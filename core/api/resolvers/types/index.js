@@ -1,0 +1,83 @@
+import User from './user';
+import LoginMethodResponse from './login-method-response';
+import Product from './product';
+import Color from './color';
+import Money from './money';
+import Media from './media';
+import SimpleProduct from './simple-product';
+import ConfigurableProduct from './configurable-product';
+import ProductMedia from './product-media';
+import ProductPrice from './product-price';
+import Dispatch from './dispatch';
+import ProductDiscount from './product-discount';
+import ProductVariationOption from './product-variation-option';
+import ProductVariation from './product-variation';
+import ProductVariationAssignment from './product-variation-assignment';
+import ProductVariationAssignmentVector from './product-variation-assignment-vector';
+import Order from './order';
+import OrderDiscount from './order-discount';
+import OrderDiscountable from './order-discountable';
+import OrderGlobalDiscount from './order-global-discount';
+import OrderItem from './order-item';
+import OrderItemDiscount from './order-item-discount';
+import OrderDelivery from './order-delivery';
+import OrderDeliveryDiscount from './order-delivery-discount';
+import OrderDeliveryShipping from './order-delivery-shipping';
+import OrderDeliveryPickUp from './order-delivery-pickup';
+import OrderPayment from './order-payment';
+import OrderPaymentDiscount from './order-payment-discount';
+import OrderPaymentCard from './order-payment-card';
+import OrderPaymentPostfinance from './order-payment-postfinance';
+import OrderPaymentCrypto from './order-payment-crypto';
+import OrderPaymentPaypal from './order-payment-paypal';
+import OrderPaymentInvoice from './order-payment-invoice';
+import PaymentProvider from './payment-provider';
+import DeliveryProvider from './delivery-provider';
+import WarehousingProvider from './warehousing-provider';
+import Dimensions from './dimensions';
+import Language from './language';
+import Shop from './shop';
+import Country from './country';
+
+export default {
+  User,
+  LoginMethodResponse,
+  Shop,
+  Country,
+  Language,
+  Money,
+  Color,
+  Media,
+  Order,
+  PaymentProvider,
+  DeliveryProvider,
+  WarehousingProvider,
+  Dimensions,
+  Dispatch,
+  OrderDiscount,
+  OrderDiscountable,
+  OrderGlobalDiscount,
+  OrderItem,
+  OrderItemDiscount,
+  OrderDelivery,
+  OrderDeliveryDiscount,
+  OrderDeliveryShipping,
+  OrderDeliveryPickUp,
+  OrderPayment,
+  OrderPaymentDiscount,
+  OrderPaymentInvoice,
+  OrderPaymentPostfinance,
+  OrderPaymentPaypal,
+  OrderPaymentCard,
+  OrderPaymentCrypto,
+  Product,
+  ProductPrice,
+  ProductDiscount,
+  ProductMedia,
+  ProductVariation,
+  ProductVariationOption,
+  ProductVariationAssignment,
+  ProductVariationAssignmentVector,
+  SimpleProduct,
+  ConfigurableProduct,
+};

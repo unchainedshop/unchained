@@ -1,0 +1,11 @@
+type Address {
+  firstName: String
+  lastName: String
+  company: String
+  postalCode: String
+  countryCode: String
+  regionCode: String
+  city: String
+  addressLine: String
+  addressLine2: String
+}

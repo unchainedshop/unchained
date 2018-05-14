@@ -1,0 +1,24 @@
+import { log } from 'meteor/unchained:core-logger';
+import { Products, ProductStatus } from 'meteor/unchained:core-products';
+import { ProductNotFoundError, ProductWrongStatusError } from '../errors';
+
+export default function (root, { productId }, { userId }) {
+  log(`mutation publishProduct ${productId}`, { userId });
+  const product = Products.findOne({ _id: productId });
+  if (!product) throw new ProductNotFoundError({ data: { productId } });
+  switch (product.status) {
+    case ProductStatus.DRAFT:
+      Products.update({ _id: productId }, {
+        $set: {
+          status: ProductStatus.ACTIVE,
+          updated: new Date(),
+          published: new Date(),
+        },
+      });
+      break;
+    default:
+      throw new ProductWrongStatusError({ data: { status: product.status } });
+  }
+
+  return Products.findOne({ _id: productId });
+}

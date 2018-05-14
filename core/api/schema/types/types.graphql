@@ -1,0 +1,23 @@
+#import "./money.graphql"
+#import "./color.graphql"
+#import "./dimensions.graphql"
+#import "./address.graphql"
+#import "./contact.graphql"
+#import "./delivery.graphql"
+#import "./currency.graphql"
+#import "./country.graphql"
+#import "./payment.graphql"
+#import "./warehousing.graphql"
+#import "./dispatch.graphql"
+#import "./shop.graphql"
+#import "./language.graphql"
+#import "./media.graphql"
+#import "./user.graphql"
+#import "./discount.graphql"
+#import "./log.graphql"
+#import "./product/product.graphql"
+#import "./order/order.graphql"
+
+type SuccessResponse {
+  success: Boolean
+}

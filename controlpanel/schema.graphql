@@ -1,0 +1,1190 @@
+# source: http://localhost:4010/graphql
+# timestamp: Wed Apr 04 2018 09:35:55 GMT+0200 (CEST)
+
+type Address {
+  firstName: String
+  lastName: String
+  company: String
+  postalCode: String
+  countryCode: String
+  regionCode: String
+  city: String
+  addressLine: String
+  addressLine2: String
+}
+
+input AddressInput {
+  firstName: String
+  lastName: String
+  company: String
+  addressLine: String
+  addressLine2: String
+  postalCode: String
+  regionCode: String
+  city: String
+  countryCode: String
+}
+
+scalar Buffer
+
+type Color {
+  name: String
+  hex: String
+  red: Int
+  green: Int
+  blue: Int
+}
+
+"""Matrix Product"""
+type ConfigurableProduct implements Product & ProductTranslation & ProductVisualization & ProductProxy {
+  _id: ID!
+  sequence: Int!
+  status: ProductStatus!
+  tags: [String]
+  created: Date
+  updated: Date
+  published: Date
+  media(vectors: [ProductAssignmentVectorInput]): [ProductMedia]
+  texts(forceLocale: String): ProductTexts
+  variations: [ProductVariation]
+  products(vectors: [ProductAssignmentVectorInput]): [Product]
+  assignments: [ProductVariationAssignment]!
+}
+
+type Contact {
+  telNumber: String
+  emailAddress: String
+}
+
+input ContactInput {
+  emailAddress: String
+  telNumber: String
+}
+
+type ConversionRate {
+  sourceCurrency: String
+  date: Date!
+  quote(targetCurrency: String): Int!
+}
+
+type Country {
+  _id: ID!
+
+  """
+  ISO 3166-1 alpha-2 https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2#Officially_assigned_code_elements
+  """
+  isoCode: String
+  isActive: Boolean
+  isBase: Boolean
+  defaultCurrency: Currency
+  flagEmoji: String
+  name(forceLocale: String): String
+}
+
+input CreateCountryInput {
+  isoCode: String!
+}
+
+input CreateCurrencyInput {
+  isoCode: String!
+}
+
+input CreateLanguageInput {
+  isoCode: String!
+}
+
+input CreateProductInput {
+  title: String!
+  type: String!
+}
+
+input CreateProductVariationInput {
+  key: String!
+  type: ProductVariationType!
+  title: String!
+}
+
+input CreateProductVariationOptionInput {
+  value: String!
+  title: String!
+}
+
+input CreateProviderInput {
+  type: String!
+  adapterKey: String!
+}
+
+input CreateUserProfileInput {
+  name: String
+}
+
+type Currency {
+  _id: ID!
+  isoCode: String
+  isActive: Boolean
+  name(forceLocale: String): String
+}
+
+scalar Date
+
+type DeliveryInterface {
+  _id: ID!
+  label: String
+  version: String
+}
+
+type DeliveryProvider {
+  _id: ID!
+  type: DeliveryProviderType
+  interface: DeliveryInterface
+  configuration: JSON
+  configurationError: DeliveryProviderError
+  isActive: Boolean
+}
+
+enum DeliveryProviderError {
+  ADAPTER_NOT_FOUND
+  NOT_IMPLEMENTED
+  INCOMPLETE_CONFIGURATION
+  WRONG_CREDENTIALS
+}
+
+enum DeliveryProviderType {
+  """Pick-Up"""
+  PICKUP
+
+  """Shipping"""
+  SHIPPING
+}
+
+type Dimensions {
+  weight(unit: MassUnit = KILOGRAM): Float
+  length(unit: LengthUnit = METERS): Float
+  width(unit: LengthUnit = METERS): Float
+  height(unit: LengthUnit = METERS): Float
+}
+
+type DiscountInterface {
+  _id: ID!
+  label: String
+  version: String
+  isManualAdditionAllowed: Boolean
+  isManualRemovalAllowed: Boolean
+}
+
+type Dispatch {
+  _id: ID!
+  deliveryProvider: DeliveryProvider
+  warehousingProvider: WarehousingProvider
+  shipping: Date
+  earliestDelivery: Date
+}
+
+"""A hashed password"""
+input HashedPassword {
+  """The hashed password"""
+  digest: String!
+
+  """Algorithm used to hash the password"""
+  algorithm: String!
+}
+
+scalar JSON
+
+type Language {
+  _id: ID!
+
+  """
+  ISO 639-1 alpha-2 https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes
+  """
+  isoCode: String
+  isActive: Boolean
+  isBase: Boolean
+  name(ignoreLocale: Boolean): String
+}
+
+enum LengthUnit {
+  METERS
+  FEET
+  MILLIMETERS
+}
+
+"""
+Server side log entry, that is contextually augmented with user & order
+"""
+type Log {
+  _id: ID!
+  created: Date!
+  level: String!
+  message: String!
+  user: User
+  order: Order
+}
+
+"""Type returned when the user logs in"""
+type LoginMethodResponse {
+  """Id of the user logged in user"""
+  id: String!
+
+  """Token of the connection"""
+  token: String!
+
+  """Expiration date for the token"""
+  tokenExpires: Float!
+
+  """The logged in user"""
+  user: User
+}
+
+enum MassUnit {
+  KILOGRAM
+  GRAM
+  POUNDS
+}
+
+type Media {
+  _id: ID!
+  name: String!
+  type: String!
+  size: Int!
+  url: String!
+}
+
+type Money {
+  amount: Int
+  currency: String
+}
+
+type Mutation {
+  """Login the user with a facebook access token"""
+  loginWithFacebook(accessToken: String!): LoginMethodResponse
+
+  """Login the user with a facebook access token"""
+  loginWithGoogle(accessToken: String!, tokenId: String): LoginMethodResponse
+
+  """Login the user with a facebook access token"""
+  loginWithLinkedIn(code: String!, redirectUri: String!): LoginMethodResponse
+
+  """Log the user in with a password. ACL: Everybody"""
+  loginWithPassword(username: String, email: String, password: HashedPassword, plainPassword: String): LoginMethodResponse
+
+  """Create a new user. ACL: Everybody"""
+  createUser(username: String, email: String, password: HashedPassword, plainPassword: String, profile: CreateUserProfileInput): LoginMethodResponse
+
+  """Change the current user's password. Must be logged in. ACL: Everybody"""
+  changePassword(oldPassword: HashedPassword!, newPassword: HashedPassword!): SuccessResponse
+
+  """Request a forgot password email. ACL: Everybody"""
+  forgotPassword(email: String!): SuccessResponse
+
+  """
+  Reset the password for a user using a token received in email. Logs the user in afterwards. ACL: Everybody
+  """
+  resetPassword(newPassword: HashedPassword!, token: String!): LoginMethodResponse
+
+  """Log the user out."""
+  logout(token: String!): SuccessResponse
+
+  """
+  Marks the user's email address as verified. Logs the user in afterwards.
+  """
+  verifyEmail(token: String!): LoginMethodResponse
+
+  """
+  Send an email with a link the user can use verify their email address.
+  """
+  resendVerificationEmail(email: String): SuccessResponse
+
+  """
+  Login as Guest User (creates an anonymous user and returns logged in token) ACL: Everybody
+  """
+  loginAsGuest: LoginMethodResponse
+
+  """
+  Add a new item to the cart. Order gets generated with status = open (= order
+  before checkout / cart) if necessary. ACL: Logged in users (including guests)
+  """
+  addCartProduct(productId: ID!, quantity: Int = 1): OrderItem!
+
+  """
+  Change the quantity of an item in the cart ACL: Logged in users (including guests)
+  """
+  updateCartItemQuantity(itemId: ID!, quantity: Int = 1): OrderItem!
+
+  """Remove an item from the cart ACL: Logged in users (including guests)"""
+  removeCartItem(itemId: ID!): OrderItem!
+
+  """
+  Add a new discount to the cart, a new order gets generated with status = open
+  (= order before checkout / cart) if necessary ACL: Logged in users (including guests)
+  """
+  addCartDiscount(code: String!): OrderDiscount!
+
+  """
+  Remove a discount from the cart ACL: Logged in users (including guests)
+  """
+  removeCartDiscount(discountId: ID!): OrderDiscount!
+
+  """Remove an order while it's still a cart"""
+  removeOrder(orderId: ID!): Order!
+
+  """Change billing address of an open order"""
+  updateOrderAddress(orderId: ID!, address: AddressInput!): Order!
+
+  """Change contact of an open order"""
+  updateOrderContact(orderId: ID!, contact: ContactInput!): Order!
+
+  """Change the delivery method/provider"""
+  setOrderDeliveryProvider(orderId: ID!, deliveryProviderId: ID!): Order!
+
+  """Change the payment method/provider"""
+  setOrderPaymentProvider(orderId: ID!, paymentProviderId: ID!): Order!
+
+  """Update a Shipping Delivery Provider's specific configuration"""
+  updateOrderDeliveryShipping(orderDeliveryId: ID!, address: AddressInput): OrderDeliveryShipping!
+
+  """Update a Pick Up Delivery Provider's specific configuration"""
+  updateOrderDeliveryPickUp(orderDeliveryId: ID!, address: AddressInput): OrderDeliveryPickUp!
+
+  """Update a Card Payment Provider's specific configuration"""
+  updateOrderPaymentCard(orderPaymentId: ID!): OrderPaymentCard!
+
+  """Update a PostFinance Payment Provider's specific configuration"""
+  updateOrderPaymentPostfinance(orderPaymentId: ID!): OrderPaymentPostfinance!
+
+  """Update am Invoice Payment Provider's specific configuration"""
+  updateOrderPaymentInvoice(orderPaymentId: ID!): OrderPaymentInvoice!
+
+  """Update a PayPal Payment Provider's specific configuration"""
+  updateOrderPaymentPaypal(orderPaymentId: ID!): OrderPaymentPaypal!
+
+  """Update a Crypo Provider's specific configuration"""
+  updateOrderPaymentCrypto(orderPaymentId: ID!): OrderPaymentCrypto!
+
+  """
+  Process the checkout (automatically charge & deliver if possible), the cart will get
+  transformed to an ordinary order if everything goes well.
+  """
+  checkout(paymentContext: JSON, deliveryContext: JSON): Order!
+
+  """
+  This method takes a cart by id and
+  transfers it to the currently logged in user
+  if the current user already has an open order (cart), remove that one
+  this method is needed to transition from a guest user to a logged in user
+  where the cart has to persist items
+  """
+  captureOrder(orderId: ID!): Order
+
+  """Update Avatar of any user or logged in user if userId is not provided"""
+  updateUserAvatar(avatar: Upload!, userId: ID): User
+
+  """
+  Update E-Mail address of any user or logged in user if userId is not provided
+  """
+  updateEmail(email: String!, userId: ID): User
+
+  """
+  Update Profile of any user or logged in user if userId is not provided
+  """
+  updateUserProfile(profile: UserProfileInput!, userId: ID): User
+
+  """
+  Enroll a new user, setting enroll to true will let the user choose his password (e-mail gets sent)
+  """
+  enrollUser(profile: UserProfileInput!, email: String!, password: String): User
+
+  """Set a new password for a specific user"""
+  setPassword(newPassword: String!, userId: ID!): User
+
+  """Set roles of a user"""
+  setRoles(roles: [String]!, userId: ID!): User
+
+  """Manually confirm an order which is in progress"""
+  confirmOrder(orderId: ID!): Order!
+
+  """Manually mark an unpaid/partially paid order as fully paid"""
+  payOrder(orderId: ID!): Order!
+
+  """Create a new product"""
+  createProduct(product: CreateProductInput!): Product!
+
+  """Make the product visible on any shop listings (product queries)"""
+  publishProduct(productId: ID!): Product!
+
+  """Hide the product visible from any shop listings (product queries)"""
+  unpublishProduct(productId: ID!): Product!
+
+  """Remove the product completely!"""
+  removeProduct(productId: ID!): Product!
+
+  """Modify generic infos of a product (tags for ex.)"""
+  updateProduct(productId: ID!, product: UpdateProductInput!): Product
+
+  """Modify commerce part of a product"""
+  updateProductCommerce(productId: ID!, commerce: UpdateProductCommerceInput!): Product
+
+  """Modify delivery part of a product"""
+  updateProductSupply(productId: ID!, supply: UpdateProductSupplyInput!): Product
+
+  """Modify warehousing part of a product"""
+  updateProductWarehousing(productId: ID!, warehousing: UpdateProductWarehousingInput!): Product
+
+  """Modify localized texts part of a product"""
+  updateProductTexts(productId: ID!, texts: [UpdateProductTextInput!]!): [ProductTexts!]!
+
+  """Add a new media to a product's visualization"""
+  addProductMedia(productId: ID!, media: Upload!): ProductMedia!
+
+  """Remove a media asset from a product's visualization"""
+  removeProductMedia(productMediaId: ID!): ProductMedia!
+
+  """Reorder a media asset (first is primary)"""
+  reorderProductMedia(sortKeys: [ReorderProductMediaInput!]!): [ProductMedia!]!
+
+  """Modify localized texts part of a product's media asset"""
+  updateProductMediaTexts(productMediaId: ID!, texts: [UpdateProductMediaTextInput!]!): [ProductMediaTexts!]!
+  removeProductVariation(productVariationId: ID!): ProductVariation!
+  removeProductVariationOption(productVariationId: ID!, productVariationOptionValue: String!): ProductVariation!
+  updateProductVariationTexts(productVariationId: ID!, productVariationOptionValue: String, texts: [UpdateProductVariationTextInput!]!): [ProductVariationTexts]!
+  createProductVariation(productId: ID!, variation: CreateProductVariationInput!): ProductVariation!
+  createProductVariationOption(productVariationId: ID!, option: CreateProductVariationOptionInput!): ProductVariation!
+  addProductAssignment(proxyId: ID!, productId: ID!, vectors: [ProductAssignmentVectorInput!]!): Product!
+  removeProductAssignment(proxyId: ID!, vectors: [ProductAssignmentVectorInput!]!): Product!
+  createLanguage(language: CreateLanguageInput!): Language!
+  updateLanguage(language: UpdateLanguageInput!, languageId: ID!): Language!
+  setBaseLanguage(languageId: ID!): Language!
+  removeLanguage(languageId: ID!): Language!
+  createCountry(country: CreateCountryInput!): Country!
+  updateCountry(country: UpdateCountryInput!, countryId: ID!): Country!
+  setBaseCountry(countryId: ID!): Country!
+  removeCountry(countryId: ID!): Country!
+  createCurrency(currency: CreateCurrencyInput!): Currency!
+  updateCurrency(currency: UpdateCurrencyInput!, currencyId: ID!): Currency!
+  removeCurrency(currencyId: ID!): Currency!
+  createPaymentProvider(paymentProvider: CreateProviderInput!): PaymentProvider!
+  updatePaymentProvider(paymentProvider: UpdateProviderInput!, paymentProviderId: ID!): PaymentProvider!
+  removePaymentProvider(paymentProviderId: ID!): PaymentProvider!
+  createDeliveryProvider(deliveryProvider: CreateProviderInput!): DeliveryProvider!
+  updateDeliveryProvider(deliveryProvider: UpdateProviderInput!, deliveryProviderId: ID!): DeliveryProvider!
+  removeDeliveryProvider(deliveryProviderId: ID!): DeliveryProvider!
+  createWarehousingProvider(warehousingProvider: CreateProviderInput!): WarehousingProvider!
+  updateWarehousingProvider(warehousingProvider: UpdateProviderInput!, warehousingProviderId: ID!): WarehousingProvider!
+  removeWarehousingProvider(warehousingProviderId: ID!): WarehousingProvider!
+}
+
+"""Just an order"""
+type Order {
+  _id: ID!
+  user: User
+  status: OrderStatus
+  created: Date
+  updated: Date
+  ordered: Date
+  orderNumber: String
+  confirmed: Date
+  fullfilled: Date
+  contact: Contact
+  country: Country
+  currency: Currency
+  address: Address
+  delivery: OrderDelivery
+  payment: OrderPayment
+  items: [OrderItem]
+  discounts: [OrderDiscount]
+  total(category: OrderPriceCategory): Money
+  documents(type: OrderDocumentType): [Media]!
+  supportedDeliveryProviders: [DeliveryProvider]!
+  supportedPaymentProviders: [PaymentProvider]!
+  logs(offset: Int, limit: Int): [Log]!
+}
+
+interface OrderDelivery {
+  _id: ID!
+  provider: DeliveryProvider
+  status: OrderDeliveryStatus
+  delivered: Date
+  fee: Money
+}
+
+type OrderDeliveryDiscount implements OrderDiscountable {
+  _id: ID!
+  orderDiscount: OrderDiscount!
+  delivery: OrderDelivery!
+  total: Money!
+}
+
+type OrderDeliveryPickUp implements OrderDelivery {
+  _id: ID!
+  provider: DeliveryProvider
+  status: OrderDeliveryStatus
+  fee: Money
+  delivered: Date
+  address: Address
+}
+
+type OrderDeliveryShipping implements OrderDelivery {
+  _id: ID!
+  provider: DeliveryProvider
+  status: OrderDeliveryStatus
+  fee: Money
+  delivered: Date
+  address: Address
+}
+
+enum OrderDeliveryStatus {
+  """Order is not delivered"""
+  OPEN
+
+  """Delivery complete"""
+  DELIVERED
+
+  """Delivery returned"""
+  RETURNED
+}
+
+type OrderDiscount {
+  _id: ID!
+  trigger: OrderDiscountTrigger!
+  code: String
+  order: Order!
+  interface: DiscountInterface
+  total: Money!
+  discounted: [OrderDiscountable]
+}
+
+interface OrderDiscountable {
+  _id: ID!
+  orderDiscount: OrderDiscount!
+  total: Money!
+}
+
+enum OrderDiscountTrigger {
+  """System triggered"""
+  SYSTEM
+
+  """User triggered"""
+  USER
+}
+
+enum OrderDocumentType {
+  """Order Confirmation"""
+  ORDER_CONFIRMATION
+
+  """Delivery Note"""
+  DELIVERY_NOTE
+
+  """Invoice"""
+  INVOICE
+
+  """Receipt"""
+  RECEIPT
+
+  """Other"""
+  OTHER
+}
+
+type OrderGlobalDiscount implements OrderDiscountable {
+  _id: ID!
+  orderDiscount: OrderDiscount!
+  order: Order!
+  total: Money!
+}
+
+type OrderItem {
+  _id: ID!
+  product: Product!
+  order: Order!
+  quantity: Int!
+  unitPrice: Money
+  total(category: OrderItemPriceCategory): Money
+  discounts: [OrderItemDiscount]
+  dispatches: [Dispatch]
+}
+
+type OrderItemDiscount implements OrderDiscountable {
+  _id: ID!
+  orderDiscount: OrderDiscount!
+  item: OrderItem!
+  total: Money!
+}
+
+enum OrderItemPriceCategory {
+  """Discount"""
+  DISCOUNT
+
+  """Tax"""
+  TAX
+
+  """Items"""
+  ITEM
+}
+
+interface OrderPayment {
+  _id: ID!
+  provider: PaymentProvider
+  status: OrderPaymentStatus
+  fee: Money
+  paid: Date
+}
+
+type OrderPaymentCard implements OrderPayment {
+  _id: ID!
+  provider: PaymentProvider
+  status: OrderPaymentStatus
+  paid: Date
+  fee: Money
+}
+
+type OrderPaymentCrypto implements OrderPayment {
+  _id: ID!
+  provider: PaymentProvider
+  status: OrderPaymentStatus
+  fee: Money
+  paid: Date
+
+  """
+  A crypto currency payment works via pre-payment like credit cards,
+  so every order payment get's it's own public key
+  """
+  walletAddress: String
+  walletBalance: Money
+}
+
+type OrderPaymentDiscount implements OrderDiscountable {
+  _id: ID!
+  orderDiscount: OrderDiscount!
+  payment: OrderPayment!
+  total: Money!
+}
+
+type OrderPaymentInvoice implements OrderPayment {
+  _id: ID!
+  provider: PaymentProvider
+  status: OrderPaymentStatus
+  fee: Money
+  paid: Date
+}
+
+type OrderPaymentPaypal implements OrderPayment {
+  _id: ID!
+  provider: PaymentProvider
+  status: OrderPaymentStatus
+  fee: Money
+  paid: Date
+
+  """Get the clientToken for Paypal Payments with the Braintree SDK"""
+  clientToken: String!
+}
+
+type OrderPaymentPostfinance implements OrderPayment {
+  _id: ID!
+  provider: PaymentProvider
+  status: OrderPaymentStatus
+  fee: Money
+  paid: Date
+}
+
+enum OrderPaymentStatus {
+  """Unpaid Order"""
+  OPEN
+
+  """Order has been paied"""
+  PAID
+
+  """Order has been refunded"""
+  REFUNDED
+}
+
+enum OrderPriceCategory {
+  """Product Price Total"""
+  ITEMS
+
+  """Payment Fees"""
+  PAYMENT
+
+  """Delivery Fees"""
+  DELIVERY
+
+  """Tax"""
+  TAXES
+
+  """Discount"""
+  DISCOUNTS
+}
+
+enum OrderStatus {
+  """Open Order / Cart"""
+  OPEN
+
+  """Order has been sent but confirmation awaiting"""
+  PENDING
+
+  """Order has been confirmed"""
+  CONFIRMED
+
+  """Order has been fullfilled completely (all positions in delivery)"""
+  FULLFILLED
+}
+
+type PaymentInterface {
+  _id: ID!
+  label: String
+  version: String
+}
+
+type PaymentProvider {
+  _id: ID!
+  type: PaymentProviderType
+  interface: PaymentInterface
+  configuration: JSON
+  configurationError: PaymentProviderError
+}
+
+enum PaymentProviderError {
+  ADAPTER_NOT_FOUND
+  NOT_IMPLEMENTED
+  INCOMPLETE_CONFIGURATION
+  WRONG_CREDENTIALS
+}
+
+enum PaymentProviderType {
+  """Card"""
+  CARD
+
+  """Invoice"""
+  INVOICE
+
+  """PostFinance"""
+  POSTFINANCE
+
+  """Paypal"""
+  PAYPAL
+
+  """Crypto"""
+  CRYPTO
+}
+
+"""Abstract Product"""
+interface Product {
+  _id: ID!
+  sequence: Int!
+  status: ProductStatus!
+  tags: [String]
+  created: Date
+  updated: Date
+  published: Date
+}
+
+input ProductAssignmentVectorInput {
+  key: String!
+  value: String!
+}
+
+"""Commerce"""
+interface ProductCommerce {
+  catalogPrice: ProductPrice
+  simulatedPrice(useNetPrice: Boolean = false): ProductPrice
+  simulatedDiscounts: [ProductDiscount]
+}
+
+type ProductDiscount {
+  _id: ID!
+  interface: DiscountInterface
+  total: Money!
+}
+
+type ProductMedia {
+  _id: ID!
+  tags: [String]
+  file: Media!
+  sortKey: Int!
+  texts(forceLocale: String): ProductMediaTexts
+}
+
+type ProductMediaTexts {
+  _id: ID!
+  locale: String
+  title: String
+  subtitle: String
+}
+
+type ProductPrice {
+  _id: ID!
+  isTaxable: Boolean!
+  isNetPrice: Boolean!
+  country: Country!
+  price: Money!
+}
+
+"""Variations (Proxy)"""
+interface ProductProxy {
+  variations: [ProductVariation]
+  products(vectors: [ProductAssignmentVectorInput]): [Product]
+  assignments: [ProductVariationAssignment]!
+}
+
+enum ProductStatus {
+  """Unpublished (hidden from catalog)"""
+  DRAFT
+
+  """Published"""
+  ACTIVE
+
+  """Deleted"""
+  DELETED
+}
+
+"""Supply"""
+interface ProductSupply {
+  dimensions: Dimensions
+  simulatedDispatches(deliveryProviderType: DeliveryProviderType = SHIPPING): [Dispatch]
+}
+
+type ProductTexts {
+  _id: ID!
+  locale: String
+  slug: String
+  title: String
+  subtitle: String
+  description: String
+  vendor: String
+  labels: [String]
+}
+
+"""Texts"""
+interface ProductTranslation {
+  texts(forceLocale: String): ProductTexts
+}
+
+type ProductVariation {
+  _id: ID!
+  texts(forceLocale: String): ProductVariationTexts
+  type: ProductVariationType
+  key: String
+  options: [ProductVariationOption]
+}
+
+"""Key Value Combination to Product Assignment"""
+type ProductVariationAssignment {
+  _id: ID!
+
+  """Query string key=val&key=val ..."""
+  vectors: [ProductVariationAssignmentVector]
+
+  """Assigned Product"""
+  product: Product
+}
+
+"""Key Value Combination"""
+type ProductVariationAssignmentVector {
+  _id: ID!
+  variation: ProductVariation
+  option: ProductVariationOption
+}
+
+type ProductVariationOption {
+  _id: ID!
+  texts(forceLocale: String): ProductVariationTexts
+  value: String
+}
+
+type ProductVariationTexts {
+  _id: ID!
+  locale: String
+  title: String
+  subtitle: String
+}
+
+enum ProductVariationType {
+  """Color Picker"""
+  COLOR
+
+  """Text Answers"""
+  TEXT
+}
+
+"""Visualization"""
+interface ProductVisualization {
+  media: [ProductMedia]
+}
+
+"""Warehousing"""
+interface ProductWarehousing {
+  sku: String
+  maxAllowedQuantityPerOrder: Int
+  allowOrderingIfNoStock: Boolean
+}
+
+type Query {
+  """Currently logged in user"""
+  me: User
+
+  """Get list of users"""
+  users(limit: Int, offset: Int, ignoreGuests: Boolean): [User]!
+
+  """
+  Specific user data if userId provided, else returns currently logged in
+  """
+  user(userId: ID): User
+
+  """Simple list of published products filtered by tags"""
+  products(tags: [String], limit: Int, offset: Int, includeDrafts: Boolean): [Product]!
+
+  """Get a specific product by id or slug"""
+  product(productId: ID, slug: String): Product
+
+  """List prices"""
+  productCatalogPrices(productId: ID!): [ProductPrice]!
+
+  """Localization: Meta data for product"""
+  translatedProductTexts(productId: ID!): [ProductTexts]!
+
+  """
+  Localization: Media title/subtitle of a media that is attached to a product
+  """
+  translatedProductMediaTexts(productMediaId: ID!): [ProductMediaTexts]!
+
+  """Localization: Label of a variation option"""
+  translatedProductVariationTexts(productVariationId: ID!, productVariationOptionValue: String): [ProductVariationTexts]!
+
+  """Get all languages"""
+  languages(limit: Int, offset: Int, includeInactive: Boolean): [Language]!
+
+  """Get a specific language"""
+  language(languageId: ID!): Language!
+
+  """Get all countries"""
+  countries(limit: Int, offset: Int, includeInactive: Boolean): [Country]!
+
+  """Get a specific country by ID"""
+  country(countryId: ID!): Country!
+
+  """Get all currencies"""
+  currencies(limit: Int, offset: Int, includeInactive: Boolean): [Currency]!
+
+  """Get a specific currency by ID"""
+  currency(currencyId: ID!): Currency!
+
+  """Get all delivery providers, optionally filtered by type"""
+  deliveryProviders(type: DeliveryProviderType): [DeliveryProvider]!
+
+  """Get a specific delivery provider by ID"""
+  deliveryProvider(deliveryProviderId: ID!): DeliveryProvider!
+
+  """Get all delivery interfaces filtered by type"""
+  deliveryInterfaces(type: DeliveryProviderType!): [DeliveryInterface]!
+
+  """Get all delivery providers, optionally filtered by type"""
+  warehousingProviders(type: WarehousingProviderType): [WarehousingProvider]!
+
+  """Get a specific warehousing provider by ID"""
+  warehousingProvider(warehousingProviderId: ID!): WarehousingProvider!
+
+  """Get all warehousing interfaces filtered by type"""
+  warehousingInterfaces(type: WarehousingProviderType!): [WarehousingInterface]!
+
+  """Get all payment providers, optionally filtered by type"""
+  paymentProviders(type: PaymentProviderType): [PaymentProvider]!
+
+  """Get a specific payment provider by ID"""
+  paymentProvider(paymentProviderId: ID!): PaymentProvider!
+
+  """Get all payment interfaces filtered by type"""
+  paymentInterfaces(type: PaymentProviderType!): [PaymentInterface]!
+
+  """Get all orders"""
+  orders(limit: Int, offset: Int): [Order]!
+
+  """
+  Get a specific single order, use the otp to get access to the information
+  without beeing logged in as the user that created the order
+  """
+  order(orderId: ID!, otp: String): Order!
+
+  """Get all logs, sorted by most recent creation date first"""
+  logs(limit: Int, offset: Int): [Log]!
+
+  """Get shop-global data and the resolved country/language pair"""
+  shopInfo: Shop!
+}
+
+input ReorderProductMediaInput {
+  productMediaId: ID!
+  sortKey: Int!
+}
+
+type Shop {
+  _id: ID!
+  language: Language
+  country: Country
+  version: String
+}
+
+"""Simple Product"""
+type SimpleProduct implements Product & ProductTranslation & ProductVisualization & ProductCommerce & ProductSupply & ProductWarehousing {
+  _id: ID!
+  sequence: Int!
+  status: ProductStatus!
+  tags: [String]
+  created: Date
+  updated: Date
+  published: Date
+  media: [ProductMedia]
+  texts(forceLocale: String): ProductTexts
+  catalogPrice: ProductPrice
+  simulatedPrice(useNetPrice: Boolean = false, quantity: Int = 1): ProductPrice
+  simulatedDiscounts(quantity: Int = 1): [ProductDiscount]
+  simulatedDispatches(deliveryProviderType: DeliveryProviderType = SHIPPING, quantity: Int = 1): [Dispatch]
+  dimensions: Dimensions
+  sku: String
+  maxAllowedQuantityPerOrder: Int
+  allowOrderingIfNoStock: Boolean
+}
+
+type SuccessResponse {
+  success: Boolean
+}
+
+input UpdateCountryInput {
+  isoCode: String!
+  isActive: Boolean
+  defaultCurrencyId: String
+}
+
+input UpdateCurrencyInput {
+  isoCode: String!
+  isActive: Boolean
+}
+
+input UpdateLanguageInput {
+  isoCode: String!
+  isActive: Boolean
+}
+
+input UpdateProductCommerceInput {
+  pricing: [UpdateProductCommercePricingInput!]!
+}
+
+input UpdateProductCommercePricingInput {
+  amount: Int!
+  isTaxable: Boolean
+  isNetPrice: Boolean
+  currencyCode: String!
+  countryCode: String!
+}
+
+input UpdateProductInput {
+  tags: [String]!
+}
+
+input UpdateProductMediaTextInput {
+  locale: String!
+  title: String
+  subtitle: String
+}
+
+input UpdateProductSupplyInput {
+  weightInGram: Int
+  heightInMillimeters: Int
+  lengthInMillimeters: Int
+  widthInMillimeters: Int
+}
+
+input UpdateProductTextInput {
+  locale: String!
+  slug: String
+  title: String
+  subtitle: String
+  description: String
+  vendor: String
+  labels: [String]
+}
+
+input UpdateProductVariationTextInput {
+  locale: String!
+  title: String
+  subtitle: String
+}
+
+input UpdateProductWarehousingInput {
+  sku: String
+  maxAllowedQuantityPerOrder: Int
+  allowOrderingIfNoStock: Boolean
+}
+
+input UpdateProviderInput {
+  configuration: [JSON]
+}
+
+"""
+The `Upload` scalar type represents a file upload promise that resolves a buffer file object
+"""
+scalar Upload
+
+type User {
+  _id: ID!
+  email: String!
+  isEmailVerified: Boolean!
+  isGuest: Boolean!
+  name: String!
+  avatar: Media
+  profile: UserProfile
+  language: Language
+  country: Country
+  lastBillingAddress: Address
+  lastDeliveryAddress: Address
+  emails: [UserEmail]
+  roles: [String]
+  cart: Order
+  orders(includeDrafts: Boolean = false): [Order]!
+  logs(offset: Int, limit: Int): [Log]!
+}
+
+type UserEmail {
+  address: String!
+  verified: Boolean!
+}
+
+type UserProfile {
+  firstName: String
+  lastName: String
+  phoneMobile: String
+  birthday: Date
+  tags: [String]
+}
+
+input UserProfileInput {
+  firstName: String!
+  lastName: String!
+  birthday: Date
+  phoneMobile: String
+  tags: [String]
+}
+
+type WarehousingInterface {
+  _id: ID!
+  label: String
+  version: String
+}
+
+type WarehousingProvider {
+  _id: ID!
+  type: WarehousingProviderType
+  interface: WarehousingInterface
+  configuration: JSON
+  configurationError: WarehousingProviderError
+  isActive: Boolean
+}
+
+enum WarehousingProviderError {
+  ADAPTER_NOT_FOUND
+  NOT_IMPLEMENTED
+  INCOMPLETE_CONFIGURATION
+  WRONG_CREDENTIALS
+}
+
+enum WarehousingProviderType {
+  """Physical"""
+  PHYSICAL
+}

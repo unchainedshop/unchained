@@ -1,0 +1,8 @@
+import { log } from 'meteor/unchained:core-logger';
+import { PaymentProviders } from 'meteor/unchained:core-payment';
+
+export default (root, { paymentProvider, paymentProviderId }, { userId }) => {
+  log(`mutation updatePaymentProvider ${paymentProviderId}`, { userId });
+  const provider = PaymentProviders.updateProvider({ paymentProviderId, ...paymentProvider });
+  return provider;
+};

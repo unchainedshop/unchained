@@ -1,0 +1,134 @@
+import React from 'react';
+import { toast } from 'react-toastify';
+import { compose, mapProps, withHandlers } from 'recompose';
+import { Button, Segment, Container } from 'semantic-ui-react';
+import Router from 'next/router';
+import gql from 'graphql-tag';
+import { graphql } from 'react-apollo';
+import AutoField from 'uniforms-semantic/AutoField';
+import SubmitField from 'uniforms-semantic/SubmitField';
+import ErrorsField from 'uniforms-semantic/ErrorsField';
+import AutoForm from 'uniforms-semantic/AutoForm';
+import withFormSchema from '../../lib/withFormSchema';
+import withFormModel from '../../lib/withFormModel';
+import withFormErrorHandlers from '../../lib/withFormErrorHandlers';
+
+const FormEditCountry = ({ currencies, removeCountry, ...formProps }) => (
+  <Container>
+    <AutoForm {...formProps} >
+      <Segment attached="bottom">
+        <AutoField name={'isoCode'} />
+        <AutoField name={'isActive'} />
+        <AutoField name={'defaultCurrencyId'} options={currencies} />
+        <ErrorsField />
+        <SubmitField value="Speichern" className="primary" />
+        <Button type="normal" secondary floated="right" onClick={removeCountry}>Löschen</Button>
+      </Segment>
+    </AutoForm>
+  </Container>
+);
+
+export default compose(
+  graphql(gql`
+    query country($countryId: ID!) {
+      country(countryId: $countryId) {
+        _id
+        isoCode
+        isActive
+        defaultCurrency {
+          _id
+        }
+      }
+      currencies {
+        _id
+        isoCode
+      }
+    }
+  `),
+  graphql(gql`
+    mutation updateCountry($country: UpdateCountryInput!, $countryId: ID!) {
+      updateCountry(country: $country, countryId: $countryId) {
+        _id
+        isoCode
+        isActive
+        defaultCurrency {
+          _id
+        }
+      }
+    }
+  `, {
+    name: 'updateCountry',
+    options: {
+      refetchQueries: [
+        'country',
+        'countries',
+      ],
+    },
+  }),
+  graphql(gql`
+    mutation removeCountry($countryId: ID!) {
+      removeCountry(countryId: $countryId) {
+        _id
+      }
+    }
+  `, {
+    name: 'removeCountry',
+    options: {
+      refetchQueries: [
+        'countries',
+      ],
+    },
+  }),
+  withFormSchema({
+    isoCode: {
+      type: String,
+      optional: false,
+      label: 'ISO Ländercode',
+    },
+    defaultCurrencyId: {
+      type: String,
+      optional: true,
+      label: 'Standardwährung',
+    },
+    isActive: {
+      type: Boolean,
+      optional: false,
+      label: 'Aktiv',
+    },
+  }),
+  withFormModel(({ data: { country: { defaultCurrency, ...country } = {} } }) => ({
+    defaultCurrencyId: defaultCurrency && defaultCurrency._id,
+    ...country,
+  })),
+  withHandlers({
+    onSubmitSuccess: () => () => {
+      toast('Country saved', { type: 'success' }); // eslint-disable-line
+    },
+    removeCountry: ({ removeCountry, countryId }) => async (event) => {
+      event.preventDefault();
+      Router.replace({ pathname: '/countries' });
+      await removeCountry({
+        variables: {
+          countryId,
+        },
+      });
+    },
+    onSubmit: ({ countryId, updateCountry }) =>
+      ({ isoCode, defaultCurrencyId, isActive }) => updateCountry({
+        variables: {
+          country: { isoCode, defaultCurrencyId, isActive },
+          countryId,
+        },
+      }),
+  }),
+  withFormErrorHandlers,
+  mapProps(({
+    countryId, updateCountry, data: { currencies = [] }, ...rest
+  }) => ({
+    currencies: currencies.map(currency => ({
+      label: currency.isoCode,
+      value: currency._id,
+    })),
+    ...rest,
+  })),
+)(FormEditCountry);

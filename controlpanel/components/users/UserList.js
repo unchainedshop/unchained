@@ -1,0 +1,156 @@
+import { compose, withState, withHandlers, pure } from 'recompose';
+import gql from 'graphql-tag';
+import { graphql } from 'react-apollo';
+import React from 'react';
+import { Table, Icon, Button, Loader, Label } from 'semantic-ui-react';
+import InfiniteScroll from 'react-infinite-scroller';
+import Link from 'next/link';
+
+const UserList = ({
+  users, loadMoreEntries, hasMore, isHideGuests, toggleHideGuests,
+}) => (
+  <Table celled>
+    <Table.Header>
+      <Table.Row>
+        <Table.HeaderCell colSpan={3}>
+          Hide guests? <input type="checkbox" checked={isHideGuests} onClick={toggleHideGuests} />
+        </Table.HeaderCell>
+      </Table.Row>
+      <Table.Row>
+        <Table.HeaderCell>E-Mail Address</Table.HeaderCell>
+        <Table.HeaderCell>Name</Table.HeaderCell>
+        <Table.HeaderCell>User Type</Table.HeaderCell>
+      </Table.Row>
+    </Table.Header>
+
+    {users && (
+      <InfiniteScroll
+        pageStart={0}
+        element={'tbody'}
+        loadMore={loadMoreEntries}
+        hasMore={hasMore}
+        loader={(
+          <Table.Row>
+            <Table.Cell colSpan="4">
+              <Loader active inline="centered" />
+            </Table.Cell>
+          </Table.Row>
+        )}
+      >
+        {users.map(({
+ name, email, _id, profile, isEmailVerified, isGuest,
+}) => (
+  <Table.Row key={_id}>
+    <Table.Cell>
+      <Link href={`/users/edit?_id=${_id}`}>
+        <a href={`/users/edit?_id=${_id}`}>{email}</a>
+      </Link>
+    </Table.Cell>
+    <Table.Cell>
+      {name}&nbsp;
+      {profile && profile.tags && profile.tags.length > 0 && (
+        profile.tags.map(tag => (
+          <Label key={tag} color="grey" horizontal>{tag}</Label>
+        ))
+      )}
+    </Table.Cell>
+    <Table.Cell>
+      {isGuest ? (
+        <Label color="orange" horizontal>
+          Guest
+        </Label>
+      ) : (
+        <Label color={isEmailVerified ? 'green' : 'red'} horizontal>
+          {isEmailVerified ? 'Verified' : 'Unverified'}
+        </Label>
+      )}
+    </Table.Cell>
+  </Table.Row>
+        ))}
+      </InfiniteScroll>
+    )}
+    <Table.Footer fullWidth>
+      <Table.Row>
+        <Table.HeaderCell colSpan="4">
+          <Link href="/users/new">
+            <Button
+              floated="right"
+              icon
+              labelPosition="left"
+              primary
+              size="small"
+              href="/users/new"
+            >
+              <Icon name="plus" />New User
+            </Button>
+          </Link>
+        </Table.HeaderCell>
+      </Table.Row>
+    </Table.Footer>
+  </Table>
+);
+
+const ITEMS_PER_PAGE = 10;
+export const USER_LIST_QUERY = gql`
+  query getAllUsers($offset: Int, $limit: Int, $ignoreGuests: Boolean) {
+    users(offset: $offset, limit: $limit, ignoreGuests: $ignoreGuests) {
+      _id
+      isGuest
+      isEmailVerified
+      profile {
+        tags
+      }
+      name
+      email
+    }
+  }
+`;
+
+export default compose(
+  withState('hasMore', 'updateHasMore', true),
+  withState('isHideGuests', 'updateHideGuests', false),
+  withHandlers({
+    toggleHideGuests: ({ isHideGuests, updateHideGuests }) => () =>
+      updateHideGuests(!isHideGuests),
+  }),
+  graphql(USER_LIST_QUERY, {
+    options: ({ isHideGuests }) => ({
+      variables: {
+        ignoreGuests: isHideGuests,
+        offset: 0,
+        limit: ITEMS_PER_PAGE,
+      },
+    }),
+    props: ({
+      data: { loading, users, fetchMore },
+      ownProps: { updateHasMore, isHideGuests },
+    }) => ({
+      loading,
+      users,
+      loadMoreEntries: () => fetchMore({
+        variables: {
+          ignoreGuests: isHideGuests,
+          offset: Math.floor(users.length / ITEMS_PER_PAGE) * ITEMS_PER_PAGE,
+          limit: ITEMS_PER_PAGE,
+        },
+        updateQuery: (previousResult, { fetchMoreResult }) => {
+          if (!fetchMoreResult || fetchMoreResult.users.length === 0) {
+            updateHasMore(false);
+            return previousResult;
+          }
+          const idComparator = fetchMoreResult.users[0]._id;
+          const alreadyAdded = previousResult.users
+            .reduce((oldValue, item) => ((item._id === idComparator) ? true : oldValue), false);
+          if (alreadyAdded) {
+            updateHasMore(false);
+            return previousResult;
+          }
+          return Object.assign({}, previousResult, {
+            users: [...previousResult.users, ...fetchMoreResult.users],
+          });
+        },
+      }),
+    }),
+  }),
+  pure,
+)(UserList);
