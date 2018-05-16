@@ -1,4 +1,5 @@
 const serverSideEnv = (process.env || {});
 const clientSideEnv = (process.browser ? JSON.parse(window.ENV) : {});
 
-export default { ...clientSideEnv, ...serverSideEnv };
+const env = { ...clientSideEnv, ...serverSideEnv };
+export default env;

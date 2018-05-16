@@ -96,7 +96,7 @@ export default compose(
   withFormModel(({ data: { product = {} } }) => ({ ...product })),
   withHandlers({
     onSubmitSuccess: () => () => {
-      toast('Warehousing settings saved', { type: 'success' });
+      toast('Warehousing settings saved', { type: toast.type.SUCCESS });
     },
     onSubmit: ({ productId, mutate, schema }) => ({ ...dirtyInput }) => mutate({
       variables: {

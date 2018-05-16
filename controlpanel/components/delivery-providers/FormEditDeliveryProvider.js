@@ -101,7 +101,7 @@ export default compose(
   })),
   withHandlers({
     onSubmitSuccess: () => () => {
-      toast('DeliveryProvider saved', { type: 'success' });
+      toast('DeliveryProvider saved', { type: toast.type.SUCCESS });
     },
     removeDeliveryProvider: ({ removeDeliveryProvider, deliveryProviderId }) => async (event) => {
       event.preventDefault();

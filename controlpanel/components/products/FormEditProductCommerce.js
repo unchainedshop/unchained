@@ -181,7 +181,7 @@ export default compose(
   }),
   withHandlers({
     onSubmitSuccess: () => () => {
-      toast('Commerce settings saved', { type: 'success' });
+      toast('Commerce settings saved', { type: toast.type.SUCCESS });
     },
     onSubmit: ({ productId, mutate, schema }) => ({ ...dirtyInput }) => mutate({
       variables: {

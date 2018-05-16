@@ -30,7 +30,7 @@ const UserList = ({
         loadMore={loadMoreEntries}
         hasMore={hasMore}
         loader={(
-          <Table.Row>
+          <Table.Row key="user-loader">
             <Table.Cell colSpan="4">
               <Loader active inline="centered" />
             </Table.Cell>

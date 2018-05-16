@@ -212,7 +212,7 @@ export default compose(
   }),
   withHandlers({
     onSubmitSuccess: () => () => {
-      toast('Texts saved', { type: 'success' });
+      toast('Texts saved', { type: toast.type.SUCCESS });
     },
     changeSelectedLocale: ({ setSelectedLocale }) => (event, element) => {
       setSelectedLocale(element.name);

@@ -21,7 +21,7 @@ const ProductList = ({ products, loadMoreEntries, hasMore }) => (
         loadMore={loadMoreEntries}
         hasMore={hasMore}
         loader={(
-          <Table.Row>
+          <Table.Row key="product-loader">
             <Table.Cell colSpan="4">
               <Loader active inline="centered" />
             </Table.Cell>

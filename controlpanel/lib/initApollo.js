@@ -27,13 +27,11 @@ function create(initialState, headersOverride, getToken) {
   const errorLink = onError(({ graphQLErrors, networkError }) => {
     if (graphQLErrors) {
       graphQLErrors.forEach(({
-        message, locations, path, ...rest
+        message, locations, path,
       }) => {
-        toast(message, { type: 'error' });
+        toast(message, { type: toast.TYPE.ERROR });
         console.log( // eslint-disable-line
-          `[GraphQL error]: Message: ${message}, Location: ${JSON.stringify(locations)}, Path: ${path}`
-          , ...rest,
-        );
+          `[GraphQL error]: Message: ${message}, Location: ${JSON.stringify(locations)}, Path: ${path}`);
       });
     }
 

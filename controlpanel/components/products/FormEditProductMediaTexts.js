@@ -152,7 +152,7 @@ export default compose(
       setSelectedLocale(element.name);
     },
     onSubmitSuccess: () => () => {
-      toast('Texts saved', { type: 'success' });
+      toast('Texts saved', { type: toast.type.SUCCESS });
     },
     onSubmit: ({ productMediaId, mutate, schema }) => ({ ...dirtyInput }) => mutate({
       variables: {

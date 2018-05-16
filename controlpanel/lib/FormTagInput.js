@@ -1,5 +1,5 @@
 import React from 'react';
-import { compose, withState, withHandlers, withProps } from 'recompose';
+import { compose, withState, withHandlers, mapProps } from 'recompose';
 import classnames from 'classnames';
 import connectField from 'uniforms/connectField';
 import filterDOMProps from 'uniforms/filterDOMProps';
@@ -76,7 +76,10 @@ export default compose(
     onAddItem: ({ ownOptions, updateOwnOptions }) => (event, { value }) =>
       updateOwnOptions([{ key: value, text: value, value }, ...ownOptions]),
   }),
-  withProps(({ options, ownOptions, value: values }) => {
+  mapProps(({
+    options, ownOptions, updateOwnOptions, value: values,
+    ...rest
+  }) => {
     const mappedValues = values.map(value => ({ key: value, text: value, value }));
     const undeduplicatedOptions = [...ownOptions, ...options, ...mappedValues];
     const deduplicatedOptionMap = undeduplicatedOptions.reduce((oldOptions, curOption) => {
@@ -87,6 +90,9 @@ export default compose(
     }, {});
     return {
       normalizedOptions: Object.values(deduplicatedOptionMap),
+      options,
+      value: values,
+      ...rest,
     };
   }),
 )(FormTagInputField);

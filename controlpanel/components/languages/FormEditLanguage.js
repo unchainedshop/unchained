@@ -83,7 +83,7 @@ export default compose(
   withFormModel(({ data: { language = {} } }) => (language)),
   withHandlers({
     onSubmitSuccess: () => () => {
-      toast('Texts saved to database', { type: 'success' });
+      toast('Texts saved to database', { type: toast.type.SUCCESS });
     },
     removeLanguage: ({ languageId, removeLanguage }) => async (event) => {
       event.preventDefault();

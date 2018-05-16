@@ -79,10 +79,23 @@ export default compose(
   }),
   withFormErrorHandlers,
   mapProps(({
-    mutate, data, userId, ...rest
+    userId,
+    error,
+    schema,
+    model,
+    onSubmit,
+    onChange,
+    onSubmitSuccess,
+    onSubmitFailure,
   }) => ({
     userId,
-    ...rest,
+    error,
+    schema,
+    model,
+    onSubmit,
+    onChange,
+    onSubmitSuccess,
+    onSubmitFailure,
   })),
   pure,
 )(FormProfile);

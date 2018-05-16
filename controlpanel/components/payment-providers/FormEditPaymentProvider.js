@@ -101,7 +101,7 @@ export default compose(
   })),
   withHandlers({
     onSubmitSuccess: () => () => {
-      toast('PaymentProvider saved', { type: 'success' });
+      toast('PaymentProvider saved', { type: toast.type.SUCCESS });
     },
     removePaymentProvider: ({ removePaymentProvider, paymentProviderId }) => async (event) => {
       event.preventDefault();
