@@ -90,12 +90,16 @@ export default ComposedComponent => class WithData extends React.Component {
           document.cookie = cookie.serialize('token', '', {
             maxAge: -1, // Expire the cookie immediately
           });
+          document.cookie = cookie.serialize('token', '', {
+            maxAge: -1, // Expire the cookie immediately
+            path: '/',
+          });
           this.apollo.resetStore();
           return;
         }
         const maxAge = moment().diff(new Date(tokenExpires), 'seconds') * -1;
         console.debug('new token, expiring: ', maxAge); // eslint-disable-line
-        document.cookie = cookie.serialize('token', token, { maxAge });
+        document.cookie = cookie.serialize('token', token, { maxAge, path: '/' });
         this.apollo.resetStore();
       });
     }

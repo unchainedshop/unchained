@@ -8,7 +8,7 @@ import FormChangeEmail from '../../components/account/FormChangeEmailContainer';
 import connectApollo from '../../lib/connectApollo';
 
 const redirect = () => {
-  toast('Account updated', { type: toast.type.SUCCESS });
+  toast('Account updated', { type: toast.TYPE.SUCCESS });
   Router.push({ pathname: '/users/account' });
 };
 

@@ -84,7 +84,7 @@ export default compose(
   withFormModel(({ data: { currency = {} } }) => (currency)),
   withHandlers({
     onSubmitSuccess: () => () => {
-      toast('Currency saved', { type: toast.type.SUCCESS });
+      toast('Currency saved', { type: toast.TYPE.SUCCESS });
     },
     removeCurrency: ({ currencyId, removeCurrency }) => async (event) => {
       event.preventDefault();

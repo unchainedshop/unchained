@@ -104,7 +104,7 @@ export default compose(
   })),
   withHandlers({
     onSubmitSuccess: () => () => {
-      toast('WarehousingProvider saved', { type: toast.type.SUCCESS });
+      toast('WarehousingProvider saved', { type: toast.TYPE.SUCCESS });
     },
     removeWarehousingProvider: ({
       removeWarehousingProvider,

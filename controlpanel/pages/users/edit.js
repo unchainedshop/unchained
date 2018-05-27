@@ -80,7 +80,7 @@ export default connectApollo(compose(
       Router.replace(newUrl);
     },
     redirect: () => () => {
-      toast('User updated', { type: toast.type.SUCCESS });
+      toast('User updated', { type: toast.TYPE.SUCCESS });
     },
   }),
   pure,

@@ -73,7 +73,7 @@ export default compose(
   withFormModel(({ data: { product = {} } }) => ({ ...product })),
   withHandlers({
     onSubmitSuccess: () => () => {
-      toast('Tags saved', { type: toast.type.SUCCESS });
+      toast('Tags saved', { type: toast.TYPE.SUCCESS });
     },
     onSubmit: ({ productId, mutate, schema }) => ({ ...dirtyInput }) => mutate({
       variables: {

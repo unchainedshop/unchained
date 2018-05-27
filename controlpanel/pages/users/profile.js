@@ -7,7 +7,7 @@ import FormProfile from '../../components/users/FormProfileContainer';
 import connectApollo from '../../lib/connectApollo';
 
 const redirect = () => {
-  toast('Profile updated', { type: toast.type.SUCCESS });
+  toast('Profile updated', { type: toast.TYPE.SUCCESS });
   Router.push({ pathname: '/users/profile' });
 };
 
