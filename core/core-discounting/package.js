@@ -12,7 +12,7 @@ Package.describe({
 });
 
 Package.onUse((api) => {
-  api.versionsFrom('1.6.1');
+  api.versionsFrom('1.7');
   api.use('ecmascript');
   api.use('unchained:utils');
   api.use('unchained:core-logger');
