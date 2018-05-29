@@ -37,7 +37,7 @@
     "react-infinite-scroller": "^1.1.4",
     "react-input-mask": "^2.0.1",
     "react-moment": "^0.7.0",
-    "react-phone-number-input": "^1.1.2",
+    "react-phone-number-input": "^1.1.4",
     "react-rte": "^0.16.1",
     "react-sortable-hoc": "^0.8.0",
     "react-toastify": "^4.0.1",
