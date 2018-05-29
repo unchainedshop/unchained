@@ -23,10 +23,7 @@ export default () => {
       return null;
     },
     isGuest() {
-      if (this.profile && this.profile.guest) {
-        return true;
-      }
-      return false;
+      return !!this.guest;
     },
     language() {
       const locale = this.lastLogin && this.lastLogin.locale;

@@ -27,9 +27,9 @@ class Starter extends DiscountAdapter {
     const { order } = this.context;
     const user = order.user();
     const isUserStudio = (user &&
-user.profile && user.profile.tags && user.profile.tags.indexOf('studio') !== -1);
+user.tags && user.tags.indexOf('studio') !== -1);
     const isUserPartner = (user &&
-user.profile && user.profile.tags && user.profile.tags.indexOf('partner') !== -1);
+user.tags && user.tags.indexOf('partner') !== -1);
     const isBeforeApril = moment().isBefore('2018-04-01', 'day');
     if (isTriggerSystem && (!isUserStudio && !isUserPartner) && isBeforeApril) {
       return true;

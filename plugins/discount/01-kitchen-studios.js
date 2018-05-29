@@ -25,8 +25,8 @@ class KitchenStudios extends DiscountAdapter {
   isValid(isTriggerSystem) { // eslint-disable-line
     const { order } = this.context;
     const user = order.user();
-    const isUserStudio = (user && user.profile && user.profile.tags &&
-user.profile.tags.indexOf('studio') !== -1);
+    const isUserStudio = (user && user.tags &&
+user.tags.indexOf('studio') !== -1);
     if (isTriggerSystem && isUserStudio) {
       return true;
     }

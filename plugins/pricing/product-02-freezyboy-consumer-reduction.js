@@ -39,7 +39,7 @@ class FreezyboyPrice extends ProductPricingAdapter {
       currency,
     } = this.context;
 
-    if (user && user.profile && user.profile.tags) {
+    if (user && user.tags) {
       const { tags } = user.profile;
       if (tags.indexOf(USER_TAG_STUDIO) !== -1 || tags.indexOf(USER_TAG_PARTNER) !== -1) {
         // skip for studios and partners

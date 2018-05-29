@@ -3,8 +3,8 @@ import { Avatars } from 'meteor/unchained:core-avatars';
 import { Users } from 'meteor/unchained:core-users';
 
 export default function (root, { avatar, userId: foreignUserId }, { userId }) {
-  log('mutation updateUserAvatar', { userId });
   const normalizedUserId = foreignUserId || userId;
+  log(`mutation updateUserAvatar ${normalizedUserId}`, { userId });
   const avatarRef = Avatars.insertWithRemoteBuffer({
     file: avatar,
     userId: normalizedUserId,

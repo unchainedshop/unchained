@@ -7,7 +7,6 @@ import AutoForm from 'uniforms-semantic/AutoForm';
 import PhoneField from '../../lib/FormPhoneInput';
 import DateField from '../../lib/FormDateInput';
 import UploadAvatar from './UploadAvatarContainer';
-import FormTagInput from '../../lib/FormTagInput';
 
 const FormProfile = ({ userId, ...formProps }) => (
   <Segment>
@@ -29,20 +28,11 @@ const FormProfile = ({ userId, ...formProps }) => (
             <AutoField name="lastName" />
           </Grid.Column>
         </Grid.Row>
-        <Grid.Row columns={2}>
+        <Grid.Row columns={1}>
           <Grid.Column width={8}>
             <AutoField name="birthday" component={DateField} />
           </Grid.Column>
           <Grid.Column width={8}>
-            <AutoField
-              name="tags"
-              component={FormTagInput}
-              options={[]}
-            />
-          </Grid.Column>
-        </Grid.Row>
-        <Grid.Row columns={1}>
-          <Grid.Column width={16}>
             <AutoField name="phoneMobile" component={PhoneField} country="CH" />
           </Grid.Column>
         </Grid.Row>

@@ -27,9 +27,9 @@ class KitchenStudios extends DiscountAdapter {
     const { order } = this.context;
     const user = order.user();
     const isUserStudio = (user &&
-user.profile && user.profile.tags && user.profile.tags.indexOf('studio') !== -1);
+user.tags && user.tags.indexOf('studio') !== -1);
     const isUserPartner = (user &&
-user.profile && user.profile.tags && user.profile.tags.indexOf('partner') !== -1);
+user.tags && user.tags.indexOf('partner') !== -1);
     const isBeforeChristmas = moment().isBefore('2017-12-26', 'day');
     if (isTriggerSystem && (!isUserStudio && !isUserPartner) && isBeforeChristmas) {
       return true;

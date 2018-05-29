@@ -38,7 +38,7 @@ const UserList = ({
         )}
       >
         {users.map(({
- name, email, _id, profile, isEmailVerified, isGuest,
+ name, email, _id, tags, profile, isEmailVerified, isGuest,
 }) => (
   <Table.Row key={_id}>
     <Table.Cell>
@@ -48,8 +48,8 @@ const UserList = ({
     </Table.Cell>
     <Table.Cell>
       {name}&nbsp;
-      {profile && profile.tags && profile.tags.length > 0 && (
-        profile.tags.map(tag => (
+      {tags && tags.length > 0 && (
+        tags.map(tag => (
           <Label key={tag} color="grey" horizontal>{tag}</Label>
         ))
       )}
@@ -97,9 +97,7 @@ export const USER_LIST_QUERY = gql`
       _id
       isGuest
       isEmailVerified
-      profile {
-        tags
-      }
+      tags
       name
       email
     }

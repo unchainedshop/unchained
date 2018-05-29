@@ -1,7 +1,7 @@
 /* globals Package */
 Package.describe({
   name: 'unchained:core-users',
-  version: '0.1.0',
+  version: '0.2.0',
   // Brief, one-line summary of the package.
   summary: '',
   // URL to the Git repository containing the source code for this package.
@@ -18,6 +18,7 @@ Package.onUse((api) => {
   api.use('promise');
   api.use('dburles:factory');
   api.use('dburles:collection-helpers');
+  api.use('percolate:migrations');
 
   api.use('unchained:utils');
   api.use('unchained:core-logger');

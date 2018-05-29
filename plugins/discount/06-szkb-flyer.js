@@ -30,8 +30,8 @@ class Flyer extends DiscountAdapter {
     }
     const { order } = this.context;
     const user = order.user();
-    const isUserStudio = (user && user.profile && user.profile.tags && user.profile.tags.indexOf('studio') !== -1);
-    const isUserPartner = (user && user.profile && user.profile.tags && user.profile.tags.indexOf('partner') !== -1);
+    const isUserStudio = (user && user.tags && user.tags.indexOf('studio') !== -1);
+    const isUserPartner = (user && user.tags && user.tags.indexOf('partner') !== -1);
     if (!isTriggerSystem && (!isUserStudio && !isUserPartner)) {
       return true;
     }

@@ -4,6 +4,7 @@ import Accounts from './accounts';
 import updateEmail from './updateEmail';
 import updateUserAvatar from './updateUserAvatar';
 import updateUserProfile from './updateUserProfile';
+import updateUserTags from './updateUserTags';
 import createLanguage from './createLanguage';
 import updateLanguage from './updateLanguage';
 import removeLanguage from './removeLanguage';
@@ -70,6 +71,7 @@ export default {
   updateEmail: acl(actions.updateUser)(updateEmail),
   updateUserAvatar: acl(actions.updateUser)(updateUserAvatar),
   updateUserProfile: acl(actions.updateUser)(updateUserProfile),
+  updateUserTags: acl(actions.manageUsers)(updateUserTags),
   setPassword: acl(actions.manageUsers)(setPassword),
   enrollUser: acl(actions.manageUsers)(enrollUser),
   setRoles: acl(actions.manageUsers)(setRoles),

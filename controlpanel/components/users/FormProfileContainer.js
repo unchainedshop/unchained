@@ -16,7 +16,6 @@ const FRAGMENT_PROFILE = gql`
       lastName
       phoneMobile
       birthday
-      tags
     }
   }
 `;

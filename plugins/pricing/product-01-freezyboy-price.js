@@ -38,7 +38,7 @@ class FreezyboyPrice extends ProductPricingAdapter {
       quantity,
       currency,
     } = this.context;
-    if (user && user.profile && user.profile.tags) {
+    if (user && user.tags) {
       const { tags } = user.profile;
       const item = {
         currency,

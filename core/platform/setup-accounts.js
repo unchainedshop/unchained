@@ -50,17 +50,17 @@ Accounts.validateNewUser((user) => {
 
 Accounts.onCreateUser((options, user = {}) => {
   const newUser = user;
-  const isGuest = options && options.profile && options.profile.guest;
+  const isGuest = options && options.guest;
   const isEnroll = options && options.enroll;
 
+  newUser.guest = !!isGuest;
   newUser.created = newUser.createdAt || new Date();
   delete newUser.createdAt; // comes from the meteor-apollo-accounts stuff
 
-  newUser.profile = { guest: !!isGuest };
   if (newUser.services.google) {
     newUser.profile = {
       name: newUser.services.google.name,
-      image: { url: newUser.services.google.picture, fileId: '1' },
+      ...newUser.profile,
     };
     newUser.emails = [{ address: newUser.services.google.email, verified: true }];
   }
@@ -68,7 +68,7 @@ Accounts.onCreateUser((options, user = {}) => {
   if (newUser.services.facebook) {
     newUser.profile = {
       name: newUser.services.facebook.name,
-      image: { url: `https://graph.facebook.com/${newUser.services.facebook.id}/picture?type=large`, fileId: '1' },
+      ...newUser.profile,
     };
     newUser.emails = [{ address: newUser.services.facebook.email, verified: true }];
   }
@@ -84,7 +84,7 @@ Accounts.removeOldGuests = (before) => {
     newBefore = new Date();
     newBefore.setHours(newBefore.getHours() - 1);
   }
-  const res = Meteor.users.remove({ created: { $lte: newBefore }, 'profile.guest': true });
+  const res = Meteor.users.remove({ created: { $lte: newBefore }, guest: true });
   return res;
 };
 

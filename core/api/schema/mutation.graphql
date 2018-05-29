@@ -22,7 +22,8 @@ input UserProfileInput {
   lastName: String!
   birthday: Date
   phoneMobile: String
-  tags: [String]
+  gender: String
+  address: AddressInput
 }
 
 input AddressInput {
@@ -318,6 +319,11 @@ type Mutation {
   Update E-Mail address of any user or logged in user if userId is not provided
   """
   updateEmail(email: String!, userId: ID): User
+
+  """
+  Update tags of user
+  """
+  updateUserTags(tags: [String]!, userId: ID!): User
 
   """
   Update Profile of any user or logged in user if userId is not provided

@@ -27,8 +27,9 @@ type UserProfile {
   firstName: String
   lastName: String
   phoneMobile: String
+  gender: String
   birthday: Date
-  tags: [String]
+  address: Address
 }
 
 type UserEmail {
@@ -50,6 +51,7 @@ type User {
   lastDeliveryAddress: Address
   emails: [UserEmail]
   roles: [String]
+  tags: [String]
   cart: Order
   orders(includeDrafts: Boolean = false): [Order]!
   logs(offset: Int, limit: Int): [Log]!
