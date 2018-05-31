@@ -24,12 +24,9 @@ const FormNewUser = formProps => (
   <Segment>
     <AutoForm showInlineError {...formProps} >
       <Grid stackable columns={3}>
-        <Grid.Row columns={2}>
-          <Grid.Column width={6}>
-            <AutoField name="firstName" />
-          </Grid.Column>
-          <Grid.Column width={10}>
-            <AutoField name="lastName" />
+        <Grid.Row columns={1}>
+          <Grid.Column width={16}>
+            <AutoField name="displayName" />
           </Grid.Column>
         </Grid.Row>
         <Grid.Row columns={1}>
@@ -73,15 +70,10 @@ export default compose(
     }
   `),
   withFormSchema({
-    firstName: {
+    displayName: {
       type: String,
       optional: false,
       label: 'First name',
-    },
-    lastName: {
-      type: String,
-      optional: false,
-      label: 'Family name / company name',
     },
     email: {
       type: String,
@@ -112,11 +104,11 @@ export default compose(
     },
     onSubmit: ({ mutate, schema }) => async ({ ...dirtyInput }) => {
       const {
-        firstName, lastName, email, password, enroll,
+        displayName, email, password, enroll,
       } = schema.clean(dirtyInput);
       return mutate({
         variables: {
-          profile: { firstName, lastName },
+          profile: { displayName },
           email,
           password: (!enroll && password) ? password : null,
         },

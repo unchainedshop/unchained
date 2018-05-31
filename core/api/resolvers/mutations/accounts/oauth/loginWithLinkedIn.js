@@ -49,7 +49,7 @@ const handleAuthFromAccessToken = ({ code, redirectUri }) => {
   return {
     serviceName: 'linkedin',
     serviceData,
-    options: { profile: { name: `${identity.firstName} ${identity.lastName}` } },
+    options: { profile: { displayName: `${identity.firstName} ${identity.lastName}` } },
   };
 };
 

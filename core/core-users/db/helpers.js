@@ -62,13 +62,8 @@ export default () => {
     },
     name() {
       const { profile, emails } = this;
-      const nameParts = [];
-      if (profile && profile.firstName) nameParts.push(profile.firstName);
-      if (profile && profile.lastName) nameParts.push(profile.lastName);
-      if (nameParts.length === 0) {
-        return emails && emails[0].address;
-      }
-      return nameParts.join(' ');
+      if (profile && profile.displayName && profile.displayName !== '') return profile.displayName;
+      return emails && emails[0].address;
     },
     orders() {
       return Orders.find({ userId: this._id }, {
@@ -126,11 +121,8 @@ Users.updateLastBillingAddress = ({ userId, address }) => {
   };
   const profile = user.profile || {};
   const isGuest = user.isGuest();
-  if (!profile.firstName || isGuest) {
-    modifier.$set['profile.firstName'] = address.firstName;
-  }
-  if (!profile.lastName || isGuest) {
-    modifier.$set['profile.lastName'] = address.lastName;
+  if (!profile.displayName || isGuest) {
+    modifier.$set['profile.displayName'] = [address.firstName, address.lastName].filter(Boolean).join(' ');
   }
   return Users.update({ _id: userId }, modifier);
 };
@@ -152,7 +144,7 @@ Users.updateLastContact = ({ userId, contact }) => {
 };
 
 Users.enrollUser = ({
-  password, email, firstName, lastName,
+  password, email, displayName, address,
 }) => {
   const options = { email };
   if (password && password !== '') {
@@ -164,8 +156,8 @@ Users.enrollUser = ({
   Users.update({ _id: newUserId }, {
     $set: {
       updated: new Date(),
-      'profile.firstName': firstName,
-      'profile.lastName': lastName,
+      'profile.displayName': displayName || null,
+      'profile.address': address || null,
     },
   });
   if (options.enroll) {

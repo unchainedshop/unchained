@@ -18,8 +18,7 @@ input CreateUserProfileInput {
 }
 
 input UserProfileInput {
-  firstName: String!
-  lastName: String!
+  displayName: String!
   birthday: Date
   phoneMobile: String
   gender: String

@@ -24,8 +24,7 @@ type LoginMethodResponse {
 }
 
 type UserProfile {
-  firstName: String
-  lastName: String
+  displayName: String
   phoneMobile: String
   gender: String
   birthday: Date

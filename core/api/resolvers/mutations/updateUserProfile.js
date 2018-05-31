@@ -4,8 +4,7 @@ import { checkPermission, actions } from '../../roles';
 
 const transform = (profile, hasManageUserPermissions) => { // eslint-disable-line
   const transformedProfile = {
-    'profile.firstName': profile.firstName,
-    'profile.lastName': profile.lastName,
+    'profile.displayName': profile.displayName,
     'profile.birthday': profile.birthday,
     'profile.phoneMobile': profile.phoneMobile,
     'profile.gender': profile.gender,

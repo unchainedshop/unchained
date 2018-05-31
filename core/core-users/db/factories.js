@@ -10,8 +10,7 @@ Factory.define('user', Users, {
   password: () => faker.internet.password(),
   emails: () => [{ address: faker.internet.email(), verified: faker.random.boolean() }],
   profile: () => ({
-    firstName: faker.name.firstName(),
-    lastName: faker.name.firstName(),
+    displayName: `${faker.name.firstName()} ${faker.name.lastName()}`,
     birthday: faker.date.past(65, '2003-08-02'),
     phoneMobile: faker.phone.phoneNumber(),
     gender: faker.random.arrayElement([null, 'f', 'm']),
