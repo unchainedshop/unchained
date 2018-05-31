@@ -73,7 +73,7 @@ export default compose(
     displayName: {
       type: String,
       optional: false,
-      label: 'First name',
+      label: 'Display Name',
     },
     email: {
       type: String,
