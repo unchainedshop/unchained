@@ -6,9 +6,7 @@ export * from './setup-accounts';
 export * from './setup-cron';
 
 export const startPlatform = (options = {}) => {
-  startAPI({
-    ...options,
-  });
+  startAPI(options);
   if (process.env.NODE_ENV !== 'production' && !options.disableEmailInterception) {
     interceptEmails();
   }

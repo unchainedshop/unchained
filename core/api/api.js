@@ -12,6 +12,9 @@ import resolvers from './resolvers';
 import graphqlServerExpressUpload from './uploadMiddleware';
 import { configureRoles } from './roles';
 
+export callMethod from './callMethod';
+export getConnection from './getConnection';
+
 const {
   APOLLO_ENGINE_KEY,
 } = process.env;
@@ -41,10 +44,10 @@ const defaultContext = (req) => {
 const startUnchainedServer = (options = {}) => {
   const {
     typeDefs: additionalTypeDefs = [],
-    resolvers: additionalResolvers = {},
+    resolvers: additionalResolvers = [],
     context = defaultContext,
     rolesOptions,
-  } = options;
+  } = options || {};
 
   configureRoles(rolesOptions);
 
@@ -53,10 +56,10 @@ const startUnchainedServer = (options = {}) => {
       ...typeDefs.definitions,
       ...additionalTypeDefs,
     ],
-    resolvers: {
-      ...resolvers,
+    resolvers: [
+      resolvers,
       ...additionalResolvers,
-    },
+    ],
   });
 
   createApolloServer((req) => {

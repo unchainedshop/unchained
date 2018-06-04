@@ -17,6 +17,5 @@ export default function (passedContext, name, ...args) {
     },
     ...passedContext,
   };
-
   return handler.call(context, ...args);
 }

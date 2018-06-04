@@ -1,7 +1,7 @@
 import { Random } from 'meteor/random';
 import { OAuth } from 'meteor/oauth';
 import { Meteor } from 'meteor/meteor';
-import callMethod from '../callMethod';
+import callMethod from '../../../../callMethod';
 import getUserLoginMethod from './getUserLoginMethod';
 
 export default handleAuthFromAccessToken => (root, params, context) => {
