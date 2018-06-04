@@ -4,7 +4,7 @@ import {
   MessagingType,
   MessagingAdapter,
 } from 'meteor/unchained:core-messaging';
-import getTemplate from '../../../imports/templates';
+import { getTemplate } from '../../templates';
 
 const {
   MAIL_URL,
