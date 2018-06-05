@@ -142,7 +142,7 @@ type Query {
   """
   Get all root assortments
   """
-  assortments: [Assortment]!
+  assortments(limit: Int, offset: Int, includeInactive: Boolean): [Assortment]!
 
   """
   Get a specific assortment by ID
