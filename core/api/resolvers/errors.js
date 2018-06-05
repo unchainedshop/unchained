@@ -16,6 +16,10 @@ export const ProductWrongStatusError = createError('ProductWrongStatusError', {
   message: 'The current status of the product does not allow this operation',
 });
 
+export const AssortmentNotFoundError = createError('AssortmentNotFoundError', {
+  message: 'Assortment not found',
+});
+
 export const UserNotFoundError = createError('UserNotFoundError', {
   message: 'Product not found',
 });
