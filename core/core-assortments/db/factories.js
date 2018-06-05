@@ -7,7 +7,8 @@ import * as Collections from './collections';
 Factory.define('assortment', Collections.Assortments, {
   isActive: () => faker.random.boolean(),
   isBase: () => false,
-  countryCode: () => 'CH',
+  sequence: () => faker.random.number(),
+  slugs: [() => faker.lorem.slug()],
   ...fakeTimestampFields,
 });
 

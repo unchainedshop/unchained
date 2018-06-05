@@ -62,7 +62,7 @@ Factory.define('productText', ProductTexts, {
   ...fakeTimestampFields,
 });
 
-Factory.createMedia = () => Meteor.wrapAsync(Media.load, Media)(faker.image.technics(), {
+Factory.createMedia = () => Meteor.wrapAsync(Media.load, Media)(faker.image.avatar(), {
   fileName: faker.system.fileName(),
 });
 

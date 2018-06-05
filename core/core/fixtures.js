@@ -25,6 +25,15 @@ const addTextAndMediaToProduct = (productId, slug) => {
   });
 };
 
+const addTextToAssortment = (assortmentId, slug) => {
+  faker.locale = 'de';
+  logger.log(`fixtures: -> assortmentTexts ${faker.locale}`);
+  Factory.create('assortmentText', { assortmentId, locale: 'de', slug });
+  faker.locale = 'en';
+  logger.log(`fixtures: -> assortmentTexts ${faker.locale}`);
+  Factory.create('assortmentText', { assortmentId, locale: 'en', slug });
+};
+
 const addVariationsToProduct = (productId) => {
   const addTranslation = (productVariationId, productVariationOptionValue) => {
     faker.locale = 'de';
@@ -54,18 +63,24 @@ const addVariationsToProduct = (productId) => {
 
 export default () => {
   try {
-    logger.log('fixtures: user admin@localhost:password');
-    const admin = Factory.create('user', {
-      username: 'admin',
-      roles: ['admin'],
-      emails: [{ address: 'admin@localhost', verified: true }],
-    });
-
     const users = Array.from(Array(10)).map(() => {
       logger.log('fixtures: user');
       const user = Factory.create('user');
       return user._id;
-    }).concat(admin._id);
+    });
+
+    try {
+      logger.log('fixtures: user admin@localhost:password');
+      const admin = Factory.create('user', {
+        username: 'admin',
+        roles: ['admin'],
+        emails: [{ address: 'admin@localhost', verified: true }],
+      });
+      users.push(admin._id);
+    } catch (e) {
+      // don't care
+      console.log(e);
+    }
 
     const languages = ['de', 'en'].map((code, key) => {
       logger.log(`fixtures: languages ${code}`);
@@ -138,6 +153,27 @@ export default () => {
       return product._id;
     });
 
+    const assortments = Array.from(Array(3)).map(() => {
+      // Add a product
+      logger.log('fixtures: assortments');
+      const assortment = Factory.create('assortment');
+      addTextToAssortment(assortment._id, assortment.slugs[0]);
+
+      logger.log('fixtures: -> assortmentProduct');
+      Array.from(Array(5)).forEach(() => {
+        Factory.create('assortmentProduct', {
+          assortmentId: assortment._id,
+          productId: faker.random.arrayElement(simpleProducts),
+        });
+      });
+
+      return assortment._id;
+    });
+
+    logger.log('fixtures: assortmentLinks');
+    Factory.create('assortmentLink', { childAssortmentId: assortments[1], parentAssortmentId: assortments[0] });
+    Factory.create('assortmentLink', { childAssortmentId: assortments[2], parentAssortmentId: assortments[0] });
+
     const orders = Array.from(Array(5)).map(() => {
       // Add an order
       logger.log('fixtures: order');
@@ -183,6 +219,7 @@ export default () => {
       paymentProviders,
       deliveryProviders,
       warehousingProviders,
+      assortments,
     };
   } catch (anyError) {
     log(anyError, { level: 'error' });

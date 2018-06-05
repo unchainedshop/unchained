@@ -5,9 +5,11 @@ export * from './setup-db';
 export * from './setup-accounts';
 export * from './setup-cron';
 
+const { NODE_ENV } = process.env;
+
 export const startPlatform = (options = {}) => {
   startAPI(options);
-  if (process.env.NODE_ENV !== 'production' && !options.disableEmailInterception) {
+  if (NODE_ENV !== 'production' && !options.disableEmailInterception) {
     interceptEmails();
   }
 };
