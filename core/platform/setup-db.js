@@ -12,6 +12,7 @@ import configureLanguages from 'meteor/unchained:core-languages';
 import configureAvatars from 'meteor/unchained:core-avatars';
 import configureDocuments from 'meteor/unchained:core-documents';
 import configureOrders from 'meteor/unchained:core-orders';
+import configureAssortments from 'meteor/unchained:core-assortments';
 
 const {
   FIXTURES,
@@ -36,6 +37,7 @@ Meteor.startup(() => {
   configureWarehousing();
   configureProducts();
   configureOrders();
+  configureAssortments();
 
   if (FIXTURES && Users.find({ username: 'admin' }).count() === 0) {
     createFixtures();

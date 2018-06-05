@@ -37,6 +37,7 @@ Package.onUse((api) => {
   api.use('unchained:core-products');
   api.use('unchained:core-users');
   api.use('unchained:core-warehousing');
+  api.use('unchained:core-assortments');
 
   api.mainModule('api.js', 'server');
 });

@@ -3,8 +3,8 @@ import { Promise } from 'meteor/promise';
 import { ProductPricingDirector } from 'meteor/unchained:core-pricing';
 import { WarehousingProviders } from 'meteor/unchained:core-warehousing';
 import { DeliveryProviders } from 'meteor/unchained:core-delivery';
-import { getFallbackLocale } from 'meteor/unchained:core';
-import { objectInvert } from 'meteor/unchained:utils';
+import { findLocalizedText } from 'meteor/unchained:core';
+import { objectInvert, slugify } from 'meteor/unchained:utils';
 import { Locale } from 'locale';
 import crypto from 'crypto';
 import {
@@ -12,15 +12,6 @@ import {
   ProductMediaTexts, ProductVariations, ProductVariationTexts,
 } from './collections';
 import { ProductStatus, ProductTypes } from './schema';
-
-function slugify(text) {
-  return text.toString().toLowerCase()
-    .replace(/\s+/g, '-') // Replace spaces with -
-    .replace(/[^\w-]+/g, '') // Remove all non-word chars
-    .replace(/--+/g, '-') // Replace multiple - with single -
-    .replace(/^-+/, '') // Trim - from start of text
-    .replace(/-+$/, ''); // Trim - from end of text
-}
 
 Products.createProduct = ({
   authorId, locale, title, type,
@@ -265,29 +256,6 @@ ProductVariations.helpers({
     };
   },
 });
-
-const extendSelectorWithLocale = (selector, locale) => {
-  const localeSelector = { locale: { $in: [locale.normalized, locale.language] } };
-  return {
-    ...localeSelector,
-    ...selector,
-  };
-};
-
-const findLocalizedText = (collection, selector, locale) => {
-  const exactTranslation = collection
-    .findOne(extendSelectorWithLocale(selector, locale));
-  if (exactTranslation) return exactTranslation;
-
-  const fallbackLocale = getFallbackLocale();
-  if (fallbackLocale.normalized !== locale.normalized) {
-    const fallbackTranslation = collection
-      .findOne(extendSelectorWithLocale(selector, fallbackLocale));
-    if (fallbackTranslation) return fallbackTranslation;
-  }
-
-  return collection.findOne(selector);
-};
 
 Products.getLocalizedTexts = (productId, locale) =>
   findLocalizedText(ProductTexts, { productId }, locale);
