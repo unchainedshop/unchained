@@ -138,4 +138,14 @@ type Query {
   Get shop-global data and the resolved country/language pair
   """
   shopInfo: Shop!
+
+  """
+  Get all root assortments
+  """
+  assortments: [Assortment]!
+
+  """
+  Get a specific assortment by ID
+  """
+  assortment(assortmentId: ID!): Assortment!
 }

@@ -148,6 +148,31 @@ input UpdateProviderInput {
   configuration: [JSON]
 }
 
+input CreateAssortmentInput {
+  isActive: String!
+  title: String!
+}
+
+input UpdateAssortmentInput {
+  isActive: String!
+}
+
+input UpdateAssortmentTextInput {
+  locale: String!
+  slug: String
+  title: String
+}
+
+input ReorderAssortmentProductInput {
+  assortmentProductId: ID!
+  sortKey: Int!
+}
+
+input ReorderAssortmentLinkInput {
+  assortmentLinkId: ID!
+  sortKey: Int!
+}
+
 type Mutation {
   """
   Login the user with a facebook access token
@@ -454,5 +479,44 @@ type Mutation {
   createWarehousingProvider(warehousingProvider: CreateProviderInput!): WarehousingProvider!
   updateWarehousingProvider(warehousingProvider: UpdateProviderInput!, warehousingProviderId: ID!): WarehousingProvider!
   removeWarehousingProvider(warehousingProviderId: ID!): WarehousingProvider!
+
+  createAssortment(assortment: CreateAssortmentInput!): Assortment!
+  updateAssortment(assortment: UpdateAssortmentInput!, assortmentId: ID!): Assortment!
+  removeAssortment(assortmentId: ID!): Assortment!
+
+  """
+  Modify localized texts part of an assortment
+  """
+  updateAssortmentTexts(assortmentId: ID!, texts: [UpdateAssortmentTextInput!]!) : [AssortmentTexts!]!
+
+  """
+  Add a new product to an assortment
+  """
+  addAssortmentProduct(assortmentId: ID!, productId: ID!): AssortmentProduct!
+
+  """
+  Remove a product from an assortment
+  """
+  removeAssortmentProduct(assortmentProductId: ID!): AssortmentProduct!
+
+  """
+  Reorder the products in an assortment
+  """
+  reorderAssortmentProducts(sortKeys: [ReorderAssortmentProductInput!]!): [AssortmentProduct!]!
+
+  """
+  Add a new child assortment to an assortment
+  """
+  addAssortmentLink(parentAssortmentId: ID!, childAssortmentId: ID!): AssortmentLink!
+
+  """
+  Remove a child/parent assortment link from it's parent
+  """
+  removeAssortmentLink(assortmentLinkId: ID!): AssortmentLink!
+
+  """
+  Reorder the child assortment links in it's parent
+  """
+  reorderAssortmentLinks(sortKeys: [ReorderAssortmentLinkInput!]!): [AssortmentLink!]!
 
 }

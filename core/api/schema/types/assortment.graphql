@@ -1,0 +1,32 @@
+"""
+Assortment
+"""
+type Assortment {
+  _id: ID!
+  created: Date
+  updated: Date
+  isActive: Boolean
+  isBase: Boolean
+  texts(forceLocale: String): AssortmentTexts
+  products: [Product]
+  children: [Assortment]
+}
+
+type AssortmentProduct {
+  _id: ID!
+  sortKey: Int!
+  product: Product!
+}
+
+type AssortmentLink {
+  _id: ID!
+  sortKey: Int!
+  childAssortment: Assortment!
+}
+
+type AssortmentTexts {
+  _id: ID!
+  locale: String
+  slug: String
+  title: String
+}

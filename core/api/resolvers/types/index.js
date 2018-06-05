@@ -38,6 +38,7 @@ import Dimensions from './dimensions';
 import Language from './language';
 import Shop from './shop';
 import Country from './country';
+import Assortment from './assortment';
 
 export default {
   User,
@@ -80,4 +81,5 @@ export default {
   ProductVariationAssignmentVector,
   SimpleProduct,
   ConfigurableProduct,
+  Assortment,
 };

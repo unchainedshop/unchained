@@ -64,6 +64,16 @@ import setPassword from './setPassword';
 import setRoles from './setRoles';
 import enrollUser from './enrollUser';
 import checkout from './checkout';
+import createAssortment from './createAssortment';
+import updateAssortment from './updateAssortment';
+import removeAssortment from './removeAssortment';
+import updateAssortmentTexts from './updateAssortmentTexts';
+import addAssortmentProduct from './addAssortmentProduct';
+import removeAssortmentProduct from './removeAssortmentProduct';
+import reorderAssortmentProducts from './reorderAssortmentProducts';
+import addAssortmentLink from './addAssortmentLink';
+import removeAssortmentLink from './removeAssortmentLink';
+import reorderAssortmentLinks from './reorderAssortmentLinks';
 
 export default {
   ...Accounts,
@@ -144,4 +154,15 @@ export default {
   createWarehousingProvider: acl(actions.manageWarehousingProviders)(createWarehousingProvider),
   updateWarehousingProvider: acl(actions.manageWarehousingProviders)(updateWarehousingProvider),
   removeWarehousingProvider: acl(actions.manageWarehousingProviders)(removeWarehousingProvider),
+
+  createAssortment: acl(actions.manageAssortments)(createAssortment),
+  updateAssortment: acl(actions.manageAssortments)(updateAssortment),
+  removeAssortment: acl(actions.manageAssortments)(removeAssortment),
+  updateAssortmentTexts: acl(actions.manageAssortments)(updateAssortmentTexts),
+  addAssortmentProduct: acl(actions.manageAssortments)(addAssortmentProduct),
+  removeAssortmentProduct: acl(actions.manageAssortments)(removeAssortmentProduct),
+  reorderAssortmentProducts: acl(actions.manageAssortments)(reorderAssortmentProducts),
+  addAssortmentLink: acl(actions.manageAssortments)(addAssortmentLink),
+  removeAssortmentLink: acl(actions.manageAssortments)(removeAssortmentLink),
+  reorderAssortmentLinks: acl(actions.manageAssortments)(reorderAssortmentLinks),
 };

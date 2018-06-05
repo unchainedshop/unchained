@@ -15,6 +15,7 @@
 #import "./user.graphql"
 #import "./discount.graphql"
 #import "./log.graphql"
+#import "./assortment.graphql"
 #import "./product/product.graphql"
 #import "./order/order.graphql"
 

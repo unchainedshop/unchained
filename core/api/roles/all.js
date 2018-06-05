@@ -54,4 +54,6 @@ export default (role, actions) => {
   role.allow(actions.viewCurrencies, () => true);
   role.allow(actions.viewCurrency, () => true);
   role.allow(actions.viewShopInfo, () => true);
+  role.allow(actions.viewAssortments, () => true);
+  role.allow(actions.viewAssortment, () => true);
 };

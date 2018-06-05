@@ -26,8 +26,10 @@ import warehousingProviders from './warehousingProviders';
 import warehousingProvider from './warehousingProvider';
 import warehousingInterfaces from './warehousingInterfaces';
 import orders from './orders';
-import logs from './logs';
 import order from './order';
+import assortment from './assortment';
+import assortments from './assortments';
+import logs from './logs';
 import shopInfo from './shopInfo';
 
 export default {
@@ -57,6 +59,8 @@ export default {
   translatedProductVariationTexts: acl(actions.viewTranslations)(translatedProductVariationTexts),
   orders: acl(actions.viewOrders)(orders),
   order: acl(actions.viewOrder)(order),
+  assortments: acl(actions.viewAssortments)(assortments),
+  assortment: acl(actions.viewAssortment)(assortment),
   shopInfo: acl(actions.viewShopInfo)(shopInfo),
   logs: acl(actions.viewLogs)(logs),
 };
