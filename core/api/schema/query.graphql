@@ -148,4 +148,10 @@ type Query {
   Get a specific assortment by ID
   """
   assortment(assortmentId: ID!): Assortment!
+
+  """
+  Localization: Meta data for assortments
+  """
+  translatedAssortmentTexts(assortmentId: ID!): [AssortmentTexts]!
+
 }

@@ -5,6 +5,8 @@ import { AssortmentNotFoundError } from '../errors';
 export default function (root, { parentAssortmentId, childAssortmentId }, { userId }) {
   log(`mutation addAssortmentLink ${parentAssortmentId} -> ${childAssortmentId}`, { userId });
   const assortment = Assortments.findOne({ _id: parentAssortmentId });
-  if (!assortment) throw new AssortmentNotFoundError({ data: { parentAssortmentId } });
+  if (!assortment) {
+    throw new AssortmentNotFoundError({ data: { assortmentId: parentAssortmentId } });
+  }
   return assortment.addLink({ assortmentId: childAssortmentId });
 }

@@ -29,6 +29,7 @@ import orders from './orders';
 import order from './order';
 import assortment from './assortment';
 import assortments from './assortments';
+import translatedAssortmentTexts from './translatedAssortmentTexts';
 import logs from './logs';
 import shopInfo from './shopInfo';
 
@@ -63,4 +64,5 @@ export default {
   assortment: acl(actions.viewAssortment)(assortment),
   shopInfo: acl(actions.viewShopInfo)(shopInfo),
   logs: acl(actions.viewLogs)(logs),
+  translatedAssortmentTexts: acl(actions.manageAssortments)(translatedAssortmentTexts),
 };

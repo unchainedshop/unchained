@@ -48,6 +48,7 @@ export const actions = [
   'managePaymentProviders',
   'manageDeliveryProviders',
   'manageWarehousingProviders',
+  'manageAssortments',
   'updateCart',
   'captureOrder',
   'checkoutCart',
@@ -58,7 +59,6 @@ export const actions = [
   'markOrderPaid',
   'viewAssortments',
   'viewAssortment',
-  'manageAssortments',
 ].reduce((oldValue, actionValue) => {
   const newValue = oldValue;
   newValue[actionValue] = actionValue;

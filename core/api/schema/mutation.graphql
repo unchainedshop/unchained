@@ -149,12 +149,12 @@ input UpdateProviderInput {
 }
 
 input CreateAssortmentInput {
-  isActive: String!
+  isActive: Boolean
   title: String!
 }
 
 input UpdateAssortmentInput {
-  isActive: String!
+  isActive: Boolean
 }
 
 input UpdateAssortmentTextInput {

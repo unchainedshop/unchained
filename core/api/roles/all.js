@@ -23,6 +23,8 @@ export default (role, actions) => {
   role.allow(actions.managePaymentProviders, () => false);
   role.allow(actions.manageDeliveryProviders, () => false);
   role.allow(actions.manageWarehousingProviders, () => false);
+  role.allow(actions.manageAssortments, () => false);
+  role.allow(actions.manageUsers, () => false);
   role.allow(actions.updateCart, () => false);
   role.allow(actions.checkoutCart, () => false);
   role.allow(actions.captureOrder, () => false);
@@ -33,7 +35,6 @@ export default (role, actions) => {
   role.allow(actions.markOrderPaid, () => false);
   role.allow(actions.viewLogs, () => false);
   role.allow(actions.viewUserRoles, () => false);
-  role.allow(actions.manageUsers, () => false);
 
   // only allow if otp is provided
   role.allow(actions.viewOrder, (root, { orderId, otp }) => (Orders.find({

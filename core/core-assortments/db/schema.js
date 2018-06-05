@@ -5,6 +5,9 @@ import * as Collections from './collections';
 Collections.Assortments.attachSchema(new SimpleSchema({
   isActive: Boolean,
   isBase: Boolean,
+  sequence: { type: Number, required: true, index: true },
+  slugs: { type: Array, index: true },
+  'slugs.$': String,
   meta: { type: Object, blackbox: true },
   ...Schemas.timestampFields,
 }, { requiredByDefault: false }));

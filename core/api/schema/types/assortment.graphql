@@ -7,9 +7,12 @@ type Assortment {
   updated: Date
   isActive: Boolean
   isBase: Boolean
+  sequence: Int!
   texts(forceLocale: String): AssortmentTexts
-  products: [Product]
+  productAssignments: [AssortmentProduct]
+  linkedAssortments: [AssortmentLink]
   children: [Assortment]
+  products: [Product]
 }
 
 type AssortmentProduct {
@@ -21,7 +24,8 @@ type AssortmentProduct {
 type AssortmentLink {
   _id: ID!
   sortKey: Int!
-  childAssortment: Assortment!
+  parent: Assortment!
+  child: Assortment!
 }
 
 type AssortmentTexts {
