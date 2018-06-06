@@ -10,6 +10,8 @@ Collections.Assortments.attachSchema(new SimpleSchema({
   slugs: { type: Array, index: true },
   'slugs.$': String,
   meta: { type: Object, blackbox: true },
+  _cachedProductIds: Array,
+  '_cachedProductIds.$': String,
   ...Schemas.timestampFields,
 }, { requiredByDefault: false }));
 

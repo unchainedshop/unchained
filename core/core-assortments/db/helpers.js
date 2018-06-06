@@ -110,6 +110,7 @@ export default () => {
         sortKey,
         created: new Date(),
       });
+      this.invalidateProductIdCache();
       return Collections.AssortmentProducts.findOne({ _id: assortmentProductId });
     },
     addLink({ assortmentId }) {
@@ -124,6 +125,7 @@ export default () => {
         sortKey,
         created: new Date(),
       });
+      this.invalidateProductIdCache();
       return Collections.AssortmentLinks.findOne({ _id: assortmentProductId });
     },
     productAssignments() {
@@ -133,15 +135,11 @@ export default () => {
         })
         .fetch();
     },
-    products() {
-      const productIds = Collections.AssortmentProducts
-        .find({ assortmentId: this._id }, {
-          fields: { productId: 1 },
-          sort: { sortKey: 1 },
-        })
-        .fetch()
-        .map(({ productId }) => productId);
-      return Collections.Assortments
+    products(forceLiveCollection = false) {
+      const productIds = forceLiveCollection ?
+        this.collectProductIdCache() :
+        this._cachedProductIds; // eslint-disable-line
+      return Products
         .find({ _id: { $in: productIds } })
         .fetch();
     },
@@ -168,6 +166,43 @@ export default () => {
       return Collections.Assortments
         .find({ _id: { $in: assortmentIds } })
         .fetch();
+    },
+    collectProductIdCache(ownProductIdCache, linkedAssortmentsCache) {
+      const ownProductIds = ownProductIdCache ||
+        this.productAssignments().map(({ productId }) => productId);
+
+      const linkedAssortments = linkedAssortmentsCache ||
+        this.linkedAssortments();
+
+      const childAssortments = linkedAssortments
+        .filter(({ parentAssortmentId }) => (parentAssortmentId === this._id));
+
+      const productIds = childAssortments
+        .reduce((accumulator, childAssortment) => {
+          const assortment = childAssortment.child();
+          return accumulator.concat(assortment.collectProductIdCache());
+        }, []);
+
+      return [...ownProductIds, ...productIds];
+    },
+    invalidateProductIdCache(productIdCache) {
+      const ownProductIds = this.productAssignments().map(({ productId }) => productId);
+      const linkedAssortments = this.linkedAssortments();
+
+      const childProductIds = productIdCache ||
+          this.collectProductIdCache(ownProductIds, linkedAssortments);
+
+      const productIds = [...(new Set([...ownProductIds, ...childProductIds]))];
+
+      Collections.Assortments.update({ _id: this._id }, {
+        $set: { _cachedProductIds: productIds },
+      });
+
+      linkedAssortments
+        .filter(({ childAssortmentId }) => (childAssortmentId === this._id))
+        .forEach((assortmentLink) => {
+          assortmentLink.parent().invalidateProductIdCache(productIds);
+        });
     },
   });
 
