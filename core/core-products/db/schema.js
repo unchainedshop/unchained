@@ -62,6 +62,7 @@ Collections.Products.attachSchema(new SimpleSchema({
   warehousing: ProductWarehousingSchema,
   supply: ProductSupplySchema,
   proxy: ProductProxySchema,
+  meta: { type: Object, blackbox: true },
   ...Schemas.timestampFields,
 }, { requiredByDefault: false }));
 
@@ -84,6 +85,7 @@ Collections.ProductMedia.attachSchema(new SimpleSchema({
   sortKey: { type: Number, required: true },
   tags: { type: Array, index: true },
   'tags.$': String,
+  meta: { type: Object, blackbox: true },
   ...Schemas.timestampFields,
 }, { requiredByDefault: false }));
 

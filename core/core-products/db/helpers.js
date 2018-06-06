@@ -14,7 +14,7 @@ import {
 import { ProductStatus, ProductTypes } from './schema';
 
 Products.createProduct = ({
-  authorId, locale, title, type,
+  authorId, locale, title, type, ...rest
 }) => {
   const product = {
     created: new Date(),
@@ -22,6 +22,7 @@ Products.createProduct = ({
     type: ProductTypes[type],
     status: ProductStatus.DRAFT,
     sequence: Products.getNewSequence(),
+    ...rest,
   };
   const productId = Products.insert(product);
   const productObject = Products.findOne({ _id: productId });
@@ -71,18 +72,23 @@ export default () => {
       });
       return ProductTexts.findOne({ productId: this._id, locale });
     },
-    addMedia({ rawFile, userId }) {
-      const file = Media.insertWithRemoteBuffer({
+    addMedia({
+      rawFile, href, name, userId, meta,
+    }) {
+      const fileLoader = rawFile ? Media.insertWithRemoteBuffer({
         file: rawFile,
         userId,
-      });
+      }) : Media.insertWithHref(href, name);
+      const file = Promise.await(fileLoader);
       const sortKey = ProductMedia.getNewSortKey(this._id);
+
       const productMediaId = ProductMedia.insert({
         mediaId: file._id,
         tags: [],
         sortKey,
         productId: this._id,
         created: new Date(),
+        ...meta,
       });
       const productMediaObject = ProductMedia.findOne({ _id: productMediaId });
       return productMediaObject;

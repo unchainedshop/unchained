@@ -7,15 +7,16 @@ import { Locale } from 'locale';
 import * as Collections from './collections';
 
 Collections.Assortments.createAssortment = ({
-  locale, title, isBase = false, isActive = true, meta,
+  locale, title, isBase = false, isActive = true, isRoot = false, meta = {},
 }) => {
   const assortment = {
     created: new Date(),
     isBase,
     isActive,
+    isRoot,
     sequence: Collections.Assortments.getNewSequence(),
+    meta,
   };
-  if (meta) assortment.meta = { ...meta };
   const assortmentId = Collections.Assortments.insert(assortment);
   const assortmentObject = Collections.Assortments.findOne({ _id: assortmentId });
   assortmentObject.upsertLocalizedText({ locale, title });
@@ -102,7 +103,7 @@ export default () => {
       Collections.AssortmentProducts.remove({
         assortmentId: this._id,
         productId,
-      }, { multi: true });
+      });
       const assortmentProductId = Collections.AssortmentProducts.insert({
         assortmentId: this._id,
         productId,
@@ -116,7 +117,7 @@ export default () => {
       Collections.AssortmentLinks.remove({
         parentAssortmentId: this._id,
         childAssortmentId: assortmentId,
-      }, { multi: true });
+      });
       const assortmentProductId = Collections.AssortmentLinks.insert({
         parentAssortmentId: this._id,
         childAssortmentId: assortmentId,
@@ -124,18 +125,6 @@ export default () => {
         created: new Date(),
       });
       return Collections.AssortmentLinks.findOne({ _id: assortmentProductId });
-    },
-    links() {
-      const assortmentIds = Collections.AssortmentLinks
-        .find({ parentAssortmentId: this._id }, {
-          fields: { childAssortmentId: 1 },
-          sort: { sortKey: 1 },
-        })
-        .fetch()
-        .map(({ childAssortmentId }) => childAssortmentId);
-      return Collections.Assortments
-        .find({ _id: { $in: assortmentIds } })
-        .fetch();
     },
     productAssignments() {
       return Collections.AssortmentProducts

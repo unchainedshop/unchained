@@ -346,7 +346,7 @@ Orders.helpers({
       }));
     }
     const { rawFile, userId } = objOrString;
-    return OrderDocuments.insertWithRemoteBuffer({
+    return Promise.await(OrderDocuments.insertWithRemoteBuffer({
       file: rawFile,
       userId,
       ...options,
@@ -354,7 +354,7 @@ Orders.helpers({
         orderId: this._id,
         ...meta,
       },
-    });
+    }));
   },
   documents(options) {
     const { type } = options || {};
