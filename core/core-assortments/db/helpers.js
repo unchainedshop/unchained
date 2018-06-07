@@ -23,6 +23,10 @@ Collections.Assortments.createAssortment = ({
   return assortmentObject;
 };
 
+Collections.Assortments.wipeAssortments = () => {
+
+};
+
 Collections.Assortments.getNewSequence = (oldSequence) => {
   const sequence = (oldSequence + 1) || (Collections.Assortments.find({}).count() * 10);
   if (Collections.Assortments.find({ sequence }).count() > 0) {
@@ -140,7 +144,10 @@ export default () => {
         this.collectProductIdCache() :
         this._cachedProductIds; // eslint-disable-line
       return Products
-        .find({ _id: { $in: productIds } })
+        .find({
+          _id: { $in: productIds },
+          isActive: true,
+        })
         .fetch();
     },
     linkedAssortments() {
