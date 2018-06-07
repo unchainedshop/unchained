@@ -17,7 +17,7 @@ async function downloadSpreadsheet() {
   try {
     // https://docs.google.com/spreadsheets/d/1lVplebvDHgPfPZnnp7NCM60iyu3WARGE1JZh6Xx5uvc/edit?usp=sharing
     const gs = new Sheets('1lVplebvDHgPfPZnnp7NCM60iyu3WARGE1JZh6Xx5uvc');
-    const authData = await import('../../google.json');
+    const authData = await import('../../private/google.json');
     await gs.authorizeJWT(authData);
     const delivery = await gs.tables('delivery!A:ZZZ');
     const inventory = await gs.tables('inventory!A:ZZZ');
