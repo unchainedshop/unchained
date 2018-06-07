@@ -257,7 +257,7 @@ class Smallinvoice extends DocumentAdapter {
         description: texts.subtitle,
         price: unitPrice / 100,
         quantity: position.quantity,
-        vat: Math.round(taxRate),
+        vat: Math.round(taxRate * 10000) / 10000,
       };
     });
   }
