@@ -257,7 +257,7 @@ class Smallinvoice extends DocumentAdapter {
         description: texts.subtitle,
         price: unitPrice / 100,
         quantity: position.quantity,
-        vat: Math.round(taxRate),
+        vat: Math.round(taxRate * 10000) / 10000,
       };
     });
   }
@@ -311,6 +311,7 @@ class Smallinvoice extends DocumentAdapter {
     const discounts = this.buildDiscounts();
     const number = orderNumber || order.orderNumber;
     this.log(`Smallinvoice -> Build Invoice and Receipt ${number}`);
+
     if (!number) {
       this.log('Smallinvoice -> No OrderNumber provided, skipping');
       return false;
@@ -338,8 +339,7 @@ class Smallinvoice extends DocumentAdapter {
         fileName: 'invoice.pdf',
       },
       {
-        file:
-        this.api.url(`/invoice/pdf/receipt/1/id/${invoiceId}`),
+        file: this.api.url(`/invoice/pdf/receipt/1/id/${invoiceId}`),
         meta: { referenceId: invoiceId },
         fileName: 'receipt.pdf',
       },
@@ -394,7 +394,7 @@ class Smallinvoice extends DocumentAdapter {
     };
   }
 
-  buildOrderConfirmation({ date, orderNumber }) {
+  buildOrderConfirmation({ date, orderNumber, ancestors }) {
     const { order } = this.context;
     const clientId = this.api.upsertClient({
       ...order.contact,

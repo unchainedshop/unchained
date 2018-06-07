@@ -30,7 +30,7 @@ class DocumentDirector {
       .map(AdapterClass => new AdapterClass(this.context));
   }
 
-  filteredDocuments({ date, type, status }) {
+  filteredDocuments({ date, type, status } = {}) {
     if (!this.context.documents) return [];
     return this.context.documents.filter((doc) => {
       const sameType = (!type || doc.meta.type === type);

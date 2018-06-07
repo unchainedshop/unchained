@@ -337,7 +337,8 @@ Orders.helpers({
   },
   addDocument(objOrString, meta, options = {}) {
     if (typeof objOrString === 'string' || objOrString instanceof String) {
-      return Promise.await(OrderDocuments.load(objOrString, {
+      return Promise.await(OrderDocuments.insertWithRemoteURL({
+        url: objOrString,
         ...options,
         meta: {
           orderId: this._id,

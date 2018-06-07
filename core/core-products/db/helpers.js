@@ -78,7 +78,11 @@ export default () => {
       const fileLoader = rawFile ? Media.insertWithRemoteBuffer({
         file: rawFile,
         userId,
-      }) : Media.insertWithHref(href, name);
+      }) : Media.insertWithRemoteURL({
+        url: href,
+        fileName: name,
+        userId,
+      });
       const file = Promise.await(fileLoader);
       const sortKey = ProductMedia.getNewSortKey(this._id);
 
