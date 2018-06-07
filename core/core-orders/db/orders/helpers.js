@@ -337,16 +337,17 @@ Orders.helpers({
   },
   addDocument(objOrString, meta, options = {}) {
     if (typeof objOrString === 'string' || objOrString instanceof String) {
-      return OrderDocuments.load(objOrString, {
+      return Promise.await(OrderDocuments.insertWithRemoteURL({
+        url: objOrString,
         ...options,
         meta: {
           orderId: this._id,
           ...meta,
         },
-      });
+      }));
     }
     const { rawFile, userId } = objOrString;
-    return OrderDocuments.insertWithRemoteBuffer({
+    return Promise.await(OrderDocuments.insertWithRemoteBuffer({
       file: rawFile,
       userId,
       ...options,
@@ -354,7 +355,7 @@ Orders.helpers({
         orderId: this._id,
         ...meta,
       },
-    });
+    }));
   },
   documents(options) {
     const { type } = options || {};

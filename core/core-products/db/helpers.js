@@ -81,10 +81,10 @@ export default () => {
       return ProductTexts.findOne({ productId: this._id, locale });
     },
     addMedia({ rawFile, userId }) {
-      const file = Media.insertWithRemoteBuffer({
+      const file = Promise.await(Media.insertWithRemoteBuffer({
         file: rawFile,
         userId,
-      });
+      }));
       const sortKey = ProductMedia.getNewSortKey(this._id);
       const productMediaId = ProductMedia.insert({
         mediaId: file._id,
