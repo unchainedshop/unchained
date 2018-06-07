@@ -32,13 +32,10 @@ class DocumentDirector {
 
   filteredDocuments({ date, type, status } = {}) {
     if (!this.context.documents) return [];
-    console.log(date, type, status)
     return this.context.documents.filter((doc) => {
-      console.log(doc.name, doc.meta, doc._id)
       const sameType = (!type || doc.meta.type === type);
       const sameDate = (!date || new Date(doc.meta.date).getTime() === new Date(date).getTime());
       const sameStatus = (!status || doc.meta.status === status);
-      console.log(sameType, sameDate, sameStatus)
       if (sameType && sameDate && sameStatus) return true;
       return false;
     });

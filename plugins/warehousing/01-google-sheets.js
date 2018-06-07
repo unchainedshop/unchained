@@ -119,7 +119,7 @@ class GoogleSheets extends WarehousingAdapter {
     const {
       product,
     } = this.context;
-    const { sku } = product.warehousing;
+    const { sku } = product.warehousing || {};
     return this.getRemoteInventory(sku);
   }
 
@@ -127,7 +127,8 @@ class GoogleSheets extends WarehousingAdapter {
     const {
       product,
     } = this.context;
-    const { sku } = product.warehousing;
+    const { sku } = product.warehousing || {};
+    if (!sku) return null;
     const selector = 'WAREHOUSE_HOURS';
     const timeInHours = await this.getRemoteTime(sku.toUpperCase(), quantity, selector);
     if (!timeInHours) return null;
@@ -139,7 +140,7 @@ class GoogleSheets extends WarehousingAdapter {
       product,
       deliveryProvider,
     } = this.context;
-    const { sku } = product.warehousing;
+    const { sku } = product.warehousing || {};
     const { type } = deliveryProvider;
     const selector = `DELIVERY_HOURS:${type}`;
     const timeInHours = await this.getRemoteTime(sku.toUpperCase(), quantity, selector);

@@ -86,7 +86,6 @@ export default ComposedComponent => class WithData extends React.Component {
       );
       onTokenChange(async ({ token, tokenExpires }) => {
         if (!token || !tokenExpires) {
-          console.log('logged out'); // eslint-disable-line
           document.cookie = cookie.serialize('token', '', {
             maxAge: -1, // Expire the cookie immediately
           });

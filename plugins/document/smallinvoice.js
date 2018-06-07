@@ -316,9 +316,6 @@ class Smallinvoice extends DocumentAdapter {
       this.log('Smallinvoice -> No OrderNumber provided, skipping');
       return false;
     }
-    console.log('ancestors:', JSON.stringify(ancestors));
-    order.documents().forEach(({ meta, _id, name }) => console.log(meta, _id, name));
-
     const invoiceId = this.api.addInvoice({
       number,
       clientId,
@@ -328,8 +325,6 @@ class Smallinvoice extends DocumentAdapter {
       positions,
       discounts,
     });
-
-    console.log('fine', invoiceId);
 
     if (payment.status === 'PAID') {
       this.api.setInvoiceStatus(invoiceId, SmallinvoiceAPI.Status.PAID);
