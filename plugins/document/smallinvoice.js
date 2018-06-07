@@ -311,10 +311,14 @@ class Smallinvoice extends DocumentAdapter {
     const discounts = this.buildDiscounts();
     const number = orderNumber || order.orderNumber;
     this.log(`Smallinvoice -> Build Invoice and Receipt ${number}`);
+
     if (!number) {
       this.log('Smallinvoice -> No OrderNumber provided, skipping');
       return false;
     }
+    console.log('ancestors:', JSON.stringify(ancestors));
+    order.documents().forEach(({ meta, _id, name }) => console.log(meta, _id, name));
+
     const invoiceId = this.api.addInvoice({
       number,
       clientId,
@@ -324,6 +328,8 @@ class Smallinvoice extends DocumentAdapter {
       positions,
       discounts,
     });
+
+    console.log('fine', invoiceId);
 
     if (payment.status === 'PAID') {
       this.api.setInvoiceStatus(invoiceId, SmallinvoiceAPI.Status.PAID);
@@ -338,8 +344,7 @@ class Smallinvoice extends DocumentAdapter {
         fileName: 'invoice.pdf',
       },
       {
-        file:
-        this.api.url(`/invoice/pdf/receipt/1/id/${invoiceId}`),
+        file: this.api.url(`/invoice/pdf/receipt/1/id/${invoiceId}`),
         meta: { referenceId: invoiceId },
         fileName: 'receipt.pdf',
       },
@@ -394,7 +399,7 @@ class Smallinvoice extends DocumentAdapter {
     };
   }
 
-  buildOrderConfirmation({ date, orderNumber }) {
+  buildOrderConfirmation({ date, orderNumber, ancestors }) {
     const { order } = this.context;
     const clientId = this.api.upsertClient({
       ...order.contact,

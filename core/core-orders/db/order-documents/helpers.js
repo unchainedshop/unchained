@@ -19,10 +19,10 @@ class OrderDocumentDirector extends DocumentDirector {
     return orderNumber;
   }
 
-  buildOrderConfirmation(options, ancestors) {
+  buildOrderConfirmation(options) {
     const orderNumber = this.resolveOrderNumber(options);
     if (!orderNumber) return;
-    this.execute('buildOrderConfirmation', { orderNumber, ...options }, ancestors).forEach((doc) => {
+    this.execute('buildOrderConfirmation', { orderNumber, ...options }).forEach((doc) => {
       if (doc) {
         const { date } = options;
         const { file, meta, ...rest } = doc;
@@ -35,10 +35,10 @@ class OrderDocumentDirector extends DocumentDirector {
     });
   }
 
-  buildDeliveryNote(options, ancestors) {
+  buildDeliveryNote(options) {
     const orderNumber = this.resolveOrderNumber(options);
     if (!orderNumber) return;
-    this.execute('buildDeliveryNote', { orderNumber, ...options }, ancestors).forEach((doc) => {
+    this.execute('buildDeliveryNote', { orderNumber, ...options }).forEach((doc) => {
       if (doc) {
         const { date, delivery } = options;
         const { file, meta, ...rest } = doc;
@@ -53,10 +53,10 @@ class OrderDocumentDirector extends DocumentDirector {
     });
   }
 
-  buildInvoice(options, ancestors) {
+  buildInvoice(options) {
     const orderNumber = this.resolveOrderNumber(options);
     if (!orderNumber) return;
-    this.execute('buildInvoiceAndReceipt', { orderNumber, ...options }, ancestors).forEach((files) => {
+    this.execute('buildInvoiceAndReceipt', { orderNumber, ...options }).forEach((files) => {
       if (files) {
         const { date, payment } = options;
         const { file: invoice, meta, ...rest } = files[0];
@@ -98,8 +98,9 @@ class OrderDocumentDirector extends DocumentDirector {
       this.buildOrderConfirmation({
         date,
         status,
+        ancestors: this.filteredDocuments(),
         ...overrideValues,
-      }, this.filteredDocuments({}));
+      });
     }
 
     if (!this.isDocumentExists({
@@ -111,10 +112,11 @@ class OrderDocumentDirector extends DocumentDirector {
         this.buildDeliveryNote({
           date,
           delivery,
+          ancestors: this.filteredDocuments({
+            type: OrderDocumentTypes.DELIVERY_NOTE,
+          }),
           ...overrideValues,
-        }, this.filteredDocuments({
-          type: OrderDocumentTypes.DELIVERY_NOTE,
-        }));
+        });
       }
     }
     if (!this.isDocumentExists({
@@ -126,10 +128,11 @@ class OrderDocumentDirector extends DocumentDirector {
         this.buildInvoice({
           date,
           payment,
+          ancestors: this.filteredDocuments({
+            type: OrderDocumentTypes.INVOICE,
+          }),
           ...overrideValues,
-        }, this.filteredDocuments({
-          type: OrderDocumentTypes.INVOICE,
-        }));
+        });
       }
     }
   }
