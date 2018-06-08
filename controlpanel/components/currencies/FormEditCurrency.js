@@ -21,7 +21,7 @@ const FormEditCurrency = ({ removeCurrency, ...formProps }) => (
         <AutoField name={'isActive'} />
         <ErrorsField />
         <SubmitField value="Speichern" className="primary" />
-        <Button type="normal" secondary floated="right" onClick={removeCurrency}>Löschen</Button>
+        <Button type="normal" secondary floated="right" onClick={removeCurrency}>Delete</Button>
       </Segment>
     </AutoForm>
   </Container>
@@ -78,7 +78,7 @@ export default compose(
     isActive: {
       type: Boolean,
       optional: false,
-      label: 'Aktiv',
+      label: 'Active?',
     },
   }),
   withFormModel(({ data: { currency = {} } }) => (currency)),

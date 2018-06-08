@@ -40,7 +40,7 @@ const CountryList = ({ changeBaseCountry, ...rest }) => (
     ))}
   >
     <Table.HeaderCell>Name</Table.HeaderCell>
-    <Table.HeaderCell>Aktiviert</Table.HeaderCell>
+    <Table.HeaderCell>Active?</Table.HeaderCell>
     <Table.HeaderCell>Basisland</Table.HeaderCell>
   </InfiniteDataTable>
 );

@@ -22,7 +22,7 @@ const FormEditCountry = ({ currencies, removeCountry, ...formProps }) => (
         <AutoField name={'defaultCurrencyId'} options={currencies} />
         <ErrorsField />
         <SubmitField value="Speichern" className="primary" />
-        <Button type="normal" secondary floated="right" onClick={removeCountry}>Löschen</Button>
+        <Button type="normal" secondary floated="right" onClick={removeCountry}>Delete</Button>
       </Segment>
     </AutoForm>
   </Container>
@@ -83,17 +83,17 @@ export default compose(
     isoCode: {
       type: String,
       optional: false,
-      label: 'ISO Ländercode',
+      label: 'ISO Country code',
     },
     defaultCurrencyId: {
       type: String,
       optional: true,
-      label: 'Standardwährung',
+      label: 'Default Currency',
     },
     isActive: {
       type: Boolean,
       optional: false,
-      label: 'Aktiv',
+      label: 'Active',
     },
   }),
   withFormModel(({ data: { country: { defaultCurrency, ...country } = {} } }) => ({

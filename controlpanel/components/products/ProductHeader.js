@@ -22,7 +22,7 @@ const ProductHeader = ({ loading, productId, product = {} }) => [
             Component={Dropdown.Item}
             disabled={product.status !== 'DRAFT'}
           >
-              Löschen
+              Delete
           </BtnRemoveProduct>
           <BtnPublishProduct
             productId={product._id}

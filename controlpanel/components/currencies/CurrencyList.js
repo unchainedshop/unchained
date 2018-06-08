@@ -25,7 +25,7 @@ const CurrencyList = ({ ...rest }) => (
     ))}
   >
     <Table.HeaderCell>Code</Table.HeaderCell>
-    <Table.HeaderCell>Aktiviert</Table.HeaderCell>
+    <Table.HeaderCell>Active</Table.HeaderCell>
   </InfiniteDataTable>
 );
 

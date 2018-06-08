@@ -25,14 +25,14 @@ const LanguageList = ({ changeBaseLanguage, ...rest }) => (
         </Table.Cell>
         <Table.Cell>
           {language.isBase ? (
-            <b>Basissprache</b>
+            <b>Base language</b>
           ) : (
             <Button
               basic
               name={language._id}
               onClick={changeBaseLanguage}
             >
-            Als Basissprache festlegen
+            Set as base language
             </Button>
           )}
         </Table.Cell>
@@ -40,7 +40,7 @@ const LanguageList = ({ changeBaseLanguage, ...rest }) => (
     ))}
   >
     <Table.HeaderCell>Name</Table.HeaderCell>
-    <Table.HeaderCell>Aktiviert</Table.HeaderCell>
+    <Table.HeaderCell>Activated?</Table.HeaderCell>
     <Table.HeaderCell />
   </InfiniteDataTable>
 );

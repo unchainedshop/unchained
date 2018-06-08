@@ -23,7 +23,7 @@ const ProductVariationItem = ({
           secondary
           onClick={removeVariation}
         >
-            Löschen
+            Delete
         </Button>
       )}
     </List.Content>

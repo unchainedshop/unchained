@@ -49,7 +49,7 @@ const ProductMediaListItem = ({
             floated="right"
             onClick={removeMedia}
           >
-              Löschen
+              Delete
           </Button>
         )}
       </Item.Extra>
