@@ -1,5 +1,5 @@
 // import { checkNpmVersions } from 'meteor/tmeasday:check-npm-versions';
-import winston from 'winston';
+const { createLogger, format, transports } = require('winston');
 import './db/factories';
 import './db/schema';
 import initHelpers from './db/helpers';
@@ -7,6 +7,7 @@ import LocalTransport from './local-transport';
 import { Logs } from './db/collections';
 
 const { DEBUG } = process.env;
+const { combine, timestamp, colorize, printf } = format;
 
 let instance = null;
 class Logger {
@@ -14,9 +15,15 @@ class Logger {
     if (!instance) {
       instance = this;
     }
-    this.winston = new winston.Logger({
+    this.winston = createLogger({
+      format: combine(
+        colorize(),
+        printf(nfo => {
+          return `${nfo.level}: ${nfo.message}`;
+        })
+      ),
       transports: [
-        new winston.transports.Console({ level: debug ? 'verbose' : 'info' }),
+        new transports.Console({ level: debug ? 'verbose' : 'info' }),
         new LocalTransport({ db: Logs }),
       ],
     });
