@@ -119,8 +119,10 @@ OrderPositions.updateScheduling = ({ positionId, position }) => {
   log(`OrderPosition ${item._id} -> Update Scheduling`, { orderId: position.orderId });
   // scheduling (store in db for auditing)
   const order = item.order();
-  const deliveryProvider = order.delivery().provider();
+  const delivery = order.delivery();
   const product = item.product();
+
+  const deliveryProvider = delivery && delivery.provider();
   const { countryCode, userId } = order;
   const scheduling = WarehousingProviders.findSupported({ product, deliveryProvider })
     .map((warehousingProvider) => {
