@@ -158,7 +158,6 @@ export default () => {
         _id: { $in: productIds },
         status: ProductStatus.ACTIVE,
       }
-      console.log(productIds)
       return Products
         .find(selector, { skip: offset, limit })
         .fetch();
