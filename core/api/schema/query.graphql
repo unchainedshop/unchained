@@ -147,7 +147,7 @@ type Query {
   """
   Get a specific assortment by ID
   """
-  assortment(assortmentId: ID!): Assortment!
+  assortment(assortmentId: ID, slug: String): Assortment!
 
   """
   Localization: Meta data for assortments

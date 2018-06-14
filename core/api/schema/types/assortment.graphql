@@ -13,7 +13,7 @@ type Assortment {
   productAssignments: [AssortmentProduct]
   linkedAssortments: [AssortmentLink]
   children: [Assortment]
-  products: [Product]
+  products(limit: Int, offset: Int): [Product]
 }
 
 type AssortmentProduct {

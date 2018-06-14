@@ -15,7 +15,7 @@ import { ProductStatus, ProductTypes } from './schema';
 
 Products.createProduct = ({
   authorId, locale, title, type, ...rest
-}) => {
+}, { autopublish = false }) => {
   const product = {
     created: new Date(),
     authorId,
@@ -27,6 +27,9 @@ Products.createProduct = ({
   const productId = Products.insert(product);
   const productObject = Products.findOne({ _id: productId });
   productObject.upsertLocalizedText({ locale, title });
+  if (autopublish) {
+    productObject.publish()
+  }
   return productObject;
 };
 
@@ -43,6 +46,21 @@ export default () => {
   const { Countries } = Promise.await(import('meteor/unchained:core-countries'));
 
   Products.helpers({
+    publish() {
+      switch (this.status) {
+        case ProductStatus.DRAFT:
+          Products.update({ _id: this._id }, {
+            $set: {
+              status: ProductStatus.ACTIVE,
+              updated: new Date(),
+              published: new Date(),
+            },
+          });
+          return true;
+        default:
+          return false;
+      }
+    },
     upsertLocalizedText({
       locale, title, slug: propablyUsedSlug, ...rest
     }) {

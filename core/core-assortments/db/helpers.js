@@ -1,10 +1,17 @@
 import 'meteor/dburles:collection-helpers';
 import { Countries } from 'meteor/unchained:core-countries';
-import { Products } from 'meteor/unchained:core-products';
+import { Products, ProductStatus } from 'meteor/unchained:core-products';
 import { slugify } from 'meteor/unchained:utils';
 import { findLocalizedText } from 'meteor/unchained:core';
 import { Locale } from 'locale';
 import * as Collections from './collections';
+
+function eqSet(as, bs) {
+  if (as.size !== bs.size) return false;
+  for (var a of as) if (!bs.has(a)) return false;
+  for (var b of bs) if (!as.has(b)) return false;
+  return true;
+}
 
 Collections.Assortments.createAssortment = ({
   locale, title, isBase = false, isActive = true, isRoot = false, meta = {},
@@ -24,7 +31,10 @@ Collections.Assortments.createAssortment = ({
 };
 
 Collections.Assortments.wipeAssortments = () => {
-
+  Collections.Assortments.remove({});
+  Collections.AssortmentTexts.remove({})
+  Collections.AssortmentProducts.remove({})
+  Collections.AssortmentLinks.remove({})
 };
 
 Collections.Assortments.getNewSequence = (oldSequence) => {
@@ -139,15 +149,18 @@ export default () => {
         })
         .fetch();
     },
-    products(forceLiveCollection = false) {
+    products({ limit = 10, offset = 0, forceLiveCollection = false } = {}) {
       const productIds = forceLiveCollection ?
         this.collectProductIdCache() :
         this._cachedProductIds; // eslint-disable-line
+
+      const selector = {
+        _id: { $in: productIds },
+        status: ProductStatus.ACTIVE,
+      }
+      console.log(productIds)
       return Products
-        .find({
-          _id: { $in: productIds },
-          isActive: true,
-        })
+        .find(selector, { skip: offset, limit })
         .fetch();
     },
     linkedAssortments() {
@@ -200,6 +213,10 @@ export default () => {
           this.collectProductIdCache(ownProductIds, linkedAssortments);
 
       const productIds = [...(new Set([...ownProductIds, ...childProductIds]))];
+
+      if (eqSet(new Set(productIds), new Set(this._cachedProductIds))) {
+        return;
+      }
 
       Collections.Assortments.update({ _id: this._id }, {
         $set: { _cachedProductIds: productIds },
