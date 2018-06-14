@@ -65,7 +65,7 @@ export default () => {
       locale, title, slug: propablyUsedSlug, ...rest
     }) {
       const slug = ProductTexts
-        .getUnusedSlug(propablyUsedSlug || `${this.sequence} - ${title}`, {
+        .getUnusedSlug(propablyUsedSlug || title || this._id, {
           productId: { $ne: this._id },
         }, !!propablyUsedSlug);
 
@@ -294,7 +294,7 @@ ProductMedia.getLocalizedTexts = (productMediaId, locale) =>
 ProductTexts.getUnusedSlug = (strValue, scope, isAlreadySlugified) => {
   const slug = isAlreadySlugified ? strValue : `${slugify(strValue)}`;
   if (ProductTexts.find({ ...scope, slug }).count() > 0) {
-    return ProductTexts.getUnusedSlug(`${strValue}--`, scope, true);
+    return ProductTexts.getUnusedSlug(`${strValue}-`, scope, true);
   }
   return slug;
 };

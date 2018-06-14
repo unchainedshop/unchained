@@ -32,9 +32,9 @@ Collections.Assortments.createAssortment = ({
 
 Collections.Assortments.wipeAssortments = () => {
   Collections.Assortments.remove({});
-  Collections.AssortmentTexts.remove({})
-  Collections.AssortmentProducts.remove({})
-  Collections.AssortmentLinks.remove({})
+  Collections.AssortmentTexts.remove({});
+  Collections.AssortmentProducts.remove({});
+  Collections.AssortmentLinks.remove({});
 };
 
 Collections.Assortments.getNewSequence = (oldSequence) => {
@@ -83,7 +83,7 @@ export default () => {
       locale, title, slug: propablyUsedSlug, ...rest
     }) {
       const slug = Collections.AssortmentTexts
-        .getUnusedSlug(propablyUsedSlug || `${this.sequence} - ${title}`, {
+        .getUnusedSlug(propablyUsedSlug || title || this._id, {
           assortmentId: { $ne: this._id },
         }, !!propablyUsedSlug);
 
