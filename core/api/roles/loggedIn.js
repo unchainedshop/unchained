@@ -1,7 +1,7 @@
 import { Orders, OrderPayments, OrderDeliveries } from 'meteor/unchained:core-orders';
 
 export default (role, actions) => {
-  const isMyself = (root, { userId: foreignUserId }, { userId: ownUserId }) =>
+  const isMyself = (root, { userId: foreignUserId } = {}, { userId: ownUserId } = {}) =>
     foreignUserId === ownUserId || !foreignUserId;
 
   const isOwnedOrder = (root, { orderId }, { userId }) => Orders.find({
