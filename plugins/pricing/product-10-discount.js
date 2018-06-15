@@ -13,7 +13,7 @@ class ProductDiscount extends ProductPricingAdapter {
     return true;
   }
 
-  calculate() {
+  async calculate() {
     const {
       quantity,
     } = this.context;

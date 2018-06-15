@@ -1,3 +1,4 @@
+import { Promise } from 'meteor/promise';
 import { log } from 'meteor/unchained:core-logger';
 import { DeliveryPricingSheet } from './sheet';
 
@@ -55,7 +56,8 @@ class DeliveryPricingDirector {
           context: this.context,
           calculation,
         });
-        return calculation.concat(concreteAdapter.calculate());
+        const nextCalculationResult = Promise.await(concreteAdapter.calculate());
+        return calculation.concat(nextCalculationResult);
       }, []);
     return this.calculation;
   }

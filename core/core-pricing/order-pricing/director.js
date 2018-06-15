@@ -1,3 +1,4 @@
+import { Promise } from 'meteor/promise';
 import { log } from 'meteor/unchained:core-logger';
 import { OrderPricingSheet } from './sheet';
 
@@ -18,7 +19,7 @@ class OrderPricingAdapter {
     this.result = new OrderPricingSheet({ currency });
   }
 
-  calculate() {
+  async calculate() {
     const resultRaw = this.result.getRawPricingSheet();
     resultRaw.forEach(({ amount, category }) =>
       log(`Order Calculation -> ${category} ${amount}`));
@@ -68,7 +69,8 @@ class OrderPricingDirector {
           calculation,
           discounts,
         });
-        return calculation.concat(concreteAdapter.calculate());
+        const nextCalculationResult = Promise.await(concreteAdapter.calculate());
+        return calculation.concat(nextCalculationResult);
       }, []);
     return this.calculation;
   }

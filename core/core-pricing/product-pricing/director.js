@@ -1,3 +1,4 @@
+import { Promise } from 'meteor/promise';
 import { log } from 'meteor/unchained:core-logger';
 import { ProductPricingSheet } from './sheet';
 
@@ -73,7 +74,8 @@ class ProductPricingDirector {
           calculation,
           discounts,
         });
-        return calculation.concat(concreteAdapter.calculate());
+        const nextCalculationResult = Promise.await(concreteAdapter.calculate());
+        return calculation.concat(nextCalculationResult);
       }, []);
     return this.calculation;
   }

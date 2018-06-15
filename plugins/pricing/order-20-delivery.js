@@ -12,7 +12,7 @@ class OrderDelivery extends OrderPricingAdapter {
     return true;
   }
 
-  calculate() {
+  async calculate() {
     // just add tax + net price to order pricing
     const { delivery } = this.context;
     if (delivery) {

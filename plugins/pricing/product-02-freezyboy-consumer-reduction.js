@@ -32,7 +32,7 @@ class FreezyboyPrice extends ProductPricingAdapter {
     return false;
   }
 
-  calculate() {
+  async calculate() {
     const {
       user,
       quantity,

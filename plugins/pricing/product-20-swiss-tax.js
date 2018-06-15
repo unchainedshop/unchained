@@ -24,7 +24,7 @@ class ProductSwissTax extends ProductPricingAdapter {
     return 0.08;
   }
 
-  calculate() {
+  async calculate() {
     const taxRate = this.getTaxRate();
     this.log(`ProductSwissTax -> Tax Multiplicator: ${taxRate}`);
     this.calculation.filterBy({ isTaxable: true }).forEach((row) => {
@@ -50,6 +50,7 @@ class ProductSwissTax extends ProductPricingAdapter {
         });
       }
     });
+    console.log(this.result, this.calculation);
     return super.calculate();
   }
 }

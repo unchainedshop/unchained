@@ -9,7 +9,7 @@ class OrderItems extends OrderPricingAdapter {
     return true;
   }
 
-  calculate() {
+  async calculate() {
     // just sum up all products items prices, taxes & fees
     const totalAndTaxesOfAllItems = this.context.items
       .reduce(

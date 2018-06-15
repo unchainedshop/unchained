@@ -13,7 +13,7 @@ class OrderItems extends OrderPricingAdapter {
     return true;
   }
 
-  calculate() {
+  async calculate() {
     // discounts need to provide a *fixedRate*
     // if you want to add percentual discounts,
     // add it to the order item calculation

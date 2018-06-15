@@ -12,7 +12,7 @@ class ProductPrice extends ProductPricingAdapter {
     return true;
   }
 
-  calculate() {
+  async calculate() {
     const {
       product,
       country,
