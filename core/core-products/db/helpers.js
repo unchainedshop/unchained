@@ -205,7 +205,7 @@ export default () => {
       return {
         _id: crypto
           .createHash('sha256')
-          .update([this._id, quantity._id, country, useNetPrice, userId || 'ANONYMOUS'].join(''))
+          .update([this._id, country, quantity, useNetPrice, userId || 'ANONYMOUS'].join(''))
           .digest('hex'),
         amount: userPrice.amount,
         currencyCode: userPrice.currency,

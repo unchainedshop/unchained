@@ -1,7 +1,8 @@
 export default {
   amount(obj) {
     if (obj.amount) {
-      return Math.round((obj.amount / 20) || 0) * 20;
+      // http://www.jacklmoore.com/notes/rounding-in-javascript/
+      return Number(Math.round(obj.amount+'e0')+'e-0');
     }
     return 0;
   },
