@@ -16,7 +16,7 @@ export default connectApollo(({ ...rest }) => (
         <Grid stackable padded columns={2}>
           <Grid.Column>
             <Segment textAlign="center" basic size="mini">
-              <Link prefetch href="/sign-up">
+              <Link href="/sign-up">
                 <Button as="a" href="/sign-up" primary basic fluid>
                   No user yet? Register now
                 </Button>
@@ -25,7 +25,7 @@ export default connectApollo(({ ...rest }) => (
           </Grid.Column>
           <Grid.Column>
             <Segment textAlign="center" basic size="mini">
-              <Link prefetch href="/sign-in">
+              <Link href="/sign-in">
                 <Button as="a" href="/sign-in" primary basic fluid>
                   Already got a user?
                 </Button>

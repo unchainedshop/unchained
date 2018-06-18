@@ -34,6 +34,9 @@ const App = ({
       ) }
       {children}
     </Segment>
+    <Segment basic textAlign="center">
+      Made with <span role="img" aria-label="love">❤️</span> by the <a href="https://unchained.shop">Unchained Team</a>
+    </Segment>
     <ToastContainer
       position="top-center"
       autoClose={3000}

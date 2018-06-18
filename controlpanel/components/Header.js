@@ -1,7 +1,7 @@
 import React from 'react';
 import { withApollo } from 'react-apollo';
 import Link from 'next/link';
-import { Menu, Dropdown, Label } from 'semantic-ui-react';
+import { Menu, Dropdown } from 'semantic-ui-react';
 import { compose, pure, withHandlers, mapProps } from 'recompose';
 import { logout } from '../lib/accounts';
 
@@ -11,7 +11,7 @@ const MenuLayout = ({
   <Menu color="red" attached="top" size="tiny" {...rest}>
     <Link href="/" passHref>
       <Menu.Item active={(pathname === '/')} >
-        <Label basic horizontal>Unchained</Label>
+        <img src="/static/diamond-snake-colored.jpg" alt="unchained logo" />
       </Menu.Item>
     </Link>
     {!loading && (
