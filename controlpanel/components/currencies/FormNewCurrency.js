@@ -1,5 +1,5 @@
 import React from 'react';
-import Router from 'next/router';
+import { withRouter } from 'next/router';
 import { compose, mapProps, withHandlers } from 'recompose';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
@@ -19,6 +19,7 @@ const FormNewCurrency = formProps => (
 );
 
 export default compose(
+  withRouter,
   graphql(gql`
     mutation createCurrency($currency: CreateCurrencyInput!) {
       createCurrency(currency: $currency) {
@@ -41,8 +42,8 @@ export default compose(
     },
   }),
   withHandlers({
-    onSubmitSuccess: () => ({ data: { createCurrency } }) => {
-      Router.replace({ pathname: '/currencies/edit', query: { _id: createCurrency._id } });
+    onSubmitSuccess: ({ router }) => ({ data: { createCurrency } }) => {
+      router.replace({ pathname: '/currencies/edit', query: { _id: createCurrency._id } });
     },
     onSubmit: ({ createCurrency, schema }) => ({ ...dirtyInput }) =>
       createCurrency({

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Container } from 'semantic-ui-react';
-import App from '../../components/AppContainer';
+import App from '../../components/App';
 import LanguageList from '../../components/languages/LanguageList';
 import connectApollo from '../../lib/connectApollo';
 

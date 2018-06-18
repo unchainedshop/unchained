@@ -3,7 +3,7 @@ import { toast } from 'react-toastify';
 import { compose, mapProps, withHandlers } from 'recompose';
 import { Segment, Button, Container } from 'semantic-ui-react';
 import gql from 'graphql-tag';
-import Router from 'next/router';
+import { withRouter } from 'next/router';
 import { graphql } from 'react-apollo';
 import AutoField from 'uniforms-semantic/AutoField';
 import SubmitField from 'uniforms-semantic/SubmitField';
@@ -28,6 +28,7 @@ const FormEditLanguage = ({ removeLanguage, ...formProps }) => (
 );
 
 export default compose(
+  withRouter,
   graphql(gql`
     query language($languageId: ID!) {
       language(languageId: $languageId) {
@@ -85,9 +86,9 @@ export default compose(
     onSubmitSuccess: () => () => {
       toast('Texts saved to database', { type: toast.TYPE.SUCCESS });
     },
-    removeLanguage: ({ languageId, removeLanguage }) => async (event) => {
+    removeLanguage: ({ router, languageId, removeLanguage }) => async (event) => {
       event.preventDefault();
-      Router.replace({ pathname: '/languages' });
+      router.replace({ pathname: '/languages' });
       await removeLanguage({
         variables: {
           languageId,

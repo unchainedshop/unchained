@@ -2,7 +2,7 @@ import React from 'react';
 import { toast } from 'react-toastify';
 import { compose, mapProps, withHandlers } from 'recompose';
 import { Button, Segment, Container, Message } from 'semantic-ui-react';
-import Router from 'next/router';
+import { withRouter } from 'next/router';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 import AutoField from 'uniforms-semantic/AutoField';
@@ -33,6 +33,7 @@ const FormEditDeliveryProvider = ({ configurationError, removeDeliveryProvider, 
 );
 
 export default compose(
+  withRouter,
   graphql(gql`
     query deliveryProvider($deliveryProviderId: ID!) {
       deliveryProvider(deliveryProviderId: $deliveryProviderId) {
@@ -103,9 +104,11 @@ export default compose(
     onSubmitSuccess: () => () => {
       toast('DeliveryProvider saved', { type: toast.TYPE.SUCCESS });
     },
-    removeDeliveryProvider: ({ removeDeliveryProvider, deliveryProviderId }) => async (event) => {
+    removeDeliveryProvider: ({
+      router, removeDeliveryProvider, deliveryProviderId,
+    }) => async (event) => {
       event.preventDefault();
-      Router.replace({ pathname: '/delivery-providers' });
+      router.replace({ pathname: '/delivery-providers' });
       await removeDeliveryProvider({
         variables: {
           deliveryProviderId,

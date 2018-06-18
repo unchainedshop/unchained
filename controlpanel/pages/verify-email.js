@@ -1,36 +1,36 @@
 import React from 'react';
 import { createSink } from 'recompose';
 import { withApollo } from 'react-apollo';
-import Router from 'next/router';
+import { withRouter } from 'next/router';
 import { Message, Container } from 'semantic-ui-react';
 import { verifyEmail } from '../lib/accounts';
-import App from '../components/AppContainer';
+import App from '../components/App';
 import connectApollo from '../lib/connectApollo';
 
 let verificationStarted = false;
 
 const Verifier = withApollo(createSink(async (
-  { client, url: { query: { expired, token } } },
-) => {
+  { router, client }) => {
+  const { query: { expired, token } } = router;
   if (token && !expired && !verificationStarted) {
     try {
       verificationStarted = true;
       await verifyEmail({ token }, client);
-      Router.push('/');
+      router.push('/');
     } catch (e) {
-      Router.push('/verify-email?expired=1');
+      router.push('/verify-email?expired=1');
     }
   }
 }));
 
 
-export default connectApollo(({ ...rest }) => (
+export default connectApollo(withRouter(({ router, ...rest }) => (
   <App {...rest} noRedirect>
     <Container>
       {process.browser && (
-        <Verifier {...rest} />
+        <Verifier router={router} {...rest} />
       )}
-      {rest.url.query.expired ? (
+      {router.query.expired ? (
         <Message negative>
           <Message.Header>Token expired</Message.Header>
           <p>Dieser Verifizierungstoken ist nicht mehr gültig,
@@ -45,4 +45,4 @@ export default connectApollo(({ ...rest }) => (
       )}
     </Container>
   </App>
-));
+)));

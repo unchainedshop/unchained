@@ -1,5 +1,5 @@
 import { compose, pure, withProps, withHandlers } from 'recompose';
-import Router from 'next/router';
+import { withRouter } from 'next/router';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 import React from 'react';
@@ -41,12 +41,13 @@ export const PRODUCT_INTERFACES_QUERY = gql`
 `;
 
 export default compose(
+  withRouter,
   graphql(PRODUCT_TYPE_NAME_QUERY),
   withProps(({ data: { product = {} } = {} }) => ({
     typeName: (product && product.__typename) || '', // eslint-disable-line
   })),
   graphql(PRODUCT_INTERFACES_QUERY),
-  withProps(({ url, data: { __type } = {} }) => { // eslint-disable-line
+  withProps(({ router, data: { __type } = {} }) => { // eslint-disable-line
     const menuItems = [];
     ((__type && __type.interfaces) || []).forEach((concreteInterface, key) => {
       if (key !== 0) {
@@ -54,9 +55,9 @@ export default compose(
           name: concreteInterface.name,
           description: concreteInterface.description,
           isActive: (
-            url.query.tab === concreteInterface.name
+            router.query.tab === concreteInterface.name
           ) || (
-            (!url.query.tab || url.query.tab === '') && key === 1
+            (!router.query.tab || router.query.tab === '') && key === 1
           ),
         });
       }
@@ -66,10 +67,14 @@ export default compose(
     };
   }),
   withHandlers({
-    changeTab: ({ url }) => (event, element) => {
-      const newUrl = url;
-      newUrl.query.tab = element.name;
-      Router.replace(newUrl);
+    changeTab: ({ router }) => (event, element) => {
+      router.replace({
+        ...router,
+        query: {
+          ...router.query,
+          tab: element.name,
+        },
+      });
     },
   }),
   pure,

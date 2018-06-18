@@ -1,13 +1,14 @@
 import React from 'react';
+import { withRouter } from 'next/router';
 import { Container } from 'semantic-ui-react';
-import App from '../../components/AppContainer';
+import App from '../../components/App';
 import FormEditPaymentProvider from '../../components/payment-providers/FormEditPaymentProvider';
 import connectApollo from '../../lib/connectApollo';
 
-export default connectApollo(({ url, ...rest }) => (
-  <App url={url} {...rest}>
+export default connectApollo(withRouter(({ router, ...rest }) => (
+  <App {...rest}>
     <Container>
-      <FormEditPaymentProvider paymentProviderId={url.query._id} />
+      <FormEditPaymentProvider paymentProviderId={router.query._id} />
     </Container>
   </App>
-));
+)));

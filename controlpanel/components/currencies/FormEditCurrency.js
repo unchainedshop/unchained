@@ -3,7 +3,7 @@ import { toast } from 'react-toastify';
 import { compose, mapProps, withHandlers } from 'recompose';
 import { Segment, Button, Container } from 'semantic-ui-react';
 import gql from 'graphql-tag';
-import Router from 'next/router';
+import { withRouter } from 'next/router';
 import { graphql } from 'react-apollo';
 import AutoField from 'uniforms-semantic/AutoField';
 import SubmitField from 'uniforms-semantic/SubmitField';
@@ -28,6 +28,7 @@ const FormEditCurrency = ({ removeCurrency, ...formProps }) => (
 );
 
 export default compose(
+  withRouter,
   graphql(gql`
     query currency($currencyId: ID!) {
       currency(currencyId: $currencyId) {
@@ -86,9 +87,9 @@ export default compose(
     onSubmitSuccess: () => () => {
       toast('Currency saved', { type: toast.TYPE.SUCCESS });
     },
-    removeCurrency: ({ currencyId, removeCurrency }) => async (event) => {
+    removeCurrency: ({ router, currencyId, removeCurrency }) => async (event) => {
       event.preventDefault();
-      Router.replace({ pathname: '/currencies' });
+      router.replace({ pathname: '/currencies' });
       await removeCurrency({
         variables: {
           currencyId,

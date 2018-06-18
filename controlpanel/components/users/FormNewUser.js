@@ -1,5 +1,5 @@
 import React from 'react';
-import Router from 'next/router';
+import { withRouter } from 'next/router';
 import BaseField from 'uniforms/BaseField';
 import nothing from 'uniforms/nothing';
 import { graphql } from 'react-apollo';
@@ -99,8 +99,9 @@ export default compose(
     },
   }),
   withHandlers({
-    onSubmitSuccess: () => ({ data: { enrollUser } }) => {
-      Router.replace({ pathname: '/users/edit', query: { _id: enrollUser._id } });
+    withRouter,
+    onSubmitSuccess: ({ router }) => ({ data: { enrollUser } }) => {
+      router.replace({ pathname: '/users/edit', query: { _id: enrollUser._id } });
     },
     onSubmit: ({ mutate, schema }) => async ({ ...dirtyInput }) => {
       const {

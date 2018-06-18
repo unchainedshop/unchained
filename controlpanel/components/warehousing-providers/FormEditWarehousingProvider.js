@@ -2,7 +2,7 @@ import React from 'react';
 import { toast } from 'react-toastify';
 import { compose, mapProps, withHandlers } from 'recompose';
 import { Button, Segment, Container, Message } from 'semantic-ui-react';
-import Router from 'next/router';
+import { withRouter } from 'next/router';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 import AutoField from 'uniforms-semantic/AutoField';
@@ -36,6 +36,7 @@ const FormEditWarehousingProvider = ({
 );
 
 export default compose(
+  withRouter,
   graphql(gql`
     query warehousingProvider($warehousingProviderId: ID!) {
       warehousingProvider(warehousingProviderId: $warehousingProviderId) {
@@ -107,11 +108,12 @@ export default compose(
       toast('WarehousingProvider saved', { type: toast.TYPE.SUCCESS });
     },
     removeWarehousingProvider: ({
+      router,
       removeWarehousingProvider,
       warehousingProviderId,
     }) => async (event) => {
       event.preventDefault();
-      Router.replace({ pathname: '/warehousing-providers' });
+      router.replace({ pathname: '/warehousing-providers' });
       await removeWarehousingProvider({
         variables: {
           warehousingProviderId,

@@ -2,7 +2,7 @@ import React from 'react';
 import { toast } from 'react-toastify';
 import { compose, mapProps, withHandlers } from 'recompose';
 import { Button, Segment, Container } from 'semantic-ui-react';
-import Router from 'next/router';
+import { withRouter } from 'next/router';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 import AutoField from 'uniforms-semantic/AutoField';
@@ -29,6 +29,7 @@ const FormEditCountry = ({ currencies, removeCountry, ...formProps }) => (
 );
 
 export default compose(
+  withRouter,
   graphql(gql`
     query country($countryId: ID!) {
       country(countryId: $countryId) {
@@ -104,9 +105,9 @@ export default compose(
     onSubmitSuccess: () => () => {
       toast('Country saved', { type: toast.TYPE.SUCCESS }); // eslint-disable-line
     },
-    removeCountry: ({ removeCountry, countryId }) => async (event) => {
+    removeCountry: ({ router, removeCountry, countryId }) => async (event) => {
       event.preventDefault();
-      Router.replace({ pathname: '/countries' });
+      router.replace({ pathname: '/countries' });
       await removeCountry({
         variables: {
           countryId,

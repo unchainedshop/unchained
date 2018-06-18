@@ -1,6 +1,6 @@
 import React from 'react';
 import { Container } from 'semantic-ui-react';
-import App from '../../components/AppContainer';
+import App from '../../components/App';
 import FormNewPaymentProvider from '../../components/payment-providers/FormNewPaymentProvider';
 import connectApollo from '../../lib/connectApollo';
 

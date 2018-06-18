@@ -1,6 +1,6 @@
 import React from 'react';
 import { Container } from 'semantic-ui-react';
-import App from '../../components/AppContainer';
+import App from '../../components/App';
 import CurrencyList from '../../components/currencies/CurrencyList';
 import connectApollo from '../../lib/connectApollo';
 

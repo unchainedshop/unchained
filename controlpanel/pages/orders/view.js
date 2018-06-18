@@ -1,6 +1,7 @@
 import React from 'react';
+import { withRouter } from 'next/router';
 import { Container, Grid } from 'semantic-ui-react';
-import App from '../../components/AppContainer';
+import App from '../../components/App';
 import OrderDownloads from '../../components/orders/OrderDownloads';
 import OrderPositionList from '../../components/orders/OrderPositionList';
 import OrderCalculation from '../../components/orders/OrderCalculation';
@@ -10,32 +11,32 @@ import OrderHeader from '../../components/orders/OrderHeader';
 import OrderLogList from '../../components/orders/OrderLogList';
 import connectApollo from '../../lib/connectApollo';
 
-export default connectApollo(({ url, ...rest }) => (
-  <App url={url} {...rest}>
+export default connectApollo(withRouter(({ router, ...rest }) => (
+  <App {...rest}>
     <Container>
       <Grid columns={2} stackable>
         <Grid.Column width={16}>
-          <OrderHeader orderId={url.query._id} />
+          <OrderHeader orderId={router.query._id} />
         </Grid.Column>
         <Grid.Column>
-          <OrderDownloads orderId={url.query._id} />
+          <OrderDownloads orderId={router.query._id} />
         </Grid.Column>
         <Grid.Column>
-          <OrderPositionList orderId={url.query._id} />
+          <OrderPositionList orderId={router.query._id} />
         </Grid.Column>
         <Grid.Column>
-          <OrderCalculation orderId={url.query._id} />
+          <OrderCalculation orderId={router.query._id} />
         </Grid.Column>
         <Grid.Column>
-          <OrderDelivery orderId={url.query._id} />
+          <OrderDelivery orderId={router.query._id} />
         </Grid.Column>
         <Grid.Column>
-          <OrderPayment orderId={url.query._id} />
+          <OrderPayment orderId={router.query._id} />
         </Grid.Column>
         <Grid.Column width={16}>
-          <OrderLogList orderId={url.query._id} />
+          <OrderLogList orderId={router.query._id} />
         </Grid.Column>
       </Grid>
     </Container>
   </App>
-));
+)));

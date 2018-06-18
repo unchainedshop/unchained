@@ -1,7 +1,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { Grid, Segment, Button, Container } from 'semantic-ui-react';
-import App from '../components/AppContainer';
+import App from '../components/App';
 import FormRecoverPassword from '../components/account/FormRecoverPassword';
 import connectApollo from '../lib/connectApollo';
 

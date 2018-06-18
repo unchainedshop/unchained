@@ -1,6 +1,6 @@
 import React from 'react';
 import { Container } from 'semantic-ui-react';
-import App from '../components/AppContainer';
+import App from '../components/App';
 import CardList from '../components/CardList';
 import connectApollo from '../lib/connectApollo';
 

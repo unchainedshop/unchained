@@ -27,56 +27,6 @@ export default ComposedComponent => class WithData extends React.Component {
       serverState: PropTypes.object.isRequired, //eslint-disable-line
     }
 
-    static async getInitialProps(ctx) {
-      // Initial serverState with apollo (empty)
-      let serverState = { apollo: { } };
-      const headers = ctx.req ? ctx.req.headers : {};
-
-      // Evaluate the composed component's getInitialProps()
-      let composedInitialProps = {};
-      if (ComposedComponent.getInitialProps) {
-        composedInitialProps = await ComposedComponent.getInitialProps(ctx);
-      }
-
-      // Run all GraphQL queries in the component tree
-      // and extract the resulting data
-      if (!process.browser) {
-        const apollo = initApollo(
-          null,
-          headers,
-          () => parseCookies(ctx).token,
-        );
-        // Provide the `url` prop data in case a GraphQL query uses it
-        const url = { query: ctx.query, pathname: ctx.pathname };
-        try {
-          // Run all GraphQL queries
-          await getDataFromTree(<ApolloProvider client={apollo}>
-            <ComposedComponent url={url} {...composedInitialProps} />
-          </ApolloProvider>); //eslint-disable-line
-        } catch (error) {
-          // Prevent Apollo Client GraphQL errors from crashing SSR.
-          // Handle them in components via the data.error prop:
-          // http://dev.apollodata.com/react/api-queries.html#graphql-query-data-error
-        }
-        // getDataFromTree does not call componentWillUnmount
-        // head side effect therefore need to be cleared manually
-        Head.rewind();
-
-        // Extract query data from the Apollo store
-        serverState = {
-          apollo: {
-            data: apollo.cache.extract(),
-          },
-        };
-      }
-
-      return {
-        serverState,
-        headers,
-        ...composedInitialProps,
-      };
-    }
-
     constructor(props) {
       super(props);
       this.apollo = initApollo(
@@ -101,6 +51,54 @@ export default ComposedComponent => class WithData extends React.Component {
         document.cookie = cookie.serialize('token', token, { maxAge, path: '/' });
         this.apollo.resetStore();
       });
+    }
+
+    static async getInitialProps(ctx) {
+      // Initial serverState with apollo (empty)
+      let serverState = { apollo: { } };
+      const headers = ctx.req ? ctx.req.headers : {};
+
+      // Evaluate the composed component's getInitialProps()
+      let composedInitialProps = {};
+      if (ComposedComponent.getInitialProps) {
+        composedInitialProps = await ComposedComponent.getInitialProps(ctx);
+      }
+
+      // Run all GraphQL queries in the component tree
+      // and extract the resulting data
+      if (!process.browser) {
+        const apollo = initApollo(
+          null,
+          headers,
+          () => parseCookies(ctx).token,
+        );
+        try {
+          // Run all GraphQL queries
+          await getDataFromTree(<ApolloProvider client={apollo}>
+            <ComposedComponent {...composedInitialProps} />
+          </ApolloProvider>); //eslint-disable-line
+        } catch (error) {
+          // Prevent Apollo Client GraphQL errors from crashing SSR.
+          // Handle them in components via the data.error prop:
+          // http://dev.apollodata.com/react/api-queries.html#graphql-query-data-error
+        }
+        // getDataFromTree does not call componentWillUnmount
+        // head side effect therefore need to be cleared manually
+        Head.rewind();
+
+        // Extract query data from the Apollo store
+        serverState = {
+          apollo: {
+            data: apollo.cache.extract(),
+          },
+        };
+      }
+
+      return {
+        serverState,
+        headers,
+        ...composedInitialProps,
+      };
     }
 
     render() {

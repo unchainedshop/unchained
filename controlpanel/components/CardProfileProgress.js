@@ -1,8 +1,11 @@
 import React from 'react';
 import Link from 'next/link';
 import { Card, Image, Button } from 'semantic-ui-react';
+import { compose, pure, mapProps } from 'recompose';
+import gql from 'graphql-tag';
+import { graphql } from 'react-apollo';
 
-export default ({ avatarUrl }) => (
+const CardProfileProgress = ({ avatarUrl }) => (
   <Card color="black" raised>
     <Card.Content>
       <Image floated="right" size="mini" src={avatarUrl} />
@@ -27,3 +30,20 @@ export default ({ avatarUrl }) => (
     </Card.Content>
   </Card>
 );
+
+export default compose(
+  graphql(gql`
+    query getProfileProgress {
+      me {
+        _id
+        avatar {
+          url
+        }
+      }
+    }
+  `),
+  mapProps(({ data: { me } }) => ({
+    avatarUrl: (me && me.avatar && me.avatar.url) || '/static/square-image.png',
+  })),
+  pure,
+)(CardProfileProgress);

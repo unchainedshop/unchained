@@ -1,28 +1,28 @@
 import React from 'react';
 import { toast } from 'react-toastify';
-import Router from 'next/router';
+import { withRouter } from 'next/router';
 import { Segment, Container } from 'semantic-ui-react';
-import App from '../../components/AppContainer';
+import App from '../../components/App';
 import FormChangePassword from '../../components/account/FormChangePassword';
-import FormChangeEmail from '../../components/account/FormChangeEmailContainer';
+import FormChangeEmail from '../../components/account/FormChangeEmail';
 import connectApollo from '../../lib/connectApollo';
 
-const redirect = () => {
+const redirect = router => () => {
   toast('Account updated', { type: toast.TYPE.SUCCESS });
-  Router.push({ pathname: '/users/account' });
+  router.push({ pathname: '/users/account' });
 };
 
-export default connectApollo(({ url, ...rest }) => (
-  <App url={url} {...rest}>
+export default connectApollo(withRouter(({ router, ...rest }) => (
+  <App {...rest}>
     <Container>
       <Segment>
         <h3 className="title">Change password</h3>
-        <FormChangePassword onSubmitSuccess={redirect} />
+        <FormChangePassword onSubmitSuccess={redirect(router)} />
       </Segment>
       <Segment>
         <h3 className="title">Change E-Mail address</h3>
-        <FormChangeEmail onSubmitSuccess={redirect} />
+        <FormChangeEmail onSubmitSuccess={redirect(router)} />
       </Segment>
     </Container>
   </App>
-));
+)));

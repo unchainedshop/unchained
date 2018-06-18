@@ -2,7 +2,7 @@ import React from 'react';
 import { toast } from 'react-toastify';
 import { compose, mapProps, withHandlers } from 'recompose';
 import { Button, Segment, Container, Message } from 'semantic-ui-react';
-import Router from 'next/router';
+import { withRouter } from 'next/router';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 import AutoField from 'uniforms-semantic/AutoField';
@@ -33,6 +33,7 @@ const FormEditPaymentProvider = ({ configurationError, removePaymentProvider, ..
 );
 
 export default compose(
+  withRouter,
   graphql(gql`
     query paymentProvider($paymentProviderId: ID!) {
       paymentProvider(paymentProviderId: $paymentProviderId) {
@@ -103,9 +104,11 @@ export default compose(
     onSubmitSuccess: () => () => {
       toast('PaymentProvider saved', { type: toast.TYPE.SUCCESS });
     },
-    removePaymentProvider: ({ removePaymentProvider, paymentProviderId }) => async (event) => {
+    removePaymentProvider: ({
+      router, removePaymentProvider, paymentProviderId,
+    }) => async (event) => {
       event.preventDefault();
-      Router.replace({ pathname: '/payment-providers' });
+      router.replace({ pathname: '/payment-providers' });
       await removePaymentProvider({
         variables: {
           paymentProviderId,

@@ -1,7 +1,7 @@
 import React from 'react';
 import { compose, mapProps, withHandlers, withState } from 'recompose';
 import gql from 'graphql-tag';
-import Router from 'next/router';
+import { withRouter } from 'next/router';
 import { graphql } from 'react-apollo';
 import AutoField from 'uniforms-semantic/AutoField';
 import SubmitField from 'uniforms-semantic/SubmitField';
@@ -24,6 +24,7 @@ const FormNewWarehousingProvider = ({ providerType, updateProviderType, ...formP
 );
 
 export default compose(
+  withRouter,
   withState('providerType', 'updateProviderType', defaultProviderType),
   graphql(gql`
     query getWarehousingProviderType($providerType: WarehousingProviderType!) {
@@ -79,8 +80,8 @@ export default compose(
     },
   })),
   withHandlers({
-    onSubmitSuccess: () => ({ data: { createWarehousingProvider } }) => {
-      Router.replace({ pathname: '/warehousing-providers/edit', query: { _id: createWarehousingProvider._id } });
+    onSubmitSuccess: ({ router }) => ({ data: { createWarehousingProvider } }) => {
+      router.replace({ pathname: '/warehousing-providers/edit', query: { _id: createWarehousingProvider._id } });
     },
     onSubmit: ({ createWarehousingProvider, schema }) => ({ ...dirtyInput }) =>
       createWarehousingProvider({

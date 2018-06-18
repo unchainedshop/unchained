@@ -2,7 +2,7 @@ import React from 'react';
 import { compose, pure, mapProps, withHandlers } from 'recompose';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
-import Router from 'next/router';
+import { withRouter } from 'next/router';
 import AutoField from 'uniforms-semantic/AutoField';
 import SubmitField from 'uniforms-semantic/SubmitField';
 import ErrorsField from 'uniforms-semantic/ErrorsField';
@@ -19,6 +19,7 @@ const FormNewLanguage = formProps => (
 );
 
 export default compose(
+  withRouter,
   graphql(gql`
     mutation createLanguage($language: CreateLanguageInput!) {
       createLanguage(language: $language) {
@@ -41,8 +42,8 @@ export default compose(
     },
   }),
   withHandlers({
-    onSubmitSuccess: () => ({ data: { createLanguage } }) => {
-      Router.replace({ pathname: '/languages/edit', query: { _id: createLanguage._id } });
+    onSubmitSuccess: ({ router }) => ({ data: { createLanguage } }) => {
+      router.replace({ pathname: '/languages/edit', query: { _id: createLanguage._id } });
     },
     onSubmit: ({ createLanguage, schema }) => ({ ...dirtyInput }) =>
       createLanguage({

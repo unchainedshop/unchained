@@ -1,7 +1,7 @@
 import React from 'react';
 import { compose, mapProps, withHandlers } from 'recompose';
 import gql from 'graphql-tag';
-import Router from 'next/router';
+import { withRouter } from 'next/router';
 import { graphql } from 'react-apollo';
 import AutoField from 'uniforms-semantic/AutoField';
 import SubmitField from 'uniforms-semantic/SubmitField';
@@ -19,6 +19,7 @@ const FormNewCountry = formProps => (
 );
 
 export default compose(
+  withRouter,
   graphql(gql`
     mutation create($country: CreateCountryInput!) {
       createCountry(country: $country) {
@@ -41,8 +42,8 @@ export default compose(
     },
   }),
   withHandlers({
-    onSubmitSuccess: () => ({ data: { createCountry } }) => {
-      Router.replace({ pathname: '/countries/edit', query: { _id: createCountry._id } });
+    onSubmitSuccess: ({ router }) => ({ data: { createCountry } }) => {
+      router.replace({ pathname: '/countries/edit', query: { _id: createCountry._id } });
     },
     onSubmit: ({ createCountry, schema }) => ({ ...dirtyInput }) =>
       createCountry({

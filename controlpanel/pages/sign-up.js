@@ -1,8 +1,8 @@
 import React from 'react';
 import Link from 'next/link';
 import { Grid, Segment, Button, Container } from 'semantic-ui-react';
-import App from '../components/AppContainer';
-import FormSignUp from '../components/account/FormSignUpContainer';
+import App from '../components/App';
+import FormSignUp from '../components/account/FormSignUp';
 import connectApollo from '../lib/connectApollo';
 
 export default connectApollo(({ ...rest }) => (

@@ -1,13 +1,14 @@
 import React from 'react';
+import { withRouter } from 'next/router';
 import { Container } from 'semantic-ui-react';
-import App from '../../components/AppContainer';
+import App from '../../components/App';
 import FormEditWarehousingProvider from '../../components/warehousing-providers/FormEditWarehousingProvider';
 import connectApollo from '../../lib/connectApollo';
 
-export default connectApollo(({ url, ...rest }) => (
-  <App url={url} {...rest}>
+export default connectApollo(withRouter(({ router, ...rest }) => (
+  <App {...rest}>
     <Container>
-      <FormEditWarehousingProvider warehousingProviderId={url.query._id} />
+      <FormEditWarehousingProvider warehousingProviderId={router.query._id} />
     </Container>
   </App>
-));
+)));

@@ -1,7 +1,7 @@
 import React from 'react';
 import { compose, mapProps, withHandlers, withState } from 'recompose';
 import gql from 'graphql-tag';
-import Router from 'next/router';
+import { withRouter } from 'next/router';
 import { graphql } from 'react-apollo';
 import AutoField from 'uniforms-semantic/AutoField';
 import SubmitField from 'uniforms-semantic/SubmitField';
@@ -24,6 +24,7 @@ const FormNewDeliveryProvider = ({ providerType, updateProviderType, ...formProp
 );
 
 export default compose(
+  withRouter,
   withState('providerType', 'updateProviderType', defaultProviderType),
   graphql(gql`
     query getDeliveryProviderType($providerType: DeliveryProviderType!) {
@@ -79,8 +80,8 @@ export default compose(
     },
   })),
   withHandlers({
-    onSubmitSuccess: () => ({ data: { createDeliveryProvider } }) => {
-      Router.replace({ pathname: '/delivery-providers/edit', query: { _id: createDeliveryProvider._id } });
+    onSubmitSuccess: ({ router }) => ({ data: { createDeliveryProvider } }) => {
+      router.replace({ pathname: '/delivery-providers/edit', query: { _id: createDeliveryProvider._id } });
     },
     onSubmit: ({ createDeliveryProvider, schema }) => ({ ...dirtyInput }) =>
       createDeliveryProvider({

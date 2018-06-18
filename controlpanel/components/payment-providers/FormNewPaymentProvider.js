@@ -1,7 +1,7 @@
 import React from 'react';
 import { compose, mapProps, withHandlers, withState } from 'recompose';
 import gql from 'graphql-tag';
-import Router from 'next/router';
+import { withRouter } from 'next/router';
 import { graphql } from 'react-apollo';
 import AutoField from 'uniforms-semantic/AutoField';
 import SubmitField from 'uniforms-semantic/SubmitField';
@@ -24,6 +24,7 @@ const FormNewPaymentProvider = ({ providerType, updateProviderType, ...formProps
 );
 
 export default compose(
+  withRouter,
   withState('providerType', 'updateProviderType', defaultProviderType),
   graphql(gql`
     query getPaymentProviderType($providerType: PaymentProviderType!) {
@@ -79,8 +80,8 @@ export default compose(
     },
   })),
   withHandlers({
-    onSubmitSuccess: () => ({ data: { createPaymentProvider } }) => {
-      Router.replace({ pathname: '/payment-providers/edit', query: { _id: createPaymentProvider._id } });
+    onSubmitSuccess: ({ router }) => ({ data: { createPaymentProvider } }) => {
+      router.replace({ pathname: '/payment-providers/edit', query: { _id: createPaymentProvider._id } });
     },
     onSubmit: ({ createPaymentProvider, schema }) => ({ ...dirtyInput }) =>
       createPaymentProvider({

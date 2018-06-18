@@ -1,13 +1,14 @@
 import React from 'react';
+import { withRouter } from 'next/router';
 import { Container } from 'semantic-ui-react';
-import App from '../../components/AppContainer';
+import App from '../../components/App';
 import FormEditCountry from '../../components/countries/FormEditCountry';
 import connectApollo from '../../lib/connectApollo';
 
-export default connectApollo(({ url, ...rest }) => (
-  <App url={url} {...rest}>
+export default connectApollo(withRouter(({ router, ...rest }) => (
+  <App {...rest}>
     <Container>
-      <FormEditCountry countryId={url.query._id} />
+      <FormEditCountry countryId={router.query._id} />
     </Container>
   </App>
-));
+)));

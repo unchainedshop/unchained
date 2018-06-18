@@ -38,7 +38,7 @@ const UserList = ({
         )}
       >
         {users.map(({
- name, email, _id, tags, profile, isEmailVerified, isGuest,
+ name, email, _id, tags, isEmailVerified, isGuest,
 }) => (
   <Table.Row key={_id}>
     <Table.Cell>
