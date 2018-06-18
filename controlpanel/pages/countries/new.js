@@ -7,7 +7,7 @@ import connectApollo from '../../lib/connectApollo';
 export default connectApollo(props => (
   <App {...props}>
     <Container>
-      <p>Sprache hinzufügen</p>
+      <p>New country</p>
       <FormNewCountry />
     </Container>
   </App>

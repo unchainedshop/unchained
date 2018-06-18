@@ -1,14 +1,14 @@
 import React from 'react';
 import { Container } from 'semantic-ui-react';
 import App from '../../components/App';
-import FormNewCurrency from '../../components/currencies/FormNewCurrency';
+import FormNewAssortment from '../../components/assortments/FormNewAssortment';
 import connectApollo from '../../lib/connectApollo';
 
 export default connectApollo(({ onSuccess, ...rest }) => (
   <App {...rest}>
     <Container>
-      <p>New currency</p>
-      <FormNewCurrency />
+      <p>New assortment</p>
+      <FormNewAssortment />
     </Container>
   </App>
 ));

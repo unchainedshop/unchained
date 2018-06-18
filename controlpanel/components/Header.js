@@ -34,6 +34,11 @@ const Header = ({
         <span>Products</span>
       </Menu.Item>
     </Link>
+    <Link href="/assortments" passHref>
+      <Menu.Item active={(pathname.startsWith('/assortments'))}>
+        <span>Assortments</span>
+      </Menu.Item>
+    </Link>
     <Link href="/orders" passHref>
       <Menu.Item active={(pathname.startsWith('/orders'))}>
         <span>Orders</span>
