@@ -50,7 +50,6 @@ class ProductSwissTax extends ProductPricingAdapter {
         });
       }
     });
-    console.log(this.result, this.calculation);
     return super.calculate();
   }
 }

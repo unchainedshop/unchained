@@ -19,7 +19,9 @@ export default compose(
   }),
   withHandlers({
     onSubmit: ({ client }) => ({ email, password }) =>
-      loginWithPassword({ email, password }, client),
+      // disable hashing so we have a chance to login with any service server-side
+      // despite a shared control panel
+      loginWithPassword({ email, password, disableHashing: true }, client),
   }),
   withFormErrorHandlers,
   mapProps(({ client, ...rest }) => ({ ...rest })),
