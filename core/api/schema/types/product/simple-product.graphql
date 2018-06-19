@@ -5,16 +5,16 @@ type SimpleProduct implements Product, ProductTranslation, ProductVisualization,
   _id: ID!
   sequence: Int!
   status: ProductStatus!
-  tags: [String]
+  tags: [String!]
   created: Date
   updated: Date
   published: Date
-  media: [ProductMedia]
+  media: [ProductMedia!]
   texts(forceLocale: String): ProductTexts
   catalogPrice: ProductPrice
   simulatedPrice(useNetPrice: Boolean = false, quantity: Int = 1): ProductPrice
-  simulatedDiscounts(quantity: Int = 1): [ProductDiscount]
-  simulatedDispatches(deliveryProviderType: DeliveryProviderType = SHIPPING, quantity: Int = 1): [Dispatch]
+  simulatedDiscounts(quantity: Int = 1): [ProductDiscount!]
+  simulatedDispatches(deliveryProviderType: DeliveryProviderType = SHIPPING, quantity: Int = 1): [Dispatch!]
   dimensions: Dimensions
   sku: String
   maxAllowedQuantityPerOrder: Int

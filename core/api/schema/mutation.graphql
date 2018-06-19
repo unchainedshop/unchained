@@ -84,7 +84,7 @@ input CreateProductVariationOptionInput {
 }
 
 input UpdateProductInput {
-  tags: [String]!
+  tags: [String!]!
 }
 
 input UpdateProductTextInput {
@@ -94,7 +94,7 @@ input UpdateProductTextInput {
   subtitle: String
   description: String
   vendor: String
-  labels: [String]
+  labels: [String!]
 }
 
 input UpdateProductMediaTextInput {
@@ -145,7 +145,7 @@ input CreateProviderInput {
 }
 
 input UpdateProviderInput {
-  configuration: [JSON]
+  configuration: [JSON!]
 }
 
 input CreateAssortmentInput {
@@ -368,7 +368,7 @@ type Mutation {
   """
   Set roles of a user
   """
-  setRoles(roles: [String]!, userId: ID!): User
+  setRoles(roles: [String!]!, userId: ID!): User
 
   """
   Manually confirm an order which is in progress
@@ -447,7 +447,7 @@ type Mutation {
 
   removeProductVariation(productVariationId: ID!): ProductVariation!
   removeProductVariationOption(productVariationId: ID!, productVariationOptionValue: String!): ProductVariation!
-  updateProductVariationTexts(productVariationId: ID!, productVariationOptionValue: String, texts: [UpdateProductVariationTextInput!]!): [ProductVariationTexts]!
+  updateProductVariationTexts(productVariationId: ID!, productVariationOptionValue: String, texts: [UpdateProductVariationTextInput!]!): [ProductVariationTexts!]!
   createProductVariation(productId: ID!, variation: CreateProductVariationInput!): ProductVariation!
   createProductVariationOption(productVariationId: ID!, option: CreateProductVariationOptionInput!): ProductVariation!
 

@@ -98,11 +98,11 @@ type Order {
   address: Address
   delivery: OrderDelivery
   payment: OrderPayment
-  items: [OrderItem]
-  discounts: [OrderDiscount]
+  items: [OrderItem!]
+  discounts: [OrderDiscount!]
   total(category: OrderPriceCategory): Money
   documents(type: OrderDocumentType = CONFIRMATION): [Media]!
-  supportedDeliveryProviders: [DeliveryProvider]!
-  supportedPaymentProviders: [PaymentProvider]!
+  supportedDeliveryProviders: [DeliveryProvider!]!
+  supportedPaymentProviders: [PaymentProvider!]!
   logs(offset: Int, limit: Int): [Log]!
 }

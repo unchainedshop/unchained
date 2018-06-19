@@ -51,5 +51,5 @@ type OrderDiscount {
   order: Order!
   interface: DiscountInterface
   total: Money!
-  discounted: [OrderDiscountable]
+  discounted: [OrderDiscountable!]
 }

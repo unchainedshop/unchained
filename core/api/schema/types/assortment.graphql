@@ -9,11 +9,12 @@ type Assortment {
   isBase: Boolean
   isRoot: Boolean
   sequence: Int!
+  tags: [String!]
   texts(forceLocale: String): AssortmentTexts
-  productAssignments: [AssortmentProduct]
-  linkedAssortments: [AssortmentLink]
-  children: [Assortment]
-  products(limit: Int, offset: Int): [Product]
+  productAssignments: [AssortmentProduct!]
+  linkedAssortments: [AssortmentLink!]
+  children: [Assortment!]
+  products(limit: Int, offset: Int): [Product!]
 }
 
 type AssortmentProduct {
@@ -34,4 +35,6 @@ type AssortmentTexts {
   locale: String
   slug: String
   title: String
+  subtitle: String
+  description: String
 }

@@ -53,7 +53,7 @@ type ProductMediaTexts {
 
 type ProductMedia {
   _id: ID!
-  tags: [String]
+  tags: [String!]
   file: Media!
   sortKey: Int!
   texts(forceLocale: String): ProductMediaTexts
@@ -77,7 +77,7 @@ type ProductVariation {
   texts(forceLocale: String): ProductVariationTexts
   type: ProductVariationType
   key: String
-  options: [ProductVariationOption]
+  options: [ProductVariationOption!]
 }
 
 type ProductTexts {
@@ -88,7 +88,7 @@ type ProductTexts {
   subtitle: String
   description: String
   vendor: String
-  labels: [String]
+  labels: [String!]
 }
 
 """
@@ -98,7 +98,7 @@ interface Product {
   _id: ID!
   sequence: Int!
   status: ProductStatus!
-  tags: [String]
+  tags: [String!]
   created: Date
   updated: Date
   published: Date
@@ -115,7 +115,7 @@ interface ProductTranslation {
 Visualization
 """
 interface ProductVisualization {
-  media: [ProductMedia]
+  media: [ProductMedia!]
 }
 
 """
@@ -124,7 +124,7 @@ Commerce
 interface ProductCommerce {
   catalogPrice: ProductPrice
   simulatedPrice(useNetPrice: Boolean = false): ProductPrice
-  simulatedDiscounts: [ProductDiscount]
+  simulatedDiscounts: [ProductDiscount!]
 }
 
 """
@@ -132,7 +132,7 @@ Supply
 """
 interface ProductSupply {
   dimensions: Dimensions
-  simulatedDispatches(deliveryProviderType: DeliveryProviderType = SHIPPING): [Dispatch]
+  simulatedDispatches(deliveryProviderType: DeliveryProviderType = SHIPPING): [Dispatch!]
 }
 
 """
@@ -153,7 +153,7 @@ type ProductVariationAssignment {
   """
   Query string key=val&key=val ...
   """
-  vectors: [ProductVariationAssignmentVector]
+  vectors: [ProductVariationAssignmentVector!]
 
   """
   Assigned Product
@@ -165,9 +165,9 @@ type ProductVariationAssignment {
 Variations (Proxy)
 """
 interface ProductProxy {
-  variations: [ProductVariation]
-  products(vectors: [ProductAssignmentVectorInput]): [Product]
-  assignments: [ProductVariationAssignment]!
+  variations: [ProductVariation!]
+  products(vectors: [ProductAssignmentVectorInput!]): [Product!]
+  assignments: [ProductVariationAssignment!]!
 }
 
 """

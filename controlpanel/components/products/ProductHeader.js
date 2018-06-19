@@ -11,7 +11,7 @@ import FormEditProduct from './FormEditProduct';
 
 const ProductHeader = ({ loading, productId, product = {} }) => [
   <Menu fluid attached="top" borderless key="header-title">
-    <Menu.Item header>{product.texts && product.texts.title}</Menu.Item>
+    <Menu.Item header>Product: {product.texts && product.texts.title}</Menu.Item>
     <Menu.Item><Label color="red" horizontal>{product.status}</Label></Menu.Item>
     <Menu.Menu position="right">
       <Dropdown item icon="wrench" simple>

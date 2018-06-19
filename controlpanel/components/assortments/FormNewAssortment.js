@@ -30,7 +30,7 @@ export default compose(
     name: 'createAssortment',
     options: {
       refetchQueries: [
-        'countries',
+        'assortments',
       ],
     },
   }),
@@ -43,7 +43,7 @@ export default compose(
   }),
   withHandlers({
     onSubmitSuccess: ({ router }) => ({ data: { createAssortment } }) => {
-      router.replace({ pathname: '/countries/edit', query: { _id: createAssortment._id } });
+      router.replace({ pathname: '/assortments/edit', query: { _id: createAssortment._id } });
     },
     onSubmit: ({ createAssortment, schema }) => ({ ...dirtyInput }) =>
       createAssortment({

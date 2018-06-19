@@ -22,6 +22,6 @@ type OrderItem {
   quantity: Int!
   unitPrice: Money
   total(category: OrderItemPriceCategory): Money
-  discounts: [OrderItemDiscount]
-  dispatches: [Dispatch]
+  discounts: [OrderItemDiscount!]
+  dispatches: [Dispatch!]
 }
