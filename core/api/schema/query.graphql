@@ -7,7 +7,7 @@ type Query {
   """
   Get list of users
   """
-  users(limit: Int, offset: Int, ignoreGuests: Boolean): [User!]!
+  users(limit: Int, offset: Int, includeGuests: Boolean): [User!]!
 
   """
   Specific user data if userId provided, else returns currently logged in
@@ -122,7 +122,7 @@ type Query {
   """
   Get all orders
   """
-  orders(limit: Int, offset: Int): [Order!]!
+  orders(limit: Int, offset: Int, includeCarts: Boolean): [Order!]!
 
   """
   Get a specific single order, use the otp to get access to the information without beeing logged in as the user that created the order
@@ -142,7 +142,7 @@ type Query {
   """
   Get all root assortments
   """
-  assortments(limit: Int, offset: Int, includeInactive: Boolean): [Assortment!]!
+  assortments(limit: Int, offset: Int, includeInactive: Boolean, includeLeaves: Boolean): [Assortment!]!
 
   """
   Get a specific assortment by ID

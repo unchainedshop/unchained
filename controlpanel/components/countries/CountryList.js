@@ -39,9 +39,11 @@ const CountryList = ({ changeBaseCountry, ...rest }) => (
       </Table.Row>
     ))}
   >
-    <Table.HeaderCell>Name</Table.HeaderCell>
-    <Table.HeaderCell>Active?</Table.HeaderCell>
-    <Table.HeaderCell>Basisland</Table.HeaderCell>
+    <Table.Row>
+      <Table.HeaderCell>Name</Table.HeaderCell>
+      <Table.HeaderCell>Active?</Table.HeaderCell>
+      <Table.HeaderCell>Basisland</Table.HeaderCell>
+    </Table.Row>
   </InfiniteDataTable>
 );
 

@@ -93,7 +93,7 @@ export default () => {
     const currencies = ['CHF', 'USD', 'EUR'].map((code) => {
       logger.log(`fixtures: currency ${code}`);
       const currency = Factory.create('currency', { isoCode: code, isActive: true, authorId: faker.random.arrayElement(users) });
-      return currency.isoCode;
+      return currency._id;
     });
     const countries = ['CH', 'US', 'DE'].map((code, key) => {
       logger.log(`fixtures: countries ${code}`);

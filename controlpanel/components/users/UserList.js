@@ -7,13 +7,13 @@ import InfiniteScroll from 'react-infinite-scroller';
 import Link from 'next/link';
 
 const UserList = ({
-  users, loadMoreEntries, hasMore, isHideGuests, toggleHideGuests,
+  users, loadMoreEntries, hasMore, isShowGuests, toggleShowGuests,
 }) => (
   <Table celled>
     <Table.Header>
       <Table.Row>
         <Table.HeaderCell colSpan={3}>
-          Hide guests? <input type="checkbox" checked={isHideGuests} onClick={toggleHideGuests} />
+          Show guests? <input type="checkbox" checked={isShowGuests} onClick={toggleShowGuests} />
         </Table.HeaderCell>
       </Table.Row>
       <Table.Row>
@@ -92,8 +92,8 @@ const UserList = ({
 
 const ITEMS_PER_PAGE = 10;
 export const USER_LIST_QUERY = gql`
-  query users($offset: Int, $limit: Int, $ignoreGuests: Boolean) {
-    users(offset: $offset, limit: $limit, ignoreGuests: $ignoreGuests) {
+  query users($offset: Int, $limit: Int, $includeGuests: Boolean) {
+    users(offset: $offset, limit: $limit, includeGuests: $includeGuests) {
       _id
       isGuest
       isEmailVerified
@@ -106,30 +106,30 @@ export const USER_LIST_QUERY = gql`
 
 export default compose(
   withState('hasMore', 'updateHasMore', true),
-  withState('isHideGuests', 'updateHideGuests', false),
+  withState('isShowGuests', 'setShowGuests', false),
   withHandlers({
-    toggleHideGuests: ({ isHideGuests, updateHasMore, updateHideGuests }) => () => {
-      updateHideGuests(!isHideGuests);
+    toggleShowGuests: ({ isShowGuests, updateHasMore, setShowGuests }) => () => {
+      setShowGuests(!isShowGuests);
       updateHasMore(true);
     },
   }),
   graphql(USER_LIST_QUERY, {
-    options: ({ isHideGuests }) => ({
+    options: ({ isShowGuests }) => ({
       variables: {
-        ignoreGuests: isHideGuests,
+        includeGuests: isShowGuests,
         offset: 0,
         limit: ITEMS_PER_PAGE,
       },
     }),
     props: ({
       data: { loading, users, fetchMore },
-      ownProps: { updateHasMore, isHideGuests },
+      ownProps: { updateHasMore, isShowGuests },
     }) => ({
       loading,
       users,
       loadMoreEntries: () => fetchMore({
         variables: {
-          ignoreGuests: isHideGuests,
+          includeGuests: isShowGuests,
           offset: Math.floor(users.length / ITEMS_PER_PAGE) * ITEMS_PER_PAGE,
           limit: ITEMS_PER_PAGE,
         },

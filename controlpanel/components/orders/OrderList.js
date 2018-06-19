@@ -1,4 +1,4 @@
-import { compose, pure } from 'recompose';
+import { compose, withHandlers, withState } from 'recompose';
 import Moment from 'react-moment';
 import gql from 'graphql-tag';
 import React from 'react';
@@ -7,7 +7,7 @@ import Link from 'next/link';
 import InfiniteDataTable, { withDataTableLoader } from '../../lib/InfiniteDataTable';
 import FormattedMoney from '../FormattedMoney';
 
-const OrderList = ({ ...rest }) => (
+const OrderList = ({ isShowCarts, toggleShowCarts, ...rest }) => (
   <InfiniteDataTable
     {...rest}
     cols={5}
@@ -44,20 +44,28 @@ const OrderList = ({ ...rest }) => (
       </Table.Row>
     ))}
   >
-    <Table.HeaderCell>Order date</Table.HeaderCell>
-    <Table.HeaderCell>Order #</Table.HeaderCell>
-    <Table.HeaderCell>User</Table.HeaderCell>
-    <Table.HeaderCell>Total</Table.HeaderCell>
-    <Table.HeaderCell>Status</Table.HeaderCell>
+    <Table.Row>
+      <Table.HeaderCell colSpan={3}>
+        Show carts? <input type="checkbox" checked={isShowCarts} onClick={toggleShowCarts} />
+      </Table.HeaderCell>
+    </Table.Row>
+    <Table.Row>
+      <Table.HeaderCell>Order date</Table.HeaderCell>
+      <Table.HeaderCell>Order #</Table.HeaderCell>
+      <Table.HeaderCell>User</Table.HeaderCell>
+      <Table.HeaderCell>Total</Table.HeaderCell>
+      <Table.HeaderCell>Status</Table.HeaderCell>
+    </Table.Row>
   </InfiniteDataTable>
 );
 
 export default compose(
+  withState('isShowCarts', 'setShowCarts', false),
   withDataTableLoader({
     queryName: 'orders',
     query: gql`
-      query orders($offset: Int, $limit: Int, ) {
-        orders(offset: $offset, limit: $limit) {
+      query orders($offset: Int, $limit: Int, $isShowCarts: Boolean) {
+        orders(offset: $offset, limit: $limit, includeCarts: $isShowCarts) {
           _id
           ordered
           orderNumber
@@ -74,5 +82,10 @@ export default compose(
       }
     `,
   }),
-  pure,
+  withHandlers({
+    toggleShowCarts: ({ updateHasMore, isShowCarts, setShowCarts }) => () => {
+      setShowCarts(!isShowCarts);
+      updateHasMore(true);
+    },
+  }),
 )(OrderList);

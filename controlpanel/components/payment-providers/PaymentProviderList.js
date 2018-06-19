@@ -35,10 +35,12 @@ const PaymentProviderList = ({ ...rest }) => (
       </Table.Row>
     ))}
   >
-    <Table.HeaderCell>Configuration</Table.HeaderCell>
-    <Table.HeaderCell>Type</Table.HeaderCell>
-    <Table.HeaderCell>Interface</Table.HeaderCell>
-    <Table.HeaderCell>Problems</Table.HeaderCell>
+    <Table.Row>
+      <Table.HeaderCell>Configuration</Table.HeaderCell>
+      <Table.HeaderCell>Type</Table.HeaderCell>
+      <Table.HeaderCell>Interface</Table.HeaderCell>
+      <Table.HeaderCell>Problems</Table.HeaderCell>
+    </Table.Row>
   </InfiniteDataTable>
 );
 

@@ -39,9 +39,11 @@ const LanguageList = ({ changeBaseLanguage, ...rest }) => (
       </Table.Row>
     ))}
   >
-    <Table.HeaderCell>Name</Table.HeaderCell>
-    <Table.HeaderCell>Activated?</Table.HeaderCell>
-    <Table.HeaderCell />
+    <Table.Row>
+      <Table.HeaderCell>Name</Table.HeaderCell>
+      <Table.HeaderCell>Activated?</Table.HeaderCell>
+      <Table.HeaderCell />
+    </Table.Row>
   </InfiniteDataTable>
 );
 

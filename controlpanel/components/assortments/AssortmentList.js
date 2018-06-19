@@ -1,4 +1,4 @@
-import { compose, withHandlers } from 'recompose';
+import { compose, withState, withHandlers } from 'recompose';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 import React from 'react';
@@ -6,7 +6,9 @@ import { Table, Icon, Button } from 'semantic-ui-react';
 import Link from 'next/link';
 import InfiniteDataTable, { withDataTableLoader } from '../../lib/InfiniteDataTable';
 
-const AssortmentList = ({ changeBaseAssortment, ...rest }) => (
+const AssortmentList = ({
+  isShowLeafNodes, toggleShowLeafNodes, changeBaseAssortment, ...rest
+}) => (
   <InfiniteDataTable
     {...rest}
     cols={3}
@@ -39,18 +41,26 @@ const AssortmentList = ({ changeBaseAssortment, ...rest }) => (
       </Table.Row>
     ))}
   >
-    <Table.HeaderCell>Name</Table.HeaderCell>
-    <Table.HeaderCell>Active?</Table.HeaderCell>
-    <Table.HeaderCell>Base?</Table.HeaderCell>
+    <Table.Row>
+      <Table.HeaderCell colSpan={3}>
+        Show non-root nodes? <input type="checkbox" checked={isShowLeafNodes} onClick={toggleShowLeafNodes} />
+      </Table.HeaderCell>
+    </Table.Row>
+    <Table.Row>
+      <Table.HeaderCell>Name</Table.HeaderCell>
+      <Table.HeaderCell>Active?</Table.HeaderCell>
+      <Table.HeaderCell>Base?</Table.HeaderCell>
+    </Table.Row>
   </InfiniteDataTable>
 );
 
 export default compose(
+  withState('isShowLeafNodes', 'setShowLeafNodes', false),
   withDataTableLoader({
     queryName: 'assortments',
     query: gql`
-      query assortments($limit: Int, $offset: Int) {
-        assortments(limit: $limit, offset: $offset, includeInactive: true) {
+      query assortments($limit: Int, $offset: Int, $isShowLeafNodes: Boolean) {
+        assortments(limit: $limit, offset: $offset, includeInactive: true, includeLeaves: $isShowLeafNodes ) {
           _id
           isActive
           isBase
@@ -78,5 +88,7 @@ export default compose(
   withHandlers({
     changeBaseAssortment: ({ mutate }) => (event, element) =>
       mutate({ variables: { assortmentId: element.name } }),
+    toggleShowLeafNodes: ({ isShowLeafNodes, setShowLeafNodes }) => () =>
+      setShowLeafNodes(!isShowLeafNodes),
   }),
 )(AssortmentList);

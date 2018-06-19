@@ -24,8 +24,10 @@ const CurrencyList = ({ ...rest }) => (
       </Table.Row>
     ))}
   >
-    <Table.HeaderCell>Code</Table.HeaderCell>
-    <Table.HeaderCell>Active</Table.HeaderCell>
+    <Table.Row>
+      <Table.HeaderCell>Code</Table.HeaderCell>
+      <Table.HeaderCell>Active</Table.HeaderCell>
+    </Table.Row>
   </InfiniteDataTable>
 );
 

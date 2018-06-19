@@ -11,9 +11,7 @@ export default ({
 }) => (
   <Table celled {...rest}>
     <Table.Header>
-      <Table.Row>
-        {children}
-      </Table.Row>
+      {children}
     </Table.Header>
     {items && (
       <InfiniteScroll
