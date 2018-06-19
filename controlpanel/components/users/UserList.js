@@ -1,4 +1,4 @@
-import { compose, withState, withHandlers, pure } from 'recompose';
+import { compose, withState, withHandlers } from 'recompose';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 import React from 'react';
@@ -92,7 +92,7 @@ const UserList = ({
 
 const ITEMS_PER_PAGE = 10;
 export const USER_LIST_QUERY = gql`
-  query getAllUsers($offset: Int, $limit: Int, $ignoreGuests: Boolean) {
+  query users($offset: Int, $limit: Int, $ignoreGuests: Boolean) {
     users(offset: $offset, limit: $limit, ignoreGuests: $ignoreGuests) {
       _id
       isGuest
@@ -108,8 +108,10 @@ export default compose(
   withState('hasMore', 'updateHasMore', true),
   withState('isHideGuests', 'updateHideGuests', false),
   withHandlers({
-    toggleHideGuests: ({ isHideGuests, updateHideGuests }) => () =>
-      updateHideGuests(!isHideGuests),
+    toggleHideGuests: ({ isHideGuests, updateHasMore, updateHideGuests }) => () => {
+      updateHideGuests(!isHideGuests);
+      updateHasMore(true);
+    },
   }),
   graphql(USER_LIST_QUERY, {
     options: ({ isHideGuests }) => ({
@@ -150,5 +152,4 @@ export default compose(
       }),
     }),
   }),
-  pure,
 )(UserList);
