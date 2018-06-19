@@ -14,7 +14,7 @@ const FormNewCountry = formProps => (
   <AutoForm {...formProps} >
     <AutoField name="isoCode" />
     <ErrorsField />
-    <SubmitField value="Land hinzufügen" className="primary" />
+    <SubmitField value="Add country" className="primary" />
   </AutoForm>
 );
 

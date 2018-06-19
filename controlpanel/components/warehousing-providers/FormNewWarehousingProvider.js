@@ -19,7 +19,7 @@ const FormNewWarehousingProvider = ({ providerType, updateProviderType, ...formP
       <AutoField name="adapterKey" />
     )}
     <ErrorsField />
-    <SubmitField value="Add Warehousing provider" className="primary" />
+    <SubmitField value="Add warehousing provider" className="primary" />
   </AutoForm>
 );
 

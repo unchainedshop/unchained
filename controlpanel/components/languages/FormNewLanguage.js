@@ -14,7 +14,7 @@ const FormNewLanguage = formProps => (
   <AutoForm {...formProps} >
     <AutoField name="isoCode" />
     <ErrorsField />
-    <SubmitField value="Sprache hinzufügen" className="primary" />
+    <SubmitField value="Add language" className="primary" />
   </AutoForm>
 );
 

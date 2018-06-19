@@ -18,7 +18,7 @@ const FormNewProductVariation = formProps => (
       <AutoField name="type" />
     </Form.Group>
     <ErrorsField />
-    <SubmitField value="Add Variation Metric" className="primary" />
+    <SubmitField value="Add variation metric" className="primary" />
   </AutoForm>
 );
 

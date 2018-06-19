@@ -17,7 +17,7 @@ const FormNewProductVariationOption = formProps => (
       <AutoField name="value" />
     </Form.Group>
     <ErrorsField />
-    <SubmitField value="Add Option" className="primary" />
+    <SubmitField value="Add option" className="primary" />
   </AutoForm>
 );
 

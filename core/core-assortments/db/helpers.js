@@ -8,8 +8,8 @@ import * as Collections from './collections';
 
 function eqSet(as, bs) {
   if (as.size !== bs.size) return false;
-  for (var a of as) if (!bs.has(a)) return false;
-  for (var b of bs) if (!as.has(b)) return false;
+  for (const a of as) if (!bs.has(a)) return false; // eslint-disable-line
+  for (const b of bs) if (!as.has(b)) return false; // eslint-disable-line
   return true;
 }
 
@@ -157,7 +157,7 @@ export default () => {
       const selector = {
         _id: { $in: productIds },
         status: ProductStatus.ACTIVE,
-      }
+      };
       return Products
         .find(selector, { skip: offset, limit })
         .fetch();

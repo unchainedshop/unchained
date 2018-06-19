@@ -14,7 +14,7 @@ const FormNewCurrency = formProps => (
   <AutoForm {...formProps} >
     <AutoField name="isoCode" />
     <ErrorsField />
-    <SubmitField value="Währung hinzufügen" className="primary" />
+    <SubmitField value="Add currency" className="primary" />
   </AutoForm>
 );
 

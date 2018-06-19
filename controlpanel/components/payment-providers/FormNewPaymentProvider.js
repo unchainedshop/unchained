@@ -19,7 +19,7 @@ const FormNewPaymentProvider = ({ providerType, updateProviderType, ...formProps
       <AutoField name="adapterKey" />
     )}
     <ErrorsField />
-    <SubmitField value="Add Payment provider" className="primary" />
+    <SubmitField value="Add payment provider" className="primary" />
   </AutoForm>
 );
 

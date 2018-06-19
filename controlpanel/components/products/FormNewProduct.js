@@ -14,7 +14,7 @@ const FormNewProduct = formProps => (
     <AutoField name="title" />
     <AutoField name="type" />
     <ErrorsField />
-    <SubmitField value="Entwurf erstellen und weiter" className="primary" />
+    <SubmitField value="Add product" className="primary" />
   </AutoForm>
 );
 
