@@ -23,19 +23,19 @@ export default connectApollo(withRouter(({ changeTab, router, ...rest }) => (
           <Grid.Column stretched width={12}>
             {(!router.query.tab || router.query.tab === 'AssortmentTranslation') && (
               <div>
-                <Header as="h3">General Texts</Header>
+                <Header as="h3">Localization</Header>
                 <FormEditAssortmentTexts assortmentId={router.query._id} />
               </div>
             )}
             {router.query.tab === 'AssortmentLinks' && (
               <div>
-                <Header as="h3">Sortimente</Header>
+                <Header as="h3">Linked assortments</Header>
                 {/* <AssortmentMediaList assortmentId={router.query._id} /> */}
               </div>
             )}
-            {router.query.tab === 'AssortmentAssortments' && (
+            {router.query.tab === 'AssortmentProducts' && (
               <div>
-                <Header as="h3">Zugewiesene Produkte</Header>
+                <Header as="h3">Assigned products</Header>
                 {/* <FormEditAssortmentCommerce assortmentId={router.query._id} /> */}
               </div>
             )}

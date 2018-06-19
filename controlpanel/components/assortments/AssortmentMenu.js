@@ -29,6 +29,14 @@ export default compose(
       ) || (
         (!router.query.tab || router.query.tab === 'AssortmentTranslation')
       ),
+    }, {
+      name: 'AssortmentLinks',
+      description: 'Links',
+      isActive: (router.query && router.query.tab === 'AssortmentLinks'),
+    }, {
+      name: 'AssortmentProducts',
+      description: 'Products',
+      isActive: (router.query && router.query.tab === 'AssortmentProducts'),
     }];
     return {
       menuItems,
