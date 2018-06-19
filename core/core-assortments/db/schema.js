@@ -9,6 +9,8 @@ Collections.Assortments.attachSchema(new SimpleSchema({
   sequence: { type: Number, required: true, index: true },
   slugs: { type: Array, index: true },
   'slugs.$': String,
+  tags: { type: Array, index: true },
+  'tags.$': String,
   meta: { type: Object, blackbox: true },
   _cachedProductIds: Array,
   '_cachedProductIds.$': String,
@@ -19,6 +21,8 @@ Collections.AssortmentTexts.attachSchema(new SimpleSchema({
   assortmentId: { type: String, required: true, index: true },
   locale: { type: String, required: true, index: true },
   title: String,
+  subtitle: String,
+  description: String,
   slug: { type: String, index: true },
   ...Schemas.timestampFields,
 }, { requiredByDefault: false }));

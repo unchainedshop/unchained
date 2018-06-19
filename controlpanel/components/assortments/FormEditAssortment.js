@@ -12,6 +12,7 @@ import AutoForm from 'uniforms-semantic/AutoForm';
 import withFormSchema from '../../lib/withFormSchema';
 import withFormModel from '../../lib/withFormModel';
 import withFormErrorHandlers from '../../lib/withFormErrorHandlers';
+import FormTagInput from '../../lib/FormTagInput';
 
 const FormEditAssortment = ({ removeAssortment, ...formProps }) => (
   <AutoForm {...formProps} >
@@ -20,6 +21,11 @@ const FormEditAssortment = ({ removeAssortment, ...formProps }) => (
         <Grid.Column width={12}>
           <AutoField name={'isActive'} />
           <AutoField name={'isRoot'} />
+          <AutoField
+            name="tags"
+            component={FormTagInput}
+            options={[]}
+          />
         </Grid.Column>
       </Grid.Row>
     </Grid>
@@ -40,32 +46,11 @@ export default compose(
         updated
         isActive
         isRoot
+        tags
         texts {
+          _id
           title
           slug
-        }
-        productAssignments {
-          _id
-          sortKey
-          product {
-            _id
-          }
-        }
-        linkedAssortments {
-          _id
-          sortKey
-          parent {
-            _id
-            texts {
-              title
-            }
-          }
-          child {
-            _id
-            texts {
-              title
-            }
-          }
         }
       }
     }
@@ -75,6 +60,8 @@ export default compose(
       updateAssortment(assortment: $assortment, assortmentId: $assortmentId) {
         _id
         isActive
+        isRoot
+        tags
       }
     }
   `, {
@@ -97,16 +84,22 @@ export default compose(
       optional: false,
       label: 'Root',
     },
+    tags: {
+      type: Array,
+      optional: true,
+      label: 'Tags',
+    },
+    'tags.$': String,
   }),
   withFormModel(({ data: { assortment = {} } }) => (assortment)),
   withHandlers({
     onSubmitSuccess: () => () => {
       toast('Assortment saved', { type: toast.TYPE.SUCCESS }); // eslint-disable-line
     },
-    onSubmit: ({ assortmentId, updateAssortment }) =>
-      ({ isActive }) => updateAssortment({
+    onSubmit: ({ assortmentId, schema, updateAssortment }) =>
+      formData => updateAssortment({
         variables: {
-          assortment: { isActive },
+          assortment: schema.clean(formData),
           assortmentId,
         },
       }),

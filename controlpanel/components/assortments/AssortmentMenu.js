@@ -1,6 +1,6 @@
+import React from 'react';
 import { compose, pure, withProps, withHandlers } from 'recompose';
 import { withRouter } from 'next/router';
-import React from 'react';
 import { Menu } from 'semantic-ui-react';
 
 const AssortmentMenu = ({ menuItems, changeTab }) => (
@@ -37,7 +37,7 @@ export default compose(
   withHandlers({
     changeTab: ({ router }) => (event, element) => {
       router.replace({
-        ...router,
+        pathname: router.pathname,
         query: {
           ...router.query,
           tab: element.name,

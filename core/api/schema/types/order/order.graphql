@@ -101,8 +101,8 @@ type Order {
   items: [OrderItem!]
   discounts: [OrderDiscount!]
   total(category: OrderPriceCategory): Money
-  documents(type: OrderDocumentType = CONFIRMATION): [Media]!
+  documents(type: OrderDocumentType = CONFIRMATION): [Media!]!
   supportedDeliveryProviders: [DeliveryProvider!]!
   supportedPaymentProviders: [PaymentProvider!]!
-  logs(offset: Int, limit: Int): [Log]!
+  logs(offset: Int, limit: Int): [Log!]!
 }

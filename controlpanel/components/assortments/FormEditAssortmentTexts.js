@@ -77,7 +77,6 @@ export default compose(
     query assortmentTexts($assortmentId: ID!) {
       assortment(assortmentId: $assortmentId) {
         _id
-        status
       }
       languages {
         _id

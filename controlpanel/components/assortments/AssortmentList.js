@@ -1,4 +1,4 @@
-import { compose, pure, withHandlers } from 'recompose';
+import { compose, withHandlers } from 'recompose';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 import React from 'react';
@@ -79,5 +79,4 @@ export default compose(
     changeBaseAssortment: ({ mutate }) => (event, element) =>
       mutate({ variables: { assortmentId: element.name } }),
   }),
-  pure,
 )(AssortmentList);

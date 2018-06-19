@@ -84,7 +84,7 @@ input CreateProductVariationOptionInput {
 }
 
 input UpdateProductInput {
-  tags: [String!]!
+  tags: [String!]
 }
 
 input UpdateProductTextInput {
@@ -149,18 +149,22 @@ input UpdateProviderInput {
 }
 
 input CreateAssortmentInput {
-  isActive: Boolean
   title: String!
+  isRoot: Boolean
 }
 
 input UpdateAssortmentInput {
   isActive: Boolean
+  isRoot: Boolean
+  tags: [String!]
 }
 
 input UpdateAssortmentTextInput {
   locale: String!
   slug: String
   title: String
+  subtitle: String
+  description: String
 }
 
 input ReorderAssortmentProductInput {

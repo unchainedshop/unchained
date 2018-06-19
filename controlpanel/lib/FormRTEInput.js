@@ -27,6 +27,7 @@ const toolbarConfig = {
 
 const FormRTEInput = ({
   className,
+  updateRichtext,
   disabled,
   error,
   errorMessage,

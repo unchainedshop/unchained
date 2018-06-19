@@ -14,6 +14,7 @@ const FormNewAssortment = formProps => (
   <AutoForm {...formProps} >
     <ErrorsField />
     <AutoField name={'title'} />
+    <AutoField name={'isRoot'} />
     <SubmitField value="Add assortment" className="primary" />
   </AutoForm>
 );
@@ -39,6 +40,12 @@ export default compose(
       type: String,
       optional: false,
       label: 'Title',
+    },
+    isRoot: {
+      type: Boolean,
+      optional: false,
+      defaultValue: true,
+      label: 'Root node',
     },
   }),
   withHandlers({

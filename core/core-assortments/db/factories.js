@@ -9,6 +9,7 @@ Factory.define('assortment', Collections.Assortments, {
   isBase: () => false,
   isRoot: () => faker.random.boolean(),
   sequence: () => faker.random.number(),
+  tags: () => (faker.random.boolean() ? [faker.random.arrayElement(['b2b', 'b2e', 'b2c'])] : []),
   slugs: [() => faker.lorem.slug()],
   ...fakeTimestampFields,
 });
@@ -17,6 +18,8 @@ Factory.define('assortmentText', Collections.AssortmentTexts, {
   assortmentId: () => Factory.get('assortment'),
   locale: () => faker.random.arrayElement(['de', 'en']),
   title: () => faker.commerce.productName(),
+  subtitle: () => faker.lorem.sentence(),
+  description: () => faker.lorem.text(),
   slug: () => faker.lorem.slug(),
   ...fakeTimestampFields,
 });

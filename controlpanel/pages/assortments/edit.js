@@ -5,7 +5,7 @@ import App from '../../components/App';
 import connectApollo from '../../lib/connectApollo';
 import AssortmentHeader from '../../components/assortments/AssortmentHeader';
 import AssortmentMenu from '../../components/assortments/AssortmentMenu';
-import FormEditAssortmentTexts from '../../components/products/FormEditAssortmentTexts';
+import FormEditAssortmentTexts from '../../components/assortments/FormEditAssortmentTexts';
 
 export default connectApollo(withRouter(({ changeTab, router, ...rest }) => (
   <App {...rest}>

@@ -1,5 +1,5 @@
 import React from 'react';
-import { compose, pure, mapProps } from 'recompose';
+import { compose, mapProps } from 'recompose';
 import Moment from 'react-moment';
 import { Menu, Dropdown, Segment, List, Grid } from 'semantic-ui-react';
 import gql from 'graphql-tag';
@@ -70,5 +70,4 @@ export default compose(
     loading,
     ...rest,
   })),
-  pure,
 )(AssortmentHeader);
