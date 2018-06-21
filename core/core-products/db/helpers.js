@@ -28,7 +28,7 @@ Products.createProduct = ({
   const productObject = Products.findOne({ _id: productId });
   productObject.upsertLocalizedText({ locale, title });
   if (autopublish) {
-    productObject.publish()
+    productObject.publish();
   }
   return productObject;
 };
@@ -91,7 +91,7 @@ export default () => {
       return ProductTexts.findOne({ productId: this._id, locale });
     },
     addMedia({
-      rawFile, href, name, userId, meta,
+      rawFile, href, name, userId, meta, ...options
     }) {
       const fileLoader = rawFile ? Media.insertWithRemoteBuffer({
         file: rawFile,
@@ -100,6 +100,7 @@ export default () => {
         url: href,
         fileName: name,
         userId,
+        ...options,
       });
       const file = Promise.await(fileLoader);
       const sortKey = ProductMedia.getNewSortKey(this._id);
