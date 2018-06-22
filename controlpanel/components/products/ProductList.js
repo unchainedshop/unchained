@@ -12,6 +12,23 @@ const ProductList = ({ products, loadMoreEntries, hasMore }) => (
   <Table celled>
     <Table.Header>
       <Table.Row>
+        <Table.HeaderCell colSpan="3">
+          <Link href="/products/new">
+            <Button
+              floated="right"
+              icon
+              labelPosition="left"
+              primary
+              size="small"
+              href="/products/new"
+            >
+              <Icon name="plus" />
+              Add
+            </Button>
+          </Link>
+        </Table.HeaderCell>
+      </Table.Row>
+      <Table.Row>
         <Table.HeaderCell>
 Name
         </Table.HeaderCell>
@@ -76,8 +93,7 @@ Tags
               href="/products/new"
             >
               <Icon name="plus" />
-              {' '}
-Add
+              Add
             </Button>
           </Link>
         </Table.HeaderCell>

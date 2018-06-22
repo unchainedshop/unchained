@@ -16,8 +16,20 @@ const UserList = ({
       <Table.Row>
         <Table.HeaderCell colSpan={3}>
           Show guests?
-          {' '}
           <input type="checkbox" checked={isShowGuests} onClick={toggleShowGuests} />
+          <Link href="/users/new">
+            <Button
+              floated="right"
+              icon
+              labelPosition="left"
+              primary
+              size="small"
+              href="/users/new"
+            >
+              <Icon name="plus" />
+New User
+            </Button>
+          </Link>
         </Table.HeaderCell>
       </Table.Row>
       <Table.Row>

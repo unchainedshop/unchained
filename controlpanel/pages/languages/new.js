@@ -8,7 +8,7 @@ export default connectApollo(({ onSuccess, ...rest }) => (
   <App {...rest}>
     <Container>
       <p>
-Sprache hinzufügen
+        Add Language
       </p>
       <FormNewLanguage />
     </Container>

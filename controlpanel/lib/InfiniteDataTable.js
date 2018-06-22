@@ -13,7 +13,25 @@ export default ({
 }) => (
   <Table celled {...rest}>
     <Table.Header>
-      {children}
+      <Table.Row>
+        <Table.HeaderCell colSpan={cols}>
+          {createPath && (
+            <Link href={createPath}>
+              <Button
+                floated="right"
+                icon
+                labelPosition="left"
+                primary
+                size="small"
+                href={createPath}
+              >
+                <Icon name="plus" />
+                  Add
+              </Button>
+            </Link>
+          )}
+        </Table.HeaderCell>
+      </Table.Row>
     </Table.Header>
     {items && (
       <InfiniteScroll

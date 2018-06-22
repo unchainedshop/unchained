@@ -48,7 +48,6 @@ Root
     <Table.Row>
       <Table.HeaderCell colSpan={3}>
         Show non-root nodes?
-        {' '}
         <input type="checkbox" checked={isShowLeafNodes} onClick={toggleShowLeafNodes} />
       </Table.HeaderCell>
     </Table.Row>

@@ -8,7 +8,7 @@ export default connectApollo(({ onSuccess, ...rest }) => (
   <App {...rest}>
     <Container>
       <p>
-New assortment
+        New assortment
       </p>
       <FormNewAssortment />
     </Container>
