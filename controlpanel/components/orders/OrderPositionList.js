@@ -55,13 +55,11 @@ export default compose(
           }
           product {
             _id
-            ... on ProductTranslation {
-              texts {
-                _id
-                slug
-                title
-                subtitle
-              }
+            texts {
+              _id
+              slug
+              title
+              subtitle
             }
           }
         }

@@ -1,7 +1,7 @@
 """
 Simple Product
 """
-type SimpleProduct implements Product, ProductTranslation, ProductVisualization, ProductCommerce, ProductSupply, ProductWarehousing {
+type SimpleProduct implements Product, ProductVisualization, ProductCommerce, ProductSupply, ProductWarehousing {
   _id: ID!
   sequence: Int!
   status: ProductStatus!

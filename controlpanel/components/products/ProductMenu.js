@@ -48,7 +48,11 @@ export default compose(
   })),
   graphql(PRODUCT_INTERFACES_QUERY),
   withProps(({ router, data: { __type } = {} }) => { // eslint-disable-line
-    const menuItems = [];
+    const menuItems = [{
+      name: 'ProductTranslation',
+      description: 'General Texts',
+      isActive: (router.query.tab === 'ProductTranslation' || !router.query.tab || router.query.tab === ''),
+    }];
     ((__type && __type.interfaces) || []).forEach((concreteInterface, key) => {
       if (key !== 0) {
         menuItems.push({
@@ -56,8 +60,6 @@ export default compose(
           description: concreteInterface.description,
           isActive: (
             router.query.tab === concreteInterface.name
-          ) || (
-            (!router.query.tab || router.query.tab === '') && key === 1
           ),
         });
       }

@@ -111,7 +111,7 @@ export default () => {
         sortKey,
         productId: this._id,
         created: new Date(),
-        ...meta,
+        meta,
       });
       const productMediaObject = ProductMedia.findOne({ _id: productMediaId });
       return productMediaObject;

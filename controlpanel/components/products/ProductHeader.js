@@ -92,11 +92,9 @@ export default compose(
         updated,
         published,
         tags,
-        ... on ProductTranslation {
-          texts {
-            _id
-            title
-          }
+        texts {
+          _id
+          title
         }
       }
     }

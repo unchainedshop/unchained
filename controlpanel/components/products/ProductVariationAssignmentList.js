@@ -81,11 +81,9 @@ export default compose(
     query productVariationAssignments($productId: ID) {
       products {
         _id
-        ... on ProductTranslation {
-          texts {
-            _id
-            title
-          }
+        texts {
+          _id
+          title
         }
       }
       product(productId: $productId) {
@@ -122,11 +120,9 @@ export default compose(
             }
             product {
               _id
-              ... on ProductTranslation {
-                texts {
-                  _id
-                  title
-                }
+              texts {
+                _id
+                title
               }
             }
           }

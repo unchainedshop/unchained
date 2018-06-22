@@ -102,13 +102,7 @@ interface Product {
   created: Date
   updated: Date
   published: Date
-}
-
-"""
-Texts
-"""
-interface ProductTranslation {
-  texts(forceLocale: String): ProductTexts
+  texts: ProductTexts
 }
 
 """

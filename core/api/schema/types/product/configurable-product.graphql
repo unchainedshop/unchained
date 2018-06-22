@@ -1,7 +1,7 @@
 """
 Matrix Product
 """
-type ConfigurableProduct implements Product, ProductTranslation, ProductVisualization, ProductProxy {
+type ConfigurableProduct implements Product, ProductVisualization, ProductProxy {
   _id: ID!
   sequence: Int!
   status: ProductStatus!

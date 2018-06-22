@@ -79,12 +79,10 @@ export const PRODUCT_LIST_QUERY = gql`
       _id
       tags
       status
-      ... on ProductTranslation {
-        texts {
-          _id
-          slug
-          title
-        }
+      texts {
+        _id
+        slug
+        title
       }
     }
   }
