@@ -1,4 +1,6 @@
-import { compose, withProps, withHandlers, withState } from 'recompose';
+import {
+  compose, withProps, withHandlers, withState,
+} from 'recompose';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 import React from 'react';
@@ -9,18 +11,21 @@ const AssortmentList = ({
 }) => (nodes.length > 0 ? (
   <div>
     <div>
-      Show non-root nodes? <input type="checkbox" checked={isShowLeafNodes} onClick={toggleShowLeafNodes} />
+      Show non-root nodes?
+      {' '}
+      <input type="checkbox" checked={isShowLeafNodes} onClick={toggleShowLeafNodes} />
     </div>
     {loading ? (
       <div>
-        <h1>Loading... this can take minutes...</h1>
+        <h1>
+Loading... this can take minutes...
+        </h1>
       </div>
     ) : (
       <InteractiveForceGraph
         zoom
         simulationOptions={{ height: 600, width: 600 }}
         labelAttr="label"
-        onSelectNode={node => console.log(node)}
       >
         {nodes.map(node => <ForceGraphNode key={node.id} node={node} fill={node.fill} />)}
         {links.map(link => <ForceGraphLink key={link.id} link={link} />)}
@@ -70,8 +75,9 @@ export default compose(
     }
   `),
   withHandlers({
-    toggleShowLeafNodes: ({ isShowLeafNodes, setShowLeafNodes }) => () =>
-      setShowLeafNodes(!isShowLeafNodes),
+    toggleShowLeafNodes: ({
+      isShowLeafNodes, setShowLeafNodes,
+    }) => () => setShowLeafNodes(!isShowLeafNodes),
   }),
   withProps(({ data: { assortments = [] } = {} }) => {
     const links = [];

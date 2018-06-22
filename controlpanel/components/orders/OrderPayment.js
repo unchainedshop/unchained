@@ -1,9 +1,13 @@
-import { compose, mapProps, pure, withHandlers } from 'recompose';
+import {
+  compose, mapProps, pure, withHandlers,
+} from 'recompose';
 import gql from 'graphql-tag';
 import Moment from 'react-moment';
 import { graphql } from 'react-apollo';
 import React from 'react';
-import { Segment, List, Label, Icon, Button } from 'semantic-ui-react';
+import {
+  Segment, List, Label, Icon, Button,
+} from 'semantic-ui-react';
 import Link from 'next/link';
 
 const colorForStatus = (status) => {
@@ -17,18 +21,34 @@ const OrderPayment = ({
   <Segment secondary>
     <Label color={statusColor} horizontal attached="top">
       {status}
-      <Label.Detail>Payment Provider</Label.Detail>
+      <Label.Detail>
+Payment Provider
+      </Label.Detail>
     </Label>
     <List relaxed divided>
       <List.Item>
         <Label horizontal basic>
           <Icon name="ship" />
           <Link href={`/payment-providers/edit?_id=${provider._id}`}>
-            <a href={`/payment-providers/edit?_id=${provider._id}`}>{provider.interface.label} {provider.interface.version} ({provider.type})</a>
+            <a href={`/payment-providers/edit?_id=${provider._id}`}>
+              {provider.interface.label}
+              {' '}
+              {provider.interface.version}
+              {' '}
+(
+              {provider.type}
+)
+            </a>
           </Link>
         </Label>
         <p>
-          Date of Payment with Provider: {paid ? (<Moment format="lll">{paid}</Moment>) : 'n/a'}
+          Date of Payment with Provider:
+          {' '}
+          {paid ? (
+            <Moment format="lll">
+              {paid}
+            </Moment>
+          ) : 'n/a'}
         </p>
       </List.Item>
     </List>

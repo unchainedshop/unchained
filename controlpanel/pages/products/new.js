@@ -9,7 +9,9 @@ import connectApollo from '../../lib/connectApollo';
 const New = ({ onSuccess, ...rest }) => (
   <App {...rest}>
     <Container>
-      <p>Neues Produkt</p>
+      <p>
+Neues Produkt
+      </p>
       <FormNewProduct onSuccess={onSuccess} />
     </Container>
   </App>

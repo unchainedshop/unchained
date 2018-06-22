@@ -15,7 +15,9 @@ const CountryList = ({ changeBaseCountry, ...rest }) => (
       <Table.Row key={country._id}>
         <Table.Cell>
           <Link href={`/countries/edit?_id=${country._id}`}>
-            <a href={`/countries/edit?_id=${country._id}`}>{country.isoCode}</a>
+            <a href={`/countries/edit?_id=${country._id}`}>
+              {country.isoCode}
+            </a>
           </Link>
         </Table.Cell>
         <Table.Cell>
@@ -25,7 +27,9 @@ const CountryList = ({ changeBaseCountry, ...rest }) => (
         </Table.Cell>
         <Table.Cell>
           {country.isBase ? (
-            <b>Basisland</b>
+            <b>
+Basisland
+            </b>
           ) : (
             <Button
               basic
@@ -40,9 +44,15 @@ const CountryList = ({ changeBaseCountry, ...rest }) => (
     ))}
   >
     <Table.Row>
-      <Table.HeaderCell>Name</Table.HeaderCell>
-      <Table.HeaderCell>Active?</Table.HeaderCell>
-      <Table.HeaderCell>Basisland</Table.HeaderCell>
+      <Table.HeaderCell>
+Name
+      </Table.HeaderCell>
+      <Table.HeaderCell>
+Active?
+      </Table.HeaderCell>
+      <Table.HeaderCell>
+Basisland
+      </Table.HeaderCell>
     </Table.Row>
   </InfiniteDataTable>
 );
@@ -77,8 +87,9 @@ export default compose(
     },
   }),
   withHandlers({
-    changeBaseCountry: ({ mutate }) => (event, element) =>
-      mutate({ variables: { countryId: element.name } }),
+    changeBaseCountry: ({
+      mutate,
+    }) => (event, element) => mutate({ variables: { countryId: element.name } }),
   }),
   pure,
 )(CountryList);

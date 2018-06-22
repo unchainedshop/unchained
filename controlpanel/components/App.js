@@ -29,13 +29,25 @@ const App = ({
     <Segment vertical padded>
       {loading && (
         <Dimmer active inverted>
-          <Loader size="large" inverted>Laden</Loader>
+          <Loader size="large" inverted>
+Laden
+          </Loader>
         </Dimmer>
       ) }
       {children}
     </Segment>
     <Segment basic textAlign="center">
-      Made with <span role="img" aria-label="love">❤️</span> by the <a href="https://unchained.shop">Unchained Team</a>
+      Made with
+      {' '}
+      <span role="img" aria-label="love">
+❤️
+      </span>
+      {' '}
+by the
+      {' '}
+      <a href="https://unchained.shop">
+Unchained Team
+      </a>
     </Segment>
     <ToastContainer
       position="top-center"

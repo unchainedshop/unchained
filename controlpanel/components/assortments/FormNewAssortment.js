@@ -11,7 +11,7 @@ import withFormSchema from '../../lib/withFormSchema';
 import withFormErrorHandlers from '../../lib/withFormErrorHandlers';
 
 const FormNewAssortment = formProps => (
-  <AutoForm {...formProps} >
+  <AutoForm {...formProps}>
     <ErrorsField />
     <AutoField name={'title'} />
     <AutoField name={'isRoot'} />
@@ -52,12 +52,11 @@ export default compose(
     onSubmitSuccess: ({ router }) => ({ data: { createAssortment } }) => {
       router.replace({ pathname: '/assortments/edit', query: { _id: createAssortment._id } });
     },
-    onSubmit: ({ createAssortment, schema }) => ({ ...dirtyInput }) =>
-      createAssortment({
-        variables: {
-          assortment: schema.clean(dirtyInput),
-        },
-      }),
+    onSubmit: ({ createAssortment, schema }) => ({ ...dirtyInput }) => createAssortment({
+      variables: {
+        assortment: schema.clean(dirtyInput),
+      },
+    }),
   }),
   withFormErrorHandlers,
   mapProps(({ createAssortment, ...rest }) => ({

@@ -4,9 +4,14 @@ import { AssortmentNotFoundError } from '../errors';
 
 export default function (root, { parentAssortmentId, childAssortmentId }, { userId }) {
   log(`mutation addAssortmentLink ${parentAssortmentId} -> ${childAssortmentId}`, { userId });
-  const assortment = Assortments.findOne({ _id: parentAssortmentId });
-  if (!assortment) {
+  const parent = Assortments.findOne({ _id: parentAssortmentId });
+  const child = Assortments.findOne({ _id: childAssortmentId });
+
+  if (!parent) {
     throw new AssortmentNotFoundError({ data: { assortmentId: parentAssortmentId } });
   }
-  return assortment.addLink({ assortmentId: childAssortmentId });
+  if (!child) {
+    throw new AssortmentNotFoundError({ data: { assortmentId: childAssortmentId } });
+  }
+  return parent.addLink({ assortmentId: childAssortmentId });
 }

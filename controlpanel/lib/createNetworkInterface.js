@@ -17,8 +17,8 @@ export class UploadNetworkInterface extends HTTPFetchNetworkInterface {
   isUpload({ request }) { // eslint-disable-line
     if (request.variables) {
       for (const key in request.variables) { // eslint-disable-line
-        if (request.variables[key] instanceof FileList ||
-            request.variables[key] instanceof File) {
+        if (request.variables[key] instanceof FileList
+            || request.variables[key] instanceof File) {
           return true;
         }
       }

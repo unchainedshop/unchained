@@ -1,6 +1,10 @@
 import React from 'react';
-import { compose, pure, mapProps, withHandlers } from 'recompose';
-import { Segment, Table, Dropdown, Button } from 'semantic-ui-react';
+import {
+  compose, pure, mapProps, withHandlers,
+} from 'recompose';
+import {
+  Segment, Table, Dropdown, Button,
+} from 'semantic-ui-react';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 
@@ -17,8 +21,12 @@ const ProductVariationAssignmentList = ({
               {title}
             </Table.HeaderCell>
           ))}
-          <Table.HeaderCell>Product</Table.HeaderCell>
-          <Table.HeaderCell>Options</Table.HeaderCell>
+          <Table.HeaderCell>
+Product
+          </Table.HeaderCell>
+          <Table.HeaderCell>
+Options
+          </Table.HeaderCell>
         </Table.Row>
       </Table.Header>
 
@@ -45,7 +53,9 @@ const ProductVariationAssignmentList = ({
             </Table.Cell>
             <Table.Cell>
               {product && product._id && (
-                <Button small onClick={removeProductAssignment} optionValues={columns}>X</Button>
+                <Button small onClick={removeProductAssignment} optionValues={columns}>
+X
+                </Button>
               )}
             </Table.Cell>
           </Table.Row>
@@ -170,9 +180,9 @@ export default compose(
         values: (options || []).map((option => option.value)),
         key,
       }));
-    const allRowsPossible = keyValueCombinations.length > 0 ?
-      matrixGenerator(keyValueCombinations, [], 0) :
-      [];
+    const allRowsPossible = keyValueCombinations.length > 0
+      ? matrixGenerator(keyValueCombinations, [], 0)
+      : [];
 
     const assignments = ((product && product.assignments) || []);
     const allAssignedRows = {};
@@ -211,31 +221,33 @@ export default compose(
     };
   }),
   withHandlers({
-    addProductAssignment: ({ addProductAssignment, productId, columnKeys }) =>
-      async (_, { value, optionValues }) => {
-        await addProductAssignment({
-          variables: {
-            proxyId: productId,
-            productId: value,
-            vectors: optionValues.map((optionValue, index) => ({
-              key: columnKeys[index],
-              value: optionValue,
-            })),
-          },
-        });
-      },
-    removeProductAssignment: ({ removeProductAssignment, productId, columnKeys }) =>
-      async (_, { optionValues }) => {
-        await removeProductAssignment({
-          variables: {
-            proxyId: productId,
-            vectors: optionValues.map((optionValue, index) => ({
-              key: columnKeys[index],
-              value: optionValue,
-            })),
-          },
-        });
-      },
+    addProductAssignment: ({
+      addProductAssignment, productId, columnKeys,
+    }) => async (_, { value, optionValues }) => {
+      await addProductAssignment({
+        variables: {
+          proxyId: productId,
+          productId: value,
+          vectors: optionValues.map((optionValue, index) => ({
+            key: columnKeys[index],
+            value: optionValue,
+          })),
+        },
+      });
+    },
+    removeProductAssignment: ({
+      removeProductAssignment, productId, columnKeys,
+    }) => async (_, { optionValues }) => {
+      await removeProductAssignment({
+        variables: {
+          proxyId: productId,
+          vectors: optionValues.map((optionValue, index) => ({
+            key: columnKeys[index],
+            value: optionValue,
+          })),
+        },
+      });
+    },
   }),
   pure,
 )(ProductVariationAssignmentList);

@@ -8,7 +8,9 @@ export default connectApollo(props => (
   <App {...props} allowAnonymousAccess>
     <Container>
       <Segment>
-        <h3 className="title">Set password</h3>
+        <h3 className="title">
+Set password
+        </h3>
         <FormResetPassword />
       </Segment>
     </Container>

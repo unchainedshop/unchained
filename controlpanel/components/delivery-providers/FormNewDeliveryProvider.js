@@ -1,5 +1,7 @@
 import React from 'react';
-import { compose, mapProps, withHandlers, withState } from 'recompose';
+import {
+  compose, mapProps, withHandlers, withState,
+} from 'recompose';
 import gql from 'graphql-tag';
 import { withRouter } from 'next/router';
 import { graphql } from 'react-apollo';
@@ -13,7 +15,7 @@ import withFormErrorHandlers from '../../lib/withFormErrorHandlers';
 const defaultProviderType = 'SHIPPING';
 
 const FormNewDeliveryProvider = ({ providerType, updateProviderType, ...formProps }) => (
-  <AutoForm {...formProps} >
+  <AutoForm {...formProps}>
     <AutoField name="type" onChange={updateProviderType} />
     {providerType && (
       <AutoField name="adapterKey" />
@@ -83,12 +85,13 @@ export default compose(
     onSubmitSuccess: ({ router }) => ({ data: { createDeliveryProvider } }) => {
       router.replace({ pathname: '/delivery-providers/edit', query: { _id: createDeliveryProvider._id } });
     },
-    onSubmit: ({ createDeliveryProvider, schema }) => ({ ...dirtyInput }) =>
-      createDeliveryProvider({
-        variables: {
-          deliveryProvider: schema.clean(dirtyInput),
-        },
-      }),
+    onSubmit: ({
+      createDeliveryProvider, schema,
+    }) => ({ ...dirtyInput }) => createDeliveryProvider({
+      variables: {
+        deliveryProvider: schema.clean(dirtyInput),
+      },
+    }),
   }),
   withFormErrorHandlers,
   mapProps(({ createDeliveryProvider, ...rest }) => ({

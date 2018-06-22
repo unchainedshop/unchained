@@ -1,5 +1,7 @@
 import React from 'react';
-import { compose, pure, mapProps, withHandlers } from 'recompose';
+import {
+  compose, pure, mapProps, withHandlers,
+} from 'recompose';
 import { graphql, withApollo } from 'react-apollo';
 import SelectField from 'uniforms-semantic/SelectField';
 import SubmitField from 'uniforms-semantic/SubmitField';
@@ -11,7 +13,7 @@ import withFormModel from '../../lib/withFormModel';
 import withFormErrorHandlers from '../../lib/withFormErrorHandlers';
 
 const FormSetRoles = ({ ...formProps }) => (
-  <AutoForm {...formProps} >
+  <AutoForm {...formProps}>
     <SelectField name="roles" checkboxes />
     <ErrorsField />
     <SubmitField value="Update permissions" className="primary" />
@@ -49,13 +51,12 @@ export default compose(
     roles: (user && user.roles) || [],
   })),
   withHandlers({
-    onSubmit: ({ mutate, schema, userId }) => ({ ...dirtyInput }) =>
-      mutate({
-        variables: {
-          ...schema.clean(dirtyInput),
-          userId,
-        },
-      }),
+    onSubmit: ({ mutate, schema, userId }) => ({ ...dirtyInput }) => mutate({
+      variables: {
+        ...schema.clean(dirtyInput),
+        userId,
+      },
+    }),
   }),
   withFormErrorHandlers,
   mapProps(({
@@ -63,7 +64,6 @@ export default compose(
     mutate,
     client,
     ...rest
-  }) =>
-    ({ ...rest })),
+  }) => ({ ...rest })),
   pure,
 )(FormSetRoles);

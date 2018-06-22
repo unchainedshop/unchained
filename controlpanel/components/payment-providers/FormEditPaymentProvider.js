@@ -1,7 +1,9 @@
 import React from 'react';
 import { toast } from 'react-toastify';
 import { compose, mapProps, withHandlers } from 'recompose';
-import { Button, Segment, Container, Message } from 'semantic-ui-react';
+import {
+  Button, Segment, Container, Message,
+} from 'semantic-ui-react';
 import { withRouter } from 'next/router';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
@@ -15,18 +17,25 @@ import withFormErrorHandlers from '../../lib/withFormErrorHandlers';
 
 const FormEditPaymentProvider = ({ configurationError, removePaymentProvider, ...formProps }) => (
   <Container>
-    <AutoForm {...formProps} >
+    <AutoForm {...formProps}>
       <Segment attached="bottom">
         <AutoField name={'configuration'} />
         <ErrorsField />
         <SubmitField value="Save" className="primary" />
         {configurationError && (
           <Message negative>
-            <Message.Header>Configuration Error: {configurationError}</Message.Header>
-            <p>Please check the docs</p>
+            <Message.Header>
+Configuration Error:
+              {configurationError}
+            </Message.Header>
+            <p>
+Please check the docs
+            </p>
           </Message>
         )}
-        <Button type="normal" secondary floated="right" onClick={removePaymentProvider}>Delete</Button>
+        <Button type="normal" secondary floated="right" onClick={removePaymentProvider}>
+Delete
+        </Button>
       </Segment>
     </AutoForm>
   </Container>
@@ -115,13 +124,14 @@ export default compose(
         },
       });
     },
-    onSubmit: ({ paymentProviderId, updatePaymentProvider }) =>
-      ({ configuration }) => updatePaymentProvider({
-        variables: {
-          paymentProvider: { configuration },
-          paymentProviderId,
-        },
-      }),
+    onSubmit: ({
+      paymentProviderId, updatePaymentProvider,
+    }) => ({ configuration }) => updatePaymentProvider({
+      variables: {
+        paymentProvider: { configuration },
+        paymentProviderId,
+      },
+    }),
   }),
   withFormErrorHandlers,
   mapProps(({

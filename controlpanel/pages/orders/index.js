@@ -7,7 +7,9 @@ import connectApollo from '../../lib/connectApollo';
 export default connectApollo(({ ...rest }) => (
   <App {...rest}>
     <Container>
-      <h2>Orders</h2>
+      <h2>
+Orders
+      </h2>
       <OrderList />
     </Container>
   </App>

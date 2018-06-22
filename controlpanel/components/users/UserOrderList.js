@@ -11,10 +11,18 @@ const UserOrderList = ({ orders }) => (
   <Table celled>
     <Table.Header>
       <Table.Row>
-        <Table.HeaderCell>Order date</Table.HeaderCell>
-        <Table.HeaderCell>Order number</Table.HeaderCell>
-        <Table.HeaderCell>Total</Table.HeaderCell>
-        <Table.HeaderCell>Status</Table.HeaderCell>
+        <Table.HeaderCell>
+Order date
+        </Table.HeaderCell>
+        <Table.HeaderCell>
+Order number
+        </Table.HeaderCell>
+        <Table.HeaderCell>
+Total
+        </Table.HeaderCell>
+        <Table.HeaderCell>
+Status
+        </Table.HeaderCell>
       </Table.Row>
     </Table.Header>
     {orders && (
@@ -25,7 +33,9 @@ const UserOrderList = ({ orders }) => (
               <Link href={`/orders/view?_id=${order._id}`}>
                 <a href={`/orders/view?_id=${order._id}`}>
                   {order.ordered ? (
-                    <Moment format="lll">{order.ordered}</Moment>
+                    <Moment format="lll">
+                      {order.ordered}
+                    </Moment>
                   ) : (
                     'n/a'
                   )}

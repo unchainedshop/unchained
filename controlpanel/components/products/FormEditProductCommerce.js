@@ -1,6 +1,8 @@
 import React from 'react';
 import { toast } from 'react-toastify';
-import { compose, pure, mapProps, withHandlers } from 'recompose';
+import {
+  compose, pure, mapProps, withHandlers,
+} from 'recompose';
 import { Segment, Table, Form } from 'semantic-ui-react';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
@@ -24,10 +26,18 @@ const FormEditProductCommerce = ({ isEditingDisabled, model, ...formProps }) => 
             </Table.HeaderCell>
           </Table.Row>
           <Table.Row>
-            <Table.HeaderCell>Country / Currency</Table.HeaderCell>
-            <Table.HeaderCell>Nettopreis?</Table.HeaderCell>
-            <Table.HeaderCell>Ust.-pflichtig?</Table.HeaderCell>
-            <Table.HeaderCell>Price</Table.HeaderCell>
+            <Table.HeaderCell>
+Country / Currency
+            </Table.HeaderCell>
+            <Table.HeaderCell>
+Nettopreis?
+            </Table.HeaderCell>
+            <Table.HeaderCell>
+Ust.-pflichtig?
+            </Table.HeaderCell>
+            <Table.HeaderCell>
+Price
+            </Table.HeaderCell>
           </Table.Row>
         </Table.Header>
         <Table.Body>
@@ -36,7 +46,10 @@ const FormEditProductCommerce = ({ isEditingDisabled, model, ...formProps }) => 
               <Table.Cell>
                 <Form.Field>
                   <label htmlFor={`pricing.${key}.countryCode`}>
-                    {item.countryCode} / {item.currencyCode}
+                    {item.countryCode}
+                    {' '}
+/
+                    {item.currencyCode}
                     <AutoField
                       name={`pricing.${key}.countryCode`}
                       hidden

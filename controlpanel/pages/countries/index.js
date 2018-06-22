@@ -7,7 +7,9 @@ import connectApollo from '../../lib/connectApollo';
 export default connectApollo(props => (
   <App {...props}>
     <Container>
-      <h2>Länder</h2>
+      <h2>
+Länder
+      </h2>
       <CountryList />
     </Container>
   </App>

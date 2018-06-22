@@ -7,7 +7,9 @@ import connectApollo from '../../lib/connectApollo';
 export default connectApollo(({ onSuccess, ...rest }) => (
   <App {...rest}>
     <Container>
-      <p>New currency</p>
+      <p>
+New currency
+      </p>
       <FormNewCurrency />
     </Container>
   </App>

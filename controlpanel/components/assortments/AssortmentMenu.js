@@ -1,5 +1,7 @@
 import React from 'react';
-import { compose, pure, withProps, withHandlers } from 'recompose';
+import {
+  compose, pure, withProps, withHandlers,
+} from 'recompose';
 import { withRouter } from 'next/router';
 import { Menu } from 'semantic-ui-react';
 

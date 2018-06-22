@@ -13,7 +13,9 @@ const WarehousingProviderList = ({ ...rest }) => (
       <Table.Row key={warehousingProvider._id}>
         <Table.Cell>
           <Link href={`/warehousing-providers/edit?_id=${warehousingProvider._id}`}>
-            <a href={`/warehousing-providers/edit?_id=${warehousingProvider._id}`}>{warehousingProvider._id}</a>
+            <a href={`/warehousing-providers/edit?_id=${warehousingProvider._id}`}>
+              {warehousingProvider._id}
+            </a>
           </Link>
         </Table.Cell>
         <Table.Cell>
@@ -21,7 +23,9 @@ const WarehousingProviderList = ({ ...rest }) => (
         </Table.Cell>
         {warehousingProvider.interface ? (
           <Table.Cell>
-            {warehousingProvider.interface.label} {warehousingProvider.interface.version}
+            {warehousingProvider.interface.label}
+            {' '}
+            {warehousingProvider.interface.version}
           </Table.Cell>
         ) : (
           <Table.Cell>
@@ -40,10 +44,18 @@ const WarehousingProviderList = ({ ...rest }) => (
     ))}
   >
     <Table.Row>
-      <Table.HeaderCell>Configuration</Table.HeaderCell>
-      <Table.HeaderCell>Type</Table.HeaderCell>
-      <Table.HeaderCell>Interface</Table.HeaderCell>
-      <Table.HeaderCell>Problems</Table.HeaderCell>
+      <Table.HeaderCell>
+Configuration
+      </Table.HeaderCell>
+      <Table.HeaderCell>
+Type
+      </Table.HeaderCell>
+      <Table.HeaderCell>
+Interface
+      </Table.HeaderCell>
+      <Table.HeaderCell>
+Problems
+      </Table.HeaderCell>
     </Table.Row>
   </InfiniteDataTable>
 );

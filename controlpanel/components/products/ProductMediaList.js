@@ -1,5 +1,7 @@
 import React from 'react';
-import { compose, pure, withHandlers, mapProps } from 'recompose';
+import {
+  compose, pure, withHandlers, mapProps,
+} from 'recompose';
 import { Item, Segment } from 'semantic-ui-react';
 import Dropzone from 'react-dropzone';
 import gql from 'graphql-tag';
@@ -22,7 +24,9 @@ const ProductMediaList = ({ items, onDrop, isEditingDisabled }) => (
       {!isEditingDisabled && (
         <Item>
           <Item.Content>
-            <Item.Header>Mediendatei hochladen</Item.Header>
+            <Item.Header>
+Mediendatei hochladen
+            </Item.Header>
             <Item.Description>
               <Dropzone onDrop={onDrop} />
             </Item.Description>

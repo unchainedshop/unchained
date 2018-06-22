@@ -11,7 +11,7 @@ import withFormSchema from '../../lib/withFormSchema';
 import withFormErrorHandlers from '../../lib/withFormErrorHandlers';
 
 const FormNewCountry = formProps => (
-  <AutoForm {...formProps} >
+  <AutoForm {...formProps}>
     <AutoField name="isoCode" />
     <ErrorsField />
     <SubmitField value="Add country" className="primary" />
@@ -45,12 +45,11 @@ export default compose(
     onSubmitSuccess: ({ router }) => ({ data: { createCountry } }) => {
       router.replace({ pathname: '/countries/edit', query: { _id: createCountry._id } });
     },
-    onSubmit: ({ createCountry, schema }) => ({ ...dirtyInput }) =>
-      createCountry({
-        variables: {
-          country: schema.clean(dirtyInput),
-        },
-      }),
+    onSubmit: ({ createCountry, schema }) => ({ ...dirtyInput }) => createCountry({
+      variables: {
+        country: schema.clean(dirtyInput),
+      },
+    }),
   }),
   withFormErrorHandlers,
   mapProps(({ createCountry, ...rest }) => ({

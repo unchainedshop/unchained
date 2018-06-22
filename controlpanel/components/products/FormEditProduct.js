@@ -1,6 +1,8 @@
 import React from 'react';
 import { toast } from 'react-toastify';
-import { compose, pure, mapProps, withHandlers } from 'recompose';
+import {
+  compose, pure, mapProps, withHandlers,
+} from 'recompose';
 import { Grid } from 'semantic-ui-react';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';

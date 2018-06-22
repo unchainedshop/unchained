@@ -15,7 +15,7 @@ import withFormErrorHandlers from '../../lib/withFormErrorHandlers';
 import FormTagInput from '../../lib/FormTagInput';
 
 const FormEditAssortment = ({ removeAssortment, ...formProps }) => (
-  <AutoForm {...formProps} >
+  <AutoForm {...formProps}>
     <Grid>
       <Grid.Row columns={1}>
         <Grid.Column width={12}>
@@ -96,13 +96,12 @@ export default compose(
     onSubmitSuccess: () => () => {
       toast('Assortment saved', { type: toast.TYPE.SUCCESS }); // eslint-disable-line
     },
-    onSubmit: ({ assortmentId, schema, updateAssortment }) =>
-      formData => updateAssortment({
-        variables: {
-          assortment: schema.clean(formData),
-          assortmentId,
-        },
-      }),
+    onSubmit: ({ assortmentId, schema, updateAssortment }) => formData => updateAssortment({
+      variables: {
+        assortment: schema.clean(formData),
+        assortmentId,
+      },
+    }),
   }),
   withFormErrorHandlers,
   mapProps(({

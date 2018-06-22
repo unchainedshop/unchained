@@ -11,7 +11,7 @@ import withFormSchema from '../../lib/withFormSchema';
 import withFormErrorHandlers from '../../lib/withFormErrorHandlers';
 
 const FormNewCurrency = formProps => (
-  <AutoForm {...formProps} >
+  <AutoForm {...formProps}>
     <AutoField name="isoCode" />
     <ErrorsField />
     <SubmitField value="Add currency" className="primary" />
@@ -45,12 +45,11 @@ export default compose(
     onSubmitSuccess: ({ router }) => ({ data: { createCurrency } }) => {
       router.replace({ pathname: '/currencies/edit', query: { _id: createCurrency._id } });
     },
-    onSubmit: ({ createCurrency, schema }) => ({ ...dirtyInput }) =>
-      createCurrency({
-        variables: {
-          currency: schema.clean(dirtyInput),
-        },
-      }),
+    onSubmit: ({ createCurrency, schema }) => ({ ...dirtyInput }) => createCurrency({
+      variables: {
+        currency: schema.clean(dirtyInput),
+      },
+    }),
   }),
   withFormErrorHandlers,
   mapProps(({ createCurrency, ...rest }) => ({

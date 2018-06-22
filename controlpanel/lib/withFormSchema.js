@@ -6,9 +6,9 @@ function isFunction(obj) {
 }
 
 export default schemaDefinition => withProps((props) => {
-  const schema = new SimpleSchema((isFunction(schemaDefinition) ?
-    schemaDefinition(props) :
-    schemaDefinition));
+  const schema = new SimpleSchema((isFunction(schemaDefinition)
+    ? schemaDefinition(props)
+    : schemaDefinition));
   return {
     schema,
   };

@@ -3,7 +3,9 @@ import { compose, pure, defaultProps } from 'recompose';
 import Moment from 'react-moment';
 import gql from 'graphql-tag';
 import React from 'react';
-import { Table, Loader, Label, Icon } from 'semantic-ui-react';
+import {
+  Table, Loader, Label, Icon,
+} from 'semantic-ui-react';
 import { graphql } from 'react-apollo';
 
 const defaultLogs = [];
@@ -12,9 +14,15 @@ const LogList = ({ data: { logs = defaultLogs, loading }, ...rest }) => (
   <Table {...rest}>
     <Table.Header>
       <Table.Row>
-        <Table.HeaderCell>Log date</Table.HeaderCell>
-        <Table.HeaderCell>Message</Table.HeaderCell>
-        <Table.HeaderCell>Context</Table.HeaderCell>
+        <Table.HeaderCell>
+Log date
+        </Table.HeaderCell>
+        <Table.HeaderCell>
+Message
+        </Table.HeaderCell>
+        <Table.HeaderCell>
+Context
+        </Table.HeaderCell>
       </Table.Row>
     </Table.Header>
     {loading && (
@@ -25,34 +33,42 @@ const LogList = ({ data: { logs = defaultLogs, loading }, ...rest }) => (
       </Table.Row>
     )}
     {logs.map(({
- _id, level, message, created, user, order,
-}) => (
-  <Table.Row key={_id}>
-    <Table.Cell singleLine>
-      <Moment format="DD.MM HH:mm:ss">{created}</Moment>
-    </Table.Cell>
-    <Table.Cell warning={level === 'warn'} error={level === 'error'}>
-      <code>
-        {message}
-      </code>
-    </Table.Cell>
-    <Table.Cell>
-      {user && (
-        <Link href={`/users/edit?_id=${user._id}`} passHref>
-          <Label horizontal basic>
-            <Icon name="user" /> {user.name.substr(0, 4)}...
-          </Label>
-        </Link>
-      )}
-      {order && (
-        <Link href={`/orders/view?_id=${order._id}`} passHref>
-          <Label horizontal basic>
-            <Icon name="cart" /> {(order.orderNumber || order._id).substr(0, 4)}...
-          </Label>
-        </Link>
-      )}
-    </Table.Cell>
-  </Table.Row>
+      _id, level, message, created, user, order,
+    }) => (
+      <Table.Row key={_id}>
+        <Table.Cell singleLine>
+          <Moment format="DD.MM HH:mm:ss">
+            {created}
+          </Moment>
+        </Table.Cell>
+        <Table.Cell warning={level === 'warn'} error={level === 'error'}>
+          <code>
+            {message}
+          </code>
+        </Table.Cell>
+        <Table.Cell>
+          {user && (
+          <Link href={`/users/edit?_id=${user._id}`} passHref>
+            <Label horizontal basic>
+              <Icon name="user" />
+              {' '}
+              {user.name.substr(0, 4)}
+...
+            </Label>
+          </Link>
+          )}
+          {order && (
+          <Link href={`/orders/view?_id=${order._id}`} passHref>
+            <Label horizontal basic>
+              <Icon name="cart" />
+              {' '}
+              {(order.orderNumber || order._id).substr(0, 4)}
+...
+            </Label>
+          </Link>
+          )}
+        </Table.Cell>
+      </Table.Row>
     ))}
   </Table>
 );

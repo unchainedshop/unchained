@@ -1,7 +1,11 @@
 import React from 'react';
 import { toast } from 'react-toastify';
-import { compose, pure, mapProps, withHandlers, withState } from 'recompose';
-import { Segment, Container, Menu, Button } from 'semantic-ui-react';
+import {
+  compose, pure, mapProps, withHandlers, withState,
+} from 'recompose';
+import {
+  Segment, Container, Menu, Button,
+} from 'semantic-ui-react';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 import AutoField from 'uniforms-semantic/AutoField';
@@ -53,7 +57,9 @@ const FormEditProductVariationTexts = ({
         <ErrorsField />
         <br />
         <SubmitField value="Speichern" className="primary" disabled={isEditingDisabled} />
-        <Button type="normal" onClick={onCancel}>Abbrechen</Button>
+        <Button type="normal" onClick={onCancel}>
+Abbrechen
+        </Button>
       </Segment>
     </AutoForm>
   </Container>
@@ -138,9 +144,9 @@ export default compose(
     const texts = languages.map((language) => {
       const foundTranslations = translatedProductVariationTexts
         .filter(translatedText => (translatedText.locale === language.isoCode));
-      const localizedTextForLocale = (foundTranslations.length > 0 ?
-        { ...(foundTranslations[0]) } :
-        { locale: language.isoCode }
+      const localizedTextForLocale = (foundTranslations.length > 0
+        ? { ...(foundTranslations[0]) }
+        : { locale: language.isoCode }
       );
       localizedTextForLocale.labels = localizedTextForLocale.labels || [];
       return localizedTextForLocale;

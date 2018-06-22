@@ -1,6 +1,8 @@
 import React from 'react';
 import { graphql } from 'react-apollo';
-import { compose, pure, withHandlers, withState, mapProps } from 'recompose';
+import {
+  compose, pure, withHandlers, withState, mapProps,
+} from 'recompose';
 import gql from 'graphql-tag';
 import { Image } from 'semantic-ui-react';
 import Dropzone from 'react-dropzone';
@@ -25,7 +27,8 @@ const UploadAvatar = ({ avatarUrl, handleChange }) => (
         shape="rounded"
       />
     </Dropzone>
-    <style jsx>{`
+    <style jsx>
+      {`
       .fixed-height {
         height: 150px;
       }

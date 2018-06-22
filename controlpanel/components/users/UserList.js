@@ -2,7 +2,9 @@ import { compose, withState, withHandlers } from 'recompose';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 import React from 'react';
-import { Table, Icon, Button, Loader, Label } from 'semantic-ui-react';
+import {
+  Table, Icon, Button, Loader, Label,
+} from 'semantic-ui-react';
 import InfiniteScroll from 'react-infinite-scroller';
 import Link from 'next/link';
 
@@ -13,13 +15,21 @@ const UserList = ({
     <Table.Header>
       <Table.Row>
         <Table.HeaderCell colSpan={3}>
-          Show guests? <input type="checkbox" checked={isShowGuests} onClick={toggleShowGuests} />
+          Show guests?
+          {' '}
+          <input type="checkbox" checked={isShowGuests} onClick={toggleShowGuests} />
         </Table.HeaderCell>
       </Table.Row>
       <Table.Row>
-        <Table.HeaderCell>E-Mail Address</Table.HeaderCell>
-        <Table.HeaderCell>Name</Table.HeaderCell>
-        <Table.HeaderCell>User Type</Table.HeaderCell>
+        <Table.HeaderCell>
+E-Mail Address
+        </Table.HeaderCell>
+        <Table.HeaderCell>
+Name
+        </Table.HeaderCell>
+        <Table.HeaderCell>
+User Type
+        </Table.HeaderCell>
       </Table.Row>
     </Table.Header>
 
@@ -38,34 +48,39 @@ const UserList = ({
         )}
       >
         {users.map(({
- name, email, _id, tags, isEmailVerified, isGuest,
-}) => (
-  <Table.Row key={_id}>
-    <Table.Cell>
-      <Link href={`/users/edit?_id=${_id}`}>
-        <a href={`/users/edit?_id=${_id}`}>{email}</a>
-      </Link>
-    </Table.Cell>
-    <Table.Cell>
-      {name}&nbsp;
-      {tags && tags.length > 0 && (
-        tags.map(tag => (
-          <Label key={tag} color="grey" horizontal>{tag}</Label>
-        ))
-      )}
-    </Table.Cell>
-    <Table.Cell>
-      {isGuest ? (
-        <Label color="orange" horizontal>
+          name, email, _id, tags, isEmailVerified, isGuest,
+        }) => (
+          <Table.Row key={_id}>
+            <Table.Cell>
+              <Link href={`/users/edit?_id=${_id}`}>
+                <a href={`/users/edit?_id=${_id}`}>
+                  {email}
+                </a>
+              </Link>
+            </Table.Cell>
+            <Table.Cell>
+              {name}
+&nbsp;
+              {tags && tags.length > 0 && (
+                tags.map(tag => (
+                  <Label key={tag} color="grey" horizontal>
+                    {tag}
+                  </Label>
+                ))
+              )}
+            </Table.Cell>
+            <Table.Cell>
+              {isGuest ? (
+                <Label color="orange" horizontal>
           Guest
-        </Label>
-      ) : (
-        <Label color={isEmailVerified ? 'green' : 'red'} horizontal>
-          {isEmailVerified ? 'Verified' : 'Unverified'}
-        </Label>
-      )}
-    </Table.Cell>
-  </Table.Row>
+                </Label>
+              ) : (
+                <Label color={isEmailVerified ? 'green' : 'red'} horizontal>
+                  {isEmailVerified ? 'Verified' : 'Unverified'}
+                </Label>
+              )}
+            </Table.Cell>
+          </Table.Row>
         ))}
       </InfiniteScroll>
     )}
@@ -81,7 +96,8 @@ const UserList = ({
               size="small"
               href="/users/new"
             >
-              <Icon name="plus" />New User
+              <Icon name="plus" />
+New User
             </Button>
           </Link>
         </Table.HeaderCell>

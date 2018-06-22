@@ -7,7 +7,9 @@ import connectApollo from '../../lib/connectApollo';
 export default connectApollo(({ onSuccess, ...rest }) => (
   <App {...rest}>
     <Container>
-      <p>New assortment</p>
+      <p>
+New assortment
+      </p>
       <FormNewAssortment />
     </Container>
   </App>

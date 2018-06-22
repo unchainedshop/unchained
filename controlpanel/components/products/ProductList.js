@@ -2,7 +2,9 @@ import { compose, pure, withState } from 'recompose';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 import React from 'react';
-import { Table, Icon, Button, Loader, Label } from 'semantic-ui-react';
+import {
+  Table, Icon, Button, Loader, Label,
+} from 'semantic-ui-react';
 import InfiniteScroll from 'react-infinite-scroller';
 import Link from 'next/link';
 
@@ -10,9 +12,15 @@ const ProductList = ({ products, loadMoreEntries, hasMore }) => (
   <Table celled>
     <Table.Header>
       <Table.Row>
-        <Table.HeaderCell>Name</Table.HeaderCell>
-        <Table.HeaderCell>Active</Table.HeaderCell>
-        <Table.HeaderCell>Tags</Table.HeaderCell>
+        <Table.HeaderCell>
+Name
+        </Table.HeaderCell>
+        <Table.HeaderCell>
+Active
+        </Table.HeaderCell>
+        <Table.HeaderCell>
+Tags
+        </Table.HeaderCell>
       </Table.Row>
     </Table.Header>
     {products && (
@@ -32,7 +40,9 @@ const ProductList = ({ products, loadMoreEntries, hasMore }) => (
           <Table.Row key={product._id}>
             <Table.Cell>
               <Link href={`/products/edit?_id=${product._id}`}>
-                <a href={`/products/edit?_id=${product._id}`}>{product.texts.title}</a>
+                <a href={`/products/edit?_id=${product._id}`}>
+                  {product.texts.title}
+                </a>
               </Link>
             </Table.Cell>
             <Table.Cell>
@@ -43,7 +53,9 @@ const ProductList = ({ products, loadMoreEntries, hasMore }) => (
             <Table.Cell>
               {product.tags && product.tags.length > 0 && (
                 product.tags.map(tag => (
-                  <Label key={tag} color="grey" horizontal>{tag}</Label>
+                  <Label key={tag} color="grey" horizontal>
+                    {tag}
+                  </Label>
                 ))
               )}
             </Table.Cell>
@@ -63,7 +75,9 @@ const ProductList = ({ products, loadMoreEntries, hasMore }) => (
               size="small"
               href="/products/new"
             >
-              <Icon name="plus" /> Add
+              <Icon name="plus" />
+              {' '}
+Add
             </Button>
           </Link>
         </Table.HeaderCell>

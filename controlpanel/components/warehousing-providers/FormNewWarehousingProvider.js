@@ -1,5 +1,7 @@
 import React from 'react';
-import { compose, mapProps, withHandlers, withState } from 'recompose';
+import {
+  compose, mapProps, withHandlers, withState,
+} from 'recompose';
 import gql from 'graphql-tag';
 import { withRouter } from 'next/router';
 import { graphql } from 'react-apollo';
@@ -13,7 +15,7 @@ import withFormErrorHandlers from '../../lib/withFormErrorHandlers';
 const defaultProviderType = 'PHYSICAL';
 
 const FormNewWarehousingProvider = ({ providerType, updateProviderType, ...formProps }) => (
-  <AutoForm {...formProps} >
+  <AutoForm {...formProps}>
     <AutoField name="type" onChange={updateProviderType} />
     {providerType && (
       <AutoField name="adapterKey" />
@@ -83,12 +85,13 @@ export default compose(
     onSubmitSuccess: ({ router }) => ({ data: { createWarehousingProvider } }) => {
       router.replace({ pathname: '/warehousing-providers/edit', query: { _id: createWarehousingProvider._id } });
     },
-    onSubmit: ({ createWarehousingProvider, schema }) => ({ ...dirtyInput }) =>
-      createWarehousingProvider({
-        variables: {
-          warehousingProvider: schema.clean(dirtyInput),
-        },
-      }),
+    onSubmit: ({
+      createWarehousingProvider, schema,
+    }) => ({ ...dirtyInput }) => createWarehousingProvider({
+      variables: {
+        warehousingProvider: schema.clean(dirtyInput),
+      },
+    }),
   }),
   withFormErrorHandlers,
   mapProps(({ createWarehousingProvider, ...rest }) => ({

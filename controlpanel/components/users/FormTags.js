@@ -1,4 +1,6 @@
-import { compose, pure, mapProps, withHandlers } from 'recompose';
+import {
+  compose, pure, mapProps, withHandlers,
+} from 'recompose';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 import React from 'react';
@@ -14,7 +16,7 @@ import FormTagInput from '../../lib/FormTagInput';
 
 const FormTags = ({ userId, ...formProps }) => (
   <Segment>
-    <AutoForm showInlineError {...formProps} >
+    <AutoForm showInlineError {...formProps}>
       <Grid stackable columns={3}>
         <Grid.Row columns={1}>
           <Grid.Column textAlign="center">
@@ -66,13 +68,12 @@ export default compose(
   }),
   withFormModel(({ data: { user } }) => (user && user.tags) || {}),
   withHandlers({
-    onSubmit: ({ userId, mutate, schema }) => ({ ...dirtyInput }) =>
-      mutate({
-        variables: {
-          userId,
-          ...schema.clean(dirtyInput),
-        },
-      }),
+    onSubmit: ({ userId, mutate, schema }) => ({ ...dirtyInput }) => mutate({
+      variables: {
+        userId,
+        ...schema.clean(dirtyInput),
+      },
+    }),
   }),
   withFormErrorHandlers,
   mapProps(({

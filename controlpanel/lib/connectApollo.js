@@ -23,15 +23,19 @@ function getComponentDisplayName(Component) {
 
 export default ComposedComponent => class WithData extends React.Component {
     static displayName = `WithData(${getComponentDisplayName(ComposedComponent)})`
+
     static propTypes = {
       serverState: PropTypes.object.isRequired, //eslint-disable-line
     }
 
     constructor(props) {
       super(props);
+
+      const { serverState, headers } = this.props;
+
       this.apollo = initApollo(
-        this.props.serverState.apollo.data,
-        this.props.headers,
+        serverState.apollo.data,
+        headers,
         () => parseCookies({}).token,
       );
       onTokenChange(async ({ token, tokenExpires }) => {

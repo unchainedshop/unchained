@@ -1,6 +1,8 @@
 import React from 'react';
 import { toast } from 'react-toastify';
-import { compose, pure, mapProps, withHandlers, withState } from 'recompose';
+import {
+  compose, pure, mapProps, withHandlers, withState,
+} from 'recompose';
 import { Segment, Container, Menu } from 'semantic-ui-react';
 import gql from 'graphql-tag';
 import dynamic from 'next/dynamic';
@@ -201,9 +203,9 @@ export default compose(
     const texts = languages.map((language) => {
       const foundTranslations = translatedProductTexts
         .filter(translatedText => (translatedText.locale === language.isoCode));
-      const localizedTextForLocale = (foundTranslations.length > 0 ?
-        { ...(foundTranslations[0]) } :
-        { locale: language.isoCode }
+      const localizedTextForLocale = (foundTranslations.length > 0
+        ? { ...(foundTranslations[0]) }
+        : { locale: language.isoCode }
       );
       localizedTextForLocale.labels = localizedTextForLocale.labels || [];
       return localizedTextForLocale;

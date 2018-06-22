@@ -20,7 +20,9 @@ const ProductVariationList = ({ items, isEditingDisabled, productId }) => (
         >
           {options && (
             <Segment>
-              <h3>Options</h3>
+              <h3>
+Options
+              </h3>
               <List celled>
                 {options && options.map(({ ...option }) => (
                   <ProductVariationOptionItem

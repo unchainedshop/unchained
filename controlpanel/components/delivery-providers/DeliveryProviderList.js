@@ -13,7 +13,9 @@ const DeliveryProviderList = ({ ...rest }) => (
       <Table.Row key={deliveryProvider._id}>
         <Table.Cell>
           <Link href={`/delivery-providers/edit?_id=${deliveryProvider._id}`}>
-            <a href={`/delivery-providers/edit?_id=${deliveryProvider._id}`}>{deliveryProvider._id}</a>
+            <a href={`/delivery-providers/edit?_id=${deliveryProvider._id}`}>
+              {deliveryProvider._id}
+            </a>
           </Link>
         </Table.Cell>
         <Table.Cell>
@@ -21,7 +23,9 @@ const DeliveryProviderList = ({ ...rest }) => (
         </Table.Cell>
         {deliveryProvider.interface ? (
           <Table.Cell>
-            {deliveryProvider.interface.label} {deliveryProvider.interface.version}
+            {deliveryProvider.interface.label}
+            {' '}
+            {deliveryProvider.interface.version}
           </Table.Cell>
         ) : (
           <Table.Cell>
@@ -40,10 +44,18 @@ const DeliveryProviderList = ({ ...rest }) => (
     ))}
   >
     <Table.Row>
-      <Table.HeaderCell>Configuration</Table.HeaderCell>
-      <Table.HeaderCell>Type</Table.HeaderCell>
-      <Table.HeaderCell>Interface</Table.HeaderCell>
-      <Table.HeaderCell>Problems</Table.HeaderCell>
+      <Table.HeaderCell>
+Configuration
+      </Table.HeaderCell>
+      <Table.HeaderCell>
+Type
+      </Table.HeaderCell>
+      <Table.HeaderCell>
+Interface
+      </Table.HeaderCell>
+      <Table.HeaderCell>
+Problems
+      </Table.HeaderCell>
     </Table.Row>
   </InfiniteDataTable>
 );

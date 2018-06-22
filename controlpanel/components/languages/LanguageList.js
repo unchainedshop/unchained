@@ -15,7 +15,9 @@ const LanguageList = ({ changeBaseLanguage, ...rest }) => (
       <Table.Row key={language._id}>
         <Table.Cell>
           <Link href={`/languages/edit?_id=${language._id}`}>
-            <a href={`/languages/edit?_id=${language._id}`}>{language.isoCode}</a>
+            <a href={`/languages/edit?_id=${language._id}`}>
+              {language.isoCode}
+            </a>
           </Link>
         </Table.Cell>
         <Table.Cell>
@@ -25,7 +27,9 @@ const LanguageList = ({ changeBaseLanguage, ...rest }) => (
         </Table.Cell>
         <Table.Cell>
           {language.isBase ? (
-            <b>Base language</b>
+            <b>
+Base language
+            </b>
           ) : (
             <Button
               basic
@@ -40,8 +44,12 @@ const LanguageList = ({ changeBaseLanguage, ...rest }) => (
     ))}
   >
     <Table.Row>
-      <Table.HeaderCell>Name</Table.HeaderCell>
-      <Table.HeaderCell>Activated?</Table.HeaderCell>
+      <Table.HeaderCell>
+Name
+      </Table.HeaderCell>
+      <Table.HeaderCell>
+Activated?
+      </Table.HeaderCell>
       <Table.HeaderCell />
     </Table.Row>
   </InfiniteDataTable>
@@ -77,8 +85,9 @@ export default compose(
     },
   }),
   withHandlers({
-    changeBaseLanguage: ({ mutate }) => (event, element) =>
-      mutate({ variables: { languageId: element.name } }),
+    changeBaseLanguage: ({
+      mutate,
+    }) => (event, element) => mutate({ variables: { languageId: element.name } }),
   }),
   pure,
 )(LanguageList);

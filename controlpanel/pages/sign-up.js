@@ -1,6 +1,8 @@
 import React from 'react';
 import Link from 'next/link';
-import { Grid, Segment, Button, Container } from 'semantic-ui-react';
+import {
+  Grid, Segment, Button, Container,
+} from 'semantic-ui-react';
 import App from '../components/App';
 import FormSignUp from '../components/account/FormSignUp';
 import connectApollo from '../lib/connectApollo';
@@ -9,7 +11,9 @@ export default connectApollo(({ ...rest }) => (
   <App {...rest} allowAnonymousAccess>
     <Container>
       <Segment>
-        <h3 className="title">Sign up</h3>
+        <h3 className="title">
+Sign up
+        </h3>
         <FormSignUp />
       </Segment>
       <Segment>

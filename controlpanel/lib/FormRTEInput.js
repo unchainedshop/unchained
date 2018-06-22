@@ -82,8 +82,7 @@ FormRTEInput.displayName = 'FormRTEInput';
 
 export default compose(
   connectField,
-  withState('rteValue', 'updateRichtext', ({ value }) =>
-    (value ? RichTextEditor.createValueFromString(value, 'markdown') : RichTextEditor.createEmptyValue())),
+  withState('rteValue', 'updateRichtext', ({ value }) => (value ? RichTextEditor.createValueFromString(value, 'markdown') : RichTextEditor.createEmptyValue())),
   withHandlers({
     onChange: ({ onChange, updateRichtext }) => (value) => {
       updateRichtext(value);

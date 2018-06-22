@@ -13,7 +13,9 @@ const PaymentProviderList = ({ ...rest }) => (
       <Table.Row key={paymentProvider._id}>
         <Table.Cell>
           <Link href={`/payment-providers/edit?_id=${paymentProvider._id}`}>
-            <a href={`/payment-providers/edit?_id=${paymentProvider._id}`}>{paymentProvider._id}</a>
+            <a href={`/payment-providers/edit?_id=${paymentProvider._id}`}>
+              {paymentProvider._id}
+            </a>
           </Link>
         </Table.Cell>
         <Table.Cell>
@@ -36,10 +38,18 @@ const PaymentProviderList = ({ ...rest }) => (
     ))}
   >
     <Table.Row>
-      <Table.HeaderCell>Configuration</Table.HeaderCell>
-      <Table.HeaderCell>Type</Table.HeaderCell>
-      <Table.HeaderCell>Interface</Table.HeaderCell>
-      <Table.HeaderCell>Problems</Table.HeaderCell>
+      <Table.HeaderCell>
+Configuration
+      </Table.HeaderCell>
+      <Table.HeaderCell>
+Type
+      </Table.HeaderCell>
+      <Table.HeaderCell>
+Interface
+      </Table.HeaderCell>
+      <Table.HeaderCell>
+Problems
+      </Table.HeaderCell>
     </Table.Row>
   </InfiniteDataTable>
 );

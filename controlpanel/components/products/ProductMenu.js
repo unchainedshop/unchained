@@ -1,4 +1,6 @@
-import { compose, pure, withProps, withHandlers } from 'recompose';
+import {
+  compose, pure, withProps, withHandlers,
+} from 'recompose';
 import { withRouter } from 'next/router';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';

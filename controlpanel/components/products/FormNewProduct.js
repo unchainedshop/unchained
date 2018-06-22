@@ -1,5 +1,7 @@
 import React from 'react';
-import { compose, pure, mapProps, withHandlers } from 'recompose';
+import {
+  compose, pure, mapProps, withHandlers,
+} from 'recompose';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 import AutoField from 'uniforms-semantic/AutoField';
@@ -55,12 +57,11 @@ export default compose(
     onSubmitSuccess: ({ onSuccess }) => ({ data: { createProduct } }) => {
       onSuccess(createProduct._id);
     },
-    onSubmit: ({ mutate, schema }) => ({ ...dirtyInput }) =>
-      mutate({
-        variables: {
-          product: schema.clean(dirtyInput),
-        },
-      }),
+    onSubmit: ({ mutate, schema }) => ({ ...dirtyInput }) => mutate({
+      variables: {
+        product: schema.clean(dirtyInput),
+      },
+    }),
   }),
   withFormErrorHandlers,
   mapProps(({ onSuccess, mutate, ...rest }) => ({

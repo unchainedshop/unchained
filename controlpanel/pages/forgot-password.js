@@ -1,6 +1,8 @@
 import React from 'react';
 import Link from 'next/link';
-import { Grid, Segment, Button, Container } from 'semantic-ui-react';
+import {
+  Grid, Segment, Button, Container,
+} from 'semantic-ui-react';
 import App from '../components/App';
 import FormRecoverPassword from '../components/account/FormRecoverPassword';
 import connectApollo from '../lib/connectApollo';
@@ -9,7 +11,9 @@ export default connectApollo(({ ...rest }) => (
   <App {...rest} allowAnonymousAccess>
     <Container>
       <Segment>
-        <h3 className="title">Reset password</h3>
+        <h3 className="title">
+Reset password
+        </h3>
         <FormRecoverPassword />
       </Segment>
       <Segment>

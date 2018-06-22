@@ -15,7 +15,7 @@ const ProductVariationOptionItem = ({
         <Button
           onClick={toggleEditing}
         >
-            Bearbeiten
+            Edit
         </Button>
       )}
       {!isEditing && !isEditingDisabled && (
@@ -28,8 +28,12 @@ const ProductVariationOptionItem = ({
       )}
     </List.Content>
     <List.Content>
-      <List.Header>{value}</List.Header>
-      <List.Description>{texts && `${texts.title}`}</List.Description>
+      <List.Header>
+        {value}
+      </List.Header>
+      <List.Description>
+        {texts && `${texts.title}`}
+      </List.Description>
       {isEditing ? (
         <FormEditProductVariationTexts
           productVariationId={productVariationId}

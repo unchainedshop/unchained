@@ -9,12 +9,16 @@ const OrderDownloads = ({
 }) => (
   <Segment secondary>
     <Label horizontal attached="top">
-      <Label.Detail>Generated Documents</Label.Detail>
+      <Label.Detail>
+Generated Documents
+      </Label.Detail>
     </Label>
     <Table celled>
       <Table.Header>
         <Table.Row>
-          <Table.HeaderCell>File</Table.HeaderCell>
+          <Table.HeaderCell>
+File
+          </Table.HeaderCell>
         </Table.Row>
       </Table.Header>
       <Table.Body>

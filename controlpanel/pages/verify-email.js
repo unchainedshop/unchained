@@ -32,15 +32,22 @@ export default connectApollo(withRouter(({ router, ...rest }) => (
       )}
       {router.query.expired ? (
         <Message negative>
-          <Message.Header>Token expired</Message.Header>
-          <p>Dieser Verifizierungstoken ist nicht mehr gültig,
+          <Message.Header>
+Token expired
+          </Message.Header>
+          <p>
+Dieser Verifizierungstoken ist nicht mehr gültig,
           melde dich an und lass dir einen neuen zusenden
           </p>
         </Message>
       ) : (
         <Message>
-          <Message.Header>Verifizierung...</Message.Header>
-          <p>Du wirst gleich weitergeleitet...</p>
+          <Message.Header>
+Verifizierung...
+          </Message.Header>
+          <p>
+Du wirst gleich weitergeleitet...
+          </p>
         </Message>
       )}
     </Container>

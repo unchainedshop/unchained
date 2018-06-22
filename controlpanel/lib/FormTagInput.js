@@ -1,5 +1,7 @@
 import React from 'react';
-import { compose, withState, withHandlers, mapProps } from 'recompose';
+import {
+  compose, withState, withHandlers, mapProps,
+} from 'recompose';
 import classnames from 'classnames';
 import connectField from 'uniforms/connectField';
 import filterDOMProps from 'uniforms/filterDOMProps';
@@ -71,10 +73,12 @@ export default compose(
   connectField,
   withState('ownOptions', 'updateOwnOptions', []),
   withHandlers({
-    onChange: ({ onChange }) => (event, { value }) =>
-      onChange(value),
-    onAddItem: ({ ownOptions, updateOwnOptions }) => (event, { value }) =>
-      updateOwnOptions([{ key: value, text: value, value }, ...ownOptions]),
+    onChange: ({ onChange }) => (event, { value }) => onChange(value),
+    onAddItem: ({
+      ownOptions, updateOwnOptions,
+    }) => (
+      event, { value },
+    ) => updateOwnOptions([{ key: value, text: value, value }, ...ownOptions]),
   }),
   mapProps(({
     options, ownOptions, updateOwnOptions, value: values,

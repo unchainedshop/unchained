@@ -16,7 +16,9 @@ const OrderList = ({ isShowCarts, toggleShowCarts, ...rest }) => (
       <Table.Row key={order._id}>
         <Table.Cell>
           {order.ordered ? (
-            <Moment format="l HH:mm">{order.ordered}</Moment>
+            <Moment format="l HH:mm">
+              {order.ordered}
+            </Moment>
           ) : (
             ''
           )}
@@ -25,10 +27,19 @@ const OrderList = ({ isShowCarts, toggleShowCarts, ...rest }) => (
           <Link href={`/orders/view?_id=${order._id}`}>
             <a href={`/orders/view?_id=${order._id}`}>
               {order.orderNumber ? (
-                <React.Fragment><b>{order.orderNumber || 'Cart'}</b><small>({order._id})</small></React.Fragment>
-            ) : (
-              order._id
-            )}
+                <React.Fragment>
+                  <b>
+                    {order.orderNumber || 'Cart'}
+                  </b>
+                  <small>
+(
+                    {order._id}
+)
+                  </small>
+                </React.Fragment>
+              ) : (
+                order._id
+              )}
             </a>
           </Link>
         </Table.Cell>
@@ -46,15 +57,27 @@ const OrderList = ({ isShowCarts, toggleShowCarts, ...rest }) => (
   >
     <Table.Row>
       <Table.HeaderCell colSpan={3}>
-        Show carts? <input type="checkbox" checked={isShowCarts} onClick={toggleShowCarts} />
+        Show carts?
+        {' '}
+        <input type="checkbox" checked={isShowCarts} onClick={toggleShowCarts} />
       </Table.HeaderCell>
     </Table.Row>
     <Table.Row>
-      <Table.HeaderCell>Order date</Table.HeaderCell>
-      <Table.HeaderCell>Order #</Table.HeaderCell>
-      <Table.HeaderCell>User</Table.HeaderCell>
-      <Table.HeaderCell>Total</Table.HeaderCell>
-      <Table.HeaderCell>Status</Table.HeaderCell>
+      <Table.HeaderCell>
+Order date
+      </Table.HeaderCell>
+      <Table.HeaderCell>
+Order #
+      </Table.HeaderCell>
+      <Table.HeaderCell>
+User
+      </Table.HeaderCell>
+      <Table.HeaderCell>
+Total
+      </Table.HeaderCell>
+      <Table.HeaderCell>
+Status
+      </Table.HeaderCell>
     </Table.Row>
   </InfiniteDataTable>
 );

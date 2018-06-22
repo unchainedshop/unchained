@@ -1,5 +1,7 @@
 import React from 'react';
-import { compose, pure, mapProps, withHandlers } from 'recompose';
+import {
+  compose, pure, mapProps, withHandlers,
+} from 'recompose';
 import { withApollo } from 'react-apollo';
 import AutoField from 'uniforms-semantic/AutoField';
 import SubmitField from 'uniforms-semantic/SubmitField';
@@ -13,7 +15,7 @@ const FormSignIn = ({
   loginType, changeLoginType, ...formProps
 }) => (
   <div>
-    <AutoForm {...formProps} >
+    <AutoForm {...formProps}>
       <AutoField id="email" name="email" />
       <AutoField name="password" type="password" />
       <ErrorsField />
@@ -35,10 +37,9 @@ export default compose(
     },
   }),
   withHandlers({
-    onSubmit: ({ client }) => ({ email, password }) =>
-      // disable hashing so we have a chance to login with any service server-side
-      // despite a shared control panel
-      loginWithPassword({ email, password, disableHashing: true }, client),
+    onSubmit: ({ client }) => ({
+      email, password,
+    }) => loginWithPassword({ email, password, disableHashing: true }, client),
   }),
   withFormErrorHandlers,
   mapProps(({ client, ...rest }) => ({ ...rest })),

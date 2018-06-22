@@ -1,7 +1,9 @@
 import { compose, withState } from 'recompose';
 import { graphql } from 'react-apollo';
 import React from 'react';
-import { Table, Icon, Button, Loader } from 'semantic-ui-react';
+import {
+  Table, Icon, Button, Loader,
+} from 'semantic-ui-react';
 import InfiniteScroll from 'react-infinite-scroller';
 import Link from 'next/link';
 
@@ -43,7 +45,9 @@ export default ({
                 size="small"
                 href={createPath}
               >
-                <Icon name="plus" /> Hinzufügen
+                <Icon name="plus" />
+                {' '}
+Hinzufügen
               </Button>
             </Link>
           )}

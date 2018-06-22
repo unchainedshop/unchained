@@ -1,6 +1,8 @@
 import React from 'react';
 import { withRouter } from 'next/router';
-import { compose, pure, mapProps, withHandlers } from 'recompose';
+import {
+  compose, pure, mapProps, withHandlers,
+} from 'recompose';
 import { withApollo } from 'react-apollo';
 import AutoField from 'uniforms-semantic/AutoField';
 import SubmitField from 'uniforms-semantic/SubmitField';
@@ -11,7 +13,7 @@ import withFormErrorHandlers from '../../lib/withFormErrorHandlers';
 import withFormSchema from '../../lib/withFormSchema';
 
 const FormResetPassword = formProps => (
-  <AutoForm {...formProps} >
+  <AutoForm {...formProps}>
     <AutoField name="password" type="password" />
     <AutoField name="passwordConfirm" type="password" />
     <ErrorsField />
@@ -31,7 +33,7 @@ export default compose(
       type: String,
       label: 'Neues Passwort bestätigen',
       custom() {
-        if (this.obj.password !== this.value) {
+        if (this.obj.password !== this.value) { // eslint-disable-line
           return 'mismatch';
         }
         return null;
@@ -39,8 +41,9 @@ export default compose(
     },
   }),
   withHandlers({
-    onSubmit: ({ client, router: { query: { token } } }) => ({ password: newPassword }) =>
-      resetPassword({ newPassword, token }, client),
+    onSubmit: ({
+      client, router: { query: { token } },
+    }) => ({ password: newPassword }) => resetPassword({ newPassword, token }, client),
   }),
   withFormErrorHandlers,
   mapProps(({ client, ...rest }) => ({ ...rest })),

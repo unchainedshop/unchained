@@ -10,7 +10,9 @@ const OrderPositionList = ({
 }) => (
   <Segment secondary>
     <Label horizontal attached="top">
-      <Label.Detail>Price Calculation</Label.Detail>
+      <Label.Detail>
+Price Calculation
+      </Label.Detail>
     </Label>
     <Table celled>
       <Table.Body>
@@ -60,7 +62,7 @@ const OrderPositionList = ({
           <Table.HeaderCell>
             Total (Net price)
           </Table.HeaderCell>
-          <Table.HeaderCell >
+          <Table.HeaderCell>
             <FormattedMoney money={net} />
           </Table.HeaderCell>
         </Table.Row>

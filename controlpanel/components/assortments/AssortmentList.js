@@ -17,7 +17,9 @@ const AssortmentList = ({
       <Table.Row key={assortment._id}>
         <Table.Cell>
           <Link href={`/assortments/edit?_id=${assortment._id}`}>
-            <a href={`/assortments/edit?_id=${assortment._id}`}>{assortment.texts.title}</a>
+            <a href={`/assortments/edit?_id=${assortment._id}`}>
+              {assortment.texts.title}
+            </a>
           </Link>
         </Table.Cell>
         <Table.Cell>
@@ -27,7 +29,9 @@ const AssortmentList = ({
         </Table.Cell>
         <Table.Cell>
           {assortment.isBase ? (
-            <b>Root</b>
+            <b>
+Root
+            </b>
           ) : (
             <Button
               basic
@@ -43,13 +47,21 @@ const AssortmentList = ({
   >
     <Table.Row>
       <Table.HeaderCell colSpan={3}>
-        Show non-root nodes? <input type="checkbox" checked={isShowLeafNodes} onClick={toggleShowLeafNodes} />
+        Show non-root nodes?
+        {' '}
+        <input type="checkbox" checked={isShowLeafNodes} onClick={toggleShowLeafNodes} />
       </Table.HeaderCell>
     </Table.Row>
     <Table.Row>
-      <Table.HeaderCell>Name</Table.HeaderCell>
-      <Table.HeaderCell>Active?</Table.HeaderCell>
-      <Table.HeaderCell>Base?</Table.HeaderCell>
+      <Table.HeaderCell>
+Name
+      </Table.HeaderCell>
+      <Table.HeaderCell>
+Active?
+      </Table.HeaderCell>
+      <Table.HeaderCell>
+Base?
+      </Table.HeaderCell>
     </Table.Row>
   </InfiniteDataTable>
 );
@@ -86,9 +98,11 @@ export default compose(
     },
   }),
   withHandlers({
-    changeBaseAssortment: ({ mutate }) => (event, element) =>
-      mutate({ variables: { assortmentId: element.name } }),
-    toggleShowLeafNodes: ({ isShowLeafNodes, setShowLeafNodes }) => () =>
-      setShowLeafNodes(!isShowLeafNodes),
+    changeBaseAssortment: ({
+      mutate,
+    }) => (event, element) => mutate({ variables: { assortmentId: element.name } }),
+    toggleShowLeafNodes: ({
+      isShowLeafNodes, setShowLeafNodes,
+    }) => () => setShowLeafNodes(!isShowLeafNodes),
   }),
 )(AssortmentList);

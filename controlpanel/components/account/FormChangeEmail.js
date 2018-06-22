@@ -1,5 +1,7 @@
 import React from 'react';
-import { compose, pure, mapProps, withHandlers } from 'recompose';
+import {
+  compose, pure, mapProps, withHandlers,
+} from 'recompose';
 import { graphql, withApollo } from 'react-apollo';
 import gql from 'graphql-tag';
 import { Message, Button } from 'semantic-ui-react';
@@ -15,12 +17,16 @@ import withFormErrorHandlers from '../../lib/withFormErrorHandlers';
 const FormChangeEmail = ({
   disableResendVerificationEmail, resendVerification, isEmailVerified, ...formProps
 }) => (
-  <AutoForm {...formProps} >
+  <AutoForm {...formProps}>
     <AutoField name="email" />
     {isEmailVerified ? (
       <Message positive>
-        <Message.Header>E-Mail address verified</Message.Header>
-        <p>This E-Mail address has been successfully verified.</p>
+        <Message.Header>
+E-Mail address verified
+        </Message.Header>
+        <p>
+This E-Mail address has been successfully verified.
+        </p>
       </Message>
     ) : (
       <Message warning visible>
@@ -32,7 +38,9 @@ const FormChangeEmail = ({
             </Button>
           )}
         </Message.Header>
-        <p>Resend and then check your inbox</p>
+        <p>
+Resend and then check your inbox
+        </p>
       </Message>
     )}
     <ErrorsField />
@@ -70,15 +78,15 @@ export default compose(
     email: (user && user.email) || null,
   })),
   withHandlers({
-    onSubmit: ({ mutate, schema, userId }) => ({ ...dirtyInput }) =>
-      mutate({
-        variables: {
-          ...schema.clean(dirtyInput),
-          userId,
-        },
-      }),
-    resendVerification: ({ client, model: { email } }) => () =>
-      resendVerificationEmail({ email }, client),
+    onSubmit: ({ mutate, schema, userId }) => ({ ...dirtyInput }) => mutate({
+      variables: {
+        ...schema.clean(dirtyInput),
+        userId,
+      },
+    }),
+    resendVerification: ({ client, model: { email } }) => () => resendVerificationEmail({
+      email,
+    }, client),
 
   }),
   withFormErrorHandlers,
@@ -87,7 +95,6 @@ export default compose(
     client,
     data: { user: { isEmailVerified = false } = {} },
     ...rest
-  }) =>
-    ({ isEmailVerified, ...rest })),
+  }) => ({ isEmailVerified, ...rest })),
   pure,
 )(FormChangeEmail);

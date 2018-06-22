@@ -199,7 +199,10 @@ export default () => {
       const productIds = childAssortments
         .reduce((accumulator, childAssortment) => {
           const assortment = childAssortment.child();
-          return accumulator.concat(assortment.collectProductIdCache());
+          if (assortment) {
+            return accumulator.concat(assortment.collectProductIdCache());
+          }
+          return accumulator;
         }, []);
 
       return [...ownProductIds, ...productIds];
@@ -213,7 +216,7 @@ export default () => {
 
       const productIds = [...(new Set([...ownProductIds, ...childProductIds]))];
 
-      if (eqSet(new Set(productIds), new Set(this._cachedProductIds))) {
+      if (eqSet(new Set(productIds), new Set(this._cachedProductIds))) { // eslint-disable-line
         return;
       }
 
@@ -224,7 +227,8 @@ export default () => {
       linkedAssortments
         .filter(({ childAssortmentId }) => (childAssortmentId === this._id))
         .forEach((assortmentLink) => {
-          assortmentLink.parent().invalidateProductIdCache(productIds);
+          const parent = assortmentLink.parent();
+          if (parent) parent.invalidateProductIdCache(productIds);
         });
     },
   });

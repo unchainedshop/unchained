@@ -1,12 +1,16 @@
 import React from 'react';
-import { compose, pure, withHandlers, mapProps } from 'recompose';
+import {
+  compose, pure, withHandlers, mapProps,
+} from 'recompose';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 
 const BtnPublishProduct = ({
   onClick, Component = 'button', children, ...rest
 }) => (
-  <Component onClick={onClick} {...rest}>{children}</Component>
+  <Component onClick={onClick} {...rest}>
+    {children}
+  </Component>
 );
 
 export default compose(

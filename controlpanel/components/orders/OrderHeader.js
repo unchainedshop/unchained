@@ -1,4 +1,6 @@
-import { compose, mapProps, withHandlers, pure } from 'recompose';
+import {
+  compose, mapProps, withHandlers, pure,
+} from 'recompose';
 import gql from 'graphql-tag';
 import Link from 'next/link';
 import { graphql } from 'react-apollo';
@@ -22,12 +24,26 @@ const OrderHeader = ({
   fullfilled, currency, address, statusColor, confirmOrder, user,
 }) => [
   <Menu fluid attached="top" borderless key="header-title">
-    <Menu.Item header>{orderNumber || 'Cart'}&nbsp;<small>({_id})</small></Menu.Item>
-    <Menu.Item><Label color={statusColor} horizontal>{status}</Label></Menu.Item>
+    <Menu.Item header>
+      {orderNumber || 'Cart'}
+&nbsp;
+      <small>
+(
+        {_id}
+)
+      </small>
+    </Menu.Item>
+    <Menu.Item>
+      <Label color={statusColor} horizontal>
+        {status}
+      </Label>
+    </Menu.Item>
     <Menu.Menu position="right">
       <Dropdown item icon="wrench" simple>
         <Dropdown.Menu>
-          <Dropdown.Header>Options</Dropdown.Header>
+          <Dropdown.Header>
+Options
+          </Dropdown.Header>
           <BtnRemoveOrder
             orderId={_id}
             Component={Dropdown.Item}
@@ -55,13 +71,17 @@ const OrderHeader = ({
             <List.Item>
               <List.Icon name="money" />
               <List.Content>
-              Currency: {currency && currency.isoCode}
+              Currency:
+                {' '}
+                {currency && currency.isoCode}
               </List.Content>
             </List.Item>
             <List.Item>
               <List.Icon name="world" />
               <List.Content>
-              Shop: {country && `${country.flagEmoji} (${country.isoCode})`}
+              Shop:
+                {' '}
+                {country && `${country.flagEmoji} (${country.isoCode})`}
               </List.Content>
             </List.Item>
             {user && (
@@ -70,7 +90,9 @@ const OrderHeader = ({
                 <List.Content>
                 User:&nbsp;
                   <Link href={`/users/edit?_id=${user._id}`}>
-                    <a href={`/users/edit?_id=${user._id}`}>{`${user.name || user._id}`}</a>
+                    <a href={`/users/edit?_id=${user._id}`}>
+                      {`${user.name || user._id}`}
+                    </a>
                   </Link>
                 </List.Content>
               </List.Item>
@@ -79,7 +101,9 @@ const OrderHeader = ({
               <List.Item>
                 <List.Icon name="mail" />
                 <List.Content>
-                E-Mail: {`${contact.emailAddress}`}
+                E-Mail:
+                  {' '}
+                  {`${contact.emailAddress}`}
                 </List.Content>
               </List.Item>
             )}
@@ -97,25 +121,49 @@ const OrderHeader = ({
             <List.Item>
               <List.Icon name="add to calendar" />
               <List.Content>
-              Created: {created ? (<Moment format="lll">{created}</Moment>) : 'n/a'}
+              Created:
+                {' '}
+                {created ? (
+                  <Moment format="lll">
+                    {created}
+                  </Moment>
+                ) : 'n/a'}
               </List.Content>
             </List.Item>
             <List.Item>
               <List.Icon name="plus cart" />
               <List.Content>
-              Ordered: {ordered ? (<Moment format="lll">{ordered}</Moment>) : 'n/a'}
+              Ordered:
+                {' '}
+                {ordered ? (
+                  <Moment format="lll">
+                    {ordered}
+                  </Moment>
+                ) : 'n/a'}
               </List.Content>
             </List.Item>
             <List.Item>
               <List.Icon name="thumbs outline up" />
               <List.Content>
-              Confirmed: {confirmed ? (<Moment format="lll">{confirmed}</Moment>) : 'n/a'}
+              Confirmed:
+                {' '}
+                {confirmed ? (
+                  <Moment format="lll">
+                    {confirmed}
+                  </Moment>
+                ) : 'n/a'}
               </List.Content>
             </List.Item>
             <List.Item>
               <List.Icon name="checkmark box" />
               <List.Content>
-              Fullfilled: {fullfilled ? (<Moment format="lll">{fullfilled}</Moment>) : 'n/a'}
+              Fullfilled:
+                {' '}
+                {fullfilled ? (
+                  <Moment format="lll">
+                    {fullfilled}
+                  </Moment>
+                ) : 'n/a'}
               </List.Content>
             </List.Item>
           </List>

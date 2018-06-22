@@ -47,7 +47,8 @@ const Phone = ({
       {(icon || iconLeft) && (
         <i className={`${icon || iconLeft} icon`} {...iconProps} />
       )}
-      <style jsx global>{`
+      <style jsx global>
+        {`
         .rrui__input
         {
           height : calc(0.3rem * 9) !important;

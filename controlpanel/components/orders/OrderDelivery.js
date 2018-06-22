@@ -3,7 +3,9 @@ import gql from 'graphql-tag';
 import Moment from 'react-moment';
 import { graphql } from 'react-apollo';
 import React from 'react';
-import { Segment, List, Label, Icon } from 'semantic-ui-react';
+import {
+  Segment, List, Label, Icon,
+} from 'semantic-ui-react';
 import Link from 'next/link';
 import Address from '../Address';
 
@@ -18,7 +20,9 @@ const OrderDelivery = ({
   <Segment secondary>
     <Label color={statusColor} horizontal attached="top">
       {status}
-      <Label.Detail>Delivery Provider</Label.Detail>
+      <Label.Detail>
+Delivery Provider
+      </Label.Detail>
     </Label>
     <List relaxed divided>
       <List.Item>
@@ -26,12 +30,26 @@ const OrderDelivery = ({
           <Icon name="ship" />
           {provider && provider.interface && (
           <Link href={`/delivery-providers/edit?_id=${provider._id}`}>
-            <a href={`/delivery-providers/edit?_id=${provider._id}`}>{provider.interface.label} {provider.interface.version} ({provider.type})</a>
+            <a href={`/delivery-providers/edit?_id=${provider._id}`}>
+              {provider.interface.label}
+              {' '}
+              {provider.interface.version}
+              {' '}
+(
+              {provider.type}
+)
+            </a>
           </Link>
           )}
         </Label>
         <p>
-          Date of Delivery to Provider: {delivered ? (<Moment format="lll">{delivered}</Moment>) : 'n/a'}
+          Date of Delivery to Provider:
+          {' '}
+          {delivered ? (
+            <Moment format="lll">
+              {delivered}
+            </Moment>
+          ) : 'n/a'}
         </p>
       </List.Item>
       {address && (

@@ -2,7 +2,9 @@ import React from 'react';
 import { withRouter } from 'next/router';
 import { toast } from 'react-toastify';
 import { compose, pure, withHandlers } from 'recompose';
-import { Container, Grid, Menu, Segment } from 'semantic-ui-react';
+import {
+  Container, Grid, Menu, Segment,
+} from 'semantic-ui-react';
 import App from '../../components/App';
 import FormProfile from '../../components/users/FormProfile';
 import UserOrderList from '../../components/users/UserOrderList';
@@ -42,11 +44,15 @@ const UsersEdit = ({
             {router.query.tab === 'account' && (
               <div>
                 <Segment>
-                  <h3 className="title">Set password</h3>
+                  <h3 className="title">
+Set password
+                  </h3>
                   <FormSetPassword onSubmitSuccess={redirect} userId={router.query._id} />
                 </Segment>
                 <Segment>
-                  <h3 className="title">Change E-Mail address</h3>
+                  <h3 className="title">
+Change E-Mail address
+                  </h3>
                   <FormChangeEmail
                     onSubmitSuccess={redirect}
                     userId={router.query._id}
@@ -54,7 +60,9 @@ const UsersEdit = ({
                   />
                 </Segment>
                 <Segment>
-                  <h3 className="title">Set roles</h3>
+                  <h3 className="title">
+Set roles
+                  </h3>
                   <FormSetRoles onSubmitSuccess={redirect} userId={router.query._id} />
                 </Segment>
               </div>

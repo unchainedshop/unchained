@@ -15,13 +15,15 @@ import withFormErrorHandlers from '../../lib/withFormErrorHandlers';
 
 const FormEditLanguage = ({ removeLanguage, ...formProps }) => (
   <Container>
-    <AutoForm {...formProps} >
+    <AutoForm {...formProps}>
       <Segment attached="bottom">
         <AutoField name={'isoCode'} />
         <AutoField name={'isActive'} />
         <ErrorsField />
         <SubmitField value="Speichern" className="primary" />
-        <Button type="normal" secondary floated="right" onClick={removeLanguage}>Delete</Button>
+        <Button type="normal" secondary floated="right" onClick={removeLanguage}>
+Delete
+        </Button>
       </Segment>
     </AutoForm>
   </Container>

@@ -9,10 +9,10 @@ export default compose(
       if (message === 'User not found [403]') {
         updateMappedError(new Error('Benutzer nicht gefunden'));
         return;
-      } else if (message === 'Email already exists. [403]') {
+      } if (message === 'Email already exists. [403]') {
         updateMappedError(new Error('E-Mail existiert bereits im System, zurücksetzen?'));
         return;
-      } else if (message === 'Incorrect password [403]') {
+      } if (message === 'Incorrect password [403]') {
         updateMappedError(new Error('Bitte überprüfe dein Passwort'));
         return;
       }

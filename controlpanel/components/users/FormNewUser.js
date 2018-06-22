@@ -3,7 +3,9 @@ import { withRouter } from 'next/router';
 import BaseField from 'uniforms/BaseField';
 import nothing from 'uniforms/nothing';
 import { graphql } from 'react-apollo';
-import { compose, pure, mapProps, withHandlers } from 'recompose';
+import {
+  compose, pure, mapProps, withHandlers,
+} from 'recompose';
 import gql from 'graphql-tag';
 import { Grid, Segment } from 'semantic-ui-react';
 import AutoField from 'uniforms-semantic/AutoField';
@@ -22,7 +24,7 @@ DisplayIf.contextTypes = BaseField.contextTypes;
 
 const FormNewUser = formProps => (
   <Segment>
-    <AutoForm showInlineError {...formProps} >
+    <AutoForm showInlineError {...formProps}>
       <Grid stackable columns={3}>
         <Grid.Row columns={1}>
           <Grid.Column width={16}>
@@ -85,7 +87,7 @@ export default compose(
       optional: true,
       label: 'Password',
       custom() {
-        if (!this.obj.enroll && (!this.value || this.value === '')) {
+        if (!this.obj.enroll && (!this.value || this.value === '')) { // eslint-disable-line
           return 'required';
         }
         return null;

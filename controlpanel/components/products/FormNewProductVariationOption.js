@@ -1,5 +1,7 @@
 import React from 'react';
-import { compose, pure, mapProps, withHandlers } from 'recompose';
+import {
+  compose, pure, mapProps, withHandlers,
+} from 'recompose';
 import { Form } from 'semantic-ui-react';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
@@ -46,15 +48,17 @@ export default compose(
     },
   })),
   withHandlers({
-    onSubmitSuccess: ({ onSuccess }) => ({ data: { createProductVariationOption } }) =>
-      onSuccess(createProductVariationOption._id),
-    onSubmit: ({ mutate, schema, productVariationId }) => ({ ...dirtyInput }) =>
-      mutate({
-        variables: {
-          option: schema.clean(dirtyInput),
-          productVariationId,
-        },
-      }),
+    onSubmitSuccess: ({
+      onSuccess,
+    }) => ({
+      data: { createProductVariationOption },
+    }) => onSuccess(createProductVariationOption._id),
+    onSubmit: ({ mutate, schema, productVariationId }) => ({ ...dirtyInput }) => mutate({
+      variables: {
+        option: schema.clean(dirtyInput),
+        productVariationId,
+      },
+    }),
   }),
   withFormErrorHandlers,
   mapProps(({

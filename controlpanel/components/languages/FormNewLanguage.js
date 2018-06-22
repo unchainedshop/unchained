@@ -1,5 +1,7 @@
 import React from 'react';
-import { compose, pure, mapProps, withHandlers } from 'recompose';
+import {
+  compose, pure, mapProps, withHandlers,
+} from 'recompose';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 import { withRouter } from 'next/router';
@@ -11,7 +13,7 @@ import withFormSchema from '../../lib/withFormSchema';
 import withFormErrorHandlers from '../../lib/withFormErrorHandlers';
 
 const FormNewLanguage = formProps => (
-  <AutoForm {...formProps} >
+  <AutoForm {...formProps}>
     <AutoField name="isoCode" />
     <ErrorsField />
     <SubmitField value="Add language" className="primary" />
@@ -45,12 +47,11 @@ export default compose(
     onSubmitSuccess: ({ router }) => ({ data: { createLanguage } }) => {
       router.replace({ pathname: '/languages/edit', query: { _id: createLanguage._id } });
     },
-    onSubmit: ({ createLanguage, schema }) => ({ ...dirtyInput }) =>
-      createLanguage({
-        variables: {
-          language: schema.clean(dirtyInput),
-        },
-      }),
+    onSubmit: ({ createLanguage, schema }) => ({ ...dirtyInput }) => createLanguage({
+      variables: {
+        language: schema.clean(dirtyInput),
+      },
+    }),
   }),
   withFormErrorHandlers,
   mapProps(({ createLanguage, ...rest }) => ({

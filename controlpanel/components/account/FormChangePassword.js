@@ -4,13 +4,15 @@ import SubmitField from 'uniforms-semantic/SubmitField';
 import ErrorsField from 'uniforms-semantic/ErrorsField';
 import AutoForm from 'uniforms-semantic/AutoForm';
 import { withApollo } from 'react-apollo';
-import { compose, pure, mapProps, withHandlers } from 'recompose';
+import {
+  compose, pure, mapProps, withHandlers,
+} from 'recompose';
 import { changePassword } from '../../lib/accounts';
 import withFormSchema from '../../lib/withFormSchema';
 import withFormErrorHandlers from '../../lib/withFormErrorHandlers';
 
 const FormChangePassword = formProps => (
-  <AutoForm {...formProps} >
+  <AutoForm {...formProps}>
     <AutoField name="oldPassword" type="password" />
     <AutoField name="newPassword" type="password" />
     <ErrorsField />
@@ -31,10 +33,9 @@ export default compose(
     },
   }),
   withHandlers({
-    onSubmit: ({ client }) => ({ oldPassword, newPassword }) =>
-      // after changePassword user get's logged out automatically triggering a jump to
-      // sign-in page
-      changePassword({ oldPassword, newPassword }, client),
+    onSubmit: ({ client }) => ({
+      oldPassword, newPassword,
+    }) => changePassword({ oldPassword, newPassword }, client),
   }),
   withFormErrorHandlers,
   mapProps(({ client, ...rest }) => ({ ...rest })),

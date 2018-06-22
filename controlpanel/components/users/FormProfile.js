@@ -1,5 +1,7 @@
 import React from 'react';
-import { compose, pure, mapProps, withHandlers } from 'recompose';
+import {
+  compose, pure, mapProps, withHandlers,
+} from 'recompose';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 import { Grid, Segment, Divider } from 'semantic-ui-react';
@@ -16,7 +18,7 @@ import withFormModel from '../../lib/withFormModel';
 
 const FormProfile = ({ userId, ...formProps }) => (
   <Segment>
-    <AutoForm showInlineError {...formProps} >
+    <AutoForm showInlineError {...formProps}>
       <Grid stackable columns={4}>
         <Grid.Row columns={1}>
           <Grid.Column textAlign="center">
@@ -44,7 +46,9 @@ const FormProfile = ({ userId, ...formProps }) => (
         </Grid.Row>
         <Grid.Row columns={1}>
           <Grid.Column width={16}>
-            <label htmlFor="address.firstName">Address</label>
+            <label htmlFor="address.firstName">
+Address
+            </label>
             <Segment>
               <Grid stackable columns={1}>
                 <Grid.Row columns={2}>
@@ -226,13 +230,12 @@ export default compose(
   }),
   withFormModel(({ data: { user } }) => (user && user.profile) || {}),
   withHandlers({
-    onSubmit: ({ userId, mutate, schema }) => ({ ...dirtyInput }) =>
-      mutate({
-        variables: {
-          userId,
-          profile: schema.clean(dirtyInput),
-        },
-      }),
+    onSubmit: ({ userId, mutate, schema }) => ({ ...dirtyInput }) => mutate({
+      variables: {
+        userId,
+        profile: schema.clean(dirtyInput),
+      },
+    }),
   }),
   withFormErrorHandlers,
   mapProps(({

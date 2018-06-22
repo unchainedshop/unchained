@@ -15,14 +15,16 @@ import withFormErrorHandlers from '../../lib/withFormErrorHandlers';
 
 const FormEditCountry = ({ currencies, removeCountry, ...formProps }) => (
   <Container>
-    <AutoForm {...formProps} >
+    <AutoForm {...formProps}>
       <Segment attached="bottom">
         <AutoField name={'isoCode'} />
         <AutoField name={'isActive'} />
         <AutoField name={'defaultCurrencyId'} options={currencies} />
         <ErrorsField />
         <SubmitField value="Speichern" className="primary" />
-        <Button type="normal" secondary floated="right" onClick={removeCountry}>Delete</Button>
+        <Button type="normal" secondary floated="right" onClick={removeCountry}>
+Delete
+        </Button>
       </Segment>
     </AutoForm>
   </Container>
@@ -114,13 +116,14 @@ export default compose(
         },
       });
     },
-    onSubmit: ({ countryId, updateCountry }) =>
-      ({ isoCode, defaultCurrencyId, isActive }) => updateCountry({
-        variables: {
-          country: { isoCode, defaultCurrencyId, isActive },
-          countryId,
-        },
-      }),
+    onSubmit: ({
+      countryId, updateCountry,
+    }) => ({ isoCode, defaultCurrencyId, isActive }) => updateCountry({
+      variables: {
+        country: { isoCode, defaultCurrencyId, isActive },
+        countryId,
+      },
+    }),
   }),
   withFormErrorHandlers,
   mapProps(({

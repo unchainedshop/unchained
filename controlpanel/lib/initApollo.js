@@ -31,7 +31,8 @@ function create(initialState, headersOverride, getToken) {
       }) => {
         toast(message, { type: toast.TYPE.ERROR });
         console.log( // eslint-disable-line
-          `[GraphQL error]: Message: ${message}, Location: ${JSON.stringify(locations)}, Path: ${path}`);
+          `[GraphQL error]: Message: ${message}, Location: ${JSON.stringify(locations)}, Path: ${path}`,
+        );
       });
     }
 
