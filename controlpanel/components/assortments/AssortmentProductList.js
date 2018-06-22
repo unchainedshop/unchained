@@ -6,15 +6,14 @@ import { Item, Segment } from 'semantic-ui-react';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 import { SortableContainer, arrayMove } from 'react-sortable-hoc';
-import AssortmentLinkListItem from './AssortmentLinkListItem';
-import FormNewAssortmentLink from './FormNewAssortmentLink';
+import AssortmentProductListItem from './AssortmentProductListItem';
+import FormNewAssortmentProduct from './FormNewAssortmentProduct';
 
-const AssortmentLinkList = ({ assortmentId, items }) => (
+const AssortmentProductList = ({ assortmentId, items }) => (
   <Segment>
     <Item.Group divided>
       {items.map(({ _id, ...rest }, index) => (
-        <AssortmentLinkListItem
-          comparedToAssortmentId={assortmentId}
+        <AssortmentProductListItem
           key={_id}
           index={index}
           _id={_id}
@@ -23,7 +22,7 @@ const AssortmentLinkList = ({ assortmentId, items }) => (
       ))}
       <Item>
         <Item.Content>
-          <FormNewAssortmentLink parentAssortmentId={assortmentId} />
+          <FormNewAssortmentProduct assortmentId={assortmentId} />
         </Item.Content>
       </Item>
     </Item.Group>
@@ -32,19 +31,12 @@ const AssortmentLinkList = ({ assortmentId, items }) => (
 
 export default compose(
   graphql(gql`
-    query assortmentLinks($assortmentId: ID) {
+    query assortmentProducts($assortmentId: ID) {
       assortment(assortmentId: $assortmentId) {
         _id
-        linkedAssortments {
+        productAssignments {
           _id
-          parent {
-            _id
-            texts {
-              _id
-              title
-            }
-          }
-          child {
+          product {
             _id
             texts {
               _id
@@ -56,31 +48,31 @@ export default compose(
     }
   `),
   graphql(gql`
-    mutation reorderAssortmentLinks($sortKeys: [ReorderAssortmentLinkInput!]!) {
-      reorderAssortmentLinks(sortKeys: $sortKeys) {
+    mutation reorderAssortmentProducts($sortKeys: [ReorderAssortmentProductInput!]!) {
+      reorderAssortmentProducts(sortKeys: $sortKeys) {
         _id
         sortKey
       }
     }
   `, {
-    name: 'reorderAssortmentLinks',
+    name: 'reorderAssortmentProducts',
     options: {
       refetchQueries: [
-        'assortmentLinks',
+        'assortmentProducts',
       ],
     },
   }),
   mapProps(({ data: { assortment }, ...rest }) => ({
-    items: (assortment && assortment.linkedAssortments) || [],
+    items: (assortment && assortment.productAssignments) || [],
     ...rest,
   })),
   withHandlers({
-    onSortEnd: ({ items, reorderAssortmentLinks }) => async ({ oldIndex, newIndex }) => {
+    onSortEnd: ({ items, reorderAssortmentProducts }) => async ({ oldIndex, newIndex }) => {
       const sortKeys = arrayMove(items, oldIndex, newIndex).map((item, sortKey) => ({
-        assortmentLinkId: item._id,
+        assortmentProductId: item._id,
         sortKey,
       }));
-      await reorderAssortmentLinks({
+      await reorderAssortmentProducts({
         variables: {
           sortKeys,
         },
@@ -89,4 +81,4 @@ export default compose(
   }),
   pure,
   SortableContainer,
-)(AssortmentLinkList);
+)(AssortmentProductList);

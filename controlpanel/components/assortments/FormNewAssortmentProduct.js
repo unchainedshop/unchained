@@ -12,13 +12,13 @@ import AutoForm from 'uniforms-semantic/AutoForm';
 import withFormSchema from '../../lib/withFormSchema';
 import withFormErrorHandlers from '../../lib/withFormErrorHandlers';
 
-const FormNewAssortmentLink = ({ assortments, removeCountry, ...formProps }) => (
+const FormNewAssortmentProduct = ({ products, removeCountry, ...formProps }) => (
   <AutoForm {...formProps}>
     <Segment basic>
-      <AutoField name={'parentAssortmentId'} type="hidden" />
-      <AutoField name={'childAssortmentId'} options={assortments} />
+      <AutoField name={'assortmentId'} type="hidden" />
+      <AutoField name={'productId'} options={products} />
       <ErrorsField />
-      <SubmitField value="Add Link" className="primary" />
+      <SubmitField value="Add Product" className="primary" />
     </Segment>
   </AutoForm>
 );
@@ -26,8 +26,8 @@ const FormNewAssortmentLink = ({ assortments, removeCountry, ...formProps }) => 
 export default compose(
   withRouter,
   graphql(gql`
-    query assortments {
-      assortments(offset: 0, limit: 0, includeLeaves: true) {
+    query products {
+      products(offset: 0, limit: 0) {
         _id
         texts {
           _id
@@ -37,56 +37,56 @@ export default compose(
     }
   `),
   graphql(gql`
-    mutation addAssortmentLink($parentAssortmentId: ID!, $childAssortmentId: ID!) {
-      addAssortmentLink(parentAssortmentId: $parentAssortmentId, childAssortmentId: $childAssortmentId) {
+    mutation addAssortmentProduct($assortmentId: ID!, $productId: ID!) {
+      addAssortmentProduct(assortmentId: $assortmentId, productId: $productId) {
         _id
       }
     }
   `, {
-    name: 'addAssortmentLink',
+    name: 'addAssortmentProduct',
     options: {
       refetchQueries: [
         'assortment',
-        'assortmentLinks',
+        'assortmentProducts',
       ],
     },
   }),
   withFormSchema({
-    parentAssortmentId: {
+    assortmentId: {
       type: String,
       label: null,
       optional: false,
     },
-    childAssortmentId: {
+    productId: {
       type: String,
       optional: false,
-      label: 'Subassortment',
+      label: 'Produkt',
     },
   }),
   withHandlers({
     onSubmitSuccess: () => () => {
-      toast('Linked', { type: toast.TYPE.SUCCESS }); // eslint-disable-line
+      toast('Producted', { type: toast.TYPE.SUCCESS }); // eslint-disable-line
     },
     onSubmit: ({
-      addAssortmentLink,
-    }) => ({ parentAssortmentId, childAssortmentId }) => addAssortmentLink({
+      addAssortmentProduct,
+    }) => ({ assortmentId, productId }) => addAssortmentProduct({
       variables: {
-        parentAssortmentId,
-        childAssortmentId,
+        assortmentId,
+        productId,
       },
     }),
   }),
   withFormErrorHandlers,
   mapProps(({
-    parentAssortmentId, addAssortmentLink, data: { assortments = [] }, ...rest
+    assortmentId, addAssortmentProduct, data: { products = [] }, ...rest
   }) => ({
-    assortments: [{ label: 'Select', value: false }].concat(assortments.map(assortment => ({
-      label: assortment.texts.title,
-      value: assortment._id,
-    })).filter(({ value }) => (parentAssortmentId !== value))),
+    products: [{ label: 'Select', value: false }].concat(products.map(product => ({
+      label: product.texts.title,
+      value: product._id,
+    }))),
     model: {
-      parentAssortmentId,
+      assortmentId,
     },
     ...rest,
   })),
-)(FormNewAssortmentLink);
+)(FormNewAssortmentProduct);

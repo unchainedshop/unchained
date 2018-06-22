@@ -6,6 +6,7 @@ import connectApollo from '../../lib/connectApollo';
 import AssortmentHeader from '../../components/assortments/AssortmentHeader';
 import AssortmentMenu from '../../components/assortments/AssortmentMenu';
 import AssortmentLinkList from '../../components/assortments/AssortmentLinkList';
+import AssortmentProductList from '../../components/assortments/AssortmentProductList';
 import FormEditAssortmentTexts from '../../components/assortments/FormEditAssortmentTexts';
 
 export default connectApollo(withRouter(({ changeTab, router, ...rest }) => (
@@ -43,7 +44,7 @@ Linked assortments
                 <Header as="h3">
 Assigned products
                 </Header>
-                {/* <FormEditAssortmentCommerce assortmentId={router.query._id} /> */}
+                <AssortmentProductList assortmentId={router.query._id} />
               </div>
             )}
           </Grid.Column>
