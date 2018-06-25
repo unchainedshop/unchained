@@ -11,7 +11,6 @@ export default async function ({
   } else {
     variables.password = hashPassword(password);
   }
-
   const result = await apollo.mutate({
     mutation: gql`
     mutation login ($username: String, $email: String, $password: HashedPassword, $plainPassword: String) {

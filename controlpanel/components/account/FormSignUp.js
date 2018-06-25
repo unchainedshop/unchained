@@ -33,7 +33,9 @@ export default compose(
     },
   }),
   withHandlers({
-    onSubmit: ({ client }) => ({ email, password }) => createUser({ email, password }, client),
+    onSubmit: ({ client }) => ({ email, password }) => createUser({
+      email, password, disableHashing: true,
+    }, client),
   }),
   withFormErrorHandlers,
   mapProps(({ client, ...rest }) => ({ ...rest })),
