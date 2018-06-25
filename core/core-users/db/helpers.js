@@ -146,11 +146,9 @@ Users.updateLastContact = ({ userId, contact }) => {
 Users.enrollUser = ({
   password, email, displayName, address,
 }) => {
-  const options = { email };
+  const options = { email, skipEmailVerification: true };
   if (password && password !== '') {
     options.password = password;
-  } else {
-    options.enroll = true;
   }
   const newUserId = Accounts.createUser(options);
   Users.update({ _id: newUserId }, {
@@ -160,7 +158,8 @@ Users.enrollUser = ({
       'profile.address': address || null,
     },
   });
-  if (options.enroll) {
+  if (!options.password) {
+    // send an e-mail if password is not set allowing the user to set it
     Accounts.sendEnrollmentEmail(newUserId);
   }
   return Users.findOne({ _id: newUserId });

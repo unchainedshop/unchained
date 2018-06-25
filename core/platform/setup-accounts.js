@@ -12,18 +12,15 @@ const {
   UI_ENDPOINT,
 } = process.env;
 
-Accounts.urls.resetPassword = token =>
-  `${UI_ENDPOINT}/set-password?token=${token}`;
+Accounts.urls.resetPassword = token => `${UI_ENDPOINT}/set-password?token=${token}`;
 
-Accounts.urls.verifyEmail = token =>
-  `${UI_ENDPOINT}/verify-email?token=${token}`;
+Accounts.urls.verifyEmail = token => `${UI_ENDPOINT}/verify-email?token=${token}`;
 
-Accounts.urls.enrollAccount = token =>
-  `${UI_ENDPOINT}/enroll-account?token=${token}`;
+Accounts.urls.enrollAccount = token => `${UI_ENDPOINT}/enroll-account?token=${token}`;
 
 const buildContext = (user) => {
-  const locale = (user && user.lastLogin && user.lastLogin.locale) ||
-    getFallbackLocale().normalized;
+  const locale = (user && user.lastLogin && user.lastLogin.locale)
+    || getFallbackLocale().normalized;
   return {
     user: user || {},
     locale,
@@ -48,12 +45,11 @@ Accounts.validateNewUser((user) => {
   return true;
 });
 
-Accounts.onCreateUser((options, user = {}) => {
+Accounts.onCreateUser((options = {}, user = {}) => {
   const newUser = user;
-  const isGuest = options && options.guest;
-  const isEnroll = options && options.enroll;
+  const { guest, skipEmailVerification } = options;
 
-  newUser.guest = !!isGuest;
+  newUser.guest = !!guest;
   newUser.created = newUser.createdAt || new Date();
   delete newUser.createdAt; // comes from the meteor-apollo-accounts stuff
 
@@ -72,7 +68,7 @@ Accounts.onCreateUser((options, user = {}) => {
     };
     newUser.emails = [{ address: newUser.services.facebook.email, verified: true }];
   }
-  if (!isGuest && !isEnroll) {
+  if (!guest && !skipEmailVerification) {
     Meteor.setTimeout(() => { Accounts.sendVerificationEmail(user._id); }, 1000);
   }
   return newUser;
@@ -101,21 +97,12 @@ function createGuestOptions(email) {
 
 Accounts.registerLoginHandler('guest', (options) => {
   if (
-    !options ||
-    !options.createGuest) {
+    !options
+    || !options.createGuest) {
     return undefined;
   }
   const guestOptions = createGuestOptions(options.email);
   return {
     userId: Accounts.createUser(guestOptions),
   };
-});
-
-Meteor.methods({
-  createGuest(email) {
-    check(email, Match.OneOf(String, null, undefined));
-    const guest = createGuestOptions(email);
-    const result = Accounts.createUser(guest);
-    return { _id: result, ...guest };
-  },
 });
