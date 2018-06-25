@@ -14,7 +14,7 @@ input HashedPassword {
 }
 
 input UserProfileInput {
-  displayName: String!
+  displayName: String
   birthday: Date
   phoneMobile: String
   gender: String
