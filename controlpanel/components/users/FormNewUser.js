@@ -62,6 +62,7 @@ const FormNewUser = formProps => (
 );
 
 export default compose(
+  withRouter,
   graphql(gql`
     mutation enrollUser($profile: UserProfileInput!, $email: String!, $password: String) {
       enrollUser(profile: $profile, email: $email, password: $password) {
@@ -101,8 +102,8 @@ export default compose(
     },
   }),
   withHandlers({
-    withRouter,
     onSubmitSuccess: ({ router }) => ({ data: { enrollUser } }) => {
+      console.log(router);
       router.replace({ pathname: '/users/edit', query: { _id: enrollUser._id } });
     },
     onSubmit: ({ mutate, schema }) => async ({ ...dirtyInput }) => {

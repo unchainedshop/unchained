@@ -13,10 +13,6 @@ input HashedPassword {
   algorithm: String!
 }
 
-input CreateUserProfileInput {
-  name: String
-}
-
 input UserProfileInput {
   displayName: String!
   birthday: Date
@@ -201,7 +197,7 @@ type Mutation {
   """
   Create a new user. ACL: Everybody
   """
-  createUser (username: String, email: String, password: HashedPassword, plainPassword: String, profile: CreateUserProfileInput): LoginMethodResponse
+  createUser (username: String, email: String, password: HashedPassword, plainPassword: String, profile: UserProfileInput): LoginMethodResponse
 
   """
   Change the current user's password. Must be logged in. ACL: Everybody

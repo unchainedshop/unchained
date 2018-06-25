@@ -7,7 +7,7 @@ export default async function ({
 }, apollo) {
   const result = await apollo.mutate({
     mutation: gql`
-    mutation createUser ($username: String, $email: String, $password: HashedPassword!, $profile: CreateUserProfileInput) {
+    mutation createUser ($username: String, $email: String, $password: HashedPassword!, $profile: UserProfileInput) {
       createUser (username: $username, email: $email, password: $password, profile: $profile) {
         id
         token
