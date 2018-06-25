@@ -13,8 +13,8 @@ export default async function ({
   }
   const result = await apollo.mutate({
     mutation: gql`
-    mutation createUser ($username: String, $email: String, $password: HashedPassword!, $profile: UserProfileInput) {
-      createUser (username: $username, email: $email, password: $password, profile: $profile) {
+    mutation createUser ($username: String, $email: String, $password: HashedPassword, $plainPassword: String, $profile: UserProfileInput) {
+      createUser (username: $username, email: $email, password: $password, plainPassword: $plainPassword, profile: $profile) {
         id
         token
         tokenExpires
@@ -24,7 +24,11 @@ export default async function ({
     variables,
   });
 
-  const { id, token, tokenExpires } = result.data.createUser;
-  await storeLoginToken(id, token, new Date(tokenExpires));
-  return id;
+  if (result.data.createUser) {
+    // immediately login
+    const { id, token, tokenExpires } = result.data.createUser;
+    await storeLoginToken(id, token, new Date(tokenExpires));
+    return id;
+  }
+  return null;
 }

@@ -16,7 +16,7 @@ const FormSignUp = formProps => (
     <AutoField name="email" type="email" />
     <AutoField name="password" type="password" />
     <ErrorsField />
-    <SubmitField value="Registrieren" className="primary" />
+    <SubmitField value="Signup" className="primary" />
   </AutoForm>
 );
 
@@ -25,17 +25,22 @@ export default compose(
   withFormSchema({
     email: {
       type: String,
-      label: 'E-Mail Adresse',
+      label: 'E-Mail Address',
     },
     password: {
       type: String,
-      label: 'Passwort',
+      label: 'Password',
     },
   }),
   withHandlers({
     onSubmit: ({ client }) => ({ email, password }) => createUser({
       email, password, disableHashing: true,
     }, client),
+    onSubmitSuccess: () => (userId) => {
+      if (!userId) {
+        alert('Signed Up successfully but not logged in automatically');
+      }
+    },
   }),
   withFormErrorHandlers,
   mapProps(({ client, ...rest }) => ({ ...rest })),
