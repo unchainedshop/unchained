@@ -74,6 +74,7 @@ export default () => {
         locale,
       }, {
         $set: {
+          updated: new Date(),
           title,
           locale,
           slug,
@@ -84,6 +85,9 @@ export default () => {
       Products.update({
         _id: this._id,
       }, {
+        $set: {
+          updated: new Date(),
+        },
         $addToSet: {
           slugs: slug,
         },
@@ -250,7 +254,12 @@ ProductMedia.helpers({
     ProductMediaTexts.upsert({
       productMediaId: this._id,
       locale,
-    }, { $set: localizedData }, { bypassCollection2: true });
+    }, {
+      $set: {
+        updated: new Date(),
+        ...localizedData,
+      },
+    }, { bypassCollection2: true });
     return ProductMediaTexts.findOne({ productMediaId: this._id, locale });
   },
   getLocalizedTexts(locale) {
@@ -270,7 +279,12 @@ ProductVariations.helpers({
       productVariationId: this._id,
       productVariationOptionValue,
       locale,
-    }, { $set: localizedData }, { bypassCollection2: true });
+    }, {
+      $set: {
+        updated: new Date(),
+        ...localizedData,
+      },
+    }, { bypassCollection2: true });
     return ProductVariationTexts.findOne({ productVariationId: this._id, locale });
   },
   getLocalizedTexts(locale, optionValue) {
@@ -286,11 +300,9 @@ ProductVariations.helpers({
   },
 });
 
-Products.getLocalizedTexts = (productId, locale) =>
-  findLocalizedText(ProductTexts, { productId }, locale);
+Products.getLocalizedTexts = (productId, locale) => findLocalizedText(ProductTexts, { productId }, locale);
 
-ProductMedia.getLocalizedTexts = (productMediaId, locale) =>
-  findLocalizedText(ProductMediaTexts, { productMediaId }, locale);
+ProductMedia.getLocalizedTexts = (productMediaId, locale) => findLocalizedText(ProductMediaTexts, { productMediaId }, locale);
 
 ProductTexts.getUnusedSlug = (strValue, scope, isAlreadySlugified) => {
   const slug = isAlreadySlugified ? strValue : `${slugify(strValue)}`;
@@ -300,11 +312,10 @@ ProductTexts.getUnusedSlug = (strValue, scope, isAlreadySlugified) => {
   return slug;
 };
 
-ProductVariations.getLocalizedTexts = (productVariationId, productVariationOptionValue, locale) =>
-  findLocalizedText(ProductVariationTexts, {
-    productVariationId,
-    productVariationOptionValue,
-  }, locale);
+ProductVariations.getLocalizedTexts = (productVariationId, productVariationOptionValue, locale) => findLocalizedText(ProductVariationTexts, {
+  productVariationId,
+  productVariationOptionValue,
+}, locale);
 
 ProductMedia.getNewSortKey = (productId) => {
   const lastProductMedia = ProductMedia.findOne({

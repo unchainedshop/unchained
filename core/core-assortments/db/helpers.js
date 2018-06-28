@@ -45,8 +45,7 @@ Collections.Assortments.getNewSequence = (oldSequence) => {
   return sequence;
 };
 
-Collections.Assortments.getLocalizedTexts = (assortmentId, locale) =>
-  findLocalizedText(Collections.AssortmentTexts, { assortmentId }, locale);
+Collections.Assortments.getLocalizedTexts = (assortmentId, locale) => findLocalizedText(Collections.AssortmentTexts, { assortmentId }, locale);
 
 Collections.AssortmentTexts.getUnusedSlug = (strValue, scope, isAlreadySlugified) => {
   const slug = isAlreadySlugified ? strValue : `${slugify(strValue)}`;
@@ -92,6 +91,7 @@ export default () => {
         locale,
       }, {
         $set: {
+          updated: new Date(),
           title,
           locale,
           slug,
@@ -102,6 +102,9 @@ export default () => {
       Collections.Assortments.update({
         _id: this._id,
       }, {
+        $set: {
+          updated: new Date(),
+        },
         $addToSet: {
           slugs: slug,
         },
@@ -150,9 +153,9 @@ export default () => {
         .fetch();
     },
     products({ limit = 10, offset = 0, forceLiveCollection = false } = {}) {
-      const productIds = forceLiveCollection ?
-        this.collectProductIdCache() :
-        this._cachedProductIds; // eslint-disable-line
+      const productIds = forceLiveCollection
+        ? this.collectProductIdCache()
+        : this._cachedProductIds; // eslint-disable-line
 
       const selector = {
         _id: { $in: productIds },
@@ -187,11 +190,11 @@ export default () => {
         .fetch();
     },
     collectProductIdCache(ownProductIdCache, linkedAssortmentsCache) {
-      const ownProductIds = ownProductIdCache ||
-        this.productAssignments().map(({ productId }) => productId);
+      const ownProductIds = ownProductIdCache
+        || this.productAssignments().map(({ productId }) => productId);
 
-      const linkedAssortments = linkedAssortmentsCache ||
-        this.linkedAssortments();
+      const linkedAssortments = linkedAssortmentsCache
+        || this.linkedAssortments();
 
       const childAssortments = linkedAssortments
         .filter(({ parentAssortmentId }) => (parentAssortmentId === this._id));
@@ -211,8 +214,8 @@ export default () => {
       const ownProductIds = this.productAssignments().map(({ productId }) => productId);
       const linkedAssortments = this.linkedAssortments();
 
-      const childProductIds = productIdCache ||
-          this.collectProductIdCache(ownProductIds, linkedAssortments);
+      const childProductIds = productIdCache
+          || this.collectProductIdCache(ownProductIds, linkedAssortments);
 
       const productIds = [...(new Set([...ownProductIds, ...childProductIds]))];
 
@@ -221,7 +224,10 @@ export default () => {
       }
 
       Collections.Assortments.update({ _id: this._id }, {
-        $set: { _cachedProductIds: productIds },
+        $set: {
+          updated: new Date(),
+          _cachedProductIds: productIds,
+        },
       });
 
       linkedAssortments

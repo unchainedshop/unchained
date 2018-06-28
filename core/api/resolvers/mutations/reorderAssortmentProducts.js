@@ -7,7 +7,10 @@ export default function (root, { sortKeys = [] }, { userId }) {
     AssortmentProducts.update({
       _id: assortmentProductId,
     }, {
-      $set: { sortKey: sortKey + 1, updated: new Date() },
+      $set: {
+        sortKey: sortKey + 1,
+        updated: new Date(),
+      },
     });
     return assortmentProductId;
   });
