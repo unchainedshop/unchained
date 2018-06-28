@@ -30,6 +30,14 @@ Collections.Assortments.createAssortment = ({
   return assortmentObject;
 };
 
+Collections.Assortments.sync = (syncFn) => {
+  const referenceDate = Collections.Assortments.markAssortmentTreeDirty();
+  syncFn(referenceDate);
+  Collections.Assortments.cleanDirtyAssortmentTreeByReferenceDate(referenceDate);
+  Collections.Assortments.updateCleanAssortmentActivation();
+  Collections.Assortments.wipeAssortments();
+};
+
 Collections.Assortments.markAssortmentTreeDirty = () => {
   const dirtyModifier = { $set: { dirty: true } };
   const collectionUpdateOptions = { bypassCollection2: true, multi: true };
@@ -53,16 +61,6 @@ Collections.Assortments.markAssortmentTreeDirty = () => {
     updatedAssortmentLinksCount,
   });
   return new Date();
-};
-
-Collections.Assortments.swapAssortmentTree = (referenceDate) => {
-  // 1. remove the dirty flag from the updated assortments since the reference date
-  // 2. deactivate all dirty assortments, activate all non-dirty assortments
-  // 3. wipe all dirty entities
-
-  Collections.Assortments.cleanDirtyAssortmentTreeByReferenceDate(referenceDate);
-  Collections.Assortments.updateCleanAssortmentActivation();
-  Collections.Assortments.wipeAssortments();
 };
 
 Collections.Assortments.cleanDirtyAssortmentTreeByReferenceDate = (referenceDate) => {
