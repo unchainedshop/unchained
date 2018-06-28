@@ -30,11 +30,105 @@ Collections.Assortments.createAssortment = ({
   return assortmentObject;
 };
 
-Collections.Assortments.wipeAssortments = () => {
-  Collections.Assortments.remove({});
-  Collections.AssortmentTexts.remove({});
-  Collections.AssortmentProducts.remove({});
-  Collections.AssortmentLinks.remove({});
+Collections.Assortments.markAssortmentTreeDirty = () => {
+  const dirtyModifier = { $set: { dirty: true } };
+  const collectionUpdateOptions = { bypassCollection2: true, multi: true };
+  const updatedAssortmentCount = Collections.Assortments.update(
+    {}, dirtyModifier, collectionUpdateOptions,
+  );
+  const updatedAssortmentTextsCount = Collections.AssortmentTexts.update(
+    {}, dirtyModifier, collectionUpdateOptions,
+  );
+  const updatedAssortmentProductsCount = Collections.AssortmentProducts.update(
+    {}, dirtyModifier, collectionUpdateOptions,
+  );
+  const updatedAssortmentLinksCount = Collections.AssortmentLinks.update(
+    {}, dirtyModifier, collectionUpdateOptions,
+  );
+  const timestamp = new Date();
+  console.log(`Assortment Sync: Marked Assortment tree dirty at timestamp ${timestamp}`, { // eslint-disable-line
+    updatedAssortmentCount,
+    updatedAssortmentTextsCount,
+    updatedAssortmentProductsCount,
+    updatedAssortmentLinksCount,
+  });
+  return new Date();
+};
+
+Collections.Assortments.swapAssortmentTree = (referenceDate) => {
+  // 1. remove the dirty flag from the updated assortments since the reference date
+  // 2. deactivate all dirty assortments, activate all non-dirty assortments
+  // 3. wipe all dirty entities
+
+  Collections.Assortments.cleanDirtyAssortmentTreeByReferenceDate(referenceDate);
+  Collections.Assortments.updateCleanAssortmentActivation();
+  Collections.Assortments.wipeAssortments();
+};
+
+Collections.Assortments.cleanDirtyAssortmentTreeByReferenceDate = (referenceDate) => {
+  const selector = {
+    dirty: true,
+    $or: [{
+      updated: { $gte: referenceDate },
+    }, {
+      created: { $gte: referenceDate },
+    }],
+  };
+  const modifier = { $set: { dirty: false } };
+  const collectionUpdateOptions = { bypassCollection2: true, multi: true };
+  const updatedAssortmentCount = Collections.Assortments.update(
+    selector, modifier, collectionUpdateOptions,
+  );
+  const updatedAssortmentTextsCount = Collections.AssortmentTexts.update(
+    selector, modifier, collectionUpdateOptions,
+  );
+  const updatedAssortmentProductsCount = Collections.AssortmentProducts.update(
+    selector, modifier, collectionUpdateOptions,
+  );
+  const updatedAssortmentLinksCount = Collections.AssortmentLinks.update(
+    selector, modifier, collectionUpdateOptions,
+  );
+  console.log(`Assortment Sync: Result of assortment cleaning with referenceDate=${referenceDate}`, { // eslint-disable-line
+    updatedAssortmentCount,
+    updatedAssortmentTextsCount,
+    updatedAssortmentProductsCount,
+    updatedAssortmentLinksCount,
+  });
+};
+
+Collections.Assortments.updateCleanAssortmentActivation = () => {
+  const disabledDirtyAssortmentsCount = Collections.Assortments.update({
+    isActive: true,
+    dirty: true,
+  }, {
+    $set: { isActive: false },
+  }, { bypassCollection2: true, multi: true });
+  const enabledCleanAssortmentsCount = Collections.Assortments.update({
+    isActive: false,
+    dirty: { $ne: true },
+  }, {
+    $set: { isActive: true },
+  }, { bypassCollection2: true, multi: true });
+
+  console.log(`Assortment Sync: Result of assortment activation`, { // eslint-disable-line
+    disabledDirtyAssortmentsCount,
+    enabledCleanAssortmentsCount,
+  });
+};
+
+
+Collections.Assortments.wipeAssortments = (onlyDirty = true) => {
+  const selector = onlyDirty ? { dirty: true } : {};
+  const removedAssortmentCount = Collections.Assortments.remove(selector);
+  const removedAssortmentTextCount = Collections.AssortmentTexts.remove(selector);
+  const removedAssortmentProductsCount = Collections.AssortmentProducts.remove(selector);
+  const removedAssortmentLinksCount = Collections.AssortmentLinks.remove(selector);
+  console.log(`result of assortment purging with onlyDirty=${onlyDirty}`, { // eslint-disable-line
+    removedAssortmentCount,
+    removedAssortmentTextCount,
+    removedAssortmentProductsCount,
+    removedAssortmentLinksCount,
+  });
 };
 
 Collections.Assortments.getNewSequence = (oldSequence) => {
@@ -45,7 +139,9 @@ Collections.Assortments.getNewSequence = (oldSequence) => {
   return sequence;
 };
 
-Collections.Assortments.getLocalizedTexts = (assortmentId, locale) => findLocalizedText(Collections.AssortmentTexts, { assortmentId }, locale);
+Collections.Assortments.getLocalizedTexts = (
+  assortmentId, locale,
+) => findLocalizedText(Collections.AssortmentTexts, { assortmentId }, locale);
 
 Collections.AssortmentTexts.getUnusedSlug = (strValue, scope, isAlreadySlugified) => {
   const slug = isAlreadySlugified ? strValue : `${slugify(strValue)}`;
@@ -91,11 +187,11 @@ export default () => {
         locale,
       }, {
         $set: {
-          updated: new Date(),
           title,
           locale,
           slug,
           ...rest,
+          updated: new Date(),
         },
       }, { bypassCollection2: true });
 
