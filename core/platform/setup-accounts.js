@@ -90,7 +90,8 @@ function createGuestOptions(email) {
   return {
     username: guestname,
     email: email || `${guestname}@localhost`,
-    profile: { guest: true },
+    guest: true,
+    profile: {},
     password: uuid(),
   };
 }
