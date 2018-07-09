@@ -4,7 +4,6 @@ import {
   MessagingType,
   MessagingAdapter,
 } from 'meteor/unchained:core-messaging';
-import getTemplate from '../../templates';
 
 const {
   MAIL_URL,
@@ -27,7 +26,8 @@ class LocalMail extends MessagingAdapter {
       to, cc, from, mailPrefix = '', ...meta
     },
   }) {
-    const renderer = getTemplate(template)(meta, this.context);
+    const templateResolver = this.resolver(template);
+    const renderer = templateResolver(meta, this.context);
     const message = {
       from: renderer.from(from),
       to: renderer.to(to),
@@ -42,7 +42,7 @@ class LocalMail extends MessagingAdapter {
       }));
     }
 
-    this.log(message, { level: 'verbose' });
+    this.log(JSON.stringify(message), { level: 'verbose' });
     return Email.send(message);
   }
 }

@@ -1,4 +1,5 @@
 import { log } from 'meteor/unchained:core-logger';
+import { defaultEmailResolver, defaultSMSResolver } from './template-resolvers';
 
 const {
   LANG,
@@ -18,8 +19,9 @@ class MessagingAdapter {
     return false;
   }
 
-  constructor({ context }) {
+  constructor({ context, resolver }) {
     this.context = context;
+    this.resolver = resolver;
   }
 
   sendMessage() { // eslint-disable-line
@@ -44,34 +46,46 @@ class MessagingDirector {
   }
 
   execute(name, options) {
-    return MessagingDirector.sortedAdapters()
+    return this.constructor.sortedAdapters()
       .filter(((AdapterClass) => {
         const activated = AdapterClass.isActivatedFor(this.context);
         if (!activated) {
-          log(`MessagingDirector -> ${AdapterClass.key} (${AdapterClass.version}) skipped`, {
+          log(`${this.constructor.name} -> ${AdapterClass.key} (${AdapterClass.version}) skipped`, {
             level: 'warn',
           });
         }
         return activated;
       }))
       .map((AdapterClass) => {
-        const concreteAdapter = new AdapterClass({ context: this.context });
-        log(`MessagingDirector via ${AdapterClass.key} -> Execute '${name}'`);
+        const concreteAdapter = new AdapterClass({
+          context: this.context,
+          resolver: this.constructor.resolvers.get(this.context.type),
+        });
+        log(`${this.constructor.name} -> via ${AdapterClass.key} -> Execute '${name}'`);
         return concreteAdapter[name](options);
       }, []);
   }
 
   static adapters = new Map();
+  static resolvers = new Map();
+
   static sortedAdapters() {
-    return Array.from(MessagingDirector.adapters)
+    return Array.from(this.adapters)
       .map(entry => entry[1])
       .sort(entry => entry.key);
   }
   static registerAdapter(adapter) {
     log(`${this.name} -> Registered ${adapter.key} ${adapter.version} (${adapter.label})`);
-    MessagingDirector.adapters.set(adapter.key, adapter);
+    this.adapters.set(adapter.key, adapter);
+  }
+  static setTemplateResolver(type, resolver) {
+    log(`${this.name} -> Registered custom template resolver for ${type}`);
+    this.resolvers.set(type, resolver);
   }
 }
+
+MessagingDirector.setTemplateResolver(MessagingType.EMAIL, defaultEmailResolver);
+MessagingDirector.setTemplateResolver(MessagingType.SMS, defaultSMSResolver);
 
 export {
   MessagingType,

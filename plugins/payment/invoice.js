@@ -1,6 +1,7 @@
 import {
   PaymentDirector,
   PaymentAdapter,
+  PaymentProviderType,
 } from 'meteor/unchained:core-payment';
 
 class Invoice extends PaymentAdapter {
@@ -10,7 +11,7 @@ class Invoice extends PaymentAdapter {
   static initialConfiguration = []
 
   static typeSupported(type) {
-    return (type === 'INVOICE');
+    return (type === PaymentProviderType.INVOICE);
   }
 
   configurationError() { // eslint-disable-line
