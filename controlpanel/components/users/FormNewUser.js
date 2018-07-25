@@ -103,7 +103,6 @@ export default compose(
   }),
   withHandlers({
     onSubmitSuccess: ({ router }) => ({ data: { enrollUser } }) => {
-      console.log(router);
       router.replace({ pathname: '/users/edit', query: { _id: enrollUser._id } });
     },
     onSubmit: ({ mutate, schema }) => async ({ ...dirtyInput }) => {

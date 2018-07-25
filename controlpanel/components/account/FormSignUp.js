@@ -38,7 +38,7 @@ export default compose(
     }, client),
     onSubmitSuccess: () => (userId) => {
       if (!userId) {
-        alert('Signed Up successfully but not logged in automatically');
+        alert('Signed Up successfully but not logged in automatically'); // eslint-disable-line
       }
     },
   }),
