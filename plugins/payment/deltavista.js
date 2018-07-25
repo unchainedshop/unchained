@@ -5,6 +5,7 @@ import {
   PaymentDirector,
   PaymentAdapter,
   PaymentError,
+  PaymentProviderType,
 } from 'meteor/unchained:core-payment';
 
 const {
@@ -118,7 +119,7 @@ class DeltavistaInvoice extends PaymentAdapter {
   static initialConfiguration = []
 
   static typeSupported(type) {
-    return (type === 'INVOICE');
+    return (type === PaymentProviderType.INVOICE);
   }
 
   static getUsername() { // eslint-disable-line
