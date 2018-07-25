@@ -38,7 +38,7 @@ export default compose(
     isoCode: {
       type: String,
       optional: false,
-      label: 'ISO Ländercode',
+      label: 'ISO Country code',
     },
   }),
   withHandlers({

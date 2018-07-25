@@ -68,7 +68,7 @@ const FormEditAssortmentTexts = ({
           </div>
         ))}
         <ErrorsField />
-        <SubmitField value="Speichern" className="primary" disabled={isEditingDisabled} />
+        <SubmitField value="Save" className="primary" disabled={isEditingDisabled} />
       </Segment>
     </AutoForm>
   </Container>

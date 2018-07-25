@@ -56,7 +56,7 @@ const FormEditProductVariationTexts = ({
         ))}
         <ErrorsField />
         <br />
-        <SubmitField value="Speichern" className="primary" disabled={isEditingDisabled} />
+        <SubmitField value="Save" className="primary" disabled={isEditingDisabled} />
         <Button type="normal" onClick={onCancel}>
 Abbrechen
         </Button>

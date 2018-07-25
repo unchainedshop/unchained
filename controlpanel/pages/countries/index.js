@@ -8,7 +8,7 @@ export default connectApollo(props => (
   <App {...props}>
     <Container>
       <h2>
-Länder
+        Countries
       </h2>
       <CountryList />
     </Container>

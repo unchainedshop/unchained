@@ -6,7 +6,6 @@ import { compose, lifecycle, withProps } from 'recompose';
 import { graphql } from 'react-apollo';
 import gql from 'graphql-tag';
 import 'react-toastify/dist/ReactToastify.min.css';
-import 'react-phone-number-input/rrui.css';
 import 'react-phone-number-input/style.css';
 import 'react-datepicker/dist/react-datepicker.css';
 import 'react-rte/lib/Draft.global.css';

@@ -27,11 +27,11 @@ export default compose(
   withFormSchema({
     password: {
       type: String,
-      label: 'Neues Passwort',
+      label: 'New password',
     },
     passwordConfirm: {
       type: String,
-      label: 'Neues Passwort bestätigen',
+      label: 'Confirm new password',
       custom() {
         if (this.obj.password !== this.value) { // eslint-disable-line
           return 'mismatch';

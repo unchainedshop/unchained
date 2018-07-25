@@ -48,7 +48,7 @@ const FormEditProductSupply = ({ isEditingDisabled, ...formProps }) => (
       <ErrorsField />
       <br />
       <SubmitField
-        value="Speichern"
+        value="Save"
         className="primary"
         disabled={isEditingDisabled}
       />
@@ -98,22 +98,22 @@ export default compose(
     weightInGram: {
       type: Number,
       optional: true,
-      label: 'Gewicht (Gram)',
+      label: 'Weight (Gram)',
     },
     lengthInMillimeters: {
       type: Number,
       optional: true,
-      label: 'Länge (Millimeter)',
+      label: 'Length (Millimeter)',
     },
     heightInMillimeters: {
       type: Number,
       optional: true,
-      label: 'Höhe (Millimeter)',
+      label: 'Height (Millimeter)',
     },
     widthInMillimeters: {
       type: Number,
       optional: true,
-      label: 'Breite (Millimeter)',
+      label: 'Width (Millimeter)',
     },
   }),
   withFormModel(({ data: { product = {} } }) => {

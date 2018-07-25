@@ -38,7 +38,7 @@ const FormEditProductWarehousing = ({ isEditingDisabled, ...formProps }) => (
       <ErrorsField />
       <br />
       <SubmitField
-        value="Speichern"
+        value="Save"
         className="primary"
         disabled={isEditingDisabled}
       />

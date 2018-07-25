@@ -15,7 +15,7 @@ import { ProductStatus, ProductTypes } from './schema';
 
 Products.createProduct = ({
   authorId, locale, title, type, ...rest
-}, { autopublish = false }) => {
+}, { autopublish = false } = {}) => {
   const product = {
     created: new Date(),
     authorId,

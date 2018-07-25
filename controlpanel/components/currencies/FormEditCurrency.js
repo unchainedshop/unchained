@@ -20,7 +20,7 @@ const FormEditCurrency = ({ removeCurrency, ...formProps }) => (
         <AutoField name={'isoCode'} />
         <AutoField name={'isActive'} />
         <ErrorsField />
-        <SubmitField value="Speichern" className="primary" />
+        <SubmitField value="Save" className="primary" />
         <Button type="normal" secondary floated="right" onClick={removeCurrency}>
 Delete
         </Button>

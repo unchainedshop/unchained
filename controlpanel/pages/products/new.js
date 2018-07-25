@@ -10,7 +10,7 @@ const New = ({ onSuccess, ...rest }) => (
   <App {...rest}>
     <Container>
       <p>
-        Neues Produkt
+        New product
       </p>
       <FormNewProduct onSuccess={onSuccess} />
     </Container>

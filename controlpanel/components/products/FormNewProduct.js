@@ -42,12 +42,12 @@ export default compose(
     title: {
       type: String,
       optional: false,
-      label: 'Titel',
+      label: 'Name',
     },
     type: {
       type: String,
       optional: false,
-      label: 'Produktart',
+      label: 'Type',
       uniforms: {
         options: [{ label: 'Choose Type', value: null }, ...uniforms.options],
       },

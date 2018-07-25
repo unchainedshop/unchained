@@ -25,11 +25,11 @@ export default compose(
   withFormSchema({
     oldPassword: {
       type: String,
-      label: 'Aktuelles Passwort',
+      label: 'Current password',
     },
     newPassword: {
       type: String,
-      label: 'Neues Passwort',
+      label: 'New password',
     },
   }),
   withHandlers({

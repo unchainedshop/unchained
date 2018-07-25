@@ -65,7 +65,7 @@ export default ({
               >
                 <Icon name="plus" />
                 {' '}
-Hinzufügen
+                Add
               </Button>
             </Link>
           )}

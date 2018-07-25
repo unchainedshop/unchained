@@ -92,7 +92,7 @@ Address
         <Grid.Row columns={2}>
           <Grid.Column width={8}>
             <ErrorsField />
-            <SubmitField value="Speichern" className="primary" />
+            <SubmitField value="Save" className="primary" />
           </Grid.Column>
         </Grid.Row>
       </Grid>

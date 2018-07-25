@@ -31,7 +31,7 @@ const FormEditAssortment = ({ removeAssortment, ...formProps }) => (
     </Grid>
     <ErrorsField />
     <br />
-    <SubmitField value="Speichern" className="primary" />
+    <SubmitField value="Save" className="primary" />
   </AutoForm>
 );
 

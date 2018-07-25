@@ -21,7 +21,7 @@ const FormEditCountry = ({ currencies, removeCountry, ...formProps }) => (
         <AutoField name={'isActive'} />
         <AutoField name={'defaultCurrencyId'} options={currencies} />
         <ErrorsField />
-        <SubmitField value="Speichern" className="primary" />
+        <SubmitField value="Save" className="primary" />
         <Button type="normal" secondary floated="right" onClick={removeCountry}>
 Delete
         </Button>

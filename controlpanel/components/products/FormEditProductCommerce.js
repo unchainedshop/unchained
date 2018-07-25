@@ -93,7 +93,7 @@ Price
       </Table>
       <ErrorsField />
       <SubmitField
-        value="Speichern"
+        value="Save"
         className="primary"
         disabled={isEditingDisabled}
       />
