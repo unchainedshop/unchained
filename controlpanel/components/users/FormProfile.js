@@ -172,6 +172,7 @@ export default compose(
       uniforms: {
         options: [
           { label: 'Unspecified', value: 'u' },
+          { label: 'Company', value: 'c' },
           { label: 'Male', value: 'm' },
           { label: 'Female', value: 'f' },
         ],

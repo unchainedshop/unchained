@@ -13,7 +13,7 @@ Factory.define('user', Users, {
     displayName: `${faker.name.firstName()} ${faker.name.lastName()}`,
     birthday: faker.date.past(65, '2003-08-02'),
     phoneMobile: faker.phone.phoneNumber(),
-    gender: faker.random.arrayElement([null, 'f', 'm']),
+    gender: faker.random.arrayElement([null, 'f', 'm', 'c']),
   }),
   guest: faker.random.boolean(),
   tags: [faker.random.arrayElement(['studio', 'peka', 'supplier'])],
