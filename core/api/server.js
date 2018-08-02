@@ -66,8 +66,7 @@ export const createApolloServer = (customOptions = {}, customConfig = {}) => {
     graphqlExpress(async (req) => {
       try {
         // graphqlExpress can accept a function returning the option object
-        const customOptionsObject =
-          typeof customOptions === 'function' ? customOptions(req) : customOptions;
+        const customOptionsObject = typeof customOptions === 'function' ? customOptions(req) : customOptions;
 
         // create a new apollo options object based on the default apollo options
         // defined above and the custom apollo options passed to this function
@@ -84,10 +83,9 @@ export const createApolloServer = (customOptions = {}, customConfig = {}) => {
         const userContext = await getUserForContext(loginToken); // eslint-disable-line
 
         // context can accept a function returning the context object
-        const context =
-          typeof options.context === 'function'
-            ? await options.context(userContext)
-            : { ...options.context, ...userContext };
+        const context = typeof options.context === 'function'
+          ? await options.context(userContext)
+          : { ...options.context, ...userContext };
 
         // return the configured options to be used by the graphql server
         return {

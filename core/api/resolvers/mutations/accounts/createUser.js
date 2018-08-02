@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import callMethod from '../../../callMethod';
-import hashPassword from './hashPassword';
+import hashPassword from '../../../hashPassword';
 
 export default async function (root, options, context) {
   Meteor._nodeCodeMustBeInFiber(); // eslint-disable-line

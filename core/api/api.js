@@ -13,6 +13,7 @@ import graphqlServerExpressUpload from './uploadMiddleware';
 import { configureRoles } from './roles';
 
 export callMethod from './callMethod';
+export hashPassword from './hashPassword';
 export getConnection from './getConnection';
 
 const {
@@ -33,11 +34,11 @@ if (APOLLO_ENGINE_KEY) {
 }
 
 const defaultContext = (req) => {
-  const remoteAddress = req.headers['x-real-ip'] ||
-    req.headers['x-forwarded-for'] ||
-    req.connection.remoteAddress ||
-    req.socket.remoteAddress ||
-    req.connection.socket.remoteAddress;
+  const remoteAddress = req.headers['x-real-ip']
+    || req.headers['x-forwarded-for']
+    || req.connection.remoteAddress
+    || req.socket.remoteAddress
+    || req.connection.socket.remoteAddress;
   return { remoteAddress };
 };
 

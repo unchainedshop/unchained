@@ -212,7 +212,7 @@ type Mutation {
   """
   Reset the password for a user using a token received in email. Logs the user in afterwards. ACL: Everybody
   """
-  resetPassword (newPassword: HashedPassword!, token: String!): LoginMethodResponse
+  resetPassword (newPlainPassword: String, newPassword: HashedPassword, token: String!): LoginMethodResponse
 
   """
   Log the user out.

@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import callMethod from '../../../callMethod';
-import hashPassword from './hashPassword';
+import hashPassword from '../../../hashPassword';
 import getUserLoginMethod from './oauth/getUserLoginMethod';
 
 export default async function (root, {
