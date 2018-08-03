@@ -6,6 +6,7 @@
   "license": "EUPL-1.1",
   "scripts": {
     "dev": "GRAPHQL_ENDPOINT=http://localhost:4010/graphql next -p 4000",
+    "dev:remote": "next -p 4000",
     "build": "next build",
     "start": "next start",
     "update-schema": "graphql get-schema && graphql get-schema -j -c > schema.json"
