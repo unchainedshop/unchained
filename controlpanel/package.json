@@ -9,7 +9,7 @@
     "dev:remote": "next -p 4000",
     "build": "next build",
     "start": "next start",
-    "update-schema": "graphql get-schema && graphql get-schema -j -c > schema.json"
+    "update-schema": "apollo schema:download"
   },
   "dependencies": {
     "@zeit/next-css": "^0.2.0",
@@ -47,7 +47,9 @@
     "semantic-ui-react": "^0.82.1",
     "simpl-schema": "^1.5.3",
     "uniforms": "^1.25.0",
-    "uniforms-semantic": "^1.25.0"
+    "uniforms-semantic": "^1.25.0",
+    "url-loader": "^1.0.1",
+    "file-loader": "^1.1.11"
   },
   "devDependencies": {
     "apollo": "^1.6.0",
@@ -56,9 +58,6 @@
     "eslint-config-airbnb": "^17.0.0",
     "eslint-plugin-import": "^2.13.0",
     "eslint-plugin-jsx-a11y": "^6.1.1",
-    "eslint-plugin-react": "^7.10.0",
-    "file-loader": "^1.1.11",
-    "graphql-cli": "^2.16.5",
-    "url-loader": "^1.0.1"
+    "eslint-plugin-react": "^7.10.0"
   }
 }
