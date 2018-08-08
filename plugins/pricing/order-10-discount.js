@@ -6,9 +6,13 @@ import {
 
 class OrderItems extends OrderPricingAdapter {
   static key = 'ch.dagobert.pricing.order-discount'
+
   static version = '1.0'
+
   static label = 'Bruttopreis + MwSt. aller Pauschal-Gutscheine summieren'
+
   static orderIndex = 10
+
   static isActivatedFor() {
     return true;
   }
@@ -36,9 +40,9 @@ class OrderItems extends OrderPricingAdapter {
       let discountAmount = 0;
       let taxAmount = 0;
 
-      const discountAmountToSplit = configuration.rate ?
-        totalItemsAmount * configuration.rate :
-        Math.min(configuration.fixedRate, totalItemsAmount);
+      const discountAmountToSplit = configuration.rate
+        ? totalItemsAmount * configuration.rate
+        : Math.min(configuration.fixedRate, totalItemsAmount);
 
       shares.forEach(({ ratio, taxDivisor }) => {
         const shareAmount = discountAmountToSplit * ratio;

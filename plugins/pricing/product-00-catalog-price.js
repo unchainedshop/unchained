@@ -5,9 +5,13 @@ import {
 
 class ProductPrice extends ProductPricingAdapter {
   static key = 'ch.dagobert.pricing.product-price'
+
   static version = '1.0'
+
   static label = 'Berechnung der Bestellposition: Bruttopreis'
+
   static orderIndex = 0
+
   static isActivatedFor() {
     return true;
   }

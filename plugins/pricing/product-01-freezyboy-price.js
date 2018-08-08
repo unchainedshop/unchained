@@ -18,15 +18,18 @@ staticPrices[CURRENCY_CHF][USER_TAG_CONSUMER] = 79000; // incl. mwst
 
 class FreezyboyPrice extends ProductPricingAdapter {
   static key = 'ch.freezyboy.pricing'
+
   static version = '1.0'
+
   static label = 'Berechnung der Bestellposition: Preis'
+
   static orderIndex = 1
 
   static isActivatedFor(product) {
     if (
-      product.tags &&
-      product.tags.length > 0 &&
-      product.tags.indexOf(PRODUCT_TAG_FREEZYBOY) !== -1) {
+      product.tags
+      && product.tags.length > 0
+      && product.tags.indexOf(PRODUCT_TAG_FREEZYBOY) !== -1) {
       return true;
     }
     return false;

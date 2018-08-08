@@ -6,9 +6,13 @@ import {
 
 class ProductSwissTax extends ProductPricingAdapter {
   static key = 'ch.dagobert.pricing.product-swiss-tax'
+
   static version = '1.0'
+
   static label = 'Berechnung der Bestellposition: Nettopreis und MwSt (Schweiz)'
+
   static orderIndex = 20
+
   static isActivatedFor() {
     return true; // check if delivery address is in switzerland?
   }

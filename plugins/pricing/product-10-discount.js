@@ -6,9 +6,13 @@ import {
 
 class ProductDiscount extends ProductPricingAdapter {
   static key = 'ch.dagobert.pricing.product-discount'
+
   static version = '1.0'
+
   static label = 'Berechnung der Bestellposition: Prozentual-Gutscheine'
+
   static orderIndex = 10
+
   static isActivatedFor() {
     return true;
   }
@@ -29,9 +33,9 @@ class ProductDiscount extends ProductPricingAdapter {
 
     this.discounts.forEach(({ configuration, discountId }) => {
       if (taxableTotal !== 0) {
-        const amount = configuration.rate ?
-          taxableTotal * configuration.rate :
-          Math.min(configuration.fixedRate, taxableTotal);
+        const amount = configuration.rate
+          ? taxableTotal * configuration.rate
+          : Math.min(configuration.fixedRate, taxableTotal);
         this.result.addDiscount({
           amount: amount * quantity * -1,
           isTaxable: true,
@@ -40,9 +44,9 @@ class ProductDiscount extends ProductPricingAdapter {
         });
       }
       if (nonTaxableTotal !== 0) {
-        const amount = configuration.rate ?
-          nonTaxableTotal * configuration.rate :
-          Math.min(configuration.fixedRate, nonTaxableTotal);
+        const amount = configuration.rate
+          ? nonTaxableTotal * configuration.rate
+          : Math.min(configuration.fixedRate, nonTaxableTotal);
         this.result.addDiscount({
           amount: amount * quantity * -1,
           isTaxable: false,

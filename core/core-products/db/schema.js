@@ -26,6 +26,7 @@ const ProductCommerceSchema = new SimpleSchema({
   'pricing.$.countryCode': String,
   'pricing.$.currencyCode': String,
   'pricing.$.amount': Number,
+  'pricing.$.maxQuantity': Number,
 }, { requiredByDefault: false });
 
 const ProductWarehousingSchema = new SimpleSchema({

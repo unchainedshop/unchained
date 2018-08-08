@@ -9,15 +9,18 @@ const SAUSAGE_THRESHOLD_CELSIUS = 20;
 
 class WeatherDependentBarbequeSausagePricing extends ProductPricingAdapter {
   static key = 'shop.unchained.wd-bbq-sausage-pricing'
+
   static version = '1.0'
+
   static label = 'Calculate the price of a sausage 🌭🌦'
+
   static orderIndex = 3
 
   static isActivatedFor(product) {
     if (
-      product.tags &&
-      product.tags.length > 0 &&
-      product.tags.indexOf(PRODUCT_TAG_SAUSAGE) !== -1) {
+      product.tags
+      && product.tags.length > 0
+      && product.tags.indexOf(PRODUCT_TAG_SAUSAGE) !== -1) {
       return true;
     }
     return false;

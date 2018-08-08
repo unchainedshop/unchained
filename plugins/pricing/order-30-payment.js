@@ -5,9 +5,13 @@ import {
 
 class OrderPayment extends OrderPricingAdapter {
   static key = 'ch.dagobert.pricing.order-payment'
+
   static version = '1.0'
+
   static label = 'Bruttopreis + MwSt. aller Zahlungsgebühren summieren'
+
   static orderIndex = 30
+
   static isActivatedFor() {
     return true;
   }

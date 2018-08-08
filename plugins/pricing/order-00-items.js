@@ -2,9 +2,13 @@ import { OrderPricingDirector, OrderPricingAdapter } from 'meteor/unchained:core
 
 class OrderItems extends OrderPricingAdapter {
   static key = 'ch.dagobert.pricing.order-items'
+
   static version = '1.0'
+
   static label = 'Bruttopreis + MwSt. aller Artikel summieren'
+
   static orderIndex = 0
+
   static isActivatedFor() {
     return true;
   }

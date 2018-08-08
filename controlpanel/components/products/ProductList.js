@@ -30,13 +30,13 @@ const ProductList = ({ products, loadMoreEntries, hasMore }) => (
       </Table.Row>
       <Table.Row>
         <Table.HeaderCell>
-Name
+          Name
         </Table.HeaderCell>
         <Table.HeaderCell>
-Active
+          Active
         </Table.HeaderCell>
         <Table.HeaderCell>
-Tags
+          Tags
         </Table.HeaderCell>
       </Table.Row>
     </Table.Header>
