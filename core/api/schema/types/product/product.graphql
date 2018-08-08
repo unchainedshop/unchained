@@ -36,6 +36,7 @@ type ProductPrice {
   isNetPrice: Boolean!
   country: Country!
   price: Money!
+  maxQuantity: Int
 }
 
 type ProductDiscount {
@@ -116,8 +117,8 @@ interface ProductVisualization {
 Commerce
 """
 interface ProductCommerce {
-  catalogPrice: ProductPrice
-  simulatedPrice(useNetPrice: Boolean = false): ProductPrice
+  catalogPrice(quantity: Int = 1): ProductPrice
+  simulatedPrice(useNetPrice: Boolean = false, quantity: Int = 1): ProductPrice
   simulatedDiscounts: [ProductDiscount!]
 }
 

@@ -6,10 +6,11 @@ export default {
     return obj.normalizedStatus();
   },
 
-  catalogPrice(obj, params, { countryContext }) {
+  catalogPrice(obj, { quantity }, { countryContext }) {
     // listPrice: ProductPrice
     return obj.price({
       country: countryContext,
+      quantity,
     });
   },
   simulatedPrice(obj, { quantity, useNetPrice }, { countryContext, userId }) {

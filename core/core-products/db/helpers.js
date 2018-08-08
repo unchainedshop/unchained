@@ -205,7 +205,7 @@ export default () => {
     },
 
     userPrice({
-      quantity, country, userId, useNetPrice,
+      quantity = 1, country, userId, useNetPrice,
     }) {
       const currency = Countries.resolveDefaultCurrencyCode({
         isoCode: country,
@@ -234,31 +234,41 @@ export default () => {
         isNetPrice: useNetPrice,
       };
     },
-    price({ country }) {
+    price({ country, quantity = 1 }) {
       const currency = Countries.resolveDefaultCurrencyCode({
         isoCode: country,
       });
-      const pricing = (this.commerce && this.commerce.pricing) || [];
-      return pricing.reduce((oldValue, curPrice) => {
-        if (curPrice.currencyCode === currency
-          && curPrice.countryCode === country) {
-          return {
-            ...oldValue,
-            ...curPrice,
-          };
-        }
-        return oldValue;
-      }, {
-        _id: crypto
-          .createHash('sha256')
-          .update([this._id, country, currency].join(''))
-          .digest('hex'),
-        amount: 0,
-        currencyCode: currency,
-        countryCode: country,
-        isTaxable: false,
-        isNetPrice: false,
-      });
+      const pricing = ((this.commerce && this.commerce.pricing) || [])
+        .sort(({ maxQuantity: leftMaxQuantity = 0 },
+          { maxQuantity: rightMaxQuantity = 0 }) => {
+          if (leftMaxQuantity === rightMaxQuantity
+            || (!leftMaxQuantity && !rightMaxQuantity)) return 0;
+          if (leftMaxQuantity === 0) return -1;
+          if (rightMaxQuantity === 0) return 1;
+          return leftMaxQuantity - rightMaxQuantity;
+        });
+      return pricing
+        .reduce((oldValue, curPrice) => {
+          if (curPrice.currencyCode === currency
+          && curPrice.countryCode === country
+          && (!curPrice.maxQuantity || curPrice.maxQuantity >= quantity)) {
+            return {
+              ...oldValue,
+              ...curPrice,
+            };
+          }
+          return oldValue;
+        }, {
+          _id: crypto
+            .createHash('sha256')
+            .update([this._id, country, currency].join(''))
+            .digest('hex'),
+          amount: 0,
+          currencyCode: currency,
+          countryCode: country,
+          isTaxable: false,
+          isNetPrice: false,
+        });
     },
   });
 };
