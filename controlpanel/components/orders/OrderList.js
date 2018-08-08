@@ -56,7 +56,7 @@ const OrderList = ({ isShowCarts, toggleShowCarts, ...rest }) => (
     ))}
   >
     <Table.Row>
-      <Table.HeaderCell colSpan={3}>
+      <Table.HeaderCell colSpan={5}>
         Show carts?
         {' '}
         <input type="checkbox" checked={isShowCarts} onClick={toggleShowCarts} />

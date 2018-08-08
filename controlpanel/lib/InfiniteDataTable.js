@@ -32,6 +32,7 @@ export default ({
           )}
         </Table.HeaderCell>
       </Table.Row>
+      {children}
     </Table.Header>
     {items && (
       <InfiniteScroll

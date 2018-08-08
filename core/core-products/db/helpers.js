@@ -61,6 +61,21 @@ export default () => {
           return false;
       }
     },
+    unpublish() {
+      switch (this.status) {
+        case ProductStatus.ACTIVE:
+          Products.update({ _id: this._id }, {
+            $set: {
+              status: ProductStatus.DRAFT,
+              updated: new Date(),
+              published: null,
+            },
+          });
+          return true;
+        default:
+          return false;
+      }
+    },
     upsertLocalizedText({
       locale, title, slug: propablyUsedSlug, ...rest
     }) {

@@ -1,5 +1,5 @@
 import { log } from 'meteor/unchained:core-logger';
-import { Products, ProductStatus } from 'meteor/unchained:core-products';
+import { Products } from 'meteor/unchained:core-products';
 import { ProductNotFoundError, ProductWrongStatusError } from '../errors';
 
 export default function (root, { productId }, { userId }) {
