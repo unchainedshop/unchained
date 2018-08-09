@@ -9,9 +9,9 @@ const {
   NODE_ENV,
 } = process.env;
 
-const googleCache = new NodeCache((NODE_ENV === 'production') ?
-  { stdTTL: 180, checkperiod: 10 } : // 4 minutes lag in production
-  { stdTTL: 30, checkperiod: 5 }); // 7 seconds lag in development
+const googleCache = new NodeCache((NODE_ENV === 'production')
+  ? { stdTTL: 180, checkperiod: 10 } // 4 minutes lag in production
+  : { stdTTL: 30, checkperiod: 5 }); // 7 seconds lag in development
 
 async function downloadSpreadsheet() {
   try {
@@ -52,9 +52,13 @@ updateGoogleCache();
 
 class GoogleSheets extends WarehousingAdapter {
   static key = 'shop.unchained.warehousing.google-sheets'
+
   static version = '1.0'
+
   static label = 'Google Sheets'
+
   static orderIndex = 0
+
   static initialConfiguration = [{
     key: 'address',
     value: null,
