@@ -9,6 +9,7 @@
 #import "./payment.graphql"
 #import "./warehousing.graphql"
 #import "./dispatch.graphql"
+#import "./stock.graphql"
 #import "./shop.graphql"
 #import "./language.graphql"
 #import "./media.graphql"

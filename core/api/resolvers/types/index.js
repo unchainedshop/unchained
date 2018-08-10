@@ -9,6 +9,7 @@ import ConfigurableProduct from './configurable-product';
 import ProductMedia from './product-media';
 import ProductPrice from './product-price';
 import Dispatch from './dispatch';
+import Stock from './stock';
 import ProductDiscount from './product-discount';
 import ProductVariationOption from './product-variation-option';
 import ProductVariation from './product-variation';
@@ -55,6 +56,7 @@ export default {
   WarehousingProvider,
   Dimensions,
   Dispatch,
+  Stock,
   OrderDiscount,
   OrderDiscountable,
   OrderGlobalDiscount,
