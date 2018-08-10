@@ -5,8 +5,11 @@ import {
 
 class Post extends DeliveryAdapter {
   static key = 'ch.dagobert.post'
+
   static label = 'Post (Manual)'
+
   static version = '1.0'
+
   static initialConfiguration = [
   ]
   isActive() { // eslint-disable-line

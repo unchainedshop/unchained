@@ -14,7 +14,8 @@ type SimpleProduct implements Product, ProductVisualization, ProductCommerce, Pr
   catalogPrice(quantity: Int = 1): ProductPrice
   simulatedPrice(useNetPrice: Boolean = false, quantity: Int = 1): ProductPrice
   simulatedDiscounts(quantity: Int = 1): [ProductDiscount!]
-  simulatedDispatches(deliveryProviderType: DeliveryProviderType = SHIPPING, quantity: Int = 1): [Dispatch!]
+  simulatedDispatches(deliveryProviderType: DeliveryProviderType = SHIPPING, referenceDate: Date, quantity: Int = 1): [Dispatch!]
+  simulatedStocks(deliveryProviderType: DeliveryProviderType = SHIPPING, referenceDate: Date): [Stock!]
   dimensions: Dimensions
   sku: String
   maxAllowedQuantityPerOrder: Int

@@ -133,7 +133,7 @@ OrderPositions.updateScheduling = ({ positionId, position }) => {
         quantity: item.quantity,
         country: countryCode,
         userId,
-        referenceDate: order.ordered || new Date(),
+        referenceDate: order.ordered,
       };
       const dispatch = warehousingProvider.estimatedDispatch(context);
       return {

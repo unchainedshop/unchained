@@ -9,7 +9,9 @@ const WarehousingError = {
 
 class WarehousingAdapter {
   static key = ''
+
   static label = ''
+
   static version = ''
 
   static typeSupported(type) { // eslint-disable-line
@@ -29,7 +31,7 @@ class WarehousingAdapter {
     return false;
   }
 
-  async stock() { // eslint-disable-line
+  async stock(referenceDate) { // eslint-disable-line
     return 0;
   }
 
@@ -66,8 +68,9 @@ class WarehousingDirector {
   async throughputTime(context) {
     try {
       const { quantity } = context;
+      const referenceDate = WarehousingDirector.getReferenceDate(context);
       const adapter = this.interface(context);
-      const stock = await adapter.stock() || 0;
+      const stock = await adapter.stock(referenceDate) || 0;
       const notInStockQuantity = Math.max(quantity - stock, 0);
       const productionTime = await adapter.productionTime(notInStockQuantity);
       const commissioningTime = await adapter.commissioningTime(quantity);
@@ -78,9 +81,22 @@ class WarehousingDirector {
     }
   }
 
+  async estimatedStock(context) {
+    try {
+      const referenceDate = WarehousingDirector.getReferenceDate(context);
+      const adapter = this.interface(context);
+      const stock = await adapter.stock(referenceDate);
+      return stock;
+    } catch (error) {
+      console.error(error); // eslint-disable-line
+      return null;
+    }
+  }
+
   async estimatedDispatch(context) {
     try {
-      const { deliveryProvider, referenceDate } = context;
+      const { deliveryProvider } = context;
+      const referenceDate = WarehousingDirector.getReferenceDate(context);
       const warehousingThroughputTime = await this.throughputTime(context);
       const deliveryThroughputTime = deliveryProvider
         .estimatedDeliveryThroughput(context, warehousingThroughputTime);
@@ -118,11 +134,19 @@ class WarehousingDirector {
   }
 
   static adapters = new Map();
+
   static filteredAdapters(filter) {
     return Array.from(WarehousingDirector.adapters)
       .map(entry => entry[1])
       .filter(filter || (() => true));
   }
+
+  static getReferenceDate(context) {
+    return (context && context.referenceDate)
+      ? context.referenceDate
+      : new Date();
+  }
+
   static registerAdapter(adapter) {
     log(`${this.name} -> Registered ${adapter.key} ${adapter.version} (${adapter.label})`) // eslint-disable-line
     WarehousingDirector.adapters.set(adapter.key, adapter);

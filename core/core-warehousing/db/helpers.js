@@ -22,6 +22,9 @@ WarehousingProviders.helpers({
   estimatedDispatch(context) {
     return Promise.await(new WarehousingDirector(this).estimatedDispatch(context));
   },
+  estimatedStock(context) {
+    return Promise.await(new WarehousingDirector(this).estimatedStock(context));
+  },
 });
 
 WarehousingProviders.createProvider = ({ type, ...rest }) => {
@@ -55,7 +58,6 @@ WarehousingProviders.findSupported = ({ product, deliveryProvider }) => {
   const providers = WarehousingProviders
     .find()
     .fetch()
-    .filter(warehousingProvider =>
-      warehousingProvider.isActive({ product, deliveryProvider }));
+    .filter(warehousingProvider => warehousingProvider.isActive({ product, deliveryProvider }));
   return providers;
 };

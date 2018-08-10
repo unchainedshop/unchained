@@ -12,8 +12,11 @@ import {
 
 class EmailDelegation extends DeliveryAdapter {
   static key = 'ch.freezyboy.email-delegation'
+
   static label = 'E-Mail Delegation'
+
   static version = '1.0'
+
   static initialConfiguration = [
     { key: 'from', value: '' },
     { key: 'to', value: '' },
@@ -56,24 +59,28 @@ class EmailDelegation extends DeliveryAdapter {
       return current;
     }, null);
   }
+
   getCCAddress() {
     return this.config.reduce((current, item) => {
       if (item.key === 'cc') return item.value;
       return current;
     }, null);
   }
+
   getStockNumber() {
     return this.config.reduce((current, item) => {
       if (item.key === 'stockNumber') return item.value;
       return current;
     }, null);
   }
+
   getClient() {
     return this.config.reduce((current, item) => {
       if (item.key === 'client') return item.value;
       return current;
     }, null);
   }
+
   generateCSV(delivery, order) {
     const lagerNr = this.getStockNumber();
     const mandant = this.getClient();
@@ -148,6 +155,7 @@ ${positions.join('\n\r')}
   configurationError() { // eslint-disable-line
     return null;
   }
+
   send() {
     const { delivery, order } = this.context;
     const attachments = [];

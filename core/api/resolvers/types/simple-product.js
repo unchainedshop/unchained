@@ -28,9 +28,20 @@ export default {
       userId,
     });
   },
-  simulatedDispatches(obj, { quantity, deliveryProviderType }, { countryContext, userId }) {
+  simulatedDispatches(obj, {
+    referenceDate, quantity, deliveryProviderType,
+  }, { countryContext, userId }) {
     return obj.userDispatches({
+      referenceDate,
       quantity,
+      deliveryProviderType,
+      country: countryContext,
+      userId,
+    });
+  },
+  simulatedStocks(obj, { referenceDate, deliveryProviderType }, { countryContext, userId }) {
+    return obj.userStocks({
+      referenceDate,
       deliveryProviderType,
       country: countryContext,
       userId,

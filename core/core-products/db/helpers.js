@@ -173,7 +173,7 @@ export default () => {
     },
 
     userDispatches({
-      deliveryProviderType, quantity, country, userId,
+      deliveryProviderType, ...options
     }) {
       const deliveryProviders = DeliveryProviders.find({ type: deliveryProviderType }).fetch();
       return deliveryProviders.reduce(
@@ -184,15 +184,36 @@ export default () => {
                 warehousingProvider,
                 deliveryProvider,
                 product: this,
-                quantity,
-                country,
-                userId,
-                referenceDate: new Date(),
+                ...options,
               };
               const dispatch = warehousingProvider.estimatedDispatch(context);
               return {
                 ...context,
                 ...dispatch,
+              };
+            })),
+        [],
+      );
+    },
+
+    userStocks({
+      deliveryProviderType, ...options
+    }) {
+      const deliveryProviders = DeliveryProviders.find({ type: deliveryProviderType }).fetch();
+      return deliveryProviders.reduce(
+        (oldResult, deliveryProvider) => oldResult
+          .concat(oldResult, WarehousingProviders.findSupported({ product: this, deliveryProvider })
+            .map((warehousingProvider) => {
+              const context = {
+                warehousingProvider,
+                deliveryProvider,
+                product: this,
+                ...options,
+              };
+              const stock = warehousingProvider.estimatedStock(context);
+              return {
+                ...context,
+                ...stock,
               };
             })),
         [],
