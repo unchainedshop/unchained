@@ -17,13 +17,13 @@ import Header from './Header';
 import Redirect from './Redirect';
 
 const App = ({
-  loggedInUser, loading, children, router, allowAnonymousAccess,
+  currentUser, loading, children, router, allowAnonymousAccess,
 }) => (
   <main>
     <Header
       loading={loading}
       pathname={router.pathname}
-      loggedInUser={loggedInUser}
+      loggedInUser={currentUser}
     />
     {allowAnonymousAccess ? (
       <Redirect to="/" ifLoggedIn />
