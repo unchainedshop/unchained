@@ -144,7 +144,7 @@ Collections.Assortments.getLocalizedTexts = (
 Collections.AssortmentTexts.getUnusedSlug = (strValue, scope, isAlreadySlugified) => {
   const slug = isAlreadySlugified ? strValue : `${slugify(strValue)}`;
   if (Collections.AssortmentTexts.find({ ...scope, slug }).count() > 0) {
-    return Collections.AssortmentTexts.getUnusedSlug(`${strValue}--`, scope, true);
+    return Collections.AssortmentTexts.getUnusedSlug(`${slug}-`, scope, true);
   }
   return slug;
 };

@@ -359,7 +359,7 @@ ProductMedia.getLocalizedTexts = (
 ProductTexts.getUnusedSlug = (strValue, scope, isAlreadySlugified) => {
   const slug = isAlreadySlugified ? strValue : `${slugify(strValue)}`;
   if (ProductTexts.find({ ...scope, slug }).count() > 0) {
-    return ProductTexts.getUnusedSlug(`${strValue}-`, scope, true);
+    return ProductTexts.getUnusedSlug(`${slug}-`, scope, true);
   }
   return slug;
 };
