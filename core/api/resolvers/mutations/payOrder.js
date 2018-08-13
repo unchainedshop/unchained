@@ -1,6 +1,6 @@
 import { log } from 'meteor/unchained:core-logger';
 import { Orders, OrderStatus, OrderPaymentStatus } from 'meteor/unchained:core-orders';
-import { OrderNotFoundError, OrderPaymentWrongStatusError, OrderWrongStatusError } from '../errors';
+import { OrderNotFoundError, OrderWrongPaymentStatusError, OrderWrongStatusError } from '../errors';
 
 export default function (root, { orderId }, { userId }) {
   log('mutation payOrder', { orderId, userId });
@@ -11,7 +11,7 @@ export default function (root, { orderId }, { userId }) {
   }
   const payment = order.payment();
   if (payment.status !== OrderPaymentStatus.OPEN && order.confirmed) {
-    throw new OrderPaymentWrongStatusError({ data: { status: payment.status } });
+    throw new OrderWrongPaymentStatusError({ data: { status: payment.status } });
   }
   payment.markPaid();
   return order.processOrder();

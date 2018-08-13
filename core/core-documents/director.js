@@ -2,7 +2,9 @@ import { log } from 'meteor/unchained:core-logger';
 
 class DocumentAdapter {
   static key = ''
+
   static label = ''
+
   static version = ''
 
   static isActivatedFor() {
@@ -58,11 +60,13 @@ class DocumentDirector {
   }
 
   static adapters = new Map();
+
   static sortedAdapters() {
     return Array.from(DocumentDirector.adapters)
       .map(entry => entry[1])
       .sort(entry => entry.key);
   }
+
   static registerAdapter(adapter) {
     log(`${this.name} -> Registered ${adapter.key} ${adapter.version} (${adapter.label})`);
     DocumentDirector.adapters.set(adapter.key, adapter);

@@ -11,8 +11,11 @@ const {
 
 class Paypal extends PaymentAdapter {
   static key = 'com.paypal'
+
   static label = 'Paypal'
+
   static version = '1.0'
+
   static initialConfiguration = [{
     key: 'publicKey',
     value: null,
@@ -20,6 +23,7 @@ class Paypal extends PaymentAdapter {
     key: 'merchantId',
     value: null,
   }]
+
   static typeSupported(type) {
     return (type === 'PAYPAL');
   }

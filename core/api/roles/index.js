@@ -71,8 +71,8 @@ export const configureRoles = () => {
   admin(roles.ADMIN, actions);
 };
 
-export const checkPermission = (userId, action, ...args) =>
-  Roles.userHasPermission(userId, action, ...args);
+export const checkPermission = (userId, action, ...args) => Roles
+  .userHasPermission(userId, action, ...args);
 
-export const updateUserRole = (userId, roleName) =>
-  Roles.addUserToRoles(userId, roles[roleName].name);
+export const updateUserRole = (userId, roleName) => Roles
+  .addUserToRoles(userId, roles[roleName].name);

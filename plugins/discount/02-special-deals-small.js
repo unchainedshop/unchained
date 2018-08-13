@@ -4,8 +4,11 @@ const CODE = 'FRESH!9901';
 
 class SpecialDeals extends DiscountAdapter {
   static key = 'ch.freezyboy.smalldeals'
+
   static label = 'Special Deals Discount (Small)'
+
   static version = '1.0'
+
   static orderIndex = 2
 
   // return true if a discount is allowed to get added manually by a user

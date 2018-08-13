@@ -50,8 +50,9 @@ Orders.helpers({
     const discounted = [];
     this.payment().discounts().forEach(discount => discount && discounted.push(discount));
     this.delivery().discounts().forEach(discount => discount && discounted.push(discount));
-    this.items().forEach(item =>
-      item.discounts().forEach(discount => discount && discounted.push(discount)));
+    this.items()
+      .forEach(item => item.discounts()
+        .forEach(discount => discount && discounted.push(discount)));
 
     this.pricing().discountPrices()
       .map(discount => ({
@@ -68,8 +69,8 @@ Orders.helpers({
     const totalOrder = this.pricing().discountSum(orderDiscountId);
     const totalPayment = payment && payment.pricing().discountSum(orderDiscountId);
     const totalDelivery = delivery && delivery.pricing().discountSum(orderDiscountId);
-    const totalItems = this.items().reduce((oldValue, item) =>
-      oldValue + item.pricing().discountSum(orderDiscountId), 0);
+    const totalItems = this.items()
+      .reduce((oldValue, item) => oldValue + item.pricing().discountSum(orderDiscountId), 0);
     return {
       amount: totalItems + totalDelivery + totalPayment + totalOrder,
       currency: this.currency,
@@ -195,8 +196,7 @@ Orders.helpers({
     });
   },
   totalQuantity() {
-    return this.items().reduce((oldValue, item) =>
-      oldValue + item.quantity, 0);
+    return this.items().reduce((oldValue, item) => oldValue + item.quantity, 0);
   },
   missingInputDataForCheckout() {
     const errors = [];
@@ -241,8 +241,8 @@ Orders.helpers({
       if (receipt) attachments.push(receipt);
     }
     const user = this.user();
-    const locale = (user && user.lastLogin && user.lastLogin.locale) ||
-      getFallbackLocale().normalized;
+    const locale = (user && user.lastLogin && user.lastLogin.locale)
+      || getFallbackLocale().normalized;
     const director = new MessagingDirector({
       locale,
       order: this,
@@ -324,8 +324,8 @@ Orders.helpers({
     if (this.payment().isBlockingOrderConfirmation()) return false;
     if (this.delivery().isBlockingOrderConfirmation()) return false;
     if (
-      this.status === OrderStatus.FULLFILLED ||
-      this.status === OrderStatus.CONFIRMED) return false;
+      this.status === OrderStatus.FULLFILLED
+      || this.status === OrderStatus.CONFIRMED) return false;
     return true;
   },
   isAutoFullfillmentEnabled() {
@@ -391,8 +391,8 @@ Orders.helpers({
 
 Orders.setDeliveryProvider = ({ orderId, deliveryProviderId }) => {
   const delivery = OrderDeliveries.findOne({ orderId, deliveryProviderId });
-  const deliveryId = delivery ? delivery._id :
-    OrderDeliveries.createOrderDelivery({ orderId, deliveryProviderId })._id;
+  const deliveryId = delivery ? delivery._id
+    : OrderDeliveries.createOrderDelivery({ orderId, deliveryProviderId })._id;
   log(`Set Delivery Provider ${deliveryProviderId}`, { orderId });
   Orders.update({ _id: orderId }, { $set: { deliveryId, updated: new Date() } });
   Orders.updateCalculation({ orderId });
@@ -401,8 +401,8 @@ Orders.setDeliveryProvider = ({ orderId, deliveryProviderId }) => {
 
 Orders.setPaymentProvider = ({ orderId, paymentProviderId }) => {
   const payment = OrderPayments.findOne({ orderId, paymentProviderId });
-  const paymentId = payment ? payment._id :
-    OrderPayments.createOrderPayment({ orderId, paymentProviderId })._id;
+  const paymentId = payment ? payment._id
+    : OrderPayments.createOrderPayment({ orderId, paymentProviderId })._id;
   log(`Set Payment Provider ${paymentProviderId}`, { orderId });
   Orders.update({ _id: orderId }, { $set: { paymentId, updated: new Date() } });
   Orders.updateCalculation({ orderId });

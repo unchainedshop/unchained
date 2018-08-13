@@ -43,8 +43,7 @@ export default (role, actions) => {
   }).count() > 0));
 
   // only allow if query is not demanding for drafts
-  role.allow(actions.viewProducts, (root, { includeDrafts }) =>
-    !includeDrafts);
+  role.allow(actions.viewProducts, (root, { includeDrafts }) => !includeDrafts);
 
   // public
   role.allow(actions.viewProduct, () => true);

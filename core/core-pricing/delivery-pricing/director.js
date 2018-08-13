@@ -4,9 +4,13 @@ import { DeliveryPricingSheet } from './sheet';
 
 class DeliveryPricingAdapter {
   static key = ''
+
   static label = ''
+
   static version = ''
+
   static orderIndex = 0
+
   static isActivatedFor() {
     return false;
   }
@@ -20,8 +24,7 @@ class DeliveryPricingAdapter {
 
   calculate() {
     const resultRaw = this.result.getRawDeliveryPricingSheet();
-    resultRaw.forEach(({ amount, category }) =>
-      log(`Delivery Calculation -> ${category} ${amount}`));
+    resultRaw.forEach(({ amount, category }) => log(`Delivery Calculation -> ${category} ${amount}`));
     return resultRaw;
   }
 
@@ -70,11 +73,13 @@ class DeliveryPricingDirector {
   }
 
   static adapters = new Map();
+
   static sortedAdapters() {
     return Array.from(DeliveryPricingDirector.adapters)
       .map(entry => entry[1])
       .sort(entry => entry.orderIndex);
   }
+
   static registerAdapter(adapter) {
     log(`${this.name} -> Registered ${adapter.key} ${adapter.version} (${adapter.label})`);
     DeliveryPricingDirector.adapters.set(adapter.key, adapter);

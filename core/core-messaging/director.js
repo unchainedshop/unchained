@@ -12,7 +12,9 @@ const MessagingType = {
 
 class MessagingAdapter {
   static key = ''
+
   static label = ''
+
   static version = ''
 
   static isActivatedFor() {
@@ -67,6 +69,7 @@ class MessagingDirector {
   }
 
   static adapters = new Map();
+
   static resolvers = new Map();
 
   static sortedAdapters() {
@@ -74,10 +77,12 @@ class MessagingDirector {
       .map(entry => entry[1])
       .sort(entry => entry.key);
   }
+
   static registerAdapter(adapter) {
     log(`${this.name} -> Registered ${adapter.key} ${adapter.version} (${adapter.label})`);
     this.adapters.set(adapter.key, adapter);
   }
+
   static setTemplateResolver(type, resolver) {
     log(`${this.name} -> Registered custom template resolver for ${type}`);
     this.resolvers.set(type, resolver);

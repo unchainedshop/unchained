@@ -4,8 +4,11 @@ const CODE = 'SZKB4YOU!';
 
 class Flyer extends DiscountAdapter {
   static key = 'ch.freezyboy.flyer'
+
   static label = 'Flyer Discount'
+
   static version = '1.0'
+
   static orderIndex = 6
 
   // return true if a discount is allowed to get added manually by a user

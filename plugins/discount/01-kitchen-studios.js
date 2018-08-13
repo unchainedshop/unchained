@@ -2,8 +2,11 @@ import { DiscountDirector, DiscountAdapter } from 'meteor/unchained:core-discoun
 
 class KitchenStudios extends DiscountAdapter {
   static key = 'ch.freezyboy.kitchen-studios'
+
   static label = 'Kitchen Studios'
+
   static version = '1.0'
+
   static orderIndex = 1
 
   // return true if a discount is allowed to get added manually by a user
@@ -25,8 +28,8 @@ class KitchenStudios extends DiscountAdapter {
   isValid(isTriggerSystem) { // eslint-disable-line
     const { order } = this.context;
     const user = order.user();
-    const isUserStudio = (user && user.tags &&
-user.tags.indexOf('studio') !== -1);
+    const isUserStudio = (user && user.tags
+&& user.tags.indexOf('studio') !== -1);
     if (isTriggerSystem && isUserStudio) {
       return true;
     }

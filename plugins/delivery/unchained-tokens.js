@@ -5,8 +5,11 @@ import {
 
 class TokenDistribution extends DeliveryAdapter {
   static key = 'shop.unchained.crowdfunding'
+
   static label = 'Token Distribution'
+
   static version = '1.0'
+
   static initialConfiguration = []
 
   static typeSupported(type) {

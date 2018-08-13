@@ -13,14 +13,17 @@ class SmallinvoiceAPI {
     DRAFT: 7,
     PAID: 2,
   }
+
   static Units = {
     PIECE: 7,
     DISCOUNT: 17,
   }
+
   static ItemType = {
     SERVICE: 1,
     PRODUCT: 2,
   }
+
   constructor({
     endpoint = 'https://api.smallinvoice.com', token, language, logger,
   }) {
@@ -37,16 +40,19 @@ class SmallinvoiceAPI {
       return newObj;
     }, {});
   }
+
   post(path, options) {
     const url = this.url(path);
     this.logger(`Smallinvoice -> POST: ${url}`);
     return HTTP.call('POST', url, options);
   }
+
   get(path, options) {
     const url = this.url(path);
     this.logger(`Smallinvoice -> GET: ${url}`);
     return HTTP.call('GET', url, options);
   }
+
   postAsync(path, options) {
     const url = this.url(path);
     this.logger(`Smallinvoice -> POST (async): ${url}`);
@@ -54,6 +60,7 @@ class SmallinvoiceAPI {
       this.logger(result, error);
     });
   }
+
   url(path) {
     return `${this.endpoint}${path}/token/${this.token}`;
   }
@@ -178,6 +185,7 @@ class SmallinvoiceAPI {
     if (error) throw new Error(error);
     return id;
   }
+
   setReceiptStatus(receiptId, status) {
     this.postAsync(`/receipt/status/id/${receiptId}`, {
       data: {
@@ -185,6 +193,7 @@ class SmallinvoiceAPI {
       },
     });
   }
+
   addInvoice({
     clientId, currency, title, date, due, positions, discounts, number, introduction,
   }) {
@@ -209,6 +218,7 @@ class SmallinvoiceAPI {
     if (error) throw new Error(error);
     return id;
   }
+
   setInvoiceStatus(invoiceId, status) {
     this.postAsync(`/invoice/status/id/${invoiceId}`, {
       data: {
@@ -220,7 +230,9 @@ class SmallinvoiceAPI {
 
 class Smallinvoice extends DocumentAdapter {
   static key = 'ch.dagobert.smallinvoice'
+
   static label = 'Smallinvoice'
+
   static version = '1.0'
 
   static isActivatedFor() {
@@ -394,7 +406,7 @@ class Smallinvoice extends DocumentAdapter {
     };
   }
 
-  buildOrderConfirmation({ date, orderNumber, ancestors }) {
+  buildOrderConfirmation({ date, orderNumber }) {
     const { order } = this.context;
     const clientId = this.api.upsertClient({
       ...order.contact,

@@ -17,7 +17,7 @@ class LocalTransport extends Transport {
       this.Logs.insert({
         created: new Date(),
         level,
-        message
+        message,
       });
     } catch (e) {
       console.trace(e); // eslint-disable-line
@@ -25,6 +25,6 @@ class LocalTransport extends Transport {
 
     callback();
   }
-};
+}
 
 export default LocalTransport;

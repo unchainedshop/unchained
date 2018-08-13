@@ -14,10 +14,10 @@ export default class PricingSheet {
     return Object
       .keys((options || {}))
       .reduce(
-        (oldCalculation, optionKey) =>
-          oldCalculation
-            .filter(row =>
-              ((options[optionKey] === undefined) || row[optionKey] === options[optionKey])),
+        (oldCalculation, optionKey) => oldCalculation
+          .filter(row => (
+            (options[optionKey] === undefined)
+            || row[optionKey] === options[optionKey])),
         this.calculation,
       );
   }

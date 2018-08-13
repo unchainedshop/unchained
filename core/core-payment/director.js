@@ -9,8 +9,11 @@ const PaymentError = {
 
 class PaymentAdapter {
   static key = ''
+
   static label = ''
+
   static version = ''
+
   static typeSupported() {
     return false;
   }
@@ -103,12 +106,14 @@ class PaymentDirector {
   }
 
   static adapters = new Map();
+
   static filteredAdapters(filter) {
     return Array.from(PaymentDirector.adapters)
       .map(entry => entry[1])
       .filter(filter || (() => true))
       .sort(entry => entry.key);
   }
+
   static registerAdapter(adapter) {
     log(`${this.name} -> Registered ${adapter.key} ${adapter.version} (${adapter.label})`);
     PaymentDirector.adapters.set(adapter.key, adapter);

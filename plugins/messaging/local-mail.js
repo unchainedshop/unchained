@@ -12,7 +12,9 @@ const {
 
 class LocalMail extends MessagingAdapter {
   static key = 'ch.dagobert.local-mail'
+
   static label = 'Local Mailer'
+
   static version = '1.0'
 
   static isActivatedFor({ type }) {

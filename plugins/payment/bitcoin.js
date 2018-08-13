@@ -6,7 +6,9 @@ import {
 
 class Bitcoin extends PaymentAdapter {
   static key = 'mesh.crypto.bitcoin'
+
   static label = 'Bitcoin'
+
   static version = '1.0'
 
   static typeSupported(type) {

@@ -346,9 +346,15 @@ ProductVariations.helpers({
   },
 });
 
-Products.getLocalizedTexts = (productId, locale) => findLocalizedText(ProductTexts, { productId }, locale);
+Products.getLocalizedTexts = (
+  productId,
+  locale,
+) => findLocalizedText(ProductTexts, { productId }, locale);
 
-ProductMedia.getLocalizedTexts = (productMediaId, locale) => findLocalizedText(ProductMediaTexts, { productMediaId }, locale);
+ProductMedia.getLocalizedTexts = (
+  productMediaId,
+  locale,
+) => findLocalizedText(ProductMediaTexts, { productMediaId }, locale);
 
 ProductTexts.getUnusedSlug = (strValue, scope, isAlreadySlugified) => {
   const slug = isAlreadySlugified ? strValue : `${slugify(strValue)}`;
@@ -358,7 +364,11 @@ ProductTexts.getUnusedSlug = (strValue, scope, isAlreadySlugified) => {
   return slug;
 };
 
-ProductVariations.getLocalizedTexts = (productVariationId, productVariationOptionValue, locale) => findLocalizedText(ProductVariationTexts, {
+ProductVariations.getLocalizedTexts = (
+  productVariationId,
+  productVariationOptionValue,
+  locale,
+) => findLocalizedText(ProductVariationTexts, {
   productVariationId,
   productVariationOptionValue,
 }, locale);

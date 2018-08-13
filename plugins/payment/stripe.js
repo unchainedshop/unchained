@@ -11,12 +11,16 @@ const {
 
 class Stripe extends PaymentAdapter {
   static key = 'com.stripe'
+
   static label = 'Stripe'
+
   static version = '1.0'
+
   static initialConfiguration = [{
     key: 'publishableAPIKey',
     value: null,
   }]
+
   static typeSupported(type) {
     return (type === 'CARD');
   }

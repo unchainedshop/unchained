@@ -6,8 +6,11 @@ import {
 
 class Invoice extends PaymentAdapter {
   static key = 'ch.dagobert.invoice'
+
   static label = 'Invoice (manually)'
+
   static version = '1.0'
+
   static initialConfiguration = []
 
   static typeSupported(type) {

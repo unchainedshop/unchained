@@ -2,8 +2,11 @@ import { log } from 'meteor/unchained:core-logger';
 
 class DiscountAdapter {
   static key = ''
+
   static label = ''
+
   static version = ''
+
   static orderIndex = -1
 
   // return true if a discount is allowed to get added manually by a user
@@ -86,11 +89,13 @@ class DiscountDirector {
   }
 
   static adapters = new Map();
+
   static sortedAdapters() {
     return Array.from(DiscountDirector.adapters)
       .map(entry => entry[1])
       .sort((left, right) => left.orderIndex > right.orderIndex);
   }
+
   static registerAdapter(adapter) {
     log(`${this.name} -> Registered ${adapter.key} ${adapter.version} (${adapter.label})`);
     DiscountDirector.adapters.set(adapter.key, adapter);

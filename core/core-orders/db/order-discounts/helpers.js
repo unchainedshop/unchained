@@ -130,10 +130,8 @@ OrderDiscounts.updateDiscounts = ({ orderId }) => {
   // those who are not valid anymore should get removed
   order
     .discounts()
-    .filter(discount =>
-      !discount.isValid())
-    .forEach(({ _id }) =>
-      OrderDiscounts.removeDiscount({ discountId: _id }));
+    .filter(discount => !discount.isValid())
+    .forEach(({ _id }) => OrderDiscounts.removeDiscount({ discountId: _id }));
 
   // 2. run auto-system discount
   const currentDiscountKeys = order
@@ -142,12 +140,10 @@ OrderDiscounts.updateDiscounts = ({ orderId }) => {
 
   director
     .findSystemDiscounts()
-    .filter(key =>
-      (currentDiscountKeys.indexOf(key) === -1))
-    .forEach(discountKey =>
-      OrderDiscounts.createDiscount({
-        orderId,
-        discountKey,
-        trigger: OrderDiscountTrigger.SYSTEM,
-      }));
+    .filter(key => (currentDiscountKeys.indexOf(key) === -1))
+    .forEach(discountKey => OrderDiscounts.createDiscount({
+      orderId,
+      discountKey,
+      trigger: OrderDiscountTrigger.SYSTEM,
+    }));
 };

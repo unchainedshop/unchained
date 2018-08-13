@@ -3,8 +3,11 @@ import { DiscountDirector, DiscountAdapter } from 'meteor/unchained:core-discoun
 
 class KitchenStudios extends DiscountAdapter {
   static key = 'ch.freezyboy.christmas'
+
   static label = 'Christmas Discount'
+
   static version = '1.0'
+
   static orderIndex = 4
 
   // return true if a discount is allowed to get added manually by a user
@@ -26,10 +29,10 @@ class KitchenStudios extends DiscountAdapter {
   isValid(isTriggerSystem) { // eslint-disable-line
     const { order } = this.context;
     const user = order.user();
-    const isUserStudio = (user &&
-user.tags && user.tags.indexOf('studio') !== -1);
-    const isUserPartner = (user &&
-user.tags && user.tags.indexOf('partner') !== -1);
+    const isUserStudio = (user
+&& user.tags && user.tags.indexOf('studio') !== -1);
+    const isUserPartner = (user
+&& user.tags && user.tags.indexOf('partner') !== -1);
     const isBeforeChristmas = moment().isBefore('2017-12-26', 'day');
     if (isTriggerSystem && (!isUserStudio && !isUserPartner) && isBeforeChristmas) {
       return true;

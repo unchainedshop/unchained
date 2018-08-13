@@ -3,6 +3,9 @@ import path from 'path';
 import os from 'os';
 import opn from 'opn';
 
+const logger = console;
+const mailman = {};
+
 function writeFile(filename, data, done) {
   fs.mkdtemp(path.join(os.tmpdir(), 'mailman-'), (err1, folder) => {
     if (err1) return done(err1);
@@ -14,11 +17,9 @@ function writeFile(filename, data, done) {
   });
 }
 
-const mailman = {};
-
 mailman.warnNoEmailPackage = function warnNoEmailPackage() {
-  console.log('unchained:core -> Unchained Mail Manager could not start because you are not using the email package');
-  console.log('unchained:core -> Please run `meteor add email`');
+  logger.log('unchained:core -> Unchained Mail Manager could not start because you are not using the email package');
+  logger.log('unchained:core -> Please run `meteor add email`');
 };
 
 export default () => {
@@ -34,13 +35,13 @@ export default () => {
       const header = `<b>from:</b>${options.from}<br><b>to:</b>${options.to}<br><br><b>subject:</b>${options.subject}<hr>`;
       const content = header + (options.html || options.text);
       writeFile(filename, content, (err, filePath) => {
-        if (err) { console.log(err); return; }
-        console.log('unchained:core -> Mailman detected an outgoing email');
+        if (err) { logger.log(err); return; }
+        logger.log('unchained:core -> Mailman detected an outgoing email');
         opn(filePath);
       });
     };
 
     Email.send = mailman.send;
-    console.log('unchained:core -> E-Mail Interception activated');
+    logger.log('unchained:core -> E-Mail Interception activated');
   });
 };

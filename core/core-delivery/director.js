@@ -9,7 +9,9 @@ export const DeliveryError = {
 
 export class DeliveryAdapter {
   static key = ''
+
   static label = ''
+
   static version = ''
 
   static typeSupported(type) { // eslint-disable-line
@@ -103,12 +105,14 @@ export class DeliveryDirector {
   }
 
   static adapters = new Map();
+
   static filteredAdapters(filter) {
     return Array.from(DeliveryDirector.adapters)
       .map(entry => entry[1])
       .filter(filter || (() => true))
       .sort(entry => entry.key);
   }
+
   static registerAdapter(AdapterClass) {
     log(`${this.name} -> Registered ${AdapterClass.key} ${AdapterClass.version} (${AdapterClass.label})`) // eslint-disable-line
     DeliveryDirector.adapters.set(AdapterClass.key, AdapterClass);

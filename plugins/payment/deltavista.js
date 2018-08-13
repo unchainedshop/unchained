@@ -28,6 +28,7 @@ class DVACheckAPI {
     this.username = username || '';
     this.password = password || '';
   }
+
   post(path, data) {
     const dataObject = {
       elements: [{
@@ -58,9 +59,11 @@ class DVACheckAPI {
     const result = HTTP.call('POST', this.url(path), options);
     return convert.xml2js(result.content, { compact: true });
   }
+
   url(path) {
     return `${this.endpoint}${path}`;
   }
+
   checkAddress(address, isCompany, reference) {
     try {
       const addressElements = Object.keys(address).map((key) => {
@@ -90,8 +93,8 @@ class DVACheckAPI {
       });
       const result = this.post('', data);
       const { dvaCheckResponse: { response } = { response: {} } } = result;
-      const responseCode = (response && response.responseCode) ?
-        response.responseCode._text : // eslint-disable-line
+      const responseCode = (response && response.responseCode)
+        ? response.responseCode._text : // eslint-disable-line
         '200';
       const responseText = (response && response.responseText)
         ? response.responseText._text : // eslint-disable-line
@@ -114,8 +117,11 @@ class DVACheckAPI {
 
 class DeltavistaInvoice extends PaymentAdapter {
   static key = 'ch.freezyboy.deltavista-invoice'
+
   static label = 'Invoice with Deltavista DVA Check'
+
   static version = '1.0'
+
   static initialConfiguration = []
 
   static typeSupported(type) {

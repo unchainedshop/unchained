@@ -4,9 +4,13 @@ import { OrderPricingSheet } from './sheet';
 
 class OrderPricingAdapter {
   static key = ''
+
   static label = ''
+
   static version = ''
+
   static orderIndex = 0
+
   static isActivatedFor() {
     return false;
   }
@@ -21,8 +25,7 @@ class OrderPricingAdapter {
 
   async calculate() {
     const resultRaw = this.result.getRawPricingSheet();
-    resultRaw.forEach(({ amount, category }) =>
-      log(`Order Calculation -> ${category} ${amount}`));
+    resultRaw.forEach(({ amount, category }) => log(`Order Calculation -> ${category} ${amount}`));
     return resultRaw;
   }
 
@@ -83,11 +86,13 @@ class OrderPricingDirector {
   }
 
   static adapters = new Map();
+
   static sortedAdapters() {
     return Array.from(OrderPricingDirector.adapters)
       .map(entry => entry[1])
       .sort(entry => entry.orderIndex);
   }
+
   static registerAdapter(adapter) {
     log(`${this.name} -> Registered ${adapter.key} ${adapter.version} (${adapter.label})`);
     OrderPricingDirector.adapters.set(adapter.key, adapter);

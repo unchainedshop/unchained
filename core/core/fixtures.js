@@ -79,7 +79,7 @@ export default () => {
       users.push(admin._id);
     } catch (e) {
       // don't care
-      console.log(e);
+      logger.log(e);
     }
 
     const languages = ['de', 'en'].map((code, key) => {
