@@ -5,8 +5,10 @@ import { setContext } from 'apollo-link-context';
 import { onError } from 'apollo-link-error';
 import { toast } from 'react-toastify';
 import fetch from 'isomorphic-unfetch';
+import getConfig from 'next/config';
 import schema from '../schema.json';
-import env from './env';
+
+const { publicRuntimeConfig } = getConfig();
 
 let apolloClient = null;
 
@@ -23,7 +25,7 @@ const fragmentMatcher = new IntrospectionFragmentMatcher({
 
 function create(initialState, headersOverride, getToken) {
   const httpLink = createUploadLink({
-    uri: env.GRAPHQL_ENDPOINT,
+    uri: publicRuntimeConfig.GRAPHQL_ENDPOINT,
     credentials: 'same-origin',
   });
   const errorLink = onError(({ graphQLErrors, networkError }) => {
@@ -49,7 +51,7 @@ function create(initialState, headersOverride, getToken) {
       headers['accept-language'] = headersOverride['accept-language'];
     }
     headers.authorization = getToken() ? `Bearer ${getToken()}` : null;
-    if (env.DEBUG) {
+    if (publicRuntimeConfig.DEBUG) {
       console.warn(headers); //eslint-disable-line
     }
     return { headers };

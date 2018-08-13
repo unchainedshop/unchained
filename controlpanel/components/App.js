@@ -2,9 +2,8 @@ import React from 'react';
 import { withRouter } from 'next/router';
 import { ToastContainer } from 'react-toastify';
 import { Segment, Dimmer, Loader } from 'semantic-ui-react';
-import { compose, lifecycle, withProps } from 'recompose';
-import { graphql } from 'react-apollo';
-import gql from 'graphql-tag';
+import compose from 'recompose/compose';
+import withCurrentUser from '../lib/withCurrentUser';
 import 'react-toastify/dist/ReactToastify.min.css';
 import 'react-phone-number-input/style.css';
 import 'react-datepicker/dist/react-datepicker.css';
@@ -15,9 +14,10 @@ import 'semantic-ui-css/themes/default/assets/fonts/icons.eot';
 import 'semantic-ui-css/themes/default/assets/fonts/icons.woff';
 import 'semantic-ui-css/themes/default/assets/fonts/icons.woff2';
 import Header from './Header';
+import Redirect from './Redirect';
 
 const App = ({
-  loggedInUser, loading, children, router,
+  loggedInUser, loading, children, router, allowAnonymousAccess,
 }) => (
   <main>
     <Header
@@ -25,11 +25,16 @@ const App = ({
       pathname={router.pathname}
       loggedInUser={loggedInUser}
     />
+    {allowAnonymousAccess ? (
+      <Redirect to="/" ifLoggedIn />
+    ) : (
+      <Redirect to="/sign-in" />
+    )}
     <Segment vertical padded>
       {loading && (
         <Dimmer active inverted>
           <Loader size="large" inverted>
-Laden
+            Laden
           </Loader>
         </Dimmer>
       ) }
@@ -39,7 +44,7 @@ Laden
       Made with
       {' '}
       <span role="img" aria-label="love">
-❤️
+        ❤️
       </span>
       {' '}
 by the
@@ -57,31 +62,5 @@ Unchained Team
 
 export default compose(
   withRouter,
-  graphql(gql`
-    query getCurrentUser {
-      me {
-       _id
-       name
-       isGuest
-     }
-    }
-  `),
-  withProps(({ data: { me, loading } }) => ({
-    loggedInUser: me,
-    userIsGuest: !me || (me && me.isGuest),
-    loading,
-  })),
-  lifecycle({
-    async componentWillReceiveProps({
-      loggedInUser, noRedirect, allowAnonymousAccess, loading, router,
-    }) {
-      if (noRedirect) return;
-      if (!allowAnonymousAccess && !loading && !loggedInUser) {
-        router.push('/sign-in');
-      }
-      if (allowAnonymousAccess && !loading && loggedInUser) {
-        router.push('/');
-      }
-    },
-  }),
+  withCurrentUser,
 )(App);

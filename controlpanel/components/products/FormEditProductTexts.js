@@ -11,11 +11,13 @@ import AutoField from 'uniforms-semantic/AutoField';
 import SubmitField from 'uniforms-semantic/SubmitField';
 import ErrorsField from 'uniforms-semantic/ErrorsField';
 import AutoForm from 'uniforms-semantic/AutoForm';
+import getConfig from 'next/config';
 import FormTagInput from '../../lib/FormTagInput';
 import withFormSchema from '../../lib/withFormSchema';
 import withFormModel from '../../lib/withFormModel';
 import withFormErrorHandlers from '../../lib/withFormErrorHandlers';
-import env from '../../lib/env';
+
+const { publicRuntimeConfig } = getConfig();
 
 const FormRTEInput = dynamic(import('../../lib/FormRTEInput'), {
   ssr: false,
@@ -118,7 +120,9 @@ export default compose(
     const filteredActiveLanguages = languages
       .filter(language => !!language.isBase);
     const baseLanguage = (
-      filteredActiveLanguages.length > 0 ? filteredActiveLanguages[0].isoCode : env.LANG
+      filteredActiveLanguages.length > 0
+        ? filteredActiveLanguages[0].isoCode
+        : publicRuntimeConfig.LANG
     );
     return {
       data,

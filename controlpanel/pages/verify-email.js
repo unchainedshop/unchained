@@ -25,7 +25,7 @@ const Verifier = withApollo(createSink(async (
 
 
 export default connectApollo(withRouter(({ router, ...rest }) => (
-  <App {...rest} noRedirect>
+  <App {...rest}>
     <Container>
       {process.browser && (
         <Verifier router={router} {...rest} />

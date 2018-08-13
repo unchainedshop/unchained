@@ -1,6 +1,18 @@
+require('dotenv').config();
 const withCss = require('@zeit/next-css');
 
+const {
+  LANG,
+  GRAPHQL_ENDPOINT,
+  DEBUG,
+} = process.env;
+
 module.exports = withCss({
+  publicRuntimeConfig: { // Will be available on both server and client
+    LANG,
+    GRAPHQL_ENDPOINT,
+    DEBUG,
+  },
   webpack(config) {
     const newConfig = config;
     newConfig.module.rules.push({

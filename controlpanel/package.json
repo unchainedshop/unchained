@@ -13,8 +13,8 @@
   },
   "dependencies": {
     "@zeit/next-css": "^0.2.0",
-    "apollo-cache-inmemory": "^1.2.6",
-    "apollo-client": "^2.3.7",
+    "apollo-cache-inmemory": "^1.2.7",
+    "apollo-client": "^2.3.8",
     "apollo-link": "^1.2.2",
     "apollo-link-context": "^1.0.8",
     "apollo-link-error": "^1.1.0",
@@ -22,6 +22,7 @@
     "apollo-upload-client": "^8.1.0",
     "classnames": "^2.2.6",
     "cookie": "^0.3.1",
+    "dotenv": "^6.0.0",
     "file-loader": "^1.1.11",
     "graphql": "^0.13.2",
     "graphql-tag": "^2.9.2",
@@ -31,7 +32,7 @@
     "next": "^6.1.1",
     "prop-types": "^15.6.2",
     "react": "^16.4.2",
-    "react-apollo": "^2.1.9",
+    "react-apollo": "^2.1.11",
     "react-datepicker": "^1.6.0",
     "react-dom": "^16.4.2",
     "react-dropzone": "^4.3.0",
@@ -52,11 +53,11 @@
     "url-loader": "^1.0.1"
   },
   "devDependencies": {
-    "apollo": "^1.6.0",
+    "apollo": "^1.7.0",
     "babel-eslint": "^8.2.6",
     "eslint": "^4.19.1",
     "eslint-config-airbnb": "^17.0.0",
-    "eslint-plugin-import": "^2.13.0",
+    "eslint-plugin-import": "^2.14.0",
     "eslint-plugin-jsx-a11y": "^6.1.1",
     "eslint-plugin-react": "^7.10.0"
   }

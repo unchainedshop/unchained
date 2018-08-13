@@ -6,6 +6,7 @@ import {
 import { Segment, Container, Menu } from 'semantic-ui-react';
 import gql from 'graphql-tag';
 import dynamic from 'next/dynamic';
+import getConfig from 'next/config';
 import { graphql } from 'react-apollo';
 import AutoField from 'uniforms-semantic/AutoField';
 import SubmitField from 'uniforms-semantic/SubmitField';
@@ -14,7 +15,8 @@ import AutoForm from 'uniforms-semantic/AutoForm';
 import withFormSchema from '../../lib/withFormSchema';
 import withFormModel from '../../lib/withFormModel';
 import withFormErrorHandlers from '../../lib/withFormErrorHandlers';
-import env from '../../lib/env';
+
+const { publicRuntimeConfig } = getConfig();
 
 const FormRTEInput = dynamic(import('../../lib/FormRTEInput'), {
   ssr: false,
@@ -102,7 +104,9 @@ export default compose(
     const filteredActiveLanguages = languages
       .filter(language => !!language.isBase);
     const baseLanguage = (
-      filteredActiveLanguages.length > 0 ? filteredActiveLanguages[0].isoCode : env.LANG
+      filteredActiveLanguages.length > 0
+        ? filteredActiveLanguages[0].isoCode
+        : publicRuntimeConfig.LANG
     );
     return {
       data,
