@@ -3,6 +3,8 @@ import {
   WarehousingAdapter,
 } from 'meteor/unchained:core-warehousing';
 
+import navision from '../../connectors/navision';
+
 const {
   NODE_ENV,
 } = process.env;
@@ -33,13 +35,16 @@ class PublicareWarehouse extends WarehousingAdapter {
     return null;
   }
 
-  async stock() {
+  async stock(referenceDate) {
     const {
       product,
     } = this.context;
     const { sku } = product.warehousing || {};
-    console.log('get stock for', sku);
-    return 10;
+    console.log('Navision Warehousing: get stock available quantity for', sku, referenceDate);
+    return navision.getAvailableStock({ 
+      itemNumber: sku,
+      deliveryDate: referenceDate,
+    });
   }
 
   async productionTime(quantity) {

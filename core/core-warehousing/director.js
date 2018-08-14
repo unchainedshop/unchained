@@ -85,8 +85,10 @@ class WarehousingDirector {
     try {
       const referenceDate = WarehousingDirector.getReferenceDate(context);
       const adapter = this.interface(context);
-      const stock = await adapter.stock(referenceDate);
-      return stock;
+      const quantity = await adapter.stock(referenceDate);
+      return {
+        quantity,
+      };
     } catch (error) {
       console.error(error); // eslint-disable-line
       return null;
