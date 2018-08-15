@@ -5,10 +5,6 @@ import {
 
 import navision from '../../connectors/navision';
 
-const {
-  NODE_ENV,
-} = process.env;
-
 class PublicareWarehouse extends WarehousingAdapter {
   static key = 'ch.publicare.navision.warehousing'
 
@@ -41,35 +37,18 @@ class PublicareWarehouse extends WarehousingAdapter {
     } = this.context;
     const { sku } = product.warehousing || {};
     console.log('Navision Warehousing: get stock available quantity for', sku, referenceDate);
-    return navision.getAvailableStock({ 
+    return navision.getAvailableStock({
       itemNumber: sku,
       deliveryDate: referenceDate,
     });
   }
 
-  async productionTime(quantity) {
-    // const {
-    //   product,
-    // } = this.context;
-    // const { sku } = product.warehousing || {};
-    // if (!sku) return null;
-    // const selector = 'WAREHOUSE_HOURS';
-    // const timeInHours = await this.getRemoteTime(sku.toUpperCase(), quantity, selector);
-    // if (!timeInHours) return null;
-    return 1 * 60 * 60 * 1000;
+  async productionTime(quantity) { // eslint-disable-line
+    return 0;
   }
 
-  async commissioningTime(quantity) {
-    // const {
-    //   product,
-    //   deliveryProvider,
-    // } = this.context;
-    // const { sku } = product.warehousing || {};
-    // const { type } = deliveryProvider;
-    // const selector = `DELIVERY_HOURS:${type}`;
-    // const timeInHours = await this.getRemoteTime(sku.toUpperCase(), quantity, selector);
-    // if (!timeInHours) return null;
-    return 1 * 60 * 60 * 1000;
+  async commissioningTime(quantity) { // eslint-disable-line
+    return 0;
   }
 }
 
