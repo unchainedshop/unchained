@@ -15,6 +15,8 @@ import { configureRoles } from './roles';
 export callMethod from './callMethod';
 export hashPassword from './hashPassword';
 export getConnection from './getConnection';
+export roles from './roles';
+export resolvers from './resolvers';
 
 const {
   APOLLO_ENGINE_KEY,

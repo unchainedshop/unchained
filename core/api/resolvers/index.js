@@ -6,6 +6,9 @@ import JSON from './scalar-json';
 import Upload from './scalar-upload';
 import Types from './types';
 
+export acl from './acl';
+export errors from './errors';
+
 export default {
   ...Types,
   JSON,
