@@ -109,6 +109,19 @@ export default () => {
       });
       return ProductTexts.findOne({ productId: this._id, locale });
     },
+    addMediaLink({ mediaId, meta }) {
+      const sortKey = ProductMedia.getNewSortKey(this._id);
+      const productMediaId = ProductMedia.insert({
+        mediaId,
+        tags: [],
+        sortKey,
+        productId: this._id,
+        created: new Date(),
+        meta,
+      });
+      const productMediaObject = ProductMedia.findOne({ _id: productMediaId });
+      return productMediaObject;
+    },
     addMedia({
       rawFile, href, name, userId, meta, ...options
     }) {
@@ -122,18 +135,7 @@ export default () => {
         ...options,
       });
       const file = Promise.await(fileLoader);
-      const sortKey = ProductMedia.getNewSortKey(this._id);
-
-      const productMediaId = ProductMedia.insert({
-        mediaId: file._id,
-        tags: [],
-        sortKey,
-        productId: this._id,
-        created: new Date(),
-        meta,
-      });
-      const productMediaObject = ProductMedia.findOne({ _id: productMediaId });
-      return productMediaObject;
+      return this.addMediaLink({ mediaId: file._id, meta });
     },
     getLocalizedTexts(locale) {
       const parsedLocale = new Locale(locale);
