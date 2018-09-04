@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-  compose, pure, mapProps, withHandlers,
+  compose, pure, withProps, withHandlers,
 } from 'recompose';
 import { graphql, withApollo } from 'react-apollo';
 import gql from 'graphql-tag';
@@ -15,7 +15,8 @@ import withFormModel from '../../lib/withFormModel';
 import withFormErrorHandlers from '../../lib/withFormErrorHandlers';
 
 const FormChangeEmail = ({
-  disableResendVerificationEmail, resendVerification, isEmailVerified, ...formProps
+  disableResendVerificationEmail, mutate,
+  client, userId, resendVerification, isEmailVerified, ...formProps
 }) => (
   <AutoForm {...formProps}>
     <AutoField name="email" />
@@ -90,11 +91,8 @@ export default compose(
 
   }),
   withFormErrorHandlers,
-  mapProps(({
-    mutate,
-    client,
+  withProps(({
     data: { user: { isEmailVerified = false } = {} },
-    ...rest
-  }) => ({ isEmailVerified, ...rest })),
+  }) => ({ isEmailVerified })),
   pure,
 )(FormChangeEmail);

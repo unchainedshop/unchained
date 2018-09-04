@@ -29,35 +29,35 @@ const Header = ({
     <Link href="/users" passHref>
       <Menu.Item active={(pathname.startsWith('/users'))}>
         <span>
-Users
+          Users
         </span>
       </Menu.Item>
     </Link>
     <Link href="/products" passHref>
       <Menu.Item active={(pathname.startsWith('/products'))}>
         <span>
-Products
+          Products
         </span>
       </Menu.Item>
     </Link>
     <Link href="/assortments" passHref>
       <Menu.Item active={(pathname.startsWith('/assortments'))}>
         <span>
-Assortments
+          Assortments
         </span>
       </Menu.Item>
     </Link>
     <Link href="/orders" passHref>
       <Menu.Item active={(pathname.startsWith('/orders'))}>
         <span>
-Orders
+          Orders
         </span>
       </Menu.Item>
     </Link>
     <Link href="/logs" passHref>
       <Menu.Item active={(pathname.startsWith('/logs'))}>
         <span>
-Logs
+          Logs
         </span>
       </Menu.Item>
     </Link>
@@ -67,42 +67,42 @@ Logs
           <Link href="/countries" passHref>
             <Dropdown.Item active={(pathname === '/countries')}>
               <span>
-Countries
+                Countries
               </span>
             </Dropdown.Item>
           </Link>
           <Link href="/languages" passHref>
             <Dropdown.Item active={(pathname === '/languages')}>
               <span>
-Languages
+                Languages
               </span>
             </Dropdown.Item>
           </Link>
           <Link href="/currencies" passHref>
             <Dropdown.Item active={(pathname === '/currencies')}>
               <span>
-Currencies
+                Currencies
               </span>
             </Dropdown.Item>
           </Link>
           <Link href="/payment-providers" passHref>
             <Dropdown.Item active={(pathname === '/payment-providers')}>
               <span>
-Payment
+                Payment
               </span>
             </Dropdown.Item>
           </Link>
           <Link href="/delivery-providers" passHref>
             <Dropdown.Item active={(pathname === '/delivery-providers')}>
               <span>
-Delivery
+                Delivery
               </span>
             </Dropdown.Item>
           </Link>
           <Link href="/warehousing-providers" passHref>
             <Dropdown.Item active={(pathname === '/warehousing-providers')}>
               <span>
-Warehousing
+                Warehousing
               </span>
             </Dropdown.Item>
           </Link>
@@ -113,19 +113,19 @@ Warehousing
           <Link href="/users/profile" passHref>
             <Dropdown.Item active={(pathname === '/users/profile')}>
               <span>
-Profile
+                Profile
               </span>
             </Dropdown.Item>
           </Link>
           <Link href="/users/account" passHref>
             <Dropdown.Item active={(pathname === '/users/account')}>
               <span>
-Account
+                Account
               </span>
             </Dropdown.Item>
           </Link>
           <Dropdown.Item onClick={doLogout}>
-Logout
+            Logout
           </Dropdown.Item>
         </Dropdown.Menu>
       </Dropdown>

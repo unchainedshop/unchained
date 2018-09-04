@@ -4,14 +4,19 @@ import SubmitField from 'uniforms-semantic/SubmitField';
 import ErrorsField from 'uniforms-semantic/ErrorsField';
 import AutoForm from 'uniforms-semantic/AutoForm';
 import {
-  compose, pure, mapProps, withHandlers,
+  compose, pure, withHandlers,
 } from 'recompose';
 import { graphql, withApollo } from 'react-apollo';
 import gql from 'graphql-tag';
 import withFormSchema from '../../lib/withFormSchema';
 import withFormErrorHandlers from '../../lib/withFormErrorHandlers';
 
-const FormSetPassword = ({ resendVerification, isEmailVerified, ...formProps }) => (
+const FormSetPassword = ({
+  resendVerification, isEmailVerified,
+  mutate,
+  client,
+  userId, ...formProps
+}) => (
   <AutoForm {...formProps}>
     <AutoField name="newPassword" />
     <ErrorsField />
@@ -43,10 +48,5 @@ export default compose(
     }),
   }),
   withFormErrorHandlers,
-  mapProps(({
-    mutate,
-    client,
-    ...rest
-  }) => ({ ...rest })),
   pure,
 )(FormSetPassword);

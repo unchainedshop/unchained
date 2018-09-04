@@ -16,9 +16,29 @@ import withFormErrorHandlers from '../../lib/withFormErrorHandlers';
 import withFormSchema from '../../lib/withFormSchema';
 import withFormModel from '../../lib/withFormModel';
 
-const FormProfile = ({ userId, ...formProps }) => (
+const FormProfile = ({
+  userId,
+  error,
+  schema,
+  model,
+  onSubmit,
+  onChange,
+  onSubmitSuccess,
+  onSubmitFailure,
+}) => (
   <Segment>
-    <AutoForm showInlineError {...formProps}>
+    <AutoForm
+      showInlineError
+      {...({
+        error,
+        schema,
+        model,
+        onSubmit,
+        onChange,
+        onSubmitSuccess,
+        onSubmitFailure,
+      })}
+    >
       <Grid stackable columns={4}>
         <Grid.Row columns={1}>
           <Grid.Column textAlign="center">
@@ -47,7 +67,7 @@ const FormProfile = ({ userId, ...formProps }) => (
         <Grid.Row columns={1}>
           <Grid.Column width={16}>
             <label htmlFor="address.firstName">
-Address
+              Address
             </label>
             <Segment>
               <Grid stackable columns={1}>
@@ -239,24 +259,5 @@ export default compose(
     }),
   }),
   withFormErrorHandlers,
-  mapProps(({
-    userId,
-    error,
-    schema,
-    model,
-    onSubmit,
-    onChange,
-    onSubmitSuccess,
-    onSubmitFailure,
-  }) => ({
-    userId,
-    error,
-    schema,
-    model,
-    onSubmit,
-    onChange,
-    onSubmitSuccess,
-    onSubmitFailure,
-  })),
   pure,
 )(FormProfile);

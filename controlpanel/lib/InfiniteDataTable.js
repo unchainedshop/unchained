@@ -9,7 +9,7 @@ import Link from 'next/link';
 
 export default ({
   items, cols = 4, rowRenderer, createPath, data,
-  children, loadMoreEntries, hasMore, ...rest
+  children, loadMoreEntries, updateHasMore, hasMore, ...rest
 }) => (
   <Table celled {...rest}>
     <Table.Header>

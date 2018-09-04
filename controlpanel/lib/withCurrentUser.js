@@ -10,12 +10,18 @@ export default compose(
        name
        isGuest
        email
+       roles
      }
     }
   `),
-  mapProps(({ data: { me, loading }, loading: loadingPredecessor = false, ...rest }) => ({
-    currentUser: me || {},
-    loading: !me && (loading || loadingPredecessor),
-    ...rest,
-  })),
+  mapProps(({ data: { me, loading }, loading: loadingPredecessor = false, ...rest }) => {
+    const currentUser = me
+      ? (me.roles.indexOf('admin') !== -1 && me)
+      : {};
+    return {
+      currentUser,
+      loading: !me && (loading || loadingPredecessor),
+      ...rest,
+    };
+  }),
 );

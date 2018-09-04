@@ -7,7 +7,8 @@ import Link from 'next/link';
 import InfiniteDataTable, { withDataTableLoader } from '../../lib/InfiniteDataTable';
 
 const AssortmentList = ({
-  isShowLeafNodes, toggleShowLeafNodes, changeBaseAssortment, ...rest
+  isShowLeafNodes, setShowLeafNodes, loading, mutate,
+  toggleShowLeafNodes, changeBaseAssortment, ...rest
 }) => (
   <InfiniteDataTable
     {...rest}

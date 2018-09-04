@@ -15,61 +15,63 @@ const LogList = ({ data: { logs = defaultLogs, loading }, ...rest }) => (
     <Table.Header>
       <Table.Row>
         <Table.HeaderCell>
-Log date
+          Log date
         </Table.HeaderCell>
         <Table.HeaderCell>
-Message
+          Message
         </Table.HeaderCell>
         <Table.HeaderCell>
-Context
+          Context
         </Table.HeaderCell>
       </Table.Row>
     </Table.Header>
-    {loading && (
-      <Table.Row>
-        <Table.Cell colSpan={3}>
-          <Loader active inline="centered" />
-        </Table.Cell>
-      </Table.Row>
-    )}
-    {logs.map(({
-      _id, level, message, created, user, order,
-    }) => (
-      <Table.Row key={_id}>
-        <Table.Cell singleLine>
-          <Moment format="DD.MM HH:mm:ss">
-            {created}
-          </Moment>
-        </Table.Cell>
-        <Table.Cell warning={level === 'warn'} error={level === 'error'}>
-          <code>
-            {message}
-          </code>
-        </Table.Cell>
-        <Table.Cell>
-          {user && (
-          <Link href={`/users/edit?_id=${user._id}`} passHref>
-            <Label horizontal basic>
-              <Icon name="user" />
-              {' '}
-              {user.name.substr(0, 4)}
+    <Table.Body>
+      {loading && (
+        <Table.Row>
+          <Table.Cell colSpan={3}>
+            <Loader active inline="centered" />
+          </Table.Cell>
+        </Table.Row>
+      )}
+      {logs.map(({
+        _id, level, message, created, user, order,
+      }) => (
+        <Table.Row key={_id}>
+          <Table.Cell singleLine>
+            <Moment format="DD.MM HH:mm:ss">
+              {created}
+            </Moment>
+          </Table.Cell>
+          <Table.Cell warning={level === 'warn'} error={level === 'error'}>
+            <code>
+              {message}
+            </code>
+          </Table.Cell>
+          <Table.Cell>
+            {user && (
+            <Link href={`/users/edit?_id=${user._id}`} passHref>
+              <Label horizontal basic>
+                <Icon name="user" />
+                {' '}
+                {user.name.substr(0, 4)}
 ...
-            </Label>
-          </Link>
-          )}
-          {order && (
-          <Link href={`/orders/view?_id=${order._id}`} passHref>
-            <Label horizontal basic>
-              <Icon name="cart" />
-              {' '}
-              {(order.orderNumber || order._id).substr(0, 4)}
+              </Label>
+            </Link>
+            )}
+            {order && (
+            <Link href={`/orders/view?_id=${order._id}`} passHref>
+              <Label horizontal basic>
+                <Icon name="cart" />
+                {' '}
+                {(order.orderNumber || order._id).substr(0, 4)}
 ...
-            </Label>
-          </Link>
-          )}
-        </Table.Cell>
-      </Table.Row>
-    ))}
+              </Label>
+            </Link>
+            )}
+          </Table.Cell>
+        </Table.Row>
+      ))}
+    </Table.Body>
   </Table>
 );
 

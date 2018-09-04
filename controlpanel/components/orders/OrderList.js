@@ -7,7 +7,10 @@ import Link from 'next/link';
 import InfiniteDataTable, { withDataTableLoader } from '../../lib/InfiniteDataTable';
 import FormattedMoney from '../FormattedMoney';
 
-const OrderList = ({ isShowCarts, toggleShowCarts, ...rest }) => (
+const OrderList = ({
+  isShowCarts, toggleShowCarts, loading,
+  updateHasMore, setShowCarts, ...rest
+}) => (
   <InfiniteDataTable
     {...rest}
     cols={5}

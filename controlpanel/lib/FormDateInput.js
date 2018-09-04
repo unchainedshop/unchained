@@ -49,14 +49,14 @@ const DatePickerField = ({
         id={id}
         name={name}
         onChange={dateObject => dateParse(dateObject, onChange)}
-        locale="de-ch"
+        locale="de-CH"
         peekNextMonth
         showMonthDropdown
         showYearDropdown
         dropdownMode="select"
         placeholder={placeholder}
         ref={inputRef}
-        selected={moment(value)}
+        selected={value ? moment(value) : null}
       />
       {(icon || iconLeft) && (
         <i className={`${icon || iconLeft} icon`} {...iconProps} />

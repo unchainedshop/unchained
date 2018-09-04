@@ -8,7 +8,10 @@ import {
 import InfiniteScroll from 'react-infinite-scroller';
 import Link from 'next/link';
 
-const ProductList = ({ products, loadMoreEntries, hasMore }) => (
+const ProductList = ({
+  products, loadMoreEntries,
+  hasMore,
+}) => (
   <Table celled>
     <Table.Header>
       <Table.Row>

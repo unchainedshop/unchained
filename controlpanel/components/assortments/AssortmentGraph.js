@@ -107,6 +107,7 @@ export default compose(
         id: keypath,
         source: keypath.split('.')[0],
         target: keypath.split('.')[1],
+        strokeWidth: 1,
       })),
     };
   }),
