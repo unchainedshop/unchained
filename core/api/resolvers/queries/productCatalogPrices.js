@@ -9,7 +9,7 @@ export default function (root, { productId }, { userId }) {
   return prices.map(price => ({
     _id: crypto
       .createHash('sha256')
-      .update([productId, price.countryCode, price.currencyCode].join(''))
+      .update([productId, price.countryCode, price.currencyCode, price.maxQuantity].join(''))
       .digest('hex'),
     ...price,
   }));

@@ -30,7 +30,7 @@ export default connectApollo(withRouter(({ changeTab, router, ...rest }) => (
             {(!router.query.tab || router.query.tab === 'ProductTranslation') && (
               <div>
                 <Header as="h3">
-General Texts
+                  General Texts
                 </Header>
                 <FormEditProductTexts productId={router.query._id} />
               </div>
@@ -38,7 +38,7 @@ General Texts
             {router.query.tab === 'ProductVisualization' && (
               <div>
                 <Header as="h3">
-Catalog Visualization
+                  Catalog Visualization
                 </Header>
                 <ProductMediaList productId={router.query._id} />
               </div>
@@ -46,7 +46,7 @@ Catalog Visualization
             {router.query.tab === 'ProductCommerce' && (
               <div>
                 <Header as="h3">
-Pricing
+                  Pricing
                 </Header>
                 <FormEditProductCommerce productId={router.query._id} />
               </div>
@@ -54,7 +54,7 @@ Pricing
             {router.query.tab === 'ProductSupply' && (
               <div>
                 <Header as="h3">
-Delivery Information
+                  Delivery Information
                 </Header>
                 <FormEditProductSupply productId={router.query._id} />
               </div>
@@ -62,7 +62,7 @@ Delivery Information
             {router.query.tab === 'ProductWarehousing' && (
               <div>
                 <Header as="h3">
-Warehousing Information
+                  Warehousing Information
                 </Header>
                 <FormEditProductWarehousing productId={router.query._id} />
               </div>
@@ -70,11 +70,11 @@ Warehousing Information
             {router.query.tab === 'ProductProxy' && (
               <div>
                 <Header as="h3">
-Metrics
+                  Metrics
                 </Header>
                 <ProductVariationList productId={router.query._id} />
                 <Header as="h3">
-Product Assignment
+                  Product Assignment
                 </Header>
                 <ProductVariationAssignmentList productId={router.query._id} />
               </div>

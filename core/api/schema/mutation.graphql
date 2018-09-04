@@ -108,6 +108,7 @@ input UpdateProductVariationTextInput {
 
 input UpdateProductCommercePricingInput {
   amount: Int!
+  maxQuantity: Int
   isTaxable: Boolean
   isNetPrice: Boolean
   currencyCode: String!
