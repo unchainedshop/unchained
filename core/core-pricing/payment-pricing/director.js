@@ -23,7 +23,7 @@ class PaymentPricingAdapter {
   }
 
   async calculate() {
-    const resultRaw = this.result.getRawPaymentPricingSheet();
+    const resultRaw = this.result.getRawPricingSheet();
     resultRaw.forEach(({ amount, category }) => log(`Payment Calculation -> ${category} ${amount}`));
     return resultRaw;
   }

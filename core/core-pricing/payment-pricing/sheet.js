@@ -1,31 +1,50 @@
+import PricingSheet from '../pricing-sheet';
+
 const PaymentPricingSheetRowCategories = {
   Payment: 'PAYMENT',
   Discount: 'DISCOUNT',
   Tax: 'TAX',
 };
 
-class PaymentPricingSheet {
-  constructor({ calculation, currency }) {
-    this.calculation = calculation || [];
-    this.currency = currency;
-  }
-
-  addPayment({ amount }) {
+class PaymentPricingSheet extends PricingSheet {
+  addPayment({
+    amount, isTaxable, isNetPrice, meta,
+  }) {
     this.calculation.push({
       category: PaymentPricingSheetRowCategories.Payment,
       amount,
+      isTaxable,
+      isNetPrice,
+      meta,
     });
   }
 
-  addTax({ amount }) {
+  addTax({ amount, rate, meta }) {
     this.calculation.push({
       category: PaymentPricingSheetRowCategories.Tax,
       amount,
+      rate,
+      meta,
     });
   }
 
   taxSum() {
-    return this.sum({ category: PaymentPricingSheetRowCategories.Tax });
+    return this.sum({
+      category: PaymentPricingSheetRowCategories.Tax,
+    });
+  }
+
+  paymentSum() {
+    return this.sum({
+      category: PaymentPricingSheetRowCategories.Payment,
+    });
+  }
+
+  discountSum(discountId) {
+    return this.sum({
+      category: PaymentPricingSheetRowCategories.Discount,
+      discountId,
+    });
   }
 
   discountPrices() {
@@ -43,41 +62,16 @@ class PaymentPricingSheet {
     }));
   }
 
-  discountSum(discountId) {
-    return this.sum({
-      category: PaymentPricingSheetRowCategories.Discount,
-      discountId,
-    });
-  }
-
-  gross() {
-    return this.sum();
-  }
-
-  sum({ category } = {}) {
-    return this.filterByCategory(category)
-      .reduce((sum, calculationRow) => sum + calculationRow.amount, 0);
+  getPaymentRows() {
+    return this.filterBy({ category: PaymentPricingSheetRowCategories.Item });
   }
 
   getDiscountRows() {
-    return this.filterByCategory(PaymentPricingSheetRowCategories.Discount);
-  }
-
-  getPaymentRows() {
-    return this.filterByCategory(PaymentPricingSheetRowCategories.Payment);
+    return this.filterBy({ category: PaymentPricingSheetRowCategories.Discount });
   }
 
   getTaxRows() {
-    return this.filterByCategory(PaymentPricingSheetRowCategories.Tax);
-  }
-
-  filterByCategory(category) {
-    return this.calculation
-      .filter(calculationRow => (!category || calculationRow.category === category));
-  }
-
-  getRawPaymentPricingSheet() {
-    return this.calculation;
+    return this.filterBy({ category: PaymentPricingSheetRowCategories.Tax });
   }
 }
 

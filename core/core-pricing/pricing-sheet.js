@@ -25,4 +25,19 @@ export default class PricingSheet {
   getRawPricingSheet() {
     return this.calculation;
   }
+
+  gross() {
+    return this.sum();
+  }
+
+  net() {
+    return this.sum() - this.taxSum();
+  }
+
+  total(category) {
+    return {
+      amount: this.sum({ category }),
+      currency: this.currency,
+    };
+  }
 }

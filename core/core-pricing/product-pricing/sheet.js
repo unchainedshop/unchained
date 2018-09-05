@@ -72,21 +72,6 @@ class ProductPricingSheet extends PricingSheet {
     };
   }
 
-  gross() {
-    return this.sum();
-  }
-
-  net() {
-    return this.sum() - this.taxSum();
-  }
-
-  total(category) {
-    return {
-      amount: this.sum({ category }),
-      currency: this.currency,
-    };
-  }
-
   discountPrices() {
     const discountIds = this
       .getDiscountRows()

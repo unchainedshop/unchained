@@ -1,31 +1,43 @@
+import PricingSheet from '../pricing-sheet';
+
 const DeliveryPricingSheetRowCategories = {
   Delivery: 'DELIVERY',
   Discount: 'DISCOUNT',
   Tax: 'TAX',
 };
 
-class DeliveryPricingSheet {
-  constructor({ calculation, currency }) {
-    this.calculation = calculation || [];
-    this.currency = currency;
-  }
-
-  addDelivery({ amount }) {
+class DeliveryPricingSheet extends PricingSheet {
+  addDelivery({
+    amount, isTaxable, isNetPrice, meta,
+  }) {
     this.calculation.push({
       category: DeliveryPricingSheetRowCategories.Delivery,
       amount,
+      isTaxable,
+      isNetPrice,
+      meta,
     });
   }
 
-  addTax({ amount }) {
+  addTax({ amount, rate, meta }) {
     this.calculation.push({
       category: DeliveryPricingSheetRowCategories.Tax,
       amount,
+      rate,
+      meta,
     });
   }
 
   taxSum() {
-    return this.sum({ category: DeliveryPricingSheetRowCategories.Tax });
+    return this.sum({
+      category: DeliveryPricingSheetRowCategories.Tax,
+    });
+  }
+
+  deliverySum() {
+    return this.sum({
+      category: DeliveryPricingSheetRowCategories.Delivery,
+    });
   }
 
   discountSum(discountId) {
@@ -50,34 +62,16 @@ class DeliveryPricingSheet {
     }));
   }
 
-  gross() {
-    return this.sum();
-  }
-
-  sum({ category } = {}) {
-    return this.filterByCategory(category)
-      .reduce((sum, calculationRow) => sum + calculationRow.amount, 0);
-  }
-
   getDeliveryRows() {
-    return this.filterByCategory(DeliveryPricingSheetRowCategories.Delivery);
+    return this.filterBy({ category: DeliveryPricingSheetRowCategories.Item });
   }
 
   getDiscountRows() {
-    return this.filterByCategory(DeliveryPricingSheetRowCategories.Discount);
+    return this.filterBy({ category: DeliveryPricingSheetRowCategories.Discount });
   }
 
   getTaxRows() {
-    return this.filterByCategory(DeliveryPricingSheetRowCategories.Tax);
-  }
-
-  filterByCategory(category) {
-    return this.calculation
-      .filter(calculationRow => (!category || calculationRow.category === category));
-  }
-
-  getRawDeliveryPricingSheet() {
-    return this.calculation;
+    return this.filterBy({ category: DeliveryPricingSheetRowCategories.Tax });
   }
 }
 
