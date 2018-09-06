@@ -103,10 +103,13 @@ class WarehousingDirector {
       const deliveryThroughputTime = deliveryProvider
         .estimatedDeliveryThroughput(context, warehousingThroughputTime);
       const shippingTimestamp = referenceDate.getTime() + warehousingThroughputTime;
-      const earliestDeliveryTimestamp = shippingTimestamp + deliveryThroughputTime;
+      const earliestDeliveryTimestamp = (deliveryThroughputTime !== null)
+        ? (shippingTimestamp + deliveryThroughputTime)
+        : null;
+
       return {
-        shipping: new Date(shippingTimestamp),
-        earliestDelivery: new Date(earliestDeliveryTimestamp),
+        shipping: shippingTimestamp && new Date(shippingTimestamp),
+        earliestDelivery: earliestDeliveryTimestamp && new Date(earliestDeliveryTimestamp),
       };
     } catch (error) {
       console.error(error); // eslint-disable-line

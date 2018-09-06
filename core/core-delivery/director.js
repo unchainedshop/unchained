@@ -90,7 +90,7 @@ export class DeliveryDirector {
       return adapter.estimatedDeliveryThroughput();
     } catch (error) {
       console.warn(error); // eslint-disable-line
-      return 0;
+      return null;
     }
   }
 
