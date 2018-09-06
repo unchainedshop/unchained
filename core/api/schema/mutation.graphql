@@ -204,7 +204,7 @@ type Mutation {
   """
   Change the current user's password. Must be logged in. ACL: Everybody
   """
-  changePassword (oldPassword: HashedPassword!, newPassword: HashedPassword!): SuccessResponse
+  changePassword (oldPassword: HashedPassword, oldPlainPassword: String, newPassword: HashedPassword, newPlainPassword: String): SuccessResponse
 
   """
   Request a forgot password email. ACL: Everybody
