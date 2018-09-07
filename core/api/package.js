@@ -1,7 +1,7 @@
 /* globals Package */
 Package.describe({
   name: 'unchained:api',
-  version: '0.3.0',
+  version: '0.4.0',
   // Brief, one-line summary of the package.
   summary: '',
   // URL to the Git repository containing the source code for this package.
