@@ -1,0 +1,45 @@
+input FilterQuery {
+  key: String!
+  value: JSON
+}
+
+enum FilterType {
+  SWITCH
+  SINGLE_CHOICE
+  MULTI_CHOICE
+  CUSTOM
+}
+
+type FilterTexts {
+  _id: ID!
+  locale: String
+  title: String
+  subtitle: String
+}
+
+type FilterOption {
+  _id: ID!
+  texts(forceLocale: String): FilterTexts
+  value: JSON
+}
+
+type Filter {
+  _id: ID!
+  texts(forceLocale: String): FilterTexts
+  type: FilterType
+  key: String
+  options: [FilterOption!]
+}
+
+type CollectionFilterOption {
+  option: FilterOption!
+  remaining: Int
+  active: Boolean
+}
+
+type CollectionFilter {
+  filter: Filter!
+  remaining: Int!
+  active: Boolean
+  optionStates: [CollectionFilterOption!]
+}

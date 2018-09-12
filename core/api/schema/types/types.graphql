@@ -3,6 +3,7 @@
 #import "./dimensions.graphql"
 #import "./address.graphql"
 #import "./contact.graphql"
+#import "./filter.graphql"
 #import "./delivery.graphql"
 #import "./currency.graphql"
 #import "./country.graphql"

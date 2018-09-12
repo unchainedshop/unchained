@@ -2,7 +2,9 @@ import 'meteor/dburles:collection-helpers';
 import { Countries } from 'meteor/unchained:core-countries';
 import { Products, ProductStatus } from 'meteor/unchained:core-products';
 import { slugify } from 'meteor/unchained:utils';
+import { filterCollection } from 'meteor/unchained:core-filters';
 import { findLocalizedText } from 'meteor/unchained:core';
+
 import { Locale } from 'locale';
 import * as Collections from './collections';
 
@@ -246,18 +248,23 @@ export default () => {
         })
         .fetch();
     },
-    products({ limit = 10, offset = 0, forceLiveCollection = false } = {}) {
+    products({
+      limit = 10, offset = 0,
+      forceLiveCollection = false,
+      includeInactive = false,
+    } = {}) {
       const productIds = forceLiveCollection
         ? this.collectProductIdCache()
         : this._cachedProductIds; // eslint-disable-line
 
       const selector = {
         _id: { $in: productIds },
-        status: ProductStatus.ACTIVE,
       };
-      return Products
-        .find(selector, { skip: offset, limit })
-        .fetch();
+      if (!includeInactive) {
+        selector.status = ProductStatus.ACTIVE;
+      }
+      const pointer = Products.find(selector, { skip: offset, limit });
+      return filterCollection(pointer);
     },
     linkedAssortments() {
       return Collections.AssortmentLinks
