@@ -1,7 +1,7 @@
 /* globals Package */
 Package.describe({
   name: 'unchained:api',
-  version: '0.4.0',
+  version: '0.5.0',
   // Brief, one-line summary of the package.
   summary: '',
   // URL to the Git repository containing the source code for this package.
@@ -37,8 +37,8 @@ Package.onUse((api) => {
   api.use('unchained:core-products');
   api.use('unchained:core-users');
   api.use('unchained:core-warehousing');
-  api.use('unchained:core-assortments');
   api.use('unchained:core-filters');
+  api.use('unchained:core-assortments');
 
   api.mainModule('api.js', 'server');
 });

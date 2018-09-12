@@ -20,6 +20,7 @@ Package.onUse((api) => {
 
   api.use('unchained:utils');
   api.use('unchained:core-currencies');
+  api.use('unchained:core-filters');
 
   api.mainModule('assortments.js', 'server');
 });
