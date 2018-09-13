@@ -3,7 +3,7 @@ import SimpleSchema from 'simpl-schema';
 import { Filters, FilterTexts } from './collections';
 
 export const FilterTypes = { // eslint-disable-line
-  BOOLEAN: 'BOOLEAN',
+  SWITCH: 'SWITCH',
   SINGLE_CHOICE: 'SINGLE_CHOICE',
   MULTI_CHOICE: 'MULTI_CHOICE',
 };

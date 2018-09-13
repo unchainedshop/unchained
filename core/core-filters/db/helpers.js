@@ -93,17 +93,19 @@ Filters.filterFilters = ({
 Filters.helpers({
   upsertLocalizedText({ locale, filterOptionValue, ...rest }) {
     const localizedData = { locale, ...rest };
-    FilterTexts.upsert({
+    const selector = {
       filterId: this._id,
-      filterOptionValue,
+      filterOptionValue: filterOptionValue || { $eq: null },
       locale,
-    }, {
+    };
+    FilterTexts.upsert(selector, {
       $set: {
         updated: new Date(),
         ...localizedData,
+        filterOptionValue: filterOptionValue || null,
       },
     }, { bypassCollection2: true });
-    return FilterTexts.findOne({ filterId: this._id, locale });
+    return FilterTexts.findOne(selector);
   },
   getLocalizedTexts(locale, optionValue) {
     const parsedLocale = new Locale(locale);

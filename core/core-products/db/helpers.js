@@ -333,17 +333,19 @@ ProductMedia.helpers({
 ProductVariations.helpers({
   upsertLocalizedText({ locale, productVariationOptionValue, ...rest }) {
     const localizedData = { locale, ...rest };
-    ProductVariationTexts.upsert({
+    const selector = {
       productVariationId: this._id,
-      productVariationOptionValue,
+      productVariationOptionValue: productVariationOptionValue || { $eq: null },
       locale,
-    }, {
+    };
+    ProductVariationTexts.upsert(selector, {
       $set: {
         updated: new Date(),
         ...localizedData,
+        productVariationOptionValue: productVariationOptionValue || null,
       },
     }, { bypassCollection2: true });
-    return ProductVariationTexts.findOne({ productVariationId: this._id, locale });
+    return ProductVariationTexts.findOne(selector);
   },
   getLocalizedTexts(locale, optionValue) {
     const parsedLocale = new Locale(locale);

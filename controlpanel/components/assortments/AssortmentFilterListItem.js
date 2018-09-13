@@ -5,19 +5,19 @@ import { SortableElement } from 'react-sortable-hoc';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 
-const AssortmentProductListItem = ({
-  product, removeAssortmentProduct,
+const AssortmentFilterListItem = ({
+  filter, removeAssortmentFilter,
 }) => (
   <Item>
     <Item.Content>
       <Item.Header>
-        {product.texts && product.texts.title}
+        {filter.texts ? filter.texts.title : filter.key}
       </Item.Header>
       <Item.Extra>
         <Button
           secondary
           floated="right"
-          onClick={removeAssortmentProduct}
+          onClick={removeAssortmentFilter}
         >
             Delete
         </Button>
@@ -28,27 +28,27 @@ const AssortmentProductListItem = ({
 
 export default compose(
   graphql(gql`
-    mutation removeAssortmentProduct($assortmentProductId: ID!) {
-      removeAssortmentProduct(assortmentProductId: $assortmentProductId) {
+    mutation removeAssortmentFilter($assortmentFilterId: ID!) {
+      removeAssortmentFilter(assortmentFilterId: $assortmentFilterId) {
         _id
       }
     }
   `, {
-    name: 'removeAssortmentProduct',
+    name: 'removeAssortmentFilter',
     options: {
       refetchQueries: [
-        'assortmentProducts',
+        'assortmentFilters',
       ],
     },
   }),
   withHandlers({
-    removeAssortmentProduct: ({ removeAssortmentProduct, _id }) => async () => {
-      await removeAssortmentProduct({
+    removeAssortmentFilter: ({ removeAssortmentFilter, _id }) => async () => {
+      await removeAssortmentFilter({
         variables: {
-          assortmentProductId: _id,
+          assortmentFilterId: _id,
         },
       });
     },
   }),
   SortableElement,
-)(AssortmentProductListItem);
+)(AssortmentFilterListItem);

@@ -4,8 +4,19 @@ input FilterQuery {
 }
 
 enum FilterType {
+  """
+  Switch / Boolean
+  """
   SWITCH
+
+  """
+  Single-choice
+  """
   SINGLE_CHOICE
+
+  """
+  Multi-choice
+  """
   MULTI_CHOICE
 }
 
@@ -24,6 +35,8 @@ type FilterOption {
 
 type Filter {
   _id: ID!
+  updated: Date
+  created: Date
   texts(forceLocale: String): FilterTexts
   type: FilterType
   key: String

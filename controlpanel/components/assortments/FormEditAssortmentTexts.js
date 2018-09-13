@@ -163,7 +163,7 @@ export default compose(
     'texts.$.description': {
       type: String,
       optional: true,
-      label: 'Produktbeschreibung',
+      label: 'Product description',
     },
     'texts.$.slug': {
       type: String,

@@ -3,27 +3,24 @@ import { toast } from 'react-toastify';
 import {
   compose, pure, mapProps, withHandlers, withState,
 } from 'recompose';
-import { Segment, Container, Menu } from 'semantic-ui-react';
+import {
+  Segment, Container, Menu, Button,
+} from 'semantic-ui-react';
 import gql from 'graphql-tag';
-import dynamic from 'next/dynamic';
 import { graphql } from 'react-apollo';
 import AutoField from 'uniforms-semantic/AutoField';
 import SubmitField from 'uniforms-semantic/SubmitField';
 import ErrorsField from 'uniforms-semantic/ErrorsField';
 import AutoForm from 'uniforms-semantic/AutoForm';
 import getConfig from 'next/config';
-import FormTagInput from '../../lib/FormTagInput';
 import withFormSchema from '../../lib/withFormSchema';
 import withFormModel from '../../lib/withFormModel';
 import withFormErrorHandlers from '../../lib/withFormErrorHandlers';
 
 const { publicRuntimeConfig } = getConfig();
 
-const FormRTEInput = dynamic(import('../../lib/FormRTEInput'), {
-  ssr: false,
-});
-const FormEditProductTexts = ({
-  languages, changeSelectedLocale, activeLanguage, isEditingDisabled, ...formProps
+const FormEditFilterTexts = ({
+  languages, changeSelectedLocale, activeLanguage, onCancel, isEditingDisabled, ...formProps
 }) => (
   <Container>
     <AutoForm {...formProps} disabled={isEditingDisabled}>
@@ -32,7 +29,7 @@ const FormEditProductTexts = ({
           <Menu.Item
             key={`menu-item-${language._id}`}
             name={language.isoCode}
-            active={activeLanguage === language.isoCode}
+            active={(activeLanguage) === language.isoCode}
             onClick={changeSelectedLocale}
           >
             {language.name}
@@ -48,11 +45,6 @@ const FormEditProductTexts = ({
               hidden
             />
             <AutoField
-              name={`texts.${key}.slug`}
-              disabled={isEditingDisabled}
-              hidden={language.isoCode !== activeLanguage}
-            />
-            <AutoField
               name={`texts.${key}.title`}
               disabled={isEditingDisabled}
               hidden={language.isoCode !== activeLanguage}
@@ -62,28 +54,14 @@ const FormEditProductTexts = ({
               disabled={isEditingDisabled}
               hidden={language.isoCode !== activeLanguage}
             />
-            <AutoField
-              name={`texts.${key}.description`}
-              disabled={isEditingDisabled}
-              hidden={language.isoCode !== activeLanguage}
-              component={FormRTEInput}
-            />
-            <AutoField
-              name={`texts.${key}.vendor`}
-              disabled={isEditingDisabled}
-              hidden={language.isoCode !== activeLanguage}
-            />
-            <AutoField
-              name={`texts.${key}.labels`}
-              disabled={isEditingDisabled}
-              hidden={language.isoCode !== activeLanguage}
-              component={FormTagInput}
-              options={[]}
-            />
           </div>
         ))}
         <ErrorsField />
+        <br />
         <SubmitField value="Save" className="primary" disabled={isEditingDisabled} />
+        <Button type="normal" onClick={onCancel}>
+Abbrechen
+        </Button>
       </Segment>
     </AutoForm>
   </Container>
@@ -91,11 +69,7 @@ const FormEditProductTexts = ({
 
 export default compose(
   graphql(gql`
-    query productTexts($productId: ID!) {
-      product(productId: $productId) {
-        _id
-        status
-      }
+    query filterTexts($filterId: ID!, $filterOptionValue: String) {
       languages {
         _id
         isoCode
@@ -103,20 +77,16 @@ export default compose(
         isBase
         name
       }
-      translatedProductTexts(productId: $productId) {
+      translatedFilterTexts(filterId: $filterId, filterOptionValue: $filterOptionValue) {
         _id
         locale
         title
         subtitle
-        slug
-        description
-        vendor
-        labels
       }
     }
   `),
   mapProps(({ data, ...rest }) => {
-    const { languages = [], product = {} /* translatedProductTexts = [] */ } = data;
+    const { languages = [] } = data;
     const filteredActiveLanguages = languages
       .filter(language => !!language.isBase);
     const baseLanguage = (
@@ -126,31 +96,26 @@ export default compose(
     );
     return {
       data,
-      ...rest,
       languages,
       baseLanguage,
-      isEditingDisabled: !product || (product.status === 'DELETED'),
+      ...rest,
     };
   }),
-  withState('selectedLocale', 'setSelectedLocale', null),
+  withState('selectedLocale', 'setSelectedLocale', ({ baseLanguage }) => baseLanguage),
   graphql(gql`
-    mutation updateProductTexts($texts: [UpdateProductTextInput!]!, $productId: ID!) {
-      updateProductTexts(texts: $texts, productId: $productId) {
+    mutation updateFilterTexts($texts: [UpdateFilterTextInput!]!, $filterId: ID!, $filterOptionValue: String) {
+      updateFilterTexts(texts: $texts, filterId: $filterId, filterOptionValue: $filterOptionValue) {
         _id
         locale
         title
         subtitle
-        slug
-        description
-        vendor
-        labels
       }
     }
   `, {
     options: {
       refetchQueries: [
-        'productTexts',
-        'productInfos',
+        'filterTexts',
+        'filters',
       ],
     },
   }),
@@ -170,48 +135,23 @@ export default compose(
     },
     'texts.$.title': {
       type: String,
-      optional: false,
+      optional: true,
       label: 'Titel',
     },
     'texts.$.subtitle': {
       type: String,
       optional: true,
-      label: 'Subtitle',
-    },
-    'texts.$.vendor': {
-      type: String,
-      optional: true,
-      label: 'Vendor',
-    },
-    'texts.$.description': {
-      type: String,
-      optional: true,
-      label: 'Product description',
-    },
-    'texts.$.slug': {
-      type: String,
-      optional: true,
-      label: 'Slug',
-    },
-    'texts.$.labels': {
-      type: Array,
-      optional: true,
-      label: 'Labels',
-    },
-    'texts.$.labels.$': {
-      type: String,
-      optional: true,
+      label: 'Untertitel',
     },
   }),
-  withFormModel(({ data: { translatedProductTexts = [] }, languages = [] }) => {
+  withFormModel(({ data: { translatedFilterTexts = [] }, languages = [] }) => {
     const texts = languages.map((language) => {
-      const foundTranslations = translatedProductTexts
+      const foundTranslations = translatedFilterTexts
         .filter(translatedText => (translatedText.locale === language.isoCode));
       const localizedTextForLocale = (foundTranslations.length > 0
         ? { ...(foundTranslations[0]) }
         : { locale: language.isoCode }
       );
-      localizedTextForLocale.labels = localizedTextForLocale.labels || [];
       return localizedTextForLocale;
     });
     return { texts };
@@ -223,20 +163,24 @@ export default compose(
     changeSelectedLocale: ({ setSelectedLocale }) => (event, element) => {
       setSelectedLocale(element.name);
     },
-    onSubmit: ({ productId, mutate, schema }) => ({ ...dirtyInput }) => mutate({
+    onSubmit: ({
+      filterId, filterOptionValue,
+      mutate, schema,
+    }) => ({ ...dirtyInput }) => mutate({
       variables: {
         texts: schema.clean(dirtyInput).texts,
-        productId,
+        filterId,
+        filterOptionValue,
       },
     }),
   }),
   withFormErrorHandlers,
   mapProps(({
     setSelectedLocale, selectedLocale,
-    baseLanguage, productId, mutate, data, ...rest
+    baseLanguage, filterId, filterOptionValue, mutate, data, ...rest
   }) => ({
     activeLanguage: selectedLocale || baseLanguage,
     ...rest,
   })),
   pure,
-)(FormEditProductTexts);
+)(FormEditFilterTexts);

@@ -68,7 +68,7 @@ export default compose(
     tags: {
       type: Array,
       optional: true,
-      label: 'Tags (Produktsegmentierung)',
+      label: 'Tags (Product Segmentation)',
     },
     'tags.$': String,
   })),

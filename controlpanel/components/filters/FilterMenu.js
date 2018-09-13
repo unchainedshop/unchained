@@ -5,7 +5,7 @@ import {
 import { withRouter } from 'next/router';
 import { Menu } from 'semantic-ui-react';
 
-const AssortmentMenu = ({ menuItems, changeTab }) => (
+const FilterMenu = ({ menuItems, changeTab }) => (
   <Menu fluid vertical tabular>
     {menuItems && menuItems.map(({ isActive, name, description }) => (
       <Menu.Item
@@ -24,25 +24,17 @@ export default compose(
   withRouter,
   withProps(({ router }) => { // eslint-disable-line
     const menuItems = [{
-      name: 'AssortmentTranslation',
+      name: 'FilterTranslation',
       description: 'Texts',
       isActive: (
         router.query.tab === ''
       ) || (
-        (!router.query.tab || router.query.tab === 'AssortmentTranslation')
+        (!router.query.tab || router.query.tab === 'FilterTranslation')
       ),
     }, {
-      name: 'AssortmentLinks',
-      description: 'Links',
-      isActive: (router.query && router.query.tab === 'AssortmentLinks'),
-    }, {
-      name: 'AssortmentProducts',
-      description: 'Products',
-      isActive: (router.query && router.query.tab === 'AssortmentProducts'),
-    }, {
-      name: 'AssortmentFilters',
-      description: 'Filters',
-      isActive: (router.query && router.query.tab === 'AssortmentFilters'),
+      name: 'FilterOptions',
+      description: 'Options',
+      isActive: (router.query && router.query.tab === 'FilterOptions'),
     }];
     return {
       menuItems,
@@ -60,4 +52,4 @@ export default compose(
     },
   }),
   pure,
-)(AssortmentMenu);
+)(FilterMenu);

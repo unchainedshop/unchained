@@ -7,6 +7,7 @@ import AssortmentHeader from '../../components/assortments/AssortmentHeader';
 import AssortmentMenu from '../../components/assortments/AssortmentMenu';
 import AssortmentLinkList from '../../components/assortments/AssortmentLinkList';
 import AssortmentProductList from '../../components/assortments/AssortmentProductList';
+import AssortmentFilterList from '../../components/assortments/AssortmentFilterList';
 import FormEditAssortmentTexts from '../../components/assortments/FormEditAssortmentTexts';
 
 export default connectApollo(withRouter(({ changeTab, router, ...rest }) => (
@@ -26,7 +27,7 @@ export default connectApollo(withRouter(({ changeTab, router, ...rest }) => (
             {(!router.query.tab || router.query.tab === 'AssortmentTranslation') && (
               <div>
                 <Header as="h3">
-Localization
+                  Localization
                 </Header>
                 <FormEditAssortmentTexts assortmentId={router.query._id} />
               </div>
@@ -34,7 +35,7 @@ Localization
             {router.query.tab === 'AssortmentLinks' && (
               <div>
                 <Header as="h3">
-Linked assortments
+                  Linked assortments
                 </Header>
                 <AssortmentLinkList assortmentId={router.query._id} />
               </div>
@@ -42,9 +43,17 @@ Linked assortments
             {router.query.tab === 'AssortmentProducts' && (
               <div>
                 <Header as="h3">
-Assigned products
+                  Assigned products
                 </Header>
                 <AssortmentProductList assortmentId={router.query._id} />
+              </div>
+            )}
+            {router.query.tab === 'AssortmentFilters' && (
+              <div>
+                <Header as="h3">
+                  Assigned filters
+                </Header>
+                <AssortmentFilterList assortmentId={router.query._id} />
               </div>
             )}
           </Grid.Column>

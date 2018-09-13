@@ -11,9 +11,9 @@ const AssortmentLinkListItem = ({
   <Item>
     <Item.Content>
       <Item.Header>
-        {parent.texts.title}
+        {parent.texts && parent.texts.title}
 /
-        {child.texts.title}
+        {child.texts && child.texts.title}
       </Item.Header>
       <Item.Extra>
         <Button

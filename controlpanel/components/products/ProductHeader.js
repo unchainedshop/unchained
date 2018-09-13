@@ -14,7 +14,7 @@ import FormEditProduct from './FormEditProduct';
 const ProductHeader = ({ loading, productId, product = {} }) => [
   <Menu fluid attached="top" borderless key="header-title">
     <Menu.Item header>
-Product:
+      Product:&nbsp;
       {product.texts && product.texts.title}
     </Menu.Item>
     <Menu.Item>
@@ -26,7 +26,7 @@ Product:
       <Dropdown item icon="wrench" simple>
         <Dropdown.Menu>
           <Dropdown.Header>
-Optionen
+            Options
           </Dropdown.Header>
           <BtnRemoveProduct
             productId={product._id}
@@ -61,7 +61,7 @@ Optionen
             <List.Item>
               <List.Icon name="cube" />
               <List.Content>
-                  Produktart: {product.__typename // eslint-disable-line
+                  Product type: {product.__typename // eslint-disable-line
                   }
               </List.Content>
             </List.Item>

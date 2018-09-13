@@ -12,13 +12,13 @@ import AutoForm from 'uniforms-semantic/AutoForm';
 import withFormSchema from '../../lib/withFormSchema';
 import withFormErrorHandlers from '../../lib/withFormErrorHandlers';
 
-const FormNewAssortmentProduct = ({ products, removeCountry, ...formProps }) => (
+const FormNewAssortmentFilter = ({ filters, removeCountry, ...formProps }) => (
   <AutoForm {...formProps}>
     <Segment basic>
       <AutoField name={'assortmentId'} type="hidden" />
-      <AutoField name={'productId'} options={products} />
+      <AutoField name={'filterId'} options={filters} />
       <ErrorsField />
-      <SubmitField value="Add Product" className="primary" />
+      <SubmitField value="Add Filter" className="primary" />
     </Segment>
   </AutoForm>
 );
@@ -26,9 +26,10 @@ const FormNewAssortmentProduct = ({ products, removeCountry, ...formProps }) => 
 export default compose(
   withRouter,
   graphql(gql`
-    query products {
-      products(offset: 0, limit: 0) {
+    query assortmentFilters {
+      filters(offset: 0, limit: 0) {
         _id
+        key
         texts {
           _id
           title
@@ -37,17 +38,17 @@ export default compose(
     }
   `),
   graphql(gql`
-    mutation addAssortmentProduct($assortmentId: ID!, $productId: ID!) {
-      addAssortmentProduct(assortmentId: $assortmentId, productId: $productId) {
+    mutation addAssortmentFilter($assortmentId: ID!, $filterId: ID!) {
+      addAssortmentFilter(assortmentId: $assortmentId, filterId: $filterId) {
         _id
       }
     }
   `, {
-    name: 'addAssortmentProduct',
+    name: 'addAssortmentFilter',
     options: {
       refetchQueries: [
         'assortment',
-        'assortmentProducts',
+        'assortmentFilters',
       ],
     },
   }),
@@ -57,36 +58,36 @@ export default compose(
       label: null,
       optional: false,
     },
-    productId: {
+    filterId: {
       type: String,
       optional: false,
-      label: 'Product',
+      label: 'Filter',
     },
   }),
   withHandlers({
     onSubmitSuccess: () => () => {
-      toast('Producted', { type: toast.TYPE.SUCCESS }); // eslint-disable-line
+      toast('Filtered', { type: toast.TYPE.SUCCESS }); // eslint-disable-line
     },
     onSubmit: ({
-      addAssortmentProduct,
-    }) => ({ assortmentId, productId }) => addAssortmentProduct({
+      addAssortmentFilter,
+    }) => ({ assortmentId, filterId }) => addAssortmentFilter({
       variables: {
         assortmentId,
-        productId,
+        filterId,
       },
     }),
   }),
   withFormErrorHandlers,
   mapProps(({
-    assortmentId, addAssortmentProduct, data: { products = [] }, ...rest
+    assortmentId, addAssortmentFilter, data: { filters = [] }, ...rest
   }) => ({
-    products: [{ label: 'Select', value: false }].concat(products.map(product => ({
-      label: product.texts.title,
-      value: product._id,
+    filters: [{ label: 'Select', value: false }].concat(filters.map(filter => ({
+      label: filter.texts ? filter.texts.title : filter.key,
+      value: filter._id,
     }))),
     model: {
       assortmentId,
     },
     ...rest,
   })),
-)(FormNewAssortmentProduct);
+)(FormNewAssortmentFilter);
