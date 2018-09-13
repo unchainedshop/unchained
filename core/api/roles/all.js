@@ -57,4 +57,6 @@ export default (role, actions) => {
   role.allow(actions.viewShopInfo, () => true);
   role.allow(actions.viewAssortments, () => true);
   role.allow(actions.viewAssortment, () => true);
+  role.allow(actions.viewFilter, () => true);
+  role.allow(actions.viewFilters, () => true);
 };

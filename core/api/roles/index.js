@@ -60,6 +60,9 @@ export const actions = [
   'markOrderPaid',
   'viewAssortments',
   'viewAssortment',
+  'viewFilter',
+  'viewFilters',
+
 ].reduce((oldValue, actionValue) => {
   const newValue = oldValue;
   newValue[actionValue] = actionValue;
