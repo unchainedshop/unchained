@@ -24,6 +24,7 @@ export default (role, actions) => {
   role.allow(actions.manageDeliveryProviders, () => false);
   role.allow(actions.manageWarehousingProviders, () => false);
   role.allow(actions.manageAssortments, () => false);
+  role.allow(actions.manageFilters, () => false);
   role.allow(actions.manageUsers, () => false);
   role.allow(actions.updateCart, () => false);
   role.allow(actions.checkoutCart, () => false);

@@ -40,7 +40,7 @@ type Query {
   translatedProductMediaTexts(productMediaId: ID!): [ProductMediaTexts!]!
 
   """
-  Localization: Label of a variation option
+  Localization: Variations and Variation Options
   """
   translatedProductVariationTexts(productVariationId: ID!, productVariationOptionValue: String): [ProductVariationTexts!]!
 
@@ -154,4 +154,8 @@ type Query {
   """
   translatedAssortmentTexts(assortmentId: ID!): [AssortmentTexts!]!
 
+  """
+  Localization: Filters and Filter Options
+  """
+  translatedFilterTexts(filterId: ID!, filterOptionValue: String): [FilterTexts!]!
 }

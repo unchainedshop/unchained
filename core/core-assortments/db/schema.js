@@ -3,10 +3,10 @@ import SimpleSchema from 'simpl-schema';
 import * as Collections from './collections';
 
 Collections.Assortments.attachSchema(new SimpleSchema({
-  isActive: Boolean,
-  isBase: Boolean,
-  isRoot: Boolean,
+  isActive: { type: Boolean, index: true },
+  isRoot: { type: Boolean, index: true },
   sequence: { type: Number, required: true, index: true },
+  isBase: Boolean,
   slugs: { type: Array, index: true },
   'slugs.$': String,
   tags: { type: Array, index: true },

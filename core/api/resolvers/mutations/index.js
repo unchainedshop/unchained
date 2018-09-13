@@ -64,6 +64,11 @@ import setPassword from './setPassword';
 import setRoles from './setRoles';
 import enrollUser from './enrollUser';
 import checkout from './checkout';
+import createFilter from './createFilter';
+import createFilterOption from './createFilterOption';
+import removeFilter from './removeFilter';
+import updateFilterTexts from './updateFilterTexts';
+import removeFilterOption from './removeFilterOption';
 import createAssortment from './createAssortment';
 import updateAssortment from './updateAssortment';
 import removeAssortment from './removeAssortment';
@@ -74,6 +79,9 @@ import reorderAssortmentProducts from './reorderAssortmentProducts';
 import addAssortmentLink from './addAssortmentLink';
 import removeAssortmentLink from './removeAssortmentLink';
 import reorderAssortmentLinks from './reorderAssortmentLinks';
+import addAssortmentFilter from './addAssortmentFilter';
+import removeAssortmentFilter from './removeAssortmentFilter';
+import reorderAssortmentFilters from './reorderAssortmentFilters';
 
 export default {
   ...Accounts,
@@ -155,6 +163,12 @@ export default {
   updateWarehousingProvider: acl(actions.manageWarehousingProviders)(updateWarehousingProvider),
   removeWarehousingProvider: acl(actions.manageWarehousingProviders)(removeWarehousingProvider),
 
+  createFilter: acl(actions.manageFilters)(createFilter),
+  removeFilter: acl(actions.manageFilters)(removeFilter),
+  updateFilterTexts: acl(actions.manageFilters)(updateFilterTexts),
+  removeFilterOption: acl(actions.manageFilters)(removeFilterOption),
+  createFilterOption: acl(actions.manageFilters)(createFilterOption),
+
   createAssortment: acl(actions.manageAssortments)(createAssortment),
   updateAssortment: acl(actions.manageAssortments)(updateAssortment),
   removeAssortment: acl(actions.manageAssortments)(removeAssortment),
@@ -165,4 +179,8 @@ export default {
   addAssortmentLink: acl(actions.manageAssortments)(addAssortmentLink),
   removeAssortmentLink: acl(actions.manageAssortments)(removeAssortmentLink),
   reorderAssortmentLinks: acl(actions.manageAssortments)(reorderAssortmentLinks),
+  addAssortmentFilter: acl(actions.manageAssortments)(addAssortmentFilter),
+  removeAssortmentFilter: acl(actions.manageAssortments)(removeAssortmentFilter),
+  reorderAssortmentFilters: acl(actions.manageAssortments)(reorderAssortmentFilters),
+
 };

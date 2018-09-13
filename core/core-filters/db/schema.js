@@ -2,7 +2,7 @@ import { Schemas } from 'meteor/unchained:utils';
 import SimpleSchema from 'simpl-schema';
 import { Filters, FilterTexts } from './collections';
 
-export const FilterType = { // eslint-disable-line
+export const FilterTypes = { // eslint-disable-line
   BOOLEAN: 'BOOLEAN',
   SINGLE_CHOICE: 'SINGLE_CHOICE',
   MULTI_CHOICE: 'MULTI_CHOICE',

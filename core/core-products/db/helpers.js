@@ -33,6 +33,16 @@ Products.createProduct = ({
   return productObject;
 };
 
+Products.updateProduct = ({ productId, ...product }) => {
+  Products.update({ _id: productId }, {
+    $set: {
+      ...product,
+      updated: new Date(),
+    },
+  });
+  return Products.findOne({ _id: productId });
+};
+
 Products.getNewSequence = (oldSequence) => {
   const sequence = (oldSequence + 1) || (Products.find({}).count() * 10);
   if (Products.find({ sequence }).count() > 0) {

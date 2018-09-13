@@ -16,16 +16,9 @@ type FilterTexts {
   subtitle: String
 }
 
-type FilterOptionTexts {
-  _id: ID!
-  locale: String
-  title: String
-  subtitle: String
-}
-
 type FilterOption {
   _id: ID!
-  texts(forceLocale: String): FilterOptionTexts
+  texts(forceLocale: String): FilterTexts
   value: String
 }
 

@@ -23,6 +23,7 @@ export default (role, actions) => {
   role.allow(actions.manageWarehousingProviders, () => true);
   role.allow(actions.manageUsers, () => true);
   role.allow(actions.manageAssortments, () => true);
+  role.allow(actions.manageFilters, () => true);
   role.allow(actions.markOrderConfirmed, () => true);
   role.allow(actions.markOrderPaid, () => true);
   role.allow(actions.updateUser, () => true);

@@ -1,10 +1,10 @@
 import { fakeTimestampFields } from 'meteor/unchained:utils';
 import { Factory } from 'meteor/dburles:factory';
 import { Filters } from './collections';
-import { FilterType } from './schema';
+import { FilterTypes } from './schema';
 
 Factory.define('filter', Filters, {
-  type: () => FilterType.SINGLE_CHOICE,
+  type: () => FilterTypes.SINGLE_CHOICE,
   key: () => 'publicare.category',
   options: () => ['INKO AB', 'COLOSTOMIE', 'ISK'],
   ...fakeTimestampFields,

@@ -49,6 +49,7 @@ export const actions = [
   'manageDeliveryProviders',
   'manageWarehousingProviders',
   'manageAssortments',
+  'manageFilters',
   'updateCart',
   'captureOrder',
   'checkoutCart',

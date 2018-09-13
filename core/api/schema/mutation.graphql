@@ -170,9 +170,32 @@ input ReorderAssortmentProductInput {
   sortKey: Int!
 }
 
+input ReorderAssortmentFilterInput {
+  assortmentFilterId: ID!
+  sortKey: Int!
+}
+
 input ReorderAssortmentLinkInput {
   assortmentLinkId: ID!
   sortKey: Int!
+}
+
+input CreateFilterInput {
+  key: String!
+  type: FilterType!
+  title: String!
+  options: [String!]
+}
+
+input CreateFilterOptionInput {
+  value: String!
+  title: String!
+}
+
+input UpdateFilterTextInput {
+  locale: String!
+  title: String
+  subtitle: String
 }
 
 type Mutation {
@@ -521,4 +544,24 @@ type Mutation {
   """
   reorderAssortmentLinks(sortKeys: [ReorderAssortmentLinkInput!]!): [AssortmentLink!]!
 
+  """
+  Add a new filter to an assortment
+  """
+  addAssortmentFilter(assortmentId: ID!, filterId: ID!): AssortmentFilter!
+
+  """
+  Remove a product from an assortment
+  """
+  removeAssortmentFilter(assortmentFilterId: ID!): AssortmentFilter!
+
+  """
+  Reorder the products in an assortment
+  """
+  reorderAssortmentFilters(sortKeys: [ReorderAssortmentFilterInput!]!): [AssortmentFilter!]!
+
+  createFilter(filter: CreateFilterInput!): Filter!
+  removeFilter(filterId: ID!): Filter!
+  removeFilterOption(filterId: ID!, filterOptionValue: String!): Filter!
+  updateFilterTexts(filterId: ID!, filterOptionValue: String, texts: [UpdateFilterTextInput!]!): [FilterTexts!]!
+  createFilterOption(filterId: ID!, option: CreateFilterOptionInput!): Filter!
 }

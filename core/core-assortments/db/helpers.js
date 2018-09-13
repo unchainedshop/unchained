@@ -160,6 +160,15 @@ Collections.AssortmentProducts.getNewSortKey = (assortmentId) => {
   return lastAssortmentProduct.sortKey + 1;
 };
 
+Collections.AssortmentFilters.getNewSortKey = (assortmentId) => {
+  const lastAssortmentFilter = Collections.AssortmentFilters.findOne({
+    assortmentId,
+  }, {
+    sort: { sortKey: 1 },
+  }) || { sortKey: 0 };
+  return lastAssortmentFilter.sortKey + 1;
+};
+
 Collections.AssortmentLinks.getNewSortKey = (parentAssortmentId) => {
   const lastAssortmentProduct = Collections.AssortmentLinks.findOne({
     parentAssortmentId,
@@ -241,8 +250,29 @@ export default () => {
       this.invalidateProductIdCache();
       return Collections.AssortmentLinks.findOne({ _id: assortmentProductId });
     },
+    addFilter({ filterId }) {
+      const sortKey = Collections.AssortmentFilters.getNewSortKey(this._id);
+      Collections.AssortmentFilters.remove({
+        assortmentId: this._id,
+        filterId,
+      });
+      const assortmentFilterId = Collections.AssortmentFilters.insert({
+        assortmentId: this._id,
+        filterId,
+        sortKey,
+        created: new Date(),
+      });
+      return Collections.AssortmentFilters.findOne({ _id: assortmentFilterId });
+    },
     productAssignments() {
       return Collections.AssortmentProducts
+        .find({ assortmentId: this._id }, {
+          sort: { sortKey: 1 },
+        })
+        .fetch();
+    },
+    filterAssignments() {
+      return Collections.AssortmentFilters
         .find({ assortmentId: this._id }, {
           sort: { sortKey: 1 },
         })

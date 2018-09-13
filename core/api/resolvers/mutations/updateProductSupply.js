@@ -4,13 +4,7 @@ import { ProductNotFoundError } from '../errors';
 
 export default function (root, { supply, productId }, { userId }) {
   log(`mutation updateProductSupply ${productId}`, { userId });
-  const success = Products.update({ _id: productId }, {
-    $set: {
-      supply,
-      updated: new Date(),
-    },
-  });
-  if (!success) throw new ProductNotFoundError({ data: { productId } });
-  const productObject = Products.findOne({ _id: productId });
+  const productObject = Products.updateProduct({ productId, supply });
+  if (!productObject) throw new ProductNotFoundError({ data: { productId } });
   return productObject;
 }

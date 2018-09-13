@@ -12,6 +12,7 @@ type Assortment {
   tags: [String!]
   texts(forceLocale: String): AssortmentTexts
   productAssignments: [AssortmentProduct!]
+  filterAssignments: [AssortmentFilter!]
   linkedAssortments: [AssortmentLink!]
   children: [Assortment!]
   filters(query: [FilterQuery!]): [FilteredFilter!]
@@ -28,6 +29,12 @@ type AssortmentProduct {
   _id: ID!
   sortKey: Int!
   product: Product!
+}
+
+type AssortmentFilter {
+  _id: ID!
+  sortKey: Int!
+  filter: Filter!
 }
 
 type AssortmentLink {
