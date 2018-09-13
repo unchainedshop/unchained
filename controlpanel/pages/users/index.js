@@ -8,7 +8,7 @@ export default connectApollo(props => (
   <App {...props}>
     <Container>
       <h1>
-All users
+        All users
       </h1>
       <UserList />
     </Container>

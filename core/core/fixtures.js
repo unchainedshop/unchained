@@ -74,6 +74,7 @@ export default () => {
       const admin = Factory.create('user', {
         username: 'admin',
         roles: ['admin'],
+        guest: false,
         emails: [{ address: 'admin@localhost', verified: true }],
       });
       users.push(admin._id);

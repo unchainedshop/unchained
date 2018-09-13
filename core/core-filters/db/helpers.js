@@ -109,9 +109,9 @@ Filters.helpers({
     const parsedLocale = new Locale(locale);
     return Filters.getLocalizedTexts(this._id, optionValue, parsedLocale);
   },
-  optionObject(productVariationOption) {
+  optionObject(filterOption) {
     return {
-      productVariationOption,
+      filterOption,
       getLocalizedTexts: this.getLocalizedTexts,
       ...this,
     };

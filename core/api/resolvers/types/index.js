@@ -40,6 +40,8 @@ import Language from './language';
 import Shop from './shop';
 import Country from './country';
 import Assortment from './assortment';
+import Filter from './filter';
+import FilterOption from './filter-option';
 
 export default {
   User,
@@ -84,4 +86,6 @@ export default {
   SimpleProduct,
   ConfigurableProduct,
   Assortment,
+  Filter,
+  FilterOption,
 };
