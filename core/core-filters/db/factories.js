@@ -4,8 +4,8 @@ import { Filters } from './collections';
 import { FilterType } from './schema';
 
 Factory.define('filter', Filters, {
-  adapterKey: () => 'ch.dagobert.warehousing.manual-stock',
-  type: () => FilterType.PHYSICAL,
-  configuration: () => [],
+  type: () => FilterType.SINGLE_CHOICE,
+  key: () => 'publicare.category',
+  options: () => ['INKO AB', 'COLOSTOMIE', 'ISK'],
   ...fakeTimestampFields,
 });

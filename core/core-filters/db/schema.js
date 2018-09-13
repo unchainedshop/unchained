@@ -1,17 +1,27 @@
 import { Schemas } from 'meteor/unchained:utils';
 import SimpleSchema from 'simpl-schema';
-import { Filters } from './collections';
+import { Filters, FilterTexts } from './collections';
 
 export const FilterType = { // eslint-disable-line
-  PHYSICAL: 'PHYSICAL',
+  BOOLEAN: 'BOOLEAN',
+  SINGLE_CHOICE: 'SINGLE_CHOICE',
+  MULTI_CHOICE: 'MULTI_CHOICE',
 };
 
 Filters.attachSchema(new SimpleSchema({
-  type: { type: String, required: true, index: true },
-  adapterKey: { type: String, required: true },
-  configuration: { type: Array },
-  'configuration.$': { type: Object },
-  'configuration.$.key': { type: String },
-  'configuration.$.value': { type: String },
+  key: { type: String, required: true, index: true },
+  type: { type: String, required: true },
+  options: Array,
+  'options.$': String,
+  _cache: { type: Object, blackbox: true },
+  ...Schemas.timestampFields,
+}, { requiredByDefault: false }));
+
+FilterTexts.attachSchema(new SimpleSchema({
+  filterId: { type: String, required: true, index: true },
+  filterOptionValue: String,
+  locale: { type: String, index: true },
+  title: String,
+  subtitle: String,
   ...Schemas.timestampFields,
 }, { requiredByDefault: false }));

@@ -14,14 +14,14 @@ type Assortment {
   productAssignments: [AssortmentProduct!]
   linkedAssortments: [AssortmentLink!]
   children: [Assortment!]
-  filters: [Filter!]
-  products(limit: Int, offset: Int, filter: [FilterQuery!]): ProductCollection
+  filters(query: [FilterQuery!]): [FilteredFilter!]
+  products(limit: Int, offset: Int, query: [FilterQuery!]): ProductCollection
 }
 
 type ProductCollection {
   totalCount: Int!
+  filteredCount: Int!
   items: [Product!]!
-  filters: [CollectionFilter!]!
 }
 
 type AssortmentProduct {

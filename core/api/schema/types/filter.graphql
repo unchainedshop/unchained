@@ -1,13 +1,12 @@
 input FilterQuery {
   key: String!
-  value: JSON
+  value: String
 }
 
 enum FilterType {
   SWITCH
   SINGLE_CHOICE
   MULTI_CHOICE
-  CUSTOM
 }
 
 type FilterTexts {
@@ -17,10 +16,17 @@ type FilterTexts {
   subtitle: String
 }
 
+type FilterOptionTexts {
+  _id: ID!
+  locale: String
+  title: String
+  subtitle: String
+}
+
 type FilterOption {
   _id: ID!
-  texts(forceLocale: String): FilterTexts
-  value: JSON
+  texts(forceLocale: String): FilterOptionTexts
+  value: String
 }
 
 type Filter {
@@ -31,15 +37,15 @@ type Filter {
   options: [FilterOption!]
 }
 
-type CollectionFilterOption {
+type FilteredFilterOption {
   option: FilterOption!
   remaining: Int
   active: Boolean
 }
 
-type CollectionFilter {
+type FilteredFilter {
   filter: Filter!
   remaining: Int!
   active: Boolean
-  optionStates: [CollectionFilterOption!]
+  filteredOptions: [FilteredFilterOption!]
 }

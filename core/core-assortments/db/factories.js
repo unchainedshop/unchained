@@ -37,3 +37,10 @@ Factory.define('assortmentLink', Collections.AssortmentLinks, {
   sortKey: () => faker.random.number(),
   ...fakeTimestampFields,
 });
+
+Factory.define('assortmentFilter', Collections.AssortmentFilters, {
+  assortmentId: () => Factory.get('assortment'),
+  filterId: () => Factory.get('filter'),
+  sortKey: () => faker.random.number(),
+  ...fakeTimestampFields,
+});

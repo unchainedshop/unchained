@@ -2,7 +2,7 @@ import 'meteor/dburles:collection-helpers';
 import { Countries } from 'meteor/unchained:core-countries';
 import { Products, ProductStatus } from 'meteor/unchained:core-products';
 import { slugify } from 'meteor/unchained:utils';
-import { filterCollection } from 'meteor/unchained:core-filters';
+import { Filters } from 'meteor/unchained:core-filters';
 import { findLocalizedText } from 'meteor/unchained:core';
 
 import { Locale } from 'locale';
@@ -248,8 +248,27 @@ export default () => {
         })
         .fetch();
     },
+    filters({ query, forceLiveCollection = false }) {
+      const productIds = forceLiveCollection
+        ? this.collectProductIdCache()
+        : this._cachedProductIds; // eslint-disable-line
+
+      const filterIds = Collections.AssortmentFilters
+        .find({ assortmentId: this._id }, {
+          sort: { sortKey: 1 },
+        })
+        .fetch()
+        .map(({ filterId }) => filterId);
+
+      return Filters.filterFilters({
+        filterIds,
+        productIds,
+        query,
+        forceLiveCollection,
+      });
+    },
     products({
-      limit = 10, offset = 0,
+      limit = 10, offset = 0, query,
       forceLiveCollection = false,
       includeInactive = false,
     } = {}) {
@@ -257,14 +276,37 @@ export default () => {
         ? this.collectProductIdCache()
         : this._cachedProductIds; // eslint-disable-line
 
-      const selector = {
-        _id: { $in: productIds },
-      };
+      const selector = {};
+      const options = { skip: offset, limit };
       if (!includeInactive) {
         selector.status = ProductStatus.ACTIVE;
       }
-      const pointer = Products.find(selector, { skip: offset, limit });
-      return filterCollection(pointer);
+      const filteredProductIds = Filters.filterProductIds({
+        productIds,
+        query,
+        forceLiveCollection,
+      });
+
+      const filteredSelector = {
+        ...selector,
+        _id: { $in: filteredProductIds },
+      };
+
+      const unfilteredSelector = {
+        ...selector,
+        _id: { $in: productIds },
+      };
+
+      return {
+        filteredProductsPointer: Products.find(filteredSelector, options),
+        totalCount: () => Products.find(unfilteredSelector, options).count(),
+        filteredCount() {
+          return this.filteredProductsPointer.count();
+        },
+        items() {
+          return this.filteredProductsPointer.fetch();
+        },
+      };
     },
     linkedAssortments() {
       return Collections.AssortmentLinks
@@ -350,8 +392,20 @@ export default () => {
   });
 
   Collections.AssortmentProducts.helpers({
+    assortment() {
+      return Collections.Assortments.findOne({ _id: this.assortmentId });
+    },
     product() {
       return Products.findOne({ _id: this.productId });
+    },
+  });
+
+  Collections.AssortmentFilters.helpers({
+    assortment() {
+      return Collections.Assortments.findOne({ _id: this.assortmentId });
+    },
+    filter() {
+      return Filters.findOne({ _id: this.filterId });
     },
   });
 };

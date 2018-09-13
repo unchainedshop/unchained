@@ -1,72 +1,104 @@
-import { Promise } from 'meteor/promise';
 import 'meteor/dburles:collection-helpers';
+import { Products } from 'meteor/unchained:core-products';
 import { Filters } from './collections';
 import { FilterDirector } from '../director';
 
+const parseQueryArray = query => (query || [])
+  .reduce((accumulator, { key, value }) => ({
+    ...accumulator,
+    [key]: accumulator[key] ? accumulator[key].concat(value) : [value],
+  }), {});
+
 Filters.helpers({
-  format(key, value) {
-    return value;
+  collectProductIds({ value } = {}) {
+    const director = new FilterDirector({ filter: this });
+    const selector = director.buildProductSelector({ key: this.key, value });
+    const products = Products.find(selector, { fields: { _id: true } }).fetch();
+    return products.map(({ _id }) => _id);
   },
-  defaultContext() {
-    return {};
+  buildProductIdMap() {
+    const cache = {
+      allProductIds: this.collectProductIds(),
+    };
+    cache.productIds = this.options.reduce((accumulator, option) => ({
+      ...accumulator,
+      [option]: this.collectProductIds({ value: option }),
+    }), {});
+    return cache;
   },
-  interface() {
-    return new FilterDirector(this).interfaceClass();
+  invalidateProductIdCache() {
+    Filters.update({ _id: this._id }, {
+      $set: {
+        _cache: this.buildProductIdMap(),
+      },
+    });
   },
-  configurationError() {
-    return new FilterDirector(this).configurationError();
+  productIds({ values, forceLiveCollection }) {
+    const { productIds, allProductIds } = forceLiveCollection
+      ? this.buildProductIdMap()
+      : (this._cache || this.buildProductIdMap()); // eslint-disable-line
+
+    return values.reduce((accumulator, value) => {
+      const additionalValues = value === undefined ? allProductIds : productIds[value];
+      if (!additionalValues || additionalValues.length === 0) return accumulator;
+      return [...accumulator, ...additionalValues];
+    }, []);
   },
-  isActive(context) {
-    return new FilterDirector(this).isActive(context);
+  intersect({ values, forceLiveCollection, productIdSet }) {
+    const filterOptionProductIds = this.productIds({ values, forceLiveCollection });
+    return new Set(filterOptionProductIds.filter(x => productIdSet.has(x)));
   },
-  estimatedDispatch(context) {
-    return Promise.await(new FilterDirector(this).estimatedDispatch(context));
-  },
-  estimatedStock(context) {
-    return Promise.await(new FilterDirector(this).estimatedStock(context));
+  filteredOptions({ values, forceLiveCollection, productIdSet }) {
+    return this.options.map(value => ({
+      option: {
+        value,
+      },
+      remaining: this.intersect({ values: [value], forceLiveCollection, productIdSet }).size,
+      active: values ? (values.indexOf(value) !== -1) : false,
+    }));
   },
 });
 
-Filters.createFilter = ({ type, ...rest }) => {
-  const InterfaceClass = new FilterDirector(rest).interfaceClass();
-  const providerId = Filters.insert({
-    ...rest,
-    created: new Date(),
-    configuration: InterfaceClass.initialConfiguration,
-    type,
-  });
-  return Filters.findOne({ _id: providerId });
+Filters.filterProductIds = ({ productIds, query, forceLiveCollection = false }) => {
+  if (!query || query.length === 0) return productIds;
+  const queryObject = parseQueryArray(query);
+
+  const filters = Filters
+    .find({ key: { $in: Object.keys(queryObject) } })
+    .fetch();
+
+  const intersectedProductIds = filters
+    .reduce((productIdSet, filter) => {
+      const values = queryObject[filter.key];
+      return filter.intersect({ values, forceLiveCollection, productIdSet });
+    }, new Set(productIds));
+
+  return [...intersectedProductIds];
 };
 
-Filters.updateFilter = ({ filterId, ...rest }) => {
-  Filters.update({ _id: filterId }, {
-    $set: {
-      ...rest,
-      updated: new Date(),
-    },
-  });
-  return Filters.findOne({ _id: filterId });
-};
+Filters.filterFilters = ({
+  filterIds, productIds, query, forceLiveCollection = false,
+}) => {
+  const queryObject = parseQueryArray(query);
 
-Filters.removeFilter = ({ filterId }) => {
-  const provider = Filters.findOne({ _id: filterId });
-  Filters.remove({ _id: filterId });
-  return provider;
-};
-
-Filters.findSupported = ({ product, deliveryFilter }) => {
-  const providers = Filters
-    .find()
+  return Filters
+    .find({ _id: { $in: filterIds } })
     .fetch()
-    .filter(filter => filter.isActive({ product, deliveryFilter }));
-  return providers;
+    .map((filter) => {
+      const values = queryObject[filter.key];
+      const productIdSet = new Set(productIds);
+      const remainingProductIdSet = values
+        ? filter.intersect({ values, forceLiveCollection, productIdSet })
+        : productIdSet;
+      return {
+        filter,
+        remaining: remainingProductIdSet.size,
+        active: Object.keys(queryObject).indexOf(filter.key) !== -1,
+        filteredOptions: filter.filteredOptions({
+          values,
+          forceLiveCollection,
+          productIdSet: remainingProductIdSet,
+        }),
+      };
+    });
 };
-
-export const filterCollection = (pointer) => {
-  console.log(this, pointer);
-  return {
-    totalCount: pointer.count(),
-    items: pointer.fetch(),
-    filters: [],
-  }
-}

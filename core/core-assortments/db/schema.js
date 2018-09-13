@@ -40,3 +40,10 @@ Collections.AssortmentLinks.attachSchema(new SimpleSchema({
   sortKey: { type: Number, required: true },
   ...Schemas.timestampFields,
 }, { requiredByDefault: false }));
+
+Collections.AssortmentFilters.attachSchema(new SimpleSchema({
+  assortmentId: { type: String, required: true, index: true },
+  filterId: { type: String, required: true, index: true },
+  sortKey: { type: Number, required: true },
+  ...Schemas.timestampFields,
+}, { requiredByDefault: false }));
