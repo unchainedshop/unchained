@@ -15,7 +15,8 @@ Filters.attachSchema(new SimpleSchema({
   type: { type: String, required: true },
   options: Array,
   'options.$': String,
-  _cache: { type: Object, blackbox: true },
+  _cache: { type: Array },
+  '_cache.$': { type: Object, blackbox: true },
   ...Schemas.timestampFields,
 }, { requiredByDefault: false }));
 

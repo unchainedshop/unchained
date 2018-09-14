@@ -141,14 +141,21 @@ Filters.helpers({
     log(`Filters: Rebuilding ${this.key}`); // eslint-disable.line
     Filters.update({ _id: this._id }, {
       $set: {
-        _cache: this.buildProductIdMap(),
+        _cache: Object.entries(this.buildProductIdMap()),
       },
     });
+  },
+  cache() {
+    if (!this._cache) return {}; // eslint-disable-line
+    return this._cache.reduce((accumulator, [key, value]) => ({ // eslint-disable-line
+      ...accumulator,
+      [key]: value,
+    }), {});
   },
   productIds({ values, forceLiveCollection }) {
     const { productIds, allProductIds } = forceLiveCollection
       ? this.buildProductIdMap()
-      : (this._cache || this.buildProductIdMap()); // eslint-disable-line
+      : (this.cache() || this.buildProductIdMap());
 
     return values.reduce((accumulator, value) => {
       const additionalValues = value === undefined ? allProductIds : productIds[value];
