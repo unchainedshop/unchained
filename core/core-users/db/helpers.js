@@ -11,11 +11,11 @@ export default () => {
   const { Languages } = Promise.await(import('meteor/unchained:core-languages'));
 
   Users.helpers({
-    cart({ countryCode }) {
+    cart({ countryCode } = {}) {
       const openOrders = Orders.find({
         userId: this._id,
         status: OrderStatus.OPEN,
-        countryCode,
+        countryCode: countryCode || this.lastLogin.country,
       });
       if (openOrders.count() > 0) {
         return openOrders.fetch()[0];

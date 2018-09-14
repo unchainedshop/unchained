@@ -60,15 +60,7 @@ class FreezyboyPrice extends ProductPricingAdapter {
       }
 
       if (item.amount > 0) {
-        this.calculation.filterBy().forEach(({ amount, ...row }) => {
-          // revert old prices
-          this.result.calculation.push({
-            ...row,
-            amount: amount * -1,
-          });
-        });
-
-        // studio pricing
+        this.resetCalculation();
         this.result.addItem(item);
       }
     }

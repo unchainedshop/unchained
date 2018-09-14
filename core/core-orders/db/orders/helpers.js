@@ -529,11 +529,13 @@ Orders.updateCalculation = ({ orderId, recalculateEverything }) => {
   log('Update Calculation', { orderId });
   if (recalculateEverything) {
     log('Whole Order Recalculation!', { orderId });
-    const deliveryId = order.delivery()._id;
-    const paymentId = order.payment()._id;
     items.forEach(({ _id }) => OrderPositions.updateCalculation({ orderId, positionId: _id }));
-    OrderDeliveries.updateCalculation({ orderId, deliveryId });
-    OrderPayments.updateCalculation({ orderId, paymentId });
+    const delivery = order.delivery();
+    const deliveryId = delivery && delivery._id;
+    if (deliveryId) OrderDeliveries.updateCalculation({ orderId, deliveryId });
+    const payment = order.payment();
+    const paymentId = payment && payment._id;
+    if (paymentId) OrderPayments.updateCalculation({ orderId, paymentId });
   }
   // always update the scheduling
   items.forEach(position => OrderPositions.updateScheduling({ position }));

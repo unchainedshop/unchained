@@ -117,6 +117,7 @@ interface ProductVisualization {
 Commerce
 """
 interface ProductCommerce {
+  salesUnit: String
   catalogPrice(quantity: Int = 1): ProductPrice
   simulatedPrice(useNetPrice: Boolean = false, quantity: Int = 1): ProductPrice
   simulatedDiscounts: [ProductDiscount!]
@@ -171,6 +172,7 @@ Warehousing
 """
 interface ProductWarehousing {
   sku: String
+  baseUnit: String
   maxAllowedQuantityPerOrder: Int
   allowOrderingIfNoStock: Boolean
 }

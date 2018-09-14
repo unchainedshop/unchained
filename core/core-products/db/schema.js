@@ -19,6 +19,7 @@ export const ProductStatus = {
 };
 
 const ProductCommerceSchema = new SimpleSchema({
+  salesUnit: String,
   pricing: Array,
   'pricing.$': Object,
   'pricing.$.isTaxable': Boolean,
@@ -30,6 +31,7 @@ const ProductCommerceSchema = new SimpleSchema({
 }, { requiredByDefault: false });
 
 const ProductWarehousingSchema = new SimpleSchema({
+  baseUnit: String,
   sku: String,
   maxAllowedQuantityPerOrder: Number,
   allowOrderingIfNoStock: Boolean,

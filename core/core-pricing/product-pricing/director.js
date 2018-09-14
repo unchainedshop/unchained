@@ -30,6 +30,16 @@ class ProductPricingAdapter {
     return resultRaw;
   }
 
+  resetCalculation() {
+    // revert old prices
+    this.calculation.filterBy().forEach(({ amount, ...row }) => {
+      this.result.calculation.push({
+        ...row,
+        amount: amount * -1,
+      });
+    });
+  }
+
   log(message) { // eslint-disable-line
     return log(message);
   }

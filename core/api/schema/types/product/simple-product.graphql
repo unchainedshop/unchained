@@ -20,4 +20,6 @@ type SimpleProduct implements Product, ProductVisualization, ProductCommerce, Pr
   sku: String
   maxAllowedQuantityPerOrder: Int
   allowOrderingIfNoStock: Boolean
+  baseUnit: String
+  salesUnit: String
 }

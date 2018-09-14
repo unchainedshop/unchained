@@ -59,13 +59,7 @@ class FreezyboyPrice extends ProductPricingAdapter {
         isNetPrice: false,
         meta: { adapter: this.constructor.key },
       };
-      this.calculation.filterBy().forEach(({ amount, ...row }) => {
-        // revert old prices
-        this.result.calculation.push({
-          ...row,
-          amount: amount * -1,
-        });
-      });
+      this.resetCalculation();
       this.result.addItem(item);
     }
 
