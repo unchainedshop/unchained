@@ -129,10 +129,12 @@ Filters.helpers({
     const cache = {
       allProductIds: this.collectProductIds(),
     };
-    cache.productIds = this.options.reduce((accumulator, option) => ({
-      ...accumulator,
-      [option]: this.collectProductIds({ value: option }),
-    }), {});
+    if (this.options) {
+      cache.productIds = this.options.reduce((accumulator, option) => ({
+        ...accumulator,
+        [option]: this.collectProductIds({ value: option }),
+      }), {});
+    }
     return cache;
   },
   invalidateProductIdCache() {

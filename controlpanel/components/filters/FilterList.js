@@ -33,7 +33,7 @@ const FilterList = ({
       </Table.Row>
       <Table.Row>
         <Table.HeaderCell>
-          Name
+          Key (Name)
         </Table.HeaderCell>
         <Table.HeaderCell>
           Type
@@ -61,7 +61,9 @@ const FilterList = ({
             <Table.Cell>
               <Link href={`/filters/edit?_id=${filter._id}`}>
                 <a href={`/filters/edit?_id=${filter._id}`}>
-                  {filter.texts ? filter.texts.title : filter.key}
+                  {filter.key}
+                  &nbsp;
+                  {filter.texts ? (`( ${filter.texts.title} )`) : ''}
                 </a>
               </Link>
             </Table.Cell>

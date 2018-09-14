@@ -9,7 +9,9 @@ export const FilterTypes = { // eslint-disable-line
 };
 
 Filters.attachSchema(new SimpleSchema({
-  key: { type: String, required: true, index: true },
+  key: {
+    type: String, required: true, index: true, unique: true,
+  },
   type: { type: String, required: true },
   options: Array,
   'options.$': String,

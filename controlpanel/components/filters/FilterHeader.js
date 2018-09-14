@@ -36,6 +36,13 @@ const FilterHeader = ({ loading, filter = {} }) => [
         <Grid.Column width={16}>
           <List>
             <List.Item>
+              <List.Icon name="key" />
+              <List.Content>
+                  Key: {filter.key // eslint-disable-line
+                  }
+              </List.Content>
+            </List.Item>
+            <List.Item>
               <List.Icon name="cube" />
               <List.Content>
                   Filter type: {filter.__typename // eslint-disable-line
