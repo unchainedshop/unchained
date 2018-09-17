@@ -52,7 +52,7 @@ type Query {
   """
   Get a specific language
   """
-  language(languageId: ID!): Language!
+  language(languageId: ID!): Language
 
   """
   Get all countries
@@ -62,7 +62,7 @@ type Query {
   """
   Get a specific country by ID
   """
-  country(countryId: ID!): Country!
+  country(countryId: ID!): Country
 
   """
   Get all currencies
@@ -72,7 +72,7 @@ type Query {
   """
   Get a specific currency by ID
   """
-  currency(currencyId: ID!): Currency!
+  currency(currencyId: ID!): Currency
 
   """
   Get all delivery providers, optionally filtered by type
@@ -82,7 +82,7 @@ type Query {
   """
   Get a specific delivery provider by ID
   """
-  deliveryProvider(deliveryProviderId: ID!): DeliveryProvider!
+  deliveryProvider(deliveryProviderId: ID!): DeliveryProvider
 
   """
   Get all delivery interfaces filtered by type
@@ -97,7 +97,7 @@ type Query {
   """
   Get a specific warehousing provider by ID
   """
-  warehousingProvider(warehousingProviderId: ID!): WarehousingProvider!
+  warehousingProvider(warehousingProviderId: ID!): WarehousingProvider
 
   """
   Get all warehousing interfaces filtered by type
@@ -112,7 +112,7 @@ type Query {
   """
   Get a specific payment provider by ID
   """
-  paymentProvider(paymentProviderId: ID!): PaymentProvider!
+  paymentProvider(paymentProviderId: ID!): PaymentProvider
 
   """
   Get all payment interfaces filtered by type
@@ -127,7 +127,7 @@ type Query {
   """
   Get a specific single order, use the otp to get access to the information without beeing logged in as the user that created the order
   """
-  order(orderId: ID!, otp: String): Order!
+  order(orderId: ID!, otp: String): Order
 
   """
   Get all logs, sorted by most recent creation date first
@@ -147,7 +147,7 @@ type Query {
   """
   Get a specific assortment by ID
   """
-  assortment(assortmentId: ID, slug: String): Assortment!
+  assortment(assortmentId: ID, slug: String): Assortment
 
   """
   Localization: Meta data for assortments
@@ -167,5 +167,5 @@ type Query {
   """
   Get a specific filter by ID
   """
-  filter(filterId: ID): Filter!
+  filter(filterId: ID): Filter
 }
