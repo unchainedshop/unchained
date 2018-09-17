@@ -13,7 +13,7 @@ import AutoForm from 'uniforms-semantic/AutoForm';
 import withFormSchema from '../../lib/withFormSchema';
 import withFormModel from '../../lib/withFormModel';
 import withFormErrorHandlers from '../../lib/withFormErrorHandlers';
-import FormTagInput from '../../lib/FormTagInput';
+import FormTagInput from '../FormTagInput';
 
 const FormEditProduct = ({ isEditingDisabled, ...formProps }) => (
   <AutoForm {...formProps}>

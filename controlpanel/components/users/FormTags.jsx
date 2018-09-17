@@ -12,7 +12,7 @@ import AutoForm from 'uniforms-semantic/AutoForm';
 import withFormErrorHandlers from '../../lib/withFormErrorHandlers';
 import withFormSchema from '../../lib/withFormSchema';
 import withFormModel from '../../lib/withFormModel';
-import FormTagInput from '../../lib/FormTagInput';
+import FormTagInput from '../FormTagInput';
 
 const FormTags = ({ userId, ...formProps }) => (
   <Segment>

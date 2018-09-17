@@ -6,22 +6,23 @@ import {
 import { Segment, Container, Menu } from 'semantic-ui-react';
 import gql from 'graphql-tag';
 import dynamic from 'next/dynamic';
-import getConfig from 'next/config';
 import { graphql } from 'react-apollo';
 import AutoField from 'uniforms-semantic/AutoField';
 import SubmitField from 'uniforms-semantic/SubmitField';
 import ErrorsField from 'uniforms-semantic/ErrorsField';
 import AutoForm from 'uniforms-semantic/AutoForm';
+import getConfig from 'next/config';
+import FormTagInput from '../FormTagInput';
 import withFormSchema from '../../lib/withFormSchema';
 import withFormModel from '../../lib/withFormModel';
 import withFormErrorHandlers from '../../lib/withFormErrorHandlers';
 
 const { publicRuntimeConfig } = getConfig();
 
-const FormRTEInput = dynamic(import('../../lib/FormRTEInput'), {
+const FormRTEInput = dynamic(import('../FormRTEInput'), {
   ssr: false,
 });
-const FormEditAssortmentTexts = ({
+const FormEditProductTexts = ({
   languages, changeSelectedLocale, activeLanguage, isEditingDisabled, ...formProps
 }) => (
   <Container>
@@ -67,6 +68,18 @@ const FormEditAssortmentTexts = ({
               hidden={language.isoCode !== activeLanguage}
               component={FormRTEInput}
             />
+            <AutoField
+              name={`texts.${key}.vendor`}
+              disabled={isEditingDisabled}
+              hidden={language.isoCode !== activeLanguage}
+            />
+            <AutoField
+              name={`texts.${key}.labels`}
+              disabled={isEditingDisabled}
+              hidden={language.isoCode !== activeLanguage}
+              component={FormTagInput}
+              options={[]}
+            />
           </div>
         ))}
         <ErrorsField />
@@ -78,9 +91,10 @@ const FormEditAssortmentTexts = ({
 
 export default compose(
   graphql(gql`
-    query assortmentTexts($assortmentId: ID!) {
-      assortment(assortmentId: $assortmentId) {
+    query productTexts($productId: ID!) {
+      product(productId: $productId) {
         _id
+        status
       }
       languages {
         _id
@@ -89,18 +103,20 @@ export default compose(
         isBase
         name
       }
-      translatedAssortmentTexts(assortmentId: $assortmentId) {
+      translatedProductTexts(productId: $productId) {
         _id
         locale
         title
         subtitle
         slug
         description
+        vendor
+        labels
       }
     }
   `),
   mapProps(({ data, ...rest }) => {
-    const { languages = [], assortment = {} /* translatedAssortmentTexts = [] */ } = data;
+    const { languages = [], product = {} /* translatedProductTexts = [] */ } = data;
     const filteredActiveLanguages = languages
       .filter(language => !!language.isBase);
     const baseLanguage = (
@@ -113,26 +129,28 @@ export default compose(
       ...rest,
       languages,
       baseLanguage,
-      isEditingDisabled: !assortment, // || (assortment.status === 'DELETED'),
+      isEditingDisabled: !product || (product.status === 'DELETED'),
     };
   }),
   withState('selectedLocale', 'setSelectedLocale', null),
   graphql(gql`
-    mutation updateAssortmentTexts($texts: [UpdateAssortmentTextInput!]!, $assortmentId: ID!) {
-      updateAssortmentTexts(texts: $texts, assortmentId: $assortmentId) {
+    mutation updateProductTexts($texts: [UpdateProductTextInput!]!, $productId: ID!) {
+      updateProductTexts(texts: $texts, productId: $productId) {
         _id
         locale
         title
         subtitle
         slug
         description
+        vendor
+        labels
       }
     }
   `, {
     options: {
       refetchQueries: [
-        'assortmentTexts',
-        'assortmentInfos',
+        'productTexts',
+        'productInfos',
       ],
     },
   }),
@@ -158,7 +176,12 @@ export default compose(
     'texts.$.subtitle': {
       type: String,
       optional: true,
-      label: 'Untertitel',
+      label: 'Subtitle',
+    },
+    'texts.$.vendor': {
+      type: String,
+      optional: true,
+      label: 'Vendor',
     },
     'texts.$.description': {
       type: String,
@@ -170,10 +193,19 @@ export default compose(
       optional: true,
       label: 'Slug',
     },
+    'texts.$.labels': {
+      type: Array,
+      optional: true,
+      label: 'Labels',
+    },
+    'texts.$.labels.$': {
+      type: String,
+      optional: true,
+    },
   }),
-  withFormModel(({ data: { translatedAssortmentTexts = [] }, languages = [] }) => {
+  withFormModel(({ data: { translatedProductTexts = [] }, languages = [] }) => {
     const texts = languages.map((language) => {
-      const foundTranslations = translatedAssortmentTexts
+      const foundTranslations = translatedProductTexts
         .filter(translatedText => (translatedText.locale === language.isoCode));
       const localizedTextForLocale = (foundTranslations.length > 0
         ? { ...(foundTranslations[0]) }
@@ -191,20 +223,20 @@ export default compose(
     changeSelectedLocale: ({ setSelectedLocale }) => (event, element) => {
       setSelectedLocale(element.name);
     },
-    onSubmit: ({ assortmentId, mutate, schema }) => ({ ...dirtyInput }) => mutate({
+    onSubmit: ({ productId, mutate, schema }) => ({ ...dirtyInput }) => mutate({
       variables: {
         texts: schema.clean(dirtyInput).texts,
-        assortmentId,
+        productId,
       },
     }),
   }),
   withFormErrorHandlers,
   mapProps(({
     setSelectedLocale, selectedLocale,
-    baseLanguage, assortmentId, mutate, data, ...rest
+    baseLanguage, productId, mutate, data, ...rest
   }) => ({
     activeLanguage: selectedLocale || baseLanguage,
     ...rest,
   })),
   pure,
-)(FormEditAssortmentTexts);
+)(FormEditProductTexts);
