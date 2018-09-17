@@ -88,13 +88,13 @@ Filters.cleanFiltersByReferenceDate = (referenceDate) => {
 };
 
 Filters.updateCleanFilterActivation = () => {
-  const disabledDirtyAssortmentsCount = Filters.update({
+  const disabledDirtyFiltersCount = Filters.update({
     isActive: true,
     dirty: true,
   }, {
     $set: { isActive: false },
   }, { bypassCollection2: true, multi: true });
-  const enabledCleanAssortmentsCount = Filters.update({
+  const enabledCleanFiltersCount = Filters.update({
     isActive: false,
     dirty: { $ne: true },
   }, {
@@ -102,19 +102,19 @@ Filters.updateCleanFilterActivation = () => {
   }, { bypassCollection2: true, multi: true });
 
   console.log(`Filter Sync: Result of filter activation`, { // eslint-disable-line
-    disabledDirtyAssortmentsCount,
-    enabledCleanAssortmentsCount,
+    disabledDirtyFiltersCount,
+    enabledCleanFiltersCount,
   });
 };
 
 
 Filters.wipeFilters = (onlyDirty = true) => {
   const selector = onlyDirty ? { dirty: true } : {};
-  const removedAssortmentCount = Filters.remove(selector);
-  const removedAssortmentTextCount = FilterTexts.remove(selector);
+  const removedFilterCount = Filters.remove(selector);
+  const removedFilterTextCount = FilterTexts.remove(selector);
   console.log(`result of filter purging with onlyDirty=${onlyDirty}`, { // eslint-disable-line
-    removedAssortmentCount,
-    removedAssortmentTextCount,
+    removedFilterCount,
+    removedFilterTextCount,
   });
 };
 
@@ -184,6 +184,13 @@ Filters.helpers({
         filterOptionValue: filterOptionValue || null,
       },
     }, { bypassCollection2: true });
+    Filters.update({
+      _id: this._id,
+    }, {
+      $set: {
+        updated: new Date(),
+      },
+    });
     return FilterTexts.findOne(selector);
   },
   getLocalizedTexts(locale, optionValue) {
