@@ -92,11 +92,15 @@ Collections.Assortments.cleanDirtyAssortmentTreeByReferenceDate = (referenceDate
   const updatedAssortmentLinksCount = Collections.AssortmentLinks.update(
     selector, modifier, collectionUpdateOptions,
   );
+  const updatedAssortmentFiltersCount = Collections.AssortmentLinks.update(
+    selector, modifier, collectionUpdateOptions,
+  );
   console.log(`Assortment Sync: Result of assortment cleaning with referenceDate=${referenceDate}`, { // eslint-disable-line
     updatedAssortmentCount,
     updatedAssortmentTextsCount,
     updatedAssortmentProductsCount,
     updatedAssortmentLinksCount,
+    updatedAssortmentFiltersCount,
   });
 };
 
@@ -127,11 +131,14 @@ Collections.Assortments.wipeAssortments = (onlyDirty = true) => {
   const removedAssortmentTextCount = Collections.AssortmentTexts.remove(selector);
   const removedAssortmentProductsCount = Collections.AssortmentProducts.remove(selector);
   const removedAssortmentLinksCount = Collections.AssortmentLinks.remove(selector);
+  const removedAssortmentFiltersCount = Collections.AssortmentLinks.remove(selector);
+
   console.log(`result of assortment purging with onlyDirty=${onlyDirty}`, { // eslint-disable-line
     removedAssortmentCount,
     removedAssortmentTextCount,
     removedAssortmentProductsCount,
     removedAssortmentLinksCount,
+    removedAssortmentFiltersCount,
   });
 };
 
