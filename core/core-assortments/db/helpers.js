@@ -55,12 +55,16 @@ Collections.Assortments.markAssortmentTreeDirty = () => {
   const updatedAssortmentLinksCount = Collections.AssortmentLinks.update(
     {}, dirtyModifier, collectionUpdateOptions,
   );
+  const updatedAssortmentFiltersCount = Collections.AssortmentFilters.update(
+    {}, dirtyModifier, collectionUpdateOptions,
+  );
   const timestamp = new Date();
   console.log(`Assortment Sync: Marked Assortment tree dirty at timestamp ${timestamp}`, { // eslint-disable-line
     updatedAssortmentCount,
     updatedAssortmentTextsCount,
     updatedAssortmentProductsCount,
     updatedAssortmentLinksCount,
+    updatedAssortmentFiltersCount,
   });
   return new Date();
 };

@@ -39,6 +39,85 @@ Filters.getLocalizedTexts = (
   filterOptionValue,
 }, locale);
 
+Filters.sync = (syncFn) => {
+  const referenceDate = Filters.markFiltersDirty();
+  syncFn(referenceDate);
+  Filters.cleanFiltersByReferenceDate(referenceDate);
+  Filters.updateCleanFilterActivation();
+  Filters.wipeFilters();
+};
+
+Filters.markFiltersDirty = () => {
+  const dirtyModifier = { $set: { dirty: true } };
+  const collectionUpdateOptions = { bypassCollection2: true, multi: true };
+  const updatedFiltersCount = Filters.update(
+    {}, dirtyModifier, collectionUpdateOptions,
+  );
+  const updatedFilterTextsCount = FilterTexts.update(
+    {}, dirtyModifier, collectionUpdateOptions,
+  );
+  const timestamp = new Date();
+  console.log(`Filter Sync: Marked Filters dirty at timestamp ${timestamp}`, { // eslint-disable-line
+    updatedFiltersCount,
+    updatedFilterTextsCount,
+  });
+  return new Date();
+};
+
+Filters.cleanFiltersByReferenceDate = (referenceDate) => {
+  const selector = {
+    dirty: true,
+    $or: [{
+      updated: { $gte: referenceDate },
+    }, {
+      created: { $gte: referenceDate },
+    }],
+  };
+  const modifier = { $set: { dirty: false } };
+  const collectionUpdateOptions = { bypassCollection2: true, multi: true };
+  const updatedFiltersCount = Filters.update(
+    selector, modifier, collectionUpdateOptions,
+  );
+  const updatedFilterTextsCount = FilterTexts.update(
+    selector, modifier, collectionUpdateOptions,
+  );
+  console.log(`Filter Sync: Result of filter cleaning with referenceDate=${referenceDate}`, { // eslint-disable-line
+    updatedFiltersCount,
+    updatedFilterTextsCount,
+  });
+};
+
+Filters.updateCleanFilterActivation = () => {
+  const disabledDirtyAssortmentsCount = Filters.update({
+    isActive: true,
+    dirty: true,
+  }, {
+    $set: { isActive: false },
+  }, { bypassCollection2: true, multi: true });
+  const enabledCleanAssortmentsCount = Filters.update({
+    isActive: false,
+    dirty: { $ne: true },
+  }, {
+    $set: { isActive: true },
+  }, { bypassCollection2: true, multi: true });
+
+  console.log(`Filter Sync: Result of filter activation`, { // eslint-disable-line
+    disabledDirtyAssortmentsCount,
+    enabledCleanAssortmentsCount,
+  });
+};
+
+
+Filters.wipeFilters = (onlyDirty = true) => {
+  const selector = onlyDirty ? { dirty: true } : {};
+  const removedAssortmentCount = Filters.remove(selector);
+  const removedAssortmentTextCount = FilterTexts.remove(selector);
+  console.log(`result of filter purging with onlyDirty=${onlyDirty}`, { // eslint-disable-line
+    removedAssortmentCount,
+    removedAssortmentTextCount,
+  });
+};
+
 Filters.filterProductIds = ({ productIds, query, forceLiveCollection = false }) => {
   if (!query || query.length === 0) return productIds;
   const queryObject = parseQueryArray(query);
@@ -139,18 +218,25 @@ Filters.helpers({
   },
   invalidateProductIdCache() {
     log(`Filters: Rebuilding ${this.key}`); // eslint-disable.line
+    const { productIds, ...productIdMap } = this.buildProductIdMap();
     Filters.update({ _id: this._id }, {
       $set: {
-        _cache: Object.entries(this.buildProductIdMap()),
+        _cache: {
+          ...productIdMap,
+          productIds: Object.entries(productIds),
+        },
       },
     });
   },
   cache() {
     if (!this._cache) return {}; // eslint-disable-line
-    return this._cache.reduce((accumulator, [key, value]) => ({ // eslint-disable-line
-      ...accumulator,
-      [key]: value,
-    }), {});
+    return {
+      allProductIds: this._cache.allProductIds, // eslint-disable-line
+      productIds: this._cache.productIds.reduce((accumulator, [key, value]) => ({ // eslint-disable-line
+        ...accumulator,
+        [key]: value,
+      }), {}),
+    };
   },
   productIds({ values, forceLiveCollection }) {
     const { productIds, allProductIds } = forceLiveCollection
