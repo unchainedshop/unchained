@@ -26,7 +26,7 @@ Filters.createFilter = ({
   };
   const filterId = Filters.insert(filter);
   const filterObject = Filters.findOne({ _id: filterId });
-  filterObject.upsertLocalizedText({ locale, title });
+  filterObject.upsertLocalizedText({ locale, filterOptionValue: null, title });
   return filterObject;
 };
 
@@ -36,7 +36,7 @@ Filters.getLocalizedTexts = (
   locale,
 ) => findLocalizedText(FilterTexts, {
   filterId,
-  filterOptionValue,
+  filterOptionValue: filterOptionValue || { $eq: null },
 }, locale);
 
 Filters.sync = (syncFn) => {
@@ -262,9 +262,7 @@ Filters.helpers({
   },
   filteredOptions({ values, forceLiveCollection, productIdSet }) {
     return this.options.map(value => ({
-      option: {
-        value,
-      },
+      option: this.optionObject(value),
       remaining: this.intersect({ values: [value], forceLiveCollection, productIdSet }).size,
       active: values ? (values.indexOf(value) !== -1) : false,
     }));

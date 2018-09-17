@@ -384,7 +384,7 @@ ProductVariations.getLocalizedTexts = (
   locale,
 ) => findLocalizedText(ProductVariationTexts, {
   productVariationId,
-  productVariationOptionValue,
+  productVariationOptionValue: productVariationOptionValue || { $eq: null },
 }, locale);
 
 ProductMedia.getNewSortKey = (productId) => {
