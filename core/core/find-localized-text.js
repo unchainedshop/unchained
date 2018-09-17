@@ -9,7 +9,6 @@ const extendSelectorWithLocale = (selector, locale) => {
 };
 
 const findLocalizedText = (collection, selector, locale) => {
-  console.log(collection, selector, locale);
   const exactTranslation = collection
     .findOne(extendSelectorWithLocale(selector, locale));
   if (exactTranslation) return exactTranslation;
