@@ -4,7 +4,7 @@ import { graphql } from 'react-apollo';
 import React from 'react';
 import { Table, Icon, Button } from 'semantic-ui-react';
 import Link from 'next/link';
-import InfiniteDataTable, { withDataTableLoader } from '../../lib/InfiniteDataTable';
+import InfiniteDataTable, { withDataTableLoader } from '../InfiniteDataTable';
 
 const CountryList = ({ changeBaseCountry, ...rest }) => (
   <InfiniteDataTable

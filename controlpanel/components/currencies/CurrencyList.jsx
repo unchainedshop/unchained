@@ -2,7 +2,7 @@ import gql from 'graphql-tag';
 import React from 'react';
 import { Table, Icon } from 'semantic-ui-react';
 import Link from 'next/link';
-import InfiniteDataTable, { withDataTableLoader } from '../../lib/InfiniteDataTable';
+import InfiniteDataTable, { withDataTableLoader } from '../InfiniteDataTable';
 
 const CurrencyList = ({ ...rest }) => (
   <InfiniteDataTable

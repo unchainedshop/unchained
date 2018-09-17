@@ -4,7 +4,7 @@ import gql from 'graphql-tag';
 import React from 'react';
 import { Table } from 'semantic-ui-react';
 import Link from 'next/link';
-import InfiniteDataTable, { withDataTableLoader } from '../../lib/InfiniteDataTable';
+import InfiniteDataTable, { withDataTableLoader } from '../InfiniteDataTable';
 import FormattedMoney from '../FormattedMoney';
 
 const OrderList = ({
