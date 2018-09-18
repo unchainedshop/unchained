@@ -1,7 +1,7 @@
 /* globals Package */
 Package.describe({
   name: 'unchained:core-products',
-  version: '0.1.0',
+  version: '0.3.1',
   // Brief, one-line summary of the package.
   summary: '',
   // URL to the Git repository containing the source code for this package.
@@ -26,6 +26,7 @@ Package.onUse((api) => {
   api.use('unchained:core-warehousing');
   api.use('unchained:core-users', { unordered: true });
   api.use('unchained:core-countries', { unordered: true });
+  api.use('unchained:core-assortments', { unordered: true });
 
   api.mainModule('products.js', 'server');
 });

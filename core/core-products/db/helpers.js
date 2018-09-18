@@ -54,6 +54,7 @@ Products.getNewSequence = (oldSequence) => {
 export default () => {
   const { Users } = Promise.await(import('meteor/unchained:core-users'));
   const { Countries } = Promise.await(import('meteor/unchained:core-countries'));
+  const { AssortmentProducts } = Promise.await(import('meteor/unchained:core-assortments'));
 
   Products.helpers({
     publish() {
@@ -302,6 +303,28 @@ export default () => {
           isTaxable: false,
           isNetPrice: false,
         });
+    },
+    siblings({ assortmentId } = {}) {
+      const assortmentIds = assortmentId
+        ? [assortmentId]
+        : AssortmentProducts
+          .find({ productId: this._id })
+          .fetch()
+          .map(({ assortmentId: id }) => id);
+      if (!assortmentIds || assortmentIds.length === 0) return [];
+      const productIds = AssortmentProducts
+        .find({
+          $and: [{
+            productId: { $ne: this._id },
+          }, {
+            assortmentId: { $in: assortmentIds },
+          }],
+        })
+        .fetch()
+        .map(({ productId: curProductId }) => curProductId);
+      return Products
+        .find({ _id: { $in: productIds } })
+        .fetch();
     },
   });
 };
