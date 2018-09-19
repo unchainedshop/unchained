@@ -198,6 +198,11 @@ input UpdateFilterTextInput {
   subtitle: String
 }
 
+input ProductConfigurationParameter {
+  key: String!
+  value: String!
+}
+
 type Mutation {
   """
   Login the user with a facebook access token
@@ -262,7 +267,7 @@ type Mutation {
   """
   Add a new item to the cart. Order gets generated with status = open (= order before checkout / cart) if necessary. ACL: Logged in users (including guests)
   """
-  addCartProduct(productId: ID!, quantity: Int = 1): OrderItem!
+  addCartProduct(productId: ID!, quantity: Int = 1, configuration: [ProductConfigurationParameter!]): OrderItem!
 
   """
   Change the quantity of an item in the cart ACL: Logged in users (including guests)

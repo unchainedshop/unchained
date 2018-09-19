@@ -58,10 +58,17 @@ OrderPositions.helpers({
         };
       });
   },
+  config(key) {
+    return (this.configuration || [])
+      .reduce((accumulator, configurationItem) => {
+        if (configurationItem.key === key) return configurationItem.value;
+        return accumulator;
+      }, undefined);
+  },
 });
 
 OrderPositions.createPosition = ({
-  orderId, productId, quantity, ...rest
+  orderId, productId, quantity, configuration, ...rest
 }) => {
   log(`Create ${quantity}x Position with Product ${productId}`, { orderId });
   const positionId = OrderPositions.insert({
@@ -69,6 +76,7 @@ OrderPositions.createPosition = ({
     orderId,
     productId,
     quantity,
+    configuration,
     created: new Date(),
   });
   OrderDiscounts.updateDiscounts({ orderId });

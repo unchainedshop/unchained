@@ -118,10 +118,11 @@ Orders.helpers({
       ...props,
     }).fetch();
   },
-  addItem({ productId, quantity }) {
+  addItem({ productId, quantity, configuration }) {
     const existingPosition = OrderPositions.findOne({
       orderId: this._id,
       productId,
+      configuration,
     });
     if (existingPosition && !existingPosition.isEnforcesSingleItemsOnAddToOrder()) {
       return this.updateItemQuantity({
@@ -133,6 +134,7 @@ Orders.helpers({
       orderId: this._id,
       productId,
       quantity,
+      configuration,
     });
   },
   removeItem({ itemId }) {

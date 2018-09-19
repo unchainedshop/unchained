@@ -13,6 +13,18 @@ const calculationFields = {
     type: Object,
     blackbox: true,
   },
+  configuration: Array,
+  'configuration.$': {
+    type: Object,
+    required: true,
+  },
+  'configuration.$.key': {
+    type: String,
+    required: true,
+  },
+  'configuration.$.value': {
+    type: String,
+  },
 };
 
 OrderPositions.attachSchema(new SimpleSchema({
