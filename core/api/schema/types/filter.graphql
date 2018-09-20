@@ -37,6 +37,7 @@ type Filter {
   _id: ID!
   updated: Date
   created: Date
+  isActive: Boolean
   texts(forceLocale: String): FilterTexts
   type: FilterType
   key: String

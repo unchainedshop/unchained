@@ -162,7 +162,7 @@ type Query {
   """
   Get all filters
   """
-  filters(limit: Int, offset: Int): [Filter!]!
+  filters(limit: Int, offset: Int, includeInactive: Boolean): [Filter!]!
 
   """
   Get a specific filter by ID

@@ -295,7 +295,11 @@ export default () => {
       }
       return this._cachedProductIds; // eslint-disable-line
     },
-    filters({ query, forceLiveCollection = false }) {
+    filters({
+      query,
+      forceLiveCollection = false,
+      includeInactive = false,
+    } = {}) {
       const productIds = this.productIds({ forceLiveCollection });
       const filterIds = Collections.AssortmentFilters
         .find({ assortmentId: this._id }, {
@@ -309,6 +313,7 @@ export default () => {
         productIds,
         query,
         forceLiveCollection,
+        includeInactive,
       });
     },
     products({
@@ -317,11 +322,14 @@ export default () => {
       includeInactive = false,
     } = {}) {
       const productIds = this.productIds({ forceLiveCollection });
-      const selector = {};
-      const options = { skip: offset, limit };
+      const selector = {
+        status: { $in: [ProductStatus.ACTIVE, ProductStatus.DRAFT] },
+      };
       if (!includeInactive) {
         selector.status = ProductStatus.ACTIVE;
       }
+      const options = { skip: offset, limit };
+
       const filteredProductIds = Filters.filterProductIds({
         productIds,
         query,
@@ -361,7 +369,7 @@ export default () => {
         })
         .fetch();
     },
-    children() {
+    children({ includeInactive = false } = {}) {
       const assortmentIds = Collections.AssortmentLinks
         .find({ parentAssortmentId: this._id }, {
           fields: { childAssortmentId: 1 },
@@ -369,11 +377,14 @@ export default () => {
         })
         .fetch()
         .map(({ childAssortmentId }) => childAssortmentId);
-      return Collections.Assortments
-        .find({ _id: { $in: assortmentIds } })
-        .fetch();
+
+      const selector = { _id: { $in: assortmentIds } };
+      if (!includeInactive) {
+        selector.isActive = true;
+      }
+      return Collections.Assortments.find(selector).fetch();
     },
-    parents() {
+    parents({ includeInactive = false } = {}) {
       const assortmentIds = Collections.AssortmentLinks
         .find({ childAssortmentId: this._id }, {
           fields: { parentAssortmentId: 1 },
@@ -381,9 +392,12 @@ export default () => {
         })
         .fetch()
         .map(({ parentAssortmentId }) => parentAssortmentId);
-      return Collections.Assortments
-        .find({ _id: { $in: assortmentIds } })
-        .fetch();
+
+      const selector = { _id: { $in: assortmentIds } };
+      if (!includeInactive) {
+        selector.isActive = true;
+      }
+      return Collections.Assortments.find(selector).fetch();
     },
     collectProductIdCache(ownProductIdCache, linkedAssortmentsCache) {
       const ownProductIds = ownProductIdCache

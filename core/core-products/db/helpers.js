@@ -310,13 +310,15 @@ export default () => {
         .fetch()
         .map(({ assortmentId: id }) => id);
     },
-    assortments() {
+    assortments({ includeInactive = false } = {}) {
       const assortmentIds = this.assortmentIds();
-      return Assortments
-        .find({ _id: { $in: assortmentIds } })
-        .fetch();
+      const selector = { _id: { $in: assortmentIds } };
+      if (!includeInactive) {
+        selector.isActive = true;
+      }
+      return Assortments.find(selector).fetch();
     },
-    siblings({ assortmentId } = {}) {
+    siblings({ assortmentId, includeDrafts = false } = {}) {
       const assortmentIds = assortmentId
         ? [assortmentId]
         : this.assortmentIds();
@@ -331,9 +333,15 @@ export default () => {
         })
         .fetch()
         .map(({ productId: curProductId }) => curProductId);
-      return Products
-        .find({ _id: { $in: productIds } })
-        .fetch();
+
+      const productSelector = {
+        _id: { $in: productIds },
+        status: { $in: [ProductStatus.ACTIVE, ProductStatus.DRAFT] },
+      };
+      if (!includeDrafts) {
+        productSelector.status = ProductStatus.ACTIVE;
+      }
+      return Products.find(productSelector).fetch();
     },
   });
 };

@@ -65,6 +65,7 @@ import setRoles from './setRoles';
 import enrollUser from './enrollUser';
 import checkout from './checkout';
 import createFilter from './createFilter';
+import updateFilter from './updateFilter';
 import createFilterOption from './createFilterOption';
 import removeFilter from './removeFilter';
 import updateFilterTexts from './updateFilterTexts';
@@ -164,6 +165,7 @@ export default {
   removeWarehousingProvider: acl(actions.manageWarehousingProviders)(removeWarehousingProvider),
 
   createFilter: acl(actions.manageFilters)(createFilter),
+  updateFilter: acl(actions.manageFilters)(updateFilter),
   removeFilter: acl(actions.manageFilters)(removeFilter),
   updateFilterTexts: acl(actions.manageFilters)(updateFilterTexts),
   removeFilterOption: acl(actions.manageFilters)(removeFilterOption),

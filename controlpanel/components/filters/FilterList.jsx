@@ -3,7 +3,7 @@ import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 import React from 'react';
 import {
-  Table, Icon, Button, Loader, Label,
+  Table, Icon, Button, Loader,
 } from 'semantic-ui-react';
 import InfiniteScroll from 'react-infinite-scroller';
 import Link from 'next/link';
@@ -39,6 +39,9 @@ const FilterList = ({
           Type
         </Table.HeaderCell>
         <Table.HeaderCell>
+          Active?
+        </Table.HeaderCell>
+        <Table.HeaderCell>
           Options
         </Table.HeaderCell>
       </Table.Row>
@@ -71,13 +74,12 @@ const FilterList = ({
               {filter.type}
             </Table.Cell>
             <Table.Cell>
-              {filter.options && filter.options.length > 0 && (
-                filter.options.map(option => (
-                  <Label key={option._id} color="grey" horizontal>
-                    {option.value}
-                  </Label>
-                ))
+              {filter.isActive && (
+                <Icon color="green" name="checkmark" size="large" />
               )}
+            </Table.Cell>
+            <Table.Cell>
+              {filter.options && filter.options.length}
             </Table.Cell>
           </Table.Row>
         ))}
@@ -108,8 +110,9 @@ const FilterList = ({
 const ITEMS_PER_PAGE = 10;
 export const FILTER_LIST_QUERY = gql`
   query filters($offset: Int, $limit: Int) {
-    filters(offset: $offset, limit: $limit) {
+    filters(offset: $offset, limit: $limit, includeInactive: true) {
       _id
+      isActive
       key
       type
       texts {

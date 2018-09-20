@@ -143,12 +143,15 @@ Filters.invalidateFilterCaches = () => {
 };
 
 Filters.filterFilters = ({
-  filterIds, productIds, query, forceLiveCollection = false,
-}) => {
+  filterIds, productIds, query, forceLiveCollection = false, includeInactive = false,
+} = {}) => {
   const queryObject = parseQueryArray(query);
-
+  const selector = { _id: { $in: filterIds } };
+  if (!includeInactive) {
+    selector.isActive = true;
+  }
   return Filters
-    .find({ _id: { $in: filterIds } })
+    .find(selector)
     .fetch()
     .map((filter) => {
       const values = queryObject[filter.key];

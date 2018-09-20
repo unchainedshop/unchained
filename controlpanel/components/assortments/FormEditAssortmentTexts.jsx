@@ -100,7 +100,7 @@ export default compose(
     }
   `),
   mapProps(({ data, ...rest }) => {
-    const { languages = [], assortment = {} /* translatedAssortmentTexts = [] */ } = data;
+    const { languages = [], assortment = {} } = data;
     const filteredActiveLanguages = languages
       .filter(language => !!language.isBase);
     const baseLanguage = (
@@ -113,7 +113,7 @@ export default compose(
       ...rest,
       languages,
       baseLanguage,
-      isEditingDisabled: !assortment, // || (assortment.status === 'DELETED'),
+      isEditingDisabled: !assortment,
     };
   }),
   withState('selectedLocale', 'setSelectedLocale', null),

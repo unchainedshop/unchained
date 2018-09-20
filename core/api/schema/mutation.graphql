@@ -192,6 +192,11 @@ input CreateFilterOptionInput {
   title: String!
 }
 
+input UpdateFilterInput {
+  isActive: Boolean
+  key: String
+}
+
 input UpdateFilterTextInput {
   locale: String!
   title: String
@@ -565,6 +570,7 @@ type Mutation {
   reorderAssortmentFilters(sortKeys: [ReorderAssortmentFilterInput!]!): [AssortmentFilter!]!
 
   createFilter(filter: CreateFilterInput!): Filter!
+  updateFilter(filter: UpdateFilterInput!, filterId: ID!): Filter!
   removeFilter(filterId: ID!): Filter!
   removeFilterOption(filterId: ID!, filterOptionValue: String!): Filter!
   updateFilterTexts(filterId: ID!, filterOptionValue: String, texts: [UpdateFilterTextInput!]!): [FilterTexts!]!
