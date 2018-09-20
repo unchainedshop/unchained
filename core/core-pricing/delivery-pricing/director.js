@@ -55,12 +55,17 @@ class DeliveryPricingDirector {
     this.calculation = DeliveryPricingDirector.sortedAdapters()
       .filter((AdapterClass => AdapterClass.isActivatedFor(this.context.provider)))
       .reduce((calculation, AdapterClass) => {
-        const concreteAdapter = new AdapterClass({
-          context: this.context,
-          calculation,
-        });
-        const nextCalculationResult = Promise.await(concreteAdapter.calculate());
-        return calculation.concat(nextCalculationResult);
+        try {
+          const concreteAdapter = new AdapterClass({
+            context: this.context,
+            calculation,
+          });
+          const nextCalculationResult = Promise.await(concreteAdapter.calculate());
+          return calculation.concat(nextCalculationResult);
+        } catch (error) {
+          log(error, { level: 'error' });
+        }
+        return calculation;
       }, []);
     return this.calculation;
   }

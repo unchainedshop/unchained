@@ -82,13 +82,18 @@ class ProductPricingDirector {
             configuration: discount.discountConfigurationForCalculation(AdapterClass.key),
           }))
           .filter(({ configuration }) => (configuration !== null));
-        const concreteAdapter = new AdapterClass({
-          context: this.context,
-          calculation,
-          discounts,
-        });
-        const nextCalculationResult = Promise.await(concreteAdapter.calculate());
-        return calculation.concat(nextCalculationResult);
+        try {
+          const concreteAdapter = new AdapterClass({
+            context: this.context,
+            calculation,
+            discounts,
+          });
+          const nextCalculationResult = Promise.await(concreteAdapter.calculate());
+          return calculation.concat(nextCalculationResult);
+        } catch (error) {
+          log(error, { level: 'error' });
+        }
+        return calculation;
       }, []);
     return this.calculation;
   }
