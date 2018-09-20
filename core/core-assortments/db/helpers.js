@@ -289,11 +289,14 @@ export default () => {
         })
         .fetch();
     },
+    productIds({ forceLiveCollection = false } = {}) {
+      if (!this._cachedProductIds || forceLiveCollection) {  // eslint-disable-line
+        return this.collectProductIdCache() || [];
+      }
+      return this._cachedProductIds; // eslint-disable-line
+    },
     filters({ query, forceLiveCollection = false }) {
-      const productIds = forceLiveCollection
-        ? this.collectProductIdCache()
-        : this._cachedProductIds; // eslint-disable-line
-
+      const productIds = this.productIds({ forceLiveCollection });
       const filterIds = Collections.AssortmentFilters
         .find({ assortmentId: this._id }, {
           sort: { sortKey: 1 },
@@ -313,10 +316,7 @@ export default () => {
       forceLiveCollection = false,
       includeInactive = false,
     } = {}) {
-      const productIds = forceLiveCollection
-        ? this.collectProductIdCache()
-        : this._cachedProductIds; // eslint-disable-line
-
+      const productIds = this.productIds({ forceLiveCollection });
       const selector = {};
       const options = { skip: offset, limit };
       if (!includeInactive) {
@@ -369,6 +369,18 @@ export default () => {
         })
         .fetch()
         .map(({ childAssortmentId }) => childAssortmentId);
+      return Collections.Assortments
+        .find({ _id: { $in: assortmentIds } })
+        .fetch();
+    },
+    parents() {
+      const assortmentIds = Collections.AssortmentLinks
+        .find({ childAssortmentId: this._id }, {
+          fields: { parentAssortmentId: 1 },
+          sort: { sortKey: 1 },
+        })
+        .fetch()
+        .map(({ parentAssortmentId }) => parentAssortmentId);
       return Collections.Assortments
         .find({ _id: { $in: assortmentIds } })
         .fetch();
