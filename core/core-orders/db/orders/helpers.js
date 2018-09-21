@@ -255,7 +255,7 @@ Orders.helpers({
       return `${this.currency} ${fixedPrice}`;
     };
     director.sendMessage({
-      template: 'ch.dagobert.orders.confirmation',
+      template: 'shop.unchained.orders.confirmation',
       attachments,
       meta: {
         mailPrefix: `${this.orderNumber}_`,
