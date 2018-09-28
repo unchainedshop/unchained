@@ -16,7 +16,7 @@ export default compose(
   `),
   mapProps(({ data: { me, loading }, loading: loadingPredecessor = false, ...rest }) => {
     const currentUser = me
-      ? (me.roles.indexOf('admin') !== -1 && me)
+      ? ((me.roles || []).indexOf('admin') !== -1 && me)
       : {};
     return {
       currentUser,
