@@ -85,7 +85,7 @@ export default () => {
       });
       return Users.findOne({ _id: this._id });
     },
-    updateEmail(email) {
+    updateEmail(email, { skipEmailVerification = false } = {}) {
       Users.update({ _id: this._id }, {
         $set: {
           updated: new Date(),
@@ -93,7 +93,9 @@ export default () => {
           'emails.0.verified': false,
         },
       });
-      Accounts.sendVerificationEmail(this._id);
+      if (!skipEmailVerification) {
+        Accounts.sendVerificationEmail(this._id);
+      }
       return Users.findOne({ _id: this._id });
     },
     logs({ limit = 10, offset = 0 }) {
