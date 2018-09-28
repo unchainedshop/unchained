@@ -252,7 +252,9 @@ export default () => {
         currency,
         quantity,
       });
-      pricingDirector.calculate();
+      const calculated = pricingDirector.calculate();
+      if (!calculated) return null;
+
       const pricing = pricingDirector.resultSheet();
       const userPrice = pricing.unitPrice({ useNetPrice });
 

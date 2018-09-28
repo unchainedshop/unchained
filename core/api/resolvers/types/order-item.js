@@ -1,8 +1,16 @@
 export default {
   total(obj, { category }) {
-    return obj.pricing().total(category);
+    const pricing = obj.pricing();
+    if (pricing.length > 0) {
+      return pricing.total(category);
+    }
+    return null;
   },
   unitPrice(obj) {
-    return obj.pricing().unitPrice();
+    const pricing = obj.pricing();
+    if (pricing.length > 0) {
+      return pricing.unitPrice();
+    }
+    return null;
   },
 };

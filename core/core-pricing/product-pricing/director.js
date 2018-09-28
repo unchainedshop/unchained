@@ -89,6 +89,7 @@ class ProductPricingDirector {
             discounts,
           });
           const nextCalculationResult = Promise.await(concreteAdapter.calculate());
+          if (!nextCalculationResult || !calculation) return null;
           return calculation.concat(nextCalculationResult);
         } catch (error) {
           log(error, { level: 'error' });
