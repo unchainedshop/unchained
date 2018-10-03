@@ -16,6 +16,7 @@ const defaultServerConfig = {
   configServer: (graphQLServer) => {}, // eslint-disable-line
   // enable GraphiQL only in development mode
   graphiql: Meteor.isDevelopment,
+  cors: false,
   // GraphiQL endpoint
   graphiqlPath: '/graphiql',
   // GraphiQL options (default: log the current user in your request)

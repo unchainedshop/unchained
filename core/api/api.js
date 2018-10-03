@@ -94,7 +94,13 @@ const startUnchainedServer = (options = {}) => {
       // formdata along the query
       // and therefore can take arbitrary binaries (uploading files through graphql)
       graphQLServer.use(
-        cors({ credentials: true }),
+        cors({
+          origin: '*',
+          methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+          preflightContinue: false,
+          optionsSuccessStatus: 204,
+          credentials: true,
+        }),
         multer({ inMemory: true }).any(),
         graphqlServerExpressUpload(),
       );
