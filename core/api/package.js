@@ -1,7 +1,7 @@
 /* globals Package */
 Package.describe({
   name: 'unchained:api',
-  version: '0.7.1',
+  version: '0.8.0',
   // Brief, one-line summary of the package.
   summary: '',
   // URL to the Git repository containing the source code for this package.
@@ -12,10 +12,11 @@ Package.describe({
 });
 
 Package.onUse((api) => {
-  api.versionsFrom('1.7');
+  api.versionsFrom('1.8');
 
   api.use('ecmascript');
   api.use('meteor');
+  api.use('http');
   api.use('webapp');
   api.use('accounts-base');
   api.use('check');
