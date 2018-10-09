@@ -12,14 +12,14 @@ import FormEditAssortment from './FormEditAssortment';
 const AssortmentHeader = ({ loading, assortmentId, assortment = {} }) => [
   <Menu fluid attached="top" borderless key="header-title">
     <Menu.Item header>
-Assortment:
+      Assortment:
       {assortment.texts && assortment.texts.title}
     </Menu.Item>
     <Menu.Menu position="right">
       <Dropdown item icon="wrench" simple>
         <Dropdown.Menu>
           <Dropdown.Header>
-Optionen
+            Options
           </Dropdown.Header>
           <BtnRemoveAssortment
             assortmentId={assortment._id}
@@ -39,7 +39,7 @@ Optionen
             <List.Item>
               <List.Icon name="add to calendar" />
               <List.Content>
-                  Erstellt:
+                  Created:
                 {' '}
                 {assortment.created ? (
                   <Moment format="LLL">
@@ -51,13 +51,13 @@ Optionen
             <List.Item>
               <List.Icon name="refresh" />
               <List.Content>
-                  Aktualisiert:
+                  Updated:
                 {' '}
                 {assortment.updated ? (
                   <Moment format="LLL">
                     {assortment.updated}
                   </Moment>
-                ) : 'Unbekannt'}
+                ) : 'n/a'}
               </List.Content>
             </List.Item>
           </List>
