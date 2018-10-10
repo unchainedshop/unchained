@@ -322,12 +322,12 @@ type Mutation {
   """
   Update a Shipping Delivery Provider's specific configuration
   """
-  updateOrderDeliveryShipping(orderDeliveryId: ID!, address: AddressInput): OrderDeliveryShipping!
+  updateOrderDeliveryShipping(orderDeliveryId: ID!, address: AddressInput, deliveryContext: JSON): OrderDeliveryShipping!
 
   """
   Update a Pick Up Delivery Provider's specific configuration
   """
-  updateOrderDeliveryPickUp(orderDeliveryId: ID!, address: AddressInput): OrderDeliveryPickUp!
+  updateOrderDeliveryPickUp(orderDeliveryId: ID!, address: AddressInput, deliveryContext: JSON): OrderDeliveryPickUp!
 
   """
   Update a Card Payment Provider's specific configuration

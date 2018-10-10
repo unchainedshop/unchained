@@ -13,6 +13,7 @@ export default function (root, { orderDeliveryId, ...rest }, { userId }) {
     throw new OrderDeliveryNotFoundError({ data: { orderDeliveryId } });
   }
   try {
+    console.log(rest);
     return orderDelivery.updateContext({ ...rest });
   } catch (error) {
     logger.error(error);
