@@ -1,4 +1,3 @@
-import moment from 'moment';
 import {
   ProductPricingDirector,
   ProductPricingAdapter,
@@ -10,21 +9,14 @@ class ProductSwissTax extends ProductPricingAdapter {
   static label = 'Berechnung der Bestellposition: Nettopreis und MwSt (Schweiz)'
   static orderIndex = 20
   static isActivatedFor(ctx) {
-    if (ctx.order && ctx.order.countryCode === 'CH') {
+    if (ctx.order && ctx.order.countryCode !== 'CH') {
       return true; // check if delivery address is in switzerland?
     }
     return false;
   }
 
-  getTaxRate() {
-    const date = (this.context.order && this.context.order.ordered)
-      ? new Date(this.context.order.ordered)
-      : new Date();
-    const referenceDate = moment(date);
-    if (referenceDate.isSameOrAfter('2018-01-01')) {
-      return 0.077;
-    }
-    return 0.08;
+  getTaxRate() { // eslint-disable-line
+    return 0.19;
   }
 
   calculate() {
