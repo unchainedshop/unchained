@@ -74,7 +74,7 @@ class ProductPricingDirector {
 
   calculate() {
     this.calculation = ProductPricingDirector.sortedAdapters()
-      .filter((AdapterClass => AdapterClass.isActivatedFor(this.context.product)))
+      .filter((AdapterClass => AdapterClass.isActivatedFor(this.context)))
       .reduce((calculation, AdapterClass) => {
         const discounts = this.context.discounts
           .map(discount => ({
