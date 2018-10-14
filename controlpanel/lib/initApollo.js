@@ -26,7 +26,7 @@ const fragmentMatcher = new IntrospectionFragmentMatcher({
 function create(initialState, headersOverride, getToken) {
   const httpLink = createUploadLink({
     uri: publicRuntimeConfig.GRAPHQL_ENDPOINT,
-    credentials: 'include',
+    credentials: 'same-origin',
   });
   const errorLink = onError(({ graphQLErrors, networkError }) => {
     if (graphQLErrors) {
