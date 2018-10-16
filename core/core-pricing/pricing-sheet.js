@@ -40,4 +40,8 @@ export default class PricingSheet {
       currency: this.currency,
     };
   }
+
+  isValid() {
+    return (this.calculation.length > 0);
+  }
 }

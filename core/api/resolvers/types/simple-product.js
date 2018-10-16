@@ -5,7 +5,6 @@ export default {
   status(obj) {
     return obj.normalizedStatus();
   },
-
   catalogPrice(obj, { quantity }, { countryContext }) {
     // listPrice: ProductPrice
     return obj.price({
@@ -46,6 +45,12 @@ export default {
       country: countryContext,
       userId,
     });
+  },
+  salesUnit(obj) {
+    return obj.commerce && obj.commerce.salesUnit;
+  },
+  baseUnit(obj) {
+    return obj.warehousing && obj.warehousing.baseUnit;
   },
   sku(obj) {
     return obj.warehousing && obj.warehousing.sku;
