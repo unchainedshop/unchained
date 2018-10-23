@@ -197,6 +197,12 @@ Orders.helpers({
       contact,
     });
   },
+  updateContext(context) {
+    return Orders.updateContext({
+      orderId: this._id,
+      context,
+    });
+  },
   totalQuantity() {
     return this.items().reduce((oldValue, item) => oldValue + item.quantity, 0);
   },
@@ -209,15 +215,17 @@ Orders.helpers({
     if (!this.payment()) errors.push('No payment provider selected');
     return errors;
   },
-  checkout({ paymentContext, deliveryContext }, { localeContext }) {
+  checkout({ paymentContext, deliveryContext, orderContext }, { localeContext }) {
     const errors = this.missingInputDataForCheckout();
     if (errors.length > 0) {
       throw errors[0];
     }
+
     const lastUserLanguage = this.user().language();
     const language = (localeContext && localeContext.normalized)
       || (lastUserLanguage && lastUserLanguage.isoCode);
     return this
+      .updateContext(orderContext)
       .processOrder({ paymentContext, deliveryContext })
       .sendOrderConfirmationToCustomer({ language });
   },
@@ -450,6 +458,18 @@ Orders.updateContact = ({ contact, orderId }) => {
   Orders.update({ _id: orderId }, {
     $set: {
       contact,
+      updated: new Date(),
+    },
+  });
+  Orders.updateCalculation({ orderId });
+  return Orders.findOne({ _id: orderId });
+};
+
+Orders.updateContext = ({ context, orderId }) => {
+  log('Update Arbitrary Context', { orderId });
+  Orders.update({ _id: orderId }, {
+    $set: {
+      context,
       updated: new Date(),
     },
   });

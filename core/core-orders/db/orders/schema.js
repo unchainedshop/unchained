@@ -3,7 +3,7 @@ import SimpleSchema from 'simpl-schema';
 import { Orders } from './collections';
 
 const {
-  Address, Contact,
+  Address, Contact, contextFields,
   logFields, timestampFields,
 } = Schemas;
 
@@ -35,6 +35,7 @@ Orders.attachSchema(new SimpleSchema({
   countryCode: String,
   paymentId: String,
   deliveryId: String,
+  ...contextFields,
   ...timestampFields,
   ...calculationFields,
   ...logFields,

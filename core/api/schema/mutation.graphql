@@ -300,14 +300,9 @@ type Mutation {
   removeOrder(orderId: ID!): Order!
 
   """
-  Change billing address of an open order
+  Change billing address and order conact of an open order
   """
-  updateOrderAddress(orderId: ID!, address: AddressInput!): Order!
-
-  """
-  Change contact of an open order
-  """
-  updateOrderContact(orderId: ID!, contact: ContactInput!): Order!
+  updateOrder(orderId: ID!, address: AddressInput, contact: ContactInput, meta: JSON): Order!
 
   """
   Change the delivery method/provider
@@ -358,7 +353,7 @@ type Mutation {
   Process the checkout (automatically charge & deliver if possible), the cart will get
   transformed to an ordinary order if everything goes well.
   """
-  checkout(paymentContext: JSON, deliveryContext: JSON): Order!
+  checkout(orderContext: JSON, paymentContext: JSON, deliveryContext: JSON): Order!
 
   """
   This method takes a cart by id and

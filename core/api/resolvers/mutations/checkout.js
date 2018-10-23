@@ -11,6 +11,7 @@ const logger = console;
 export default function (root, {
   paymentContext,
   deliveryContext,
+  orderContext,
 }, {
   userId,
   countryContext,
@@ -26,6 +27,7 @@ export default function (root, {
   }
   try {
     return cart.checkout({
+      orderContext,
       paymentContext,
       deliveryContext,
     }, {
