@@ -6,7 +6,7 @@ import { DeliveryDirector } from '../director';
 const emptyContext = {};
 
 DeliveryProviders.helpers({
-  format(key, value) {
+  transformContext(key, value) {
     return value;
   },
   defaultContext(context) {

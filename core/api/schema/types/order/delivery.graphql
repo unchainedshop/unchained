@@ -21,14 +21,17 @@ interface OrderDelivery {
   status: OrderDeliveryStatus
   delivered: Date
   fee: Money
+  meta: JSON
 }
 
 type OrderDeliveryPickUp implements OrderDelivery {
   _id: ID!
   provider: DeliveryProvider
   status: OrderDeliveryStatus
-  fee: Money
   delivered: Date
+  fee: Money
+  meta: JSON
+
   address: Address
 }
 
@@ -36,7 +39,9 @@ type OrderDeliveryShipping implements OrderDelivery {
   _id: ID!
   provider: DeliveryProvider
   status: OrderDeliveryStatus
-  fee: Money
   delivered: Date
+  fee: Money
+  meta: JSON
+
   address: Address
 }

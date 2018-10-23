@@ -18,10 +18,10 @@ OrderDeliveries.helpers({
   provider() {
     return DeliveryProviders.findOne({ _id: this.deliveryProviderId });
   },
-  formattedContextValue(key) {
+  transformedContextValue(key) {
     const provider = this.provider();
     if (provider) {
-      return provider.format(key, this.context[key]);
+      return provider.transformContext(key, this.context[key]);
     }
     return JSON.stringify(this.context[key]);
   },

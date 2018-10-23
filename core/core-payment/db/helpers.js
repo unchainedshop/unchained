@@ -4,7 +4,7 @@ import { PaymentDirector } from '../director';
 import { PaymentProviders } from './collections';
 
 PaymentProviders.helpers({
-  format(key, value) {
+  transformContext(key, value) {
     return value;
   },
   defaultContext({ order }) { //eslint-disable-line
