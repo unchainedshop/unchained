@@ -15,9 +15,10 @@ type Query {
   user(userId: ID): User
 
   """
-  Simple list of published products filtered by tags
+  Simple list of published products filtered either by tags or explicit slugs
+  If a slug is provided, limit and offset don't have any effect on the result
   """
-  products(tags: [String], limit: Int, offset: Int, includeDrafts: Boolean): [Product!]!
+  products(tags: [String!], limit: Int, offset: Int, slugs: [String!], includeDrafts: Boolean): [Product!]!
 
   """
   Get a specific product by id or slug
