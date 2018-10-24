@@ -18,17 +18,17 @@ DeliveryProviders.helpers({
   configurationError() {
     return new DeliveryDirector(this).configurationError();
   },
-  estimatedDeliveryThroughput(context, warehousingThroughputTime) {
-    return Promise.await(new DeliveryDirector(this)
-      .estimatedDeliveryThroughput(this.defaultContext(context), warehousingThroughputTime));
-  },
   isActive(context) {
     return new DeliveryDirector(this)
       .isActive(this.defaultContext(context));
   },
+  estimatedDeliveryThroughput(context, warehousingThroughputTime) {
+    return Promise.await(new DeliveryDirector(this)
+      .estimatedDeliveryThroughput(this.defaultContext(context), warehousingThroughputTime));
+  },
   send(context) {
-    return new DeliveryDirector(this)
-      .send(this.defaultContext(context));
+    return Promise.await(new DeliveryDirector(this)
+      .send(this.defaultContext(context)));
   },
 });
 

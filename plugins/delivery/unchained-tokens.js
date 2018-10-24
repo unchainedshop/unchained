@@ -24,7 +24,7 @@ class TokenDistribution extends DeliveryAdapter {
     return null;
   }
 
-  send() {
+  async send() {
     const { order } = this.context;
     const payment = order.payment();
     const icoEnded = false;
