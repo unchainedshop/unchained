@@ -94,6 +94,7 @@ type Order {
   fullfilled: Date
   contact: Contact
   country: Country
+  meta: JSON
   currency: Currency
   address: Address
   delivery: OrderDelivery

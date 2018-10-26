@@ -16,4 +16,7 @@ export default {
       throw new Error({ error });
     }
   },
+  meta(obj) {
+    return obj.transformedContextValue('meta');
+  },
 };

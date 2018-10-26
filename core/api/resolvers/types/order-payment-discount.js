@@ -13,4 +13,7 @@ export default {
       currency: obj.currency,
     };
   },
+  meta(obj) {
+    return obj.transformedContextValue('meta');
+  },
 };

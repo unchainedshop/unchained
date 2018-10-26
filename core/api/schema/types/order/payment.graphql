@@ -21,6 +21,8 @@ interface OrderPayment {
   status: OrderPaymentStatus
   fee: Money
   paid: Date
+  meta: JSON
+
 }
 
 type OrderPaymentInvoice implements OrderPayment {
@@ -29,6 +31,8 @@ type OrderPaymentInvoice implements OrderPayment {
   status: OrderPaymentStatus
   fee: Money
   paid: Date
+  meta: JSON
+
 }
 
 type OrderPaymentCrypto implements OrderPayment {
@@ -37,6 +41,8 @@ type OrderPaymentCrypto implements OrderPayment {
   status: OrderPaymentStatus
   fee: Money
   paid: Date
+  meta: JSON
+
 
   """
   A crypto currency payment works via pre-payment like credit cards,
@@ -52,6 +58,8 @@ type OrderPaymentCard implements OrderPayment {
   status: OrderPaymentStatus
   paid: Date
   fee: Money
+  meta: JSON
+
 }
 
 type OrderPaymentPaypal implements OrderPayment {
@@ -60,6 +68,8 @@ type OrderPaymentPaypal implements OrderPayment {
   status: OrderPaymentStatus
   fee: Money
   paid: Date
+  meta: JSON
+
 
   """
   Get the clientToken for Paypal Payments with the Braintree SDK
@@ -73,4 +83,6 @@ type OrderPaymentPostfinance implements OrderPayment {
   status: OrderPaymentStatus
   fee: Money
   paid: Date
+  meta: JSON
+
 }
