@@ -1,4 +1,0 @@
-type Contact {
-  telNumber: String
-  emailAddress: String
-}

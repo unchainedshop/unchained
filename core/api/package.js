@@ -20,7 +20,6 @@ Package.onUse((api) => {
   api.use('webapp');
   api.use('accounts-base');
   api.use('check');
-  api.use('swydo:graphql');
   api.use('unchained:core');
   api.use('unchained:roles');
   api.use('unchained:core-avatars');
