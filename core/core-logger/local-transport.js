@@ -11,13 +11,16 @@ class LocalTransport extends Transport {
       this.emit('logged', info);
     });
 
-    // Perform the writing to the remote service
-    const { level, message } = info;
+    const {
+      level, message, userId, orderId,
+    } = info;
     try {
       this.Logs.insert({
         created: new Date(),
         level,
         message,
+        userId,
+        orderId,
       });
     } catch (e) {
       console.trace(e); // eslint-disable-line
