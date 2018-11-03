@@ -43,21 +43,19 @@ export default compose(
       product(productId: $productId) {
         _id
         status
-        ... on ProductVisualization {
-          media {
+        media {
+          _id
+          tags
+          texts {
             _id
-            tags
-            texts {
-              _id
-              title
-              subtitle
-            }
-            file {
-              url
-              name
-              size
-              type
-            }
+            title
+            subtitle
+          }
+          file {
+            url
+            name
+            size
+            type
           }
         }
       }

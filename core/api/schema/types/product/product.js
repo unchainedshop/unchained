@@ -102,6 +102,7 @@ interface Product {
   updated: Date
   published: Date
   texts: ProductTexts
+  media: [ProductMedia!]
 }
 
 """
