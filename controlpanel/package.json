@@ -23,12 +23,10 @@
     "classnames": "^2.2.6",
     "cookie": "^0.3.1",
     "dotenv": "^6.1.0",
-    "file-loader": "^2.0.0",
-    "graphql": "^0.13.2",
+    "graphql": "^14.0.2",
     "graphql-tag": "^2.10.0",
     "isomorphic-unfetch": "^3.0.0",
     "moment": "^2.22.2",
-    "moment-timezone": "^0.5.23",
     "next": "^7.0.2",
     "prop-types": "^15.6.2",
     "react": "^16.6.0",
@@ -49,8 +47,7 @@
     "semantic-ui-react": "^0.83.0",
     "simpl-schema": "^1.5.3",
     "uniforms": "^1.27.0",
-    "uniforms-semantic": "^1.27.0",
-    "url-loader": "^1.1.2"
+    "uniforms-semantic": "^1.27.0"
   },
   "devDependencies": {
     "apollo": "^1.9.2",
@@ -59,6 +56,8 @@
     "eslint-config-airbnb": "^17.1.0",
     "eslint-plugin-import": "^2.14.0",
     "eslint-plugin-jsx-a11y": "^6.1.2",
-    "eslint-plugin-react": "^7.11.1"
+    "eslint-plugin-react": "^7.11.1",
+    "file-loader": "^2.0.0",
+    "url-loader": "^1.1.2"
   }
 }
