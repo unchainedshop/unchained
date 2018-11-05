@@ -1,16 +1,18 @@
 import { FilesCollection } from 'meteor/ostrio:files';
 
-FilesCollection.prototype.insertWithRemoteBuffer = async function insertWithRemoteBuffer({
-  file: {
-    name: fileName, type, size, buffer,
-  }, meta = {}, ...rest
+
+FilesCollection.prototype.insertWithRemoteFile = async function insertWithRemoteFile({
+  file, meta = {}, ...rest
 }) {
+  const {
+    stream, filename, mimetype, /* encoding, */
+  } = await file;
   return new Promise((resolve, reject) => {
     try {
-      this.write(buffer, {
-        fileName,
-        type,
-        size,
+      this.write(stream, {
+        fileName: filename,
+        type: mimetype,
+        // size,
         meta,
         ...rest,
       }, (err, fileObj) => {
