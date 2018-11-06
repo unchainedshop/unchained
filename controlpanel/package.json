@@ -47,7 +47,9 @@
     "semantic-ui-react": "^0.83.0",
     "simpl-schema": "^1.5.3",
     "uniforms": "^1.27.0",
-    "uniforms-semantic": "^1.27.0"
+    "uniforms-semantic": "^1.27.0",
+    "file-loader": "^2.0.0",
+    "url-loader": "^1.1.2"
   },
   "devDependencies": {
     "apollo": "^1.9.2",
@@ -56,8 +58,6 @@
     "eslint-config-airbnb": "^17.1.0",
     "eslint-plugin-import": "^2.14.0",
     "eslint-plugin-jsx-a11y": "^6.1.2",
-    "eslint-plugin-react": "^7.11.1",
-    "file-loader": "^2.0.0",
-    "url-loader": "^1.1.2"
+    "eslint-plugin-react": "^7.11.1"
   }
 }
