@@ -5,23 +5,31 @@ FilesCollection.prototype.insertWithRemoteFile = async function insertWithRemote
   file, meta = {}, ...rest
 }) {
   const {
-    stream, filename, mimetype, /* encoding, */
+    stream, filename, mimetype,
   } = await file;
   return new Promise((resolve, reject) => {
-    try {
-      this.write(stream, {
-        fileName: filename,
-        type: mimetype,
-        // size,
-        meta,
-        ...rest,
-      }, (err, fileObj) => {
-        if (err) return reject(err);
-        return resolve(fileObj);
-      });
-    } catch (e) {
-      reject(e);
-    }
+    const bufs = [];
+    stream.on('data', (d) => {
+      bufs.push(d);
+    });
+    stream.on('end', () => {
+      const contentLength = bufs.reduce((sum, buf) => sum + buf.length, 0);
+      const buf = Buffer.concat(bufs);
+      try {
+        this.write(buf, {
+          fileName: filename,
+          type: mimetype,
+          size: contentLength,
+          meta,
+          ...rest,
+        }, (err, fileObj) => {
+          if (err) return reject(err);
+          return resolve(fileObj);
+        });
+      } catch (e) {
+        reject(e);
+      }
+    });
   });
 };
 
