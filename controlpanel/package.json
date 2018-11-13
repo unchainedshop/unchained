@@ -52,7 +52,7 @@
     "url-loader": "^1.1.2"
   },
   "devDependencies": {
-    "apollo": "^1.9.2",
+    "apollo": "^2.0.17",
     "babel-eslint": "^10.0.1",
     "eslint": "^5.9.0",
     "eslint-config-airbnb": "^17.1.0",
