@@ -10,7 +10,6 @@ class LocalTransport extends Transport {
     setImmediate(() => {
       this.emit('logged', info);
     });
-
     const {
       level, message, userId, orderId,
     } = info;
