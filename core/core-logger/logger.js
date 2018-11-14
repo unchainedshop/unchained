@@ -24,7 +24,7 @@ class Logger {
         printf(nfo => `${nfo.level}: ${nfo.message}`),
       ),
       transports: [
-        new transports.Console({ level: debug ? 'verbose' : 'info' }),
+        new transports.Console({ level: debug ? 'debug' : 'info' }),
         new LocalTransport({ db: Logs }),
       ],
     });

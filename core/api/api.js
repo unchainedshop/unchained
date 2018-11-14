@@ -54,8 +54,9 @@ const startUnchainedServer = (options = {}) => {
       };
     },
     formatError: (error) => {
-      const { message, ...rest } = error;
-      log(message, { level: 'error', ...rest });
+      const { message, extensions, ...rest } = error;
+      log(`${message} ${extensions && extensions.code}`, { level: 'error', extensions, ...rest });
+      log(JSON.stringify(error), { level: 'verbose' });
       return error;
     },
     tracing: true,
