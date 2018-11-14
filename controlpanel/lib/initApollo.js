@@ -18,9 +18,7 @@ if (!process.browser) {
 }
 
 const fragmentMatcher = new IntrospectionFragmentMatcher({
-  introspectionQueryResultData: {
-    __schema: schema,
-  },
+  introspectionQueryResultData: schema,
 });
 
 function create(initialState, headersOverride, getToken) {
