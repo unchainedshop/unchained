@@ -159,15 +159,18 @@ Filters.filterFilters = ({
       const remainingProductIdSet = values
         ? filter.intersect({ values, forceLiveCollection, productIdSet })
         : productIdSet;
+
+      const filteredOptions = filter.filteredOptions({
+        values,
+        forceLiveCollection,
+        productIdSet: remainingProductIdSet,
+      });
+
       return {
         filter,
         remaining: remainingProductIdSet.size,
-        active: Object.keys(queryObject).indexOf(filter.key) !== -1,
-        filteredOptions: filter.filteredOptions({
-          values,
-          forceLiveCollection,
-          productIdSet: remainingProductIdSet,
-        }),
+        active: Object.prototype.hasOwnProperty.call(queryObject, filter.key),
+        filteredOptions,
       };
     });
 };
@@ -239,35 +242,45 @@ Filters.helpers({
     });
   },
   cache() {
-    if (!this._cache) return {}; // eslint-disable-line
-    return {
-      allProductIds: this._cache.allProductIds, // eslint-disable-line
-      productIds: this._cache.productIds.reduce((accumulator, [key, value]) => ({ // eslint-disable-line
-        ...accumulator,
-        [key]: value,
-      }), {}),
-    };
+    if (!this._cache) return null; // eslint-disable-line
+    if (!this._isCacheTransformed) { // eslint-disable-line
+      this._cache = { // eslint-disable-line
+        allProductIds: this._cache.allProductIds, // eslint-disable-line
+        productIds: this._cache.productIds.reduce((accumulator, [key, value]) => ({ // eslint-disable-line
+          ...accumulator,
+          [key]: value,
+        }), {}),
+      };
+      this._isCacheTransformed = true; // eslint-disable-line
+    }
+    return this._cache; // eslint-disable-line
   },
   productIds({ values, forceLiveCollection }) {
     const { productIds, allProductIds } = forceLiveCollection
       ? this.buildProductIdMap()
       : (this.cache() || this.buildProductIdMap());
-
-    return values.reduce((accumulator, value) => {
+    const reducedValues = values.reduce((accumulator, value) => {
       const additionalValues = value === undefined ? allProductIds : productIds[value];
       if (!additionalValues || additionalValues.length === 0) return accumulator;
       return [...accumulator, ...additionalValues];
     }, []);
+    return reducedValues;
   },
   intersect({ values, forceLiveCollection, productIdSet }) {
     const filterOptionProductIds = this.productIds({ values, forceLiveCollection });
     return new Set(filterOptionProductIds.filter(x => productIdSet.has(x)));
   },
   filteredOptions({ values, forceLiveCollection, productIdSet }) {
-    return this.options.map(value => ({
-      option: this.optionObject(value),
-      remaining: this.intersect({ values: [value], forceLiveCollection, productIdSet }).size,
-      active: values ? (values.indexOf(value) !== -1) : false,
-    }));
+    const mappedOptions = this.options.map((value) => {
+      const option = this.optionObject(value);
+      const remainingIds = this.intersect({ values: [value], forceLiveCollection, productIdSet });
+
+      return {
+        option,
+        remaining: remainingIds.size,
+        active: values ? (values.indexOf(value) !== -1) : false,
+      };
+    });
+    return mappedOptions;
   },
 });
