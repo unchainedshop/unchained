@@ -14,6 +14,14 @@ const parseQueryArray = query => (query || [])
     [key]: accumulator[key] ? accumulator[key].concat(value) : [value],
   }), {});
 
+const intersectProductIds = ({
+  productIds, filters, queryObject, ...options
+}) => filters
+  .reduce((productIdSet, filter) => {
+    const values = queryObject[filter.key];
+    return filter.intersect({ values, productIdSet, ...options });
+  }, new Set(productIds));
+
 Filters.createFilter = ({
   locale, title, type, key, options, ...rest
 }) => {
@@ -126,11 +134,9 @@ Filters.filterProductIds = ({ productIds, query, forceLiveCollection = false }) 
     .find({ key: { $in: Object.keys(queryObject) } })
     .fetch();
 
-  const intersectedProductIds = filters
-    .reduce((productIdSet, filter) => {
-      const values = queryObject[filter.key];
-      return filter.intersect({ values, forceLiveCollection, productIdSet });
-    }, new Set(productIds));
+  const intersectedProductIds = intersectProductIds({
+    productIds, filters, queryObject, forceLiveCollection,
+  });
 
   return [...intersectedProductIds];
 };
@@ -145,34 +151,44 @@ Filters.invalidateFilterCaches = () => {
 Filters.filterFilters = ({
   filterIds, productIds, query, forceLiveCollection = false, includeInactive = false,
 } = {}) => {
+  const allProductIdsSet = new Set(productIds);
   const queryObject = parseQueryArray(query);
   const selector = { _id: { $in: filterIds } };
   if (!includeInactive) {
     selector.isActive = true;
   }
-  return Filters
+  const filters = Filters
     .find(selector)
-    .fetch()
-    .map((filter) => {
-      const values = queryObject[filter.key];
-      const productIdSet = new Set(productIds);
-      const remainingProductIdSet = values
-        ? filter.intersect({ values, forceLiveCollection, productIdSet })
-        : productIdSet;
+    .fetch();
 
-      const filteredOptions = filter.filteredOptions({
-        values,
-        forceLiveCollection,
-        productIdSet: remainingProductIdSet,
-      });
+  console.log(filters.length, productIds.length, queryObject, forceLiveCollection);
+  const intersectedProductIds = intersectProductIds({
+    productIds, filters, queryObject, forceLiveCollection,
+  });
+  console.log(intersectedProductIds);
 
-      return {
-        filter,
-        remaining: remainingProductIdSet.size,
-        active: Object.prototype.hasOwnProperty.call(queryObject, filter.key),
-        filteredOptions,
-      };
+  return filters.map((filter) => {
+    const values = queryObject[filter.key];
+
+    // compare against potentially all product ids
+    // possible for remaining on filter level?
+    const remainingProductIdSet = values
+      ? filter.intersect({ values, forceLiveCollection, productIdSet: allProductIdsSet })
+      : allProductIdsSet;
+
+    const filteredOptions = filter.filteredOptions({
+      values,
+      forceLiveCollection,
+      productIdSet: intersectedProductIds,
     });
+
+    return {
+      filter,
+      remaining: remainingProductIdSet.size,
+      active: Object.prototype.hasOwnProperty.call(queryObject, filter.key),
+      filteredOptions,
+    };
+  });
 };
 
 Filters.helpers({
@@ -267,6 +283,7 @@ Filters.helpers({
     return reducedValues;
   },
   intersect({ values, forceLiveCollection, productIdSet }) {
+    if (!values) return productIdSet;
     const filterOptionProductIds = this.productIds({ values, forceLiveCollection });
     return new Set(filterOptionProductIds.filter(x => productIdSet.has(x)));
   },
