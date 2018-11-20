@@ -161,11 +161,9 @@ Filters.filterFilters = ({
     .find(selector)
     .fetch();
 
-  console.log(filters.length, productIds.length, queryObject, forceLiveCollection);
   const intersectedProductIds = intersectProductIds({
     productIds, filters, queryObject, forceLiveCollection,
   });
-  console.log(intersectedProductIds);
 
   return filters.map((filter) => {
     const values = queryObject[filter.key];
@@ -291,7 +289,6 @@ Filters.helpers({
     const mappedOptions = this.options.map((value) => {
       const option = this.optionObject(value);
       const remainingIds = this.intersect({ values: [value], forceLiveCollection, productIdSet });
-
       return {
         option,
         remaining: remainingIds.size,
