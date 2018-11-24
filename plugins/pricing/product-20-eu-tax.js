@@ -3,10 +3,10 @@ import {
   ProductPricingAdapter,
 } from 'meteor/unchained:core-pricing';
 
-class ProductSwissTax extends ProductPricingAdapter {
-  static key = 'ch.dagobert.pricing.product-swiss-tax'
+class ProductEuTax extends ProductPricingAdapter {
+  static key = 'ch.dagobert.pricing.product-eu-tax'
   static version = '1.0'
-  static label = 'Berechnung der Bestellposition: Nettopreis und MwSt (Schweiz)'
+  static label = 'Berechnung der Bestellposition: Nettopreis und MwSt (EU)'
   static orderIndex = 20
   static isActivatedFor(ctx) {
     if (ctx.order && ctx.order.countryCode !== 'CH') {
@@ -21,7 +21,7 @@ class ProductSwissTax extends ProductPricingAdapter {
 
   calculate() {
     const taxRate = this.getTaxRate();
-    this.log(`ProductSwissTax -> Tax Multiplicator: ${taxRate}`);
+    this.log(`ProductEuTax -> Tax Multiplicator: ${taxRate}`);
     this.calculation.filterBy({ isTaxable: true }).forEach((row) => {
       if (!row.isNetPrice) {
         const taxAmount = row.amount - (row.amount / (1 + taxRate));
@@ -49,4 +49,4 @@ class ProductSwissTax extends ProductPricingAdapter {
   }
 }
 
-ProductPricingDirector.registerAdapter(ProductSwissTax);
+ProductPricingDirector.registerAdapter(ProductEuTax);
