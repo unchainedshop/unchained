@@ -31,42 +31,72 @@ export const PRODUCT_TYPE_NAME_QUERY = gql`
   }
 `;
 
-export const PRODUCT_INTERFACES_QUERY = gql`
-  query productInterfaces($typeName: String!) {
-    __type(name: $typeName) {
-      interfaces {
-        name
-        description
-      }
-    }
-  }
-`;
-
 export default compose(
   withRouter,
   graphql(PRODUCT_TYPE_NAME_QUERY),
-  withProps(({ data: { product = {} } = {} }) => ({
-    typeName: (product && product.__typename) || '', // eslint-disable-line
-  })),
-  graphql(PRODUCT_INTERFACES_QUERY),
-  withProps(({ router, data: { __type } = {} }) => { // eslint-disable-line
+  withProps(({ router, data: { product = {} } = {} }) => { // eslint-disable-line
     const menuItems = [{
       name: 'ProductTranslation',
       description: 'General Texts',
       isActive: (router.query.tab === 'ProductTranslation' || !router.query.tab || router.query.tab === ''),
     }];
-    ((__type && __type.interfaces) || []).forEach((concreteInterface, key) => {
-      if (key !== 0) {
-        menuItems.push({
-          name: concreteInterface.name,
-          description: concreteInterface.description,
-          isActive: (
-            router.query.tab === concreteInterface.name
-          ),
-        });
-      }
-    });
+
+    if (product.__typename === 'SimpleProduct') {  // eslint-disable-line
+      menuItems.push({
+        name: 'ProductVisualization',
+        description: 'Media',
+        isActive: (
+          router.query.tab === 'ProductVisualization'
+        ),
+      });
+      menuItems.push({
+        name: 'ProductCommerce',
+        description: 'Commerce',
+        isActive: (
+          router.query.tab === 'ProductCommerce'
+        ),
+      });
+      menuItems.push({
+        name: 'ProductSupply',
+        description: 'Supply',
+        isActive: (
+          router.query.tab === 'ProductSupply'
+        ),
+      });
+      menuItems.push({
+        name: 'ProductWarehousing',
+        description: 'Warehousing',
+        isActive: (
+          router.query.tab === 'ProductWarehousing'
+        ),
+      });
+    }
+
+    if (product.__typename === 'ConfigurableProduct') { // eslint-disable-line
+      menuItems.push({
+        name: 'ProductVisualization',
+        description: 'Media',
+        isActive: (
+          router.query.tab === 'ProductVisualization'
+        ),
+      });
+      menuItems.push({
+        name: 'ProductCommerce',
+        description: 'Commerce',
+        isActive: (
+          router.query.tab === 'ProductCommerce'
+        ),
+      });
+      menuItems.push({
+        name: 'ProductProxy',
+        description: 'Variations',
+        isActive: (
+          router.query.tab === 'ProductProxy'
+        ),
+      });
+    }
     return {
+      typeName: (product && product.__typename) || '', // eslint-disable-line
       menuItems,
     };
   }),
