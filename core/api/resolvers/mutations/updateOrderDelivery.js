@@ -5,7 +5,7 @@ import { OrderDeliveryNotFoundError } from '../errors';
 
 const logger = console;
 
-export default function (root, { orderDeliveryId, ...rest }, { userId }) {
+export default function (root, { orderDeliveryId, ...context }, { userId }) {
   log(`mutation updateOrderDelivery ${orderDeliveryId}`, { userId });
   const orderDelivery = OrderDeliveries.findOne({ _id: orderDeliveryId });
   if (!orderDelivery) {
@@ -13,8 +13,7 @@ export default function (root, { orderDeliveryId, ...rest }, { userId }) {
     throw new OrderDeliveryNotFoundError({ data: { orderDeliveryId } });
   }
   try {
-    console.log(rest);
-    return orderDelivery.updateContext({ ...rest });
+    return orderDelivery.updateContext(context);
   } catch (error) {
     logger.error(error);
     log('order delivery context update error', { userId, orderDeliveryId, level: 'error' });

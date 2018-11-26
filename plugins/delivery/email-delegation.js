@@ -156,7 +156,7 @@ ${positions.join('\n\r')}
     return null;
   }
 
-  send() {
+  async send() {
     const { delivery, order } = this.context;
     const attachments = [];
     if (this.isSendAttachmentsWithType('csv')) {

@@ -35,7 +35,7 @@ export class DeliveryAdapter {
     return 0;
   }
 
-  send() {  // eslint-disable-line
+  async send() {  // eslint-disable-line
     // if you return true, the status will be changed to DELIVERED
 
     // if you return false, the order delivery status stays the
@@ -67,12 +67,6 @@ export class DeliveryDirector {
     return new Adapter(this.provider.configuration, context);
   }
 
-  send(context) {
-    const adapter = this.interface(context);
-    const result = adapter.send();
-    return result;
-  }
-
   configurationError() {
     try {
       const adapter = this.interface();
@@ -92,6 +86,12 @@ export class DeliveryDirector {
       console.warn(error); // eslint-disable-line
       return null;
     }
+  }
+
+  async send(context) {
+    const adapter = this.interface(context);
+    const result = adapter.send();
+    return result;
   }
 
   isActive(context) {

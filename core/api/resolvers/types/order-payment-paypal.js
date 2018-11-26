@@ -11,4 +11,7 @@ export default {
       throw new PaypalConfigurationError({ error });
     }
   },
+  meta(obj) {
+    return obj.transformedContextValue('meta');
+  },
 };

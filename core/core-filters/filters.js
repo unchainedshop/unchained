@@ -7,7 +7,9 @@ export * from './director';
 
 export { Filters, FilterTexts };
 
-export default () => {
+export default ({ skipInvalidationOnStartup = false }) => {
   // configure
-  Filters.invalidateFilterCaches();
+  if (!skipInvalidationOnStartup) {
+    Filters.invalidateFilterCaches();
+  }
 };

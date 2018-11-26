@@ -307,7 +307,6 @@ export default () => {
         })
         .fetch()
         .map(({ filterId }) => filterId);
-
       return Filters.filterFilters({
         filterIds,
         productIds,

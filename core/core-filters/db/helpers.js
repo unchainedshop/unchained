@@ -14,6 +14,14 @@ const parseQueryArray = query => (query || [])
     [key]: accumulator[key] ? accumulator[key].concat(value) : [value],
   }), {});
 
+const intersectProductIds = ({
+  productIds, filters, queryObject, ...options
+}) => filters
+  .reduce((productIdSet, filter) => {
+    const values = queryObject[filter.key];
+    return filter.intersect({ values, productIdSet, ...options });
+  }, new Set(productIds));
+
 Filters.createFilter = ({
   locale, title, type, key, options, ...rest
 }) => {
@@ -126,11 +134,9 @@ Filters.filterProductIds = ({ productIds, query, forceLiveCollection = false }) 
     .find({ key: { $in: Object.keys(queryObject) } })
     .fetch();
 
-  const intersectedProductIds = filters
-    .reduce((productIdSet, filter) => {
-      const values = queryObject[filter.key];
-      return filter.intersect({ values, forceLiveCollection, productIdSet });
-    }, new Set(productIds));
+  const intersectedProductIds = intersectProductIds({
+    productIds, filters, queryObject, forceLiveCollection,
+  });
 
   return [...intersectedProductIds];
 };
@@ -145,31 +151,42 @@ Filters.invalidateFilterCaches = () => {
 Filters.filterFilters = ({
   filterIds, productIds, query, forceLiveCollection = false, includeInactive = false,
 } = {}) => {
+  const allProductIdsSet = new Set(productIds);
   const queryObject = parseQueryArray(query);
   const selector = { _id: { $in: filterIds } };
   if (!includeInactive) {
     selector.isActive = true;
   }
-  return Filters
+  const filters = Filters
     .find(selector)
-    .fetch()
-    .map((filter) => {
-      const values = queryObject[filter.key];
-      const productIdSet = new Set(productIds);
-      const remainingProductIdSet = values
-        ? filter.intersect({ values, forceLiveCollection, productIdSet })
-        : productIdSet;
-      return {
-        filter,
-        remaining: remainingProductIdSet.size,
-        active: Object.keys(queryObject).indexOf(filter.key) !== -1,
-        filteredOptions: filter.filteredOptions({
-          values,
-          forceLiveCollection,
-          productIdSet: remainingProductIdSet,
-        }),
-      };
+    .fetch();
+
+  const intersectedProductIds = intersectProductIds({
+    productIds, filters, queryObject, forceLiveCollection,
+  });
+
+  return filters.map((filter) => {
+    const values = queryObject[filter.key];
+
+    // compare against potentially all product ids
+    // possible for remaining on filter level?
+    const remainingProductIdSet = values
+      ? filter.intersect({ values, forceLiveCollection, productIdSet: allProductIdsSet })
+      : allProductIdsSet;
+
+    const filteredOptions = filter.filteredOptions({
+      values,
+      forceLiveCollection,
+      productIdSet: intersectedProductIds,
     });
+
+    return {
+      filter,
+      remaining: remainingProductIdSet.size,
+      active: Object.prototype.hasOwnProperty.call(queryObject, filter.key),
+      filteredOptions,
+    };
+  });
 };
 
 Filters.helpers({
@@ -239,35 +256,45 @@ Filters.helpers({
     });
   },
   cache() {
-    if (!this._cache) return {}; // eslint-disable-line
-    return {
-      allProductIds: this._cache.allProductIds, // eslint-disable-line
-      productIds: this._cache.productIds.reduce((accumulator, [key, value]) => ({ // eslint-disable-line
-        ...accumulator,
-        [key]: value,
-      }), {}),
-    };
+    if (!this._cache) return null; // eslint-disable-line
+    if (!this._isCacheTransformed) { // eslint-disable-line
+      this._cache = { // eslint-disable-line
+        allProductIds: this._cache.allProductIds, // eslint-disable-line
+        productIds: this._cache.productIds.reduce((accumulator, [key, value]) => ({ // eslint-disable-line
+          ...accumulator,
+          [key]: value,
+        }), {}),
+      };
+      this._isCacheTransformed = true; // eslint-disable-line
+    }
+    return this._cache; // eslint-disable-line
   },
   productIds({ values, forceLiveCollection }) {
     const { productIds, allProductIds } = forceLiveCollection
       ? this.buildProductIdMap()
       : (this.cache() || this.buildProductIdMap());
-
-    return values.reduce((accumulator, value) => {
+    const reducedValues = values.reduce((accumulator, value) => {
       const additionalValues = value === undefined ? allProductIds : productIds[value];
       if (!additionalValues || additionalValues.length === 0) return accumulator;
       return [...accumulator, ...additionalValues];
     }, []);
+    return reducedValues;
   },
   intersect({ values, forceLiveCollection, productIdSet }) {
+    if (!values) return productIdSet;
     const filterOptionProductIds = this.productIds({ values, forceLiveCollection });
     return new Set(filterOptionProductIds.filter(x => productIdSet.has(x)));
   },
   filteredOptions({ values, forceLiveCollection, productIdSet }) {
-    return this.options.map(value => ({
-      option: this.optionObject(value),
-      remaining: this.intersect({ values: [value], forceLiveCollection, productIdSet }).size,
-      active: values ? (values.indexOf(value) !== -1) : false,
-    }));
+    const mappedOptions = this.options.map((value) => {
+      const option = this.optionObject(value);
+      const remainingIds = this.intersect({ values: [value], forceLiveCollection, productIdSet });
+      return {
+        option,
+        remaining: remainingIds.size,
+        active: values ? (values.indexOf(value) !== -1) : false,
+      };
+    });
+    return mappedOptions;
   },
 });

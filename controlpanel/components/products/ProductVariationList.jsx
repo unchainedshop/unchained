@@ -63,7 +63,7 @@ export default compose(
       product(productId: $productId) {
         _id
         status
-        ... on ProductProxy {
+        ... on ConfigurableProduct {
           variations {
             _id
             type

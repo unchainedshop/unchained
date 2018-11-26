@@ -24,12 +24,11 @@ OrderPositions.helpers({
     return false;
   },
   pricing() {
-    const pricing = new ProductPricingSheet({
+    return new ProductPricingSheet({
       calculation: this.calculation,
       currency: this.order().currency,
       quantity: this.quantity,
     });
-    return pricing;
   },
   discounts() {
     return this.pricing().discountPrices().map(discount => ({

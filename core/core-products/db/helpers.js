@@ -136,7 +136,7 @@ export default () => {
     addMedia({
       rawFile, href, name, userId, meta, ...options
     }) {
-      const fileLoader = rawFile ? Media.insertWithRemoteBuffer({
+      const fileLoader = rawFile ? Media.insertWithRemoteFile({
         file: rawFile,
         userId,
       }) : Media.insertWithRemoteURL({

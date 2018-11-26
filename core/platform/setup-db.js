@@ -39,7 +39,7 @@ Meteor.startup(() => {
   configureProducts();
   configureOrders();
   configureAssortments();
-  configureFilters();
+  configureFilters({ skipInvalidationOnStartup: true });
 
   if (FIXTURES && Users.find({ username: 'admin' }).count() === 0) {
     createFixtures();

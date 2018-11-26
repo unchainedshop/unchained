@@ -6,7 +6,7 @@ import { Users } from 'meteor/unchained:core-users';
 export default function (root, { avatar, userId: foreignUserId }, { userId }) {
   const normalizedUserId = foreignUserId || userId;
   log(`mutation updateUserAvatar ${normalizedUserId}`, { userId });
-  const avatarRef = Promise.await(Avatars.insertWithRemoteBuffer({
+  const avatarRef = Promise.await(Avatars.insertWithRemoteFile({
     file: avatar,
     userId: normalizedUserId,
   }));

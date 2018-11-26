@@ -1,7 +1,15 @@
 module.exports = {
-  schemas: {
-    local: {
-      endpoint: 'http://localhost:4010/graphql',
+  client: {
+    name: 'Unchained Control Panel',
+    service: {
+      name: 'local',
+      url: 'http://localhost:4010/graphql',
+    },
+  },
+  service: {
+    name: 'local',
+    endpoint: {
+      url: 'http://localhost:4010/graphql',
     },
   },
   queries: [

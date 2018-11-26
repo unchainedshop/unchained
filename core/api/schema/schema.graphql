@@ -1,8 +1,0 @@
-#import "./mutation.graphql"
-#import "./query.graphql"
-#import "./types/types.graphql"
-
-scalar Date
-scalar JSON
-scalar Buffer
-scalar Upload

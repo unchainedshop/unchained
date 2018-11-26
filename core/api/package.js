@@ -1,7 +1,7 @@
 /* globals Package */
 Package.describe({
   name: 'unchained:api',
-  version: '0.8.0',
+  version: '0.15.0',
   // Brief, one-line summary of the package.
   summary: '',
   // URL to the Git repository containing the source code for this package.
@@ -20,7 +20,6 @@ Package.onUse((api) => {
   api.use('webapp');
   api.use('accounts-base');
   api.use('check');
-  api.use('swydo:graphql');
   api.use('unchained:core');
   api.use('unchained:roles');
   api.use('unchained:core-avatars');

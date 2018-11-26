@@ -52,7 +52,7 @@ export default compose(
       product(productId: $productId) {
         _id
         status
-        ... on ProductWarehousing {
+        ... on SimpleProduct {
           sku
           maxAllowedQuantityPerOrder
           allowOrderingIfNoStock
@@ -64,7 +64,7 @@ export default compose(
     mutation updateProductWarehousing($warehousing: UpdateProductWarehousingInput!, $productId: ID!) {
       updateProductWarehousing(warehousing: $warehousing, productId: $productId) {
         _id
-        ... on ProductWarehousing {
+        ... on SimpleProduct {
           sku
           maxAllowedQuantityPerOrder
           allowOrderingIfNoStock

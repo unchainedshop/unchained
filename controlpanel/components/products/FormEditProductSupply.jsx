@@ -62,7 +62,7 @@ export default compose(
       product(productId: $productId) {
         _id
         status
-        ... on ProductSupply {
+        ... on SimpleProduct {
           dimensions {
             weight(unit: GRAM)
             length(unit: MILLIMETERS)
@@ -77,7 +77,7 @@ export default compose(
     mutation updateProductSupply($supply: UpdateProductSupplyInput!, $productId: ID!) {
       updateProductSupply(supply: $supply, productId: $productId) {
         _id
-        ... on ProductSupply {
+        ... on SimpleProduct {
           dimensions {
             weight(unit: GRAM)
             length(unit: MILLIMETERS)

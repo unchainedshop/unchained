@@ -4,7 +4,7 @@ import { WarehousingProviders } from './collections';
 import { WarehousingDirector } from '../director';
 
 WarehousingProviders.helpers({
-  format(key, value) {
+  transformContext(key, value) {
     return value;
   },
   defaultContext() {

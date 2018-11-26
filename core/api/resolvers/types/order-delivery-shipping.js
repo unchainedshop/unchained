@@ -1,8 +1,11 @@
 export default {
   address(obj) {
-    return obj.formattedContextValue('address');
+    return obj.transformedContextValue('address');
   },
   status(obj) {
     return obj.normalizedStatus();
+  },
+  meta(obj) {
+    return obj.transformedContextValue('meta');
   },
 };
