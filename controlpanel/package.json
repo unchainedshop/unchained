@@ -9,7 +9,7 @@
     "dev:remote": "next -p 4000",
     "build": "next build",
     "start": "next start",
-    "update-schema": "apollo schema:download"
+    "update-schema": "apollo service:download"
   },
   "dependencies": {
     "@zeit/next-css": "^1.0.1",

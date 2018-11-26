@@ -9,9 +9,8 @@ module.exports = {
   service: {
     name: 'local',
     endpoint: {
-      url: 'https://localhost:4000/graphql',
+      url: 'http://localhost:4010/graphql',
     },
-    localSchemaFile: './schema.json',
   },
   queries: [
     {
