@@ -1,12 +1,12 @@
 Package.describe({
   name: 'unchained:roles',
   summary: 'The most advanced roles package for meteor',
-  version: '3.0.0',
+  version: '0.15.0',
   git: 'https://github.com/nicolaslopezj/roles',
 });
 
 Package.onUse((api) => {
-  api.versionsFrom('1.7');
+  api.versionsFrom('1.8');
 
   api.use([
     'meteor-base',
