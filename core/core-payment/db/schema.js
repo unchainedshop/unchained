@@ -23,7 +23,7 @@ PaymentProviders.attachSchema(new SimpleSchema({
 
 Migrations.add({
   version: 20181128,
-  name: 'Rename delivery provider keys',
+  name: 'Rename pament provider keys',
   up() {
     PaymentProviders.update({ adapterKey: 'ch.dagobert.invoice' }, {
       $set: { adapterKey: 'shop.unchained.invoice' },
