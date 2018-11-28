@@ -15,6 +15,7 @@ export * as resolvers from './resolvers';
 
 const {
   APOLLO_ENGINE_KEY,
+  DEBUG,
 } = process.env;
 
 const defaultContext = (req) => {
@@ -32,6 +33,7 @@ const startUnchainedServer = (options = {}) => {
     resolvers: additionalResolvers = [],
     context = defaultContext,
     rolesOptions,
+    ...apolloServerOptions
   } = options || {};
 
   configureRoles(rolesOptions);
@@ -59,14 +61,16 @@ const startUnchainedServer = (options = {}) => {
       log(JSON.stringify(error), { level: 'verbose' });
       return error;
     },
-    tracing: true,
+    tracing: !!DEBUG,
     cacheControl: true,
+    introspection: true,
     engine: APOLLO_ENGINE_KEY ? {
       apiKey: APOLLO_ENGINE_KEY,
       logging: {
         level: 'WARN', // ApolloEngine Proxy logging level. DEBUG, INFO, WARN or ERROR
       },
     } : null,
+    ...apolloServerOptions,
   });
 
   server.applyMiddleware({
