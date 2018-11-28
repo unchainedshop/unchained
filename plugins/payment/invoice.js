@@ -5,7 +5,7 @@ import {
 } from 'meteor/unchained:core-payment';
 
 class Invoice extends PaymentAdapter {
-  static key = 'ch.dagobert.invoice'
+  static key = 'shop.unchained.invoice'
 
   static label = 'Invoice (manually)'
 

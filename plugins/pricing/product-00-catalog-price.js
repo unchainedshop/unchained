@@ -4,7 +4,7 @@ import {
 } from 'meteor/unchained:core-pricing';
 
 class ProductPrice extends ProductPricingAdapter {
-  static key = 'ch.dagobert.pricing.product-price'
+  static key = 'shop.unchained.pricing.product-price'
 
   static version = '1.0'
 

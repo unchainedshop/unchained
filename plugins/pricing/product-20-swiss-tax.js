@@ -5,7 +5,7 @@ import {
 } from 'meteor/unchained:core-pricing';
 
 class ProductSwissTax extends ProductPricingAdapter {
-  static key = 'ch.dagobert.pricing.product-swiss-tax'
+  static key = 'shop.unchained.pricing.product-swiss-tax'
 
   static version = '1.0'
 

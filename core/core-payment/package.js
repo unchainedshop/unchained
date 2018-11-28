@@ -18,6 +18,7 @@ Package.onUse((api) => {
   api.use('promise');
   api.use('dburles:factory');
   api.use('dburles:collection-helpers');
+  api.use('percolate:migrations');
 
   api.use('unchained:utils');
   api.use('unchained:core-logger');

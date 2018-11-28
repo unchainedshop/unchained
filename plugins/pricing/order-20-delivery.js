@@ -4,7 +4,7 @@ import {
 } from 'meteor/unchained:core-pricing';
 
 class OrderDelivery extends OrderPricingAdapter {
-  static key = 'ch.dagobert.pricing.order-delivery'
+  static key = 'shop.unchained.pricing.order-delivery'
 
   static version = '1.0'
 

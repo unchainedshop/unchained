@@ -229,7 +229,7 @@ class SmallinvoiceAPI {
 }
 
 class Smallinvoice extends DocumentAdapter {
-  static key = 'ch.dagobert.smallinvoice'
+  static key = 'shop.unchained.smallinvoice'
 
   static label = 'Smallinvoice'
 

@@ -4,7 +4,7 @@ import {
 } from 'meteor/unchained:core-pricing';
 
 class ProductEuTax extends ProductPricingAdapter {
-  static key = 'ch.dagobert.pricing.product-eu-tax'
+  static key = 'shop.unchained.pricing.product-eu-tax'
   static version = '1.0'
   static label = 'Berechnung der Bestellposition: Nettopreis und MwSt (EU)'
   static orderIndex = 20

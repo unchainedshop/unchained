@@ -11,7 +11,7 @@ const {
 } = process.env;
 
 class LocalMail extends MessagingAdapter {
-  static key = 'ch.dagobert.local-mail'
+  static key = 'shop.unchained.local-mail'
 
   static label = 'Local Mailer'
 

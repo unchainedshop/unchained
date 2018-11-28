@@ -4,7 +4,7 @@ import { WarehousingProviders } from './collections';
 import { WarehousingProviderType } from './schema';
 
 Factory.define('warehousingProvider', WarehousingProviders, {
-  adapterKey: () => 'ch.dagobert.warehousing.manual-stock',
+  adapterKey: () => 'shop.unchained.warehousing.manual-stock',
   type: () => WarehousingProviderType.PHYSICAL,
   configuration: () => [],
   ...fakeTimestampFields,

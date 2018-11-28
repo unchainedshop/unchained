@@ -42,7 +42,7 @@ class Starter extends DiscountAdapter {
 
   // returns the appropriate discount context for a calculation adapter
   discountForPricingAdapterKey(pricingAdapterKey) { // eslint-disable-line
-    if (pricingAdapterKey === 'ch.dagobert.pricing.product-discount') {
+    if (pricingAdapterKey === 'shop.unchained.pricing.product-discount') {
       return { fixedRate: 10000 };
     }
     return null;

@@ -43,7 +43,7 @@ class Flyer extends DiscountAdapter {
 
   // returns the appropriate discount context for a calculation adapter
   discountForPricingAdapterKey(pricingAdapterKey, context) { // eslint-disable-line
-    if (pricingAdapterKey === 'ch.dagobert.pricing.product-discount') {
+    if (pricingAdapterKey === 'shop.unchained.pricing.product-discount') {
       return { fixedRate: 19000 };
     }
     return null;

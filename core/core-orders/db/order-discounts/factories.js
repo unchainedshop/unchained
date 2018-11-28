@@ -8,6 +8,6 @@ Factory.define('systemOrderDiscount', OrderDiscounts, {
   orderId: () => Factory.get('order'),
   code: () => null,
   trigger: () => OrderDiscountTrigger.SYSTEM,
-  discountKey: () => faker.random.arrayElement(['ch.dagobert.coupon.distributor']),
+  discountKey: () => faker.random.arrayElement(['shop.unchained.coupon.distributor']),
   ...fakeTimestampFields,
 });

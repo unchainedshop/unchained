@@ -1,5 +1,6 @@
-import SimpleSchema from 'simpl-schema';
 import { Schemas } from 'meteor/unchained:utils';
+import { Migrations } from 'meteor/percolate:migrations';
+import SimpleSchema from 'simpl-schema';
 import { PaymentProviders } from './collections';
 
 export const PaymentProviderType = { // eslint-disable-line
@@ -19,3 +20,24 @@ PaymentProviders.attachSchema(new SimpleSchema({
   'configuration.$.value': { type: String },
   ...Schemas.timestampFields,
 }, { requiredByDefault: false }));
+
+Migrations.add({
+  version: 20181128,
+  name: 'Rename delivery provider keys',
+  up() {
+    PaymentProviders.update({ adapterKey: 'ch.dagobert.invoice' }, {
+      $set: { adapterKey: 'shop.unchained.invoice' },
+    }, { multi: true });
+  },
+  down() {
+    PaymentProviders.update({ adapterKey: 'shop.unchained.invoice' }, {
+      $set: { adapterKey: 'ch.dagobert.invoice' },
+    }, { multi: true });
+  },
+});
+
+export default () => {
+  Meteor.startup(() => {
+    Migrations.migrateTo('latest');
+  });
+};
