@@ -6,7 +6,7 @@ import { onError } from 'apollo-link-error';
 import { toast } from 'react-toastify';
 import fetch from 'isomorphic-unfetch';
 import getConfig from 'next/config';
-import schema from '../schema.json';
+import introspectionQueryResultData from '../schema.json';
 
 const { publicRuntimeConfig } = getConfig();
 
@@ -17,9 +17,7 @@ if (!process.browser) {
   global.fetch = fetch;
 }
 
-const fragmentMatcher = new IntrospectionFragmentMatcher({
-  introspectionQueryResultData: schema,
-});
+const fragmentMatcher = new IntrospectionFragmentMatcher({ introspectionQueryResultData });
 
 function create(initialState, headersOverride, getToken) {
   const httpLink = createUploadLink({
