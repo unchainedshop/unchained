@@ -23,6 +23,14 @@ const {
   UI_ENDPOINT,
 } = process.env;
 
+Logs.helpers({
+  order() {
+    return this.meta && Orders.findOne({
+      _id: this.meta.orderId,
+    });
+  },
+});
+
 Orders.helpers({
   init() {
     // initialize payment with default values

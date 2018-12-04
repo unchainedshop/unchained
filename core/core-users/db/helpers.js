@@ -10,6 +10,14 @@ export default () => {
   const { Countries } = Promise.await(import('meteor/unchained:core-countries'));
   const { Languages } = Promise.await(import('meteor/unchained:core-languages'));
 
+  Logs.helpers({
+    user() {
+      return this.meta && Users.findOne({
+        _id: this.meta.userId,
+      });
+    },
+  });
+
   Users.helpers({
     cart({ countryCode } = {}) {
       const openOrders = Orders.find({

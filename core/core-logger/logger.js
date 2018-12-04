@@ -1,9 +1,9 @@
 // import { checkNpmVersions } from 'meteor/tmeasday:check-npm-versions';
 import './db/factories';
-import './db/schema';
 import initHelpers from './db/helpers';
 import LocalTransport from './local-transport';
 import { Logs } from './db/collections';
+import runMigrations from './db/schema';
 
 const { createLogger, format, transports } = require('winston');
 
@@ -38,7 +38,7 @@ const log = (message, options) => {
 };
 
 export default () => {
-  // configure
+  runMigrations();
   initHelpers();
 };
 

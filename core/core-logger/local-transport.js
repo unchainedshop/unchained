@@ -11,15 +11,14 @@ class LocalTransport extends Transport {
       this.emit('logged', info);
     });
     const {
-      level, message, userId, orderId,
+      level, message, ...meta
     } = info;
     try {
       this.Logs.insert({
         created: new Date(),
         level,
         message,
-        userId,
-        orderId,
+        meta,
       });
     } catch (e) {
       console.trace(e); // eslint-disable-line
