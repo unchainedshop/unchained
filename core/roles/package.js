@@ -1,7 +1,7 @@
 /* globals Package */
 Package.describe({
   name: 'unchained:roles',
-  version: '0.15.0',
+  version: '0.16.0',
   summary: 'Unchained Engine: Roles',
   git: '',
   documentation: 'README.md',
@@ -17,7 +17,7 @@ Package.onUse((api) => {
     'mongo',
     'ecmascript',
     'underscore',
-    'dburles:collection-helpers@0.1.6',
+    'dburles:collection-helpers@1.1.0',
   ]);
 
   api.addFiles([
