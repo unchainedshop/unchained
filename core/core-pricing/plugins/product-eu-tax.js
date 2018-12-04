@@ -5,9 +5,13 @@ import {
 
 class ProductEuTax extends ProductPricingAdapter {
   static key = 'shop.unchained.pricing.product-eu-tax'
+
   static version = '1.0'
+
   static label = 'Berechnung der Bestellposition: Nettopreis und MwSt (EU)'
+
   static orderIndex = 20
+
   static isActivatedFor(ctx) {
     if (ctx.order && ctx.order.countryCode !== 'CH') {
       return true; // check if delivery address is in switzerland?
