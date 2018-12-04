@@ -1,8 +1,10 @@
+/* globals Package */
 Package.describe({
   name: 'unchained:roles',
-  summary: 'The most advanced roles package for meteor',
   version: '0.15.0',
-  git: 'https://github.com/nicolaslopezj/roles',
+  summary: 'Unchained Engine: Roles',
+  git: '',
+  documentation: 'README.md',
 });
 
 Package.onUse((api) => {
@@ -15,7 +17,7 @@ Package.onUse((api) => {
     'mongo',
     'ecmascript',
     'underscore',
-    'dburles:collection-helpers',
+    'dburles:collection-helpers@0.1.6',
   ]);
 
   api.addFiles([
