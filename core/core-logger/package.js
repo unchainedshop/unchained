@@ -12,7 +12,7 @@ Package.onUse((api) => {
   api.use('ecmascript');
   api.use('mongo');
   api.use('promise');
-  api.use('percolate:migrations');
+  api.use('percolate:migrations@0.7.6');
   api.use('dburles:factory@0.1.9');
   api.use('dburles:collection-helpers@0.1.6');
   api.use('unchained:utils@0.15.0');
