@@ -4,7 +4,7 @@ import {
 import gql from 'graphql-tag';
 import Link from 'next/link';
 import { graphql } from 'react-apollo';
-import Moment from 'react-moment';
+import { format } from 'date-fns';
 import React from 'react';
 import {
   List, Segment, Menu, Dropdown,
@@ -123,11 +123,9 @@ Options
               <List.Content>
               Created:
                 {' '}
-                {created ? (
-                  <Moment format="lll">
-                    {created}
-                  </Moment>
-                ) : 'n/a'}
+                {created
+                  ? format(created, 'Pp')
+                  : 'n/a'}
               </List.Content>
             </List.Item>
             <List.Item>
@@ -135,11 +133,9 @@ Options
               <List.Content>
               Ordered:
                 {' '}
-                {ordered ? (
-                  <Moment format="lll">
-                    {ordered}
-                  </Moment>
-                ) : 'n/a'}
+                {ordered
+                  ? format(ordered, 'Pp')
+                  : 'n/a'}
               </List.Content>
             </List.Item>
             <List.Item>
@@ -147,11 +143,9 @@ Options
               <List.Content>
               Confirmed:
                 {' '}
-                {confirmed ? (
-                  <Moment format="lll">
-                    {confirmed}
-                  </Moment>
-                ) : 'n/a'}
+                {confirmed
+                  ? format(confirmed, 'Pp')
+                  : 'n/a'}
               </List.Content>
             </List.Item>
             <List.Item>
@@ -159,11 +153,9 @@ Options
               <List.Content>
               Fullfilled:
                 {' '}
-                {fullfilled ? (
-                  <Moment format="lll">
-                    {fullfilled}
-                  </Moment>
-                ) : 'n/a'}
+                {fullfilled
+                  ? format(fullfilled, 'Pp')
+                  : 'n/a'}
               </List.Content>
             </List.Item>
           </List>

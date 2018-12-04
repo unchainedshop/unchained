@@ -1,6 +1,6 @@
 import React from 'react';
 import { compose, pure, mapProps } from 'recompose';
-import Moment from 'react-moment';
+import { format } from 'date-fns';
 import {
   Menu, Dropdown, Segment, List, Grid,
 } from 'semantic-ui-react';
@@ -54,11 +54,9 @@ const FilterHeader = ({ loading, filter = {} }) => [
               <List.Content>
                   Created:
                 {' '}
-                {filter.created ? (
-                  <Moment format="LLL">
-                    {filter.created}
-                  </Moment>
-                ) : 'Unbekannt'}
+                {filter.created
+                  ? format(filter.created, 'Pp')
+                  : 'Unbekannt'}
               </List.Content>
             </List.Item>
             <List.Item>
@@ -66,11 +64,9 @@ const FilterHeader = ({ loading, filter = {} }) => [
               <List.Content>
                   Updated:
                 {' '}
-                {filter.updated ? (
-                  <Moment format="LLL">
-                    {filter.updated}
-                  </Moment>
-                ) : 'Unbekannt'}
+                {filter.updated
+                  ? format(filter.updated, 'Pp')
+                  : 'Unbekannt'}
               </List.Content>
             </List.Item>
           </List>

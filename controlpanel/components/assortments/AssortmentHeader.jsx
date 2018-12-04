@@ -1,6 +1,6 @@
 import React from 'react';
 import { compose, mapProps } from 'recompose';
-import Moment from 'react-moment';
+import { format } from 'date-fns';
 import {
   Menu, Dropdown, Segment, List, Grid,
 } from 'semantic-ui-react';
@@ -41,23 +41,18 @@ const AssortmentHeader = ({ loading, assortmentId, assortment = {} }) => [
               <List.Content>
                   Created:
                 {' '}
-                {assortment.created ? (
-                  <Moment format="LLL">
-                    {assortment.created}
-                  </Moment>
-                ) : 'Unbekannt'}
+                {assortment.created
+                  ? format(assortment.created, 'Pp')
+                  : 'Unbekannt'}
               </List.Content>
             </List.Item>
             <List.Item>
               <List.Icon name="refresh" />
               <List.Content>
                   Updated:
-                {' '}
-                {assortment.updated ? (
-                  <Moment format="LLL">
-                    {assortment.updated}
-                  </Moment>
-                ) : 'n/a'}
+                {assortment.updated
+                  ? format(assortment.updated, 'Pp')
+                  : 'Unbekannt'}
               </List.Content>
             </List.Item>
           </List>

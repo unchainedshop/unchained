@@ -1,6 +1,6 @@
 import React from 'react';
 import { compose, pure, mapProps } from 'recompose';
-import Moment from 'react-moment';
+import { format } from 'date-fns';
 import {
   Menu, Dropdown, Segment, Label, List, Grid,
 } from 'semantic-ui-react';
@@ -70,11 +70,9 @@ const ProductHeader = ({ loading, productId, product = {} }) => [
               <List.Content>
                   Erstellt:
                 {' '}
-                {product.created ? (
-                  <Moment format="LLL">
-                    {product.created}
-                  </Moment>
-                ) : 'Unbekannt'}
+                {product.created
+                  ? format(product.created, 'Pp')
+                  : 'n/a'}
               </List.Content>
             </List.Item>
             <List.Item>
@@ -82,11 +80,9 @@ const ProductHeader = ({ loading, productId, product = {} }) => [
               <List.Content>
                   Aktualisiert:
                 {' '}
-                {product.updated ? (
-                  <Moment format="LLL">
-                    {product.updated}
-                  </Moment>
-                ) : 'Unbekannt'}
+                {product.updated
+                  ? format(product.updated, 'Pp')
+                  : 'n/a'}
               </List.Content>
             </List.Item>
             <List.Item>
@@ -94,11 +90,9 @@ const ProductHeader = ({ loading, productId, product = {} }) => [
               <List.Content>
                   Veröffentlicht:
                 {' '}
-                {product.published ? (
-                  <Moment format="LLL">
-                    {product.published}
-                  </Moment>
-                ) : 'Unbekannt'}
+                {product.published
+                  ? format(product.published, 'Pp')
+                  : 'n/a'}
               </List.Content>
             </List.Item>
           </List>

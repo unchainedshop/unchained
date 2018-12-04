@@ -1,5 +1,5 @@
 import { compose, mapProps, pure } from 'recompose';
-import Moment from 'react-moment';
+import { format } from 'date-fns';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 import React from 'react';
@@ -32,13 +32,9 @@ Status
             <Table.Cell>
               <Link href={`/orders/view?_id=${order._id}`}>
                 <a href={`/orders/view?_id=${order._id}`}>
-                  {order.ordered ? (
-                    <Moment format="lll">
-                      {order.ordered}
-                    </Moment>
-                  ) : (
-                    'n/a'
-                  )}
+                  {order.ordered
+                    ? format(order.ordered, 'Pp')
+                    : 'n/a'}
                 </a>
               </Link>
             </Table.Cell>

@@ -1,6 +1,6 @@
 import React from 'react';
 import cookie from 'cookie';
-import moment from 'moment';
+import { differenceInMilliseconds } from 'date-fns';
 import PropTypes from 'prop-types';
 import { ApolloProvider, getDataFromTree } from 'react-apollo';
 import Head from 'next/head';
@@ -50,7 +50,7 @@ export default ComposedComponent => class WithData extends React.Component {
           this.apollo.resetStore();
           return;
         }
-        const maxAge = moment().diff(new Date(tokenExpires), 'seconds') * -1;
+        const maxAge = differenceInMilliseconds(new Date(tokenExpires), new Date()) / 1000;
         console.debug('new token, expiring: ', maxAge); // eslint-disable-line
         document.cookie = cookie.serialize('token', token, { maxAge, path: '/' });
         this.apollo.resetStore();

@@ -1,5 +1,5 @@
 import { compose, withHandlers, withState } from 'recompose';
-import Moment from 'react-moment';
+import { format } from 'date-fns';
 import gql from 'graphql-tag';
 import React from 'react';
 import { Table } from 'semantic-ui-react';
@@ -18,13 +18,9 @@ const OrderList = ({
     rowRenderer={(order => (
       <Table.Row key={order._id}>
         <Table.Cell>
-          {order.ordered ? (
-            <Moment format="l HH:mm">
-              {order.ordered}
-            </Moment>
-          ) : (
-            ''
-          )}
+          {order.ordered
+            ? format(order.ordered, 'Pp')
+            : 'n/a'}
         </Table.Cell>
         <Table.Cell>
           <Link href={`/orders/view?_id=${order._id}`}>

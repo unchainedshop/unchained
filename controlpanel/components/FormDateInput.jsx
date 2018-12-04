@@ -3,17 +3,6 @@ import classnames from 'classnames';
 import connectField from 'uniforms/connectField';
 import filterDOMProps from 'uniforms/filterDOMProps';
 import DatePicker from 'react-datepicker';
-import moment from 'moment';
-
-const dateParse = (dateObject, onChange) => {
-  if (dateObject && dateObject.isValid()) {
-    const offset = dateObject.utcOffset();
-    dateObject.add(offset, 'minutes');
-    const date = dateObject.toDate();
-    return onChange(date);
-  }
-  return onChange(null);
-};
 
 const DatePickerField = ({
   className,
@@ -48,7 +37,7 @@ const DatePickerField = ({
         disabled={disabled}
         id={id}
         name={name}
-        onChange={dateObject => dateParse(dateObject, onChange)}
+        onChange={onChange}
         locale="de-CH"
         peekNextMonth
         showMonthDropdown
@@ -56,7 +45,7 @@ const DatePickerField = ({
         dropdownMode="select"
         placeholder={placeholder}
         ref={inputRef}
-        selected={value ? moment(value) : null}
+        selected={value ? new Date(value) : null}
       />
       {(icon || iconLeft) && (
         <i className={`${icon || iconLeft} icon`} {...iconProps} />

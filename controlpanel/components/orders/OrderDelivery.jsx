@@ -1,6 +1,6 @@
 import { compose, mapProps, pure } from 'recompose';
 import gql from 'graphql-tag';
-import Moment from 'react-moment';
+import { format } from 'date-fns';
 import { graphql } from 'react-apollo';
 import React from 'react';
 import {
@@ -45,11 +45,9 @@ Delivery Provider
         <p>
           Date of Delivery to Provider:
           {' '}
-          {delivered ? (
-            <Moment format="lll">
-              {delivered}
-            </Moment>
-          ) : 'n/a'}
+          {delivered
+            ? format(delivered, 'Pp')
+            : 'n/a'}
         </p>
       </List.Item>
       {address && (

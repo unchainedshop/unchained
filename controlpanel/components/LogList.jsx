@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { compose, pure, defaultProps } from 'recompose';
-import Moment from 'react-moment';
+import { format } from 'date-fns';
 import gql from 'graphql-tag';
 import React from 'react';
 import {
@@ -38,9 +38,7 @@ const LogList = ({ data: { logs = defaultLogs, loading }, ...rest }) => (
       }) => (
         <Table.Row key={_id}>
           <Table.Cell singleLine>
-            <Moment format="DD.MM HH:mm:ss">
-              {created}
-            </Moment>
+            {format(created, 'Pp')}
           </Table.Cell>
           <Table.Cell warning={level === 'warn'} error={level === 'error'}>
             <code>

@@ -1,7 +1,7 @@
 import {
   compose, mapProps, pure, defaultProps,
 } from 'recompose';
-import Moment from 'react-moment';
+import { format } from 'date-fns';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 import React from 'react';
@@ -30,9 +30,7 @@ Context
         }) => (
           <Table.Row key={_id}>
             <Table.Cell singleLine>
-              <Moment format="DD.MM HH:mm:ss">
-                {created}
-              </Moment>
+              {format(created, 'Pp')}
             </Table.Cell>
             <Table.Cell warning={level === 'warn'} error={level === 'error'}>
               <code>

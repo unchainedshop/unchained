@@ -2,7 +2,7 @@ import {
   compose, mapProps, pure, withHandlers,
 } from 'recompose';
 import gql from 'graphql-tag';
-import Moment from 'react-moment';
+import { format } from 'date-fns';
 import { graphql } from 'react-apollo';
 import React from 'react';
 import {
@@ -44,11 +44,9 @@ Payment Provider
         <p>
           Date of Payment with Provider:
           {' '}
-          {paid ? (
-            <Moment format="lll">
-              {paid}
-            </Moment>
-          ) : 'n/a'}
+          {paid
+            ? format(paid, 'Pp')
+            : 'n/a'}
         </p>
       </List.Item>
     </List>
