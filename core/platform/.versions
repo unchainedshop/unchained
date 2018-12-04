@@ -1,8 +1,6 @@
 accounts-base@1.4.3
-aldeed:collection2@0.1.7
-aldeed:collection2-core@1.0.0
-aldeed:schema-index@1.0.1
-aldeed:simple-schema@1.5.4
+aldeed:collection2@3.0.1
+aldeed:schema-index@3.0.0
 allow-deny@1.1.0
 autoupdate@1.5.0
 babel-compiler@7.2.3
@@ -37,7 +35,6 @@ livedata@1.0.18
 local-test:unchained:platform@0.16.0
 localstorage@1.2.0
 logging@1.1.20
-mdg:validation-error@0.2.0
 meteor@1.9.2
 meteor-base@1.4.0
 minimongo@1.4.5
@@ -63,6 +60,7 @@ retry@1.1.0
 routepolicy@1.1.0
 service-configuration@1.0.11
 socket-stream-client@0.2.2
+tmeasday:check-npm-versions@0.3.2
 tracker@1.2.0
 unchained:api@0.16.0
 unchained:core@0.16.0
