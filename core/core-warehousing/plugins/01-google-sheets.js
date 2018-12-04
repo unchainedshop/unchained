@@ -7,6 +7,7 @@ import NodeCache from 'node-cache';
 
 const {
   NODE_ENV,
+  GOOGLE_SHEETS_PRIVATE_KEY_DATA,
 } = process.env;
 
 const googleCache = new NodeCache((NODE_ENV === 'production')
@@ -17,7 +18,7 @@ async function downloadSpreadsheet() {
   try {
     // https://docs.google.com/spreadsheets/d/1lVplebvDHgPfPZnnp7NCM60iyu3WARGE1JZh6Xx5uvc/edit?usp=sharing
     const gs = new Sheets('1lVplebvDHgPfPZnnp7NCM60iyu3WARGE1JZh6Xx5uvc');
-    const authData = JSON.parse(Assets.getText('google.json'));
+    const authData = JSON.parse(GOOGLE_SHEETS_PRIVATE_KEY_DATA);
     await gs.authorizeJWT(authData);
     const delivery = await gs.tables('delivery!A:ZZZ');
     const inventory = await gs.tables('inventory!A:ZZZ');
