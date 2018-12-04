@@ -190,6 +190,48 @@ Collections.AssortmentLinks.getNewSortKey = (parentAssortmentId) => {
 };
 
 export default () => {
+  Products.helpers({
+    assortmentIds() {
+      return Collections.AssortmentProducts
+        .find({ productId: this._id }, { fields: { assortmentId: true } })
+        .fetch()
+        .map(({ assortmentId: id }) => id);
+    },
+    assortments({ includeInactive = false } = {}) {
+      const assortmentIds = this.assortmentIds();
+      const selector = { _id: { $in: assortmentIds } };
+      if (!includeInactive) {
+        selector.isActive = true;
+      }
+      return Collections.Assortments.find(selector).fetch();
+    },
+    siblings({ assortmentId, includeDrafts = false } = {}) {
+      const assortmentIds = assortmentId
+        ? [assortmentId]
+        : this.assortmentIds();
+      if (!assortmentIds.length) return [];
+      const productIds = Collections.AssortmentProducts
+        .find({
+          $and: [{
+            productId: { $ne: this._id },
+          }, {
+            assortmentId: { $in: assortmentIds },
+          }],
+        })
+        .fetch()
+        .map(({ productId: curProductId }) => curProductId);
+
+      const productSelector = {
+        _id: { $in: productIds },
+        status: { $in: [ProductStatus.ACTIVE, ProductStatus.DRAFT] },
+      };
+      if (!includeDrafts) {
+        productSelector.status = ProductStatus.ACTIVE;
+      }
+      return Products.find(productSelector).fetch();
+    },
+  });
+
   Collections.Assortments.helpers({
     country() {
       return Countries.findOne({ isoCode: this.countryCode });

@@ -3,6 +3,7 @@ import { Promise } from 'meteor/promise';
 import { ProductPricingDirector } from 'meteor/unchained:core-pricing';
 import { WarehousingProviders } from 'meteor/unchained:core-warehousing';
 import { DeliveryProviders } from 'meteor/unchained:core-delivery';
+import { Countries } from 'meteor/unchained:core-countries';
 import { findLocalizedText } from 'meteor/unchained:core';
 import { objectInvert, slugify } from 'meteor/unchained:utils';
 import { Locale } from 'locale';
@@ -52,10 +53,6 @@ Products.getNewSequence = (oldSequence) => {
 };
 
 export default () => {
-  const { Users } = Promise.await(import('meteor/unchained:core-users'));
-  const { Countries } = Promise.await(import('meteor/unchained:core-countries'));
-  const { Assortments, AssortmentProducts } = Promise.await(import('meteor/unchained:core-assortments'));
-
   Products.helpers({
     publish() {
       switch (this.status) {
@@ -239,12 +236,11 @@ export default () => {
     },
 
     userPrice({
-      quantity = 1, country, userId, useNetPrice,
+      quantity = 1, country, user, useNetPrice,
     }) {
       const currency = Countries.resolveDefaultCurrencyCode({
         isoCode: country,
       });
-      const user = Users.findOne({ _id: userId });
       const pricingDirector = new ProductPricingDirector({
         product: this,
         user,
@@ -261,7 +257,7 @@ export default () => {
       return {
         _id: crypto
           .createHash('sha256')
-          .update([this._id, country, quantity, useNetPrice, userId || 'ANONYMOUS'].join(''))
+          .update([this._id, country, quantity, useNetPrice, (user ? user._id : 'ANONYMOUS')].join(''))
           .digest('hex'),
         amount: userPrice.amount,
         currencyCode: userPrice.currency,
@@ -305,45 +301,6 @@ export default () => {
           isTaxable: false,
           isNetPrice: false,
         });
-    },
-    assortmentIds() {
-      return AssortmentProducts
-        .find({ productId: this._id }, { fields: { assortmentId: true } })
-        .fetch()
-        .map(({ assortmentId: id }) => id);
-    },
-    assortments({ includeInactive = false } = {}) {
-      const assortmentIds = this.assortmentIds();
-      const selector = { _id: { $in: assortmentIds } };
-      if (!includeInactive) {
-        selector.isActive = true;
-      }
-      return Assortments.find(selector).fetch();
-    },
-    siblings({ assortmentId, includeDrafts = false } = {}) {
-      const assortmentIds = assortmentId
-        ? [assortmentId]
-        : this.assortmentIds();
-      if (!assortmentIds.length) return [];
-      const productIds = AssortmentProducts
-        .find({
-          $and: [{
-            productId: { $ne: this._id },
-          }, {
-            assortmentId: { $in: assortmentIds },
-          }],
-        })
-        .fetch()
-        .map(({ productId: curProductId }) => curProductId);
-
-      const productSelector = {
-        _id: { $in: productIds },
-        status: { $in: [ProductStatus.ACTIVE, ProductStatus.DRAFT] },
-      };
-      if (!includeDrafts) {
-        productSelector.status = ProductStatus.ACTIVE;
-      }
-      return Products.find(productSelector).fetch();
     },
   });
 };

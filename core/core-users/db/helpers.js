@@ -1,15 +1,13 @@
 import 'meteor/dburles:collection-helpers';
-import { Promise } from 'meteor/promise';
 import { Accounts } from 'meteor/accounts-base';
 import { log, Logs } from 'meteor/unchained:core-logger';
 import { Avatars } from 'meteor/unchained:core-avatars';
+import { Countries } from 'meteor/unchained:core-countries';
+import { Languages } from 'meteor/unchained:core-languages';
+
 import { Users } from './collections';
 
 export default () => {
-  const { Orders, OrderStatus } = Promise.await(import('meteor/unchained:core-orders'));
-  const { Countries } = Promise.await(import('meteor/unchained:core-countries'));
-  const { Languages } = Promise.await(import('meteor/unchained:core-languages'));
-
   Logs.helpers({
     user() {
       return this.meta && Users.findOne({
@@ -19,17 +17,6 @@ export default () => {
   });
 
   Users.helpers({
-    cart({ countryCode } = {}) {
-      const openOrders = Orders.find({
-        userId: this._id,
-        status: OrderStatus.OPEN,
-        countryCode: countryCode || this.lastLogin.country,
-      });
-      if (openOrders.count() > 0) {
-        return openOrders.fetch()[0];
-      }
-      return null;
-    },
     isGuest() {
       return !!this.guest;
     },
@@ -47,15 +34,6 @@ export default () => {
       }
       return null;
     },
-    initCart({ countryCode }) {
-      return this.cart({ countryCode }) || Orders.createOrder({
-        userId: this._id,
-        currency: Countries.resolveDefaultCurrencyCode({
-          isoCode: countryCode,
-        }),
-        countryCode,
-      });
-    },
     avatar() {
       return Avatars.findOne({ _id: this.avatarId });
     },
@@ -72,13 +50,6 @@ export default () => {
       const { profile, emails } = this;
       if (profile && profile.displayName && profile.displayName !== '') return profile.displayName;
       return emails && emails[0].address;
-    },
-    orders() {
-      return Orders.find({ userId: this._id }, {
-        sort: {
-          created: -1,
-        },
-      }).fetch();
     },
     updatePassword(newPassword) {
       Accounts.setPassword(this._id, newPassword);

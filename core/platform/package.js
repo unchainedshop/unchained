@@ -2,12 +2,8 @@
 Package.describe({
   name: 'unchained:platform',
   version: '0.15.0',
-  // Brief, one-line summary of the package.
-  summary: '',
-  // URL to the Git repository containing the source code for this package.
+  summary: 'Unchained Engine',
   git: '',
-  // By default, Meteor will default to using README.md for documentation.
-  // To avoid submitting documentation, set this field to null.
   documentation: 'README.md',
 });
 
@@ -18,27 +14,27 @@ Package.onUse((api) => {
   api.use('random');
   api.use('check');
   api.use('accounts-base');
-  api.use('aldeed:collection2');
-  api.use('aldeed:schema-index');
-  api.use('unchained:core');
-  api.use('unchained:core-avatars');
-  api.use('unchained:core-currencies');
-  api.use('unchained:core-countries');
-  api.use('unchained:core-delivery');
-  api.use('unchained:core-discounting');
-  api.use('unchained:core-documents');
-  api.use('unchained:core-languages');
-  api.use('unchained:core-logger');
-  api.use('unchained:core-messaging');
-  api.use('unchained:core-orders');
-  api.use('unchained:core-payment');
-  api.use('unchained:core-pricing');
-  api.use('unchained:core-products');
-  api.use('unchained:core-users');
-  api.use('unchained:core-warehousing');
-  api.use('unchained:core-filters');
-  api.use('unchained:core-assortments');
-  api.use('unchained:api');
+  api.use('aldeed:collection2@0.1.7');
+  api.use('aldeed:schema-index@1.0.1');
+  api.use('unchained:core@0.15.0');
+  api.use('unchained:core-avatars@0.15.0');
+  api.use('unchained:core-currencies@0.15.0');
+  api.use('unchained:core-countries@0.15.0');
+  api.use('unchained:core-delivery@0.15.0');
+  api.use('unchained:core-discounting@0.15.0');
+  api.use('unchained:core-documents@0.15.0');
+  api.use('unchained:core-languages@0.15.0');
+  api.use('unchained:core-logger@0.15.0');
+  api.use('unchained:core-messaging@0.15.0');
+  api.use('unchained:core-orders@0.15.0');
+  api.use('unchained:core-payment@0.15.0');
+  api.use('unchained:core-pricing@0.15.0');
+  api.use('unchained:core-products@0.15.0');
+  api.use('unchained:core-users@0.15.0');
+  api.use('unchained:core-warehousing@0.15.0');
+  api.use('unchained:core-filters@0.15.0');
+  api.use('unchained:core-assortments@0.15.0');
+  api.use('unchained:api@0.15.0');
 
   api.mainModule('platform.js', 'server');
 });

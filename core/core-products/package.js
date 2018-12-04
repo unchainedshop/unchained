@@ -2,12 +2,8 @@
 Package.describe({
   name: 'unchained:core-products',
   version: '0.15.0',
-  // Brief, one-line summary of the package.
-  summary: '',
-  // URL to the Git repository containing the source code for this package.
+  summary: 'Unchained Engine Core: Products',
   git: '',
-  // By default, Meteor will default to using README.md for documentation.
-  // To avoid submitting documentation, set this field to null.
   documentation: 'README.md',
 });
 
@@ -16,17 +12,14 @@ Package.onUse((api) => {
   api.use('ecmascript');
   api.use('mongo');
   api.use('promise');
-  api.use('dburles:factory');
-  api.use('dburles:collection-helpers');
-  api.use('ostrio:files');
-
-  api.use('unchained:utils');
-  api.use('unchained:core');
-  api.use('unchained:core-pricing');
-  api.use('unchained:core-warehousing');
-  api.use('unchained:core-users', { unordered: true });
-  api.use('unchained:core-countries', { unordered: true });
-  api.use('unchained:core-assortments', { unordered: true });
+  api.use('dburles:factory@0.1.9');
+  api.use('dburles:collection-helpers@0.1.6');
+  api.use('ostrio:files@1.9.11');
+  api.use('unchained:utils@0.15.0');
+  api.use('unchained:core@0.15.0');
+  api.use('unchained:core-pricing@0.15.0');
+  api.use('unchained:core-warehousing@0.15.0');
+  api.use('unchained:core-countries@0.15.0');
 
   api.mainModule('products.js', 'server');
 });

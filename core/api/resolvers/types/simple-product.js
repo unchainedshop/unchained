@@ -1,3 +1,5 @@
+import { Users } from 'meteor/unchained:core-users';
+
 export default {
   texts(obj, { forceLocale }, { localeContext }) {
     return obj.getLocalizedTexts(forceLocale || localeContext.normalized);
@@ -13,10 +15,11 @@ export default {
     });
   },
   simulatedPrice(obj, { quantity, useNetPrice }, { countryContext, userId }) {
+    const user = Users.findOne({ _id: userId });
     return obj.userPrice({
       quantity,
       country: countryContext,
-      userId,
+      user,
       useNetPrice,
     });
   },

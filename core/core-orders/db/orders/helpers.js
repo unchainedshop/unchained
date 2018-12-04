@@ -31,6 +31,36 @@ Logs.helpers({
   },
 });
 
+Users.helpers({
+  cart({ countryCode } = {}) {
+    const openOrders = Orders.find({
+      userId: this._id,
+      status: OrderStatus.OPEN,
+      countryCode: countryCode || this.lastLogin.country,
+    });
+    if (openOrders.count() > 0) {
+      return openOrders.fetch()[0];
+    }
+    return null;
+  },
+  initCart({ countryCode }) {
+    return this.cart({ countryCode }) || Orders.createOrder({
+      userId: this._id,
+      currency: Countries.resolveDefaultCurrencyCode({
+        isoCode: countryCode,
+      }),
+      countryCode,
+    });
+  },
+  orders() {
+    return Orders.find({ userId: this._id }, {
+      sort: {
+        created: -1,
+      },
+    }).fetch();
+  },
+});
+
 Orders.helpers({
   init() {
     // initialize payment with default values
