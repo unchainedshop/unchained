@@ -36,8 +36,9 @@ class ProductDiscount extends ProductPricingAdapter {
         const amount = configuration.rate
           ? taxableTotal * configuration.rate
           : Math.min(configuration.fixedRate, taxableTotal);
+
         this.result.addDiscount({
-          amount: amount * quantity * -1,
+          amount: amount * -1,
           isTaxable: true,
           discountId,
           meta: { adapter: this.constructor.key },
@@ -48,7 +49,7 @@ class ProductDiscount extends ProductPricingAdapter {
           ? nonTaxableTotal * configuration.rate
           : Math.min(configuration.fixedRate, nonTaxableTotal);
         this.result.addDiscount({
-          amount: amount * quantity * -1,
+          amount: amount * -1,
           isTaxable: false,
           discountId,
           meta: { adapter: this.constructor.key },

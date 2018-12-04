@@ -50,14 +50,6 @@ export default compose(
       }
     }
   `),
-  graphql(gql`
-    mutation updateUserUserTags($tags: [String]!, $userId: ID!) {
-      updateUserUserTags(tags: $tags, userId: $userId) {
-        _id
-        tags
-      }
-    }
-  `),
   withFormSchema({
     tags: {
       type: Array,
@@ -66,7 +58,15 @@ export default compose(
     },
     'tags.$': String,
   }),
-  withFormModel(({ data: { user } }) => (user && user.tags) || {}),
+  withFormModel(({ data: { user } }) => ({ tags: user && user.tags }) || {}),
+  graphql(gql`
+    mutation updateUserTags($tags: [String]!, $userId: ID!) {
+      updateUserTags(tags: $tags, userId: $userId) {
+        _id
+        tags
+      }
+    }
+  `),
   withHandlers({
     onSubmit: ({ userId, mutate, schema }) => ({ ...dirtyInput }) => mutate({
       variables: {

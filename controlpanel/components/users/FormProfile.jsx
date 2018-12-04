@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-  compose, pure, mapProps, withHandlers,
+  compose, pure, withHandlers,
 } from 'recompose';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';

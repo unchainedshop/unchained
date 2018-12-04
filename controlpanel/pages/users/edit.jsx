@@ -12,6 +12,8 @@ import UserLogList from '../../components/users/UserLogList';
 import FormSetPassword from '../../components/account/FormSetPassword';
 import FormChangeEmail from '../../components/account/FormChangeEmail';
 import FormSetRoles from '../../components/account/FormSetRoles';
+import FormTags from '../../components/account/FormTags';
+
 import connectApollo from '../../lib/connectApollo';
 
 const UsersEdit = ({
@@ -45,13 +47,13 @@ const UsersEdit = ({
               <div>
                 <Segment>
                   <h3 className="title">
-Set password
+                    Set password
                   </h3>
                   <FormSetPassword onSubmitSuccess={redirect} userId={router.query._id} />
                 </Segment>
                 <Segment>
                   <h3 className="title">
-Change E-Mail address
+                    Change E-Mail address
                   </h3>
                   <FormChangeEmail
                     onSubmitSuccess={redirect}
@@ -61,9 +63,15 @@ Change E-Mail address
                 </Segment>
                 <Segment>
                   <h3 className="title">
-Set roles
+                    Set roles
                   </h3>
                   <FormSetRoles onSubmitSuccess={redirect} userId={router.query._id} />
+                </Segment>
+                <Segment>
+                  <h3 className="title">
+                    Set tags
+                  </h3>
+                  <FormTags onSubmitSuccess={redirect} userId={router.query._id} />
                 </Segment>
               </div>
             )}
