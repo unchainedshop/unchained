@@ -1,7 +1,6 @@
 {
-  "name": "unchained-webapp-admin",
+  "name": "unchained-controlpanel",
   "version": "1.0.0",
-  "private": true,
   "author": "Pascal Kaufmann",
   "license": "EUPL-1.1",
   "scripts": {
