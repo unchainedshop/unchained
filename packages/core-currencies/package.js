@@ -3,7 +3,7 @@ Package.describe({
   name: 'unchained:core-currencies',
   version: '0.16.0',
   summary: 'Unchained Engine Core: Currencies',
-  git: '',
+  git: 'https://github.com/unchainedshop/unchained',
   documentation: 'README.md',
 });
 

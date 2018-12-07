@@ -3,7 +3,7 @@ Package.describe({
   name: 'unchained:core-documents',
   version: '0.16.0',
   summary: 'Unchained Engine Core: Documents',
-  git: '',
+  git: 'https://github.com/unchainedshop/unchained',
   documentation: 'README.md',
 });
 

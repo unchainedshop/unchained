@@ -3,7 +3,7 @@ Package.describe({
   name: 'unchained:core-users',
   version: '0.16.0',
   summary: 'Unchained Engine Core: Users',
-  git: '',
+  git: 'https://github.com/unchainedshop/unchained',
   documentation: 'README.md',
 });
 

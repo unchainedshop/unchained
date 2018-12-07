@@ -3,7 +3,7 @@ Package.describe({
   name: 'unchained:platform',
   version: '0.16.0',
   summary: 'Unchained Engine',
-  git: '',
+  git: 'https://github.com/unchainedshop/unchained',
   documentation: 'README.md',
 });
 
