@@ -1,0 +1,20 @@
+# Meteor packages used by this project, one per line.
+# Check this file (and the other files in this directory) into your repository.
+#
+# 'meteor add' and 'meteor remove' will edit this file for you,
+# but you can also edit it by hand.
+
+meteor@1.9.2
+webapp@1.7.1
+mongo@1.6.0
+accounts-base@1.4.3
+accounts-password@1.5.1
+accounts-oauth@1.1.16
+ecmascript@0.12.3
+standard-minifiers@1.1.0
+email@1.2.3
+disable-oplog@1.0.7
+underscore@1.0.10
+shell-server@0.4.0
+http@1.4.1
+unchained:platform
