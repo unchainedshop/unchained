@@ -5,16 +5,16 @@
   "license": "EUPL-1.2",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/xecutors/unchained.git"
+    "url": "git+https://github.com/unchainedshop/unchained.git"
   },
   "contributors": [
     "Vedran Rudelj <vedran@fliptation.ch> (http://www.fliptation.ch)",
     "Pascal Kaufmann <pascal@reactive.one> (http://www.reactive.one)"
   ],
   "bugs": {
-    "url": "https://github.com/xecutors/unchained/issues"
+    "url": "https://github.com/unchainedshop/unchained/issues"
   },
-  "homepage": "https://github.com/xecutors/unchained#readme",
+  "homepage": "https://github.com/unchainedshop/unchained#readme",
   "scripts": {
     "predev": "cd backend && npm install",
     "dev": "cd backend && npm run dev",
