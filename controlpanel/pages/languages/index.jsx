@@ -8,7 +8,7 @@ export default connectApollo(({ ...rest }) => (
   <App {...rest}>
     <Container>
       <h2>
-Languages
+        Languages
       </h2>
       <LanguageList />
     </Container>
