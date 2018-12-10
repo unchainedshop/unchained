@@ -15,24 +15,26 @@ const UploadAvatar = ({ avatarUrl, handleChange }) => (
       multiple={false}
       accept="image/*"
     >
-      {({ getRootProps }) => (
-        <div
-          style={{
-            border: 0,
-          }}
-          className="ui container"
-          {...getRootProps()}
-        >
-          <Image
-            label={{ color: 'blue', corner: 'right', icon: 'edit' }}
-            src={avatarUrl}
-            width={150}
-            height={150}
-            bordered
-            shape="rounded"
-          />
-        </div>
-      )}
+      {({ getRootProps, getInputProps }) => {
+        const inputProps = getInputProps();
+        return (
+          <div
+            {...getRootProps()}
+            style={{ border: 0 }}
+            className="ui container"
+          >
+            <input {...inputProps} />
+            <Image
+              label={{ color: 'blue', corner: 'right', icon: 'edit' }}
+              src={avatarUrl}
+              width={150}
+              height={150}
+              bordered
+              shape="rounded"
+            />
+          </div>
+        );
+      }}
     </Dropzone>
     <style jsx>
       {`
