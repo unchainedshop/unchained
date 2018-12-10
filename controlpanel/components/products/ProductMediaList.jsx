@@ -22,18 +22,26 @@ const ProductMediaList = ({ items, onDrop, isEditingDisabled }) => (
         />
       ))}
       {!isEditingDisabled && (
-        <Item>
-          <Item.Content>
-            <Item.Header>
-              Upload media
-            </Item.Header>
-            <Item.Description>
-              <Dropzone onDrop={onDrop}>
-                {({ getRootProps }) => <div {...getRootProps()} />}
-              </Dropzone>
-            </Item.Description>
-          </Item.Content>
-        </Item>
+
+      <Dropzone onDrop={onDrop}>
+        {({ getRootProps, getInputProps }) => {
+          const inputProps = getInputProps();
+          return (
+            <Item {...getRootProps()}>
+              <Item.Content>
+                <Item.Header>
+                  Upload media
+                </Item.Header>
+                <Item.Description>
+                  <input {...inputProps} />
+                  Drop files here or click to upload...
+                </Item.Description>
+              </Item.Content>
+            </Item>
+          );
+        }}
+      </Dropzone>
+
       )}
     </Item.Group>
   </Segment>
