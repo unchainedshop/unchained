@@ -25,10 +25,12 @@ const ProductMediaList = ({ items, onDrop, isEditingDisabled }) => (
         <Item>
           <Item.Content>
             <Item.Header>
-Mediendatei hochladen
+              Upload media
             </Item.Header>
             <Item.Description>
-              <Dropzone onDrop={onDrop} />
+              <Dropzone onDrop={onDrop}>
+                {({ getRootProps }) => <div {...getRootProps()} />}
+              </Dropzone>
             </Item.Description>
           </Item.Content>
         </Item>

@@ -9,23 +9,30 @@ import Dropzone from 'react-dropzone';
 
 const UploadAvatar = ({ avatarUrl, handleChange }) => (
   <div className="fixed-height">
+
     <Dropzone
-      style={{
-        border: 0,
-      }}
-      className="ui container"
       onDrop={handleChange}
       multiple={false}
       accept="image/*"
     >
-      <Image
-        label={{ color: 'blue', corner: 'right', icon: 'edit' }}
-        src={avatarUrl}
-        width={150}
-        height={150}
-        bordered
-        shape="rounded"
-      />
+      {({ getRootProps }) => (
+        <div
+          style={{
+            border: 0,
+          }}
+          className="ui container"
+          {...getRootProps()}
+        >
+          <Image
+            label={{ color: 'blue', corner: 'right', icon: 'edit' }}
+            src={avatarUrl}
+            width={150}
+            height={150}
+            bordered
+            shape="rounded"
+          />
+        </div>
+      )}
     </Dropzone>
     <style jsx>
       {`
