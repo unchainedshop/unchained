@@ -126,13 +126,13 @@ Orders.helpers({
     });
   },
   supportedDeliveryProviders() {
-    return DeliveryProviders.findProviders()
+    return DeliveryProviders
+      .findProviders()
       .filter(provider => provider.isActive(this));
   },
   supportedPaymentProviders() {
     return PaymentProviders
-      .find()
-      .fetch()
+      .findProviders()
       .filter(provider => provider.isActive(this));
   },
   setDeliveryProvider({ deliveryProviderId }) {

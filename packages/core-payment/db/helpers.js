@@ -72,3 +72,9 @@ PaymentProviders.removeProvider = ({ _id }) => {
   });
   return PaymentProviders.findOne({ _id });
 };
+
+PaymentProviders.findProviderById = _id => PaymentProviders.findOne({ _id });
+
+PaymentProviders.findProviders = ({ type } = {}) => PaymentProviders
+  .find({ ...(type ? { type } : {}), deleted: null })
+  .fetch();
