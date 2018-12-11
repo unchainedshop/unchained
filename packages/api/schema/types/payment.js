@@ -41,6 +41,9 @@ enum PaymentProviderError {
 
 type PaymentProvider {
   _id: ID!
+  created: Date
+  updated: Date
+  deleted: Date
   type: PaymentProviderType
   interface: PaymentInterface
   configuration: JSON

@@ -3,8 +3,6 @@ import { WarehousingProviders } from 'meteor/unchained:core-warehousing';
 
 export default function (root, { warehousingProviderId }, { userId }) {
   log(`query warehousing-provider ${warehousingProviderId}`, { userId });
-  const selector = { };
-  selector._id = warehousingProviderId;
-  const warehousingProvider = WarehousingProviders.findOne(selector);
+  const warehousingProvider = WarehousingProviders.findProviderById(warehousingProviderId);
   return warehousingProvider;
 }

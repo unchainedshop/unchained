@@ -38,26 +38,31 @@ WarehousingProviders.createProvider = ({ type, ...rest }) => {
   return WarehousingProviders.findOne({ _id: providerId });
 };
 
-WarehousingProviders.updateProvider = ({ warehousingProviderId, ...rest }) => {
-  WarehousingProviders.update({ _id: warehousingProviderId }, {
+WarehousingProviders.updateProvider = ({ _id, ...rest }) => {
+  WarehousingProviders.update({ _id, deleted: null }, {
     $set: {
       ...rest,
       updated: new Date(),
     },
   });
-  return WarehousingProviders.findOne({ _id: warehousingProviderId });
+  return WarehousingProviders.findOne({ _id, deleted: null });
 };
 
-WarehousingProviders.removeProvider = ({ warehousingProviderId }) => {
-  const provider = WarehousingProviders.findOne({ _id: warehousingProviderId });
-  WarehousingProviders.remove({ _id: warehousingProviderId });
-  return provider;
+WarehousingProviders.removeProvider = ({ _id }) => {
+  WarehousingProviders.update({ _id, deleted: null }, {
+    $set: {
+      deleted: new Date(),
+    },
+  });
+  return WarehousingProviders.findOne({ _id });
 };
 
-WarehousingProviders.findSupported = ({ product, deliveryProvider }) => {
-  const providers = WarehousingProviders
-    .find()
-    .fetch()
-    .filter(warehousingProvider => warehousingProvider.isActive({ product, deliveryProvider }));
-  return providers;
-};
+WarehousingProviders.findProviderById = _id => WarehousingProviders.findOne({ _id });
+
+WarehousingProviders.findProviders = ({ type } = {}) => WarehousingProviders
+  .find({ ...(type ? { type } : {}), deleted: null })
+  .fetch();
+
+WarehousingProviders.findSupported = ({ product, deliveryProvider }) => WarehousingProviders
+  .findProviders()
+  .filter(warehousingProvider => warehousingProvider.isActive({ product, deliveryProvider }));

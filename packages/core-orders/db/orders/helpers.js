@@ -126,9 +126,7 @@ Orders.helpers({
     });
   },
   supportedDeliveryProviders() {
-    return DeliveryProviders
-      .find()
-      .fetch()
+    return DeliveryProviders.findProviders()
       .filter(provider => provider.isActive(this));
   },
   supportedPaymentProviders() {
@@ -425,7 +423,7 @@ Orders.helpers({
     return Countries.findOne({ isoCode: this.countryCode });
   },
   logs({ limit = 10, offset = 0 }) {
-    const selector = { orderId: this._id };
+    const selector = { 'meta.orderId': this._id };
     const logs = Logs.find(selector, {
       skip: offset,
       limit,

@@ -185,7 +185,7 @@ export default () => {
     userDispatches({
       deliveryProviderType, ...options
     }) {
-      const deliveryProviders = DeliveryProviders.find({ type: deliveryProviderType }).fetch();
+      const deliveryProviders = DeliveryProviders.findProviders({ type: deliveryProviderType });
       return deliveryProviders.reduce(
         (oldResult, deliveryProvider) => oldResult
           .concat(oldResult, WarehousingProviders.findSupported({ product: this, deliveryProvider })
@@ -209,7 +209,7 @@ export default () => {
     userStocks({
       deliveryProviderType, ...options
     }) {
-      const deliveryProviders = DeliveryProviders.find({ type: deliveryProviderType }).fetch();
+      const deliveryProviders = DeliveryProviders.findProviders({ type: deliveryProviderType });
       return deliveryProviders.reduce(
         (oldResult, deliveryProvider) => oldResult
           .concat(oldResult, WarehousingProviders.findSupported({ product: this, deliveryProvider })

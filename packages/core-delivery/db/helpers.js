@@ -34,27 +34,36 @@ DeliveryProviders.helpers({
 
 DeliveryProviders.createProvider = ({ type, ...rest }) => {
   const InterfaceClass = new DeliveryDirector(rest).interfaceClass();
-  const providerId = DeliveryProviders.insert({
+  const _id = DeliveryProviders.insert({
     ...rest,
     created: new Date(),
     configuration: InterfaceClass.initialConfiguration,
     type,
   });
-  return DeliveryProviders.findOne({ _id: providerId });
+  return DeliveryProviders.findOne({ _id });
 };
 
-DeliveryProviders.updateProvider = ({ deliveryProviderId, ...rest }) => {
-  DeliveryProviders.update({ _id: deliveryProviderId }, {
+DeliveryProviders.updateProvider = ({ _id, ...rest }) => {
+  DeliveryProviders.update({ _id, deleted: null }, {
     $set: {
       ...rest,
       updated: new Date(),
     },
   });
-  return DeliveryProviders.findOne({ _id: deliveryProviderId });
+  return DeliveryProviders.findOne({ _id, deleted: null });
 };
 
-DeliveryProviders.removeProvider = ({ deliveryProviderId }) => {
-  const provider = DeliveryProviders.findOne({ _id: deliveryProviderId });
-  DeliveryProviders.remove({ _id: deliveryProviderId });
-  return provider;
+DeliveryProviders.removeProvider = ({ _id }) => {
+  DeliveryProviders.update({ _id, deleted: null }, {
+    $set: {
+      deleted: new Date(),
+    },
+  });
+  return DeliveryProviders.findOne({ _id });
 };
+
+DeliveryProviders.findProviderById = _id => DeliveryProviders.findOne({ _id });
+
+DeliveryProviders.findProviders = ({ type } = {}) => DeliveryProviders
+  .find({ ...(type ? { type } : {}), deleted: null })
+  .fetch();

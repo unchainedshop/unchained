@@ -44,7 +44,7 @@ OrderPositions.helpers({
       .map((schedule) => {
         const context = {
           warehousingProvider: WarehousingProviders
-            .findOne({ _id: schedule.warehousingProviderId }),
+            .findProviderById(schedule.warehousingProviderId),
           deliveryProvider: () => order.delivery().provider(),
           product: this.product,
           quantity: this.quantity,

@@ -21,6 +21,9 @@ enum WarehousingProviderError {
 
 type WarehousingProvider {
   _id: ID!
+  created: Date
+  updated: Date
+  deleted: Date
   type: WarehousingProviderType
   interface: WarehousingInterface
   configuration: JSON
