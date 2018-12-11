@@ -106,8 +106,8 @@ class GoogleSheets extends WarehousingAdapter {
 
   async getRemoteInventory(sku) {
     const rows = await this.constructor.getRows('inventory');
-    const resolvedRow = rows.reduce((result, row) => {
-      if (result) return result;
+    const resolvedRow = [].concat(rows).reduce((result, row) => {
+      if (result || !row) return result;
       const parsedSKU = row.SKU.value.toUpperCase();
       if (parsedSKU === sku) {
         return row;
