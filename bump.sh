@@ -1,4 +1,4 @@
-cd core/utils && meteor publish &&
+cd packages/utils && meteor publish &&
 cd ../roles && meteor publish &&
 cd ../core-languages && meteor publish &&
 cd ../core-currencies && meteor publish &&
