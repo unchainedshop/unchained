@@ -2,10 +2,9 @@ import { fakeTimestampFields } from 'meteor/unchained:utils';
 import { Meteor } from 'meteor/meteor';
 import { Factory } from 'meteor/dburles:factory';
 import faker from 'faker';
-import { ProductTypes, ProductVariationType, ProductStatus } from './schema';
+import { ProductTypes, ProductStatus } from './schema';
 import {
   Products, ProductTexts, ProductMediaTexts, ProductMedia, Media,
-  ProductVariations, ProductVariationTexts,
 } from './collections';
 
 Factory.define('simpleProduct', Products, {
@@ -78,22 +77,5 @@ Factory.define('productMedia', ProductMedia, {
   mediaId: () => Factory.createMedia()._id,
   tags: () => (faker.random.boolean() ? [faker.random.arrayElement(['red', 'green', 'blue'])] : []),
   productId: () => Factory.get('simpleProduct'),
-  ...fakeTimestampFields,
-});
-
-Factory.define('productVariation', ProductVariations, {
-  productId: () => Factory.get('configurableProduct'),
-  key: () => faker.lorem.slug(),
-  type: () => faker.random.arrayElement(Object.values(ProductVariationType)),
-  options: () => ['red', 'green', 'blue'],
-  ...fakeTimestampFields,
-});
-
-Factory.define('productVariationText', ProductVariationTexts, {
-  productVariationId: () => Factory.get('productMedia'),
-  productVariationOptionValue: () => null,
-  locale: () => faker.random.arrayElement(['de', 'en']),
-  title: () => faker.lorem.words(),
-  subtitle: () => faker.lorem.sentence(),
   ...fakeTimestampFields,
 });

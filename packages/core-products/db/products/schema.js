@@ -7,11 +7,6 @@ export const ProductTypes = {
   ConfigurableProduct: 'CONFIGURABLE_PRODUCT',
 };
 
-export const ProductVariationType = {
-  COLOR: 'COLOR',
-  TEXT: 'TEXT',
-};
-
 export const ProductStatus = {
   DRAFT: null,
   ACTIVE: 'ACTIVE',
@@ -94,24 +89,6 @@ Collections.ProductMedia.attachSchema(new SimpleSchema({
 
 Collections.ProductMediaTexts.attachSchema(new SimpleSchema({
   productMediaId: { type: String, required: true, index: true },
-  locale: { type: String, index: true },
-  title: String,
-  subtitle: String,
-  ...Schemas.timestampFields,
-}, { requiredByDefault: false }));
-
-Collections.ProductVariations.attachSchema(new SimpleSchema({
-  productId: { type: String, required: true, index: true },
-  key: String,
-  type: String,
-  options: Array,
-  'options.$': String,
-  ...Schemas.timestampFields,
-}, { requiredByDefault: false }));
-
-Collections.ProductVariationTexts.attachSchema(new SimpleSchema({
-  productVariationId: { type: String, required: true, index: true },
-  productVariationOptionValue: String,
   locale: { type: String, index: true },
   title: String,
   subtitle: String,
