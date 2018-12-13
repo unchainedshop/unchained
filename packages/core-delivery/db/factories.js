@@ -4,7 +4,7 @@ import { DeliveryProviders } from './collections';
 import { DeliveryProviderType } from './schema';
 
 Factory.define('deliveryProvider', DeliveryProviders, {
-  adapterKey: () => 'ch.freezyboy.email-delegation',
+  adapterKey: () => 'shop.unchained.send-mail',
   type: () => DeliveryProviderType.SHIPPING,
   configuration: () => [],
   ...fakeTimestampFields,

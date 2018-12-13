@@ -138,7 +138,7 @@ export default () => {
       // Add a product
       logger.log('unchained:platform -> fixtures: log');
       const logEntry = Factory.create('log', {
-        userId: faker.random.arrayElement(users),
+        meta: { userId: faker.random.arrayElement(users) },
       });
       return logEntry._id;
     });
@@ -154,6 +154,32 @@ export default () => {
       return product._id;
     });
 
+    const filters = Array.from(Array(1)).map(() => {
+      logger.log('unchained:platform -> fixtures: -> filter');
+      const addTranslation = (filterId, filterOptionValue) => {
+        faker.locale = 'de';
+        logger.log(`unchained:platform -> fixtures: --> filterText ${faker.locale}`);
+        Factory.create('filterText', {
+          filterId,
+          locale: faker.locale,
+          filterOptionValue,
+        });
+        faker.locale = 'en';
+        logger.log(`unchained:platform -> fixtures: --> filterText ${faker.locale}`);
+        Factory.create('filterText', {
+          filterId,
+          locale: faker.locale,
+          filterOptionValue,
+        });
+      };
+      const filter = Factory.create('filter');
+      addTranslation(filter._id);
+      filter.options.forEach((filterOptionValue) => {
+        addTranslation(filter._id, filterOptionValue);
+      });
+      return filter._id;
+    });
+
     const assortments = Array.from(Array(3)).map(() => {
       // Add a product
       logger.log('unchained:platform -> fixtures: assortments');
@@ -164,8 +190,13 @@ export default () => {
       Array.from(Array(5)).forEach(() => {
         Factory.create('assortmentProduct', {
           assortmentId: assortment._id,
-          productId: faker.random.arrayElement(simpleProducts),
+          productId: faker.random.arrayElement(simpleProducts.concat[configurableProducts]),
         });
+      });
+
+      Factory.create('assortmentFilter', {
+        assortmentId: assortment._id,
+        filterId: faker.random.arrayElement(filters),
       });
 
       return assortment._id;
@@ -215,6 +246,7 @@ export default () => {
       countries,
       simpleProducts,
       configurableProducts,
+      filters,
       orders,
       currencies,
       paymentProviders,
