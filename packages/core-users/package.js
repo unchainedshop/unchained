@@ -1,7 +1,7 @@
 /* globals Package */
 Package.describe({
   name: 'unchained:core-users',
-  version: '0.17.0',
+  version: '0.18.0',
   summary: 'Unchained Engine Core: Users',
   git: 'https://github.com/unchainedshop/unchained',
   documentation: 'README.md',
@@ -16,10 +16,10 @@ Package.onUse((api) => {
   api.use('dburles:collection-helpers@1.1.0');
   api.use('ostrio:files@1.9.11');
   api.use('percolate:migrations@1.0.2');
-  api.use('unchained:utils@0.17.0');
-  api.use('unchained:core-logger@0.17.0');
-  api.use('unchained:core-languages@0.17.0');
-  api.use('unchained:core-countries@0.17.0');
+  api.use('unchained:utils@0.18.0');
+  api.use('unchained:core-logger@0.18.0');
+  api.use('unchained:core-languages@0.18.0');
+  api.use('unchained:core-countries@0.18.0');
 
   api.mainModule('users.js', 'server');
 });
