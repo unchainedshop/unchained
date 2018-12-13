@@ -8,11 +8,10 @@ import { findLocalizedText } from 'meteor/unchained:core';
 import { objectInvert, slugify } from 'meteor/unchained:utils';
 import { Locale } from 'locale';
 import crypto from 'crypto';
-import {
-  Products, ProductMedia, Media, ProductTexts,
-  ProductMediaTexts,
-} from './collections';
+import { Products, ProductTexts } from './collections';
 import { ProductVariations } from '../product-variations/collections';
+import { ProductMedia, Media } from '../product-media/collections';
+
 import { ProductStatus, ProductTypes } from './schema';
 
 Products.createProduct = ({
@@ -304,39 +303,10 @@ Products.helpers({
   },
 });
 
-ProductMedia.helpers({
-  upsertLocalizedText({ locale, ...rest }) {
-    const localizedData = { locale, ...rest };
-    ProductMediaTexts.upsert({
-      productMediaId: this._id,
-      locale,
-    }, {
-      $set: {
-        updated: new Date(),
-        ...localizedData,
-      },
-    }, { bypassCollection2: true });
-    return ProductMediaTexts.findOne({ productMediaId: this._id, locale });
-  },
-  getLocalizedTexts(locale) {
-    const parsedLocale = new Locale(locale);
-    return ProductMedia.getLocalizedTexts(this._id, parsedLocale);
-  },
-  file() {
-    const media = Media.findOne({ _id: this.mediaId });
-    return media;
-  },
-});
-
 Products.getLocalizedTexts = (
   productId,
   locale,
 ) => findLocalizedText(ProductTexts, { productId }, locale);
-
-ProductMedia.getLocalizedTexts = (
-  productMediaId,
-  locale,
-) => findLocalizedText(ProductMediaTexts, { productMediaId }, locale);
 
 ProductTexts.getUnusedSlug = (strValue, scope, isAlreadySlugified) => {
   const slug = isAlreadySlugified ? strValue : `${slugify(strValue)}`;
@@ -344,13 +314,4 @@ ProductTexts.getUnusedSlug = (strValue, scope, isAlreadySlugified) => {
     return ProductTexts.getUnusedSlug(`${slug}-`, scope, true);
   }
   return slug;
-};
-
-ProductMedia.getNewSortKey = (productId) => {
-  const lastProductMedia = ProductMedia.findOne({
-    productId,
-  }, {
-    sort: { sortKey: 1 },
-  }) || { sortKey: 0 };
-  return lastProductMedia.sortKey + 1;
 };

@@ -1,6 +1,6 @@
 import SimpleSchema from 'simpl-schema';
 import { Schemas } from 'meteor/unchained:utils';
-import * as Collections from './collections';
+import { Products, ProductTexts } from './collections';
 
 export const ProductTypes = {
   SimpleProduct: 'SIMPLE_PRODUCT',
@@ -46,7 +46,7 @@ const ProductProxySchema = new SimpleSchema({
   'assignments.$.productId': String,
 }, { requiredByDefault: false });
 
-Collections.Products.attachSchema(new SimpleSchema({
+Products.attachSchema(new SimpleSchema({
   sequence: { type: Number, required: true, index: true },
   slugs: { type: Array, index: true },
   'slugs.$': String,
@@ -64,7 +64,7 @@ Collections.Products.attachSchema(new SimpleSchema({
   ...Schemas.timestampFields,
 }, { requiredByDefault: false }));
 
-Collections.ProductTexts.attachSchema(new SimpleSchema({
+ProductTexts.attachSchema(new SimpleSchema({
   productId: { type: String, required: true, index: true },
   locale: { type: String, required: true, index: true },
   vendor: String,
@@ -74,23 +74,5 @@ Collections.ProductTexts.attachSchema(new SimpleSchema({
   description: String,
   labels: Array,
   'labels.$': String,
-  ...Schemas.timestampFields,
-}, { requiredByDefault: false }));
-
-Collections.ProductMedia.attachSchema(new SimpleSchema({
-  mediaId: { type: String, required: true, index: true },
-  productId: { type: String, required: true, index: true },
-  sortKey: { type: Number, required: true },
-  tags: { type: Array, index: true },
-  'tags.$': String,
-  meta: { type: Object, blackbox: true },
-  ...Schemas.timestampFields,
-}, { requiredByDefault: false }));
-
-Collections.ProductMediaTexts.attachSchema(new SimpleSchema({
-  productMediaId: { type: String, required: true, index: true },
-  locale: { type: String, index: true },
-  title: String,
-  subtitle: String,
   ...Schemas.timestampFields,
 }, { requiredByDefault: false }));
