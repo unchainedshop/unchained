@@ -71,6 +71,7 @@ import updateFilterTexts from './updateFilterTexts';
 import removeFilterOption from './removeFilterOption';
 import createAssortment from './createAssortment';
 import updateAssortment from './updateAssortment';
+import setBaseAssortment from './setBaseAssortment';
 import removeAssortment from './removeAssortment';
 import updateAssortmentTexts from './updateAssortmentTexts';
 import addAssortmentProduct from './addAssortmentProduct';
@@ -171,6 +172,7 @@ export default {
 
   createAssortment: acl(actions.manageAssortments)(createAssortment),
   updateAssortment: acl(actions.manageAssortments)(updateAssortment),
+  setBaseAssortment: acl(actions.manageAssortments)(setBaseAssortment),
   removeAssortment: acl(actions.manageAssortments)(removeAssortment),
   updateAssortmentTexts: acl(actions.manageAssortments)(updateAssortmentTexts),
   addAssortmentProduct: acl(actions.manageAssortments)(addAssortmentProduct),

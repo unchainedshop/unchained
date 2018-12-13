@@ -513,6 +513,7 @@ export default [/* GraphQL */`
 
     createAssortment(assortment: CreateAssortmentInput!): Assortment!
     updateAssortment(assortment: UpdateAssortmentInput!, assortmentId: ID!): Assortment!
+    setBaseAssortment(assortmentId: ID!): Assortment!
     removeAssortment(assortmentId: ID!): Assortment!
 
     """

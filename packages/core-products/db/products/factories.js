@@ -5,7 +5,7 @@ import { ProductTypes, ProductStatus } from './schema';
 import { Products, ProductTexts } from './collections';
 
 Factory.define('simpleProduct', Products, {
-  status: () => faker.random.arrayElement(Object.values(ProductStatus)),
+  status: () => faker.random.arrayElement([ProductStatus.ACTIVE, ProductStatus.DRAFT]),
   type: () => ProductTypes.SimpleProduct,
   sequence: () => faker.random.number(),
   authorId: () => Factory.get('user'),
