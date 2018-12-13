@@ -33,4 +33,5 @@ export default (role, actions) => {
   role.allow(actions.updateOrderDelivery, () => true);
   role.allow(actions.viewLogs, () => true);
   role.allow(actions.viewUserRoles, () => true);
+  role.allow(actions.manageProductReviews, () => true);
 };

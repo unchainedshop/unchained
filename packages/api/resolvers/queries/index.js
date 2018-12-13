@@ -35,6 +35,8 @@ import translatedAssortmentTexts from './translatedAssortmentTexts';
 import translatedFilterTexts from './translatedFilterTexts';
 import logs from './logs';
 import shopInfo from './shopInfo';
+import productReview from './productReview';
+import productReviews from './productReviews';
 
 export default {
   me,
@@ -71,5 +73,6 @@ export default {
   logs: acl(actions.viewLogs)(logs),
   translatedAssortmentTexts: acl(actions.manageAssortments)(translatedAssortmentTexts),
   translatedFilterTexts: acl(actions.manageFilters)(translatedFilterTexts),
-
+  productReview: acl(actions.manageProductReviews)(productReview),
+  productReviews: acl(actions.manageProductReviews)(productReviews),
 };

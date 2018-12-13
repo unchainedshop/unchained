@@ -50,6 +50,7 @@ export const actions = [
   'manageWarehousingProviders',
   'manageAssortments',
   'manageFilters',
+  'manageProductReviews',
   'updateCart',
   'captureOrder',
   'checkoutCart',

@@ -36,6 +36,7 @@ export default (role, actions) => {
   role.allow(actions.markOrderPaid, () => false);
   role.allow(actions.viewLogs, () => false);
   role.allow(actions.viewUserRoles, () => false);
+  role.allow(actions.manageProductReviews, () => false);
 
   // only allow if otp is provided
   role.allow(actions.viewOrder, (root, { orderId, otp }) => (Orders.find({

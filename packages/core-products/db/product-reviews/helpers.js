@@ -19,7 +19,7 @@ ProductReviews.helpers({
   upvoteCount() {
     return this.userIdsThatVoted({ type: ProductReviewVoteTypes.UPVOTE }).length;
   },
-  downVoteCount() {
+  downvoteCount() {
     return this.userIdsThatVoted({ type: ProductReviewVoteTypes.DOWNVOTE }).length;
   },
   addVote({ userId, type = ProductReviewVoteTypes.UPVOTE } = {}) {

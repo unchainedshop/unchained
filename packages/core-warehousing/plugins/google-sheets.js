@@ -15,6 +15,7 @@ const googleCache = new NodeCache((NODE_ENV === 'production')
   : { stdTTL: 30, checkperiod: 5 }); // 7 seconds lag in development
 
 async function downloadSpreadsheet() {
+  if (!GOOGLE_SHEETS_PRIVATE_KEY_DATA) return null;
   try {
     // https://docs.google.com/spreadsheets/d/1lVplebvDHgPfPZnnp7NCM60iyu3WARGE1JZh6Xx5uvc/edit?usp=sharing
     const gs = new Sheets('1lVplebvDHgPfPZnnp7NCM60iyu3WARGE1JZh6Xx5uvc');
