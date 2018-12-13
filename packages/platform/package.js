@@ -18,7 +18,6 @@ Package.onUse((api) => {
   api.use('aldeed:schema-index@3.0.0');
   api.use('dburles:factory@1.1.0');
   api.use('unchained:core@0.17.0');
-  api.use('unchained:core-avatars@0.17.0');
   api.use('unchained:core-currencies@0.17.0');
   api.use('unchained:core-countries@0.17.0');
   api.use('unchained:core-delivery@0.17.0');

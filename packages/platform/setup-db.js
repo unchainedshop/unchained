@@ -8,7 +8,6 @@ import configureProducts from 'meteor/unchained:core-products';
 import configureCurrencies from 'meteor/unchained:core-currencies';
 import configureCountries from 'meteor/unchained:core-countries';
 import configureLanguages from 'meteor/unchained:core-languages';
-import configureAvatars from 'meteor/unchained:core-avatars';
 import configureDocuments from 'meteor/unchained:core-documents';
 import configureOrders from 'meteor/unchained:core-orders';
 import configureAssortments from 'meteor/unchained:core-assortments';
@@ -30,7 +29,6 @@ Meteor.startup(() => {
   configureCurrencies();
   configureCountries();
   configureLanguages();
-  configureAvatars();
   configureDocuments();
   configureUsers();
   configureDelivery();

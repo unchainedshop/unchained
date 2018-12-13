@@ -1,9 +1,13 @@
 import { fakeTimestampFields, fakeAddress } from 'meteor/unchained:utils';
-import { createFakeAvatar } from 'meteor/unchained:core-avatars';
 import { Factory } from 'meteor/dburles:factory';
 import { Accounts } from 'meteor/accounts-base';
 import faker from 'faker';
-import { Users } from './collections';
+import { Avatars, Users } from './collections';
+
+const createFakeAvatar = () => Meteor // eslint-disable-line
+  .wrapAsync(Avatars.load, Avatars)(faker.internet.avatar(), {
+    fileName: faker.system.fileName(),
+  });
 
 Factory.define('user', Users, {
   username: () => faker.internet.userName(),

@@ -190,7 +190,7 @@ export default () => {
       Array.from(Array(5)).forEach(() => {
         Factory.create('assortmentProduct', {
           assortmentId: assortment._id,
-          productId: faker.random.arrayElement(simpleProducts.concat[configurableProducts]),
+          productId: faker.random.arrayElement(simpleProducts),
         });
       });
 

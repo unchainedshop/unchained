@@ -19,7 +19,6 @@ Package.onUse((api) => {
   api.use('check');
   api.use('unchained:core@0.17.0');
   api.use('unchained:roles@0.17.0');
-  api.use('unchained:core-avatars@0.17.0');
   api.use('unchained:core-currencies@0.17.0');
   api.use('unchained:core-countries@0.17.0');
   api.use('unchained:core-delivery@0.17.0');
