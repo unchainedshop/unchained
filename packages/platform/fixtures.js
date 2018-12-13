@@ -70,7 +70,7 @@ export default () => {
     });
 
     try {
-      logger.log('fixtures: user admin@localhost:password');
+      logger.log('fixtures: user admin@localhost');
       const admin = Factory.create('user', {
         username: 'admin',
         roles: ['admin'],

@@ -8,7 +8,7 @@ export const ProductVariationType = { // eslint-disable-line
 };
 
 ProductVariations.attachSchema(new SimpleSchema({
-  productId: { type: String, required: true, index: true },
+  productId: { type: SimpleSchema.RegEx.Id, required: true, index: true },
   key: String,
   type: String,
   options: Array,
@@ -17,7 +17,7 @@ ProductVariations.attachSchema(new SimpleSchema({
 }, { requiredByDefault: false }));
 
 ProductVariationTexts.attachSchema(new SimpleSchema({
-  productVariationId: { type: String, required: true, index: true },
+  productVariationId: { type: SimpleSchema.RegEx.Id, required: true, index: true },
   productVariationOptionValue: String,
   locale: { type: String, index: true },
   title: String,

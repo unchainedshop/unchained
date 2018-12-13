@@ -43,7 +43,7 @@ const ProductProxySchema = new SimpleSchema({
   assignments: Array,
   'assignments.$': Object,
   'assignments.$.vector': { type: Object, blackbox: true },
-  'assignments.$.productId': String,
+  'assignments.$.productId': SimpleSchema.RegEx.Id,
 }, { requiredByDefault: false });
 
 Products.attachSchema(new SimpleSchema({
@@ -52,7 +52,7 @@ Products.attachSchema(new SimpleSchema({
   'slugs.$': String,
   type: { type: String, required: true },
   status: { type: String, index: true },
-  authorId: { type: String, required: true },
+  authorId: { type: SimpleSchema.RegEx.Id, required: true },
   published: Date,
   tags: { type: Array, index: true },
   'tags.$': String,
@@ -65,7 +65,7 @@ Products.attachSchema(new SimpleSchema({
 }, { requiredByDefault: false }));
 
 ProductTexts.attachSchema(new SimpleSchema({
-  productId: { type: String, required: true, index: true },
+  productId: { type: SimpleSchema.RegEx.Id, required: true, index: true },
   locale: { type: String, required: true, index: true },
   vendor: String,
   title: String,

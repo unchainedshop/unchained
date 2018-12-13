@@ -1,5 +1,4 @@
 import { Meteor } from 'meteor/meteor';
-import { createFixtures } from 'meteor/unchained:core';
 import configureUsers, { Users } from 'meteor/unchained:core-users';
 import configureLogger from 'meteor/unchained:core-logger';
 import configureDelivery from 'meteor/unchained:core-delivery';
@@ -14,6 +13,7 @@ import configureDocuments from 'meteor/unchained:core-documents';
 import configureOrders from 'meteor/unchained:core-orders';
 import configureAssortments from 'meteor/unchained:core-assortments';
 import configureFilters from 'meteor/unchained:core-filters';
+import createFixtures from './fixtures';
 
 const {
   FIXTURES,

@@ -11,7 +11,6 @@ import crypto from 'crypto';
 import { Products, ProductTexts } from './collections';
 import { ProductVariations } from '../product-variations/collections';
 import { ProductMedia, Media } from '../product-media/collections';
-
 import { ProductStatus, ProductTypes } from './schema';
 
 Products.createProduct = ({

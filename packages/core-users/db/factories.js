@@ -7,13 +7,13 @@ import { Users } from './collections';
 
 Factory.define('user', Users, {
   username: () => faker.internet.userName(),
-  password: () => faker.internet.password(),
   emails: () => [{ address: faker.internet.email(), verified: faker.random.boolean() }],
   profile: () => ({
     displayName: `${faker.name.firstName()} ${faker.name.lastName()}`,
     birthday: faker.date.past(65, '2003-08-02'),
     phoneMobile: faker.phone.phoneNumber(),
     gender: faker.random.arrayElement([null, 'f', 'm', 'c']),
+    address: fakeAddress,
   }),
   guest: faker.random.boolean(),
   tags: [faker.random.arrayElement(['studio', 'peka', 'supplier'])],

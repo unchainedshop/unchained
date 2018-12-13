@@ -3,8 +3,8 @@ import { Schemas } from 'meteor/unchained:utils';
 import { ProductMedia, ProductMediaTexts } from './collections';
 
 ProductMedia.attachSchema(new SimpleSchema({
-  mediaId: { type: String, required: true, index: true },
-  productId: { type: String, required: true, index: true },
+  mediaId: { type: SimpleSchema.RegEx.Id, required: true, index: true },
+  productId: { type: SimpleSchema.RegEx.Id, required: true, index: true },
   sortKey: { type: Number, required: true },
   tags: { type: Array, index: true },
   'tags.$': String,
@@ -13,7 +13,7 @@ ProductMedia.attachSchema(new SimpleSchema({
 }, { requiredByDefault: false }));
 
 ProductMediaTexts.attachSchema(new SimpleSchema({
-  productMediaId: { type: String, required: true, index: true },
+  productMediaId: { type: SimpleSchema.RegEx.Id, required: true, index: true },
   locale: { type: String, index: true },
   title: String,
   subtitle: String,
