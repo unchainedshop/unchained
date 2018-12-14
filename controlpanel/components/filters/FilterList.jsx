@@ -15,7 +15,7 @@ const FilterList = ({
   <Table celled>
     <Table.Header>
       <Table.Row>
-        <Table.HeaderCell colSpan="3">
+        <Table.HeaderCell colSpan="4">
           <Link href="/filters/new">
             <Button
               floated="right"
@@ -87,7 +87,7 @@ const FilterList = ({
     )}
     <Table.Footer fullWidth>
       <Table.Row>
-        <Table.HeaderCell colSpan="3">
+        <Table.HeaderCell colSpan="4">
           <Link href="/filters/new">
             <Button
               floated="right"

@@ -171,7 +171,7 @@ export default compose(
     'texts.$.title': {
       type: String,
       optional: false,
-      label: 'Titel',
+      label: 'Title',
     },
     'texts.$.subtitle': {
       type: String,

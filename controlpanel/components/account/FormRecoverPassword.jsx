@@ -15,7 +15,7 @@ const FormRecoverPassword = formProps => (
   <AutoForm {...formProps}>
     <AutoField name="email" />
     <ErrorsField />
-    <SubmitField value="Passwort zurücksetzen" className="primary" />
+    <SubmitField value="Password zurücksetzen" className="primary" />
   </AutoForm>
 );
 

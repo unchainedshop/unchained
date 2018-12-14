@@ -153,12 +153,12 @@ export default compose(
     'texts.$.title': {
       type: String,
       optional: false,
-      label: 'Titel',
+      label: 'Title',
     },
     'texts.$.subtitle': {
       type: String,
       optional: true,
-      label: 'Untertitel',
+      label: 'Subtitle',
     },
     'texts.$.description': {
       type: String,

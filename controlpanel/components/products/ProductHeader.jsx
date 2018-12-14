@@ -68,7 +68,7 @@ const ProductHeader = ({ loading, productId, product = {} }) => [
             <List.Item>
               <List.Icon name="add to calendar" />
               <List.Content>
-                  Erstellt:
+                  Created:
                 {' '}
                 {product.created
                   ? format(product.created, 'Pp')
@@ -78,7 +78,7 @@ const ProductHeader = ({ loading, productId, product = {} }) => [
             <List.Item>
               <List.Icon name="refresh" />
               <List.Content>
-                  Aktualisiert:
+                  Updated:
                 {' '}
                 {product.updated
                   ? format(product.updated, 'Pp')
@@ -88,7 +88,7 @@ const ProductHeader = ({ loading, productId, product = {} }) => [
             <List.Item>
               <List.Icon name="eye" />
               <List.Content>
-                  Veröffentlicht:
+                  Published:
                 {' '}
                 {product.published
                   ? format(product.published, 'Pp')

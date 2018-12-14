@@ -26,16 +26,16 @@ const UsersEdit = ({
           <Grid.Column width={3}>
             <Menu fluid vertical tabular>
               <Menu.Item active={!router.query.tab} name="" onClick={changeTab}>
-                Profil
+                Profile
               </Menu.Item>
               <Menu.Item active={router.query.tab === 'account'} name="account" onClick={changeTab}>
-                Konto
+                Account
               </Menu.Item>
               <Menu.Item active={router.query.tab === 'orders'} name="orders" onClick={changeTab}>
-                Bestellungen
+                Orders
               </Menu.Item>
               <Menu.Item active={router.query.tab === 'log'} name="log" onClick={changeTab}>
-                Log
+                Logs
               </Menu.Item>
             </Menu>
           </Grid.Column>

@@ -167,7 +167,7 @@ export default compose(
     displayName: {
       type: String,
       optional: false,
-      label: 'Anzeigename',
+      label: 'Display name',
     },
     birthday: {
       type: Date,
@@ -182,7 +182,7 @@ export default compose(
     tags: {
       type: Array,
       optional: true,
-      label: 'Tags (Kundensegmentierung)',
+      label: 'Tags (segmentation)',
     },
     'tags.$': String,
     gender: {
