@@ -34,7 +34,7 @@ const App = ({
       {loading && (
         <Dimmer active inverted>
           <Loader size="large" inverted>
-            Laden
+            Loading
           </Loader>
         </Dimmer>
       ) }
@@ -42,15 +42,15 @@ const App = ({
     </Segment>
     <Segment basic textAlign="center">
       Made with
-      {' '}
+      &nbsp;
       <span role="img" aria-label="love">
         ❤️
       </span>
-      {' '}
-by the
-      {' '}
+      &nbsp;
+      by the
+      &nbsp;
       <a href="https://unchained.shop">
-Unchained Team
+        Unchained Team
       </a>
     </Segment>
     <ToastContainer
