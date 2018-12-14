@@ -53,7 +53,6 @@ export const actions = [
   'manageWarehousingProviders',
   'manageAssortments',
   'manageFilters',
-  'manageProductReviews',
   'updateCart',
   'captureOrder',
   'checkoutCart',
@@ -66,7 +65,9 @@ export const actions = [
   'viewAssortment',
   'viewFilter',
   'viewFilters',
-
+  'reviewProduct',
+  'updateProductReview',
+  'manageProductReviews',
 ].reduce((oldValue, actionValue) => {
   const newValue = oldValue;
   newValue[actionValue] = actionValue;

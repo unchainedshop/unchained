@@ -208,6 +208,13 @@ export default [/* GraphQL */`
     value: String!
   }
 
+  input ProductReviewInput {
+    rating: Int
+    title: String
+    review: String
+    meta: JSON
+  }
+
   type Mutation {
     """
     Login the user with a facebook access token
@@ -571,5 +578,20 @@ export default [/* GraphQL */`
     removeFilterOption(filterId: ID!, filterOptionValue: String!): Filter!
     updateFilterTexts(filterId: ID!, filterOptionValue: String, texts: [UpdateFilterTextInput!]!): [FilterTexts!]!
     createFilterOption(filterId: ID!, option: CreateFilterOptionInput!): Filter!
+
+    """
+    Add a new ProductReview
+    """
+    createProductReview(productId: ID!, productReview: ProductReviewInput!): ProductReview!
+
+    """
+    Update an existing ProductReview. The logic to allow/dissallow editing is controlled by product plugin logic
+    """
+    updateProductReview(productReviewId: ID!, productReview: ProductReviewInput!): ProductReview!
+
+    """
+    Remove an existing ProductReview. The logic to allow/dissallow removal is controlled by product plugin logic
+    """
+    removeProductReview(productReviewId: ID!): ProductReview!
   }
 `];

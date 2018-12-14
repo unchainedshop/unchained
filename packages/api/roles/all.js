@@ -38,6 +38,8 @@ export default (role, actions) => {
   role.allow(actions.viewUserRoles, () => false);
   role.allow(actions.viewUserOrders, () => false);
   role.allow(actions.viewUserPrivateInfos, () => false);
+  role.allow(actions.reviewProduct, () => false);
+  role.allow(actions.updateProductReview, () => false);
   role.allow(actions.manageProductReviews, () => false);
 
   // only allow if otp is provided

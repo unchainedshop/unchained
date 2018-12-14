@@ -83,6 +83,9 @@ import reorderAssortmentLinks from './reorderAssortmentLinks';
 import addAssortmentFilter from './addAssortmentFilter';
 import removeAssortmentFilter from './removeAssortmentFilter';
 import reorderAssortmentFilters from './reorderAssortmentFilters';
+import createProductReview from './createProductReview';
+import updateProductReview from './updateProductReview';
+import removeProductReview from './removeProductReview';
 
 export default {
   ...Accounts,
@@ -185,4 +188,7 @@ export default {
   removeAssortmentFilter: acl(actions.manageAssortments)(removeAssortmentFilter),
   reorderAssortmentFilters: acl(actions.manageAssortments)(reorderAssortmentFilters),
 
+  createProductReview: acl(actions.reviewProduct)(createProductReview),
+  updateProductReview: acl(actions.updateProductReview)(updateProductReview),
+  removeProductReview: acl(actions.updateProductReview)(removeProductReview),
 };

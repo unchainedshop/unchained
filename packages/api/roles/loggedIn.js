@@ -1,4 +1,5 @@
 import { Orders, OrderPayments, OrderDeliveries } from 'meteor/unchained:core-orders';
+import { ProductReviews } from 'meteor/unchained:core-products';
 
 export default (role, actions) => {
   const isMyself = (root, {
@@ -29,6 +30,9 @@ export default (role, actions) => {
     return isOwnedOrder(null, { orderId }, { userId });
   };
 
+  const isOwnedProductReview = (root, { productReviewId }, { userId }) => ProductReviews
+    .findReviewById(productReviewId).userId === userId;
+
   role.allow(actions.viewUser, isMyself);
   role.allow(actions.viewUserRoles, isMyself);
   role.allow(actions.viewUserOrders, isMyself);
@@ -41,4 +45,6 @@ export default (role, actions) => {
   role.allow(actions.updateOrderDelivery, isOwnedOrderDelivery);
   role.allow(actions.checkoutCart, () => true);
   role.allow(actions.updateCart, () => true);
+  role.allow(actions.reviewProduct, () => true);
+  role.allow(actions.updateProductReview, () => isOwnedProductReview);
 };
