@@ -1,9 +1,8 @@
 import './db/factories';
 import './db/schema';
-import initHelpers from './db/helpers';
+import './db/helpers';
 
 export * from './db/collections';
 export default () => {
   // configure
-  initHelpers();
 };
