@@ -16,7 +16,7 @@ type LoginMethodResponse {
   """
   Expiration date for the token
   """
-  tokenExpires: Float!
+  tokenExpires: Date!
 
   """
   The logged in user
