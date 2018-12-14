@@ -14,6 +14,9 @@ export default roles;
 
 export const actions = [
   'viewUserRoles',
+  'viewUserOrders',
+  'viewUserPublicInfos',
+  'viewUserPrivateInfos',
   'viewLogs',
   'viewUser',
   'viewUsers',

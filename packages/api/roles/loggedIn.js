@@ -5,7 +5,12 @@ export default (role, actions) => {
     userId: foreignUserId,
   } = {}, {
     userId: ownUserId,
-  } = {}) => foreignUserId === ownUserId || !foreignUserId;
+  } = {}) => {
+    if ((root.username && root.services && root.emails) && !foreignUserId) {
+      return root._id === ownUserId;
+    }
+    return foreignUserId === ownUserId || !foreignUserId;
+  };
 
   const isOwnedOrder = (root, { orderId }, { userId }) => Orders.find({
     _id: orderId,
@@ -26,6 +31,8 @@ export default (role, actions) => {
 
   role.allow(actions.viewUser, isMyself);
   role.allow(actions.viewUserRoles, isMyself);
+  role.allow(actions.viewUserOrders, isMyself);
+  role.allow(actions.viewUserPrivateInfos, isMyself);
   role.allow(actions.updateUser, isMyself);
   role.allow(actions.viewOrder, isOwnedOrder);
   role.allow(actions.captureOrder, isOwnedOrder);

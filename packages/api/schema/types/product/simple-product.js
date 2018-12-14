@@ -24,5 +24,6 @@ type SimpleProduct implements Product {
   allowOrderingIfNoStock: Boolean
   baseUnit: String
   salesUnit: String
+  reviews(limit: Int, offset: Int): [ProductReview!]!
 }
 `];

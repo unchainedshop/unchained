@@ -32,24 +32,24 @@ Logs.helpers({
 });
 
 Users.helpers({
-  cart({ countryCode } = {}) {
+  cart({ countryContext } = {}) {
     const openOrders = Orders.find({
       userId: this._id,
       status: OrderStatus.OPEN,
-      countryCode: countryCode || this.lastLogin.country,
+      countryCode: countryContext || this.lastLogin.country,
     });
     if (openOrders.count() > 0) {
       return openOrders.fetch()[0];
     }
     return null;
   },
-  initCart({ countryCode }) {
-    return this.cart({ countryCode }) || Orders.createOrder({
+  initCart({ countryContext }) {
+    return this.cart({ countryContext }) || Orders.createOrder({
       userId: this._id,
       currency: Countries.resolveDefaultCurrencyCode({
-        isoCode: countryCode,
+        isoCode: countryContext,
       }),
-      countryCode,
+      countryCode: countryContext,
     });
   },
   orders() {

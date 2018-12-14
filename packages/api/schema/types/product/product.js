@@ -103,6 +103,7 @@ interface Product {
   published: Date
   texts: ProductTexts
   media: [ProductMedia!]
+  reviews: [ProductReview!]!
 }
 
 """

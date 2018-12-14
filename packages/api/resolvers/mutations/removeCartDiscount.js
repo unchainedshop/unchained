@@ -6,6 +6,6 @@ export default function (root, { discountId }, { userId, countryContext }) {
   log(`mutation removeCartDiscount ${discountId}`, { userId });
   const user = Users.findOne({ _id: userId });
   if (!user) throw new UserNotFoundError({ userId });
-  const cart = user.initCart({ countryCode: countryContext });
+  const cart = user.initCart({ countryContext });
   return cart.removeDiscount({ discountId });
 }

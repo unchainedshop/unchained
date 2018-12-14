@@ -1,6 +1,6 @@
 import { Currencies } from 'meteor/unchained:core-currencies';
 import { actions } from '../../roles';
-import { checkAction } from '../acl';
+import { checkTypeResolver } from '../acl';
 
 export default {
   status(obj) {
@@ -12,8 +12,6 @@ export default {
   currency(obj) {
     return Currencies.findOne({ isoCode: obj.currency });
   },
-  logs(obj, params, context) {
-    checkAction(actions.viewLogs, context.userId);
-    return obj.logs(params);
-  },
+
+  logs: checkTypeResolver(actions.viewLogs, 'logs'),
 };

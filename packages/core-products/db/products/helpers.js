@@ -11,6 +11,8 @@ import crypto from 'crypto';
 import { Products, ProductTexts } from './collections';
 import { ProductVariations } from '../product-variations/collections';
 import { ProductMedia, Media } from '../product-media/collections';
+import { ProductReviews } from '../product-reviews/collections';
+
 import { ProductStatus, ProductTypes } from './schema';
 
 Products.createProduct = ({
@@ -299,6 +301,9 @@ Products.helpers({
         isTaxable: false,
         isNetPrice: false,
       });
+  },
+  reviews({ limit, offset }) {
+    return ProductReviews.findReviews({ productId: this._id }, { skip: offset, limit });
   },
 });
 

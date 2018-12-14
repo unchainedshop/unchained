@@ -64,6 +64,14 @@ const checkResolver = (action, userOptions) => {
   return (fn, name) => wrapFunction(fn, name, action, userOptions);
 };
 
+const checkTypeResolver = (action, key) => function checkTypeResolver(obj, params, context) {
+  checkAction(action, context.userId, [obj, params, context]);
+  if (typeof obj[key] === 'function') {
+    return obj[key](params, context);
+  }
+  return obj[key];
+};
+
 const resolverDecorator = function resolverDecorator(action, userOptions) {
   ensureActionExists(action, userOptions);
   return function decorator(target, key, descriptor) {
@@ -91,6 +99,7 @@ export default resolverDecorator;
 export {
   resolverDecorator,
   checkResolver,
+  checkTypeResolver,
   checkPermission,
   checkAction,
 };
