@@ -23,8 +23,7 @@ Factory.define('simpleProduct', Products, {
   }),
   warehousing: () => ({
     sku: faker.hacker.abbreviation(),
-    maxAllowedQuantityPerOrder: faker.finance.amount(0, 4, 0),
-    allowOrderingIfNoStock: faker.random.boolean(),
+    baseUnit: 'ST',
   }),
   supply: () => ({
     weightInGram: faker.random.number(),

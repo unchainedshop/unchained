@@ -28,8 +28,6 @@ const ProductCommerceSchema = new SimpleSchema({
 const ProductWarehousingSchema = new SimpleSchema({
   baseUnit: String,
   sku: String,
-  maxAllowedQuantityPerOrder: Number,
-  allowOrderingIfNoStock: Boolean,
 }, { requiredByDefault: false });
 
 const ProductSupplySchema = new SimpleSchema({

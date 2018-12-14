@@ -129,8 +129,7 @@ export default [/* GraphQL */`
 
   input UpdateProductWarehousingInput {
     sku: String
-    maxAllowedQuantityPerOrder: Int
-    allowOrderingIfNoStock: Boolean
+    baseUnit: String
   }
 
   input ReorderProductMediaInput {

@@ -20,8 +20,6 @@ type SimpleProduct implements Product {
   siblings(assortmentId: ID): [Product!]!
   dimensions: Dimensions
   sku: String
-  maxAllowedQuantityPerOrder: Int
-  allowOrderingIfNoStock: Boolean
   baseUnit: String
   salesUnit: String
   reviews(limit: Int, offset: Int): [ProductReview!]!
