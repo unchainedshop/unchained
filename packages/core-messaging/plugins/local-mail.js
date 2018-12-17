@@ -30,6 +30,10 @@ class LocalMail extends MessagingAdapter {
   }) {
     const templateResolver = this.resolver(template);
     const renderer = templateResolver(meta, this.context);
+    if (!renderer) {
+      this.log(`Skip ${template}`, { level: 'verbose' });
+      return true;
+    }
     const message = {
       from: renderer.from(from),
       to: renderer.to(to),
