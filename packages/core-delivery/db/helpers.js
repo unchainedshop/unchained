@@ -62,7 +62,7 @@ DeliveryProviders.removeProvider = ({ _id }) => {
   return DeliveryProviders.findOne({ _id });
 };
 
-DeliveryProviders.findProviderById = ({ _id }, ...options) => DeliveryProviders
+DeliveryProviders.findProviderById = (_id, ...options) => DeliveryProviders
   .findOne({ _id }, ...options);
 
 DeliveryProviders.findProviders = ({ type } = {}, ...options) => DeliveryProviders
