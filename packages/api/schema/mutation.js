@@ -593,5 +593,10 @@ export default [/* GraphQL */`
     Remove an existing ProductReview. The logic to allow/dissallow removal is controlled by product plugin logic
     """
     removeProductReview(productReviewId: ID!): ProductReview!
+
+    """
+    Add a vote to a ProductReview
+    """
+    addProductReviewVote(productReviewId: ID!, type: ProductReviewVoteType!, meta: JSON): ProductReviewVote!
   }
 `];

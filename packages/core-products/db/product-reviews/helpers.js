@@ -22,7 +22,7 @@ ProductReviews.helpers({
   downvoteCount() {
     return this.userIdsThatVoted({ type: ProductReviewVoteTypes.DOWNVOTE }).length;
   },
-  addVote({ userId, type = ProductReviewVoteTypes.UPVOTE } = {}) {
+  addVote({ userId, type = ProductReviewVoteTypes.UPVOTE, meta } = {}) {
     if (!this.userIdsThatVoted({ type }).includes(userId)) {
       if (type === ProductReviewVoteTypes.UPVOTE) {
         // if this is an upvote, remove the downvote first
@@ -32,7 +32,9 @@ ProductReviews.helpers({
         // if this is a downvote, remove the upvote first
         ProductReviews.removeVote({ _id: this._id, userId, type: ProductReviewVoteTypes.UPVOTE });
       }
-      ProductReviews.addVote({ _id: this._id, userId, type });
+      ProductReviews.addVote({
+        _id: this._id, userId, type, meta,
+      });
     }
   },
   removeVote({ userId, type = ProductReviewVoteTypes.UPVOTE } = {}) {
@@ -69,12 +71,14 @@ ProductReviews.updateReview = function updateReview({
 
 ProductReviews.addVote = function addVote({
   _id,
-  userId,
   type,
+  ...vote
 }) {
   this.update({ _id, deleted: null }, {
     $push: {
-      votes: { timestamp: new Date(), userId, type },
+      votes: {
+        timestamp: new Date(), type, ...vote,
+      },
     },
   });
   return this.findOne({ _id, deleted: null });

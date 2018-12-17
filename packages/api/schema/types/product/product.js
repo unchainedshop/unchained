@@ -148,7 +148,21 @@ type ProductReview {
   title: String
   review: String
   meta: JSON
-  upvoteCount: Int
-  downvoteCount: Int
+  voteCount(type: ProductReviewVoteType): Int
+  ownVotes: [ProductReviewVote!]!
 }
+
+type ProductReviewVote {
+  _id: ID!
+  timestamp: Date!
+  type: ProductReviewVoteType!
+  meta: JSON
+}
+
+enum ProductReviewVoteType {
+  UPVOTE
+  DOWNVOTE
+  REPORT
+}
+
 `];
