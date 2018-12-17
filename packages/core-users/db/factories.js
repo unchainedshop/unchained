@@ -1,19 +1,23 @@
 import { fakeTimestampFields, fakeAddress } from 'meteor/unchained:utils';
-import { createFakeAvatar } from 'meteor/unchained:core-avatars';
 import { Factory } from 'meteor/dburles:factory';
 import { Accounts } from 'meteor/accounts-base';
 import faker from 'faker';
-import { Users } from './collections';
+import { Avatars, Users } from './collections';
+
+const createFakeAvatar = () => Meteor // eslint-disable-line
+  .wrapAsync(Avatars.load, Avatars)(faker.internet.avatar(), {
+    fileName: faker.system.fileName(),
+  });
 
 Factory.define('user', Users, {
   username: () => faker.internet.userName(),
-  password: () => faker.internet.password(),
   emails: () => [{ address: faker.internet.email(), verified: faker.random.boolean() }],
   profile: () => ({
     displayName: `${faker.name.firstName()} ${faker.name.lastName()}`,
     birthday: faker.date.past(65, '2003-08-02'),
     phoneMobile: faker.phone.phoneNumber(),
     gender: faker.random.arrayElement([null, 'f', 'm', 'c']),
+    address: fakeAddress,
   }),
   guest: faker.random.boolean(),
   tags: [faker.random.arrayElement(['studio', 'peka', 'supplier'])],

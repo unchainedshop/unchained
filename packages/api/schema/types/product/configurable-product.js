@@ -15,5 +15,6 @@ type ConfigurableProduct implements Product {
   variations: [ProductVariation!]
   products(vectors: [ProductAssignmentVectorInput!]): [Product!]
   assignments: [ProductVariationAssignment!]!
+  reviews(limit: Int, offset: Int): [ProductReview!]!
 }
 `];

@@ -103,6 +103,7 @@ interface Product {
   published: Date
   texts: ProductTexts
   media: [ProductMedia!]
+  reviews: [ProductReview!]!
 }
 
 """
@@ -134,5 +135,20 @@ type ProductVariationAssignment {
 input ProductAssignmentVectorInput {
   key: String!
   value: String!
+}
+
+type ProductReview {
+  _id: ID!
+  created: Date
+  updated: Date
+  deleted: Date
+  author: User!
+  product: Product!
+  rating: Int
+  title: String
+  review: String
+  meta: JSON
+  upvoteCount: Int
+  downvoteCount: Int
 }
 `];

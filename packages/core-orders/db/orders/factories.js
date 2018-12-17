@@ -6,8 +6,8 @@ import { OrderStatus } from './schema';
 
 Factory.define('order', Orders, {
   userId: () => Factory.get('user'),
-  ordered: () => (faker.random.boolean() ? faker.date.past() : null),
-  confirmed: () => (faker.random.boolean() ? faker.date.past() : null),
+  ordered: () => faker.date.past(),
+  confirmed: () => faker.date.past(),
   fullfilled: () => faker.date.past(),
   billingAddress: () => fakeAddress(),
   status: () => faker.random.arrayElement(OrderStatus),

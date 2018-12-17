@@ -1,11 +1,11 @@
 import { ApolloClient } from 'apollo-client';
-import { IntrospectionFragmentMatcher, InMemoryCache } from 'apollo-cache-inmemory'; // eslint-disable-line
-import { createUploadLink } from 'apollo-upload-client';
-import { setContext } from 'apollo-link-context';
+import { InMemoryCache, IntrospectionFragmentMatcher } from 'apollo-cache-inmemory';
 import { onError } from 'apollo-link-error';
+import { ApolloLink } from 'apollo-link';
 import { toast } from 'react-toastify';
 import fetch from 'isomorphic-unfetch';
 import getConfig from 'next/config';
+import { createUploadLink } from 'apollo-upload-client';
 import introspectionQueryResultData from '../schema.json';
 
 const { publicRuntimeConfig } = getConfig();
@@ -41,7 +41,9 @@ function create(initialState, headersOverride, getToken) {
       toast(networkError);
     }
   });
-  const middlewareLink = setContext(() => {
+
+  const middlewareLink = new ApolloLink((operation, forward) => {
+    // add the authorization to the headers
     const headers = {};
     if (headersOverride['accept-language']) {
       headers['accept-language'] = headersOverride['accept-language'];
@@ -50,10 +52,10 @@ function create(initialState, headersOverride, getToken) {
     if (publicRuntimeConfig.DEBUG) {
       console.warn(headers); //eslint-disable-line
     }
-    return { headers };
+    operation.setContext({ headers });
+    return forward(operation);
   });
 
-  const link = errorLink.concat(middlewareLink.concat(httpLink));
   const cache = new InMemoryCache({
     fragmentMatcher,
     dataIdFromObject: (result) => {
@@ -68,7 +70,11 @@ function create(initialState, headersOverride, getToken) {
   return new ApolloClient({
     connectToDevTools: process.browser,
     ssrMode: !process.browser, // Disables forceFetch on the server (so queries are only run once)
-    link,
+    link: ApolloLink.from([
+      errorLink,
+      middlewareLink,
+      httpLink,
+    ]),
     cache: cache.restore(initialState || {}),
   });
 }

@@ -16,7 +16,7 @@ const FormChangePassword = formProps => (
     <AutoField name="oldPassword" type="password" />
     <AutoField name="newPassword" type="password" />
     <ErrorsField />
-    <SubmitField value="Passwort ändern" className="primary" />
+    <SubmitField value="Change password" className="primary" />
   </AutoForm>
 );
 

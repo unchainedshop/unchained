@@ -71,6 +71,7 @@ import updateFilterTexts from './updateFilterTexts';
 import removeFilterOption from './removeFilterOption';
 import createAssortment from './createAssortment';
 import updateAssortment from './updateAssortment';
+import setBaseAssortment from './setBaseAssortment';
 import removeAssortment from './removeAssortment';
 import updateAssortmentTexts from './updateAssortmentTexts';
 import addAssortmentProduct from './addAssortmentProduct';
@@ -82,6 +83,9 @@ import reorderAssortmentLinks from './reorderAssortmentLinks';
 import addAssortmentFilter from './addAssortmentFilter';
 import removeAssortmentFilter from './removeAssortmentFilter';
 import reorderAssortmentFilters from './reorderAssortmentFilters';
+import createProductReview from './createProductReview';
+import updateProductReview from './updateProductReview';
+import removeProductReview from './removeProductReview';
 
 export default {
   ...Accounts,
@@ -171,6 +175,7 @@ export default {
 
   createAssortment: acl(actions.manageAssortments)(createAssortment),
   updateAssortment: acl(actions.manageAssortments)(updateAssortment),
+  setBaseAssortment: acl(actions.manageAssortments)(setBaseAssortment),
   removeAssortment: acl(actions.manageAssortments)(removeAssortment),
   updateAssortmentTexts: acl(actions.manageAssortments)(updateAssortmentTexts),
   addAssortmentProduct: acl(actions.manageAssortments)(addAssortmentProduct),
@@ -183,4 +188,7 @@ export default {
   removeAssortmentFilter: acl(actions.manageAssortments)(removeAssortmentFilter),
   reorderAssortmentFilters: acl(actions.manageAssortments)(reorderAssortmentFilters),
 
+  createProductReview: acl(actions.reviewProduct)(createProductReview),
+  updateProductReview: acl(actions.updateProductReview)(updateProductReview),
+  removeProductReview: acl(actions.updateProductReview)(removeProductReview),
 };

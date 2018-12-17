@@ -15,6 +15,7 @@ const googleCache = new NodeCache((NODE_ENV === 'production')
   : { stdTTL: 30, checkperiod: 5 }); // 7 seconds lag in development
 
 async function downloadSpreadsheet() {
+  if (!GOOGLE_SHEETS_PRIVATE_KEY_DATA) return null;
   try {
     // https://docs.google.com/spreadsheets/d/1lVplebvDHgPfPZnnp7NCM60iyu3WARGE1JZh6Xx5uvc/edit?usp=sharing
     const gs = new Sheets('1lVplebvDHgPfPZnnp7NCM60iyu3WARGE1JZh6Xx5uvc');
@@ -106,8 +107,8 @@ class GoogleSheets extends WarehousingAdapter {
 
   async getRemoteInventory(sku) {
     const rows = await this.constructor.getRows('inventory');
-    const resolvedRow = rows.reduce((result, row) => {
-      if (result) return result;
+    const resolvedRow = [].concat(rows).reduce((result, row) => {
+      if (result || !row) return result;
       const parsedSKU = row.SKU.value.toUpperCase();
       if (parsedSKU === sku) {
         return row;

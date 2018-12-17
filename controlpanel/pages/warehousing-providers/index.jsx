@@ -8,7 +8,7 @@ export default connectApollo(props => (
   <App {...props}>
     <Container>
       <h2>
-Warehousings
+        Warehousing providers
       </h2>
       <WarehousingProviderList />
     </Container>

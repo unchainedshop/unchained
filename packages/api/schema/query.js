@@ -170,5 +170,15 @@ export default [/* GraphQL */`
     Get a specific filter by ID
     """
     filter(filterId: ID): Filter
+
+    """
+    Get all product reviews
+    """
+    productReviews(limit: Int, offset: Int): [ProductReview!]!
+
+    """
+    Get a specific product review by ID
+    """
+    productReview(productReviewId: ID!): [ProductReview!]!
   }
 `];

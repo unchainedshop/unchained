@@ -12,13 +12,13 @@ const AssortmentList = ({
   <div>
     <div>
       Show non-root nodes?
-      {' '}
+      &nbsp;
       <input type="checkbox" checked={isShowLeafNodes} onClick={toggleShowLeafNodes} />
     </div>
     {loading ? (
       <div>
         <h1>
-Loading... this can take minutes...
+          Loading... this can take a while...
         </h1>
       </div>
     ) : (

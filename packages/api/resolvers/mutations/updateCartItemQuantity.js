@@ -13,6 +13,6 @@ export default function (root, { itemId, quantity }, { userId, countryContext })
   }
   const user = Users.findOne({ _id: userId });
   if (!user) throw new UserNotFoundError({ userId });
-  const cart = user.initCart({ countryCode: countryContext });
+  const cart = user.initCart({ countryContext });
   return cart.updateItemQuantity({ itemId, quantity });
 }

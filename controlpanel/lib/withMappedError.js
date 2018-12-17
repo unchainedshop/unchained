@@ -13,7 +13,7 @@ export default compose(
         updateMappedError(new Error('E-Mail existiert bereits im System, zurücksetzen?'));
         return;
       } if (message === 'Incorrect password [403]') {
-        updateMappedError(new Error('Bitte überprüfe dein Passwort'));
+        updateMappedError(new Error('Bitte überprüfe dein Password'));
         return;
       }
       if (graphQLError) {

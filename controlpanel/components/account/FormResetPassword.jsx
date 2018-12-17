@@ -17,7 +17,7 @@ const FormResetPassword = formProps => (
     <AutoField name="password" type="password" />
     <AutoField name="passwordConfirm" type="password" />
     <ErrorsField />
-    <SubmitField value="Passwort ändern" className="primary" />
+    <SubmitField value="Change password" className="primary" />
   </AutoForm>
 );
 

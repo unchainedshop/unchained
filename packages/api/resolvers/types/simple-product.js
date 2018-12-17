@@ -58,12 +58,6 @@ export default {
   sku(obj) {
     return obj.warehousing && obj.warehousing.sku;
   },
-  maxAllowedQuantityPerOrder(obj) {
-    return obj.warehousing && obj.warehousing.maxAllowedQuantityPerOrder;
-  },
-  allowOrderingIfNoStock(obj) {
-    return obj.warehousing && obj.warehousing.allowOrderingIfNoStock;
-  },
   dimensions({ supply }) {
     if (!supply) return null;
     const {

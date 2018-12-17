@@ -4,6 +4,7 @@ import { Factory } from 'meteor/dburles:factory';
 import configureEmailTemplates from './templates';
 
 import 'meteor/unchained:core-delivery/plugins/send-mail';
+import 'meteor/unchained:core-warehousing/plugins/google-sheets';
 import 'meteor/unchained:core-discounting/plugins/half-price';
 import 'meteor/unchained:core-documents/plugins/smallinvoice';
 import 'meteor/unchained:core-messaging/plugins/local-mail';

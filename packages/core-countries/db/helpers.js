@@ -9,22 +9,20 @@ const {
   CURRENCY,
 } = process.env;
 
-export default () => {
-  Countries.helpers({
-    defaultCurrency() {
-      if (this.defaultCurrencyId) {
-        return Currencies.findOne({ _id: this.defaultCurrencyId });
-      }
-      return null;
-    },
-    name(language) {
-      return countryI18n.getName(this.isoCode, language) || language;
-    },
-    flagEmoji() {
-      return countryFlags.countryCode(this.isoCode).emoji || '❌';
-    },
-  });
-};
+Countries.helpers({
+  defaultCurrency() {
+    if (this.defaultCurrencyId) {
+      return Currencies.findOne({ _id: this.defaultCurrencyId });
+    }
+    return null;
+  },
+  name(language) {
+    return countryI18n.getName(this.isoCode, language) || language;
+  },
+  flagEmoji() {
+    return countryFlags.countryCode(this.isoCode).emoji || '❌';
+  },
+});
 
 Countries.resolveDefaultCurrencyCode = ({ isoCode }) => {
   const country = Countries.findOne({ isoCode });

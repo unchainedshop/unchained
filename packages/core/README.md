@@ -1,3 +1,3 @@
 # Core (Unchained Engine)
 
-This package handles internationalization, asset handling and fixtures available to all core modules.
+This package handles internationalization, localization and asset handling available to all core modules.

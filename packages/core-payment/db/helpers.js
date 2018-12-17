@@ -54,19 +54,27 @@ PaymentProviders.createProvider = ({ type, ...rest }) => {
   return PaymentProviders.findOne({ _id: providerId });
 };
 
-PaymentProviders.updateProvider = ({ paymentProviderId, ...rest }) => {
-  PaymentProviders.update({ _id: paymentProviderId }, {
+PaymentProviders.updateProvider = ({ _id, ...rest }) => {
+  PaymentProviders.update({ _id, deleted: null }, {
     $set: {
       ...rest,
       updated: new Date(),
     },
   });
-  return PaymentProviders.findOne({ _id: paymentProviderId });
+  return PaymentProviders.findOne({ _id, deleted: null });
 };
 
-PaymentProviders.removeProvider = ({ paymentProviderId }) => {
-  const provider = PaymentProviders.findOne({ _id: paymentProviderId });
-  // TODO: Providers can not be removed!
-  PaymentProviders.remove({ _id: paymentProviderId });
-  return provider;
+PaymentProviders.removeProvider = ({ _id }) => {
+  PaymentProviders.update({ _id, deleted: null }, {
+    $set: {
+      deleted: new Date(),
+    },
+  });
+  return PaymentProviders.findOne({ _id });
 };
+
+PaymentProviders.findProviderById = _id => PaymentProviders.findOne({ _id });
+
+PaymentProviders.findProviders = ({ type } = {}) => PaymentProviders
+  .find({ ...(type ? { type } : {}), deleted: null })
+  .fetch();

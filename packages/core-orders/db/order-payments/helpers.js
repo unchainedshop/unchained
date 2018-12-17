@@ -16,7 +16,7 @@ OrderPayments.helpers({
     });
   },
   provider() {
-    return PaymentProviders.findOne({ _id: this.paymentProviderId });
+    return PaymentProviders.findProviderById(this.paymentProviderId);
   },
   transformedContextValue(key) {
     const provider = this.provider();

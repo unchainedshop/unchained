@@ -57,25 +57,25 @@ const OrderList = ({
     <Table.Row>
       <Table.HeaderCell colSpan={5}>
         Show carts?
-        {' '}
+        &nbsp;
         <input type="checkbox" checked={isShowCarts} onClick={toggleShowCarts} />
       </Table.HeaderCell>
     </Table.Row>
     <Table.Row>
       <Table.HeaderCell>
-Order date
+        Order date
       </Table.HeaderCell>
       <Table.HeaderCell>
-Order #
+        Order #
       </Table.HeaderCell>
       <Table.HeaderCell>
-User
+        User
       </Table.HeaderCell>
       <Table.HeaderCell>
-Total
+        Total
       </Table.HeaderCell>
       <Table.HeaderCell>
-Status
+        Status
       </Table.HeaderCell>
     </Table.Row>
   </InfiniteDataTable>

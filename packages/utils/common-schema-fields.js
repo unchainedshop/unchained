@@ -25,4 +25,5 @@ export const logFields = {
 export const timestampFields = {
   created: { type: Date, required: true },
   updated: { type: Date, required: false },
+  deleted: { type: Date, required: false },
 };

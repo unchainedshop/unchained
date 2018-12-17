@@ -1,95 +1,91 @@
 import 'meteor/dburles:collection-helpers';
 import { Accounts } from 'meteor/accounts-base';
 import { log, Logs } from 'meteor/unchained:core-logger';
-import { Avatars } from 'meteor/unchained:core-avatars';
 import { Countries } from 'meteor/unchained:core-countries';
 import { Languages } from 'meteor/unchained:core-languages';
+import { Users, Avatars } from './collections';
 
-import { Users } from './collections';
+Logs.helpers({
+  user() {
+    return this.meta && Users.findOne({
+      _id: this.meta.userId,
+    });
+  },
+});
 
-export default () => {
-  Logs.helpers({
-    user() {
-      return this.meta && Users.findOne({
-        _id: this.meta.userId,
-      });
-    },
-  });
-
-  Users.helpers({
-    isGuest() {
-      return !!this.guest;
-    },
-    language() {
-      const locale = this.lastLogin && this.lastLogin.locale;
-      if (locale) {
-        return Languages.findOne({ isoCode: locale.substr(0, 2).toLowerCase() });
-      }
-      return null;
-    },
-    country() {
-      const country = this.lastLogin && this.lastLogin.country;
-      if (country) {
-        return Countries.findOne({ isoCode: country.toUpperCase() });
-      }
-      return null;
-    },
-    avatar() {
-      return Avatars.findOne({ _id: this.avatarId });
-    },
-    email() {
-      return this.emails[0].address;
-    },
-    telNumber() {
-      return this.profile && this.profile.phoneMobile;
-    },
-    isEmailVerified() {
-      return this.emails[0].verified;
-    },
-    name() {
-      const { profile, emails } = this;
-      if (profile && profile.displayName && profile.displayName !== '') return profile.displayName;
-      return emails && emails[0].address;
-    },
-    updatePassword(newPassword) {
-      Accounts.setPassword(this._id, newPassword);
-      return this;
-    },
-    updateRoles(roles) {
-      Users.update({ _id: this._id }, {
-        $set: {
-          updated: new Date(),
-          roles,
-        },
-      });
-      return Users.findOne({ _id: this._id });
-    },
-    updateEmail(email, { skipEmailVerification = false } = {}) {
-      Users.update({ _id: this._id }, {
-        $set: {
-          updated: new Date(),
-          'emails.0.address': email,
-          'emails.0.verified': false,
-        },
-      });
-      if (!skipEmailVerification) {
-        Accounts.sendVerificationEmail(this._id);
-      }
-      return Users.findOne({ _id: this._id });
-    },
-    logs({ limit = 10, offset = 0 }) {
-      const selector = { userId: this._id };
-      const logs = Logs.find(selector, {
-        skip: offset,
-        limit,
-        sort: {
-          created: -1,
-        },
-      }).fetch();
-      return logs;
-    },
-  });
-};
+Users.helpers({
+  isGuest() {
+    return !!this.guest;
+  },
+  language() {
+    const locale = this.lastLogin && this.lastLogin.locale;
+    if (locale) {
+      return Languages.findOne({ isoCode: locale.substr(0, 2).toLowerCase() });
+    }
+    return null;
+  },
+  country() {
+    const country = this.lastLogin && this.lastLogin.country;
+    if (country) {
+      return Countries.findOne({ isoCode: country.toUpperCase() });
+    }
+    return null;
+  },
+  avatar() {
+    return Avatars.findOne({ _id: this.avatarId });
+  },
+  email() {
+    return this.emails[0].address;
+  },
+  telNumber() {
+    return this.profile && this.profile.phoneMobile;
+  },
+  isEmailVerified() {
+    return this.emails[0].verified;
+  },
+  name() {
+    const { profile, emails } = this;
+    if (profile && profile.displayName && profile.displayName !== '') return profile.displayName;
+    return emails && emails[0].address;
+  },
+  updatePassword(newPassword) {
+    Accounts.setPassword(this._id, newPassword);
+    return this;
+  },
+  updateRoles(roles) {
+    Users.update({ _id: this._id }, {
+      $set: {
+        updated: new Date(),
+        roles,
+      },
+    });
+    return Users.findOne({ _id: this._id });
+  },
+  updateEmail(email, { skipEmailVerification = false } = {}) {
+    Users.update({ _id: this._id }, {
+      $set: {
+        updated: new Date(),
+        'emails.0.address': email,
+        'emails.0.verified': false,
+      },
+    });
+    if (!skipEmailVerification) {
+      Accounts.sendVerificationEmail(this._id);
+    }
+    return Users.findOne({ _id: this._id });
+  },
+  logs({ limit = 10, offset = 0 }) {
+    const selector = { 'meta.userId': this._id };
+    const logs = Logs.find(selector, {
+      skip: offset,
+      limit,
+      sort: {
+        created: -1,
+      },
+    }).fetch();
+    return logs;
+  },
+});
 
 Users.updateLastBillingAddress = ({ userId, address }) => {
   const user = Users.findOne({ _id: userId });

@@ -20,7 +20,7 @@ export default function (root, {
   log('mutation checkout', { userId });
   const user = Users.findOne({ _id: userId });
   if (!user) throw new UserNotFoundError({ data: { userId } });
-  const cart = user.cart({ countryCode: countryContext });
+  const cart = user.cart({ countryContext });
   if (!cart) throw new UserNoCartError({ data: { userId } });
   if (cart.status !== OrderStatus.OPEN) {
     throw new OrderWrongStatusError({ data: { status: cart.status } });

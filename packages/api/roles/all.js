@@ -36,6 +36,11 @@ export default (role, actions) => {
   role.allow(actions.markOrderPaid, () => false);
   role.allow(actions.viewLogs, () => false);
   role.allow(actions.viewUserRoles, () => false);
+  role.allow(actions.viewUserOrders, () => false);
+  role.allow(actions.viewUserPrivateInfos, () => false);
+  role.allow(actions.reviewProduct, () => false);
+  role.allow(actions.updateProductReview, () => false);
+  role.allow(actions.manageProductReviews, () => false);
 
   // only allow if otp is provided
   role.allow(actions.viewOrder, (root, { orderId, otp }) => (Orders.find({
@@ -47,6 +52,7 @@ export default (role, actions) => {
   role.allow(actions.viewProducts, (root, { includeDrafts }) => !includeDrafts);
 
   // public
+  role.allow(actions.viewUserPublicInfos, () => true);
   role.allow(actions.viewProduct, () => true);
   role.allow(actions.viewLanguages, () => true);
   role.allow(actions.viewLanguage, () => true);

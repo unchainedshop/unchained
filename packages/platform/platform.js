@@ -1,5 +1,5 @@
 import startAPI from 'meteor/unchained:api';
-import { interceptEmails } from 'meteor/unchained:core';
+import interceptEmails from './intercept-emails';
 
 export * from './setup-db';
 export * from './setup-accounts';

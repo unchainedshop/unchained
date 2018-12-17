@@ -26,6 +26,9 @@ enum DeliveryProviderError {
 
 type DeliveryProvider {
   _id: ID!
+  created: Date
+  updated: Date
+  deleted: Date
   type: DeliveryProviderType
   interface: DeliveryInterface
   configuration: JSON

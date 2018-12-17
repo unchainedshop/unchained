@@ -25,11 +25,7 @@ const FormEditProductWarehousing = ({ isEditingDisabled, ...formProps }) => (
               disabled={isEditingDisabled}
             />
             <AutoField
-              name="maxAllowedQuantityPerOrder"
-              disabled={isEditingDisabled}
-            />
-            <AutoField
-              name="allowOrderingIfNoStock"
+              name="baseUnit"
               disabled={isEditingDisabled}
             />
           </Grid.Column>
@@ -54,8 +50,7 @@ export default compose(
         status
         ... on SimpleProduct {
           sku
-          maxAllowedQuantityPerOrder
-          allowOrderingIfNoStock
+          baseUnit
         }
       }
     }
@@ -66,8 +61,7 @@ export default compose(
         _id
         ... on SimpleProduct {
           sku
-          maxAllowedQuantityPerOrder
-          allowOrderingIfNoStock
+          baseUnit
         }
       }
     }
@@ -84,15 +78,10 @@ export default compose(
       optional: true,
       label: 'SKU',
     },
-    maxAllowedQuantityPerOrder: {
-      type: Number,
+    baseUnit: {
+      type: String,
       optional: true,
-      label: 'Max. allowed quantity per order?',
-    },
-    allowOrderingIfNoStock: {
-      type: Boolean,
-      optional: true,
-      label: 'Allow ordering if no stock quantities left?',
+      label: 'Base unit',
     },
   }),
   withFormModel(({ data: { product = {} } }) => ({ ...product })),

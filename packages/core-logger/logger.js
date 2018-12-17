@@ -1,6 +1,6 @@
 // import { checkNpmVersions } from 'meteor/tmeasday:check-npm-versions';
 import './db/factories';
-import initHelpers from './db/helpers';
+import './db/helpers';
 import LocalTransport from './local-transport';
 import { Logs } from './db/collections';
 import runMigrations from './db/schema';
@@ -39,7 +39,6 @@ const log = (message, options) => {
 
 export default () => {
   runMigrations();
-  initHelpers();
 };
 
 export {

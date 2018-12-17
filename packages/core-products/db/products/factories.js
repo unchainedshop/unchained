@@ -1,15 +1,11 @@
 import { fakeTimestampFields } from 'meteor/unchained:utils';
-import { Meteor } from 'meteor/meteor';
 import { Factory } from 'meteor/dburles:factory';
 import faker from 'faker';
-import { ProductTypes, ProductVariationType, ProductStatus } from './schema';
-import {
-  Products, ProductTexts, ProductMediaTexts, ProductMedia, Media,
-  ProductVariations, ProductVariationTexts,
-} from './collections';
+import { ProductTypes, ProductStatus } from './schema';
+import { Products, ProductTexts } from './collections';
 
 Factory.define('simpleProduct', Products, {
-  status: () => faker.random.arrayElement(Object.values(ProductStatus)),
+  status: () => faker.random.arrayElement([ProductStatus.ACTIVE, ProductStatus.DRAFT]),
   type: () => ProductTypes.SimpleProduct,
   sequence: () => faker.random.number(),
   authorId: () => Factory.get('user'),
@@ -27,8 +23,7 @@ Factory.define('simpleProduct', Products, {
   }),
   warehousing: () => ({
     sku: faker.hacker.abbreviation(),
-    maxAllowedQuantityPerOrder: faker.finance.amount(0, 4, 0),
-    allowOrderingIfNoStock: faker.random.boolean(),
+    baseUnit: 'ST',
   }),
   supply: () => ({
     weightInGram: faker.random.number(),
@@ -59,41 +54,5 @@ Factory.define('productText', ProductTexts, {
   slug: () => faker.lorem.slug(),
   description: () => faker.lorem.text(),
   labels: () => (faker.random.boolean() ? [faker.random.arrayElement(['Neu', 'Knapp', 'Verstaubt'])] : []),
-  ...fakeTimestampFields,
-});
-
-Factory.createMedia = () => Meteor.wrapAsync(Media.load, Media)(faker.image.avatar(), {
-  fileName: faker.system.fileName(),
-});
-
-Factory.define('productMediaText', ProductMediaTexts, {
-  productMediaId: () => Factory.get('productMedia'),
-  locale: () => faker.random.arrayElement(['de', 'en']),
-  title: () => faker.lorem.words(),
-  subtitle: () => faker.lorem.sentence(),
-  ...fakeTimestampFields,
-});
-
-Factory.define('productMedia', ProductMedia, {
-  mediaId: () => Factory.createMedia()._id,
-  tags: () => (faker.random.boolean() ? [faker.random.arrayElement(['red', 'green', 'blue'])] : []),
-  productId: () => Factory.get('simpleProduct'),
-  ...fakeTimestampFields,
-});
-
-Factory.define('productVariation', ProductVariations, {
-  productId: () => Factory.get('configurableProduct'),
-  key: () => faker.lorem.slug(),
-  type: () => faker.random.arrayElement(Object.values(ProductVariationType)),
-  options: () => ['red', 'green', 'blue'],
-  ...fakeTimestampFields,
-});
-
-Factory.define('productVariationText', ProductVariationTexts, {
-  productVariationId: () => Factory.get('productMedia'),
-  productVariationOptionValue: () => null,
-  locale: () => faker.random.arrayElement(['de', 'en']),
-  title: () => faker.lorem.words(),
-  subtitle: () => faker.lorem.sentence(),
   ...fakeTimestampFields,
 });

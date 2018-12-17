@@ -16,6 +16,7 @@ const UserList = ({
       <Table.Row>
         <Table.HeaderCell colSpan={3}>
           Show guests?
+          &nbsp;
           <input type="checkbox" checked={isShowGuests} onClick={toggleShowGuests} />
           <Link href="/users/new">
             <Button

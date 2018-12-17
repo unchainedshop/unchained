@@ -33,7 +33,7 @@ export default compose(
     },
     password: {
       type: String,
-      label: 'Passwort',
+      label: 'Password',
     },
   }),
   withHandlers({

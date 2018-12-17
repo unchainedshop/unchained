@@ -31,7 +31,7 @@ const AssortmentList = ({
         <Table.Cell>
           {assortment.isBase ? (
             <b>
-Root
+              Base
             </b>
           ) : (
             <Button
@@ -49,18 +49,19 @@ Root
     <Table.Row>
       <Table.HeaderCell colSpan={3}>
         Show non-root nodes?
+        &nbsp;
         <input type="checkbox" checked={isShowLeafNodes} onClick={toggleShowLeafNodes} />
       </Table.HeaderCell>
     </Table.Row>
     <Table.Row>
       <Table.HeaderCell>
-Name
+        Name
       </Table.HeaderCell>
       <Table.HeaderCell>
-Active?
+        Active?
       </Table.HeaderCell>
       <Table.HeaderCell>
-Base?
+        Base?
       </Table.HeaderCell>
     </Table.Row>
   </InfiniteDataTable>

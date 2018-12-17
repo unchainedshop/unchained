@@ -60,7 +60,7 @@ const FormEditProductVariationTexts = ({
         <br />
         <SubmitField value="Save" className="primary" disabled={isEditingDisabled} />
         <Button type="normal" onClick={onCancel}>
-Abbrechen
+          Cancel
         </Button>
       </Segment>
     </AutoForm>
@@ -136,12 +136,12 @@ export default compose(
     'texts.$.title': {
       type: String,
       optional: true,
-      label: 'Titel',
+      label: 'Title',
     },
     'texts.$.subtitle': {
       type: String,
       optional: true,
-      label: 'Untertitel',
+      label: 'Subtitle',
     },
   }),
   withFormModel(({ data: { translatedProductVariationTexts = [] }, languages = [] }) => {

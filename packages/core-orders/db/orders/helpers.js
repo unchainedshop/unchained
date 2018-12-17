@@ -32,24 +32,24 @@ Logs.helpers({
 });
 
 Users.helpers({
-  cart({ countryCode } = {}) {
+  cart({ countryContext } = {}) {
     const openOrders = Orders.find({
       userId: this._id,
       status: OrderStatus.OPEN,
-      countryCode: countryCode || this.lastLogin.country,
+      countryCode: countryContext || this.lastLogin.country,
     });
     if (openOrders.count() > 0) {
       return openOrders.fetch()[0];
     }
     return null;
   },
-  initCart({ countryCode }) {
-    return this.cart({ countryCode }) || Orders.createOrder({
+  initCart({ countryContext }) {
+    return this.cart({ countryContext }) || Orders.createOrder({
       userId: this._id,
       currency: Countries.resolveDefaultCurrencyCode({
-        isoCode: countryCode,
+        isoCode: countryContext,
       }),
-      countryCode,
+      countryCode: countryContext,
     });
   },
   orders() {
@@ -127,14 +127,12 @@ Orders.helpers({
   },
   supportedDeliveryProviders() {
     return DeliveryProviders
-      .find()
-      .fetch()
+      .findProviders()
       .filter(provider => provider.isActive(this));
   },
   supportedPaymentProviders() {
     return PaymentProviders
-      .find()
-      .fetch()
+      .findProviders()
       .filter(provider => provider.isActive(this));
   },
   setDeliveryProvider({ deliveryProviderId }) {
@@ -425,7 +423,7 @@ Orders.helpers({
     return Countries.findOne({ isoCode: this.countryCode });
   },
   logs({ limit = 10, offset = 0 }) {
-    const selector = { orderId: this._id };
+    const selector = { 'meta.orderId': this._id };
     const logs = Logs.find(selector, {
       skip: offset,
       limit,

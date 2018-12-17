@@ -2,12 +2,8 @@ import { FilesCollection } from 'meteor/ostrio:files';
 import { Mongo } from 'meteor/mongo';
 import { fileStoragePath } from 'meteor/unchained:utils';
 
-export const Products = new Mongo.Collection('products');
-export const ProductTexts = new Mongo.Collection('product_texts');
 export const ProductMedia = new Mongo.Collection('product_media');
 export const ProductMediaTexts = new Mongo.Collection('product_media_texts');
-export const ProductVariations = new Mongo.Collection('product_variations');
-export const ProductVariationTexts = new Mongo.Collection('product_variation_texts');
 
 export const Media = new FilesCollection({
   storagePath: fileStoragePath('media'),
