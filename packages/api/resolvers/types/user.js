@@ -22,8 +22,9 @@ export default {
   logs: checkTypeResolver(actions.viewLogs, 'logs'),
   roles: checkTypeResolver(actions.viewUserRoles, 'roles'),
 
-  cart(user, params, { countryContext, userId } = {}) {
-    checkAction(actions.viewUserOrders, userId, [user, params]);
+  cart(user, params, context = {}) {
+    const { countryContext, userId, ...rest } = context;
+    checkAction(actions.viewUserOrders, userId, [user, params, context]);
     return user.cart({ countryContext });
   },
 };
