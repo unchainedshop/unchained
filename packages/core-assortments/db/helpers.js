@@ -272,7 +272,7 @@ Collections.Assortments.helpers({
     const parsedLocale = new Locale(locale);
     return Collections.Assortments.getLocalizedTexts(this._id, parsedLocale);
   },
-  addProduct({ productId }) {
+  addProduct({ productId }, { skipInvalidation = false } = {}) {
     const sortKey = Collections.AssortmentProducts.getNewSortKey(this._id);
     Collections.AssortmentProducts.remove({
       assortmentId: this._id,
@@ -284,10 +284,12 @@ Collections.Assortments.helpers({
       sortKey,
       created: new Date(),
     });
-    this.invalidateProductIdCache();
+    if (!skipInvalidation) {
+      this.invalidateProductIdCache();
+    }
     return Collections.AssortmentProducts.findOne({ _id: assortmentProductId });
   },
-  addLink({ assortmentId }) {
+  addLink({ assortmentId }, { skipInvalidation = false } = {}) {
     const sortKey = Collections.AssortmentLinks.getNewSortKey(this._id);
     Collections.AssortmentLinks.remove({
       parentAssortmentId: this._id,
@@ -299,7 +301,9 @@ Collections.Assortments.helpers({
       sortKey,
       created: new Date(),
     });
-    this.invalidateProductIdCache();
+    if (!skipInvalidation) {
+      this.invalidateProductIdCache();
+    }
     return Collections.AssortmentLinks.findOne({ _id: assortmentProductId });
   },
   addFilter({ filterId }) {
