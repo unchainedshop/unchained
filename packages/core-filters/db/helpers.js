@@ -143,9 +143,8 @@ Filters.filterProductIds = ({ productIds, query, forceLiveCollection = false }) 
 
 Filters.invalidateFilterCaches = () => {
   log('Filters: Invalidating filter caches...'); // eslint-disable.line
-  Meteor.defer(() => {
-    Filters.find().fetch().forEach(filter => filter.invalidateProductIdCache());
-  });
+  Filters.find().fetch().forEach(filter => filter.invalidateProductIdCache());
+  log('Filters: Invalided the filter caches'); // eslint-disable.line  
 };
 
 Filters.filterFilters = ({
