@@ -10,6 +10,8 @@ export { Filters, FilterTexts };
 export default ({ skipInvalidationOnStartup = false }) => {
   // configure
   if (!skipInvalidationOnStartup) {
-    Filters.invalidateFilterCaches();
+    Meteor.defer(() => {
+      Filters.invalidateFilterCaches();
+    });
   }
 };
