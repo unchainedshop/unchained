@@ -1,4 +1,5 @@
 import React from 'react';
+import Link from 'next/link';
 import { compose, withHandlers } from 'recompose';
 import { Item, Button } from 'semantic-ui-react';
 import { SortableElement } from 'react-sortable-hoc';
@@ -11,9 +12,17 @@ const AssortmentLinkListItem = ({
   <Item>
     <Item.Content>
       <Item.Header>
-        {parent.texts && parent.texts.title}
-/
-        {child.texts && child.texts.title}
+        <Link href={`/assortments/edit?_id=${parent._id}&tab=AssortmentLinks`}>
+          <a href={`/assortments/edit?_id=${parent._id}&tab=AssortmentLinks`}>
+            {parent.texts && parent.texts.title}
+          </a>
+        </Link>
+        &nbsp;/&nbsp;
+        <Link href={`/assortments/edit?_id=${child._id}&tab=AssortmentLinks`}>
+          <a href={`/assortments/edit?_id=${child._id}&tab=AssortmentLinks`}>
+            {child.texts && child.texts.title}
+          </a>
+        </Link>
       </Item.Header>
       <Item.Extra>
         <Button
@@ -52,5 +61,4 @@ export default compose(
       });
     },
   }),
-  SortableElement,
 )(AssortmentLinkListItem);
