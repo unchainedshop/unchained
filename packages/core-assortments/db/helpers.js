@@ -464,12 +464,10 @@ Collections.Assortments.helpers({
 
     return [...ownProductIds, ...productIds];
   },
-  invalidateProductIdCache(productIdCache) {
+  invalidateProductIdCache() {
     const ownProductIds = this.productAssignments().map(({ productId }) => productId);
     const linkedAssortments = this.linkedAssortments();
-
-    const childProductIds = productIdCache
-        || this.collectProductIdCache(ownProductIds, linkedAssortments);
+    const childProductIds = this.collectProductIdCache(ownProductIds, linkedAssortments);
 
     const productIds = [...(new Set([...ownProductIds, ...childProductIds]))];
 
@@ -483,13 +481,12 @@ Collections.Assortments.helpers({
         _cachedProductIds: productIds,
       },
     });
-    console.log(updateCount, this._id)
 
     linkedAssortments
       .filter(({ childAssortmentId }) => (childAssortmentId === this._id))
       .forEach((assortmentLink) => {
         const parent = assortmentLink.parent();
-        if (parent) parent.invalidateProductIdCache(productIds);
+        if (parent) parent.invalidateProductIdCache();
       });
   },
 });
