@@ -477,12 +477,13 @@ Collections.Assortments.helpers({
       return;
     }
 
-    Collections.Assortments.update({ _id: this._id }, {
+    const updateCount = Collections.Assortments.update({ _id: this._id }, {
       $set: {
         updated: new Date(),
         _cachedProductIds: productIds,
       },
     });
+    console.log(updateCount, this._id)
 
     linkedAssortments
       .filter(({ childAssortmentId }) => (childAssortmentId === this._id))
