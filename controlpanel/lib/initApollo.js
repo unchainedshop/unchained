@@ -49,9 +49,6 @@ function create(initialState, headersOverride, getToken) {
       headers['accept-language'] = headersOverride['accept-language'];
     }
     headers.authorization = getToken() ? `Bearer ${getToken()}` : null;
-    if (publicRuntimeConfig.DEBUG) {
-      console.warn(headers); //eslint-disable-line
-    }
     operation.setContext({ headers });
     return forward(operation);
   });
