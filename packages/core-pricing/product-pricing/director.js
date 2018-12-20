@@ -40,8 +40,8 @@ class ProductPricingAdapter {
     });
   }
 
-  log(message) { // eslint-disable-line
-    return log(message);
+  log(message, { level = 'verbose', ...options } = {}) { // eslint-disable-line
+    return log(message, { level, ...options });
   }
 }
 

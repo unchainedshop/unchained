@@ -40,7 +40,7 @@ const LogList = ({ data: { logs = defaultLogs, loading }, ...rest }) => (
           <Table.Cell singleLine>
             {format(created, 'Pp')}
           </Table.Cell>
-          <Table.Cell warning={level === 'warn'} error={level === 'error'}>
+          <Table.Cell success={level === 'info'} warning={level === 'warn'} error={level === 'error'}>
             <code>
               {message}
             </code>
@@ -52,7 +52,7 @@ const LogList = ({ data: { logs = defaultLogs, loading }, ...rest }) => (
                 <Icon name="user" />
                 {' '}
                 {user.name.substr(0, 4)}
-...
+                ...
               </Label>
             </Link>
             )}
@@ -62,7 +62,7 @@ const LogList = ({ data: { logs = defaultLogs, loading }, ...rest }) => (
                 <Icon name="cart" />
                 {' '}
                 {(order.orderNumber || order._id).substr(0, 4)}
-...
+                ...
               </Label>
             </Link>
             )}
