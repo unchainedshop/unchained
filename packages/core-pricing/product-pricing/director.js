@@ -26,7 +26,7 @@ class ProductPricingAdapter {
 
   calculate() {
     const resultRaw = this.result.getRawPricingSheet();
-    resultRaw.forEach(({ amount, category }) => log(`Item Calculation -> ${category} ${amount}`));
+    resultRaw.forEach(({ amount, category }) => this.log(`Item Calculation -> ${category} ${amount}`));
     return resultRaw;
   }
 

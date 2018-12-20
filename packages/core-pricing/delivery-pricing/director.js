@@ -24,7 +24,7 @@ class DeliveryPricingAdapter {
 
   calculate() {
     const resultRaw = this.result.getRawPricingSheet();
-    resultRaw.forEach(({ amount, category }) => log(`Delivery Calculation -> ${category} ${amount}`));
+    resultRaw.forEach(({ amount, category }) => this.log(`Delivery Calculation -> ${category} ${amount}`));
     return resultRaw;
   }
 
