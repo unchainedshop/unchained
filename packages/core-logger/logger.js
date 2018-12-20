@@ -25,7 +25,7 @@ class Logger {
       ),
       transports: [
         new transports.Console({ level: debug ? 'debug' : 'info' }),
-        new LocalTransport({ db: Logs }),
+        new LocalTransport({ level: 'info' }),
       ],
     });
     return instance;
