@@ -25,7 +25,7 @@ class OrderPricingAdapter {
 
   async calculate() {
     const resultRaw = this.result.getRawPricingSheet();
-    resultRaw.forEach(({ amount, category }) => log(`Order Calculation -> ${category} ${amount}`));
+    resultRaw.forEach(({ amount, category }) => this.log(`Order Calculation -> ${category} ${amount}`));
     return resultRaw;
   }
 

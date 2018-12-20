@@ -18,10 +18,6 @@ class ProductDiscount extends ProductPricingAdapter {
   }
 
   async calculate() {
-    const {
-      quantity,
-    } = this.context;
-
     const taxableTotal = this.calculation.sum({
       category: ProductPricingSheetRowCategories.Item,
       isTaxable: true,
