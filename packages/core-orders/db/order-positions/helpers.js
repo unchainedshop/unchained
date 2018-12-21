@@ -45,11 +45,12 @@ OrderPositions.helpers({
         const context = {
           warehousingProvider: WarehousingProviders
             .findProviderById(schedule.warehousingProviderId),
-          deliveryProvider: () => order.delivery().provider(),
-          product: this.product,
+          deliveryProvider: order.delivery().provider(),
+          product: this.product(),
           quantity: this.quantity,
           country: countryCode,
           userId,
+          // referenceDate,
         };
         return {
           ...context,
