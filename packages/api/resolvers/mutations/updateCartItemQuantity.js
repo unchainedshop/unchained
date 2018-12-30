@@ -1,7 +1,7 @@
 import { log } from 'meteor/unchained:core-logger';
 import { OrderPositions } from 'meteor/unchained:core-orders';
 import { Users } from 'meteor/unchained:core-users';
-import { UserNotFoundError, OrderQuantityTooLowError, OrderItemNotFound } from '../errors';
+import { UserNotFoundError, OrderQuantityTooLowError, OrderItemNotFound } from '../../errors';
 
 export default function (root, { itemId, quantity }, { userId, countryContext }) {
   log(`mutation updateCartItemQuantity ${itemId} ${quantity}`, { userId });

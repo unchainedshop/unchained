@@ -1,6 +1,6 @@
 import { ApolloError } from 'apollo-server';
 
-const createError = (code, message) => class extends ApolloError {
+export const createError = (code, message) => class extends ApolloError {
   constructor({ data }) {
     super(message, code, data);
   }

@@ -12,6 +12,7 @@ export hashPassword from './hashPassword';
 export getConnection from './getConnection';
 export * as roles from './roles';
 export * as resolvers from './resolvers';
+export * as errors from './errors';
 
 const {
   APOLLO_ENGINE_KEY,
@@ -56,10 +57,11 @@ const startUnchainedServer = (options = {}) => {
       };
     },
     formatError: (error) => {
-      const { message, extensions, ...rest } = error;
-      log(`${message} ${extensions && extensions.code}`, { level: 'error', extensions, ...rest });
-      log(JSON.stringify(error), { level: 'verbose' });
-      return error;
+      const { message, extensions: { exception, ...extensions }, ...rest } = error;
+      log(`${message} ${extensions && extensions.code}`, { level: 'error', ...extensions, ...rest });
+      const newError = error;
+      delete newError.extensions.exception;
+      return newError;
     },
     tracing: !!DEBUG,
     cacheControl: true,

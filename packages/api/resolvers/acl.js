@@ -1,5 +1,5 @@
 import { checkPermission } from '../roles';
-import { NoPermissionError, PermissionSystemError } from './errors';
+import { NoPermissionError, PermissionSystemError } from '../errors';
 
 const defaultOptions = {
   showKey: true,
@@ -18,7 +18,6 @@ const ensureActionExists = (action, userOptions) => {
     });
   }
 };
-
 
 const ensureIsFunction = (fn, action, options, key) => {
   if (typeof fn !== 'function') {

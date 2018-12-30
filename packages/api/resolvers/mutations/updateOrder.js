@@ -1,6 +1,6 @@
 import { log } from 'meteor/unchained:core-logger';
 import { Orders } from 'meteor/unchained:core-orders';
-import { OrderNotFoundError } from '../errors';
+import { OrderNotFoundError } from '../../errors';
 
 const logger = console;
 

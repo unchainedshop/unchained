@@ -1,6 +1,6 @@
 import { log } from 'meteor/unchained:core-logger';
 import { Assortments } from 'meteor/unchained:core-assortments';
-import { AssortmentNotFoundError } from '../errors';
+import { AssortmentNotFoundError } from '../../errors';
 
 export default function (root, { parentAssortmentId, childAssortmentId }, { userId }) {
   log(`mutation addAssortmentLink ${parentAssortmentId} -> ${childAssortmentId}`, { userId });
