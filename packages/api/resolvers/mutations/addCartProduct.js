@@ -1,7 +1,7 @@
 import { log } from 'meteor/unchained:core-logger';
 import { Products } from 'meteor/unchained:core-products';
 import { Users } from 'meteor/unchained:core-users';
-import { ProductNotFoundError, UserNotFoundError } from '../errors';
+import { ProductNotFoundError, UserNotFoundError } from '../../errors';
 
 export default function (root, { productId, quantity, configuration }, { userId, countryContext }) {
   log(`mutation addCartProduct ${productId} ${quantity} ${configuration ? JSON.stringify(configuration) : ''}`, { userId });

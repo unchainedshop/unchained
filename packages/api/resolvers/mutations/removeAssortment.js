@@ -1,6 +1,6 @@
 import { log } from 'meteor/unchained:core-logger';
 import { Assortments } from 'meteor/unchained:core-assortments';
-import { AssortmentNotFoundError } from '../errors';
+import { AssortmentNotFoundError } from '../../errors';
 
 export default function (root, { assortmentId }, { userId }) {
   log(`mutation removeAssortment ${assortmentId}`, { userId });

@@ -1,6 +1,6 @@
 import { log } from 'meteor/unchained:core-logger';
 import { Users } from 'meteor/unchained:core-users';
-import { UserNotFoundError } from '../errors';
+import { UserNotFoundError } from '../../errors';
 
 export default function (root, { discountId }, { userId, countryContext }) {
   log(`mutation removeCartDiscount ${discountId}`, { userId });

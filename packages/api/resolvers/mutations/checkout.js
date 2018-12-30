@@ -4,7 +4,7 @@ import { Users } from 'meteor/unchained:core-users';
 import {
   UserNotFoundError, OrderCheckoutError, UserNoCartError,
   OrderWrongStatusError,
-} from '../errors';
+} from '../../errors';
 
 const logger = console;
 

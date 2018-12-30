@@ -5,7 +5,6 @@ import JSON from './scalar-json';
 import Types from './types';
 
 export * as acl from './acl';
-export * as errors from './errors';
 
 export default {
   ...Types,

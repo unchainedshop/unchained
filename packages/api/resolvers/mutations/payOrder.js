@@ -1,6 +1,6 @@
 import { log } from 'meteor/unchained:core-logger';
 import { Orders, OrderStatus, OrderPaymentStatus } from 'meteor/unchained:core-orders';
-import { OrderNotFoundError, OrderWrongPaymentStatusError, OrderWrongStatusError } from '../errors';
+import { OrderNotFoundError, OrderWrongPaymentStatusError, OrderWrongStatusError } from '../../errors';
 
 export default function (root, { orderId }, { userId }) {
   log('mutation payOrder', { orderId, userId });
