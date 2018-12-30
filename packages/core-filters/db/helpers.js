@@ -1,5 +1,4 @@
 import 'meteor/dburles:collection-helpers';
-import { Meteor } from 'meteor/meteor';
 import { Locale } from 'locale';
 import { findLocalizedText } from 'meteor/unchained:core';
 import { log } from 'meteor/unchained:core-logger';

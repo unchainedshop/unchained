@@ -23,7 +23,7 @@ Filters.attachSchema(new SimpleSchema({
 
 FilterTexts.attachSchema(new SimpleSchema({
   filterId: { type: String, required: true, index: true },
-  filterOptionValue: String,
+  filterOptionValue: { type: String, index: true },
   locale: { type: String, index: true },
   title: String,
   subtitle: String,
