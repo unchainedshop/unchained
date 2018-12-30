@@ -472,10 +472,10 @@ Collections.Assortments.helpers({
     const productIds = [...(new Set([...ownProductIds, ...childProductIds]))];
 
     if (eqSet(new Set(productIds), new Set(this._cachedProductIds))) { // eslint-disable-line
-      return;
+      return 0;
     }
 
-    const updateCount = Collections.Assortments.update({ _id: this._id }, {
+    let updateCount = Collections.Assortments.update({ _id: this._id }, {
       $set: {
         updated: new Date(),
         _cachedProductIds: productIds,
@@ -486,8 +486,10 @@ Collections.Assortments.helpers({
       .filter(({ childAssortmentId }) => (childAssortmentId === this._id))
       .forEach((assortmentLink) => {
         const parent = assortmentLink.parent();
-        if (parent) parent.invalidateProductIdCache();
+        if (parent) updateCount += parent.invalidateProductIdCache();
       });
+
+    return updateCount;
   },
 });
 
