@@ -172,17 +172,15 @@ Filters.filterFilters = ({
       ? filter.intersect({ values, forceLiveCollection, productIdSet: allProductIdsSet })
       : allProductIdsSet;
 
-    const filteredOptions = filter.filteredOptions({
-      values,
-      forceLiveCollection,
-      productIdSet: intersectedProductIds,
-    });
-
     return {
       filter,
       remaining: remainingProductIdSet.size,
       active: Object.prototype.hasOwnProperty.call(queryObject, filter.key),
-      filteredOptions,
+      filteredOptions: () => filter.filteredOptions({
+        values,
+        forceLiveCollection,
+        productIdSet: intersectedProductIds,
+      }),
     };
   });
 };
@@ -284,15 +282,17 @@ Filters.helpers({
     return new Set(filterOptionProductIds.filter(x => productIdSet.has(x)));
   },
   filteredOptions({ values, forceLiveCollection, productIdSet }) {
-    const mappedOptions = this.options.map((value) => {
-      const option = this.optionObject(value);
-      const remainingIds = this.intersect({ values: [value], forceLiveCollection, productIdSet });
-      return {
-        option,
-        remaining: remainingIds.size,
-        active: values ? (values.indexOf(value) !== -1) : false,
-      };
-    });
+    const mappedOptions = this.options
+      .map((value) => {
+        const remainingIds = this.intersect({ values: [value], forceLiveCollection, productIdSet });
+        if (!remainingIds.size) return null;
+        return {
+          option: () => this.optionObject(value),
+          remaining: remainingIds.size,
+          active: values ? (values.indexOf(value) !== -1) : false,
+        };
+      })
+      .filter(Boolean);
     return mappedOptions;
   },
 });
