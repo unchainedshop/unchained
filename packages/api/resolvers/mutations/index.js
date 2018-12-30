@@ -1,5 +1,5 @@
 import { actions } from '../../roles';
-import { checkResolver as acl } from '../acl';
+import { checkResolver as acl } from '../../acl';
 import Accounts from './accounts';
 import updateEmail from './updateEmail';
 import updateUserAvatar from './updateUserAvatar';

@@ -4,8 +4,6 @@ import Date from './scalar-date';
 import JSON from './scalar-json';
 import Types from './types';
 
-export * as acl from './acl';
-
 export default {
   ...Types,
   JSON,

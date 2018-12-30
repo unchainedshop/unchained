@@ -11,7 +11,7 @@ export callMethod from './callMethod';
 export hashPassword from './hashPassword';
 export getConnection from './getConnection';
 export * as roles from './roles';
-export * as resolvers from './resolvers';
+export * as acl from './acl';
 export * as errors from './errors';
 
 const {

@@ -1,5 +1,5 @@
 import { actions } from '../../roles';
-import { checkAction, checkTypeResolver } from '../acl';
+import { checkAction, checkTypeResolver } from '../../acl';
 
 export default {
   _id: checkTypeResolver(actions.viewUserPublicInfos, '_id'),

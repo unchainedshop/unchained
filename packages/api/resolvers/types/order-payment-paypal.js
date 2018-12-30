@@ -1,4 +1,4 @@
-import { PaypalConfigurationError } from '../errors';
+import { PaypalConfigurationError } from '../../errors';
 
 export default {
   status(obj) {
