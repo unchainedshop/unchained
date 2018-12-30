@@ -1,5 +1,5 @@
-import { checkPermission } from '../roles';
-import { NoPermissionError, PermissionSystemError } from '../errors';
+import { checkPermission } from './roles';
+import { NoPermissionError, PermissionSystemError } from './errors';
 
 const defaultOptions = {
   showKey: true,
