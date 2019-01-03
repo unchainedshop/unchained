@@ -52,7 +52,7 @@
     "react-phone-number-input": "^2.2.20",
     "react-rte": "^0.16.1",
     "react-sortable-hoc": "^0.8.4",
-    "react-toastify": "^4.5.1",
+    "react-toastify": "^4.5.2",
     "react-vis-force": "^0.3.1",
     "recompose": "^0.30.0",
     "semantic-ui-css": "^2.4.1",
@@ -69,6 +69,6 @@
     "eslint-config-airbnb": "^17.1.0",
     "eslint-plugin-import": "^2.14.0",
     "eslint-plugin-jsx-a11y": "^6.1.2",
-    "eslint-plugin-react": "^7.12.1"
+    "eslint-plugin-react": "^7.12.2"
   }
 }
