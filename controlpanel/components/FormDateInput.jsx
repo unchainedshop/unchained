@@ -3,6 +3,14 @@ import classnames from 'classnames';
 import connectField from 'uniforms/connectField';
 import filterDOMProps from 'uniforms/filterDOMProps';
 import DatePicker from 'react-datepicker';
+import isValid from 'date-fns/isValid';
+
+const dateParse = (onChange, date) => {
+  if (date && isValid(date)) {
+    return onChange(date.getTime());
+  }
+  return onChange(null);
+};
 
 const DatePickerField = ({
   className,
@@ -37,8 +45,8 @@ const DatePickerField = ({
         disabled={disabled}
         id={id}
         name={name}
-        onChange={onChange}
-        locale="de-CH"
+        onChange={(...dateObject) => dateParse(onChange, ...dateObject)}
+        dateFormat="dd.MM.yyyy"
         peekNextMonth
         showMonthDropdown
         showYearDropdown
