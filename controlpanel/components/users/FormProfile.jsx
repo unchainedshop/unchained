@@ -254,7 +254,7 @@ export default compose(
     onSubmit: ({ userId, mutate, schema }) => ({ ...dirtyInput }) => mutate({
       variables: {
         userId,
-        profile: schema.clean(dirtyInput),
+        profile: schema.clean(dirtyInput, { autoConvert: false }),
       },
     }),
   }),
