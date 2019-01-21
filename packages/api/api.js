@@ -59,6 +59,7 @@ const startUnchainedServer = (options = {}) => {
     formatError: (error) => {
       const { message, extensions: { exception, ...extensions }, ...rest } = error;
       log(`${message} ${extensions && extensions.code}`, { level: 'error', ...extensions, ...rest });
+      console.error(exception.stacktrace);
       const newError = error;
       delete newError.extensions.exception;
       return newError;
