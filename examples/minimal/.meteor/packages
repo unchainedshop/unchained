@@ -10,7 +10,7 @@ mongo@1.6.0
 accounts-base@1.4.3
 accounts-password@1.5.1
 accounts-oauth@1.1.16
-ecmascript@0.12.3
+ecmascript@0.12.4
 standard-minifiers@1.1.0
 email@1.2.3
 disable-oplog@1.0.7
