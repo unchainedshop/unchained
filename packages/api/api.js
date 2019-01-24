@@ -30,6 +30,7 @@ const defaultContext = (req) => {
 
 const startUnchainedServer = (options = {}) => {
   const {
+    corsOrigins = null, // no cookie handling
     typeDefs: additionalTypeDefs = [],
     resolvers: additionalResolvers = [],
     context = defaultContext,
@@ -79,6 +80,20 @@ const startUnchainedServer = (options = {}) => {
   server.applyMiddleware({
     app: WebApp.connectHandlers,
     path: '/graphql',
+    cors: !corsOrigins ? undefined : {
+      origin(origin, callback) {
+        if (corsOrigins.length === 0) {
+          callback(null, true);
+          return;
+        }
+        if (corsOrigins.indexOf(origin) !== -1) {
+          callback(null, true);
+        } else {
+          callback(new Error('Not allowed by CORS'));
+        }
+      },
+      credentials: true,
+    },
   });
 
   WebApp.connectHandlers.use('/graphql', (req, res) => {
