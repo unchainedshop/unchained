@@ -58,9 +58,11 @@ const startUnchainedServer = (options) => {
       };
     },
     formatError: (error) => {
-      const { message, extensions: { exception, ...extensions }, ...rest } = error;
-      log(`${message} ${extensions && extensions.code}`, { level: 'error', ...extensions, ...rest });
-      console.error(exception.stacktrace); // eslint-disable-line
+      try {
+        const { message, extensions: { exception, ...extensions }, ...rest } = error;
+        log(`${message} ${extensions && extensions.code}`, { level: 'error', ...extensions, ...rest });
+        console.error(exception.stacktrace); // eslint-disable-line
+      } catch (e) { } // eslint-disable-line
       const newError = error;
       delete newError.extensions.exception;
       return newError;
