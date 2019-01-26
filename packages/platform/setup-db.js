@@ -16,7 +16,6 @@ import createFixtures from './fixtures';
 
 const {
   FIXTURES,
-  NODE_ENV,
 } = process.env;
 
 export { createFixtures };
