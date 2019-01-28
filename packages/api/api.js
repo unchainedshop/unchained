@@ -16,7 +16,6 @@ export * as errors from './errors';
 
 const {
   APOLLO_ENGINE_KEY,
-  DEBUG,
 } = process.env;
 
 const defaultContext = (req) => {
@@ -28,14 +27,16 @@ const defaultContext = (req) => {
   return { remoteAddress };
 };
 
-const startUnchainedServer = (options = {}) => {
+const startUnchainedServer = (options) => {
   const {
+    corsOrigins = null, // no cookie handling
     typeDefs: additionalTypeDefs = [],
     resolvers: additionalResolvers = [],
     context = defaultContext,
     rolesOptions,
+    engine = {},
     ...apolloServerOptions
-  } = options || {};
+  } = (options || {});
 
   configureRoles(rolesOptions);
 
@@ -57,20 +58,24 @@ const startUnchainedServer = (options = {}) => {
       };
     },
     formatError: (error) => {
-      const { message, extensions: { exception, ...extensions }, ...rest } = error;
-      log(`${message} ${extensions && extensions.code}`, { level: 'error', ...extensions, ...rest });
+      try {
+        const { message, extensions: { exception, ...extensions }, ...rest } = error;
+        log(`${message} ${extensions && extensions.code}`, { level: 'error', ...extensions, ...rest });
+        console.error(exception.stacktrace); // eslint-disable-line
+      } catch (e) { } // eslint-disable-line
       const newError = error;
       delete newError.extensions.exception;
       return newError;
     },
-    tracing: !!DEBUG,
-    cacheControl: true,
-    introspection: true,
     engine: APOLLO_ENGINE_KEY ? {
       apiKey: APOLLO_ENGINE_KEY,
-      logging: {
-        level: 'WARN', // ApolloEngine Proxy logging level. DEBUG, INFO, WARN or ERROR
-      },
+      privateVariables: [
+        'email',
+        'plainPassword',
+        'oldPlainPassword',
+        'newPlainPassword',
+      ],
+      ...engine,
     } : null,
     ...apolloServerOptions,
   });
@@ -78,6 +83,20 @@ const startUnchainedServer = (options = {}) => {
   server.applyMiddleware({
     app: WebApp.connectHandlers,
     path: '/graphql',
+    cors: !corsOrigins ? undefined : {
+      origin(origin, callback) {
+        if (corsOrigins.length === 0) {
+          callback(null, true);
+          return;
+        }
+        if (corsOrigins.indexOf(origin) !== -1) {
+          callback(null, true);
+        } else {
+          callback(new Error('Not allowed by CORS'));
+        }
+      },
+      credentials: true,
+    },
   });
 
   WebApp.connectHandlers.use('/graphql', (req, res) => {

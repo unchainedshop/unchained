@@ -51,23 +51,23 @@
     "react-input-mask": "^2.0.4",
     "react-phone-number-input": "^2.3.2",
     "react-rte": "^0.16.1",
-    "react-sortable-hoc": "^1.4.0",
+    "react-sortable-hoc": "^1.5.2",
     "react-toastify": "^4.5.2",
     "recompose": "^0.30.0",
     "semantic-ui-css": "^2.4.1",
     "semantic-ui-react": "^0.84.0",
     "simpl-schema": "^1.5.3",
-    "uniforms": "^1.30.0",
-    "uniforms-semantic": "^1.30.0",
+    "uniforms": "^1.31.0",
+    "uniforms-semantic": "^1.31.0",
     "url-loader": "^1.1.2"
   },
   "devDependencies": {
-    "apollo": "^2.3.0",
+    "apollo": "^2.3.1",
     "babel-eslint": "^10.0.1",
     "eslint": "^5.12.1",
     "eslint-config-airbnb": "^17.1.0",
-    "eslint-plugin-import": "^2.14.0",
-    "eslint-plugin-jsx-a11y": "^6.1.2",
+    "eslint-plugin-import": "^2.15.0",
+    "eslint-plugin-jsx-a11y": "^6.2.0",
     "eslint-plugin-react": "^7.12.4"
   }
 }

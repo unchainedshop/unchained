@@ -16,7 +16,6 @@ import createFixtures from './fixtures';
 
 const {
   FIXTURES,
-  NODE_ENV,
 } = process.env;
 
 export { createFixtures };
@@ -38,7 +37,7 @@ Meteor.startup(() => {
   configureProducts();
   configureOrders();
   configureAssortments();
-  configureFilters({ skipInvalidationOnStartup: (NODE_ENV !== 'production') });
+  configureFilters({ skipInvalidationOnStartup: true });
 
   if (FIXTURES && Users.find({ username: 'admin' }).count() === 0) {
     createFixtures();
