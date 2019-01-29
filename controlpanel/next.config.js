@@ -1,6 +1,5 @@
 require('dotenv').config();
 const withCss = require('@zeit/next-css');
-const withBundleAnalyzer = require('@zeit/next-bundle-analyzer');
 
 const {
   LANG,
