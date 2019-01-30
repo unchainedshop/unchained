@@ -8,7 +8,7 @@ const {
   BUNDLE_ANALYZE,
 } = process.env;
 
-module.exports = withBundleAnalyzer(withCss({
+module.exports = withCss({
   analyzeServer: ['server', 'both'].includes(BUNDLE_ANALYZE),
   analyzeBrowser: ['browser', 'both'].includes(BUNDLE_ANALYZE),
   bundleAnalyzerConfig: {
@@ -42,4 +42,4 @@ module.exports = withBundleAnalyzer(withCss({
     });
     return newConfig;
   },
-}));
+});
