@@ -80,21 +80,25 @@ const startUnchainedServer = (options) => {
     ...apolloServerOptions,
   });
 
+  const originFn = (corsOrigins && Array.isArray(corsOrigins))
+    ? ((origin, callback) => {
+      if (corsOrigins.length === 0 || !origin) {
+        callback(null, true);
+        return;
+      }
+      if (corsOrigins.indexOf(origin) !== -1) {
+        callback(null, true);
+      } else {
+        callback(new Error('Not allowed by CORS'));
+      }
+    })
+    : corsOrigins;
+
   server.applyMiddleware({
     app: WebApp.connectHandlers,
     path: '/graphql',
-    cors: !corsOrigins ? undefined : {
-      origin(origin, callback) {
-        if (corsOrigins.length === 0) {
-          callback(null, true);
-          return;
-        }
-        if (corsOrigins.indexOf(origin) !== -1) {
-          callback(null, true);
-        } else {
-          callback(new Error('Not allowed by CORS'));
-        }
-      },
+    cors: !originFn ? undefined : {
+      origin: originFn,
       credentials: true,
     },
   });
