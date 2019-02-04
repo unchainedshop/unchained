@@ -1,6 +1,5 @@
 require('dotenv').config();
 const withCss = require('@zeit/next-css');
-const withBundleAnalyzer = require('@zeit/next-bundle-analyzer');
 
 const {
   LANG,
@@ -9,7 +8,7 @@ const {
   BUNDLE_ANALYZE,
 } = process.env;
 
-module.exports = withBundleAnalyzer(withCss({
+module.exports = withCss({
   analyzeServer: ['server', 'both'].includes(BUNDLE_ANALYZE),
   analyzeBrowser: ['browser', 'both'].includes(BUNDLE_ANALYZE),
   bundleAnalyzerConfig: {
@@ -43,4 +42,4 @@ module.exports = withBundleAnalyzer(withCss({
     });
     return newConfig;
   },
-}));
+});
