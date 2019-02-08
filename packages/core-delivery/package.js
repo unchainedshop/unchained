@@ -1,7 +1,7 @@
 /* globals Package */
 Package.describe({
   name: 'unchained:core-delivery',
-  version: '0.20.0',
+  version: '0.21.0',
   summary: 'Unchained Engine Core: Delivery',
   git: 'https://github.com/unchainedshop/unchained',
   documentation: 'README.md',
@@ -15,8 +15,8 @@ Package.onUse((api) => {
   api.use('percolate:migrations@1.0.2');
   api.use('dburles:factory@1.1.0');
   api.use('dburles:collection-helpers@1.1.0');
-  api.use('unchained:utils@0.20.0');
-  api.use('unchained:core-logger@0.20.0');
+  api.use('unchained:utils@0.21.0');
+  api.use('unchained:core-logger@0.21.0');
 
   api.mainModule('delivery.js', 'server');
 });
