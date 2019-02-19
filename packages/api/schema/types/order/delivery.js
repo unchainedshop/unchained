@@ -46,4 +46,4 @@ type OrderDeliveryShipping implements OrderDelivery {
 
   address: Address
 }
-`]
+`];

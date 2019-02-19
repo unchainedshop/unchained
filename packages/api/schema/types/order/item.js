@@ -32,4 +32,4 @@ type OrderItem {
   dispatches: [Dispatch!]
   configuration: [OrderItemConfiguration!]
 }
-`]
+`];
