@@ -1,4 +1,4 @@
-import { FilesCollection } from 'meteor/ostrio:files';
+
 import { createFilesCollection } from 'meteor/unchained:core-files';
 
 export const OrderDocuments = createFilesCollection('order_documents', {

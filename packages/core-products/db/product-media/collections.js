@@ -1,4 +1,3 @@
-import { FilesCollection } from 'meteor/ostrio:files';
 import { Mongo } from 'meteor/mongo';
 import { createFilesCollection } from 'meteor/unchained:core-files';
 

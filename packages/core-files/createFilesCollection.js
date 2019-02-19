@@ -1,9 +1,11 @@
 import fileStoragePath from './fileStoragePath';
+import FilesCollection from './FilesCollection';
 
 const DEFAULT_OPTIONS = {
   maxSize: 10485760,
   extensionRegex: null,
 };
+
 export default (collectionName, options = null) => {
   const fullOptions = {
     ...DEFAULT_OPTIONS,

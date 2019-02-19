@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import { FilesCollection } from 'meteor/ostrio:files';
+
 import { createFilesCollection } from 'meteor/unchained:core-files';
 
 export const Avatars = createFilesCollection('avatars', {

@@ -12,7 +12,7 @@ Package.onUse((api) => {
 
   api.use('ecmascript');
   api.use('promise');
-  api.use('ostrio:files@1.9.11');
+  
   api.use('unchained:core-logger@0.21.0');
   api.use('unchained:core-countries@0.21.0');
   api.use('unchained:core-languages@0.21.0');
