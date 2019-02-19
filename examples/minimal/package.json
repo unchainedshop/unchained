@@ -11,7 +11,7 @@
     }
   },
   "scripts": {
-    "lint": "eslint . --cache  --ext=jsx --ext=js",
+    "lint": "eslint packages --cache  --ext=jsx --ext=js",
     "dev": "UI_ENDPOINT=http://localhost:4000 meteor --no-release-check --no-lint -p 4010",
     "build": "meteor build --architecture os.linux.x86_64 --directory .build",
     "debug": "UI_ENDPOINT=http://localhost:4000 meteor debug -p 4010"
