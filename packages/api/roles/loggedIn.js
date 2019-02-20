@@ -7,7 +7,7 @@ export default (role, actions) => {
   } = {}, {
     userId: ownUserId,
   } = {}) => {
-    if ((root.username && root.services && root.emails) && !foreignUserId) {
+    if ((root && root.username && root.services && root.emails) && !foreignUserId) {
       return root._id === ownUserId;
     }
     return foreignUserId === ownUserId || !foreignUserId;
