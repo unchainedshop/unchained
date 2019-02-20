@@ -1,7 +1,7 @@
 /* globals Package */
 Package.describe({
   name: 'unchained:core-quotations',
-  version: '0.20.0',
+  version: '0.21.0',
   summary: 'Unchained Engine Core: Quotations',
   git: 'https://github.com/unchainedshop/unchained',
   documentation: 'README.md',
