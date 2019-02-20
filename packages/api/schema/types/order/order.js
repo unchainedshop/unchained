@@ -103,4 +103,4 @@ type Order {
   supportedPaymentProviders: [PaymentProvider!]!
   logs(offset: Int, limit: Int): [Log!]!
 }
-`]
+`];
