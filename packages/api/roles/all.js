@@ -41,6 +41,7 @@ export default (role, actions) => {
   role.allow(actions.reviewProduct, () => false);
   role.allow(actions.updateProductReview, () => false);
   role.allow(actions.manageProductReviews, () => false);
+  role.allow(actions.requestQuotation, () => false);
 
   // only allow if otp is provided
   role.allow(actions.viewOrder, (root, { orderId, otp }) => (Orders.find({

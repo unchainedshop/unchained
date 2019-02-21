@@ -86,6 +86,7 @@ import reorderAssortmentFilters from './reorderAssortmentFilters';
 import createProductReview from './createProductReview';
 import updateProductReview from './updateProductReview';
 import removeProductReview from './removeProductReview';
+import requestQuotation from './requestQuotation';
 
 export default {
   ...Accounts,
@@ -191,4 +192,6 @@ export default {
   createProductReview: acl(actions.reviewProduct)(createProductReview),
   updateProductReview: acl(actions.updateProductReview)(updateProductReview),
   removeProductReview: acl(actions.updateProductReview)(removeProductReview),
+
+  requestQuotation: acl(actions.requestQuotation)(requestQuotation),
 };

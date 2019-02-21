@@ -47,4 +47,5 @@ export default (role, actions) => {
   role.allow(actions.updateCart, () => true);
   role.allow(actions.reviewProduct, () => true);
   role.allow(actions.updateProductReview, () => isOwnedProductReview);
+  role.allow(actions.requestQuotation, () => true);
 };
