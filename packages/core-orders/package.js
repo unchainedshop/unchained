@@ -14,8 +14,9 @@ Package.onUse((api) => {
   api.use('promise');
   api.use('dburles:factory@1.1.0');
   api.use('dburles:collection-helpers@1.1.0');
-  api.use('ostrio:files@1.9.11');
+
   api.use('unchained:utils@0.21.0');
+  api.use('unchained:core-files');
   api.use('unchained:core-logger@0.21.0');
   api.use('unchained:core-pricing@0.21.0');
   api.use('unchained:core-users@0.21.0');

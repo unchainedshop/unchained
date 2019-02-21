@@ -23,7 +23,7 @@ export default {
   roles: checkTypeResolver(actions.viewUserRoles, 'roles'),
 
   cart(user, params, context = {}) {
-    const { countryContext, userId, ...rest } = context;
+    const { countryContext, userId } = context;
     checkAction(actions.viewUserOrders, userId, [user, params, context]);
     return user.cart({ countryContext });
   },

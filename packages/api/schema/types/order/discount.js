@@ -54,4 +54,4 @@ type OrderDiscount {
   total: Money!
   discounted: [OrderDiscountable!]
 }
-`]
+`];
