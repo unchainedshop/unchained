@@ -86,4 +86,4 @@ type OrderPaymentPostfinance implements OrderPayment {
   paid: Date
   meta: JSON
 }
-`]
+`];
