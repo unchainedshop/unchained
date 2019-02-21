@@ -285,7 +285,7 @@ Quotations.updateStatus = ({ status, orderId, info = '' }) => {
     try {
       // we are now allowed to stop this process, else we could
       // end up with non-confirmed but charged orders.
-      OrderDocuments.updateDocuments({
+      QuotationDocuments.updateDocuments({
         orderId,
         date: modifier.$set.confirmed || order.confirmed,
         ...modifier.$set,
