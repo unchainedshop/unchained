@@ -17,7 +17,7 @@ Package.onUse((api) => {
 
   api.use('unchained:utils@0.21.0');
   api.use('unchained:core@0.21.0');
-  api.use('unchained:core-files');
+  api.use('unchained:core-files@0.21.0');
   api.use('unchained:core-users@0.21.0');
   api.use('unchained:core-pricing@0.21.0');
   api.use('unchained:core-warehousing@0.21.0');

@@ -42,6 +42,7 @@ import Country from './country';
 import Assortment from './assortment';
 import Filter from './filter';
 import FilterOption from './filter-option';
+import Quotation from './quotation';
 
 export default {
   User,
@@ -88,4 +89,5 @@ export default {
   Assortment,
   Filter,
   FilterOption,
+  Quotation,
 };

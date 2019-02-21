@@ -4,10 +4,14 @@ import { Promise } from 'meteor/promise';
 import { getFallbackLocale } from 'meteor/unchained:core';
 import { objectInvert } from 'meteor/unchained:utils';
 import { Users } from 'meteor/unchained:core-users';
+import { Products } from 'meteor/unchained:core-products';
+import { Countries } from 'meteor/unchained:core-countries';
 import { Logs, log } from 'meteor/unchained:core-logger';
 import { MessagingDirector, MessagingType } from 'meteor/unchained:core-messaging';
 import { Quotations } from './collections';
+import { QuotationDocuments } from '../quotation-documents/collections';
 import { QuotationStatus } from './schema';
+import { QuotationDirector } from '../../director';
 
 const {
   EMAIL_FROM,
@@ -38,23 +42,38 @@ Quotations.helpers({
       _id: this.userId,
     });
   },
+  product() {
+    return Products.findOne({
+      _id: this.productId,
+    });
+  },
   normalizedStatus() {
     return objectInvert(QuotationStatus)[this.status];
   },
   updateContext(context) {
     return Quotations.updateContext({
-      orderId: this._id,
+      quotationId: this._id,
       context,
     });
   },
-  verify({ meta }, { localeContext }) {
+  verify({ quotationContext }, { localeContext }) {
     if (this.status !== QuotationStatus.REQUESTED) return this;
     const lastUserLanguage = this.user().language();
     const language = (localeContext && localeContext.normalized)
       || (lastUserLanguage && lastUserLanguage.isoCode);
     return this
       .setStatus(QuotationStatus.PROCESSING, 'verified elligibility manually')
-      .process({ meta })
+      .process({ quotationContext })
+      .sendStatusToCustomer({ language });
+  },
+  propose({ quotationContext }, { localeContext }) {
+    if (this.status !== QuotationStatus.PROCESSING) return this;
+    const lastUserLanguage = this.user().language();
+    const language = (localeContext && localeContext.normalized)
+      || (lastUserLanguage && lastUserLanguage.isoCode);
+    return this
+      .setStatus(QuotationStatus.PROPOSED, 'proposed manually')
+      .process({ quotationContext })
       .sendStatusToCustomer({ language });
   },
   sendStatusToCustomer({ language }) {
@@ -73,7 +92,7 @@ Quotations.helpers({
       || getFallbackLocale().normalized;
     const director = new MessagingDirector({
       locale,
-      order: this,
+      quotation: this,
       type: MessagingType.EMAIL,
     });
     const format = (price) => {
@@ -84,10 +103,10 @@ Quotations.helpers({
       template: 'shop.unchained.orders.confirmation',
       attachments,
       meta: {
-        mailPrefix: `${this.orderNumber}_`,
+        mailPrefix: `${this.quotationNumber}_`,
         from: EMAIL_FROM,
         to: this.contact.emailAddress,
-        url: `${UI_ENDPOINT}/order?_id=${this._id}&otp=${this.orderNumber}`,
+        url: `${UI_ENDPOINT}/order?_id=${this._id}&otp=${this.quotationNumber}`,
         summary: this.pricing().formattedSummary(format),
         positions: this.items().map((item) => {
           const texts = item.product().getLocalizedTexts(language);
@@ -100,51 +119,43 @@ Quotations.helpers({
     });
     return this;
   },
-  process({ paymentContext, deliveryContext } = {}) {
-    if (this.nextStatus() === QuotationStatus.PENDING) {
-      // auto charge during transition to pending
-      this.payment().charge(paymentContext, this);
+  process({ quotationContext } = {}) {
+    if (this.nextStatus() === QuotationStatus.PROPOSED) {
+      this.buildProposal(quotationContext);
     }
-
-    if (this.nextStatus() === QuotationStatus.CONFIRMED) {
-      if (this.status !== QuotationStatus.CONFIRMED) {
-        // we have to stop here shortly to complete the confirmation
-        // before auto delivery is started, else we have no chance to create
-        // documents and numbers that are needed for delivery
-        const newConfirmedOrder = this.setStatus(QuotationStatus.CONFIRMED, 'before delivery');
-        this.delivery().send(deliveryContext, newConfirmedOrder);
-      } else {
-        this.delivery().send(deliveryContext, this);
-      }
-    }
-    return this.setStatus(this.nextStatus(), 'order processed');
-  },
-  setStatus(status, info) {
-    return Quotations.updateStatus({
-      orderId: this._id,
-      status,
-      info,
-    });
+    return this.setStatus(this.nextStatus(), 'quotation processed');
   },
   nextStatus() {
     let { status } = this;
     if (status === QuotationStatus.REQUESTED || !status) {
-      if (this.isAutoVerificationEnabled()) {
+      if (!Promise.await(this.controller().manualRequestVerificationNeeded())) {
         status = QuotationStatus.PROCESSING;
       }
     }
     if (status === QuotationStatus.PROCESSING) {
-      if (this.isAutoOfferingEnabled()) {
+      if (!Promise.await(this.controller().manualProposalNeeded())) {
         status = QuotationStatus.PROPOSED;
       }
     }
     return status;
   },
-  isAutoVerificationEnabled() {
-    return true;
+  buildProposal(quotationContext) {
+    const proposal = Promise.await(this.controller().quote(quotationContext));
+    return Quotations.updateProposal({
+      ...proposal,
+      quotationId: this._id,
+    });
   },
-  isAutoOfferingEnabled() {
-    return true;
+  controller() {
+    const director = new QuotationDirector(this);
+    return director;
+  },
+  setStatus(status, info) {
+    return Quotations.updateStatus({
+      quotationId: this._id,
+      status,
+      info,
+    });
   },
   addDocument(objOrString, meta, options = {}) {
     if (typeof objOrString === 'string' || objOrString instanceof String) {
@@ -197,56 +208,67 @@ Quotations.helpers({
   },
 });
 
-Quotations.createOrder = ({
-  userId, currency, countryCode, ...rest
+Quotations.requestQuotation = ({
+  productId, userId, currencyCode, ...rest
 }) => {
-  const user = Users.findOne({ _id: userId });
-  log('Create Order', { userId });
-  const orderId = Quotations.insert({
+  log('Create Quotation', { userId });
+  const quotationId = Quotations.insert({
     ...rest,
     created: new Date(),
-    status: QuotationStatus.OPEN,
-    billingAddress: user.lastBillingAddress,
-    contact: user.isGuest() ? {} : {
-      telNumber: user.telNumber(),
-      emailAddress: user.email(),
-    },
+    status: QuotationStatus.REQUESTED,
     userId,
-    currency,
-    countryCode,
+    productId,
+    currency: Countries.resolveDefaultCurrencyCode({
+      isoCode: currencyCode,
+    }),
+    countryCode: currencyCode,
   });
-  const order = Quotations.findOne({ _id: orderId });
-  return order.init();
+  const quotation = Quotations.findOne({ _id: quotationId });
+  return quotation.process();
 };
 
-Quotations.updateContext = ({ context, orderId }) => {
-  log('Update Arbitrary Context', { orderId });
-  Quotations.update({ _id: orderId }, {
+Quotations.updateContext = ({ context, quotationId }) => {
+  log('Update Arbitrary Context', { quotationId });
+  Quotations.update({ _id: quotationId }, {
     $set: {
       context,
       updated: new Date(),
     },
   });
-  Quotations.updateCalculation({ orderId });
-  return Quotations.findOne({ _id: orderId });
+  return Quotations.findOne({ _id: quotationId });
 };
 
-Quotations.newOrderNumber = () => {
-  let orderNumber = null;
+Quotations.updateProposal = ({
+  price, expires, meta, quotationId,
+}) => {
+  log('Update Quote with proposal data', { quotationId });
+  Quotations.update({ _id: quotationId }, {
+    $set: {
+      price,
+      expires,
+      meta,
+      updated: new Date(),
+    },
+  });
+  return Quotations.findOne({ _id: quotationId });
+};
+
+Quotations.newQuotationNumber = () => {
+  let quotationNumber = null;
   const hashids = new Hashids('unchained', 6, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890');
-  while (!orderNumber) {
+  while (!quotationNumber) {
     const randomNumber = Math.floor(Math.random() * (999999999 - 1)) + 1;
     const newHashID = hashids.encode(randomNumber);
-    if (Quotations.find({ orderNumber: newHashID }, { limit: 1 }).count() === 0) {
-      orderNumber = newHashID;
+    if (Quotations.find({ quotationNumber: newHashID }, { limit: 1 }).count() === 0) {
+      quotationNumber = newHashID;
     }
   }
-  return orderNumber;
+  return quotationNumber;
 };
 
-Quotations.updateStatus = ({ status, orderId, info = '' }) => {
-  const order = Quotations.findOne({ _id: orderId });
-  if (order.status === status) return order;
+Quotations.updateStatus = ({ status, quotationId, info = '' }) => {
+  const quotation = Quotations.findOne({ _id: quotationId });
+  if (quotation.status === status) return quotation;
   const date = new Date();
   let isShouldUpdateDocuments = false;
   const modifier = {
@@ -262,18 +284,14 @@ Quotations.updateStatus = ({ status, orderId, info = '' }) => {
   switch (status) {
     // explicitly use fallthrough here!
     case QuotationStatus.FULLFILLED:
-      if (!order.fullfilled) {
+      if (!quotation.fullfilled) {
         modifier.$set.fullfilled = date;
       }
-    case QuotationStatus.CONFIRMED: // eslint-disable-line no-fallthrough
+    case QuotationStatus.PROPOSED: // eslint-disable-line no-fallthrough
       isShouldUpdateDocuments = true;
-      if (!order.confirmed) {
-        modifier.$set.confirmed = date;
-      }
-    case QuotationStatus.PENDING: // eslint-disable-line no-fallthrough
-      if (!order.ordered) {
-        modifier.$set.ordered = date;
-        modifier.$set.orderNumber = Quotations.newOrderNumber();
+    case QuotationStatus.PROCESSING: // eslint-disable-line no-fallthrough
+      if (!quotation.quotationNumber) {
+        modifier.$set.quotationNumber = Quotations.newQuotationNumber();
       }
       break;
     default:
@@ -286,15 +304,15 @@ Quotations.updateStatus = ({ status, orderId, info = '' }) => {
       // we are now allowed to stop this process, else we could
       // end up with non-confirmed but charged orders.
       QuotationDocuments.updateDocuments({
-        orderId,
-        date: modifier.$set.confirmed || order.confirmed,
+        quotationId,
+        date: modifier.$set.confirmed || quotation.confirmed,
         ...modifier.$set,
       });
     } catch (e) {
       log(e, { level: 'error' });
     }
   }
-  log(`New Status: ${status}`, { orderId });
-  Quotations.update({ _id: orderId }, modifier);
-  return Quotations.findOne({ _id: orderId });
+  log(`New Status: ${status}`, { quotationId });
+  Quotations.update({ _id: quotationId }, modifier);
+  return Quotations.findOne({ _id: quotationId });
 };

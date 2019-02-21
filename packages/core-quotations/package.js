@@ -13,7 +13,14 @@ Package.onUse((api) => {
   api.use('mongo');
   api.use('dburles:factory@1.1.0');
   api.use('dburles:collection-helpers@1.1.0');
-  api.use('unchained:utils@0.20.0');
+  api.use('unchained:core-files@0.21.0');
+  api.use('unchained:core@0.21.0');
+  api.use('unchained:utils@0.21.0');
+  api.use('unchained:core-users@0.21.0');
+  api.use('unchained:core-products@0.21.0');
+  api.use('unchained:core-countries@0.21.0');
+  api.use('unchained:core-logger@0.21.0');
+  api.use('unchained:core-messaging@0.21.0');
 
   api.mainModule('quotations.js', 'server');
 });
