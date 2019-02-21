@@ -25,13 +25,12 @@ class ManualOffering extends QuotationAdapter {
   }
 
   async manualProposalNeeded(context) { // eslint-disable-line
-    return false;
+    return true;
   }
 
   async quote(config) { // eslint-disable-line
     return {
-      price: 500,
-      expires: new Date(),
+      expires: new Date() + (1000 * 3600),
     };
   }
 
