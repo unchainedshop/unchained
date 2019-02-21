@@ -7,6 +7,10 @@ export default function (root, { productId, configuration }, { userId, countryCo
   log(`mutation requestQuotation ${productId} ${configuration ? JSON.stringify(configuration) : ''}`, { userId });
   const product = Products.findOne({ _id: productId });
   if (!product) throw new ProductNotFoundError({ data: { productId } });
-  const quotation = Quotations.requestQuotation({ productId, currencyCode: countryContext });
+  const quotation = Quotations.requestQuotation({
+    userId,
+    productId,
+    currencyCode: countryContext,
+  });
   return quotation;
 }

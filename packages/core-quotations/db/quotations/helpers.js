@@ -127,20 +127,23 @@ Quotations.helpers({
   },
   nextStatus() {
     let { status } = this;
+    const controller = this.controller();
+
     if (status === QuotationStatus.REQUESTED || !status) {
-      if (!Promise.await(this.controller().manualRequestVerificationNeeded())) {
+      if (!Promise.await(controller.manualRequestVerificationNeeded())) {
         status = QuotationStatus.PROCESSING;
       }
     }
     if (status === QuotationStatus.PROCESSING) {
-      if (!Promise.await(this.controller().manualProposalNeeded())) {
+      if (!Promise.await(controller.manualProposalNeeded())) {
         status = QuotationStatus.PROPOSED;
       }
     }
     return status;
   },
   buildProposal(quotationContext) {
-    const proposal = Promise.await(this.controller().quote(quotationContext));
+    const controller = this.controller();
+    const proposal = Promise.await(controller.quote(quotationContext));
     return Quotations.updateProposal({
       ...proposal,
       quotationId: this._id,
@@ -241,7 +244,7 @@ Quotations.updateContext = ({ context, quotationId }) => {
 Quotations.updateProposal = ({
   price, expires, meta, quotationId,
 }) => {
-  log('Update Quote with proposal data', { quotationId });
+  log('Update Quotation with Proposal', { quotationId });
   Quotations.update({ _id: quotationId }, {
     $set: {
       price,
@@ -305,7 +308,7 @@ Quotations.updateStatus = ({ status, quotationId, info = '' }) => {
       // end up with non-confirmed but charged orders.
       QuotationDocuments.updateDocuments({
         quotationId,
-        date: modifier.$set.confirmed || quotation.confirmed,
+        date,
         ...modifier.$set,
       });
     } catch (e) {

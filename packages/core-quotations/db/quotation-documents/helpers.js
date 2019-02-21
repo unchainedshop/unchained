@@ -1,4 +1,5 @@
 import 'meteor/dburles:collection-helpers';
+import { Promise } from 'meteor/promise';
 import { log } from 'meteor/unchained:core-logger';
 import { DocumentDirector } from 'meteor/unchained:core-documents';
 import { QuotationDocuments } from './collections';
@@ -8,7 +9,8 @@ import { Quotations } from '../quotations/collections';
 class QuotationDocumentDirector extends DocumentDirector {
   constructor(context) {
     const documents = context && context.quotation && context.quotation.documents();
-    super({ documents, ...context });
+    const user = context && context.quotation && context.quotation.user();
+    super({ documents, user, ...context });
   }
 
   resolveQuotationNumber(options) {
@@ -18,10 +20,11 @@ class QuotationDocumentDirector extends DocumentDirector {
     return quotationNumber;
   }
 
-  buildProposal(options) {
+  async buildProposal(options) {
     const quotationNumber = this.resolveQuotationNumber(options);
     if (!quotationNumber) return;
-    this.execute('buildProposal', { quotationNumber, ...options }).forEach((doc) => {
+    const files = await this.execute('buildProposal', { quotationNumber, ...options });
+    files.forEach((doc) => {
       if (doc) {
         const { date } = options;
         const { file, meta, ...rest } = doc;
@@ -34,15 +37,14 @@ class QuotationDocumentDirector extends DocumentDirector {
     });
   }
 
-  updateDocuments({ date, status, ...overrideValues }) {
+  async updateDocuments({ date, status, ...overrideValues }) {
     if (!this.context.quotation || !date) return;
     const { quotation } = this.context;
     quotation.status = status;
-
     if (!this.isDocumentExists({
       type: QuotationDocumentTypes.PROPOSAL,
     })) {
-      this.buildProposal({
+      await this.buildProposal({
         date,
         status,
         ancestors: this.filteredDocuments(),
@@ -57,5 +59,5 @@ QuotationDocuments.updateDocuments = ({ quotationId, ...rest }) => {
   const quotation = Quotations.findOne({ _id: quotationId });
   const director = new QuotationDocumentDirector({ quotation });
   log('Update Quotation Documents', { quotationId });
-  director.updateDocuments({ ...rest });
+  Promise.await(director.updateDocuments({ ...rest }));
 };
