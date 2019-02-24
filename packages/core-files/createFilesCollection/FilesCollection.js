@@ -23,6 +23,7 @@ FilesCollection.prototype.insertWithRemoteBuffer = async function insertWithRemo
           if (err) return reject(err);
           return resolve(fileObj);
         },
+        true, // proceedAfterUpload
       );
     } catch (e) {
       reject(e);
@@ -58,6 +59,7 @@ FilesCollection.prototype.insertWithRemoteFile = async function insertWithRemote
             if (err) return reject(err);
             return resolve(fileObj);
           },
+          true, // proceedAfterUpload
         );
       } catch (e) {
         reject(e);
