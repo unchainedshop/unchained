@@ -1,6 +1,5 @@
 import { Mongo } from 'meteor/mongo';
 import { createFilesCollection } from 'meteor/unchained:core-files';
-git 
 
 export const ProductMedia = new Mongo.Collection('product_media');
 export const ProductMediaTexts = new Mongo.Collection('product_media_texts');
