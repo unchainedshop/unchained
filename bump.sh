@@ -16,6 +16,7 @@ cd ../core-warehousing && meteor publish &&
 cd ../core-products && meteor publish &&
 cd ../core-filters && meteor publish &&
 cd ../core-assortments && meteor publish &&
+cd ../core-quotations && meteor publish &&
 cd ../core-orders && meteor publish &&
 cd ../api && meteor publish &&
 cd ../platform && meteor publish
