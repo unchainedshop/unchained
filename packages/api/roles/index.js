@@ -68,6 +68,7 @@ export const actions = [
   'reviewProduct',
   'updateProductReview',
   'manageProductReviews',
+  'requestQuotation',
 ].reduce((oldValue, actionValue) => {
   const newValue = oldValue;
   newValue[actionValue] = actionValue;
