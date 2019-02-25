@@ -397,7 +397,11 @@ Collections.Assortments.helpers({
         return this.filteredProductsPointer.count();
       },
       items() {
-        return this.filteredProductsPointer.fetch();
+        const items = this.filteredProductsPointer.fetch();
+        const order = {};
+        filteredProductIds.forEach((a, i) => { order[a] = i; });
+        items.sort((a, b) => order[a._id] - order[b._id]);
+        return items;
       },
     };
   },
