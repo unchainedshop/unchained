@@ -27,7 +27,7 @@ const ProductCommerceSchema = new SimpleSchema({
 
 const ProductWarehousingSchema = new SimpleSchema({
   baseUnit: String,
-  sku: String,
+  sku: { type: String, index: true },
 }, { requiredByDefault: false });
 
 const ProductSupplySchema = new SimpleSchema({
