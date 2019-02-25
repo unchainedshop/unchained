@@ -242,8 +242,7 @@ class Smallinvoice extends DocumentAdapter {
 
   constructor(data) {
     super(data);
-    const { order } = this.context;
-    const user = order.user();
+    const { user } = this.context;
     const language = user && user.language();
     this.language = language.isoCode || LANG;
     this.api = new SmallinvoiceAPI({
@@ -298,7 +297,7 @@ class Smallinvoice extends DocumentAdapter {
     return [];
   }
 
-  buildInvoiceAndReceipt({
+  async buildInvoiceAndReceipt({
     date, payment, orderNumber, ancestors,
   }) {
     if (ancestors && ancestors.length > 0) {
@@ -358,7 +357,7 @@ class Smallinvoice extends DocumentAdapter {
     ];
   }
 
-  buildDeliveryNote({
+  async buildDeliveryNote({
     date, delivery, orderNumber, ancestors,
   }) {
     const { order } = this.context;
@@ -406,7 +405,7 @@ class Smallinvoice extends DocumentAdapter {
     };
   }
 
-  buildOrderConfirmation({ date, orderNumber }) {
+  async buildOrderConfirmation({ date, orderNumber }) {
     const { order } = this.context;
     const clientId = this.api.upsertClient({
       ...order.contact,
