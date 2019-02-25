@@ -9,10 +9,7 @@ import { Locale } from 'locale';
 import * as Collections from './collections';
 
 function eqSet(as, bs) {
-  if (as.size !== bs.size) return false;
-  for (const a of as) if (!bs.has(a)) return false; // eslint-disable-line
-  for (const b of bs) if (!as.has(b)) return false; // eslint-disable-line
-  return true;
+  return [...as].join(',') === [...bs].join(',');
 }
 
 Collections.Assortments.createAssortment = ({
@@ -171,7 +168,7 @@ Collections.AssortmentProducts.getNewSortKey = (assortmentId) => {
   return lastAssortmentProduct.sortKey + 1;
 };
 
-Collections.AssortmentProducts.updateManualOrder = ({ sortKeys }) => {
+Collections.AssortmentProducts.updateManualOrder = ({ sortKeys, skipInvalidation = false }) => {
   const changedAssortmentProductIds = sortKeys.map(({ assortmentProductId, sortKey }) => {
     Collections.AssortmentProducts.update({
       _id: assortmentProductId,
@@ -180,9 +177,18 @@ Collections.AssortmentProducts.updateManualOrder = ({ sortKeys }) => {
     });
     return assortmentProductId;
   });
-  return Collections.AssortmentProducts
+  const assortmentProducts = Collections.AssortmentProducts
     .find({ _id: { $in: changedAssortmentProductIds } })
     .fetch();
+
+  if (!skipInvalidation) {
+    const assortmentIds = assortmentProducts.map(({ assortmentId }) => assortmentId)
+    Collections.Assortments
+      .find({ _id: { $in: assortmentIds } })
+      .forEach(assortment => assortment.invalidateProductIdCache())
+  }
+
+  return assortmentProducts;
 }
 
 Collections.AssortmentFilters.getNewSortKey = (assortmentId) => {
@@ -543,7 +549,6 @@ Collections.Assortments.helpers({
     if (eqSet(new Set(productIds), new Set(this._cachedProductIds))) { // eslint-disable-line
       return 0;
     }
-
     let updateCount = Collections.Assortments.update({ _id: this._id }, {
       $set: {
         updated: new Date(),
