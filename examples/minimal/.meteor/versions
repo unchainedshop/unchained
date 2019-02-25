@@ -1,10 +1,10 @@
 accounts-base@1.4.3
 accounts-oauth@1.1.16
 accounts-password@1.5.1
-aldeed:collection2@3.0.1
+aldeed:collection2@3.0.2
 aldeed:schema-index@3.0.0
 allow-deny@1.1.0
-autoupdate@1.5.0
+autoupdate@1.5.1
 babel-compiler@7.2.4
 babel-runtime@1.3.0
 base64@1.0.11
@@ -58,7 +58,7 @@ ostrio:cookies@2.3.0
 ostrio:files@1.10.2
 percolate:migrations@1.0.2
 promise@0.11.2
-raix:eventemitter@0.1.3
+raix:eventemitter@1.0.0
 random@1.1.0
 rate-limit@1.0.9
 reactive-var@1.0.11
@@ -83,6 +83,7 @@ unchained:core-currencies@0.22.0
 unchained:core-delivery@0.22.0
 unchained:core-discounting@0.22.0
 unchained:core-documents@0.22.0
+unchained:core-files@0.22.0
 unchained:core-filters@0.22.0
 unchained:core-languages@0.22.0
 unchained:core-logger@0.22.0
@@ -91,6 +92,7 @@ unchained:core-orders@0.22.0
 unchained:core-payment@0.22.0
 unchained:core-pricing@0.22.0
 unchained:core-products@0.22.0
+unchained:core-quotations@0.22.0
 unchained:core-users@0.22.0
 unchained:core-warehousing@0.22.0
 unchained:platform@0.22.0
