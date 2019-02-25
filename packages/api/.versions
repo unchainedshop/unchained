@@ -46,7 +46,7 @@ mongo-id@1.0.7
 npm-mongo@3.1.1
 ordered-dict@1.1.0
 ostrio:cookies@2.2.7
-
+ostrio:files@1.9.11
 percolate:migrations@1.0.2
 promise@0.11.2
 random@1.1.0
@@ -66,6 +66,7 @@ unchained:core-currencies@0.22.0
 unchained:core-delivery@0.22.0
 unchained:core-discounting@0.22.0
 unchained:core-documents@0.22.0
+unchained:core-files@0.22.0
 unchained:core-filters@0.22.0
 unchained:core-languages@0.22.0
 unchained:core-logger@0.22.0
@@ -74,6 +75,7 @@ unchained:core-orders@0.22.0
 unchained:core-payment@0.22.0
 unchained:core-pricing@0.22.0
 unchained:core-products@0.22.0
+unchained:core-quotations@0.22.0
 unchained:core-users@0.22.0
 unchained:core-warehousing@0.22.0
 unchained:roles@0.22.0
