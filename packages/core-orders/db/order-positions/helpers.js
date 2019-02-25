@@ -138,10 +138,13 @@ OrderPositions.updateScheduling = ({ positionId, position }) => {
         warehousingProvider,
         deliveryProvider,
         product,
-        quantity: item.quantity,
-        country: countryCode,
+        item,
+        delivery,
+        order,
         userId,
+        country: countryCode,
         referenceDate: order.ordered,
+        quantity: item.quantity,
       };
       const dispatch = warehousingProvider.estimatedDispatch(context);
       return {

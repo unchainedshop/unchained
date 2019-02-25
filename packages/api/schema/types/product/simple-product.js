@@ -17,7 +17,8 @@ type SimpleProduct implements Product {
   simulatedDiscounts(quantity: Int = 1): [ProductDiscount!]
   simulatedDispatches(deliveryProviderType: DeliveryProviderType = SHIPPING, referenceDate: Date, quantity: Int = 1): [Dispatch!]
   simulatedStocks(deliveryProviderType: DeliveryProviderType = SHIPPING, referenceDate: Date): [Stock!]
-  siblings(assortmentId: ID): [Product!]!
+  assortments(limit: Int, offset: Int): [Assortment!]! 
+  siblings(assortmentId: ID, limit: Int, offset: Int): [Product!]!
   dimensions: Dimensions
   sku: String
   baseUnit: String
