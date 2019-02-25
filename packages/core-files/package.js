@@ -1,6 +1,6 @@
 Package.describe({
   name: 'unchained:core-files',
-  version: '0.21.0',
+  version: '0.22.0',
   // Brief, one-line summary of the package.
   summary: '',
   // URL to the Git repository containing the source code for this package.
