@@ -171,6 +171,20 @@ Collections.AssortmentProducts.getNewSortKey = (assortmentId) => {
   return lastAssortmentProduct.sortKey + 1;
 };
 
+Collections.AssortmentProducts.updateManualOrder = ({ sortKeys }) => {
+  const changedAssortmentProductIds = sortKeys.map(({ assortmentProductId, sortKey }) => {
+    Collections.AssortmentProducts.update({
+      _id: assortmentProductId,
+    }, {
+      $set: { sortKey: sortKey + 1, updated: new Date() },
+    });
+    return assortmentProductId;
+  });
+  return Collections.AssortmentProducts
+    .find({ _id: { $in: changedAssortmentProductIds } })
+    .fetch();
+}
+
 Collections.AssortmentFilters.getNewSortKey = (assortmentId) => {
   const lastAssortmentFilter = Collections.AssortmentFilters.findOne({
     assortmentId,
@@ -180,6 +194,20 @@ Collections.AssortmentFilters.getNewSortKey = (assortmentId) => {
   return lastAssortmentFilter.sortKey + 1;
 };
 
+Collections.AssortmentFilters.updateManualOrder = ({ sortKeys }) => {
+  const changedAssortmentFilterIds = sortKeys.map(({ assortmentFilterId, sortKey }) => {
+    Collections.AssortmentFilters.update({
+      _id: assortmentFilterId,
+    }, {
+      $set: { sortKey: sortKey + 1, updated: new Date() },
+    });
+    return assortmentFilterId;
+  });
+  return Collections.AssortmentFilters
+    .find({ _id: { $in: changedAssortmentFilterIds } })
+    .fetch();
+}
+
 Collections.AssortmentLinks.getNewSortKey = (parentAssortmentId) => {
   const lastAssortmentProduct = Collections.AssortmentLinks.findOne({
     parentAssortmentId,
@@ -188,6 +216,21 @@ Collections.AssortmentLinks.getNewSortKey = (parentAssortmentId) => {
   }) || { sortKey: 0 };
   return lastAssortmentProduct.sortKey + 1;
 };
+
+Collections.AssortmentLinks.updateManualOrder = ({ sortKeys }) => {
+  const changedAssortmentLinkIds = sortKeys.map(({ assortmentLinkId, sortKey }) => {
+    Collections.AssortmentLinks.update({
+      _id: assortmentLinkId,
+    }, {
+      $set: { sortKey: sortKey + 1, updated: new Date() },
+    });
+    return assortmentLinkId;
+  });
+  return Collections.AssortmentLinks
+    .find({ _id: { $in: changedAssortmentLinkIds } })
+    .fetch();
+}
+
 
 Products.helpers({
   assortmentIds() {

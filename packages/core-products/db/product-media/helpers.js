@@ -40,3 +40,17 @@ ProductMedia.getNewSortKey = (productId) => {
   }) || { sortKey: 0 };
   return lastProductMedia.sortKey + 1;
 };
+
+ProductMedia.updateManualOrder = ({ sortKeys }) => {
+  const changedMediaIds = sortKeys.map(({ productMediaId, sortKey }) => {
+    ProductMedia.update({
+      _id: productMediaId,
+    }, {
+      $set: { sortKey: sortKey + 1, updated: new Date() },
+    });
+    return productMediaId;
+  });
+  return ProductMedia
+    .find({ _id: { $in: changedMediaIds } })
+    .fetch();
+}
