@@ -390,18 +390,39 @@ Collections.Assortments.helpers({
       _id: { $in: productIds },
     };
 
+    const filteredPipeline = [
+      {
+        $match: selector,
+      }, {
+        $addFields: {
+          index: { $indexOfArray: [filteredProductIds, '$_id'] },
+        },
+      }, {
+        $match: {
+          index: { $ne: -1 },
+        },
+      },
+      {
+        $sort: {
+          index: 1,
+        },
+      },
+      { $skip: offset },
+      { $limit: limit },
+    ];
+
+    const rawProducts = Products.rawCollection();
+    const aggregateProducts = Meteor.wrapAsync(rawProducts.aggregate, rawProducts);
+
     return {
-      filteredProductsPointer: Products.find(filteredSelector, options),
       totalCount: () => Products.find(unfilteredSelector, options).count(),
       filteredCount() {
-        return this.filteredProductsPointer.count();
+        return Products.find(filteredSelector, options).count();
       },
-      items() {
-        const items = this.filteredProductsPointer.fetch();
-        const order = {};
-        filteredProductIds.forEach((a, i) => { order[a] = i; });
-        items.sort((a, b) => order[a._id] - order[b._id]);
-        return items;
+      async items() {
+        const aggregationPointer = aggregateProducts(filteredPipeline);
+        const items = await aggregationPointer.toArray();
+        return items.map(item => new Products._transform(item)); // eslint-disable-line
       },
     };
   },
