@@ -7,7 +7,7 @@ export default (role, actions) => {
   } = {}, {
     userId: ownUserId,
   } = {}) => {
-    if ((root.username && root.services && root.emails) && !foreignUserId) {
+    if ((root && root.username && root.services && root.emails) && !foreignUserId) {
       return root._id === ownUserId;
     }
     return foreignUserId === ownUserId || !foreignUserId;
@@ -47,4 +47,5 @@ export default (role, actions) => {
   role.allow(actions.updateCart, () => true);
   role.allow(actions.reviewProduct, () => true);
   role.allow(actions.updateProductReview, () => isOwnedProductReview);
+  role.allow(actions.requestQuotation, () => true);
 };
