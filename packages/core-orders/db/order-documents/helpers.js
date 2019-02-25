@@ -1,4 +1,5 @@
 import 'meteor/dburles:collection-helpers';
+import { Promise } from 'meteor/promise';
 import { log } from 'meteor/unchained:core-logger';
 import { DocumentDirector } from 'meteor/unchained:core-documents';
 import { OrderDocuments } from './collections';
@@ -10,7 +11,8 @@ import { OrderPayments } from '../order-payments/collections';
 class OrderDocumentDirector extends DocumentDirector {
   constructor(context) {
     const documents = context && context.order && context.order.documents();
-    super({ documents, ...context });
+    const user = context && context.order && context.order.user();
+    super({ documents, user, ...context });
   }
 
   resolveOrderNumber(options) {
@@ -19,10 +21,11 @@ class OrderDocumentDirector extends DocumentDirector {
     return orderNumber;
   }
 
-  buildOrderConfirmation(options) {
+  async buildOrderConfirmation(options) {
     const orderNumber = this.resolveOrderNumber(options);
     if (!orderNumber) return;
-    this.execute('buildOrderConfirmation', { orderNumber, ...options }).forEach((doc) => {
+    const documents = await this.execute('buildOrderConfirmation', { orderNumber, ...options });
+    documents.forEach((doc) => {
       if (doc) {
         const { date } = options;
         const { file, meta, ...rest } = doc;
@@ -35,10 +38,11 @@ class OrderDocumentDirector extends DocumentDirector {
     });
   }
 
-  buildDeliveryNote(options) {
+  async buildDeliveryNote(options) {
     const orderNumber = this.resolveOrderNumber(options);
     if (!orderNumber) return;
-    this.execute('buildDeliveryNote', { orderNumber, ...options }).forEach((doc) => {
+    const documents = await this.execute('buildDeliveryNote', { orderNumber, ...options });
+    documents.forEach((doc) => {
       if (doc) {
         const { date, delivery } = options;
         const { file, meta, ...rest } = doc;
@@ -53,10 +57,11 @@ class OrderDocumentDirector extends DocumentDirector {
     });
   }
 
-  buildInvoice(options) {
+  async buildInvoice(options) {
     const orderNumber = this.resolveOrderNumber(options);
     if (!orderNumber) return;
-    this.execute('buildInvoiceAndReceipt', { orderNumber, ...options }).forEach((files) => {
+    const documents = await this.execute('buildInvoiceAndReceipt', { orderNumber, ...options });
+    documents.forEach((files) => {
       if (files) {
         const { date, payment } = options;
         const { file: invoice, meta, ...rest } = files[0];
@@ -79,7 +84,7 @@ class OrderDocumentDirector extends DocumentDirector {
     });
   }
 
-  updateDocuments({ date, status, ...overrideValues }) {
+  async updateDocuments({ date, status, ...overrideValues }) {
     if (!this.context.order || !date) return;
     const { order } = this.context;
     const payment = (this.context.payment || order.payment());
@@ -95,7 +100,7 @@ class OrderDocumentDirector extends DocumentDirector {
     if (!this.isDocumentExists({
       type: OrderDocumentTypes.ORDER_CONFIRMATION,
     })) {
-      this.buildOrderConfirmation({
+      await this.buildOrderConfirmation({
         date,
         status,
         ancestors: this.filteredDocuments(),
@@ -109,7 +114,7 @@ class OrderDocumentDirector extends DocumentDirector {
     })) {
       const deliveryProvider = delivery.provider();
       if (deliveryProvider) {
-        this.buildDeliveryNote({
+        await this.buildDeliveryNote({
           date,
           delivery,
           ancestors: this.filteredDocuments({
@@ -125,7 +130,7 @@ class OrderDocumentDirector extends DocumentDirector {
     })) {
       const paymentProvider = payment.provider();
       if (paymentProvider) {
-        this.buildInvoice({
+        await this.buildInvoice({
           date,
           payment,
           ancestors: this.filteredDocuments({
@@ -143,7 +148,7 @@ OrderDocuments.updateDocuments = ({ orderId, ...rest }) => {
   const order = Orders.findOne({ _id: orderId });
   const director = new OrderDocumentDirector({ order });
   log('Update Order Documents', { orderId });
-  director.updateDocuments({ ...rest });
+  Promise.await(director.updateDocuments({ ...rest }));
 };
 
 OrderDocuments.updatePaymentDocuments = ({ paymentId, ...rest }) => {
@@ -151,7 +156,7 @@ OrderDocuments.updatePaymentDocuments = ({ paymentId, ...rest }) => {
   const order = Orders.findOne({ _id: payment.orderId });
   const director = new OrderDocumentDirector({ order, payment });
   log(`Payment ${paymentId} -> Update Payment Documents`, { orderId: payment.orderId });
-  director.updateDocuments({ ...rest });
+  Promise.await(director.updateDocuments({ ...rest }));
 };
 
 OrderDocuments.updateDeliveryDocuments = ({ deliveryId, ...rest }) => {
@@ -159,5 +164,5 @@ OrderDocuments.updateDeliveryDocuments = ({ deliveryId, ...rest }) => {
   const order = Orders.findOne({ _id: delivery.orderId });
   const director = new OrderDocumentDirector({ order, delivery });
   log(`Delivery ${deliveryId} -> Update Delivery Documents`, { orderId: delivery.orderId });
-  director.updateDocuments({ ...rest });
+  Promise.await(director.updateDocuments({ ...rest }));
 };

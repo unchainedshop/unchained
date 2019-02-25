@@ -196,15 +196,18 @@ Products.helpers({
       .fetch()
       .map(({ assortmentId: id }) => id);
   },
-  assortments({ includeInactive = false } = {}) {
+  assortments({ includeInactive = false, limit = 0, offset = 0 } = {}) {
     const assortmentIds = this.assortmentIds();
     const selector = { _id: { $in: assortmentIds } };
     if (!includeInactive) {
       selector.isActive = true;
     }
-    return Collections.Assortments.find(selector).fetch();
+    const options = { skip: offset, limit };
+    return Collections.Assortments.find(selector, options).fetch();
   },
-  siblings({ assortmentId, includeDrafts = false } = {}) {
+  siblings({
+    assortmentId, limit = 0, offset = 0, sort = {},
+  } = {}) {
     const assortmentIds = assortmentId
       ? [assortmentId]
       : this.assortmentIds();
@@ -224,10 +227,8 @@ Products.helpers({
       _id: { $in: productIds },
       status: { $in: [ProductStatus.ACTIVE, ProductStatus.DRAFT] },
     };
-    if (!includeDrafts) {
-      productSelector.status = ProductStatus.ACTIVE;
-    }
-    return Products.find(productSelector).fetch();
+    const productOptions = { skip: offset, limit, sort };
+    return Products.find(productSelector, productOptions).fetch();
   },
 });
 
@@ -361,7 +362,7 @@ Collections.Assortments.helpers({
     });
   },
   products({
-    limit = 10, offset = 0, query,
+    limit = 10, offset = 0, query, sort = {},
     forceLiveCollection = false,
     includeInactive = false,
   } = {}) {
@@ -372,7 +373,7 @@ Collections.Assortments.helpers({
     if (!includeInactive) {
       selector.status = ProductStatus.ACTIVE;
     }
-    const options = { skip: offset, limit };
+    const options = { skip: offset, limit, sort };
 
     const filteredProductIds = Filters.filterProductIds({
       productIds,
@@ -390,14 +391,39 @@ Collections.Assortments.helpers({
       _id: { $in: productIds },
     };
 
+    const filteredPipeline = [
+      {
+        $match: selector,
+      }, {
+        $addFields: {
+          index: { $indexOfArray: [filteredProductIds, '$_id'] },
+        },
+      }, {
+        $match: {
+          index: { $ne: -1 },
+        },
+      },
+      {
+        $sort: {
+          index: 1,
+        },
+      },
+      { $skip: offset },
+      { $limit: limit },
+    ];
+
+    const rawProducts = Products.rawCollection();
+    const aggregateProducts = Meteor.wrapAsync(rawProducts.aggregate, rawProducts);
+
     return {
-      filteredProductsPointer: Products.find(filteredSelector, options),
       totalCount: () => Products.find(unfilteredSelector, options).count(),
       filteredCount() {
-        return this.filteredProductsPointer.count();
+        return Products.find(filteredSelector, options).count();
       },
-      items() {
-        return this.filteredProductsPointer.fetch();
+      async items() {
+        const aggregationPointer = aggregateProducts(filteredPipeline);
+        const items = await aggregationPointer.toArray();
+        return items.map(item => new Products._transform(item)); // eslint-disable-line
       },
     };
   },
