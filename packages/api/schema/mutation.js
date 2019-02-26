@@ -302,14 +302,19 @@ export default [/* GraphQL */`
     removeCartDiscount(discountId: ID!): OrderDiscount!
 
     """
+    Change billing address and order contact of the current cart
+    """
+    updateCart(address: AddressInput, contact: ContactInput, meta: JSON): Order!
+
+    """
+    Change billing address and order contact of an open order
+    """
+    updateOrder(orderId: ID!, address: AddressInput, contact: ContactInput, meta: JSON): Order!
+
+    """
     Remove an order while it's still open
     """
     removeOrder(orderId: ID!): Order!
-
-    """
-    Change billing address and order conact of an open order
-    """
-    updateOrder(orderId: ID!, address: AddressInput, contact: ContactInput, meta: JSON): Order!
 
     """
     Change the delivery method/provider
