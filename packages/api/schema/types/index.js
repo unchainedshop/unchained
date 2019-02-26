@@ -21,6 +21,7 @@ import user from './user';
 import warehousing from './warehousing';
 import order from './order';
 import product from './product';
+import quotation from './quotation';
 
 export default [
   ...address,
@@ -46,4 +47,5 @@ export default [
   ...warehousing,
   ...product,
   ...order,
+  ...quotation,
 ];

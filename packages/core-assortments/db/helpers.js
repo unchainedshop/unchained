@@ -9,10 +9,7 @@ import { Locale } from 'locale';
 import * as Collections from './collections';
 
 function eqSet(as, bs) {
-  if (as.size !== bs.size) return false;
-  for (const a of as) if (!bs.has(a)) return false; // eslint-disable-line
-  for (const b of bs) if (!as.has(b)) return false; // eslint-disable-line
-  return true;
+  return [...as].join(',') === [...bs].join(',');
 }
 
 Collections.Assortments.createAssortment = ({
@@ -171,6 +168,29 @@ Collections.AssortmentProducts.getNewSortKey = (assortmentId) => {
   return lastAssortmentProduct.sortKey + 1;
 };
 
+Collections.AssortmentProducts.updateManualOrder = ({ sortKeys, skipInvalidation = false }) => {
+  const changedAssortmentProductIds = sortKeys.map(({ assortmentProductId, sortKey }) => {
+    Collections.AssortmentProducts.update({
+      _id: assortmentProductId,
+    }, {
+      $set: { sortKey: sortKey + 1, updated: new Date() },
+    });
+    return assortmentProductId;
+  });
+  const assortmentProducts = Collections.AssortmentProducts
+    .find({ _id: { $in: changedAssortmentProductIds } })
+    .fetch();
+
+  if (!skipInvalidation) {
+    const assortmentIds = assortmentProducts.map(({ assortmentId }) => assortmentId)
+    Collections.Assortments
+      .find({ _id: { $in: assortmentIds } })
+      .forEach(assortment => assortment.invalidateProductIdCache())
+  }
+
+  return assortmentProducts;
+}
+
 Collections.AssortmentFilters.getNewSortKey = (assortmentId) => {
   const lastAssortmentFilter = Collections.AssortmentFilters.findOne({
     assortmentId,
@@ -179,6 +199,20 @@ Collections.AssortmentFilters.getNewSortKey = (assortmentId) => {
   }) || { sortKey: 0 };
   return lastAssortmentFilter.sortKey + 1;
 };
+
+Collections.AssortmentFilters.updateManualOrder = ({ sortKeys }) => {
+  const changedAssortmentFilterIds = sortKeys.map(({ assortmentFilterId, sortKey }) => {
+    Collections.AssortmentFilters.update({
+      _id: assortmentFilterId,
+    }, {
+      $set: { sortKey: sortKey + 1, updated: new Date() },
+    });
+    return assortmentFilterId;
+  });
+  return Collections.AssortmentFilters
+    .find({ _id: { $in: changedAssortmentFilterIds } })
+    .fetch();
+}
 
 Collections.AssortmentLinks.getNewSortKey = (parentAssortmentId) => {
   const lastAssortmentProduct = Collections.AssortmentLinks.findOne({
@@ -189,6 +223,21 @@ Collections.AssortmentLinks.getNewSortKey = (parentAssortmentId) => {
   return lastAssortmentProduct.sortKey + 1;
 };
 
+Collections.AssortmentLinks.updateManualOrder = ({ sortKeys }) => {
+  const changedAssortmentLinkIds = sortKeys.map(({ assortmentLinkId, sortKey }) => {
+    Collections.AssortmentLinks.update({
+      _id: assortmentLinkId,
+    }, {
+      $set: { sortKey: sortKey + 1, updated: new Date() },
+    });
+    return assortmentLinkId;
+  });
+  return Collections.AssortmentLinks
+    .find({ _id: { $in: changedAssortmentLinkIds } })
+    .fetch();
+}
+
+
 Products.helpers({
   assortmentIds() {
     return Collections.AssortmentProducts
@@ -196,15 +245,18 @@ Products.helpers({
       .fetch()
       .map(({ assortmentId: id }) => id);
   },
-  assortments({ includeInactive = false } = {}) {
+  assortments({ includeInactive = false, limit = 0, offset = 0 } = {}) {
     const assortmentIds = this.assortmentIds();
     const selector = { _id: { $in: assortmentIds } };
     if (!includeInactive) {
       selector.isActive = true;
     }
-    return Collections.Assortments.find(selector).fetch();
+    const options = { skip: offset, limit };
+    return Collections.Assortments.find(selector, options).fetch();
   },
-  siblings({ assortmentId, includeDrafts = false } = {}) {
+  siblings({
+    assortmentId, limit = 0, offset = 0, sort = {},
+  } = {}) {
     const assortmentIds = assortmentId
       ? [assortmentId]
       : this.assortmentIds();
@@ -224,10 +276,8 @@ Products.helpers({
       _id: { $in: productIds },
       status: { $in: [ProductStatus.ACTIVE, ProductStatus.DRAFT] },
     };
-    if (!includeDrafts) {
-      productSelector.status = ProductStatus.ACTIVE;
-    }
-    return Products.find(productSelector).fetch();
+    const productOptions = { skip: offset, limit, sort };
+    return Products.find(productSelector, productOptions).fetch();
   },
 });
 
@@ -361,7 +411,7 @@ Collections.Assortments.helpers({
     });
   },
   products({
-    limit = 10, offset = 0, query,
+    limit = 10, offset = 0, query, sort = {},
     forceLiveCollection = false,
     includeInactive = false,
   } = {}) {
@@ -372,7 +422,7 @@ Collections.Assortments.helpers({
     if (!includeInactive) {
       selector.status = ProductStatus.ACTIVE;
     }
-    const options = { skip: offset, limit };
+    const options = { skip: offset, limit, sort };
 
     const filteredProductIds = Filters.filterProductIds({
       productIds,
@@ -390,14 +440,39 @@ Collections.Assortments.helpers({
       _id: { $in: productIds },
     };
 
+    const filteredPipeline = [
+      {
+        $match: selector,
+      }, {
+        $addFields: {
+          index: { $indexOfArray: [filteredProductIds, '$_id'] },
+        },
+      }, {
+        $match: {
+          index: { $ne: -1 },
+        },
+      },
+      {
+        $sort: {
+          index: 1,
+        },
+      },
+      { $skip: offset },
+      { $limit: limit },
+    ];
+
+    const rawProducts = Products.rawCollection();
+    const aggregateProducts = Meteor.wrapAsync(rawProducts.aggregate, rawProducts);
+
     return {
-      filteredProductsPointer: Products.find(filteredSelector, options),
       totalCount: () => Products.find(unfilteredSelector, options).count(),
       filteredCount() {
-        return this.filteredProductsPointer.count();
+        return Products.find(filteredSelector, options).count();
       },
-      items() {
-        return this.filteredProductsPointer.fetch();
+      async items() {
+        const aggregationPointer = aggregateProducts(filteredPipeline);
+        const items = await aggregationPointer.toArray();
+        return items.map(item => new Products._transform(item)); // eslint-disable-line
       },
     };
   },
@@ -474,7 +549,6 @@ Collections.Assortments.helpers({
     if (eqSet(new Set(productIds), new Set(this._cachedProductIds))) { // eslint-disable-line
       return 0;
     }
-
     let updateCount = Collections.Assortments.update({ _id: this._id }, {
       $set: {
         updated: new Date(),

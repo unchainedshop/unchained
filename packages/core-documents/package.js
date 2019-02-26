@@ -1,7 +1,7 @@
 /* globals Package */
 Package.describe({
   name: 'unchained:core-documents',
-  version: '0.21.0',
+  version: '0.22.0',
   summary: 'Unchained Engine Core: Documents',
   git: 'https://github.com/unchainedshop/unchained',
   documentation: 'README.md',
@@ -10,8 +10,8 @@ Package.describe({
 Package.onUse((api) => {
   api.versionsFrom('1.8');
   api.use('ecmascript');
-  api.use('unchained:utils@0.21.0');
-  api.use('unchained:core-logger@0.21.0');
+  api.use('unchained:utils@0.22.0');
+  api.use('unchained:core-logger@0.22.0');
 
   api.mainModule('documents.js', 'server');
 });
