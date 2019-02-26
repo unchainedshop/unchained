@@ -5,7 +5,7 @@ export default {
   status(product) {
     return product.normalizedStatus();
   },
-  setItems(product) {
-    return product.setItems ? product.setItems : [];
+  bundleItems(product) {
+    return product.bundleItems ? product.bundleItems : [];
   },
 };

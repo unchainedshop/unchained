@@ -1,9 +1,9 @@
 export default [
   /* GraphQL */ `
     """
-    A set product consists of multiple sub products
+    A Bundle product consists of multiple configured products
     """
-    type SetProduct implements Product {
+    type BundleProduct implements Product {
       _id: ID!
       sequence: Int!
       status: ProductStatus!
@@ -13,13 +13,19 @@ export default [
       published: Date
       media(vectors: [ProductAssignmentVectorInput!]): [ProductMedia!]
       texts(forceLocale: String): ProductTexts
-      setItems: [ProductSetItem!]
+      bundleItems: [ProductBundleItem!]
       reviews(limit: Int, offset: Int): [ProductReview!]!
     }
 
-    type ProductSetItem {
+    type ProductBundleItemConfigurationParameter {
+      key: String!
+      value: String!
+    }
+
+    type ProductBundleItem {
       product: Product!
       quantity: Int!
+      configuration: [ProductBundleItemConfigurationParameter!]
     }
   `,
 ];
