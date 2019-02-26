@@ -40,6 +40,7 @@ export default (role, actions) => {
   role.allow(actions.updateUser, isMyself);
   role.allow(actions.viewOrder, isOwnedOrder);
   role.allow(actions.updateOrder, isOwnedOrder);
+  role.allow(actions.checkoutOrder, isOwnedOrder);
   role.allow(actions.updateOrderPayment, isOwnedOrderPayment);
   role.allow(actions.updateOrderDelivery, isOwnedOrderDelivery);
   role.allow(actions.checkoutCart, () => true);

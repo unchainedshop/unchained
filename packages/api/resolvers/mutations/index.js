@@ -62,7 +62,8 @@ import removeWarehousingProvider from './removeWarehousingProvider';
 import setPassword from './setPassword';
 import setRoles from './setRoles';
 import enrollUser from './enrollUser';
-import checkout from './checkout';
+import checkoutCart from './checkoutCart';
+import checkoutOrder from './checkoutOrder';
 import createFilter from './createFilter';
 import updateFilter from './updateFilter';
 import createFilterOption from './createFilterOption';
@@ -140,6 +141,8 @@ export default {
   addCartDiscount: acl(actions.updateCart)(addCartDiscount),
   removeCartDiscount: acl(actions.updateCart)(removeCartDiscount),
   updateCart: acl(actions.updateCart)(updateCart),
+  checkoutCart: acl(actions.checkoutCart)(checkoutCart),
+
   updateOrder: acl(actions.updateOrder)(updateOrder),
   removeOrder: acl(actions.updateOrder)(removeOrder),
   setOrderPaymentProvider: acl(actions.updateOrder)(setOrderPaymentProvider),
@@ -151,7 +154,7 @@ export default {
   updateOrderPaymentPostfinance: acl(actions.updateOrderPayment)(updateOrderPayment),
   updateOrderPaymentPaypal: acl(actions.updateOrderPayment)(updateOrderPayment),
   updateOrderPaymentCrypto: acl(actions.updateOrderPayment)(updateOrderPayment),
-  checkout: acl(actions.checkoutCart)(checkout),
+  checkoutOrder: acl(actions.checkoutOrder)(checkoutOrder),
   confirmOrder: acl(actions.markOrderConfirmed)(confirmOrder),
   payOrder: acl(actions.markOrderPaid)(payOrder),
 

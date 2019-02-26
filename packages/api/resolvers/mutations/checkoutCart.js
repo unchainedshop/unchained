@@ -17,7 +17,7 @@ export default function (root, {
   countryContext,
   localeContext,
 }) {
-  log('mutation checkout', { userId });
+  log('mutation checkoutCart', { userId });
   const user = Users.findOne({ _id: userId });
   if (!user) throw new UserNotFoundError({ data: { userId } });
   const cart = user.cart({ countryContext });
