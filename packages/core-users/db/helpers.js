@@ -87,12 +87,12 @@ Users.helpers({
   },
 });
 
-Users.updateLastBillingAddress = ({ userId, address }) => {
+Users.updateLastBillingAddress = ({ userId, lastBillingAddress }) => {
   const user = Users.findOne({ _id: userId });
   log('Store Last Billing Address', { userId });
   const modifier = {
     $set: {
-      lastBillingAddress: address,
+      lastBillingAddress,
       updated: new Date(),
     },
   };
@@ -104,15 +104,15 @@ Users.updateLastBillingAddress = ({ userId, address }) => {
   return Users.update({ _id: userId }, modifier);
 };
 
-Users.updateLastContact = ({ userId, contact }) => {
+Users.updateLastContact = ({ userId, lastContact }) => {
   const user = Users.findOne({ _id: userId });
   log('Store Last Contact Information', { userId });
   const profile = user.profile || {};
   const isGuest = user.isGuest();
-  if ((!profile.phoneMobile || isGuest) && contact.telNumber) {
+  if ((!profile.phoneMobile || isGuest) && lastContact.telNumber) {
     const modifier = {
       $set: {
-        'profile.phoneMobile': contact.telNumber,
+        'profile.phoneMobile': lastContact.telNumber,
         updated: new Date(),
       },
     };
