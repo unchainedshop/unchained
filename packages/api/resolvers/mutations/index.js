@@ -24,6 +24,8 @@ import updateProduct from './updateProduct';
 import updateProductTexts from './updateProductTexts';
 import updateProductMediaTexts from './updateProductMediaTexts';
 import createProductVariation from './createProductVariation';
+import createProductBundleItem from './createProductBundleItem';
+import removeBundleItem from './removeBundleItem';
 import createProductVariationOption from './createProductVariationOption';
 import removeProductVariation from './removeProductVariation';
 import updateProductVariationTexts from './updateProductVariationTexts';
@@ -126,6 +128,8 @@ export default {
   updateProductVariationTexts: acl(actions.manageProducts)(updateProductVariationTexts),
   removeProductVariationOption: acl(actions.manageProducts)(removeProductVariationOption),
   createProductVariation: acl(actions.manageProducts)(createProductVariation),
+  createProductBundleItem: acl(actions.manageProducts)(createProductBundleItem),
+  removeBundleItem: acl(actions.manageProducts)(removeBundleItem),
   createProductVariationOption: acl(actions.manageProducts)(createProductVariationOption),
   addProductAssignment: acl(actions.manageProducts)(addProductAssignment),
   removeProductAssignment: acl(actions.manageProducts)(removeProductAssignment),
