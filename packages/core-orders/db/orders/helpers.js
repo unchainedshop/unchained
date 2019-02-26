@@ -190,26 +190,26 @@ Orders.helpers({
   payment() {
     return OrderPayments.findOne({ _id: this.paymentId });
   },
-  address() {
+  billingAddress() {
     return {
       ...this.billingAddress,
       countryCode: this.countryCode,
     };
   },
-  updateAddress(address) {
+  updateBillingAddress(billingAddress) {
     Users.updateLastBillingAddress({
       userId: this.userId,
-      address,
+      lastBillingAddress: billingAddress,
     });
-    return Orders.updateAddress({
+    return Orders.updateBillingAddress({
       orderId: this._id,
-      address,
+      billingAddress,
     });
   },
   updateContact({ contact }) {
     Users.updateLastContact({
       userId: this.userId,
-      contact,
+      lastContact: contact,
     });
     return Orders.updateContact({
       orderId: this._id,
@@ -467,11 +467,11 @@ Orders.createOrder = ({
   return order.init();
 };
 
-Orders.updateAddress = ({ address, orderId }) => {
+Orders.updateBillingAddress = ({ billingAddress, orderId }) => {
   log('Update Invoicing Address', { orderId });
   Orders.update({ _id: orderId }, {
     $set: {
-      billingAddress: address,
+      billingAddress,
       updated: new Date(),
     },
   });

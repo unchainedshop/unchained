@@ -73,7 +73,7 @@ export default [/* GraphQL */`
     """
     Change billing address and order contact of the current cart
     """
-    updateCart(address: AddressInput, contact: ContactInput, meta: JSON): Order!
+    updateCart(billingAddress: AddressInput, contact: ContactInput, meta: JSON): Order!
 
     """
     Process the checkout (automatically charge & deliver if possible), the cart will get
@@ -109,7 +109,7 @@ export default [/* GraphQL */`
     """
     Change billing address and order contact of an open order
     """
-    updateOrder(orderId: ID!, address: AddressInput, contact: ContactInput, meta: JSON): Order!
+    updateOrder(orderId: ID!, billingAddress: AddressInput, contact: ContactInput, meta: JSON): Order!
 
     """
     Remove an order while it's still open

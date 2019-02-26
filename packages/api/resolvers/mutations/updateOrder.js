@@ -3,7 +3,7 @@ import { Orders, OrderStatus } from 'meteor/unchained:core-orders';
 import { OrderNotFoundError, OrderWrongStatusError } from '../../errors';
 
 export default function (root, {
-  address, contact, orderId, meta,
+  billingAddress, contact, orderId, meta,
 }, { countryContext, userId }) {
   log('mutation updateOrder', { orderId, userId });
   let order = Orders.findOne({ _id: orderId });
@@ -14,8 +14,8 @@ export default function (root, {
   if (meta) {
     order = order.updateContext(meta);
   }
-  if (address) {
-    order = order.updateAddress({ ...address, countryCode: countryContext });
+  if (billingAddress) {
+    order = order.updateBillingAddress({ ...billingAddress, countryCode: countryContext });
   }
   if (contact) {
     order = order.updateContact({ contact });

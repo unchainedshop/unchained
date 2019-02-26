@@ -3,7 +3,7 @@ import { Users } from 'meteor/unchained:core-users';
 import { UserNotFoundError } from '../../errors';
 
 export default function (root, {
-  address, contact, meta,
+  billingAddress, contact, meta,
 }, { countryContext, userId }) {
   log('mutation updateCart', { userId });
   const user = Users.findOne({ _id: userId });
@@ -12,8 +12,8 @@ export default function (root, {
   if (meta) {
     order = order.updateContext(meta);
   }
-  if (address) {
-    order = order.updateAddress({ ...address, countryCode: countryContext });
+  if (billingAddress) {
+    order = order.updateBillingAddress({ ...billingAddress, countryCode: countryContext });
   }
   if (contact) {
     order = order.updateContact({ contact });
