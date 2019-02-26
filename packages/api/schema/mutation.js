@@ -307,6 +307,12 @@ export default [/* GraphQL */`
     updateCart(address: AddressInput, contact: ContactInput, meta: JSON): Order!
 
     """
+    Process the checkout (automatically charge & deliver if possible), the cart will get
+    transformed to an ordinary order if everything goes well.
+    """
+    checkoutCart(orderContext: JSON, paymentContext: JSON, deliveryContext: JSON): Order!
+
+    """
     Change billing address and order contact of an open order
     """
     updateOrder(orderId: ID!, address: AddressInput, contact: ContactInput, meta: JSON): Order!
@@ -315,6 +321,12 @@ export default [/* GraphQL */`
     Remove an order while it's still open
     """
     removeOrder(orderId: ID!): Order!
+
+    """
+    Process the checkout (automatically charge & deliver if possible), the cart will get
+    transformed to an ordinary order if everything goes well.
+    """
+    checkoutOrder(orderId: ID!, orderContext: JSON, paymentContext: JSON, deliveryContext: JSON): Order!
 
     """
     Change the delivery method/provider
@@ -360,12 +372,6 @@ export default [/* GraphQL */`
     Update a Crypo Provider's specific configuration
     """
     updateOrderPaymentCrypto(orderPaymentId: ID!): OrderPaymentCrypto!
-
-    """
-    Process the checkout (automatically charge & deliver if possible), the cart will get
-    transformed to an ordinary order if everything goes well.
-    """
-    checkout(orderContext: JSON, paymentContext: JSON, deliveryContext: JSON): Order!
 
     """
     Update Avatar of any user or logged in user if userId is not provided

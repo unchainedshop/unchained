@@ -29,6 +29,7 @@ export default (role, actions) => {
   role.allow(actions.updateCart, () => false);
   role.allow(actions.checkoutCart, () => false);
   role.allow(actions.updateOrder, () => false);
+  role.allow(actions.checkoutOrder, () => false);
   role.allow(actions.updateOrderPayment, () => false);
   role.allow(actions.updateOrderDelivery, () => false);
   role.allow(actions.markOrderConfirmed, () => false);
