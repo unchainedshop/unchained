@@ -31,7 +31,7 @@ export default compose(
     }
   `),
   graphql(gql`
-    mutation setRoles($roles: [String]!, $userId: ID!) {
+    mutation setRoles($roles: [String!]!, $userId: ID!) {
       setRoles(roles: $roles, userId: $userId) {
         _id
       }

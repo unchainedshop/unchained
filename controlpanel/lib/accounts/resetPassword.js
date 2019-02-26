@@ -12,7 +12,7 @@ export default async function ({ newPassword, token, disableHashing = false }, a
     variables.newPassword = hashPassword(newPassword);
   }
   const result = await apollo.mutate({
-    mutation: gql`mutation resetPassword($newPassword: HashedPassword, $newPlainPassword: String, $token: String!) {
+    mutation: gql`mutation resetPassword($newPassword: HashedPasswordInput, $newPlainPassword: String, $token: String!) {
       resetPassword(newPassword: $newPassword, newPlainPassword: $newPlainPassword, token: $token) {
         id
         token
