@@ -49,14 +49,14 @@ class DocumentDirector {
     return true;
   }
 
-  execute(name, options, ancestors) {
-    return this.adapters.map((adapter) => {
+  async execute(name, options, ancestors) {
+    return Promise.all(this.adapters.map(async (adapter) => {
       log(`DocumentDirector via ${adapter.constructor.key} -> Execute '${name}'`);
       return adapter[name]({
         ancestors,
         ...options,
       });
-    });
+    }));
   }
 
   static adapters = new Map();

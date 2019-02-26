@@ -598,5 +598,10 @@ export default [/* GraphQL */`
     Add a vote to a ProductReview
     """
     addProductReviewVote(productReviewId: ID!, type: ProductReviewVoteType!, meta: JSON): ProductReviewVote!
+
+    """
+    Request for Proposal
+    """
+    requestQuotation(productId: ID!, configuration: [ProductConfigurationParameter!]): Quotation!
   }
 `];
