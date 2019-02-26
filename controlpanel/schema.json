@@ -2578,7 +2578,7 @@
             "deprecationReason": null
           },
           {
-            "name": "address",
+            "name": "billingAddress",
             "description": "",
             "args": [],
             "type": {
@@ -7425,7 +7425,7 @@
             "description": "Change billing address and order contact of the current cart",
             "args": [
               {
-                "name": "address",
+                "name": "billingAddress",
                 "description": "",
                 "type": {
                   "kind": "INPUT_OBJECT",
@@ -7754,7 +7754,7 @@
                 "defaultValue": null
               },
               {
-                "name": "address",
+                "name": "billingAddress",
                 "description": "",
                 "type": {
                   "kind": "INPUT_OBJECT",

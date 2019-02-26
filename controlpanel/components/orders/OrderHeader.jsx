@@ -21,7 +21,7 @@ const colorForStatus = (status) => {
 
 const OrderHeader = ({
   _id, status, created, ordered, orderNumber, confirmed, country, contact,
-  fullfilled, currency, address, statusColor, confirmOrder, user,
+  fullfilled, currency, billingAddress, statusColor, confirmOrder, user,
 }) => [
   <Menu fluid attached="top" borderless key="header-title">
     <Menu.Item header>
@@ -42,7 +42,7 @@ const OrderHeader = ({
       <Dropdown item icon="wrench" simple>
         <Dropdown.Menu>
           <Dropdown.Header>
-Options
+            Options
           </Dropdown.Header>
           <BtnRemoveOrder
             orderId={_id}
@@ -112,7 +112,7 @@ Options
                 <Icon name="mail" />
                 Invoice Address
               </Label>
-              <Address {...address} />
+              <Address {...billingAddress} />
             </List.Item>
           </List>
         </Grid.Column>
@@ -217,7 +217,7 @@ export default compose(
           isoCode
           flagEmoji
         }
-        address {
+        billingAddress {
           firstName
           lastName
           company
