@@ -66,16 +66,8 @@ const ProductProxySchema = new SimpleSchema(
 
 const ProductBundleItemSchema = new SimpleSchema({
   productId: String,
-  amount: Number,
+  quantity: Number,
 });
-
-const ProductBundleItemsSchema = new SimpleSchema(
-  {
-    items: Array,
-    'items.$': ProductBundleItemSchema,
-  },
-  { requiredByDefault: false },
-);
 
 Products.attachSchema(
   new SimpleSchema(
@@ -93,7 +85,11 @@ Products.attachSchema(
       warehousing: ProductWarehousingSchema,
       supply: ProductSupplySchema,
       proxy: ProductProxySchema,
-      bundleItems: ProductBundleItemsSchema,
+      bundleItems: {
+        type: Array,
+        optional: true,
+      },
+      'bundleItems.$': ProductBundleItemSchema,
       meta: { type: Object, blackbox: true },
       ...Schemas.timestampFields,
     },
