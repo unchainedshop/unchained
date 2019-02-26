@@ -1,6 +1,6 @@
 import configurableProduct from './configurable-product';
 import simpleProduct from './simple-product';
 import product from './product';
-import setProduct from './set-product';
+import bundleProduct from './bundle-product';
 
-export default [...product, ...configurableProduct, ...simpleProduct, ...setProduct];
+export default [...product, ...configurableProduct, ...simpleProduct, ...bundleProduct];

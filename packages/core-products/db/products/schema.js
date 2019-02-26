@@ -5,7 +5,7 @@ import { Products, ProductTexts } from './collections';
 export const ProductTypes = {
   SimpleProduct: 'SIMPLE_PRODUCT',
   ConfigurableProduct: 'CONFIGURABLE_PRODUCT',
-  SetProduct: 'SET_PRODUCT',
+  BundleProduct: 'BUNDLE_PRODUCT',
 };
 
 export const ProductStatus = {
@@ -64,15 +64,15 @@ const ProductProxySchema = new SimpleSchema(
   { requiredByDefault: false },
 );
 
-const ProductSetItemSchema = new SimpleSchema({
+const ProductBundleItemSchema = new SimpleSchema({
   productId: String,
   amount: Number,
 });
 
-const ProductSetItemsSchema = new SimpleSchema(
+const ProductBundleItemsSchema = new SimpleSchema(
   {
     items: Array,
-    'items.$': ProductSetItemSchema,
+    'items.$': ProductBundleItemSchema,
   },
   { requiredByDefault: false },
 );
@@ -93,7 +93,7 @@ Products.attachSchema(
       warehousing: ProductWarehousingSchema,
       supply: ProductSupplySchema,
       proxy: ProductProxySchema,
-      setItems: ProductSetItemsSchema,
+      bundleItems: ProductBundleItemsSchema,
       meta: { type: Object, blackbox: true },
       ...Schemas.timestampFields,
     },
