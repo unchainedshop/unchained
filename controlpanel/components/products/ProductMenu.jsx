@@ -9,12 +9,16 @@ import { Menu } from 'semantic-ui-react';
 
 const ProductMenu = ({ menuItems, changeTab }) => (
   <Menu fluid vertical tabular>
-    {menuItems
-      && menuItems.map(({ isActive, name, description }) => (
-        <Menu.Item key={name} active={isActive} name={name} onClick={changeTab}>
-          {description}
-        </Menu.Item>
-      ))}
+    {menuItems && menuItems.map(({ isActive, name, description }) => (
+      <Menu.Item
+        key={name}
+        active={isActive}
+        name={name}
+        onClick={changeTab}
+      >
+        {description}
+      </Menu.Item>
+    ))}
   </Menu>
 );
 
@@ -30,63 +34,65 @@ export const PRODUCT_TYPE_NAME_QUERY = gql`
 export default compose(
   withRouter,
   graphql(PRODUCT_TYPE_NAME_QUERY),
-  withProps(({ router, data: { product = {} } = {} }) => {
-    // eslint-disable-line
-    const menuItems = [
-      {
-        name: 'ProductTranslation',
-        description: 'General Texts',
-        isActive:
-          router.query.tab === 'ProductTranslation' || !router.query.tab || router.query.tab === '',
-      },
-    ];
+  withProps(({ router, data: { product = {} } = {} }) => { // eslint-disable-line
+    const menuItems = [{
+      name: 'ProductTranslation',
+      description: 'General Texts',
+      isActive: (router.query.tab === 'ProductTranslation' || !router.query.tab || router.query.tab === ''),
+    }];
 
-    if (product.__typename === 'SimpleProduct') {
-      // eslint-disable-line
+    if (product.__typename === 'SimpleProduct') {  // eslint-disable-line
       menuItems.push({
         name: 'ProductVisualization',
         description: 'Media',
-        isActive: router.query.tab === 'ProductVisualization',
-      });
-
-      menuItems.push({
-        name: 'ProductConfiguration',
-        description: 'Configuration',
-        isActive: router.query.tab === 'ProductConfiguration',
+        isActive: (
+          router.query.tab === 'ProductVisualization'
+        ),
       });
       menuItems.push({
         name: 'ProductCommerce',
         description: 'Commerce',
-        isActive: router.query.tab === 'ProductCommerce',
+        isActive: (
+          router.query.tab === 'ProductCommerce'
+        ),
       });
       menuItems.push({
         name: 'ProductSupply',
         description: 'Supply',
-        isActive: router.query.tab === 'ProductSupply',
+        isActive: (
+          router.query.tab === 'ProductSupply'
+        ),
       });
       menuItems.push({
         name: 'ProductWarehousing',
         description: 'Warehousing',
-        isActive: router.query.tab === 'ProductWarehousing',
+        isActive: (
+          router.query.tab === 'ProductWarehousing'
+        ),
       });
     }
 
-    if (product.__typename === 'ConfigurableProduct') {
-      // eslint-disable-line
+    if (product.__typename === 'ConfigurableProduct') { // eslint-disable-line
       menuItems.push({
         name: 'ProductVisualization',
         description: 'Media',
-        isActive: router.query.tab === 'ProductVisualization',
+        isActive: (
+          router.query.tab === 'ProductVisualization'
+        ),
       });
       menuItems.push({
         name: 'ProductCommerce',
         description: 'Commerce',
-        isActive: router.query.tab === 'ProductCommerce',
+        isActive: (
+          router.query.tab === 'ProductCommerce'
+        ),
       });
       menuItems.push({
         name: 'ProductProxy',
         description: 'Variations',
-        isActive: router.query.tab === 'ProductProxy',
+        isActive: (
+          router.query.tab === 'ProductProxy'
+        ),
       });
     }
     return {
