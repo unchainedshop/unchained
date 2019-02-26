@@ -282,24 +282,9 @@ export default [/* GraphQL */`
     addCartProduct(productId: ID!, quantity: Int = 1, configuration: [ProductConfigurationParameter!]): OrderItem!
 
     """
-    Change the quantity of an item in the cart ACL: Logged in users (including guests)
-    """
-    updateCartItemQuantity(itemId: ID!, quantity: Int = 1): OrderItem!
-
-    """
-    Remove an item from the cart ACL: Logged in users (including guests)
-    """
-    removeCartItem(itemId: ID!): OrderItem!
-
-    """
     Add a new discount to the cart, a new order gets generated with status = open (= order before checkout / cart) if necessary ACL: Logged in users (including guests)
     """
     addCartDiscount(code: String!): OrderDiscount!
-
-    """
-    Remove a discount from the cart ACL: Logged in users (including guests)
-    """
-    removeCartDiscount(discountId: ID!): OrderDiscount!
 
     """
     Change billing address and order contact of the current cart
@@ -311,6 +296,31 @@ export default [/* GraphQL */`
     transformed to an ordinary order if everything goes well.
     """
     checkoutCart(orderContext: JSON, paymentContext: JSON, deliveryContext: JSON): Order!
+
+    """
+    Add a new item to the cart. Order gets generated with status = open (= order before checkout / cart) if necessary. ACL: Logged in users (including guests)
+    """
+    addOrderProduct(orderId: ID!, productId: ID!, quantity: Int = 1, configuration: [ProductConfigurationParameter!]): OrderItem!
+
+    """
+    Change the quantity of an item in an open order
+    """
+    updateOrderItemQuantity(itemId: ID!, quantity: Int = 1): OrderItem!
+
+    """
+    Remove an item from an open order
+    """
+    removeOrderItem(itemId: ID!): OrderItem!
+
+    """
+    Add a new discount to the cart, a new order gets generated with status = open (= order before checkout / cart) if necessary ACL: Logged in users (including guests)
+    """
+    addOrderDiscount(orderId: ID!, code: String!): OrderDiscount!
+
+    """
+    Remove a discount from the cart ACL: Logged in users (including guests)
+    """
+    removeOrderDiscount(discountId: ID!): OrderDiscount!
 
     """
     Change billing address and order contact of an open order
