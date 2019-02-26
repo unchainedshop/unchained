@@ -490,7 +490,16 @@ export default [/* GraphQL */`
     createProductVariation(productId: ID!, variation: CreateProductVariationInput!): ProductVariation!
     createProductVariationOption(productVariationId: ID!, option: CreateProductVariationOptionInput!): ProductVariation!
 
+    """
+    Link a new product to a ConfigurableProduct by providing a configuration
+    combination that uniquely identifies a row in the assignment matrix
+    """
     addProductAssignment(proxyId: ID!, productId: ID!, vectors: [ProductAssignmentVectorInput!]!): Product!
+
+    """
+    Unlinks a product from a ConfigurableProduct by providing a configuration
+    combination that uniquely identifies a row in the assignment matrix
+    """
     removeProductAssignment(proxyId: ID!, vectors: [ProductAssignmentVectorInput!]!): Product!
 
     createLanguage(language: CreateLanguageInput!): Language!
