@@ -1,5 +1,7 @@
 import { getSetting } from 'meteor/unchained:core-settings';
 
+import merge from 'lodash.merge';
+
 import FilesCollection from './FilesCollection';
 
 import createDefaultFileCollectionConfig from './createDefaultFileCollectionConfig';
@@ -15,14 +17,13 @@ const createDefaultSettings = () => ({
 });
 
 export default (collectionName, customSettings = null) => {
-  const userSettings = getSetting(['files', collectionName], getSetting('files.default'));
-  const mergedSettings = {
-    ...createDefaultSettings(),
-    ...customSettings,
-    ...userSettings,
-  };
-
-  console.log(`create fs collection ${collectionName}`, mergedSettings);
+  const mergedSettings = merge(
+    {},
+    createDefaultSettings(),
+    customSettings,
+    getSetting('files.default'),
+    getSetting(['files', collectionName]),
+  );
 
   const configByType = Types[mergedSettings.storage.type];
   if (!configByType) {
