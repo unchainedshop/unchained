@@ -12,9 +12,21 @@ type ConfigurableProduct implements Product {
   published: Date
   media(vectors: [ProductAssignmentVectorInput!]): [ProductMedia!]
   texts(forceLocale: String): ProductTexts
-  variations: [ProductVariation!]
-  products(vectors: [ProductAssignmentVectorInput!]): [Product!]
-  assignments: [ProductVariationAssignment!]!
   reviews(limit: Int, offset: Int): [ProductReview!]!
+
+  """
+  Reduced list of possible products by key/value combinations
+  """
+  products(vectors: [ProductAssignmentVectorInput!]): [Product!]
+
+  """
+  Product's variations (keys) and their options (values)
+  """
+  variations: [ProductVariation!]
+
+  """
+  Complete assignment matrix
+  """
+  assignments: [ProductVariationAssignment!]!
 }
 `];
