@@ -54,7 +54,6 @@ export const actions = [
   'manageAssortments',
   'manageFilters',
   'updateCart',
-  'captureOrder',
   'checkoutCart',
   'updateOrder',
   'updateOrderPayment',
