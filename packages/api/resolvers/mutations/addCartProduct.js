@@ -10,7 +10,7 @@ export default function (root, { productId, quantity, configuration }, { userId,
   const product = Products.findOne({ _id: productId });
   if (!product) throw new ProductNotFoundError({ data: { productId } });
   const cart = user.initCart({ countryContext });
-  return cart.addItem({
+  return cart.addProductItem({
     productId,
     quantity,
     configuration,

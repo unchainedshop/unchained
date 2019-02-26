@@ -120,11 +120,6 @@ Orders.helpers({
       code: code.toUpperCase(),
     });
   },
-  removeDiscount({ discountId }) {
-    return OrderDiscounts.removeDiscount({
-      discountId,
-    });
-  },
   supportedDeliveryProviders() {
     return DeliveryProviders
       .findProviders()
@@ -154,15 +149,16 @@ Orders.helpers({
       ...props,
     }).fetch();
   },
-  addItem({ productId, quantity, configuration }) {
+  addProductItem({ productId, quantity, configuration }) {
     const existingPosition = OrderPositions.findOne({
       orderId: this._id,
       productId,
       configuration,
     });
     if (existingPosition && !existingPosition.isEnforcesSingleItemsOnAddToOrder()) {
-      return this.updateItemQuantity({
-        itemId: existingPosition._id,
+      return OrderPositions.updatePosition({
+        orderId: this._id,
+        positionId: existingPosition._id,
         quantity: existingPosition.quantity + quantity,
       });
     }
@@ -171,19 +167,6 @@ Orders.helpers({
       productId,
       quantity,
       configuration,
-    });
-  },
-  removeItem({ itemId }) {
-    return OrderPositions.removePosition({
-      orderId: this._id,
-      positionId: itemId,
-    });
-  },
-  updateItemQuantity({ itemId, quantity }) {
-    return OrderPositions.updatePosition({
-      orderId: this._id,
-      positionId: itemId,
-      quantity,
     });
   },
   user() {

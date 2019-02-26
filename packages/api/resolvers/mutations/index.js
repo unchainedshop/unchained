@@ -37,11 +37,13 @@ import updateProductSupply from './updateProductSupply';
 import addProductAssignment from './addProductAssignment';
 import removeProductAssignment from './removeProductAssignment';
 import addCartProduct from './addCartProduct';
-import updateCartItemQuantity from './updateCartItemQuantity';
-import removeCartItem from './removeCartItem';
 import addCartDiscount from './addCartDiscount';
-import removeCartDiscount from './removeCartDiscount';
 import updateCart from './updateCart';
+import addOrderProduct from './addOrderProduct';
+import updateOrderItemQuantity from './updateOrderItemQuantity';
+import removeOrderItem from './removeOrderItem';
+import addOrderDiscount from './addOrderDiscount';
+import removeOrderDiscount from './removeOrderDiscount';
 import updateOrder from './updateOrder';
 import removeOrder from './removeOrder';
 import setOrderPaymentProvider from './setOrderPaymentProvider';
@@ -136,15 +138,20 @@ export default {
   removeCurrency: acl(actions.manageCurrencies)(removeCurrency),
 
   addCartProduct: acl(actions.updateCart)(addCartProduct),
-  updateCartItemQuantity: acl(actions.updateCart)(updateCartItemQuantity),
-  removeCartItem: acl(actions.updateCart)(removeCartItem),
   addCartDiscount: acl(actions.updateCart)(addCartDiscount),
-  removeCartDiscount: acl(actions.updateCart)(removeCartDiscount),
   updateCart: acl(actions.updateCart)(updateCart),
   checkoutCart: acl(actions.checkoutCart)(checkoutCart),
 
+  addOrderProduct: acl(actions.updateOrder)(addOrderProduct),
+  updateOrderItemQuantity: acl(actions.updateOrderItem)(updateOrderItemQuantity),
+  removeOrderItem: acl(actions.updateOrderItem)(removeOrderItem),
+  addOrderDiscount: acl(actions.updateOrder)(addOrderDiscount),
+  removeOrderDiscount: acl(actions.updateOrderDiscount)(removeOrderDiscount),
   updateOrder: acl(actions.updateOrder)(updateOrder),
   removeOrder: acl(actions.updateOrder)(removeOrder),
+  checkoutOrder: acl(actions.checkoutOrder)(checkoutOrder),
+  confirmOrder: acl(actions.markOrderConfirmed)(confirmOrder),
+  payOrder: acl(actions.markOrderPaid)(payOrder),
   setOrderPaymentProvider: acl(actions.updateOrder)(setOrderPaymentProvider),
   setOrderDeliveryProvider: acl(actions.updateOrder)(setOrderDeliveryProvider),
   updateOrderDeliveryShipping: acl(actions.updateOrderDelivery)(updateOrderDelivery),
@@ -154,9 +161,6 @@ export default {
   updateOrderPaymentPostfinance: acl(actions.updateOrderPayment)(updateOrderPayment),
   updateOrderPaymentPaypal: acl(actions.updateOrderPayment)(updateOrderPayment),
   updateOrderPaymentCrypto: acl(actions.updateOrderPayment)(updateOrderPayment),
-  checkoutOrder: acl(actions.checkoutOrder)(checkoutOrder),
-  confirmOrder: acl(actions.markOrderConfirmed)(confirmOrder),
-  payOrder: acl(actions.markOrderPaid)(payOrder),
 
   createPaymentProvider: acl(actions.managePaymentProviders)(createPaymentProvider),
   updatePaymentProvider: acl(actions.managePaymentProviders)(updatePaymentProvider),
