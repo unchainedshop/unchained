@@ -6,6 +6,10 @@ Package.describe({
   documentation: 'README.md',
 });
 
+Npm.depends({
+  'lodash.merge': '4.6.1',
+});
+
 Package.onUse((api) => {
   api.versionsFrom('1.8.0.2');
   api.use('ostrio:files@1.9.11');
