@@ -58,7 +58,6 @@ import removeDeliveryProvider from './removeDeliveryProvider';
 import createWarehousingProvider from './createWarehousingProvider';
 import updateWarehousingProvider from './updateWarehousingProvider';
 import removeWarehousingProvider from './removeWarehousingProvider';
-import captureOrder from './captureOrder';
 import setPassword from './setPassword';
 import setRoles from './setRoles';
 import enrollUser from './enrollUser';
@@ -134,7 +133,6 @@ export default {
   updateCurrency: acl(actions.manageCurrencies)(updateCurrency),
   removeCurrency: acl(actions.manageCurrencies)(removeCurrency),
 
-  captureOrder: acl(actions.captureOrder)(captureOrder),
   addCartProduct: acl(actions.updateCart)(addCartProduct),
   updateCartItemQuantity: acl(actions.updateCart)(updateCartItemQuantity),
   removeCartItem: acl(actions.updateCart)(removeCartItem),

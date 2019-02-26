@@ -302,7 +302,7 @@ export default [/* GraphQL */`
     removeCartDiscount(discountId: ID!): OrderDiscount!
 
     """
-    Remove an order while it's still a cart
+    Remove an order while it's still open
     """
     removeOrder(orderId: ID!): Order!
 
@@ -361,15 +361,6 @@ export default [/* GraphQL */`
     transformed to an ordinary order if everything goes well.
     """
     checkout(orderContext: JSON, paymentContext: JSON, deliveryContext: JSON): Order!
-
-    """
-    This method takes a cart by id and
-    transfers it to the currently logged in user
-    if the current user already has an open order (cart), remove that one
-    this method is needed to transition from a guest user to a logged in user
-    where the cart has to persist items
-    """
-    captureOrder(orderId: ID!): Order
 
     """
     Update Avatar of any user or logged in user if userId is not provided

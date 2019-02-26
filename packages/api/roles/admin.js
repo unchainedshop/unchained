@@ -27,7 +27,6 @@ export default (role, actions) => {
   role.allow(actions.markOrderConfirmed, () => true);
   role.allow(actions.markOrderPaid, () => true);
   role.allow(actions.updateUser, () => true);
-  role.allow(actions.captureOrder, () => true);
   role.allow(actions.updateOrder, () => true);
   role.allow(actions.updateOrderPayment, () => true);
   role.allow(actions.updateOrderDelivery, () => true);
