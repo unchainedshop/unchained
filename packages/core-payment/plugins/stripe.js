@@ -1,28 +1,23 @@
-import {
-  PaymentDirector,
-  PaymentAdapter,
-  PaymentError,
-} from 'meteor/unchained:core-payment';
+import { PaymentDirector, PaymentAdapter, PaymentError } from 'meteor/unchained:core-payment';
 
-const {
-  STRIPE_SECRET,
-  EMAIL_WEBSITE_NAME,
-} = process.env;
+const { STRIPE_SECRET, EMAIL_WEBSITE_NAME } = process.env;
 
 class Stripe extends PaymentAdapter {
-  static key = 'com.stripe'
+  static key = 'com.stripe';
 
-  static label = 'Stripe'
+  static label = 'Stripe';
 
-  static version = '1.0'
+  static version = '1.0';
 
-  static initialConfiguration = [{
-    key: 'publishableAPIKey',
-    value: null,
-  }]
+  static initialConfiguration = [
+    {
+      key: 'publishableAPIKey',
+      value: null,
+    },
+  ];
 
   static typeSupported(type) {
-    return (type === 'CARD');
+    return type === 'CARD';
   }
 
   getPublishableApiKey() {
@@ -32,11 +27,13 @@ class Stripe extends PaymentAdapter {
     }, null);
   }
 
-  getSecretkey() { // eslint-disable-line
+  getSecretkey() {
+    // eslint-disable-line
     return STRIPE_SECRET;
   }
 
-  configurationError() { // eslint-disable-line
+  configurationError() {
+    // eslint-disable-line
     if (!this.getPublishableApiKey() || !this.getSecretkey()) {
       return PaymentError.INCOMPLETE_CONFIGURATION;
     }
@@ -46,12 +43,14 @@ class Stripe extends PaymentAdapter {
     return null;
   }
 
-  isActive() { // eslint-disable-line
+  isActive() {
+    // eslint-disable-line
     if (this.configurationError() === null) return true;
     return false;
   }
 
-  isPayLaterAllowed() { // eslint-disable-line
+  isPayLaterAllowed() {
+    // eslint-disable-line
     return false;
   }
 
@@ -60,6 +59,7 @@ class Stripe extends PaymentAdapter {
     const StripeAPI = require('stripe'); // eslint-disable-line
     const stripe = StripeAPI(this.getSecretkey());
     const pricing = this.context.order.pricing();
+
     const stripeChargeReceipt = await stripe.charges.create({
       amount: Math.round(pricing.total().amount),
       currency: this.context.order.currency.toLowerCase(),
