@@ -3,7 +3,7 @@ import { OrderDiscounts, OrderStatus } from 'meteor/unchained:core-orders';
 import { OrderDiscountNotFoundError, OrderWrongStatusError } from '../../errors';
 
 export default function (root, { discountId }, { userId }) {
-  log(`mutation removeOrderDiscount ${discountId}`, { userId });
+  log(`mutation removeCartDiscount ${discountId}`, { userId });
   const orderDiscount = OrderDiscounts.findOne({ _id: discountId });
   if (!orderDiscount) throw new OrderDiscountNotFoundError({ data: { orderDiscount } });
   const order = orderDiscount.order();

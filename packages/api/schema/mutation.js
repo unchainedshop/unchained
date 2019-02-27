@@ -60,67 +60,42 @@ export default [/* GraphQL */`
     """
     loginAsGuest: LoginMethodResponse
 
+
     """
     Add a new item to the cart. Order gets generated with status = open (= order before checkout / cart) if necessary.
     """
-    addCartProduct(productId: ID!, quantity: Int = 1, configuration: [ProductConfigurationParameterInput!]): OrderItem!
+    addCartProduct(orderId: ID, productId: ID!, quantity: Int = 1, configuration: [ProductConfigurationParameterInput!]): OrderItem!
 
     """
     Add a new discount to the cart, a new order gets generated with status = open (= order before checkout / cart) if necessary
     """
-    addCartDiscount(code: String!): OrderDiscount!
+    addCartDiscount(orderId: ID, code: String!): OrderDiscount!
 
     """
-    Change billing address and order contact of the current cart
+    Change billing address and order contact of an open order (cart)
     """
-    updateCart(billingAddress: AddressInput, contact: ContactInput, meta: JSON): Order!
+    updateCart(orderId: ID, billingAddress: AddressInput, contact: ContactInput, meta: JSON): Order!
 
     """
     Process the checkout (automatically charge & deliver if possible), the cart will get
     transformed to an ordinary order if everything goes well.
     """
-    checkoutCart(orderContext: JSON, paymentContext: JSON, deliveryContext: JSON): Order!
-
-    """
-    Add a new item to the cart. Order gets generated with status = open (= order before checkout / cart) if necessary.
-    """
-    addOrderProduct(orderId: ID!, productId: ID!, quantity: Int = 1, configuration: [ProductConfigurationParameterInput!]): OrderItem!
+    checkoutCart(orderId: ID, orderContext: JSON, paymentContext: JSON, deliveryContext: JSON): Order!
 
     """
     Change the quantity of an item in an open order
     """
-    updateOrderItemQuantity(itemId: ID!, quantity: Int = 1): OrderItem!
+    updateCartItemQuantity(itemId: ID!, quantity: Int = 1): OrderItem!
 
     """
     Remove an item from an open order
     """
-    removeOrderItem(itemId: ID!): OrderItem!
-
-    """
-    Add a new discount to the cart, a new order gets generated with status = open (= order before checkout / cart) if necessary
-    """
-    addOrderDiscount(orderId: ID!, code: String!): OrderDiscount!
+    removeCartItem(itemId: ID!): OrderItem!
 
     """
     Remove a discount from the cart
     """
-    removeOrderDiscount(discountId: ID!): OrderDiscount!
-
-    """
-    Change billing address and order contact of an open order
-    """
-    updateOrder(orderId: ID!, billingAddress: AddressInput, contact: ContactInput, meta: JSON): Order!
-
-    """
-    Remove an order while it's still open
-    """
-    removeOrder(orderId: ID!): Order!
-
-    """
-    Process the checkout (automatically charge & deliver if possible), the cart will get
-    transformed to an ordinary order if everything goes well.
-    """
-    checkoutOrder(orderId: ID!, orderContext: JSON, paymentContext: JSON, deliveryContext: JSON): Order!
+    removeCartDiscount(discountId: ID!): OrderDiscount!
 
     """
     Change the delivery method/provider
@@ -168,6 +143,21 @@ export default [/* GraphQL */`
     updateOrderPaymentCrypto(orderPaymentId: ID!): OrderPaymentCrypto!
 
     """
+    Remove an order while it's still open
+    """
+    removeOrder(orderId: ID!): Order!
+
+    """
+    Manually confirm an order which is in progress
+    """
+    confirmOrder(orderId: ID!): Order!
+
+    """
+    Manually mark an unpaid/partially paid order as fully paid
+    """
+    payOrder(orderId: ID!): Order!
+
+    """
     Update Avatar of any user or logged in user if userId is not provided
     """
     updateUserAvatar(avatar: Upload!, userId: ID): User
@@ -202,16 +192,6 @@ export default [/* GraphQL */`
     Set roles of a user
     """
     setRoles(roles: [String!]!, userId: ID!): User
-
-    """
-    Manually confirm an order which is in progress
-    """
-    confirmOrder(orderId: ID!): Order!
-
-    """
-    Manually mark an unpaid/partially paid order as fully paid
-    """
-    payOrder(orderId: ID!): Order!
 
     """
     Create a new product
