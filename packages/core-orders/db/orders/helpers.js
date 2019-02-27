@@ -237,7 +237,7 @@ Orders.helpers({
   checkout({ paymentContext, deliveryContext, orderContext }, { localeContext }) {
     const errors = this.missingInputDataForCheckout();
     if (errors.length > 0) {
-      throw errors[0];
+      throw new Error(errors[0]);
     }
 
     const lastUserLanguage = this.user().language();

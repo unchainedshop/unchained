@@ -39,6 +39,7 @@ import removeProductAssignment from './removeProductAssignment';
 import addCartProduct from './addCartProduct';
 import addCartDiscount from './addCartDiscount';
 import updateCart from './updateCart';
+import emptyCart from './emptyCart';
 import updateCartItemQuantity from './updateCartItemQuantity';
 import removeCartItem from './removeCartItem';
 import removeCartDiscount from './removeCartDiscount';
@@ -136,11 +137,11 @@ export default {
   addCartProduct: acl(actions.updateCart)(addCartProduct),
   addCartDiscount: acl(actions.updateCart)(addCartDiscount),
   updateCart: acl(actions.updateCart)(updateCart),
+  emptyCart: acl(actions.updateCart)(emptyCart),
   checkoutCart: acl(actions.checkoutCart)(checkoutCart),
   updateCartItemQuantity: acl(actions.updateOrderItem)(updateCartItemQuantity),
   removeCartItem: acl(actions.updateOrderItem)(removeCartItem),
   removeCartDiscount: acl(actions.updateOrderDiscount)(removeCartDiscount),
-
   setOrderPaymentProvider: acl(actions.updateOrder)(setOrderPaymentProvider),
   setOrderDeliveryProvider: acl(actions.updateOrder)(setOrderDeliveryProvider),
   updateOrderDeliveryShipping: acl(actions.updateOrderDelivery)(updateOrderDelivery),

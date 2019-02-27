@@ -6,8 +6,6 @@ import {
   OrderWrongStatusError, OrderNotFoundError,
 } from '../../errors';
 
-const logger = console;
-
 const checkoutWithPotentialErrors = (
   cart, context, options, userId,
 ) => {
@@ -20,8 +18,7 @@ const checkoutWithPotentialErrors = (
       ...context,
       detailMessage: error.message,
     };
-    logger.error(error);
-    log(data, { userId, orderId: cart._id, level: 'error' });
+    log(data.detailMessage, { userId, orderId: cart._id, level: 'error' });
     throw new OrderCheckoutError({ data });
   }
 };

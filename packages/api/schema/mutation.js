@@ -77,6 +77,11 @@ export default [/* GraphQL */`
     updateCart(orderId: ID, billingAddress: AddressInput, contact: ContactInput, meta: JSON): Order!
 
     """
+    Remove all items of an open order (cart)
+    """
+    emptyCart(orderId: ID): Order!
+
+    """
     Process the checkout (automatically charge & deliver if possible), the cart will get
     transformed to an ordinary order if everything goes well.
     """
