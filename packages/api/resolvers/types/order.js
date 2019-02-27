@@ -12,6 +12,8 @@ export default {
   currency(obj) {
     return Currencies.findOne({ isoCode: obj.currency });
   },
-
+  meta(obj) {
+    return obj.context;
+  },
   logs: checkTypeResolver(actions.viewLogs, 'logs'),
 };
