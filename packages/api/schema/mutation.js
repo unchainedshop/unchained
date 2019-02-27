@@ -1,220 +1,4 @@
 export default [/* GraphQL */`
-  """
-  A hashed password
-  """
-  input HashedPassword {
-    """
-    The hashed password
-    """
-    digest: String!
-
-    """
-    Algorithm used to hash the password
-    """
-    algorithm: String!
-  }
-
-  input UserProfileInput {
-    displayName: String
-    birthday: Date
-    phoneMobile: String
-    gender: String
-    address: AddressInput
-    customFields: JSON
-  }
-
-  input AddressInput {
-    firstName: String
-    lastName: String
-    company: String
-    addressLine: String
-    addressLine2: String
-    postalCode: String
-    regionCode: String
-    city: String
-    countryCode: String
-  }
-
-  input ContactInput {
-    emailAddress: String
-    telNumber: String
-  }
-
-  input CreateLanguageInput {
-    isoCode: String!
-  }
-  input UpdateLanguageInput {
-    isoCode: String!
-    isActive: Boolean
-  }
-
-  input CreateCountryInput {
-    isoCode: String!
-  }
-  input UpdateCountryInput {
-    isoCode: String!
-    isActive: Boolean
-    defaultCurrencyId: String
-  }
-
-  input CreateCurrencyInput {
-    isoCode: String!
-  }
-  input UpdateCurrencyInput {
-    isoCode: String!
-    isActive: Boolean
-  }
-
-  input CreateProductInput {
-    title: String!
-    type: String!
-  }
-
-  input CreateProductVariationInput {
-    key: String!
-    type: ProductVariationType!
-    title: String!
-  }
-
-  input CreateProductVariationOptionInput {
-    value: String!
-    title: String!
-  }
-
-  input UpdateProductInput {
-    tags: [String!]
-  }
-
-  input UpdateProductTextInput {
-    locale: String!
-    slug: String
-    title: String
-    subtitle: String
-    description: String
-    vendor: String
-    labels: [String!]
-  }
-
-  input UpdateProductMediaTextInput {
-    locale: String!
-    title: String
-    subtitle: String
-  }
-
-  input UpdateProductVariationTextInput {
-    locale: String!
-    title: String
-    subtitle: String
-  }
-
-  input UpdateProductCommercePricingInput {
-    amount: Int!
-    maxQuantity: Int
-    isTaxable: Boolean
-    isNetPrice: Boolean
-    currencyCode: String!
-    countryCode: String!
-  }
-
-  input UpdateProductCommerceInput {
-    pricing: [UpdateProductCommercePricingInput!]!
-  }
-
-  input UpdateProductSupplyInput {
-    weightInGram: Int
-    heightInMillimeters: Int
-    lengthInMillimeters: Int
-    widthInMillimeters: Int
-  }
-
-  input UpdateProductWarehousingInput {
-    sku: String
-    baseUnit: String
-  }
-
-  input ReorderProductMediaInput {
-    productMediaId: ID!
-    sortKey: Int!
-  }
-
-  input CreateProviderInput {
-    type: String!
-    adapterKey: String!
-  }
-
-  input UpdateProviderInput {
-    configuration: [JSON!]
-  }
-
-  input CreateAssortmentInput {
-    title: String!
-    isRoot: Boolean
-  }
-
-  input UpdateAssortmentInput {
-    isActive: Boolean
-    isRoot: Boolean
-    tags: [String!]
-  }
-
-  input UpdateAssortmentTextInput {
-    locale: String!
-    slug: String
-    title: String
-    subtitle: String
-    description: String
-  }
-
-  input ReorderAssortmentProductInput {
-    assortmentProductId: ID!
-    sortKey: Int!
-  }
-
-  input ReorderAssortmentFilterInput {
-    assortmentFilterId: ID!
-    sortKey: Int!
-  }
-
-  input ReorderAssortmentLinkInput {
-    assortmentLinkId: ID!
-    sortKey: Int!
-  }
-
-  input CreateFilterInput {
-    key: String!
-    type: FilterType!
-    title: String!
-    options: [String!]
-  }
-
-  input CreateFilterOptionInput {
-    value: String!
-    title: String!
-  }
-
-  input UpdateFilterInput {
-    isActive: Boolean
-    key: String
-  }
-
-  input UpdateFilterTextInput {
-    locale: String!
-    title: String
-    subtitle: String
-  }
-
-  input ProductConfigurationParameter {
-    key: String!
-    value: String!
-  }
-
-  input ProductReviewInput {
-    rating: Int
-    title: String
-    review: String
-    meta: JSON
-  }
-
   type Mutation {
     """
     Login the user with a facebook access token
@@ -232,29 +16,29 @@ export default [/* GraphQL */`
     loginWithLinkedIn (code: String!, redirectUri: String!): LoginMethodResponse
 
     """
-    Log the user in with a password. ACL: Everybody
+    Log the user in with a password.
     """
-    loginWithPassword (username: String, email: String, password: HashedPassword, plainPassword: String): LoginMethodResponse
+    loginWithPassword (username: String, email: String, password: HashedPasswordInput, plainPassword: String): LoginMethodResponse
 
     """
-    Create a new user. ACL: Everybody
+    Create a new user.
     """
-    createUser (username: String, email: String, password: HashedPassword, plainPassword: String, profile: UserProfileInput): LoginMethodResponse
+    createUser (username: String, email: String, password: HashedPasswordInput, plainPassword: String, profile: UserProfileInput): LoginMethodResponse
 
     """
-    Change the current user's password. Must be logged in. ACL: Everybody
+    Change the current user's password. Must be logged in.
     """
-    changePassword (oldPassword: HashedPassword, oldPlainPassword: String, newPassword: HashedPassword, newPlainPassword: String): SuccessResponse
+    changePassword (oldPassword: HashedPasswordInput, oldPlainPassword: String, newPassword: HashedPasswordInput, newPlainPassword: String): SuccessResponse
 
     """
-    Request a forgot password email. ACL: Everybody
+    Request a forgot password email.
     """
     forgotPassword (email: String!): SuccessResponse
 
     """
-    Reset the password for a user using a token received in email. Logs the user in afterwards. ACL: Everybody
+    Reset the password for a user using a token received in email. Logs the user in afterwards.
     """
-    resetPassword (newPlainPassword: String, newPassword: HashedPassword, token: String!): LoginMethodResponse
+    resetPassword (newPlainPassword: String, newPassword: HashedPasswordInput, token: String!): LoginMethodResponse
 
     """
     Log the user out.
@@ -272,44 +56,51 @@ export default [/* GraphQL */`
     resendVerificationEmail (email: String): SuccessResponse
 
     """
-    Login as Guest User (creates an anonymous user and returns logged in token) ACL: Everybody
+    Login as Guest User (creates an anonymous user and returns logged in token)
     """
     loginAsGuest: LoginMethodResponse
 
-    """
-    Add a new item to the cart. Order gets generated with status = open (= order before checkout / cart) if necessary. ACL: Logged in users (including guests)
-    """
-    addCartProduct(productId: ID!, quantity: Int = 1, configuration: [ProductConfigurationParameter!]): OrderItem!
 
     """
-    Change the quantity of an item in the cart ACL: Logged in users (including guests)
+    Add a new item to the cart. Order gets generated with status = open (= order before checkout / cart) if necessary.
+    """
+    addCartProduct(orderId: ID, productId: ID!, quantity: Int = 1, configuration: [ProductConfigurationParameterInput!]): OrderItem!
+
+    """
+    Add a new discount to the cart, a new order gets generated with status = open (= order before checkout / cart) if necessary
+    """
+    addCartDiscount(orderId: ID, code: String!): OrderDiscount!
+
+    """
+    Change billing address and order contact of an open order (cart)
+    """
+    updateCart(orderId: ID, billingAddress: AddressInput, contact: ContactInput, meta: JSON): Order!
+
+    """
+    Remove all items of an open order (cart)
+    """
+    emptyCart(orderId: ID): Order!
+
+    """
+    Process the checkout (automatically charge & deliver if possible), the cart will get
+    transformed to an ordinary order if everything goes well.
+    """
+    checkoutCart(orderId: ID, orderContext: JSON, paymentContext: JSON, deliveryContext: JSON): Order!
+
+    """
+    Change the quantity of an item in an open order
     """
     updateCartItemQuantity(itemId: ID!, quantity: Int = 1): OrderItem!
 
     """
-    Remove an item from the cart ACL: Logged in users (including guests)
+    Remove an item from an open order
     """
     removeCartItem(itemId: ID!): OrderItem!
 
     """
-    Add a new discount to the cart, a new order gets generated with status = open (= order before checkout / cart) if necessary ACL: Logged in users (including guests)
-    """
-    addCartDiscount(code: String!): OrderDiscount!
-
-    """
-    Remove a discount from the cart ACL: Logged in users (including guests)
+    Remove a discount from the cart
     """
     removeCartDiscount(discountId: ID!): OrderDiscount!
-
-    """
-    Remove an order while it's still a cart
-    """
-    removeOrder(orderId: ID!): Order!
-
-    """
-    Change billing address and order conact of an open order
-    """
-    updateOrder(orderId: ID!, address: AddressInput, contact: ContactInput, meta: JSON): Order!
 
     """
     Change the delivery method/provider
@@ -357,19 +148,19 @@ export default [/* GraphQL */`
     updateOrderPaymentCrypto(orderPaymentId: ID!): OrderPaymentCrypto!
 
     """
-    Process the checkout (automatically charge & deliver if possible), the cart will get
-    transformed to an ordinary order if everything goes well.
+    Remove an order while it's still open
     """
-    checkout(orderContext: JSON, paymentContext: JSON, deliveryContext: JSON): Order!
+    removeOrder(orderId: ID!): Order!
 
     """
-    This method takes a cart by id and
-    transfers it to the currently logged in user
-    if the current user already has an open order (cart), remove that one
-    this method is needed to transition from a guest user to a logged in user
-    where the cart has to persist items
+    Manually confirm an order which is in progress
     """
-    captureOrder(orderId: ID!): Order
+    confirmOrder(orderId: ID!): Order!
+
+    """
+    Manually mark an unpaid/partially paid order as fully paid
+    """
+    payOrder(orderId: ID!): Order!
 
     """
     Update Avatar of any user or logged in user if userId is not provided
@@ -406,16 +197,6 @@ export default [/* GraphQL */`
     Set roles of a user
     """
     setRoles(roles: [String!]!, userId: ID!): User
-
-    """
-    Manually confirm an order which is in progress
-    """
-    confirmOrder(orderId: ID!): Order!
-
-    """
-    Manually mark an unpaid/partially paid order as fully paid
-    """
-    payOrder(orderId: ID!): Order!
 
     """
     Create a new product
@@ -488,7 +269,16 @@ export default [/* GraphQL */`
     createProductVariation(productId: ID!, variation: CreateProductVariationInput!): ProductVariation!
     createProductVariationOption(productVariationId: ID!, option: CreateProductVariationOptionInput!): ProductVariation!
 
+    """
+    Link a new product to a ConfigurableProduct by providing a configuration
+    combination that uniquely identifies a row in the assignment matrix
+    """
     addProductAssignment(proxyId: ID!, productId: ID!, vectors: [ProductAssignmentVectorInput!]!): Product!
+
+    """
+    Unlinks a product from a ConfigurableProduct by providing a configuration
+    combination that uniquely identifies a row in the assignment matrix
+    """
     removeProductAssignment(proxyId: ID!, vectors: [ProductAssignmentVectorInput!]!): Product!
 
     createLanguage(language: CreateLanguageInput!): Language!
@@ -602,6 +392,6 @@ export default [/* GraphQL */`
     """
     Request for Proposal
     """
-    requestQuotation(productId: ID!, configuration: [ProductConfigurationParameter!]): Quotation!
+    requestQuotation(productId: ID!, configuration: [ProductConfigurationParameterInput!]): Quotation!
   }
 `];

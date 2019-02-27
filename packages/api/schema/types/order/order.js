@@ -92,7 +92,7 @@ type Order {
   country: Country
   meta: JSON
   currency: Currency
-  address: Address
+  billingAddress: Address
   delivery: OrderDelivery
   payment: OrderPayment
   items: [OrderItem!]

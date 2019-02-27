@@ -8,7 +8,7 @@ export default {
   assignments(obj) {
     return obj.proxyAssignments();
   },
-  products(obj, { vectors }) {
+  products(obj, { vectors = [] } = {}) {
     return obj.proxyProducts(vectors);
   },
 };

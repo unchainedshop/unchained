@@ -32,6 +32,9 @@ Logs.helpers({
 });
 
 Users.helpers({
+  isCart() {
+    return this.status === OrderStatus.OPEN;
+  },
   cart({ countryContext } = {}) {
     const openOrders = Orders.find({
       userId: this._id,
@@ -120,11 +123,6 @@ Orders.helpers({
       code: code.toUpperCase(),
     });
   },
-  removeDiscount({ discountId }) {
-    return OrderDiscounts.removeDiscount({
-      discountId,
-    });
-  },
   supportedDeliveryProviders() {
     return DeliveryProviders
       .findProviders()
@@ -154,15 +152,16 @@ Orders.helpers({
       ...props,
     }).fetch();
   },
-  addItem({ productId, quantity, configuration }) {
+  addProductItem({ productId, quantity, configuration }) {
     const existingPosition = OrderPositions.findOne({
       orderId: this._id,
       productId,
       configuration,
     });
     if (existingPosition && !existingPosition.isEnforcesSingleItemsOnAddToOrder()) {
-      return this.updateItemQuantity({
-        itemId: existingPosition._id,
+      return OrderPositions.updatePosition({
+        orderId: this._id,
+        positionId: existingPosition._id,
         quantity: existingPosition.quantity + quantity,
       });
     }
@@ -171,19 +170,6 @@ Orders.helpers({
       productId,
       quantity,
       configuration,
-    });
-  },
-  removeItem({ itemId }) {
-    return OrderPositions.removePosition({
-      orderId: this._id,
-      positionId: itemId,
-    });
-  },
-  updateItemQuantity({ itemId, quantity }) {
-    return OrderPositions.updatePosition({
-      orderId: this._id,
-      positionId: itemId,
-      quantity,
     });
   },
   user() {
@@ -207,26 +193,26 @@ Orders.helpers({
   payment() {
     return OrderPayments.findOne({ _id: this.paymentId });
   },
-  address() {
+  billingAddress() {
     return {
       ...this.billingAddress,
       countryCode: this.countryCode,
     };
   },
-  updateAddress(address) {
+  updateBillingAddress(billingAddress) {
     Users.updateLastBillingAddress({
       userId: this.userId,
-      address,
+      lastBillingAddress: billingAddress,
     });
-    return Orders.updateAddress({
+    return Orders.updateBillingAddress({
       orderId: this._id,
-      address,
+      billingAddress,
     });
   },
   updateContact({ contact }) {
     Users.updateLastContact({
       userId: this.userId,
-      contact,
+      lastContact: contact,
     });
     return Orders.updateContact({
       orderId: this._id,
@@ -254,7 +240,7 @@ Orders.helpers({
   checkout({ paymentContext, deliveryContext, orderContext }, { localeContext }) {
     const errors = this.missingInputDataForCheckout();
     if (errors.length > 0) {
-      throw errors[0];
+      throw new Error(errors[0]);
     }
 
     const lastUserLanguage = this.user().language();
@@ -484,11 +470,11 @@ Orders.createOrder = ({
   return order.init();
 };
 
-Orders.updateAddress = ({ address, orderId }) => {
+Orders.updateBillingAddress = ({ billingAddress, orderId }) => {
   log('Update Invoicing Address', { orderId });
   Orders.update({ _id: orderId }, {
     $set: {
-      billingAddress: address,
+      billingAddress,
       updated: new Date(),
     },
   });

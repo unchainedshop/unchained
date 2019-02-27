@@ -21,7 +21,7 @@ const OrderDelivery = ({
     <Label color={statusColor} horizontal attached="top">
       {status}
       <Label.Detail>
-Delivery Provider
+        Delivery Provider
       </Label.Detail>
     </Label>
     <List relaxed divided>
@@ -68,7 +68,7 @@ export default compose(
     query order($orderId: ID!) {
       order(orderId: $orderId) {
         _id
-        address {
+        billingAddress {
           firstName
           lastName
           company
@@ -129,7 +129,7 @@ export default compose(
   `),
   mapProps(({ data: { order = {} } }) => ({
     ...order.delivery,
-    address: (order.delivery && order.delivery.address) || order.address,
+    address: (order.delivery && order.delivery.address) || order.billingAddress,
     statusColor: colorForStatus(order.delivery && order.delivery.status),
   })),
   pure,

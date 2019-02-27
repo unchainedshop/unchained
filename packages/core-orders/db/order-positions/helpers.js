@@ -112,6 +112,14 @@ OrderPositions.removePosition = ({ positionId }) => {
   return position;
 };
 
+OrderPositions.removePositions = ({ orderId }) => {
+  log('Remove Positions', { orderId });
+  const count = OrderPositions.remove({ orderId });
+  OrderDiscounts.updateDiscounts({ orderId });
+  Orders.updateCalculation({ orderId });
+  return count;
+};
+
 OrderPositions.updateCalculation = ({ positionId }) => {
   const position = OrderPositions.findOne({ _id: positionId });
   log(`OrderPosition ${positionId} -> Update Calculation`, { orderId: position.orderId });
