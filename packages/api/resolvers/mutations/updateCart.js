@@ -11,7 +11,7 @@ export default function (root, {
   if (orderId) {
     order = Orders.findOne({ _id: orderId });
     if (!order) throw new OrderNotFoundError({ data: { orderId } });
-    if (order.status !== OrderStatus.OPEN) {
+    if (!order.isCart()) {
       throw new OrderWrongStatusError({ data: { status: order.status } });
     }
   } else {
