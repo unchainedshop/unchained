@@ -16,8 +16,8 @@ type Assortment {
   filterAssignments: [AssortmentFilter!]
   linkedAssortments: [AssortmentLink!]
   children: [Assortment!]
-  filters(query: [FilterQuery!]): [FilteredFilter!]
-  products(limit: Int, offset: Int, query: [FilterQuery!]): ProductCollection
+  filters(query: [FilterQueryInput!]): [FilteredFilter!]
+  products(limit: Int, offset: Int, query: [FilterQueryInput!]): ProductCollection
 }
 
 type ProductCollection {

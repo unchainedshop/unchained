@@ -1,11 +1,16 @@
 import { log } from 'meteor/unchained:core-logger';
-import { Users } from 'meteor/unchained:core-users';
-import { UserNotFoundError } from '../../errors';
+import { OrderPositions, OrderStatus } from 'meteor/unchained:core-orders';
+import { OrderItemNotFoundError, OrderWrongStatusError } from '../../errors';
 
-export default function (root, { itemId }, { userId, countryContext }) {
+export default function (root, { itemId }, { userId }) {
   log(`mutation removeCartItem ${itemId}`, { userId });
-  const user = Users.findOne({ _id: userId });
-  if (!user) throw new UserNotFoundError({ userId });
-  const cart = user.initCart({ countryContext });
-  return cart.removeItem({ itemId });
+  const orderItem = OrderPositions.findOne({ _id: itemId });
+  if (!orderItem) throw new OrderItemNotFoundError({ data: { orderItem } });
+  const order = orderItem.order();
+  if (!order.isCart()) {
+    throw new OrderWrongStatusError({ data: { status: order.status } });
+  }
+  return OrderPositions.removePosition({
+    positionId: itemId,
+  });
 }

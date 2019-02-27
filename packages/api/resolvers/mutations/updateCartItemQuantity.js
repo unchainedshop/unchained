@@ -1,18 +1,19 @@
 import { log } from 'meteor/unchained:core-logger';
-import { OrderPositions } from 'meteor/unchained:core-orders';
-import { Users } from 'meteor/unchained:core-users';
-import { UserNotFoundError, OrderQuantityTooLowError, OrderItemNotFound } from '../../errors';
+import { OrderPositions, OrderStatus } from 'meteor/unchained:core-orders';
+import { OrderQuantityTooLowError, OrderItemNotFoundError, OrderWrongStatusError } from '../../errors';
 
-export default function (root, { itemId, quantity }, { userId, countryContext }) {
+export default function (root, { itemId, quantity }, { userId }) {
   log(`mutation updateCartItemQuantity ${itemId} ${quantity}`, { userId });
-  if (quantity === 0) {
-    throw new OrderQuantityTooLowError({ data: { quantity } });
+  if (quantity === 0) throw new OrderQuantityTooLowError({ data: { quantity } });
+  const item = OrderPositions.findOne({ _id: itemId });
+  if (!item) throw new OrderItemNotFoundError({ data: { itemId } });
+  const order = item.order();
+  if (!order.isCart()) {
+    throw new OrderWrongStatusError({ data: { status: order.status } });
   }
-  if (OrderPositions.find({ _id: itemId }).count() === 0) {
-    throw new OrderItemNotFound({ data: { itemId } });
-  }
-  const user = Users.findOne({ _id: userId });
-  if (!user) throw new UserNotFoundError({ userId });
-  const cart = user.initCart({ countryContext });
-  return cart.updateItemQuantity({ itemId, quantity });
+  return OrderPositions.updatePosition({
+    orderId: item.orderId,
+    positionId: itemId,
+    quantity,
+  });
 }

@@ -1,4 +1,6 @@
-import { Orders, OrderPayments, OrderDeliveries } from 'meteor/unchained:core-orders';
+import {
+  Orders, OrderPayments, OrderDeliveries, OrderPositions, OrderDiscounts,
+} from 'meteor/unchained:core-orders';
 import { ProductReviews } from 'meteor/unchained:core-products';
 
 export default (role, actions) => {
@@ -18,6 +20,13 @@ export default (role, actions) => {
     userId,
   }).count() > 0;
 
+  const isOwnedOrderOrCart = (root, { orderId }, { userId }) => {
+    if (orderId) {
+      return isOwnedOrder(null, { orderId }, { userId });
+    }
+    return true;
+  };
+
   const isOwnedOrderPayment = (root, { orderPaymentId }, { userId }) => {
     const payment = OrderPayments.findOne({ _id: orderPaymentId });
     const orderId = payment && payment.orderId;
@@ -30,6 +39,18 @@ export default (role, actions) => {
     return isOwnedOrder(null, { orderId }, { userId });
   };
 
+  const isOwnedOrderItem = (root, { itemId }, { userId }) => {
+    const item = OrderPositions.findOne({ _id: itemId });
+    const orderId = item && item.orderId;
+    return isOwnedOrder(null, { orderId }, { userId });
+  };
+
+  const isOwnedOrderDiscount = (root, { discountId }, { userId }) => {
+    const discount = OrderDiscounts.findOne({ _id: discountId });
+    const orderId = discount && discount.orderId;
+    return isOwnedOrder(null, { orderId }, { userId });
+  };
+
   const isOwnedProductReview = (root, { productReviewId }, { userId }) => ProductReviews
     .findReviewById(productReviewId).userId === userId;
 
@@ -39,12 +60,13 @@ export default (role, actions) => {
   role.allow(actions.viewUserPrivateInfos, isMyself);
   role.allow(actions.updateUser, isMyself);
   role.allow(actions.viewOrder, isOwnedOrder);
-  role.allow(actions.captureOrder, isOwnedOrder);
   role.allow(actions.updateOrder, isOwnedOrder);
+  role.allow(actions.updateOrderItem, isOwnedOrderItem);
+  role.allow(actions.updateOrderDiscount, isOwnedOrderDiscount);
   role.allow(actions.updateOrderPayment, isOwnedOrderPayment);
   role.allow(actions.updateOrderDelivery, isOwnedOrderDelivery);
-  role.allow(actions.checkoutCart, () => true);
-  role.allow(actions.updateCart, () => true);
+  role.allow(actions.checkoutCart, isOwnedOrderOrCart);
+  role.allow(actions.updateCart, isOwnedOrderOrCart);
   role.allow(actions.reviewProduct, () => true);
   role.allow(actions.updateProductReview, () => isOwnedProductReview);
   role.allow(actions.requestQuotation, () => true);

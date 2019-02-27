@@ -37,12 +37,13 @@ import updateProductSupply from './updateProductSupply';
 import addProductAssignment from './addProductAssignment';
 import removeProductAssignment from './removeProductAssignment';
 import addCartProduct from './addCartProduct';
+import addCartDiscount from './addCartDiscount';
+import updateCart from './updateCart';
+import emptyCart from './emptyCart';
 import updateCartItemQuantity from './updateCartItemQuantity';
 import removeCartItem from './removeCartItem';
-import addCartDiscount from './addCartDiscount';
 import removeCartDiscount from './removeCartDiscount';
 import removeOrder from './removeOrder';
-import updateOrder from './updateOrder';
 import setOrderPaymentProvider from './setOrderPaymentProvider';
 import setOrderDeliveryProvider from './setOrderDeliveryProvider';
 import updateOrderDelivery from './updateOrderDelivery';
@@ -58,11 +59,10 @@ import removeDeliveryProvider from './removeDeliveryProvider';
 import createWarehousingProvider from './createWarehousingProvider';
 import updateWarehousingProvider from './updateWarehousingProvider';
 import removeWarehousingProvider from './removeWarehousingProvider';
-import captureOrder from './captureOrder';
 import setPassword from './setPassword';
 import setRoles from './setRoles';
 import enrollUser from './enrollUser';
-import checkout from './checkout';
+import checkoutCart from './checkoutCart';
 import createFilter from './createFilter';
 import updateFilter from './updateFilter';
 import createFilterOption from './createFilterOption';
@@ -134,16 +134,16 @@ export default {
   updateCurrency: acl(actions.manageCurrencies)(updateCurrency),
   removeCurrency: acl(actions.manageCurrencies)(removeCurrency),
 
-  captureOrder: acl(actions.captureOrder)(captureOrder),
   addCartProduct: acl(actions.updateCart)(addCartProduct),
-  updateCartItemQuantity: acl(actions.updateCart)(updateCartItemQuantity),
-  removeCartItem: acl(actions.updateCart)(removeCartItem),
   addCartDiscount: acl(actions.updateCart)(addCartDiscount),
-  removeCartDiscount: acl(actions.updateCart)(removeCartDiscount),
-  removeOrder: acl(actions.updateOrder)(removeOrder),
+  updateCart: acl(actions.updateCart)(updateCart),
+  emptyCart: acl(actions.updateCart)(emptyCart),
+  checkoutCart: acl(actions.checkoutCart)(checkoutCart),
+  updateCartItemQuantity: acl(actions.updateOrderItem)(updateCartItemQuantity),
+  removeCartItem: acl(actions.updateOrderItem)(removeCartItem),
+  removeCartDiscount: acl(actions.updateOrderDiscount)(removeCartDiscount),
   setOrderPaymentProvider: acl(actions.updateOrder)(setOrderPaymentProvider),
   setOrderDeliveryProvider: acl(actions.updateOrder)(setOrderDeliveryProvider),
-  updateOrder: acl(actions.updateOrder)(updateOrder),
   updateOrderDeliveryShipping: acl(actions.updateOrderDelivery)(updateOrderDelivery),
   updateOrderDeliveryPickUp: acl(actions.updateOrderDelivery)(updateOrderDelivery),
   updateOrderPaymentCard: acl(actions.updateOrderPayment)(updateOrderPayment),
@@ -151,7 +151,7 @@ export default {
   updateOrderPaymentPostfinance: acl(actions.updateOrderPayment)(updateOrderPayment),
   updateOrderPaymentPaypal: acl(actions.updateOrderPayment)(updateOrderPayment),
   updateOrderPaymentCrypto: acl(actions.updateOrderPayment)(updateOrderPayment),
-  checkout: acl(actions.checkoutCart)(checkout),
+  removeOrder: acl(actions.updateOrder)(removeOrder),
   confirmOrder: acl(actions.markOrderConfirmed)(confirmOrder),
   payOrder: acl(actions.markOrderPaid)(payOrder),
 

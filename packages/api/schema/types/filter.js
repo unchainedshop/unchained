@@ -1,8 +1,4 @@
 export default [/* GraphQL */`
-input FilterQuery {
-  key: String!
-  value: String
-}
 
 enum FilterType {
   """

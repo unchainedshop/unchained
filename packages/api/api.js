@@ -64,7 +64,7 @@ const startUnchainedServer = (options) => {
         console.error(exception.stacktrace); // eslint-disable-line
       } catch (e) { } // eslint-disable-line
       const newError = error;
-      delete newError.extensions.exception;
+      if (newError.extensions.exception) delete newError.extensions.exception.stacktrace;
       return newError;
     },
     engine: APOLLO_ENGINE_KEY ? {
