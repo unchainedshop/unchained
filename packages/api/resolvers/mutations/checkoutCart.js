@@ -1,14 +1,33 @@
 import { log } from 'meteor/unchained:core-logger';
-import { OrderStatus } from 'meteor/unchained:core-orders';
+import { Orders, OrderStatus } from 'meteor/unchained:core-orders';
 import { Users } from 'meteor/unchained:core-users';
 import {
   UserNotFoundError, OrderCheckoutError, UserNoCartError,
-  OrderWrongStatusError,
+  OrderWrongStatusError, OrderNotFoundError,
 } from '../../errors';
 
 const logger = console;
 
+const checkoutWithPotentialErrors = (
+  cart, context, options, userId,
+) => {
+  try {
+    return cart.checkout(context, options);
+  } catch (error) {
+    const data = {
+      userId,
+      orderId: cart._id,
+      ...context,
+      detailMessage: error.message,
+    };
+    logger.error(error);
+    log(data, { userId, orderId: cart._id, level: 'error' });
+    throw new OrderCheckoutError({ data });
+  }
+};
+
 export default function (root, {
+  orderId,
   paymentContext,
   deliveryContext,
   orderContext,
@@ -17,32 +36,30 @@ export default function (root, {
   countryContext,
   localeContext,
 }) {
-  log('mutation checkoutCart', { userId });
-  const user = Users.findOne({ _id: userId });
-  if (!user) throw new UserNotFoundError({ data: { userId } });
-  const cart = user.cart({ countryContext });
-  if (!cart) throw new UserNoCartError({ data: { userId } });
-  if (cart.status !== OrderStatus.OPEN) {
-    throw new OrderWrongStatusError({ data: { status: cart.status } });
-  }
-  try {
-    return cart.checkout({
+  log('mutation checkoutCart', { orderId, userId });
+  if (orderId) {
+    const order = Orders.findOne({ _id: orderId });
+    if (!order) throw new OrderNotFoundError({ data: { orderId } });
+    if (order.status !== OrderStatus.OPEN) {
+      throw new OrderWrongStatusError({ data: { status: order.status } });
+    }
+    checkoutWithPotentialErrors(order, {
       orderContext,
       paymentContext,
       deliveryContext,
     }, {
       localeContext,
-    });
-  } catch (error) {
-    const data = {
-      userId,
-      orderId: cart._id,
-      paymentContext,
-      deliveryContext,
-      detailMessage: error.message,
-    };
-    logger.error(error);
-    log(data, { userId, orderId: cart._id, level: 'error' });
-    throw new OrderCheckoutError({ data });
+    }, userId);
   }
+  const user = Users.findOne({ _id: userId });
+  if (!user) throw new UserNotFoundError({ data: { userId } });
+  const cart = user.cart({ countryContext });
+  if (!cart) throw new UserNoCartError({ data: { userId } });
+  checkoutWithPotentialErrors(cart, {
+    orderContext,
+    paymentContext,
+    deliveryContext,
+  }, {
+    localeContext,
+  }, userId);
 }

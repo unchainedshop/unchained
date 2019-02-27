@@ -20,6 +20,13 @@ export default (role, actions) => {
     userId,
   }).count() > 0;
 
+  const isOwnedOrderOrCart = (root, { orderId }, { userId }) => {
+    if (orderId) {
+      return isOwnedOrder(null, { orderId }, { userId });
+    }
+    return true;
+  };
+
   const isOwnedOrderPayment = (root, { orderPaymentId }, { userId }) => {
     const payment = OrderPayments.findOne({ _id: orderPaymentId });
     const orderId = payment && payment.orderId;
@@ -58,9 +65,8 @@ export default (role, actions) => {
   role.allow(actions.updateOrderDiscount, isOwnedOrderDiscount);
   role.allow(actions.updateOrderPayment, isOwnedOrderPayment);
   role.allow(actions.updateOrderDelivery, isOwnedOrderDelivery);
-  role.allow(actions.checkoutOrder, isOwnedOrder);
-  role.allow(actions.checkoutCart, () => true);
-  role.allow(actions.updateCart, () => true);
+  role.allow(actions.checkoutCart, isOwnedOrderOrCart);
+  role.allow(actions.updateCart, isOwnedOrderOrCart);
   role.allow(actions.reviewProduct, () => true);
   role.allow(actions.updateProductReview, () => isOwnedProductReview);
   role.allow(actions.requestQuotation, () => true);
