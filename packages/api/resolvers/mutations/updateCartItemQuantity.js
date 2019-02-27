@@ -8,7 +8,7 @@ export default function (root, { itemId, quantity }, { userId }) {
   const item = OrderPositions.findOne({ _id: itemId });
   if (!item) throw new OrderItemNotFoundError({ data: { itemId } });
   const order = item.order();
-  if (order.status !== OrderStatus.OPEN) {
+  if (!order.isCart()) {
     throw new OrderWrongStatusError({ data: { status: order.status } });
   }
   return OrderPositions.updatePosition({

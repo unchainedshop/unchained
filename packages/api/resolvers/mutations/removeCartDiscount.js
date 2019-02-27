@@ -7,7 +7,7 @@ export default function (root, { discountId }, { userId }) {
   const orderDiscount = OrderDiscounts.findOne({ _id: discountId });
   if (!orderDiscount) throw new OrderDiscountNotFoundError({ data: { orderDiscount } });
   const order = orderDiscount.order();
-  if (order.status !== OrderStatus.OPEN) {
+  if (!order.isCart()) {
     throw new OrderWrongStatusError({ data: { status: order.status } });
   }
   return OrderDiscounts.removeDiscount({ discountId });
