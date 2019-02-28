@@ -1,4 +1,6 @@
 import 'meteor/dburles:collection-helpers';
+import { Locale } from 'locale';
+import { getFallbackLocale } from 'meteor/unchained:core';
 import { Accounts } from 'meteor/accounts-base';
 import { log, Logs } from 'meteor/unchained:core-logger';
 import { Countries } from 'meteor/unchained:core-countries';
@@ -17,19 +19,17 @@ Users.helpers({
   isGuest() {
     return !!this.guest;
   },
-  language() {
-    const locale = this.lastLogin && this.lastLogin.locale;
-    if (locale) {
-      return Languages.findOne({ isoCode: locale.substr(0, 2).toLowerCase() });
-    }
-    return null;
+  language(options) {
+    return Languages.findOne({ isoCode: this.locale(options).language });
   },
-  country() {
-    const country = this.lastLogin && this.lastLogin.country;
-    if (country) {
-      return Countries.findOne({ isoCode: country.toUpperCase() });
-    }
-    return null;
+  country(options) {
+    return Countries.findOne({ isoCode: this.locale(options).country.toUpperCase() });
+  },
+  locale({ localeContext } = {}) {
+    const locale = localeContext
+      || new Locale(this.lastLogin && this.lastLogin.locale)
+      || getFallbackLocale();
+    return locale;
   },
   avatar() {
     return Avatars.findOne({ _id: this.avatarId });
