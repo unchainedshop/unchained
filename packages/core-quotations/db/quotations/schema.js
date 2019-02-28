@@ -16,6 +16,7 @@ Quotations.attachSchema(new SimpleSchema({
   userId: { type: String, index: true },
   productId: { type: String, index: true },
   status: { type: String, index: true },
+  quotationNumber: String,
   price: Number,
   expires: Date,
   meta: { type: Object, blackbox: true },
