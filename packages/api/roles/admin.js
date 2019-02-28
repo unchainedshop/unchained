@@ -35,10 +35,13 @@ export default (role, actions) => {
   role.allow(actions.viewLogs, () => true);
   role.allow(actions.viewUserRoles, () => true);
   role.allow(actions.viewUserOrders, () => true);
+  role.allow(actions.viewUserQuotations, () => true);
   role.allow(actions.viewUserPublicInfos, () => true);
   role.allow(actions.viewUserPrivateInfos, () => true);
   role.allow(actions.reviewProduct, () => true);
   role.allow(actions.updateProductReview, () => true);
   role.allow(actions.manageProductReviews, () => true);
   role.allow(actions.requestQuotation, () => true);
+  role.allow(actions.viewQuotations, () => true);
+  role.allow(actions.viewQuotation, () => true);
 };

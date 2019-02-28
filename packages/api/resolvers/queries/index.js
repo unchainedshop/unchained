@@ -37,6 +37,8 @@ import logs from './logs';
 import shopInfo from './shopInfo';
 import productReview from './productReview';
 import productReviews from './productReviews';
+import quotation from './quotation';
+import quotations from './quotations';
 
 export default {
   me,
@@ -75,4 +77,6 @@ export default {
   translatedFilterTexts: acl(actions.manageFilters)(translatedFilterTexts),
   productReview: acl(actions.manageProductReviews)(productReview),
   productReviews: acl(actions.manageProductReviews)(productReviews),
+  quotation: acl(actions.viewQuotation)(quotation),
+  quotations: acl(actions.viewQuotations)(quotations),
 };
