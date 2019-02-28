@@ -57,6 +57,7 @@ export default (role, actions) => {
   role.allow(actions.viewUser, isMyself);
   role.allow(actions.viewUserRoles, isMyself);
   role.allow(actions.viewUserOrders, isMyself);
+  role.allow(actions.viewUserQuotations, isMyself);
   role.allow(actions.viewUserPrivateInfos, isMyself);
   role.allow(actions.updateUser, isMyself);
   role.allow(actions.viewOrder, isOwnedOrder);

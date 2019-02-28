@@ -180,5 +180,15 @@ export default [/* GraphQL */`
     Get a specific product review by ID
     """
     productReview(productReviewId: ID!): [ProductReview!]!
+
+    """
+    Get all quotations
+    """
+    quotations(limit: Int, offset: Int): [Quotation!]!
+
+    """
+    Get a specific quotation by ID
+    """
+    quotation(quotationId: ID!): Quotation
   }
 `];

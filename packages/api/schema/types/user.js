@@ -55,6 +55,7 @@ type User {
   tags: [String!]
   cart: Order
   orders(includeDrafts: Boolean = false): [Order!]!
+  quotations: [Quotation!]!
   logs(offset: Int, limit: Int): [Log!]!
 }
 `];
