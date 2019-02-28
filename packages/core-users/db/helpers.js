@@ -70,7 +70,10 @@ Users.helpers({
       },
     });
     if (!skipEmailVerification) {
-      Accounts.sendVerificationEmail(this._id);
+      const { sendVerificationEmail } = Accounts._options; // eslint-disable-line
+      if (sendVerificationEmail) {
+        Accounts.sendVerificationEmail(this._id);
+      }
     }
     return Users.findOne({ _id: this._id });
   },
@@ -99,7 +102,10 @@ Users.updateLastBillingAddress = ({ userId, lastBillingAddress }) => {
   const profile = user.profile || {};
   const isGuest = user.isGuest();
   if (!profile.displayName || isGuest) {
-    modifier.$set['profile.displayName'] = [lastBillingAddress.firstName, lastBillingAddress.lastName].filter(Boolean).join(' ');
+    modifier.$set['profile.displayName'] = [
+      lastBillingAddress.firstName,
+      lastBillingAddress.lastName,
+    ].filter(Boolean).join(' ');
   }
   return Users.update({ _id: userId }, modifier);
 };

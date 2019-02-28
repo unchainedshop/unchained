@@ -69,7 +69,12 @@ Accounts.onCreateUser((options = {}, user = {}) => {
     newUser.emails = [{ address: newUser.services.facebook.email, verified: true }];
   }
   if (!guest && !skipEmailVerification) {
-    Meteor.setTimeout(() => { Accounts.sendVerificationEmail(user._id); }, 1000);
+    Meteor.setTimeout(() => {
+      const { sendVerificationEmail } = Accounts._options; // eslint-disable-line
+      if (sendVerificationEmail) {
+        Accounts.sendVerificationEmail(user._id);
+      }
+    }, 1000);
   }
   return newUser;
 });
