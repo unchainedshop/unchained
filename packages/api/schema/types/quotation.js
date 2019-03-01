@@ -44,9 +44,10 @@ Quotation
 """
 type Quotation {
   _id: ID!
-  user: User
-  status: QuotationStatus
-  created: Date
+  user: User!
+  product: Product!
+  status: QuotationStatus!
+  created: Date!
   updated: Date
   quotationNumber: String
   fullfilled: Date
