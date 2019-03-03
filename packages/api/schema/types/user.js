@@ -43,6 +43,7 @@ type User {
   username: String
   isEmailVerified: Boolean!
   isGuest: Boolean!
+  isInitialPassword: Boolean!
   name: String!
   avatar: Media
   profile: UserProfile
