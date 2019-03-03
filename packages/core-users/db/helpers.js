@@ -5,6 +5,7 @@ import { Accounts } from 'meteor/accounts-base';
 import { log, Logs } from 'meteor/unchained:core-logger';
 import { Countries } from 'meteor/unchained:core-countries';
 import { Languages } from 'meteor/unchained:core-languages';
+import uuid from 'uuid';
 import { Users, Avatars } from './collections';
 
 Logs.helpers({
@@ -18,6 +19,15 @@ Logs.helpers({
 Users.helpers({
   isGuest() {
     return !!this.guest;
+  },
+  isInitialPassword() {
+    const {
+      password: { initial } = {},
+    } = this.services || {};
+    return !!initial;
+  },
+  isEmailVerified() {
+    return !!this.emails[0].verified;
   },
   language(options) {
     return Languages.findOne({ isoCode: this.locale(options).language });
@@ -40,17 +50,25 @@ Users.helpers({
   telNumber() {
     return this.profile && this.profile.phoneMobile;
   },
-  isEmailVerified() {
-    return this.emails[0].verified;
-  },
   name() {
     const { profile, emails } = this;
     if (profile && profile.displayName && profile.displayName !== '') return profile.displayName;
     return emails && emails[0].address;
   },
-  updatePassword(newPassword) {
-    Accounts.setPassword(this._id, newPassword);
-    return this;
+  updatePassword({ password, ...options } = {}) {
+    const newPassword = password || uuid().split('-').pop();
+    Accounts.setPassword(this._id, newPassword, options);
+    if (!password) {
+      Users.update({ _id: this._id }, {
+        $set: {
+          'services.password.initial': true,
+          updated: new Date(),
+        },
+      });
+    }
+    const user = Users.findOne({ _id: this._id });
+    user.password = newPassword;
+    return user;
   },
   updateRoles(roles) {
     Users.update({ _id: this._id }, {
@@ -146,19 +164,6 @@ Users.enrollUser = ({
     Accounts.sendEnrollmentEmail(newUserId);
   }
   return Users.findOne({ _id: newUserId });
-};
-
-Users.adjustGuestEmail = ({ userId, emailAddress = null }) => {
-  const user = Users.findOne({ _id: userId });
-  if (emailAddress && user && user.email() !== emailAddress && user.isGuest()) {
-    log(`Guest ${userId} -> New E-Mail: ${emailAddress}`, { userId });
-    if (user && user.emails) {
-      user.emails.forEach(({ address: oldEmailAddress }) => {
-        Accounts.removeEmail(userId, oldEmailAddress);
-      });
-    }
-    Accounts.addEmail(userId, emailAddress, false);
-  }
 };
 
 Users.findOneWithHeartbeat = ({ userId, ...options }) => {
