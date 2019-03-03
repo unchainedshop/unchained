@@ -5,7 +5,6 @@ import { Accounts } from 'meteor/accounts-base';
 import { getFallbackLocale } from 'meteor/unchained:core';
 import { Users } from 'meteor/unchained:core-users';
 import cloneDeep from 'lodash.clonedeep';
-import uuid from 'uuid';
 import moniker from 'moniker';
 
 const {
@@ -97,7 +96,6 @@ function createGuestOptions(email) {
     email: email || `${guestname}@localhost`,
     guest: true,
     profile: {},
-    password: uuid(),
   };
 }
 
@@ -111,4 +109,17 @@ Accounts.registerLoginHandler('guest', (options) => {
   return {
     userId: Accounts.createUser(guestOptions),
   };
+});
+
+Accounts.validateLoginAttempt(({
+  type, allowed, user,
+}) => {
+  if (type !== 'guest' && allowed && user.guest) {
+    Users.update({ _id: user._id }, {
+      $set: {
+        guest: false,
+      },
+    });
+  }
+  return true;
 });
