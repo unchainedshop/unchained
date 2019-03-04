@@ -53,4 +53,4 @@ ProductMedia.updateManualOrder = ({ sortKeys }) => {
   return ProductMedia
     .find({ _id: { $in: changedMediaIds } })
     .fetch();
-}
+};

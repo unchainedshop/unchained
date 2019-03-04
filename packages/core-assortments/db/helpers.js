@@ -182,14 +182,14 @@ Collections.AssortmentProducts.updateManualOrder = ({ sortKeys, skipInvalidation
     .fetch();
 
   if (!skipInvalidation) {
-    const assortmentIds = assortmentProducts.map(({ assortmentId }) => assortmentId)
+    const assortmentIds = assortmentProducts.map(({ assortmentId }) => assortmentId);
     Collections.Assortments
       .find({ _id: { $in: assortmentIds } })
-      .forEach(assortment => assortment.invalidateProductIdCache())
+      .forEach(assortment => assortment.invalidateProductIdCache());
   }
 
   return assortmentProducts;
-}
+};
 
 Collections.AssortmentFilters.getNewSortKey = (assortmentId) => {
   const lastAssortmentFilter = Collections.AssortmentFilters.findOne({
@@ -212,7 +212,7 @@ Collections.AssortmentFilters.updateManualOrder = ({ sortKeys }) => {
   return Collections.AssortmentFilters
     .find({ _id: { $in: changedAssortmentFilterIds } })
     .fetch();
-}
+};
 
 Collections.AssortmentLinks.getNewSortKey = (parentAssortmentId) => {
   const lastAssortmentProduct = Collections.AssortmentLinks.findOne({
@@ -235,7 +235,7 @@ Collections.AssortmentLinks.updateManualOrder = ({ sortKeys }) => {
   return Collections.AssortmentLinks
     .find({ _id: { $in: changedAssortmentLinkIds } })
     .fetch();
-}
+};
 
 
 Products.helpers({
