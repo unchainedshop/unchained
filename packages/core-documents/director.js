@@ -1,11 +1,11 @@
-import { log } from 'meteor/unchained:core-logger';
+import { log } from "meteor/unchained:core-logger";
 
 class DocumentAdapter {
-  static key = ''
+  static key = "";
 
-  static label = ''
+  static label = "";
 
-  static version = ''
+  static version = "";
 
   static isActivatedFor() {
     return false;
@@ -24,20 +24,21 @@ class DocumentDirector {
   constructor(context) {
     this.context = context;
     this.adapters = DocumentDirector.sortedAdapters()
-      .filter(((AdapterClass) => {
+      .filter(AdapterClass => {
         const activated = AdapterClass.isActivatedFor(this.context);
         if (!activated) log(`DocumentDirector -> ${AdapterClass.key} (${AdapterClass.version}) skipped`); // eslint-disable-line
         return activated;
-      }))
+      })
       .map(AdapterClass => new AdapterClass(this.context));
   }
 
   filteredDocuments({ date, type, status } = {}) {
     if (!this.context.documents) return [];
-    return this.context.documents.filter((doc) => {
-      const sameType = (!type || doc.meta.type === type);
-      const sameDate = (!date || new Date(doc.meta.date).getTime() === new Date(date).getTime());
-      const sameStatus = (!status || doc.meta.status === status);
+    return this.context.documents.filter(doc => {
+      const sameType = !type || doc.meta.type === type;
+      const sameDate =
+        !date || new Date(doc.meta.date).getTime() === new Date(date).getTime();
+      const sameStatus = !status || doc.meta.status === status;
       if (sameType && sameDate && sameStatus) return true;
       return false;
     });
@@ -69,12 +70,13 @@ class DocumentDirector {
   }
 
   static registerAdapter(adapter) {
-    log(`${this.name} -> Registered ${adapter.key} ${adapter.version} (${adapter.label})`);
+    log(
+      `${this.name} -> Registered ${adapter.key} ${adapter.version} (${
+        adapter.label
+      })`
+    );
     DocumentDirector.adapters.set(adapter.key, adapter);
   }
 }
 
-export {
-  DocumentDirector,
-  DocumentAdapter,
-};
+export { DocumentDirector, DocumentAdapter };

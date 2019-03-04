@@ -1,4 +1,4 @@
-import { PaypalConfigurationError } from '../../errors';
+import { PaypalConfigurationError } from "../../errors";
 
 export default {
   status(obj) {
@@ -6,12 +6,12 @@ export default {
   },
   clientToken(obj) {
     try {
-      return obj.provider().run('clientToken');
+      return obj.provider().run("clientToken");
     } catch (error) {
       throw new PaypalConfigurationError({ error });
     }
   },
   meta(obj) {
-    return obj.transformedContextValue('meta');
-  },
+    return obj.transformedContextValue("meta");
+  }
 };

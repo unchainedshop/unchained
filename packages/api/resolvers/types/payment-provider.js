@@ -5,7 +5,7 @@ export default {
     return {
       _id: Interface.key,
       label: Interface.label,
-      version: Interface.version,
+      version: Interface.version
     };
-  },
+  }
 };

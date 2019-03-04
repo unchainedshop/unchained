@@ -1,4 +1,4 @@
-import 'meteor/dburles:collection-helpers';
-import { Logs } from './collections';
+import "meteor/dburles:collection-helpers";
+import { Logs } from "./collections";
 
 Logs.helpers({});

@@ -15,11 +15,11 @@ Package.onUse((api) => {
   api.use('dburles:collection-helpers@1.1.0');
   api.use('unchained:utils@0.24.0');
 
-  api.mainModule('currencies.js', 'server');
+  api.mainModule("currencies.js", "server");
 });
 
-Package.onTest((api) => {
-  api.use('ecmascript');
-  api.use('unchained:core-currencies');
-  api.mainModule('currencies-tests.js');
+Package.onTest(api => {
+  api.use("ecmascript");
+  api.use("unchained:core-currencies");
+  api.mainModule("currencies-tests.js");
 });

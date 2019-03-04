@@ -8,7 +8,7 @@ export default {
   texts(obj, { forceLocale }, { localeContext }) {
     return obj.getLocalizedTexts(
       forceLocale || localeContext.normalized,
-      obj.filterOption,
+      obj.filterOption
     );
-  },
+  }
 };

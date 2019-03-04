@@ -1,32 +1,37 @@
-import { Schemas } from 'meteor/unchained:utils';
-import SimpleSchema from 'simpl-schema';
-import { OrderDeliveries } from './collections';
+import { Schemas } from "meteor/unchained:utils";
+import SimpleSchema from "simpl-schema";
+import { OrderDeliveries } from "./collections";
 
 const { logFields, contextFields, timestampFields } = Schemas;
 
 const calculationFields = {
   calculation: Array,
-  'calculation.$': {
+  "calculation.$": {
     type: Object,
-    blackbox: true,
-  },
+    blackbox: true
+  }
 };
 
 export const OrderDeliveryStatus = {
   OPEN: null,
-  DELIVERED: 'DELIVERED',
-  RETURNED: 'RETURNED',
+  DELIVERED: "DELIVERED",
+  RETURNED: "RETURNED"
 };
 
-OrderDeliveries.attachSchema(new SimpleSchema({
-  orderId: { type: String, index: true },
-  deliveryProviderId: String,
-  delivered: Date,
-  status: String,
-  ...timestampFields,
-  ...contextFields,
-  ...calculationFields,
-  ...logFields,
-}, { requiredByDefault: false }));
+OrderDeliveries.attachSchema(
+  new SimpleSchema(
+    {
+      orderId: { type: String, index: true },
+      deliveryProviderId: String,
+      delivered: Date,
+      status: String,
+      ...timestampFields,
+      ...contextFields,
+      ...calculationFields,
+      ...logFields
+    },
+    { requiredByDefault: false }
+  )
+);
 
 export default OrderDeliveryStatus;

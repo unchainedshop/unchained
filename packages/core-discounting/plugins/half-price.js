@@ -1,13 +1,16 @@
-import { DiscountDirector, DiscountAdapter } from 'meteor/unchained:core-discounting';
+import {
+  DiscountDirector,
+  DiscountAdapter
+} from "meteor/unchained:core-discounting";
 
 class HalfPrice extends DiscountAdapter {
-  static key = 'shop.unchained.discount.half-price'
+  static key = "shop.unchained.discount.half-price";
 
-  static label = 'Half Price'
+  static label = "Half Price";
 
-  static version = '1.0'
+  static version = "1.0";
 
-  static orderIndex = 1
+  static orderIndex = 1;
 
   // return true if a discount is allowed to get added manually by a user
   static isManualAdditionAllowed() { // eslint-disable-line
@@ -28,7 +31,8 @@ class HalfPrice extends DiscountAdapter {
   isValid(isTriggerSystem) { // eslint-disable-line
     const { order } = this.context;
     const user = order.user();
-    const isUserEligibleForHalfPrice = (user && user.tags && user.tags.indexOf('half-price') !== -1);
+    const isUserEligibleForHalfPrice =
+      user && user.tags && user.tags.indexOf("half-price") !== -1;
     if (isTriggerSystem && isUserEligibleForHalfPrice) {
       return true;
     }
@@ -37,7 +41,7 @@ class HalfPrice extends DiscountAdapter {
 
   // returns the appropriate discount context for a calculation adapter
   discountForPricingAdapterKey(pricingAdapterKey) { // eslint-disable-line
-    if (pricingAdapterKey === 'shop.unchained.pricing.product-discount') {
+    if (pricingAdapterKey === "shop.unchained.pricing.product-discount") {
       return { rate: 0.5 };
     }
     return null;

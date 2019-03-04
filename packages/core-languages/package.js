@@ -15,11 +15,11 @@ Package.onUse((api) => {
   api.use('dburles:collection-helpers@1.1.0');
   api.use('unchained:utils@0.24.0');
 
-  api.mainModule('languages.js', 'server');
+  api.mainModule("languages.js", "server");
 });
 
-Package.onTest((api) => {
-  api.use('ecmascript');
-  api.use('unchained:core-languages');
-  api.mainModule('languages-tests.js');
+Package.onTest(api => {
+  api.use("ecmascript");
+  api.use("unchained:core-languages");
+  api.mainModule("languages-tests.js");
 });

@@ -1,36 +1,41 @@
-import { HTTP } from 'meteor/http';
-import { ServiceConfiguration } from 'meteor/service-configuration';
-import resolver from './resolver';
+import { HTTP } from "meteor/http";
+import { ServiceConfiguration } from "meteor/service-configuration";
+import resolver from "./resolver";
 
 const getTokens = () => {
-  const result = ServiceConfiguration.configurations.findOne({ service: 'linkedin' });
+  const result = ServiceConfiguration.configurations.findOne({
+    service: "linkedin"
+  });
   return {
     client_id: result.clientId,
-    client_secret: result.secret,
+    client_secret: result.secret
   };
 };
 
 const getAccessToken = (code, redirectUri) => {
-  const response = HTTP.post('https://www.linkedin.com/oauth/v2/accessToken', {
+  const response = HTTP.post("https://www.linkedin.com/oauth/v2/accessToken", {
     params: {
-      grant_type: 'authorization_code',
+      grant_type: "authorization_code",
       code,
       redirect_uri: redirectUri,
-      ...getTokens(),
-    },
+      ...getTokens()
+    }
   }).data;
 
   return response.access_token;
 };
 
-const getIdentity = (accessToken) => {
+const getIdentity = accessToken => {
   try {
-    return HTTP.get('https://www.linkedin.com/v1/people/~:(id,email-address,first-name,last-name,headline)', {
-      params: {
-        oauth2_access_token: accessToken,
-        format: 'json',
-      },
-    }).data;
+    return HTTP.get(
+      "https://www.linkedin.com/v1/people/~:(id,email-address,first-name,last-name,headline)",
+      {
+        params: {
+          oauth2_access_token: accessToken,
+          format: "json"
+        }
+      }
+    ).data;
   } catch (err) {
     throw new Error(`Failed to fetch identity from LinkedIn. ${err.message}`);
   }
@@ -43,13 +48,15 @@ const handleAuthFromAccessToken = ({ code, redirectUri }) => {
 
   const serviceData = {
     ...identity,
-    accessToken,
+    accessToken
   };
 
   return {
-    serviceName: 'linkedin',
+    serviceName: "linkedin",
     serviceData,
-    options: { profile: { displayName: `${identity.firstName} ${identity.lastName}` } },
+    options: {
+      profile: { displayName: `${identity.firstName} ${identity.lastName}` }
+    }
   };
 };
 

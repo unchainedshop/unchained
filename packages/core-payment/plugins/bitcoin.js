@@ -1,18 +1,18 @@
 import {
   PaymentDirector,
   PaymentAdapter,
-  PaymentError,
-} from 'meteor/unchained:core-payment';
+  PaymentError
+} from "meteor/unchained:core-payment";
 
 class Bitcoin extends PaymentAdapter {
-  static key = 'mesh.crypto.bitcoin'
+  static key = "mesh.crypto.bitcoin";
 
-  static label = 'Bitcoin'
+  static label = "Bitcoin";
 
-  static version = '1.0'
+  static version = "1.0";
 
   static typeSupported(type) {
-    return (type === 'CRYPTO');
+    return type === "CRYPTO";
   }
 
   configurationError() {
@@ -25,8 +25,8 @@ class Bitcoin extends PaymentAdapter {
 
   getWallets() {
     return this.config.reduce((current, item) => {
-      if (item.key === 'wallets') return item.value;
-      return current.split(',');
+      if (item.key === "wallets") return item.value;
+      return current.split(",");
     }, []);
   }
 
@@ -41,7 +41,7 @@ class Bitcoin extends PaymentAdapter {
 
   async balance(publicKey) { // eslint-disable-line
     this.log(`getting the balance of ${publicKey}`);
-    throw new Error('Could not retrieve a public key');
+    throw new Error("Could not retrieve a public key");
   }
 
   async charge() { // eslint-disable-line

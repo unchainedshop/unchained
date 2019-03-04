@@ -10,10 +10,13 @@ import { Users, Avatars } from './collections';
 
 Logs.helpers({
   user() {
-    return this.meta && Users.findOne({
-      _id: this.meta.userId,
-    });
-  },
+    return (
+      this.meta &&
+      Users.findOne({
+        _id: this.meta.userId
+      })
+    );
+  }
 });
 
 Users.helpers({
@@ -52,7 +55,8 @@ Users.helpers({
   },
   name() {
     const { profile, emails } = this;
-    if (profile && profile.displayName && profile.displayName !== '') return profile.displayName;
+    if (profile && profile.displayName && profile.displayName !== "")
+      return profile.displayName;
     return emails && emails[0].address;
   },
   updatePassword({ password, ...options } = {}) {
@@ -71,22 +75,28 @@ Users.helpers({
     return user;
   },
   updateRoles(roles) {
-    Users.update({ _id: this._id }, {
-      $set: {
-        updated: new Date(),
-        roles,
-      },
-    });
+    Users.update(
+      { _id: this._id },
+      {
+        $set: {
+          updated: new Date(),
+          roles
+        }
+      }
+    );
     return Users.findOne({ _id: this._id });
   },
   updateEmail(email, { skipEmailVerification = false } = {}) {
-    Users.update({ _id: this._id }, {
-      $set: {
-        updated: new Date(),
-        'emails.0.address': email,
-        'emails.0.verified': false,
-      },
-    });
+    Users.update(
+      { _id: this._id },
+      {
+        $set: {
+          updated: new Date(),
+          "emails.0.address": email,
+          "emails.0.verified": false
+        }
+      }
+    );
     if (!skipEmailVerification) {
       const { sendVerificationEmail } = Accounts._options; // eslint-disable-line
       if (sendVerificationEmail) {
@@ -96,26 +106,26 @@ Users.helpers({
     return Users.findOne({ _id: this._id });
   },
   logs({ limit = 10, offset = 0 }) {
-    const selector = { 'meta.userId': this._id };
+    const selector = { "meta.userId": this._id };
     const logs = Logs.find(selector, {
       skip: offset,
       limit,
       sort: {
-        created: -1,
-      },
+        created: -1
+      }
     }).fetch();
     return logs;
-  },
+  }
 });
 
 Users.updateLastBillingAddress = ({ userId, lastBillingAddress }) => {
   const user = Users.findOne({ _id: userId });
-  log('Store Last Billing Address', { userId });
+  log("Store Last Billing Address", { userId });
   const modifier = {
     $set: {
       lastBillingAddress,
-      updated: new Date(),
-    },
+      updated: new Date()
+    }
   };
   const profile = user.profile || {};
   const isGuest = user.isGuest();
@@ -130,35 +140,36 @@ Users.updateLastBillingAddress = ({ userId, lastBillingAddress }) => {
 
 Users.updateLastContact = ({ userId, lastContact }) => {
   const user = Users.findOne({ _id: userId });
-  log('Store Last Contact Information', { userId });
+  log("Store Last Contact Information", { userId });
   const profile = user.profile || {};
   const isGuest = user.isGuest();
   if ((!profile.phoneMobile || isGuest) && lastContact.telNumber) {
     const modifier = {
       $set: {
-        'profile.phoneMobile': lastContact.telNumber,
-        updated: new Date(),
-      },
+        "profile.phoneMobile": lastContact.telNumber,
+        updated: new Date()
+      }
     };
     Users.update({ _id: userId }, modifier);
   }
 };
 
-Users.enrollUser = ({
-  password, email, displayName, address,
-}) => {
+Users.enrollUser = ({ password, email, displayName, address }) => {
   const options = { email, skipEmailVerification: true };
-  if (password && password !== '') {
+  if (password && password !== "") {
     options.password = password;
   }
   const newUserId = Accounts.createUser(options);
-  Users.update({ _id: newUserId }, {
-    $set: {
-      updated: new Date(),
-      'profile.displayName': displayName || null,
-      'profile.address': address || null,
-    },
-  });
+  Users.update(
+    { _id: newUserId },
+    {
+      $set: {
+        updated: new Date(),
+        "profile.displayName": displayName || null,
+        "profile.address": address || null
+      }
+    }
+  );
   if (!options.password) {
     // send an e-mail if password is not set allowing the user to set it
     Accounts.sendEnrollmentEmail(newUserId);
@@ -167,14 +178,19 @@ Users.enrollUser = ({
 };
 
 Users.findOneWithHeartbeat = ({ userId, ...options }) => {
-  if (Users.update({ _id: userId }, {
-    $set: {
-      lastLogin: {
-        timestamp: new Date(),
-        ...options,
-      },
-    },
-  })) {
+  if (
+    Users.update(
+      { _id: userId },
+      {
+        $set: {
+          lastLogin: {
+            timestamp: new Date(),
+            ...options
+          }
+        }
+      }
+    )
+  ) {
     return Users.findOne({ _id: userId });
   }
   return null;

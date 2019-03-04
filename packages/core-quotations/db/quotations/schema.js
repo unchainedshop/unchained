@@ -1,15 +1,15 @@
-import { Schemas } from 'meteor/unchained:utils';
-import SimpleSchema from 'simpl-schema';
-import { Quotations } from './collections';
+import { Schemas } from "meteor/unchained:utils";
+import SimpleSchema from "simpl-schema";
+import { Quotations } from "./collections";
 
 const { logFields, contextFields, timestampFields } = Schemas;
 
 export const QuotationStatus = {
   REQUESTED: null, // Request for Proposal
-  PROCESSING: 'PROCESSING',
-  PROPOSED: 'PROPOSED',
-  FULLFILLED: 'FULLFILLED',
-  REJECTED: 'REJECTED',
+  PROCESSING: "PROCESSING",
+  PROPOSED: "PROPOSED",
+  FULLFILLED: "FULLFILLED",
+  REJECTED: "REJECTED"
 };
 
 Quotations.attachSchema(new SimpleSchema({

@@ -1,7 +1,7 @@
-import { Kind } from 'graphql/language';
+import { Kind } from "graphql/language";
 
 const identity = value => value;
-const parseLiteral = (ast) => {
+const parseLiteral = ast => {
   switch (ast.kind) {
     case Kind.STRING:
     case Kind.BOOLEAN:
@@ -11,7 +11,7 @@ const parseLiteral = (ast) => {
       return parseFloat(ast.value);
     case Kind.OBJECT: {
       const value = Object.create(null);
-      ast.fields.forEach((field) => {
+      ast.fields.forEach(field => {
         value[field.name.value] = parseLiteral(field.value);
       });
 
@@ -27,5 +27,5 @@ const parseLiteral = (ast) => {
 export default {
   __parseValue: identity,
   __serialize: identity,
-  __parseLiteral: parseLiteral,
+  __parseLiteral: parseLiteral
 };

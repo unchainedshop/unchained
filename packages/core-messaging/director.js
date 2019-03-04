@@ -1,21 +1,19 @@
-import { log } from 'meteor/unchained:core-logger';
-import { defaultEmailResolver, defaultSMSResolver } from './template-resolvers';
+import { log } from "meteor/unchained:core-logger";
+import { defaultEmailResolver, defaultSMSResolver } from "./template-resolvers";
 
-const {
-  LANG,
-} = process.env;
+const { LANG } = process.env;
 
 const MessagingType = {
-  EMAIL: 'EMAIL',
-  SMS: 'SMS',
+  EMAIL: "EMAIL",
+  SMS: "SMS"
 };
 
 class MessagingAdapter {
-  static key = ''
+  static key = "";
 
-  static label = ''
+  static label = "";
 
-  static version = ''
+  static version = "";
 
   static isActivatedFor() {
     return false;
@@ -39,31 +37,41 @@ class MessagingDirector {
   constructor(context) {
     this.context = {
       locale: LANG,
-      ...context,
+      ...context
     };
   }
 
   sendMessage(options) {
-    return this.execute('sendMessage', options);
+    return this.execute("sendMessage", options);
   }
 
   execute(name, options) {
-    return this.constructor.sortedAdapters()
-      .filter(((AdapterClass) => {
+    return this.constructor
+      .sortedAdapters()
+      .filter(AdapterClass => {
         const activated = AdapterClass.isActivatedFor(this.context);
         if (!activated) {
-          log(`${this.constructor.name} -> ${AdapterClass.key} (${AdapterClass.version}) skipped`, {
-            level: 'warn',
-          });
+          log(
+            `${this.constructor.name} -> ${AdapterClass.key} (${
+              AdapterClass.version
+            }) skipped`,
+            {
+              level: "warn"
+            }
+          );
         }
         return activated;
-      }))
-      .map((AdapterClass) => {
+      })
+      .map(AdapterClass => {
         const concreteAdapter = new AdapterClass({
           context: this.context,
-          resolver: this.constructor.resolvers.get(this.context.type),
+          resolver: this.constructor.resolvers.get(this.context.type)
         });
-        log(`${this.constructor.name} -> via ${AdapterClass.key} -> Execute '${name}'`);
+        log(
+          `${this.constructor.name} -> via ${
+            AdapterClass.key
+          } -> Execute '${name}'`
+        );
         return concreteAdapter[name](options);
       }, []);
   }
@@ -79,7 +87,11 @@ class MessagingDirector {
   }
 
   static registerAdapter(adapter) {
-    log(`${this.name} -> Registered ${adapter.key} ${adapter.version} (${adapter.label})`);
+    log(
+      `${this.name} -> Registered ${adapter.key} ${adapter.version} (${
+        adapter.label
+      })`
+    );
     this.adapters.set(adapter.key, adapter);
   }
 
@@ -89,11 +101,10 @@ class MessagingDirector {
   }
 }
 
-MessagingDirector.setTemplateResolver(MessagingType.EMAIL, defaultEmailResolver);
+MessagingDirector.setTemplateResolver(
+  MessagingType.EMAIL,
+  defaultEmailResolver
+);
 MessagingDirector.setTemplateResolver(MessagingType.SMS, defaultSMSResolver);
 
-export {
-  MessagingType,
-  MessagingDirector,
-  MessagingAdapter,
-};
+export { MessagingType, MessagingDirector, MessagingAdapter };

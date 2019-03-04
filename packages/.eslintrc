@@ -6,7 +6,8 @@
   ],
   "extends": [
     "airbnb-base",
-    "plugin:meteor/recommended"
+    "plugin:meteor/recommended",
+    "plugin:prettier/recommended",
   ],
   "env": {
     "node": true,

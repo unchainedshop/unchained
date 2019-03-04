@@ -1,10 +1,10 @@
-import { Random } from 'meteor/random';
+import { Random } from "meteor/random";
 
-export default function () {
+export default function() {
   return {
     id: Random.id(),
     close() {
       // nothing to close here
-    },
+    }
   };
 }

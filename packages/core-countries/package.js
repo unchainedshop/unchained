@@ -16,11 +16,11 @@ Package.onUse((api) => {
   api.use('unchained:utils@0.24.0');
   api.use('unchained:core-currencies@0.24.0');
 
-  api.mainModule('countries.js', 'server');
+  api.mainModule("countries.js", "server");
 });
 
-Package.onTest((api) => {
-  api.use('ecmascript');
-  api.use('unchained:core-countries');
-  api.mainModule('countries-tests.js');
+Package.onTest(api => {
+  api.use("ecmascript");
+  api.use("unchained:core-countries");
+  api.mainModule("countries-tests.js");
 });

@@ -1,6 +1,6 @@
-import { log } from 'meteor/unchained:core-logger';
-import { Orders, OrderStatus } from 'meteor/unchained:core-orders';
-import { OrderNotFoundError, OrderWrongStatusError } from '../../errors';
+import { log } from "meteor/unchained:core-logger";
+import { Orders, OrderStatus } from "meteor/unchained:core-orders";
+import { OrderNotFoundError, OrderWrongStatusError } from "../../errors";
 
 export default function (root, { orderId, ...transactionContext }, { userId, localeContext }) {
   log('mutation confirmOrder', { orderId, userId });

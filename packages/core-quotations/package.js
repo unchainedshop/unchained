@@ -22,11 +22,11 @@ Package.onUse((api) => {
   api.use('unchained:core-logger@0.24.0');
   api.use('unchained:core-messaging@0.24.0');
 
-  api.mainModule('quotations.js', 'server');
+  api.mainModule("quotations.js", "server");
 });
 
-Package.onTest((api) => {
-  api.use('ecmascript');
-  api.use('unchained:core-quotations');
-  api.mainModule('quotations-tests.js');
+Package.onTest(api => {
+  api.use("ecmascript");
+  api.use("unchained:core-quotations");
+  api.mainModule("quotations-tests.js");
 });

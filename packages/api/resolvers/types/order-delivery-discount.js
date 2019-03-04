@@ -1,4 +1,4 @@
-import { OrderDiscounts } from 'meteor/unchained:core-orders';
+import { OrderDiscounts } from "meteor/unchained:core-orders";
 
 export default {
   _id(obj) {
@@ -10,7 +10,7 @@ export default {
   total(obj) {
     return {
       amount: obj.amount,
-      currency: obj.currency,
+      currency: obj.currency
     };
-  },
+  }
 };

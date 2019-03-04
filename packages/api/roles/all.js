@@ -50,10 +50,14 @@ export default (role, actions) => {
   role.allow(actions.answerQuotation, () => false);
 
   // only allow if otp is provided
-  role.allow(actions.viewOrder, (root, { orderId, otp }) => (Orders.find({
-    _id: orderId,
-    orderNumber: otp,
-  }).count() > 0));
+  role.allow(
+    actions.viewOrder,
+    (root, { orderId, otp }) =>
+      Orders.find({
+        _id: orderId,
+        orderNumber: otp
+      }).count() > 0
+  );
 
   // only allow if otp is provided
   role.allow(actions.viewQuotation, (root, { quotationId, otp }) => (Quotations.find({

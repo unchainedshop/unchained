@@ -1,4 +1,6 @@
-export default [/* GraphQL */`
-  scalar Date
-  scalar JSON
-`];
+export default [
+  /* GraphQL */ `
+    scalar Date
+    scalar JSON
+  `
+];

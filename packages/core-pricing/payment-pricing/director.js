@@ -1,15 +1,15 @@
-import { Promise } from 'meteor/promise';
-import { log } from 'meteor/unchained:core-logger';
-import { PaymentPricingSheet } from './sheet';
+import { Promise } from "meteor/promise";
+import { log } from "meteor/unchained:core-logger";
+import { PaymentPricingSheet } from "./sheet";
 
 class PaymentPricingAdapter {
-  static key = ''
+  static key = "";
 
-  static label = ''
+  static label = "";
 
-  static version = ''
+  static version = "";
 
-  static orderIndex = 0
+  static orderIndex = 0;
 
   static isActivatedFor() {
     return false;
@@ -24,7 +24,9 @@ class PaymentPricingAdapter {
 
   async calculate() {
     const resultRaw = this.result.getRawPricingSheet();
-    resultRaw.forEach(({ amount, category }) => this.log(`Payment Calculation -> ${category} ${amount}`));
+    resultRaw.forEach(({ amount, category }) =>
+      this.log(`Payment Calculation -> ${category} ${amount}`)
+    );
     return resultRaw;
   }
 
@@ -47,23 +49,27 @@ class PaymentPricingDirector {
       order,
       provider,
       user,
-      ...this.item.context,
+      ...this.item.context
     };
   }
 
   calculate() {
     this.calculation = PaymentPricingDirector.sortedAdapters()
-      .filter((AdapterClass => AdapterClass.isActivatedFor(this.context.provider)))
+      .filter(AdapterClass =>
+        AdapterClass.isActivatedFor(this.context.provider)
+      )
       .reduce((calculation, AdapterClass) => {
         try {
           const concreteAdapter = new AdapterClass({
             context: this.context,
-            calculation,
+            calculation
           });
-          const nextCalculationResult = Promise.await(concreteAdapter.calculate());
+          const nextCalculationResult = Promise.await(
+            concreteAdapter.calculate()
+          );
           return calculation.concat(nextCalculationResult);
         } catch (error) {
-          log(error, { level: 'error' });
+          log(error, { level: "error" });
         }
         return calculation;
       }, []);
@@ -73,7 +79,7 @@ class PaymentPricingDirector {
   resultSheet() {
     return new PaymentPricingSheet({
       calculation: this.calculation,
-      currency: this.context.order.currency,
+      currency: this.context.order.currency
     });
   }
 
@@ -86,12 +92,13 @@ class PaymentPricingDirector {
   }
 
   static registerAdapter(adapter) {
-    log(`${this.name} -> Registered ${adapter.key} ${adapter.version} (${adapter.label})`);
+    log(
+      `${this.name} -> Registered ${adapter.key} ${adapter.version} (${
+        adapter.label
+      })`
+    );
     PaymentPricingDirector.adapters.set(adapter.key, adapter);
   }
 }
 
-export {
-  PaymentPricingDirector,
-  PaymentPricingAdapter,
-};
+export { PaymentPricingDirector, PaymentPricingAdapter };

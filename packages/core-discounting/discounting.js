@@ -1,4 +1,4 @@
-export * from './director';
+export * from "./director";
 export default () => {
   // configure
 };

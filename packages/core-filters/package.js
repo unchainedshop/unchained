@@ -19,11 +19,11 @@ Package.onUse((api) => {
   api.use('unchained:core-products@0.24.0');
   api.use('unchained:core-logger@0.24.0');
 
-  api.mainModule('filters.js', 'server');
+  api.mainModule("filters.js", "server");
 });
 
-Package.onTest((api) => {
-  api.use('ecmascript');
-  api.use('unchained:core-filters');
-  api.mainModule('filters-tests.js');
+Package.onTest(api => {
+  api.use("ecmascript");
+  api.use("unchained:core-filters");
+  api.mainModule("filters-tests.js");
 });

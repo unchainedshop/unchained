@@ -1,232 +1,234 @@
-export default [/* GraphQL */`
-  """
-  A hashed password
-  """
-  input HashedPasswordInput {
+export default [
+  /* GraphQL */ `
     """
-    The hashed password
+    A hashed password
     """
-    digest: String!
+    input HashedPasswordInput {
+      """
+      The hashed password
+      """
+      digest: String!
 
-    """
-    Algorithm used to hash the password
-    """
-    algorithm: String!
-  }
+      """
+      Algorithm used to hash the password
+      """
+      algorithm: String!
+    }
 
-  input UserProfileInput {
-    displayName: String
-    birthday: Date
-    phoneMobile: String
-    gender: String
-    address: AddressInput
-    customFields: JSON
-  }
+    input UserProfileInput {
+      displayName: String
+      birthday: Date
+      phoneMobile: String
+      gender: String
+      address: AddressInput
+      customFields: JSON
+    }
 
-  input AddressInput {
-    firstName: String
-    lastName: String
-    company: String
-    addressLine: String
-    addressLine2: String
-    postalCode: String
-    regionCode: String
-    city: String
-    countryCode: String
-  }
+    input AddressInput {
+      firstName: String
+      lastName: String
+      company: String
+      addressLine: String
+      addressLine2: String
+      postalCode: String
+      regionCode: String
+      city: String
+      countryCode: String
+    }
 
-  input ContactInput {
-    emailAddress: String
-    telNumber: String
-  }
+    input ContactInput {
+      emailAddress: String
+      telNumber: String
+    }
 
-  input CreateLanguageInput {
-    isoCode: String!
-  }
-  input UpdateLanguageInput {
-    isoCode: String!
-    isActive: Boolean
-  }
+    input CreateLanguageInput {
+      isoCode: String!
+    }
+    input UpdateLanguageInput {
+      isoCode: String!
+      isActive: Boolean
+    }
 
-  input CreateCountryInput {
-    isoCode: String!
-  }
-  input UpdateCountryInput {
-    isoCode: String!
-    isActive: Boolean
-    defaultCurrencyId: String
-  }
+    input CreateCountryInput {
+      isoCode: String!
+    }
+    input UpdateCountryInput {
+      isoCode: String!
+      isActive: Boolean
+      defaultCurrencyId: String
+    }
 
-  input CreateCurrencyInput {
-    isoCode: String!
-  }
-  input UpdateCurrencyInput {
-    isoCode: String!
-    isActive: Boolean
-  }
+    input CreateCurrencyInput {
+      isoCode: String!
+    }
+    input UpdateCurrencyInput {
+      isoCode: String!
+      isActive: Boolean
+    }
 
-  input CreateProductInput {
-    title: String!
-    type: String!
-  }
+    input CreateProductInput {
+      title: String!
+      type: String!
+    }
 
-  input CreateProductVariationInput {
-    key: String!
-    type: ProductVariationType!
-    title: String!
-  }
+    input CreateProductVariationInput {
+      key: String!
+      type: ProductVariationType!
+      title: String!
+    }
 
-  input CreateProductVariationOptionInput {
-    value: String!
-    title: String!
-  }
+    input CreateProductVariationOptionInput {
+      value: String!
+      title: String!
+    }
 
-  input ProductAssignmentVectorInput {
-    key: String!
-    value: String!
-  }
+    input ProductAssignmentVectorInput {
+      key: String!
+      value: String!
+    }
 
-  input UpdateProductInput {
-    tags: [String!]
-  }
+    input UpdateProductInput {
+      tags: [String!]
+    }
 
-  input UpdateProductTextInput {
-    locale: String!
-    slug: String
-    title: String
-    subtitle: String
-    description: String
-    vendor: String
-    labels: [String!]
-  }
+    input UpdateProductTextInput {
+      locale: String!
+      slug: String
+      title: String
+      subtitle: String
+      description: String
+      vendor: String
+      labels: [String!]
+    }
 
-  input UpdateProductMediaTextInput {
-    locale: String!
-    title: String
-    subtitle: String
-  }
+    input UpdateProductMediaTextInput {
+      locale: String!
+      title: String
+      subtitle: String
+    }
 
-  input UpdateProductVariationTextInput {
-    locale: String!
-    title: String
-    subtitle: String
-  }
+    input UpdateProductVariationTextInput {
+      locale: String!
+      title: String
+      subtitle: String
+    }
 
-  input UpdateProductCommercePricingInput {
-    amount: Int!
-    maxQuantity: Int
-    isTaxable: Boolean
-    isNetPrice: Boolean
-    currencyCode: String!
-    countryCode: String!
-  }
+    input UpdateProductCommercePricingInput {
+      amount: Int!
+      maxQuantity: Int
+      isTaxable: Boolean
+      isNetPrice: Boolean
+      currencyCode: String!
+      countryCode: String!
+    }
 
-  input UpdateProductCommerceInput {
-    pricing: [UpdateProductCommercePricingInput!]!
-  }
+    input UpdateProductCommerceInput {
+      pricing: [UpdateProductCommercePricingInput!]!
+    }
 
-  input UpdateProductSupplyInput {
-    weightInGram: Int
-    heightInMillimeters: Int
-    lengthInMillimeters: Int
-    widthInMillimeters: Int
-  }
+    input UpdateProductSupplyInput {
+      weightInGram: Int
+      heightInMillimeters: Int
+      lengthInMillimeters: Int
+      widthInMillimeters: Int
+    }
 
-  input UpdateProductWarehousingInput {
-    sku: String
-    baseUnit: String
-  }
+    input UpdateProductWarehousingInput {
+      sku: String
+      baseUnit: String
+    }
 
-  input ReorderProductMediaInput {
-    productMediaId: ID!
-    sortKey: Int!
-  }
+    input ReorderProductMediaInput {
+      productMediaId: ID!
+      sortKey: Int!
+    }
 
-  input CreateProviderInput {
-    type: String!
-    adapterKey: String!
-  }
+    input CreateProviderInput {
+      type: String!
+      adapterKey: String!
+    }
 
-  input UpdateProviderInput {
-    configuration: [JSON!]
-  }
+    input UpdateProviderInput {
+      configuration: [JSON!]
+    }
 
-  input CreateAssortmentInput {
-    title: String!
-    isRoot: Boolean
-  }
+    input CreateAssortmentInput {
+      title: String!
+      isRoot: Boolean
+    }
 
-  input UpdateAssortmentInput {
-    isActive: Boolean
-    isRoot: Boolean
-    tags: [String!]
-  }
+    input UpdateAssortmentInput {
+      isActive: Boolean
+      isRoot: Boolean
+      tags: [String!]
+    }
 
-  input UpdateAssortmentTextInput {
-    locale: String!
-    slug: String
-    title: String
-    subtitle: String
-    description: String
-  }
+    input UpdateAssortmentTextInput {
+      locale: String!
+      slug: String
+      title: String
+      subtitle: String
+      description: String
+    }
 
-  input ReorderAssortmentProductInput {
-    assortmentProductId: ID!
-    sortKey: Int!
-  }
+    input ReorderAssortmentProductInput {
+      assortmentProductId: ID!
+      sortKey: Int!
+    }
 
-  input ReorderAssortmentFilterInput {
-    assortmentFilterId: ID!
-    sortKey: Int!
-  }
+    input ReorderAssortmentFilterInput {
+      assortmentFilterId: ID!
+      sortKey: Int!
+    }
 
-  input ReorderAssortmentLinkInput {
-    assortmentLinkId: ID!
-    sortKey: Int!
-  }
+    input ReorderAssortmentLinkInput {
+      assortmentLinkId: ID!
+      sortKey: Int!
+    }
 
-  input CreateFilterInput {
-    key: String!
-    type: FilterType!
-    title: String!
-    options: [String!]
-  }
+    input CreateFilterInput {
+      key: String!
+      type: FilterType!
+      title: String!
+      options: [String!]
+    }
 
-  input CreateFilterOptionInput {
-    value: String!
-    title: String!
-  }
+    input CreateFilterOptionInput {
+      value: String!
+      title: String!
+    }
 
-  input UpdateFilterInput {
-    isActive: Boolean
-    key: String
-  }
+    input UpdateFilterInput {
+      isActive: Boolean
+      key: String
+    }
 
-  input UpdateFilterTextInput {
-    locale: String!
-    title: String
-    subtitle: String
-  }
+    input UpdateFilterTextInput {
+      locale: String!
+      title: String
+      subtitle: String
+    }
 
-  input ProductConfigurationParameterInput {
-    key: String!
-    value: String!
-  }
+    input ProductConfigurationParameterInput {
+      key: String!
+      value: String!
+    }
 
-  input ProductReviewInput {
-    rating: Int
-    title: String
-    review: String
-    meta: JSON
-  }
+    input ProductReviewInput {
+      rating: Int
+      title: String
+      review: String
+      meta: JSON
+    }
 
-  input FilterQueryInput {
-    key: String!
-    value: String
-  }
+    input FilterQueryInput {
+      key: String!
+      value: String
+    }
 
-  input CreateProductBundleItemInput {
-    productId: ID!
-    quantity: Int!
-  }
-`];
+    input CreateProductBundleItemInput {
+      productId: ID!
+      quantity: Int!
+    }
+  `
+];

@@ -1,44 +1,46 @@
-import { Schemas } from 'meteor/unchained:utils';
-import SimpleSchema from 'simpl-schema';
-import { Orders } from './collections';
+import { Schemas } from "meteor/unchained:utils";
+import SimpleSchema from "simpl-schema";
+import { Orders } from "./collections";
 
-const {
-  Address, Contact, contextFields,
-  logFields, timestampFields,
-} = Schemas;
+const { Address, Contact, contextFields, logFields, timestampFields } = Schemas;
 
 export const OrderStatus = {
   OPEN: null,
-  PENDING: 'PENDING',
-  CONFIRMED: 'CONFIRMED',
-  FULLFILLED: 'FULLFILLED',
+  PENDING: "PENDING",
+  CONFIRMED: "CONFIRMED",
+  FULLFILLED: "FULLFILLED"
 };
 
 const calculationFields = {
   calculation: Array,
-  'calculation.$': {
+  "calculation.$": {
     type: Object,
-    blackbox: true,
-  },
+    blackbox: true
+  }
 };
 
-Orders.attachSchema(new SimpleSchema({
-  userId: { type: String, index: true },
-  status: { type: String, index: true },
-  ordered: Date,
-  orderNumber: String,
-  confirmed: Date,
-  fullfilled: Date,
-  billingAddress: Address,
-  contact: Contact,
-  currency: String,
-  countryCode: String,
-  paymentId: String,
-  deliveryId: String,
-  ...contextFields,
-  ...timestampFields,
-  ...calculationFields,
-  ...logFields,
-}, { requiredByDefault: false }));
+Orders.attachSchema(
+  new SimpleSchema(
+    {
+      userId: { type: String, index: true },
+      status: { type: String, index: true },
+      ordered: Date,
+      orderNumber: String,
+      confirmed: Date,
+      fullfilled: Date,
+      billingAddress: Address,
+      contact: Contact,
+      currency: String,
+      countryCode: String,
+      paymentId: String,
+      deliveryId: String,
+      ...contextFields,
+      ...timestampFields,
+      ...calculationFields,
+      ...logFields
+    },
+    { requiredByDefault: false }
+  )
+);
 
 export default OrderStatus;

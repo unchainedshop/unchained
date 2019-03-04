@@ -1,4 +1,4 @@
-import { Countries } from 'meteor/unchained:core-countries';
+import { Countries } from "meteor/unchained:core-countries";
 
 export default {
   isTaxable({ isTaxable }) {
@@ -13,7 +13,7 @@ export default {
   price({ amount, currencyCode }) {
     return {
       amount,
-      currency: currencyCode,
+      currency: currencyCode
     };
-  },
+  }
 };

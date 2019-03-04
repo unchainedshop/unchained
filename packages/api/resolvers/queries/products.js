@@ -1,11 +1,18 @@
-import { log } from 'meteor/unchained:core-logger';
-import { Products, ProductStatus } from 'meteor/unchained:core-products';
+import { log } from "meteor/unchained:core-logger";
+import { Products, ProductStatus } from "meteor/unchained:core-products";
 
-export default function (root, {
-  limit = 10, offset = 0, tags, includeDrafts = false, slugs = [],
-}, { userId }) {
-  log(`query products: ${limit} ${offset} ${includeDrafts ? 'includeDrafts' : ''} ${slugs.join(',')}`, { userId });
-  const selector = { };
+export default function(
+  root,
+  { limit = 10, offset = 0, tags, includeDrafts = false, slugs = [] },
+  { userId }
+) {
+  log(
+    `query products: ${limit} ${offset} ${
+      includeDrafts ? "includeDrafts" : ""
+    } ${slugs.join(",")}`,
+    { userId }
+  );
+  const selector = {};
   const sort = { published: -1 };
   const options = { skip: offset, limit, sort };
 

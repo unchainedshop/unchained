@@ -19,8 +19,8 @@ Package.onUse((api) => {
   api.mainModule('logger.js', 'server');
 });
 
-Package.onTest((api) => {
-  api.use('ecmascript');
-  api.use('unchained:core-logger');
-  api.mainModule('logger-tests.js');
+Package.onTest(api => {
+  api.use("ecmascript");
+  api.use("unchained:core-logger");
+  api.mainModule("logger-tests.js");
 });

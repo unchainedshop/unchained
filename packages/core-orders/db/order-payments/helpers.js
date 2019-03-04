@@ -1,18 +1,21 @@
-import 'meteor/dburles:collection-helpers';
-import { log } from 'meteor/unchained:core-logger';
-import { PaymentProviders } from 'meteor/unchained:core-payment';
-import { PaymentPricingDirector, PaymentPricingSheet } from 'meteor/unchained:core-pricing';
-import { objectInvert } from 'meteor/unchained:utils';
-import { OrderPayments } from './collections';
-import { OrderPaymentStatus } from './schema';
-import { Orders } from '../orders/collections';
-import { OrderDocuments } from '../order-documents/collections';
-import { OrderDiscounts } from '../order-discounts/collections';
+import "meteor/dburles:collection-helpers";
+import { log } from "meteor/unchained:core-logger";
+import { PaymentProviders } from "meteor/unchained:core-payment";
+import {
+  PaymentPricingDirector,
+  PaymentPricingSheet
+} from "meteor/unchained:core-pricing";
+import { objectInvert } from "meteor/unchained:utils";
+import { OrderPayments } from "./collections";
+import { OrderPaymentStatus } from "./schema";
+import { Orders } from "../orders/collections";
+import { OrderDocuments } from "../order-documents/collections";
+import { OrderDiscounts } from "../order-discounts/collections";
 
 OrderPayments.helpers({
   order() {
     return Orders.findOne({
-      _id: this.orderId,
+      _id: this.orderId
     });
   },
   provider() {
@@ -37,13 +40,13 @@ OrderPayments.helpers({
     return OrderPayments.updatePayment({
       paymentId: this._id,
       orderId: this.orderId,
-      context,
+      context
     });
   },
   pricing() {
     const pricing = new PaymentPricingSheet({
       calculation: this.calculation,
-      currency: this.order().currency,
+      currency: this.order().currency
     });
     return pricing;
   },
@@ -61,36 +64,45 @@ OrderPayments.helpers({
     const provider = this.provider();
     const arbitraryResponseData = provider.charge(paymentContext, order);
     if (arbitraryResponseData) {
-      this.setStatus(OrderPaymentStatus.PAID, JSON.stringify(arbitraryResponseData));
+      this.setStatus(
+        OrderPaymentStatus.PAID,
+        JSON.stringify(arbitraryResponseData)
+      );
     }
   },
   markPaid() {
     if (this.status !== OrderPaymentStatus.OPEN) return;
-    this.setStatus(OrderPaymentStatus.PAID, 'mark paid manually');
+    this.setStatus(OrderPaymentStatus.PAID, "mark paid manually");
   },
   setStatus(status, info) {
     return OrderPayments.updateStatus({
       paymentId: this._id,
       info,
-      status,
+      status
     });
   },
   discounts() {
-    return this.pricing().discountPrices().map(discount => ({
-      payment: this,
-      ...discount,
-    }));
-  },
+    return this.pricing()
+      .discountPrices()
+      .map(discount => ({
+        payment: this,
+        ...discount
+      }));
+  }
 });
 
-OrderPayments.createOrderPayment = ({ orderId, paymentProviderId, ...rest }) => {
+OrderPayments.createOrderPayment = ({
+  orderId,
+  paymentProviderId,
+  ...rest
+}) => {
   log(`Create OrderPayment with Provider ${paymentProviderId}`, { orderId });
   const orderPaymentId = OrderPayments.insert({
     ...rest,
     created: new Date(),
     status: OrderPaymentStatus.OPEN,
     orderId,
-    paymentProviderId,
+    paymentProviderId
   });
   const orderPayment = OrderPayments.findOne({ _id: orderPaymentId });
   const order = Orders.findOne({ _id: orderId });
@@ -102,21 +114,27 @@ OrderPayments.updateCalculation = ({ orderId, paymentId }) => {
   log(`OrderPayment ${paymentId} -> Update Calculation`, { orderId });
   const pricing = new PaymentPricingDirector({ item: payment });
   const calculation = pricing.calculate();
-  return OrderPayments.update({ _id: paymentId }, { $set: { calculation, updated: new Date() } });
+  return OrderPayments.update(
+    { _id: paymentId },
+    { $set: { calculation, updated: new Date() } }
+  );
 };
 
 OrderPayments.updatePayment = ({ orderId, paymentId, context }) => {
   log(`OrderPayment ${paymentId} -> Update Context`, { orderId });
-  OrderPayments.update({ _id: paymentId }, {
-    $set: { context, updated: new Date() },
-  });
+  OrderPayments.update(
+    { _id: paymentId },
+    {
+      $set: { context, updated: new Date() }
+    }
+  );
   OrderDiscounts.updateDiscounts({ orderId });
   OrderPayments.updateCalculation({ orderId, paymentId });
   Orders.updateCalculation({ orderId });
   return OrderPayments.findOne({ _id: paymentId });
 };
 
-OrderPayments.updateStatus = ({ paymentId, status, info = '' }) => {
+OrderPayments.updateStatus = ({ paymentId, status, info = "" }) => {
   log(`OrderPayment ${paymentId} -> New Status: ${status}`);
   const date = new Date();
   const modifier = {
@@ -125,9 +143,9 @@ OrderPayments.updateStatus = ({ paymentId, status, info = '' }) => {
       log: {
         date,
         status,
-        info,
-      },
-    },
+        info
+      }
+    }
   };
   if (status === OrderPaymentStatus.PAID) {
     modifier.$set.paid = date;

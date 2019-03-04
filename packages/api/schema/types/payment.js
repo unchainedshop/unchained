@@ -1,52 +1,54 @@
-export default [/* GraphQL */`
-type PaymentInterface {
-  _id: ID!
-  label: String
-  version: String
-}
+export default [
+  /* GraphQL */ `
+    type PaymentInterface {
+      _id: ID!
+      label: String
+      version: String
+    }
 
-enum PaymentProviderType {
-  """
-  Card
-  """
-  CARD
+    enum PaymentProviderType {
+      """
+      Card
+      """
+      CARD
 
-  """
-  Invoice
-  """
-  INVOICE
+      """
+      Invoice
+      """
+      INVOICE
 
-  """
-  PostFinance
-  """
-  POSTFINANCE
+      """
+      PostFinance
+      """
+      POSTFINANCE
 
-  """
-  Paypal
-  """
-  PAYPAL
+      """
+      Paypal
+      """
+      PAYPAL
 
-  """
-  Crypto
-  """
-  CRYPTO
-}
+      """
+      Crypto
+      """
+      CRYPTO
+    }
 
-enum PaymentProviderError {
-  ADAPTER_NOT_FOUND
-  NOT_IMPLEMENTED
-  INCOMPLETE_CONFIGURATION
-  WRONG_CREDENTIALS
-}
+    enum PaymentProviderError {
+      ADAPTER_NOT_FOUND
+      NOT_IMPLEMENTED
+      INCOMPLETE_CONFIGURATION
+      WRONG_CREDENTIALS
+    }
 
-type PaymentProvider {
-  _id: ID!
-  created: Date
-  updated: Date
-  deleted: Date
-  type: PaymentProviderType
-  interface: PaymentInterface
-  configuration: JSON
-  configurationError: PaymentProviderError
-}
-`];
+    type PaymentProvider {
+      _id: ID!
+      created: Date
+      updated: Date
+      deleted: Date
+      type: PaymentProviderType
+      interface: PaymentInterface
+      configuration: JSON
+      configurationError: PaymentProviderError
+    }
+  `
+];

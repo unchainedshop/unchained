@@ -12,11 +12,11 @@ Package.onUse((api) => {
   api.use('ecmascript');
   api.use('unchained:core-logger@0.24.0');
 
-  api.mainModule('pricing.js', 'server');
+  api.mainModule("pricing.js", "server");
 });
 
-Package.onTest((api) => {
-  api.use('ecmascript');
-  api.use('unchained:core-pricing');
-  api.mainModule('pricing-tests.js');
+Package.onTest(api => {
+  api.use("ecmascript");
+  api.use("unchained:core-pricing");
+  api.mainModule("pricing-tests.js");
 });

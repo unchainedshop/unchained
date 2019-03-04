@@ -1,10 +1,11 @@
-import { ApolloError } from 'apollo-server-express';
+import { ApolloError } from "apollo-server-express";
 
-export const createError = (code, message) => class extends ApolloError {
-  constructor({ data }) {
-    super(message, code, data);
-  }
-};
+export const createError = (code, message) =>
+  class extends ApolloError {
+    constructor({ data }) {
+      super(message, code, data);
+    }
+  };
 
 export const PermissionSystemError = createError('PermissionSystemError', 'Permission System Error');
 export const NoPermissionError = createError('NoPermissionError', 'Not authorized');

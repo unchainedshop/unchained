@@ -1,5 +1,5 @@
-import './factories';
-import './helpers';
+import "./factories";
+import "./helpers";
 
-export * from './schema';
-export * from './collections';
+export * from "./schema";
+export * from "./collections";
