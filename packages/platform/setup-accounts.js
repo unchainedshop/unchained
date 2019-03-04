@@ -89,7 +89,7 @@ Accounts.onCreateUser((options = {}, user = {}) => {
 
 Accounts.removeOldGuests = before => {
   let newBefore = before;
-  if (typeof newBefore === "undefined") {
+  if (typeof newBefore === 'undefined') {
     newBefore = new Date();
     newBefore.setHours(newBefore.getHours() - 1);
   }
@@ -111,7 +111,7 @@ function createGuestOptions(email) {
   };
 }
 
-Accounts.registerLoginHandler("guest", options => {
+Accounts.registerLoginHandler('guest', options => {
   if (!options || !options.createGuest) {
     return undefined;
   }

@@ -1,13 +1,13 @@
-import { log } from "meteor/unchained:core-logger";
-import { Orders, OrderPaymentStatus } from "meteor/unchained:core-orders";
+import { log } from 'meteor/unchained:core-logger';
+import { Orders, OrderPaymentStatus } from 'meteor/unchained:core-orders';
 import {
   OrderNotFoundError,
   OrderWrongPaymentStatusError,
   OrderWrongStatusError
-} from "../../errors";
+} from '../../errors';
 
 export default function(root, { orderId }, { userId }) {
-  log("mutation payOrder", { orderId, userId });
+  log('mutation payOrder', { orderId, userId });
   const order = Orders.findOne({ _id: orderId });
   if (!order) throw new OrderNotFoundError({ data: { orderId } });
   if (order.isCart()) {

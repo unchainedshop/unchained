@@ -8,12 +8,12 @@ Package.describe({
 });
 
 Package.onUse(api => {
-  api.versionsFrom("1.8");
-  api.use("ecmascript");
-  api.use("mongo");
-  api.use("promise");
-  api.use("dburles:factory@1.1.0");
-  api.use("dburles:collection-helpers@1.1.0");
+  api.versionsFrom('1.8');
+  api.use('ecmascript');
+  api.use('mongo');
+  api.use('promise');
+  api.use('dburles:factory@1.1.0');
+  api.use('dburles:collection-helpers@1.1.0');
 
   api.use('unchained:utils@0.24.0');
   api.use('unchained:core@0.24.0');
@@ -23,11 +23,11 @@ Package.onUse(api => {
   api.use('unchained:core-warehousing@0.24.0');
   api.use('unchained:core-countries@0.24.0');
 
-  api.mainModule("products.js", "server");
+  api.mainModule('products.js', 'server');
 });
 
 Package.onTest(api => {
-  api.use("ecmascript");
-  api.use("unchained:core-products");
-  api.mainModule("products-tests.js");
+  api.use('ecmascript');
+  api.use('unchained:core-products');
+  api.mainModule('products-tests.js');
 });

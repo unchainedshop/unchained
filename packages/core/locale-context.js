@@ -1,9 +1,9 @@
-import { log } from "meteor/unchained:core-logger";
-import { Countries } from "meteor/unchained:core-countries";
-import { Locales, Locale } from "locale";
-import { Languages } from "meteor/unchained:core-languages";
+import { log } from 'meteor/unchained:core-logger';
+import { Countries } from 'meteor/unchained:core-countries';
+import { Locales, Locale } from 'locale';
+import { Languages } from 'meteor/unchained:core-languages';
 
-const { LANG = "de", COUNTRY = "CH" } = process.env;
+const { LANG = 'de', COUNTRY = 'CH' } = process.env;
 
 export const systemLocale = new Locale(`${LANG}-${COUNTRY}`);
 
@@ -62,17 +62,17 @@ export const buildLocaleContext = req => {
     getFallbackLocale().code
   );
   const localeContext = resolveBestSupported(
-    req.headers["accept-language"],
+    req.headers['accept-language'],
     supportedLocales
   );
   const countryContext = resolveBestCountry(
     localeContext.country,
-    req.headers["x-shop-country"],
+    req.headers['x-shop-country'],
     countries
   );
   log(
     `Locale Context: Resolved ${localeContext.normalized} ${countryContext}`,
-    { level: "verbose" }
+    { level: 'verbose' }
   );
   return {
     localeContext,

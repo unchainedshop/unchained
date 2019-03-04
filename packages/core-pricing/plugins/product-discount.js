@@ -2,14 +2,14 @@ import {
   ProductPricingDirector,
   ProductPricingAdapter,
   ProductPricingSheetRowCategories
-} from "meteor/unchained:core-pricing";
+} from 'meteor/unchained:core-pricing';
 
 class ProductDiscount extends ProductPricingAdapter {
-  static key = "shop.unchained.pricing.product-discount";
+  static key = 'shop.unchained.pricing.product-discount';
 
-  static version = "1.0";
+  static version = '1.0';
 
-  static label = "Berechnung der Bestellposition: Prozentual-Gutscheine";
+  static label = 'Berechnung der Bestellposition: Prozentual-Gutscheine';
 
   static orderIndex = 10;
 

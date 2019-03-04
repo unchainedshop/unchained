@@ -1,4 +1,4 @@
-import { OrderDiscounts } from "meteor/unchained:core-orders";
+import { OrderDiscounts } from 'meteor/unchained:core-orders';
 
 export default {
   _id(obj) {

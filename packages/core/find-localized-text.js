@@ -1,4 +1,4 @@
-import { getFallbackLocale } from "./locale-context";
+import { getFallbackLocale } from './locale-context';
 
 const extendSelectorWithLocale = (selector, locale) => {
   const localeSelector = {

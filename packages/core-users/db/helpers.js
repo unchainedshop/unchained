@@ -55,7 +55,7 @@ Users.helpers({
   },
   name() {
     const { profile, emails } = this;
-    if (profile && profile.displayName && profile.displayName !== "")
+    if (profile && profile.displayName && profile.displayName !== '')
       return profile.displayName;
     return emails && emails[0].address;
   },
@@ -92,8 +92,8 @@ Users.helpers({
       {
         $set: {
           updated: new Date(),
-          "emails.0.address": email,
-          "emails.0.verified": false
+          'emails.0.address': email,
+          'emails.0.verified': false
         }
       }
     );
@@ -106,7 +106,7 @@ Users.helpers({
     return Users.findOne({ _id: this._id });
   },
   logs({ limit = 10, offset = 0 }) {
-    const selector = { "meta.userId": this._id };
+    const selector = { 'meta.userId': this._id };
     const logs = Logs.find(selector, {
       skip: offset,
       limit,
@@ -120,7 +120,7 @@ Users.helpers({
 
 Users.updateLastBillingAddress = ({ userId, lastBillingAddress }) => {
   const user = Users.findOne({ _id: userId });
-  log("Store Last Billing Address", { userId });
+  log('Store Last Billing Address', { userId });
   const modifier = {
     $set: {
       lastBillingAddress,
@@ -140,13 +140,13 @@ Users.updateLastBillingAddress = ({ userId, lastBillingAddress }) => {
 
 Users.updateLastContact = ({ userId, lastContact }) => {
   const user = Users.findOne({ _id: userId });
-  log("Store Last Contact Information", { userId });
+  log('Store Last Contact Information', { userId });
   const profile = user.profile || {};
   const isGuest = user.isGuest();
   if ((!profile.phoneMobile || isGuest) && lastContact.telNumber) {
     const modifier = {
       $set: {
-        "profile.phoneMobile": lastContact.telNumber,
+        'profile.phoneMobile': lastContact.telNumber,
         updated: new Date()
       }
     };
@@ -156,7 +156,7 @@ Users.updateLastContact = ({ userId, lastContact }) => {
 
 Users.enrollUser = ({ password, email, displayName, address }) => {
   const options = { email, skipEmailVerification: true };
-  if (password && password !== "") {
+  if (password && password !== '') {
     options.password = password;
   }
   const newUserId = Accounts.createUser(options);
@@ -165,8 +165,8 @@ Users.enrollUser = ({ password, email, displayName, address }) => {
     {
       $set: {
         updated: new Date(),
-        "profile.displayName": displayName || null,
-        "profile.address": address || null
+        'profile.displayName': displayName || null,
+        'profile.address': address || null
       }
     }
   );

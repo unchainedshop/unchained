@@ -1,13 +1,13 @@
-import { log } from "meteor/unchained:core-logger";
-import { Orders } from "meteor/unchained:core-orders";
-import { Users } from "meteor/unchained:core-users";
+import { log } from 'meteor/unchained:core-logger';
+import { Orders } from 'meteor/unchained:core-orders';
+import { Users } from 'meteor/unchained:core-users';
 import {
   UserNotFoundError,
   OrderCheckoutError,
   UserNoCartError,
   OrderWrongStatusError,
   OrderNotFoundError
-} from "../../errors";
+} from '../../errors';
 
 const checkoutWithPotentialErrors = (cart, context, options, userId) => {
   try {
@@ -19,7 +19,7 @@ const checkoutWithPotentialErrors = (cart, context, options, userId) => {
       ...context,
       detailMessage: error.message
     };
-    log(data.detailMessage, { userId, orderId: cart._id, level: "error" });
+    log(data.detailMessage, { userId, orderId: cart._id, level: 'error' });
     throw new OrderCheckoutError({ data });
   }
 };

@@ -1,5 +1,5 @@
-import { log } from "meteor/unchained:core-logger";
-import { Languages } from "meteor/unchained:core-languages";
+import { log } from 'meteor/unchained:core-logger';
+import { Languages } from 'meteor/unchained:core-languages';
 
 export default function setBaseLanguage(root, { languageId }, { userId }) {
   log(`mutation setBaseLanguage ${languageId}`, { userId });

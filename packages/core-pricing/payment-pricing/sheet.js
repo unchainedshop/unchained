@@ -1,9 +1,9 @@
-import PricingSheet from "../pricing-sheet";
+import PricingSheet from '../pricing-sheet';
 
 const PaymentPricingSheetRowCategories = {
-  Payment: "PAYMENT",
-  Discount: "DISCOUNT",
-  Tax: "TAX"
+  Payment: 'PAYMENT',
+  Discount: 'DISCOUNT',
+  Tax: 'TAX'
 };
 
 class PaymentPricingSheet extends PricingSheet {

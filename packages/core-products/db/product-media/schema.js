@@ -1,6 +1,6 @@
-import SimpleSchema from "simpl-schema";
-import { Schemas } from "meteor/unchained:utils";
-import { ProductMedia, ProductMediaTexts } from "./collections";
+import SimpleSchema from 'simpl-schema';
+import { Schemas } from 'meteor/unchained:utils';
+import { ProductMedia, ProductMediaTexts } from './collections';
 
 ProductMedia.attachSchema(
   new SimpleSchema(
@@ -9,7 +9,7 @@ ProductMedia.attachSchema(
       productId: { type: SimpleSchema.RegEx.Id, required: true, index: true },
       sortKey: { type: Number, required: true },
       tags: { type: Array, index: true },
-      "tags.$": String,
+      'tags.$': String,
       meta: { type: Object, blackbox: true },
       ...Schemas.timestampFields
     },

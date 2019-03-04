@@ -1,14 +1,14 @@
-import { log } from "meteor/unchained:core-logger";
-import { Users } from "meteor/unchained:core-users";
-import { checkPermission, actions } from "../../roles";
+import { log } from 'meteor/unchained:core-logger';
+import { Users } from 'meteor/unchained:core-users';
+import { checkPermission, actions } from '../../roles';
 
 const transform = (profile, hasManageUserPermissions) => { // eslint-disable-line
   const transformedProfile = {
-    "profile.displayName": profile.displayName,
-    "profile.birthday": profile.birthday,
-    "profile.phoneMobile": profile.phoneMobile,
-    "profile.gender": profile.gender,
-    "profile.address": profile.address
+    'profile.displayName': profile.displayName,
+    'profile.birthday': profile.birthday,
+    'profile.phoneMobile': profile.phoneMobile,
+    'profile.gender': profile.gender,
+    'profile.address': profile.address
   };
   return transformedProfile;
 };

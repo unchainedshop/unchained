@@ -1,10 +1,10 @@
-import SimpleSchema from "simpl-schema";
-import { Schemas } from "meteor/unchained:utils";
-import { ProductVariations, ProductVariationTexts } from "./collections";
+import SimpleSchema from 'simpl-schema';
+import { Schemas } from 'meteor/unchained:utils';
+import { ProductVariations, ProductVariationTexts } from './collections';
 
 export const ProductVariationType = { // eslint-disable-line
-  COLOR: "COLOR",
-  TEXT: "TEXT"
+  COLOR: 'COLOR',
+  TEXT: 'TEXT'
 };
 
 ProductVariations.attachSchema(
@@ -14,7 +14,7 @@ ProductVariations.attachSchema(
       key: String,
       type: String,
       options: Array,
-      "options.$": String,
+      'options.$': String,
       ...Schemas.timestampFields
     },
     { requiredByDefault: false }

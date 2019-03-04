@@ -1,5 +1,5 @@
-import { log } from "meteor/unchained:core-logger";
-import { Users } from "meteor/unchained:core-users";
+import { log } from 'meteor/unchained:core-logger';
+import { Users } from 'meteor/unchained:core-users';
 
 export default function(
   root,
@@ -7,7 +7,7 @@ export default function(
   { userId }
 ) {
   log(
-    `query users ${limit} ${offset} ${includeGuests ? "includeGuests" : ""}`,
+    `query users ${limit} ${offset} ${includeGuests ? 'includeGuests' : ''}`,
     { userId }
   );
   const selector = {};

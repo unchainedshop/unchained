@@ -1,5 +1,5 @@
-import { log } from "meteor/unchained:core-logger";
-import { AssortmentLinks } from "meteor/unchained:core-assortments";
+import { log } from 'meteor/unchained:core-logger';
+import { AssortmentLinks } from 'meteor/unchained:core-assortments';
 
 export default function(root, { assortmentLinkId }, { userId }) {
   log(`mutation removeAssortmentLink ${assortmentLinkId}`, { userId });

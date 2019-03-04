@@ -1,6 +1,6 @@
-import { log } from "meteor/unchained:core-logger";
-import { OrderDeliveries } from "meteor/unchained:core-orders";
-import { OrderDeliveryNotFoundError } from "../../errors";
+import { log } from 'meteor/unchained:core-logger';
+import { OrderDeliveries } from 'meteor/unchained:core-orders';
+import { OrderDeliveryNotFoundError } from '../../errors';
 
 export default function(root, { orderDeliveryId, ...context }, { userId }) {
   log(`mutation updateOrderDelivery ${orderDeliveryId}`, { userId });

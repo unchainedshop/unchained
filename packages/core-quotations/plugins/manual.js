@@ -1,14 +1,14 @@
 import {
   QuotationDirector,
   QuotationAdapter
-} from "meteor/unchained:core-quotations";
+} from 'meteor/unchained:core-quotations';
 
 class ManualOffering extends QuotationAdapter {
-  static key = "shop.unchained.quotations.manual";
+  static key = 'shop.unchained.quotations.manual';
 
-  static version = "1.0";
+  static version = '1.0';
 
-  static label = "Manual Offerings";
+  static label = 'Manual Offerings';
 
   static orderIndex = 0;
 

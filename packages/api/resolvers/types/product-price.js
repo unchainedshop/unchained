@@ -1,4 +1,4 @@
-import { Countries } from "meteor/unchained:core-countries";
+import { Countries } from 'meteor/unchained:core-countries';
 
 export default {
   isTaxable({ isTaxable }) {

@@ -18,11 +18,11 @@ Package.onUse((api) => {
   api.use('unchained:core-products@0.24.0');
   api.use('unchained:core-filters@0.24.0');
 
-  api.mainModule("assortments.js", "server");
+  api.mainModule('assortments.js', 'server');
 });
 
 Package.onTest(api => {
-  api.use("ecmascript");
-  api.use("unchained:core-assortments");
-  api.mainModule("assortments-tests.js");
+  api.use('ecmascript');
+  api.use('unchained:core-assortments');
+  api.mainModule('assortments-tests.js');
 });

@@ -1,5 +1,5 @@
-import { log } from "meteor/unchained:core-logger";
-import { Countries } from "meteor/unchained:core-countries";
+import { log } from 'meteor/unchained:core-logger';
+import { Countries } from 'meteor/unchained:core-countries';
 
 export default function setBaseCountry(root, { countryId }, { userId }) {
   log(`mutation setBaseCountry ${countryId}`, { userId });

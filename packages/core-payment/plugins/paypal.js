@@ -2,42 +2,42 @@ import {
   PaymentDirector,
   PaymentAdapter,
   PaymentError
-} from "meteor/unchained:core-payment";
+} from 'meteor/unchained:core-payment';
 
 const { BRAINTREE_SANDBOX_TOKEN, BRAINTREE_PRIVATE_KEY } = process.env;
 
 class Paypal extends PaymentAdapter {
-  static key = "com.paypal";
+  static key = 'com.paypal';
 
-  static label = "Paypal";
+  static label = 'Paypal';
 
-  static version = "1.0";
+  static version = '1.0';
 
   static initialConfiguration = [
     {
-      key: "publicKey",
+      key: 'publicKey',
       value: null
     },
     {
-      key: "merchantId",
+      key: 'merchantId',
       value: null
     }
   ];
 
   static typeSupported(type) {
-    return type === "PAYPAL";
+    return type === 'PAYPAL';
   }
 
   getPublicKey() {
     return this.config.reduce((current, item) => {
-      if (item.key === "publicKey") return item.value;
+      if (item.key === 'publicKey') return item.value;
       return current;
     }, null);
   }
 
   getMerchantId() {
     return this.config.reduce((current, item) => {
-      if (item.key === "merchantId") return item.value;
+      if (item.key === 'merchantId') return item.value;
       return current;
     }, null);
   }
@@ -93,13 +93,13 @@ class Paypal extends PaymentAdapter {
     if (result.success) {
       return result.clientToken;
     }
-    throw new Error("Could not retrieve the client token");
+    throw new Error('Could not retrieve the client token');
   }
 
   async charge({ paypalPaymentMethodNonce }) {
     if (!paypalPaymentMethodNonce)
       throw new Error(
-        "You have to provide paypalPaymentMethodNonce in paymentContext"
+        'You have to provide paypalPaymentMethodNonce in paymentContext'
       );
     const braintree = require('braintree'); // eslint-disable-line
     const gateway = this.gateway(braintree);

@@ -1,5 +1,5 @@
-import { DeliveryProviderType } from "meteor/unchained:core-delivery";
-import { objectInvert } from "meteor/unchained:utils";
+import { DeliveryProviderType } from 'meteor/unchained:core-delivery';
+import { objectInvert } from 'meteor/unchained:utils';
 
 const OrderDeliveryMap = {
   OrderDeliveryShipping: DeliveryProviderType.SHIPPING,

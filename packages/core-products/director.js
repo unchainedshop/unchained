@@ -1,15 +1,15 @@
-import { log } from "meteor/unchained:core-logger";
+import { log } from 'meteor/unchained:core-logger';
 
 const ProductError = {
-  NOT_IMPLEMENTED: "NOT_IMPLEMENTED"
+  NOT_IMPLEMENTED: 'NOT_IMPLEMENTED'
 };
 
 class ProductAdapter {
-  static key = "";
+  static key = '';
 
-  static label = "";
+  static label = '';
 
-  static version = "";
+  static version = '';
 
   static isActivatedFor(context) { // eslint-disable-line
     return false;

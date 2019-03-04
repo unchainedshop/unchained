@@ -1,19 +1,19 @@
-import "meteor/dburles:collection-helpers";
-import { Promise } from "meteor/promise";
-import { ProductPricingDirector } from "meteor/unchained:core-pricing";
-import { WarehousingProviders } from "meteor/unchained:core-warehousing";
-import { DeliveryProviders } from "meteor/unchained:core-delivery";
-import { Countries } from "meteor/unchained:core-countries";
-import { findLocalizedText } from "meteor/unchained:core";
-import { objectInvert, slugify } from "meteor/unchained:utils";
-import { Locale } from "locale";
-import crypto from "crypto";
-import { Products, ProductTexts } from "./collections";
-import { ProductVariations } from "../product-variations/collections";
-import { ProductMedia, Media } from "../product-media/collections";
-import { ProductReviews } from "../product-reviews/collections";
+import 'meteor/dburles:collection-helpers';
+import { Promise } from 'meteor/promise';
+import { ProductPricingDirector } from 'meteor/unchained:core-pricing';
+import { WarehousingProviders } from 'meteor/unchained:core-warehousing';
+import { DeliveryProviders } from 'meteor/unchained:core-delivery';
+import { Countries } from 'meteor/unchained:core-countries';
+import { findLocalizedText } from 'meteor/unchained:core';
+import { objectInvert, slugify } from 'meteor/unchained:utils';
+import { Locale } from 'locale';
+import crypto from 'crypto';
+import { Products, ProductTexts } from './collections';
+import { ProductVariations } from '../product-variations/collections';
+import { ProductMedia, Media } from '../product-media/collections';
+import { ProductReviews } from '../product-reviews/collections';
 
-import { ProductStatus, ProductTypes } from "./schema";
+import { ProductStatus, ProductTypes } from './schema';
 
 Products.createProduct = (
   { authorId, locale, title, type, ...rest },
@@ -287,17 +287,17 @@ Products.helpers({
 
     return {
       _id: crypto
-        .createHash("sha256")
+        .createHash('sha256')
         .update(
           [
             this._id,
             country,
             quantity,
             useNetPrice,
-            user ? user._id : "ANONYMOUS"
-          ].join("")
+            user ? user._id : 'ANONYMOUS'
+          ].join('')
         )
-        .digest("hex"),
+        .digest('hex'),
       amount: userPrice.amount,
       currencyCode: userPrice.currency,
       countryCode: country,
@@ -340,9 +340,9 @@ Products.helpers({
       },
       {
         _id: crypto
-          .createHash("sha256")
-          .update([this._id, country, currency].join(""))
-          .digest("hex"),
+          .createHash('sha256')
+          .update([this._id, country, currency].join(''))
+          .digest('hex'),
         amount: 0,
         currencyCode: currency,
         countryCode: country,

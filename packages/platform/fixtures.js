@@ -1,77 +1,77 @@
-import { Factory } from "meteor/dburles:factory";
-import { log } from "meteor/unchained:core-logger";
-import faker from "faker";
+import { Factory } from 'meteor/dburles:factory';
+import { log } from 'meteor/unchained:core-logger';
+import faker from 'faker';
 
 const logger = console;
 
 const addTextAndMediaToProduct = (productId, slug) => {
-  faker.locale = "de";
+  faker.locale = 'de';
   logger.log(`unchained:platform -> fixtures: -> productText ${faker.locale}`);
-  Factory.create("productText", { productId, locale: "de", slug });
-  faker.locale = "en";
+  Factory.create('productText', { productId, locale: 'de', slug });
+  faker.locale = 'en';
   logger.log(`unchained:platform -> fixtures: -> productText ${faker.locale}`);
-  Factory.create("productText", { productId, locale: "en", slug });
+  Factory.create('productText', { productId, locale: 'en', slug });
 
   // Add some random images to the product
   Array.from(Array(2)).forEach((value, sortKey) => {
     logger.log(`unchained:platform -> fixtures: -> productMedia ${sortKey}`);
-    const productMedia = Factory.create("productMedia", { productId, sortKey });
-    faker.locale = "de";
+    const productMedia = Factory.create('productMedia', { productId, sortKey });
+    faker.locale = 'de';
     logger.log(
       `unchained:platform -> fixtures: -> productMediaText ${faker.locale}`
     );
-    Factory.create("productMediaText", {
+    Factory.create('productMediaText', {
       productMediaId: productMedia._id,
-      locale: "de"
+      locale: 'de'
     });
-    faker.locale = "en";
+    faker.locale = 'en';
     logger.log(
       `unchained:platform -> fixtures: -> productMediaText ${faker.locale}`
     );
-    Factory.create("productMediaText", {
+    Factory.create('productMediaText', {
       productMediaId: productMedia._id,
-      locale: "en"
+      locale: 'en'
     });
   });
 };
 
 const addTextToAssortment = (assortmentId, slug) => {
-  faker.locale = "de";
+  faker.locale = 'de';
   logger.log(
     `unchained:platform -> fixtures: -> assortmentTexts ${faker.locale}`
   );
-  Factory.create("assortmentText", { assortmentId, locale: "de", slug });
-  faker.locale = "en";
+  Factory.create('assortmentText', { assortmentId, locale: 'de', slug });
+  faker.locale = 'en';
   logger.log(
     `unchained:platform -> fixtures: -> assortmentTexts ${faker.locale}`
   );
-  Factory.create("assortmentText", { assortmentId, locale: "en", slug });
+  Factory.create('assortmentText', { assortmentId, locale: 'en', slug });
 };
 
 const addVariationsToProduct = productId => {
   const addTranslation = (productVariationId, productVariationOptionValue) => {
-    faker.locale = "de";
+    faker.locale = 'de';
     logger.log(
       `unchained:platform -> fixtures: --> productVariationText ${faker.locale}`
     );
-    Factory.create("productVariationText", {
+    Factory.create('productVariationText', {
       productVariationId,
       locale: faker.locale,
       productVariationOptionValue
     });
-    faker.locale = "en";
+    faker.locale = 'en';
     logger.log(
       `unchained:platform -> fixtures: --> productVariationText ${faker.locale}`
     );
-    Factory.create("productVariationText", {
+    Factory.create('productVariationText', {
       productVariationId,
       locale: faker.locale,
       productVariationOptionValue
     });
   };
   Array.from(Array(1)).forEach(() => {
-    logger.log("unchained:platform -> fixtures: -> productVariation");
-    const productVariation = Factory.create("productVariation", { productId });
+    logger.log('unchained:platform -> fixtures: -> productVariation');
+    const productVariation = Factory.create('productVariation', { productId });
     addTranslation(productVariation._id);
     productVariation.options.forEach(productVariationOptionValue => {
       addTranslation(productVariation._id, productVariationOptionValue);
@@ -82,18 +82,18 @@ const addVariationsToProduct = productId => {
 export default () => {
   try {
     const users = Array.from(Array(10)).map(() => {
-      logger.log("unchained:platform -> fixtures: user");
-      const user = Factory.create("user");
+      logger.log('unchained:platform -> fixtures: user');
+      const user = Factory.create('user');
       return user._id;
     });
 
     try {
-      logger.log("unchained:platform -> fixtures: user admin@localhost");
-      const admin = Factory.create("user", {
-        username: "admin",
-        roles: ["admin"],
+      logger.log('unchained:platform -> fixtures: user admin@localhost');
+      const admin = Factory.create('user', {
+        username: 'admin',
+        roles: ['admin'],
         guest: false,
-        emails: [{ address: "admin@localhost", verified: true }]
+        emails: [{ address: 'admin@localhost', verified: true }]
       });
       users.push(admin._id);
     } catch (e) {
@@ -101,10 +101,10 @@ export default () => {
       logger.log(e);
     }
 
-    const languages = ["de", "en"].map((code, key) => {
+    const languages = ['de', 'en'].map((code, key) => {
       logger.log(`unchained:platform -> fixtures: languages ${code}`);
       const isBase = key === 0;
-      const language = Factory.create("language", {
+      const language = Factory.create('language', {
         isoCode: code,
         isActive: true,
         isBase,
@@ -112,19 +112,19 @@ export default () => {
       });
       return language.isoCode;
     });
-    const currencies = ["CHF", "USD", "EUR"].map(code => {
+    const currencies = ['CHF', 'USD', 'EUR'].map(code => {
       logger.log(`unchained:platform -> fixtures: currency ${code}`);
-      const currency = Factory.create("currency", {
+      const currency = Factory.create('currency', {
         isoCode: code,
         isActive: true,
         authorId: faker.random.arrayElement(users)
       });
       return currency._id;
     });
-    const countries = ["CH", "US", "DE"].map((code, key) => {
+    const countries = ['CH', 'US', 'DE'].map((code, key) => {
       logger.log(`unchained:platform -> fixtures: countries ${code}`);
       const isBase = key === 0;
-      const country = Factory.create("country", {
+      const country = Factory.create('country', {
         isoCode: code,
         isBase,
         isActive: true,
@@ -134,25 +134,25 @@ export default () => {
       return country.isoCode;
     });
     const paymentProviders = Array.from(Array(1)).map(() => {
-      logger.log("unchained:platform -> fixtures: paymentProvider");
-      const paymentProvider = Factory.create("paymentProvider");
+      logger.log('unchained:platform -> fixtures: paymentProvider');
+      const paymentProvider = Factory.create('paymentProvider');
       return paymentProvider._id;
     });
     const deliveryProviders = Array.from(Array(1)).map(() => {
-      logger.log("unchained:platform -> fixtures: deliveryProvider");
-      const deliveryProvider = Factory.create("deliveryProvider");
+      logger.log('unchained:platform -> fixtures: deliveryProvider');
+      const deliveryProvider = Factory.create('deliveryProvider');
       return deliveryProvider._id;
     });
     const warehousingProviders = Array.from(Array(1)).map(() => {
-      logger.log("unchained:platform -> fixtures: warehousingProvider");
-      const warehousingProvider = Factory.create("warehousingProvider");
+      logger.log('unchained:platform -> fixtures: warehousingProvider');
+      const warehousingProvider = Factory.create('warehousingProvider');
       return warehousingProvider._id;
     });
 
     const simpleProducts = Array.from(Array(2)).map(() => {
       // Add a product
-      logger.log("unchained:platform -> fixtures: simpleProduct");
-      const product = Factory.create("simpleProduct", {
+      logger.log('unchained:platform -> fixtures: simpleProduct');
+      const product = Factory.create('simpleProduct', {
         authorId: faker.random.arrayElement(users)
       });
       addTextAndMediaToProduct(product._id, product.slugs[0]);
@@ -161,8 +161,8 @@ export default () => {
 
     const logs = Array.from(Array(5)).map(() => {
       // Add a product
-      logger.log("unchained:platform -> fixtures: log");
-      const logEntry = Factory.create("log", {
+      logger.log('unchained:platform -> fixtures: log');
+      const logEntry = Factory.create('log', {
         meta: { userId: faker.random.arrayElement(users) }
       });
       return logEntry._id;
@@ -170,8 +170,8 @@ export default () => {
 
     const configurableProducts = Array.from(Array(2)).map(() => {
       // Add a product
-      logger.log("unchained:platform -> fixtures: configurableProduct");
-      const product = Factory.create("configurableProduct", {
+      logger.log('unchained:platform -> fixtures: configurableProduct');
+      const product = Factory.create('configurableProduct', {
         authorId: faker.random.arrayElement(users)
       });
       addTextAndMediaToProduct(product._id, product.slugs[0]);
@@ -180,28 +180,28 @@ export default () => {
     });
 
     const filters = Array.from(Array(1)).map(() => {
-      logger.log("unchained:platform -> fixtures: -> filter");
+      logger.log('unchained:platform -> fixtures: -> filter');
       const addTranslation = (filterId, filterOptionValue) => {
-        faker.locale = "de";
+        faker.locale = 'de';
         logger.log(
           `unchained:platform -> fixtures: --> filterText ${faker.locale}`
         );
-        Factory.create("filterText", {
+        Factory.create('filterText', {
           filterId,
           locale: faker.locale,
           filterOptionValue
         });
-        faker.locale = "en";
+        faker.locale = 'en';
         logger.log(
           `unchained:platform -> fixtures: --> filterText ${faker.locale}`
         );
-        Factory.create("filterText", {
+        Factory.create('filterText', {
           filterId,
           locale: faker.locale,
           filterOptionValue
         });
       };
-      const filter = Factory.create("filter");
+      const filter = Factory.create('filter');
       addTranslation(filter._id);
       filter.options.forEach(filterOptionValue => {
         addTranslation(filter._id, filterOptionValue);
@@ -211,19 +211,19 @@ export default () => {
 
     const assortments = Array.from(Array(3)).map(() => {
       // Add a product
-      logger.log("unchained:platform -> fixtures: assortments");
-      const assortment = Factory.create("assortment");
+      logger.log('unchained:platform -> fixtures: assortments');
+      const assortment = Factory.create('assortment');
       addTextToAssortment(assortment._id, assortment.slugs[0]);
 
-      logger.log("unchained:platform -> fixtures: -> assortmentProduct");
+      logger.log('unchained:platform -> fixtures: -> assortmentProduct');
       Array.from(Array(5)).forEach(() => {
-        Factory.create("assortmentProduct", {
+        Factory.create('assortmentProduct', {
           assortmentId: assortment._id,
           productId: faker.random.arrayElement(simpleProducts)
         });
       });
 
-      Factory.create("assortmentFilter", {
+      Factory.create('assortmentFilter', {
         assortmentId: assortment._id,
         filterId: faker.random.arrayElement(filters)
       });
@@ -231,30 +231,30 @@ export default () => {
       return assortment._id;
     });
 
-    logger.log("unchained:platform -> fixtures: assortmentLinks");
-    Factory.create("assortmentLink", {
+    logger.log('unchained:platform -> fixtures: assortmentLinks');
+    Factory.create('assortmentLink', {
       childAssortmentId: assortments[1],
       parentAssortmentId: assortments[0]
     });
-    Factory.create("assortmentLink", {
+    Factory.create('assortmentLink', {
       childAssortmentId: assortments[2],
       parentAssortmentId: assortments[0]
     });
 
     const orders = Array.from(Array(5)).map(() => {
       // Add an order
-      logger.log("unchained:platform -> fixtures: order");
-      const order = Factory.create("order", {
+      logger.log('unchained:platform -> fixtures: order');
+      const order = Factory.create('order', {
         userId: faker.random.arrayElement(users)
       });
 
-      logger.log("unchained:platform -> fixtures: -> orderPayment");
-      const orderPayment = Factory.create("orderPayment", {
+      logger.log('unchained:platform -> fixtures: -> orderPayment');
+      const orderPayment = Factory.create('orderPayment', {
         orderId: order._id,
         paymentProviderId: faker.random.arrayElement(paymentProviders)
       });
-      logger.log("unchained:platform -> fixtures: -> orderDelivery");
-      const orderDelivery = Factory.create("orderDelivery", {
+      logger.log('unchained:platform -> fixtures: -> orderDelivery');
+      const orderDelivery = Factory.create('orderDelivery', {
         orderId: order._id,
         deliveryProviderId: faker.random.arrayElement(deliveryProviders)
       });
@@ -264,8 +264,8 @@ export default () => {
 
       // Add some random images to the order
       Array.from(Array(faker.random.number({ min: 1, max: 3 }))).forEach(() => {
-        logger.log("unchained:platform -> fixtures: -> orderPosition");
-        Factory.create("orderPosition", {
+        logger.log('unchained:platform -> fixtures: -> orderPosition');
+        Factory.create('orderPosition', {
           orderId: order._id,
           productId: faker.random.arrayElement([
             ...simpleProducts,
@@ -292,7 +292,7 @@ export default () => {
       assortments
     };
   } catch (anyError) {
-    log(anyError, { level: "error" });
+    log(anyError, { level: 'error' });
   }
   return null;
 };

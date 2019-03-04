@@ -7,7 +7,7 @@ Package.describe({
 });
 
 Npm.depends({
-  "lodash.merge": "4.6.1"
+  'lodash.merge': '4.6.1'
 });
 
 Package.onUse((api) => {
@@ -19,8 +19,8 @@ Package.onUse((api) => {
 });
 
 Package.onTest(api => {
-  api.use("ecmascript");
-  api.use("tinytest");
-  api.use("unchained:core-files");
-  api.mainModule("core-files-tests.js");
+  api.use('ecmascript');
+  api.use('tinytest');
+  api.use('unchained:core-files');
+  api.mainModule('core-files-tests.js');
 });

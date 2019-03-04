@@ -1,8 +1,8 @@
-import { Products } from "meteor/unchained:core-products";
+import { Products } from 'meteor/unchained:core-products';
 
 export default {
   _id({ product, assignment }) {
-    return `${product._id}:${Object.values(assignment.vector).join("-")}`;
+    return `${product._id}:${Object.values(assignment.vector).join('-')}`;
   },
   vectors({ assignment, product }) {
     return Object.keys(assignment.vector || {}).map(key => ({

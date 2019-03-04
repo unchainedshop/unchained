@@ -8,16 +8,16 @@ export const contextFields = {
 
 export const logFields = {
   log: Array,
-  "log.$": {
+  'log.$': {
     type: Object
   },
-  "log.$.date": {
+  'log.$.date': {
     type: Date
   },
-  "log.$.status": {
+  'log.$.status': {
     type: String
   },
-  "log.$.info": {
+  'log.$.info': {
     type: String
   }
 };

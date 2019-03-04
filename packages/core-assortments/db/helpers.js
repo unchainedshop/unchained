@@ -1,15 +1,15 @@
-import "meteor/dburles:collection-helpers";
-import { Countries } from "meteor/unchained:core-countries";
-import { Products, ProductStatus } from "meteor/unchained:core-products";
-import { slugify } from "meteor/unchained:utils";
-import { Filters } from "meteor/unchained:core-filters";
-import { findLocalizedText } from "meteor/unchained:core";
+import 'meteor/dburles:collection-helpers';
+import { Countries } from 'meteor/unchained:core-countries';
+import { Products, ProductStatus } from 'meteor/unchained:core-products';
+import { slugify } from 'meteor/unchained:utils';
+import { Filters } from 'meteor/unchained:core-filters';
+import { findLocalizedText } from 'meteor/unchained:core';
 
-import { Locale } from "locale";
-import * as Collections from "./collections";
+import { Locale } from 'locale';
+import * as Collections from './collections';
 
 function eqSet(as, bs) {
-  return [...as].join(",") === [...bs].join(",");
+  return [...as].join(',') === [...bs].join(',');
 }
 
 Collections.Assortments.createAssortment = ({
@@ -545,7 +545,7 @@ Collections.Assortments.helpers({
       },
       {
         $addFields: {
-          index: { $indexOfArray: [filteredProductIds, "$_id"] }
+          index: { $indexOfArray: [filteredProductIds, '$_id'] }
         }
       },
       {

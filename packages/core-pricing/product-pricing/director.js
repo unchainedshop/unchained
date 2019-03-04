@@ -1,13 +1,13 @@
-import { Promise } from "meteor/promise";
-import { log } from "meteor/unchained:core-logger";
-import { ProductPricingSheet } from "./sheet";
+import { Promise } from 'meteor/promise';
+import { log } from 'meteor/unchained:core-logger';
+import { ProductPricingSheet } from './sheet';
 
 class ProductPricingAdapter {
-  static key = "";
+  static key = '';
 
-  static label = "";
+  static label = '';
 
-  static version = "";
+  static version = '';
 
   static orderIndex = 0;
 
@@ -102,7 +102,7 @@ class ProductPricingDirector {
           if (!nextCalculationResult || !calculation) return null;
           return calculation.concat(nextCalculationResult);
         } catch (error) {
-          log(error, { level: "error" });
+          log(error, { level: 'error' });
         }
         return calculation;
       }, []);

@@ -1,5 +1,5 @@
-import { PaymentProviderType } from "meteor/unchained:core-payment";
-import { objectInvert } from "meteor/unchained:utils";
+import { PaymentProviderType } from 'meteor/unchained:core-payment';
+import { objectInvert } from 'meteor/unchained:utils';
 
 const OrderPaymentMap = {
   OrderPaymentPostfinance: PaymentProviderType.POSTFINANCE,

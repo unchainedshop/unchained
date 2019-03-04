@@ -1,15 +1,15 @@
-import { log } from "meteor/unchained:core-logger";
+import { log } from 'meteor/unchained:core-logger';
 
 const FilterError = {
-  NOT_IMPLEMENTED: "NOT_IMPLEMENTED"
+  NOT_IMPLEMENTED: 'NOT_IMPLEMENTED'
 };
 
 class FilterAdapter {
-  static key = "";
+  static key = '';
 
-  static label = "";
+  static label = '';
 
-  static version = "";
+  static version = '';
 
   static isActivatedFor(context) { // eslint-disable-line
     return false;

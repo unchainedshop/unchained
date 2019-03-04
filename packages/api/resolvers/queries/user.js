@@ -1,5 +1,5 @@
-import { log } from "meteor/unchained:core-logger";
-import { Users } from "meteor/unchained:core-users";
+import { log } from 'meteor/unchained:core-logger';
+import { Users } from 'meteor/unchained:core-users';
 
 export default function(root, { userId }, { userId: ownUserId }) {
   log(`query user ${userId}`, { userId: ownUserId });

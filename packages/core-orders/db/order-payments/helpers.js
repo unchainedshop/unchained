@@ -1,16 +1,16 @@
-import "meteor/dburles:collection-helpers";
-import { log } from "meteor/unchained:core-logger";
-import { PaymentProviders } from "meteor/unchained:core-payment";
+import 'meteor/dburles:collection-helpers';
+import { log } from 'meteor/unchained:core-logger';
+import { PaymentProviders } from 'meteor/unchained:core-payment';
 import {
   PaymentPricingDirector,
   PaymentPricingSheet
-} from "meteor/unchained:core-pricing";
-import { objectInvert } from "meteor/unchained:utils";
-import { OrderPayments } from "./collections";
-import { OrderPaymentStatus } from "./schema";
-import { Orders } from "../orders/collections";
-import { OrderDocuments } from "../order-documents/collections";
-import { OrderDiscounts } from "../order-discounts/collections";
+} from 'meteor/unchained:core-pricing';
+import { objectInvert } from 'meteor/unchained:utils';
+import { OrderPayments } from './collections';
+import { OrderPaymentStatus } from './schema';
+import { Orders } from '../orders/collections';
+import { OrderDocuments } from '../order-documents/collections';
+import { OrderDiscounts } from '../order-discounts/collections';
 
 OrderPayments.helpers({
   order() {
@@ -72,7 +72,7 @@ OrderPayments.helpers({
   },
   markPaid() {
     if (this.status !== OrderPaymentStatus.OPEN) return;
-    this.setStatus(OrderPaymentStatus.PAID, "mark paid manually");
+    this.setStatus(OrderPaymentStatus.PAID, 'mark paid manually');
   },
   setStatus(status, info) {
     return OrderPayments.updateStatus({
@@ -134,7 +134,7 @@ OrderPayments.updatePayment = ({ orderId, paymentId, context }) => {
   return OrderPayments.findOne({ _id: paymentId });
 };
 
-OrderPayments.updateStatus = ({ paymentId, status, info = "" }) => {
+OrderPayments.updateStatus = ({ paymentId, status, info = '' }) => {
   log(`OrderPayment ${paymentId} -> New Status: ${status}`);
   const date = new Date();
   const modifier = {

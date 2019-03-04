@@ -1,5 +1,5 @@
-import { log } from "meteor/unchained:core-logger";
-import { Assortments } from "meteor/unchained:core-assortments";
+import { log } from 'meteor/unchained:core-logger';
+import { Assortments } from 'meteor/unchained:core-assortments';
 
 export default function(
   root,
@@ -8,7 +8,7 @@ export default function(
 ) {
   log(
     `query assortments: ${limit} ${offset} ${
-      includeInactive ? "includeInactive" : ""
+      includeInactive ? 'includeInactive' : ''
     }`,
     { userId }
   );

@@ -1,18 +1,18 @@
-import { getSetting } from "meteor/unchained:core-settings";
+import { getSetting } from 'meteor/unchained:core-settings';
 
-import merge from "lodash.merge";
+import merge from 'lodash.merge';
 
-import FilesCollection from "./FilesCollection";
+import FilesCollection from './FilesCollection';
 
-import createDefaultFileCollectionConfig from "./createDefaultFileCollectionConfig";
+import createDefaultFileCollectionConfig from './createDefaultFileCollectionConfig';
 
-import * as Types from "./types";
+import * as Types from './types';
 
 const createDefaultSettings = () => ({
   maxSize: 10485760,
   extensionRegex: null,
   storage: {
-    type: "filesystem"
+    type: 'filesystem'
   }
 });
 
@@ -21,8 +21,8 @@ export default (collectionName, customSettings = null) => {
     {},
     createDefaultSettings(),
     customSettings,
-    getSetting("files.default"),
-    getSetting(["files", collectionName])
+    getSetting('files.default'),
+    getSetting(['files', collectionName])
   );
 
   const configByType = Types[mergedSettings.storage.type];

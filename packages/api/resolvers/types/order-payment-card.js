@@ -3,6 +3,6 @@ export default {
     return obj.normalizedStatus();
   },
   meta(obj) {
-    return obj.transformedContextValue("meta");
+    return obj.transformedContextValue('meta');
   }
 };

@@ -1,5 +1,5 @@
-import { Kind } from "graphql/language";
-import isNumber from "lodash.isnumber";
+import { Kind } from 'graphql/language';
+import isNumber from 'lodash.isnumber';
 
 export default {
   __parseValue(value) {

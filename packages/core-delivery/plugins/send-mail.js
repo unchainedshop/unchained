@@ -1,28 +1,28 @@
 import {
   DeliveryAdapter,
   DeliveryDirector
-} from "meteor/unchained:core-delivery";
+} from 'meteor/unchained:core-delivery';
 
 import {
   MessagingDirector,
   MessagingType
-} from "meteor/unchained:core-messaging";
+} from 'meteor/unchained:core-messaging';
 
 class SendMail extends DeliveryAdapter {
-  static key = "shop.unchained.send-mail";
+  static key = 'shop.unchained.send-mail';
 
-  static label = "Send E-Mail to central Address";
+  static label = 'Send E-Mail to central Address';
 
-  static version = "1.0";
+  static version = '1.0';
 
   static initialConfiguration = [
-    { key: "from", value: "" },
-    { key: "to", value: "" },
-    { key: "cc", value: "" }
+    { key: 'from', value: '' },
+    { key: 'to', value: '' },
+    { key: 'cc', value: '' }
   ];
 
   static typeSupported(type) {
-    return type === "SHIPPING";
+    return type === 'SHIPPING';
   }
 
   isActive() { // eslint-disable-line
@@ -35,21 +35,21 @@ class SendMail extends DeliveryAdapter {
 
   getFromAddress() {
     return this.config.reduce((current, item) => {
-      if (item.key === "from") return item.value;
+      if (item.key === 'from') return item.value;
       return current;
     }, null);
   }
 
   getToAddress() {
     return this.config.reduce((current, item) => {
-      if (item.key === "to") return item.value;
+      if (item.key === 'to') return item.value;
       return current;
     }, null);
   }
 
   getCCAddress() {
     return this.config.reduce((current, item) => {
-      if (item.key === "cc") return item.value;
+      if (item.key === 'cc') return item.value;
       return current;
     }, null);
   }
@@ -61,13 +61,13 @@ class SendMail extends DeliveryAdapter {
   async send() {
     const { delivery, order } = this.context;
     const attachments = [];
-    const deliveryNote = order.document({ type: "DELIVERY_NOTE" });
+    const deliveryNote = order.document({ type: 'DELIVERY_NOTE' });
     if (deliveryNote) attachments.push(deliveryNote);
     if (order.payment().isBlockingOrderFullfillment()) {
-      const invoice = order.document({ type: "INVOICE" });
+      const invoice = order.document({ type: 'INVOICE' });
       if (invoice) attachments.push(invoice);
     } else {
-      const receipt = order.document({ type: "RECEIPT" });
+      const receipt = order.document({ type: 'RECEIPT' });
       if (receipt) attachments.push(receipt);
     }
 
@@ -90,7 +90,7 @@ class SendMail extends DeliveryAdapter {
     });
 
     return director.sendMessage({
-      template: "shop.unchained.send-mail",
+      template: 'shop.unchained.send-mail',
       attachments,
       meta: {
         mailPrefix: `${order.orderNumber}_`,

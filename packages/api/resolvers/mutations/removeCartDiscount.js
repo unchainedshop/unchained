@@ -1,9 +1,9 @@
-import { log } from "meteor/unchained:core-logger";
-import { OrderDiscounts } from "meteor/unchained:core-orders";
+import { log } from 'meteor/unchained:core-logger';
+import { OrderDiscounts } from 'meteor/unchained:core-orders';
 import {
   OrderDiscountNotFoundError,
   OrderWrongStatusError
-} from "../../errors";
+} from '../../errors';
 
 export default function(root, { discountId }, { userId }) {
   log(`mutation removeCartDiscount ${discountId}`, { userId });

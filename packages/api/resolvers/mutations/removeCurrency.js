@@ -1,5 +1,5 @@
-import { log } from "meteor/unchained:core-logger";
-import { Currencies } from "meteor/unchained:core-currencies";
+import { log } from 'meteor/unchained:core-logger';
+import { Currencies } from 'meteor/unchained:core-currencies';
 
 export default function(root, { currencyId }, { userId }) {
   log(`mutation removeCurrency ${currencyId}`, { userId });

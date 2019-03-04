@@ -1,11 +1,11 @@
-import PricingSheet from "../pricing-sheet";
+import PricingSheet from '../pricing-sheet';
 
 const OrderPricingSheetRowCategories = {
-  Items: "ITEMS",
-  Discounts: "DISCOUNTS",
-  Taxes: "TAXES",
-  Delivery: "DELIVERY",
-  Payment: "PAYMENT"
+  Items: 'ITEMS',
+  Discounts: 'DISCOUNTS',
+  Taxes: 'TAXES',
+  Delivery: 'DELIVERY',
+  Payment: 'PAYMENT'
 };
 
 class OrderPricingSheet extends PricingSheet {

@@ -1,8 +1,8 @@
-import "meteor/dburles:collection-helpers";
-import { Users } from "meteor/unchained:core-users";
-import { ProductReviews } from "./collections";
-import { ProductReviewVoteTypes } from "./schema";
-import { Products } from "../products/collections";
+import 'meteor/dburles:collection-helpers';
+import { Users } from 'meteor/unchained:core-users';
+import { ProductReviews } from './collections';
+import { ProductReviewVoteTypes } from './schema';
+import { Products } from '../products/collections';
 
 ProductReviews.helpers({
   product() {

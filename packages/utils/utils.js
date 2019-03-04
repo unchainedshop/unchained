@@ -4,15 +4,15 @@
 //   faker: '4.x',
 // }, 'base');
 
-import Address from "./address-schema";
-import Contact from "./contact-schema";
-import * as schemaFields from "./common-schema-fields";
+import Address from './address-schema';
+import Contact from './contact-schema';
+import * as schemaFields from './common-schema-fields';
 
-export fakeTimestampFields from "./fake-timestamp-fields";
+export fakeTimestampFields from './fake-timestamp-fields';
 
-export fakeAddress from "./fake-address";
-export objectInvert from "./object-invert";
-export slugify from "./slugify";
+export fakeAddress from './fake-address';
+export objectInvert from './object-invert';
+export slugify from './slugify';
 
 const Schemas = {
   ...schemaFields,

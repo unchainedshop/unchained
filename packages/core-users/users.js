@@ -1,8 +1,8 @@
-import "./db/factories";
-import runMigrations from "./db/schema";
-import "./db/helpers";
+import './db/factories';
+import runMigrations from './db/schema';
+import './db/helpers';
 
-export * from "./db/collections";
+export * from './db/collections';
 export default () => {
   // configure
   runMigrations();

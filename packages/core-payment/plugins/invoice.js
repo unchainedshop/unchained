@@ -2,14 +2,14 @@ import {
   PaymentDirector,
   PaymentAdapter,
   PaymentProviderType
-} from "meteor/unchained:core-payment";
+} from 'meteor/unchained:core-payment';
 
 class Invoice extends PaymentAdapter {
-  static key = "shop.unchained.invoice";
+  static key = 'shop.unchained.invoice';
 
-  static label = "Invoice (manually)";
+  static label = 'Invoice (manually)';
 
-  static version = "1.0";
+  static version = '1.0';
 
   static initialConfiguration = [];
 

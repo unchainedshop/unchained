@@ -12,11 +12,11 @@ Package.onUse((api) => {
   api.use('ecmascript');
   api.use('unchained:core-logger@0.24.0');
 
-  api.mainModule("messaging.js", "server");
+  api.mainModule('messaging.js', 'server');
 });
 
 Package.onTest(api => {
-  api.use("ecmascript");
-  api.use("unchained:core-messaging");
-  api.mainModule("messaging-tests.js");
+  api.use('ecmascript');
+  api.use('unchained:core-messaging');
+  api.mainModule('messaging-tests.js');
 });

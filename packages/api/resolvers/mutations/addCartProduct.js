@@ -1,13 +1,13 @@
-import { log } from "meteor/unchained:core-logger";
-import { Products } from "meteor/unchained:core-products";
-import { Users } from "meteor/unchained:core-users";
-import { Orders } from "meteor/unchained:core-orders";
+import { log } from 'meteor/unchained:core-logger';
+import { Products } from 'meteor/unchained:core-products';
+import { Users } from 'meteor/unchained:core-users';
+import { Orders } from 'meteor/unchained:core-orders';
 import {
   ProductNotFoundError,
   UserNotFoundError,
   OrderNotFoundError,
   OrderWrongStatusError
-} from "../../errors";
+} from '../../errors';
 
 export default function(
   root,
@@ -16,7 +16,7 @@ export default function(
 ) {
   log(
     `mutation addCartProduct ${productId} ${quantity} ${
-      configuration ? JSON.stringify(configuration) : ""
+      configuration ? JSON.stringify(configuration) : ''
     }`,
     { userId, orderId }
   );

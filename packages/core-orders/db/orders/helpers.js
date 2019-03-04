@@ -1,28 +1,28 @@
-import Hashids from "hashids";
-import "meteor/dburles:collection-helpers";
-import { Promise } from "meteor/promise";
-import { getFallbackLocale } from "meteor/unchained:core";
-import { objectInvert } from "meteor/unchained:utils";
-import { DeliveryProviders } from "meteor/unchained:core-delivery";
-import { PaymentProviders } from "meteor/unchained:core-payment";
-import { Countries } from "meteor/unchained:core-countries";
-import { Users } from "meteor/unchained:core-users";
-import { Logs, log } from "meteor/unchained:core-logger";
+import Hashids from 'hashids';
+import 'meteor/dburles:collection-helpers';
+import { Promise } from 'meteor/promise';
+import { getFallbackLocale } from 'meteor/unchained:core';
+import { objectInvert } from 'meteor/unchained:utils';
+import { DeliveryProviders } from 'meteor/unchained:core-delivery';
+import { PaymentProviders } from 'meteor/unchained:core-payment';
+import { Countries } from 'meteor/unchained:core-countries';
+import { Users } from 'meteor/unchained:core-users';
+import { Logs, log } from 'meteor/unchained:core-logger';
 import {
   MessagingDirector,
   MessagingType
-} from "meteor/unchained:core-messaging";
+} from 'meteor/unchained:core-messaging';
 import {
   OrderPricingDirector,
   OrderPricingSheet
-} from "meteor/unchained:core-pricing";
-import { OrderStatus } from "./schema";
-import { Orders } from "./collections";
-import { OrderDeliveries } from "../order-deliveries/collections";
-import { OrderDiscounts } from "../order-discounts/collections";
-import { OrderPayments } from "../order-payments/collections";
-import { OrderDocuments } from "../order-documents/collections";
-import { OrderPositions } from "../order-positions/collections";
+} from 'meteor/unchained:core-pricing';
+import { OrderStatus } from './schema';
+import { Orders } from './collections';
+import { OrderDeliveries } from '../order-deliveries/collections';
+import { OrderDiscounts } from '../order-discounts/collections';
+import { OrderPayments } from '../order-payments/collections';
+import { OrderDocuments } from '../order-documents/collections';
+import { OrderPositions } from '../order-positions/collections';
 
 const { EMAIL_FROM, UI_ENDPOINT } = process.env;
 
@@ -256,12 +256,12 @@ Orders.helpers({
   },
   missingInputDataForCheckout() {
     const errors = [];
-    if (!this.contact) errors.push(new Error("Contact data not provided"));
+    if (!this.contact) errors.push(new Error('Contact data not provided'));
     if (!this.billingAddress)
-      errors.push(new Error("Billing address not provided"));
-    if (this.totalQuantity() === 0) errors.push(new Error("No items in cart"));
-    if (!this.delivery()) errors.push("No delivery provider selected");
-    if (!this.payment()) errors.push("No payment provider selected");
+      errors.push(new Error('Billing address not provided'));
+    if (this.totalQuantity() === 0) errors.push(new Error('No items in cart'));
+    if (!this.delivery()) errors.push('No delivery provider selected');
+    if (!this.payment()) errors.push('No payment provider selected');
     return errors;
   },
   checkout(
@@ -299,10 +299,10 @@ Orders.helpers({
     const confirmation = this.document({ type: 'ORDER_CONFIRMATION' });
     if (confirmation) attachments.push(confirmation);
     if (this.payment().isBlockingOrderFullfillment()) {
-      const invoice = this.document({ type: "INVOICE" });
+      const invoice = this.document({ type: 'INVOICE' });
       if (invoice) attachments.push(invoice);
     } else {
-      const receipt = this.document({ type: "RECEIPT" });
+      const receipt = this.document({ type: 'RECEIPT' });
       if (receipt) attachments.push(receipt);
     }
     const user = this.user();
@@ -319,7 +319,7 @@ Orders.helpers({
       return `${this.currency} ${fixedPrice}`;
     };
     director.sendMessage({
-      template: "shop.unchained.orders.confirmation",
+      template: 'shop.unchained.orders.confirmation',
       attachments,
       meta: {
         mailPrefix: `${this.orderNumber}_`,
@@ -351,14 +351,14 @@ Orders.helpers({
         // documents and numbers that are needed for delivery
         const newConfirmedOrder = this.setStatus(
           OrderStatus.CONFIRMED,
-          "before delivery"
+          'before delivery'
         );
         this.delivery().send(deliveryContext, newConfirmedOrder);
       } else {
         this.delivery().send(deliveryContext, this);
       }
     }
-    return this.setStatus(this.nextStatus(), "order processed");
+    return this.setStatus(this.nextStatus(), 'order processed');
   },
   setStatus(status, info) {
     return Orders.updateStatus({
@@ -406,7 +406,7 @@ Orders.helpers({
     return true;
   },
   addDocument(objOrString, meta, options = {}) {
-    if (typeof objOrString === "string" || objOrString instanceof String) {
+    if (typeof objOrString === 'string' || objOrString instanceof String) {
       return Promise.await(
         OrderDocuments.insertWithRemoteURL({
           url: objOrString,
@@ -433,25 +433,25 @@ Orders.helpers({
   },
   documents(options) {
     const { type } = options || {};
-    const selector = { "meta.orderId": this._id };
+    const selector = { 'meta.orderId': this._id };
     if (type) {
-      selector["meta.type"] = type;
+      selector['meta.type'] = type;
     }
-    return OrderDocuments.find(selector, { sort: { "meta.date": -1 } }).each();
+    return OrderDocuments.find(selector, { sort: { 'meta.date': -1 } }).each();
   },
   document(options) {
     const { type } = options || {};
-    const selector = { "meta.orderId": this._id };
+    const selector = { 'meta.orderId': this._id };
     if (type) {
-      selector["meta.type"] = type;
+      selector['meta.type'] = type;
     }
-    return OrderDocuments.findOne(selector, { sort: { "meta.date": -1 } });
+    return OrderDocuments.findOne(selector, { sort: { 'meta.date': -1 } });
   },
   country() {
     return Countries.findOne({ isoCode: this.countryCode });
   },
   logs({ limit = 10, offset = 0 }) {
-    const selector = { "meta.orderId": this._id };
+    const selector = { 'meta.orderId': this._id };
     const logs = Logs.find(selector, {
       skip: offset,
       limit,
@@ -500,7 +500,7 @@ Orders.setPaymentProvider = ({ orderId, paymentProviderId }) => {
 
 Orders.createOrder = ({ userId, currency, countryCode, ...rest }) => {
   const user = Users.findOne({ _id: userId });
-  log("Create Order", { userId });
+  log('Create Order', { userId });
   const orderId = Orders.insert({
     ...rest,
     created: new Date(),
@@ -521,7 +521,7 @@ Orders.createOrder = ({ userId, currency, countryCode, ...rest }) => {
 };
 
 Orders.updateBillingAddress = ({ billingAddress, orderId }) => {
-  log("Update Invoicing Address", { orderId });
+  log('Update Invoicing Address', { orderId });
   Orders.update(
     { _id: orderId },
     {
@@ -536,7 +536,7 @@ Orders.updateBillingAddress = ({ billingAddress, orderId }) => {
 };
 
 Orders.updateContact = ({ contact, orderId }) => {
-  log("Update Contact Information", { orderId });
+  log('Update Contact Information', { orderId });
   Orders.update(
     { _id: orderId },
     {
@@ -551,7 +551,7 @@ Orders.updateContact = ({ contact, orderId }) => {
 };
 
 Orders.updateContext = ({ context, orderId }) => {
-  log("Update Arbitrary Context", { orderId });
+  log('Update Arbitrary Context', { orderId });
   Orders.update(
     { _id: orderId },
     {
@@ -568,9 +568,9 @@ Orders.updateContext = ({ context, orderId }) => {
 Orders.newOrderNumber = () => {
   let orderNumber = null;
   const hashids = new Hashids(
-    "unchained",
+    'unchained',
     6,
-    "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890"
+    'ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890'
   );
   while (!orderNumber) {
     const randomNumber = Math.floor(Math.random() * (999999999 - 1)) + 1;
@@ -582,7 +582,7 @@ Orders.newOrderNumber = () => {
   return orderNumber;
 };
 
-Orders.updateStatus = ({ status, orderId, info = "" }) => {
+Orders.updateStatus = ({ status, orderId, info = '' }) => {
   const order = Orders.findOne({ _id: orderId });
   if (order.status === status) return order;
   const date = new Date();
@@ -630,7 +630,7 @@ Orders.updateStatus = ({ status, orderId, info = "" }) => {
         ...modifier.$set
       });
     } catch (e) {
-      log(e, { level: "error" });
+      log(e, { level: 'error' });
     }
   }
   log(`New Status: ${status}`, { orderId });
@@ -641,9 +641,9 @@ Orders.updateStatus = ({ status, orderId, info = "" }) => {
 Orders.updateCalculation = ({ orderId, recalculateEverything }) => {
   const order = Orders.findOne({ _id: orderId });
   const items = order.items();
-  log("Update Calculation", { orderId });
+  log('Update Calculation', { orderId });
   if (recalculateEverything) {
-    log("Whole Order Recalculation!", { orderId });
+    log('Whole Order Recalculation!', { orderId });
     items.forEach(({ _id }) =>
       OrderPositions.updateCalculation({ orderId, positionId: _id })
     );

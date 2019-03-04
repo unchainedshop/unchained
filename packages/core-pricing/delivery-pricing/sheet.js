@@ -1,9 +1,9 @@
-import PricingSheet from "../pricing-sheet";
+import PricingSheet from '../pricing-sheet';
 
 const DeliveryPricingSheetRowCategories = {
-  Delivery: "DELIVERY",
-  Discount: "DISCOUNT",
-  Tax: "TAX"
+  Delivery: 'DELIVERY',
+  Discount: 'DISCOUNT',
+  Tax: 'TAX'
 };
 
 class DeliveryPricingSheet extends PricingSheet {

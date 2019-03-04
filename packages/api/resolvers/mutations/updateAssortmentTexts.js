@@ -1,5 +1,5 @@
-import { log } from "meteor/unchained:core-logger";
-import { Assortments } from "meteor/unchained:core-assortments";
+import { log } from 'meteor/unchained:core-logger';
+import { Assortments } from 'meteor/unchained:core-assortments';
 
 export default function(root, { texts, assortmentId }, { userId }) {
   log(`mutation updateAssortmentTexts ${assortmentId}`, { userId });

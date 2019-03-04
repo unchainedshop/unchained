@@ -1,4 +1,4 @@
-import { FilesCollection } from "meteor/ostrio:files";
+import { FilesCollection } from 'meteor/ostrio:files';
 
 FilesCollection.prototype.insertWithRemoteBuffer = async function insertWithRemoteBuffer({
   file: { name: fileName, type, size, buffer },
@@ -36,10 +36,10 @@ FilesCollection.prototype.insertWithRemoteFile = async function insertWithRemote
   const { stream, filename, mimetype } = await file;
   return new Promise((resolve, reject) => {
     const bufs = [];
-    stream.on("data", d => {
+    stream.on('data', d => {
       bufs.push(d);
     });
-    stream.on("end", () => {
+    stream.on('end', () => {
       const contentLength = bufs.reduce((sum, buf) => sum + buf.length, 0);
       const buf = Buffer.concat(bufs);
       try {

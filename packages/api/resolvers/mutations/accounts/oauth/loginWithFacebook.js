@@ -1,23 +1,23 @@
-import { HTTP } from "meteor/http";
-import resolver from "./resolver";
+import { HTTP } from 'meteor/http';
+import resolver from './resolver';
 
 const getIdentity = accessToken => {
   const fields = [
-    "id",
-    "email",
-    "name",
-    "first_name",
-    "last_name",
-    "link",
-    "gender",
-    "locale",
-    "age_range"
+    'id',
+    'email',
+    'name',
+    'first_name',
+    'last_name',
+    'link',
+    'gender',
+    'locale',
+    'age_range'
   ];
   try {
-    return HTTP.get("https://graph.facebook.com/v2.8/me", {
+    return HTTP.get('https://graph.facebook.com/v2.8/me', {
       params: {
         access_token: accessToken,
-        fields: fields.join(",")
+        fields: fields.join(',')
       }
     }).data;
   } catch (err) {
@@ -34,7 +34,7 @@ const handleAuthFromAccessToken = ({ accessToken }) => {
   };
 
   return {
-    serviceName: "facebook",
+    serviceName: 'facebook',
     serviceData,
     options: { profile: { name: identity.name } }
   };

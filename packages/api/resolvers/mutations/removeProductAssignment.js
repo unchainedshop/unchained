@@ -1,5 +1,5 @@
-import { log } from "meteor/unchained:core-logger";
-import { Products } from "meteor/unchained:core-products";
+import { log } from 'meteor/unchained:core-logger';
+import { Products } from 'meteor/unchained:core-products';
 
 export default function(root, { proxyId, vectors }, { userId }) {
   log(`mutation removeProductAssignment ${proxyId}`, { userId });
@@ -12,7 +12,7 @@ export default function(root, { proxyId, vectors }, { userId }) {
       updated: new Date()
     },
     $pull: {
-      "proxy.assignments": {
+      'proxy.assignments': {
         vector
       }
     }

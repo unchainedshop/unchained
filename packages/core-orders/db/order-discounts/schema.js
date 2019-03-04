@@ -1,10 +1,10 @@
-import { Schemas } from "meteor/unchained:utils";
-import SimpleSchema from "simpl-schema";
-import { OrderDiscounts } from "./collections";
+import { Schemas } from 'meteor/unchained:utils';
+import SimpleSchema from 'simpl-schema';
+import { OrderDiscounts } from './collections';
 
 export const OrderDiscountTrigger = {
-  USER: "USER",
-  SYSTEM: "SYSTEM"
+  USER: 'USER',
+  SYSTEM: 'SYSTEM'
 };
 
 OrderDiscounts.attachSchema(

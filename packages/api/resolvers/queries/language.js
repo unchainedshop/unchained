@@ -1,5 +1,5 @@
-import { log } from "meteor/unchained:core-logger";
-import { Languages } from "meteor/unchained:core-languages";
+import { log } from 'meteor/unchained:core-logger';
+import { Languages } from 'meteor/unchained:core-languages';
 
 export default function(root, { languageId }, { userId }) {
   log(`query language ${languageId}`, { userId });

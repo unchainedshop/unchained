@@ -1,10 +1,10 @@
-import "meteor/dburles:collection-helpers";
-import { Promise } from "meteor/promise";
-import { log } from "meteor/unchained:core-logger";
-import { DocumentDirector } from "meteor/unchained:core-documents";
-import { QuotationDocuments } from "./collections";
-import { QuotationDocumentTypes } from "./schema";
-import { Quotations } from "../quotations/collections";
+import 'meteor/dburles:collection-helpers';
+import { Promise } from 'meteor/promise';
+import { log } from 'meteor/unchained:core-logger';
+import { DocumentDirector } from 'meteor/unchained:core-documents';
+import { QuotationDocuments } from './collections';
+import { QuotationDocumentTypes } from './schema';
+import { Quotations } from '../quotations/collections';
 
 class QuotationDocumentDirector extends DocumentDirector {
   constructor(context) {
@@ -63,6 +63,6 @@ class QuotationDocumentDirector extends DocumentDirector {
 QuotationDocuments.updateDocuments = ({ quotationId, ...rest }) => {
   const quotation = Quotations.findOne({ _id: quotationId });
   const director = new QuotationDocumentDirector({ quotation });
-  log("Update Quotation Documents", { quotationId });
+  log('Update Quotation Documents', { quotationId });
   Promise.await(director.updateDocuments({ ...rest }));
 };

@@ -1,7 +1,7 @@
-import "meteor/dburles:collection-helpers";
-import { findLocalizedText } from "meteor/unchained:core";
-import { Locale } from "locale";
-import { ProductMedia, Media, ProductMediaTexts } from "./collections";
+import 'meteor/dburles:collection-helpers';
+import { findLocalizedText } from 'meteor/unchained:core';
+import { Locale } from 'locale';
+import { ProductMedia, Media, ProductMediaTexts } from './collections';
 
 ProductMedia.helpers({
   upsertLocalizedText({ locale, ...rest }) {

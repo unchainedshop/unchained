@@ -1,5 +1,5 @@
-import { Accounts } from "meteor/accounts-base";
-import getConnection from "../../../getConnection";
+import { Accounts } from 'meteor/accounts-base';
+import getConnection from '../../../getConnection';
 
 export default async function(root, { token }, context) {
   if (token && context.userId) {

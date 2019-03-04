@@ -1,4 +1,4 @@
-import { Kind } from "graphql/language";
+import { Kind } from 'graphql/language';
 
 const identity = value => value;
 const parseLiteral = ast => {
