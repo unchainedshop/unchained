@@ -24,9 +24,7 @@ const mjmlTemplate = `
 </mjml>
 `;
 
-const {
-  EMAIL_FROM,
-} = process.env;
+const { EMAIL_FROM } = process.env;
 
 const textTemplate = `
   {{meta.message}}
@@ -36,24 +34,30 @@ const textTemplate = `
   -----------------\n
 `;
 
-export default texts => (meta, { locale, ...context }, { renderToText, renderMjmlToHtml }) => {
+export default texts => (
+  meta,
+  { locale, ...context },
+  { renderToText, renderMjmlToHtml }
+) => {
   const langCode = locale.substr(0, 2).toLowerCase();
   return {
     from: from => from || EMAIL_FROM,
     subject: () => texts[langCode].subject,
-    text: () => renderToText(textTemplate, {
-      meta: {
-        ...texts[langCode],
-        ...meta,
-      },
-      context,
-    }),
-    html: () => renderMjmlToHtml(mjmlTemplate, {
-      meta: {
-        ...texts[langCode],
-        ...meta,
-      },
-      context,
-    }),
+    text: () =>
+      renderToText(textTemplate, {
+        meta: {
+          ...texts[langCode],
+          ...meta
+        },
+        context
+      }),
+    html: () =>
+      renderMjmlToHtml(mjmlTemplate, {
+        meta: {
+          ...texts[langCode],
+          ...meta
+        },
+        context
+      })
   };
 };

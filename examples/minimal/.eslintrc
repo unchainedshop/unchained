@@ -6,7 +6,8 @@
   ],
   "extends": [
     "airbnb-base",
-    "plugin:meteor/recommended"
+    "plugin:meteor/recommended",
+    "plugin:prettier/recommended"
   ],
   "env": {
     "node": true,
@@ -14,7 +15,6 @@
     "meteor": true
   },
   "settings": {
-    "prettier/prettier": "error",
     "import/core-modules": ["meteor"],
     "import/resolver": {
       "meteor": {
@@ -26,6 +26,7 @@
     }
   },
   "rules": {
+    "prettier/prettier": [ "error" ],
     "no-underscore-dangle": [ "error", { "allow": [ "_id" ] } ],
     "import/no-unresolved": [ "error", { ignore: ['meteor/'] } ]
   }
