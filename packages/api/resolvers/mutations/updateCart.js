@@ -1,6 +1,6 @@
 import { log } from 'meteor/unchained:core-logger';
 import { Users } from 'meteor/unchained:core-users';
-import { Orders, OrderStatus } from 'meteor/unchained:core-orders';
+import { Orders } from 'meteor/unchained:core-orders';
 import { UserNotFoundError, OrderNotFoundError, OrderWrongStatusError } from '../../errors';
 
 export default function (root, {

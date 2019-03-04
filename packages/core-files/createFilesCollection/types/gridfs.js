@@ -23,7 +23,7 @@ export default (collectionName) => {
             }),
           )
           .on('error', (err) => {
-            console.log('error', err);
+            console.error(err); // eslint-disable-line
             throw err;
           })
           .on(

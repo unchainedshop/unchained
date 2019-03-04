@@ -99,7 +99,7 @@ Users.updateLastBillingAddress = ({ userId, lastBillingAddress }) => {
   const profile = user.profile || {};
   const isGuest = user.isGuest();
   if (!profile.displayName || isGuest) {
-    modifier.$set['profile.displayName'] = [address.firstName, address.lastName].filter(Boolean).join(' ');
+    modifier.$set['profile.displayName'] = [lastBillingAddress.firstName, lastBillingAddress.lastName].filter(Boolean).join(' ');
   }
   return Users.update({ _id: userId }, modifier);
 };

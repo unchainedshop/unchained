@@ -1,5 +1,5 @@
 import { log } from 'meteor/unchained:core-logger';
-import { OrderPositions, OrderStatus } from 'meteor/unchained:core-orders';
+import { OrderPositions } from 'meteor/unchained:core-orders';
 import { OrderQuantityTooLowError, OrderItemNotFoundError, OrderWrongStatusError } from '../../errors';
 
 export default function (root, { itemId, quantity }, { userId }) {

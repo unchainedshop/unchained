@@ -1,5 +1,5 @@
 import { log } from 'meteor/unchained:core-logger';
-import { OrderDiscounts, OrderStatus } from 'meteor/unchained:core-orders';
+import { OrderDiscounts } from 'meteor/unchained:core-orders';
 import { OrderDiscountNotFoundError, OrderWrongStatusError } from '../../errors';
 
 export default function (root, { discountId }, { userId }) {

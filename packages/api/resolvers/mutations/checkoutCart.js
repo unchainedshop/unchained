@@ -1,5 +1,5 @@
 import { log } from 'meteor/unchained:core-logger';
-import { Orders, OrderStatus } from 'meteor/unchained:core-orders';
+import { Orders } from 'meteor/unchained:core-orders';
 import { Users } from 'meteor/unchained:core-users';
 import {
   UserNotFoundError, OrderCheckoutError, UserNoCartError,
