@@ -40,7 +40,7 @@ export default function (root, {
     if (!order.isCart()) {
       throw new OrderWrongStatusError({ data: { status: order.status } });
     }
-    checkoutWithPotentialErrors(order, {
+    return checkoutWithPotentialErrors(order, {
       orderContext,
       paymentContext,
       deliveryContext,
@@ -52,7 +52,7 @@ export default function (root, {
   if (!user) throw new UserNotFoundError({ data: { userId } });
   const cart = user.cart({ countryContext });
   if (!cart) throw new UserNoCartError({ data: { userId } });
-  checkoutWithPotentialErrors(cart, {
+  return checkoutWithPotentialErrors(cart, {
     orderContext,
     paymentContext,
     deliveryContext,
