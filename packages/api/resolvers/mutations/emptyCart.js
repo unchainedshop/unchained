@@ -1,15 +1,14 @@
-import { log } from 'meteor/unchained:core-logger';
-import { Users } from 'meteor/unchained:core-users';
-import { Orders, OrderPositions } from 'meteor/unchained:core-orders';
+import { log } from "meteor/unchained:core-logger";
+import { Users } from "meteor/unchained:core-users";
+import { Orders, OrderPositions } from "meteor/unchained:core-orders";
 import {
   UserNotFoundError,
-  OrderNotFoundError, OrderWrongStatusError,
-} from '../../errors';
+  OrderNotFoundError,
+  OrderWrongStatusError
+} from "../../errors";
 
-export default function (root, {
-  orderId,
-}, { userId, countryContext }) {
-  log('mutation emptyCart', { userId, orderId });
+export default function(root, { orderId }, { userId, countryContext }) {
+  log("mutation emptyCart", { userId, orderId });
   if (orderId) {
     const order = Orders.findOne({ _id: orderId });
     if (!order) throw new OrderNotFoundError({ orderId });

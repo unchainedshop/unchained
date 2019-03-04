@@ -1,5 +1,5 @@
-import { actions } from '../../roles';
-import { checkResolver as acl } from '../../acl';
+import { actions } from "../../roles";
+import { checkResolver as acl } from "../../acl";
 
 import me from './me';
 import user from './user';
@@ -59,12 +59,22 @@ export default {
   deliveryProviders: acl(actions.viewDeliveryProviders)(deliveryProviders),
   deliveryProvider: acl(actions.viewDeliveryProvider)(deliveryProvider),
   deliveryInterfaces: acl(actions.viewDeliveryInterfaces)(deliveryInterfaces),
-  warehousingProviders: acl(actions.viewWarehousingProviders)(warehousingProviders),
-  warehousingProvider: acl(actions.viewWarehousingProvider)(warehousingProvider),
-  warehousingInterfaces: acl(actions.viewWarehousingInterfaces)(warehousingInterfaces),
+  warehousingProviders: acl(actions.viewWarehousingProviders)(
+    warehousingProviders
+  ),
+  warehousingProvider: acl(actions.viewWarehousingProvider)(
+    warehousingProvider
+  ),
+  warehousingInterfaces: acl(actions.viewWarehousingInterfaces)(
+    warehousingInterfaces
+  ),
   translatedProductTexts: acl(actions.viewTranslations)(translatedProductTexts),
-  translatedProductMediaTexts: acl(actions.viewTranslations)(translatedProductMediaTexts),
-  translatedProductVariationTexts: acl(actions.viewTranslations)(translatedProductVariationTexts),
+  translatedProductMediaTexts: acl(actions.viewTranslations)(
+    translatedProductMediaTexts
+  ),
+  translatedProductVariationTexts: acl(actions.viewTranslations)(
+    translatedProductVariationTexts
+  ),
   orders: acl(actions.viewOrders)(orders),
   order: acl(actions.viewOrder)(order),
   assortments: acl(actions.viewAssortments)(assortments),
@@ -73,7 +83,9 @@ export default {
   filter: acl(actions.viewFilter)(filter),
   shopInfo: acl(actions.viewShopInfo)(shopInfo),
   logs: acl(actions.viewLogs)(logs),
-  translatedAssortmentTexts: acl(actions.manageAssortments)(translatedAssortmentTexts),
+  translatedAssortmentTexts: acl(actions.manageAssortments)(
+    translatedAssortmentTexts
+  ),
   translatedFilterTexts: acl(actions.manageFilters)(translatedFilterTexts),
   productReview: acl(actions.manageProductReviews)(productReview),
   productReviews: acl(actions.manageProductReviews)(productReviews),

@@ -1,18 +1,21 @@
-import 'meteor/dburles:collection-helpers';
-import { log } from 'meteor/unchained:core-logger';
-import { DeliveryProviders } from 'meteor/unchained:core-delivery';
-import { DeliveryPricingDirector, DeliveryPricingSheet } from 'meteor/unchained:core-pricing';
-import { objectInvert } from 'meteor/unchained:utils';
-import { OrderDeliveries } from './collections';
-import { OrderDeliveryStatus } from './schema';
-import { Orders } from '../orders/collections';
-import { OrderDocuments } from '../order-documents/collections';
-import { OrderDiscounts } from '../order-discounts/collections';
+import "meteor/dburles:collection-helpers";
+import { log } from "meteor/unchained:core-logger";
+import { DeliveryProviders } from "meteor/unchained:core-delivery";
+import {
+  DeliveryPricingDirector,
+  DeliveryPricingSheet
+} from "meteor/unchained:core-pricing";
+import { objectInvert } from "meteor/unchained:utils";
+import { OrderDeliveries } from "./collections";
+import { OrderDeliveryStatus } from "./schema";
+import { Orders } from "../orders/collections";
+import { OrderDocuments } from "../order-documents/collections";
+import { OrderDiscounts } from "../order-discounts/collections";
 
 OrderDeliveries.helpers({
   order() {
     return Orders.findOne({
-      _id: this.orderId,
+      _id: this.orderId
     });
   },
   provider() {
@@ -37,13 +40,13 @@ OrderDeliveries.helpers({
     return OrderDeliveries.updateDelivery({
       deliveryId: this._id,
       orderId: this.orderId,
-      context,
+      context
     });
   },
   pricing() {
     const pricing = new DeliveryPricingSheet({
       calculation: this.calculation,
-      currency: this.order().currency,
+      currency: this.order().currency
     });
     return pricing;
   },
@@ -62,40 +65,49 @@ OrderDeliveries.helpers({
     const context = {
       delivery: {
         ...(deliveryContext || {}),
-        ...(this.context),
-        address,
+        ...this.context,
+        address
       },
-      order,
+      order
     };
 
     const arbitraryResponseData = provider.send(context);
     if (arbitraryResponseData) {
-      this.setStatus(OrderDeliveryStatus.DELIVERED, JSON.stringify(arbitraryResponseData));
+      this.setStatus(
+        OrderDeliveryStatus.DELIVERED,
+        JSON.stringify(arbitraryResponseData)
+      );
     }
   },
   setStatus(status, info) {
     return OrderDeliveries.updateStatus({
       deliveryId: this._id,
       info,
-      status,
+      status
     });
   },
   discounts() {
-    return this.pricing().discountPrices().map(discount => ({
-      delivery: this,
-      ...discount,
-    }));
-  },
+    return this.pricing()
+      .discountPrices()
+      .map(discount => ({
+        delivery: this,
+        ...discount
+      }));
+  }
 });
 
-OrderDeliveries.createOrderDelivery = ({ orderId, deliveryProviderId, ...rest }) => {
+OrderDeliveries.createOrderDelivery = ({
+  orderId,
+  deliveryProviderId,
+  ...rest
+}) => {
   log(`Create OrderDelivery with Provider ${deliveryProviderId}`, { orderId });
   const orderDeliveryId = OrderDeliveries.insert({
     ...rest,
     created: new Date(),
     status: OrderDeliveryStatus.OPEN,
     orderId,
-    deliveryProviderId,
+    deliveryProviderId
   });
   const orderDelivery = OrderDeliveries.findOne({ _id: orderDeliveryId });
   const order = Orders.findOne({ _id: orderId });
@@ -107,23 +119,29 @@ OrderDeliveries.updateCalculation = ({ orderId, deliveryId }) => {
   log(`OrderDelivery ${deliveryId} -> Update Calculation`, { orderId });
   const pricing = new DeliveryPricingDirector({ item: delivery });
   const calculation = pricing.calculate();
-  return OrderDeliveries.update({ _id: deliveryId }, {
-    $set: { updated: new Date(), calculation },
-  });
+  return OrderDeliveries.update(
+    { _id: deliveryId },
+    {
+      $set: { updated: new Date(), calculation }
+    }
+  );
 };
 
 OrderDeliveries.updateDelivery = ({ deliveryId, orderId, context }) => {
   log(`OrderDelivery ${deliveryId} -> Update Context`, { orderId });
-  OrderDeliveries.update({ _id: deliveryId }, {
-    $set: { context },
-  });
+  OrderDeliveries.update(
+    { _id: deliveryId },
+    {
+      $set: { context }
+    }
+  );
   OrderDiscounts.updateDiscounts({ orderId });
   OrderDeliveries.updateCalculation({ orderId, deliveryId });
   Orders.updateCalculation({ orderId });
   return OrderDeliveries.findOne({ _id: deliveryId });
 };
 
-OrderDeliveries.updateStatus = ({ deliveryId, status, info = '' }) => {
+OrderDeliveries.updateStatus = ({ deliveryId, status, info = "" }) => {
   log(`OrderDelivery ${deliveryId} -> New Status: ${status}`);
   const date = new Date();
   const modifier = {
@@ -132,14 +150,18 @@ OrderDeliveries.updateStatus = ({ deliveryId, status, info = '' }) => {
       log: {
         date,
         status,
-        info,
-      },
-    },
+        info
+      }
+    }
   };
   if (status === OrderDeliveryStatus.DELIVERED) {
     modifier.$set.delivered = date;
   }
-  OrderDocuments.updateDeliveryDocuments({ deliveryId, date, ...modifier.$set });
+  OrderDocuments.updateDeliveryDocuments({
+    deliveryId,
+    date,
+    ...modifier.$set
+  });
   OrderDeliveries.update({ _id: deliveryId }, modifier);
   return OrderDeliveries.findOne({ _id: deliveryId });
 };

@@ -1,8 +1,8 @@
-import { log } from 'meteor/unchained:core-logger';
-import { Languages } from 'meteor/unchained:core-languages';
+import { log } from "meteor/unchained:core-logger";
+import { Languages } from "meteor/unchained:core-languages";
 
-export default function (root, { language: inputData }, { userId }) {
-  log('mutation createLanguage', { userId });
+export default function(root, { language: inputData }, { userId }) {
+  log("mutation createLanguage", { userId });
   const { isoCode } = inputData;
   const language = { created: new Date() };
   language.authorId = userId;

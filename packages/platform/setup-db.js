@@ -1,23 +1,21 @@
-import { Meteor } from 'meteor/meteor';
-import configureUsers, { Users } from 'meteor/unchained:core-users';
-import configureLogger from 'meteor/unchained:core-logger';
-import configureDelivery from 'meteor/unchained:core-delivery';
-import configurePayment from 'meteor/unchained:core-payment';
-import configureWarehousing from 'meteor/unchained:core-warehousing';
-import configureProducts from 'meteor/unchained:core-products';
-import configureQuotations from 'meteor/unchained:core-quotations';
-import configureCurrencies from 'meteor/unchained:core-currencies';
-import configureCountries from 'meteor/unchained:core-countries';
-import configureLanguages from 'meteor/unchained:core-languages';
-import configureDocuments from 'meteor/unchained:core-documents';
-import configureOrders from 'meteor/unchained:core-orders';
-import configureAssortments from 'meteor/unchained:core-assortments';
-import configureFilters from 'meteor/unchained:core-filters';
-import createFixtures from './fixtures';
+import { Meteor } from "meteor/meteor";
+import configureUsers, { Users } from "meteor/unchained:core-users";
+import configureLogger from "meteor/unchained:core-logger";
+import configureDelivery from "meteor/unchained:core-delivery";
+import configurePayment from "meteor/unchained:core-payment";
+import configureWarehousing from "meteor/unchained:core-warehousing";
+import configureProducts from "meteor/unchained:core-products";
+import configureQuotations from "meteor/unchained:core-quotations";
+import configureCurrencies from "meteor/unchained:core-currencies";
+import configureCountries from "meteor/unchained:core-countries";
+import configureLanguages from "meteor/unchained:core-languages";
+import configureDocuments from "meteor/unchained:core-documents";
+import configureOrders from "meteor/unchained:core-orders";
+import configureAssortments from "meteor/unchained:core-assortments";
+import configureFilters from "meteor/unchained:core-filters";
+import createFixtures from "./fixtures";
 
-const {
-  FIXTURES,
-} = process.env;
+const { FIXTURES } = process.env;
 
 export { createFixtures };
 export default createFixtures;
@@ -41,7 +39,7 @@ Meteor.startup(() => {
   configureAssortments();
   configureFilters({ skipInvalidationOnStartup: true });
 
-  if (FIXTURES && Users.find({ username: 'admin' }).count() === 0) {
+  if (FIXTURES && Users.find({ username: "admin" }).count() === 0) {
     createFixtures();
   }
 });

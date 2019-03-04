@@ -1,14 +1,17 @@
-import { log } from 'meteor/unchained:core-logger';
-import { Users } from 'meteor/unchained:core-users';
+import { log } from "meteor/unchained:core-logger";
+import { Users } from "meteor/unchained:core-users";
 
-export default function (root, { tags, userId: normalizedUserId }, { userId }) {
+export default function(root, { tags, userId: normalizedUserId }, { userId }) {
   log(`mutation updateUserTags ${normalizedUserId}`, { userId });
 
-  Users.update({ _id: normalizedUserId }, {
-    $set: {
-      updated: new Date(),
-      tags,
-    },
-  });
+  Users.update(
+    { _id: normalizedUserId },
+    {
+      $set: {
+        updated: new Date(),
+        tags
+      }
+    }
+  );
   return Users.findOne({ _id: normalizedUserId });
 }

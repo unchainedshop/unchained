@@ -17,11 +17,11 @@ Package.onUse((api) => {
   api.use('unchained:utils@0.24.0');
   api.use('unchained:core-logger@0.24.0');
 
-  api.mainModule('warehousing.js', 'server');
+  api.mainModule("warehousing.js", "server");
 });
 
-Package.onTest((api) => {
-  api.use('ecmascript');
-  api.use('unchained:core-warehousing');
-  api.mainModule('warehousing-tests.js');
+Package.onTest(api => {
+  api.use("ecmascript");
+  api.use("unchained:core-warehousing");
+  api.mainModule("warehousing-tests.js");
 });

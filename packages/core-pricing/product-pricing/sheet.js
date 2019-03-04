@@ -1,9 +1,9 @@
-import PricingSheet from '../pricing-sheet';
+import PricingSheet from "../pricing-sheet";
 
 const ProductPricingSheetRowCategories = {
-  Item: 'ITEM',
-  Discount: 'DISCOUNT',
-  Tax: 'TAX',
+  Item: "ITEM",
+  Discount: "DISCOUNT",
+  Tax: "TAX"
 };
 
 class ProductPricingSheet extends PricingSheet {
@@ -12,27 +12,23 @@ class ProductPricingSheet extends PricingSheet {
     this.quantity = quantity;
   }
 
-  addItem({
-    amount, isTaxable, isNetPrice, meta,
-  }) {
+  addItem({ amount, isTaxable, isNetPrice, meta }) {
     this.calculation.push({
       category: ProductPricingSheetRowCategories.Item,
       amount,
       isTaxable,
       isNetPrice,
-      meta,
+      meta
     });
   }
 
-  addDiscount({
-    amount, isTaxable, discountId, meta,
-  }) {
+  addDiscount({ amount, isTaxable, discountId, meta }) {
     this.calculation.push({
       category: ProductPricingSheetRowCategories.Discount,
       amount,
       isTaxable,
       discountId,
-      meta,
+      meta
     });
   }
 
@@ -41,26 +37,26 @@ class ProductPricingSheet extends PricingSheet {
       category: ProductPricingSheetRowCategories.Tax,
       amount,
       rate,
-      meta,
+      meta
     });
   }
 
   taxSum() {
     return this.sum({
-      category: ProductPricingSheetRowCategories.Tax,
+      category: ProductPricingSheetRowCategories.Tax
     });
   }
 
   itemSum() {
     return this.sum({
-      category: ProductPricingSheetRowCategories.Item,
+      category: ProductPricingSheetRowCategories.Item
     });
   }
 
   discountSum(discountId) {
     return this.sum({
       category: ProductPricingSheetRowCategories.Discount,
-      discountId,
+      discountId
     });
   }
 
@@ -68,22 +64,22 @@ class ProductPricingSheet extends PricingSheet {
     const amount = useNetPrice ? this.net() : this.gross();
     return {
       amount: amount / this.quantity,
-      currency: this.currency,
+      currency: this.currency
     };
   }
 
   discountPrices() {
-    const discountIds = this
-      .getDiscountRows()
-      .map(({ discountId }) => discountId);
+    const discountIds = this.getDiscountRows().map(
+      ({ discountId }) => discountId
+    );
 
     return [...new Set(discountIds)].map(discountId => ({
       discountId,
       amount: this.sum({
         category: ProductPricingSheetRowCategories.Discount,
-        discountId,
+        discountId
       }),
-      currency: this.currency,
+      currency: this.currency
     }));
   }
 
@@ -92,7 +88,9 @@ class ProductPricingSheet extends PricingSheet {
   }
 
   getDiscountRows() {
-    return this.filterBy({ category: ProductPricingSheetRowCategories.Discount });
+    return this.filterBy({
+      category: ProductPricingSheetRowCategories.Discount
+    });
   }
 
   getTaxRows() {

@@ -1,6 +1,6 @@
-import { Currencies } from 'meteor/unchained:core-currencies';
-import { actions } from '../../roles';
-import { checkTypeResolver } from '../../acl';
+import { Currencies } from "meteor/unchained:core-currencies";
+import { actions } from "../../roles";
+import { checkTypeResolver } from "../../acl";
 
 export default {
   status(obj) {
@@ -15,5 +15,5 @@ export default {
   meta(obj) {
     return obj.context;
   },
-  logs: checkTypeResolver(actions.viewLogs, 'logs'),
+  logs: checkTypeResolver(actions.viewLogs, "logs")
 };

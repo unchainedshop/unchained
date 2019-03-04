@@ -1,6 +1,4 @@
-const {
-  EMAIL_FROM,
-} = process.env;
+const { EMAIL_FROM } = process.env;
 
 export const defaultSMSResolver = template => (meta, context) => ({
   to() {
@@ -8,7 +6,7 @@ export const defaultSMSResolver = template => (meta, context) => ({
   },
   text() {
     return `${template}: ${JSON.stringify(meta)}`;
-  },
+  }
 });
 
 export const defaultEmailResolver = template => (meta, context) => ({
@@ -26,5 +24,5 @@ export const defaultEmailResolver = template => (meta, context) => ({
   },
   html() {
     return null;
-  },
+  }
 });

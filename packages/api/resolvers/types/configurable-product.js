@@ -10,5 +10,5 @@ export default {
   },
   products(obj, { vectors = [] } = {}) {
     return obj.proxyProducts(vectors);
-  },
+  }
 };

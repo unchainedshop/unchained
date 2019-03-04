@@ -7,14 +7,14 @@ Package.describe({
   documentation: 'README.md',
 });
 
-Package.onUse((api) => {
-  api.versionsFrom('1.8');
-  api.use('ecmascript');
-  api.mainModule('utils.js', 'server');
+Package.onUse(api => {
+  api.versionsFrom("1.8");
+  api.use("ecmascript");
+  api.mainModule("utils.js", "server");
 });
 
-Package.onTest((api) => {
-  api.use('ecmascript');
-  api.use('unchained:utils');
-  api.mainModule('utils-tests.js');
+Package.onTest(api => {
+  api.use("ecmascript");
+  api.use("unchained:utils");
+  api.mainModule("utils-tests.js");
 });

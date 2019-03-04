@@ -1,7 +1,7 @@
-import { log } from 'meteor/unchained:core-logger';
-import { Products } from 'meteor/unchained:core-products';
+import { log } from "meteor/unchained:core-logger";
+import { Products } from "meteor/unchained:core-products";
 
-export default function (root, { proxyId, vectors }, { userId }) {
+export default function(root, { proxyId, vectors }, { userId }) {
   log(`mutation removeProductAssignment ${proxyId}`, { userId });
   const vector = {};
   vectors.forEach(({ key, value }) => {
@@ -9,13 +9,13 @@ export default function (root, { proxyId, vectors }, { userId }) {
   });
   const modifier = {
     $set: {
-      updated: new Date(),
+      updated: new Date()
     },
     $pull: {
-      'proxy.assignments': {
-        vector,
-      },
-    },
+      "proxy.assignments": {
+        vector
+      }
+    }
   };
   Products.update({ _id: proxyId }, modifier, { multi: true });
   return Products.findOne({ _id: proxyId });

@@ -1,18 +1,18 @@
-import { log } from 'meteor/unchained:core-logger';
+import { log } from "meteor/unchained:core-logger";
 
 const QuotationError = {
-  ADAPTER_NOT_FOUND: 'ADAPTER_NOT_FOUND',
-  NOT_IMPLEMENTED: 'NOT_IMPLEMENTED',
-  INCOMPLETE_CONFIGURATION: 'INCOMPLETE_CONFIGURATION',
-  WRONG_CREDENTIALS: 'WRONG_CREDENTIALS',
+  ADAPTER_NOT_FOUND: "ADAPTER_NOT_FOUND",
+  NOT_IMPLEMENTED: "NOT_IMPLEMENTED",
+  INCOMPLETE_CONFIGURATION: "INCOMPLETE_CONFIGURATION",
+  WRONG_CREDENTIALS: "WRONG_CREDENTIALS"
 };
 
 class QuotationAdapter {
-  static key = ''
+  static key = "";
 
-  static label = ''
+  static label = "";
 
-  static version = ''
+  static version = "";
 
   static isActivatedFor() {
     return true;
@@ -54,35 +54,40 @@ class QuotationAdapter {
 class QuotationDirector {
   constructor(quotation) {
     this.context = {
-      quotation,
+      quotation
     };
   }
 
   findAppropriateAdapters(context) {
-    return this.constructor.filteredAdapters(((AdapterClass) => {
+    return this.constructor.filteredAdapters(AdapterClass => {
       const activated = AdapterClass.isActivatedFor({
         ...this.context,
-        ...context,
+        ...context
       });
       if (!activated) {
-        log(`${this.constructor.name} -> ${AdapterClass.key} (${AdapterClass.version}) skipped`, {
-          level: 'warn',
-        });
+        log(
+          `${this.constructor.name} -> ${AdapterClass.key} (${
+            AdapterClass.version
+          }) skipped`,
+          {
+            level: "warn"
+          }
+        );
       }
       return activated;
-    }));
+    });
   }
 
   interface(context) {
-    const Adapter = this
-      .findAppropriateAdapters(context)
-      .shift();
+    const Adapter = this.findAppropriateAdapters(context).shift();
     if (!Adapter) {
-      throw new Error('No suitable quotation plugin available for this context');
+      throw new Error(
+        "No suitable quotation plugin available for this context"
+      );
     }
     return new Adapter({
       ...this.context,
-      ...context,
+      ...context
     });
   }
 
@@ -162,8 +167,4 @@ class QuotationDirector {
   }
 }
 
-export {
-  QuotationDirector,
-  QuotationAdapter,
-  QuotationError,
-};
+export { QuotationDirector, QuotationAdapter, QuotationError };

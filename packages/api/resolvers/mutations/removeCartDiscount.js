@@ -1,11 +1,15 @@
-import { log } from 'meteor/unchained:core-logger';
-import { OrderDiscounts } from 'meteor/unchained:core-orders';
-import { OrderDiscountNotFoundError, OrderWrongStatusError } from '../../errors';
+import { log } from "meteor/unchained:core-logger";
+import { OrderDiscounts } from "meteor/unchained:core-orders";
+import {
+  OrderDiscountNotFoundError,
+  OrderWrongStatusError
+} from "../../errors";
 
-export default function (root, { discountId }, { userId }) {
+export default function(root, { discountId }, { userId }) {
   log(`mutation removeCartDiscount ${discountId}`, { userId });
   const orderDiscount = OrderDiscounts.findOne({ _id: discountId });
-  if (!orderDiscount) throw new OrderDiscountNotFoundError({ data: { orderDiscount } });
+  if (!orderDiscount)
+    throw new OrderDiscountNotFoundError({ data: { orderDiscount } });
   const order = orderDiscount.order();
   if (!order.isCart()) {
     throw new OrderWrongStatusError({ data: { status: order.status } });

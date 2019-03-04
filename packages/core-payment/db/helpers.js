@@ -1,7 +1,7 @@
-import 'meteor/dburles:collection-helpers';
-import { Promise } from 'meteor/promise';
-import { PaymentDirector } from '../director';
-import { PaymentProviders } from './collections';
+import "meteor/dburles:collection-helpers";
+import { Promise } from "meteor/promise";
+import { PaymentDirector } from "../director";
+import { PaymentProviders } from "./collections";
 
 PaymentProviders.helpers({
   transformContext(key, value) {
@@ -15,32 +15,36 @@ PaymentProviders.helpers({
   },
   configurationError(order) {
     return new PaymentDirector(this).configurationError({
-      order,
+      order
     });
   },
   isActive(order) {
     return new PaymentDirector(this).isActive({
-      order,
+      order
     });
   },
   isPayLaterAllowed(order) {
     return new PaymentDirector(this).isPayLaterAllowed({
-      order,
+      order
     });
   },
   run(command, args, order) {
-    return Promise.await(new PaymentDirector(this).run({
-      command,
-      args,
-      order,
-    }));
+    return Promise.await(
+      new PaymentDirector(this).run({
+        command,
+        args,
+        order
+      })
+    );
   },
   charge(payment, order) {
-    return Promise.await(new PaymentDirector(this).charge({
-      payment,
-      order,
-    }));
-  },
+    return Promise.await(
+      new PaymentDirector(this).charge({
+        payment,
+        order
+      })
+    );
+  }
 });
 
 PaymentProviders.createProvider = ({ type, ...rest }) => {
@@ -49,32 +53,37 @@ PaymentProviders.createProvider = ({ type, ...rest }) => {
     ...rest,
     created: new Date(),
     configuration: InterfaceClass.initialConfiguration,
-    type,
+    type
   });
   return PaymentProviders.findOne({ _id: providerId });
 };
 
 PaymentProviders.updateProvider = ({ _id, ...rest }) => {
-  PaymentProviders.update({ _id, deleted: null }, {
-    $set: {
-      ...rest,
-      updated: new Date(),
-    },
-  });
+  PaymentProviders.update(
+    { _id, deleted: null },
+    {
+      $set: {
+        ...rest,
+        updated: new Date()
+      }
+    }
+  );
   return PaymentProviders.findOne({ _id, deleted: null });
 };
 
 PaymentProviders.removeProvider = ({ _id }) => {
-  PaymentProviders.update({ _id, deleted: null }, {
-    $set: {
-      deleted: new Date(),
-    },
-  });
+  PaymentProviders.update(
+    { _id, deleted: null },
+    {
+      $set: {
+        deleted: new Date()
+      }
+    }
+  );
   return PaymentProviders.findOne({ _id });
 };
 
 PaymentProviders.findProviderById = _id => PaymentProviders.findOne({ _id });
 
-PaymentProviders.findProviders = ({ type } = {}) => PaymentProviders
-  .find({ ...(type ? { type } : {}), deleted: null })
-  .fetch();
+PaymentProviders.findProviders = ({ type } = {}) =>
+  PaymentProviders.find({ ...(type ? { type } : {}), deleted: null }).fetch();

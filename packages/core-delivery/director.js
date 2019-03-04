@@ -1,18 +1,18 @@
-import { log } from 'meteor/unchained:core-logger';
+import { log } from "meteor/unchained:core-logger";
 
 export const DeliveryError = {
-  ADAPTER_NOT_FOUND: 'ADAPTER_NOT_FOUND',
-  NOT_IMPLEMENTED: 'NOT_IMPLEMENTED',
-  INCOMPLETE_CONFIGURATION: 'INCOMPLETE_CONFIGURATION',
-  WRONG_CREDENTIALS: 'WRONG_CREDENTIALS',
+  ADAPTER_NOT_FOUND: "ADAPTER_NOT_FOUND",
+  NOT_IMPLEMENTED: "NOT_IMPLEMENTED",
+  INCOMPLETE_CONFIGURATION: "INCOMPLETE_CONFIGURATION",
+  WRONG_CREDENTIALS: "WRONG_CREDENTIALS"
 };
 
 export class DeliveryAdapter {
-  static key = ''
+  static key = "";
 
-  static label = ''
+  static label = "";
 
-  static version = ''
+  static version = "";
 
   static typeSupported(type) { // eslint-disable-line
     return false;
@@ -69,7 +69,9 @@ export class DeliveryDirector {
   interface(context) {
     const Adapter = this.interfaceClass();
     if (!Adapter) {
-      throw new Error(`Delivery Plugin ${this.provider.adapterKey} not available`);
+      throw new Error(
+        `Delivery Plugin ${this.provider.adapterKey} not available`
+      );
     }
     return new Adapter(this.provider.configuration, context);
   }

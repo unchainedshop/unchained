@@ -1,9 +1,9 @@
-import { checkPermission } from './roles';
-import { NoPermissionError, PermissionSystemError } from './errors';
+import { checkPermission } from "./roles";
+import { NoPermissionError, PermissionSystemError } from "./errors";
 
 const defaultOptions = {
   showKey: true,
-  mapArgs: (...args) => args,
+  mapArgs: (...args) => args
 };
 
 const emptyObject = {};
@@ -13,35 +13,41 @@ const ensureActionExists = (action, userOptions) => {
   if (!action) {
     throw new PermissionSystemError({
       data: {
-        userOptions,
-      },
+        userOptions
+      }
     });
   }
 };
 
 const ensureIsFunction = (fn, action, options, key) => {
-  if (typeof fn !== 'function') {
+  if (typeof fn !== "function") {
     throw new PermissionSystemError({
       data: {
         action,
-        key: options.showKey ? key : '',
-      },
+        key: options.showKey ? key : ""
+      }
     });
   }
 };
 
-const checkAction = (action, userId, args = emptyArray, options = emptyObject) => {
-  const { key } = (options || emptyObject);
+const checkAction = (
+  action,
+  userId,
+  args = emptyArray,
+  options = emptyObject
+) => {
+  const { key } = options || emptyObject;
   const hasPermission = checkPermission(userId, action, ...args);
   if (hasPermission) return;
-  const keyText = (key && key !== '') ? ` in "${key}"` : '';
+  const keyText = key && key !== "" ? ` in "${key}"` : "";
   throw new NoPermissionError({
     data: {
       userId,
       action,
-      key,
+      key
     },
-    message: `The user "${userId || ''}" has no permission to perform the action "${action}"${keyText}`,
+    message: `The user "${userId ||
+      ""}" has no permission to perform the action "${action}"${keyText}`
   });
 };
 
@@ -52,7 +58,7 @@ const wrapFunction = (fn, name, action, userOptions) => {
   return (root, params, context, ...other) => {
     const args = options.mapArgs(root, params, context, ...other);
     checkAction(action, context.userId, args, {
-      key: options.showKey ? key : '',
+      key: options.showKey ? key : ""
     });
     return fn(root, params, context, ...other);
   };
@@ -63,13 +69,14 @@ const checkResolver = (action, userOptions) => {
   return (fn, name) => wrapFunction(fn, name, action, userOptions);
 };
 
-const checkTypeResolver = (action, key) => function _checkTypeResolver(obj, params, context) {
-  checkAction(action, context.userId, [obj, params, context]);
-  if (typeof obj[key] === 'function') {
-    return obj[key](params, context);
-  }
-  return obj[key];
-};
+const checkTypeResolver = (action, key) =>
+  function _checkTypeResolver(obj, params, context) {
+    checkAction(action, context.userId, [obj, params, context]);
+    if (typeof obj[key] === "function") {
+      return obj[key](params, context);
+    }
+    return obj[key];
+  };
 
 const resolverDecorator = function resolverDecorator(action, userOptions) {
   ensureActionExists(action, userOptions);
@@ -82,10 +89,10 @@ const resolverDecorator = function resolverDecorator(action, userOptions) {
         Object.defineProperty(this, key, {
           value,
           configurable: true,
-          writable: true,
+          writable: true
         });
         return value;
-      },
+      }
     };
   };
 };
@@ -100,5 +107,5 @@ export {
   checkResolver,
   checkTypeResolver,
   checkPermission,
-  checkAction,
+  checkAction
 };

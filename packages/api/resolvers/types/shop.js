@@ -1,5 +1,5 @@
-import { Countries } from 'meteor/unchained:core-countries';
-import { Languages } from 'meteor/unchained:core-languages';
+import { Countries } from "meteor/unchained:core-countries";
+import { Languages } from "meteor/unchained:core-languages";
 
 export default {
   language(obj, _, { localeContext }) {
@@ -9,6 +9,6 @@ export default {
     return Countries.findOne({ isoCode: countryContext });
   },
   _id() {
-    return 'root';
-  },
+    return "root";
+  }
 };

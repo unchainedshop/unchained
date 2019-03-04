@@ -126,15 +126,23 @@ export default {
   reorderProductMedia: acl(actions.manageProducts)(reorderProductMedia),
   removeProductMedia: acl(actions.manageProducts)(removeProductMedia),
   updateProductCommerce: acl(actions.manageProducts)(updateProductCommerce),
-  updateProductWarehousing: acl(actions.manageProducts)(updateProductWarehousing),
+  updateProductWarehousing: acl(actions.manageProducts)(
+    updateProductWarehousing
+  ),
   updateProductSupply: acl(actions.manageProducts)(updateProductSupply),
   removeProductVariation: acl(actions.manageProducts)(removeProductVariation),
-  updateProductVariationTexts: acl(actions.manageProducts)(updateProductVariationTexts),
-  removeProductVariationOption: acl(actions.manageProducts)(removeProductVariationOption),
+  updateProductVariationTexts: acl(actions.manageProducts)(
+    updateProductVariationTexts
+  ),
+  removeProductVariationOption: acl(actions.manageProducts)(
+    removeProductVariationOption
+  ),
   createProductVariation: acl(actions.manageProducts)(createProductVariation),
   createProductBundleItem: acl(actions.manageProducts)(createProductBundleItem),
   removeBundleItem: acl(actions.manageProducts)(removeBundleItem),
-  createProductVariationOption: acl(actions.manageProducts)(createProductVariationOption),
+  createProductVariationOption: acl(actions.manageProducts)(
+    createProductVariationOption
+  ),
   addProductAssignment: acl(actions.manageProducts)(addProductAssignment),
   removeProductAssignment: acl(actions.manageProducts)(removeProductAssignment),
 
@@ -153,28 +161,54 @@ export default {
   removeCartDiscount: acl(actions.updateOrderDiscount)(removeCartDiscount),
   setOrderPaymentProvider: acl(actions.updateOrder)(setOrderPaymentProvider),
   setOrderDeliveryProvider: acl(actions.updateOrder)(setOrderDeliveryProvider),
-  updateOrderDeliveryShipping: acl(actions.updateOrderDelivery)(updateOrderDelivery),
-  updateOrderDeliveryPickUp: acl(actions.updateOrderDelivery)(updateOrderDelivery),
+  updateOrderDeliveryShipping: acl(actions.updateOrderDelivery)(
+    updateOrderDelivery
+  ),
+  updateOrderDeliveryPickUp: acl(actions.updateOrderDelivery)(
+    updateOrderDelivery
+  ),
   updateOrderPaymentCard: acl(actions.updateOrderPayment)(updateOrderPayment),
-  updateOrderPaymentInvoice: acl(actions.updateOrderPayment)(updateOrderPayment),
-  updateOrderPaymentPostfinance: acl(actions.updateOrderPayment)(updateOrderPayment),
+  updateOrderPaymentInvoice: acl(actions.updateOrderPayment)(
+    updateOrderPayment
+  ),
+  updateOrderPaymentPostfinance: acl(actions.updateOrderPayment)(
+    updateOrderPayment
+  ),
   updateOrderPaymentPaypal: acl(actions.updateOrderPayment)(updateOrderPayment),
   updateOrderPaymentCrypto: acl(actions.updateOrderPayment)(updateOrderPayment),
   removeOrder: acl(actions.updateOrder)(removeOrder),
   confirmOrder: acl(actions.markOrderConfirmed)(confirmOrder),
   payOrder: acl(actions.markOrderPaid)(payOrder),
 
-  createPaymentProvider: acl(actions.managePaymentProviders)(createPaymentProvider),
-  updatePaymentProvider: acl(actions.managePaymentProviders)(updatePaymentProvider),
-  removePaymentProvider: acl(actions.managePaymentProviders)(removePaymentProvider),
+  createPaymentProvider: acl(actions.managePaymentProviders)(
+    createPaymentProvider
+  ),
+  updatePaymentProvider: acl(actions.managePaymentProviders)(
+    updatePaymentProvider
+  ),
+  removePaymentProvider: acl(actions.managePaymentProviders)(
+    removePaymentProvider
+  ),
 
-  createDeliveryProvider: acl(actions.manageDeliveryProviders)(createDeliveryProvider),
-  updateDeliveryProvider: acl(actions.manageDeliveryProviders)(updateDeliveryProvider),
-  removeDeliveryProvider: acl(actions.manageDeliveryProviders)(removeDeliveryProvider),
+  createDeliveryProvider: acl(actions.manageDeliveryProviders)(
+    createDeliveryProvider
+  ),
+  updateDeliveryProvider: acl(actions.manageDeliveryProviders)(
+    updateDeliveryProvider
+  ),
+  removeDeliveryProvider: acl(actions.manageDeliveryProviders)(
+    removeDeliveryProvider
+  ),
 
-  createWarehousingProvider: acl(actions.manageWarehousingProviders)(createWarehousingProvider),
-  updateWarehousingProvider: acl(actions.manageWarehousingProviders)(updateWarehousingProvider),
-  removeWarehousingProvider: acl(actions.manageWarehousingProviders)(removeWarehousingProvider),
+  createWarehousingProvider: acl(actions.manageWarehousingProviders)(
+    createWarehousingProvider
+  ),
+  updateWarehousingProvider: acl(actions.manageWarehousingProviders)(
+    updateWarehousingProvider
+  ),
+  removeWarehousingProvider: acl(actions.manageWarehousingProviders)(
+    removeWarehousingProvider
+  ),
 
   createFilter: acl(actions.manageFilters)(createFilter),
   updateFilter: acl(actions.manageFilters)(updateFilter),
@@ -189,14 +223,24 @@ export default {
   removeAssortment: acl(actions.manageAssortments)(removeAssortment),
   updateAssortmentTexts: acl(actions.manageAssortments)(updateAssortmentTexts),
   addAssortmentProduct: acl(actions.manageAssortments)(addAssortmentProduct),
-  removeAssortmentProduct: acl(actions.manageAssortments)(removeAssortmentProduct),
-  reorderAssortmentProducts: acl(actions.manageAssortments)(reorderAssortmentProducts),
+  removeAssortmentProduct: acl(actions.manageAssortments)(
+    removeAssortmentProduct
+  ),
+  reorderAssortmentProducts: acl(actions.manageAssortments)(
+    reorderAssortmentProducts
+  ),
   addAssortmentLink: acl(actions.manageAssortments)(addAssortmentLink),
   removeAssortmentLink: acl(actions.manageAssortments)(removeAssortmentLink),
-  reorderAssortmentLinks: acl(actions.manageAssortments)(reorderAssortmentLinks),
+  reorderAssortmentLinks: acl(actions.manageAssortments)(
+    reorderAssortmentLinks
+  ),
   addAssortmentFilter: acl(actions.manageAssortments)(addAssortmentFilter),
-  removeAssortmentFilter: acl(actions.manageAssortments)(removeAssortmentFilter),
-  reorderAssortmentFilters: acl(actions.manageAssortments)(reorderAssortmentFilters),
+  removeAssortmentFilter: acl(actions.manageAssortments)(
+    removeAssortmentFilter
+  ),
+  reorderAssortmentFilters: acl(actions.manageAssortments)(
+    reorderAssortmentFilters
+  ),
 
   createProductReview: acl(actions.reviewProduct)(createProductReview),
   updateProductReview: acl(actions.updateProductReview)(updateProductReview),

@@ -1,32 +1,32 @@
-import { Schemas } from 'meteor/unchained:utils';
-import SimpleSchema from 'simpl-schema';
-import { OrderPositions } from './collections';
+import { Schemas } from "meteor/unchained:utils";
+import SimpleSchema from "simpl-schema";
+import { OrderPositions } from "./collections";
 
 const { contextFields, timestampFields } = Schemas;
 
 const calculationFields = {
   calculation: Array,
-  'calculation.$': {
+  "calculation.$": {
     type: Object,
-    blackbox: true,
+    blackbox: true
   },
   scheduling: Array,
-  'scheduling.$': {
+  "scheduling.$": {
     type: Object,
-    blackbox: true,
+    blackbox: true
   },
   configuration: Array,
-  'configuration.$': {
+  "configuration.$": {
     type: Object,
-    required: true,
+    required: true
   },
-  'configuration.$.key': {
+  "configuration.$.key": {
     type: String,
-    required: true,
+    required: true
   },
-  'configuration.$.value': {
-    type: String,
-  },
+  "configuration.$.value": {
+    type: String
+  }
 };
 
 OrderPositions.attachSchema(new SimpleSchema({

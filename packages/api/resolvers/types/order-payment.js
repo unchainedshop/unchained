@@ -1,12 +1,12 @@
-import { PaymentProviderType } from 'meteor/unchained:core-payment';
-import { objectInvert } from 'meteor/unchained:utils';
+import { PaymentProviderType } from "meteor/unchained:core-payment";
+import { objectInvert } from "meteor/unchained:utils";
 
 const OrderPaymentMap = {
   OrderPaymentPostfinance: PaymentProviderType.POSTFINANCE,
   OrderPaymentPaypal: PaymentProviderType.PAYPAL,
   OrderPaymentCrypto: PaymentProviderType.CRYPTO,
   OrderPaymentCard: PaymentProviderType.CARD,
-  OrderPaymentInvoice: PaymentProviderType.INVOICE,
+  OrderPaymentInvoice: PaymentProviderType.INVOICE
 };
 
 export default {
@@ -17,5 +17,5 @@ export default {
       return invertedProductTypes[provider.type];
     }
     return invertedProductTypes[PaymentProviderType.INVOICE];
-  },
+  }
 };

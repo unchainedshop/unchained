@@ -10,7 +10,6 @@
 //   test.equal(packageName, 'logging');
 // });
 
-
 //
 // Meteor.startup(() => {
 //   const review = ProductReviews.createReview({

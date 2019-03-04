@@ -5,21 +5,28 @@ import { ProductReviews } from 'meteor/unchained:core-products';
 import { Quotations } from 'meteor/unchained:core-quotations';
 
 export default (role, actions) => {
-  const isMyself = (root, {
-    userId: foreignUserId,
-  } = {}, {
-    userId: ownUserId,
-  } = {}) => {
-    if ((root && root.username && root.services && root.emails) && !foreignUserId) {
+  const isMyself = (
+    root,
+    { userId: foreignUserId } = {},
+    { userId: ownUserId } = {}
+  ) => {
+    if (
+      root &&
+      root.username &&
+      root.services &&
+      root.emails &&
+      !foreignUserId
+    ) {
       return root._id === ownUserId;
     }
     return foreignUserId === ownUserId || !foreignUserId;
   };
 
-  const isOwnedOrder = (root, { orderId }, { userId }) => Orders.find({
-    _id: orderId,
-    userId,
-  }).count() > 0;
+  const isOwnedOrder = (root, { orderId }, { userId }) =>
+    Orders.find({
+      _id: orderId,
+      userId
+    }).count() > 0;
 
   const isOwnedOrderOrCart = (root, { orderId }, { userId }) => {
     if (orderId) {
@@ -52,8 +59,8 @@ export default (role, actions) => {
     return isOwnedOrder(null, { orderId }, { userId });
   };
 
-  const isOwnedProductReview = (root, { productReviewId }, { userId }) => ProductReviews
-    .findReviewById(productReviewId).userId === userId;
+  const isOwnedProductReview = (root, { productReviewId }, { userId }) =>
+    ProductReviews.findReviewById(productReviewId).userId === userId;
 
   const isOwnedQuotation = (root, { quotationId }, { userId }) => Quotations.find({
     _id: quotationId,

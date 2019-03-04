@@ -1,15 +1,15 @@
-import { Promise } from 'meteor/promise';
-import { log } from 'meteor/unchained:core-logger';
-import { ProductPricingSheet } from './sheet';
+import { Promise } from "meteor/promise";
+import { log } from "meteor/unchained:core-logger";
+import { ProductPricingSheet } from "./sheet";
 
 class ProductPricingAdapter {
-  static key = ''
+  static key = "";
 
-  static label = ''
+  static label = "";
 
-  static version = ''
+  static version = "";
 
-  static orderIndex = 0
+  static orderIndex = 0;
 
   static isActivatedFor() {
     return false;
@@ -20,13 +20,19 @@ class ProductPricingAdapter {
     this.discounts = discounts;
 
     const { currency, quantity } = context;
-    this.calculation = new ProductPricingSheet({ calculation, currency, quantity });
+    this.calculation = new ProductPricingSheet({
+      calculation,
+      currency,
+      quantity
+    });
     this.result = new ProductPricingSheet({ currency, quantity });
   }
 
   calculate() {
     const resultRaw = this.result.getRawPricingSheet();
-    resultRaw.forEach(({ amount, category }) => this.log(`Item Calculation -> ${category} ${amount}`));
+    resultRaw.forEach(({ amount, category }) =>
+      this.log(`Item Calculation -> ${category} ${amount}`)
+    );
     return resultRaw;
   }
 
@@ -35,7 +41,7 @@ class ProductPricingAdapter {
     this.calculation.filterBy().forEach(({ amount, ...row }) => {
       this.result.calculation.push({
         ...row,
-        amount: amount * -1,
+        amount: amount * -1
       });
     });
   }
@@ -50,12 +56,12 @@ class ProductPricingDirector {
     this.context = {
       discounts: [],
       ...this.constructor.buildContext(item),
-      ...context,
+      ...context
     };
   }
 
   static buildContext(item) {
-    if (!item) return { };
+    if (!item) return {};
     const product = item.product();
     const order = item.order();
     const user = order.user();
@@ -68,31 +74,35 @@ class ProductPricingDirector {
       product,
       order,
       user,
-      discounts,
+      discounts
     };
   }
 
   calculate() {
     this.calculation = ProductPricingDirector.sortedAdapters()
-      .filter((AdapterClass => AdapterClass.isActivatedFor(this.context)))
+      .filter(AdapterClass => AdapterClass.isActivatedFor(this.context))
       .reduce((calculation, AdapterClass) => {
         const discounts = this.context.discounts
           .map(discount => ({
             discountId: discount._id,
-            configuration: discount.discountConfigurationForCalculation(AdapterClass.key),
+            configuration: discount.discountConfigurationForCalculation(
+              AdapterClass.key
+            )
           }))
-          .filter(({ configuration }) => (configuration !== null));
+          .filter(({ configuration }) => configuration !== null);
         try {
           const concreteAdapter = new AdapterClass({
             context: this.context,
             calculation,
-            discounts,
+            discounts
           });
-          const nextCalculationResult = Promise.await(concreteAdapter.calculate());
+          const nextCalculationResult = Promise.await(
+            concreteAdapter.calculate()
+          );
           if (!nextCalculationResult || !calculation) return null;
           return calculation.concat(nextCalculationResult);
         } catch (error) {
-          log(error, { level: 'error' });
+          log(error, { level: "error" });
         }
         return calculation;
       }, []);
@@ -103,7 +113,7 @@ class ProductPricingDirector {
     return new ProductPricingSheet({
       calculation: this.calculation,
       currency: this.context.currency,
-      quantity: this.context.quantity,
+      quantity: this.context.quantity
     });
   }
 
@@ -116,12 +126,13 @@ class ProductPricingDirector {
   }
 
   static registerAdapter(adapter) {
-    log(`${this.name} -> Registered ${adapter.key} ${adapter.version} (${adapter.label})`);
+    log(
+      `${this.name} -> Registered ${adapter.key} ${adapter.version} (${
+        adapter.label
+      })`
+    );
     ProductPricingDirector.adapters.set(adapter.key, adapter);
   }
 }
 
-export {
-  ProductPricingDirector,
-  ProductPricingAdapter,
-};
+export { ProductPricingDirector, ProductPricingAdapter };

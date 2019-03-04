@@ -1,1 +1,1 @@
-export createFilesCollection from './createFilesCollection';
+export createFilesCollection from "./createFilesCollection";

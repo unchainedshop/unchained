@@ -1,7 +1,7 @@
-import 'meteor/dburles:collection-helpers';
-import { findLocalizedText } from 'meteor/unchained:core';
-import { Locale } from 'locale';
-import { ProductVariations, ProductVariationTexts } from './collections';
+import "meteor/dburles:collection-helpers";
+import { findLocalizedText } from "meteor/unchained:core";
+import { Locale } from "locale";
+import { ProductVariations, ProductVariationTexts } from "./collections";
 
 ProductVariations.helpers({
   upsertLocalizedText({ locale, productVariationOptionValue, ...rest }) {
@@ -9,36 +9,48 @@ ProductVariations.helpers({
     const selector = {
       productVariationId: this._id,
       productVariationOptionValue: productVariationOptionValue || { $eq: null },
-      locale,
+      locale
     };
-    ProductVariationTexts.upsert(selector, {
-      $set: {
-        updated: new Date(),
-        ...localizedData,
-        productVariationOptionValue: productVariationOptionValue || null,
+    ProductVariationTexts.upsert(
+      selector,
+      {
+        $set: {
+          updated: new Date(),
+          ...localizedData,
+          productVariationOptionValue: productVariationOptionValue || null
+        }
       },
-    }, { bypassCollection2: true });
+      { bypassCollection2: true }
+    );
     return ProductVariationTexts.findOne(selector);
   },
   getLocalizedTexts(locale, optionValue) {
     const parsedLocale = new Locale(locale);
-    return ProductVariations.getLocalizedTexts(this._id, optionValue, parsedLocale);
+    return ProductVariations.getLocalizedTexts(
+      this._id,
+      optionValue,
+      parsedLocale
+    );
   },
   optionObject(productVariationOption) {
     return {
       productVariationOption,
       getLocalizedTexts: this.getLocalizedTexts,
-      ...this,
+      ...this
     };
-  },
+  }
 });
-
 
 ProductVariations.getLocalizedTexts = (
   productVariationId,
   productVariationOptionValue,
-  locale,
-) => findLocalizedText(ProductVariationTexts, {
-  productVariationId,
-  productVariationOptionValue: productVariationOptionValue || { $eq: null },
-}, locale);
+  locale
+) =>
+  findLocalizedText(
+    ProductVariationTexts,
+    {
+      productVariationId,
+      productVariationOptionValue: productVariationOptionValue || { $eq: null }
+    },
+    locale
+  );
