@@ -190,12 +190,6 @@ Orders.helpers({
   payment() {
     return OrderPayments.findOne({ _id: this.paymentId });
   },
-  billingAddress() {
-    return {
-      ...this.billingAddress,
-      countryCode: this.countryCode,
-    };
-  },
   updateBillingAddress(billingAddress) {
     Users.updateLastBillingAddress({
       userId: this.userId,
