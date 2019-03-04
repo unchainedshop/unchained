@@ -190,7 +190,7 @@ Orders.helpers({
   payment() {
     return OrderPayments.findOne({ _id: this.paymentId });
   },
-  billingAddress() {
+  address() {
     return {
       ...this.billingAddress,
       countryCode: this.countryCode,
