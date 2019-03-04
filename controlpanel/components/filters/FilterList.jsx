@@ -2,16 +2,11 @@ import { compose, pure, withState } from 'recompose';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 import React from 'react';
-import {
-  Table, Icon, Button, Loader,
-} from 'semantic-ui-react';
+import { Table, Icon, Button, Loader } from 'semantic-ui-react';
 import InfiniteScroll from 'react-infinite-scroller';
 import Link from 'next/link';
 
-const FilterList = ({
-  filters, loadMoreEntries,
-  hasMore,
-}) => (
+const FilterList = ({ filters, loadMoreEntries, hasMore }) => (
   <Table celled>
     <Table.Header>
       <Table.Row>
@@ -32,18 +27,10 @@ const FilterList = ({
         </Table.HeaderCell>
       </Table.Row>
       <Table.Row>
-        <Table.HeaderCell>
-          Key (Name)
-        </Table.HeaderCell>
-        <Table.HeaderCell>
-          Type
-        </Table.HeaderCell>
-        <Table.HeaderCell>
-          Active?
-        </Table.HeaderCell>
-        <Table.HeaderCell>
-          Options
-        </Table.HeaderCell>
+        <Table.HeaderCell>Key (Name)</Table.HeaderCell>
+        <Table.HeaderCell>Type</Table.HeaderCell>
+        <Table.HeaderCell>Active?</Table.HeaderCell>
+        <Table.HeaderCell>Options</Table.HeaderCell>
       </Table.Row>
     </Table.Header>
     {filters && (
@@ -51,13 +38,13 @@ const FilterList = ({
         element={'tbody'}
         loadMore={loadMoreEntries}
         hasMore={hasMore}
-        loader={(
+        loader={
           <Table.Row key="filter-loader">
             <Table.Cell colSpan="4">
               <Loader active inline="centered" />
             </Table.Cell>
           </Table.Row>
-        )}
+        }
       >
         {filters.map(filter => (
           <Table.Row key={filter._id}>
@@ -66,21 +53,17 @@ const FilterList = ({
                 <a href={`/filters/edit?_id=${filter._id}`}>
                   {filter.key}
                   &nbsp;
-                  {filter.texts ? (`( ${filter.texts.title} )`) : ''}
+                  {filter.texts ? `( ${filter.texts.title} )` : ''}
                 </a>
               </Link>
             </Table.Cell>
-            <Table.Cell>
-              {filter.type}
-            </Table.Cell>
+            <Table.Cell>{filter.type}</Table.Cell>
             <Table.Cell>
               {filter.isActive && (
                 <Icon color="green" name="checkmark" size="large" />
               )}
             </Table.Cell>
-            <Table.Cell>
-              {filter.options && filter.options.length}
-            </Table.Cell>
+            <Table.Cell>{filter.options && filter.options.length}</Table.Cell>
           </Table.Row>
         ))}
       </InfiniteScroll>
@@ -133,38 +116,41 @@ export default compose(
     options: () => ({
       variables: {
         offset: 0,
-        limit: ITEMS_PER_PAGE,
-      },
+        limit: ITEMS_PER_PAGE
+      }
     }),
     props: ({
       data: { loading, filters, fetchMore },
-      ownProps: { updateHasMore },
+      ownProps: { updateHasMore }
     }) => ({
       loading,
       filters,
-      loadMoreEntries: () => fetchMore({
-        variables: {
-          offset: filters.length,
-          limit: ITEMS_PER_PAGE,
-        },
-        updateQuery: (previousResult, { fetchMoreResult }) => {
-          if (!fetchMoreResult || fetchMoreResult.filters.length === 0) {
-            updateHasMore(false);
-            return previousResult;
+      loadMoreEntries: () =>
+        fetchMore({
+          variables: {
+            offset: filters.length,
+            limit: ITEMS_PER_PAGE
+          },
+          updateQuery: (previousResult, { fetchMoreResult }) => {
+            if (!fetchMoreResult || fetchMoreResult.filters.length === 0) {
+              updateHasMore(false);
+              return previousResult;
+            }
+            const idComparator = fetchMoreResult.filters[0]._id;
+            const alreadyAdded = previousResult.filters.reduce(
+              (oldValue, item) => (item._id === idComparator ? true : oldValue),
+              false
+            );
+            if (alreadyAdded) {
+              updateHasMore(false);
+              return previousResult;
+            }
+            return Object.assign({}, previousResult, {
+              filters: [...previousResult.filters, ...fetchMoreResult.filters]
+            });
           }
-          const idComparator = fetchMoreResult.filters[0]._id;
-          const alreadyAdded = previousResult.filters
-            .reduce((oldValue, item) => ((item._id === idComparator) ? true : oldValue), false);
-          if (alreadyAdded) {
-            updateHasMore(false);
-            return previousResult;
-          }
-          return Object.assign({}, previousResult, {
-            filters: [...previousResult.filters, ...fetchMoreResult.filters],
-          });
-        },
-      }),
-    }),
+        })
+    })
   }),
-  pure,
+  pure
 )(FilterList);

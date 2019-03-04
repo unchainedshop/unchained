@@ -21,45 +21,50 @@ const FormNewAssortment = formProps => (
 
 export default compose(
   withRouter,
-  graphql(gql`
-    mutation create($assortment: CreateAssortmentInput!) {
-      createAssortment(assortment: $assortment) {
-        _id
+  graphql(
+    gql`
+      mutation create($assortment: CreateAssortmentInput!) {
+        createAssortment(assortment: $assortment) {
+          _id
+        }
+      }
+    `,
+    {
+      name: 'createAssortment',
+      options: {
+        refetchQueries: ['assortments']
       }
     }
-  `, {
-    name: 'createAssortment',
-    options: {
-      refetchQueries: [
-        'assortments',
-      ],
-    },
-  }),
+  ),
   withFormSchema({
     title: {
       type: String,
       optional: false,
-      label: 'Title',
+      label: 'Title'
     },
     isRoot: {
       type: Boolean,
       optional: false,
       defaultValue: true,
-      label: 'Root node',
-    },
+      label: 'Root node'
+    }
   }),
   withHandlers({
     onSubmitSuccess: ({ router }) => ({ data: { createAssortment } }) => {
-      router.replace({ pathname: '/assortments/edit', query: { _id: createAssortment._id } });
+      router.replace({
+        pathname: '/assortments/edit',
+        query: { _id: createAssortment._id }
+      });
     },
-    onSubmit: ({ createAssortment, schema }) => ({ ...dirtyInput }) => createAssortment({
-      variables: {
-        assortment: schema.clean(dirtyInput),
-      },
-    }),
+    onSubmit: ({ createAssortment, schema }) => ({ ...dirtyInput }) =>
+      createAssortment({
+        variables: {
+          assortment: schema.clean(dirtyInput)
+        }
+      })
   }),
   withFormErrorHandlers,
   mapProps(({ createAssortment, ...rest }) => ({
-    ...rest,
-  })),
+    ...rest
+  }))
 )(FormNewAssortment);

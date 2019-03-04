@@ -11,10 +11,12 @@ const redirect = router => () => {
   router.push({ pathname: '/users/profile' });
 };
 
-export default connectApollo(withRouter(({ router, ...rest }) => (
-  <App {...rest}>
-    <Container>
-      <FormProfile onSubmitSuccess={redirect(router)} />
-    </Container>
-  </App>
-)));
+export default connectApollo(
+  withRouter(({ router, ...rest }) => (
+    <App {...rest}>
+      <Container>
+        <FormProfile onSubmitSuccess={redirect(router)} />
+      </Container>
+    </App>
+  ))
+);

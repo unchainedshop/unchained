@@ -1,13 +1,14 @@
 import React from 'react';
 import { withRouter } from 'next/router';
-import {
-  compose, pure, withHandlers, mapProps,
-} from 'recompose';
+import { compose, pure, withHandlers, mapProps } from 'recompose';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 
 const BtnRemoveAssortment = ({
-  onClick, Component = 'button', children, ...rest
+  onClick,
+  Component = 'button',
+  children,
+  ...rest
 }) => (
   <Component onClick={onClick} {...rest}>
     {children}
@@ -16,35 +17,36 @@ const BtnRemoveAssortment = ({
 
 export default compose(
   withRouter,
-  graphql(gql`
-    mutation removeAssortment($assortmentId: ID!) {
-      removeAssortment(assortmentId: $assortmentId) {
-        _id
-        status
-        updated
+  graphql(
+    gql`
+      mutation removeAssortment($assortmentId: ID!) {
+        removeAssortment(assortmentId: $assortmentId) {
+          _id
+          status
+          updated
+        }
+      }
+    `,
+    {
+      options: {
+        refetchQueries: ['assortments']
       }
     }
-  `, {
-    options: {
-      refetchQueries: [
-        'assortments',
-      ],
-    },
-  }),
+  ),
   withHandlers({
     onClick: ({ assortmentId, mutate, router }) => async () => {
       if (confirm('Really?')) { // eslint-disable-line
         await mutate({
           variables: {
-            assortmentId,
-          },
+            assortmentId
+          }
         });
         router.push('/assortments');
       }
-    },
+    }
   }),
   mapProps(({ assortmentId, mutate, ...rest }) => ({
-    ...rest,
+    ...rest
   })),
-  pure,
+  pure
 )(BtnRemoveAssortment);

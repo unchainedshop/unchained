@@ -9,7 +9,7 @@ const CurrencyList = ({ ...rest }) => (
     {...rest}
     cols={2}
     createPath="/currencies/new"
-    rowRenderer={(currency => (
+    rowRenderer={currency => (
       <Table.Row key={currency._id}>
         <Table.Cell>
           <Link href={`/currencies/edit?_id=${currency._id}`}>
@@ -24,15 +24,11 @@ const CurrencyList = ({ ...rest }) => (
           )}
         </Table.Cell>
       </Table.Row>
-    ))}
+    )}
   >
     <Table.Row>
-      <Table.HeaderCell>
-Code
-      </Table.HeaderCell>
-      <Table.HeaderCell>
-Active
-      </Table.HeaderCell>
+      <Table.HeaderCell>Code</Table.HeaderCell>
+      <Table.HeaderCell>Active</Table.HeaderCell>
     </Table.Row>
   </InfiniteDataTable>
 );
@@ -40,12 +36,12 @@ Active
 export default withDataTableLoader({
   queryName: 'currencies',
   query: gql`
-      query currencies($limit: Int, $offset: Int) {
-        currencies(limit: $limit, offset: $offset, includeInactive: true) {
-          _id
-          isoCode
-          isActive
-        }
+    query currencies($limit: Int, $offset: Int) {
+      currencies(limit: $limit, offset: $offset, includeInactive: true) {
+        _id
+        isoCode
+        isActive
       }
-    `,
+    }
+  `
 })(CurrencyList);

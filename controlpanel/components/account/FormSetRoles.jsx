@@ -1,7 +1,5 @@
 import React from 'react';
-import {
-  compose, pure, mapProps, withHandlers,
-} from 'recompose';
+import { compose, pure, mapProps, withHandlers } from 'recompose';
 import { graphql, withApollo } from 'react-apollo';
 import SelectField from 'uniforms-semantic/SelectField';
 import SubmitField from 'uniforms-semantic/SubmitField';
@@ -40,30 +38,26 @@ export default compose(
   withFormSchema({
     roles: {
       type: Array,
-      label: 'Roles',
+      label: 'Roles'
     },
     'roles.$': {
       type: String,
-      allowedValues: ['user', 'admin'],
-    },
+      allowedValues: ['user', 'admin']
+    }
   }),
   withFormModel(({ data: { user } }) => ({
-    roles: (user && user.roles) || [],
+    roles: (user && user.roles) || []
   })),
   withHandlers({
-    onSubmit: ({ mutate, schema, userId }) => ({ ...dirtyInput }) => mutate({
-      variables: {
-        ...schema.clean(dirtyInput),
-        userId,
-      },
-    }),
+    onSubmit: ({ mutate, schema, userId }) => ({ ...dirtyInput }) =>
+      mutate({
+        variables: {
+          ...schema.clean(dirtyInput),
+          userId
+        }
+      })
   }),
   withFormErrorHandlers,
-  mapProps(({
-    userId,
-    mutate,
-    client,
-    ...rest
-  }) => ({ ...rest })),
-  pure,
+  mapProps(({ userId, mutate, client, ...rest }) => ({ ...rest })),
+  pure
 )(FormSetRoles);

@@ -11,16 +11,14 @@ const panes = [
       <Tab.Pane>
         <AssortmentList />
       </Tab.Pane>
-    ),
-  },
+    )
+  }
 ];
 
 export default connectApollo(props => (
   <App {...props}>
     <Container>
-      <h2>
-        Assortments
-      </h2>
+      <h2>Assortments</h2>
       <Tab panes={panes} />
     </Container>
   </App>

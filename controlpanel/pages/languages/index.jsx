@@ -7,9 +7,7 @@ import connectApollo from '../../lib/connectApollo';
 export default connectApollo(({ ...rest }) => (
   <App {...rest}>
     <Container>
-      <h2>
-        Languages
-      </h2>
+      <h2>Languages</h2>
       <LanguageList />
     </Container>
   </App>

@@ -6,20 +6,20 @@ import { storeLoginToken } from '../store';
  * It's recommended to use https://github.com/keppelen/react-facebook-login
  */
 
-export default async function ({ accessToken }, apollo) {
+export default async function({ accessToken }, apollo) {
   const result = await apollo.mutate({
     mutation: gql`
-    mutation loginWithFacebook ($accessToken: String!) {
-      loginWithFacebook (accessToken: $accessToken) {
-        id
-        token
-        tokenExpires
+      mutation loginWithFacebook($accessToken: String!) {
+        loginWithFacebook(accessToken: $accessToken) {
+          id
+          token
+          tokenExpires
+        }
       }
-    }
     `,
     variables: {
-      accessToken,
-    },
+      accessToken
+    }
   });
 
   const { id, token, tokenExpires } = result.data.loginWithFacebook;

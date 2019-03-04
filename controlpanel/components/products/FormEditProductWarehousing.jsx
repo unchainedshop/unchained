@@ -1,8 +1,6 @@
 import React from 'react';
 import { toast } from 'react-toastify';
-import {
-  compose, pure, mapProps, withHandlers,
-} from 'recompose';
+import { compose, pure, mapProps, withHandlers } from 'recompose';
 import { Segment, Grid } from 'semantic-ui-react';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
@@ -20,14 +18,8 @@ const FormEditProductWarehousing = ({ isEditingDisabled, ...formProps }) => (
       <Grid>
         <Grid.Row columns={1}>
           <Grid.Column width={16}>
-            <AutoField
-              name="sku"
-              disabled={isEditingDisabled}
-            />
-            <AutoField
-              name="baseUnit"
-              disabled={isEditingDisabled}
-            />
+            <AutoField name="sku" disabled={isEditingDisabled} />
+            <AutoField name="baseUnit" disabled={isEditingDisabled} />
           </Grid.Column>
         </Grid.Row>
       </Grid>
@@ -55,53 +47,59 @@ export default compose(
       }
     }
   `),
-  graphql(gql`
-    mutation updateProductWarehousing($warehousing: UpdateProductWarehousingInput!, $productId: ID!) {
-      updateProductWarehousing(warehousing: $warehousing, productId: $productId) {
-        _id
-        ... on SimpleProduct {
-          sku
-          baseUnit
+  graphql(
+    gql`
+      mutation updateProductWarehousing(
+        $warehousing: UpdateProductWarehousingInput!
+        $productId: ID!
+      ) {
+        updateProductWarehousing(
+          warehousing: $warehousing
+          productId: $productId
+        ) {
+          _id
+          ... on SimpleProduct {
+            sku
+            baseUnit
+          }
         }
       }
+    `,
+    {
+      options: {
+        refetchQueries: ['productWarehousingInfo']
+      }
     }
-  `, {
-    options: {
-      refetchQueries: [
-        'productWarehousingInfo',
-      ],
-    },
-  }),
+  ),
   withFormSchema({
     sku: {
       type: String,
       optional: true,
-      label: 'SKU',
+      label: 'SKU'
     },
     baseUnit: {
       type: String,
       optional: true,
-      label: 'Base unit',
-    },
+      label: 'Base unit'
+    }
   }),
   withFormModel(({ data: { product = {} } }) => ({ ...product })),
   withHandlers({
     onSubmitSuccess: () => () => {
       toast('Warehousing settings saved', { type: toast.TYPE.SUCCESS });
     },
-    onSubmit: ({ productId, mutate, schema }) => ({ ...dirtyInput }) => mutate({
-      variables: {
-        warehousing: schema.clean(dirtyInput),
-        productId,
-      },
-    }),
+    onSubmit: ({ productId, mutate, schema }) => ({ ...dirtyInput }) =>
+      mutate({
+        variables: {
+          warehousing: schema.clean(dirtyInput),
+          productId
+        }
+      })
   }),
   withFormErrorHandlers,
-  mapProps(({
-    productId, mutate, data, ...rest
-  }) => ({
-    isEditingDisabled: !data.product || (data.product.status === 'DELETED'),
-    ...rest,
+  mapProps(({ productId, mutate, data, ...rest }) => ({
+    isEditingDisabled: !data.product || data.product.status === 'DELETED',
+    ...rest
   })),
-  pure,
+  pure
 )(FormEditProductWarehousing);

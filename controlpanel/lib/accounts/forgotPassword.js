@@ -1,15 +1,17 @@
 import gql from 'graphql-tag';
 
-export default async function ({ email }, apollo) {
+export default async function({ email }, apollo) {
   const result = await apollo.mutate({
-    mutation: gql`mutation forgotPassword($email: String!) {
-      forgotPassword(email: $email) {
-        success
+    mutation: gql`
+      mutation forgotPassword($email: String!) {
+        forgotPassword(email: $email) {
+          success
+        }
       }
-    }`,
+    `,
     variables: {
-      email,
-    },
+      email
+    }
   });
 
   const { success } = result.data.forgotPassword;

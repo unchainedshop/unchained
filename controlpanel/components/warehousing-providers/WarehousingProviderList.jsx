@@ -9,28 +9,29 @@ const WarehousingProviderList = ({ ...rest }) => (
     {...rest}
     cols={4}
     createPath="/warehousing-providers/new"
-    rowRenderer={(warehousingProvider => (
+    rowRenderer={warehousingProvider => (
       <Table.Row key={warehousingProvider._id}>
         <Table.Cell>
-          <Link href={`/warehousing-providers/edit?_id=${warehousingProvider._id}`}>
-            <a href={`/warehousing-providers/edit?_id=${warehousingProvider._id}`}>
+          <Link
+            href={`/warehousing-providers/edit?_id=${warehousingProvider._id}`}
+          >
+            <a
+              href={`/warehousing-providers/edit?_id=${
+                warehousingProvider._id
+              }`}
+            >
               {warehousingProvider._id}
             </a>
           </Link>
         </Table.Cell>
-        <Table.Cell>
-          {warehousingProvider.type}
-        </Table.Cell>
+        <Table.Cell>{warehousingProvider.type}</Table.Cell>
         {warehousingProvider.interface ? (
           <Table.Cell>
-            {warehousingProvider.interface.label}
-            {' '}
+            {warehousingProvider.interface.label}{' '}
             {warehousingProvider.interface.version}
           </Table.Cell>
         ) : (
-          <Table.Cell>
-            Invalid Interface
-          </Table.Cell>
+          <Table.Cell>Invalid Interface</Table.Cell>
         )}
         <Table.Cell>
           {warehousingProvider.configurationError && (
@@ -41,21 +42,13 @@ const WarehousingProviderList = ({ ...rest }) => (
           )}
         </Table.Cell>
       </Table.Row>
-    ))}
+    )}
   >
     <Table.Row>
-      <Table.HeaderCell>
-Configuration
-      </Table.HeaderCell>
-      <Table.HeaderCell>
-Type
-      </Table.HeaderCell>
-      <Table.HeaderCell>
-Interface
-      </Table.HeaderCell>
-      <Table.HeaderCell>
-Problems
-      </Table.HeaderCell>
+      <Table.HeaderCell>Configuration</Table.HeaderCell>
+      <Table.HeaderCell>Type</Table.HeaderCell>
+      <Table.HeaderCell>Interface</Table.HeaderCell>
+      <Table.HeaderCell>Problems</Table.HeaderCell>
     </Table.Row>
   </InfiniteDataTable>
 );
@@ -75,5 +68,5 @@ export default withDataTableLoader({
         }
       }
     }
-  `,
+  `
 })(WarehousingProviderList);

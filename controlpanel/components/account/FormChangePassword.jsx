@@ -4,9 +4,7 @@ import SubmitField from 'uniforms-semantic/SubmitField';
 import ErrorsField from 'uniforms-semantic/ErrorsField';
 import AutoForm from 'uniforms-semantic/AutoForm';
 import { withApollo } from 'react-apollo';
-import {
-  compose, pure, mapProps, withHandlers,
-} from 'recompose';
+import { compose, pure, mapProps, withHandlers } from 'recompose';
 import { changePassword } from '../../lib/accounts';
 import withFormSchema from '../../lib/withFormSchema';
 import withFormErrorHandlers from '../../lib/withFormErrorHandlers';
@@ -25,19 +23,18 @@ export default compose(
   withFormSchema({
     oldPassword: {
       type: String,
-      label: 'Current password',
+      label: 'Current password'
     },
     newPassword: {
       type: String,
-      label: 'New password',
-    },
+      label: 'New password'
+    }
   }),
   withHandlers({
-    onSubmit: ({ client }) => ({
-      oldPassword, newPassword,
-    }) => changePassword({ oldPassword, newPassword }, client),
+    onSubmit: ({ client }) => ({ oldPassword, newPassword }) =>
+      changePassword({ oldPassword, newPassword }, client)
   }),
   withFormErrorHandlers,
   mapProps(({ client, ...rest }) => ({ ...rest })),
-  pure,
+  pure
 )(FormChangePassword);

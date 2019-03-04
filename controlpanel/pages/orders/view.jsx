@@ -11,32 +11,34 @@ import OrderHeader from '../../components/orders/OrderHeader';
 import OrderLogList from '../../components/orders/OrderLogList';
 import connectApollo from '../../lib/connectApollo';
 
-export default connectApollo(withRouter(({ router, ...rest }) => (
-  <App {...rest}>
-    <Container>
-      <Grid columns={2} stackable>
-        <Grid.Column width={16}>
-          <OrderHeader orderId={router.query._id} />
-        </Grid.Column>
-        <Grid.Column>
-          <OrderDownloads orderId={router.query._id} />
-        </Grid.Column>
-        <Grid.Column>
-          <OrderPositionList orderId={router.query._id} />
-        </Grid.Column>
-        <Grid.Column>
-          <OrderCalculation orderId={router.query._id} />
-        </Grid.Column>
-        <Grid.Column>
-          <OrderDelivery orderId={router.query._id} />
-        </Grid.Column>
-        <Grid.Column>
-          <OrderPayment orderId={router.query._id} />
-        </Grid.Column>
-        <Grid.Column width={16}>
-          <OrderLogList orderId={router.query._id} />
-        </Grid.Column>
-      </Grid>
-    </Container>
-  </App>
-)));
+export default connectApollo(
+  withRouter(({ router, ...rest }) => (
+    <App {...rest}>
+      <Container>
+        <Grid columns={2} stackable>
+          <Grid.Column width={16}>
+            <OrderHeader orderId={router.query._id} />
+          </Grid.Column>
+          <Grid.Column>
+            <OrderDownloads orderId={router.query._id} />
+          </Grid.Column>
+          <Grid.Column>
+            <OrderPositionList orderId={router.query._id} />
+          </Grid.Column>
+          <Grid.Column>
+            <OrderCalculation orderId={router.query._id} />
+          </Grid.Column>
+          <Grid.Column>
+            <OrderDelivery orderId={router.query._id} />
+          </Grid.Column>
+          <Grid.Column>
+            <OrderPayment orderId={router.query._id} />
+          </Grid.Column>
+          <Grid.Column width={16}>
+            <OrderLogList orderId={router.query._id} />
+          </Grid.Column>
+        </Grid>
+      </Container>
+    </App>
+  ))
+);

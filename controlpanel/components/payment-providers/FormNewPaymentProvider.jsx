@@ -1,7 +1,5 @@
 import React from 'react';
-import {
-  compose, mapProps, withHandlers, withState,
-} from 'recompose';
+import { compose, mapProps, withHandlers, withState } from 'recompose';
 import gql from 'graphql-tag';
 import { withRouter } from 'next/router';
 import { graphql } from 'react-apollo';
@@ -14,12 +12,14 @@ import withFormErrorHandlers from '../../lib/withFormErrorHandlers';
 
 const defaultProviderType = 'CARD';
 
-const FormNewPaymentProvider = ({ providerType, updateProviderType, ...formProps }) => (
+const FormNewPaymentProvider = ({
+  providerType,
+  updateProviderType,
+  ...formProps
+}) => (
   <AutoForm {...formProps}>
     <AutoField name="type" onChange={updateProviderType} />
-    {providerType && (
-      <AutoField name="adapterKey" />
-    )}
+    {providerType && <AutoField name="adapterKey" />}
     <ErrorsField />
     <SubmitField value="Add payment provider" className="primary" />
   </AutoForm>
@@ -43,56 +43,70 @@ export default compose(
       }
     }
   `),
-  graphql(gql`
-    mutation create($paymentProvider: CreateProviderInput!) {
-      createPaymentProvider(paymentProvider: $paymentProvider) {
-        _id
+  graphql(
+    gql`
+      mutation create($paymentProvider: CreateProviderInput!) {
+        createPaymentProvider(paymentProvider: $paymentProvider) {
+          _id
+        }
+      }
+    `,
+    {
+      name: 'createPaymentProvider',
+      options: {
+        refetchQueries: ['paymentProviders']
       }
     }
-  `, {
-    name: 'createPaymentProvider',
-    options: {
-      refetchQueries: [
-        'paymentProviders',
-      ],
-    },
-  }),
-  withFormSchema(({
-    providerType, data: {
-      paymentProviderType = { options: [] },
-      paymentInterfaces = [],
-    } = {},
-  }) => ({
-    type: {
-      type: String,
-      optional: false,
-      label: 'Type',
-      defaultValue: providerType,
-      uniforms: {
-        options: [{ label: 'Choose Type', value: null }, ...paymentProviderType.options],
+  ),
+  withFormSchema(
+    ({
+      providerType,
+      data: {
+        paymentProviderType = { options: [] },
+        paymentInterfaces = []
+      } = {}
+    }) => ({
+      type: {
+        type: String,
+        optional: false,
+        label: 'Type',
+        defaultValue: providerType,
+        uniforms: {
+          options: [
+            { label: 'Choose Type', value: null },
+            ...paymentProviderType.options
+          ]
+        }
       },
-    },
-    adapterKey: {
-      type: String,
-      optional: false,
-      label: 'Adapter',
-      uniforms: {
-        options: [{ label: 'Choose Adapter', value: null }, ...paymentInterfaces],
-      },
-    },
-  })),
+      adapterKey: {
+        type: String,
+        optional: false,
+        label: 'Adapter',
+        uniforms: {
+          options: [
+            { label: 'Choose Adapter', value: null },
+            ...paymentInterfaces
+          ]
+        }
+      }
+    })
+  ),
   withHandlers({
     onSubmitSuccess: ({ router }) => ({ data: { createPaymentProvider } }) => {
-      router.replace({ pathname: '/payment-providers/edit', query: { _id: createPaymentProvider._id } });
+      router.replace({
+        pathname: '/payment-providers/edit',
+        query: { _id: createPaymentProvider._id }
+      });
     },
-    onSubmit: ({ createPaymentProvider, schema }) => ({ ...dirtyInput }) => createPaymentProvider({
-      variables: {
-        paymentProvider: schema.clean(dirtyInput),
-      },
-    }),
+    onSubmit: ({ createPaymentProvider, schema }) => ({ ...dirtyInput }) =>
+      createPaymentProvider({
+        variables: {
+          paymentProvider: schema.clean(dirtyInput)
+        }
+      })
   }),
   withFormErrorHandlers,
   mapProps(({ createPaymentProvider, ...rest }) => ({
-    ...rest,
-  })),
+    ...rest
+  }))
 )(FormNewPaymentProvider);

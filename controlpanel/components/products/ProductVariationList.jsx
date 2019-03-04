@@ -20,18 +20,17 @@ const ProductVariationList = ({ items, isEditingDisabled, productId }) => (
         >
           {options && (
             <Segment>
-              <h3>
-Options
-              </h3>
+              <h3>Options</h3>
               <List celled>
-                {options && options.map(({ ...option }) => (
-                  <ProductVariationOptionItem
-                    key={option._id}
-                    productVariationId={item._id}
-                    isEditingDisabled={isEditingDisabled}
-                    {...option}
-                  />
-                ))}
+                {options &&
+                  options.map(({ ...option }) => (
+                    <ProductVariationOptionItem
+                      key={option._id}
+                      productVariationId={item._id}
+                      isEditingDisabled={isEditingDisabled}
+                      {...option}
+                    />
+                  ))}
                 {!isEditingDisabled && (
                   <List.Item>
                     <FormNewProductVariationOption
@@ -97,9 +96,9 @@ export default compose(
   `),
   mapProps(({ data: { product }, ...rest }) => ({
     items: (product && product.variations) || [],
-    isEditingDisabled: !product || (product.status === 'DELETED'),
+    isEditingDisabled: !product || product.status === 'DELETED',
     pressDelay: 200,
-    ...rest,
+    ...rest
   })),
-  pure,
+  pure
 )(ProductVariationList);

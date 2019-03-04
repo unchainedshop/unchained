@@ -1,9 +1,7 @@
 import React from 'react';
 import { compose, pure, mapProps } from 'recompose';
 import { format } from 'date-fns';
-import {
-  Menu, Dropdown, Segment, Label, List, Grid,
-} from 'semantic-ui-react';
+import { Menu, Dropdown, Segment, Label, List, Grid } from 'semantic-ui-react';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 import BtnPublishProduct from './BtnPublishProduct';
@@ -25,29 +23,27 @@ const ProductHeader = ({ loading, productId, product = {} }) => [
     <Menu.Menu position="right">
       <Dropdown item icon="wrench" simple>
         <Dropdown.Menu>
-          <Dropdown.Header>
-            Options
-          </Dropdown.Header>
+          <Dropdown.Header>Options</Dropdown.Header>
           <BtnRemoveProduct
             productId={product._id}
             Component={Dropdown.Item}
             disabled={product.status !== 'DRAFT'}
           >
-              Delete
+            Delete
           </BtnRemoveProduct>
           <BtnPublishProduct
             productId={product._id}
             Component={Dropdown.Item}
             disabled={product.status !== 'DRAFT'}
           >
-              Publish
+            Publish
           </BtnPublishProduct>
           <BtnUnpublishProduct
             productId={product._id}
             Component={Dropdown.Item}
             disabled={product.status !== 'ACTIVE'}
           >
-              Unpublish
+            Unpublish
           </BtnUnpublishProduct>
         </Dropdown.Menu>
       </Dropdown>
@@ -62,37 +58,28 @@ const ProductHeader = ({ loading, productId, product = {} }) => [
               <List.Icon name="cube" />
               <List.Content>
                   Product type: {product.__typename // eslint-disable-line
-                  }
+                }
               </List.Content>
             </List.Item>
             <List.Item>
               <List.Icon name="add to calendar" />
               <List.Content>
-                  Created:
-                {' '}
-                {product.created
-                  ? format(product.created, 'Pp')
-                  : 'n/a'}
+                Created:{' '}
+                {product.created ? format(product.created, 'Pp') : 'n/a'}
               </List.Content>
             </List.Item>
             <List.Item>
               <List.Icon name="refresh" />
               <List.Content>
-                  Updated:
-                {' '}
-                {product.updated
-                  ? format(product.updated, 'Pp')
-                  : 'n/a'}
+                Updated:{' '}
+                {product.updated ? format(product.updated, 'Pp') : 'n/a'}
               </List.Content>
             </List.Item>
             <List.Item>
               <List.Icon name="eye" />
               <List.Content>
-                  Published:
-                {' '}
-                {product.published
-                  ? format(product.published, 'Pp')
-                  : 'n/a'}
+                Published:{' '}
+                {product.published ? format(product.published, 'Pp') : 'n/a'}
               </List.Content>
             </List.Item>
           </List>
@@ -102,7 +89,7 @@ const ProductHeader = ({ loading, productId, product = {} }) => [
         </Grid.Column>
       </Grid.Row>
     </Grid>
-  </Segment>,
+  </Segment>
 ];
 
 export default compose(
@@ -110,11 +97,11 @@ export default compose(
     query productInfos($productId: ID) {
       product(productId: $productId) {
         _id
-        status,
-        created,
-        updated,
-        published,
-        tags,
+        status
+        created
+        updated
+        published
+        tags
         texts {
           _id
           title
@@ -125,7 +112,7 @@ export default compose(
   mapProps(({ data: { product, loading }, ...rest }) => ({
     product,
     loading,
-    ...rest,
+    ...rest
   })),
-  pure,
+  pure
 )(ProductHeader);

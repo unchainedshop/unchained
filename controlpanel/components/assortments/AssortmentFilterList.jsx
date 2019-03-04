@@ -1,7 +1,5 @@
 import React from 'react';
-import {
-  compose, pure, withHandlers, mapProps,
-} from 'recompose';
+import { compose, pure, withHandlers, mapProps } from 'recompose';
 import { Item, Segment } from 'semantic-ui-react';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
@@ -13,12 +11,7 @@ const AssortmentFilterList = ({ assortmentId, items }) => (
   <Segment>
     <Item.Group divided>
       {items.map(({ _id, ...rest }, index) => (
-        <AssortmentFilterListItem
-          key={_id}
-          index={index}
-          _id={_id}
-          {...rest}
-        />
+        <AssortmentFilterListItem key={_id} index={index} _id={_id} {...rest} />
       ))}
       <Item>
         <Item.Content>
@@ -48,38 +41,46 @@ export default compose(
       }
     }
   `),
-  graphql(gql`
-    mutation reorderAssortmentFilters($sortKeys: [ReorderAssortmentFilterInput!]!) {
-      reorderAssortmentFilters(sortKeys: $sortKeys) {
-        _id
-        sortKey
+  graphql(
+    gql`
+      mutation reorderAssortmentFilters(
+        $sortKeys: [ReorderAssortmentFilterInput!]!
+      ) {
+        reorderAssortmentFilters(sortKeys: $sortKeys) {
+          _id
+          sortKey
+        }
+      }
+    `,
+    {
+      name: 'reorderAssortmentFilters',
+      options: {
+        refetchQueries: ['assortmentFilters']
       }
     }
-  `, {
-    name: 'reorderAssortmentFilters',
-    options: {
-      refetchQueries: [
-        'assortmentFilters',
-      ],
-    },
-  }),
+  ),
   mapProps(({ data: { assortment }, ...rest }) => ({
     items: (assortment && assortment.filterAssignments) || [],
-    ...rest,
+    ...rest
   })),
   withHandlers({
-    onSortEnd: ({ items, reorderAssortmentFilters }) => async ({ oldIndex, newIndex }) => {
-      const sortKeys = arrayMove(items, oldIndex, newIndex).map((item, sortKey) => ({
-        assortmentFilterId: item._id,
-        sortKey,
-      }));
+    onSortEnd: ({ items, reorderAssortmentFilters }) => async ({
+      oldIndex,
+      newIndex
+    }) => {
+      const sortKeys = arrayMove(items, oldIndex, newIndex).map(
+        (item, sortKey) => ({
+          assortmentFilterId: item._id,
+          sortKey
+        })
+      );
       await reorderAssortmentFilters({
         variables: {
-          sortKeys,
-        },
+          sortKeys
+        }
       });
-    },
+    }
   }),
   pure,
-  SortableContainer,
+  SortableContainer
 )(AssortmentFilterList);

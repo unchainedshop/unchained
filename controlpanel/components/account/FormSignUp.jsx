@@ -1,7 +1,5 @@
 import React from 'react';
-import {
-  compose, pure, mapProps, withHandlers,
-} from 'recompose';
+import { compose, pure, mapProps, withHandlers } from 'recompose';
 import { withApollo } from 'react-apollo';
 import AutoField from 'uniforms-semantic/AutoField';
 import SubmitField from 'uniforms-semantic/SubmitField';
@@ -25,24 +23,30 @@ export default compose(
   withFormSchema({
     email: {
       type: String,
-      label: 'E-Mail Address',
+      label: 'E-Mail Address'
     },
     password: {
       type: String,
-      label: 'Password',
-    },
+      label: 'Password'
+    }
   }),
   withHandlers({
-    onSubmit: ({ client }) => ({ email, password }) => createUser({
-      email, password, disableHashing: true,
-    }, client),
-    onSubmitSuccess: () => (userId) => {
+    onSubmit: ({ client }) => ({ email, password }) =>
+      createUser(
+        {
+          email,
+          password,
+          disableHashing: true
+        },
+        client
+      ),
+    onSubmitSuccess: () => userId => {
       if (!userId) {
         alert('Signed Up successfully but not logged in automatically'); // eslint-disable-line
       }
-    },
+    }
   }),
   withFormErrorHandlers,
   mapProps(({ client, ...rest }) => ({ ...rest })),
-  pure,
+  pure
 )(FormSignUp);
