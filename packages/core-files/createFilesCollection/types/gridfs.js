@@ -57,6 +57,7 @@ export default (collectionName) => {
         });
 
         http.response.setHeader('Content-Disposition', `inline; filename="${file.name}"`);
+        http.response.setHeader('Cache-Control', this.cacheControl);
       }
       return Boolean(gridFsFileId); // Serve file from either GridFS or FS if it wasn't uploaded yet
     },
