@@ -2,12 +2,12 @@
   "parser": "babel-eslint",
   "plugins": [
     "meteor",
-    "prettier",
+    "prettier"
   ],
   "extends": [
     "airbnb-base",
     "plugin:meteor/recommended",
-    "plugin:prettier/recommended",
+    "plugin:prettier/recommended"
   ],
   "env": {
     "node": true,
@@ -15,7 +15,7 @@
     "meteor": true
   },
   "rules": {
-    "prettier/prettier": "error",
+    "prettier/prettier": [ "error" ],
     "no-underscore-dangle": [ "error", { "allow": [ "_id" ] } ],
     "import/no-unresolved": [ 0 ]
   }
