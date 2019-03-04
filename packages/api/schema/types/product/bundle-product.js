@@ -17,15 +17,10 @@ export default [
       reviews(limit: Int, offset: Int): [ProductReview!]!
     }
 
-    type ProductBundleItemConfigurationParameter {
-      key: String!
-      value: String!
-    }
-
     type ProductBundleItem {
       product: Product!
       quantity: Int!
-      configuration: [ProductBundleItemConfigurationParameter!]
+      configuration: [ProductItemConfigurationParameterInput!]
     }
   `,
 ];
