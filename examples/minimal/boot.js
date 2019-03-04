@@ -1,8 +1,8 @@
-import { Meteor } from "meteor/meteor";
-import { startPlatform } from "meteor/unchained:platform";
-import { Users } from "meteor/unchained:core-users";
-import { Factory } from "meteor/dburles:factory";
-import configureEmailTemplates from "./templates";
+import { Meteor } from 'meteor/meteor';
+import { startPlatform } from 'meteor/unchained:platform';
+import { Users } from 'meteor/unchained:core-users';
+import { Factory } from 'meteor/dburles:factory';
+import configureEmailTemplates from './templates';
 
 import 'meteor/unchained:core-delivery/plugins/send-mail';
 import 'meteor/unchained:core-warehousing/plugins/google-sheets';
@@ -24,18 +24,18 @@ const logger = console;
 
 const initializeDatabase = () => {
   try {
-    if (Users.find({ username: "admin" }).count() > 0) {
+    if (Users.find({ username: 'admin' }).count() > 0) {
       return;
     }
-    const admin = Factory.create("user", {
-      username: "admin",
-      roles: ["admin"],
-      emails: [{ address: "admin@localhost", verified: true }],
+    const admin = Factory.create('user', {
+      username: 'admin',
+      roles: ['admin'],
+      emails: [{ address: 'admin@localhost', verified: true }],
       guest: false
     });
-    const languages = ["de", "fr"].map((code, key) => {
+    const languages = ['de', 'fr'].map((code, key) => {
       const isBase = key === 0;
-      const language = Factory.create("language", {
+      const language = Factory.create('language', {
         isoCode: code,
         isActive: true,
         isBase,
@@ -43,17 +43,17 @@ const initializeDatabase = () => {
       });
       return language.isoCode;
     });
-    const currencies = ["CHF"].map(code => {
-      const currency = Factory.create("currency", {
+    const currencies = ['CHF'].map(code => {
+      const currency = Factory.create('currency', {
         isoCode: code,
         isActive: true,
         authorId: admin._id
       });
       return currency._id;
     });
-    const countries = ["CH"].map((code, key) => {
+    const countries = ['CH'].map((code, key) => {
       const isBase = key === 0;
-      const country = Factory.create("country", {
+      const country = Factory.create('country', {
         isoCode: code,
         isBase,
         isActive: true,
@@ -64,12 +64,12 @@ const initializeDatabase = () => {
     });
     logger.log(`
       initialized database with
-      \ncountries: ${countries.join(",")}
-      \ncurrencies: ${currencies.join(",")}
-      \nlanguages: ${languages.join(",")}
+      \ncountries: ${countries.join(',')}
+      \ncurrencies: ${currencies.join(',')}
+      \nlanguages: ${languages.join(',')}
       \nuser: admin@localhost / password`);
   } catch (e) {
-    logger.log("database was already initialized");
+    logger.log('database was already initialized');
   }
 };
 

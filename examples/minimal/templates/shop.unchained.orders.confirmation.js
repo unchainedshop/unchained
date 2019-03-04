@@ -35,18 +35,18 @@ const textTemplate = `
 
 const texts = {
   en: {
-    buttonText: "Follow purchase order status",
-    thankyou: "Thank you for your order on",
+    buttonText: 'Follow purchase order status',
+    thankyou: 'Thank you for your order on',
     subject: `${EMAIL_WEBSITE_NAME}: Order confirmation`
   },
   de: {
-    buttonText: "Bestellstatus verfolgen",
-    thankyou: "Vielen Dank für deine Bestellung bei",
+    buttonText: 'Bestellstatus verfolgen',
+    thankyou: 'Vielen Dank für deine Bestellung bei',
     subject: `${EMAIL_WEBSITE_NAME}: Bestellbestätigung`
   },
   fr: {
-    buttonText: "Follow purchase order status",
-    thankyou: "Thank you for your order on",
+    buttonText: 'Follow purchase order status',
+    thankyou: 'Thank you for your order on',
     subject: `${EMAIL_WEBSITE_NAME}: Order confirmation`
   }
 };
@@ -58,7 +58,7 @@ export default (
 ) => {
   const langCode = locale.substr(0, 2).toLowerCase();
   return {
-    to: to => to || "admin@localhost",
+    to: to => to || 'admin@localhost',
     from: from => from || EMAIL_FROM,
     subject: () => texts[langCode].subject,
     text: () =>
