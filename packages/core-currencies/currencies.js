@@ -1,7 +1,7 @@
-import "./db/factories";
-import "./db/schema";
+import './db/factories';
+import './db/schema';
 
-export * from "./db/collections";
+export * from './db/collections';
 export default () => {
   // configure
 };

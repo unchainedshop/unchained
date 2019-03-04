@@ -1,8 +1,8 @@
-import { Roles } from "meteor/unchained:roles";
+import { Roles } from 'meteor/unchained:roles';
 
-import all from "./all";
-import loggedIn from "./loggedIn";
-import admin from "./admin";
+import all from './all';
+import loggedIn from './loggedIn';
+import admin from './admin';
 
 const roles = {
   ADMIN: Roles.adminRole,

@@ -1,7 +1,7 @@
-import { Promise } from "meteor/promise";
-import "meteor/dburles:collection-helpers";
-import { WarehousingProviders } from "./collections";
-import { WarehousingDirector } from "../director";
+import { Promise } from 'meteor/promise';
+import 'meteor/dburles:collection-helpers';
+import { WarehousingProviders } from './collections';
+import { WarehousingDirector } from '../director';
 
 WarehousingProviders.helpers({
   transformContext(key, value) {

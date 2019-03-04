@@ -1,6 +1,6 @@
-import { log } from "meteor/unchained:core-logger";
-import { Products } from "meteor/unchained:core-products";
-import { ProductNotFoundError } from "../../errors";
+import { log } from 'meteor/unchained:core-logger';
+import { Products } from 'meteor/unchained:core-products';
+import { ProductNotFoundError } from '../../errors';
 
 export default function(root, { supply, productId }, { userId }) {
   log(`mutation updateProductSupply ${productId}`, { userId });

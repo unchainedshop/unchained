@@ -1,6 +1,6 @@
-import { Schemas } from "meteor/unchained:utils";
-import SimpleSchema from "simpl-schema";
-import * as Collections from "./collections";
+import { Schemas } from 'meteor/unchained:utils';
+import SimpleSchema from 'simpl-schema';
+import * as Collections from './collections';
 
 Collections.Assortments.attachSchema(
   new SimpleSchema(
@@ -10,12 +10,12 @@ Collections.Assortments.attachSchema(
       sequence: { type: Number, required: true, index: true },
       isBase: Boolean,
       slugs: { type: Array, index: true },
-      "slugs.$": String,
+      'slugs.$': String,
       tags: { type: Array, index: true },
-      "tags.$": String,
+      'tags.$': String,
       meta: { type: Object, blackbox: true },
       _cachedProductIds: Array,
-      "_cachedProductIds.$": String,
+      '_cachedProductIds.$': String,
       ...Schemas.timestampFields
     },
     { requiredByDefault: false }

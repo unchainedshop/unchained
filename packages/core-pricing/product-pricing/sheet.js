@@ -1,9 +1,9 @@
-import PricingSheet from "../pricing-sheet";
+import PricingSheet from '../pricing-sheet';
 
 const ProductPricingSheetRowCategories = {
-  Item: "ITEM",
-  Discount: "DISCOUNT",
-  Tax: "TAX"
+  Item: 'ITEM',
+  Discount: 'DISCOUNT',
+  Tax: 'TAX'
 };
 
 class ProductPricingSheet extends PricingSheet {

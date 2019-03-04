@@ -1,16 +1,16 @@
-import "meteor/dburles:collection-helpers";
-import { log } from "meteor/unchained:core-logger";
-import { DeliveryProviders } from "meteor/unchained:core-delivery";
+import 'meteor/dburles:collection-helpers';
+import { log } from 'meteor/unchained:core-logger';
+import { DeliveryProviders } from 'meteor/unchained:core-delivery';
 import {
   DeliveryPricingDirector,
   DeliveryPricingSheet
-} from "meteor/unchained:core-pricing";
-import { objectInvert } from "meteor/unchained:utils";
-import { OrderDeliveries } from "./collections";
-import { OrderDeliveryStatus } from "./schema";
-import { Orders } from "../orders/collections";
-import { OrderDocuments } from "../order-documents/collections";
-import { OrderDiscounts } from "../order-discounts/collections";
+} from 'meteor/unchained:core-pricing';
+import { objectInvert } from 'meteor/unchained:utils';
+import { OrderDeliveries } from './collections';
+import { OrderDeliveryStatus } from './schema';
+import { Orders } from '../orders/collections';
+import { OrderDocuments } from '../order-documents/collections';
+import { OrderDiscounts } from '../order-discounts/collections';
 
 OrderDeliveries.helpers({
   order() {
@@ -141,7 +141,7 @@ OrderDeliveries.updateDelivery = ({ deliveryId, orderId, context }) => {
   return OrderDeliveries.findOne({ _id: deliveryId });
 };
 
-OrderDeliveries.updateStatus = ({ deliveryId, status, info = "" }) => {
+OrderDeliveries.updateStatus = ({ deliveryId, status, info = '' }) => {
   log(`OrderDelivery ${deliveryId} -> New Status: ${status}`);
   const date = new Date();
   const modifier = {

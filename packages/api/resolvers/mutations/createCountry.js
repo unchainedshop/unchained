@@ -1,8 +1,8 @@
-import { log } from "meteor/unchained:core-logger";
-import { Countries } from "meteor/unchained:core-countries";
+import { log } from 'meteor/unchained:core-logger';
+import { Countries } from 'meteor/unchained:core-countries';
 
 export default function(root, { country: inputData }, { userId }) {
-  log("mutation createCountry", { userId });
+  log('mutation createCountry', { userId });
   const { isoCode } = inputData;
   const country = { created: new Date() };
   country.authorId = userId;

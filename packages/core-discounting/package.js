@@ -13,11 +13,11 @@ Package.onUse((api) => {
   api.use('unchained:utils@0.24.0');
   api.use('unchained:core-logger@0.24.0');
 
-  api.mainModule("discounting.js", "server");
+  api.mainModule('discounting.js', 'server');
 });
 
 Package.onTest(api => {
-  api.use("ecmascript");
-  api.use("unchained:core-discounting");
-  api.mainModule("discounting-tests.js");
+  api.use('ecmascript');
+  api.use('unchained:core-discounting');
+  api.mainModule('discounting-tests.js');
 });

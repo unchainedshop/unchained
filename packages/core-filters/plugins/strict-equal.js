@@ -1,11 +1,11 @@
-import { FilterDirector, FilterAdapter } from "meteor/unchained:core-filters";
+import { FilterDirector, FilterAdapter } from 'meteor/unchained:core-filters';
 
 class StrictQualFilter extends FilterAdapter {
-  static key = "shop.unchained.filters.strict-qual";
+  static key = 'shop.unchained.filters.strict-qual';
 
-  static label = "Simple Strict Equal DB Filter";
+  static label = 'Simple Strict Equal DB Filter';
 
-  static version = "0.1";
+  static version = '0.1';
 
   static orderIndex = 0;
 

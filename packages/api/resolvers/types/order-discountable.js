@@ -1,8 +1,8 @@
 const OrderDiscountableTypes = {
-  OrderItemDiscount: "OrderItemDiscount",
-  OrderPaymentDiscount: "OrderPaymentDiscount",
-  OrderDeliveryDiscount: "OrderDeliveryDiscount",
-  OrderGlobalDiscount: "OrderGlobalDiscount"
+  OrderItemDiscount: 'OrderItemDiscount',
+  OrderPaymentDiscount: 'OrderPaymentDiscount',
+  OrderDeliveryDiscount: 'OrderDeliveryDiscount',
+  OrderGlobalDiscount: 'OrderGlobalDiscount'
 };
 
 export default {

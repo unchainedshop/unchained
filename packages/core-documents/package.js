@@ -13,11 +13,11 @@ Package.onUse((api) => {
   api.use('unchained:utils@0.24.0');
   api.use('unchained:core-logger@0.24.0');
 
-  api.mainModule("documents.js", "server");
+  api.mainModule('documents.js', 'server');
 });
 
 Package.onTest(api => {
-  api.use("ecmascript");
-  api.use("unchained:core-documents");
-  api.mainModule("documents-tests.js");
+  api.use('ecmascript');
+  api.use('unchained:core-documents');
+  api.mainModule('documents-tests.js');
 });

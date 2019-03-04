@@ -1,18 +1,18 @@
-import { log } from "meteor/unchained:core-logger";
+import { log } from 'meteor/unchained:core-logger';
 
 const QuotationError = {
-  ADAPTER_NOT_FOUND: "ADAPTER_NOT_FOUND",
-  NOT_IMPLEMENTED: "NOT_IMPLEMENTED",
-  INCOMPLETE_CONFIGURATION: "INCOMPLETE_CONFIGURATION",
-  WRONG_CREDENTIALS: "WRONG_CREDENTIALS"
+  ADAPTER_NOT_FOUND: 'ADAPTER_NOT_FOUND',
+  NOT_IMPLEMENTED: 'NOT_IMPLEMENTED',
+  INCOMPLETE_CONFIGURATION: 'INCOMPLETE_CONFIGURATION',
+  WRONG_CREDENTIALS: 'WRONG_CREDENTIALS'
 };
 
 class QuotationAdapter {
-  static key = "";
+  static key = '';
 
-  static label = "";
+  static label = '';
 
-  static version = "";
+  static version = '';
 
   static isActivatedFor() {
     return true;
@@ -70,7 +70,7 @@ class QuotationDirector {
             AdapterClass.version
           }) skipped`,
           {
-            level: "warn"
+            level: 'warn'
           }
         );
       }
@@ -82,7 +82,7 @@ class QuotationDirector {
     const Adapter = this.findAppropriateAdapters(context).shift();
     if (!Adapter) {
       throw new Error(
-        "No suitable quotation plugin available for this context"
+        'No suitable quotation plugin available for this context'
       );
     }
     return new Adapter({

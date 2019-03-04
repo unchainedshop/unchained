@@ -1,7 +1,7 @@
-import "meteor/dburles:collection-helpers";
-import { findLocalizedText } from "meteor/unchained:core";
-import { Locale } from "locale";
-import { ProductVariations, ProductVariationTexts } from "./collections";
+import 'meteor/dburles:collection-helpers';
+import { findLocalizedText } from 'meteor/unchained:core';
+import { Locale } from 'locale';
+import { ProductVariations, ProductVariationTexts } from './collections';
 
 ProductVariations.helpers({
   upsertLocalizedText({ locale, productVariationOptionValue, ...rest }) {

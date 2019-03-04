@@ -1,7 +1,7 @@
-import SimpleSchema from "simpl-schema";
-import { Schemas } from "meteor/unchained:utils";
-import { Migrations } from "meteor/percolate:migrations";
-import { Logs } from "./collections";
+import SimpleSchema from 'simpl-schema';
+import { Schemas } from 'meteor/unchained:utils';
+import { Migrations } from 'meteor/percolate:migrations';
+import { Logs } from './collections';
 
 Logs.attachSchema(
   new SimpleSchema(
@@ -17,7 +17,7 @@ Logs.attachSchema(
 
 Migrations.add({
   version: 20181204,
-  name: "Move orderId and userId into meta field",
+  name: 'Move orderId and userId into meta field',
   up() {
     Logs.find({
       $or: [{ orderId: { $exists: true } }, { userId: { $exists: true } }]
@@ -41,8 +41,8 @@ Migrations.add({
   down() {
     Logs.find({
       $or: [
-        { "meta.orderId": { $exists: true } },
-        { "meta.userId": { $exists: true } }
+        { 'meta.orderId': { $exists: true } },
+        { 'meta.userId': { $exists: true } }
       ]
     })
       .fetch()
@@ -55,8 +55,8 @@ Migrations.add({
               userId
             },
             $unset: {
-              "meta.orderId": 1,
-              "meta.userId": 1
+              'meta.orderId': 1,
+              'meta.userId': 1
             }
           }
         );
@@ -66,6 +66,6 @@ Migrations.add({
 
 export default () => {
   Meteor.startup(() => {
-    Migrations.migrateTo("latest");
+    Migrations.migrateTo('latest');
   });
 };

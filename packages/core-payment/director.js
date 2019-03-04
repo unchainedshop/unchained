@@ -1,18 +1,18 @@
-import { log } from "meteor/unchained:core-logger";
+import { log } from 'meteor/unchained:core-logger';
 
 const PaymentError = {
-  ADAPTER_NOT_FOUND: "ADAPTER_NOT_FOUND",
-  NOT_IMPLEMENTED: "NOT_IMPLEMENTED",
-  INCOMPLETE_CONFIGURATION: "INCOMPLETE_CONFIGURATION",
-  WRONG_CREDENTIALS: "WRONG_CREDENTIALS"
+  ADAPTER_NOT_FOUND: 'ADAPTER_NOT_FOUND',
+  NOT_IMPLEMENTED: 'NOT_IMPLEMENTED',
+  INCOMPLETE_CONFIGURATION: 'INCOMPLETE_CONFIGURATION',
+  WRONG_CREDENTIALS: 'WRONG_CREDENTIALS'
 };
 
 class PaymentAdapter {
-  static key = "";
+  static key = '';
 
-  static label = "";
+  static label = '';
 
-  static version = "";
+  static version = '';
 
   static typeSupported() {
     return false;
@@ -79,7 +79,7 @@ class PaymentDirector {
       const adapter = this.interface(context);
       return adapter.isActive();
     } catch (error) {
-      log(error.message, { level: "error" });
+      log(error.message, { level: 'error' });
       return false;
     }
   }
@@ -89,7 +89,7 @@ class PaymentDirector {
       const adapter = this.interface(context);
       return adapter.isPayLaterAllowed();
     } catch (error) {
-      log(error.message, { level: "error" });
+      log(error.message, { level: 'error' });
       return false;
     }
   }

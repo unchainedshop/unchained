@@ -1,7 +1,7 @@
-import { Meteor } from "meteor/meteor";
-import { Migrations } from "meteor/percolate:migrations";
-import SimpleSchema from "simpl-schema";
-import { Schemas } from "meteor/unchained:utils";
+import { Meteor } from 'meteor/meteor';
+import { Migrations } from 'meteor/percolate:migrations';
+import SimpleSchema from 'simpl-schema';
+import { Schemas } from 'meteor/unchained:utils';
 
 const { Address, timestampFields } = Schemas;
 
@@ -9,9 +9,9 @@ Meteor.users.attachSchema(
   new SimpleSchema(
     {
       emails: Array,
-      "emails.$": Object,
-      "emails.$.address": String,
-      "emails.$.verified": Boolean,
+      'emails.$': Object,
+      'emails.$.address': String,
+      'emails.$.verified': Boolean,
       username: String,
       lastLogin: new SimpleSchema({
         timestamp: Date,
@@ -33,7 +33,7 @@ Meteor.users.attachSchema(
       lastBillingAddress: Address,
       guest: Boolean,
       tags: Array,
-      "tags.$": String,
+      'tags.$': String,
       avatarId: String,
       services: {
         type: Object,
@@ -41,7 +41,7 @@ Meteor.users.attachSchema(
         blackbox: true
       },
       roles: Array,
-      "roles.$": String,
+      'roles.$': String,
       ...timestampFields
     },
     { requiredByDefault: false }
@@ -50,7 +50,7 @@ Meteor.users.attachSchema(
 
 Migrations.add({
   version: 20180529,
-  name: "Move tags and guest from user.profile to user level",
+  name: 'Move tags and guest from user.profile to user level',
   up() {
     Meteor.users
       .find()
@@ -59,20 +59,20 @@ Migrations.add({
         const { profile = {} } = user;
         const displayName =
           profile.displayName ||
-          [profile.firstName, profile.lastName].filter(Boolean).join(" ");
+          [profile.firstName, profile.lastName].filter(Boolean).join(' ');
         Meteor.users.update(
           { _id: user._id },
           {
             $set: {
               tags: user.tags || null,
               guest: !!profile.guest,
-              "profile.displayName": displayName
+              'profile.displayName': displayName
             },
             $unset: {
-              "profile.tags": 1,
-              "profile.guest": 1,
-              "profile.firstName": 1,
-              "profile.lastName": 1
+              'profile.tags': 1,
+              'profile.guest': 1,
+              'profile.firstName': 1,
+              'profile.lastName': 1
             }
           }
         );
@@ -84,23 +84,23 @@ Migrations.add({
       .fetch()
       .forEach(user => {
         const { profile = {} } = user;
-        const displayName = profile.displayName || "";
+        const displayName = profile.displayName || '';
         Meteor.users.update(
           { _id: user._id },
           {
             $set: {
-              "profile.tags": user.tags || null,
-              "profile.guest": user.guest || false,
-              "profile.firstName": displayName.split(" ")[0],
-              "profile.lastName": displayName
-                .split(" ")
+              'profile.tags': user.tags || null,
+              'profile.guest': user.guest || false,
+              'profile.firstName': displayName.split(' ')[0],
+              'profile.lastName': displayName
+                .split(' ')
                 .splice(-1)
-                .join(" ")
+                .join(' ')
             },
             $unset: {
               tags: 1,
               guest: 1,
-              "profile.displayName": 1
+              'profile.displayName': 1
             }
           }
         );
@@ -110,6 +110,6 @@ Migrations.add({
 
 export default () => {
   Meteor.startup(() => {
-    Migrations.migrateTo("latest");
+    Migrations.migrateTo('latest');
   });
 };

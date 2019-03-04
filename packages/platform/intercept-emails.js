@@ -1,13 +1,13 @@
-import fs from "fs";
-import path from "path";
-import os from "os";
-import opn from "opn";
+import fs from 'fs';
+import path from 'path';
+import os from 'os';
+import opn from 'opn';
 
 const logger = console;
 const mailman = {};
 
 function writeFile(filename, data, done) {
-  fs.mkdtemp(path.join(os.tmpdir(), "mailman-"), (err1, folder) => {
+  fs.mkdtemp(path.join(os.tmpdir(), 'mailman-'), (err1, folder) => {
     if (err1) return done(err1);
     const temporaryFolderPath = `${folder}/${filename}`;
     return fs.writeFile(temporaryFolderPath, data, err2 => {
@@ -19,9 +19,9 @@ function writeFile(filename, data, done) {
 
 mailman.warnNoEmailPackage = function warnNoEmailPackage() {
   logger.log(
-    "unchained:platform -> Unchained Mail Manager could not start because you are not using the email package"
+    'unchained:platform -> Unchained Mail Manager could not start because you are not using the email package'
   );
-  logger.log("unchained:platform -> Please run `meteor add email`");
+  logger.log('unchained:platform -> Please run `meteor add email`');
 };
 
 export default () => {
@@ -43,12 +43,12 @@ export default () => {
           logger.log(err);
           return;
         }
-        logger.log("unchained:platform -> Mailman detected an outgoing email");
+        logger.log('unchained:platform -> Mailman detected an outgoing email');
         opn(filePath);
       });
     };
 
     Email.send = mailman.send;
-    logger.log("unchained:platform -> E-Mail Interception activated");
+    logger.log('unchained:platform -> E-Mail Interception activated');
   });
 };

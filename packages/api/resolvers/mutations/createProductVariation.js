@@ -1,8 +1,8 @@
-import { log } from "meteor/unchained:core-logger";
+import { log } from 'meteor/unchained:core-logger';
 import {
   ProductVariations,
   ProductVariationType
-} from "meteor/unchained:core-products";
+} from 'meteor/unchained:core-products';
 
 export default function(
   root,

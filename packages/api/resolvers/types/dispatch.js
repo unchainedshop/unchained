@@ -1,4 +1,4 @@
-import crypto from "crypto";
+import crypto from 'crypto';
 
 export default {
   _id: ({
@@ -11,7 +11,7 @@ export default {
     userId
   }) =>
     crypto
-      .createHash("sha256")
+      .createHash('sha256')
       .update(
         [
           product._id,
@@ -20,8 +20,8 @@ export default {
           referenceDate,
           quantity,
           country,
-          userId || "ANONYMOUS"
-        ].join("")
+          userId || 'ANONYMOUS'
+        ].join('')
       )
-      .digest("hex")
+      .digest('hex')
 };

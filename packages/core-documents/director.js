@@ -1,11 +1,11 @@
-import { log } from "meteor/unchained:core-logger";
+import { log } from 'meteor/unchained:core-logger';
 
 class DocumentAdapter {
-  static key = "";
+  static key = '';
 
-  static label = "";
+  static label = '';
 
-  static version = "";
+  static version = '';
 
   static isActivatedFor() {
     return false;

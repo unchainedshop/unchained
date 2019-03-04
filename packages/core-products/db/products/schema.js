@@ -1,30 +1,30 @@
-import SimpleSchema from "simpl-schema";
-import { Schemas } from "meteor/unchained:utils";
-import { Products, ProductTexts } from "./collections";
+import SimpleSchema from 'simpl-schema';
+import { Schemas } from 'meteor/unchained:utils';
+import { Products, ProductTexts } from './collections';
 
 export const ProductTypes = {
-  SimpleProduct: "SIMPLE_PRODUCT",
-  ConfigurableProduct: "CONFIGURABLE_PRODUCT",
-  BundleProduct: "BUNDLE_PRODUCT"
+  SimpleProduct: 'SIMPLE_PRODUCT',
+  ConfigurableProduct: 'CONFIGURABLE_PRODUCT',
+  BundleProduct: 'BUNDLE_PRODUCT'
 };
 
 export const ProductStatus = {
   DRAFT: null,
-  ACTIVE: "ACTIVE",
-  DELETED: "DELETED"
+  ACTIVE: 'ACTIVE',
+  DELETED: 'DELETED'
 };
 
 const ProductCommerceSchema = new SimpleSchema(
   {
     salesUnit: String,
     pricing: Array,
-    "pricing.$": Object,
-    "pricing.$.isTaxable": Boolean,
-    "pricing.$.isNetPrice": Boolean,
-    "pricing.$.countryCode": String,
-    "pricing.$.currencyCode": String,
-    "pricing.$.amount": Number,
-    "pricing.$.maxQuantity": Number
+    'pricing.$': Object,
+    'pricing.$.isTaxable': Boolean,
+    'pricing.$.isNetPrice': Boolean,
+    'pricing.$.countryCode': String,
+    'pricing.$.currencyCode': String,
+    'pricing.$.amount': Number,
+    'pricing.$.maxQuantity': Number
   },
   { requiredByDefault: false }
 );
@@ -50,9 +50,9 @@ const ProductSupplySchema = new SimpleSchema(
 const ProductProxySchema = new SimpleSchema(
   {
     assignments: Array,
-    "assignments.$": Object,
-    "assignments.$.vector": { type: Object, blackbox: true },
-    "assignments.$.productId": SimpleSchema.RegEx.Id
+    'assignments.$': Object,
+    'assignments.$.vector': { type: Object, blackbox: true },
+    'assignments.$.productId': SimpleSchema.RegEx.Id
   },
   { requiredByDefault: false }
 );
@@ -67,13 +67,13 @@ Products.attachSchema(
     {
       sequence: { type: Number, required: true, index: true },
       slugs: { type: Array, index: true },
-      "slugs.$": String,
+      'slugs.$': String,
       type: { type: String, required: true },
       status: { type: String, index: true },
       authorId: { type: SimpleSchema.RegEx.Id, required: true },
       published: Date,
       tags: { type: Array, index: true },
-      "tags.$": String,
+      'tags.$': String,
       commerce: ProductCommerceSchema,
       warehousing: ProductWarehousingSchema,
       supply: ProductSupplySchema,
@@ -82,7 +82,7 @@ Products.attachSchema(
         type: Array,
         optional: true
       },
-      "bundleItems.$": ProductBundleItemSchema,
+      'bundleItems.$': ProductBundleItemSchema,
       meta: { type: Object, blackbox: true },
       ...Schemas.timestampFields
     },
@@ -101,7 +101,7 @@ ProductTexts.attachSchema(
       subtitle: String,
       description: String,
       labels: Array,
-      "labels.$": String,
+      'labels.$': String,
       ...Schemas.timestampFields
     },
     { requiredByDefault: false }

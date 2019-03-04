@@ -1,14 +1,14 @@
 import {
   ProductPricingDirector,
   ProductPricingAdapter
-} from "meteor/unchained:core-pricing";
+} from 'meteor/unchained:core-pricing';
 
 class ProductPrice extends ProductPricingAdapter {
-  static key = "shop.unchained.pricing.product-price";
+  static key = 'shop.unchained.pricing.product-price';
 
-  static version = "1.0";
+  static version = '1.0';
 
-  static label = "Berechnung der Bestellposition: Bruttopreis";
+  static label = 'Berechnung der Bestellposition: Bruttopreis';
 
   static orderIndex = 0;
 

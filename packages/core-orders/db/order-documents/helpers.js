@@ -1,12 +1,12 @@
-import "meteor/dburles:collection-helpers";
-import { Promise } from "meteor/promise";
-import { log } from "meteor/unchained:core-logger";
-import { DocumentDirector } from "meteor/unchained:core-documents";
-import { OrderDocuments } from "./collections";
-import { OrderDocumentTypes } from "./schema";
-import { Orders } from "../orders/collections";
-import { OrderDeliveries } from "../order-deliveries/collections";
-import { OrderPayments } from "../order-payments/collections";
+import 'meteor/dburles:collection-helpers';
+import { Promise } from 'meteor/promise';
+import { log } from 'meteor/unchained:core-logger';
+import { DocumentDirector } from 'meteor/unchained:core-documents';
+import { OrderDocuments } from './collections';
+import { OrderDocumentTypes } from './schema';
+import { Orders } from '../orders/collections';
+import { OrderDeliveries } from '../order-deliveries/collections';
+import { OrderPayments } from '../order-payments/collections';
 
 class OrderDocumentDirector extends DocumentDirector {
   constructor(context) {
@@ -25,7 +25,7 @@ class OrderDocumentDirector extends DocumentDirector {
   async buildOrderConfirmation(options) {
     const orderNumber = this.resolveOrderNumber(options);
     if (!orderNumber) return;
-    const documents = await this.execute("buildOrderConfirmation", {
+    const documents = await this.execute('buildOrderConfirmation', {
       orderNumber,
       ...options
     });
@@ -49,7 +49,7 @@ class OrderDocumentDirector extends DocumentDirector {
   async buildDeliveryNote(options) {
     const orderNumber = this.resolveOrderNumber(options);
     if (!orderNumber) return;
-    const documents = await this.execute("buildDeliveryNote", {
+    const documents = await this.execute('buildDeliveryNote', {
       orderNumber,
       ...options
     });
@@ -75,7 +75,7 @@ class OrderDocumentDirector extends DocumentDirector {
   async buildInvoice(options) {
     const orderNumber = this.resolveOrderNumber(options);
     if (!orderNumber) return;
-    const documents = await this.execute("buildInvoiceAndReceipt", {
+    const documents = await this.execute('buildInvoiceAndReceipt', {
       orderNumber,
       ...options
     });
@@ -178,7 +178,7 @@ class OrderDocumentDirector extends DocumentDirector {
 OrderDocuments.updateDocuments = ({ orderId, ...rest }) => {
   const order = Orders.findOne({ _id: orderId });
   const director = new OrderDocumentDirector({ order });
-  log("Update Order Documents", { orderId });
+  log('Update Order Documents', { orderId });
   Promise.await(director.updateDocuments({ ...rest }));
 };
 

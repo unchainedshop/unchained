@@ -1,4 +1,4 @@
-import { ApolloError } from "apollo-server-express";
+import { ApolloError } from 'apollo-server-express';
 
 export const createError = (code, message) =>
   class extends ApolloError {

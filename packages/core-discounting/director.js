@@ -1,11 +1,11 @@
-import { log } from "meteor/unchained:core-logger";
+import { log } from 'meteor/unchained:core-logger';
 
 class DiscountAdapter {
-  static key = "";
+  static key = '';
 
-  static label = "";
+  static label = '';
 
-  static version = "";
+  static version = '';
 
   static orderIndex = -1;
 
@@ -83,7 +83,7 @@ class DiscountDirector {
 
   findSystemDiscounts() {
     if (!this.context.order) return [];
-    log("DiscountDirector -> Find system discounts");
+    log('DiscountDirector -> Find system discounts');
     const discountKeys = DiscountDirector.sortedAdapters()
       .map(AdapterClass => new AdapterClass({ context: this.context }))
       .filter(adapter => adapter.isValid(true))

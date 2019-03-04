@@ -1,6 +1,6 @@
-import { Promise } from "meteor/promise";
-import { log } from "meteor/unchained:core-logger";
-import { Avatars, Users } from "meteor/unchained:core-users";
+import { Promise } from 'meteor/promise';
+import { log } from 'meteor/unchained:core-logger';
+import { Avatars, Users } from 'meteor/unchained:core-users';
 
 export default function(root, { avatar, userId: foreignUserId }, { userId }) {
   const normalizedUserId = foreignUserId || userId;

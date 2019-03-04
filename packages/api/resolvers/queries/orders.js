@@ -1,5 +1,5 @@
-import { log } from "meteor/unchained:core-logger";
-import { Orders, OrderStatus } from "meteor/unchained:core-orders";
+import { log } from 'meteor/unchained:core-logger';
+import { Orders, OrderStatus } from 'meteor/unchained:core-orders';
 
 export default function(
   root,

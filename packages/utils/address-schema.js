@@ -1,4 +1,4 @@
-import SimpleSchema from "simpl-schema";
+import SimpleSchema from 'simpl-schema';
 
 export default new SimpleSchema(
   {

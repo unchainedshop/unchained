@@ -1,7 +1,7 @@
-import { Promise } from "meteor/promise";
-import "meteor/dburles:collection-helpers";
-import { DeliveryProviders } from "./collections";
-import { DeliveryDirector } from "../director";
+import { Promise } from 'meteor/promise';
+import 'meteor/dburles:collection-helpers';
+import { DeliveryProviders } from './collections';
+import { DeliveryDirector } from '../director';
 
 const emptyContext = {};
 

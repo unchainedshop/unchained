@@ -1,4 +1,4 @@
-import { Logs } from "meteor/unchained:core-logger";
+import { Logs } from 'meteor/unchained:core-logger';
 
 // we don't log this query because of reasons ;)
 export default function(root, { limit = 10, offset = 0 }, { userId }) {

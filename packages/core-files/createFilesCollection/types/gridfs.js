@@ -1,7 +1,7 @@
-import { Meteor } from "meteor/meteor";
+import { Meteor } from 'meteor/meteor';
 
-import fs from "fs"; // Required to read files initially uploaded via Meteor-Files
-import { MongoInternals } from "meteor/mongo";
+import fs from 'fs'; // Required to read files initially uploaded via Meteor-Files
+import { MongoInternals } from 'meteor/mongo';
 
 export default collectionName => {
   const gridFSBucket = new MongoInternals.NpmModule.GridFSBucket(
@@ -18,16 +18,16 @@ export default collectionName => {
         fs.createReadStream(file.versions[versionName].path)
           .pipe(
             gridFSBucket.openUploadStream(file.name, {
-              contentType: file.type || "binary/octet-stream",
+              contentType: file.type || 'binary/octet-stream',
               metadata
             })
           )
-          .on("error", err => {
+          .on('error', err => {
             console.error(err); // eslint-disable-line
             throw err;
           })
           .on(
-            "finish",
+            'finish',
             Meteor.bindEnvironment(ver => {
               const property = `versions.${versionName}.meta.gridFsFileId`;
               this.collection.update(file._id, {
@@ -44,25 +44,25 @@ export default collectionName => {
         const readStream = gridFSBucket.openDownloadStream(
           new ObjID(gridFsFileId)
         );
-        readStream.on("data", data => {
+        readStream.on('data', data => {
           http.response.write(data);
         });
 
-        readStream.on("end", () => {
-          http.response.end("end");
+        readStream.on('end', () => {
+          http.response.end('end');
         });
-        readStream.on("error", () => {
+        readStream.on('error', () => {
           // not found probably
           // eslint-disable-next-line no-param-reassign
           http.response.statusCode = 404;
-          http.response.end("not found");
+          http.response.end('not found');
         });
 
         http.response.setHeader(
-          "Content-Disposition",
+          'Content-Disposition',
           `inline; filename="${file.name}"`
         );
-        http.response.setHeader("Cache-Control", this.cacheControl);
+        http.response.setHeader('Cache-Control', this.cacheControl);
       }
       return Boolean(gridFsFileId); // Serve file from either GridFS or FS if it wasn't uploaded yet
     },

@@ -1,5 +1,5 @@
-import { Meteor } from "meteor/meteor";
-import getConnection from "./getConnection";
+import { Meteor } from 'meteor/meteor';
+import getConnection from './getConnection';
 
 export default function(passedContext, name, ...args) {
   const handler = Meteor.default_server.method_handlers[name];

@@ -8,7 +8,7 @@ Package.describe({
 });
 
 Package.onUse(api => {
-  api.versionsFrom("1.8");
+  api.versionsFrom('1.8');
 
   api.use('ecmascript');
   api.use('meteor');
@@ -37,11 +37,11 @@ Package.onUse(api => {
   api.use('unchained:core-filters@0.24.0');
   api.use('unchained:core-assortments@0.24.0');
 
-  api.mainModule("api.js", "server");
+  api.mainModule('api.js', 'server');
 });
 
 Package.onTest(api => {
-  api.use("ecmascript");
-  api.use("unchained:api");
-  api.mainModule("api-tests.js");
+  api.use('ecmascript');
+  api.use('unchained:api');
+  api.mainModule('api-tests.js');
 });

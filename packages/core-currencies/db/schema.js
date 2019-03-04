@@ -1,6 +1,6 @@
-import { Schemas } from "meteor/unchained:utils";
-import SimpleSchema from "simpl-schema";
-import { Currencies } from "./collections";
+import { Schemas } from 'meteor/unchained:utils';
+import SimpleSchema from 'simpl-schema';
+import { Currencies } from './collections';
 
 Currencies.attachSchema(
   new SimpleSchema(

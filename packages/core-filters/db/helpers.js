@@ -1,11 +1,11 @@
-import "meteor/dburles:collection-helpers";
-import { Locale } from "locale";
-import { findLocalizedText } from "meteor/unchained:core";
-import { log } from "meteor/unchained:core-logger";
-import { Products } from "meteor/unchained:core-products";
-import { FilterTypes } from "./schema";
-import { Filters, FilterTexts } from "./collections";
-import { FilterDirector } from "../director";
+import 'meteor/dburles:collection-helpers';
+import { Locale } from 'locale';
+import { findLocalizedText } from 'meteor/unchained:core';
+import { log } from 'meteor/unchained:core-logger';
+import { Products } from 'meteor/unchained:core-products';
+import { FilterTypes } from './schema';
+import { Filters, FilterTexts } from './collections';
+import { FilterDirector } from '../director';
 
 const parseQueryArray = query =>
   (query || []).reduce(
@@ -172,11 +172,11 @@ Filters.filterProductIds = ({
 };
 
 Filters.invalidateFilterCaches = () => {
-  log("Filters: Invalidating filter caches...");
+  log('Filters: Invalidating filter caches...');
   Filters.find()
     .fetch()
     .forEach(filter => filter.invalidateProductIdCache());
-  log("Filters: Invalided the filter caches");
+  log('Filters: Invalided the filter caches');
 };
 
 Filters.filterFilters = ({

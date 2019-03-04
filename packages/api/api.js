@@ -1,25 +1,25 @@
-import { ApolloServer } from "apollo-server-express";
-import { WebApp } from "meteor/webapp";
-import { buildLocaleContext } from "meteor/unchained:core";
-import { log } from "meteor/unchained:core-logger";
-import getUserContext from "./user-context";
-import typeDefs from "./schema";
-import resolvers from "./resolvers";
-import { configureRoles } from "./roles";
+import { ApolloServer } from 'apollo-server-express';
+import { WebApp } from 'meteor/webapp';
+import { buildLocaleContext } from 'meteor/unchained:core';
+import { log } from 'meteor/unchained:core-logger';
+import getUserContext from './user-context';
+import typeDefs from './schema';
+import resolvers from './resolvers';
+import { configureRoles } from './roles';
 
-export callMethod from "./callMethod";
-export hashPassword from "./hashPassword";
-export getConnection from "./getConnection";
-export * as roles from "./roles";
-export * as acl from "./acl";
-export * as errors from "./errors";
+export callMethod from './callMethod';
+export hashPassword from './hashPassword';
+export getConnection from './getConnection';
+export * as roles from './roles';
+export * as acl from './acl';
+export * as errors from './errors';
 
 const { APOLLO_ENGINE_KEY } = process.env;
 
 const defaultContext = req => {
   const remoteAddress =
-    req.headers["x-real-ip"] ||
-    req.headers["x-forwarded-for"] ||
+    req.headers['x-real-ip'] ||
+    req.headers['x-forwarded-for'] ||
     req.connection.remoteAddress ||
     req.socket.remoteAddress ||
     req.connection.socket.remoteAddress;
@@ -58,7 +58,7 @@ const startUnchainedServer = options => {
           ...rest
         } = error;
         log(`${message} ${extensions && extensions.code}`, {
-          level: "error",
+          level: 'error',
           ...extensions,
           ...rest
         });
@@ -73,10 +73,10 @@ const startUnchainedServer = options => {
       ? {
           apiKey: APOLLO_ENGINE_KEY,
           privateVariables: [
-            "email",
-            "plainPassword",
-            "oldPlainPassword",
-            "newPlainPassword"
+            'email',
+            'plainPassword',
+            'oldPlainPassword',
+            'newPlainPassword'
           ],
           ...engine
         }
@@ -94,7 +94,7 @@ const startUnchainedServer = options => {
           if (corsOrigins.indexOf(origin) !== -1) {
             callback(null, true);
           } else {
-            callback(new Error("Not allowed by CORS"));
+            callback(new Error('Not allowed by CORS'));
           }
         }
       : corsOrigins;
@@ -111,8 +111,8 @@ const startUnchainedServer = options => {
     },
   });
 
-  WebApp.connectHandlers.use("/graphql", (req, res) => {
-    if (req.method === "GET") {
+  WebApp.connectHandlers.use('/graphql', (req, res) => {
+    if (req.method === 'GET') {
       res.end();
     }
   });

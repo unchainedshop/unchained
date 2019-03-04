@@ -2,31 +2,31 @@ import {
   PaymentDirector,
   PaymentAdapter,
   PaymentError
-} from "meteor/unchained:core-payment";
+} from 'meteor/unchained:core-payment';
 
 const { STRIPE_SECRET, EMAIL_WEBSITE_NAME } = process.env;
 
 class Stripe extends PaymentAdapter {
-  static key = "com.stripe";
+  static key = 'com.stripe';
 
-  static label = "Stripe";
+  static label = 'Stripe';
 
-  static version = "1.0";
+  static version = '1.0';
 
   static initialConfiguration = [
     {
-      key: "publishableAPIKey",
+      key: 'publishableAPIKey',
       value: null
     }
   ];
 
   static typeSupported(type) {
-    return type === "CARD";
+    return type === 'CARD';
   }
 
   getPublishableApiKey() {
     return this.config.reduce((current, item) => {
-      if (item.key === "publishableAPIKey") return item.value;
+      if (item.key === 'publishableAPIKey') return item.value;
       return current;
     }, null);
   }
@@ -56,7 +56,7 @@ class Stripe extends PaymentAdapter {
 
   async charge({ stripeToken, stripeCustomerId } = {}) {
     if (!stripeToken)
-      throw new Error("You have to provide stripeToken in paymentContext");
+      throw new Error('You have to provide stripeToken in paymentContext');
     const StripeAPI = require('stripe'); // eslint-disable-line
     const stripe = StripeAPI(this.getSecretkey());
     const pricing = this.context.order.pricing();
@@ -67,7 +67,7 @@ class Stripe extends PaymentAdapter {
       source: stripeToken.id,
       customer: stripeCustomerId
     });
-    this.log("Stripe -> ", stripeToken, stripeChargeReceipt);
+    this.log('Stripe -> ', stripeToken, stripeChargeReceipt);
     return stripeChargeReceipt;
   }
 }

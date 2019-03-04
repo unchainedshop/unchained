@@ -1,5 +1,5 @@
-import { log } from "meteor/unchained:core-logger";
-import { Products } from "meteor/unchained:core-products";
+import { log } from 'meteor/unchained:core-logger';
+import { Products } from 'meteor/unchained:core-products';
 
 export default function(root, { texts, productId }, { userId }) {
   log(`mutation updateProductTexts ${productId}`, { userId });

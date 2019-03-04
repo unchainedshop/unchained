@@ -1,15 +1,15 @@
-import moment from "moment";
+import moment from 'moment';
 import {
   DeliveryPricingDirector,
   DeliveryPricingAdapter
-} from "meteor/unchained:core-pricing";
+} from 'meteor/unchained:core-pricing';
 
 class DeliverySwissTax extends DeliveryPricingAdapter {
-  static key = "shop.unchained.pricing.delivery-swiss-tax";
+  static key = 'shop.unchained.pricing.delivery-swiss-tax';
 
-  static version = "1.0";
+  static version = '1.0';
 
-  static label = "Berechnung MwSt. für Versandgebühren (Schweiz)";
+  static label = 'Berechnung MwSt. für Versandgebühren (Schweiz)';
 
   static orderIndex = 20;
 
@@ -23,7 +23,7 @@ class DeliverySwissTax extends DeliveryPricingAdapter {
         ? new Date(this.context.order.ordered)
         : new Date();
     const referenceDate = moment(date);
-    if (referenceDate.isSameOrAfter("2018-01-01")) {
+    if (referenceDate.isSameOrAfter('2018-01-01')) {
       return 0.077;
     }
     return 0.08;

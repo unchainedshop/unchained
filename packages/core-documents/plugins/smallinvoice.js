@@ -1,9 +1,9 @@
-import { HTTP } from "meteor/http";
-import moment from "moment";
+import { HTTP } from 'meteor/http';
+import moment from 'moment';
 import {
   DocumentDirector,
   DocumentAdapter
-} from "meteor/unchained:core-documents";
+} from 'meteor/unchained:core-documents';
 
 const { SMALLINVOICE_TOKEN, LANG } = process.env;
 
@@ -25,7 +25,7 @@ class SmallinvoiceAPI {
   };
 
   constructor({
-    endpoint = "https://api.smallinvoice.com",
+    endpoint = 'https://api.smallinvoice.com',
     token,
     language,
     logger
@@ -37,7 +37,7 @@ class SmallinvoiceAPI {
 
     const {
       data: { items, error }
-    } = this.get("/client/list");
+    } = this.get('/client/list');
     if (error) throw new Error(error);
     this.clientMap = (items || []).reduce((oldObj, { notes, id }) => {
       const newObj = oldObj;
@@ -49,19 +49,19 @@ class SmallinvoiceAPI {
   post(path, options) {
     const url = this.url(path);
     this.logger(`Smallinvoice -> POST: ${url}`);
-    return HTTP.call("POST", url, options);
+    return HTTP.call('POST', url, options);
   }
 
   get(path, options) {
     const url = this.url(path);
     this.logger(`Smallinvoice -> GET: ${url}`);
-    return HTTP.call("GET", url, options);
+    return HTTP.call('GET', url, options);
   }
 
   postAsync(path, options) {
     const url = this.url(path);
     this.logger(`Smallinvoice -> POST (async): ${url}`);
-    return HTTP.call("POST", url, options, (result, error) => {
+    return HTTP.call('POST', url, options, (result, error) => {
       this.logger(result, error);
     });
   }
@@ -88,7 +88,7 @@ class SmallinvoiceAPI {
 
   mapDiscounts(discounts) {
     return discounts.map(
-      ({ name, description = "", price, quantity, vat, number }) => ({
+      ({ name, description = '', price, quantity, vat, number }) => ({
         type: this.constructor.ItemType.PRODUCT,
         number,
         name,
@@ -117,7 +117,7 @@ class SmallinvoiceAPI {
     const mappedBody = {
       data: {
         type: 1,
-        name: `${firstName || ""} ${lastName || ""}`,
+        name: `${firstName || ''} ${lastName || ''}`,
         email: emailAddress,
         phone: telNumber,
         addition: company,
@@ -126,7 +126,7 @@ class SmallinvoiceAPI {
         addresses: [
           {
             street: addressLine,
-            streetno: "",
+            streetno: '',
             code: postalCode,
             city,
             country: countryCode
@@ -143,7 +143,7 @@ class SmallinvoiceAPI {
       if (editResult.error) throw new Error(editResult.error);
       return clientId;
     }
-    const { data: addResult } = this.post("/client/add", mappedBody);
+    const { data: addResult } = this.post('/client/add', mappedBody);
     if (addResult.error) throw new Error(addResult.error);
     this.clientMap[userId] = addResult.id;
     return addResult.id;
@@ -160,7 +160,7 @@ class SmallinvoiceAPI {
   }) {
     const {
       data: { error, id }
-    } = this.post("/confirmation/add", {
+    } = this.post('/confirmation/add', {
       data: {
         number,
         client_id: clientId,
@@ -199,7 +199,7 @@ class SmallinvoiceAPI {
   }) {
     const {
       data: { error, id }
-    } = this.post("/receipt/add", {
+    } = this.post('/receipt/add', {
       data: {
         introduction,
         number,
@@ -240,7 +240,7 @@ class SmallinvoiceAPI {
   }) {
     const {
       data: { error, id }
-    } = this.post("/invoice/add", {
+    } = this.post('/invoice/add', {
       data: {
         introduction,
         number,
@@ -272,11 +272,11 @@ class SmallinvoiceAPI {
 }
 
 class Smallinvoice extends DocumentAdapter {
-  static key = "shop.unchained.smallinvoice";
+  static key = 'shop.unchained.smallinvoice';
 
-  static label = "Smallinvoice";
+  static label = 'Smallinvoice';
 
-  static version = "1.0";
+  static version = '1.0';
 
   static isActivatedFor() {
     if (!SMALLINVOICE_TOKEN) return false;
@@ -332,7 +332,7 @@ class Smallinvoice extends DocumentAdapter {
       return [
         {
           number: null,
-          name: "Specials / Discounts",
+          name: 'Specials / Discounts',
           price: discounts / 100,
           quantity: 1,
           vat: Math.round(taxRate * 100 * 10000) / 10000
@@ -346,7 +346,7 @@ class Smallinvoice extends DocumentAdapter {
     if (ancestors && ancestors.length > 0) {
       const oldInvoiceId = (ancestors[0].meta || {}).referenceId;
       if (oldInvoiceId) {
-        if (payment.status === "PAID") {
+        if (payment.status === 'PAID') {
           this.api.setInvoiceStatus(oldInvoiceId, SmallinvoiceAPI.Status.PAID);
         } else {
           this.api.setInvoiceStatus(oldInvoiceId, SmallinvoiceAPI.Status.SENT);
@@ -367,22 +367,22 @@ class Smallinvoice extends DocumentAdapter {
     this.log(`Smallinvoice -> Build Invoice and Receipt ${number}`);
 
     if (!number) {
-      this.log("Smallinvoice -> No OrderNumber provided, skipping");
+      this.log('Smallinvoice -> No OrderNumber provided, skipping');
       return false;
     }
     const invoiceId = this.api.addInvoice({
       number,
       clientId,
-      date: moment(date).format("YYYY-MM-DD"),
+      date: moment(date).format('YYYY-MM-DD'),
       due: moment(date)
-        .add(30, "days")
-        .format("YYYY-MM-DD"),
+        .add(30, 'days')
+        .format('YYYY-MM-DD'),
       currency: order.currency,
       positions,
       discounts
     });
 
-    if (payment.status === "PAID") {
+    if (payment.status === 'PAID') {
       this.api.setInvoiceStatus(invoiceId, SmallinvoiceAPI.Status.PAID);
     } else {
       this.api.setInvoiceStatus(invoiceId, SmallinvoiceAPI.Status.SENT);
@@ -392,12 +392,12 @@ class Smallinvoice extends DocumentAdapter {
       {
         file: this.api.url(`/invoice/pdf/id/${invoiceId}`),
         meta: { referenceId: invoiceId },
-        fileName: "invoice.pdf"
+        fileName: 'invoice.pdf'
       },
       {
         file: this.api.url(`/invoice/pdf/receipt/1/id/${invoiceId}`),
         meta: { referenceId: invoiceId },
-        fileName: "receipt.pdf"
+        fileName: 'receipt.pdf'
       }
     ];
   }
@@ -424,27 +424,27 @@ class Smallinvoice extends DocumentAdapter {
     const number = orderNumber || order.orderNumber;
     this.log(`Smallinvoice -> Build Delivery Note ${number}`);
     if (!number) {
-      this.log("Smallinvoice -> No OrderNumber provided, skipping");
+      this.log('Smallinvoice -> No OrderNumber provided, skipping');
       return false;
     }
 
     const receiptId = this.api.addReceipt({
       number,
       clientId,
-      date: moment(date).format("YYYY-MM-DD"),
+      date: moment(date).format('YYYY-MM-DD'),
       currency: order.currency,
       positions,
       discounts
     });
 
-    if (delivery.status === "DELIVERED") {
+    if (delivery.status === 'DELIVERED') {
       this.api.setReceiptStatus(receiptId, SmallinvoiceAPI.Status.SENT);
     }
 
     return {
       file: this.api.url(`/receipt/pdf/id/${receiptId}`),
       meta: { referenceId: receiptId },
-      fileName: "delivery_note.pdf"
+      fileName: 'delivery_note.pdf'
     };
   }
 
@@ -460,13 +460,13 @@ class Smallinvoice extends DocumentAdapter {
     const number = orderNumber || order.orderNumber;
     this.log(`Smallinvoice -> Build Order Confirmation ${number}`);
     if (!number) {
-      this.log("Smallinvoice -> No OrderNumber provided, skipping");
+      this.log('Smallinvoice -> No OrderNumber provided, skipping');
       return false;
     }
     const confirmationId = this.api.addConfirmation({
       number,
       clientId,
-      date: moment(date).format("YYYY-MM-DD"),
+      date: moment(date).format('YYYY-MM-DD'),
       currency: order.currency,
       positions,
       discounts
@@ -477,7 +477,7 @@ class Smallinvoice extends DocumentAdapter {
     return {
       file: this.api.url(`/confirmation/pdf/id/${confirmationId}`),
       meta: { referenceId: confirmationId },
-      fileName: "confirmation.pdf"
+      fileName: 'confirmation.pdf'
     };
   }
 }

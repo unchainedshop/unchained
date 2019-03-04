@@ -1,14 +1,14 @@
 import {
   OrderPricingDirector,
   OrderPricingAdapter
-} from "meteor/unchained:core-pricing";
+} from 'meteor/unchained:core-pricing';
 
 class OrderItems extends OrderPricingAdapter {
-  static key = "shop.unchained.pricing.order-items";
+  static key = 'shop.unchained.pricing.order-items';
 
-  static version = "1.0";
+  static version = '1.0';
 
-  static label = "Bruttopreis + MwSt. aller Artikel summieren";
+  static label = 'Bruttopreis + MwSt. aller Artikel summieren';
 
   static orderIndex = 0;
 

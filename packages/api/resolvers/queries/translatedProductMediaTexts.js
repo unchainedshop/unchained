@@ -1,5 +1,5 @@
-import { log } from "meteor/unchained:core-logger";
-import { ProductMediaTexts } from "meteor/unchained:core-products";
+import { log } from 'meteor/unchained:core-logger';
+import { ProductMediaTexts } from 'meteor/unchained:core-products';
 
 export default function(root, { productMediaId }, { userId }) {
   log(`query translatedProductMediaTexts ${productMediaId}`, { userId });

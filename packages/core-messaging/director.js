@@ -1,19 +1,19 @@
-import { log } from "meteor/unchained:core-logger";
-import { defaultEmailResolver, defaultSMSResolver } from "./template-resolvers";
+import { log } from 'meteor/unchained:core-logger';
+import { defaultEmailResolver, defaultSMSResolver } from './template-resolvers';
 
 const { LANG } = process.env;
 
 const MessagingType = {
-  EMAIL: "EMAIL",
-  SMS: "SMS"
+  EMAIL: 'EMAIL',
+  SMS: 'SMS'
 };
 
 class MessagingAdapter {
-  static key = "";
+  static key = '';
 
-  static label = "";
+  static label = '';
 
-  static version = "";
+  static version = '';
 
   static isActivatedFor() {
     return false;
@@ -42,7 +42,7 @@ class MessagingDirector {
   }
 
   sendMessage(options) {
-    return this.execute("sendMessage", options);
+    return this.execute('sendMessage', options);
   }
 
   execute(name, options) {
@@ -56,7 +56,7 @@ class MessagingDirector {
               AdapterClass.version
             }) skipped`,
             {
-              level: "warn"
+              level: 'warn'
             }
           );
         }

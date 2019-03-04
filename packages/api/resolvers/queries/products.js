@@ -1,5 +1,5 @@
-import { log } from "meteor/unchained:core-logger";
-import { Products, ProductStatus } from "meteor/unchained:core-products";
+import { log } from 'meteor/unchained:core-logger';
+import { Products, ProductStatus } from 'meteor/unchained:core-products';
 
 export default function(
   root,
@@ -8,8 +8,8 @@ export default function(
 ) {
   log(
     `query products: ${limit} ${offset} ${
-      includeDrafts ? "includeDrafts" : ""
-    } ${slugs.join(",")}`,
+      includeDrafts ? 'includeDrafts' : ''
+    } ${slugs.join(',')}`,
     { userId }
   );
   const selector = {};

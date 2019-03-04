@@ -1,13 +1,13 @@
-import "meteor/dburles:collection-helpers";
-import { log } from "meteor/unchained:core-logger";
-import { DiscountDirector } from "meteor/unchained:core-discounting";
-import { OrderDiscounts } from "./collections";
-import { OrderDiscountTrigger } from "./schema";
-import { Orders } from "../orders/collections";
+import 'meteor/dburles:collection-helpers';
+import { log } from 'meteor/unchained:core-logger';
+import { DiscountDirector } from 'meteor/unchained:core-discounting';
+import { OrderDiscounts } from './collections';
+import { OrderDiscountTrigger } from './schema';
+import { Orders } from '../orders/collections';
 
 const ErrorCodes = {
-  CODE_ALREADY_PRESENT: "CODE_ALREADY_PRESENT",
-  CODE_NOT_VALID: "CODE_NOT_VALID"
+  CODE_ALREADY_PRESENT: 'CODE_ALREADY_PRESENT',
+  CODE_NOT_VALID: 'CODE_NOT_VALID'
 };
 
 OrderDiscounts.helpers({
@@ -133,7 +133,7 @@ OrderDiscounts.grabDiscount = ({ code, orderId }) => {
 OrderDiscounts.updateDiscounts = ({ orderId }) => {
   const order = Orders.findOne({ _id: orderId });
   const director = new DiscountDirector({ order });
-  log("Update Discounts", { orderId });
+  log('Update Discounts', { orderId });
 
   // 1. go through existing order-discounts and check if discount still valid,
   // those who are not valid anymore should get removed

@@ -1,18 +1,18 @@
-import { Schemas } from "meteor/unchained:utils";
-import SimpleSchema from "simpl-schema";
-import { OrderPayments } from "./collections";
+import { Schemas } from 'meteor/unchained:utils';
+import SimpleSchema from 'simpl-schema';
+import { OrderPayments } from './collections';
 
 const { logFields, contextFields, timestampFields } = Schemas;
 
 export const OrderPaymentStatus = {
   OPEN: null,
-  PAID: "PAID",
-  REFUNDED: "REFUNDED"
+  PAID: 'PAID',
+  REFUNDED: 'REFUNDED'
 };
 
 const calculationFields = {
   calculation: Array,
-  "calculation.$": {
+  'calculation.$': {
     type: Object,
     blackbox: true
   }

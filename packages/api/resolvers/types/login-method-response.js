@@ -1,4 +1,4 @@
-import { Users } from "meteor/unchained:core-users";
+import { Users } from 'meteor/unchained:core-users';
 
 export default {
   user({ id }) {

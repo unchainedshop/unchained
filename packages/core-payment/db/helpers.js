@@ -1,7 +1,7 @@
-import "meteor/dburles:collection-helpers";
-import { Promise } from "meteor/promise";
-import { PaymentDirector } from "../director";
-import { PaymentProviders } from "./collections";
+import 'meteor/dburles:collection-helpers';
+import { Promise } from 'meteor/promise';
+import { PaymentDirector } from '../director';
+import { PaymentProviders } from './collections';
 
 PaymentProviders.helpers({
   transformContext(key, value) {

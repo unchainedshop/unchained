@@ -2,14 +2,14 @@ import {
   OrderPricingDirector,
   OrderPricingAdapter,
   OrderPricingSheetRowCategories
-} from "meteor/unchained:core-pricing";
+} from 'meteor/unchained:core-pricing';
 
 class OrderItems extends OrderPricingAdapter {
-  static key = "shop.unchained.pricing.order-discount";
+  static key = 'shop.unchained.pricing.order-discount';
 
-  static version = "1.0";
+  static version = '1.0';
 
-  static label = "Bruttopreis + MwSt. aller Pauschal-Gutscheine summieren";
+  static label = 'Bruttopreis + MwSt. aller Pauschal-Gutscheine summieren';
 
   static orderIndex = 10;
 
