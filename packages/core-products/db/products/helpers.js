@@ -150,7 +150,7 @@ Products.helpers({
     return Products.getLocalizedTexts(this._id, parsedLocale);
   },
   normalizedStatus() {
-    return objectInvert(ProductStatus)[this.status];
+    return objectInvert(ProductStatus)[this.status || null];
   },
   media() {
     return ProductMedia.find({ productId: this._id }, { sort: { sortKey: 1 } }).fetch();

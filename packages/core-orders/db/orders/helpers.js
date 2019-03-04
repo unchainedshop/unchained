@@ -175,7 +175,7 @@ Orders.helpers({
     });
   },
   normalizedStatus() {
-    return objectInvert(OrderStatus)[this.status];
+    return objectInvert(OrderStatus)[this.status || null];
   },
   pricing() {
     const pricing = new OrderPricingSheet({
@@ -418,7 +418,7 @@ Orders.helpers({
     return JSON.stringify(this.context[key]);
   },
   isCart() {
-    return this.status === OrderStatus.OPEN;
+    return ((this.status || null) === OrderStatus.OPEN);
   },
 });
 

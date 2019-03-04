@@ -48,7 +48,7 @@ Quotations.helpers({
     });
   },
   normalizedStatus() {
-    return objectInvert(QuotationStatus)[this.status];
+    return objectInvert(QuotationStatus)[this.status || null];
   },
   updateContext(context) {
     return Quotations.updateContext({
