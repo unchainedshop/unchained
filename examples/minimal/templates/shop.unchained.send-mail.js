@@ -1,4 +1,4 @@
-import moment from "moment";
+import moment from 'moment';
 
 const mjmlTemplate = `
 <mjml>
@@ -66,10 +66,10 @@ const textTemplate = `
 
 export default (meta, context, { renderToText, renderMjmlToHtml }) => {
   const momentDate = moment(context.order.ordered);
-  momentDate.locale("de-CH");
-  const orderDate = momentDate.format("lll");
+  momentDate.locale('de-CH');
+  const orderDate = momentDate.format('lll');
   return {
-    to: to => to || "admin@localhost",
+    to: to => to || 'admin@localhost',
     from: from => from || EMAIL_FROM,
     subject: () =>
       `${EMAIL_WEBSITE_NAME}: Neue Bestellung / ${context.order.orderNumber}`,
