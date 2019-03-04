@@ -224,4 +224,9 @@ export default [/* GraphQL */`
     key: String!
     value: String
   }
+
+  input CreateProductBundleItemInput {
+    productId: ID!
+    quantity: Int!
+  }
 `];
