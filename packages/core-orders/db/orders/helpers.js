@@ -32,9 +32,6 @@ Logs.helpers({
 });
 
 Users.helpers({
-  isCart() {
-    return this.status === OrderStatus.OPEN;
-  },
   cart({ countryContext } = {}) {
     const openOrders = Orders.find({
       userId: this._id,
@@ -425,6 +422,9 @@ Orders.helpers({
       return provider.transformContext(key, this.context[key]);
     }
     return JSON.stringify(this.context[key]);
+  },
+  isCart() {
+    return this.status === OrderStatus.OPEN;
   },
 });
 
