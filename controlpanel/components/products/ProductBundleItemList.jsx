@@ -44,13 +44,13 @@ const ProductBundleItemList = ({
     <AutoForm onSubmit={addNewBundleItem} schema={schema}>
       <AutoField
         name={'productId'}
-        options={
-          allProducts
-          && allProducts.map(product => ({
+        options={[
+          { label: 'Choose Type', value: null },
+          ...(allProducts || []).map(product => ({
             label: product.texts.title,
             value: product._id,
-          }))
-        }
+          })),
+        ]}
       />
       <AutoField name={'quantity'} />
       <ErrorsField />

@@ -24,8 +24,8 @@
   },
   "dependencies": {
     "@zeit/next-css": "^1.0.1",
-    "apollo-cache-inmemory": "^1.5.0",
-    "apollo-client": "^2.5.0",
+    "apollo-cache-inmemory": "^1.5.1",
+    "apollo-client": "^2.5.1",
     "apollo-link": "^1.2.8",
     "apollo-link-context": "^1.0.14",
     "apollo-link-error": "^1.1.7",
@@ -42,7 +42,7 @@
     "next": "^8.0.3",
     "prop-types": "^15.7.2",
     "react": "^16.8.3",
-    "react-apollo": "^2.5.0",
+    "react-apollo": "^2.5.1",
     "react-datepicker": "^2.1.0",
     "react-dom": "^16.8.3",
     "react-dropzone": "^9.0.0",
@@ -62,7 +62,7 @@
   },
   "devDependencies": {
     "babel-eslint": "^10.0.1",
-    "eslint": "^5.14.1",
+    "eslint": "^5.15.0",
     "eslint-config-airbnb": "^17.1.0",
     "eslint-plugin-import": "^2.16.0",
     "eslint-plugin-jsx-a11y": "^6.2.1",

@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { startPlatform } from 'meteor/unchained:platform';
+import { Users } from 'meteor/unchained:core-users';
 import { Factory } from 'meteor/dburles:factory';
 import configureEmailTemplates from './templates';
 
@@ -21,6 +22,9 @@ const logger = console;
 
 const initializeDatabase = () => {
   try {
+    if (Users.find({ username: 'admin' }).count() > 0) {
+      return;
+    }
     const admin = Factory.create('user', {
       username: 'admin',
       roles: ['admin'],
