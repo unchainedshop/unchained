@@ -315,7 +315,7 @@ class Smallinvoice extends DocumentAdapter {
     const { order } = this.context;
     const clientId = this.api.upsertClient({
       ...order.contact,
-      ...order.address(),
+      ...(order.billingAddress || {}),
       userId: order.userId,
     });
     const positions = this.buildItems();
@@ -372,7 +372,7 @@ class Smallinvoice extends DocumentAdapter {
 
     const clientId = this.api.upsertClient({
       ...order.contact,
-      ...(delivery.context.address || order.address()),
+      ...(delivery.context.address || order.billingAddress || {}),
       countryCode: order.countryCode,
       userId: order.userId,
     });
@@ -409,7 +409,7 @@ class Smallinvoice extends DocumentAdapter {
     const { order } = this.context;
     const clientId = this.api.upsertClient({
       ...order.contact,
-      ...order.address(),
+      ...(order.billingAddress || {}),
       userId: order.userId,
     });
     const positions = this.buildItems();

@@ -56,10 +56,10 @@ OrderPayments.helpers({
     if (this.status !== OrderPaymentStatus.PAID) return true;
     return false;
   },
-  charge(paymentContext) {
+  charge(paymentContext, order) {
     if (this.status !== OrderPaymentStatus.OPEN) return;
     const provider = this.provider();
-    const arbitraryResponseData = provider.charge(paymentContext, this.order());
+    const arbitraryResponseData = provider.charge(paymentContext, order);
     if (arbitraryResponseData) {
       this.setStatus(OrderPaymentStatus.PAID, JSON.stringify(arbitraryResponseData));
     }

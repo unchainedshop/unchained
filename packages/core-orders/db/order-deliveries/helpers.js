@@ -54,17 +54,17 @@ OrderDeliveries.helpers({
     if (this.status !== OrderDeliveryStatus.DELIVERED) return true;
     return false;
   },
-  send(deliveryContext, orderContext) {
+  send(deliveryContext, order) {
     if (this.status !== OrderDeliveryStatus.OPEN) return;
     const provider = this.provider();
-    const address = this.context.address || orderContext.address();
+    const address = this.context.address || order.billingAddress || {};
     const context = {
       delivery: {
         ...(deliveryContext || {}),
         ...(this.context),
         address,
       },
-      order: orderContext,
+      order,
     };
 
     const arbitraryResponseData = provider.send(context);
