@@ -7,9 +7,7 @@ import connectApollo from '../../lib/connectApollo';
 export default connectApollo(({ onSuccess, ...rest }) => (
   <App {...rest}>
     <Container>
-      <p>
-        Add Language
-      </p>
+      <p>Add Language</p>
       <FormNewLanguage />
     </Container>
   </App>

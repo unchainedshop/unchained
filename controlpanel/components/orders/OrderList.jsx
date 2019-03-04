@@ -8,19 +8,21 @@ import InfiniteDataTable, { withDataTableLoader } from '../InfiniteDataTable';
 import FormattedMoney from '../FormattedMoney';
 
 const OrderList = ({
-  isShowCarts, toggleShowCarts, loading,
-  updateHasMore, setShowCarts, ...rest
+  isShowCarts,
+  toggleShowCarts,
+  loading,
+  updateHasMore,
+  setShowCarts,
+  ...rest
 }) => (
   <InfiniteDataTable
     {...rest}
     cols={5}
     createPath={null}
-    rowRenderer={(order => (
+    rowRenderer={order => (
       <Table.Row key={order._id}>
         <Table.Cell>
-          {order.ordered
-            ? format(order.ordered, 'Pp')
-            : 'n/a'}
+          {order.ordered ? format(order.ordered, 'Pp') : 'n/a'}
         </Table.Cell>
         <Table.Cell>
           <Link href={`/orders/view?_id=${order._id}`}>
@@ -57,35 +59,26 @@ const OrderList = ({
         <Table.Cell>
           <FormattedMoney money={order.total} />
         </Table.Cell>
-        <Table.Cell>
-          {order.status}
-        </Table.Cell>
+        <Table.Cell>{order.status}</Table.Cell>
       </Table.Row>
-    ))}
+    )}
   >
     <Table.Row>
       <Table.HeaderCell colSpan={5}>
-        Show carts?
-        &nbsp;
-        <input type="checkbox" checked={isShowCarts} onClick={toggleShowCarts} />
+        Show carts? &nbsp;
+        <input
+          type="checkbox"
+          checked={isShowCarts}
+          onClick={toggleShowCarts}
+        />
       </Table.HeaderCell>
     </Table.Row>
     <Table.Row>
-      <Table.HeaderCell>
-        Order date
-      </Table.HeaderCell>
-      <Table.HeaderCell>
-        Order #
-      </Table.HeaderCell>
-      <Table.HeaderCell>
-        User
-      </Table.HeaderCell>
-      <Table.HeaderCell>
-        Total
-      </Table.HeaderCell>
-      <Table.HeaderCell>
-        Status
-      </Table.HeaderCell>
+      <Table.HeaderCell>Order date</Table.HeaderCell>
+      <Table.HeaderCell>Order #</Table.HeaderCell>
+      <Table.HeaderCell>User</Table.HeaderCell>
+      <Table.HeaderCell>Total</Table.HeaderCell>
+      <Table.HeaderCell>Status</Table.HeaderCell>
     </Table.Row>
   </InfiniteDataTable>
 );
@@ -111,12 +104,12 @@ export default compose(
           }
         }
       }
-    `,
+    `
   }),
   withHandlers({
     toggleShowCarts: ({ updateHasMore, isShowCarts, setShowCarts }) => () => {
       setShowCarts(!isShowCarts);
       updateHasMore(true);
-    },
-  }),
+    }
+  })
 )(OrderList);

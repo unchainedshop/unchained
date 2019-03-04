@@ -3,9 +3,7 @@ import AutoField from 'uniforms-semantic/AutoField';
 import SubmitField from 'uniforms-semantic/SubmitField';
 import ErrorsField from 'uniforms-semantic/ErrorsField';
 import AutoForm from 'uniforms-semantic/AutoForm';
-import {
-  compose, pure, mapProps, withHandlers,
-} from 'recompose';
+import { compose, pure, mapProps, withHandlers } from 'recompose';
 import { Item, Segment } from 'semantic-ui-react';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
@@ -22,7 +20,7 @@ const ProductBundleItemList = ({
   productId,
   isEditingDisabled,
   addNewBundleItem,
-  removeBundleItem,
+  removeBundleItem
 }) => (
   <Segment>
     <Item.Group divided>
@@ -48,8 +46,8 @@ const ProductBundleItemList = ({
           { label: 'Choose Type', value: null },
           ...(allProducts || []).map(product => ({
             label: product.texts.title,
-            value: product._id,
-          })),
+            value: product._id
+          }))
         ]}
       />
       <AutoField name={'quantity'} />
@@ -65,13 +63,13 @@ export default compose(
       type: String,
       optional: false,
       label: 'Product',
-      defaultValue: null,
+      defaultValue: null
     },
     quantity: {
       type: Number,
       label: 'Quantity',
-      optional: false,
-    },
+      optional: false
+    }
   }),
   graphql(gql`
     query productBundleItems($productId: ID) {
@@ -105,7 +103,10 @@ export default compose(
   `),
   graphql(
     gql`
-      mutation createProductBundleItem($productId: ID!, $item: CreateProductBundleItemInput!) {
+      mutation createProductBundleItem(
+        $productId: ID!
+        $item: CreateProductBundleItemInput!
+      ) {
         createProductBundleItem(productId: $productId, item: $item) {
           _id
         }
@@ -114,9 +115,9 @@ export default compose(
     {
       name: 'createProductBundleItem',
       options: {
-        refetchQueries: ['productBundleItems'],
-      },
-    },
+        refetchQueries: ['productBundleItems']
+      }
+    }
   ),
   graphql(
     gql`
@@ -129,19 +130,19 @@ export default compose(
     {
       name: 'removeBundleItem',
       options: {
-        refetchQueries: ['productBundleItems'],
-      },
-    },
+        refetchQueries: ['productBundleItems']
+      }
+    }
   ),
   withHandlers({
-    addNewBundleItem: ({ productId, createProductBundleItem }) => (item) => {
+    addNewBundleItem: ({ productId, createProductBundleItem }) => item => {
       createProductBundleItem({
         variables: {
           productId,
-          item,
-        },
+          item
+        }
       });
-    },
+    }
   }),
 
   mapProps(({ data, ...rest }) => {
@@ -151,9 +152,9 @@ export default compose(
       allProducts,
       isEditingDisabled: !product || product.status === 'DELETED',
       pressDelay: 200,
-      ...rest,
+      ...rest
     };
   }),
   pure,
-  SortableContainer,
+  SortableContainer
 )(ProductBundleItemList);

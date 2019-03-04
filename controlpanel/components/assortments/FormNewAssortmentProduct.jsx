@@ -12,7 +12,11 @@ import AutoForm from 'uniforms-semantic/AutoForm';
 import withFormSchema from '../../lib/withFormSchema';
 import withFormErrorHandlers from '../../lib/withFormErrorHandlers';
 
-const FormNewAssortmentProduct = ({ products, removeCountry, ...formProps }) => (
+const FormNewAssortmentProduct = ({
+  products,
+  removeCountry,
+  ...formProps
+}) => (
   <AutoForm {...formProps}>
     <Segment basic>
       <AutoField name={'assortmentId'} type="hidden" />
@@ -36,57 +40,66 @@ export default compose(
       }
     }
   `),
-  graphql(gql`
-    mutation addAssortmentProduct($assortmentId: ID!, $productId: ID!) {
-      addAssortmentProduct(assortmentId: $assortmentId, productId: $productId) {
-        _id
+  graphql(
+    gql`
+      mutation addAssortmentProduct($assortmentId: ID!, $productId: ID!) {
+        addAssortmentProduct(
+          assortmentId: $assortmentId
+          productId: $productId
+        ) {
+          _id
+        }
+      }
+    `,
+    {
+      name: 'addAssortmentProduct',
+      options: {
+        refetchQueries: ['assortment', 'assortmentProducts']
       }
     }
-  `, {
-    name: 'addAssortmentProduct',
-    options: {
-      refetchQueries: [
-        'assortment',
-        'assortmentProducts',
-      ],
-    },
-  }),
+  ),
   withFormSchema({
     assortmentId: {
       type: String,
       label: null,
-      optional: false,
+      optional: false
     },
     productId: {
       type: String,
       optional: false,
-      label: 'Product',
-    },
+      label: 'Product'
+    }
   }),
   withHandlers({
     onSubmitSuccess: () => () => {
       toast('Producted', { type: toast.TYPE.SUCCESS }); // eslint-disable-line
     },
-    onSubmit: ({
-      addAssortmentProduct,
-    }) => ({ assortmentId, productId }) => addAssortmentProduct({
-      variables: {
-        assortmentId,
-        productId,
-      },
-    }),
+    onSubmit: ({ addAssortmentProduct }) => ({ assortmentId, productId }) =>
+      addAssortmentProduct({
+        variables: {
+          assortmentId,
+          productId
+        }
+      })
   }),
   withFormErrorHandlers,
-  mapProps(({
-    assortmentId, addAssortmentProduct, data: { products = [] }, ...rest
-  }) => ({
-    products: [{ label: 'Select', value: false }].concat(products.map(product => ({
-      label: product.texts.title,
-      value: product._id,
-    }))),
-    model: {
+  mapProps(
+    ({
       assortmentId,
-    },
-    ...rest,
-  })),
+      addAssortmentProduct,
+      data: { products = [] },
+      ...rest
+    }) => ({
+      products: [{ label: 'Select', value: false }].concat(
+        products.map(product => ({
+          label: product.texts.title,
+          value: product._id
+        }))
+      ),
+      model: {
+        assortmentId
+      },
+      ...rest
+    })
+  )
 )(FormNewAssortmentProduct);

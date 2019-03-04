@@ -1,7 +1,5 @@
 import React from 'react';
-import {
-  compose, mapProps, withHandlers, withState,
-} from 'recompose';
+import { compose, mapProps, withHandlers, withState } from 'recompose';
 import gql from 'graphql-tag';
 import { withRouter } from 'next/router';
 import { graphql } from 'react-apollo';
@@ -14,12 +12,14 @@ import withFormErrorHandlers from '../../lib/withFormErrorHandlers';
 
 const defaultProviderType = 'PHYSICAL';
 
-const FormNewWarehousingProvider = ({ providerType, updateProviderType, ...formProps }) => (
+const FormNewWarehousingProvider = ({
+  providerType,
+  updateProviderType,
+  ...formProps
+}) => (
   <AutoForm {...formProps}>
     <AutoField name="type" onChange={updateProviderType} />
-    {providerType && (
-      <AutoField name="adapterKey" />
-    )}
+    {providerType && <AutoField name="adapterKey" />}
     <ErrorsField />
     <SubmitField value="Add warehousing provider" className="primary" />
   </AutoForm>
@@ -43,58 +43,72 @@ export default compose(
       }
     }
   `),
-  graphql(gql`
-    mutation create($warehousingProvider: CreateProviderInput!) {
-      createWarehousingProvider(warehousingProvider: $warehousingProvider) {
-        _id
+  graphql(
+    gql`
+      mutation create($warehousingProvider: CreateProviderInput!) {
+        createWarehousingProvider(warehousingProvider: $warehousingProvider) {
+          _id
+        }
+      }
+    `,
+    {
+      name: 'createWarehousingProvider',
+      options: {
+        refetchQueries: ['warehousingProviders']
       }
     }
-  `, {
-    name: 'createWarehousingProvider',
-    options: {
-      refetchQueries: [
-        'warehousingProviders',
-      ],
-    },
-  }),
-  withFormSchema(({
-    providerType, data: {
-      warehousingProviderType = { options: [] },
-      warehousingInterfaces = [],
-    } = {},
-  }) => ({
-    type: {
-      type: String,
-      optional: false,
-      label: 'Type',
-      defaultValue: providerType,
-      uniforms: {
-        options: [{ label: 'Choose Type', value: null }, ...warehousingProviderType.options],
+  ),
+  withFormSchema(
+    ({
+      providerType,
+      data: {
+        warehousingProviderType = { options: [] },
+        warehousingInterfaces = []
+      } = {}
+    }) => ({
+      type: {
+        type: String,
+        optional: false,
+        label: 'Type',
+        defaultValue: providerType,
+        uniforms: {
+          options: [
+            { label: 'Choose Type', value: null },
+            ...warehousingProviderType.options
+          ]
+        }
       },
-    },
-    adapterKey: {
-      type: String,
-      optional: false,
-      label: 'Adapter',
-      uniforms: {
-        options: [{ label: 'Choose Adapter', value: null }, ...warehousingInterfaces],
-      },
-    },
-  })),
+      adapterKey: {
+        type: String,
+        optional: false,
+        label: 'Adapter',
+        uniforms: {
+          options: [
+            { label: 'Choose Adapter', value: null },
+            ...warehousingInterfaces
+          ]
+        }
+      }
+    })
+  ),
   withHandlers({
-    onSubmitSuccess: ({ router }) => ({ data: { createWarehousingProvider } }) => {
-      router.replace({ pathname: '/warehousing-providers/edit', query: { _id: createWarehousingProvider._id } });
+    onSubmitSuccess: ({ router }) => ({
+      data: { createWarehousingProvider }
+    }) => {
+      router.replace({
+        pathname: '/warehousing-providers/edit',
+        query: { _id: createWarehousingProvider._id }
+      });
     },
-    onSubmit: ({
-      createWarehousingProvider, schema,
-    }) => ({ ...dirtyInput }) => createWarehousingProvider({
-      variables: {
-        warehousingProvider: schema.clean(dirtyInput),
-      },
-    }),
+    onSubmit: ({ createWarehousingProvider, schema }) => ({ ...dirtyInput }) =>
+      createWarehousingProvider({
+        variables: {
+          warehousingProvider: schema.clean(dirtyInput)
+        }
+      })
   }),
   withFormErrorHandlers,
   mapProps(({ createWarehousingProvider, ...rest }) => ({
-    ...rest,
-  })),
+    ...rest
+  }))
 )(FormNewWarehousingProvider);

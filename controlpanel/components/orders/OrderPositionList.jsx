@@ -9,19 +9,13 @@ import FormattedMoney from '../FormattedMoney';
 const OrderPositionList = ({ items }) => (
   <Segment secondary>
     <Label horizontal attached="top">
-      <Label.Detail>
-Ordered Items
-      </Label.Detail>
+      <Label.Detail>Ordered Items</Label.Detail>
     </Label>
     <Table celled>
       <Table.Header>
         <Table.Row>
-          <Table.HeaderCell>
-Product
-          </Table.HeaderCell>
-          <Table.HeaderCell>
-Total
-          </Table.HeaderCell>
+          <Table.HeaderCell>Product</Table.HeaderCell>
+          <Table.HeaderCell>Total</Table.HeaderCell>
         </Table.Row>
       </Table.Header>
       {items && (
@@ -30,10 +24,11 @@ Total
             <Table.Row key={item._id}>
               <Table.Cell>
                 {item.quantity}
-x&nbsp;
+                x&nbsp;
                 <Link href={`/products/edit?_id=${item.product._id}`}>
                   <a href={`/products/edit?_id=${item.product._id}`}>
-                    {(item.product.texts && item.product.texts.title) || item.product._id}
+                    {(item.product.texts && item.product.texts.title) ||
+                      item.product._id}
                   </a>
                 </Link>
               </Table.Cell>
@@ -74,7 +69,7 @@ export default compose(
     }
   `),
   mapProps(({ data: { order = {} } }) => ({
-    items: order.items,
+    items: order.items
   })),
-  pure,
+  pure
 )(OrderPositionList);

@@ -5,10 +5,12 @@ import App from '../../components/App';
 import FormEditPaymentProvider from '../../components/payment-providers/FormEditPaymentProvider';
 import connectApollo from '../../lib/connectApollo';
 
-export default connectApollo(withRouter(({ router, ...rest }) => (
-  <App {...rest}>
-    <Container>
-      <FormEditPaymentProvider paymentProviderId={router.query._id} />
-    </Container>
-  </App>
-)));
+export default connectApollo(
+  withRouter(({ router, ...rest }) => (
+    <App {...rest}>
+      <Container>
+        <FormEditPaymentProvider paymentProviderId={router.query._id} />
+      </Container>
+    </App>
+  ))
+);

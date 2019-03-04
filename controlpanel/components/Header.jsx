@@ -2,23 +2,17 @@ import React from 'react';
 import { withApollo } from 'react-apollo';
 import Link from 'next/link';
 import { Menu, Dropdown } from 'semantic-ui-react';
-import {
-  compose, pure, withHandlers, mapProps,
-} from 'recompose';
+import { compose, pure, withHandlers, mapProps } from 'recompose';
 import { logout } from '../lib/accounts';
 
-const MenuLayout = ({
-  pathname, children, loading, ...rest
-}) => (
+const MenuLayout = ({ pathname, children, loading, ...rest }) => (
   <Menu color="red" attached="top" size="tiny" {...rest}>
     <Link href="/" passHref>
-      <Menu.Item active={(pathname === '/')}>
+      <Menu.Item active={pathname === '/'}>
         <img src="/static/diamond-snake-colored.jpg" alt="unchained logo" />
       </Menu.Item>
     </Link>
-    {!loading && (
-      children
-    )}
+    {!loading && children}
   </Menu>
 );
 
@@ -154,8 +148,8 @@ export default compose(
   withHandlers({
     logout: ({ client }) => async () => {
       await logout(client);
-    },
+    }
   }),
   mapProps(({ client, ...rest }) => ({ ...rest })),
-  pure,
+  pure
 )(Header);

@@ -1,6 +1,4 @@
-import {
-  compose, pure, mapProps, withHandlers,
-} from 'recompose';
+import { compose, pure, mapProps, withHandlers } from 'recompose';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 import React from 'react';
@@ -20,11 +18,7 @@ const FormTags = ({ userId, ...formProps }) => (
       <Grid stackable columns={3}>
         <Grid.Row columns={1}>
           <Grid.Column textAlign="center">
-            <AutoField
-              name="tags"
-              component={FormTagInput}
-              options={[]}
-            />
+            <AutoField name="tags" component={FormTagInput} options={[]} />
             <Divider />
           </Grid.Column>
         </Grid.Row>
@@ -54,11 +48,11 @@ export default compose(
     tags: {
       type: Array,
       optional: true,
-      label: 'Tags (Kundensegmentierung)',
+      label: 'Tags (Kundensegmentierung)'
     },
-    'tags.$': String,
+    'tags.$': String
   }),
-  withFormModel(({ data: { user } }) => ({ tags: user && user.tags }) || {}),
+  withFormModel(({ data: { user } }) => ({ tags: user && user.tags } || {})),
   graphql(gql`
     mutation updateUserTags($tags: [String]!, $userId: ID!) {
       updateUserTags(tags: $tags, userId: $userId) {
@@ -68,32 +62,35 @@ export default compose(
     }
   `),
   withHandlers({
-    onSubmit: ({ userId, mutate, schema }) => ({ ...dirtyInput }) => mutate({
-      variables: {
-        userId,
-        ...schema.clean(dirtyInput),
-      },
-    }),
+    onSubmit: ({ userId, mutate, schema }) => ({ ...dirtyInput }) =>
+      mutate({
+        variables: {
+          userId,
+          ...schema.clean(dirtyInput)
+        }
+      })
   }),
   withFormErrorHandlers,
-  mapProps(({
-    userId,
-    error,
-    schema,
-    model,
-    onSubmit,
-    onChange,
-    onSubmitSuccess,
-    onSubmitFailure,
-  }) => ({
-    userId,
-    error,
-    schema,
-    model,
-    onSubmit,
-    onChange,
-    onSubmitSuccess,
-    onSubmitFailure,
-  })),
-  pure,
+  mapProps(
+    ({
+      userId,
+      error,
+      schema,
+      model,
+      onSubmit,
+      onChange,
+      onSubmitSuccess,
+      onSubmitFailure
+    }) => ({
+      userId,
+      error,
+      schema,
+      model,
+      onSubmit,
+      onChange,
+      onSubmitSuccess,
+      onSubmitFailure
+    })
+  ),
+  pure
 )(FormTags);

@@ -7,13 +7,18 @@ export default compose(
     onChange: ({ updateMappedError }) => () => {
       updateMappedError(null);
     },
-    onSubmitFailure: ({ mapError }) => mapError,
+    onSubmitFailure: ({ mapError }) => mapError
   }),
-  mapProps(({
-    // strip mapError && updateMappedError, rename mappedError to error
-    mappedError, mapError, updateMappedError, ...rest
-  }) => ({
-    error: mappedError,
-    ...rest,
-  })),
+  mapProps(
+    ({
+      // strip mapError && updateMappedError, rename mappedError to error
+      mappedError,
+      mapError,
+      updateMappedError,
+      ...rest
+    }) => ({
+      error: mappedError,
+      ...rest
+    })
+  )
 );

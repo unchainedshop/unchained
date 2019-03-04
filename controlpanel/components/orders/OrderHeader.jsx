@@ -1,27 +1,42 @@
-import {
-  compose, mapProps, withHandlers, pure,
-} from 'recompose';
+import { compose, mapProps, withHandlers, pure } from 'recompose';
 import gql from 'graphql-tag';
 import Link from 'next/link';
 import { graphql } from 'react-apollo';
 import { format } from 'date-fns';
 import React from 'react';
 import {
-  List, Segment, Menu, Dropdown,
-  Label, Icon, Grid,
+  List,
+  Segment,
+  Menu,
+  Dropdown,
+  Label,
+  Icon,
+  Grid
 } from 'semantic-ui-react';
 import Address from '../Address';
 import BtnRemoveOrder from './BtnRemoveOrder';
 
-const colorForStatus = (status) => {
+const colorForStatus = status => {
   if (status === 'OPEN') return 'red';
   if (status === 'FULLFILLED') return 'green';
   return 'orange';
 };
 
 const OrderHeader = ({
-  _id, status, created, ordered, orderNumber, confirmed, country, contact,
-  fullfilled, currency, billingAddress, statusColor, confirmOrder, user,
+  _id,
+  status,
+  created,
+  ordered,
+  orderNumber,
+  confirmed,
+  country,
+  contact,
+  fullfilled,
+  currency,
+  billingAddress,
+  statusColor,
+  confirmOrder,
+  user
 }) => [
   <Menu fluid attached="top" borderless key="header-title">
     <Menu.Item header>
@@ -43,15 +58,13 @@ const OrderHeader = ({
     <Menu.Menu position="right">
       <Dropdown item icon="wrench" simple>
         <Dropdown.Menu>
-          <Dropdown.Header>
-            Options
-          </Dropdown.Header>
+          <Dropdown.Header>Options</Dropdown.Header>
           <BtnRemoveOrder
             orderId={_id}
             Component={Dropdown.Item}
             disabled={status !== 'OPEN'}
           >
-              Delete
+            Delete
           </BtnRemoveOrder>
           <Dropdown.Item
             primary
@@ -59,7 +72,7 @@ const OrderHeader = ({
             disabled={status !== 'PENDING'}
             onClick={confirmOrder}
           >
-              Confirm
+            Confirm
           </Dropdown.Item>
         </Dropdown.Menu>
       </Dropdown>
@@ -103,8 +116,7 @@ const OrderHeader = ({
               <List.Item>
                 <List.Icon name="mail" />
                 <List.Content>
-                E-Mail:
-                  {' '}
+                  E-Mail:
                   {`${contact.emailAddress}`}
                 </List.Content>
               </List.Item>
@@ -123,75 +135,59 @@ const OrderHeader = ({
             <List.Item>
               <List.Icon name="add to calendar" />
               <List.Content>
-              Created:
-                {' '}
-                {created
-                  ? format(created, 'Pp')
-                  : 'n/a'}
+                Created: {created ? format(created, 'Pp') : 'n/a'}
               </List.Content>
             </List.Item>
             <List.Item>
               <List.Icon name="plus cart" />
               <List.Content>
-              Ordered:
-                {' '}
-                {ordered
-                  ? format(ordered, 'Pp')
-                  : 'n/a'}
+                Ordered: {ordered ? format(ordered, 'Pp') : 'n/a'}
               </List.Content>
             </List.Item>
             <List.Item>
               <List.Icon name="thumbs outline up" />
               <List.Content>
-              Confirmed:
-                {' '}
-                {confirmed
-                  ? format(confirmed, 'Pp')
-                  : 'n/a'}
+                Confirmed: {confirmed ? format(confirmed, 'Pp') : 'n/a'}
               </List.Content>
             </List.Item>
             <List.Item>
               <List.Icon name="checkmark box" />
               <List.Content>
-              Fullfilled:
-                {' '}
-                {fullfilled
-                  ? format(fullfilled, 'Pp')
-                  : 'n/a'}
+                Fullfilled: {fullfilled ? format(fullfilled, 'Pp') : 'n/a'}
               </List.Content>
             </List.Item>
           </List>
         </Grid.Column>
       </Grid.Row>
     </Grid>
-  </Segment>,
+  </Segment>
 ];
 
 export default compose(
-  graphql(gql`
-    mutation confirmOrder($orderId: ID!) {
-      confirmOrder(orderId: $orderId) {
-        _id
-        status
-        delivery {
+  graphql(
+    gql`
+      mutation confirmOrder($orderId: ID!) {
+        confirmOrder(orderId: $orderId) {
           _id
           status
-        }
-        payment {
-          _id
-          status
+          delivery {
+            _id
+            status
+          }
+          payment {
+            _id
+            status
+          }
         }
       }
+    `,
+    {
+      name: 'confirmOrder',
+      options: {
+        refetchQueries: ['orders', 'order']
+      }
     }
-  `, {
-    name: 'confirmOrder',
-    options: {
-      refetchQueries: [
-        'orders',
-        'order',
-      ],
-    },
-  }),
+  ),
   graphql(gql`
     query order($orderId: ID!) {
       order(orderId: $orderId) {
@@ -234,19 +230,17 @@ export default compose(
     }
   `),
   withHandlers({
-    confirmOrder: ({ confirmOrder, orderId }) => () => confirmOrder({
-      variables: {
-        orderId,
-      },
-    }),
+    confirmOrder: ({ confirmOrder, orderId }) => () =>
+      confirmOrder({
+        variables: {
+          orderId
+        }
+      })
   }),
-  mapProps(({
-    confirmOrder,
-    data: { order = {} },
-  }) => ({
+  mapProps(({ confirmOrder, data: { order = {} } }) => ({
     statusColor: colorForStatus(order.status),
     confirmOrder,
-    ...order,
+    ...order
   })),
-  pure,
+  pure
 )(OrderHeader);

@@ -1,7 +1,5 @@
 import React from 'react';
-import {
-  compose, pure, withHandlers, mapProps,
-} from 'recompose';
+import { compose, pure, withHandlers, mapProps } from 'recompose';
 import { Item, Segment } from 'semantic-ui-react';
 import Dropzone from 'react-dropzone';
 import gql from 'graphql-tag';
@@ -22,26 +20,22 @@ const ProductMediaList = ({ items, onDrop, isEditingDisabled }) => (
         />
       ))}
       {!isEditingDisabled && (
-
-      <Dropzone onDrop={onDrop}>
-        {({ getRootProps, getInputProps }) => {
-          const inputProps = getInputProps();
-          return (
-            <Item {...getRootProps()}>
-              <Item.Content>
-                <Item.Header>
-                  Upload media
-                </Item.Header>
-                <Item.Description>
-                  <input {...inputProps} />
-                  Drop files here or click to upload...
-                </Item.Description>
-              </Item.Content>
-            </Item>
-          );
-        }}
-      </Dropzone>
-
+        <Dropzone onDrop={onDrop}>
+          {({ getRootProps, getInputProps }) => {
+            const inputProps = getInputProps();
+            return (
+              <Item {...getRootProps()}>
+                <Item.Content>
+                  <Item.Header>Upload media</Item.Header>
+                  <Item.Description>
+                    <input {...inputProps} />
+                    Drop files here or click to upload...
+                  </Item.Description>
+                </Item.Content>
+              </Item>
+            );
+          }}
+        </Dropzone>
       )}
     </Item.Group>
   </Segment>
@@ -71,64 +65,71 @@ export default compose(
       }
     }
   `),
-  graphql(gql`
-    mutation addProductMedia($media: Upload!, $productId: ID!) {
-      addProductMedia(media: $media, productId: $productId) {
-        _id
-        tags
+  graphql(
+    gql`
+      mutation addProductMedia($media: Upload!, $productId: ID!) {
+        addProductMedia(media: $media, productId: $productId) {
+          _id
+          tags
+        }
+      }
+    `,
+    {
+      name: 'addProductMedia',
+      options: {
+        refetchQueries: ['productMedia']
       }
     }
-  `, {
-    name: 'addProductMedia',
-    options: {
-      refetchQueries: [
-        'productMedia',
-      ],
-    },
-  }),
-  graphql(gql`
-    mutation reorderProductMedia($sortKeys: [ReorderProductMediaInput!]!) {
-      reorderProductMedia(sortKeys: $sortKeys) {
-        _id
-        sortKey
+  ),
+  graphql(
+    gql`
+      mutation reorderProductMedia($sortKeys: [ReorderProductMediaInput!]!) {
+        reorderProductMedia(sortKeys: $sortKeys) {
+          _id
+          sortKey
+        }
+      }
+    `,
+    {
+      name: 'reorderProductMedia',
+      options: {
+        refetchQueries: ['productMedia']
       }
     }
-  `, {
-    name: 'reorderProductMedia',
-    options: {
-      refetchQueries: [
-        'productMedia',
-      ],
-    },
-  }),
+  ),
   mapProps(({ data: { product }, ...rest }) => ({
     items: (product && product.media) || [],
-    isEditingDisabled: !product || (product.status === 'DELETED'),
+    isEditingDisabled: !product || product.status === 'DELETED',
     pressDelay: 200,
-    ...rest,
+    ...rest
   })),
   withHandlers({
-    onSortEnd: ({ items, reorderProductMedia }) => async ({ oldIndex, newIndex }) => {
-      const sortKeys = arrayMove(items, oldIndex, newIndex).map((item, sortKey) => ({
-        productMediaId: item._id,
-        sortKey,
-      }));
+    onSortEnd: ({ items, reorderProductMedia }) => async ({
+      oldIndex,
+      newIndex
+    }) => {
+      const sortKeys = arrayMove(items, oldIndex, newIndex).map(
+        (item, sortKey) => ({
+          productMediaId: item._id,
+          sortKey
+        })
+      );
       await reorderProductMedia({
         variables: {
-          sortKeys,
-        },
+          sortKeys
+        }
       });
     },
-    onDrop: ({ productId, addProductMedia }) => async (files) => {
+    onDrop: ({ productId, addProductMedia }) => async files => {
       const media = files[0];
       await addProductMedia({
         variables: {
           media,
-          productId,
-        },
+          productId
+        }
       });
-    },
+    }
   }),
   pure,
-  SortableContainer,
+  SortableContainer
 )(ProductMediaList);

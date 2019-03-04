@@ -1,5 +1,8 @@
 import { ApolloClient } from 'apollo-client';
-import { InMemoryCache, IntrospectionFragmentMatcher } from 'apollo-cache-inmemory';
+import {
+  InMemoryCache,
+  IntrospectionFragmentMatcher
+} from 'apollo-cache-inmemory';
 import { onError } from 'apollo-link-error';
 import { ApolloLink } from 'apollo-link';
 import { toast } from 'react-toastify';
@@ -17,21 +20,23 @@ if (!process.browser) {
   global.fetch = fetch;
 }
 
-const fragmentMatcher = new IntrospectionFragmentMatcher({ introspectionQueryResultData });
+const fragmentMatcher = new IntrospectionFragmentMatcher({
+  introspectionQueryResultData
+});
 
 function create(initialState, headersOverride, getToken) {
   const httpLink = createUploadLink({
     uri: publicRuntimeConfig.GRAPHQL_ENDPOINT,
-    credentials: 'same-origin',
+    credentials: 'same-origin'
   });
   const errorLink = onError(({ graphQLErrors, networkError }) => {
     if (graphQLErrors) {
-      graphQLErrors.forEach(({
-        message, locations, path,
-      }) => {
+      graphQLErrors.forEach(({ message, locations, path }) => {
         toast(message, { type: toast.TYPE.ERROR });
         console.log( // eslint-disable-line
-          `[GraphQL error]: Message: ${message}, Location: ${JSON.stringify(locations)}, Path: ${path}`,
+          `[GraphQL error]: Message: ${message}, Location: ${JSON.stringify(
+            locations
+          )}, Path: ${path}`
         );
       });
     }
@@ -55,24 +60,20 @@ function create(initialState, headersOverride, getToken) {
 
   const cache = new InMemoryCache({
     fragmentMatcher,
-    dataIdFromObject: (result) => {
+    dataIdFromObject: result => {
       if (result._id && result.__typename) { // eslint-disable-line
         return `${result.__typename}:${result._id}`; // eslint-disable-line
       } else if (result.id && result.__typename) { // eslint-disable-line
         return `${result.__typename}:${result.id}`; // eslint-disable-line
       }
       return null;
-    },
+    }
   });
   return new ApolloClient({
     connectToDevTools: process.browser,
     ssrMode: !process.browser, // Disables forceFetch on the server (so queries are only run once)
-    link: ApolloLink.from([
-      errorLink,
-      middlewareLink,
-      httpLink,
-    ]),
-    cache: cache.restore(initialState || {}),
+    link: ApolloLink.from([errorLink, middlewareLink, httpLink]),
+    cache: cache.restore(initialState || {})
   });
 }
 

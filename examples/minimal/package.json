@@ -1,9 +1,20 @@
 {
-  "name": "unchained-engine",
+  "name": "@unchainedshop/example-minimal",
   "version": "0.24.0",
-  "private": true,
-  "author": "Pascal Kaufmann",
-  "license": "EUPL-1.1",
+  "license": "EUPL-1.2",
+  "homepage": "https://unchained.shop",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/unchainedshop/unchained.git"
+  },
+  "contributors": [
+    "Vedran Rudelj <vedran@unchained.shop> (https://unchained.shop)",
+    "Pascal Kaufmann <pascal@unchained.shop> (https://unchained.shop)",
+    "Marco Wettstein <maw@panter.ch>"
+  ],
+  "bugs": {
+    "url": "https://github.com/unchainedshop/unchained/issues"
+  },
   "meteor": {
     "mainModule": {
       "client": false,
@@ -11,7 +22,7 @@
     }
   },
   "scripts": {
-    "lint": "eslint packages --cache  --ext=jsx --ext=js",
+    "lint": "eslint . --cache  --fix --ext=jsx --ext=js",
     "dev": "UI_ENDPOINT=http://localhost:4000 meteor --no-release-check --no-lint -p 4010",
     "build": "meteor build --architecture os.linux.x86_64 --directory .build",
     "debug": "UI_ENDPOINT=http://localhost:4000 meteor debug -p 4010"
@@ -55,6 +66,7 @@
     "eslint-config-airbnb-base": "^13.1.0",
     "eslint-import-resolver-meteor": "^0.4.0",
     "eslint-plugin-import": "^2.16.0",
-    "eslint-plugin-meteor": "^5.1.0"
+    "eslint-plugin-meteor": "^5.1.0",
+    "eslint-plugin-prettier": "^3.0.1"
   }
 }

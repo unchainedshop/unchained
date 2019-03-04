@@ -1,9 +1,7 @@
 import React from 'react';
 import { toast } from 'react-toastify';
 import { compose, mapProps, withHandlers } from 'recompose';
-import {
-  Button, Segment, Container, Message,
-} from 'semantic-ui-react';
+import { Button, Segment, Container, Message } from 'semantic-ui-react';
 import { withRouter } from 'next/router';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
@@ -17,7 +15,8 @@ import withFormErrorHandlers from '../../lib/withFormErrorHandlers';
 
 const FormEditWarehousingProvider = ({
   configurationError,
-  removeWarehousingProvider, ...formProps
+  removeWarehousingProvider,
+  ...formProps
 }) => (
   <Container>
     <AutoForm {...formProps}>
@@ -28,16 +27,19 @@ const FormEditWarehousingProvider = ({
         {configurationError && (
           <Message negative>
             <Message.Header>
-Configuration Error:
+              Configuration Error:
               {configurationError}
             </Message.Header>
-            <p>
-Please check the docs
-            </p>
+            <p>Please check the docs</p>
           </Message>
         )}
-        <Button type="normal" secondary floated="right" onClick={removeWarehousingProvider}>
-Delete
+        <Button
+          type="normal"
+          secondary
+          floated="right"
+          onClick={removeWarehousingProvider}
+        >
+          Delete
         </Button>
       </Segment>
     </AutoForm>
@@ -56,62 +58,73 @@ export default compose(
       }
     }
   `),
-  graphql(gql`
-    mutation updateWarehousingProvider($warehousingProvider: UpdateProviderInput!, $warehousingProviderId: ID!) {
-      updateWarehousingProvider(warehousingProvider: $warehousingProvider, warehousingProviderId: $warehousingProviderId) {
-        _id
-        type
-        interface {
+  graphql(
+    gql`
+      mutation updateWarehousingProvider(
+        $warehousingProvider: UpdateProviderInput!
+        $warehousingProviderId: ID!
+      ) {
+        updateWarehousingProvider(
+          warehousingProvider: $warehousingProvider
+          warehousingProviderId: $warehousingProviderId
+        ) {
           _id
-          label
-          version
+          type
+          interface {
+            _id
+            label
+            version
+          }
+          configuration
+          configurationError
         }
-        configuration
-        configurationError
+      }
+    `,
+    {
+      name: 'updateWarehousingProvider',
+      options: {
+        refetchQueries: ['warehousingProvider', 'warehousingProviders']
       }
     }
-  `, {
-    name: 'updateWarehousingProvider',
-    options: {
-      refetchQueries: [
-        'warehousingProvider',
-        'warehousingProviders',
-      ],
-    },
-  }),
-  graphql(gql`
-    mutation removeWarehousingProvider($warehousingProviderId: ID!) {
-      removeWarehousingProvider(warehousingProviderId: $warehousingProviderId) {
-        _id
+  ),
+  graphql(
+    gql`
+      mutation removeWarehousingProvider($warehousingProviderId: ID!) {
+        removeWarehousingProvider(
+          warehousingProviderId: $warehousingProviderId
+        ) {
+          _id
+        }
+      }
+    `,
+    {
+      name: 'removeWarehousingProvider',
+      options: {
+        refetchQueries: ['warehousingProviders']
       }
     }
-  `, {
-    name: 'removeWarehousingProvider',
-    options: {
-      refetchQueries: [
-        'warehousingProviders',
-      ],
-    },
-  }),
+  ),
   withFormSchema({
     configuration: {
       type: Array,
       optional: false,
-      label: 'Konfigurationsparameter',
+      label: 'Konfigurationsparameter'
     },
     'configuration.$': {
-      type: Object,
+      type: Object
     },
     'configuration.$.key': {
-      type: String,
+      type: String
     },
     'configuration.$.value': {
-      type: String,
-    },
+      type: String
+    }
   }),
-  withFormModel(({ data: { warehousingProvider: { ...warehousingProvider } = {} } }) => ({
-    ...warehousingProvider,
-  })),
+  withFormModel(
+    ({ data: { warehousingProvider: { ...warehousingProvider } = {} } }) => ({
+      ...warehousingProvider
+    })
+  ),
   withHandlers({
     onSubmitSuccess: () => () => {
       toast('WarehousingProvider saved', { type: toast.TYPE.SUCCESS });
@@ -119,33 +132,36 @@ export default compose(
     removeWarehousingProvider: ({
       router,
       removeWarehousingProvider,
-      warehousingProviderId,
-    }) => async (event) => {
+      warehousingProviderId
+    }) => async event => {
       event.preventDefault();
       router.replace({ pathname: '/warehousing-providers' });
       await removeWarehousingProvider({
         variables: {
-          warehousingProviderId,
-        },
+          warehousingProviderId
+        }
       });
     },
-    onSubmit: ({
-      warehousingProviderId, updateWarehousingProvider,
-    }) => ({ configuration }) => updateWarehousingProvider({
-      variables: {
-        warehousingProvider: { configuration },
-        warehousingProviderId,
-      },
-    }),
+    onSubmit: ({ warehousingProviderId, updateWarehousingProvider }) => ({
+      configuration
+    }) =>
+      updateWarehousingProvider({
+        variables: {
+          warehousingProvider: { configuration },
+          warehousingProviderId
+        }
+      })
   }),
   withFormErrorHandlers,
-  mapProps(({
-    warehousingProviderId,
-    updateWarehousingProvider,
-    data: { warehousingProvider: { configurationError } = {} } = {},
-    ...rest
-  }) => ({
-    configurationError,
-    ...rest,
-  })),
+  mapProps(
+    ({
+      warehousingProviderId,
+      updateWarehousingProvider,
+      data: { warehousingProvider: { configurationError } = {} } = {},
+      ...rest
+    }) => ({
+      configurationError,
+      ...rest
+    })
+  )
 )(FormEditWarehousingProvider);

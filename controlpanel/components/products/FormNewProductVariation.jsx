@@ -1,7 +1,5 @@
 import React from 'react';
-import {
-  compose, pure, mapProps, withHandlers,
-} from 'recompose';
+import { compose, pure, mapProps, withHandlers } from 'recompose';
 import { Form } from 'semantic-ui-react';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
@@ -35,52 +33,55 @@ export default compose(
       }
     }
   `),
-  graphql(gql`
-    mutation create($variation: CreateProductVariationInput!, $productId: ID!) {
-      createProductVariation(variation: $variation, productId: $productId) {
-        _id
+  graphql(
+    gql`
+      mutation create(
+        $variation: CreateProductVariationInput!
+        $productId: ID!
+      ) {
+        createProductVariation(variation: $variation, productId: $productId) {
+          _id
+        }
+      }
+    `,
+    {
+      options: {
+        refetchQueries: ['productVariations']
       }
     }
-  `, {
-    options: {
-      refetchQueries: [
-        'productVariations',
-      ],
-    },
-  }),
+  ),
   withFormSchema(({ data: { uniforms = { options: [] } } = {} }) => ({
     title: {
       type: String,
-      optional: false,
+      optional: false
     },
     key: {
       type: String,
-      optional: false,
+      optional: false
     },
     type: {
       type: String,
       optional: false,
       uniforms: {
-        options: [{ label: 'Choose Type', value: null }, ...uniforms.options],
-      },
-    },
+        options: [{ label: 'Choose Type', value: null }, ...uniforms.options]
+      }
+    }
   })),
   withHandlers({
-    onSubmitSuccess: ({
-      onSuccess,
-    }) => ({ data: { createProductVariation } }) => onSuccess(createProductVariation._id),
-    onSubmit: ({ mutate, schema, productId }) => ({ ...dirtyInput }) => mutate({
-      variables: {
-        variation: schema.clean(dirtyInput),
-        productId,
-      },
-    }),
+    onSubmitSuccess: ({ onSuccess }) => ({
+      data: { createProductVariation }
+    }) => onSuccess(createProductVariation._id),
+    onSubmit: ({ mutate, schema, productId }) => ({ ...dirtyInput }) =>
+      mutate({
+        variables: {
+          variation: schema.clean(dirtyInput),
+          productId
+        }
+      })
   }),
   withFormErrorHandlers,
-  mapProps(({
-    onSuccess, productId, mutate, ...rest
-  }) => ({
-    ...rest,
+  mapProps(({ onSuccess, productId, mutate, ...rest }) => ({
+    ...rest
   })),
-  pure,
+  pure
 )(FormNewProductVariation);

@@ -1,21 +1,22 @@
 {
   "name": "@unchainedshop/controlpanel",
   "version": "0.24.0",
-  "author": "Pascal Kaufmann",
   "license": "EUPL-1.2",
+  "homepage": "https://unchained.shop",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/unchainedshop/unchained.git"
   },
   "contributors": [
-    "Vedran Rudelj <vedran@fliptation.ch> (http://www.fliptation.ch)",
-    "Pascal Kaufmann <pascal@reactive.one> (http://www.reactive.one)"
+    "Vedran Rudelj <vedran@unchained.shop> (https://unchained.shop)",
+    "Pascal Kaufmann <pascal@unchained.shop> (https://unchained.shop)",
+    "Marco Wettstein <maw@panter.ch>"
   ],
   "bugs": {
     "url": "https://github.com/unchainedshop/unchained/issues"
   },
-  "homepage": "https://github.com/unchainedshop/unchained#readme",
   "scripts": {
+    "lint": "eslint . --cache --fix --ext=jsx --ext=js",
     "dev": "GRAPHQL_ENDPOINT=http://localhost:4010/graphql next -p 4000",
     "dev:remote": "next -p 4000",
     "build": "next build",
@@ -35,6 +36,7 @@
     "cookie": "^0.3.1",
     "date-fns": "^2.0.0-alpha.27",
     "dotenv": "^6.2.0",
+    "eslint-config-prettier": "^4.1.0",
     "file-loader": "^3.0.1",
     "graphql": "^14.1.1",
     "graphql-tag": "^2.10.1",
@@ -66,6 +68,7 @@
     "eslint-config-airbnb": "^17.1.0",
     "eslint-plugin-import": "^2.16.0",
     "eslint-plugin-jsx-a11y": "^6.2.1",
+    "eslint-plugin-prettier": "^3.0.1",
     "eslint-plugin-react": "^7.12.4"
   }
 }
