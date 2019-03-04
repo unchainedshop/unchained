@@ -24,7 +24,7 @@ export default function (root, {
     order = order.updateContext(meta);
   }
   if (billingAddress) {
-    order = order.updateBillingAddress({ ...billingAddress, countryCode: countryContext });
+    order = order.updateBillingAddress(billingAddress);
   }
   if (contact) {
     order = order.updateContact({ contact });

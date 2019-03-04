@@ -190,7 +190,11 @@ Orders.helpers({
   payment() {
     return OrderPayments.findOne({ _id: this.paymentId });
   },
-  updateBillingAddress(billingAddress) {
+  updateBillingAddress(rawBillingAddress) {
+    const billingAddress = {
+      ...(rawBillingAddress || {}),
+      countryCode: this.countryCode,
+    }
     Users.updateLastBillingAddress({
       userId: this.userId,
       lastBillingAddress: billingAddress,
