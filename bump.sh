@@ -1,5 +1,6 @@
 cd packages/utils && meteor publish &&
 cd ../roles && meteor publish &&
+cd ../core-settings && meteor publish &&
 cd ../core-languages && meteor publish &&
 cd ../core-currencies && meteor publish &&
 cd ../core-countries && meteor publish &&
