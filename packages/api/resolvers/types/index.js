@@ -6,6 +6,8 @@ import Money from './money';
 import Media from './media';
 import SimpleProduct from './simple-product';
 import ConfigurableProduct from './configurable-product';
+import BundleProduct from './bundle-product';
+import ProductBundleItem from './product-bundle-item';
 import ProductMedia from './product-media';
 import ProductPrice from './product-price';
 import Dispatch from './dispatch';
@@ -84,8 +86,10 @@ export default {
   ProductVariationOption,
   ProductVariationAssignment,
   ProductVariationAssignmentVector,
+  ProductBundleItem,
   SimpleProduct,
   ConfigurableProduct,
+  BundleProduct,
   Assortment,
   Filter,
   FilterOption,

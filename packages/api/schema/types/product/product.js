@@ -160,4 +160,9 @@ enum ProductReviewVoteType {
   REPORT
 }
 
+type ProductConfigurationParameter {
+  key: String!
+  value: String!
+}
+
 `];

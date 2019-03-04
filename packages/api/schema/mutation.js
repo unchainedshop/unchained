@@ -267,6 +267,8 @@ export default [/* GraphQL */`
     removeProductVariationOption(productVariationId: ID!, productVariationOptionValue: String!): ProductVariation!
     updateProductVariationTexts(productVariationId: ID!, productVariationOptionValue: String, texts: [UpdateProductVariationTextInput!]!): [ProductVariationTexts!]!
     createProductVariation(productId: ID!, variation: CreateProductVariationInput!): ProductVariation!
+    createProductBundleItem(productId: ID!, item: CreateProductBundleItemInput!): Product!
+    removeBundleItem(productId: ID!, index: Int!): Product!
     createProductVariationOption(productVariationId: ID!, option: CreateProductVariationOptionInput!): ProductVariation!
 
     """
