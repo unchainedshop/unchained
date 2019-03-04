@@ -16,11 +16,6 @@ enum OrderItemPriceCategory {
   ITEM
 }
 
-type OrderItemConfiguration {
-  key: String!
-  value: String!
-}
-
 type OrderItem {
   _id: ID!
   product: Product!
@@ -30,6 +25,6 @@ type OrderItem {
   total(category: OrderItemPriceCategory): Money
   discounts: [OrderItemDiscount!]
   dispatches: [Dispatch!]
-  configuration: [OrderItemConfiguration!]
+  configuration: [ProductConfigurationParameter!]
 }
 `];

@@ -20,7 +20,7 @@ export default [
     type ProductBundleItem {
       product: Product!
       quantity: Int!
-      configuration: [ProductItemConfigurationParameterInput!]
+      configuration: [ProductConfigurationParameter!]
     }
   `,
 ];

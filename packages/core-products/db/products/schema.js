@@ -29,20 +29,10 @@ const ProductCommerceSchema = new SimpleSchema(
   { requiredByDefault: false },
 );
 
-<<<<<<< HEAD
 const ProductWarehousingSchema = new SimpleSchema({
   baseUnit: String,
   sku: { type: String, index: true },
 }, { requiredByDefault: false });
-=======
-const ProductWarehousingSchema = new SimpleSchema(
-  {
-    baseUnit: String,
-    sku: String,
-  },
-  { requiredByDefault: false },
-);
->>>>>>> basic set item implementation
 
 const ProductSupplySchema = new SimpleSchema(
   {
