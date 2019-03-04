@@ -26,7 +26,7 @@ OrderPayments.helpers({
     return JSON.stringify(this.context[key]);
   },
   normalizedStatus() {
-    return objectInvert(OrderPaymentStatus)[this.status];
+    return objectInvert(OrderPaymentStatus)[this.status || null];
   },
   init(order) {
     const provider = this.provider();
