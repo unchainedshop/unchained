@@ -3,6 +3,7 @@ import { log } from 'meteor/unchained:core-logger';
 import { ProductPricingDirector, ProductPricingSheet } from 'meteor/unchained:core-pricing';
 import { WarehousingProviders } from 'meteor/unchained:core-warehousing';
 import { Products } from 'meteor/unchained:core-products';
+import { Quotations } from 'meteor/unchained:core-quotations';
 import { OrderPositions } from './collections';
 import { Orders } from '../orders/collections';
 import { OrderDiscounts } from '../order-discounts/collections';
@@ -18,10 +19,10 @@ OrderPositions.helpers({
       _id: this.orderId,
     });
   },
-  isEnforcesSingleItemsOnAddToOrder() {
-    // return true to make addItem calls generate new positions even if there is already
-    // a position with the same product
-    return false;
+  quotation() {
+    return Quotations.findOne({
+      _id: this.quotationId,
+    });
   },
   pricing() {
     return new ProductPricingSheet({
@@ -68,13 +69,14 @@ OrderPositions.helpers({
 });
 
 OrderPositions.createPosition = ({
-  orderId, productId, quantity, configuration, ...rest
+  orderId, productId, quotationId, quantity, configuration, ...rest
 }) => {
-  log(`Create ${quantity}x Position with Product ${productId}`, { orderId });
+  log(`Create ${quantity}x Position with Product ${productId} ${quotationId ? ` (${quotationId})` : ''}`, { orderId });
   const positionId = OrderPositions.insert({
     ...rest,
     orderId,
     productId,
+    quotationId,
     quantity,
     configuration,
     created: new Date(),

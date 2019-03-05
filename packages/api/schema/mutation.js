@@ -72,6 +72,11 @@ export default [/* GraphQL */`
     addCartDiscount(orderId: ID, code: String!): OrderDiscount!
 
     """
+    Add a new quotation to the cart.
+    """
+    addCartQuotation(orderId: ID, quotationId: ID!, quantity: Int = 1, configuration: [ProductConfigurationParameterInput!]): OrderItem!
+
+    """
     Change billing address and order contact of an open order (cart)
     """
     updateCart(orderId: ID, billingAddress: AddressInput, contact: ContactInput, meta: JSON): Order!

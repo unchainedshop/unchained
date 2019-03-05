@@ -7,6 +7,7 @@ import { DeliveryProviders } from 'meteor/unchained:core-delivery';
 import { PaymentProviders } from 'meteor/unchained:core-payment';
 import { Countries } from 'meteor/unchained:core-countries';
 import { Users } from 'meteor/unchained:core-users';
+import { Quotations } from 'meteor/unchained:core-quotations';
 import { Logs, log } from 'meteor/unchained:core-logger';
 import { MessagingDirector, MessagingType } from 'meteor/unchained:core-messaging';
 import { OrderPricingDirector, OrderPricingSheet } from 'meteor/unchained:core-pricing';
@@ -150,12 +151,26 @@ Orders.helpers({
     }).fetch();
   },
   addProductItem({ productId, quantity, configuration }) {
+    return this.addItem({
+      productId, quantity, configuration,
+    });
+  },
+  addQuotationItem({
+    quotationId, quantity, configuration,
+  }) {
+    const { productId } = Quotations.findOne({ _id: quotationId },
+      { fields: { productId: 1 } });
+    return this.addItem({
+      productId, quotationId, quantity, configuration,
+    });
+  },
+  addItem({ quantity, configuration, ...scope }) {
     const existingPosition = OrderPositions.findOne({
       orderId: this._id,
-      productId,
       configuration,
+      ...scope,
     });
-    if (existingPosition && !existingPosition.isEnforcesSingleItemsOnAddToOrder()) {
+    if (existingPosition) {
       return OrderPositions.updatePosition({
         orderId: this._id,
         positionId: existingPosition._id,
@@ -164,9 +179,9 @@ Orders.helpers({
     }
     return OrderPositions.createPosition({
       orderId: this._id,
-      productId,
       quantity,
       configuration,
+      ...scope,
     });
   },
   user() {
