@@ -18,8 +18,7 @@ class QuotationAdapter {
     return false;
   }
 
-  constructor(config, context) {
-    this.config = config;
+  constructor(context) {
     this.context = context;
   }
 
@@ -31,15 +30,15 @@ class QuotationAdapter {
     return false;
   }
 
-  async manualRequestVerificationNeeded(context) { // eslint-disable-line
+  async manualRequestVerificationNeeded() { // eslint-disable-line
     return true;
   }
 
-  async manualProposalNeeded(context) { // eslint-disable-line
+  async manualProposalNeeded() { // eslint-disable-line
     return true;
   }
 
-  async quote(context) { // eslint-disable-line
+  async quote() { // eslint-disable-line
     return {};
   }
 
