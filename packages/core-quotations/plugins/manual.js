@@ -21,7 +21,7 @@ class ManualOffering extends QuotationAdapter {
   }
 
   async manualRequestVerificationNeeded() { // eslint-disable-line
-    return false;
+    return true;
   }
 
   async manualProposalNeeded(context) { // eslint-disable-line

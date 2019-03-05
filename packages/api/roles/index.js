@@ -73,6 +73,7 @@ export const actions = [
   'requestQuotation',
   'viewQuotations',
   'viewQuotation',
+  'markQuotationVerified',
 ].reduce((oldValue, actionValue) => {
   const newValue = oldValue;
   newValue[actionValue] = actionValue;

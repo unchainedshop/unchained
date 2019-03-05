@@ -28,6 +28,10 @@ class Invoice extends PaymentAdapter {
   isPayLaterAllowed() { // eslint-disable-line
     return false;
   }
+
+  async charge() {  // eslint-disable-line
+    return false;
+  }
 }
 
 PaymentDirector.registerAdapter(Invoice);

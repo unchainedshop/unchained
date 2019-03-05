@@ -89,6 +89,7 @@ import createProductReview from './createProductReview';
 import updateProductReview from './updateProductReview';
 import removeProductReview from './removeProductReview';
 import requestQuotation from './requestQuotation';
+import verifyQuotation from './verifyQuotation';
 
 export default {
   ...Accounts,
@@ -198,4 +199,5 @@ export default {
   removeProductReview: acl(actions.updateProductReview)(removeProductReview),
 
   requestQuotation: acl(actions.requestQuotation)(requestQuotation),
+  verifyQuotation: acl(actions.markQuotationVerified)(verifyQuotation),
 };
