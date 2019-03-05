@@ -18,17 +18,27 @@ const QuotationList = ({
           <Link href={`/quotations/view?_id=${quotation._id}`}>
             <a href={`/quotations/view?_id=${quotation._id}`}>
               {quotation.quotationNumber ? (
-                <React.Fragment>
+                <>
                   <b>
                     {quotation.quotationNumber}
                   </b>
-                </React.Fragment>
+                  <small>
+                  &nbsp;(
+                    {quotation._id}
+                  )
+                  </small>
+                </>
               ) : (
-                <React.Fragment>
-                  <i>
+                <>
+                  <b>
                     RFP
-                  </i>
-                </React.Fragment>
+                  </b>
+                  <small>
+                    &nbsp;(
+                    {quotation._id}
+                    )
+                  </small>
+                </>
               )}
             </a>
           </Link>

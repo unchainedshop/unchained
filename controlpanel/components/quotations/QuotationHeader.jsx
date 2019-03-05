@@ -13,7 +13,7 @@ import {
 import BtnRemoveQuotation from './BtnRemoveQuotation';
 
 const colorForStatus = (status) => {
-  if (status === 'REQUESTED') return 'red';
+  if (status === 'REQUESTED' || status === 'REJECTED') return 'red';
   if (status === 'FULLFILLED') return 'green';
   return 'orange';
 };
@@ -25,7 +25,9 @@ const QuotationHeader = ({
   <>
     <Menu fluid attached="top" bquotationless key="header-title">
       <Menu.Item header>
-        {quotationNumber || 'RFP'}
+        Quotation
+        {' '}
+        {quotationNumber || ''}
         &nbsp;
         <small>
           (
@@ -188,6 +190,7 @@ export default compose(
       refetchQueries: [
         'quotations',
         'quotation',
+        'quotationLogs',
       ],
     },
   }),
@@ -209,6 +212,7 @@ export default compose(
       refetchQueries: [
         'quotations',
         'quotation',
+        'quotationLogs',
       ],
     },
   }),
@@ -252,7 +256,7 @@ export default compose(
       },
     }),
     rejectQuotation: ({ rejectQuotation, quotationId }) => () => {
-      const reason = prompt('Reason', '');
+      const reason = prompt('Reason', ''); // eslint-disable-line
       return rejectQuotation({
         variables: {
           quotationId,
