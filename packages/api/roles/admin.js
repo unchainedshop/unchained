@@ -44,4 +44,5 @@ export default (role, actions) => {
   role.allow(actions.requestQuotation, () => true);
   role.allow(actions.viewQuotations, () => true);
   role.allow(actions.viewQuotation, () => true);
+  role.allow(actions.markQuotationVerified, () => true);
 };

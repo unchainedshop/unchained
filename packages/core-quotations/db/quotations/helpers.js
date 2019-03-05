@@ -55,14 +55,14 @@ Quotations.helpers({
       context,
     });
   },
-  verify({ quotationContext }, options) {
+  verify({ quotationContext } = {}, options) {
     if (this.status !== QuotationStatus.REQUESTED) return this;
     return this
       .setStatus(QuotationStatus.PROCESSING, 'verified elligibility manually')
       .process({ quotationContext })
       .sendStatusToCustomer(options);
   },
-  propose({ quotationContext }, options) {
+  propose({ quotationContext } = {}, options) {
     if (this.status !== QuotationStatus.PROCESSING) return this;
     return this
       .setStatus(QuotationStatus.PROPOSED, 'proposed manually')

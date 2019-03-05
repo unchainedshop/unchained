@@ -395,5 +395,11 @@ export default [/* GraphQL */`
     Request for Proposal
     """
     requestQuotation(productId: ID!, configuration: [ProductConfigurationParameterInput!]): Quotation!
+
+    """
+    Verify request elligibility
+    """
+    verifyQuotation(quotationId: ID!): Quotation!
+
   }
 `];
