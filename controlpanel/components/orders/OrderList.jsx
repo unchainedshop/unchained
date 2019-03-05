@@ -31,9 +31,9 @@ const OrderList = ({
                     {order.orderNumber || 'Cart'}
                   </b>
                   <small>
-(
+                    &nbsp;(
                     {order._id}
-)
+                    )
                   </small>
                 </React.Fragment>
               ) : (
