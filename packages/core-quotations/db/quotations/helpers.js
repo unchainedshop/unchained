@@ -199,6 +199,7 @@ Quotations.requestQuotation = ({
     status: QuotationStatus.REQUESTED,
     userId,
     productId,
+    configuration,
     currency: Countries.resolveDefaultCurrencyCode({
       isoCode: currencyCode,
     }),
@@ -206,7 +207,7 @@ Quotations.requestQuotation = ({
   });
   const quotation = Quotations.findOne({ _id: quotationId });
   return quotation
-    .process({ quotationContext: { configuration } })
+    .process()
     .sendStatusToCustomer(options);
 };
 

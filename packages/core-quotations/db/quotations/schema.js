@@ -23,6 +23,18 @@ Quotations.attachSchema(new SimpleSchema({
   fullfilled: Date,
   currency: String,
   countryCode: String,
+  configuration: Array,
+  'configuration.$': {
+    type: Object,
+    required: true,
+  },
+  'configuration.$.key': {
+    type: String,
+    required: true,
+  },
+  'configuration.$.value': {
+    type: String,
+  },
   ...timestampFields,
   ...contextFields,
   ...logFields,
