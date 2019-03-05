@@ -48,6 +48,7 @@ type Quotation {
   product: Product!
   status: QuotationStatus!
   created: Date!
+  expires: Date
   updated: Date
   quotationNumber: String
   fullfilled: Date
