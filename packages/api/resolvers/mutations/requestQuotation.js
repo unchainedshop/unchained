@@ -12,6 +12,7 @@ export default function (root, { productId, configuration },
     userId,
     productId,
     currencyCode: countryContext,
+    configuration,
   }, { localeContext });
   return quotation;
 }

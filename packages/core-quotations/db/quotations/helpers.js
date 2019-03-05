@@ -191,11 +191,10 @@ Quotations.helpers({
 });
 
 Quotations.requestQuotation = ({
-  productId, userId, currencyCode, ...rest
+  productId, userId, currencyCode, configuration,
 }, options) => {
   log('Create Quotation', { userId });
   const quotationId = Quotations.insert({
-    ...rest,
     created: new Date(),
     status: QuotationStatus.REQUESTED,
     userId,
@@ -207,7 +206,7 @@ Quotations.requestQuotation = ({
   });
   const quotation = Quotations.findOne({ _id: quotationId });
   return quotation
-    .process()
+    .process({ quotationContext: { configuration } })
     .sendStatusToCustomer(options);
 };
 
