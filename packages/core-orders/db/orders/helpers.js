@@ -194,7 +194,7 @@ Orders.helpers({
     const billingAddress = {
       ...(rawBillingAddress || {}),
       countryCode: this.countryCode,
-    }
+    };
     Users.updateLastBillingAddress({
       userId: this.userId,
       lastBillingAddress: billingAddress,
@@ -246,18 +246,21 @@ Orders.helpers({
       .processOrder({ paymentContext, deliveryContext })
       .sendOrderConfirmationToCustomer({ language });
   },
-  confirm({ paymentContext, deliveryContext }, { localeContext }) {
+  confirm({ orderContext, paymentContext, deliveryContext }, { localeContext }) {
     if (this.status !== OrderStatus.PENDING) return this;
     const lastUserLanguage = this.user().language();
     const language = (localeContext && localeContext.normalized)
       || (lastUserLanguage && lastUserLanguage.isoCode);
     return this
+      .updateContext(orderContext)
       .setStatus(OrderStatus.CONFIRMED, 'confirmed manually')
       .processOrder({ paymentContext, deliveryContext })
       .sendOrderConfirmationToCustomer({ language });
   },
   sendOrderConfirmationToCustomer({ language }) {
     const attachments = [];
+    // TODO: If this.status is PENDING, we should only send the user
+    // a notice that we have received the order but not confirming it
     const confirmation = this.document({ type: 'ORDER_CONFIRMATION' });
     if (confirmation) attachments.push(confirmation);
     if (this.payment().isBlockingOrderFullfillment()) {

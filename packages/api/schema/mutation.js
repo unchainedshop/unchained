@@ -155,7 +155,7 @@ export default [/* GraphQL */`
     """
     Manually confirm an order which is in progress
     """
-    confirmOrder(orderId: ID!): Order!
+    confirmOrder(orderId: ID!, orderContext: JSON, paymentContext: JSON, deliveryContext: JSON): Order!
 
     """
     Manually mark an unpaid/partially paid order as fully paid
