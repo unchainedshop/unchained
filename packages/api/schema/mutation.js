@@ -392,14 +392,24 @@ export default [/* GraphQL */`
     addProductReviewVote(productReviewId: ID!, type: ProductReviewVoteType!, meta: JSON): ProductReviewVote!
 
     """
-    Request for Proposal
+    Request for Proposal (RFP)
     """
     requestQuotation(productId: ID!, configuration: [ProductConfigurationParameterInput!]): Quotation!
 
     """
-    Verify request elligibility
+    Verify quotation request elligibility
     """
-    verifyQuotation(quotationId: ID!): Quotation!
+    verifyQuotation(quotationId: ID!, quotationContext: JSON): Quotation!
+
+    """
+    Reject an RFP, this is possible as long as a quotation is not fullfilled
+    """
+    rejectQuotation(quotationId: ID!, quotationContext: JSON): Quotation!
+
+    """
+    Make a proposal as answer to the RFP
+    """
+    makeQuotationProposal(quotationId: ID!, quotationContext: JSON): Quotation!
 
   }
 `];

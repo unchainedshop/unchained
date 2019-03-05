@@ -62,6 +62,13 @@ Quotations.helpers({
       .process({ quotationContext })
       .sendStatusToCustomer(options);
   },
+  reject({ quotationContext } = {}, options) {
+    if (this.status === QuotationStatus.FULLFILLED) return this;
+    return this
+      .setStatus(QuotationStatus.REJECTED, 'rejected manually')
+      .process({ quotationContext })
+      .sendStatusToCustomer(options);
+  },
   propose({ quotationContext } = {}, options) {
     if (this.status !== QuotationStatus.PROCESSING) return this;
     return this
