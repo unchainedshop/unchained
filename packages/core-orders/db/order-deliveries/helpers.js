@@ -48,6 +48,7 @@ OrderDeliveries.helpers({
     return pricing;
   },
   isBlockingOrderConfirmation() {
+    if (!this.provider().isAutoReleaseAllowed()) return true;
     return false;
   },
   isBlockingOrderFullfillment() {
