@@ -12,30 +12,10 @@ class ManualOffering extends QuotationAdapter {
 
   static orderIndex = 0
 
-  static isActivatedFor() {
-    return true;
-  }
-
-  configurationError() { // eslint-disable-line
-    return null;
-  }
-
-  async manualRequestVerificationNeeded() { // eslint-disable-line
-    return true;
-  }
-
-  async manualProposalNeeded() { // eslint-disable-line
-    return true;
-  }
-
   async quote(config) { // eslint-disable-line
     return {
-      expires: new Date() + (1000 * 3600),
+      expires: new Date() + (1000 * 3600) * 1000,
     };
-  }
-
-  async rejectWithReason() { // eslint-disable-line
-    return true;
   }
 }
 

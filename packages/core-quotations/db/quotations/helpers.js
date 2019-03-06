@@ -109,12 +109,12 @@ Quotations.helpers({
     const controller = this.controller();
 
     if (status === QuotationStatus.REQUESTED || !status) {
-      if (!Promise.await(controller.manualRequestVerificationNeeded())) {
+      if (!Promise.await(controller.isManualRequestVerificationNeeded())) {
         status = QuotationStatus.PROCESSING;
       }
     }
     if (status === QuotationStatus.PROCESSING) {
-      if (!Promise.await(controller.manualProposalNeeded())) {
+      if (!Promise.await(controller.isManualProposalNeeded())) {
         status = QuotationStatus.PROPOSED;
       }
     }
