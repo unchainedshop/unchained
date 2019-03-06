@@ -14,8 +14,8 @@ class QuotationAdapter {
 
   static version = ''
 
-  static typeSupported(type) { // eslint-disable-line
-    return false;
+  static isActivatedFor() {
+    return true;
   }
 
   constructor(context) {
@@ -26,15 +26,11 @@ class QuotationAdapter {
     return QuotationError.NOT_IMPLEMENTED;
   }
 
-  isActive() { // eslint-disable-line
-    return false;
-  }
-
-  async manualRequestVerificationNeeded() { // eslint-disable-line
+  async isManualRequestVerificationNeeded() { // eslint-disable-line
     return true;
   }
 
-  async manualProposalNeeded() { // eslint-disable-line
+  async isManualProposalNeeded() { // eslint-disable-line
     return true;
   }
 
@@ -42,7 +38,11 @@ class QuotationAdapter {
     return {};
   }
 
-  async rejectWithReason() { // eslint-disable-line
+  async reject() { // eslint-disable-line
+    return true;
+  }
+
+  async isProductConfigurationValid({ quantity, configuration }) { // eslint-disable-line
     return true;
   }
 
@@ -86,10 +86,10 @@ class QuotationDirector {
     });
   }
 
-  async manualRequestVerificationNeeded(context) {
+  async isManualRequestVerificationNeeded(context) {
     try {
       const adapter = this.interface(context);
-      const result = await adapter.manualRequestVerificationNeeded();
+      const result = await adapter.isManualRequestVerificationNeeded();
       return result;
     } catch (error) {
       console.error(error); // eslint-disable-line
@@ -97,10 +97,10 @@ class QuotationDirector {
     }
   }
 
-  async manualProposalNeeded(context) { // eslint-disable-line
+  async isManualProposalNeeded(context) { // eslint-disable-line
     try {
       const adapter = this.interface(context);
-      const result = await adapter.manualProposalNeeded();
+      const result = await adapter.isManualProposalNeeded();
       return result;
     } catch (error) {
       console.error(error); // eslint-disable-line
@@ -119,10 +119,10 @@ class QuotationDirector {
     }
   }
 
-  async rejectWithReason(context) {
+  async reject(context) {
     try {
       const adapter = this.interface(context);
-      const result = await adapter.rejectWithReason();
+      const result = await adapter.reject();
       return result;
     } catch (error) {
       console.error(error); // eslint-disable-line
@@ -138,16 +138,6 @@ class QuotationDirector {
     } catch (error) {
       console.warn(error); // eslint-disable-line
       return QuotationError.ADAPTER_NOT_FOUND;
-    }
-  }
-
-  isActive(context) {
-    try {
-      const adapter = this.interface();
-      return adapter.isActive(context);
-    } catch (error) {
-      console.warn(error); // eslint-disable-line
-      return false;
     }
   }
 

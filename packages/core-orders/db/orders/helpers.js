@@ -574,8 +574,9 @@ Orders.updateStatus = ({ status, orderId, info = '' }) => {
   // so we only track when transitioning to confirmed or fullfilled status
   if (isShouldUpdateDocuments) {
     try {
-      // we are now allowed to stop this process, else we could
-      // end up with non-confirmed but charged orders.
+      // It's okay if this fails as it is not
+      // super-vital to the
+      // checkout process
       OrderDocuments.updateDocuments({
         orderId,
         date: modifier.$set.confirmed || order.confirmed,
