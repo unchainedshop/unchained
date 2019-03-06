@@ -56,6 +56,7 @@ type Quotation {
   country: Country
   currency: Currency
   meta: JSON
+  configuration: [ProductConfigurationParameter!]!
   documents(type: QuotationDocumentType = PROPOSAL): [Media!]!
   logs(offset: Int, limit: Int): [Log!]!
 }
