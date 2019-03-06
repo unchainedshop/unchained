@@ -53,8 +53,8 @@ OrderPayments.helpers({
     return true;
   },
   isBlockingOrderFullfillment() {
-    if (this.status !== OrderPaymentStatus.PAID) return true;
-    return false;
+    if (this.status === OrderPaymentStatus.PAID) return false;
+    return true;
   },
   charge(paymentContext, order) {
     if (this.status !== OrderPaymentStatus.OPEN) return;
