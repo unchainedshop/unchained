@@ -26,6 +26,10 @@ DeliveryProviders.helpers({
     return Promise.await(new DeliveryDirector(this)
       .estimatedDeliveryThroughput(this.defaultContext(context), warehousingThroughputTime));
   },
+  isAutoReleaseAllowed(context) {
+    return new DeliveryDirector(this)
+      .isAutoReleaseAllowed(this.defaultContext(context));
+  },
   send(context) {
     return Promise.await(new DeliveryDirector(this)
       .send(this.defaultContext(context)));

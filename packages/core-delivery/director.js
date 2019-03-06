@@ -45,6 +45,13 @@ export class DeliveryAdapter {
     return false;
   }
 
+  isAutoReleaseAllowed() { // eslint-disable-line
+    // if you return false here,
+    // the order will need manual confirmation before
+    // unchained will try to invoke send()
+    return true;
+  }
+
   log(message, { level = 'verbose', ...options } = {}) { // eslint-disable-line
     return log(message, { level, ...options });
   }
@@ -98,6 +105,16 @@ export class DeliveryDirector {
     try {
       const adapter = this.interface(context);
       return adapter.isActive();
+    } catch (error) {
+      console.warn(error); // eslint-disable-line
+      return false;
+    }
+  }
+
+  isAutoReleaseAllowed(context) {
+    try {
+      const adapter = this.interface(context);
+      return adapter.isAutoReleaseAllowed();
     } catch (error) {
       console.warn(error); // eslint-disable-line
       return false;
