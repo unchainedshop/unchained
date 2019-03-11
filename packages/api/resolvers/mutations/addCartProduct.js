@@ -11,8 +11,8 @@ export default function (root, {
   orderId, productId, quantity, configuration,
 }, { userId, countryContext }) {
   log(`mutation addCartProduct ${productId} ${quantity} ${configuration ? JSON.stringify(configuration) : ''}`, { userId, orderId });
-  const productCount = Products.find({ _id: productId }).count();
-  if (productCount === 0) throw new ProductNotFoundError({ data: { productId } });
+  const product = Products.findOne({ _id: productId });
+  if (!product) throw new ProductNotFoundError({ data: { productId } });
   if (orderId) {
     const order = Orders.findOne({ _id: orderId });
     if (!order) throw new OrderNotFoundError({ orderId });
@@ -20,7 +20,7 @@ export default function (root, {
       throw new OrderWrongStatusError({ data: { status: order.status } });
     }
     return order.addProductItem({
-      productId,
+      product,
       quantity,
       configuration,
     });
@@ -29,7 +29,7 @@ export default function (root, {
   if (!user) throw new UserNotFoundError({ userId });
   const cart = user.initCart({ countryContext });
   return cart.addProductItem({
-    productId,
+    product,
     quantity,
     configuration,
   });

@@ -68,6 +68,42 @@ OrderPositions.helpers({
   },
 });
 
+OrderPositions.upsertProductPosition = ({
+  product,
+  order,
+  ...options
+}) => OrderPositions.upsertPosition({
+  ...options,
+  productId: product._id,
+  orderId: order._id,
+});
+
+OrderPositions.upsertPosition = ({
+  orderId,
+  quantity,
+  configuration,
+  ...scope
+}) => {
+  const existingPosition = OrderPositions.findOne({
+    orderId,
+    configuration,
+    ...scope,
+  });
+  if (existingPosition) {
+    return OrderPositions.updatePosition({
+      orderId,
+      positionId: existingPosition._id,
+      quantity: existingPosition.quantity + quantity,
+    });
+  }
+  return OrderPositions.createPosition({
+    orderId,
+    quantity,
+    configuration,
+    ...scope,
+  });
+};
+
 OrderPositions.createPosition = ({
   orderId, productId, quotationId, quantity, configuration, ...rest
 }) => {

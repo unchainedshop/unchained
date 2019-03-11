@@ -23,7 +23,7 @@ export default function (root, {
       throw new OrderWrongStatusError({ data: { status: order.status } });
     }
     return order.addQuotationItem({
-      quotationId,
+      quotation,
       quantity,
       configuration,
     });
@@ -32,7 +32,7 @@ export default function (root, {
   if (!user) throw new UserNotFoundError({ userId });
   const cart = user.initCart({ countryContext });
   return cart.addQuotationItem({
-    quotationId,
+    quotation,
     quantity,
     configuration,
   });
