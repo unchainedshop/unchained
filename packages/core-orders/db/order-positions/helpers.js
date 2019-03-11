@@ -82,6 +82,7 @@ OrderPositions.upsertPosition = ({
   orderId,
   quantity,
   configuration,
+  context,
   ...scope
 }) => {
   const existingPosition = OrderPositions.findOne({
@@ -100,6 +101,7 @@ OrderPositions.upsertPosition = ({
     orderId,
     quantity,
     configuration,
+    context,
     ...scope,
   });
 };
