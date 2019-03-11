@@ -104,6 +104,10 @@ Quotations.helpers({
     }
     return this.setStatus(this.nextStatus(), 'quotation processed');
   },
+  transformItemConfiguration(itemConfiguration) {
+    const controller = this.controller();
+    return Promise.await(controller.transformItemConfiguration(itemConfiguration));
+  },
   nextStatus() {
     let { status } = this;
     const controller = this.controller();

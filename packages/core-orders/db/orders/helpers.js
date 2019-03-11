@@ -7,7 +7,6 @@ import { DeliveryProviders } from 'meteor/unchained:core-delivery';
 import { PaymentProviders } from 'meteor/unchained:core-payment';
 import { Countries } from 'meteor/unchained:core-countries';
 import { Users } from 'meteor/unchained:core-users';
-import { Quotations } from 'meteor/unchained:core-quotations';
 import { Logs, log } from 'meteor/unchained:core-logger';
 import { MessagingDirector, MessagingType } from 'meteor/unchained:core-messaging';
 import { OrderPricingDirector, OrderPricingSheet } from 'meteor/unchained:core-pricing';
@@ -150,22 +149,33 @@ Orders.helpers({
       ...props,
     }).fetch();
   },
-  addQuotationItem({ quotationId, quantity, configuration }) {
-    const quotation = Quotations.findOne({ _id: quotationId });
+  addQuotationItem({ quotation, ...quotationItemConfiguration }) {
+    const { quantity, configuration } = quotation
+      .transformItemConfiguration(quotationItemConfiguration);
     const product = quotation.product();
     return this.addProductItem({
       product,
       quantity,
       configuration,
+      origin: {
+        quotationId: quotation._id,
+      },
     });
   },
-  addProductItem({ product, quantity, configuration }) {
-    console.log(product);
+  addProductItem({
+    product, quantity, configuration, origin,
+  }) {
     return OrderPositions.upsertProductPosition({
       order: this,
-      product,
+      product: product.resolveOrderableProduct({ quantity, configuration }),
       quantity,
       configuration,
+      context: {
+        origin: {
+          productId: product._id,
+          ...origin,
+        },
+      },
     });
   },
   user() {

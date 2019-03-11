@@ -42,8 +42,8 @@ class QuotationAdapter {
     return true;
   }
 
-  async isProductConfigurationValid({ quantity, configuration }) { // eslint-disable-line
-    return true;
+  async transformItemConfiguration({ quantity, configuration }) { // eslint-disable-line
+    return { quantity, configuration };
   }
 
   log(message, { level = 'verbose', ...options } = {}) { // eslint-disable-line
@@ -108,10 +108,16 @@ class QuotationDirector {
     }
   }
 
-  async quote(context) {
+  async transformItemConfiguration({
+    quantity,
+    configuration,
+  }) { // eslint-disable-line
     try {
-      const adapter = this.interface(context);
-      const result = await adapter.quote();
+      const adapter = this.interface();
+      const result = await adapter.transformItemConfiguration({
+        quantity,
+        configuration,
+      });
       return result;
     } catch (error) {
       console.error(error); // eslint-disable-line
@@ -119,15 +125,16 @@ class QuotationDirector {
     }
   }
 
+  async quote(context) {
+    const adapter = this.interface(context);
+    const result = await adapter.quote();
+    return result;
+  }
+
   async reject(context) {
-    try {
-      const adapter = this.interface(context);
-      const result = await adapter.reject();
-      return result;
-    } catch (error) {
-      console.error(error); // eslint-disable-line
-      return null;
-    }
+    const adapter = this.interface(context);
+    const result = await adapter.reject();
+    return result;
   }
 
   configurationError() {

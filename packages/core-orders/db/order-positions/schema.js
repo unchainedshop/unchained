@@ -2,6 +2,8 @@ import { Schemas } from 'meteor/unchained:utils';
 import SimpleSchema from 'simpl-schema';
 import { OrderPositions } from './collections';
 
+const { contextFields, timestampFields } = Schemas;
+
 const calculationFields = {
   calculation: Array,
   'calculation.$': {
@@ -32,6 +34,7 @@ OrderPositions.attachSchema(new SimpleSchema({
   orderId: { type: String, index: true },
   quotationId: { type: String },
   quantity: Number,
-  ...Schemas.timestampFields,
+  ...timestampFields,
+  ...contextFields,
   ...calculationFields,
 }, { requiredByDefault: false }));
