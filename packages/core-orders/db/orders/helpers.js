@@ -150,38 +150,22 @@ Orders.helpers({
       ...props,
     }).fetch();
   },
-  addProductItem({ productId, quantity, configuration }) {
-    return this.addItem({
-      productId, quantity, configuration,
-    });
-  },
-  addQuotationItem({
-    quotationId, quantity, configuration,
-  }) {
-    const { productId } = Quotations.findOne({ _id: quotationId },
-      { fields: { productId: 1 } });
-    return this.addItem({
-      productId, quotationId, quantity, configuration,
-    });
-  },
-  addItem({ quantity, configuration, ...scope }) {
-    const existingPosition = OrderPositions.findOne({
-      orderId: this._id,
-      configuration,
-      ...scope,
-    });
-    if (existingPosition) {
-      return OrderPositions.updatePosition({
-        orderId: this._id,
-        positionId: existingPosition._id,
-        quantity: existingPosition.quantity + quantity,
-      });
-    }
-    return OrderPositions.createPosition({
-      orderId: this._id,
+  addQuotationItem({ quotationId, quantity, configuration }) {
+    const quotation = Quotations.findOne({ _id: quotationId });
+    const product = quotation.product();
+    return this.addProductItem({
+      product,
       quantity,
       configuration,
-      ...scope,
+    });
+  },
+  addProductItem({ product, quantity, configuration }) {
+    console.log(product);
+    return OrderPositions.upsertProductPosition({
+      order: this,
+      product,
+      quantity,
+      configuration,
     });
   },
   user() {
