@@ -3,6 +3,7 @@ export const OrderDocumentTypes = {
   DELIVERY_NOTE: 'DELIVERY_NOTE',
   INVOICE: 'INVOICE',
   RECEIPT: 'RECEIPT',
+  OTHER: 'OTHER',
 };
 
 export default OrderDocumentTypes;
