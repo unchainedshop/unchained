@@ -52,6 +52,7 @@ class DocumentDirector {
   async execute(name, options, ancestors) {
     return Promise.all(this.adapters.map(async (adapter) => {
       log(`DocumentDirector via ${adapter.constructor.key} -> Execute '${name}'`);
+      if (!adapter[name]) throw new Error(`Document Adapter ${adapter.constructor.key} misses ${name}`);
       return adapter[name]({
         ancestors,
         ...options,

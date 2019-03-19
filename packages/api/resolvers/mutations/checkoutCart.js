@@ -25,9 +25,7 @@ const checkoutWithPotentialErrors = (
 
 export default function (root, {
   orderId,
-  paymentContext,
-  deliveryContext,
-  orderContext,
+  ...transactionContext
 }, {
   userId,
   countryContext,
@@ -40,11 +38,7 @@ export default function (root, {
     if (!order.isCart()) {
       throw new OrderWrongStatusError({ data: { status: order.status } });
     }
-    return checkoutWithPotentialErrors(order, {
-      orderContext,
-      paymentContext,
-      deliveryContext,
-    }, {
+    return checkoutWithPotentialErrors(order, transactionContext, {
       localeContext,
     }, userId);
   }
@@ -52,11 +46,7 @@ export default function (root, {
   if (!user) throw new UserNotFoundError({ data: { userId } });
   const cart = user.cart({ countryContext });
   if (!cart) throw new UserNoCartError({ data: { userId } });
-  return checkoutWithPotentialErrors(cart, {
-    orderContext,
-    paymentContext,
-    deliveryContext,
-  }, {
+  return checkoutWithPotentialErrors(cart, transactionContext, {
     localeContext,
   }, userId);
 }

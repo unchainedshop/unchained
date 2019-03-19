@@ -44,9 +44,11 @@ Quotation
 """
 type Quotation {
   _id: ID!
-  user: User
-  status: QuotationStatus
-  created: Date
+  user: User!
+  product: Product!
+  status: QuotationStatus!
+  created: Date!
+  expires: Date
   updated: Date
   quotationNumber: String
   fullfilled: Date
@@ -54,6 +56,7 @@ type Quotation {
   country: Country
   currency: Currency
   meta: JSON
+  configuration: [ProductConfigurationParameter!]!
   documents(type: QuotationDocumentType = PROPOSAL): [Media!]!
   logs(offset: Int, limit: Int): [Log!]!
 }

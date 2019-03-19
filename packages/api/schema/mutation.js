@@ -72,6 +72,11 @@ export default [/* GraphQL */`
     addCartDiscount(orderId: ID, code: String!): OrderDiscount!
 
     """
+    Add a new quotation to the cart.
+    """
+    addCartQuotation(orderId: ID, quotationId: ID!, quantity: Int = 1, configuration: [ProductConfigurationParameterInput!]): OrderItem!
+
+    """
     Change billing address and order contact of an open order (cart)
     """
     updateCart(orderId: ID, billingAddress: AddressInput, contact: ContactInput, meta: JSON): Order!
@@ -155,7 +160,7 @@ export default [/* GraphQL */`
     """
     Manually confirm an order which is in progress
     """
-    confirmOrder(orderId: ID!): Order!
+    confirmOrder(orderId: ID!, orderContext: JSON, paymentContext: JSON, deliveryContext: JSON): Order!
 
     """
     Manually mark an unpaid/partially paid order as fully paid
@@ -392,8 +397,24 @@ export default [/* GraphQL */`
     addProductReviewVote(productReviewId: ID!, type: ProductReviewVoteType!, meta: JSON): ProductReviewVote!
 
     """
-    Request for Proposal
+    Request for Proposal (RFP)
     """
     requestQuotation(productId: ID!, configuration: [ProductConfigurationParameterInput!]): Quotation!
+
+    """
+    Verify quotation request elligibility
+    """
+    verifyQuotation(quotationId: ID!, quotationContext: JSON): Quotation!
+
+    """
+    Reject an RFP, this is possible as long as a quotation is not fullfilled
+    """
+    rejectQuotation(quotationId: ID!, quotationContext: JSON): Quotation!
+
+    """
+    Make a proposal as answer to the RFP
+    """
+    makeQuotationProposal(quotationId: ID!, quotationContext: JSON): Quotation!
+
   }
 `];

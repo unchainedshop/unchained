@@ -149,24 +149,33 @@ Orders.helpers({
       ...props,
     }).fetch();
   },
-  addProductItem({ productId, quantity, configuration }) {
-    const existingPosition = OrderPositions.findOne({
-      orderId: this._id,
-      productId,
-      configuration,
-    });
-    if (existingPosition && !existingPosition.isEnforcesSingleItemsOnAddToOrder()) {
-      return OrderPositions.updatePosition({
-        orderId: this._id,
-        positionId: existingPosition._id,
-        quantity: existingPosition.quantity + quantity,
-      });
-    }
-    return OrderPositions.createPosition({
-      orderId: this._id,
-      productId,
+  addQuotationItem({ quotation, ...quotationItemConfiguration }) {
+    const { quantity, configuration } = quotation
+      .transformItemConfiguration(quotationItemConfiguration);
+    const product = quotation.product();
+    return this.addProductItem({
+      product,
       quantity,
       configuration,
+      origin: {
+        quotationId: quotation._id,
+      },
+    });
+  },
+  addProductItem({
+    product, quantity, configuration, origin,
+  }) {
+    return OrderPositions.upsertProductPosition({
+      order: this,
+      product: product.resolveOrderableProduct({ quantity, configuration }),
+      quantity,
+      configuration,
+      context: {
+        origin: {
+          productId: product._id,
+          ...origin,
+        },
+      },
     });
   },
   user() {
@@ -194,7 +203,7 @@ Orders.helpers({
     const billingAddress = {
       ...(rawBillingAddress || {}),
       countryCode: this.countryCode,
-    }
+    };
     Users.updateLastBillingAddress({
       userId: this.userId,
       lastBillingAddress: billingAddress,
@@ -246,18 +255,21 @@ Orders.helpers({
       .processOrder({ paymentContext, deliveryContext })
       .sendOrderConfirmationToCustomer({ language });
   },
-  confirm({ paymentContext, deliveryContext }, { localeContext }) {
+  confirm({ orderContext, paymentContext, deliveryContext }, { localeContext }) {
     if (this.status !== OrderStatus.PENDING) return this;
     const lastUserLanguage = this.user().language();
     const language = (localeContext && localeContext.normalized)
       || (lastUserLanguage && lastUserLanguage.isoCode);
     return this
+      .updateContext(orderContext)
       .setStatus(OrderStatus.CONFIRMED, 'confirmed manually')
       .processOrder({ paymentContext, deliveryContext })
       .sendOrderConfirmationToCustomer({ language });
   },
   sendOrderConfirmationToCustomer({ language }) {
     const attachments = [];
+    // TODO: If this.status is PENDING, we should only send the user
+    // a notice that we have received the order but not confirming it
     const confirmation = this.document({ type: 'ORDER_CONFIRMATION' });
     if (confirmation) attachments.push(confirmation);
     if (this.payment().isBlockingOrderFullfillment()) {
@@ -556,8 +568,9 @@ Orders.updateStatus = ({ status, orderId, info = '' }) => {
   // so we only track when transitioning to confirmed or fullfilled status
   if (isShouldUpdateDocuments) {
     try {
-      // we are now allowed to stop this process, else we could
-      // end up with non-confirmed but charged orders.
+      // It's okay if this fails as it is not
+      // super-vital to the
+      // checkout process
       OrderDocuments.updateDocuments({
         orderId,
         date: modifier.$set.confirmed || order.confirmed,

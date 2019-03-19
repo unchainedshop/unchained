@@ -1,7 +1,6 @@
 import Hashids from 'hashids';
 import 'meteor/dburles:collection-helpers';
 import { Promise } from 'meteor/promise';
-import { getFallbackLocale } from 'meteor/unchained:core';
 import { objectInvert } from 'meteor/unchained:utils';
 import { Users } from 'meteor/unchained:core-users';
 import { Products } from 'meteor/unchained:core-products';
@@ -56,65 +55,45 @@ Quotations.helpers({
       context,
     });
   },
-  verify({ quotationContext }, { localeContext }) {
+  verify({ quotationContext } = {}, options) {
     if (this.status !== QuotationStatus.REQUESTED) return this;
-    const lastUserLanguage = this.user().language();
-    const language = (localeContext && localeContext.normalized)
-      || (lastUserLanguage && lastUserLanguage.isoCode);
     return this
       .setStatus(QuotationStatus.PROCESSING, 'verified elligibility manually')
       .process({ quotationContext })
-      .sendStatusToCustomer({ language });
+      .sendStatusToCustomer(options);
   },
-  propose({ quotationContext }, { localeContext }) {
+  reject({ quotationContext } = {}, options) {
+    if (this.status === QuotationStatus.FULLFILLED) return this;
+    return this
+      .setStatus(QuotationStatus.REJECTED, 'rejected manually')
+      .process({ quotationContext })
+      .sendStatusToCustomer(options);
+  },
+  propose({ quotationContext } = {}, options) {
     if (this.status !== QuotationStatus.PROCESSING) return this;
-    const lastUserLanguage = this.user().language();
-    const language = (localeContext && localeContext.normalized)
-      || (lastUserLanguage && lastUserLanguage.isoCode);
     return this
       .setStatus(QuotationStatus.PROPOSED, 'proposed manually')
       .process({ quotationContext })
-      .sendStatusToCustomer({ language });
+      .sendStatusToCustomer(options);
   },
-  sendStatusToCustomer({ language }) {
-    const attachments = [];
-    const confirmation = this.document({ type: 'ORDER_CONFIRMATION' });
-    if (confirmation) attachments.push(confirmation);
-    if (this.payment().isBlockingOrderFullfillment()) {
-      const invoice = this.document({ type: 'INVOICE' });
-      if (invoice) attachments.push(invoice);
-    } else {
-      const receipt = this.document({ type: 'RECEIPT' });
-      if (receipt) attachments.push(receipt);
-    }
+  sendStatusToCustomer(options) {
     const user = this.user();
-    const locale = (user && user.lastLogin && user.lastLogin.locale)
-      || getFallbackLocale().normalized;
+    const locale = user.locale(options).normalized;
+    const attachments = [this.document({ type: 'PROPOSAL' })];
     const director = new MessagingDirector({
       locale,
       quotation: this,
       type: MessagingType.EMAIL,
     });
-    const format = (price) => {
-      const fixedPrice = price / 100;
-      return `${this.currency} ${fixedPrice}`;
-    };
     director.sendMessage({
-      template: 'shop.unchained.orders.confirmation',
+      template: 'shop.unchained.quotations.proposal',
       attachments,
       meta: {
         mailPrefix: `${this.quotationNumber}_`,
         from: EMAIL_FROM,
-        to: this.contact.emailAddress,
-        url: `${UI_ENDPOINT}/order?_id=${this._id}&otp=${this.quotationNumber}`,
-        summary: this.pricing().formattedSummary(format),
-        positions: this.items().map((item) => {
-          const texts = item.product().getLocalizedTexts(language);
-          const product = texts && texts.title;
-          const total = format(item.pricing().sum());
-          const { quantity } = item;
-          return { quantity, product, total };
-        }),
+        to: user.email(),
+        url: `${UI_ENDPOINT}/quotation?_id=${this._id}&otp=${this.quotationNumber}`,
+        quotation: this,
       },
     });
     return this;
@@ -125,17 +104,21 @@ Quotations.helpers({
     }
     return this.setStatus(this.nextStatus(), 'quotation processed');
   },
+  transformItemConfiguration(itemConfiguration) {
+    const controller = this.controller();
+    return Promise.await(controller.transformItemConfiguration(itemConfiguration));
+  },
   nextStatus() {
     let { status } = this;
     const controller = this.controller();
 
     if (status === QuotationStatus.REQUESTED || !status) {
-      if (!Promise.await(controller.manualRequestVerificationNeeded())) {
+      if (!Promise.await(controller.isManualRequestVerificationNeeded())) {
         status = QuotationStatus.PROCESSING;
       }
     }
     if (status === QuotationStatus.PROCESSING) {
-      if (!Promise.await(controller.manualProposalNeeded())) {
+      if (!Promise.await(controller.isManualProposalNeeded())) {
         status = QuotationStatus.PROPOSED;
       }
     }
@@ -212,22 +195,24 @@ Quotations.helpers({
 });
 
 Quotations.requestQuotation = ({
-  productId, userId, currencyCode, ...rest
-}) => {
+  productId, userId, currencyCode, configuration,
+}, options) => {
   log('Create Quotation', { userId });
   const quotationId = Quotations.insert({
-    ...rest,
     created: new Date(),
     status: QuotationStatus.REQUESTED,
     userId,
     productId,
+    configuration,
     currency: Countries.resolveDefaultCurrencyCode({
       isoCode: currencyCode,
     }),
     countryCode: currencyCode,
   });
   const quotation = Quotations.findOne({ _id: quotationId });
-  return quotation.process();
+  return quotation
+    .process()
+    .sendStatusToCustomer(options);
 };
 
 Quotations.updateContext = ({ context, quotationId }) => {

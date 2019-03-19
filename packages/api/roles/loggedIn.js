@@ -2,6 +2,7 @@ import {
   Orders, OrderPayments, OrderDeliveries, OrderPositions, OrderDiscounts,
 } from 'meteor/unchained:core-orders';
 import { ProductReviews } from 'meteor/unchained:core-products';
+import { Quotations } from 'meteor/unchained:core-quotations';
 
 export default (role, actions) => {
   const isMyself = (root, {
@@ -54,9 +55,15 @@ export default (role, actions) => {
   const isOwnedProductReview = (root, { productReviewId }, { userId }) => ProductReviews
     .findReviewById(productReviewId).userId === userId;
 
+  const isOwnedQuotation = (root, { quotationId }, { userId }) => Quotations.find({
+    _id: quotationId,
+    userId,
+  }).count() > 0;
+
   role.allow(actions.viewUser, isMyself);
   role.allow(actions.viewUserRoles, isMyself);
   role.allow(actions.viewUserOrders, isMyself);
+  role.allow(actions.viewUserQuotations, isMyself);
   role.allow(actions.viewUserPrivateInfos, isMyself);
   role.allow(actions.updateUser, isMyself);
   role.allow(actions.viewOrder, isOwnedOrder);
@@ -70,4 +77,5 @@ export default (role, actions) => {
   role.allow(actions.reviewProduct, () => true);
   role.allow(actions.updateProductReview, () => isOwnedProductReview);
   role.allow(actions.requestQuotation, () => true);
+  role.allow(actions.answerQuotation, () => isOwnedQuotation);
 };

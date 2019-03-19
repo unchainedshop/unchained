@@ -40,6 +40,7 @@ import addProductAssignment from './addProductAssignment';
 import removeProductAssignment from './removeProductAssignment';
 import addCartProduct from './addCartProduct';
 import addCartDiscount from './addCartDiscount';
+import addCartQuotation from './addCartQuotation';
 import updateCart from './updateCart';
 import emptyCart from './emptyCart';
 import updateCartItemQuantity from './updateCartItemQuantity';
@@ -89,6 +90,9 @@ import createProductReview from './createProductReview';
 import updateProductReview from './updateProductReview';
 import removeProductReview from './removeProductReview';
 import requestQuotation from './requestQuotation';
+import rejectQuotation from './rejectQuotation';
+import verifyQuotation from './verifyQuotation';
+import makeQuotationProposal from './makeQuotationProposal';
 
 export default {
   ...Accounts,
@@ -140,6 +144,7 @@ export default {
 
   addCartProduct: acl(actions.updateCart)(addCartProduct),
   addCartDiscount: acl(actions.updateCart)(addCartDiscount),
+  addCartQuotation: acl(actions.updateCart)(addCartQuotation),
   updateCart: acl(actions.updateCart)(updateCart),
   emptyCart: acl(actions.updateCart)(emptyCart),
   checkoutCart: acl(actions.checkoutCart)(checkoutCart),
@@ -198,4 +203,8 @@ export default {
   removeProductReview: acl(actions.updateProductReview)(removeProductReview),
 
   requestQuotation: acl(actions.requestQuotation)(requestQuotation),
+  rejectQuotation: acl(actions.answerQuotation)(rejectQuotation),
+  verifyQuotation: acl(actions.manageQuotations)(verifyQuotation),
+  makeQuotationProposal: acl(actions.manageQuotations)(makeQuotationProposal),
+
 };

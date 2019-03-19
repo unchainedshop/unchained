@@ -43,6 +43,7 @@ type User {
   username: String
   isEmailVerified: Boolean!
   isGuest: Boolean!
+  isInitialPassword: Boolean!
   name: String!
   avatar: Media
   profile: UserProfile
@@ -55,6 +56,7 @@ type User {
   tags: [String!]
   cart: Order
   orders(includeDrafts: Boolean = false): [Order!]!
+  quotations: [Quotation!]!
   logs(offset: Int, limit: Int): [Log!]!
 }
 `];

@@ -6,5 +6,5 @@ export default function (root, { newPassword, userId: foreignUserId }, { userId 
   log(`mutation setPassword ${foreignUserId}`, { userId });
   const user = Users.findOne({ _id: foreignUserId });
   if (!user) throw new UserNotFoundError({ userId: foreignUserId });
-  return user.updatePassword(newPassword);
+  return user.updatePassword({ password: newPassword });
 }
