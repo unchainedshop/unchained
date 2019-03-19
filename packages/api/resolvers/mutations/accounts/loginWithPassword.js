@@ -3,9 +3,11 @@ import callMethod from '../../../callMethod';
 import hashPassword from '../../../hashPassword';
 import getUserLoginMethod from './oauth/getUserLoginMethod';
 
-export default async function (root, {
-  username, email, password: hashedPassword, plainPassword,
-}, context) {
+export default async function(
+  root,
+  { username, email, password: hashedPassword, plainPassword },
+  context
+) {
   if (!hashedPassword && !plainPassword) {
     throw new Error('Password is required');
   }
@@ -14,7 +16,7 @@ export default async function (root, {
 
   const methodArguments = {
     user,
-    password,
+    password
   };
   try {
     return callMethod(context, 'login', methodArguments);
@@ -22,7 +24,10 @@ export default async function (root, {
     if (error.reason === 'User has no password set') {
       const method = getUserLoginMethod(email || username);
       if (method === 'no-password') {
-        throw new Meteor.Error('no-password', 'User has no password set, go to forgot password');
+        throw new Meteor.Error(
+          'no-password',
+          'User has no password set, go to forgot password'
+        );
       } else if (method) {
         throw new Error(`User is registered with ${method}.`);
       } else {

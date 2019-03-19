@@ -1,17 +1,17 @@
 import {
   ProductPricingDirector,
   ProductPricingAdapter,
-  ProductPricingSheetRowCategories,
+  ProductPricingSheetRowCategories
 } from 'meteor/unchained:core-pricing';
 
 class ProductDiscount extends ProductPricingAdapter {
-  static key = 'shop.unchained.pricing.product-discount'
+  static key = 'shop.unchained.pricing.product-discount';
 
-  static version = '1.0'
+  static version = '1.0';
 
-  static label = 'Berechnung der Bestellposition: Prozentual-Gutscheine'
+  static label = 'Berechnung der Bestellposition: Prozentual-Gutscheine';
 
-  static orderIndex = 10
+  static orderIndex = 10;
 
   static isActivatedFor() {
     return true;
@@ -20,11 +20,11 @@ class ProductDiscount extends ProductPricingAdapter {
   async calculate() {
     const taxableTotal = this.calculation.sum({
       category: ProductPricingSheetRowCategories.Item,
-      isTaxable: true,
+      isTaxable: true
     });
     const nonTaxableTotal = this.calculation.sum({
       category: ProductPricingSheetRowCategories.Item,
-      isTaxable: false,
+      isTaxable: false
     });
 
     this.discounts.forEach(({ configuration, discountId }) => {
@@ -37,7 +37,7 @@ class ProductDiscount extends ProductPricingAdapter {
           amount: amount * -1,
           isTaxable: true,
           discountId,
-          meta: { adapter: this.constructor.key },
+          meta: { adapter: this.constructor.key }
         });
       }
       if (nonTaxableTotal !== 0) {
@@ -48,7 +48,7 @@ class ProductDiscount extends ProductPricingAdapter {
           amount: amount * -1,
           isTaxable: false,
           discountId,
-          meta: { adapter: this.constructor.key },
+          meta: { adapter: this.constructor.key }
         });
       }
     });

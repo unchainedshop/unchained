@@ -11,7 +11,7 @@ export default {
     // listPrice: ProductPrice
     return obj.price({
       country: countryContext,
-      quantity,
+      quantity
     });
   },
   simulatedPrice(obj, { quantity, useNetPrice }, { countryContext, userId }) {
@@ -20,33 +20,39 @@ export default {
       quantity,
       country: countryContext,
       user,
-      useNetPrice,
+      useNetPrice
     });
   },
   simulatedDiscounts(obj, { quantity }, { countryContext, userId }) {
     return obj.userDiscounts({
       quantity,
       country: countryContext,
-      userId,
+      userId
     });
   },
-  simulatedDispatches(obj, {
-    referenceDate, quantity, deliveryProviderType,
-  }, { countryContext, userId }) {
+  simulatedDispatches(
+    obj,
+    { referenceDate, quantity, deliveryProviderType },
+    { countryContext, userId }
+  ) {
     return obj.userDispatches({
       referenceDate,
       quantity,
       deliveryProviderType,
       country: countryContext,
-      userId,
+      userId
     });
   },
-  simulatedStocks(obj, { referenceDate, deliveryProviderType }, { countryContext, userId }) {
+  simulatedStocks(
+    obj,
+    { referenceDate, deliveryProviderType },
+    { countryContext, userId }
+  ) {
     return obj.userStocks({
       referenceDate,
       deliveryProviderType,
       country: countryContext,
-      userId,
+      userId
     });
   },
   salesUnit(obj) {
@@ -61,13 +67,16 @@ export default {
   dimensions({ supply }) {
     if (!supply) return null;
     const {
-      weightInGram, heightInMillimeters, lengthInMillimeters, widthInMillimeters,
+      weightInGram,
+      heightInMillimeters,
+      lengthInMillimeters,
+      widthInMillimeters
     } = supply;
     return {
       weightInGram,
       heightInMillimeters,
       lengthInMillimeters,
-      widthInMillimeters,
+      widthInMillimeters
     };
-  },
+  }
 };

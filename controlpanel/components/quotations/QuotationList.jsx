@@ -5,38 +5,30 @@ import { Table } from 'semantic-ui-react';
 import Link from 'next/link';
 import InfiniteDataTable, { withDataTableLoader } from '../InfiniteDataTable';
 
-const QuotationList = ({
-  loading, updateHasMore, ...rest
-}) => (
+const QuotationList = ({ loading, updateHasMore, ...rest }) => (
   <InfiniteDataTable
     {...rest}
     cols={5}
     createPath={null}
-    rowRenderer={(quotation => (
+    rowRenderer={quotation => (
       <Table.Row key={quotation._id}>
         <Table.Cell>
           <Link href={`/quotations/view?_id=${quotation._id}`}>
             <a href={`/quotations/view?_id=${quotation._id}`}>
               {quotation.quotationNumber ? (
                 <>
-                  <b>
-                    {quotation.quotationNumber}
-                  </b>
+                  <b>{quotation.quotationNumber}</b>
                   <small>
-                  &nbsp;(
-                    {quotation._id}
-                  )
+                    &nbsp;(
+                    {quotation._id})
                   </small>
                 </>
               ) : (
                 <>
-                  <b>
-                    RFP
-                  </b>
+                  <b>RFP</b>
                   <small>
                     &nbsp;(
-                    {quotation._id}
-                    )
+                    {quotation._id})
                   </small>
                 </>
               )}
@@ -47,13 +39,10 @@ const QuotationList = ({
           {quotation.product && (
             <Link href={`/products/edit?_id=${quotation.product._id}`}>
               <a href={`/products/edit?_id=${quotation.product._id}`}>
-                <b>
-                  {quotation.product.texts.title}
-                </b>
+                <b>{quotation.product.texts.title}</b>
                 <small>
-                &nbsp;(
-                  {quotation.product.sku}
-                )
+                  &nbsp;(
+                  {quotation.product.sku})
                 </small>
               </a>
             </Link>
@@ -69,61 +58,46 @@ const QuotationList = ({
           )}
         </Table.Cell>
         <Table.Cell>
-          {quotation.expires
-            ? format(quotation.expires, 'Ppp')
-            : 'n/a'}
+          {quotation.expires ? format(quotation.expires, 'Ppp') : 'n/a'}
         </Table.Cell>
-        <Table.Cell>
-          {quotation.status}
-        </Table.Cell>
+        <Table.Cell>{quotation.status}</Table.Cell>
       </Table.Row>
-    ))}
+    )}
   >
     <Table.Row>
-      <Table.HeaderCell>
-        Quotation #
-      </Table.HeaderCell>
-      <Table.HeaderCell>
-        Product
-      </Table.HeaderCell>
-      <Table.HeaderCell>
-        User
-      </Table.HeaderCell>
-      <Table.HeaderCell>
-        Expiry Date
-      </Table.HeaderCell>
-      <Table.HeaderCell>
-        Status
-      </Table.HeaderCell>
+      <Table.HeaderCell>Quotation #</Table.HeaderCell>
+      <Table.HeaderCell>Product</Table.HeaderCell>
+      <Table.HeaderCell>User</Table.HeaderCell>
+      <Table.HeaderCell>Expiry Date</Table.HeaderCell>
+      <Table.HeaderCell>Status</Table.HeaderCell>
     </Table.Row>
   </InfiniteDataTable>
 );
 
-export default
-withDataTableLoader({
+export default withDataTableLoader({
   queryName: 'quotations',
   query: gql`
-      query quotations($offset: Int, $limit: Int) {
-        quotations(offset: $offset, limit: $limit) {
+    query quotations($offset: Int, $limit: Int) {
+      quotations(offset: $offset, limit: $limit) {
+        _id
+        expires
+        quotationNumber
+        status
+        user {
           _id
-          expires
-          quotationNumber
-          status
-          user {
-            _id
-            name
+          name
+        }
+        product {
+          _id
+          ... on SimpleProduct {
+            sku
           }
-          product {
+          texts {
             _id
-            ... on SimpleProduct {
-              sku
-            }
-            texts {
-              _id
-              title
-            }
+            title
           }
         }
       }
-    `,
+    }
+  `
 })(QuotationList);

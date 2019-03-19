@@ -4,10 +4,4 @@ import discount from './discount';
 import item from './item';
 import payment from './payment';
 
-export default [
-  ...order,
-  ...item,
-  ...discount,
-  ...delivery,
-  ...payment,
-];
+export default [...order, ...item, ...discount, ...delivery, ...payment];

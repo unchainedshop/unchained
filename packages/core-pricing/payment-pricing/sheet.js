@@ -3,19 +3,17 @@ import PricingSheet from '../pricing-sheet';
 const PaymentPricingSheetRowCategories = {
   Payment: 'PAYMENT',
   Discount: 'DISCOUNT',
-  Tax: 'TAX',
+  Tax: 'TAX'
 };
 
 class PaymentPricingSheet extends PricingSheet {
-  addPayment({
-    amount, isTaxable, isNetPrice, meta,
-  }) {
+  addPayment({ amount, isTaxable, isNetPrice, meta }) {
     this.calculation.push({
       category: PaymentPricingSheetRowCategories.Payment,
       amount,
       isTaxable,
       isNetPrice,
-      meta,
+      meta
     });
   }
 
@@ -24,41 +22,41 @@ class PaymentPricingSheet extends PricingSheet {
       category: PaymentPricingSheetRowCategories.Tax,
       amount,
       rate,
-      meta,
+      meta
     });
   }
 
   taxSum() {
     return this.sum({
-      category: PaymentPricingSheetRowCategories.Tax,
+      category: PaymentPricingSheetRowCategories.Tax
     });
   }
 
   paymentSum() {
     return this.sum({
-      category: PaymentPricingSheetRowCategories.Payment,
+      category: PaymentPricingSheetRowCategories.Payment
     });
   }
 
   discountSum(discountId) {
     return this.sum({
       category: PaymentPricingSheetRowCategories.Discount,
-      discountId,
+      discountId
     });
   }
 
   discountPrices() {
-    const discountIds = this
-      .getDiscountRows()
-      .map(({ discountId }) => discountId);
+    const discountIds = this.getDiscountRows().map(
+      ({ discountId }) => discountId
+    );
 
     return [...new Set(discountIds)].map(discountId => ({
       discountId,
       amount: this.sum({
         category: PaymentPricingSheetRowCategories.Discount,
-        discountId,
+        discountId
       }),
-      currency: this.currency,
+      currency: this.currency
     }));
   }
 
@@ -67,7 +65,9 @@ class PaymentPricingSheet extends PricingSheet {
   }
 
   getDiscountRows() {
-    return this.filterBy({ category: PaymentPricingSheetRowCategories.Discount });
+    return this.filterBy({
+      category: PaymentPricingSheetRowCategories.Discount
+    });
   }
 
   getTaxRows() {

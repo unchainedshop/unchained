@@ -1,8 +1,6 @@
 import React from 'react';
 import { withRouter } from 'next/router';
-import {
-  compose, pure, mapProps, withHandlers,
-} from 'recompose';
+import { compose, pure, mapProps, withHandlers } from 'recompose';
 import { withApollo } from 'react-apollo';
 import AutoField from 'uniforms-semantic/AutoField';
 import SubmitField from 'uniforms-semantic/SubmitField';
@@ -27,7 +25,7 @@ export default compose(
   withFormSchema({
     password: {
       type: String,
-      label: 'New password',
+      label: 'New password'
     },
     passwordConfirm: {
       type: String,
@@ -37,17 +35,19 @@ export default compose(
           return 'mismatch';
         }
         return null;
-      },
-    },
+      }
+    }
   }),
   withHandlers({
     onSubmit: ({
-      client, router: { query: { token } },
-    }) => ({
-      password: newPassword,
-    }) => resetPassword({ newPassword, token, disableHashing: true }, client),
+      client,
+      router: {
+        query: { token }
+      }
+    }) => ({ password: newPassword }) =>
+      resetPassword({ newPassword, token, disableHashing: true }, client)
   }),
   withFormErrorHandlers,
   mapProps(({ client, ...rest }) => ({ ...rest })),
-  pure,
+  pure
 )(FormResetPassword);

@@ -7,5 +7,5 @@ export default {
   },
   bundleItems(product) {
     return product.bundleItems ? product.bundleItems : [];
-  },
+  }
 };

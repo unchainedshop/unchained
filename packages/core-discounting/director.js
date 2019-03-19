@@ -1,13 +1,13 @@
 import { log } from 'meteor/unchained:core-logger';
 
 class DiscountAdapter {
-  static key = ''
+  static key = '';
 
-  static label = ''
+  static label = '';
 
-  static version = ''
+  static version = '';
 
-  static orderIndex = -1
+  static orderIndex = -1;
 
   // return true if a discount is allowed to get added manually by a user
   static isManualAdditionAllowed(code) { // eslint-disable-line
@@ -64,7 +64,10 @@ class DiscountDirector {
     const AdapterClass = this.interfaceClass(discountKey);
     if (!AdapterClass) return null;
     const adapter = new AdapterClass({ context: this.context });
-    return adapter.discountForPricingAdapterKey(pricingAdapterKey, this.context);
+    return adapter.discountForPricingAdapterKey(
+      pricingAdapterKey,
+      this.context
+    );
   }
 
   resolveDiscountKeyFromStaticCode({ code }) {
@@ -97,12 +100,13 @@ class DiscountDirector {
   }
 
   static registerAdapter(adapter) {
-    log(`${this.name} -> Registered ${adapter.key} ${adapter.version} (${adapter.label})`);
+    log(
+      `${this.name} -> Registered ${adapter.key} ${adapter.version} (${
+        adapter.label
+      })`
+    );
     DiscountDirector.adapters.set(adapter.key, adapter);
   }
 }
 
-export {
-  DiscountDirector,
-  DiscountAdapter,
-};
+export { DiscountDirector, DiscountAdapter };

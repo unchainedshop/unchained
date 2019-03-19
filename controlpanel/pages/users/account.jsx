@@ -12,21 +12,19 @@ const redirect = router => () => {
   router.push({ pathname: '/users/account' });
 };
 
-export default connectApollo(withRouter(({ router, ...rest }) => (
-  <App {...rest}>
-    <Container>
-      <Segment>
-        <h3 className="title">
-Change password
-        </h3>
-        <FormChangePassword onSubmitSuccess={redirect(router)} />
-      </Segment>
-      <Segment>
-        <h3 className="title">
-Change E-Mail address
-        </h3>
-        <FormChangeEmail onSubmitSuccess={redirect(router)} />
-      </Segment>
-    </Container>
-  </App>
-)));
+export default connectApollo(
+  withRouter(({ router, ...rest }) => (
+    <App {...rest}>
+      <Container>
+        <Segment>
+          <h3 className="title">Change password</h3>
+          <FormChangePassword onSubmitSuccess={redirect(router)} />
+        </Segment>
+        <Segment>
+          <h3 className="title">Change E-Mail address</h3>
+          <FormChangeEmail onSubmitSuccess={redirect(router)} />
+        </Segment>
+      </Container>
+    </App>
+  ))
+);

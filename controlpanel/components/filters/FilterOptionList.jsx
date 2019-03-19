@@ -22,10 +22,7 @@ const FilterVariationList = ({ items, filterId }) => (
         />
       ))}
       <List.Item>
-        <FormNewFilterOption
-          filterId={filterId}
-          onSuccess={() => true}
-        />
+        <FormNewFilterOption filterId={filterId} onSuccess={() => true} />
       </List.Item>
     </List>
   </Segment>
@@ -51,7 +48,7 @@ export default compose(
   mapProps(({ data: { filter }, ...rest }) => ({
     items: (filter && filter.options) || [],
     pressDelay: 200,
-    ...rest,
+    ...rest
   })),
-  pure,
+  pure
 )(FilterVariationList);

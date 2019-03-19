@@ -6,38 +6,32 @@ import { graphql } from 'react-apollo';
 import FormEditProductVariationTexts from './FormEditProductVariationTexts';
 
 const ProductVariationItem = ({
-  children, texts, type, name, _id, isEditing,
-  toggleEditing, isEditingDisabled, removeVariation,
+  children,
+  texts,
+  type,
+  name,
+  _id,
+  isEditing,
+  toggleEditing,
+  isEditingDisabled,
+  removeVariation
 }) => (
   <List.Item>
     <List.Content floated="right">
       {!isEditing && !isEditingDisabled && (
-        <Button
-          onClick={toggleEditing}
-        >
-            Edit
-        </Button>
+        <Button onClick={toggleEditing}>Edit</Button>
       )}
       {!isEditing && !isEditingDisabled && (
-        <Button
-          secondary
-          onClick={removeVariation}
-        >
-            Delete
+        <Button secondary onClick={removeVariation}>
+          Delete
         </Button>
       )}
     </List.Content>
     <List.Content>
       <List.Header>
-        {name}
-        {' '}
-(
-        {type}
-)
+        {name} ({type})
       </List.Header>
-      <List.Description>
-        {texts && `${texts.title}`}
-      </List.Description>
+      <List.Description>{texts && `${texts.title}`}</List.Description>
       {isEditing ? (
         <FormEditProductVariationTexts
           productVariationId={_id}
@@ -45,38 +39,41 @@ const ProductVariationItem = ({
           onCancel={toggleEditing}
           onSubmitSuccess={toggleEditing}
         />
-      ) : children}
+      ) : (
+        children
+      )}
     </List.Content>
   </List.Item>
 );
 
 export default compose(
-  graphql(gql`
-    mutation removeProductVariation($productVariationId: ID!) {
-      removeProductVariation(productVariationId: $productVariationId) {
-        _id
+  graphql(
+    gql`
+      mutation removeProductVariation($productVariationId: ID!) {
+        removeProductVariation(productVariationId: $productVariationId) {
+          _id
+        }
+      }
+    `,
+    {
+      name: 'removeProductVariation',
+      options: {
+        refetchQueries: ['productVariations']
       }
     }
-  `, {
-    name: 'removeProductVariation',
-    options: {
-      refetchQueries: [
-        'productVariations',
-      ],
-    },
-  }),
+  ),
   withState('isEditing', 'setIsEditing', false),
   withHandlers({
     removeVariation: ({ removeProductVariation, _id }) => async () => {
       await removeProductVariation({
         variables: {
-          productVariationId: _id,
-        },
+          productVariationId: _id
+        }
       });
     },
-    toggleEditing: ({ isEditing, setIsEditing }) => (event) => {
+    toggleEditing: ({ isEditing, setIsEditing }) => event => {
       if (event && event.preventDefault) event.preventDefault();
       setIsEditing(!isEditing);
-    },
-  }),
+    }
+  })
 )(ProductVariationItem);

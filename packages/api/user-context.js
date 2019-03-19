@@ -3,7 +3,7 @@ import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
 import { check } from 'meteor/check';
 
-export default async (req) => {
+export default async req => {
   // there is a possible current user connected!
   let loginToken = req.headers['meteor-login-token'];
   if (req.headers.authorization) {
@@ -23,7 +23,7 @@ export default async (req) => {
     // note: no need of a fiber aware findOne + a fiber aware call break tests
     // runned with practicalmeteor:mocha if eslint is enabled
     const currentUser = await Meteor.users.rawCollection().findOne({
-      'services.resume.loginTokens.hashedToken': hashedToken,
+      'services.resume.loginTokens.hashedToken': hashedToken
     });
 
     // the current user exists
@@ -44,7 +44,7 @@ export default async (req) => {
         // return a new context object with the current user & her id
         return {
           user: currentUser,
-          userId: currentUser._id,
+          userId: currentUser._id
         };
       }
     }

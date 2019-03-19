@@ -1,5 +1,7 @@
-export default [/* GraphQL */`
-type SuccessResponse {
-  success: Boolean
-}
-`];
+export default [
+  /* GraphQL */ `
+    type SuccessResponse {
+      success: Boolean
+    }
+  `
+];

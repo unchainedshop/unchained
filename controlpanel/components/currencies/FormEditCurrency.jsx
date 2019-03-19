@@ -21,8 +21,13 @@ const FormEditCurrency = ({ removeCurrency, ...formProps }) => (
         <AutoField name={'isActive'} />
         <ErrorsField />
         <SubmitField value="Save" className="primary" />
-        <Button type="normal" secondary floated="right" onClick={removeCurrency}>
-Delete
+        <Button
+          type="normal"
+          secondary
+          floated="right"
+          onClick={removeCurrency}
+        >
+          Delete
         </Button>
       </Segment>
     </AutoForm>
@@ -41,74 +46,77 @@ export default compose(
       }
     }
   `),
-  graphql(gql`
-    mutation updateCurrency($currency: UpdateCurrencyInput!, $currencyId: ID!) {
-      updateCurrency(currency: $currency, currencyId: $currencyId) {
-        _id
-        isoCode
-        isActive
+  graphql(
+    gql`
+      mutation updateCurrency(
+        $currency: UpdateCurrencyInput!
+        $currencyId: ID!
+      ) {
+        updateCurrency(currency: $currency, currencyId: $currencyId) {
+          _id
+          isoCode
+          isActive
+        }
+      }
+    `,
+    {
+      name: 'updateCurrency',
+      options: {
+        refetchQueries: ['currency', 'currencies']
       }
     }
-  `, {
-    name: 'updateCurrency',
-    options: {
-      refetchQueries: [
-        'currency',
-        'currencies',
-      ],
-    },
-  }),
-  graphql(gql`
-    mutation removeCurrency($currencyId: ID!) {
-      removeCurrency(currencyId: $currencyId) {
-        _id
+  ),
+  graphql(
+    gql`
+      mutation removeCurrency($currencyId: ID!) {
+        removeCurrency(currencyId: $currencyId) {
+          _id
+        }
+      }
+    `,
+    {
+      name: 'removeCurrency',
+      options: {
+        refetchQueries: ['currencies']
       }
     }
-  `, {
-    name: 'removeCurrency',
-    options: {
-      refetchQueries: [
-        'currencies',
-      ],
-    },
-  }),
+  ),
   withFormSchema({
     isoCode: {
       type: String,
       optional: false,
-      label: 'ISO Währungscode',
+      label: 'ISO Währungscode'
     },
     isActive: {
       type: Boolean,
       optional: false,
-      label: 'Active?',
-    },
+      label: 'Active?'
+    }
   }),
-  withFormModel(({ data: { currency = {} } }) => (currency)),
+  withFormModel(({ data: { currency = {} } }) => currency),
   withHandlers({
     onSubmitSuccess: () => () => {
       toast('Currency saved', { type: toast.TYPE.SUCCESS });
     },
-    removeCurrency: ({ router, currencyId, removeCurrency }) => async (event) => {
+    removeCurrency: ({ router, currencyId, removeCurrency }) => async event => {
       event.preventDefault();
       router.replace({ pathname: '/currencies' });
       await removeCurrency({
         variables: {
-          currencyId,
-        },
+          currencyId
+        }
       });
     },
-    onSubmit: ({ currencyId, updateCurrency, schema }) => ({ ...dirtyInput }) => updateCurrency({
-      variables: {
-        currency: schema.clean(dirtyInput),
-        currencyId,
-      },
-    }),
+    onSubmit: ({ currencyId, updateCurrency, schema }) => ({ ...dirtyInput }) =>
+      updateCurrency({
+        variables: {
+          currency: schema.clean(dirtyInput),
+          currencyId
+        }
+      })
   }),
   withFormErrorHandlers,
-  mapProps(({
-    currencyId, updateCurrency, data, ...rest
-  }) => ({
-    ...rest,
-  })),
+  mapProps(({ currencyId, updateCurrency, data, ...rest }) => ({
+    ...rest
+  }))
 )(FormEditCurrency);

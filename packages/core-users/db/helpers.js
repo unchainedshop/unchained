@@ -10,10 +10,13 @@ import { Users, Avatars } from './collections';
 
 Logs.helpers({
   user() {
-    return this.meta && Users.findOne({
-      _id: this.meta.userId,
-    });
-  },
+    return (
+      this.meta &&
+      Users.findOne({
+        _id: this.meta.userId
+      })
+    );
+  }
 });
 
 Users.helpers({
@@ -21,9 +24,7 @@ Users.helpers({
     return !!this.guest;
   },
   isInitialPassword() {
-    const {
-      password: { initial } = {},
-    } = this.services || {};
+    const { password: { initial } = {} } = this.services || {};
     return !!initial;
   },
   isEmailVerified() {
@@ -33,12 +34,15 @@ Users.helpers({
     return Languages.findOne({ isoCode: this.locale(options).language });
   },
   country(options) {
-    return Countries.findOne({ isoCode: this.locale(options).country.toUpperCase() });
+    return Countries.findOne({
+      isoCode: this.locale(options).country.toUpperCase()
+    });
   },
   locale({ localeContext } = {}) {
-    const locale = localeContext
-      || new Locale(this.lastLogin && this.lastLogin.locale)
-      || getFallbackLocale();
+    const locale =
+      localeContext ||
+      new Locale(this.lastLogin && this.lastLogin.locale) ||
+      getFallbackLocale();
     return locale;
   },
   avatar() {
@@ -52,41 +56,55 @@ Users.helpers({
   },
   name() {
     const { profile, emails } = this;
-    if (profile && profile.displayName && profile.displayName !== '') return profile.displayName;
+    if (profile && profile.displayName && profile.displayName !== '')
+      return profile.displayName;
     return emails && emails[0].address;
   },
   updatePassword({ password, ...options } = {}) {
-    const newPassword = password || uuid().split('-').pop();
+    const newPassword =
+      password ||
+      uuid()
+        .split('-')
+        .pop();
     Accounts.setPassword(this._id, newPassword, options);
     if (!password) {
-      Users.update({ _id: this._id }, {
-        $set: {
-          'services.password.initial': true,
-          updated: new Date(),
-        },
-      });
+      Users.update(
+        { _id: this._id },
+        {
+          $set: {
+            'services.password.initial': true,
+            updated: new Date()
+          }
+        }
+      );
     }
     const user = Users.findOne({ _id: this._id });
     user.password = newPassword;
     return user;
   },
   updateRoles(roles) {
-    Users.update({ _id: this._id }, {
-      $set: {
-        updated: new Date(),
-        roles,
-      },
-    });
+    Users.update(
+      { _id: this._id },
+      {
+        $set: {
+          updated: new Date(),
+          roles
+        }
+      }
+    );
     return Users.findOne({ _id: this._id });
   },
   updateEmail(email, { skipEmailVerification = false } = {}) {
-    Users.update({ _id: this._id }, {
-      $set: {
-        updated: new Date(),
-        'emails.0.address': email,
-        'emails.0.verified': false,
-      },
-    });
+    Users.update(
+      { _id: this._id },
+      {
+        $set: {
+          updated: new Date(),
+          'emails.0.address': email,
+          'emails.0.verified': false
+        }
+      }
+    );
     if (!skipEmailVerification) {
       const { sendVerificationEmail } = Accounts._options; // eslint-disable-line
       if (sendVerificationEmail) {
@@ -101,11 +119,11 @@ Users.helpers({
       skip: offset,
       limit,
       sort: {
-        created: -1,
-      },
+        created: -1
+      }
     }).fetch();
     return logs;
-  },
+  }
 });
 
 Users.updateLastBillingAddress = ({ userId, lastBillingAddress }) => {
@@ -114,16 +132,18 @@ Users.updateLastBillingAddress = ({ userId, lastBillingAddress }) => {
   const modifier = {
     $set: {
       lastBillingAddress,
-      updated: new Date(),
-    },
+      updated: new Date()
+    }
   };
   const profile = user.profile || {};
   const isGuest = user.isGuest();
   if (!profile.displayName || isGuest) {
     modifier.$set['profile.displayName'] = [
       lastBillingAddress.firstName,
-      lastBillingAddress.lastName,
-    ].filter(Boolean).join(' ');
+      lastBillingAddress.lastName
+    ]
+      .filter(Boolean)
+      .join(' ');
   }
   return Users.update({ _id: userId }, modifier);
 };
@@ -137,28 +157,29 @@ Users.updateLastContact = ({ userId, lastContact }) => {
     const modifier = {
       $set: {
         'profile.phoneMobile': lastContact.telNumber,
-        updated: new Date(),
-      },
+        updated: new Date()
+      }
     };
     Users.update({ _id: userId }, modifier);
   }
 };
 
-Users.enrollUser = ({
-  password, email, displayName, address,
-}) => {
+Users.enrollUser = ({ password, email, displayName, address }) => {
   const options = { email, skipEmailVerification: true };
   if (password && password !== '') {
     options.password = password;
   }
   const newUserId = Accounts.createUser(options);
-  Users.update({ _id: newUserId }, {
-    $set: {
-      updated: new Date(),
-      'profile.displayName': displayName || null,
-      'profile.address': address || null,
-    },
-  });
+  Users.update(
+    { _id: newUserId },
+    {
+      $set: {
+        updated: new Date(),
+        'profile.displayName': displayName || null,
+        'profile.address': address || null
+      }
+    }
+  );
   if (!options.password) {
     // send an e-mail if password is not set allowing the user to set it
     Accounts.sendEnrollmentEmail(newUserId);
@@ -167,14 +188,19 @@ Users.enrollUser = ({
 };
 
 Users.findOneWithHeartbeat = ({ userId, ...options }) => {
-  if (Users.update({ _id: userId }, {
-    $set: {
-      lastLogin: {
-        timestamp: new Date(),
-        ...options,
-      },
-    },
-  })) {
+  if (
+    Users.update(
+      { _id: userId },
+      {
+        $set: {
+          lastLogin: {
+            timestamp: new Date(),
+            ...options
+          }
+        }
+      }
+    )
+  ) {
     return Users.findOne({ _id: userId });
   }
   return null;

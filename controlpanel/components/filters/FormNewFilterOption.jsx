@@ -1,7 +1,5 @@
 import React from 'react';
-import {
-  compose, pure, mapProps, withHandlers,
-} from 'recompose';
+import { compose, pure, mapProps, withHandlers } from 'recompose';
 import { Form } from 'semantic-ui-react';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
@@ -24,47 +22,47 @@ const FormNewFilterOption = formProps => (
 );
 
 export default compose(
-  graphql(gql`
-    mutation createFilterOption($option: CreateFilterOptionInput!, $filterId: ID!) {
-      createFilterOption(option: $option, filterId: $filterId) {
-        _id
+  graphql(
+    gql`
+      mutation createFilterOption(
+        $option: CreateFilterOptionInput!
+        $filterId: ID!
+      ) {
+        createFilterOption(option: $option, filterId: $filterId) {
+          _id
+        }
+      }
+    `,
+    {
+      options: {
+        refetchQueries: ['filterOptions']
       }
     }
-  `, {
-    options: {
-      refetchQueries: [
-        'filterOptions',
-      ],
-    },
-  }),
+  ),
   withFormSchema(() => ({
     title: {
       type: String,
-      optional: false,
+      optional: false
     },
     value: {
       type: String,
-      optional: false,
-    },
+      optional: false
+    }
   })),
   withHandlers({
-    onSubmitSuccess: ({
-      onSuccess,
-    }) => ({
-      data: { createFilterOption },
-    }) => onSuccess(createFilterOption._id),
-    onSubmit: ({ mutate, schema, filterId }) => ({ ...dirtyInput }) => mutate({
-      variables: {
-        option: schema.clean(dirtyInput),
-        filterId,
-      },
-    }),
+    onSubmitSuccess: ({ onSuccess }) => ({ data: { createFilterOption } }) =>
+      onSuccess(createFilterOption._id),
+    onSubmit: ({ mutate, schema, filterId }) => ({ ...dirtyInput }) =>
+      mutate({
+        variables: {
+          option: schema.clean(dirtyInput),
+          filterId
+        }
+      })
   }),
   withFormErrorHandlers,
-  mapProps(({
-    onSuccess, filterId, mutate, ...rest
-  }) => ({
-    ...rest,
+  mapProps(({ onSuccess, filterId, mutate, ...rest }) => ({
+    ...rest
   })),
-  pure,
+  pure
 )(FormNewFilterOption);

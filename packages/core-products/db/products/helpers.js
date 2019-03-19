@@ -15,16 +15,17 @@ import { ProductReviews } from '../product-reviews/collections';
 
 import { ProductStatus, ProductTypes } from './schema';
 
-Products.createProduct = ({
-  authorId, locale, title, type, ...rest
-}, { autopublish = false } = {}) => {
+Products.createProduct = (
+  { authorId, locale, title, type, ...rest },
+  { autopublish = false } = {}
+) => {
   const product = {
     created: new Date(),
     authorId,
     type: ProductTypes[type],
     status: ProductStatus.DRAFT,
     sequence: Products.getNewSequence(),
-    ...rest,
+    ...rest
   };
   const productId = Products.insert(product);
   const productObject = Products.findOne({ _id: productId });
@@ -36,17 +37,20 @@ Products.createProduct = ({
 };
 
 Products.updateProduct = ({ productId, ...product }) => {
-  Products.update({ _id: productId }, {
-    $set: {
-      ...product,
-      updated: new Date(),
-    },
-  });
+  Products.update(
+    { _id: productId },
+    {
+      $set: {
+        ...product,
+        updated: new Date()
+      }
+    }
+  );
   return Products.findOne({ _id: productId });
 };
 
-Products.getNewSequence = (oldSequence) => {
-  const sequence = (oldSequence + 1) || (Products.find({}).count() * 10);
+Products.getNewSequence = oldSequence => {
+  const sequence = oldSequence + 1 || Products.find({}).count() * 10;
   if (Products.find({ sequence }).count() > 0) {
     return Products.getNewSequence(sequence);
   }
@@ -57,13 +61,16 @@ Products.helpers({
   publish() {
     switch (this.status) {
       case ProductStatus.DRAFT:
-        Products.update({ _id: this._id }, {
-          $set: {
-            status: ProductStatus.ACTIVE,
-            updated: new Date(),
-            published: new Date(),
-          },
-        });
+        Products.update(
+          { _id: this._id },
+          {
+            $set: {
+              status: ProductStatus.ACTIVE,
+              updated: new Date(),
+              published: new Date()
+            }
+          }
+        );
         return true;
       default:
         return false;
@@ -72,49 +79,60 @@ Products.helpers({
   unpublish() {
     switch (this.status) {
       case ProductStatus.ACTIVE:
-        Products.update({ _id: this._id }, {
-          $set: {
-            status: ProductStatus.DRAFT,
-            updated: new Date(),
-            published: null,
-          },
-        });
+        Products.update(
+          { _id: this._id },
+          {
+            $set: {
+              status: ProductStatus.DRAFT,
+              updated: new Date(),
+              published: null
+            }
+          }
+        );
         return true;
       default:
         return false;
     }
   },
-  upsertLocalizedText({
-    locale, title, slug: propablyUsedSlug, ...rest
-  }) {
-    const slug = ProductTexts
-      .getUnusedSlug(propablyUsedSlug || title || this._id, {
-        productId: { $ne: this._id },
-      }, !!propablyUsedSlug);
+  upsertLocalizedText({ locale, title, slug: propablyUsedSlug, ...rest }) {
+    const slug = ProductTexts.getUnusedSlug(
+      propablyUsedSlug || title || this._id,
+      {
+        productId: { $ne: this._id }
+      },
+      !!propablyUsedSlug
+    );
 
-    ProductTexts.upsert({
-      productId: this._id,
-      locale,
-    }, {
-      $set: {
-        updated: new Date(),
-        title,
-        locale,
-        slug,
-        ...rest,
+    ProductTexts.upsert(
+      {
+        productId: this._id,
+        locale
       },
-    }, { bypassCollection2: true });
+      {
+        $set: {
+          updated: new Date(),
+          title,
+          locale,
+          slug,
+          ...rest
+        }
+      },
+      { bypassCollection2: true }
+    );
 
-    Products.update({
-      _id: this._id,
-    }, {
-      $set: {
-        updated: new Date(),
+    Products.update(
+      {
+        _id: this._id
       },
-      $addToSet: {
-        slugs: slug,
-      },
-    });
+      {
+        $set: {
+          updated: new Date()
+        },
+        $addToSet: {
+          slugs: slug
+        }
+      }
+    );
     return ProductTexts.findOne({ productId: this._id, locale });
   },
   addMediaLink({ mediaId, meta }) {
@@ -125,23 +143,23 @@ Products.helpers({
       sortKey,
       productId: this._id,
       created: new Date(),
-      meta,
+      meta
     });
     const productMediaObject = ProductMedia.findOne({ _id: productMediaId });
     return productMediaObject;
   },
-  addMedia({
-    rawFile, href, name, userId, meta, ...options
-  }) {
-    const fileLoader = rawFile ? Media.insertWithRemoteFile({
-      file: rawFile,
-      userId,
-    }) : Media.insertWithRemoteURL({
-      url: href,
-      fileName: name,
-      userId,
-      ...options,
-    });
+  addMedia({ rawFile, href, name, userId, meta, ...options }) {
+    const fileLoader = rawFile
+      ? Media.insertWithRemoteFile({
+          file: rawFile,
+          userId
+        })
+      : Media.insertWithRemoteURL({
+          url: href,
+          fileName: name,
+          userId,
+          ...options
+        });
     const file = Promise.await(fileLoader);
     return this.addMediaLink({ mediaId: file._id, meta });
   },
@@ -153,7 +171,10 @@ Products.helpers({
     return objectInvert(ProductStatus)[this.status || null];
   },
   media() {
-    return ProductMedia.find({ productId: this._id }, { sort: { sortKey: 1 } }).fetch();
+    return ProductMedia.find(
+      { productId: this._id },
+      { sort: { sortKey: 1 } }
+    ).fetch();
   },
   variations() {
     return ProductVariations.find({ productId: this._id }).fetch();
@@ -164,69 +185,81 @@ Products.helpers({
   proxyAssignments() {
     return ((this.proxy && this.proxy.assignments) || []).map(assignment => ({
       assignment,
-      product: this,
+      product: this
     }));
   },
   proxyProducts(vectors) {
-    const { proxy = { } } = this;
+    const { proxy = {} } = this;
     let filtered = [...(proxy.assignments || [])];
     vectors.forEach(({ key, value }) => {
-      filtered = filtered.filter((assignment) => {
+      filtered = filtered.filter(assignment => {
         if (assignment.vector[key] === value) {
           return true;
         }
         return false;
       });
     });
-    const productIds = filtered.map(filteredAssignment => filteredAssignment.productId);
+    const productIds = filtered.map(
+      filteredAssignment => filteredAssignment.productId
+    );
     return Products.find({ _id: { $in: productIds } }).fetch();
   },
 
-  userDispatches({
-    deliveryProviderType, ...options
-  }) {
-    const deliveryProviders = DeliveryProviders.findProviders({ type: deliveryProviderType });
+  userDispatches({ deliveryProviderType, ...options }) {
+    const deliveryProviders = DeliveryProviders.findProviders({
+      type: deliveryProviderType
+    });
     return deliveryProviders.reduce(
-      (oldResult, deliveryProvider) => oldResult
-        .concat(oldResult, WarehousingProviders.findSupported({ product: this, deliveryProvider })
-          .map((warehousingProvider) => {
+      (oldResult, deliveryProvider) =>
+        oldResult.concat(
+          oldResult,
+          WarehousingProviders.findSupported({
+            product: this,
+            deliveryProvider
+          }).map(warehousingProvider => {
             const context = {
               warehousingProvider,
               deliveryProvider,
               product: this,
-              ...options,
+              ...options
             };
             const dispatch = warehousingProvider.estimatedDispatch(context);
             return {
               ...context,
-              ...dispatch,
+              ...dispatch
             };
-          })),
-      [],
+          })
+        ),
+      []
     );
   },
 
-  userStocks({
-    deliveryProviderType, ...options
-  }) {
-    const deliveryProviders = DeliveryProviders.findProviders({ type: deliveryProviderType });
+  userStocks({ deliveryProviderType, ...options }) {
+    const deliveryProviders = DeliveryProviders.findProviders({
+      type: deliveryProviderType
+    });
     return deliveryProviders.reduce(
-      (oldResult, deliveryProvider) => oldResult
-        .concat(oldResult, WarehousingProviders.findSupported({ product: this, deliveryProvider })
-          .map((warehousingProvider) => {
+      (oldResult, deliveryProvider) =>
+        oldResult.concat(
+          oldResult,
+          WarehousingProviders.findSupported({
+            product: this,
+            deliveryProvider
+          }).map(warehousingProvider => {
             const context = {
               warehousingProvider,
               deliveryProvider,
               product: this,
-              ...options,
+              ...options
             };
             const stock = warehousingProvider.estimatedStock(context);
             return {
               ...context,
-              ...stock,
+              ...stock
             };
-          })),
-      [],
+          })
+        ),
+      []
     );
   },
 
@@ -235,18 +268,16 @@ Products.helpers({
     return [];
   },
 
-  userPrice({
-    quantity = 1, country, user, useNetPrice,
-  }) {
+  userPrice({ quantity = 1, country, user, useNetPrice }) {
     const currency = Countries.resolveDefaultCurrencyCode({
-      isoCode: country,
+      isoCode: country
     });
     const pricingDirector = new ProductPricingDirector({
       product: this,
       user,
       country,
       currency,
-      quantity,
+      quantity
     });
     const calculated = pricingDirector.calculate();
     if (!calculated) return null;
@@ -257,40 +288,57 @@ Products.helpers({
     return {
       _id: crypto
         .createHash('sha256')
-        .update([this._id, country, quantity, useNetPrice, (user ? user._id : 'ANONYMOUS')].join(''))
+        .update(
+          [
+            this._id,
+            country,
+            quantity,
+            useNetPrice,
+            user ? user._id : 'ANONYMOUS'
+          ].join('')
+        )
         .digest('hex'),
       amount: userPrice.amount,
       currencyCode: userPrice.currency,
       countryCode: country,
-      isTaxable: (pricing.taxSum() > 0),
-      isNetPrice: useNetPrice,
+      isTaxable: pricing.taxSum() > 0,
+      isNetPrice: useNetPrice
     };
   },
   price({ country, quantity = 1 }) {
     const currency = Countries.resolveDefaultCurrencyCode({
-      isoCode: country,
+      isoCode: country
     });
-    const pricing = ((this.commerce && this.commerce.pricing) || [])
-      .sort(({ maxQuantity: leftMaxQuantity = 0 },
-        { maxQuantity: rightMaxQuantity = 0 }) => {
-        if (leftMaxQuantity === rightMaxQuantity
-            || (!leftMaxQuantity && !rightMaxQuantity)) return 0;
+    const pricing = ((this.commerce && this.commerce.pricing) || []).sort(
+      (
+        { maxQuantity: leftMaxQuantity = 0 },
+        { maxQuantity: rightMaxQuantity = 0 }
+      ) => {
+        if (
+          leftMaxQuantity === rightMaxQuantity ||
+          (!leftMaxQuantity && !rightMaxQuantity)
+        )
+          return 0;
         if (leftMaxQuantity === 0) return -1;
         if (rightMaxQuantity === 0) return 1;
         return leftMaxQuantity - rightMaxQuantity;
-      });
-    return pricing
-      .reduce((oldValue, curPrice) => {
-        if (curPrice.currencyCode === currency
-          && curPrice.countryCode === country
-          && (!curPrice.maxQuantity || curPrice.maxQuantity >= quantity)) {
+      }
+    );
+    return pricing.reduce(
+      (oldValue, curPrice) => {
+        if (
+          curPrice.currencyCode === currency &&
+          curPrice.countryCode === country &&
+          (!curPrice.maxQuantity || curPrice.maxQuantity >= quantity)
+        ) {
           return {
             ...oldValue,
-            ...curPrice,
+            ...curPrice
           };
         }
         return oldValue;
-      }, {
+      },
+      {
         _id: crypto
           .createHash('sha256')
           .update([this._id, country, currency].join(''))
@@ -299,35 +347,41 @@ Products.helpers({
         currencyCode: currency,
         countryCode: country,
         isTaxable: false,
-        isNetPrice: false,
-      });
+        isNetPrice: false
+      }
+    );
   },
   resolveOrderableProduct({ configuration }) {
     if (this.type === ProductTypes.ConfigurableProduct) {
       const variations = this.variations();
       const vectors = configuration.filter(({ key: configurationKey }) => {
-        const isKeyEqualsVariationKey = Boolean(variations
-          .filter(({ key: variationKey }) => variationKey === configurationKey)
-          .length);
+        const isKeyEqualsVariationKey = Boolean(
+          variations.filter(
+            ({ key: variationKey }) => variationKey === configurationKey
+          ).length
+        );
         return isKeyEqualsVariationKey;
       });
       const variants = this.proxyProducts(vectors);
       if (variants.length !== 1) {
-        throw new Error('Too many variants left, configuration not distinct enough');
+        throw new Error(
+          'Too many variants left, configuration not distinct enough'
+        );
       }
       return variants[0];
     }
     return this;
   },
   reviews({ limit, offset }) {
-    return ProductReviews.findReviews({ productId: this._id }, { skip: offset, limit });
-  },
+    return ProductReviews.findReviews(
+      { productId: this._id },
+      { skip: offset, limit }
+    );
+  }
 });
 
-Products.getLocalizedTexts = (
-  productId,
-  locale,
-) => findLocalizedText(ProductTexts, { productId }, locale);
+Products.getLocalizedTexts = (productId, locale) =>
+  findLocalizedText(ProductTexts, { productId }, locale);
 
 ProductTexts.getUnusedSlug = (strValue, scope, isAlreadySlugified) => {
   const slug = isAlreadySlugified ? strValue : `${slugify(strValue)}`;

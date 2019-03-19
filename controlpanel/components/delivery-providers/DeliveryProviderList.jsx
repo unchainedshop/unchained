@@ -9,7 +9,7 @@ const DeliveryProviderList = ({ ...rest }) => (
     {...rest}
     cols={4}
     createPath="/delivery-providers/new"
-    rowRenderer={(deliveryProvider => (
+    rowRenderer={deliveryProvider => (
       <Table.Row key={deliveryProvider._id}>
         <Table.Cell>
           <Link href={`/delivery-providers/edit?_id=${deliveryProvider._id}`}>
@@ -18,19 +18,14 @@ const DeliveryProviderList = ({ ...rest }) => (
             </a>
           </Link>
         </Table.Cell>
-        <Table.Cell>
-          {deliveryProvider.type}
-        </Table.Cell>
+        <Table.Cell>{deliveryProvider.type}</Table.Cell>
         {deliveryProvider.interface ? (
           <Table.Cell>
-            {deliveryProvider.interface.label}
-            {' '}
+            {deliveryProvider.interface.label}{' '}
             {deliveryProvider.interface.version}
           </Table.Cell>
         ) : (
-          <Table.Cell>
-            Invalid Interface
-          </Table.Cell>
+          <Table.Cell>Invalid Interface</Table.Cell>
         )}
         <Table.Cell>
           {deliveryProvider.configurationError && (
@@ -41,21 +36,13 @@ const DeliveryProviderList = ({ ...rest }) => (
           )}
         </Table.Cell>
       </Table.Row>
-    ))}
+    )}
   >
     <Table.Row>
-      <Table.HeaderCell>
-Configuration
-      </Table.HeaderCell>
-      <Table.HeaderCell>
-Type
-      </Table.HeaderCell>
-      <Table.HeaderCell>
-Interface
-      </Table.HeaderCell>
-      <Table.HeaderCell>
-Problems
-      </Table.HeaderCell>
+      <Table.HeaderCell>Configuration</Table.HeaderCell>
+      <Table.HeaderCell>Type</Table.HeaderCell>
+      <Table.HeaderCell>Interface</Table.HeaderCell>
+      <Table.HeaderCell>Problems</Table.HeaderCell>
     </Table.Row>
   </InfiniteDataTable>
 );
@@ -75,5 +62,5 @@ export default withDataTableLoader({
         }
       }
     }
-  `,
+  `
 })(DeliveryProviderList);

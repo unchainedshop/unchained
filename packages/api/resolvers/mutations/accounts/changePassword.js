@@ -1,12 +1,16 @@
 import callMethod from '../../../callMethod';
 import hashPassword from '../../../hashPassword';
 
-export default async function (root, {
-  oldPassword: oldHashedPassword,
-  oldPlainPassword,
-  newPassword: newHashedPassword,
-  newPlainPassword,
-}, context) {
+export default async function(
+  root,
+  {
+    oldPassword: oldHashedPassword,
+    oldPlainPassword,
+    newPassword: newHashedPassword,
+    newPlainPassword
+  },
+  context
+) {
   if (!newHashedPassword && !newPlainPassword) {
     throw new Error('New password is required');
   }

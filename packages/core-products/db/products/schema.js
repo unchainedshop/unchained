@@ -5,13 +5,13 @@ import { Products, ProductTexts } from './collections';
 export const ProductTypes = {
   SimpleProduct: 'SIMPLE_PRODUCT',
   ConfigurableProduct: 'CONFIGURABLE_PRODUCT',
-  BundleProduct: 'BUNDLE_PRODUCT',
+  BundleProduct: 'BUNDLE_PRODUCT'
 };
 
 export const ProductStatus = {
   DRAFT: null,
   ACTIVE: 'ACTIVE',
-  DELETED: 'DELETED',
+  DELETED: 'DELETED'
 };
 
 const ProductCommerceSchema = new SimpleSchema(
@@ -24,24 +24,27 @@ const ProductCommerceSchema = new SimpleSchema(
     'pricing.$.countryCode': String,
     'pricing.$.currencyCode': String,
     'pricing.$.amount': Number,
-    'pricing.$.maxQuantity': Number,
+    'pricing.$.maxQuantity': Number
   },
-  { requiredByDefault: false },
+  { requiredByDefault: false }
 );
 
-const ProductWarehousingSchema = new SimpleSchema({
-  baseUnit: String,
-  sku: { type: String, index: true },
-}, { requiredByDefault: false });
+const ProductWarehousingSchema = new SimpleSchema(
+  {
+    baseUnit: String,
+    sku: { type: String, index: true }
+  },
+  { requiredByDefault: false }
+);
 
 const ProductSupplySchema = new SimpleSchema(
   {
     weightInGram: Number,
     heightInMillimeters: Number,
     lengthInMillimeters: Number,
-    widthInMillimeters: Number,
+    widthInMillimeters: Number
   },
-  { requiredByDefault: false },
+  { requiredByDefault: false }
 );
 
 const ProductProxySchema = new SimpleSchema(
@@ -49,14 +52,14 @@ const ProductProxySchema = new SimpleSchema(
     assignments: Array,
     'assignments.$': Object,
     'assignments.$.vector': { type: Object, blackbox: true },
-    'assignments.$.productId': SimpleSchema.RegEx.Id,
+    'assignments.$.productId': SimpleSchema.RegEx.Id
   },
-  { requiredByDefault: false },
+  { requiredByDefault: false }
 );
 
 const ProductBundleItemSchema = new SimpleSchema({
   productId: String,
-  quantity: Number,
+  quantity: Number
 });
 
 Products.attachSchema(
@@ -77,14 +80,14 @@ Products.attachSchema(
       proxy: ProductProxySchema,
       bundleItems: {
         type: Array,
-        optional: true,
+        optional: true
       },
       'bundleItems.$': ProductBundleItemSchema,
       meta: { type: Object, blackbox: true },
-      ...Schemas.timestampFields,
+      ...Schemas.timestampFields
     },
-    { requiredByDefault: false },
-  ),
+    { requiredByDefault: false }
+  )
 );
 
 ProductTexts.attachSchema(
@@ -99,8 +102,8 @@ ProductTexts.attachSchema(
       description: String,
       labels: Array,
       'labels.$': String,
-      ...Schemas.timestampFields,
+      ...Schemas.timestampFields
     },
-    { requiredByDefault: false },
-  ),
+    { requiredByDefault: false }
+  )
 );

@@ -6,34 +6,25 @@ import { graphql } from 'react-apollo';
 import FormEditFilterTexts from './FormEditFilterTexts';
 
 const FilterOptionItem = ({
-  filterId, texts, value, isEditing,
-  toggleEditing, removeFilterOption,
+  filterId,
+  texts,
+  value,
+  isEditing,
+  toggleEditing,
+  removeFilterOption
 }) => (
   <List.Item>
     <List.Content floated="right">
+      {!isEditing && <Button onClick={toggleEditing}>Edit</Button>}
       {!isEditing && (
-        <Button
-          onClick={toggleEditing}
-        >
-            Edit
-        </Button>
-      )}
-      {!isEditing && (
-        <Button
-          secondary
-          onClick={removeFilterOption}
-        >
-            Delete
+        <Button secondary onClick={removeFilterOption}>
+          Delete
         </Button>
       )}
     </List.Content>
     <List.Content>
-      <List.Header>
-        {value}
-      </List.Header>
-      <List.Description>
-        {texts && `${texts.title}`}
-      </List.Description>
+      <List.Header>{value}</List.Header>
+      <List.Description>{texts && `${texts.title}`}</List.Description>
       {isEditing ? (
         <FormEditFilterTexts
           filterId={filterId}
@@ -41,39 +32,49 @@ const FilterOptionItem = ({
           onCancel={toggleEditing}
           onSubmitSuccess={toggleEditing}
         />
-      ) : ''}
+      ) : (
+        ''
+      )}
     </List.Content>
   </List.Item>
 );
 
 export default compose(
-  graphql(gql`
-    mutation removeFilterOption($filterId: ID!, $filterOptionValue: String!) {
-      removeFilterOption(filterId: $filterId, filterOptionValue: $filterOptionValue) {
-        _id
+  graphql(
+    gql`
+      mutation removeFilterOption($filterId: ID!, $filterOptionValue: String!) {
+        removeFilterOption(
+          filterId: $filterId
+          filterOptionValue: $filterOptionValue
+        ) {
+          _id
+        }
+      }
+    `,
+    {
+      name: 'removeFilterOption',
+      options: {
+        refetchQueries: ['filterOptions']
       }
     }
-  `, {
-    name: 'removeFilterOption',
-    options: {
-      refetchQueries: [
-        'filterOptions',
-      ],
-    },
-  }),
+  ),
   withState('isEditing', 'setIsEditing', false),
   withHandlers({
-    removeFilterOption: ({ removeFilterOption, value, filterId }) => async () => {
+    removeFilterOption: ({
+      removeFilterOption,
+      value,
+      filterId
+    }) => async () => {
       await removeFilterOption({
         variables: {
           filterId,
-          filterOptionValue: value,
-        },
+          filterOptionValue: value
+        }
       });
     },
-    toggleEditing: ({ isEditing, setIsEditing }) => (event) => {
+    toggleEditing: ({ isEditing, setIsEditing }) => event => {
       if (event && event.preventDefault) event.preventDefault();
       setIsEditing(!isEditing);
-    },
-  }),
+    }
+  })
 )(FilterOptionItem);

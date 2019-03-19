@@ -4,5 +4,5 @@ export default {
   name(obj, { ignoreLocale = false }) {
     log(`ignoreLocale: ${ignoreLocale}`);
     return `${obj.isoCode}${obj.isBase ? ' (Base)' : ''}`;
-  },
+  }
 };

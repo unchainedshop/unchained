@@ -2,9 +2,10 @@ import gql from 'graphql-tag';
 import hashPassword from './hashPassword';
 import { storeLoginToken } from './store';
 
-export default async function ({
-  username, email, password, disableHashing = false,
-}, apollo) {
+export default async function(
+  { username, email, password, disableHashing = false },
+  apollo
+) {
   const variables = { username, email };
   if (disableHashing) {
     variables.plainPassword = password;
@@ -13,15 +14,25 @@ export default async function ({
   }
   const result = await apollo.mutate({
     mutation: gql`
-    mutation login ($username: String, $email: String, $password: HashedPasswordInput, $plainPassword: String) {
-      loginWithPassword (username: $username, email: $email, password: $password, plainPassword: $plainPassword) {
-        id
-        token
-        tokenExpires
+      mutation login(
+        $username: String
+        $email: String
+        $password: HashedPasswordInput
+        $plainPassword: String
+      ) {
+        loginWithPassword(
+          username: $username
+          email: $email
+          password: $password
+          plainPassword: $plainPassword
+        ) {
+          id
+          token
+          tokenExpires
+        }
       }
-    }
     `,
-    variables,
+    variables
   });
 
   const { id, token, tokenExpires } = result.data.loginWithPassword;

@@ -5,21 +5,22 @@ export default class PricingSheet {
   }
 
   sum(filterOptions) {
-    return this
-      .filterBy(filterOptions)
-      .reduce((sum, calculationRow) => sum + calculationRow.amount, 0);
+    return this.filterBy(filterOptions).reduce(
+      (sum, calculationRow) => sum + calculationRow.amount,
+      0
+    );
   }
 
   filterBy(options) {
-    return Object
-      .keys((options || {}))
-      .reduce(
-        (oldCalculation, optionKey) => oldCalculation
-          .filter(row => (
-            (options[optionKey] === undefined)
-            || row[optionKey] === options[optionKey])),
-        this.calculation,
-      );
+    return Object.keys(options || {}).reduce(
+      (oldCalculation, optionKey) =>
+        oldCalculation.filter(
+          row =>
+            options[optionKey] === undefined ||
+            row[optionKey] === options[optionKey]
+        ),
+      this.calculation
+    );
   }
 
   getRawPricingSheet() {
@@ -37,11 +38,11 @@ export default class PricingSheet {
   total(category) {
     return {
       amount: this.sum({ category }),
-      currency: this.currency,
+      currency: this.currency
     };
   }
 
   isValid() {
-    return (this.calculation.length > 0);
+    return this.calculation.length > 0;
   }
 }

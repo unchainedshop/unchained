@@ -21,8 +21,13 @@ const FormEditLanguage = ({ removeLanguage, ...formProps }) => (
         <AutoField name={'isActive'} />
         <ErrorsField />
         <SubmitField value="Save" className="primary" />
-        <Button type="normal" secondary floated="right" onClick={removeLanguage}>
-Delete
+        <Button
+          type="normal"
+          secondary
+          floated="right"
+          onClick={removeLanguage}
+        >
+          Delete
         </Button>
       </Segment>
     </AutoForm>
@@ -41,73 +46,76 @@ export default compose(
       }
     }
   `),
-  graphql(gql`
-    mutation updateLanguage($language: UpdateLanguageInput!, $languageId: ID!) {
-      updateLanguage(language: $language, languageId: $languageId) {
-        _id
-        isoCode
-        isActive
+  graphql(
+    gql`
+      mutation updateLanguage(
+        $language: UpdateLanguageInput!
+        $languageId: ID!
+      ) {
+        updateLanguage(language: $language, languageId: $languageId) {
+          _id
+          isoCode
+          isActive
+        }
+      }
+    `,
+    {
+      options: {
+        refetchQueries: ['languages', 'language']
       }
     }
-  `, {
-    options: {
-      refetchQueries: [
-        'languages',
-        'language',
-      ],
-    },
-  }),
-  graphql(gql`
-    mutation removeLanguage($languageId: ID!) {
-      removeLanguage(languageId: $languageId) {
-        _id
+  ),
+  graphql(
+    gql`
+      mutation removeLanguage($languageId: ID!) {
+        removeLanguage(languageId: $languageId) {
+          _id
+        }
+      }
+    `,
+    {
+      name: 'removeLanguage',
+      options: {
+        refetchQueries: ['languages']
       }
     }
-  `, {
-    name: 'removeLanguage',
-    options: {
-      refetchQueries: [
-        'languages',
-      ],
-    },
-  }),
+  ),
   withFormSchema({
     isoCode: {
       type: String,
       optional: false,
-      label: 'ISO Sprachcode',
+      label: 'ISO Sprachcode'
     },
     isActive: {
       type: Boolean,
       optional: false,
-      label: 'Active',
-    },
+      label: 'Active'
+    }
   }),
-  withFormModel(({ data: { language = {} } }) => (language)),
+  withFormModel(({ data: { language = {} } }) => language),
   withHandlers({
     onSubmitSuccess: () => () => {
       toast('Texts saved to database', { type: toast.TYPE.SUCCESS });
     },
-    removeLanguage: ({ router, languageId, removeLanguage }) => async (event) => {
+    removeLanguage: ({ router, languageId, removeLanguage }) => async event => {
       event.preventDefault();
       router.replace({ pathname: '/languages' });
       await removeLanguage({
         variables: {
-          languageId,
-        },
+          languageId
+        }
       });
     },
-    onSubmit: ({ languageId, mutate, schema }) => ({ ...dirtyInput }) => mutate({
-      variables: {
-        language: schema.clean(dirtyInput),
-        languageId,
-      },
-    }),
+    onSubmit: ({ languageId, mutate, schema }) => ({ ...dirtyInput }) =>
+      mutate({
+        variables: {
+          language: schema.clean(dirtyInput),
+          languageId
+        }
+      })
   }),
   withFormErrorHandlers,
-  mapProps(({
-    languageId, mutate, data, ...rest
-  }) => ({
-    ...rest,
-  })),
+  mapProps(({ languageId, mutate, data, ...rest }) => ({
+    ...rest
+  }))
 )(FormEditLanguage);

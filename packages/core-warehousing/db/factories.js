@@ -7,5 +7,5 @@ Factory.define('warehousingProvider', WarehousingProviders, {
   adapterKey: () => 'shop.unchained.warehousing.google-sheets',
   type: () => WarehousingProviderType.PHYSICAL,
   configuration: () => [],
-  ...fakeTimestampFields,
+  ...fakeTimestampFields
 });

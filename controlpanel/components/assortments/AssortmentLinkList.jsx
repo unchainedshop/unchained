@@ -1,7 +1,5 @@
 import React from 'react';
-import {
-  compose, pure, withHandlers, mapProps,
-} from 'recompose';
+import { compose, pure, withHandlers, mapProps } from 'recompose';
 import { Item, Segment } from 'semantic-ui-react';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
@@ -55,38 +53,46 @@ export default compose(
       }
     }
   `),
-  graphql(gql`
-    mutation reorderAssortmentLinks($sortKeys: [ReorderAssortmentLinkInput!]!) {
-      reorderAssortmentLinks(sortKeys: $sortKeys) {
-        _id
-        sortKey
+  graphql(
+    gql`
+      mutation reorderAssortmentLinks(
+        $sortKeys: [ReorderAssortmentLinkInput!]!
+      ) {
+        reorderAssortmentLinks(sortKeys: $sortKeys) {
+          _id
+          sortKey
+        }
+      }
+    `,
+    {
+      name: 'reorderAssortmentLinks',
+      options: {
+        refetchQueries: ['assortmentLinks']
       }
     }
-  `, {
-    name: 'reorderAssortmentLinks',
-    options: {
-      refetchQueries: [
-        'assortmentLinks',
-      ],
-    },
-  }),
+  ),
   mapProps(({ data: { assortment }, ...rest }) => ({
     items: (assortment && assortment.linkedAssortments) || [],
-    ...rest,
+    ...rest
   })),
   withHandlers({
-    onSortEnd: ({ items, reorderAssortmentLinks }) => async ({ oldIndex, newIndex }) => {
-      const sortKeys = arrayMove(items, oldIndex, newIndex).map((item, sortKey) => ({
-        assortmentLinkId: item._id,
-        sortKey,
-      }));
+    onSortEnd: ({ items, reorderAssortmentLinks }) => async ({
+      oldIndex,
+      newIndex
+    }) => {
+      const sortKeys = arrayMove(items, oldIndex, newIndex).map(
+        (item, sortKey) => ({
+          assortmentLinkId: item._id,
+          sortKey
+        })
+      );
       await reorderAssortmentLinks({
         variables: {
-          sortKeys,
-        },
+          sortKeys
+        }
       });
-    },
+    }
   }),
   pure,
-  SortableContainer,
+  SortableContainer
 )(AssortmentLinkList);

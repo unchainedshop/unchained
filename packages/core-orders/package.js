@@ -4,10 +4,10 @@ Package.describe({
   version: '0.24.0',
   summary: 'Unchained Engine Core: Orders',
   git: 'https://github.com/unchainedshop/unchained',
-  documentation: 'README.md',
+  documentation: 'README.md'
 });
 
-Package.onUse((api) => {
+Package.onUse(api => {
   api.versionsFrom('1.8');
   api.use('ecmascript');
   api.use('mongo');
@@ -31,7 +31,7 @@ Package.onUse((api) => {
   api.mainModule('orders.js', 'server');
 });
 
-Package.onTest((api) => {
+Package.onTest(api => {
   api.use('ecmascript');
   api.use('unchained:core-orders');
   api.mainModule('orders-tests.js');

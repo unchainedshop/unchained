@@ -6,44 +6,50 @@ import { Users } from 'meteor/unchained:core-users';
 import { Products } from 'meteor/unchained:core-products';
 import { Countries } from 'meteor/unchained:core-countries';
 import { Logs, log } from 'meteor/unchained:core-logger';
-import { MessagingDirector, MessagingType } from 'meteor/unchained:core-messaging';
+import {
+  MessagingDirector,
+  MessagingType
+} from 'meteor/unchained:core-messaging';
 import { Quotations } from './collections';
 import { QuotationDocuments } from '../quotation-documents/collections';
 import { QuotationStatus } from './schema';
 import { QuotationDirector } from '../../director';
 
-const {
-  EMAIL_FROM,
-  UI_ENDPOINT,
-} = process.env;
+const { EMAIL_FROM, UI_ENDPOINT } = process.env;
 
 Logs.helpers({
   quotation() {
-    return this.meta && Quotations.findOne({
-      _id: this.meta.quotationId,
-    });
-  },
+    return (
+      this.meta &&
+      Quotations.findOne({
+        _id: this.meta.quotationId
+      })
+    );
+  }
 });
 
 Users.helpers({
   quotations() {
-    return Quotations.find({ userId: this._id }, {
-      sort: {
-        created: -1,
-      },
-    }).fetch();
-  },
+    return Quotations.find(
+      { userId: this._id },
+      {
+        sort: {
+          created: -1
+        }
+      }
+    ).fetch();
+  }
 });
 
 Quotations.helpers({
   user() {
     return Users.findOne({
-      _id: this.userId,
+      _id: this.userId
     });
   },
   product() {
     return Products.findOne({
-      _id: this.productId,
+      _id: this.productId
     });
   },
   normalizedStatus() {
@@ -52,27 +58,27 @@ Quotations.helpers({
   updateContext(context) {
     return Quotations.updateContext({
       quotationId: this._id,
-      context,
+      context
     });
   },
   verify({ quotationContext } = {}, options) {
     if (this.status !== QuotationStatus.REQUESTED) return this;
-    return this
-      .setStatus(QuotationStatus.PROCESSING, 'verified elligibility manually')
+    return this.setStatus(
+      QuotationStatus.PROCESSING,
+      'verified elligibility manually'
+    )
       .process({ quotationContext })
       .sendStatusToCustomer(options);
   },
   reject({ quotationContext } = {}, options) {
     if (this.status === QuotationStatus.FULLFILLED) return this;
-    return this
-      .setStatus(QuotationStatus.REJECTED, 'rejected manually')
+    return this.setStatus(QuotationStatus.REJECTED, 'rejected manually')
       .process({ quotationContext })
       .sendStatusToCustomer(options);
   },
   propose({ quotationContext } = {}, options) {
     if (this.status !== QuotationStatus.PROCESSING) return this;
-    return this
-      .setStatus(QuotationStatus.PROPOSED, 'proposed manually')
+    return this.setStatus(QuotationStatus.PROPOSED, 'proposed manually')
       .process({ quotationContext })
       .sendStatusToCustomer(options);
   },
@@ -83,7 +89,7 @@ Quotations.helpers({
     const director = new MessagingDirector({
       locale,
       quotation: this,
-      type: MessagingType.EMAIL,
+      type: MessagingType.EMAIL
     });
     director.sendMessage({
       template: 'shop.unchained.quotations.proposal',
@@ -92,9 +98,11 @@ Quotations.helpers({
         mailPrefix: `${this.quotationNumber}_`,
         from: EMAIL_FROM,
         to: user.email(),
-        url: `${UI_ENDPOINT}/quotation?_id=${this._id}&otp=${this.quotationNumber}`,
-        quotation: this,
-      },
+        url: `${UI_ENDPOINT}/quotation?_id=${this._id}&otp=${
+          this.quotationNumber
+        }`,
+        quotation: this
+      }
     });
     return this;
   },
@@ -106,7 +114,9 @@ Quotations.helpers({
   },
   transformItemConfiguration(itemConfiguration) {
     const controller = this.controller();
-    return Promise.await(controller.transformItemConfiguration(itemConfiguration));
+    return Promise.await(
+      controller.transformItemConfiguration(itemConfiguration)
+    );
   },
   nextStatus() {
     let { status } = this;
@@ -129,7 +139,7 @@ Quotations.helpers({
     const proposal = Promise.await(controller.quote(quotationContext));
     return Quotations.updateProposal({
       ...proposal,
-      quotationId: this._id,
+      quotationId: this._id
     });
   },
   controller() {
@@ -140,30 +150,34 @@ Quotations.helpers({
     return Quotations.updateStatus({
       quotationId: this._id,
       status,
-      info,
+      info
     });
   },
   addDocument(objOrString, meta, options = {}) {
     if (typeof objOrString === 'string' || objOrString instanceof String) {
-      return Promise.await(QuotationDocuments.insertWithRemoteURL({
-        url: objOrString,
+      return Promise.await(
+        QuotationDocuments.insertWithRemoteURL({
+          url: objOrString,
+          ...options,
+          meta: {
+            quotationId: this._id,
+            ...meta
+          }
+        })
+      );
+    }
+    const { rawFile, userId } = objOrString;
+    return Promise.await(
+      QuotationDocuments.insertWithRemoteBuffer({
+        file: rawFile,
+        userId,
         ...options,
         meta: {
           quotationId: this._id,
-          ...meta,
-        },
-      }));
-    }
-    const { rawFile, userId } = objOrString;
-    return Promise.await(QuotationDocuments.insertWithRemoteBuffer({
-      file: rawFile,
-      userId,
-      ...options,
-      meta: {
-        quotationId: this._id,
-        ...meta,
-      },
-    }));
+          ...meta
+        }
+      })
+    );
   },
   documents(options) {
     const { type } = options || {};
@@ -171,7 +185,9 @@ Quotations.helpers({
     if (type) {
       selector['meta.type'] = type;
     }
-    return QuotationDocuments.find(selector, { sort: { 'meta.date': -1 } }).each();
+    return QuotationDocuments.find(selector, {
+      sort: { 'meta.date': -1 }
+    }).each();
   },
   document(options) {
     const { type } = options || {};
@@ -187,16 +203,17 @@ Quotations.helpers({
       skip: offset,
       limit,
       sort: {
-        created: -1,
-      },
+        created: -1
+      }
     }).fetch();
     return logs;
-  },
+  }
 });
 
-Quotations.requestQuotation = ({
-  productId, userId, currencyCode, configuration,
-}, options) => {
+Quotations.requestQuotation = (
+  { productId, userId, currencyCode, configuration },
+  options
+) => {
   log('Create Quotation', { userId });
   const quotationId = Quotations.insert({
     created: new Date(),
@@ -205,49 +222,58 @@ Quotations.requestQuotation = ({
     productId,
     configuration,
     currency: Countries.resolveDefaultCurrencyCode({
-      isoCode: currencyCode,
+      isoCode: currencyCode
     }),
-    countryCode: currencyCode,
+    countryCode: currencyCode
   });
   const quotation = Quotations.findOne({ _id: quotationId });
-  return quotation
-    .process()
-    .sendStatusToCustomer(options);
+  return quotation.process().sendStatusToCustomer(options);
 };
 
 Quotations.updateContext = ({ context, quotationId }) => {
   log('Update Arbitrary Context', { quotationId });
-  Quotations.update({ _id: quotationId }, {
-    $set: {
-      context,
-      updated: new Date(),
-    },
-  });
+  Quotations.update(
+    { _id: quotationId },
+    {
+      $set: {
+        context,
+        updated: new Date()
+      }
+    }
+  );
   return Quotations.findOne({ _id: quotationId });
 };
 
-Quotations.updateProposal = ({
-  price, expires, meta, quotationId,
-}) => {
+Quotations.updateProposal = ({ price, expires, meta, quotationId }) => {
   log('Update Quotation with Proposal', { quotationId });
-  Quotations.update({ _id: quotationId }, {
-    $set: {
-      price,
-      expires,
-      meta,
-      updated: new Date(),
-    },
-  });
+  Quotations.update(
+    { _id: quotationId },
+    {
+      $set: {
+        price,
+        expires,
+        meta,
+        updated: new Date()
+      }
+    }
+  );
   return Quotations.findOne({ _id: quotationId });
 };
 
 Quotations.newQuotationNumber = () => {
   let quotationNumber = null;
-  const hashids = new Hashids('unchained', 6, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890');
+  const hashids = new Hashids(
+    'unchained',
+    6,
+    'ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890'
+  );
   while (!quotationNumber) {
     const randomNumber = Math.floor(Math.random() * (999999999 - 1)) + 1;
     const newHashID = hashids.encode(randomNumber);
-    if (Quotations.find({ quotationNumber: newHashID }, { limit: 1 }).count() === 0) {
+    if (
+      Quotations.find({ quotationNumber: newHashID }, { limit: 1 }).count() ===
+      0
+    ) {
       quotationNumber = newHashID;
     }
   }
@@ -265,9 +291,9 @@ Quotations.updateStatus = ({ status, quotationId, info = '' }) => {
       log: {
         date,
         status,
-        info,
-      },
-    },
+        info
+      }
+    }
   };
   switch (status) {
     // explicitly use fallthrough here!
@@ -294,7 +320,7 @@ Quotations.updateStatus = ({ status, quotationId, info = '' }) => {
       QuotationDocuments.updateDocuments({
         quotationId,
         date,
-        ...modifier.$set,
+        ...modifier.$set
       });
     } catch (e) {
       log(e, { level: 'error' });

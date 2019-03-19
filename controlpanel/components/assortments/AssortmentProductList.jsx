@@ -1,7 +1,5 @@
 import React from 'react';
-import {
-  compose, pure, withHandlers, mapProps,
-} from 'recompose';
+import { compose, pure, withHandlers, mapProps } from 'recompose';
 import { Item, Segment } from 'semantic-ui-react';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
@@ -47,38 +45,46 @@ export default compose(
       }
     }
   `),
-  graphql(gql`
-    mutation reorderAssortmentProducts($sortKeys: [ReorderAssortmentProductInput!]!) {
-      reorderAssortmentProducts(sortKeys: $sortKeys) {
-        _id
-        sortKey
+  graphql(
+    gql`
+      mutation reorderAssortmentProducts(
+        $sortKeys: [ReorderAssortmentProductInput!]!
+      ) {
+        reorderAssortmentProducts(sortKeys: $sortKeys) {
+          _id
+          sortKey
+        }
+      }
+    `,
+    {
+      name: 'reorderAssortmentProducts',
+      options: {
+        refetchQueries: ['assortmentProducts']
       }
     }
-  `, {
-    name: 'reorderAssortmentProducts',
-    options: {
-      refetchQueries: [
-        'assortmentProducts',
-      ],
-    },
-  }),
+  ),
   mapProps(({ data: { assortment }, ...rest }) => ({
     items: (assortment && assortment.productAssignments) || [],
-    ...rest,
+    ...rest
   })),
   withHandlers({
-    onSortEnd: ({ items, reorderAssortmentProducts }) => async ({ oldIndex, newIndex }) => {
-      const sortKeys = arrayMove(items, oldIndex, newIndex).map((item, sortKey) => ({
-        assortmentProductId: item._id,
-        sortKey,
-      }));
+    onSortEnd: ({ items, reorderAssortmentProducts }) => async ({
+      oldIndex,
+      newIndex
+    }) => {
+      const sortKeys = arrayMove(items, oldIndex, newIndex).map(
+        (item, sortKey) => ({
+          assortmentProductId: item._id,
+          sortKey
+        })
+      );
       await reorderAssortmentProducts({
         variables: {
-          sortKeys,
-        },
+          sortKeys
+        }
       });
-    },
+    }
   }),
   pure,
-  SortableContainer,
+  SortableContainer
 )(AssortmentProductList);

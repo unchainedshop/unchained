@@ -31,27 +31,34 @@ const initializeDatabase = () => {
       username: 'admin',
       roles: ['admin'],
       emails: [{ address: 'admin@localhost', verified: true }],
-      guest: false,
+      guest: false
     });
     const languages = ['de', 'fr'].map((code, key) => {
-      const isBase = (key === 0);
+      const isBase = key === 0;
       const language = Factory.create('language', {
-        isoCode: code, isActive: true, isBase, authorId: admin._id,
+        isoCode: code,
+        isActive: true,
+        isBase,
+        authorId: admin._id
       });
       return language.isoCode;
     });
-    const currencies = ['CHF'].map((code) => {
-      const currency = Factory.create('currency', { isoCode: code, isActive: true, authorId: admin._id });
+    const currencies = ['CHF'].map(code => {
+      const currency = Factory.create('currency', {
+        isoCode: code,
+        isActive: true,
+        authorId: admin._id
+      });
       return currency._id;
     });
     const countries = ['CH'].map((code, key) => {
-      const isBase = (key === 0);
+      const isBase = key === 0;
       const country = Factory.create('country', {
         isoCode: code,
         isBase,
         isActive: true,
         authorId: admin._id,
-        defaultCurrencyId: currencies[key],
+        defaultCurrencyId: currencies[key]
       });
       return country.isoCode;
     });

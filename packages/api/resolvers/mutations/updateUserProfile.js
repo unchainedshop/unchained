@@ -8,20 +8,23 @@ const transform = (profile, hasManageUserPermissions) => { // eslint-disable-lin
     'profile.birthday': profile.birthday,
     'profile.phoneMobile': profile.phoneMobile,
     'profile.gender': profile.gender,
-    'profile.address': profile.address,
+    'profile.address': profile.address
   };
   return transformedProfile;
 };
 
-export default function (root, { profile, userId: foreignUserId }, { userId }) {
+export default function(root, { profile, userId: foreignUserId }, { userId }) {
   const normalizedUserId = foreignUserId || userId;
   log(`mutation updateUserProfile ${normalizedUserId}`, { userId });
 
-  Users.update({ _id: normalizedUserId }, {
-    $set: {
-      updated: new Date(),
-      ...transform(profile, checkPermission(userId, actions.manageUsers)),
-    },
-  });
+  Users.update(
+    { _id: normalizedUserId },
+    {
+      $set: {
+        updated: new Date(),
+        ...transform(profile, checkPermission(userId, actions.manageUsers))
+      }
+    }
+  );
   return Users.findOne({ _id: normalizedUserId });
 }

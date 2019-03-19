@@ -11,8 +11,10 @@ function parseCookies(ctx = {}, options = {}) {
   return cookie.parse(
     (ctx.req && ctx.req.headers.cookie) // eslint-disable-line
       ? ctx.req.headers.cookie
-      : (process.browser ? document.cookie : ''),
-    options,
+      : process.browser
+      ? document.cookie
+      : '',
+    options
   );
 }
 
@@ -21,12 +23,15 @@ function getComponentDisplayName(Component) {
   return Component.displayName || Component.name || 'Unknown';
 }
 
-export default ComposedComponent => class WithData extends React.Component {
-    static displayName = `WithData(${getComponentDisplayName(ComposedComponent)})`
+export default ComposedComponent =>
+  class WithData extends React.Component {
+    static displayName = `WithData(${getComponentDisplayName(
+      ComposedComponent
+    )})`;
 
     static propTypes = {
       serverState: PropTypes.object.isRequired, //eslint-disable-line
-    }
+    };
 
     constructor(props) {
       super(props);
@@ -36,30 +41,34 @@ export default ComposedComponent => class WithData extends React.Component {
       this.apollo = initApollo(
         serverState.apollo.data,
         headers,
-        () => parseCookies({}).token,
+        () => parseCookies({}).token
       );
       onTokenChange(async ({ token, tokenExpires }) => {
         if (!token || !tokenExpires) {
           document.cookie = cookie.serialize('token', '', {
-            maxAge: -1, // Expire the cookie immediately
+            maxAge: -1 // Expire the cookie immediately
           });
           document.cookie = cookie.serialize('token', '', {
             maxAge: -1, // Expire the cookie immediately
-            path: '/',
+            path: '/'
           });
           this.apollo.resetStore();
           return;
         }
-        const maxAge = differenceInMilliseconds(new Date(tokenExpires), new Date()) / 1000;
+        const maxAge =
+          differenceInMilliseconds(new Date(tokenExpires), new Date()) / 1000;
         console.debug('new token, expiring: ', maxAge); // eslint-disable-line
-        document.cookie = cookie.serialize('token', token, { maxAge, path: '/' });
+        document.cookie = cookie.serialize('token', token, {
+          maxAge,
+          path: '/'
+        });
         this.apollo.resetStore();
       });
     }
 
     static async getInitialProps(ctx) {
       // Initial serverState with apollo (empty)
-      let serverState = { apollo: { } };
+      let serverState = { apollo: {} };
       const headers = ctx.req ? ctx.req.headers : {};
 
       // Evaluate the composed component's getInitialProps()
@@ -71,15 +80,12 @@ export default ComposedComponent => class WithData extends React.Component {
       // Run all GraphQL queries in the component tree
       // and extract the resulting data
       if (!process.browser) {
-        const apollo = initApollo(
-          null,
-          headers,
-          () => parseCookies(ctx).token,
-        );
+        const apollo = initApollo(null, headers, () => parseCookies(ctx).token);
         try {
           // Run all GraphQL queries
-          await getDataFromTree(<ApolloProvider client={apollo}>
-            <ComposedComponent {...composedInitialProps} />
+          await getDataFromTree(
+            <ApolloProvider client={apollo}>
+              <ComposedComponent {...composedInitialProps} />
           </ApolloProvider>); //eslint-disable-line
         } catch (error) {
           // Prevent Apollo Client GraphQL errors from crashing SSR.
@@ -93,15 +99,15 @@ export default ComposedComponent => class WithData extends React.Component {
         // Extract query data from the Apollo store
         serverState = {
           apollo: {
-            data: apollo.cache.extract(),
-          },
+            data: apollo.cache.extract()
+          }
         };
       }
 
       return {
         serverState,
         headers,
-        ...composedInitialProps,
+        ...composedInitialProps
       };
     }
 
@@ -112,4 +118,4 @@ export default ComposedComponent => class WithData extends React.Component {
         </ApolloProvider>
       );
     }
-};
+  };

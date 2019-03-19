@@ -14,20 +14,19 @@ export * as roles from './roles';
 export * as acl from './acl';
 export * as errors from './errors';
 
-const {
-  APOLLO_ENGINE_KEY,
-} = process.env;
+const { APOLLO_ENGINE_KEY } = process.env;
 
-const defaultContext = (req) => {
-  const remoteAddress = req.headers['x-real-ip']
-    || req.headers['x-forwarded-for']
-    || req.connection.remoteAddress
-    || req.socket.remoteAddress
-    || req.connection.socket.remoteAddress;
+const defaultContext = req => {
+  const remoteAddress =
+    req.headers['x-real-ip'] ||
+    req.headers['x-forwarded-for'] ||
+    req.connection.remoteAddress ||
+    req.socket.remoteAddress ||
+    req.connection.socket.remoteAddress;
   return { remoteAddress };
 };
 
-const startUnchainedServer = (options) => {
+const startUnchainedServer = options => {
   const {
     corsOrigins = null, // no cookie handling
     typeDefs: additionalTypeDefs = [],
@@ -36,74 +35,82 @@ const startUnchainedServer = (options) => {
     rolesOptions,
     engine = {},
     ...apolloServerOptions
-  } = (options || {});
+  } = options || {};
 
   configureRoles(rolesOptions);
 
   const server = new ApolloServer({
-    typeDefs: [
-      ...typeDefs,
-      ...additionalTypeDefs,
-    ],
-    resolvers: [
-      resolvers,
-      ...additionalResolvers,
-    ],
+    typeDefs: [...typeDefs, ...additionalTypeDefs],
+    resolvers: [resolvers, ...additionalResolvers],
     context: async ({ req }) => {
       const userContext = await getUserContext(req);
       return {
         ...userContext,
         ...buildLocaleContext(req),
-        ...context(req),
+        ...context(req)
       };
     },
-    formatError: (error) => {
+    formatError: error => {
       try {
-        const { message, extensions: { exception, ...extensions }, ...rest } = error;
-        log(`${message} ${extensions && extensions.code}`, { level: 'error', ...extensions, ...rest });
+        const {
+          message,
+          extensions: { exception, ...extensions },
+          ...rest
+        } = error;
+        log(`${message} ${extensions && extensions.code}`, {
+          level: 'error',
+          ...extensions,
+          ...rest
+        });
         console.error(exception.stacktrace); // eslint-disable-line
       } catch (e) { } // eslint-disable-line
       const newError = error;
-      if (newError.extensions.exception) delete newError.extensions.exception.stacktrace;
+      if (newError.extensions.exception)
+        delete newError.extensions.exception.stacktrace;
       return newError;
     },
-    engine: APOLLO_ENGINE_KEY ? {
-      apiKey: APOLLO_ENGINE_KEY,
-      privateVariables: [
-        'email',
-        'plainPassword',
-        'oldPlainPassword',
-        'newPlainPassword',
-      ],
-      ...engine,
-    } : null,
-    ...apolloServerOptions,
+    engine: APOLLO_ENGINE_KEY
+      ? {
+          apiKey: APOLLO_ENGINE_KEY,
+          privateVariables: [
+            'email',
+            'plainPassword',
+            'oldPlainPassword',
+            'newPlainPassword'
+          ],
+          ...engine
+        }
+      : null,
+    ...apolloServerOptions
   });
 
-  const originFn = (corsOrigins && Array.isArray(corsOrigins))
-    ? ((origin, callback) => {
-      if (corsOrigins.length === 0 || !origin) {
-        callback(null, true);
-        return;
-      }
-      if (corsOrigins.indexOf(origin) !== -1) {
-        callback(null, true);
-      } else {
-        callback(new Error('Not allowed by CORS'));
-      }
-    })
-    : corsOrigins;
+  const originFn =
+    corsOrigins && Array.isArray(corsOrigins)
+      ? (origin, callback) => {
+          if (corsOrigins.length === 0 || !origin) {
+            callback(null, true);
+            return;
+          }
+          if (corsOrigins.indexOf(origin) !== -1) {
+            callback(null, true);
+          } else {
+            callback(new Error('Not allowed by CORS'));
+          }
+        }
+      : corsOrigins;
 
   server.applyMiddleware({
     app: WebApp.connectHandlers,
     path: '/graphql',
-    cors: !originFn ? undefined : {
-      origin: originFn,
-      credentials: true,
-    },
+    cors: !originFn
+      ? undefined
+      : {
+          origin: originFn,
+          credentials: true
+        },
     bodyParserConfig: {
-      limit: '5mb',
-    },
+      limit: '5mb'
+    }
   });
 
   WebApp.connectHandlers.use('/graphql', (req, res) => {

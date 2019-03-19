@@ -8,5 +8,5 @@ export default {
   },
   currency(obj) {
     return obj.currency;
-  },
+  }
 };

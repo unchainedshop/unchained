@@ -2,7 +2,7 @@ import { log } from 'meteor/unchained:core-logger';
 import { OrderPositions } from 'meteor/unchained:core-orders';
 import { OrderItemNotFoundError, OrderWrongStatusError } from '../../errors';
 
-export default function (root, { itemId }, { userId }) {
+export default function(root, { itemId }, { userId }) {
   log(`mutation removeCartItem ${itemId}`, { userId });
   const orderItem = OrderPositions.findOne({ _id: itemId });
   if (!orderItem) throw new OrderItemNotFoundError({ data: { orderItem } });
@@ -11,6 +11,6 @@ export default function (root, { itemId }, { userId }) {
     throw new OrderWrongStatusError({ data: { status: order.status } });
   }
   return OrderPositions.removePosition({
-    positionId: itemId,
+    positionId: itemId
   });
 }

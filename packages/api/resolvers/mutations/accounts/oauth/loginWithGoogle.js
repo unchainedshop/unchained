@@ -1,17 +1,21 @@
 import { HTTP } from 'meteor/http';
 import resolver from './resolver';
 
-const getIdentity = (accessToken) => {
+const getIdentity = accessToken => {
   try {
-    return HTTP.get('https://www.googleapis.com/oauth2/v1/userinfo', { params: { access_token: accessToken } }).data;
+    return HTTP.get('https://www.googleapis.com/oauth2/v1/userinfo', {
+      params: { access_token: accessToken }
+    }).data;
   } catch (err) {
     throw new Error(`Failed to fetch identity from Google. ${err.message}`);
   }
 };
 
-const getScopes = (accessToken) => {
+const getScopes = accessToken => {
   try {
-    return HTTP.get('https://www.googleapis.com/oauth2/v1/tokeninfo', { params: { access_token: accessToken } }).data.scope.split(' ');
+    return HTTP.get('https://www.googleapis.com/oauth2/v1/tokeninfo', {
+      params: { access_token: accessToken }
+    }).data.scope.split(' ');
   } catch (err) {
     throw new Error(`Failed to fetch tokeninfo from Google. ${err.message}`);
   }
@@ -24,13 +28,13 @@ const handleAuthFromAccessToken = ({ accessToken }) => {
   const serviceData = {
     ...identity,
     accessToken,
-    scopes,
+    scopes
   };
 
   return {
     serviceName: 'google',
     serviceData,
-    options: { profile: { name: identity.name } },
+    options: { profile: { name: identity.name } }
   };
 };
 

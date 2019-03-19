@@ -27,13 +27,18 @@ const Phone = ({
   component,
   ...props
 }) => (
-  <div className={classnames(className, { disabled, error, required }, 'field')} {...filterDOMProps(props)}>
-    {label && (
-      <label htmlFor={id}>
-        {label}
-      </label>
-    )}
-    <div className={classnames('ui', { left: iconLeft, icon: icon || iconLeft }, 'input')}>
+  <div
+    className={classnames(className, { disabled, error, required }, 'field')}
+    {...filterDOMProps(props)}
+  >
+    {label && <label htmlFor={id}>{label}</label>}
+    <div
+      className={classnames(
+        'ui',
+        { left: iconLeft, icon: icon || iconLeft },
+        'input'
+      )}
+    >
       <PhoneNumberInput
         country={country}
         disabled={disabled}
@@ -49,22 +54,18 @@ const Phone = ({
       )}
       <style jsx global>
         {`
-        .rrui__input
-        {
-          height : calc(0.3rem * 9) !important;
-        }
-        .rrui__select__native
-        {
-          min-height : calc(0.3rem * 9) !important;
-        }
-      `}
+          .rrui__input {
+            height: calc(0.3rem * 9) !important;
+          }
+          .rrui__select__native {
+            min-height: calc(0.3rem * 9) !important;
+          }
+        `}
       </style>
     </div>
 
     {!!(error && showInlineError) && (
-      <div className="ui red basic pointing label">
-        {errorMessage}
-      </div>
+      <div className="ui red basic pointing label">{errorMessage}</div>
     )}
   </div>
 );

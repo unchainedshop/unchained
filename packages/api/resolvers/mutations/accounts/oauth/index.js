@@ -4,7 +4,7 @@ import loginWithGoogle from './loginWithGoogle';
 import loginWithLinkedIn from './loginWithLinkedIn';
 import hasService from './hasService';
 
-export default function (options) {
+export default function(options) {
   const oauth = {};
 
   if (hasService(options, 'facebook')) {

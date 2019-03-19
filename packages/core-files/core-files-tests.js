@@ -6,6 +6,6 @@ import { name as packageName } from 'meteor/core-files';
 
 // Write your tests here!
 // Here is an example.
-Tinytest.add('core-files - example', (test) => {
+Tinytest.add('core-files - example', test => {
   test.equal(packageName, 'core-files');
 });

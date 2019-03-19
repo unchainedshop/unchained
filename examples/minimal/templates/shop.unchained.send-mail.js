@@ -41,11 +41,7 @@ const mjmlTemplate = `
 </mjml>
 `;
 
-
-const {
-  EMAIL_FROM,
-  EMAIL_WEBSITE_NAME,
-} = process.env;
+const { EMAIL_FROM, EMAIL_WEBSITE_NAME } = process.env;
 
 const textTemplate = `
   Bestellnummer: {{context.order.orderNumber}}\n
@@ -68,7 +64,6 @@ const textTemplate = `
   {{/meta.items}}
 `;
 
-
 export default (meta, context, { renderToText, renderMjmlToHtml }) => {
   const momentDate = moment(context.order.ordered);
   momentDate.locale('de-CH');
@@ -76,10 +71,15 @@ export default (meta, context, { renderToText, renderMjmlToHtml }) => {
   return {
     to: to => to || 'admin@localhost',
     from: from => from || EMAIL_FROM,
-    subject: () => `${EMAIL_WEBSITE_NAME}: Neue Bestellung / ${context.order.orderNumber}`,
-    text: () => renderToText(textTemplate, {
-      meta, context, orderDate, shopName: EMAIL_WEBSITE_NAME,
-    }),
-    html: () => renderMjmlToHtml(mjmlTemplate, { meta, context, orderDate }),
+    subject: () =>
+      `${EMAIL_WEBSITE_NAME}: Neue Bestellung / ${context.order.orderNumber}`,
+    text: () =>
+      renderToText(textTemplate, {
+        meta,
+        context,
+        orderDate,
+        shopName: EMAIL_WEBSITE_NAME
+      }),
+    html: () => renderMjmlToHtml(mjmlTemplate, { meta, context, orderDate })
   };
 };

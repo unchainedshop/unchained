@@ -8,13 +8,22 @@ export default {
 
   email: checkTypeResolver(actions.viewUserPrivateInfos, 'email'),
   username: checkTypeResolver(actions.viewUserPrivateInfos, 'username'),
-  isEmailVerified: checkTypeResolver(actions.viewUserPrivateInfos, 'isEmailVerified'),
+  isEmailVerified: checkTypeResolver(
+    actions.viewUserPrivateInfos,
+    'isEmailVerified'
+  ),
   isGuest: checkTypeResolver(actions.viewUserPrivateInfos, 'isGuest'),
   profile: checkTypeResolver(actions.viewUserPrivateInfos, 'profile'),
   language: checkTypeResolver(actions.viewUserPrivateInfos, 'language'),
   country: checkTypeResolver(actions.viewUserPrivateInfos, 'country'),
-  lastBillingAddress: checkTypeResolver(actions.viewUserPrivateInfos, 'lastBillingAddress'),
-  lastDeliveryAddress: checkTypeResolver(actions.viewUserPrivateInfos, 'lastDeliveryAddress'),
+  lastBillingAddress: checkTypeResolver(
+    actions.viewUserPrivateInfos,
+    'lastBillingAddress'
+  ),
+  lastDeliveryAddress: checkTypeResolver(
+    actions.viewUserPrivateInfos,
+    'lastDeliveryAddress'
+  ),
   emails: checkTypeResolver(actions.viewUserPrivateInfos, 'emails'),
   tags: checkTypeResolver(actions.viewUserPrivateInfos, 'tags'),
 
@@ -27,5 +36,5 @@ export default {
     const { countryContext, userId } = context;
     checkAction(actions.viewUserOrders, userId, [user, params, context]);
     return user.cart({ countryContext });
-  },
+  }
 };

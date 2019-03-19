@@ -37,57 +37,63 @@ export default compose(
       }
     }
   `),
-  graphql(gql`
-    mutation addAssortmentFilter($assortmentId: ID!, $filterId: ID!) {
-      addAssortmentFilter(assortmentId: $assortmentId, filterId: $filterId) {
-        _id
+  graphql(
+    gql`
+      mutation addAssortmentFilter($assortmentId: ID!, $filterId: ID!) {
+        addAssortmentFilter(assortmentId: $assortmentId, filterId: $filterId) {
+          _id
+        }
+      }
+    `,
+    {
+      name: 'addAssortmentFilter',
+      options: {
+        refetchQueries: ['assortment', 'assortmentFilters']
       }
     }
-  `, {
-    name: 'addAssortmentFilter',
-    options: {
-      refetchQueries: [
-        'assortment',
-        'assortmentFilters',
-      ],
-    },
-  }),
+  ),
   withFormSchema({
     assortmentId: {
       type: String,
       label: null,
-      optional: false,
+      optional: false
     },
     filterId: {
       type: String,
       optional: false,
-      label: 'Filter',
-    },
+      label: 'Filter'
+    }
   }),
   withHandlers({
     onSubmitSuccess: () => () => {
       toast('Filtered', { type: toast.TYPE.SUCCESS }); // eslint-disable-line
     },
-    onSubmit: ({
-      addAssortmentFilter,
-    }) => ({ assortmentId, filterId }) => addAssortmentFilter({
-      variables: {
-        assortmentId,
-        filterId,
-      },
-    }),
+    onSubmit: ({ addAssortmentFilter }) => ({ assortmentId, filterId }) =>
+      addAssortmentFilter({
+        variables: {
+          assortmentId,
+          filterId
+        }
+      })
   }),
   withFormErrorHandlers,
-  mapProps(({
-    assortmentId, addAssortmentFilter, data: { filters = [] }, ...rest
-  }) => ({
-    filters: [{ label: 'Select', value: false }].concat(filters.map(filter => ({
-      label: filter.texts ? filter.texts.title : filter.key,
-      value: filter._id,
-    }))),
-    model: {
+  mapProps(
+    ({
       assortmentId,
-    },
-    ...rest,
-  })),
+      addAssortmentFilter,
+      data: { filters = [] },
+      ...rest
+    }) => ({
+      filters: [{ label: 'Select', value: false }].concat(
+        filters.map(filter => ({
+          label: filter.texts ? filter.texts.title : filter.key,
+          value: filter._id
+        }))
+      ),
+      model: {
+        assortmentId
+      },
+      ...rest
+    })
+  )
 )(FormNewAssortmentFilter);

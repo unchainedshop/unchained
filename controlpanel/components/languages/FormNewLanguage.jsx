@@ -1,7 +1,5 @@
 import React from 'react';
-import {
-  compose, pure, mapProps, withHandlers,
-} from 'recompose';
+import { compose, pure, mapProps, withHandlers } from 'recompose';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 import { withRouter } from 'next/router';
@@ -22,40 +20,45 @@ const FormNewLanguage = formProps => (
 
 export default compose(
   withRouter,
-  graphql(gql`
-    mutation createLanguage($language: CreateLanguageInput!) {
-      createLanguage(language: $language) {
-        _id
+  graphql(
+    gql`
+      mutation createLanguage($language: CreateLanguageInput!) {
+        createLanguage(language: $language) {
+          _id
+        }
+      }
+    `,
+    {
+      name: 'createLanguage',
+      options: {
+        refetchQueries: ['languages']
       }
     }
-  `, {
-    name: 'createLanguage',
-    options: {
-      refetchQueries: [
-        'languages',
-      ],
-    },
-  }),
+  ),
   withFormSchema({
     isoCode: {
       type: String,
       optional: false,
-      label: 'ISO Sprachcode',
-    },
+      label: 'ISO Sprachcode'
+    }
   }),
   withHandlers({
     onSubmitSuccess: ({ router }) => ({ data: { createLanguage } }) => {
-      router.replace({ pathname: '/languages/edit', query: { _id: createLanguage._id } });
+      router.replace({
+        pathname: '/languages/edit',
+        query: { _id: createLanguage._id }
+      });
     },
-    onSubmit: ({ createLanguage, schema }) => ({ ...dirtyInput }) => createLanguage({
-      variables: {
-        language: schema.clean(dirtyInput),
-      },
-    }),
+    onSubmit: ({ createLanguage, schema }) => ({ ...dirtyInput }) =>
+      createLanguage({
+        variables: {
+          language: schema.clean(dirtyInput)
+        }
+      })
   }),
   withFormErrorHandlers,
   mapProps(({ createLanguage, ...rest }) => ({
-    ...rest,
+    ...rest
   })),
-  pure,
+  pure
 )(FormNewLanguage);

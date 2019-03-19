@@ -5,16 +5,10 @@ import { compose, pure } from 'recompose';
 const CardOrdersThisWeek = () => (
   <Card color="black" raised>
     <Card.Content>
-      <Card.Header>
-        Orders this Week
-      </Card.Header>
-      <Card.Description>
-        n/a
-      </Card.Description>
+      <Card.Header>Orders this Week</Card.Header>
+      <Card.Description>n/a</Card.Description>
     </Card.Content>
   </Card>
 );
 
-export default compose(
-  pure,
-)(CardOrdersThisWeek);
+export default compose(pure)(CardOrdersThisWeek);

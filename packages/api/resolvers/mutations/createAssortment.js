@@ -5,6 +5,6 @@ export default (root, { assortment }, { userId, localeContext }) => {
   log('mutation createAssortment', { userId });
   return Assortments.createAssortment({
     locale: localeContext.language,
-    ...assortment,
+    ...assortment
   });
 };

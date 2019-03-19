@@ -6,7 +6,7 @@ const OrderPaymentMap = {
   OrderPaymentPaypal: PaymentProviderType.PAYPAL,
   OrderPaymentCrypto: PaymentProviderType.CRYPTO,
   OrderPaymentCard: PaymentProviderType.CARD,
-  OrderPaymentInvoice: PaymentProviderType.INVOICE,
+  OrderPaymentInvoice: PaymentProviderType.INVOICE
 };
 
 export default {
@@ -17,5 +17,5 @@ export default {
       return invertedProductTypes[provider.type];
     }
     return invertedProductTypes[PaymentProviderType.INVOICE];
-  },
+  }
 };

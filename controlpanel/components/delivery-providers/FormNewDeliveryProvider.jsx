@@ -1,7 +1,5 @@
 import React from 'react';
-import {
-  compose, mapProps, withHandlers, withState,
-} from 'recompose';
+import { compose, mapProps, withHandlers, withState } from 'recompose';
 import gql from 'graphql-tag';
 import { withRouter } from 'next/router';
 import { graphql } from 'react-apollo';
@@ -14,12 +12,14 @@ import withFormErrorHandlers from '../../lib/withFormErrorHandlers';
 
 const defaultProviderType = 'SHIPPING';
 
-const FormNewDeliveryProvider = ({ providerType, updateProviderType, ...formProps }) => (
+const FormNewDeliveryProvider = ({
+  providerType,
+  updateProviderType,
+  ...formProps
+}) => (
   <AutoForm {...formProps}>
     <AutoField name="type" onChange={updateProviderType} />
-    {providerType && (
-      <AutoField name="adapterKey" />
-    )}
+    {providerType && <AutoField name="adapterKey" />}
     <ErrorsField />
     <SubmitField value="Add Delivery provider" className="primary" />
   </AutoForm>
@@ -43,58 +43,70 @@ export default compose(
       }
     }
   `),
-  graphql(gql`
-    mutation create($deliveryProvider: CreateProviderInput!) {
-      createDeliveryProvider(deliveryProvider: $deliveryProvider) {
-        _id
+  graphql(
+    gql`
+      mutation create($deliveryProvider: CreateProviderInput!) {
+        createDeliveryProvider(deliveryProvider: $deliveryProvider) {
+          _id
+        }
+      }
+    `,
+    {
+      name: 'createDeliveryProvider',
+      options: {
+        refetchQueries: ['deliveryProviders']
       }
     }
-  `, {
-    name: 'createDeliveryProvider',
-    options: {
-      refetchQueries: [
-        'deliveryProviders',
-      ],
-    },
-  }),
-  withFormSchema(({
-    providerType, data: {
-      deliveryProviderType = { options: [] },
-      deliveryInterfaces = [],
-    } = {},
-  }) => ({
-    type: {
-      type: String,
-      optional: false,
-      label: 'Type',
-      defaultValue: providerType,
-      uniforms: {
-        options: [{ label: 'Choose Type', value: null }, ...deliveryProviderType.options],
+  ),
+  withFormSchema(
+    ({
+      providerType,
+      data: {
+        deliveryProviderType = { options: [] },
+        deliveryInterfaces = []
+      } = {}
+    }) => ({
+      type: {
+        type: String,
+        optional: false,
+        label: 'Type',
+        defaultValue: providerType,
+        uniforms: {
+          options: [
+            { label: 'Choose Type', value: null },
+            ...deliveryProviderType.options
+          ]
+        }
       },
-    },
-    adapterKey: {
-      type: String,
-      optional: false,
-      label: 'Adapter',
-      uniforms: {
-        options: [{ label: 'Choose Adapter', value: null }, ...deliveryInterfaces],
-      },
-    },
-  })),
+      adapterKey: {
+        type: String,
+        optional: false,
+        label: 'Adapter',
+        uniforms: {
+          options: [
+            { label: 'Choose Adapter', value: null },
+            ...deliveryInterfaces
+          ]
+        }
+      }
+    })
+  ),
   withHandlers({
     onSubmitSuccess: ({ router }) => ({ data: { createDeliveryProvider } }) => {
-      router.replace({ pathname: '/delivery-providers/edit', query: { _id: createDeliveryProvider._id } });
+      router.replace({
+        pathname: '/delivery-providers/edit',
+        query: { _id: createDeliveryProvider._id }
+      });
     },
-    onSubmit: ({
-      createDeliveryProvider, schema,
-    }) => ({ ...dirtyInput }) => createDeliveryProvider({
-      variables: {
-        deliveryProvider: schema.clean(dirtyInput),
-      },
-    }),
+    onSubmit: ({ createDeliveryProvider, schema }) => ({ ...dirtyInput }) =>
+      createDeliveryProvider({
+        variables: {
+          deliveryProvider: schema.clean(dirtyInput)
+        }
+      })
   }),
   withFormErrorHandlers,
   mapProps(({ createDeliveryProvider, ...rest }) => ({
-    ...rest,
-  })),
+    ...rest
+  }))
 )(FormNewDeliveryProvider);

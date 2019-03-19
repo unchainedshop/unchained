@@ -3,19 +3,19 @@ import AutoField from 'uniforms-semantic/AutoField';
 import SubmitField from 'uniforms-semantic/SubmitField';
 import ErrorsField from 'uniforms-semantic/ErrorsField';
 import AutoForm from 'uniforms-semantic/AutoForm';
-import {
-  compose, pure, withHandlers,
-} from 'recompose';
+import { compose, pure, withHandlers } from 'recompose';
 import { graphql, withApollo } from 'react-apollo';
 import gql from 'graphql-tag';
 import withFormSchema from '../../lib/withFormSchema';
 import withFormErrorHandlers from '../../lib/withFormErrorHandlers';
 
 const FormSetPassword = ({
-  resendVerification, isEmailVerified,
+  resendVerification,
+  isEmailVerified,
   mutate,
   client,
-  userId, ...formProps
+  userId,
+  ...formProps
 }) => (
   <AutoForm {...formProps}>
     <AutoField name="newPassword" />
@@ -36,17 +36,18 @@ export default compose(
   withFormSchema({
     newPassword: {
       type: String,
-      label: 'New password (overwrite)',
-    },
+      label: 'New password (overwrite)'
+    }
   }),
   withHandlers({
-    onSubmit: ({ mutate, schema, userId }) => ({ ...dirtyInput }) => mutate({
-      variables: {
-        ...schema.clean(dirtyInput),
-        userId,
-      },
-    }),
+    onSubmit: ({ mutate, schema, userId }) => ({ ...dirtyInput }) =>
+      mutate({
+        variables: {
+          ...schema.clean(dirtyInput),
+          userId
+        }
+      })
   }),
   withFormErrorHandlers,
-  pure,
+  pure
 )(FormSetPassword);

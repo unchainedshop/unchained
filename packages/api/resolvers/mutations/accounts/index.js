@@ -13,7 +13,7 @@ const options = {
   loginWithFacebook: true,
   loginWithGoogle: true,
   loginWithLinkedIn: true,
-  loginWithPassword: true,
+  loginWithPassword: true
 };
 
 export default {
@@ -26,5 +26,5 @@ export default {
   createUser,
   forgotPassword,
   resetPassword,
-  ...oauth(options),
+  ...oauth(options)
 };

@@ -9,7 +9,7 @@ const PaymentProviderList = ({ ...rest }) => (
     {...rest}
     cols={4}
     createPath="/payment-providers/new"
-    rowRenderer={(paymentProvider => (
+    rowRenderer={paymentProvider => (
       <Table.Row key={paymentProvider._id}>
         <Table.Cell>
           <Link href={`/payment-providers/edit?_id=${paymentProvider._id}`}>
@@ -18,9 +18,7 @@ const PaymentProviderList = ({ ...rest }) => (
             </a>
           </Link>
         </Table.Cell>
-        <Table.Cell>
-          {paymentProvider.type}
-        </Table.Cell>
+        <Table.Cell>{paymentProvider.type}</Table.Cell>
         <Table.Cell>
           {paymentProvider.interface && paymentProvider.interface.label}
           &nbsp;
@@ -35,21 +33,13 @@ const PaymentProviderList = ({ ...rest }) => (
           )}
         </Table.Cell>
       </Table.Row>
-    ))}
+    )}
   >
     <Table.Row>
-      <Table.HeaderCell>
-Configuration
-      </Table.HeaderCell>
-      <Table.HeaderCell>
-Type
-      </Table.HeaderCell>
-      <Table.HeaderCell>
-Interface
-      </Table.HeaderCell>
-      <Table.HeaderCell>
-Problems
-      </Table.HeaderCell>
+      <Table.HeaderCell>Configuration</Table.HeaderCell>
+      <Table.HeaderCell>Type</Table.HeaderCell>
+      <Table.HeaderCell>Interface</Table.HeaderCell>
+      <Table.HeaderCell>Problems</Table.HeaderCell>
     </Table.Row>
   </InfiniteDataTable>
 );
@@ -57,17 +47,17 @@ Problems
 export default withDataTableLoader({
   queryName: 'paymentProviders',
   query: gql`
-      query paymentProviders {
-        paymentProviders {
+    query paymentProviders {
+      paymentProviders {
+        _id
+        type
+        configurationError
+        interface {
           _id
-          type
-          configurationError
-          interface {
-            _id
-            label
-            version
-          }
+          label
+          version
         }
       }
-    `,
+    }
+  `
 })(PaymentProviderList);

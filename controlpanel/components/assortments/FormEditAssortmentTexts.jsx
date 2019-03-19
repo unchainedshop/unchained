@@ -1,8 +1,6 @@
 import React from 'react';
 import { toast } from 'react-toastify';
-import {
-  compose, pure, mapProps, withHandlers, withState,
-} from 'recompose';
+import { compose, pure, mapProps, withHandlers, withState } from 'recompose';
 import { Segment, Container, Menu } from 'semantic-ui-react';
 import gql from 'graphql-tag';
 import dynamic from 'next/dynamic';
@@ -19,10 +17,14 @@ import withFormErrorHandlers from '../../lib/withFormErrorHandlers';
 const { publicRuntimeConfig } = getConfig();
 
 const FormRTEInput = dynamic(import('../FormRTEInput'), {
-  ssr: false,
+  ssr: false
 });
 const FormEditAssortmentTexts = ({
-  languages, changeSelectedLocale, activeLanguage, isEditingDisabled, ...formProps
+  languages,
+  changeSelectedLocale,
+  activeLanguage,
+  isEditingDisabled,
+  ...formProps
 }) => (
   <Container>
     <AutoForm {...formProps} disabled={isEditingDisabled}>
@@ -70,7 +72,11 @@ const FormEditAssortmentTexts = ({
           </div>
         ))}
         <ErrorsField />
-        <SubmitField value="Save" className="primary" disabled={isEditingDisabled} />
+        <SubmitField
+          value="Save"
+          className="primary"
+          disabled={isEditingDisabled}
+        />
       </Segment>
     </AutoForm>
   </Container>
@@ -101,89 +107,95 @@ export default compose(
   `),
   mapProps(({ data, ...rest }) => {
     const { languages = [], assortment = {} } = data;
-    const filteredActiveLanguages = languages
-      .filter(language => !!language.isBase);
-    const baseLanguage = (
+    const filteredActiveLanguages = languages.filter(
+      language => !!language.isBase
+    );
+    const baseLanguage =
       filteredActiveLanguages.length > 0
         ? filteredActiveLanguages[0].isoCode
-        : publicRuntimeConfig.LANG
-    );
+        : publicRuntimeConfig.LANG;
     return {
       data,
       ...rest,
       languages,
       baseLanguage,
-      isEditingDisabled: !assortment,
+      isEditingDisabled: !assortment
     };
   }),
   withState('selectedLocale', 'setSelectedLocale', null),
-  graphql(gql`
-    mutation updateAssortmentTexts($texts: [UpdateAssortmentTextInput!]!, $assortmentId: ID!) {
-      updateAssortmentTexts(texts: $texts, assortmentId: $assortmentId) {
-        _id
-        locale
-        title
-        subtitle
-        slug
-        description
+  graphql(
+    gql`
+      mutation updateAssortmentTexts(
+        $texts: [UpdateAssortmentTextInput!]!
+        $assortmentId: ID!
+      ) {
+        updateAssortmentTexts(texts: $texts, assortmentId: $assortmentId) {
+          _id
+          locale
+          title
+          subtitle
+          slug
+          description
+        }
+      }
+    `,
+    {
+      options: {
+        refetchQueries: ['assortmentTexts', 'assortmentInfos']
       }
     }
-  `, {
-    options: {
-      refetchQueries: [
-        'assortmentTexts',
-        'assortmentInfos',
-      ],
-    },
-  }),
+  ),
   withFormSchema({
     texts: {
       type: Array,
-      optional: true,
+      optional: true
     },
     'texts.$': {
       type: Object,
-      optional: true,
+      optional: true
     },
     'texts.$.locale': {
       type: String,
       optional: false,
-      label: 'Locale',
+      label: 'Locale'
     },
     'texts.$.title': {
       type: String,
       optional: false,
-      label: 'Title',
+      label: 'Title'
     },
     'texts.$.subtitle': {
       type: String,
       optional: true,
-      label: 'Subtitle',
+      label: 'Subtitle'
     },
     'texts.$.description': {
       type: String,
       optional: true,
-      label: 'Product description',
+      label: 'Product description'
     },
     'texts.$.slug': {
       type: String,
       optional: true,
-      label: 'Slug',
-    },
+      label: 'Slug'
+    }
   }),
-  withFormModel(({ data: { translatedAssortmentTexts = [] }, languages = [] }) => {
-    const texts = languages.map((language) => {
-      const foundTranslations = translatedAssortmentTexts
-        .filter(translatedText => (translatedText.locale === language.isoCode));
-      const localizedTextForLocale = (foundTranslations.length > 0
-        ? { ...(foundTranslations[0]) }
-        : { locale: language.isoCode }
-      );
-      localizedTextForLocale.labels = localizedTextForLocale.labels || [];
-      return localizedTextForLocale;
-    });
-    return { texts };
-  }),
+  withFormModel(
+    ({ data: { translatedAssortmentTexts = [] }, languages = [] }) => {
+      const texts = languages.map(language => {
+        const foundTranslations = translatedAssortmentTexts.filter(
+          translatedText => translatedText.locale === language.isoCode
+        );
+        const localizedTextForLocale =
+          foundTranslations.length > 0
+            ? { ...foundTranslations[0] }
+            : { locale: language.isoCode };
+        localizedTextForLocale.labels = localizedTextForLocale.labels || [];
+        return localizedTextForLocale;
+      });
+      return { texts };
+    }
+  ),
   withHandlers({
     onSubmitSuccess: () => () => {
       toast('Texts saved', { type: toast.TYPE.SUCCESS });
@@ -191,20 +203,28 @@ export default compose(
     changeSelectedLocale: ({ setSelectedLocale }) => (event, element) => {
       setSelectedLocale(element.name);
     },
-    onSubmit: ({ assortmentId, mutate, schema }) => ({ ...dirtyInput }) => mutate({
-      variables: {
-        texts: schema.clean(dirtyInput).texts,
-        assortmentId,
-      },
-    }),
+    onSubmit: ({ assortmentId, mutate, schema }) => ({ ...dirtyInput }) =>
+      mutate({
+        variables: {
+          texts: schema.clean(dirtyInput).texts,
+          assortmentId
+        }
+      })
   }),
   withFormErrorHandlers,
-  mapProps(({
-    setSelectedLocale, selectedLocale,
-    baseLanguage, assortmentId, mutate, data, ...rest
-  }) => ({
-    activeLanguage: selectedLocale || baseLanguage,
-    ...rest,
-  })),
-  pure,
+  mapProps(
+    ({
+      setSelectedLocale,
+      selectedLocale,
+      baseLanguage,
+      assortmentId,
+      mutate,
+      data,
+      ...rest
+    }) => ({
+      activeLanguage: selectedLocale || baseLanguage,
+      ...rest
+    })
+  ),
+  pure
 )(FormEditAssortmentTexts);

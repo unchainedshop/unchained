@@ -7,7 +7,7 @@ export default {
       label: Interface.label,
       version: Interface.version,
       isManualAdditionAllowed: Interface.isManualAdditionAllowed(),
-      isManualRemovalAllowed: Interface.isManualRemovalAllowed(),
+      isManualRemovalAllowed: Interface.isManualRemovalAllowed()
     };
-  },
+  }
 };

@@ -1,18 +1,17 @@
 import {
   WarehousingDirector,
-  WarehousingAdapter,
+  WarehousingAdapter
 } from 'meteor/unchained:core-warehousing';
 import Sheets from 'node-sheets';
 import NodeCache from 'node-cache';
 
-const {
-  NODE_ENV,
-  GOOGLE_SHEETS_PRIVATE_KEY_DATA,
-} = process.env;
+const { NODE_ENV, GOOGLE_SHEETS_PRIVATE_KEY_DATA } = process.env;
 
-const googleCache = new NodeCache((NODE_ENV === 'production')
-  ? { stdTTL: 180, checkperiod: 10 } // 4 minutes lag in production
-  : { stdTTL: 30, checkperiod: 5 }); // 7 seconds lag in development
+const googleCache = new NodeCache(
+  NODE_ENV === 'production'
+    ? { stdTTL: 180, checkperiod: 10 } // 4 minutes lag in production
+    : { stdTTL: 30, checkperiod: 5 }
+); // 7 seconds lag in development
 
 async function downloadSpreadsheet() {
   if (!GOOGLE_SHEETS_PRIVATE_KEY_DATA) return null;
@@ -26,7 +25,7 @@ async function downloadSpreadsheet() {
     console.log('GoogleSheet: Updated cache with TTL: ' + googleCache.options.stdTTL); // eslint-disable-line
     return {
       delivery,
-      inventory,
+      inventory
     };
   } catch (err) {
     console.log(err); // eslint-disable-line
@@ -53,25 +52,28 @@ googleCache.on('expired', updateGoogleCache);
 updateGoogleCache();
 
 class GoogleSheets extends WarehousingAdapter {
-  static key = 'shop.unchained.warehousing.google-sheets'
+  static key = 'shop.unchained.warehousing.google-sheets';
 
-  static version = '1.0'
+  static version = '1.0';
 
-  static label = 'Google Sheets'
+  static label = 'Google Sheets';
 
-  static orderIndex = 0
+  static orderIndex = 0;
 
-  static initialConfiguration = [{
-    key: 'address',
-    value: null,
-  }]
+  static initialConfiguration = [
+    {
+      key: 'address',
+      value: null
+    }
+  ];
 
   static typeSupported(type) {
-    return (type === 'PHYSICAL');
+    return type === 'PHYSICAL';
   }
 
   static async getRows(name) {
-    const cachedTables = googleCache.get('tables') || googleCache.get('tablesFallback');
+    const cachedTables =
+      googleCache.get('tables') || googleCache.get('tablesFallback');
     let tables = cachedTables;
     if (!cachedTables) {
       tables = await updateGoogleCache();
@@ -122,34 +124,35 @@ class GoogleSheets extends WarehousingAdapter {
   }
 
   async stock() {
-    const {
-      product,
-    } = this.context;
+    const { product } = this.context;
     const { sku } = product.warehousing || {};
     return this.getRemoteInventory(sku);
   }
 
   async productionTime(quantity) {
-    const {
-      product,
-    } = this.context;
+    const { product } = this.context;
     const { sku } = product.warehousing || {};
     if (!sku) return null;
     const selector = 'WAREHOUSE_HOURS';
-    const timeInHours = await this.getRemoteTime(sku.toUpperCase(), quantity, selector);
+    const timeInHours = await this.getRemoteTime(
+      sku.toUpperCase(),
+      quantity,
+      selector
+    );
     if (!timeInHours) return null;
     return timeInHours * 60 * 60 * 1000;
   }
 
   async commissioningTime(quantity) {
-    const {
-      product,
-      deliveryProvider,
-    } = this.context;
+    const { product, deliveryProvider } = this.context;
     const { sku } = product.warehousing || {};
     const { type } = deliveryProvider;
     const selector = `DELIVERY_HOURS:${type}`;
-    const timeInHours = await this.getRemoteTime(sku.toUpperCase(), quantity, selector);
+    const timeInHours = await this.getRemoteTime(
+      sku.toUpperCase(),
+      quantity,
+      selector
+    );
     if (!timeInHours) return null;
     return timeInHours * 60 * 60 * 1000;
   }

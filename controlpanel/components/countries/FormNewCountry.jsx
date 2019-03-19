@@ -20,39 +20,44 @@ const FormNewCountry = formProps => (
 
 export default compose(
   withRouter,
-  graphql(gql`
-    mutation create($country: CreateCountryInput!) {
-      createCountry(country: $country) {
-        _id
+  graphql(
+    gql`
+      mutation create($country: CreateCountryInput!) {
+        createCountry(country: $country) {
+          _id
+        }
+      }
+    `,
+    {
+      name: 'createCountry',
+      options: {
+        refetchQueries: ['countries']
       }
     }
-  `, {
-    name: 'createCountry',
-    options: {
-      refetchQueries: [
-        'countries',
-      ],
-    },
-  }),
+  ),
   withFormSchema({
     isoCode: {
       type: String,
       optional: false,
-      label: 'ISO Country code',
-    },
+      label: 'ISO Country code'
+    }
   }),
   withHandlers({
     onSubmitSuccess: ({ router }) => ({ data: { createCountry } }) => {
-      router.replace({ pathname: '/countries/edit', query: { _id: createCountry._id } });
+      router.replace({
+        pathname: '/countries/edit',
+        query: { _id: createCountry._id }
+      });
     },
-    onSubmit: ({ createCountry, schema }) => ({ ...dirtyInput }) => createCountry({
-      variables: {
-        country: schema.clean(dirtyInput),
-      },
-    }),
+    onSubmit: ({ createCountry, schema }) => ({ ...dirtyInput }) =>
+      createCountry({
+        variables: {
+          country: schema.clean(dirtyInput)
+        }
+      })
   }),
   withFormErrorHandlers,
   mapProps(({ createCountry, ...rest }) => ({
-    ...rest,
-  })),
+    ...rest
+  }))
 )(FormNewCountry);

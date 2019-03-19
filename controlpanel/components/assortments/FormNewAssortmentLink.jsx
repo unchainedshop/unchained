@@ -12,7 +12,11 @@ import AutoForm from 'uniforms-semantic/AutoForm';
 import withFormSchema from '../../lib/withFormSchema';
 import withFormErrorHandlers from '../../lib/withFormErrorHandlers';
 
-const FormNewAssortmentLink = ({ assortments, removeCountry, ...formProps }) => (
+const FormNewAssortmentLink = ({
+  assortments,
+  removeCountry,
+  ...formProps
+}) => (
   <AutoForm {...formProps}>
     <Segment basic>
       <AutoField name={'parentAssortmentId'} type="hidden" />
@@ -36,57 +40,74 @@ export default compose(
       }
     }
   `),
-  graphql(gql`
-    mutation addAssortmentLink($parentAssortmentId: ID!, $childAssortmentId: ID!) {
-      addAssortmentLink(parentAssortmentId: $parentAssortmentId, childAssortmentId: $childAssortmentId) {
-        _id
+  graphql(
+    gql`
+      mutation addAssortmentLink(
+        $parentAssortmentId: ID!
+        $childAssortmentId: ID!
+      ) {
+        addAssortmentLink(
+          parentAssortmentId: $parentAssortmentId
+          childAssortmentId: $childAssortmentId
+        ) {
+          _id
+        }
+      }
+    `,
+    {
+      name: 'addAssortmentLink',
+      options: {
+        refetchQueries: ['assortment', 'assortmentLinks']
       }
     }
-  `, {
-    name: 'addAssortmentLink',
-    options: {
-      refetchQueries: [
-        'assortment',
-        'assortmentLinks',
-      ],
-    },
-  }),
+  ),
   withFormSchema({
     parentAssortmentId: {
       type: String,
       label: null,
-      optional: false,
+      optional: false
     },
     childAssortmentId: {
       type: String,
       optional: false,
-      label: 'Subassortment',
-    },
+      label: 'Subassortment'
+    }
   }),
   withHandlers({
     onSubmitSuccess: () => () => {
       toast('Linked', { type: toast.TYPE.SUCCESS }); // eslint-disable-line
     },
-    onSubmit: ({
-      addAssortmentLink,
-    }) => ({ parentAssortmentId, childAssortmentId }) => addAssortmentLink({
-      variables: {
-        parentAssortmentId,
-        childAssortmentId,
-      },
-    }),
+    onSubmit: ({ addAssortmentLink }) => ({
+      parentAssortmentId,
+      childAssortmentId
+    }) =>
+      addAssortmentLink({
+        variables: {
+          parentAssortmentId,
+          childAssortmentId
+        }
+      })
   }),
   withFormErrorHandlers,
-  mapProps(({
-    parentAssortmentId, addAssortmentLink, data: { assortments = [] }, ...rest
-  }) => ({
-    assortments: [{ label: 'Select', value: false }].concat(assortments.map(assortment => ({
-      label: assortment.texts.title,
-      value: assortment._id,
-    })).filter(({ value }) => (parentAssortmentId !== value))),
-    model: {
+  mapProps(
+    ({
       parentAssortmentId,
-    },
-    ...rest,
-  })),
+      addAssortmentLink,
+      data: { assortments = [] },
+      ...rest
+    }) => ({
+      assortments: [{ label: 'Select', value: false }].concat(
+        assortments
+          .map(assortment => ({
+            label: assortment.texts.title,
+            value: assortment._id
+          }))
+          .filter(({ value }) => parentAssortmentId !== value)
+      ),
+      model: {
+        parentAssortmentId
+      },
+      ...rest
+    })
+  )
 )(FormNewAssortmentLink);

@@ -5,10 +5,12 @@ import App from '../../components/App';
 import FormEditCountry from '../../components/countries/FormEditCountry';
 import connectApollo from '../../lib/connectApollo';
 
-export default connectApollo(withRouter(({ router, ...rest }) => (
-  <App {...rest}>
-    <Container>
-      <FormEditCountry countryId={router.query._id} />
-    </Container>
-  </App>
-)));
+export default connectApollo(
+  withRouter(({ router, ...rest }) => (
+    <App {...rest}>
+      <Container>
+        <FormEditCountry countryId={router.query._id} />
+      </Container>
+    </App>
+  ))
+);

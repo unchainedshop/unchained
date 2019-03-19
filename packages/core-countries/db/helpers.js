@@ -4,10 +4,7 @@ import countryI18n from 'i18n-iso-countries';
 import { Currencies } from 'meteor/unchained:core-currencies';
 import { Countries } from './collections';
 
-
-const {
-  CURRENCY,
-} = process.env;
+const { CURRENCY } = process.env;
 
 Countries.helpers({
   defaultCurrency() {
@@ -21,7 +18,7 @@ Countries.helpers({
   },
   flagEmoji() {
     return countryFlags.countryCode(this.isoCode).emoji || '❌';
-  },
+  }
 });
 
 Countries.resolveDefaultCurrencyCode = ({ isoCode }) => {
