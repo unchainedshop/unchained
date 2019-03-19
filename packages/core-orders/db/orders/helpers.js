@@ -49,18 +49,6 @@ Users.helpers({
     }
     return null;
   },
-  initCart({ countryContext }) {
-    return (
-      this.cart({ countryContext }) ||
-      Orders.createOrder({
-        userId: this._id,
-        currency: Countries.resolveDefaultCurrencyCode({
-          isoCode: countryContext
-        }),
-        countryCode: countryContext
-      })
-    );
-  },
   orders() {
     return Orders.find(
       { userId: this._id },

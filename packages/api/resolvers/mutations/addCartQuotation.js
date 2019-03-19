@@ -1,14 +1,10 @@
 import { log } from 'meteor/unchained:core-logger';
 import { Quotations, QuotationStatus } from 'meteor/unchained:core-quotations';
-import { Users } from 'meteor/unchained:core-users';
-import { Orders } from 'meteor/unchained:core-orders';
 import {
   QuotationNotFoundError,
-  UserNotFoundError,
-  QuotationWrongStatusError,
-  OrderNotFoundError,
-  OrderWrongStatusError
+  QuotationWrongStatusError
 } from '../../errors';
+import getCart from '../../getCart';
 
 export default function(
   root,
@@ -26,21 +22,7 @@ export default function(
   if (quotation.status !== QuotationStatus.PROPOSED) {
     throw new QuotationWrongStatusError({ data: { status: quotation.status } });
   }
-  if (orderId) {
-    const order = Orders.findOne({ _id: orderId });
-    if (!order) throw new OrderNotFoundError({ orderId });
-    if (!order.isCart()) {
-      throw new OrderWrongStatusError({ data: { status: order.status } });
-    }
-    return order.addQuotationItem({
-      quotation,
-      quantity,
-      configuration
-    });
-  }
-  const user = Users.findOne({ _id: userId });
-  if (!user) throw new UserNotFoundError({ userId });
-  const cart = user.initCart({ countryContext });
+  const cart = getCart({ orderId, userId, countryContext });
   return cart.addQuotationItem({
     quotation,
     quantity,
