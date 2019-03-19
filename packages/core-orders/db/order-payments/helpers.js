@@ -31,9 +31,9 @@ OrderPayments.helpers({
   normalizedStatus() {
     return objectInvert(OrderPaymentStatus)[this.status || null];
   },
-  init(order) {
+  init() {
     const provider = this.provider();
-    const context = provider.defaultContext({ order });
+    const context = provider.defaultContext();
     return this.updateContext(context);
   },
   updateContext(context) {
@@ -62,7 +62,13 @@ OrderPayments.helpers({
   charge(paymentContext, order) {
     if (this.status !== OrderPaymentStatus.OPEN) return;
     const provider = this.provider();
-    const arbitraryResponseData = provider.charge(paymentContext, order);
+    const arbitraryResponseData = provider.charge({
+      transactionContext: {
+        ...(paymentContext || {}),
+        ...this.context
+      },
+      order
+    });
     if (arbitraryResponseData) {
       this.setStatus(
         OrderPaymentStatus.PAID,
@@ -105,8 +111,7 @@ OrderPayments.createOrderPayment = ({
     paymentProviderId
   });
   const orderPayment = OrderPayments.findOne({ _id: orderPaymentId });
-  const order = Orders.findOne({ _id: orderId });
-  return orderPayment.init(order);
+  return orderPayment.init();
 };
 
 OrderPayments.updateCalculation = ({ orderId, paymentId }) => {

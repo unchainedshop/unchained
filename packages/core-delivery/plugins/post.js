@@ -21,7 +21,7 @@ class Post extends DeliveryAdapter {
     return null;
   }
 
-  async estimatedDeliveryThroughput() { // eslint-disable-line
+  async estimatedDeliveryThroughput(warehousingThroughputTime) { // eslint-disable-line
     return 0;
   }
 }

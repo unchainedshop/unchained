@@ -31,11 +31,11 @@ export class DeliveryAdapter {
     return false;
   }
 
-  async estimatedDeliveryThroughput() { // eslint-disable-line
+  async estimatedDeliveryThroughput(warehousingThroughputTime) { // eslint-disable-line
     return 0;
   }
 
-  async send() {  // eslint-disable-line
+  async send(transactionContext) {  // eslint-disable-line
     // if you return true, the status will be changed to DELIVERED
 
     // if you return false, the order delivery status stays the
@@ -87,20 +87,20 @@ export class DeliveryDirector {
     }
   }
 
-  async estimatedDeliveryThroughput(context) {
+  async estimatedDeliveryThroughput({ warehousingThroughputTime, ...context }) {
     try {
       const adapter = this.interface(context);
-      return adapter.estimatedDeliveryThroughput();
+      return adapter.estimatedDeliveryThroughput(warehousingThroughputTime);
     } catch (error) {
       console.warn(error); // eslint-disable-line
       return null;
     }
   }
 
-  async send(context) {
+  async send({ transactionContext, ...context }) {
     const adapter = this.interface(context);
-    const result = adapter.send();
-    return result;
+    const sendResult = await adapter.send(transactionContext);
+    return sendResult;
   }
 
   isActive(context) {

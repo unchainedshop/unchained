@@ -24,7 +24,7 @@ class TokenDistribution extends DeliveryAdapter {
     return null;
   }
 
-  async send() {
+  async send(transactionContext) { // eslint-disable-line
     const { order } = this.context;
     const payment = order.payment();
     const icoEnded = false;
@@ -39,7 +39,7 @@ class TokenDistribution extends DeliveryAdapter {
     return false;
   }
 
-  async estimatedDeliveryThroughput() { // eslint-disable-line
+  async estimatedDeliveryThroughput(warehousingThroughputTime) { // eslint-disable-line
     return 0;
   }
 }

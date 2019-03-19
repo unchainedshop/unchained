@@ -3,46 +3,42 @@ import { Promise } from 'meteor/promise';
 import { PaymentDirector } from '../director';
 import { PaymentProviders } from './collections';
 
+const emptyContext = {};
+
 PaymentProviders.helpers({
   transformContext(key, value) {
     return value;
   },
-  defaultContext({ order }) { //eslint-disable-line
-    return {};
+  defaultContext(context) {
+    return context || emptyContext;
   },
   interface() {
     return new PaymentDirector(this).interfaceClass();
   },
-  configurationError(order) {
-    return new PaymentDirector(this).configurationError({
-      order
-    });
+  configurationError() {
+    return new PaymentDirector(this).configurationError();
   },
-  isActive(order) {
-    return new PaymentDirector(this).isActive({
-      order
-    });
+  isActive(context) {
+    return new PaymentDirector(this).isActive(this.defaultContext(context));
   },
-  isPayLaterAllowed(order) {
-    return new PaymentDirector(this).isPayLaterAllowed({
-      order
-    });
-  },
-  run(command, args, order) {
-    return Promise.await(
-      new PaymentDirector(this).run({
-        command,
-        args,
-        order
-      })
+  isPayLaterAllowed(context) {
+    return new PaymentDirector(this).isPayLaterAllowed(
+      this.defaultContext(context)
     );
   },
-  charge(payment, order) {
+  run(command, ...args) {
     return Promise.await(
-      new PaymentDirector(this).charge({
-        payment,
-        order
-      })
+      new PaymentDirector(this).run(
+        this.defaultContext({
+          command,
+          args
+        })
+      )
+    );
+  },
+  charge(context) {
+    return Promise.await(
+      new PaymentDirector(this).charge(this.defaultContext(context))
     );
   }
 });

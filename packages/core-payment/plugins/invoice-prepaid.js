@@ -29,7 +29,7 @@ class Invoice extends PaymentAdapter {
     return false;
   }
 
-  async charge() {  // eslint-disable-line
+  async charge(transactionContext) {  // eslint-disable-line
     return false;
   }
 }

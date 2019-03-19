@@ -44,7 +44,7 @@ class Bitcoin extends PaymentAdapter {
     throw new Error('Could not retrieve a public key');
   }
 
-  async charge() { // eslint-disable-line
+  async charge(transactionContext) { // eslint-disable-line
     // throw new Error('Could not retrieve a public key');
     return true;
   }
