@@ -4,7 +4,7 @@ Package.describe({
   version: '0.24.0',
   summary: 'Unchained Engine Core: Orders',
   git: 'https://github.com/unchainedshop/unchained',
-  documentation: 'README.md',
+  documentation: 'README.md'
 });
 
 Package.onUse(api => {

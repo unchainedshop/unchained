@@ -6,7 +6,10 @@ import { Users } from 'meteor/unchained:core-users';
 import { Products } from 'meteor/unchained:core-products';
 import { Countries } from 'meteor/unchained:core-countries';
 import { Logs, log } from 'meteor/unchained:core-logger';
-import { MessagingDirector, MessagingType } from 'meteor/unchained:core-messaging';
+import {
+  MessagingDirector,
+  MessagingType
+} from 'meteor/unchained:core-messaging';
 import { Quotations } from './collections';
 import { QuotationDocuments } from '../quotation-documents/collections';
 import { QuotationStatus } from './schema';
@@ -60,22 +63,22 @@ Quotations.helpers({
   },
   verify({ quotationContext } = {}, options) {
     if (this.status !== QuotationStatus.REQUESTED) return this;
-    return this
-      .setStatus(QuotationStatus.PROCESSING, 'verified elligibility manually')
+    return this.setStatus(
+      QuotationStatus.PROCESSING,
+      'verified elligibility manually'
+    )
       .process({ quotationContext })
       .sendStatusToCustomer(options);
   },
   reject({ quotationContext } = {}, options) {
     if (this.status === QuotationStatus.FULLFILLED) return this;
-    return this
-      .setStatus(QuotationStatus.REJECTED, 'rejected manually')
+    return this.setStatus(QuotationStatus.REJECTED, 'rejected manually')
       .process({ quotationContext })
       .sendStatusToCustomer(options);
   },
   propose({ quotationContext } = {}, options) {
     if (this.status !== QuotationStatus.PROCESSING) return this;
-    return this
-      .setStatus(QuotationStatus.PROPOSED, 'proposed manually')
+    return this.setStatus(QuotationStatus.PROPOSED, 'proposed manually')
       .process({ quotationContext })
       .sendStatusToCustomer(options);
   },
@@ -95,9 +98,11 @@ Quotations.helpers({
         mailPrefix: `${this.quotationNumber}_`,
         from: EMAIL_FROM,
         to: user.email(),
-        url: `${UI_ENDPOINT}/quotation?_id=${this._id}&otp=${this.quotationNumber}`,
-        quotation: this,
-      },
+        url: `${UI_ENDPOINT}/quotation?_id=${this._id}&otp=${
+          this.quotationNumber
+        }`,
+        quotation: this
+      }
     });
     return this;
   },
@@ -109,7 +114,9 @@ Quotations.helpers({
   },
   transformItemConfiguration(itemConfiguration) {
     const controller = this.controller();
-    return Promise.await(controller.transformItemConfiguration(itemConfiguration));
+    return Promise.await(
+      controller.transformItemConfiguration(itemConfiguration)
+    );
   },
   nextStatus() {
     let { status } = this;
@@ -203,9 +210,10 @@ Quotations.helpers({
   }
 });
 
-Quotations.requestQuotation = ({
-  productId, userId, currencyCode, configuration,
-}, options) => {
+Quotations.requestQuotation = (
+  { productId, userId, currencyCode, configuration },
+  options
+) => {
   log('Create Quotation', { userId });
   const quotationId = Quotations.insert({
     created: new Date(),
@@ -219,9 +227,7 @@ Quotations.requestQuotation = ({
     countryCode: currencyCode
   });
   const quotation = Quotations.findOne({ _id: quotationId });
-  return quotation
-    .process()
-    .sendStatusToCustomer(options);
+  return quotation.process().sendStatusToCustomer(options);
 };
 
 Quotations.updateContext = ({ context, quotationId }) => {

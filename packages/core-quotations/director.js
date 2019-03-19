@@ -113,15 +113,13 @@ class QuotationDirector {
     }
   }
 
-  async transformItemConfiguration({
-    quantity,
-    configuration,
-  }) { // eslint-disable-line
+  async transformItemConfiguration({ quantity, configuration }) {
+    // eslint-disable-line
     try {
       const adapter = this.interface();
       const result = await adapter.transformItemConfiguration({
         quantity,
-        configuration,
+        configuration
       });
       return result;
     } catch (error) {

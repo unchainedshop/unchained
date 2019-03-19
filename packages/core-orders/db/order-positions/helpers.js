@@ -1,6 +1,9 @@
 import 'meteor/dburles:collection-helpers';
 import { log } from 'meteor/unchained:core-logger';
-import { ProductPricingDirector, ProductPricingSheet } from 'meteor/unchained:core-pricing';
+import {
+  ProductPricingDirector,
+  ProductPricingSheet
+} from 'meteor/unchained:core-pricing';
 import { WarehousingProviders } from 'meteor/unchained:core-warehousing';
 import { Products } from 'meteor/unchained:core-products';
 import { Quotations } from 'meteor/unchained:core-quotations';
@@ -21,7 +24,7 @@ OrderPositions.helpers({
   },
   quotation() {
     return Quotations.findOne({
-      _id: this.quotationId,
+      _id: this.quotationId
     });
   },
   pricing() {
@@ -72,15 +75,12 @@ OrderPositions.helpers({
   }
 });
 
-OrderPositions.upsertProductPosition = ({
-  product,
-  order,
-  ...options
-}) => OrderPositions.upsertPosition({
-  ...options,
-  productId: product._id,
-  orderId: order._id,
-});
+OrderPositions.upsertProductPosition = ({ product, order, ...options }) =>
+  OrderPositions.upsertPosition({
+    ...options,
+    productId: product._id,
+    orderId: order._id
+  });
 
 OrderPositions.upsertPosition = ({
   orderId,
@@ -92,13 +92,13 @@ OrderPositions.upsertPosition = ({
   const existingPosition = OrderPositions.findOne({
     orderId,
     configuration,
-    ...scope,
+    ...scope
   });
   if (existingPosition) {
     return OrderPositions.updatePosition({
       orderId,
       positionId: existingPosition._id,
-      quantity: existingPosition.quantity + quantity,
+      quantity: existingPosition.quantity + quantity
     });
   }
   return OrderPositions.createPosition({
@@ -106,14 +106,24 @@ OrderPositions.upsertPosition = ({
     quantity,
     configuration,
     context,
-    ...scope,
+    ...scope
   });
 };
 
 OrderPositions.createPosition = ({
-  orderId, productId, quotationId, quantity, configuration, ...rest
+  orderId,
+  productId,
+  quotationId,
+  quantity,
+  configuration,
+  ...rest
 }) => {
-  log(`Create ${quantity}x Position with Product ${productId} ${quotationId ? ` (${quotationId})` : ''}`, { orderId });
+  log(
+    `Create ${quantity}x Position with Product ${productId} ${
+      quotationId ? ` (${quotationId})` : ''
+    }`,
+    { orderId }
+  );
   const positionId = OrderPositions.insert({
     ...rest,
     orderId,

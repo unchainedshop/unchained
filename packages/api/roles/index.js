@@ -74,7 +74,7 @@ export const actions = [
   'viewQuotations',
   'viewQuotation',
   'manageQuotations',
-  'answerQuotation',
+  'answerQuotation'
 ].reduce((oldValue, actionValue) => {
   const newValue = oldValue;
   newValue[actionValue] = actionValue;

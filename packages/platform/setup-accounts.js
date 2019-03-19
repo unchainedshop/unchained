@@ -107,7 +107,7 @@ function createGuestOptions(email) {
     username: guestname,
     email: email || `${guestname}@localhost`,
     guest: true,
-    profile: {},
+    profile: {}
   };
 }
 
@@ -121,15 +121,16 @@ Accounts.registerLoginHandler('guest', options => {
   };
 });
 
-Accounts.validateLoginAttempt(({
-  type, allowed, user,
-}) => {
+Accounts.validateLoginAttempt(({ type, allowed, user }) => {
   if (type !== 'guest' && allowed && user.guest) {
-    Users.update({ _id: user._id }, {
-      $set: {
-        guest: false,
-      },
-    });
+    Users.update(
+      { _id: user._id },
+      {
+        $set: {
+          guest: false
+        }
+      }
+    );
   }
   return true;
 });

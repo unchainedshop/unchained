@@ -172,21 +172,20 @@ Orders.helpers({
     }).fetch();
   },
   addQuotationItem({ quotation, ...quotationItemConfiguration }) {
-    const { quantity, configuration } = quotation
-      .transformItemConfiguration(quotationItemConfiguration);
+    const { quantity, configuration } = quotation.transformItemConfiguration(
+      quotationItemConfiguration
+    );
     const product = quotation.product();
     return this.addProductItem({
       product,
       quantity,
       configuration,
       origin: {
-        quotationId: quotation._id,
-      },
+        quotationId: quotation._id
+      }
     });
   },
-  addProductItem({
-    product, quantity, configuration, origin,
-  }) {
+  addProductItem({ product, quantity, configuration, origin }) {
     return OrderPositions.upsertProductPosition({
       order: this,
       product: product.resolveOrderableProduct({ quantity, configuration }),
@@ -195,9 +194,9 @@ Orders.helpers({
       context: {
         origin: {
           productId: product._id,
-          ...origin,
-        },
-      },
+          ...origin
+        }
+      }
     });
   },
   user() {
@@ -224,7 +223,7 @@ Orders.helpers({
   updateBillingAddress(rawBillingAddress) {
     const billingAddress = {
       ...(rawBillingAddress || {}),
-      countryCode: this.countryCode,
+      countryCode: this.countryCode
     };
     Users.updateLastBillingAddress({
       userId: this.userId,
@@ -281,13 +280,16 @@ Orders.helpers({
       .processOrder({ paymentContext, deliveryContext })
       .sendOrderConfirmationToCustomer({ language });
   },
-  confirm({ orderContext, paymentContext, deliveryContext }, { localeContext }) {
+  confirm(
+    { orderContext, paymentContext, deliveryContext },
+    { localeContext }
+  ) {
     if (this.status !== OrderStatus.PENDING) return this;
     const lastUserLanguage = this.user().language();
-    const language = (localeContext && localeContext.normalized)
-      || (lastUserLanguage && lastUserLanguage.isoCode);
-    return this
-      .updateContext(orderContext)
+    const language =
+      (localeContext && localeContext.normalized) ||
+      (lastUserLanguage && lastUserLanguage.isoCode);
+    return this.updateContext(orderContext)
       .setStatus(OrderStatus.CONFIRMED, 'confirmed manually')
       .processOrder({ paymentContext, deliveryContext })
       .sendOrderConfirmationToCustomer({ language });

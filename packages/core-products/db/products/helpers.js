@@ -355,14 +355,18 @@ Products.helpers({
     if (this.type === ProductTypes.ConfigurableProduct) {
       const variations = this.variations();
       const vectors = configuration.filter(({ key: configurationKey }) => {
-        const isKeyEqualsVariationKey = Boolean(variations
-          .filter(({ key: variationKey }) => variationKey === configurationKey)
-          .length);
+        const isKeyEqualsVariationKey = Boolean(
+          variations.filter(
+            ({ key: variationKey }) => variationKey === configurationKey
+          ).length
+        );
         return isKeyEqualsVariationKey;
       });
       const variants = this.proxyProducts(vectors);
       if (variants.length !== 1) {
-        throw new Error('Too many variants left, configuration not distinct enough');
+        throw new Error(
+          'Too many variants left, configuration not distinct enough'
+        );
       }
       return variants[0];
     }

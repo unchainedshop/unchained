@@ -24,14 +24,11 @@ const checkoutWithPotentialErrors = (cart, context, options, userId) => {
   }
 };
 
-export default function (root, {
-  orderId,
-  ...transactionContext
-}, {
-  userId,
-  countryContext,
-  localeContext,
-}) {
+export default function(
+  root,
+  { orderId, ...transactionContext },
+  { userId, countryContext, localeContext }
+) {
   log('mutation checkoutCart', { orderId, userId });
   if (orderId) {
     const order = Orders.findOne({ _id: orderId });
@@ -39,15 +36,25 @@ export default function (root, {
     if (!order.isCart()) {
       throw new OrderWrongStatusError({ data: { status: order.status } });
     }
-    return checkoutWithPotentialErrors(order, transactionContext, {
-      localeContext,
-    }, userId);
+    return checkoutWithPotentialErrors(
+      order,
+      transactionContext,
+      {
+        localeContext
+      },
+      userId
+    );
   }
   const user = Users.findOne({ _id: userId });
   if (!user) throw new UserNotFoundError({ data: { userId } });
   const cart = user.cart({ countryContext });
   if (!cart) throw new UserNoCartError({ data: { userId } });
-  return checkoutWithPotentialErrors(cart, transactionContext, {
-    localeContext,
-  }, userId);
+  return checkoutWithPotentialErrors(
+    cart,
+    transactionContext,
+    {
+      localeContext
+    },
+    userId
+  );
 }

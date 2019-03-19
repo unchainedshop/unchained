@@ -4,10 +4,10 @@ Package.describe({
   version: '0.24.0',
   summary: 'Unchained Engine Core: Warehousing',
   git: 'https://github.com/unchainedshop/unchained',
-  documentation: 'README.md',
+  documentation: 'README.md'
 });
 
-Package.onUse((api) => {
+Package.onUse(api => {
   api.versionsFrom('1.8');
   api.use('ecmascript');
   api.use('mongo');

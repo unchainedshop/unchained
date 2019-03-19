@@ -3,14 +3,14 @@ Package.describe({
   version: '0.24.0',
   summary: 'Unchained Engine Core: Files',
   git: 'https://github.com/unchainedshop/unchained',
-  documentation: 'README.md',
+  documentation: 'README.md'
 });
 
 Npm.depends({
   'lodash.merge': '4.6.1'
 });
 
-Package.onUse((api) => {
+Package.onUse(api => {
   api.versionsFrom('1.8.0.2');
   api.use('ostrio:files@1.9.11');
   api.use('ecmascript');

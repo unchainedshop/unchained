@@ -249,6 +249,5 @@ export default {
   requestQuotation: acl(actions.requestQuotation)(requestQuotation),
   rejectQuotation: acl(actions.answerQuotation)(rejectQuotation),
   verifyQuotation: acl(actions.manageQuotations)(verifyQuotation),
-  makeQuotationProposal: acl(actions.manageQuotations)(makeQuotationProposal),
-
+  makeQuotationProposal: acl(actions.manageQuotations)(makeQuotationProposal)
 };
