@@ -29,24 +29,18 @@ const OrderList = ({
             <a href={`/orders/view?_id=${order._id}`}>
               {order.orderNumber ? (
                 <>
-                  <b>
-                    {order.orderNumber}
-                  </b>
+                  <b>{order.orderNumber}</b>
                   <small>
                     &nbsp;(
-                    {order._id}
-                    )
+                    {order._id})
                   </small>
                 </>
               ) : (
                 <>
-                  <b>
-                    Cart
-                  </b>
+                  <b>Cart</b>
                   <small>
-                  &nbsp;(
-                    {order._id}
-                  )
+                    &nbsp;(
+                    {order._id})
                   </small>
                 </>
               )}

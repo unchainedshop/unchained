@@ -40,15 +40,9 @@ const OrderHeader = ({
 }) => [
   <Menu fluid attached="top" borderless key="header-title">
     <Menu.Item header>
-      Order
-      {' '}
-      {orderNumber || ''}
+      Order {orderNumber || ''}
       &nbsp;
-      <small>
-      (
-        {_id}
-      )
-      </small>
+      <small>({_id})</small>
     </Menu.Item>
     <Menu.Item>
       <Label color={statusColor} horizontal>
@@ -86,17 +80,13 @@ const OrderHeader = ({
             <List.Item>
               <List.Icon name="money" />
               <List.Content>
-                Currency:
-                {' '}
-                {currency && currency.isoCode}
+                Currency: {currency && currency.isoCode}
               </List.Content>
             </List.Item>
             <List.Item>
               <List.Icon name="world" />
               <List.Content>
-                Shop:
-                {' '}
-                {country && `${country.flagEmoji} (${country.isoCode})`}
+                Shop: {country && `${country.flagEmoji} (${country.isoCode})`}
               </List.Content>
             </List.Item>
             {user && (
