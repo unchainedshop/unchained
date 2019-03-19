@@ -57,10 +57,12 @@ unchained:core-documents@0.25.0
 unchained:core-files@0.25.0
 unchained:core-languages@0.25.0
 unchained:core-logger@0.25.0
+unchained:core-messaging@0.25.0
 unchained:core-orders@0.25.0
 unchained:core-payment@0.25.0
 unchained:core-pricing@0.25.0
 unchained:core-products@0.25.0
+unchained:core-quotations@0.25.0
 unchained:core-settings@0.25.0
 unchained:core-users@0.25.0
 unchained:core-warehousing@0.25.0
