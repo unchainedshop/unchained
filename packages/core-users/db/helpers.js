@@ -24,9 +24,7 @@ Users.helpers({
     return !!this.guest;
   },
   isInitialPassword() {
-    const {
-      password: { initial } = {},
-    } = this.services || {};
+    const { password: { initial } = {} } = this.services || {};
     return !!initial;
   },
   isEmailVerified() {
@@ -36,12 +34,15 @@ Users.helpers({
     return Languages.findOne({ isoCode: this.locale(options).language });
   },
   country(options) {
-    return Countries.findOne({ isoCode: this.locale(options).country.toUpperCase() });
+    return Countries.findOne({
+      isoCode: this.locale(options).country.toUpperCase()
+    });
   },
   locale({ localeContext } = {}) {
-    const locale = localeContext
-      || new Locale(this.lastLogin && this.lastLogin.locale)
-      || getFallbackLocale();
+    const locale =
+      localeContext ||
+      new Locale(this.lastLogin && this.lastLogin.locale) ||
+      getFallbackLocale();
     return locale;
   },
   avatar() {
@@ -60,15 +61,22 @@ Users.helpers({
     return emails && emails[0].address;
   },
   updatePassword({ password, ...options } = {}) {
-    const newPassword = password || uuid().split('-').pop();
+    const newPassword =
+      password ||
+      uuid()
+        .split('-')
+        .pop();
     Accounts.setPassword(this._id, newPassword, options);
     if (!password) {
-      Users.update({ _id: this._id }, {
-        $set: {
-          'services.password.initial': true,
-          updated: new Date(),
-        },
-      });
+      Users.update(
+        { _id: this._id },
+        {
+          $set: {
+            'services.password.initial': true,
+            updated: new Date()
+          }
+        }
+      );
     }
     const user = Users.findOne({ _id: this._id });
     user.password = newPassword;
@@ -132,8 +140,10 @@ Users.updateLastBillingAddress = ({ userId, lastBillingAddress }) => {
   if (!profile.displayName || isGuest) {
     modifier.$set['profile.displayName'] = [
       lastBillingAddress.firstName,
-      lastBillingAddress.lastName,
-    ].filter(Boolean).join(' ');
+      lastBillingAddress.lastName
+    ]
+      .filter(Boolean)
+      .join(' ');
   }
   return Users.update({ _id: userId }, modifier);
 };

@@ -38,26 +38,27 @@ export default [
       verified: Boolean!
     }
 
-type User {
-  _id: ID!
-  email: String
-  username: String
-  isEmailVerified: Boolean!
-  isGuest: Boolean!
-  isInitialPassword: Boolean!
-  name: String!
-  avatar: Media
-  profile: UserProfile
-  language: Language
-  country: Country
-  lastBillingAddress: Address
-  lastDeliveryAddress: Address
-  emails: [UserEmail!]
-  roles: [String!]
-  tags: [String!]
-  cart: Order
-  orders(includeDrafts: Boolean = false): [Order!]!
-  quotations: [Quotation!]!
-  logs(offset: Int, limit: Int): [Log!]!
-}
-`];
+    type User {
+      _id: ID!
+      email: String
+      username: String
+      isEmailVerified: Boolean!
+      isGuest: Boolean!
+      isInitialPassword: Boolean!
+      name: String!
+      avatar: Media
+      profile: UserProfile
+      language: Language
+      country: Country
+      lastBillingAddress: Address
+      lastDeliveryAddress: Address
+      emails: [UserEmail!]
+      roles: [String!]
+      tags: [String!]
+      cart: Order
+      orders(includeDrafts: Boolean = false): [Order!]!
+      quotations: [Quotation!]!
+      logs(offset: Int, limit: Int): [Log!]!
+    }
+  `
+];

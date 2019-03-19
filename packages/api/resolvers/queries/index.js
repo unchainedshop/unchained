@@ -90,5 +90,5 @@ export default {
   productReview: acl(actions.manageProductReviews)(productReview),
   productReviews: acl(actions.manageProductReviews)(productReviews),
   quotation: acl(actions.viewQuotation)(quotation),
-  quotations: acl(actions.viewQuotations)(quotations),
+  quotations: acl(actions.viewQuotations)(quotations)
 };

@@ -102,13 +102,15 @@ const startUnchainedServer = options => {
   server.applyMiddleware({
     app: WebApp.connectHandlers,
     path: '/graphql',
-    cors: !originFn ? undefined : {
-      origin: originFn,
-      credentials: true,
-    },
+    cors: !originFn
+      ? undefined
+      : {
+          origin: originFn,
+          credentials: true
+        },
     bodyParserConfig: {
-      limit: '5mb',
-    },
+      limit: '5mb'
+    }
   });
 
   WebApp.connectHandlers.use('/graphql', (req, res) => {

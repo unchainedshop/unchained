@@ -30,8 +30,9 @@ DeliveryProviders.helpers({
     );
   },
   isAutoReleaseAllowed(context) {
-    return new DeliveryDirector(this)
-      .isAutoReleaseAllowed(this.defaultContext(context));
+    return new DeliveryDirector(this).isAutoReleaseAllowed(
+      this.defaultContext(context)
+    );
   },
   send(context) {
     return Promise.await(
