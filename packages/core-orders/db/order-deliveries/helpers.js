@@ -31,9 +31,9 @@ OrderDeliveries.helpers({
   normalizedStatus() {
     return objectInvert(OrderDeliveryStatus)[this.status || null];
   },
-  init(order) {
+  init() {
     const provider = this.provider();
-    const context = provider.defaultContext({ order });
+    const context = provider.defaultContext();
     return this.updateContext(context);
   },
   updateContext(context) {
@@ -62,16 +62,14 @@ OrderDeliveries.helpers({
     if (this.status !== OrderDeliveryStatus.OPEN) return;
     const provider = this.provider();
     const address = this.context.address || order.billingAddress || {};
-    const context = {
-      delivery: {
+    const arbitraryResponseData = provider.send({
+      transactionContext: {
         ...(deliveryContext || {}),
         ...this.context,
         address
       },
       order
-    };
-
-    const arbitraryResponseData = provider.send(context);
+    });
     if (arbitraryResponseData) {
       this.setStatus(
         OrderDeliveryStatus.DELIVERED,
@@ -110,8 +108,7 @@ OrderDeliveries.createOrderDelivery = ({
     deliveryProviderId
   });
   const orderDelivery = OrderDeliveries.findOne({ _id: orderDeliveryId });
-  const order = Orders.findOne({ _id: orderId });
-  return orderDelivery.init(order);
+  return orderDelivery.init();
 };
 
 OrderDeliveries.updateCalculation = ({ orderId, deliveryId }) => {

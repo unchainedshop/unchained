@@ -50,6 +50,7 @@ export default [
       created: Date!
       expires: Date
       updated: Date
+      isExpired(referenceDate: Date): Boolean
       quotationNumber: String
       fullfilled: Date
       rejected: Date

@@ -123,9 +123,9 @@ export default [
       ): Order!
 
       """
-      Remove all items of an open order (cart)
+      Remove all items of an open order (cart) if possible
       """
-      emptyCart(orderId: ID): Order!
+      emptyCart(orderId: ID): Order
 
       """
       Process the checkout (automatically charge & deliver if possible), the cart will get

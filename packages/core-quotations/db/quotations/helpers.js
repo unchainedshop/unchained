@@ -82,6 +82,12 @@ Quotations.helpers({
       .process({ quotationContext })
       .sendStatusToCustomer(options);
   },
+  fullfill({ quotationContext, info } = {}, options) {
+    if (this.status !== QuotationStatus.PROPOSED) return this;
+    return this.setStatus(QuotationStatus.FULLFILLED, JSON.stringify(info))
+      .process({ quotationContext })
+      .sendStatusToCustomer(options);
+  },
   sendStatusToCustomer(options) {
     const user = this.user();
     const locale = user.locale(options).normalized;
@@ -113,36 +119,36 @@ Quotations.helpers({
     return this.setStatus(this.nextStatus(), 'quotation processed');
   },
   transformItemConfiguration(itemConfiguration) {
-    const controller = this.controller();
+    const director = this.director();
     return Promise.await(
-      controller.transformItemConfiguration(itemConfiguration)
+      director.transformItemConfiguration(itemConfiguration)
     );
   },
   nextStatus() {
     let { status } = this;
-    const controller = this.controller();
+    const director = this.director();
 
     if (status === QuotationStatus.REQUESTED || !status) {
-      if (!Promise.await(controller.isManualRequestVerificationNeeded())) {
+      if (!Promise.await(director.isManualRequestVerificationNeeded())) {
         status = QuotationStatus.PROCESSING;
       }
     }
     if (status === QuotationStatus.PROCESSING) {
-      if (!Promise.await(controller.isManualProposalNeeded())) {
+      if (!Promise.await(director.isManualProposalNeeded())) {
         status = QuotationStatus.PROPOSED;
       }
     }
     return status;
   },
   buildProposal(quotationContext) {
-    const controller = this.controller();
-    const proposal = Promise.await(controller.quote(quotationContext));
+    const director = this.director();
+    const proposal = Promise.await(director.quote(quotationContext));
     return Quotations.updateProposal({
       ...proposal,
       quotationId: this._id
     });
   },
-  controller() {
+  director() {
     const director = new QuotationDirector(this);
     return director;
   },
@@ -207,6 +213,15 @@ Quotations.helpers({
       }
     }).fetch();
     return logs;
+  },
+  isProposalValid() {
+    return this.status === QuotationStatus.PROPOSED && !this.isExpired();
+  },
+  isExpired(referenceDate) {
+    const now = new Date() || referenceDate;
+    const expiryDate = new Date(this.expires);
+    const isExpired = now.getTime() > expiryDate.getTime();
+    return isExpired;
   }
 });
 
@@ -301,12 +316,16 @@ Quotations.updateStatus = ({ status, quotationId, info = '' }) => {
       if (!quotation.fullfilled) {
         modifier.$set.fullfilled = date;
       }
+      modifier.$set.expires = new Date();
     case QuotationStatus.PROPOSED: // eslint-disable-line no-fallthrough
       isShouldUpdateDocuments = true;
     case QuotationStatus.PROCESSING: // eslint-disable-line no-fallthrough
       if (!quotation.quotationNumber) {
         modifier.$set.quotationNumber = Quotations.newQuotationNumber();
       }
+      break;
+    case QuotationStatus.REJECTED:
+      modifier.$set.expires = new Date();
       break;
     default:
       break;

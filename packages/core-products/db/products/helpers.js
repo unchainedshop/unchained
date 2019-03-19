@@ -352,6 +352,7 @@ Products.helpers({
     );
   },
   resolveOrderableProduct({ configuration }) {
+    this.checkIsActive();
     if (this.type === ProductTypes.ConfigurableProduct) {
       const variations = this.variations();
       const vectors = configuration.filter(({ key: configurationKey }) => {
@@ -365,12 +366,25 @@ Products.helpers({
       const variants = this.proxyProducts(vectors);
       if (variants.length !== 1) {
         throw new Error(
-          'Too many variants left, configuration not distinct enough'
+          'There needs to be exactly one variant left when adding a ConfigurableProduct to the cart, configuration not distinct enough'
         );
       }
-      return variants[0];
+      const resolvedProduct = variants[0];
+      resolvedProduct.checkIsActive();
+      return resolvedProduct;
     }
     return this;
+  },
+  checkIsActive() {
+    if (!this.isActive()) {
+      throw new Error(
+        'This product is not available for ordering at the moment'
+      );
+    }
+  },
+  isActive() {
+    if (this.status === ProductStatus.ACTIVE) return true;
+    return false;
   },
   reviews({ limit, offset }) {
     return ProductReviews.findReviews(

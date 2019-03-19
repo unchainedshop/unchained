@@ -180,23 +180,21 @@ Orders.helpers({
       product,
       quantity,
       configuration,
-      origin: {
-        quotationId: quotation._id
-      }
+      quotationId: quotation._id
     });
   },
-  addProductItem({ product, quantity, configuration, origin }) {
-    return OrderPositions.upsertProductPosition({
-      order: this,
-      product: product.resolveOrderableProduct({ quantity, configuration }),
+  addProductItem({ product, quantity, configuration, ...rest }) {
+    const resolvedProduct = product.resolveOrderableProduct({
+      quantity,
+      configuration
+    });
+    return OrderPositions.upsertPosition({
+      orderId: this._id,
+      productId: resolvedProduct._id,
+      originalProductId: product._id,
       quantity,
       configuration,
-      context: {
-        origin: {
-          productId: product._id,
-          ...origin
-        }
-      }
+      ...rest
     });
   },
   user() {
@@ -253,25 +251,30 @@ Orders.helpers({
   totalQuantity() {
     return this.items().reduce((oldValue, item) => oldValue + item.quantity, 0);
   },
-  missingInputDataForCheckout() {
-    const errors = [];
-    if (!this.contact) errors.push(new Error('Contact data not provided'));
-    if (!this.billingAddress)
-      errors.push(new Error('Billing address not provided'));
-    if (this.totalQuantity() === 0) errors.push(new Error('No items in cart'));
-    if (!this.delivery()) errors.push('No delivery provider selected');
-    if (!this.payment()) errors.push('No payment provider selected');
-    return errors;
+  itemValidationErrors() {
+    // If we came here, the checkout succeeded, so we can reserve the items
+    return this.items().flatMap(item => item.validationErrors());
+  },
+  reserveItems() {
+    // If we came here, the checkout succeeded, so we can reserve the items
+    this.items().forEach(item => item.reserve());
+
+    // TODO: we will use this function to keep a "Ordered in Flight" amount, allowing us to
+    // do live stock stuff
+    // 2. Reserve quantity at Warehousing Provider until order is CANCELLED/FULLFILLED
+    // ???
   },
   checkout(
     { paymentContext, deliveryContext, orderContext },
     { localeContext }
   ) {
-    const errors = this.missingInputDataForCheckout();
+    const errors = [
+      ...this.missingInputDataForCheckout(),
+      ...this.itemValidationErrors()
+    ].filter(Boolean);
     if (errors.length > 0) {
       throw new Error(errors[0]);
     }
-
     const lastUserLanguage = this.user().language();
     const language =
       (localeContext && localeContext.normalized) ||
@@ -293,6 +296,16 @@ Orders.helpers({
       .setStatus(OrderStatus.CONFIRMED, 'confirmed manually')
       .processOrder({ paymentContext, deliveryContext })
       .sendOrderConfirmationToCustomer({ language });
+  },
+  missingInputDataForCheckout() {
+    const errors = [];
+    if (!this.contact) errors.push(new Error('Contact data not provided'));
+    if (!this.billingAddress)
+      errors.push(new Error('Billing address not provided'));
+    if (this.totalQuantity() === 0) errors.push(new Error('No items in cart'));
+    if (!this.delivery()) errors.push('No delivery provider selected');
+    if (!this.payment()) errors.push('No payment provider selected');
+    return errors;
   },
   sendOrderConfirmationToCustomer({ language }) {
     const attachments = [];
@@ -360,6 +373,9 @@ Orders.helpers({
         this.delivery().send(deliveryContext, this);
       }
     }
+    // no matter what happens, the items need to
+    // get reserved if we came that far
+    this.reserveItems();
     return this.setStatus(this.nextStatus(), 'order processed');
   },
   setStatus(status, info) {
@@ -588,7 +604,7 @@ Orders.updateStatus = ({ status, orderId, info = '' }) => {
   const order = Orders.findOne({ _id: orderId });
   if (order.status === status) return order;
   const date = new Date();
-  let isShouldUpdateDocuments = false;
+  let shouldUpdateDocuments = false;
   const modifier = {
     $set: { status, updated: new Date() },
     $push: {
@@ -606,7 +622,7 @@ Orders.updateStatus = ({ status, orderId, info = '' }) => {
         modifier.$set.fullfilled = date;
       }
     case OrderStatus.CONFIRMED: // eslint-disable-line no-fallthrough
-      isShouldUpdateDocuments = true;
+      shouldUpdateDocuments = true;
       if (!order.confirmed) {
         modifier.$set.confirmed = date;
       }
@@ -621,7 +637,7 @@ Orders.updateStatus = ({ status, orderId, info = '' }) => {
   }
   // documents represent long-living state of orders,
   // so we only track when transitioning to confirmed or fullfilled status
-  if (isShouldUpdateDocuments) {
+  if (shouldUpdateDocuments) {
     try {
       // It's okay if this fails as it is not
       // super-vital to the

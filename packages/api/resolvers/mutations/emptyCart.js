@@ -21,6 +21,7 @@ export default function(root, { orderId }, { userId, countryContext }) {
   const user = Users.findOne({ _id: userId });
   if (!user) throw new UserNotFoundError({ userId });
   const cart = user.cart({ countryContext });
+  if (!cart) return null;
   OrderPositions.removePositions({ orderId: cart._id });
   return cart;
 }

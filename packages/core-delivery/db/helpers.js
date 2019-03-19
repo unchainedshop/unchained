@@ -21,11 +21,10 @@ DeliveryProviders.helpers({
   isActive(context) {
     return new DeliveryDirector(this).isActive(this.defaultContext(context));
   },
-  estimatedDeliveryThroughput(context, warehousingThroughputTime) {
+  estimatedDeliveryThroughput(context) {
     return Promise.await(
       new DeliveryDirector(this).estimatedDeliveryThroughput(
-        this.defaultContext(context),
-        warehousingThroughputTime
+        this.defaultContext(context)
       )
     );
   },

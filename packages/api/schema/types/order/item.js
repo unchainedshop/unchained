@@ -22,6 +22,8 @@ export default [
       product: Product!
       order: Order!
       quantity: Int!
+      originalProduct: Product!
+      quotation: Quotation
       unitPrice: Money
       total(category: OrderItemPriceCategory): Money
       discounts: [OrderItemDiscount!]
