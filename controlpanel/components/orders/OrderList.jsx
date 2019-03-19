@@ -26,18 +26,27 @@ const OrderList = ({
           <Link href={`/orders/view?_id=${order._id}`}>
             <a href={`/orders/view?_id=${order._id}`}>
               {order.orderNumber ? (
-                <React.Fragment>
+                <>
                   <b>
-                    {order.orderNumber || 'Cart'}
+                    {order.orderNumber}
                   </b>
                   <small>
-(
+                    &nbsp;(
                     {order._id}
-)
+                    )
                   </small>
-                </React.Fragment>
+                </>
               ) : (
-                order._id
+                <>
+                  <b>
+                    Cart
+                  </b>
+                  <small>
+                  &nbsp;(
+                    {order._id}
+                  )
+                  </small>
+                </>
               )}
             </a>
           </Link>

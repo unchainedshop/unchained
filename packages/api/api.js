@@ -101,6 +101,9 @@ const startUnchainedServer = (options) => {
       origin: originFn,
       credentials: true,
     },
+    bodyParserConfig: {
+      limit: '5mb',
+    },
   });
 
   WebApp.connectHandlers.use('/graphql', (req, res) => {

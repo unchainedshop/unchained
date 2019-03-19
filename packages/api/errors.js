@@ -23,3 +23,5 @@ export const OrderWrongPaymentStatusError = createError('OrderWrongPaymentStatus
 export const OrderWrongStatusError = createError('OrderWrongStatusError', 'The current status of the order does not allow this operation');
 export const OrderCheckoutError = createError('OrderCheckoutError', 'A problem occured while processing the order');
 export const PaypalConfigurationError = createError('PaypalConfigurationError', 'PayPal configuration invalid');
+export const QuotationWrongStatusError = createError('QuotationWrongStatusError', 'The current status of the quotation does not allow this operation');
+export const QuotationNotFoundError = createError('QuotationNotFoundError', 'Quotation not found');

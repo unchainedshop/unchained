@@ -302,6 +302,23 @@ Products.helpers({
         isNetPrice: false,
       });
   },
+  resolveOrderableProduct({ configuration }) {
+    if (this.type === ProductTypes.ConfigurableProduct) {
+      const variations = this.variations();
+      const vectors = configuration.filter(({ key: configurationKey }) => {
+        const isKeyEqualsVariationKey = Boolean(variations
+          .filter(({ key: variationKey }) => variationKey === configurationKey)
+          .length);
+        return isKeyEqualsVariationKey;
+      });
+      const variants = this.proxyProducts(vectors);
+      if (variants.length !== 1) {
+        throw new Error('Too many variants left, configuration not distinct enough');
+      }
+      return variants[0];
+    }
+    return this;
+  },
   reviews({ limit, offset }) {
     return ProductReviews.findReviews({ productId: this._id }, { skip: offset, limit });
   },

@@ -19,6 +19,7 @@ export default {
   tags: checkTypeResolver(actions.viewUserPrivateInfos, 'tags'),
 
   orders: checkTypeResolver(actions.viewUserOrders, 'orders'),
+  quotations: checkTypeResolver(actions.viewUserQuotations, 'quotations'),
   logs: checkTypeResolver(actions.viewLogs, 'logs'),
   roles: checkTypeResolver(actions.viewUserRoles, 'roles'),
 

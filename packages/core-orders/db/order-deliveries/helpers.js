@@ -48,11 +48,12 @@ OrderDeliveries.helpers({
     return pricing;
   },
   isBlockingOrderConfirmation() {
-    return false;
+    if (this.provider().isAutoReleaseAllowed()) return false;
+    return true;
   },
   isBlockingOrderFullfillment() {
-    if (this.status !== OrderDeliveryStatus.DELIVERED) return true;
-    return false;
+    if (this.status === OrderDeliveryStatus.DELIVERED) return false;
+    return true;
   },
   send(deliveryContext, order) {
     if (this.status !== OrderDeliveryStatus.OPEN) return;

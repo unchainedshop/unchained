@@ -44,8 +44,15 @@ const renderMjmlToHtml = (template, data) => {
   }
 };
 
-export const getTemplate = template => (meta, context) => require(`./${template}.js`) // eslint-disable-line
-  .default(meta, context, { renderToText, renderMjmlToHtml });
+export const getTemplate = template => (meta, context) => {
+  try {
+    const templateRenderer = require(`./${template}.js`) // eslint-disable-line
+    return templateRenderer.default(meta, context, { renderToText, renderMjmlToHtml });
+  } catch (e) {
+    log(e.message, { level: 'warn' });
+    return null;
+  }
+};
 
 export default () => {
   MessagingDirector.setTemplateResolver(MessagingType.EMAIL, getTemplate);

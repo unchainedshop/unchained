@@ -14,12 +14,11 @@ class QuotationAdapter {
 
   static version = ''
 
-  static typeSupported(type) { // eslint-disable-line
-    return false;
+  static isActivatedFor() {
+    return true;
   }
 
-  constructor(config, context) {
-    this.config = config;
+  constructor(context) {
     this.context = context;
   }
 
@@ -27,24 +26,24 @@ class QuotationAdapter {
     return QuotationError.NOT_IMPLEMENTED;
   }
 
-  isActive() { // eslint-disable-line
-    return false;
-  }
-
-  async manualRequestVerificationNeeded(context) { // eslint-disable-line
+  async isManualRequestVerificationNeeded() { // eslint-disable-line
     return true;
   }
 
-  async manualProposalNeeded(context) { // eslint-disable-line
+  async isManualProposalNeeded() { // eslint-disable-line
     return true;
   }
 
-  async quote(context) { // eslint-disable-line
+  async quote() { // eslint-disable-line
     return {};
   }
 
-  async rejectWithReason() { // eslint-disable-line
+  async reject() { // eslint-disable-line
     return true;
+  }
+
+  async transformItemConfiguration({ quantity, configuration }) { // eslint-disable-line
+    return { quantity, configuration };
   }
 
   log(message, { level = 'verbose', ...options } = {}) { // eslint-disable-line
@@ -87,10 +86,10 @@ class QuotationDirector {
     });
   }
 
-  async manualRequestVerificationNeeded(context) {
+  async isManualRequestVerificationNeeded(context) {
     try {
       const adapter = this.interface(context);
-      const result = await adapter.manualRequestVerificationNeeded();
+      const result = await adapter.isManualRequestVerificationNeeded();
       return result;
     } catch (error) {
       console.error(error); // eslint-disable-line
@@ -98,10 +97,27 @@ class QuotationDirector {
     }
   }
 
-  async manualProposalNeeded(context) { // eslint-disable-line
+  async isManualProposalNeeded(context) { // eslint-disable-line
     try {
       const adapter = this.interface(context);
-      const result = await adapter.manualProposalNeeded();
+      const result = await adapter.isManualProposalNeeded();
+      return result;
+    } catch (error) {
+      console.error(error); // eslint-disable-line
+      return null;
+    }
+  }
+
+  async transformItemConfiguration({
+    quantity,
+    configuration,
+  }) { // eslint-disable-line
+    try {
+      const adapter = this.interface();
+      const result = await adapter.transformItemConfiguration({
+        quantity,
+        configuration,
+      });
       return result;
     } catch (error) {
       console.error(error); // eslint-disable-line
@@ -110,25 +126,15 @@ class QuotationDirector {
   }
 
   async quote(context) {
-    try {
-      const adapter = this.interface(context);
-      const result = await adapter.quote();
-      return result;
-    } catch (error) {
-      console.error(error); // eslint-disable-line
-      return null;
-    }
+    const adapter = this.interface(context);
+    const result = await adapter.quote();
+    return result;
   }
 
-  async rejectWithReason(context) {
-    try {
-      const adapter = this.interface(context);
-      const result = await adapter.rejectWithReason();
-      return result;
-    } catch (error) {
-      console.error(error); // eslint-disable-line
-      return null;
-    }
+  async reject(context) {
+    const adapter = this.interface(context);
+    const result = await adapter.reject();
+    return result;
   }
 
   configurationError() {
@@ -139,16 +145,6 @@ class QuotationDirector {
     } catch (error) {
       console.warn(error); // eslint-disable-line
       return QuotationError.ADAPTER_NOT_FOUND;
-    }
-  }
-
-  isActive(context) {
-    try {
-      const adapter = this.interface();
-      return adapter.isActive(context);
-    } catch (error) {
-      console.warn(error); // eslint-disable-line
-      return false;
     }
   }
 

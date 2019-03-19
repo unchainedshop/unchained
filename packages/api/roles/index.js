@@ -15,6 +15,7 @@ export default roles;
 export const actions = [
   'viewUserRoles',
   'viewUserOrders',
+  'viewUserQuotations',
   'viewUserPublicInfos',
   'viewUserPrivateInfos',
   'viewLogs',
@@ -70,6 +71,10 @@ export const actions = [
   'updateProductReview',
   'manageProductReviews',
   'requestQuotation',
+  'viewQuotations',
+  'viewQuotation',
+  'manageQuotations',
+  'answerQuotation',
 ].reduce((oldValue, actionValue) => {
   const newValue = oldValue;
   newValue[actionValue] = actionValue;

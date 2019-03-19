@@ -1,4 +1,5 @@
 import { Orders } from 'meteor/unchained:core-orders';
+import { Quotations } from 'meteor/unchained:core-quotations';
 
 export default (role, actions) => {
   // private
@@ -38,16 +39,26 @@ export default (role, actions) => {
   role.allow(actions.viewLogs, () => false);
   role.allow(actions.viewUserRoles, () => false);
   role.allow(actions.viewUserOrders, () => false);
+  role.allow(actions.viewUserQuotations, () => false);
   role.allow(actions.viewUserPrivateInfos, () => false);
   role.allow(actions.reviewProduct, () => false);
   role.allow(actions.updateProductReview, () => false);
   role.allow(actions.manageProductReviews, () => false);
   role.allow(actions.requestQuotation, () => false);
+  role.allow(actions.viewQuotations, () => false);
+  role.allow(actions.manageQuotations, () => false);
+  role.allow(actions.answerQuotation, () => false);
 
   // only allow if otp is provided
   role.allow(actions.viewOrder, (root, { orderId, otp }) => (Orders.find({
     _id: orderId,
     orderNumber: otp,
+  }).count() > 0));
+
+  // only allow if otp is provided
+  role.allow(actions.viewQuotation, (root, { quotationId, otp }) => (Quotations.find({
+    _id: quotationId,
+    quotationNumber: otp,
   }).count() > 0));
 
   // only allow if query is not demanding for drafts
