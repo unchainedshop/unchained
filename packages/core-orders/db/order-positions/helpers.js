@@ -22,6 +22,11 @@ OrderPositions.helpers({
       _id: this.orderId
     });
   },
+  originalProduct() {
+    return Products.findOne({
+      _id: this.originalProductId
+    });
+  },
   quotation() {
     return Quotations.findOne({
       _id: this.quotationId
@@ -41,6 +46,21 @@ OrderPositions.helpers({
         item: this,
         ...discount
       }));
+  },
+  validationErrors() {
+    const errors = [];
+    log(`OrderPosition ${this._id} -> Validate ${this.quantity}`);
+    if (!this.product().isActive())
+      errors.push(new Error('This product is not available anymore'));
+    if (this.quotationId && !this.quotation().isProposalValid())
+      errors.push(
+        new Error('Quotation expired or fullfiled, please request a new offer')
+      );
+  },
+  reserve() {
+    if (this.quotationId)
+      this.quotation().fullfill({ info: { orderPositionId: this._id } });
+    log(`OrderPosition ${this._id} -> Reserve ${this.quantity}`);
   },
   dispatches() {
     const scheduling = this.scheduling || [];
@@ -75,13 +95,6 @@ OrderPositions.helpers({
   }
 });
 
-OrderPositions.upsertProductPosition = ({ product, order, ...options }) =>
-  OrderPositions.upsertPosition({
-    ...options,
-    productId: product._id,
-    orderId: order._id
-  });
-
 OrderPositions.upsertPosition = ({
   orderId,
   quantity,
@@ -113,6 +126,7 @@ OrderPositions.upsertPosition = ({
 OrderPositions.createPosition = ({
   orderId,
   productId,
+  originalProductId,
   quotationId,
   quantity,
   configuration,
@@ -128,6 +142,7 @@ OrderPositions.createPosition = ({
     ...rest,
     orderId,
     productId,
+    originalProductId,
     quotationId,
     quantity,
     configuration,
