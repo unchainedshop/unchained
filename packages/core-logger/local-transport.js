@@ -8,9 +8,7 @@ class LocalTransport extends Transport {
       this.emit('logged', info);
     });
 
-    const {
-      level: formattedLevel, message, ...meta
-    } = info;
+    const { level: formattedLevel, message, ...meta } = info;
 
     const level = info[Symbol.for('level')];
     Meteor.defer(() => {
@@ -19,7 +17,7 @@ class LocalTransport extends Transport {
           created: new Date(),
           level,
           message,
-          meta,
+          meta
         });
       } catch (e) {
         console.trace(e); // eslint-disable-line

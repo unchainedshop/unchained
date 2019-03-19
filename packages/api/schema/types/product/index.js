@@ -3,4 +3,9 @@ import simpleProduct from './simple-product';
 import product from './product';
 import bundleProduct from './bundle-product';
 
-export default [...product, ...configurableProduct, ...simpleProduct, ...bundleProduct];
+export default [
+  ...product,
+  ...configurableProduct,
+  ...simpleProduct,
+  ...bundleProduct
+];

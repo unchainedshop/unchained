@@ -10,7 +10,7 @@ function writeFile(filename, data, done) {
   fs.mkdtemp(path.join(os.tmpdir(), 'mailman-'), (err1, folder) => {
     if (err1) return done(err1);
     const temporaryFolderPath = `${folder}/${filename}`;
-    return fs.writeFile(temporaryFolderPath, data, (err2) => {
+    return fs.writeFile(temporaryFolderPath, data, err2 => {
       if (err2) return done(err2);
       return done(null, temporaryFolderPath);
     });
@@ -18,7 +18,9 @@ function writeFile(filename, data, done) {
 }
 
 mailman.warnNoEmailPackage = function warnNoEmailPackage() {
-  logger.log('unchained:platform -> Unchained Mail Manager could not start because you are not using the email package');
+  logger.log(
+    'unchained:platform -> Unchained Mail Manager could not start because you are not using the email package'
+  );
   logger.log('unchained:platform -> Please run `meteor add email`');
 };
 
@@ -32,10 +34,15 @@ export default () => {
     mailman.originalSend = Email.send;
     mailman.send = function mailmanSend(options) {
       const filename = `${Date.now()}.html`;
-      const header = `<b>from:</b>${options.from}<br><b>to:</b>${options.to}<br><br><b>subject:</b>${options.subject}<hr>`;
+      const header = `<b>from:</b>${options.from}<br><b>to:</b>${
+        options.to
+      }<br><br><b>subject:</b>${options.subject}<hr>`;
       const content = header + (options.html || options.text);
       writeFile(filename, content, (err, filePath) => {
-        if (err) { logger.log(err); return; }
+        if (err) {
+          logger.log(err);
+          return;
+        }
         logger.log('unchained:platform -> Mailman detected an outgoing email');
         opn(filePath);
       });

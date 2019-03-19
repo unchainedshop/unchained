@@ -8,5 +8,5 @@ Factory.define('language', Languages, {
   authorId: () => Factory.get('user'),
   isActive: () => faker.random.boolean(),
   isBase: () => false,
-  ...fakeTimestampFields,
+  ...fakeTimestampFields
 });

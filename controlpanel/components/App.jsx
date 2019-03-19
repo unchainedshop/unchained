@@ -17,7 +17,11 @@ import Header from './Header';
 import Redirect from './Redirect';
 
 const App = ({
-  currentUser, loading, children, router, allowAnonymousAccess,
+  currentUser,
+  loading,
+  children,
+  router,
+  allowAnonymousAccess
 }) => (
   <main>
     <Header
@@ -37,30 +41,22 @@ const App = ({
             Loading
           </Loader>
         </Dimmer>
-      ) }
+      )}
       {children}
     </Segment>
     <Segment basic textAlign="center">
-      Made with
-      &nbsp;
+      Made with &nbsp;
       <span role="img" aria-label="love">
         ❤️
       </span>
-      &nbsp;
-      by the
-      &nbsp;
-      <a href="https://unchained.shop">
-        Unchained Team
-      </a>
+      &nbsp; by the &nbsp;
+      <a href="https://unchained.shop">Unchained Team</a>
     </Segment>
-    <ToastContainer
-      position="top-center"
-      autoClose={3000}
-    />
+    <ToastContainer position="top-center" autoClose={3000} />
   </main>
 );
 
 export default compose(
   withRouter,
-  withCurrentUser,
+  withCurrentUser
 )(App);

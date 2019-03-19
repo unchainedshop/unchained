@@ -8,32 +8,45 @@ export const PaymentProviderType = { // eslint-disable-line
   INVOICE: 'INVOICE',
   POSTFINANCE: 'POSTFINANCE',
   PAYPAL: 'PAYPAL',
-  CRYPTO: 'CRYPTO',
+  CRYPTO: 'CRYPTO'
 };
 
-PaymentProviders.attachSchema(new SimpleSchema({
-  type: { type: String, required: true, index: true },
-  adapterKey: { type: String, required: true },
-  configuration: { type: Array },
-  'configuration.$': { type: Object },
-  'configuration.$.key': { type: String },
-  'configuration.$.value': { type: String },
-  ...Schemas.timestampFields,
-}, { requiredByDefault: false }));
+PaymentProviders.attachSchema(
+  new SimpleSchema(
+    {
+      type: { type: String, required: true, index: true },
+      adapterKey: { type: String, required: true },
+      configuration: { type: Array },
+      'configuration.$': { type: Object },
+      'configuration.$.key': { type: String },
+      'configuration.$.value': { type: String },
+      ...Schemas.timestampFields
+    },
+    { requiredByDefault: false }
+  )
+);
 
 Migrations.add({
   version: 20181128,
   name: 'Rename pament provider keys',
   up() {
-    PaymentProviders.update({ adapterKey: 'ch.dagobert.invoice' }, {
-      $set: { adapterKey: 'shop.unchained.invoice' },
-    }, { multi: true });
+    PaymentProviders.update(
+      { adapterKey: 'ch.dagobert.invoice' },
+      {
+        $set: { adapterKey: 'shop.unchained.invoice' }
+      },
+      { multi: true }
+    );
   },
   down() {
-    PaymentProviders.update({ adapterKey: 'shop.unchained.invoice' }, {
-      $set: { adapterKey: 'ch.dagobert.invoice' },
-    }, { multi: true });
-  },
+    PaymentProviders.update(
+      { adapterKey: 'shop.unchained.invoice' },
+      {
+        $set: { adapterKey: 'ch.dagobert.invoice' }
+      },
+      { multi: true }
+    );
+  }
 });
 
 export default () => {

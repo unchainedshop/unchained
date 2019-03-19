@@ -4,15 +4,15 @@ const WarehousingError = {
   ADAPTER_NOT_FOUND: 'ADAPTER_NOT_FOUND',
   NOT_IMPLEMENTED: 'NOT_IMPLEMENTED',
   INCOMPLETE_CONFIGURATION: 'INCOMPLETE_CONFIGURATION',
-  WRONG_CREDENTIALS: 'WRONG_CREDENTIALS',
+  WRONG_CREDENTIALS: 'WRONG_CREDENTIALS'
 };
 
 class WarehousingAdapter {
-  static key = ''
+  static key = '';
 
-  static label = ''
+  static label = '';
 
-  static version = ''
+  static version = '';
 
   static typeSupported(type) { // eslint-disable-line
     return false;
@@ -60,7 +60,9 @@ class WarehousingDirector {
   interface(context) {
     const Adapter = this.interfaceClass();
     if (!Adapter) {
-      throw new Error(`Warehousing Plugin ${this.provider.adapterKey} not available`);
+      throw new Error(
+        `Warehousing Plugin ${this.provider.adapterKey} not available`
+      );
     }
     return new Adapter(this.provider.configuration, context);
   }
@@ -70,7 +72,7 @@ class WarehousingDirector {
       const { quantity } = context;
       const referenceDate = WarehousingDirector.getReferenceDate(context);
       const adapter = this.interface(context);
-      const stock = await adapter.stock(referenceDate) || 0;
+      const stock = (await adapter.stock(referenceDate)) || 0;
       const notInStockQuantity = Math.max(quantity - stock, 0);
       const productionTime = await adapter.productionTime(notInStockQuantity);
       const commissioningTime = await adapter.commissioningTime(quantity);
@@ -87,7 +89,7 @@ class WarehousingDirector {
       const adapter = this.interface(context);
       const quantity = await adapter.stock(referenceDate);
       return {
-        quantity,
+        quantity
       };
     } catch (error) {
       console.error(error); // eslint-disable-line
@@ -100,20 +102,25 @@ class WarehousingDirector {
       const { deliveryProvider } = context;
       const referenceDate = WarehousingDirector.getReferenceDate(context);
       const warehousingThroughputTime = await this.throughputTime(context);
-      const deliveryThroughputTime = deliveryProvider
-        .estimatedDeliveryThroughput(context, warehousingThroughputTime);
-      const shippingTimestamp = referenceDate.getTime() + warehousingThroughputTime;
-      const earliestDeliveryTimestamp = (deliveryThroughputTime !== null)
-        ? (shippingTimestamp + deliveryThroughputTime)
-        : null;
+      const deliveryThroughputTime = deliveryProvider.estimatedDeliveryThroughput(
+        context,
+        warehousingThroughputTime
+      );
+      const shippingTimestamp =
+        referenceDate.getTime() + warehousingThroughputTime;
+      const earliestDeliveryTimestamp =
+        deliveryThroughputTime !== null
+          ? shippingTimestamp + deliveryThroughputTime
+          : null;
 
       return {
         shipping: shippingTimestamp && new Date(shippingTimestamp),
-        earliestDelivery: earliestDeliveryTimestamp && new Date(earliestDeliveryTimestamp),
+        earliestDelivery:
+          earliestDeliveryTimestamp && new Date(earliestDeliveryTimestamp)
       };
     } catch (error) {
       console.error(error); // eslint-disable-line
-      return { };
+      return {};
     }
   }
 
@@ -147,7 +154,7 @@ class WarehousingDirector {
   }
 
   static getReferenceDate(context) {
-    return (context && context.referenceDate)
+    return context && context.referenceDate
       ? context.referenceDate
       : new Date();
   }
@@ -158,8 +165,4 @@ class WarehousingDirector {
   }
 }
 
-export {
-  WarehousingDirector,
-  WarehousingAdapter,
-  WarehousingError,
-};
+export { WarehousingDirector, WarehousingAdapter, WarehousingError };

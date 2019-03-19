@@ -29,7 +29,8 @@ export default connectApollo(
               <ProductMenu router={router} productId={router.query._id} />
             </Grid.Column>
             <Grid.Column stretched width={12}>
-              {(!router.query.tab || router.query.tab === 'ProductTranslation') && (
+              {(!router.query.tab ||
+                router.query.tab === 'ProductTranslation') && (
                 <div>
                   <Header as="h3">General Texts</Header>
                   <FormEditProductTexts productId={router.query._id} />
@@ -64,7 +65,9 @@ export default connectApollo(
                   <Header as="h3">Metrics</Header>
                   <ProductVariationList productId={router.query._id} />
                   <Header as="h3">Product Assignment</Header>
-                  <ProductVariationAssignmentList productId={router.query._id} />
+                  <ProductVariationAssignmentList
+                    productId={router.query._id}
+                  />
                 </div>
               )}
               {router.query.tab === 'ProductBundleItems' && (
@@ -78,5 +81,5 @@ export default connectApollo(
         </Grid>
       </Container>
     </App>
-  )),
+  ))
 );

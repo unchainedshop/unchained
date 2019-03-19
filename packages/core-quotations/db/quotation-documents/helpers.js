@@ -8,14 +8,16 @@ import { Quotations } from '../quotations/collections';
 
 class QuotationDocumentDirector extends DocumentDirector {
   constructor(context) {
-    const documents = context && context.quotation && context.quotation.documents();
+    const documents =
+      context && context.quotation && context.quotation.documents();
     const user = context && context.quotation && context.quotation.user();
     super({ documents, user, ...context });
   }
 
   resolveQuotationNumber(options) {
-    const quotationNumber = (options && options.quotationNumber)
-      || this.context.quotation.quotationNumber;
+    const quotationNumber =
+      (options && options.quotationNumber) ||
+      this.context.quotation.quotationNumber;
     log(`DocumentDirector -> QuotationNumber resolved: ${quotationNumber}`);
     return quotationNumber;
   }
@@ -23,16 +25,23 @@ class QuotationDocumentDirector extends DocumentDirector {
   async buildQuotationProposal(options) {
     const quotationNumber = this.resolveQuotationNumber(options);
     if (!quotationNumber) return;
-    const files = await this.execute('buildQuotationProposal', { quotationNumber, ...options });
-    files.forEach((doc) => {
+    const files = await this.execute('buildQuotationProposal', {
+      quotationNumber,
+      ...options
+    });
+    files.forEach(doc => {
       if (doc) {
         const { date } = options;
         const { file, meta, ...rest } = doc;
-        this.context.quotation.addDocument(file, {
-          date,
-          type: QuotationDocumentTypes.PROPOSAL,
-          ...meta,
-        }, rest);
+        this.context.quotation.addDocument(
+          file,
+          {
+            date,
+            type: QuotationDocumentTypes.PROPOSAL,
+            ...meta
+          },
+          rest
+        );
       }
     });
   }
@@ -41,19 +50,20 @@ class QuotationDocumentDirector extends DocumentDirector {
     if (!this.context.quotation || !date) return;
     const { quotation } = this.context;
     quotation.status = status;
-    if (!this.isDocumentExists({
-      type: QuotationDocumentTypes.PROPOSAL,
-    })) {
+    if (
+      !this.isDocumentExists({
+        type: QuotationDocumentTypes.PROPOSAL
+      })
+    ) {
       await this.buildQuotationProposal({
         date,
         status,
         ancestors: this.filteredDocuments(),
-        ...overrideValues,
+        ...overrideValues
       });
     }
   }
 }
-
 
 QuotationDocuments.updateDocuments = ({ quotationId, ...rest }) => {
   const quotation = Quotations.findOne({ _id: quotationId });

@@ -8,25 +8,30 @@ const calculationFields = {
   calculation: Array,
   'calculation.$': {
     type: Object,
-    blackbox: true,
-  },
+    blackbox: true
+  }
 };
 
 export const OrderDeliveryStatus = {
   OPEN: null,
   DELIVERED: 'DELIVERED',
-  RETURNED: 'RETURNED',
+  RETURNED: 'RETURNED'
 };
 
-OrderDeliveries.attachSchema(new SimpleSchema({
-  orderId: { type: String, index: true },
-  deliveryProviderId: String,
-  delivered: Date,
-  status: String,
-  ...timestampFields,
-  ...contextFields,
-  ...calculationFields,
-  ...logFields,
-}, { requiredByDefault: false }));
+OrderDeliveries.attachSchema(
+  new SimpleSchema(
+    {
+      orderId: { type: String, index: true },
+      deliveryProviderId: String,
+      delivered: Date,
+      status: String,
+      ...timestampFields,
+      ...contextFields,
+      ...calculationFields,
+      ...logFields
+    },
+    { requiredByDefault: false }
+  )
+);
 
 export default OrderDeliveryStatus;

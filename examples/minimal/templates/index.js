@@ -1,7 +1,10 @@
 import mjml from 'mjml';
 import mustache from 'mustache';
 import { configureAccountsEmailTemplates } from 'meteor/unchained:platform';
-import { MessagingDirector, MessagingType } from 'meteor/unchained:core-messaging';
+import {
+  MessagingDirector,
+  MessagingType
+} from 'meteor/unchained:core-messaging';
 import { log } from 'meteor/unchained:core-logger';
 
 import './shop.unchained.accounts.verify-email.js'; // eslint-disable-line
@@ -47,7 +50,10 @@ const renderMjmlToHtml = (template, data) => {
 export const getTemplate = template => (meta, context) => {
   try {
     const templateRenderer = require(`./${template}.js`) // eslint-disable-line
-    return templateRenderer.default(meta, context, { renderToText, renderMjmlToHtml });
+    return templateRenderer.default(meta, context, {
+      renderToText,
+      renderMjmlToHtml
+    });
   } catch (e) {
     log(e.message, { level: 'warn' });
     return null;
@@ -56,7 +62,16 @@ export const getTemplate = template => (meta, context) => {
 
 export default () => {
   MessagingDirector.setTemplateResolver(MessagingType.EMAIL, getTemplate);
-  configureAccountsEmailTemplates('verifyEmail', getTemplate('shop.unchained.accounts.verify-email'));
-  configureAccountsEmailTemplates('resetPassword', getTemplate('shop.unchained.accounts.reset-password'));
-  configureAccountsEmailTemplates('enrollAccount', getTemplate('shop.unchained.accounts.enroll-account'));
+  configureAccountsEmailTemplates(
+    'verifyEmail',
+    getTemplate('shop.unchained.accounts.verify-email')
+  );
+  configureAccountsEmailTemplates(
+    'resetPassword',
+    getTemplate('shop.unchained.accounts.reset-password')
+  );
+  configureAccountsEmailTemplates(
+    'enrollAccount',
+    getTemplate('shop.unchained.accounts.enroll-account')
+  );
 };

@@ -1,168 +1,169 @@
-export default [/* GraphQL */`
-enum ProductStatus {
-  """
-  Unpublished (hidden from catalog)
-  """
-  DRAFT
+export default [
+  /* GraphQL */ `
+    enum ProductStatus {
+      """
+      Unpublished (hidden from catalog)
+      """
+      DRAFT
 
-  """
-  Published
-  """
-  ACTIVE
+      """
+      Published
+      """
+      ACTIVE
 
-  """
-  Deleted
-  """
-  DELETED
-}
+      """
+      Deleted
+      """
+      DELETED
+    }
 
-enum ProductVariationType {
-  """
-  Color Picker
-  """
-  COLOR
+    enum ProductVariationType {
+      """
+      Color Picker
+      """
+      COLOR
 
-  """
-  Text Answers
-  """
-  TEXT
-}
+      """
+      Text Answers
+      """
+      TEXT
+    }
 
-type ProductPrice {
-  _id: ID!
-  isTaxable: Boolean!
-  isNetPrice: Boolean!
-  country: Country!
-  price: Money!
-  maxQuantity: Int
-}
+    type ProductPrice {
+      _id: ID!
+      isTaxable: Boolean!
+      isNetPrice: Boolean!
+      country: Country!
+      price: Money!
+      maxQuantity: Int
+    }
 
-type ProductDiscount {
-  _id: ID!
-  interface: DiscountInterface
-  total: Money!
-}
+    type ProductDiscount {
+      _id: ID!
+      interface: DiscountInterface
+      total: Money!
+    }
 
-type ProductMediaTexts {
-  _id: ID!
-  locale: String
-  title: String
-  subtitle: String
-}
+    type ProductMediaTexts {
+      _id: ID!
+      locale: String
+      title: String
+      subtitle: String
+    }
 
-type ProductMedia {
-  _id: ID!
-  tags: [String!]
-  file: Media!
-  sortKey: Int!
-  texts(forceLocale: String): ProductMediaTexts
-}
+    type ProductMedia {
+      _id: ID!
+      tags: [String!]
+      file: Media!
+      sortKey: Int!
+      texts(forceLocale: String): ProductMediaTexts
+    }
 
-type ProductVariationTexts {
-  _id: ID!
-  locale: String
-  title: String
-  subtitle: String
-}
+    type ProductVariationTexts {
+      _id: ID!
+      locale: String
+      title: String
+      subtitle: String
+    }
 
-type ProductVariationOption {
-  _id: ID!
-  texts(forceLocale: String): ProductVariationTexts
-  value: String
-}
+    type ProductVariationOption {
+      _id: ID!
+      texts(forceLocale: String): ProductVariationTexts
+      value: String
+    }
 
-type ProductVariation {
-  _id: ID!
-  texts(forceLocale: String): ProductVariationTexts
-  type: ProductVariationType
-  key: String
-  options: [ProductVariationOption!]
-}
+    type ProductVariation {
+      _id: ID!
+      texts(forceLocale: String): ProductVariationTexts
+      type: ProductVariationType
+      key: String
+      options: [ProductVariationOption!]
+    }
 
-type ProductTexts {
-  _id: ID!
-  locale: String
-  slug: String
-  title: String
-  subtitle: String
-  description: String
-  vendor: String
-  labels: [String!]
-}
+    type ProductTexts {
+      _id: ID!
+      locale: String
+      slug: String
+      title: String
+      subtitle: String
+      description: String
+      vendor: String
+      labels: [String!]
+    }
 
-"""
-Abstract Product
-"""
-interface Product {
-  _id: ID!
-  sequence: Int!
-  status: ProductStatus!
-  tags: [String!]
-  created: Date
-  updated: Date
-  published: Date
-  texts: ProductTexts
-  media: [ProductMedia!]
-  reviews: [ProductReview!]!
-}
+    """
+    Abstract Product
+    """
+    interface Product {
+      _id: ID!
+      sequence: Int!
+      status: ProductStatus!
+      tags: [String!]
+      created: Date
+      updated: Date
+      published: Date
+      texts: ProductTexts
+      media: [ProductMedia!]
+      reviews: [ProductReview!]!
+    }
 
-"""
-Key Value Combination
-"""
-type ProductVariationAssignmentVector {
-  _id: ID!
-  variation: ProductVariation
-  option: ProductVariationOption
-}
+    """
+    Key Value Combination
+    """
+    type ProductVariationAssignmentVector {
+      _id: ID!
+      variation: ProductVariation
+      option: ProductVariationOption
+    }
 
-"""
-Key Value Combination to Product Assignment
-"""
-type ProductVariationAssignment {
-  _id: ID!
+    """
+    Key Value Combination to Product Assignment
+    """
+    type ProductVariationAssignment {
+      _id: ID!
 
-  """
-  Query string key=val&key=val ...
-  """
-  vectors: [ProductVariationAssignmentVector!]
+      """
+      Query string key=val&key=val ...
+      """
+      vectors: [ProductVariationAssignmentVector!]
 
-  """
-  Assigned Product
-  """
-  product: Product
-}
+      """
+      Assigned Product
+      """
+      product: Product
+    }
 
-type ProductReview {
-  _id: ID!
-  created: Date
-  updated: Date
-  deleted: Date
-  author: User!
-  product: Product!
-  rating: Int
-  title: String
-  review: String
-  meta: JSON
-  voteCount(type: ProductReviewVoteType): Int
-  ownVotes: [ProductReviewVote!]!
-}
+    type ProductReview {
+      _id: ID!
+      created: Date
+      updated: Date
+      deleted: Date
+      author: User!
+      product: Product!
+      rating: Int
+      title: String
+      review: String
+      meta: JSON
+      voteCount(type: ProductReviewVoteType): Int
+      ownVotes: [ProductReviewVote!]!
+    }
 
-type ProductReviewVote {
-  _id: ID!
-  timestamp: Date!
-  type: ProductReviewVoteType!
-  meta: JSON
-}
+    type ProductReviewVote {
+      _id: ID!
+      timestamp: Date!
+      type: ProductReviewVoteType!
+      meta: JSON
+    }
 
-enum ProductReviewVoteType {
-  UPVOTE
-  DOWNVOTE
-  REPORT
-}
+    enum ProductReviewVoteType {
+      UPVOTE
+      DOWNVOTE
+      REPORT
+    }
 
-type ProductConfigurationParameter {
-  key: String!
-  value: String!
-}
-
-`];
+    type ProductConfigurationParameter {
+      key: String!
+      value: String!
+    }
+  `
+];

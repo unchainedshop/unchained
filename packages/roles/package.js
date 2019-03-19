@@ -4,10 +4,10 @@ Package.describe({
   version: '0.24.0',
   summary: 'Unchained Engine: Roles',
   git: 'https://github.com/unchainedshop/unchained',
-  documentation: 'README.md',
+  documentation: 'README.md'
 });
 
-Package.onUse((api) => {
+Package.onUse(api => {
   api.versionsFrom('1.8');
 
   api.use([
@@ -17,24 +17,18 @@ Package.onUse((api) => {
     'mongo',
     'ecmascript',
     'underscore',
-    'dburles:collection-helpers@1.1.0',
+    'dburles:collection-helpers@1.1.0'
   ]);
 
-  api.addFiles([
-    'helpers.js',
-    'roles.js',
-    'keys.js',
-  ]);
+  api.addFiles(['helpers.js', 'roles.js', 'keys.js']);
 
-  api.addFiles([
-    'roles_server.js',
-  ], 'server');
+  api.addFiles(['roles_server.js'], 'server');
 
   api.export('Roles');
   api.export('objectHasKey');
 });
 
-Package.onTest((api) => {
+Package.onTest(api => {
   api.use('ecmascript');
   api.use('unchained:roles');
 });

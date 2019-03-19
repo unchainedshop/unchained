@@ -7,26 +7,31 @@ const { logFields, contextFields, timestampFields } = Schemas;
 export const OrderPaymentStatus = {
   OPEN: null,
   PAID: 'PAID',
-  REFUNDED: 'REFUNDED',
+  REFUNDED: 'REFUNDED'
 };
 
 const calculationFields = {
   calculation: Array,
   'calculation.$': {
     type: Object,
-    blackbox: true,
-  },
+    blackbox: true
+  }
 };
 
-OrderPayments.attachSchema(new SimpleSchema({
-  orderId: { type: String, index: true },
-  paymentProviderId: String,
-  paid: Date,
-  status: String,
-  ...timestampFields,
-  ...contextFields,
-  ...calculationFields,
-  ...logFields,
-}, { requiredByDefault: false }));
+OrderPayments.attachSchema(
+  new SimpleSchema(
+    {
+      orderId: { type: String, index: true },
+      paymentProviderId: String,
+      paid: Date,
+      status: String,
+      ...timestampFields,
+      ...contextFields,
+      ...calculationFields,
+      ...logFields
+    },
+    { requiredByDefault: false }
+  )
+);
 
 export default OrderPaymentStatus;

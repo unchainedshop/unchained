@@ -2,9 +2,7 @@ import React from 'react';
 import { withRouter } from 'next/router';
 import { toast } from 'react-toastify';
 import { compose, pure, withHandlers } from 'recompose';
-import {
-  Container, Grid, Menu, Segment,
-} from 'semantic-ui-react';
+import { Container, Grid, Menu, Segment } from 'semantic-ui-react';
 import App from '../../components/App';
 import FormProfile from '../../components/users/FormProfile';
 import UserOrderList from '../../components/users/UserOrderList';
@@ -16,9 +14,7 @@ import FormTags from '../../components/account/FormTags';
 
 import connectApollo from '../../lib/connectApollo';
 
-const UsersEdit = ({
-  router, redirect, changeTab, ...rest
-}) => (
+const UsersEdit = ({ router, redirect, changeTab, ...rest }) => (
   <App {...rest}>
     <Container>
       <Grid>
@@ -28,33 +24,47 @@ const UsersEdit = ({
               <Menu.Item active={!router.query.tab} name="" onClick={changeTab}>
                 Profile
               </Menu.Item>
-              <Menu.Item active={router.query.tab === 'account'} name="account" onClick={changeTab}>
+              <Menu.Item
+                active={router.query.tab === 'account'}
+                name="account"
+                onClick={changeTab}
+              >
                 Account
               </Menu.Item>
-              <Menu.Item active={router.query.tab === 'orders'} name="orders" onClick={changeTab}>
+              <Menu.Item
+                active={router.query.tab === 'orders'}
+                name="orders"
+                onClick={changeTab}
+              >
                 Orders
               </Menu.Item>
-              <Menu.Item active={router.query.tab === 'log'} name="log" onClick={changeTab}>
+              <Menu.Item
+                active={router.query.tab === 'log'}
+                name="log"
+                onClick={changeTab}
+              >
                 Logs
               </Menu.Item>
             </Menu>
           </Grid.Column>
           <Grid.Column stretched width={12}>
             {!router.query.tab && (
-              <FormProfile onSubmitSuccess={redirect} userId={router.query._id} />
+              <FormProfile
+                onSubmitSuccess={redirect}
+                userId={router.query._id}
+              />
             )}
             {router.query.tab === 'account' && (
               <div>
                 <Segment>
-                  <h3 className="title">
-                    Set password
-                  </h3>
-                  <FormSetPassword onSubmitSuccess={redirect} userId={router.query._id} />
+                  <h3 className="title">Set password</h3>
+                  <FormSetPassword
+                    onSubmitSuccess={redirect}
+                    userId={router.query._id}
+                  />
                 </Segment>
                 <Segment>
-                  <h3 className="title">
-                    Change E-Mail address
-                  </h3>
+                  <h3 className="title">Change E-Mail address</h3>
                   <FormChangeEmail
                     onSubmitSuccess={redirect}
                     userId={router.query._id}
@@ -62,16 +72,18 @@ const UsersEdit = ({
                   />
                 </Segment>
                 <Segment>
-                  <h3 className="title">
-                    Set roles
-                  </h3>
-                  <FormSetRoles onSubmitSuccess={redirect} userId={router.query._id} />
+                  <h3 className="title">Set roles</h3>
+                  <FormSetRoles
+                    onSubmitSuccess={redirect}
+                    userId={router.query._id}
+                  />
                 </Segment>
                 <Segment>
-                  <h3 className="title">
-                    Set tags
-                  </h3>
-                  <FormTags onSubmitSuccess={redirect} userId={router.query._id} />
+                  <h3 className="title">Set tags</h3>
+                  <FormTags
+                    onSubmitSuccess={redirect}
+                    userId={router.query._id}
+                  />
                 </Segment>
               </div>
             )}
@@ -88,17 +100,19 @@ const UsersEdit = ({
   </App>
 );
 
-export default connectApollo(compose(
-  withRouter,
-  withHandlers({
-    changeTab: ({ router }) => (event, element) => {
-      const newUrl = router;
-      newUrl.query.tab = element.name;
-      router.replace(newUrl);
-    },
-    redirect: () => () => {
-      toast('User updated', { type: toast.TYPE.SUCCESS });
-    },
-  }),
-  pure,
-)(UsersEdit));
+export default connectApollo(
+  compose(
+    withRouter,
+    withHandlers({
+      changeTab: ({ router }) => (event, element) => {
+        const newUrl = router;
+        newUrl.query.tab = element.name;
+        router.replace(newUrl);
+      },
+      redirect: () => () => {
+        toast('User updated', { type: toast.TYPE.SUCCESS });
+      }
+    }),
+    pure
+  )(UsersEdit)
+);

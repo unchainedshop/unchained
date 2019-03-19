@@ -6,6 +6,6 @@ import { name as packageName } from 'meteor/core-settings';
 
 // Write your tests here!
 // Here is an example.
-Tinytest.add('core-settings - example', (test) => {
+Tinytest.add('core-settings - example', test => {
   test.equal(packageName, 'core-settings');
 });

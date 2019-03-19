@@ -17,7 +17,7 @@ export slugify from './slugify';
 const Schemas = {
   ...schemaFields,
   Address,
-  Contact,
+  Contact
 };
 
 export { Schemas };

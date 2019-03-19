@@ -9,5 +9,5 @@ export default {
   JSON,
   Date,
   Query,
-  Mutation,
+  Mutation
 };

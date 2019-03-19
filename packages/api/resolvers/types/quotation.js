@@ -10,5 +10,5 @@ export default {
     return Currencies.findOne({ isoCode: obj.currency });
   },
 
-  logs: checkTypeResolver(actions.viewLogs, 'logs'),
+  logs: checkTypeResolver(actions.viewLogs, 'logs')
 };

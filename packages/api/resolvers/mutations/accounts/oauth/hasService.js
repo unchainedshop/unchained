@@ -1,4 +1,4 @@
-export default function (options, service) {
+export default function(options, service) {
   if (service === 'facebook') {
     return options.loginWithFacebook;
   }

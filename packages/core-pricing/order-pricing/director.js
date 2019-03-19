@@ -3,13 +3,13 @@ import { log } from 'meteor/unchained:core-logger';
 import { OrderPricingSheet } from './sheet';
 
 class OrderPricingAdapter {
-  static key = ''
+  static key = '';
 
-  static label = ''
+  static label = '';
 
-  static version = ''
+  static version = '';
 
-  static orderIndex = 0
+  static orderIndex = 0;
 
   static isActivatedFor() {
     return false;
@@ -25,7 +25,9 @@ class OrderPricingAdapter {
 
   async calculate() {
     const resultRaw = this.result.getRawPricingSheet();
-    resultRaw.forEach(({ amount, category }) => this.log(`Order Calculation -> ${category} ${amount}`));
+    resultRaw.forEach(({ amount, category }) =>
+      this.log(`Order Calculation -> ${category} ${amount}`)
+    );
     return resultRaw;
   }
 
@@ -53,27 +55,31 @@ class OrderPricingDirector {
       user,
       delivery,
       payment,
-      discounts,
+      discounts
     };
   }
 
   calculate() {
     this.calculation = OrderPricingDirector.sortedAdapters()
-      .filter((AdapterClass => AdapterClass.isActivatedFor(this.context.order)))
+      .filter(AdapterClass => AdapterClass.isActivatedFor(this.context.order))
       .reduce((calculation, AdapterClass) => {
         const discounts = this.context.discounts
           .map(discount => ({
             discountId: discount._id,
-            configuration: discount.discountConfigurationForCalculation(AdapterClass.key),
+            configuration: discount.discountConfigurationForCalculation(
+              AdapterClass.key
+            )
           }))
-          .filter(({ configuration }) => (configuration !== null));
+          .filter(({ configuration }) => configuration !== null);
         try {
           const concreteAdapter = new AdapterClass({
             context: this.context,
             calculation,
-            discounts,
+            discounts
           });
-          const nextCalculationResult = Promise.await(concreteAdapter.calculate());
+          const nextCalculationResult = Promise.await(
+            concreteAdapter.calculate()
+          );
           return calculation.concat(nextCalculationResult);
         } catch (error) {
           log(error, { level: 'error' });
@@ -86,7 +92,7 @@ class OrderPricingDirector {
   resultSheet() {
     return new OrderPricingSheet({
       calculation: this.calculation,
-      currency: this.context.order.currency,
+      currency: this.context.order.currency
     });
   }
 
@@ -99,12 +105,13 @@ class OrderPricingDirector {
   }
 
   static registerAdapter(adapter) {
-    log(`${this.name} -> Registered ${adapter.key} ${adapter.version} (${adapter.label})`);
+    log(
+      `${this.name} -> Registered ${adapter.key} ${adapter.version} (${
+        adapter.label
+      })`
+    );
     OrderPricingDirector.adapters.set(adapter.key, adapter);
   }
 }
 
-export {
-  OrderPricingDirector,
-  OrderPricingAdapter,
-};
+export { OrderPricingDirector, OrderPricingAdapter };

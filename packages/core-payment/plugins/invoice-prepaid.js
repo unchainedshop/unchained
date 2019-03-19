@@ -1,20 +1,20 @@
 import {
   PaymentDirector,
   PaymentAdapter,
-  PaymentProviderType,
+  PaymentProviderType
 } from 'meteor/unchained:core-payment';
 
 class Invoice extends PaymentAdapter {
-  static key = 'shop.unchained.invoice-prepaid'
+  static key = 'shop.unchained.invoice-prepaid';
 
-  static label = 'Invoice Prepaid (manually)'
+  static label = 'Invoice Prepaid (manually)';
 
-  static version = '1.0'
+  static version = '1.0';
 
-  static initialConfiguration = []
+  static initialConfiguration = [];
 
   static typeSupported(type) {
-    return (type === PaymentProviderType.INVOICE);
+    return type === PaymentProviderType.INVOICE;
   }
 
   configurationError() { // eslint-disable-line

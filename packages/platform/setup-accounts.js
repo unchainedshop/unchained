@@ -7,37 +7,42 @@ import { Users } from 'meteor/unchained:core-users';
 import cloneDeep from 'lodash.clonedeep';
 import moniker from 'moniker';
 
-const {
-  UI_ENDPOINT,
-} = process.env;
+const { UI_ENDPOINT } = process.env;
 
-Accounts.urls.resetPassword = token => `${UI_ENDPOINT}/set-password?token=${token}`;
+Accounts.urls.resetPassword = token =>
+  `${UI_ENDPOINT}/set-password?token=${token}`;
 
-Accounts.urls.verifyEmail = token => `${UI_ENDPOINT}/verify-email?token=${token}`;
+Accounts.urls.verifyEmail = token =>
+  `${UI_ENDPOINT}/verify-email?token=${token}`;
 
-Accounts.urls.enrollAccount = token => `${UI_ENDPOINT}/enroll-account?token=${token}`;
+Accounts.urls.enrollAccount = token =>
+  `${UI_ENDPOINT}/enroll-account?token=${token}`;
 
-const buildContext = (user) => {
-  const locale = (user && user.lastLogin && user.lastLogin.locale)
-    || getFallbackLocale().normalized;
+const buildContext = user => {
+  const locale =
+    (user && user.lastLogin && user.lastLogin.locale) ||
+    getFallbackLocale().normalized;
   return {
     user: user || {},
-    locale,
+    locale
   };
 };
 
-export const configureAccountsEmailTemplates = (accountsTemplateName, templateObject) => {
+export const configureAccountsEmailTemplates = (
+  accountsTemplateName,
+  templateObject
+) => {
   Accounts.emailTemplates[accountsTemplateName] = {
     from: user => templateObject(null, buildContext(user)).from(),
     subject: user => templateObject(null, buildContext(user)).subject(),
     html: (user, url) => templateObject({ url }, buildContext(user)).html(),
-    text: (user, url) => templateObject({ url }, buildContext(user)).text(),
+    text: (user, url) => templateObject({ url }, buildContext(user)).text()
   };
 };
 
 export default Accounts;
 
-Accounts.validateNewUser((user) => {
+Accounts.validateNewUser(user => {
   const clone = cloneDeep(user);
   delete clone._id;
   Users.simpleSchema().validate(clone);
@@ -55,17 +60,21 @@ Accounts.onCreateUser((options = {}, user = {}) => {
   if (newUser.services.google) {
     newUser.profile = {
       name: newUser.services.google.name,
-      ...newUser.profile,
+      ...newUser.profile
     };
-    newUser.emails = [{ address: newUser.services.google.email, verified: true }];
+    newUser.emails = [
+      { address: newUser.services.google.email, verified: true }
+    ];
   }
 
   if (newUser.services.facebook) {
     newUser.profile = {
       name: newUser.services.facebook.name,
-      ...newUser.profile,
+      ...newUser.profile
     };
-    newUser.emails = [{ address: newUser.services.facebook.email, verified: true }];
+    newUser.emails = [
+      { address: newUser.services.facebook.email, verified: true }
+    ];
   }
   if (!guest && !skipEmailVerification) {
     Meteor.setTimeout(() => {
@@ -78,13 +87,16 @@ Accounts.onCreateUser((options = {}, user = {}) => {
   return newUser;
 });
 
-Accounts.removeOldGuests = (before) => {
+Accounts.removeOldGuests = before => {
   let newBefore = before;
   if (typeof newBefore === 'undefined') {
     newBefore = new Date();
     newBefore.setHours(newBefore.getHours() - 1);
   }
-  const res = Meteor.users.remove({ created: { $lte: newBefore }, guest: true });
+  const res = Meteor.users.remove({
+    created: { $lte: newBefore },
+    guest: true
+  });
   return res;
 };
 
@@ -95,31 +107,30 @@ function createGuestOptions(email) {
     username: guestname,
     email: email || `${guestname}@localhost`,
     guest: true,
-    profile: {},
+    profile: {}
   };
 }
 
-Accounts.registerLoginHandler('guest', (options) => {
-  if (
-    !options
-    || !options.createGuest) {
+Accounts.registerLoginHandler('guest', options => {
+  if (!options || !options.createGuest) {
     return undefined;
   }
   const guestOptions = createGuestOptions(options.email);
   return {
-    userId: Accounts.createUser(guestOptions),
+    userId: Accounts.createUser(guestOptions)
   };
 });
 
-Accounts.validateLoginAttempt(({
-  type, allowed, user,
-}) => {
+Accounts.validateLoginAttempt(({ type, allowed, user }) => {
   if (type !== 'guest' && allowed && user.guest) {
-    Users.update({ _id: user._id }, {
-      $set: {
-        guest: false,
-      },
-    });
+    Users.update(
+      { _id: user._id },
+      {
+        $set: {
+          guest: false
+        }
+      }
+    );
   }
   return true;
 });

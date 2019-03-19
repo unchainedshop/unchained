@@ -1,8 +1,6 @@
 import React from 'react';
 import { toast } from 'react-toastify';
-import {
-  compose, pure, mapProps, withHandlers, withState,
-} from 'recompose';
+import { compose, pure, mapProps, withHandlers, withState } from 'recompose';
 import { Segment, Container, Menu } from 'semantic-ui-react';
 import gql from 'graphql-tag';
 import dynamic from 'next/dynamic';
@@ -20,10 +18,14 @@ import withFormErrorHandlers from '../../lib/withFormErrorHandlers';
 const { publicRuntimeConfig } = getConfig();
 
 const FormRTEInput = dynamic(import('../FormRTEInput'), {
-  ssr: false,
+  ssr: false
 });
 const FormEditProductTexts = ({
-  languages, changeSelectedLocale, activeLanguage, isEditingDisabled, ...formProps
+  languages,
+  changeSelectedLocale,
+  activeLanguage,
+  isEditingDisabled,
+  ...formProps
 }) => (
   <Container>
     <AutoForm {...formProps} disabled={isEditingDisabled}>
@@ -83,7 +85,11 @@ const FormEditProductTexts = ({
           </div>
         ))}
         <ErrorsField />
-        <SubmitField value="Save" className="primary" disabled={isEditingDisabled} />
+        <SubmitField
+          value="Save"
+          className="primary"
+          disabled={isEditingDisabled}
+        />
       </Segment>
     </AutoForm>
   </Container>
@@ -116,101 +122,108 @@ export default compose(
     }
   `),
   mapProps(({ data, ...rest }) => {
-    const { languages = [], product = {} /* translatedProductTexts = [] */ } = data;
-    const filteredActiveLanguages = languages
-      .filter(language => !!language.isBase);
-    const baseLanguage = (
+    const {
+      languages = [],
+      product = {} /* translatedProductTexts = [] */
+    } = data;
+    const filteredActiveLanguages = languages.filter(
+      language => !!language.isBase
+    );
+    const baseLanguage =
       filteredActiveLanguages.length > 0
         ? filteredActiveLanguages[0].isoCode
-        : publicRuntimeConfig.LANG
-    );
+        : publicRuntimeConfig.LANG;
     return {
       data,
       ...rest,
       languages,
       baseLanguage,
-      isEditingDisabled: !product || (product.status === 'DELETED'),
+      isEditingDisabled: !product || product.status === 'DELETED'
     };
   }),
   withState('selectedLocale', 'setSelectedLocale', null),
-  graphql(gql`
-    mutation updateProductTexts($texts: [UpdateProductTextInput!]!, $productId: ID!) {
-      updateProductTexts(texts: $texts, productId: $productId) {
-        _id
-        locale
-        title
-        subtitle
-        slug
-        description
-        vendor
-        labels
+  graphql(
+    gql`
+      mutation updateProductTexts(
+        $texts: [UpdateProductTextInput!]!
+        $productId: ID!
+      ) {
+        updateProductTexts(texts: $texts, productId: $productId) {
+          _id
+          locale
+          title
+          subtitle
+          slug
+          description
+          vendor
+          labels
+        }
+      }
+    `,
+    {
+      options: {
+        refetchQueries: ['productTexts', 'productInfos']
       }
     }
-  `, {
-    options: {
-      refetchQueries: [
-        'productTexts',
-        'productInfos',
-      ],
-    },
-  }),
+  ),
   withFormSchema({
     texts: {
       type: Array,
-      optional: true,
+      optional: true
     },
     'texts.$': {
       type: Object,
-      optional: true,
+      optional: true
     },
     'texts.$.locale': {
       type: String,
       optional: false,
-      label: 'Locale',
+      label: 'Locale'
     },
     'texts.$.title': {
       type: String,
       optional: false,
-      label: 'Title',
+      label: 'Title'
     },
     'texts.$.subtitle': {
       type: String,
       optional: true,
-      label: 'Subtitle',
+      label: 'Subtitle'
     },
     'texts.$.vendor': {
       type: String,
       optional: true,
-      label: 'Vendor',
+      label: 'Vendor'
     },
     'texts.$.description': {
       type: String,
       optional: true,
-      label: 'Product description',
+      label: 'Product description'
     },
     'texts.$.slug': {
       type: String,
       optional: true,
-      label: 'Slug',
+      label: 'Slug'
     },
     'texts.$.labels': {
       type: Array,
       optional: true,
-      label: 'Labels',
+      label: 'Labels'
     },
     'texts.$.labels.$': {
       type: String,
-      optional: true,
-    },
+      optional: true
+    }
   }),
   withFormModel(({ data: { translatedProductTexts = [] }, languages = [] }) => {
-    const texts = languages.map((language) => {
-      const foundTranslations = translatedProductTexts
-        .filter(translatedText => (translatedText.locale === language.isoCode));
-      const localizedTextForLocale = (foundTranslations.length > 0
-        ? { ...(foundTranslations[0]) }
-        : { locale: language.isoCode }
+    const texts = languages.map(language => {
+      const foundTranslations = translatedProductTexts.filter(
+        translatedText => translatedText.locale === language.isoCode
       );
+      const localizedTextForLocale =
+        foundTranslations.length > 0
+          ? { ...foundTranslations[0] }
+          : { locale: language.isoCode };
       localizedTextForLocale.labels = localizedTextForLocale.labels || [];
       return localizedTextForLocale;
     });
@@ -223,20 +236,28 @@ export default compose(
     changeSelectedLocale: ({ setSelectedLocale }) => (event, element) => {
       setSelectedLocale(element.name);
     },
-    onSubmit: ({ productId, mutate, schema }) => ({ ...dirtyInput }) => mutate({
-      variables: {
-        texts: schema.clean(dirtyInput).texts,
-        productId,
-      },
-    }),
+    onSubmit: ({ productId, mutate, schema }) => ({ ...dirtyInput }) =>
+      mutate({
+        variables: {
+          texts: schema.clean(dirtyInput).texts,
+          productId
+        }
+      })
   }),
   withFormErrorHandlers,
-  mapProps(({
-    setSelectedLocale, selectedLocale,
-    baseLanguage, productId, mutate, data, ...rest
-  }) => ({
-    activeLanguage: selectedLocale || baseLanguage,
-    ...rest,
-  })),
-  pure,
+  mapProps(
+    ({
+      setSelectedLocale,
+      selectedLocale,
+      baseLanguage,
+      productId,
+      mutate,
+      data,
+      ...rest
+    }) => ({
+      activeLanguage: selectedLocale || baseLanguage,
+      ...rest
+    })
+  ),
+  pure
 )(FormEditProductTexts);

@@ -1,15 +1,21 @@
 import { compose, withState } from 'recompose';
 import { graphql } from 'react-apollo';
 import React from 'react';
-import {
-  Table, Icon, Button, Loader,
-} from 'semantic-ui-react';
+import { Table, Icon, Button, Loader } from 'semantic-ui-react';
 import InfiniteScroll from 'react-infinite-scroller';
 import Link from 'next/link';
 
 export default ({
-  items, cols = 4, rowRenderer, createPath, data,
-  children, loadMoreEntries, updateHasMore, hasMore, ...rest
+  items,
+  cols = 4,
+  rowRenderer,
+  createPath,
+  data,
+  children,
+  loadMoreEntries,
+  updateHasMore,
+  hasMore,
+  ...rest
 }) => (
   <Table celled {...rest}>
     <Table.Header>
@@ -26,7 +32,7 @@ export default ({
                 href={createPath}
               >
                 <Icon name="plus" />
-                  Add
+                Add
               </Button>
             </Link>
           )}
@@ -40,13 +46,13 @@ export default ({
         element={'tbody'}
         loadMore={loadMoreEntries}
         hasMore={hasMore}
-        loader={(
+        loader={
           <Table.Row>
             <Table.Cell colSpan={cols}>
               <Loader active inline="centered" />
             </Table.Cell>
           </Table.Row>
-        )}
+        }
       >
         {items.map(rowRenderer)}
       </InfiniteScroll>
@@ -64,9 +70,7 @@ export default ({
                 size="small"
                 href={createPath}
               >
-                <Icon name="plus" />
-                {' '}
-                Add
+                <Icon name="plus" /> Add
               </Button>
             </Link>
           )}
@@ -79,48 +83,60 @@ export default ({
 Array.prototype.diff = function(a) {return this.filter(i => a.indexOf(i) !== -1)}; // eslint-disable-line
 
 export const withDataTableLoader = ({
-  query, queryName, queryOptions, itemsPerPage = 5,
-}) => compose(
-  withState('hasMore', 'updateHasMore', true),
-  graphql(query, {
-    options: ({ hasMore, updateHasMore, ...props }) => ({
-      variables: {
-        offset: 0,
-        limit: process.browser ? itemsPerPage : 1,
-        ...props,
-      },
-      ...queryOptions,
-    }),
-    props: ({
-      data: { loading, fetchMore, ...data },
-      ownProps: { updateHasMore, hasMore },
-    }) => ({
-      loading,
-      hasMore: (data[queryName] && itemsPerPage > data[queryName].length) ? false : hasMore,
-      items: data[queryName],
-      loadMoreEntries: () => fetchMore({
+  query,
+  queryName,
+  queryOptions,
+  itemsPerPage = 5
+}) =>
+  compose(
+    withState('hasMore', 'updateHasMore', true),
+    graphql(query, {
+      options: ({ hasMore, updateHasMore, ...props }) => ({
         variables: {
-          offset: Math.floor(data[queryName].length / itemsPerPage) * itemsPerPage,
-          limit: itemsPerPage,
+          offset: 0,
+          limit: process.browser ? itemsPerPage : 1,
+          ...props
         },
-        updateQuery: (previousResult, { fetchMoreResult }) => {
-          if (!fetchMoreResult || fetchMoreResult[queryName].length === 0) {
-            updateHasMore(false);
-            return previousResult;
-          }
-
-          const oldIds = previousResult[queryName].map(item => item._id);
-          const newIds = fetchMoreResult[queryName].filter(item => oldIds.indexOf(item._id) === -1);
-          if (newIds.length === 0) {
-            updateHasMore(false);
-            return previousResult;
-          }
-
-          const newObj = { };
-          newObj[queryName] = [...previousResult[queryName], ...newIds];
-          return Object.assign({}, previousResult, newObj);
-        },
+        ...queryOptions
       }),
-    }),
-  }),
-);
+      props: ({
+        data: { loading, fetchMore, ...data },
+        ownProps: { updateHasMore, hasMore }
+      }) => ({
+        loading,
+        hasMore:
+          data[queryName] && itemsPerPage > data[queryName].length
+            ? false
+            : hasMore,
+        items: data[queryName],
+        loadMoreEntries: () =>
+          fetchMore({
+            variables: {
+              offset:
+                Math.floor(data[queryName].length / itemsPerPage) *
+                itemsPerPage,
+              limit: itemsPerPage
+            },
+            updateQuery: (previousResult, { fetchMoreResult }) => {
+              if (!fetchMoreResult || fetchMoreResult[queryName].length === 0) {
+                updateHasMore(false);
+                return previousResult;
+              }
+
+              const oldIds = previousResult[queryName].map(item => item._id);
+              const newIds = fetchMoreResult[queryName].filter(
+                item => oldIds.indexOf(item._id) === -1
+              );
+              if (newIds.length === 0) {
+                updateHasMore(false);
+                return previousResult;
+              }
+
+              const newObj = {};
+              newObj[queryName] = [...previousResult[queryName], ...newIds];
+              return Object.assign({}, previousResult, newObj);
+            }
+          })
+      })
+    })
+  );

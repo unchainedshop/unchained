@@ -6,22 +6,28 @@ export default compose(
   graphql(gql`
     query getCurrentUser {
       me {
-       _id
-       name
-       isGuest
-       email
-       roles
-     }
+        _id
+        name
+        isGuest
+        email
+        roles
+      }
     }
   `),
-  mapProps(({ data: { me, loading }, loading: loadingPredecessor = false, ...rest }) => {
-    const currentUser = me
-      ? ((me.roles || []).indexOf('admin') !== -1 && me)
-      : {};
-    return {
-      currentUser,
-      loading: !me && (loading || loadingPredecessor),
-      ...rest,
-    };
-  }),
+  mapProps(
+    ({
+      data: { me, loading },
+      loading: loadingPredecessor = false,
+      ...rest
+    }) => {
+      const currentUser = me
+        ? (me.roles || []).indexOf('admin') !== -1 && me
+        : {};
+      return {
+        currentUser,
+        loading: !me && (loading || loadingPredecessor),
+        ...rest
+      };
+    }
+  )
 );

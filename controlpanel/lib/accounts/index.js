@@ -32,5 +32,5 @@ export {
   loginWithLinkedIn,
   onTokenChange,
   setTokenStore,
-  userId,
+  userId
 };

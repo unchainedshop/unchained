@@ -1,32 +1,25 @@
 import React from 'react';
-import {
-  compose, pure, mapProps, withHandlers,
-} from 'recompose';
-import {
-  Segment, Table, Dropdown, Button,
-} from 'semantic-ui-react';
+import { compose, pure, mapProps, withHandlers } from 'recompose';
+import { Segment, Table, Dropdown, Button } from 'semantic-ui-react';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 
 const ProductVariationAssignmentList = ({
-  columnTitles, addProductAssignment,
-  removeProductAssignment, rows, productOptions,
+  columnTitles,
+  addProductAssignment,
+  removeProductAssignment,
+  rows,
+  productOptions
 }) => (
   <Segment>
     <Table celled>
       <Table.Header>
         <Table.Row>
           {columnTitles.map(title => (
-            <Table.HeaderCell key={title}>
-              {title}
-            </Table.HeaderCell>
+            <Table.HeaderCell key={title}>{title}</Table.HeaderCell>
           ))}
-          <Table.HeaderCell>
-Product
-          </Table.HeaderCell>
-          <Table.HeaderCell>
-Options
-          </Table.HeaderCell>
+          <Table.HeaderCell>Product</Table.HeaderCell>
+          <Table.HeaderCell>Options</Table.HeaderCell>
         </Table.Row>
       </Table.Header>
 
@@ -34,9 +27,7 @@ Options
         {rows.map(({ _id, columns, product }) => (
           <Table.Row key={_id}>
             {columns.map(column => (
-              <Table.Cell key={`${column}`}>
-                {column}
-              </Table.Cell>
+              <Table.Cell key={`${column}`}>{column}</Table.Cell>
             ))}
             <Table.Cell>
               <Dropdown
@@ -53,8 +44,12 @@ Options
             </Table.Cell>
             <Table.Cell>
               {product && product._id && (
-                <Button small onClick={removeProductAssignment} optionValues={columns}>
-X
+                <Button
+                  small
+                  onClick={removeProductAssignment}
+                  optionValues={columns}
+                >
+                  X
                 </Button>
               )}
             </Table.Cell>
@@ -68,11 +63,11 @@ X
 const matrixGenerator = (columns, rowContainer, currentIndex) => {
   const column = columns[currentIndex];
   const newRows = [];
-  column.values.forEach((value) => {
-    const tempRow = { };
+  column.values.forEach(value => {
+    const tempRow = {};
     tempRow[column.key] = value;
     if (rowContainer.length > 0) {
-      rowContainer.forEach((oldRow) => {
+      rowContainer.forEach(oldRow => {
         newRows.push({ ...oldRow, ...tempRow });
       });
     } else {
@@ -140,89 +135,105 @@ export default compose(
       }
     }
   `),
-  graphql(gql`
-    mutation addProductAssignment($proxyId: ID!, $productId: ID!, $vectors: [ProductAssignmentVectorInput!]!) {
-      addProductAssignment(proxyId: $proxyId, productId: $productId, vectors: $vectors) {
-        _id
+  graphql(
+    gql`
+      mutation addProductAssignment(
+        $proxyId: ID!
+        $productId: ID!
+        $vectors: [ProductAssignmentVectorInput!]!
+      ) {
+        addProductAssignment(
+          proxyId: $proxyId
+          productId: $productId
+          vectors: $vectors
+        ) {
+          _id
+        }
+      }
+    `,
+    {
+      name: 'addProductAssignment',
+      options: {
+        refetchQueries: ['productVariationAssignments']
       }
     }
-  `, {
-    name: 'addProductAssignment',
-    options: {
-      refetchQueries: [
-        'productVariationAssignments',
-      ],
-    },
-  }),
-  graphql(gql`
-    mutation removeProductAssignment($proxyId: ID!, $vectors: [ProductAssignmentVectorInput!]!) {
-      removeProductAssignment(proxyId: $proxyId, vectors: $vectors) {
-        _id
+  ),
+  graphql(
+    gql`
+      mutation removeProductAssignment(
+        $proxyId: ID!
+        $vectors: [ProductAssignmentVectorInput!]!
+      ) {
+        removeProductAssignment(proxyId: $proxyId, vectors: $vectors) {
+          _id
+        }
+      }
+    `,
+    {
+      name: 'removeProductAssignment',
+      options: {
+        refetchQueries: ['productVariationAssignments']
       }
     }
-  `, {
-    name: 'removeProductAssignment',
-    options: {
-      refetchQueries: [
-        'productVariationAssignments',
-      ],
-    },
-  }),
+  ),
   mapProps(({ data: { product, products }, ...rest }) => {
-    const variations = ((product && product.variations) || []);
-    const columnTitles = variations
-      .map(({ texts, key }) => (texts ? texts.title : key));
-    const columnKeys = variations
-      .map(({ key }) => key);
+    const variations = (product && product.variations) || [];
+    const columnTitles = variations.map(({ texts, key }) =>
+      texts ? texts.title : key
+    );
+    const columnKeys = variations.map(({ key }) => key);
 
-    const keyValueCombinations = variations
-      .map(({ key, options }) => ({
-        values: (options || []).map((option => option.value)),
-        key,
-      }));
-    const allRowsPossible = keyValueCombinations.length > 0
-      ? matrixGenerator(keyValueCombinations, [], 0)
-      : [];
+    const keyValueCombinations = variations.map(({ key, options }) => ({
+      values: (options || []).map(option => option.value),
+      key
+    }));
+    const allRowsPossible =
+      keyValueCombinations.length > 0
+        ? matrixGenerator(keyValueCombinations, [], 0)
+        : [];
 
-    const assignments = ((product && product.assignments) || []);
+    const assignments = (product && product.assignments) || [];
     const allAssignedRows = {};
-    assignments
-      .forEach((assignment) => {
-        const selector = {};
-        assignment.vectors.forEach((vector) => {
-          selector[vector.variation.key] = vector.option.value;
-        });
-        allAssignedRows[Object.values(selector).join('')] = assignment.product;
+    assignments.forEach(assignment => {
+      const selector = {};
+      assignment.vectors.forEach(vector => {
+        selector[vector.variation.key] = vector.option.value;
       });
+      allAssignedRows[Object.values(selector).join('')] = assignment.product;
+    });
 
-    const rows = allRowsPossible.map((row) => {
+    const rows = allRowsPossible.map(row => {
       const hash = Object.values(row).join('');
       return {
         _id: hash,
         product: allAssignedRows[hash],
         columns: Object.values(row),
-        columnsText: Object.values(row),
+        columnsText: Object.values(row)
       };
     });
 
-    const productOptions = products && products.map(({ texts, _id }) => ({
-      text: texts && texts.title,
-      value: _id,
-    }));
+    const productOptions =
+      products &&
+      products.map(({ texts, _id }) => ({
+        text: texts && texts.title,
+        value: _id
+      }));
 
     return {
       columnTitles,
       columnKeys,
       rows,
       productOptions,
-      isEditingDisabled: !product || (product.status === 'DELETED'),
+      isEditingDisabled: !product || product.status === 'DELETED',
       pressDelay: 200,
-      ...rest,
+      ...rest
     };
   }),
   withHandlers({
     addProductAssignment: ({
-      addProductAssignment, productId, columnKeys,
+      addProductAssignment,
+      productId,
+      columnKeys
     }) => async (_, { value, optionValues }) => {
       await addProductAssignment({
         variables: {
@@ -230,24 +241,26 @@ export default compose(
           productId: value,
           vectors: optionValues.map((optionValue, index) => ({
             key: columnKeys[index],
-            value: optionValue,
-          })),
-        },
+            value: optionValue
+          }))
+        }
       });
     },
     removeProductAssignment: ({
-      removeProductAssignment, productId, columnKeys,
+      removeProductAssignment,
+      productId,
+      columnKeys
     }) => async (_, { optionValues }) => {
       await removeProductAssignment({
         variables: {
           proxyId: productId,
           vectors: optionValues.map((optionValue, index) => ({
             key: columnKeys[index],
-            value: optionValue,
-          })),
-        },
+            value: optionValue
+          }))
+        }
       });
-    },
+    }
   }),
-  pure,
+  pure
 )(ProductVariationAssignmentList);

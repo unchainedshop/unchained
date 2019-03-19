@@ -13,7 +13,7 @@ export default {
   price({ amount, currencyCode }) {
     return {
       amount,
-      currency: currencyCode,
+      currency: currencyCode
     };
-  },
+  }
 };

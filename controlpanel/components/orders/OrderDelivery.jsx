@@ -3,51 +3,43 @@ import gql from 'graphql-tag';
 import { format } from 'date-fns';
 import { graphql } from 'react-apollo';
 import React from 'react';
-import {
-  Segment, List, Label, Icon,
-} from 'semantic-ui-react';
+import { Segment, List, Label, Icon } from 'semantic-ui-react';
 import Link from 'next/link';
 import Address from '../Address';
 
-const colorForStatus = (status) => {
+const colorForStatus = status => {
   if (status === 'DELIVERED') return 'green';
   return 'red';
 };
 
 const OrderDelivery = ({
-  provider = { interface: {} }, status, address, statusColor, delivered,
+  provider = { interface: {} },
+  status,
+  address,
+  statusColor,
+  delivered
 }) => (
   <Segment secondary>
     <Label color={statusColor} horizontal attached="top">
       {status}
-      <Label.Detail>
-        Delivery Provider
-      </Label.Detail>
+      <Label.Detail>Delivery Provider</Label.Detail>
     </Label>
     <List relaxed divided>
       <List.Item>
         <Label horizontal basic>
           <Icon name="ship" />
           {provider && provider.interface && (
-          <Link href={`/delivery-providers/edit?_id=${provider._id}`}>
-            <a href={`/delivery-providers/edit?_id=${provider._id}`}>
-              {provider.interface.label}
-              {' '}
-              {provider.interface.version}
-              {' '}
-(
-              {provider.type}
-)
-            </a>
-          </Link>
+            <Link href={`/delivery-providers/edit?_id=${provider._id}`}>
+              <a href={`/delivery-providers/edit?_id=${provider._id}`}>
+                {provider.interface.label} {provider.interface.version} (
+                {provider.type})
+              </a>
+            </Link>
           )}
         </Label>
         <p>
-          Date of Delivery to Provider:
-          {' '}
-          {delivered
-            ? format(delivered, 'Pp')
-            : 'n/a'}
+          Date of Delivery to Provider:{' '}
+          {delivered ? format(delivered, 'Pp') : 'n/a'}
         </p>
       </List.Item>
       {address && (
@@ -130,7 +122,7 @@ export default compose(
   mapProps(({ data: { order = {} } }) => ({
     ...order.delivery,
     address: (order.delivery && order.delivery.address) || order.billingAddress,
-    statusColor: colorForStatus(order.delivery && order.delivery.status),
+    statusColor: colorForStatus(order.delivery && order.delivery.status)
   })),
-  pure,
+  pure
 )(OrderDelivery);

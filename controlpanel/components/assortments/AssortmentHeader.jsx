@@ -1,9 +1,7 @@
 import React from 'react';
 import { compose, mapProps } from 'recompose';
 import { format } from 'date-fns';
-import {
-  Menu, Dropdown, Segment, List, Grid,
-} from 'semantic-ui-react';
+import { Menu, Dropdown, Segment, List, Grid } from 'semantic-ui-react';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 import BtnRemoveAssortment from './BtnRemoveAssortment';
@@ -18,14 +16,12 @@ const AssortmentHeader = ({ loading, assortmentId, assortment = {} }) => [
     <Menu.Menu position="right">
       <Dropdown item icon="wrench" simple>
         <Dropdown.Menu>
-          <Dropdown.Header>
-            Options
-          </Dropdown.Header>
+          <Dropdown.Header>Options</Dropdown.Header>
           <BtnRemoveAssortment
             assortmentId={assortment._id}
             Component={Dropdown.Item}
           >
-              Delete
+            Delete
           </BtnRemoveAssortment>
         </Dropdown.Menu>
       </Dropdown>
@@ -39,8 +35,7 @@ const AssortmentHeader = ({ loading, assortmentId, assortment = {} }) => [
             <List.Item>
               <List.Icon name="add to calendar" />
               <List.Content>
-                  Created:
-                {' '}
+                Created:{' '}
                 {assortment.created
                   ? format(assortment.created, 'Pp')
                   : 'Unbekannt'}
@@ -49,7 +44,7 @@ const AssortmentHeader = ({ loading, assortmentId, assortment = {} }) => [
             <List.Item>
               <List.Icon name="refresh" />
               <List.Content>
-                  Updated:
+                Updated:
                 {assortment.updated
                   ? format(assortment.updated, 'Pp')
                   : 'Unbekannt'}
@@ -62,7 +57,7 @@ const AssortmentHeader = ({ loading, assortmentId, assortment = {} }) => [
         </Grid.Column>
       </Grid.Row>
     </Grid>
-  </Segment>,
+  </Segment>
 ];
 
 export default compose(
@@ -70,8 +65,8 @@ export default compose(
     query assortmentInfos($assortmentId: ID) {
       assortment(assortmentId: $assortmentId) {
         _id
-        created,
-        updated,
+        created
+        updated
         texts {
           _id
           title
@@ -82,6 +77,6 @@ export default compose(
   mapProps(({ data: { assortment, loading }, ...rest }) => ({
     assortment,
     loading,
-    ...rest,
-  })),
+    ...rest
+  }))
 )(AssortmentHeader);

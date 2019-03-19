@@ -1,25 +1,22 @@
 import {
   PaymentDirector,
   PaymentAdapter,
-  PaymentError,
+  PaymentError
 } from 'meteor/unchained:core-payment';
 
-const {
-  POSTFINANCE_SECRET,
-} = process.env;
+const { POSTFINANCE_SECRET } = process.env;
 
 class Postfinance extends PaymentAdapter {
-  static key = 'ch.postfinance'
+  static key = 'ch.postfinance';
 
-  static label = 'Postfinance'
+  static label = 'Postfinance';
 
-  static version = '1.0'
+  static version = '1.0';
 
-  static initialConfiguration = [
-  ]
+  static initialConfiguration = [];
 
   static typeSupported(type) {
-    return (type === 'POSTFINANCE');
+    return type === 'POSTFINANCE';
   }
   isActive() { // eslint-disable-line
     return false;

@@ -9,7 +9,7 @@ Factory.define('orderDelivery', OrderDeliveries, {
   deliveryProviderId: () => Factory.get('deliveryProvider'),
   status: () => faker.random.arrayElement(OrderDeliveryStatus),
   context: () => ({
-    address: fakeAddress(),
+    address: fakeAddress()
   }),
-  ...fakeTimestampFields,
+  ...fakeTimestampFields
 });

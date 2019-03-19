@@ -1,9 +1,7 @@
 import React from 'react';
 import { toast } from 'react-toastify';
 import { compose, mapProps, withHandlers } from 'recompose';
-import {
-  Button, Segment, Container, Message,
-} from 'semantic-ui-react';
+import { Button, Segment, Container, Message } from 'semantic-ui-react';
 import { withRouter } from 'next/router';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
@@ -15,7 +13,11 @@ import withFormSchema from '../../lib/withFormSchema';
 import withFormModel from '../../lib/withFormModel';
 import withFormErrorHandlers from '../../lib/withFormErrorHandlers';
 
-const FormEditPaymentProvider = ({ configurationError, removePaymentProvider, ...formProps }) => (
+const FormEditPaymentProvider = ({
+  configurationError,
+  removePaymentProvider,
+  ...formProps
+}) => (
   <Container>
     <AutoForm {...formProps}>
       <Segment attached="bottom">
@@ -25,16 +27,19 @@ const FormEditPaymentProvider = ({ configurationError, removePaymentProvider, ..
         {configurationError && (
           <Message negative>
             <Message.Header>
-Configuration Error:
+              Configuration Error:
               {configurationError}
             </Message.Header>
-            <p>
-Please check the docs
-            </p>
+            <p>Please check the docs</p>
           </Message>
         )}
-        <Button type="normal" secondary floated="right" onClick={removePaymentProvider}>
-Delete
+        <Button
+          type="normal"
+          secondary
+          floated="right"
+          onClick={removePaymentProvider}
+        >
+          Delete
         </Button>
       </Segment>
     </AutoForm>
@@ -53,94 +58,108 @@ export default compose(
       }
     }
   `),
-  graphql(gql`
-    mutation updatePaymentProvider($paymentProvider: UpdateProviderInput!, $paymentProviderId: ID!) {
-      updatePaymentProvider(paymentProvider: $paymentProvider, paymentProviderId: $paymentProviderId) {
-        _id
-        type
-        interface {
+  graphql(
+    gql`
+      mutation updatePaymentProvider(
+        $paymentProvider: UpdateProviderInput!
+        $paymentProviderId: ID!
+      ) {
+        updatePaymentProvider(
+          paymentProvider: $paymentProvider
+          paymentProviderId: $paymentProviderId
+        ) {
           _id
-          label
-          version
+          type
+          interface {
+            _id
+            label
+            version
+          }
+          configuration
+          configurationError
         }
-        configuration
-        configurationError
+      }
+    `,
+    {
+      name: 'updatePaymentProvider',
+      options: {
+        refetchQueries: ['paymentProvider', 'paymentProviders']
       }
     }
-  `, {
-    name: 'updatePaymentProvider',
-    options: {
-      refetchQueries: [
-        'paymentProvider',
-        'paymentProviders',
-      ],
-    },
-  }),
-  graphql(gql`
-    mutation removePaymentProvider($paymentProviderId: ID!) {
-      removePaymentProvider(paymentProviderId: $paymentProviderId) {
-        _id
+  ),
+  graphql(
+    gql`
+      mutation removePaymentProvider($paymentProviderId: ID!) {
+        removePaymentProvider(paymentProviderId: $paymentProviderId) {
+          _id
+        }
+      }
+    `,
+    {
+      name: 'removePaymentProvider',
+      options: {
+        refetchQueries: ['paymentProviders']
       }
     }
-  `, {
-    name: 'removePaymentProvider',
-    options: {
-      refetchQueries: [
-        'paymentProviders',
-      ],
-    },
-  }),
+  ),
   withFormSchema({
     configuration: {
       type: Array,
       optional: false,
-      label: 'Konfigurationsparameter',
+      label: 'Konfigurationsparameter'
     },
     'configuration.$': {
-      type: Object,
+      type: Object
     },
     'configuration.$.key': {
-      type: String,
+      type: String
     },
     'configuration.$.value': {
-      type: String,
-    },
+      type: String
+    }
   }),
-  withFormModel(({ data: { paymentProvider: { ...paymentProvider } = {} } }) => ({
-    ...paymentProvider,
-  })),
+  withFormModel(
+    ({ data: { paymentProvider: { ...paymentProvider } = {} } }) => ({
+      ...paymentProvider
+    })
+  ),
   withHandlers({
     onSubmitSuccess: () => () => {
       toast('PaymentProvider saved', { type: toast.TYPE.SUCCESS });
     },
     removePaymentProvider: ({
-      router, removePaymentProvider, paymentProviderId,
-    }) => async (event) => {
+      router,
+      removePaymentProvider,
+      paymentProviderId
+    }) => async event => {
       event.preventDefault();
       router.replace({ pathname: '/payment-providers' });
       await removePaymentProvider({
         variables: {
-          paymentProviderId,
-        },
+          paymentProviderId
+        }
       });
     },
-    onSubmit: ({
-      paymentProviderId, updatePaymentProvider,
-    }) => ({ configuration }) => updatePaymentProvider({
-      variables: {
-        paymentProvider: { configuration },
-        paymentProviderId,
-      },
-    }),
+    onSubmit: ({ paymentProviderId, updatePaymentProvider }) => ({
+      configuration
+    }) =>
+      updatePaymentProvider({
+        variables: {
+          paymentProvider: { configuration },
+          paymentProviderId
+        }
+      })
   }),
   withFormErrorHandlers,
-  mapProps(({
-    paymentProviderId,
-    updatePaymentProvider,
-    data: { paymentProvider: { configurationError } = {} } = {},
-    ...rest
-  }) => ({
-    configurationError,
-    ...rest,
-  })),
+  mapProps(
+    ({
+      paymentProviderId,
+      updatePaymentProvider,
+      data: { paymentProvider: { configurationError } = {} } = {},
+      ...rest
+    }) => ({
+      configurationError,
+      ...rest
+    })
+  )
 )(FormEditPaymentProvider);

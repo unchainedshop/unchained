@@ -3,16 +3,20 @@ import { compose, withHandlers, withState } from 'recompose';
 export default compose(
   withState('mappedError', 'updateMappedError', null),
   withHandlers({
-    mapError: ({ updateMappedError }) => (error) => {
+    mapError: ({ updateMappedError }) => error => {
       const graphQLError = error.graphQLErrors && error.graphQLErrors[0];
       const message = graphQLError && graphQLError.message;
       if (message === 'User not found [403]') {
         updateMappedError(new Error('Benutzer nicht gefunden'));
         return;
-      } if (message === 'Email already exists. [403]') {
-        updateMappedError(new Error('E-Mail existiert bereits im System, zurücksetzen?'));
+      }
+      if (message === 'Email already exists. [403]') {
+        updateMappedError(
+          new Error('E-Mail existiert bereits im System, zurücksetzen?')
+        );
         return;
-      } if (message === 'Incorrect password [403]') {
+      }
+      if (message === 'Incorrect password [403]') {
         updateMappedError(new Error('Bitte überprüfe dein Password'));
         return;
       }
@@ -21,6 +25,6 @@ export default compose(
       } else {
         updateMappedError(error);
       }
-    },
-  }),
+    }
+  })
 );

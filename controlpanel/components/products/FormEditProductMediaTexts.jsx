@@ -1,11 +1,7 @@
 import React from 'react';
 import { toast } from 'react-toastify';
-import {
-  compose, pure, mapProps, withHandlers, withState,
-} from 'recompose';
-import {
-  Segment, Container, Menu, Button,
-} from 'semantic-ui-react';
+import { compose, pure, mapProps, withHandlers, withState } from 'recompose';
+import { Segment, Container, Menu, Button } from 'semantic-ui-react';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 import AutoField from 'uniforms-semantic/AutoField';
@@ -20,7 +16,12 @@ import withFormErrorHandlers from '../../lib/withFormErrorHandlers';
 const { publicRuntimeConfig } = getConfig();
 
 const FormEditProductMediaTexts = ({
-  languages, changeSelectedLocale, activeLanguage, onCancel, isEditingDisabled, ...formProps
+  languages,
+  changeSelectedLocale,
+  activeLanguage,
+  onCancel,
+  isEditingDisabled,
+  ...formProps
 }) => (
   <Container>
     <AutoForm {...formProps} disabled={isEditingDisabled}>
@@ -29,7 +30,7 @@ const FormEditProductMediaTexts = ({
           <Menu.Item
             key={`menu-item-${language._id}`}
             name={language.isoCode}
-            active={(activeLanguage) === language.isoCode}
+            active={activeLanguage === language.isoCode}
             onClick={changeSelectedLocale}
           >
             {language.name}
@@ -58,7 +59,11 @@ const FormEditProductMediaTexts = ({
         ))}
         <ErrorsField />
         <br />
-        <SubmitField value="Save" className="primary" disabled={isEditingDisabled} />
+        <SubmitField
+          value="Save"
+          className="primary"
+          disabled={isEditingDisabled}
+        />
         <Button type="normal" onClick={onCancel}>
           Cancel
         </Button>
@@ -87,76 +92,89 @@ export default compose(
   `),
   mapProps(({ data, ...rest }) => {
     const { languages = [] } = data;
-    const filteredActiveLanguages = languages
-      .filter(language => !!language.isBase);
-    const baseLanguage = (
+    const filteredActiveLanguages = languages.filter(
+      language => !!language.isBase
+    );
+    const baseLanguage =
       filteredActiveLanguages.length > 0
         ? filteredActiveLanguages[0].isoCode
-        : publicRuntimeConfig.LANG
-    );
+        : publicRuntimeConfig.LANG;
     return {
       data,
       languages,
       baseLanguage,
-      ...rest,
+      ...rest
     };
   }),
-  withState('selectedLocale', 'setSelectedLocale', ({ baseLanguage }) => baseLanguage),
-  graphql(gql`
-    mutation updateProductMediaTexts($texts: [UpdateProductMediaTextInput!]!, $productMediaId: ID!) {
-      updateProductMediaTexts(texts: $texts, productMediaId: $productMediaId) {
-        _id
-        locale
-        title
-        subtitle
+  withState(
+    'selectedLocale',
+    'setSelectedLocale',
+    ({ baseLanguage }) => baseLanguage
+  ),
+  graphql(
+    gql`
+      mutation updateProductMediaTexts(
+        $texts: [UpdateProductMediaTextInput!]!
+        $productMediaId: ID!
+      ) {
+        updateProductMediaTexts(
+          texts: $texts
+          productMediaId: $productMediaId
+        ) {
+          _id
+          locale
+          title
+          subtitle
+        }
+      }
+    `,
+    {
+      options: {
+        refetchQueries: ['productMediaTexts', 'productMedia']
       }
     }
-  `, {
-    options: {
-      refetchQueries: [
-        'productMediaTexts',
-        'productMedia',
-      ],
-    },
-  }),
+  ),
   withFormSchema({
     texts: {
       type: Array,
-      optional: true,
+      optional: true
     },
     'texts.$': {
       type: Object,
-      optional: true,
+      optional: true
     },
     'texts.$.locale': {
       type: String,
       optional: false,
-      label: 'Locale',
+      label: 'Locale'
     },
     'texts.$.title': {
       type: String,
       optional: true,
-      label: 'Title',
+      label: 'Title'
     },
     'texts.$.subtitle': {
       type: String,
       optional: true,
-      label: 'Subtitle',
-    },
+      label: 'Subtitle'
+    }
   }),
-  withFormModel(({ data: { translatedProductMediaTexts = [] }, languages = [] }) => {
-    const texts = languages.map((language) => {
-      const foundTranslations = translatedProductMediaTexts
-        .filter(translatedText => (translatedText.locale === language.isoCode));
-      const localizedTextForLocale = (foundTranslations.length > 0
-        ? { ...(foundTranslations[0]) }
-        : { locale: language.isoCode }
-      );
-      localizedTextForLocale.labels = localizedTextForLocale.labels || [];
-      return localizedTextForLocale;
-    });
-    return { texts };
-  }),
+  withFormModel(
+    ({ data: { translatedProductMediaTexts = [] }, languages = [] }) => {
+      const texts = languages.map(language => {
+        const foundTranslations = translatedProductMediaTexts.filter(
+          translatedText => translatedText.locale === language.isoCode
+        );
+        const localizedTextForLocale =
+          foundTranslations.length > 0
+            ? { ...foundTranslations[0] }
+            : { locale: language.isoCode };
+        localizedTextForLocale.labels = localizedTextForLocale.labels || [];
+        return localizedTextForLocale;
+      });
+      return { texts };
+    }
+  ),
   withHandlers({
     changeSelectedLocale: ({ setSelectedLocale }) => (event, element) => {
       setSelectedLocale(element.name);
@@ -164,20 +182,28 @@ export default compose(
     onSubmitSuccess: () => () => {
       toast('Texts saved', { type: toast.TYPE.SUCCESS });
     },
-    onSubmit: ({ productMediaId, mutate, schema }) => ({ ...dirtyInput }) => mutate({
-      variables: {
-        texts: schema.clean(dirtyInput).texts,
-        productMediaId,
-      },
-    }),
+    onSubmit: ({ productMediaId, mutate, schema }) => ({ ...dirtyInput }) =>
+      mutate({
+        variables: {
+          texts: schema.clean(dirtyInput).texts,
+          productMediaId
+        }
+      })
   }),
   withFormErrorHandlers,
-  mapProps(({
-    setSelectedLocale, selectedLocale,
-    baseLanguage, productMediaId, mutate, data, ...rest
-  }) => ({
-    activeLanguage: selectedLocale || baseLanguage,
-    ...rest,
-  })),
-  pure,
+  mapProps(
+    ({
+      setSelectedLocale,
+      selectedLocale,
+      baseLanguage,
+      productMediaId,
+      mutate,
+      data,
+      ...rest
+    }) => ({
+      activeLanguage: selectedLocale || baseLanguage,
+      ...rest
+    })
+  ),
+  pure
 )(FormEditProductMediaTexts);

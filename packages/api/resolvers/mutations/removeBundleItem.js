@@ -1,7 +1,7 @@
 import { log } from 'meteor/unchained:core-logger';
 import { Products } from 'meteor/unchained:core-products';
 
-export default function (root, { productId, index }) {
+export default function(root, { productId, index }) {
   log(`mutation removeBundleItem ${productId}`, { index });
 
   const { bundleItems = [] } = Products.findOne(productId);
@@ -9,8 +9,8 @@ export default function (root, { productId, index }) {
   Products.update(productId, {
     $set: {
       updated: new Date(),
-      bundleItems,
-    },
+      bundleItems
+    }
   });
 
   return Products.findOne(productId);

@@ -2,13 +2,14 @@ import { log } from 'meteor/unchained:core-logger';
 import { Orders } from 'meteor/unchained:core-orders';
 import { Users } from 'meteor/unchained:core-users';
 import {
-  UserNotFoundError, OrderCheckoutError, UserNoCartError,
-  OrderWrongStatusError, OrderNotFoundError,
+  UserNotFoundError,
+  OrderCheckoutError,
+  UserNoCartError,
+  OrderWrongStatusError,
+  OrderNotFoundError
 } from '../../errors';
 
-const checkoutWithPotentialErrors = (
-  cart, context, options, userId,
-) => {
+const checkoutWithPotentialErrors = (cart, context, options, userId) => {
   try {
     return cart.checkout(context, options);
   } catch (error) {
@@ -16,21 +17,18 @@ const checkoutWithPotentialErrors = (
       userId,
       orderId: cart._id,
       ...context,
-      detailMessage: error.message,
+      detailMessage: error.message
     };
     log(data.detailMessage, { userId, orderId: cart._id, level: 'error' });
     throw new OrderCheckoutError({ data });
   }
 };
 
-export default function (root, {
-  orderId,
-  ...transactionContext
-}, {
-  userId,
-  countryContext,
-  localeContext,
-}) {
+export default function(
+  root,
+  { orderId, ...transactionContext },
+  { userId, countryContext, localeContext }
+) {
   log('mutation checkoutCart', { orderId, userId });
   if (orderId) {
     const order = Orders.findOne({ _id: orderId });
@@ -38,15 +36,25 @@ export default function (root, {
     if (!order.isCart()) {
       throw new OrderWrongStatusError({ data: { status: order.status } });
     }
-    return checkoutWithPotentialErrors(order, transactionContext, {
-      localeContext,
-    }, userId);
+    return checkoutWithPotentialErrors(
+      order,
+      transactionContext,
+      {
+        localeContext
+      },
+      userId
+    );
   }
   const user = Users.findOne({ _id: userId });
   if (!user) throw new UserNotFoundError({ data: { userId } });
   const cart = user.cart({ countryContext });
   if (!cart) throw new UserNoCartError({ data: { userId } });
-  return checkoutWithPotentialErrors(cart, transactionContext, {
-    localeContext,
-  }, userId);
+  return checkoutWithPotentialErrors(
+    cart,
+    transactionContext,
+    {
+      localeContext
+    },
+    userId
+  );
 }

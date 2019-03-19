@@ -34,13 +34,18 @@ const DatePickerField = ({
   component,
   ...props
 }) => (
-  <div className={classnames(className, { disabled, error, required }, 'field')} {...filterDOMProps(props)}>
-    {label && (
-      <label htmlFor={id}>
-        {label}
-      </label>
-    )}
-    <div className={classnames('ui', { left: iconLeft, icon: icon || iconLeft }, 'input')}>
+  <div
+    className={classnames(className, { disabled, error, required }, 'field')}
+    {...filterDOMProps(props)}
+  >
+    {label && <label htmlFor={id}>{label}</label>}
+    <div
+      className={classnames(
+        'ui',
+        { left: iconLeft, icon: icon || iconLeft },
+        'input'
+      )}
+    >
       <DatePicker
         disabled={disabled}
         id={id}
@@ -61,9 +66,7 @@ const DatePickerField = ({
     </div>
 
     {!!(error && showInlineError) && (
-      <div className="ui red basic pointing label">
-        {errorMessage}
-      </div>
+      <div className="ui red basic pointing label">{errorMessage}</div>
     )}
   </div>
 );

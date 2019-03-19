@@ -5,33 +5,39 @@ import { ProductTypes, ProductStatus } from './schema';
 import { Products, ProductTexts } from './collections';
 
 Factory.define('simpleProduct', Products, {
-  status: () => faker.random.arrayElement([ProductStatus.ACTIVE, ProductStatus.DRAFT]),
+  status: () =>
+    faker.random.arrayElement([ProductStatus.ACTIVE, ProductStatus.DRAFT]),
   type: () => ProductTypes.SimpleProduct,
   sequence: () => faker.random.number(),
   authorId: () => Factory.get('user'),
   published: () => (faker.random.boolean() ? faker.date.past() : null),
   slugs: [() => faker.lorem.slug()],
-  tags: () => (faker.random.boolean() ? [faker.random.arrayElement(['business', 'private', 'specials'])] : []),
+  tags: () =>
+    faker.random.boolean()
+      ? [faker.random.arrayElement(['business', 'private', 'specials'])]
+      : [],
   commerce: () => ({
-    pricing: [{
-      currencyCode: 'CHF',
-      countryCode: 'CH',
-      amount: faker.finance.amount(50, 3000, 0),
-      isTaxable: faker.random.boolean(),
-      isNetPrice: faker.random.boolean(),
-    }],
+    pricing: [
+      {
+        currencyCode: 'CHF',
+        countryCode: 'CH',
+        amount: faker.finance.amount(50, 3000, 0),
+        isTaxable: faker.random.boolean(),
+        isNetPrice: faker.random.boolean()
+      }
+    ]
   }),
   warehousing: () => ({
     sku: faker.hacker.abbreviation(),
-    baseUnit: 'ST',
+    baseUnit: 'ST'
   }),
   supply: () => ({
     weightInGram: faker.random.number(),
     heightInMillimeters: faker.random.number(),
     lengthInMillimeters: faker.random.number(),
-    widthInMillimeters: faker.random.number(),
+    widthInMillimeters: faker.random.number()
   }),
-  ...fakeTimestampFields,
+  ...fakeTimestampFields
 });
 
 Factory.define('configurableProduct', Products, {
@@ -41,8 +47,11 @@ Factory.define('configurableProduct', Products, {
   slugs: [() => faker.lorem.slug()],
   authorId: () => Factory.get('user'),
   published: () => (faker.random.boolean() ? faker.date.past() : null),
-  tags: () => (faker.random.boolean() ? [faker.random.arrayElement(['business', 'private', 'specials'])] : []),
-  ...fakeTimestampFields,
+  tags: () =>
+    faker.random.boolean()
+      ? [faker.random.arrayElement(['business', 'private', 'specials'])]
+      : [],
+  ...fakeTimestampFields
 });
 
 Factory.define('productText', ProductTexts, {
@@ -53,6 +62,9 @@ Factory.define('productText', ProductTexts, {
   subtitle: () => faker.lorem.sentence(),
   slug: () => faker.lorem.slug(),
   description: () => faker.lorem.text(),
-  labels: () => (faker.random.boolean() ? [faker.random.arrayElement(['Neu', 'Knapp', 'Verstaubt'])] : []),
-  ...fakeTimestampFields,
+  labels: () =>
+    faker.random.boolean()
+      ? [faker.random.arrayElement(['Neu', 'Knapp', 'Verstaubt'])]
+      : [],
+  ...fakeTimestampFields
 });

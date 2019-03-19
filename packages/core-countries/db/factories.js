@@ -8,5 +8,5 @@ Factory.define('country', Countries, {
   authorId: () => Factory.get('user'),
   isActive: () => faker.random.boolean(),
   isBase: () => false,
-  ...fakeTimestampFields,
+  ...fakeTimestampFields
 });

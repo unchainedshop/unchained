@@ -11,18 +11,10 @@ const UserOrderList = ({ orders }) => (
   <Table celled>
     <Table.Header>
       <Table.Row>
-        <Table.HeaderCell>
-Order date
-        </Table.HeaderCell>
-        <Table.HeaderCell>
-Order number
-        </Table.HeaderCell>
-        <Table.HeaderCell>
-Total
-        </Table.HeaderCell>
-        <Table.HeaderCell>
-Status
-        </Table.HeaderCell>
+        <Table.HeaderCell>Order date</Table.HeaderCell>
+        <Table.HeaderCell>Order number</Table.HeaderCell>
+        <Table.HeaderCell>Total</Table.HeaderCell>
+        <Table.HeaderCell>Status</Table.HeaderCell>
       </Table.Row>
     </Table.Header>
     {orders && (
@@ -32,21 +24,15 @@ Status
             <Table.Cell>
               <Link href={`/orders/view?_id=${order._id}`}>
                 <a href={`/orders/view?_id=${order._id}`}>
-                  {order.ordered
-                    ? format(order.ordered, 'Pp')
-                    : 'n/a'}
+                  {order.ordered ? format(order.ordered, 'Pp') : 'n/a'}
                 </a>
               </Link>
             </Table.Cell>
-            <Table.Cell>
-              {order.orderNumber || 'Cart'}
-            </Table.Cell>
+            <Table.Cell>{order.orderNumber || 'Cart'}</Table.Cell>
             <Table.Cell>
               <FormattedMoney money={order.total} />
             </Table.Cell>
-            <Table.Cell>
-              {order.status}
-            </Table.Cell>
+            <Table.Cell>{order.status}</Table.Cell>
           </Table.Row>
         ))}
       </Table.Body>
@@ -73,7 +59,7 @@ export default compose(
     }
   `),
   mapProps(({ data: { user = {} } }) => ({
-    orders: user.orders,
+    orders: user.orders
   })),
-  pure,
+  pure
 )(UserOrderList);

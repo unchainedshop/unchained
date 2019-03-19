@@ -93,5 +93,5 @@ export default {
   Assortment,
   Filter,
   FilterOption,
-  Quotation,
+  Quotation
 };

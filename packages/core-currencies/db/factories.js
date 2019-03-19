@@ -7,5 +7,5 @@ Factory.define('currency', Currencies, {
   isoCode: () => null,
   authorId: () => Factory.get('user'),
   isActive: () => faker.random.boolean(),
-  ...fakeTimestampFields,
+  ...fakeTimestampFields
 });

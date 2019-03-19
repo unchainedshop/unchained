@@ -4,5 +4,5 @@ export default {
   },
   meta(obj) {
     return obj.transformedContextValue('meta');
-  },
+  }
 };

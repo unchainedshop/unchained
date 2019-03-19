@@ -23,11 +23,7 @@ const mjmlTemplate = `
 </mjml>
 `;
 
-const {
-  EMAIL_FROM,
-  EMAIL_WEBSITE_NAME,
-  EMAIL_WEBSITE_URL,
-} = process.env;
+const { EMAIL_FROM, EMAIL_WEBSITE_NAME, EMAIL_WEBSITE_URL } = process.env;
 
 const textTemplate = `
   {{meta.thankyou}} {{shopName}}\n
@@ -41,41 +37,47 @@ const texts = {
   en: {
     buttonText: 'Follow purchase order status',
     thankyou: 'Thank you for your order on',
-    subject: `${EMAIL_WEBSITE_NAME}: Order confirmation`,
+    subject: `${EMAIL_WEBSITE_NAME}: Order confirmation`
   },
   de: {
     buttonText: 'Bestellstatus verfolgen',
     thankyou: 'Vielen Dank für deine Bestellung bei',
-    subject: `${EMAIL_WEBSITE_NAME}: Bestellbestätigung`,
+    subject: `${EMAIL_WEBSITE_NAME}: Bestellbestätigung`
   },
   fr: {
     buttonText: 'Follow purchase order status',
     thankyou: 'Thank you for your order on',
-    subject: `${EMAIL_WEBSITE_NAME}: Order confirmation`,
-  },
+    subject: `${EMAIL_WEBSITE_NAME}: Order confirmation`
+  }
 };
 
-export default (meta, { locale, ...context }, { renderToText, renderMjmlToHtml }) => {
+export default (
+  meta,
+  { locale, ...context },
+  { renderToText, renderMjmlToHtml }
+) => {
   const langCode = locale.substr(0, 2).toLowerCase();
   return {
     to: to => to || 'admin@localhost',
     from: from => from || EMAIL_FROM,
     subject: () => texts[langCode].subject,
-    text: () => renderToText(textTemplate, {
-      meta: {
-        ...texts[langCode],
-        ...meta,
-      },
-      shopName: EMAIL_WEBSITE_NAME,
-      shopUrl: EMAIL_WEBSITE_URL,
-      context,
-    }),
-    html: () => renderMjmlToHtml(mjmlTemplate, {
-      meta: {
-        ...texts[langCode],
-        ...meta,
-      },
-      context,
-    }),
+    text: () =>
+      renderToText(textTemplate, {
+        meta: {
+          ...texts[langCode],
+          ...meta
+        },
+        shopName: EMAIL_WEBSITE_NAME,
+        shopUrl: EMAIL_WEBSITE_URL,
+        context
+      }),
+    html: () =>
+      renderMjmlToHtml(mjmlTemplate, {
+        meta: {
+          ...texts[langCode],
+          ...meta
+        },
+        context
+      })
   };
 };

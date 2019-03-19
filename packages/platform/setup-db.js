@@ -15,9 +15,7 @@ import configureAssortments from 'meteor/unchained:core-assortments';
 import configureFilters from 'meteor/unchained:core-filters';
 import createFixtures from './fixtures';
 
-const {
-  FIXTURES,
-} = process.env;
+const { FIXTURES } = process.env;
 
 export { createFixtures };
 export default createFixtures;

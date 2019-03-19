@@ -1,8 +1,6 @@
 import React from 'react';
 import { toast } from 'react-toastify';
-import {
-  compose, pure, mapProps, withHandlers,
-} from 'recompose';
+import { compose, pure, mapProps, withHandlers } from 'recompose';
 import { Grid } from 'semantic-ui-react';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
@@ -49,47 +47,46 @@ export default compose(
       }
     }
   `),
-  graphql(gql`
-    mutation updateProduct($product: UpdateProductInput!, $productId: ID!) {
-      updateProduct(product: $product, productId: $productId) {
-        _id
-        tags
+  graphql(
+    gql`
+      mutation updateProduct($product: UpdateProductInput!, $productId: ID!) {
+        updateProduct(product: $product, productId: $productId) {
+          _id
+          tags
+        }
+      }
+    `,
+    {
+      options: {
+        refetchQueries: ['productInfos', 'getAllProducts']
       }
     }
-  `, {
-    options: {
-      refetchQueries: [
-        'productInfos',
-        'getAllProducts',
-      ],
-    },
-  }),
+  ),
   withFormSchema(() => ({
     tags: {
       type: Array,
       optional: true,
-      label: 'Tags (Product Segmentation)',
+      label: 'Tags (Product Segmentation)'
     },
-    'tags.$': String,
+    'tags.$': String
   })),
   withFormModel(({ data: { product = {} } }) => ({ ...product })),
   withHandlers({
     onSubmitSuccess: () => () => {
       toast('Tags saved', { type: toast.TYPE.SUCCESS });
     },
-    onSubmit: ({ productId, mutate, schema }) => ({ ...dirtyInput }) => mutate({
-      variables: {
-        product: schema.clean(dirtyInput),
-        productId,
-      },
-    }),
+    onSubmit: ({ productId, mutate, schema }) => ({ ...dirtyInput }) =>
+      mutate({
+        variables: {
+          product: schema.clean(dirtyInput),
+          productId
+        }
+      })
   }),
   withFormErrorHandlers,
-  mapProps(({
-    productId, mutate, data, ...rest
-  }) => ({
-    isEditingDisabled: !data.product || (data.product.status === 'DELETED'),
-    ...rest,
+  mapProps(({ productId, mutate, data, ...rest }) => ({
+    isEditingDisabled: !data.product || data.product.status === 'DELETED',
+    ...rest
   })),
-  pure,
+  pure
 )(FormEditProduct);

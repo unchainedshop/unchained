@@ -17,10 +17,14 @@ export default handleAuthFromAccessToken => (root, params, context) => {
     return callMethod(context, 'login', { oauth });
   } catch (error) {
     if (error.reason === 'Email already exists.') {
-      const email = oauthResult.serviceData.email || oauthResult.serviceData.emailAddress;
+      const email =
+        oauthResult.serviceData.email || oauthResult.serviceData.emailAddress;
       const method = getUserLoginMethod(email);
       if (method === 'no-password') {
-        throw new Meteor.Error('no-password', 'User has no password set, go to forgot password');
+        throw new Meteor.Error(
+          'no-password',
+          'User has no password set, go to forgot password'
+        );
       } else if (method) {
         throw new Error(`User is registered with ${method}.`);
       } else {

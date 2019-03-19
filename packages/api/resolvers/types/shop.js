@@ -10,5 +10,5 @@ export default {
   },
   _id() {
     return 'root';
-  },
+  }
 };

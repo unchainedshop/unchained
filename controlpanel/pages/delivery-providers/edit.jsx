@@ -5,10 +5,12 @@ import App from '../../components/App';
 import FormEditDeliveryProvider from '../../components/delivery-providers/FormEditDeliveryProvider';
 import connectApollo from '../../lib/connectApollo';
 
-export default connectApollo(withRouter(({ router, ...rest }) => (
-  <App {...rest}>
-    <Container>
-      <FormEditDeliveryProvider deliveryProviderId={router.query._id} />
-    </Container>
-  </App>
-)));
+export default connectApollo(
+  withRouter(({ router, ...rest }) => (
+    <App {...rest}>
+      <Container>
+        <FormEditDeliveryProvider deliveryProviderId={router.query._id} />
+      </Container>
+    </App>
+  ))
+);

@@ -10,39 +10,19 @@ export default ({
   postalCode = null,
   city = '',
   countryCode = '',
-  regionCode = null,
+  regionCode = null
 }) => (
   <List>
     <List.Item>
-      {firstName}
-      {' '}
-      {lastName}
+      {firstName} {lastName}
     </List.Item>
-    {company && (
+    {company && <List.Item>{company}</List.Item>}
+    <List.Item>{addressLine}</List.Item>
+    {addressLine2 && <List.Item>{addressLine2}</List.Item>}
+    {regionCode && <List.Item>{regionCode}</List.Item>}
     <List.Item>
-      {company}
+      {postalCode} {city}
     </List.Item>
-    )}
-    <List.Item>
-      {addressLine}
-    </List.Item>
-    {addressLine2 && (
-    <List.Item>
-      {addressLine2}
-    </List.Item>
-    )}
-    {regionCode && (
-    <List.Item>
-      {regionCode}
-    </List.Item>
-    )}
-    <List.Item>
-      {postalCode}
-      {' '}
-      {city}
-    </List.Item>
-    <List.Item>
-      {countryCode}
-    </List.Item>
+    <List.Item>{countryCode}</List.Item>
   </List>
 );

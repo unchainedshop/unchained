@@ -9,35 +9,40 @@ export const QuotationStatus = {
   PROCESSING: 'PROCESSING',
   PROPOSED: 'PROPOSED',
   FULLFILLED: 'FULLFILLED',
-  REJECTED: 'REJECTED',
+  REJECTED: 'REJECTED'
 };
 
-Quotations.attachSchema(new SimpleSchema({
-  userId: { type: String, index: true },
-  productId: { type: String, index: true },
-  status: { type: String, index: true },
-  quotationNumber: String,
-  price: Number,
-  expires: Date,
-  meta: { type: Object, blackbox: true },
-  fullfilled: Date,
-  currency: String,
-  countryCode: String,
-  configuration: Array,
-  'configuration.$': {
-    type: Object,
-    required: true,
-  },
-  'configuration.$.key': {
-    type: String,
-    required: true,
-  },
-  'configuration.$.value': {
-    type: String,
-  },
-  ...timestampFields,
-  ...contextFields,
-  ...logFields,
-}, { requiredByDefault: false }));
+Quotations.attachSchema(
+  new SimpleSchema(
+    {
+      userId: { type: String, index: true },
+      productId: { type: String, index: true },
+      status: { type: String, index: true },
+      quotationNumber: String,
+      price: Number,
+      expires: Date,
+      meta: { type: Object, blackbox: true },
+      fullfilled: Date,
+      currency: String,
+      countryCode: String,
+      configuration: Array,
+      'configuration.$': {
+        type: Object,
+        required: true
+      },
+      'configuration.$.key': {
+        type: String,
+        required: true
+      },
+      'configuration.$.value': {
+        type: String
+      },
+      ...timestampFields,
+      ...contextFields,
+      ...logFields
+    },
+    { requiredByDefault: false }
+  )
+);
 
 export default QuotationStatus;

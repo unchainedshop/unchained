@@ -1,31 +1,31 @@
 import {
   PaymentDirector,
   PaymentAdapter,
-  PaymentError,
+  PaymentError
 } from 'meteor/unchained:core-payment';
 
-const {
-  BRAINTREE_SANDBOX_TOKEN,
-  BRAINTREE_PRIVATE_KEY,
-} = process.env;
+const { BRAINTREE_SANDBOX_TOKEN, BRAINTREE_PRIVATE_KEY } = process.env;
 
 class Paypal extends PaymentAdapter {
-  static key = 'com.paypal'
+  static key = 'com.paypal';
 
-  static label = 'Paypal'
+  static label = 'Paypal';
 
-  static version = '1.0'
+  static version = '1.0';
 
-  static initialConfiguration = [{
-    key: 'publicKey',
-    value: null,
-  }, {
-    key: 'merchantId',
-    value: null,
-  }]
+  static initialConfiguration = [
+    {
+      key: 'publicKey',
+      value: null
+    },
+    {
+      key: 'merchantId',
+      value: null
+    }
+  ];
 
   static typeSupported(type) {
-    return (type === 'PAYPAL');
+    return type === 'PAYPAL';
   }
 
   getPublicKey() {
@@ -51,9 +51,9 @@ class Paypal extends PaymentAdapter {
   }
 
   configurationError() {
-    const publicCredentialsValid = this.getAccessToken() || (
-      this.getMerchantId() && this.getPublicKey() && this.getPrivateKey()
-    );
+    const publicCredentialsValid =
+      this.getAccessToken() ||
+      (this.getMerchantId() && this.getPublicKey() && this.getPrivateKey());
 
     if (!publicCredentialsValid) {
       return PaymentError.WRONG_CREDENTIALS;
@@ -75,14 +75,14 @@ class Paypal extends PaymentAdapter {
     if (accessToken) {
       // sandbox mode!
       return braintree.connect({
-        accessToken,
+        accessToken
       });
     }
     return braintree.connect({
       environment: braintree.Environment.Production,
       merchantId: this.getMerchantId(),
       publicKey: this.getPublicKey(),
-      privateKey: this.getPrivateKey(),
+      privateKey: this.getPrivateKey()
     });
   }
 
@@ -97,12 +97,15 @@ class Paypal extends PaymentAdapter {
   }
 
   async charge({ paypalPaymentMethodNonce }) {
-    if (!paypalPaymentMethodNonce) throw new Error('You have to provide paypalPaymentMethodNonce in paymentContext');
+    if (!paypalPaymentMethodNonce)
+      throw new Error(
+        'You have to provide paypalPaymentMethodNonce in paymentContext'
+      );
     const braintree = require('braintree'); // eslint-disable-line
     const gateway = this.gateway(braintree);
     const address = this.context.order.billingAddress || {};
     const pricing = this.context.order.pricing();
-    const rounded = Math.round((pricing.total().amount / 10) || 0) * 10;
+    const rounded = Math.round(pricing.total().amount / 10 || 0) * 10;
     const saleRequest = {
       amount: rounded / 100,
       merchantAccountId: this.context.order.currency,
@@ -117,11 +120,11 @@ class Paypal extends PaymentAdapter {
         locality: address.city,
         region: address.regionCode,
         postalCode: address.postalCode,
-        countryCodeAlpha2: address.countryCode,
+        countryCodeAlpha2: address.countryCode
       },
       options: {
-        submitForSettlement: true,
-      },
+        submitForSettlement: true
+      }
     };
     const result = await gateway.transaction.sale(saleRequest);
     if (result.success) {

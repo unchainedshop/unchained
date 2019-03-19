@@ -20,39 +20,44 @@ const FormNewCurrency = formProps => (
 
 export default compose(
   withRouter,
-  graphql(gql`
-    mutation createCurrency($currency: CreateCurrencyInput!) {
-      createCurrency(currency: $currency) {
-        _id
+  graphql(
+    gql`
+      mutation createCurrency($currency: CreateCurrencyInput!) {
+        createCurrency(currency: $currency) {
+          _id
+        }
+      }
+    `,
+    {
+      name: 'createCurrency',
+      options: {
+        refetchQueries: ['currencies']
       }
     }
-  `, {
-    name: 'createCurrency',
-    options: {
-      refetchQueries: [
-        'currencies',
-      ],
-    },
-  }),
+  ),
   withFormSchema({
     isoCode: {
       type: String,
       optional: false,
-      label: 'ISO Währungscode',
-    },
+      label: 'ISO Währungscode'
+    }
   }),
   withHandlers({
     onSubmitSuccess: ({ router }) => ({ data: { createCurrency } }) => {
-      router.replace({ pathname: '/currencies/edit', query: { _id: createCurrency._id } });
+      router.replace({
+        pathname: '/currencies/edit',
+        query: { _id: createCurrency._id }
+      });
     },
-    onSubmit: ({ createCurrency, schema }) => ({ ...dirtyInput }) => createCurrency({
-      variables: {
-        currency: schema.clean(dirtyInput),
-      },
-    }),
+    onSubmit: ({ createCurrency, schema }) => ({ ...dirtyInput }) =>
+      createCurrency({
+        variables: {
+          currency: schema.clean(dirtyInput)
+        }
+      })
   }),
   withFormErrorHandlers,
   mapProps(({ createCurrency, ...rest }) => ({
-    ...rest,
-  })),
+    ...rest
+  }))
 )(FormNewCurrency);

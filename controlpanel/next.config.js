@@ -1,12 +1,7 @@
 require('dotenv').config();
 const withCss = require('@zeit/next-css');
 
-const {
-  LANG,
-  GRAPHQL_ENDPOINT,
-  DEBUG,
-  BUNDLE_ANALYZE,
-} = process.env;
+const { LANG, GRAPHQL_ENDPOINT, DEBUG, BUNDLE_ANALYZE } = process.env;
 
 module.exports = withCss({
   analyzeServer: ['server', 'both'].includes(BUNDLE_ANALYZE),
@@ -14,17 +9,18 @@ module.exports = withCss({
   bundleAnalyzerConfig: {
     server: {
       analyzerMode: 'static',
-      reportFilename: '../.next/server.html',
+      reportFilename: '../.next/server.html'
     },
     browser: {
       analyzerMode: 'static',
-      reportFilename: '../.next/client.html',
-    },
+      reportFilename: '../.next/client.html'
+    }
   },
-  publicRuntimeConfig: { // Will be available on both server and client
+  publicRuntimeConfig: {
+    // Will be available on both server and client
     LANG,
     GRAPHQL_ENDPOINT,
-    DEBUG,
+    DEBUG
   },
   webpack(config) {
     const newConfig = config;
@@ -36,10 +32,10 @@ module.exports = withCss({
           limit: 100000,
           publicPath: './',
           outputPath: 'static/',
-          name: '[name].[ext]',
-        },
-      },
+          name: '[name].[ext]'
+        }
+      }
     });
     return newConfig;
-  },
+  }
 });

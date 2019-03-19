@@ -3,19 +3,17 @@ import PricingSheet from '../pricing-sheet';
 const DeliveryPricingSheetRowCategories = {
   Delivery: 'DELIVERY',
   Discount: 'DISCOUNT',
-  Tax: 'TAX',
+  Tax: 'TAX'
 };
 
 class DeliveryPricingSheet extends PricingSheet {
-  addDelivery({
-    amount, isTaxable, isNetPrice, meta,
-  }) {
+  addDelivery({ amount, isTaxable, isNetPrice, meta }) {
     this.calculation.push({
       category: DeliveryPricingSheetRowCategories.Delivery,
       amount,
       isTaxable,
       isNetPrice,
-      meta,
+      meta
     });
   }
 
@@ -24,41 +22,41 @@ class DeliveryPricingSheet extends PricingSheet {
       category: DeliveryPricingSheetRowCategories.Tax,
       amount,
       rate,
-      meta,
+      meta
     });
   }
 
   taxSum() {
     return this.sum({
-      category: DeliveryPricingSheetRowCategories.Tax,
+      category: DeliveryPricingSheetRowCategories.Tax
     });
   }
 
   deliverySum() {
     return this.sum({
-      category: DeliveryPricingSheetRowCategories.Delivery,
+      category: DeliveryPricingSheetRowCategories.Delivery
     });
   }
 
   discountSum(discountId) {
     return this.sum({
       category: DeliveryPricingSheetRowCategories.Discount,
-      discountId,
+      discountId
     });
   }
 
   discountPrices() {
-    const discountIds = this
-      .getDiscountRows()
-      .map(({ discountId }) => discountId);
+    const discountIds = this.getDiscountRows().map(
+      ({ discountId }) => discountId
+    );
 
     return [...new Set(discountIds)].map(discountId => ({
       discountId,
       amount: this.sum({
         category: DeliveryPricingSheetRowCategories.Discount,
-        discountId,
+        discountId
       }),
-      currency: this.currency,
+      currency: this.currency
     }));
   }
 
@@ -67,7 +65,9 @@ class DeliveryPricingSheet extends PricingSheet {
   }
 
   getDiscountRows() {
-    return this.filterBy({ category: DeliveryPricingSheetRowCategories.Discount });
+    return this.filterBy({
+      category: DeliveryPricingSheetRowCategories.Discount
+    });
   }
 
   getTaxRows() {

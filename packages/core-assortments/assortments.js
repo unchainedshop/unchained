@@ -5,5 +5,4 @@ import './db/helpers';
 export * from './db/collections';
 export default () => {
   // configure
-
 };

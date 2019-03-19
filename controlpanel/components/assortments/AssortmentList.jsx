@@ -7,14 +7,19 @@ import Link from 'next/link';
 import InfiniteDataTable, { withDataTableLoader } from '../InfiniteDataTable';
 
 const AssortmentList = ({
-  isShowLeafNodes, setShowLeafNodes, loading, mutate,
-  toggleShowLeafNodes, changeBaseAssortment, ...rest
+  isShowLeafNodes,
+  setShowLeafNodes,
+  loading,
+  mutate,
+  toggleShowLeafNodes,
+  changeBaseAssortment,
+  ...rest
 }) => (
   <InfiniteDataTable
     {...rest}
     cols={3}
     createPath="/assortments/new"
-    rowRenderer={(assortment => (
+    rowRenderer={assortment => (
       <Table.Row key={assortment._id}>
         <Table.Cell>
           <Link href={`/assortments/edit?_id=${assortment._id}`}>
@@ -30,39 +35,30 @@ const AssortmentList = ({
         </Table.Cell>
         <Table.Cell>
           {assortment.isBase ? (
-            <b>
-              Base
-            </b>
+            <b>Base</b>
           ) : (
-            <Button
-              basic
-              name={assortment._id}
-              onClick={changeBaseAssortment}
-            >
-            Define as base assortment
+            <Button basic name={assortment._id} onClick={changeBaseAssortment}>
+              Define as base assortment
             </Button>
           )}
         </Table.Cell>
       </Table.Row>
-    ))}
+    )}
   >
     <Table.Row>
       <Table.HeaderCell colSpan={3}>
-        Show non-root nodes?
-        &nbsp;
-        <input type="checkbox" checked={isShowLeafNodes} onClick={toggleShowLeafNodes} />
+        Show non-root nodes? &nbsp;
+        <input
+          type="checkbox"
+          checked={isShowLeafNodes}
+          onClick={toggleShowLeafNodes}
+        />
       </Table.HeaderCell>
     </Table.Row>
     <Table.Row>
-      <Table.HeaderCell>
-        Name
-      </Table.HeaderCell>
-      <Table.HeaderCell>
-        Active?
-      </Table.HeaderCell>
-      <Table.HeaderCell>
-        Base?
-      </Table.HeaderCell>
+      <Table.HeaderCell>Name</Table.HeaderCell>
+      <Table.HeaderCell>Active?</Table.HeaderCell>
+      <Table.HeaderCell>Base?</Table.HeaderCell>
     </Table.Row>
   </InfiniteDataTable>
 );
@@ -73,7 +69,12 @@ export default compose(
     queryName: 'assortments',
     query: gql`
       query assortments($limit: Int, $offset: Int, $isShowLeafNodes: Boolean) {
-        assortments(limit: $limit, offset: $offset, includeInactive: true, includeLeaves: $isShowLeafNodes ) {
+        assortments(
+          limit: $limit
+          offset: $offset
+          includeInactive: true
+          includeLeaves: $isShowLeafNodes
+        ) {
           _id
           isActive
           isBase
@@ -82,28 +83,27 @@ export default compose(
           }
         }
       }
-    `,
+    `
   }),
-  graphql(gql`
-    mutation changeBaseAssortment($assortmentId: ID!) {
-      setBaseAssortment(assortmentId: $assortmentId) {
-        _id
-        isBase
+  graphql(
+    gql`
+      mutation changeBaseAssortment($assortmentId: ID!) {
+        setBaseAssortment(assortmentId: $assortmentId) {
+          _id
+          isBase
+        }
+      }
+    `,
+    {
+      options: {
+        refetchQueries: ['assortments']
       }
     }
-  `, {
-    options: {
-      refetchQueries: [
-        'assortments',
-      ],
-    },
-  }),
+  ),
   withHandlers({
-    changeBaseAssortment: ({
-      mutate,
-    }) => (event, element) => mutate({ variables: { assortmentId: element.name } }),
-    toggleShowLeafNodes: ({
-      isShowLeafNodes, setShowLeafNodes,
-    }) => () => setShowLeafNodes(!isShowLeafNodes),
-  }),
+    changeBaseAssortment: ({ mutate }) => (event, element) =>
+      mutate({ variables: { assortmentId: element.name } }),
+    toggleShowLeafNodes: ({ isShowLeafNodes, setShowLeafNodes }) => () =>
+      setShowLeafNodes(!isShowLeafNodes)
+  })
 )(AssortmentList);

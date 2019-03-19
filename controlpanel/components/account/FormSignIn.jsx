@@ -1,7 +1,5 @@
 import React from 'react';
-import {
-  compose, pure, mapProps, withHandlers,
-} from 'recompose';
+import { compose, pure, mapProps, withHandlers } from 'recompose';
 import { withApollo } from 'react-apollo';
 import AutoField from 'uniforms-semantic/AutoField';
 import SubmitField from 'uniforms-semantic/SubmitField';
@@ -11,9 +9,7 @@ import { loginWithPassword } from '../../lib/accounts';
 import withFormSchema from '../../lib/withFormSchema';
 import withFormErrorHandlers from '../../lib/withFormErrorHandlers';
 
-const FormSignIn = ({
-  loginType, changeLoginType, ...formProps
-}) => (
+const FormSignIn = ({ loginType, changeLoginType, ...formProps }) => (
   <div>
     <AutoForm {...formProps}>
       <AutoField id="email" name="email" />
@@ -29,19 +25,25 @@ export default compose(
   withFormSchema({
     email: {
       type: String,
-      label: 'E-Mail Adresse',
+      label: 'E-Mail Adresse'
     },
     password: {
       type: String,
-      label: 'Password',
-    },
+      label: 'Password'
+    }
   }),
   withHandlers({
-    onSubmit: ({ client }) => ({ email, password }) => loginWithPassword({
-      email, password, disableHashing: true,
-    }, client),
+    onSubmit: ({ client }) => ({ email, password }) =>
+      loginWithPassword(
+        {
+          email,
+          password,
+          disableHashing: true
+        },
+        client
+      )
   }),
   withFormErrorHandlers,
   mapProps(({ client, ...rest }) => ({ ...rest })),
-  pure,
+  pure
 )(FormSignIn);

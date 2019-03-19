@@ -3,7 +3,7 @@ import { objectInvert } from 'meteor/unchained:utils';
 
 const OrderDeliveryMap = {
   OrderDeliveryShipping: DeliveryProviderType.SHIPPING,
-  OrderDeliveryPickUp: DeliveryProviderType.PICKUP,
+  OrderDeliveryPickUp: DeliveryProviderType.PICKUP
 };
 
 export default {
@@ -14,5 +14,5 @@ export default {
       return invertedProductTypes[provider.type];
     }
     return invertedProductTypes[DeliveryProviderType.SHIPPING];
-  },
+  }
 };

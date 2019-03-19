@@ -1,8 +1,6 @@
 import React from 'react';
 import { toast } from 'react-toastify';
-import {
-  compose, pure, mapProps, withHandlers,
-} from 'recompose';
+import { compose, pure, mapProps, withHandlers } from 'recompose';
 import { Segment, Grid } from 'semantic-ui-react';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
@@ -20,10 +18,7 @@ const FormEditProductSupply = ({ isEditingDisabled, ...formProps }) => (
       <Grid>
         <Grid.Row>
           <Grid.Column width={8}>
-            <AutoField
-              name="weightInGram"
-              disabled={isEditingDisabled}
-            />
+            <AutoField name="weightInGram" disabled={isEditingDisabled} />
           </Grid.Column>
           <Grid.Column width={8}>
             <AutoField
@@ -32,10 +27,7 @@ const FormEditProductSupply = ({ isEditingDisabled, ...formProps }) => (
             />
           </Grid.Column>
           <Grid.Column width={8}>
-            <AutoField
-              name="widthInMillimeters"
-              disabled={isEditingDisabled}
-            />
+            <AutoField name="widthInMillimeters" disabled={isEditingDisabled} />
           </Grid.Column>
           <Grid.Column width={8}>
             <AutoField
@@ -73,48 +65,52 @@ export default compose(
       }
     }
   `),
-  graphql(gql`
-    mutation updateProductSupply($supply: UpdateProductSupplyInput!, $productId: ID!) {
-      updateProductSupply(supply: $supply, productId: $productId) {
-        _id
-        ... on SimpleProduct {
-          dimensions {
-            weight(unit: GRAM)
-            length(unit: MILLIMETERS)
-            width(unit: MILLIMETERS)
-            height(unit: MILLIMETERS)
+  graphql(
+    gql`
+      mutation updateProductSupply(
+        $supply: UpdateProductSupplyInput!
+        $productId: ID!
+      ) {
+        updateProductSupply(supply: $supply, productId: $productId) {
+          _id
+          ... on SimpleProduct {
+            dimensions {
+              weight(unit: GRAM)
+              length(unit: MILLIMETERS)
+              width(unit: MILLIMETERS)
+              height(unit: MILLIMETERS)
+            }
           }
         }
       }
+    `,
+    {
+      options: {
+        refetchQueries: ['productSupplyInfo']
+      }
     }
-  `, {
-    options: {
-      refetchQueries: [
-        'productSupplyInfo',
-      ],
-    },
-  }),
+  ),
   withFormSchema({
     weightInGram: {
       type: Number,
       optional: true,
-      label: 'Weight (Gram)',
+      label: 'Weight (Gram)'
     },
     lengthInMillimeters: {
       type: Number,
       optional: true,
-      label: 'Length (Millimeter)',
+      label: 'Length (Millimeter)'
     },
     heightInMillimeters: {
       type: Number,
       optional: true,
-      label: 'Height (Millimeter)',
+      label: 'Height (Millimeter)'
     },
     widthInMillimeters: {
       type: Number,
       optional: true,
-      label: 'Width (Millimeter)',
-    },
+      label: 'Width (Millimeter)'
+    }
   }),
   withFormModel(({ data: { product = {} } }) => {
     if (!product || !product.dimensions) return {};
@@ -122,26 +118,25 @@ export default compose(
       weightInGram: product.dimensions && product.dimensions.weight,
       heightInMillimeters: product.dimensions && product.dimensions.height,
       lengthInMillimeters: product.dimensions && product.dimensions.length,
-      widthInMillimeters: product.dimensions && product.dimensions.width,
+      widthInMillimeters: product.dimensions && product.dimensions.width
     };
   }),
   withHandlers({
     onSubmitSuccess: () => () => {
       toast('Supply settings saved', { type: toast.TYPE.SUCCESS });
     },
-    onSubmit: ({ productId, mutate, schema }) => ({ ...dirtyInput }) => mutate({
-      variables: {
-        supply: schema.clean(dirtyInput),
-        productId,
-      },
-    }),
+    onSubmit: ({ productId, mutate, schema }) => ({ ...dirtyInput }) =>
+      mutate({
+        variables: {
+          supply: schema.clean(dirtyInput),
+          productId
+        }
+      })
   }),
   withFormErrorHandlers,
-  mapProps(({
-    productId, mutate, data, ...rest
-  }) => ({
-    isEditingDisabled: !data.product || (data.product.status === 'DELETED'),
-    ...rest,
+  mapProps(({ productId, mutate, data, ...rest }) => ({
+    isEditingDisabled: !data.product || data.product.status === 'DELETED',
+    ...rest
   })),
-  pure,
+  pure
 )(FormEditProductSupply);

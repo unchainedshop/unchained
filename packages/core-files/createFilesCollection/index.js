@@ -12,8 +12,8 @@ const createDefaultSettings = () => ({
   maxSize: 10485760,
   extensionRegex: null,
   storage: {
-    type: 'filesystem',
-  },
+    type: 'filesystem'
+  }
 });
 
 export default (collectionName, customSettings = null) => {
@@ -22,7 +22,7 @@ export default (collectionName, customSettings = null) => {
     createDefaultSettings(),
     customSettings,
     getSetting('files.default'),
-    getSetting(['files', collectionName]),
+    getSetting(['files', collectionName])
   );
 
   const configByType = Types[mergedSettings.storage.type];
@@ -32,7 +32,7 @@ export default (collectionName, customSettings = null) => {
 
   const fullconfig = {
     ...createDefaultFileCollectionConfig(collectionName, mergedSettings),
-    ...configByType(collectionName, mergedSettings.storage),
+    ...configByType(collectionName, mergedSettings.storage)
   };
 
   return new FilesCollection(fullconfig);

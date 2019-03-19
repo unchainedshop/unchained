@@ -3,14 +3,23 @@ import { Products } from 'meteor/unchained:core-products';
 import { Users } from 'meteor/unchained:core-users';
 import { Orders } from 'meteor/unchained:core-orders';
 import {
-  ProductNotFoundError, UserNotFoundError,
-  OrderNotFoundError, OrderWrongStatusError,
+  ProductNotFoundError,
+  UserNotFoundError,
+  OrderNotFoundError,
+  OrderWrongStatusError
 } from '../../errors';
 
-export default function (root, {
-  orderId, productId, quantity, configuration,
-}, { userId, countryContext }) {
-  log(`mutation addCartProduct ${productId} ${quantity} ${configuration ? JSON.stringify(configuration) : ''}`, { userId, orderId });
+export default function(
+  root,
+  { orderId, productId, quantity, configuration },
+  { userId, countryContext }
+) {
+  log(
+    `mutation addCartProduct ${productId} ${quantity} ${
+      configuration ? JSON.stringify(configuration) : ''
+    }`,
+    { userId, orderId }
+  );
   const product = Products.findOne({ _id: productId });
   if (!product) throw new ProductNotFoundError({ data: { productId } });
   if (orderId) {
@@ -22,7 +31,7 @@ export default function (root, {
     return order.addProductItem({
       product,
       quantity,
-      configuration,
+      configuration
     });
   }
   const user = Users.findOne({ _id: userId });
@@ -31,6 +40,6 @@ export default function (root, {
   return cart.addProductItem({
     product,
     quantity,
-    configuration,
+    configuration
   });
 }

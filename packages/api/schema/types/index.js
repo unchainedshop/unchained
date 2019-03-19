@@ -47,5 +47,5 @@ export default [
   ...warehousing,
   ...product,
   ...order,
-  ...quotation,
+  ...quotation
 ];

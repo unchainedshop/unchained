@@ -1,13 +1,14 @@
 import React from 'react';
 import { withRouter } from 'next/router';
-import {
-  compose, pure, withHandlers, mapProps,
-} from 'recompose';
+import { compose, pure, withHandlers, mapProps } from 'recompose';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 
 const BtnRemoveQuotation = ({
-  onClick, Component = 'button', children, ...rest
+  onClick,
+  Component = 'button',
+  children,
+  ...rest
 }) => (
   <Component onClick={onClick} {...rest}>
     {children}
@@ -16,35 +17,36 @@ const BtnRemoveQuotation = ({
 
 export default compose(
   withRouter,
-  graphql(gql`
-    mutation removeQuotation($quotationId: ID!) {
-      removeQuotation(quotationId: $quotationId) {
-        _id
-        status
-        updated
+  graphql(
+    gql`
+      mutation removeQuotation($quotationId: ID!) {
+        removeQuotation(quotationId: $quotationId) {
+          _id
+          status
+          updated
+        }
+      }
+    `,
+    {
+      options: {
+        refetchQueries: ['quotations']
       }
     }
-  `, {
-    options: {
-      refetchQueries: [
-        'quotations',
-      ],
-    },
-  }),
+  ),
   withHandlers({
     onClick: ({ quotationId, mutate, router }) => async () => {
       if (confirm('Really?')) { // eslint-disable-line
         await mutate({
           variables: {
-            quotationId,
-          },
+            quotationId
+          }
         });
         router.push('/quotations');
       }
-    },
+    }
   }),
   mapProps(({ quotationId, mutate, ...rest }) => ({
-    ...rest,
+    ...rest
   })),
-  pure,
+  pure
 )(BtnRemoveQuotation);

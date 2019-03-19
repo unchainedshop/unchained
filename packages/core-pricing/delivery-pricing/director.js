@@ -3,13 +3,13 @@ import { log } from 'meteor/unchained:core-logger';
 import { DeliveryPricingSheet } from './sheet';
 
 class DeliveryPricingAdapter {
-  static key = ''
+  static key = '';
 
-  static label = ''
+  static label = '';
 
-  static version = ''
+  static version = '';
 
-  static orderIndex = 0
+  static orderIndex = 0;
 
   static isActivatedFor() {
     return false;
@@ -24,7 +24,9 @@ class DeliveryPricingAdapter {
 
   calculate() {
     const resultRaw = this.result.getRawPricingSheet();
-    resultRaw.forEach(({ amount, category }) => this.log(`Delivery Calculation -> ${category} ${amount}`));
+    resultRaw.forEach(({ amount, category }) =>
+      this.log(`Delivery Calculation -> ${category} ${amount}`)
+    );
     return resultRaw;
   }
 
@@ -47,20 +49,24 @@ class DeliveryPricingDirector {
       order,
       provider,
       user,
-      ...this.item.context,
+      ...this.item.context
     };
   }
 
   calculate() {
     this.calculation = DeliveryPricingDirector.sortedAdapters()
-      .filter((AdapterClass => AdapterClass.isActivatedFor(this.context.provider)))
+      .filter(AdapterClass =>
+        AdapterClass.isActivatedFor(this.context.provider)
+      )
       .reduce((calculation, AdapterClass) => {
         try {
           const concreteAdapter = new AdapterClass({
             context: this.context,
-            calculation,
+            calculation
           });
-          const nextCalculationResult = Promise.await(concreteAdapter.calculate());
+          const nextCalculationResult = Promise.await(
+            concreteAdapter.calculate()
+          );
           return calculation.concat(nextCalculationResult);
         } catch (error) {
           log(error, { level: 'error' });
@@ -73,7 +79,7 @@ class DeliveryPricingDirector {
   resultSheet() {
     return new DeliveryPricingSheet({
       calculation: this.calculation,
-      currency: this.context.order.currency,
+      currency: this.context.order.currency
     });
   }
 
@@ -86,12 +92,13 @@ class DeliveryPricingDirector {
   }
 
   static registerAdapter(adapter) {
-    log(`${this.name} -> Registered ${adapter.key} ${adapter.version} (${adapter.label})`);
+    log(
+      `${this.name} -> Registered ${adapter.key} ${adapter.version} (${
+        adapter.label
+      })`
+    );
     DeliveryPricingDirector.adapters.set(adapter.key, adapter);
   }
 }
 
-export {
-  DeliveryPricingDirector,
-  DeliveryPricingAdapter,
-};
+export { DeliveryPricingDirector, DeliveryPricingAdapter };

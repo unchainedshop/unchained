@@ -1,17 +1,17 @@
 import {
   OrderPricingDirector,
   OrderPricingAdapter,
-  OrderPricingSheetRowCategories,
+  OrderPricingSheetRowCategories
 } from 'meteor/unchained:core-pricing';
 
 class OrderItems extends OrderPricingAdapter {
-  static key = 'shop.unchained.pricing.order-discount'
+  static key = 'shop.unchained.pricing.order-discount';
 
-  static version = '1.0'
+  static version = '1.0';
 
-  static label = 'Bruttopreis + MwSt. aller Pauschal-Gutscheine summieren'
+  static label = 'Bruttopreis + MwSt. aller Pauschal-Gutscheine summieren';
 
-  static orderIndex = 10
+  static orderIndex = 10;
 
   static isActivatedFor() {
     return true;
@@ -23,16 +23,16 @@ class OrderItems extends OrderPricingAdapter {
     // add it to the order item calculation
 
     let totalItemsAmount = this.calculation.sum({
-      category: OrderPricingSheetRowCategories.Items,
+      category: OrderPricingSheetRowCategories.Items
     });
 
-    const shares = this.context.items.map((item) => {
+    const shares = this.context.items.map(item => {
       const pricing = item.pricing();
       const tax = pricing.taxSum();
       const gross = pricing.gross();
       return {
         ratio: gross / totalItemsAmount,
-        taxDivisor: gross / (gross - tax),
+        taxDivisor: gross / (gross - tax)
       };
     });
 
@@ -46,7 +46,7 @@ class OrderItems extends OrderPricingAdapter {
 
       shares.forEach(({ ratio, taxDivisor }) => {
         const shareAmount = discountAmountToSplit * ratio;
-        const shareTaxAmount = shareAmount - (shareAmount / taxDivisor);
+        const shareTaxAmount = shareAmount - shareAmount / taxDivisor;
         discountAmount += shareAmount;
         taxAmount += shareTaxAmount;
       });
@@ -54,11 +54,11 @@ class OrderItems extends OrderPricingAdapter {
       if (discountAmount) {
         this.result.addDiscounts({
           amount: discountAmount * -1,
-          discountId,
+          discountId
         });
         if (taxAmount !== 0) {
           this.result.addTaxes({
-            amount: taxAmount * -1,
+            amount: taxAmount * -1
           });
         }
       }

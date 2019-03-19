@@ -1,15 +1,15 @@
 import { log } from 'meteor/unchained:core-logger';
 
 const FilterError = {
-  NOT_IMPLEMENTED: 'NOT_IMPLEMENTED',
+  NOT_IMPLEMENTED: 'NOT_IMPLEMENTED'
 };
 
 class FilterAdapter {
-  static key = ''
+  static key = '';
 
-  static label = ''
+  static label = '';
 
-  static version = ''
+  static version = '';
 
   static isActivatedFor(context) { // eslint-disable-line
     return false;
@@ -35,15 +35,15 @@ class FilterDirector {
 
   buildProductSelector({ key, value }) {
     return FilterDirector.sortedAdapters()
-      .filter((AdapterClass => AdapterClass.isActivatedFor(this.context)))
+      .filter(AdapterClass => AdapterClass.isActivatedFor(this.context))
       .reduce((lastSelector, AdapterClass) => {
         const concreteAdapter = new AdapterClass({
-          context: this.context,
+          context: this.context
         });
         return concreteAdapter.transformSelector({
           last: lastSelector,
           key,
-          value,
+          value
         });
       }, {});
   }
@@ -62,8 +62,4 @@ class FilterDirector {
   }
 }
 
-export {
-  FilterDirector,
-  FilterAdapter,
-  FilterError,
-};
+export { FilterDirector, FilterAdapter, FilterError };

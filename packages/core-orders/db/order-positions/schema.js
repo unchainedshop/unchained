@@ -8,33 +8,38 @@ const calculationFields = {
   calculation: Array,
   'calculation.$': {
     type: Object,
-    blackbox: true,
+    blackbox: true
   },
   scheduling: Array,
   'scheduling.$': {
     type: Object,
-    blackbox: true,
+    blackbox: true
   },
   configuration: Array,
   'configuration.$': {
     type: Object,
-    required: true,
+    required: true
   },
   'configuration.$.key': {
     type: String,
-    required: true,
+    required: true
   },
   'configuration.$.value': {
-    type: String,
-  },
+    type: String
+  }
 };
 
-OrderPositions.attachSchema(new SimpleSchema({
-  productId: { type: String, index: true },
-  orderId: { type: String, index: true },
-  quotationId: { type: String },
-  quantity: Number,
-  ...timestampFields,
-  ...contextFields,
-  ...calculationFields,
-}, { requiredByDefault: false }));
+OrderPositions.attachSchema(
+  new SimpleSchema(
+    {
+      productId: { type: String, index: true },
+      orderId: { type: String, index: true },
+      quotationId: { type: String },
+      quantity: Number,
+      ...timestampFields,
+      ...contextFields,
+      ...calculationFields
+    },
+    { requiredByDefault: false }
+  )
+);

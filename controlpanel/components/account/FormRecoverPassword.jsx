@@ -1,8 +1,6 @@
 import React from 'react';
 import { withApollo } from 'react-apollo';
-import {
-  compose, pure, mapProps, withHandlers,
-} from 'recompose';
+import { compose, pure, mapProps, withHandlers } from 'recompose';
 import AutoField from 'uniforms-semantic/AutoField';
 import SubmitField from 'uniforms-semantic/SubmitField';
 import ErrorsField from 'uniforms-semantic/ErrorsField';
@@ -24,13 +22,13 @@ export default compose(
   withFormSchema({
     email: {
       type: String,
-      label: 'E-Mail Adresse',
-    },
+      label: 'E-Mail Adresse'
+    }
   }),
   withHandlers({
-    onSubmit: ({ client }) => ({ email }) => forgotPassword({ email }, client),
+    onSubmit: ({ client }) => ({ email }) => forgotPassword({ email }, client)
   }),
   withFormErrorHandlers,
   mapProps(({ client, ...rest }) => ({ ...rest })),
-  pure,
+  pure
 )(FormRecoverPassword);
