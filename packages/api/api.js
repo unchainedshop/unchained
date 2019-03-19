@@ -16,6 +16,8 @@ export * as errors from './errors';
 
 const { APOLLO_ENGINE_KEY } = process.env;
 
+global._UnchainedAPIVersion = '0.25.0'; // eslint-disable-line
+
 const defaultContext = req => {
   const remoteAddress =
     req.headers['x-real-ip'] ||
