@@ -35,7 +35,7 @@ class PaymentAdapter {
     return false;
   }
 
-  async charge(paymentContext) {  // eslint-disable-line
+  async charge(transactionContext) {  // eslint-disable-line
     // if you return true, the status will be changed to PAID
 
     // if you return false, the order payment status stays the
@@ -94,9 +94,9 @@ class PaymentDirector {
     }
   }
 
-  async charge({ payment, ...context }) {
+  async charge({ transactionContext, ...context }) {
     const adapter = this.interface(context);
-    const chargeResult = await adapter.charge(payment);
+    const chargeResult = await adapter.charge(transactionContext);
     return chargeResult;
   }
 

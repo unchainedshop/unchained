@@ -6,6 +6,7 @@ export default [
       type: String!
       size: Int!
       url: String!
+      meta: JSON
     }
   `
 ];

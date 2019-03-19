@@ -34,6 +34,7 @@ OrderPositions.attachSchema(
     {
       productId: { type: String, index: true },
       orderId: { type: String, index: true },
+      originalProductId: { type: String },
       quotationId: { type: String },
       quantity: Number,
       ...timestampFields,
