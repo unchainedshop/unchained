@@ -1,24 +1,8 @@
 import { log } from 'meteor/unchained:core-logger';
-import { Users } from 'meteor/unchained:core-users';
-import { Orders } from 'meteor/unchained:core-orders';
-import {
-  UserNotFoundError,
-  OrderNotFoundError,
-  OrderWrongStatusError
-} from '../../errors';
+import getCart from '../../getCart';
 
 export default function(root, { orderId, code }, { userId, countryContext }) {
   log(`mutation addCartDiscount ${code} ${orderId}`, { userId, orderId });
-  if (orderId) {
-    const order = Orders.findOne({ _id: orderId });
-    if (!order) throw new OrderNotFoundError({ orderId });
-    if (!order.isCart()) {
-      throw new OrderWrongStatusError({ data: { status: order.status } });
-    }
-    return order.addDiscount({ code });
-  }
-  const user = Users.findOne({ _id: userId });
-  if (!user) throw new UserNotFoundError({ userId });
-  const cart = user.initCart({ countryContext });
+  const cart = getCart({ orderId, userId, countryContext });
   return cart.addDiscount({ code });
 }
