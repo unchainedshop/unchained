@@ -192,6 +192,7 @@ Products.helpers({
   proxyProducts(vectors) {
     const { proxy = {} } = this;
     let filtered = [...(proxy.assignments || [])];
+
     vectors.forEach(({ key, value }) => {
       filtered = filtered.filter(assignment => {
         if (assignment.vector[key] === value) {
