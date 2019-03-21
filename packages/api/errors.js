@@ -43,6 +43,10 @@ export const OrderNotFoundError = createError(
   'OrderNotFoundError',
   'Order not found'
 );
+export const OrderNumberAlreadyExistsError = createError(
+  'OrderNumberAlreadyExistsError',
+  'This orderNumber has already been used by another order'
+);
 export const OrderDiscountNotFoundError = createError(
   'OrderDiscountNotFoundError',
   'Order discount not found'
