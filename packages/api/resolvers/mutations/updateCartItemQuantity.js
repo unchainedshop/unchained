@@ -16,9 +16,13 @@ export default function(root, { itemId, quantity }, { userId }) {
   if (!order.isCart()) {
     throw new OrderWrongStatusError({ data: { status: order.status } });
   }
-  return OrderPositions.updatePosition({
-    orderId: item.orderId,
-    positionId: itemId,
-    quantity
-  });
+  return OrderPositions.updatePosition(
+    {
+      orderId: item.orderId,
+      positionId: itemId
+    },
+    {
+      quantity
+    }
+  );
 }
