@@ -36,16 +36,17 @@ Products.createProduct = (
   return productObject;
 };
 
-Products.updateProduct = ({ productId, ...product }) => {
-  Products.update(
-    { _id: productId },
-    {
-      $set: {
-        ...product,
-        updated: new Date()
-      }
+Products.updateProduct = ({ productId, type, ...product }) => {
+  const modifier = {
+    $set: {
+      ...product,
+      updated: new Date()
     }
-  );
+  };
+  if (type) {
+    modifier.$set.type = ProductTypes[type];
+  }
+  Products.update({ _id: productId }, modifier);
   return Products.findOne({ _id: productId });
 };
 
