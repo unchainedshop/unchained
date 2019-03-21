@@ -88,6 +88,12 @@ export default [
       loginAsGuest: LoginMethodResponse
 
       """
+      Creates an alternative cart. If you use this feature, you should use explicit orderId's when using the
+      cart mutations. Else it will work like a stack and the checkout will use the very first cart of the user.
+      """
+      createCart(orderNumber: String!): Order!
+
+      """
       Add a new item to the cart. Order gets generated with status = open (= order before checkout / cart) if necessary.
       """
       addCartProduct(
