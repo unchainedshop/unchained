@@ -19,10 +19,10 @@ export default [
 
     type OrderItem {
       _id: ID!
-      product: Product!
+      product: Product
       order: Order!
       quantity: Int!
-      originalProduct: Product!
+      originalProduct: Product
       quotation: Quotation
       unitPrice: Money
       total(category: OrderItemPriceCategory): Money
