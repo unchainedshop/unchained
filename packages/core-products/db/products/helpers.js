@@ -351,7 +351,7 @@ Products.helpers({
       }
     );
   },
-  resolveOrderableProduct({ configuration }) {
+  resolveOrderableProduct({ configuration = [] }) {
     this.checkIsActive();
     if (this.type === ProductTypes.ConfigurableProduct) {
       const variations = this.variations();
