@@ -142,6 +142,7 @@ export default [
       Change the quantity of an item in an open order
       """
       updateCartItemQuantity(itemId: ID!, quantity: Int = 1): OrderItem!
+        @deprecated(reason: "Please use updateCartItem instead")
 
       """
       Change the quantity or configuration of an item in an open order
