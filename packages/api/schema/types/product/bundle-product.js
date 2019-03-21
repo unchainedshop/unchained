@@ -15,6 +15,7 @@ export default [
       texts(forceLocale: String): ProductTexts
       bundleItems: [ProductBundleItem!]
       reviews(limit: Int, offset: Int): [ProductReview!]!
+      meta: JSON
     }
 
     type ProductBundleItem {

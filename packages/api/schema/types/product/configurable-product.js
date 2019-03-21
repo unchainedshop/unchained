@@ -29,6 +29,7 @@ export default [
       Complete assignment matrix
       """
       assignments: [ProductVariationAssignment!]!
+      meta: JSON
     }
   `
 ];
