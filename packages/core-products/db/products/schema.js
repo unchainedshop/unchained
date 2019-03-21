@@ -68,7 +68,11 @@ Products.attachSchema(
       sequence: { type: Number, required: true, index: true },
       slugs: { type: Array, index: true },
       'slugs.$': String,
-      type: { type: String, required: true },
+      type: {
+        type: String,
+        allowedValues: Object.values(ProductTypes),
+        required: true
+      },
       status: { type: String, index: true },
       authorId: { type: SimpleSchema.RegEx.Id, required: true },
       published: Date,
