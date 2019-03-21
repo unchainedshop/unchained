@@ -144,6 +144,15 @@ export default [
       updateCartItemQuantity(itemId: ID!, quantity: Int = 1): OrderItem!
 
       """
+      Change the quantity or configuration of an item in an open order
+      """
+      updateCartItem(
+        itemId: ID!
+        quantity: Int
+        configuration: [ProductConfigurationParameterInput!]
+      ): OrderItem!
+
+      """
       Remove an item from an open order
       """
       removeCartItem(itemId: ID!): OrderItem!

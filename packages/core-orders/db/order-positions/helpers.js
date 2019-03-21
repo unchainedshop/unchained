@@ -108,11 +108,15 @@ OrderPositions.upsertPosition = ({
     ...scope
   });
   if (existingPosition) {
-    return OrderPositions.updatePosition({
-      orderId,
-      positionId: existingPosition._id,
-      quantity: existingPosition.quantity + quantity
-    });
+    return OrderPositions.updatePosition(
+      {
+        orderId,
+        positionId: existingPosition._id
+      },
+      {
+        quantity: existingPosition.quantity + quantity
+      }
+    );
   }
   return OrderPositions.createPosition({
     orderId,
@@ -156,20 +160,66 @@ OrderPositions.createPosition = ({
   });
 };
 
-OrderPositions.updatePosition = ({ positionId, orderId, quantity }) => {
-  log(
-    `OrderPosition ${positionId} -> Update Quantity of ${positionId} to ${quantity}x`,
-    { orderId }
-  );
-  OrderPositions.update(
-    { orderId, _id: positionId },
-    {
-      $set: {
-        quantity,
-        updated: new Date()
+OrderPositions.updatePosition = (
+  { orderId, positionId },
+  { quantity = null, configuration = null }
+) => {
+  const orderPosition = OrderPositions.findOne({
+    orderId,
+    _id: positionId
+  });
+
+  if (quantity !== null) {
+    log(
+      `OrderPosition ${positionId} -> Update Quantity of ${positionId} to ${quantity}x`,
+      { orderId }
+    );
+
+    OrderPositions.update(
+      { orderId, _id: positionId },
+      {
+        $set: {
+          quantity,
+          updated: new Date()
+        }
       }
+    );
+  }
+  if (configuration !== null) {
+    log(
+      `OrderPosition ${positionId} -> Update confiugration of ${positionId} to ${JSON.stringify(
+        configuration
+      )}x`,
+      { orderId }
+    );
+    // check if the variant has changed
+    const originalProduct = orderPosition.originalProduct();
+    if (originalProduct) {
+      const resolvedProduct = originalProduct.resolveOrderableProduct({
+        quantity,
+        configuration
+      });
+      OrderPositions.update(
+        { orderId, _id: positionId },
+        {
+          $set: {
+            productId: resolvedProduct._id,
+            updated: new Date()
+          }
+        }
+      );
     }
-  );
+
+    OrderPositions.update(
+      { orderId, _id: positionId },
+      {
+        $set: {
+          configuration,
+          updated: new Date()
+        }
+      }
+    );
+  }
   OrderDiscounts.updateDiscounts({ orderId });
   OrderPositions.updateCalculation({ orderId, positionId });
   Orders.updateCalculation({ orderId });
