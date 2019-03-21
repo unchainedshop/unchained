@@ -191,6 +191,7 @@ Products.helpers({
   proxyProducts(vectors) {
     const { proxy = {} } = this;
     let filtered = [...(proxy.assignments || [])];
+
     vectors.forEach(({ key, value }) => {
       filtered = filtered.filter(assignment => {
         if (assignment.vector[key] === value) {
@@ -351,7 +352,8 @@ Products.helpers({
       }
     );
   },
-  resolveOrderableProduct({ configuration }) {
+
+  resolveOrderableProduct({ configuration = [] }) {
     this.checkIsActive();
     if (this.type === ProductTypes.ConfigurableProduct) {
       const variations = this.variations();

@@ -57,9 +57,19 @@ const ProductProxySchema = new SimpleSchema(
   { requiredByDefault: false }
 );
 
+const ProductConfigurationSchema = new SimpleSchema({
+  key: String,
+  value: String
+});
+
 const ProductBundleItemSchema = new SimpleSchema({
   productId: String,
-  quantity: Number
+  quantity: Number,
+  configuration: {
+    type: Array,
+    defaultValue: []
+  },
+  'configuration.$': ProductConfigurationSchema
 });
 
 Products.attachSchema(
