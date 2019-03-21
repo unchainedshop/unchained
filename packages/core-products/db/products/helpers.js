@@ -352,7 +352,6 @@ Products.helpers({
       }
     );
   },
-
   resolveOrderableProduct({ configuration = [] }) {
     this.checkIsActive();
     if (this.type === ProductTypes.ConfigurableProduct) {
