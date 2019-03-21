@@ -35,6 +35,7 @@ export default [
       baseUnit: String
       salesUnit: String
       reviews(limit: Int, offset: Int): [ProductReview!]!
+      meta: JSON
     }
   `
 ];
