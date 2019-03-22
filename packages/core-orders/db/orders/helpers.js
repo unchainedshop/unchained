@@ -347,7 +347,7 @@ Orders.helpers({
           const originalProductTexts = item
             .product()
             .getLocalizedTexts(language);
-          const product = texts && texts.title; // deprected
+          const product = productTexts && productTexts.title; // deprected
           const total = format(item.pricing().sum());
           const { quantity } = item;
           return {
