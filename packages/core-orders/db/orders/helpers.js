@@ -345,7 +345,7 @@ Orders.helpers({
         positions: this.items().map(item => {
           const productTexts = item.product().getLocalizedTexts(language);
           const originalProductTexts = item
-            .product()
+            .getOriginalProduct()
             .getLocalizedTexts(language);
           const product = productTexts && productTexts.title; // deprected
           const total = format(item.pricing().sum());
