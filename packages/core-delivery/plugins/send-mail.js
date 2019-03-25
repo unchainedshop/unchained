@@ -78,12 +78,16 @@ class SendMail extends DeliveryAdapter {
 
     const items = order.items().map(position => {
       const product = position.product();
-      const texts = product.getLocalizedTexts();
+      const originalProduct = position.originalProduct();
+      const productTexts = product.getLocalizedTexts();
+      const originalProductTexts = originalProduct.getLocalizedTexts();
       const pricing = position.pricing();
       const unitPrice = pricing.unitPrice().amount;
       return {
         sku: product.warehousing && product.warehousing.sku,
-        name: texts.title,
+        productTexts,
+        originalProductTexts,
+        name: productTexts.title,
         price: unitPrice / 100,
         quantity: position.quantity
       };

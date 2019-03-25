@@ -343,11 +343,20 @@ Orders.helpers({
         url: `${UI_ENDPOINT}/order?_id=${this._id}&otp=${this.orderNumber}`,
         summary: this.pricing().formattedSummary(format),
         positions: this.items().map(item => {
-          const texts = item.product().getLocalizedTexts(language);
-          const product = texts && texts.title;
+          const productTexts = item.product().getLocalizedTexts(language);
+          const originalProductTexts = item
+            .originalProduct()
+            .getLocalizedTexts(language);
+          const product = productTexts && productTexts.title; // deprected
           const total = format(item.pricing().sum());
           const { quantity } = item;
-          return { quantity, product, total };
+          return {
+            quantity,
+            product,
+            productTexts,
+            originalProductTexts,
+            total
+          };
         })
       }
     });
