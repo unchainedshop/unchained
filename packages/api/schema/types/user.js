@@ -55,7 +55,7 @@ export default [
       emails: [UserEmail!]
       roles: [String!]
       tags: [String!]
-      cart(orderNumber: String!): Order
+      cart(orderNumber: String): Order
       orders(includeCarts: Boolean = false): [Order!]!
       quotations: [Quotation!]!
       logs(offset: Int, limit: Int): [Log!]!
