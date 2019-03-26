@@ -38,38 +38,31 @@ Logs.helpers({
 });
 
 Users.helpers({
-  cart({ countryContext } = {}) {
-    const openOrders = Orders.find({
-      userId: this._id,
-      status: OrderStatus.OPEN,
-      countryCode: countryContext || this.lastLogin.country
-    });
-    if (openOrders.count() > 0) {
-      return openOrders.fetch()[0];
+  cart({ countryContext, orderNumber } = {}) {
+    const selector = {
+      countryCode: countryContext || this.lastLogin.country,
+      status: { $eq: OrderStatus.OPEN }
+    };
+    if (orderNumber) selector.orderNumber = orderNumber;
+    const carts = this.orders(selector);
+    console.log(carts);
+    if (carts.length > 0) {
+      return carts[0];
     }
     return null;
   },
-  initCart({ countryContext }) {
-    return (
-      this.cart({ countryContext }) ||
-      Orders.createOrder({
-        userId: this._id,
-        currency: Countries.resolveDefaultCurrencyCode({
-          isoCode: countryContext
-        }),
-        countryCode: countryContext
-      })
-    );
-  },
-  orders() {
-    return Orders.find(
-      { userId: this._id },
-      {
-        sort: {
-          created: -1
-        }
+  orders({ includeCarts = false, status, ...rest } = {}) {
+    const selector = { userId: this._id, ...rest };
+    if (!includeCarts || status) {
+      selector.status = status || { $ne: OrderStatus.OPEN };
+    }
+    const options = {
+      sort: {
+        created: -1
       }
-    ).fetch();
+    };
+    const orders = Orders.find(selector, options).fetch();
+    return orders;
   }
 });
 
@@ -592,7 +585,7 @@ Orders.updateContext = ({ context, orderId }) => {
   return Orders.findOne({ _id: orderId });
 };
 
-Orders.newOrderNumber = () => {
+Orders.getUniqueOrderNumber = () => {
   let orderNumber = null;
   const hashids = new Hashids(
     'unchained',
@@ -638,7 +631,10 @@ Orders.updateStatus = ({ status, orderId, info = '' }) => {
     case OrderStatus.PENDING: // eslint-disable-line no-fallthrough
       if (!order.ordered) {
         modifier.$set.ordered = date;
-        modifier.$set.orderNumber = Orders.newOrderNumber();
+      }
+      if (!order.orderNumber) {
+        // Order Numbers can be set by the user
+        modifier.$set.orderNumber = Orders.getUniqueOrderNumber();
       }
       break;
     default:
