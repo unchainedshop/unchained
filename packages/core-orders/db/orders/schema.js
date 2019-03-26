@@ -24,8 +24,8 @@ Orders.attachSchema(
     {
       userId: { type: String, index: true },
       status: { type: String, index: true },
+      orderNumber: { type: String, index: true, unique: true },
       ordered: Date,
-      orderNumber: String,
       confirmed: Date,
       fullfilled: Date,
       billingAddress: Address,

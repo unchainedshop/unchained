@@ -38,6 +38,7 @@ import updateProductWarehousing from './updateProductWarehousing';
 import updateProductSupply from './updateProductSupply';
 import addProductAssignment from './addProductAssignment';
 import removeProductAssignment from './removeProductAssignment';
+import createCart from './createCart';
 import addCartProduct from './addCartProduct';
 import addCartDiscount from './addCartDiscount';
 import addCartQuotation from './addCartQuotation';
@@ -152,6 +153,7 @@ export default {
   updateCurrency: acl(actions.manageCurrencies)(updateCurrency),
   removeCurrency: acl(actions.manageCurrencies)(removeCurrency),
 
+  createCart: acl(actions.createCart)(createCart),
   addCartProduct: acl(actions.updateCart)(addCartProduct),
   addCartDiscount: acl(actions.updateCart)(addCartDiscount),
   addCartQuotation: acl(actions.updateCart)(addCartQuotation),

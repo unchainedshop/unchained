@@ -11,6 +11,13 @@ export default function(
   if (!includeCarts) {
     selector.status = { $ne: OrderStatus.OPEN };
   }
-  const orders = Orders.find(selector, { skip: offset, limit }).fetch();
+  const options = {
+    skip: offset,
+    limit,
+    sort: {
+      created: -1
+    }
+  };
+  const orders = Orders.find(selector, options).fetch();
   return orders;
 }
