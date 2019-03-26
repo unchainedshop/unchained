@@ -45,7 +45,6 @@ Users.helpers({
     };
     if (orderNumber) selector.orderNumber = orderNumber;
     const carts = this.orders(selector);
-    console.log(carts);
     if (carts.length > 0) {
       return carts[0];
     }
