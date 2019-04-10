@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import os from 'os';
-import opn from 'opn';
+import open from 'open';
 
 const logger = console;
 const mailman = {};
@@ -44,7 +44,7 @@ export default () => {
           return;
         }
         logger.log('unchained:platform -> Mailman detected an outgoing email');
-        opn(filePath);
+        open(filePath);
       });
     };
 

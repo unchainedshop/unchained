@@ -5,6 +5,7 @@ export default [
       language: Language
       country: Country
       version: String
+      userRoles: [String!]!
     }
   `
 ];

@@ -159,13 +159,11 @@ export default compose(
   withFormModel(({ data: { countries, productCatalogPrices } = {} }) => {
     const productPricing = productCatalogPrices || [];
     const productPricingMap = {};
+    const burnedIds = [];
     productPricing.forEach(
-      ({ country, price, isTaxable, isNetPrice, maxQuantity }) => {
-        const suffix = maxQuantity && maxQuantity > 0 ? `${maxQuantity}` : '';
-        const id = `${country.isoCode}:${price.currency}`;
-        const idWithPotentialSuffix = `${id}${suffix}`;
-        if (!productPricingMap[id]) productPricingMap[id] = null;
-        productPricingMap[idWithPotentialSuffix] = {
+      ({ _id, country, price, isTaxable, isNetPrice, maxQuantity }) => {
+        burnedIds.push(`${country.isoCode}:${price.currency}`);
+        productPricingMap[_id] = {
           countryCode: country.isoCode,
           amount: price.amount,
           currencyCode: price.currency,
@@ -187,7 +185,7 @@ export default compose(
         isNetPrice: false
       };
       const id = `${price.countryCode}:${price.currencyCode}`;
-      if (productPricingMap[id] === undefined) {
+      if (!burnedIds.includes(id)) {
         productPricingMap[id] = price;
       }
     });
