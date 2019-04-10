@@ -5,7 +5,7 @@ import { Quotations } from './collections';
 const { logFields, contextFields, timestampFields } = Schemas;
 
 export const QuotationStatus = {
-  REQUESTED: null, // Request for Proposal
+  REQUESTED: 'REQUESTED',
   PROCESSING: 'PROCESSING',
   PROPOSED: 'PROPOSED',
   FULLFILLED: 'FULLFILLED',
@@ -15,9 +15,9 @@ export const QuotationStatus = {
 Quotations.attachSchema(
   new SimpleSchema(
     {
-      userId: { type: String, index: true },
-      productId: { type: String, index: true },
-      status: { type: String, index: true },
+      userId: { type: String, required: true, index: true },
+      productId: { type: String, required: true, index: true },
+      status: { type: String, required: true, index: true },
       quotationNumber: String,
       price: Number,
       expires: Date,

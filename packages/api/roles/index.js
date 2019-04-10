@@ -10,7 +10,8 @@ const roles = {
   ALL: Roles.allRole
 };
 
-export default roles;
+const allRoles = roles;
+export default allRoles;
 
 export const actions = [
   'viewUserRoles',
@@ -82,7 +83,11 @@ export const actions = [
   return newValue;
 }, {});
 
-export const configureRoles = () => {
+export const configureRoles = ({ additionalRoles = {} } = {}) => {
+  Object.entries(additionalRoles).forEach(([key, val]) => {
+    allRoles[key] = new Roles.Role(key);
+    val(allRoles[key], actions)
+  });
   all(roles.ALL, actions);
   loggedIn(roles.LOGGEDIN, actions);
   admin(roles.ADMIN, actions);
