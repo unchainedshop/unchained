@@ -26,6 +26,10 @@ export default compose(
         _id
         roles
       }
+      shopInfo {
+        _id
+        userRoles
+      }
     }
   `),
   graphql(gql`
@@ -35,15 +39,17 @@ export default compose(
       }
     }
   `),
-  withFormSchema({
-    roles: {
-      type: Array,
-      label: 'Roles'
-    },
-    'roles.$': {
-      type: String,
-      allowedValues: ['user', 'admin']
-    }
+  withFormSchema(({ data: { shopInfo } }) => {
+    return {
+      roles: {
+        type: Array,
+        label: 'Roles'
+      },
+      'roles.$': {
+        type: String,
+        allowedValues: shopInfo ? shopInfo.userRoles : []
+      }
+    };
   }),
   withFormModel(({ data: { user } }) => ({
     roles: (user && user.roles) || []
