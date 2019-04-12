@@ -58,7 +58,7 @@ export default [
       cart(orderNumber: String): Order
       orders(includeCarts: Boolean = false): [Order!]!
       quotations: [Quotation!]!
-      logs(offset: Int, limit: Int): [Log!]!
+      logs(offset: Int = 10, limit: Int = 0): [Log!]!
     }
   `
 ];

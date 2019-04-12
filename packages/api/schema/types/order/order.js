@@ -102,7 +102,7 @@ export default [
       documents(type: OrderDocumentType = CONFIRMATION): [Media!]!
       supportedDeliveryProviders: [DeliveryProvider!]!
       supportedPaymentProviders: [PaymentProvider!]!
-      logs(offset: Int, limit: Int): [Log!]!
+      logs(limit: Int = 10, offset: Int = 0): [Log!]!
     }
   `
 ];

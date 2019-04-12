@@ -1,11 +1,7 @@
 import { log } from 'meteor/unchained:core-logger';
 import { Orders, OrderStatus } from 'meteor/unchained:core-orders';
 
-export default function(
-  root,
-  { limit = 10, offset = 0, includeCarts = false },
-  { userId }
-) {
+export default function(root, { limit, offset, includeCarts }, { userId }) {
   log(`query orders: ${limit} ${offset} ${includeCarts}`, { userId });
   const selector = {};
   if (!includeCarts) {

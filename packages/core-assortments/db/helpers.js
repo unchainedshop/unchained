@@ -328,7 +328,7 @@ Products.helpers({
       .fetch()
       .map(({ assortmentId: id }) => id);
   },
-  assortments({ includeInactive = false, limit = 0, offset = 0 } = {}) {
+  assortments({ includeInactive, limit, offset } = {}) {
     const assortmentIds = this.assortmentIds();
     const selector = { _id: { $in: assortmentIds } };
     if (!includeInactive) {
@@ -337,7 +337,7 @@ Products.helpers({
     const options = { skip: offset, limit };
     return Collections.Assortments.find(selector, options).fetch();
   },
-  siblings({ assortmentId, limit = 0, offset = 0, sort = {} } = {}) {
+  siblings({ assortmentId, limit, offset, sort = {} } = {}) {
     const assortmentIds = assortmentId ? [assortmentId] : this.assortmentIds();
     if (!assortmentIds.length) return [];
     const productIds = Collections.AssortmentProducts.find({
@@ -507,8 +507,8 @@ Collections.Assortments.helpers({
     });
   },
   products({
-    limit = 10,
-    offset = 0,
+    limit,
+    offset,
     query,
     sort = {},
     forceLiveCollection = false,

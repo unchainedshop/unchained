@@ -469,7 +469,7 @@ Orders.helpers({
   country() {
     return Countries.findOne({ isoCode: this.countryCode });
   },
-  logs({ limit = 10, offset = 0 }) {
+  logs({ limit, offset }) {
     const selector = { 'meta.orderId': this._id };
     const logs = Logs.find(selector, {
       skip: offset,
