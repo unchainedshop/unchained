@@ -4,7 +4,40 @@ Licensed under the EUPL 1.2
 
 [![CLA assistant](https://cla-assistant.io/readme/badge/unchainedshop/unchained)](https://cla-assistant.io/unchainedshop/unchained)
 
+## Quickstart
+
+### Prerequisites
+
+- Meteor 1.8.1
+- Node.js 8.9.3 (lts/carbon, see [.nvmrc](.nvmrc))
+
+### Run the example
+
+```bash
+git clone https://github.com/unchainedshop/unchained.git
+cd unchained
+npm install
+cd examples/controlpanel
+npm install
+cd ../minimal
+npm install
+cd ../..
+npm run dev
+```
+
+- Navigate to http://localhost:4000/ to view the controlpanel. You can login with: user: admin@localhost / password: password
+- Navigate to http://localhost:4010/graphql to view the GraphQL Playground
+
+### Start your Project
+
+- Copy `examples/minimal` to your project folder
+- (optional) Copy `examples/controlpanel` to your project folder
+- Start hacking (`npm install && npm run dev` in each of these folders)
+
+## Configuration
+
 ### Settings API
+
 E.g. given these settings:
 
 ```
@@ -19,6 +52,7 @@ E.g. given these settings:
   }
 }
 ```
+
 you can access `maxSize` with this:
 
 ```
@@ -33,7 +67,9 @@ const maxSize = getSetting(["files", "media", "maxSize"])
 
 const maxSize = getSetting("files.avatars.maxSize", 10485760);
 ```
+
 ### configure FileCollections
+
 to set gridfs for all collections, use this:
 
 ```
@@ -49,6 +85,7 @@ to set gridfs for all collections, use this:
   }
 }
 ```
+
 all collections will use `default`, unless specified directly:
 
 ```
@@ -67,9 +104,9 @@ all collections will use `default`, unless specified directly:
 
 How order positions get generated out of quotations and configurable products:
 
-* addCartProduct of a ConfigurableProduct resolves to the concrete product if enough variation vector parameters provided through product configuration parameters. The source productId is saved into context.origin, the variation configuration is stored on the item along other product configuration parameters
+- addCartProduct of a ConfigurableProduct resolves to the concrete product if enough variation vector parameters provided through product configuration parameters. The source productId is saved into context.origin, the variation configuration is stored on the item along other product configuration parameters
 
-* addCartQuotation resolved to the actual product and adds that to the cart. It uses a transform method of the quotation plugin system to transform a quotationConfiguration to a productConfiguration. The source quotationId is saved into context.origin
+- addCartQuotation resolved to the actual product and adds that to the cart. It uses a transform method of the quotation plugin system to transform a quotationConfiguration to a productConfiguration. The source quotationId is saved into context.origin
 
 It's also possible to chain:
 
