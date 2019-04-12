@@ -3,7 +3,7 @@ import { Assortments } from 'meteor/unchained:core-assortments';
 
 export default function(
   root,
-  { limit = 10, offset = 0, includeInactive = false, includeLeaves = false },
+  { limit, offset, includeInactive, includeLeaves },
   { userId }
 ) {
   log(

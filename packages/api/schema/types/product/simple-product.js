@@ -28,13 +28,13 @@ export default [
         deliveryProviderType: DeliveryProviderType = SHIPPING
         referenceDate: Date
       ): [Stock!]
-      assortments(limit: Int, offset: Int): [Assortment!]!
-      siblings(assortmentId: ID, limit: Int, offset: Int): [Product!]!
+      assortments(limit: Int = 10, offset: Int = 0): [Assortment!]!
+      siblings(assortmentId: ID, limit: Int = 10, offset: Int = 0): [Product!]!
       dimensions: Dimensions
       sku: String
       baseUnit: String
       salesUnit: String
-      reviews(limit: Int, offset: Int): [ProductReview!]!
+      reviews(limit: Int = 10, offset: Int = 0): [ProductReview!]!
     }
   `
 ];

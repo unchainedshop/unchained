@@ -113,7 +113,10 @@ Quotations.helpers({
     return this;
   },
   process({ quotationContext } = {}) {
-    if (this.status === QuotationStatus.REQUESTED && this.nextStatus() !== QuotationStatus.REQUESTED) {
+    if (
+      this.status === QuotationStatus.REQUESTED &&
+      this.nextStatus() !== QuotationStatus.REQUESTED
+    ) {
       this.submitRequest(quotationContext);
     }
     if (this.nextStatus() !== QuotationStatus.PROCESSING) {
@@ -219,7 +222,7 @@ Quotations.helpers({
     }
     return QuotationDocuments.findOne(selector, { sort: { 'meta.date': -1 } });
   },
-  logs({ limit = 10, offset = 0 }) {
+  logs({ limit, offset }) {
     const selector = { 'meta.quotationId': this._id };
     const logs = Logs.find(selector, {
       skip: offset,
@@ -258,9 +261,7 @@ Quotations.requestQuotation = (
     countryCode: currencyCode
   });
   const quotation = Quotations.findOne({ _id: quotationId });
-  return quotation
-    .process()
-    .sendStatusToCustomer(options);
+  return quotation.process().sendStatusToCustomer(options);
 };
 
 Quotations.updateContext = ({ context, quotationId }) => {

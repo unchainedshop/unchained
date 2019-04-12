@@ -3,7 +3,7 @@ import { Products, ProductStatus } from 'meteor/unchained:core-products';
 
 export default function(
   root,
-  { limit = 10, offset = 0, tags, includeDrafts = false, slugs = [] },
+  { limit, offset, tags, includeDrafts, slugs = [] },
   { userId }
 ) {
   log(
