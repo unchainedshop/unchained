@@ -113,7 +113,7 @@ Users.helpers({
     }
     return Users.findOne({ _id: this._id });
   },
-  logs({ limit = 10, offset = 0 }) {
+  logs({ limit, offset }) {
     const selector = { 'meta.userId': this._id };
     const logs = Logs.find(selector, {
       skip: offset,

@@ -55,10 +55,10 @@ export default [
       emails: [UserEmail!]
       roles: [String!]
       tags: [String!]
-      cart: Order
-      orders(includeDrafts: Boolean = false): [Order!]!
+      cart(orderNumber: String): Order
+      orders(includeCarts: Boolean = false): [Order!]!
       quotations: [Quotation!]!
-      logs(offset: Int, limit: Int): [Log!]!
+      logs(offset: Int = 10, limit: Int = 0): [Log!]!
     }
   `
 ];

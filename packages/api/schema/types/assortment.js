@@ -19,8 +19,8 @@ export default [
       children: [Assortment!]
       filters(query: [FilterQueryInput!]): [FilteredFilter!]
       products(
-        limit: Int
-        offset: Int
+        limit: Int = 10
+        offset: Int = 0
         query: [FilterQueryInput!]
       ): ProductCollection
     }

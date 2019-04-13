@@ -38,12 +38,15 @@ import updateProductWarehousing from './updateProductWarehousing';
 import updateProductSupply from './updateProductSupply';
 import addProductAssignment from './addProductAssignment';
 import removeProductAssignment from './removeProductAssignment';
+import createCart from './createCart';
 import addCartProduct from './addCartProduct';
 import addCartDiscount from './addCartDiscount';
 import addCartQuotation from './addCartQuotation';
 import updateCart from './updateCart';
 import emptyCart from './emptyCart';
 import updateCartItemQuantity from './updateCartItemQuantity';
+import updateCartItem from './updateCartItem';
+
 import removeCartItem from './removeCartItem';
 import removeCartDiscount from './removeCartDiscount';
 import removeOrder from './removeOrder';
@@ -150,6 +153,7 @@ export default {
   updateCurrency: acl(actions.manageCurrencies)(updateCurrency),
   removeCurrency: acl(actions.manageCurrencies)(removeCurrency),
 
+  createCart: acl(actions.createCart)(createCart),
   addCartProduct: acl(actions.updateCart)(addCartProduct),
   addCartDiscount: acl(actions.updateCart)(addCartDiscount),
   addCartQuotation: acl(actions.updateCart)(addCartQuotation),
@@ -157,6 +161,7 @@ export default {
   emptyCart: acl(actions.updateCart)(emptyCart),
   checkoutCart: acl(actions.checkoutCart)(checkoutCart),
   updateCartItemQuantity: acl(actions.updateOrderItem)(updateCartItemQuantity),
+  updateCartItem: acl(actions.updateOrderItem)(updateCartItem),
   removeCartItem: acl(actions.updateOrderItem)(removeCartItem),
   removeCartDiscount: acl(actions.updateOrderDiscount)(removeCartDiscount),
   setOrderPaymentProvider: acl(actions.updateOrder)(setOrderPaymentProvider),

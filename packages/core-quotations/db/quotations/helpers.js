@@ -83,7 +83,7 @@ Quotations.helpers({
       .sendStatusToCustomer(options);
   },
   fullfill({ quotationContext, info } = {}, options) {
-    if (this.status !== QuotationStatus.PROPOSED) return this;
+    if (this.status === QuotationStatus.FULLFILLED) return this;
     return this.setStatus(QuotationStatus.FULLFILLED, JSON.stringify(info))
       .process({ quotationContext })
       .sendStatusToCustomer(options);
@@ -91,7 +91,7 @@ Quotations.helpers({
   sendStatusToCustomer(options) {
     const user = this.user();
     const locale = user.locale(options).normalized;
-    const attachments = [this.document({ type: 'PROPOSAL' })];
+    const attachments = [this.document({ type: 'PROPOSAL' })].filter(Boolean);
     const director = new MessagingDirector({
       locale,
       quotation: this,
@@ -113,6 +113,15 @@ Quotations.helpers({
     return this;
   },
   process({ quotationContext } = {}) {
+    if (
+      this.status === QuotationStatus.REQUESTED &&
+      this.nextStatus() !== QuotationStatus.REQUESTED
+    ) {
+      this.submitRequest(quotationContext);
+    }
+    if (this.nextStatus() !== QuotationStatus.PROCESSING) {
+      this.verifyRequest(quotationContext);
+    }
     if (this.nextStatus() === QuotationStatus.PROPOSED) {
       this.buildProposal(quotationContext);
     }
@@ -128,17 +137,27 @@ Quotations.helpers({
     let { status } = this;
     const director = this.director();
 
-    if (status === QuotationStatus.REQUESTED || !status) {
-      if (!Promise.await(director.isManualRequestVerificationNeeded())) {
+    if (status === QuotationStatus.REQUESTED) {
+      if (!Promise.await(director.isManualRequestVerificationRequired())) {
         status = QuotationStatus.PROCESSING;
       }
     }
     if (status === QuotationStatus.PROCESSING) {
-      if (!Promise.await(director.isManualProposalNeeded())) {
+      if (!Promise.await(director.isManualProposalRequired())) {
         status = QuotationStatus.PROPOSED;
       }
     }
     return status;
+  },
+  submitRequest(quotationContext) {
+    const director = this.director();
+    Promise.await(director.submit(quotationContext));
+    return this;
+  },
+  verifyRequest(quotationContext) {
+    const director = this.director();
+    Promise.await(director.verify(quotationContext));
+    return this;
   },
   buildProposal(quotationContext) {
     const director = this.director();
@@ -203,7 +222,7 @@ Quotations.helpers({
     }
     return QuotationDocuments.findOne(selector, { sort: { 'meta.date': -1 } });
   },
-  logs({ limit = 10, offset = 0 }) {
+  logs({ limit, offset }) {
     const selector = { 'meta.quotationId': this._id };
     const logs = Logs.find(selector, {
       skip: offset,

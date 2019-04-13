@@ -1,11 +1,7 @@
 import { log } from 'meteor/unchained:core-logger';
 import { Currencies } from 'meteor/unchained:core-currencies';
 
-export default function(
-  root,
-  { limit = 10, offset = 0, includeInactive = false },
-  { userId }
-) {
+export default function(root, { limit, offset, includeInactive }, { userId }) {
   log(
     `query currencies: ${limit} ${offset} ${
       includeInactive ? 'includeInactive' : ''

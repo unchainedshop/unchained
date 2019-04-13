@@ -9,7 +9,11 @@ export default [
       """
       Get list of users
       """
-      users(limit: Int, offset: Int, includeGuests: Boolean): [User!]!
+      users(
+        limit: Int = 20
+        offset: Int = 0
+        includeGuests: Boolean = false
+      ): [User!]!
 
       """
       Specific user data if userId provided, else returns currently logged in
@@ -22,10 +26,10 @@ export default [
       """
       products(
         tags: [String!]
-        limit: Int
-        offset: Int
         slugs: [String!]
-        includeDrafts: Boolean
+        limit: Int = 10
+        offset: Int = 0
+        includeDrafts: Boolean = false
       ): [Product!]!
 
       """
@@ -59,7 +63,11 @@ export default [
       """
       Get all languages
       """
-      languages(limit: Int, offset: Int, includeInactive: Boolean): [Language]!
+      languages(
+        limit: Int = 50
+        offset: Int = 0
+        includeInactive: Boolean
+      ): [Language]!
 
       """
       Get a specific language
@@ -69,7 +77,11 @@ export default [
       """
       Get all countries
       """
-      countries(limit: Int, offset: Int, includeInactive: Boolean): [Country!]!
+      countries(
+        limit: Int = 50
+        offset: Int = 0
+        includeInactive: Boolean = false
+      ): [Country!]!
 
       """
       Get a specific country by ID
@@ -80,9 +92,9 @@ export default [
       Get all currencies
       """
       currencies(
-        limit: Int
-        offset: Int
-        includeInactive: Boolean
+        limit: Int = 50
+        offset: Int = 0
+        includeInactive: Boolean = false
       ): [Currency!]!
 
       """
@@ -142,7 +154,11 @@ export default [
       """
       Get all orders
       """
-      orders(limit: Int, offset: Int, includeCarts: Boolean): [Order!]!
+      orders(
+        limit: Int = 10
+        offset: Int = 0
+        includeCarts: Boolean = false
+      ): [Order!]!
 
       """
       Get a specific single order, use the otp to get access to the information without beeing logged in as the user that created the order
@@ -152,7 +168,7 @@ export default [
       """
       Get all logs, sorted by most recent creation date first
       """
-      logs(limit: Int, offset: Int): [Log!]!
+      logs(limit: Int = 100, offset: Int = 0): [Log!]!
 
       """
       Get shop-global data and the resolved country/language pair
@@ -163,10 +179,10 @@ export default [
       Get all root assortments
       """
       assortments(
-        limit: Int
-        offset: Int
-        includeInactive: Boolean
-        includeLeaves: Boolean
+        limit: Int = 10
+        offset: Int = 0
+        includeInactive: Boolean = false
+        includeLeaves: Boolean = false
       ): [Assortment!]!
 
       """
@@ -190,7 +206,11 @@ export default [
       """
       Get all filters
       """
-      filters(limit: Int, offset: Int, includeInactive: Boolean): [Filter!]!
+      filters(
+        limit: Int = 10
+        offset: Int = 0
+        includeInactive: Boolean = false
+      ): [Filter!]!
 
       """
       Get a specific filter by ID
@@ -200,7 +220,7 @@ export default [
       """
       Get all product reviews
       """
-      productReviews(limit: Int, offset: Int): [ProductReview!]!
+      productReviews(limit: Int = 10, offset: Int = 0): [ProductReview!]!
 
       """
       Get a specific product review by ID
@@ -210,7 +230,7 @@ export default [
       """
       Get all quotations
       """
-      quotations(limit: Int, offset: Int): [Quotation!]!
+      quotations(limit: Int = 10, offset: Int = 0): [Quotation!]!
 
       """
       Get a specific quotation by ID

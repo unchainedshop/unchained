@@ -25,11 +25,13 @@ class SendMail extends DeliveryAdapter {
     return type === 'SHIPPING';
   }
 
-  isActive() { // eslint-disable-line
+  isActive() {
+    // eslint-disable-line
     return true;
   }
 
-  async estimatedDeliveryThroughput(warehousingThroughputTime) { // eslint-disable-line
+  async estimatedDeliveryThroughput(warehousingThroughputTime) {
+    // eslint-disable-line
     return 0;
   }
 
@@ -54,7 +56,8 @@ class SendMail extends DeliveryAdapter {
     }, null);
   }
 
-  configurationError() { // eslint-disable-line
+  configurationError() {
+    // eslint-disable-line
     return null;
   }
 
@@ -78,12 +81,16 @@ class SendMail extends DeliveryAdapter {
 
     const items = order.items().map(position => {
       const product = position.product();
-      const texts = product.getLocalizedTexts();
+      const originalProduct = position.originalProduct();
+      const productTexts = product.getLocalizedTexts();
+      const originalProductTexts = originalProduct.getLocalizedTexts();
       const pricing = position.pricing();
       const unitPrice = pricing.unitPrice().amount;
       return {
         sku: product.warehousing && product.warehousing.sku,
-        name: texts.title,
+        productTexts,
+        originalProductTexts,
+        name: productTexts.title,
         price: unitPrice / 100,
         quantity: position.quantity
       };
@@ -98,7 +105,9 @@ class SendMail extends DeliveryAdapter {
         to: this.getToAddress(),
         cc: this.getCCAddress(),
         ...((transactionContext && transactionContext.address) || {}),
-        items
+        items,
+        contact: order.contact || {},
+        total: order.pricing().total().amount / 100
       }
     });
   }

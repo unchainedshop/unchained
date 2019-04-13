@@ -10,13 +10,14 @@ import { configureRoles } from './roles';
 export callMethod from './callMethod';
 export hashPassword from './hashPassword';
 export getConnection from './getConnection';
+export getCart from './getCart';
 export * as roles from './roles';
 export * as acl from './acl';
 export * as errors from './errors';
 
 const { APOLLO_ENGINE_KEY } = process.env;
 
-global._UnchainedAPIVersion = '0.25.0'; // eslint-disable-line
+global._UnchainedAPIVersion = '0.26.0'; // eslint-disable-line
 
 const defaultContext = req => {
   const remoteAddress =
