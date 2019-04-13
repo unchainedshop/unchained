@@ -13,7 +13,8 @@ export default [
       published: Date
       media(vectors: [ProductAssignmentVectorInput!]): [ProductMedia!]
       texts(forceLocale: String): ProductTexts
-      reviews(limit: Int, offset: Int): [ProductReview!]!
+      assortments(limit: Int = 10, offset: Int = 0): [Assortment!]!
+      reviews(limit: Int = 10, offset: Int = 0): [ProductReview!]!
 
       """
       Reduced list of possible products by key/value combinations

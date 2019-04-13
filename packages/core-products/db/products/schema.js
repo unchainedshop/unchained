@@ -57,9 +57,19 @@ const ProductProxySchema = new SimpleSchema(
   { requiredByDefault: false }
 );
 
+const ProductConfigurationSchema = new SimpleSchema({
+  key: String,
+  value: String
+});
+
 const ProductBundleItemSchema = new SimpleSchema({
   productId: String,
-  quantity: Number
+  quantity: Number,
+  configuration: {
+    type: Array,
+    defaultValue: []
+  },
+  'configuration.$': ProductConfigurationSchema
 });
 
 Products.attachSchema(
@@ -68,7 +78,11 @@ Products.attachSchema(
       sequence: { type: Number, required: true, index: true },
       slugs: { type: Array, index: true },
       'slugs.$': String,
-      type: { type: String, required: true },
+      type: {
+        type: String,
+        allowedValues: Object.values(ProductTypes),
+        required: true
+      },
       status: { type: String, index: true },
       authorId: { type: SimpleSchema.RegEx.Id, required: true },
       published: Date,

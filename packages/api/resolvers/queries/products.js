@@ -3,7 +3,7 @@ import { Products, ProductStatus } from 'meteor/unchained:core-products';
 
 export default function(
   root,
-  { limit = 10, offset = 0, tags, includeDrafts = false, slugs = [] },
+  { limit, offset, tags, includeDrafts, slugs = [] },
   { userId }
 ) {
   log(
@@ -23,7 +23,7 @@ export default function(
     options.limit = limit;
 
     if (tags && tags.length > 0) {
-      selector.tags = { $in: tags };
+      selector.tags = { $all: tags };
     }
   }
 

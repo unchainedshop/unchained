@@ -26,16 +26,24 @@ class QuotationAdapter {
     return QuotationError.NOT_IMPLEMENTED;
   }
 
-  async isManualRequestVerificationNeeded() { // eslint-disable-line
+  async isManualRequestVerificationRequired() { // eslint-disable-line
     return true;
   }
 
-  async isManualProposalNeeded() { // eslint-disable-line
+  async isManualProposalRequired() { // eslint-disable-line
     return true;
   }
 
   async quote() { // eslint-disable-line
     return {};
+  }
+
+  async verify() { // eslint-disable-line
+    return true;
+  }
+
+  async submit() { // eslint-disable-line
+    return true;
   }
 
   async reject() { // eslint-disable-line
@@ -91,10 +99,10 @@ class QuotationDirector {
     });
   }
 
-  async isManualRequestVerificationNeeded(context) {
+  async isManualRequestVerificationRequired(context) {
     try {
       const adapter = this.interface(context);
-      const result = await adapter.isManualRequestVerificationNeeded();
+      const result = await adapter.isManualRequestVerificationRequired();
       return result;
     } catch (error) {
       console.error(error); // eslint-disable-line
@@ -102,10 +110,10 @@ class QuotationDirector {
     }
   }
 
-  async isManualProposalNeeded(context) { // eslint-disable-line
+  async isManualProposalRequired(context) { // eslint-disable-line
     try {
       const adapter = this.interface(context);
-      const result = await adapter.isManualProposalNeeded();
+      const result = await adapter.isManualProposalRequired();
       return result;
     } catch (error) {
       console.error(error); // eslint-disable-line
@@ -131,6 +139,18 @@ class QuotationDirector {
   async quote(context) {
     const adapter = this.interface(context);
     const result = await adapter.quote();
+    return result;
+  }
+
+  async verify(context) {
+    const adapter = this.interface(context);
+    const result = await adapter.verify();
+    return result;
+  }
+
+  async submit(context) {
+    const adapter = this.interface(context);
+    const result = await adapter.submit();
     return result;
   }
 
