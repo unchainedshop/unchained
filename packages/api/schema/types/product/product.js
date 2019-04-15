@@ -105,6 +105,7 @@ export default [
       texts: ProductTexts
       media: [ProductMedia!]
       reviews: [ProductReview!]!
+      meta: JSON
     }
 
     """
