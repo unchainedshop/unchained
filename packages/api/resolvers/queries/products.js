@@ -13,7 +13,7 @@ export default function(
     { userId }
   );
   const selector = {};
-  const sort = { published: -1 };
+  const sort = { sequence: 1, published: -1 };
   const options = { skip: offset, limit, sort };
 
   if (slugs.length > 0) {
