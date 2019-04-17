@@ -69,6 +69,7 @@ export default [
     input CreateProductInput {
       title: String!
       type: String!
+      tags: [String!]
     }
 
     input CreateProductVariationInput {
@@ -153,14 +154,15 @@ export default [
     }
 
     input CreateAssortmentInput {
-      title: String!
       isRoot: Boolean
+      tags: [String!]
+      title: String!
     }
 
     input UpdateAssortmentInput {
-      isActive: Boolean
       isRoot: Boolean
       tags: [String!]
+      isActive: Boolean
     }
 
     input UpdateAssortmentTextInput {
