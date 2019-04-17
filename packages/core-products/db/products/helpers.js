@@ -16,12 +16,11 @@ import { ProductReviews } from '../product-reviews/collections';
 import { ProductStatus, ProductTypes } from './schema';
 
 Products.createProduct = (
-  { authorId, locale, title, type, ...rest },
+  { locale, title, type, ...rest },
   { autopublish = false } = {}
 ) => {
   const product = {
     created: new Date(),
-    authorId,
     type: ProductTypes[type],
     status: ProductStatus.DRAFT,
     sequence: Products.getNewSequence(),
