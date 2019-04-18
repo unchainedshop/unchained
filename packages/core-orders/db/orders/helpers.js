@@ -517,9 +517,7 @@ Orders.setPaymentProvider = ({ orderId, paymentProviderId }) => {
   return Orders.findOne({ _id: orderId });
 };
 
-Orders.createOrder = ({ userId, currency, countryCode, ...rest }) => {
-  const user = Users.findOne({ _id: userId });
-  log('Create Order', { userId });
+Orders.createOrder = ({ user, currency, countryCode, ...rest }) => {
   const orderId = Orders.insert({
     ...rest,
     created: new Date(),
@@ -531,7 +529,7 @@ Orders.createOrder = ({ userId, currency, countryCode, ...rest }) => {
           telNumber: user.telNumber(),
           emailAddress: user.email()
         },
-    userId,
+    userId: user._id,
     currency,
     countryCode
   });

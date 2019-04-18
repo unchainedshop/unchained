@@ -9,7 +9,7 @@ import getCart from '../../getCart';
 export default function(
   root,
   { orderId, quotationId, quantity, configuration },
-  { userId, countryContext }
+  { user, userId, countryContext }
 ) {
   log(
     `mutation addCartQuotation ${quotationId} ${quantity} ${
@@ -22,7 +22,7 @@ export default function(
   if (quotation.status !== QuotationStatus.PROPOSED) {
     throw new QuotationWrongStatusError({ data: { status: quotation.status } });
   }
-  const cart = getCart({ orderId, userId, countryContext });
+  const cart = getCart({ orderId, user, countryContext });
   return cart.addQuotationItem({
     quotation,
     quantity,

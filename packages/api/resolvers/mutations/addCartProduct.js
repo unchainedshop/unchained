@@ -6,7 +6,7 @@ import getCart from '../../getCart';
 export default function(
   root,
   { orderId, productId, quantity, configuration },
-  { userId, countryContext }
+  { user, userId, countryContext }
 ) {
   log(
     `mutation addCartProduct ${productId} ${quantity} ${
@@ -16,7 +16,7 @@ export default function(
   );
   const product = Products.findOne({ _id: productId });
   if (!product) throw new ProductNotFoundError({ data: { productId } });
-  const cart = getCart({ orderId, userId, countryContext });
+  const cart = getCart({ orderId, user, countryContext });
   return cart.addProductItem({
     product,
     quantity,
