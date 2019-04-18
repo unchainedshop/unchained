@@ -1,59 +1,73 @@
-import { Users } from 'meteor/unchained:core-users';
-
 export default {
-  texts(obj, { forceLocale }, { localeContext }) {
+  texts(obj, { forceLocale }, requestContext) {
+    const { localeContext } = requestContext;
     return obj.getLocalizedTexts(forceLocale || localeContext.normalized);
   },
   status(obj) {
     return obj.normalizedStatus();
   },
-  catalogPrice(obj, { quantity }, { countryContext }) {
+  catalogPrice(obj, { quantity }, requestContext) {
     // listPrice: ProductPrice
+    const { countryContext } = requestContext;
     return obj.price({
       country: countryContext,
       quantity
     });
   },
-  simulatedPrice(obj, { quantity, useNetPrice }, { countryContext, userId }) {
-    const user = Users.findOne({ _id: userId });
-    return obj.userPrice({
-      quantity,
-      country: countryContext,
-      user,
-      useNetPrice
-    });
+  simulatedPrice(obj, { quantity, useNetPrice }, requestContext) {
+    const { countryContext, userId, user } = requestContext;
+    return obj.userPrice(
+      {
+        quantity,
+        country: countryContext,
+        useNetPrice,
+        userId,
+        user
+      },
+      requestContext
+    );
   },
-  simulatedDiscounts(obj, { quantity }, { countryContext, userId }) {
-    return obj.userDiscounts({
-      quantity,
-      country: countryContext,
-      userId
-    });
+  simulatedDiscounts(obj, params, requestContext) {
+    const { quantity } = params;
+    const { countryContext, userId, user } = requestContext;
+    return obj.userDiscounts(
+      {
+        quantity,
+        country: countryContext,
+        userId,
+        user
+      },
+      requestContext
+    );
   },
-  simulatedDispatches(
-    obj,
-    { referenceDate, quantity, deliveryProviderType },
-    { countryContext, userId }
-  ) {
-    return obj.userDispatches({
-      referenceDate,
-      quantity,
-      deliveryProviderType,
-      country: countryContext,
-      userId
-    });
+  simulatedDispatches(obj, params, requestContext) {
+    const { referenceDate, quantity, deliveryProviderType } = params;
+    const { countryContext, userId, user } = requestContext;
+    return obj.userDispatches(
+      {
+        referenceDate,
+        quantity,
+        deliveryProviderType,
+        country: countryContext,
+        userId,
+        user
+      },
+      requestContext
+    );
   },
-  simulatedStocks(
-    obj,
-    { referenceDate, deliveryProviderType },
-    { countryContext, userId }
-  ) {
-    return obj.userStocks({
-      referenceDate,
-      deliveryProviderType,
-      country: countryContext,
-      userId
-    });
+  simulatedStocks(obj, params, requestContext) {
+    const { referenceDate, deliveryProviderType } = params;
+    const { countryContext, userId, user } = requestContext;
+    return obj.userStocks(
+      {
+        referenceDate,
+        deliveryProviderType,
+        country: countryContext,
+        userId,
+        user
+      },
+      requestContext
+    );
   },
   salesUnit(obj) {
     return obj.commerce && obj.commerce.salesUnit;
