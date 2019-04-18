@@ -14,10 +14,9 @@ export default {
     return 'root';
   },
   userRoles(root, params, context) {
-    checkAction(actions.manageUsers, context.userId)
-    return Object
-      .values(roles)
+    checkAction(actions.manageUsers, context.userId);
+    return Object.values(roles)
       .map(({ name }) => name)
-      .filter((name) => name.substring(0,2) !== '__');
+      .filter(name => name.substring(0, 2) !== '__');
   }
 };

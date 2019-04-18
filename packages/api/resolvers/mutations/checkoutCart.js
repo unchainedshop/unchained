@@ -5,10 +5,10 @@ import getCart from '../../getCart';
 export default function(
   root,
   { orderId, ...transactionContext },
-  { userId, countryContext, localeContext }
+  { user, userId, countryContext, localeContext }
 ) {
   log('mutation checkoutCart', { orderId, userId });
-  const cart = getCart({ orderId, userId, countryContext });
+  const cart = getCart({ orderId, user, countryContext });
   try {
     return cart.checkout(transactionContext, {
       localeContext

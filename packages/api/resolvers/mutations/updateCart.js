@@ -4,10 +4,10 @@ import getCart from '../../getCart';
 export default function(
   root,
   { orderId, billingAddress, contact, meta },
-  { countryContext, userId }
+  { user, countryContext, userId }
 ) {
   log('mutation updateCart', { userId });
-  let order = getCart({ orderId, userId, countryContext });
+  let order = getCart({ orderId, user, countryContext });
   if (meta) {
     order = order.updateContext(meta);
   }

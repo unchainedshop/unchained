@@ -7,7 +7,7 @@ import {
   OrderWrongStatusError
 } from './errors';
 
-export default ({ orderId, userId, countryContext }) => {
+export default ({ orderId, userId, user: userObject, countryContext }) => {
   if (orderId) {
     const order = Orders.findOne({ _id: orderId });
     if (!order) throw new OrderNotFoundError({ orderId });
@@ -16,12 +16,12 @@ export default ({ orderId, userId, countryContext }) => {
     }
     return order;
   }
-  const user = Users.findOne({ _id: userId });
+  const user = userObject || Users.findOne({ _id: userId });
   if (!user) throw new UserNotFoundError({ userId });
   const cart =
     user.cart({ countryContext }) ||
     Orders.createOrder({
-      userId: user._id,
+      user,
       currency: Countries.resolveDefaultCurrencyCode({
         isoCode: countryContext
       }),

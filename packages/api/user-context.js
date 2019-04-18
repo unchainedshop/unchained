@@ -1,6 +1,5 @@
-/* Copied from the server part of https://github.com/apollographql/meteor-integration */
-import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
+import { Users } from 'meteor/unchained:core-users';
 import { check } from 'meteor/check';
 
 export default async req => {
@@ -19,10 +18,7 @@ export default async req => {
     // the hashed token is the key to find the possible current user in the db
     const hashedToken = Accounts._hashLoginToken(loginToken); // eslint-disable-line
 
-    // get the possible current user from the database
-    // note: no need of a fiber aware findOne + a fiber aware call break tests
-    // runned with practicalmeteor:mocha if eslint is enabled
-    const currentUser = await Meteor.users.rawCollection().findOne({
+    const currentUser = Users.findOne({
       'services.resume.loginTokens.hashedToken': hashedToken
     });
 
