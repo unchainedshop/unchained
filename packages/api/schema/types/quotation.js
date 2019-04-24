@@ -57,7 +57,7 @@ export default [
       country: Country
       currency: Currency
       meta: JSON
-      configuration: [ProductConfigurationParameter!]!
+      configuration: [ProductConfigurationParameter!]
       documents(type: QuotationDocumentType = PROPOSAL): [Media!]!
       logs(limit: Int = 10, offset: Int = 0): [Log!]!
     }
