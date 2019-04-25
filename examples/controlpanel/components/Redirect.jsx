@@ -7,7 +7,7 @@ export default compose(
   withRouter
 )(
   createSink(({ to, router, ifLoggedIn, currentUser, loading }) => {
-    if (!router) return;
+    if (!router || !process.browser) return;
     const realUser = currentUser._id && !currentUser.isGuest;
     if (!ifLoggedIn && !loading && !realUser) {
     console.debug(`user anonymous, redirect to ${to}: checkpoint`); // eslint-disable-line
