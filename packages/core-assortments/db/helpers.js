@@ -543,16 +543,11 @@ Collections.Assortments.helpers({
 
     const filteredPipeline = [
       {
-        $match: selector
+        $match: filteredSelector
       },
       {
         $addFields: {
           index: { $indexOfArray: [filteredProductIds, '$_id'] }
-        }
-      },
-      {
-        $match: {
-          index: { $ne: -1 }
         }
       },
       {
