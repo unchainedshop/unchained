@@ -17,7 +17,7 @@ export * as errors from './errors';
 
 const { APOLLO_ENGINE_KEY } = process.env;
 
-global._UnchainedAPIVersion = '0.26.0'; // eslint-disable-line
+global._UnchainedAPIVersion = '0.27.0'; // eslint-disable-line
 
 const defaultContext = req => {
   const remoteAddress =

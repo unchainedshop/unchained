@@ -1,7 +1,7 @@
 /* globals Package */
 Package.describe({
   name: 'unchained:utils',
-  version: '0.26.0',
+  version: '0.27.0',
   summary: 'Unchained Engine: Helper Functions',
   git: 'https://github.com/unchainedshop/unchained',
   documentation: 'README.md'
