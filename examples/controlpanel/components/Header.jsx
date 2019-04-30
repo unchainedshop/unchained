@@ -6,7 +6,7 @@ import { compose, pure, withHandlers, mapProps } from 'recompose';
 import { logout } from '../lib/accounts';
 
 const MenuLayout = ({ pathname, children, loading, ...rest }) => (
-  <Menu color="red" attached="top" size="tiny" {...rest}>
+  <Menu color="black" pointing attached="top" size="small" {...rest}>
     <Link href="/" passHref>
       <Menu.Item active={pathname === '/'}>
         <img src="/static/diamond-snake-colored.jpg" alt="unchained logo" />

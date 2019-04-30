@@ -20,8 +20,7 @@ export default function(
     }
   );
   const filter = Filters.findOne({ _id: filterId });
-  filter.upsertLocalizedText({
-    locale: localeContext.language,
+  filter.upsertLocalizedText(localeContext.language, {
     filterOptionValue: value,
     title
   });

@@ -4,8 +4,7 @@ import { Locale } from 'locale';
 import { ProductMedia, Media, ProductMediaTexts } from './collections';
 
 ProductMedia.helpers({
-  upsertLocalizedText({ locale, ...rest }) {
-    const localizedData = { locale, ...rest };
+  upsertLocalizedText(locale, fields) {
     ProductMediaTexts.upsert(
       {
         productMediaId: this._id,
@@ -14,7 +13,8 @@ ProductMedia.helpers({
       {
         $set: {
           updated: new Date(),
-          ...localizedData
+          locale,
+          ...fields
         }
       },
       { bypassCollection2: true }
