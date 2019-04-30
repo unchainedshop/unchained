@@ -34,7 +34,7 @@ Collections.Assortments.createAssortment = ({
   const assortmentObject = Collections.Assortments.findOne({
     _id: assortmentId
   });
-  assortmentObject.upsertLocalizedText({ locale, title });
+  assortmentObject.upsertLocalizedText(locale, { title });
   return assortmentObject;
 };
 
@@ -368,14 +368,16 @@ Collections.Assortments.helpers({
   country() {
     return Countries.findOne({ isoCode: this.countryCode });
   },
-  upsertLocalizedText({
+  upsertLocalizedText(
     locale,
-    slug: propablyUsedSlug,
-    title = null,
-    subtitle = null,
-    description = null,
-    ...rest
-  }) {
+    {
+      slug: propablyUsedSlug,
+      title = null,
+      subtitle = null,
+      description = null,
+      ...rest
+    }
+  ) {
     const slug = Collections.AssortmentTexts.getUnusedSlug(
       propablyUsedSlug || title || this._id,
       {

@@ -4,7 +4,7 @@ import { Locale } from 'locale';
 import { ProductMedia, Media, ProductMediaTexts } from './collections';
 
 ProductMedia.helpers({
-  upsertLocalizedText({ locale, title = null, subtitle = null, ...rest }) {
+  upsertLocalizedText(locale, { title = null, subtitle = null, ...rest }) {
     ProductMediaTexts.upsert(
       {
         productMediaId: this._id,

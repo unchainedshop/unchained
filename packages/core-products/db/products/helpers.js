@@ -28,7 +28,7 @@ Products.createProduct = (
   };
   const productId = Products.insert(product);
   const productObject = Products.findOne({ _id: productId });
-  productObject.upsertLocalizedText({ locale, title });
+  productObject.upsertLocalizedText(locale, { title });
   if (autopublish) {
     productObject.publish();
   }
@@ -94,15 +94,17 @@ Products.helpers({
         return false;
     }
   },
-  upsertLocalizedText({
+  upsertLocalizedText(
     locale,
-    slug: propablyUsedSlug,
-    title = null,
-    subtitle = null,
-    description = null,
-    labels = null,
-    vendor = null
-  }) {
+    {
+      slug: propablyUsedSlug,
+      title = null,
+      subtitle = null,
+      description = null,
+      labels = null,
+      vendor = null
+    }
+  ) {
     const slug = ProductTexts.getUnusedSlug(
       propablyUsedSlug || title || this._id,
       {
