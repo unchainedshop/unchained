@@ -11,8 +11,7 @@ export default function(
     _id: productVariationId
   });
   const changedLocalizations = texts.map(({ locale, ...rest }) =>
-    productVariation.upsertLocalizedText({
-      locale,
+    productVariation.upsertLocalizedText(locale, {
       productVariationOptionValue,
       ...rest
     })

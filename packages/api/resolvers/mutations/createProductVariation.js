@@ -17,8 +17,7 @@ export default function(
   variation.productId = productId;
   const variationId = ProductVariations.insert(variation);
   const variationObject = ProductVariations.findOne({ _id: variationId });
-  variationObject.upsertLocalizedText({
-    locale: localeContext.language,
+  variationObject.upsertLocalizedText(localeContext.language, {
     title
   });
   return variationObject;

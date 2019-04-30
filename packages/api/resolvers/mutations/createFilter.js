@@ -16,6 +16,6 @@ export default function(
   };
   const filterId = Filters.insert(filter);
   const filterObject = Filters.findOne({ _id: filterId });
-  filterObject.upsertLocalizedText({ locale: localeContext.language, title });
+  filterObject.upsertLocalizedText(localeContext.language, { title });
   return filterObject;
 }

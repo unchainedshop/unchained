@@ -9,7 +9,7 @@ import { graphql } from 'react-apollo';
 const defaultLogs = [];
 
 const LogList = ({ data: { logs = defaultLogs, loading }, ...rest }) => (
-  <Table {...rest}>
+  <Table celled {...rest}>
     <Table.Header>
       <Table.Row>
         <Table.HeaderCell>Log date</Table.HeaderCell>

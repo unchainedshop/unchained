@@ -37,7 +37,7 @@ Filters.createFilter = ({ locale, title, type, key, options, ...rest }) => {
   };
   const filterId = Filters.insert(filter);
   const filterObject = Filters.findOne({ _id: filterId });
-  filterObject.upsertLocalizedText({ locale, filterOptionValue: null, title });
+  filterObject.upsertLocalizedText(locale, { filterOptionValue: null, title });
   return filterObject;
 };
 
@@ -229,8 +229,7 @@ Filters.filterFilters = ({
 };
 
 Filters.helpers({
-  upsertLocalizedText({ locale, filterOptionValue, ...rest }) {
-    const localizedData = { locale, ...rest };
+  upsertLocalizedText(locale, { filterOptionValue, ...fields }) {
     const selector = {
       filterId: this._id,
       filterOptionValue: filterOptionValue || { $eq: null },
@@ -241,7 +240,8 @@ Filters.helpers({
       {
         $set: {
           updated: new Date(),
-          ...localizedData,
+          locale,
+          ...fields,
           filterOptionValue: filterOptionValue || null
         }
       },
