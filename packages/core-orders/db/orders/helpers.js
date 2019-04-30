@@ -524,7 +524,7 @@ Orders.createOrder = ({ user, currency, countryCode, ...rest }) => {
     status: OrderStatus.OPEN,
     billingAddress: user.lastBillingAddress,
     contact: user.isGuest()
-      ? {}
+      ? user.lastContact
       : {
           telNumber: user.telNumber(),
           emailAddress: user.email()
