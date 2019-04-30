@@ -11,7 +11,7 @@ export default function(
   });
   const filter = Filters.findOne({ _id: filterId });
   const changedLocalizations = texts.map(({ locale, ...rest }) =>
-    filter.upsertLocalizedText({ locale, filterOptionValue, ...rest })
+    filter.upsertLocalizedText(locale, { filterOptionValue, ...rest })
   );
   return changedLocalizations;
 }

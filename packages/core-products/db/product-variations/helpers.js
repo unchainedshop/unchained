@@ -4,13 +4,15 @@ import { Locale } from 'locale';
 import { ProductVariations, ProductVariationTexts } from './collections';
 
 ProductVariations.helpers({
-  upsertLocalizedText({
+  upsertLocalizedText(
     locale,
-    productVariationOptionValue = null,
-    title = null,
-    subtitle = null,
-    ...rest
-  }) {
+    {
+      productVariationOptionValue = null,
+      title = null,
+      subtitle = null,
+      ...rest
+    }
+  ) {
     const selector = {
       productVariationId: this._id,
       productVariationOptionValue: productVariationOptionValue || { $eq: null },
