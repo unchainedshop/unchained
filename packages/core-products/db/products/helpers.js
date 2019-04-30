@@ -96,14 +96,7 @@ Products.helpers({
   },
   upsertLocalizedText(
     locale,
-    {
-      slug: propablyUsedSlug,
-      title = null,
-      subtitle = null,
-      description = null,
-      labels = null,
-      vendor = null
-    }
+    { slug: propablyUsedSlug, title = null, ...fields }
   ) {
     const slug = ProductTexts.getUnusedSlug(
       propablyUsedSlug || title || this._id,
@@ -122,12 +115,9 @@ Products.helpers({
         $set: {
           updated: new Date(),
           title,
-          subtitle,
-          description,
           locale,
           slug,
-          labels,
-          vendor
+          ...fields
         }
       },
       { bypassCollection2: true }
