@@ -35,7 +35,7 @@ class DiscountAdapter {
   }
 
   // returns the appropriate discount context for a calculation adapter
-  discountForPricingAdapterKey(pricingAdapterKey) { // eslint-disable-line
+  discountForPricingAdapterKey(pricingAdapterKey, code) { // eslint-disable-line
     return null;
   }
 
@@ -53,21 +53,18 @@ class DiscountDirector {
     return DiscountDirector.adapters.get(discountKey);
   }
 
-  isValid({ discountKey, isTriggerSystem, code }) { // eslint-disable-line
+  isValid({ discountKey, code, isTriggerSystem }) { // eslint-disable-line
     const AdapterClass = this.interfaceClass(discountKey);
     if (!AdapterClass) return false;
     const adapter = new AdapterClass({ context: this.context });
     return adapter.isValid(isTriggerSystem, code);
   }
 
-  discountConfigurationForCalculation({ discountKey, pricingAdapterKey }) { // eslint-disable-line
+  discountConfigurationForCalculation({ discountKey, code, pricingAdapterKey }) { // eslint-disable-line
     const AdapterClass = this.interfaceClass(discountKey);
     if (!AdapterClass) return null;
     const adapter = new AdapterClass({ context: this.context });
-    return adapter.discountForPricingAdapterKey(
-      pricingAdapterKey,
-      this.context
-    );
+    return adapter.discountForPricingAdapterKey(pricingAdapterKey, code);
   }
 
   resolveDiscountKeyFromStaticCode({ code }) {
