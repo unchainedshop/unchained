@@ -4,8 +4,13 @@ import { Locale } from 'locale';
 import { ProductVariations, ProductVariationTexts } from './collections';
 
 ProductVariations.helpers({
-  upsertLocalizedText({ locale, productVariationOptionValue, ...rest }) {
-    const localizedData = { locale, ...rest };
+  upsertLocalizedText({
+    locale,
+    productVariationOptionValue,
+    title,
+    subtitle,
+    ...rest
+  }) {
     const selector = {
       productVariationId: this._id,
       productVariationOptionValue: productVariationOptionValue || { $eq: null },
@@ -16,7 +21,10 @@ ProductVariations.helpers({
       {
         $set: {
           updated: new Date(),
-          ...localizedData,
+          locale,
+          title,
+          subtitle,
+          ...rest,
           productVariationOptionValue: productVariationOptionValue || null
         }
       },

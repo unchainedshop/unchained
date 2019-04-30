@@ -368,7 +368,14 @@ Collections.Assortments.helpers({
   country() {
     return Countries.findOne({ isoCode: this.countryCode });
   },
-  upsertLocalizedText({ locale, title, slug: propablyUsedSlug, ...rest }) {
+  upsertLocalizedText({
+    locale,
+    title,
+    slug: propablyUsedSlug,
+    subtitle,
+    description,
+    ...rest
+  }) {
     const slug = Collections.AssortmentTexts.getUnusedSlug(
       propablyUsedSlug || title || this._id,
       {
@@ -387,6 +394,8 @@ Collections.Assortments.helpers({
           title,
           locale,
           slug,
+          subtitle,
+          description,
           ...rest,
           updated: new Date()
         }
