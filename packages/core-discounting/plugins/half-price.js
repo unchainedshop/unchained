@@ -40,7 +40,7 @@ class HalfPrice extends DiscountAdapter {
   }
 
   // returns the appropriate discount context for a calculation adapter
-  discountForPricingAdapterKey(pricingAdapterKey) { // eslint-disable-line
+  discountForPricingAdapterKey(pricingAdapterKey, code) { // eslint-disable-line
     if (pricingAdapterKey === 'shop.unchained.pricing.product-discount') {
       return { rate: 0.5 };
     }

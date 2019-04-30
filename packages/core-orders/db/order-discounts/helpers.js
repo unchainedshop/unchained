@@ -31,6 +31,7 @@ OrderDiscounts.helpers({
   discountConfigurationForCalculation(pricingAdapterKey) {
     const director = new DiscountDirector({ order: this.order() });
     return director.discountConfigurationForCalculation({
+      code: this.code,
       discountKey: this.discountKey,
       pricingAdapterKey
     });
