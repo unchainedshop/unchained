@@ -15,7 +15,7 @@ const FormSignIn = ({ loginType, changeLoginType, ...formProps }) => (
       <AutoField id="email" name="email" />
       <AutoField name="password" type="password" />
       <ErrorsField />
-      <SubmitField value="Anmelden" className="primary" />
+      <SubmitField value="Sign in" className="primary" />
     </AutoForm>
   </div>
 );
