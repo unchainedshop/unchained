@@ -229,8 +229,7 @@ Filters.filterFilters = ({
 };
 
 Filters.helpers({
-  upsertLocalizedText({ locale, filterOptionValue, ...rest }) {
-    const localizedData = { locale, ...rest };
+  upsertLocalizedText({ locale, filterOptionValue, title, subtitle, ...rest }) {
     const selector = {
       filterId: this._id,
       filterOptionValue: filterOptionValue || { $eq: null },
@@ -241,7 +240,10 @@ Filters.helpers({
       {
         $set: {
           updated: new Date(),
-          ...localizedData,
+          locale,
+          title,
+          subtitle,
+          ...rest,
           filterOptionValue: filterOptionValue || null
         }
       },
