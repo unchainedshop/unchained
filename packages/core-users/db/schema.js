@@ -31,6 +31,13 @@ Meteor.users.attachSchema(
       ),
       lastDeliveryAddress: Address,
       lastBillingAddress: Address,
+      lastContact: new SimpleSchema(
+        {
+          telNumber: String,
+          emailAddress: String
+        },
+        { requiredByDefault: false }
+      ),
       guest: Boolean,
       tags: Array,
       'tags.$': String,

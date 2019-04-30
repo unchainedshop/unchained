@@ -52,6 +52,7 @@ export default [
       country: Country
       lastBillingAddress: Address
       lastDeliveryAddress: Address
+      lastContact: Contact
       emails: [UserEmail!]
       roles: [String!]
       tags: [String!]

@@ -153,15 +153,17 @@ Users.updateLastContact = ({ userId, lastContact }) => {
   log('Store Last Contact Information', { userId });
   const profile = user.profile || {};
   const isGuest = user.isGuest();
+  const modifier = {
+    $set: {
+      updated: new Date(),
+      lastContact
+    }
+  };
   if ((!profile.phoneMobile || isGuest) && lastContact.telNumber) {
-    const modifier = {
-      $set: {
-        'profile.phoneMobile': lastContact.telNumber,
-        updated: new Date()
-      }
-    };
-    Users.update({ _id: userId }, modifier);
+    // Backport the contact phone number to the user profile
+    modifier.$set['profile.phoneMobile'] = lastContact.telNumber;
   }
+  Users.update({ _id: userId }, modifier);
 };
 
 Users.enrollUser = ({ password, email, displayName, address }) => {
