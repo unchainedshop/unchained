@@ -8,7 +8,7 @@ export default connectApollo(({ ...rest }) => (
   <App {...rest}>
     <Container>
       <h2>Logs</h2>
-      <LogList basic compact />
+      <LogList />
     </Container>
   </App>
 ));
