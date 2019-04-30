@@ -370,10 +370,10 @@ Collections.Assortments.helpers({
   },
   upsertLocalizedText({
     locale,
-    title,
     slug: propablyUsedSlug,
-    subtitle,
-    description,
+    title = null,
+    subtitle = null,
+    description = null,
     ...rest
   }) {
     const slug = Collections.AssortmentTexts.getUnusedSlug(

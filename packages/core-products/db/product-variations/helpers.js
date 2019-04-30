@@ -6,9 +6,9 @@ import { ProductVariations, ProductVariationTexts } from './collections';
 ProductVariations.helpers({
   upsertLocalizedText({
     locale,
-    productVariationOptionValue,
-    title,
-    subtitle,
+    productVariationOptionValue = null,
+    title = null,
+    subtitle = null,
     ...rest
   }) {
     const selector = {

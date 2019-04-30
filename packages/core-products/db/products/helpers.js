@@ -96,12 +96,12 @@ Products.helpers({
   },
   upsertLocalizedText({
     locale,
-    title,
     slug: propablyUsedSlug,
-    subtitle,
-    description,
-    labels,
-    vendor
+    title = null,
+    subtitle = null,
+    description = null,
+    labels = null,
+    vendor = null
   }) {
     const slug = ProductTexts.getUnusedSlug(
       propablyUsedSlug || title || this._id,
