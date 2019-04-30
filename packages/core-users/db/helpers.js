@@ -153,6 +153,12 @@ Users.updateLastContact = ({ userId, lastContact }) => {
   log('Store Last Contact Information', { userId });
   const profile = user.profile || {};
   const isGuest = user.isGuest();
+  Users.update(
+    { _id: userId },
+    {
+      $set: { lastContact }
+    }
+  );
   if ((!profile.phoneMobile || isGuest) && lastContact.telNumber) {
     const modifier = {
       $set: {
