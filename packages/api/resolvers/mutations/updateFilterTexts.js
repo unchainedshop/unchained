@@ -10,8 +10,8 @@ export default function(
     userId
   });
   const filter = Filters.findOne({ _id: filterId });
-  const changedLocalizations = texts.map(({ locale, ...rest }) =>
-    filter.upsertLocalizedText(locale, { filterOptionValue, ...rest })
+  const changedLocalizations = texts.map(({ locale, ...fields }) =>
+    filter.upsertLocalizedText(locale, { filterOptionValue, ...fields })
   );
   return changedLocalizations;
 }
