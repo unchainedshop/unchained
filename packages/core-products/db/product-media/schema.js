@@ -5,8 +5,8 @@ import { ProductMedia, ProductMediaTexts } from './collections';
 ProductMedia.attachSchema(
   new SimpleSchema(
     {
-      mediaId: { type: SimpleSchema.RegEx.Id, required: true, index: true },
-      productId: { type: SimpleSchema.RegEx.Id, required: true, index: true },
+      mediaId: { type: String, required: true, index: true },
+      productId: { type: String, required: true, index: true },
       sortKey: { type: Number, required: true },
       tags: { type: Array, index: true },
       'tags.$': String,
@@ -21,7 +21,7 @@ ProductMediaTexts.attachSchema(
   new SimpleSchema(
     {
       productMediaId: {
-        type: SimpleSchema.RegEx.Id,
+        type: String,
         required: true,
         index: true
       },

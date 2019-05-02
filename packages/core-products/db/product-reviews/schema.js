@@ -2,7 +2,8 @@ import SimpleSchema from 'simpl-schema';
 import { Schemas } from 'meteor/unchained:utils';
 import { ProductReviews } from './collections';
 
-export const ProductReviewVoteTypes = { // eslint-disable-line
+export const ProductReviewVoteTypes = {
+  // eslint-disable-line
   UPVOTE: 'UPVOTE',
   DOWNVOTE: 'DOWNVOTE',
   REPORT: 'REPORT'
@@ -24,7 +25,7 @@ ProductReviews.attachSchema(
       votes: Array,
       'votes.$': { type: Object, required: true },
       'votes.$.timestamp': { type: Date, required: true },
-      'votes.$.userId': { type: SimpleSchema.RegEx.Id, required: true },
+      'votes.$.userId': { type: String, required: true },
       'votes.$.type': {
         type: String,
         required: true,
