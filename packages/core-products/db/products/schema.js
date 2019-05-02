@@ -52,7 +52,7 @@ const ProductProxySchema = new SimpleSchema(
     assignments: Array,
     'assignments.$': Object,
     'assignments.$.vector': { type: Object, blackbox: true },
-    'assignments.$.productId': SimpleSchema.RegEx.Id
+    'assignments.$.productId': String
   },
   { requiredByDefault: false }
 );
@@ -84,7 +84,7 @@ Products.attachSchema(
         required: true
       },
       status: { type: String, index: true },
-      authorId: { type: SimpleSchema.RegEx.Id, required: true },
+      authorId: { type: String, required: true },
       published: Date,
       tags: { type: Array, index: true },
       'tags.$': String,
@@ -107,7 +107,7 @@ Products.attachSchema(
 ProductTexts.attachSchema(
   new SimpleSchema(
     {
-      productId: { type: SimpleSchema.RegEx.Id, required: true, index: true },
+      productId: { type: String, required: true, index: true },
       locale: { type: String, required: true, index: true },
       vendor: String,
       title: String,
