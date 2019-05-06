@@ -10,10 +10,11 @@ export default function(
   const productVariation = ProductVariations.findOne({
     _id: productVariationId
   });
-  const changedLocalizations = texts.map(({ locale, ...rest }) =>
+  const changedLocalizations = texts.map(({ locale, ...localizations }) =>
     productVariation.upsertLocalizedText(locale, {
+      authorId: userId,
       productVariationOptionValue,
-      ...rest
+      ...localizations
     })
   );
   return changedLocalizations;

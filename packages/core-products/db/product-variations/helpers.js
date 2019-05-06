@@ -2,6 +2,7 @@ import 'meteor/dburles:collection-helpers';
 import { findLocalizedText } from 'meteor/unchained:core';
 import { Locale } from 'locale';
 import { ProductVariations, ProductVariationTexts } from './collections';
+import { ProductVariationType } from './schema';
 
 ProductVariations.helpers({
   upsertLocalizedText(
@@ -19,6 +20,7 @@ ProductVariations.helpers({
         $set: {
           updated: new Date(),
           locale,
+          authorId: this.authorId,
           ...fields,
           productVariationOptionValue: productVariationOptionValue || null
         }
@@ -43,6 +45,24 @@ ProductVariations.helpers({
     };
   }
 });
+
+ProductVariations.createVariation = ({
+  type,
+  locale,
+  title,
+  ...variationData
+}) => {
+  const variationId = ProductVariations.insert({
+    created: new Date(),
+    type: ProductVariationType[type],
+    ...variationData
+  });
+  const variation = ProductVariations.findOne({ _id: variationId });
+  variation.upsertLocalizedText(locale, {
+    title
+  });
+  return variation;
+};
 
 ProductVariations.getLocalizedTexts = (
   productVariationId,

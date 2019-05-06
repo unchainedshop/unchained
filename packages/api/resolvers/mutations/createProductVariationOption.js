@@ -23,6 +23,7 @@ export default function(
   );
   const variation = ProductVariations.findOne({ _id: productVariationId });
   variation.upsertLocalizedText(localeContext.language, {
+    authorId: userId,
     productVariationOptionValue: value,
     title
   });
