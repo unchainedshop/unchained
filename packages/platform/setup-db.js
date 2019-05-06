@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+import { Migrations } from 'meteor/percolate:migrations';
 import configureUsers, { Users } from 'meteor/unchained:core-users';
 import configureLogger from 'meteor/unchained:core-logger';
 import configureDelivery from 'meteor/unchained:core-delivery';
@@ -38,6 +39,8 @@ Meteor.startup(() => {
   configureOrders();
   configureAssortments();
   configureFilters({ skipInvalidationOnStartup: true });
+
+  Migrations.migrateTo('latest');
 
   if (FIXTURES && Users.find({ username: 'admin' }).count() === 0) {
     createFixtures();
