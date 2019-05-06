@@ -6,14 +6,15 @@ export default compose(
   withCurrentUser,
   withRouter
 )(
-  createSink(({ to, router, ifLoggedIn, currentUser, loading }) => {
-    if (!router || !process.browser) return;
-    const realUser = currentUser._id && !currentUser.isGuest;
-    if (!ifLoggedIn && !loading && !realUser) {
+  createSink(({ to, router, ifLoggedIn, currentUser, loading, ...rest }) => {
+    console.log(currentUser, loading, rest);
+    if (!router || !process.browser || loading) return;
+    const realUser = currentUser && currentUser._id && !currentUser.isGuest;
+    if (!ifLoggedIn && !realUser) {
     console.debug(`user anonymous, redirect to ${to}: checkpoint`); // eslint-disable-line
       router.replace(to);
     }
-    if (ifLoggedIn && !loading && realUser) {
+    if (ifLoggedIn && realUser) {
     console.debug(`user logged in, redirect to ${to}: checkpoint`); // eslint-disable-line
       router.replace(to);
     }
