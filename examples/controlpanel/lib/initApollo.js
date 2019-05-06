@@ -50,7 +50,7 @@ function create(initialState, headersOverride, getToken) {
   const middlewareLink = new ApolloLink((operation, forward) => {
     // add the authorization to the headers
     const headers = {};
-    if (headersOverride['accept-language']) {
+    if (headersOverride && headersOverride['accept-language']) {
       headers['accept-language'] = headersOverride['accept-language'];
     }
     headers.authorization = getToken() ? `Bearer ${getToken()}` : null;
@@ -77,7 +77,11 @@ function create(initialState, headersOverride, getToken) {
   });
 }
 
-export default function initApollo(initialState, headersOverride, getToken) {
+export default function initApollo(
+  initialState,
+  headersOverride = {},
+  getToken
+) {
   // Make sure to create a new client for every server-side request so that data
   // isn't shared between connections (which would be bad)
   if (!process.browser) {

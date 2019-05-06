@@ -9,7 +9,7 @@ import initApollo from './initApollo';
 
 function parseCookies(ctx = {}, options = {}) {
   return cookie.parse(
-    (ctx.req && ctx.req.headers.cookie) // eslint-disable-line
+    (ctx.req && ctx.req.headers && ctx.req.headers.cookie) // eslint-disable-line
       ? ctx.req.headers.cookie
       : process.browser
       ? document.cookie

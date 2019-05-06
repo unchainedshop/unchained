@@ -1,7 +1,12 @@
 require('dotenv').config();
 const withCss = require('@zeit/next-css');
 
-const { LANG, GRAPHQL_ENDPOINT, DEBUG, BUNDLE_ANALYZE } = process.env;
+const {
+  LANG,
+  GRAPHQL_ENDPOINT = 'http://localhost:4010/graphql',
+  DEBUG = false,
+  BUNDLE_ANALYZE = false
+} = process.env;
 
 module.exports = withCss({
   analyzeServer: ['server', 'both'].includes(BUNDLE_ANALYZE),
