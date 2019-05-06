@@ -43,13 +43,12 @@ PaymentProviders.helpers({
   }
 });
 
-PaymentProviders.createProvider = ({ type, ...rest }) => {
-  const InterfaceClass = new PaymentDirector(rest).interfaceClass();
+PaymentProviders.createProvider = providerData => {
+  const InterfaceClass = new PaymentDirector(providerData).interfaceClass();
   const providerId = PaymentProviders.insert({
-    ...rest,
     created: new Date(),
     configuration: InterfaceClass.initialConfiguration,
-    type
+    ...providerData
   });
   return PaymentProviders.findOne({ _id: providerId });
 };
