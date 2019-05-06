@@ -7,5 +7,6 @@ Factory.define('deliveryProvider', DeliveryProviders, {
   adapterKey: () => 'shop.unchained.send-mail',
   type: () => DeliveryProviderType.SHIPPING,
   configuration: () => [],
+  authorId: () => Factory.get('user'),
   ...fakeTimestampFields
 });

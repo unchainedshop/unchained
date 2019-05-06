@@ -13,6 +13,7 @@ DeliveryProviders.attachSchema(
     {
       type: { type: String, required: true, index: true },
       adapterKey: { type: String, required: true },
+      authorId: { type: String, required: true },
       configuration: { type: Array },
       'configuration.$': { type: Object },
       'configuration.$.key': { type: String },
@@ -46,8 +47,35 @@ Migrations.add({
   }
 });
 
-export default () => {
-  Meteor.startup(() => {
-    Migrations.migrateTo('latest');
-  });
-};
+Migrations.add({
+  version: 20190506.3,
+  name: 'Add default authorId',
+  up() {
+    DeliveryProviders.find()
+      .fetch()
+      .forEach(({ _id }) => {
+        DeliveryProviders.update(
+          { _id },
+          {
+            $set: {
+              authorId: 'root'
+            }
+          }
+        );
+      });
+  },
+  down() {
+    DeliveryProviders.find()
+      .fetch()
+      .forEach(({ _id }) => {
+        DeliveryProviders.update(
+          { _id },
+          {
+            $unset: {
+              authorId: 1
+            }
+          }
+        );
+      });
+  }
+});
