@@ -27,17 +27,17 @@ const intersectProductIds = ({
     return filter.intersect({ values, productIdSet, ...options });
   }, new Set(productIds));
 
-Filters.createFilter = ({ locale, title, type, key, options, ...rest }) => {
-  const filter = {
+Filters.createFilter = ({ locale, title, type, ...filterData }) => {
+  const filterId = Filters.insert({
     created: new Date(),
     type: FilterTypes[type],
-    key,
-    options,
-    ...rest
-  };
-  const filterId = Filters.insert(filter);
+    ...filterData
+  });
   const filterObject = Filters.findOne({ _id: filterId });
-  filterObject.upsertLocalizedText(locale, { filterOptionValue: null, title });
+  filterObject.upsertLocalizedText(locale, {
+    filterOptionValue: null,
+    title
+  });
   return filterObject;
 };
 
@@ -252,6 +252,7 @@ Filters.helpers({
         $set: {
           updated: new Date(),
           locale,
+          authorId: this.authorId,
           ...fields,
           filterOptionValue: filterOptionValue || null
         }
