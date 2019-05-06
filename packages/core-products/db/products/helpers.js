@@ -16,23 +16,22 @@ import { ProductReviews } from '../product-reviews/collections';
 import { ProductStatus, ProductTypes } from './schema';
 
 Products.createProduct = (
-  { locale, title, type, ...rest },
+  { locale, title, type, ...productData },
   { autopublish = false } = {}
 ) => {
-  const product = {
+  const productId = Products.insert({
     created: new Date(),
     type: ProductTypes[type],
     status: ProductStatus.DRAFT,
     sequence: Products.getNewSequence(),
-    ...rest
-  };
-  const productId = Products.insert(product);
-  const productObject = Products.findOne({ _id: productId });
-  productObject.upsertLocalizedText(locale, { title });
+    ...productData
+  });
+  const product = Products.findOne({ _id: productId });
+  product.upsertLocalizedText(locale, { title });
   if (autopublish) {
-    productObject.publish();
+    product.publish();
   }
-  return productObject;
+  return product;
 };
 
 Products.updateProduct = ({ productId, type, ...product }) => {
@@ -117,6 +116,7 @@ Products.helpers({
           title,
           locale,
           slug,
+          authorId: this.authorId,
           ...fields
         }
       },

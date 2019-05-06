@@ -1,4 +1,5 @@
 import SimpleSchema from 'simpl-schema';
+import { Migrations } from 'meteor/percolate:migrations';
 import { Schemas } from 'meteor/unchained:utils';
 import { Products, ProductTexts } from './collections';
 
@@ -77,18 +78,18 @@ Products.attachSchema(
   new SimpleSchema(
     {
       sequence: { type: Number, required: true, index: true },
-      slugs: { type: Array, index: true },
-      'slugs.$': String,
       type: {
         type: String,
         allowedValues: Object.values(ProductTypes),
         required: true
       },
-      status: { type: String, index: true },
       authorId: { type: String, required: true },
-      published: Date,
+      status: { type: String, index: true },
+      slugs: { type: Array, index: true },
+      'slugs.$': String,
       tags: { type: Array, index: true },
       'tags.$': String,
+      published: Date,
       commerce: ProductCommerceSchema,
       warehousing: ProductWarehousingSchema,
       supply: ProductSupplySchema,
@@ -110,6 +111,7 @@ ProductTexts.attachSchema(
     {
       productId: { type: String, required: true, index: true },
       locale: { type: String, required: true, index: true },
+      authorId: { type: String, required: true },
       vendor: String,
       title: String,
       slug: { type: String, index: true },
@@ -122,3 +124,36 @@ ProductTexts.attachSchema(
     { requiredByDefault: false }
   )
 );
+
+Migrations.add({
+  version: 20190506.5,
+  name: 'Add default authorId',
+  up() {
+    ProductTexts.find()
+      .fetch()
+      .forEach(({ _id }) => {
+        ProductTexts.update(
+          { _id },
+          {
+            $set: {
+              authorId: 'root'
+            }
+          }
+        );
+      });
+  },
+  down() {
+    ProductTexts.find()
+      .fetch()
+      .forEach(({ _id }) => {
+        ProductTexts.update(
+          { _id },
+          {
+            $unset: {
+              authorId: 1
+            }
+          }
+        );
+      });
+  }
+});
