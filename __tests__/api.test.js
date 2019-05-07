@@ -1,5 +1,6 @@
 const {MongoClient} = require('mongodb');
 const { spawn } = require('child_process');
+const { createApolloFetch } = require('apollo-fetch');
 
 describe('insert', () => {
   let connection;
@@ -10,7 +11,7 @@ describe('insert', () => {
     console.log(global.__MONGO_URI__);
     connection = await MongoClient.connect(global.__MONGO_URI__, {useNewUrlParser: true});
     db = await connection.db(global.__MONGO_DB_NAME__);
-    apolloFetch = createApolloFetch({ uri: global.__SUBPROCESS_METEOR_ROOT_URL__ + '/graphql' });
+    apolloFetch = createApolloFetch({ uri: 'http://localhost:3000/graphql' });
   });
 
   afterAll(async () => {
