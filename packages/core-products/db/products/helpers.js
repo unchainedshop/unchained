@@ -138,18 +138,12 @@ Products.helpers({
     );
     return ProductTexts.findOne({ productId: this._id, locale });
   },
-  addMediaLink({ mediaId, meta }) {
-    const sortKey = ProductMedia.getNewSortKey(this._id);
-    const productMediaId = ProductMedia.insert({
-      mediaId,
-      tags: [],
-      sortKey,
+  addMediaLink(mediaData) {
+    return ProductMedia.createMedia({
+      authorId: this.authorId,
       productId: this._id,
-      created: new Date(),
-      meta
+      ...mediaData
     });
-    const productMediaObject = ProductMedia.findOne({ _id: productMediaId });
-    return productMediaObject;
   },
   addMedia({ rawFile, href, name, userId, meta, ...options }) {
     const fileLoader = rawFile
@@ -164,7 +158,7 @@ Products.helpers({
           ...options
         });
     const file = Promise.await(fileLoader);
-    return this.addMediaLink({ mediaId: file._id, meta });
+    return this.addMediaLink({ mediaId: file._id, meta, authorId: userId });
   },
   getLocalizedTexts(locale) {
     const parsedLocale = new Locale(locale);

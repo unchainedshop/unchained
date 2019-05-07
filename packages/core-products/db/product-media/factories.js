@@ -9,20 +9,22 @@ Factory.createMedia = () =>
     fileName: faker.system.fileName()
   });
 
-Factory.define('productMediaText', ProductMediaTexts, {
-  productMediaId: () => Factory.get('productMedia'),
-  locale: () => faker.random.arrayElement(['de', 'en']),
-  title: () => faker.lorem.words(),
-  subtitle: () => faker.lorem.sentence(),
-  ...fakeTimestampFields
-});
-
 Factory.define('productMedia', ProductMedia, {
   mediaId: () => Factory.createMedia()._id,
+  productId: () => Factory.get('simpleProduct'),
+  authorId: () => Factory.get('user'),
   tags: () =>
     faker.random.boolean()
       ? [faker.random.arrayElement(['red', 'green', 'blue'])]
       : [],
-  productId: () => Factory.get('simpleProduct'),
+  ...fakeTimestampFields
+});
+
+Factory.define('productMediaText', ProductMediaTexts, {
+  productMediaId: () => Factory.get('productMedia'),
+  locale: () => faker.random.arrayElement(['de', 'en']),
+  authorId: () => Factory.get('user'),
+  title: () => faker.lorem.words(),
+  subtitle: () => faker.lorem.sentence(),
   ...fakeTimestampFields
 });

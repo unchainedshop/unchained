@@ -44,7 +44,7 @@ ProductVariationTexts.attachSchema(
 
 Migrations.add({
   version: 20190506.6,
-  name: 'Add default authorId',
+  name: 'Add default authorId to product variations',
   up() {
     ProductVariations.find()
       .fetch()
