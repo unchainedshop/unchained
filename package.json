@@ -24,6 +24,7 @@
   },
   "devDependencies": {
     "@shelf/jest-mongodb": "^1.0.1",
+    "apollo-fetch": "^0.7.0",
     "babel-eslint": "^10.0.1",
     "eslint": "^5.16.0",
     "eslint-config-airbnb-base": "^13.1.0",
