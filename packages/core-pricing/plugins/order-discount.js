@@ -30,6 +30,13 @@ class OrderItems extends OrderPricingAdapter {
       const pricing = item.pricing();
       const tax = pricing.taxSum();
       const gross = pricing.gross();
+      if (totalItemsAmount === 0 || gross - tax === 0) {
+        return {
+          ratio: 0,
+          taxDivisor: 1
+        };
+      }
+
       return {
         ratio: gross / totalItemsAmount,
         taxDivisor: gross / (gross - tax)
