@@ -1,5 +1,4 @@
 import SimpleSchema from 'simpl-schema';
-import { Migrations } from 'meteor/percolate:migrations';
 import { Schemas } from 'meteor/unchained:utils';
 import { Products, ProductTexts } from './collections';
 
@@ -124,36 +123,3 @@ ProductTexts.attachSchema(
     { requiredByDefault: false }
   )
 );
-
-Migrations.add({
-  version: 20190506.5,
-  name: 'Add default authorId',
-  up() {
-    ProductTexts.find()
-      .fetch()
-      .forEach(({ _id }) => {
-        ProductTexts.update(
-          { _id },
-          {
-            $set: {
-              authorId: 'root'
-            }
-          }
-        );
-      });
-  },
-  down() {
-    ProductTexts.find()
-      .fetch()
-      .forEach(({ _id }) => {
-        ProductTexts.update(
-          { _id },
-          {
-            $unset: {
-              authorId: 1
-            }
-          }
-        );
-      });
-  }
-});

@@ -1,5 +1,4 @@
 import SimpleSchema from 'simpl-schema';
-import { Migrations } from 'meteor/percolate:migrations';
 import { Schemas } from 'meteor/unchained:utils';
 import { ProductMedia, ProductMediaTexts } from './collections';
 
@@ -36,60 +35,3 @@ ProductMediaTexts.attachSchema(
     { requiredByDefault: false }
   )
 );
-
-Migrations.add({
-  version: 20190506.7,
-  name: 'Add default authorId to product medias',
-  up() {
-    ProductMedia.find()
-      .fetch()
-      .forEach(({ _id }) => {
-        ProductMedia.update(
-          { _id },
-          {
-            $set: {
-              authorId: 'root'
-            }
-          }
-        );
-      });
-    ProductMediaTexts.find()
-      .fetch()
-      .forEach(({ _id }) => {
-        ProductMediaTexts.update(
-          { _id },
-          {
-            $set: {
-              authorId: 'root'
-            }
-          }
-        );
-      });
-  },
-  down() {
-    ProductMedia.find()
-      .fetch()
-      .forEach(({ _id }) => {
-        ProductMedia.update(
-          { _id },
-          {
-            $unset: {
-              authorId: 1
-            }
-          }
-        );
-      });
-    ProductMediaTexts.find()
-      .fetch()
-      .forEach(({ _id }) => {
-        ProductMediaTexts.update(
-          { _id },
-          {
-            $unset: {
-              authorId: 1
-            }
-          }
-        );
-      });
-  }
-});
