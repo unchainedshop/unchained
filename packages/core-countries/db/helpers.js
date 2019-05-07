@@ -21,6 +21,16 @@ Countries.helpers({
   }
 });
 
+Countries.createCountry = ({ isoCode, ...countryData }) => {
+  const _id = Countries.insert({
+    created: new Date(),
+    isoCode: isoCode.toUpperCase(),
+    isActive: true,
+    ...countryData
+  });
+  return Countries.findOne({ _id });
+};
+
 Countries.resolveDefaultCurrencyCode = ({ isoCode }) => {
   const country = Countries.findOne({ isoCode });
   const currency = country && country.defaultCurrency();
