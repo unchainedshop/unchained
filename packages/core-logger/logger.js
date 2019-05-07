@@ -1,9 +1,7 @@
 // import { checkNpmVersions } from 'meteor/tmeasday:check-npm-versions';
-import './db/factories';
-import './db/helpers';
 import LocalTransport from './local-transport';
-import { Logs } from './db/collections';
-import runMigrations from './db/schema';
+
+export * from './db';
 
 const { createLogger, format, transports } = require('winston');
 
@@ -11,7 +9,8 @@ const { DEBUG } = process.env;
 const { combine, colorize, printf } = format;
 
 let instance = null;
-class Logger {
+
+export class Logger {
   constructor(debug) {
     if (!instance) {
       instance = this;
@@ -30,13 +29,11 @@ class Logger {
   }
 }
 
-const log = (message, options) => {
+export const log = (message, options) => {
   const { level = 'info', ...meta } = options || {};
   return new Logger(DEBUG).winston.log(level, message, meta);
 };
 
 export default () => {
-  runMigrations();
+  // configure
 };
-
-export { Logger, log, Logs };

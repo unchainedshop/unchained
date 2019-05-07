@@ -24,7 +24,6 @@ export default createFixtures;
 Meteor.startup(() => {
   if (!Meteor.isServer) return;
 
-  // connect domain model
   configureLogger();
   configureCurrencies();
   configureCountries();

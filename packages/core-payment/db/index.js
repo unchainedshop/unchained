@@ -1,6 +1,5 @@
 import './factories';
 import './helpers';
-import './schema';
-import './migrations';
 
+export * from './schema';
 export * from './collections';

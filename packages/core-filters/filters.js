@@ -1,11 +1,7 @@
-import './db/factories';
-import './db/helpers';
-import { Filters, FilterTexts } from './db/collections';
+import { Filters } from './db/collections';
 
-export * from './db/schema';
+export * from './db';
 export * from './director';
-
-export { Filters, FilterTexts };
 
 export default ({ skipInvalidationOnStartup = false }) => {
   // configure
