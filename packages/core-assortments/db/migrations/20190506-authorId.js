@@ -3,7 +3,7 @@ import * as Collections from '../collections';
 
 Migrations.add({
   version: 20190506.8,
-  name: 'Add default authorId',
+  name: 'Add default authorId to assortments',
   up() {
     Collections.Assortments.find()
       .fetch()
