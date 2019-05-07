@@ -24,5 +24,5 @@ export default function(
       data: { assortmentId: childAssortmentId }
     });
   }
-  return parent.addLink({ assortmentId: childAssortmentId });
+  return parent.addLink({ assortmentId: childAssortmentId, authorId: userId });
 }

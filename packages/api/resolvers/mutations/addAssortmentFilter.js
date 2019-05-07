@@ -9,5 +9,5 @@ export default function(root, { assortmentId, filterId }, { userId }) {
   const assortment = Assortments.findOne({ _id: assortmentId });
   if (!assortment)
     throw new AssortmentNotFoundError({ data: { assortmentId } });
-  return assortment.addFilter({ filterId });
+  return assortment.addFilter({ filterId, authorId: userId });
 }

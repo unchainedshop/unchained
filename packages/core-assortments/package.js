@@ -13,6 +13,7 @@ Package.onUse(api => {
   api.use('mongo');
   api.use('dburles:factory@1.1.0');
   api.use('dburles:collection-helpers@1.1.0');
+  api.use('percolate:migrations@1.0.2');
   api.use('unchained:utils@0.27.0');
   api.use('unchained:core-countries@0.27.0');
   api.use('unchained:core-products@0.27.0');

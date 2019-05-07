@@ -16,6 +16,7 @@ Collections.Assortments.attachSchema(
       meta: { type: Object, blackbox: true },
       _cachedProductIds: Array,
       '_cachedProductIds.$': String,
+      authorId: { type: String, required: true },
       ...Schemas.timestampFields
     },
     { requiredByDefault: false }
@@ -31,6 +32,7 @@ Collections.AssortmentTexts.attachSchema(
       subtitle: String,
       description: String,
       slug: { type: String, index: true },
+      authorId: { type: String, required: true },
       ...Schemas.timestampFields
     },
     { requiredByDefault: false }
@@ -43,6 +45,7 @@ Collections.AssortmentProducts.attachSchema(
       assortmentId: { type: String, required: true, index: true },
       productId: { type: String, required: true, index: true },
       sortKey: { type: Number, required: true },
+      authorId: { type: String, required: true },
       ...Schemas.timestampFields
     },
     { requiredByDefault: false }
@@ -55,6 +58,7 @@ Collections.AssortmentLinks.attachSchema(
       parentAssortmentId: { type: String, required: true, index: true },
       childAssortmentId: { type: String, required: true, index: true },
       sortKey: { type: Number, required: true },
+      authorId: { type: String, required: true },
       ...Schemas.timestampFields
     },
     { requiredByDefault: false }
@@ -67,6 +71,7 @@ Collections.AssortmentFilters.attachSchema(
       assortmentId: { type: String, required: true, index: true },
       filterId: { type: String, required: true, index: true },
       sortKey: { type: Number, required: true },
+      authorId: { type: String, required: true },
       ...Schemas.timestampFields
     },
     { requiredByDefault: false }

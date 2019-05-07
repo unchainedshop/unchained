@@ -21,7 +21,7 @@ Collections.Assortments.createAssortment = ({
   meta = {},
   ...rest
 }) => {
-  const assortment = {
+  const assortmentId = Collections.Assortments.insert({
     created: new Date(),
     sequence: Collections.Assortments.getNewSequence(),
     isBase,
@@ -29,13 +29,12 @@ Collections.Assortments.createAssortment = ({
     isRoot,
     meta,
     ...rest
-  };
-  const assortmentId = Collections.Assortments.insert(assortment);
-  const assortmentObject = Collections.Assortments.findOne({
+  });
+  const assortment = Collections.Assortments.findOne({
     _id: assortmentId
   });
-  assortmentObject.upsertLocalizedText(locale, { title });
-  return assortmentObject;
+  assortment.upsertLocalizedText(locale, { title });
+  return assortment;
 };
 
 Collections.Assortments.sync = syncFn => {
@@ -387,6 +386,7 @@ Collections.Assortments.helpers({
           title,
           locale,
           slug,
+          authorId: this.authorId,
           ...fields,
           updated: new Date()
         }
@@ -416,33 +416,37 @@ Collections.Assortments.helpers({
     const parsedLocale = new Locale(locale);
     return Collections.Assortments.getLocalizedTexts(this._id, parsedLocale);
   },
-  addProduct({ productId }, { skipInvalidation = false } = {}) {
-    const sortKey = Collections.AssortmentProducts.getNewSortKey(this._id);
+  addProduct({ productId, ...fields }, { skipInvalidation = false } = {}) {
     Collections.AssortmentProducts.remove({
       assortmentId: this._id,
       productId
     });
+    const sortKey = Collections.AssortmentProducts.getNewSortKey(this._id);
     const assortmentProductId = Collections.AssortmentProducts.insert({
-      assortmentId: this._id,
-      productId,
       sortKey,
-      created: new Date()
+      authorId: this.authorId,
+      ...fields,
+      created: new Date(),
+      assortmentId: this._id,
+      productId
     });
     if (!skipInvalidation) {
       this.invalidateProductIdCache();
     }
     return Collections.AssortmentProducts.findOne({ _id: assortmentProductId });
   },
-  addLink({ assortmentId }, { skipInvalidation = false } = {}) {
-    const sortKey = Collections.AssortmentLinks.getNewSortKey(this._id);
+  addLink({ assortmentId, ...fields }, { skipInvalidation = false } = {}) {
     Collections.AssortmentLinks.remove({
       parentAssortmentId: this._id,
       childAssortmentId: assortmentId
     });
+    const sortKey = Collections.AssortmentLinks.getNewSortKey(this._id);
     const assortmentProductId = Collections.AssortmentLinks.insert({
+      sortKey,
+      authorId: this.authorId,
+      ...fields,
       parentAssortmentId: this._id,
       childAssortmentId: assortmentId,
-      sortKey,
       created: new Date()
     });
     if (!skipInvalidation) {
@@ -450,16 +454,18 @@ Collections.Assortments.helpers({
     }
     return Collections.AssortmentLinks.findOne({ _id: assortmentProductId });
   },
-  addFilter({ filterId }) {
-    const sortKey = Collections.AssortmentFilters.getNewSortKey(this._id);
+  addFilter({ filterId, ...fields }) {
     Collections.AssortmentFilters.remove({
       assortmentId: this._id,
       filterId
     });
+    const sortKey = Collections.AssortmentFilters.getNewSortKey(this._id);
     const assortmentFilterId = Collections.AssortmentFilters.insert({
+      sortKey,
+      authorId: this.authorId,
+      ...fields,
       assortmentId: this._id,
       filterId,
-      sortKey,
       created: new Date()
     });
     return Collections.AssortmentFilters.findOne({ _id: assortmentFilterId });
