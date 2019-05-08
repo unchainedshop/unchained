@@ -1,26 +1,27 @@
+const teardownInMemoryMongoDB = require('@shelf/jest-mongodb/teardown')
+
 module.exports = async function(globalConfig) {
-  await global.__MONGOD__.stop();
   global.__SUBPROCESS_METEOR__.unref()
   if (!globalConfig.watch && !globalConfig.watchAll) {
-    global.__SUBPROCESS_METEOR__.kill('SIGHUP');
+    await cleanup();
   }
 };
 
-
-function exitHandler(options, exitCode) {
-  // cleanup processes
+// Stop MongoDB and Meteor
+async function cleanup() {
   global.__SUBPROCESS_METEOR__.kill('SIGHUP');
+  return teardownInMemoryMongoDB();
 }
 
 //do something when app is closing
-process.on('exit', exitHandler.bind(null,{cleanup:true}));
+process.on('exit', cleanup);
 
 //catches ctrl+c event
-process.on('SIGINT', exitHandler.bind(null, {exit:true}));
+process.on('SIGINT', cleanup);
 
 // catches "kill pid" (for example: nodemon restart)
-process.on('SIGUSR1', exitHandler.bind(null, {exit:true}));
-process.on('SIGUSR2', exitHandler.bind(null, {exit:true}));
+process.on('SIGUSR1', cleanup);
+process.on('SIGUSR2', cleanup);
 
 //catches uncaught exceptions
-process.on('uncaughtException', exitHandler.bind(null, {exit:true}));
+process.on('uncaughtException', cleanup);
