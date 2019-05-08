@@ -1,9 +1,8 @@
 module.exports = async function(globalConfig) {
   await global.__MONGOD__.stop();
   global.__SUBPROCESS_METEOR__.unref()
-  if (!globalConfig.watch) {
-    // not in watch mode, kill meteor after running all tests
-    await global.__SUBPROCESS_METEOR__.kill('SIGHUP');
+  if (!globalConfig.watch && !globalConfig.watchAll) {
+    global.__SUBPROCESS_METEOR__.kill('SIGHUP');
   }
 };
 
@@ -11,7 +10,6 @@ module.exports = async function(globalConfig) {
 function exitHandler(options, exitCode) {
   // cleanup processes
   global.__SUBPROCESS_METEOR__.kill('SIGHUP');
-  global.__MONGOD__.stop();
 }
 
 //do something when app is closing
