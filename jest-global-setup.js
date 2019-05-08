@@ -1,16 +1,23 @@
 const setupInMemoryMongoDB = require('@shelf/jest-mongodb/setup')
 const { spawn } = require('child_process');
 
-const startAndWaitForMeteor = async () => {
+let meteorProcess = null;
+
+const startAndWaitForMeteor = async (config) => {
   return new Promise(function(resolve, reject) {
     try {
+      if (meteorProcess) {
+        global.__SUBPROCESS_METEOR__ = meteorProcess;
+        global.__SUBPROCESS_METEOR__.ref()
+        return resolve();
+      }
       global.__SUBPROCESS_METEOR__ = spawn(
         'meteor',
         [
           '--no-release-check',
           `--no-lint`
         ], {
-          detached: false,
+          detached: config.watch,
           cwd: process.cwd() + '/examples/minimal',
         }
       );
@@ -26,13 +33,17 @@ const startAndWaitForMeteor = async () => {
           resolve(dataAsString.substring(19))
         }
       });
+      if (config.watch) {
+        // in watch mode, keep ref to subprocess
+        meteorProcess = global.__SUBPROCESS_METEOR__;
+      }
     } catch (e) {
       reject(e.message);
     }
   })
 }
 
-module.exports = async (...config) => {
-  await setupInMemoryMongoDB(...config);
-  global.__SUBPROCESS_METEOR_ROOT_URL__ = await startAndWaitForMeteor(...config)
+module.exports = async (config) => {
+  await setupInMemoryMongoDB(config);
+  await startAndWaitForMeteor(config)
 };

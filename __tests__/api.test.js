@@ -2,21 +2,22 @@ const {MongoClient} = require('mongodb');
 const { spawn } = require('child_process');
 const { createApolloFetch } = require('apollo-fetch');
 
+let connection;
+let db;
+let apolloFetch;
+
+beforeAll(async () => {
+  console.log(global.__MONGO_URI__);
+  connection = await MongoClient.connect(global.__MONGO_URI__, {useNewUrlParser: true});
+  db = await connection.db(global.__MONGO_DB_NAME__);
+  apolloFetch = createApolloFetch({ uri: 'http://localhost:3000/graphql' });
+});
+
+afterAll(async () => {
+  await connection.close();
+});
+
 describe('insert', () => {
-  let connection;
-  let db;
-  let apolloFetch;
-
-  beforeAll(async () => {
-    console.log(global.__MONGO_URI__);
-    connection = await MongoClient.connect(global.__MONGO_URI__, {useNewUrlParser: true});
-    db = await connection.db(global.__MONGO_DB_NAME__);
-    apolloFetch = createApolloFetch({ uri: 'http://localhost:3000/graphql' });
-  });
-
-  afterAll(async () => {
-    await connection.close();
-  });
 
   it('should insert a doc into collection', async () => {
     const shopInfo = await apolloFetch({ query: /*graphql*/`
