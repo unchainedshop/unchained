@@ -17,10 +17,11 @@ const startAndWaitForMeteor = async (config) => {
           '--no-release-check',
           `--no-lint`
         ], {
-          detached: config.watch,
+          detached: true,
           cwd: process.cwd() + '/examples/minimal',
         }
       );
+      meteorProcess = global.__SUBPROCESS_METEOR__;
       global.__SUBPROCESS_METEOR__.stdout.on('data', (data) => {
         const dataAsString = '' + data;
         if (process.env.DEBUG) {
@@ -33,10 +34,6 @@ const startAndWaitForMeteor = async (config) => {
           resolve(dataAsString.substring(19))
         }
       });
-      if (config.watch) {
-        // in watch mode, keep ref to subprocess
-        meteorProcess = global.__SUBPROCESS_METEOR__;
-      }
     } catch (e) {
       reject(e.message);
     }
