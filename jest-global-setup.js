@@ -1,7 +1,9 @@
 const setupInMemoryMongoDB = require('@shelf/jest-mongodb/setup')
+const { MongoClient } = require('mongodb');
 const { spawn } = require('child_process');
 
 let meteorProcess = null;
+let mongoDBRunning = false;
 
 const startAndWaitForMeteor = async (config) => {
   return new Promise(function(resolve, reject) {
@@ -41,6 +43,19 @@ const startAndWaitForMeteor = async (config) => {
 }
 
 module.exports = async (config) => {
-  await setupInMemoryMongoDB(config);
+  if (!mongoDBRunning) {
+    await setupInMemoryMongoDB(config);
+    mongoDBRunning = true
+  }
   await startAndWaitForMeteor(config)
+  await resetDatabase()
 };
+
+// Reset DB
+async function resetDatabase() {
+  const connectionUri = await global.__MONGOD__.getConnectionString();
+  const connection = await MongoClient.connect(connectionUri, {useNewUrlParser: true});
+  const db = await connection.db('jest');
+  await db.dropDatabase();
+  await connection.close();
+}
