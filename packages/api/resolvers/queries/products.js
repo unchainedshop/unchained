@@ -14,12 +14,12 @@ export default function(
   );
   const selector = {};
   const sort = { sequence: 1, published: -1 };
-  const options = { skip: offset, limit, sort };
+  const options = { sort };
 
   if (slugs.length > 0) {
     selector.slugs = { $in: slugs };
   } else {
-    options.offset = offset;
+    options.skip = offset;
     options.limit = limit;
 
     if (tags && tags.length > 0) {
