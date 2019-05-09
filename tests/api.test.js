@@ -88,6 +88,25 @@ describe('shop configuration', () => {
         isActive: true
       });
     });
+
+    it('remove a currency', async () => {
+      const currencies = db.collection('currencies');
+      await currencies.insertOne({ _id: 'ltc', isoCode: 'LTC' });
+      const { data: { removeCurrency } = {}, errors } = await apolloFetch({
+        query: /* GraphQL */ `
+          mutation {
+            removeCurrency(currencyId: "ltc") {
+              _id
+              isoCode
+            }
+          }
+        `
+      });
+      expect(errors).toEqual(undefined);
+      expect(removeCurrency).toMatchObject({
+        isoCode: 'LTC'
+      });
+    });
   });
 
   describe('countries', () => {
