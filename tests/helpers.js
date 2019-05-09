@@ -6,14 +6,18 @@ Collection.prototype.findOrInsertOne = async function findOrInsertOne(
   doc,
   ...args
 ) {
-  const found = await this.findOne({ _id: doc._id }, ...args);
-  if (found) return found;
-  return this.insertOne(doc, ...args);
+  try {
+    const { insertedId } = await this.insertOne(doc, ...args);
+    return this.findOne({ _id: insertedId }, ...args);
+  } catch (e) {
+    return this.findOne({ _id: doc._id }, ...args);
+  }
 };
 
 module.exports.setupDatabase = async () => {
   const connection = await MongoClient.connect(global.__MONGO_URI__, {
-    useNewUrlParser: true
+    useNewUrlParser: true,
+    poolSize: 1
   });
   const db = await connection.db(global.__MONGO_DB_NAME__);
   const users = db.collection('users');
