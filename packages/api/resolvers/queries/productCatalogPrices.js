@@ -15,7 +15,7 @@ export default function(root, { productId }, { userId }) {
           price.countryCode,
           price.currencyCode,
           price.maxQuantity,
-          price.amount,
+          price.amount
         ].join('')
       )
       .digest('hex'),

@@ -1,0 +1,24 @@
+{
+  "parser": "babel-eslint",
+  "plugins": [
+    "prettier"
+  ],
+  "extends": [
+    "airbnb-base",
+    "plugin:prettier/recommended"
+  ],
+  "env": {
+    "node": true,
+    "jest": true
+  },
+  "rules": {
+    "prettier/prettier": [ "error" ],
+    "no-underscore-dangle": [ "error", { "allow": [
+      "_id",
+      "__MONGO_URI__",
+      "__MONGO_DB_NAME__",
+      "__SUBPROCESS_METEOR__",
+      "__MONGOD__"
+    ] } ]
+  }
+}
