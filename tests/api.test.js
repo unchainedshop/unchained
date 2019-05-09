@@ -223,4 +223,108 @@ describe('shop configuration', () => {
       });
     });
   });
+
+  describe('languages', () => {
+    it('add a language', async () => {
+      const {
+        data: { createLanguage }
+      } = await apolloFetch({
+        query: /* GraphQL */ `
+          mutation {
+            createLanguage(language: { isoCode: "fr" }) {
+              _id
+              isoCode
+              isActive
+              isBase
+              name
+            }
+          }
+        `
+      });
+      expect(createLanguage).toMatchObject({
+        isoCode: 'fr',
+        isActive: true,
+        isBase: false,
+        name: 'fr'
+      });
+    });
+
+    it('set the base language', async () => {
+      const languages = db.collection('languages');
+      const language = await languages.findOne();
+
+      const {
+        data: { setBaseLanguage },
+        errors
+      } = await apolloFetch({
+        query: /* GraphQL */ `
+          mutation setBaseLanguage($languageId: ID!) {
+            setBaseLanguage(languageId: $languageId) {
+              isBase
+              name
+            }
+          }
+        `,
+        variables: {
+          languageId: language._id
+        }
+      });
+      expect(errors).toEqual(undefined);
+      expect(setBaseLanguage).toMatchObject({
+        isBase: true,
+        name: 'fr (Base)'
+      });
+    });
+
+    it('update a language', async () => {
+      const languages = db.collection('languages');
+      const language = await languages.findOne();
+
+      const { data: { updateLanguage } = {}, errors } = await apolloFetch({
+        query: /* GraphQL */ `
+          mutation updateLanguage(
+            $languageId: ID!
+            $language: UpdateLanguageInput!
+          ) {
+            updateLanguage(languageId: $languageId, language: $language) {
+              _id
+              isoCode
+              isActive
+            }
+          }
+        `,
+        variables: {
+          languageId: language._id,
+          language: {
+            isoCode: 'de',
+            isActive: true
+          }
+        }
+      });
+      expect(errors).toEqual(undefined);
+      expect(updateLanguage).toMatchObject({
+        isoCode: 'de',
+        isActive: true
+      });
+    });
+
+    it('remove a language', async () => {
+      const languages = db.collection('languages');
+      await languages.insertOne({ _id: 'us', isoCode: 'US' });
+      const { data: { removeLanguage } = {}, errors } = await apolloFetch({
+        query: /* GraphQL */ `
+          mutation {
+            removeLanguage(languageId: "us") {
+              _id
+              isoCode
+            }
+          }
+        `
+      });
+      expect(errors).toEqual(undefined);
+      expect(removeLanguage).toMatchObject({
+        isoCode: 'US'
+      });
+    });
+  });
 });
