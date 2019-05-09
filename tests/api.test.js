@@ -56,6 +56,38 @@ describe('shop configuration', () => {
         isActive: true
       });
     });
+
+    it('update a currency', async () => {
+      const currencies = db.collection('currencies');
+      const currency = await currencies.findOne();
+
+      const { data: { updateCurrency } = {}, errors } = await apolloFetch({
+        query: /* GraphQL */ `
+          mutation updateCurrency(
+            $currencyId: ID!
+            $currency: UpdateCurrencyInput!
+          ) {
+            updateCurrency(currencyId: $currencyId, currency: $currency) {
+              _id
+              isoCode
+              isActive
+            }
+          }
+        `,
+        variables: {
+          currencyId: currency._id,
+          currency: {
+            isoCode: 'btc',
+            isActive: true
+          }
+        }
+      });
+      expect(errors).toEqual(undefined);
+      expect(updateCurrency).toMatchObject({
+        isoCode: 'BTC',
+        isActive: true
+      });
+    });
   });
 
   describe('countries', () => {
@@ -92,16 +124,21 @@ describe('shop configuration', () => {
       const country = await countries.findOne();
 
       const {
-        data: { setBaseCountry }
+        data: { setBaseCountry },
+        errors
       } = await apolloFetch({
         query: /* GraphQL */ `
-        mutation {
-          setBaseCountry(countryId: "${country._id}") {
-            isBase
+          mutation setBaseCountry($countryId: ID!) {
+            setBaseCountry(countryId: $countryId) {
+              isBase
+            }
           }
+        `,
+        variables: {
+          countryId: country._id
         }
-      `
       });
+      expect(errors).toEqual(undefined);
       expect(setBaseCountry).toMatchObject({
         isBase: true
       });
@@ -114,27 +151,33 @@ describe('shop configuration', () => {
       const country = await countries.findOne();
       const currency = await currencies.findOne();
 
-      const {
-        data: { updateCountry }
-      } = await apolloFetch({
+      const { data: { updateCountry } = {}, errors } = await apolloFetch({
         query: /* GraphQL */ `
-        mutation {
-          updateCountry(countryId: "${
-            country._id
-          }", country: { isoCode: "CH", isActive: true, defaultCurrencyId: "${
-          currency._id
-        }" }) {
-            _id
-            isoCode
-            isActive
-            defaultCurrency {
+          mutation updateCountry(
+            $countryId: ID!
+            $country: UpdateCountryInput!
+          ) {
+            updateCountry(countryId: $countryId, country: $country) {
               _id
               isoCode
+              isActive
+              defaultCurrency {
+                _id
+                isoCode
+              }
             }
           }
+        `,
+        variables: {
+          countryId: country._id,
+          country: {
+            isoCode: 'CH',
+            isActive: true,
+            defaultCurrencyId: currency._id
+          }
         }
-      `
       });
+      expect(errors).toEqual(undefined);
       expect(updateCountry).toMatchObject({
         isoCode: 'CH',
         isActive: true,
@@ -145,9 +188,7 @@ describe('shop configuration', () => {
     it('remove a country', async () => {
       const countries = db.collection('countries');
       await countries.insertOne({ _id: 'us', isoCode: 'US' });
-      const {
-        data: { removeCountry }
-      } = await apolloFetch({
+      const { data: { removeCountry } = {}, errors } = await apolloFetch({
         query: /* GraphQL */ `
           mutation {
             removeCountry(countryId: "us") {
@@ -157,6 +198,7 @@ describe('shop configuration', () => {
           }
         `
       });
+      expect(errors).toEqual(undefined);
       expect(removeCountry).toMatchObject({
         isoCode: 'US'
       });
