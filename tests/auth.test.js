@@ -1,4 +1,4 @@
-const { setupDB, createAdminApolloFetch } = require('./helpers');
+const { setupDatabase, createAdminApolloFetch } = require('./helpers');
 
 let connection;
 let db;
@@ -6,7 +6,7 @@ let apolloFetch;
 
 describe('authentication', () => {
   beforeAll(async () => {
-    [db, connection] = await setupDB();
+    [db, connection] = await setupDatabase();
     apolloFetch = await createAdminApolloFetch();
   });
 

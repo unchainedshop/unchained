@@ -1,4 +1,4 @@
-const { setupDB, createAdminApolloFetch } = require('./helpers');
+const { setupDatabase, createAdminApolloFetch } = require('./helpers');
 const { Admin } = require('./seeds/users');
 
 let connection;
@@ -7,7 +7,7 @@ let apolloFetch;
 
 describe('shop configuration', () => {
   beforeAll(async () => {
-    [db, connection] = await setupDB();
+    [db, connection] = await setupDatabase();
     apolloFetch = await createAdminApolloFetch();
   });
 

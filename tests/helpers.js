@@ -11,7 +11,7 @@ Collection.prototype.findOrInsertOne = async function findOrInsertOne(
   return this.insertOne(doc, ...args);
 };
 
-module.exports.setupDB = async () => {
+module.exports.setupDatabase = async () => {
   const connection = await MongoClient.connect(global.__MONGO_URI__, {
     useNewUrlParser: true
   });
@@ -19,6 +19,16 @@ module.exports.setupDB = async () => {
   const users = db.collection('users');
   await users.findOrInsertOne(Admin);
   return [db, connection];
+};
+
+module.exports.wipeDatabase = async () => {
+  const connectionUri = await global.__MONGOD__.getConnectionString();
+  const connection = await MongoClient.connect(connectionUri, {
+    useNewUrlParser: true
+  });
+  const db = await connection.db('jest');
+  await db.dropDatabase();
+  await connection.close();
 };
 
 module.exports.createAdminApolloFetch = () => {
