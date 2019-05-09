@@ -5,7 +5,7 @@ let connection;
 let db;
 let apolloFetch;
 
-describe('shop configuration', () => {
+describe('basic setup of internationalization and localization context', () => {
   beforeAll(async () => {
     [db, connection] = await setupDatabase();
     apolloFetch = await createAdminApolloFetch();
@@ -43,7 +43,7 @@ describe('shop configuration', () => {
       } = await apolloFetch({
         query: /* GraphQL */ `
           mutation {
-            createCurrency(currency: { isoCode: "chf" }) {
+            createCurrency(currency: { isoCode: "btc" }) {
               _id
               isoCode
               isActive
@@ -52,7 +52,7 @@ describe('shop configuration', () => {
         `
       });
       expect(createCurrency).toMatchObject({
-        isoCode: 'CHF',
+        isoCode: 'BTC',
         isActive: true
       });
     });
@@ -77,14 +77,14 @@ describe('shop configuration', () => {
         variables: {
           currencyId: currency._id,
           currency: {
-            isoCode: 'btc',
+            isoCode: 'chf',
             isActive: true
           }
         }
       });
       expect(errors).toEqual(undefined);
       expect(updateCurrency).toMatchObject({
-        isoCode: 'BTC',
+        isoCode: 'CHF',
         isActive: true
       });
     });
@@ -106,6 +106,8 @@ describe('shop configuration', () => {
       expect(removeCurrency).toMatchObject({
         isoCode: 'LTC'
       });
+      // TODO: Currencies should have delete flags, as orders can depend on them
+      expect(await currencies.countDocuments({ _id: 'ltc' })).toEqual(0);
     });
   });
 
@@ -221,6 +223,8 @@ describe('shop configuration', () => {
       expect(removeCountry).toMatchObject({
         isoCode: 'US'
       });
+      // TODO: Countries should have delete flags, as orders can depend on them
+      expect(await countries.countDocuments({ _id: 'us' })).toEqual(0);
     });
   });
 
@@ -310,11 +314,11 @@ describe('shop configuration', () => {
 
     it('remove a language', async () => {
       const languages = db.collection('languages');
-      await languages.insertOne({ _id: 'us', isoCode: 'US' });
+      await languages.insertOne({ _id: 'en', isoCode: 'US' });
       const { data: { removeLanguage } = {}, errors } = await apolloFetch({
         query: /* GraphQL */ `
           mutation {
-            removeLanguage(languageId: "us") {
+            removeLanguage(languageId: "en") {
               _id
               isoCode
             }
@@ -325,6 +329,73 @@ describe('shop configuration', () => {
       expect(removeLanguage).toMatchObject({
         isoCode: 'US'
       });
+      // TODO: Currencies should have delete flags, as orders can depend on them
+      expect(await languages.countDocuments({ _id: 'en' })).toEqual(0);
+    });
+  });
+
+  it('cross-check user defaults', async () => {
+    const {
+      data: { me }
+    } = await apolloFetch({
+      query: /* GraphQL */ `
+        query {
+          me {
+            language {
+              isoCode
+            }
+            country {
+              isoCode
+            }
+          }
+        }
+      `
+    });
+    expect(me).toMatchObject({
+      language: {
+        isoCode: 'de'
+      },
+      country: {
+        isoCode: 'CH'
+      }
+    });
+  });
+
+  it('cross-check shopInfo', async () => {
+    const {
+      data: { shopInfo }
+    } = await apolloFetch({
+      query: /* GraphQL */ `
+        query {
+          shopInfo {
+            _id
+            language {
+              isoCode
+            }
+            country {
+              isoCode
+              defaultCurrency {
+                isoCode
+              }
+            }
+            version
+            userRoles
+          }
+        }
+      `
+    });
+    expect(shopInfo).toMatchObject({
+      _id: 'root',
+      language: {
+        isoCode: 'de'
+      },
+      country: {
+        isoCode: 'CH',
+        defaultCurrency: {
+          isoCode: 'CHF'
+        }
+      },
+      userRoles: ['admin']
     });
   });
 });
