@@ -11,7 +11,7 @@ let apolloFetch;
 describe('authentication', () => {
   beforeAll(async () => {
     [db, connection] = await setupDatabase();
-    apolloFetch = await createAdminApolloFetch();
+    apolloFetch = await createAnonymousApolloFetch();
   });
 
   afterAll(async () => {
@@ -35,9 +35,7 @@ describe('authentication', () => {
   });
 
   it('forgot/reset password', async () => {
-    const anonymousApolloFetch = createAnonymousApolloFetch();
-
-    const { data: { forgotPassword } = {} } = await anonymousApolloFetch({
+    const { data: { forgotPassword } = {} } = await apolloFetch({
       query: /* GraphQL */ `
         mutation {
           forgotPassword(email: "user@localhost") {
@@ -49,6 +47,8 @@ describe('authentication', () => {
     expect(forgotPassword).toEqual({
       success: true
     });
+
+    // Get the token which is sent via E-Mail
     const Users = db.collection('users');
     const user = await Users.findOne({ 'emails.address': 'user@localhost' });
     const {
@@ -59,7 +59,8 @@ describe('authentication', () => {
       }
     } = user;
 
-    const { data: { resetPassword } = {} } = await anonymousApolloFetch({
+    // Reset the password with that token
+    const { data: { resetPassword } = {} } = await apolloFetch({
       query: /* GraphQL */ `
         mutation resetPassword($newPlainPassword: String, $token: String!) {
           resetPassword(newPlainPassword: $newPlainPassword, token: $token) {
@@ -82,10 +83,6 @@ describe('authentication', () => {
         _id: 'user'
       }
     });
-  });
-
-  it('TODO: change password', async () => {
-    // TODO: Change password
   });
 
   it('TODO: sign up', async () => {
