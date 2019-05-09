@@ -15,6 +15,10 @@ describe('basic setup of internationalization and localization context', () => {
   });
 
   describe('currencies', () => {
+    let Currencies;
+    beforeAll(() => {
+      Currencies = db.collection('currencies');
+    });
     it('add a currency', async () => {
       const {
         data: { createCurrency }
@@ -36,8 +40,7 @@ describe('basic setup of internationalization and localization context', () => {
     });
 
     it('update a currency', async () => {
-      const currencies = db.collection('currencies');
-      const currency = await currencies.findOne();
+      const currency = await Currencies.findOne();
 
       const { data: { updateCurrency } = {}, errors } = await apolloFetch({
         query: /* GraphQL */ `
@@ -68,8 +71,7 @@ describe('basic setup of internationalization and localization context', () => {
     });
 
     it('remove a currency', async () => {
-      const currencies = db.collection('currencies');
-      await currencies.insertOne({ _id: 'ltc', isoCode: 'LTC' });
+      await Currencies.insertOne({ _id: 'ltc', isoCode: 'LTC' });
       const { data: { removeCurrency } = {}, errors } = await apolloFetch({
         query: /* GraphQL */ `
           mutation {
@@ -85,11 +87,10 @@ describe('basic setup of internationalization and localization context', () => {
         isoCode: 'LTC'
       });
       // TODO: Currencies should have delete flags, as orders can depend on them
-      expect(await currencies.countDocuments({ _id: 'ltc' })).toEqual(0);
+      expect(await Currencies.countDocuments({ _id: 'ltc' })).toEqual(0);
     });
 
     it('query active currencies', async () => {
-      const Currencies = db.collection('currencies');
       await Currencies.insertOne({
         _id: 'ltc',
         isoCode: 'LTC',
@@ -121,8 +122,7 @@ describe('basic setup of internationalization and localization context', () => {
       ]);
     });
 
-    it('query single currency', async () => {
-      const Currencies = db.collection('currencies');
+    it('query inactive single currency', async () => {
       await Currencies.insertOne({
         _id: 'sigt',
         isoCode: 'SIGT',
@@ -147,7 +147,7 @@ describe('basic setup of internationalization and localization context', () => {
 
   describe('countries', () => {
     let Countries;
-    beforeEach(() => {
+    beforeAll(() => {
       Countries = db.collection('countries');
     });
 
@@ -204,9 +204,9 @@ describe('basic setup of internationalization and localization context', () => {
     });
 
     it('update a country', async () => {
-      const currencies = db.collection('currencies');
+      const Currencies = db.collection('currencies');
       const country = await Countries.findOne();
-      const currency = await currencies.findOne();
+      const currency = await Currencies.findOne();
 
       const { data: { updateCountry } = {}, errors } = await apolloFetch({
         query: /* GraphQL */ `
@@ -294,7 +294,7 @@ describe('basic setup of internationalization and localization context', () => {
       ]);
     });
 
-    it('query single country', async () => {
+    it('query inactive single country', async () => {
       await Countries.insertOne({
         _id: 'de',
         isoCode: 'DE',
@@ -318,6 +318,11 @@ describe('basic setup of internationalization and localization context', () => {
   });
 
   describe('languages', () => {
+    let Languages;
+    beforeAll(() => {
+      Languages = db.collection('languages');
+    });
+
     it('add a language', async () => {
       const {
         data: { createLanguage }
@@ -343,8 +348,7 @@ describe('basic setup of internationalization and localization context', () => {
     });
 
     it('set the base language', async () => {
-      const languages = db.collection('languages');
-      const language = await languages.findOne();
+      const language = await Languages.findOne();
 
       const {
         data: { setBaseLanguage },
@@ -370,8 +374,7 @@ describe('basic setup of internationalization and localization context', () => {
     });
 
     it('update a language', async () => {
-      const languages = db.collection('languages');
-      const language = await languages.findOne();
+      const language = await Languages.findOne();
 
       const { data: { updateLanguage } = {}, errors } = await apolloFetch({
         query: /* GraphQL */ `
@@ -402,8 +405,7 @@ describe('basic setup of internationalization and localization context', () => {
     });
 
     it('remove a language', async () => {
-      const languages = db.collection('languages');
-      await languages.insertOne({ _id: 'en', isoCode: 'US' });
+      await Languages.insertOne({ _id: 'en', isoCode: 'US' });
       const { data: { removeLanguage } = {}, errors } = await apolloFetch({
         query: /* GraphQL */ `
           mutation {
@@ -419,7 +421,61 @@ describe('basic setup of internationalization and localization context', () => {
         isoCode: 'US'
       });
       // TODO: Currencies should have delete flags, as orders can depend on them
-      expect(await languages.countDocuments({ _id: 'en' })).toEqual(0);
+      expect(await Languages.countDocuments({ _id: 'en' })).toEqual(0);
+    });
+
+    it('query active languages', async () => {
+      await Languages.insertOne({
+        _id: 'es',
+        isoCode: 'es',
+        isActive: true
+      });
+      await Languages.insertOne({
+        _id: 'ru',
+        isoCode: 'ru',
+        isActive: false
+      });
+
+      const { data: { languages } = {}, errors } = await apolloFetch({
+        query: /* GraphQL */ `
+          query {
+            languages {
+              isoCode
+            }
+          }
+        `
+      });
+      expect(errors).toEqual(undefined);
+      expect(languages).toEqual([
+        {
+          isoCode: 'de'
+        },
+        {
+          isoCode: 'es'
+        }
+      ]);
+    });
+
+    it('query inactive single language', async () => {
+      await Languages.insertOne({
+        _id: 'pl',
+        isoCode: 'pl',
+        isActive: false
+      });
+
+      const { data: { language } = {}, errors } = await apolloFetch({
+        query: /* GraphQL */ `
+          query {
+            language(languageId: "pl") {
+              isoCode
+            }
+          }
+        `
+      });
+      expect(errors).toEqual(undefined);
+      expect(language).toMatchObject({
+        isoCode: 'pl'
+      });
     });
   });
 
