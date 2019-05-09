@@ -9,7 +9,7 @@ export default [
 
       isActive: Boolean
       isBase: Boolean
-      name(ignoreLocale: Boolean): String
+      name: String
     }
   `
 ];
