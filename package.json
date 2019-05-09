@@ -19,7 +19,7 @@
   "scripts": {
     "lint": "eslint packages --cache --fix --ext=jsx --ext=js",
     "test": "jest",
-    "test:watch": "jest --watch",
+    "test:watch": "DEBUG=jest-mongodb:* jest --watch",
     "bump": "./bump.sh",
     "dev": "./dev.sh"
   },
