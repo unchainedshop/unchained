@@ -86,7 +86,7 @@ export const actions = [
 export const configureRoles = ({ additionalRoles = {} } = {}) => {
   Object.entries(additionalRoles).forEach(([key, val]) => {
     allRoles[key] = new Roles.Role(key);
-    val(allRoles[key], actions)
+    val(allRoles[key], actions);
   });
   all(roles.ALL, actions);
   loggedIn(roles.LOGGEDIN, actions);
