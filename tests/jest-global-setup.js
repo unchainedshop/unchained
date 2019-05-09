@@ -19,7 +19,11 @@ const startAndWaitForMeteor = async () => {
         ['--no-release-check', `--no-lint`],
         {
           detached: true,
-          cwd: `${process.cwd()}/examples/minimal`
+          cwd: `${process.cwd()}/examples/minimal`,
+          env: {
+            ...process.env,
+            UNCHAINED_DISABLE_EMAIL_INTERCEPTION: 1
+          }
         }
       );
       meteorProcess = global.__SUBPROCESS_METEOR__;
