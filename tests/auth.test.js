@@ -1,4 +1,8 @@
-const { setupDatabase, createAdminApolloFetch } = require('./helpers');
+const {
+  setupDatabase,
+  createAdminApolloFetch,
+  createAnonymousApolloFetch
+} = require('./helpers');
 
 let connection;
 let db;
@@ -20,20 +24,23 @@ describe('authentication', () => {
         mutation {
           loginWithPassword(username: "admin", plainPassword: "password") {
             id
+            token
           }
         }
       `
     });
-    expect(loginWithPassword).toEqual({
+    expect(loginWithPassword).toMatchObject({
       id: 'admin'
     });
   });
 
   it('forgot/reset password', async () => {
-    const { data: { forgotPassword } = {} } = await apolloFetch({
+    const anonymousApolloFetch = createAnonymousApolloFetch();
+
+    const { data: { forgotPassword } = {} } = await anonymousApolloFetch({
       query: /* GraphQL */ `
         mutation {
-          forgotPassword(email: "admin@localhost") {
+          forgotPassword(email: "user@localhost") {
             success
           }
         }
@@ -43,7 +50,7 @@ describe('authentication', () => {
       success: true
     });
     const Users = db.collection('users');
-    const user = await Users.findOne({ 'emails.address': 'admin@localhost' });
+    const user = await Users.findOne({ 'emails.address': 'user@localhost' });
     const {
       services: {
         password: {
@@ -52,7 +59,7 @@ describe('authentication', () => {
       }
     } = user;
 
-    const { data: { resetPassword } = {} } = await apolloFetch({
+    const { data: { resetPassword } = {} } = await anonymousApolloFetch({
       query: /* GraphQL */ `
         mutation resetPassword($newPlainPassword: String, $token: String!) {
           resetPassword(newPlainPassword: $newPlainPassword, token: $token) {
@@ -70,9 +77,9 @@ describe('authentication', () => {
       }
     });
     expect(resetPassword).toMatchObject({
-      id: 'admin',
+      id: 'user',
       user: {
-        _id: 'admin'
+        _id: 'user'
       }
     });
   });

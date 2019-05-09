@@ -327,9 +327,7 @@ describe('basic setup of internationalization and localization context', () => {
     });
 
     it('add a language', async () => {
-      const {
-        data: { createLanguage }
-      } = await apolloFetch({
+      const { data: { createLanguage } = {} } = await apolloFetch({
         query: /* GraphQL */ `
           mutation {
             createLanguage(language: { isoCode: "fr" }) {

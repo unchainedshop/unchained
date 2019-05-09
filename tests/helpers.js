@@ -1,6 +1,6 @@
 const { MongoClient, Collection } = require('mongodb');
 const { createApolloFetch } = require('apollo-fetch');
-const { Admin, ADMIN_TOKEN } = require('./seeds/users');
+const { Admin, User, ADMIN_TOKEN } = require('./seeds/users');
 
 Collection.prototype.findOrInsertOne = async function findOrInsertOne(
   doc,
@@ -22,6 +22,7 @@ module.exports.setupDatabase = async () => {
   const db = await connection.db(global.__MONGO_DB_NAME__);
   const users = db.collection('users');
   await users.findOrInsertOne(Admin);
+  await users.findOrInsertOne(User);
   return [db, connection];
 };
 
@@ -35,7 +36,14 @@ module.exports.wipeDatabase = async () => {
   await connection.close();
 };
 
-module.exports.createAdminApolloFetch = () => {
+module.exports.createAnonymousApolloFetch = () => {
+  const apolloFetch = createApolloFetch({
+    uri: 'http://localhost:3000/graphql'
+  });
+  return apolloFetch;
+};
+
+module.exports.createAdminApolloFetch = (token = ADMIN_TOKEN) => {
   const apolloFetch = createApolloFetch({
     uri: 'http://localhost:3000/graphql'
   });
@@ -43,7 +51,7 @@ module.exports.createAdminApolloFetch = () => {
     if (!options.headers) {
       options.headers = {}; // eslint-disable-line
     }
-    options.headers.authorization = ADMIN_TOKEN; // eslint-disable-line
+    options.headers.authorization = token; // eslint-disable-line
     next();
   });
   return apolloFetch;
