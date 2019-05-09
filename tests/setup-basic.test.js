@@ -1,5 +1,4 @@
 const { setupDatabase, createAdminApolloFetch } = require('./helpers');
-const { Admin } = require('./seeds/users');
 
 let connection;
 let db;
@@ -13,27 +12,6 @@ describe('basic setup of internationalization and localization context', () => {
 
   afterAll(async () => {
     await connection.close();
-  });
-
-  describe('users', () => {
-    it('login with password', async () => {
-      const users = db.collection('users');
-      await users.findOrInsertOne(Admin);
-      const { data } = await apolloFetch({
-        query: /* GraphQL */ `
-          mutation {
-            loginWithPassword(username: "admin", plainPassword: "password") {
-              id
-            }
-          }
-        `
-      });
-      expect(data).toEqual({
-        loginWithPassword: {
-          id: 'admin'
-        }
-      });
-    });
   });
 
   describe('currencies', () => {
@@ -108,6 +86,62 @@ describe('basic setup of internationalization and localization context', () => {
       });
       // TODO: Currencies should have delete flags, as orders can depend on them
       expect(await currencies.countDocuments({ _id: 'ltc' })).toEqual(0);
+    });
+
+    it('query active currencies', async () => {
+      const Currencies = db.collection('currencies');
+      await Currencies.insertOne({
+        _id: 'ltc',
+        isoCode: 'LTC',
+        isActive: true
+      });
+      await Currencies.insertOne({
+        _id: 'btc',
+        isoCode: 'BTC',
+        isActive: false
+      });
+
+      const { data: { currencies } = {}, errors } = await apolloFetch({
+        query: /* GraphQL */ `
+          query {
+            currencies {
+              isoCode
+            }
+          }
+        `
+      });
+      expect(errors).toEqual(undefined);
+      expect(currencies).toEqual([
+        {
+          isoCode: 'CHF'
+        },
+        {
+          isoCode: 'LTC'
+        }
+      ]);
+    });
+
+    it('query single currency', async () => {
+      const Currencies = db.collection('currencies');
+      await Currencies.insertOne({
+        _id: 'sigt',
+        isoCode: 'SIGT',
+        isActive: true
+      });
+
+      const { data: { currency } = {}, errors } = await apolloFetch({
+        query: /* GraphQL */ `
+          query {
+            currency(currencyId: "sigt") {
+              isoCode
+            }
+          }
+        `
+      });
+      expect(errors).toEqual(undefined);
+      expect(currency).toMatchObject({
+        isoCode: 'SIGT'
+      });
     });
   });
 
@@ -334,7 +368,7 @@ describe('basic setup of internationalization and localization context', () => {
     });
   });
 
-  it('cross-check user defaults', async () => {
+  it('user defaults', async () => {
     const {
       data: { me }
     } = await apolloFetch({
@@ -361,7 +395,7 @@ describe('basic setup of internationalization and localization context', () => {
     });
   });
 
-  it('cross-check shopInfo', async () => {
+  it('global shop context', async () => {
     const {
       data: { shopInfo }
     } = await apolloFetch({
