@@ -19,9 +19,11 @@ describe('basic setup of internationalization and localization context', () => {
     beforeAll(() => {
       Currencies = db.collection('currencies');
     });
+
     it('add a currency', async () => {
       const {
-        data: { createCurrency }
+        data: { createCurrency },
+        errors
       } = await apolloFetch({
         query: /* GraphQL */ `
           mutation {
@@ -33,6 +35,7 @@ describe('basic setup of internationalization and localization context', () => {
           }
         `
       });
+      expect(errors).toEqual(undefined);
       expect(createCurrency).toMatchObject({
         isoCode: 'BTC',
         isActive: true
