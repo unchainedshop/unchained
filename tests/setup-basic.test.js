@@ -126,7 +126,7 @@ describe('basic setup of internationalization and localization context', () => {
       await Currencies.insertOne({
         _id: 'sigt',
         isoCode: 'SIGT',
-        isActive: true
+        isActive: false
       });
 
       const { data: { currency } = {}, errors } = await apolloFetch({
@@ -146,6 +146,11 @@ describe('basic setup of internationalization and localization context', () => {
   });
 
   describe('countries', () => {
+    let Countries;
+    beforeEach(() => {
+      Countries = db.collection('countries');
+    });
+
     it('add a country', async () => {
       const {
         data: { createCountry }
@@ -175,8 +180,7 @@ describe('basic setup of internationalization and localization context', () => {
     });
 
     it('set the base country', async () => {
-      const countries = db.collection('countries');
-      const country = await countries.findOne();
+      const country = await Countries.findOne();
 
       const {
         data: { setBaseCountry },
@@ -200,10 +204,8 @@ describe('basic setup of internationalization and localization context', () => {
     });
 
     it('update a country', async () => {
-      const countries = db.collection('countries');
       const currencies = db.collection('currencies');
-
-      const country = await countries.findOne();
+      const country = await Countries.findOne();
       const currency = await currencies.findOne();
 
       const { data: { updateCountry } = {}, errors } = await apolloFetch({
@@ -241,8 +243,7 @@ describe('basic setup of internationalization and localization context', () => {
     });
 
     it('remove a country', async () => {
-      const countries = db.collection('countries');
-      await countries.insertOne({ _id: 'us', isoCode: 'US' });
+      await Countries.insertOne({ _id: 'us', isoCode: 'US' });
       const { data: { removeCountry } = {}, errors } = await apolloFetch({
         query: /* GraphQL */ `
           mutation {
@@ -258,7 +259,61 @@ describe('basic setup of internationalization and localization context', () => {
         isoCode: 'US'
       });
       // TODO: Countries should have delete flags, as orders can depend on them
-      expect(await countries.countDocuments({ _id: 'us' })).toEqual(0);
+      expect(await Countries.countDocuments({ _id: 'us' })).toEqual(0);
+    });
+
+    it('query active countries', async () => {
+      await Countries.insertOne({
+        _id: 'uk',
+        isoCode: 'UK',
+        isActive: true
+      });
+      await Countries.insertOne({
+        _id: 'it',
+        isoCode: 'IT',
+        isActive: false
+      });
+
+      const { data: { countries } = {}, errors } = await apolloFetch({
+        query: /* GraphQL */ `
+          query {
+            countries {
+              isoCode
+            }
+          }
+        `
+      });
+      expect(errors).toEqual(undefined);
+      expect(countries).toEqual([
+        {
+          isoCode: 'CH'
+        },
+        {
+          isoCode: 'UK'
+        }
+      ]);
+    });
+
+    it('query single country', async () => {
+      await Countries.insertOne({
+        _id: 'de',
+        isoCode: 'DE',
+        isActive: false
+      });
+
+      const { data: { country } = {}, errors } = await apolloFetch({
+        query: /* GraphQL */ `
+          query {
+            country(countryId: "de") {
+              isoCode
+            }
+          }
+        `
+      });
+      expect(errors).toEqual(undefined);
+      expect(country).toMatchObject({
+        isoCode: 'DE'
+      });
     });
   });
 
