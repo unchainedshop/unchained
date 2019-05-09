@@ -3,31 +3,32 @@ import { graphql } from 'react-apollo';
 import gql from 'graphql-tag';
 
 export default compose(
-  graphql(gql`
-    query getCurrentUser {
-      me {
-        _id
-        name
-        isGuest
-        email
-        roles
+  graphql(
+    gql`
+      query getCurrentUser {
+        me {
+          _id
+          name
+          isGuest
+          email
+          roles
+        }
+      }
+    `,
+    {
+      options: {
+        fetchPolicy: 'network-only'
       }
     }
-  `),
-  mapProps(
-    ({
-      data: { me, loading },
-      loading: loadingPredecessor = false,
+  ),
+  mapProps(({ data: { me, loading }, ...rest }) => {
+    const currentUser = me
+      ? (me.roles || []).indexOf('admin') !== -1 && me
+      : null;
+    return {
+      currentUser,
+      loading,
       ...rest
-    }) => {
-      const currentUser = me
-        ? (me.roles || []).indexOf('admin') !== -1 && me
-        : {};
-      return {
-        currentUser,
-        loading: !me && (loading || loadingPredecessor),
-        ...rest
-      };
-    }
-  )
+    };
+  })
 );

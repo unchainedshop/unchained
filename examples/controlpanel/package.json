@@ -18,10 +18,12 @@
   },
   "scripts": {
     "lint": "eslint . --cache --fix --ext=jsx --ext=js",
-    "dev": "GRAPHQL_ENDPOINT=http://localhost:4010/graphql next -p 4000",
+    "dev": "next -p 4000",
     "dev:remote": "next -p 4000",
     "build": "next build",
     "start": "next start",
+    "preexport": "npm run build",
+    "export": "next export",
     "update-schema": "npx apollo service:download"
   },
   "dependencies": {
@@ -32,11 +34,11 @@
     "apollo-link-context": "^1.0.17",
     "apollo-link-error": "^1.1.10",
     "apollo-link-http": "^1.5.14",
-    "apollo-upload-client": "^10.0.0",
+    "apollo-upload-client": "^10.0.1",
     "classnames": "^2.2.6",
     "cookie": "^0.3.1",
     "date-fns": "^2.0.0-alpha.27",
-    "dotenv": "^7.0.0",
+    "dotenv": "^8.0.0",
     "file-loader": "^3.0.1",
     "graphql": "^14.2.1",
     "graphql-tag": "^2.10.1",
@@ -70,7 +72,7 @@
     "eslint-plugin-import": "^2.17.2",
     "eslint-plugin-jsx-a11y": "^6.2.1",
     "eslint-plugin-prettier": "^3.0.1",
-    "eslint-plugin-react": "^7.12.4",
+    "eslint-plugin-react": "^7.13.0",
     "prettier": "^1.17.0"
   }
 }
