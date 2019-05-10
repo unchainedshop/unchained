@@ -1,4 +1,4 @@
-const { setupDatabase, createAdminApolloFetch } = require('./helpers');
+import { setupDatabase, createAdminApolloFetch } from './helpers';
 
 describe('setup warehousing providers', () => {
   let WarehousingProviders;
