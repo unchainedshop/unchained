@@ -1,14 +1,14 @@
-import { setupDatabase, createAdminApolloFetch } from './helpers';
+import { setupDatabase, createAdminGraphqlFetch } from './helpers';
 
 describe('setup warehousing providers', () => {
   let WarehousingProviders;
   let connection;
   let db;
-  let apolloFetch;
+  let graphqlFetch;
 
   beforeAll(async () => {
     [db, connection] = await setupDatabase();
-    apolloFetch = await createAdminApolloFetch();
+    graphqlFetch = await createAdminGraphqlFetch();
     WarehousingProviders = db.collection('warehousing-providers');
   });
 
@@ -19,7 +19,7 @@ describe('setup warehousing providers', () => {
   it('add a shipping warehousing provider', async () => {
     const {
       data: { createWarehousingProvider, errors }
-    } = await apolloFetch({
+    } = await graphqlFetch({
       query: /* GraphQL */ `
         mutation createWarehousingProvider(
           $warehousingProvider: CreateProviderInput!

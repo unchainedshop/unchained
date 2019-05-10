@@ -1,5 +1,8 @@
 import { MongoClient, Collection } from 'mongodb';
-import { createApolloFetch } from 'apollo-fetch';
+import { execute, makePromise } from 'apollo-link';
+import { HttpLink } from 'apollo-link-http';
+import gql from 'graphql-tag';
+import fetch from 'isomorphic-unfetch';
 import { Admin, User, ADMIN_TOKEN } from './seeds/users';
 
 Collection.prototype.findOrInsertOne = async function findOrInsertOne(
@@ -36,23 +39,31 @@ export const wipeDatabase = async () => {
   await connection.close();
 };
 
-export const createAnonymousApolloFetch = () => {
-  const apolloFetch = createApolloFetch({
-    uri: 'http://localhost:3000/graphql'
+const convertLinkToFetch = link => ({ query, ...operation }) =>
+  makePromise(
+    execute(link, {
+      query: gql(query),
+      ...operation
+    })
+  );
+
+export const createAnonymousGraphqlFetch = () => {
+  const uri = 'http://localhost:3000/graphql';
+  const link = new HttpLink({
+    uri,
+    fetch
   });
-  return apolloFetch;
+  return convertLinkToFetch(link);
 };
 
-export const createAdminApolloFetch = (token = ADMIN_TOKEN) => {
-  const apolloFetch = createApolloFetch({
-    uri: 'http://localhost:3000/graphql'
-  });
-  apolloFetch.use(({ options }, next) => {
-    if (!options.headers) {
-      options.headers = {}; // eslint-disable-line
+export const createAdminGraphqlFetch = (token = ADMIN_TOKEN) => {
+  const uri = 'http://localhost:3000/graphql';
+  const link = new HttpLink({
+    uri,
+    fetch,
+    headers: {
+      authorization: token
     }
-    options.headers.authorization = token; // eslint-disable-line
-    next();
   });
-  return apolloFetch;
+  return convertLinkToFetch(link);
 };

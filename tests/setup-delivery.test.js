@@ -1,14 +1,14 @@
-import { setupDatabase, createAdminApolloFetch } from './helpers';
+import { setupDatabase, createAdminGraphqlFetch } from './helpers';
 
 describe('setup delivery providers', () => {
   let DeliveryProviders;
   let connection;
   let db;
-  let apolloFetch;
+  let graphqlFetch;
 
   beforeAll(async () => {
     [db, connection] = await setupDatabase();
-    apolloFetch = await createAdminApolloFetch();
+    graphqlFetch = await createAdminGraphqlFetch();
     DeliveryProviders = db.collection('delivery-providers');
   });
 
@@ -19,7 +19,7 @@ describe('setup delivery providers', () => {
   it('add a shipping delivery provider', async () => {
     const {
       data: { createDeliveryProvider, errors }
-    } = await apolloFetch({
+    } = await graphqlFetch({
       query: /* GraphQL */ `
         mutation createDeliveryProvider(
           $deliveryProvider: CreateProviderInput!
