@@ -1,8 +1,4 @@
-const {
-  setupDatabase,
-  createAdminApolloFetch,
-  createAnonymousApolloFetch
-} = require('./helpers');
+import { setupDatabase, createAnonymousApolloFetch } from './helpers';
 
 let connection;
 let db;

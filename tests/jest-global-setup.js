@@ -1,6 +1,6 @@
-const setupInMemoryMongoDB = require('@shelf/jest-mongodb/setup');
-const { spawn } = require('child_process');
-const { wipeDatabase } = require('./helpers');
+import setupInMemoryMongoDB from '@shelf/jest-mongodb/setup';
+import { spawn } from 'child_process';
+import { wipeDatabase } from './helpers';
 
 let meteorProcess = null;
 let mongoDBRunning = false;
@@ -45,7 +45,7 @@ const startAndWaitForMeteor = async () => {
   });
 };
 
-module.exports = async config => {
+export default async config => {
   if (!mongoDBRunning) {
     await setupInMemoryMongoDB(config);
     mongoDBRunning = true;

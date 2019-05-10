@@ -1,4 +1,4 @@
-const teardownInMemoryMongoDB = require('@shelf/jest-mongodb/teardown');
+import teardownInMemoryMongoDB from '@shelf/jest-mongodb/teardown';
 
 // Stop MongoDB and Meteor
 async function cleanup() {
@@ -6,12 +6,12 @@ async function cleanup() {
   return teardownInMemoryMongoDB();
 }
 
-module.exports = async function teardown(globalConfig) {
+export default async function teardown(globalConfig) {
   global.__SUBPROCESS_METEOR__.unref();
   if (!globalConfig.watch && !globalConfig.watchAll) {
     await cleanup();
   }
-};
+}
 
 // do something when app is closing
 process.on('exit', cleanup);

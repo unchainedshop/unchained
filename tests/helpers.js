@@ -1,6 +1,6 @@
-const { MongoClient, Collection } = require('mongodb');
-const { createApolloFetch } = require('apollo-fetch');
-const { Admin, User, ADMIN_TOKEN } = require('./seeds/users');
+import { MongoClient, Collection } from 'mongodb';
+import { createApolloFetch } from 'apollo-fetch';
+import { Admin, User, ADMIN_TOKEN } from './seeds/users';
 
 Collection.prototype.findOrInsertOne = async function findOrInsertOne(
   doc,
@@ -14,7 +14,7 @@ Collection.prototype.findOrInsertOne = async function findOrInsertOne(
   }
 };
 
-module.exports.setupDatabase = async () => {
+export const setupDatabase = async () => {
   const connection = await MongoClient.connect(global.__MONGO_URI__, {
     useNewUrlParser: true,
     poolSize: 1
@@ -26,7 +26,7 @@ module.exports.setupDatabase = async () => {
   return [db, connection];
 };
 
-module.exports.wipeDatabase = async () => {
+export const wipeDatabase = async () => {
   const connectionUri = await global.__MONGOD__.getConnectionString();
   const connection = await MongoClient.connect(connectionUri, {
     useNewUrlParser: true
@@ -36,14 +36,14 @@ module.exports.wipeDatabase = async () => {
   await connection.close();
 };
 
-module.exports.createAnonymousApolloFetch = () => {
+export const createAnonymousApolloFetch = () => {
   const apolloFetch = createApolloFetch({
     uri: 'http://localhost:3000/graphql'
   });
   return apolloFetch;
 };
 
-module.exports.createAdminApolloFetch = (token = ADMIN_TOKEN) => {
+export const createAdminApolloFetch = (token = ADMIN_TOKEN) => {
   const apolloFetch = createApolloFetch({
     uri: 'http://localhost:3000/graphql'
   });

@@ -1,10 +1,7 @@
-module.exports.ADMIN_TOKEN =
-  'Bearer JOytDLyIQL3lOY1K1EfKx_S_nh13kOIe9h_J8E3mDWO';
+export const ADMIN_TOKEN = 'Bearer JOytDLyIQL3lOY1K1EfKx_S_nh13kOIe9h_J8E3mDWO';
+export const USER_TOKEN = 'Bearer U8CGfEBGEFM9s97hFamxruxV9VlvfRw5CbQ27Ci0WWz';
 
-module.exports.USER_TOKEN =
-  'Bearer U8CGfEBGEFM9s97hFamxruxV9VlvfRw5CbQ27Ci0WWz';
-
-module.exports.Admin = {
+export const Admin = {
   _id: 'admin',
   username: 'admin',
   emails: [
@@ -32,7 +29,7 @@ module.exports.Admin = {
   }
 };
 
-module.exports.User = {
+export const User = {
   _id: 'user',
   username: 'user',
   emails: [

@@ -1,4 +1,4 @@
-const { setupDatabase, createAdminApolloFetch } = require('./helpers');
+import { setupDatabase, createAdminApolloFetch } from './helpers';
 
 describe('setup payment providers', () => {
   let PaymentProviders;
