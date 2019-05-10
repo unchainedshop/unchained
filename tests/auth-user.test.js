@@ -1,13 +1,13 @@
-import { setupDatabase, createAnonymousApolloFetch } from './helpers';
+import { setupDatabase, createAnonymousGraphqlFetch } from './helpers';
 
 let connection;
 let db;
-let apolloFetch;
+let graphqlFetch;
 
 describe('authentication', () => {
   beforeAll(async () => {
     [db, connection] = await setupDatabase();
-    apolloFetch = await createAnonymousApolloFetch();
+    graphqlFetch = await createAnonymousGraphqlFetch();
   });
 
   afterAll(async () => {

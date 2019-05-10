@@ -1,13 +1,13 @@
-import { setupDatabase, createAnonymousApolloFetch } from './helpers';
+import { setupDatabase, createAnonymousGraphqlFetch } from './helpers';
 
 let connection;
 let db;
-let apolloFetch;
+let graphqlFetch;
 
 describe('authentication', () => {
   beforeAll(async () => {
     [db, connection] = await setupDatabase();
-    apolloFetch = await createAnonymousApolloFetch();
+    graphqlFetch = await createAnonymousGraphqlFetch();
   });
 
   afterAll(async () => {
@@ -15,7 +15,7 @@ describe('authentication', () => {
   });
 
   it('login with password and logout', async () => {
-    const { data: { loginWithPassword } = {} } = await apolloFetch({
+    const { data: { loginWithPassword } = {} } = await graphqlFetch({
       query: /* GraphQL */ `
         mutation {
           loginWithPassword(username: "admin", plainPassword: "password") {
@@ -31,7 +31,7 @@ describe('authentication', () => {
   });
 
   it('forgot/reset password', async () => {
-    const { data: { forgotPassword } = {} } = await apolloFetch({
+    const { data: { forgotPassword } = {} } = await graphqlFetch({
       query: /* GraphQL */ `
         mutation {
           forgotPassword(email: "user@localhost") {
@@ -56,7 +56,7 @@ describe('authentication', () => {
     } = user;
 
     // Reset the password with that token
-    const { data: { resetPassword } = {} } = await apolloFetch({
+    const { data: { resetPassword } = {} } = await graphqlFetch({
       query: /* GraphQL */ `
         mutation resetPassword($newPlainPassword: String, $token: String!) {
           resetPassword(newPlainPassword: $newPlainPassword, token: $token) {

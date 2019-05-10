@@ -1,13 +1,13 @@
-import { setupDatabase, createAdminApolloFetch } from './helpers';
+import { setupDatabase, createAdminGraphqlFetch } from './helpers';
 
 let connection;
 let db;
-let apolloFetch;
+let graphqlFetch;
 
 describe('basic setup of internationalization and localization context', () => {
   beforeAll(async () => {
     [db, connection] = await setupDatabase();
-    apolloFetch = await createAdminApolloFetch();
+    graphqlFetch = await createAdminGraphqlFetch();
   });
 
   afterAll(async () => {
@@ -24,7 +24,7 @@ describe('basic setup of internationalization and localization context', () => {
       const {
         data: { createCurrency },
         errors
-      } = await apolloFetch({
+      } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation {
             createCurrency(currency: { isoCode: "btc" }) {
@@ -45,7 +45,7 @@ describe('basic setup of internationalization and localization context', () => {
     it('update a currency', async () => {
       const currency = await Currencies.findOne();
 
-      const { data: { updateCurrency } = {}, errors } = await apolloFetch({
+      const { data: { updateCurrency } = {}, errors } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation updateCurrency(
             $currencyId: ID!
@@ -75,7 +75,7 @@ describe('basic setup of internationalization and localization context', () => {
 
     it('remove a currency', async () => {
       await Currencies.insertOne({ _id: 'ltc', isoCode: 'LTC' });
-      const { data: { removeCurrency } = {}, errors } = await apolloFetch({
+      const { data: { removeCurrency } = {}, errors } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation {
             removeCurrency(currencyId: "ltc") {
@@ -105,7 +105,7 @@ describe('basic setup of internationalization and localization context', () => {
         isActive: false
       });
 
-      const { data: { currencies } = {}, errors } = await apolloFetch({
+      const { data: { currencies } = {}, errors } = await graphqlFetch({
         query: /* GraphQL */ `
           query {
             currencies {
@@ -132,7 +132,7 @@ describe('basic setup of internationalization and localization context', () => {
         isActive: false
       });
 
-      const { data: { currency } = {}, errors } = await apolloFetch({
+      const { data: { currency } = {}, errors } = await graphqlFetch({
         query: /* GraphQL */ `
           query {
             currency(currencyId: "sigt") {
@@ -157,7 +157,7 @@ describe('basic setup of internationalization and localization context', () => {
     it('add a country', async () => {
       const {
         data: { createCountry }
-      } = await apolloFetch({
+      } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation {
             createCountry(country: { isoCode: "ch" }) {
@@ -188,7 +188,7 @@ describe('basic setup of internationalization and localization context', () => {
       const {
         data: { setBaseCountry },
         errors
-      } = await apolloFetch({
+      } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation setBaseCountry($countryId: ID!) {
             setBaseCountry(countryId: $countryId) {
@@ -211,7 +211,7 @@ describe('basic setup of internationalization and localization context', () => {
       const country = await Countries.findOne();
       const currency = await Currencies.findOne();
 
-      const { data: { updateCountry } = {}, errors } = await apolloFetch({
+      const { data: { updateCountry } = {}, errors } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation updateCountry(
             $countryId: ID!
@@ -247,7 +247,7 @@ describe('basic setup of internationalization and localization context', () => {
 
     it('remove a country', async () => {
       await Countries.insertOne({ _id: 'us', isoCode: 'US' });
-      const { data: { removeCountry } = {}, errors } = await apolloFetch({
+      const { data: { removeCountry } = {}, errors } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation {
             removeCountry(countryId: "us") {
@@ -277,7 +277,7 @@ describe('basic setup of internationalization and localization context', () => {
         isActive: false
       });
 
-      const { data: { countries } = {}, errors } = await apolloFetch({
+      const { data: { countries } = {}, errors } = await graphqlFetch({
         query: /* GraphQL */ `
           query {
             countries {
@@ -304,7 +304,7 @@ describe('basic setup of internationalization and localization context', () => {
         isActive: false
       });
 
-      const { data: { country } = {}, errors } = await apolloFetch({
+      const { data: { country } = {}, errors } = await graphqlFetch({
         query: /* GraphQL */ `
           query {
             country(countryId: "de") {
@@ -327,7 +327,7 @@ describe('basic setup of internationalization and localization context', () => {
     });
 
     it('add a language', async () => {
-      const { data: { createLanguage } = {} } = await apolloFetch({
+      const { data: { createLanguage } = {} } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation {
             createLanguage(language: { isoCode: "fr" }) {
@@ -354,7 +354,7 @@ describe('basic setup of internationalization and localization context', () => {
       const {
         data: { setBaseLanguage },
         errors
-      } = await apolloFetch({
+      } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation setBaseLanguage($languageId: ID!) {
             setBaseLanguage(languageId: $languageId) {
@@ -377,7 +377,7 @@ describe('basic setup of internationalization and localization context', () => {
     it('update a language', async () => {
       const language = await Languages.findOne();
 
-      const { data: { updateLanguage } = {}, errors } = await apolloFetch({
+      const { data: { updateLanguage } = {}, errors } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation updateLanguage(
             $languageId: ID!
@@ -407,7 +407,7 @@ describe('basic setup of internationalization and localization context', () => {
 
     it('remove a language', async () => {
       await Languages.insertOne({ _id: 'en', isoCode: 'US' });
-      const { data: { removeLanguage } = {}, errors } = await apolloFetch({
+      const { data: { removeLanguage } = {}, errors } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation {
             removeLanguage(languageId: "en") {
@@ -437,7 +437,7 @@ describe('basic setup of internationalization and localization context', () => {
         isActive: false
       });
 
-      const { data: { languages } = {}, errors } = await apolloFetch({
+      const { data: { languages } = {}, errors } = await graphqlFetch({
         query: /* GraphQL */ `
           query {
             languages {
@@ -464,7 +464,7 @@ describe('basic setup of internationalization and localization context', () => {
         isActive: false
       });
 
-      const { data: { language } = {}, errors } = await apolloFetch({
+      const { data: { language } = {}, errors } = await graphqlFetch({
         query: /* GraphQL */ `
           query {
             language(languageId: "pl") {
@@ -483,7 +483,7 @@ describe('basic setup of internationalization and localization context', () => {
   it('user defaults', async () => {
     const {
       data: { me }
-    } = await apolloFetch({
+    } = await graphqlFetch({
       query: /* GraphQL */ `
         query {
           me {
@@ -510,7 +510,7 @@ describe('basic setup of internationalization and localization context', () => {
   it('global shop context', async () => {
     const {
       data: { shopInfo }
-    } = await apolloFetch({
+    } = await graphqlFetch({
       query: /* GraphQL */ `
         query {
           shopInfo {

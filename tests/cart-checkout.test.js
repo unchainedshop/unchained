@@ -1,13 +1,13 @@
-import { setupDatabase, createAdminApolloFetch } from './helpers';
+import { setupDatabase, createAdminGraphqlFetch } from './helpers';
 
 let connection;
 let db;
-let apolloFetch;
+let graphqlFetch;
 
 describe('cart checkout', () => {
   beforeAll(async () => {
     [db, connection] = await setupDatabase();
-    apolloFetch = await createAdminApolloFetch();
+    graphqlFetch = await createAdminGraphqlFetch();
   });
 
   afterAll(async () => {

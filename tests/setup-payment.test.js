@@ -1,14 +1,14 @@
-import { setupDatabase, createAdminApolloFetch } from './helpers';
+import { setupDatabase, createAdminGraphqlFetch } from './helpers';
 
 describe('setup payment providers', () => {
   let PaymentProviders;
   let connection;
   let db;
-  let apolloFetch;
+  let graphqlFetch;
 
   beforeAll(async () => {
     [db, connection] = await setupDatabase();
-    apolloFetch = await createAdminApolloFetch();
+    graphqlFetch = await createAdminGraphqlFetch();
     PaymentProviders = db.collection('payment-providers');
   });
 
@@ -19,7 +19,7 @@ describe('setup payment providers', () => {
   it('add an invoice payment provider', async () => {
     const {
       data: { createPaymentProvider, errors }
-    } = await apolloFetch({
+    } = await graphqlFetch({
       query: /* GraphQL */ `
         mutation createPaymentProvider($paymentProvider: CreateProviderInput!) {
           createPaymentProvider(paymentProvider: $paymentProvider) {
