@@ -2,8 +2,7 @@ import SimpleSchema from 'simpl-schema';
 import { Schemas } from 'meteor/unchained:utils';
 import { ProductVariations, ProductVariationTexts } from './collections';
 
-export const ProductVariationType = {
-  // eslint-disable-line
+export const ProductVariationType = { // eslint-disable-line
   COLOR: 'COLOR',
   TEXT: 'TEXT'
 };

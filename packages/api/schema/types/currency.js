@@ -4,7 +4,6 @@ export default [
       _id: ID!
       isoCode: String
       isActive: Boolean
-      name(forceLocale: String): String
     }
   `
 ];

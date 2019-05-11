@@ -2,8 +2,7 @@ import SimpleSchema from 'simpl-schema';
 import { Schemas } from 'meteor/unchained:utils';
 import { ProductReviews } from './collections';
 
-export const ProductReviewVoteTypes = {
-  // eslint-disable-line
+export const ProductReviewVoteTypes = { // eslint-disable-line
   UPVOTE: 'UPVOTE',
   DOWNVOTE: 'DOWNVOTE',
   REPORT: 'REPORT'
