@@ -23,9 +23,9 @@ export const setupDatabase = async () => {
     poolSize: 1
   });
   const db = await connection.db(global.__MONGO_DB_NAME__);
-  const users = db.collection('users');
-  await users.findOrInsertOne(Admin);
-  await users.findOrInsertOne(User);
+  const Users = db.collection('users');
+  await Users.findOrInsertOne(Admin);
+  await Users.findOrInsertOne(User);
   return [db, connection];
 };
 

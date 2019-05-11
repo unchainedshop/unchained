@@ -1,5 +1,5 @@
 export const ADMIN_TOKEN = 'Bearer JOytDLyIQL3lOY1K1EfKx_S_nh13kOIe9h_J8E3mDWO';
-export const USER_TOKEN = 'Bearer U8CGfEBGEFM9s97hFamxruxV9VlvfRw5CbQ27Ci0WWz';
+export const USER_TOKEN = 'Bearer nYhR7GjP4Ur4-oMw1Ns7Ti61_0jB3YM5d0XrnXKc2qQ';
 
 export const Admin = {
   _id: 'admin',
@@ -50,7 +50,7 @@ export const User = {
       loginTokens: [
         {
           when: new Date(new Date().getTime() + 1000000),
-          hashedToken: 'WeMY99U5lhhJJTpC7bw6voIN6Q2ETWEyEhkXpn9G9ls'
+          hashedToken: '5VVf9TC/VQVcA271Muuhc4Y2QEtye79UnBR8Ib8oIi8='
         }
       ]
     }
