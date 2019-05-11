@@ -15,6 +15,50 @@ describe('Auth for anonymous users', () => {
     await connection.close();
   });
 
+  describe('Mutation.createUser', () => {
+    it('create a new user', async () => {
+      const { data: { createUser } = {} } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation createUser(
+            $username: String
+            $email: String
+            $password: String
+            $profile: UserProfileInput
+          ) {
+            createUser(
+              username: $username
+              email: $email
+              plainPassword: $password
+              profile: $profile
+            ) {
+              id
+              token
+              user {
+                _id
+              }
+            }
+          }
+        `,
+        variables: {
+          username: 'newuser',
+          email: 'newuser@localhost',
+          password: 'password',
+          profile: {
+            displayName: 'New User',
+            birthday: new Date(),
+            phoneMobile: '+410000000',
+            gender: 'm',
+            address: null,
+            customFields: null
+          }
+        }
+      });
+      expect(createUser).toMatchObject({
+        user: {}
+      });
+    });
+  });
+
   describe('Mutation.loginWithPassword', () => {
     it('login via username and password', async () => {
       const { data: { loginWithPassword } = {} } = await graphqlFetch({
