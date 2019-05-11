@@ -56,7 +56,7 @@ export const createAnonymousGraphqlFetch = () => {
   return convertLinkToFetch(link);
 };
 
-export const createAdminGraphqlFetch = (token = ADMIN_TOKEN) => {
+export const createLoggedInGraphqlFetch = (token = ADMIN_TOKEN) => {
   const uri = 'http://localhost:3000/graphql';
   const link = new HttpLink({
     uri,

@@ -1,4 +1,4 @@
-import { setupDatabase, createAdminGraphqlFetch } from './helpers';
+import { setupDatabase, createLoggedInGraphqlFetch } from './helpers';
 
 describe('setup delivery providers', () => {
   let DeliveryProviders;
@@ -8,7 +8,7 @@ describe('setup delivery providers', () => {
 
   beforeAll(async () => {
     [db, connection] = await setupDatabase();
-    graphqlFetch = await createAdminGraphqlFetch();
+    graphqlFetch = await createLoggedInGraphqlFetch();
     DeliveryProviders = db.collection('delivery-providers');
   });
 

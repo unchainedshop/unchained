@@ -1,4 +1,4 @@
-import { setupDatabase, createAdminGraphqlFetch } from './helpers';
+import { setupDatabase, createLoggedInGraphqlFetch } from './helpers';
 
 describe('setup payment providers', () => {
   let PaymentProviders;
@@ -8,7 +8,7 @@ describe('setup payment providers', () => {
 
   beforeAll(async () => {
     [db, connection] = await setupDatabase();
-    graphqlFetch = await createAdminGraphqlFetch();
+    graphqlFetch = await createLoggedInGraphqlFetch();
     PaymentProviders = db.collection('payment-providers');
   });
 

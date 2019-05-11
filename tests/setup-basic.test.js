@@ -1,4 +1,4 @@
-import { setupDatabase, createAdminGraphqlFetch } from './helpers';
+import { setupDatabase, createLoggedInGraphqlFetch } from './helpers';
 
 let connection;
 let db;
@@ -7,7 +7,7 @@ let graphqlFetch;
 describe('basic setup of internationalization and localization context', () => {
   beforeAll(async () => {
     [db, connection] = await setupDatabase();
-    graphqlFetch = await createAdminGraphqlFetch();
+    graphqlFetch = await createLoggedInGraphqlFetch();
   });
 
   afterAll(async () => {
