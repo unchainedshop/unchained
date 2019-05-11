@@ -5,7 +5,7 @@ let connection;
 let db;
 let graphqlFetch;
 
-describe('auth for logged in users', () => {
+describe('Auth for logged in users', () => {
   beforeAll(async () => {
     [db, connection] = await setupDatabase();
     graphqlFetch = await createLoggedInGraphqlFetch(USER_TOKEN);
