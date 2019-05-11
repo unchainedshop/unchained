@@ -1,4 +1,4 @@
-import { setupDatabase, createAdminGraphqlFetch } from './helpers';
+import { setupDatabase, createLoggedInGraphqlFetch } from './helpers';
 
 describe('setup warehousing providers', () => {
   let WarehousingProviders;
@@ -8,7 +8,7 @@ describe('setup warehousing providers', () => {
 
   beforeAll(async () => {
     [db, connection] = await setupDatabase();
-    graphqlFetch = await createAdminGraphqlFetch();
+    graphqlFetch = await createLoggedInGraphqlFetch();
     WarehousingProviders = db.collection('warehousing-providers');
   });
 
