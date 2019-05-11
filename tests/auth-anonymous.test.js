@@ -1,4 +1,5 @@
 import { setupDatabase, createAnonymousGraphqlFetch } from './helpers';
+import { User } from './seeds/users';
 
 let connection;
 let db;
@@ -35,11 +36,25 @@ describe('Auth for anonymous users', () => {
   describe('Mutation.forgotPassword', () => {
     let token;
 
+    beforeAll(async () => {
+      const Users = db.collection('users');
+      await Users.findOrInsertOne({
+        ...User,
+        _id: 'userthatforgetspasswords',
+        emails: [
+          {
+            address: 'userthatforgetspasswords@localhost',
+            verified: true
+          }
+        ]
+      });
+    });
+
     it('create a reset token', async () => {
       const { data: { forgotPassword } = {} } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation {
-            forgotPassword(email: "user@localhost") {
+            forgotPassword(email: "userthatforgetspasswords@localhost") {
               success
             }
           }
@@ -51,7 +66,9 @@ describe('Auth for anonymous users', () => {
 
       // Get the token which is sent via E-Mail
       const Users = db.collection('users');
-      const user = await Users.findOne({ 'emails.address': 'user@localhost' });
+      const user = await Users.findOne({
+        'emails.address': 'userthatforgetspasswords@localhost'
+      });
       ({
         services: {
           password: {
@@ -81,9 +98,9 @@ describe('Auth for anonymous users', () => {
         }
       });
       expect(resetPassword).toMatchObject({
-        id: 'user',
+        id: 'userthatforgetspasswords',
         user: {
-          _id: 'user'
+          _id: 'userthatforgetspasswords'
         }
       });
     });

@@ -13,4 +13,22 @@ describe('cart checkout', () => {
   afterAll(async () => {
     await connection.close();
   });
+
+  describe('Mutation.createCart', () => {
+    it('create a cart with a specific order number', async () => {
+      const { data: { createCart } = {} } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation {
+            createCart(orderNumber: "wishlist") {
+              _id
+              orderNumber
+            }
+          }
+        `
+      });
+      expect(createCart).toMatchObject({
+        orderNumber: 'wishlist'
+      });
+    });
+  });
 });
