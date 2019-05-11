@@ -20,5 +20,13 @@ export default async function(
   const newPassword = newHashedPassword || hashPassword(newPlainPassword);
   const oldPassword = oldHashedPassword || hashPassword(oldPlainPassword);
 
-  return callMethod(context, 'changePassword', oldPassword, newPassword);
+  const { passwordChanged } = callMethod(
+    context,
+    'changePassword',
+    oldPassword,
+    newPassword
+  );
+  return {
+    success: passwordChanged
+  };
 }

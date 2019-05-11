@@ -1,5 +1,5 @@
 import { setupDatabase, createLoggedInGraphqlFetch } from './helpers';
-import { USER_TOKEN, User } from './seeds/users';
+import { USER_TOKEN } from './seeds/users';
 
 let connection;
 let db;
@@ -22,7 +22,7 @@ describe('auth for logged in users', () => {
           mutation {
             changePassword(
               oldPlainPassword: "password"
-              newPlainPassword: "password2"
+              newPlainPassword: "password"
             ) {
               success
             }
