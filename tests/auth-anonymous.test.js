@@ -59,6 +59,36 @@ describe('Auth for anonymous users', () => {
     });
   });
 
+  describe('Mutation.loginAsGuest', () => {
+    it('login as guest', async () => {
+      const { data: { loginAsGuest } = {} } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation {
+            loginAsGuest {
+              id
+              token
+            }
+          }
+        `
+      });
+      expect(loginAsGuest).toMatchObject({});
+    });
+    it('user has guest flag', async () => {
+      const Users = db.collection('users');
+      const user = await Users.findOne({
+        guest: true
+      });
+      expect(user).toMatchObject({
+        guest: true,
+        emails: [
+          {
+            verified: false
+          }
+        ]
+      });
+    });
+  });
+
   describe('Mutation.loginWithPassword', () => {
     it('login via username and password', async () => {
       const { data: { loginWithPassword } = {} } = await graphqlFetch({
@@ -78,8 +108,6 @@ describe('Auth for anonymous users', () => {
   });
 
   describe('Mutation.forgotPassword', () => {
-    let token;
-
     beforeAll(async () => {
       const Users = db.collection('users');
       await Users.findOrInsertOne({
@@ -107,23 +135,24 @@ describe('Auth for anonymous users', () => {
       expect(forgotPassword).toEqual({
         success: true
       });
+    });
+  });
 
-      // Get the token which is sent via E-Mail
+  describe('Mutation.resetPassword', () => {
+    it('change password with token from forgotPassword call', async () => {
+      // Reset the password with that token
       const Users = db.collection('users');
       const user = await Users.findOne({
         'emails.address': 'userthatforgetspasswords@localhost'
       });
-      ({
+      const {
         services: {
           password: {
             reset: { token }
           }
         }
-      } = user);
-    });
+      } = user;
 
-    it('change password with token', async () => {
-      // Reset the password with that token
       const { data: { resetPassword } = {} } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation resetPassword($newPlainPassword: String, $token: String!) {

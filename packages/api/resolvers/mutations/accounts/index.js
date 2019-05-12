@@ -1,3 +1,5 @@
+import { actions } from '../../../roles';
+import { checkResolver as acl } from '../../../acl';
 import loginWithPassword from './loginWithPassword';
 import loginAsGuest from './loginAsGuest';
 import logout from './logout';
@@ -20,11 +22,11 @@ export default {
   logout,
   loginAsGuest,
   verifyEmail,
-  resendVerificationEmail,
   loginWithPassword,
-  changePassword,
   createUser,
   forgotPassword,
   resetPassword,
+  resendVerificationEmail: acl(actions.updateUser)(resendVerificationEmail),
+  changePassword: acl(actions.updateUser)(changePassword),
   ...oauth(options)
 };

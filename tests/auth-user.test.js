@@ -34,4 +34,21 @@ describe('Auth for logged in users', () => {
       });
     });
   });
+
+  describe('Mutation.resendVerificationEmail', () => {
+    it('change own password as user', async () => {
+      const { data: { resendVerificationEmail } = {} } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation {
+            resendVerificationEmail(email: "user@localhost") {
+              success
+            }
+          }
+        `
+      });
+      expect(resendVerificationEmail).toMatchObject({
+        success: true
+      });
+    });
+  });
 });
