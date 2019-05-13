@@ -70,7 +70,7 @@ export default [
       """
       Log the user out.
       """
-      logout(token: String!): SuccessResponse
+      logout(token: String): SuccessResponse
 
       """
       Marks the user's email address as verified. Logs the user in afterwards.
