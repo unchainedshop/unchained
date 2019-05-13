@@ -178,46 +178,4 @@ describe('Auth for anonymous users', () => {
       });
     });
   });
-
-  describe('Mutation.verifyEmail', () => {
-    it('verifies the e-mail of the guest', async () => {
-      // Reset the password with that token
-      const Users = db.collection('users');
-      const guest = await Users.findOne({
-        guest: true
-      });
-      console.log(guest);
-      const {
-        services: {
-          password: {
-            reset: { token }
-          }
-        }
-      } = user;
-
-      const { data: { verifyEmail } = {} } = await graphqlFetch({
-        query: /* GraphQL */ `
-          mutation verifyEmail($newPlainPassword: String, $token: String!) {
-            verifyEmail(newPlainPassword: $newPlainPassword, token: $token) {
-              id
-              token
-              user {
-                _id
-              }
-            }
-          }
-        `,
-        variables: {
-          newPlainPassword: 'password',
-          token
-        }
-      });
-      expect(verifyEmail).toMatchObject({
-        id: 'userthatforgetspasswords',
-        user: {
-          _id: 'userthatforgetspasswords'
-        }
-      });
-    });
-  });
 });

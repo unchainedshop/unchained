@@ -36,7 +36,7 @@ describe('Auth for logged in users', () => {
   });
 
   describe('Mutation.resendVerificationEmail', () => {
-    it('change own password as user', async () => {
+    it('resend verification e-mail', async () => {
       const { data: { resendVerificationEmail } = {} } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation {
@@ -49,6 +49,53 @@ describe('Auth for logged in users', () => {
       expect(resendVerificationEmail).toMatchObject({
         success: true
       });
+    });
+  });
+
+  describe('Mutation.verifyEmail', () => {
+    it('verifies the e-mail of user', async () => {
+      // Reset the password with that token
+      const Users = db.collection('users');
+      const user = await Users.findOne({
+        _id: 'user'
+      });
+
+      const {
+        services: {
+          email: {
+            verificationTokens: [{ token }]
+          }
+        }
+      } = user;
+
+      const { data: { verifyEmail } = {} } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation verifyEmail($token: String!) {
+            verifyEmail(token: $token) {
+              id
+              token
+              user {
+                _id
+              }
+            }
+          }
+        `,
+        variables: {
+          token
+        }
+      });
+      expect(verifyEmail).toMatchObject({
+        user: {}
+      });
+    });
+    it('e-mail is tagged as verified', async () => {
+      // Reset the password with that token
+      const Users = db.collection('users');
+      const user = await Users.findOne({
+        _id: 'user'
+      });
+
+      expect(user.emails[0].verified).toEqual(true);
     });
   });
 
