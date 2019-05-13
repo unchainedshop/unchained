@@ -5,6 +5,9 @@ import { check } from 'meteor/check';
 export default async req => {
   // there is a possible current user connected!
   let loginToken = req.headers['meteor-login-token'];
+  if (req.cookies.meteor_login_token) {
+    loginToken = req.cookies.meteor_login_token;
+  }
   if (req.headers.authorization) {
     const [type, token] = req.headers.authorization.split(' ');
     if (type === 'Bearer') {
