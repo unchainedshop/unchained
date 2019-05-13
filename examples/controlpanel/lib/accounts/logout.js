@@ -9,7 +9,7 @@ export default async function(apollo) {
 
   apollo.mutate({
     mutation: gql`
-      mutation logout($token: String!) {
+      mutation logout($token: String) {
         logout(token: $token) {
           success
         }
