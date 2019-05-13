@@ -15,6 +15,63 @@ describe('Auth for logged in users', () => {
     await connection.close();
   });
 
+  describe('Query.me', () => {
+    it('returns currently logged in user', async () => {
+      const { data: { me } = {} } = await graphqlFetch({
+        query: /* GraphQL */ `
+          query {
+            me {
+              _id
+              name
+              profile {
+                gender
+              }
+            }
+          }
+        `
+      });
+      expect(me).toMatchObject({
+        _id: User._id,
+        profile: {
+          gender: 'm'
+        }
+      });
+    });
+  });
+
+  describe('Query.user', () => {
+    it('returns currently logged in user when no userId provided', async () => {
+      const { data: { user } = {} } = await graphqlFetch({
+        query: /* GraphQL */ `
+          query {
+            user {
+              _id
+              name
+            }
+          }
+        `
+      });
+      expect(user).toMatchObject({
+        _id: User._id
+      });
+    });
+    it('does not allow a user to just retrieve data of other users', async () => {
+      const { errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          query($userId: ID) {
+            user(userId: $userId) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          userId: 'admin'
+        }
+      });
+      expect(errors.length).toEqual(1);
+    });
+  });
+
   describe('Mutation.changePassword', () => {
     it('change own password as user', async () => {
       const { data: { changePassword } = {} } = await graphqlFetch({

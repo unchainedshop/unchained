@@ -38,6 +38,9 @@ export const User = {
       verified: true
     }
   ],
+  profile: {
+    gender: 'm'
+  },
   guest: false,
   created: new Date(),
   updated: new Date(),
