@@ -83,7 +83,7 @@ const startUnchainedServer = options => {
           ],
           ...engine
         }
-      : null,
+      : undefined,
     ...apolloServerOptions
   });
 
