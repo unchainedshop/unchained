@@ -76,5 +76,5 @@ const initializeDatabase = () => {
 Meteor.startup(() => {
   configureEmailTemplates();
   initializeDatabase();
-  startPlatform();
+  startPlatform({ introspection: true });
 });
