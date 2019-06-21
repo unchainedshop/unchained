@@ -104,6 +104,14 @@ export default [
       ): OrderItem!
 
       """
+      Add multiple new item to the cart. Order gets generated with status = open (= order before checkout / cart) if necessary.
+      """
+      addMultipleCartProducts(
+        orderId: ID
+        items: [OrderItemInput!]!
+      ): [OrderItem]!
+
+      """
       Add a new discount to the cart, a new order gets generated with status = open (= order before checkout / cart) if necessary
       """
       addCartDiscount(orderId: ID, code: String!): OrderDiscount!
