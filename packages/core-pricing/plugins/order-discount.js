@@ -45,9 +45,11 @@ class OrderItems extends OrderPricingAdapter {
         : Math.min(configuration.fixedRate, totalItemsAmount);
 
       shares.forEach(({ ratio, taxDivisor }) => {
+        if (!Number.isFinite(ratio)) return;
         const shareAmount = discountAmountToSplit * ratio;
-        const shareTaxAmount = shareAmount - shareAmount / taxDivisor;
         discountAmount += shareAmount;
+        if (!Number.isFinite(taxDivisor)) return;
+        const shareTaxAmount = shareAmount - shareAmount / taxDivisor;
         taxAmount += shareTaxAmount;
       });
 

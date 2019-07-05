@@ -232,5 +232,11 @@ export default [
       productId: ID!
       quantity: Int!
     }
+
+    input OrderItemInput {
+      productId: ID!
+      quantity: Int = 1
+      configuration: [ProductConfigurationParameterInput!]
+    }
   `
 ];

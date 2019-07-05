@@ -17,6 +17,7 @@ export const ProductStatus = {
 const ProductCommerceSchema = new SimpleSchema(
   {
     salesUnit: String,
+    salesQuantityPerUnit: String,
     pricing: Array,
     'pricing.$': Object,
     'pricing.$.isTaxable': Boolean,

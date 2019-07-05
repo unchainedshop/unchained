@@ -25,7 +25,7 @@ OrderPositions.helpers({
   originalProduct() {
     return Products.findOne({
       _id: this.originalProductId
-    });
+    }) || this.product();
   },
   quotation() {
     return Quotations.findOne({
