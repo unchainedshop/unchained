@@ -41,6 +41,17 @@ Filters.createFilter = ({ locale, title, type, key, options, ...rest }) => {
   return filterObject;
 };
 
+Filters.updateFilter = ({ filterId, ...filter }) => {
+  const modifier = {
+    $set: {
+      ...filter,
+      updated: new Date()
+    }
+  };
+  Filters.update({ _id: filterId }, modifier);
+  return Filters.findOne({ _id: filterId });
+}
+
 Filters.getLocalizedTexts = (filterId, filterOptionValue, locale) =>
   findLocalizedText(
     FilterTexts,
@@ -246,16 +257,6 @@ Filters.helpers({
         }
       },
       { bypassCollection2: true }
-    );
-    Filters.update(
-      {
-        _id: this._id
-      },
-      {
-        $set: {
-          updated: new Date()
-        }
-      }
     );
     return FilterTexts.findOne(selector);
   },

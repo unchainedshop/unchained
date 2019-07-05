@@ -72,6 +72,9 @@ export default {
   salesUnit(obj) {
     return obj.commerce && obj.commerce.salesUnit;
   },
+  salesQuantityPerUnit(obj) {
+    return obj.commerce && obj.commerce.salesQuantityPerUnit;
+  },
   baseUnit(obj) {
     return obj.warehousing && obj.warehousing.baseUnit;
   },
