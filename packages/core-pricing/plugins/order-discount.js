@@ -30,13 +30,6 @@ class OrderItems extends OrderPricingAdapter {
       const pricing = item.pricing();
       const tax = pricing.taxSum();
       const gross = pricing.gross();
-      if (totalItemsAmount === 0 || gross - tax === 0) {
-        return {
-          ratio: 0,
-          taxDivisor: 1
-        };
-      }
-
       return {
         ratio: gross / totalItemsAmount,
         taxDivisor: gross / (gross - tax)
@@ -52,9 +45,11 @@ class OrderItems extends OrderPricingAdapter {
         : Math.min(configuration.fixedRate, totalItemsAmount);
 
       shares.forEach(({ ratio, taxDivisor }) => {
+        if (!Number.isFinite(ratio)) return;
         const shareAmount = discountAmountToSplit * ratio;
-        const shareTaxAmount = shareAmount - shareAmount / taxDivisor;
         discountAmount += shareAmount;
+        if (!Number.isFinite(taxDivisor)) return;
+        const shareTaxAmount = shareAmount - shareAmount / taxDivisor;
         taxAmount += shareTaxAmount;
       });
 
