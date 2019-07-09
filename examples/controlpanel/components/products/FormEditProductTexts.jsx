@@ -15,7 +15,7 @@ import withFormSchema from '../../lib/withFormSchema';
 import withFormModel from '../../lib/withFormModel';
 import withFormErrorHandlers from '../../lib/withFormErrorHandlers';
 
-const { publicRuntimeConfig } = getConfig();
+const { publicRuntimeConfig } = getConfig() || {};
 
 const FormRTEInput = dynamic(import('../FormRTEInput'), {
   ssr: false

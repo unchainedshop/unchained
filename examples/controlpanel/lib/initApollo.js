@@ -11,7 +11,7 @@ import getConfig from 'next/config';
 import { createUploadLink } from 'apollo-upload-client';
 import introspectionQueryResultData from '../schema.json';
 
-const { publicRuntimeConfig } = getConfig();
+const { publicRuntimeConfig } = getConfig() || {};
 
 let apolloClient = null;
 
