@@ -78,9 +78,8 @@ class GoogleSheets extends WarehousingAdapter {
     if (!cachedTables) {
       tables = await updateGoogleCache();
     }
-    if (!tables || !tables[name]) return null;
-    const rows = tables[name].rows || [];
-    return rows;
+    if (!tables || !tables[name] || !tables[name].rows) return [];
+    return tables[name].rows;
   }
 
   isActive(context) { // eslint-disable-line

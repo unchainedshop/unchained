@@ -11,7 +11,8 @@
   "contributors": [
     "Vedran Rudelj <vedran@unchained.shop> (https://unchained.shop)",
     "Pascal Kaufmann <pascal@unchained.shop> (https://unchained.shop)",
-    "Marco Wettstein <maw@panter.ch>"
+    "Marco Wettstein <maw@panter.ch>",
+    "Simon Emanuel Schmid <simon@schmid.io>"
   ],
   "bugs": {
     "url": "https://github.com/unchainedshop/unchained/issues"
@@ -29,17 +30,17 @@
     "debug": "UI_ENDPOINT=http://localhost:4000 meteor debug -p 4010"
   },
   "dependencies": {
-    "@babel/runtime": "^7.4.4",
-    "apollo-server-express": "^2.4.6",
+    "@babel/runtime": "^7.5.4",
+    "apollo-server-express": "^2.6.7",
     "bcrypt": "^3.0.6",
-    "braintree": "^2.16.0",
-    "dotenv": "^7.0.0",
+    "braintree": "^2.18.0",
+    "dotenv": "^8.0.0",
     "emoji-flags": "^1.2.0",
     "faker": "^4.1.0",
-    "graphql": "^14.2.1",
+    "graphql": "^14.4.2",
     "hashids": "^1.2.2",
-    "i18n-iso-countries": "^3.7.8",
-    "iconv-lite": "^0.4.24",
+    "i18n-iso-countries": "^4.2.0",
+    "iconv-lite": "^0.5.0",
     "isomorphic-unfetch": "^3.0.0",
     "locale": "^0.1.0",
     "lodash.clonedeep": "^4.5.0",
@@ -50,25 +51,25 @@
     "mustache": "^3.0.1",
     "node-cache": "^4.2.0",
     "node-sheets": "^1.0.0",
-    "open": "^6.2.0",
+    "open": "^6.4.0",
     "simpl-schema": "^1.5.5",
-    "stripe": "^6.31.1",
+    "stripe": "^7.4.0",
     "uuid": "^3.3.2",
     "winston": "^3.2.1",
     "winston-transport": "^4.3.0",
     "xml-js": "^1.6.11"
   },
   "devDependencies": {
-    "@babel/core": "^7.4.4",
-    "@babel/preset-env": "^7.4.4",
+    "@babel/core": "^7.5.4",
+    "@babel/preset-env": "^7.5.4",
     "@babel/register": "^7.4.4",
-    "babel-eslint": "^10.0.1",
+    "babel-eslint": "^10.0.2",
     "eslint": "^5.16.0",
-    "eslint-config-airbnb-base": "^13.1.0",
+    "eslint-config-airbnb-base": "^13.2.0",
     "eslint-import-resolver-meteor": "^0.4.0",
-    "eslint-plugin-import": "^2.17.2",
+    "eslint-plugin-import": "^2.18.0",
     "eslint-plugin-meteor": "^5.1.0",
-    "eslint-plugin-prettier": "^3.0.1",
-    "prettier": "^1.17.0"
+    "eslint-plugin-prettier": "^3.1.0",
+    "prettier": "^1.18.2"
   }
 }
