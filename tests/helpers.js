@@ -23,6 +23,7 @@ export const setupDatabase = async () => {
     poolSize: 1
   });
   const db = await connection.db(global.__MONGO_DB_NAME__);
+  await db.dropDatabase();
   const Users = db.collection('users');
   await Users.findOrInsertOne(Admin);
   await Users.findOrInsertOne(User);
@@ -34,7 +35,7 @@ export const wipeDatabase = async () => {
   const connection = await MongoClient.connect(connectionUri, {
     useNewUrlParser: true
   });
-  const db = await connection.db('jest');
+  const db = await connection.db(global.__MONGO_DB_NAME__);
   await db.dropDatabase();
   await connection.close();
 };
