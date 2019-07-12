@@ -34,9 +34,7 @@ export default () => {
     mailman.originalSend = Email.send;
     mailman.send = function mailmanSend(options) {
       const filename = `${Date.now()}.html`;
-      const header = `<b>from:</b>${options.from}<br><b>to:</b>${
-        options.to
-      }<br><br><b>subject:</b>${options.subject}<hr>`;
+      const header = `<b>from:</b>${options.from}<br><b>to:</b>${options.to}<br><br><b>subject:</b>${options.subject}<hr>`;
       const content = header + (options.html || options.text);
       writeFile(filename, content, (err, filePath) => {
         if (err) {

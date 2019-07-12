@@ -127,9 +127,7 @@ class ProductPricingDirector {
 
   static registerAdapter(adapter) {
     log(
-      `${this.name} -> Registered ${adapter.key} ${adapter.version} (${
-        adapter.label
-      })`
+      `${this.name} -> Registered ${adapter.key} ${adapter.version} (${adapter.label})`
     );
     ProductPricingDirector.adapters.set(adapter.key, adapter);
   }

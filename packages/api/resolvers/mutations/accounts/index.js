@@ -1,5 +1,3 @@
-import { actions } from '../../../roles';
-import { checkResolver as acl } from '../../../acl';
 import loginWithPassword from './loginWithPassword';
 import loginAsGuest from './loginAsGuest';
 import logout from './logout';
