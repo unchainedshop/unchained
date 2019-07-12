@@ -26,7 +26,7 @@ export default {
   createUser,
   forgotPassword,
   resetPassword,
-  resendVerificationEmail: acl(actions.updateUser)(resendVerificationEmail),
-  changePassword: acl(actions.updateUser)(changePassword),
+  resendVerificationEmail,
+  changePassword,
   ...oauth(options)
 };
