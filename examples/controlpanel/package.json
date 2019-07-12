@@ -61,8 +61,9 @@
     "semantic-ui-css": "^2.4.1",
     "semantic-ui-react": "^0.87.3",
     "simpl-schema": "^1.5.4",
-    "uniforms": "^1.31.1",
-    "uniforms-semantic": "^1.31.1",
+    "uniforms": "^2.1.0",
+    "uniforms-bridge-simple-schema-2": "^2.1.0",
+    "uniforms-semantic": "^2.1.0",
     "url-loader": "^2.0.1"
   },
   "devDependencies": {
