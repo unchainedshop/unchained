@@ -31,7 +31,7 @@
   },
   "dependencies": {
     "@babel/runtime": "^7.5.4",
-    "apollo-server-express": "^2.6.7",
+    "apollo-server-express": "^2.6.9",
     "bcrypt": "^3.0.6",
     "braintree": "^2.18.0",
     "dotenv": "^8.0.0",

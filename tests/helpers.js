@@ -1,6 +1,6 @@
 import { MongoClient, Collection } from 'mongodb';
 import { execute, makePromise } from 'apollo-link';
-import { HttpLink } from 'apollo-link-http';
+import { createUploadLink } from 'apollo-upload-client';
 import gql from 'graphql-tag';
 import fetch from 'isomorphic-unfetch';
 import { Admin, User, ADMIN_TOKEN } from './seeds/users';
@@ -23,6 +23,7 @@ export const setupDatabase = async () => {
     poolSize: 1
   });
   const db = await connection.db(global.__MONGO_DB_NAME__);
+  await db.dropDatabase();
   const Users = db.collection('users');
   await Users.findOrInsertOne(Admin);
   await Users.findOrInsertOne(User);
@@ -34,7 +35,7 @@ export const wipeDatabase = async () => {
   const connection = await MongoClient.connect(connectionUri, {
     useNewUrlParser: true
   });
-  const db = await connection.db('jest');
+  const db = await connection.db(global.__MONGO_DB_NAME__);
   await db.dropDatabase();
   await connection.close();
 };
@@ -49,7 +50,7 @@ const convertLinkToFetch = link => ({ query, ...operation }) =>
 
 export const createAnonymousGraphqlFetch = () => {
   const uri = 'http://localhost:3000/graphql';
-  const link = new HttpLink({
+  const link = createUploadLink({
     uri,
     fetch
   });
@@ -58,7 +59,7 @@ export const createAnonymousGraphqlFetch = () => {
 
 export const createLoggedInGraphqlFetch = (token = ADMIN_TOKEN) => {
   const uri = 'http://localhost:3000/graphql';
-  const link = new HttpLink({
+  const link = createUploadLink({
     uri,
     fetch,
     headers: {

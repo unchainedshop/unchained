@@ -20,11 +20,11 @@ export default {
   logout,
   loginAsGuest,
   verifyEmail,
-  resendVerificationEmail,
   loginWithPassword,
-  changePassword,
   createUser,
   forgotPassword,
   resetPassword,
+  resendVerificationEmail,
+  changePassword,
   ...oauth(options)
 };

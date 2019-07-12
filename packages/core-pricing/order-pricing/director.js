@@ -106,9 +106,7 @@ class OrderPricingDirector {
 
   static registerAdapter(adapter) {
     log(
-      `${this.name} -> Registered ${adapter.key} ${adapter.version} (${
-        adapter.label
-      })`
+      `${this.name} -> Registered ${adapter.key} ${adapter.version} (${adapter.label})`
     );
     OrderPricingDirector.adapters.set(adapter.key, adapter);
   }

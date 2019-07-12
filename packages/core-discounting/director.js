@@ -98,9 +98,7 @@ class DiscountDirector {
 
   static registerAdapter(adapter) {
     log(
-      `${this.name} -> Registered ${adapter.key} ${adapter.version} (${
-        adapter.label
-      })`
+      `${this.name} -> Registered ${adapter.key} ${adapter.version} (${adapter.label})`
     );
     DiscountDirector.adapters.set(adapter.key, adapter);
   }
