@@ -7,7 +7,6 @@ let db;
 let graphqlFetch;
 
 /* TODO:
-- enrollUser
 - setPassword
 - setRoles
 */
@@ -255,6 +254,8 @@ describe('Auth for admin users', () => {
             enrollUser(email: $email, password: $password, profile: $profile) {
               _id
               email
+              isInitialPassword
+              isEmailVerified
             }
           }
         `,
@@ -266,6 +267,7 @@ describe('Auth for admin users', () => {
       });
       expect(enrollUser).toMatchObject({
         email,
+        isInitialPassword: true,
         isEmailVerified: false
       });
     });
@@ -286,6 +288,8 @@ describe('Auth for admin users', () => {
             enrollUser(email: $email, password: $password, profile: $profile) {
               _id
               email
+              isInitialPassword
+              isEmailVerified
             }
           }
         `,
@@ -297,7 +301,30 @@ describe('Auth for admin users', () => {
       });
       expect(enrollUser).toMatchObject({
         email,
+        isInitialPassword: true,
         isEmailVerified: false
+      });
+    });
+  });
+
+  describe('Mutation.setPassword', () => {
+    it('set the password of a foreign user', async () => {
+      const newPassword = 'new';
+      const { data: { setPassword } = {} } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation setPassword($userId: ID!, $newPassword: String!) {
+            setPassword(newPassword: $newPassword, userId: $userId) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          userId: User._id,
+          newPassword
+        }
+      });
+      expect(setPassword).toMatchObject({
+        _id: User._id
       });
     });
   });
