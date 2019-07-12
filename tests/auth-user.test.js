@@ -1,5 +1,5 @@
 import { setupDatabase, createLoggedInGraphqlFetch } from './helpers';
-import { User, USER_TOKEN } from './seeds/users';
+import { User, Admin, USER_TOKEN } from './seeds/users';
 
 let connection;
 let db;
@@ -65,7 +65,7 @@ describe('Auth for logged in users', () => {
           }
         `,
         variables: {
-          userId: 'admin'
+          userId: Admin._id
         }
       });
       expect(errors.length).toEqual(1);

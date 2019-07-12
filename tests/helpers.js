@@ -1,6 +1,6 @@
 import { MongoClient, Collection } from 'mongodb';
 import { execute, makePromise } from 'apollo-link';
-import { HttpLink } from 'apollo-link-http';
+import { createUploadLink } from 'apollo-upload-client';
 import gql from 'graphql-tag';
 import fetch from 'isomorphic-unfetch';
 import { Admin, User, ADMIN_TOKEN } from './seeds/users';
@@ -50,7 +50,7 @@ const convertLinkToFetch = link => ({ query, ...operation }) =>
 
 export const createAnonymousGraphqlFetch = () => {
   const uri = 'http://localhost:3000/graphql';
-  const link = new HttpLink({
+  const link = createUploadLink({
     uri,
     fetch
   });
@@ -59,7 +59,7 @@ export const createAnonymousGraphqlFetch = () => {
 
 export const createLoggedInGraphqlFetch = (token = ADMIN_TOKEN) => {
   const uri = 'http://localhost:3000/graphql';
-  const link = new HttpLink({
+  const link = createUploadLink({
     uri,
     fetch,
     headers: {
