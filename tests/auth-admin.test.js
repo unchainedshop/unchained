@@ -7,9 +7,6 @@ let db;
 let graphqlFetch;
 
 /* TODO:
-- updateEmail
-- updateUserTags
-- updateUserProfile
 - enrollUser
 - setPassword
 - setRoles
@@ -145,26 +142,97 @@ describe('Auth for admin users', () => {
 
   describe('Mutation.updateEmail', () => {
     it('update the e-mail of a foreign user', async () => {
+      const email = 'admin2@localhost';
       const { data: { updateEmail } = {} } = await graphqlFetch({
         query: /* GraphQL */ `
-          mutation updateEmail($userId: ID, $avatar: Upload!) {
-            updateEmail(userId: $userId, avatar: $avatar) {
+          mutation updateEmail($email: String!, $userId: ID) {
+            updateEmail(email: $email, userId: $userId) {
               _id
-              avatar {
-                name
+              email
+              isEmailVerified
+            }
+          }
+        `,
+        variables: {
+          userId: User._id,
+          email
+        }
+      });
+      expect(updateEmail).toMatchObject({
+        _id: User._id,
+        email,
+        isEmailVerified: false
+      });
+    });
+  });
+
+  describe('Mutation.updateUserTags', () => {
+    it('update the tags of myself as admin', async () => {
+      const tags = ['new-tag'];
+      const { data: { updateUserTags } = {} } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation updateUserTags($tags: [String]!, $userId: ID!) {
+            updateUserTags(tags: $tags, userId: $userId) {
+              _id
+              tags
+            }
+          }
+        `,
+        variables: {
+          userId: Admin._id,
+          tags
+        }
+      });
+      expect(updateUserTags).toMatchObject({
+        _id: Admin._id,
+        tags
+      });
+    });
+  });
+
+  describe('Mutation.updateUserProfile', () => {
+    it('update the profile of a foreign user', async () => {
+      const profile = {
+        displayName: 'Administratörli',
+        birthday: new Date('01.03.37'),
+        phoneMobile: '+414114141',
+        gender: 'm',
+        address: {
+          firstName: 'P',
+          lastName: 'K'
+        }
+      };
+      const { data: { updateUserProfile } = {} } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation updateUserProfile($profile: UserProfileInput!, $userId: ID) {
+            updateUserProfile(profile: $profile, userId: $userId) {
+              _id
+              name
+              profile {
+                birthday
+                displayName
+                phoneMobile
+                gender
+                birthday
+                address {
+                  firstName
+                  lastName
+                }
               }
             }
           }
         `,
         variables: {
           userId: User._id,
-          avatar
+          profile
         }
       });
-      expect(updateEmail).toMatchObject({
+      expect(updateUserProfile).toMatchObject({
         _id: User._id,
-        avatar: {
-          name: 'Octocat.png'
+        name: profile.displayName,
+        profile: {
+          ...profile,
+          birthday: profile.birthday.getTime()
         }
       });
     });
