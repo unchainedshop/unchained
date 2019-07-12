@@ -6,11 +6,6 @@ let connection;
 let db;
 let graphqlFetch;
 
-/* TODO:
-- setPassword
-- setRoles
-*/
-
 describe('Auth for admin users', () => {
   beforeAll(async () => {
     [db, connection] = await setupDatabase();
@@ -325,6 +320,30 @@ describe('Auth for admin users', () => {
       });
       expect(setPassword).toMatchObject({
         _id: User._id
+      });
+    });
+  });
+
+  describe('Mutation.setRoles', () => {
+    it('set the roles of a foreign user', async () => {
+      const roles = ['admin'];
+      const { data: { setRoles } = {} } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation setRoles($userId: ID!, $roles: [String!]!) {
+            setRoles(roles: $roles, userId: $userId) {
+              _id
+              roles
+            }
+          }
+        `,
+        variables: {
+          userId: User._id,
+          roles
+        }
+      });
+      expect(setRoles).toMatchObject({
+        _id: User._id,
+        roles
       });
     });
   });
