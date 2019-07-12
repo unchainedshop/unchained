@@ -237,4 +237,68 @@ describe('Auth for admin users', () => {
       });
     });
   });
+
+  describe('Mutation.enrollUser', () => {
+    it('enroll a user without a password', async () => {
+      const profile = {
+        displayName: 'Admin3'
+      };
+      const email = 'admin3@localhost';
+      const password = null;
+      const { data: { enrollUser } = {} } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation enrollUser(
+            $email: String!
+            $password: String
+            $profile: UserProfileInput!
+          ) {
+            enrollUser(email: $email, password: $password, profile: $profile) {
+              _id
+              email
+            }
+          }
+        `,
+        variables: {
+          email,
+          password,
+          profile
+        }
+      });
+      expect(enrollUser).toMatchObject({
+        email,
+        isEmailVerified: false
+      });
+    });
+
+    it('enroll a user with pre-setting a password', async () => {
+      const profile = {
+        displayName: 'Admin4'
+      };
+      const email = 'admin4@localhost';
+      const password = 'admin4';
+      const { data: { enrollUser } = {} } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation enrollUser(
+            $email: String!
+            $password: String
+            $profile: UserProfileInput!
+          ) {
+            enrollUser(email: $email, password: $password, profile: $profile) {
+              _id
+              email
+            }
+          }
+        `,
+        variables: {
+          email,
+          password,
+          profile
+        }
+      });
+      expect(enrollUser).toMatchObject({
+        email,
+        isEmailVerified: false
+      });
+    });
+  });
 });
