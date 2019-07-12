@@ -1,5 +1,6 @@
 import setupInMemoryMongoDB from '@shelf/jest-mongodb/setup';
 import { spawn } from 'child_process';
+import { wipeDatabase } from './helpers';
 
 let meteorProcess = null;
 let mongoDBRunning = false;
@@ -50,4 +51,5 @@ export default async config => {
     mongoDBRunning = true;
   }
   await startAndWaitForMeteor(config);
+  await wipeDatabase();
 };
