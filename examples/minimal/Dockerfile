@@ -1,6 +1,5 @@
 FROM pozylon/meteor-docker-auto as bundler
 ADD . /source
-RUN rm /source/packages
 WORKDIR /source
 ENV METEOR_ALLOW_SUPERUSER true
 RUN meteor npm install && \

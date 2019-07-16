@@ -20,8 +20,7 @@
   "scripts": {
     "lint": "eslint packages --cache --fix --ext=jsx --ext=js",
     "test": "jest --runInBand",
-    "test:watch": "DEBUG=jest-mongodb:* jest --watch --verbose",
-    "bump": "./bump.sh",
+    "test:watch": "cross-env DEBUG=jest-mongodb:* jest --runInBand --watch --verbose",
     "dev": "run-p --print-label 'dev:*'",
     "dev:minimal": "cd examples/minimal && npm run dev",
     "dev:controlpanel": "cd examples/controlpanel && npm run dev",
@@ -38,6 +37,7 @@
     "apollo-upload-client": "^11.0.0",
     "babel-eslint": "^10.0.2",
     "babel-jest": "^24.8.0",
+    "cross-env": "^5.2.0",
     "eslint": "^5.16.0",
     "eslint-config-airbnb-base": "^13.2.0",
     "eslint-config-prettier": "^6.0.0",
