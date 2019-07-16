@@ -25,9 +25,9 @@
   },
   "scripts": {
     "lint": "eslint . --cache  --fix --ext=jsx --ext=js",
-    "dev": "UI_ENDPOINT=http://localhost:4000 meteor --no-release-check --no-lint -p 4010",
-    "build": "meteor build --server-only --directory .build",
-    "debug": "UI_ENDPOINT=http://localhost:4000 meteor debug -p 4010"
+    "dev": "METEOR_PACKAGE_DIRS=../../packages UI_ENDPOINT=http://localhost:4000 meteor --no-release-check --no-lint -p 4010",
+    "build": "METEOR_PACKAGE_DIRS=../../packages UI_ENDPOINT=http://localhost:4000 meteor build --server-only --directory .build",
+    "debug": "METEOR_PACKAGE_DIRS=../../packages UI_ENDPOINT=http://localhost:4000 meteor debug -p 4010"
   },
   "dependencies": {
     "@babel/runtime": "^7.5.4",
