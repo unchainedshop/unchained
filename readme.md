@@ -15,13 +15,7 @@ Licensed under the EUPL 1.2
 
 ```bash
 git clone https://github.com/unchainedshop/unchained.git
-cd unchained
 npm install
-cd examples/controlpanel
-npm install
-cd ../minimal
-npm install
-cd ../..
 npm run dev
 ```
 

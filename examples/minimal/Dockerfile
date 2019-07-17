@@ -1,8 +1,9 @@
 FROM pozylon/meteor-docker-auto as bundler
 ADD . /source
 WORKDIR /source
+ENV METEOR_ALLOW_SUPERUSER true
 RUN meteor npm install && \
-  meteor build --server-only --allow-superuser --directory /bundle
+  meteor build --server-only --directory /bundle
 
 FROM node:8-alpine as rebuilder
 RUN apk add --no-cache make gcc g++ python sudo
