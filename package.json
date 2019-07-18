@@ -1,7 +1,7 @@
 {
   "name": "@unchainedshop/engine",
   "description": "Unchained Engine",
-  "version": "0.27.0",
+  "version": "0.28.0",
   "license": "EUPL-1.2",
   "homepage": "https://unchained.shop",
   "repository": {
@@ -29,8 +29,8 @@
     "install:controlpanel": "cd examples/controlpanel && npm install"
   },
   "devDependencies": {
-    "@babel/core": "^7.5.4",
-    "@babel/preset-env": "^7.5.4",
+    "@babel/core": "^7.5.5",
+    "@babel/preset-env": "^7.5.5",
     "@shelf/jest-mongodb": "^1.1.0",
     "apollo-link": "^1.2.12",
     "apollo-link-http": "^1.5.15",

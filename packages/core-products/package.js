@@ -1,7 +1,7 @@
 /* globals Package */
 Package.describe({
   name: 'unchained:core-products',
-  version: '0.27.0',
+  version: '0.28.0',
   summary: 'Unchained Engine Core: Products',
   git: 'https://github.com/unchainedshop/unchained',
   documentation: 'README.md'
@@ -15,13 +15,13 @@ Package.onUse(api => {
   api.use('dburles:factory@1.1.0');
   api.use('dburles:collection-helpers@1.1.0');
 
-  api.use('unchained:utils@0.27.0');
-  api.use('unchained:core@0.27.0');
-  api.use('unchained:core-files@0.27.0');
-  api.use('unchained:core-users@0.27.0');
-  api.use('unchained:core-pricing@0.27.0');
-  api.use('unchained:core-warehousing@0.27.0');
-  api.use('unchained:core-countries@0.27.0');
+  api.use('unchained:utils@0.28.0');
+  api.use('unchained:core@0.28.0');
+  api.use('unchained:core-files@0.28.0');
+  api.use('unchained:core-users@0.28.0');
+  api.use('unchained:core-pricing@0.28.0');
+  api.use('unchained:core-warehousing@0.28.0');
+  api.use('unchained:core-countries@0.28.0');
 
   api.mainModule('products.js', 'server');
 });
