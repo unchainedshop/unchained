@@ -27,7 +27,7 @@
     "preexport": "npm run build",
     "export": "next export",
     "update-schema": "npx apollo service:download",
-    "prepare": "npm run build"
+    "prepublishOnly": "npm run build"
   },
   "dependencies": {
     "@zeit/next-css": "^1.0.1",

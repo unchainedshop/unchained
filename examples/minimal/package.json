@@ -27,6 +27,7 @@
     "lint": "eslint . --cache  --fix --ext=jsx --ext=js",
     "link:cp": "meteor npm link ../controlpanel && npm link ../controlpanel",
     "unlink:cp": "meteor npm unlink @unchainedshop/controlpanel && npm unlink @unchainedshop/controlpanel",
+    "install": "cd node_modules/@unchainedshop/controlpanel && npm install",
     "dev": "cross-env METEOR_PACKAGE_DIRS=../../packages UI_ENDPOINT=http://localhost:4000 meteor --no-release-check --no-lint -p 4010",
     "build": "cross-env METEOR_PACKAGE_DIRS=../../packages UI_ENDPOINT=http://localhost:4000 meteor build --server-only --directory .build",
     "debug": "cross-env METEOR_PACKAGE_DIRS=../../packages UI_ENDPOINT=http://localhost:4000 meteor debug -p 4010"
