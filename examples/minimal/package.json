@@ -25,11 +25,13 @@
   },
   "scripts": {
     "lint": "eslint . --cache  --fix --ext=jsx --ext=js",
+    "predev": "npm link ../controlpanel",
     "dev": "cross-env METEOR_PACKAGE_DIRS=../../packages UI_ENDPOINT=http://localhost:4000 meteor --no-release-check --no-lint -p 4010",
     "build": "cross-env METEOR_PACKAGE_DIRS=../../packages UI_ENDPOINT=http://localhost:4000 meteor build --server-only --directory .build",
     "debug": "cross-env METEOR_PACKAGE_DIRS=../../packages UI_ENDPOINT=http://localhost:4000 meteor debug -p 4010"
   },
   "dependencies": {
+    "@unchainedshop/controlpanel": "^0.28.1",
     "@babel/runtime": "^7.5.4",
     "apollo-server-express": "^2.6.9",
     "bcrypt": "^3.0.6",

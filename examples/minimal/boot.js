@@ -2,8 +2,8 @@ import { Meteor } from 'meteor/meteor';
 import { startPlatform } from 'meteor/unchained:platform';
 import { Users } from 'meteor/unchained:core-users';
 import { Factory } from 'meteor/dburles:factory';
-import configureEmailTemplates from './templates';
 
+import { embedControlpanelInMeteorWebApp } from '@unchainedshop/controlpanel';
 import 'meteor/unchained:core-delivery/plugins/send-mail';
 import 'meteor/unchained:core-warehousing/plugins/google-sheets';
 import 'meteor/unchained:core-discounting/plugins/half-price';
@@ -19,6 +19,7 @@ import 'meteor/unchained:core-pricing/plugins/product-catalog-price';
 import 'meteor/unchained:core-pricing/plugins/product-discount';
 import 'meteor/unchained:core-pricing/plugins/product-swiss-tax';
 import 'meteor/unchained:core-quotations/plugins/manual';
+import configureEmailTemplates from './templates';
 
 const logger = console;
 
@@ -77,4 +78,5 @@ Meteor.startup(() => {
   configureEmailTemplates();
   initializeDatabase();
   startPlatform({ introspection: true });
+  embedControlpanelInMeteorWebApp(WebApp);
 });

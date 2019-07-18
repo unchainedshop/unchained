@@ -1,9 +1,10 @@
 {
   "name": "@unchainedshop/controlpanel",
   "description": "Control Panel for Unchained Engine",
-  "version": "0.28.0",
+  "version": "0.28.1",
   "license": "EUPL-1.2",
   "homepage": "https://unchained.shop",
+  "main": "index.js",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/unchainedshop/unchained.git"
@@ -25,7 +26,8 @@
     "start": "next start",
     "preexport": "npm run build",
     "export": "next export",
-    "update-schema": "npx apollo service:download"
+    "update-schema": "npx apollo service:download",
+    "prepare": "npm run build"
   },
   "dependencies": {
     "@zeit/next-css": "^1.0.1",
