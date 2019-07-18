@@ -1,7 +1,7 @@
 /* globals Package */
 Package.describe({
   name: 'unchained:roles',
-  version: '0.28.0',
+  version: '0.29.0',
   summary: 'Unchained Engine: Roles',
   git: 'https://github.com/unchainedshop/unchained',
   documentation: 'README.md'

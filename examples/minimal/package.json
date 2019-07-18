@@ -1,7 +1,7 @@
 {
   "name": "@unchainedshop/example-minimal",
   "description": "Minimal Bootstrap Project for Unchained Engine",
-  "version": "0.28.0",
+  "version": "0.29.0",
   "license": "EUPL-1.2",
   "homepage": "https://unchained.shop",
   "repository": {
@@ -25,13 +25,14 @@
   },
   "scripts": {
     "lint": "eslint . --cache  --fix --ext=jsx --ext=js",
-    "link": "npm link ../controlpanel",
+    "link:cp": "meteor npm link ../controlpanel && npm link ../controlpanel",
+    "unlink:cp": "meteor npm unlink @unchainedshop/controlpanel && npm unlink @unchainedshop/controlpanel",
     "dev": "cross-env METEOR_PACKAGE_DIRS=../../packages UI_ENDPOINT=http://localhost:4000 meteor --no-release-check --no-lint -p 4010",
     "build": "cross-env METEOR_PACKAGE_DIRS=../../packages UI_ENDPOINT=http://localhost:4000 meteor build --server-only --directory .build",
     "debug": "cross-env METEOR_PACKAGE_DIRS=../../packages UI_ENDPOINT=http://localhost:4000 meteor debug -p 4010"
   },
   "dependencies": {
-    "@unchainedshop/controlpanel": "^0.28.1",
+    "@unchainedshop/controlpanel": "latest",
     "@babel/runtime": "^7.5.4",
     "apollo-server-express": "^2.6.9",
     "bcrypt": "^3.0.6",
