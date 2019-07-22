@@ -61,7 +61,8 @@ OrderDeliveries.helpers({
   send(deliveryContext, order) {
     if (this.status !== OrderDeliveryStatus.OPEN) return;
     const provider = this.provider();
-    const address = this.context.address || order.billingAddress || {};
+    const address =
+      this.context.address || (order || this.order()).billingAddress || {};
     const arbitraryResponseData = provider.send({
       transactionContext: {
         ...(deliveryContext || {}),
@@ -77,6 +78,7 @@ OrderDeliveries.helpers({
       );
     }
   },
+
   setStatus(status, info) {
     return OrderDeliveries.updateStatus({
       deliveryId: this._id,
