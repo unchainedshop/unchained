@@ -9,6 +9,9 @@
     "type": "git",
     "url": "git+https://github.com/unchainedshop/unchained.git"
   },
+  "config": {
+    "legacy-bundling": true
+  },
   "contributors": [
     "Vedran Rudelj <vedran@unchained.shop> (https://unchained.shop)",
     "Pascal Kaufmann <pascal@unchained.shop> (https://unchained.shop)",
