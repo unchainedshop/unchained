@@ -6,7 +6,7 @@ import { slugify } from 'meteor/unchained:utils';
 import { Filters } from 'meteor/unchained:core-filters';
 import { findLocalizedText } from 'meteor/unchained:core';
 import { Locale } from 'locale';
-import pathBuilderFactory from './helpers/path-builder-factory';
+import buildPaths from './helpers/build-paths';
 import * as Collections from './collections';
 
 function eqSet(as, bs) {
@@ -341,45 +341,41 @@ Products.helpers({
     return Collections.Assortments.find(selector, options).fetch();
   },
   assortmentPaths({ locale, includeInactive } = {}) {
-    const pathBuilder = pathBuilderFactory(
-      (assortmentId, childAssortmentId) => {
-        const selector = {
-          _id: assortmentId
-        };
-        if (!includeInactive) selector.isActive = true;
-        const assortment = Collections.Assortments.findOne(selector);
-        return (
-          assortment && {
-            assortmentId,
-            childAssortmentId,
-            assortmentSlug: assortment.getLocalizedTexts(locale).slug,
-            parentIds: assortment.isRoot
-              ? []
-              : assortment.parents({ includeInactive }).map(({ _id }) => _id)
-          }
-        );
-      }
-    );
+    const resolveAssortmentLinkFromDatabase = (
+      assortmentId,
+      childAssortmentId
+    ) => {
+      const selector = {
+        _id: assortmentId
+      };
+      if (!includeInactive) selector.isActive = true;
+      const assortment = Collections.Assortments.findOne(selector);
+      return (
+        assortment && {
+          assortmentId,
+          childAssortmentId,
+          assortmentSlug: assortment.getLocalizedTexts(locale).slug,
+          parentIds: assortment.isRoot
+            ? []
+            : assortment.parents({ includeInactive }).map(({ _id }) => _id)
+        }
+      );
+    };
 
-    const assortmentPaths = Collections.AssortmentProducts.find(
-      { productId: this._id },
-      { fields: { _id: true } }
-    )
-      .fetch()
-      .flatMap(({ _id }) => {
-        const assortmentProduct = Collections.AssortmentProducts.findOne({
-          _id
-        });
-        const paths = Promise.await(
-          pathBuilder(assortmentProduct.assortmentId)
-        );
-        return paths.map(links => ({
-          _id,
-          assortmentProduct,
-          links
-        }));
-      });
-    return assortmentPaths;
+    const resolveAssortmentProductsFromDatabase = productId => {
+      return Collections.AssortmentProducts.find(
+        { productId },
+        { fields: { _id: true, assortmentId: true } }
+      ).fetch();
+    };
+
+    return Promise.await(
+      buildPaths({
+        resolveAssortmentLink: resolveAssortmentLinkFromDatabase,
+        resolveAssortmentProducts: resolveAssortmentProductsFromDatabase,
+        productId: this._id
+      })
+    );
   },
   siblings({ assortmentId, limit, offset, sort = {} } = {}) {
     const assortmentIds = assortmentId ? [assortmentId] : this.assortmentIds();
