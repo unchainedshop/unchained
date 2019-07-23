@@ -3,7 +3,6 @@ import { startPlatform } from 'meteor/unchained:platform';
 import { Users } from 'meteor/unchained:core-users';
 import { Factory } from 'meteor/dburles:factory';
 
-import { embedControlpanelInMeteorWebApp } from '@unchainedshop/controlpanel';
 import 'meteor/unchained:core-delivery/plugins/send-mail';
 import 'meteor/unchained:core-warehousing/plugins/google-sheets';
 import 'meteor/unchained:core-discounting/plugins/half-price';
@@ -78,5 +77,4 @@ Meteor.startup(() => {
   configureEmailTemplates();
   initializeDatabase();
   startPlatform({ introspection: true });
-  embedControlpanelInMeteorWebApp(WebApp);
 });
