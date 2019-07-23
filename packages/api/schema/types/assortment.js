@@ -16,7 +16,7 @@ export default [
       productAssignments: [AssortmentProduct!]
       filterAssignments: [AssortmentFilter!]
       linkedAssortments: [AssortmentLink!]
-      paths(forceLocale: String): [AssortmentPath!]!
+      assortmentPaths(forceLocale: String): [AssortmentPath!]!
       children: [Assortment!]
       filters(query: [FilterQueryInput!]): [FilteredFilter!]
       products(

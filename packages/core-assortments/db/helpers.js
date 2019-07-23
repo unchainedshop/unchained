@@ -719,7 +719,7 @@ Collections.Assortments.helpers({
 
     return updateCount;
   },
-  paths({ locale } = {}) {
+  assortmentPaths({ locale } = {}) {
     const resolveAssortmentLinkFromDatabase = (
       assortmentId,
       childAssortmentId
