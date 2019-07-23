@@ -16,6 +16,7 @@ export default [
       productAssignments: [AssortmentProduct!]
       filterAssignments: [AssortmentFilter!]
       linkedAssortments: [AssortmentLink!]
+      paths(forceLocale: String): [AssortmentPath!]!
       children: [Assortment!]
       filters(query: [FilterQueryInput!]): [FilteredFilter!]
       products(
@@ -23,6 +24,25 @@ export default [
         offset: Int = 0
         query: [FilterQueryInput!]
       ): ProductCollection
+    }
+
+    """
+    Directed assortment to product paths (breadcrumbs)
+    """
+    type AssortmentPath {
+      _id: ID!
+      links: [AssortmentPathLink!]!
+    }
+
+    """
+    A connection that represents an uplink from assortment to assortment,
+    assortmentId and assortmentSlug are there for convenience
+    to short-circuit breadcrumb lookups
+    """
+    type AssortmentPathLink {
+      assortmentId: ID!
+      assortmentSlug: String!
+      link: AssortmentLink
     }
 
     type ProductCollection {

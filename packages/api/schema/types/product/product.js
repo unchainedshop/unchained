@@ -119,18 +119,7 @@ export default [
     type ProductAssortmentPath {
       _id: ID!
       assortmentProduct: AssortmentProduct!
-      links: [ProductAssortmentPathLink!]!
-    }
-
-    """
-    A connection that represents an uplink from assortment to assortment,
-    assortmentId and assortmentSlug are there for convenience
-    to short-circuit breadcrumb lookups
-    """
-    type ProductAssortmentPathLink {
-      assortmentId: ID!
-      assortmentSlug: String!
-      link: AssortmentLink
+      links: [AssortmentPathLink!]!
     }
 
     """

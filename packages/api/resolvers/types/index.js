@@ -18,7 +18,6 @@ import ProductVariation from './product-variation';
 import ProductVariationAssignment from './product-variation-assignment';
 import ProductVariationAssignmentVector from './product-variation-assignment-vector';
 import ProductAssortmentPath from './product-assortment-path';
-import ProductAssortmentPathLink from './product-assortment-path-link';
 import Order from './order';
 import OrderDiscount from './order-discount';
 import OrderDiscountable from './order-discountable';
@@ -44,6 +43,7 @@ import Language from './language';
 import Shop from './shop';
 import Country from './country';
 import Assortment from './assortment';
+import AssortmentPathLink from './assortment-path-link';
 import Filter from './filter';
 import FilterOption from './filter-option';
 import Quotation from './quotation';
@@ -89,12 +89,12 @@ export default {
   ProductVariationAssignment,
   ProductVariationAssignmentVector,
   ProductAssortmentPath,
-  ProductAssortmentPathLink,
   ProductBundleItem,
   SimpleProduct,
   ConfigurableProduct,
   BundleProduct,
   Assortment,
+  AssortmentPathLink,
   Filter,
   FilterOption,
   Quotation

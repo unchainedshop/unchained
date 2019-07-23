@@ -341,16 +341,14 @@ Products.helpers({
     const options = { skip: offset, limit };
     return Collections.Assortments.find(selector, options).fetch();
   },
-  assortmentPaths({ locale, includeInactive } = {}) {
+  assortmentPaths({ locale } = {}) {
     const resolveAssortmentLinkFromDatabase = (
       assortmentId,
       childAssortmentId
     ) => {
-      const selector = {
+      const assortment = Collections.Assortments.findOne({
         _id: assortmentId
-      };
-      if (!includeInactive) selector.isActive = true;
-      const assortment = Collections.Assortments.findOne(selector);
+      });
       return (
         assortment && {
           assortmentId,
@@ -358,7 +356,9 @@ Products.helpers({
           assortmentSlug: assortment.getLocalizedTexts(locale).slug,
           parentIds: assortment.isRoot
             ? []
-            : assortment.parents({ includeInactive }).map(({ _id }) => _id)
+            : assortment
+                .parents({ includeInactive: false })
+                .map(({ _id }) => _id)
         }
       );
     };
@@ -718,6 +718,35 @@ Collections.Assortments.helpers({
       });
 
     return updateCount;
+  },
+  paths({ locale } = {}) {
+    const resolveAssortmentLinkFromDatabase = (
+      assortmentId,
+      childAssortmentId
+    ) => {
+      const assortment = Collections.Assortments.findOne({
+        _id: assortmentId
+      });
+      return (
+        assortment && {
+          assortmentId,
+          childAssortmentId,
+          assortmentSlug: assortment.getLocalizedTexts(locale).slug,
+          parentIds: assortment.isRoot
+            ? []
+            : assortment
+                .parents({ includeInactive: false })
+                .map(({ _id }) => _id)
+        }
+      );
+    };
+
+    return Promise.await(
+      buildPaths({
+        resolveAssortmentLink: resolveAssortmentLinkFromDatabase,
+        assortmentId: this._id
+      })
+    );
   }
 });
 

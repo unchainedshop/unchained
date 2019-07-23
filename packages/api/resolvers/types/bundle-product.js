@@ -7,5 +7,8 @@ export default {
   },
   bundleItems(product) {
     return product.bundleItems ? product.bundleItems : [];
+  },
+  assortmentPaths(obj, { forceLocale }, { localeContext }) {
+    return obj.assortmentPaths(forceLocale || localeContext.normalized);
   }
 };
