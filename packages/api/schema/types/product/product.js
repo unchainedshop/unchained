@@ -130,7 +130,7 @@ export default [
     type ProductAssortmentPathLink {
       assortmentId: ID!
       assortmentSlug: String!
-      link: AssortmentLink!
+      link: AssortmentLink
     }
 
     """

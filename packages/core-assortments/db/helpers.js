@@ -4,8 +4,8 @@ import { Products, ProductStatus } from 'meteor/unchained:core-products';
 import { slugify } from 'meteor/unchained:utils';
 import { Filters } from 'meteor/unchained:core-filters';
 import { findLocalizedText } from 'meteor/unchained:core';
-
 import { Locale } from 'locale';
+import pathBuilderFactory from './helpers/path-builder-factory';
 import * as Collections from './collections';
 
 function eqSet(as, bs) {
@@ -338,6 +338,48 @@ Products.helpers({
     }
     const options = { skip: offset, limit };
     return Collections.Assortments.find(selector, options).fetch();
+  },
+  assortmentPaths({ locale, includeInactive } = {}) {
+    const pathBuilder = pathBuilderFactory(
+      (assortmentId, childAssortmentId) => {
+        const selector = {
+          _id: assortmentId
+        };
+        if (!includeInactive) selector.isActive = true;
+        const assortment = Collections.Assortments.findOne(selector);
+        return (
+          assortment && {
+            assortmentId,
+            assortmentSlug: assortment.getLocalizedTexts(locale).slug,
+            parents: assortment.isRoot
+              ? []
+              : assortment.parents({ includeInactive }).map(({ _id }) => _id),
+            link: () =>
+              Collections.AssortmentLinks.findOne({
+                parentAssortmentId: assortmentId,
+                childAssortmentId
+              })
+          }
+        );
+      }
+    );
+
+    const assortmentPaths = Collections.AssortmentProducts.find(
+      { productId: this._id },
+      { fields: { _id: true } }
+    )
+      .fetch()
+      .map(({ _id }) => {
+        const assortmentProduct = Collections.AssortmentProducts.findOne({
+          _id
+        });
+        return {
+          _id,
+          assortmentProduct,
+          links: pathBuilder(assortmentProduct.assortmentId)
+        };
+      });
+    return assortmentPaths;
   },
   siblings({ assortmentId, limit, offset, sort = {} } = {}) {
     const assortmentIds = assortmentId ? [assortmentId] : this.assortmentIds();
