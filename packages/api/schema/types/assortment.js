@@ -34,12 +34,14 @@ export default [
     type AssortmentProduct {
       _id: ID!
       sortKey: Int!
+      assortment: Assortment!
       product: Product!
     }
 
     type AssortmentFilter {
       _id: ID!
       sortKey: Int!
+      assortment: Assortment!
       filter: Filter!
     }
 
