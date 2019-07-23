@@ -1,17 +1,25 @@
-const pathBuilderFactory = fetcher => rootAssortmentId => {
-  const walk = (assortmentId, initialPaths = [], childAssortmentId) => {
-    const assortmentLink = fetcher(assortmentId, childAssortmentId);
+const pathBuilderFactory = fetcher => async rootAssortmentId => {
+  const walk = async (assortmentId, initialPaths = [], childAssortmentId) => {
+    const assortmentLink = await fetcher(assortmentId, childAssortmentId);
     if (!assortmentLink) return initialPaths;
-    return [
-      ...assortmentLink.parents.flatMap(parentAssortmentId => {
+    const subAsssortmentLinks = await Promise.all(
+      assortmentLink.parentIds.map(async parentAssortmentId => {
         return walk(parentAssortmentId, initialPaths, assortmentId);
-      }),
-      ...[assortmentLink],
-      ...initialPaths
-    ];
+      })
+    );
+
+    if (subAsssortmentLinks.length > 0) {
+      return subAsssortmentLinks.map(subAsssortmentLink => {
+        return [
+          ...subAsssortmentLink.flat(),
+          ...[assortmentLink],
+          ...initialPaths
+        ];
+      });
+    }
+    return [[...[assortmentLink], ...initialPaths]];
   };
-  const result = walk(rootAssortmentId, []);
-  return result;
+  return walk(rootAssortmentId, []);
 };
 
 export default pathBuilderFactory;

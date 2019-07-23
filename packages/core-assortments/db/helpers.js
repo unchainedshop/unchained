@@ -1,4 +1,5 @@
 import 'meteor/dburles:collection-helpers';
+import { Promise } from 'meteor/promise';
 import { Countries } from 'meteor/unchained:core-countries';
 import { Products, ProductStatus } from 'meteor/unchained:core-products';
 import { slugify } from 'meteor/unchained:utils';
@@ -350,15 +351,11 @@ Products.helpers({
         return (
           assortment && {
             assortmentId,
+            childAssortmentId,
             assortmentSlug: assortment.getLocalizedTexts(locale).slug,
-            parents: assortment.isRoot
+            parentIds: assortment.isRoot
               ? []
-              : assortment.parents({ includeInactive }).map(({ _id }) => _id),
-            link: () =>
-              Collections.AssortmentLinks.findOne({
-                parentAssortmentId: assortmentId,
-                childAssortmentId
-              })
+              : assortment.parents({ includeInactive }).map(({ _id }) => _id)
           }
         );
       }
@@ -369,15 +366,18 @@ Products.helpers({
       { fields: { _id: true } }
     )
       .fetch()
-      .map(({ _id }) => {
+      .flatMap(({ _id }) => {
         const assortmentProduct = Collections.AssortmentProducts.findOne({
           _id
         });
-        return {
+        const paths = Promise.await(
+          pathBuilder(assortmentProduct.assortmentId)
+        );
+        return paths.map(links => ({
           _id,
           assortmentProduct,
-          links: pathBuilder(assortmentProduct.assortmentId)
-        };
+          links
+        }));
       });
     return assortmentPaths;
   },
