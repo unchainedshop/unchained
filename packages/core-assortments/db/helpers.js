@@ -331,6 +331,7 @@ Products.helpers({
       .fetch()
       .map(({ assortmentId: id }) => id);
   },
+  // DEPRECATED
   assortments({ includeInactive, limit, offset } = {}) {
     const assortmentIds = this.assortmentIds();
     const selector = { _id: { $in: assortmentIds } };

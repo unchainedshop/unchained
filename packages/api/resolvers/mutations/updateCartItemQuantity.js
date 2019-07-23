@@ -6,6 +6,7 @@ import {
   OrderWrongStatusError
 } from '../../errors';
 
+// DEPRECATED
 export default function(root, { itemId, quantity }, { userId }) {
   log(`mutation updateCartItemQuantity ${itemId} ${quantity}`, { userId });
   if (quantity === 0)
