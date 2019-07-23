@@ -6,7 +6,7 @@ import { slugify } from 'meteor/unchained:utils';
 import { Filters } from 'meteor/unchained:core-filters';
 import { findLocalizedText } from 'meteor/unchained:core';
 import { Locale } from 'locale';
-import buildPaths from './helpers/build-paths';
+import { walkUpFromProduct, walkUpFromAssortment } from './helpers/build-paths';
 import * as Collections from './collections';
 
 function eqSet(as, bs) {
@@ -371,9 +371,9 @@ Products.helpers({
     };
 
     return Promise.await(
-      buildPaths({
-        resolveAssortmentLink: resolveAssortmentLinkFromDatabase,
+      walkUpFromProduct({
         resolveAssortmentProducts: resolveAssortmentProductsFromDatabase,
+        resolveAssortmentLink: resolveAssortmentLinkFromDatabase,
         productId: this._id
       })
     );
@@ -742,7 +742,7 @@ Collections.Assortments.helpers({
     };
 
     return Promise.await(
-      buildPaths({
+      walkUpFromAssortment({
         resolveAssortmentLink: resolveAssortmentLinkFromDatabase,
         assortmentId: this._id
       })

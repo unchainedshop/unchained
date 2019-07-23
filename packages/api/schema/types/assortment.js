@@ -30,7 +30,6 @@ export default [
     Directed assortment to product paths (breadcrumbs)
     """
     type AssortmentPath {
-      _id: ID!
       links: [AssortmentPathLink!]!
     }
 

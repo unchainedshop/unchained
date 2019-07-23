@@ -1,6 +1,9 @@
-const walkAssortmentLinks = fetcher => async rootAssortmentId => {
+const walkAssortmentLinks = resolveAssortmentLink => async rootAssortmentId => {
   const walk = async (assortmentId, initialPaths = [], childAssortmentId) => {
-    const assortmentLink = await fetcher(assortmentId, childAssortmentId);
+    const assortmentLink = await resolveAssortmentLink(
+      assortmentId,
+      childAssortmentId
+    );
     if (!assortmentLink) return initialPaths;
 
     const subAsssortmentLinks = await Promise.all(
@@ -20,23 +23,34 @@ const walkAssortmentLinks = fetcher => async rootAssortmentId => {
   return walk(rootAssortmentId, []);
 };
 
-export default async ({
-  resolveAssortmentLink,
+export const walkUpFromProduct = async ({
   resolveAssortmentProducts,
+  resolveAssortmentLink,
   productId
 }) => {
-  // Get all assortment/product assignments
+  const pathResolver = walkAssortmentLinks(resolveAssortmentLink);
   const assortmentProducts = await resolveAssortmentProducts(productId);
   return (await Promise.all(
     assortmentProducts.map(async assortmentProduct => {
       // Walk up the assortments to find all distinct paths
-      const paths = await walkAssortmentLinks(resolveAssortmentLink)(
-        assortmentProduct.assortmentId
-      );
+      const paths = await pathResolver(assortmentProduct.assortmentId);
       return paths.map(links => ({
         ...assortmentProduct,
         links
       }));
     })
   )).flat();
+};
+
+export const walkUpFromAssortment = async ({
+  resolveAssortmentLink,
+  assortmentId
+}) => {
+  const pathResolver = walkAssortmentLinks(resolveAssortmentLink);
+  const paths = await pathResolver(assortmentId);
+  return paths
+    .map(links => ({
+      links: links.slice(0, -1)
+    }))
+    .filter(({ links }) => links.length);
 };

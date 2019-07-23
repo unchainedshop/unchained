@@ -117,7 +117,6 @@ export default [
     Directed assortment to product paths (breadcrumbs)
     """
     type ProductAssortmentPath {
-      _id: ID!
       assortmentProduct: AssortmentProduct!
       links: [AssortmentPathLink!]!
     }
