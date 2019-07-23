@@ -106,6 +106,31 @@ export default [
       media: [ProductMedia!]
       reviews: [ProductReview!]!
       meta: JSON
+      assortments(limit: Int = 10, offset: Int = 0): [Assortment!]!
+        @deprecated(
+          reason: "Please use assortmentPaths to get the parent assortments"
+        )
+      assortmentPaths: [ProductAssortmentPath!]!
+    }
+
+    """
+    Directed assortment to product paths (breadcrumbs)
+    """
+    type ProductAssortmentPath {
+      _id: ID!
+      assortmentProduct: AssortmentProduct!
+      links: [ProductAssortmentPathLink!]!
+    }
+
+    """
+    A connection that represents an uplink from assortment to assortment,
+    assortmentId and assortmentSlug are there for convenience
+    to short-circuit breadcrumb lookups
+    """
+    type ProductAssortmentPathLink {
+      assortmentId: ID!
+      assortmentSlug: String!
+      link: AssortmentLink!
     }
 
     """

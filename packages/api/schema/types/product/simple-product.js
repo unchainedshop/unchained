@@ -29,6 +29,10 @@ export default [
         referenceDate: Date
       ): [Stock!]
       assortments(limit: Int = 10, offset: Int = 0): [Assortment!]!
+        @deprecated(
+          reason: "Please use assortmentPaths to get the parent assortments"
+        )
+      assortmentPaths: [ProductAssortmentPath!]!
       siblings(assortmentId: ID, limit: Int = 10, offset: Int = 0): [Product!]!
       dimensions: Dimensions
       sku: String
