@@ -17,7 +17,7 @@ export default [
         @deprecated(
           reason: "Please use assortmentPaths to get the parent assortments"
         )
-      assortmentPaths: [ProductAssortmentPath!]!
+      assortmentPaths(forceLocale: String): [ProductAssortmentPath!]!
       reviews(limit: Int = 10, offset: Int = 0): [ProductReview!]!
 
       """

@@ -32,7 +32,7 @@ export default [
         @deprecated(
           reason: "Please use assortmentPaths to get the parent assortments"
         )
-      assortmentPaths: [ProductAssortmentPath!]!
+      assortmentPaths(forceLocale: String): [ProductAssortmentPath!]!
       siblings(assortmentId: ID, limit: Int = 10, offset: Int = 0): [Product!]!
       dimensions: Dimensions
       sku: String

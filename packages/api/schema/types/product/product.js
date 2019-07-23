@@ -110,7 +110,7 @@ export default [
         @deprecated(
           reason: "Please use assortmentPaths to get the parent assortments"
         )
-      assortmentPaths: [ProductAssortmentPath!]!
+      assortmentPaths(forceLocale: String): [ProductAssortmentPath!]!
     }
 
     """
