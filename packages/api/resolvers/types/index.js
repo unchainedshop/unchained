@@ -17,6 +17,7 @@ import ProductVariationOption from './product-variation-option';
 import ProductVariation from './product-variation';
 import ProductVariationAssignment from './product-variation-assignment';
 import ProductVariationAssignmentVector from './product-variation-assignment-vector';
+import ProductAssortmentPath from './product-assortment-path';
 import ProductAssortmentPathLink from './product-assortment-path-link';
 import Order from './order';
 import OrderDiscount from './order-discount';
@@ -87,6 +88,7 @@ export default {
   ProductVariationOption,
   ProductVariationAssignment,
   ProductVariationAssignmentVector,
+  ProductAssortmentPath,
   ProductAssortmentPathLink,
   ProductBundleItem,
   SimpleProduct,

@@ -30,12 +30,12 @@ export default async ({
 }) => {
   const assortmentProducts = await resolveAssortmentProducts(productId);
   return (await Promise.all(
-    assortmentProducts.map(async ({ _id, assortmentId }) => {
+    assortmentProducts.map(async assortmentProduct => {
       const paths = await walkAssortmentLinks(resolveAssortmentLink)(
-        assortmentId
+        assortmentProduct.assortmentId
       );
       return paths.map(links => ({
-        _id,
+        ...assortmentProduct,
         links
       }));
     })
