@@ -14,6 +14,10 @@ export default [
       media(vectors: [ProductAssignmentVectorInput!]): [ProductMedia!]
       texts(forceLocale: String): ProductTexts
       assortments(limit: Int = 10, offset: Int = 0): [Assortment!]!
+        @deprecated(
+          reason: "Please use assortmentPaths to get the parent assortments"
+        )
+      assortmentPaths(forceLocale: String): [ProductAssortmentPath!]!
       reviews(limit: Int = 10, offset: Int = 0): [ProductReview!]!
 
       """

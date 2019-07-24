@@ -106,6 +106,19 @@ export default [
       media: [ProductMedia!]
       reviews: [ProductReview!]!
       meta: JSON
+      assortments(limit: Int = 10, offset: Int = 0): [Assortment!]!
+        @deprecated(
+          reason: "Please use assortmentPaths to get the parent assortments"
+        )
+      assortmentPaths(forceLocale: String): [ProductAssortmentPath!]!
+    }
+
+    """
+    Directed assortment to product paths (breadcrumbs)
+    """
+    type ProductAssortmentPath {
+      assortmentProduct: AssortmentProduct!
+      links: [AssortmentPathLink!]!
     }
 
     """

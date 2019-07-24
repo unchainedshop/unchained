@@ -1,11 +1,12 @@
 import 'meteor/dburles:collection-helpers';
+import { Promise } from 'meteor/promise';
 import { Countries } from 'meteor/unchained:core-countries';
 import { Products, ProductStatus } from 'meteor/unchained:core-products';
 import { slugify } from 'meteor/unchained:utils';
 import { Filters } from 'meteor/unchained:core-filters';
 import { findLocalizedText } from 'meteor/unchained:core';
-
 import { Locale } from 'locale';
+import { walkUpFromProduct, walkUpFromAssortment } from './helpers/build-paths';
 import * as Collections from './collections';
 
 function eqSet(as, bs) {
@@ -330,6 +331,7 @@ Products.helpers({
       .fetch()
       .map(({ assortmentId: id }) => id);
   },
+  // DEPRECATED
   assortments({ includeInactive, limit, offset } = {}) {
     const assortmentIds = this.assortmentIds();
     const selector = { _id: { $in: assortmentIds } };
@@ -338,6 +340,43 @@ Products.helpers({
     }
     const options = { skip: offset, limit };
     return Collections.Assortments.find(selector, options).fetch();
+  },
+  assortmentPaths({ locale } = {}) {
+    const resolveAssortmentLinkFromDatabase = (
+      assortmentId,
+      childAssortmentId
+    ) => {
+      const assortment = Collections.Assortments.findOne({
+        _id: assortmentId
+      });
+      return (
+        assortment && {
+          assortmentId,
+          childAssortmentId,
+          assortmentSlug: assortment.getLocalizedTexts(locale).slug,
+          parentIds: assortment.isRoot
+            ? []
+            : assortment
+                .parents({ includeInactive: false })
+                .map(({ _id }) => _id)
+        }
+      );
+    };
+
+    const resolveAssortmentProductsFromDatabase = productId => {
+      return Collections.AssortmentProducts.find(
+        { productId },
+        { fields: { _id: true, assortmentId: true } }
+      ).fetch();
+    };
+
+    return Promise.await(
+      walkUpFromProduct({
+        resolveAssortmentProducts: resolveAssortmentProductsFromDatabase,
+        resolveAssortmentLink: resolveAssortmentLinkFromDatabase,
+        productId: this._id
+      })
+    );
   },
   siblings({ assortmentId, limit, offset, sort = {} } = {}) {
     const assortmentIds = assortmentId ? [assortmentId] : this.assortmentIds();
@@ -679,6 +718,35 @@ Collections.Assortments.helpers({
       });
 
     return updateCount;
+  },
+  assortmentPaths({ locale } = {}) {
+    const resolveAssortmentLinkFromDatabase = (
+      assortmentId,
+      childAssortmentId
+    ) => {
+      const assortment = Collections.Assortments.findOne({
+        _id: assortmentId
+      });
+      return (
+        assortment && {
+          assortmentId,
+          childAssortmentId,
+          assortmentSlug: assortment.getLocalizedTexts(locale).slug,
+          parentIds: assortment.isRoot
+            ? []
+            : assortment
+                .parents({ includeInactive: false })
+                .map(({ _id }) => _id)
+        }
+      );
+    };
+
+    return Promise.await(
+      walkUpFromAssortment({
+        resolveAssortmentLink: resolveAssortmentLinkFromDatabase,
+        assortmentId: this._id
+      })
+    );
   }
 });
 

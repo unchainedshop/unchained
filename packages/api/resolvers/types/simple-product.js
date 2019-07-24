@@ -95,5 +95,8 @@ export default {
       lengthInMillimeters,
       widthInMillimeters
     };
+  },
+  assortmentPaths(obj, { forceLocale }, { localeContext }) {
+    return obj.assortmentPaths(forceLocale || localeContext.normalized);
   }
 };
