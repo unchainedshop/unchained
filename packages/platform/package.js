@@ -1,7 +1,7 @@
 /* globals Package */
 Package.describe({
   name: 'unchained:platform',
-  version: '0.29.0',
+  version: '0.30.0',
   summary: 'Unchained Engine',
   git: 'https://github.com/unchainedshop/unchained',
   documentation: 'README.md'
@@ -17,25 +17,25 @@ Package.onUse(api => {
   api.use('aldeed:collection2@3.0.1');
   api.use('aldeed:schema-index@3.0.0');
   api.use('dburles:factory@1.1.0');
-  api.use('unchained:core@0.29.0');
-  api.use('unchained:core-currencies@0.29.0');
-  api.use('unchained:core-countries@0.29.0');
-  api.use('unchained:core-delivery@0.29.0');
-  api.use('unchained:core-discounting@0.29.0');
-  api.use('unchained:core-documents@0.29.0');
-  api.use('unchained:core-languages@0.29.0');
-  api.use('unchained:core-logger@0.29.0');
-  api.use('unchained:core-messaging@0.29.0');
-  api.use('unchained:core-quotations@0.29.0');
-  api.use('unchained:core-orders@0.29.0');
-  api.use('unchained:core-payment@0.29.0');
-  api.use('unchained:core-pricing@0.29.0');
-  api.use('unchained:core-products@0.29.0');
-  api.use('unchained:core-users@0.29.0');
-  api.use('unchained:core-warehousing@0.29.0');
-  api.use('unchained:core-filters@0.29.0');
-  api.use('unchained:core-assortments@0.29.0');
-  api.use('unchained:api@0.29.0');
+  api.use('unchained:core@0.30.0');
+  api.use('unchained:core-currencies@0.30.0');
+  api.use('unchained:core-countries@0.30.0');
+  api.use('unchained:core-delivery@0.30.0');
+  api.use('unchained:core-discounting@0.30.0');
+  api.use('unchained:core-documents@0.30.0');
+  api.use('unchained:core-languages@0.30.0');
+  api.use('unchained:core-logger@0.30.0');
+  api.use('unchained:core-messaging@0.30.0');
+  api.use('unchained:core-quotations@0.30.0');
+  api.use('unchained:core-orders@0.30.0');
+  api.use('unchained:core-payment@0.30.0');
+  api.use('unchained:core-pricing@0.30.0');
+  api.use('unchained:core-products@0.30.0');
+  api.use('unchained:core-users@0.30.0');
+  api.use('unchained:core-warehousing@0.30.0');
+  api.use('unchained:core-filters@0.30.0');
+  api.use('unchained:core-assortments@0.30.0');
+  api.use('unchained:api@0.30.0');
 
   api.mainModule('platform.js', 'server');
 });
