@@ -14,6 +14,9 @@ export default (role, actions) => {
     { userId: foreignUserId } = {},
     { userId: ownUserId } = {}
   ) => {
+    if (root && root._bypassIsMyselfRule) { // eslint-disable-line
+      return true;
+    }
     if (
       root &&
       root.username &&
