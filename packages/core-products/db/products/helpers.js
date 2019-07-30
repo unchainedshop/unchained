@@ -239,18 +239,18 @@ Products.helpers({
     );
   },
 
-  userStocks({ deliveryProviderType, ...options }, requestContext) {
+  async userStocks({ deliveryProviderType, ...options }, requestContext) {
     const deliveryProviders = DeliveryProviders.findProviders({
       type: deliveryProviderType
     });
-    return deliveryProviders.reduce(
-      (oldResult, deliveryProvider) =>
-        oldResult.concat(
-          oldResult,
+    return deliveryProviders.reduce(async (oldResult, deliveryProvider) => {
+      return [
+        ...(await oldResult),
+        ...(await Promise.all(
           WarehousingProviders.findSupported({
             product: this,
             deliveryProvider
-          }).map(warehousingProvider => {
+          }).map(async warehousingProvider => {
             const context = {
               warehousingProvider,
               deliveryProvider,
@@ -258,15 +258,15 @@ Products.helpers({
               requestContext,
               ...options
             };
-            const stock = warehousingProvider.estimatedStock(context);
+            const stock = await warehousingProvider.estimatedStock(context);
             return {
               ...context,
               ...stock
             };
           })
-        ),
-      []
-    );
+        ))
+      ];
+    }, []);
   },
 
   userDiscounts(/* { quantity, country, userId }, requestContext */) {

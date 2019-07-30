@@ -24,8 +24,9 @@ WarehousingProviders.helpers({
       new WarehousingDirector(this).estimatedDispatch(context)
     );
   },
-  estimatedStock(context) {
-    return Promise.await(new WarehousingDirector(this).estimatedStock(context));
+  async estimatedStock(context) {
+    const director = new WarehousingDirector(this);
+    return director.estimatedStock(context);
   }
 });
 
