@@ -7,7 +7,7 @@ import {
 } from '../../errors';
 
 // DEPRECATED
-export default function(root, { itemId, quantity }, { userId }) {
+export default async function(root, { itemId, quantity }, { userId }) {
   log(`mutation updateCartItemQuantity ${itemId} ${quantity}`, { userId });
   if (quantity === 0)
     throw new OrderQuantityTooLowError({ data: { quantity } });

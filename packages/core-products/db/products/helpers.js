@@ -209,18 +209,18 @@ Products.helpers({
     return Products.find({ _id: { $in: productIds } }).fetch();
   },
 
-  userDispatches({ deliveryProviderType, ...options }, requestContext) {
+  async userDispatches({ deliveryProviderType, ...options }, requestContext) {
     const deliveryProviders = DeliveryProviders.findProviders({
       type: deliveryProviderType
     });
-    return deliveryProviders.reduce(
-      (oldResult, deliveryProvider) =>
-        oldResult.concat(
-          oldResult,
+    return deliveryProviders.reduce(async (oldResult, deliveryProvider) => {
+      return [
+        ...(await oldResult),
+        ...(await Promise.all(
           WarehousingProviders.findSupported({
             product: this,
             deliveryProvider
-          }).map(warehousingProvider => {
+          }).map(async warehousingProvider => {
             const context = {
               warehousingProvider,
               deliveryProvider,
@@ -228,15 +228,17 @@ Products.helpers({
               requestContext,
               ...options
             };
-            const dispatch = warehousingProvider.estimatedDispatch(context);
+            const dispatch = await warehousingProvider.estimatedDispatch(
+              context
+            );
             return {
               ...context,
               ...dispatch
             };
           })
-        ),
-      []
-    );
+        ))
+      ];
+    }, []);
   },
 
   async userStocks({ deliveryProviderType, ...options }, requestContext) {

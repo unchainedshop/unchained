@@ -66,18 +66,18 @@ Users.helpers({
 });
 
 Orders.helpers({
-  init() {
+  async init() {
     // initialize payment with default values
     const supportedPaymentProviders = this.supportedPaymentProviders();
     if (supportedPaymentProviders.length > 0) {
-      this.setPaymentProvider({
+      await this.setPaymentProvider({
         paymentProviderId: supportedPaymentProviders[0]._id
       });
     }
     // initialize delivery with default values
     const supportedDeliveryProviders = this.supportedDeliveryProviders();
     if (supportedDeliveryProviders.length > 0) {
-      this.setDeliveryProvider({
+      await this.setDeliveryProvider({
         deliveryProviderId: supportedDeliveryProviders[0]._id
       });
     }
@@ -128,7 +128,7 @@ Orders.helpers({
       currency: this.currency
     };
   },
-  addDiscount({ code }) {
+  async addDiscount({ code }) {
     return OrderDiscounts.createManualOrderDiscount({
       orderId: this._id,
       code: code.toUpperCase()
@@ -144,13 +144,13 @@ Orders.helpers({
       provider.isActive(this)
     );
   },
-  setDeliveryProvider({ deliveryProviderId }) {
+  async setDeliveryProvider({ deliveryProviderId }) {
     return Orders.setDeliveryProvider({
       orderId: this._id,
       deliveryProviderId
     });
   },
-  setPaymentProvider({ paymentProviderId }) {
+  async setPaymentProvider({ paymentProviderId }) {
     return Orders.setPaymentProvider({
       orderId: this._id,
       paymentProviderId
@@ -163,7 +163,7 @@ Orders.helpers({
       ...props
     }).fetch();
   },
-  addQuotationItem({ quotation, ...quotationItemConfiguration }) {
+  async addQuotationItem({ quotation, ...quotationItemConfiguration }) {
     const { quantity, configuration } = quotation.transformItemConfiguration(
       quotationItemConfiguration
     );
@@ -175,7 +175,7 @@ Orders.helpers({
       quotationId: quotation._id
     });
   },
-  addProductItem({ product, quantity, configuration, ...rest }) {
+  async addProductItem({ product, quantity, configuration, ...rest }) {
     const resolvedProduct = product.resolveOrderableProduct({
       quantity,
       configuration
@@ -210,7 +210,7 @@ Orders.helpers({
   payment() {
     return OrderPayments.findOne({ _id: this.paymentId });
   },
-  updateBillingAddress(rawBillingAddress) {
+  async updateBillingAddress(rawBillingAddress) {
     const billingAddress = {
       ...(rawBillingAddress || {}),
       countryCode: this.countryCode
@@ -224,7 +224,7 @@ Orders.helpers({
       billingAddress
     });
   },
-  updateContact({ contact }) {
+  async updateContact({ contact }) {
     Users.updateLastContact({
       userId: this.userId,
       lastContact: contact
@@ -234,7 +234,7 @@ Orders.helpers({
       contact
     });
   },
-  updateContext(context) {
+  async updateContext(context) {
     return Orders.updateContext({
       orderId: this._id,
       context
@@ -256,7 +256,7 @@ Orders.helpers({
     // 2. Reserve quantity at Warehousing Provider until order is CANCELLED/FULLFILLED
     // ???
   },
-  checkout(
+  async checkout(
     { paymentContext, deliveryContext, orderContext },
     { localeContext }
   ) {
@@ -271,11 +271,11 @@ Orders.helpers({
     const language =
       (localeContext && localeContext.normalized) ||
       (lastUserLanguage && lastUserLanguage.isoCode);
-    return this.updateContext(orderContext)
+    return (await this.updateContext(orderContext))
       .processOrder({ paymentContext, deliveryContext })
       .sendOrderConfirmationToCustomer({ language });
   },
-  confirm(
+  async confirm(
     { orderContext, paymentContext, deliveryContext },
     { localeContext }
   ) {
@@ -284,7 +284,7 @@ Orders.helpers({
     const language =
       (localeContext && localeContext.normalized) ||
       (lastUserLanguage && lastUserLanguage.isoCode);
-    return this.updateContext(orderContext)
+    return (await this.updateContext(orderContext))
       .setStatus(OrderStatus.CONFIRMED, 'confirmed manually')
       .processOrder({ paymentContext, deliveryContext })
       .sendOrderConfirmationToCustomer({ language });
@@ -492,32 +492,38 @@ Orders.helpers({
   }
 });
 
-Orders.setDeliveryProvider = ({ orderId, deliveryProviderId }) => {
+Orders.setDeliveryProvider = async ({ orderId, deliveryProviderId }) => {
   const delivery = OrderDeliveries.findOne({ orderId, deliveryProviderId });
   const deliveryId = delivery
     ? delivery._id
-    : OrderDeliveries.createOrderDelivery({ orderId, deliveryProviderId })._id;
+    : (await OrderDeliveries.createOrderDelivery({
+        orderId,
+        deliveryProviderId
+      }))._id;
   log(`Set Delivery Provider ${deliveryProviderId}`, { orderId });
   Orders.update(
     { _id: orderId },
     { $set: { deliveryId, updated: new Date() } }
   );
-  Orders.updateCalculation({ orderId });
+  await Orders.updateCalculation({ orderId });
   return Orders.findOne({ _id: orderId });
 };
 
-Orders.setPaymentProvider = ({ orderId, paymentProviderId }) => {
+Orders.setPaymentProvider = async ({ orderId, paymentProviderId }) => {
   const payment = OrderPayments.findOne({ orderId, paymentProviderId });
   const paymentId = payment
     ? payment._id
-    : OrderPayments.createOrderPayment({ orderId, paymentProviderId })._id;
+    : (await OrderPayments.createOrderPayment({
+        orderId,
+        paymentProviderId
+      }))._id;
   log(`Set Payment Provider ${paymentProviderId}`, { orderId });
   Orders.update({ _id: orderId }, { $set: { paymentId, updated: new Date() } });
-  Orders.updateCalculation({ orderId });
+  await Orders.updateCalculation({ orderId });
   return Orders.findOne({ _id: orderId });
 };
 
-Orders.createOrder = ({ user, currency, countryCode, ...rest }) => {
+Orders.createOrder = async ({ user, currency, countryCode, ...rest }) => {
   const orderId = Orders.insert({
     ...rest,
     created: new Date(),
@@ -537,7 +543,7 @@ Orders.createOrder = ({ user, currency, countryCode, ...rest }) => {
   return order.init();
 };
 
-Orders.updateBillingAddress = ({ billingAddress, orderId }) => {
+Orders.updateBillingAddress = async ({ billingAddress, orderId }) => {
   log('Update Invoicing Address', { orderId });
   Orders.update(
     { _id: orderId },
@@ -548,11 +554,11 @@ Orders.updateBillingAddress = ({ billingAddress, orderId }) => {
       }
     }
   );
-  Orders.updateCalculation({ orderId });
+  await Orders.updateCalculation({ orderId });
   return Orders.findOne({ _id: orderId });
 };
 
-Orders.updateContact = ({ contact, orderId }) => {
+Orders.updateContact = async ({ contact, orderId }) => {
   log('Update Contact Information', { orderId });
   Orders.update(
     { _id: orderId },
@@ -563,11 +569,11 @@ Orders.updateContact = ({ contact, orderId }) => {
       }
     }
   );
-  Orders.updateCalculation({ orderId });
+  await Orders.updateCalculation({ orderId });
   return Orders.findOne({ _id: orderId });
 };
 
-Orders.updateContext = ({ context, orderId }) => {
+Orders.updateContext = async ({ context, orderId }) => {
   log('Update Arbitrary Context', { orderId });
   Orders.update(
     { _id: orderId },
@@ -578,7 +584,7 @@ Orders.updateContext = ({ context, orderId }) => {
       }
     }
   );
-  Orders.updateCalculation({ orderId });
+  await Orders.updateCalculation({ orderId });
   return Orders.findOne({ _id: orderId });
 };
 
@@ -658,24 +664,32 @@ Orders.updateStatus = ({ status, orderId, info = '' }) => {
   return Orders.findOne({ _id: orderId });
 };
 
-Orders.updateCalculation = ({ orderId, recalculateEverything }) => {
+Orders.updateCalculation = async ({ orderId, recalculateEverything }) => {
   const order = Orders.findOne({ _id: orderId });
   const items = order.items();
   log('Update Calculation', { orderId });
   if (recalculateEverything) {
     log('Whole Order Recalculation!', { orderId });
-    items.forEach(({ _id }) =>
-      OrderPositions.updateCalculation({ orderId, positionId: _id })
+    await Promise.all(
+      items.map(({ _id }) =>
+        OrderPositions.updateCalculation({ orderId, positionId: _id })
+      )
     );
     const delivery = order.delivery();
     const deliveryId = delivery && delivery._id;
-    if (deliveryId) OrderDeliveries.updateCalculation({ orderId, deliveryId });
+    if (deliveryId) {
+      await OrderDeliveries.updateCalculation({ orderId, deliveryId });
+    }
     const payment = order.payment();
     const paymentId = payment && payment._id;
-    if (paymentId) OrderPayments.updateCalculation({ orderId, paymentId });
+    if (paymentId) {
+      await OrderPayments.updateCalculation({ orderId, paymentId });
+    }
   }
   // always update the scheduling
-  items.forEach(position => OrderPositions.updateScheduling({ position }));
+  await Promise.all(
+    items.map(position => OrderPositions.updateScheduling({ position }))
+  );
   const pricing = new OrderPricingDirector({ item: order });
   const calculation = pricing.calculate();
   return Orders.update(

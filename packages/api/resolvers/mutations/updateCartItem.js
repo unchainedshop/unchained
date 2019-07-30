@@ -6,7 +6,7 @@ import {
   OrderWrongStatusError
 } from '../../errors';
 
-export default function(
+export default async function(
   root,
   { itemId, quantity = null, configuration = null },
   { userId }
@@ -27,7 +27,7 @@ export default function(
     if (quantity === 0)
       throw new OrderQuantityTooLowError({ data: { quantity } });
     // FIXME: positionId is actually
-    OrderPositions.updatePosition(
+    await OrderPositions.updatePosition(
       {
         orderId: item.orderId,
         positionId: itemId
@@ -37,7 +37,7 @@ export default function(
   }
 
   if (configuration !== null) {
-    OrderPositions.updatePosition(
+    await OrderPositions.updatePosition(
       {
         orderId: item.orderId,
         positionId: itemId

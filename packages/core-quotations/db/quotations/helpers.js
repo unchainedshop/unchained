@@ -55,7 +55,7 @@ Quotations.helpers({
   normalizedStatus() {
     return objectInvert(QuotationStatus)[this.status || null];
   },
-  updateContext(context) {
+  async updateContext(context) {
     return Quotations.updateContext({
       quotationId: this._id,
       context

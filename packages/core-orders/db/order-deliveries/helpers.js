@@ -31,12 +31,12 @@ OrderDeliveries.helpers({
   normalizedStatus() {
     return objectInvert(OrderDeliveryStatus)[this.status || null];
   },
-  init() {
+  async init() {
     const provider = this.provider();
     const context = provider.defaultContext();
     return this.updateContext(context);
   },
-  updateContext(context) {
+  async updateContext(context) {
     return OrderDeliveries.updateDelivery({
       deliveryId: this._id,
       orderId: this.orderId,
@@ -96,7 +96,7 @@ OrderDeliveries.helpers({
   }
 });
 
-OrderDeliveries.createOrderDelivery = ({
+OrderDeliveries.createOrderDelivery = async ({
   orderId,
   deliveryProviderId,
   ...rest
@@ -113,7 +113,7 @@ OrderDeliveries.createOrderDelivery = ({
   return orderDelivery.init();
 };
 
-OrderDeliveries.updateCalculation = ({ orderId, deliveryId }) => {
+OrderDeliveries.updateCalculation = async ({ orderId, deliveryId }) => {
   const delivery = OrderDeliveries.findOne({ _id: deliveryId });
   log(`OrderDelivery ${deliveryId} -> Update Calculation`, { orderId });
   const pricing = new DeliveryPricingDirector({ item: delivery });
@@ -126,7 +126,7 @@ OrderDeliveries.updateCalculation = ({ orderId, deliveryId }) => {
   );
 };
 
-OrderDeliveries.updateDelivery = ({ deliveryId, orderId, context }) => {
+OrderDeliveries.updateDelivery = async ({ deliveryId, orderId, context }) => {
   log(`OrderDelivery ${deliveryId} -> Update Context`, { orderId });
   OrderDeliveries.update(
     { _id: deliveryId },
@@ -134,9 +134,9 @@ OrderDeliveries.updateDelivery = ({ deliveryId, orderId, context }) => {
       $set: { context }
     }
   );
-  OrderDiscounts.updateDiscounts({ orderId });
-  OrderDeliveries.updateCalculation({ orderId, deliveryId });
-  Orders.updateCalculation({ orderId });
+  await OrderDiscounts.updateDiscounts({ orderId });
+  await OrderDeliveries.updateCalculation({ orderId, deliveryId });
+  await Orders.updateCalculation({ orderId });
   return OrderDeliveries.findOne({ _id: deliveryId });
 };
 

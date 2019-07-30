@@ -31,12 +31,12 @@ OrderPayments.helpers({
   normalizedStatus() {
     return objectInvert(OrderPaymentStatus)[this.status || null];
   },
-  init() {
+  async init() {
     const provider = this.provider();
     const context = provider.defaultContext();
     return this.updateContext(context);
   },
-  updateContext(context) {
+  async updateContext(context) {
     return OrderPayments.updatePayment({
       paymentId: this._id,
       orderId: this.orderId,
@@ -97,7 +97,7 @@ OrderPayments.helpers({
   }
 });
 
-OrderPayments.createOrderPayment = ({
+OrderPayments.createOrderPayment = async ({
   orderId,
   paymentProviderId,
   ...rest
@@ -114,7 +114,7 @@ OrderPayments.createOrderPayment = ({
   return orderPayment.init();
 };
 
-OrderPayments.updateCalculation = ({ orderId, paymentId }) => {
+OrderPayments.updateCalculation = async ({ orderId, paymentId }) => {
   const payment = OrderPayments.findOne({ _id: paymentId });
   log(`OrderPayment ${paymentId} -> Update Calculation`, { orderId });
   const pricing = new PaymentPricingDirector({ item: payment });
@@ -125,7 +125,7 @@ OrderPayments.updateCalculation = ({ orderId, paymentId }) => {
   );
 };
 
-OrderPayments.updatePayment = ({ orderId, paymentId, context }) => {
+OrderPayments.updatePayment = async ({ orderId, paymentId, context }) => {
   log(`OrderPayment ${paymentId} -> Update Context`, { orderId });
   OrderPayments.update(
     { _id: paymentId },
@@ -133,9 +133,9 @@ OrderPayments.updatePayment = ({ orderId, paymentId, context }) => {
       $set: { context, updated: new Date() }
     }
   );
-  OrderDiscounts.updateDiscounts({ orderId });
-  OrderPayments.updateCalculation({ orderId, paymentId });
-  Orders.updateCalculation({ orderId });
+  await OrderDiscounts.updateDiscounts({ orderId });
+  await OrderPayments.updateCalculation({ orderId, paymentId });
+  await Orders.updateCalculation({ orderId });
   return OrderPayments.findOne({ _id: paymentId });
 };
 

@@ -3,7 +3,7 @@ import { Products } from 'meteor/unchained:core-products';
 import { ProductNotFoundError } from '../../errors';
 import getCart from '../../getCart';
 
-export default function(
+export default async function(
   root,
   { orderId, items },
   { user, userId, countryContext }
@@ -19,13 +19,19 @@ export default function(
   });
 
   const cart = getCart({ orderId, user, countryContext });
-  return itemsWithProducts.map(({ product, quantity, configuration }) => {
-    log(
-      `mutation addCartProduct ${product._id} ${quantity} ${
-        configuration ? JSON.stringify(configuration) : ''
-      }`,
-      { userId, orderId }
-    );
-    return cart.addProductItem({ product, quantity, configuration });
-  });
+  return itemsWithProducts.reduce(
+    async (accumulator, { product, quantity, configuration }) => {
+      log(
+        `mutation addCartProduct ${product._id} ${quantity} ${
+          configuration ? JSON.stringify(configuration) : ''
+        }`,
+        { userId, orderId }
+      );
+      return [
+        ...(await accumulator),
+        ...cart.addProductItem({ product, quantity, configuration })
+      ];
+    },
+    null
+  );
 }

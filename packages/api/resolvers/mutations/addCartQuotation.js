@@ -6,7 +6,7 @@ import {
 } from '../../errors';
 import getCart from '../../getCart';
 
-export default function(
+export default async function(
   root,
   { orderId, quotationId, quantity, configuration },
   { user, userId, countryContext }

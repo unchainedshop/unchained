@@ -19,10 +19,9 @@ WarehousingProviders.helpers({
   isActive(context) {
     return new WarehousingDirector(this).isActive(context);
   },
-  estimatedDispatch(context) {
-    return Promise.await(
-      new WarehousingDirector(this).estimatedDispatch(context)
-    );
+  async estimatedDispatch(context) {
+    const director = new WarehousingDirector(this);
+    return director.estimatedDispatch(context);
   },
   async estimatedStock(context) {
     const director = new WarehousingDirector(this);

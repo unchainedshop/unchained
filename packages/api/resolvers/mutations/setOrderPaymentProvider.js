@@ -1,7 +1,11 @@
 import { log } from 'meteor/unchained:core-logger';
 import { Orders } from 'meteor/unchained:core-orders';
 
-export default function(root, { orderId, paymentProviderId }, { userId }) {
+export default async function(
+  root,
+  { orderId, paymentProviderId },
+  { userId }
+) {
   log(`mutation setOrderPaymentProvider ${paymentProviderId}`, {
     orderId,
     userId

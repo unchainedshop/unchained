@@ -44,7 +44,11 @@ OrderDiscounts.helpers({
   }
 });
 
-OrderDiscounts.createManualOrderDiscount = ({ orderId, code, ...rest }) => {
+OrderDiscounts.createManualOrderDiscount = async ({
+  orderId,
+  code,
+  ...rest
+}) => {
   // Try to grab single-usage-discount
   if (!code) throw new Error(ErrorCodes.CODE_NOT_VALID);
   const fetchedDiscount = OrderDiscounts.grabDiscount({
@@ -56,7 +60,7 @@ OrderDiscounts.createManualOrderDiscount = ({ orderId, code, ...rest }) => {
   const director = new DiscountDirector({ order });
   const discountKey = director.resolveDiscountKeyFromStaticCode({ code });
   if (discountKey) {
-    const newDiscount = OrderDiscounts.createDiscount({
+    const newDiscount = await OrderDiscounts.createDiscount({
       ...rest,
       code,
       orderId,
@@ -67,7 +71,7 @@ OrderDiscounts.createManualOrderDiscount = ({ orderId, code, ...rest }) => {
   throw new Error(ErrorCodes.CODE_NOT_VALID);
 };
 
-OrderDiscounts.createDiscount = ({
+OrderDiscounts.createDiscount = async ({
   orderId,
   discountKey,
   trigger,
@@ -86,7 +90,7 @@ OrderDiscounts.createDiscount = ({
     created: new Date()
   });
   if (normalizedTrigger === OrderDiscountTrigger.USER) {
-    Orders.updateCalculation({
+    await Orders.updateCalculation({
       orderId,
       recalculateEverything: true
     });
@@ -96,14 +100,14 @@ OrderDiscounts.createDiscount = ({
   });
 };
 
-OrderDiscounts.removeDiscount = ({ discountId }) => {
+OrderDiscounts.removeDiscount = async ({ discountId }) => {
   const discount = OrderDiscounts.findOne({ _id: discountId });
   log(`OrderDiscounts -> Remove Discount ${discountId}`, {
     orderId: discount.orderId
   });
   OrderDiscounts.remove({ _id: discountId });
   if (discount.trigger === OrderDiscountTrigger.USER) {
-    Orders.updateCalculation({
+    await Orders.updateCalculation({
       orderId: discount.orderId,
       recalculateEverything: true
     });
@@ -131,31 +135,35 @@ OrderDiscounts.grabDiscount = ({ code, orderId }) => {
   return OrderDiscounts.findOne({ _id: discount && discount._id });
 };
 
-OrderDiscounts.updateDiscounts = ({ orderId }) => {
+OrderDiscounts.updateDiscounts = async ({ orderId }) => {
   const order = Orders.findOne({ _id: orderId });
   const director = new DiscountDirector({ order });
   log('Update Discounts', { orderId });
 
   // 1. go through existing order-discounts and check if discount still valid,
   // those who are not valid anymore should get removed
-  order
-    .discounts()
-    .filter(discount => !discount.isValid())
-    .forEach(({ _id }) => OrderDiscounts.removeDiscount({ discountId: _id }));
+  await Promise.all(
+    order
+      .discounts()
+      .filter(discount => !discount.isValid())
+      .map(({ _id }) => OrderDiscounts.removeDiscount({ discountId: _id }))
+  );
 
   // 2. run auto-system discount
   const currentDiscountKeys = order
     .discounts()
     .map(({ discountKey }) => discountKey);
 
-  director
-    .findSystemDiscounts()
-    .filter(key => currentDiscountKeys.indexOf(key) === -1)
-    .forEach(discountKey =>
-      OrderDiscounts.createDiscount({
-        orderId,
-        discountKey,
-        trigger: OrderDiscountTrigger.SYSTEM
-      })
-    );
+  await Promise.all(
+    director
+      .findSystemDiscounts()
+      .filter(key => currentDiscountKeys.indexOf(key) === -1)
+      .map(discountKey =>
+        OrderDiscounts.createDiscount({
+          orderId,
+          discountKey,
+          trigger: OrderDiscountTrigger.SYSTEM
+        })
+      )
+  );
 };

@@ -79,7 +79,7 @@ const addVariationsToProduct = productId => {
   });
 };
 
-export default () => {
+export default async () => {
   try {
     const users = Array.from(Array(10)).map(() => {
       logger.log('unchained:platform -> fixtures: user');
@@ -241,40 +241,48 @@ export default () => {
       parentAssortmentId: assortments[0]
     });
 
-    const orders = Array.from(Array(5)).map(() => {
-      // Add an order
-      logger.log('unchained:platform -> fixtures: order');
-      const order = Factory.create('order', {
-        userId: faker.random.arrayElement(users)
-      });
-
-      logger.log('unchained:platform -> fixtures: -> orderPayment');
-      const orderPayment = Factory.create('orderPayment', {
-        orderId: order._id,
-        paymentProviderId: faker.random.arrayElement(paymentProviders)
-      });
-      logger.log('unchained:platform -> fixtures: -> orderDelivery');
-      const orderDelivery = Factory.create('orderDelivery', {
-        orderId: order._id,
-        deliveryProviderId: faker.random.arrayElement(deliveryProviders)
-      });
-
-      order.setPaymentProvider({ _id: orderPayment.paymentProviderId });
-      order.setDeliveryProvider({ _id: orderDelivery.deliveryProviderId });
-
-      // Add some random images to the order
-      Array.from(Array(faker.random.number({ min: 1, max: 3 }))).forEach(() => {
-        logger.log('unchained:platform -> fixtures: -> orderPosition');
-        Factory.create('orderPosition', {
-          orderId: order._id,
-          productId: faker.random.arrayElement([
-            ...simpleProducts,
-            ...configurableProducts
-          ])
+    const orders = await Promise.all(
+      Array.from(Array(5)).map(async () => {
+        // Add an order
+        logger.log('unchained:platform -> fixtures: order');
+        const order = Factory.create('order', {
+          userId: faker.random.arrayElement(users)
         });
-      });
-      return order._id;
-    });
+
+        logger.log('unchained:platform -> fixtures: -> orderPayment');
+        const orderPayment = Factory.create('orderPayment', {
+          orderId: order._id,
+          paymentProviderId: faker.random.arrayElement(paymentProviders)
+        });
+        logger.log('unchained:platform -> fixtures: -> orderDelivery');
+        const orderDelivery = Factory.create('orderDelivery', {
+          orderId: order._id,
+          deliveryProviderId: faker.random.arrayElement(deliveryProviders)
+        });
+
+        await order.setPaymentProvider({
+          _id: orderPayment.paymentProviderId
+        });
+        await order.setDeliveryProvider({
+          _id: orderDelivery.deliveryProviderId
+        });
+
+        // Add some random images to the order
+        Array.from(Array(faker.random.number({ min: 1, max: 3 }))).forEach(
+          () => {
+            logger.log('unchained:platform -> fixtures: -> orderPosition');
+            Factory.create('orderPosition', {
+              orderId: order._id,
+              productId: faker.random.arrayElement([
+                ...simpleProducts,
+                ...configurableProducts
+              ])
+            });
+          }
+        );
+        return order._id;
+      })
+    );
 
     return {
       users,

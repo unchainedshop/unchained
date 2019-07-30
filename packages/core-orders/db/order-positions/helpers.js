@@ -97,7 +97,7 @@ OrderPositions.helpers({
   }
 });
 
-OrderPositions.upsertPosition = ({
+OrderPositions.upsertPosition = async ({
   orderId,
   quantity,
   configuration,
@@ -129,7 +129,7 @@ OrderPositions.upsertPosition = ({
   });
 };
 
-OrderPositions.createPosition = ({
+OrderPositions.createPosition = async ({
   orderId,
   productId,
   originalProductId,
@@ -154,15 +154,15 @@ OrderPositions.createPosition = ({
     configuration,
     created: new Date()
   });
-  OrderDiscounts.updateDiscounts({ orderId });
-  OrderPositions.updateCalculation({ orderId, positionId });
-  Orders.updateCalculation({ orderId });
+  await OrderDiscounts.updateDiscounts({ orderId });
+  await OrderPositions.updateCalculation({ orderId, positionId });
+  await Orders.updateCalculation({ orderId });
   return OrderPositions.findOne({
     _id: positionId
   });
 };
 
-OrderPositions.updatePosition = (
+OrderPositions.updatePosition = async (
   { orderId, positionId },
   { quantity = null, configuration = null }
 ) => {
@@ -222,32 +222,32 @@ OrderPositions.updatePosition = (
       }
     );
   }
-  OrderDiscounts.updateDiscounts({ orderId });
-  OrderPositions.updateCalculation({ orderId, positionId });
-  Orders.updateCalculation({ orderId });
+  await OrderDiscounts.updateDiscounts({ orderId });
+  await OrderPositions.updateCalculation({ orderId, positionId });
+  await Orders.updateCalculation({ orderId });
   return OrderPositions.findOne({
     _id: positionId
   });
 };
 
-OrderPositions.removePosition = ({ positionId }) => {
+OrderPositions.removePosition = async ({ positionId }) => {
   const position = OrderPositions.findOne({ _id: positionId });
   log(`Remove Position ${positionId}`, { orderId: position.orderId });
   OrderPositions.remove({ _id: positionId });
-  OrderDiscounts.updateDiscounts({ orderId: position.orderId });
-  Orders.updateCalculation({ orderId: position.orderId });
+  await OrderDiscounts.updateDiscounts({ orderId: position.orderId });
+  await Orders.updateCalculation({ orderId: position.orderId });
   return position;
 };
 
-OrderPositions.removePositions = ({ orderId }) => {
+OrderPositions.removePositions = async ({ orderId }) => {
   log('Remove Positions', { orderId });
   const count = OrderPositions.remove({ orderId });
-  OrderDiscounts.updateDiscounts({ orderId });
-  Orders.updateCalculation({ orderId });
+  await OrderDiscounts.updateDiscounts({ orderId });
+  await Orders.updateCalculation({ orderId });
   return count;
 };
 
-OrderPositions.updateCalculation = ({ positionId }) => {
+OrderPositions.updateCalculation = async ({ positionId }) => {
   const position = OrderPositions.findOne({ _id: positionId });
   log(`OrderPosition ${positionId} -> Update Calculation`, {
     orderId: position.orderId
@@ -262,7 +262,7 @@ OrderPositions.updateCalculation = ({ positionId }) => {
   );
 };
 
-OrderPositions.updateScheduling = ({ positionId, position }) => {
+OrderPositions.updateScheduling = async ({ positionId, position }) => {
   const item = position || OrderPositions.findOne({ _id: positionId });
   log(`OrderPosition ${item._id} -> Update Scheduling`, {
     orderId: position.orderId
@@ -274,28 +274,30 @@ OrderPositions.updateScheduling = ({ positionId, position }) => {
 
   const deliveryProvider = delivery && delivery.provider();
   const { countryCode, userId } = order;
-  const scheduling = WarehousingProviders.findSupported({
-    product,
-    deliveryProvider
-  }).map(warehousingProvider => {
-    const context = {
-      warehousingProvider,
-      deliveryProvider,
+  const scheduling = await Promise.all(
+    WarehousingProviders.findSupported({
       product,
-      item,
-      delivery,
-      order,
-      userId,
-      country: countryCode,
-      referenceDate: order.ordered,
-      quantity: item.quantity
-    };
-    const dispatch = warehousingProvider.estimatedDispatch(context);
-    return {
-      warehousingProviderId: warehousingProvider._id,
-      ...dispatch
-    };
-  });
+      deliveryProvider
+    }).map(async warehousingProvider => {
+      const context = {
+        warehousingProvider,
+        deliveryProvider,
+        product,
+        item,
+        delivery,
+        order,
+        userId,
+        country: countryCode,
+        referenceDate: order.ordered,
+        quantity: item.quantity
+      };
+      const dispatch = await warehousingProvider.estimatedDispatch(context);
+      return {
+        warehousingProviderId: warehousingProvider._id,
+        ...dispatch
+      };
+    })
+  );
   return OrderPositions.update(
     { _id: item._id },
     {
