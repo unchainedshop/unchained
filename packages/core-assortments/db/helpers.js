@@ -341,7 +341,7 @@ Products.helpers({
     const options = { skip: offset, limit };
     return Collections.Assortments.find(selector, options).fetch();
   },
-  assortmentPaths({ locale } = {}) {
+  async assortmentPaths({ locale } = {}) {
     const resolveAssortmentLinkFromDatabase = (
       assortmentId,
       childAssortmentId
@@ -370,13 +370,11 @@ Products.helpers({
       ).fetch();
     };
 
-    return Promise.await(
-      walkUpFromProduct({
-        resolveAssortmentProducts: resolveAssortmentProductsFromDatabase,
-        resolveAssortmentLink: resolveAssortmentLinkFromDatabase,
-        productId: this._id
-      })
-    );
+    return walkUpFromProduct({
+      resolveAssortmentProducts: resolveAssortmentProductsFromDatabase,
+      resolveAssortmentLink: resolveAssortmentLinkFromDatabase,
+      productId: this._id
+    });
   },
   siblings({ assortmentId, limit, offset, sort = {} } = {}) {
     const assortmentIds = assortmentId ? [assortmentId] : this.assortmentIds();
@@ -719,7 +717,7 @@ Collections.Assortments.helpers({
 
     return updateCount;
   },
-  assortmentPaths({ locale } = {}) {
+  async assortmentPaths({ locale } = {}) {
     const resolveAssortmentLinkFromDatabase = (
       assortmentId,
       childAssortmentId
@@ -741,12 +739,10 @@ Collections.Assortments.helpers({
       );
     };
 
-    return Promise.await(
-      walkUpFromAssortment({
-        resolveAssortmentLink: resolveAssortmentLinkFromDatabase,
-        assortmentId: this._id
-      })
-    );
+    return walkUpFromAssortment({
+      resolveAssortmentLink: resolveAssortmentLinkFromDatabase,
+      assortmentId: this._id
+    });
   }
 });
 

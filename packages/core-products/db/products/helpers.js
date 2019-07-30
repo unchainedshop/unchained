@@ -151,7 +151,7 @@ Products.helpers({
     const productMediaObject = ProductMedia.findOne({ _id: productMediaId });
     return productMediaObject;
   },
-  addMedia({ rawFile, href, name, userId, meta, ...options }) {
+  async addMedia({ rawFile, href, name, userId, meta, ...options }) {
     const fileLoader = rawFile
       ? Media.insertWithRemoteFile({
           file: rawFile,
@@ -163,7 +163,7 @@ Products.helpers({
           userId,
           ...options
         });
-    const file = Promise.await(fileLoader);
+    const file = await fileLoader;
     return this.addMediaLink({ mediaId: file._id, meta });
   },
   getLocalizedTexts(locale) {
