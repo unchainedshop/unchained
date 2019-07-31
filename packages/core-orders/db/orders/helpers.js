@@ -670,23 +670,25 @@ Orders.updateCalculation = async ({ orderId, recalculateEverything }) => {
   log('Update Calculation', { orderId });
   if (recalculateEverything) {
     log('Whole Order Recalculation!', { orderId });
+    const delivery = order.delivery();
+    const deliveryId = delivery && delivery._id;
+    const payment = order.payment();
+    const paymentId = payment && payment._id;
+
+    // Parallel calculation of order position prices
     await Promise.all(
-      items.map(({ _id }) =>
+      items.map(async ({ _id }) =>
         OrderPositions.updateCalculation({ orderId, positionId: _id })
       )
     );
-    const delivery = order.delivery();
-    const deliveryId = delivery && delivery._id;
-    if (deliveryId) {
-      await OrderDeliveries.updateCalculation({ orderId, deliveryId });
-    }
-    const payment = order.payment();
-    const paymentId = payment && payment._id;
-    if (paymentId) {
-      await OrderPayments.updateCalculation({ orderId, paymentId });
-    }
+
+    // Parallel calculation of delivery and payment fees
+    await Promise.all([
+      deliveryId && OrderDeliveries.updateCalculation({ orderId, deliveryId }),
+      paymentId && OrderPayments.updateCalculation({ orderId, paymentId })
+    ]);
   }
-  // always update the scheduling
+  // Prallell rescheduling of items
   await Promise.all(
     items.map(position => OrderPositions.updateScheduling({ position }))
   );

@@ -29,9 +29,9 @@ export default async function(
       );
       return [
         ...(await accumulator),
-        ...cart.addProductItem({ product, quantity, configuration })
+        await cart.addProductItem({ product, quantity, configuration })
       ];
     },
-    null
+    []
   );
 }

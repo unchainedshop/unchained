@@ -142,28 +142,37 @@ OrderDiscounts.updateDiscounts = async ({ orderId }) => {
 
   // 1. go through existing order-discounts and check if discount still valid,
   // those who are not valid anymore should get removed
-  await Promise.all(
-    order
-      .discounts()
-      .filter(discount => !discount.isValid())
-      .map(({ _id }) => OrderDiscounts.removeDiscount({ discountId: _id }))
-  );
+  await order
+    .discounts()
+    .filter(discount => !discount.isValid())
+    .reduce(
+      async (accumulator, { _id }) => [
+        ...(await accumulator),
+        await OrderDiscounts.removeDiscount({ discountId: _id })
+      ],
+      []
+    );
 
   // 2. run auto-system discount
   const currentDiscountKeys = order
     .discounts()
     .map(({ discountKey }) => discountKey);
 
-  await Promise.all(
-    director
-      .findSystemDiscounts()
-      .filter(key => currentDiscountKeys.indexOf(key) === -1)
-      .map(discountKey =>
-        OrderDiscounts.createDiscount({
+  const isDiscountNotAlreadyAdded = key =>
+    currentDiscountKeys.indexOf(key) === -1;
+
+  await director
+    .findSystemDiscounts()
+    .filter(isDiscountNotAlreadyAdded)
+    .reduce(
+      async (accumulator, discountKey) => [
+        ...(await accumulator),
+        await OrderDiscounts.createDiscount({
           orderId,
           discountKey,
           trigger: OrderDiscountTrigger.SYSTEM
         })
-      )
-  );
+      ],
+      []
+    );
 };
