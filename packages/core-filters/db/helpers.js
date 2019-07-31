@@ -50,7 +50,7 @@ Filters.updateFilter = ({ filterId, ...filter }) => {
   };
   Filters.update({ _id: filterId }, modifier);
   return Filters.findOne({ _id: filterId });
-}
+};
 
 Filters.getLocalizedTexts = (filterId, filterOptionValue, locale) =>
   findLocalizedText(

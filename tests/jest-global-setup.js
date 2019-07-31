@@ -22,6 +22,7 @@ const startAndWaitForMeteor = async () => {
           cwd: `${process.cwd()}/examples/minimal`,
           env: {
             ...process.env,
+            METEOR_PACKAGE_DIRS: '../../packages',
             UNCHAINED_DISABLE_EMAIL_INTERCEPTION: 1
           }
         }

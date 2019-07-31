@@ -55,9 +55,7 @@ class MessagingDirector {
         const activated = AdapterClass.isActivatedFor(this.context);
         if (!activated) {
           log(
-            `${this.constructor.name} -> ${AdapterClass.key} (${
-              AdapterClass.version
-            }) skipped`,
+            `${this.constructor.name} -> ${AdapterClass.key} (${AdapterClass.version}) skipped`,
             {
               level: 'warn'
             }
@@ -71,9 +69,7 @@ class MessagingDirector {
           resolver: this.constructor.resolvers.get(this.context.type)
         });
         log(
-          `${this.constructor.name} -> via ${
-            AdapterClass.key
-          } -> Execute '${name}'`
+          `${this.constructor.name} -> via ${AdapterClass.key} -> Execute '${name}'`
         );
         return concreteAdapter[name](options);
       }, []);
@@ -91,9 +87,7 @@ class MessagingDirector {
 
   static registerAdapter(adapter) {
     log(
-      `${this.name} -> Registered ${adapter.key} ${adapter.version} (${
-        adapter.label
-      })`
+      `${this.name} -> Registered ${adapter.key} ${adapter.version} (${adapter.label})`
     );
     this.adapters.set(adapter.key, adapter);
   }

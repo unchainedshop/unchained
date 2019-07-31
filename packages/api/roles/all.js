@@ -2,7 +2,13 @@ import { Orders } from 'meteor/unchained:core-orders';
 import { Quotations } from 'meteor/unchained:core-quotations';
 
 export default (role, actions) => {
-  // private
+  const isInLoginMutationResponse = root => {
+      if (root && root._inLoginMethodResponse) { // eslint-disable-line
+      return true;
+    }
+    return false;
+  };
+
   role.allow(actions.viewUser, () => false);
   role.allow(actions.viewUsers, () => false);
   role.allow(actions.viewPaymentProviders, () => false);
@@ -37,11 +43,11 @@ export default (role, actions) => {
   role.allow(actions.updateOrderDelivery, () => false);
   role.allow(actions.markOrderConfirmed, () => false);
   role.allow(actions.markOrderPaid, () => false);
-  role.allow(actions.viewLogs, () => false);
-  role.allow(actions.viewUserRoles, () => false);
-  role.allow(actions.viewUserOrders, () => false);
-  role.allow(actions.viewUserQuotations, () => false);
-  role.allow(actions.viewUserPrivateInfos, () => false);
+  role.allow(actions.viewLogs, isInLoginMutationResponse);
+  role.allow(actions.viewUserRoles, isInLoginMutationResponse);
+  role.allow(actions.viewUserOrders, isInLoginMutationResponse);
+  role.allow(actions.viewUserQuotations, isInLoginMutationResponse);
+  role.allow(actions.viewUserPrivateInfos, isInLoginMutationResponse);
   role.allow(actions.reviewProduct, () => false);
   role.allow(actions.updateProductReview, () => false);
   role.allow(actions.manageProductReviews, () => false);

@@ -15,13 +15,7 @@ Licensed under the EUPL 1.2
 
 ```bash
 git clone https://github.com/unchainedshop/unchained.git
-cd unchained
 npm install
-cd examples/controlpanel
-npm install
-cd ../minimal
-npm install
-cd ../..
 npm run dev
 ```
 
@@ -118,3 +112,18 @@ addCartQuotation is called with quotation Y
 Now the cart looks like this:
 
 1 x Bundle Z
+
+
+### Integrate Control Panel in Unchained Project
+
+1. Add @unchainedshop/controlpanel as dependency
+2. Use the embedControlpanelInMeteorWebApp function
+
+```
+import { WebApp } from 'meteor/webapp';
+import { embedControlpanelInMeteorWebApp } from '@unchainedshop/controlpanel';
+
+Meteor.startup(() => {
+  embedControlpanelInMeteorWebApp(WebApp);
+});
+```

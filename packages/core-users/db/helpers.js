@@ -178,7 +178,8 @@ Users.enrollUser = ({ password, email, displayName, address }) => {
       $set: {
         updated: new Date(),
         'profile.displayName': displayName || null,
-        'profile.address': address || null
+        'profile.address': address || null,
+        'services.password.initial': true
       }
     }
   );

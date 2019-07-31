@@ -1,4 +1,5 @@
-cd packages/utils && meteor publish &&
+cd examples/controlpanel && npm publish &&
+cd ../../packages/utils && meteor publish &&
 cd ../roles && meteor publish &&
 cd ../core-settings && meteor publish &&
 cd ../core-languages && meteor publish &&

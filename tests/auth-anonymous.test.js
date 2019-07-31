@@ -15,6 +15,80 @@ describe('Auth for anonymous users', () => {
     await connection.close();
   });
 
+  describe('Mutation.createUser', () => {
+    it('create a new user', async () => {
+      const { data: { createUser } = {} } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation createUser(
+            $username: String
+            $email: String
+            $password: String
+            $profile: UserProfileInput
+          ) {
+            createUser(
+              username: $username
+              email: $email
+              plainPassword: $password
+              profile: $profile
+            ) {
+              id
+              token
+              user {
+                _id
+              }
+            }
+          }
+        `,
+        variables: {
+          username: 'newuser',
+          email: 'newuser@localhost',
+          password: 'password',
+          profile: {
+            displayName: 'New User',
+            birthday: new Date(),
+            phoneMobile: '+410000000',
+            gender: 'm',
+            address: null,
+            customFields: null
+          }
+        }
+      });
+      expect(createUser).toMatchObject({
+        user: {}
+      });
+    });
+  });
+
+  describe('Mutation.loginAsGuest', () => {
+    it('login as guest', async () => {
+      const { data: { loginAsGuest } = {} } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation {
+            loginAsGuest {
+              id
+              token
+            }
+          }
+        `
+      });
+      expect(loginAsGuest).toMatchObject({});
+    });
+    it('user has guest flag', async () => {
+      const Users = db.collection('users');
+      const user = await Users.findOne({
+        guest: true
+      });
+      expect(user).toMatchObject({
+        guest: true,
+        emails: [
+          {
+            verified: false
+          }
+        ]
+      });
+    });
+  });
+
   describe('Mutation.loginWithPassword', () => {
     it('login via username and password', async () => {
       const { data: { loginWithPassword } = {} } = await graphqlFetch({
@@ -23,19 +97,23 @@ describe('Auth for anonymous users', () => {
             loginWithPassword(username: "admin", plainPassword: "password") {
               id
               token
+              user {
+                username
+              }
             }
           }
         `
       });
       expect(loginWithPassword).toMatchObject({
-        id: 'admin'
+        id: 'admin',
+        user: {
+          username: 'admin'
+        }
       });
     });
   });
 
   describe('Mutation.forgotPassword', () => {
-    let token;
-
     beforeAll(async () => {
       const Users = db.collection('users');
       await Users.findOrInsertOne({
@@ -63,23 +141,24 @@ describe('Auth for anonymous users', () => {
       expect(forgotPassword).toEqual({
         success: true
       });
+    });
+  });
 
-      // Get the token which is sent via E-Mail
+  describe('Mutation.resetPassword', () => {
+    it('change password with token from forgotPassword call', async () => {
+      // Reset the password with that token
       const Users = db.collection('users');
       const user = await Users.findOne({
         'emails.address': 'userthatforgetspasswords@localhost'
       });
-      ({
+      const {
         services: {
           password: {
             reset: { token }
           }
         }
-      } = user);
-    });
+      } = user;
 
-    it('change password with token', async () => {
-      // Reset the password with that token
       const { data: { resetPassword } = {} } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation resetPassword($newPlainPassword: String, $token: String!) {

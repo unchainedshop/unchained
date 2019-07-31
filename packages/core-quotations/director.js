@@ -74,9 +74,7 @@ class QuotationDirector {
       });
       if (!activated) {
         log(
-          `${this.constructor.name} -> ${AdapterClass.key} (${
-            AdapterClass.version
-          }) skipped`,
+          `${this.constructor.name} -> ${AdapterClass.key} (${AdapterClass.version}) skipped`,
           {
             level: 'warn'
           }
