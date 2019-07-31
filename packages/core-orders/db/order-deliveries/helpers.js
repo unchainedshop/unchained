@@ -117,7 +117,7 @@ OrderDeliveries.updateCalculation = async ({ orderId, deliveryId }) => {
   const delivery = OrderDeliveries.findOne({ _id: deliveryId });
   log(`OrderDelivery ${deliveryId} -> Update Calculation`, { orderId });
   const pricing = new DeliveryPricingDirector({ item: delivery });
-  const calculation = pricing.calculate();
+  const calculation = await pricing.calculate();
   return OrderDeliveries.update(
     { _id: deliveryId },
     {

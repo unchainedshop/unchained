@@ -253,7 +253,7 @@ OrderPositions.updateCalculation = async ({ positionId }) => {
     orderId: position.orderId
   });
   const pricing = new ProductPricingDirector({ item: position });
-  const calculation = pricing.calculate();
+  const calculation = await pricing.calculate();
   return OrderPositions.update(
     { _id: positionId },
     {

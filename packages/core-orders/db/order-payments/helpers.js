@@ -118,7 +118,7 @@ OrderPayments.updateCalculation = async ({ orderId, paymentId }) => {
   const payment = OrderPayments.findOne({ _id: paymentId });
   log(`OrderPayment ${paymentId} -> Update Calculation`, { orderId });
   const pricing = new PaymentPricingDirector({ item: payment });
-  const calculation = pricing.calculate();
+  const calculation = await pricing.calculate();
   return OrderPayments.update(
     { _id: paymentId },
     { $set: { calculation, updated: new Date() } }

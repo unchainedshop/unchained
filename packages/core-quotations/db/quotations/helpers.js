@@ -1,6 +1,5 @@
 import Hashids from 'hashids';
 import 'meteor/dburles:collection-helpers';
-import { Promise } from 'meteor/promise';
 import { objectInvert } from 'meteor/unchained:utils';
 import { Users } from 'meteor/unchained:core-users';
 import { Products } from 'meteor/unchained:core-products';

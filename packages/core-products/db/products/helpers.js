@@ -1,5 +1,4 @@
 import 'meteor/dburles:collection-helpers';
-import { Promise } from 'meteor/promise';
 import { ProductPricingDirector } from 'meteor/unchained:core-pricing';
 import { WarehousingProviders } from 'meteor/unchained:core-warehousing';
 import { DeliveryProviders } from 'meteor/unchained:core-delivery';
@@ -276,7 +275,10 @@ Products.helpers({
     return [];
   },
 
-  userPrice({ quantity = 1, country, user, useNetPrice }, requestContext) {
+  async userPrice(
+    { quantity = 1, country, user, useNetPrice },
+    requestContext
+  ) {
     const currency = Countries.resolveDefaultCurrencyCode({
       isoCode: country
     });
@@ -288,7 +290,7 @@ Products.helpers({
       quantity,
       requestContext
     });
-    const calculated = pricingDirector.calculate();
+    const calculated = await pricingDirector.calculate();
     if (!calculated) return null;
 
     const pricing = pricingDirector.resultSheet();

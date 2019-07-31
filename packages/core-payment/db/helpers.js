@@ -1,5 +1,4 @@
 import 'meteor/dburles:collection-helpers';
-import { Promise } from 'meteor/promise';
 import { PaymentDirector } from '../director';
 import { PaymentProviders } from './collections';
 

@@ -1,6 +1,5 @@
 import Hashids from 'hashids';
 import 'meteor/dburles:collection-helpers';
-import { Promise } from 'meteor/promise';
 import { getFallbackLocale } from 'meteor/unchained:core';
 import { objectInvert } from 'meteor/unchained:utils';
 import { DeliveryProviders } from 'meteor/unchained:core-delivery';
@@ -697,7 +696,7 @@ Orders.updateCalculation = async ({ orderId, recalculateEverything }) => {
     items.map(position => OrderPositions.updateScheduling({ position }))
   );
   const pricing = new OrderPricingDirector({ item: order });
-  const calculation = pricing.calculate();
+  const calculation = await pricing.calculate();
   return Orders.update(
     { _id: orderId },
     {

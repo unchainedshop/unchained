@@ -23,7 +23,7 @@ class ProductEuTax extends ProductPricingAdapter {
     return 0.19;
   }
 
-  calculate() {
+  async calculate() {
     const taxRate = this.getTaxRate();
     this.log(`ProductEuTax -> Tax Multiplicator: ${taxRate}`);
     this.calculation.filterBy({ isTaxable: true }).forEach(row => {

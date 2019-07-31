@@ -1,4 +1,3 @@
-import { Promise } from 'meteor/promise';
 import { log } from 'meteor/unchained:core-logger';
 import { ProductPricingSheet } from './sheet';
 
@@ -28,7 +27,7 @@ class ProductPricingAdapter {
     this.result = new ProductPricingSheet({ currency, quantity });
   }
 
-  calculate() {
+  async calculate() {
     const resultRaw = this.result.getRawPricingSheet();
     resultRaw.forEach(({ amount, category }) =>
       this.log(`Item Calculation -> ${category} ${amount}`)
@@ -78,10 +77,11 @@ class ProductPricingDirector {
     };
   }
 
-  calculate() {
-    this.calculation = ProductPricingDirector.sortedAdapters()
+  async calculate() {
+    this.calculation = await ProductPricingDirector.sortedAdapters()
       .filter(AdapterClass => AdapterClass.isActivatedFor(this.context))
-      .reduce((calculation, AdapterClass) => {
+      .reduce(async (accumulator, AdapterClass) => {
+        const calculation = await accumulator;
         const discounts = this.context.discounts
           .map(discount => ({
             discountId: discount._id,
@@ -96,9 +96,7 @@ class ProductPricingDirector {
             calculation,
             discounts
           });
-          const nextCalculationResult = Promise.await(
-            concreteAdapter.calculate()
-          );
+          const nextCalculationResult = await concreteAdapter.calculate();
           if (!nextCalculationResult || !calculation) return null;
           return calculation.concat(nextCalculationResult);
         } catch (error) {

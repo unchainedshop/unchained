@@ -1,5 +1,4 @@
 import 'meteor/dburles:collection-helpers';
-import { Promise } from 'meteor/promise';
 import { Countries } from 'meteor/unchained:core-countries';
 import { Products, ProductStatus } from 'meteor/unchained:core-products';
 import { slugify } from 'meteor/unchained:utils';
