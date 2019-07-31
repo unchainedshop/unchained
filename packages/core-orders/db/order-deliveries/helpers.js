@@ -72,14 +72,14 @@ OrderDeliveries.helpers({
       order
     });
     if (arbitraryResponseData) {
-      this.setStatus(
+      await this.setStatus(
         OrderDeliveryStatus.DELIVERED,
         JSON.stringify(arbitraryResponseData)
       );
     }
   },
 
-  setStatus(status, info) {
+  async setStatus(status, info) {
     return OrderDeliveries.updateStatus({
       deliveryId: this._id,
       info,
@@ -140,7 +140,7 @@ OrderDeliveries.updateDelivery = async ({ deliveryId, orderId, context }) => {
   return OrderDeliveries.findOne({ _id: deliveryId });
 };
 
-OrderDeliveries.updateStatus = ({ deliveryId, status, info = '' }) => {
+OrderDeliveries.updateStatus = async ({ deliveryId, status, info = '' }) => {
   log(`OrderDelivery ${deliveryId} -> New Status: ${status}`);
   const date = new Date();
   const modifier = {
@@ -156,7 +156,7 @@ OrderDeliveries.updateStatus = ({ deliveryId, status, info = '' }) => {
   if (status === OrderDeliveryStatus.DELIVERED) {
     modifier.$set.delivered = date;
   }
-  OrderDocuments.updateDeliveryDocuments({
+  await OrderDocuments.updateDeliveryDocuments({
     deliveryId,
     date,
     ...modifier.$set

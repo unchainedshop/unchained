@@ -29,21 +29,23 @@ class QuotationDocumentDirector extends DocumentDirector {
       quotationNumber,
       ...options
     });
-    files.forEach(doc => {
-      if (doc) {
-        const { date } = options;
-        const { file, meta, ...rest } = doc;
-        this.context.quotation.addDocument(
-          file,
-          {
-            date,
-            type: QuotationDocumentTypes.PROPOSAL,
-            ...meta
-          },
-          rest
-        );
-      }
-    });
+    await Promise.all(
+      files.map(async doc => {
+        if (doc) {
+          const { date } = options;
+          const { file, meta, ...rest } = doc;
+          await this.context.quotation.addDocument(
+            file,
+            {
+              date,
+              type: QuotationDocumentTypes.PROPOSAL,
+              ...meta
+            },
+            rest
+          );
+        }
+      })
+    );
   }
 
   async updateDocuments({ date, status, ...overrideValues }) {

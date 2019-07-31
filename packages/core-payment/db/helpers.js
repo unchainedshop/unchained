@@ -26,20 +26,18 @@ PaymentProviders.helpers({
       this.defaultContext(context)
     );
   },
-  run(command, ...args) {
-    return Promise.await(
-      new PaymentDirector(this).run(
-        this.defaultContext({
-          command,
-          args
-        })
-      )
+  async run(command, ...args) {
+    const director = new PaymentDirector(this);
+    return director.run(
+      this.defaultContext({
+        command,
+        args
+      })
     );
   },
-  charge(context) {
-    return Promise.await(
-      new PaymentDirector(this).charge(this.defaultContext(context))
-    );
+  async charge(context) {
+    const director = new PaymentDirector(this);
+    return director.charge(this.defaultContext(context));
   }
 });
 

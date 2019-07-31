@@ -360,7 +360,7 @@ Orders.helpers({
   async processOrder({ paymentContext, deliveryContext } = {}) {
     if (this.nextStatus() === OrderStatus.PENDING) {
       // auto charge during transition to pending
-      this.payment().charge(paymentContext, this);
+      await this.payment().charge(paymentContext, this);
     }
 
     if (this.nextStatus() === OrderStatus.CONFIRMED) {
@@ -368,7 +368,7 @@ Orders.helpers({
         // we have to stop here shortly to complete the confirmation
         // before auto delivery is started, else we have no chance to create
         // documents and numbers that are needed for delivery
-        const newConfirmedOrder = this.setStatus(
+        const newConfirmedOrder = await this.setStatus(
           OrderStatus.CONFIRMED,
           'before delivery'
         );
@@ -382,7 +382,7 @@ Orders.helpers({
     this.reserveItems();
     return this.setStatus(this.nextStatus(), 'order processed');
   },
-  setStatus(status, info) {
+  async setStatus(status, info) {
     return Orders.updateStatus({
       orderId: this._id,
       status,
@@ -427,31 +427,27 @@ Orders.helpers({
     if (this.status === OrderStatus.FULLFILLED) return false;
     return true;
   },
-  addDocument(objOrString, meta, options = {}) {
+  async addDocument(objOrString, meta, options = {}) {
     if (typeof objOrString === 'string' || objOrString instanceof String) {
-      return Promise.await(
-        OrderDocuments.insertWithRemoteURL({
-          url: objOrString,
-          ...options,
-          meta: {
-            orderId: this._id,
-            ...meta
-          }
-        })
-      );
-    }
-    const { rawFile, userId } = objOrString;
-    return Promise.await(
-      OrderDocuments.insertWithRemoteBuffer({
-        file: rawFile,
-        userId,
+      return OrderDocuments.insertWithRemoteURL({
+        url: objOrString,
         ...options,
         meta: {
           orderId: this._id,
           ...meta
         }
-      })
-    );
+      });
+    }
+    const { rawFile, userId } = objOrString;
+    return OrderDocuments.insertWithRemoteBuffer({
+      file: rawFile,
+      userId,
+      ...options,
+      meta: {
+        orderId: this._id,
+        ...meta
+      }
+    });
   },
   documents(options) {
     const { type } = options || {};
@@ -608,7 +604,7 @@ Orders.getUniqueOrderNumber = () => {
   return orderNumber;
 };
 
-Orders.updateStatus = ({ status, orderId, info = '' }) => {
+Orders.updateStatus = async ({ status, orderId, info = '' }) => {
   const order = Orders.findOne({ _id: orderId });
   if (order.status === status) return order;
   const date = new Date();
@@ -653,7 +649,7 @@ Orders.updateStatus = ({ status, orderId, info = '' }) => {
       // It's okay if this fails as it is not
       // super-vital to the
       // checkout process
-      OrderDocuments.updateDocuments({
+      await OrderDocuments.updateDocuments({
         orderId,
         date: modifier.$set.confirmed || order.confirmed,
         ...modifier.$set

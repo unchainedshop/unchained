@@ -176,31 +176,27 @@ Quotations.helpers({
       info
     });
   },
-  addDocument(objOrString, meta, options = {}) {
+  async addDocument(objOrString, meta, options = {}) {
     if (typeof objOrString === 'string' || objOrString instanceof String) {
-      return Promise.await(
-        QuotationDocuments.insertWithRemoteURL({
-          url: objOrString,
-          ...options,
-          meta: {
-            quotationId: this._id,
-            ...meta
-          }
-        })
-      );
-    }
-    const { rawFile, userId } = objOrString;
-    return Promise.await(
-      QuotationDocuments.insertWithRemoteBuffer({
-        file: rawFile,
-        userId,
+      return QuotationDocuments.insertWithRemoteURL({
+        url: objOrString,
         ...options,
         meta: {
           quotationId: this._id,
           ...meta
         }
-      })
-    );
+      });
+    }
+    const { rawFile, userId } = objOrString;
+    return QuotationDocuments.insertWithRemoteBuffer({
+      file: rawFile,
+      userId,
+      ...options,
+      meta: {
+        quotationId: this._id,
+        ...meta
+      }
+    });
   },
   documents(options) {
     const { type } = options || {};

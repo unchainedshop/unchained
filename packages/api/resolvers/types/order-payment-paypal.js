@@ -4,7 +4,7 @@ export default {
   status(obj) {
     return obj.normalizedStatus();
   },
-  clientToken(obj) {
+  async clientToken(obj) {
     try {
       return obj.provider().run('clientToken');
     } catch (error) {

@@ -2,14 +2,14 @@ export default {
   status(obj) {
     return obj.normalizedStatus();
   },
-  walletAddress(obj) {
+  async walletAddress(obj) {
     try {
       return obj.provider().run('walletAddress');
     } catch (error) {
       throw new Error({ error });
     }
   },
-  walletBalance(obj) {
+  async walletBalance(obj) {
     try {
       return obj.provider().run('walletBalance');
     } catch (error) {

@@ -29,21 +29,23 @@ class OrderDocumentDirector extends DocumentDirector {
       orderNumber,
       ...options
     });
-    documents.forEach(doc => {
-      if (doc) {
-        const { date } = options;
-        const { file, meta, ...rest } = doc;
-        this.context.order.addDocument(
-          file,
-          {
-            date,
-            type: OrderDocumentTypes.ORDER_CONFIRMATION,
-            ...meta
-          },
-          rest
-        );
-      }
-    });
+    await Promise.all(
+      documents.map(async doc => {
+        if (doc) {
+          const { date } = options;
+          const { file, meta, ...rest } = doc;
+          await this.context.order.addDocument(
+            file,
+            {
+              date,
+              type: OrderDocumentTypes.ORDER_CONFIRMATION,
+              ...meta
+            },
+            rest
+          );
+        }
+      })
+    );
   }
 
   async buildDeliveryNote(options) {
@@ -53,23 +55,25 @@ class OrderDocumentDirector extends DocumentDirector {
       orderNumber,
       ...options
     });
-    documents.forEach(doc => {
-      if (doc) {
-        const { date, delivery } = options;
-        const { file, meta, ...rest } = doc;
-        this.context.order.addDocument(
-          file,
-          {
-            date,
-            type: OrderDocumentTypes.DELIVERY_NOTE,
-            deliveryId: delivery._id,
-            status: delivery.status,
-            ...meta
-          },
-          rest
-        );
-      }
-    });
+    await Promise.all(
+      documents.map(async doc => {
+        if (doc) {
+          const { date, delivery } = options;
+          const { file, meta, ...rest } = doc;
+          await this.context.order.addDocument(
+            file,
+            {
+              date,
+              type: OrderDocumentTypes.DELIVERY_NOTE,
+              deliveryId: delivery._id,
+              status: delivery.status,
+              ...meta
+            },
+            rest
+          );
+        }
+      })
+    );
   }
 
   async buildInvoice(options) {
@@ -79,35 +83,37 @@ class OrderDocumentDirector extends DocumentDirector {
       orderNumber,
       ...options
     });
-    documents.forEach(files => {
-      if (files) {
-        const { date, payment } = options;
-        const { file: invoice, meta, ...rest } = files[0];
-        this.context.order.addDocument(
-          invoice,
-          {
-            date,
-            type: OrderDocumentTypes.INVOICE,
-            paymentId: payment._id,
-            status: payment.status,
-            ...meta
-          },
-          rest
-        );
-        const { file: receipt, meta: receiptMeta, ...receiptRest } = files[1];
-        this.context.order.addDocument(
-          receipt,
-          {
-            date,
-            type: OrderDocumentTypes.RECEIPT,
-            paymentId: payment._id,
-            status: payment.status,
-            ...receiptMeta
-          },
-          receiptRest
-        );
-      }
-    });
+    await Promise.all(
+      documents.map(async files => {
+        if (files) {
+          const { date, payment } = options;
+          const { file: invoice, meta, ...rest } = files[0];
+          await this.context.order.addDocument(
+            invoice,
+            {
+              date,
+              type: OrderDocumentTypes.INVOICE,
+              paymentId: payment._id,
+              status: payment.status,
+              ...meta
+            },
+            rest
+          );
+          const { file: receipt, meta: receiptMeta, ...receiptRest } = files[1];
+          await this.context.order.addDocument(
+            receipt,
+            {
+              date,
+              type: OrderDocumentTypes.RECEIPT,
+              paymentId: payment._id,
+              status: payment.status,
+              ...receiptMeta
+            },
+            receiptRest
+          );
+        }
+      })
+    );
   }
 
   async updateDocuments({ date, status, ...overrideValues }) {
@@ -175,29 +181,29 @@ class OrderDocumentDirector extends DocumentDirector {
   }
 }
 
-OrderDocuments.updateDocuments = ({ orderId, ...rest }) => {
+OrderDocuments.updateDocuments = async ({ orderId, ...rest }) => {
   const order = Orders.findOne({ _id: orderId });
   const director = new OrderDocumentDirector({ order });
   log('Update Order Documents', { orderId });
-  Promise.await(director.updateDocuments({ ...rest }));
+  return director.updateDocuments({ ...rest });
 };
 
-OrderDocuments.updatePaymentDocuments = ({ paymentId, ...rest }) => {
+OrderDocuments.updatePaymentDocuments = async ({ paymentId, ...rest }) => {
   const payment = OrderPayments.findOne({ _id: paymentId });
   const order = Orders.findOne({ _id: payment.orderId });
   const director = new OrderDocumentDirector({ order, payment });
   log(`Payment ${paymentId} -> Update Payment Documents`, {
     orderId: payment.orderId
   });
-  Promise.await(director.updateDocuments({ ...rest }));
+  return director.updateDocuments({ ...rest });
 };
 
-OrderDocuments.updateDeliveryDocuments = ({ deliveryId, ...rest }) => {
+OrderDocuments.updateDeliveryDocuments = async ({ deliveryId, ...rest }) => {
   const delivery = OrderDeliveries.findOne({ _id: deliveryId });
   const order = Orders.findOne({ _id: delivery.orderId });
   const director = new OrderDocumentDirector({ order, delivery });
   log(`Delivery ${deliveryId} -> Update Delivery Documents`, {
     orderId: delivery.orderId
   });
-  Promise.await(director.updateDocuments({ ...rest }));
+  return director.updateDocuments({ ...rest });
 };

@@ -19,6 +19,6 @@ export default async function(root, { orderId }, { userId }) {
       data: { status: payment.status }
     });
   }
-  payment.markPaid();
+  await payment.markPaid();
   return order.processOrder();
 }

@@ -59,10 +59,10 @@ OrderPayments.helpers({
     if (this.status === OrderPaymentStatus.PAID) return false;
     return true;
   },
-  charge(paymentContext, order) {
+  async charge(paymentContext, order) {
     if (this.status !== OrderPaymentStatus.OPEN) return;
     const provider = this.provider();
-    const arbitraryResponseData = provider.charge({
+    const arbitraryResponseData = await provider.charge({
       transactionContext: {
         ...(paymentContext || {}),
         ...this.context
@@ -70,17 +70,17 @@ OrderPayments.helpers({
       order
     });
     if (arbitraryResponseData) {
-      this.setStatus(
+      await this.setStatus(
         OrderPaymentStatus.PAID,
         JSON.stringify(arbitraryResponseData)
       );
     }
   },
-  markPaid() {
+  async markPaid() {
     if (this.status !== OrderPaymentStatus.OPEN) return;
-    this.setStatus(OrderPaymentStatus.PAID, 'mark paid manually');
+    await this.setStatus(OrderPaymentStatus.PAID, 'mark paid manually');
   },
-  setStatus(status, info) {
+  async setStatus(status, info) {
     return OrderPayments.updateStatus({
       paymentId: this._id,
       info,
@@ -139,7 +139,7 @@ OrderPayments.updatePayment = async ({ orderId, paymentId, context }) => {
   return OrderPayments.findOne({ _id: paymentId });
 };
 
-OrderPayments.updateStatus = ({ paymentId, status, info = '' }) => {
+OrderPayments.updateStatus = async ({ paymentId, status, info = '' }) => {
   log(`OrderPayment ${paymentId} -> New Status: ${status}`);
   const date = new Date();
   const modifier = {
@@ -155,7 +155,11 @@ OrderPayments.updateStatus = ({ paymentId, status, info = '' }) => {
   if (status === OrderPaymentStatus.PAID) {
     modifier.$set.paid = date;
   }
-  OrderDocuments.updatePaymentDocuments({ paymentId, date, ...modifier.$set });
+  await OrderDocuments.updatePaymentDocuments({
+    paymentId,
+    date,
+    ...modifier.$set
+  });
   OrderPayments.update({ _id: paymentId }, modifier);
   return OrderPayments.findOne({ _id: paymentId });
 };
