@@ -3,7 +3,7 @@ import { Products } from 'meteor/unchained:core-products';
 import { Quotations } from 'meteor/unchained:core-quotations';
 import { ProductNotFoundError } from '../../errors';
 
-export default function(
+export default async function(
   root,
   { productId, configuration },
   { userId, countryContext, localeContext }
@@ -16,7 +16,7 @@ export default function(
   );
   const product = Products.findOne({ _id: productId });
   if (!product) throw new ProductNotFoundError({ data: { productId } });
-  const quotation = Quotations.requestQuotation(
+  return Quotations.requestQuotation(
     {
       userId,
       productId,
@@ -25,5 +25,4 @@ export default function(
     },
     { localeContext }
   );
-  return quotation;
 }

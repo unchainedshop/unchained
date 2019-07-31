@@ -164,9 +164,10 @@ Orders.helpers({
     }).fetch();
   },
   async addQuotationItem({ quotation, ...quotationItemConfiguration }) {
-    const { quantity, configuration } = quotation.transformItemConfiguration(
-      quotationItemConfiguration
-    );
+    const {
+      quantity,
+      configuration
+    } = await quotation.transformItemConfiguration(quotationItemConfiguration);
     const product = quotation.product();
     return this.addProductItem({
       product,
@@ -247,9 +248,9 @@ Orders.helpers({
     // If we came here, the checkout succeeded, so we can reserve the items
     return this.items().flatMap(item => item.validationErrors());
   },
-  reserveItems() {
+  async reserveItems() {
     // If we came here, the checkout succeeded, so we can reserve the items
-    this.items().forEach(item => item.reserve());
+    await Promise.all(this.items().map(async item => item.reserve()));
 
     // TODO: we will use this function to keep a "Ordered in Flight" amount, allowing us to
     // do live stock stuff
@@ -273,8 +274,10 @@ Orders.helpers({
       (lastUserLanguage && lastUserLanguage.isoCode);
 
     return this.updateContext(orderContext)
-      .then(order => order.processOrder({ paymentContext, deliveryContext }))
-      .then(order => order.sendOrderConfirmationToCustomer({ language }));
+      .then(async order =>
+        order.processOrder({ paymentContext, deliveryContext })
+      )
+      .then(async order => order.sendOrderConfirmationToCustomer({ language }));
   },
   async confirm(
     { orderContext, paymentContext, deliveryContext },
@@ -286,11 +289,13 @@ Orders.helpers({
       (localeContext && localeContext.normalized) ||
       (lastUserLanguage && lastUserLanguage.isoCode);
     return this.updateContext(orderContext)
-      .then(order =>
+      .then(async order =>
         order.setStatus(OrderStatus.CONFIRMED, 'confirmed manually')
       )
-      .then(order => order.processOrder({ paymentContext, deliveryContext }))
-      .then(order => order.sendOrderConfirmationToCustomer({ language }));
+      .then(async order =>
+        order.processOrder({ paymentContext, deliveryContext })
+      )
+      .then(async order => order.sendOrderConfirmationToCustomer({ language }));
   },
   missingInputDataForCheckout() {
     const errors = [];
@@ -379,7 +384,7 @@ Orders.helpers({
     }
     // no matter what happens, the items need to
     // get reserved if we came that far
-    this.reserveItems();
+    await this.reserveItems();
     return this.setStatus(this.nextStatus(), 'order processed');
   },
   async setStatus(status, info) {

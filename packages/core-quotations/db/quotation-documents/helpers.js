@@ -67,9 +67,9 @@ class QuotationDocumentDirector extends DocumentDirector {
   }
 }
 
-QuotationDocuments.updateDocuments = ({ quotationId, ...rest }) => {
+QuotationDocuments.updateDocuments = async ({ quotationId, ...rest }) => {
   const quotation = Quotations.findOne({ _id: quotationId });
   const director = new QuotationDocumentDirector({ quotation });
   log('Update Quotation Documents', { quotationId });
-  Promise.await(director.updateDocuments({ ...rest }));
+  return director.updateDocuments({ ...rest });
 };

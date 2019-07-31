@@ -5,7 +5,7 @@ import {
   QuotationWrongStatusError
 } from '../../errors';
 
-export default function(
+export default async function(
   root,
   { quotationId, ...transactionContext },
   { userId }

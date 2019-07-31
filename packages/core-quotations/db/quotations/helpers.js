@@ -61,32 +61,32 @@ Quotations.helpers({
       context
     });
   },
-  verify({ quotationContext } = {}, options) {
+  async verify({ quotationContext } = {}, options) {
     if (this.status !== QuotationStatus.REQUESTED) return this;
     return this.setStatus(
       QuotationStatus.PROCESSING,
       'verified elligibility manually'
     )
-      .process({ quotationContext })
-      .sendStatusToCustomer(options);
+      .then(async quotation => quotation.process({ quotationContext }))
+      .then(async quotation => quotation.sendStatusToCustomer(options));
   },
-  reject({ quotationContext } = {}, options) {
+  async reject({ quotationContext } = {}, options) {
     if (this.status === QuotationStatus.FULLFILLED) return this;
     return this.setStatus(QuotationStatus.REJECTED, 'rejected manually')
-      .process({ quotationContext })
-      .sendStatusToCustomer(options);
+      .then(async quotation => quotation.process({ quotationContext }))
+      .then(async quotation => quotation.sendStatusToCustomer(options));
   },
-  propose({ quotationContext } = {}, options) {
+  async propose({ quotationContext } = {}, options) {
     if (this.status !== QuotationStatus.PROCESSING) return this;
     return this.setStatus(QuotationStatus.PROPOSED, 'proposed manually')
-      .process({ quotationContext })
-      .sendStatusToCustomer(options);
+      .then(async quotation => quotation.process({ quotationContext }))
+      .then(async quotation => quotation.sendStatusToCustomer(options));
   },
-  fullfill({ quotationContext, info } = {}, options) {
+  async fullfill({ quotationContext, info } = {}, options) {
     if (this.status === QuotationStatus.FULLFILLED) return this;
     return this.setStatus(QuotationStatus.FULLFILLED, JSON.stringify(info))
-      .process({ quotationContext })
-      .sendStatusToCustomer(options);
+      .then(async quotation => quotation.process({ quotationContext }))
+      .then(async quotation => quotation.sendStatusToCustomer(options));
   },
   sendStatusToCustomer(options) {
     const user = this.user();
@@ -110,56 +110,54 @@ Quotations.helpers({
     });
     return this;
   },
-  process({ quotationContext } = {}) {
+  async process({ quotationContext } = {}) {
     if (
       this.status === QuotationStatus.REQUESTED &&
-      this.nextStatus() !== QuotationStatus.REQUESTED
+      (await this.nextStatus()) !== QuotationStatus.REQUESTED
     ) {
-      this.submitRequest(quotationContext);
+      await this.submitRequest(quotationContext);
     }
-    if (this.nextStatus() !== QuotationStatus.PROCESSING) {
-      this.verifyRequest(quotationContext);
+    if ((await this.nextStatus()) !== QuotationStatus.PROCESSING) {
+      await this.verifyRequest(quotationContext);
     }
-    if (this.nextStatus() === QuotationStatus.PROPOSED) {
-      this.buildProposal(quotationContext);
+    if ((await this.nextStatus()) === QuotationStatus.PROPOSED) {
+      await this.buildProposal(quotationContext);
     }
-    return this.setStatus(this.nextStatus(), 'quotation processed');
+    return this.setStatus(await this.nextStatus(), 'quotation processed');
   },
-  transformItemConfiguration(itemConfiguration) {
+  async transformItemConfiguration(itemConfiguration) {
     const director = this.director();
-    return Promise.await(
-      director.transformItemConfiguration(itemConfiguration)
-    );
+    return director.transformItemConfiguration(itemConfiguration);
   },
-  nextStatus() {
+  async nextStatus() {
     let { status } = this;
     const director = this.director();
 
     if (status === QuotationStatus.REQUESTED) {
-      if (!Promise.await(director.isManualRequestVerificationRequired())) {
+      if (!(await director.isManualRequestVerificationRequired())) {
         status = QuotationStatus.PROCESSING;
       }
     }
     if (status === QuotationStatus.PROCESSING) {
-      if (!Promise.await(director.isManualProposalRequired())) {
+      if (!(await director.isManualProposalRequired())) {
         status = QuotationStatus.PROPOSED;
       }
     }
     return status;
   },
-  submitRequest(quotationContext) {
+  async submitRequest(quotationContext) {
     const director = this.director();
-    Promise.await(director.submit(quotationContext));
+    await director.submit(quotationContext);
     return this;
   },
-  verifyRequest(quotationContext) {
+  async verifyRequest(quotationContext) {
     const director = this.director();
-    Promise.await(director.verify(quotationContext));
+    await director.verify(quotationContext);
     return this;
   },
-  buildProposal(quotationContext) {
+  async buildProposal(quotationContext) {
     const director = this.director();
-    const proposal = Promise.await(director.quote(quotationContext));
+    const proposal = await director.quote(quotationContext);
     return Quotations.updateProposal({
       ...proposal,
       quotationId: this._id
@@ -169,7 +167,7 @@ Quotations.helpers({
     const director = new QuotationDirector(this);
     return director;
   },
-  setStatus(status, info) {
+  async setStatus(status, info) {
     return Quotations.updateStatus({
       quotationId: this._id,
       status,
@@ -238,7 +236,7 @@ Quotations.helpers({
   }
 });
 
-Quotations.requestQuotation = (
+Quotations.requestQuotation = async (
   { productId, userId, currencyCode, configuration },
   options
 ) => {
@@ -308,7 +306,7 @@ Quotations.newQuotationNumber = () => {
   return quotationNumber;
 };
 
-Quotations.updateStatus = ({ status, quotationId, info = '' }) => {
+Quotations.updateStatus = async ({ status, quotationId, info = '' }) => {
   const quotation = Quotations.findOne({ _id: quotationId });
   if (quotation.status === status) return quotation;
   const date = new Date();
@@ -349,7 +347,7 @@ Quotations.updateStatus = ({ status, quotationId, info = '' }) => {
     try {
       // we are now allowed to stop this process, else we could
       // end up with non-confirmed but charged orders.
-      QuotationDocuments.updateDocuments({
+      await QuotationDocuments.updateDocuments({
         quotationId,
         date,
         ...modifier.$set

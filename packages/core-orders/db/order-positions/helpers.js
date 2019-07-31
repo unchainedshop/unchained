@@ -59,9 +59,9 @@ OrderPositions.helpers({
         new Error('Quotation expired or fullfiled, please request a new offer')
       );
   },
-  reserve() {
+  async reserve() {
     if (this.quotationId)
-      this.quotation().fullfill({ info: { orderPositionId: this._id } });
+      await this.quotation().fullfill({ info: { orderPositionId: this._id } });
     log(`OrderPosition ${this._id} -> Reserve ${this.quantity}`);
   },
   dispatches() {
