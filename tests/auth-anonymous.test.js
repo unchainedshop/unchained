@@ -97,12 +97,18 @@ describe('Auth for anonymous users', () => {
             loginWithPassword(username: "admin", plainPassword: "password") {
               id
               token
+              user {
+                username
+              }
             }
           }
         `
       });
       expect(loginWithPassword).toMatchObject({
-        id: 'admin'
+        id: 'admin',
+        user: {
+          username: 'admin'
+        }
       });
     });
   });
