@@ -213,9 +213,9 @@ Products.helpers({
     const deliveryProviders = DeliveryProviders.findProviders({
       type: deliveryProviderType
     });
-    return deliveryProviders.reduce(async (oldResult, deliveryProvider) => {
+    return deliveryProviders.reduce(async (accumulator, deliveryProvider) => {
       return [
-        ...(await oldResult),
+        ...(await accumulator),
         ...(await Promise.all(
           WarehousingProviders.findSupported({
             product: this,
@@ -245,9 +245,9 @@ Products.helpers({
     const deliveryProviders = DeliveryProviders.findProviders({
       type: deliveryProviderType
     });
-    return deliveryProviders.reduce(async (oldResult, deliveryProvider) => {
+    return deliveryProviders.reduce(async (accumulator, deliveryProvider) => {
       return [
-        ...(await oldResult),
+        ...(await accumulator),
         ...(await Promise.all(
           WarehousingProviders.findSupported({
             product: this,

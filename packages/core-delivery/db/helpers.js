@@ -21,22 +21,18 @@ DeliveryProviders.helpers({
   isActive(context) {
     return new DeliveryDirector(this).isActive(this.defaultContext(context));
   },
-  estimatedDeliveryThroughput(context) {
-    return Promise.await(
-      new DeliveryDirector(this).estimatedDeliveryThroughput(
-        this.defaultContext(context)
-      )
-    );
+  async estimatedDeliveryThroughput(context) {
+    const director = new DeliveryDirector(this);
+    return director.estimatedDeliveryThroughput(this.defaultContext(context));
   },
   isAutoReleaseAllowed(context) {
     return new DeliveryDirector(this).isAutoReleaseAllowed(
       this.defaultContext(context)
     );
   },
-  send(context) {
-    return Promise.await(
-      new DeliveryDirector(this).send(this.defaultContext(context))
-    );
+  async send(context) {
+    const director = new DeliveryDirector(this);
+    return director.send(this.defaultContext(context));
   }
 });
 

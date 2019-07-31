@@ -58,12 +58,12 @@ OrderDeliveries.helpers({
     if (this.status === OrderDeliveryStatus.DELIVERED) return false;
     return true;
   },
-  send(deliveryContext, order) {
+  async send(deliveryContext, order) {
     if (this.status !== OrderDeliveryStatus.OPEN) return;
     const provider = this.provider();
     const address =
       this.context.address || (order || this.order()).billingAddress || {};
-    const arbitraryResponseData = provider.send({
+    const arbitraryResponseData = await provider.send({
       transactionContext: {
         ...(deliveryContext || {}),
         ...this.context,

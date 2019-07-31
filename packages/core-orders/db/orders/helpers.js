@@ -271,9 +271,10 @@ Orders.helpers({
     const language =
       (localeContext && localeContext.normalized) ||
       (lastUserLanguage && lastUserLanguage.isoCode);
-    return (await this.updateContext(orderContext))
-      .processOrder({ paymentContext, deliveryContext })
-      .sendOrderConfirmationToCustomer({ language });
+
+    return this.updateContext(orderContext)
+      .then(order => order.processOrder({ paymentContext, deliveryContext }))
+      .then(order => order.sendOrderConfirmationToCustomer({ language }));
   },
   async confirm(
     { orderContext, paymentContext, deliveryContext },
@@ -284,10 +285,12 @@ Orders.helpers({
     const language =
       (localeContext && localeContext.normalized) ||
       (lastUserLanguage && lastUserLanguage.isoCode);
-    return (await this.updateContext(orderContext))
-      .setStatus(OrderStatus.CONFIRMED, 'confirmed manually')
-      .processOrder({ paymentContext, deliveryContext })
-      .sendOrderConfirmationToCustomer({ language });
+    return this.updateContext(orderContext)
+      .then(order =>
+        order.setStatus(OrderStatus.CONFIRMED, 'confirmed manually')
+      )
+      .then(order => order.processOrder({ paymentContext, deliveryContext }))
+      .then(order => order.sendOrderConfirmationToCustomer({ language }));
   },
   missingInputDataForCheckout() {
     const errors = [];
@@ -354,7 +357,7 @@ Orders.helpers({
     });
     return this;
   },
-  processOrder({ paymentContext, deliveryContext } = {}) {
+  async processOrder({ paymentContext, deliveryContext } = {}) {
     if (this.nextStatus() === OrderStatus.PENDING) {
       // auto charge during transition to pending
       this.payment().charge(paymentContext, this);
@@ -369,9 +372,9 @@ Orders.helpers({
           OrderStatus.CONFIRMED,
           'before delivery'
         );
-        this.delivery().send(deliveryContext, newConfirmedOrder);
+        await this.delivery().send(deliveryContext, newConfirmedOrder);
       } else {
-        this.delivery().send(deliveryContext, this);
+        await this.delivery().send(deliveryContext, this);
       }
     }
     // no matter what happens, the items need to

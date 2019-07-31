@@ -6,7 +6,7 @@ import {
   OrderWrongStatusError
 } from '../../errors';
 
-export default function(root, { orderId }, { userId }) {
+export default async function(root, { orderId }, { userId }) {
   log('mutation payOrder', { orderId, userId });
   const order = Orders.findOne({ _id: orderId });
   if (!order) throw new OrderNotFoundError({ data: { orderId } });
