@@ -1,6 +1,6 @@
 Package.describe({
   name: 'unchained:core-files',
-  version: '0.30.0',
+  version: '0.31.0',
   summary: 'Unchained Engine Core: Files',
   git: 'https://github.com/unchainedshop/unchained',
   documentation: 'README.md'
@@ -12,9 +12,9 @@ Npm.depends({
 
 Package.onUse(api => {
   api.versionsFrom('1.8.0.2');
-  api.use('ostrio:files@1.9.11');
+  api.use('ostrio:files@1.11.2');
   api.use('ecmascript');
-  api.use('unchained:core-settings@0.30.0');
+  api.use('unchained:core-settings@0.31.0');
   api.mainModule('core-files.js');
 });
 

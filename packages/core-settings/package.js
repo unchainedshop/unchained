@@ -1,13 +1,9 @@
 Package.describe({
   name: 'unchained:core-settings',
-  version: '0.30.0',
-  // Brief, one-line summary of the package.
+  version: '0.31.0',
   summary:
     'This package contains api to define settings for the unchained engine.',
-  // URL to the Git repository containing the source code for this package.
-  git: '',
-  // By default, Meteor will default to using README.md for documentation.
-  // To avoid submitting documentation, set this field to null.
+  git: 'https://github.com/unchainedshop/unchained',
   documentation: 'README.md'
 });
 
