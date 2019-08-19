@@ -221,7 +221,6 @@ export default [
       rating: Int
       title: String
       review: String
-      meta: JSON
     }
 
     input FilterQueryInput {

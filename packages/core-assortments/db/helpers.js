@@ -455,7 +455,7 @@ Collections.Assortments.helpers({
     const parsedLocale = new Locale(locale);
     return Collections.Assortments.getLocalizedTexts(this._id, parsedLocale);
   },
-  addProduct({ productId }, { skipInvalidation = false } = {}) {
+  addProduct({ productId, ...rest }, { skipInvalidation = false } = {}) {
     const sortKey = Collections.AssortmentProducts.getNewSortKey(this._id);
     Collections.AssortmentProducts.remove({
       assortmentId: this._id,
@@ -465,14 +465,15 @@ Collections.Assortments.helpers({
       assortmentId: this._id,
       productId,
       sortKey,
-      created: new Date()
+      created: new Date(),
+      ...rest
     });
     if (!skipInvalidation) {
       this.invalidateProductIdCache();
     }
     return Collections.AssortmentProducts.findOne({ _id: assortmentProductId });
   },
-  addLink({ assortmentId }, { skipInvalidation = false } = {}) {
+  addLink({ assortmentId, ...rest }, { skipInvalidation = false } = {}) {
     const sortKey = Collections.AssortmentLinks.getNewSortKey(this._id);
     Collections.AssortmentLinks.remove({
       parentAssortmentId: this._id,
@@ -482,14 +483,15 @@ Collections.Assortments.helpers({
       parentAssortmentId: this._id,
       childAssortmentId: assortmentId,
       sortKey,
-      created: new Date()
+      created: new Date(),
+      ...rest
     });
     if (!skipInvalidation) {
       this.invalidateProductIdCache();
     }
     return Collections.AssortmentLinks.findOne({ _id: assortmentProductId });
   },
-  addFilter({ filterId }) {
+  addFilter({ filterId, ...rest }) {
     const sortKey = Collections.AssortmentFilters.getNewSortKey(this._id);
     Collections.AssortmentFilters.remove({
       assortmentId: this._id,
@@ -499,7 +501,8 @@ Collections.Assortments.helpers({
       assortmentId: this._id,
       filterId,
       sortKey,
-      created: new Date()
+      created: new Date(),
+      ...rest
     });
     return Collections.AssortmentFilters.findOne({ _id: assortmentFilterId });
   },

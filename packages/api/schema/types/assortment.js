@@ -12,6 +12,7 @@ export default [
       isRoot: Boolean
       sequence: Int!
       tags: [String!]
+      meta: JSON
       texts(forceLocale: String): AssortmentTexts
       productAssignments: [AssortmentProduct!]
       filterAssignments: [AssortmentFilter!]
@@ -53,6 +54,8 @@ export default [
     type AssortmentProduct {
       _id: ID!
       sortKey: Int!
+      tags: [String!]
+      meta: JSON
       assortment: Assortment!
       product: Product!
     }
@@ -60,6 +63,8 @@ export default [
     type AssortmentFilter {
       _id: ID!
       sortKey: Int!
+      tags: [String!]
+      meta: JSON
       assortment: Assortment!
       filter: Filter!
     }
@@ -67,6 +72,8 @@ export default [
     type AssortmentLink {
       _id: ID!
       sortKey: Int!
+      tags: [String!]
+      meta: JSON
       parent: Assortment!
       child: Assortment!
     }

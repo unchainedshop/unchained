@@ -481,6 +481,7 @@ export default [
       addAssortmentProduct(
         assortmentId: ID!
         productId: ID!
+        tags: [String!]
       ): AssortmentProduct!
 
       """
@@ -501,6 +502,7 @@ export default [
       addAssortmentLink(
         parentAssortmentId: ID!
         childAssortmentId: ID!
+        tags: [String!]
       ): AssortmentLink!
 
       """
@@ -518,7 +520,11 @@ export default [
       """
       Add a new filter to an assortment
       """
-      addAssortmentFilter(assortmentId: ID!, filterId: ID!): AssortmentFilter!
+      addAssortmentFilter(
+        assortmentId: ID!
+        filterId: ID!
+        tags: [String!]
+      ): AssortmentFilter!
 
       """
       Remove a product from an assortment

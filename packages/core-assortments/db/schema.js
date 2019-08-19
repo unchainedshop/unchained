@@ -43,6 +43,9 @@ Collections.AssortmentProducts.attachSchema(
       assortmentId: { type: String, required: true, index: true },
       productId: { type: String, required: true, index: true },
       sortKey: { type: Number, required: true },
+      tags: { type: Array, index: true },
+      'tags.$': String,
+      meta: { type: Object, blackbox: true },
       ...Schemas.timestampFields
     },
     { requiredByDefault: false }
@@ -55,6 +58,9 @@ Collections.AssortmentLinks.attachSchema(
       parentAssortmentId: { type: String, required: true, index: true },
       childAssortmentId: { type: String, required: true, index: true },
       sortKey: { type: Number, required: true },
+      tags: { type: Array, index: true },
+      'tags.$': String,
+      meta: { type: Object, blackbox: true },
       ...Schemas.timestampFields
     },
     { requiredByDefault: false }
@@ -67,6 +73,9 @@ Collections.AssortmentFilters.attachSchema(
       assortmentId: { type: String, required: true, index: true },
       filterId: { type: String, required: true, index: true },
       sortKey: { type: Number, required: true },
+      tags: { type: Array, index: true },
+      'tags.$': String,
+      meta: { type: Object, blackbox: true },
       ...Schemas.timestampFields
     },
     { requiredByDefault: false }
