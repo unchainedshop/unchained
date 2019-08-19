@@ -76,6 +76,11 @@ const FormEditProductTexts = ({
               hidden={language.isoCode !== activeLanguage}
             />
             <AutoField
+              name={`texts.${key}.brand`}
+              disabled={isEditingDisabled}
+              hidden={language.isoCode !== activeLanguage}
+            />
+            <AutoField
               name={`texts.${key}.labels`}
               disabled={isEditingDisabled}
               hidden={language.isoCode !== activeLanguage}
@@ -117,6 +122,7 @@ export default compose(
         slug
         description
         vendor
+        brand
         labels
       }
     }
@@ -156,6 +162,7 @@ export default compose(
           slug
           description
           vendor
+          brand
           labels
         }
       }
@@ -194,6 +201,11 @@ export default compose(
       type: String,
       optional: true,
       label: 'Vendor'
+    },
+    'texts.$.brand': {
+      type: String,
+      optional: true,
+      label: 'Brand'
     },
     'texts.$.description': {
       type: String,

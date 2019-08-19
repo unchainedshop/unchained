@@ -59,6 +59,7 @@ Factory.define('productText', ProductTexts, {
   locale: () => faker.random.arrayElement(['de', 'en']),
   title: () => faker.commerce.productName(),
   vendor: () => faker.company.companyName(),
+  brand: () => faker.company.companyName(),
   subtitle: () => faker.lorem.sentence(),
   slug: () => faker.lorem.slug(),
   description: () => faker.lorem.text(),

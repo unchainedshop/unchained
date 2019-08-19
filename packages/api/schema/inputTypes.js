@@ -99,6 +99,7 @@ export default [
       subtitle: String
       description: String
       vendor: String
+      brand: String
       labels: [String!]
     }
 

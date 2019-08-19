@@ -111,6 +111,7 @@ ProductTexts.attachSchema(
       productId: { type: String, required: true, index: true },
       locale: { type: String, required: true, index: true },
       vendor: String,
+      brand: String,
       title: String,
       slug: { type: String, index: true },
       subtitle: String,
