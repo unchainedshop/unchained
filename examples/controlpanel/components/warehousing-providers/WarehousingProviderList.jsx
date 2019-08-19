@@ -16,9 +16,7 @@ const WarehousingProviderList = ({ ...rest }) => (
             href={`/warehousing-providers/edit?_id=${warehousingProvider._id}`}
           >
             <a
-              href={`/warehousing-providers/edit?_id=${
-                warehousingProvider._id
-              }`}
+              href={`/warehousing-providers/edit?_id=${warehousingProvider._id}`}
             >
               {warehousingProvider._id}
             </a>

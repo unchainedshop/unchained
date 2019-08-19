@@ -1,4 +1,3 @@
-/* globals Package */
 Package.describe({
   name: 'unchained:roles',
   version: '0.31.0',

@@ -1,4 +1,3 @@
-/* globals Package */
 Package.describe({
   name: 'unchained:core-currencies',
   version: '0.31.0',

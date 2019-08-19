@@ -20,6 +20,7 @@ Collection.prototype.findOrInsertOne = async function findOrInsertOne(
 export const setupDatabase = async () => {
   const connection = await MongoClient.connect(global.__MONGO_URI__, {
     useNewUrlParser: true,
+    useUnifiedTopology: true,
     poolSize: 1
   });
   const db = await connection.db(global.__MONGO_DB_NAME__);
@@ -33,7 +34,8 @@ export const setupDatabase = async () => {
 export const wipeDatabase = async () => {
   const connectionUri = await global.__MONGOD__.getConnectionString();
   const connection = await MongoClient.connect(connectionUri, {
-    useNewUrlParser: true
+    useNewUrlParser: true,
+    useUnifiedTopology: true
   });
   const db = await connection.db(global.__MONGO_DB_NAME__);
   await db.dropDatabase();

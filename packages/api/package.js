@@ -1,4 +1,3 @@
-/* globals Package */
 Package.describe({
   name: 'unchained:api',
   version: '0.31.0', // eslint-disable-line

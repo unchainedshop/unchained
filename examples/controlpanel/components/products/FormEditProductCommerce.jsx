@@ -194,9 +194,7 @@ export default compose(
       .map(
         key =>
           productPricingMap[key] && {
-            countryCurrency: `${productPricingMap[key].countryCode} / ${
-              productPricingMap[key].currencyCode
-            }`,
+            countryCurrency: `${productPricingMap[key].countryCode} / ${productPricingMap[key].currencyCode}`,
             ...productPricingMap[key]
           }
       )
