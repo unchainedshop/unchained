@@ -640,6 +640,7 @@ Collections.Assortments.helpers({
       .fetch()
       .map(({ childAssortmentId }) => childAssortmentId);
 
+    // TODO: Preserve id order!
     const selector = { _id: { $in: assortmentIds } };
     if (!includeInactive) {
       selector.isActive = true;
@@ -657,6 +658,7 @@ Collections.Assortments.helpers({
       .fetch()
       .map(({ parentAssortmentId }) => parentAssortmentId);
 
+    // TODO: Preserve id order!
     const selector = { _id: { $in: assortmentIds } };
     if (!includeInactive) {
       selector.isActive = true;

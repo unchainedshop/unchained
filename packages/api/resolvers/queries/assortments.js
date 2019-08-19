@@ -19,9 +19,12 @@ export default function(
   if (!includeInactive) {
     selector.isActive = true;
   }
-  const assortments = Assortments.find(selector, {
+  const sort = { sequence: 1 };
+  const options = {
     skip: offset,
-    limit
-  }).fetch();
+    limit,
+    sort
+  };
+  const assortments = Assortments.find(selector, options).fetch();
   return assortments;
 }
