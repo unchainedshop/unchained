@@ -2,7 +2,7 @@ import 'meteor/dburles:collection-helpers';
 import { Promise } from 'meteor/promise';
 import { Countries } from 'meteor/unchained:core-countries';
 import { Products, ProductStatus } from 'meteor/unchained:core-products';
-import { slugify } from 'meteor/unchained:utils';
+import { slugify, findPreservingIds } from 'meteor/unchained:utils';
 import { Filters } from 'meteor/unchained:core-filters';
 import { findLocalizedText } from 'meteor/unchained:core';
 import { Locale } from 'locale';
@@ -583,39 +583,16 @@ Collections.Assortments.helpers({
       _id: { $in: productIds }
     };
 
-    const filteredPipeline = [
-      {
-        $match: filteredSelector
-      },
-      {
-        $addFields: {
-          index: { $indexOfArray: [filteredProductIds, '$_id'] }
-        }
-      },
-      {
-        $sort: {
-          index: 1
-        }
-      },
-      { $skip: offset },
-      { $limit: limit }
-    ];
-
-    const rawProducts = Products.rawCollection();
-    const aggregateProducts = Meteor.wrapAsync(
-      rawProducts.aggregate,
-      rawProducts
-    );
-
     return {
       totalCount: () => Products.find(unfilteredSelector, options).count(),
       filteredCount() {
         return Products.find(filteredSelector, options).count();
       },
       async items() {
-        const aggregationPointer = aggregateProducts(filteredPipeline);
-        const items = await aggregationPointer.toArray();
-        return items.map(item => new Products._transform(item)); // eslint-disable-line
+        return findPreservingIds(Products)(selector, filteredProductIds, {
+          offset,
+          limit
+        });
       }
     };
   },
@@ -640,12 +617,8 @@ Collections.Assortments.helpers({
       .fetch()
       .map(({ childAssortmentId }) => childAssortmentId);
 
-    // TODO: Preserve id order!
-    const selector = { _id: { $in: assortmentIds } };
-    if (!includeInactive) {
-      selector.isActive = true;
-    }
-    return Collections.Assortments.find(selector).fetch();
+    const selector = !includeInactive ? { isActive: true } : {};
+    return findPreservingIds(Collections.Assortments)(selector, assortmentIds);
   },
   parents({ includeInactive = false } = {}) {
     const assortmentIds = Collections.AssortmentLinks.find(
@@ -658,12 +631,8 @@ Collections.Assortments.helpers({
       .fetch()
       .map(({ parentAssortmentId }) => parentAssortmentId);
 
-    // TODO: Preserve id order!
-    const selector = { _id: { $in: assortmentIds } };
-    if (!includeInactive) {
-      selector.isActive = true;
-    }
-    return Collections.Assortments.find(selector).fetch();
+    const selector = !includeInactive ? { isActive: true } : {};
+    return findPreservingIds(Collections.Assortments)(selector, assortmentIds);
   },
   collectProductIdCache(ownProductIdCache, linkedAssortmentsCache) {
     const ownProductIds =

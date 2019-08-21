@@ -12,6 +12,7 @@ export fakeTimestampFields from './fake-timestamp-fields';
 
 export fakeAddress from './fake-address';
 export objectInvert from './object-invert';
+export findPreservingIds from './find-preserving-ids';
 export slugify from './slugify';
 
 const Schemas = {
