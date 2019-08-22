@@ -145,12 +145,13 @@ export default compose(
               updateHasMore(false);
               return previousResult;
             }
-            return Object.assign({}, previousResult, {
+            return {
+              ...previousResult,
               products: [
                 ...previousResult.products,
                 ...fetchMoreResult.products
               ]
-            });
+            };
           }
         })
     })

@@ -23,16 +23,8 @@ function getComponentDisplayName(Component) {
   return Component.displayName || Component.name || 'Unknown';
 }
 
-export default ComposedComponent =>
+export default ComposedComponent => {
   class WithData extends React.Component {
-    static displayName = `WithData(${getComponentDisplayName(
-      ComposedComponent
-    )})`;
-
-    static propTypes = {
-      serverState: PropTypes.object.isRequired, //eslint-disable-line
-    };
-
     constructor(props) {
       super(props);
 
@@ -118,4 +110,15 @@ export default ComposedComponent =>
         </ApolloProvider>
       );
     }
+  }
+
+  WithData.displayName = `WithData(${getComponentDisplayName(
+    ComposedComponent
+  )})`;
+
+  WithData.propTypes = {
+    serverState: PropTypes.object.isRequired, //eslint-disable-line
   };
+
+  return WithData;
+};

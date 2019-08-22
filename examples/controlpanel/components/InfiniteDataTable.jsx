@@ -134,7 +134,7 @@ export const withDataTableLoader = ({
 
               const newObj = {};
               newObj[queryName] = [...previousResult[queryName], ...newIds];
-              return Object.assign({}, previousResult, newObj);
+              return { ...previousResult, ...newObj };
             }
           })
       })

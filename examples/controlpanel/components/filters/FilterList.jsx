@@ -145,9 +145,10 @@ export default compose(
               updateHasMore(false);
               return previousResult;
             }
-            return Object.assign({}, previousResult, {
+            return {
+              ...previousResult,
               filters: [...previousResult.filters, ...fetchMoreResult.filters]
-            });
+            };
           }
         })
     })

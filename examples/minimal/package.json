@@ -48,7 +48,7 @@
     "mjml": "^4.4.1",
     "moment": "^2.24.0",
     "moniker": "^0.1.2",
-    "mustache": "^3.0.1",
+    "mustache": "^3.0.2",
     "node-cache": "^4.2.1",
     "node-sheets": "^1.0.0",
     "open": "^6.4.0",
