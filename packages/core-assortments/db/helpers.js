@@ -6,15 +6,52 @@ import { slugify, findPreservingIds } from 'meteor/unchained:utils';
 import { Filters } from 'meteor/unchained:core-filters';
 import { findLocalizedText } from 'meteor/unchained:core';
 import { Locale } from 'locale';
-import {
-  walkUpFromProduct,
-  walkUpFromAssortment
-} from '../breadcrumbs/build-paths';
+import { makeBreadcrumbsBuilder } from '../breadcrumbs';
 import * as Collections from './collections';
 
-function eqSet(as, bs) {
+const eqSet = (as, bs) => {
   return [...as].join(',') === [...bs].join(',');
-}
+};
+
+export const resolveAssortmentLinkFromDatabase = ({
+  locale,
+  selector = {}
+} = {}) => (assortmentId, childAssortmentId) => {
+  const assortment = Collections.Assortments.findOne({
+    _id: assortmentId,
+    ...selector
+  });
+  return (
+    assortment && {
+      assortmentId,
+      childAssortmentId,
+      assortmentSlug: assortment.getLocalizedTexts(locale).slug,
+      parentIds: assortment.parentIds()
+    }
+  );
+};
+
+export const resolveAssortmentProductsFromDatabase = ({
+  selector = {}
+} = {}) => productId => {
+  return Collections.AssortmentProducts.find(
+    { productId, ...selector },
+    { fields: { _id: true, assortmentId: true } }
+  ).fetch();
+};
+
+export const makeAssortmentBreadcrumbsBuilder = ({
+  locale,
+  resolveAssortmentProducts,
+  resolveAssortmentLink
+}) => {
+  return makeBreadcrumbsBuilder({
+    resolveAssortmentProducts:
+      resolveAssortmentProducts || resolveAssortmentProductsFromDatabase(),
+    resolveAssortmentLink:
+      resolveAssortmentLink || resolveAssortmentLinkFromDatabase({ locale })
+  });
+};
 
 Collections.Assortments.createAssortment = ({
   locale,
@@ -345,34 +382,9 @@ Products.helpers({
     return Collections.Assortments.find(selector, options).fetch();
   },
   assortmentPaths({ locale } = {}) {
-    const resolveAssortmentLinkFromDatabase = (
-      assortmentId,
-      childAssortmentId
-    ) => {
-      const assortment = Collections.Assortments.findOne({
-        _id: assortmentId
-      });
-      return (
-        assortment && {
-          assortmentId,
-          childAssortmentId,
-          assortmentSlug: assortment.getLocalizedTexts(locale).slug,
-          parentIds: assortment.parentIds()
-        }
-      );
-    };
-
-    const resolveAssortmentProductsFromDatabase = productId => {
-      return Collections.AssortmentProducts.find(
-        { productId },
-        { fields: { _id: true, assortmentId: true } }
-      ).fetch();
-    };
-
+    const build = makeAssortmentBreadcrumbsBuilder({ locale });
     return Promise.await(
-      walkUpFromProduct({
-        resolveAssortmentProducts: resolveAssortmentProductsFromDatabase,
-        resolveAssortmentLink: resolveAssortmentLinkFromDatabase,
+      build({
         productId: this._id
       })
     );
@@ -697,26 +709,9 @@ Collections.Assortments.helpers({
     return updateCount;
   },
   assortmentPaths({ locale } = {}) {
-    const resolveAssortmentLinkFromDatabase = (
-      assortmentId,
-      childAssortmentId
-    ) => {
-      const assortment = Collections.Assortments.findOne({
-        _id: assortmentId
-      });
-      return (
-        assortment && {
-          assortmentId,
-          childAssortmentId,
-          assortmentSlug: assortment.getLocalizedTexts(locale).slug,
-          parentIds: assortment.parentIds()
-        }
-      );
-    };
-
+    const build = makeAssortmentBreadcrumbsBuilder({ locale });
     return Promise.await(
-      walkUpFromAssortment({
-        resolveAssortmentLink: resolveAssortmentLinkFromDatabase,
+      build({
         assortmentId: this._id
       })
     );
