@@ -6,7 +6,10 @@ import { slugify, findPreservingIds } from 'meteor/unchained:utils';
 import { Filters } from 'meteor/unchained:core-filters';
 import { findLocalizedText } from 'meteor/unchained:core';
 import { Locale } from 'locale';
-import { walkUpFromProduct, walkUpFromAssortment } from './helpers/build-paths';
+import {
+  walkUpFromProduct,
+  walkUpFromAssortment
+} from '../breadcrumbs/build-paths';
 import * as Collections from './collections';
 
 function eqSet(as, bs) {
@@ -354,11 +357,7 @@ Products.helpers({
           assortmentId,
           childAssortmentId,
           assortmentSlug: assortment.getLocalizedTexts(locale).slug,
-          parentIds: assortment.isRoot
-            ? []
-            : assortment
-                .parents({ includeInactive: false })
-                .map(({ _id }) => _id)
+          parentIds: assortment.parentIds()
         }
       );
     };
@@ -620,8 +619,8 @@ Collections.Assortments.helpers({
     const selector = !includeInactive ? { isActive: true } : {};
     return findPreservingIds(Collections.Assortments)(selector, assortmentIds);
   },
-  parents({ includeInactive = false } = {}) {
-    const assortmentIds = Collections.AssortmentLinks.find(
+  parentIds() {
+    return Collections.AssortmentLinks.find(
       { childAssortmentId: this._id },
       {
         fields: { parentAssortmentId: 1 },
@@ -630,9 +629,13 @@ Collections.Assortments.helpers({
     )
       .fetch()
       .map(({ parentAssortmentId }) => parentAssortmentId);
-
+  },
+  parents({ includeInactive = false } = {}) {
     const selector = !includeInactive ? { isActive: true } : {};
-    return findPreservingIds(Collections.Assortments)(selector, assortmentIds);
+    return findPreservingIds(Collections.Assortments)(
+      selector,
+      this.parentIds()
+    );
   },
   collectProductIdCache(ownProductIdCache, linkedAssortmentsCache) {
     const ownProductIds =
@@ -706,11 +709,7 @@ Collections.Assortments.helpers({
           assortmentId,
           childAssortmentId,
           assortmentSlug: assortment.getLocalizedTexts(locale).slug,
-          parentIds: assortment.isRoot
-            ? []
-            : assortment
-                .parents({ includeInactive: false })
-                .map(({ _id }) => _id)
+          parentIds: assortment.parentIds()
         }
       );
     };
