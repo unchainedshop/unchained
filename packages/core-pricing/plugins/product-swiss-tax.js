@@ -15,7 +15,7 @@ class ProductSwissTax extends ProductPricingAdapter {
   static orderIndex = 20;
 
   static isActivatedFor(ctx) {
-    if (ctx.order && ctx.order.countryCode === 'CH') {
+    if (ctx.country === 'CH') {
       return true; // check if delivery address is in switzerland?
     }
     return false;

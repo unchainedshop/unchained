@@ -4,6 +4,9 @@ import {
   ProductPricingSheetRowCategories
 } from 'meteor/unchained:core-pricing';
 
+const applyRate = ({ rate, fixedRate }, amount) =>
+  rate ? amount * rate : Math.min(fixedRate, amount);
+
 class ProductDiscount extends ProductPricingAdapter {
   static key = 'shop.unchained.pricing.product-discount';
 
@@ -17,6 +20,17 @@ class ProductDiscount extends ProductPricingAdapter {
     return true;
   }
 
+  addDiscount(discount, total, isTaxable) {
+    const { configuration, discountId } = discount;
+    const amount = applyRate(configuration, total);
+    this.result.addDiscount({
+      amount: amount * -1,
+      isTaxable,
+      discountId,
+      meta: { adapter: this.constructor.key }
+    });
+  }
+
   async calculate() {
     const taxableTotal = this.calculation.sum({
       category: ProductPricingSheetRowCategories.Item,
@@ -27,29 +41,12 @@ class ProductDiscount extends ProductPricingAdapter {
       isTaxable: false
     });
 
-    this.discounts.forEach(({ configuration, discountId }) => {
+    this.discounts.forEach(discount => {
       if (taxableTotal !== 0) {
-        const amount = configuration.rate
-          ? taxableTotal * configuration.rate
-          : Math.min(configuration.fixedRate, taxableTotal);
-
-        this.result.addDiscount({
-          amount: amount * -1,
-          isTaxable: true,
-          discountId,
-          meta: { adapter: this.constructor.key }
-        });
+        this.addDiscount(discount, taxableTotal, true);
       }
       if (nonTaxableTotal !== 0) {
-        const amount = configuration.rate
-          ? nonTaxableTotal * configuration.rate
-          : Math.min(configuration.fixedRate, nonTaxableTotal);
-        this.result.addDiscount({
-          amount: amount * -1,
-          isTaxable: false,
-          discountId,
-          meta: { adapter: this.constructor.key }
-        });
+        this.addDiscount(discount, nonTaxableTotal, false);
       }
     });
 
