@@ -1,5 +1,5 @@
 export default {
-  url(obj) {
-    return obj.link();
+  url(obj, { version, baseUrl }) {
+    return obj.link(version, baseUrl);
   }
 };
