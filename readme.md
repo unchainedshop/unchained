@@ -9,7 +9,7 @@ Licensed under the EUPL 1.2
 ### Prerequisites
 
 - Meteor 1.8.1
-- Node.js 8.9.3 (lts/carbon, see [.nvmrc](.nvmrc))
+- Node.js 8.16.0 (lts/carbon, see [.nvmrc](.nvmrc))
 
 ### Run the example
 
