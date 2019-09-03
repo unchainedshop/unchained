@@ -173,10 +173,14 @@ Products.helpers({
   normalizedStatus() {
     return objectInvert(ProductStatus)[this.status || null];
   },
-  media() {
+  media({ limit, offset }) {
     return ProductMedia.find(
       { productId: this._id },
-      { sort: { sortKey: 1 } }
+      {
+        skip: offset,
+        limit,
+        sort: { sortKey: 1 }
+      }
     ).fetch();
   },
   variations() {

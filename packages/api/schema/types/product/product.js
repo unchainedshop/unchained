@@ -104,7 +104,7 @@ export default [
       updated: Date
       published: Date
       texts: ProductTexts
-      media: [ProductMedia!]
+      media(limit: Int = 10, offset: Int = 0): [ProductMedia!]!
       reviews: [ProductReview!]!
       meta: JSON
       assortments(limit: Int = 10, offset: Int = 0): [Assortment!]!

@@ -11,7 +11,7 @@ export default [
       created: Date
       updated: Date
       published: Date
-      media(vectors: [ProductAssignmentVectorInput!]): [ProductMedia!]
+      media(limit: Int = 10, offset: Int = 0): [ProductMedia!]!
       texts(forceLocale: String): ProductTexts
       assortments(limit: Int = 10, offset: Int = 0): [Assortment!]!
         @deprecated(
