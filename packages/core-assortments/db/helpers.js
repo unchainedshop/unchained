@@ -617,7 +617,7 @@ Collections.Assortments.helpers({
       }
     ).fetch();
   },
-  children({ includeInactive = false } = {}) {
+  async children({ includeInactive = false } = {}) {
     const assortmentIds = Collections.AssortmentLinks.find(
       { parentAssortmentId: this._id },
       {
@@ -633,16 +633,19 @@ Collections.Assortments.helpers({
   },
   parentIds() {
     return Collections.AssortmentLinks.find(
-      { childAssortmentId: this._id },
+      {
+        childAssortmentId: this._id
+      },
       {
         fields: { parentAssortmentId: 1 },
         sort: { sortKey: 1 }
       }
     )
       .fetch()
-      .map(({ parentAssortmentId }) => parentAssortmentId);
+      .map(({ parentAssortmentId }) => parentAssortmentId)
+      .filter(Boolean);
   },
-  parents({ includeInactive = false } = {}) {
+  async parents({ includeInactive = false } = {}) {
     const selector = !includeInactive ? { isActive: true } : {};
     return findPreservingIds(Collections.Assortments)(
       selector,
