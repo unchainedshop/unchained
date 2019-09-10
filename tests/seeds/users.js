@@ -59,3 +59,9 @@ export const User = {
     }
   }
 };
+
+export default async function seedUsers(db) {
+  const Users = db.collection('users');
+  await Users.findOrInsertOne(Admin);
+  await Users.findOrInsertOne(User);
+}

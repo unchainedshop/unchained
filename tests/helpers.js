@@ -3,7 +3,8 @@ import { execute, makePromise } from 'apollo-link';
 import { createUploadLink } from 'apollo-upload-client';
 import gql from 'graphql-tag';
 import fetch from 'isomorphic-unfetch';
-import { Admin, User, ADMIN_TOKEN } from './seeds/users';
+import seedUsers, { ADMIN_TOKEN } from './seeds/users';
+import seedProducts from './seeds/products';
 
 Collection.prototype.findOrInsertOne = async function findOrInsertOne(
   doc,
@@ -25,9 +26,9 @@ export const setupDatabase = async () => {
   });
   const db = await connection.db(global.__MONGO_DB_NAME__);
   await db.dropDatabase();
-  const Users = db.collection('users');
-  await Users.findOrInsertOne(Admin);
-  await Users.findOrInsertOne(User);
+  await seedUsers(db);
+  await seedProducts(db);
+
   return [db, connection];
 };
 
