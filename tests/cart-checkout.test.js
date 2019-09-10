@@ -114,9 +114,55 @@ describe('cart checkout', () => {
           productId: SimpleProduct._id
         }
       });
-      console.log(addCartProduct);
       expect(addCartProduct).toMatchObject({
         quantity: 1
+      });
+    });
+  });
+
+  describe('Mutation.addMultipleCartProducts', () => {
+    it('add multiple products to the cart', async () => {
+      const { data: { addMultipleCartProducts } = {} } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation addMultipleCartProducts($items: [OrderItemInput!]!) {
+            addMultipleCartProducts(items: $items) {
+              _id
+              quantity
+              product {
+                _id
+              }
+              configuration {
+                key
+                value
+              }
+            }
+          }
+        `,
+        variables: {
+          items: [
+            {
+              productId: SimpleProduct._id,
+              quantity: 2,
+              configuration: [{ key: 'height', value: '5' }]
+            },
+            {
+              productId: SimpleProduct._id,
+              quantity: 2,
+              configuration: [{ key: 'height', value: '5' }]
+            }
+          ]
+        }
+      });
+      expect(addMultipleCartProducts.pop()).toMatchObject({
+        quantity: 4,
+        product: {
+          _id: SimpleProduct._id
+        },
+        configuration: [
+          {
+            key: 'height'
+          }
+        ]
       });
     });
   });
