@@ -5,7 +5,7 @@ import { WarehousingProviders } from 'meteor/unchained:core-warehousing';
 import { DeliveryProviders } from 'meteor/unchained:core-delivery';
 import { Countries } from 'meteor/unchained:core-countries';
 import { findLocalizedText } from 'meteor/unchained:core';
-import { objectInvert, slugify } from 'meteor/unchained:utils';
+import { objectInvert, findUnusedSlug } from 'meteor/unchained:utils';
 import { Locale } from 'locale';
 import crypto from 'crypto';
 import { Products, ProductTexts } from './collections';
@@ -98,12 +98,14 @@ Products.helpers({
     locale,
     { slug: propablyUsedSlug, title = null, ...fields }
   ) {
-    const slug = ProductTexts.getUnusedSlug(
-      propablyUsedSlug || title || this._id,
+    const slug = findUnusedSlug(ProductTexts)(
+      {
+        slug: propablyUsedSlug,
+        title: title || this._id
+      },
       {
         productId: { $ne: this._id }
-      },
-      !!propablyUsedSlug
+      }
     );
 
     ProductTexts.upsert(
@@ -407,11 +409,3 @@ Products.helpers({
 
 Products.getLocalizedTexts = (productId, locale) =>
   findLocalizedText(ProductTexts, { productId }, locale);
-
-ProductTexts.getUnusedSlug = (strValue, scope, isAlreadySlugified) => {
-  const slug = isAlreadySlugified ? strValue : `${slugify(strValue)}`;
-  if (ProductTexts.find({ ...scope, slug }).count() > 0) {
-    return ProductTexts.getUnusedSlug(`${slug}-`, scope, true);
-  }
-  return slug;
-};

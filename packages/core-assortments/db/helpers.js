@@ -2,7 +2,7 @@ import 'meteor/dburles:collection-helpers';
 import { Promise } from 'meteor/promise';
 import { Countries } from 'meteor/unchained:core-countries';
 import { Products, ProductStatus } from 'meteor/unchained:core-products';
-import { slugify, findPreservingIds } from 'meteor/unchained:utils';
+import { findUnusedSlug, findPreservingIds } from 'meteor/unchained:utils';
 import { Filters } from 'meteor/unchained:core-filters';
 import { findLocalizedText } from 'meteor/unchained:core';
 import { Locale } from 'locale';
@@ -243,18 +243,6 @@ Collections.Assortments.getNewSequence = oldSequence => {
 Collections.Assortments.getLocalizedTexts = (assortmentId, locale) =>
   findLocalizedText(Collections.AssortmentTexts, { assortmentId }, locale);
 
-Collections.AssortmentTexts.getUnusedSlug = (
-  strValue,
-  scope,
-  isAlreadySlugified
-) => {
-  const slug = isAlreadySlugified ? strValue : `${slugify(strValue)}`;
-  if (Collections.AssortmentTexts.find({ ...scope, slug }).count() > 0) {
-    return Collections.AssortmentTexts.getUnusedSlug(`${slug}-`, scope, true);
-  }
-  return slug;
-};
-
 Collections.AssortmentProducts.getNewSortKey = assortmentId => {
   const lastAssortmentProduct = Collections.AssortmentProducts.findOne(
     {
@@ -419,12 +407,14 @@ Collections.Assortments.helpers({
     return Countries.findOne({ isoCode: this.countryCode });
   },
   upsertLocalizedText(locale, { slug: propablyUsedSlug, title, ...fields }) {
-    const slug = Collections.AssortmentTexts.getUnusedSlug(
-      propablyUsedSlug || title || this._id,
+    const slug = findUnusedSlug(Collections.AssortmentTexts)(
+      {
+        slug: propablyUsedSlug,
+        title: title || this._id
+      },
       {
         assortmentId: { $ne: this._id }
-      },
-      !!propablyUsedSlug
+      }
     );
 
     Collections.AssortmentTexts.upsert(
