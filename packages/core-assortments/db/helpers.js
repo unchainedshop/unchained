@@ -705,8 +705,11 @@ Collections.Assortments.helpers({
   }
 });
 
-Collections.AssortmentTexts.makeSlug = ({ slug, title, assortmentId }) => {
-  return findUnusedSlug(Collections.AssortmentTexts)(
+Collections.AssortmentTexts.makeSlug = (
+  { slug, title, assortmentId },
+  options
+) => {
+  return findUnusedSlug(Collections.AssortmentTexts, options)(
     {
       existingSlug: slug,
       title: title || assortmentId

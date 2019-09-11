@@ -57,8 +57,8 @@ Products.getNewSequence = oldSequence => {
   return sequence;
 };
 
-ProductTexts.makeSlug = ({ slug, title, productId }) => {
-  return findUnusedSlug(ProductTexts)(
+ProductTexts.makeSlug = ({ slug, title, productId }, options) => {
+  return findUnusedSlug(ProductTexts, options)(
     {
       existingSlug: slug,
       title: title || productId

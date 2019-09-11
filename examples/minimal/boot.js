@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { startPlatform } from 'meteor/unchained:platform';
 import { Users } from 'meteor/unchained:core-users';
+
 import { Factory } from 'meteor/dburles:factory';
 
 import 'meteor/unchained:core-delivery/plugins/send-mail';
