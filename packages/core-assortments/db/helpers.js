@@ -2,7 +2,7 @@ import 'meteor/dburles:collection-helpers';
 import { Promise } from 'meteor/promise';
 import { Countries } from 'meteor/unchained:core-countries';
 import { Products, ProductStatus } from 'meteor/unchained:core-products';
-import { slugify, findPreservingIds } from 'meteor/unchained:utils';
+import { findUnusedSlug, findPreservingIds } from 'meteor/unchained:utils';
 import { Filters } from 'meteor/unchained:core-filters';
 import { findLocalizedText } from 'meteor/unchained:core';
 import { Locale } from 'locale';
@@ -243,18 +243,6 @@ Collections.Assortments.getNewSequence = oldSequence => {
 Collections.Assortments.getLocalizedTexts = (assortmentId, locale) =>
   findLocalizedText(Collections.AssortmentTexts, { assortmentId }, locale);
 
-Collections.AssortmentTexts.getUnusedSlug = (
-  strValue,
-  scope,
-  isAlreadySlugified
-) => {
-  const slug = isAlreadySlugified ? strValue : `${slugify(strValue)}`;
-  if (Collections.AssortmentTexts.find({ ...scope, slug }).count() > 0) {
-    return Collections.AssortmentTexts.getUnusedSlug(`${slug}-`, scope, true);
-  }
-  return slug;
-};
-
 Collections.AssortmentProducts.getNewSortKey = assortmentId => {
   const lastAssortmentProduct = Collections.AssortmentProducts.findOne(
     {
@@ -418,15 +406,7 @@ Collections.Assortments.helpers({
   country() {
     return Countries.findOne({ isoCode: this.countryCode });
   },
-  upsertLocalizedText(locale, { slug: propablyUsedSlug, title, ...fields }) {
-    const slug = Collections.AssortmentTexts.getUnusedSlug(
-      propablyUsedSlug || title || this._id,
-      {
-        assortmentId: { $ne: this._id }
-      },
-      !!propablyUsedSlug
-    );
-
+  upsertLocalizedText(locale, { slug, title, ...fields }) {
     Collections.AssortmentTexts.upsert(
       {
         assortmentId: this._id,
@@ -436,7 +416,11 @@ Collections.Assortments.helpers({
         $set: {
           title,
           locale,
-          slug,
+          slug: Collections.AssortmentTexts.makeSlug({
+            slug,
+            title,
+            assortmentId: this._id
+          }),
           ...fields,
           updated: new Date()
         }
@@ -720,6 +704,21 @@ Collections.Assortments.helpers({
     );
   }
 });
+
+Collections.AssortmentTexts.makeSlug = (
+  { slug, title, assortmentId },
+  options
+) => {
+  return findUnusedSlug(Collections.AssortmentTexts, options)(
+    {
+      existingSlug: slug,
+      title: title || assortmentId
+    },
+    {
+      assortmentId: { $ne: assortmentId }
+    }
+  );
+};
 
 Collections.AssortmentLinks.helpers({
   child() {

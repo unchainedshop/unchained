@@ -114,6 +114,23 @@ Now the cart looks like this:
 1 x Bundle Z
 
 
+### Configure Slugs
+
+You can override the default slugify function for certain core modules like that:
+
+```
+import { ProductTexts } from 'meteor/unchained:core-products';
+const oldMakeSlug = ProductTexts.makeSlug;
+ProductTexts.makeSlug = rest =>
+  oldMakeSlug(rest, {
+    slugify: (title) => {
+      return 'fu';
+    }
+  });
+```
+
+Currently ProductTexts from core-products and AssortmentTexts from core-assortments are supported.
+
 ### Integrate Control Panel in Unchained Project
 
 1. Add @unchainedshop/controlpanel as dependency
