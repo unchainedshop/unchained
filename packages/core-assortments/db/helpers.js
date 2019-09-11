@@ -406,17 +406,7 @@ Collections.Assortments.helpers({
   country() {
     return Countries.findOne({ isoCode: this.countryCode });
   },
-  upsertLocalizedText(locale, { slug: propablyUsedSlug, title, ...fields }) {
-    const slug = findUnusedSlug(Collections.AssortmentTexts)(
-      {
-        slug: propablyUsedSlug,
-        title: title || this._id
-      },
-      {
-        assortmentId: { $ne: this._id }
-      }
-    );
-
+  upsertLocalizedText(locale, { slug, title, ...fields }) {
     Collections.AssortmentTexts.upsert(
       {
         assortmentId: this._id,
@@ -426,7 +416,11 @@ Collections.Assortments.helpers({
         $set: {
           title,
           locale,
-          slug,
+          slug: Collections.AssortmentTexts.makeSlug({
+            slug,
+            title,
+            assortmentId: this._id
+          }),
           ...fields,
           updated: new Date()
         }
@@ -710,6 +704,18 @@ Collections.Assortments.helpers({
     );
   }
 });
+
+Collections.AssortmentTexts.makeSlug = ({ slug, title, assortmentId }) => {
+  return findUnusedSlug(Collections.AssortmentTexts)(
+    {
+      slug,
+      title: title || assortmentId
+    },
+    {
+      assortmentId: { $ne: assortmentId }
+    }
+  );
+};
 
 Collections.AssortmentLinks.helpers({
   child() {

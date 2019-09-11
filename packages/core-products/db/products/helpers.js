@@ -57,6 +57,18 @@ Products.getNewSequence = oldSequence => {
   return sequence;
 };
 
+ProductTexts.makeSlug = ({ slug, title, productId }) => {
+  return findUnusedSlug(ProductTexts)(
+    {
+      slug,
+      title: title || productId
+    },
+    {
+      productId: { $ne: productId }
+    }
+  );
+};
+
 Products.helpers({
   publish() {
     switch (this.status) {
@@ -94,20 +106,7 @@ Products.helpers({
         return false;
     }
   },
-  upsertLocalizedText(
-    locale,
-    { slug: propablyUsedSlug, title = null, ...fields }
-  ) {
-    const slug = findUnusedSlug(ProductTexts)(
-      {
-        slug: propablyUsedSlug,
-        title: title || this._id
-      },
-      {
-        productId: { $ne: this._id }
-      }
-    );
-
+  upsertLocalizedText(locale, { slug, title = null, ...fields }) {
     ProductTexts.upsert(
       {
         productId: this._id,
@@ -118,7 +117,11 @@ Products.helpers({
           updated: new Date(),
           title,
           locale,
-          slug,
+          slug: ProductTexts.makeSlug({
+            slug,
+            title,
+            productId: this._id
+          }),
           ...fields
         }
       },
