@@ -708,7 +708,7 @@ Collections.Assortments.helpers({
 Collections.AssortmentTexts.makeSlug = ({ slug, title, assortmentId }) => {
   return findUnusedSlug(Collections.AssortmentTexts)(
     {
-      slug,
+      existingSlug: slug,
       title: title || assortmentId
     },
     {
