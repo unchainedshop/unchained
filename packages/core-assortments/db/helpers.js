@@ -6,11 +6,33 @@ import { findUnusedSlug, findPreservingIds } from 'meteor/unchained:utils';
 import { Filters } from 'meteor/unchained:core-filters';
 import { findLocalizedText } from 'meteor/unchained:core';
 import { Locale } from 'locale';
+import * as R from 'ramda';
 import { makeBreadcrumbsBuilder } from '../breadcrumbs';
 import * as Collections from './collections';
 
 const eqSet = (as, bs) => {
   return [...as].join(',') === [...bs].join(',');
+};
+
+const fill = (arr, size) => [...arr, ...new Array(size).fill(null)];
+const aryFill = size => (...arrs) => arrs.map(arr => fill(arr, size));
+
+const zipTreeByDeepness = arrayOfArrays => {
+  const maxLength = arrayOfArrays.reduce((accumulator, array) => {
+    return Math.max(accumulator, array.length);
+  }, 0);
+
+  const shuffled = arrayOfArrays.reduce((a, b) => {
+    return R.pipe(
+      R.zip,
+      R.filter(Boolean)
+    )(...aryFill(maxLength)(a, b));
+  }, []);
+
+  return R.pipe(
+    R.flatten,
+    R.filter(Boolean)
+  )(shuffled);
 };
 
 export const resolveAssortmentLinkFromDatabase = ({
@@ -406,7 +428,12 @@ Collections.Assortments.helpers({
   country() {
     return Countries.findOne({ isoCode: this.countryCode });
   },
-  upsertLocalizedText(locale, { slug, title, ...fields }) {
+  upsertLocalizedText(locale, { slug: forcedSlug, title, ...fields }) {
+    const slug = Collections.AssortmentTexts.makeSlug({
+      slug: forcedSlug,
+      title,
+      assortmentId: this._id
+    });
     Collections.AssortmentTexts.upsert(
       {
         assortmentId: this._id,
@@ -416,11 +443,7 @@ Collections.Assortments.helpers({
         $set: {
           title,
           locale,
-          slug: Collections.AssortmentTexts.makeSlug({
-            slug,
-            title,
-            assortmentId: this._id
-          }),
+          slug,
           ...fields,
           updated: new Date()
         }
@@ -517,9 +540,13 @@ Collections.Assortments.helpers({
       }
     ).fetch();
   },
-  productIds({ forceLiveCollection = false } = {}) {
+  productIds({
+    forceLiveCollection = false,
+    zipperFunction = zipTreeByDeepness
+  } = {}) {
     if (!this._cachedProductIds || forceLiveCollection) {  // eslint-disable-line
-      return this.collectProductIdCache() || [];
+      const collectedProductIdTree = this.collectProductIdCacheTree() || [];
+      return [...new Set(zipperFunction(collectedProductIdTree))];
     }
     return this._cachedProductIds; // eslint-disable-line
   },
@@ -550,7 +577,7 @@ Collections.Assortments.helpers({
     offset,
     query,
     sort = {},
-    forceLiveCollection = false,
+    forceLiveCollection = true,
     includeInactive = false
   } = {}) {
     const productIds = this.productIds({ forceLiveCollection });
@@ -636,42 +663,29 @@ Collections.Assortments.helpers({
       this.parentIds()
     );
   },
-  collectProductIdCache(ownProductIdCache, linkedAssortmentsCache) {
-    const ownProductIds =
-      ownProductIdCache ||
-      this.productAssignments().map(({ productId }) => productId);
-
-    const linkedAssortments =
-      linkedAssortmentsCache || this.linkedAssortments();
+  collectProductIdCacheTree() {
+    const ownProductIds = this.productAssignments().map(
+      ({ productId }) => productId
+    );
+    const linkedAssortments = this.linkedAssortments();
 
     const childAssortments = linkedAssortments.filter(
       ({ parentAssortmentId }) => parentAssortmentId === this._id
     );
 
-    const productIds = childAssortments.reduce(
-      (accumulator, childAssortment) => {
-        const assortment = childAssortment.child();
-        if (assortment) {
-          return accumulator.concat(assortment.collectProductIdCache());
-        }
-        return accumulator;
-      },
-      []
-    );
+    const productIds = childAssortments.map(childAssortment => {
+      const assortment = childAssortment.child();
+      if (assortment) {
+        return assortment.collectProductIdCacheTree();
+      }
+      return [];
+    });
 
-    return [...ownProductIds, ...productIds];
+    return [ownProductIds, ...productIds];
   },
   invalidateProductIdCache() {
-    const ownProductIds = this.productAssignments().map(
-      ({ productId }) => productId
-    );
     const linkedAssortments = this.linkedAssortments();
-    const childProductIds = this.collectProductIdCache(
-      ownProductIds,
-      linkedAssortments
-    );
-
-    const productIds = [...new Set([...ownProductIds, ...childProductIds])];
+    const productIds = this.productIds({ forceLiveCollection: true });
 
     if (eqSet(new Set(productIds), new Set(this._cachedProductIds))) { // eslint-disable-line
       return 0;
