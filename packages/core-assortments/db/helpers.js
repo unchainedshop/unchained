@@ -14,21 +14,19 @@ const eqSet = (as, bs) => {
   return [...as].join(',') === [...bs].join(',');
 };
 
-const fill = (arr, size) => [...arr, ...new Array(size).fill(null)];
-const aryFill = size => (...arrs) => arrs.map(arr => fill(arr, size));
+const fillUp = (arr, size) =>
+  [...arr, ...new Array(size).fill(null)].slice(0, size);
+
+const fillToSameLengthArray = (a, b) => {
+  const length = Math.max(a.length, b.length);
+  return [fillUp(a, length), fillUp(b, length)];
+};
 
 const zipTreeByDeepness = arrayOfArrays => {
-  const maxLength = arrayOfArrays.reduce((accumulator, array) => {
-    return Math.max(accumulator, array.length);
-  }, 0);
-
   const shuffled = arrayOfArrays.reduce((a, b) => {
-    return R.pipe(
-      R.zip,
-      R.filter(Boolean)
-    )(...aryFill(maxLength)(a, b));
+    const [accumulator, arr] = fillToSameLengthArray(a, b);
+    return R.zip(accumulator, R.flatten(arr));
   }, []);
-
   return R.pipe(
     R.flatten,
     R.filter(Boolean)
