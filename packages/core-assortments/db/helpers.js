@@ -24,8 +24,8 @@ const fillToSameLengthArray = (a, b) => {
 
 const zipTreeByDeepness = arrayOfArrays => {
   const shuffled = arrayOfArrays.reduce((a, b) => {
-    const [accumulator, arr] = fillToSameLengthArray(a, b);
-    return R.zip(accumulator, R.flatten(arr));
+    const [accumulator, currentArray] = fillToSameLengthArray(a, b);
+    return R.zip(accumulator, R.flatten(currentArray));
   }, []);
   return R.pipe(
     R.flatten,
@@ -575,7 +575,7 @@ Collections.Assortments.helpers({
     offset,
     query,
     sort = {},
-    forceLiveCollection = true,
+    forceLiveCollection = false,
     includeInactive = false
   } = {}) {
     const productIds = this.productIds({ forceLiveCollection });
