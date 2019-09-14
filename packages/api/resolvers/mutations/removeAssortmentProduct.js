@@ -7,5 +7,6 @@ export default function(root, { assortmentProductId }, { userId }) {
     _id: assortmentProductId
   });
   AssortmentProducts.remove({ _id: assortmentProductId });
+  assortmentProduct.assortment().invalidateProductIdCache();
   return assortmentProduct;
 }

@@ -617,7 +617,7 @@ Collections.Assortments.helpers({
     offset,
     query,
     sort = {},
-    forceLiveCollection = true,
+    forceLiveCollection = false,
     includeInactive = false
   } = {}) {
     const productIds = this.productIds({ forceLiveCollection });
