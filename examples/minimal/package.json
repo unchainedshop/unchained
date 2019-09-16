@@ -52,6 +52,7 @@
     "node-cache": "^4.2.1",
     "node-sheets": "^1.0.0",
     "open": "^6.4.0",
+    "ramda": "^0.26.1",
     "simpl-schema": "^1.5.5",
     "stripe": "^7.8.0",
     "uuid": "^3.3.3",

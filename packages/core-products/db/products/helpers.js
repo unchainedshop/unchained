@@ -106,7 +106,12 @@ Products.helpers({
         return false;
     }
   },
-  upsertLocalizedText(locale, { slug, title = null, ...fields }) {
+  upsertLocalizedText(locale, { slug: forcedSlug, title = null, ...fields }) {
+    const slug = ProductTexts.makeSlug({
+      slug: forcedSlug,
+      title,
+      productId: this._id
+    });
     ProductTexts.upsert(
       {
         productId: this._id,
@@ -117,11 +122,7 @@ Products.helpers({
           updated: new Date(),
           title,
           locale,
-          slug: ProductTexts.makeSlug({
-            slug,
-            title,
-            productId: this._id
-          }),
+          slug,
           ...fields
         }
       },
