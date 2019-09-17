@@ -5,6 +5,7 @@ import configureDelivery from 'meteor/unchained:core-delivery';
 import configurePayment from 'meteor/unchained:core-payment';
 import configureWarehousing from 'meteor/unchained:core-warehousing';
 import configureProducts from 'meteor/unchained:core-products';
+import configureBookmarks from 'meteor/unchained:core-bookmarks';
 import configureQuotations from 'meteor/unchained:core-quotations';
 import configureCurrencies from 'meteor/unchained:core-currencies';
 import configureCountries from 'meteor/unchained:core-countries';
@@ -34,6 +35,7 @@ Meteor.startup(() => {
   configurePayment();
   configureWarehousing();
   configureProducts();
+  configureBookmarks();
   configureQuotations();
   configureOrders();
   configureAssortments();

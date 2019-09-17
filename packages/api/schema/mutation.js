@@ -607,6 +607,21 @@ export default [
         quotationId: ID!
         quotationContext: JSON
       ): Quotation!
+
+      """
+      Bookmarks a product as currently logged in user
+      """
+      bookmark(productId: ID!, bookmarked: Boolean = true): Bookmark
+
+      """
+      Create a bookmark for a specific user
+      """
+      createBookmark(productId: ID!, userId: ID!): Bookmark!
+
+      """
+      Remove an existing bookmark by ID
+      """
+      removeBookmark(bookmarkId: ID!): Bookmark!
     }
   `
 ];

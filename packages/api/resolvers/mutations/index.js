@@ -97,6 +97,9 @@ import requestQuotation from './requestQuotation';
 import rejectQuotation from './rejectQuotation';
 import verifyQuotation from './verifyQuotation';
 import makeQuotationProposal from './makeQuotationProposal';
+import bookmark from './bookmark';
+import createBookmark from './createBookmark';
+import removeBookmark from './removeBookmark';
 
 export default {
   ...Accounts,
@@ -256,5 +259,9 @@ export default {
   requestQuotation: acl(actions.requestQuotation)(requestQuotation),
   rejectQuotation: acl(actions.answerQuotation)(rejectQuotation),
   verifyQuotation: acl(actions.manageQuotations)(verifyQuotation),
-  makeQuotationProposal: acl(actions.manageQuotations)(makeQuotationProposal)
+  makeQuotationProposal: acl(actions.manageQuotations)(makeQuotationProposal),
+
+  bookmark: acl(actions.bookmarkProduct)(bookmark),
+  createBookmark: acl(actions.manageBookmarks)(createBookmark),
+  removeBookmark: acl(actions.manageBookmarks)(removeBookmark)
 };

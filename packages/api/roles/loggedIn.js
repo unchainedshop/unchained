@@ -7,6 +7,7 @@ import {
 } from 'meteor/unchained:core-orders';
 import { ProductReviews } from 'meteor/unchained:core-products';
 import { Quotations } from 'meteor/unchained:core-quotations';
+import { Bookmarks } from 'meteor/unchained:core-bookmarks';
 
 export default (role, actions) => {
   const isMyself = (
@@ -72,6 +73,12 @@ export default (role, actions) => {
       userId
     }).count() > 0;
 
+  const isOwnedBookmark = (root, { bookmarkId }, { userId }) =>
+    Bookmarks.find({
+      _id: bookmarkId,
+      userId
+    }).count() > 0;
+
   role.allow(actions.viewUser, isMyself);
   role.allow(actions.viewUserRoles, isMyself);
   role.allow(actions.viewUserOrders, isMyself);
@@ -91,4 +98,6 @@ export default (role, actions) => {
   role.allow(actions.updateProductReview, () => isOwnedProductReview);
   role.allow(actions.requestQuotation, () => true);
   role.allow(actions.answerQuotation, () => isOwnedQuotation);
+  role.allow(actions.manageBookmarks, () => isOwnedBookmark);
+  role.allow(actions.bookmarkProduct, () => true);
 };

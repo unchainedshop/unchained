@@ -55,6 +55,8 @@ export default (role, actions) => {
   role.allow(actions.viewQuotations, () => false);
   role.allow(actions.manageQuotations, () => false);
   role.allow(actions.answerQuotation, () => false);
+  role.allow(actions.manageBookmarks, () => false);
+  role.allow(actions.bookmarkProduct, () => false);
 
   // only allow if otp is provided
   role.allow(

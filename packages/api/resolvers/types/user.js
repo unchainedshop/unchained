@@ -26,6 +26,7 @@ export default {
   ),
   emails: checkTypeResolver(actions.viewUserPrivateInfos, 'emails'),
   tags: checkTypeResolver(actions.viewUserPrivateInfos, 'tags'),
+  bookmarks: checkTypeResolver(actions.viewUserPrivateInfos, 'bookmarks'),
 
   orders: checkTypeResolver(actions.viewUserOrders, 'orders'),
   quotations: checkTypeResolver(actions.viewUserQuotations, 'quotations'),

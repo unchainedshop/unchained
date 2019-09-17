@@ -29,6 +29,7 @@ Package.onUse(api => {
   api.use('unchained:core-pricing@0.32.0');
   api.use('unchained:core-products@0.32.0');
   api.use('unchained:core-users@0.32.0');
+  api.use('unchained:core-bookmarks@0.32.0');
   api.use('unchained:core-warehousing@0.32.0');
   api.use('unchained:core-filters@0.32.0');
   api.use('unchained:core-assortments@0.32.0');

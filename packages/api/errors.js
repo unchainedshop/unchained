@@ -87,3 +87,12 @@ export const QuotationNotFoundError = createError(
   'QuotationNotFoundError',
   'Quotation not found'
 );
+
+export const BookmarkAlreadyExistsError = createError(
+  'BookmarkAlreadyExistsError',
+  'Bookmark already exists'
+);
+export const BookmarkNotFoundError = createError(
+  'BookmarkNotFoundError',
+  'Bookmark not found'
+);
