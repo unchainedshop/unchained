@@ -7,12 +7,22 @@ const PaymentPricingSheetRowCategories = {
 };
 
 class PaymentPricingSheet extends PricingSheet {
-  addPayment({ amount, isTaxable, isNetPrice, meta }) {
+  addFee({ amount, isTaxable, isNetPrice, meta }) {
     this.calculation.push({
       category: PaymentPricingSheetRowCategories.Payment,
       amount,
       isTaxable,
       isNetPrice,
+      meta
+    });
+  }
+
+  addDiscount({ amount, isTaxable, discountId, meta }) {
+    this.calculation.push({
+      category: PaymentPricingSheetRowCategories.Discount,
+      amount,
+      isTaxable,
+      discountId,
       meta
     });
   }
@@ -32,7 +42,7 @@ class PaymentPricingSheet extends PricingSheet {
     });
   }
 
-  paymentSum() {
+  feeSum() {
     return this.sum({
       category: PaymentPricingSheetRowCategories.Payment
     });
@@ -60,7 +70,7 @@ class PaymentPricingSheet extends PricingSheet {
     }));
   }
 
-  getPaymentRows() {
+  getFeeRows() {
     return this.filterBy({ category: PaymentPricingSheetRowCategories.Item });
   }
 

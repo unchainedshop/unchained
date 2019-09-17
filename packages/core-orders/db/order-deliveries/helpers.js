@@ -135,7 +135,6 @@ OrderDeliveries.updateDelivery = ({ deliveryId, orderId, context }) => {
     }
   );
   OrderDiscounts.updateDiscounts({ orderId });
-  OrderDeliveries.updateCalculation({ orderId, deliveryId });
   Orders.updateCalculation({ orderId });
   return OrderDeliveries.findOne({ _id: deliveryId });
 };

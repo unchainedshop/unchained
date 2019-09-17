@@ -667,14 +667,15 @@ Orders.updateCalculation = ({ orderId, recalculateEverything }) => {
     items.forEach(({ _id }) =>
       OrderPositions.updateCalculation({ orderId, positionId: _id })
     );
-    const delivery = order.delivery();
-    const deliveryId = delivery && delivery._id;
-    if (deliveryId) OrderDeliveries.updateCalculation({ orderId, deliveryId });
-    const payment = order.payment();
-    const paymentId = payment && payment._id;
-    if (paymentId) OrderPayments.updateCalculation({ orderId, paymentId });
   }
-  // always update the scheduling
+  const delivery = order.delivery();
+  const deliveryId = delivery && delivery._id;
+  if (deliveryId) OrderDeliveries.updateCalculation({ orderId, deliveryId });
+
+  const payment = order.payment();
+  const paymentId = payment && payment._id;
+  if (paymentId) OrderPayments.updateCalculation({ orderId, paymentId });
+
   items.forEach(position => OrderPositions.updateScheduling({ position }));
   const pricing = new OrderPricingDirector({ item: order });
   const calculation = pricing.calculate();
