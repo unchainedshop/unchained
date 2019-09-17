@@ -7,7 +7,17 @@ const DeliveryPricingSheetRowCategories = {
 };
 
 class DeliveryPricingSheet extends PricingSheet {
-  addDelivery({ amount, isTaxable, isNetPrice, meta }) {
+  addDiscount({ amount, isTaxable, discountId, meta }) {
+    this.calculation.push({
+      category: PaymentPricingSheetRowCategories.Discount,
+      amount,
+      isTaxable,
+      discountId,
+      meta
+    });
+  }
+
+  addFee({ amount, isTaxable, isNetPrice, meta }) {
     this.calculation.push({
       category: DeliveryPricingSheetRowCategories.Delivery,
       amount,
@@ -32,7 +42,7 @@ class DeliveryPricingSheet extends PricingSheet {
     });
   }
 
-  deliverySum() {
+  feeSum() {
     return this.sum({
       category: DeliveryPricingSheetRowCategories.Delivery
     });
@@ -60,7 +70,7 @@ class DeliveryPricingSheet extends PricingSheet {
     }));
   }
 
-  getDeliveryRows() {
+  getFeeRows() {
     return this.filterBy({ category: DeliveryPricingSheetRowCategories.Item });
   }
 

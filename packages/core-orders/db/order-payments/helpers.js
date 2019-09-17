@@ -134,7 +134,6 @@ OrderPayments.updatePayment = ({ orderId, paymentId, context }) => {
     }
   );
   OrderDiscounts.updateDiscounts({ orderId });
-  OrderPayments.updateCalculation({ orderId, paymentId });
   Orders.updateCalculation({ orderId });
   return OrderPayments.findOne({ _id: paymentId });
 };
