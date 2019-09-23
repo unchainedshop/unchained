@@ -13,13 +13,13 @@ Bookmarks.helpers({
 });
 
 Bookmarks.createBookmark = ({ userId, productId, ...rest }) => {
-  const providerId = Bookmarks.insert({
+  const bookmarkId = Bookmarks.insert({
     ...rest,
     created: new Date(),
     userId,
     productId
   });
-  return Bookmarks.findBookmarkById(providerId);
+  return Bookmarks.findBookmarkById(bookmarkId);
 };
 
 Bookmarks.removeBookmark = ({ _id }) => {

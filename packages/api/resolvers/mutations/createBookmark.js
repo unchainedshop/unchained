@@ -8,7 +8,10 @@ export default function(
   { userId }
 ) {
   log(`mutation createBookmark for ${foreignUserId}`, { productId, userId });
-  const foundBookmark = Bookmarks.findBookmarks({ productId, userId }).pop();
+  const foundBookmark = Bookmarks.findBookmarks({
+    productId,
+    userId: foreignUserId
+  }).pop();
   if (foundBookmark) {
     throw new BookmarkAlreadyExistsError({
       data: { bookmarkId: foundBookmark._id }
