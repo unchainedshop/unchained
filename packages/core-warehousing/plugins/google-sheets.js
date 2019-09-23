@@ -145,6 +145,7 @@ class GoogleSheets extends WarehousingAdapter {
   async commissioningTime(quantity) {
     const { product, deliveryProvider } = this.context;
     const { sku } = product.warehousing || {};
+    if (!sku) return null;
     const { type } = deliveryProvider;
     const selector = `DELIVERY_HOURS:${type}`;
     const timeInHours = await this.getRemoteTime(

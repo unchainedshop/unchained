@@ -4,7 +4,8 @@ import { Users } from 'meteor/unchained:core-users';
 
 import { Factory } from 'meteor/dburles:factory';
 
-import 'meteor/unchained:core-delivery/plugins/send-mail';
+import 'meteor/unchained:core-delivery/plugins/post';
+import 'meteor/unchained:core-delivery/plugins/pick-mup';
 import 'meteor/unchained:core-warehousing/plugins/google-sheets';
 import 'meteor/unchained:core-discounting/plugins/half-price';
 import 'meteor/unchained:core-documents/plugins/smallinvoice';
