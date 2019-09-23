@@ -45,6 +45,14 @@ export class DeliveryAdapter {
     return false;
   }
 
+  async pickUpLocationById(id) {  // eslint-disable-line
+    return null;
+  }
+
+  async pickUpLocations() {  // eslint-disable-line
+    return [];
+  }
+
   isAutoReleaseAllowed() { // eslint-disable-line
     // if you return false here,
     // the order will need manual confirmation before
@@ -101,6 +109,11 @@ export class DeliveryDirector {
     const adapter = this.interface(context);
     const sendResult = await adapter.send(transactionContext);
     return sendResult;
+  }
+
+  async run({ command, args, ...context }) {
+    const adapter = this.interface(context);
+    return adapter[command](args);
   }
 
   isActive(context) {

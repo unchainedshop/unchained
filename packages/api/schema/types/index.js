@@ -22,6 +22,7 @@ import warehousing from './warehousing';
 import order from './order';
 import product from './product';
 import quotation from './quotation';
+import geoposition from './geo-position';
 import bookmark from './bookmark';
 
 export default [
@@ -49,5 +50,6 @@ export default [
   ...product,
   ...order,
   ...quotation,
+  ...geoposition,
   ...bookmark
 ];

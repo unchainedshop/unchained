@@ -201,7 +201,7 @@ export default [
       """
       updateOrderDeliveryPickUp(
         orderDeliveryId: ID!
-        address: AddressInput
+        orderPickUpLocationId: ID!
         meta: JSON
       ): OrderDeliveryPickUp!
 

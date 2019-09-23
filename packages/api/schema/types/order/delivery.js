@@ -34,7 +34,8 @@ export default [
       fee: Money
       meta: JSON
 
-      address: Address
+      pickUpLocations: [OrderPickUpLocation!]!
+      activePickUpLocation: OrderPickUpLocation
     }
 
     type OrderDeliveryShipping implements OrderDelivery {

@@ -11,12 +11,15 @@ class Post extends DeliveryAdapter {
   static version = '1.0';
 
   static initialConfiguration = [];
+
   isActive() { // eslint-disable-line
     return false;
   }
-  static typeSupported(type) {  // eslint-disable-line
-    return false;
+
+  static typeSupported(type) {
+    return type === 'SHIPPING';
   }
+
   configurationError() { // eslint-disable-line
     return null;
   }
