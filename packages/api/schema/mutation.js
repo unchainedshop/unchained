@@ -134,6 +134,8 @@ export default [
         billingAddress: AddressInput
         contact: ContactInput
         meta: JSON
+        paymentProviderId: ID
+        deliveryProviderId: ID
       ): Order!
 
       """
