@@ -111,9 +111,9 @@ export class DeliveryDirector {
     return sendResult;
   }
 
-  async run({ command, args, ...context }) {
+  async run({ command, args = [], ...context }) {
     const adapter = this.interface(context);
-    return adapter[command](args);
+    return adapter[command](...args);
   }
 
   isActive(context) {
