@@ -61,7 +61,7 @@ export const OrderPaymentNotFoundError = createError(
 );
 export const OrderQuantityTooLowError = createError(
   'OrderQuantityTooLowError',
-  'Quantity has to be 0 or greater'
+  'Quantity cannot be lower than 1'
 );
 export const OrderWrongPaymentStatusError = createError(
   'OrderWrongPaymentStatus',

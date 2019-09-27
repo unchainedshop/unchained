@@ -1,6 +1,6 @@
 import { log } from 'meteor/unchained:core-logger';
 import { Products } from 'meteor/unchained:core-products';
-import { ProductNotFoundError } from '../../errors';
+import { ProductNotFoundError, OrderQuantityTooLowError } from '../../errors';
 import getCart from '../../getCart';
 
 export default function(
@@ -14,6 +14,7 @@ export default function(
     }`,
     { userId, orderId }
   );
+  if (quantity < 1) throw new OrderQuantityTooLowError({ data: { quantity } });
   const product = Products.findOne({ _id: productId });
   if (!product) throw new ProductNotFoundError({ data: { productId } });
   const cart = getCart({ orderId, user, countryContext });

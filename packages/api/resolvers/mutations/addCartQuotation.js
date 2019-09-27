@@ -2,7 +2,8 @@ import { log } from 'meteor/unchained:core-logger';
 import { Quotations, QuotationStatus } from 'meteor/unchained:core-quotations';
 import {
   QuotationNotFoundError,
-  QuotationWrongStatusError
+  QuotationWrongStatusError,
+  OrderQuantityTooLowError
 } from '../../errors';
 import getCart from '../../getCart';
 
@@ -17,6 +18,7 @@ export default function(
     }`,
     { userId, orderId }
   );
+  if (quantity < 1) throw new OrderQuantityTooLowError({ data: { quantity } });
   const quotation = Quotations.findOne({ _id: quotationId });
   if (!quotation) throw new QuotationNotFoundError({ data: { quotationId } });
   if (quotation.status !== QuotationStatus.PROPOSED) {

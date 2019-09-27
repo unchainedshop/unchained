@@ -23,8 +23,9 @@ export default function(
   if (!order.isCart()) {
     throw new OrderWrongStatusError({ data: { status: order.status } });
   }
+
   if (quantity !== null) {
-    if (quantity === 0)
+    if (quantity < 1)
       throw new OrderQuantityTooLowError({ data: { quantity } });
     // FIXME: positionId is actually
     OrderPositions.updatePosition(
