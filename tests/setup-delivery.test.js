@@ -18,7 +18,7 @@ describe('setup delivery providers', () => {
 
   it('add a shipping delivery provider', async () => {
     const {
-      data: { createDeliveryProvider, errors }
+      data: { createDeliveryProvider, errors } = {}
     } = await graphqlFetch({
       query: /* GraphQL */ `
         mutation createDeliveryProvider(
@@ -43,7 +43,7 @@ describe('setup delivery providers', () => {
       variables: {
         deliveryProvider: {
           type: 'SHIPPING',
-          adapterKey: 'shop.unchained.send-mail'
+          adapterKey: 'shop.unchained.post'
         }
       }
     });
@@ -52,7 +52,7 @@ describe('setup delivery providers', () => {
       configurationError: null,
       deleted: null,
       interface: {
-        _id: 'shop.unchained.send-mail'
+        _id: 'shop.unchained.post'
       },
       type: 'SHIPPING'
     });
