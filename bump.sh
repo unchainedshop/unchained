@@ -21,5 +21,6 @@ cd ../core-filters && meteor publish &&
 cd ../core-assortments && meteor publish &&
 cd ../core-quotations && meteor publish &&
 cd ../core-orders && meteor publish &&
+cd ../core-bookmarks && meteor publish &&
 cd ../api && meteor publish &&
 cd ../platform && meteor publish

@@ -72,6 +72,7 @@ tracker@1.2.0
 unchained:api@0.33.0
 unchained:core@0.33.0
 unchained:core-assortments@0.33.0
+unchained:core-bookmarks@0.33.0
 unchained:core-countries@0.33.0
 unchained:core-currencies@0.33.0
 unchained:core-delivery@0.33.0
