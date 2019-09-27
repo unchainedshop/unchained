@@ -22,7 +22,7 @@ geojson-utils@1.0.10
 http@1.4.2
 id-map@1.1.0
 inter-process-messaging@0.1.0
-local-test:unchained:core-files@0.32.0
+local-test:unchained:core-files@0.33.0
 logging@1.1.20
 meteor@1.9.3
 minimongo@1.4.5
@@ -46,8 +46,8 @@ routepolicy@1.1.0
 socket-stream-client@0.2.2
 tinytest@1.1.0
 tracker@1.2.0
-unchained:core-files@0.32.0
-unchained:core-settings@0.32.0
+unchained:core-files@0.33.0
+unchained:core-settings@0.33.0
 underscore@1.0.10
 url@1.2.0
 webapp@1.7.3
