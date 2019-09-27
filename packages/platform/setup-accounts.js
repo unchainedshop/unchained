@@ -51,8 +51,9 @@ Accounts.validateNewUser(user => {
 
 Accounts.onCreateUser((options = {}, user = {}) => {
   const newUser = user;
-  const { guest, skipEmailVerification } = options;
+  const { guest, skipEmailVerification, profile } = options;
 
+  newUser.profile = profile;
   newUser.guest = !!guest;
   newUser.created = newUser.createdAt || new Date();
   delete newUser.createdAt; // comes from the meteor-apollo-accounts stuff

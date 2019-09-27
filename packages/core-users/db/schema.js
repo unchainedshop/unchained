@@ -25,7 +25,12 @@ Meteor.users.attachSchema(
           birthday: Date,
           phoneMobile: String,
           gender: String,
-          address: Address
+          address: Address,
+          customFields: {
+            type: Object,
+            optional: true,
+            blackbox: true
+          }
         },
         { requiredByDefault: false }
       ),

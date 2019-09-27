@@ -54,7 +54,9 @@ describe('Auth for anonymous users', () => {
         }
       });
       expect(createUser).toMatchObject({
-        user: {}
+        user: {
+          profile: {}
+        }
       });
     });
   });
