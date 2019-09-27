@@ -35,7 +35,9 @@ describe('Auth for anonymous users', () => {
               token
               user {
                 _id
-                profile
+                profile {
+                  displayName
+                }
               }
             }
           }
