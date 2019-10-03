@@ -4,6 +4,7 @@ import { check, Match } from 'meteor/check';
 import { Accounts } from 'meteor/accounts-base';
 import { getFallbackLocale } from 'meteor/unchained:core';
 import { Users } from 'meteor/unchained:core-users';
+import { Orders } from 'meteor/unchained:core-orders';
 import cloneDeep from 'lodash.clonedeep';
 import moniker from 'moniker';
 
@@ -120,6 +121,18 @@ Accounts.registerLoginHandler('guest', options => {
   return {
     userId: Accounts.createUser(guestOptions)
   };
+});
+
+Accounts.onLogin(({ methodArguments, user }) => {
+  const { userIdBeforeLogin, countryContext } =
+    [...methodArguments].pop() || {};
+  if (userIdBeforeLogin) {
+    Orders.migrateCart({
+      fromUserId: userIdBeforeLogin,
+      toUserId: user._id,
+      countryContext
+    });
+  }
 });
 
 Accounts.validateLoginAttempt(({ type, allowed, user }) => {

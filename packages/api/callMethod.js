@@ -17,5 +17,16 @@ export default function(passedContext, name, ...args) {
     },
     ...passedContext
   };
-  return handler.call(context, ...args);
+  const {
+    userId: userIdBeforeLogin,
+    countryContext,
+    remoteAddress,
+    localeContext
+  } = passedContext;
+  return handler.call(context, ...args, {
+    userIdBeforeLogin,
+    countryContext,
+    remoteAddress,
+    locale: localeContext.normalized
+  });
 }

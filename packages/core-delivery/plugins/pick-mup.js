@@ -67,7 +67,7 @@ class PickMup extends DeliveryAdapter {
   static initialConfiguration = [{ key: 'key', value: '' }];
 
   isActive() { // eslint-disable-line
-    return false;
+    return true;
   }
 
   static typeSupported(type) {
