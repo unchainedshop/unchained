@@ -6,6 +6,7 @@ import React from 'react';
 import { Segment, List, Label, Icon } from 'semantic-ui-react';
 import Link from 'next/link';
 import Address from '../Address';
+import GeoPoint from '../GeoPoint';
 
 const colorForStatus = status => {
   if (status === 'DELIVERED') return 'green';
@@ -15,9 +16,10 @@ const colorForStatus = status => {
 const OrderDelivery = ({
   provider = { interface: {} },
   status,
-  address,
+  deliveryAddress,
   statusColor,
-  delivered
+  delivered,
+  activePickUpLocation
 }) => (
   <Segment secondary>
     <Label color={statusColor} horizontal attached="top">
@@ -37,18 +39,37 @@ const OrderDelivery = ({
             </Link>
           )}
         </Label>
-        <p>
-          Date of Delivery to Provider:{' '}
-          {delivered ? format(delivered, 'Pp') : 'n/a'}
-        </p>
+        <List>
+          <List.Item>
+            Date of Delivery to Provider:{' '}
+            {delivered ? format(delivered, 'Pp') : 'n/a'}
+          </List.Item>
+        </List>
       </List.Item>
-      {address && (
+      {deliveryAddress && (
         <List.Item>
           <Label horizontal basic>
             <Icon name="mail" />
             Delivery Address
           </Label>
-          <Address {...address} />
+          <Address {...deliveryAddress} />
+        </List.Item>
+      )}
+      {activePickUpLocation && (
+        <List.Item>
+          <Label horizontal basic>
+            <Icon name="mail" />
+            Active Pickup Location
+          </Label>
+          <List>
+            <List.Item>{activePickUpLocation.name}</List.Item>
+          </List>
+          {activePickUpLocation.address && (
+            <Address {...activePickUpLocation.address} />
+          )}
+          {activePickUpLocation.geoPoint && (
+            <GeoPoint {...activePickUpLocation.geoPoint} />
+          )}
         </List.Item>
       )}
     </List>
@@ -90,16 +111,25 @@ export default compose(
             currency
           }
           ... on OrderDeliveryPickUp {
-            address {
-              firstName
-              lastName
-              company
-              postalCode
-              countryCode
-              regionCode
-              city
-              addressLine
-              addressLine2
+            activePickUpLocation {
+              _id
+              name
+              address {
+                firstName
+                lastName
+                company
+                postalCode
+                countryCode
+                regionCode
+                city
+                addressLine
+                addressLine2
+              }
+              geoPoint {
+                latitude
+                longitude
+                altitute
+              }
             }
           }
           ... on OrderDeliveryShipping {
@@ -121,7 +151,8 @@ export default compose(
   `),
   mapProps(({ data: { order = {} } }) => ({
     ...order.delivery,
-    address: (order.delivery && order.delivery.address) || order.billingAddress,
+    deliveryAddress: order.delivery && order.delivery.address,
+    activePickUpLocation: order.delivery && order.delivery.activePickUpLocation,
     statusColor: colorForStatus(order.delivery && order.delivery.status)
   })),
   pure
