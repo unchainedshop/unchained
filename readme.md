@@ -39,6 +39,9 @@ meteor npm install
 meteor npm run dev
 ```
 
+6. (Optionally) Add the controlpanel (see section below)
+
+
 
 If you have issues installing or running meteor in your environment or you don't want to install the meteor cli on your computer, try it that way to ramp up a dev environment:
 
