@@ -22,13 +22,56 @@ npm run dev
 - Navigate to http://localhost:4000/ to view the controlpanel. You can login with: user: admin@localhost / password: password
 - Navigate to http://localhost:4010/graphql to view the GraphQL Playground
 
-### Start your Project
+### Start your own Project
 
-- Copy `examples/minimal` to your project folder
-- (optional) Copy `examples/controlpanel` to your project folder
-- Start hacking (`npm install && npm run dev` in each of these folders)
+1. Install Meteor from meteor.com
+
+2. Download the latest version of unchained from https://github.com/unchainedshop/unchained/releases, just download the latest zip file of the source code.
+
+3. Create an empty folder for your own project
+
+4. Copy the contents of 'examples/minimal' to the project root
+
+5. Run your project:
+
+```
+meteor npm install
+meteor npm run dev
+```
+
+
+If you have issues installing or running meteor in your environment or you don't want to install the meteor cli on your computer, try it that way to ramp up a dev environment:
+
+```
+docker build -f Dockerfile.dev -t unchained-local-dev .
+docker run -it -p 4010:4010 -p 4011:4011 --mount type=bind,source="$(pwd)",target=/app unchained-local-dev
+```
+
+## Add the control panel
+
+
+
 
 ## Configuration
+
+### Platform
+
+To start the server inside a meteor project, use:
+```
+import { startPlatform } from 'meteor/unchained:platform';
+Meteor.startup(() => {
+  startPlatform(options);
+});
+```
+
+These options are available:
+
+- corsOrigins: Array/Function (Determine if origin is fine for CORS)
+- rolesOptions: Object (Roles configuration)
+- engine: String (Apollo Engine Key)
+- introspection: Boolean (Enable/Disable introspection)
+- playground: Boolean (Enable/Disable playground)
+- mergeUserCartsOnLogin: Boolean (Enable/Disable merge mode of carts when user gets logged in)
 
 ### Settings API
 

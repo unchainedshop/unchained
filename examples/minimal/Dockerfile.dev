@@ -1,0 +1,7 @@
+FROM ubuntu:latest
+RUN apt-get update && apt-get install -y curl
+RUN curl https://install.meteor.com/ | sh
+VOLUME /app
+WORKDIR /app
+ENV METEOR_ALLOW_SUPERUSER 1
+#CMD "meteor npm install && meteor npm run dev"
