@@ -712,6 +712,7 @@ Orders.migrateCart = ({ fromUserId, toUserId, countryContext, mergeCarts }) => {
       orderId: fromCart._id,
       recalculateEverything: true
     });
+    return;
   }
   // Move positions
   OrderPositions.update(
