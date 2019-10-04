@@ -1,12 +1,12 @@
 import { setupDatabase, createAnonymousGraphqlFetch } from './helpers';
 
 let connection;
-let db;
+// let db;
 let graphqlFetch;
 
 describe('public queries', () => {
   beforeAll(async () => {
-    [db, connection] = await setupDatabase();
+    [, /* db */ connection] = await setupDatabase();
     graphqlFetch = await createAnonymousGraphqlFetch();
   });
 
