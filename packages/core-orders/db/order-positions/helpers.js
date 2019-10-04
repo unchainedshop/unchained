@@ -106,7 +106,9 @@ OrderPositions.upsertPosition = ({
 }) => {
   const existingPosition = OrderPositions.findOne({
     orderId,
-    configuration,
+    configuration: configuration || {
+      $exists: false
+    },
     ...scope
   });
   if (existingPosition) {
