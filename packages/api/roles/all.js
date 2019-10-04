@@ -21,7 +21,6 @@ export default (role, actions) => {
   role.allow(actions.viewWarehousingProviders, () => false);
   role.allow(actions.viewWarehousingProvider, () => false);
   role.allow(actions.viewWarehousingInterfaces, () => false);
-  role.allow(actions.viewTranslations, () => true);
   role.allow(actions.viewOrders, () => false);
   role.allow(actions.updateUser, () => false);
   role.allow(actions.manageLanguages, () => false);
@@ -96,4 +95,5 @@ export default (role, actions) => {
   role.allow(actions.viewAssortment, () => true);
   role.allow(actions.viewFilter, () => true);
   role.allow(actions.viewFilters, () => true);
+  role.allow(actions.viewTranslations, () => true);
 };
