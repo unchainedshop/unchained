@@ -13,7 +13,7 @@ class Post extends DeliveryAdapter {
   static initialConfiguration = [];
 
   isActive() { // eslint-disable-line
-    return false;
+    return true;
   }
 
   static typeSupported(type) {

@@ -179,8 +179,9 @@ Currently ProductTexts from core-products and AssortmentTexts from core-assortme
 
 ### Integrate Control Panel in Unchained Project
 
-1. Add @unchainedshop/controlpanel as dependency
-2. Use the embedControlpanelInMeteorWebApp function
+1. Add @unchainedshop/controlpanel as dependency (`meteor npm install @unchainedshop/controlpanel`)
+
+2. Use the embedControlpanelInMeteorWebApp function after startPlatform
 
 ```
 import { WebApp } from 'meteor/webapp';
@@ -189,4 +190,74 @@ import { embedControlpanelInMeteorWebApp } from '@unchainedshop/controlpanel';
 Meteor.startup(() => {
   embedControlpanelInMeteorWebApp(WebApp);
 });
+```
+
+## Simple Checkout
+
+```
+mutation loginAsGuest {
+  loginAsGuest {
+    id
+    token
+    tokenExpires
+  }
+}
+```
+
+Then set the authorization header in GraphiQL
+```
+{
+  "Authorization": "Bearer HERE_GOES_THE_TOKEN_FROM_ABOVE"
+}
+```
+
+```
+query products {
+  products {
+    _id
+    texts {
+      title
+    }
+    ... on SimpleProduct {
+      simulatedPrice(quantity: 2) {
+        price {
+          amount
+        }
+      }
+    }
+  }
+}
+```
+
+```
+mutation addCartProduct {
+  addCartProduct(productId: "A9e2kCJfcF9QZF4o9", quantity: 1) {
+    _id
+    order {
+      items {
+        _id
+        quantity
+      }
+    }
+  }
+}
+```
+
+```
+mutation updateContact {
+  updateCart(contact: { emailAddress: "hello@localhost" }, billingAddress: {firstName: "Pascal", addressLine: "Haha", postalCode: "5556", city: "somewhere"}) {
+    _id
+  }
+}
+```
+
+```
+mutation checkoutCart {
+  checkoutCart {
+    _id
+    orderNumber
+    ordered
+    confirmed
+  }
+}
 ```
