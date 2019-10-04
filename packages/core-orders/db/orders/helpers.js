@@ -690,12 +690,7 @@ Orders.updateCalculation = ({ orderId, recalculateEverything }) => {
   );
 };
 
-Orders.migrateCart = ({
-  fromUserId,
-  toUserId,
-  countryContext,
-  mergeCarts = true
-}) => {
+Orders.migrateCart = ({ fromUserId, toUserId, countryContext, mergeCarts }) => {
   const fromCart = Users.findOne({ _id: fromUserId }).cart({ countryContext });
   const toCart = Users.findOne({ _id: toUserId }).cart({ countryContext });
 
@@ -718,6 +713,7 @@ Orders.migrateCart = ({
       recalculateEverything: true
     });
   }
+  // Move positions
   OrderPositions.update(
     { orderId: fromCart._id },
     {
@@ -726,5 +722,12 @@ Orders.migrateCart = ({
       }
     }
   );
-  console.log(fromCart, toCart);
+  Orders.updateCalculation({
+    orderId: fromCart._id,
+    recalculateEverything: true
+  });
+  Orders.updateCalculation({
+    orderId: toCart._id,
+    recalculateEverything: true
+  });
 };
