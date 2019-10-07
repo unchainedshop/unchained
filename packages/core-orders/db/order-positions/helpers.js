@@ -273,7 +273,6 @@ OrderPositions.updateScheduling = ({ positionId, position }) => {
   const order = item.order();
   const delivery = order.delivery();
   const product = item.product();
-
   const deliveryProvider = delivery && delivery.provider();
   const { countryCode, userId } = order;
   const scheduling = WarehousingProviders.findSupported({

@@ -57,7 +57,7 @@ Users.helpers({
     }
     const options = {
       sort: {
-        created: -1
+        updated: -1
       }
     };
     const orders = Orders.find(selector, options).fetch();
@@ -688,4 +688,46 @@ Orders.updateCalculation = ({ orderId, recalculateEverything }) => {
       }
     }
   );
+};
+
+Orders.migrateCart = ({ fromUserId, toUserId, countryContext, mergeCarts }) => {
+  const fromCart = Users.findOne({ _id: fromUserId }).cart({ countryContext });
+  const toCart = Users.findOne({ _id: toUserId }).cart({ countryContext });
+
+  if (!fromCart) {
+    // No cart, don't copy
+    return;
+  }
+  if (!toCart || !mergeCarts) {
+    // No destination cart, move whole cart
+    Orders.update(
+      { _id: fromCart._id },
+      {
+        $set: {
+          userId: toUserId
+        }
+      }
+    );
+    Orders.updateCalculation({
+      orderId: fromCart._id,
+      recalculateEverything: true
+    });
+  }
+  // Move positions
+  OrderPositions.update(
+    { orderId: fromCart._id },
+    {
+      $set: {
+        orderId: toCart._id
+      }
+    }
+  );
+  Orders.updateCalculation({
+    orderId: fromCart._id,
+    recalculateEverything: true
+  });
+  Orders.updateCalculation({
+    orderId: toCart._id,
+    recalculateEverything: true
+  });
 };
