@@ -115,6 +115,8 @@ export const FrenchJpegProductMediaText = {
   _id: 'french-jpeg-product',
   locale: 'fr',
   productMediaId: 'jpeg-product',
+  subtitle: 'product-media-subtitle-fr',
+  title: 'product-media-title-fr',
   updated: new Date('2019-09-10T14:42:16.177+0000')
 };
 

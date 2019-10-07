@@ -3,7 +3,8 @@ import { Quotations } from 'meteor/unchained:core-quotations';
 
 export default (role, actions) => {
   const isInLoginMutationResponse = root => {
-      if (root && root._inLoginMethodResponse) { // eslint-disable-line
+    if (root && root._inLoginMethodResponse) {
+      // eslint-disable-line
       return true;
     }
     return false;
@@ -20,7 +21,6 @@ export default (role, actions) => {
   role.allow(actions.viewWarehousingProviders, () => false);
   role.allow(actions.viewWarehousingProvider, () => false);
   role.allow(actions.viewWarehousingInterfaces, () => false);
-  role.allow(actions.viewTranslations, () => false);
   role.allow(actions.viewOrders, () => false);
   role.allow(actions.updateUser, () => false);
   role.allow(actions.manageLanguages, () => false);
@@ -95,4 +95,5 @@ export default (role, actions) => {
   role.allow(actions.viewAssortment, () => true);
   role.allow(actions.viewFilter, () => true);
   role.allow(actions.viewFilters, () => true);
+  role.allow(actions.viewTranslations, () => true);
 };
