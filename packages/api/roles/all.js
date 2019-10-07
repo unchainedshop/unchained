@@ -3,8 +3,7 @@ import { Quotations } from 'meteor/unchained:core-quotations';
 
 export default (role, actions) => {
   const isInLoginMutationResponse = root => {
-    if (root && root._inLoginMethodResponse) {
-      // eslint-disable-line
+    if (root && root._inLoginMethodResponse) { // eslint-disable-line
       return true;
     }
     return false;
