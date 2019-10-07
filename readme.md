@@ -15,31 +15,30 @@ Licensed under the EUPL 1.2
 
 ```bash
 git clone https://github.com/unchainedshop/unchained.git
-npm install
-npm run dev
+meteor npm install
+meteor npm run dev
 ```
 
-- Navigate to http://localhost:4000/ to view the controlpanel. You can login with: user: admin@localhost / password: password
-- Navigate to http://localhost:4010/graphql to view the GraphQL Playground
+1. Navigate to http://localhost:4000/ to view the controlpanel. You can login with: user: admin@localhost / password: password
 
-### Start your own Project
+2. Navigate to http://localhost:4010/graphql to view the GraphQL Playground
 
-1. Install Meteor from meteor.com
+### Or start your own Project
 
-2. Download the latest version of unchained from https://github.com/unchainedshop/unchained/releases, just download the latest zip file of the source code.
+1. Download the latest version of unchained from https://github.com/unchainedshop/unchained/releases, just download the latest zip file of the source code.
 
-3. Create an empty folder for your own project
+2. Create an empty folder for your own project
 
-4. Copy the contents of 'examples/minimal' to the project root
+3. Copy the contents of 'examples/minimal' to the project root
 
-5. Run your project:
+4. Run your project:
 
 ```
 meteor npm install
 meteor npm run dev
 ```
 
-6. (Optionally) Add the controlpanel (see section below)
+5. (Optionally) Add the controlpanel (see section below)
 
 
 
@@ -50,16 +49,113 @@ docker build -f Dockerfile.dev -t unchained-local-dev .
 docker run -it -p 4010:4010 -p 4011:4011 --mount type=bind,source="$(pwd)",target=/app unchained-local-dev
 ```
 
-## Add the control panel
+### Integrate Control Panel in Unchained Project
 
+1. Add @unchainedshop/controlpanel as dependency (`meteor npm install @unchainedshop/controlpanel`)
 
+2. Use the embedControlpanelInMeteorWebApp function after startPlatform
 
+```
+import { WebApp } from 'meteor/webapp';
+import { embedControlpanelInMeteorWebApp } from '@unchainedshop/controlpanel';
+
+Meteor.startup(() => {
+  embedControlpanelInMeteorWebApp(WebApp);
+});
+```
+
+### Simple Checkout
+
+Use the following GraphQL queries/mutations to do your first checkout.
+
+You can browse to http://localhost:4010/graphql to bring up the GraphQL Playground.
+
+To initiate a cart/basket, you need to be logged in. You can login as guest with a simple call:
+
+```
+mutation loginAsGuest {
+  loginAsGuest {
+    id
+    token
+    tokenExpires
+  }
+}
+```
+
+Then set the authorization header in GraphQL Playground for all upcoming operations:
+```
+{
+  "Authorization": "Bearer HERE_GOES_THE_TOKEN_FROM_ABOVE"
+}
+```
+
+Get the list of products:
+
+```
+query products {
+  products {
+    _id
+    texts {
+      title
+    }
+    ... on SimpleProduct {
+      simulatedPrice(quantity: 2) {
+        price {
+          amount
+        }
+      }
+    }
+  }
+}
+```
+
+Add the product that you've found to the cart.
+
+```
+mutation addCartProduct {
+  addCartProduct(productId: "A9e2kCJfcF9QZF4o9", quantity: 1) {
+    _id
+    order {
+      items {
+        _id
+        quantity
+      }
+    }
+  }
+}
+```
+
+Tell unchained more about the guy who orders:
+
+```
+mutation updateContact {
+  updateCart(contact: { emailAddress: "hello@localhost" }, billingAddress: {firstName: "Pascal", addressLine: "Haha", postalCode: "5556", city: "somewhere"}) {
+    _id
+  }
+}
+```
+
+Checkout the cart:
+
+```
+mutation checkoutCart {
+  checkoutCart {
+    _id
+    orderNumber
+    ordered
+    confirmed
+  }
+}
+```
 
 ## Configuration
 
 ### Platform
 
-To start the server inside a meteor project, use:
+Setting up unchained engine is simple:
+
+Add unchained:platform to your meteor project, copy the dependencies part of the minimal example to your own project's package.json, then start the engine:
+
 ```
 import { startPlatform } from 'meteor/unchained:platform';
 Meteor.startup(() => {
@@ -69,14 +165,15 @@ Meteor.startup(() => {
 
 These options are available:
 
-- corsOrigins: Array/Function (Determine if origin is fine for CORS)
+- corsOrigins: Array/Boolean (Determine if origin is fine for cors, set to true to reflect all origins in http responses)
 - rolesOptions: Object (Roles configuration)
-- engine: String (Apollo Engine Key)
-- introspection: Boolean (Enable/Disable introspection)
-- playground: Boolean (Enable/Disable playground)
 - mergeUserCartsOnLogin: Boolean (Enable/Disable merge mode of carts when user gets logged in)
+- typeDefs: Object (GraphQL Schema that gets merged with the default schema)
+- resolvers: Object (GraphQL Resolvers that get merged with the default API)
 
-### Settings API
+All other options are forwarded to the Apollo Engine, the available options are documented here: https://www.apollographql.com/docs/apollo-server
+
+### Package: Settings
 
 E.g. given these settings:
 
@@ -108,7 +205,7 @@ const maxSize = getSetting(["files", "media", "maxSize"])
 const maxSize = getSetting("files.avatars.maxSize", 10485760);
 ```
 
-### configure FileCollections
+### Package: Files
 
 to set gridfs for all collections, use this:
 
@@ -140,7 +237,7 @@ all collections will use `default`, unless specified directly:
 }
 ```
 
-### Cart API
+### Package: Orders
 
 How order positions get generated out of quotations and configurable products:
 
@@ -160,7 +257,9 @@ Now the cart looks like this:
 1 x Bundle Z
 
 
-### Configure Slugs
+### Package: Products
+
+**Configure Slugs**
 
 You can override the default slugify function for certain core modules like that:
 
@@ -176,88 +275,3 @@ ProductTexts.makeSlug = rest =>
 ```
 
 Currently ProductTexts from core-products and AssortmentTexts from core-assortments are supported.
-
-### Integrate Control Panel in Unchained Project
-
-1. Add @unchainedshop/controlpanel as dependency (`meteor npm install @unchainedshop/controlpanel`)
-
-2. Use the embedControlpanelInMeteorWebApp function after startPlatform
-
-```
-import { WebApp } from 'meteor/webapp';
-import { embedControlpanelInMeteorWebApp } from '@unchainedshop/controlpanel';
-
-Meteor.startup(() => {
-  embedControlpanelInMeteorWebApp(WebApp);
-});
-```
-
-## Simple Checkout
-
-```
-mutation loginAsGuest {
-  loginAsGuest {
-    id
-    token
-    tokenExpires
-  }
-}
-```
-
-Then set the authorization header in GraphiQL
-```
-{
-  "Authorization": "Bearer HERE_GOES_THE_TOKEN_FROM_ABOVE"
-}
-```
-
-```
-query products {
-  products {
-    _id
-    texts {
-      title
-    }
-    ... on SimpleProduct {
-      simulatedPrice(quantity: 2) {
-        price {
-          amount
-        }
-      }
-    }
-  }
-}
-```
-
-```
-mutation addCartProduct {
-  addCartProduct(productId: "A9e2kCJfcF9QZF4o9", quantity: 1) {
-    _id
-    order {
-      items {
-        _id
-        quantity
-      }
-    }
-  }
-}
-```
-
-```
-mutation updateContact {
-  updateCart(contact: { emailAddress: "hello@localhost" }, billingAddress: {firstName: "Pascal", addressLine: "Haha", postalCode: "5556", city: "somewhere"}) {
-    _id
-  }
-}
-```
-
-```
-mutation checkoutCart {
-  checkoutCart {
-    _id
-    orderNumber
-    ordered
-    confirmed
-  }
-}
-```
