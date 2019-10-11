@@ -248,7 +248,7 @@ How order positions get generated out of quotations and configurable products:
 It's also possible to chain:
 
 addCartQuotation is called with quotation Y
--> resolves to a Matrix product X with a specific configuration
+-> resolves to a configurable product X with a specific configuration
 -> specific configuration is handed to vector logic trying to find a distinct concrete product Z
 -> bundle product Z is resolved
 

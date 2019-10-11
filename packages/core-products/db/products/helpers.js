@@ -201,7 +201,7 @@ Products.helpers({
       product: this
     }));
   },
-  proxyProducts(vectors) {
+  proxyProducts(vectors, { includeInactive = false } = {}) {
     const { proxy = {} } = this;
     let filtered = [...(proxy.assignments || [])];
 
@@ -216,9 +216,14 @@ Products.helpers({
     const productIds = filtered.map(
       filteredAssignment => filteredAssignment.productId
     );
-    return Products.find({ _id: { $in: productIds } }).fetch();
+    const selector = {
+      _id: { $in: productIds },
+      status: includeInactive
+        ? { $in: [ProductStatus.ACTIVE, ProductStatus.DRAFT] }
+        : ProductStatus.ACTIVE
+    };
+    return Products.find(selector).fetch();
   },
-
   userDispatches({ deliveryProviderType, ...options }, requestContext) {
     const deliveryProviders = DeliveryProviders.findProviders({
       type: deliveryProviderType

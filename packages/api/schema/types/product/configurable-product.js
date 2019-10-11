@@ -1,7 +1,7 @@
 export default [
   /* GraphQL */ `
     """
-    Matrix Product
+    Configurable Product (Proxy)
     """
     type ConfigurableProduct implements Product {
       _id: ID!
@@ -23,7 +23,10 @@ export default [
       """
       Reduced list of possible products by key/value combinations
       """
-      products(vectors: [ProductAssignmentVectorInput!]): [Product!]
+      products(
+        vectors: [ProductAssignmentVectorInput!]
+        includeInactive: Boolean = false
+      ): [Product!]
 
       """
       Product's variations (keys) and their options (values)

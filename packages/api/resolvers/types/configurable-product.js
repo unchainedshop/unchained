@@ -8,8 +8,8 @@ export default {
   assignments(obj) {
     return obj.proxyAssignments();
   },
-  products(obj, { vectors = [] } = {}) {
-    return obj.proxyProducts(vectors);
+  products(obj, { vectors = [], includeInactive } = {}) {
+    return obj.proxyProducts(vectors, { includeInactive });
   },
   assortmentPaths(obj, { forceLocale }, { localeContext }) {
     return obj.assortmentPaths(forceLocale || localeContext.normalized);
