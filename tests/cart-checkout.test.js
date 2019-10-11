@@ -262,11 +262,9 @@ describe('cart checkout', () => {
               }
             }
           }
-        `,
-        variables: {
-          code: 'TEST'
-        }
+        `
       });
+      console.log(addCartDiscount);
       expect(addCartDiscount).toMatchObject({
         code: '100OFF',
         discounted: [],
@@ -307,20 +305,18 @@ describe('cart checkout', () => {
               }
             }
           }
-        `,
-        variables: {
-          code: 'TEST'
-        }
+        `
       });
       expect(addCartDiscount).toMatchObject({
-        product: {
-          _id: SimpleProduct._id
-        },
-        configuration: [
-          {
-            key: 'height'
-          }
-        ]
+        code: 'HALFPRICE',
+        discounted: [],
+        order: {
+          discounts: [
+            {
+              code: 'HALFPRICE'
+            }
+          ]
+        }
       });
     });
   });
