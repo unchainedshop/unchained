@@ -21,7 +21,7 @@ const UserList = ({
           <input
             type="checkbox"
             checked={isShowGuests}
-            onClick={toggleShowGuests}
+            onChange={toggleShowGuests}
           />
           <Link href="/users/new">
             <Button

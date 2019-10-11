@@ -63,7 +63,7 @@ const OrderList = ({
         <input
           type="checkbox"
           checked={isShowCarts}
-          onClick={toggleShowCarts}
+          onChange={toggleShowCarts}
         />
       </Table.HeaderCell>
     </Table.Row>

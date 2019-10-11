@@ -51,7 +51,7 @@ const AssortmentList = ({
         <input
           type="checkbox"
           checked={isShowLeafNodes}
-          onClick={toggleShowLeafNodes}
+          onChange={toggleShowLeafNodes}
         />
       </Table.HeaderCell>
     </Table.Row>
