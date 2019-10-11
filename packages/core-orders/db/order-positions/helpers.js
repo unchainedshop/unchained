@@ -41,13 +41,14 @@ OrderPositions.helpers({
       quantity: this.quantity
     });
   },
-  discounts() {
-    return this.pricing()
-      .discountPrices()
+  discounts(orderDiscountId) {
+    const discounts = this.pricing()
+      .discountPrices(orderDiscountId)
       .map(discount => ({
         item: this,
         ...discount
       }));
+    return discounts;
   },
   validationErrors() {
     const errors = [];

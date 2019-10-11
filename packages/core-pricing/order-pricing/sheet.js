@@ -93,8 +93,8 @@ class OrderPricingSheet extends PricingSheet {
     });
   }
 
-  discountPrices() {
-    const discountIds = this.getDiscountsRows().map(
+  discountPrices(explicitDiscountId) {
+    const discountIds = this.getDiscountRows(explicitDiscountId).map(
       ({ discountId }) => discountId
     );
 
@@ -108,9 +108,10 @@ class OrderPricingSheet extends PricingSheet {
     }));
   }
 
-  getDiscountsRows() {
+  getDiscountRows(discountId) {
     return this.filterBy({
-      category: OrderPricingSheetRowCategories.Discounts
+      category: OrderPricingSheetRowCategories.Discounts,
+      discountId
     });
   }
 

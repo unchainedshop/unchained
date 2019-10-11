@@ -3,23 +3,23 @@ import {
   DiscountAdapter
 } from 'meteor/unchained:core-discounting';
 
-class HalfPrice extends DiscountAdapter {
-  static key = 'shop.unchained.discount.half-price';
+class HalfPriceManual extends DiscountAdapter {
+  static key = 'shop.unchained.discount.half-price-manual';
 
   static label = 'Half Price';
 
   static version = '1.0';
 
-  static orderIndex = 3;
+  static orderIndex = 2;
 
   // return true if a discount is allowed to get added manually by a user
   static isManualAdditionAllowed() { // eslint-disable-line
-    return false;
+    return true;
   }
 
   // return true if a discount is allowed to get removed manually by a user
   static isManualRemovalAllowed() { // eslint-disable-line
-    return false;
+    return true;
   }
 
   // return true if a discount is valid to be part of the order.
@@ -28,12 +28,8 @@ class HalfPrice extends DiscountAdapter {
   // takes place.
   // if you return false and the trigger is system,
   // the coupon does not get automatically added
-  isValid(isTriggerSystem) { // eslint-disable-line
-    const { order } = this.context;
-    const user = order.user();
-    const isUserEligibleForHalfPrice =
-      user && user.tags && user.tags.indexOf('half-price') !== -1;
-    if (isTriggerSystem && isUserEligibleForHalfPrice) {
+  isValid(isTriggerSystem, code) { // eslint-disable-line
+    if (!isTriggerSystem && code === 'HALFPRICE') {
       return true;
     }
     return false;
@@ -48,4 +44,4 @@ class HalfPrice extends DiscountAdapter {
   }
 }
 
-DiscountDirector.registerAdapter(HalfPrice);
+DiscountDirector.registerAdapter(HalfPriceManual);

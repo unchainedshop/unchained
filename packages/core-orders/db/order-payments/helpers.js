@@ -87,9 +87,9 @@ OrderPayments.helpers({
       status
     });
   },
-  discounts() {
+  discounts(orderDiscountId) {
     return this.pricing()
-      .discountPrices()
+      .discountPrices(orderDiscountId)
       .map(discount => ({
         payment: this,
         ...discount

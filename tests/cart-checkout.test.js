@@ -229,6 +229,102 @@ describe('cart checkout', () => {
     });
   });
 
+  describe('Mutation.addCartDiscount', () => {
+    it('add order discount to the cart', async () => {
+      const { data: { addCartDiscount } = {} } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation addCartDiscount {
+            addCartDiscount(code: "100off") {
+              code
+              discounted {
+                _id
+                ... on OrderGlobalDiscount {
+                  _id
+                  order {
+                    _id
+                  }
+                  orderDiscount {
+                    _id
+                    code
+                    trigger
+                  }
+                }
+                total {
+                  amount
+                }
+              }
+              _id
+              order {
+                discounts {
+                  _id
+                  code
+                }
+              }
+            }
+          }
+        `,
+        variables: {
+          code: 'TEST'
+        }
+      });
+      expect(addCartDiscount).toMatchObject({
+        code: '100OFF',
+        discounted: [],
+        order: {
+          discounts: [
+            {
+              code: '100OFF'
+            }
+          ]
+        }
+      });
+    });
+
+    it('add product discount to the cart', async () => {
+      const { data: { addCartDiscount } = {} } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation addCartDiscount {
+            addCartDiscount(code: "HALFPRICE") {
+              code
+              discounted {
+                _id
+                ... on OrderItemDiscount {
+                  item {
+                    _id
+                  }
+                }
+
+                total {
+                  amount
+                }
+              }
+              _id
+              order {
+                discounts {
+                  _id
+                  code
+                }
+              }
+            }
+          }
+        `,
+        variables: {
+          code: 'TEST'
+        }
+      });
+      expect(addCartDiscount).toMatchObject({
+        product: {
+          _id: SimpleProduct._id
+        },
+        configuration: [
+          {
+            key: 'height'
+          }
+        ]
+      });
+    });
+  });
+
   describe('Mutation.updateCart', () => {
     it('update the billingAddress', async () => {
       const Orders = db.collection('orders');

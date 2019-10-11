@@ -86,22 +86,22 @@ Orders.helpers({
   discounts() {
     return OrderDiscounts.find({ orderId: this._id }).fetch();
   },
-  discounted() {
+  discounted({ orderDiscountId }) {
     const discounted = [];
     this.payment()
-      .discounts()
+      .discounts(orderDiscountId)
       .forEach(discount => discount && discounted.push(discount));
     this.delivery()
-      .discounts()
+      .discounts(orderDiscountId)
       .forEach(discount => discount && discounted.push(discount));
     this.items().forEach(item =>
       item
-        .discounts()
+        .discounts(orderDiscountId)
         .forEach(discount => discount && discounted.push(discount))
     );
 
     this.pricing()
-      .discountPrices()
+      .discountPrices(orderDiscountId)
       .map(discount => ({
         order: this,
         ...discount
