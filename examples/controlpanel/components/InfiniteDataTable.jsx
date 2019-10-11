@@ -15,6 +15,7 @@ export default ({
   loadMoreEntries,
   updateHasMore,
   hasMore,
+  loading,
   ...rest
 }) => (
   <Table celled {...rest}>
