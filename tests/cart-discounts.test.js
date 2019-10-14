@@ -51,6 +51,7 @@ describe('cart checkout', () => {
         `
       });
       console.log(addCartDiscount);
+
       expect(addCartDiscount).toMatchObject({
         code: '100OFF',
         discounted: [],

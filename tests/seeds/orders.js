@@ -144,4 +144,16 @@ export const OrderPosition = {
 
 export default async function seedOrders(db) {
   await db.collection('orders').findOrInsertOne(DiscountedOrder);
+  await db.collection('order_payments').findOrInsertOne(DiscountedOrderPayment);
+  await db
+    .collection('order_deliveries')
+    .findOrInsertOne(DiscountedOrderDelivery);
+  await db
+    .collection('order_discounts')
+    .findOrInsertOne(DiscountedOrderDiscount);
+  await db
+    .collection('order_discounts')
+    .findOrInsertOne(DiscountedOrderProductDiscount);
+
+  await db.collection('order_positions').findOrInsertOne(OrderPosition);
 }
