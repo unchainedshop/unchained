@@ -23,6 +23,7 @@ import { OrderDiscounts } from '../order-discounts/collections';
 import { OrderPayments } from '../order-payments/collections';
 import { OrderDocuments } from '../order-documents/collections';
 import { OrderPositions } from '../order-positions/collections';
+import 'core-js/features/array/flat-map';
 
 const { EMAIL_FROM, UI_ENDPOINT } = process.env;
 
@@ -86,45 +87,42 @@ Orders.helpers({
   discounts() {
     return OrderDiscounts.find({ orderId: this._id }).fetch();
   },
-  discounted() {
-    const discounted = [];
-    this.payment()
-      .discounts()
-      .forEach(discount => discount && discounted.push(discount));
-    this.delivery()
-      .discounts()
-      .forEach(discount => discount && discounted.push(discount));
-    this.items().forEach(item =>
-      item
-        .discounts()
-        .forEach(discount => discount && discounted.push(discount))
-    );
+  discounted({ orderDiscountId }) {
+    const payment = this.payment();
+    const delivery = this.delivery();
 
-    this.pricing()
-      .discountPrices()
-      .map(discount => ({
-        order: this,
-        ...discount
-      }))
-      .forEach(discount => discount && discounted.push(discount));
+    const discounted = [
+      ...(payment ? payment.discounts(orderDiscountId) : []),
+      ...(delivery ? delivery.discounts(orderDiscountId) : []),
+      ...this.items().flatMap(item => item.discounts(orderDiscountId)),
+      ...this.pricing()
+        .discountPrices(orderDiscountId)
+        .map(discount => ({
+          order: this,
+          ...discount
+        }))
+    ].filter(Boolean);
+
     return discounted;
   },
   discountTotal({ orderDiscountId }) {
     const payment = this.payment();
     const delivery = this.delivery();
 
-    const totalOrder = this.pricing().discountSum(orderDiscountId);
-    const totalPayment =
-      payment && payment.pricing().discountSum(orderDiscountId);
-    const totalDelivery =
-      delivery && delivery.pricing().discountSum(orderDiscountId);
-    const totalItems = this.items().reduce(
-      (oldValue, item) =>
-        oldValue + item.pricing().discountSum(orderDiscountId),
+    const prices = [
+      payment && payment.pricing().discountSum(orderDiscountId),
+      delivery && delivery.pricing().discountSum(orderDiscountId),
+      ...this.items().flatMap(item =>
+        item.pricing().discountSum(orderDiscountId)
+      ),
+      this.pricing().discountSum(orderDiscountId)
+    ];
+    const amount = prices.reduce(
+      (oldValue, price) => oldValue + (price || 0),
       0
     );
     return {
-      amount: totalItems + totalDelivery + totalPayment + totalOrder,
+      amount,
       currency: this.currency
     };
   },

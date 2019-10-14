@@ -55,8 +55,8 @@ class DeliveryPricingSheet extends PricingSheet {
     });
   }
 
-  discountPrices() {
-    const discountIds = this.getDiscountRows().map(
+  discountPrices(explicitDiscountId) {
+    const discountIds = this.getDiscountRows(explicitDiscountId).map(
       ({ discountId }) => discountId
     );
 
@@ -74,9 +74,10 @@ class DeliveryPricingSheet extends PricingSheet {
     return this.filterBy({ category: DeliveryPricingSheetRowCategories.Item });
   }
 
-  getDiscountRows() {
+  getDiscountRows(discountId) {
     return this.filterBy({
-      category: DeliveryPricingSheetRowCategories.Discount
+      category: DeliveryPricingSheetRowCategories.Discount,
+      discountId
     });
   }
 

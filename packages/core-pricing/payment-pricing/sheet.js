@@ -55,11 +55,10 @@ class PaymentPricingSheet extends PricingSheet {
     });
   }
 
-  discountPrices() {
-    const discountIds = this.getDiscountRows().map(
+  discountPrices(explicitDiscountId) {
+    const discountIds = this.getDiscountRows(explicitDiscountId).map(
       ({ discountId }) => discountId
     );
-
     return [...new Set(discountIds)].map(discountId => ({
       discountId,
       amount: this.sum({
@@ -74,9 +73,10 @@ class PaymentPricingSheet extends PricingSheet {
     return this.filterBy({ category: PaymentPricingSheetRowCategories.Item });
   }
 
-  getDiscountRows() {
+  getDiscountRows(discountId) {
     return this.filterBy({
-      category: PaymentPricingSheetRowCategories.Discount
+      category: PaymentPricingSheetRowCategories.Discount,
+      discountId
     });
   }
 

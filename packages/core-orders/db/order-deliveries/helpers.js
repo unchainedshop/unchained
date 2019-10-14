@@ -86,9 +86,9 @@ OrderDeliveries.helpers({
       status
     });
   },
-  discounts() {
+  discounts(orderDiscountId) {
     return this.pricing()
-      .discountPrices()
+      .discountPrices(orderDiscountId)
       .map(discount => ({
         delivery: this,
         ...discount

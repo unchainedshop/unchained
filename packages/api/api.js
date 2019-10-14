@@ -57,7 +57,10 @@ const startUnchainedServer = options => {
       try {
         const {
           message,
-          extensions: { exception, ...extensions },
+          extensions: {
+            exception: { stacktrace, ...parameters },
+            ...extensions
+          },
           ...rest
         } = error;
         log(`${message} ${extensions && extensions.code}`, {
@@ -65,7 +68,7 @@ const startUnchainedServer = options => {
           ...extensions,
           ...rest
         });
-        console.error(exception.stacktrace); // eslint-disable-line
+        console.error(stacktrace, parameters); // eslint-disable-line
       } catch (e) { } // eslint-disable-line
       const newError = error;
       if (newError.extensions.exception)
