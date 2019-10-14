@@ -5,6 +5,7 @@ import { objectInvert } from 'meteor/unchained:utils';
 import { Users } from 'meteor/unchained:core-users';
 import { Products } from 'meteor/unchained:core-products';
 import { Countries } from 'meteor/unchained:core-countries';
+import { Currencies } from 'meteor/unchained:core-currencies';
 import { Logs, log } from 'meteor/unchained:core-logger';
 import {
   MessagingDirector,
@@ -51,6 +52,12 @@ Quotations.helpers({
     return Products.findOne({
       _id: this.productId
     });
+  },
+  country() {
+    return Countries.findOne({ isoCode: this.countryCode });
+  },
+  currency() {
+    return Currencies.findOne({ isoCode: this.currencyCode });
   },
   normalizedStatus() {
     return objectInvert(QuotationStatus)[this.status || null];
@@ -243,7 +250,7 @@ Quotations.helpers({
 });
 
 Quotations.requestQuotation = (
-  { productId, userId, currencyCode, configuration },
+  { productId, userId, countryCode, configuration },
   options
 ) => {
   log('Create Quotation', { userId });
@@ -253,10 +260,10 @@ Quotations.requestQuotation = (
     userId,
     productId,
     configuration,
-    currency: Countries.resolveDefaultCurrencyCode({
-      isoCode: currencyCode
+    currencyCode: Countries.resolveDefaultCurrencyCode({
+      isoCode: countryCode
     }),
-    countryCode: currencyCode
+    countryCode
   });
   const quotation = Quotations.findOne({ _id: quotationId });
   return quotation.process().sendStatusToCustomer(options);
@@ -333,7 +340,7 @@ Quotations.updateStatus = ({ status, quotationId, info = '' }) => {
       if (!quotation.fullfilled) {
         modifier.$set.fullfilled = date;
       }
-      modifier.$set.expires = new Date();
+      modifier.$set.expires = date;
     case QuotationStatus.PROPOSED: // eslint-disable-line no-fallthrough
       isShouldUpdateDocuments = true;
     case QuotationStatus.PROCESSING: // eslint-disable-line no-fallthrough
@@ -342,17 +349,18 @@ Quotations.updateStatus = ({ status, quotationId, info = '' }) => {
       }
       break;
     case QuotationStatus.REJECTED:
-      modifier.$set.expires = new Date();
+      modifier.$set.expires = date;
+      modifier.$set.rejected = date;
       break;
     default:
       break;
   }
   // documents represent long-living state of orders,
-  // so we only track when transitioning to confirmed or fullfilled status
+  // so we only track when transitioning to proposed or fullfilled status
   if (isShouldUpdateDocuments) {
     try {
       // we are now allowed to stop this process, else we could
-      // end up with non-confirmed but charged orders.
+      // end up with non-proposed but charged orders.
       QuotationDocuments.updateDocuments({
         quotationId,
         date,

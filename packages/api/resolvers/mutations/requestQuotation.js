@@ -20,7 +20,7 @@ export default function(
     {
       userId,
       productId,
-      currencyCode: countryContext,
+      countryCode: countryContext,
       configuration
     },
     { localeContext }
