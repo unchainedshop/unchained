@@ -2,8 +2,8 @@ import { ApolloError } from 'apollo-server-express';
 
 export const createError = (code, message) =>
   class extends ApolloError {
-    constructor({ data }) {
-      super(message, code, data);
+    constructor({ data, message: explicitMessage }) {
+      super(explicitMessage || message, code, data);
     }
   };
 
