@@ -87,44 +87,39 @@ Orders.helpers({
     return OrderDiscounts.find({ orderId: this._id }).fetch();
   },
   discounted({ orderDiscountId }) {
-    const discounted = [];
-    this.payment()
-      .discounts(orderDiscountId)
-      .forEach(discount => discount && discounted.push(discount));
-    this.delivery()
-      .discounts(orderDiscountId)
-      .forEach(discount => discount && discounted.push(discount));
-    this.items().forEach(item =>
-      item
-        .discounts(orderDiscountId)
-        .forEach(discount => discount && discounted.push(discount))
-    );
+    const payment = this.payment();
+    const delivery = this.delivery();
 
-    this.pricing()
-      .discountPrices(orderDiscountId)
-      .map(discount => ({
-        order: this,
-        ...discount
-      }))
-      .forEach(discount => discount && discounted.push(discount));
+    const discounted = [
+      ...(payment ? payment.discounts(orderDiscountId) : []),
+      ...(delivery ? delivery.discounts(orderDiscountId) : []),
+      ...this.items().map(item => item.discounts(orderDiscountId)),
+      ...this.pricing()
+        .discountPrices(orderDiscountId)
+        .map(discount => ({
+          order: this,
+          ...discount
+        }))
+    ].filter(Boolean);
+
     return discounted;
   },
   discountTotal({ orderDiscountId }) {
     const payment = this.payment();
     const delivery = this.delivery();
 
-    const totalOrder = this.pricing().discountSum(orderDiscountId);
-    const totalPayment =
-      payment && payment.pricing().discountSum(orderDiscountId);
-    const totalDelivery =
-      delivery && delivery.pricing().discountSum(orderDiscountId);
-    const totalItems = this.items().reduce(
-      (oldValue, item) =>
-        oldValue + item.pricing().discountSum(orderDiscountId),
+    const prices = [
+      payment && payment.pricing().discountSum(orderDiscountId),
+      delivery && delivery.pricing().discountSum(orderDiscountId),
+      ...this.items().map(item => item.pricing().discountSum(orderDiscountId)),
+      this.pricing().discountSum(orderDiscountId)
+    ];
+    const amount = prices.reduce(
+      (oldValue, price) => oldValue + (price || 0),
       0
     );
     return {
-      amount: totalItems + totalDelivery + totalPayment + totalOrder,
+      amount,
       currency: this.currency
     };
   },
