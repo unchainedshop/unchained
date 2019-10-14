@@ -4,7 +4,7 @@ import { USER_TOKEN } from './seeds/users';
 import { ProposedQuotation } from './seeds/quotations';
 
 let connection;
-let db;
+let db; // eslint-disable-line
 let graphqlFetch;
 
 describe('cart checkout', () => {

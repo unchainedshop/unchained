@@ -5,7 +5,7 @@ import { ProcessingQuotation } from './seeds/quotations';
 import { USER_TOKEN, ADMIN_TOKEN } from './seeds/users';
 
 let connection;
-let db;
+let db;  // eslint-disable-line
 let graphqlFetch;
 let adminGraphqlFetch;
 

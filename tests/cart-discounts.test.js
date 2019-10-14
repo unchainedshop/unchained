@@ -3,7 +3,7 @@ import { SimpleOrder, DiscountedDiscount } from './seeds/orders';
 import { USER_TOKEN } from './seeds/users';
 
 let connection;
-let db;
+let db; // eslint-disable-line
 let graphqlFetch;
 
 describe('cart checkout', () => {
