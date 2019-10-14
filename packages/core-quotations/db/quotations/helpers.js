@@ -5,6 +5,7 @@ import { objectInvert } from 'meteor/unchained:utils';
 import { Users } from 'meteor/unchained:core-users';
 import { Products } from 'meteor/unchained:core-products';
 import { Countries } from 'meteor/unchained:core-countries';
+import { Currencies } from 'meteor/unchained:core-currencies';
 import { Logs, log } from 'meteor/unchained:core-logger';
 import {
   MessagingDirector,
@@ -51,6 +52,12 @@ Quotations.helpers({
     return Products.findOne({
       _id: this.productId
     });
+  },
+  country() {
+    return Countries.findOne({ isoCode: this.countryCode });
+  },
+  currency() {
+    return Currencies.findOne({ isoCode: this.currencyCode });
   },
   normalizedStatus() {
     return objectInvert(QuotationStatus)[this.status || null];
@@ -243,7 +250,7 @@ Quotations.helpers({
 });
 
 Quotations.requestQuotation = (
-  { productId, userId, currencyCode, configuration },
+  { productId, userId, countryCode, configuration },
   options
 ) => {
   log('Create Quotation', { userId });
@@ -253,10 +260,10 @@ Quotations.requestQuotation = (
     userId,
     productId,
     configuration,
-    currency: Countries.resolveDefaultCurrencyCode({
-      isoCode: currencyCode
+    currencyCode: Countries.resolveDefaultCurrencyCode({
+      isoCode: countryCode
     }),
-    countryCode: currencyCode
+    countryCode
   });
   const quotation = Quotations.findOne({ _id: quotationId });
   return quotation.process().sendStatusToCustomer(options);
