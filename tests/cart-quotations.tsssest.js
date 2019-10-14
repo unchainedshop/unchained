@@ -1,5 +1,5 @@
 import { setupDatabase, createLoggedInGraphqlFetch } from './helpers';
-import { SimpleOrder, DiscountedDiscount } from './seeds/orders';
+import { SimpleOrder } from './seeds/orders';
 import { USER_TOKEN } from './seeds/users';
 
 let connection;

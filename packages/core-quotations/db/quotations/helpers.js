@@ -340,7 +340,7 @@ Quotations.updateStatus = ({ status, quotationId, info = '' }) => {
       if (!quotation.fullfilled) {
         modifier.$set.fullfilled = date;
       }
-      modifier.$set.expires = new Date();
+      modifier.$set.expires = date;
     case QuotationStatus.PROPOSED: // eslint-disable-line no-fallthrough
       isShouldUpdateDocuments = true;
     case QuotationStatus.PROCESSING: // eslint-disable-line no-fallthrough
@@ -349,17 +349,18 @@ Quotations.updateStatus = ({ status, quotationId, info = '' }) => {
       }
       break;
     case QuotationStatus.REJECTED:
-      modifier.$set.expires = new Date();
+      modifier.$set.expires = date;
+      modifier.$set.rejected = date;
       break;
     default:
       break;
   }
   // documents represent long-living state of orders,
-  // so we only track when transitioning to confirmed or fullfilled status
+  // so we only track when transitioning to proposed or fullfilled status
   if (isShouldUpdateDocuments) {
     try {
       // we are now allowed to stop this process, else we could
-      // end up with non-confirmed but charged orders.
+      // end up with non-proposed but charged orders.
       QuotationDocuments.updateDocuments({
         quotationId,
         date,

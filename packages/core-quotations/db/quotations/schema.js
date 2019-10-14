@@ -22,6 +22,7 @@ Quotations.attachSchema(
       quotationNumber: String,
       price: Number,
       expires: Date,
+      rejected: Date,
       meta: { type: Object, blackbox: true },
       fullfilled: Date,
       currency: String,
