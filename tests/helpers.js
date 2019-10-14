@@ -5,6 +5,9 @@ import gql from 'graphql-tag';
 import fetch from 'isomorphic-unfetch';
 import seedUsers, { ADMIN_TOKEN } from './seeds/users';
 import seedProducts from './seeds/products';
+import seedDeliveries from './seeds/deliveries';
+import seedPayments from './seeds/payments';
+import seedOrders from './seeds/orders';
 
 Collection.prototype.findOrInsertOne = async function findOrInsertOne(
   doc,
@@ -28,6 +31,9 @@ export const setupDatabase = async () => {
   await db.dropDatabase();
   await seedUsers(db);
   await seedProducts(db);
+  await seedDeliveries(db);
+  await seedPayments(db);
+  await seedOrders(db);
 
   return [db, connection];
 };

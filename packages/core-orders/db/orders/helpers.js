@@ -23,6 +23,7 @@ import { OrderDiscounts } from '../order-discounts/collections';
 import { OrderPayments } from '../order-payments/collections';
 import { OrderDocuments } from '../order-documents/collections';
 import { OrderPositions } from '../order-positions/collections';
+import 'core-js/features/array/flat-map';
 
 const { EMAIL_FROM, UI_ENDPOINT } = process.env;
 
@@ -93,7 +94,7 @@ Orders.helpers({
     const discounted = [
       ...(payment ? payment.discounts(orderDiscountId) : []),
       ...(delivery ? delivery.discounts(orderDiscountId) : []),
-      ...this.items().map(item => item.discounts(orderDiscountId)),
+      ...this.items().flatMap(item => item.discounts(orderDiscountId)),
       ...this.pricing()
         .discountPrices(orderDiscountId)
         .map(discount => ({
@@ -111,7 +112,9 @@ Orders.helpers({
     const prices = [
       payment && payment.pricing().discountSum(orderDiscountId),
       delivery && delivery.pricing().discountSum(orderDiscountId),
-      ...this.items().map(item => item.pricing().discountSum(orderDiscountId)),
+      ...this.items().flatMap(item =>
+        item.pricing().discountSum(orderDiscountId)
+      ),
       this.pricing().discountSum(orderDiscountId)
     ];
     const amount = prices.reduce(
