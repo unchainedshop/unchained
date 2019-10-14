@@ -1,5 +1,5 @@
 import { setupDatabase, createLoggedInGraphqlFetch } from './helpers';
-import { SimpleOrder } from './seeds/orders';
+import { SimpleOrder, DiscountedDiscount } from './seeds/orders';
 import { USER_TOKEN } from './seeds/users';
 
 let connection;
@@ -127,6 +127,35 @@ describe('cart checkout', () => {
               code: '100OFF'
             }
           ]
+        }
+      });
+    });
+
+    it('remove order discount from a cart', async () => {
+      const { data: { removeCartDiscount } = {} } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation removeCartDiscount($discountId: ID!) {
+            removeCartDiscount(discountId: $discountId) {
+              code
+              _id
+              order {
+                total(category: DISCOUNTS) {
+                  amount
+                }
+              }
+            }
+          }
+        `,
+        variables: {
+          discountId: DiscountedDiscount._id
+        }
+      });
+
+      expect(removeCartDiscount.order.total.amount).toBe(0);
+      expect(removeCartDiscount).toMatchObject({
+        code: '100OFF',
+        order: {
+          total: {}
         }
       });
     });
