@@ -37,7 +37,37 @@ export const DiscountedOrder = {
   deliveryId: 'discounted-order-delivery'
 };
 
-export const DiscountedOrderPayment = {
+export const SimpleOrder = {
+  _id: 'simple-order',
+  created: new Date('2019-10-11T11:52:25.433+0000'),
+  status: null,
+  userId: 'user',
+  currency: 'CHF',
+  countryCode: 'CH',
+  calculation: [
+    {
+      category: 'ITEMS',
+      amount: 100000
+    },
+    {
+      category: 'PAYMENT',
+      amount: 0
+    },
+    {
+      category: 'DELIVERY',
+      amount: 0
+    },
+    {
+      category: 'DISCOUNTS',
+      amount: 0
+    }
+  ],
+  updated: new Date('2019-10-11T12:48:01.611+0000'),
+  paymentId: 'simple-order-payment',
+  deliveryId: 'simple-order-delivery'
+};
+
+export const DiscountedPayment = {
   _id: 'discounted-order-payment',
   created: new Date('2019-10-11T11:52:25.446+0000'),
   status: null,
@@ -48,7 +78,7 @@ export const DiscountedOrderPayment = {
   calculation: []
 };
 
-export const DiscountedOrderDelivery = {
+export const DiscountedDelivery = {
   _id: 'discounted-order-delivery',
   created: new Date('2019-10-11T11:52:25.563+0000'),
   status: null,
@@ -59,7 +89,29 @@ export const DiscountedOrderDelivery = {
   updated: new Date('2019-10-11T12:48:01.523+0000')
 };
 
-export const DiscountedOrderDiscount = {
+export const SimplePayment = {
+  _id: 'simple-order-payment',
+  created: new Date('2019-10-11T11:52:25.446+0000'),
+  status: null,
+  orderId: 'simple-order',
+  paymentProviderId: 'simple-payment-provider',
+  context: {},
+  updated: new Date('2019-10-11T12:48:01.537+0000'),
+  calculation: []
+};
+
+export const SimpleDelivery = {
+  _id: 'simple-order-delivery',
+  created: new Date('2019-10-11T11:52:25.563+0000'),
+  status: null,
+  orderId: 'simple-order',
+  deliveryProviderId: 'simple-delivery-provider',
+  context: {},
+  calculation: [],
+  updated: new Date('2019-10-11T12:48:01.523+0000')
+};
+
+export const DiscountedDiscount = {
   _id: 'discounted-order-discount',
   code: '100OFF',
   trigger: 'USER',
@@ -68,7 +120,7 @@ export const DiscountedOrderDiscount = {
   created: new Date('2019-10-11T12:07:27.123+0000')
 };
 
-export const DiscountedOrderProductDiscount = {
+export const DiscountedProductDiscount = {
   _id: 'discounted-order-product-discount',
   code: 'HALFPRICE',
   trigger: 'USER',
@@ -77,7 +129,29 @@ export const DiscountedOrderProductDiscount = {
   created: new Date('2019-10-11T12:48:01.435+0000')
 };
 
-export const OrderPosition = {
+export const SimplePosition = {
+  _id: 'simple-order-position',
+  orderId: 'simple-order',
+  productId: 'simple-product',
+  originalProductId: 'simple-product',
+  quantity: 3,
+  created: new Date('2019-10-11T12:15:42.456+0000'),
+  calculation: [
+    {
+      category: 'ITEM',
+      amount: 20000, // CHF 200
+      isTaxable: true,
+      isNetPrice: false,
+      meta: {
+        adapter: 'shop.unchained.pricing.product-price'
+      }
+    }
+  ],
+  scheduling: [],
+  updated: new Date('2019-10-11T12:17:49.529+0000')
+};
+
+export const DiscountedPosition = {
   _id: 'discounted-order-position',
   orderId: 'discounted-order',
   productId: 'simple-product',
@@ -144,16 +218,16 @@ export const OrderPosition = {
 
 export default async function seedOrders(db) {
   await db.collection('orders').findOrInsertOne(DiscountedOrder);
-  await db.collection('order_payments').findOrInsertOne(DiscountedOrderPayment);
-  await db
-    .collection('order_deliveries')
-    .findOrInsertOne(DiscountedOrderDelivery);
-  await db
-    .collection('order_discounts')
-    .findOrInsertOne(DiscountedOrderDiscount);
+  await db.collection('order_payments').findOrInsertOne(DiscountedPayment);
+  await db.collection('order_deliveries').findOrInsertOne(DiscountedDelivery);
+  await db.collection('order_discounts').findOrInsertOne(DiscountedDiscount);
   await db
     .collection('order_discounts')
-    .findOrInsertOne(DiscountedOrderProductDiscount);
+    .findOrInsertOne(DiscountedProductDiscount);
+  await db.collection('order_positions').findOrInsertOne(DiscountedPosition);
 
-  await db.collection('order_positions').findOrInsertOne(OrderPosition);
+  await db.collection('orders').findOrInsertOne(SimpleOrder);
+  await db.collection('order_payments').findOrInsertOne(SimplePayment);
+  await db.collection('order_deliveries').findOrInsertOne(SimpleDelivery);
+  await db.collection('order_positions').findOrInsertOne(SimplePosition);
 }

@@ -1,5 +1,6 @@
 import { setupDatabase, createLoggedInGraphqlFetch } from './helpers';
-import { SimpleProduct } from './seeds/products';
+import { SimpleOrder } from './seeds/orders';
+import { USER_TOKEN } from './seeds/users';
 
 let connection;
 let db;
@@ -8,7 +9,7 @@ let graphqlFetch;
 describe('cart checkout', () => {
   beforeAll(async () => {
     [db, connection] = await setupDatabase();
-    graphqlFetch = await createLoggedInGraphqlFetch();
+    graphqlFetch = await createLoggedInGraphqlFetch(USER_TOKEN);
   });
 
   afterAll(async () => {
@@ -16,11 +17,63 @@ describe('cart checkout', () => {
   });
 
   describe('Mutation.addCartDiscount', () => {
+    it('add product discount to the cart', async () => {
+      const { data: { addCartDiscount } = {} } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation addCartDiscount($orderId: ID) {
+            addCartDiscount(orderId: $orderId, code: "HALFPRICE") {
+              code
+              discounted {
+                _id
+                ... on OrderItemDiscount {
+                  item {
+                    _id
+                  }
+                }
+                total {
+                  amount
+                }
+              }
+              _id
+              order {
+                total(category: DISCOUNTS) {
+                  amount
+                }
+                discounts {
+                  _id
+                  code
+                }
+              }
+            }
+          }
+        `,
+        variables: {
+          orderId: SimpleOrder._id
+        }
+      });
+      expect(addCartDiscount.order.total.amount).toBe(0);
+      expect(addCartDiscount).toMatchObject({
+        code: 'HALFPRICE',
+        discounted: [
+          {
+            item: {},
+            total: {}
+          }
+        ],
+        order: {
+          discounts: [
+            {
+              code: 'HALFPRICE'
+            }
+          ]
+        }
+      });
+    });
     it('add order discount to the cart', async () => {
       const { data: { addCartDiscount } = {} } = await graphqlFetch({
         query: /* GraphQL */ `
-          mutation addCartDiscount {
-            addCartDiscount(code: "100off") {
+          mutation addCartDiscount($orderId: ID) {
+            addCartDiscount(orderId: $orderId, code: "100off") {
               code
               discounted {
                 _id
@@ -41,50 +94,9 @@ describe('cart checkout', () => {
               }
               _id
               order {
-                discounts {
-                  _id
-                  code
-                }
-              }
-            }
-          }
-        `
-      });
-      console.log(addCartDiscount);
-
-      expect(addCartDiscount).toMatchObject({
-        code: '100OFF',
-        discounted: [],
-        order: {
-          discounts: [
-            {
-              code: '100OFF'
-            }
-          ]
-        }
-      });
-    });
-
-    it('add product discount to the cart', async () => {
-      const { data: { addCartDiscount } = {} } = await graphqlFetch({
-        query: /* GraphQL */ `
-          mutation addCartDiscount {
-            addCartDiscount(code: "HALFPRICE") {
-              code
-              discounted {
-                _id
-                ... on OrderItemDiscount {
-                  item {
-                    _id
-                  }
-                }
-
-                total {
+                total(category: DISCOUNTS) {
                   amount
                 }
-              }
-              _id
-              order {
                 discounts {
                   _id
                   code
@@ -92,15 +104,27 @@ describe('cart checkout', () => {
               }
             }
           }
-        `
+        `,
+        variables: {
+          orderId: SimpleOrder._id
+        }
       });
+
+      expect(addCartDiscount.order.total.amount).toBeLessThan(0);
       expect(addCartDiscount).toMatchObject({
-        code: 'HALFPRICE',
-        discounted: [],
+        code: '100OFF',
+        discounted: [
+          {
+            order: {},
+            orderDiscount: {},
+            total: {}
+          }
+        ],
         order: {
           discounts: [
+            {},
             {
-              code: 'HALFPRICE'
+              code: '100OFF'
             }
           ]
         }
