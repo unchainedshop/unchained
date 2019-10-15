@@ -43,17 +43,21 @@ export default [
 
     type LoadedFilterOption {
       filteredProducts: Int!
-      option: FilterOption!
+      definition: FilterOption!
+      isSelected: Boolean
+      option: FilterOption! @deprecated(reason: "Use definition instead")
       remaining: Int @deprecated(reason: "Use filteredProducts instead")
-      active: Boolean
+      active: Boolean @deprecated(reason: "Use isSelected instead")
     }
 
     type LoadedFilter {
       examinedProducts: Int!
       filteredProducts: Int!
-      filter: Filter!
+      definition: Filter!
+      isSelected: Boolean
+      filter: Filter! @deprecated(reason: "Use definition instead")
       remaining: Int! @deprecated(reason: "Use examinedProducts instead")
-      active: Boolean
+      active: Boolean @deprecated(reason: "Use isSelected instead")
       filteredOptions: [LoadedFilterOption!]
     }
   `

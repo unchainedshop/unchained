@@ -226,10 +226,10 @@ Filters.filterFilters = ({
       : allProductIdsSet;
 
     return {
-      filter,
+      definition: filter,
       examinedProducts: examinedProductIdSet.size,
       filteredProducts: examinedProductIdSet.size, // TODO: Implement
-      active: Object.prototype.hasOwnProperty.call(queryObject, filter.key),
+      isSelected: Object.prototype.hasOwnProperty.call(queryObject, filter.key),
       filteredOptions: () =>
         filter.filteredOptions({
           values,
@@ -356,9 +356,9 @@ Filters.helpers({
         });
         if (!filteredProductIds.size) return null;
         return {
-          option: () => this.optionObject(value),
+          definition: () => this.optionObject(value),
           filteredProducts: filteredProductIds.size,
-          active: values ? values.indexOf(value) !== -1 : false
+          isSelected: values ? values.indexOf(value) !== -1 : false
         };
       })
       .filter(Boolean);
