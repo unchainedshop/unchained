@@ -187,7 +187,7 @@ Filters.invalidateFilterCaches = () => {
   Filters.find()
     .fetch()
     .forEach(filter => filter.invalidateProductIdCache());
-  log('Filters: Invalided the filter caches');
+  log('Filters: Invalidated the filter caches');
 };
 
 Filters.filterFilters = ({

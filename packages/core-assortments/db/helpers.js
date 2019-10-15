@@ -723,7 +723,7 @@ Collections.Assortments.helpers({
 
     return [...ownProductIds, ...productIds];
   },
-  invalidateProductIdCache() {
+  invalidateProductIdCache({ skipUpstreamTraversal = false } = {}) {
     const linkedAssortments = this.linkedAssortments();
     const productIds = this.productIds({ forceLiveCollection: true });
 
@@ -740,10 +740,12 @@ Collections.Assortments.helpers({
       }
     );
 
+    if (skipUpstreamTraversal) return updateCount;
+
     linkedAssortments
       .filter(({ childAssortmentId }) => childAssortmentId === this._id)
-      .forEach(assortmentLink => {
-        const parent = assortmentLink.parent();
+      .forEach(upstreamAssortmentLink => {
+        const parent = upstreamAssortmentLink.parent();
         if (parent) updateCount += parent.invalidateProductIdCache();
       });
 
