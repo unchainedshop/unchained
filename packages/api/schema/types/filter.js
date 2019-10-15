@@ -42,14 +42,17 @@ export default [
     }
 
     type LoadedFilterOption {
+      filteredProducts: Int!
       option: FilterOption!
-      remaining: Int
+      remaining: Int @deprecated(reason: "Use filteredProducts instead")
       active: Boolean
     }
 
     type LoadedFilter {
+      examinedProducts: Int!
+      filteredProducts: Int!
       filter: Filter!
-      remaining: Int!
+      remaining: Int! @deprecated(reason: "Use examinedProducts instead")
       active: Boolean
       filteredOptions: [LoadedFilterOption!]
     }

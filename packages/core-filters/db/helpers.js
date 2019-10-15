@@ -216,8 +216,8 @@ Filters.filterFilters = ({
     const values = queryObject[filter.key];
 
     // compare against potentially all product ids
-    // possible for remaining on filter level?
-    const remainingProductIdSet = values
+    // possible for examination on filter level?
+    const examinedProductIdSet = values
       ? filter.intersect({
           values,
           forceLiveCollection,
@@ -227,7 +227,8 @@ Filters.filterFilters = ({
 
     return {
       filter,
-      remaining: remainingProductIdSet.size,
+      examinedProducts: examinedProductIdSet.size,
+      filteredProducts: examinedProductIdSet.size, // TODO: Implement
       active: Object.prototype.hasOwnProperty.call(queryObject, filter.key),
       filteredOptions: () =>
         filter.filteredOptions({
@@ -348,15 +349,15 @@ Filters.helpers({
   filteredOptions({ values, forceLiveCollection, productIdSet }) {
     const mappedOptions = this.options
       .map(value => {
-        const remainingIds = this.intersect({
+        const filteredProductIds = this.intersect({
           values: [value],
           forceLiveCollection,
           productIdSet
         });
-        if (!remainingIds.size) return null;
+        if (!filteredProductIds.size) return null;
         return {
           option: () => this.optionObject(value),
-          remaining: remainingIds.size,
+          filteredProducts: filteredProductIds.size,
           active: values ? values.indexOf(value) !== -1 : false
         };
       })

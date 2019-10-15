@@ -46,6 +46,9 @@ import Assortment from './assortment';
 import AssortmentPathLink from './assortment-path-link';
 import Filter from './filter';
 import FilterOption from './filter-option';
+import LoadedFilter from './loaded-filter';
+import LoadedFilterOption from './loaded-filter-option';
+
 import Quotation from './quotation';
 
 export default {
@@ -97,5 +100,7 @@ export default {
   AssortmentPathLink,
   Filter,
   FilterOption,
+  LoadedFilter,
+  LoadedFilterOption,
   Quotation
 };
