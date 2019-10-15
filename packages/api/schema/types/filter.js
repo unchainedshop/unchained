@@ -41,17 +41,17 @@ export default [
       options: [FilterOption!]
     }
 
-    type FilteredFilterOption {
+    type LoadedFilterOption {
       option: FilterOption!
       remaining: Int
       active: Boolean
     }
 
-    type FilteredFilter {
+    type LoadedFilter {
       filter: Filter!
       remaining: Int!
       active: Boolean
-      filteredOptions: [FilteredFilterOption!]
+      filteredOptions: [LoadedFilterOption!]
     }
   `
 ];
