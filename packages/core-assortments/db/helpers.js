@@ -600,7 +600,7 @@ Collections.Assortments.helpers({
     return selector;
   },
   search({ filterQuery, includeInactive }) {
-    const forceLiveCollection = true;
+    const forceLiveCollection = false;
     const productIds = this.productIds({ forceLiveCollection });
     const selector = this.defaultProductSelectorForSearch({ includeInactive });
     const filteredProductIds = Filters.filterProductIds({
