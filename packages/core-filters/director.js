@@ -34,18 +34,24 @@ class FilterDirector {
   }
 
   buildProductSelector({ key, value }) {
-    return FilterDirector.sortedAdapters()
-      .filter(AdapterClass => AdapterClass.isActivatedFor(this.context))
-      .reduce((lastSelector, AdapterClass) => {
-        const concreteAdapter = new AdapterClass({
-          context: this.context
-        });
-        return concreteAdapter.transformSelector({
-          last: lastSelector,
-          key,
-          value
-        });
-      }, {});
+    const adapters = FilterDirector.sortedAdapters().filter(AdapterClass =>
+      AdapterClass.isActivatedFor(this.context)
+    );
+
+    if (adapters.length === 0) {
+      return null;
+    }
+
+    return adapters.reduce((lastSelector, AdapterClass) => {
+      const concreteAdapter = new AdapterClass({
+        context: this.context
+      });
+      return concreteAdapter.transformSelector({
+        last: lastSelector,
+        key,
+        value
+      });
+    }, {});
   }
 
   static adapters = new Map();
