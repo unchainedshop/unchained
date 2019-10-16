@@ -590,20 +590,64 @@ Collections.Assortments.helpers({
     }
     return this._cachedProductIds; // eslint-disable-line
   },
+  search({ filterQuery, includeInactive = false }) {
+    const forceLiveCollection = false;
+    const productIds = this.productIds({ forceLiveCollection });
+    const selector = {
+      status: { $in: [ProductStatus.ACTIVE, ProductStatus.DRAFT] }
+    };
+    if (!includeInactive) {
+      selector.status = ProductStatus.ACTIVE;
+    }
+
+    const filteredProductIds = Filters.filterProductIds({
+      productIds,
+      query: filterQuery,
+      forceLiveCollection
+    });
+
+    return {
+      totalProducts: () => {
+        Products.find({
+          ...selector,
+          _id: { $in: productIds }
+        }).count();
+      },
+      filteredProducts() {
+        return Products.find({
+          ...selector,
+          _id: { $in: filteredProductIds }
+        }).count();
+      },
+      products: ({ offset, limit, sort = {} }) => {
+        const options = { skip: offset, limit, sort };
+        return findPreservingIds(Products)(
+          selector,
+          filteredProductIds,
+          options
+        );
+      },
+      filters: () => {
+        const filterIds = this.filterAssignments().map(
+          ({ filterId }) => filterId
+        );
+        return Filters.filterFilters({
+          filterIds,
+          productIds,
+          query: filterQuery,
+          forceLiveCollection,
+          includeInactive
+        });
+      }
+    };
+  },
   filters({
     query,
     forceLiveCollection = false,
     includeInactive = false
   } = {}) {
     const productIds = this.productIds({ forceLiveCollection });
-    const filterIds = Collections.AssortmentFilters.find(
-      { assortmentId: this._id },
-      {
-        sort: { sortKey: 1 }
-      }
-    )
-      .fetch()
-      .map(({ filterId }) => filterId);
+    const filterIds = this.filterAssignments().map(({ filterId }) => filterId);
     return Filters.filterFilters({
       filterIds,
       productIds,

@@ -230,7 +230,7 @@ Filters.filterFilters = ({
       examinedProducts: examinedProductIdSet.size,
       filteredProducts: examinedProductIdSet.size, // TODO: Implement
       isSelected: Object.prototype.hasOwnProperty.call(queryObject, filter.key),
-      filteredOptions: () =>
+      options: () =>
         filter.filteredOptions({
           values,
           forceLiveCollection,

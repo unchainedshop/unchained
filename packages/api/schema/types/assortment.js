@@ -20,11 +20,26 @@ export default [
       assortmentPaths(forceLocale: String): [AssortmentPath!]!
       children: [Assortment!]
       filters(query: [FilterQueryInput!]): [LoadedFilter!]
+        @deprecated(reason: "Use search instead")
       products(
         limit: Int = 10
         offset: Int = 0
         query: [FilterQueryInput!]
-      ): ProductCollection
+      ): ProductCollection @deprecated(reason: "Use search instead")
+      search(
+        filterQuery: [FilterQueryInput!]
+        includeInactive: Boolean = false
+      ): AssortmentSearchResult!
+    }
+
+    """
+    Search result
+    """
+    type AssortmentSearchResult {
+      totalProducts: Int!
+      filteredProducts: Int!
+      filters: [LoadedFilter!]!
+      products(limit: Int = 10, offset: Int = 0): [Product!]!
     }
 
     """
