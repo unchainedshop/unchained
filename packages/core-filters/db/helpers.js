@@ -217,24 +217,29 @@ Filters.filterFilters = ({
 
     // compare against potentially all product ids
     // possible for examination on filter level?
-    const examinedProductIdSet = values
+    const examinedProductIdSet = filter.intersect({
+      values: [undefined],
+      forceLiveCollection,
+      productIdSet: allProductIdsSet
+    });
+    const filteredProductIdSet = values
       ? filter.intersect({
           values,
           forceLiveCollection,
-          productIdSet: allProductIdsSet
+          productIdSet: intersectedProductIds
         })
-      : allProductIdsSet;
+      : examinedProductIdSet;
 
     return {
       definition: filter,
       examinedProducts: examinedProductIdSet.size,
-      filteredProducts: examinedProductIdSet.size, // TODO: Implement
+      filteredProducts: filteredProductIdSet.size, // TODO: Implement
       isSelected: Object.prototype.hasOwnProperty.call(queryObject, filter.key),
       options: () =>
         filter.filteredOptions({
           values,
           forceLiveCollection,
-          productIdSet: intersectedProductIds
+          productIdSet: examinedProductIdSet
         })
     };
   });
@@ -333,9 +338,7 @@ Filters.helpers({
     const reducedValues = values.reduce((accumulator, value) => {
       const additionalValues =
         value === undefined ? allProductIds : productIds[value];
-      if (!additionalValues || additionalValues.length === 0)
-        return accumulator;
-      return [...accumulator, ...additionalValues];
+      return [...accumulator, ...(additionalValues || [])];
     }, []);
     return reducedValues;
   },
