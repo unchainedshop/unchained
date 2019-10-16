@@ -55,10 +55,12 @@ export default [
       filteredProducts: Int!
       definition: Filter!
       isSelected: Boolean
+      options: [LoadedFilterOption!]
       filter: Filter! @deprecated(reason: "Use definition instead")
       remaining: Int! @deprecated(reason: "Use examinedProducts instead")
       active: Boolean @deprecated(reason: "Use isSelected instead")
       filteredOptions: [LoadedFilterOption!]
+        @deprecated(reason: "Use options instead")
     }
   `
 ];

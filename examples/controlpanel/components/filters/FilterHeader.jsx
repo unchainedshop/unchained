@@ -5,6 +5,7 @@ import { Menu, Dropdown, Segment, List, Grid } from 'semantic-ui-react';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 import BtnRemoveFilter from './BtnRemoveFilter';
+import FormEditFilter from './FormEditFilter';
 
 const FilterHeader = ({ loading, filter = {} }) => [
   <Menu fluid attached="top" borderless key="header-title">
@@ -25,8 +26,8 @@ const FilterHeader = ({ loading, filter = {} }) => [
   </Menu>,
   <Segment attached loading={loading} key="header-body">
     <Grid>
-      <Grid.Row columns={1}>
-        <Grid.Column width={16}>
+      <Grid.Row columns={2}>
+        <Grid.Column width={10}>
           <List>
             <List.Item>
               <List.Icon name="key" />
@@ -57,6 +58,9 @@ const FilterHeader = ({ loading, filter = {} }) => [
               </List.Content>
             </List.Item>
           </List>
+        </Grid.Column>
+        <Grid.Column width={6}>
+          <FormEditFilter filterId={filter._id} />
         </Grid.Column>
       </Grid.Row>
     </Grid>

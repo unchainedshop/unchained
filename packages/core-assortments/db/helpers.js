@@ -590,20 +590,65 @@ Collections.Assortments.helpers({
     }
     return this._cachedProductIds; // eslint-disable-line
   },
+  defaultProductSelectorForSearch({ includeInactive = false }) {
+    const selector = {
+      status: { $in: [ProductStatus.ACTIVE, ProductStatus.DRAFT] }
+    };
+    if (!includeInactive) {
+      selector.status = ProductStatus.ACTIVE;
+    }
+    return selector;
+  },
+  search({ filterQuery, includeInactive }) {
+    const forceLiveCollection = false;
+    const productIds = this.productIds({ forceLiveCollection });
+    const selector = this.defaultProductSelectorForSearch({ includeInactive });
+    const filteredProductIds = Filters.filterProductIds({
+      productIds,
+      query: filterQuery,
+      forceLiveCollection
+    });
+
+    return {
+      totalProducts: () =>
+        Products.find({
+          ...selector,
+          _id: { $in: productIds }
+        }).count(),
+      filteredProducts: () =>
+        Products.find({
+          ...selector,
+          _id: { $in: filteredProductIds }
+        }).count(),
+      products: ({ offset, limit, sort = {} }) => {
+        const options = { skip: offset, limit, sort };
+        return findPreservingIds(Products)(
+          selector,
+          filteredProductIds,
+          options
+        );
+      },
+      filters: () => {
+        const filterIds = this.filterAssignments().map(
+          ({ filterId }) => filterId
+        );
+        return Filters.filterFilters({
+          filterIds,
+          productIds,
+          query: filterQuery,
+          forceLiveCollection,
+          includeInactive
+        });
+      }
+    };
+  },
   filters({
     query,
     forceLiveCollection = false,
     includeInactive = false
   } = {}) {
     const productIds = this.productIds({ forceLiveCollection });
-    const filterIds = Collections.AssortmentFilters.find(
-      { assortmentId: this._id },
-      {
-        sort: { sortKey: 1 }
-      }
-    )
-      .fetch()
-      .map(({ filterId }) => filterId);
+    const filterIds = this.filterAssignments().map(({ filterId }) => filterId);
     return Filters.filterFilters({
       filterIds,
       productIds,
@@ -618,43 +663,33 @@ Collections.Assortments.helpers({
     query,
     sort = {},
     forceLiveCollection = false,
-    includeInactive = false
+    includeInactive
   } = {}) {
     const productIds = this.productIds({ forceLiveCollection });
-    const selector = {
-      status: { $in: [ProductStatus.ACTIVE, ProductStatus.DRAFT] }
-    };
-    if (!includeInactive) {
-      selector.status = ProductStatus.ACTIVE;
-    }
-    const options = { skip: offset, limit, sort };
-
+    const selector = this.defaultProductSelectorForSearch({ includeInactive });
     const filteredProductIds = Filters.filterProductIds({
       productIds,
       query,
       forceLiveCollection
     });
-
-    const filteredSelector = {
-      ...selector,
-      _id: { $in: filteredProductIds }
-    };
-
-    const unfilteredSelector = {
-      ...selector,
-      _id: { $in: productIds }
-    };
-
     return {
-      totalCount: () => Products.find(unfilteredSelector, options).count(),
-      filteredCount() {
-        return Products.find(filteredSelector, options).count();
-      },
+      totalCount: () =>
+        Products.find({
+          ...selector,
+          _id: { $in: productIds }
+        }).count(),
+      filteredCount: () =>
+        Products.find({
+          ...selector,
+          _id: { $in: filteredProductIds }
+        }).count(),
       async items() {
-        return findPreservingIds(Products)(selector, filteredProductIds, {
-          offset,
-          limit
-        });
+        const options = { skip: offset, limit, sort };
+        return findPreservingIds(Products)(
+          selector,
+          filteredProductIds,
+          options
+        );
       }
     };
   },
