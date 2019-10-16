@@ -312,7 +312,7 @@ Filters.helpers({
     const cache = {
       allProductIds: this.collectProductIds()
     };
-    if (this.type === 'SWITCH') {
+    if (this.type === FilterTypes.SWITCH) {
       cache.productIds = {
         true: this.collectProductIds({ value: true }),
         false: this.collectProductIds({ value: false })
@@ -365,7 +365,7 @@ Filters.helpers({
       ? this.buildProductIdMap()
       : this.cache() || this.buildProductIdMap();
 
-    if (this.type === 'SWITCH') {
+    if (this.type === FilterTypes.SWITCH) {
       const [stringifiedBoolean] = values;
       if (stringifiedBoolean !== undefined) {
         if (
@@ -396,7 +396,7 @@ Filters.helpers({
     return new Set(filterOptionProductIds.filter(x => productIdSet.has(x)));
   },
   optionsForFilterType(type) {
-    if (type === 'SWITCH') return ['true', 'false'];
+    if (type === FilterTypes.SWITCH) return ['true', 'false'];
     return this.options || [];
   },
   filteredOptions({ values, forceLiveCollection, productIdSet }) {
