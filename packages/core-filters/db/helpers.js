@@ -215,13 +215,20 @@ Filters.filterFilters = ({
   return filters.map(filter => {
     const values = queryObject[filter.key];
 
-    // compare against potentially all product ids
-    // possible for examination on filter level?
+    // The examinedProductIdSet is a set of product id's that:
+    // - Fit this filter generally
+    // - Are part of the preselected product id array
     const examinedProductIdSet = filter.intersect({
       values: [undefined],
       forceLiveCollection,
       productIdSet: allProductIdsSet
     });
+
+    // The filteredProductIdSet is a set of product id's that:
+    // - Are filtered by all other filters
+    // - Are filtered by the currently selected value of this filter
+    // or if there is no currently selected value:
+    // - Is the same like examinedProductIdSet
     const filteredProductIdSet = values
       ? filter.intersect({
           values,
@@ -235,12 +242,28 @@ Filters.filterFilters = ({
       examinedProducts: examinedProductIdSet.size,
       filteredProducts: filteredProductIdSet.size, // TODO: Implement
       isSelected: Object.prototype.hasOwnProperty.call(queryObject, filter.key),
-      options: () =>
-        filter.filteredOptions({
+      options: () => {
+        // The current base for options should be an array of product id's that:
+        // - Are part of the preselected product id array
+        // - Fit this filter generally
+        // - Are filtered by all other filters
+        // - Are not filtered by the currently selected value of this filter
+        const queryWithoutOwnFilter = queryObject;
+        delete queryWithoutOwnFilter[filter.key];
+        const intersectedExaminedProductIds = intersectProductIds({
+          productIds: examinedProductIdSet,
+          filters: filters.filter(
+            otherFilter => otherFilter.key !== filter.key
+          ),
+          queryObject: queryWithoutOwnFilter,
+          forceLiveCollection
+        });
+        return filter.filteredOptions({
           values,
           forceLiveCollection,
-          productIdSet: examinedProductIdSet
-        })
+          productIdSet: intersectedExaminedProductIds
+        });
+      }
     };
   });
 };
@@ -289,8 +312,13 @@ Filters.helpers({
     const cache = {
       allProductIds: this.collectProductIds()
     };
-    if (this.options) {
-      cache.productIds = this.options.reduce(
+    if (this.type === 'SWITCH') {
+      cache.productIds = {
+        true: this.collectProductIds({ value: true }),
+        false: this.collectProductIds({ value: false })
+      };
+    } else {
+      cache.productIds = (this.options || []).reduce(
         (accumulator, option) => ({
           ...accumulator,
           [option]: this.collectProductIds({ value: option })
@@ -298,6 +326,7 @@ Filters.helpers({
         {}
       );
     }
+
     return cache;
   },
   invalidateProductIdCache() {
@@ -335,6 +364,22 @@ Filters.helpers({
     const { productIds, allProductIds } = forceLiveCollection
       ? this.buildProductIdMap()
       : this.cache() || this.buildProductIdMap();
+
+    if (this.type === 'SWITCH') {
+      const [stringifiedBoolean] = values;
+      if (stringifiedBoolean !== undefined) {
+        if (
+          !stringifiedBoolean ||
+          stringifiedBoolean === 'false' ||
+          stringifiedBoolean === '0'
+        ) {
+          return productIds.false;
+        }
+        return productIds.true;
+      }
+      return allProductIds;
+    }
+
     const reducedValues = values.reduce((accumulator, value) => {
       const additionalValues =
         value === undefined ? allProductIds : productIds[value];
@@ -350,8 +395,12 @@ Filters.helpers({
     });
     return new Set(filterOptionProductIds.filter(x => productIdSet.has(x)));
   },
+  optionsForFilterType(type) {
+    if (type === 'SWITCH') return ['true', 'false'];
+    return this.options || [];
+  },
   filteredOptions({ values, forceLiveCollection, productIdSet }) {
-    const mappedOptions = this.options
+    const mappedOptions = this.optionsForFilterType(this.type)
       .map(value => {
         const filteredProductIds = this.intersect({
           values: [value],
