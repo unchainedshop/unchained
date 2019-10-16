@@ -216,8 +216,8 @@ Filters.filterFilters = ({
     const values = queryObject[filter.key];
 
     // compare against potentially all product ids
-    // possible for remaining on filter level?
-    const remainingProductIdSet = values
+    // possible for examination on filter level?
+    const examinedProductIdSet = values
       ? filter.intersect({
           values,
           forceLiveCollection,
@@ -226,9 +226,10 @@ Filters.filterFilters = ({
       : allProductIdsSet;
 
     return {
-      filter,
-      remaining: remainingProductIdSet.size,
-      active: Object.prototype.hasOwnProperty.call(queryObject, filter.key),
+      definition: filter,
+      examinedProducts: examinedProductIdSet.size,
+      filteredProducts: examinedProductIdSet.size, // TODO: Implement
+      isSelected: Object.prototype.hasOwnProperty.call(queryObject, filter.key),
       filteredOptions: () =>
         filter.filteredOptions({
           values,
@@ -348,16 +349,16 @@ Filters.helpers({
   filteredOptions({ values, forceLiveCollection, productIdSet }) {
     const mappedOptions = this.options
       .map(value => {
-        const remainingIds = this.intersect({
+        const filteredProductIds = this.intersect({
           values: [value],
           forceLiveCollection,
           productIdSet
         });
-        if (!remainingIds.size) return null;
+        if (!filteredProductIds.size) return null;
         return {
-          option: () => this.optionObject(value),
-          remaining: remainingIds.size,
-          active: values ? values.indexOf(value) !== -1 : false
+          definition: () => this.optionObject(value),
+          filteredProducts: filteredProductIds.size,
+          isSelected: values ? values.indexOf(value) !== -1 : false
         };
       })
       .filter(Boolean);

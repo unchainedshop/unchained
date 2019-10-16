@@ -19,7 +19,7 @@ export default [
       linkedAssortments: [AssortmentLink!]
       assortmentPaths(forceLocale: String): [AssortmentPath!]!
       children: [Assortment!]
-      filters(query: [FilterQueryInput!]): [FilteredFilter!]
+      filters(query: [FilterQueryInput!]): [LoadedFilter!]
       products(
         limit: Int = 10
         offset: Int = 0
