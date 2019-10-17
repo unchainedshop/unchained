@@ -2,7 +2,7 @@ import 'meteor/dburles:collection-helpers';
 import { Locale } from 'locale';
 import { findLocalizedText } from 'meteor/unchained:core';
 import { log } from 'meteor/unchained:core-logger';
-import { Products } from 'meteor/unchained:core-products';
+import { Products, ProductStatus } from 'meteor/unchained:core-products';
 import { FilterTypes } from './schema';
 import { Filters, FilterTexts } from './collections';
 import { FilterDirector } from '../director';
@@ -303,7 +303,13 @@ Filters.helpers({
 
   collectProductIds({ value } = {}) {
     const director = new FilterDirector({ filter: this });
-    const selector = director.buildProductSelector({ key: this.key, value });
+    const selector = director.buildProductSelector({
+      key: this.key,
+      value,
+      defaultSelector: {
+        status: ProductStatus.ACTIVE
+      }
+    });
     if (!selector) return [];
     const products = Products.find(selector, { fields: { _id: true } }).fetch();
     return products.map(({ _id }) => _id);

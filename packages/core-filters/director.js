@@ -33,7 +33,7 @@ class FilterDirector {
     this.context = context;
   }
 
-  buildProductSelector({ key, value }) {
+  buildProductSelector({ key, value, defaultSelector = {} }) {
     const adapters = FilterDirector.sortedAdapters().filter(AdapterClass =>
       AdapterClass.isActivatedFor(this.context)
     );
@@ -51,7 +51,7 @@ class FilterDirector {
         key,
         value
       });
-    }, {});
+    }, defaultSelector);
   }
 
   static adapters = new Map();
