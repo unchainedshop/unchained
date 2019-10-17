@@ -6,6 +6,10 @@ Package.describe({
   documentation: 'README.md'
 });
 
+Npm.depends({
+  'core-js': '3.3.1'
+});
+
 Package.onUse(api => {
   api.versionsFrom('1.8');
   api.use('ecmascript');
