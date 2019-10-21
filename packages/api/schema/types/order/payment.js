@@ -60,7 +60,7 @@ export default [
       meta: JSON
     }
 
-    type OrderPaymentPaypal implements OrderPayment {
+    type OrderPaymentGeneric implements OrderPayment {
       _id: ID!
       provider: PaymentProvider
       status: OrderPaymentStatus
@@ -69,18 +69,9 @@ export default [
       meta: JSON
 
       """
-      Get the clientToken for Paypal Payments with the Braintree SDK
+      Sign a transaction with the provider
       """
-      clientToken: String!
-    }
-
-    type OrderPaymentPostfinance implements OrderPayment {
-      _id: ID!
-      provider: PaymentProvider
-      status: OrderPaymentStatus
-      fee: Money
-      paid: Date
-      meta: JSON
+      sign(transactionContext: JSON): String
     }
   `
 ];

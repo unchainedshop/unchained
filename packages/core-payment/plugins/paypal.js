@@ -25,7 +25,7 @@ class Paypal extends PaymentAdapter {
   ];
 
   static typeSupported(type) {
-    return type === 'PAYPAL';
+    return type === 'GENERIC';
   }
 
   getPublicKey() {
@@ -86,7 +86,7 @@ class Paypal extends PaymentAdapter {
     });
   }
 
-  async clientToken() {
+  async sign() {
     const braintree = require('braintree'); // eslint-disable-line
     const gateway = this.gateway(braintree);
     const result = await gateway.clientToken.generate({});

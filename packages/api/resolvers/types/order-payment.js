@@ -2,8 +2,7 @@ import { PaymentProviderType } from 'meteor/unchained:core-payment';
 import { objectInvert } from 'meteor/unchained:utils';
 
 const OrderPaymentMap = {
-  OrderPaymentPostfinance: PaymentProviderType.POSTFINANCE,
-  OrderPaymentPaypal: PaymentProviderType.PAYPAL,
+  OrderPaymentGeneric: PaymentProviderType.GENERIC,
   OrderPaymentCrypto: PaymentProviderType.CRYPTO,
   OrderPaymentCard: PaymentProviderType.CARD,
   OrderPaymentInvoice: PaymentProviderType.INVOICE

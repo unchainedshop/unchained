@@ -18,14 +18,9 @@ export default [
       INVOICE
 
       """
-      PostFinance
+      Generic
       """
-      POSTFINANCE
-
-      """
-      Paypal
-      """
-      PAYPAL
+      GENERIC
 
       """
       Crypto

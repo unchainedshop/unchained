@@ -75,9 +75,9 @@ export const OrderCheckoutError = createError(
   'OrderCheckoutError',
   'A problem occured while processing the order'
 );
-export const PaypalConfigurationError = createError(
-  'PaypalConfigurationError',
-  'PayPal configuration invalid'
+export const OrderPaymentConfigurationError = createError(
+  'OrderPaymentConfigurationError',
+  'Payment configuration invalid'
 );
 export const QuotationWrongStatusError = createError(
   'QuotationWrongStatusError',
