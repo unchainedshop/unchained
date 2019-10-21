@@ -1,21 +1,74 @@
 import fetch from 'isomorphic-unfetch';
 import { URLSearchParams } from 'url';
-import { setupDatabase } from './helpers';
+import { createLoggedInGraphqlFetch, setupDatabase } from './helpers';
+import { USER_TOKEN } from './seeds/users';
+import { SimplePaymentProvider } from './seeds/payments';
+import { SimpleOrder, SimplePayment } from './seeds/orders';
 
 let connection;
 let db; // eslint-disable-line
+let graphqlFetch;
 
 describe('cart checkout', () => {
   beforeAll(async () => {
     [db, connection] = await setupDatabase();
+    graphqlFetch = await createLoggedInGraphqlFetch(USER_TOKEN);
+    await db.collection('payment-providers').findOrInsertOne({
+      ...SimplePaymentProvider,
+      _id: 'datatrans-payment-provider',
+      adapterKey: 'shop.unchained.datatrans',
+      type: 'GENERIC'
+    });
+
+    await db.collection('order_payments').findOrInsertOne({
+      ...SimplePayment,
+      _id: 'datatrans-payment',
+      paymentProviderId: 'datatrans-payment-provider',
+      orderId: 'datatrans-order'
+    });
+
+    await db.collection('orders').findOrInsertOne({
+      ...SimpleOrder,
+      _id: 'datatrans-order',
+      orderNumber: 'datatrans',
+      paymentId: 'datatrans-payment'
+    });
   });
 
   afterAll(async () => {
     await connection.close();
   });
 
+  describe('OrderPaymentGeneric.sign (Datatrans)', () => {
+    it('request a new signed nonce', async () => {
+      const { data: { me } = {} } = await graphqlFetch({
+        query: /* GraphQL */ `
+          query sign($transactionContext: JSON, $orderNumber: String) {
+            me {
+              cart(orderNumber: $orderNumber) {
+                _id
+                payment {
+                  _id
+                  ... on OrderPaymentGeneric {
+                    sign(transactionContext: $transactionContext)
+                  }
+                }
+              }
+            }
+          }
+        `,
+        variables: {
+          orderNumber: 'datatrans',
+          transactionContext: {}
+        }
+      });
+      console.log(me);
+      expect(me).toMatchObject({});
+    });
+  });
+
   describe('Datatrans Hooks', () => {
-    it('datatrans accepts payment', async () => {
+    it('mocks ingress successful payment webhook call', async () => {
       const params = new URLSearchParams();
       params.append('uppMsgType', 'post');
       params.append('status', 'success');
@@ -45,7 +98,7 @@ describe('cart checkout', () => {
       expect(result.status).toBe(200);
     });
 
-    it('datatrans rejects payment', async () => {
+    it('mocks ingress declined payment webhook call', async () => {
       const params = new URLSearchParams();
       params.append('uppMsgType', 'post');
       params.append('status', 'error');

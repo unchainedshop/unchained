@@ -42,7 +42,7 @@ WebApp.connectHandlers.use('/graphql/datatrans', (req, res) => {
 });
 
 class Datatrans extends PaymentAdapter {
-  static key = 'com.datatrans';
+  static key = 'shop.unchained.datatrans';
 
   static label = 'Datatrans';
 
@@ -91,6 +91,8 @@ class Datatrans extends PaymentAdapter {
 
   async sign(transactionData) {
     const bla = '';
+    console.log(transactionData);
+    return '';
   }
 
   async charge({ datatransToken, datatransCustomerId } = {}) {
