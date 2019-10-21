@@ -13,6 +13,7 @@ import 'meteor/unchained:core-documents/plugins/smallinvoice';
 import 'meteor/unchained:core-messaging/plugins/local-mail';
 import 'meteor/unchained:core-payment/plugins/invoice';
 import 'meteor/unchained:core-payment/plugins/invoice-prepaid';
+import 'meteor/unchained:core-payment/plugins/datatrans';
 import 'meteor/unchained:core-pricing/plugins/order-items';
 import 'meteor/unchained:core-pricing/plugins/order-discount';
 import 'meteor/unchained:core-pricing/plugins/order-delivery';
@@ -21,7 +22,6 @@ import 'meteor/unchained:core-pricing/plugins/product-catalog-price';
 import 'meteor/unchained:core-pricing/plugins/product-discount';
 import 'meteor/unchained:core-pricing/plugins/product-swiss-tax';
 import 'meteor/unchained:core-filters/plugins/strict-equal';
-
 import 'meteor/unchained:core-quotations/plugins/manual';
 import configureEmailTemplates from './templates';
 
