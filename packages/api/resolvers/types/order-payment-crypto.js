@@ -4,14 +4,18 @@ export default {
   },
   walletAddress(obj) {
     try {
-      return obj.provider().run('walletAddress');
+      return obj.provider().run('walletAddress', {
+        orderPayment: obj
+      });
     } catch (error) {
       throw new Error({ error });
     }
   },
   walletBalance(obj) {
     try {
-      return obj.provider().run('walletBalance');
+      return obj.provider().run('walletBalance', {
+        orderPayment: obj
+      });
     } catch (error) {
       throw new Error({ error });
     }

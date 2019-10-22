@@ -33,13 +33,12 @@ DeliveryProviders.helpers({
       this.defaultContext(context)
     );
   },
-  run(command, ...args) {
+  run(command, context, ...args) {
     return Promise.await(
       new DeliveryDirector(this).run(
-        this.defaultContext({
-          command,
-          args
-        })
+        command,
+        this.defaultContext(context),
+        ...args
       )
     );
   },
