@@ -23,7 +23,9 @@ const startAndWaitForMeteor = async () => {
           env: {
             ...process.env,
             METEOR_PACKAGE_DIRS: '../../packages',
-            UNCHAINED_DISABLE_EMAIL_INTERCEPTION: 1
+            UNCHAINED_DISABLE_EMAIL_INTERCEPTION: 1,
+            DATATRANS_SECRET: 'secret',
+            DATATRANS_SIGN_KEY: '1337'
           }
         }
       );
