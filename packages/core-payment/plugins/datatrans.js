@@ -3,41 +3,49 @@ import {
   PaymentAdapter,
   PaymentError
 } from 'meteor/unchained:core-payment';
+import { OrderPayments } from 'meteor/unchained:core-orders';
 import { WebApp } from 'meteor/webapp';
-
 import bodyParser from 'body-parser';
 import crypto from 'crypto';
 
-const { DATATRANS_SECRET, DATATRANS_SIGN_KEY } = process.env;
+const {
+  DATATRANS_SECRET,
+  DATATRANS_SIGN_KEY,
+  DATATRANS_WEBHOOK_PATH = '/graphql/datatrans'
+} = process.env;
+
+const getSecretkey = () => DATATRANS_SECRET;
+const getSignKey = () => DATATRANS_SIGN_KEY;
+
+const generateSignature = (...parts) => {
+  // https://docs.datatrans.ch/docs/security-sign
+  const resultString = parts.filter(Boolean).join('');
+  const signKeyInBytes = Buffer.from(getSignKey(), 'hex');
+  const signedString = crypto
+    .createHmac('sha256', signKeyInBytes)
+    .update(resultString)
+    .digest('hex');
+  return signedString;
+};
 
 WebApp.connectHandlers.use(
-  '/graphql/datatrans',
+  DATATRANS_WEBHOOK_PATH,
   bodyParser.urlencoded({ extended: false })
 );
 
 WebApp.connectHandlers.use('/graphql/datatrans', (req, res) => {
   if (req.method === 'POST') {
-    const {
-      uppMsgType,
-      status,
-      uppTransactionId,
-      refno,
-      amount,
-      authorizationCode,
-      sign,
-      language,
-      pmethod,
-      responseCode,
-      expy,
-      acqAuthorizationCode,
-      merchantId,
-      reqtype,
-      currency,
-      responseMessage,
-      testOnly,
-      expm
-    } = req.body || {};
-    return res.end();
+    const authorizationResponse = req.body || {};
+    const { refno } = authorizationResponse;
+    if (refno) {
+      try {
+        const orderPayment = OrderPayments.findOne({ _id: refno });
+        const order = orderPayment.order();
+        order.checkout({ paymentContext: authorizationResponse });
+      } catch (e) {
+        console.error(e);
+      }
+    }
   }
   return res.end();
 });
@@ -67,16 +75,8 @@ class Datatrans extends PaymentAdapter {
     }, null);
   }
 
-  getSecretkey() { // eslint-disable-line
-    return DATATRANS_SECRET;
-  }
-
-  getSignKey() { // eslint-disable-line
-    return DATATRANS_SIGN_KEY;
-  }
-
   configurationError() { // eslint-disable-line
-    if (!this.getMerchantId() || !this.getSecretkey() || !this.signKey()) {
+    if (!this.getMerchantId() || !getSecretkey() || !getSignKey()) {
       return PaymentError.INCOMPLETE_CONFIGURATION;
     }
     if (this.wrongCredentials) {
@@ -95,40 +95,78 @@ class Datatrans extends PaymentAdapter {
   }
 
   async sign({ transactionContext }) {
+    const { aliasCC = '' } = transactionContext;
+    const merchantId = this.getMerchantId();
+
     const { orderPayment } = this.context;
     const order = orderPayment.order();
-    const { aliasCC = '', refno = orderPayment._id } = transactionContext;
-    const merchantId = this.getMerchantId();
+    const refno = orderPayment._id;
     const { currency, amount } = order.pricing().total();
-
-    // https://docs.datatrans.ch/docs/security-sign
-    const resultString = `${aliasCC}${merchantId}${amount}${currency}${refno}`;
-    this.log(`Datatrans -> Sign ${resultString}`);
-    const signKeyInHex = this.getSignKey();
-    const signKeyInBytes = Buffer.from(signKeyInHex, 'hex');
-    const signedString = crypto
-      .createHmac('sha256', signKeyInBytes)
-      .update(resultString)
-      .digest('hex');
-    return signedString;
+    const signature = generateSignature(
+      aliasCC,
+      merchantId,
+      amount,
+      currency,
+      refno
+    );
+    this.log(
+      `Datatrans -> Signed ${JSON.stringify({
+        aliasCC,
+        merchantId,
+        amount,
+        currency,
+        refno
+      })} with ${signature}`
+    );
+    return signature;
   }
 
-  async charge({ datatransToken, datatransCustomerId } = {}) {
-    return false;
-    // if (!datatransToken)
-    //   throw new Error('You have to provide datatransToken in paymentContext');
-    // const DatatransAPI = require('datatrans'); // eslint-disable-line
-    // const datatrans = DatatransAPI(this.getSecretkey());
-    // const pricing = this.context.order.pricing();
-    // const datatransChargeReceipt = await datatrans.charges.create({
-    //   amount: Math.round(pricing.total().amount),
-    //   currency: this.context.order.currency.toLowerCase(),
-    //   description: `${EMAIL_WEBSITE_NAME} Order #${this.context.order._id}`,
-    //   source: datatransToken.id,
-    //   customer: datatransCustomerId
-    // });
-    // this.log('Datatrans -> ', datatransToken, datatransChargeReceipt);
-    // return datatransChargeReceipt;
+  async charge(transactionResponse) {
+    const {
+      aliasCC,
+      status,
+      uppTransactionId,
+      sign,
+      sign2
+    } = transactionResponse;
+    const merchantId = this.getMerchantId();
+
+    const { order } = this.context;
+    const refno = order.paymentId;
+    const { currency, amount } = order.pricing().total();
+    if (status === 'success') {
+      const validSign = generateSignature(
+        aliasCC,
+        merchantId,
+        amount,
+        currency,
+        refno
+      );
+      const validSign2 = generateSignature(
+        aliasCC,
+        merchantId,
+        amount,
+        currency,
+        uppTransactionId
+      );
+      if (sign === validSign && sign2 === validSign2) {
+        this.log('Datatrans -> Charged successfully', transactionResponse);
+        return transactionResponse;
+      }
+      this.log(
+        `Datatrans -> Somebody evil attempted to trick us, fix ${sign} === ${validSign}, ${sign2} === ${validSign2}`,
+        transactionResponse
+      );
+      throw new Error('Signature mismatch');
+    } else if (status === 'error') {
+      this.log('Datatrans -> Payment declined', transactionResponse);
+      throw new Error('Payment declined');
+    } else {
+      this.log(
+        'Datatrans -> Not trying to charge because of missing payment authorization response'
+      );
+      return false;
+    }
   }
 }
 
