@@ -29,18 +29,18 @@
     "install:controlpanel": "cd examples/controlpanel && npm install"
   },
   "devDependencies": {
-    "@babel/core": "^7.6.2",
-    "@babel/preset-env": "^7.6.2",
-    "@shelf/jest-mongodb": "^1.1.1",
+    "@babel/core": "^7.6.4",
+    "@babel/preset-env": "^7.6.3",
+    "@shelf/jest-mongodb": "^1.1.2",
     "apollo-link": "^1.2.13",
     "apollo-link-http": "^1.5.16",
     "apollo-upload-client": "^11.0.0",
     "babel-eslint": "^10.0.3",
     "babel-jest": "^24.9.0",
-    "cross-env": "^6.0.0",
-    "eslint": "^6.4.0",
+    "cross-env": "^6.0.3",
+    "eslint": "^6.5.1",
     "eslint-config-airbnb-base": "^14.0.0",
-    "eslint-config-prettier": "^6.3.0",
+    "eslint-config-prettier": "^6.4.0",
     "eslint-plugin-import": "^2.18.2",
     "eslint-plugin-meteor": "^6.0.0",
     "eslint-plugin-prettier": "^3.1.1",
@@ -48,7 +48,7 @@
     "graphql-tag": "^2.10.1",
     "isomorphic-unfetch": "^3.0.0",
     "jest": "^24.9.0",
-    "mongodb": "^3.3.2",
+    "mongodb": "^3.3.3",
     "npm-run-all": "^4.1.5",
     "prettier": "^1.18.2"
   }
