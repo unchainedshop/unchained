@@ -17,7 +17,8 @@ describe('cart checkout', () => {
       ...SimplePaymentProvider,
       _id: 'datatrans-payment-provider',
       adapterKey: 'shop.unchained.datatrans',
-      type: 'GENERIC'
+      type: 'GENERIC',
+      configuration: [{ key: 'merchantId', value: '1100004624' }]
     });
 
     await db.collection('order_payments').findOrInsertOne({
@@ -62,8 +63,22 @@ describe('cart checkout', () => {
           transactionContext: {}
         }
       });
-      console.log(me);
-      expect(me).toMatchObject({});
+      expect(me.cart.payment.sign).toBe(
+        'c3b752995f529d73d38edc0b682d0dd2007540f151c9c892a9c0966948599f72'
+      );
+    });
+    it('datatrans accepts the parameters for a payment form', async () => {
+      const merchantId = '1100004624';
+      const amount = '100000';
+      const currency = 'CHF';
+      const refno = 'datatrans';
+      const sign =
+        'c3b752995f529d73d38edc0b682d0dd2007540f151c9c892a9c0966948599f72';
+      const url = `https://pay.sandbox.datatrans.com/upp/jsp/upStart.jsp?merchantId=${merchantId}&refno=${refno}&amount=${amount}&currency=${currency}&sign=${sign}`;
+      const result = await fetch(url);
+      const text = await result.text();
+      expect(text).not.toMatch(/incorrect request/);
+      expect(text).not.toMatch(/error/);
     });
   });
 

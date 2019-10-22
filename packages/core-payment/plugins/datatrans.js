@@ -5,9 +5,10 @@ import {
 } from 'meteor/unchained:core-payment';
 import { WebApp } from 'meteor/webapp';
 
-const bodyParser = require('body-parser');
+import bodyParser from 'body-parser';
+import crypto from 'crypto';
 
-const { DATATRANS_SECRET } = process.env;
+const { DATATRANS_SECRET, DATATRANS_SIGN_KEY } = process.env;
 
 WebApp.connectHandlers.use(
   '/graphql/datatrans',
@@ -70,8 +71,12 @@ class Datatrans extends PaymentAdapter {
     return DATATRANS_SECRET;
   }
 
+  getSignKey() { // eslint-disable-line
+    return DATATRANS_SIGN_KEY;
+  }
+
   configurationError() { // eslint-disable-line
-    if (!this.getMerchantId() || !this.getSecretkey()) {
+    if (!this.getMerchantId() || !this.getSecretkey() || !this.signKey()) {
       return PaymentError.INCOMPLETE_CONFIGURATION;
     }
     if (this.wrongCredentials) {
@@ -89,10 +94,23 @@ class Datatrans extends PaymentAdapter {
     return false;
   }
 
-  async sign(transactionData) {
-    const bla = '';
-    console.log(transactionData);
-    return '';
+  async sign({ transactionContext }) {
+    const { orderPayment } = this.context;
+    const order = orderPayment.order();
+    const { aliasCC = '', refno = orderPayment._id } = transactionContext;
+    const merchantId = this.getMerchantId();
+    const { currency, amount } = order.pricing().total();
+
+    // https://docs.datatrans.ch/docs/security-sign
+    const resultString = `${aliasCC}${merchantId}${amount}${currency}${refno}`;
+    this.log(`Datatrans -> Sign ${resultString}`);
+    const signKeyInHex = this.getSignKey();
+    const signKeyInBytes = Buffer.from(signKeyInHex, 'hex');
+    const signedString = crypto
+      .createHmac('sha256', signKeyInBytes)
+      .update(resultString)
+      .digest('hex');
+    return signedString;
   }
 
   async charge({ datatransToken, datatransCustomerId } = {}) {
