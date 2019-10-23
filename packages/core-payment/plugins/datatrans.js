@@ -94,7 +94,7 @@ class Datatrans extends PaymentAdapter {
     return false;
   }
 
-  async sign({ transactionContext }) {
+  async sign({ transactionContext = {} } = {}) {
     const { aliasCC = '' } = transactionContext;
     const merchantId = this.getMerchantId();
 
