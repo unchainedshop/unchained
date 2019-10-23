@@ -33,20 +33,26 @@ WebApp.connectHandlers.use(
   bodyParser.urlencoded({ extended: false })
 );
 
-WebApp.connectHandlers.use('/graphql/datatrans', (req, res) => {
+WebApp.connectHandlers.use(DATATRANS_WEBHOOK_PATH, (req, res) => {
   if (req.method === 'POST') {
     const authorizationResponse = req.body || {};
-    const { refno } = authorizationResponse;
-    if (refno) {
+    const { refno, status } = authorizationResponse;
+    if (refno && status === 'success') {
       try {
         const orderPayment = OrderPayments.findOne({ _id: refno });
-        const order = orderPayment.order();
-        order.checkout({ paymentContext: authorizationResponse });
+        const order = orderPayment
+          .order()
+          .checkout({ paymentContext: authorizationResponse });
+        res.writeHead(200);
+        return res.end(JSON.stringify(order));
       } catch (e) {
+        res.writeHead(503);
         console.error(e);
+        return res.end(JSON.stringify(e));
       }
     }
   }
+  res.writeHead(200);
   return res.end();
 });
 
