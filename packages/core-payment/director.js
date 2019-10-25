@@ -100,7 +100,7 @@ class PaymentDirector {
     return chargeResult;
   }
 
-  async run({ command, args = [], ...context }) {
+  async run(command, context, ...args) {
     const adapter = this.interface(context);
     return adapter[command](...args);
   }

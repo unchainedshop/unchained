@@ -16,7 +16,7 @@ class Postfinance extends PaymentAdapter {
   static initialConfiguration = [];
 
   static typeSupported(type) {
-    return type === 'POSTFINANCE';
+    return type === 'GENERIC';
   }
   isActive() { // eslint-disable-line
     return false;

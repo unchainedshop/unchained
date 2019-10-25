@@ -208,33 +208,6 @@ export default [
       ): OrderDeliveryPickUp!
 
       """
-      Update a Card Payment Provider's specific configuration
-      """
-      updateOrderPaymentCard(orderPaymentId: ID!): OrderPaymentCard!
-
-      """
-      Update a PostFinance Payment Provider's specific configuration
-      """
-      updateOrderPaymentPostfinance(
-        orderPaymentId: ID!
-      ): OrderPaymentPostfinance!
-
-      """
-      Update am Invoice Payment Provider's specific configuration
-      """
-      updateOrderPaymentInvoice(orderPaymentId: ID!): OrderPaymentInvoice!
-
-      """
-      Update a PayPal Payment Provider's specific configuration
-      """
-      updateOrderPaymentPaypal(orderPaymentId: ID!): OrderPaymentPaypal!
-
-      """
-      Update a Crypo Provider's specific configuration
-      """
-      updateOrderPaymentCrypto(orderPaymentId: ID!): OrderPaymentCrypto!
-
-      """
       Remove an order while it's still open
       """
       removeOrder(orderId: ID!): Order!

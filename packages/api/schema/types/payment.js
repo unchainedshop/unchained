@@ -18,19 +18,9 @@ export default [
       INVOICE
 
       """
-      PostFinance
+      Generic
       """
-      POSTFINANCE
-
-      """
-      Paypal
-      """
-      PAYPAL
-
-      """
-      Crypto
-      """
-      CRYPTO
+      GENERIC
     }
 
     enum PaymentProviderError {

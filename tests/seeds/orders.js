@@ -44,10 +44,18 @@ export const SimpleOrder = {
   userId: 'user',
   currency: 'CHF',
   countryCode: 'CH',
+  contact: {
+    emailAddress: 'info@unchained.shop'
+  },
+  billingAddress: {
+    addressLine: 'Bahnhofplatz 2',
+    city: 'Zurich',
+    postalCode: '8001'
+  },
   calculation: [
     {
       category: 'ITEMS',
-      amount: 100000
+      amount: 20000
     },
     {
       category: 'PAYMENT',

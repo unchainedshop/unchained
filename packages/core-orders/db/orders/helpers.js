@@ -255,8 +255,8 @@ Orders.helpers({
     // ???
   },
   checkout(
-    { paymentContext, deliveryContext, orderContext },
-    { localeContext }
+    { paymentContext, deliveryContext, orderContext } = {},
+    { localeContext } = {}
   ) {
     const errors = [
       ...this.missingInputDataForCheckout(),

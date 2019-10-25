@@ -6,9 +6,7 @@ import { PaymentProviders } from './collections';
 export const PaymentProviderType = { // eslint-disable-line
   CARD: 'CARD',
   INVOICE: 'INVOICE',
-  POSTFINANCE: 'POSTFINANCE',
-  PAYPAL: 'PAYPAL',
-  CRYPTO: 'CRYPTO'
+  GENERIC: 'GENERIC'
 };
 
 PaymentProviders.attachSchema(

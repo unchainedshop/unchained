@@ -1,10 +1,18 @@
 export default {
   activePickUpLocation(obj) {
     const { orderPickUpLocationId } = obj.context || {};
-    return obj.provider().run('pickUpLocationById', orderPickUpLocationId);
+    return obj.provider().run(
+      'pickUpLocationById',
+      {
+        orderDelivery: obj
+      },
+      orderPickUpLocationId
+    );
   },
   pickUpLocations(obj) {
-    return obj.provider().run('pickUpLocations');
+    return obj.provider().run('pickUpLocations', {
+      orderDelivery: obj
+    });
   },
   status(obj) {
     return obj.normalizedStatus();

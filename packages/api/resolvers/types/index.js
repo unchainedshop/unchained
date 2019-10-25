@@ -31,9 +31,7 @@ import OrderDeliveryPickUp from './order-delivery-pickup';
 import OrderPayment from './order-payment';
 import OrderPaymentDiscount from './order-payment-discount';
 import OrderPaymentCard from './order-payment-card';
-import OrderPaymentPostfinance from './order-payment-postfinance';
-import OrderPaymentCrypto from './order-payment-crypto';
-import OrderPaymentPaypal from './order-payment-paypal';
+import OrderPaymentGeneric from './order-payment-generic';
 import OrderPaymentInvoice from './order-payment-invoice';
 import PaymentProvider from './payment-provider';
 import DeliveryProvider from './delivery-provider';
@@ -79,10 +77,8 @@ export default {
   OrderPayment,
   OrderPaymentDiscount,
   OrderPaymentInvoice,
-  OrderPaymentPostfinance,
-  OrderPaymentPaypal,
+  OrderPaymentGeneric,
   OrderPaymentCard,
-  OrderPaymentCrypto,
   Product,
   ProductPrice,
   ProductDiscount,
