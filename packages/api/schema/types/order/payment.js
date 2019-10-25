@@ -35,22 +35,6 @@ export default [
       meta: JSON
     }
 
-    type OrderPaymentCrypto implements OrderPayment {
-      _id: ID!
-      provider: PaymentProvider
-      status: OrderPaymentStatus
-      fee: Money
-      paid: Date
-      meta: JSON
-
-      """
-      A crypto currency payment works via pre-payment like credit cards,
-      so every order payment get's it's own public key
-      """
-      walletAddress: String
-      walletBalance: Money
-    }
-
     type OrderPaymentCard implements OrderPayment {
       _id: ID!
       provider: PaymentProvider

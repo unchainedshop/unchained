@@ -21,11 +21,6 @@ export default [
       Generic
       """
       GENERIC
-
-      """
-      Crypto
-      """
-      CRYPTO
     }
 
     enum PaymentProviderError {

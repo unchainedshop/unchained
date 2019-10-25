@@ -31,7 +31,6 @@ import OrderDeliveryPickUp from './order-delivery-pickup';
 import OrderPayment from './order-payment';
 import OrderPaymentDiscount from './order-payment-discount';
 import OrderPaymentCard from './order-payment-card';
-import OrderPaymentCrypto from './order-payment-crypto';
 import OrderPaymentGeneric from './order-payment-generic';
 import OrderPaymentInvoice from './order-payment-invoice';
 import PaymentProvider from './payment-provider';
@@ -80,7 +79,6 @@ export default {
   OrderPaymentInvoice,
   OrderPaymentGeneric,
   OrderPaymentCard,
-  OrderPaymentCrypto,
   Product,
   ProductPrice,
   ProductDiscount,
