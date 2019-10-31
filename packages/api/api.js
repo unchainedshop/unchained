@@ -1,4 +1,4 @@
-import { ApolloServer } from 'apollo-server-express';
+import { ApolloServer, ApolloError } from 'apollo-server-express';
 import { WebApp } from 'meteor/webapp';
 import { buildLocaleContext } from 'meteor/unchained:core';
 import { log } from 'meteor/unchained:core-logger';
@@ -18,6 +18,25 @@ export * as errors from './errors';
 const { APOLLO_ENGINE_KEY } = process.env;
 
 global._UnchainedAPIVersion = '0.33.0'; // eslint-disable-line
+
+const logGraphQLServerError = error => {
+  try {
+    const {
+      message,
+      extensions: {
+        exception: { stacktrace, ...parameters },
+        ...extensions
+      },
+      ...rest
+    } = error;
+    log(`${message} ${extensions && extensions.code}`, {
+      level: 'error',
+      ...extensions,
+      ...rest
+    });
+    console.error(stacktrace, parameters); // eslint-disable-line
+  } catch (e) { } // eslint-disable-line
+};
 
 const defaultContext = req => {
   const remoteAddress =
@@ -54,26 +73,15 @@ const startUnchainedServer = options => {
       };
     },
     formatError: error => {
-      try {
-        const {
-          message,
-          extensions: {
-            exception: { stacktrace, ...parameters },
-            ...extensions
-          },
-          ...rest
-        } = error;
-        log(`${message} ${extensions && extensions.code}`, {
-          level: 'error',
-          ...extensions,
-          ...rest
-        });
-        console.error(stacktrace, parameters); // eslint-disable-line
-      } catch (e) { } // eslint-disable-line
-      const newError = error;
-      if (newError.extensions.exception)
-        delete newError.extensions.exception.stacktrace;
-      return newError;
+      logGraphQLServerError(error);
+      const {
+        message,
+        extensions: { code, ...extensions }
+      } = error;
+      return new ApolloError(message, code, {
+        code,
+        ...extensions
+      });
     },
     engine: APOLLO_ENGINE_KEY
       ? {
