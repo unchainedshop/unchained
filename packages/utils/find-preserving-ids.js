@@ -1,5 +1,5 @@
 export default Collection => async (selector, ids, options = {}) => {
-  const { offset, limit } = options;
+  const { skip, limit } = options;
   const filteredSelector = {
     ...selector,
     _id: { $in: ids }
@@ -19,7 +19,7 @@ export default Collection => async (selector, ids, options = {}) => {
         index: 1
       }
     },
-    offset && { $skip: offset },
+    skip && { $skip: skip },
     limit && { $limit: limit }
   ].filter(Boolean);
 
