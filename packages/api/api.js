@@ -74,15 +74,14 @@ const startUnchainedServer = options => {
     },
     formatError: error => {
       logGraphQLServerError(error);
-      return error;
-      // const {
-      //   message,
-      //   extensions: { code, exception, ...extensions }
-      // } = error;
-      // return new ApolloError(message, code, {
-      //   code,
-      //   ...extensions
-      // });
+      const {
+        message,
+        extensions: { code, ...extensions }
+      } = error;
+      return new ApolloError(message, code, {
+        code,
+        ...extensions
+      });
     },
     engine: APOLLO_ENGINE_KEY
       ? {
