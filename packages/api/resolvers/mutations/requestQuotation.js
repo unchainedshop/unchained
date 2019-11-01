@@ -15,7 +15,7 @@ export default function(
     { userId }
   );
   const product = Products.findOne({ _id: productId });
-  if (!product) throw new ProductNotFoundError({ data: { productId } });
+  if (!product) throw new ProductNotFoundError({ productId });
   const quotation = Quotations.requestQuotation(
     {
       userId,

@@ -16,12 +16,12 @@ export default function(
 
   if (!parent) {
     throw new AssortmentNotFoundError({
-      data: { assortmentId: parentAssortmentId }
+      assortmentId: parentAssortmentId
     });
   }
   if (!child) {
     throw new AssortmentNotFoundError({
-      data: { assortmentId: childAssortmentId }
+      assortmentId: childAssortmentId
     });
   }
   return parent.addLink({ assortmentId: childAssortmentId, tags });

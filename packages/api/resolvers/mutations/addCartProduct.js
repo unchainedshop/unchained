@@ -14,9 +14,9 @@ export default function(
     }`,
     { userId, orderId }
   );
-  if (quantity < 1) throw new OrderQuantityTooLowError({ data: { quantity } });
+  if (quantity < 1) throw new OrderQuantityTooLowError({ quantity });
   const product = Products.findOne({ _id: productId });
-  if (!product) throw new ProductNotFoundError({ data: { productId } });
+  if (!product) throw new ProductNotFoundError({ productId });
   const cart = getCart({ orderId, user, countryContext });
   return cart.addProductItem({
     product,

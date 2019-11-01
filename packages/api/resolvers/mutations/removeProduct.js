@@ -5,7 +5,7 @@ import { ProductNotFoundError, ProductWrongStatusError } from '../../errors';
 export default function(root, { productId }, { userId }) {
   log(`mutation removeProduct ${productId}`, { userId });
   const product = Products.findOne({ _id: productId });
-  if (!product) throw new ProductNotFoundError({ data: { productId } });
+  if (!product) throw new ProductNotFoundError({ productId });
   switch (product.status) {
     case ProductStatus.DRAFT:
       Products.update(
@@ -19,7 +19,7 @@ export default function(root, { productId }, { userId }) {
       );
       break;
     default:
-      throw new ProductWrongStatusError({ data: { status: product.status } });
+      throw new ProductWrongStatusError({ status: product.status });
   }
   return Products.findOne({ _id: productId });
 }

@@ -5,6 +5,6 @@ import { ProductNotFoundError } from '../../errors';
 export default function(root, { supply, productId }, { userId }) {
   log(`mutation updateProductSupply ${productId}`, { userId });
   const productObject = Products.updateProduct({ productId, supply });
-  if (!productObject) throw new ProductNotFoundError({ data: { productId } });
+  if (!productObject) throw new ProductNotFoundError({ productId });
   return productObject;
 }

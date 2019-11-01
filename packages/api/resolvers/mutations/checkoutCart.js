@@ -14,13 +14,12 @@ export default function(
       localeContext
     });
   } catch (error) {
-    const data = {
+    log(error.message, { userId, orderId: cart._id, level: 'error' });
+    throw new OrderCheckoutError({
       userId,
       orderId: cart._id,
       ...transactionContext,
       detailMessage: error.message
-    };
-    log(data.detailMessage, { userId, orderId: cart._id, level: 'error' });
-    throw new OrderCheckoutError({ data });
+    });
   }
 }

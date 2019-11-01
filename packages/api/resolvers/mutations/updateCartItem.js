@@ -18,15 +18,14 @@ export default function(
     { userId }
   );
   const item = OrderPositions.findOne({ _id: itemId });
-  if (!item) throw new OrderItemNotFoundError({ data: { itemId } });
+  if (!item) throw new OrderItemNotFoundError({ itemId });
   const order = item.order();
   if (!order.isCart()) {
-    throw new OrderWrongStatusError({ data: { status: order.status } });
+    throw new OrderWrongStatusError({ status: order.status });
   }
 
   if (quantity !== null) {
-    if (quantity < 1)
-      throw new OrderQuantityTooLowError({ data: { quantity } });
+    if (quantity < 1) throw new OrderQuantityTooLowError({ quantity });
     // FIXME: positionId is actually
     OrderPositions.updatePosition(
       {

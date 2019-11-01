@@ -11,21 +11,15 @@ const emptyArray = [];
 
 const ensureActionExists = (action, userOptions) => {
   if (!action) {
-    throw new PermissionSystemError({
-      data: {
-        userOptions
-      }
-    });
+    throw new PermissionSystemError({ userOptions });
   }
 };
 
 const ensureIsFunction = (fn, action, options, key) => {
   if (typeof fn !== 'function') {
     throw new PermissionSystemError({
-      data: {
-        action,
-        key: options.showKey ? key : ''
-      }
+      action,
+      key: options.showKey ? key : ''
     });
   }
 };
@@ -41,11 +35,9 @@ const checkAction = (
   if (hasPermission) return;
   const keyText = key && key !== '' ? ` in "${key}"` : '';
   throw new NoPermissionError({
-    data: {
-      userId,
-      action,
-      key
-    },
+    userId,
+    action,
+    key,
     message: `The user "${userId ||
       ''}" has no permission to perform the action "${action}"${keyText}`
   });

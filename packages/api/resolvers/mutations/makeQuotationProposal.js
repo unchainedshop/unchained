@@ -12,9 +12,9 @@ export default function(
 ) {
   log('mutation makeQuotationProposal', { quotationId, userId });
   const quotation = Quotations.findOne({ _id: quotationId });
-  if (!quotation) throw new QuotationNotFoundError({ data: { quotationId } });
+  if (!quotation) throw new QuotationNotFoundError({ quotationId });
   if (quotation.status !== QuotationStatus.PROCESSING) {
-    throw new QuotationWrongStatusError({ data: { status: quotation.status } });
+    throw new QuotationWrongStatusError({ status: quotation.status });
   }
   return quotation.propose(transactionContext);
 }

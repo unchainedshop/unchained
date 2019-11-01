@@ -5,7 +5,7 @@ import { BookmarkNotFoundError } from '../../errors';
 export default function(root, { bookmarkId }, { userId }) {
   log('mutation removeBookmark', { bookmarkId, userId });
   if (!Bookmarks.findBookmarkById(bookmarkId)) {
-    throw new BookmarkNotFoundError({ data: { bookmarkId } });
+    throw new BookmarkNotFoundError({ bookmarkId });
   }
   return Bookmarks.removeBookmark({ _id: bookmarkId });
 }

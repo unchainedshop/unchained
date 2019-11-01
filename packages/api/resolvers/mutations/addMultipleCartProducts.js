@@ -11,7 +11,7 @@ export default function(
   /* verify existence of products */
   const itemsWithProducts = items.map(({ productId, ...item }) => {
     const product = Products.findOne({ _id: productId });
-    if (!product) throw new ProductNotFoundError({ data: { productId } });
+    if (!product) throw new ProductNotFoundError({ productId });
     return {
       ...item,
       product
@@ -22,7 +22,8 @@ export default function(
   return itemsWithProducts.map(({ product, quantity, configuration }) => {
     if (quantity < 1)
       throw new OrderQuantityTooLowError({
-        data: { quantity, productId: product._id }
+        quantity,
+        productId: product._id
       });
     log(
       `mutation addCartProduct ${product._id} ${quantity} ${

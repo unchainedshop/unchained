@@ -9,12 +9,12 @@ import {
 // DEPRECATED
 export default function(root, { itemId, quantity }, { userId }) {
   log(`mutation updateCartItemQuantity ${itemId} ${quantity}`, { userId });
-  if (quantity < 1) throw new OrderQuantityTooLowError({ data: { quantity } });
+  if (quantity < 1) throw new OrderQuantityTooLowError({ quantity });
   const item = OrderPositions.findOne({ _id: itemId });
-  if (!item) throw new OrderItemNotFoundError({ data: { itemId } });
+  if (!item) throw new OrderItemNotFoundError({ itemId });
   const order = item.order();
   if (!order.isCart()) {
-    throw new OrderWrongStatusError({ data: { status: order.status } });
+    throw new OrderWrongStatusError({ status: order.status });
   }
   return OrderPositions.updatePosition(
     {

@@ -8,11 +8,10 @@ import {
 export default function(root, { discountId }, { userId }) {
   log(`mutation removeCartDiscount ${discountId}`, { userId });
   const orderDiscount = OrderDiscounts.findOne({ _id: discountId });
-  if (!orderDiscount)
-    throw new OrderDiscountNotFoundError({ data: { orderDiscount } });
+  if (!orderDiscount) throw new OrderDiscountNotFoundError({ orderDiscount });
   const order = orderDiscount.order();
   if (!order.isCart()) {
-    throw new OrderWrongStatusError({ data: { status: order.status } });
+    throw new OrderWrongStatusError({ status: order.status });
   }
   return OrderDiscounts.removeDiscount({ discountId });
 }

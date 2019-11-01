@@ -18,11 +18,11 @@ export default function(
     }`,
     { userId, orderId }
   );
-  if (quantity < 1) throw new OrderQuantityTooLowError({ data: { quantity } });
+  if (quantity < 1) throw new OrderQuantityTooLowError({ quantity });
   const quotation = Quotations.findOne({ _id: quotationId });
-  if (!quotation) throw new QuotationNotFoundError({ data: { quotationId } });
+  if (!quotation) throw new QuotationNotFoundError({ quotationId });
   if (quotation.status !== QuotationStatus.PROPOSED) {
-    throw new QuotationWrongStatusError({ data: { status: quotation.status } });
+    throw new QuotationWrongStatusError({ status: quotation.status });
   }
   const cart = getCart({ orderId, user, countryContext });
   return cart.addQuotationItem({

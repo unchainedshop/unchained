@@ -9,9 +9,9 @@ export default function(
 ) {
   log('mutation confirmOrder', { orderId, userId });
   const order = Orders.findOne({ _id: orderId });
-  if (!order) throw new OrderNotFoundError({ data: { orderId } });
+  if (!order) throw new OrderNotFoundError({ orderId });
   if (order.status !== OrderStatus.PENDING) {
-    throw new OrderWrongStatusError({ data: { status: order.status } });
+    throw new OrderWrongStatusError({ status: order.status });
   }
   return order.confirm(transactionContext, { localeContext });
 }
