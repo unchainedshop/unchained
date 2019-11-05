@@ -6,6 +6,10 @@ Package.describe({
   documentation: 'README.md'
 });
 
+Npm.depends({
+  hashids: '2.0.1'
+});
+
 Package.onUse(api => {
   api.versionsFrom('1.8');
   api.use('ecmascript');

@@ -1,4 +1,4 @@
-import Hashids from 'hashids';
+import Hashids from 'hashids/cjs';
 import 'meteor/dburles:collection-helpers';
 import { Promise } from 'meteor/promise';
 import { objectInvert } from 'meteor/unchained:utils';

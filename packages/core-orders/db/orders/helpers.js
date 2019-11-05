@@ -1,4 +1,4 @@
-import Hashids from 'hashids';
+import Hashids from 'hashids/cjs';
 import 'meteor/dburles:collection-helpers';
 import { Promise } from 'meteor/promise';
 import { getFallbackLocale } from 'meteor/unchained:core';
@@ -208,11 +208,7 @@ Orders.helpers({
   payment() {
     return OrderPayments.findOne({ _id: this.paymentId });
   },
-  updateBillingAddress(rawBillingAddress) {
-    const billingAddress = {
-      ...(rawBillingAddress || {}),
-      countryCode: this.countryCode
-    };
+  updateBillingAddress(billingAddress = {}) {
     Users.updateLastBillingAddress({
       userId: this.userId,
       lastBillingAddress: billingAddress

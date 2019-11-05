@@ -7,7 +7,8 @@ Package.describe({
 });
 
 Npm.depends({
-  'core-js': '3.3.1'
+  'core-js': '3.3.1',
+  hashids: '2.0.1'
 });
 
 Package.onUse(api => {
