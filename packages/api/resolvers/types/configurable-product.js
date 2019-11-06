@@ -1,5 +1,5 @@
 export default {
-  texts(obj, { forceLocale }, { localeContext }) {
+  async texts(obj, { forceLocale }, { localeContext }) {
     return obj.getLocalizedTexts(forceLocale || localeContext.normalized);
   },
   status(obj) {
@@ -8,10 +8,13 @@ export default {
   assignments(obj) {
     return obj.proxyAssignments();
   },
-  products(obj, { vectors = [], includeInactive } = {}) {
+  async products(obj, { vectors = [], includeInactive } = {}) {
     return obj.proxyProducts(vectors, { includeInactive });
   },
-  assortmentPaths(obj, { forceLocale }, { localeContext }) {
+  async assortmentPaths(obj, { forceLocale }, { localeContext }) {
     return obj.assortmentPaths(forceLocale || localeContext.normalized);
+  },
+  async media(obj, { limit, offset }) {
+    return obj.media({ limit, offset });
   }
 };

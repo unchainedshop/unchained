@@ -1,12 +1,12 @@
 export default {
-  texts(obj, { forceLocale }, requestContext) {
+  async texts(obj, { forceLocale }, requestContext) {
     const { localeContext } = requestContext;
     return obj.getLocalizedTexts(forceLocale || localeContext.normalized);
   },
   status(obj) {
     return obj.normalizedStatus();
   },
-  catalogPrice(obj, { quantity }, requestContext) {
+  async catalogPrice(obj, { quantity }, requestContext) {
     // listPrice: ProductPrice
     const { countryContext } = requestContext;
     return obj.price({
@@ -14,7 +14,7 @@ export default {
       quantity
     });
   },
-  simulatedPrice(obj, { quantity, useNetPrice }, requestContext) {
+  async simulatedPrice(obj, { quantity, useNetPrice }, requestContext) {
     const { countryContext, userId, user } = requestContext;
     return obj.userPrice(
       {
@@ -27,7 +27,7 @@ export default {
       requestContext
     );
   },
-  simulatedDiscounts(obj, params, requestContext) {
+  async simulatedDiscounts(obj, params, requestContext) {
     const { quantity } = params;
     const { countryContext, userId, user } = requestContext;
     return obj.userDiscounts(
@@ -40,7 +40,7 @@ export default {
       requestContext
     );
   },
-  simulatedDispatches(obj, params, requestContext) {
+  async simulatedDispatches(obj, params, requestContext) {
     const { referenceDate, quantity, deliveryProviderType } = params;
     const { countryContext, userId, user } = requestContext;
     return obj.userDispatches(
@@ -55,7 +55,7 @@ export default {
       requestContext
     );
   },
-  simulatedStocks(obj, params, requestContext) {
+  async simulatedStocks(obj, params, requestContext) {
     const { referenceDate, deliveryProviderType } = params;
     const { countryContext, userId, user } = requestContext;
     return obj.userStocks(
@@ -96,7 +96,10 @@ export default {
       widthInMillimeters
     };
   },
-  assortmentPaths(obj, { forceLocale }, { localeContext }) {
+  async assortmentPaths(obj, { forceLocale }, { localeContext }) {
     return obj.assortmentPaths(forceLocale || localeContext.normalized);
+  },
+  async media(obj, { limit, offset }) {
+    return obj.media({ limit, offset });
   }
 };
