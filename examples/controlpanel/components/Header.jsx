@@ -9,7 +9,7 @@ const MenuLayout = ({ pathname, children, loading, ...rest }) => (
   <Menu color="black" pointing attached="top" size="small" {...rest}>
     <Link href="/" passHref>
       <Menu.Item active={pathname === '/'}>
-        <img src="/static/diamond-snake-colored.jpg" alt="unchained logo" />
+        <img src="/diamond-snake-colored.jpg" alt="unchained logo" />
       </Menu.Item>
     </Link>
     {!loading && children}

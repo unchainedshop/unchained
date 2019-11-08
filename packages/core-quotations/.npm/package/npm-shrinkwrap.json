@@ -1,0 +1,10 @@
+{
+  "lockfileVersion": 1,
+  "dependencies": {
+    "hashids": {
+      "version": "2.0.1",
+      "resolved": "https://registry.npmjs.org/hashids/-/hashids-2.0.1.tgz",
+      "integrity": "sha512-Hr1lPEGhCkZSniYj9jAj8gQtcTBKNhf/tF14R1tu3zvIcwCT89/ucHEyObSIUZ42Y30SlIfOt7Sq0Uw+rhs6iQ=="
+    }
+  }
+}

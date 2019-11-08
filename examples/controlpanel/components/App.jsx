@@ -1,3 +1,4 @@
+import 'core-js/features/global-this';
 import React from 'react';
 import { withRouter } from 'next/router';
 import { ToastContainer } from 'react-toastify';

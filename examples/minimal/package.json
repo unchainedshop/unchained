@@ -1,7 +1,7 @@
 {
   "name": "@unchainedshop/example-minimal",
   "description": "Minimal Bootstrap Project for Unchained Engine",
-  "version": "0.33.0",
+  "version": "0.34.0",
   "license": "EUPL-1.2",
   "homepage": "https://unchained.shop",
   "repository": {
@@ -30,7 +30,7 @@
     "debug": "cross-env METEOR_PACKAGE_DIRS=../../packages UI_ENDPOINT=http://localhost:4000 meteor debug -p 4010"
   },
   "dependencies": {
-    "@babel/runtime": "^7.6.3",
+    "@babel/runtime": "^7.7.2",
     "apollo-server-express": "^2.9.7",
     "bcrypt": "^3.0.6",
     "braintree": "^2.21.0",
@@ -53,16 +53,16 @@
     "open": "^7.0.0",
     "ramda": "^0.26.1",
     "simpl-schema": "^1.5.6",
-    "stripe": "^7.11.0",
+    "stripe": "^7.13.0",
     "uuid": "^3.3.3",
     "winston": "^3.2.1",
     "winston-transport": "^4.3.0",
     "xml-js": "^1.6.11"
   },
   "devDependencies": {
-    "@babel/core": "^7.6.4",
-    "@babel/preset-env": "^7.6.3",
-    "@babel/register": "^7.6.2",
+    "@babel/core": "^7.7.2",
+    "@babel/preset-env": "^7.7.1",
+    "@babel/register": "^7.7.0",
     "babel-eslint": "^10.0.3",
     "cross-env": "^6.0.3",
     "eslint": "^6.6.0",

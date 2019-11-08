@@ -83,7 +83,7 @@ export default compose(
     avatarUrl:
       imageUrl ||
       (user && user.avatar && user.avatar.url) ||
-      '/static/square-image.png',
+      '/square-image.png',
     ...rest
   })),
   pure

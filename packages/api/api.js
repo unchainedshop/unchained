@@ -17,7 +17,7 @@ export * as errors from './errors';
 
 const { APOLLO_ENGINE_KEY } = process.env;
 
-global._UnchainedAPIVersion = '0.33.0'; // eslint-disable-line
+global._UnchainedAPIVersion = '0.34.0'; // eslint-disable-line
 
 const logGraphQLServerError = error => {
   try {
