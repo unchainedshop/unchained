@@ -2,6 +2,8 @@ import { Meteor } from 'meteor/meteor';
 import { startPlatform } from 'meteor/unchained:platform';
 import { Users } from 'meteor/unchained:core-users';
 import { Factory } from 'meteor/dburles:factory';
+import { WebApp } from 'meteor/webapp';
+import { embedControlpanelInMeteorWebApp } from '@unchainedshop/controlpanel';
 
 import 'meteor/unchained:core-delivery/plugins/post';
 import 'meteor/unchained:core-delivery/plugins/pick-mup';
@@ -82,4 +84,5 @@ Meteor.startup(() => {
   configureEmailTemplates();
   initializeDatabase();
   startPlatform({ introspection: true });
+  embedControlpanelInMeteorWebApp(WebApp);
 });

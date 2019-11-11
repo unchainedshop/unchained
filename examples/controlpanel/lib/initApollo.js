@@ -25,8 +25,14 @@ const fragmentMatcher = new IntrospectionFragmentMatcher({
 });
 
 function create(initialState, headersOverride, getToken) {
+  const browserFallback =
+    process.browser && `${window.location.origin}/graphql`;
+  const fallback =
+    headersOverride && headersOverride.host
+      ? `http://${headersOverride.host}/graphql`
+      : browserFallback;
   const httpLink = createUploadLink({
-    uri: publicRuntimeConfig.GRAPHQL_ENDPOINT,
+    uri: publicRuntimeConfig.GRAPHQL_ENDPOINT || fallback,
     credentials: 'same-origin'
   });
   const errorLink = onError(({ graphQLErrors, networkError }) => {

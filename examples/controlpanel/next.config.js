@@ -3,12 +3,13 @@ const withCss = require('@zeit/next-css');
 
 const {
   LANG,
-  GRAPHQL_ENDPOINT = 'http://localhost:4010/graphql',
+  GRAPHQL_ENDPOINT,
   DEBUG = false,
   BUNDLE_ANALYZE = false
 } = process.env;
 
 module.exports = withCss({
+  exportTrailingSlash: true,
   analyzeServer: ['server', 'both'].includes(BUNDLE_ANALYZE),
   analyzeBrowser: ['browser', 'both'].includes(BUNDLE_ANALYZE),
   bundleAnalyzerConfig: {

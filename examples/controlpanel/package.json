@@ -1,16 +1,13 @@
 {
   "name": "@unchainedshop/controlpanel",
   "description": "Control Panel for Unchained Engine",
-  "version": "0.34.0",
+  "version": "0.35.0",
   "license": "EUPL-1.2",
   "homepage": "https://unchained.shop",
   "main": "index.js",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/unchainedshop/unchained.git"
-  },
-  "config": {
-    "legacy-bundling": true
   },
   "contributors": [
     "Vedran Rudelj <vedran@unchained.shop> (https://unchained.shop)",
@@ -23,16 +20,18 @@
   },
   "scripts": {
     "lint": "eslint . --cache --fix --ext=jsx --ext=js",
-    "dev": "next -p 4000",
-    "dev:remote": "next -p 4000",
+    "dev": "GRAPHQL_ENDPOINT=http://localhost:4010/graphql next -p 4000",
     "build": "next build",
     "start": "next start",
     "preexport": "npm run build",
     "export": "next export",
     "update-schema": "npx apollo service:download",
-    "prepublishOnly": "npm run build"
+    "prepublishOnly": "npm run export"
   },
   "dependencies": {
+    "serve-static": "^1.14.1"
+  },
+  "devDependencies": {
     "@zeit/next-css": "^1.0.1",
     "apollo-cache-inmemory": "^1.6.3",
     "apollo-client": "^2.6.4",
@@ -71,9 +70,7 @@
     "uniforms": "=2.5.0",
     "uniforms-bridge-simple-schema-2": "=2.5.0",
     "uniforms-semantic": "=2.5.0",
-    "url-loader": "^2.2.0"
-  },
-  "devDependencies": {
+    "url-loader": "^2.2.0",
     "babel-eslint": "^10.0.3",
     "eslint": "^6.6.0",
     "eslint-config-airbnb": "^18.0.1",

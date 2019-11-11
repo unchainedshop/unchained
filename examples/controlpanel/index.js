@@ -1,17 +1,13 @@
-const { parse } = require('url');
-const next = require('next');
+const serveStatic = require('serve-static');
 
-const app = next({
-  dev: false,
-  dir: __dirname
+const path = `${__dirname}/out`;
+const serve = serveStatic(path, {
+  index: ['index.html'],
+  extensions: ['html'],
+  redirect: false,
+  fallthrough: false
 });
-const handle = app.getRequestHandler();
-
-module.exports = handle;
 
 module.exports.embedControlpanelInMeteorWebApp = WebApp => {
-  WebApp.connectHandlers.use('/', (req, res) => {
-    const parsedUrl = parse(req.url, true);
-    return handle(req, res, parsedUrl);
-  });
+  WebApp.connectHandlers.use('/', serve);
 };
