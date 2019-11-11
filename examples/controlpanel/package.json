@@ -21,9 +21,7 @@
   "scripts": {
     "lint": "eslint . --cache --fix --ext=jsx --ext=js",
     "dev": "GRAPHQL_ENDPOINT=http://localhost:4010/graphql next -p 4000",
-    "build": "next build",
-    "start": "next start",
-    "preexport": "npm run build",
+    "preexport": "next build",
     "export": "next export",
     "update-schema": "npx apollo service:download",
     "prepublishOnly": "npm run export"
