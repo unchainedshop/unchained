@@ -236,6 +236,17 @@ export default [
       Get a specific quotation by ID
       """
       quotation(quotationId: ID!): Quotation
+
+      """
+      Search products
+      """
+      search(
+        queryString: String
+        filterQuery: [FilterQueryInput!]
+        assortmentId: ID
+        orderBy: SearchOrderBy
+        includeInactive: Boolean = false
+      ): SearchResult!
     }
   `
 ];

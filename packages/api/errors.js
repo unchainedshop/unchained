@@ -87,7 +87,6 @@ export const QuotationNotFoundError = createError(
   'QuotationNotFoundError',
   'Quotation not found'
 );
-
 export const BookmarkAlreadyExistsError = createError(
   'BookmarkAlreadyExistsError',
   'Bookmark already exists'
@@ -95,4 +94,8 @@ export const BookmarkAlreadyExistsError = createError(
 export const BookmarkNotFoundError = createError(
   'BookmarkNotFoundError',
   'Bookmark not found'
+);
+export const QueryStringRequiredError = createError(
+  'QueryStringRequiredError',
+  'Query string is required if no assortmentId is provided'
 );

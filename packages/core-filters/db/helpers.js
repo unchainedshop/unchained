@@ -229,13 +229,21 @@ Filters.filterFilters = ({
     // - Are filtered by the currently selected value of this filter
     // or if there is no currently selected value:
     // - Is the same like examinedProductIdSet
-    const filteredProductIdSet = values
-      ? filter.intersect({
-          values,
-          forceLiveCollection,
-          productIdSet: intersectedProductIds
-        })
-      : examinedProductIdSet;
+    const queryWithoutOwnFilter = {...queryObject};
+    delete queryWithoutOwnFilter[filter.key];
+    const filteredByOtherFiltersSet = intersectProductIds({
+      productIds: examinedProductIdSet,
+      filters: filters.filter(
+        otherFilter => otherFilter.key !== filter.key
+      ),
+      queryObject: queryWithoutOwnFilter,
+      forceLiveCollection
+    });
+    const filteredProductIdSet = filter.intersect({
+        values: values || [undefined],
+        forceLiveCollection,
+        productIdSet: filteredByOtherFiltersSet
+      })
 
     return {
       definition: filter,
@@ -248,20 +256,10 @@ Filters.filterFilters = ({
         // - Fit this filter generally
         // - Are filtered by all other filters
         // - Are not filtered by the currently selected value of this filter
-        const queryWithoutOwnFilter = queryObject;
-        delete queryWithoutOwnFilter[filter.key];
-        const intersectedExaminedProductIds = intersectProductIds({
-          productIds: examinedProductIdSet,
-          filters: filters.filter(
-            otherFilter => otherFilter.key !== filter.key
-          ),
-          queryObject: queryWithoutOwnFilter,
-          forceLiveCollection
-        });
         return filter.filteredOptions({
           values,
           forceLiveCollection,
-          productIdSet: intersectedExaminedProductIds
+          productIdSet: filteredByOtherFiltersSet
         });
       }
     };

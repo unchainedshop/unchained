@@ -94,4 +94,5 @@ export default (role, actions) => {
   role.allow(actions.viewFilter, () => true);
   role.allow(actions.viewFilters, () => true);
   role.allow(actions.viewTranslations, () => true);
+  role.allow(actions.search, () => true);
 };

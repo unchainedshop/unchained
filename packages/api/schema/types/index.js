@@ -24,6 +24,7 @@ import product from './product';
 import quotation from './quotation';
 import geoposition from './geo-position';
 import bookmark from './bookmark';
+import search from './search';
 
 export default [
   ...address,
@@ -51,5 +52,6 @@ export default [
   ...order,
   ...quotation,
   ...geoposition,
-  ...bookmark
+  ...bookmark,
+  ...search,
 ];

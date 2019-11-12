@@ -3,7 +3,7 @@ import { Promise } from 'meteor/promise';
 import { Countries } from 'meteor/unchained:core-countries';
 import { Products, ProductStatus } from 'meteor/unchained:core-products';
 import { findUnusedSlug, findPreservingIds } from 'meteor/unchained:utils';
-import { Filters } from 'meteor/unchained:core-filters';
+import { facetedSearch, Filters } from 'meteor/unchained:core-filters';
 import { findLocalizedText } from 'meteor/unchained:core';
 import { Locale } from 'locale';
 import * as R from 'ramda';
@@ -590,108 +590,17 @@ Collections.Assortments.helpers({
     }
     return this._cachedProductIds; // eslint-disable-line
   },
-  defaultProductSelectorForSearch({ includeInactive = false }) {
-    const selector = {
-      status: { $in: [ProductStatus.ACTIVE, ProductStatus.DRAFT] }
-    };
-    if (!includeInactive) {
-      selector.status = ProductStatus.ACTIVE;
-    }
-    return selector;
-  },
-  search({ filterQuery, includeInactive }) {
-    const forceLiveCollection = false;
-    const productIds = this.productIds({ forceLiveCollection });
-    const selector = this.defaultProductSelectorForSearch({ includeInactive });
-    const filteredProductIds = Filters.filterProductIds({
-      productIds,
-      query: filterQuery,
-      forceLiveCollection
-    });
-
-    return {
-      totalProducts: () =>
-        Products.find({
-          ...selector,
-          _id: { $in: productIds }
-        }).count(),
-      filteredProducts: () =>
-        Products.find({
-          ...selector,
-          _id: { $in: filteredProductIds }
-        }).count(),
-      products: ({ offset, limit, sort = {} }) => {
-        const options = { skip: offset, limit, sort };
-        return findPreservingIds(Products)(
-          selector,
-          filteredProductIds,
-          options
-        );
-      },
-      filters: () => {
-        const filterIds = this.filterAssignments().map(
-          ({ filterId }) => filterId
-        );
-        return Filters.filterFilters({
-          filterIds,
-          productIds,
-          query: filterQuery,
-          forceLiveCollection,
-          includeInactive
-        });
-      }
-    };
-  },
-  filters({
-    query,
-    forceLiveCollection = false,
-    includeInactive = false
-  } = {}) {
+  search({ filterQuery, includeInactive, forceLiveCollection = false, orderBy }) {
     const productIds = this.productIds({ forceLiveCollection });
     const filterIds = this.filterAssignments().map(({ filterId }) => filterId);
-    return Filters.filterFilters({
+    return facetedSearch({
       filterIds,
       productIds,
-      query,
+      filterQuery,
       forceLiveCollection,
-      includeInactive
-    });
-  },
-  products({
-    limit,
-    offset,
-    query,
-    sort = {},
-    forceLiveCollection = false,
-    includeInactive
-  } = {}) {
-    const productIds = this.productIds({ forceLiveCollection });
-    const selector = this.defaultProductSelectorForSearch({ includeInactive });
-    const filteredProductIds = Filters.filterProductIds({
-      productIds,
-      query,
-      forceLiveCollection
-    });
-    return {
-      totalCount: () =>
-        Products.find({
-          ...selector,
-          _id: { $in: productIds }
-        }).count(),
-      filteredCount: () =>
-        Products.find({
-          ...selector,
-          _id: { $in: filteredProductIds }
-        }).count(),
-      async items() {
-        const options = { skip: offset, limit, sort };
-        return findPreservingIds(Products)(
-          selector,
-          filteredProductIds,
-          options
-        );
-      }
-    };
+      includeInactive,
+      orderBy
+    })
   },
   linkedAssortments() {
     return Collections.AssortmentLinks.find(
