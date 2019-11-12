@@ -16,15 +16,18 @@ class Logger {
     if (!instance) {
       instance = this;
     }
+    const transportsUsed = [
+      new transports.Console({ level: debug ? 'debug' : 'info' })
+    ]
+    if(!process.env.LOG_DISABLE_DB_LOGGER) {
+      transportsUsed.push(new LocalTransport({ level: 'info' }))
+    }
     this.winston = createLogger({
       format: combine(
         colorize(),
         printf(nfo => `${nfo.level}: ${nfo.message}`)
       ),
-      transports: [
-        new transports.Console({ level: debug ? 'debug' : 'info' }),
-        new LocalTransport({ level: 'info' })
-      ]
+      transports: transportsUsed
     });
     return instance;
   }
