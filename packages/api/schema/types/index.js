@@ -53,5 +53,5 @@ export default [
   ...quotation,
   ...geoposition,
   ...bookmark,
-  ...search,
+  ...search
 ];

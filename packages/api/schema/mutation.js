@@ -202,6 +202,27 @@ export default [
       ): OrderDeliveryPickUp!
 
       """
+      Update a Card Payment Provider's specific configuration
+      """
+      updateOrderPaymentCard(orderPaymentId: ID!, meta: JSON): OrderPaymentCard!
+
+      """
+      Update an Invoice Payment Provider's specific configuration
+      """
+      updateOrderPaymentInvoice(
+        orderPaymentId: ID!
+        meta: JSON
+      ): OrderPaymentInvoice!
+
+      """
+      Update a Generic Payment Provider's specific configuration
+      """
+      updateOrderPaymentGeneric(
+        orderPaymentId: ID!
+        meta: JSON
+      ): OrderPaymentPaypal!
+
+      """
       Remove an order while it's still open
       """
       removeOrder(orderId: ID!): Order!

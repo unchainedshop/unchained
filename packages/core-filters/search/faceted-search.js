@@ -1,14 +1,17 @@
-import { Products, ProductStatus } from 'meteor/unchained:core-products';
-import { Filters } from '../db/collections';
+import { Products } from 'meteor/unchained:core-products';
 import { findPreservingIds } from 'meteor/unchained:utils';
+import { Filters } from '../db/collections';
+import defaultProductSelector from './default-product-selector';
 
-export default async ({ filterIds, productIds, filterQuery, forceLiveCollection, includeInactive, orderBy }) => {
-  const selector = {
-    status: { $in: [ProductStatus.ACTIVE, ProductStatus.DRAFT] }
-  };
-  if (!includeInactive) {
-    selector.status = ProductStatus.ACTIVE;
-  }
+export default async ({
+  filterIds,
+  productIds,
+  filterQuery,
+  forceLiveCollection,
+  includeInactive,
+  orderBy
+}) => {
+  const selector = defaultProductSelector({ includeInactive });
 
   const filteredProductIds = Filters.filterProductIds({
     productIds,
@@ -27,17 +30,19 @@ export default async ({ filterIds, productIds, filterQuery, forceLiveCollection,
         ...selector,
         _id: { $in: filteredProductIds }
       }).count(),
-    products: async ({ offset, limit, sort = {} }) => findPreservingIds(Products)(
-      selector,
-      filteredProductIds,
-      { skip: offset, limit, sort }
-    ),
-    filters: async () => Filters.filterFilters({
-      filterIds,
-      productIds,
-      query: filterQuery,
-      forceLiveCollection,
-      includeInactive
-    })
+    products: async ({ offset, limit, sort = {} }) =>
+      findPreservingIds(Products)(selector, filteredProductIds, {
+        skip: offset,
+        limit,
+        sort
+      }),
+    filters: async () =>
+      Filters.filterFilters({
+        filterIds,
+        productIds,
+        query: filterQuery,
+        forceLiveCollection,
+        includeInactive
+      })
   };
-}
+};

@@ -52,6 +52,7 @@ import removeCartDiscount from './removeCartDiscount';
 import removeOrder from './removeOrder';
 import setOrderPaymentProvider from './setOrderPaymentProvider';
 import setOrderDeliveryProvider from './setOrderDeliveryProvider';
+import updateOrderPayment from './updateOrderPayment';
 import updateOrderDelivery from './updateOrderDelivery';
 import confirmOrder from './confirmOrder';
 import payOrder from './payOrder';
@@ -173,6 +174,13 @@ export default {
   ),
   updateOrderDeliveryPickUp: acl(actions.updateOrderDelivery)(
     updateOrderDelivery
+  ),
+  updateOrderPaymentGeneric: acl(actions.updateOrderPayment)(
+    updateOrderPayment
+  ),
+  updateOrderPaymentCard: acl(actions.updateOrderPayment)(updateOrderPayment),
+  updateOrderPaymentInvoice: acl(actions.updateOrderPayment)(
+    updateOrderPayment
   ),
   removeOrder: acl(actions.updateOrder)(removeOrder),
   confirmOrder: acl(actions.markOrderConfirmed)(confirmOrder),

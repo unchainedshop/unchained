@@ -580,7 +580,12 @@ Collections.Assortments.helpers({
     }
     return this._cachedProductIds; // eslint-disable-line
   },
-  search({ filterQuery, includeInactive, forceLiveCollection = false, orderBy }) {
+  search({
+    filterQuery,
+    includeInactive,
+    forceLiveCollection = false,
+    orderBy
+  }) {
     const productIds = this.productIds({ forceLiveCollection });
     const filterIds = this.filterAssignments().map(({ filterId }) => filterId);
     return facetedSearch({
@@ -590,7 +595,7 @@ Collections.Assortments.helpers({
       forceLiveCollection,
       includeInactive,
       orderBy
-    })
+    });
   },
   linkedAssortments() {
     return Collections.AssortmentLinks.find(

@@ -13,7 +13,7 @@ class DBSearchFilter extends FilterAdapter {
     return true;
   }
 
-  async productIds({ searchQuery }) {
+  async productIds({ searchQuery }) { // eslint-disable-line
     return [];
   }
 }
