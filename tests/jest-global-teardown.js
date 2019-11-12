@@ -1,3 +1,5 @@
+/* eslint-disable import/no-extraneous-dependencies */
+/* eslint-disable import/no-unresolved */
 import teardownInMemoryMongoDB from '@shelf/jest-mongodb/teardown';
 
 // Stop MongoDB and Meteor

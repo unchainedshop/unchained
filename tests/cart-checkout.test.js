@@ -2,6 +2,7 @@ import { setupDatabase, createLoggedInGraphqlFetch } from './helpers';
 import { SimpleProduct } from './seeds/products';
 
 let connection;
+// eslint-disable-next-line no-unused-vars
 let db;
 let graphqlFetch;
 

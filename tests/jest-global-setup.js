@@ -1,3 +1,5 @@
+/* eslint-disable import/no-extraneous-dependencies */
+/* eslint-disable import/no-unresolved */
 import setupInMemoryMongoDB from '@shelf/jest-mongodb/setup';
 import { spawn } from 'child_process';
 import { wipeDatabase } from './helpers';

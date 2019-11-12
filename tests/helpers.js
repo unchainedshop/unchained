@@ -1,3 +1,5 @@
+/* eslint-disable import/no-extraneous-dependencies */
+/* eslint-disable import/no-unresolved */
 import { MongoClient, Collection } from 'mongodb';
 import { execute, makePromise } from 'apollo-link';
 import { createUploadLink } from 'apollo-upload-client';
