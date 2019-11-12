@@ -107,10 +107,6 @@ export default [
       media(limit: Int = 10, offset: Int = 0): [ProductMedia!]!
       reviews: [ProductReview!]!
       meta: JSON
-      assortments(limit: Int = 10, offset: Int = 0): [Assortment!]!
-        @deprecated(
-          reason: "Please use assortmentPaths to get the parent assortments"
-        )
       assortmentPaths(forceLocale: String): [ProductAssortmentPath!]!
     }
 

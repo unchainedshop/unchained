@@ -421,16 +421,6 @@ Products.helpers({
       .fetch()
       .map(({ assortmentId: id }) => id);
   },
-  // DEPRECATED
-  assortments({ includeInactive, limit, offset } = {}) {
-    const assortmentIds = this.assortmentIds();
-    const selector = { _id: { $in: assortmentIds } };
-    if (!includeInactive) {
-      selector.isActive = true;
-    }
-    const options = { skip: offset, limit };
-    return Collections.Assortments.find(selector, options).fetch();
-  },
   assortmentPaths({ locale } = {}) {
     const build = makeAssortmentBreadcrumbsBuilder({ locale });
     return Promise.await(

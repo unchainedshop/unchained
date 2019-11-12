@@ -28,10 +28,6 @@ export default [
         deliveryProviderType: DeliveryProviderType = SHIPPING
         referenceDate: Date
       ): [Stock!]
-      assortments(limit: Int = 10, offset: Int = 0): [Assortment!]!
-        @deprecated(
-          reason: "Please use assortmentPaths to get the parent assortments"
-        )
       assortmentPaths(forceLocale: String): [ProductAssortmentPath!]!
       siblings(assortmentId: ID, limit: Int = 10, offset: Int = 0): [Product!]!
       dimensions: Dimensions

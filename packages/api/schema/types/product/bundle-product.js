@@ -15,10 +15,6 @@ export default [
       texts(forceLocale: String): ProductTexts
       bundleItems: [ProductBundleItem!]
       reviews(limit: Int = 10, offset: Int = 0): [ProductReview!]!
-      assortments(limit: Int = 10, offset: Int = 0): [Assortment!]!
-        @deprecated(
-          reason: "Please use assortmentPaths to get the parent assortments"
-        )
       assortmentPaths(forceLocale: String): [ProductAssortmentPath!]!
       meta: JSON
     }
