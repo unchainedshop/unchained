@@ -220,7 +220,7 @@ export default [
       updateOrderPaymentGeneric(
         orderPaymentId: ID!
         meta: JSON
-      ): OrderPaymentPaypal!
+      ): OrderPaymentGeneric!
 
       """
       Remove an order while it's still open
