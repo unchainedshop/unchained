@@ -13,11 +13,14 @@ class StrictQualFilter extends FilterAdapter {
     return true;
   }
 
-  transformSelector({ selector, key, value }) { // eslint-disable-line
-    return {
-      ...selector,
-      [key]: value !== undefined ? value : { $exists: true }
-    };
+  async transformProductSelector(lastSelector, { key, value }) { // eslint-disable-line
+    if (key) {
+      return {
+        ...lastSelector,
+        [key]: value !== undefined ? value : { $exists: true }
+      };
+    }
+    return lastSelector;
   }
 }
 

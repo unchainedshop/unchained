@@ -6,26 +6,7 @@ import { Products, ProductStatus } from 'meteor/unchained:core-products';
 import { FilterTypes } from './schema';
 import { Filters, FilterTexts } from './collections';
 import { FilterDirector } from '../director';
-
-const parseQueryArray = query =>
-  (query || []).reduce(
-    (accumulator, { key, value }) => ({
-      ...accumulator,
-      [key]: accumulator[key] ? accumulator[key].concat(value) : [value]
-    }),
-    {}
-  );
-
-const intersectProductIds = ({
-  productIds,
-  filters,
-  queryObject,
-  ...options
-}) =>
-  filters.reduce((productIdSet, filter) => {
-    const values = queryObject[filter.key];
-    return filter.intersect({ values, productIdSet, ...options });
-  }, new Set(productIds));
+import intersectProductIds from '../search/intersect-product-ids';
 
 Filters.createFilter = ({ locale, title, type, key, options, ...rest }) => {
   const filter = {
@@ -160,110 +141,12 @@ Filters.wipeFilters = (onlyDirty = true) => {
   });
 };
 
-Filters.filterProductIds = ({
-  productIds,
-  query,
-  forceLiveCollection = false
-}) => {
-  if (!query || query.length === 0) return productIds;
-  const queryObject = parseQueryArray(query);
-
-  const filters = Filters.find({
-    key: { $in: Object.keys(queryObject) }
-  }).fetch();
-
-  const intersectedProductIds = intersectProductIds({
-    productIds,
-    filters,
-    queryObject,
-    forceLiveCollection
-  });
-
-  return [...intersectedProductIds];
-};
-
 Filters.invalidateFilterCaches = () => {
   log('Filters: Invalidating filter caches...');
   Filters.find()
     .fetch()
     .forEach(filter => filter.invalidateProductIdCache());
   log('Filters: Invalidated the filter caches');
-};
-
-Filters.filterFilters = ({
-  filterIds,
-  productIds,
-  query,
-  forceLiveCollection = false,
-  includeInactive = false
-} = {}) => {
-  const allProductIdsSet = new Set(productIds);
-  const queryObject = parseQueryArray(query);
-  const selector = { _id: { $in: filterIds } };
-  if (!includeInactive) {
-    selector.isActive = true;
-  }
-  const filters = Filters.find(selector).fetch();
-
-  const intersectedProductIds = intersectProductIds({
-    productIds,
-    filters,
-    queryObject,
-    forceLiveCollection
-  });
-
-  return filters.map(filter => {
-    const values = queryObject[filter.key];
-
-    // The examinedProductIdSet is a set of product id's that:
-    // - Fit this filter generally
-    // - Are part of the preselected product id array
-    const examinedProductIdSet = filter.intersect({
-      values: [undefined],
-      forceLiveCollection,
-      productIdSet: allProductIdsSet
-    });
-
-    // The filteredProductIdSet is a set of product id's that:
-    // - Are filtered by all other filters
-    // - Are filtered by the currently selected value of this filter
-    // or if there is no currently selected value:
-    // - Is the same like examinedProductIdSet
-    const queryWithoutOwnFilter = {...queryObject};
-    delete queryWithoutOwnFilter[filter.key];
-    const filteredByOtherFiltersSet = intersectProductIds({
-      productIds: examinedProductIdSet,
-      filters: filters.filter(
-        otherFilter => otherFilter.key !== filter.key
-      ),
-      queryObject: queryWithoutOwnFilter,
-      forceLiveCollection
-    });
-    const filteredProductIdSet = filter.intersect({
-        values: values || [undefined],
-        forceLiveCollection,
-        productIdSet: filteredByOtherFiltersSet
-      })
-
-    return {
-      definition: filter,
-      examinedProducts: examinedProductIdSet.size,
-      filteredProducts: filteredProductIdSet.size, // TODO: Implement
-      isSelected: Object.prototype.hasOwnProperty.call(queryObject, filter.key),
-      options: () => {
-        // The current base for options should be an array of product id's that:
-        // - Are part of the preselected product id array
-        // - Fit this filter generally
-        // - Are filtered by all other filters
-        // - Are not filtered by the currently selected value of this filter
-        return filter.filteredOptions({
-          values,
-          forceLiveCollection,
-          productIdSet: filteredByOtherFiltersSet
-        });
-      }
-    };
-  });
 };
 
 Filters.helpers({
@@ -403,7 +286,7 @@ Filters.helpers({
     if (type === FilterTypes.SWITCH) return ['true', 'false'];
     return this.options || [];
   },
-  filteredOptions({ values, forceLiveCollection, productIdSet }) {
+  loadedOptions({ values, forceLiveCollection, productIdSet }) {
     const mappedOptions = this.optionsForFilterType(this.type)
       .map(value => {
         const filteredProductIds = this.intersect({
@@ -420,5 +303,55 @@ Filters.helpers({
       })
       .filter(Boolean);
     return mappedOptions;
+  },
+  load({ filterQuery, forceLiveCollection, allProductIdsSet, otherFilters }) {
+    const values = filterQuery[this.key];
+
+    // The examinedProductIdSet is a set of product id's that:
+    // - Fit this filter generally
+    // - Are part of the preselected product id array
+    const examinedProductIdSet = this.intersect({
+      values: [undefined],
+      forceLiveCollection,
+      productIdSet: allProductIdsSet
+    });
+
+    // The filteredProductIdSet is a set of product id's that:
+    // - Are filtered by all other filters
+    // - Are filtered by the currently selected value of this filter
+    // or if there is no currently selected value:
+    // - Is the same like examinedProductIdSet
+    const queryWithoutOwnFilter = { ...filterQuery };
+    delete queryWithoutOwnFilter[this.key];
+    const filteredByOtherFiltersSet = intersectProductIds({
+      productIds: examinedProductIdSet,
+      filters: otherFilters.filter(otherFilter => otherFilter.key !== this.key),
+      filterQuery: queryWithoutOwnFilter,
+      forceLiveCollection
+    });
+    const filteredProductIdSet = this.intersect({
+      values: values || [undefined],
+      forceLiveCollection,
+      productIdSet: filteredByOtherFiltersSet
+    });
+
+    return {
+      definition: this,
+      examinedProducts: examinedProductIdSet.size,
+      filteredProducts: filteredProductIdSet.size, // TODO: Implement
+      isSelected: Object.prototype.hasOwnProperty.call(filterQuery, this.key),
+      options: () => {
+        // The current base for options should be an array of product id's that:
+        // - Are part of the preselected product id array
+        // - Fit this filter generally
+        // - Are filtered by all other filters
+        // - Are not filtered by the currently selected value of this filter
+        return this.loadedOptions({
+          values,
+          forceLiveCollection,
+          productIdSet: filteredByOtherFiltersSet
+        });
+      }
+    };
   }
 });

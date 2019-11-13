@@ -3,7 +3,7 @@ import { Promise } from 'meteor/promise';
 import { Countries } from 'meteor/unchained:core-countries';
 import { Products, ProductStatus } from 'meteor/unchained:core-products';
 import { findUnusedSlug, findPreservingIds } from 'meteor/unchained:utils';
-import { facetedSearch, Filters } from 'meteor/unchained:core-filters';
+import { search, Filters } from 'meteor/unchained:core-filters';
 import { findLocalizedText } from 'meteor/unchained:core';
 import { Locale } from 'locale';
 import * as R from 'ramda';
@@ -580,17 +580,15 @@ Collections.Assortments.helpers({
     }
     return this._cachedProductIds; // eslint-disable-line
   },
-  search({ filterQuery, includeInactive, forceLiveCollection = false, orderBy }) {
+  search({ forceLiveCollection, ...query }) {
     const productIds = this.productIds({ forceLiveCollection });
     const filterIds = this.filterAssignments().map(({ filterId }) => filterId);
-    return facetedSearch({
+    return search({
       filterIds,
       productIds,
-      filterQuery,
       forceLiveCollection,
-      includeInactive,
-      orderBy
-    })
+      ...query
+    });
   },
   linkedAssortments() {
     return Collections.AssortmentLinks.find(

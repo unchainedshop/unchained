@@ -93,5 +93,4 @@ export default {
   quotation: acl(actions.viewQuotation)(quotation),
   quotations: acl(actions.viewQuotations)(quotations),
   search: acl(actions.search)(search)
-
 };

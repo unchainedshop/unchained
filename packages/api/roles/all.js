@@ -39,6 +39,7 @@ export default (role, actions) => {
   role.allow(actions.updateOrderDiscount, () => false);
   role.allow(actions.updateOrderItem, () => false);
   role.allow(actions.updateOrderDelivery, () => false);
+  role.allow(actions.updateOrderPayment, () => false);
   role.allow(actions.markOrderConfirmed, () => false);
   role.allow(actions.markOrderPaid, () => false);
   role.allow(actions.viewLogs, isInLoginMutationResponse);

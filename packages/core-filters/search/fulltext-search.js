@@ -1,14 +1,18 @@
-import { ProductTexts } from 'meteor/unchained:core-products';
+import { FilterDirector } from 'meteor/unchained:core-filters';
 
-export default async ({ queryString, includeInactive, orderBy }) => {
-  const productIds = ProductTexts.find( { $text: { $search: queryString } } , {
-    fields: {
-      productId: 1
-    }
-  }).map(({ productId }) => productId)
-  return {
-    productIds,
-    filterIds: [],
-    selector: {}
-  };
-}
+export default ({
+  query,
+  filterSelector,
+  productSelector
+}) => async productIdResolver => {
+  const { queryString } = query;
+  if (!queryString) return productIdResolver;
+
+  const director = new FilterDirector({
+    query
+  });
+  return director.search(productIdResolver, {
+    filterSelector,
+    productSelector
+  });
+};

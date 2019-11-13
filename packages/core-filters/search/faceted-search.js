@@ -1,43 +1,21 @@
-import { Products, ProductStatus } from 'meteor/unchained:core-products';
 import { Filters } from '../db/collections';
-import { findPreservingIds } from 'meteor/unchained:utils';
+import intersectProductIds from './intersect-product-ids';
 
-export default async ({ filterIds, productIds, filterQuery, forceLiveCollection, includeInactive, orderBy }) => {
-  const selector = {
-    status: { $in: [ProductStatus.ACTIVE, ProductStatus.DRAFT] }
-  };
-  if (!includeInactive) {
-    selector.status = ProductStatus.ACTIVE;
-  }
+export default ({ query, filterSelector }) => async productIdResolver => {
+  const { filterQuery, forceLiveCollection } = query;
+  if (!filterQuery || filterQuery.length === 0) return productIdResolver;
 
-  const filteredProductIds = Filters.filterProductIds({
-    productIds,
-    query: filterQuery,
+  const [selector, allProductIds] = await Promise.all([
+    filterSelector,
+    productIdResolver
+  ]);
+  const filters = Filters.find(selector).fetch();
+  const intersectedProductIds = intersectProductIds({
+    productIds: allProductIds,
+    filters,
+    filterQuery,
     forceLiveCollection
   });
 
-  return {
-    totalProducts: async () =>
-      Products.find({
-        ...selector,
-        _id: { $in: productIds }
-      }).count(),
-    filteredProducts: async () =>
-      Products.find({
-        ...selector,
-        _id: { $in: filteredProductIds }
-      }).count(),
-    products: async ({ offset, limit, sort = {} }) => findPreservingIds(Products)(
-      selector,
-      filteredProductIds,
-      { skip: offset, limit, sort }
-    ),
-    filters: async () => Filters.filterFilters({
-      filterIds,
-      productIds,
-      query: filterQuery,
-      forceLiveCollection,
-      includeInactive
-    })
-  };
-}
+  return [...intersectedProductIds];
+};

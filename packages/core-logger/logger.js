@@ -18,9 +18,9 @@ class Logger {
     }
     const transportsUsed = [
       new transports.Console({ level: debug ? 'debug' : 'info' })
-    ]
-    if(!process.env.LOG_DISABLE_DB_LOGGER) {
-      transportsUsed.push(new LocalTransport({ level: 'info' }))
+    ];
+    if (!process.env.LOG_DISABLE_DB_LOGGER) {
+      transportsUsed.push(new LocalTransport({ level: 'info' }));
     }
     this.winston = createLogger({
       format: combine(

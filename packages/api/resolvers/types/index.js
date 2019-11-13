@@ -46,6 +46,7 @@ import Filter from './filter';
 import FilterOption from './filter-option';
 import LoadedFilter from './loaded-filter';
 import LoadedFilterOption from './loaded-filter-option';
+import SearchResult from './search-result';
 
 import Quotation from './quotation';
 
@@ -98,5 +99,6 @@ export default {
   FilterOption,
   LoadedFilter,
   LoadedFilterOption,
-  Quotation
+  Quotation,
+  SearchResult
 };
