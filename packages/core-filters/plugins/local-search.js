@@ -1,7 +1,12 @@
 import { FilterDirector, FilterAdapter } from 'meteor/unchained:core-filters';
 import { ProductTexts } from 'meteor/unchained:core-products';
 
-ProductTexts.rawCollection().createIndex({ title: 'text' });
+ProductTexts.rawCollection().createIndex({
+  title: 'text',
+  subtitle: 'text',
+  vendor: 'text',
+  brand: 'text'
+});
 
 class LocalSearch extends FilterAdapter {
   static key = 'shop.unchained.filters.local-search';
