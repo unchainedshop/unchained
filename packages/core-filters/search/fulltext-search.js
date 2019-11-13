@@ -2,6 +2,9 @@ import { ProductTexts } from 'meteor/unchained:core-products';
 
 export default ({ queryString }) => async productIdResolver => {
   // TODO: Hand of logic to Filter Plugin
+
+  if (!queryString) return productIdResolver;
+
   const selector = {
     $text: { $search: queryString }
   };

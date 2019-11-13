@@ -23,14 +23,28 @@ export default {
       limit,
       sort
     }),
-  filters: async ({ filterSelector, totalProductIds, query }) => {
+  filters: async ({
+    filterSelector,
+    productSelector,
+    totalProductIds,
+    query
+  }) => {
     const otherFilters = Filters.find(filterSelector).fetch();
-    const allProductIdsSet = new Set(await totalProductIds);
+
+    const relevantProductIds = Products.find(
+      {
+        ...productSelector,
+        _id: { $in: await totalProductIds }
+      },
+      {
+        fields: { _id: 1 }
+      }
+    ).map(({ _id }) => _id);
 
     return otherFilters.map(filter => {
       return filter.load({
         ...query,
-        allProductIdsSet,
+        allProductIdsSet: new Set(relevantProductIds),
         otherFilters
       });
     });
