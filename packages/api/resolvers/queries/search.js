@@ -1,12 +1,12 @@
 import { log } from 'meteor/unchained:core-logger';
 import { Assortments } from 'meteor/unchained:core-assortments';
-import { facetedSearch, fulltextSearch } from 'meteor/unchained:core-filters';
+import { search } from 'meteor/unchained:core-filters';
 import {
   QueryStringRequiredError,
   AssortmentNotFoundError
 } from '../../errors';
 
-export default async function search(root, query, { userId }) {
+export default async function(root, query, { userId }) {
   const { queryString, assortmentId } = query;
   log(`query search ${assortmentId} ${JSON.stringify(query)}`, { userId });
 
@@ -16,9 +16,5 @@ export default async function search(root, query, { userId }) {
     return assortment.search(query);
   }
   if (!queryString) throw new QueryStringRequiredError({});
-  const fulltextQuery = await fulltextSearch(query);
-  return facetedSearch({
-    ...query,
-    ...fulltextQuery
-  });
+  return search(query);
 }
