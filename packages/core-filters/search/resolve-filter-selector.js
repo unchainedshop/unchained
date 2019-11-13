@@ -1,3 +1,5 @@
+import { FilterDirector } from 'meteor/unchained:core-filters';
+
 const defaultSelector = ({
   filterIds = [],
   filterQuery = {},
@@ -22,10 +24,8 @@ const defaultSelector = ({
   return selector;
 };
 
-export default query => {
+export default async query => {
   const selector = defaultSelector(query);
-
-  // TODO: Transform with Filter Plugin!
-
-  return selector;
+  const director = new FilterDirector({ query });
+  return director.buildFilterSelector(selector);
 };

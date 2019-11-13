@@ -24,6 +24,7 @@ import 'meteor/unchained:core-pricing/plugins/product-catalog-price';
 import 'meteor/unchained:core-pricing/plugins/product-discount';
 import 'meteor/unchained:core-pricing/plugins/product-swiss-tax';
 import 'meteor/unchained:core-filters/plugins/strict-equal';
+import 'meteor/unchained:core-filters/plugins/local-search';
 import 'meteor/unchained:core-quotations/plugins/manual';
 import configureEmailTemplates from './templates';
 

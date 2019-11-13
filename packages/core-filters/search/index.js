@@ -12,13 +12,20 @@ const cleanQuery = ({ filterQuery, productIds = [], ...query }) => ({
 
 const search = async rawQuery => {
   const query = cleanQuery(rawQuery);
-  const { productIds } = query;
-
   const productSelector = resolveProductSelector(query);
   const filterSelector = resolveFilterSelector(query);
 
-  const totalProductIds = fulltextSearch(query)(productIds);
-  const filteredProductIds = facetedSearch(query)(totalProductIds);
+  const { productIds } = query;
+  const searchConfiguration = {
+    query,
+    filterSelector,
+    productSelector
+  };
+
+  const totalProductIds = fulltextSearch(searchConfiguration)(productIds);
+  const filteredProductIds = totalProductIds.then(
+    facetedSearch(searchConfiguration)
+  );
 
   return {
     totalProductIds,

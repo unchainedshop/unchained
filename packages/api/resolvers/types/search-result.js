@@ -6,34 +6,38 @@ import { findPreservingIds } from 'meteor/unchained:utils';
 export default {
   totalProducts: async ({ productSelector, totalProductIds }) =>
     Products.find({
-      ...productSelector,
+      ...(await productSelector),
       _id: { $in: await totalProductIds }
     }).count(),
   filteredProducts: async ({ productSelector, filteredProductIds }) =>
     Products.find({
-      ...productSelector,
+      ...(await productSelector),
       _id: { $in: await filteredProductIds }
     }).count(),
   products: async (
     { productSelector, filteredProductIds },
     { offset, limit, sort = {} }
   ) =>
-    findPreservingIds(Products)(productSelector, await filteredProductIds, {
-      skip: offset,
-      limit,
-      sort
-    }),
+    findPreservingIds(Products)(
+      await productSelector,
+      await filteredProductIds,
+      {
+        skip: offset,
+        limit,
+        sort
+      }
+    ),
   filters: async ({
     filterSelector,
     productSelector,
     totalProductIds,
     query
   }) => {
-    const otherFilters = Filters.find(filterSelector).fetch();
+    const otherFilters = Filters.find(await filterSelector).fetch();
 
     const relevantProductIds = Products.find(
       {
-        ...productSelector,
+        ...(await productSelector),
         _id: { $in: await totalProductIds }
       },
       {

@@ -19,8 +19,19 @@ class FilterAdapter {
     this.context = context;
   }
 
-  transformSelector({ last }) { // eslint-disable-line
-    return last;
+  async search(productIds) { // eslint-disable-line
+    return productIds;
+  }
+
+  // return a selector that is applied to Products.find to find relevant products
+  // if no key is provided, it expects either null for all products or a list of products that are relevant
+  async transformProductSelector(lastSelector, { key, value }) { // eslint-disable-line
+    return lastSelector;
+  }
+
+  // return a selector that is applied to Filters.find to find relevant filters
+  async transformFilterSelector(lastSelector) { // eslint-disable-line
+    return lastSelector;
   }
 
   log(message, { level = 'verbose', ...options } = {}) { // eslint-disable-line
@@ -33,7 +44,31 @@ class FilterDirector {
     this.context = context;
   }
 
-  buildProductSelector({ key, value, defaultSelector = {} }) {
+  async buildProductSelector(defaultSelector, options = {}) {
+    return this.reduceAdapters(async (lastSelector, concreteAdapter) => {
+      return concreteAdapter.transformProductSelector(
+        await lastSelector,
+        options
+      );
+    }, defaultSelector || {});
+  }
+
+  async search(productIdResolver, options = {}) {
+    return this.reduceAdapters(async (lastSearchPromise, concreteAdapter) => {
+      return concreteAdapter.search(await lastSearchPromise, options);
+    }, productIdResolver || null);
+  }
+
+  async buildFilterSelector(defaultSelector, options = {}) {
+    return this.reduceAdapters(async (lastSelector, concreteAdapter) => {
+      return concreteAdapter.transformFilterSelector(
+        await lastSelector,
+        options
+      );
+    }, defaultSelector || {});
+  }
+
+  async reduceAdapters(reducer, initialValue) {
     const adapters = FilterDirector.sortedAdapters().filter(AdapterClass =>
       AdapterClass.isActivatedFor(this.context)
     );
@@ -42,16 +77,10 @@ class FilterDirector {
       return null;
     }
 
-    return adapters.reduce((lastSelector, AdapterClass) => {
-      const concreteAdapter = new AdapterClass({
-        context: this.context
-      });
-      return concreteAdapter.transformSelector({
-        last: lastSelector,
-        key,
-        value
-      });
-    }, defaultSelector);
+    return adapters.reduce(async (lastSearchPromise, AdapterClass, index) => {
+      const concreteAdapter = new AdapterClass(this.context);
+      return reducer(lastSearchPromise, concreteAdapter, index);
+    }, Promise.resolve(initialValue));
   }
 
   static adapters = new Map();

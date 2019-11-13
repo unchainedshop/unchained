@@ -1,4 +1,5 @@
 import { ProductStatus } from 'meteor/unchained:core-products';
+import { FilterDirector } from 'meteor/unchained:core-filters';
 
 const defaultSelector = ({ includeInactive }) => {
   const selector = {
@@ -10,10 +11,8 @@ const defaultSelector = ({ includeInactive }) => {
   return selector;
 };
 
-export default query => {
+export default async query => {
   const selector = defaultSelector(query);
-
-  // TODO: Transform with Filter Plugin!
-
-  return selector;
+  const director = new FilterDirector({ query });
+  return director.buildProductSelector(selector);
 };
