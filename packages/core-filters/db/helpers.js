@@ -286,7 +286,7 @@ Filters.helpers({
     if (type === FilterTypes.SWITCH) return ['true', 'false'];
     return this.options || [];
   },
-  filteredOptions({ values, forceLiveCollection, productIdSet }) {
+  loadedOptions({ values, forceLiveCollection, productIdSet }) {
     const mappedOptions = this.optionsForFilterType(this.type)
       .map(value => {
         const filteredProductIds = this.intersect({
@@ -346,7 +346,7 @@ Filters.helpers({
         // - Fit this filter generally
         // - Are filtered by all other filters
         // - Are not filtered by the currently selected value of this filter
-        return this.filteredOptions({
+        return this.loadedOptions({
           values,
           forceLiveCollection,
           productIdSet: filteredByOtherFiltersSet
