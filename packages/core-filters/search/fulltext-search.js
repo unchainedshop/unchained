@@ -5,6 +5,9 @@ export default ({
   filterSelector,
   productSelector
 }) => async productIdResolver => {
+  const { queryString } = query;
+  if (!queryString) return productIdResolver;
+
   const director = new FilterDirector({
     query
   });
