@@ -8,6 +8,11 @@ import { Filters, FilterTexts } from './collections';
 import { FilterDirector } from '../director';
 import intersectProductIds from '../search/intersect-product-ids';
 
+const util = require('util');
+const zlib = require('zlib');
+
+const MAX_UNCOMPRESSED_FILTER_PRODUCTS = 1000;
+
 Filters.createFilter = ({ locale, title, type, key, options, ...rest }) => {
   const filter = {
     created: new Date(),
@@ -218,15 +223,27 @@ Filters.helpers({
   },
   invalidateProductIdCache() {
     log(`Filters: Rebuilding ${this.key}`); // eslint-disable.line
-    const { productIds, ...productIdMap } = this.buildProductIdMap();
+    const { productIds, allProductIds } = this.buildProductIdMap();
+    const cache = {
+      allProductIds,
+      productIds: Object.entries(productIds)
+    };
+
+    const gzip = util.promisify(zlib.gzip);
+    const compressedCache =
+      allProductIds.length > MAX_UNCOMPRESSED_FILTER_PRODUCTS
+        ? Promise.await(gzip(JSON.stringify(cache)))
+        : null;
+
     Filters.update(
       { _id: this._id },
       {
         $set: {
-          _cache: {
-            ...productIdMap,
-            productIds: Object.entries(productIds)
-          }
+          _cache: compressedCache
+            ? {
+                compressed: compressedCache
+              }
+            : cache
         }
       }
     );
@@ -234,6 +251,10 @@ Filters.helpers({
   cache() {
     if (!this._cache) return null; // eslint-disable-line
     if (!this._isCacheTransformed) { // eslint-disable-line
+      if (this._cache.compressed) { // eslint-disable-line
+        const gunzip = util.promisify(zlib.gunzip);
+        this._cache = JSON.parse(Promise.await(gunzip(this._cache))); // eslint-disable-line
+      }
       this._cache = { // eslint-disable-line
         allProductIds: this._cache.allProductIds, // eslint-disable-line
         productIds: this._cache.productIds.reduce((accumulator, [key, value]) => ({ // eslint-disable-line
