@@ -79,6 +79,8 @@ describe('Product Reviews', () => {
         ownVotes: []
       });
     });
+  });
+  describe('Mutation.updateProductReview', () => {
     it('update a product review', async () => {
       const { data: { updateProductReview } = {} } = await graphqlFetch({
         query: /* GraphQL */ `
@@ -140,7 +142,8 @@ describe('Product Reviews', () => {
         ownVotes: []
       });
     });
-
+  });
+  describe('Mutation.addProductReviewVote', () => {
     it('upvote a review', async () => {
       const { data: { addProductReviewVote } = {} } = await graphqlFetch({
         query: /* GraphQL */ `
@@ -218,7 +221,8 @@ describe('Product Reviews', () => {
         ]
       });
     });
-
+  });
+  describe('Mutation.removeProductReviewVote', () => {
     it('remove the downvote from the review', async () => {
       const { data: { removeProductReviewVote } = {} } = await graphqlFetch({
         query: /* GraphQL */ `
@@ -250,7 +254,8 @@ describe('Product Reviews', () => {
         ownVotes: []
       });
     });
-
+  });
+  describe('Mutation.removeProductReview', () => {
     it('remove a product review', async () => {
       const { data: { removeProductReview } = {} } = await graphqlFetch({
         query: /* GraphQL */ `
@@ -266,6 +271,32 @@ describe('Product Reviews', () => {
         }
       });
       expect(removeProductReview.deleted).toBeTruthy();
+    });
+  });
+  describe('Product.reviews', () => {
+    it('product returns 1 review that is left', async () => {
+      const { data: { product: { reviews } } = {} } = await graphqlFetch({
+        query: /* GraphQL */ `
+          query productReviews($productId: ID!) {
+            product(productId: $productId) {
+              _id
+              reviews {
+                rating
+                title
+              }
+            }
+          }
+        `,
+        variables: {
+          productId: SimpleProduct._id
+        }
+      });
+      expect(reviews).toMatchObject([
+        {
+          title: 'Hello',
+          rating: 5
+        }
+      ]);
     });
   });
 });
