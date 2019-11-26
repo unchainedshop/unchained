@@ -570,7 +570,15 @@ export default [
         productReviewId: ID!
         type: ProductReviewVoteType!
         meta: JSON
-      ): ProductReviewVote!
+      ): ProductReview!
+
+      """
+      Remove a vote from a ProductReview
+      """
+      removeProductReviewVote(
+        productReviewId: ID!
+        type: ProductReviewVoteType
+      ): ProductReview!
 
       """
       Request for Proposal (RFP)

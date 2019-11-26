@@ -48,4 +48,5 @@ export default (role, actions) => {
   role.allow(actions.answerQuotation, () => true);
   role.allow(actions.bookmarkProduct, () => true);
   role.allow(actions.manageBookmarks, () => true);
+  role.allow(actions.voteProductReview, () => true);
 };

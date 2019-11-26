@@ -100,4 +100,5 @@ export default (role, actions) => {
   role.allow(actions.answerQuotation, () => isOwnedQuotation);
   role.allow(actions.manageBookmarks, () => isOwnedBookmark);
   role.allow(actions.bookmarkProduct, () => true);
+  role.allow(actions.voteProductReview, () => true);
 };
