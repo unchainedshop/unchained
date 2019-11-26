@@ -189,13 +189,17 @@ Filters.helpers({
 
   collectProductIds({ value } = {}) {
     const director = new FilterDirector({ filter: this });
-    const selector = director.buildProductSelector({
-      key: this.key,
-      value,
-      defaultSelector: {
-        status: ProductStatus.ACTIVE
-      }
-    });
+    const selector = Promise.await(
+      director.buildProductSelector(
+        {
+          status: ProductStatus.ACTIVE
+        },
+        {
+          key: this.key,
+          value
+        }
+      )
+    );
     if (!selector) return [];
     const products = Products.find(selector, { fields: { _id: true } }).fetch();
     return products.map(({ _id }) => _id);
