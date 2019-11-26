@@ -120,8 +120,21 @@ export const FrenchJpegProductMediaText = {
   updated: new Date('2019-09-10T14:42:16.177+0000')
 };
 
+export const SimpleProductReview = {
+  _id: 'product-review',
+  productId: 'simple-product',
+  authorId: 'admin',
+  rating: 2,
+  title: 'Title of my Review',
+  review: 'Explanatory comment why I love or hate this product',
+  updated: new Date('2019-09-10T14:42:16.177+0000'),
+  created: new Date('2019-09-10T14:42:16.177+0000'),
+  votes: []
+};
+
 export default async function seedProducts(db) {
   await db.collection('products').findOrInsertOne(SimpleProduct);
+  await db.collection('product_reviews').findOrInsertOne(SimpleProductReview);
   await db.collection('product_texts').findOrInsertOne(GermanProductText);
   await db.collection('product_texts').findOrInsertOne(FrenchProductText);
   await db.collection('product_media').findOrInsertOne(JpegProductMedia);

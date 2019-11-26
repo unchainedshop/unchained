@@ -19,6 +19,10 @@ export const ProductNotFoundError = createError(
   'ProductNotFoundError',
   'Product not found'
 );
+export const ProductReviewNotFoundError = createError(
+  'ProductReviewNotFoundError',
+  'ProductReview not found'
+);
 export const ProductWrongStatusError = createError(
   'ProductWrongStatusError',
   'The current status of the product does not allow this operation'

@@ -6,7 +6,7 @@ let connection;
 let db;
 let graphqlFetch;
 
-describe('cart checkout', () => {
+describe('Cart Checkout Flow', () => {
   beforeAll(async () => {
     [db, connection] = await setupDatabase();
     graphqlFetch = await createLoggedInGraphqlFetch();

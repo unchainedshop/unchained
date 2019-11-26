@@ -12,6 +12,10 @@ export default {
     actions.viewUserPrivateInfos,
     'isEmailVerified'
   ),
+  isInitialPassword: checkTypeResolver(
+    actions.viewUserPrivateInfos,
+    'isInitialPassword'
+  ),
   isGuest: checkTypeResolver(actions.viewUserPrivateInfos, 'isGuest'),
   profile: checkTypeResolver(actions.viewUserPrivateInfos, 'profile'),
   language: checkTypeResolver(actions.viewUserPrivateInfos, 'language'),
@@ -24,6 +28,7 @@ export default {
     actions.viewUserPrivateInfos,
     'lastDeliveryAddress'
   ),
+  lastContact: checkTypeResolver(actions.viewUserPrivateInfos, 'lastContact'),
   emails: checkTypeResolver(actions.viewUserPrivateInfos, 'emails'),
   tags: checkTypeResolver(actions.viewUserPrivateInfos, 'tags'),
   bookmarks: checkTypeResolver(actions.viewUserPrivateInfos, 'bookmarks'),

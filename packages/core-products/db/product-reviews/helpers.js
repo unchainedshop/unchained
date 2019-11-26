@@ -16,20 +16,18 @@ ProductReviews.helpers({
       .filter(({ type: currentType }) => type === currentType)
       .map(({ userId }) => userId);
   },
-  upvoteCount() {
-    return this.userIdsThatVoted({ type: ProductReviewVoteTypes.UPVOTE })
-      .length;
+  voteCount({ type = ProductReviewVoteTypes.UPVOTE }) {
+    return this.userIdsThatVoted({ type }).length;
   },
-  downvoteCount() {
-    return this.userIdsThatVoted({ type: ProductReviewVoteTypes.DOWNVOTE })
-      .length;
+  ownVotes(props, { userId: ownUserId }) {
+    return (this.votes || []).filter(({ userId }) => userId === ownUserId);
   },
   addVote({ userId, type = ProductReviewVoteTypes.UPVOTE, meta } = {}) {
     if (!this.userIdsThatVoted({ type }).includes(userId)) {
       if (type === ProductReviewVoteTypes.UPVOTE) {
         // if this is an upvote, remove the downvote first
         ProductReviews.removeVote({
-          _id: this._id,
+          productReviewId: this._id,
           userId,
           type: ProductReviewVoteTypes.DOWNVOTE
         });
@@ -37,21 +35,26 @@ ProductReviews.helpers({
       if (type === ProductReviewVoteTypes.DOWNVOTE) {
         // if this is a downvote, remove the upvote first
         ProductReviews.removeVote({
-          _id: this._id,
+          productReviewId: this._id,
           userId,
           type: ProductReviewVoteTypes.UPVOTE
         });
       }
-      ProductReviews.addVote({
-        _id: this._id,
+      return ProductReviews.addVote({
+        productReviewId: this._id,
         userId,
         type,
         meta
       });
     }
+    return this;
   },
   removeVote({ userId, type = ProductReviewVoteTypes.UPVOTE } = {}) {
-    ProductReviews.removeVote({ _id: this._id, userId, type });
+    return ProductReviews.removeVote({
+      productReviewId: this._id,
+      userId,
+      type
+    });
   }
 });
 
@@ -69,9 +72,12 @@ ProductReviews.createReview = function createReview({
   return this.findOne({ _id });
 };
 
-ProductReviews.updateReview = function updateReview({ _id, ...review }) {
+ProductReviews.updateReview = function updateReview({
+  productReviewId,
+  ...review
+}) {
   this.update(
-    { _id, deleted: null },
+    { _id: productReviewId, deleted: null },
     {
       $set: {
         ...review,
@@ -79,12 +85,12 @@ ProductReviews.updateReview = function updateReview({ _id, ...review }) {
       }
     }
   );
-  return this.findOne({ _id, deleted: null });
+  return this.findOne({ _id: productReviewId, deleted: null });
 };
 
-ProductReviews.addVote = function addVote({ _id, type, ...vote }) {
+ProductReviews.addVote = function addVote({ productReviewId, type, ...vote }) {
   this.update(
-    { _id, deleted: null },
+    { _id: productReviewId, deleted: null },
     {
       $push: {
         votes: {
@@ -95,31 +101,35 @@ ProductReviews.addVote = function addVote({ _id, type, ...vote }) {
       }
     }
   );
-  return this.findOne({ _id, deleted: null });
+  return this.findOne({ _id: productReviewId, deleted: null });
 };
 
-ProductReviews.removeVote = function addVote({ _id, userId, type }) {
+ProductReviews.removeVote = function addVote({
+  productReviewId,
+  userId,
+  type
+}) {
   this.update(
-    { _id, deleted: null },
+    { _id: productReviewId, deleted: null },
     {
       $pull: {
         votes: { userId, type }
       }
     }
   );
-  return this.findOne({ _id, deleted: null });
+  return this.findOne({ _id: productReviewId, deleted: null });
 };
 
-ProductReviews.deleteReview = function deleteReview({ _id }) {
+ProductReviews.deleteReview = function deleteReview({ productReviewId }) {
   this.update(
-    { _id, deleted: null },
+    { _id: productReviewId, deleted: null },
     {
       $set: {
         deleted: new Date()
       }
     }
   );
-  return this.findOne({ _id });
+  return this.findOne({ _id: productReviewId });
 };
 
 ProductReviews.findReviewById = function findReviewById(_id, ...options) {

@@ -72,6 +72,7 @@ export const actions = [
   'reviewProduct',
   'updateProductReview',
   'manageProductReviews',
+  'voteProductReview',
   'requestQuotation',
   'viewQuotations',
   'viewQuotation',

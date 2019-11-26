@@ -92,6 +92,8 @@ import reorderAssortmentFilters from './reorderAssortmentFilters';
 import createProductReview from './createProductReview';
 import updateProductReview from './updateProductReview';
 import removeProductReview from './removeProductReview';
+import addProductReviewVote from './addProductReviewVote';
+import removeProductReviewVote from './removeProductReviewVote';
 import requestQuotation from './requestQuotation';
 import rejectQuotation from './rejectQuotation';
 import verifyQuotation from './verifyQuotation';
@@ -251,6 +253,10 @@ export default {
   createProductReview: acl(actions.reviewProduct)(createProductReview),
   updateProductReview: acl(actions.updateProductReview)(updateProductReview),
   removeProductReview: acl(actions.updateProductReview)(removeProductReview),
+  addProductReviewVote: acl(actions.voteProductReview)(addProductReviewVote),
+  removeProductReviewVote: acl(actions.voteProductReview)(
+    removeProductReviewVote
+  ),
 
   requestQuotation: acl(actions.requestQuotation)(requestQuotation),
   rejectQuotation: acl(actions.answerQuotation)(rejectQuotation),
