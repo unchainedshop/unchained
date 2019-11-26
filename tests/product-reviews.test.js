@@ -299,4 +299,59 @@ describe('Product Reviews', () => {
       ]);
     });
   });
+  describe('Query.productReviews', () => {
+    it('product returns all reviews', async () => {
+      const { data: { productReviews } = {} } = await graphqlFetch({
+        query: /* GraphQL */ `
+          query productReviews {
+            productReviews {
+              _id
+              rating
+              title
+              product {
+                _id
+              }
+            }
+          }
+        `
+      });
+      expect(productReviews).toMatchObject([
+        {
+          title: 'Hello',
+          rating: 5,
+          product: {
+            _id: SimpleProduct._id
+          }
+        }
+      ]);
+    });
+  });
+  describe('Query.productReview', () => {
+    it('product returns all reviews', async () => {
+      const { data: { productReview } = {} } = await graphqlFetch({
+        query: /* GraphQL */ `
+          query productReview($productReviewId: ID!) {
+            productReview(productReviewId: $productReviewId) {
+              _id
+              rating
+              title
+              product {
+                _id
+              }
+            }
+          }
+        `,
+        variables: {
+          productReviewId: SimpleProductReview._id
+        }
+      });
+      expect(productReview).toMatchObject({
+        title: 'Title of my Review',
+        rating: 1,
+        product: {
+          _id: SimpleProduct._id
+        }
+      });
+    });
+  });
 });

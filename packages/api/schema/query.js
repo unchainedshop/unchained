@@ -225,7 +225,7 @@ export default [
       """
       Get a specific product review by ID
       """
-      productReview(productReviewId: ID!): [ProductReview!]!
+      productReview(productReviewId: ID!): ProductReview!
 
       """
       Get all quotations
