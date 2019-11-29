@@ -23,7 +23,8 @@ export default compose(
         description: 'Texts',
         isActive:
           router.query.tab === '' ||
-          (!router.query.tab || router.query.tab === 'FilterTranslation')
+          !router.query.tab ||
+          router.query.tab === 'FilterTranslation'
       },
       {
         name: 'FilterOptions',

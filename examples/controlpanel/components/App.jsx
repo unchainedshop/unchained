@@ -58,7 +58,4 @@ const App = ({
   </main>
 );
 
-export default compose(
-  withRouter,
-  withCurrentUser
-)(App);
+export default compose(withRouter, withCurrentUser)(App);
