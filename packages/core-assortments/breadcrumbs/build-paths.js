@@ -30,16 +30,18 @@ export const walkUpFromProduct = async ({
 }) => {
   const pathResolver = walkAssortmentLinks(resolveAssortmentLink);
   const assortmentProducts = await resolveAssortmentProducts(productId);
-  return (await Promise.all(
-    assortmentProducts.map(async assortmentProduct => {
-      // Walk up the assortments to find all distinct paths
-      const paths = await pathResolver(assortmentProduct.assortmentId);
-      return paths.map(links => ({
-        ...assortmentProduct,
-        links
-      }));
-    })
-  )).flat();
+  return (
+    await Promise.all(
+      assortmentProducts.map(async assortmentProduct => {
+        // Walk up the assortments to find all distinct paths
+        const paths = await pathResolver(assortmentProduct.assortmentId);
+        return paths.map(links => ({
+          ...assortmentProduct,
+          links
+        }));
+      })
+    )
+  ).flat();
 };
 
 export const walkUpFromAssortment = async ({

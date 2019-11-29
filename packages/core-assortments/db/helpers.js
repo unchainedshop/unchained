@@ -69,10 +69,7 @@ const zipTreeByDeepness = tree => {
   const concattedLevels = concatItemsByLevels(levels);
   const items = shuffleEachLevel(concattedLevels);
 
-  return R.pipe(
-    R.flatten,
-    R.filter(Boolean)
-  )(items);
+  return R.pipe(R.flatten, R.filter(Boolean))(items);
 };
 
 export const resolveAssortmentLinkFromDatabase = ({
@@ -342,9 +339,9 @@ Collections.AssortmentProducts.updateManualOrder = ({
     const assortmentIds = assortmentProducts.map(
       ({ assortmentId }) => assortmentId
     );
-    Collections.Assortments.find({ _id: { $in: assortmentIds } }).forEach(
-      assortment => assortment.invalidateProductIdCache()
-    );
+    Collections.Assortments.find({
+      _id: { $in: assortmentIds }
+    }).forEach(assortment => assortment.invalidateProductIdCache());
   }
 
   return assortmentProducts;

@@ -47,7 +47,7 @@ WebApp.connectHandlers.use(DATATRANS_WEBHOOK_PATH, (req, res) => {
         return res.end(JSON.stringify(order));
       } catch (e) {
         res.writeHead(503);
-        console.error(e);
+        console.error(e); // eslint-disable-line
         return res.end(JSON.stringify(e));
       }
     }
