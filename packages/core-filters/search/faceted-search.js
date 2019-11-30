@@ -9,7 +9,7 @@ export default ({ query, filterSelector }) => async productIdResolver => {
     filterSelector,
     productIdResolver
   ]);
-  const filters = Filters.find(selector).fetch();
+  const filters = selector ? Filters.find(selector).fetch() : [];
   const intersectedProductIds = intersectProductIds({
     productIds: allProductIds,
     filters,

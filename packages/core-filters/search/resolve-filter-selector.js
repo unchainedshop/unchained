@@ -7,7 +7,7 @@ const defaultSelector = ({
 }) => {
   const selector = {};
   const keys = Object.keys(filterQuery);
-  if (filterIds.length > 0) {
+  if (Array.isArray(filterIds)) {
     // return predefined list
     selector._id = { $in: filterIds };
   } else if (keys.length > 0) {

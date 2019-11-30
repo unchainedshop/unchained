@@ -50,7 +50,7 @@ class FilterDirector {
         await lastSelector,
         options
       );
-    }, defaultSelector || {});
+    }, defaultSelector || null);
   }
 
   async search(productIdResolver, options = {}) {
@@ -65,7 +65,7 @@ class FilterDirector {
         await lastSelector,
         options
       );
-    }, defaultSelector || {});
+    }, defaultSelector || null);
   }
 
   async reduceAdapters(reducer, initialValue) {
