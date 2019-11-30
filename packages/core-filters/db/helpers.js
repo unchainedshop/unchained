@@ -257,7 +257,7 @@ Filters.helpers({
     if (!this._isCacheTransformed) { // eslint-disable-line
       if (this._cache.compressed) { // eslint-disable-line
         const gunzip = util.promisify(zlib.gunzip);
-        this._cache = JSON.parse(Promise.await(gunzip(this._cache))); // eslint-disable-line
+        this._cache = JSON.parse(Promise.await(gunzip(this._cache.compressed))); // eslint-disable-line
       }
       this._cache = { // eslint-disable-line
         allProductIds: this._cache.allProductIds, // eslint-disable-line
