@@ -1,7 +1,7 @@
 {
   "name": "@unchainedshop/example-minimal",
   "description": "Minimal Bootstrap Project for Unchained Engine",
-  "version": "0.36.0",
+  "version": "0.36.1",
   "license": "EUPL-1.2",
   "homepage": "https://unchained.shop",
   "repository": {
@@ -31,7 +31,7 @@
   },
   "dependencies": {
     "@babel/runtime": "^7.7.4",
-    "@unchainedshop/controlpanel": "^0.36.0",
+    "@unchainedshop/controlpanel": "^0.36.1",
     "apollo-server-express": "^2.9.12",
     "bcrypt": "^3.0.7",
     "braintree": "^2.21.0",
