@@ -9,7 +9,7 @@ const { BRAINTREE_SANDBOX_TOKEN, BRAINTREE_PRIVATE_KEY } = process.env;
 class Paypal extends PaymentAdapter {
   static key = 'com.paypal';
 
-  static label = 'Paypal';
+  static label = 'Paypal (Braintree)';
 
   static version = '1.0';
 
