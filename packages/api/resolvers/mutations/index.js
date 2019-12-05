@@ -101,6 +101,10 @@ import makeQuotationProposal from './makeQuotationProposal';
 import bookmark from './bookmark';
 import createBookmark from './createBookmark';
 import removeBookmark from './removeBookmark';
+import addWork from './addWork';
+import allocateWork from './allocateWork';
+import finishWork from './finishWork';
+import doWork from './doWork';
 
 export default {
   ...Accounts,
@@ -265,5 +269,10 @@ export default {
 
   bookmark: acl(actions.bookmarkProduct)(bookmark),
   createBookmark: acl(actions.manageBookmarks)(createBookmark),
-  removeBookmark: acl(actions.manageBookmarks)(removeBookmark)
+  removeBookmark: acl(actions.manageBookmarks)(removeBookmark),
+
+  addWork: acl(actions.manageWorker)(addWork),
+  allocateWork: acl(actions.manageWorker)(allocateWork),
+  finishWork: acl(actions.manageWorker)(finishWork),
+  doWork: acl(actions.manageWorker)(doWork)
 };

@@ -57,6 +57,7 @@ export default (role, actions) => {
   role.allow(actions.manageBookmarks, () => false);
   role.allow(actions.bookmarkProduct, () => false);
   role.allow(actions.voteProductReview, () => false);
+  role.allow(actions.manageWorker, () => false);
 
   // only allow if otp is provided
   role.allow(

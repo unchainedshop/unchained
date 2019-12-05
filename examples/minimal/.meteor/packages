@@ -18,3 +18,4 @@ underscore@1.0.10
 shell-server@0.4.0
 http@1.4.2
 unchained:platform
+littledata:synced-cron

@@ -33,6 +33,7 @@ Package.onUse(api => {
   api.use('unchained:core-warehousing@0.36.1');
   api.use('unchained:core-filters@0.36.1');
   api.use('unchained:core-assortments@0.36.1');
+  api.use('unchained:core-worker@0.36.1');
   api.use('unchained:api@0.36.1');
 
   api.mainModule('platform.js', 'server');

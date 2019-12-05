@@ -26,3 +26,12 @@ export const defaultEmailResolver = template => (meta, context) => ({
     return null;
   }
 });
+
+export const defaultApiResolver = template => (meta, context) => ({
+  meta() {
+    return JSON.stringify(meta);
+  },
+  payload() {
+    return JSON.stringify(context);
+  }
+});

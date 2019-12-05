@@ -40,6 +40,7 @@ import productReviews from './productReviews';
 import quotation from './quotation';
 import quotations from './quotations';
 import search from './search';
+import workQueue from './workQueue';
 
 export default {
   me,
@@ -92,5 +93,6 @@ export default {
   productReviews: acl(actions.manageProductReviews)(productReviews),
   quotation: acl(actions.viewQuotation)(quotation),
   quotations: acl(actions.viewQuotations)(quotations),
-  search: acl(actions.search)(search)
+  search: acl(actions.search)(search),
+  workQueue: acl(actions.manageWorker)(workQueue)
 };
