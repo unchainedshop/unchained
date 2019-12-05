@@ -25,6 +25,7 @@ import quotation from './quotation';
 import geoposition from './geo-position';
 import bookmark from './bookmark';
 import search from './search';
+import worker from './worker';
 
 export default [
   ...address,
@@ -53,5 +54,6 @@ export default [
   ...quotation,
   ...geoposition,
   ...bookmark,
-  ...search
+  ...search,
+  ...worker
 ];

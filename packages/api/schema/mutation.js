@@ -620,6 +620,44 @@ export default [
       Remove an existing bookmark by ID
       """
       removeBookmark(bookmarkId: ID!): Bookmark!
+
+      """
+      Add work to the work queue. Each type has its own input shape
+      """
+      addWork(
+        type: WorkType!
+        input: JSON
+        original: ID
+        scheduled: Date
+        retries: Int
+      ): Work
+
+      """
+      Get the next task from the worker queue. This will also mark the task as "started".
+      Optional worker to identify the worker.
+      """
+      allocateWork(types: [WorkType], worker: String): Work
+
+      """
+      Trigger a registered plugin for "type" to actually do the work with given "input".
+      """
+      doWork(type: WorkType!, input: JSON): WorkOutput
+
+      """
+      Register a work attempt manually.
+
+      Note: Usually, work attempts are handled internally by the inbuilt cron
+      worker. This mutation is part of the interface for "outside" workers.
+      """
+      finishWork(
+        workId: ID!
+        result: JSON
+        error: JSON
+        success: Boolean
+        worker: String
+        started: Date
+        finished: Date
+      ): Work
     }
   `
 ];

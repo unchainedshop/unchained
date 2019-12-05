@@ -80,7 +80,8 @@ export const actions = [
   'answerQuotation',
   'bookmarkProduct',
   'manageBookmarks',
-  'search'
+  'search',
+  'manageWorker'
 ].reduce((oldValue, actionValue) => {
   const newValue = oldValue;
   newValue[actionValue] = actionValue;

@@ -247,6 +247,11 @@ export default [
         orderBy: SearchOrderBy
         includeInactive: Boolean = false
       ): SearchResult!
+
+      """
+      Get all work from the queue
+      """
+      workQueue(status: [WorkStatus] = [NEW]): [Work]
     }
   `
 ];

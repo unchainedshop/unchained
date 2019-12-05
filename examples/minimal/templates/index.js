@@ -49,7 +49,7 @@ const renderMjmlToHtml = (template, data) => {
 
 export const getTemplate = template => (meta, context) => {
   try {
-    const templateRenderer = require(`./${template}.js`) // eslint-disable-line
+    const templateRenderer = require(`./${template}.js`); // eslint-disable-line
     return templateRenderer.default(meta, context, {
       renderToText,
       renderMjmlToHtml
