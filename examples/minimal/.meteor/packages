@@ -5,12 +5,12 @@
 # but you can also edit it by hand.
 
 meteor@1.9.3
-webapp@1.7.5
-mongo@1.7.0
-accounts-base@1.4.5
+webapp@1.8.0-beta190.4
+mongo@1.8.0-beta190.4
+accounts-base@1.5.0-beta190.4
 accounts-password@1.5.1
 accounts-oauth@1.1.16
-ecmascript@0.13.0
+ecmascript@0.14.0-beta190.4
 standard-minifiers@1.1.0
 email@1.2.3
 disable-oplog@1.0.7
