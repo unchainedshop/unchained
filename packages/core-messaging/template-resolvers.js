@@ -27,7 +27,7 @@ export const defaultEmailResolver = template => (meta, context) => ({
   }
 });
 
-export const defaultApiResolver = template => (meta, context) => ({
+export const defaultApiResolver = () => (meta, context) => ({
   meta() {
     return JSON.stringify(meta);
   },

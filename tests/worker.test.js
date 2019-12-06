@@ -370,8 +370,6 @@ describe('Worker Module', () => {
         `
       });
 
-      console.log(workQueueAfter);
-
       expect(workQueueAfter).toHaveLength(1);
     });
 

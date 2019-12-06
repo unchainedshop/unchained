@@ -1,5 +1,3 @@
-import fetch from 'isomorphic-unfetch';
-
 import { log } from 'meteor/unchained:core-logger';
 
 import {

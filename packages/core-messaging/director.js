@@ -24,13 +24,11 @@ class MessagingAdapter {
     this.resolver = resolver;
   }
 
-  sendMessage() {
-    // eslint-disable-line
+  sendMessage() { // eslint-disable-line
     return null;
   }
 
-  log(message, { level = 'verbose', ...options } = {}) {
-    // eslint-disable-line
+  log(message, { level = 'verbose', ...options } = {}) { // eslint-disable-line
     return log(message, { level, ...options });
   }
 }

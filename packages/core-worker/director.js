@@ -125,7 +125,8 @@ class WorkerDirector {
       return output;
     } catch (error) {
       // DO not use this as flow control. The plugin should catch expected errors and return status: FAILED
-      console.error('DO not use this as flow control.', error);
+      log('DO not use this as flow control.', { level: 'verbose' });
+
       log(`${this.name} -> Error doing work ${type}: ${error.message}`);
 
       const output = { error, success: false };
@@ -163,7 +164,7 @@ class WorkerDirector {
 
     const work = WorkQueue.findOne({ _id: workId });
 
-    console.log('IN DIRECTOR', work, workId);
+    log(`IN DIRECTOR ${workId} ${JSON.stringify(work)}`, { level: 'verbose' });
 
     this.events.emit(WorkerEventTypes.finished, { work });
 

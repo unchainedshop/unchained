@@ -1,3 +1,4 @@
+import { log } from 'meteor/unchained:core-logger';
 import { WorkStatus } from './schema';
 import { WorkQueue } from './collections';
 
@@ -15,7 +16,7 @@ export const getWorkStatus = work => {
     return WorkStatus.FAILED;
   }
 
-  console.warn('Unexpected work status', work);
+  log('Unexpected work status', { level: 'warn' });
   throw new Error('Unexpected work status');
 };
 
