@@ -19,7 +19,7 @@ class BaseWorker {
     WorkerDirector,
     workerId = WORKER_ID || `${os.hostname()}:${this.type}`
   }) {
-    log(`${this.key} -> Initialized: ${workerId}`);
+    log(`${this.constructor.key} -> Initialized: ${workerId}`);
     this.WorkerDirector = WorkerDirector;
     this.workerId = workerId;
   }
