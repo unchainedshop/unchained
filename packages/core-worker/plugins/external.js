@@ -1,3 +1,4 @@
+import { WorkerDirector } from 'meteor/unchained:core-worker';
 import WorkerPlugin from './base';
 
 class ExternalWorkerPlugin extends WorkerPlugin {
@@ -14,5 +15,7 @@ class ExternalWorkerPlugin extends WorkerPlugin {
     throw new Error('Cannot do work for external workers');
   }
 }
+
+WorkerDirector.registerPlugin(ExternalWorkerPlugin);
 
 export default ExternalWorkerPlugin;

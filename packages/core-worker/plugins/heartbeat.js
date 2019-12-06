@@ -1,3 +1,4 @@
+import { WorkerDirector } from 'meteor/unchained:core-worker';
 import WorkerPlugin from './base';
 
 class Heartbeat extends WorkerPlugin {
@@ -22,5 +23,7 @@ class Heartbeat extends WorkerPlugin {
     };
   }
 }
+
+WorkerDirector.registerPlugin(Heartbeat);
 
 export default Heartbeat;

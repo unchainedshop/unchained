@@ -26,10 +26,10 @@ import 'meteor/unchained:core-pricing/plugins/product-swiss-tax';
 import 'meteor/unchained:core-filters/plugins/strict-equal';
 import 'meteor/unchained:core-filters/plugins/local-search';
 import 'meteor/unchained:core-quotations/plugins/manual';
+import 'meteor/unchained:core-worker/plugins/external';
+import 'meteor/unchained:core-worker/plugins/heartbeat';
 
 import { WorkerDirector } from 'meteor/unchained:core-worker';
-import ExternalWorkerPlugin from 'meteor/unchained:core-worker/plugins/external';
-import HeartbeatWorkerPlugin from 'meteor/unchained:core-worker/plugins/heartbeat';
 import EventListenerWorker from 'meteor/unchained:core-worker/workers/eventListener';
 import CronWorker from 'meteor/unchained:core-worker/workers/cron';
 import FailedRescheduler from 'meteor/unchained:core-worker/schedulers/failedRescheduler';
@@ -38,8 +38,6 @@ import configureEmailTemplates from './templates';
 
 const { DISABLE_WORKER } = process.env;
 
-WorkerDirector.registerPlugin(ExternalWorkerPlugin);
-WorkerDirector.registerPlugin(HeartbeatWorkerPlugin);
 new FailedRescheduler({ WorkerDirector }).start();
 
 if (!DISABLE_WORKER) {

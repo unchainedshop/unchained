@@ -1,6 +1,7 @@
-import WorkerPlugin from './base';
-
+import { WorkerDirector } from 'meteor/unchained:core-worker';
 import { log } from 'meteor/unchained:core-logger';
+import fetch from 'isomorphic-unfetch';
+import WorkerPlugin from './base';
 
 class HttpRequestWorkerPlugin extends WorkerPlugin {
   static key = 'shop.unchained.worker-plugin.http-request';
@@ -23,23 +24,22 @@ class HttpRequestWorkerPlugin extends WorkerPlugin {
         headers: { 'Content-Type': 'application/json', ...headers }
       });
 
-      console.log(res);
-
       const result = await res.json();
 
       if (res.status === 200) {
         return { success: true, result };
-      } else {
-        return { success: false, result };
       }
+      return { success: false, result };
     } catch (err) {
-      console.error(err.message);
+      console.error(err.message); // eslint-disable-line
       return {
         success: false,
-        error
+        error: err
       };
     }
   }
 }
+
+WorkerDirector.registerPlugin(HttpRequestWorkerPlugin);
 
 export default HttpRequestWorkerPlugin;
