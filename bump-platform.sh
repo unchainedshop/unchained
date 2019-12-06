@@ -5,6 +5,7 @@ cd ../core-languages && meteor publish &&
 cd ../core-currencies && meteor publish &&
 cd ../core-countries && meteor publish &&
 cd ../core-logger && meteor publish &&
+cd ../core-worker && meteor publish &&
 cd ../core-files && meteor publish &&
 cd ../core && meteor publish &&
 cd ../core-users && meteor publish &&
