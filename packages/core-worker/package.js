@@ -17,7 +17,7 @@ Package.onUse(api => {
   api.use('aldeed:schema-index@3.0.0');
   api.use('littledata:synced-cron@1.5.1');
   api.use('unchained:core-logger@0.37.0');
-  api.use('unchained:core-utils@0.37.0');
+  api.use('unchained:utils@0.37.0');
 
   api.mainModule('worker.js', 'server');
 });
