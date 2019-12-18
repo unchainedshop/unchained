@@ -41,7 +41,9 @@ Users.helpers({
   locale({ localeContext } = {}) {
     const locale =
       localeContext ||
-      new Locale(this.lastLogin && this.lastLogin.locale) ||
+      (this.lastLogin &&
+        this.lastLogin.locale &&
+        new Locale(this.lastLogin.locale)) ||
       getFallbackLocale();
     return locale;
   },
