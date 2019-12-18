@@ -17,18 +17,11 @@ export default function(passedContext, name, ...args) {
     },
     ...passedContext
   };
-  const {
-    userId: userIdBeforeLogin,
-    countryContext,
-    remoteAddress,
-    localeContext
-  } = passedContext;
+  const { userId: userIdBeforeLogin, ...handlerContext } = passedContext;
 
   const retValue = handler.call(context, ...args, {
     userIdBeforeLogin,
-    countryContext,
-    remoteAddress,
-    locale: localeContext.normalized
+    ...handlerContext
   });
   connection.close();
   return retValue;

@@ -32,6 +32,20 @@ class LocalMail extends MessagingAdapter {
       this.log(`Skip ${template}`, { level: 'verbose' });
       return true;
     }
+    if (
+      !renderer.text ||
+      !renderer.html ||
+      !renderer.subject ||
+      !renderer.to ||
+      !renderer.from
+    ) {
+      // renderers that don't provide text or html, we cannot serve
+      this.log(
+        `Skip ${template}, Local-Mail Renderers have to provide: from, to, subject, text, html`,
+        { level: 'verbose' }
+      );
+      return false;
+    }
     const message = {
       from: renderer.from(from),
       to: renderer.to(to),
