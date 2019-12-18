@@ -7,6 +7,7 @@ export default function() {
     id: connectionId,
     close() {
       Accounts._removeTokenFromConnection(connectionId); // eslint-disable-line
+      delete Accounts._accountData[connectionId];  // eslint-disable-line
     }
   };
 }
