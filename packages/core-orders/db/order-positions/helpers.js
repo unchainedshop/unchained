@@ -52,7 +52,9 @@ OrderPositions.helpers({
   },
   validationErrors() {
     const errors = [];
-    log(`OrderPosition ${this._id} -> Validate ${this.quantity}`);
+    log(`OrderPosition ${this._id} -> Validate ${this.quantity}`, {
+      orderId: this.orderId
+    });
     if (!this.product().isActive())
       errors.push(new Error('This product is not available anymore'));
     if (this.quotationId && !this.quotation().isProposalValid())
@@ -63,7 +65,9 @@ OrderPositions.helpers({
   reserve() {
     if (this.quotationId)
       this.quotation().fullfill({ info: { orderPositionId: this._id } });
-    log(`OrderPosition ${this._id} -> Reserve ${this.quantity}`);
+    log(`OrderPosition ${this._id} -> Reserve ${this.quantity}`, {
+      orderId: this.orderId
+    });
   },
   dispatches() {
     const scheduling = this.scheduling || [];

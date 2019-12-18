@@ -644,7 +644,7 @@ Orders.updateStatus = ({ status, orderId, info = '' }) => {
         ...modifier.$set
       });
     } catch (e) {
-      log(e, { level: 'error' });
+      log(e, { level: 'error', orderId });
     }
   }
   log(`New Status: ${status}`, { orderId });
