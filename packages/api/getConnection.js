@@ -1,10 +1,12 @@
 import { Random } from 'meteor/random';
+import { Accounts } from 'meteor/accounts-base';
 
 export default function() {
+  const connectionId = Random.id();
   return {
-    id: Random.id(),
+    id: connectionId,
     close() {
-      // nothing to close here
+      Accounts._removeTokenFromConnection(connectionId); // eslint-disable-line
     }
   };
 }

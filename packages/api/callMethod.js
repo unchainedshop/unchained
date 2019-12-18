@@ -23,10 +23,13 @@ export default function(passedContext, name, ...args) {
     remoteAddress,
     localeContext
   } = passedContext;
-  return handler.call(context, ...args, {
+
+  const retValue = handler.call(context, ...args, {
     userIdBeforeLogin,
     countryContext,
     remoteAddress,
     locale: localeContext.normalized
   });
+  connection.close();
+  return retValue;
 }
