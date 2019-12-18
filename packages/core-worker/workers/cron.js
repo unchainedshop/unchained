@@ -9,8 +9,8 @@ const { WORKER_CRON_TEXT = 'every 10 minutes' } = process.env;
 SyncedCron.config({
   log: true,
 
-  logger({ level, message, tag }) {
-    log(message, { level, tag });
+  logger({ message, tag }) {
+    log(message, { level: 'verbose', tag });
   },
 
   collectionName: 'cron_history',
