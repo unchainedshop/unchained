@@ -39,28 +39,22 @@ class WorkerDirector {
     return Object.keys(this.plugins);
   }
 
-  static addWork({
-    type,
-    input,
-    priority = 0,
-    scheduled = new Date(0),
-    original,
-    retries
-  }) {
+  static addWork({ type, input, priority = 0, scheduled, original, retries }) {
     if (!this.plugins[type]) {
       throw new Error(`No plugin registered for type ${type}`);
     }
 
     log(`${this.name} -> Work added ${type} ${scheduled} ${retries}`);
 
+    const created = new Date();
     const _id = WorkQueue.insert({
       type,
       input,
       priority,
-      scheduled,
+      scheduled: scheduled || created,
       original,
       retries,
-      created: new Date()
+      created
     });
 
     const work = WorkQueue.findOne({ _id });
@@ -96,7 +90,7 @@ class WorkerDirector {
     const result = await WorkQueue.rawCollection().findAndModify(
       {
         started: null,
-        scheduled: { $lt: new Date() },
+        scheduled: { $lte: new Date() },
         worker: { $in: [null, worker] },
         ...(types ? { type: { $in: types } } : {})
       },
