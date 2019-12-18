@@ -22,7 +22,7 @@ class FailedRescheduler {
       // In short: Double the delay of the old work or delay for 5 seconds
       const scheduled =
         workDelayMs > 1000
-          ? new Date(workDelayMs * 2)
+          ? new Date(now.getTime() + workDelayMs * 2)
           : new Date(now.setSeconds(now.getSeconds() + 5));
 
       log(
