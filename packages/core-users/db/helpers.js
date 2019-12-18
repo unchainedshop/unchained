@@ -190,21 +190,16 @@ Users.enrollUser = ({ password, email, displayName, address }) => {
   return Users.findOne({ _id: newUserId });
 };
 
-Users.findOneWithHeartbeat = ({ userId, ...options }) => {
-  if (
-    Users.update(
-      { _id: userId },
-      {
-        $set: {
-          lastLogin: {
-            timestamp: new Date(),
-            ...options
-          }
+Users.updateHeartbeat = ({ userId, ...options }) => {
+  Users.update(
+    { _id: userId },
+    {
+      $set: {
+        lastLogin: {
+          timestamp: new Date(),
+          ...options
         }
       }
-    )
-  ) {
-    return Users.findOne({ _id: userId });
-  }
-  return null;
+    }
+  );
 };

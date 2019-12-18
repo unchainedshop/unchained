@@ -105,10 +105,12 @@ import addWork from './addWork';
 import allocateWork from './allocateWork';
 import finishWork from './finishWork';
 import doWork from './doWork';
+import heartbeat from './heartbeat';
 
 export default {
   ...Accounts,
 
+  heartbeat,
   updateEmail: acl(actions.updateUser)(updateEmail),
   updateUserAvatar: acl(actions.updateUser)(updateUserAvatar),
   updateUserProfile: acl(actions.updateUser)(updateUserProfile),

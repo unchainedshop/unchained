@@ -44,6 +44,11 @@ export default [
       ): LoginMethodResponse
 
       """
+      Update hearbeat
+      """
+      heartbeat: User
+
+      """
       Change the current user's password. Must be logged in.
       """
       changePassword(
