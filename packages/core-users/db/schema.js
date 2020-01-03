@@ -16,7 +16,7 @@ Meteor.users.attachSchema(
       lastLogin: new SimpleSchema({
         timestamp: Date,
         locale: String,
-        country: String,
+        countryContext: String,
         remoteAddress: String
       }),
       profile: new SimpleSchema(
@@ -116,6 +116,55 @@ Migrations.add({
             }
           }
         );
+      });
+  }
+});
+
+Migrations.add({
+  version: 20200103,
+  name: 'lastLogin.country to lastLogin.countryContext',
+  up() {
+    Meteor.users
+      .find()
+      .fetch()
+      .forEach(user => {
+        const { lastLogin } = user;
+        if (lastLogin) {
+          const { country } = lastLogin;
+          Meteor.users.update(
+            { _id: user._id },
+            {
+              $set: {
+                'lastLogin.countryContext': country
+              },
+              $unset: {
+                'lastLogin.country': 1
+              }
+            }
+          );
+        }
+      });
+  },
+  down() {
+    Meteor.users
+      .find()
+      .fetch()
+      .forEach(user => {
+        const { lastLogin } = user;
+        if (lastLogin) {
+          const { countryContext } = lastLogin;
+          Meteor.users.update(
+            { _id: user._id },
+            {
+              $set: {
+                'lastLogin.country': countryContext
+              },
+              $unset: {
+                'lastLogin.countryContext': 1
+              }
+            }
+          );
+        }
       });
   }
 });

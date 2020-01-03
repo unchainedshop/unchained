@@ -41,7 +41,7 @@ Logs.helpers({
 Users.helpers({
   cart({ countryContext, orderNumber } = {}) {
     const selector = {
-      countryCode: countryContext || this.lastLogin.country,
+      countryCode: countryContext || this.lastLogin.countryContext,
       status: { $eq: OrderStatus.OPEN }
     };
     if (orderNumber) selector.orderNumber = orderNumber;
