@@ -123,19 +123,25 @@ export default ({ mergeUserCartsOnLogin = true } = {}) => {
   });
 
   Accounts.onLogin(({ methodArguments, user }) => {
-    const { userIdBeforeLogin, countryContext, remoteAddress, localeContext } =
-      [...methodArguments].pop() || {};
+    const {
+      userIdBeforeLogin,
+      countryContext,
+      remoteAddress,
+      normalizedLocale
+    } = [...methodArguments].pop() || {};
+
     // update the heartbeat
     Users.updateHeartbeat({
       _id: user._id,
       remoteAddress,
-      locale: localeContext.normalized,
-      country: countryContext
+      locale: normalizedLocale,
+      countryContext
     });
     if (userIdBeforeLogin) {
       Orders.migrateCart({
         fromUserId: userIdBeforeLogin,
         toUserId: user._id,
+        locale: normalizedLocale,
         countryContext,
         mergeCarts: mergeUserCartsOnLogin
       });
