@@ -1,6 +1,6 @@
 import { Factory } from 'meteor/dburles:factory';
-import faker from 'faker';
 import { fakeTimestampFields } from 'meteor/unchained:utils';
+import faker from 'faker';
 import { Logs } from './collections';
 
 Factory.define('log', Logs, {

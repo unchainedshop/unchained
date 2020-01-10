@@ -4,42 +4,29 @@ import './db/helpers';
 import LocalTransport from './local-transport';
 import { Logs } from './db/collections';
 import runMigrations from './db/schema';
-
-const { createLogger, format, transports } = require('winston');
-
-const { DEBUG } = process.env;
-const { combine, colorize, printf } = format;
+import createLogger from './createLogger';
 
 let instance = null;
 class Logger {
-  constructor(debug) {
+  constructor() {
     if (!instance) {
       instance = this;
     }
-    const transportsUsed = [
-      new transports.Console({ level: debug ? 'debug' : 'info' })
-    ];
-    if (!process.env.LOG_DISABLE_DB_LOGGER) {
-      transportsUsed.push(new LocalTransport({ level: 'info' }));
-    }
-    this.winston = createLogger({
-      format: combine(
-        colorize(),
-        printf(nfo => `${nfo.level}: ${nfo.message}`)
-      ),
-      transports: transportsUsed
-    });
+    const transports = !process.env.LOG_DISABLE_DB_LOGGER
+      ? [new LocalTransport({ level: 'info' })]
+      : [];
+    this.winston = createLogger('unchained', transports);
     return instance;
   }
 }
 
 const log = (message, options) => {
   const { level = 'info', ...meta } = options || {};
-  return new Logger(DEBUG).winston.log(level, message, meta);
+  return new Logger().winston.log(level, message, meta);
 };
 
 export default () => {
   runMigrations();
 };
 
-export { Logger, log, Logs };
+export { Logger, log, Logs, createLogger };
