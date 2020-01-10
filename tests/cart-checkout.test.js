@@ -1,6 +1,5 @@
 import { setupDatabase, createLoggedInGraphqlFetch } from './helpers';
 import { SimpleProduct } from './seeds/products';
-import wait from './lib/wait';
 
 let connection;
 // eslint-disable-next-line no-unused-vars
@@ -122,6 +121,26 @@ describe('Cart Checkout Flow', () => {
     });
   });
 
+  describe('Mutation.emptyCart', () => {
+    it('clear the cart from items', async () => {
+      const { data: { emptyCart } = {} } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation {
+            emptyCart {
+              _id
+              items {
+                _id
+              }
+            }
+          }
+        `
+      });
+      expect(emptyCart).toMatchObject({
+        items: []
+      });
+    });
+  });
+
   describe('Mutation.addMultipleCartProducts', () => {
     it('add multiple products to the cart', async () => {
       const { data: { addMultipleCartProducts } = {} } = await graphqlFetch({
@@ -178,7 +197,6 @@ describe('Cart Checkout Flow', () => {
           mutation updateCart($billingAddress: AddressInput, $orderId: ID) {
             updateCart(orderId: $orderId, billingAddress: $billingAddress) {
               _id
-              orderNumber
               billingAddress {
                 firstName
               }
@@ -198,9 +216,50 @@ describe('Cart Checkout Flow', () => {
         }
       });
       expect(updateCart).toMatchObject({
-        orderNumber: 'wishlist',
         billingAddress: {
           firstName: 'Hallo'
+        }
+      });
+    });
+
+    it('update the contact', async () => {
+      const Orders = db.collection('orders');
+      const order = Orders.findOne({ orderNumber: 'wishlist' });
+      const { data: { updateCart } = {} } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation updateCart(
+            $meta: JSON
+            $contact: ContactInput
+            $orderId: ID
+          ) {
+            updateCart(orderId: $orderId, contact: $contact, meta: $meta) {
+              _id
+              contact {
+                emailAddress
+                telNumber
+              }
+              meta
+            }
+          }
+        `,
+        variables: {
+          orderId: order._id,
+          contact: {
+            emailAddress: 'hello@unchained.shop',
+            telNumber: '+41999999999'
+          },
+          meta: {
+            hi: 'there'
+          }
+        }
+      });
+      expect(updateCart).toMatchObject({
+        contact: {
+          emailAddress: 'hello@unchained.shop',
+          telNumber: '+41999999999'
+        },
+        meta: {
+          hi: 'there'
         }
       });
     });
@@ -230,8 +289,6 @@ describe('Cart Checkout Flow', () => {
         orderNumber: 'wishlist',
         status: 'CONFIRMED'
       });
-
-      await wait(1000);
     });
   });
 });
