@@ -43,7 +43,7 @@ class WarehousingAdapter {
     return 0;
   }
 
-  log(message, { level = 'verbose', ...options } = {}) { // eslint-disable-line
+  log(message, { level = 'debug', ...options } = {}) { // eslint-disable-line
     return log(message, { level, ...options });
   }
 }

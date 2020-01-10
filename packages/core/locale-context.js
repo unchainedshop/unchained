@@ -72,7 +72,7 @@ export const buildLocaleContext = req => {
   );
   log(
     `Locale Context: Resolved ${localeContext.normalized} ${countryContext}`,
-    { level: 'verbose' }
+    { level: 'debug' }
   );
   return {
     localeContext,

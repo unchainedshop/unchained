@@ -10,7 +10,7 @@ SyncedCron.config({
   log: true,
 
   logger({ message, tag }) {
-    log(message, { level: 'verbose', tag });
+    log(message, { level: 'debug', tag });
   },
 
   collectionName: 'cron_history',
