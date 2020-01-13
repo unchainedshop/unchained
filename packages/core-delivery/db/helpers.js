@@ -50,11 +50,15 @@ DeliveryProviders.helpers({
       new DeliveryDirector(this).send(this.defaultContext(context))
     );
   },
-  orderPrice({ country, order, user, useNetPrice }, requestContext) {
+  orderPrice(
+    { country, order, user, useNetPrice, providerContext },
+    requestContext
+  ) {
     const currency = Countries.resolveDefaultCurrencyCode({
       isoCode: country
     });
     const pricingDirector = new DeliveryPricingDirector({
+      providerContext,
       deliveryProvider: this,
       order,
       user,

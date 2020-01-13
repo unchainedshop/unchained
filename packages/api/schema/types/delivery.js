@@ -43,7 +43,11 @@ export default [
       configuration: JSON
       configurationError: DeliveryProviderError
       isActive: Boolean
-      simulatedPrice(useNetPrice: Boolean = false, orderId: ID): DeliveryFee
+      simulatedPrice(
+        useNetPrice: Boolean = false
+        orderId: ID
+        context: JSON
+      ): DeliveryFee
     }
   `
 ];

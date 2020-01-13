@@ -38,16 +38,20 @@ class DeliveryPricingAdapter {
 }
 
 class DeliveryPricingDirector {
-  constructor({ item, ...context }) {
+  constructor({ item, providerContext, ...context }) {
     this.context = {
       discounts: [],
-      ...this.constructor.buildContext(item),
+      ...this.constructor.buildContext(item, providerContext),
       ...context
     };
   }
 
-  static buildContext(item) {
-    if (!item) return {};
+  static buildContext(item, providerContext) {
+    if (!item) {
+      return {
+        ...providerContext
+      };
+    }
     const order = item.order();
     const provider = item.provider();
     const user = order.user();
@@ -58,7 +62,8 @@ class DeliveryPricingDirector {
       user,
       discounts,
       currency: order.currency,
-      country: order.countryCode
+      country: order.countryCode,
+      ...item.context
     };
   }
 
