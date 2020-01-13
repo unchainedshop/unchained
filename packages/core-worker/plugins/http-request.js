@@ -14,7 +14,7 @@ class HttpRequestWorkerPlugin extends WorkerPlugin {
 
   static async doWork({ url, data = {}, headers, method = 'post' }) {
     log(`HttpRequestWorkerPlugin -> doWork: ${url} ${data}`, {
-      level: 'verbose'
+      level: 'debug'
     });
 
     try {

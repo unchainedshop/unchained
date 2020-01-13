@@ -15,9 +15,11 @@ class DeliveryPricingAdapter {
     return false;
   }
 
-  constructor({ context, calculation }) {
+  constructor({ context, calculation, discounts }) {
     this.context = context;
-    const { currency } = this.context.order;
+    this.discounts = discounts;
+
+    const { currency } = context;
     this.calculation = new DeliveryPricingSheet({ calculation, currency });
     this.result = new DeliveryPricingSheet({ currency });
   }
@@ -30,26 +32,33 @@ class DeliveryPricingAdapter {
     return resultRaw;
   }
 
-  log(message, { level = 'verbose', ...options } = {}) { // eslint-disable-line
+  log(message, { level = 'debug', ...options } = {}) { // eslint-disable-line
     return log(message, { level, ...options });
   }
 }
 
 class DeliveryPricingDirector {
-  constructor({ item }) {
-    this.item = item;
-    this.context = this.buildContext();
+  constructor({ item, ...context }) {
+    this.context = {
+      discounts: [],
+      ...this.constructor.buildContext(item),
+      ...context
+    };
   }
 
-  buildContext() {
-    const order = this.item.order();
-    const provider = this.item.provider();
+  static buildContext(item) {
+    if (!item) return {};
+    const order = item.order();
+    const provider = item.provider();
     const user = order.user();
+    const discounts = order.discounts();
     return {
-      order,
       provider,
+      order,
       user,
-      ...this.item.context
+      discounts,
+      currency: order.currency,
+      country: order.countryCode
     };
   }
 
@@ -59,10 +68,19 @@ class DeliveryPricingDirector {
         AdapterClass.isActivatedFor(this.context.provider)
       )
       .reduce((calculation, AdapterClass) => {
+        const discounts = this.context.discounts
+          .map(discount => ({
+            discountId: discount._id,
+            configuration: discount.discountConfigurationForCalculation(
+              AdapterClass.key
+            )
+          }))
+          .filter(({ configuration }) => configuration !== null);
         try {
           const concreteAdapter = new AdapterClass({
             context: this.context,
-            calculation
+            calculation,
+            discounts
           });
           const nextCalculationResult = Promise.await(
             concreteAdapter.calculate()
@@ -79,7 +97,8 @@ class DeliveryPricingDirector {
   resultSheet() {
     return new DeliveryPricingSheet({
       calculation: this.calculation,
-      currency: this.context.order.currency
+      currency: this.context.currency,
+      quantity: this.context.quantity
     });
   }
 

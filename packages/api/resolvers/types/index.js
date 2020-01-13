@@ -47,8 +47,8 @@ import FilterOption from './filter-option';
 import LoadedFilter from './loaded-filter';
 import LoadedFilterOption from './loaded-filter-option';
 import SearchResult from './search-result';
-
 import Quotation from './quotation';
+import DeliveryFee from './delivery-fee';
 
 export default {
   User,
@@ -100,5 +100,6 @@ export default {
   LoadedFilter,
   LoadedFilterOption,
   Quotation,
-  SearchResult
+  SearchResult,
+  DeliveryFee
 };

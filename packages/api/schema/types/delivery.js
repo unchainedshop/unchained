@@ -1,5 +1,13 @@
 export default [
   /* GraphQL */ `
+    type DeliveryFee {
+      _id: ID!
+      isTaxable: Boolean!
+      isNetPrice: Boolean!
+      country: Country!
+      price: Money!
+    }
+
     type DeliveryInterface {
       _id: ID!
       label: String
@@ -35,6 +43,7 @@ export default [
       configuration: JSON
       configurationError: DeliveryProviderError
       isActive: Boolean
+      simulatedPrice(useNetPrice: Boolean = false, orderId: ID): DeliveryFee
     }
   `
 ];

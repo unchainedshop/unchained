@@ -1,6 +1,6 @@
-import SimpleSchema from 'simpl-schema';
 import { Schemas } from 'meteor/unchained:utils';
 import { Migrations } from 'meteor/percolate:migrations';
+import SimpleSchema from 'simpl-schema';
 import { Logs } from './collections';
 
 Logs.attachSchema(

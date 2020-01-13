@@ -1,3 +1,5 @@
+import { Orders } from 'meteor/unchained:core-orders';
+
 export default {
   interface(obj) {
     const Interface = obj.interface();
@@ -7,5 +9,18 @@ export default {
       label: Interface.label,
       version: Interface.version
     };
+  },
+  async simulatedPrice(obj, { orderId, useNetPrice }, requestContext) {
+    const { countryContext, user } = requestContext;
+    const order = Orders.findOne({ _id: orderId });
+    return obj.orderPrice(
+      {
+        country: countryContext,
+        order,
+        useNetPrice,
+        user
+      },
+      requestContext
+    );
   }
 };

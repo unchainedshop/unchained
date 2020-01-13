@@ -29,7 +29,7 @@ class LocalMail extends MessagingAdapter {
     const templateResolver = this.resolver(template);
     const renderer = templateResolver(meta, this.context);
     if (!renderer) {
-      this.log(`Skip ${template}`, { level: 'verbose' });
+      this.log(`Skip ${template}`);
       return true;
     }
     if (
@@ -41,8 +41,7 @@ class LocalMail extends MessagingAdapter {
     ) {
       // renderers that don't provide text or html, we cannot serve
       this.log(
-        `Skip ${template}, Local-Mail Renderers have to provide: from, to, subject, text, html`,
-        { level: 'verbose' }
+        `Skip ${template}, Local-Mail Renderers have to provide: from, to, subject, text, html`
       );
       return false;
     }
@@ -60,7 +59,7 @@ class LocalMail extends MessagingAdapter {
       }));
     }
 
-    this.log(JSON.stringify(message), { level: 'verbose' });
+    this.log(JSON.stringify(message));
     return Email.send(message);
   }
 }

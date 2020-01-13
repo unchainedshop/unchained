@@ -1,5 +1,8 @@
 import { Promise } from 'meteor/promise';
 import 'meteor/dburles:collection-helpers';
+import crypto from 'crypto';
+import { Countries } from 'meteor/unchained:core-countries';
+import { DeliveryPricingDirector } from 'meteor/unchained:core-pricing';
 import { DeliveryProviders } from './collections';
 import { DeliveryDirector } from '../director';
 
@@ -46,6 +49,39 @@ DeliveryProviders.helpers({
     return Promise.await(
       new DeliveryDirector(this).send(this.defaultContext(context))
     );
+  },
+  orderPrice({ country, order, user, useNetPrice }, requestContext) {
+    const currency = Countries.resolveDefaultCurrencyCode({
+      isoCode: country
+    });
+    const pricingDirector = new DeliveryPricingDirector({
+      deliveryProvider: this,
+      order,
+      user,
+      country,
+      currency,
+      requestContext
+    });
+    const calculated = pricingDirector.calculate();
+    if (!calculated) return null;
+
+    const pricing = pricingDirector.resultSheet();
+    const amount = useNetPrice ? pricing.net() : pricing.gross();
+    const orderPrice = { amount, currency: pricing.currency };
+
+    return {
+      _id: crypto
+        .createHash('sha256')
+        .update(
+          [this._id, country, useNetPrice, order ? order._id : ''].join('')
+        )
+        .digest('hex'),
+      amount: orderPrice.amount,
+      currencyCode: orderPrice.currency,
+      countryCode: country,
+      isTaxable: pricing.taxSum() > 0,
+      isNetPrice: useNetPrice
+    };
   }
 });
 

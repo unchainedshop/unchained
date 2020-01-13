@@ -18,6 +18,8 @@ Package.onUse(api => {
   api.use('aldeed:schema-index@3.0.0');
   api.use('unchained:utils@0.37.1');
   api.use('unchained:core-logger@0.37.1');
+  api.use('unchained:core-pricing@0.37.1');
+  api.use('unchained:core-countries@0.37.1');
 
   api.mainModule('delivery.js', 'server');
 });

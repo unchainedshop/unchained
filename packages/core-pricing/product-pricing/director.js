@@ -46,7 +46,7 @@ class ProductPricingAdapter {
     });
   }
 
-  log(message, { level = 'verbose', ...options } = {}) { // eslint-disable-line
+  log(message, { level = 'debug', ...options } = {}) { // eslint-disable-line
     return log(message, { level, ...options });
   }
 }
@@ -67,14 +67,13 @@ class ProductPricingDirector {
     const user = order.user();
     const discounts = order.discounts();
     return {
-      item,
       quantity: item.quantity,
-      currency: order.currency,
-      country: order.countryCode,
       product,
       order,
       user,
-      discounts
+      discounts,
+      currency: order.currency,
+      country: order.countryCode
     };
   }
 
