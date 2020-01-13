@@ -67,14 +67,13 @@ class ProductPricingDirector {
     const user = order.user();
     const discounts = order.discounts();
     return {
-      item,
       quantity: item.quantity,
-      currency: order.currency,
-      country: order.countryCode,
       product,
       order,
       user,
-      discounts
+      discounts,
+      currency: order.currency,
+      country: order.countryCode
     };
   }
 
