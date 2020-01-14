@@ -23,7 +23,6 @@ export default Collection => async (selector, ids, options = {}) => {
     limit && { $limit: limit }
   ].filter(Boolean);
 
-  console.log(filteredPipeline)
   const rawCollection = Collection.rawCollection();
   const aggregateCollection = Meteor.wrapAsync(
     rawCollection.aggregate,
