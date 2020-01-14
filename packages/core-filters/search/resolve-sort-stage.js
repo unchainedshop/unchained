@@ -1,4 +1,3 @@
-import { ProductStatus } from 'meteor/unchained:core-products';
 import { FilterDirector } from 'meteor/unchained:core-filters';
 
 const ORDER_BY_INDEX = 'default';
@@ -8,12 +7,12 @@ const DIRECTION_ASCENDING = 'ASC';
 const normalizeDirection = textualInput => {
   if (textualInput === DIRECTION_ASCENDING) {
     return 1;
-  } else if (textualInput === DIRECTION_DESCENDING) {
-    return -1;
-  } else {
-    return null;
   }
-}
+  if (textualInput === DIRECTION_DESCENDING) {
+    return -1;
+  }
+  return null;
+};
 
 const defaultStage = ({ orderBy }) => {
   if (orderBy === ORDER_BY_INDEX || !orderBy) {
@@ -24,7 +23,7 @@ const defaultStage = ({ orderBy }) => {
   const orderBySlices = orderBy.split('_');
   const maybeDirection = orderBySlices.pop();
   const direction = normalizeDirection(maybeDirection);
-  if (direction === null) orderBySlices.push(maybeDirection)
+  if (direction === null) orderBySlices.push(maybeDirection);
   const keyPath = orderBySlices.join('.');
   return {
     [keyPath]: direction === null ? 1 : direction

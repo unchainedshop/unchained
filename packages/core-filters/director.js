@@ -23,6 +23,10 @@ class FilterAdapter {
     return productIds;
   }
 
+  async transformSortStage(lastStage) {  // eslint-disable-line
+    return lastStage;
+  }
+
   // return a selector that is applied to Products.find to find relevant products
   // if no key is provided, it expects either null for all products or a list of products that are relevant
   async transformProductSelector(lastSelector, { key, value }) { // eslint-disable-line
@@ -51,6 +55,12 @@ class FilterDirector {
         options
       );
     }, defaultSelector || null);
+  }
+
+  async buildSortStage(defaultStage, options = {}) {
+    return this.reduceAdapters(async (lastStage, concreteAdapter) => {
+      return concreteAdapter.transformSortStage(await lastStage, options);
+    }, defaultStage || null);
   }
 
   async search(productIdResolver, options = {}) {
