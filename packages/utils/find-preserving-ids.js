@@ -1,6 +1,6 @@
 const sortByIndex = {
   index: 1
-}
+};
 
 export default Collection => async (selector, ids, options = {}) => {
   const { skip, limit, sort = sortByIndex } = options;
