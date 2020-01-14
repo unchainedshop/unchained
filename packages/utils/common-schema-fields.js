@@ -19,6 +19,22 @@ export const logFields = {
   },
   'log.$.info': {
     type: String
+  },
+  'log.$.tracking': {
+    type: Object,
+    required: false
+  },
+  'log.$.tracking.remoteAddress': {
+    type: String,
+    required: false
+  },
+  'log.$.tracking.remotePort': {
+    type: String,
+    required: false
+  },
+  'log.$.tracking.userAgent': {
+    type: String,
+    required: false
   }
 };
 

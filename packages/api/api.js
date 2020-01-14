@@ -35,7 +35,7 @@ const logGraphQLServerError = error => {
       ...rest
     });
     console.error(stacktrace, parameters); // eslint-disable-line
-  } catch (e) { } // eslint-disable-line
+  } catch (e) {} // eslint-disable-line
 };
 
 const defaultContext = req => {
@@ -45,7 +45,15 @@ const defaultContext = req => {
     req.connection.remoteAddress ||
     req.socket.remoteAddress ||
     req.connection.socket.remoteAddress;
-  return { remoteAddress };
+
+  const remotePort =
+    req.connection.remotePort ||
+    req.socket.remotePort ||
+    req.connection.socket.remotePort;
+
+  const userAgent = req.headers['user-agent'];
+
+  return { remoteAddress, remotePort, userAgent };
 };
 
 const startUnchainedServer = options => {

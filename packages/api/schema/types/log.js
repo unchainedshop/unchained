@@ -10,6 +10,16 @@ export default [
       message: String!
       user: User
       order: Order
+      tracking: Tracking
+    }
+
+    """
+    Fields to identify a remote user
+    """
+    type Tracking {
+      remoteAddress: String
+      remotePort: String
+      userAgent: String
     }
   `
 ];

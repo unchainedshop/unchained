@@ -252,7 +252,8 @@ Orders.helpers({
   },
   checkout(
     { paymentContext, deliveryContext, orderContext } = {},
-    { localeContext } = {}
+    { localeContext } = {},
+    trackerContext
   ) {
     const errors = [
       ...this.missingInputDataForCheckout(),
@@ -266,7 +267,7 @@ Orders.helpers({
       (localeContext && localeContext.normalized) ||
       (lastUserLanguage && lastUserLanguage.isoCode);
     return this.updateContext(orderContext)
-      .processOrder({ paymentContext, deliveryContext })
+      .processOrder({ paymentContext, deliveryContext }, trackerContext)
       .sendOrderConfirmationToCustomer({ language });
   },
   confirm(
@@ -348,7 +349,7 @@ Orders.helpers({
     });
     return this;
   },
-  processOrder({ paymentContext, deliveryContext } = {}) {
+  processOrder({ paymentContext, deliveryContext } = {}, trackerContext) {
     if (this.nextStatus() === OrderStatus.PENDING) {
       // auto charge during transition to pending
       this.payment().charge(paymentContext, this);
@@ -371,14 +372,17 @@ Orders.helpers({
     // no matter what happens, the items need to
     // get reserved if we came that far
     this.reserveItems();
-    return this.setStatus(this.nextStatus(), 'order processed');
+    return this.setStatus(this.nextStatus(), 'order processed', trackerContext);
   },
-  setStatus(status, info) {
-    return Orders.updateStatus({
-      orderId: this._id,
-      status,
-      info
-    });
+  setStatus(status, info, trackerContext) {
+    return Orders.updateStatus(
+      {
+        orderId: this._id,
+        status,
+        info
+      },
+      trackerContext
+    );
   },
   nextStatus() {
     let { status } = this;
@@ -593,7 +597,7 @@ Orders.getUniqueOrderNumber = () => {
   return orderNumber;
 };
 
-Orders.updateStatus = ({ status, orderId, info = '' }) => {
+Orders.updateStatus = ({ status, orderId, info = '' }, trackerContext) => {
   const order = Orders.findOne({ _id: orderId });
   if (order.status === status) return order;
   const date = new Date();
@@ -604,7 +608,8 @@ Orders.updateStatus = ({ status, orderId, info = '' }) => {
       log: {
         date,
         status,
-        info
+        info,
+        tracking: trackerContext
       }
     }
   };

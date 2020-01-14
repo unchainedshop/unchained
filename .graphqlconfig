@@ -1,0 +1,11 @@
+{
+  "projects": {
+    "unchained": {
+      "extensions": {
+        "endpoints": {
+          "dev": "http://localhost:4010/graphql"
+        }
+      }
+    }
+  }
+}

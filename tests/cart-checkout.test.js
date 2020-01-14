@@ -277,6 +277,14 @@ describe('Cart Checkout Flow', () => {
               _id
               orderNumber
               status
+              logs {
+                message
+                tracking {
+                  remoteAddress
+                  remotePort
+                  userAgent
+                }
+              }
             }
           }
         `,
