@@ -20,8 +20,10 @@ export default [
       assortmentPaths(forceLocale: String): [AssortmentPath!]!
       children: [Assortment!]
       search(
+        queryString: String
         filterQuery: [FilterQueryInput!]
         includeInactive: Boolean = false
+        orderBy: SearchOrderBy
       ): SearchResult!
     }
 

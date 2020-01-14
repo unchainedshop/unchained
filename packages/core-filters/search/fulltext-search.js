@@ -3,7 +3,8 @@ import { FilterDirector } from 'meteor/unchained:core-filters';
 export default ({
   query,
   filterSelector,
-  productSelector
+  productSelector,
+  sortStage
 }) => async productIdResolver => {
   const { queryString } = query;
   if (!queryString) return productIdResolver;
@@ -13,6 +14,7 @@ export default ({
   });
   return director.search(productIdResolver, {
     filterSelector,
-    productSelector
+    productSelector,
+    sortStage
   });
 };
