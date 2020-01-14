@@ -1,5 +1,9 @@
+const sortByIndex = {
+  index: 1
+}
+
 export default Collection => async (selector, ids, options = {}) => {
-  const { skip, limit } = options;
+  const { skip, limit, sort = sortByIndex } = options;
   const filteredSelector = {
     ...selector,
     _id: { $in: ids }
@@ -14,15 +18,12 @@ export default Collection => async (selector, ids, options = {}) => {
         index: { $indexOfArray: [ids, '$_id'] }
       }
     },
-    {
-      $sort: {
-        index: 1
-      }
-    },
+    { $sort: sort },
     skip && { $skip: skip },
     limit && { $limit: limit }
   ].filter(Boolean);
 
+  console.log(filteredPipeline)
   const rawCollection = Collection.rawCollection();
   const aggregateCollection = Meteor.wrapAsync(
     rawCollection.aggregate,

@@ -15,8 +15,8 @@ export default {
       _id: { $in: await filteredProductIds }
     }).count(),
   products: async (
-    { productSelector, filteredProductIds },
-    { offset, limit, sort = {} }
+    { productSelector, filteredProductIds, sortStage },
+    { offset, limit }
   ) =>
     findPreservingIds(Products)(
       await productSelector,
@@ -24,7 +24,7 @@ export default {
       {
         skip: offset,
         limit,
-        sort
+        sort: await sortStage
       }
     ),
   filters: async ({
