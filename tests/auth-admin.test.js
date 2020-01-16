@@ -188,8 +188,8 @@ describe('Auth for admin users', () => {
         _id: User._id,
         emails: [
           {
-            address: 'user@localhost',
-            verified: true
+            address: expect.anything(),
+            verified: expect.anything()
           },
           {
             address: email,
@@ -224,8 +224,8 @@ describe('Auth for admin users', () => {
         _id: User._id,
         emails: [
           {
-            address: 'user@localhost',
-            verified: true
+            address: expect.anything(),
+            verified: expect.anything()
           }
         ]
       });
