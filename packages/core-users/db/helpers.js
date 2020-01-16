@@ -125,17 +125,15 @@ Users.helpers({
     Accounts.removeEmail(this._id, email);
     return Users.findOne({ _id: this._id });
   },
-  updateEmail(email, { skipEmailVerification = false } = {}) {
-    Users.update(
-      { _id: this._id },
-      {
-        $set: {
-          updated: new Date(),
-          'emails.0.address': email,
-          'emails.0.verified': false
-        }
-      }
+  updateEmail(email, { verified = false, skipEmailVerification = false } = {}) {
+    log(
+      'user.updateEmail is deprecated, please use user.addEmail and user.removeEmail',
+      { level: 'warn' }
     );
+    Accounts.addEmail(this._id, email, verified);
+    (this.emails || [])
+      .filter(({ address }) => address.toLowerCase() !== email.toLowerCase())
+      .forEach(({ address }) => Accounts.removeEmail(this._id, address));
     if (!skipEmailVerification) {
       const { sendVerificationEmail = true } = Accounts._options; // eslint-disable-line
       if (sendVerificationEmail) {
