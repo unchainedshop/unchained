@@ -136,7 +136,7 @@ describe('Auth for admin users', () => {
 
   describe('Mutation.updateEmail', () => {
     it('update the e-mail of a foreign user', async () => {
-      const email = 'admin2@localhost';
+      const email = 'newuser@localhost';
       const { data: { updateEmail } = {} } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation updateEmail($email: String!, $userId: ID) {
@@ -160,6 +160,74 @@ describe('Auth for admin users', () => {
           address: email,
           verified: false
         }
+      });
+    });
+  });
+
+  describe('Mutation.addEmail', () => {
+    it('add an e-mail to a foreign user', async () => {
+      const email = 'newuser2@localhost';
+      const { data: { addEmail } = {} } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation addEmail($email: String!, $userId: ID) {
+            addEmail(email: $email, userId: $userId) {
+              _id
+              emails {
+                address
+                verified
+              }
+            }
+          }
+        `,
+        variables: {
+          userId: User._id,
+          email
+        }
+      });
+      expect(addEmail).toMatchObject({
+        _id: User._id,
+        emails: [
+          {
+            address: 'user@localhost',
+            verified: true
+          },
+          {
+            address: email,
+            verified: false
+          }
+        ]
+      });
+    });
+  });
+
+  describe('Mutation.removeEmail', () => {
+    it('remove an e-mail of a foreign user', async () => {
+      const email = 'newuser2@localhost';
+      const { data: { removeEmail } = {} } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation removeEmail($email: String!, $userId: ID) {
+            removeEmail(email: $email, userId: $userId) {
+              _id
+              emails {
+                address
+                verified
+              }
+            }
+          }
+        `,
+        variables: {
+          userId: User._id,
+          email
+        }
+      });
+      expect(removeEmail).toMatchObject({
+        _id: User._id,
+        emails: [
+          {
+            address: 'user@localhost',
+            verified: true
+          }
+        ]
       });
     });
   });
