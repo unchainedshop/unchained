@@ -114,7 +114,7 @@ Users.helpers({
   addEmail(email, { verified = false, skipEmailVerification = false } = {}) {
     Accounts.addEmail(this._id, email, verified);
     if (!skipEmailVerification) {
-      const { sendVerificationEmail } = Accounts._options; // eslint-disable-line
+      const { sendVerificationEmail = true } = Accounts._options; // eslint-disable-line
       if (sendVerificationEmail) {
         Accounts.sendVerificationEmail(this._id);
       }
@@ -137,7 +137,7 @@ Users.helpers({
       }
     );
     if (!skipEmailVerification) {
-      const { sendVerificationEmail } = Accounts._options; // eslint-disable-line
+      const { sendVerificationEmail = true } = Accounts._options; // eslint-disable-line
       if (sendVerificationEmail) {
         Accounts.sendVerificationEmail(this._id);
       }
