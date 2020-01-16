@@ -18,12 +18,12 @@ const FormChangeEmail = ({
   client,
   userId,
   resendVerification,
-  isEmailVerified,
+  verified,
   ...formProps
 }) => (
   <AutoForm {...formProps}>
     <AutoField name="email" />
-    {isEmailVerified ? (
+    {verified ? (
       <Message positive>
         <Message.Header>E-Mail address verified</Message.Header>
         <p>This E-Mail address has been successfully verified.</p>
@@ -58,8 +58,10 @@ export default compose(
     query email($userId: ID) {
       user(userId: $userId) {
         _id
-        email
-        isEmailVerified
+        primaryEmail {
+          verified
+          address
+        }
       }
     }
   `),
@@ -67,8 +69,10 @@ export default compose(
     mutation updateEmail($email: String!, $userId: ID) {
       updateEmail(email: $email, userId: $userId) {
         _id
-        email
-        isEmailVerified
+        primaryEmail {
+          verified
+          address
+        }
       }
     }
   `),
@@ -79,7 +83,7 @@ export default compose(
     }
   }),
   withFormModel(({ data: { user } }) => ({
-    email: (user && user.email) || null
+    email: (user && user.primaryEmail && user.primaryEmail.address) || null
   })),
   withHandlers({
     onSubmit: ({ mutate, schema, userId }) => ({ ...dirtyInput }) =>
@@ -98,8 +102,8 @@ export default compose(
       )
   }),
   withFormErrorHandlers,
-  withProps(({ data: { user: { isEmailVerified = false } = {} } }) => ({
-    isEmailVerified
+  withProps(({ data: { user: { primaryEmail = {} } = {} } }) => ({
+    ...primaryEmail
   })),
   pure
 )(FormChangeEmail);

@@ -59,11 +59,13 @@ const UserList = ({
           </Table.Row>
         }
       >
-        {users.map(({ name, email, _id, tags, isEmailVerified, isGuest }) => (
+        {users.map(({ name, _id, tags, primaryEmail, isGuest }) => (
           <Table.Row key={_id}>
             <Table.Cell>
               <Link href={`/users/edit?_id=${_id}`}>
-                <a href={`/users/edit?_id=${_id}`}>{email}</a>
+                <a href={`/users/edit?_id=${_id}`}>
+                  {primaryEmail && primaryEmail.address}
+                </a>
               </Link>
             </Table.Cell>
             <Table.Cell>
@@ -83,8 +85,15 @@ const UserList = ({
                   Guest
                 </Label>
               ) : (
-                <Label color={isEmailVerified ? 'green' : 'red'} horizontal>
-                  {isEmailVerified ? 'Verified' : 'Unverified'}
+                <Label
+                  color={
+                    primaryEmail && primaryEmail.verified ? 'green' : 'red'
+                  }
+                  horizontal
+                >
+                  {primaryEmail && primaryEmail.verified
+                    ? 'Verified'
+                    : 'Unverified'}
                 </Label>
               )}
             </Table.Cell>
@@ -120,10 +129,12 @@ export const USER_LIST_QUERY = gql`
     users(offset: $offset, limit: $limit, includeGuests: $includeGuests) {
       _id
       isGuest
-      isEmailVerified
+      primaryEmail {
+        address
+        verified
+      }
       tags
       name
-      email
     }
   }
 `;

@@ -142,8 +142,10 @@ describe('Auth for admin users', () => {
           mutation updateEmail($email: String!, $userId: ID) {
             updateEmail(email: $email, userId: $userId) {
               _id
-              email
-              isEmailVerified
+              primaryEmail {
+                address
+                verified
+              }
             }
           }
         `,
@@ -154,8 +156,10 @@ describe('Auth for admin users', () => {
       });
       expect(updateEmail).toMatchObject({
         _id: User._id,
-        email,
-        isEmailVerified: false
+        primaryEmail: {
+          address: email,
+          verified: false
+        }
       });
     });
   });
@@ -248,9 +252,11 @@ describe('Auth for admin users', () => {
           ) {
             enrollUser(email: $email, password: $password, profile: $profile) {
               _id
-              email
               isInitialPassword
-              isEmailVerified
+              primaryEmail {
+                address
+                verified
+              }
             }
           }
         `,
@@ -261,9 +267,11 @@ describe('Auth for admin users', () => {
         }
       });
       expect(enrollUser).toMatchObject({
-        email,
         isInitialPassword: true,
-        isEmailVerified: false
+        primaryEmail: {
+          address: email,
+          verified: false
+        }
       });
     });
 
@@ -282,9 +290,11 @@ describe('Auth for admin users', () => {
           ) {
             enrollUser(email: $email, password: $password, profile: $profile) {
               _id
-              email
               isInitialPassword
-              isEmailVerified
+              primaryEmail {
+                address
+                verified
+              }
             }
           }
         `,
@@ -295,9 +305,11 @@ describe('Auth for admin users', () => {
         }
       });
       expect(enrollUser).toMatchObject({
-        email,
         isInitialPassword: true,
-        isEmailVerified: false
+        primaryEmail: {
+          address: email,
+          verified: false
+        }
       });
     });
   });

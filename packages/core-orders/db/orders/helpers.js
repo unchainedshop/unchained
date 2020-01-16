@@ -521,7 +521,7 @@ Orders.createOrder = ({ user, currency, countryCode, ...rest }) => {
       ? user.lastContact
       : {
           telNumber: user.telNumber(),
-          emailAddress: user.email()
+          emailAddress: user.primaryEmail()?.address
         },
     userId: user._id,
     currency,

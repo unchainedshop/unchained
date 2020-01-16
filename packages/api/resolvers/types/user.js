@@ -5,6 +5,7 @@ export default {
   _id: checkTypeResolver(actions.viewUserPublicInfos, '_id'),
   name: checkTypeResolver(actions.viewUserPublicInfos, 'name'),
   avatar: checkTypeResolver(actions.viewUserPublicInfos, 'avatar'),
+  primaryEmail: checkTypeResolver(actions.viewUserPrivateInfos, 'primaryEmail'),
 
   email: checkTypeResolver(actions.viewUserPrivateInfos, 'email'),
   username: checkTypeResolver(actions.viewUserPrivateInfos, 'username'),

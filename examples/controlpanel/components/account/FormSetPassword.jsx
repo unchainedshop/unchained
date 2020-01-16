@@ -11,7 +11,7 @@ import withFormErrorHandlers from '../../lib/withFormErrorHandlers';
 
 const FormSetPassword = ({
   resendVerification,
-  isEmailVerified,
+  verified,
   mutate,
   client,
   userId,

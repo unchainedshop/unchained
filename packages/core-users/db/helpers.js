@@ -28,7 +28,11 @@ Users.helpers({
     return !!initial;
   },
   isEmailVerified() {
-    return !!this.emails[0].verified;
+    log(
+      'user.isEmailVerified is deprecated, please use user.primaryEmail.verified',
+      { level: 'warn' }
+    );
+    return !!this.primaryEmail()?.verified;
   },
   language(options) {
     return Languages.findOne({ isoCode: this.locale(options).language });
@@ -50,8 +54,19 @@ Users.helpers({
   avatar() {
     return Avatars.findOne({ _id: this.avatarId });
   },
+  primaryEmail() {
+    return [...this.emails]
+      .sort(
+        ({ verified: verifiedLeft }, { verified: verifiedRight }) =>
+          verifiedLeft - verifiedRight
+      )
+      .pop();
+  },
   email() {
-    return this.emails[0].address;
+    log('user.email is deprecated, please use user.primaryEmail.verified', {
+      level: 'warn'
+    });
+    return this.primaryEmail()?.address;
   },
   telNumber() {
     return this.profile && this.profile.phoneMobile;
@@ -94,6 +109,20 @@ Users.helpers({
         }
       }
     );
+    return Users.findOne({ _id: this._id });
+  },
+  addEmail(email, { verified = false, skipEmailVerification = false } = {}) {
+    Accounts.addEmail(this._id, email, verified);
+    if (!skipEmailVerification) {
+      const { sendVerificationEmail } = Accounts._options; // eslint-disable-line
+      if (sendVerificationEmail) {
+        Accounts.sendVerificationEmail(this._id);
+      }
+    }
+    return Users.findOne({ _id: this._id });
+  },
+  removeEmail(email) {
+    Accounts.removeEmail(this._id, email);
     return Users.findOne({ _id: this._id });
   },
   updateEmail(email, { skipEmailVerification = false } = {}) {

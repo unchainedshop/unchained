@@ -41,8 +41,10 @@ export default [
     type User {
       _id: ID!
       email: String
+        @deprecated(reason: "Please use primaryEmail.address instead")
       username: String
       isEmailVerified: Boolean!
+        @deprecated(reason: "Please use primaryEmail.verified instead")
       isGuest: Boolean!
       isInitialPassword: Boolean!
       name: String!
@@ -53,6 +55,7 @@ export default [
       lastBillingAddress: Address
       lastDeliveryAddress: Address
       lastContact: Contact
+      primaryEmail: UserEmail
       emails: [UserEmail!]
       roles: [String!]
       tags: [String!]
