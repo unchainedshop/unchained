@@ -110,7 +110,7 @@ Quotations.helpers({
       meta: {
         mailPrefix: `${this.quotationNumber}_`,
         from: EMAIL_FROM,
-        to: user.email(),
+        to: user.primaryEmail()?.address,
         url: `${UI_ENDPOINT}/quotation?_id=${this._id}&otp=${this.quotationNumber}`,
         quotation: this
       }

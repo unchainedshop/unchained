@@ -8,7 +8,7 @@ import FormProfile from '../../components/users/FormProfile';
 import UserOrderList from '../../components/users/UserOrderList';
 import UserLogList from '../../components/users/UserLogList';
 import FormSetPassword from '../../components/account/FormSetPassword';
-import FormChangeEmail from '../../components/account/FormChangeEmail';
+import EmailsList from '../../components/account/EmailsList';
 import FormSetRoles from '../../components/account/FormSetRoles';
 import FormTags from '../../components/account/FormTags';
 
@@ -64,8 +64,8 @@ const UsersEdit = ({ router, redirect, changeTab, ...rest }) => (
                   />
                 </Segment>
                 <Segment>
-                  <h3 className="title">Change E-Mail address</h3>
-                  <FormChangeEmail
+                  <h3 className="title">Edit E-Mail addresses</h3>
+                  <EmailsList
                     onSubmitSuccess={redirect}
                     userId={router.query._id}
                     disableResendVerificationEmail

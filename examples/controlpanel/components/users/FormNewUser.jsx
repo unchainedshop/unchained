@@ -68,7 +68,9 @@ export default compose(
       enrollUser(profile: $profile, email: $email, password: $password) {
         _id
         name
-        email
+        primaryEmail {
+          address
+        }
       }
     }
   `),
@@ -88,7 +90,8 @@ export default compose(
       optional: true,
       label: 'Password',
       custom() {
-        if (!this.obj.enroll && (!this.value || this.value === '')) { // eslint-disable-line
+        if (!this.obj.enroll && (!this.value || this.value === '')) {
+          // eslint-disable-line
           return 'required';
         }
         return null;

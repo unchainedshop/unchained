@@ -10,7 +10,10 @@ export default compose(
           _id
           name
           isGuest
-          email
+          primaryEmail {
+            address
+            verified
+          }
           roles
         }
       }

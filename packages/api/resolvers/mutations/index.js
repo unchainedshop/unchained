@@ -2,6 +2,8 @@ import { actions } from '../../roles';
 import { checkResolver as acl } from '../../acl';
 import Accounts from './accounts';
 import updateEmail from './updateEmail';
+import addEmail from './addEmail';
+import removeEmail from './removeEmail';
 import updateUserAvatar from './updateUserAvatar';
 import updateUserProfile from './updateUserProfile';
 import updateUserTags from './updateUserTags';
@@ -112,6 +114,8 @@ export default {
 
   heartbeat,
   updateEmail: acl(actions.updateUser)(updateEmail),
+  addEmail: acl(actions.updateUser)(addEmail),
+  removeEmail: acl(actions.updateUser)(removeEmail),
   updateUserAvatar: acl(actions.updateUser)(updateUserAvatar),
   updateUserProfile: acl(actions.updateUser)(updateUserProfile),
   updateUserTags: acl(actions.manageUsers)(updateUserTags),

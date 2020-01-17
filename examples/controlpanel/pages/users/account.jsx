@@ -4,7 +4,7 @@ import { withRouter } from 'next/router';
 import { Segment, Container } from 'semantic-ui-react';
 import App from '../../components/App';
 import FormChangePassword from '../../components/account/FormChangePassword';
-import FormChangeEmail from '../../components/account/FormChangeEmail';
+import EmailsList from '../../components/account/EmailsList';
 import connectApollo from '../../lib/connectApollo';
 
 const redirect = router => () => {
@@ -21,8 +21,8 @@ export default connectApollo(
           <FormChangePassword onSubmitSuccess={redirect(router)} />
         </Segment>
         <Segment>
-          <h3 className="title">Change E-Mail address</h3>
-          <FormChangeEmail onSubmitSuccess={redirect(router)} />
+          <h3 className="title">Edit E-Mail addresses</h3>
+          <EmailsList onSubmitSuccess={redirect(router)} />
         </Segment>
       </Container>
     </App>
