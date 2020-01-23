@@ -5,60 +5,66 @@ import { Schemas } from 'meteor/unchained:utils';
 
 const { Address, timestampFields } = Schemas;
 
-Meteor.users.attachSchema(
-  new SimpleSchema(
-    {
-      emails: Array,
-      'emails.$': Object,
-      'emails.$.address': String,
-      'emails.$.verified': Boolean,
-      username: String,
-      lastLogin: new SimpleSchema({
-        timestamp: Date,
-        locale: String,
-        countryContext: String,
-        remoteAddress: String
-      }),
-      profile: new SimpleSchema(
-        {
-          displayName: String,
-          birthday: Date,
-          phoneMobile: String,
-          gender: String,
-          address: Address,
-          customFields: {
-            type: Object,
-            optional: true,
-            blackbox: true
-          }
-        },
-        { requiredByDefault: false }
-      ),
-      lastDeliveryAddress: Address,
-      lastBillingAddress: Address,
-      lastContact: new SimpleSchema(
-        {
-          telNumber: String,
-          emailAddress: String
-        },
-        { requiredByDefault: false }
-      ),
-      guest: Boolean,
-      tags: Array,
-      'tags.$': String,
-      avatarId: String,
-      services: {
-        type: Object,
-        optional: true,
-        blackbox: true
-      },
-      roles: Array,
-      'roles.$': String,
-      ...timestampFields
-    },
-    { requiredByDefault: false }
-  )
+export const ProfileSchema = new SimpleSchema(
+  {
+    displayName: String,
+    birthday: Date,
+    phoneMobile: String,
+    gender: String,
+    address: Address,
+    customFields: {
+      type: Object,
+      optional: true,
+      blackbox: true
+    }
+  },
+  { requiredByDefault: false }
 );
+
+export const LastLoginSchema = new SimpleSchema({
+  timestamp: Date,
+  locale: String,
+  countryContext: String,
+  remoteAddress: String
+});
+
+export const LastContactSchema = new SimpleSchema(
+  {
+    telNumber: String,
+    emailAddress: String
+  },
+  { requiredByDefault: false }
+);
+
+export const UserSchema = new SimpleSchema(
+  {
+    emails: Array,
+    'emails.$': Object,
+    'emails.$.address': String,
+    'emails.$.verified': Boolean,
+    username: String,
+    lastLogin: LastLoginSchema,
+    profile: ProfileSchema,
+    lastDeliveryAddress: Address,
+    lastBillingAddress: Address,
+    lastContact: LastContactSchema,
+    guest: Boolean,
+    tags: Array,
+    'tags.$': String,
+    avatarId: String,
+    services: {
+      type: Object,
+      optional: true,
+      blackbox: true
+    },
+    roles: Array,
+    'roles.$': String,
+    ...timestampFields
+  },
+  { requiredByDefault: false }
+);
+
+Meteor.users.attachSchema(UserSchema);
 
 Migrations.add({
   version: 20180529,
