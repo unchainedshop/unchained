@@ -33,7 +33,16 @@ export default {
     totalProductIds,
     query
   }) => {
-    const otherFilters = Filters.find(await filterSelector).fetch();
+    const resolvedFilterSelector = await filterSelector;
+    const extractedFilterIds =
+      (resolvedFilterSelector._id && resolvedFilterSelector._id.$in) || [];
+    const otherFilters = Filters.find(resolvedFilterSelector)
+      .fetch()
+      .sort((left, right) => {
+        const leftIndex = extractedFilterIds.indexOf(left._id);
+        const rightIndex = extractedFilterIds.indexOf(right._id);
+        return leftIndex - rightIndex;
+      });
 
     const relevantProductIds = Products.find(
       {
