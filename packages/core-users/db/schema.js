@@ -21,12 +21,15 @@ export const ProfileSchema = new SimpleSchema(
   { requiredByDefault: false }
 );
 
-export const LastLoginSchema = new SimpleSchema({
-  timestamp: Date,
-  locale: String,
-  countryContext: String,
-  remoteAddress: String
-});
+export const LastLoginSchema = new SimpleSchema(
+  {
+    timestamp: Date,
+    locale: String,
+    countryContext: String,
+    remoteAddress: String
+  },
+  { requiredByDefault: false }
+);
 
 export const LastContactSchema = new SimpleSchema(
   {
