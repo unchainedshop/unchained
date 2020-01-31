@@ -140,18 +140,18 @@ Filters.wipeFilters = (onlyDirty = true) => {
   const selector = onlyDirty ? { dirty: true } : {};
   const removedFilterCount = Filters.remove(selector);
   const removedFilterTextCount = FilterTexts.remove(selector);
-  console.log(`result of filter purging with onlyDirty=${onlyDirty}`, { // eslint-disable-line
-    removedFilterCount,
-    removedFilterTextCount
-  });
+  console.log(`Filter Sync: Result of filter purging with onlyDirty=${onlyDirty}`, { // eslint-disable-line
+      removedFilterCount,
+      removedFilterTextCount
+    }
+  );
 };
 
 Filters.invalidateFilterCaches = () => {
-  log('Filters: Invalidating filter caches...');
+  log('Filters: Start invalidating filter caches', { level: 'verbose' });
   Filters.find()
     .fetch()
     .forEach(filter => filter.invalidateProductIdCache());
-  log('Filters: Invalidated the filter caches');
 };
 
 Filters.helpers({
@@ -226,7 +226,7 @@ Filters.helpers({
     return cache;
   },
   invalidateProductIdCache() {
-    log(`Filters: Rebuilding ${this.key}`); // eslint-disable.line
+    log(`Filters: Rebuilding ${this.key}`, { level: 'verbose' }); // eslint-disable.line
     const { productIds, allProductIds } = this.buildProductIdMap();
     const cache = {
       allProductIds,
