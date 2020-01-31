@@ -4,6 +4,7 @@ import {
 } from 'meteor/unchained:core-warehousing';
 import Sheets from 'node-sheets';
 import NodeCache from 'node-cache';
+import { log } from 'meteor/unchained:core-logger';
 
 const { NODE_ENV, GOOGLE_SHEETS_PRIVATE_KEY_DATA } = process.env;
 
@@ -22,13 +23,15 @@ async function downloadSpreadsheet() {
     await gs.authorizeJWT(authData);
     const delivery = await gs.tables('delivery!A:ZZZ');
     const inventory = await gs.tables('inventory!A:ZZZ');
-    console.log('GoogleSheet: Updated cache with TTL: ' + googleCache.options.stdTTL); // eslint-disable-line
+    log(`GoogleSheet: Updated cache with TTL: ${googleCache.options.stdTTL}`, {
+      level: 'verbose'
+    });
     return {
       delivery,
       inventory
     };
   } catch (err) {
-    console.log(err); // eslint-disable-line
+    log(err, { level: 'error' }); // eslint-disable-line
     throw err;
   }
 }
@@ -102,7 +105,10 @@ class GoogleSheets extends WarehousingAdapter {
     }, null);
     if (!resolvedRow) return null;
     const time = parseInt(resolvedRow[selector].value, 10) || 0;
-    console.log(`GoogleSheet: Resolve Time ${selector} (${quantity}) for ${sku}: ${time}`); // eslint-disable-line
+    log(
+      `GoogleSheet: Resolve Time ${selector} (${quantity}) for ${sku}: ${time}`,
+      { level: 'verbose' }
+    );
     return time;
   }
 
@@ -118,7 +124,9 @@ class GoogleSheets extends WarehousingAdapter {
     }, null);
     if (!resolvedRow) return null;
     const amount = parseInt(resolvedRow.Stock.value, 10) || 0;
-    console.log(`GoogleSheet: Resolve Inventory for ${sku}: ${amount}`); // eslint-disable-line
+    log(`GoogleSheet: Resolve Inventory for ${sku}: ${amount}`, {
+      level: 'verbose'
+    });
     return amount;
   }
 

@@ -70,9 +70,10 @@ Filters.markFiltersDirty = () => {
     collectionUpdateOptions
   );
   const timestamp = new Date();
-  console.log(`Filter Sync: Marked Filters dirty at timestamp ${timestamp}`, { // eslint-disable-line
+  log(`Filter Sync: Marked Filters dirty at timestamp ${timestamp}`, { // eslint-disable-line
     updatedFiltersCount,
-    updatedFilterTextsCount
+    updatedFilterTextsCount,
+    level: 'verbose'
   });
   return new Date();
 };
@@ -101,9 +102,12 @@ Filters.cleanFiltersByReferenceDate = referenceDate => {
     modifier,
     collectionUpdateOptions
   );
-  console.log(`Filter Sync: Result of filter cleaning with referenceDate=${referenceDate}`, { // eslint-disable-line
+  log(
+    `Filter Sync: Result of filter cleaning with referenceDate=${referenceDate}`,
+    {
       updatedFiltersCount,
-      updatedFilterTextsCount
+      updatedFilterTextsCount,
+      level: 'verbose'
     }
   );
 };
@@ -130,9 +134,10 @@ Filters.updateCleanFilterActivation = () => {
     { bypassCollection2: true, multi: true }
   );
 
-  console.log(`Filter Sync: Result of filter activation`, { // eslint-disable-line
+  log(`Filter Sync: Result of filter activation`, {
     disabledDirtyFiltersCount,
-    enabledCleanFiltersCount
+    enabledCleanFiltersCount,
+    level: 'verbose'
   });
 };
 
@@ -140,11 +145,11 @@ Filters.wipeFilters = (onlyDirty = true) => {
   const selector = onlyDirty ? { dirty: true } : {};
   const removedFilterCount = Filters.remove(selector);
   const removedFilterTextCount = FilterTexts.remove(selector);
-  console.log(`Filter Sync: Result of filter purging with onlyDirty=${onlyDirty}`, { // eslint-disable-line
-      removedFilterCount,
-      removedFilterTextCount
-    }
-  );
+  log(`Filter Sync: Result of filter purging with onlyDirty=${onlyDirty}`, {
+    removedFilterCount,
+    removedFilterTextCount,
+    level: 'verbose'
+  });
 };
 
 Filters.invalidateFilterCaches = () => {

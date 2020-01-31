@@ -7,6 +7,7 @@ import { search, Filters } from 'meteor/unchained:core-filters';
 import { findLocalizedText } from 'meteor/unchained:core';
 import { Locale } from 'locale';
 import * as R from 'ramda';
+import { log } from 'meteor/unchained:core-logger';
 import { makeBreadcrumbsBuilder } from '../breadcrumbs';
 import * as Collections from './collections';
 
@@ -177,12 +178,15 @@ Collections.Assortments.markAssortmentTreeDirty = () => {
     collectionUpdateOptions
   );
   const timestamp = new Date();
-  console.log(`Assortment Sync: Marked Assortment tree dirty at timestamp ${timestamp}`, { // eslint-disable-line
+  log(
+    `Assortment Sync: Marked Assortment tree dirty at timestamp ${timestamp}`,
+    {
       updatedAssortmentCount,
       updatedAssortmentTextsCount,
       updatedAssortmentProductsCount,
       updatedAssortmentLinksCount,
-      updatedAssortmentFiltersCount
+      updatedAssortmentFiltersCount,
+      level: 'verbose'
     }
   );
   return new Date();
@@ -227,12 +231,15 @@ Collections.Assortments.cleanDirtyAssortmentTreeByReferenceDate = referenceDate 
     modifier,
     collectionUpdateOptions
   );
-  console.log(`Assortment Sync: Result of assortment cleaning with referenceDate=${referenceDate}`, { // eslint-disable-line
+  log(
+    `Assortment Sync: Result of assortment cleaning with referenceDate=${referenceDate}`,
+    {
       updatedAssortmentCount,
       updatedAssortmentTextsCount,
       updatedAssortmentProductsCount,
       updatedAssortmentLinksCount,
-      updatedAssortmentFiltersCount
+      updatedAssortmentFiltersCount,
+      level: 'verbose'
     }
   );
 };
@@ -259,9 +266,10 @@ Collections.Assortments.updateCleanAssortmentActivation = () => {
     { bypassCollection2: true, multi: true }
   );
 
-  console.log(`Assortment Sync: Result of assortment activation`, { // eslint-disable-line
+  log(`Assortment Sync: Result of assortment activation`, {
     disabledDirtyAssortmentsCount,
-    enabledCleanAssortmentsCount
+    enabledCleanAssortmentsCount,
+    level: 'verbose'
   });
 };
 
@@ -281,12 +289,13 @@ Collections.Assortments.wipeAssortments = (onlyDirty = true) => {
     selector
   );
 
-  console.log(`result of assortment purging with onlyDirty=${onlyDirty}`, { // eslint-disable-line
+  log(`result of assortment purging with onlyDirty=${onlyDirty}`, {
     removedAssortmentCount,
     removedAssortmentTextCount,
     removedAssortmentProductsCount,
     removedAssortmentLinksCount,
-    removedAssortmentFiltersCount
+    removedAssortmentFiltersCount,
+    level: 'verbose'
   });
 };
 
@@ -571,7 +580,7 @@ Collections.Assortments.helpers({
     forceLiveCollection = false,
     zipperFunction = zipTreeByDeepness
   } = {}) {
-    if (!this._cachedProductIds || forceLiveCollection) {  // eslint-disable-line
+    if (!this._cachedProductIds || forceLiveCollection) { // eslint-disable-line
       const collectedProductIdTree = this.collectProductIdCacheTree() || [];
       return [...new Set(zipperFunction(collectedProductIdTree))];
     }

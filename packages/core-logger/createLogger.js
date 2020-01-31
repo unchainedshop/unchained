@@ -46,7 +46,11 @@ export default (moduleName, moreTransports = []) => {
       myFormat
     ),
     transports: [
-      new transports.Console({ level: loggingMatched ? 'debug' : LOG_LEVEL }),
+      new transports.Console({
+        stderrLevels: ['error'],
+        consoleWarnLevels: ['warn'],
+        level: loggingMatched ? 'debug' : LOG_LEVEL
+      }),
       ...moreTransports
     ]
   });
