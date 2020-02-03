@@ -24,9 +24,12 @@ class HttpRequestWorkerPlugin extends WorkerPlugin {
         headers: { 'Content-Type': 'application/json', ...headers }
       });
 
-      const result = await res.json();
+      const contentType = res.headers.get('content-type');
+      const isJson = contentType && contentType.includes('application/json');
 
-      if (res.status === 200) {
+      const result = isJson ? await res.json() : { text: await res.text() };
+
+      if (res.status === 200 && res.ok) {
         return { success: true, result };
       }
       return { success: false, result };
