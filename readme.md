@@ -40,8 +40,6 @@ meteor npm run dev
 
 5. (Optionally) Add the controlpanel (see section below)
 
-
-
 If you have issues installing or running meteor in your environment or you don't want to install the meteor cli on your computer, try it that way to ramp up a dev environment:
 
 ```
@@ -83,6 +81,7 @@ mutation loginAsGuest {
 ```
 
 Then set the authorization header in GraphQL Playground for all upcoming operations:
+
 ```
 {
   "Authorization": "Bearer HERE_GOES_THE_TOKEN_FROM_ABOVE"
@@ -293,3 +292,14 @@ ProductTexts.makeSlug = rest =>
 ```
 
 Currently ProductTexts from core-products and AssortmentTexts from core-assortments are supported.
+
+# Various
+
+## Amazon Document DB Compatibility Mode
+
+Set AMAZON_DOCUMENTDB_COMPAT_MODE to trueish if you use Amazon DocumentDB or an old MongoDB version pre 3.6.
+
+Downsides:
+
+- assortment shuffling and product sorting in assortments will not work, it will be random
+- local search plugin will do regex search instead of fulltext search, a search engine is required for full text search

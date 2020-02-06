@@ -4,6 +4,8 @@ const ORDER_BY_INDEX = 'default';
 const DIRECTION_DESCENDING = 'DESC';
 const DIRECTION_ASCENDING = 'ASC';
 
+const { AMAZON_DOCUMENTDB_COMPAT_MODE } = process.env;
+
 const normalizeDirection = textualInput => {
   if (textualInput === DIRECTION_ASCENDING) {
     return 1;
@@ -16,6 +18,9 @@ const normalizeDirection = textualInput => {
 
 const defaultStage = ({ orderBy }) => {
   if (orderBy === ORDER_BY_INDEX || !orderBy) {
+    if (AMAZON_DOCUMENTDB_COMPAT_MODE) {
+      return null;
+    }
     return {
       index: 1
     };
