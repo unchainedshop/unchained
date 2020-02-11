@@ -144,11 +144,11 @@ Products.helpers({
     );
     return ProductTexts.findOne({ productId: this._id, locale });
   },
-  addMediaLink({ mediaId, meta }) {
+  addMediaLink({ mediaId, meta, tags = [] }) {
     const sortKey = ProductMedia.getNewSortKey(this._id);
     const productMediaId = ProductMedia.insert({
       mediaId,
-      tags: [],
+      tags,
       sortKey,
       productId: this._id,
       created: new Date(),
@@ -157,7 +157,7 @@ Products.helpers({
     const productMediaObject = ProductMedia.findOne({ _id: productMediaId });
     return productMediaObject;
   },
-  addMedia({ rawFile, href, name, userId, meta, ...options }) {
+  addMedia({ rawFile, href, name, userId, meta, tags = [], ...options }) {
     const fileLoader = rawFile
       ? Media.insertWithRemoteFile({
           file: rawFile,
@@ -170,7 +170,7 @@ Products.helpers({
           ...options
         });
     const file = Promise.await(fileLoader);
-    return this.addMediaLink({ mediaId: file._id, meta });
+    return this.addMediaLink({ mediaId: file._id, tags, meta });
   },
   getLocalizedTexts(locale) {
     const parsedLocale = new Locale(locale);
@@ -179,15 +179,16 @@ Products.helpers({
   normalizedStatus() {
     return objectInvert(ProductStatus)[this.status || null];
   },
-  media({ limit, offset }) {
-    return ProductMedia.find(
-      { productId: this._id },
-      {
-        skip: offset,
-        limit,
-        sort: { sortKey: 1 }
-      }
-    ).fetch();
+  media({ limit, offset, tags }) {
+    const selector = { productId: this._id };
+    if (tags && tags.length > 0) {
+      selector.tags = { $all: tags };
+    }
+    return ProductMedia.find(selector, {
+      skip: offset,
+      limit,
+      sort: { sortKey: 1 }
+    }).fetch();
   },
   variations() {
     return ProductVariations.find({ productId: this._id }).fetch();

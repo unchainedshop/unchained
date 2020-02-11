@@ -14,7 +14,7 @@ export default {
   async assortmentPaths(obj, { forceLocale }, { localeContext }) {
     return obj.assortmentPaths(forceLocale || localeContext.normalized);
   },
-  async media(obj, { limit, offset }) {
-    return obj.media({ limit, offset });
+  async media(obj, props) {
+    return obj.media(props);
   }
 };

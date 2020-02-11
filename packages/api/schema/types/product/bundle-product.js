@@ -11,7 +11,7 @@ export default [
       created: Date
       updated: Date
       published: Date
-      media(limit: Int = 10, offset: Int = 0): [ProductMedia!]!
+      media(limit: Int = 10, offset: Int = 0, tags: [String!]): [ProductMedia!]!
       texts(forceLocale: String): ProductTexts
       bundleItems: [ProductBundleItem!]
       reviews(limit: Int = 10, offset: Int = 0): [ProductReview!]!
