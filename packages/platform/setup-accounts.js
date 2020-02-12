@@ -105,7 +105,6 @@ export default ({ mergeUserCartsOnLogin = true } = {}) => {
     check(email, Match.OneOf(String, null, undefined));
     const guestname = `${moniker.choose()}-${Random.hexString(5)}`;
     return {
-      username: guestname,
       email: email || `${guestname}@localhost`,
       guest: true,
       profile: {}
