@@ -35,7 +35,7 @@ const logGraphQLServerError = error => {
       ...rest
     });
     console.error(stacktrace, parameters); // eslint-disable-line
-  } catch (e) { } // eslint-disable-line
+  } catch (e) {} // eslint-disable-line
 };
 
 const defaultContext = req => {
@@ -76,7 +76,7 @@ const startUnchainedServer = options => {
       logGraphQLServerError(error);
       const {
         message,
-        extensions: { code, ...extensions }
+        extensions: { exception, code, ...extensions } // removes exception
       } = error;
       return new ApolloError(message, code, {
         code,
