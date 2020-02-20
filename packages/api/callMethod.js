@@ -34,7 +34,7 @@ export default function(passedContext, name, ...args) {
 
   const retValue = handler.call(context, ...args, {
     userIdBeforeLogin,
-    normalizedLocale: localeContext.normalized,
+    normalizedLocale: localeContext && localeContext.normalized,
     ...handlerContext
   });
   connection.close();
