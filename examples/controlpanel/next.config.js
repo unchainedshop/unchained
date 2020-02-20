@@ -36,6 +36,7 @@ module.exports = withCss({
         loader: 'url-loader',
         options: {
           limit: 100000,
+          esModule: false,
           publicPath: './',
           outputPath: 'static/',
           name: '[name].[ext]'
