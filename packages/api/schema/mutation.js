@@ -625,7 +625,7 @@ export default [
       """
       Bookmarks a product as currently logged in user
       """
-      bookmark(productId: ID!, bookmarked: Boolean = true): Bookmark
+      bookmark(productId: ID!, bookmarked: Boolean = true): Bookmark!
 
       """
       Create a bookmark for a specific user
