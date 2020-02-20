@@ -48,9 +48,9 @@ routepolicy@1.1.0
 socket-stream-client@0.2.2
 tmeasday:check-npm-versions@0.3.2
 tracker@1.2.0
-unchained:core-logger@0.40.0
-unchained:core-worker@0.40.0
-unchained:utils@0.40.0
+unchained:core-logger@0.41.0
+unchained:core-worker@0.41.0
+unchained:utils@0.41.0
 underscore@1.0.10
 webapp@1.8.0
 webapp-hashing@1.0.9
