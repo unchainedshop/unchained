@@ -57,8 +57,6 @@
     "simpl-schema": "^1.5.7",
     "stripe": "^8.14.0",
     "uuid": "^3.4.0",
-    "winston": "^3.2.1",
-    "winston-transport": "^4.3.0",
     "xml-js": "^1.6.11"
   },
   "devDependencies": {
