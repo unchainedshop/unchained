@@ -5,7 +5,7 @@ aldeed:collection2@3.0.2
 aldeed:schema-index@3.0.0
 allow-deny@1.1.0
 autoupdate@1.6.0
-babel-compiler@7.5.0
+babel-compiler@7.5.2
 babel-runtime@1.5.0
 base64@1.0.12
 binary-heap@1.0.11
@@ -21,7 +21,7 @@ ddp-rate-limiter@1.0.7
 ddp-server@2.3.0
 diff-sequence@1.1.1
 dynamic-import@0.5.1
-ecmascript@0.14.0
+ecmascript@0.14.2
 ecmascript-runtime@0.7.0
 ecmascript-runtime-client@0.10.0
 ecmascript-runtime-server@0.9.0
@@ -35,7 +35,7 @@ http@1.4.2
 id-map@1.1.0
 inter-process-messaging@0.1.0
 livedata@1.0.18
-local-test:unchained:api@0.41.0
+local-test:unchained:api@0.42.0
 localstorage@1.2.0
 logging@1.1.20
 meteor@1.9.3
@@ -69,7 +69,7 @@ socket-stream-client@0.2.2
 srp@1.0.12
 tmeasday:check-npm-versions@0.3.2
 tracker@1.2.0
-unchained:api@0.41.0
+unchained:api@0.42.0
 unchained:core@0.41.0
 unchained:core-assortments@0.41.0
 unchained:core-bookmarks@0.41.0

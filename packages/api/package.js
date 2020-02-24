@@ -1,6 +1,6 @@
 Package.describe({
   name: 'unchained:api',
-  version: '0.41.0', // eslint-disable-line
+  version: '0.42.0', // eslint-disable-line
   summary: 'Unchained Engine: GraphQL API',
   git: 'https://github.com/unchainedshop/unchained',
   documentation: 'README.md'
