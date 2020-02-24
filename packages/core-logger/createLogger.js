@@ -1,5 +1,5 @@
 import { createLogger, format, transports } from 'winston';
-import util from 'util';
+import stringify from 'safe-stable-stringify';
 
 const { DEBUG = '', LOG_LEVEL = 'info' } = process.env;
 const { combine, label, timestamp, colorize, printf } = format;
@@ -26,12 +26,7 @@ const debugStringContainsModule = (debugString, moduleName) => {
 
 const myFormat = printf(
   ({ level, message, label: _label, timestamp: _timestamp, ...rest }) => {
-    const otherProps = JSON.parse(JSON.stringify(rest));
-    const otherPropsString = Object.keys(otherProps).length
-      ? util.inspect(otherProps, {
-          colors: true
-        })
-      : '';
+    const otherPropsString = stringify(rest);
     return `${_timestamp} [${_label}] ${level}: ${message} ${otherPropsString}`;
   }
 );

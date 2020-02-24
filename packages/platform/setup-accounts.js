@@ -5,6 +5,7 @@ import { Accounts } from 'meteor/accounts-base';
 import { getFallbackLocale } from 'meteor/unchained:core';
 import { Users } from 'meteor/unchained:core-users';
 import { Orders } from 'meteor/unchained:core-orders';
+import { Bookmarks } from 'meteor/unchained:core-bookmarks';
 import cloneDeep from 'lodash.clonedeep';
 import moniker from 'moniker';
 
@@ -143,6 +144,12 @@ export default ({ mergeUserCartsOnLogin = true } = {}) => {
         locale: normalizedLocale,
         countryContext,
         mergeCarts: mergeUserCartsOnLogin
+      });
+
+      Bookmarks.migrateBookmarks({
+        fromUserId: userIdBeforeLogin,
+        toUserId: user._id,
+        mergeBookmarks: mergeUserCartsOnLogin
       });
     }
   });
