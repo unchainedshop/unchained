@@ -5,7 +5,7 @@ import { Accounts } from 'meteor/accounts-base';
 import { log, Logs } from 'meteor/unchained:core-logger';
 import { Countries } from 'meteor/unchained:core-countries';
 import { Languages } from 'meteor/unchained:core-languages';
-import uuid from 'uuid';
+import { v4 as uuidv4 } from 'uuid';
 import { Users, Avatars } from './collections';
 
 Logs.helpers({
@@ -80,7 +80,7 @@ Users.helpers({
   updatePassword({ password, ...options } = {}) {
     const newPassword =
       password ||
-      uuid()
+      uuidv4()
         .split('-')
         .pop();
     Accounts.setPassword(this._id, newPassword, options);
