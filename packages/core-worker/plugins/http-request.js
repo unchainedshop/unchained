@@ -3,6 +3,21 @@ import { log } from 'meteor/unchained:core-logger';
 import fetch from 'isomorphic-unfetch';
 import WorkerPlugin from './base';
 
+const postFetch = async (url, { data, headers }) => {
+  return fetch(url, {
+    method: 'POST',
+    body: JSON.stringify(data),
+    headers: { 'Content-Type': 'application/json', ...headers }
+  });
+};
+
+const nonPostFetch = async (url, { headers, method = 'GET' }) => {
+  return fetch(url, {
+    method,
+    headers
+  });
+};
+
 class HttpRequestWorkerPlugin extends WorkerPlugin {
   static key = 'shop.unchained.worker-plugin.http-request';
 
@@ -12,17 +27,15 @@ class HttpRequestWorkerPlugin extends WorkerPlugin {
 
   static type = 'HTTP_REQUEST';
 
-  static async doWork({ url, data = {}, headers, method = 'post' }) {
-    log(`HttpRequestWorkerPlugin -> doWork: ${url} ${data}`, {
+  static async doWork({ url, data = {}, headers, method = 'POST' }) {
+    log(`${this.key} -> doWork: ${method} ${url} ${data}`, {
       level: 'debug'
     });
 
     try {
-      const res = await fetch(url, {
-        method,
-        body: JSON.stringify(data),
-        headers: { 'Content-Type': 'application/json', ...headers }
-      });
+      const normalizedFetch =
+        method.toUpperCase() === 'POST' ? postFetch : nonPostFetch;
+      const res = await normalizedFetch(url, { data, headers, method });
 
       const contentType = res.headers.get('content-type');
       const isJson = contentType && contentType.includes('application/json');
@@ -34,7 +47,9 @@ class HttpRequestWorkerPlugin extends WorkerPlugin {
       }
       return { success: false, result };
     } catch (err) {
-      console.error(err.message); // eslint-disable-line
+      log(`${this.key} -> doWork failed: ${err.message}`, {
+        level: 'warn'
+      });
       return {
         success: false,
         error: err
