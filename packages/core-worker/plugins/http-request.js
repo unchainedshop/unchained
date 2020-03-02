@@ -47,12 +47,19 @@ class HttpRequestWorkerPlugin extends WorkerPlugin {
       }
       return { success: false, result };
     } catch (err) {
-      log(`${this.key} -> doWork failed: ${err.message}`, {
-        level: 'warn'
-      });
+      log(
+        `${this.key} -> doWork failed: ${err.name} ${err.message} ${err.stack}`,
+        {
+          level: 'warn'
+        }
+      );
       return {
         success: false,
-        error: err
+        error: {
+          name: err.name,
+          message: err.message,
+          stack: err.stack
+        }
       };
     }
   }
