@@ -6,7 +6,7 @@ export default function(
   { type, input, scheduled, original, retries },
   { userId }
 ) {
-  log(`mutation addWork ${type} ${input}`, { userId });
+  log(`mutation addWork ${type} ${JSON.stringify(input)}`, { userId });
 
   const work = WorkerDirector.addWork({
     type,
