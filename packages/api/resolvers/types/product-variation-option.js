@@ -5,7 +5,7 @@ export default {
   value(obj) {
     return obj.productVariationOption;
   },
-  texts(obj, { forceLocale }, { localeContext }) {
+  async texts(obj, { forceLocale }, { localeContext }) {
     return obj.getLocalizedTexts(
       forceLocale || localeContext.normalized,
       obj.productVariationOption

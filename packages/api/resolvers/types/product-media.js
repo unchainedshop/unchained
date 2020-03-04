@@ -1,5 +1,5 @@
 export default {
-  texts(obj, { forceLocale }, { localeContext }) {
+  async texts(obj, { forceLocale }, { localeContext }) {
     return obj.getLocalizedTexts(forceLocale || localeContext.normalized);
   }
 };
