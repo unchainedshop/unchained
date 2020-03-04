@@ -116,7 +116,7 @@ Users.helpers({
     if (!skipEmailVerification) {
       const { sendVerificationEmail = true } = Accounts._options; // eslint-disable-line
       if (sendVerificationEmail) {
-        Accounts.sendVerificationEmail(this._id);
+        Accounts.sendVerificationEmail(this._id, email);
       }
     }
     return Users.findOne({ _id: this._id });
