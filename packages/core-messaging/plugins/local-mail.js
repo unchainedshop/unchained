@@ -33,8 +33,7 @@ class LocalMail extends MessagingAdapter {
       return true;
     }
     if (
-      !renderer.text ||
-      !renderer.html ||
+      !(renderer.text || renderer.html) ||
       !renderer.subject ||
       !renderer.to ||
       !renderer.from
