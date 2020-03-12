@@ -111,6 +111,10 @@ Users.helpers({
     );
     return Users.findOne({ _id: this._id });
   },
+  setUsername(username) {
+    Accounts.setUsername(this._id, username);
+    return Users.findOne({ _id: this._id });
+  },
   addEmail(email, { verified = false, skipEmailVerification = false } = {}) {
     Accounts.addEmail(this._id, email, verified);
     if (!skipEmailVerification) {

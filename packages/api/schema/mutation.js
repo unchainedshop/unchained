@@ -288,6 +288,11 @@ export default [
       ): User
 
       """
+      Set username for a specific user
+      """
+      setUsername(username: String!, userId: ID!): User
+
+      """
       Set a new password for a specific user
       """
       setPassword(newPassword: String!, userId: ID!): User

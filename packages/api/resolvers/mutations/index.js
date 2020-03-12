@@ -69,6 +69,7 @@ import updateWarehousingProvider from './updateWarehousingProvider';
 import removeWarehousingProvider from './removeWarehousingProvider';
 import setPassword from './setPassword';
 import setRoles from './setRoles';
+import setUsername from './setUsername';
 import enrollUser from './enrollUser';
 import checkoutCart from './checkoutCart';
 import createFilter from './createFilter';
