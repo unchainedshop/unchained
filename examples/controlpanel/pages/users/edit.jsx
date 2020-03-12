@@ -11,6 +11,7 @@ import FormSetPassword from '../../components/account/FormSetPassword';
 import EmailsList from '../../components/account/EmailsList';
 import FormSetRoles from '../../components/account/FormSetRoles';
 import FormTags from '../../components/account/FormTags';
+import FormSetUsername from '../../components/account/FormSetUsername';
 
 import connectApollo from '../../lib/connectApollo';
 
@@ -56,6 +57,13 @@ const UsersEdit = ({ router, redirect, changeTab, ...rest }) => (
             )}
             {router.query.tab === 'account' && (
               <div>
+                <Segment>
+                  <h3 className="title">Set username</h3>
+                  <FormSetUsername
+                    onSubmitSuccess={redirect}
+                    userId={router.query._id}
+                  />
+                </Segment>
                 <Segment>
                   <h3 className="title">Set password</h3>
                   <FormSetPassword
