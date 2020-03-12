@@ -8204,7 +8204,7 @@
             "deprecationReason": null
           },
           {
-            "name": "updateUserTags",
+            "name": "setUserTags",
             "description": "Update tags of user",
             "args": [
               {

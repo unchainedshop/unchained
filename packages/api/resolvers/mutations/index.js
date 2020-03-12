@@ -6,7 +6,7 @@ import addEmail from './addEmail';
 import removeEmail from './removeEmail';
 import updateUserAvatar from './updateUserAvatar';
 import updateUserProfile from './updateUserProfile';
-import updateUserTags from './updateUserTags';
+import setUserTags from './setUserTags';
 import createLanguage from './createLanguage';
 import updateLanguage from './updateLanguage';
 import removeLanguage from './removeLanguage';

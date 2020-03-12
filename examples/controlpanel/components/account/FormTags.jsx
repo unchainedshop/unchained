@@ -54,8 +54,8 @@ export default compose(
   }),
   withFormModel(({ data: { user } }) => ({ tags: user && user.tags } || {})),
   graphql(gql`
-    mutation updateUserTags($tags: [String]!, $userId: ID!) {
-      updateUserTags(tags: $tags, userId: $userId) {
+    mutation setUserTags($tags: [String]!, $userId: ID!) {
+      setUserTags(tags: $tags, userId: $userId) {
         _id
         tags
       }

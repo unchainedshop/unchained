@@ -248,11 +248,6 @@ export default [
       payOrder(orderId: ID!): Order!
 
       """
-      Update Avatar of any user or logged in user if userId is not provided
-      """
-      updateUserAvatar(avatar: Upload!, userId: ID): User
-
-      """
       Update E-Mail address of any user or logged in user if userId is not provided
       """
       updateEmail(email: String!, userId: ID): User
@@ -269,9 +264,14 @@ export default [
       removeEmail(email: String!, userId: ID): User
 
       """
-      Update tags of user
+      Update Avatar of any user or logged in user if userId is not provided
       """
-      updateUserTags(tags: [String]!, userId: ID!): User
+      updateUserAvatar(avatar: Upload!, userId: ID): User
+
+      """
+      Set tags of user
+      """
+      setUserTags(tags: [String]!, userId: ID!): User
 
       """
       Update Profile of any user or logged in user if userId is not provided
