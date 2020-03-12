@@ -6,5 +6,5 @@ export default function(root, { roles, userId: foreignUserId }, { userId }) {
   log(`mutation setRoles ${foreignUserId}`, { userId });
   const user = Users.findOne({ _id: foreignUserId });
   if (!user) throw new UserNotFoundError({ userId: foreignUserId });
-  return user.updateRoles(roles);
+  return user.setRoles(roles);
 }
