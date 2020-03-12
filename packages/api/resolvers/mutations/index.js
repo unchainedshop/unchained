@@ -119,10 +119,11 @@ export default {
   removeEmail: acl(actions.updateUser)(removeEmail),
   updateUserAvatar: acl(actions.updateUser)(updateUserAvatar),
   updateUserProfile: acl(actions.updateUser)(updateUserProfile),
-  updateUserTags: acl(actions.manageUsers)(updateUserTags),
+  setUserTags: acl(actions.manageUsers)(setUserTags),
   setPassword: acl(actions.manageUsers)(setPassword),
-  enrollUser: acl(actions.manageUsers)(enrollUser),
+  setUsername: acl(actions.manageUsers)(setUsername),
   setRoles: acl(actions.manageUsers)(setRoles),
+  enrollUser: acl(actions.manageUsers)(enrollUser),
 
   createLanguage: acl(actions.manageLanguages)(createLanguage),
   updateLanguage: acl(actions.manageLanguages)(updateLanguage),
