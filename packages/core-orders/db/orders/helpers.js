@@ -23,7 +23,6 @@ import { OrderDiscounts } from '../order-discounts/collections';
 import { OrderPayments } from '../order-payments/collections';
 import { OrderDocuments } from '../order-documents/collections';
 import { OrderPositions } from '../order-positions/collections';
-import 'core-js/features/array/flat-map';
 
 const { EMAIL_FROM, UI_ENDPOINT } = process.env;
 
