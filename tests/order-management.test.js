@@ -91,4 +91,46 @@ describe('Order Management', () => {
       });
     });
   });
+
+  describe('Mutation.payOrder / deliverOrder', () => {
+    it('pay a confirmed order', async () => {
+      const { data: { payOrder } = {} } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation payOrder($orderId: ID!) {
+            payOrder(orderId: $orderId) {
+              _id
+              status
+            }
+          }
+        `,
+        variables: {
+          orderId: ConfirmedOrder._id
+        }
+      });
+      expect(payOrder).toMatchObject({
+        _id: ConfirmedOrder._id,
+        status: 'CONFIRMED'
+      });
+    });
+
+    it('deliver a confirmed order -> leads to fullfilled', async () => {
+      const { data: { deliverOrder } = {} } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation deliverOrder($orderId: ID!) {
+            deliverOrder(orderId: $orderId) {
+              _id
+              status
+            }
+          }
+        `,
+        variables: {
+          orderId: ConfirmedOrder._id
+        }
+      });
+      expect(deliverOrder).toMatchObject({
+        _id: ConfirmedOrder._id,
+        status: 'FULLFILLED'
+      });
+    });
+  });
 });
