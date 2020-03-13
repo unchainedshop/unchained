@@ -237,8 +237,14 @@ Orders.helpers({
     return this.items().reduce((oldValue, item) => oldValue + item.quantity, 0);
   },
   itemValidationErrors() {
-    // If we came here, the checkout succeeded, so we can reserve the items
-    return this.items().flatMap(item => item.validationErrors());
+    // Check if items are valid
+    const items = this.items();
+    if (items.length === 0) {
+      const NoItemsError = new Error('No items to checkout');
+      NoItemsError.name = 'NoItemsError';
+      return [NoItemsError];
+    }
+    return items.flatMap(item => item.validationErrors());
   },
   reserveItems() {
     // If we came here, the checkout succeeded, so we can reserve the items

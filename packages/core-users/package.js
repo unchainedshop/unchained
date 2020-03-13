@@ -17,7 +17,6 @@ Package.onUse(api => {
   api.use('promise');
   api.use('accounts-base');
   api.use('accounts-password');
-  api.use('accounts-oauth');
   api.use('dburles:factory@1.1.0');
   api.use('dburles:collection-helpers@1.1.0');
   api.use('aldeed:collection2@3.0.2');

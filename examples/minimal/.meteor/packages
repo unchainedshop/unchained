@@ -9,7 +9,6 @@ webapp@1.9.0
 mongo@1.9.0
 accounts-base@1.6.0
 accounts-password@1.6.0
-accounts-oauth@1.2.0
 ecmascript@0.14.2
 email@1.2.3
 disable-oplog@1.0.7

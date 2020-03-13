@@ -2,27 +2,6 @@ export default [
   /* GraphQL */ `
     type Mutation {
       """
-      Login the user with a facebook access token
-      """
-      loginWithFacebook(accessToken: String!): LoginMethodResponse
-
-      """
-      Login the user with a facebook access token
-      """
-      loginWithGoogle(
-        accessToken: String!
-        tokenId: String
-      ): LoginMethodResponse
-
-      """
-      Login the user with a facebook access token
-      """
-      loginWithLinkedIn(
-        code: String!
-        redirectUri: String!
-      ): LoginMethodResponse
-
-      """
       Log the user in with a password.
       """
       loginWithPassword(

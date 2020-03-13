@@ -36,154 +36,33 @@ describe('Cart Checkout Flow', () => {
 
   describe('Mutation.addCartProduct', () => {
     it('add a product to the cart', async () => {
+      const Orders = db.collection('orders');
+      const order = Orders.findOne({ orderNumber: 'wishlist' });
       const { data: { addCartProduct } = {} } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation addCartProduct(
             $productId: ID!
             $quantity: Int
-            $configuration: [ProductConfigurationParameterInput!]
+            $orderId: ID
           ) {
             addCartProduct(
               productId: $productId
               quantity: $quantity
-              configuration: $configuration
+              orderId: $orderId
             ) {
               _id
               quantity
-              total {
-                currency
-                amount
-              }
-              taxes: total(category: TAX) {
-                currency
-                amount
-              }
-              product {
-                _id
-              }
-              order {
-                _id
-              }
-              configuration {
-                key
-                value
-              }
             }
           }
         `,
         variables: {
           productId: SimpleProduct._id,
-          quantity: 2,
-          configuration: [{ key: 'length', value: '5' }]
-        }
-      });
-      expect(addCartProduct).toMatchObject({
-        quantity: 2,
-        total: {
-          currency: 'CHF',
-          amount: 20000
-        },
-        taxes: {
-          amount: 1430
-        },
-        product: {
-          _id: SimpleProduct._id
-        },
-        order: {},
-        configuration: [
-          {
-            key: 'length'
-          }
-        ]
-      });
-    });
-
-    it('add another product to the cart should create new order item', async () => {
-      const { data: { addCartProduct } = {} } = await graphqlFetch({
-        query: /* GraphQL */ `
-          mutation addCartProduct($productId: ID!) {
-            addCartProduct(productId: $productId) {
-              _id
-              quantity
-              order {
-                _id
-              }
-            }
-          }
-        `,
-        variables: {
-          productId: SimpleProduct._id
+          orderId: order._id,
+          quantity: 1
         }
       });
       expect(addCartProduct).toMatchObject({
         quantity: 1
-      });
-    });
-  });
-
-  describe('Mutation.emptyCart', () => {
-    it('clear the cart from items', async () => {
-      const { data: { emptyCart } = {} } = await graphqlFetch({
-        query: /* GraphQL */ `
-          mutation {
-            emptyCart {
-              _id
-              items {
-                _id
-              }
-            }
-          }
-        `
-      });
-      expect(emptyCart).toMatchObject({
-        items: []
-      });
-    });
-  });
-
-  describe('Mutation.addMultipleCartProducts', () => {
-    it('add multiple products to the cart', async () => {
-      const { data: { addMultipleCartProducts } = {} } = await graphqlFetch({
-        query: /* GraphQL */ `
-          mutation addMultipleCartProducts($items: [OrderItemInput!]!) {
-            addMultipleCartProducts(items: $items) {
-              _id
-              quantity
-              product {
-                _id
-              }
-              configuration {
-                key
-                value
-              }
-            }
-          }
-        `,
-        variables: {
-          items: [
-            {
-              productId: SimpleProduct._id,
-              quantity: 2,
-              configuration: [{ key: 'height', value: '5' }]
-            },
-            {
-              productId: SimpleProduct._id,
-              quantity: 2,
-              configuration: [{ key: 'height', value: '5' }]
-            }
-          ]
-        }
-      });
-      expect(addMultipleCartProducts.pop()).toMatchObject({
-        quantity: 4,
-        product: {
-          _id: SimpleProduct._id
-        },
-        configuration: [
-          {
-            key: 'height'
-          }
-        ]
       });
     });
   });
