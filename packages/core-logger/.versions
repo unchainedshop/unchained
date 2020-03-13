@@ -49,7 +49,7 @@ socket-stream-client@0.2.2
 tmeasday:check-npm-versions@0.3.2
 tracker@1.2.0
 unchained:core-logger@0.42.0
-unchained:utils@0.41.0
+unchained:utils@0.42.0
 underscore@1.0.10
 webapp@1.8.0
 webapp-hashing@1.0.9

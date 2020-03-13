@@ -8,6 +8,7 @@ import { graphql, withApollo } from 'react-apollo';
 import gql from 'graphql-tag';
 import withFormSchema from '../../lib/withFormSchema';
 import withFormErrorHandlers from '../../lib/withFormErrorHandlers';
+import withFormModel from '../../lib/withFormModel';
 
 const FormSetUsername = ({
   resendVerification,
@@ -26,6 +27,14 @@ const FormSetUsername = ({
 
 export default compose(
   withApollo,
+  graphql(gql`
+    query username($userId: ID) {
+      user(userId: $userId) {
+        _id
+        username
+      }
+    }
+  `),
   graphql(gql`
     mutation setUsername($username: String!, $userId: ID!) {
       setUsername(username: $username, userId: $userId) {
@@ -48,6 +57,9 @@ export default compose(
         }
       })
   }),
+  withFormModel(({ data: { user } = {} }) => ({
+    username: user?.username
+  })),
   withFormErrorHandlers,
   pure
 )(FormSetUsername);
