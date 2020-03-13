@@ -1,5 +1,5 @@
 import { setupDatabase, createLoggedInGraphqlFetch } from './helpers';
-import { SimpleOrder, ConfirmedOrder } from './seeds/orders';
+import { SimpleOrder, ConfirmedOrder, PendingOrder } from './seeds/orders';
 
 let connection;
 // eslint-disable-next-line no-unused-vars
@@ -50,6 +50,44 @@ describe('Order Management', () => {
       });
       expect(removeOrder).toMatchObject({
         _id: SimpleOrder._id
+      });
+    });
+  });
+
+  describe('Mutation.confirmOrder', () => {
+    it('cannot confirm an already confirmed order', async () => {
+      const { errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation confirmOrder($orderId: ID!) {
+            confirmOrder(orderId: $orderId) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          orderId: ConfirmedOrder._id
+        }
+      });
+      expect(errors.length).toEqual(1);
+    });
+
+    it('confirm a pending order', async () => {
+      const { data: { confirmOrder } = {} } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation confirmOrder($orderId: ID!) {
+            confirmOrder(orderId: $orderId) {
+              _id
+              status
+            }
+          }
+        `,
+        variables: {
+          orderId: PendingOrder._id
+        }
+      });
+      expect(confirmOrder).toMatchObject({
+        _id: PendingOrder._id,
+        status: 'CONFIRMED'
       });
     });
   });

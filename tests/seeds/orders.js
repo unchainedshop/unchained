@@ -1,3 +1,5 @@
+import chainedUpsert from './utils/chainedUpsert';
+
 export const SimpleOrder = {
   _id: 'simple-order',
   created: new Date('2019-10-11T11:52:25.433+0000'),
@@ -58,13 +60,34 @@ export const SimpleDelivery = {
   updated: new Date('2019-10-11T12:48:01.523+0000')
 };
 
+export const SimplePosition = {
+  _id: 'simple-order-position',
+  orderId: 'simple-order',
+  productId: 'simple-product',
+  originalProductId: 'simple-product',
+  quantity: 3,
+  created: new Date('2019-10-11T12:15:42.456+0000'),
+  calculation: [
+    {
+      category: 'ITEM',
+      amount: 20000, // CHF 200
+      isTaxable: true,
+      isNetPrice: false,
+      meta: {
+        adapter: 'shop.unchained.pricing.product-price'
+      }
+    }
+  ],
+  scheduling: [],
+  updated: new Date('2019-10-11T12:17:49.529+0000')
+};
+
 export const ConfirmedOrder = {
+  ...SimpleOrder,
   _id: 'confirmed-order',
-  created: new Date('2020-03-13T12:28:09.706+0000'),
+  paymentId: 'confirmed-order-payment',
+  deliveryId: 'confirmed-order-delivery',
   status: 'CONFIRMED',
-  userId: 'user',
-  currency: 'CHF',
-  countryCode: 'CH',
   contact: {
     emailAddress: 'info@unchained.shop',
     telNumber: '+41999999999'
@@ -80,25 +103,6 @@ export const ConfirmedOrder = {
   context: {
     hi: 'there'
   },
-  calculation: [
-    {
-      category: 'ITEMS',
-      amount: 20000
-    },
-    {
-      category: 'PAYMENT',
-      amount: 0
-    },
-    {
-      category: 'DELIVERY',
-      amount: 0
-    },
-    {
-      category: 'DISCOUNTS',
-      amount: 0
-    }
-  ],
-  updated: new Date('2020-03-13T12:28:10.371+0000'),
   ordered: new Date('2020-03-13T12:28:10.371+0000'),
   confirmed: new Date('2020-03-13T12:28:10.371+0000'),
   log: [
@@ -107,40 +111,60 @@ export const ConfirmedOrder = {
       status: 'CONFIRMED',
       info: 'before delivery'
     }
-  ],
-  paymentId: 'confirmed-order-payment',
-  deliveryId: 'confirmed-order-delivery'
+  ]
 };
 
 export const ConfirmedOrderPayment = {
+  ...SimplePayment,
   _id: 'confirmed-order-payment',
-  created: new Date('2020-03-13T12:28:09.706+0000'),
-  status: null,
-  orderId: 'confirmed-order',
-  paymentProviderId: 'simple-payment-provider',
-  context: {},
-  updated: new Date('2020-03-13T12:28:10.371+0000'),
-  calculation: []
+  orderId: 'confirmed-order'
 };
 
 export const ConfirmedOrderDelivery = {
+  ...SimpleDelivery,
   _id: 'confirmed-order-delivery',
-  created: new Date('2020-03-13T12:28:09.706+0000'),
-  status: null,
-  orderId: 'confirmed-order',
-  deliveryProviderId: 'simple-delivery-provider',
-  context: {},
-  calculation: [],
-  updated: new Date('2020-03-13T12:28:10.371+0000')
+  orderId: 'confirmed-order'
+};
+
+export const ConfirmedOrderPosition = {
+  ...SimplePosition,
+  _id: 'confirmed-order-position',
+  orderId: 'confirmed-order'
+};
+
+export const PendingOrder = {
+  ...ConfirmedOrder,
+  _id: 'pending-order',
+  paymentId: 'pending-order-payment',
+  deliveryId: 'pending-order-delivery',
+  status: 'PENDING',
+  confirmed: null
+};
+
+export const PendingOrderPayment = {
+  ...SimplePayment,
+  _id: 'pending-order-payment',
+  orderId: 'pending-order',
+  paymentProviderId: 'prepaid-payment-provider'
+};
+
+export const PendingOrderDelivery = {
+  ...SimpleDelivery,
+  _id: 'pending-order-delivery',
+  orderId: 'pending-order'
+};
+
+export const PendingOrderPosition = {
+  ...SimplePosition,
+  _id: 'pending-order-position',
+  orderId: 'pending-order'
 };
 
 export const DiscountedOrder = {
+  ...SimpleOrder,
   _id: 'discounted-order',
-  created: new Date('2019-10-11T11:52:25.433+0000'),
-  status: null,
-  userId: 'user',
-  currency: 'CHF',
-  countryCode: 'CH',
+  paymentId: 'discounted-order-payment',
+  deliveryId: 'discounted-order-delivery',
   calculation: [
     {
       category: 'ITEMS',
@@ -167,32 +191,19 @@ export const DiscountedOrder = {
       category: 'TAXES',
       amount: -714.9489322191266
     }
-  ],
-  updated: new Date('2019-10-11T12:48:01.611+0000'),
-  paymentId: 'discounted-order-payment',
-  deliveryId: 'discounted-order-delivery'
+  ]
 };
 
 export const DiscountedPayment = {
+  ...SimplePayment,
   _id: 'discounted-order-payment',
-  created: new Date('2019-10-11T11:52:25.446+0000'),
-  status: null,
-  orderId: 'discounted-order',
-  paymentProviderId: 'simple-payment-provider',
-  context: {},
-  updated: new Date('2019-10-11T12:48:01.537+0000'),
-  calculation: []
+  orderId: 'discounted-order'
 };
 
 export const DiscountedDelivery = {
+  ...SimpleDelivery,
   _id: 'discounted-order-delivery',
-  created: new Date('2019-10-11T11:52:25.563+0000'),
-  status: null,
-  orderId: 'discounted-order',
-  deliveryProviderId: 'simple-delivery-provider',
-  context: {},
-  calculation: [],
-  updated: new Date('2019-10-11T12:48:01.523+0000')
+  orderId: 'discounted-order'
 };
 
 export const DiscountedDiscount = {
@@ -213,57 +224,10 @@ export const DiscountedProductDiscount = {
   created: new Date('2019-10-11T12:48:01.435+0000')
 };
 
-export const SimplePosition = {
-  _id: 'simple-order-position',
-  orderId: 'simple-order',
-  productId: 'simple-product',
-  originalProductId: 'simple-product',
-  quantity: 3,
-  created: new Date('2019-10-11T12:15:42.456+0000'),
-  calculation: [
-    {
-      category: 'ITEM',
-      amount: 20000, // CHF 200
-      isTaxable: true,
-      isNetPrice: false,
-      meta: {
-        adapter: 'shop.unchained.pricing.product-price'
-      }
-    }
-  ],
-  scheduling: [],
-  updated: new Date('2019-10-11T12:17:49.529+0000')
-};
-
-export const ConfirmedOrderPosition = {
-  _id: 'confirmed-order-position',
-  orderId: 'confirmed-order',
-  productId: 'simple-product',
-  originalProductId: 'simple-product',
-  quantity: 3,
-  created: new Date('2019-10-11T12:15:42.456+0000'),
-  calculation: [
-    {
-      category: 'ITEM',
-      amount: 20000, // CHF 200
-      isTaxable: true,
-      isNetPrice: false,
-      meta: {
-        adapter: 'shop.unchained.pricing.product-price'
-      }
-    }
-  ],
-  scheduling: [],
-  updated: new Date('2019-10-11T12:17:49.529+0000')
-};
-
 export const DiscountedPosition = {
+  ...SimplePosition,
   _id: 'discounted-order-position',
   orderId: 'discounted-order',
-  productId: 'simple-product',
-  originalProductId: 'simple-product',
-  quantity: 3,
-  created: new Date('2019-10-11T12:15:42.456+0000'),
   calculation: [
     {
       category: 'ITEM',
@@ -317,32 +281,32 @@ export const DiscountedPosition = {
         adapter: 'shop.unchained.pricing.product-swiss-tax'
       }
     }
-  ],
-  scheduling: [],
-  updated: new Date('2019-10-11T12:17:49.529+0000')
+  ]
 };
 
 export default async function seedOrders(db) {
-  await db.collection('orders').findOrInsertOne(DiscountedOrder);
-  await db.collection('order_payments').findOrInsertOne(DiscountedPayment);
-  await db.collection('order_deliveries').findOrInsertOne(DiscountedDelivery);
-  await db.collection('order_discounts').findOrInsertOne(DiscountedDiscount);
-  await db
-    .collection('order_discounts')
-    .findOrInsertOne(DiscountedProductDiscount);
-  await db.collection('order_positions').findOrInsertOne(DiscountedPosition);
+  return chainedUpsert(db)
+    .upsert('orders', SimpleOrder)
+    .upsert('order_payments', SimplePayment)
+    .upsert('order_deliveries', SimpleDelivery)
+    .upsert('order_positions', SimplePosition)
 
-  await db.collection('orders').findOrInsertOne(SimpleOrder);
-  await db.collection('order_payments').findOrInsertOne(SimplePayment);
-  await db.collection('order_deliveries').findOrInsertOne(SimpleDelivery);
-  await db.collection('order_positions').findOrInsertOne(SimplePosition);
+    .upsert('orders', ConfirmedOrder)
+    .upsert('order_payments', ConfirmedOrderPayment)
+    .upsert('order_deliveries', ConfirmedOrderDelivery)
+    .upsert('order_positions', ConfirmedOrderPosition)
 
-  await db.collection('orders').findOrInsertOne(ConfirmedOrder);
-  await db.collection('order_payments').findOrInsertOne(ConfirmedOrderPayment);
-  await db
-    .collection('order_deliveries')
-    .findOrInsertOne(ConfirmedOrderDelivery);
-  await db
-    .collection('order_positions')
-    .findOrInsertOne(ConfirmedOrderPosition);
+    .upsert('orders', PendingOrder)
+    .upsert('order_payments', PendingOrderPayment)
+    .upsert('order_deliveries', PendingOrderDelivery)
+    .upsert('order_positions', PendingOrderPosition)
+
+    .upsert('orders', DiscountedOrder)
+    .upsert('order_payments', DiscountedPayment)
+    .upsert('order_deliveries', DiscountedDelivery)
+    .upsert('order_discounts', DiscountedDiscount)
+    .upsert('order_discounts', DiscountedProductDiscount)
+    .upsert('order_positions', DiscountedPosition)
+
+    .resolve();
 }
