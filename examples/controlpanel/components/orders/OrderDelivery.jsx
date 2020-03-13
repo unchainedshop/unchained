@@ -1,9 +1,9 @@
-import { compose, mapProps, pure } from 'recompose';
+import { compose, mapProps, withHandlers } from 'recompose';
 import gql from 'graphql-tag';
 import { format } from 'date-fns';
 import { graphql } from 'react-apollo';
 import React from 'react';
-import { Segment, List, Label, Icon } from 'semantic-ui-react';
+import { Segment, List, Label, Icon, Button } from 'semantic-ui-react';
 import Link from 'next/link';
 import Address from '../Address';
 import GeoPoint from '../GeoPoint';
@@ -17,7 +17,9 @@ const OrderDelivery = ({
   provider = { interface: {} },
   status,
   deliveryAddress,
+  deliverOrder,
   statusColor,
+  orderStatus,
   delivered,
   activePickUpLocation
 }) => (
@@ -73,14 +75,44 @@ const OrderDelivery = ({
         </List.Item>
       )}
     </List>
+    {status === 'OPEN' && orderStatus !== 'OPEN' && (
+      <Button primary fluid onClick={deliverOrder}>
+        Mark Order as DELIVERED manually
+      </Button>
+    )}
   </Segment>
 );
 
 export default compose(
+  graphql(
+    gql`
+      mutation deliverOrder($orderId: ID!) {
+        deliverOrder(orderId: $orderId) {
+          _id
+          status
+          delivery {
+            _id
+            status
+          }
+          payment {
+            _id
+            status
+          }
+        }
+      }
+    `,
+    {
+      name: 'deliverOrder',
+      options: {
+        refetchQueries: ['orders', 'order']
+      }
+    }
+  ),
   graphql(gql`
     query order($orderId: ID!) {
       order(orderId: $orderId) {
         _id
+        status
         billingAddress {
           firstName
           lastName
@@ -149,11 +181,20 @@ export default compose(
       }
     }
   `),
-  mapProps(({ data: { order = {} } }) => ({
+  withHandlers({
+    deliverOrder: ({ deliverOrder, orderId }) => () =>
+      deliverOrder({
+        variables: {
+          orderId
+        }
+      })
+  }),
+  mapProps(({ deliverOrder, data: { order = {} } }) => ({
     ...order.delivery,
+    deliverOrder,
     deliveryAddress: order.delivery && order.delivery.address,
     activePickUpLocation: order.delivery && order.delivery.activePickUpLocation,
-    statusColor: colorForStatus(order.delivery && order.delivery.status)
-  })),
-  pure
+    statusColor: colorForStatus(order.delivery && order.delivery.status),
+    orderStatus: order.status
+  }))
 )(OrderDelivery);

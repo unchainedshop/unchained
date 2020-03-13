@@ -227,6 +227,11 @@ export default [
       payOrder(orderId: ID!): Order!
 
       """
+      Manually mark a undelivered order as delivered
+      """
+      deliverOrder(orderId: ID!): Order!
+
+      """
       Update E-Mail address of any user or logged in user if userId is not provided
       """
       updateEmail(email: String!, userId: ID): User

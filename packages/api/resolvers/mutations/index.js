@@ -58,6 +58,7 @@ import updateOrderPayment from './updateOrderPayment';
 import updateOrderDelivery from './updateOrderDelivery';
 import confirmOrder from './confirmOrder';
 import payOrder from './payOrder';
+import deliverOrder from './deliverOrder';
 import createPaymentProvider from './createPaymentProvider';
 import updatePaymentProvider from './updatePaymentProvider';
 import removePaymentProvider from './removePaymentProvider';
@@ -199,6 +200,7 @@ export default {
   removeOrder: acl(actions.updateOrder)(removeOrder),
   confirmOrder: acl(actions.markOrderConfirmed)(confirmOrder),
   payOrder: acl(actions.markOrderPaid)(payOrder),
+  deliverOrder: acl(actions.markOrderDelivered)(deliverOrder),
 
   createPaymentProvider: acl(actions.managePaymentProviders)(
     createPaymentProvider
