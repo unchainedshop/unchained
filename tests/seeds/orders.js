@@ -60,6 +60,17 @@ export const SimpleDelivery = {
   updated: new Date('2019-10-11T12:48:01.523+0000')
 };
 
+export const PickupDelivery = {
+  _id: 'pickup-order-delivery',
+  created: new Date('2019-10-11T11:52:25.563+0000'),
+  status: null,
+  orderId: 'simple-order',
+  deliveryProviderId: 'pickup-delivery-provider',
+  context: {},
+  calculation: [],
+  updated: new Date('2019-10-11T12:48:01.523+0000')
+};
+
 export const SimplePosition = {
   _id: 'simple-order-position',
   orderId: 'simple-order',
@@ -289,6 +300,7 @@ export default async function seedOrders(db) {
     .upsert('orders', SimpleOrder)
     .upsert('order_payments', SimplePayment)
     .upsert('order_deliveries', SimpleDelivery)
+    .upsert('order_deliveries', PickupDelivery)
     .upsert('order_positions', SimplePosition)
 
     .upsert('orders', ConfirmedOrder)

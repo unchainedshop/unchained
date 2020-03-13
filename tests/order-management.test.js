@@ -6,7 +6,7 @@ let connection;
 let db;
 let graphqlFetch;
 
-describe('Order Management', () => {
+describe('Order: Management', () => {
   beforeAll(async () => {
     [db, connection] = await setupDatabase();
     graphqlFetch = await createLoggedInGraphqlFetch();
