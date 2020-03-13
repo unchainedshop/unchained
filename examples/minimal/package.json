@@ -39,7 +39,7 @@
     "emoji-flags": "^1.2.0",
     "faker": "^4.1.0",
     "graphql": "^14.6.0",
-    "i18n-iso-countries": "^4.3.1",
+    "i18n-iso-countries": "^5.1.0",
     "iconv-lite": "^0.5.1",
     "isomorphic-unfetch": "^3.0.0",
     "locale": "^0.1.0",
@@ -55,7 +55,7 @@
     "open": "^7.0.3",
     "ramda": "^0.27.0",
     "simpl-schema": "^1.5.7",
-    "stripe": "^8.30.0",
+    "stripe": "^8.31.0",
     "xml-js": "^1.6.11"
   },
   "devDependencies": {
@@ -65,7 +65,7 @@
     "babel-eslint": "^10.1.0",
     "cross-env": "^7.0.2",
     "eslint": "^6.7.1",
-    "eslint-config-airbnb-base": "^14.0.0",
+    "eslint-config-airbnb-base": "^14.1.0",
     "eslint-import-resolver-meteor": "^0.4.0",
     "eslint-plugin-import": "^2.20.1",
     "eslint-plugin-meteor": "^6.0.0",

@@ -9,6 +9,7 @@ Package.describe({
 Package.onUse(api => {
   api.versionsFrom('1.9');
   api.use('ecmascript');
+  api.use('http');
   api.use('unchained:utils@0.41.0');
   api.use('unchained:core-logger@0.41.0');
 
