@@ -4,15 +4,15 @@
 # 'meteor add' and 'meteor remove' will edit this file for you,
 # but you can also edit it by hand.
 
-meteor
-webapp
-mongo
-accounts-base
-accounts-password
-accounts-oauth
-ecmascript
-email
-disable-oplog
-shell-server
+meteor@1.9.3
+webapp@1.9.0
+mongo@1.9.0
+accounts-base@1.6.0
+accounts-password@1.6.0
+accounts-oauth@1.2.0
+ecmascript@0.14.2
+email@1.2.3
+disable-oplog@1.0.7
+shell-server@0.5.0
 unchained:platform
 littledata:synced-cron
