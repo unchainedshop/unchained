@@ -1,5 +1,6 @@
 import { setupDatabase, createLoggedInGraphqlFetch } from './helpers';
 import { SimpleProduct } from './seeds/products';
+import { SimplePosition } from './seeds/orders';
 
 let connection;
 // eslint-disable-next-line no-unused-vars
@@ -172,23 +173,6 @@ describe('Cart: Product Items', () => {
 
   describe('Mutation.updateCartItem', () => {
     it('update a cart item', async () => {
-      const { data: { addCartProduct } = {} } = await graphqlFetch({
-        query: /* GraphQL */ `
-          mutation addCartProduct($productId: ID!) {
-            addCartProduct(productId: $productId) {
-              _id
-              configuration {
-                key
-                value
-              }
-            }
-          }
-        `,
-        variables: {
-          productId: SimpleProduct._id
-        }
-      });
-      expect(addCartProduct.configuration).toBe(null);
       const { data: { updateCartItem } = {} } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation updateCartItem(
@@ -213,7 +197,7 @@ describe('Cart: Product Items', () => {
           }
         `,
         variables: {
-          itemId: addCartProduct._id,
+          itemId: SimplePosition._id,
           configuration: [
             {
               key: 'height',
@@ -223,7 +207,7 @@ describe('Cart: Product Items', () => {
         }
       });
       expect(updateCartItem).toMatchObject({
-        _id: addCartProduct._id,
+        _id: SimplePosition._id,
         quantity: 10,
         product: {
           _id: SimpleProduct._id
@@ -238,31 +222,13 @@ describe('Cart: Product Items', () => {
     });
   });
 
-  describe('Mutation.updateCartItem', () => {
-    it('update a cart item', async () => {
-      const { data: { addCartProduct } = {} } = await graphqlFetch({
-        query: /* GraphQL */ `
-          mutation addCartProduct($productId: ID!) {
-            addCartProduct(productId: $productId) {
-              _id
-              configuration {
-                key
-                value
-              }
-            }
-          }
-        `,
-        variables: {
-          productId: SimpleProduct._id
-        }
-      });
-      expect(addCartProduct.configuration).toBe(null);
+  describe('Mutation.removeCartItem', () => {
+    it('remove a cart item', async () => {
       const { data: { removeCartItem } = {} } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation removeCartItem($itemId: ID!) {
             removeCartItem(itemId: $itemId) {
               _id
-              quantity
               product {
                 _id
               }
@@ -270,12 +236,11 @@ describe('Cart: Product Items', () => {
           }
         `,
         variables: {
-          itemId: addCartProduct._id
+          itemId: SimplePosition._id
         }
       });
       expect(removeCartItem).toMatchObject({
-        _id: addCartProduct._id,
-        quantity: 1,
+        _id: SimplePosition._id,
         product: {
           _id: SimpleProduct._id
         }

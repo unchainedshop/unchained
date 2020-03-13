@@ -1,3 +1,139 @@
+export const SimpleOrder = {
+  _id: 'simple-order',
+  created: new Date('2019-10-11T11:52:25.433+0000'),
+  status: null,
+  userId: 'user',
+  currency: 'CHF',
+  countryCode: 'CH',
+  contact: {
+    emailAddress: 'info@unchained.shop'
+  },
+  billingAddress: {
+    addressLine: 'Bahnhofplatz 2',
+    city: 'Zurich',
+    postalCode: '8001'
+  },
+  calculation: [
+    {
+      category: 'ITEMS',
+      amount: 20000
+    },
+    {
+      category: 'PAYMENT',
+      amount: 0
+    },
+    {
+      category: 'DELIVERY',
+      amount: 0
+    },
+    {
+      category: 'DISCOUNTS',
+      amount: 0
+    }
+  ],
+  updated: new Date('2019-10-11T12:48:01.611+0000'),
+  paymentId: 'simple-order-payment',
+  deliveryId: 'simple-order-delivery'
+};
+
+export const SimplePayment = {
+  _id: 'simple-order-payment',
+  created: new Date('2019-10-11T11:52:25.446+0000'),
+  status: null,
+  orderId: 'simple-order',
+  paymentProviderId: 'simple-payment-provider',
+  context: {},
+  updated: new Date('2019-10-11T12:48:01.537+0000'),
+  calculation: []
+};
+
+export const SimpleDelivery = {
+  _id: 'simple-order-delivery',
+  created: new Date('2019-10-11T11:52:25.563+0000'),
+  status: null,
+  orderId: 'simple-order',
+  deliveryProviderId: 'simple-delivery-provider',
+  context: {},
+  calculation: [],
+  updated: new Date('2019-10-11T12:48:01.523+0000')
+};
+
+export const ConfirmedOrder = {
+  _id: 'confirmed-order',
+  created: new Date('2020-03-13T12:28:09.706+0000'),
+  status: 'CONFIRMED',
+  userId: 'user',
+  currency: 'CHF',
+  countryCode: 'CH',
+  contact: {
+    emailAddress: 'info@unchained.shop',
+    telNumber: '+41999999999'
+  },
+  billingAddress: {
+    firstName: 'Hallo',
+    lastName: 'Velo',
+    addressLine: 'Strasse 1',
+    addressLine2: 'Postfach',
+    postalCode: '8000',
+    city: 'Zürich'
+  },
+  context: {
+    hi: 'there'
+  },
+  calculation: [
+    {
+      category: 'ITEMS',
+      amount: 20000
+    },
+    {
+      category: 'PAYMENT',
+      amount: 0
+    },
+    {
+      category: 'DELIVERY',
+      amount: 0
+    },
+    {
+      category: 'DISCOUNTS',
+      amount: 0
+    }
+  ],
+  updated: new Date('2020-03-13T12:28:10.371+0000'),
+  ordered: new Date('2020-03-13T12:28:10.371+0000'),
+  confirmed: new Date('2020-03-13T12:28:10.371+0000'),
+  log: [
+    {
+      date: new Date('2020-03-13T12:28:10.371+0000'),
+      status: 'CONFIRMED',
+      info: 'before delivery'
+    }
+  ],
+  paymentId: 'confirmed-order-payment',
+  deliveryId: 'confirmed-order-delivery'
+};
+
+export const ConfirmedOrderPayment = {
+  _id: 'confirmed-order-payment',
+  created: new Date('2020-03-13T12:28:09.706+0000'),
+  status: null,
+  orderId: 'confirmed-order',
+  paymentProviderId: 'simple-payment-provider',
+  context: {},
+  updated: new Date('2020-03-13T12:28:10.371+0000'),
+  calculation: []
+};
+
+export const ConfirmedOrderDelivery = {
+  _id: 'confirmed-order-delivery',
+  created: new Date('2020-03-13T12:28:09.706+0000'),
+  status: null,
+  orderId: 'confirmed-order',
+  deliveryProviderId: 'simple-delivery-provider',
+  context: {},
+  calculation: [],
+  updated: new Date('2020-03-13T12:28:10.371+0000')
+};
+
 export const DiscountedOrder = {
   _id: 'discounted-order',
   created: new Date('2019-10-11T11:52:25.433+0000'),
@@ -37,44 +173,6 @@ export const DiscountedOrder = {
   deliveryId: 'discounted-order-delivery'
 };
 
-export const SimpleOrder = {
-  _id: 'simple-order',
-  created: new Date('2019-10-11T11:52:25.433+0000'),
-  status: null,
-  userId: 'user',
-  currency: 'CHF',
-  countryCode: 'CH',
-  contact: {
-    emailAddress: 'info@unchained.shop'
-  },
-  billingAddress: {
-    addressLine: 'Bahnhofplatz 2',
-    city: 'Zurich',
-    postalCode: '8001'
-  },
-  calculation: [
-    {
-      category: 'ITEMS',
-      amount: 20000
-    },
-    {
-      category: 'PAYMENT',
-      amount: 0
-    },
-    {
-      category: 'DELIVERY',
-      amount: 0
-    },
-    {
-      category: 'DISCOUNTS',
-      amount: 0
-    }
-  ],
-  updated: new Date('2019-10-11T12:48:01.611+0000'),
-  paymentId: 'simple-order-payment',
-  deliveryId: 'simple-order-delivery'
-};
-
 export const DiscountedPayment = {
   _id: 'discounted-order-payment',
   created: new Date('2019-10-11T11:52:25.446+0000'),
@@ -91,28 +189,6 @@ export const DiscountedDelivery = {
   created: new Date('2019-10-11T11:52:25.563+0000'),
   status: null,
   orderId: 'discounted-order',
-  deliveryProviderId: 'simple-delivery-provider',
-  context: {},
-  calculation: [],
-  updated: new Date('2019-10-11T12:48:01.523+0000')
-};
-
-export const SimplePayment = {
-  _id: 'simple-order-payment',
-  created: new Date('2019-10-11T11:52:25.446+0000'),
-  status: null,
-  orderId: 'simple-order',
-  paymentProviderId: 'simple-payment-provider',
-  context: {},
-  updated: new Date('2019-10-11T12:48:01.537+0000'),
-  calculation: []
-};
-
-export const SimpleDelivery = {
-  _id: 'simple-order-delivery',
-  created: new Date('2019-10-11T11:52:25.563+0000'),
-  status: null,
-  orderId: 'simple-order',
   deliveryProviderId: 'simple-delivery-provider',
   context: {},
   calculation: [],
@@ -140,6 +216,28 @@ export const DiscountedProductDiscount = {
 export const SimplePosition = {
   _id: 'simple-order-position',
   orderId: 'simple-order',
+  productId: 'simple-product',
+  originalProductId: 'simple-product',
+  quantity: 3,
+  created: new Date('2019-10-11T12:15:42.456+0000'),
+  calculation: [
+    {
+      category: 'ITEM',
+      amount: 20000, // CHF 200
+      isTaxable: true,
+      isNetPrice: false,
+      meta: {
+        adapter: 'shop.unchained.pricing.product-price'
+      }
+    }
+  ],
+  scheduling: [],
+  updated: new Date('2019-10-11T12:17:49.529+0000')
+};
+
+export const ConfirmedOrderPosition = {
+  _id: 'confirmed-order-position',
+  orderId: 'confirmed-order',
   productId: 'simple-product',
   originalProductId: 'simple-product',
   quantity: 3,
@@ -238,4 +336,13 @@ export default async function seedOrders(db) {
   await db.collection('order_payments').findOrInsertOne(SimplePayment);
   await db.collection('order_deliveries').findOrInsertOne(SimpleDelivery);
   await db.collection('order_positions').findOrInsertOne(SimplePosition);
+
+  await db.collection('orders').findOrInsertOne(ConfirmedOrder);
+  await db.collection('order_payments').findOrInsertOne(ConfirmedOrderPayment);
+  await db
+    .collection('order_deliveries')
+    .findOrInsertOne(ConfirmedOrderDelivery);
+  await db
+    .collection('order_positions')
+    .findOrInsertOne(ConfirmedOrderPosition);
 }
