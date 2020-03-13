@@ -500,6 +500,21 @@ Collections.Assortments.helpers({
         }
       }
     );
+    Collections.Assortments.update(
+      {
+        _id: { $ne: this._id },
+        slugs: slug
+      },
+      {
+        $set: {
+          updated: new Date()
+        },
+        $pullAll: {
+          slugs: slug
+        }
+      },
+      { multi: true }
+    );
     return Collections.AssortmentTexts.findOne({
       assortmentId: this._id,
       locale
@@ -580,7 +595,8 @@ Collections.Assortments.helpers({
     forceLiveCollection = false,
     zipperFunction = zipTreeByDeepness
   } = {}) {
-    if (!this._cachedProductIds || forceLiveCollection) { // eslint-disable-line
+    // eslint-disable-next-line
+    if (!this._cachedProductIds || forceLiveCollection) {
       const collectedProductIdTree = this.collectProductIdCacheTree() || [];
       return [...new Set(zipperFunction(collectedProductIdTree))];
     }
@@ -665,7 +681,8 @@ Collections.Assortments.helpers({
     const linkedAssortments = this.linkedAssortments();
     const productIds = this.productIds({ forceLiveCollection: true });
 
-    if (eqSet(new Set(productIds), new Set(this._cachedProductIds))) { // eslint-disable-line
+    // eslint-disable-next-line
+    if (eqSet(new Set(productIds), new Set(this._cachedProductIds))) {
       return 0;
     }
     let updateCount = Collections.Assortments.update(
@@ -703,15 +720,21 @@ Collections.AssortmentTexts.makeSlug = (
   { slug, title, assortmentId },
   options
 ) => {
-  return findUnusedSlug(Collections.AssortmentTexts, options)(
-    {
-      existingSlug: slug,
-      title: title || assortmentId
-    },
-    {
-      assortmentId: { $ne: assortmentId }
-    }
-  );
+  const checkSlugIsUnique = newPotentialSlug => {
+    return (
+      Collections.AssortmentTexts.find({
+        assortmentId: { $ne: assortmentId },
+        slug: newPotentialSlug
+      }).count() === 0
+    );
+  };
+  return findUnusedSlug(
+    checkSlugIsUnique,
+    options
+  )({
+    existingSlug: slug,
+    title: title || assortmentId
+  });
 };
 
 Collections.AssortmentLinks.helpers({
