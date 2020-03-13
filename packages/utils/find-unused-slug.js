@@ -13,19 +13,16 @@ const incrementSuffixedSlug = (slugIncludingSuffix, delimiter = DELIMITER) => {
   return addSuffixToSlug(slugWithoutSuffix, suffixedIndex + 1);
 };
 
-export default (Collection, { slugify = defaultSlugify } = {}) => {
-  const findUnusedSlug = ({ title, existingSlug, newSlug }, scopeSelector) => {
+export default (checkSlugIsUniqueFn, { slugify = defaultSlugify } = {}) => {
+  const findUnusedSlug = ({ title, existingSlug, newSlug }) => {
     const slug = newSlug || existingSlug || `${slugify(title)}`;
-    if (Collection.find({ ...scopeSelector, slug }).count() > 0) {
+    if (!checkSlugIsUniqueFn(slug)) {
       const isSlugAlreadySuffixed = !!newSlug;
-      return findUnusedSlug(
-        {
-          newSlug: isSlugAlreadySuffixed
-            ? incrementSuffixedSlug(slug)
-            : addSuffixToSlug(slug)
-        },
-        scopeSelector
-      );
+      return findUnusedSlug({
+        newSlug: isSlugAlreadySuffixed
+          ? incrementSuffixedSlug(slug)
+          : addSuffixToSlug(slug)
+      });
     }
     return slug;
   };

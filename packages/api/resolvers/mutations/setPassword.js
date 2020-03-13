@@ -11,5 +11,5 @@ export default function(
   const userId = foreignUserId || ownUserId;
   const user = Users.findOne({ _id: userId });
   if (!user) throw new UserNotFoundError({ userId });
-  return user.updatePassword({ password: newPassword });
+  return user.setPassword(newPassword);
 }

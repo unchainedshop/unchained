@@ -232,13 +232,13 @@ describe('Auth for admin users', () => {
     });
   });
 
-  describe('Mutation.updateUserTags', () => {
+  describe('Mutation.setUserTags', () => {
     it('update the tags of myself as admin', async () => {
       const tags = ['new-tag'];
-      const { data: { updateUserTags } = {} } = await graphqlFetch({
+      const { data: { setUserTags } = {} } = await graphqlFetch({
         query: /* GraphQL */ `
-          mutation updateUserTags($tags: [String]!, $userId: ID!) {
-            updateUserTags(tags: $tags, userId: $userId) {
+          mutation setUserTags($tags: [String]!, $userId: ID!) {
+            setUserTags(tags: $tags, userId: $userId) {
               _id
               tags
             }
@@ -249,7 +249,7 @@ describe('Auth for admin users', () => {
           tags
         }
       });
-      expect(updateUserTags).toMatchObject({
+      expect(setUserTags).toMatchObject({
         _id: Admin._id,
         tags
       });

@@ -58,15 +58,21 @@ Products.getNewSequence = oldSequence => {
 };
 
 ProductTexts.makeSlug = ({ slug, title, productId }, options) => {
-  return findUnusedSlug(ProductTexts, options)(
-    {
-      existingSlug: slug,
-      title: title || productId
-    },
-    {
-      productId: { $ne: productId }
-    }
-  );
+  const checkSlugIsUnique = newPotentialSlug => {
+    return (
+      ProductTexts.find({
+        productId: { $ne: productId },
+        slug: newPotentialSlug
+      }).count() === 0
+    );
+  };
+  return findUnusedSlug(
+    checkSlugIsUnique,
+    options
+  )({
+    existingSlug: slug,
+    title: title || productId
+  });
 };
 
 Products.helpers({
@@ -141,6 +147,21 @@ Products.helpers({
           slugs: slug
         }
       }
+    );
+    Products.update(
+      {
+        _id: { $ne: this._id },
+        slugs: slug
+      },
+      {
+        $set: {
+          updated: new Date()
+        },
+        $pullAll: {
+          slugs: slug
+        }
+      },
+      { multi: true }
     );
     return ProductTexts.findOne({ productId: this._id, locale });
   },

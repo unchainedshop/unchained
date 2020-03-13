@@ -77,7 +77,7 @@ Users.helpers({
       return profile.displayName;
     return emails && emails[0].address;
   },
-  updatePassword({ password, ...options } = {}) {
+  setPassword(password, options) {
     const newPassword =
       password ||
       uuidv4()
@@ -99,7 +99,7 @@ Users.helpers({
     user.password = newPassword;
     return user;
   },
-  updateRoles(roles) {
+  setRoles(roles) {
     Users.update(
       { _id: this._id },
       {
@@ -109,6 +109,10 @@ Users.helpers({
         }
       }
     );
+    return Users.findOne({ _id: this._id });
+  },
+  setUsername(username) {
+    Accounts.setUsername(this._id, username);
     return Users.findOne({ _id: this._id });
   },
   addEmail(email, { verified = false, skipEmailVerification = false } = {}) {

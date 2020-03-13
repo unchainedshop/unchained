@@ -5,7 +5,7 @@ aldeed:collection2@3.0.6
 aldeed:schema-index@3.0.0
 allow-deny@1.1.0
 autoupdate@1.6.0
-babel-compiler@7.5.1
+babel-compiler@7.5.2
 babel-runtime@1.5.0
 base64@1.0.12
 binary-heap@1.0.11
@@ -22,7 +22,7 @@ ddp-server@2.3.1
 diff-sequence@1.1.1
 disable-oplog@1.0.7
 dynamic-import@0.5.1
-ecmascript@0.14.1
+ecmascript@0.14.2
 ecmascript-runtime@0.7.0
 ecmascript-runtime-client@0.10.0
 ecmascript-runtime-server@0.9.0
@@ -55,8 +55,8 @@ npm-bcrypt@0.9.3
 npm-mongo@3.3.0
 oauth@1.2.8
 ordered-dict@1.1.0
-ostrio:cookies@2.5.0
-ostrio:files@1.13.0
+ostrio:cookies@2.6.0
+ostrio:files@1.14.0
 percolate:migrations@1.0.2
 promise@0.11.2
 raix:eventemitter@1.0.0

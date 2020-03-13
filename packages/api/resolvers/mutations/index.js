@@ -6,7 +6,7 @@ import addEmail from './addEmail';
 import removeEmail from './removeEmail';
 import updateUserAvatar from './updateUserAvatar';
 import updateUserProfile from './updateUserProfile';
-import updateUserTags from './updateUserTags';
+import setUserTags from './setUserTags';
 import createLanguage from './createLanguage';
 import updateLanguage from './updateLanguage';
 import removeLanguage from './removeLanguage';
@@ -69,6 +69,7 @@ import updateWarehousingProvider from './updateWarehousingProvider';
 import removeWarehousingProvider from './removeWarehousingProvider';
 import setPassword from './setPassword';
 import setRoles from './setRoles';
+import setUsername from './setUsername';
 import enrollUser from './enrollUser';
 import checkoutCart from './checkoutCart';
 import createFilter from './createFilter';
@@ -118,10 +119,11 @@ export default {
   removeEmail: acl(actions.updateUser)(removeEmail),
   updateUserAvatar: acl(actions.updateUser)(updateUserAvatar),
   updateUserProfile: acl(actions.updateUser)(updateUserProfile),
-  updateUserTags: acl(actions.manageUsers)(updateUserTags),
+  setUserTags: acl(actions.manageUsers)(setUserTags),
   setPassword: acl(actions.manageUsers)(setPassword),
-  enrollUser: acl(actions.manageUsers)(enrollUser),
+  setUsername: acl(actions.manageUsers)(setUsername),
   setRoles: acl(actions.manageUsers)(setRoles),
+  enrollUser: acl(actions.manageUsers)(enrollUser),
 
   createLanguage: acl(actions.manageLanguages)(createLanguage),
   updateLanguage: acl(actions.manageLanguages)(updateLanguage),
