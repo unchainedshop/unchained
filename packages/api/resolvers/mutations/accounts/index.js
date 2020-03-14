@@ -7,14 +7,6 @@ import verifyEmail from './verifyEmail';
 import resendVerificationEmail from './resendVerificationEmail';
 import forgotPassword from './forgotPassword';
 import resetPassword from './resetPassword';
-import oauth from './oauth';
-
-const options = {
-  loginWithFacebook: true,
-  loginWithGoogle: true,
-  loginWithLinkedIn: true,
-  loginWithPassword: true
-};
 
 export default {
   logout,
@@ -25,6 +17,5 @@ export default {
   forgotPassword,
   resetPassword,
   resendVerificationEmail,
-  changePassword,
-  ...oauth(options)
+  changePassword
 };

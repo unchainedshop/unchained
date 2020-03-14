@@ -65,6 +65,7 @@ export const actions = [
   'updateOrderItem',
   'markOrderConfirmed',
   'markOrderPaid',
+  'markOrderDelivered',
   'viewAssortments',
   'viewAssortment',
   'viewFilter',

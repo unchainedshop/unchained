@@ -3,7 +3,8 @@ import { Quotations } from 'meteor/unchained:core-quotations';
 
 export default (role, actions) => {
   const isInLoginMutationResponse = root => {
-    if (root && root._inLoginMethodResponse) { // eslint-disable-line
+    // eslint-disable-next-line
+    if (root && root._inLoginMethodResponse) {
       return true;
     }
     return false;
@@ -42,6 +43,7 @@ export default (role, actions) => {
   role.allow(actions.updateOrderPayment, () => false);
   role.allow(actions.markOrderConfirmed, () => false);
   role.allow(actions.markOrderPaid, () => false);
+  role.allow(actions.markOrderDelivered, () => false);
   role.allow(actions.viewLogs, isInLoginMutationResponse);
   role.allow(actions.viewUserRoles, isInLoginMutationResponse);
   role.allow(actions.viewUserOrders, isInLoginMutationResponse);

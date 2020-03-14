@@ -78,7 +78,10 @@ OrderDeliveries.helpers({
       );
     }
   },
-
+  markDelivered() {
+    if (this.status !== OrderDeliveryStatus.OPEN) return;
+    this.setStatus(OrderDeliveryStatus.DELIVERED, 'mark delivered manually');
+  },
   setStatus(status, info) {
     return OrderDeliveries.updateStatus({
       deliveryId: this._id,

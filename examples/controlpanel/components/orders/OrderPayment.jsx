@@ -1,4 +1,4 @@
-import { compose, mapProps, pure, withHandlers } from 'recompose';
+import { compose, mapProps, withHandlers } from 'recompose';
 import gql from 'graphql-tag';
 import { format } from 'date-fns';
 import { graphql } from 'react-apollo';
@@ -113,6 +113,5 @@ export default compose(
     statusColor: colorForStatus(order.payment && order.payment.status),
     orderStatus: order.status,
     ...order.payment
-  })),
-  pure
+  }))
 )(OrderPayment);

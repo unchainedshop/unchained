@@ -71,6 +71,10 @@ export const OrderWrongPaymentStatusError = createError(
   'OrderWrongPaymentStatus',
   'The current status of the payment does not allow this operation'
 );
+export const OrderWrongDeliveryStatusError = createError(
+  'OrderWrongDeliveryStatus',
+  'The current status of the delivery does not allow this operation'
+);
 export const OrderWrongStatusError = createError(
   'OrderWrongStatusError',
   'The current status of the order does not allow this operation'

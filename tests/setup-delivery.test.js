@@ -56,6 +56,6 @@ describe('setup delivery providers', () => {
       },
       type: 'SHIPPING'
     });
-    expect(await DeliveryProviders.countDocuments()).toEqual(2);
+    expect(await DeliveryProviders.countDocuments()).toEqual(4);
   });
 });

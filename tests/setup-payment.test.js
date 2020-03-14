@@ -55,6 +55,6 @@ describe('setup payment providers', () => {
       },
       type: 'INVOICE'
     });
-    expect(await PaymentProviders.countDocuments()).toEqual(2);
+    expect(await PaymentProviders.countDocuments()).toEqual(4);
   });
 });

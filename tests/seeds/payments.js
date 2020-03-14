@@ -1,3 +1,5 @@
+import chainedUpsert from './utils/chainedUpsert';
+
 export const SimplePaymentProvider = {
   _id: 'simple-payment-provider',
   adapterKey: 'shop.unchained.invoice',
@@ -6,8 +8,26 @@ export const SimplePaymentProvider = {
   type: 'INVOICE'
 };
 
+export const PrePaidPaymentProvider = {
+  _id: 'prepaid-payment-provider',
+  adapterKey: 'shop.unchained.invoice-prepaid',
+  created: new Date('2019-10-04T13:52:57.938+0000'),
+  configuration: [],
+  type: 'INVOICE'
+};
+
+export const GenericPaymentProvider = {
+  _id: 'generic-payment-provider',
+  adapterKey: 'shop.unchained.datatrans',
+  created: new Date('2019-10-04T13:52:57.938+0000'),
+  configuration: [],
+  type: 'GENERIC'
+};
+
 export default async function seedPayments(db) {
-  await db
-    .collection('payment-providers')
-    .findOrInsertOne(SimplePaymentProvider);
+  await chainedUpsert(db)
+    .upsert('payment-providers', SimplePaymentProvider)
+    .upsert('payment-providers', PrePaidPaymentProvider)
+    .upsert('payment-providers', GenericPaymentProvider)
+    .resolve();
 }

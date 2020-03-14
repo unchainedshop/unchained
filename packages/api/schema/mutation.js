@@ -2,27 +2,6 @@ export default [
   /* GraphQL */ `
     type Mutation {
       """
-      Login the user with a facebook access token
-      """
-      loginWithFacebook(accessToken: String!): LoginMethodResponse
-
-      """
-      Login the user with a facebook access token
-      """
-      loginWithGoogle(
-        accessToken: String!
-        tokenId: String
-      ): LoginMethodResponse
-
-      """
-      Login the user with a facebook access token
-      """
-      loginWithLinkedIn(
-        code: String!
-        redirectUri: String!
-      ): LoginMethodResponse
-
-      """
       Log the user in with a password.
       """
       loginWithPassword(
@@ -246,6 +225,11 @@ export default [
       Manually mark an unpaid/partially paid order as fully paid
       """
       payOrder(orderId: ID!): Order!
+
+      """
+      Manually mark a undelivered order as delivered
+      """
+      deliverOrder(orderId: ID!): Order!
 
       """
       Update E-Mail address of any user or logged in user if userId is not provided

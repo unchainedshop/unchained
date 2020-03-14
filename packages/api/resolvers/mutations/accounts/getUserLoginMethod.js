@@ -7,7 +7,7 @@ export default function(email) {
       ? Accounts.findUserByEmail(email)
       : Accounts.findUserByUsername(email);
 
-  const list = services
+  return services
     .filter(key => {
       if (key === 'email') return false;
       if (key === 'resume') return false;
@@ -19,8 +19,4 @@ export default function(email) {
       }
       return key;
     });
-  const allowedServices = [...Accounts.oauth.serviceNames(), 'password'];
-  return list
-    .filter(service => allowedServices.indexOf(service) !== -1)
-    .join(', ');
 }

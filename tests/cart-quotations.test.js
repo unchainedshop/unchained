@@ -7,7 +7,7 @@ let connection;
 let db; // eslint-disable-line
 let graphqlFetch;
 
-describe('Cart Quotations', () => {
+describe('Cart: Quotations', () => {
   beforeAll(async () => {
     [db, connection] = await setupDatabase();
     graphqlFetch = await createLoggedInGraphqlFetch(USER_TOKEN);

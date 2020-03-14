@@ -8,6 +8,7 @@ import { embedControlpanelInMeteorWebApp } from '@unchainedshop/controlpanel';
 import 'meteor/unchained:core-delivery/plugins/post';
 import 'meteor/unchained:core-delivery/plugins/pick-mup';
 import 'meteor/unchained:core-delivery/plugins/send-mail';
+import 'meteor/unchained:core-delivery/plugins/stores';
 import 'meteor/unchained:core-warehousing/plugins/google-sheets';
 import 'meteor/unchained:core-discounting/plugins/half-price-manual';
 import 'meteor/unchained:core-discounting/plugins/100-off';
