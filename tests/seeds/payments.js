@@ -16,9 +16,18 @@ export const PrePaidPaymentProvider = {
   type: 'INVOICE'
 };
 
+export const GenericPaymentProvider = {
+  _id: 'generic-payment-provider',
+  adapterKey: 'shop.unchained.datatrans',
+  created: new Date('2019-10-04T13:52:57.938+0000'),
+  configuration: [],
+  type: 'GENERIC'
+};
+
 export default async function seedPayments(db) {
   await chainedUpsert(db)
     .upsert('payment-providers', SimplePaymentProvider)
     .upsert('payment-providers', PrePaidPaymentProvider)
+    .upsert('payment-providers', GenericPaymentProvider)
     .resolve();
 }

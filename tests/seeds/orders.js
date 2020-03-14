@@ -49,6 +49,17 @@ export const SimplePayment = {
   calculation: []
 };
 
+export const GenericPayment = {
+  _id: 'generic-order-payment',
+  created: new Date('2019-10-11T11:52:25.446+0000'),
+  status: null,
+  orderId: 'simple-order',
+  paymentProviderId: 'generic-payment-provider',
+  context: {},
+  updated: new Date('2019-10-11T12:48:01.537+0000'),
+  calculation: []
+};
+
 export const SimpleDelivery = {
   _id: 'simple-order-delivery',
   created: new Date('2019-10-11T11:52:25.563+0000'),
@@ -299,6 +310,7 @@ export default async function seedOrders(db) {
   return chainedUpsert(db)
     .upsert('orders', SimpleOrder)
     .upsert('order_payments', SimplePayment)
+    .upsert('order_payments', GenericPayment)
     .upsert('order_deliveries', SimpleDelivery)
     .upsert('order_deliveries', PickupDelivery)
     .upsert('order_positions', SimplePosition)
