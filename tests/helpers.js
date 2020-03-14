@@ -9,6 +9,7 @@ import seedUsers, { ADMIN_TOKEN } from './seeds/users';
 import seedProducts from './seeds/products';
 import seedDeliveries from './seeds/deliveries';
 import seedPayments from './seeds/payments';
+import seedWarehousings from './seeds/warehousings';
 import seedOrders from './seeds/orders';
 import seedQuotations from './seeds/quotations';
 
@@ -36,6 +37,7 @@ export const setupDatabase = async () => {
   await seedProducts(db);
   await seedDeliveries(db);
   await seedPayments(db);
+  await seedWarehousings(db);
   await seedOrders(db);
   await seedQuotations(db);
 

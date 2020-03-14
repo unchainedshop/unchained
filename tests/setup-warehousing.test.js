@@ -1,61 +1,144 @@
 import { setupDatabase, createLoggedInGraphqlFetch } from './helpers';
+import { SimpleWarehousingProvider } from './seeds/warehousings';
 
 describe('setup warehousing providers', () => {
-  let WarehousingProviders;
   let connection;
-  let db;
   let graphqlFetch;
 
   beforeAll(async () => {
-    [db, connection] = await setupDatabase();
+    [, connection] = await setupDatabase();
     graphqlFetch = await createLoggedInGraphqlFetch();
-    WarehousingProviders = db.collection('warehousing-providers');
   });
 
   afterAll(async () => {
     await connection.close();
   });
 
-  it('add a shipping warehousing provider', async () => {
-    const {
-      data: { createWarehousingProvider, errors }
-    } = await graphqlFetch({
-      query: /* GraphQL */ `
-        mutation createWarehousingProvider(
-          $warehousingProvider: CreateProviderInput!
-        ) {
-          createWarehousingProvider(warehousingProvider: $warehousingProvider) {
-            _id
-            created
-            updated
-            deleted
-            type
-            interface {
+  describe('Mutation.createWarehousingProvider', () => {
+    it('add a shipping warehousing provider', async () => {
+      const {
+        data: { createWarehousingProvider, errors }
+      } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation createWarehousingProvider(
+            $warehousingProvider: CreateProviderInput!
+          ) {
+            createWarehousingProvider(
+              warehousingProvider: $warehousingProvider
+            ) {
               _id
-              version
-              label
+              created
+              updated
+              deleted
+              type
+              interface {
+                _id
+                version
+                label
+              }
+              configuration
+              configurationError
             }
-            configuration
-            configurationError
+          }
+        `,
+        variables: {
+          warehousingProvider: {
+            type: 'PHYSICAL',
+            adapterKey: 'shop.unchained.warehousing.google-sheets'
           }
         }
-      `,
-      variables: {
-        warehousingProvider: {
-          type: 'PHYSICAL',
-          adapterKey: 'shop.unchained.warehousing.google-sheets'
+      });
+      expect(errors).toEqual(undefined);
+      expect(createWarehousingProvider).toMatchObject({
+        configurationError: null,
+        deleted: null,
+        interface: {
+          _id: 'shop.unchained.warehousing.google-sheets'
+        },
+        type: 'PHYSICAL'
+      });
+    });
+  });
+
+  describe('Mutation.updateWarehousingProvider', () => {
+    it('Update a warehousing provider', async () => {
+      const {
+        data: { updateWarehousingProvider, errors }
+      } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation updateWarehousingProvider(
+            $warehousingProvider: UpdateProviderInput!
+            $warehousingProviderId: ID!
+          ) {
+            updateWarehousingProvider(
+              warehousingProvider: $warehousingProvider
+              warehousingProviderId: $warehousingProviderId
+            ) {
+              _id
+              type
+              deleted
+              interface {
+                _id
+              }
+              configuration
+              configurationError
+            }
+          }
+        `,
+        variables: {
+          warehousingProviderId: SimpleWarehousingProvider._id,
+          warehousingProvider: {
+            configuration: [
+              {
+                key: 'gugus',
+                value: 'blub'
+              }
+            ]
+          }
         }
-      }
+      });
+      expect(errors).toEqual(undefined);
+      expect(updateWarehousingProvider).toMatchObject({
+        configuration: [
+          {
+            key: 'gugus',
+            value: 'blub'
+          }
+        ],
+        configurationError: null,
+        deleted: null,
+        interface: {
+          _id: 'shop.unchained.warehousing.google-sheets'
+        },
+        type: 'PHYSICAL'
+      });
     });
-    expect(errors).toEqual(undefined);
-    expect(createWarehousingProvider).toMatchObject({
-      configurationError: null,
-      deleted: null,
-      interface: {
-        _id: 'shop.unchained.warehousing.google-sheets'
-      },
-      type: 'PHYSICAL'
+  });
+
+  describe('Mutation.removeWarehousingProvider', () => {
+    it('Remove a warehousing provider', async () => {
+      const {
+        data: { removeWarehousingProvider, errors }
+      } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation removeWarehousingProvider($warehousingProviderId: ID!) {
+            removeWarehousingProvider(
+              warehousingProviderId: $warehousingProviderId
+            ) {
+              _id
+              deleted
+            }
+          }
+        `,
+        variables: {
+          warehousingProviderId: SimpleWarehousingProvider._id
+        }
+      });
+      expect(errors).toEqual(undefined);
+      expect(removeWarehousingProvider).toMatchObject({
+        deleted: expect.anything(),
+        _id: SimpleWarehousingProvider._id
+      });
     });
-    expect(await WarehousingProviders.countDocuments()).toEqual(1);
   });
 });
