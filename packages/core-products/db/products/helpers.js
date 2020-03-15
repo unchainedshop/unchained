@@ -368,7 +368,7 @@ Products.helpers({
         return leftMaxQuantity - rightMaxQuantity;
       }
     );
-    return pricing.reduce(
+    const price = pricing.reduce(
       (oldValue, curPrice) => {
         if (
           curPrice.currencyCode === currency &&
@@ -383,17 +383,23 @@ Products.helpers({
         return oldValue;
       },
       {
-        _id: crypto
-          .createHash('sha256')
-          .update([this._id, country, currency].join(''))
-          .digest('hex'),
-        amount: 0,
+        amount: null,
         currencyCode: currency,
         countryCode: country,
         isTaxable: false,
         isNetPrice: false
       }
     );
+    if (price.amount !== undefined && price.amount !== null) {
+      return {
+        _id: crypto
+          .createHash('sha256')
+          .update([this._id, country, currency].join(''))
+          .digest('hex'),
+        ...price
+      };
+    }
+    return null;
   },
   resolveOrderableProduct({ configuration = [] }) {
     this.checkIsActive();

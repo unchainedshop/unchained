@@ -20,6 +20,7 @@ class ProductPrice extends ProductPricingAdapter {
     const { product, country, quantity } = this.context;
 
     const price = product.price({ country });
+    if (price === null || price === undefined) return null;
     const itemTotal = price.amount * quantity;
     this.result.addItem({
       amount: itemTotal,

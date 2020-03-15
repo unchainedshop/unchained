@@ -1,8 +1,8 @@
 export default [
   /* GraphQL */ `
     type Money {
-      amount: Int
-      currency: String
+      amount: Int!
+      currency: String!
     }
   `
 ];

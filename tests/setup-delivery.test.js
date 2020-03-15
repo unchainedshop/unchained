@@ -1,61 +1,141 @@
 import { setupDatabase, createLoggedInGraphqlFetch } from './helpers';
+import { SimpleDeliveryProvider } from './seeds/deliveries';
 
 describe('setup delivery providers', () => {
-  let DeliveryProviders;
   let connection;
-  let db;
   let graphqlFetch;
 
   beforeAll(async () => {
-    [db, connection] = await setupDatabase();
+    [, connection] = await setupDatabase();
     graphqlFetch = await createLoggedInGraphqlFetch();
-    DeliveryProviders = db.collection('delivery-providers');
   });
 
   afterAll(async () => {
     await connection.close();
   });
 
-  it('add a shipping delivery provider', async () => {
-    const {
-      data: { createDeliveryProvider, errors } = {}
-    } = await graphqlFetch({
-      query: /* GraphQL */ `
-        mutation createDeliveryProvider(
-          $deliveryProvider: CreateProviderInput!
-        ) {
-          createDeliveryProvider(deliveryProvider: $deliveryProvider) {
-            _id
-            created
-            updated
-            deleted
-            type
-            interface {
+  describe('Mutation.createDeliveryProvider', () => {
+    it('create a shipping delivery provider', async () => {
+      const {
+        data: { createDeliveryProvider, errors } = {}
+      } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation createDeliveryProvider(
+            $deliveryProvider: CreateProviderInput!
+          ) {
+            createDeliveryProvider(deliveryProvider: $deliveryProvider) {
               _id
-              version
-              label
+              created
+              updated
+              deleted
+              type
+              interface {
+                _id
+                version
+                label
+              }
+              configuration
+              configurationError
             }
-            configuration
-            configurationError
+          }
+        `,
+        variables: {
+          deliveryProvider: {
+            type: 'SHIPPING',
+            adapterKey: 'shop.unchained.post'
           }
         }
-      `,
-      variables: {
-        deliveryProvider: {
-          type: 'SHIPPING',
-          adapterKey: 'shop.unchained.post'
+      });
+      expect(errors).toEqual(undefined);
+      expect(createDeliveryProvider).toMatchObject({
+        configurationError: null,
+        configuration: [],
+        deleted: null,
+        interface: {
+          _id: 'shop.unchained.post'
+        },
+        type: 'SHIPPING'
+      });
+    });
+  });
+
+  describe('Mutation.updateDeliveryProvider', () => {
+    it('Update a delivery provider', async () => {
+      const {
+        data: { updateDeliveryProvider, errors }
+      } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation updateDeliveryProvider(
+            $deliveryProvider: UpdateProviderInput!
+            $deliveryProviderId: ID!
+          ) {
+            updateDeliveryProvider(
+              deliveryProvider: $deliveryProvider
+              deliveryProviderId: $deliveryProviderId
+            ) {
+              _id
+              type
+              deleted
+              interface {
+                _id
+              }
+              configuration
+              configurationError
+            }
+          }
+        `,
+        variables: {
+          deliveryProviderId: SimpleDeliveryProvider._id,
+          deliveryProvider: {
+            configuration: [
+              {
+                key: 'gugus',
+                value: 'blub'
+              }
+            ]
+          }
         }
-      }
+      });
+      expect(errors).toEqual(undefined);
+      expect(updateDeliveryProvider).toMatchObject({
+        configuration: [
+          {
+            key: 'gugus',
+            value: 'blub'
+          }
+        ],
+        configurationError: null,
+        deleted: null,
+        interface: {
+          _id: 'shop.unchained.post'
+        },
+        type: 'SHIPPING'
+      });
     });
-    expect(errors).toEqual(undefined);
-    expect(createDeliveryProvider).toMatchObject({
-      configurationError: null,
-      deleted: null,
-      interface: {
-        _id: 'shop.unchained.post'
-      },
-      type: 'SHIPPING'
+  });
+
+  describe('Mutation.removeDeliveryProvider', () => {
+    it('Remove a delivery provider', async () => {
+      const {
+        data: { removeDeliveryProvider, errors }
+      } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation removeDeliveryProvider($deliveryProviderId: ID!) {
+            removeDeliveryProvider(deliveryProviderId: $deliveryProviderId) {
+              _id
+              deleted
+            }
+          }
+        `,
+        variables: {
+          deliveryProviderId: SimpleDeliveryProvider._id
+        }
+      });
+      expect(errors).toEqual(undefined);
+      expect(removeDeliveryProvider).toMatchObject({
+        deleted: expect.anything(),
+        _id: SimpleDeliveryProvider._id
+      });
     });
-    expect(await DeliveryProviders.countDocuments()).toEqual(4);
   });
 });
