@@ -25,11 +25,13 @@ class SendMail extends DeliveryAdapter {
     return type === 'SHIPPING';
   }
 
-  isActive() { // eslint-disable-line
+  isActive() {
+    // eslint-disable-line
     return true;
   }
 
-  async estimatedDeliveryThroughput(warehousingThroughputTime) { // eslint-disable-line
+  async estimatedDeliveryThroughput(warehousingThroughputTime) {
+    // eslint-disable-line
     return 0;
   }
 
@@ -54,7 +56,8 @@ class SendMail extends DeliveryAdapter {
     }, null);
   }
 
-  configurationError() { // eslint-disable-line
+  configurationError() {
+    // eslint-disable-line
     return null;
   }
 
@@ -82,17 +85,18 @@ class SendMail extends DeliveryAdapter {
       const productTexts = product.getLocalizedTexts();
       const originalProductTexts = originalProduct.getLocalizedTexts();
       const pricing = position.pricing();
-      const unitPrice = pricing.unitPrice().amount;
+      const unitPrice = pricing.unitPrice();
       return {
         sku: product.warehousing && product.warehousing.sku,
         productTexts,
         originalProductTexts,
         name: productTexts.title,
-        price: unitPrice / 100,
+        price: unitPrice?.amount ?? unitPrice.amount / 100,
         quantity: position.quantity
       };
     });
 
+    const total = order.pricing()?.total();
     return director.sendMessage({
       template: 'shop.unchained.send-mail',
       attachments,
@@ -104,7 +108,7 @@ class SendMail extends DeliveryAdapter {
         ...((transactionContext && transactionContext.address) || {}),
         items,
         contact: order.contact || {},
-        total: order.pricing().total().amount / 100
+        total: total ?? total / 100
       }
     });
   }
