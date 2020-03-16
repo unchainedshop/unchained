@@ -26,15 +26,6 @@ Collection.prototype.findOrInsertOne = async function findOrInsertOne(
   }
 };
 
-const clearCollections = async db => {
-  const collections = await db.collections();
-  return Promise.all(
-    collections.map(async collection => {
-      return collection.deleteMany({});
-    })
-  );
-};
-
 export const setupDatabase = async () => {
   const connection = await MongoClient.connect(global.__MONGO_URI__, {
     useNewUrlParser: true,
@@ -42,7 +33,7 @@ export const setupDatabase = async () => {
     poolSize: 1
   });
   const db = await connection.db(global.__MONGO_DB_NAME__);
-  await clearCollections(db);
+  await db.dropDatabase();
   await seedUsers(db);
   await seedProducts(db);
   await seedDeliveries(db);
@@ -62,7 +53,7 @@ export const wipeDatabase = async () => {
     useUnifiedTopology: true
   });
   const db = await connection.db(global.__MONGO_DB_NAME__);
-  await clearCollections(db);
+  await db.dropDatabase();
   await connection.close();
 };
 
