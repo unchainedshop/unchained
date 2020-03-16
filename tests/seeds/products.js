@@ -38,7 +38,7 @@ export const GermanProductText = {
   locale: 'de',
   productId: 'simple-product',
   slug: 'slug-de',
-  title: 'title-de',
+  title: 'simple product title de',
   updated: new Date('2019-09-10T14:28:46.103+0000'),
   brand: 'brand-de',
   description: 'text-de',
@@ -53,7 +53,7 @@ export const FrenchProductText = {
   productId: 'simple-product',
   labels: ['label-fr-1'],
   slug: 'slug-fr',
-  title: 'title-fr',
+  title: 'simple product title fr',
   updated: new Date('2019-09-10T14:28:46.105+0000'),
   brand: 'brand-fr-1',
   description: 'text-fr-1',
@@ -133,6 +133,9 @@ export const SimpleProductReview = {
 };
 
 export default async function seedProducts(db) {
+  await db.collection('product_texts').createIndex({
+    title: 'text'
+  });
   await db.collection('products').findOrInsertOne(SimpleProduct);
   await db.collection('product_reviews').findOrInsertOne(SimpleProductReview);
   await db.collection('product_texts').findOrInsertOne(GermanProductText);

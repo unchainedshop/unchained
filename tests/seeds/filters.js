@@ -3,12 +3,12 @@ export const MultiChoiceFilter = {
   created: new Date('2020-03-16T09:31:42.690+0000'),
   type: 'MULTI_CHOICE',
   key: 'tags',
-  options: [],
+  options: ['highlight', 'tag-1', 'tag-2'],
   updated: new Date('2020-03-16T09:32:31.996+0000'),
   isActive: true
 };
 
-export const GermanFilterText = {
+export const GermanMultiChoiceFilterText = {
   _id: 'german',
   filterId: 'multichoice-filter',
   filterOptionValue: null,
@@ -18,7 +18,7 @@ export const GermanFilterText = {
   subtitle: null
 };
 
-export const FrenchFilterText = {
+export const FrenchMultiChoiceFilterText = {
   _id: 'french',
   filterId: 'multichoice-filter',
   filterOptionValue: null,
@@ -28,6 +28,10 @@ export const FrenchFilterText = {
 
 export default async function seedFilters(db) {
   await db.collection('filters').findOrInsertOne(MultiChoiceFilter);
-  await db.collection('filter_texts').findOrInsertOne(GermanFilterText);
-  await db.collection('filter_texts').findOrInsertOne(FrenchFilterText);
+  await db
+    .collection('filter_texts')
+    .findOrInsertOne(GermanMultiChoiceFilterText);
+  await db
+    .collection('filter_texts')
+    .findOrInsertOne(FrenchMultiChoiceFilterText);
 }

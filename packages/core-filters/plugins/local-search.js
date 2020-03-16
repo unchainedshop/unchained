@@ -59,6 +59,20 @@ class LocalSearch extends FilterAdapter {
 
     return productIds;
   }
+
+  async transformFilterSelector(last) {
+    // eslint-disable-line
+    const { query = {} } = this.context;
+    const { queryString } = query;
+
+    if (queryString) {
+      return {
+        isActive: true
+      };
+    }
+
+    return last;
+  }
 }
 
 FilterDirector.registerAdapter(LocalSearch);

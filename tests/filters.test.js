@@ -16,7 +16,7 @@ describe('Filters', () => {
   });
 
   describe('Mutation.createFilter', () => {
-    it('create a new filter', async () => {
+    it('create a new single choice filter', async () => {
       const { data: { createFilter } = {} } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation createFilter($filter: CreateFilterInput!) {
@@ -62,6 +62,42 @@ describe('Filters', () => {
             value: 'ST'
           }
         ]
+      });
+
+      const { data: { search } = {} } = await graphqlFetch({
+        query: /* GraphQL */ `
+          query search(
+            $queryString: String
+            $filterQuery: [FilterQueryInput!]
+          ) {
+            search(queryString: $queryString, filterQuery: $filterQuery) {
+              totalProducts
+              filters {
+                filteredProducts
+                definition {
+                  _id
+                  key
+                }
+                options {
+                  isSelected
+                  filteredProducts
+                  definition {
+                    _id
+                    value
+                  }
+                }
+              }
+            }
+          }
+        `,
+        variables: {
+          queryString: 'product',
+          filterQuery: null
+        }
+      });
+      expect(search).toMatchObject({
+        totalProducts: 1,
+        filters: expect.anything()
       });
     });
   });
