@@ -61,14 +61,22 @@ class LocalSearch extends FilterAdapter {
   }
 
   async transformFilterSelector(last) {
-    // eslint-disable-line
     const { query = {} } = this.context;
-    const { queryString } = query;
+    const { queryString, filterIds, includeInactive } = query;
 
-    if (queryString) {
-      return {
-        isActive: true
-      };
+    if (queryString && !filterIds) {
+      // Global search without assortment scope:
+      // Return all filters
+      const selector = { ...last };
+      if (selector?.key) {
+        // Do not restrict to keys
+        delete selector.key;
+      }
+      if (!includeInactive) {
+        // Include only active filters
+        selector.isActive = true;
+      }
+      return selector;
     }
 
     return last;

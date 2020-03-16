@@ -70,7 +70,11 @@ describe('Filters', () => {
             $queryString: String
             $filterQuery: [FilterQueryInput!]
           ) {
-            search(queryString: $queryString, filterQuery: $filterQuery) {
+            search(
+              queryString: $queryString
+              filterQuery: $filterQuery
+              includeInactive: true
+            ) {
               totalProducts
               filters {
                 filteredProducts
@@ -97,7 +101,20 @@ describe('Filters', () => {
       });
       expect(search).toMatchObject({
         totalProducts: 1,
-        filters: expect.anything()
+        filters: [
+          {
+            filteredProducts: 1,
+            definition: {
+              key: 'tags'
+            }
+          },
+          {
+            filteredProducts: 1,
+            definition: {
+              key: 'warehousing.baseUnit'
+            }
+          }
+        ]
       });
     });
   });
