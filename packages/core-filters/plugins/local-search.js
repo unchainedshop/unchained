@@ -30,8 +30,7 @@ class LocalSearch extends FilterAdapter {
 
     if (!queryString) return productIdResolver;
 
-    const allProductIds = await productIdResolver;
-    if (allProductIds && allProductIds.length === 0) return productIdResolver;
+    const restrictedProductIds = await productIdResolver;
 
     const selector = AMAZON_DOCUMENTDB_COMPAT_MODE
       ? {
@@ -48,7 +47,9 @@ class LocalSearch extends FilterAdapter {
           $text: { $search: queryString }
         };
 
-    selector.productId = { $in: allProductIds };
+    if (restrictedProductIds) {
+      selector.productId = { $in: new Set(restrictedProductIds) };
+    }
 
     const productIds = ProductTexts.find(selector, {
       fields: {
@@ -57,6 +58,28 @@ class LocalSearch extends FilterAdapter {
     }).map(({ productId }) => productId);
 
     return productIds;
+  }
+
+  async transformFilterSelector(last) {
+    const { query = {} } = this.context;
+    const { queryString, filterIds, includeInactive } = query;
+
+    if (queryString && !filterIds) {
+      // Global search without assortment scope:
+      // Return all filters
+      const selector = { ...last };
+      if (selector?.key) {
+        // Do not restrict to keys
+        delete selector.key;
+      }
+      if (!includeInactive) {
+        // Include only active filters
+        selector.isActive = true;
+      }
+      return selector;
+    }
+
+    return last;
   }
 }
 

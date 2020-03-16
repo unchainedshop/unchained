@@ -13,8 +13,12 @@ const zlib = require('zlib');
 
 const MAX_UNCOMPRESSED_FILTER_PRODUCTS = 1000;
 
-Filters.createFilter = ({ locale, title, type, key, options, ...rest }) => {
+Filters.createFilter = (
+  { locale, title, type, key, options, isActive = false, ...rest },
+  { skipInvalidation = false } = {}
+) => {
   const filter = {
+    isActive,
     created: new Date(),
     type: FilterTypes[type],
     key,
@@ -24,10 +28,16 @@ Filters.createFilter = ({ locale, title, type, key, options, ...rest }) => {
   const filterId = Filters.insert(filter);
   const filterObject = Filters.findOne({ _id: filterId });
   filterObject.upsertLocalizedText(locale, { filterOptionValue: null, title });
+  if (!skipInvalidation) {
+    filterObject.invalidateProductIdCache();
+  }
   return filterObject;
 };
 
-Filters.updateFilter = ({ filterId, ...filter }) => {
+Filters.updateFilter = (
+  { filterId, ...filter },
+  { skipInvalidation = false } = {}
+) => {
   const modifier = {
     $set: {
       ...filter,
@@ -35,7 +45,17 @@ Filters.updateFilter = ({ filterId, ...filter }) => {
     }
   };
   Filters.update({ _id: filterId }, modifier);
-  return Filters.findOne({ _id: filterId });
+  const filterObject = Filters.findOne({ _id: filterId });
+  if (!skipInvalidation) {
+    filterObject.invalidateProductIdCache();
+  }
+  return filterObject;
+};
+
+Filters.removeFilter = ({ filterId }) => {
+  const removedFilter = Filters.findOne({ _id: filterId });
+  Filters.remove({ _id: filterId });
+  return removedFilter;
 };
 
 Filters.getLocalizedTexts = (filterId, filterOptionValue, locale) =>
@@ -70,7 +90,8 @@ Filters.markFiltersDirty = () => {
     collectionUpdateOptions
   );
   const timestamp = new Date();
-  log(`Filter Sync: Marked Filters dirty at timestamp ${timestamp}`, { // eslint-disable-line
+  log(`Filter Sync: Marked Filters dirty at timestamp ${timestamp}`, {
+    // eslint-disable-line
     updatedFiltersCount,
     updatedFilterTextsCount,
     level: 'verbose'
@@ -258,15 +279,22 @@ Filters.helpers({
     );
   },
   cache() {
-    if (!this._cache) return null; // eslint-disable-line
-    if (!this._isCacheTransformed) { // eslint-disable-line
-      if (this._cache.compressed) { // eslint-disable-line
+    // eslint-disable-next-line
+    if (!this._cache) return null;
+    // eslint-disable-next-line
+    if (!this._isCacheTransformed) {
+      // eslint-disable-next-line
+      if (this._cache.compressed) {
         const gunzip = util.promisify(zlib.gunzip);
         this._cache = JSON.parse(Promise.await(gunzip(this._cache.compressed))); // eslint-disable-line
       }
-      this._cache = { // eslint-disable-line
-        allProductIds: this._cache.allProductIds, // eslint-disable-line
-        productIds: this._cache.productIds.reduce((accumulator, [key, value]) => ({ // eslint-disable-line
+      // eslint-disable-next-line
+      this._cache = {
+        // eslint-disable-next-line
+        allProductIds: this._cache.allProductIds,
+        // eslint-disable-next-line
+        productIds: this._cache.productIds.reduce(
+          (accumulator, [key, value]) => ({
             ...accumulator,
             [key]: value
           }),

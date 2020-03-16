@@ -1,10 +1,6 @@
 import { FilterDirector } from 'meteor/unchained:core-filters';
 
-const defaultSelector = ({
-  filterIds = [],
-  filterQuery = {},
-  includeInactive
-}) => {
+const defaultSelector = ({ filterIds, filterQuery = {}, includeInactive }) => {
   const selector = {};
   const keys = Object.keys(filterQuery);
   if (Array.isArray(filterIds)) {
