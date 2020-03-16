@@ -12,7 +12,7 @@ export const SimpleProduct = {
     sku: 'SKU',
     baseUnit: 'ST'
   },
-  tags: ['tag-1', 'tag-2'],
+  tags: ['tag-1', 'tag-2', 'highlight'],
   commerce: {
     pricing: [
       {
