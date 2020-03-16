@@ -30,8 +30,7 @@ class LocalSearch extends FilterAdapter {
 
     if (!queryString) return productIdResolver;
 
-    const allProductIds = await productIdResolver;
-    if (allProductIds && allProductIds.length === 0) return productIdResolver;
+    const restrictedProductIds = await productIdResolver;
 
     const selector = AMAZON_DOCUMENTDB_COMPAT_MODE
       ? {
@@ -48,7 +47,9 @@ class LocalSearch extends FilterAdapter {
           $text: { $search: queryString }
         };
 
-    selector.productId = { $in: allProductIds };
+    if (restrictedProductIds) {
+      selector.productId = { $in: new Set(restrictedProductIds) };
+    }
 
     const productIds = ProductTexts.find(selector, {
       fields: {
