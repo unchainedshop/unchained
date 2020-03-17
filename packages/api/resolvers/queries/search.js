@@ -15,7 +15,7 @@ export default async function(root, query, context) {
   if (assortmentId) {
     const assortment = Assortments.findOne({ _id: assortmentId });
     if (!assortment) throw new AssortmentNotFoundError({ assortmentId });
-    return assortment.search({ ...query, forceLiveCollection });
+    return assortment.search({ ...query, forceLiveCollection, context });
   }
   if (!queryString) throw new QueryStringRequiredError({});
   return search({ ...query, forceLiveCollection, context });
