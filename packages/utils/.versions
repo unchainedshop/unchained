@@ -1,7 +1,7 @@
-babel-compiler@7.5.0
+babel-compiler@7.5.2
 babel-runtime@1.5.0
 dynamic-import@0.5.1
-ecmascript@0.14.0
+ecmascript@0.14.2
 ecmascript-runtime@0.7.0
 ecmascript-runtime-client@0.10.0
 ecmascript-runtime-server@0.9.0

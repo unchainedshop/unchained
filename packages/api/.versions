@@ -1,5 +1,4 @@
 accounts-base@1.5.0
-accounts-oauth@1.1.16
 accounts-password@1.5.2
 aldeed:collection2@3.0.2
 aldeed:schema-index@3.0.0
@@ -49,8 +48,7 @@ mongo-decimal@0.1.1
 mongo-dev-server@1.1.0
 mongo-id@1.0.7
 npm-bcrypt@0.9.3
-npm-mongo@3.3.0
-oauth@1.2.8
+npm-mongo@3.6.0
 ordered-dict@1.1.0
 ostrio:cookies@2.3.0
 ostrio:files@1.11.2
