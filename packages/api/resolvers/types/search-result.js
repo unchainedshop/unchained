@@ -34,8 +34,7 @@ export default {
     query
   }) => {
     const resolvedFilterSelector = await filterSelector;
-    const extractedFilterIds =
-      (resolvedFilterSelector._id && resolvedFilterSelector._id.$in) || [];
+    const extractedFilterIds = resolvedFilterSelector?._id?.$in || [];
     const otherFilters = Filters.find(resolvedFilterSelector)
       .fetch()
       .sort((left, right) => {

@@ -6,7 +6,8 @@ import {
   AssortmentNotFoundError
 } from '../../errors';
 
-export default async function(root, query, { userId }) {
+export default async function(root, query, context) {
+  const { userId } = context;
   const forceLiveCollection = false;
   const { queryString, assortmentId } = query;
   log(`query search ${assortmentId} ${JSON.stringify(query)}`, { userId });
@@ -17,5 +18,5 @@ export default async function(root, query, { userId }) {
     return assortment.search({ ...query, forceLiveCollection });
   }
   if (!queryString) throw new QueryStringRequiredError({});
-  return search({ ...query, forceLiveCollection });
+  return search({ ...query, forceLiveCollection, context });
 }

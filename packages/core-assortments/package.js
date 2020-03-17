@@ -17,7 +17,7 @@ Package.onUse(api => {
   api.use('unchained:utils@0.43.0');
   api.use('unchained:core-countries@0.43.0');
   api.use('unchained:core-products@0.43.0');
-  api.use('unchained:core-filters@0.43.0');
+  api.use('unchained:core-filters@0.44.0');
 
   api.mainModule('assortments.js', 'server');
 });
