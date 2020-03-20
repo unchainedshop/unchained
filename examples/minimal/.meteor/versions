@@ -69,7 +69,7 @@ socket-stream-client@0.2.3
 srp@1.0.12
 tmeasday:check-npm-versions@0.3.2
 tracker@1.2.0
-unchained:api@0.43.0
+unchained:api@0.44.1
 unchained:core@0.43.0
 unchained:core-assortments@0.43.0
 unchained:core-bookmarks@0.43.0
@@ -79,7 +79,7 @@ unchained:core-delivery@0.43.0
 unchained:core-discounting@0.43.0
 unchained:core-documents@0.43.0
 unchained:core-files@0.43.0
-unchained:core-filters@0.44.0
+unchained:core-filters@0.44.1
 unchained:core-languages@0.43.0
 unchained:core-logger@0.43.0
 unchained:core-messaging@0.43.0
