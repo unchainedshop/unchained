@@ -46,7 +46,8 @@ class ProductPricingAdapter {
     });
   }
 
-  log(message, { level = 'debug', ...options } = {}) { // eslint-disable-line
+  log(message, { level = 'debug', ...options } = {}) {
+    // eslint-disable-line
     return log(message, { level, ...options });
   }
 }
@@ -98,13 +99,14 @@ class ProductPricingDirector {
           const nextCalculationResult = Promise.await(
             concreteAdapter.calculate()
           );
-          if (!nextCalculationResult || !calculation) return null;
+          if (!nextCalculationResult) return null;
+          if (!calculation) return nextCalculationResult;
           return calculation.concat(nextCalculationResult);
         } catch (error) {
           log(error, { level: 'error' });
         }
         return calculation;
-      }, []);
+      }, null);
     return this.calculation;
   }
 
