@@ -4,6 +4,45 @@ import {
   OrderPricingSheetRowCategories
 } from 'meteor/unchained:core-pricing';
 
+const resolveRatioAndTaxDivisorForPricingSheet = (pricing, total) => {
+  const tax = pricing.taxSum();
+  const gross = pricing.gross();
+  if (total === 0) {
+    return {
+      ratio: 1,
+      taxDivisor: 1
+    };
+  }
+  return {
+    ratio: gross / total,
+    taxDivisor: gross / (gross - tax)
+  };
+}
+
+const resolveAmountAndTax = ({ ratio, taxDivisor }, amount) => {
+  const shareAmount = Number.isFinite(ratio) ? (amount * ratio) : 0;
+  const shareTaxAmount = Number.isFinite(taxDivisor) ? (shareAmount - shareAmount / taxDivisor) : 0;
+  return [shareAmount, shareTaxAmount];
+}
+
+const applyDiscountToMultipleShares = (shares, amount) => {
+  return shares.reduce(([currentDiscountAmount, currentTaxAmount], share) => {
+    const [shareAmount, shareTaxAmount] = resolveAmountAndTax(share, amount);
+    return [
+      currentDiscountAmount + shareAmount,
+      currentTaxAmount + shareTaxAmount
+    ];
+  }, [0,0]);
+}
+
+const calculateAmountToSplit = (configuration, amount) => {
+  const deductionAmount = configuration.rate
+    ? amount * configuration.rate
+    : Math.min(configuration.fixedRate, amount);
+
+  return Math.max(0, deductionAmount - (configuration.alreadyDeducted || 0))
+}
+
 class OrderItems extends OrderPricingAdapter {
   static key = 'shop.unchained.pricing.order-discount';
 
@@ -11,7 +50,7 @@ class OrderItems extends OrderPricingAdapter {
 
   static label = 'Bruttopreis + MwSt. aller Pauschal-Gutscheine summieren';
 
-  static orderIndex = 10;
+  static orderIndex = 90;
 
   static isActivatedFor() {
     return true;
@@ -22,50 +61,53 @@ class OrderItems extends OrderPricingAdapter {
     // if you want to add percentual discounts,
     // add it to the order item calculation
 
-    let totalItemsAmount = this.calculation.sum({
-      category: OrderPricingSheetRowCategories.Items
-    });
+    const totalAmountOfItems =
+      this.calculation.sum({ category: OrderPricingSheetRowCategories.Items });
+    const totalAmountOfPaymentAndDelivery =
+      this.calculation.sum({ category: OrderPricingSheetRowCategories.Payment }) +
+      this.calculation.sum({ category: OrderPricingSheetRowCategories.Delivery });
 
-    const shares = this.context.items.map(item => {
-      const pricing = item.pricing();
-      const tax = pricing.taxSum();
-      const gross = pricing.gross();
-      return {
-        ratio: gross / totalItemsAmount,
-        taxDivisor: gross / (gross - tax)
-      };
-    });
+    const itemShares = this.context.items.map(item => resolveRatioAndTaxDivisorForPricingSheet(item.pricing(), totalAmountOfItems));
+    const deliveryShare = resolveRatioAndTaxDivisorForPricingSheet(this.context.delivery.pricing(), totalAmountOfPaymentAndDelivery)
+    const paymentShare = resolveRatioAndTaxDivisorForPricingSheet(this.context.payment.pricing(), totalAmountOfPaymentAndDelivery)
+
+    let alreadyDeducted = 0;
 
     this.discounts.forEach(({ configuration, discountId }) => {
-      let discountAmount = 0;
-      let taxAmount = 0;
+      // First, we deduce the discount from the items
+      const [itemsDiscountAmount, itemsTaxAmount] = applyDiscountToMultipleShares(
+        itemShares,
+        calculateAmountToSplit(configuration, totalAmountOfItems)
+      )
+      alreadyDeducted =+ itemsDiscountAmount;
 
-      const discountAmountToSplit = configuration.rate
-        ? totalItemsAmount * configuration.rate
-        : Math.min(configuration.fixedRate, totalItemsAmount);
+      // After the items, we deduct the remaining discount from payment & delivery fees
+      const [deliveryAndPaymentDiscountAmount, deliveryAndPaymentTaxAmount] = applyDiscountToMultipleShares(
+        [deliveryShare, paymentShare],
+        calculateAmountToSplit({ ...configuration, alreadyDeducted }, totalAmountOfPaymentAndDelivery)
+      )
+      alreadyDeducted =+ deliveryAndPaymentDiscountAmount;
 
-      shares.forEach(({ ratio, taxDivisor }) => {
-        if (!Number.isFinite(ratio)) return;
-        const shareAmount = discountAmountToSplit * ratio;
-        discountAmount += shareAmount;
-        if (!Number.isFinite(taxDivisor)) return;
-        const shareTaxAmount = shareAmount - shareAmount / taxDivisor;
-        taxAmount += shareTaxAmount;
-      });
-
+      const discountAmount = itemsDiscountAmount + deliveryAndPaymentDiscountAmount;
+      const taxAmount = itemsTaxAmount + deliveryAndPaymentTaxAmount;
       if (discountAmount) {
         this.result.addDiscounts({
           amount: discountAmount * -1,
-          discountId
+          discountId,
+          meta: {
+            adapter: this.constructor.key
+          }
         });
         if (taxAmount !== 0) {
           this.result.addTaxes({
-            amount: taxAmount * -1
+            amount: taxAmount * -1,
+            meta: {
+              discountId,
+              adapter: this.constructor.key
+            }
           });
         }
       }
-
-      totalItemsAmount -= discountAmountToSplit;
     });
 
     return super.calculate();

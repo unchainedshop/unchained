@@ -85,7 +85,7 @@ class ProductPricingDirector {
         const discounts = this.context.discounts
           .map(discount => ({
             discountId: discount._id,
-            configuration: discount.discountConfigurationForCalculation(
+            configuration: discount.configurationForPricingAdapterKey(
               AdapterClass.key
             )
           }))
@@ -123,7 +123,7 @@ class ProductPricingDirector {
   static sortedAdapters() {
     return Array.from(ProductPricingDirector.adapters)
       .map(entry => entry[1])
-      .sort((left, right) => left.orderIndex > right.orderIndex);
+      .sort((left, right) => left.orderIndex - right.orderIndex);
   }
 
   static registerAdapter(adapter) {

@@ -22,21 +22,16 @@ class HundredOff extends DiscountAdapter {
     return true;
   }
 
-  // return true if a discount is valid to be part of the order.
-  // if you return false, this discount will
-  // get removed from the order before any price calculation
-  // takes place.
-  // if you return false and the trigger is system,
-  // the coupon does not get automatically added
-  isValid(isTriggerSystem, code) { // eslint-disable-line
-    if (!isTriggerSystem && code === '100OFF') {
-      return true;
-    }
+  async isValidForSystemTriggering() { // eslint-disable-line
     return false;
   }
 
+  async isValidForCodeTriggering({ code }) { // eslint-disable-line
+    return (code === '100OFF')
+  }
+
   // returns the appropriate discount context for a calculation adapter
-  discountForPricingAdapterKey(pricingAdapterKey, code) { // eslint-disable-line
+  discountForPricingAdapterKey({ pricingAdapterKey }) { // eslint-disable-line
     if (pricingAdapterKey === 'shop.unchained.pricing.order-discount') {
       return { fixedRate: 10000 };
     }

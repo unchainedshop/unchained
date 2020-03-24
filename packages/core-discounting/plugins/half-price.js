@@ -22,25 +22,20 @@ class HalfPrice extends DiscountAdapter {
     return false;
   }
 
-  // return true if a discount is valid to be part of the order.
-  // if you return false, this discount will
-  // get removed from the order before any price calculation
-  // takes place.
-  // if you return false and the trigger is system,
-  // the coupon does not get automatically added
-  isValid(isTriggerSystem) { // eslint-disable-line
+  async isValidForSystemTriggering() { // eslint-disable-line
     const { order } = this.context;
     const user = order.user();
     const isUserEligibleForHalfPrice =
       user && user.tags && user.tags.indexOf('half-price') !== -1;
-    if (isTriggerSystem && isUserEligibleForHalfPrice) {
-      return true;
-    }
+    return !!isUserEligibleForHalfPrice;
+  }
+
+  async isValidForCodeTriggering({ code }) { // eslint-disable-line
     return false;
   }
 
   // returns the appropriate discount context for a calculation adapter
-  discountForPricingAdapterKey(pricingAdapterKey, code) { // eslint-disable-line
+  discountForPricingAdapterKey({ pricingAdapterKey }) { // eslint-disable-line
     if (pricingAdapterKey === 'shop.unchained.pricing.product-discount') {
       return { rate: 0.5 };
     }

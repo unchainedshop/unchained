@@ -2,6 +2,8 @@ import { Schemas } from 'meteor/unchained:utils';
 import SimpleSchema from 'simpl-schema';
 import { OrderDiscounts } from './collections';
 
+const { contextFields, timestampFields } = Schemas;
+
 export const OrderDiscountTrigger = {
   USER: 'USER',
   SYSTEM: 'SYSTEM'
@@ -14,7 +16,9 @@ OrderDiscounts.attachSchema(
       code: String,
       trigger: { type: String, index: true, required: true },
       discountKey: { type: String, required: true },
-      ...Schemas.timestampFields
+      reservation: { type: Object, blackbox: true },
+      ...contextFields,
+      ...timestampFields
     },
     { requiredByDefault: false }
   )

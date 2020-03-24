@@ -24,18 +24,38 @@ class DiscountAdapter {
     this.context = context;
   }
 
+  // return true if a discount is valid to be part of the order
+  // without input of a user. that could be a time based global discount
+  // like a 10% discount day
+  // if you return false, this discount will
+  // get removed from the order before any price calculation
+  // takes place.
+  async isValidForSystemTriggering(options) {
+    return false;
+  }
+
+  // return an arbitrary JSON serializable object with reservation data
+  // this method is called when a discount is added through a manual code and let's
+  // you manually deduct expendable discounts (coupon balances for ex.) before checkout
+  async reserve() {
+    return {};
+  }
+
+  // return void, allows you to free up any reservations in backend systems
+  async release() {
+    return;
+  }
+
   // return true if a discount is valid to be part of the order.
   // if you return false, this discount will
   // get removed from the order before any price calculation
   // takes place.
-  // if you return false and the trigger is system,
-  // the coupon does not get automatically added
-  isValid(isTriggerSystem, code) { // eslint-disable-line
-    return !isTriggerSystem;
+  async isValidForCodeTriggering(options) {
+    return false;
   }
 
   // returns the appropriate discount context for a calculation adapter
-  discountForPricingAdapterKey(pricingAdapterKey, code) { // eslint-disable-line
+  discountForPricingAdapterKey({ pricingAdapterKey }) { // eslint-disable-line
     return null;
   }
 
@@ -53,39 +73,37 @@ class DiscountDirector {
     return DiscountDirector.adapters.get(discountKey);
   }
 
-  isValid({ discountKey, code, isTriggerSystem }) { // eslint-disable-line
-    const AdapterClass = this.interfaceClass(discountKey);
-    if (!AdapterClass) return false;
-    const adapter = new AdapterClass({ context: this.context });
-    return adapter.isValid(isTriggerSystem, code);
-  }
-
-  discountConfigurationForCalculation({ discountKey, code, pricingAdapterKey }) { // eslint-disable-line
+  interface(discountKey) {
     const AdapterClass = this.interfaceClass(discountKey);
     if (!AdapterClass) return null;
     const adapter = new AdapterClass({ context: this.context });
-    return adapter.discountForPricingAdapterKey(pricingAdapterKey, code);
+    return adapter;
   }
 
-  resolveDiscountKeyFromStaticCode({ code }) {
+  async resolveDiscountKeyFromStaticCode(options) {
     if (!this.context.order) return [];
-    log(`DiscountDirector -> Find user discount for static code ${code}`);
-    const discountKeys = DiscountDirector.sortedAdapters()
-      .filter(AdapterClass => AdapterClass.isManualAdditionAllowed(code))
-      .map(AdapterClass => new AdapterClass({ context: this.context }))
-      .filter(adapter => adapter.isValid(false, code))
-      .map(adapter => adapter.constructor.key);
-    return discountKeys.length > 0 && discountKeys[0];
+    log(`DiscountDirector -> Find user discount for static code ${options?.code}`);
+    const discounts = await Promise.all(DiscountDirector.sortedAdapters()
+      .filter(AdapterClass => AdapterClass.isManualAdditionAllowed(options?.code))
+      .map(async AdapterClass => {
+        const adapter = new AdapterClass({ context: this.context });
+        return { key: AdapterClass.key, isValid: await adapter.isValidForCodeTriggering(options) }
+      }))
+
+    return discounts.find(({ isValid }) => isValid === true)?.key
   }
 
-  findSystemDiscounts() {
+  async findSystemDiscounts(options) {
     if (!this.context.order) return [];
     log('DiscountDirector -> Find system discounts');
-    const discountKeys = DiscountDirector.sortedAdapters()
-      .map(AdapterClass => new AdapterClass({ context: this.context }))
-      .filter(adapter => adapter.isValid(true))
-      .map(adapter => adapter.constructor.key);
-    return discountKeys;
+    const discounts = await Promise.all(DiscountDirector.sortedAdapters()
+      .map(async AdapterClass => {
+        const adapter = new AdapterClass({ context: this.context });
+        return { key: AdapterClass.key, isValid: await adapter.isValidForSystemTriggering(options) }
+      }))
+    return discounts
+      .filter(({ isValid }) => isValid === true)
+      .map(({ key }) => key)
   }
 
   static adapters = new Map();
@@ -93,7 +111,7 @@ class DiscountDirector {
   static sortedAdapters() {
     return Array.from(DiscountDirector.adapters)
       .map(entry => entry[1])
-      .sort((left, right) => left.orderIndex > right.orderIndex);
+      .sort((left, right) => left.orderIndex - right.orderIndex);
   }
 
   static registerAdapter(adapter) {

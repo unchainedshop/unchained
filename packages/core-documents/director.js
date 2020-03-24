@@ -73,7 +73,7 @@ class DocumentDirector {
   static sortedAdapters() {
     return Array.from(DocumentDirector.adapters)
       .map(entry => entry[1])
-      .sort(entry => entry.key);
+      .sort((left, right) => left.key - right.key);
   }
 
   static registerAdapter(adapter) {

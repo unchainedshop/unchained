@@ -1,6 +1,6 @@
 export default {
   interface(obj) {
-    const Interface = obj.interface();
+    const Interface = obj.interface()?.constructor;
     if (!Interface) return null;
     return {
       _id: Interface.key,

@@ -82,7 +82,7 @@ class MessagingDirector {
   static sortedAdapters() {
     return Array.from(this.adapters)
       .map(entry => entry[1])
-      .sort(entry => entry.key);
+      .sort((left, right) => left.key - right.key);
   }
 
   static registerAdapter(adapter) {

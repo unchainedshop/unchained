@@ -10,7 +10,7 @@ class OrderPayment extends OrderPricingAdapter {
 
   static label = 'Bruttopreis + MwSt. aller Zahlungsgebühren summieren';
 
-  static orderIndex = 30;
+  static orderIndex = 20;
 
   static isActivatedFor() {
     return true;

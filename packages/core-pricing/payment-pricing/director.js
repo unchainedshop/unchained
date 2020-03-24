@@ -88,7 +88,7 @@ class PaymentPricingDirector {
   static sortedAdapters() {
     return Array.from(PaymentPricingDirector.adapters)
       .map(entry => entry[1])
-      .sort(entry => entry.orderIndex);
+      .sort((left, right) => left.orderIndex - right.orderIndex);
   }
 
   static registerAdapter(adapter) {

@@ -1,12 +1,12 @@
-import 'meteor/dburles:collection-helpers';
 import { Locale } from 'locale';
-import { getFallbackLocale } from 'meteor/unchained:core';
 import { Accounts } from 'meteor/accounts-base';
-import { log, Logs } from 'meteor/unchained:core-logger';
+import 'meteor/dburles:collection-helpers';
+import { getFallbackLocale } from 'meteor/unchained:core';
 import { Countries } from 'meteor/unchained:core-countries';
 import { Languages } from 'meteor/unchained:core-languages';
+import { log, Logs } from 'meteor/unchained:core-logger';
 import { v4 as uuidv4 } from 'uuid';
-import { Users, Avatars } from './collections';
+import { Avatars, Users } from './collections';
 
 Logs.helpers({
   user() {

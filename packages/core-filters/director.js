@@ -98,7 +98,7 @@ class FilterDirector {
   static sortedAdapters() {
     return Array.from(FilterDirector.adapters)
       .map(entry => entry[1])
-      .sort((left, right) => left.orderIndex > right.orderIndex);
+      .sort((left, right) => left.orderIndex - right.orderIndex);
   }
 
   static registerAdapter(adapter) {
