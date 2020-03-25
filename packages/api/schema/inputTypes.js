@@ -90,6 +90,8 @@ export default [
 
     input UpdateProductInput {
       tags: [String!]
+      sequence: Int
+      meta: JSON
     }
 
     input UpdateProductTextInput {
