@@ -22,7 +22,6 @@ export default compose(
       mutation removeAssortment($assortmentId: ID!) {
         removeAssortment(assortmentId: $assortmentId) {
           _id
-          status
           updated
         }
       }
@@ -35,7 +34,8 @@ export default compose(
   ),
   withHandlers({
     onClick: ({ assortmentId, mutate, router }) => async () => {
-      if (confirm('Really?')) { // eslint-disable-line
+      if (confirm('Really?')) {
+        // eslint-disable-line
         await mutate({
           variables: {
             assortmentId
