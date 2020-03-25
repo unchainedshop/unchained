@@ -47,7 +47,7 @@ if (!DISABLE_WORKER) {
   new CronWorker({
     WorkerDirector,
     workerId: 'CronWorker',
-    cronText: 'every 1 seconds'
+    cronText: 'every 1 seconds',
   }).start();
 }
 
@@ -62,7 +62,7 @@ const initializeDatabase = () => {
       username: 'admin',
       roles: ['admin'],
       emails: [{ address: 'admin@localhost', verified: true }],
-      guest: false
+      guest: false,
     });
     const languages = ['de', 'fr'].map((code, key) => {
       const isBase = key === 0;
@@ -70,15 +70,15 @@ const initializeDatabase = () => {
         isoCode: code,
         isActive: true,
         isBase,
-        authorId: admin._id
+        authorId: admin._id,
       });
       return language.isoCode;
     });
-    const currencies = ['CHF'].map(code => {
+    const currencies = ['CHF'].map((code) => {
       const currency = Factory.create('currency', {
         isoCode: code,
         isActive: true,
-        authorId: admin._id
+        authorId: admin._id,
       });
       return currency._id;
     });
@@ -89,7 +89,7 @@ const initializeDatabase = () => {
         isBase,
         isActive: true,
         authorId: admin._id,
-        defaultCurrencyId: currencies[key]
+        defaultCurrencyId: currencies[key],
       });
       return country.isoCode;
     });
@@ -109,7 +109,7 @@ const typeDefs = [
     extend enum WorkType {
       ${WorkerDirector.getActivePluginTypes().join(',')}
     }
-  `
+  `,
 ];
 
 Meteor.startup(() => {
