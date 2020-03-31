@@ -24,6 +24,7 @@ export default [
       fee: Money
       paid: Date
       meta: JSON
+      discounts: [OrderPaymentDiscount!]
     }
 
     type OrderPaymentInvoice implements OrderPayment {
@@ -33,6 +34,7 @@ export default [
       fee: Money
       paid: Date
       meta: JSON
+      discounts: [OrderPaymentDiscount!]
     }
 
     type OrderPaymentCard implements OrderPayment {
@@ -42,6 +44,7 @@ export default [
       paid: Date
       fee: Money
       meta: JSON
+      discounts: [OrderPaymentDiscount!]
     }
 
     type OrderPaymentGeneric implements OrderPayment {
@@ -51,6 +54,7 @@ export default [
       fee: Money
       paid: Date
       meta: JSON
+      discounts: [OrderPaymentDiscount!]
 
       """
       Sign a transaction with the provider

@@ -12,5 +12,9 @@ export default {
       return pricing.unitPrice();
     }
     return null;
+  },
+  discounts(obj) {
+    // IMPORTANT: Do not send any parameter to obj.discounts!
+    return obj.discounts();
   }
 };

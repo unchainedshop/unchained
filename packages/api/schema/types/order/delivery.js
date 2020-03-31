@@ -24,6 +24,7 @@ export default [
       delivered: Date
       fee: Money
       meta: JSON
+      discounts: [OrderDeliveryDiscount!]
     }
 
     type OrderDeliveryPickUp implements OrderDelivery {
@@ -33,6 +34,7 @@ export default [
       delivered: Date
       fee: Money
       meta: JSON
+      discounts: [OrderDeliveryDiscount!]
 
       pickUpLocations: [OrderPickUpLocation!]!
       activePickUpLocation: OrderPickUpLocation
@@ -45,6 +47,7 @@ export default [
       delivered: Date
       fee: Money
       meta: JSON
+      discounts: [OrderDeliveryDiscount!]
 
       address: Address
     }
