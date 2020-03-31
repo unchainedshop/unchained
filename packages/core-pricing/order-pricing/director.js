@@ -67,7 +67,8 @@ class OrderPricingDirector {
           .map(discount => ({
             discountId: discount._id,
             configuration: discount.configurationForPricingAdapterKey(
-              AdapterClass.key
+              AdapterClass.key,
+              calculation
             )
           }))
           .filter(({ configuration }) => configuration !== null);

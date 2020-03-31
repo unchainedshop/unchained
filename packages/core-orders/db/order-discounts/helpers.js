@@ -56,11 +56,12 @@ OrderDiscounts.helpers({
       reservation: null
     });
   },
-  configurationForPricingAdapterKey(pricingAdapterKey) {
+  configurationForPricingAdapterKey(pricingAdapterKey, calculation) {
     const adapter = this.interface();
     if (!adapter) return null;
     return adapter.discountForPricingAdapterKey({
-      pricingAdapterKey
+      pricingAdapterKey,
+      calculation,
     });
   },
   total() {
