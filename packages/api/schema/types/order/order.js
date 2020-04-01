@@ -104,5 +104,5 @@ export default [
       supportedPaymentProviders: [PaymentProvider!]!
       logs(limit: Int = 10, offset: Int = 0): [Log!]!
     }
-  `
+  `,
 ];

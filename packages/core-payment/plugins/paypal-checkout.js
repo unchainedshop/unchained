@@ -1,7 +1,7 @@
 import {
   PaymentDirector,
   PaymentAdapter,
-  PaymentError
+  PaymentError,
 } from 'meteor/unchained:core-payment';
 
 const checkoutNodeJssdk = require('@paypal/checkout-server-sdk');
@@ -19,8 +19,8 @@ class PaypalCheckout extends PaymentAdapter {
   static initialConfiguration = [
     {
       key: 'description',
-      value: 'Paypal/Credit Card'
-    }
+      value: 'Paypal/Credit Card',
+    },
   ];
 
   static typeSupported(type) {

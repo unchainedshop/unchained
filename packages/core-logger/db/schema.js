@@ -9,7 +9,7 @@ Logs.attachSchema(
       level: { type: String, required: true },
       message: { type: String, required: true },
       meta: { type: Object, blackbox: true },
-      ...Schemas.timestampFields
+      ...Schemas.timestampFields,
     },
     { requiredByDefault: false }
   )
@@ -20,7 +20,7 @@ Migrations.add({
   name: 'Move orderId and userId into meta field',
   up() {
     Logs.find({
-      $or: [{ orderId: { $exists: true } }, { userId: { $exists: true } }]
+      $or: [{ orderId: { $exists: true } }, { userId: { $exists: true } }],
     })
       .fetch()
       .forEach(({ _id, userId, orderId }) => {
@@ -28,12 +28,12 @@ Migrations.add({
           { _id },
           {
             $set: {
-              meta: { orderId, userId }
+              meta: { orderId, userId },
             },
             $unset: {
               orderId: 1,
-              userId: 1
-            }
+              userId: 1,
+            },
           }
         );
       });
@@ -42,8 +42,8 @@ Migrations.add({
     Logs.find({
       $or: [
         { 'meta.orderId': { $exists: true } },
-        { 'meta.userId': { $exists: true } }
-      ]
+        { 'meta.userId': { $exists: true } },
+      ],
     })
       .fetch()
       .forEach(({ _id, userId, orderId }) => {
@@ -52,16 +52,16 @@ Migrations.add({
           {
             $set: {
               orderId,
-              userId
+              userId,
             },
             $unset: {
               'meta.orderId': 1,
-              'meta.userId': 1
-            }
+              'meta.userId': 1,
+            },
           }
         );
       });
-  }
+  },
 });
 
 export default () => {

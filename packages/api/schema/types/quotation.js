@@ -61,5 +61,5 @@ export default [
       documents(type: QuotationDocumentType = PROPOSAL): [Media!]!
       logs(limit: Int = 10, offset: Int = 0): [Log!]!
     }
-  `
+  `,
 ];

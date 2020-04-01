@@ -1,7 +1,7 @@
 import {
   DeliveryAdapter,
   DeliveryDirector,
-  DeliveryError
+  DeliveryError,
 } from 'meteor/unchained:core-delivery';
 
 import fetch from 'isomorphic-unfetch';
@@ -20,10 +20,10 @@ const fetchPickMupLocations = async (key, idsFilter) => {
         origin: 'https://filialen.migros.ch',
         DNT: '1',
         'user-agent':
-          'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/77.0.3865.90 Safari/537.36'
+          'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/77.0.3865.90 Safari/537.36',
       },
       body: null,
-      method: 'GET'
+      method: 'GET',
     }
   );
   const result = await data.json();
@@ -36,7 +36,7 @@ const fetchPickMupLocations = async (key, idsFilter) => {
         country,
         address,
         city,
-        address2
+        address2,
       } = location;
       return {
         _id: id,
@@ -46,12 +46,12 @@ const fetchPickMupLocations = async (key, idsFilter) => {
           addressLine2: address2,
           postalCode: zip,
           countryCode: country,
-          city
+          city,
         },
         geoPoint: {
           latitude: lat,
-          longitude: lon
-        }
+          longitude: lon,
+        },
       };
     });
   });

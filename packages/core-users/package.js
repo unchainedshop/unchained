@@ -3,14 +3,14 @@ Package.describe({
   version: '0.45.0',
   summary: 'Unchained Engine Core: Users',
   git: 'https://github.com/unchainedshop/unchained',
-  documentation: 'README.md'
+  documentation: 'README.md',
 });
 
 Npm.depends({
-  uuid: '7.0.1'
+  uuid: '7.0.1',
 });
 
-Package.onUse(api => {
+Package.onUse((api) => {
   api.versionsFrom('1.9');
   api.use('ecmascript');
   api.use('mongo');
@@ -32,7 +32,7 @@ Package.onUse(api => {
   api.mainModule('users.js', 'server');
 });
 
-Package.onTest(api => {
+Package.onTest((api) => {
   api.use('ecmascript');
   api.use('unchained:core-users');
   api.mainModule('users-tests.js');

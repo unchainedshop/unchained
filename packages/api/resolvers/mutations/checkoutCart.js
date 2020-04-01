@@ -2,7 +2,7 @@ import { log } from 'meteor/unchained:core-logger';
 import { OrderCheckoutError } from '../../errors';
 import getCart from '../../getCart';
 
-export default function(
+export default function (
   root,
   { orderId, ...transactionContext },
   { user, userId, countryContext, localeContext }
@@ -11,7 +11,7 @@ export default function(
   const cart = getCart({ orderId, user, countryContext });
   try {
     return cart.checkout(transactionContext, {
-      localeContext
+      localeContext,
     });
   } catch (error) {
     log(error.message, { userId, orderId: cart._id, level: 'error' });
@@ -19,7 +19,7 @@ export default function(
       userId,
       orderId: cart._id,
       ...transactionContext,
-      detailMessage: error.message
+      detailMessage: error.message,
     });
   }
 }

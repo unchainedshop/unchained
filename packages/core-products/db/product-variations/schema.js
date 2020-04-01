@@ -4,7 +4,7 @@ import { ProductVariations, ProductVariationTexts } from './collections';
 
 export const ProductVariationType = { // eslint-disable-line
   COLOR: 'COLOR',
-  TEXT: 'TEXT'
+  TEXT: 'TEXT',
 };
 
 ProductVariations.attachSchema(
@@ -15,7 +15,7 @@ ProductVariations.attachSchema(
       type: String,
       options: Array,
       'options.$': String,
-      ...Schemas.timestampFields
+      ...Schemas.timestampFields,
     },
     { requiredByDefault: false }
   )
@@ -27,13 +27,13 @@ ProductVariationTexts.attachSchema(
       productVariationId: {
         type: String,
         required: true,
-        index: true
+        index: true,
       },
       productVariationOptionValue: String,
       locale: { type: String, index: true },
       title: String,
       subtitle: String,
-      ...Schemas.timestampFields
+      ...Schemas.timestampFields,
     },
     { requiredByDefault: false }
   )

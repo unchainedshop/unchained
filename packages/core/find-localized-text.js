@@ -2,11 +2,11 @@ import { getFallbackLocale } from './locale-context';
 
 const extendSelectorWithLocale = (selector, locale) => {
   const localeSelector = {
-    locale: { $in: [locale.normalized, locale.language] }
+    locale: { $in: [locale.normalized, locale.language] },
   };
   return {
     ...localeSelector,
-    ...selector
+    ...selector,
   };
 };
 

@@ -3,10 +3,10 @@ import { Orders, OrderDeliveryStatus } from 'meteor/unchained:core-orders';
 import {
   OrderNotFoundError,
   OrderWrongDeliveryStatusError,
-  OrderWrongStatusError
+  OrderWrongStatusError,
 } from '../../errors';
 
-export default function(root, { orderId }, { userId }) {
+export default function (root, { orderId }, { userId }) {
   log('mutation deliverOrder', { orderId, userId });
   const order = Orders.findOne({ _id: orderId });
   if (!order) throw new OrderNotFoundError({ orderId });
@@ -16,7 +16,7 @@ export default function(root, { orderId }, { userId }) {
   const delivery = order.delivery();
   if (delivery.status !== OrderDeliveryStatus.OPEN && order.confirmed) {
     throw new OrderWrongDeliveryStatusError({
-      status: delivery.status
+      status: delivery.status,
     });
   }
   delivery.markDelivered();

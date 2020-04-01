@@ -17,7 +17,7 @@ class StrictQualFilter extends FilterAdapter {
     if (key) {
       return {
         ...lastSelector,
-        [key]: value !== undefined ? value : { $exists: true }
+        [key]: value !== undefined ? value : { $exists: true },
       };
     }
     return lastSelector;

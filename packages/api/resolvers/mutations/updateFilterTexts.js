@@ -1,13 +1,13 @@
 import { log } from 'meteor/unchained:core-logger';
 import { Filters } from 'meteor/unchained:core-filters';
 
-export default function(
+export default function (
   root,
   { texts, filterId, filterOptionValue },
   { userId }
 ) {
   log(`mutation updateFilterTexts ${filterId} ${filterOptionValue}`, {
-    userId
+    userId,
   });
   const filter = Filters.findOne({ _id: filterId });
   const changedLocalizations = texts.map(({ locale, ...fields }) =>

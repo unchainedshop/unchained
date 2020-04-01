@@ -23,7 +23,7 @@ Filters.createFilter = (
     type: FilterTypes[type],
     key,
     options,
-    ...rest
+    ...rest,
   };
   const filterId = Filters.insert(filter);
   const filterObject = Filters.findOne({ _id: filterId });
@@ -41,8 +41,8 @@ Filters.updateFilter = (
   const modifier = {
     $set: {
       ...filter,
-      updated: new Date()
-    }
+      updated: new Date(),
+    },
   };
   Filters.update({ _id: filterId }, modifier);
   const filterObject = Filters.findOne({ _id: filterId });
@@ -63,12 +63,12 @@ Filters.getLocalizedTexts = (filterId, filterOptionValue, locale) =>
     FilterTexts,
     {
       filterId,
-      filterOptionValue: filterOptionValue || { $eq: null }
+      filterOptionValue: filterOptionValue || { $eq: null },
     },
     locale
   );
 
-Filters.sync = syncFn => {
+Filters.sync = (syncFn) => {
   const referenceDate = Filters.markFiltersDirty();
   syncFn(referenceDate);
   Filters.cleanFiltersByReferenceDate(referenceDate);
@@ -94,22 +94,22 @@ Filters.markFiltersDirty = () => {
     // eslint-disable-line
     updatedFiltersCount,
     updatedFilterTextsCount,
-    level: 'verbose'
+    level: 'verbose',
   });
   return new Date();
 };
 
-Filters.cleanFiltersByReferenceDate = referenceDate => {
+Filters.cleanFiltersByReferenceDate = (referenceDate) => {
   const selector = {
     dirty: true,
     $or: [
       {
-        updated: { $gte: referenceDate }
+        updated: { $gte: referenceDate },
       },
       {
-        created: { $gte: referenceDate }
-      }
-    ]
+        created: { $gte: referenceDate },
+      },
+    ],
   };
   const modifier = { $set: { dirty: false } };
   const collectionUpdateOptions = { bypassCollection2: true, multi: true };
@@ -128,7 +128,7 @@ Filters.cleanFiltersByReferenceDate = referenceDate => {
     {
       updatedFiltersCount,
       updatedFilterTextsCount,
-      level: 'verbose'
+      level: 'verbose',
     }
   );
 };
@@ -137,20 +137,20 @@ Filters.updateCleanFilterActivation = () => {
   const disabledDirtyFiltersCount = Filters.update(
     {
       isActive: true,
-      dirty: true
+      dirty: true,
     },
     {
-      $set: { isActive: false }
+      $set: { isActive: false },
     },
     { bypassCollection2: true, multi: true }
   );
   const enabledCleanFiltersCount = Filters.update(
     {
       isActive: false,
-      dirty: { $ne: true }
+      dirty: { $ne: true },
     },
     {
-      $set: { isActive: true }
+      $set: { isActive: true },
     },
     { bypassCollection2: true, multi: true }
   );
@@ -158,7 +158,7 @@ Filters.updateCleanFilterActivation = () => {
   log(`Filter Sync: Result of filter activation`, {
     disabledDirtyFiltersCount,
     enabledCleanFiltersCount,
-    level: 'verbose'
+    level: 'verbose',
   });
 };
 
@@ -169,7 +169,7 @@ Filters.wipeFilters = (onlyDirty = true) => {
   log(`Filter Sync: Result of filter purging with onlyDirty=${onlyDirty}`, {
     removedFilterCount,
     removedFilterTextCount,
-    level: 'verbose'
+    level: 'verbose',
   });
 };
 
@@ -177,7 +177,7 @@ Filters.invalidateFilterCaches = () => {
   log('Filters: Start invalidating filter caches', { level: 'verbose' });
   Filters.find()
     .fetch()
-    .forEach(filter => filter.invalidateProductIdCache());
+    .forEach((filter) => filter.invalidateProductIdCache());
 };
 
 Filters.helpers({
@@ -185,7 +185,7 @@ Filters.helpers({
     const selector = {
       filterId: this._id,
       filterOptionValue: filterOptionValue || { $eq: null },
-      locale
+      locale,
     };
     FilterTexts.upsert(
       selector,
@@ -194,8 +194,8 @@ Filters.helpers({
           updated: new Date(),
           locale,
           ...fields,
-          filterOptionValue: filterOptionValue || null
-        }
+          filterOptionValue: filterOptionValue || null,
+        },
       },
       { bypassCollection2: true }
     );
@@ -209,7 +209,7 @@ Filters.helpers({
     return {
       filterOption,
       getLocalizedTexts: this.getLocalizedTexts,
-      ...this
+      ...this,
     };
   },
 
@@ -218,11 +218,11 @@ Filters.helpers({
     const selector = Promise.await(
       director.buildProductSelector(
         {
-          status: ProductStatus.ACTIVE
+          status: ProductStatus.ACTIVE,
         },
         {
           key: this.key,
-          value
+          value,
         }
       )
     );
@@ -232,18 +232,18 @@ Filters.helpers({
   },
   buildProductIdMap() {
     const cache = {
-      allProductIds: this.collectProductIds()
+      allProductIds: this.collectProductIds(),
     };
     if (this.type === FilterTypes.SWITCH) {
       cache.productIds = {
         true: this.collectProductIds({ value: true }),
-        false: this.collectProductIds({ value: false })
+        false: this.collectProductIds({ value: false }),
       };
     } else {
       cache.productIds = (this.options || []).reduce(
         (accumulator, option) => ({
           ...accumulator,
-          [option]: this.collectProductIds({ value: option })
+          [option]: this.collectProductIds({ value: option }),
         }),
         {}
       );
@@ -256,7 +256,7 @@ Filters.helpers({
     const { productIds, allProductIds } = this.buildProductIdMap();
     const cache = {
       allProductIds,
-      productIds: Object.entries(productIds)
+      productIds: Object.entries(productIds),
     };
 
     const gzip = util.promisify(zlib.gzip);
@@ -271,10 +271,10 @@ Filters.helpers({
         $set: {
           _cache: compressedCache
             ? {
-                compressed: compressedCache
+                compressed: compressedCache,
               }
-            : cache
-        }
+            : cache,
+        },
       }
     );
   },
@@ -296,10 +296,10 @@ Filters.helpers({
         productIds: this._cache.productIds.reduce(
           (accumulator, [key, value]) => ({
             ...accumulator,
-            [key]: value
+            [key]: value,
           }),
           {}
-        )
+        ),
       };
       this._isCacheTransformed = true; // eslint-disable-line
     }
@@ -336,9 +336,9 @@ Filters.helpers({
     if (!values) return productIdSet;
     const filterOptionProductIds = this.productIds({
       values,
-      forceLiveCollection
+      forceLiveCollection,
     });
-    return new Set(filterOptionProductIds.filter(x => productIdSet.has(x)));
+    return new Set(filterOptionProductIds.filter((x) => productIdSet.has(x)));
   },
   optionsForFilterType(type) {
     if (type === FilterTypes.SWITCH) return ['true', 'false'];
@@ -346,17 +346,17 @@ Filters.helpers({
   },
   loadedOptions({ values, forceLiveCollection, productIdSet }) {
     const mappedOptions = this.optionsForFilterType(this.type)
-      .map(value => {
+      .map((value) => {
         const filteredProductIds = this.intersect({
           values: [value],
           forceLiveCollection,
-          productIdSet
+          productIdSet,
         });
         if (!filteredProductIds.size) return null;
         return {
           definition: () => this.optionObject(value),
           filteredProducts: filteredProductIds.size,
-          isSelected: values ? values.indexOf(value) !== -1 : false
+          isSelected: values ? values.indexOf(value) !== -1 : false,
         };
       })
       .filter(Boolean);
@@ -371,7 +371,7 @@ Filters.helpers({
     const examinedProductIdSet = this.intersect({
       values: [undefined],
       forceLiveCollection,
-      productIdSet: allProductIdsSet
+      productIdSet: allProductIdsSet,
     });
 
     // The filteredProductIdSet is a set of product id's that:
@@ -383,14 +383,16 @@ Filters.helpers({
     delete queryWithoutOwnFilter[this.key];
     const filteredByOtherFiltersSet = intersectProductIds({
       productIds: examinedProductIdSet,
-      filters: otherFilters.filter(otherFilter => otherFilter.key !== this.key),
+      filters: otherFilters.filter(
+        (otherFilter) => otherFilter.key !== this.key
+      ),
       filterQuery: queryWithoutOwnFilter,
-      forceLiveCollection
+      forceLiveCollection,
     });
     const filteredProductIdSet = this.intersect({
       values: values || [undefined],
       forceLiveCollection,
-      productIdSet: filteredByOtherFiltersSet
+      productIdSet: filteredByOtherFiltersSet,
     });
 
     return {
@@ -407,9 +409,9 @@ Filters.helpers({
         return this.loadedOptions({
           values,
           forceLiveCollection,
-          productIdSet: filteredByOtherFiltersSet
+          productIdSet: filteredByOtherFiltersSet,
         });
-      }
+      },
     };
-  }
+  },
 });

@@ -15,8 +15,8 @@ export const ProfileSchema = new SimpleSchema(
     customFields: {
       type: Object,
       optional: true,
-      blackbox: true
-    }
+      blackbox: true,
+    },
   },
   { requiredByDefault: false }
 );
@@ -26,7 +26,7 @@ export const LastLoginSchema = new SimpleSchema(
     timestamp: Date,
     locale: String,
     countryContext: String,
-    remoteAddress: String
+    remoteAddress: String,
   },
   { requiredByDefault: false }
 );
@@ -34,7 +34,7 @@ export const LastLoginSchema = new SimpleSchema(
 export const LastContactSchema = new SimpleSchema(
   {
     telNumber: String,
-    emailAddress: String
+    emailAddress: String,
   },
   { requiredByDefault: false }
 );
@@ -58,11 +58,11 @@ export const UserSchema = new SimpleSchema(
     services: {
       type: Object,
       optional: true,
-      blackbox: true
+      blackbox: true,
     },
     roles: Array,
     'roles.$': String,
-    ...timestampFields
+    ...timestampFields,
   },
   { requiredByDefault: false }
 );
@@ -76,7 +76,7 @@ Migrations.add({
     Meteor.users
       .find()
       .fetch()
-      .forEach(user => {
+      .forEach((user) => {
         const { profile = {} } = user;
         const displayName =
           profile.displayName ||
@@ -87,14 +87,14 @@ Migrations.add({
             $set: {
               tags: user.tags || null,
               guest: !!profile.guest,
-              'profile.displayName': displayName
+              'profile.displayName': displayName,
             },
             $unset: {
               'profile.tags': 1,
               'profile.guest': 1,
               'profile.firstName': 1,
-              'profile.lastName': 1
-            }
+              'profile.lastName': 1,
+            },
           }
         );
       });
@@ -103,7 +103,7 @@ Migrations.add({
     Meteor.users
       .find()
       .fetch()
-      .forEach(user => {
+      .forEach((user) => {
         const { profile = {} } = user;
         const displayName = profile.displayName || '';
         Meteor.users.update(
@@ -113,20 +113,17 @@ Migrations.add({
               'profile.tags': user.tags || null,
               'profile.guest': user.guest || false,
               'profile.firstName': displayName.split(' ')[0],
-              'profile.lastName': displayName
-                .split(' ')
-                .splice(-1)
-                .join(' ')
+              'profile.lastName': displayName.split(' ').splice(-1).join(' '),
             },
             $unset: {
               tags: 1,
               guest: 1,
-              'profile.displayName': 1
-            }
+              'profile.displayName': 1,
+            },
           }
         );
       });
-  }
+  },
 });
 
 Migrations.add({
@@ -136,7 +133,7 @@ Migrations.add({
     Meteor.users
       .find()
       .fetch()
-      .forEach(user => {
+      .forEach((user) => {
         const { lastLogin } = user;
         if (lastLogin) {
           const { country } = lastLogin;
@@ -144,11 +141,11 @@ Migrations.add({
             { _id: user._id },
             {
               $set: {
-                'lastLogin.countryContext': country
+                'lastLogin.countryContext': country,
               },
               $unset: {
-                'lastLogin.country': 1
-              }
+                'lastLogin.country': 1,
+              },
             }
           );
         }
@@ -158,7 +155,7 @@ Migrations.add({
     Meteor.users
       .find()
       .fetch()
-      .forEach(user => {
+      .forEach((user) => {
         const { lastLogin } = user;
         if (lastLogin) {
           const { countryContext } = lastLogin;
@@ -166,16 +163,16 @@ Migrations.add({
             { _id: user._id },
             {
               $set: {
-                'lastLogin.country': countryContext
+                'lastLogin.country': countryContext,
               },
               $unset: {
-                'lastLogin.countryContext': 1
-              }
+                'lastLogin.countryContext': 1,
+              },
             }
           );
         }
       });
-  }
+  },
 });
 
 export default () => {

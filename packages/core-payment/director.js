@@ -4,7 +4,7 @@ const PaymentError = {
   ADAPTER_NOT_FOUND: 'ADAPTER_NOT_FOUND',
   NOT_IMPLEMENTED: 'NOT_IMPLEMENTED',
   INCOMPLETE_CONFIGURATION: 'INCOMPLETE_CONFIGURATION',
-  WRONG_CREDENTIALS: 'WRONG_CREDENTIALS'
+  WRONG_CREDENTIALS: 'WRONG_CREDENTIALS',
 };
 
 class PaymentAdapter {
@@ -109,9 +109,9 @@ class PaymentDirector {
 
   static filteredAdapters(filter) {
     return Array.from(PaymentDirector.adapters)
-      .map(entry => entry[1])
+      .map((entry) => entry[1])
       .filter(filter || (() => true))
-      .sort(entry => entry.key);
+      .sort((entry) => entry.key);
   }
 
   static registerAdapter(adapter) {

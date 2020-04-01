@@ -3,10 +3,10 @@ import { Assortments } from 'meteor/unchained:core-assortments';
 import { search } from 'meteor/unchained:core-filters';
 import {
   QueryStringRequiredError,
-  AssortmentNotFoundError
+  AssortmentNotFoundError,
 } from '../../errors';
 
-export default async function(root, query, context) {
+export default async function (root, query, context) {
   const { userId } = context;
   const forceLiveCollection = false;
   const { queryString, assortmentId } = query;

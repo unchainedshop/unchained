@@ -8,7 +8,7 @@ export const WorkStatus = {
   NEW: 'NEW',
   ALLOCATED: 'ALLOCATED',
   SUCCESS: 'SUCCESS',
-  FAILED: 'FAILED'
+  FAILED: 'FAILED',
 };
 
 WorkQueue.attachSchema(
@@ -27,7 +27,7 @@ WorkQueue.attachSchema(
       worker: String,
       original: String,
       timeout: Number,
-      ...Schemas.timestampFields
+      ...Schemas.timestampFields,
     },
     { requiredByDefault: false }
   )

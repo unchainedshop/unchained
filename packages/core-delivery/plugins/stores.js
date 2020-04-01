@@ -1,6 +1,6 @@
 import {
   DeliveryAdapter,
-  DeliveryDirector
+  DeliveryDirector,
 } from 'meteor/unchained:core-delivery';
 
 class PickMup extends DeliveryAdapter {
@@ -39,7 +39,7 @@ class PickMup extends DeliveryAdapter {
   }
 
   async pickUpLocationById(id) {
-    return this.getStores().find(store => store._id === id);
+    return this.getStores().find((store) => store._id === id);
   }
 
   async pickUpLocations() {

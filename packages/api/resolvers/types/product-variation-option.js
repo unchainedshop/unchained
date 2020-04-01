@@ -10,5 +10,5 @@ export default {
       forceLocale || localeContext.normalized,
       obj.productVariationOption
     );
-  }
+  },
 };

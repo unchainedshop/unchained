@@ -6,5 +6,5 @@ export default [
       product: Product!
       created: Date
     }
-  `
+  `,
 ];

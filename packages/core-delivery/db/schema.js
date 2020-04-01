@@ -5,7 +5,7 @@ import { DeliveryProviders } from './collections';
 
 export const DeliveryProviderType = { // eslint-disable-line
   SHIPPING: 'SHIPPING',
-  PICKUP: 'PICKUP'
+  PICKUP: 'PICKUP',
 };
 
 DeliveryProviders.attachSchema(
@@ -17,7 +17,7 @@ DeliveryProviders.attachSchema(
       'configuration.$': { type: Object },
       'configuration.$.key': { type: String },
       'configuration.$.value': { type: String },
-      ...Schemas.timestampFields
+      ...Schemas.timestampFields,
     },
     { requiredByDefault: false }
   )
@@ -30,7 +30,7 @@ Migrations.add({
     DeliveryProviders.update(
       { adapterKey: 'ch.dagobert.post' },
       {
-        $set: { adapterKey: 'shop.unchained.post' }
+        $set: { adapterKey: 'shop.unchained.post' },
       },
       { multi: true }
     );
@@ -39,11 +39,11 @@ Migrations.add({
     DeliveryProviders.update(
       { adapterKey: 'shop.unchained.post' },
       {
-        $set: { adapterKey: 'ch.dagobert.post' }
+        $set: { adapterKey: 'ch.dagobert.post' },
       },
       { multi: true }
     );
-  }
+  },
 });
 
 export default () => {

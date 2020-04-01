@@ -1,6 +1,6 @@
 import {
   OrderPricingDirector,
-  OrderPricingAdapter
+  OrderPricingAdapter,
 } from 'meteor/unchained:core-pricing';
 
 class OrderPayment extends OrderPricingAdapter {

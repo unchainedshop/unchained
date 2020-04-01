@@ -3,10 +3,10 @@ import { OrderPositions } from 'meteor/unchained:core-orders';
 import {
   OrderQuantityTooLowError,
   OrderItemNotFoundError,
-  OrderWrongStatusError
+  OrderWrongStatusError,
 } from '../../errors';
 
-export default function(
+export default function (
   root,
   { itemId, quantity = null, configuration = null },
   { userId }
@@ -30,7 +30,7 @@ export default function(
     OrderPositions.updatePosition(
       {
         orderId: item.orderId,
-        positionId: itemId
+        positionId: itemId,
       },
       { quantity }
     );
@@ -40,7 +40,7 @@ export default function(
     OrderPositions.updatePosition(
       {
         orderId: item.orderId,
-        positionId: itemId
+        positionId: itemId,
       },
       { configuration }
     );

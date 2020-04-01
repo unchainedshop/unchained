@@ -7,5 +7,5 @@ Factory.define('log', Logs, {
   meta: () => ({ userId: Factory.get('user') }),
   level: () => faker.random.arrayElement(['error', 'warn', 'info']),
   message: () => faker.lorem.sentence(),
-  ...fakeTimestampFields
+  ...fakeTimestampFields,
 });

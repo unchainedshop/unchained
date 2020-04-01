@@ -6,7 +6,7 @@ import { PaymentProviders } from './collections';
 export const PaymentProviderType = { // eslint-disable-line
   CARD: 'CARD',
   INVOICE: 'INVOICE',
-  GENERIC: 'GENERIC'
+  GENERIC: 'GENERIC',
 };
 
 PaymentProviders.attachSchema(
@@ -18,7 +18,7 @@ PaymentProviders.attachSchema(
       'configuration.$': { type: Object },
       'configuration.$.key': { type: String },
       'configuration.$.value': { type: String },
-      ...Schemas.timestampFields
+      ...Schemas.timestampFields,
     },
     { requiredByDefault: false }
   )
@@ -31,7 +31,7 @@ Migrations.add({
     PaymentProviders.update(
       { adapterKey: 'ch.dagobert.invoice' },
       {
-        $set: { adapterKey: 'shop.unchained.invoice' }
+        $set: { adapterKey: 'shop.unchained.invoice' },
       },
       { multi: true }
     );
@@ -40,11 +40,11 @@ Migrations.add({
     PaymentProviders.update(
       { adapterKey: 'shop.unchained.invoice' },
       {
-        $set: { adapterKey: 'ch.dagobert.invoice' }
+        $set: { adapterKey: 'ch.dagobert.invoice' },
       },
       { multi: true }
     );
-  }
+  },
 });
 
 export default () => {

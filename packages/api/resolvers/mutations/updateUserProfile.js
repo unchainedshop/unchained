@@ -1,14 +1,14 @@
 import { log } from 'meteor/unchained:core-logger';
 import { Users } from 'meteor/unchained:core-users';
 
-export default function(root, { profile, userId: foreignUserId }, { userId }) {
+export default function (root, { profile, userId: foreignUserId }, { userId }) {
   const normalizedUserId = foreignUserId || userId;
   log(`mutation updateUserProfile ${normalizedUserId}`, { userId });
 
   const transformedProfile = Object.keys(profile).reduce((acc, profileKey) => {
     return {
       ...acc,
-      [`profile.${profileKey}`]: profile[profileKey]
+      [`profile.${profileKey}`]: profile[profileKey],
     };
   }, {});
 
@@ -17,8 +17,8 @@ export default function(root, { profile, userId: foreignUserId }, { userId }) {
     {
       $set: {
         updated: new Date(),
-        ...transformedProfile
-      }
+        ...transformedProfile,
+      },
     }
   );
   return Users.findOne({ _id: normalizedUserId });

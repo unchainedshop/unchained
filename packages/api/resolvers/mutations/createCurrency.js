@@ -1,7 +1,7 @@
 import { log } from 'meteor/unchained:core-logger';
 import { Currencies } from 'meteor/unchained:core-currencies';
 
-export default function(root, { currency: inputData }, { userId }) {
+export default function (root, { currency: inputData }, { userId }) {
   log('mutation createCurrency', { userId });
   const { isoCode } = inputData;
   const currency = { created: new Date() };

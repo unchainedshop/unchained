@@ -14,7 +14,7 @@ class EventListenerWorker extends BaseWorker {
   async handleAllocateWorkFinish() {
     const work = await this.WorkerDirector.allocateWork({
       types: this.getInternalTypes(),
-      worker: this.worker
+      worker: this.worker,
     });
 
     if (work) {
@@ -23,7 +23,7 @@ class EventListenerWorker extends BaseWorker {
       await this.WorkerDirector.finishWork({
         workId: work._id,
         ...output,
-        worker: this.worker
+        worker: this.worker,
       });
     }
   }

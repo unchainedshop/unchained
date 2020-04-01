@@ -2,7 +2,7 @@ import { log } from 'meteor/unchained:core-logger';
 import { Assortments } from 'meteor/unchained:core-assortments';
 import { AssortmentNotFoundError } from '../../errors';
 
-export default function(
+export default function (
   root,
   { parentAssortmentId, childAssortmentId, tags },
   { userId }
@@ -16,12 +16,12 @@ export default function(
 
   if (!parent) {
     throw new AssortmentNotFoundError({
-      assortmentId: parentAssortmentId
+      assortmentId: parentAssortmentId,
     });
   }
   if (!child) {
     throw new AssortmentNotFoundError({
-      assortmentId: childAssortmentId
+      assortmentId: childAssortmentId,
     });
   }
   return parent.addLink({ assortmentId: childAssortmentId, tags });

@@ -1,7 +1,7 @@
 import {
   PaymentDirector,
   PaymentAdapter,
-  PaymentError
+  PaymentError,
 } from 'meteor/unchained:core-payment';
 
 const { STRIPE_SECRET, EMAIL_WEBSITE_NAME } = process.env;
@@ -16,8 +16,8 @@ class Stripe extends PaymentAdapter {
   static initialConfiguration = [
     {
       key: 'publishableAPIKey',
-      value: null
-    }
+      value: null,
+    },
   ];
 
   static typeSupported(type) {
@@ -65,7 +65,7 @@ class Stripe extends PaymentAdapter {
       currency: this.context.order.currency.toLowerCase(),
       description: `${EMAIL_WEBSITE_NAME} Order #${this.context.order._id}`,
       source: stripeToken.id,
-      customer: stripeCustomerId
+      customer: stripeCustomerId,
     });
     this.log('Stripe -> ', stripeToken, stripeChargeReceipt);
     return stripeChargeReceipt;

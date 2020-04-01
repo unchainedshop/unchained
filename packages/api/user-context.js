@@ -2,7 +2,7 @@ import { Accounts } from 'meteor/accounts-base';
 import { Users } from 'meteor/unchained:core-users';
 import { check } from 'meteor/check';
 
-export default async req => {
+export default async (req) => {
   // there is a possible current user connected!
   let loginToken = req.headers['meteor-login-token'];
   if (req.cookies.meteor_login_token) {
@@ -22,7 +22,7 @@ export default async req => {
     const hashedToken = Accounts._hashLoginToken(loginToken); // eslint-disable-line
 
     const currentUser = Users.findOne({
-      'services.resume.loginTokens.hashedToken': hashedToken
+      'services.resume.loginTokens.hashedToken': hashedToken,
     });
 
     // the current user exists
@@ -43,7 +43,7 @@ export default async req => {
         // return a new context object with the current user & her id
         return {
           user: currentUser,
-          userId: currentUser._id
+          userId: currentUser._id,
         };
       }
     }

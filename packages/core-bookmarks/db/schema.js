@@ -7,7 +7,7 @@ Bookmarks.attachSchema(
     {
       userId: { type: String, required: true, index: true },
       productId: { type: String, required: true, index: true },
-      ...Schemas.timestampFields
+      ...Schemas.timestampFields,
     },
     { requiredByDefault: false }
   )

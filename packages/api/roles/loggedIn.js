@@ -3,7 +3,7 @@ import {
   OrderPayments,
   OrderDeliveries,
   OrderPositions,
-  OrderDiscounts
+  OrderDiscounts,
 } from 'meteor/unchained:core-orders';
 import { ProductReviews } from 'meteor/unchained:core-products';
 import { Quotations } from 'meteor/unchained:core-quotations';
@@ -30,7 +30,7 @@ export default (role, actions) => {
   const isOwnedOrder = (root, { orderId }, { userId }) =>
     Orders.find({
       _id: orderId,
-      userId
+      userId,
     }).count() > 0;
 
   const isOwnedOrderOrCart = (root, { orderId }, { userId }) => {
@@ -70,13 +70,13 @@ export default (role, actions) => {
   const isOwnedQuotation = (root, { quotationId }, { userId }) =>
     Quotations.find({
       _id: quotationId,
-      userId
+      userId,
     }).count() > 0;
 
   const isOwnedBookmark = (root, { bookmarkId }, { userId }) =>
     Bookmarks.find({
       _id: bookmarkId,
-      userId
+      userId,
     }).count() > 0;
 
   role.allow(actions.viewUser, isMyself);

@@ -3,7 +3,7 @@ import PricingSheet from '../pricing-sheet';
 const DeliveryPricingSheetRowCategories = {
   Delivery: 'DELIVERY',
   Discount: 'DISCOUNT',
-  Tax: 'TAX'
+  Tax: 'TAX',
 };
 
 class DeliveryPricingSheet extends PricingSheet {
@@ -13,7 +13,7 @@ class DeliveryPricingSheet extends PricingSheet {
       amount,
       isTaxable,
       discountId,
-      meta
+      meta,
     });
   }
 
@@ -23,7 +23,7 @@ class DeliveryPricingSheet extends PricingSheet {
       amount,
       isTaxable,
       isNetPrice,
-      meta
+      meta,
     });
   }
 
@@ -32,26 +32,26 @@ class DeliveryPricingSheet extends PricingSheet {
       category: DeliveryPricingSheetRowCategories.Tax,
       amount,
       rate,
-      meta
+      meta,
     });
   }
 
   taxSum() {
     return this.sum({
-      category: DeliveryPricingSheetRowCategories.Tax
+      category: DeliveryPricingSheetRowCategories.Tax,
     });
   }
 
   feeSum() {
     return this.sum({
-      category: DeliveryPricingSheetRowCategories.Delivery
+      category: DeliveryPricingSheetRowCategories.Delivery,
     });
   }
 
   discountSum(discountId) {
     return this.sum({
       category: DeliveryPricingSheetRowCategories.Discount,
-      discountId
+      discountId,
     });
   }
 
@@ -60,13 +60,13 @@ class DeliveryPricingSheet extends PricingSheet {
       ({ discountId }) => discountId
     );
 
-    return [...new Set(discountIds)].map(discountId => ({
+    return [...new Set(discountIds)].map((discountId) => ({
       discountId,
       amount: this.sum({
         category: DeliveryPricingSheetRowCategories.Discount,
-        discountId
+        discountId,
       }),
-      currency: this.currency
+      currency: this.currency,
     }));
   }
 
@@ -77,7 +77,7 @@ class DeliveryPricingSheet extends PricingSheet {
   getDiscountRows(discountId) {
     return this.filterBy({
       category: DeliveryPricingSheetRowCategories.Discount,
-      discountId
+      discountId,
     });
   }
 

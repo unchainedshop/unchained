@@ -22,7 +22,7 @@ const addTextAndMediaToProduct = (productId, slug) => {
     );
     Factory.create('productMediaText', {
       productMediaId: productMedia._id,
-      locale: 'de'
+      locale: 'de',
     });
     faker.locale = 'en';
     logger.log(
@@ -30,7 +30,7 @@ const addTextAndMediaToProduct = (productId, slug) => {
     );
     Factory.create('productMediaText', {
       productMediaId: productMedia._id,
-      locale: 'en'
+      locale: 'en',
     });
   });
 };
@@ -48,7 +48,7 @@ const addTextToAssortment = (assortmentId, slug) => {
   Factory.create('assortmentText', { assortmentId, locale: 'en', slug });
 };
 
-const addVariationsToProduct = productId => {
+const addVariationsToProduct = (productId) => {
   const addTranslation = (productVariationId, productVariationOptionValue) => {
     faker.locale = 'de';
     logger.log(
@@ -57,7 +57,7 @@ const addVariationsToProduct = productId => {
     Factory.create('productVariationText', {
       productVariationId,
       locale: faker.locale,
-      productVariationOptionValue
+      productVariationOptionValue,
     });
     faker.locale = 'en';
     logger.log(
@@ -66,14 +66,14 @@ const addVariationsToProduct = productId => {
     Factory.create('productVariationText', {
       productVariationId,
       locale: faker.locale,
-      productVariationOptionValue
+      productVariationOptionValue,
     });
   };
   Array.from(Array(1)).forEach(() => {
     logger.log('unchained:platform -> fixtures: -> productVariation');
     const productVariation = Factory.create('productVariation', { productId });
     addTranslation(productVariation._id);
-    productVariation.options.forEach(productVariationOptionValue => {
+    productVariation.options.forEach((productVariationOptionValue) => {
       addTranslation(productVariation._id, productVariationOptionValue);
     });
   });
@@ -93,7 +93,7 @@ export default () => {
         username: 'admin',
         roles: ['admin'],
         guest: false,
-        emails: [{ address: 'admin@localhost', verified: true }]
+        emails: [{ address: 'admin@localhost', verified: true }],
       });
       users.push(admin._id);
     } catch (e) {
@@ -108,16 +108,16 @@ export default () => {
         isoCode: code,
         isActive: true,
         isBase,
-        authorId: faker.random.arrayElement(users)
+        authorId: faker.random.arrayElement(users),
       });
       return language.isoCode;
     });
-    const currencies = ['CHF', 'USD', 'EUR'].map(code => {
+    const currencies = ['CHF', 'USD', 'EUR'].map((code) => {
       logger.log(`unchained:platform -> fixtures: currency ${code}`);
       const currency = Factory.create('currency', {
         isoCode: code,
         isActive: true,
-        authorId: faker.random.arrayElement(users)
+        authorId: faker.random.arrayElement(users),
       });
       return currency._id;
     });
@@ -129,7 +129,7 @@ export default () => {
         isBase,
         isActive: true,
         authorId: faker.random.arrayElement(users),
-        defaultCurrencyId: currencies[key]
+        defaultCurrencyId: currencies[key],
       });
       return country.isoCode;
     });
@@ -153,7 +153,7 @@ export default () => {
       // Add a product
       logger.log('unchained:platform -> fixtures: simpleProduct');
       const product = Factory.create('simpleProduct', {
-        authorId: faker.random.arrayElement(users)
+        authorId: faker.random.arrayElement(users),
       });
       addTextAndMediaToProduct(product._id, product.slugs[0]);
       return product._id;
@@ -163,7 +163,7 @@ export default () => {
       // Add a product
       logger.log('unchained:platform -> fixtures: log');
       const logEntry = Factory.create('log', {
-        meta: { userId: faker.random.arrayElement(users) }
+        meta: { userId: faker.random.arrayElement(users) },
       });
       return logEntry._id;
     });
@@ -172,7 +172,7 @@ export default () => {
       // Add a product
       logger.log('unchained:platform -> fixtures: configurableProduct');
       const product = Factory.create('configurableProduct', {
-        authorId: faker.random.arrayElement(users)
+        authorId: faker.random.arrayElement(users),
       });
       addTextAndMediaToProduct(product._id, product.slugs[0]);
       addVariationsToProduct(product._id);
@@ -189,7 +189,7 @@ export default () => {
         Factory.create('filterText', {
           filterId,
           locale: faker.locale,
-          filterOptionValue
+          filterOptionValue,
         });
         faker.locale = 'en';
         logger.log(
@@ -198,12 +198,12 @@ export default () => {
         Factory.create('filterText', {
           filterId,
           locale: faker.locale,
-          filterOptionValue
+          filterOptionValue,
         });
       };
       const filter = Factory.create('filter');
       addTranslation(filter._id);
-      filter.options.forEach(filterOptionValue => {
+      filter.options.forEach((filterOptionValue) => {
         addTranslation(filter._id, filterOptionValue);
       });
       return filter._id;
@@ -219,13 +219,13 @@ export default () => {
       Array.from(Array(5)).forEach(() => {
         Factory.create('assortmentProduct', {
           assortmentId: assortment._id,
-          productId: faker.random.arrayElement(simpleProducts)
+          productId: faker.random.arrayElement(simpleProducts),
         });
       });
 
       Factory.create('assortmentFilter', {
         assortmentId: assortment._id,
-        filterId: faker.random.arrayElement(filters)
+        filterId: faker.random.arrayElement(filters),
       });
 
       return assortment._id;
@@ -234,29 +234,29 @@ export default () => {
     logger.log('unchained:platform -> fixtures: assortmentLinks');
     Factory.create('assortmentLink', {
       childAssortmentId: assortments[1],
-      parentAssortmentId: assortments[0]
+      parentAssortmentId: assortments[0],
     });
     Factory.create('assortmentLink', {
       childAssortmentId: assortments[2],
-      parentAssortmentId: assortments[0]
+      parentAssortmentId: assortments[0],
     });
 
     const orders = Array.from(Array(5)).map(() => {
       // Add an order
       logger.log('unchained:platform -> fixtures: order');
       const order = Factory.create('order', {
-        userId: faker.random.arrayElement(users)
+        userId: faker.random.arrayElement(users),
       });
 
       logger.log('unchained:platform -> fixtures: -> orderPayment');
       const orderPayment = Factory.create('orderPayment', {
         orderId: order._id,
-        paymentProviderId: faker.random.arrayElement(paymentProviders)
+        paymentProviderId: faker.random.arrayElement(paymentProviders),
       });
       logger.log('unchained:platform -> fixtures: -> orderDelivery');
       const orderDelivery = Factory.create('orderDelivery', {
         orderId: order._id,
-        deliveryProviderId: faker.random.arrayElement(deliveryProviders)
+        deliveryProviderId: faker.random.arrayElement(deliveryProviders),
       });
 
       order.setPaymentProvider({ _id: orderPayment.paymentProviderId });
@@ -269,8 +269,8 @@ export default () => {
           orderId: order._id,
           productId: faker.random.arrayElement([
             ...simpleProducts,
-            ...configurableProducts
-          ])
+            ...configurableProducts,
+          ]),
         });
       });
       return order._id;
@@ -289,7 +289,7 @@ export default () => {
       paymentProviders,
       deliveryProviders,
       warehousingProviders,
-      assortments
+      assortments,
     };
   } catch (anyError) {
     log(anyError, { level: 'error' });

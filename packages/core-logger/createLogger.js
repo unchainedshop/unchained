@@ -44,9 +44,9 @@ export default (moduleName, moreTransports = []) => {
       new transports.Console({
         stderrLevels: ['error'],
         consoleWarnLevels: ['warn'],
-        level: loggingMatched ? 'debug' : LOG_LEVEL
+        level: loggingMatched ? 'debug' : LOG_LEVEL,
       }),
-      ...moreTransports
-    ]
+      ...moreTransports,
+    ],
   });
 };

@@ -13,5 +13,5 @@ export default (collectionName, options) => ({
       return 'file too big';
     }
     return true;
-  }
+  },
 });

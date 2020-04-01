@@ -101,5 +101,5 @@ export default {
   LoadedFilterOption,
   Quotation,
   SearchResult,
-  DeliveryFee
+  DeliveryFee,
 };

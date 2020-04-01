@@ -56,5 +56,5 @@ export default [
       # \`FAILED\` and could be cleaned.
       timeout: Int
     }
-  `
+  `,
 ];

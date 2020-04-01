@@ -39,7 +39,7 @@ class FailedRescheduler {
         priority: work.priority,
         original: work.original || work._id,
         retries: work.retries - 1,
-        scheduled
+        scheduled,
       });
     }
   }

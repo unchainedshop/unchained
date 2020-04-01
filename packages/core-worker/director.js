@@ -11,7 +11,7 @@ const WorkerEventTypes = {
   added: 'added',
   allocated: 'allocated',
   done: 'done',
-  finished: 'finished'
+  finished: 'finished',
   // The difference between `done` and `finished` is, that work is `done` after
   // it was computed (no DB write, could be external) and `finished` after
   // the changes are written to the DB
@@ -54,7 +54,7 @@ class WorkerDirector {
       scheduled: scheduled || created,
       original,
       retries,
-      created
+      created,
     });
 
     const work = WorkQueue.findOne({ _id });
@@ -68,17 +68,20 @@ class WorkerDirector {
     const filterMap = {
       [WorkStatus.NEW]: { started: { $exists: false } },
       [WorkStatus.ALLOCATED]: {
-        $and: [{ started: { $exists: true } }, { finished: { $exists: false } }]
+        $and: [
+          { started: { $exists: true } },
+          { finished: { $exists: false } },
+        ],
       },
       [WorkStatus.SUCCESS]: { finished: { $exists: true }, success: true },
-      [WorkStatus.FAILED]: { finished: { $exists: true }, success: false }
+      [WorkStatus.FAILED]: { finished: { $exists: true }, success: false },
     };
 
     const query = {
       $or: Object.entries(filterMap).reduce(
         (acc, [key, filter]) => (status.includes(key) ? [...acc, filter] : acc),
         []
-      )
+      ),
     };
 
     const result = WorkQueue.find(query.$or.length > 0 ? query : {}).fetch();
@@ -92,11 +95,11 @@ class WorkerDirector {
         started: null,
         scheduled: { $lte: new Date() },
         worker: { $in: [null, worker] },
-        ...(types ? { type: { $in: types } } : {})
+        ...(types ? { type: { $in: types } } : {}),
       },
       { created: 1, priority: -1 },
       {
-        $set: { started: new Date(), worker }
+        $set: { started: new Date(), worker },
       },
       { new: true }
     );
@@ -138,7 +141,7 @@ class WorkerDirector {
     success,
     worker = WORKER_ID,
     started = new Date(),
-    finished = new Date()
+    finished = new Date(),
   }) {
     const originalWork = WorkQueue.findOne({ _id: workId });
 
@@ -151,8 +154,8 @@ class WorkerDirector {
           error,
           result,
           ...(!originalWork.started ? { started } : {}),
-          worker
-        }
+          worker,
+        },
       }
     );
 

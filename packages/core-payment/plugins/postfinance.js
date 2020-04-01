@@ -1,7 +1,7 @@
 import {
   PaymentDirector,
   PaymentAdapter,
-  PaymentError
+  PaymentError,
 } from 'meteor/unchained:core-payment';
 
 const { POSTFINANCE_SECRET } = process.env;

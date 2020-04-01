@@ -1,7 +1,7 @@
 import {
   OrderPricingDirector,
   OrderPricingAdapter,
-  OrderPricingSheetRowCategories
+  OrderPricingSheetRowCategories,
 } from 'meteor/unchained:core-pricing';
 
 const resolveRatioAndTaxDivisorForPricingSheet = (pricing, total) => {
@@ -10,12 +10,12 @@ const resolveRatioAndTaxDivisorForPricingSheet = (pricing, total) => {
   if (total === 0) {
     return {
       ratio: 1,
-      taxDivisor: 1
+      taxDivisor: 1,
     };
   }
   return {
     ratio: gross / total,
-    taxDivisor: gross / (gross - tax)
+    taxDivisor: gross / (gross - tax),
   };
 };
 
@@ -33,7 +33,7 @@ const applyDiscountToMultipleShares = (shares, amount) => {
       const [shareAmount, shareTaxAmount] = resolveAmountAndTax(share, amount);
       return [
         currentDiscountAmount + shareAmount,
-        currentTaxAmount + shareTaxAmount
+        currentTaxAmount + shareTaxAmount,
       ];
     },
     [0, 0]
@@ -67,17 +67,17 @@ class OrderItems extends OrderPricingAdapter {
     // add it to the order item calculation
 
     const totalAmountOfItems = this.calculation.sum({
-      category: OrderPricingSheetRowCategories.Items
+      category: OrderPricingSheetRowCategories.Items,
     });
     const totalAmountOfPaymentAndDelivery =
       this.calculation.sum({
-        category: OrderPricingSheetRowCategories.Payment
+        category: OrderPricingSheetRowCategories.Payment,
       }) +
       this.calculation.sum({
-        category: OrderPricingSheetRowCategories.Delivery
+        category: OrderPricingSheetRowCategories.Delivery,
       });
 
-    const itemShares = this.context.items.map(item =>
+    const itemShares = this.context.items.map((item) =>
       resolveRatioAndTaxDivisorForPricingSheet(
         item.pricing(),
         totalAmountOfItems
@@ -98,7 +98,7 @@ class OrderItems extends OrderPricingAdapter {
       // First, we deduce the discount from the items
       const [
         itemsDiscountAmount,
-        itemsTaxAmount
+        itemsTaxAmount,
       ] = applyDiscountToMultipleShares(
         itemShares,
         calculateAmountToSplit(
@@ -111,7 +111,7 @@ class OrderItems extends OrderPricingAdapter {
       // After the items, we deduct the remaining discount from payment & delivery fees
       const [
         deliveryAndPaymentDiscountAmount,
-        deliveryAndPaymentTaxAmount
+        deliveryAndPaymentTaxAmount,
       ] = applyDiscountToMultipleShares(
         [deliveryShare, paymentShare],
         calculateAmountToSplit(
@@ -129,16 +129,16 @@ class OrderItems extends OrderPricingAdapter {
           amount: discountAmount * -1,
           discountId,
           meta: {
-            adapter: this.constructor.key
-          }
+            adapter: this.constructor.key,
+          },
         });
         if (taxAmount !== 0) {
           this.result.addTaxes({
             amount: taxAmount * -1,
             meta: {
               discountId,
-              adapter: this.constructor.key
-            }
+              adapter: this.constructor.key,
+            },
           });
         }
       }

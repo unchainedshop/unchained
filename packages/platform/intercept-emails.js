@@ -10,7 +10,7 @@ function writeFile(filename, data, done) {
   fs.mkdtemp(path.join(os.tmpdir(), 'mailman-'), (err1, folder) => {
     if (err1) return done(err1);
     const temporaryFolderPath = `${folder}/${filename}`;
-    return fs.writeFile(temporaryFolderPath, data, err2 => {
+    return fs.writeFile(temporaryFolderPath, data, (err2) => {
       if (err2) return done(err2);
       return done(null, temporaryFolderPath);
     });

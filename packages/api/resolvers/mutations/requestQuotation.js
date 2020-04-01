@@ -3,7 +3,7 @@ import { Products } from 'meteor/unchained:core-products';
 import { Quotations } from 'meteor/unchained:core-quotations';
 import { ProductNotFoundError } from '../../errors';
 
-export default function(
+export default function (
   root,
   { productId, configuration },
   { userId, countryContext, localeContext }
@@ -21,7 +21,7 @@ export default function(
       userId,
       productId,
       countryCode: countryContext,
-      configuration
+      configuration,
     },
     { localeContext }
   );

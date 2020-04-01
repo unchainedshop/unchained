@@ -3,16 +3,16 @@ Package.describe({
   version: '0.45.0',
   summary: 'Unchained Engine Core: Logger',
   git: 'https://github.com/unchainedshop/unchained',
-  documentation: 'README.md'
+  documentation: 'README.md',
 });
 
 Npm.depends({
   winston: '3.2.1',
   'winston-transport': '4.3.0',
-  'safe-stable-stringify': '1.1.0'
+  'safe-stable-stringify': '1.1.0',
 });
 
-Package.onUse(api => {
+Package.onUse((api) => {
   api.versionsFrom('1.9');
   api.use('ecmascript');
   api.use('mongo');
@@ -26,7 +26,7 @@ Package.onUse(api => {
   api.mainModule('logger.js', 'server');
 });
 
-Package.onTest(api => {
+Package.onTest((api) => {
   api.use('ecmascript');
   api.use('unchained:core-logger');
   api.mainModule('logger-tests.js');

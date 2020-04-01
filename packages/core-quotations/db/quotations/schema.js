@@ -10,7 +10,7 @@ export const QuotationStatus = {
   PROCESSING: 'PROCESSING',
   PROPOSED: 'PROPOSED',
   FULLFILLED: 'FULLFILLED',
-  REJECTED: 'REJECTED'
+  REJECTED: 'REJECTED',
 };
 
 Quotations.attachSchema(
@@ -30,18 +30,18 @@ Quotations.attachSchema(
       configuration: Array,
       'configuration.$': {
         type: Object,
-        required: true
+        required: true,
       },
       'configuration.$.key': {
         type: String,
-        required: true
+        required: true,
       },
       'configuration.$.value': {
-        type: String
+        type: String,
       },
       ...timestampFields,
       ...contextFields,
-      ...logFields
+      ...logFields,
     },
     { requiredByDefault: false }
   )
@@ -53,16 +53,16 @@ Migrations.add({
   up() {
     Quotations.find()
       .fetch()
-      .forEach(user => {
+      .forEach((user) => {
         Quotations.update(
           { _id: user._id },
           {
             $set: {
-              currencyCode: user.currency || null
+              currencyCode: user.currency || null,
             },
             $unset: {
-              currency: 1
-            }
+              currency: 1,
+            },
           }
         );
       });
@@ -70,20 +70,20 @@ Migrations.add({
   down() {
     Quotations.find()
       .fetch()
-      .forEach(user => {
+      .forEach((user) => {
         Quotations.update(
           { _id: user._id },
           {
             $set: {
-              currency: user.currencyCode || null
+              currency: user.currencyCode || null,
             },
             $unset: {
-              currencyCode: 1
-            }
+              currencyCode: 1,
+            },
           }
         );
       });
-  }
+  },
 });
 
 export default () => {

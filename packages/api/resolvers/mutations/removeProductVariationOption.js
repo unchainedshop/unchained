@@ -1,7 +1,7 @@
 import { log } from 'meteor/unchained:core-logger';
 import { ProductVariations } from 'meteor/unchained:core-products';
 
-export default function(
+export default function (
   root,
   { productVariationId, productVariationOptionValue },
   { userId }
@@ -11,15 +11,15 @@ export default function(
     { _id: productVariationId },
     {
       $set: {
-        updated: new Date()
+        updated: new Date(),
       },
       $pull: {
-        options: productVariationOptionValue
-      }
+        options: productVariationOptionValue,
+      },
     }
   );
   const productVariation = ProductVariations.findOne({
-    _id: productVariationId
+    _id: productVariationId,
   });
   return productVariation;
 }

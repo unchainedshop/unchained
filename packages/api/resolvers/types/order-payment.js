@@ -4,7 +4,7 @@ import { objectInvert } from 'meteor/unchained:utils';
 const OrderPaymentMap = {
   OrderPaymentGeneric: PaymentProviderType.GENERIC,
   OrderPaymentCard: PaymentProviderType.CARD,
-  OrderPaymentInvoice: PaymentProviderType.INVOICE
+  OrderPaymentInvoice: PaymentProviderType.INVOICE,
 };
 
 export default {
@@ -15,5 +15,5 @@ export default {
       return invertedProductTypes[provider.type];
     }
     return invertedProductTypes[PaymentProviderType.INVOICE];
-  }
+  },
 };

@@ -3,10 +3,10 @@ import { WarehousingProviders } from 'meteor/unchained:core-warehousing';
 
 export default (root, { warehousingProviderId }, { userId }) => {
   log(`mutation removeWarehousingProvider ${warehousingProviderId}`, {
-    userId
+    userId,
   });
   const provider = WarehousingProviders.removeProvider({
-    _id: warehousingProviderId
+    _id: warehousingProviderId,
   });
   return provider;
 };

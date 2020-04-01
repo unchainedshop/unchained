@@ -6,6 +6,6 @@ import { name as packageName } from 'meteor/unchained:core-files';
 
 // Write your tests here!
 // Here is an example.
-Tinytest.add('unchained:core-files - example', test => {
+Tinytest.add('unchained:core-files - example', (test) => {
   test.equal(packageName, 'unchained:core-files');
 });

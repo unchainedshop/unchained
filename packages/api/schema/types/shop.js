@@ -7,5 +7,5 @@ export default [
       version: String
       userRoles: [String!]!
     }
-  `
+  `,
 ];

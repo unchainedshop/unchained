@@ -4,7 +4,7 @@ const WarehousingError = {
   ADAPTER_NOT_FOUND: 'ADAPTER_NOT_FOUND',
   NOT_IMPLEMENTED: 'NOT_IMPLEMENTED',
   INCOMPLETE_CONFIGURATION: 'INCOMPLETE_CONFIGURATION',
-  WRONG_CREDENTIALS: 'WRONG_CREDENTIALS'
+  WRONG_CREDENTIALS: 'WRONG_CREDENTIALS',
 };
 
 class WarehousingAdapter {
@@ -89,7 +89,7 @@ class WarehousingDirector {
       const adapter = this.interface(context);
       const quantity = await adapter.stock(referenceDate);
       return {
-        quantity
+        quantity,
       };
     } catch (error) {
       console.error(error); // eslint-disable-line
@@ -115,7 +115,7 @@ class WarehousingDirector {
       return {
         shipping: shippingTimestamp && new Date(shippingTimestamp),
         earliestDelivery:
-          earliestDeliveryTimestamp && new Date(earliestDeliveryTimestamp)
+          earliestDeliveryTimestamp && new Date(earliestDeliveryTimestamp),
       };
     } catch (error) {
       console.error(error); // eslint-disable-line
@@ -148,7 +148,7 @@ class WarehousingDirector {
 
   static filteredAdapters(filter) {
     return Array.from(WarehousingDirector.adapters)
-      .map(entry => entry[1])
+      .map((entry) => entry[1])
       .filter(filter || (() => true));
   }
 

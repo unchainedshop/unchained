@@ -1,10 +1,10 @@
 import { log } from 'meteor/unchained:core-logger';
 import {
   ProductVariations,
-  ProductVariationType
+  ProductVariationType,
 } from 'meteor/unchained:core-products';
 
-export default function(
+export default function (
   root,
   { variation: inputData, productId },
   { localeContext, userId }
@@ -18,7 +18,7 @@ export default function(
   const variationId = ProductVariations.insert(variation);
   const variationObject = ProductVariations.findOne({ _id: variationId });
   variationObject.upsertLocalizedText(localeContext.language, {
-    title
+    title,
   });
   return variationObject;
 }

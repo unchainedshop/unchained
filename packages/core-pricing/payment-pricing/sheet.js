@@ -3,7 +3,7 @@ import PricingSheet from '../pricing-sheet';
 const PaymentPricingSheetRowCategories = {
   Payment: 'PAYMENT',
   Discount: 'DISCOUNT',
-  Tax: 'TAX'
+  Tax: 'TAX',
 };
 
 class PaymentPricingSheet extends PricingSheet {
@@ -13,7 +13,7 @@ class PaymentPricingSheet extends PricingSheet {
       amount,
       isTaxable,
       isNetPrice,
-      meta
+      meta,
     });
   }
 
@@ -23,7 +23,7 @@ class PaymentPricingSheet extends PricingSheet {
       amount,
       isTaxable,
       discountId,
-      meta
+      meta,
     });
   }
 
@@ -32,26 +32,26 @@ class PaymentPricingSheet extends PricingSheet {
       category: PaymentPricingSheetRowCategories.Tax,
       amount,
       rate,
-      meta
+      meta,
     });
   }
 
   taxSum() {
     return this.sum({
-      category: PaymentPricingSheetRowCategories.Tax
+      category: PaymentPricingSheetRowCategories.Tax,
     });
   }
 
   feeSum() {
     return this.sum({
-      category: PaymentPricingSheetRowCategories.Payment
+      category: PaymentPricingSheetRowCategories.Payment,
     });
   }
 
   discountSum(discountId) {
     return this.sum({
       category: PaymentPricingSheetRowCategories.Discount,
-      discountId
+      discountId,
     });
   }
 
@@ -59,13 +59,13 @@ class PaymentPricingSheet extends PricingSheet {
     const discountIds = this.getDiscountRows(explicitDiscountId).map(
       ({ discountId }) => discountId
     );
-    return [...new Set(discountIds)].map(discountId => ({
+    return [...new Set(discountIds)].map((discountId) => ({
       discountId,
       amount: this.sum({
         category: PaymentPricingSheetRowCategories.Discount,
-        discountId
+        discountId,
       }),
-      currency: this.currency
+      currency: this.currency,
     }));
   }
 
@@ -76,7 +76,7 @@ class PaymentPricingSheet extends PricingSheet {
   getDiscountRows(discountId) {
     return this.filterBy({
       category: PaymentPricingSheetRowCategories.Discount,
-      discountId
+      discountId,
     });
   }
 

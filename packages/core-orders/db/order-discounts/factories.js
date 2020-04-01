@@ -10,5 +10,5 @@ Factory.define('systemOrderDiscount', OrderDiscounts, {
   trigger: () => OrderDiscountTrigger.SYSTEM,
   discountKey: () =>
     faker.random.arrayElement(['shop.unchained.coupon.distributor']),
-  ...fakeTimestampFields
+  ...fakeTimestampFields,
 });

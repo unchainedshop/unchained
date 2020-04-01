@@ -4,5 +4,5 @@ export default [
       telNumber: String
       emailAddress: String
     }
-  `
+  `,
 ];

@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import getConnection from './getConnection';
 
-const filterContext = graphqlContext => {
+const filterContext = (graphqlContext) => {
   return Object.fromEntries(
     Object.entries(graphqlContext).filter(([key]) => {
       if (key.substr(0, 1) === '_') return false;
@@ -10,7 +10,7 @@ const filterContext = graphqlContext => {
   );
 };
 
-export default function(passedContext, name, ...args) {
+export default function (passedContext, name, ...args) {
   const handler = Meteor.default_server.method_handlers[name];
   if (!handler) {
     throw new Meteor.Error(404, `Method '${name}' not found`);
@@ -24,7 +24,7 @@ export default function(passedContext, name, ...args) {
        * This will not make any changes if you don\'t pass setUserId function in context
        */
     },
-    ...filteredContext
+    ...filteredContext,
   };
   const {
     userId: userIdBeforeLogin,
@@ -35,7 +35,7 @@ export default function(passedContext, name, ...args) {
   const retValue = handler.call(context, ...args, {
     userIdBeforeLogin,
     normalizedLocale: localeContext && localeContext.normalized,
-    ...handlerContext
+    ...handlerContext,
   });
   connection.close();
   return retValue;

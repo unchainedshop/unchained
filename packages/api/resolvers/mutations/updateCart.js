@@ -1,7 +1,7 @@
 import { log } from 'meteor/unchained:core-logger';
 import getCart from '../../getCart';
 
-export default function(
+export default function (
   root,
   {
     orderId,
@@ -9,7 +9,7 @@ export default function(
     contact,
     paymentProviderId,
     deliveryProviderId,
-    meta
+    meta,
   },
   { user, countryContext, userId }
 ) {

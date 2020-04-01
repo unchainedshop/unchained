@@ -3,7 +3,7 @@ import SimpleSchema from 'simpl-schema';
 import { WarehousingProviders } from './collections';
 
 export const WarehousingProviderType = { // eslint-disable-line
-  PHYSICAL: 'PHYSICAL'
+  PHYSICAL: 'PHYSICAL',
 };
 
 WarehousingProviders.attachSchema(
@@ -15,7 +15,7 @@ WarehousingProviders.attachSchema(
       'configuration.$': { type: Object },
       'configuration.$.key': { type: String },
       'configuration.$.value': { type: String },
-      ...Schemas.timestampFields
+      ...Schemas.timestampFields,
     },
     { requiredByDefault: false }
   )

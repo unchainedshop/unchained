@@ -17,7 +17,7 @@ class LocalTransport extends Transport {
           created: new Date(),
           level,
           message,
-          meta
+          meta,
         });
       } catch (e) {
         console.trace(e); // eslint-disable-line

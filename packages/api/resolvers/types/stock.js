@@ -7,7 +7,7 @@ export default {
     warehousingProvider,
     referenceDate,
     country,
-    userId
+    userId,
   }) =>
     crypto
       .createHash('sha256')
@@ -18,8 +18,8 @@ export default {
           warehousingProvider._id,
           referenceDate,
           country,
-          userId || 'ANONYMOUS'
+          userId || 'ANONYMOUS',
         ].join('')
       )
-      .digest('hex')
+      .digest('hex'),
 };

@@ -15,7 +15,7 @@ SyncedCron.config({
 
   collectionName: 'cron_history',
 
-  utc: true
+  utc: true,
 });
 
 class CronWorker extends BaseWorker {
@@ -38,14 +38,14 @@ class CronWorker extends BaseWorker {
       },
       job: () => {
         return this.allocateAndWork();
-      }
+      },
     });
   }
 
   async allocateAndWork() {
     const work = await this.WorkerDirector.allocateWork({
       types: this.getInternalTypes(),
-      workerId: this.workerId
+      workerId: this.workerId,
     });
 
     if (work) {
@@ -54,7 +54,7 @@ class CronWorker extends BaseWorker {
       return this.WorkerDirector.finishWork({
         workId: work._id,
         worker: this.workerId,
-        ...output
+        ...output,
       });
     }
 

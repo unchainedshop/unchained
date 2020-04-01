@@ -9,13 +9,13 @@ Countries.attachSchema(
         type: String,
         required: true,
         index: true,
-        unique: true
+        unique: true,
       },
       isActive: Boolean,
       isBase: Boolean,
       authorId: { type: String, required: true },
       defaultCurrencyId: String,
-      ...Schemas.timestampFields
+      ...Schemas.timestampFields,
     },
     { requiredByDefault: false }
   )

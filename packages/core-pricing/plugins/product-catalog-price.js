@@ -1,6 +1,6 @@
 import {
   ProductPricingDirector,
-  ProductPricingAdapter
+  ProductPricingAdapter,
 } from 'meteor/unchained:core-pricing';
 
 class ProductPrice extends ProductPricingAdapter {
@@ -26,7 +26,7 @@ class ProductPrice extends ProductPricingAdapter {
       amount: itemTotal,
       isTaxable: price.isTaxable,
       isNetPrice: price.isNetPrice,
-      meta: { adapter: this.constructor.key }
+      meta: { adapter: this.constructor.key },
     });
 
     return super.calculate();

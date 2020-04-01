@@ -7,7 +7,7 @@ ProductTexts.rawCollection().createIndex({
   title: 'text',
   subtitle: 'text',
   vendor: 'text',
-  brand: 'text'
+  brand: 'text',
 });
 
 class LocalSearch extends FilterAdapter {
@@ -40,11 +40,11 @@ class LocalSearch extends FilterAdapter {
             { vendor: { $regex: `${queryString}`, $options: 'im' } },
             { brand: { $regex: `${queryString}`, $options: 'im' } },
             { description: { $regex: `${queryString}`, $options: 'im' } },
-            { labels: { $regex: `${queryString}`, $options: 'im' } }
-          ]
+            { labels: { $regex: `${queryString}`, $options: 'im' } },
+          ],
         }
       : {
-          $text: { $search: queryString }
+          $text: { $search: queryString },
         };
 
     if (restrictedProductIds) {
@@ -53,8 +53,8 @@ class LocalSearch extends FilterAdapter {
 
     const productIds = ProductTexts.find(selector, {
       fields: {
-        productId: 1
-      }
+        productId: 1,
+      },
     }).map(({ productId }) => productId);
 
     return productIds;

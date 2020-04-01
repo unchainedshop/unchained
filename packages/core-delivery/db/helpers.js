@@ -55,7 +55,7 @@ DeliveryProviders.helpers({
     requestContext
   ) {
     const currency = Countries.resolveDefaultCurrencyCode({
-      isoCode: country
+      isoCode: country,
     });
     const pricingDirector = new DeliveryPricingDirector({
       providerContext,
@@ -64,7 +64,7 @@ DeliveryProviders.helpers({
       user,
       country,
       currency,
-      requestContext
+      requestContext,
     });
     const calculated = pricingDirector.calculate();
     if (!calculated) return null;
@@ -84,9 +84,9 @@ DeliveryProviders.helpers({
       currencyCode: orderPrice.currency,
       countryCode: country,
       isTaxable: pricing.taxSum() > 0,
-      isNetPrice: useNetPrice
+      isNetPrice: useNetPrice,
     };
-  }
+  },
 });
 
 DeliveryProviders.createProvider = ({ type, ...rest }) => {
@@ -95,7 +95,7 @@ DeliveryProviders.createProvider = ({ type, ...rest }) => {
     ...rest,
     created: new Date(),
     configuration: InterfaceClass.initialConfiguration,
-    type
+    type,
   });
   return DeliveryProviders.findOne({ _id });
 };
@@ -106,8 +106,8 @@ DeliveryProviders.updateProvider = ({ _id, ...rest }) => {
     {
       $set: {
         ...rest,
-        updated: new Date()
-      }
+        updated: new Date(),
+      },
     }
   );
   return DeliveryProviders.findOne({ _id, deleted: null });
@@ -118,8 +118,8 @@ DeliveryProviders.removeProvider = ({ _id }) => {
     { _id, deleted: null },
     {
       $set: {
-        deleted: new Date()
-      }
+        deleted: new Date(),
+      },
     }
   );
   return DeliveryProviders.findOne({ _id });

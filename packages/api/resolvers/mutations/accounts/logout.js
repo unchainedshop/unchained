@@ -2,7 +2,7 @@ import { Accounts } from 'meteor/accounts-base';
 import getConnection from '../../../getConnection';
 import callMethod from '../../../callMethod';
 
-export default async function(root, { token }, context) {
+export default async function (root, { token }, context) {
   if (token && context.userId) {
     const hashedToken = Accounts._hashLoginToken(token); // eslint-disable-line
     Accounts.destroyToken(context.userId, hashedToken);

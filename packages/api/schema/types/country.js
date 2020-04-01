@@ -12,5 +12,5 @@ export default [
       flagEmoji: String
       name(forceLocale: String): String
     }
-  `
+  `,
 ];

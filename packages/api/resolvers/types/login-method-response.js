@@ -5,5 +5,5 @@ export default {
     const user = Users.findOne({ _id: id });
     user._inLoginMethodResponse = true; // eslint-disable-line
     return user;
-  }
+  },
 };

@@ -17,7 +17,7 @@ class BaseWorker {
 
   constructor({
     WorkerDirector,
-    workerId = WORKER_ID || `${os.hostname()}:${this.type}`
+    workerId = WORKER_ID || `${os.hostname()}:${this.type}`,
   }) {
     log(`${this.constructor.key} -> Initialized: ${workerId}`);
     this.WorkerDirector = WorkerDirector;
@@ -26,7 +26,7 @@ class BaseWorker {
 
   getInternalTypes() {
     return this.WorkerDirector.getActivePluginTypes().filter(
-      type => type !== External.type
+      (type) => type !== External.type
     );
   }
 

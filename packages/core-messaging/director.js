@@ -5,7 +5,7 @@ const { LANG } = process.env;
 
 const MessagingType = {
   EMAIL: 'EMAIL',
-  SMS: 'SMS'
+  SMS: 'SMS',
 };
 
 class MessagingAdapter {
@@ -37,7 +37,7 @@ class MessagingDirector {
   constructor(context) {
     this.context = {
       locale: LANG,
-      ...context
+      ...context,
     };
   }
 
@@ -51,22 +51,22 @@ class MessagingDirector {
   execute(name, options) {
     return this.constructor
       .sortedAdapters()
-      .filter(AdapterClass => {
+      .filter((AdapterClass) => {
         const activated = AdapterClass.isActivatedFor(this.context);
         if (!activated) {
           log(
             `${this.constructor.name} -> ${AdapterClass.key} (${AdapterClass.version}) skipped`,
             {
-              level: 'warn'
+              level: 'warn',
             }
           );
         }
         return activated;
       })
-      .map(AdapterClass => {
+      .map((AdapterClass) => {
         const concreteAdapter = new AdapterClass({
           context: this.context,
-          resolver: this.constructor.resolvers.get(this.context.type)
+          resolver: this.constructor.resolvers.get(this.context.type),
         });
         log(
           `${this.constructor.name} -> via ${AdapterClass.key} -> Execute '${name}'`
@@ -81,7 +81,7 @@ class MessagingDirector {
 
   static sortedAdapters() {
     return Array.from(this.adapters)
-      .map(entry => entry[1])
+      .map((entry) => entry[1])
       .sort((left, right) => left.key - right.key);
   }
 

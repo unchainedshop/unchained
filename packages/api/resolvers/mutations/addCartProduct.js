@@ -3,7 +3,7 @@ import { Products } from 'meteor/unchained:core-products';
 import { ProductNotFoundError, OrderQuantityTooLowError } from '../../errors';
 import getCart from '../../getCart';
 
-export default function(
+export default function (
   root,
   { orderId, productId, quantity, configuration },
   { user, userId, countryContext }
@@ -21,6 +21,6 @@ export default function(
   return cart.addProductItem({
     product,
     quantity,
-    configuration
+    configuration,
   });
 }

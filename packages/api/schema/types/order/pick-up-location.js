@@ -7,5 +7,5 @@ export default [
       address: Address
       geoPoint: GeoPosition
     }
-  `
+  `,
 ];

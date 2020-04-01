@@ -1,13 +1,13 @@
 import callMethod from '../../../callMethod';
 import hashPassword from '../../../hashPassword';
 
-export default async function(
+export default async function (
   root,
   {
     oldPassword: oldHashedPassword,
     oldPlainPassword,
     newPassword: newHashedPassword,
-    newPlainPassword
+    newPlainPassword,
   },
   context
 ) {
@@ -27,6 +27,6 @@ export default async function(
     newPassword
   );
   return {
-    success: passwordChanged
+    success: passwordChanged,
   };
 }

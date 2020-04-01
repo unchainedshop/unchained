@@ -24,5 +24,5 @@ export default [
       quantity: Int!
       configuration: [ProductConfigurationParameter!]
     }
-  `
+  `,
 ];

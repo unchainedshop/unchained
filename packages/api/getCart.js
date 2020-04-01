@@ -4,7 +4,7 @@ import { Countries } from 'meteor/unchained:core-countries';
 import {
   UserNotFoundError,
   OrderNotFoundError,
-  OrderWrongStatusError
+  OrderWrongStatusError,
 } from './errors';
 
 export default ({ orderId, userId, user: userObject, countryContext }) => {
@@ -23,9 +23,9 @@ export default ({ orderId, userId, user: userObject, countryContext }) => {
     Orders.createOrder({
       user,
       currency: Countries.resolveDefaultCurrencyCode({
-        isoCode: countryContext
+        isoCode: countryContext,
       }),
-      countryCode: countryContext
+      countryCode: countryContext,
     });
   return cart;
 };

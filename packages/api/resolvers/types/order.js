@@ -15,5 +15,5 @@ export default {
   meta(obj) {
     return obj.context;
   },
-  logs: checkTypeResolver(actions.viewLogs, 'logs')
+  logs: checkTypeResolver(actions.viewLogs, 'logs'),
 };

@@ -1,11 +1,11 @@
 import {
   DeliveryAdapter,
-  DeliveryDirector
+  DeliveryDirector,
 } from 'meteor/unchained:core-delivery';
 
 import {
   MessagingDirector,
-  MessagingType
+  MessagingType,
 } from 'meteor/unchained:core-messaging';
 
 class SendMail extends DeliveryAdapter {
@@ -18,7 +18,7 @@ class SendMail extends DeliveryAdapter {
   static initialConfiguration = [
     { key: 'from', value: '' },
     { key: 'to', value: '' },
-    { key: 'cc', value: '' }
+    { key: 'cc', value: '' },
   ];
 
   static typeSupported(type) {
@@ -76,10 +76,10 @@ class SendMail extends DeliveryAdapter {
 
     const director = new MessagingDirector({
       ...this.context,
-      type: MessagingType.EMAIL
+      type: MessagingType.EMAIL,
     });
 
-    const items = order.items().map(position => {
+    const items = order.items().map((position) => {
       const product = position.product();
       const originalProduct = position.originalProduct();
       const productTexts = product.getLocalizedTexts();
@@ -92,7 +92,7 @@ class SendMail extends DeliveryAdapter {
         originalProductTexts,
         name: productTexts.title,
         price: unitPrice?.amount ?? unitPrice.amount / 100,
-        quantity: position.quantity
+        quantity: position.quantity,
       };
     });
 
@@ -108,8 +108,8 @@ class SendMail extends DeliveryAdapter {
         ...((transactionContext && transactionContext.address) || {}),
         items,
         contact: order.contact || {},
-        total: total ?? total / 100
-      }
+        total: total ?? total / 100,
+      },
     });
   }
 }

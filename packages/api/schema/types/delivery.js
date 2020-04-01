@@ -49,5 +49,5 @@ export default [
         context: JSON
       ): DeliveryFee
     }
-  `
+  `,
 ];

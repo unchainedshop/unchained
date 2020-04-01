@@ -89,14 +89,14 @@ class DiscountDirector {
     );
     const discounts = await Promise.all(
       DiscountDirector.sortedAdapters()
-        .filter(AdapterClass =>
+        .filter((AdapterClass) =>
           AdapterClass.isManualAdditionAllowed(options?.code)
         )
-        .map(async AdapterClass => {
+        .map(async (AdapterClass) => {
           const adapter = new AdapterClass({ context: this.context });
           return {
             key: AdapterClass.key,
-            isValid: await adapter.isValidForCodeTriggering(options)
+            isValid: await adapter.isValidForCodeTriggering(options),
           };
         })
     );
@@ -108,11 +108,11 @@ class DiscountDirector {
     if (!this.context.order) return [];
     log('DiscountDirector -> Find system discounts');
     const discounts = await Promise.all(
-      DiscountDirector.sortedAdapters().map(async AdapterClass => {
+      DiscountDirector.sortedAdapters().map(async (AdapterClass) => {
         const adapter = new AdapterClass({ context: this.context });
         return {
           key: AdapterClass.key,
-          isValid: await adapter.isValidForSystemTriggering(options)
+          isValid: await adapter.isValidForSystemTriggering(options),
         };
       })
     );
@@ -125,7 +125,7 @@ class DiscountDirector {
 
   static sortedAdapters() {
     return Array.from(DiscountDirector.adapters)
-      .map(entry => entry[1])
+      .map((entry) => entry[1])
       .sort((left, right) => left.orderIndex - right.orderIndex);
   }
 

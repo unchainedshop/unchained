@@ -2,10 +2,10 @@ import { log } from 'meteor/unchained:core-logger';
 import { Quotations, QuotationStatus } from 'meteor/unchained:core-quotations';
 import {
   QuotationNotFoundError,
-  QuotationWrongStatusError
+  QuotationWrongStatusError,
 } from '../../errors';
 
-export default function(
+export default function (
   root,
   { quotationId, ...transactionContext },
   { userId }

@@ -14,5 +14,5 @@ Factory.define('order', Orders, {
   currency: () => 'CHF',
   paymentId: () => null,
   deliveryId: () => null,
-  ...fakeTimestampFields
+  ...fakeTimestampFields,
 });

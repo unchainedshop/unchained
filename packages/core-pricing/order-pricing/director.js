@@ -55,28 +55,28 @@ class OrderPricingDirector {
       user,
       delivery,
       payment,
-      discounts
+      discounts,
     };
   }
 
   calculate() {
     this.calculation = OrderPricingDirector.sortedAdapters()
-      .filter(AdapterClass => AdapterClass.isActivatedFor(this.context.order))
+      .filter((AdapterClass) => AdapterClass.isActivatedFor(this.context.order))
       .reduce((calculation, AdapterClass) => {
         const discounts = this.context.discounts
-          .map(discount => ({
+          .map((discount) => ({
             discountId: discount._id,
             configuration: discount.configurationForPricingAdapterKey(
               AdapterClass.key,
               calculation
-            )
+            ),
           }))
           .filter(({ configuration }) => configuration !== null);
         try {
           const concreteAdapter = new AdapterClass({
             context: this.context,
             calculation,
-            discounts
+            discounts,
           });
           const nextCalculationResult = Promise.await(
             concreteAdapter.calculate()
@@ -93,7 +93,7 @@ class OrderPricingDirector {
   resultSheet() {
     return new OrderPricingSheet({
       calculation: this.calculation,
-      currency: this.context.order.currency
+      currency: this.context.order.currency,
     });
   }
 
@@ -101,7 +101,7 @@ class OrderPricingDirector {
 
   static sortedAdapters() {
     return Array.from(OrderPricingDirector.adapters)
-      .map(entry => entry[1])
+      .map((entry) => entry[1])
       .sort((left, right) => left.orderIndex - right.orderIndex);
   }
 

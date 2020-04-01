@@ -9,11 +9,11 @@ Currencies.attachSchema(
         type: String,
         required: true,
         index: true,
-        unique: true
+        unique: true,
       },
       isActive: Boolean,
       authorId: { type: String, required: true },
-      ...Schemas.timestampFields
+      ...Schemas.timestampFields,
     },
     { requiredByDefault: false }
   )

@@ -1,6 +1,6 @@
 import {
   DeliveryAdapter,
-  DeliveryDirector
+  DeliveryDirector,
 } from 'meteor/unchained:core-delivery';
 
 class Post extends DeliveryAdapter {

@@ -6,7 +6,7 @@ const { contextFields, timestampFields } = Schemas;
 
 export const OrderDiscountTrigger = {
   USER: 'USER',
-  SYSTEM: 'SYSTEM'
+  SYSTEM: 'SYSTEM',
 };
 
 OrderDiscounts.attachSchema(
@@ -18,7 +18,7 @@ OrderDiscounts.attachSchema(
       discountKey: { type: String, required: true },
       reservation: { type: Object, blackbox: true },
       ...contextFields,
-      ...timestampFields
+      ...timestampFields,
     },
     { requiredByDefault: false }
   )

@@ -7,5 +7,5 @@ export default [
   ...product,
   ...configurableProduct,
   ...simpleProduct,
-  ...bundleProduct
+  ...bundleProduct,
 ];

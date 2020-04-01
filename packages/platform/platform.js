@@ -2,7 +2,7 @@ import startAPI from 'meteor/unchained:api';
 import interceptEmails from './intercept-emails';
 import setupAccounts, {
   configureAccountsEmailTemplates,
-  buildContext
+  buildContext,
 } from './setup-accounts';
 
 export * from './setup-db';

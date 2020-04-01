@@ -43,5 +43,5 @@ export default {
     const { countryContext, userId } = context;
     checkAction(actions.viewUserOrders, userId, [user, params, context]);
     return user.cart({ countryContext, ...params });
-  }
+  },
 };

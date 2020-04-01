@@ -27,9 +27,9 @@ class QuotationDocumentDirector extends DocumentDirector {
     if (!quotationNumber) return;
     const files = await this.execute('buildQuotationProposal', {
       quotationNumber,
-      ...options
+      ...options,
     });
-    files.forEach(doc => {
+    files.forEach((doc) => {
       if (doc) {
         const { date } = options;
         const { file, meta, ...rest } = doc;
@@ -38,7 +38,7 @@ class QuotationDocumentDirector extends DocumentDirector {
           {
             date,
             type: QuotationDocumentTypes.PROPOSAL,
-            ...meta
+            ...meta,
           },
           rest
         );
@@ -52,14 +52,14 @@ class QuotationDocumentDirector extends DocumentDirector {
     quotation.status = status;
     if (
       !this.isDocumentExists({
-        type: QuotationDocumentTypes.PROPOSAL
+        type: QuotationDocumentTypes.PROPOSAL,
       })
     ) {
       await this.buildQuotationProposal({
         date,
         status,
         ancestors: this.filteredDocuments(),
-        ...overrideValues
+        ...overrideValues,
       });
     }
   }

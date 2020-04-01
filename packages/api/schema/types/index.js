@@ -55,5 +55,5 @@ export default [
   ...geoposition,
   ...bookmark,
   ...search,
-  ...worker
+  ...worker,
 ];

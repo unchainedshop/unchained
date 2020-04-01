@@ -4,13 +4,13 @@ const ONE_POUND_IN_GRAM = 453.59237;
 const MassUnit = {
   KILOGRAM: 'KILOGRAM',
   GRAM: 'GRAM',
-  POUNDS: 'POUNDS'
+  POUNDS: 'POUNDS',
 };
 
 const LengthUnit = {
   METERS: 'METERS',
   FEET: 'FEET',
-  MILLIMETERS: 'MILLIMETERS'
+  MILLIMETERS: 'MILLIMETERS',
 };
 
 export default {
@@ -49,5 +49,5 @@ export default {
       return heightInMillimeters / ONE_FOOT_IN_MILLIMETERS;
     }
     return heightInMillimeters;
-  }
+  },
 };

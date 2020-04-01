@@ -284,5 +284,5 @@ export default {
   addWork: acl(actions.manageWorker)(addWork),
   allocateWork: acl(actions.manageWorker)(allocateWork),
   finishWork: acl(actions.manageWorker)(finishWork),
-  doWork: acl(actions.manageWorker)(doWork)
+  doWork: acl(actions.manageWorker)(doWork),
 };

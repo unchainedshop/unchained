@@ -5,5 +5,5 @@ export default {
   status(obj) {
     return obj.normalizedStatus();
   },
-  logs: checkTypeResolver(actions.viewLogs, 'logs')
+  logs: checkTypeResolver(actions.viewLogs, 'logs'),
 };

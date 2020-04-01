@@ -8,5 +8,5 @@ export default [
       url(version: String = "original", baseUrl: String): String!
       meta: JSON
     }
-  `
+  `,
 ];

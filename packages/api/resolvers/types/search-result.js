@@ -7,12 +7,12 @@ export default {
   totalProducts: async ({ productSelector, totalProductIds }) =>
     Products.find({
       ...(await productSelector),
-      _id: { $in: await totalProductIds }
+      _id: { $in: await totalProductIds },
     }).count(),
   filteredProducts: async ({ productSelector, filteredProductIds }) =>
     Products.find({
       ...(await productSelector),
-      _id: { $in: await filteredProductIds }
+      _id: { $in: await filteredProductIds },
     }).count(),
   products: async (
     { productSelector, filteredProductIds, sortStage },
@@ -24,14 +24,14 @@ export default {
       {
         skip: offset,
         limit,
-        sort: await sortStage
+        sort: await sortStage,
       }
     ),
   filters: async ({
     filterSelector,
     productSelector,
     totalProductIds,
-    query
+    query,
   }) => {
     const resolvedFilterSelector = await filterSelector;
     const extractedFilterIds = resolvedFilterSelector?._id?.$in || [];
@@ -46,19 +46,19 @@ export default {
     const relevantProductIds = Products.find(
       {
         ...(await productSelector),
-        _id: { $in: await totalProductIds }
+        _id: { $in: await totalProductIds },
       },
       {
-        fields: { _id: 1 }
+        fields: { _id: 1 },
       }
     ).map(({ _id }) => _id);
 
-    return otherFilters.map(filter => {
+    return otherFilters.map((filter) => {
       return filter.load({
         ...query,
         allProductIdsSet: new Set(relevantProductIds),
-        otherFilters
+        otherFilters,
       });
     });
-  }
+  },
 };

@@ -1,6 +1,6 @@
 import {
   DiscountDirector,
-  DiscountAdapter
+  DiscountAdapter,
 } from 'meteor/unchained:core-discounting';
 
 class HundredOff extends DiscountAdapter {

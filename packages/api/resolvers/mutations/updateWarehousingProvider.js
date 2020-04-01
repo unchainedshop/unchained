@@ -7,11 +7,11 @@ export default (
   { userId }
 ) => {
   log(`mutation updateWarehousingProvider ${warehousingProviderId}`, {
-    userId
+    userId,
   });
   const provider = WarehousingProviders.updateProvider({
     _id: warehousingProviderId,
-    ...warehousingProvider
+    ...warehousingProvider,
   });
   return provider;
 };

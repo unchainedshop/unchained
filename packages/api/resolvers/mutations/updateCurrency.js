@@ -1,7 +1,7 @@
 import { log } from 'meteor/unchained:core-logger';
 import { Currencies } from 'meteor/unchained:core-currencies';
 
-export default function(
+export default function (
   root,
   { currency: { isoCode, ...currency }, currencyId },
   { userId }
@@ -13,8 +13,8 @@ export default function(
       $set: {
         isoCode: isoCode.toUpperCase(),
         ...currency,
-        updated: new Date()
-      }
+        updated: new Date(),
+      },
     }
   );
   return Currencies.findOne({ _id: currencyId });

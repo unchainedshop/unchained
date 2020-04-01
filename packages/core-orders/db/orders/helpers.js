@@ -10,11 +10,11 @@ import { Users } from 'meteor/unchained:core-users';
 import { Logs, log } from 'meteor/unchained:core-logger';
 import {
   MessagingDirector,
-  MessagingType
+  MessagingType,
 } from 'meteor/unchained:core-messaging';
 import {
   OrderPricingDirector,
-  OrderPricingSheet
+  OrderPricingSheet,
 } from 'meteor/unchained:core-pricing';
 import { OrderStatus } from './schema';
 import { Orders } from './collections';
@@ -31,17 +31,17 @@ Logs.helpers({
     return (
       this.meta &&
       Orders.findOne({
-        _id: this.meta.orderId
+        _id: this.meta.orderId,
       })
     );
-  }
+  },
 });
 
 Users.helpers({
   cart({ countryContext, orderNumber } = {}) {
     const selector = {
       countryCode: countryContext || this.lastLogin.countryContext,
-      status: { $eq: OrderStatus.OPEN }
+      status: { $eq: OrderStatus.OPEN },
     };
     if (orderNumber) selector.orderNumber = orderNumber;
     const carts = this.orders(selector);
@@ -57,12 +57,12 @@ Users.helpers({
     }
     const options = {
       sort: {
-        updated: -1
-      }
+        updated: -1,
+      },
     };
     const orders = Orders.find(selector, options).fetch();
     return orders;
-  }
+  },
 });
 
 Orders.helpers({
@@ -71,14 +71,14 @@ Orders.helpers({
     const supportedPaymentProviders = this.supportedPaymentProviders();
     if (supportedPaymentProviders.length > 0) {
       this.setPaymentProvider({
-        paymentProviderId: supportedPaymentProviders[0]._id
+        paymentProviderId: supportedPaymentProviders[0]._id,
       });
     }
     // initialize delivery with default values
     const supportedDeliveryProviders = this.supportedDeliveryProviders();
     if (supportedDeliveryProviders.length > 0) {
       this.setDeliveryProvider({
-        deliveryProviderId: supportedDeliveryProviders[0]._id
+        deliveryProviderId: supportedDeliveryProviders[0]._id,
       });
     }
     return Orders.findOne({ _id: this._id });
@@ -93,13 +93,13 @@ Orders.helpers({
     const discounted = [
       ...(payment ? payment.discounts(orderDiscountId) : []),
       ...(delivery ? delivery.discounts(orderDiscountId) : []),
-      ...this.items().flatMap(item => item.discounts(orderDiscountId)),
+      ...this.items().flatMap((item) => item.discounts(orderDiscountId)),
       ...this.pricing()
         .discountPrices(orderDiscountId)
-        .map(discount => ({
+        .map((discount) => ({
           order: this,
-          ...discount
-        }))
+          ...discount,
+        })),
     ].filter(Boolean);
 
     return discounted;
@@ -111,10 +111,10 @@ Orders.helpers({
     const prices = [
       payment && payment.pricing().discountSum(orderDiscountId),
       delivery && delivery.pricing().discountSum(orderDiscountId),
-      ...this.items().flatMap(item =>
+      ...this.items().flatMap((item) =>
         item.pricing().discountSum(orderDiscountId)
       ),
-      this.pricing().discountSum(orderDiscountId)
+      this.pricing().discountSum(orderDiscountId),
     ];
     const amount = prices.reduce(
       (oldValue, price) => oldValue + (price || 0),
@@ -122,42 +122,42 @@ Orders.helpers({
     );
     return {
       amount,
-      currency: this.currency
+      currency: this.currency,
     };
   },
   addDiscount({ code }) {
     return OrderDiscounts.createManualOrderDiscount({
       orderId: this._id,
-      code
+      code,
     });
   },
   supportedDeliveryProviders() {
-    return DeliveryProviders.findProviders().filter(provider =>
+    return DeliveryProviders.findProviders().filter((provider) =>
       provider.isActive(this)
     );
   },
   supportedPaymentProviders() {
-    return PaymentProviders.findProviders().filter(provider =>
+    return PaymentProviders.findProviders().filter((provider) =>
       provider.isActive(this)
     );
   },
   setDeliveryProvider({ deliveryProviderId }) {
     return Orders.setDeliveryProvider({
       orderId: this._id,
-      deliveryProviderId
+      deliveryProviderId,
     });
   },
   setPaymentProvider({ paymentProviderId }) {
     return Orders.setPaymentProvider({
       orderId: this._id,
-      paymentProviderId
+      paymentProviderId,
     });
   },
   items(props) {
     return OrderPositions.find({
       orderId: this._id,
       quantity: { $gt: 0 },
-      ...props
+      ...props,
     }).fetch();
   },
   addQuotationItem({ quotation, ...quotationItemConfiguration }) {
@@ -169,13 +169,13 @@ Orders.helpers({
       product,
       quantity,
       configuration,
-      quotationId: quotation._id
+      quotationId: quotation._id,
     });
   },
   addProductItem({ product, quantity, configuration, ...rest }) {
     const resolvedProduct = product.resolveOrderableProduct({
       quantity,
-      configuration
+      configuration,
     });
     return OrderPositions.upsertPosition({
       orderId: this._id,
@@ -183,12 +183,12 @@ Orders.helpers({
       originalProductId: product._id,
       quantity,
       configuration,
-      ...rest
+      ...rest,
     });
   },
   user() {
     return Users.findOne({
-      _id: this.userId
+      _id: this.userId,
     });
   },
   normalizedStatus() {
@@ -197,7 +197,7 @@ Orders.helpers({
   pricing() {
     const pricing = new OrderPricingSheet({
       calculation: this.calculation,
-      currency: this.currency
+      currency: this.currency,
     });
     return pricing;
   },
@@ -210,27 +210,27 @@ Orders.helpers({
   updateBillingAddress(billingAddress = {}) {
     Users.updateLastBillingAddress({
       userId: this.userId,
-      lastBillingAddress: billingAddress
+      lastBillingAddress: billingAddress,
     });
     return Orders.updateBillingAddress({
       orderId: this._id,
-      billingAddress
+      billingAddress,
     });
   },
   updateContact({ contact }) {
     Users.updateLastContact({
       userId: this.userId,
-      lastContact: contact
+      lastContact: contact,
     });
     return Orders.updateContact({
       orderId: this._id,
-      contact
+      contact,
     });
   },
   updateContext(context) {
     return Orders.updateContext({
       orderId: this._id,
-      context
+      context,
     });
   },
   totalQuantity() {
@@ -244,11 +244,11 @@ Orders.helpers({
       NoItemsError.name = 'NoItemsError';
       return [NoItemsError];
     }
-    return items.flatMap(item => item.validationErrors());
+    return items.flatMap((item) => item.validationErrors());
   },
   reserveItems() {
     // If we came here, the checkout succeeded, so we can reserve the items
-    this.items().forEach(item => item.reserve());
+    this.items().forEach((item) => item.reserve());
 
     // TODO: we will use this function to keep a "Ordered in Flight" amount, allowing us to
     // do live stock stuff
@@ -261,7 +261,7 @@ Orders.helpers({
   ) {
     const errors = [
       ...this.missingInputDataForCheckout(),
-      ...this.itemValidationErrors()
+      ...this.itemValidationErrors(),
     ].filter(Boolean);
     if (errors.length > 0) {
       throw new Error(errors[0]);
@@ -318,9 +318,9 @@ Orders.helpers({
     const director = new MessagingDirector({
       locale,
       order: this,
-      type: MessagingType.EMAIL
+      type: MessagingType.EMAIL,
     });
-    const format = price => {
+    const format = (price) => {
       const fixedPrice = price / 100;
       return `${this.currency} ${fixedPrice}`;
     };
@@ -333,7 +333,7 @@ Orders.helpers({
         to: this.contact.emailAddress,
         url: `${UI_ENDPOINT}/order?_id=${this._id}&otp=${this.orderNumber}`,
         summary: this.pricing().formattedSummary(format),
-        positions: this.items().map(item => {
+        positions: this.items().map((item) => {
           const productTexts = item.product().getLocalizedTexts(language);
           const originalProductTexts = item
             .originalProduct()
@@ -346,10 +346,10 @@ Orders.helpers({
             product,
             productTexts,
             originalProductTexts,
-            total
+            total,
           };
-        })
-      }
+        }),
+      },
     });
     return this;
   },
@@ -382,7 +382,7 @@ Orders.helpers({
     return Orders.updateStatus({
       orderId: this._id,
       status,
-      info
+      info,
     });
   },
   nextStatus() {
@@ -431,8 +431,8 @@ Orders.helpers({
           ...options,
           meta: {
             orderId: this._id,
-            ...meta
-          }
+            ...meta,
+          },
         })
       );
     }
@@ -444,8 +444,8 @@ Orders.helpers({
         ...options,
         meta: {
           orderId: this._id,
-          ...meta
-        }
+          ...meta,
+        },
       })
     );
   },
@@ -474,8 +474,8 @@ Orders.helpers({
       skip: offset,
       limit,
       sort: {
-        created: -1
-      }
+        created: -1,
+      },
     }).fetch();
     return logs;
   },
@@ -488,7 +488,7 @@ Orders.helpers({
   },
   isCart() {
     return (this.status || null) === OrderStatus.OPEN;
-  }
+  },
 });
 
 Orders.setDeliveryProvider = ({ orderId, deliveryProviderId }) => {
@@ -526,11 +526,11 @@ Orders.createOrder = ({ user, currency, countryCode, ...rest }) => {
       ? user.lastContact
       : {
           telNumber: user.telNumber(),
-          emailAddress: user.primaryEmail()?.address
+          emailAddress: user.primaryEmail()?.address,
         },
     userId: user._id,
     currency,
-    countryCode
+    countryCode,
   });
   const order = Orders.findOne({ _id: orderId });
   return order.init();
@@ -543,8 +543,8 @@ Orders.updateBillingAddress = ({ billingAddress, orderId }) => {
     {
       $set: {
         billingAddress,
-        updated: new Date()
-      }
+        updated: new Date(),
+      },
     }
   );
   Orders.updateCalculation({ orderId });
@@ -558,8 +558,8 @@ Orders.updateContact = ({ contact, orderId }) => {
     {
       $set: {
         contact,
-        updated: new Date()
-      }
+        updated: new Date(),
+      },
     }
   );
   Orders.updateCalculation({ orderId });
@@ -573,8 +573,8 @@ Orders.updateContext = ({ context, orderId }) => {
     {
       $set: {
         context,
-        updated: new Date()
-      }
+        updated: new Date(),
+      },
     }
   );
   Orders.updateCalculation({ orderId });
@@ -609,9 +609,9 @@ Orders.updateStatus = ({ status, orderId, info = '' }) => {
       log: {
         date,
         status,
-        info
-      }
-    }
+        info,
+      },
+    },
   };
   switch (status) {
     // explicitly use fallthrough here!
@@ -646,7 +646,7 @@ Orders.updateStatus = ({ status, orderId, info = '' }) => {
       OrderDocuments.updateDocuments({
         orderId,
         date: modifier.$set.confirmed || order.confirmed,
-        ...modifier.$set
+        ...modifier.$set,
       });
     } catch (e) {
       log(e, { level: 'error', orderId });
@@ -657,16 +657,13 @@ Orders.updateStatus = ({ status, orderId, info = '' }) => {
   return Orders.findOne({ _id: orderId });
 };
 
-Orders.updateCalculation = ({ orderId, recalculateEverything }) => {
+Orders.updateCalculation = ({ orderId }) => {
   const order = Orders.findOne({ _id: orderId });
   const items = order.items();
   log('Update Calculation', { orderId });
-  if (recalculateEverything) {
-    log('Whole Order Recalculation!', { orderId });
-    items.forEach(({ _id }) =>
-      OrderPositions.updateCalculation({ orderId, positionId: _id })
-    );
-  }
+  items.forEach(({ _id }) =>
+    OrderPositions.updateCalculation({ orderId, positionId: _id })
+  );
   const delivery = order.delivery();
   const deliveryId = delivery && delivery._id;
   if (deliveryId) OrderDeliveries.updateCalculation({ orderId, deliveryId });
@@ -675,7 +672,7 @@ Orders.updateCalculation = ({ orderId, recalculateEverything }) => {
   const paymentId = payment && payment._id;
   if (paymentId) OrderPayments.updateCalculation({ orderId, paymentId });
 
-  items.forEach(position => OrderPositions.updateScheduling({ position }));
+  items.forEach((position) => OrderPositions.updateScheduling({ position }));
   const pricing = new OrderPricingDirector({ item: order });
   const calculation = pricing.calculate();
   return Orders.update(
@@ -683,8 +680,8 @@ Orders.updateCalculation = ({ orderId, recalculateEverything }) => {
     {
       $set: {
         calculation,
-        updated: new Date()
-      }
+        updated: new Date(),
+      },
     }
   );
 };
@@ -703,13 +700,12 @@ Orders.migrateCart = ({ fromUserId, toUserId, countryContext, mergeCarts }) => {
       { _id: fromCart._id },
       {
         $set: {
-          userId: toUserId
-        }
+          userId: toUserId,
+        },
       }
     );
     Orders.updateCalculation({
       orderId: fromCart._id,
-      recalculateEverything: true
     });
     return;
   }
@@ -718,16 +714,14 @@ Orders.migrateCart = ({ fromUserId, toUserId, countryContext, mergeCarts }) => {
     { orderId: fromCart._id },
     {
       $set: {
-        orderId: toCart._id
-      }
+        orderId: toCart._id,
+      },
     }
   );
   Orders.updateCalculation({
     orderId: fromCart._id,
-    recalculateEverything: true
   });
   Orders.updateCalculation({
     orderId: toCart._id,
-    recalculateEverything: true
   });
 };

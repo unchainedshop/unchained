@@ -2,7 +2,7 @@ import { HTTP } from 'meteor/http';
 import moment from 'moment';
 import {
   DocumentDirector,
-  DocumentAdapter
+  DocumentAdapter,
 } from 'meteor/unchained:core-documents';
 
 const { SMALLINVOICE_TOKEN, LANG } = process.env;
@@ -11,24 +11,24 @@ class SmallinvoiceAPI {
   static Status = {
     SENT: 1,
     DRAFT: 7,
-    PAID: 2
+    PAID: 2,
   };
 
   static Units = {
     PIECE: 7,
-    DISCOUNT: 17
+    DISCOUNT: 17,
   };
 
   static ItemType = {
     SERVICE: 1,
-    PRODUCT: 2
+    PRODUCT: 2,
   };
 
   constructor({
     endpoint = 'https://api.smallinvoice.com',
     token,
     language,
-    logger
+    logger,
   }) {
     this.endpoint = endpoint;
     this.token = token;
@@ -36,7 +36,7 @@ class SmallinvoiceAPI {
     this.logger = logger;
 
     const {
-      data: { items, error }
+      data: { items, error },
     } = this.get('/client/list');
     if (error) throw new Error(error);
     this.clientMap = (items || []).reduce((oldObj, { notes, id }) => {
@@ -81,7 +81,7 @@ class SmallinvoiceAPI {
         unit: this.constructor.Units.PIECE,
         amount: quantity,
         vat,
-        discount: null
+        discount: null,
       })
     );
   }
@@ -97,7 +97,7 @@ class SmallinvoiceAPI {
         unit: this.constructor.Units.DISCOUNT,
         amount: quantity,
         vat,
-        discount: null
+        discount: null,
       })
     );
   }
@@ -112,7 +112,7 @@ class SmallinvoiceAPI {
     addressLine,
     postalCode,
     city,
-    countryCode
+    countryCode,
   }) {
     const mappedBody = {
       data: {
@@ -129,10 +129,10 @@ class SmallinvoiceAPI {
             streetno: '',
             code: postalCode,
             city,
-            country: countryCode
-          }
-        ]
-      }
+            country: countryCode,
+          },
+        ],
+      },
     };
     const clientId = this.clientMap[userId];
     if (clientId) {
@@ -156,10 +156,10 @@ class SmallinvoiceAPI {
     date,
     positions,
     discounts,
-    number
+    number,
   }) {
     const {
-      data: { error, id }
+      data: { error, id },
     } = this.post('/confirmation/add', {
       data: {
         number,
@@ -171,9 +171,9 @@ class SmallinvoiceAPI {
         vat_included: 1,
         positions: [
           ...this.mapPositions(positions),
-          ...this.mapDiscounts(discounts)
-        ]
-      }
+          ...this.mapDiscounts(discounts),
+        ],
+      },
     });
     if (error) throw new Error(error);
     return id;
@@ -182,8 +182,8 @@ class SmallinvoiceAPI {
   setConfirmationStatus(confirmationId, status) {
     this.postAsync(`/confirmation/status/id/${confirmationId}`, {
       data: {
-        status
-      }
+        status,
+      },
     });
   }
 
@@ -195,10 +195,10 @@ class SmallinvoiceAPI {
     positions,
     discounts,
     number,
-    introduction
+    introduction,
   }) {
     const {
-      data: { error, id }
+      data: { error, id },
     } = this.post('/receipt/add', {
       data: {
         introduction,
@@ -211,9 +211,9 @@ class SmallinvoiceAPI {
         vat_included: 1,
         positions: [
           ...this.mapPositions(positions),
-          ...this.mapDiscounts(discounts)
-        ]
-      }
+          ...this.mapDiscounts(discounts),
+        ],
+      },
     });
     if (error) throw new Error(error);
     return id;
@@ -222,8 +222,8 @@ class SmallinvoiceAPI {
   setReceiptStatus(receiptId, status) {
     this.postAsync(`/receipt/status/id/${receiptId}`, {
       data: {
-        status
-      }
+        status,
+      },
     });
   }
 
@@ -236,10 +236,10 @@ class SmallinvoiceAPI {
     positions,
     discounts,
     number,
-    introduction
+    introduction,
   }) {
     const {
-      data: { error, id }
+      data: { error, id },
     } = this.post('/invoice/add', {
       data: {
         introduction,
@@ -254,9 +254,9 @@ class SmallinvoiceAPI {
         esr: 0,
         positions: [
           ...this.mapPositions(positions),
-          ...this.mapDiscounts(discounts)
-        ]
-      }
+          ...this.mapDiscounts(discounts),
+        ],
+      },
     });
     if (error) throw new Error(error);
     return id;
@@ -265,8 +265,8 @@ class SmallinvoiceAPI {
   setInvoiceStatus(invoiceId, status) {
     this.postAsync(`/invoice/status/id/${invoiceId}`, {
       data: {
-        status
-      }
+        status,
+      },
     });
   }
 }
@@ -291,13 +291,13 @@ class Smallinvoice extends DocumentAdapter {
     this.api = new SmallinvoiceAPI({
       token: SMALLINVOICE_TOKEN,
       language: this.language,
-      logger: this.log
+      logger: this.log,
     });
   }
 
   buildItems() {
     const { order } = this.context;
-    return order.items().map(position => {
+    return order.items().map((position) => {
       const product = position.product();
       const texts = product.getLocalizedTexts(this.language);
       const pricing = position.pricing();
@@ -311,7 +311,7 @@ class Smallinvoice extends DocumentAdapter {
         description: texts.subtitle,
         price: unitPrice / 100,
         quantity: position.quantity,
-        vat: Math.round(taxRate * 10000) / 10000
+        vat: Math.round(taxRate * 10000) / 10000,
       };
     });
   }
@@ -320,7 +320,7 @@ class Smallinvoice extends DocumentAdapter {
     const { order } = this.context;
     const pricing = order.pricing();
     let itemsTax = 0;
-    order.items().forEach(position => {
+    order.items().forEach((position) => {
       itemsTax += position.pricing().taxSum();
     });
     const discounts = pricing.discountSum();
@@ -335,8 +335,8 @@ class Smallinvoice extends DocumentAdapter {
           name: 'Specials / Discounts',
           price: discounts / 100,
           quantity: 1,
-          vat: Math.round(taxRate * 100 * 10000) / 10000
-        }
+          vat: Math.round(taxRate * 100 * 10000) / 10000,
+        },
       ];
     }
     return [];
@@ -359,7 +359,7 @@ class Smallinvoice extends DocumentAdapter {
     const clientId = this.api.upsertClient({
       ...order.contact,
       ...(order.billingAddress || {}),
-      userId: order.userId
+      userId: order.userId,
     });
     const positions = this.buildItems();
     const discounts = this.buildDiscounts();
@@ -374,12 +374,10 @@ class Smallinvoice extends DocumentAdapter {
       number,
       clientId,
       date: moment(date).format('YYYY-MM-DD'),
-      due: moment(date)
-        .add(30, 'days')
-        .format('YYYY-MM-DD'),
+      due: moment(date).add(30, 'days').format('YYYY-MM-DD'),
       currency: order.currency,
       positions,
-      discounts
+      discounts,
     });
 
     if (payment.status === 'PAID') {
@@ -392,13 +390,13 @@ class Smallinvoice extends DocumentAdapter {
       {
         file: this.api.url(`/invoice/pdf/id/${invoiceId}`),
         meta: { referenceId: invoiceId },
-        fileName: 'invoice.pdf'
+        fileName: 'invoice.pdf',
       },
       {
         file: this.api.url(`/invoice/pdf/receipt/1/id/${invoiceId}`),
         meta: { referenceId: invoiceId },
-        fileName: 'receipt.pdf'
-      }
+        fileName: 'receipt.pdf',
+      },
     ];
   }
 
@@ -417,7 +415,7 @@ class Smallinvoice extends DocumentAdapter {
       ...order.contact,
       ...(delivery.context.address || order.billingAddress || {}),
       countryCode: order.countryCode,
-      userId: order.userId
+      userId: order.userId,
     });
     const positions = this.buildItems();
     const discounts = this.buildDiscounts();
@@ -434,7 +432,7 @@ class Smallinvoice extends DocumentAdapter {
       date: moment(date).format('YYYY-MM-DD'),
       currency: order.currency,
       positions,
-      discounts
+      discounts,
     });
 
     if (delivery.status === 'DELIVERED') {
@@ -444,7 +442,7 @@ class Smallinvoice extends DocumentAdapter {
     return {
       file: this.api.url(`/receipt/pdf/id/${receiptId}`),
       meta: { referenceId: receiptId },
-      fileName: 'delivery_note.pdf'
+      fileName: 'delivery_note.pdf',
     };
   }
 
@@ -453,7 +451,7 @@ class Smallinvoice extends DocumentAdapter {
     const clientId = this.api.upsertClient({
       ...order.contact,
       ...(order.billingAddress || {}),
-      userId: order.userId
+      userId: order.userId,
     });
     const positions = this.buildItems();
     const discounts = this.buildDiscounts();
@@ -469,7 +467,7 @@ class Smallinvoice extends DocumentAdapter {
       date: moment(date).format('YYYY-MM-DD'),
       currency: order.currency,
       positions,
-      discounts
+      discounts,
     });
 
     this.api.setConfirmationStatus(confirmationId, SmallinvoiceAPI.Status.SENT);
@@ -477,7 +475,7 @@ class Smallinvoice extends DocumentAdapter {
     return {
       file: this.api.url(`/confirmation/pdf/id/${confirmationId}`),
       meta: { referenceId: confirmationId },
-      fileName: 'confirmation.pdf'
+      fileName: 'confirmation.pdf',
     };
   }
 }

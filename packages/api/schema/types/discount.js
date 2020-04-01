@@ -7,5 +7,5 @@ export default [
       isManualAdditionAllowed: Boolean
       isManualRemovalAllowed: Boolean
     }
-  `
+  `,
 ];

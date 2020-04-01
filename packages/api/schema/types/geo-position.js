@@ -5,5 +5,5 @@ export default [
       longitude: Float!
       altitute: Float
     }
-  `
+  `,
 ];

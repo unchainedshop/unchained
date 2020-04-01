@@ -11,7 +11,7 @@ ProductVariations.helpers({
     const selector = {
       productVariationId: this._id,
       productVariationOptionValue: productVariationOptionValue || { $eq: null },
-      locale
+      locale,
     };
     ProductVariationTexts.upsert(
       selector,
@@ -20,8 +20,8 @@ ProductVariations.helpers({
           updated: new Date(),
           locale,
           ...fields,
-          productVariationOptionValue: productVariationOptionValue || null
-        }
+          productVariationOptionValue: productVariationOptionValue || null,
+        },
       },
       { bypassCollection2: true }
     );
@@ -39,9 +39,9 @@ ProductVariations.helpers({
     return {
       productVariationOption,
       getLocalizedTexts: this.getLocalizedTexts,
-      ...this
+      ...this,
     };
-  }
+  },
 });
 
 ProductVariations.getLocalizedTexts = (
@@ -53,7 +53,7 @@ ProductVariations.getLocalizedTexts = (
     ProductVariationTexts,
     {
       productVariationId,
-      productVariationOptionValue: productVariationOptionValue || { $eq: null }
+      productVariationOptionValue: productVariationOptionValue || { $eq: null },
     },
     locale
   );

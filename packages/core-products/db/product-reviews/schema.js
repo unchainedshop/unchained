@@ -5,7 +5,7 @@ import { ProductReviews } from './collections';
 export const ProductReviewVoteTypes = { // eslint-disable-line
   UPVOTE: 'UPVOTE',
   DOWNVOTE: 'DOWNVOTE',
-  REPORT: 'REPORT'
+  REPORT: 'REPORT',
 };
 
 ProductReviews.attachSchema(
@@ -16,7 +16,7 @@ ProductReviews.attachSchema(
       rating: {
         type: SimpleSchema.Integer,
         min: 1,
-        max: 100
+        max: 100,
       },
       title: String,
       review: String,
@@ -28,10 +28,10 @@ ProductReviews.attachSchema(
       'votes.$.type': {
         type: String,
         required: true,
-        allowedValues: Object.values(ProductReviewVoteTypes)
+        allowedValues: Object.values(ProductReviewVoteTypes),
       },
       'votes.$.meta': { type: Object, blackbox: true },
-      ...Schemas.timestampFields
+      ...Schemas.timestampFields,
     },
     { requiredByDefault: false }
   )

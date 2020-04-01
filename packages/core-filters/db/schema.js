@@ -5,7 +5,7 @@ import { Filters, FilterTexts } from './collections';
 export const FilterTypes = { // eslint-disable-line
   SWITCH: 'SWITCH',
   SINGLE_CHOICE: 'SINGLE_CHOICE',
-  MULTI_CHOICE: 'MULTI_CHOICE'
+  MULTI_CHOICE: 'MULTI_CHOICE',
 };
 
 Filters.attachSchema(
@@ -16,14 +16,14 @@ Filters.attachSchema(
         type: String,
         required: true,
         index: true,
-        unique: true
+        unique: true,
       },
       type: { type: String, required: true },
       options: Array,
       'options.$': String,
       _cache: { type: Object, blackbox: true },
       meta: { type: Object, blackbox: true },
-      ...Schemas.timestampFields
+      ...Schemas.timestampFields,
     },
     { requiredByDefault: false }
   )
@@ -37,7 +37,7 @@ FilterTexts.attachSchema(
       locale: { type: String, index: true },
       title: String,
       subtitle: String,
-      ...Schemas.timestampFields
+      ...Schemas.timestampFields,
     },
     { requiredByDefault: false }
   )

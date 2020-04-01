@@ -6,5 +6,5 @@ export default [
       warehousingProvider: WarehousingProvider
       quantity: Int
     }
-  `
+  `,
 ];

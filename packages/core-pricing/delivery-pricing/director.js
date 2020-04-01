@@ -42,14 +42,14 @@ class DeliveryPricingDirector {
     this.context = {
       discounts: [],
       ...this.constructor.buildContext(item, providerContext),
-      ...context
+      ...context,
     };
   }
 
   static buildContext(item, providerContext) {
     if (!item) {
       return {
-        ...providerContext
+        ...providerContext,
       };
     }
     const order = item.order();
@@ -63,30 +63,30 @@ class DeliveryPricingDirector {
       discounts,
       currency: order.currency,
       country: order.countryCode,
-      ...item.context
+      ...item.context,
     };
   }
 
   calculate() {
     this.calculation = DeliveryPricingDirector.sortedAdapters()
-      .filter(AdapterClass =>
+      .filter((AdapterClass) =>
         AdapterClass.isActivatedFor(this.context.provider)
       )
       .reduce((calculation, AdapterClass) => {
         const discounts = this.context.discounts
-          .map(discount => ({
+          .map((discount) => ({
             discountId: discount._id,
             configuration: discount.configurationForPricingAdapterKey(
               AdapterClass.key,
               calculation
-            )
+            ),
           }))
           .filter(({ configuration }) => configuration !== null);
         try {
           const concreteAdapter = new AdapterClass({
             context: this.context,
             calculation,
-            discounts
+            discounts,
           });
           const nextCalculationResult = Promise.await(
             concreteAdapter.calculate()
@@ -104,7 +104,7 @@ class DeliveryPricingDirector {
     return new DeliveryPricingSheet({
       calculation: this.calculation,
       currency: this.context.currency,
-      quantity: this.context.quantity
+      quantity: this.context.quantity,
     });
   }
 
@@ -112,7 +112,7 @@ class DeliveryPricingDirector {
 
   static sortedAdapters() {
     return Array.from(DeliveryPricingDirector.adapters)
-      .map(entry => entry[1])
+      .map((entry) => entry[1])
       .sort((left, right) => left.orderIndex - right.orderIndex);
   }
 

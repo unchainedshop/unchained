@@ -1,6 +1,6 @@
 import {
   ProductPricingDirector,
-  ProductPricingAdapter
+  ProductPricingAdapter,
 } from 'meteor/unchained:core-pricing';
 
 class ProductEuTax extends ProductPricingAdapter {
@@ -26,26 +26,26 @@ class ProductEuTax extends ProductPricingAdapter {
   calculate() {
     const taxRate = this.getTaxRate();
     this.log(`ProductEuTax -> Tax Multiplicator: ${taxRate}`);
-    this.calculation.filterBy({ isTaxable: true }).forEach(row => {
+    this.calculation.filterBy({ isTaxable: true }).forEach((row) => {
       if (!row.isNetPrice) {
         const taxAmount = row.amount - row.amount / (1 + taxRate);
         this.result.calculation.push({
           ...row,
           amount: -taxAmount,
           isTaxable: false,
-          meta: { adapter: this.constructor.key }
+          meta: { adapter: this.constructor.key },
         });
         this.result.addTax({
           amount: taxAmount,
           rate: taxRate,
-          meta: { adapter: this.constructor.key }
+          meta: { adapter: this.constructor.key },
         });
       } else {
         const taxAmount = row.amount * taxRate;
         this.result.addTax({
           amount: taxAmount,
           rate: taxRate,
-          meta: { adapter: this.constructor.key }
+          meta: { adapter: this.constructor.key },
         });
       }
     });

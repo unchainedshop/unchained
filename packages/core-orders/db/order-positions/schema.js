@@ -8,25 +8,25 @@ const calculationFields = {
   calculation: Array,
   'calculation.$': {
     type: Object,
-    blackbox: true
+    blackbox: true,
   },
   scheduling: Array,
   'scheduling.$': {
     type: Object,
-    blackbox: true
+    blackbox: true,
   },
   configuration: Array,
   'configuration.$': {
     type: Object,
-    required: true
+    required: true,
   },
   'configuration.$.key': {
     type: String,
-    required: true
+    required: true,
   },
   'configuration.$.value': {
-    type: String
-  }
+    type: String,
+  },
 };
 
 OrderPositions.attachSchema(
@@ -39,7 +39,7 @@ OrderPositions.attachSchema(
       quantity: Number,
       ...timestampFields,
       ...contextFields,
-      ...calculationFields
+      ...calculationFields,
     },
     { requiredByDefault: false }
   )

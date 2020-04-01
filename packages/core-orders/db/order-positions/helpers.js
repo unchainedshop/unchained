@@ -2,7 +2,7 @@ import 'meteor/dburles:collection-helpers';
 import { log } from 'meteor/unchained:core-logger';
 import {
   ProductPricingDirector,
-  ProductPricingSheet
+  ProductPricingSheet,
 } from 'meteor/unchained:core-pricing';
 import { WarehousingProviders } from 'meteor/unchained:core-warehousing';
 import { Products } from 'meteor/unchained:core-products';
@@ -14,46 +14,46 @@ import { OrderDiscounts } from '../order-discounts/collections';
 OrderPositions.helpers({
   product() {
     return Products.findOne({
-      _id: this.productId
+      _id: this.productId,
     });
   },
   order() {
     return Orders.findOne({
-      _id: this.orderId
+      _id: this.orderId,
     });
   },
   originalProduct() {
     return (
       Products.findOne({
-        _id: this.originalProductId
+        _id: this.originalProductId,
       }) || this.product()
     );
   },
   quotation() {
     return Quotations.findOne({
-      _id: this.quotationId
+      _id: this.quotationId,
     });
   },
   pricing() {
     return new ProductPricingSheet({
       calculation: this.calculation,
       currency: this.order().currency,
-      quantity: this.quantity
+      quantity: this.quantity,
     });
   },
   discounts(orderDiscountId) {
     const discounts = this.pricing()
       .discountPrices(orderDiscountId)
-      .map(discount => ({
+      .map((discount) => ({
         item: this,
-        ...discount
+        ...discount,
       }));
     return discounts;
   },
   validationErrors() {
     const errors = [];
     log(`OrderPosition ${this._id} -> Validate ${this.quantity}`, {
-      orderId: this.orderId
+      orderId: this.orderId,
     });
     if (!this.product().isActive())
       errors.push(new Error('This product is not available anymore'));
@@ -66,14 +66,14 @@ OrderPositions.helpers({
     if (this.quotationId)
       this.quotation().fullfill({ info: { orderPositionId: this._id } });
     log(`OrderPosition ${this._id} -> Reserve ${this.quantity}`, {
-      orderId: this.orderId
+      orderId: this.orderId,
     });
   },
   dispatches() {
     const scheduling = this.scheduling || [];
     const order = this.order();
     const { countryCode, userId } = order;
-    return scheduling.map(schedule => {
+    return scheduling.map((schedule) => {
       const context = {
         warehousingProvider: WarehousingProviders.findProviderById(
           schedule.warehousingProviderId
@@ -82,12 +82,12 @@ OrderPositions.helpers({
         product: this.product(),
         quantity: this.quantity,
         country: countryCode,
-        userId
+        userId,
         // referenceDate,
       };
       return {
         ...context,
-        ...schedule
+        ...schedule,
       };
     });
   },
@@ -99,7 +99,7 @@ OrderPositions.helpers({
       },
       undefined
     );
-  }
+  },
 });
 
 OrderPositions.upsertPosition = ({
@@ -112,18 +112,18 @@ OrderPositions.upsertPosition = ({
   const existingPosition = OrderPositions.findOne({
     orderId,
     configuration: configuration || {
-      $exists: false
+      $exists: false,
     },
-    ...scope
+    ...scope,
   });
   if (existingPosition) {
     return OrderPositions.updatePosition(
       {
         orderId,
-        positionId: existingPosition._id
+        positionId: existingPosition._id,
       },
       {
-        quantity: existingPosition.quantity + quantity
+        quantity: existingPosition.quantity + quantity,
       }
     );
   }
@@ -132,7 +132,7 @@ OrderPositions.upsertPosition = ({
     quantity,
     configuration,
     context,
-    ...scope
+    ...scope,
   });
 };
 
@@ -159,13 +159,12 @@ OrderPositions.createPosition = ({
     quotationId,
     quantity,
     configuration,
-    created: new Date()
+    created: new Date(),
   });
   OrderDiscounts.updateDiscounts({ orderId });
-  OrderPositions.updateCalculation({ orderId, positionId });
   Orders.updateCalculation({ orderId });
   return OrderPositions.findOne({
-    _id: positionId
+    _id: positionId,
   });
 };
 
@@ -175,7 +174,7 @@ OrderPositions.updatePosition = (
 ) => {
   const orderPosition = OrderPositions.findOne({
     orderId,
-    _id: positionId
+    _id: positionId,
   });
 
   if (quantity !== null) {
@@ -189,8 +188,8 @@ OrderPositions.updatePosition = (
       {
         $set: {
           quantity,
-          updated: new Date()
-        }
+          updated: new Date(),
+        },
       }
     );
   }
@@ -206,15 +205,15 @@ OrderPositions.updatePosition = (
     if (originalProduct) {
       const resolvedProduct = originalProduct.resolveOrderableProduct({
         quantity,
-        configuration
+        configuration,
       });
       OrderPositions.update(
         { orderId, _id: positionId },
         {
           $set: {
             productId: resolvedProduct._id,
-            updated: new Date()
-          }
+            updated: new Date(),
+          },
         }
       );
     }
@@ -224,16 +223,15 @@ OrderPositions.updatePosition = (
       {
         $set: {
           configuration,
-          updated: new Date()
-        }
+          updated: new Date(),
+        },
       }
     );
   }
   OrderDiscounts.updateDiscounts({ orderId });
-  OrderPositions.updateCalculation({ orderId, positionId });
   Orders.updateCalculation({ orderId });
   return OrderPositions.findOne({
-    _id: positionId
+    _id: positionId,
   });
 };
 
@@ -257,14 +255,14 @@ OrderPositions.removePositions = ({ orderId }) => {
 OrderPositions.updateCalculation = ({ positionId }) => {
   const position = OrderPositions.findOne({ _id: positionId });
   log(`OrderPosition ${positionId} -> Update Calculation`, {
-    orderId: position.orderId
+    orderId: position.orderId,
   });
   const pricing = new ProductPricingDirector({ item: position });
   const calculation = pricing.calculate();
   return OrderPositions.update(
     { _id: positionId },
     {
-      $set: { calculation }
+      $set: { calculation },
     }
   );
 };
@@ -272,7 +270,7 @@ OrderPositions.updateCalculation = ({ positionId }) => {
 OrderPositions.updateScheduling = ({ positionId, position }) => {
   const item = position || OrderPositions.findOne({ _id: positionId });
   log(`OrderPosition ${item._id} -> Update Scheduling`, {
-    orderId: position.orderId
+    orderId: position.orderId,
   });
   // scheduling (store in db for auditing)
   const order = item.order();
@@ -282,8 +280,8 @@ OrderPositions.updateScheduling = ({ positionId, position }) => {
   const { countryCode, userId } = order;
   const scheduling = WarehousingProviders.findSupported({
     product,
-    deliveryProvider
-  }).map(warehousingProvider => {
+    deliveryProvider,
+  }).map((warehousingProvider) => {
     const context = {
       warehousingProvider,
       deliveryProvider,
@@ -294,18 +292,18 @@ OrderPositions.updateScheduling = ({ positionId, position }) => {
       userId,
       country: countryCode,
       referenceDate: order.ordered,
-      quantity: item.quantity
+      quantity: item.quantity,
     };
     const dispatch = warehousingProvider.estimatedDispatch(context);
     return {
       warehousingProviderId: warehousingProvider._id,
-      ...dispatch
+      ...dispatch,
     };
   });
   return OrderPositions.update(
     { _id: item._id },
     {
-      $set: { scheduling }
+      $set: { scheduling },
     }
   );
 };

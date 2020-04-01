@@ -8,15 +8,15 @@ export const OrderStatus = {
   OPEN: null,
   PENDING: 'PENDING',
   CONFIRMED: 'CONFIRMED',
-  FULLFILLED: 'FULLFILLED'
+  FULLFILLED: 'FULLFILLED',
 };
 
 const calculationFields = {
   calculation: Array,
   'calculation.$': {
     type: Object,
-    blackbox: true
-  }
+    blackbox: true,
+  },
 };
 
 Orders.attachSchema(
@@ -37,7 +37,7 @@ Orders.attachSchema(
       ...contextFields,
       ...timestampFields,
       ...calculationFields,
-      ...logFields
+      ...logFields,
     },
     { requiredByDefault: false }
   )

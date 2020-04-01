@@ -35,5 +35,5 @@ export default [
       assignments: [ProductVariationAssignment!]!
       meta: JSON
     }
-  `
+  `,
 ];

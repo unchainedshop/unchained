@@ -11,7 +11,7 @@ export default {
     const { countryContext } = requestContext;
     return obj.price({
       country: countryContext,
-      quantity
+      quantity,
     });
   },
   async simulatedPrice(obj, { quantity, useNetPrice }, requestContext) {
@@ -22,7 +22,7 @@ export default {
         country: countryContext,
         useNetPrice,
         userId,
-        user
+        user,
       },
       requestContext
     );
@@ -35,7 +35,7 @@ export default {
         quantity,
         country: countryContext,
         userId,
-        user
+        user,
       },
       requestContext
     );
@@ -50,7 +50,7 @@ export default {
         deliveryProviderType,
         country: countryContext,
         userId,
-        user
+        user,
       },
       requestContext
     );
@@ -64,7 +64,7 @@ export default {
         deliveryProviderType,
         country: countryContext,
         userId,
-        user
+        user,
       },
       requestContext
     );
@@ -87,13 +87,13 @@ export default {
       weightInGram,
       heightInMillimeters,
       lengthInMillimeters,
-      widthInMillimeters
+      widthInMillimeters,
     } = supply;
     return {
       weightInGram,
       heightInMillimeters,
       lengthInMillimeters,
-      widthInMillimeters
+      widthInMillimeters,
     };
   },
   async assortmentPaths(obj, { forceLocale }, { localeContext }) {
@@ -101,5 +101,5 @@ export default {
   },
   async media(obj, props) {
     return obj.media(props);
-  }
+  },
 };

@@ -2,7 +2,7 @@ import { log } from 'meteor/unchained:core-logger';
 import { Bookmarks } from 'meteor/unchained:core-bookmarks';
 import { BookmarkAlreadyExistsError } from '../../errors';
 
-export default function(
+export default function (
   root,
   { productId, userId: foreignUserId },
   { userId }
@@ -10,11 +10,11 @@ export default function(
   log(`mutation createBookmark for ${foreignUserId}`, { productId, userId });
   const foundBookmark = Bookmarks.findBookmarks({
     productId,
-    userId: foreignUserId
+    userId: foreignUserId,
   }).pop();
   if (foundBookmark) {
     throw new BookmarkAlreadyExistsError({
-      bookmarkId: foundBookmark._id
+      bookmarkId: foundBookmark._id,
     });
   }
   return Bookmarks.createBookmark({ userId: foreignUserId, productId });

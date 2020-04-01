@@ -3,7 +3,7 @@ import { Meteor } from 'meteor/meteor';
 import fs from 'fs'; // Required to read files initially uploaded via Meteor-Files
 import { MongoInternals } from 'meteor/mongo';
 
-export default collectionName => {
+export default (collectionName) => {
   const gridFSBucket = new MongoInternals.NpmModule.GridFSBucket(
     MongoInternals.defaultRemoteCollectionDriver().mongo.db,
     { bucketName: collectionName }
@@ -13,25 +13,25 @@ export default collectionName => {
   return {
     onAfterUpload(file) {
       // Move file to GridFS
-      Object.keys(file.versions).forEach(versionName => {
+      Object.keys(file.versions).forEach((versionName) => {
         const metadata = { ...file.meta, versionName, fileId: file._id };
         fs.createReadStream(file.versions[versionName].path)
           .pipe(
             gridFSBucket.openUploadStream(file.name, {
               contentType: file.type || 'binary/octet-stream',
-              metadata
+              metadata,
             })
           )
-          .on('error', err => {
+          .on('error', (err) => {
             console.error(err); // eslint-disable-line
             throw err;
           })
           .on(
             'finish',
-            Meteor.bindEnvironment(ver => {
+            Meteor.bindEnvironment((ver) => {
               const property = `versions.${versionName}.meta.gridFsFileId`;
               this.collection.update(file._id, {
-                $set: { [property]: ver._id.toHexString() }
+                $set: { [property]: ver._id.toHexString() },
               });
               this.unlink(this.collection.findOne(file._id), versionName); // Unlink files from FS
             })
@@ -44,7 +44,7 @@ export default collectionName => {
         const readStream = gridFSBucket.openDownloadStream(
           new ObjID(gridFsFileId)
         );
-        readStream.on('data', data => {
+        readStream.on('data', (data) => {
           http.response.write(data);
         });
 
@@ -67,16 +67,16 @@ export default collectionName => {
       return Boolean(gridFsFileId); // Serve file from either GridFS or FS if it wasn't uploaded yet
     },
     onAfterRemove(files) {
-      files.forEach(file => {
-        Object.keys(file.versions).forEach(versionName => {
+      files.forEach((file) => {
+        Object.keys(file.versions).forEach((versionName) => {
           const { gridFsFileId } = file.versions[versionName].meta || {};
           if (gridFsFileId) {
-            gridFSBucket.delete(new ObjID(gridFsFileId), err => {
+            gridFSBucket.delete(new ObjID(gridFsFileId), (err) => {
               if (err) throw err;
             });
           }
         });
       });
-    }
+    },
   };
 };

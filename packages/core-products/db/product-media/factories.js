@@ -6,7 +6,7 @@ import { ProductMediaTexts, ProductMedia, Media } from './collections';
 
 Factory.createMedia = () =>
   Meteor.wrapAsync(Media.load, Media)(faker.image.avatar(), {
-    fileName: faker.system.fileName()
+    fileName: faker.system.fileName(),
   });
 
 Factory.define('productMediaText', ProductMediaTexts, {
@@ -14,7 +14,7 @@ Factory.define('productMediaText', ProductMediaTexts, {
   locale: () => faker.random.arrayElement(['de', 'en']),
   title: () => faker.lorem.words(),
   subtitle: () => faker.lorem.sentence(),
-  ...fakeTimestampFields
+  ...fakeTimestampFields,
 });
 
 Factory.define('productMedia', ProductMedia, {
@@ -24,5 +24,5 @@ Factory.define('productMedia', ProductMedia, {
       ? [faker.random.arrayElement(['red', 'green', 'blue'])]
       : [],
   productId: () => Factory.get('simpleProduct'),
-  ...fakeTimestampFields
+  ...fakeTimestampFields,
 });

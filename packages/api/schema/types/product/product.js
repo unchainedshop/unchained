@@ -176,5 +176,5 @@ export default [
       key: String!
       value: String!
     }
-  `
+  `,
 ];

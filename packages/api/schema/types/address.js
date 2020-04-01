@@ -11,5 +11,5 @@ export default [
       regionCode: String
       city: String
     }
-  `
+  `,
 ];

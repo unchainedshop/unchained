@@ -1,7 +1,7 @@
 import { log } from 'meteor/unchained:core-logger';
 import { Products, ProductStatus } from 'meteor/unchained:core-products';
 
-export default function(
+export default function (
   root,
   { limit, offset, tags, includeDrafts, slugs = [] },
   { userId }

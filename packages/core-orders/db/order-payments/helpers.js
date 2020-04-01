@@ -3,7 +3,7 @@ import { log } from 'meteor/unchained:core-logger';
 import { PaymentProviders } from 'meteor/unchained:core-payment';
 import {
   PaymentPricingDirector,
-  PaymentPricingSheet
+  PaymentPricingSheet,
 } from 'meteor/unchained:core-pricing';
 import { objectInvert } from 'meteor/unchained:utils';
 import { OrderPayments } from './collections';
@@ -15,7 +15,7 @@ import { OrderDiscounts } from '../order-discounts/collections';
 OrderPayments.helpers({
   order() {
     return Orders.findOne({
-      _id: this.orderId
+      _id: this.orderId,
     });
   },
   provider() {
@@ -40,13 +40,13 @@ OrderPayments.helpers({
     return OrderPayments.updatePayment({
       paymentId: this._id,
       orderId: this.orderId,
-      context
+      context,
     });
   },
   pricing() {
     const pricing = new PaymentPricingSheet({
       calculation: this.calculation,
-      currency: this.order().currency
+      currency: this.order().currency,
     });
     return pricing;
   },
@@ -65,9 +65,9 @@ OrderPayments.helpers({
     const arbitraryResponseData = provider.charge({
       transactionContext: {
         ...(paymentContext || {}),
-        ...this.context
+        ...this.context,
       },
-      order
+      order,
     });
     if (arbitraryResponseData) {
       this.setStatus(
@@ -84,17 +84,17 @@ OrderPayments.helpers({
     return OrderPayments.updateStatus({
       paymentId: this._id,
       info,
-      status
+      status,
     });
   },
   discounts(orderDiscountId) {
     return this.pricing()
       .discountPrices(orderDiscountId)
-      .map(discount => ({
+      .map((discount) => ({
         payment: this,
-        ...discount
+        ...discount,
       }));
-  }
+  },
 });
 
 OrderPayments.createOrderPayment = ({
@@ -108,7 +108,7 @@ OrderPayments.createOrderPayment = ({
     created: new Date(),
     status: OrderPaymentStatus.OPEN,
     orderId,
-    paymentProviderId
+    paymentProviderId,
   });
   const orderPayment = OrderPayments.findOne({ _id: orderPaymentId });
   return orderPayment.init();
@@ -130,7 +130,7 @@ OrderPayments.updatePayment = ({ orderId, paymentId, context }) => {
   OrderPayments.update(
     { _id: paymentId },
     {
-      $set: { context, updated: new Date() }
+      $set: { context, updated: new Date() },
     }
   );
   OrderDiscounts.updateDiscounts({ orderId });
@@ -147,9 +147,9 @@ OrderPayments.updateStatus = ({ paymentId, status, info = '' }) => {
       log: {
         date,
         status,
-        info
-      }
-    }
+        info,
+      },
+    },
   };
   if (status === OrderPaymentStatus.PAID) {
     modifier.$set.paid = date;

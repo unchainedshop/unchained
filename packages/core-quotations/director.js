@@ -4,7 +4,7 @@ const QuotationError = {
   ADAPTER_NOT_FOUND: 'ADAPTER_NOT_FOUND',
   NOT_IMPLEMENTED: 'NOT_IMPLEMENTED',
   INCOMPLETE_CONFIGURATION: 'INCOMPLETE_CONFIGURATION',
-  WRONG_CREDENTIALS: 'WRONG_CREDENTIALS'
+  WRONG_CREDENTIALS: 'WRONG_CREDENTIALS',
 };
 
 class QuotationAdapter {
@@ -62,21 +62,21 @@ class QuotationAdapter {
 class QuotationDirector {
   constructor(quotation) {
     this.context = {
-      quotation
+      quotation,
     };
   }
 
   findAppropriateAdapters(context) {
-    return this.constructor.filteredAdapters(AdapterClass => {
+    return this.constructor.filteredAdapters((AdapterClass) => {
       const activated = AdapterClass.isActivatedFor({
         ...this.context,
-        ...context
+        ...context,
       });
       if (!activated) {
         log(
           `${this.constructor.name} -> ${AdapterClass.key} (${AdapterClass.version}) skipped`,
           {
-            level: 'warn'
+            level: 'warn',
           }
         );
       }
@@ -93,7 +93,7 @@ class QuotationDirector {
     }
     return new Adapter({
       ...this.context,
-      ...context
+      ...context,
     });
   }
 
@@ -125,7 +125,7 @@ class QuotationDirector {
       const adapter = this.interface();
       const result = await adapter.transformItemConfiguration({
         quantity,
-        configuration
+        configuration,
       });
       return result;
     } catch (error) {
@@ -173,7 +173,7 @@ class QuotationDirector {
 
   static filteredAdapters(filter) {
     return Array.from(QuotationDirector.adapters)
-      .map(entry => entry[1])
+      .map((entry) => entry[1])
       .filter(filter || (() => true));
   }
 

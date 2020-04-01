@@ -7,5 +7,5 @@ export default [
       shipping: Date
       earliestDelivery: Date
     }
-  `
+  `,
 ];

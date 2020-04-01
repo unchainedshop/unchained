@@ -3,14 +3,14 @@ Package.describe({
   version: '0.45.0',
   summary: 'Unchained Engine Core: Orders',
   git: 'https://github.com/unchainedshop/unchained',
-  documentation: 'README.md'
+  documentation: 'README.md',
 });
 
 Npm.depends({
-  hashids: '2.0.1'
+  hashids: '2.0.1',
 });
 
-Package.onUse(api => {
+Package.onUse((api) => {
   api.versionsFrom('1.9');
   api.use('ecmascript');
   api.use('mongo');
@@ -36,7 +36,7 @@ Package.onUse(api => {
   api.mainModule('orders.js', 'server');
 });
 
-Package.onTest(api => {
+Package.onTest((api) => {
   api.use('ecmascript');
   api.use('unchained:core-orders');
   api.mainModule('orders-tests.js');

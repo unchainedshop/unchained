@@ -3,11 +3,11 @@ import { Quotations, QuotationStatus } from 'meteor/unchained:core-quotations';
 import {
   QuotationNotFoundError,
   QuotationWrongStatusError,
-  OrderQuantityTooLowError
+  OrderQuantityTooLowError,
 } from '../../errors';
 import getCart from '../../getCart';
 
-export default function(
+export default function (
   root,
   { orderId, quotationId, quantity, configuration },
   { user, userId, countryContext }
@@ -28,6 +28,6 @@ export default function(
   return cart.addQuotationItem({
     quotation,
     quantity,
-    configuration
+    configuration,
   });
 }

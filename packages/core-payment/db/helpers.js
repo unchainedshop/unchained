@@ -39,7 +39,7 @@ PaymentProviders.helpers({
     return Promise.await(
       new PaymentDirector(this).charge(this.defaultContext(context))
     );
-  }
+  },
 });
 
 PaymentProviders.createProvider = ({ type, ...rest }) => {
@@ -48,7 +48,7 @@ PaymentProviders.createProvider = ({ type, ...rest }) => {
     ...rest,
     created: new Date(),
     configuration: InterfaceClass.initialConfiguration,
-    type
+    type,
   });
   return PaymentProviders.findOne({ _id: providerId });
 };
@@ -59,8 +59,8 @@ PaymentProviders.updateProvider = ({ _id, ...rest }) => {
     {
       $set: {
         ...rest,
-        updated: new Date()
-      }
+        updated: new Date(),
+      },
     }
   );
   return PaymentProviders.findOne({ _id, deleted: null });
@@ -71,14 +71,14 @@ PaymentProviders.removeProvider = ({ _id }) => {
     { _id, deleted: null },
     {
       $set: {
-        deleted: new Date()
-      }
+        deleted: new Date(),
+      },
     }
   );
   return PaymentProviders.findOne({ _id });
 };
 
-PaymentProviders.findProviderById = _id => PaymentProviders.findOne({ _id });
+PaymentProviders.findProviderById = (_id) => PaymentProviders.findOne({ _id });
 
 PaymentProviders.findProviders = ({ type } = {}) =>
   PaymentProviders.find({ ...(type ? { type } : {}), deleted: null }).fetch();

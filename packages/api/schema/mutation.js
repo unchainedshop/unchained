@@ -664,5 +664,5 @@ export default [
         finished: Date
       ): Work
     }
-  `
+  `,
 ];

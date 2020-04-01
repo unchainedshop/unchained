@@ -2,7 +2,7 @@ import { Orders } from 'meteor/unchained:core-orders';
 import { Quotations } from 'meteor/unchained:core-quotations';
 
 export default (role, actions) => {
-  const isInLoginMutationResponse = root => {
+  const isInLoginMutationResponse = (root) => {
     // eslint-disable-next-line
     if (root && root._inLoginMethodResponse) {
       return true;
@@ -67,7 +67,7 @@ export default (role, actions) => {
     (root, { orderId, otp }) =>
       Orders.find({
         _id: orderId,
-        orderNumber: otp
+        orderNumber: otp,
       }).count() > 0
   );
 
@@ -77,7 +77,7 @@ export default (role, actions) => {
     (root, { quotationId, otp }) =>
       Quotations.find({
         _id: quotationId,
-        quotationNumber: otp
+        quotationNumber: otp,
       }).count() > 0
   );
 

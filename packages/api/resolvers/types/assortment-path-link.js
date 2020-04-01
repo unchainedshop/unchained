@@ -4,7 +4,7 @@ export default {
   async link({ assortmentId, childAssortmentId }) {
     return AssortmentLinks.findOne({
       parentAssortmentId: assortmentId,
-      childAssortmentId
+      childAssortmentId,
     });
-  }
+  },
 };

@@ -10,7 +10,7 @@ export default {
   total(obj) {
     return {
       amount: obj.amount,
-      currency: obj.currency
+      currency: obj.currency,
     };
-  }
+  },
 };

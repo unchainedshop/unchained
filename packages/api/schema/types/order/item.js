@@ -30,5 +30,5 @@ export default [
       dispatches: [Dispatch!]
       configuration: [ProductConfigurationParameter!]
     }
-  `
+  `,
 ];

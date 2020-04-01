@@ -1,7 +1,7 @@
 import { log } from 'meteor/unchained:core-logger';
 import { ProductVariationTexts } from 'meteor/unchained:core-products';
 
-export default function(
+export default function (
   root,
   { productVariationId, productVariationOptionValue },
   { userId }
@@ -12,7 +12,7 @@ export default function(
   );
   const selector = {
     productVariationId,
-    productVariationOptionValue
+    productVariationOptionValue,
   };
   const productTexts = ProductVariationTexts.find(selector).fetch();
   return productTexts;

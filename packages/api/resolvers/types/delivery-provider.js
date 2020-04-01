@@ -7,7 +7,7 @@ export default {
     return {
       _id: Interface.key,
       label: Interface.label,
-      version: Interface.version
+      version: Interface.version,
     };
   },
   async simulatedPrice(obj, { orderId, useNetPrice, context }, requestContext) {
@@ -19,9 +19,9 @@ export default {
         order,
         useNetPrice,
         user,
-        providerContext: context
+        providerContext: context,
       },
       requestContext
     );
-  }
+  },
 };

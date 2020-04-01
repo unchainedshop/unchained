@@ -8,14 +8,14 @@ ProductMedia.helpers({
     ProductMediaTexts.upsert(
       {
         productMediaId: this._id,
-        locale
+        locale,
       },
       {
         $set: {
           updated: new Date(),
           locale,
-          ...fields
-        }
+          ...fields,
+        },
       },
       { bypassCollection2: true }
     );
@@ -28,19 +28,19 @@ ProductMedia.helpers({
   file() {
     const media = Media.findOne({ _id: this.mediaId });
     return media;
-  }
+  },
 });
 
 ProductMedia.getLocalizedTexts = (productMediaId, locale) =>
   findLocalizedText(ProductMediaTexts, { productMediaId }, locale);
 
-ProductMedia.getNewSortKey = productId => {
+ProductMedia.getNewSortKey = (productId) => {
   const lastProductMedia = ProductMedia.findOne(
     {
-      productId
+      productId,
     },
     {
-      sort: { sortKey: 1 }
+      sort: { sortKey: 1 },
     }
   ) || { sortKey: 0 };
   return lastProductMedia.sortKey + 1;
@@ -50,10 +50,10 @@ ProductMedia.updateManualOrder = ({ sortKeys }) => {
   const changedMediaIds = sortKeys.map(({ productMediaId, sortKey }) => {
     ProductMedia.update(
       {
-        _id: productMediaId
+        _id: productMediaId,
       },
       {
-        $set: { sortKey: sortKey + 1, updated: new Date() }
+        $set: { sortKey: sortKey + 1, updated: new Date() },
       }
     );
     return productMediaId;

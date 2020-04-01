@@ -5,5 +5,5 @@ export default {
   __resolveType(obj) {
     const invertedProductTypes = objectInvert(ProductTypes);
     return invertedProductTypes[obj.type];
-  }
+  },
 };

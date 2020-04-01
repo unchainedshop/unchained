@@ -19,7 +19,7 @@ const { APOLLO_ENGINE_KEY } = process.env;
 
 global._UnchainedAPIVersion = '0.45.0'; // eslint-disable-line
 
-const logGraphQLServerError = error => {
+const logGraphQLServerError = (error) => {
   try {
     const {
       message,
@@ -32,13 +32,13 @@ const logGraphQLServerError = error => {
     log(`${message} ${extensions && extensions.code}`, {
       level: 'error',
       ...extensions,
-      ...rest
+      ...rest,
     });
     console.error(stacktrace, parameters); // eslint-disable-line
   } catch (e) {} // eslint-disable-line
 };
 
-const defaultContext = req => {
+const defaultContext = (req) => {
   const remoteAddress =
     req.headers['x-real-ip'] ||
     req.headers['x-forwarded-for'] ||
@@ -48,7 +48,7 @@ const defaultContext = req => {
   return { remoteAddress };
 };
 
-const startUnchainedServer = options => {
+const startUnchainedServer = (options) => {
   const {
     corsOrigins = null, // no cookie handling
     typeDefs: additionalTypeDefs = [],
@@ -69,18 +69,18 @@ const startUnchainedServer = options => {
       return {
         ...userContext,
         ...buildLocaleContext(req),
-        ...context(req)
+        ...context(req),
       };
     },
-    formatError: error => {
+    formatError: (error) => {
       logGraphQLServerError(error);
       const {
         message,
-        extensions: { exception, code, ...extensions } // removes exception
+        extensions: { exception, code, ...extensions }, // removes exception
       } = error;
       return new ApolloError(message, code, {
         code,
-        ...extensions
+        ...extensions,
       });
     },
     engine: APOLLO_ENGINE_KEY
@@ -90,12 +90,12 @@ const startUnchainedServer = options => {
             'email',
             'plainPassword',
             'oldPlainPassword',
-            'newPlainPassword'
+            'newPlainPassword',
           ],
-          ...engine
+          ...engine,
         }
       : undefined,
-    ...apolloServerOptions
+    ...apolloServerOptions,
   });
 
   const originFn =
@@ -120,11 +120,11 @@ const startUnchainedServer = options => {
       ? undefined
       : {
           origin: originFn,
-          credentials: true
+          credentials: true,
         },
     bodyParserConfig: {
-      limit: '5mb'
-    }
+      limit: '5mb',
+    },
   });
 
   WebApp.connectHandlers.use('/graphql', (req, res) => {

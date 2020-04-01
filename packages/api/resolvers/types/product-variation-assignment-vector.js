@@ -7,5 +7,5 @@ export default {
   },
   variation(obj) {
     return obj.product.variation(obj.key);
-  }
+  },
 };

@@ -7,14 +7,14 @@ const postFetch = async (url, { data, headers }) => {
   return fetch(url, {
     method: 'POST',
     body: JSON.stringify(data),
-    headers: { 'Content-Type': 'application/json', ...headers }
+    headers: { 'Content-Type': 'application/json', ...headers },
   });
 };
 
 const nonPostFetch = async (url, { headers, method = 'GET' }) => {
   return fetch(url, {
     method,
-    headers
+    headers,
   });
 };
 
@@ -29,7 +29,7 @@ class HttpRequestWorkerPlugin extends WorkerPlugin {
 
   static async doWork({ url, data = {}, headers, method = 'POST' }) {
     log(`${this.key} -> doWork: ${method} ${url} ${data}`, {
-      level: 'debug'
+      level: 'debug',
     });
 
     try {
@@ -50,7 +50,7 @@ class HttpRequestWorkerPlugin extends WorkerPlugin {
       log(
         `${this.key} -> doWork failed: ${err.name} ${err.message} ${err.stack}`,
         {
-          level: 'warn'
+          level: 'warn',
         }
       );
       return {
@@ -58,8 +58,8 @@ class HttpRequestWorkerPlugin extends WorkerPlugin {
         error: {
           name: err.name,
           message: err.message,
-          stack: err.stack
-        }
+          stack: err.stack,
+        },
       };
     }
   }

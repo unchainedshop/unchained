@@ -10,7 +10,7 @@ export default new SimpleSchema(
     city: String,
     postalCode: String,
     regionCode: String,
-    countryCode: String
+    countryCode: String,
   },
   { requiredByDefault: false }
 );

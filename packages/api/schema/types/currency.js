@@ -5,5 +5,5 @@ export default [
       isoCode: String
       isActive: Boolean
     }
-  `
+  `,
 ];

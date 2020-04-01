@@ -94,5 +94,5 @@ export default {
   quotation: acl(actions.viewQuotation)(quotation),
   quotations: acl(actions.viewQuotations)(quotations),
   search: acl(actions.search)(search),
-  workQueue: acl(actions.manageWorker)(workQueue)
+  workQueue: acl(actions.manageWorker)(workQueue),
 };

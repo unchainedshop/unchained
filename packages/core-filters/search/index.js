@@ -8,10 +8,10 @@ import parseQueryArray from './parse-query-array';
 const cleanQuery = ({ filterQuery, productIds = null, ...query }) => ({
   filterQuery: parseQueryArray(filterQuery),
   productIds: Promise.resolve(productIds),
-  ...query
+  ...query,
 });
 
-const search = async rawQuery => {
+const search = async (rawQuery) => {
   const query = cleanQuery(rawQuery);
   const filterSelector = resolveFilterSelector(query);
   const productSelector = resolveProductSelector(query);
@@ -21,7 +21,7 @@ const search = async rawQuery => {
     query,
     filterSelector,
     productSelector,
-    sortStage
+    sortStage,
   };
 
   if (rawQuery?.productIds?.length === 0) {
@@ -30,7 +30,7 @@ const search = async rawQuery => {
     return {
       totalProductIds: [],
       filteredProductIds: [],
-      ...searchConfiguration
+      ...searchConfiguration,
     };
   }
 
@@ -44,7 +44,7 @@ const search = async rawQuery => {
   return {
     totalProductIds,
     filteredProductIds,
-    ...searchConfiguration
+    ...searchConfiguration,
   };
 };
 

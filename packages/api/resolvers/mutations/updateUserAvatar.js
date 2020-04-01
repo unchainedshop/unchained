@@ -2,7 +2,7 @@ import { Promise } from 'meteor/promise';
 import { log } from 'meteor/unchained:core-logger';
 import { Avatars, Users } from 'meteor/unchained:core-users';
 
-export default function(root, { avatar, userId: foreignUserId }, { userId }) {
+export default function (root, { avatar, userId: foreignUserId }, { userId }) {
   const normalizedUserId = foreignUserId || userId;
   log(`mutation updateUserAvatar ${normalizedUserId}`, { userId });
   const avatarRef =
@@ -10,16 +10,16 @@ export default function(root, { avatar, userId: foreignUserId }, { userId }) {
       ? Promise.await(
           Avatars.insertWithRemoteFile({
             file: avatar,
-            userId: normalizedUserId
+            userId: normalizedUserId,
           })
         )
       : Promise.await(
           Avatars.insertWithRemoteBuffer({
             file: {
               ...avatar,
-              buffer: Buffer.from(avatar.buffer, 'base64')
+              buffer: Buffer.from(avatar.buffer, 'base64'),
             },
-            userId: normalizedUserId
+            userId: normalizedUserId,
           })
         );
   Users.update(
@@ -27,8 +27,8 @@ export default function(root, { avatar, userId: foreignUserId }, { userId }) {
     {
       $set: {
         updated: new Date(),
-        avatarId: avatarRef._id
-      }
+        avatarId: avatarRef._id,
+      },
     }
   );
   return Users.findOne({ _id: normalizedUserId });

@@ -5,7 +5,7 @@ const OrderPricingSheetRowCategories = {
   Discounts: 'DISCOUNTS',
   Taxes: 'TAXES',
   Delivery: 'DELIVERY',
-  Payment: 'PAYMENT'
+  Payment: 'PAYMENT',
 };
 
 class OrderPricingSheet extends PricingSheet {
@@ -13,7 +13,7 @@ class OrderPricingSheet extends PricingSheet {
     this.calculation.push({
       category: OrderPricingSheetRowCategories.Items,
       amount,
-      meta
+      meta,
     });
   }
 
@@ -22,7 +22,7 @@ class OrderPricingSheet extends PricingSheet {
       category: OrderPricingSheetRowCategories.Discounts,
       amount,
       discountId,
-      meta
+      meta,
     });
   }
 
@@ -30,7 +30,7 @@ class OrderPricingSheet extends PricingSheet {
     this.calculation.push({
       category: OrderPricingSheetRowCategories.Taxes,
       amount,
-      meta
+      meta,
     });
   }
 
@@ -38,7 +38,7 @@ class OrderPricingSheet extends PricingSheet {
     this.calculation.push({
       category: OrderPricingSheetRowCategories.Delivery,
       amount,
-      meta
+      meta,
     });
   }
 
@@ -46,7 +46,7 @@ class OrderPricingSheet extends PricingSheet {
     this.calculation.push({
       category: OrderPricingSheetRowCategories.Payment,
       amount,
-      meta
+      meta,
     });
   }
 
@@ -65,31 +65,31 @@ class OrderPricingSheet extends PricingSheet {
         amount:
           this.sum() -
           this.sum({ category: OrderPricingSheetRowCategories.Taxes }),
-        currency: this.currency
+        currency: this.currency,
       };
     }
     return {
       amount: this.sum({ category }),
-      currency: this.currency
+      currency: this.currency,
     };
   }
 
   taxSum() {
     return this.sum({
-      category: OrderPricingSheetRowCategories.Taxes
+      category: OrderPricingSheetRowCategories.Taxes,
     });
   }
 
   itemsSum() {
     return this.sum({
-      category: OrderPricingSheetRowCategories.Items
+      category: OrderPricingSheetRowCategories.Items,
     });
   }
 
   discountSum(discountId) {
     return this.sum({
       category: OrderPricingSheetRowCategories.Discounts,
-      discountId
+      discountId,
     });
   }
 
@@ -98,20 +98,20 @@ class OrderPricingSheet extends PricingSheet {
       ({ discountId }) => discountId
     );
 
-    return [...new Set(discountIds)].map(discountId => ({
+    return [...new Set(discountIds)].map((discountId) => ({
       discountId,
       amount: this.sum({
         category: OrderPricingSheetRowCategories.Discounts,
-        discountId
+        discountId,
       }),
-      currency: this.currency
+      currency: this.currency,
     }));
   }
 
   getDiscountRows(discountId) {
     return this.filterBy({
       category: OrderPricingSheetRowCategories.Discounts,
-      discountId
+      discountId,
     });
   }
 
@@ -121,19 +121,19 @@ class OrderPricingSheet extends PricingSheet {
 
   getTaxesRows() {
     return this.filterByCategory({
-      category: OrderPricingSheetRowCategories.Taxes
+      category: OrderPricingSheetRowCategories.Taxes,
     });
   }
 
   getDeliveryRows() {
     return this.filterByCategory({
-      category: OrderPricingSheetRowCategories.Delivery
+      category: OrderPricingSheetRowCategories.Delivery,
     });
   }
 
   getPaymentRows() {
     return this.filterByCategory({
-      category: OrderPricingSheetRowCategories.Payment
+      category: OrderPricingSheetRowCategories.Payment,
     });
   }
 
@@ -147,7 +147,7 @@ class OrderPricingSheet extends PricingSheet {
       payment: formatter(
         this.total(OrderPricingSheetRowCategories.Payment).amount
       ),
-      net: formatter(this.total().amount)
+      net: formatter(this.total().amount),
     };
   }
 }

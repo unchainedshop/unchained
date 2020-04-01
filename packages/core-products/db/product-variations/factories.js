@@ -9,7 +9,7 @@ Factory.define('productVariation', ProductVariations, {
   key: () => faker.lorem.slug(),
   type: () => faker.random.arrayElement(Object.values(ProductVariationType)),
   options: () => ['red', 'green', 'blue'],
-  ...fakeTimestampFields
+  ...fakeTimestampFields,
 });
 
 Factory.define('productVariationText', ProductVariationTexts, {
@@ -18,5 +18,5 @@ Factory.define('productVariationText', ProductVariationTexts, {
   locale: () => faker.random.arrayElement(['de', 'en']),
   title: () => faker.lorem.words(),
   subtitle: () => faker.lorem.sentence(),
-  ...fakeTimestampFields
+  ...fakeTimestampFields,
 });

@@ -31,5 +31,5 @@ export default [
       configurationError: WarehousingProviderError
       isActive: Boolean
     }
-  `
+  `,
 ];

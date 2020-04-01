@@ -9,7 +9,7 @@ Bookmarks.helpers({
   },
   user() {
     return Users.findOne({ _id: this.userId });
-  }
+  },
 });
 
 Bookmarks.createBookmark = ({ userId, productId, ...rest }) => {
@@ -17,7 +17,7 @@ Bookmarks.createBookmark = ({ userId, productId, ...rest }) => {
     ...rest,
     created: new Date(),
     userId,
-    productId
+    productId,
   });
   return Bookmarks.findBookmarkById(bookmarkId);
 };
@@ -28,12 +28,12 @@ Bookmarks.removeBookmark = ({ _id }) => {
   return bookmark;
 };
 
-Bookmarks.findBookmarkById = _id => Bookmarks.findOne({ _id });
+Bookmarks.findBookmarkById = (_id) => Bookmarks.findOne({ _id });
 
 Bookmarks.findBookmarks = ({ userId, productId } = {}) =>
   Bookmarks.find({
     ...(userId ? { userId } : {}),
-    ...(productId ? { productId } : {})
+    ...(productId ? { productId } : {}),
   }).fetch();
 
 Bookmarks.migrateBookmarks = ({ fromUserId, toUserId, mergeBookmarks }) => {
@@ -52,8 +52,8 @@ Bookmarks.migrateBookmarks = ({ fromUserId, toUserId, mergeBookmarks }) => {
     { userId: fromUserId },
     {
       $set: {
-        userId: toUserId
-      }
+        userId: toUserId,
+      },
     }
   );
 };
@@ -61,5 +61,5 @@ Bookmarks.migrateBookmarks = ({ fromUserId, toUserId, mergeBookmarks }) => {
 Users.helpers({
   bookmarks() {
     return Bookmarks.findBookmarks({ userId: this._id });
-  }
+  },
 });

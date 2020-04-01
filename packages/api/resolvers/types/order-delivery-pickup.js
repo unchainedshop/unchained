@@ -4,14 +4,14 @@ export default {
     return obj.provider().run(
       'pickUpLocationById',
       {
-        orderDelivery: obj
+        orderDelivery: obj,
       },
       orderPickUpLocationId
     );
   },
   pickUpLocations(obj) {
     return obj.provider().run('pickUpLocations', {
-      orderDelivery: obj
+      orderDelivery: obj,
     });
   },
   status(obj) {
@@ -23,5 +23,5 @@ export default {
   discounts(obj) {
     // IMPORTANT: Do not send any parameter to obj.discounts!
     return obj.discounts();
-  }
+  },
 };

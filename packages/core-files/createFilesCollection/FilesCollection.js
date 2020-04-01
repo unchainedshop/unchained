@@ -14,7 +14,7 @@ FilesCollection.prototype.insertWithRemoteBuffer = async function insertWithRemo
           type,
           size,
           meta,
-          ...rest
+          ...rest,
         },
         (err, fileObj) => {
           if (err) return reject(err);
@@ -36,7 +36,7 @@ FilesCollection.prototype.insertWithRemoteFile = async function insertWithRemote
   const { stream, filename, mimetype } = await file;
   return new Promise((resolve, reject) => {
     const bufs = [];
-    stream.on('data', d => {
+    stream.on('data', (d) => {
       bufs.push(d);
     });
     stream.on('end', () => {
@@ -50,7 +50,7 @@ FilesCollection.prototype.insertWithRemoteFile = async function insertWithRemote
             type: mimetype,
             size: contentLength,
             meta,
-            ...rest
+            ...rest,
           },
           (err, fileObj) => {
             if (err) return reject(err);
@@ -76,7 +76,7 @@ FilesCollection.prototype.insertWithRemoteURL = async function insertWithRemoteU
         href,
         {
           meta,
-          ...rest
+          ...rest,
         },
         (err, fileObj) => {
           if (err) return reject(err);

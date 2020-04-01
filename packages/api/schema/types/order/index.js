@@ -11,5 +11,5 @@ export default [
   ...discount,
   ...delivery,
   ...payment,
-  ...pickuplocation
+  ...pickuplocation,
 ];

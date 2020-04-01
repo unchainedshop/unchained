@@ -18,5 +18,5 @@ export default [
       width(unit: LengthUnit = METERS): Float
       height(unit: LengthUnit = METERS): Float
     }
-  `
+  `,
 ];

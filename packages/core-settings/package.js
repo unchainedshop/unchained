@@ -4,20 +4,20 @@ Package.describe({
   summary:
     'This package contains api to define settings for the unchained engine.',
   git: 'https://github.com/unchainedshop/unchained',
-  documentation: 'README.md'
+  documentation: 'README.md',
 });
 
 Npm.depends({
-  'lodash.get': '4.4.2'
+  'lodash.get': '4.4.2',
 });
 
-Package.onUse(api => {
+Package.onUse((api) => {
   api.versionsFrom('1.8.0.2');
   api.use('ecmascript');
   api.mainModule('core-settings.js');
 });
 
-Package.onTest(api => {
+Package.onTest((api) => {
   api.use('ecmascript');
   api.use('tinytest');
   api.use('unchained:core-settings');

@@ -1,17 +1,17 @@
 import { log } from 'meteor/unchained:core-logger';
 import { Filters } from 'meteor/unchained:core-filters';
 
-export default function(root, { filterId, filterOptionValue }, { userId }) {
+export default function (root, { filterId, filterOptionValue }, { userId }) {
   log(`mutation removeFilterOption ${filterId}`, { userId });
   Filters.update(
     { _id: filterId },
     {
       $set: {
-        updated: new Date()
+        updated: new Date(),
       },
       $pull: {
-        options: filterOptionValue
-      }
+        options: filterOptionValue,
+      },
     }
   );
   const filter = Filters.findOne({ _id: filterId });

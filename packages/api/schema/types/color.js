@@ -7,5 +7,5 @@ export default [
       green: Int
       blue: Int
     }
-  `
+  `,
 ];

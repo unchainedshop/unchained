@@ -8,8 +8,8 @@ export default function setBaseCountry(root, { countryId }, { userId }) {
     {
       $set: {
         isBase: false,
-        updated: new Date()
-      }
+        updated: new Date(),
+      },
     },
     { multi: true }
   );
@@ -18,8 +18,8 @@ export default function setBaseCountry(root, { countryId }, { userId }) {
     {
       $set: {
         isBase: true,
-        updated: new Date()
-      }
+        updated: new Date(),
+      },
     }
   );
   return Countries.findOne({ _id: countryId });

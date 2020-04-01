@@ -29,7 +29,7 @@ ProductReviews.helpers({
         ProductReviews.removeVote({
           productReviewId: this._id,
           userId,
-          type: ProductReviewVoteTypes.DOWNVOTE
+          type: ProductReviewVoteTypes.DOWNVOTE,
         });
       }
       if (type === ProductReviewVoteTypes.DOWNVOTE) {
@@ -37,14 +37,14 @@ ProductReviews.helpers({
         ProductReviews.removeVote({
           productReviewId: this._id,
           userId,
-          type: ProductReviewVoteTypes.UPVOTE
+          type: ProductReviewVoteTypes.UPVOTE,
         });
       }
       return ProductReviews.addVote({
         productReviewId: this._id,
         userId,
         type,
-        meta
+        meta,
       });
     }
     return this;
@@ -53,9 +53,9 @@ ProductReviews.helpers({
     return ProductReviews.removeVote({
       productReviewId: this._id,
       userId,
-      type
+      type,
     });
-  }
+  },
 });
 
 ProductReviews.createReview = function createReview({
@@ -67,7 +67,7 @@ ProductReviews.createReview = function createReview({
     created: new Date(),
     productId,
     authorId,
-    ...product
+    ...product,
   });
   return this.findOne({ _id });
 };
@@ -81,8 +81,8 @@ ProductReviews.updateReview = function updateReview({
     {
       $set: {
         ...review,
-        updated: new Date()
-      }
+        updated: new Date(),
+      },
     }
   );
   return this.findOne({ _id: productReviewId, deleted: null });
@@ -96,9 +96,9 @@ ProductReviews.addVote = function addVote({ productReviewId, type, ...vote }) {
         votes: {
           timestamp: new Date(),
           type,
-          ...vote
-        }
-      }
+          ...vote,
+        },
+      },
     }
   );
   return this.findOne({ _id: productReviewId, deleted: null });
@@ -107,14 +107,14 @@ ProductReviews.addVote = function addVote({ productReviewId, type, ...vote }) {
 ProductReviews.removeVote = function addVote({
   productReviewId,
   userId,
-  type
+  type,
 }) {
   this.update(
     { _id: productReviewId, deleted: null },
     {
       $pull: {
-        votes: { userId, type }
-      }
+        votes: { userId, type },
+      },
     }
   );
   return this.findOne({ _id: productReviewId, deleted: null });
@@ -125,8 +125,8 @@ ProductReviews.deleteReview = function deleteReview({ productReviewId }) {
     { _id: productReviewId, deleted: null },
     {
       $set: {
-        deleted: new Date()
-      }
+        deleted: new Date(),
+      },
     }
   );
   return this.findOne({ _id: productReviewId });
@@ -144,7 +144,7 @@ ProductReviews.findReviews = function findReviews(
     {
       ...(productId ? { productId } : {}),
       ...(authorId ? { authorId } : {}),
-      deleted: null
+      deleted: null,
     },
     ...options
   ).fetch();

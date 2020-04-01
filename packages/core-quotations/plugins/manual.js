@@ -1,6 +1,6 @@
 import {
   QuotationDirector,
-  QuotationAdapter
+  QuotationAdapter,
 } from 'meteor/unchained:core-quotations';
 
 class ManualOffering extends QuotationAdapter {
@@ -14,7 +14,7 @@ class ManualOffering extends QuotationAdapter {
 
   async quote(config) { // eslint-disable-line
     return {
-      expires: new Date() + 1000 * 3600 * 1000
+      expires: new Date() + 1000 * 3600 * 1000,
     };
   }
 }

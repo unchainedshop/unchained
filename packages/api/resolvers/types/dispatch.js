@@ -8,7 +8,7 @@ export default {
     referenceDate,
     quantity,
     country,
-    userId
+    userId,
   }) =>
     crypto
       .createHash('sha256')
@@ -20,8 +20,8 @@ export default {
           referenceDate,
           quantity,
           country,
-          userId || 'ANONYMOUS'
+          userId || 'ANONYMOUS',
         ].join('')
       )
-      .digest('hex')
+      .digest('hex'),
 };

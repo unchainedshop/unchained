@@ -10,5 +10,5 @@ export default {
   },
   async assortmentPaths(obj, { forceLocale }, { localeContext }) {
     return obj.assortmentPaths(forceLocale || localeContext.normalized);
-  }
+  },
 };

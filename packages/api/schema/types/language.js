@@ -11,5 +11,5 @@ export default [
       isBase: Boolean
       name: String
     }
-  `
+  `,
 ];

@@ -2,7 +2,7 @@ const OrderDiscountableTypes = {
   OrderItemDiscount: 'OrderItemDiscount',
   OrderPaymentDiscount: 'OrderPaymentDiscount',
   OrderDeliveryDiscount: 'OrderDeliveryDiscount',
-  OrderGlobalDiscount: 'OrderGlobalDiscount'
+  OrderGlobalDiscount: 'OrderGlobalDiscount',
 };
 
 export default {
@@ -17,5 +17,5 @@ export default {
       return OrderDiscountableTypes.OrderItemDiscount;
     }
     return OrderDiscountableTypes.OrderGlobalDiscount;
-  }
+  },
 };

@@ -13,5 +13,5 @@ export default [
       filters: [LoadedFilter!]!
       products(limit: Int = 10, offset: Int = 0): [Product!]!
     }
-  `
+  `,
 ];

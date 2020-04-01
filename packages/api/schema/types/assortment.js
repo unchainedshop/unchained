@@ -86,5 +86,5 @@ export default [
       subtitle: String
       description: String
     }
-  `
+  `,
 ];

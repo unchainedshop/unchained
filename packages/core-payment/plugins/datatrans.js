@@ -1,7 +1,7 @@
 import {
   PaymentDirector,
   PaymentAdapter,
-  PaymentError
+  PaymentError,
 } from 'meteor/unchained:core-payment';
 import { OrderPayments } from 'meteor/unchained:core-orders';
 import { WebApp } from 'meteor/webapp';
@@ -11,7 +11,7 @@ import crypto from 'crypto';
 const {
   DATATRANS_SECRET,
   DATATRANS_SIGN_KEY,
-  DATATRANS_WEBHOOK_PATH = '/graphql/datatrans'
+  DATATRANS_WEBHOOK_PATH = '/graphql/datatrans',
 } = process.env;
 
 const getSecretkey = () => DATATRANS_SECRET;
@@ -66,8 +66,8 @@ class Datatrans extends PaymentAdapter {
   static initialConfiguration = [
     {
       key: 'merchantId',
-      value: null
-    }
+      value: null,
+    },
   ];
 
   static typeSupported(type) {
@@ -121,7 +121,7 @@ class Datatrans extends PaymentAdapter {
         merchantId,
         amount,
         currency,
-        refno
+        refno,
       })} with ${signature}`
     );
     return signature;
@@ -133,7 +133,7 @@ class Datatrans extends PaymentAdapter {
       status,
       uppTransactionId,
       sign,
-      sign2
+      sign2,
     } = transactionResponse;
     const merchantId = this.getMerchantId();
 

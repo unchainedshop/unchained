@@ -8,14 +8,14 @@ const calculationFields = {
   calculation: Array,
   'calculation.$': {
     type: Object,
-    blackbox: true
-  }
+    blackbox: true,
+  },
 };
 
 export const OrderDeliveryStatus = {
   OPEN: null,
   DELIVERED: 'DELIVERED',
-  RETURNED: 'RETURNED'
+  RETURNED: 'RETURNED',
 };
 
 OrderDeliveries.attachSchema(
@@ -28,7 +28,7 @@ OrderDeliveries.attachSchema(
       ...timestampFields,
       ...contextFields,
       ...calculationFields,
-      ...logFields
+      ...logFields,
     },
     { requiredByDefault: false }
   )

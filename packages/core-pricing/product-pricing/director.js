@@ -23,7 +23,7 @@ class ProductPricingAdapter {
     this.calculation = new ProductPricingSheet({
       calculation,
       currency,
-      quantity
+      quantity,
     });
     this.result = new ProductPricingSheet({ currency, quantity });
   }
@@ -41,7 +41,7 @@ class ProductPricingAdapter {
     this.calculation.filterBy().forEach(({ amount, ...row }) => {
       this.result.calculation.push({
         ...row,
-        amount: amount * -1
+        amount: amount * -1,
       });
     });
   }
@@ -57,7 +57,7 @@ class ProductPricingDirector {
     this.context = {
       discounts: [],
       ...this.constructor.buildContext(item),
-      ...context
+      ...context,
     };
   }
 
@@ -74,28 +74,28 @@ class ProductPricingDirector {
       user,
       discounts,
       currency: order.currency,
-      country: order.countryCode
+      country: order.countryCode,
     };
   }
 
   calculate() {
     this.calculation = ProductPricingDirector.sortedAdapters()
-      .filter(AdapterClass => AdapterClass.isActivatedFor(this.context))
+      .filter((AdapterClass) => AdapterClass.isActivatedFor(this.context))
       .reduce((calculation, AdapterClass) => {
         const discounts = this.context.discounts
-          .map(discount => ({
+          .map((discount) => ({
             discountId: discount._id,
             configuration: discount.configurationForPricingAdapterKey(
               AdapterClass.key,
               calculation
-            )
+            ),
           }))
           .filter(({ configuration }) => configuration !== null);
         try {
           const concreteAdapter = new AdapterClass({
             context: this.context,
             calculation,
-            discounts
+            discounts,
           });
           const nextCalculationResult = Promise.await(
             concreteAdapter.calculate()
@@ -115,7 +115,7 @@ class ProductPricingDirector {
     return new ProductPricingSheet({
       calculation: this.calculation,
       currency: this.context.currency,
-      quantity: this.context.quantity
+      quantity: this.context.quantity,
     });
   }
 
@@ -123,7 +123,7 @@ class ProductPricingDirector {
 
   static sortedAdapters() {
     return Array.from(ProductPricingDirector.adapters)
-      .map(entry => entry[1])
+      .map((entry) => entry[1])
       .sort((left, right) => left.orderIndex - right.orderIndex);
   }
 

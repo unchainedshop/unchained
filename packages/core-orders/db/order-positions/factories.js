@@ -7,5 +7,5 @@ Factory.define('orderPosition', OrderPositions, {
   productId: () => Factory.get('simpleProduct'),
   orderId: () => Factory.get('order'),
   quantity: () => faker.random.number({ min: 1, max: 3 }),
-  ...fakeTimestampFields
+  ...fakeTimestampFields,
 });

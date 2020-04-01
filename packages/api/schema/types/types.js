@@ -3,5 +3,5 @@ export default [
     type SuccessResponse {
       success: Boolean
     }
-  `
+  `,
 ];

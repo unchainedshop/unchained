@@ -16,5 +16,5 @@ export default {
   },
   async media(obj, props) {
     return obj.media(props);
-  }
+  },
 };

@@ -1,7 +1,7 @@
 import {
   PaymentDirector,
   PaymentAdapter,
-  PaymentProviderType
+  PaymentProviderType,
 } from 'meteor/unchained:core-payment';
 
 class Invoice extends PaymentAdapter {

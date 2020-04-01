@@ -7,15 +7,15 @@ const { logFields, contextFields, timestampFields } = Schemas;
 export const OrderPaymentStatus = {
   OPEN: null,
   PAID: 'PAID',
-  REFUNDED: 'REFUNDED'
+  REFUNDED: 'REFUNDED',
 };
 
 const calculationFields = {
   calculation: Array,
   'calculation.$': {
     type: Object,
-    blackbox: true
-  }
+    blackbox: true,
+  },
 };
 
 OrderPayments.attachSchema(
@@ -28,7 +28,7 @@ OrderPayments.attachSchema(
       ...timestampFields,
       ...contextFields,
       ...calculationFields,
-      ...logFields
+      ...logFields,
     },
     { requiredByDefault: false }
   )

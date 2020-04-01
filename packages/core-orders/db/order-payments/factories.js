@@ -9,5 +9,5 @@ Factory.define('orderPayment', OrderPayments, {
   paymentProviderId: () => Factory.get('paymentProvider'),
   status: () => faker.random.arrayElement(OrderPaymentStatus),
   context: () => ({}),
-  ...fakeTimestampFields
+  ...fakeTimestampFields,
 });

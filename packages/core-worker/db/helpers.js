@@ -2,7 +2,7 @@ import { log } from 'meteor/unchained:core-logger';
 import { WorkStatus } from './schema';
 import { WorkQueue } from './collections';
 
-export const getWorkStatus = work => {
+export const getWorkStatus = (work) => {
   if (!work.started && !work.finished) {
     return WorkStatus.NEW;
   }
@@ -23,7 +23,7 @@ export const getWorkStatus = work => {
 WorkQueue.helpers({
   status() {
     return getWorkStatus(this);
-  }
+  },
 });
 
 export default () => {};

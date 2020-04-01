@@ -13,10 +13,10 @@ Logs.helpers({
     return (
       this.meta &&
       Users.findOne({
-        _id: this.meta.userId
+        _id: this.meta.userId,
       })
     );
-  }
+  },
 });
 
 Users.helpers({
@@ -39,7 +39,7 @@ Users.helpers({
   },
   country(options) {
     return Countries.findOne({
-      isoCode: this.locale(options).country.toUpperCase()
+      isoCode: this.locale(options).country.toUpperCase(),
     });
   },
   locale({ localeContext } = {}) {
@@ -64,7 +64,7 @@ Users.helpers({
   },
   email() {
     log('user.email is deprecated, please use user.primaryEmail.verified', {
-      level: 'warn'
+      level: 'warn',
     });
     return this.primaryEmail()?.address;
   },
@@ -78,11 +78,7 @@ Users.helpers({
     return emails && emails[0].address;
   },
   setPassword(password, options) {
-    const newPassword =
-      password ||
-      uuidv4()
-        .split('-')
-        .pop();
+    const newPassword = password || uuidv4().split('-').pop();
     Accounts.setPassword(this._id, newPassword, options);
     if (!password) {
       Users.update(
@@ -90,8 +86,8 @@ Users.helpers({
         {
           $set: {
             'services.password.initial': true,
-            updated: new Date()
-          }
+            updated: new Date(),
+          },
         }
       );
     }
@@ -105,8 +101,8 @@ Users.helpers({
       {
         $set: {
           updated: new Date(),
-          roles
-        }
+          roles,
+        },
       }
     );
     return Users.findOne({ _id: this._id });
@@ -152,11 +148,11 @@ Users.helpers({
       skip: offset,
       limit,
       sort: {
-        created: -1
-      }
+        created: -1,
+      },
     }).fetch();
     return logs;
-  }
+  },
 });
 
 Users.updateLastBillingAddress = ({ userId, lastBillingAddress }) => {
@@ -165,15 +161,15 @@ Users.updateLastBillingAddress = ({ userId, lastBillingAddress }) => {
   const modifier = {
     $set: {
       lastBillingAddress,
-      updated: new Date()
-    }
+      updated: new Date(),
+    },
   };
   const profile = user.profile || {};
   const isGuest = user.isGuest();
   if (!profile.displayName || isGuest) {
     modifier.$set['profile.displayName'] = [
       lastBillingAddress.firstName,
-      lastBillingAddress.lastName
+      lastBillingAddress.lastName,
     ]
       .filter(Boolean)
       .join(' ');
@@ -189,8 +185,8 @@ Users.updateLastContact = ({ userId, lastContact }) => {
   const modifier = {
     $set: {
       updated: new Date(),
-      lastContact
-    }
+      lastContact,
+    },
   };
   if ((!profile.phoneMobile || isGuest) && lastContact.telNumber) {
     // Backport the contact phone number to the user profile
@@ -212,8 +208,8 @@ Users.enrollUser = ({ password, email, displayName, address }) => {
         updated: new Date(),
         'profile.displayName': displayName || null,
         'profile.address': address || null,
-        'services.password.initial': true
-      }
+        'services.password.initial': true,
+      },
     }
   );
   if (!options.password) {
@@ -230,9 +226,9 @@ Users.updateHeartbeat = ({ userId, ...options }) => {
       $set: {
         lastLogin: {
           timestamp: new Date(),
-          ...options
-        }
-      }
+          ...options,
+        },
+      },
     }
   );
 };

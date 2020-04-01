@@ -5,13 +5,13 @@ import { Products, ProductTexts } from './collections';
 export const ProductTypes = {
   SimpleProduct: 'SIMPLE_PRODUCT',
   ConfigurableProduct: 'CONFIGURABLE_PRODUCT',
-  BundleProduct: 'BUNDLE_PRODUCT'
+  BundleProduct: 'BUNDLE_PRODUCT',
 };
 
 export const ProductStatus = {
   DRAFT: null,
   ACTIVE: 'ACTIVE',
-  DELETED: 'DELETED'
+  DELETED: 'DELETED',
 };
 
 const ProductCommerceSchema = new SimpleSchema(
@@ -25,7 +25,7 @@ const ProductCommerceSchema = new SimpleSchema(
     'pricing.$.countryCode': String,
     'pricing.$.currencyCode': String,
     'pricing.$.amount': Number,
-    'pricing.$.maxQuantity': Number
+    'pricing.$.maxQuantity': Number,
   },
   { requiredByDefault: false }
 );
@@ -33,7 +33,7 @@ const ProductCommerceSchema = new SimpleSchema(
 const ProductWarehousingSchema = new SimpleSchema(
   {
     baseUnit: String,
-    sku: { type: String, index: true }
+    sku: { type: String, index: true },
   },
   { requiredByDefault: false }
 );
@@ -43,7 +43,7 @@ const ProductSupplySchema = new SimpleSchema(
     weightInGram: Number,
     heightInMillimeters: Number,
     lengthInMillimeters: Number,
-    widthInMillimeters: Number
+    widthInMillimeters: Number,
   },
   { requiredByDefault: false }
 );
@@ -53,14 +53,14 @@ const ProductProxySchema = new SimpleSchema(
     assignments: Array,
     'assignments.$': Object,
     'assignments.$.vector': { type: Object, blackbox: true },
-    'assignments.$.productId': String
+    'assignments.$.productId': String,
   },
   { requiredByDefault: false }
 );
 
 const ProductConfigurationSchema = new SimpleSchema({
   key: String,
-  value: String
+  value: String,
 });
 
 const ProductBundleItemSchema = new SimpleSchema({
@@ -68,9 +68,9 @@ const ProductBundleItemSchema = new SimpleSchema({
   quantity: Number,
   configuration: {
     type: Array,
-    defaultValue: []
+    defaultValue: [],
   },
-  'configuration.$': ProductConfigurationSchema
+  'configuration.$': ProductConfigurationSchema,
 });
 
 Products.attachSchema(
@@ -82,7 +82,7 @@ Products.attachSchema(
       type: {
         type: String,
         allowedValues: Object.values(ProductTypes),
-        required: true
+        required: true,
       },
       status: { type: String, index: true },
       authorId: { type: String, required: true },
@@ -95,11 +95,11 @@ Products.attachSchema(
       proxy: ProductProxySchema,
       bundleItems: {
         type: Array,
-        optional: true
+        optional: true,
       },
       'bundleItems.$': ProductBundleItemSchema,
       meta: { type: Object, blackbox: true },
-      ...Schemas.timestampFields
+      ...Schemas.timestampFields,
     },
     { requiredByDefault: false }
   )
@@ -118,7 +118,7 @@ ProductTexts.attachSchema(
       description: String,
       labels: Array,
       'labels.$': String,
-      ...Schemas.timestampFields
+      ...Schemas.timestampFields,
     },
     { requiredByDefault: false }
   )

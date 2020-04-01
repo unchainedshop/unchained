@@ -27,9 +27,9 @@ class OrderDocumentDirector extends DocumentDirector {
     if (!orderNumber) return;
     const documents = await this.execute('buildOrderConfirmation', {
       orderNumber,
-      ...options
+      ...options,
     });
-    documents.forEach(doc => {
+    documents.forEach((doc) => {
       if (doc) {
         const { date } = options;
         const { file, meta, ...rest } = doc;
@@ -38,7 +38,7 @@ class OrderDocumentDirector extends DocumentDirector {
           {
             date,
             type: OrderDocumentTypes.ORDER_CONFIRMATION,
-            ...meta
+            ...meta,
           },
           rest
         );
@@ -51,9 +51,9 @@ class OrderDocumentDirector extends DocumentDirector {
     if (!orderNumber) return;
     const documents = await this.execute('buildDeliveryNote', {
       orderNumber,
-      ...options
+      ...options,
     });
-    documents.forEach(doc => {
+    documents.forEach((doc) => {
       if (doc) {
         const { date, delivery } = options;
         const { file, meta, ...rest } = doc;
@@ -64,7 +64,7 @@ class OrderDocumentDirector extends DocumentDirector {
             type: OrderDocumentTypes.DELIVERY_NOTE,
             deliveryId: delivery._id,
             status: delivery.status,
-            ...meta
+            ...meta,
           },
           rest
         );
@@ -77,9 +77,9 @@ class OrderDocumentDirector extends DocumentDirector {
     if (!orderNumber) return;
     const documents = await this.execute('buildInvoiceAndReceipt', {
       orderNumber,
-      ...options
+      ...options,
     });
-    documents.forEach(files => {
+    documents.forEach((files) => {
       if (files) {
         const { date, payment } = options;
         const { file: invoice, meta, ...rest } = files[0];
@@ -90,7 +90,7 @@ class OrderDocumentDirector extends DocumentDirector {
             type: OrderDocumentTypes.INVOICE,
             paymentId: payment._id,
             status: payment.status,
-            ...meta
+            ...meta,
           },
           rest
         );
@@ -102,7 +102,7 @@ class OrderDocumentDirector extends DocumentDirector {
             type: OrderDocumentTypes.RECEIPT,
             paymentId: payment._id,
             status: payment.status,
-            ...receiptMeta
+            ...receiptMeta,
           },
           receiptRest
         );
@@ -125,21 +125,21 @@ class OrderDocumentDirector extends DocumentDirector {
     }
     if (
       !this.isDocumentExists({
-        type: OrderDocumentTypes.ORDER_CONFIRMATION
+        type: OrderDocumentTypes.ORDER_CONFIRMATION,
       })
     ) {
       await this.buildOrderConfirmation({
         date,
         status,
         ancestors: this.filteredDocuments(),
-        ...overrideValues
+        ...overrideValues,
       });
     }
 
     if (
       !this.isDocumentExists({
         type: OrderDocumentTypes.DELIVERY_NOTE,
-        status: delivery.status
+        status: delivery.status,
       })
     ) {
       const deliveryProvider = delivery.provider();
@@ -148,16 +148,16 @@ class OrderDocumentDirector extends DocumentDirector {
           date,
           delivery,
           ancestors: this.filteredDocuments({
-            type: OrderDocumentTypes.DELIVERY_NOTE
+            type: OrderDocumentTypes.DELIVERY_NOTE,
           }),
-          ...overrideValues
+          ...overrideValues,
         });
       }
     }
     if (
       !this.isDocumentExists({
         type: OrderDocumentTypes.INVOICE,
-        status: payment.status
+        status: payment.status,
       })
     ) {
       const paymentProvider = payment.provider();
@@ -166,9 +166,9 @@ class OrderDocumentDirector extends DocumentDirector {
           date,
           payment,
           ancestors: this.filteredDocuments({
-            type: OrderDocumentTypes.INVOICE
+            type: OrderDocumentTypes.INVOICE,
           }),
-          ...overrideValues
+          ...overrideValues,
         });
       }
     }
@@ -187,7 +187,7 @@ OrderDocuments.updatePaymentDocuments = ({ paymentId, ...rest }) => {
   const order = Orders.findOne({ _id: payment.orderId });
   const director = new OrderDocumentDirector({ order, payment });
   log(`Payment ${paymentId} -> Update Payment Documents`, {
-    orderId: payment.orderId
+    orderId: payment.orderId,
   });
   Promise.await(director.updateDocuments({ ...rest }));
 };
@@ -197,7 +197,7 @@ OrderDocuments.updateDeliveryDocuments = ({ deliveryId, ...rest }) => {
   const order = Orders.findOne({ _id: delivery.orderId });
   const director = new OrderDocumentDirector({ order, delivery });
   log(`Delivery ${deliveryId} -> Update Delivery Documents`, {
-    orderId: delivery.orderId
+    orderId: delivery.orderId,
   });
   Promise.await(director.updateDocuments({ ...rest }));
 };

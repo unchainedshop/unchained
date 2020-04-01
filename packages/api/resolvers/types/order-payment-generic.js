@@ -9,7 +9,7 @@ export default {
       return obj.provider().run(
         'sign',
         {
-          orderPayment: obj
+          orderPayment: obj,
         },
         parameters
       );
@@ -23,5 +23,5 @@ export default {
   discounts(obj) {
     // IMPORTANT: Do not send any parameter to obj.discounts!
     return obj.discounts();
-  }
+  },
 };

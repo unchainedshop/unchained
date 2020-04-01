@@ -1,7 +1,7 @@
 import { log } from 'meteor/unchained:core-logger';
 import { WorkerDirector } from 'meteor/unchained:core-worker';
 
-export default function(
+export default function (
   root,
   { type, input, scheduled, original, retries },
   { userId }
@@ -13,7 +13,7 @@ export default function(
     input,
     scheduled,
     original,
-    retries
+    retries,
   });
   return work;
 }

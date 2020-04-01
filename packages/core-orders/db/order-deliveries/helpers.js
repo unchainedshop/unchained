@@ -3,7 +3,7 @@ import { log } from 'meteor/unchained:core-logger';
 import { DeliveryProviders } from 'meteor/unchained:core-delivery';
 import {
   DeliveryPricingDirector,
-  DeliveryPricingSheet
+  DeliveryPricingSheet,
 } from 'meteor/unchained:core-pricing';
 import { objectInvert } from 'meteor/unchained:utils';
 import { OrderDeliveries } from './collections';
@@ -15,7 +15,7 @@ import { OrderDiscounts } from '../order-discounts/collections';
 OrderDeliveries.helpers({
   order() {
     return Orders.findOne({
-      _id: this.orderId
+      _id: this.orderId,
     });
   },
   provider() {
@@ -40,13 +40,13 @@ OrderDeliveries.helpers({
     return OrderDeliveries.updateDelivery({
       deliveryId: this._id,
       orderId: this.orderId,
-      context
+      context,
     });
   },
   pricing() {
     const pricing = new DeliveryPricingSheet({
       calculation: this.calculation,
-      currency: this.order().currency
+      currency: this.order().currency,
     });
     return pricing;
   },
@@ -67,9 +67,9 @@ OrderDeliveries.helpers({
       transactionContext: {
         ...(deliveryContext || {}),
         ...this.context,
-        address
+        address,
       },
-      order
+      order,
     });
     if (arbitraryResponseData) {
       this.setStatus(
@@ -86,17 +86,17 @@ OrderDeliveries.helpers({
     return OrderDeliveries.updateStatus({
       deliveryId: this._id,
       info,
-      status
+      status,
     });
   },
   discounts(orderDiscountId) {
     return this.pricing()
       .discountPrices(orderDiscountId)
-      .map(discount => ({
+      .map((discount) => ({
         delivery: this,
-        ...discount
+        ...discount,
       }));
-  }
+  },
 });
 
 OrderDeliveries.createOrderDelivery = ({
@@ -110,7 +110,7 @@ OrderDeliveries.createOrderDelivery = ({
     created: new Date(),
     status: OrderDeliveryStatus.OPEN,
     orderId,
-    deliveryProviderId
+    deliveryProviderId,
   });
   const orderDelivery = OrderDeliveries.findOne({ _id: orderDeliveryId });
   return orderDelivery.init();
@@ -124,7 +124,7 @@ OrderDeliveries.updateCalculation = ({ orderId, deliveryId }) => {
   return OrderDeliveries.update(
     { _id: deliveryId },
     {
-      $set: { updated: new Date(), calculation }
+      $set: { updated: new Date(), calculation },
     }
   );
 };
@@ -134,7 +134,7 @@ OrderDeliveries.updateDelivery = ({ deliveryId, orderId, context }) => {
   OrderDeliveries.update(
     { _id: deliveryId },
     {
-      $set: { context }
+      $set: { context },
     }
   );
   OrderDiscounts.updateDiscounts({ orderId });
@@ -151,9 +151,9 @@ OrderDeliveries.updateStatus = ({ deliveryId, status, info = '' }) => {
       log: {
         date,
         status,
-        info
-      }
-    }
+        info,
+      },
+    },
   };
   if (status === OrderDeliveryStatus.DELIVERED) {
     modifier.$set.delivered = date;
@@ -161,7 +161,7 @@ OrderDeliveries.updateStatus = ({ deliveryId, status, info = '' }) => {
   OrderDocuments.updateDeliveryDocuments({
     deliveryId,
     date,
-    ...modifier.$set
+    ...modifier.$set,
   });
   OrderDeliveries.update({ _id: deliveryId }, modifier);
   return OrderDeliveries.findOne({ _id: deliveryId });

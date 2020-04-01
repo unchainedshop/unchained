@@ -24,7 +24,7 @@ Products.createProduct = (
     type: ProductTypes[type],
     status: ProductStatus.DRAFT,
     sequence: Products.getNewSequence(),
-    ...rest
+    ...rest,
   };
   const productId = Products.insert(product);
   const productObject = Products.findOne({ _id: productId });
@@ -39,8 +39,8 @@ Products.updateProduct = ({ productId, type, ...product }) => {
   const modifier = {
     $set: {
       ...product,
-      updated: new Date()
-    }
+      updated: new Date(),
+    },
   };
   if (type) {
     modifier.$set.type = ProductTypes[type];
@@ -49,7 +49,7 @@ Products.updateProduct = ({ productId, type, ...product }) => {
   return Products.findOne({ _id: productId });
 };
 
-Products.getNewSequence = oldSequence => {
+Products.getNewSequence = (oldSequence) => {
   const sequence = oldSequence + 1 || Products.find({}).count() * 10;
   if (Products.find({ sequence }).count() > 0) {
     return Products.getNewSequence(sequence);
@@ -58,11 +58,11 @@ Products.getNewSequence = oldSequence => {
 };
 
 ProductTexts.makeSlug = ({ slug, title, productId }, options) => {
-  const checkSlugIsUnique = newPotentialSlug => {
+  const checkSlugIsUnique = (newPotentialSlug) => {
     return (
       ProductTexts.find({
         productId: { $ne: productId },
-        slug: newPotentialSlug
+        slug: newPotentialSlug,
       }).count() === 0
     );
   };
@@ -71,7 +71,7 @@ ProductTexts.makeSlug = ({ slug, title, productId }, options) => {
     options
   )({
     existingSlug: slug,
-    title: title || productId
+    title: title || productId,
   });
 };
 
@@ -85,8 +85,8 @@ Products.helpers({
             $set: {
               status: ProductStatus.ACTIVE,
               updated: new Date(),
-              published: new Date()
-            }
+              published: new Date(),
+            },
           }
         );
         return true;
@@ -103,8 +103,8 @@ Products.helpers({
             $set: {
               status: ProductStatus.DRAFT,
               updated: new Date(),
-              published: null
-            }
+              published: null,
+            },
           }
         );
         return true;
@@ -116,12 +116,12 @@ Products.helpers({
     const slug = ProductTexts.makeSlug({
       slug: forcedSlug,
       title,
-      productId: this._id
+      productId: this._id,
     });
     ProductTexts.upsert(
       {
         productId: this._id,
-        locale
+        locale,
       },
       {
         $set: {
@@ -129,37 +129,37 @@ Products.helpers({
           title,
           locale,
           slug,
-          ...fields
-        }
+          ...fields,
+        },
       },
       { bypassCollection2: true }
     );
 
     Products.update(
       {
-        _id: this._id
+        _id: this._id,
       },
       {
         $set: {
-          updated: new Date()
+          updated: new Date(),
         },
         $addToSet: {
-          slugs: slug
-        }
+          slugs: slug,
+        },
       }
     );
     Products.update(
       {
         _id: { $ne: this._id },
-        slugs: slug
+        slugs: slug,
       },
       {
         $set: {
-          updated: new Date()
+          updated: new Date(),
         },
         $pullAll: {
-          slugs: slug
-        }
+          slugs: slug,
+        },
       },
       { multi: true }
     );
@@ -173,7 +173,7 @@ Products.helpers({
       sortKey,
       productId: this._id,
       created: new Date(),
-      meta
+      meta,
     });
     const productMediaObject = ProductMedia.findOne({ _id: productMediaId });
     return productMediaObject;
@@ -182,13 +182,13 @@ Products.helpers({
     const fileLoader = rawFile
       ? Media.insertWithRemoteFile({
           file: rawFile,
-          userId
+          userId,
         })
       : Media.insertWithRemoteURL({
           url: href,
           fileName: name,
           userId,
-          ...options
+          ...options,
         });
     const file = Promise.await(fileLoader);
     return this.addMediaLink({ mediaId: file._id, tags, meta });
@@ -208,7 +208,7 @@ Products.helpers({
     return ProductMedia.find(selector, {
       skip: offset,
       limit,
-      sort: { sortKey: 1 }
+      sort: { sortKey: 1 },
     }).fetch();
   },
   variations() {
@@ -218,9 +218,9 @@ Products.helpers({
     return ProductVariations.findOne({ productId: this._id, key });
   },
   proxyAssignments() {
-    return ((this.proxy && this.proxy.assignments) || []).map(assignment => ({
+    return ((this.proxy && this.proxy.assignments) || []).map((assignment) => ({
       assignment,
-      product: this
+      product: this,
     }));
   },
   proxyProducts(vectors, { includeInactive = false } = {}) {
@@ -228,7 +228,7 @@ Products.helpers({
     let filtered = [...(proxy.assignments || [])];
 
     vectors.forEach(({ key, value }) => {
-      filtered = filtered.filter(assignment => {
+      filtered = filtered.filter((assignment) => {
         if (assignment.vector[key] === value) {
           return true;
         }
@@ -236,19 +236,19 @@ Products.helpers({
       });
     });
     const productIds = filtered.map(
-      filteredAssignment => filteredAssignment.productId
+      (filteredAssignment) => filteredAssignment.productId
     );
     const selector = {
       _id: { $in: productIds },
       status: includeInactive
         ? { $in: [ProductStatus.ACTIVE, ProductStatus.DRAFT] }
-        : ProductStatus.ACTIVE
+        : ProductStatus.ACTIVE,
     };
     return Products.find(selector).fetch();
   },
   userDispatches({ deliveryProviderType, ...options }, requestContext) {
     const deliveryProviders = DeliveryProviders.findProviders({
-      type: deliveryProviderType
+      type: deliveryProviderType,
     });
     return deliveryProviders.reduce(
       (oldResult, deliveryProvider) =>
@@ -256,19 +256,19 @@ Products.helpers({
           oldResult,
           WarehousingProviders.findSupported({
             product: this,
-            deliveryProvider
-          }).map(warehousingProvider => {
+            deliveryProvider,
+          }).map((warehousingProvider) => {
             const context = {
               warehousingProvider,
               deliveryProvider,
               product: this,
               requestContext,
-              ...options
+              ...options,
             };
             const dispatch = warehousingProvider.estimatedDispatch(context);
             return {
               ...context,
-              ...dispatch
+              ...dispatch,
             };
           })
         ),
@@ -278,7 +278,7 @@ Products.helpers({
 
   userStocks({ deliveryProviderType, ...options }, requestContext) {
     const deliveryProviders = DeliveryProviders.findProviders({
-      type: deliveryProviderType
+      type: deliveryProviderType,
     });
     return deliveryProviders.reduce(
       (oldResult, deliveryProvider) =>
@@ -286,19 +286,19 @@ Products.helpers({
           oldResult,
           WarehousingProviders.findSupported({
             product: this,
-            deliveryProvider
-          }).map(warehousingProvider => {
+            deliveryProvider,
+          }).map((warehousingProvider) => {
             const context = {
               warehousingProvider,
               deliveryProvider,
               product: this,
               requestContext,
-              ...options
+              ...options,
             };
             const stock = warehousingProvider.estimatedStock(context);
             return {
               ...context,
-              ...stock
+              ...stock,
             };
           })
         ),
@@ -313,7 +313,7 @@ Products.helpers({
 
   userPrice({ quantity = 1, country, user, useNetPrice }, requestContext) {
     const currency = Countries.resolveDefaultCurrencyCode({
-      isoCode: country
+      isoCode: country,
     });
     const pricingDirector = new ProductPricingDirector({
       product: this,
@@ -321,7 +321,7 @@ Products.helpers({
       country,
       currency,
       quantity,
-      requestContext
+      requestContext,
     });
     const calculated = pricingDirector.calculate();
     if (!calculated) return null;
@@ -338,7 +338,7 @@ Products.helpers({
             country,
             quantity,
             useNetPrice,
-            user ? user._id : 'ANONYMOUS'
+            user ? user._id : 'ANONYMOUS',
           ].join('')
         )
         .digest('hex'),
@@ -346,12 +346,12 @@ Products.helpers({
       currencyCode: userPrice.currency,
       countryCode: country,
       isTaxable: pricing.taxSum() > 0,
-      isNetPrice: useNetPrice
+      isNetPrice: useNetPrice,
     };
   },
   price({ country, quantity = 1 }) {
     const currency = Countries.resolveDefaultCurrencyCode({
-      isoCode: country
+      isoCode: country,
     });
     const pricing = ((this.commerce && this.commerce.pricing) || []).sort(
       (
@@ -377,7 +377,7 @@ Products.helpers({
         ) {
           return {
             ...oldValue,
-            ...curPrice
+            ...curPrice,
           };
         }
         return oldValue;
@@ -387,7 +387,7 @@ Products.helpers({
         currencyCode: currency,
         countryCode: country,
         isTaxable: false,
-        isNetPrice: false
+        isNetPrice: false,
       }
     );
     if (price.amount !== undefined && price.amount !== null) {
@@ -396,7 +396,7 @@ Products.helpers({
           .createHash('sha256')
           .update([this._id, country, currency].join(''))
           .digest('hex'),
-        ...price
+        ...price,
       };
     }
     return null;
@@ -441,7 +441,7 @@ Products.helpers({
       { productId: this._id },
       { skip: offset, limit }
     );
-  }
+  },
 });
 
 Products.getLocalizedTexts = (productId, locale) =>

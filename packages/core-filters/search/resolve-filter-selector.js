@@ -20,7 +20,7 @@ const defaultSelector = ({ filterIds, filterQuery = {}, includeInactive }) => {
   return selector;
 };
 
-export default async query => {
+export default async (query) => {
   const selector = defaultSelector(query);
   const director = new FilterDirector({ query });
   return director.buildFilterSelector(selector);

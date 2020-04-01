@@ -23,21 +23,21 @@ Factory.define('simpleProduct', Products, {
         countryCode: 'CH',
         amount: faker.finance.amount(50, 3000, 0),
         isTaxable: faker.random.boolean(),
-        isNetPrice: faker.random.boolean()
-      }
-    ]
+        isNetPrice: faker.random.boolean(),
+      },
+    ],
   }),
   warehousing: () => ({
     sku: faker.hacker.abbreviation(),
-    baseUnit: 'ST'
+    baseUnit: 'ST',
   }),
   supply: () => ({
     weightInGram: faker.random.number(),
     heightInMillimeters: faker.random.number(),
     lengthInMillimeters: faker.random.number(),
-    widthInMillimeters: faker.random.number()
+    widthInMillimeters: faker.random.number(),
   }),
-  ...fakeTimestampFields
+  ...fakeTimestampFields,
 });
 
 Factory.define('configurableProduct', Products, {
@@ -51,7 +51,7 @@ Factory.define('configurableProduct', Products, {
     faker.random.boolean()
       ? [faker.random.arrayElement(['business', 'private', 'specials'])]
       : [],
-  ...fakeTimestampFields
+  ...fakeTimestampFields,
 });
 
 Factory.define('productText', ProductTexts, {
@@ -67,5 +67,5 @@ Factory.define('productText', ProductTexts, {
     faker.random.boolean()
       ? [faker.random.arrayElement(['Neu', 'Knapp', 'Verstaubt'])]
       : [],
-  ...fakeTimestampFields
+  ...fakeTimestampFields,
 });

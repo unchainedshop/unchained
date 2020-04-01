@@ -253,5 +253,5 @@ export default [
       """
       workQueue(status: [WorkStatus] = [NEW]): [Work]
     }
-  `
+  `,
 ];

@@ -54,5 +54,5 @@ export default [
       isSelected: Boolean
       options: [LoadedFilterOption!]
     }
-  `
+  `,
 ];

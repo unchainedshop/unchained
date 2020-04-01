@@ -11,7 +11,7 @@ Factory.define('worker_tasks', WorkQueue, {
   priority: () => faker.random.number({ min: 0, max: 10 }),
   type: () => faker.random.arrayElement(['email']),
   input: () => ({
-    data: faker.random.words
+    data: faker.random.words,
   }),
-  ...fakeTimestampFields
+  ...fakeTimestampFields,
 });

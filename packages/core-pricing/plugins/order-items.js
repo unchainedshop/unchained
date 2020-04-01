@@ -1,6 +1,6 @@
 import {
   OrderPricingDirector,
-  OrderPricingAdapter
+  OrderPricingAdapter,
 } from 'meteor/unchained:core-pricing';
 
 class OrderItems extends OrderPricingAdapter {
@@ -25,12 +25,12 @@ class OrderItems extends OrderPricingAdapter {
         const items = pricing.gross();
         return {
           taxes: current.taxes + tax,
-          items: current.items + items
+          items: current.items + items,
         };
       },
       {
         taxes: 0,
-        items: 0
+        items: 0,
       }
     );
     this.result.addItems({ amount: totalAndTaxesOfAllItems.items });

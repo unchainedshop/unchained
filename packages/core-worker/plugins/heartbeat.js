@@ -14,12 +14,12 @@ class Heartbeat extends WorkerPlugin {
     if (input && input.fails) {
       return {
         success: false,
-        result: input
+        result: input,
       };
     }
     return {
       success: true,
-      result: input
+      result: input,
     };
   }
 }

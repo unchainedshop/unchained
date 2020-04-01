@@ -18,7 +18,7 @@ Countries.helpers({
   },
   flagEmoji() {
     return countryFlags.countryCode(this.isoCode).emoji || '❌';
-  }
+  },
 });
 
 Countries.resolveDefaultCurrencyCode = ({ isoCode }) => {

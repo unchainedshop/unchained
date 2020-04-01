@@ -3,7 +3,7 @@ import callMethod from '../../../callMethod';
 import hashPassword from '../../../hashPassword';
 import getUserLoginMethod from './getUserLoginMethod';
 
-export default async function(
+export default async function (
   root,
   { username, email, password: hashedPassword, plainPassword },
   context
@@ -16,7 +16,7 @@ export default async function(
 
   const methodArguments = {
     user,
-    password
+    password,
   };
   try {
     return callMethod(context, 'login', methodArguments);

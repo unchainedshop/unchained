@@ -1,7 +1,7 @@
 import {
   ProductPricingDirector,
   ProductPricingAdapter,
-  ProductPricingSheetRowCategories
+  ProductPricingSheetRowCategories,
 } from 'meteor/unchained:core-pricing';
 
 const applyRate = ({ rate, fixedRate }, amount) =>
@@ -27,21 +27,21 @@ class ProductDiscount extends ProductPricingAdapter {
       amount: amount * -1,
       isTaxable,
       discountId,
-      meta: { adapter: this.constructor.key }
+      meta: { adapter: this.constructor.key },
     });
   }
 
   async calculate() {
     const taxableTotal = this.calculation.sum({
       category: ProductPricingSheetRowCategories.Item,
-      isTaxable: true
+      isTaxable: true,
     });
     const nonTaxableTotal = this.calculation.sum({
       category: ProductPricingSheetRowCategories.Item,
-      isTaxable: false
+      isTaxable: false,
     });
 
-    this.discounts.forEach(discount => {
+    this.discounts.forEach((discount) => {
       if (taxableTotal !== 0) {
         this.addDiscount(discount, taxableTotal, true);
       }

@@ -15,7 +15,7 @@ export default class PricingSheet {
     return Object.keys(options || {}).reduce(
       (oldCalculation, optionKey) =>
         oldCalculation.filter(
-          row =>
+          (row) =>
             options[optionKey] === undefined ||
             row[optionKey] === options[optionKey]
         ),
@@ -38,7 +38,7 @@ export default class PricingSheet {
   total(category) {
     return {
       amount: this.sum({ category }),
-      currency: this.currency
+      currency: this.currency,
     };
   }
 

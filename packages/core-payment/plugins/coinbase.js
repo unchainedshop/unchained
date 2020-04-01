@@ -3,7 +3,7 @@ import coinbase from 'coinbase-commerce-node';
 import {
   PaymentDirector,
   PaymentAdapter,
-  PaymentError
+  PaymentError,
 } from 'meteor/unchained:core-payment';
 
 import { OrderPricingSheet } from 'meteor/unchained:core-pricing';
@@ -20,8 +20,8 @@ class Coinbase extends PaymentAdapter {
   static initialConfiguration = [
     {
       key: 'description',
-      value: 'Cryptocurrencies (Coinbase)'
-    }
+      value: 'Cryptocurrencies (Coinbase)',
+    },
   ];
 
   static typeSupported(type) {
@@ -61,7 +61,7 @@ class Coinbase extends PaymentAdapter {
     try {
       const pricing = new OrderPricingSheet({
         calculation: order.calculation,
-        currency: order.currency
+        currency: order.currency,
       });
 
       const rounded = Math.round(pricing.total().amount / 10 || 0) * 10;
@@ -75,9 +75,9 @@ class Coinbase extends PaymentAdapter {
         pricing_type: 'fixed_price',
         local_price: {
           amount: `${rounded / 100}.00`,
-          currency: order.currency
+          currency: order.currency,
         },
-        requested_info: []
+        requested_info: [],
       };
 
       const checkout = await coinbase.resources.Checkout.create(config);
@@ -98,7 +98,7 @@ class Coinbase extends PaymentAdapter {
       const charge = await coinbase.resources.Charge.retrieve(chargeCode);
 
       const completed = !!charge.timeline.find(
-        statusUpdate => statusUpdate.status === 'COMPLETED'
+        (statusUpdate) => statusUpdate.status === 'COMPLETED'
       );
 
       if (completed) {

@@ -1,6 +1,6 @@
 export const QuotationDocumentTypes = {
   PROPOSAL: 'PROPOSAL',
-  OTHER: 'OTHER'
+  OTHER: 'OTHER',
 };
 
 export default QuotationDocumentTypes;

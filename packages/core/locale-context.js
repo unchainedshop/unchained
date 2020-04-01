@@ -35,7 +35,7 @@ export const resolveBestCountry = (localeCountry, shopCountry, countries) => {
   return localeCountry || baseCountry;
 };
 
-export const buildLocaleContext = req => {
+export const buildLocaleContext = (req) => {
   // return the parsed locale by bcp47 and
   // return the best resolved normalized locale by locale according to system-wide configuration
   // else fallback to base language & base country
@@ -50,7 +50,7 @@ export const buildLocaleContext = req => {
 
   const supportedLocaleStrings = languages.reduce((accumulator, language) => {
     if (language.isBase) baseLanguage = language.isoCode;
-    const added = countries.map(country => {
+    const added = countries.map((country) => {
       if (country.isBase) baseCountry = country.isoCode;
       return `${language.isoCode}-${country.isoCode}`;
     });
@@ -76,6 +76,6 @@ export const buildLocaleContext = req => {
   );
   return {
     localeContext,
-    countryContext
+    countryContext,
   };
 };

@@ -1,6 +1,6 @@
 import {
   WarehousingDirector,
-  WarehousingAdapter
+  WarehousingAdapter,
 } from 'meteor/unchained:core-warehousing';
 import Sheets from 'node-sheets';
 import NodeCache from 'node-cache';
@@ -24,11 +24,11 @@ async function downloadSpreadsheet() {
     const delivery = await gs.tables('delivery!A:ZZZ');
     const inventory = await gs.tables('inventory!A:ZZZ');
     log(`GoogleSheet: Updated cache with TTL: ${googleCache.options.stdTTL}`, {
-      level: 'verbose'
+      level: 'verbose',
     });
     return {
       delivery,
-      inventory
+      inventory,
     };
   } catch (err) {
     log(err, { level: 'error' }); // eslint-disable-line
@@ -66,8 +66,8 @@ class GoogleSheets extends WarehousingAdapter {
   static initialConfiguration = [
     {
       key: 'address',
-      value: null
-    }
+      value: null,
+    },
   ];
 
   static typeSupported(type) {
@@ -125,7 +125,7 @@ class GoogleSheets extends WarehousingAdapter {
     if (!resolvedRow) return null;
     const amount = parseInt(resolvedRow.Stock.value, 10) || 0;
     log(`GoogleSheet: Resolve Inventory for ${sku}: ${amount}`, {
-      level: 'verbose'
+      level: 'verbose',
     });
     return amount;
   }

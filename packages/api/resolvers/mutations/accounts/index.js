@@ -17,5 +17,5 @@ export default {
   forgotPassword,
   resetPassword,
   resendVerificationEmail,
-  changePassword
+  changePassword,
 };

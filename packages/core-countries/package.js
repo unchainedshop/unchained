@@ -3,10 +3,10 @@ Package.describe({
   version: '0.45.0',
   summary: 'Unchained Engine Core: Countries',
   git: 'https://github.com/unchainedshop/unchained',
-  documentation: 'README.md'
+  documentation: 'README.md',
 });
 
-Package.onUse(api => {
+Package.onUse((api) => {
   api.versionsFrom('1.9');
   api.use('ecmascript');
   api.use('mongo');
@@ -20,7 +20,7 @@ Package.onUse(api => {
   api.mainModule('countries.js', 'server');
 });
 
-Package.onTest(api => {
+Package.onTest((api) => {
   api.use('ecmascript');
   api.use('unchained:core-countries');
   api.mainModule('countries-tests.js');

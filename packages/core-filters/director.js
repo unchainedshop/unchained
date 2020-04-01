@@ -1,7 +1,7 @@
 import { log } from 'meteor/unchained:core-logger';
 
 const FilterError = {
-  NOT_IMPLEMENTED: 'NOT_IMPLEMENTED'
+  NOT_IMPLEMENTED: 'NOT_IMPLEMENTED',
 };
 
 class FilterAdapter {
@@ -79,7 +79,7 @@ class FilterDirector {
   }
 
   async reduceAdapters(reducer, initialValue) {
-    const adapters = FilterDirector.sortedAdapters().filter(AdapterClass =>
+    const adapters = FilterDirector.sortedAdapters().filter((AdapterClass) =>
       AdapterClass.isActivatedFor(this.context)
     );
 
@@ -97,7 +97,7 @@ class FilterDirector {
 
   static sortedAdapters() {
     return Array.from(FilterDirector.adapters)
-      .map(entry => entry[1])
+      .map((entry) => entry[1])
       .sort((left, right) => left.orderIndex - right.orderIndex);
   }
 

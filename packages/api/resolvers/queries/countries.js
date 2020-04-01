@@ -1,7 +1,7 @@
 import { log } from 'meteor/unchained:core-logger';
 import { Countries } from 'meteor/unchained:core-countries';
 
-export default function(root, { limit, offset, includeInactive }, { userId }) {
+export default function (root, { limit, offset, includeInactive }, { userId }) {
   log(
     `query countries: ${limit} ${offset} ${
       includeInactive ? 'includeInactive' : ''

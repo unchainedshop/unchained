@@ -11,7 +11,7 @@ ProductMedia.attachSchema(
       tags: { type: Array, index: true },
       'tags.$': String,
       meta: { type: Object, blackbox: true },
-      ...Schemas.timestampFields
+      ...Schemas.timestampFields,
     },
     { requiredByDefault: false }
   )
@@ -23,12 +23,12 @@ ProductMediaTexts.attachSchema(
       productMediaId: {
         type: String,
         required: true,
-        index: true
+        index: true,
       },
       locale: { type: String, index: true },
       title: String,
       subtitle: String,
-      ...Schemas.timestampFields
+      ...Schemas.timestampFields,
     },
     { requiredByDefault: false }
   )

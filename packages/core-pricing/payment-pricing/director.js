@@ -49,20 +49,20 @@ class PaymentPricingDirector {
       order,
       provider,
       user,
-      ...this.item.context
+      ...this.item.context,
     };
   }
 
   calculate() {
     this.calculation = PaymentPricingDirector.sortedAdapters()
-      .filter(AdapterClass =>
+      .filter((AdapterClass) =>
         AdapterClass.isActivatedFor(this.context.provider)
       )
       .reduce((calculation, AdapterClass) => {
         try {
           const concreteAdapter = new AdapterClass({
             context: this.context,
-            calculation
+            calculation,
           });
           const nextCalculationResult = Promise.await(
             concreteAdapter.calculate()
@@ -79,7 +79,7 @@ class PaymentPricingDirector {
   resultSheet() {
     return new PaymentPricingSheet({
       calculation: this.calculation,
-      currency: this.context.order.currency
+      currency: this.context.order.currency,
     });
   }
 
@@ -87,7 +87,7 @@ class PaymentPricingDirector {
 
   static sortedAdapters() {
     return Array.from(PaymentPricingDirector.adapters)
-      .map(entry => entry[1])
+      .map((entry) => entry[1])
       .sort((left, right) => left.orderIndex - right.orderIndex);
   }
 

@@ -1,7 +1,7 @@
 import { log } from 'meteor/unchained:core-logger';
 import { Filters } from 'meteor/unchained:core-filters';
 
-export default function(
+export default function (
   root,
   { option: inputData, filterId },
   { localeContext, userId }
@@ -12,17 +12,17 @@ export default function(
     { _id: filterId },
     {
       $set: {
-        updated: new Date()
+        updated: new Date(),
       },
       $addToSet: {
-        options: value
-      }
+        options: value,
+      },
     }
   );
   const filter = Filters.findOne({ _id: filterId });
   filter.upsertLocalizedText(localeContext.language, {
     filterOptionValue: value,
-    title
+    title,
   });
   return filter;
 }

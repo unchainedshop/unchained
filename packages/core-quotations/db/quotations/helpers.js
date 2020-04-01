@@ -9,7 +9,7 @@ import { Currencies } from 'meteor/unchained:core-currencies';
 import { Logs, log } from 'meteor/unchained:core-logger';
 import {
   MessagingDirector,
-  MessagingType
+  MessagingType,
 } from 'meteor/unchained:core-messaging';
 import { Quotations } from './collections';
 import { QuotationDocuments } from '../quotation-documents/collections';
@@ -23,10 +23,10 @@ Logs.helpers({
     return (
       this.meta &&
       Quotations.findOne({
-        _id: this.meta.quotationId
+        _id: this.meta.quotationId,
       })
     );
-  }
+  },
 });
 
 Users.helpers({
@@ -35,22 +35,22 @@ Users.helpers({
       { userId: this._id },
       {
         sort: {
-          created: -1
-        }
+          created: -1,
+        },
       }
     ).fetch();
-  }
+  },
 });
 
 Quotations.helpers({
   user() {
     return Users.findOne({
-      _id: this.userId
+      _id: this.userId,
     });
   },
   product() {
     return Products.findOne({
-      _id: this.productId
+      _id: this.productId,
     });
   },
   country() {
@@ -65,7 +65,7 @@ Quotations.helpers({
   updateContext(context) {
     return Quotations.updateContext({
       quotationId: this._id,
-      context
+      context,
     });
   },
   verify({ quotationContext } = {}, options) {
@@ -102,7 +102,7 @@ Quotations.helpers({
     const director = new MessagingDirector({
       locale,
       quotation: this,
-      type: MessagingType.EMAIL
+      type: MessagingType.EMAIL,
     });
     director.sendMessage({
       template: 'shop.unchained.quotations.proposal',
@@ -112,8 +112,8 @@ Quotations.helpers({
         from: EMAIL_FROM,
         to: user.primaryEmail()?.address,
         url: `${UI_ENDPOINT}/quotation?_id=${this._id}&otp=${this.quotationNumber}`,
-        quotation: this
-      }
+        quotation: this,
+      },
     });
     return this;
   },
@@ -169,7 +169,7 @@ Quotations.helpers({
     const proposal = Promise.await(director.quote(quotationContext));
     return Quotations.updateProposal({
       ...proposal,
-      quotationId: this._id
+      quotationId: this._id,
     });
   },
   director() {
@@ -180,7 +180,7 @@ Quotations.helpers({
     return Quotations.updateStatus({
       quotationId: this._id,
       status,
-      info
+      info,
     });
   },
   addDocument(objOrString, meta, options = {}) {
@@ -191,8 +191,8 @@ Quotations.helpers({
           ...options,
           meta: {
             quotationId: this._id,
-            ...meta
-          }
+            ...meta,
+          },
         })
       );
     }
@@ -204,8 +204,8 @@ Quotations.helpers({
         ...options,
         meta: {
           quotationId: this._id,
-          ...meta
-        }
+          ...meta,
+        },
       })
     );
   },
@@ -216,7 +216,7 @@ Quotations.helpers({
       selector['meta.type'] = type;
     }
     return QuotationDocuments.find(selector, {
-      sort: { 'meta.date': -1 }
+      sort: { 'meta.date': -1 },
     }).each();
   },
   document(options) {
@@ -233,8 +233,8 @@ Quotations.helpers({
       skip: offset,
       limit,
       sort: {
-        created: -1
-      }
+        created: -1,
+      },
     }).fetch();
     return logs;
   },
@@ -246,7 +246,7 @@ Quotations.helpers({
     const expiryDate = new Date(this.expires);
     const isExpired = now.getTime() > expiryDate.getTime();
     return isExpired;
-  }
+  },
 });
 
 Quotations.requestQuotation = (
@@ -261,9 +261,9 @@ Quotations.requestQuotation = (
     productId,
     configuration,
     currencyCode: Countries.resolveDefaultCurrencyCode({
-      isoCode: countryCode
+      isoCode: countryCode,
     }),
-    countryCode
+    countryCode,
   });
   const quotation = Quotations.findOne({ _id: quotationId });
   return quotation.process().sendStatusToCustomer(options);
@@ -276,8 +276,8 @@ Quotations.updateContext = ({ context, quotationId }) => {
     {
       $set: {
         context,
-        updated: new Date()
-      }
+        updated: new Date(),
+      },
     }
   );
   return Quotations.findOne({ _id: quotationId });
@@ -292,8 +292,8 @@ Quotations.updateProposal = ({ price, expires, meta, quotationId }) => {
         price,
         expires,
         meta,
-        updated: new Date()
-      }
+        updated: new Date(),
+      },
     }
   );
   return Quotations.findOne({ _id: quotationId });
@@ -330,9 +330,9 @@ Quotations.updateStatus = ({ status, quotationId, info = '' }) => {
       log: {
         date,
         status,
-        info
-      }
-    }
+        info,
+      },
+    },
   };
   switch (status) {
     // explicitly use fallthrough here!
@@ -364,7 +364,7 @@ Quotations.updateStatus = ({ status, quotationId, info = '' }) => {
       QuotationDocuments.updateDocuments({
         quotationId,
         date,
-        ...modifier.$set
+        ...modifier.$set,
       });
     } catch (e) {
       log(e, { level: 'error' });

@@ -9,5 +9,5 @@ export default () => ({
   city: faker.address.city(),
   addressLine: faker.address.streetAddress(),
   addressLine2: faker.random.boolean() && faker.address.secondaryAddress(),
-  regionCode: faker.random.boolean() && faker.address.state()
+  regionCode: faker.random.boolean() && faker.address.state(),
 });

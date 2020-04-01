@@ -3,7 +3,7 @@ import { log } from 'meteor/unchained:core-logger';
 import {
   MessagingDirector,
   MessagingType,
-  MessagingAdapter
+  MessagingAdapter,
 } from 'meteor/unchained:core-messaging';
 import { WorkerDirector } from 'meteor/unchained:core-worker';
 
@@ -33,8 +33,8 @@ class ExternalRestPost extends MessagingAdapter {
       type: 'HTTP_REQUEST',
       input: {
         url: EMAIL_API_ENDPOINT,
-        data
-      }
+        data,
+      },
     });
   }
 }

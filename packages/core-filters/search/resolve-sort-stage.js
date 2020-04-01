@@ -6,7 +6,7 @@ const DIRECTION_ASCENDING = 'ASC';
 
 const { AMAZON_DOCUMENTDB_COMPAT_MODE } = process.env;
 
-const normalizeDirection = textualInput => {
+const normalizeDirection = (textualInput) => {
   if (textualInput === DIRECTION_ASCENDING) {
     return 1;
   }
@@ -22,7 +22,7 @@ const defaultStage = ({ orderBy }) => {
       return null;
     }
     return {
-      index: 1
+      index: 1,
     };
   }
   const orderBySlices = orderBy.split('_');
@@ -31,11 +31,11 @@ const defaultStage = ({ orderBy }) => {
   if (direction === null) orderBySlices.push(maybeDirection);
   const keyPath = orderBySlices.join('.');
   return {
-    [keyPath]: direction === null ? 1 : direction
+    [keyPath]: direction === null ? 1 : direction,
   };
 };
 
-export default async query => {
+export default async (query) => {
   const stage = defaultStage(query);
   const director = new FilterDirector({ query });
   return director.buildSortStage(stage);

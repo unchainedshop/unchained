@@ -11,5 +11,5 @@ export default [
       user: User
       order: Order
     }
-  `
+  `,
 ];

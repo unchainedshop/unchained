@@ -55,5 +55,5 @@ export default [
       total: Money!
       discounted: [OrderDiscountable!]
     }
-  `
+  `,
 ];

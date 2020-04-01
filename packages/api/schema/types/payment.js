@@ -40,5 +40,5 @@ export default [
       configuration: JSON
       configurationError: PaymentProviderError
     }
-  `
+  `,
 ];

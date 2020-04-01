@@ -7,7 +7,7 @@ import admin from './admin';
 const roles = {
   ADMIN: Roles.adminRole,
   LOGGEDIN: Roles.loggedInRole,
-  ALL: Roles.allRole
+  ALL: Roles.allRole,
 };
 
 const allRoles = roles;
@@ -82,7 +82,7 @@ export const actions = [
   'bookmarkProduct',
   'manageBookmarks',
   'search',
-  'manageWorker'
+  'manageWorker',
 ].reduce((oldValue, actionValue) => {
   const newValue = oldValue;
   newValue[actionValue] = actionValue;

@@ -3,7 +3,7 @@ import { NoPermissionError, PermissionSystemError } from './errors';
 
 const defaultOptions = {
   showKey: true,
-  mapArgs: (...args) => args
+  mapArgs: (...args) => args,
 };
 
 const emptyObject = {};
@@ -19,7 +19,7 @@ const ensureIsFunction = (fn, action, options, key) => {
   if (typeof fn !== 'function') {
     throw new PermissionSystemError({
       action,
-      key: options.showKey ? key : ''
+      key: options.showKey ? key : '',
     });
   }
 };
@@ -38,8 +38,9 @@ const checkAction = (
     userId,
     action,
     key,
-    message: `The user "${userId ||
-      ''}" has no permission to perform the action "${action}"${keyText}`
+    message: `The user "${
+      userId || ''
+    }" has no permission to perform the action "${action}"${keyText}`,
   });
 };
 
@@ -50,7 +51,7 @@ const wrapFunction = (fn, name, action, userOptions) => {
   return (root, params, context, ...other) => {
     const args = options.mapArgs(root, params, context, ...other);
     checkAction(action, context.userId, args, {
-      key: options.showKey ? key : ''
+      key: options.showKey ? key : '',
     });
     return fn(root, params, context, ...other);
   };
@@ -81,10 +82,10 @@ const resolverDecorator = function resolverDecorator(action, userOptions) {
         Object.defineProperty(this, key, {
           value,
           configurable: true,
-          writable: true
+          writable: true,
         });
         return value;
-      }
+      },
     };
   };
 };
@@ -94,10 +95,4 @@ export default resolverDecorator;
 // @resolverDecorator(action)
 // resolverToBeChecked: () => ...
 
-export {
-  resolverDecorator,
-  checkResolver,
-  checkTypeResolver,
-  checkPermission,
-  checkAction
-};
+export { resolverDecorator, checkResolver, checkTypeResolver, checkAction };
