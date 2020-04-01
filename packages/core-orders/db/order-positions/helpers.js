@@ -100,6 +100,55 @@ OrderPositions.helpers({
       undefined
     );
   },
+  updateCalculation() {
+    log(`OrderPosition ${this._id} -> Update Calculation`, {
+      orderId: this.orderId,
+    });
+    const pricing = new ProductPricingDirector({ item: this });
+    const calculation = pricing.calculate();
+    return OrderPositions.update(
+      { _id: this._id },
+      {
+        $set: { calculation },
+      }
+    );
+  },
+  updateScheduling() {
+    // scheduling (store in db for auditing)
+    const order = this.order();
+    const delivery = order.delivery();
+    const product = this.product();
+    const deliveryProvider = delivery && delivery.provider();
+    const { countryCode, userId } = order;
+    const scheduling = WarehousingProviders.findSupported({
+      product,
+      deliveryProvider,
+    }).map((warehousingProvider) => {
+      const context = {
+        warehousingProvider,
+        deliveryProvider,
+        product,
+        item: this,
+        delivery,
+        order,
+        userId,
+        country: countryCode,
+        referenceDate: order.ordered,
+        quantity: this.quantity,
+      };
+      const dispatch = warehousingProvider.estimatedDispatch(context);
+      return {
+        warehousingProviderId: warehousingProvider._id,
+        ...dispatch,
+      };
+    });
+    return OrderPositions.update(
+      { _id: this._id },
+      {
+        $set: { scheduling },
+      }
+    );
+  },
 });
 
 OrderPositions.upsertPosition = ({
@@ -246,60 +295,4 @@ OrderPositions.removePositions = ({ orderId }) => {
   const count = OrderPositions.remove({ orderId });
   Orders.updateCalculation({ orderId });
   return count;
-};
-
-OrderPositions.updateCalculation = ({ positionId }) => {
-  const position = OrderPositions.findOne({ _id: positionId });
-  log(`OrderPosition ${positionId} -> Update Calculation`, {
-    orderId: position.orderId,
-  });
-  const pricing = new ProductPricingDirector({ item: position });
-  const calculation = pricing.calculate();
-  return OrderPositions.update(
-    { _id: positionId },
-    {
-      $set: { calculation },
-    }
-  );
-};
-
-OrderPositions.updateScheduling = ({ positionId, position }) => {
-  const item = position || OrderPositions.findOne({ _id: positionId });
-  log(`OrderPosition ${item._id} -> Update Scheduling`, {
-    orderId: position.orderId,
-  });
-  // scheduling (store in db for auditing)
-  const order = item.order();
-  const delivery = order.delivery();
-  const product = item.product();
-  const deliveryProvider = delivery && delivery.provider();
-  const { countryCode, userId } = order;
-  const scheduling = WarehousingProviders.findSupported({
-    product,
-    deliveryProvider,
-  }).map((warehousingProvider) => {
-    const context = {
-      warehousingProvider,
-      deliveryProvider,
-      product,
-      item,
-      delivery,
-      order,
-      userId,
-      country: countryCode,
-      referenceDate: order.ordered,
-      quantity: item.quantity,
-    };
-    const dispatch = warehousingProvider.estimatedDispatch(context);
-    return {
-      warehousingProviderId: warehousingProvider._id,
-      ...dispatch,
-    };
-  });
-  return OrderPositions.update(
-    { _id: item._id },
-    {
-      $set: { scheduling },
-    }
-  );
 };

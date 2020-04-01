@@ -96,6 +96,19 @@ OrderDeliveries.helpers({
         ...discount,
       }));
   },
+  updateCalculation() {
+    log(`OrderDelivery ${this._id} -> Update Calculation`, {
+      orderId: this.orderId,
+    });
+    const pricing = new DeliveryPricingDirector({ item: this });
+    const calculation = pricing.calculate();
+    return OrderDeliveries.update(
+      { _id: this._id },
+      {
+        $set: { updated: new Date(), calculation },
+      }
+    );
+  },
 });
 
 OrderDeliveries.createOrderDelivery = ({
@@ -113,22 +126,6 @@ OrderDeliveries.createOrderDelivery = ({
   });
   const orderDelivery = OrderDeliveries.findOne({ _id: orderDeliveryId });
   return orderDelivery.init();
-};
-
-OrderDeliveries.updateCalculation = ({ deliveryId }) => {
-  const delivery = OrderDeliveries.findOne({ _id: deliveryId });
-  if (!delivery) return null;
-  log(`OrderDelivery ${deliveryId} -> Update Calculation`, {
-    orderId: delivery.orderId,
-  });
-  const pricing = new DeliveryPricingDirector({ item: delivery });
-  const calculation = pricing.calculate();
-  return OrderDeliveries.update(
-    { _id: deliveryId },
-    {
-      $set: { updated: new Date(), calculation },
-    }
-  );
 };
 
 OrderDeliveries.updateDelivery = ({ deliveryId, orderId, context }) => {

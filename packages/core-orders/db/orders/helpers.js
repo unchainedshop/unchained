@@ -662,13 +662,10 @@ Orders.updateCalculation = ({ orderId }) => {
 
   const order = Orders.findOne({ _id: orderId });
   const items = order.items();
-  items.forEach(({ _id }) =>
-    OrderPositions.updateCalculation({ positionId: _id })
-  );
-  OrderDeliveries.updateCalculation({ deliveryId: order.deliveryId });
-  OrderPayments.updateCalculation({ paymentId: order.paymentId });
-
-  items.forEach((position) => OrderPositions.updateScheduling({ position }));
+  items.forEach((item) => item.updateCalculation());
+  order.delivery()?.updateCalculation(); // eslint-disable-line
+  order.payment()?.updateCalculation(); // eslint-disable-line
+  items.forEach((item) => item.updateScheduling());
   const pricing = new OrderPricingDirector({ item: order });
   const calculation = pricing.calculate();
   return Orders.update(
