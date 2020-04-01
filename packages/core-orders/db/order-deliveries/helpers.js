@@ -116,9 +116,12 @@ OrderDeliveries.createOrderDelivery = ({
   return orderDelivery.init();
 };
 
-OrderDeliveries.updateCalculation = ({ orderId, deliveryId }) => {
+OrderDeliveries.updateCalculation = ({ deliveryId }) => {
   const delivery = OrderDeliveries.findOne({ _id: deliveryId });
-  log(`OrderDelivery ${deliveryId} -> Update Calculation`, { orderId });
+  if (!delivery) return null;
+  log(`OrderDelivery ${deliveryId} -> Update Calculation`, {
+    orderId: delivery.orderId,
+  });
   const pricing = new DeliveryPricingDirector({ item: delivery });
   const calculation = pricing.calculate();
   return OrderDeliveries.update(
@@ -137,7 +140,6 @@ OrderDeliveries.updateDelivery = ({ deliveryId, orderId, context }) => {
       $set: { context },
     }
   );
-  OrderDiscounts.updateDiscounts({ orderId });
   Orders.updateCalculation({ orderId });
   return OrderDeliveries.findOne({ _id: deliveryId });
 };

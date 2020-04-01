@@ -114,9 +114,12 @@ OrderPayments.createOrderPayment = ({
   return orderPayment.init();
 };
 
-OrderPayments.updateCalculation = ({ orderId, paymentId }) => {
+OrderPayments.updateCalculation = ({ paymentId }) => {
   const payment = OrderPayments.findOne({ _id: paymentId });
-  log(`OrderPayment ${paymentId} -> Update Calculation`, { orderId });
+  if (!payment) return null;
+  log(`OrderPayment ${paymentId} -> Update Calculation`, {
+    orderId: payment.orderId,
+  });
   const pricing = new PaymentPricingDirector({ item: payment });
   const calculation = pricing.calculate();
   return OrderPayments.update(
@@ -133,7 +136,6 @@ OrderPayments.updatePayment = ({ orderId, paymentId, context }) => {
       $set: { context, updated: new Date() },
     }
   );
-  OrderDiscounts.updateDiscounts({ orderId });
   Orders.updateCalculation({ orderId });
   return OrderPayments.findOne({ _id: paymentId });
 };

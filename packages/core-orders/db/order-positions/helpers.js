@@ -161,7 +161,6 @@ OrderPositions.createPosition = ({
     configuration,
     created: new Date(),
   });
-  OrderDiscounts.updateDiscounts({ orderId });
   Orders.updateCalculation({ orderId });
   return OrderPositions.findOne({
     _id: positionId,
@@ -228,7 +227,6 @@ OrderPositions.updatePosition = (
       }
     );
   }
-  OrderDiscounts.updateDiscounts({ orderId });
   Orders.updateCalculation({ orderId });
   return OrderPositions.findOne({
     _id: positionId,
@@ -239,7 +237,6 @@ OrderPositions.removePosition = ({ positionId }) => {
   const position = OrderPositions.findOne({ _id: positionId });
   log(`Remove Position ${positionId}`, { orderId: position.orderId });
   OrderPositions.remove({ _id: positionId });
-  OrderDiscounts.updateDiscounts({ orderId: position.orderId });
   Orders.updateCalculation({ orderId: position.orderId });
   return position;
 };
@@ -247,7 +244,6 @@ OrderPositions.removePosition = ({ positionId }) => {
 OrderPositions.removePositions = ({ orderId }) => {
   log('Remove Positions', { orderId });
   const count = OrderPositions.remove({ orderId });
-  OrderDiscounts.updateDiscounts({ orderId });
   Orders.updateCalculation({ orderId });
   return count;
 };

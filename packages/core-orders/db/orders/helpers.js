@@ -658,19 +658,15 @@ Orders.updateStatus = ({ status, orderId, info = '' }) => {
 };
 
 Orders.updateCalculation = ({ orderId }) => {
+  OrderDiscounts.updateDiscounts({ orderId });
+
   const order = Orders.findOne({ _id: orderId });
   const items = order.items();
-  log('Update Calculation', { orderId });
   items.forEach(({ _id }) =>
-    OrderPositions.updateCalculation({ orderId, positionId: _id })
+    OrderPositions.updateCalculation({ positionId: _id })
   );
-  const delivery = order.delivery();
-  const deliveryId = delivery && delivery._id;
-  if (deliveryId) OrderDeliveries.updateCalculation({ orderId, deliveryId });
-
-  const payment = order.payment();
-  const paymentId = payment && payment._id;
-  if (paymentId) OrderPayments.updateCalculation({ orderId, paymentId });
+  OrderDeliveries.updateCalculation({ deliveryId: order.deliveryId });
+  OrderPayments.updateCalculation({ paymentId: order.paymentId });
 
   items.forEach((position) => OrderPositions.updateScheduling({ position }));
   const pricing = new OrderPricingDirector({ item: order });
