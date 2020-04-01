@@ -9,7 +9,6 @@ import { Products } from 'meteor/unchained:core-products';
 import { Quotations } from 'meteor/unchained:core-quotations';
 import { OrderPositions } from './collections';
 import { Orders } from '../orders/collections';
-import { OrderDiscounts } from '../order-discounts/collections';
 
 OrderPositions.helpers({
   product() {
@@ -106,12 +105,13 @@ OrderPositions.helpers({
     });
     const pricing = new ProductPricingDirector({ item: this });
     const calculation = pricing.calculate();
-    return OrderPositions.update(
+    OrderPositions.update(
       { _id: this._id },
       {
         $set: { calculation },
       }
     );
+    return OrderPositions.findOne({ _id: this._id });
   },
   updateScheduling() {
     // scheduling (store in db for auditing)

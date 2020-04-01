@@ -98,14 +98,22 @@ class OrderPricingSheet extends PricingSheet {
       ({ discountId }) => discountId
     );
 
-    return [...new Set(discountIds)].map((discountId) => ({
-      discountId,
-      amount: this.sum({
-        category: OrderPricingSheetRowCategories.Discounts,
-        discountId,
-      }),
-      currency: this.currency,
-    }));
+    return [...new Set(discountIds)]
+      .map((discountId) => {
+        const amount = this.sum({
+          category: OrderPricingSheetRowCategories.Discount,
+          discountId,
+        });
+        if (!amount) {
+          return null;
+        }
+        return {
+          discountId,
+          amount,
+          currency: this.currency,
+        };
+      })
+      .filter(Boolean);
   }
 
   getDiscountRows(discountId) {

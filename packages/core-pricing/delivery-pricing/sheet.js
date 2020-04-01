@@ -60,14 +60,22 @@ class DeliveryPricingSheet extends PricingSheet {
       ({ discountId }) => discountId
     );
 
-    return [...new Set(discountIds)].map((discountId) => ({
-      discountId,
-      amount: this.sum({
-        category: DeliveryPricingSheetRowCategories.Discount,
-        discountId,
-      }),
-      currency: this.currency,
-    }));
+    return [...new Set(discountIds)]
+      .map((discountId) => {
+        const amount = this.sum({
+          category: DeliveryPricingSheetRowCategories.Discount,
+          discountId,
+        });
+        if (!amount) {
+          return null;
+        }
+        return {
+          discountId,
+          amount,
+          currency: this.currency,
+        };
+      })
+      .filter(Boolean);
   }
 
   getFeeRows() {
