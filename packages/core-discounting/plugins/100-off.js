@@ -27,7 +27,7 @@ class HundredOff extends DiscountAdapter {
   }
 
   async isValidForCodeTriggering({ code }) { // eslint-disable-line
-    return (code === '100OFF')
+    return code === '100OFF';
   }
 
   // returns the appropriate discount context for a calculation adapter

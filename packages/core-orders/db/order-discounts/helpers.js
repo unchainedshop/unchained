@@ -61,7 +61,7 @@ OrderDiscounts.helpers({
     if (!adapter) return null;
     return adapter.discountForPricingAdapterKey({
       pricingAdapterKey,
-      calculation,
+      calculation
     });
   },
   total() {

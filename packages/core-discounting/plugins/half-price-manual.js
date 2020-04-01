@@ -27,7 +27,7 @@ class HalfPriceManual extends DiscountAdapter {
   }
 
   async isValidForCodeTriggering({ code }) { // eslint-disable-line
-    return (code === 'HALFPRICE')
+    return code === 'HALFPRICE';
   }
 
   // returns the appropriate discount context for a calculation adapter

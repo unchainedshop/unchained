@@ -128,7 +128,7 @@ Orders.helpers({
   addDiscount({ code }) {
     return OrderDiscounts.createManualOrderDiscount({
       orderId: this._id,
-      code,
+      code
     });
   },
   supportedDeliveryProviders() {

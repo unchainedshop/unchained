@@ -25,13 +25,13 @@ class SendMail extends DeliveryAdapter {
     return type === 'SHIPPING';
   }
 
+  // eslint-disable-next-line
   isActive() {
-    // eslint-disable-line
     return true;
   }
 
+  // eslint-disable-next-line
   async estimatedDeliveryThroughput(warehousingThroughputTime) {
-    // eslint-disable-line
     return 0;
   }
 
@@ -56,8 +56,8 @@ class SendMail extends DeliveryAdapter {
     }, null);
   }
 
+  // eslint-disable-next-line
   configurationError() {
-    // eslint-disable-line
     return null;
   }
 
