@@ -187,8 +187,6 @@ OrderDiscounts.grabDiscount = ({ code, orderId }) => {
 };
 
 OrderDiscounts.updateDiscounts = ({ orderId }) => {
-  log('Update Discounts', { orderId });
-
   // 1. go through existing order-discounts and check if discount still valid,
   // those who are not valid anymore should get removed
   const order = Orders.findOne({ _id: orderId });

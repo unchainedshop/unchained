@@ -106,7 +106,6 @@ class DiscountDirector {
 
   async findSystemDiscounts(options) {
     if (!this.context.order) return [];
-    log('DiscountDirector -> Find system discounts');
     const discounts = await Promise.all(
       DiscountDirector.sortedAdapters().map(async (AdapterClass) => {
         const adapter = new AdapterClass({ context: this.context });
@@ -116,9 +115,15 @@ class DiscountDirector {
         };
       })
     );
-    return discounts
+    const validDiscounts = discounts
       .filter(({ isValid }) => isValid === true)
       .map(({ key }) => key);
+    if (validDiscounts.length > 0) {
+      log(
+        `DiscountDirector -> Found ${validDiscounts.length} system discounts`
+      );
+    }
+    return validDiscounts;
   }
 
   static adapters = new Map();

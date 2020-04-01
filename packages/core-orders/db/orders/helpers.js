@@ -91,8 +91,8 @@ Orders.helpers({
     const delivery = this.delivery();
 
     const discounted = [
-      ...(payment ? payment.discounts(orderDiscountId) : []),
-      ...(delivery ? delivery.discounts(orderDiscountId) : []),
+      ...(payment?.discounts(orderDiscountId) || []),
+      ...(delivery?.discounts(orderDiscountId) || []),
       ...this.items().flatMap((item) => item.discounts(orderDiscountId)),
       ...this.pricing()
         .discountPrices(orderDiscountId)
@@ -109,8 +109,8 @@ Orders.helpers({
     const delivery = this.delivery();
 
     const prices = [
-      payment && payment.pricing().discountSum(orderDiscountId),
-      delivery && delivery.pricing().discountSum(orderDiscountId),
+      payment?.pricing().discountSum(orderDiscountId),
+      delivery?.pricing().discountSum(orderDiscountId),
       ...this.items().flatMap((item) =>
         item.pricing().discountSum(orderDiscountId)
       ),

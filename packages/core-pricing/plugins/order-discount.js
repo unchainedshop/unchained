@@ -5,14 +5,14 @@ import {
 } from 'meteor/unchained:core-pricing';
 
 const resolveRatioAndTaxDivisorForPricingSheet = (pricing, total) => {
-  const tax = pricing.taxSum();
-  const gross = pricing.gross();
-  if (total === 0) {
+  if (total === 0 || !pricing) {
     return {
       ratio: 1,
       taxDivisor: 1,
     };
   }
+  const tax = pricing.taxSum();
+  const gross = pricing.gross();
   return {
     ratio: gross / total,
     taxDivisor: gross / (gross - tax),
@@ -84,11 +84,11 @@ class OrderItems extends OrderPricingAdapter {
       )
     );
     const deliveryShare = resolveRatioAndTaxDivisorForPricingSheet(
-      this.context.delivery.pricing(),
+      this.context.delivery?.pricing(),
       totalAmountOfPaymentAndDelivery
     );
     const paymentShare = resolveRatioAndTaxDivisorForPricingSheet(
-      this.context.payment.pricing(),
+      this.context.payment?.pricing(),
       totalAmountOfPaymentAndDelivery
     );
 
