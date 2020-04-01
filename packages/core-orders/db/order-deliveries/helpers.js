@@ -10,7 +10,6 @@ import { OrderDeliveries } from './collections';
 import { OrderDeliveryStatus } from './schema';
 import { Orders } from '../orders/collections';
 import { OrderDocuments } from '../order-documents/collections';
-import { OrderDiscounts } from '../order-discounts/collections';
 
 OrderDeliveries.helpers({
   order() {
