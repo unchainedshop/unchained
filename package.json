@@ -36,7 +36,7 @@
     "apollo-link-http": "^1.5.16",
     "apollo-upload-client": "^13.0.0",
     "babel-eslint": "^10.1.0",
-    "babel-jest": "^25.2.4",
+    "babel-jest": "^25.2.6",
     "cross-env": "^7.0.2",
     "eslint": "^6.8.0",
     "eslint-config-airbnb-base": "^14.1.0",
@@ -47,7 +47,7 @@
     "graphql": "^14.6.0",
     "graphql-tag": "^2.10.3",
     "isomorphic-unfetch": "^3.0.0",
-    "jest": "^25.2.4",
+    "jest": "^25.2.6",
     "mongodb": "^3.5.5",
     "npm-run-all": "^4.1.5",
     "prettier": "^2.0.2"

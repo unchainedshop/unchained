@@ -17,11 +17,12 @@ class PaymentPricingSheet extends PricingSheet {
     });
   }
 
-  addDiscount({ amount, isTaxable, discountId, meta }) {
+  addDiscount({ amount, isTaxable, isNetPrice, discountId, meta }) {
     this.calculation.push({
       category: PaymentPricingSheetRowCategories.Discount,
       amount,
       isTaxable,
+      isNetPrice,
       discountId,
       meta,
     });

@@ -7,11 +7,12 @@ const DeliveryPricingSheetRowCategories = {
 };
 
 class DeliveryPricingSheet extends PricingSheet {
-  addDiscount({ amount, isTaxable, discountId, meta }) {
+  addDiscount({ amount, isTaxable, isNetPrice, discountId, meta }) {
     this.calculation.push({
       category: DeliveryPricingSheetRowCategories.Discount,
       amount,
       isTaxable,
+      isNetPrice,
       discountId,
       meta,
     });

@@ -22,12 +22,14 @@ class ProductDiscount extends ProductPricingAdapter {
 
   addDiscount(discount, total, isTaxable) {
     const { configuration, discountId } = discount;
+    const { isNetPrice = false, ...meta } = configuration;
     const amount = applyRate(configuration, total);
     this.result.addDiscount({
       amount: amount * -1,
+      isNetPrice,
       isTaxable,
       discountId,
-      meta: { adapter: this.constructor.key },
+      meta: { adapter: this.constructor.key, ...meta },
     });
   }
 
