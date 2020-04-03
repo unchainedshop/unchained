@@ -19,6 +19,7 @@ export const actions = [
   'viewUserQuotations',
   'viewUserPublicInfos',
   'viewUserPrivateInfos',
+  'viewUserSubscriptions',
   'viewLogs',
   'viewUser',
   'viewUsers',
@@ -83,6 +84,8 @@ export const actions = [
   'manageBookmarks',
   'search',
   'manageWorker',
+  'viewSubscriptions',
+  'viewSubscription',
 ].reduce((oldValue, actionValue) => {
   const newValue = oldValue;
   newValue[actionValue] = actionValue;

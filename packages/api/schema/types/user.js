@@ -64,6 +64,7 @@ export default [
       quotations: [Quotation!]!
       logs(offset: Int = 10, limit: Int = 0): [Log!]!
       bookmarks: [Bookmark!]!
+      subscriptions: [Subscription!]!
     }
   `,
 ];

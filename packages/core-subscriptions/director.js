@@ -22,7 +22,7 @@ class SubscriptionAdapter {
     this.context = context;
   }
 
-  async generateSubscriptionsForOrder() { // eslint-disable-line
+  async generateSubscriptionsForOrder(order) { // eslint-disable-line
     return [];
   }
 
@@ -56,7 +56,7 @@ class SubscriptionDirector {
     });
   }
 
-  async generateSubscriptionsForOrder(context, options) {
+  async generateSubscriptionsForOrder(context) {
     const AdapterTypes = this.findAppropriateAdapters(context);
     if (AdapterTypes.length === 0) {
       throw new Error(
@@ -69,17 +69,17 @@ class SubscriptionDirector {
           ...this.context,
           ...context,
         });
-        return adapter.subscriptionsForPlanItems(options);
+        return adapter.generateSubscriptionsForOrder();
       })
     );
     return subscriptions.flat();
   }
 
-  async isReadyForActivation() {
+  async isReadyForActivation(context) {
     return true;
   }
 
-  async isOverdue() {
+  async isOverdue(context) {
     return false;
   }
 

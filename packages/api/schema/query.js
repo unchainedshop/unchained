@@ -238,6 +238,16 @@ export default [
       quotation(quotationId: ID!): Quotation
 
       """
+      Get all subscriptions
+      """
+      subscriptions(limit: Int = 10, offset: Int = 0): [Subscription!]!
+
+      """
+      Get a specific quotation by ID
+      """
+      subscription(subscriptionId: ID!): Subscription
+
+      """
       Search products
       """
       search(

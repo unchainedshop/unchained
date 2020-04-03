@@ -3,7 +3,6 @@ import 'meteor/dburles:collection-helpers';
 import { Promise } from 'meteor/promise';
 import { objectInvert } from 'meteor/unchained:utils';
 import { Users } from 'meteor/unchained:core-users';
-import { Products } from 'meteor/unchained:core-products';
 import { Countries } from 'meteor/unchained:core-countries';
 import { Currencies } from 'meteor/unchained:core-currencies';
 import { Logs, log } from 'meteor/unchained:core-logger';
@@ -45,11 +44,6 @@ Subscriptions.helpers({
   user() {
     return Users.findOne({
       _id: this.userId,
-    });
-  },
-  product() {
-    return Products.findOne({
-      _id: this.productId,
     });
   },
   country() {
@@ -165,7 +159,7 @@ Subscriptions.helpers({
 });
 
 Subscriptions.createSubscription = (
-  { productId, userId, countryCode, configuration },
+  { userId, countryCode, configuration },
   options
 ) => {
   log('Create Subscription', { userId });
@@ -173,7 +167,6 @@ Subscriptions.createSubscription = (
     created: new Date(),
     status: SubscriptionStatus.INITIAL,
     userId,
-    productId,
     configuration,
     currencyCode: Countries.resolveDefaultCurrencyCode({
       isoCode: countryCode,

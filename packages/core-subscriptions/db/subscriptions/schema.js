@@ -14,8 +14,8 @@ export const SubscriptionStatus = {
 export const Schema = new SimpleSchema(
   {
     userId: { type: String, required: true, index: true },
-    productId: { type: String, required: true, index: true },
     status: { type: String, required: true, index: true },
+    quotationNumber: String,
     expires: Date,
     meta: { type: Object, blackbox: true },
     currencyCode: String,

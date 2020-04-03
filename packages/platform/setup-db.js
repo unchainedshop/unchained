@@ -14,6 +14,7 @@ import configureDocuments from 'meteor/unchained:core-documents';
 import configureOrders from 'meteor/unchained:core-orders';
 import configureAssortments from 'meteor/unchained:core-assortments';
 import configureFilters from 'meteor/unchained:core-filters';
+import configureSubscriptions from 'meteor/unchained:core-subscriptions';
 import createFixtures from './fixtures';
 
 const { FIXTURES } = process.env;
@@ -40,6 +41,7 @@ Meteor.startup(() => {
   configureOrders();
   configureAssortments();
   configureFilters({ skipInvalidationOnStartup: true });
+  configureSubscriptions();
 
   if (FIXTURES && Users.find({ username: 'admin' }).count() === 0) {
     createFixtures();

@@ -39,6 +39,7 @@ export default (role, actions) => {
   role.allow(actions.viewUserQuotations, () => true);
   role.allow(actions.viewUserPublicInfos, () => true);
   role.allow(actions.viewUserPrivateInfos, () => true);
+  role.allow(actions.viewUserSubscriptions, () => true);
   role.allow(actions.reviewProduct, () => true);
   role.allow(actions.updateProductReview, () => true);
   role.allow(actions.manageProductReviews, () => true);
@@ -51,4 +52,6 @@ export default (role, actions) => {
   role.allow(actions.manageBookmarks, () => true);
   role.allow(actions.voteProductReview, () => true);
   role.allow(actions.manageWorker, () => true);
+  role.allow(actions.viewSubscriptions, () => true);
+  role.allow(actions.viewSubscription, () => true);
 };

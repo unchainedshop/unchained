@@ -41,6 +41,8 @@ import quotation from './quotation';
 import quotations from './quotations';
 import search from './search';
 import workQueue from './workQueue';
+import subscription from './subscription';
+import subscriptions from './subscriptions';
 import work from './work';
 
 export default {
@@ -96,5 +98,7 @@ export default {
   quotations: acl(actions.viewQuotations)(quotations),
   search: acl(actions.search)(search),
   workQueue: acl(actions.manageWorker)(workQueue),
+  subscription: acl(actions.viewQuotation)(subscription),
+  subscriptions: acl(actions.viewQuotations)(subscriptions),
   work: acl(actions.manageWorker)(work),
 };

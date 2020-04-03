@@ -44,4 +44,9 @@ export default {
     checkAction(actions.viewUserOrders, userId, [user, params, context]);
     return user.cart({ countryContext, ...params });
   },
+
+  subscriptions: checkTypeResolver(
+    actions.viewUserSubscriptions,
+    'subscriptions'
+  ),
 };
