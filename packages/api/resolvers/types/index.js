@@ -6,6 +6,7 @@ import Money from './money';
 import Media from './media';
 import SimpleProduct from './simple-product';
 import ConfigurableProduct from './configurable-product';
+import PlanProduct from './plan-product';
 import BundleProduct from './bundle-product';
 import ProductBundleItem from './product-bundle-item';
 import ProductMedia from './product-media';
@@ -91,6 +92,7 @@ export default {
   ProductAssortmentPath,
   ProductBundleItem,
   SimpleProduct,
+  PlanProduct,
   ConfigurableProduct,
   BundleProduct,
   Assortment,

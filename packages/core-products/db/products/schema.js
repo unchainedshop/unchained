@@ -6,6 +6,7 @@ export const ProductTypes = {
   SimpleProduct: 'SIMPLE_PRODUCT',
   ConfigurableProduct: 'CONFIGURABLE_PRODUCT',
   BundleProduct: 'BUNDLE_PRODUCT',
+  PlanProduct: 'PLAN_PRODUCT',
 };
 
 export const ProductStatus = {

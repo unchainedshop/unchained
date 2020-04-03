@@ -17,18 +17,6 @@ export default [
       DELETED
     }
 
-    enum ProductVariationType {
-      """
-      Color Picker
-      """
-      COLOR
-
-      """
-      Text Answers
-      """
-      TEXT
-    }
-
     type ProductPrice {
       _id: ID!
       isTaxable: Boolean!
@@ -59,27 +47,6 @@ export default [
       texts(forceLocale: String): ProductMediaTexts
     }
 
-    type ProductVariationTexts {
-      _id: ID!
-      locale: String
-      title: String
-      subtitle: String
-    }
-
-    type ProductVariationOption {
-      _id: ID!
-      texts(forceLocale: String): ProductVariationTexts
-      value: String
-    }
-
-    type ProductVariation {
-      _id: ID!
-      texts(forceLocale: String): ProductVariationTexts
-      type: ProductVariationType
-      key: String
-      options: [ProductVariationOption!]
-    }
-
     type ProductTexts {
       _id: ID!
       locale: String
@@ -108,6 +75,7 @@ export default [
       reviews: [ProductReview!]!
       meta: JSON
       assortmentPaths: [ProductAssortmentPath!]!
+      siblings(assortmentId: ID, limit: Int = 10, offset: Int = 0): [Product!]!
     }
 
     """
@@ -116,32 +84,6 @@ export default [
     type ProductAssortmentPath {
       assortmentProduct: AssortmentProduct!
       links: [AssortmentPathLink!]!
-    }
-
-    """
-    Key Value Combination
-    """
-    type ProductVariationAssignmentVector {
-      _id: ID!
-      variation: ProductVariation
-      option: ProductVariationOption
-    }
-
-    """
-    Key Value Combination to Product Assignment
-    """
-    type ProductVariationAssignment {
-      _id: ID!
-
-      """
-      Query string key=val&key=val ...
-      """
-      vectors: [ProductVariationAssignmentVector!]
-
-      """
-      Assigned Product
-      """
-      product: Product
     }
 
     type ProductReview {
