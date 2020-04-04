@@ -14,17 +14,17 @@ export default [
     }
 
     type ProductPlanConfiguration {
+      usageCalculationType: ProductPlanUsageCalculationType!
       billingInterval: ProductPlanConfigurationInterval!
       billingIntervalCount: Int
-      usageCalculationType: ProductPlanUsageCalculationType
       trialInterval: ProductPlanConfigurationInterval
       trialIntervalCount: Int
     }
 
-    input ProductPlanConfigurationInput {
+    input UpdateProductPlanInput {
+      usageCalculationType: ProductPlanUsageCalculationType!
       billingInterval: ProductPlanConfigurationInterval!
       billingIntervalCount: Int
-      usageCalculationType: ProductPlanUsageCalculationType
       trialInterval: ProductPlanConfigurationInterval
       trialIntervalCount: Int
     }
@@ -54,7 +54,7 @@ export default [
       salesQuantityPerUnit: String
       reviews(limit: Int = 10, offset: Int = 0): [ProductReview!]!
       meta: JSON
-      plan: ProductPlanConfiguration!
+      plan: ProductPlanConfiguration
     }
   `,
 ];

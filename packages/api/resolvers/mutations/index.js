@@ -38,6 +38,7 @@ import reorderProductMedia from './reorderProductMedia';
 import updateProductCommerce from './updateProductCommerce';
 import updateProductWarehousing from './updateProductWarehousing';
 import updateProductSupply from './updateProductSupply';
+import updateProductPlan from './updateProductPlan';
 import addProductAssignment from './addProductAssignment';
 import removeProductAssignment from './removeProductAssignment';
 import createCart from './createCart';
@@ -152,6 +153,7 @@ export default {
     updateProductWarehousing
   ),
   updateProductSupply: acl(actions.manageProducts)(updateProductSupply),
+  updateProductPlan: acl(actions.manageProducts)(updateProductPlan),
   removeProductVariation: acl(actions.manageProducts)(removeProductVariation),
   updateProductVariationTexts: acl(actions.manageProducts)(
     updateProductVariationTexts

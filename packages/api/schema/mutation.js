@@ -340,6 +340,11 @@ export default [
       ): Product
 
       """
+      Modify plan part of a product
+      """
+      updateProductPlan(productId: ID!, plan: UpdateProductPlanInput!): Product
+
+      """
       Modify warehousing part of a product
       """
       updateProductWarehousing(

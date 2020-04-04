@@ -6,6 +6,7 @@ import FormEditProductTexts from '../../components/products/FormEditProductTexts
 import FormEditProductCommerce from '../../components/products/FormEditProductCommerce';
 import FormEditProductSupply from '../../components/products/FormEditProductSupply';
 import FormEditProductWarehousing from '../../components/products/FormEditProductWarehousing';
+import FormEditProductPlan from '../../components/products/FormEditProductPlan';
 import ProductVariationList from '../../components/products/ProductVariationList';
 import ProductVariationAssignmentList from '../../components/products/ProductVariationAssignmentList'; // eslint-disable-line
 import ProductMediaList from '../../components/products/ProductMediaList';
@@ -74,6 +75,12 @@ export default connectApollo(
                 <div>
                   <Header as="h3">Bundle Items</Header>
                   <ProductBundleItemList productId={router.query._id} />
+                </div>
+              )}
+              {router.query.tab === 'ProductPlan' && (
+                <div>
+                  <Header as="h3">Plan Configuration</Header>
+                  <FormEditProductPlan productId={router.query._id} />
                 </div>
               )}
             </Grid.Column>

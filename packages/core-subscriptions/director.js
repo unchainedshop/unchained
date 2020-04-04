@@ -49,7 +49,7 @@ class SubscriptionDirector {
     )?.[0];
     if (!Adapter) {
       throw new Error(
-        'No suitable subscription plugin available for this order'
+        'No suitable subscription plugin available for this plan configuration'
       );
     }
     const adapter = new Adapter({
