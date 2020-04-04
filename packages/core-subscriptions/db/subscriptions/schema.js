@@ -15,8 +15,8 @@ export const Schema = new SimpleSchema(
   {
     userId: { type: String, required: true, index: true },
     status: { type: String, required: true, index: true },
+    productId: { type: String, required: true, index: true },
     subscriptionNumber: String,
-    adapterKey: String,
     expires: Date,
     meta: { type: Object, blackbox: true },
     billingAddress: Address,
@@ -27,7 +27,7 @@ export const Schema = new SimpleSchema(
     'payment.paymentProviderId': String,
     'payment.context': contextFields.context,
     delivery: { type: Object },
-    'delivery.paymentProviderId': String,
+    'delivery.deliveryProviderId': String,
     'delivery.context': contextFields.context,
     ...timestampFields,
     ...contextFields,

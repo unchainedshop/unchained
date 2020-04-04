@@ -3,6 +3,7 @@ import 'meteor/dburles:collection-helpers';
 import { Promise } from 'meteor/promise';
 import { objectInvert } from 'meteor/unchained:utils';
 import { Users } from 'meteor/unchained:core-users';
+import { Products } from 'meteor/unchained:core-products';
 import { Countries } from 'meteor/unchained:core-countries';
 import { Currencies } from 'meteor/unchained:core-currencies';
 import { Logs, log } from 'meteor/unchained:core-logger';
@@ -44,6 +45,11 @@ Subscriptions.helpers({
   user() {
     return Users.findOne({
       _id: this.userId,
+    });
+  },
+  product() {
+    return Products.findOne({
+      _id: this.productId,
     });
   },
   country() {
@@ -160,18 +166,44 @@ Subscriptions.helpers({
   },
 });
 
-Subscriptions.generateFromCheckout = async (context) => {
-  const director = new SubscriptionDirector();
-  const subscriptions = await director.generateSubscriptionsForOrder(context);
-  subscriptions.forEach((subscriptionData) => {
-    Subscriptions.createSubscription(subscriptionData);
-  });
+Subscriptions.generateFromCheckout = async ({ items, order, ...context }) => {
+  const payment = order.payment();
+  const delivery = order.delivery();
+  const template = {
+    orderId: order._id,
+    userId: order.userId,
+    countryCode: order.countryCode,
+    currencyCode: order.currency,
+    billingAddress: order.billingAddress,
+    contact: order.contact,
+    payment: {
+      paymentProviderId: payment.paymentProviderId,
+      context: payment.context,
+    },
+    delivery: {
+      deliveryProviderId: delivery.deliveryProviderId,
+      context: delivery.context,
+    },
+    meta: order.meta,
+  };
+  return Promise.all(
+    items.map(async (item) => {
+      const subscriptionData = await SubscriptionDirector.transformOrderItemToSubscription(
+        item,
+        { ...template, ...context }
+      );
+      const subscription = Subscriptions.createSubscription(subscriptionData);
+      subscription.addOrder(order);
+    })
+  );
 };
 
 Subscriptions.createSubscription = (
   {
+    productId,
+    quantity,
+    configuration,
     userId,
-    adapterKey,
     countryCode,
     currencyCode,
     contact,
@@ -183,9 +215,11 @@ Subscriptions.createSubscription = (
 ) => {
   log('Create Subscription', { userId });
   const subscriptionId = Subscriptions.insert({
+    productId,
+    quantity,
+    configuration,
     created: new Date(),
     status: SubscriptionStatus.INITIAL,
-    adapterKey,
     userId,
     contact,
     billingAddress,

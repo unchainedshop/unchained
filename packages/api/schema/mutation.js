@@ -161,8 +161,7 @@ export default [
       Creates a subscription.
       """
       createSubscription(
-        adapterKey: String
-        plans: [SubscriptionPlanInput!]!
+        plan: SubscriptionPlanInput!
         billingAddress: AddressInput
         contact: ContactInput
         payment: SubscriptionPaymentInput

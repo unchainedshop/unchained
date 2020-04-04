@@ -14,16 +14,20 @@ class SubscriptionAdapter {
 
   static version = '';
 
-  static isActivatedFor(usageCalculationType) {  // eslint-disable-line
+  static isActivatedFor({ usageCalculationType }) {  // eslint-disable-line
     return false;
+  }
+
+  static async transformOrderItemToSubscription(item, context) { // eslint-disable-line
+    return {
+      quantity: item.quantity,
+      configuration: item.configuration,
+      productId: item.productId,
+    };
   }
 
   constructor(context) {
     this.context = context;
-  }
-
-  async generateSubscriptionsForOrder(order) { // eslint-disable-line
-    return [];
   }
 
   log(message, { level = 'debug', ...options } = {}) { // eslint-disable-line
@@ -38,10 +42,44 @@ class SubscriptionDirector {
     };
   }
 
-  findAppropriateAdapters(context) {
-    return this.constructor.filteredAdapters((AdapterClass) => {
+  resolveAdapter(context) {
+    const { subscription } = this.context;
+    const Adapter = this.constructor.findAppropriateAdapters(
+      subscription.product()?.plan
+    )?.[0];
+    if (!Adapter) {
+      throw new Error(
+        'No suitable subscription plugin available for this order'
+      );
+    }
+    const adapter = new Adapter({
+      ...this.context,
+      ...context,
+    });
+    return adapter;
+  }
+
+  async isValidForActivation(context) {
+    const adapter = this.resolveAdapter();
+    return adapter.isValidForActivation(context);
+  }
+
+  async isOverdue(context) {
+    const adapter = this.resolveAdapter(context);
+    return adapter.isOverdue(context);
+  }
+
+  static adapters = new Map();
+
+  static filteredAdapters(filter) {
+    return Array.from(SubscriptionDirector.adapters)
+      .map(([, entry]) => entry)
+      .filter(filter || (() => true));
+  }
+
+  static findAppropriateAdapters(context) {
+    return this.filteredAdapters((AdapterClass) => {
       const activated = AdapterClass.isActivatedFor({
-        ...this.context,
         ...context,
       });
       if (!activated) {
@@ -56,39 +94,21 @@ class SubscriptionDirector {
     });
   }
 
-  async generateSubscriptionsForOrder(context) {
-    const AdapterTypes = this.findAppropriateAdapters(context);
-    if (AdapterTypes.length === 0) {
+  static async transformOrderItemToSubscription(item, subscriptionData) {
+    const product = item.product();
+    const AdapterClass = this.findAppropriateAdapters(product.plan)?.[0];
+    if (!AdapterClass) {
       throw new Error(
-        'No suitable subscription plugin available for this order'
+        'No suitable subscription plugin available for this item'
       );
     }
-    const subscriptions = await Promise.all(
-      AdapterTypes.map(async (Adapter) => {
-        const adapter = new Adapter({
-          ...this.context,
-          ...context,
-        });
-        return adapter.generateSubscriptionsForOrder();
-      })
+    const transformedItem = await AdapterClass.transformOrderItemToSubscription(
+      item
     );
-    return subscriptions.flat();
-  }
-
-  async isValidForActivation(context) {
-    return true;
-  }
-
-  async isOverdue(context) {
-    return false;
-  }
-
-  static adapters = new Map();
-
-  static filteredAdapters(filter) {
-    return Array.from(SubscriptionDirector.adapters)
-      .map(([, entry]) => entry)
-      .filter(filter || (() => true));
+    return {
+      ...subscriptionData,
+      ...transformedItem,
+    };
   }
 
   static registerAdapter(adapter) {
