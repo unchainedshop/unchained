@@ -14,7 +14,7 @@ export default [
       """
       Paused because of overdue payments
       """
-      PROPOSED
+      PAUSED
 
       """
       Terminated / Ended subscription
