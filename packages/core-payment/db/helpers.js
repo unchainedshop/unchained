@@ -1,7 +1,10 @@
 import 'meteor/dburles:collection-helpers';
 import { Promise } from 'meteor/promise';
 import { PaymentDirector } from '../director';
-import { PaymentProviders } from './collections';
+import {
+  PaymentProviders,
+  PaymentProviderStoredCredentials,
+} from './collections';
 
 const emptyContext = {};
 
@@ -35,12 +38,65 @@ PaymentProviders.helpers({
       )
     );
   },
-  charge(context) {
-    return Promise.await(
-      new PaymentDirector(this).charge(this.defaultContext(context))
+  register(context, userId) {
+    const credentials = Promise.await(
+      new PaymentDirector(this).register(this.defaultContext(context))
     );
+    if (credentials) {
+      PaymentProviderStoredCredentials.upsertCredentials({
+        userId,
+        paymentProviderId: this._id,
+        credentials,
+      });
+      return true;
+    }
+    return false;
+  },
+  storedCredentials(userId) {
+    const found = PaymentProviderStoredCredentials.findOne({
+      userId,
+      paymentProviderId: this._id,
+    });
+    return found?.credentials;
+  },
+  validate(userId) {
+    const credentials = this.storedCredentials(userId);
+    return Promise.await(new PaymentDirector(this).validate(credentials));
+  },
+  charge(context, userId) {
+    const director = new PaymentDirector(this);
+    const [strippedResult, credentials] = Promise.await(
+      director.charge(this.defaultContext(context))
+    );
+    if (credentials)
+      PaymentProviderStoredCredentials.upsertCredentials({
+        userId,
+        paymentProviderId: this._id,
+        credentials,
+      });
+    return strippedResult;
   },
 });
+
+PaymentProviderStoredCredentials.upsertCredentials = ({
+  userId,
+  paymentProviderId,
+  credentials,
+}) => {
+  return PaymentProviderStoredCredentials.upsert(
+    {
+      userId,
+      paymentProviderId,
+    },
+    {
+      $setOnInsert: {
+        userId,
+        paymentProviderId,
+      },
+      credentials,
+    }
+  );
+};
 
 PaymentProviders.createProvider = ({ type, ...rest }) => {
   const InterfaceClass = new PaymentDirector(rest).interfaceClass();

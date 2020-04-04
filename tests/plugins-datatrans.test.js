@@ -80,7 +80,7 @@ describe('Plugins: Datatrans Payments', () => {
     });
     it('datatrans accepts the parameters for a payment form', async () => {
       // https://pay.sandbox.datatrans.com/upp/jsp/upStart.jsp?merchantId=1100004624&refno=datatrans&amount=100000&currency=CHF&sign=c3b752995f529d73d38edc0b682d0dd2007540f151c9c892a9c0966948599f72
-      const url = `https://pay.sandbox.datatrans.com/upp/jsp/upStart.jsp?merchantId=${merchantId}&refno=${refno}&amount=${amount}&currency=${currency}&sign=${sign}`;
+      const url = `https://pay.sandbox.datatrans.com/upp/jsp/upStart.jsp?merchantId=${merchantId}&refno=${refno}&amount=${amount}&currency=${currency}&sign=${sign}&useAlias=1`;
       const result = await fetch(url);
       const text = await result.text();
       expect(text).not.toMatch(/incorrect request/);
@@ -101,7 +101,6 @@ describe('Plugins: Datatrans Payments', () => {
       params.append('errorCode', '1403');
       params.append('language', 'en');
       params.append('pmethod', 'VIS');
-      params.append('expy', '18');
       params.append('merchantId', merchantId);
       params.append('reqtype', 'CAA');
       params.append('errorDetail', 'Declined');
@@ -109,6 +108,7 @@ describe('Plugins: Datatrans Payments', () => {
       params.append('acqErrorCode', '50');
       params.append('testOnly', 'yes');
       params.append('expm', '12');
+      params.append('expy', '18');
       const result = await fetch('http://localhost:3000/graphql/datatrans', {
         method: 'POST',
         headers: {
@@ -142,7 +142,6 @@ describe('Plugins: Datatrans Payments', () => {
       params.append('language', 'en');
       params.append('pmethod', 'VIS');
       params.append('responseCode', '01');
-      params.append('expy', '18');
       params.append('acqAuthorizationCode', '155258');
       params.append('merchantId', merchantId);
       params.append('reqtype', 'CAA');
@@ -150,6 +149,7 @@ describe('Plugins: Datatrans Payments', () => {
       params.append('responseMessage', 'Authorized');
       params.append('testOnly', 'yes');
       params.append('expm', '12');
+      params.append('expy', '18');
       const result = await fetch('http://localhost:3000/graphql/datatrans', {
         method: 'POST',
         headers: {
