@@ -18,10 +18,6 @@ class PaymentAdapter {
     return false;
   }
 
-  static extractStoredCredentials(result) {
-    return [result];
-  }
-
   constructor(config, context) {
     this.config = config;
     this.context = context;
@@ -100,25 +96,18 @@ class PaymentDirector {
 
   async charge({ transactionContext, ...context }) {
     const adapter = this.interface(context);
-    const chargeResult = await adapter.charge(transactionContext);
-    return adapter.constructor.extractStoredCredentials(chargeResult);
+    return adapter.charge(transactionContext);
   }
 
   async register({ transactionContext, ...context }) {
     const adapter = this.interface(context);
-    const credentials = await adapter.register(transactionContext);
-    return credentials;
+    return adapter.register(transactionContext);
   }
 
   async validate({ credentials, ...context }) {
     const adapter = this.interface(context);
     const validated = await adapter.validate(credentials);
     return !!validated;
-  }
-
-  async extractStoredCredentials(chargeResponse) {
-    const Adapter = this.interfaceClass();
-    return Adapter.extractStoredCredentials(chargeResponse);
   }
 
   async run(command, context, ...args) {

@@ -229,6 +229,7 @@ Orders.helpers({
     });
   },
   updateContext(context) {
+    if (!this.context && !context) return this;
     return Orders.updateContext({
       orderId: this._id,
       context,
@@ -281,6 +282,7 @@ Orders.helpers({
     const language =
       (localeContext && localeContext.normalized) ||
       (lastUserLanguage && lastUserLanguage.isoCode);
+
     return this.updateContext(orderContext)
       .processOrder({ paymentContext, deliveryContext })
       .sendOrderConfirmationToCustomer({ language });
