@@ -23,20 +23,17 @@ export default [
     }
 
     type SubscriptionPlan {
-      _id: ID!
       product: Product!
       quantity: Int!
       configuration: [ProductConfigurationParameter!]
     }
 
     type SubscriptionPayment {
-      _id: ID!
       provider: PaymentProvider
       meta: JSON
     }
 
     type SubscriptionDelivery {
-      _id: ID!
       provider: DeliveryProvider
       meta: JSON
     }

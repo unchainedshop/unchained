@@ -32,9 +32,9 @@ class SubscriptionAdapter {
 }
 
 class SubscriptionDirector {
-  constructor(order) {
+  constructor(subscription) {
     this.context = {
-      order,
+      subscription,
     };
   }
 

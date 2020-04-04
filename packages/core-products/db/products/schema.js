@@ -49,6 +49,17 @@ const ProductSupplySchema = new SimpleSchema(
   { requiredByDefault: false }
 );
 
+const ProductPlanSchema = new SimpleSchema(
+  {
+    billingInterval: String,
+    billingIntervalCount: Number,
+    usageCalculationType: String,
+    trialInterval: String,
+    trialIntervalCount: Number,
+  },
+  { requiredByDefault: false }
+);
+
 const ProductProxySchema = new SimpleSchema(
   {
     assignments: Array,
@@ -94,6 +105,7 @@ Products.attachSchema(
       warehousing: ProductWarehousingSchema,
       supply: ProductSupplySchema,
       proxy: ProductProxySchema,
+      plan: ProductPlanSchema,
       bundleItems: {
         type: Array,
         optional: true,

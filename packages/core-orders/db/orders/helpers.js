@@ -5,6 +5,7 @@ import { getFallbackLocale } from 'meteor/unchained:core';
 import { objectInvert } from 'meteor/unchained:utils';
 import { DeliveryProviders } from 'meteor/unchained:core-delivery';
 import { PaymentProviders } from 'meteor/unchained:core-payment';
+import { Subscriptions } from 'meteor/unchained:core-subscriptions';
 import { Countries } from 'meteor/unchained:core-countries';
 import { Users } from 'meteor/unchained:core-users';
 import { Logs, log } from 'meteor/unchained:core-logger';
@@ -255,6 +256,38 @@ Orders.helpers({
     // 2. Reserve quantity at Warehousing Provider until order is CANCELLED/FULLFILLED
     // ???
   },
+  generateSubscriptions({ paymentContext, deliveryContext }) {
+    const plans = this.items()
+      .map((item) => {
+        const productPlan = item.product()?.plan;
+        if (!productPlan) return null;
+        return {
+          item,
+          productPlan,
+        };
+      })
+      .filter(Boolean);
+
+    if (plans.length > 0) {
+      const payment = this.payment();
+      const delivery = this.delivery();
+
+      Subscriptions.generateFromCheckout({
+        orderId: this._id,
+        userId: this.userId,
+        countryCode: this.country,
+        currencyCode: this.currencyCode,
+        billingAddress: this.billingAddress,
+        contact: this.contact,
+        paymentContext,
+        deliveryContext,
+        payment,
+        delivery,
+        plans,
+        meta: this.meta,
+      });
+    }
+  },
   checkout(
     { paymentContext, deliveryContext, orderContext } = {},
     { localeContext } = {}
@@ -369,13 +402,15 @@ Orders.helpers({
           'before delivery'
         );
         this.delivery().send(deliveryContext, newConfirmedOrder);
+        newConfirmedOrder.generateSubscriptions({
+          paymentContext,
+          deliveryContext,
+        });
       } else {
         this.delivery().send(deliveryContext, this);
       }
+      this.reserveItems();
     }
-    // no matter what happens, the items need to
-    // get reserved if we came that far
-    this.reserveItems();
     return this.setStatus(this.nextStatus(), 'order processed');
   },
   setStatus(status, info) {

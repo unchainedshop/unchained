@@ -158,6 +158,14 @@ Subscriptions.helpers({
   },
 });
 
+Subscriptions.generateFromCheckout = async (context) => {
+  const director = new SubscriptionDirector();
+  const subscriptions = await director.generateSubscriptionsForOrder(context);
+  subscriptions.forEach((subscriptionData) => {
+    Subscriptions.createSubscription(subscriptionData);
+  });
+};
+
 Subscriptions.createSubscription = (
   { userId, countryCode, configuration },
   options
