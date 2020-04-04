@@ -158,6 +158,19 @@ export default [
       removeCartDiscount(discountId: ID!): OrderDiscount!
 
       """
+      Creates a subscription.
+      """
+      createSubscription(
+        adapterKey: String
+        plans: [SubscriptionPlanInput!]!
+        billingAddress: AddressInput
+        contact: ContactInput
+        payment: SubscriptionPaymentInput
+        delivery: SubscriptionDeliveryInput
+        meta: JSON
+      ): Subscription!
+
+      """
       Change the delivery method/provider
       """
       setOrderDeliveryProvider(orderId: ID!, deliveryProviderId: ID!): Order!

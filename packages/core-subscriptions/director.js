@@ -75,7 +75,7 @@ class SubscriptionDirector {
     return subscriptions.flat();
   }
 
-  async isReadyForActivation(context) {
+  async isValidForActivation(context) {
     return true;
   }
 

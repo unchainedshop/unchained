@@ -93,6 +93,8 @@ Subscriptions.helpers({
     });
     return this;
   },
+  initializeSubscription() {},
+  reactivateSubscription() {},
   process({ subscriptionContext } = {}) {
     if (
       this.status === SubscriptionStatus.INITIAL &&
@@ -167,18 +169,33 @@ Subscriptions.generateFromCheckout = async (context) => {
 };
 
 Subscriptions.createSubscription = (
-  { userId, countryCode, configuration },
+  {
+    userId,
+    adapterKey,
+    countryCode,
+    currencyCode,
+    contact,
+    billingAddress,
+    payment,
+    delivery,
+  },
   options
 ) => {
   log('Create Subscription', { userId });
   const subscriptionId = Subscriptions.insert({
     created: new Date(),
     status: SubscriptionStatus.INITIAL,
+    adapterKey,
     userId,
-    configuration,
-    currencyCode: Countries.resolveDefaultCurrencyCode({
-      isoCode: countryCode,
-    }),
+    contact,
+    billingAddress,
+    payment,
+    delivery,
+    currencyCode:
+      currencyCode ||
+      Countries.resolveDefaultCurrencyCode({
+        isoCode: countryCode,
+      }),
     countryCode,
   });
   const subscription = Subscriptions.findOne({ _id: subscriptionId });

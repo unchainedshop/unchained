@@ -63,6 +63,8 @@ export default (role, actions) => {
   role.allow(actions.voteProductReview, () => false);
   role.allow(actions.manageWorker, () => false);
   role.allow(actions.viewSubscriptions, () => false);
+  role.allow(actions.updateSubscription, () => false);
+  role.allow(actions.createSubscription, () => false);
 
   // only allow if otp is provided
   role.allow(

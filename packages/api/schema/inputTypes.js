@@ -235,6 +235,22 @@ export default [
       quantity: Int!
     }
 
+    input SubscriptionDeliveryInput {
+      deliveryProviderInput: ID!
+      meta: JSON
+    }
+
+    input SubscriptionPaymentInput {
+      paymentProviderId: ID!
+      meta: JSON
+    }
+
+    input SubscriptionPlanInput {
+      productId: ID!
+      quantity: Int = 1
+      configuration: [ProductConfigurationParameterInput!]
+    }
+
     input OrderItemInput {
       productId: ID!
       quantity: Int = 1

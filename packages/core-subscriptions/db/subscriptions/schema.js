@@ -16,6 +16,7 @@ export const Schema = new SimpleSchema(
     userId: { type: String, required: true, index: true },
     status: { type: String, required: true, index: true },
     subscriptionNumber: String,
+    adapterKey: String,
     expires: Date,
     meta: { type: Object, blackbox: true },
     billingAddress: Address,

@@ -7,6 +7,7 @@ import {
 } from 'meteor/unchained:core-orders';
 import { ProductReviews } from 'meteor/unchained:core-products';
 import { Quotations } from 'meteor/unchained:core-quotations';
+import { Subscriptions } from 'meteor/unchained:core-subscriptions';
 import { Bookmarks } from 'meteor/unchained:core-bookmarks';
 
 export default (role, actions) => {
@@ -38,6 +39,15 @@ export default (role, actions) => {
       return isOwnedOrder(null, { orderId }, { userId });
     }
     return true;
+  };
+
+  const isOwnedSubscription = (root, { subscriptionId }, { userId }) => {
+    return (
+      Subscriptions.find({
+        _id: subscriptionId,
+        userId,
+      }).count() > 0
+    );
   };
 
   const isOwnedOrderPayment = (root, { orderPaymentId }, { userId }) => {
@@ -95,6 +105,9 @@ export default (role, actions) => {
   role.allow(actions.checkoutCart, isOwnedOrderOrCart);
   role.allow(actions.updateCart, isOwnedOrderOrCart);
   role.allow(actions.createCart, () => true);
+  role.allow(actions.updateSubscription, isOwnedSubscription);
+  role.allow(actions.createSubscription, () => true);
+
   role.allow(actions.reviewProduct, () => true);
   role.allow(actions.updateProductReview, () => isOwnedProductReview);
   role.allow(actions.requestQuotation, () => true);

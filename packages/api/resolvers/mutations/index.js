@@ -48,7 +48,6 @@ import addCartQuotation from './addCartQuotation';
 import updateCart from './updateCart';
 import emptyCart from './emptyCart';
 import updateCartItem from './updateCartItem';
-
 import removeCartItem from './removeCartItem';
 import removeCartDiscount from './removeCartDiscount';
 import removeOrder from './removeOrder';
@@ -111,6 +110,7 @@ import finishWork from './finishWork';
 import removeWork from './removeWork';
 import doWork from './doWork';
 import heartbeat from './heartbeat';
+import createSubscription from './createSubscription';
 
 export default {
   ...Accounts,
@@ -202,6 +202,8 @@ export default {
   confirmOrder: acl(actions.markOrderConfirmed)(confirmOrder),
   payOrder: acl(actions.markOrderPaid)(payOrder),
   deliverOrder: acl(actions.markOrderDelivered)(deliverOrder),
+
+  createSubscription: acl(actions.createSubscription)(createSubscription),
 
   createPaymentProvider: acl(actions.managePaymentProviders)(
     createPaymentProvider
