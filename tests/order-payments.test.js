@@ -121,7 +121,7 @@ describe('Order: Payments', () => {
           john: 'wayne',
         },
         sign:
-          '94475d01cf6f1a565046029cc009e4213150fcb2c99bfb5d0c2d879dd98eb04f',
+          '0bea13199c5abb6d0861d661d565a47f193bc20dc10bad12f00e584a33f01939',
       });
     });
   });
