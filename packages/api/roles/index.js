@@ -88,6 +88,8 @@ export const actions = [
   'manageWorker',
   'viewSubscriptions',
   'viewSubscription',
+  'registerPaymentCredentials',
+  'managePaymentCredentials',
 ].reduce((oldValue, actionValue) => {
   const newValue = oldValue;
   newValue[actionValue] = actionValue;

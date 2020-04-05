@@ -9,6 +9,7 @@ import { ProductReviews } from 'meteor/unchained:core-products';
 import { Quotations } from 'meteor/unchained:core-quotations';
 import { Subscriptions } from 'meteor/unchained:core-subscriptions';
 import { Bookmarks } from 'meteor/unchained:core-bookmarks';
+import { PaymentCredentials } from 'meteor/unchained:core-payment';
 
 export default (role, actions) => {
   const isMyself = (
@@ -89,6 +90,16 @@ export default (role, actions) => {
       userId,
     }).count() > 0;
 
+  const isOwnedPaymentCredential = (
+    root,
+    { paymentCredentialsId },
+    { userId }
+  ) =>
+    PaymentCredentials.find({
+      _id: paymentCredentialsId,
+      userId,
+    }).count() > 0;
+
   role.allow(actions.viewUser, isMyself);
   role.allow(actions.viewUserRoles, isMyself);
   role.allow(actions.viewUserOrders, isMyself);
@@ -107,7 +118,6 @@ export default (role, actions) => {
   role.allow(actions.createCart, () => true);
   role.allow(actions.updateSubscription, isOwnedSubscription);
   role.allow(actions.createSubscription, () => true);
-
   role.allow(actions.reviewProduct, () => true);
   role.allow(actions.updateProductReview, () => isOwnedProductReview);
   role.allow(actions.requestQuotation, () => true);
@@ -116,4 +126,6 @@ export default (role, actions) => {
   role.allow(actions.bookmarkProduct, () => true);
   role.allow(actions.voteProductReview, () => true);
   role.allow(actions.manageWorker, () => false);
+  role.allow(actions.registerPaymentCredentials, () => true);
+  role.allow(actions.managePaymentCredentials, () => isOwnedPaymentCredential);
 };

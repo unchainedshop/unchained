@@ -1,7 +1,7 @@
 import fetch from 'isomorphic-unfetch';
 import { URLSearchParams } from 'url';
 import { createLoggedInGraphqlFetch, setupDatabase } from './helpers';
-import { USER_TOKEN } from './seeds/users';
+import { USER_TOKEN, Admin } from './seeds/users';
 import { SimplePaymentProvider } from './seeds/payments';
 import { SimpleOrder, SimplePayment } from './seeds/orders';
 
@@ -46,6 +46,40 @@ describe('Plugins: Datatrans Payments', () => {
 
   afterAll(async () => {
     await connection.close();
+  });
+
+  describe('Query.signPaymentProviderForCredentialRegistration (Datatrans)', () => {
+    const sign =
+      '0c83ed74918d05cdd5309389dd8f011881250351f861619fbdfb9f75c711a5db';
+
+    it('request a new signed nonce', async () => {
+      const {
+        data: { signPaymentProviderForCredentialRegistration } = {},
+      } = await graphqlFetch({
+        query: /* GraphQL */ `
+          query signPaymentProviderForCredentialRegistration(
+            $paymentProviderId: ID!
+          ) {
+            signPaymentProviderForCredentialRegistration(
+              paymentProviderId: $paymentProviderId
+            )
+          }
+        `,
+        variables: {
+          paymentProviderId: 'datatrans-payment-provider',
+        },
+      });
+
+      expect(signPaymentProviderForCredentialRegistration).toBe(sign);
+    });
+    it('datatrans accepts the parameters for a payment form', async () => {
+      // https://pay.sandbox.datatrans.com/upp/jsp/upStart.jsp?merchantId=1100004624&refno=datatrans&amount=100000&currency=CHF&sign=c3b752995f529d73d38edc0b682d0dd2007540f151c9c892a9c0966948599f72
+      const url = `https://pay.sandbox.datatrans.com/upp/jsp/upStart.jsp?merchantId=${merchantId}&refno=${refno}&amount=${amount}&currency=${currency}&sign=${sign}&useAlias=1`;
+      const result = await fetch(url);
+      const text = await result.text();
+      expect(text).not.toMatch(/incorrect request/);
+      expect(text).not.toMatch(/error/);
+    });
   });
 
   describe('OrderPaymentGeneric.sign (Datatrans)', () => {
@@ -178,7 +212,7 @@ describe('Plugins: Datatrans Payments', () => {
       expect(orderPayment.status).toBe('PAID');
     });
 
-    it.only('mocks ingress successful payment webhook call with alias', async () => {
+    it('mocks ingress successful payment webhook call with alias', async () => {
       const sign =
         'a41485ad7136a121340d91eff0fa16a8aa12b7edd1780a141c11c6d352178bbf';
       const sign2 =
@@ -232,6 +266,61 @@ describe('Plugins: Datatrans Payments', () => {
         .collection('order_payments')
         .findOne({ _id: refno });
       expect(orderPayment.status).toBe('PAID');
+    });
+
+    it('mocks ingress successful payment webhook call with register', async () => {
+      const sign =
+        '1a75b37239446edd039885f236c77e1c32a7f0e9df32619d645e364a761d6322';
+      const sign2 =
+        '68f22b815c96ee81d3ab7a28ea77253904b0b9738e4bed5ac70a0a00a1168788';
+
+      const paymentProviderId = 'datatrans-payment-provider';
+      const registerAmount = 0;
+      const registerRefno = `${paymentProviderId}:${Admin._id}`;
+
+      const params = new URLSearchParams();
+
+      params.append('skipSimulation', 'true');
+      params.append('maskedCC', '510000xxxxxx0008');
+      params.append('sign', sign);
+      params.append('sign2', sign2);
+      params.append('errorCode', '1403');
+      params.append('aliasCC', '17124632626363307');
+      params.append('mode', 'lightbox');
+      params.append('expy', '21');
+      params.append('merchantId', merchantId);
+      params.append('uppTransactionId', '200404221602871223');
+      params.append('reqtype', 'CAA');
+      params.append('errorDetail', 'Declined');
+      params.append('currency', currency);
+      params.append('theme', 'DT2015');
+      params.append('expm', '12');
+      params.append('refno', registerRefno);
+      params.append('amount', registerAmount);
+      params.append('errorMessage', 'declined');
+      params.append('pmethod', 'ECA');
+      params.append('acqErrorCode', '50');
+      params.append('testOnly', 'yes');
+      params.append('status', 'success');
+      params.append('useAlias', 'yes');
+      params.append('authorizationCode', '650981237');
+      params.append('responseCode', '01');
+      params.append('acqAuthorizationCode', '221650');
+      params.append('responseMessage', 'Authorized');
+
+      const result = await fetch('http://localhost:3000/graphql/datatrans', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8',
+        },
+        body: params,
+      });
+      expect(result.status).toBe(200);
+
+      const paymentCredential = await db
+        .collection('payment_credentials')
+        .findOne({ paymentProviderId });
+      expect(paymentCredential).not.toBe(null);
     });
   });
 });

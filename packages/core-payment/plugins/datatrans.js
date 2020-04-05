@@ -2,6 +2,7 @@ import {
   PaymentDirector,
   PaymentAdapter,
   PaymentError,
+  PaymentCredentials,
 } from 'meteor/unchained:core-payment';
 import { OrderPayments } from 'meteor/unchained:core-orders';
 import { WebApp } from 'meteor/webapp';
@@ -78,9 +79,21 @@ WebApp.connectHandlers.use(
 WebApp.connectHandlers.use(DATATRANS_WEBHOOK_PATH, (req, res) => {
   if (req.method === 'POST') {
     const authorizationResponse = req.body || {};
-    const { refno, status } = authorizationResponse;
+    const { refno, status, amount } = authorizationResponse;
     if (refno && status === 'success') {
       try {
+        if (amount === '0') {
+          const [paymentProviderId, userId] = refno.split(':');
+          const paymentCredentials = PaymentCredentials.registerPaymentCredentials(
+            {
+              paymentProviderId,
+              paymentContext: authorizationResponse,
+              userId,
+            }
+          );
+          res.writeHead(200);
+          return res.end(JSON.stringify(paymentCredentials));
+        }
         const orderPayment = OrderPayments.findOne({ _id: refno });
         const order = orderPayment
           .order()
@@ -143,10 +156,35 @@ class Datatrans extends PaymentAdapter {
   }
 
   async sign({ transactionContext = {} } = {}) {
-    const { aliasCC } = transactionContext;
     const merchantId = this.getMerchantId();
 
     const { orderPayment } = this.context;
+    if (!orderPayment) {
+      // sign for registration
+      const currency = 'CHF';
+      const refno = `${this.context.paymentProviderId}:${this.context.userId}`;
+      const amount = '0';
+      const aliasCC = '';
+      const signature = generateSignature(
+        aliasCC,
+        merchantId,
+        amount,
+        currency,
+        refno
+      );
+      this.log(
+        `Datatrans -> Signed for Registration ${JSON.stringify({
+          aliasCC,
+          merchantId,
+          amount,
+          currency,
+          refno,
+        })} with ${signature}`
+      );
+      return signature;
+    }
+    // sign for order checkout
+    const { aliasCC } = transactionContext;
     const order = orderPayment.order();
     const refno = orderPayment._id;
     const { currency, amount } = order.pricing().total();
@@ -192,31 +230,41 @@ class Datatrans extends PaymentAdapter {
       pmethod,
       currency,
       refno,
+      maskedCC,
     } = transactionResponse;
     const merchantId = this.getMerchantId();
     if (status === 'success') {
       const validSign = generateSignature(
         aliasCC,
         merchantId,
-        0, // amount 0
+        '0', // amount 0
         currency,
         refno
       );
       const validSign2 = generateSignature(
         aliasCC,
         merchantId,
-        0, // amount 0
+        '0', // amount 0
         currency,
         uppTransactionId
       );
       if (sign === validSign && sign2 === validSign2) {
         this.log('Datatrans -> Registered successfully', transactionResponse);
         return {
-          expy,
-          expm,
-          pmethod,
-          currency,
-          aliasCC,
+          credentials: {
+            expy,
+            expm,
+            pmethod,
+            currency,
+            aliasCC,
+          },
+          meta: {
+            expy,
+            expm,
+            pmethod,
+            currency,
+            maskedCC,
+          },
         };
       }
       this.log(

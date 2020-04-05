@@ -686,6 +686,19 @@ export default [
       Manually remove a work
       """
       removeWork(workId: ID!): Work!
+
+      """
+      Register credentials for an existing payment provider allowing to store and use them
+      for later payments (1-click checkout or subscriptions)
+      """
+      registerPaymentCredentials(
+        paymentContext: JSON!
+        paymentProviderId: ID!
+      ): PaymentCredentials
+      markPaymentCredentialsPreferred(
+        paymentCredentialsId: ID!
+      ): PaymentCredentials
+      removePaymentCredentials(paymentCredentialsId: ID!): PaymentCredentials
     }
   `,
 ];

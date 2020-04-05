@@ -48,7 +48,6 @@ export const UserSchema = new SimpleSchema(
     username: String,
     lastLogin: LastLoginSchema,
     profile: ProfileSchema,
-    lastDeliveryAddress: Address,
     lastBillingAddress: Address,
     lastContact: LastContactSchema,
     guest: Boolean,

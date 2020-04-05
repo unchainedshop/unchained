@@ -4,15 +4,12 @@ export default {
   status(obj) {
     return obj.normalizedStatus();
   },
-  sign(obj, parameters) {
+  sign(obj, { transactionContext }) {
     try {
-      return obj.provider().run(
-        'sign',
-        {
-          orderPayment: obj,
-        },
-        parameters
-      );
+      return obj.provider().sign({
+        orderPayment: obj,
+        transactionContext,
+      });
     } catch (error) {
       throw new OrderPaymentConfigurationError(error);
     }

@@ -1,12 +1,23 @@
 import 'meteor/dburles:collection-helpers';
 import { Promise } from 'meteor/promise';
+import { Users } from 'meteor/unchained:core-users';
 import { PaymentDirector } from '../director';
-import {
-  PaymentProviders,
-  PaymentProviderStoredCredentials,
-} from './collections';
+import { PaymentProviders, PaymentCredentials } from './collections';
 
 const emptyContext = {};
+
+Users.helpers({
+  async paymentCredentials() {
+    return PaymentCredentials.find(
+      { userId: this._id },
+      {
+        sort: {
+          created: -1,
+        },
+      }
+    ).fetch();
+  },
+});
 
 PaymentProviders.helpers({
   transformContext(key, value) {
@@ -29,39 +40,18 @@ PaymentProviders.helpers({
       this.defaultContext(context)
     );
   },
-  run(command, context, ...args) {
+  register(context) {
     return Promise.await(
-      new PaymentDirector(this).run(
-        command,
-        this.defaultContext(context),
-        ...args
-      )
-    );
-  },
-  register(context, userId) {
-    const credentials = Promise.await(
       new PaymentDirector(this).register(this.defaultContext(context))
     );
-    if (credentials) {
-      PaymentProviderStoredCredentials.upsertCredentials({
-        userId,
-        paymentProviderId: this._id,
-        credentials,
-      });
-      return true;
-    }
-    return false;
   },
-  storedCredentials(userId) {
-    const found = PaymentProviderStoredCredentials.findOne({
-      userId,
-      paymentProviderId: this._id,
-    });
-    return found?.credentials;
-  },
-  validate(userId) {
-    const credentials = this.storedCredentials(userId);
+  validate(credentials) {
     return Promise.await(new PaymentDirector(this).validate(credentials));
+  },
+  sign(context) {
+    return Promise.await(
+      new PaymentDirector(this).sign(this.defaultContext(context))
+    );
   },
   charge(context, userId) {
     const director = new PaymentDirector(this);
@@ -69,7 +59,7 @@ PaymentProviders.helpers({
       director.charge(this.defaultContext(context))
     );
     if (credentials)
-      PaymentProviderStoredCredentials.upsertCredentials({
+      PaymentCredentials.upsertCredentials({
         userId,
         paymentProviderId: this._id,
         credentials,
@@ -78,12 +68,32 @@ PaymentProviders.helpers({
   },
 });
 
-PaymentProviderStoredCredentials.upsertCredentials = ({
+PaymentCredentials.helpers({
+  async user() {
+    return Users.findOne({
+      _id: this.userId,
+    });
+  },
+  async paymentProvider() {
+    return PaymentProviders.findOne({
+      _id: this.paymentProviderId,
+    });
+  },
+  async isActive() {
+    return this.paymentProvider().validate(this.credentials);
+  },
+
+  markPreferred() {
+    throw new Error('TODO: NOT IMPLEMENTED');
+  },
+});
+
+PaymentCredentials.upsertCredentials = ({
   userId,
   paymentProviderId,
   credentials,
 }) => {
-  return PaymentProviderStoredCredentials.upsert(
+  return PaymentCredentials.upsert(
     {
       userId,
       paymentProviderId,
@@ -92,10 +102,44 @@ PaymentProviderStoredCredentials.upsertCredentials = ({
       $setOnInsert: {
         userId,
         paymentProviderId,
+        created: new Date(),
       },
-      credentials,
+      $set: {
+        updated: new Date(),
+        credentials,
+      },
     }
   );
+};
+
+PaymentCredentials.registerPaymentCredentials = ({
+  paymentContext,
+  userId,
+  paymentProviderId,
+}) => {
+  const paymentProvider = PaymentProviders.findOne({ _id: paymentProviderId });
+  const { credentials, meta } = paymentProvider.register(
+    { transactionContext: paymentContext },
+    userId
+  );
+  const paymentCredentialsId = PaymentCredentials.insert({
+    userId,
+    paymentProviderId,
+    credentials,
+    meta,
+    created: new Date(),
+  });
+  return PaymentCredentials.findOne({ _id: paymentCredentialsId });
+};
+
+PaymentCredentials.removeCredentials = ({ paymentCredentialsId }) => {
+  const paymentCredentials = PaymentCredentials.findOne({
+    _id: paymentCredentialsId,
+  });
+  PaymentCredentials.remove({
+    _id: paymentCredentialsId,
+  });
+  return paymentCredentials;
 };
 
 PaymentProviders.createProvider = ({ type, ...rest }) => {

@@ -30,6 +30,15 @@ export default [
       WRONG_CREDENTIALS
     }
 
+    type PaymentCredentials {
+      _id: ID!
+      user: User!
+      paymentProvider: PaymentProvider!
+      meta: JSON
+      isValid: Boolean
+      isPreferred: Boolean
+    }
+
     type PaymentProvider {
       _id: ID!
       created: Date

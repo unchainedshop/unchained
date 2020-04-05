@@ -268,6 +268,13 @@ export default [
       ): [Work]
 
       """
+      Sign a generic payment provider for registration
+      """
+      signPaymentProviderForCredentialRegistration(
+        paymentProviderId: ID!
+      ): String
+
+      """
       Get a specific work unit by ID
       """
       work(workId: ID!): Work

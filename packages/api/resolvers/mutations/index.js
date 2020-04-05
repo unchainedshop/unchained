@@ -112,6 +112,9 @@ import removeWork from './removeWork';
 import doWork from './doWork';
 import heartbeat from './heartbeat';
 import createSubscription from './createSubscription';
+import registerPaymentCredentials from './registerPaymentCredentials';
+import markPaymentCredentialsPreferred from './markPaymentCredentialsPreferred';
+import removePaymentCredentials from './removePaymentCredentials';
 
 export default {
   ...Accounts,
@@ -127,6 +130,15 @@ export default {
   setUsername: acl(actions.manageUsers)(setUsername),
   setRoles: acl(actions.manageUsers)(setRoles),
   enrollUser: acl(actions.manageUsers)(enrollUser),
+  registerPaymentCredentials: acl(actions.registerPaymentCredentials)(
+    registerPaymentCredentials
+  ),
+  markPaymentCredentialsPreferred: acl(actions.managePaymentCredentials)(
+    markPaymentCredentialsPreferred
+  ),
+  removePaymentCredentials: acl(actions.managePaymentCredentials)(
+    removePaymentCredentials
+  ),
 
   createLanguage: acl(actions.manageLanguages)(createLanguage),
   updateLanguage: acl(actions.manageLanguages)(updateLanguage),
