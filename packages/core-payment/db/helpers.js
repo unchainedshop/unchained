@@ -80,7 +80,8 @@ PaymentCredentials.helpers({
     });
   },
   async isActive() {
-    return this.paymentProvider().validate(this.credentials);
+    throw new Error('TODO: NOT IMPLEMENTED');
+    // return this.paymentProvider().validate(this.credentials);
   },
 
   markPreferred() {
