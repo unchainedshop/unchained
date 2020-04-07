@@ -16,14 +16,14 @@ import { ProductReviews } from '../product-reviews/collections';
 import { ProductStatus, ProductTypes } from './schema';
 
 Products.createProduct = (
-  { locale, title, type, ...rest },
+  { locale, title, type, sequence, ...rest },
   { autopublish = false } = {}
 ) => {
   const product = {
     created: new Date(),
     type: ProductTypes[type],
     status: ProductStatus.DRAFT,
-    sequence: Products.getNewSequence(),
+    sequence: sequence ?? Products.find({}).count() + 10,
     ...rest,
   };
   const productId = Products.insert(product);
@@ -47,14 +47,6 @@ Products.updateProduct = ({ productId, type, ...product }) => {
   }
   Products.update({ _id: productId }, modifier);
   return Products.findOne({ _id: productId });
-};
-
-Products.getNewSequence = (oldSequence) => {
-  const sequence = oldSequence + 1 || Products.find({}).count() * 10;
-  if (Products.find({ sequence }).count() > 0) {
-    return Products.getNewSequence(sequence);
-  }
-  return sequence;
 };
 
 ProductTexts.makeSlug = ({ slug, title, productId }, options) => {

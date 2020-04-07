@@ -120,11 +120,12 @@ Collections.Assortments.createAssortment = ({
   isActive = true,
   isRoot = false,
   meta = {},
+  sequence,
   ...rest
 }) => {
   const assortment = {
     created: new Date(),
-    sequence: Collections.Assortments.getNewSequence(),
+    sequence: sequence ?? Collections.Assortments.find({}).count() + 10,
     isBase,
     isActive,
     isRoot,
@@ -299,15 +300,6 @@ Collections.Assortments.wipeAssortments = (onlyDirty = true) => {
     removedAssortmentFiltersCount,
     level: 'verbose',
   });
-};
-
-Collections.Assortments.getNewSequence = (oldSequence) => {
-  const sequence =
-    oldSequence + 1 || Collections.Assortments.find({}).count() * 10;
-  if (Collections.Assortments.find({ sequence }).count() > 0) {
-    return Collections.Assortments.getNewSequence(sequence);
-  }
-  return sequence;
 };
 
 Collections.Assortments.getLocalizedTexts = (assortmentId, locale) =>
