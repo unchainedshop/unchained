@@ -50,8 +50,6 @@
     "moment": "^2.24.0",
     "moniker": "^0.1.2",
     "mustache": "^4.0.1",
-    "node-cache": "^5.1.0",
-    "node-sheets": "^1.1.0",
     "open": "^7.0.3",
     "ramda": "^0.27.0",
     "simpl-schema": "^1.5.7",
