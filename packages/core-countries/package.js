@@ -6,6 +6,10 @@ Package.describe({
   documentation: 'README.md',
 });
 
+Npm.depends({
+  'lru-cache': '5.1.1',
+});
+
 Package.onUse((api) => {
   api.versionsFrom('1.9');
   api.use('ecmascript');

@@ -2,7 +2,17 @@ import 'meteor/dburles:collection-helpers';
 import countryFlags from 'emoji-flags';
 import countryI18n from 'i18n-iso-countries';
 import { Currencies } from 'meteor/unchained:core-currencies';
+import LRU from 'lru-cache';
 import { Countries } from './collections';
+
+const { NODE_ENV } = process.env;
+
+const maxAge = NODE_ENV === 'production' ? 1000 * 60 : 1000 * 1; // minute or second
+
+const currencyCodeCache = new LRU({
+  max: 500,
+  maxAge,
+});
 
 const { CURRENCY } = process.env;
 
@@ -22,8 +32,12 @@ Countries.helpers({
 });
 
 Countries.resolveDefaultCurrencyCode = ({ isoCode }) => {
+  const currencyCode = currencyCodeCache.get(isoCode);
+  if (currencyCode) return currencyCode;
+
   const country = Countries.findOne({ isoCode });
   const currency = country && country.defaultCurrency();
-  const currencyCode = currency && currency.isoCode;
-  return currencyCode || CURRENCY || 'CHF';
+  const liveCurrencyCode = (currency && currency.isoCode) || CURRENCY || 'CHF';
+  currencyCodeCache.set(liveCurrencyCode);
+  return liveCurrencyCode;
 };
