@@ -6,7 +6,7 @@ import React from 'react';
 import { Segment, List, Label, Icon, Button } from 'semantic-ui-react';
 import Link from 'next/link';
 
-const colorForStatus = status => {
+const colorForStatus = (status) => {
   if (status === 'PAID') return 'green';
   return 'red';
 };
@@ -17,7 +17,7 @@ const OrderPayment = ({
   statusColor,
   payOrder,
   paid,
-  orderStatus
+  orderStatus,
 }) => (
   <Segment secondary>
     <Label color={statusColor} horizontal attached="top">
@@ -69,8 +69,8 @@ export default compose(
     {
       name: 'payOrder',
       options: {
-        refetchQueries: ['orders', 'order']
-      }
+        refetchQueries: ['orders', 'order'],
+      },
     }
   ),
   graphql(gql`
@@ -104,14 +104,14 @@ export default compose(
     payOrder: ({ payOrder, orderId }) => () =>
       payOrder({
         variables: {
-          orderId
-        }
-      })
+          orderId,
+        },
+      }),
   }),
   mapProps(({ payOrder, data: { order = {} } }) => ({
     payOrder,
     statusColor: colorForStatus(order.payment && order.payment.status),
     orderStatus: order.status,
-    ...order.payment
+    ...order.payment,
   }))
 )(OrderPayment);

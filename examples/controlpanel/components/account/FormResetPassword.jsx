@@ -10,7 +10,7 @@ import { resetPassword } from '../../lib/accounts';
 import withFormErrorHandlers from '../../lib/withFormErrorHandlers';
 import withFormSchema from '../../lib/withFormSchema';
 
-const FormResetPassword = formProps => (
+const FormResetPassword = (formProps) => (
   <AutoForm {...formProps}>
     <AutoField name="password" type="password" />
     <AutoField name="passwordConfirm" type="password" />
@@ -25,7 +25,7 @@ export default compose(
   withFormSchema({
     password: {
       type: String,
-      label: 'New password'
+      label: 'New password',
     },
     passwordConfirm: {
       type: String,
@@ -35,17 +35,17 @@ export default compose(
           return 'mismatch';
         }
         return null;
-      }
-    }
+      },
+    },
   }),
   withHandlers({
     onSubmit: ({
       client,
       router: {
-        query: { token }
-      }
+        query: { token },
+      },
     }) => ({ password: newPassword }) =>
-      resetPassword({ newPassword, token, disableHashing: true }, client)
+      resetPassword({ newPassword, token, disableHashing: true }, client),
   }),
   withFormErrorHandlers,
   mapProps(({ client, ...rest }) => ({ ...rest })),

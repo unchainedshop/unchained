@@ -25,12 +25,12 @@ export default compose(
   withFormSchema({
     email: {
       type: String,
-      label: 'E-Mail Adresse'
+      label: 'E-Mail Adresse',
     },
     password: {
       type: String,
-      label: 'Password'
-    }
+      label: 'Password',
+    },
   }),
   withHandlers({
     onSubmit: ({ client }) => ({ email, password }) =>
@@ -38,10 +38,10 @@ export default compose(
         {
           email,
           password,
-          disableHashing: true
+          disableHashing: true,
         },
         client
-      )
+      ),
   }),
   withFormErrorHandlers,
   mapProps(({ client, ...rest }) => ({ ...rest })),

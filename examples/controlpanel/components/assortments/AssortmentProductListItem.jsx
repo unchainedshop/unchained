@@ -30,18 +30,18 @@ export default compose(
     {
       name: 'removeAssortmentProduct',
       options: {
-        refetchQueries: ['assortmentProducts']
-      }
+        refetchQueries: ['assortmentProducts'],
+      },
     }
   ),
   withHandlers({
     removeAssortmentProduct: ({ removeAssortmentProduct, _id }) => async () => {
       await removeAssortmentProduct({
         variables: {
-          assortmentProductId: _id
-        }
+          assortmentProductId: _id,
+        },
       });
-    }
+    },
   }),
   SortableElement
 )(AssortmentProductListItem);

@@ -46,7 +46,7 @@ const FilterList = ({ filters, loadMoreEntries, hasMore }) => (
           </Table.Row>
         }
       >
-        {filters.map(filter => (
+        {filters.map((filter) => (
           <Table.Row key={filter._id}>
             <Table.Cell>
               <Link href={`/filters/edit?_id=${filter._id}`}>
@@ -116,12 +116,12 @@ export default compose(
     options: () => ({
       variables: {
         offset: 0,
-        limit: ITEMS_PER_PAGE
-      }
+        limit: ITEMS_PER_PAGE,
+      },
     }),
     props: ({
       data: { loading, filters, fetchMore },
-      ownProps: { updateHasMore }
+      ownProps: { updateHasMore },
     }) => ({
       loading,
       filters,
@@ -129,7 +129,7 @@ export default compose(
         fetchMore({
           variables: {
             offset: filters.length,
-            limit: ITEMS_PER_PAGE
+            limit: ITEMS_PER_PAGE,
           },
           updateQuery: (previousResult, { fetchMoreResult }) => {
             if (!fetchMoreResult || fetchMoreResult.filters.length === 0) {
@@ -147,11 +147,11 @@ export default compose(
             }
             return {
               ...previousResult,
-              filters: [...previousResult.filters, ...fetchMoreResult.filters]
+              filters: [...previousResult.filters, ...fetchMoreResult.filters],
             };
-          }
-        })
-    })
+          },
+        }),
+    }),
   }),
   pure
 )(FilterList);

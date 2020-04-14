@@ -28,20 +28,20 @@ export default compose(
     `,
     {
       options: {
-        refetchQueries: ['productInfos', 'productTexts']
-      }
+        refetchQueries: ['productInfos', 'productTexts'],
+      },
     }
   ),
   withHandlers({
     onClick: ({ productId, mutate }) => () =>
       mutate({
         variables: {
-          productId
-        }
-      })
+          productId,
+        },
+      }),
   }),
   mapProps(({ productId, mutate, ...rest }) => ({
-    ...rest
+    ...rest,
   })),
   pure
 )(BtnPublishProduct);

@@ -20,8 +20,8 @@ export default compose(
     `,
     {
       options: {
-        fetchPolicy: 'network-only'
-      }
+        fetchPolicy: 'network-only',
+      },
     }
   ),
   mapProps(({ data: { me, loading }, ...rest }) => {
@@ -31,7 +31,7 @@ export default compose(
     return {
       currentUser,
       loading,
-      ...rest
+      ...rest,
     };
   })
 );

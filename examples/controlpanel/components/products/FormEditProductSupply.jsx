@@ -86,31 +86,31 @@ export default compose(
     `,
     {
       options: {
-        refetchQueries: ['productSupplyInfo']
-      }
+        refetchQueries: ['productSupplyInfo'],
+      },
     }
   ),
   withFormSchema({
     weightInGram: {
       type: Number,
       optional: true,
-      label: 'Weight (Gram)'
+      label: 'Weight (Gram)',
     },
     lengthInMillimeters: {
       type: Number,
       optional: true,
-      label: 'Length (Millimeter)'
+      label: 'Length (Millimeter)',
     },
     heightInMillimeters: {
       type: Number,
       optional: true,
-      label: 'Height (Millimeter)'
+      label: 'Height (Millimeter)',
     },
     widthInMillimeters: {
       type: Number,
       optional: true,
-      label: 'Width (Millimeter)'
-    }
+      label: 'Width (Millimeter)',
+    },
   }),
   withFormModel(({ data: { product = {} } }) => {
     if (!product || !product.dimensions) return {};
@@ -118,7 +118,7 @@ export default compose(
       weightInGram: product.dimensions && product.dimensions.weight,
       heightInMillimeters: product.dimensions && product.dimensions.height,
       lengthInMillimeters: product.dimensions && product.dimensions.length,
-      widthInMillimeters: product.dimensions && product.dimensions.width
+      widthInMillimeters: product.dimensions && product.dimensions.width,
     };
   }),
   withHandlers({
@@ -129,14 +129,14 @@ export default compose(
       mutate({
         variables: {
           supply: schema.clean(dirtyInput),
-          productId
-        }
-      })
+          productId,
+        },
+      }),
   }),
   withFormErrorHandlers,
   mapProps(({ productId, mutate, data, ...rest }) => ({
     isEditingDisabled: !data.product || data.product.status === 'DELETED',
-    ...rest
+    ...rest,
   })),
   pure
 )(FormEditProductSupply);

@@ -11,7 +11,7 @@ const UserList = ({
   loadMoreEntries,
   hasMore,
   isShowGuests,
-  toggleShowGuests
+  toggleShowGuests,
 }) => (
   <Table celled>
     <Table.Header>
@@ -73,7 +73,7 @@ const UserList = ({
               &nbsp;
               {tags &&
                 tags.length > 0 &&
-                tags.map(tag => (
+                tags.map((tag) => (
                   <Label key={tag} color="grey" horizontal>
                     {tag}
                   </Label>
@@ -146,23 +146,23 @@ export default compose(
     toggleShowGuests: ({
       isShowGuests,
       updateHasMore,
-      setShowGuests
+      setShowGuests,
     }) => () => {
       setShowGuests(!isShowGuests);
       updateHasMore(true);
-    }
+    },
   }),
   graphql(USER_LIST_QUERY, {
     options: ({ isShowGuests }) => ({
       variables: {
         includeGuests: isShowGuests,
         offset: 0,
-        limit: ITEMS_PER_PAGE
-      }
+        limit: ITEMS_PER_PAGE,
+      },
     }),
     props: ({
       data: { loading, users, fetchMore },
-      ownProps: { updateHasMore, isShowGuests }
+      ownProps: { updateHasMore, isShowGuests },
     }) => ({
       loading,
       users,
@@ -171,7 +171,7 @@ export default compose(
           variables: {
             includeGuests: isShowGuests,
             offset: Math.floor(users.length / ITEMS_PER_PAGE) * ITEMS_PER_PAGE,
-            limit: ITEMS_PER_PAGE
+            limit: ITEMS_PER_PAGE,
           },
           updateQuery: (previousResult, { fetchMoreResult }) => {
             if (!fetchMoreResult || fetchMoreResult.users.length === 0) {
@@ -189,10 +189,10 @@ export default compose(
             }
             return {
               ...previousResult,
-              users: [...previousResult.users, ...fetchMoreResult.users]
+              users: [...previousResult.users, ...fetchMoreResult.users],
             };
-          }
-        })
-    })
+          },
+        }),
+    }),
   })
 )(UserList);

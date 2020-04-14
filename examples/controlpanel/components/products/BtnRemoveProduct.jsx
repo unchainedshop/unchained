@@ -29,8 +29,8 @@ export default compose(
     `,
     {
       options: {
-        refetchQueries: ['getAllProducts']
-      }
+        refetchQueries: ['getAllProducts'],
+      },
     }
   ),
   withHandlers({
@@ -38,15 +38,15 @@ export default compose(
       if (confirm('Really?')) { // eslint-disable-line
         await mutate({
           variables: {
-            productId
-          }
+            productId,
+          },
         });
         router.push('/products');
       }
-    }
+    },
   }),
   mapProps(({ productId, mutate, ...rest }) => ({
-    ...rest
+    ...rest,
   })),
   pure
 )(BtnRemoveProduct);

@@ -10,7 +10,7 @@ const EmailsListItem = ({
   address,
   verified,
   resendVerification,
-  disableResendVerificationEmail
+  disableResendVerificationEmail,
 }) => (
   <div>
     {address}
@@ -62,16 +62,16 @@ export default compose(
       mutate({
         variables: {
           email: address,
-          userId
-        }
+          userId,
+        },
       }),
     resendVerification: ({ client, address }) => () =>
       resendVerificationEmail(
         {
-          email: address
+          email: address,
         },
         client
-      )
+      ),
   }),
   pure
 )(EmailsListItem);

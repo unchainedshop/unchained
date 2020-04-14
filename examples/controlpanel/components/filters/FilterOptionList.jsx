@@ -48,7 +48,7 @@ export default compose(
   mapProps(({ data: { filter }, ...rest }) => ({
     items: (filter && filter.options) || [],
     pressDelay: 200,
-    ...rest
+    ...rest,
   })),
   pure
 )(FilterVariationList);

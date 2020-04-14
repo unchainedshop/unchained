@@ -1,6 +1,6 @@
 import gql from 'graphql-tag';
 
-export default async function({ oldPassword, newPassword }, apollo) {
+export default async function ({ oldPassword, newPassword }, apollo) {
   if (!oldPassword || !newPassword)
     throw new Error('Old and new password are required');
 
@@ -17,8 +17,8 @@ export default async function({ oldPassword, newPassword }, apollo) {
     `,
     variables: {
       oldPassword,
-      newPassword
-    }
+      newPassword,
+    },
   });
 
   const { success } = result.data.changePassword;

@@ -17,7 +17,7 @@ import withFormErrorHandlers from '../../lib/withFormErrorHandlers';
 const { publicRuntimeConfig } = getConfig() || {};
 
 const FormRTEInput = dynamic(import('../FormRTEInput'), {
-  ssr: false
+  ssr: false,
 });
 const FormEditAssortmentTexts = ({
   languages,
@@ -29,7 +29,7 @@ const FormEditAssortmentTexts = ({
   <Container>
     <AutoForm {...formProps} disabled={isEditingDisabled}>
       <Menu attached="top" tabular>
-        {languages.map(language => (
+        {languages.map((language) => (
           <Menu.Item
             key={`menu-item-${language._id}`}
             name={language.isoCode}
@@ -108,7 +108,7 @@ export default compose(
   mapProps(({ data, ...rest }) => {
     const { languages = [], assortment = {} } = data;
     const filteredActiveLanguages = languages.filter(
-      language => !!language.isBase
+      (language) => !!language.isBase
     );
     const baseLanguage =
       filteredActiveLanguages.length > 0
@@ -119,7 +119,7 @@ export default compose(
       ...rest,
       languages,
       baseLanguage,
-      isEditingDisabled: !assortment
+      isEditingDisabled: !assortment,
     };
   }),
   withState('selectedLocale', 'setSelectedLocale', null),
@@ -141,50 +141,50 @@ export default compose(
     `,
     {
       options: {
-        refetchQueries: ['assortmentTexts', 'assortmentInfos']
-      }
+        refetchQueries: ['assortmentTexts', 'assortmentInfos'],
+      },
     }
   ),
   withFormSchema({
     texts: {
       type: Array,
-      optional: true
+      optional: true,
     },
     'texts.$': {
       type: Object,
-      optional: true
+      optional: true,
     },
     'texts.$.locale': {
       type: String,
       optional: false,
-      label: 'Locale'
+      label: 'Locale',
     },
     'texts.$.title': {
       type: String,
       optional: false,
-      label: 'Title'
+      label: 'Title',
     },
     'texts.$.subtitle': {
       type: String,
       optional: true,
-      label: 'Subtitle'
+      label: 'Subtitle',
     },
     'texts.$.description': {
       type: String,
       optional: true,
-      label: 'Product description'
+      label: 'Product description',
     },
     'texts.$.slug': {
       type: String,
       optional: true,
-      label: 'Slug'
-    }
+      label: 'Slug',
+    },
   }),
   withFormModel(
     ({ data: { translatedAssortmentTexts = [] }, languages = [] }) => {
-      const texts = languages.map(language => {
+      const texts = languages.map((language) => {
         const foundTranslations = translatedAssortmentTexts.filter(
-          translatedText => translatedText.locale === language.isoCode
+          (translatedText) => translatedText.locale === language.isoCode
         );
         const localizedTextForLocale =
           foundTranslations.length > 0
@@ -207,9 +207,9 @@ export default compose(
       mutate({
         variables: {
           texts: schema.clean(dirtyInput).texts,
-          assortmentId
-        }
-      })
+          assortmentId,
+        },
+      }),
   }),
   withFormErrorHandlers,
   mapProps(
@@ -223,7 +223,7 @@ export default compose(
       ...rest
     }) => ({
       activeLanguage: selectedLocale || baseLanguage,
-      ...rest
+      ...rest,
     })
   ),
   pure

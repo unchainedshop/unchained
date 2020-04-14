@@ -20,7 +20,7 @@ const ProductBundleItemList = ({
   productId,
   isEditingDisabled,
   addNewBundleItem,
-  removeBundleItem
+  removeBundleItem,
 }) => (
   <Segment>
     <Item.Group divided>
@@ -44,10 +44,10 @@ const ProductBundleItemList = ({
         name={'productId'}
         options={[
           { label: 'Choose Type', value: null },
-          ...(allProducts || []).map(product => ({
+          ...(allProducts || []).map((product) => ({
             label: product.texts.title,
-            value: product._id
-          }))
+            value: product._id,
+          })),
         ]}
       />
       <AutoField name={'quantity'} />
@@ -63,13 +63,13 @@ export default compose(
       type: String,
       optional: false,
       label: 'Product',
-      defaultValue: null
+      defaultValue: null,
     },
     quantity: {
       type: Number,
       label: 'Quantity',
-      optional: false
-    }
+      optional: false,
+    },
   }),
   graphql(gql`
     query productBundleItems($productId: ID) {
@@ -115,8 +115,8 @@ export default compose(
     {
       name: 'createProductBundleItem',
       options: {
-        refetchQueries: ['productBundleItems']
-      }
+        refetchQueries: ['productBundleItems'],
+      },
     }
   ),
   graphql(
@@ -130,19 +130,19 @@ export default compose(
     {
       name: 'removeBundleItem',
       options: {
-        refetchQueries: ['productBundleItems']
-      }
+        refetchQueries: ['productBundleItems'],
+      },
     }
   ),
   withHandlers({
-    addNewBundleItem: ({ productId, createProductBundleItem }) => item => {
+    addNewBundleItem: ({ productId, createProductBundleItem }) => (item) => {
       createProductBundleItem({
         variables: {
           productId,
-          item
-        }
+          item,
+        },
       });
-    }
+    },
   }),
 
   mapProps(({ data, ...rest }) => {
@@ -152,7 +152,7 @@ export default compose(
       allProducts,
       isEditingDisabled: !product || product.status === 'DELETED',
       pressDelay: 200,
-      ...rest
+      ...rest,
     };
   }),
   pure,

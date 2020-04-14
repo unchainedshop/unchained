@@ -39,17 +39,17 @@ export default compose(
   withFormSchema({
     email: {
       type: String,
-      label: 'E-Mail'
-    }
+      label: 'E-Mail',
+    },
   }),
   withHandlers({
     onSubmit: ({ mutate, schema, userId }) => ({ ...dirtyInput }) =>
       mutate({
         variables: {
           ...schema.clean(dirtyInput),
-          userId
-        }
-      })
+          userId,
+        },
+      }),
   }),
   withFormErrorHandlers,
   pure

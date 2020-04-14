@@ -65,7 +65,7 @@ export default compose(
     }
   `),
   mapProps(({ data: { order = {} } }) => ({
-    logs: order.logs
+    logs: order.logs,
   })),
   pure
 )(OrderLogList);

@@ -47,15 +47,15 @@ export default compose(
     `,
     {
       options: {
-        refetchQueries: ['filterInfos', 'filters']
-      }
+        refetchQueries: ['filterInfos', 'filters'],
+      },
     }
   ),
   withFormSchema(() => ({
     isActive: {
       type: Boolean,
-      label: 'Active'
-    }
+      label: 'Active',
+    },
   })),
   withFormModel(({ data: { filter = {} } }) => ({ ...filter })),
   withHandlers({
@@ -66,13 +66,13 @@ export default compose(
       mutate({
         variables: {
           filter: schema.clean(dirtyInput),
-          filterId
-        }
-      })
+          filterId,
+        },
+      }),
   }),
   withFormErrorHandlers,
   mapProps(({ filterId, mutate, data, ...rest }) => ({
-    ...rest
+    ...rest,
   })),
   pure
 )(FormEditFilter);

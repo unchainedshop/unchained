@@ -28,25 +28,25 @@ export default compose(
     `,
     {
       options: {
-        refetchQueries: ['assortments']
-      }
+        refetchQueries: ['assortments'],
+      },
     }
   ),
   withHandlers({
     onClick: ({ assortmentId, mutate, router }) => async () => {
+      // eslint-disable-next-line
       if (confirm('Really?')) {
-        // eslint-disable-line
         await mutate({
           variables: {
-            assortmentId
-          }
+            assortmentId,
+          },
         });
         router.push('/assortments');
       }
-    }
+    },
   }),
   mapProps(({ assortmentId, mutate, ...rest }) => ({
-    ...rest
+    ...rest,
   })),
   pure
 )(BtnRemoveAssortment);

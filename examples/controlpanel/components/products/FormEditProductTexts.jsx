@@ -18,7 +18,7 @@ import withFormErrorHandlers from '../../lib/withFormErrorHandlers';
 const { publicRuntimeConfig } = getConfig() || {};
 
 const FormRTEInput = dynamic(import('../FormRTEInput'), {
-  ssr: false
+  ssr: false,
 });
 const FormEditProductTexts = ({
   languages,
@@ -30,7 +30,7 @@ const FormEditProductTexts = ({
   <Container>
     <AutoForm {...formProps} disabled={isEditingDisabled}>
       <Menu attached="top" tabular>
-        {languages.map(language => (
+        {languages.map((language) => (
           <Menu.Item
             key={`menu-item-${language._id}`}
             name={language.isoCode}
@@ -130,10 +130,10 @@ export default compose(
   mapProps(({ data, ...rest }) => {
     const {
       languages = [],
-      product = {} /* translatedProductTexts = [] */
+      product = {} /* translatedProductTexts = [] */,
     } = data;
     const filteredActiveLanguages = languages.filter(
-      language => !!language.isBase
+      (language) => !!language.isBase
     );
     const baseLanguage =
       filteredActiveLanguages.length > 0
@@ -144,7 +144,7 @@ export default compose(
       ...rest,
       languages,
       baseLanguage,
-      isEditingDisabled: !product || product.status === 'DELETED'
+      isEditingDisabled: !product || product.status === 'DELETED',
     };
   }),
   withState('selectedLocale', 'setSelectedLocale', null),
@@ -169,68 +169,68 @@ export default compose(
     `,
     {
       options: {
-        refetchQueries: ['productTexts', 'productInfos']
-      }
+        refetchQueries: ['productTexts', 'productInfos'],
+      },
     }
   ),
   withFormSchema({
     texts: {
       type: Array,
-      optional: true
+      optional: true,
     },
     'texts.$': {
       type: Object,
-      optional: true
+      optional: true,
     },
     'texts.$.locale': {
       type: String,
       optional: false,
-      label: 'Locale'
+      label: 'Locale',
     },
     'texts.$.title': {
       type: String,
       optional: false,
-      label: 'Title'
+      label: 'Title',
     },
     'texts.$.subtitle': {
       type: String,
       optional: true,
-      label: 'Subtitle'
+      label: 'Subtitle',
     },
     'texts.$.vendor': {
       type: String,
       optional: true,
-      label: 'Vendor'
+      label: 'Vendor',
     },
     'texts.$.brand': {
       type: String,
       optional: true,
-      label: 'Brand'
+      label: 'Brand',
     },
     'texts.$.description': {
       type: String,
       optional: true,
-      label: 'Product description'
+      label: 'Product description',
     },
     'texts.$.slug': {
       type: String,
       optional: true,
-      label: 'Slug'
+      label: 'Slug',
     },
     'texts.$.labels': {
       type: Array,
       optional: true,
-      label: 'Labels'
+      label: 'Labels',
     },
     'texts.$.labels.$': {
       type: String,
-      optional: true
-    }
+      optional: true,
+    },
   }),
   withFormModel(({ data: { translatedProductTexts = [] }, languages = [] }) => {
-    const texts = languages.map(language => {
+    const texts = languages.map((language) => {
       const foundTranslations = translatedProductTexts.filter(
-        translatedText => translatedText.locale === language.isoCode
+        (translatedText) => translatedText.locale === language.isoCode
       );
       const localizedTextForLocale =
         foundTranslations.length > 0
@@ -252,9 +252,9 @@ export default compose(
       mutate({
         variables: {
           texts: schema.clean(dirtyInput).texts,
-          productId
-        }
-      })
+          productId,
+        },
+      }),
   }),
   withFormErrorHandlers,
   mapProps(
@@ -268,7 +268,7 @@ export default compose(
       ...rest
     }) => ({
       activeLanguage: selectedLocale || baseLanguage,
-      ...rest
+      ...rest,
     })
   ),
   pure

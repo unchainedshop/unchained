@@ -10,7 +10,7 @@ const QuotationList = ({ loading, updateHasMore, ...rest }) => (
     {...rest}
     cols={5}
     createPath={null}
-    rowRenderer={quotation => (
+    rowRenderer={(quotation) => (
       <Table.Row key={quotation._id}>
         <Table.Cell>
           <Link href={`/quotations/view?_id=${quotation._id}`}>
@@ -99,5 +99,5 @@ export default withDataTableLoader({
         }
       }
     }
-  `
+  `,
 })(QuotationList);

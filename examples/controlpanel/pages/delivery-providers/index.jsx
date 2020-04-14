@@ -4,7 +4,7 @@ import App from '../../components/App';
 import DeliveryProviderList from '../../components/delivery-providers/DeliveryProviderList';
 import connectApollo from '../../lib/connectApollo';
 
-export default connectApollo(props => (
+export default connectApollo((props) => (
   <App {...props}>
     <Container>
       <h2>Delivery</h2>

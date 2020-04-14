@@ -3,7 +3,7 @@ import { compose, withHandlers, withState } from 'recompose';
 export default compose(
   withState('mappedError', 'updateMappedError', null),
   withHandlers({
-    mapError: ({ updateMappedError }) => error => {
+    mapError: ({ updateMappedError }) => (error) => {
       const graphQLError = error.graphQLErrors && error.graphQLErrors[0];
       const message = graphQLError && graphQLError.message;
       if (message === 'User not found [403]') {
@@ -25,6 +25,6 @@ export default compose(
       } else {
         updateMappedError(error);
       }
-    }
+    },
   })
 );

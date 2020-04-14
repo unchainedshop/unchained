@@ -24,16 +24,16 @@ export default compose(
         isActive:
           router.query.tab === '' ||
           !router.query.tab ||
-          router.query.tab === 'FilterTranslation'
+          router.query.tab === 'FilterTranslation',
       },
       {
         name: 'FilterOptions',
         description: 'Options',
-        isActive: router.query && router.query.tab === 'FilterOptions'
-      }
+        isActive: router.query && router.query.tab === 'FilterOptions',
+      },
     ];
     return {
-      menuItems
+      menuItems,
     };
   }),
   withHandlers({
@@ -42,10 +42,10 @@ export default compose(
         pathname: router.pathname,
         query: {
           ...router.query,
-          tab: element.name
-        }
+          tab: element.name,
+        },
       });
-    }
+    },
   }),
   pure
 )(FilterMenu);

@@ -9,7 +9,7 @@ import { changePassword } from '../../lib/accounts';
 import withFormSchema from '../../lib/withFormSchema';
 import withFormErrorHandlers from '../../lib/withFormErrorHandlers';
 
-const FormChangePassword = formProps => (
+const FormChangePassword = (formProps) => (
   <AutoForm {...formProps}>
     <AutoField name="oldPassword" type="password" />
     <AutoField name="newPassword" type="password" />
@@ -23,16 +23,16 @@ export default compose(
   withFormSchema({
     oldPassword: {
       type: String,
-      label: 'Current password'
+      label: 'Current password',
     },
     newPassword: {
       type: String,
-      label: 'New password'
-    }
+      label: 'New password',
+    },
   }),
   withHandlers({
     onSubmit: ({ client }) => ({ oldPassword, newPassword }) =>
-      changePassword({ oldPassword, newPassword }, client)
+      changePassword({ oldPassword, newPassword }, client),
   }),
   withFormErrorHandlers,
   mapProps(({ client, ...rest }) => ({ ...rest })),

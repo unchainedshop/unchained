@@ -9,7 +9,7 @@ const CurrencyList = ({ ...rest }) => (
     {...rest}
     cols={2}
     createPath="/currencies/new"
-    rowRenderer={currency => (
+    rowRenderer={(currency) => (
       <Table.Row key={currency._id}>
         <Table.Cell>
           <Link href={`/currencies/edit?_id=${currency._id}`}>
@@ -43,5 +43,5 @@ export default withDataTableLoader({
         isActive
       }
     }
-  `
+  `,
 })(CurrencyList);

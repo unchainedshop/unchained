@@ -19,9 +19,9 @@ export default connectApollo(
   compose(
     withRouter,
     withHandlers({
-      onSuccess: ({ router }) => filterId => {
+      onSuccess: ({ router }) => (filterId) => {
         router.push({ pathname: '/filters/edit', query: { _id: filterId } });
-      }
+      },
     })
   )(New)
 );

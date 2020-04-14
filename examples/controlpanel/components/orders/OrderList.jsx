@@ -19,7 +19,7 @@ const OrderList = ({
     {...rest}
     cols={5}
     createPath={null}
-    rowRenderer={order => (
+    rowRenderer={(order) => (
       <Table.Row key={order._id}>
         <Table.Cell>
           {order.ordered ? format(order.ordered, 'Pp') : 'n/a'}
@@ -98,12 +98,12 @@ export default compose(
           }
         }
       }
-    `
+    `,
   }),
   withHandlers({
     toggleShowCarts: ({ updateHasMore, isShowCarts, setShowCarts }) => () => {
       setShowCarts(!isShowCarts);
       updateHasMore(true);
-    }
+    },
   })
 )(OrderList);

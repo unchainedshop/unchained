@@ -43,25 +43,25 @@ export default compose(
     return {
       roles: {
         type: Array,
-        label: 'Roles'
+        label: 'Roles',
       },
       'roles.$': {
         type: String,
-        allowedValues: shopInfo ? shopInfo.userRoles : []
-      }
+        allowedValues: shopInfo ? shopInfo.userRoles : [],
+      },
     };
   }),
   withFormModel(({ data: { user } }) => ({
-    roles: (user && user.roles) || []
+    roles: (user && user.roles) || [],
   })),
   withHandlers({
     onSubmit: ({ mutate, schema, userId }) => ({ ...dirtyInput }) =>
       mutate({
         variables: {
           ...schema.clean(dirtyInput),
-          userId
-        }
-      })
+          userId,
+        },
+      }),
   }),
   withFormErrorHandlers,
   mapProps(({ userId, mutate, client, ...rest }) => ({ ...rest })),

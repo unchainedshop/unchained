@@ -17,7 +17,7 @@ const DisplayIf = ({ children, condition }, { uniforms }) =>
   condition(uniforms) ? React.Children.only(children) : nothing;
 DisplayIf.contextTypes = BaseField.contextTypes;
 
-const FormNewUser = formProps => (
+const FormNewUser = (formProps) => (
   <Segment>
     <AutoForm showInlineError {...formProps}>
       <Grid stackable columns={3}>
@@ -41,7 +41,7 @@ const FormNewUser = formProps => (
             </p>
           </Grid.Column>
           <Grid.Column width={6}>
-            <DisplayIf condition={context => !context.model.enroll}>
+            <DisplayIf condition={(context) => !context.model.enroll}>
               <AutoField name="password" type="password" required />
             </DisplayIf>
           </Grid.Column>
@@ -78,12 +78,12 @@ export default compose(
     displayName: {
       type: String,
       optional: false,
-      label: 'Display Name'
+      label: 'Display Name',
     },
     email: {
       type: String,
       optional: false,
-      label: 'E-Mail address'
+      label: 'E-Mail address',
     },
     password: {
       type: String,
@@ -95,20 +95,20 @@ export default compose(
           return 'required';
         }
         return null;
-      }
+      },
     },
     enroll: {
       type: Boolean,
       optional: false,
       defaultValue: true,
-      label: 'Enrollment?'
-    }
+      label: 'Enrollment?',
+    },
   }),
   withHandlers({
     onSubmitSuccess: ({ router }) => ({ data: { enrollUser } }) => {
       router.replace({
         pathname: '/users/edit',
-        query: { _id: enrollUser._id }
+        query: { _id: enrollUser._id },
       });
     },
     onSubmit: ({ mutate, schema }) => async ({ ...dirtyInput }) => {
@@ -117,14 +117,14 @@ export default compose(
         variables: {
           profile: { displayName },
           email,
-          password: !enroll && password ? password : null
-        }
+          password: !enroll && password ? password : null,
+        },
       });
-    }
+    },
   }),
   withFormErrorHandlers,
   mapProps(({ mutate, data, userId, ...rest }) => ({
-    ...rest
+    ...rest,
   })),
   pure
 )(FormNewUser);

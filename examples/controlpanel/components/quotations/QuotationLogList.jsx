@@ -65,7 +65,7 @@ export default compose(
     }
   `),
   mapProps(({ data: { quotation = {} } }) => ({
-    logs: quotation.logs
+    logs: quotation.logs,
   })),
   pure
 )(QuotationLogList);

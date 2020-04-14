@@ -54,21 +54,21 @@ export default compose(
     {
       name: 'addAssortmentProduct',
       options: {
-        refetchQueries: ['assortment', 'assortmentProducts']
-      }
+        refetchQueries: ['assortment', 'assortmentProducts'],
+      },
     }
   ),
   withFormSchema({
     assortmentId: {
       type: String,
       label: null,
-      optional: false
+      optional: false,
     },
     productId: {
       type: String,
       optional: false,
-      label: 'Product'
-    }
+      label: 'Product',
+    },
   }),
   withHandlers({
     onSubmitSuccess: () => () => {
@@ -78,9 +78,9 @@ export default compose(
       addAssortmentProduct({
         variables: {
           assortmentId,
-          productId
-        }
-      })
+          productId,
+        },
+      }),
   }),
   withFormErrorHandlers,
   mapProps(
@@ -91,15 +91,15 @@ export default compose(
       ...rest
     }) => ({
       products: [{ label: 'Select', value: false }].concat(
-        products.map(product => ({
+        products.map((product) => ({
           label: product.texts.title,
-          value: product._id
+          value: product._id,
         }))
       ),
       model: {
-        assortmentId
+        assortmentId,
       },
-      ...rest
+      ...rest,
     })
   )
 )(FormNewAssortmentProduct);

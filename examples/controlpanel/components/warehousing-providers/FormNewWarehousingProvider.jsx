@@ -54,8 +54,8 @@ export default compose(
     {
       name: 'createWarehousingProvider',
       options: {
-        refetchQueries: ['warehousingProviders']
-      }
+        refetchQueries: ['warehousingProviders'],
+      },
     }
   ),
   withFormSchema(
@@ -63,8 +63,8 @@ export default compose(
       providerType,
       data: {
         warehousingProviderType = { options: [] },
-        warehousingInterfaces = []
-      } = {}
+        warehousingInterfaces = [],
+      } = {},
     }) => ({
       type: {
         type: String,
@@ -74,9 +74,9 @@ export default compose(
         uniforms: {
           options: [
             { label: 'Choose Type', value: null },
-            ...warehousingProviderType.options
-          ]
-        }
+            ...warehousingProviderType.options,
+          ],
+        },
       },
       adapterKey: {
         type: String,
@@ -85,30 +85,30 @@ export default compose(
         uniforms: {
           options: [
             { label: 'Choose Adapter', value: null },
-            ...warehousingInterfaces
-          ]
-        }
-      }
+            ...warehousingInterfaces,
+          ],
+        },
+      },
     })
   ),
   withHandlers({
     onSubmitSuccess: ({ router }) => ({
-      data: { createWarehousingProvider }
+      data: { createWarehousingProvider },
     }) => {
       router.replace({
         pathname: '/warehousing-providers/edit',
-        query: { _id: createWarehousingProvider._id }
+        query: { _id: createWarehousingProvider._id },
       });
     },
     onSubmit: ({ createWarehousingProvider, schema }) => ({ ...dirtyInput }) =>
       createWarehousingProvider({
         variables: {
-          warehousingProvider: schema.clean(dirtyInput)
-        }
-      })
+          warehousingProvider: schema.clean(dirtyInput),
+        },
+      }),
   }),
   withFormErrorHandlers,
   mapProps(({ createWarehousingProvider, ...rest }) => ({
-    ...rest
+    ...rest,
   }))
 )(FormNewWarehousingProvider);

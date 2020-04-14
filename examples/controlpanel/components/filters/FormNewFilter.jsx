@@ -9,7 +9,7 @@ import AutoForm from 'uniforms-semantic/AutoForm';
 import withFormSchema from '../../lib/withFormSchema';
 import withFormErrorHandlers from '../../lib/withFormErrorHandlers';
 
-const FormNewFilter = formProps => (
+const FormNewFilter = (formProps) => (
   <AutoForm {...formProps}>
     <AutoField name="title" />
     <AutoField name="key" />
@@ -41,21 +41,21 @@ export default compose(
     title: {
       type: String,
       optional: false,
-      label: 'Name'
+      label: 'Name',
     },
     key: {
       type: String,
       optional: false,
-      label: 'Key'
+      label: 'Key',
     },
     type: {
       type: String,
       optional: false,
       label: 'Type',
       uniforms: {
-        options: [{ label: 'Choose Type', value: null }, ...uniforms.options]
-      }
-    }
+        options: [{ label: 'Choose Type', value: null }, ...uniforms.options],
+      },
+    },
   })),
   withHandlers({
     onSubmitSuccess: ({ onSuccess }) => ({ data: { createFilter } }) => {
@@ -64,13 +64,13 @@ export default compose(
     onSubmit: ({ mutate, schema }) => ({ ...dirtyInput }) =>
       mutate({
         variables: {
-          filter: schema.clean(dirtyInput)
-        }
-      })
+          filter: schema.clean(dirtyInput),
+        },
+      }),
   }),
   withFormErrorHandlers,
   mapProps(({ onSuccess, mutate, ...rest }) => ({
-    ...rest
+    ...rest,
   })),
   pure
 )(FormNewFilter);

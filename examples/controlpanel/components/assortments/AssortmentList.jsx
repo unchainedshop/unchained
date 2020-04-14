@@ -19,7 +19,7 @@ const AssortmentList = ({
     {...rest}
     cols={3}
     createPath="/assortments/new"
-    rowRenderer={assortment => (
+    rowRenderer={(assortment) => (
       <Table.Row key={assortment._id}>
         <Table.Cell>
           <Link href={`/assortments/edit?_id=${assortment._id}`}>
@@ -83,7 +83,7 @@ export default compose(
           }
         }
       }
-    `
+    `,
   }),
   graphql(
     gql`
@@ -96,14 +96,14 @@ export default compose(
     `,
     {
       options: {
-        refetchQueries: ['assortments']
-      }
+        refetchQueries: ['assortments'],
+      },
     }
   ),
   withHandlers({
     changeBaseAssortment: ({ mutate }) => (event, element) =>
       mutate({ variables: { assortmentId: element.name } }),
     toggleShowLeafNodes: ({ isShowLeafNodes, setShowLeafNodes }) => () =>
-      setShowLeafNodes(!isShowLeafNodes)
+      setShowLeafNodes(!isShowLeafNodes),
   })
 )(AssortmentList);

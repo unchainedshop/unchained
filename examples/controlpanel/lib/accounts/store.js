@@ -10,9 +10,9 @@ let tokenStore = {
     return {
       userId: global.localStorage['Meteor.userId'],
       token: global.localStorage['Meteor.loginToken'],
-      tokenExpires: global.localStorage['Meteor.loginTokenExpires']
+      tokenExpires: global.localStorage['Meteor.loginTokenExpires'],
     };
-  }
+  },
 };
 
 export const setTokenStore = function setTokenStore(newStore) {
@@ -21,7 +21,7 @@ export const setTokenStore = function setTokenStore(newStore) {
 
 const tokenDidChange = async function tokenDidChange() {
   const newData = await tokenStore.get();
-  onChangeCallbacks.forEach(callback => callback(newData));
+  onChangeCallbacks.forEach((callback) => callback(newData));
 };
 
 export const storeLoginToken = async function storeLoginToken(

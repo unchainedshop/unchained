@@ -29,8 +29,8 @@ export default compose(
     `,
     {
       options: {
-        refetchQueries: ['quotations']
-      }
+        refetchQueries: ['quotations'],
+      },
     }
   ),
   withHandlers({
@@ -38,15 +38,15 @@ export default compose(
       if (confirm('Really?')) { // eslint-disable-line
         await mutate({
           variables: {
-            quotationId
-          }
+            quotationId,
+          },
         });
         router.push('/quotations');
       }
-    }
+    },
   }),
   mapProps(({ quotationId, mutate, ...rest }) => ({
-    ...rest
+    ...rest,
   })),
   pure
 )(BtnRemoveQuotation);

@@ -4,7 +4,7 @@ import App from '../../components/App';
 import FormNewUser from '../../components/users/FormNewUser';
 import connectApollo from '../../lib/connectApollo';
 
-export default connectApollo(props => (
+export default connectApollo((props) => (
   <App {...props}>
     <Container>
       <p>New User</p>

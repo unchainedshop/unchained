@@ -4,7 +4,8 @@ import connectField from 'uniforms/connectField';
 import filterDOMProps from 'uniforms/filterDOMProps';
 import InputMask from 'react-input-mask';
 
-const parseAndForwardValue = onChange => event => onChange(event.target.value);
+const parseAndForwardValue = (onChange) => (event) =>
+  onChange(event.target.value);
 
 const MaskedText = ({
   mask,

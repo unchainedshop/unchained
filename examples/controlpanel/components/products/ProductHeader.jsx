@@ -89,7 +89,7 @@ const ProductHeader = ({ loading, productId, product = {} }) => [
         </Grid.Column>
       </Grid.Row>
     </Grid>
-  </Segment>
+  </Segment>,
 ];
 
 export default compose(
@@ -112,7 +112,7 @@ export default compose(
   mapProps(({ data: { product, loading }, ...rest }) => ({
     product,
     loading,
-    ...rest
+    ...rest,
   })),
   pure
 )(ProductHeader);

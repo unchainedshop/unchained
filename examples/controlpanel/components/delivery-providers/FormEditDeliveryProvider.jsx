@@ -83,8 +83,8 @@ export default compose(
     {
       name: 'updateDeliveryProvider',
       options: {
-        refetchQueries: ['deliveryProvider', 'deliveryProviders']
-      }
+        refetchQueries: ['deliveryProvider', 'deliveryProviders'],
+      },
     }
   ),
   graphql(
@@ -98,29 +98,29 @@ export default compose(
     {
       name: 'removeDeliveryProvider',
       options: {
-        refetchQueries: ['deliveryProviders']
-      }
+        refetchQueries: ['deliveryProviders'],
+      },
     }
   ),
   withFormSchema({
     configuration: {
       type: Array,
       optional: false,
-      label: 'Konfigurationsparameter'
+      label: 'Konfigurationsparameter',
     },
     'configuration.$': {
-      type: Object
+      type: Object,
     },
     'configuration.$.key': {
-      type: String
+      type: String,
     },
     'configuration.$.value': {
-      type: String
-    }
+      type: String,
+    },
   }),
   withFormModel(
     ({ data: { deliveryProvider: { ...deliveryProvider } = {} } }) => ({
-      ...deliveryProvider
+      ...deliveryProvider,
     })
   ),
   withHandlers({
@@ -130,25 +130,25 @@ export default compose(
     removeDeliveryProvider: ({
       router,
       removeDeliveryProvider,
-      deliveryProviderId
-    }) => async event => {
+      deliveryProviderId,
+    }) => async (event) => {
       event.preventDefault();
       router.replace({ pathname: '/delivery-providers' });
       await removeDeliveryProvider({
         variables: {
-          deliveryProviderId
-        }
+          deliveryProviderId,
+        },
       });
     },
     onSubmit: ({ deliveryProviderId, updateDeliveryProvider }) => ({
-      configuration
+      configuration,
     }) =>
       updateDeliveryProvider({
         variables: {
           deliveryProvider: { configuration },
-          deliveryProviderId
-        }
-      })
+          deliveryProviderId,
+        },
+      }),
   }),
   withFormErrorHandlers,
   mapProps(
@@ -159,7 +159,7 @@ export default compose(
       ...rest
     }) => ({
       configurationError,
-      ...rest
+      ...rest,
     })
   )
 )(FormEditDeliveryProvider);

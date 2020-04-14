@@ -5,9 +5,9 @@ const serve = serveStatic(path, {
   index: ['index.html'],
   extensions: ['html'],
   redirect: false,
-  fallthrough: false
+  fallthrough: false,
 });
 
-module.exports.embedControlpanelInMeteorWebApp = WebApp => {
+module.exports.embedControlpanelInMeteorWebApp = (WebApp) => {
   WebApp.connectHandlers.use('/', serve);
 };

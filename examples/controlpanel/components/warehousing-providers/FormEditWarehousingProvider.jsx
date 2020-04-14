@@ -83,8 +83,8 @@ export default compose(
     {
       name: 'updateWarehousingProvider',
       options: {
-        refetchQueries: ['warehousingProvider', 'warehousingProviders']
-      }
+        refetchQueries: ['warehousingProvider', 'warehousingProviders'],
+      },
     }
   ),
   graphql(
@@ -100,29 +100,29 @@ export default compose(
     {
       name: 'removeWarehousingProvider',
       options: {
-        refetchQueries: ['warehousingProviders']
-      }
+        refetchQueries: ['warehousingProviders'],
+      },
     }
   ),
   withFormSchema({
     configuration: {
       type: Array,
       optional: false,
-      label: 'Konfigurationsparameter'
+      label: 'Konfigurationsparameter',
     },
     'configuration.$': {
-      type: Object
+      type: Object,
     },
     'configuration.$.key': {
-      type: String
+      type: String,
     },
     'configuration.$.value': {
-      type: String
-    }
+      type: String,
+    },
   }),
   withFormModel(
     ({ data: { warehousingProvider: { ...warehousingProvider } = {} } }) => ({
-      ...warehousingProvider
+      ...warehousingProvider,
     })
   ),
   withHandlers({
@@ -132,25 +132,25 @@ export default compose(
     removeWarehousingProvider: ({
       router,
       removeWarehousingProvider,
-      warehousingProviderId
-    }) => async event => {
+      warehousingProviderId,
+    }) => async (event) => {
       event.preventDefault();
       router.replace({ pathname: '/warehousing-providers' });
       await removeWarehousingProvider({
         variables: {
-          warehousingProviderId
-        }
+          warehousingProviderId,
+        },
       });
     },
     onSubmit: ({ warehousingProviderId, updateWarehousingProvider }) => ({
-      configuration
+      configuration,
     }) =>
       updateWarehousingProvider({
         variables: {
           warehousingProvider: { configuration },
-          warehousingProviderId
-        }
-      })
+          warehousingProviderId,
+        },
+      }),
   }),
   withFormErrorHandlers,
   mapProps(
@@ -161,7 +161,7 @@ export default compose(
       ...rest
     }) => ({
       configurationError,
-      ...rest
+      ...rest,
     })
   )
 )(FormEditWarehousingProvider);

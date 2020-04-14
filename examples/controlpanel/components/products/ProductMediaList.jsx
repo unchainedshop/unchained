@@ -77,8 +77,8 @@ export default compose(
     {
       name: 'addProductMedia',
       options: {
-        refetchQueries: ['productMedia']
-      }
+        refetchQueries: ['productMedia'],
+      },
     }
   ),
   graphql(
@@ -93,42 +93,42 @@ export default compose(
     {
       name: 'reorderProductMedia',
       options: {
-        refetchQueries: ['productMedia']
-      }
+        refetchQueries: ['productMedia'],
+      },
     }
   ),
   mapProps(({ data: { product }, ...rest }) => ({
     items: (product && product.media) || [],
     isEditingDisabled: !product || product.status === 'DELETED',
     pressDelay: 200,
-    ...rest
+    ...rest,
   })),
   withHandlers({
     onSortEnd: ({ items, reorderProductMedia }) => async ({
       oldIndex,
-      newIndex
+      newIndex,
     }) => {
       const sortKeys = arrayMove(items, oldIndex, newIndex).map(
         (item, sortKey) => ({
           productMediaId: item._id,
-          sortKey
+          sortKey,
         })
       );
       await reorderProductMedia({
         variables: {
-          sortKeys
-        }
+          sortKeys,
+        },
       });
     },
-    onDrop: ({ productId, addProductMedia }) => async files => {
+    onDrop: ({ productId, addProductMedia }) => async (files) => {
       const media = files[0];
       await addProductMedia({
         variables: {
           media,
-          productId
-        }
+          productId,
+        },
       });
-    }
+    },
   }),
   pure,
   SortableContainer

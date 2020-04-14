@@ -9,7 +9,7 @@ const DeliveryProviderList = ({ ...rest }) => (
     {...rest}
     cols={4}
     createPath="/delivery-providers/new"
-    rowRenderer={deliveryProvider => (
+    rowRenderer={(deliveryProvider) => (
       <Table.Row key={deliveryProvider._id}>
         <Table.Cell>
           <Link href={`/delivery-providers/edit?_id=${deliveryProvider._id}`}>
@@ -62,5 +62,5 @@ export default withDataTableLoader({
         }
       }
     }
-  `
+  `,
 })(DeliveryProviderList);

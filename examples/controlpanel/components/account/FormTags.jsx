@@ -48,9 +48,9 @@ export default compose(
     tags: {
       type: Array,
       optional: true,
-      label: 'Tags (Kundensegmentierung)'
+      label: 'Tags (Kundensegmentierung)',
     },
-    'tags.$': String
+    'tags.$': String,
   }),
   withFormModel(({ data: { user } }) => ({ tags: user && user.tags } || {})),
   graphql(gql`
@@ -66,9 +66,9 @@ export default compose(
       mutate({
         variables: {
           userId,
-          ...schema.clean(dirtyInput)
-        }
-      })
+          ...schema.clean(dirtyInput),
+        },
+      }),
   }),
   withFormErrorHandlers,
   mapProps(
@@ -80,7 +80,7 @@ export default compose(
       onSubmit,
       onChange,
       onSubmitSuccess,
-      onSubmitFailure
+      onSubmitFailure,
     }) => ({
       userId,
       error,
@@ -89,7 +89,7 @@ export default compose(
       onSubmit,
       onChange,
       onSubmitSuccess,
-      onSubmitFailure
+      onSubmitFailure,
     })
   ),
   pure

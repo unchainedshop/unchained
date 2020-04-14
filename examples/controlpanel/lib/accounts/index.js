@@ -26,5 +26,5 @@ export {
   verifyEmail,
   onTokenChange,
   setTokenStore,
-  userId
+  userId,
 };

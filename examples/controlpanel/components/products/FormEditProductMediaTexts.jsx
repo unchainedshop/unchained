@@ -26,7 +26,7 @@ const FormEditProductMediaTexts = ({
   <Container>
     <AutoForm {...formProps} disabled={isEditingDisabled}>
       <Menu attached="top" tabular>
-        {languages.map(language => (
+        {languages.map((language) => (
           <Menu.Item
             key={`menu-item-${language._id}`}
             name={language.isoCode}
@@ -93,7 +93,7 @@ export default compose(
   mapProps(({ data, ...rest }) => {
     const { languages = [] } = data;
     const filteredActiveLanguages = languages.filter(
-      language => !!language.isBase
+      (language) => !!language.isBase
     );
     const baseLanguage =
       filteredActiveLanguages.length > 0
@@ -103,7 +103,7 @@ export default compose(
       data,
       languages,
       baseLanguage,
-      ...rest
+      ...rest,
     };
   }),
   withState(
@@ -130,40 +130,40 @@ export default compose(
     `,
     {
       options: {
-        refetchQueries: ['productMediaTexts', 'productMedia']
-      }
+        refetchQueries: ['productMediaTexts', 'productMedia'],
+      },
     }
   ),
   withFormSchema({
     texts: {
       type: Array,
-      optional: true
+      optional: true,
     },
     'texts.$': {
       type: Object,
-      optional: true
+      optional: true,
     },
     'texts.$.locale': {
       type: String,
       optional: false,
-      label: 'Locale'
+      label: 'Locale',
     },
     'texts.$.title': {
       type: String,
       optional: true,
-      label: 'Title'
+      label: 'Title',
     },
     'texts.$.subtitle': {
       type: String,
       optional: true,
-      label: 'Subtitle'
-    }
+      label: 'Subtitle',
+    },
   }),
   withFormModel(
     ({ data: { translatedProductMediaTexts = [] }, languages = [] }) => {
-      const texts = languages.map(language => {
+      const texts = languages.map((language) => {
         const foundTranslations = translatedProductMediaTexts.filter(
-          translatedText => translatedText.locale === language.isoCode
+          (translatedText) => translatedText.locale === language.isoCode
         );
         const localizedTextForLocale =
           foundTranslations.length > 0
@@ -186,9 +186,9 @@ export default compose(
       mutate({
         variables: {
           texts: schema.clean(dirtyInput).texts,
-          productMediaId
-        }
-      })
+          productMediaId,
+        },
+      }),
   }),
   withFormErrorHandlers,
   mapProps(
@@ -202,7 +202,7 @@ export default compose(
       ...rest
     }) => ({
       activeLanguage: selectedLocale || baseLanguage,
-      ...rest
+      ...rest,
     })
   ),
   pure

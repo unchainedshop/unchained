@@ -29,8 +29,8 @@ export default compose(
     `,
     {
       options: {
-        refetchQueries: ['orders']
-      }
+        refetchQueries: ['orders'],
+      },
     }
   ),
   withHandlers({
@@ -38,15 +38,15 @@ export default compose(
       if (confirm('Really?')) { // eslint-disable-line
         await mutate({
           variables: {
-            orderId
-          }
+            orderId,
+          },
         });
         router.push('/orders');
       }
-    }
+    },
   }),
   mapProps(({ orderId, mutate, ...rest }) => ({
-    ...rest
+    ...rest,
   })),
   pure
 )(BtnRemoveOrder);

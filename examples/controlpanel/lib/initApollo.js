@@ -1,7 +1,7 @@
 import { ApolloClient } from 'apollo-client';
 import {
   InMemoryCache,
-  IntrospectionFragmentMatcher
+  IntrospectionFragmentMatcher,
 } from 'apollo-cache-inmemory';
 import { onError } from 'apollo-link-error';
 import { ApolloLink } from 'apollo-link';
@@ -21,7 +21,7 @@ if (!process.browser) {
 }
 
 const fragmentMatcher = new IntrospectionFragmentMatcher({
-  introspectionQueryResultData
+  introspectionQueryResultData,
 });
 
 function create(initialState, headersOverride, getToken) {
@@ -33,7 +33,7 @@ function create(initialState, headersOverride, getToken) {
       : browserFallback;
   const httpLink = createUploadLink({
     uri: publicRuntimeConfig.GRAPHQL_ENDPOINT || fallback,
-    credentials: 'same-origin'
+    credentials: 'same-origin',
   });
   const errorLink = onError(({ graphQLErrors, networkError }) => {
     if (graphQLErrors) {
@@ -66,20 +66,20 @@ function create(initialState, headersOverride, getToken) {
 
   const cache = new InMemoryCache({
     fragmentMatcher,
-    dataIdFromObject: result => {
+    dataIdFromObject: (result) => {
       if (result._id && result.__typename) { // eslint-disable-line
         return `${result.__typename}:${result._id}`; // eslint-disable-line
       } else if (result.id && result.__typename) { // eslint-disable-line
         return `${result.__typename}:${result.id}`; // eslint-disable-line
       }
       return null;
-    }
+    },
   });
   return new ApolloClient({
     connectToDevTools: process.browser,
     ssrMode: !process.browser, // Disables forceFetch on the server (so queries are only run once)
     link: ApolloLink.from([errorLink, middlewareLink, httpLink]),
-    cache: cache.restore(initialState || {})
+    cache: cache.restore(initialState || {}),
   });
 }
 

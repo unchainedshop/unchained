@@ -14,7 +14,7 @@ const ProductVariationItem = ({
   isEditing,
   toggleEditing,
   isEditingDisabled,
-  removeVariation
+  removeVariation,
 }) => (
   <List.Item>
     <List.Content floated="right">
@@ -58,8 +58,8 @@ export default compose(
     {
       name: 'removeProductVariation',
       options: {
-        refetchQueries: ['productVariations']
-      }
+        refetchQueries: ['productVariations'],
+      },
     }
   ),
   withState('isEditing', 'setIsEditing', false),
@@ -67,13 +67,13 @@ export default compose(
     removeVariation: ({ removeProductVariation, _id }) => async () => {
       await removeProductVariation({
         variables: {
-          productVariationId: _id
-        }
+          productVariationId: _id,
+        },
       });
     },
-    toggleEditing: ({ isEditing, setIsEditing }) => event => {
+    toggleEditing: ({ isEditing, setIsEditing }) => (event) => {
       if (event && event.preventDefault) event.preventDefault();
       setIsEditing(!isEditing);
-    }
+    },
   })
 )(ProductVariationItem);

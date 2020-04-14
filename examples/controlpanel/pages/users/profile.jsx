@@ -6,7 +6,7 @@ import App from '../../components/App';
 import FormProfile from '../../components/users/FormProfile';
 import connectApollo from '../../lib/connectApollo';
 
-const redirect = router => () => {
+const redirect = (router) => () => {
   toast('Profile updated', { type: toast.TYPE.SUCCESS });
   router.push({ pathname: '/users/profile' });
 };

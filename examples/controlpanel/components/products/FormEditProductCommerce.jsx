@@ -109,52 +109,53 @@ export default compose(
     `,
     {
       options: {
-        refetchQueries: ['productCommerceInfo']
-      }
+        refetchQueries: ['productCommerceInfo'],
+      },
     }
   ),
   withFormSchema(({ data: { countries } }) => ({
     pricing: {
       type: Array,
-      minCount: 1
+      minCount: 1,
     },
     'pricing.$': {
-      type: Object
+      type: Object,
     },
     'pricing.$.countryCurrency': {
       type: String,
       allowedValues: (countries || []).reduce(
         (allCombinations, country) => [
           ...allCombinations,
-          `${country.isoCode} / ${country.defaultCurrency &&
-            country.defaultCurrency.isoCode}`
+          `${country.isoCode} / ${
+            country.defaultCurrency && country.defaultCurrency.isoCode
+          }`,
         ],
         [null]
-      )
+      ),
     },
     'pricing.$.countryCode': {
       optional: true,
-      type: String
+      type: String,
     },
     'pricing.$.currencyCode': {
       optional: true,
-      type: String
+      type: String,
     },
     'pricing.$.maxQuantity': {
-      type: Number
+      type: Number,
     },
     'pricing.$.isTaxable': {
       type: Boolean,
-      optional: true
+      optional: true,
     },
     'pricing.$.isNetPrice': {
       type: Boolean,
-      optional: true
+      optional: true,
     },
     'pricing.$.amount': {
       type: Number,
-      defaultValue: 0
-    }
+      defaultValue: 0,
+    },
   })),
   withFormModel(({ data: { countries, productCatalogPrices } = {} }) => {
     const productPricing = productCatalogPrices || [];
@@ -169,20 +170,20 @@ export default compose(
           currencyCode: price.currency,
           maxQuantity: maxQuantity || 0,
           isTaxable,
-          isNetPrice
+          isNetPrice,
         };
       }
     );
 
     const defaultPairs = countries || [];
-    defaultPairs.forEach(country => {
+    defaultPairs.forEach((country) => {
       const price = {
         countryCode: country.isoCode,
         currencyCode:
           country.defaultCurrency && country.defaultCurrency.isoCode,
         maxQuantity: 0,
         isTaxable: true,
-        isNetPrice: false
+        isNetPrice: false,
       };
       const id = `${price.countryCode}:${price.currencyCode}`;
       if (!burnedIds.includes(id)) {
@@ -192,10 +193,10 @@ export default compose(
 
     const pricing = Object.keys(productPricingMap)
       .map(
-        key =>
+        (key) =>
           productPricingMap[key] && {
             countryCurrency: `${productPricingMap[key].countryCode} / ${productPricingMap[key].currencyCode}`,
-            ...productPricingMap[key]
+            ...productPricingMap[key],
           }
       )
       .filter(Boolean)
@@ -216,20 +217,20 @@ export default compose(
       const newPricing = pricing.map(({ countryCurrency, ...rest }) => ({
         countryCode: countryCurrency.split(' / ')[0],
         currencyCode: countryCurrency.split(' / ')[1],
-        ...rest
+        ...rest,
       }));
       return mutate({
         variables: {
           commerce: schema.clean({ pricing: newPricing }),
-          productId
-        }
+          productId,
+        },
       });
-    }
+    },
   }),
   withFormErrorHandlers,
   mapProps(({ productId, mutate, data, ...rest }) => ({
     isEditingDisabled: !data.product || data.product.status === 'DELETED',
-    ...rest
+    ...rest,
   })),
   pure
 )(FormEditProductCommerce);

@@ -7,7 +7,7 @@ const ProductBundleItemListItem = ({
   product,
   quantity,
   isEditing,
-  removeItem
+  removeItem,
 }) => (
   <List.Item>
     <List.Content floated="right">
@@ -29,9 +29,9 @@ const ProductBundleItemListItem = ({
 export default compose(
   withState('isEditing', 'setIsEditing', false),
   withHandlers({
-    toggleEditing: ({ isEditing, setIsEditing }) => event => {
+    toggleEditing: ({ isEditing, setIsEditing }) => (event) => {
       if (event && event.preventDefault) event.preventDefault();
       setIsEditing(!isEditing);
-    }
+    },
   })
 )(ProductBundleItemListItem);

@@ -5,33 +5,35 @@ const {
   LANG,
   GRAPHQL_ENDPOINT,
   DEBUG = false,
-  BUNDLE_ANALYZE = false
+  ROOT_URL,
+  BUNDLE_ANALYZE = false,
 } = process.env;
 
 module.exports = withCss({
+  assetPrefix: ROOT_URL || '',
   exportTrailingSlash: true,
   analyzeServer: ['server', 'both'].includes(BUNDLE_ANALYZE),
   analyzeBrowser: ['browser', 'both'].includes(BUNDLE_ANALYZE),
   bundleAnalyzerConfig: {
     server: {
       analyzerMode: 'static',
-      reportFilename: '../.next/server.html'
+      reportFilename: '../.next/server.html',
     },
     browser: {
       analyzerMode: 'static',
-      reportFilename: '../.next/client.html'
-    }
+      reportFilename: '../.next/client.html',
+    },
   },
   publicRuntimeConfig: {
     // Will be available on both server and client
     LANG,
     GRAPHQL_ENDPOINT,
-    DEBUG
+    DEBUG,
   },
   webpack(config) {
     const newConfig = config;
     newConfig.module.rules.push({
-      test: /\.(png|svg|eot|otf|ttf|woff|woff2)$/,
+      test: /\.(png|svg|jpg|eot|otf|ttf|woff|woff2)$/,
       use: {
         loader: 'url-loader',
         options: {
@@ -39,10 +41,10 @@ module.exports = withCss({
           esModule: false,
           publicPath: './',
           outputPath: 'static/',
-          name: '[name].[ext]'
-        }
-      }
+          name: '[name].[ext]',
+        },
+      },
     });
     return newConfig;
-  }
+  },
 });

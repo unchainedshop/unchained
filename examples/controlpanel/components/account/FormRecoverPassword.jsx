@@ -9,7 +9,7 @@ import { forgotPassword } from '../../lib/accounts';
 import withFormSchema from '../../lib/withFormSchema';
 import withFormErrorHandlers from '../../lib/withFormErrorHandlers';
 
-const FormRecoverPassword = formProps => (
+const FormRecoverPassword = (formProps) => (
   <AutoForm {...formProps}>
     <AutoField name="email" />
     <ErrorsField />
@@ -22,11 +22,11 @@ export default compose(
   withFormSchema({
     email: {
       type: String,
-      label: 'E-Mail Adresse'
-    }
+      label: 'E-Mail Adresse',
+    },
   }),
   withHandlers({
-    onSubmit: ({ client }) => ({ email }) => forgotPassword({ email }, client)
+    onSubmit: ({ client }) => ({ email }) => forgotPassword({ email }, client),
   }),
   withFormErrorHandlers,
   mapProps(({ client, ...rest }) => ({ ...rest })),

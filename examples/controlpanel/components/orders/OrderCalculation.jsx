@@ -11,7 +11,7 @@ const OrderPositionList = ({
   payment,
   taxes,
   net,
-  discounts
+  discounts,
 }) => (
   <Segment secondary>
     <Label horizontal attached="top">

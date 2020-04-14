@@ -4,7 +4,7 @@ import App from '../../components/App';
 import FormNewCountry from '../../components/countries/FormNewCountry';
 import connectApollo from '../../lib/connectApollo';
 
-export default connectApollo(props => (
+export default connectApollo((props) => (
   <App {...props}>
     <Container>
       <p>New country</p>

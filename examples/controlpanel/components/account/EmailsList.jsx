@@ -9,7 +9,7 @@ const EmailsList = ({
   userId,
   emails,
   onSubmitSuccess,
-  disableResendVerificationEmail
+  disableResendVerificationEmail,
 }) => (
   <>
     {emails.map(({ address, verified }) => (
@@ -40,7 +40,7 @@ export default compose(
     }
   `),
   withProps(({ data: { user: { emails = [] } = {} } }) => ({
-    emails
+    emails,
   })),
   pure
 )(EmailsList);

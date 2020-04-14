@@ -20,7 +20,7 @@ const OrderPositionList = ({ items }) => (
       </Table.Header>
       {items && (
         <Table.Body>
-          {items.map(item => (
+          {items.map((item) => (
             <Table.Row key={item._id}>
               <Table.Cell>
                 {item.quantity}
@@ -69,7 +69,7 @@ export default compose(
     }
   `),
   mapProps(({ data: { order = {} } }) => ({
-    items: order.items
+    items: order.items,
   })),
   pure
 )(OrderPositionList);

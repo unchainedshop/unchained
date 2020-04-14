@@ -12,7 +12,7 @@ let verificationStarted = false;
 const Verifier = withApollo(
   createSink(async ({ router, client }) => {
     const {
-      query: { expired, token }
+      query: { expired, token },
     } = router;
     if (token && !expired && !verificationStarted) {
       try {

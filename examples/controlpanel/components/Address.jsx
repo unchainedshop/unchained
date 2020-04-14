@@ -10,7 +10,7 @@ export default ({
   postalCode = null,
   city = '',
   countryCode = '',
-  regionCode = null
+  regionCode = null,
 }) => (
   <List>
     <List.Item>

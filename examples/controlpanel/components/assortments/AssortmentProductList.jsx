@@ -59,31 +59,31 @@ export default compose(
     {
       name: 'reorderAssortmentProducts',
       options: {
-        refetchQueries: ['assortmentProducts']
-      }
+        refetchQueries: ['assortmentProducts'],
+      },
     }
   ),
   mapProps(({ data: { assortment }, ...rest }) => ({
     items: (assortment && assortment.productAssignments) || [],
-    ...rest
+    ...rest,
   })),
   withHandlers({
     onSortEnd: ({ items, reorderAssortmentProducts }) => async ({
       oldIndex,
-      newIndex
+      newIndex,
     }) => {
       const sortKeys = arrayMove(items, oldIndex, newIndex).map(
         (item, sortKey) => ({
           assortmentProductId: item._id,
-          sortKey
+          sortKey,
         })
       );
       await reorderAssortmentProducts({
         variables: {
-          sortKeys
-        }
+          sortKeys,
+        },
       });
-    }
+    },
   }),
   pure,
   SortableContainer

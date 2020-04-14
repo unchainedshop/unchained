@@ -83,8 +83,8 @@ export default compose(
     {
       name: 'updatePaymentProvider',
       options: {
-        refetchQueries: ['paymentProvider', 'paymentProviders']
-      }
+        refetchQueries: ['paymentProvider', 'paymentProviders'],
+      },
     }
   ),
   graphql(
@@ -98,29 +98,29 @@ export default compose(
     {
       name: 'removePaymentProvider',
       options: {
-        refetchQueries: ['paymentProviders']
-      }
+        refetchQueries: ['paymentProviders'],
+      },
     }
   ),
   withFormSchema({
     configuration: {
       type: Array,
       optional: false,
-      label: 'Konfigurationsparameter'
+      label: 'Konfigurationsparameter',
     },
     'configuration.$': {
-      type: Object
+      type: Object,
     },
     'configuration.$.key': {
-      type: String
+      type: String,
     },
     'configuration.$.value': {
-      type: String
-    }
+      type: String,
+    },
   }),
   withFormModel(
     ({ data: { paymentProvider: { ...paymentProvider } = {} } }) => ({
-      ...paymentProvider
+      ...paymentProvider,
     })
   ),
   withHandlers({
@@ -130,25 +130,25 @@ export default compose(
     removePaymentProvider: ({
       router,
       removePaymentProvider,
-      paymentProviderId
-    }) => async event => {
+      paymentProviderId,
+    }) => async (event) => {
       event.preventDefault();
       router.replace({ pathname: '/payment-providers' });
       await removePaymentProvider({
         variables: {
-          paymentProviderId
-        }
+          paymentProviderId,
+        },
       });
     },
     onSubmit: ({ paymentProviderId, updatePaymentProvider }) => ({
-      configuration
+      configuration,
     }) =>
       updatePaymentProvider({
         variables: {
           paymentProvider: { configuration },
-          paymentProviderId
-        }
-      })
+          paymentProviderId,
+        },
+      }),
   }),
   withFormErrorHandlers,
   mapProps(
@@ -159,7 +159,7 @@ export default compose(
       ...rest
     }) => ({
       configurationError,
-      ...rest
+      ...rest,
     })
   )
 )(FormEditPaymentProvider);

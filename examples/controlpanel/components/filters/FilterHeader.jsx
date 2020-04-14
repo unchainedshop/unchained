@@ -64,7 +64,7 @@ const FilterHeader = ({ loading, filter = {} }) => [
         </Grid.Column>
       </Grid.Row>
     </Grid>
-  </Segment>
+  </Segment>,
 ];
 
 export default compose(
@@ -90,7 +90,7 @@ export default compose(
   mapProps(({ data: { filter, loading }, ...rest }) => ({
     filter,
     loading,
-    ...rest
+    ...rest,
   })),
   pure
 )(FilterHeader);

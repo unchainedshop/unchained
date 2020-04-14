@@ -64,8 +64,8 @@ export default compose(
     {
       name: 'updateCountry',
       options: {
-        refetchQueries: ['country', 'countries']
-      }
+        refetchQueries: ['country', 'countries'],
+      },
     }
   ),
   graphql(
@@ -79,66 +79,66 @@ export default compose(
     {
       name: 'removeCountry',
       options: {
-        refetchQueries: ['countries']
-      }
+        refetchQueries: ['countries'],
+      },
     }
   ),
   withFormSchema({
     isoCode: {
       type: String,
       optional: false,
-      label: 'ISO Country code'
+      label: 'ISO Country code',
     },
     defaultCurrencyId: {
       type: String,
       optional: true,
-      label: 'Default Currency'
+      label: 'Default Currency',
     },
     isActive: {
       type: Boolean,
       optional: false,
-      label: 'Active'
-    }
+      label: 'Active',
+    },
   }),
   withFormModel(
     ({ data: { country: { defaultCurrency, ...country } = {} } }) => ({
       defaultCurrencyId: defaultCurrency && defaultCurrency._id,
-      ...country
+      ...country,
     })
   ),
   withHandlers({
     onSubmitSuccess: () => () => {
       toast('Country saved', { type: toast.TYPE.SUCCESS }); // eslint-disable-line
     },
-    removeCountry: ({ router, removeCountry, countryId }) => async event => {
+    removeCountry: ({ router, removeCountry, countryId }) => async (event) => {
       event.preventDefault();
       router.replace({ pathname: '/countries' });
       await removeCountry({
         variables: {
-          countryId
-        }
+          countryId,
+        },
       });
     },
     onSubmit: ({ countryId, updateCountry }) => ({
       isoCode,
       defaultCurrencyId,
-      isActive
+      isActive,
     }) =>
       updateCountry({
         variables: {
           country: { isoCode, defaultCurrencyId, isActive },
-          countryId
-        }
-      })
+          countryId,
+        },
+      }),
   }),
   withFormErrorHandlers,
   mapProps(
     ({ countryId, updateCountry, data: { currencies = [] }, ...rest }) => ({
-      currencies: currencies.map(currency => ({
+      currencies: currencies.map((currency) => ({
         label: currency.isoCode,
-        value: currency._id
+        value: currency._id,
       })),
-      ...rest
+      ...rest,
     })
   )
 )(FormEditCountry);

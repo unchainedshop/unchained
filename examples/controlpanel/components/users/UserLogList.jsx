@@ -61,7 +61,7 @@ export default compose(
     }
   `),
   mapProps(({ data: { user = {} } }) => ({
-    logs: user.logs
+    logs: user.logs,
   })),
   pure
 )(UserLogList);

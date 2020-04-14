@@ -22,7 +22,7 @@ const FormProfile = ({
   onSubmit,
   onChange,
   onSubmitSuccess,
-  onSubmitFailure
+  onSubmitFailure,
 }) => (
   <Segment>
     <AutoForm
@@ -34,7 +34,7 @@ const FormProfile = ({
         onSubmit,
         onChange,
         onSubmitSuccess,
-        onSubmitFailure
+        onSubmitFailure,
       }}
     >
       <Grid stackable columns={4}>
@@ -163,22 +163,22 @@ export default compose(
     displayName: {
       type: String,
       optional: false,
-      label: 'Display name'
+      label: 'Display name',
     },
     birthday: {
       type: Date,
       optional: true,
-      label: 'Birthday'
+      label: 'Birthday',
     },
     phoneMobile: {
       type: String,
       optional: true,
-      label: 'Mobile phone'
+      label: 'Mobile phone',
     },
     tags: {
       type: Array,
       optional: true,
-      label: 'Tags (segmentation)'
+      label: 'Tags (segmentation)',
     },
     'tags.$': String,
     gender: {
@@ -190,60 +190,60 @@ export default compose(
           { label: 'Unspecified', value: 'u' },
           { label: 'Company', value: 'c' },
           { label: 'Male', value: 'm' },
-          { label: 'Female', value: 'f' }
-        ]
-      }
+          { label: 'Female', value: 'f' },
+        ],
+      },
     },
     address: {
       type: Object,
       optional: true,
-      label: 'Legal Address'
+      label: 'Legal Address',
     },
     'address.firstName': {
       type: String,
       optional: true,
-      label: 'Firstname'
+      label: 'Firstname',
     },
     'address.lastName': {
       type: String,
       optional: true,
-      label: 'Lastname'
+      label: 'Lastname',
     },
     'address.company': {
       type: String,
       optional: true,
-      label: 'Company'
+      label: 'Company',
     },
     'address.addressLine': {
       type: String,
       optional: true,
-      label: 'Address line 1 (Street, Houseno)'
+      label: 'Address line 1 (Street, Houseno)',
     },
     'address.addressLine2': {
       type: String,
       optional: true,
-      label: 'Address line 2'
+      label: 'Address line 2',
     },
     'address.postalCode': {
       type: String,
       optional: true,
-      label: 'Postal/ZIP'
+      label: 'Postal/ZIP',
     },
     'address.countryCode': {
       type: String,
       optional: true,
-      label: 'Country Code'
+      label: 'Country Code',
     },
     'address.regionCode': {
       type: String,
       optional: true,
-      label: 'Region Code'
+      label: 'Region Code',
     },
     'address.city': {
       type: String,
       optional: true,
-      label: 'City/Commune'
-    }
+      label: 'City/Commune',
+    },
   }),
   withFormModel(({ data: { user } }) => (user && user.profile) || {}),
   withHandlers({
@@ -251,9 +251,9 @@ export default compose(
       mutate({
         variables: {
           userId,
-          profile: schema.clean(dirtyInput, { autoConvert: false })
-        }
-      })
+          profile: schema.clean(dirtyInput, { autoConvert: false }),
+        },
+      }),
   }),
   withFormErrorHandlers,
   pure

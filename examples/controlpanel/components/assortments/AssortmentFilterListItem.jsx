@@ -32,18 +32,18 @@ export default compose(
     {
       name: 'removeAssortmentFilter',
       options: {
-        refetchQueries: ['assortmentFilters']
-      }
+        refetchQueries: ['assortmentFilters'],
+      },
     }
   ),
   withHandlers({
     removeAssortmentFilter: ({ removeAssortmentFilter, _id }) => async () => {
       await removeAssortmentFilter({
         variables: {
-          assortmentFilterId: _id
-        }
+          assortmentFilterId: _id,
+        },
       });
-    }
+    },
   }),
   SortableElement
 )(AssortmentFilterListItem);

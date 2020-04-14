@@ -7,7 +7,7 @@ export default compose(
     onChange: ({ updateMappedError }) => () => {
       updateMappedError(null);
     },
-    onSubmitFailure: ({ mapError }) => mapError
+    onSubmitFailure: ({ mapError }) => mapError,
   }),
   mapProps(
     ({
@@ -18,7 +18,7 @@ export default compose(
       ...rest
     }) => ({
       error: mappedError,
-      ...rest
+      ...rest,
     })
   )
 );

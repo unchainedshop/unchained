@@ -57,7 +57,7 @@ const AssortmentHeader = ({ loading, assortmentId, assortment = {} }) => [
         </Grid.Column>
       </Grid.Row>
     </Grid>
-  </Segment>
+  </Segment>,
 ];
 
 export default compose(
@@ -77,6 +77,6 @@ export default compose(
   mapProps(({ data: { assortment, loading }, ...rest }) => ({
     assortment,
     loading,
-    ...rest
+    ...rest,
   }))
 )(AssortmentHeader);

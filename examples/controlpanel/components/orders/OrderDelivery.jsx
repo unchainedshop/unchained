@@ -8,7 +8,7 @@ import Link from 'next/link';
 import Address from '../Address';
 import GeoPoint from '../GeoPoint';
 
-const colorForStatus = status => {
+const colorForStatus = (status) => {
   if (status === 'DELIVERED') return 'green';
   return 'red';
 };
@@ -21,7 +21,7 @@ const OrderDelivery = ({
   statusColor,
   orderStatus,
   delivered,
-  activePickUpLocation
+  activePickUpLocation,
 }) => (
   <Segment secondary>
     <Label color={statusColor} horizontal attached="top">
@@ -104,8 +104,8 @@ export default compose(
     {
       name: 'deliverOrder',
       options: {
-        refetchQueries: ['orders', 'order']
-      }
+        refetchQueries: ['orders', 'order'],
+      },
     }
   ),
   graphql(gql`
@@ -185,9 +185,9 @@ export default compose(
     deliverOrder: ({ deliverOrder, orderId }) => () =>
       deliverOrder({
         variables: {
-          orderId
-        }
-      })
+          orderId,
+        },
+      }),
   }),
   mapProps(({ deliverOrder, data: { order = {} } }) => ({
     ...order.delivery,
@@ -195,6 +195,6 @@ export default compose(
     deliveryAddress: order.delivery && order.delivery.address,
     activePickUpLocation: order.delivery && order.delivery.activePickUpLocation,
     statusColor: colorForStatus(order.delivery && order.delivery.status),
-    orderStatus: order.status
+    orderStatus: order.status,
   }))
 )(OrderDelivery);

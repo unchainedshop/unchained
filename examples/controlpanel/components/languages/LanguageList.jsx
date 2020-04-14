@@ -11,7 +11,7 @@ const LanguageList = ({ changeBaseLanguage, ...rest }) => (
     {...rest}
     cols={3}
     createPath="/languages/new"
-    rowRenderer={language => (
+    rowRenderer={(language) => (
       <Table.Row key={language._id}>
         <Table.Cell>
           <Link href={`/languages/edit?_id=${language._id}`}>
@@ -58,7 +58,7 @@ export default compose(
           name
         }
       }
-    `
+    `,
   }),
   graphql(
     gql`
@@ -71,13 +71,13 @@ export default compose(
     `,
     {
       options: {
-        refetchQueries: ['languages']
-      }
+        refetchQueries: ['languages'],
+      },
     }
   ),
   withHandlers({
     changeBaseLanguage: ({ mutate }) => (event, element) =>
-      mutate({ variables: { languageId: element.name } })
+      mutate({ variables: { languageId: element.name } }),
   }),
   pure
 )(LanguageList);

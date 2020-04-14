@@ -67,31 +67,31 @@ export default compose(
     {
       name: 'reorderAssortmentLinks',
       options: {
-        refetchQueries: ['assortmentLinks']
-      }
+        refetchQueries: ['assortmentLinks'],
+      },
     }
   ),
   mapProps(({ data: { assortment }, ...rest }) => ({
     items: (assortment && assortment.linkedAssortments) || [],
-    ...rest
+    ...rest,
   })),
   withHandlers({
     onSortEnd: ({ items, reorderAssortmentLinks }) => async ({
       oldIndex,
-      newIndex
+      newIndex,
     }) => {
       const sortKeys = arrayMove(items, oldIndex, newIndex).map(
         (item, sortKey) => ({
           assortmentLinkId: item._id,
-          sortKey
+          sortKey,
         })
       );
       await reorderAssortmentLinks({
         variables: {
-          sortKeys
-        }
+          sortKeys,
+        },
       });
-    }
+    },
   }),
   pure,
   SortableContainer

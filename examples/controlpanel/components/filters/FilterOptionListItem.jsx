@@ -11,7 +11,7 @@ const FilterOptionItem = ({
   value,
   isEditing,
   toggleEditing,
-  removeFilterOption
+  removeFilterOption,
 }) => (
   <List.Item>
     <List.Content floated="right">
@@ -54,8 +54,8 @@ export default compose(
     {
       name: 'removeFilterOption',
       options: {
-        refetchQueries: ['filterOptions']
-      }
+        refetchQueries: ['filterOptions'],
+      },
     }
   ),
   withState('isEditing', 'setIsEditing', false),
@@ -63,18 +63,18 @@ export default compose(
     removeFilterOption: ({
       removeFilterOption,
       value,
-      filterId
+      filterId,
     }) => async () => {
       await removeFilterOption({
         variables: {
           filterId,
-          filterOptionValue: value
-        }
+          filterOptionValue: value,
+        },
       });
     },
-    toggleEditing: ({ isEditing, setIsEditing }) => event => {
+    toggleEditing: ({ isEditing, setIsEditing }) => (event) => {
       if (event && event.preventDefault) event.preventDefault();
       setIsEditing(!isEditing);
-    }
+    },
   })
 )(FilterOptionItem);

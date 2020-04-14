@@ -14,7 +14,7 @@ const ProductMediaListItem = ({
   isEditing,
   toggleEditing,
   isEditingDisabled,
-  removeMedia
+  removeMedia,
 }) => (
   <Item>
     <Item.Image size="tiny" src={file.url} />
@@ -44,7 +44,7 @@ const ProductMediaListItem = ({
         )}
       </Item.Description>
       <Item.Extra>
-        {tags && tags.map(tag => <Label key={`tag-${tag}`}>{tag}</Label>)}
+        {tags && tags.map((tag) => <Label key={`tag-${tag}`}>{tag}</Label>)}
         {!isEditing && !isEditingDisabled && (
           <Button floated="right" onClick={toggleEditing}>
             Edit
@@ -72,8 +72,8 @@ export default compose(
     {
       name: 'removeProductMedia',
       options: {
-        refetchQueries: ['productMedia']
-      }
+        refetchQueries: ['productMedia'],
+      },
     }
   ),
   withState('isEditing', 'setIsEditing', false),
@@ -81,14 +81,14 @@ export default compose(
     removeMedia: ({ removeProductMedia, _id }) => async () => {
       await removeProductMedia({
         variables: {
-          productMediaId: _id
-        }
+          productMediaId: _id,
+        },
       });
     },
-    toggleEditing: ({ isEditing, setIsEditing }) => event => {
+    toggleEditing: ({ isEditing, setIsEditing }) => (event) => {
       if (event && event.preventDefault) event.preventDefault();
       setIsEditing(!isEditing);
-    }
+    },
   }),
   SortableElement
 )(ProductMediaListItem);

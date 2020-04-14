@@ -10,7 +10,7 @@ import AutoForm from 'uniforms-semantic/AutoForm';
 import withFormSchema from '../../lib/withFormSchema';
 import withFormErrorHandlers from '../../lib/withFormErrorHandlers';
 
-const FormNewCountry = formProps => (
+const FormNewCountry = (formProps) => (
   <AutoForm {...formProps}>
     <AutoField name="isoCode" />
     <ErrorsField />
@@ -31,33 +31,33 @@ export default compose(
     {
       name: 'createCountry',
       options: {
-        refetchQueries: ['countries']
-      }
+        refetchQueries: ['countries'],
+      },
     }
   ),
   withFormSchema({
     isoCode: {
       type: String,
       optional: false,
-      label: 'ISO Country code'
-    }
+      label: 'ISO Country code',
+    },
   }),
   withHandlers({
     onSubmitSuccess: ({ router }) => ({ data: { createCountry } }) => {
       router.replace({
         pathname: '/countries/edit',
-        query: { _id: createCountry._id }
+        query: { _id: createCountry._id },
       });
     },
     onSubmit: ({ createCountry, schema }) => ({ ...dirtyInput }) =>
       createCountry({
         variables: {
-          country: schema.clean(dirtyInput)
-        }
-      })
+          country: schema.clean(dirtyInput),
+        },
+      }),
   }),
   withFormErrorHandlers,
   mapProps(({ createCountry, ...rest }) => ({
-    ...rest
+    ...rest,
   }))
 )(FormNewCountry);

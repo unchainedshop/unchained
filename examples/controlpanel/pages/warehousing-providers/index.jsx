@@ -4,7 +4,7 @@ import App from '../../components/App';
 import WarehousingProviderList from '../../components/warehousing-providers/WarehousingProviderList';
 import connectApollo from '../../lib/connectApollo';
 
-export default connectApollo(props => (
+export default connectApollo((props) => (
   <App {...props}>
     <Container>
       <h2>Warehousing providers</h2>

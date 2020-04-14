@@ -2,7 +2,7 @@ import gql from 'graphql-tag';
 import hashPassword from './hashPassword';
 import { storeLoginToken } from './store';
 
-export default async function(
+export default async function (
   { username, email, password, profile, disableHashing = false },
   apollo
 ) {
@@ -34,7 +34,7 @@ export default async function(
         }
       }
     `,
-    variables
+    variables,
   });
 
   if (result.data.createUser) {

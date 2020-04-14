@@ -67,21 +67,21 @@ export default compose(
     `,
     {
       options: {
-        refetchQueries: ['productWarehousingInfo']
-      }
+        refetchQueries: ['productWarehousingInfo'],
+      },
     }
   ),
   withFormSchema({
     sku: {
       type: String,
       optional: true,
-      label: 'SKU'
+      label: 'SKU',
     },
     baseUnit: {
       type: String,
       optional: true,
-      label: 'Base unit'
-    }
+      label: 'Base unit',
+    },
   }),
   withFormModel(({ data: { product = {} } }) => ({ ...product })),
   withHandlers({
@@ -92,14 +92,14 @@ export default compose(
       mutate({
         variables: {
           warehousing: schema.clean(dirtyInput),
-          productId
-        }
-      })
+          productId,
+        },
+      }),
   }),
   withFormErrorHandlers,
   mapProps(({ productId, mutate, data, ...rest }) => ({
     isEditingDisabled: !data.product || data.product.status === 'DELETED',
-    ...rest
+    ...rest,
   })),
   pure
 )(FormEditProductWarehousing);

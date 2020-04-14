@@ -57,21 +57,21 @@ export default compose(
     {
       name: 'addAssortmentLink',
       options: {
-        refetchQueries: ['assortment', 'assortmentLinks']
-      }
+        refetchQueries: ['assortment', 'assortmentLinks'],
+      },
     }
   ),
   withFormSchema({
     parentAssortmentId: {
       type: String,
       label: null,
-      optional: false
+      optional: false,
     },
     childAssortmentId: {
       type: String,
       optional: false,
-      label: 'Subassortment'
-    }
+      label: 'Subassortment',
+    },
   }),
   withHandlers({
     onSubmitSuccess: () => () => {
@@ -79,14 +79,14 @@ export default compose(
     },
     onSubmit: ({ addAssortmentLink }) => ({
       parentAssortmentId,
-      childAssortmentId
+      childAssortmentId,
     }) =>
       addAssortmentLink({
         variables: {
           parentAssortmentId,
-          childAssortmentId
-        }
-      })
+          childAssortmentId,
+        },
+      }),
   }),
   withFormErrorHandlers,
   mapProps(
@@ -98,16 +98,16 @@ export default compose(
     }) => ({
       assortments: [{ label: 'Select', value: false }].concat(
         assortments
-          .map(assortment => ({
+          .map((assortment) => ({
             label: assortment.texts.title,
-            value: assortment._id
+            value: assortment._id,
           }))
           .filter(({ value }) => parentAssortmentId !== value)
       ),
       model: {
-        parentAssortmentId
+        parentAssortmentId,
       },
-      ...rest
+      ...rest,
     })
   )
 )(FormNewAssortmentLink);

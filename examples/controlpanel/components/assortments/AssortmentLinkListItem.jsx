@@ -42,17 +42,17 @@ export default compose(
     {
       name: 'removeAssortmentLink',
       options: {
-        refetchQueries: ['assortmentLinks']
-      }
+        refetchQueries: ['assortmentLinks'],
+      },
     }
   ),
   withHandlers({
     removeAssortmentLink: ({ removeAssortmentLink, _id }) => async () => {
       await removeAssortmentLink({
         variables: {
-          assortmentLinkId: _id
-        }
+          assortmentLinkId: _id,
+        },
       });
-    }
+    },
   })
 )(AssortmentLinkListItem);

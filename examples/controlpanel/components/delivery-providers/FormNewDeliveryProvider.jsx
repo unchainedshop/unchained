@@ -54,8 +54,8 @@ export default compose(
     {
       name: 'createDeliveryProvider',
       options: {
-        refetchQueries: ['deliveryProviders']
-      }
+        refetchQueries: ['deliveryProviders'],
+      },
     }
   ),
   withFormSchema(
@@ -63,8 +63,8 @@ export default compose(
       providerType,
       data: {
         deliveryProviderType = { options: [] },
-        deliveryInterfaces = []
-      } = {}
+        deliveryInterfaces = [],
+      } = {},
     }) => ({
       type: {
         type: String,
@@ -74,9 +74,9 @@ export default compose(
         uniforms: {
           options: [
             { label: 'Choose Type', value: null },
-            ...deliveryProviderType.options
-          ]
-        }
+            ...deliveryProviderType.options,
+          ],
+        },
       },
       adapterKey: {
         type: String,
@@ -85,28 +85,28 @@ export default compose(
         uniforms: {
           options: [
             { label: 'Choose Adapter', value: null },
-            ...deliveryInterfaces
-          ]
-        }
-      }
+            ...deliveryInterfaces,
+          ],
+        },
+      },
     })
   ),
   withHandlers({
     onSubmitSuccess: ({ router }) => ({ data: { createDeliveryProvider } }) => {
       router.replace({
         pathname: '/delivery-providers/edit',
-        query: { _id: createDeliveryProvider._id }
+        query: { _id: createDeliveryProvider._id },
       });
     },
     onSubmit: ({ createDeliveryProvider, schema }) => ({ ...dirtyInput }) =>
       createDeliveryProvider({
         variables: {
-          deliveryProvider: schema.clean(dirtyInput)
-        }
-      })
+          deliveryProvider: schema.clean(dirtyInput),
+        },
+      }),
   }),
   withFormErrorHandlers,
   mapProps(({ createDeliveryProvider, ...rest }) => ({
-    ...rest
+    ...rest,
   }))
 )(FormNewDeliveryProvider);

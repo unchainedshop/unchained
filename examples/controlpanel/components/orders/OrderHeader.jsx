@@ -11,12 +11,12 @@ import {
   Dropdown,
   Label,
   Icon,
-  Grid
+  Grid,
 } from 'semantic-ui-react';
 import Address from '../Address';
 import BtnRemoveOrder from './BtnRemoveOrder';
 
-const colorForStatus = status => {
+const colorForStatus = (status) => {
   if (status === 'OPEN') return 'red';
   if (status === 'FULLFILLED') return 'green';
   return 'orange';
@@ -36,7 +36,7 @@ const OrderHeader = ({
   billingAddress,
   statusColor,
   confirmOrder,
-  user
+  user,
 }) => [
   <Menu fluid attached="top" borderless key="header-title">
     <Menu.Item header>
@@ -150,7 +150,7 @@ const OrderHeader = ({
         </Grid.Column>
       </Grid.Row>
     </Grid>
-  </Segment>
+  </Segment>,
 ];
 
 export default compose(
@@ -174,8 +174,8 @@ export default compose(
     {
       name: 'confirmOrder',
       options: {
-        refetchQueries: ['orders', 'order']
-      }
+        refetchQueries: ['orders', 'order'],
+      },
     }
   ),
   graphql(gql`
@@ -223,14 +223,14 @@ export default compose(
     confirmOrder: ({ confirmOrder, orderId }) => () =>
       confirmOrder({
         variables: {
-          orderId
-        }
-      })
+          orderId,
+        },
+      }),
   }),
   mapProps(({ confirmOrder, data: { order = {} } }) => ({
     statusColor: colorForStatus(order.status),
     confirmOrder,
-    ...order
+    ...order,
   })),
   pure
 )(OrderHeader);

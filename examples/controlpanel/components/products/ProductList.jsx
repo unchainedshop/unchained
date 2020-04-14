@@ -45,7 +45,7 @@ const ProductList = ({ products, loadMoreEntries, hasMore }) => (
           </Table.Row>
         }
       >
-        {products.map(product => (
+        {products.map((product) => (
           <Table.Row key={product._id}>
             <Table.Cell>
               <Link href={`/products/edit?_id=${product._id}`}>
@@ -62,7 +62,7 @@ const ProductList = ({ products, loadMoreEntries, hasMore }) => (
             <Table.Cell>
               {product.tags &&
                 product.tags.length > 0 &&
-                product.tags.map(tag => (
+                product.tags.map((tag) => (
                   <Label key={tag} color="grey" horizontal>
                     {tag}
                   </Label>
@@ -116,12 +116,12 @@ export default compose(
     options: () => ({
       variables: {
         offset: 0,
-        limit: ITEMS_PER_PAGE
-      }
+        limit: ITEMS_PER_PAGE,
+      },
     }),
     props: ({
       data: { loading, products, fetchMore },
-      ownProps: { updateHasMore }
+      ownProps: { updateHasMore },
     }) => ({
       loading,
       products,
@@ -129,7 +129,7 @@ export default compose(
         fetchMore({
           variables: {
             offset: products.length,
-            limit: ITEMS_PER_PAGE
+            limit: ITEMS_PER_PAGE,
           },
           updateQuery: (previousResult, { fetchMoreResult }) => {
             if (!fetchMoreResult || fetchMoreResult.products.length === 0) {
@@ -149,12 +149,12 @@ export default compose(
               ...previousResult,
               products: [
                 ...previousResult.products,
-                ...fetchMoreResult.products
-              ]
+                ...fetchMoreResult.products,
+              ],
             };
-          }
-        })
-    })
+          },
+        }),
+    }),
   }),
   pure
 )(ProductList);

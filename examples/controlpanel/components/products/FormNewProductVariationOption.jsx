@@ -10,7 +10,7 @@ import AutoForm from 'uniforms-semantic/AutoForm';
 import withFormSchema from '../../lib/withFormSchema';
 import withFormErrorHandlers from '../../lib/withFormErrorHandlers';
 
-const FormNewProductVariationOption = formProps => (
+const FormNewProductVariationOption = (formProps) => (
   <AutoForm {...formProps}>
     <Form.Group inline>
       <AutoField name="title" />
@@ -38,35 +38,35 @@ export default compose(
     `,
     {
       options: {
-        refetchQueries: ['productVariations']
-      }
+        refetchQueries: ['productVariations'],
+      },
     }
   ),
   withFormSchema(() => ({
     title: {
       type: String,
-      optional: false
+      optional: false,
     },
     value: {
       type: String,
-      optional: false
-    }
+      optional: false,
+    },
   })),
   withHandlers({
     onSubmitSuccess: ({ onSuccess }) => ({
-      data: { createProductVariationOption }
+      data: { createProductVariationOption },
     }) => onSuccess(createProductVariationOption._id),
     onSubmit: ({ mutate, schema, productVariationId }) => ({ ...dirtyInput }) =>
       mutate({
         variables: {
           option: schema.clean(dirtyInput),
-          productVariationId
-        }
-      })
+          productVariationId,
+        },
+      }),
   }),
   withFormErrorHandlers,
   mapProps(({ onSuccess, productVariationId, mutate, ...rest }) => ({
-    ...rest
+    ...rest,
   })),
   pure
 )(FormNewProductVariationOption);

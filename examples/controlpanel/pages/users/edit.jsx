@@ -119,7 +119,7 @@ export default connectApollo(
       },
       redirect: () => () => {
         toast('User updated', { type: toast.TYPE.SUCCESS });
-      }
+      },
     }),
     pure
   )(UsersEdit)

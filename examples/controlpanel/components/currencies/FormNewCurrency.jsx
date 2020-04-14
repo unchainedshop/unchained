@@ -10,7 +10,7 @@ import AutoForm from 'uniforms-semantic/AutoForm';
 import withFormSchema from '../../lib/withFormSchema';
 import withFormErrorHandlers from '../../lib/withFormErrorHandlers';
 
-const FormNewCurrency = formProps => (
+const FormNewCurrency = (formProps) => (
   <AutoForm {...formProps}>
     <AutoField name="isoCode" />
     <ErrorsField />
@@ -31,33 +31,33 @@ export default compose(
     {
       name: 'createCurrency',
       options: {
-        refetchQueries: ['currencies']
-      }
+        refetchQueries: ['currencies'],
+      },
     }
   ),
   withFormSchema({
     isoCode: {
       type: String,
       optional: false,
-      label: 'ISO Währungscode'
-    }
+      label: 'ISO Währungscode',
+    },
   }),
   withHandlers({
     onSubmitSuccess: ({ router }) => ({ data: { createCurrency } }) => {
       router.replace({
         pathname: '/currencies/edit',
-        query: { _id: createCurrency._id }
+        query: { _id: createCurrency._id },
       });
     },
     onSubmit: ({ createCurrency, schema }) => ({ ...dirtyInput }) =>
       createCurrency({
         variables: {
-          currency: schema.clean(dirtyInput)
-        }
-      })
+          currency: schema.clean(dirtyInput),
+        },
+      }),
   }),
   withFormErrorHandlers,
   mapProps(({ createCurrency, ...rest }) => ({
-    ...rest
+    ...rest,
   }))
 )(FormNewCurrency);

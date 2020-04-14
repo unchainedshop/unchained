@@ -54,8 +54,8 @@ export default compose(
     {
       name: 'createPaymentProvider',
       options: {
-        refetchQueries: ['paymentProviders']
-      }
+        refetchQueries: ['paymentProviders'],
+      },
     }
   ),
   withFormSchema(
@@ -63,8 +63,8 @@ export default compose(
       providerType,
       data: {
         paymentProviderType = { options: [] },
-        paymentInterfaces = []
-      } = {}
+        paymentInterfaces = [],
+      } = {},
     }) => ({
       type: {
         type: String,
@@ -74,9 +74,9 @@ export default compose(
         uniforms: {
           options: [
             { label: 'Choose Type', value: null },
-            ...paymentProviderType.options
-          ]
-        }
+            ...paymentProviderType.options,
+          ],
+        },
       },
       adapterKey: {
         type: String,
@@ -85,28 +85,28 @@ export default compose(
         uniforms: {
           options: [
             { label: 'Choose Adapter', value: null },
-            ...paymentInterfaces
-          ]
-        }
-      }
+            ...paymentInterfaces,
+          ],
+        },
+      },
     })
   ),
   withHandlers({
     onSubmitSuccess: ({ router }) => ({ data: { createPaymentProvider } }) => {
       router.replace({
         pathname: '/payment-providers/edit',
-        query: { _id: createPaymentProvider._id }
+        query: { _id: createPaymentProvider._id },
       });
     },
     onSubmit: ({ createPaymentProvider, schema }) => ({ ...dirtyInput }) =>
       createPaymentProvider({
         variables: {
-          paymentProvider: schema.clean(dirtyInput)
-        }
-      })
+          paymentProvider: schema.clean(dirtyInput),
+        },
+      }),
   }),
   withFormErrorHandlers,
   mapProps(({ createPaymentProvider, ...rest }) => ({
-    ...rest
+    ...rest,
   }))
 )(FormNewPaymentProvider);

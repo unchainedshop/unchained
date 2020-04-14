@@ -4,7 +4,7 @@ import App from '../../components/App';
 import PaymentProviderList from '../../components/payment-providers/PaymentProviderList';
 import connectApollo from '../../lib/connectApollo';
 
-export default connectApollo(props => (
+export default connectApollo((props) => (
   <App {...props}>
     <Container>
       <h2>Payments</h2>

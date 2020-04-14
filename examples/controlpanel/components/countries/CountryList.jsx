@@ -11,7 +11,7 @@ const CountryList = ({ changeBaseCountry, ...rest }) => (
     {...rest}
     cols={3}
     createPath="/countries/new"
-    rowRenderer={country => (
+    rowRenderer={(country) => (
       <Table.Row key={country._id}>
         <Table.Cell>
           <Link href={`/countries/edit?_id=${country._id}`}>
@@ -56,7 +56,7 @@ export default compose(
           name
         }
       }
-    `
+    `,
   }),
   graphql(
     gql`
@@ -69,13 +69,13 @@ export default compose(
     `,
     {
       options: {
-        refetchQueries: ['countries']
-      }
+        refetchQueries: ['countries'],
+      },
     }
   ),
   withHandlers({
     changeBaseCountry: ({ mutate }) => (event, element) =>
-      mutate({ variables: { countryId: element.name } })
+      mutate({ variables: { countryId: element.name } }),
   }),
   pure
 )(CountryList);

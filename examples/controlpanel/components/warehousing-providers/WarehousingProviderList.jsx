@@ -9,7 +9,7 @@ const WarehousingProviderList = ({ ...rest }) => (
     {...rest}
     cols={4}
     createPath="/warehousing-providers/new"
-    rowRenderer={warehousingProvider => (
+    rowRenderer={(warehousingProvider) => (
       <Table.Row key={warehousingProvider._id}>
         <Table.Cell>
           <Link
@@ -66,5 +66,5 @@ export default withDataTableLoader({
         }
       }
     }
-  `
+  `,
 })(WarehousingProviderList);

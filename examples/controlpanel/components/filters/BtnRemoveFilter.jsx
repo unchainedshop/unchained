@@ -28,8 +28,8 @@ export default compose(
     `,
     {
       options: {
-        refetchQueries: ['filters']
-      }
+        refetchQueries: ['filters'],
+      },
     }
   ),
   withHandlers({
@@ -37,15 +37,15 @@ export default compose(
       if (confirm('Really?')) { // eslint-disable-line
         await mutate({
           variables: {
-            filterId
-          }
+            filterId,
+          },
         });
         router.push('/filters');
       }
-    }
+    },
   }),
   mapProps(({ filterId, mutate, ...rest }) => ({
-    ...rest
+    ...rest,
   })),
   pure
 )(BtnRemoveFilter);

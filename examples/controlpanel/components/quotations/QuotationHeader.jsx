@@ -7,7 +7,7 @@ import React from 'react';
 import { List, Segment, Menu, Dropdown, Label, Grid } from 'semantic-ui-react';
 import BtnRemoveQuotation from './BtnRemoveQuotation';
 
-const colorForStatus = status => {
+const colorForStatus = (status) => {
   if (status === 'REQUESTED' || status === 'REJECTED') return 'red';
   if (status === 'FULLFILLED') return 'green';
   return 'orange';
@@ -27,7 +27,7 @@ const QuotationHeader = ({
   statusColor,
   verifyQuotation,
   user,
-  rejectQuotation
+  rejectQuotation,
 }) => (
   <>
     <Menu fluid attached="top" bquotationless key="header-title">
@@ -168,8 +168,8 @@ export default compose(
     {
       name: 'verifyQuotation',
       options: {
-        refetchQueries: ['quotations', 'quotation', 'quotationLogs']
-      }
+        refetchQueries: ['quotations', 'quotation', 'quotationLogs'],
+      },
     }
   ),
   graphql(
@@ -189,8 +189,8 @@ export default compose(
     {
       name: 'rejectQuotation',
       options: {
-        refetchQueries: ['quotations', 'quotation', 'quotationLogs']
-      }
+        refetchQueries: ['quotations', 'quotation', 'quotationLogs'],
+      },
     }
   ),
   graphql(gql`
@@ -230,8 +230,8 @@ export default compose(
     verifyQuotation: ({ verifyQuotation, quotationId }) => () =>
       verifyQuotation({
         variables: {
-          quotationId
-        }
+          quotationId,
+        },
       }),
     rejectQuotation: ({ rejectQuotation, quotationId }) => () => {
       const reason = prompt('Reason', ''); // eslint-disable-line
@@ -239,18 +239,18 @@ export default compose(
         variables: {
           quotationId,
           quotationContext: {
-            reason
-          }
-        }
+            reason,
+          },
+        },
       });
-    }
+    },
   }),
   mapProps(
     ({ verifyQuotation, rejectQuotation, data: { quotation = {} } }) => ({
       statusColor: colorForStatus(quotation.status),
       verifyQuotation,
       rejectQuotation,
-      ...quotation
+      ...quotation,
     })
   )
 )(QuotationHeader);

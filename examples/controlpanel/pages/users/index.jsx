@@ -4,7 +4,7 @@ import App from '../../components/App';
 import UserList from '../../components/users/UserList';
 import connectApollo from '../../lib/connectApollo';
 
-export default connectApollo(props => (
+export default connectApollo((props) => (
   <App {...props}>
     <Container>
       <h1>All users</h1>

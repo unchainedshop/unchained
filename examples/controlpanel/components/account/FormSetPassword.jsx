@@ -36,17 +36,17 @@ export default compose(
   withFormSchema({
     newPassword: {
       type: String,
-      label: 'New password (overwrite)'
-    }
+      label: 'New password (overwrite)',
+    },
   }),
   withHandlers({
     onSubmit: ({ mutate, schema, userId }) => ({ ...dirtyInput }) =>
       mutate({
         variables: {
           ...schema.clean(dirtyInput),
-          userId
-        }
-      })
+          userId,
+        },
+      }),
   }),
   withFormErrorHandlers,
   pure

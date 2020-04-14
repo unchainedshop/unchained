@@ -9,7 +9,7 @@ const PaymentProviderList = ({ ...rest }) => (
     {...rest}
     cols={4}
     createPath="/payment-providers/new"
-    rowRenderer={paymentProvider => (
+    rowRenderer={(paymentProvider) => (
       <Table.Row key={paymentProvider._id}>
         <Table.Cell>
           <Link href={`/payment-providers/edit?_id=${paymentProvider._id}`}>
@@ -59,5 +59,5 @@ export default withDataTableLoader({
         }
       }
     }
-  `
+  `,
 })(PaymentProviderList);

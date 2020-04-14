@@ -10,7 +10,7 @@ import AutoForm from 'uniforms-semantic/AutoForm';
 import withFormSchema from '../../lib/withFormSchema';
 import withFormErrorHandlers from '../../lib/withFormErrorHandlers';
 
-const FormNewLanguage = formProps => (
+const FormNewLanguage = (formProps) => (
   <AutoForm {...formProps}>
     <AutoField name="isoCode" />
     <ErrorsField />
@@ -31,34 +31,34 @@ export default compose(
     {
       name: 'createLanguage',
       options: {
-        refetchQueries: ['languages']
-      }
+        refetchQueries: ['languages'],
+      },
     }
   ),
   withFormSchema({
     isoCode: {
       type: String,
       optional: false,
-      label: 'ISO Sprachcode'
-    }
+      label: 'ISO Sprachcode',
+    },
   }),
   withHandlers({
     onSubmitSuccess: ({ router }) => ({ data: { createLanguage } }) => {
       router.replace({
         pathname: '/languages/edit',
-        query: { _id: createLanguage._id }
+        query: { _id: createLanguage._id },
       });
     },
     onSubmit: ({ createLanguage, schema }) => ({ ...dirtyInput }) =>
       createLanguage({
         variables: {
-          language: schema.clean(dirtyInput)
-        }
-      })
+          language: schema.clean(dirtyInput),
+        },
+      }),
   }),
   withFormErrorHandlers,
   mapProps(({ createLanguage, ...rest }) => ({
-    ...rest
+    ...rest,
   })),
   pure
 )(FormNewLanguage);

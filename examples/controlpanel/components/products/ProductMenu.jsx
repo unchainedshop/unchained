@@ -36,30 +36,30 @@ export default compose(
         isActive:
           router.query.tab === 'ProductTranslation' ||
           !router.query.tab ||
-          router.query.tab === ''
-      }
+          router.query.tab === '',
+      },
     ];
 
     if (product.__typename === 'SimpleProduct') {
       menuItems.push({
         name: 'ProductVisualization',
         description: 'Media',
-        isActive: router.query.tab === 'ProductVisualization'
+        isActive: router.query.tab === 'ProductVisualization',
       });
       menuItems.push({
         name: 'ProductCommerce',
         description: 'Commerce',
-        isActive: router.query.tab === 'ProductCommerce'
+        isActive: router.query.tab === 'ProductCommerce',
       });
       menuItems.push({
         name: 'ProductSupply',
         description: 'Supply',
-        isActive: router.query.tab === 'ProductSupply'
+        isActive: router.query.tab === 'ProductSupply',
       });
       menuItems.push({
         name: 'ProductWarehousing',
         description: 'Warehousing',
-        isActive: router.query.tab === 'ProductWarehousing'
+        isActive: router.query.tab === 'ProductWarehousing',
       });
     }
 
@@ -67,17 +67,17 @@ export default compose(
       menuItems.push({
         name: 'ProductVisualization',
         description: 'Media',
-        isActive: router.query.tab === 'ProductVisualization'
+        isActive: router.query.tab === 'ProductVisualization',
       });
       menuItems.push({
         name: 'ProductCommerce',
         description: 'Commerce',
-        isActive: router.query.tab === 'ProductCommerce'
+        isActive: router.query.tab === 'ProductCommerce',
       });
       menuItems.push({
         name: 'ProductProxy',
         description: 'Variations',
-        isActive: router.query.tab === 'ProductProxy'
+        isActive: router.query.tab === 'ProductProxy',
       });
     }
 
@@ -85,22 +85,22 @@ export default compose(
       menuItems.push({
         name: 'ProductVisualization',
         description: 'Media',
-        isActive: router.query.tab === 'ProductVisualization'
+        isActive: router.query.tab === 'ProductVisualization',
       });
       menuItems.push({
         name: 'ProductCommerce',
         description: 'Commerce',
-        isActive: router.query.tab === 'ProductCommerce'
+        isActive: router.query.tab === 'ProductCommerce',
       });
       menuItems.push({
         name: 'ProductBundleItems',
         description: 'Bundled products',
-        isActive: router.query.tab === 'ProductBundleItems'
+        isActive: router.query.tab === 'ProductBundleItems',
       });
     }
     return {
       typeName: (product && product.__typename) || '', // eslint-disable-line
-      menuItems
+      menuItems,
     };
   }),
   withHandlers({
@@ -109,10 +109,10 @@ export default compose(
         pathname: router.pathname,
         query: {
           ...router.query,
-          tab: element.name
-        }
+          tab: element.name,
+        },
       });
-    }
+    },
   }),
   pure
 )(ProductMenu);

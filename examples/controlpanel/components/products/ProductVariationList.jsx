@@ -98,7 +98,7 @@ export default compose(
     items: (product && product.variations) || [],
     isEditingDisabled: !product || product.status === 'DELETED',
     pressDelay: 200,
-    ...rest
+    ...rest,
   })),
   pure
 )(ProductVariationList);

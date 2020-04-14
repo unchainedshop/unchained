@@ -9,7 +9,7 @@ import AutoForm from 'uniforms-semantic/AutoForm';
 import withFormSchema from '../../lib/withFormSchema';
 import withFormErrorHandlers from '../../lib/withFormErrorHandlers';
 
-const FormNewProduct = formProps => (
+const FormNewProduct = (formProps) => (
   <AutoForm {...formProps}>
     <AutoField name="title" />
     <AutoField name="type" />
@@ -40,16 +40,16 @@ export default compose(
     title: {
       type: String,
       optional: false,
-      label: 'Name'
+      label: 'Name',
     },
     type: {
       type: String,
       optional: false,
       label: 'Type',
       uniforms: {
-        options: [{ label: 'Choose Type', value: null }, ...uniforms.options]
-      }
-    }
+        options: [{ label: 'Choose Type', value: null }, ...uniforms.options],
+      },
+    },
   })),
   withHandlers({
     onSubmitSuccess: ({ onSuccess }) => ({ data: { createProduct } }) => {
@@ -58,13 +58,13 @@ export default compose(
     onSubmit: ({ mutate, schema }) => ({ ...dirtyInput }) =>
       mutate({
         variables: {
-          product: schema.clean(dirtyInput)
-        }
-      })
+          product: schema.clean(dirtyInput),
+        },
+      }),
   }),
   withFormErrorHandlers,
   mapProps(({ onSuccess, mutate, ...rest }) => ({
-    ...rest
+    ...rest,
   })),
   pure
 )(FormNewProduct);

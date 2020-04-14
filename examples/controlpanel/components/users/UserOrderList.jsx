@@ -19,7 +19,7 @@ const UserOrderList = ({ orders }) => (
     </Table.Header>
     {orders && (
       <Table.Body>
-        {orders.map(order => (
+        {orders.map((order) => (
           <Table.Row key={order._id}>
             <Table.Cell>
               <Link href={`/orders/view?_id=${order._id}`}>
@@ -59,7 +59,7 @@ export default compose(
     }
   `),
   mapProps(({ data: { user = {} } }) => ({
-    orders: user.orders
+    orders: user.orders,
   })),
   pure
 )(UserOrderList);

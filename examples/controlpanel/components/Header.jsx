@@ -4,12 +4,13 @@ import Link from 'next/link';
 import { Menu, Dropdown } from 'semantic-ui-react';
 import { compose, pure, withHandlers, mapProps } from 'recompose';
 import { logout } from '../lib/accounts';
+import diamondSnake from '../public/diamond-snake-colored.jpg';
 
 const MenuLayout = ({ pathname, children, loading, ...rest }) => (
   <Menu color="black" pointing attached="top" size="small" {...rest}>
     <Link href="/" passHref>
       <Menu.Item active={pathname === '/'}>
-        <img src="/diamond-snake-colored.jpg" alt="unchained logo" />
+        <img src={diamondSnake} alt="unchained logo" />
       </Menu.Item>
     </Link>
     {!loading && children}
@@ -115,7 +116,7 @@ export default compose(
   withHandlers({
     logout: ({ client }) => async () => {
       await logout(client);
-    }
+    },
   }),
   mapProps(({ client, ...rest }) => ({ ...rest })),
   pure

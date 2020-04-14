@@ -17,7 +17,7 @@ const QuotationDownloads = ({ documents }) => (
       </Table.Header>
       <Table.Body>
         {documents &&
-          documents.map(doc => (
+          documents.map((doc) => (
             <Table.Row>
               <Table.Cell>
                 <a target="_new" rel="noopener" href={doc.url}>
@@ -45,7 +45,7 @@ export default compose(
     }
   `),
   mapProps(({ data: { quotation = {} } }) => ({
-    ...quotation
+    ...quotation,
   })),
   pure
 )(QuotationDownloads);

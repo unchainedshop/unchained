@@ -10,7 +10,7 @@ import AutoForm from 'uniforms-semantic/AutoForm';
 import withFormSchema from '../../lib/withFormSchema';
 import withFormErrorHandlers from '../../lib/withFormErrorHandlers';
 
-const FormNewAssortment = formProps => (
+const FormNewAssortment = (formProps) => (
   <AutoForm {...formProps}>
     <ErrorsField />
     <AutoField name={'title'} />
@@ -32,39 +32,39 @@ export default compose(
     {
       name: 'createAssortment',
       options: {
-        refetchQueries: ['assortments']
-      }
+        refetchQueries: ['assortments'],
+      },
     }
   ),
   withFormSchema({
     title: {
       type: String,
       optional: false,
-      label: 'Title'
+      label: 'Title',
     },
     isRoot: {
       type: Boolean,
       optional: false,
       defaultValue: true,
-      label: 'Root node'
-    }
+      label: 'Root node',
+    },
   }),
   withHandlers({
     onSubmitSuccess: ({ router }) => ({ data: { createAssortment } }) => {
       router.replace({
         pathname: '/assortments/edit',
-        query: { _id: createAssortment._id }
+        query: { _id: createAssortment._id },
       });
     },
     onSubmit: ({ createAssortment, schema }) => ({ ...dirtyInput }) =>
       createAssortment({
         variables: {
-          assortment: schema.clean(dirtyInput)
-        }
-      })
+          assortment: schema.clean(dirtyInput),
+        },
+      }),
   }),
   withFormErrorHandlers,
   mapProps(({ createAssortment, ...rest }) => ({
-    ...rest
+    ...rest,
   }))
 )(FormNewAssortment);

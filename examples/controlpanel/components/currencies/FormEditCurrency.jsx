@@ -62,8 +62,8 @@ export default compose(
     {
       name: 'updateCurrency',
       options: {
-        refetchQueries: ['currency', 'currencies']
-      }
+        refetchQueries: ['currency', 'currencies'],
+      },
     }
   ),
   graphql(
@@ -77,46 +77,48 @@ export default compose(
     {
       name: 'removeCurrency',
       options: {
-        refetchQueries: ['currencies']
-      }
+        refetchQueries: ['currencies'],
+      },
     }
   ),
   withFormSchema({
     isoCode: {
       type: String,
       optional: false,
-      label: 'ISO Währungscode'
+      label: 'ISO Währungscode',
     },
     isActive: {
       type: Boolean,
       optional: false,
-      label: 'Active?'
-    }
+      label: 'Active?',
+    },
   }),
   withFormModel(({ data: { currency = {} } }) => currency),
   withHandlers({
     onSubmitSuccess: () => () => {
       toast('Currency saved', { type: toast.TYPE.SUCCESS });
     },
-    removeCurrency: ({ router, currencyId, removeCurrency }) => async event => {
+    removeCurrency: ({ router, currencyId, removeCurrency }) => async (
+      event
+    ) => {
       event.preventDefault();
       router.replace({ pathname: '/currencies' });
       await removeCurrency({
         variables: {
-          currencyId
-        }
+          currencyId,
+        },
       });
     },
     onSubmit: ({ currencyId, updateCurrency, schema }) => ({ ...dirtyInput }) =>
       updateCurrency({
         variables: {
           currency: schema.clean(dirtyInput),
-          currencyId
-        }
-      })
+          currencyId,
+        },
+      }),
   }),
   withFormErrorHandlers,
   mapProps(({ currencyId, updateCurrency, data, ...rest }) => ({
-    ...rest
+    ...rest,
   }))
 )(FormEditCurrency);

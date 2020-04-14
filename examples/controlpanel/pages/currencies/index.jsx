@@ -4,7 +4,7 @@ import App from '../../components/App';
 import CurrencyList from '../../components/currencies/CurrencyList';
 import connectApollo from '../../lib/connectApollo';
 
-export default connectApollo(props => (
+export default connectApollo((props) => (
   <App {...props}>
     <Container>
       <h2>Currencies</h2>

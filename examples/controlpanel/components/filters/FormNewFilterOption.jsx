@@ -10,7 +10,7 @@ import AutoForm from 'uniforms-semantic/AutoForm';
 import withFormSchema from '../../lib/withFormSchema';
 import withFormErrorHandlers from '../../lib/withFormErrorHandlers';
 
-const FormNewFilterOption = formProps => (
+const FormNewFilterOption = (formProps) => (
   <AutoForm {...formProps}>
     <Form.Group inline>
       <AutoField name="title" />
@@ -35,19 +35,19 @@ export default compose(
     `,
     {
       options: {
-        refetchQueries: ['filterOptions']
-      }
+        refetchQueries: ['filterOptions'],
+      },
     }
   ),
   withFormSchema(() => ({
     title: {
       type: String,
-      optional: false
+      optional: false,
     },
     value: {
       type: String,
-      optional: false
-    }
+      optional: false,
+    },
   })),
   withHandlers({
     onSubmitSuccess: ({ onSuccess }) => ({ data: { createFilterOption } }) =>
@@ -56,13 +56,13 @@ export default compose(
       mutate({
         variables: {
           option: schema.clean(dirtyInput),
-          filterId
-        }
-      })
+          filterId,
+        },
+      }),
   }),
   withFormErrorHandlers,
   mapProps(({ onSuccess, filterId, mutate, ...rest }) => ({
-    ...rest
+    ...rest,
   })),
   pure
 )(FormNewFilterOption);

@@ -61,8 +61,8 @@ export default compose(
     `,
     {
       options: {
-        refetchQueries: ['languages', 'language']
-      }
+        refetchQueries: ['languages', 'language'],
+      },
     }
   ),
   graphql(
@@ -76,46 +76,48 @@ export default compose(
     {
       name: 'removeLanguage',
       options: {
-        refetchQueries: ['languages']
-      }
+        refetchQueries: ['languages'],
+      },
     }
   ),
   withFormSchema({
     isoCode: {
       type: String,
       optional: false,
-      label: 'ISO Sprachcode'
+      label: 'ISO Sprachcode',
     },
     isActive: {
       type: Boolean,
       optional: false,
-      label: 'Active'
-    }
+      label: 'Active',
+    },
   }),
   withFormModel(({ data: { language = {} } }) => language),
   withHandlers({
     onSubmitSuccess: () => () => {
       toast('Texts saved to database', { type: toast.TYPE.SUCCESS });
     },
-    removeLanguage: ({ router, languageId, removeLanguage }) => async event => {
+    removeLanguage: ({ router, languageId, removeLanguage }) => async (
+      event
+    ) => {
       event.preventDefault();
       router.replace({ pathname: '/languages' });
       await removeLanguage({
         variables: {
-          languageId
-        }
+          languageId,
+        },
       });
     },
     onSubmit: ({ languageId, mutate, schema }) => ({ ...dirtyInput }) =>
       mutate({
         variables: {
           language: schema.clean(dirtyInput),
-          languageId
-        }
-      })
+          languageId,
+        },
+      }),
   }),
   withFormErrorHandlers,
   mapProps(({ languageId, mutate, data, ...rest }) => ({
-    ...rest
+    ...rest,
   }))
 )(FormEditLanguage);

@@ -4,6 +4,7 @@ import { compose, pure, withHandlers, withState, mapProps } from 'recompose';
 import gql from 'graphql-tag';
 import { Image } from 'semantic-ui-react';
 import Dropzone from 'react-dropzone';
+import squareImage from '../../public/square-image.png';
 
 const UploadAvatar = ({ avatarUrl, handleChange }) => (
   <div className="fixed-height">
@@ -68,23 +69,21 @@ export default compose(
     ${FRAGMENT_AVATAR_FIELDS}
   `),
   withHandlers({
-    handleChange: ({ mutate, userId, updateImageUrl }) => async files => {
+    handleChange: ({ mutate, userId, updateImageUrl }) => async (files) => {
       const avatar = files[0];
       updateImageUrl(URL.createObjectURL(avatar));
       await mutate({
         variables: {
           userId,
-          avatar
-        }
+          avatar,
+        },
       });
-    }
+    },
   }),
   mapProps(({ mutate, imageUrl, data: { user }, ...rest }) => ({
     avatarUrl:
-      imageUrl ||
-      (user && user.avatar && user.avatar.url) ||
-      '/square-image.png',
-    ...rest
+      imageUrl || (user && user.avatar && user.avatar.url) || squareImage,
+    ...rest,
   })),
   pure
 )(UploadAvatar);

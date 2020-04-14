@@ -23,7 +23,7 @@ function getComponentDisplayName(Component) {
   return Component.displayName || Component.name || 'Unknown';
 }
 
-export default ComposedComponent => {
+export default (ComposedComponent) => {
   class WithData extends React.Component {
     constructor(props) {
       super(props);
@@ -38,11 +38,11 @@ export default ComposedComponent => {
       onTokenChange(async ({ token, tokenExpires }) => {
         if (!token || !tokenExpires) {
           document.cookie = cookie.serialize('token', '', {
-            maxAge: -1 // Expire the cookie immediately
+            maxAge: -1, // Expire the cookie immediately
           });
           document.cookie = cookie.serialize('token', '', {
             maxAge: -1, // Expire the cookie immediately
-            path: '/'
+            path: '/',
           });
           this.apollo.resetStore();
           return;
@@ -52,7 +52,7 @@ export default ComposedComponent => {
         console.debug('new token, expiring: ', maxAge); // eslint-disable-line
         document.cookie = cookie.serialize('token', token, {
           maxAge,
-          path: '/'
+          path: '/',
         });
         this.apollo.resetStore();
       });
@@ -91,15 +91,15 @@ export default ComposedComponent => {
         // Extract query data from the Apollo store
         serverState = {
           apollo: {
-            data: apollo.cache.extract()
-          }
+            data: apollo.cache.extract(),
+          },
         };
       }
 
       return {
         serverState,
         headers,
-        ...composedInitialProps
+        ...composedInitialProps,
       };
     }
 

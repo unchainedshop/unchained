@@ -24,26 +24,26 @@ export default compose(
         isActive:
           router.query.tab === '' ||
           !router.query.tab ||
-          router.query.tab === 'AssortmentTranslation'
+          router.query.tab === 'AssortmentTranslation',
       },
       {
         name: 'AssortmentLinks',
         description: 'Links',
-        isActive: router.query && router.query.tab === 'AssortmentLinks'
+        isActive: router.query && router.query.tab === 'AssortmentLinks',
       },
       {
         name: 'AssortmentProducts',
         description: 'Products',
-        isActive: router.query && router.query.tab === 'AssortmentProducts'
+        isActive: router.query && router.query.tab === 'AssortmentProducts',
       },
       {
         name: 'AssortmentFilters',
         description: 'Filters',
-        isActive: router.query && router.query.tab === 'AssortmentFilters'
-      }
+        isActive: router.query && router.query.tab === 'AssortmentFilters',
+      },
     ];
     return {
-      menuItems
+      menuItems,
     };
   }),
   withHandlers({
@@ -52,10 +52,10 @@ export default compose(
         pathname: router.pathname,
         query: {
           ...router.query,
-          tab: element.name
-        }
+          tab: element.name,
+        },
       });
-    }
+    },
   }),
   pure
 )(AssortmentMenu);

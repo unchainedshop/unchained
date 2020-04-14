@@ -45,20 +45,20 @@ export default compose(
   withFormSchema({
     username: {
       type: String,
-      label: 'New username'
-    }
+      label: 'New username',
+    },
   }),
   withHandlers({
     onSubmit: ({ mutate, schema, userId }) => ({ ...dirtyInput }) =>
       mutate({
         variables: {
           ...schema.clean(dirtyInput),
-          userId
-        }
-      })
+          userId,
+        },
+      }),
   }),
   withFormModel(({ data: { user } = {} }) => ({
-    username: user?.username
+    username: user?.username,
   })),
   withFormErrorHandlers,
   pure

@@ -23,7 +23,7 @@ const App = ({
   loading,
   children,
   router,
-  allowAnonymousAccess
+  allowAnonymousAccess,
 }) => (
   <main>
     <Header

@@ -76,19 +76,19 @@ export default compose(
   withHandlers({
     onChange: ({ onChange }) => (event, { value }) => onChange(value),
     onAddItem: ({ ownOptions, updateOwnOptions }) => (event, { value }) =>
-      updateOwnOptions([{ key: value, text: value, value }, ...ownOptions])
+      updateOwnOptions([{ key: value, text: value, value }, ...ownOptions]),
   }),
   mapProps(
     ({ options, ownOptions, updateOwnOptions, value: values, ...rest }) => {
-      const mappedValues = values.map(value => ({
+      const mappedValues = values.map((value) => ({
         key: value,
         text: value,
-        value
+        value,
       }));
       const undeduplicatedOptions = [
         ...ownOptions,
         ...options,
-        ...mappedValues
+        ...mappedValues,
       ];
       const deduplicatedOptionMap = undeduplicatedOptions.reduce(
         (oldOptions, curOption) => {
@@ -103,7 +103,7 @@ export default compose(
         normalizedOptions: Object.values(deduplicatedOptionMap),
         options,
         value: values,
-        ...rest
+        ...rest,
       };
     }
   )

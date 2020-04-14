@@ -58,17 +58,17 @@ export default compose(
     `,
     {
       options: {
-        refetchQueries: ['productInfos', 'getAllProducts']
-      }
+        refetchQueries: ['productInfos', 'getAllProducts'],
+      },
     }
   ),
   withFormSchema(() => ({
     tags: {
       type: Array,
       optional: true,
-      label: 'Tags (Product Segmentation)'
+      label: 'Tags (Product Segmentation)',
     },
-    'tags.$': String
+    'tags.$': String,
   })),
   withFormModel(({ data: { product = {} } }) => ({ ...product })),
   withHandlers({
@@ -79,14 +79,14 @@ export default compose(
       mutate({
         variables: {
           product: schema.clean(dirtyInput),
-          productId
-        }
-      })
+          productId,
+        },
+      }),
   }),
   withFormErrorHandlers,
   mapProps(({ productId, mutate, data, ...rest }) => ({
     isEditingDisabled: !data.product || data.product.status === 'DELETED',
-    ...rest
+    ...rest,
   })),
   pure
 )(FormEditProduct);

@@ -4,7 +4,7 @@ import App from '../../components/App';
 import CountryList from '../../components/countries/CountryList';
 import connectApollo from '../../lib/connectApollo';
 
-export default connectApollo(props => (
+export default connectApollo((props) => (
   <App {...props}>
     <Container>
       <h2>Countries</h2>

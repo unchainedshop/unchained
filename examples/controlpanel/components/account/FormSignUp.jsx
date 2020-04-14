@@ -9,7 +9,7 @@ import { createUser } from '../../lib/accounts';
 import withFormSchema from '../../lib/withFormSchema';
 import withFormErrorHandlers from '../../lib/withFormErrorHandlers';
 
-const FormSignUp = formProps => (
+const FormSignUp = (formProps) => (
   <AutoForm {...formProps}>
     <AutoField name="email" type="email" />
     <AutoField name="password" type="password" />
@@ -23,12 +23,12 @@ export default compose(
   withFormSchema({
     email: {
       type: String,
-      label: 'E-Mail Address'
+      label: 'E-Mail Address',
     },
     password: {
       type: String,
-      label: 'Password'
-    }
+      label: 'Password',
+    },
   }),
   withHandlers({
     onSubmit: ({ client }) => ({ email, password }) =>
@@ -36,15 +36,15 @@ export default compose(
         {
           email,
           password,
-          disableHashing: true
+          disableHashing: true,
         },
         client
       ),
-    onSubmitSuccess: () => userId => {
+    onSubmitSuccess: () => (userId) => {
       if (!userId) {
         alert('Signed Up successfully but not logged in automatically'); // eslint-disable-line
       }
-    }
+    },
   }),
   withFormErrorHandlers,
   mapProps(({ client, ...rest }) => ({ ...rest })),
