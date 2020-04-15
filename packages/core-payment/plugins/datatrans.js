@@ -4,6 +4,7 @@ import {
   PaymentError,
   PaymentCredentials,
 } from 'meteor/unchained:core-payment';
+import { log } from 'meteor/unchained:core-logger';
 import { OrderPayments } from 'meteor/unchained:core-orders';
 import { WebApp } from 'meteor/webapp';
 import bodyParser from 'body-parser';
@@ -80,8 +81,8 @@ WebApp.connectHandlers.use(
 WebApp.connectHandlers.use(DATATRANS_WEBHOOK_PATH, (req, res) => {
   if (req.method === 'POST') {
     const authorizationResponse = req.body || {};
-    const { refno, status, amount } = authorizationResponse;
-    if (refno && status === 'success') {
+    const { refno, amount } = authorizationResponse;
+    if (refno) {
       try {
         if (amount === '0') {
           const [paymentProviderId, userId] = refno.split(':');
@@ -92,6 +93,10 @@ WebApp.connectHandlers.use(DATATRANS_WEBHOOK_PATH, (req, res) => {
               userId,
             }
           );
+          log(
+            `Datatrans Webhook: Unchained registered payment credentials for ${userId}`,
+            { userId }
+          );
           res.writeHead(200);
           return res.end(JSON.stringify(paymentCredentials));
         }
@@ -100,15 +105,33 @@ WebApp.connectHandlers.use(DATATRANS_WEBHOOK_PATH, (req, res) => {
           .order()
           .checkout({ paymentContext: authorizationResponse });
         res.writeHead(200);
+        log(
+          `Datatrans Webhook: Unchained confirmed checkout for order ${order.orderNumber}`,
+          { orderId: order._id }
+        );
         return res.end(JSON.stringify(order));
       } catch (e) {
+        if (
+          e.message === 'Payment declined' ||
+          e.message === 'Signature mismatch'
+        ) {
+          // We also confirm a declined payment or a signature mismatch with 200 so
+          // datatrans does not retry to send us the failed transaction
+          log(
+            `Datatrans Webhook: Unchained declined checkout with message ${e.message}`,
+            { level: 'warn' }
+          );
+          res.writeHead(200);
+          return res.end();
+        }
         res.writeHead(503);
-        console.error(e); // eslint-disable-line
         return res.end(JSON.stringify(e));
       }
+    } else {
+      log(`Datatrans Webhook: Reference number not set`, { level: 'warn' });
     }
   }
-  res.writeHead(200);
+  res.writeHead(404);
   return res.end();
 });
 
@@ -137,7 +160,7 @@ class Datatrans extends PaymentAdapter {
     }, null);
   }
 
-  configurationError() { // eslint-disable-line
+  configurationError() {
     if (!this.getMerchantId() || !DATATRANS_SECRET || !DATATRANS_SIGN_KEY) {
       return PaymentError.INCOMPLETE_CONFIGURATION;
     }
@@ -147,12 +170,13 @@ class Datatrans extends PaymentAdapter {
     return null;
   }
 
-  isActive() { // eslint-disable-line
+  isActive() {
     if (this.configurationError() === null) return true;
     return false;
   }
 
-  isPayLaterAllowed() { // eslint-disable-line
+  // eslint-disable-next-line
+  isPayLaterAllowed() {
     return false;
   }
 

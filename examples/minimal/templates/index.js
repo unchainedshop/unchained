@@ -3,7 +3,7 @@ import mustache from 'mustache';
 import { configureAccountsEmailTemplates } from 'meteor/unchained:platform';
 import {
   MessagingDirector,
-  MessagingType
+  MessagingType,
 } from 'meteor/unchained:core-messaging';
 import { log } from 'meteor/unchained:core-logger';
 
@@ -33,7 +33,7 @@ const renderMjmlToHtml = (template, data) => {
   try {
     const rendered = mustache.render(template, data);
     const { html, errors } = mjml(rendered, { minify: true });
-    if (errors) log(JSON.stringify(errors), { level: 'warn' });
+    if (errors && errors.length) log(JSON.stringify(errors), { level: 'warn' });
     return html;
   } catch (e) {
     if (e.getMessages) {
@@ -47,12 +47,12 @@ const renderMjmlToHtml = (template, data) => {
   }
 };
 
-export const getTemplate = template => (meta, context) => {
+export const getTemplate = (template) => (meta, context) => {
   try {
     const templateRenderer = require(`./${template}.js`); // eslint-disable-line
     return templateRenderer.default(meta, context, {
       renderToText,
-      renderMjmlToHtml
+      renderMjmlToHtml,
     });
   } catch (e) {
     log(e.message, { level: 'warn' });

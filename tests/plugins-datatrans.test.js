@@ -3,7 +3,7 @@ import { URLSearchParams } from 'url';
 import { createLoggedInGraphqlFetch, setupDatabase } from './helpers';
 import { USER_TOKEN, User } from './seeds/users';
 import { SimplePaymentProvider } from './seeds/payments';
-import { SimpleOrder, SimplePayment } from './seeds/orders';
+import { SimpleOrder, SimplePosition, SimplePayment } from './seeds/orders';
 
 let connection;
 let db; // eslint-disable-line
@@ -14,10 +14,13 @@ describe('Plugins: Datatrans Payments', () => {
   const amount = '20000';
   const currency = 'CHF';
   const refno = 'datatrans-payment';
+  const refno2 = 'datatrans-payment2';
 
   beforeAll(async () => {
     [db, connection] = await setupDatabase();
     graphqlFetch = await createLoggedInGraphqlFetch(USER_TOKEN);
+
+    // Add a datatrans provider
     await db.collection('payment-providers').findOrInsertOne({
       ...SimplePaymentProvider,
       _id: 'datatrans-payment-provider',
@@ -26,22 +29,47 @@ describe('Plugins: Datatrans Payments', () => {
       configuration: [{ key: 'merchantId', value: merchantId }],
     });
 
+    // Add a demo order ready to checkout
     await db.collection('order_payments').findOrInsertOne({
       ...SimplePayment,
       _id: 'datatrans-payment',
       paymentProviderId: 'datatrans-payment-provider',
-      orderId: SimpleOrder._id,
+      orderId: 'datatrans-order',
     });
 
-    await db.collection('orders').updateOne(
-      { _id: SimpleOrder._id },
-      {
-        $set: {
-          orderNumber: 'datatrans',
-          paymentId: 'datatrans-payment',
-        },
-      }
-    );
+    await db.collection('order_positions').findOrInsertOne({
+      ...SimplePosition,
+      _id: 'datatrans-order-position',
+      orderId: 'datatrans-order',
+    });
+
+    await db.collection('orders').findOrInsertOne({
+      ...SimpleOrder,
+      _id: 'datatrans-order',
+      orderNumber: 'datatrans',
+      paymentId: 'datatrans-payment',
+    });
+
+    // Add a second demo order ready to checkout
+    await db.collection('order_payments').findOrInsertOne({
+      ...SimplePayment,
+      _id: 'datatrans-payment2',
+      paymentProviderId: 'datatrans-payment-provider',
+      orderId: 'datatrans-order2',
+    });
+
+    await db.collection('order_positions').findOrInsertOne({
+      ...SimplePosition,
+      _id: 'datatrans-order-position2',
+      orderId: 'datatrans-order2',
+    });
+
+    await db.collection('orders').findOrInsertOne({
+      ...SimpleOrder,
+      _id: 'datatrans-order2',
+      orderNumber: 'datatrans2',
+      paymentId: 'datatrans-payment2',
+    });
   });
 
   afterAll(async () => {
@@ -156,7 +184,7 @@ describe('Plugins: Datatrans Payments', () => {
 
       const order = await db
         .collection('orders')
-        .findOne({ _id: SimpleOrder._id });
+        .findOne({ _id: 'datatrans-order' });
       expect(order.status).toBe(null);
 
       const orderPayment = await db
@@ -203,7 +231,7 @@ describe('Plugins: Datatrans Payments', () => {
 
       const order = await db
         .collection('orders')
-        .findOne({ _id: SimpleOrder._id });
+        .findOne({ _id: 'datatrans-order' });
       expect(order.status).toBe('CONFIRMED');
 
       const orderPayment = await db
@@ -214,7 +242,7 @@ describe('Plugins: Datatrans Payments', () => {
 
     it('mocks ingress successful payment webhook call with alias', async () => {
       const sign =
-        'a41485ad7136a121340d91eff0fa16a8aa12b7edd1780a141c11c6d352178bbf';
+        '0c7d34445860ef18bcf28c72b3013c14b35a23352656b18694a9fcd0a1222523';
       const sign2 =
         '49b61ca73da761a291bb178893b937b0b3286b500646e5a9781b33781e67235e';
 
@@ -235,7 +263,7 @@ describe('Plugins: Datatrans Payments', () => {
       params.append('currency', currency);
       params.append('theme', 'DT2015');
       params.append('expm', '12');
-      params.append('refno', refno);
+      params.append('refno', refno2);
       params.append('amount', amount);
       params.append('errorMessage', 'declined');
       params.append('pmethod', 'ECA');
@@ -259,12 +287,12 @@ describe('Plugins: Datatrans Payments', () => {
 
       const order = await db
         .collection('orders')
-        .findOne({ _id: SimpleOrder._id });
+        .findOne({ _id: 'datatrans-order2' });
       expect(order.status).toBe('CONFIRMED');
 
       const orderPayment = await db
         .collection('order_payments')
-        .findOne({ _id: refno });
+        .findOne({ _id: refno2 });
       expect(orderPayment.status).toBe('PAID');
     });
 

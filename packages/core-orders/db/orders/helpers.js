@@ -303,6 +303,8 @@ Orders.helpers({
   },
   missingInputDataForCheckout() {
     const errors = [];
+    if (this.status !== OrderStatus.OPEN)
+      errors.push(new Error('Order has already been checked out'));
     if (!this.contact) errors.push(new Error('Contact data not provided'));
     if (!this.billingAddress)
       errors.push(new Error('Billing address not provided'));

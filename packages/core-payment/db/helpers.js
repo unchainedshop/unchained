@@ -58,7 +58,6 @@ PaymentProviders.helpers({
     const { credentials, ...strippedResult } = Promise.await(
       director.charge(this.defaultContext(context))
     );
-    console.log('upsertCredentials', credentials, strippedResult);
     if (credentials) {
       PaymentCredentials.upsertCredentials({
         userId,
@@ -101,7 +100,6 @@ PaymentCredentials.markPreferred = ({ userId, paymentCredentialsId }) => {
   PaymentCredentials.update(
     {
       _id: { $ne: paymentCredentialsId },
-      isPreferred: true,
       userId,
     },
     {
@@ -158,8 +156,6 @@ PaymentCredentials.registerPaymentCredentials = ({
     isPreferred: false,
     created: new Date(),
   });
-  console.log(paymentProvider, paymentCredentialsId);
-
   PaymentCredentials.markPreferred({ userId, paymentCredentialsId });
   return PaymentCredentials.findOne({ _id: paymentCredentialsId });
 };
