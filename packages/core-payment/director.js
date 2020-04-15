@@ -109,9 +109,9 @@ class PaymentDirector {
     return adapter.sign(transactionContext);
   }
 
-  async validate({ credentials, ...context }) {
+  async validate({ token, ...context }) {
     const adapter = this.interface(context);
-    const validated = await adapter.validate(credentials);
+    const validated = await adapter.validate(token);
     return !!validated;
   }
 

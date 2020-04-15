@@ -1,7 +1,7 @@
 import fetch from 'isomorphic-unfetch';
 import { URLSearchParams } from 'url';
 import { createLoggedInGraphqlFetch, setupDatabase } from './helpers';
-import { USER_TOKEN, Admin } from './seeds/users';
+import { USER_TOKEN, User } from './seeds/users';
 import { SimplePaymentProvider } from './seeds/payments';
 import { SimpleOrder, SimplePayment } from './seeds/orders';
 
@@ -270,13 +270,13 @@ describe('Plugins: Datatrans Payments', () => {
 
     it('mocks ingress successful payment webhook call with register', async () => {
       const sign =
-        '1a75b37239446edd039885f236c77e1c32a7f0e9df32619d645e364a761d6322';
+        '813ffac5be3753f363f82818f9cc0993f4ee421aef351d30b5ca9dc3773dfc24';
       const sign2 =
         '68f22b815c96ee81d3ab7a28ea77253904b0b9738e4bed5ac70a0a00a1168788';
 
       const paymentProviderId = 'datatrans-payment-provider';
       const registerAmount = 0;
-      const registerRefno = `${paymentProviderId}:${Admin._id}`;
+      const registerRefno = `${paymentProviderId}:${User._id}`;
 
       const params = new URLSearchParams();
 
@@ -320,7 +320,47 @@ describe('Plugins: Datatrans Payments', () => {
       const paymentCredential = await db
         .collection('payment_credentials')
         .findOne({ paymentProviderId });
+
       expect(paymentCredential).not.toBe(null);
+    });
+
+    it('found valid registrations after registration', async () => {
+      const { data: { me } = {} } = await graphqlFetch({
+        query: /* GraphQL */ `
+          query {
+            me {
+              paymentCredentials {
+                _id
+                user {
+                  _id
+                }
+                paymentProvider {
+                  _id
+                }
+                meta
+                token
+                isValid
+                isPreferred
+              }
+            }
+          }
+        `,
+      });
+
+      expect(me?.paymentCredentials?.[0]).toMatchObject({
+        isPreferred: true,
+        isValid: true,
+        meta: {
+          currency: 'CHF',
+          expm: '12',
+          expy: '21',
+          maskedCC: '510000xxxxxx0008',
+          pmethod: 'ECA',
+        },
+        token: expect.anything(),
+        paymentProvider: { _id: 'datatrans-payment-provider' },
+        user: { _id: 'user' },
+      });
     });
   });
 });

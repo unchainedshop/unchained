@@ -58,12 +58,14 @@ PaymentProviders.helpers({
     const { credentials, ...strippedResult } = Promise.await(
       director.charge(this.defaultContext(context))
     );
-    if (credentials)
+    console.log('upsertCredentials', credentials, strippedResult);
+    if (credentials) {
       PaymentCredentials.upsertCredentials({
         userId,
         paymentProviderId: this._id,
-        credentials,
+        ...credentials,
       });
+    }
     return strippedResult;
   },
 });
@@ -79,22 +81,44 @@ PaymentCredentials.helpers({
       _id: this.paymentProviderId,
     });
   },
-  async isActive() {
-    throw new Error('TODO: NOT IMPLEMENTED');
-    // return this.paymentProvider().validate(this.credentials);
-  },
-
-  markPreferred() {
-    throw new Error('TODO: NOT IMPLEMENTED');
+  async isValid() {
+    const provider = await this.paymentProvider();
+    return provider.validate(this);
   },
 });
+
+PaymentCredentials.markPreferred = ({ userId, paymentCredentialsId }) => {
+  PaymentCredentials.update(
+    {
+      _id: paymentCredentialsId,
+    },
+    {
+      $set: {
+        isPreferred: true,
+      },
+    }
+  );
+  PaymentCredentials.update(
+    {
+      _id: { $ne: paymentCredentialsId },
+      isPreferred: true,
+      userId,
+    },
+    {
+      $set: {
+        isPreferred: false,
+      },
+    }
+  );
+};
 
 PaymentCredentials.upsertCredentials = ({
   userId,
   paymentProviderId,
-  credentials,
+  token,
+  ...meta
 }) => {
-  return PaymentCredentials.upsert(
+  const upsertedId = PaymentCredentials.upsert(
     {
       userId,
       paymentProviderId,
@@ -103,14 +127,17 @@ PaymentCredentials.upsertCredentials = ({
       $setOnInsert: {
         userId,
         paymentProviderId,
+        isPreferred: false,
         created: new Date(),
       },
       $set: {
         updated: new Date(),
-        credentials,
+        token,
+        meta,
       },
     }
   );
+  return upsertedId;
 };
 
 PaymentCredentials.registerPaymentCredentials = ({
@@ -119,17 +146,21 @@ PaymentCredentials.registerPaymentCredentials = ({
   paymentProviderId,
 }) => {
   const paymentProvider = PaymentProviders.findOne({ _id: paymentProviderId });
-  const { credentials, meta } = paymentProvider.register(
+  const { token, ...meta } = paymentProvider.register(
     { transactionContext: paymentContext },
     userId
   );
   const paymentCredentialsId = PaymentCredentials.insert({
     userId,
     paymentProviderId,
-    credentials,
+    token,
     meta,
+    isPreferred: false,
     created: new Date(),
   });
+  console.log(paymentProvider, paymentCredentialsId);
+
+  PaymentCredentials.markPreferred({ userId, paymentCredentialsId });
   return PaymentCredentials.findOne({ _id: paymentCredentialsId });
 };
 

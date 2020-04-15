@@ -41,26 +41,27 @@ const datatransAuthorize = async ({
   expy,
   pmethod,
 }) => {
+  const body = `
+<?xml version="1.0" encoding="UTF-8" ?>
+<authorizationService version="6">
+<body merchantId="${merchantId}">
+<transaction refno="${refno}">
+<request>
+  <amount>${amount}</amount>
+  <currency>${currency}</currency>
+  <aliasCC>${aliasCC}</aliasCC>
+  <pmethod>${pmethod}</pmethod>
+  <expm>${expm}</expm>
+  <expy>${expy}</expy>
+</request>
+</transaction>
+</body>
+</authorizationService>`;
   const result = await fetch(
     `${DATATRANS_API_ENDPOINT}/upp/jsp/XML_authorize.jsp`,
     {
       method: 'POST',
-      body: `
-<?xml version="1.0" encoding="UTF-8" ?>
-<authorizationService version="6">
-<body merchantId="${merchantId}">
-  <transaction refno="${refno}">
-    <request>
-      <amount>${amount}</amount>
-      <currency>${currency}</currency>
-      <aliasCC>${aliasCC}</aliasCC>
-      <pmethod>${pmethod}</pmethod>
-      <expm>${expm}</expm>
-      <expy>${expy}</expy>
-    </request>
-  </transaction>
-</body>
-</authorizationService>`,
+      body,
       headers: {
         'Content-Type': 'application/xml',
         Authorization: `Basic ${DATATRANS_SECRET}`,
@@ -207,15 +208,19 @@ class Datatrans extends PaymentAdapter {
     return signature;
   }
 
-  async validate(credentials) {
+  async validate(token) {
     const result = await datatransAuthorize({
       merchantId: this.getMerchantId(),
       refno: `validate-${new Date().toLocaleString()}`,
       amount: 0,
-      ...credentials,
+      aliasCC: token,
+      ...this.context.meta,
     });
-    console.log(this, credentials, JSON.stringify(result));
-    return true;
+    this.log(`Datatrans -> Validation Result`, result);
+    return (
+      result?.authorizationService?.body?.[0]?.transaction?.[0]?.response?.[0]
+        ?.status[0] === 'success'
+    );
   }
 
   async register(transactionResponse) {
@@ -251,20 +256,12 @@ class Datatrans extends PaymentAdapter {
       if (sign === validSign && sign2 === validSign2) {
         this.log('Datatrans -> Registered successfully', transactionResponse);
         return {
-          credentials: {
-            expy,
-            expm,
-            pmethod,
-            currency,
-            aliasCC,
-          },
-          meta: {
-            expy,
-            expm,
-            pmethod,
-            currency,
-            maskedCC,
-          },
+          token: aliasCC,
+          expy,
+          expm,
+          pmethod,
+          currency,
+          maskedCC,
         };
       }
       this.log(
@@ -318,7 +315,14 @@ class Datatrans extends PaymentAdapter {
         this.log('Datatrans -> Charged successfully', transactionResponse);
         return {
           ...transactionResponse,
-          credentials: { expy, expm, pmethod, currency, aliasCC, maskedCC },
+          credentials: aliasCC && {
+            token: aliasCC,
+            expy,
+            expm,
+            pmethod,
+            currency,
+            maskedCC,
+          },
         };
       }
       this.log(

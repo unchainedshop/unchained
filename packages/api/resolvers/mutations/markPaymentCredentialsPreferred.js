@@ -9,5 +9,5 @@ export default (root, { paymentCredentialsId }, { userId }) => {
   const credentials = PaymentCredentials.findOne({ _id: paymentCredentialsId });
   if (!credentials)
     throw new PaymentCredentialsNotFoundError({ paymentCredentialsId });
-  return credentials.markPreferred();
+  return PaymentCredentials.markPreferred({ paymentCredentialsId, userId });
 };
