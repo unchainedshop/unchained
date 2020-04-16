@@ -6,6 +6,7 @@ import {
   MessagingAdapter,
 } from 'meteor/unchained:core-messaging';
 import { WorkerDirector } from 'meteor/unchained:core-worker';
+import { Promise } from 'meteor/promise';
 
 const { EMAIL_API_ENDPOINT } = process.env;
 
@@ -29,13 +30,15 @@ class ExternalRestPost extends MessagingAdapter {
     const templateResolver = this.resolver(args.template);
     const data = templateResolver(args.meta, this.context);
 
-    WorkerDirector.addWork({
-      type: 'HTTP_REQUEST',
-      input: {
-        url: EMAIL_API_ENDPOINT,
-        data,
-      },
-    });
+    Promise.await(
+      WorkerDirector.addWork({
+        type: 'HTTP_REQUEST',
+        input: {
+          url: EMAIL_API_ENDPOINT,
+          data,
+        },
+      })
+    );
   }
 }
 

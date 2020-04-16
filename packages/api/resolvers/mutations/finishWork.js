@@ -10,7 +10,7 @@ export default async function (
     userId,
   });
 
-  const work = WorkerDirector.finishWork({
+  return WorkerDirector.finishWork({
     workId,
     result,
     error,
@@ -19,6 +19,4 @@ export default async function (
     started,
     finished,
   });
-
-  return work;
 }

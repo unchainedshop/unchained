@@ -10,7 +10,7 @@ class Heartbeat extends WorkerPlugin {
 
   static type = 'HEARTBEAT';
 
-  static doWork(input) {
+  static async doWork(input) {
     if (input && input.fails) {
       return {
         success: false,

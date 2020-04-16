@@ -39,7 +39,18 @@ class WorkerDirector {
     return Object.keys(this.plugins);
   }
 
-  static addWork({ type, input, priority = 0, scheduled, original, retries }) {
+  static async work({ workId }) {
+    return WorkQueue.findOne({ _id: workId });
+  }
+
+  static async addWork({
+    type,
+    input,
+    priority = 0,
+    scheduled,
+    original,
+    retries,
+  }) {
     if (!this.plugins[type]) {
       throw new Error(`No plugin registered for type ${type}`);
     }
@@ -47,7 +58,7 @@ class WorkerDirector {
     log(`${this.name} -> Work added ${type} ${scheduled} ${retries}`);
 
     const created = new Date();
-    const _id = WorkQueue.insert({
+    const workId = WorkQueue.insert({
       type,
       input,
       priority,
@@ -57,14 +68,14 @@ class WorkerDirector {
       created,
     });
 
-    const work = WorkQueue.findOne({ _id });
+    const work = this.work({ workId });
 
     this.events.emit(WorkerEventTypes.added, { work });
 
     return work;
   }
 
-  static workQueue({ status = [] }) {
+  static async workQueue({ status = [], skip, limit }) {
     const filterMap = {
       [WorkStatus.NEW]: { started: { $exists: false } },
       [WorkStatus.ALLOCATED]: {
@@ -84,7 +95,10 @@ class WorkerDirector {
       ),
     };
 
-    const result = WorkQueue.find(query.$or.length > 0 ? query : {}).fetch();
+    const result = WorkQueue.find(query.$or.length > 0 ? query : {}, {
+      skip,
+      limit,
+    }).fetch();
 
     return result;
   }
@@ -134,7 +148,7 @@ class WorkerDirector {
     }
   }
 
-  static finishWork({
+  static async finishWork({
     workId,
     result,
     error,
@@ -143,7 +157,7 @@ class WorkerDirector {
     started = new Date(),
     finished = new Date(),
   }) {
-    const originalWork = WorkQueue.findOne({ _id: workId });
+    const originalWork = await this.work({ workId });
 
     WorkQueue.update(
       { _id: workId },
@@ -159,7 +173,7 @@ class WorkerDirector {
       }
     );
 
-    const work = WorkQueue.findOne({ _id: workId });
+    const work = await this.work({ workId });
 
     log(`IN DIRECTOR ${workId} ${JSON.stringify(work)}`, { level: 'verbose' });
 

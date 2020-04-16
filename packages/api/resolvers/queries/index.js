@@ -41,6 +41,7 @@ import quotation from './quotation';
 import quotations from './quotations';
 import search from './search';
 import workQueue from './workQueue';
+import work from './work';
 
 export default {
   me,
@@ -95,4 +96,5 @@ export default {
   quotations: acl(actions.viewQuotations)(quotations),
   search: acl(actions.search)(search),
   workQueue: acl(actions.manageWorker)(workQueue),
+  work: acl(actions.manageWorker)(work),
 };

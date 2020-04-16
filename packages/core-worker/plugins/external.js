@@ -11,7 +11,7 @@ class ExternalWorkerPlugin extends WorkerPlugin {
 
   static type = 'EXTERNAL';
 
-  static doWork() {
+  static async doWork() {
     throw new Error('Cannot do work for external workers');
   }
 }

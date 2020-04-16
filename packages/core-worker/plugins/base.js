@@ -7,7 +7,7 @@ class WorkerPlugin {
 
   static type = '';
 
-  doWork(/* input */) {
+  static async doWork(/* input */) {
     return this;
   }
 }

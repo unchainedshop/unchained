@@ -11,7 +11,6 @@ class FailedRescheduler {
 
   constructor({ WorkerDirector }) {
     this.WorkerDirector = WorkerDirector;
-    // this.handleFinishedWork.bind(this);
   }
 
   handleFinishedWork({ work }) {
