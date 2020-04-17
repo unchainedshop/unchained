@@ -1,7 +1,7 @@
 {
   "name": "@unchainedshop/controlpanel",
   "description": "Control Panel for Unchained Engine",
-  "version": "0.45.2",
+  "version": "0.46.0",
   "license": "EUPL-1.2",
   "homepage": "https://unchained.shop",
   "main": "index.js",
@@ -74,7 +74,7 @@
     "recompose": "^0.30.0",
     "semantic-ui-css": "^2.4.1",
     "semantic-ui-react": "^0.88.2",
-    "simpl-schema": "^1.5.7",
+    "simpl-schema": "^1.5.9",
     "uniforms": "=2.5.0",
     "uniforms-bridge-simple-schema-2": "=2.5.0",
     "uniforms-semantic": "=2.5.0",
