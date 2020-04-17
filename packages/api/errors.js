@@ -107,3 +107,7 @@ export const QueryStringRequiredError = createError(
   'QueryStringRequiredError',
   'Query string is required if no assortmentId is provided'
 );
+export const WorkNotFoundOrWrongStatus = createError(
+  'WorkNotFoundOrWrongStatus',
+  'Could not find work or no work with the correct status'
+);

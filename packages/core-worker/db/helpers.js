@@ -3,6 +3,9 @@ import { WorkStatus } from './schema';
 import { WorkQueue } from './collections';
 
 export const getWorkStatus = (work) => {
+  if (work.deleted) {
+    return WorkStatus.DELETED;
+  }
   if (!work.started && !work.finished) {
     return WorkStatus.NEW;
   }

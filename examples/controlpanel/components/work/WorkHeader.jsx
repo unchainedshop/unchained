@@ -1,9 +1,23 @@
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
-import { format } from 'date-fns';
+import Link from 'next/link';
 import React from 'react';
-import { List, Segment, Menu, Dropdown, Label, Grid } from 'semantic-ui-react';
-import BtnFinishWork from './BtnFinishWork';
+import {
+  List,
+  Segment,
+  Menu,
+  Dropdown,
+  Label,
+  Grid,
+  Header,
+} from 'semantic-ui-react';
+import dynamic from 'next/dynamic';
+
+import BtnRemoveWork from './BtnRemoveWork';
+
+const ReactJson = dynamic(import('@ggascoigne/react-json-view'), {
+  ssr: false,
+});
 
 const colorForStatus = (status) => {
   if (status === 'FAILED') return 'red';
@@ -27,6 +41,8 @@ const WorkHeader = ({ data }) => {
     retries,
     priority,
     worker,
+    deleted,
+    original,
   } = work || {};
   const statusColor = colorForStatus(status);
   return (
@@ -42,19 +58,19 @@ const WorkHeader = ({ data }) => {
           <Dropdown item icon="wrench" simple>
             <Dropdown.Menu>
               <Dropdown.Header>Options</Dropdown.Header>
-              <BtnFinishWork
+              <BtnRemoveWork
                 workId={_id}
                 Component={Dropdown.Item}
-                disabled={status !== 'ALLOCATED'}
+                disabled={status === 'FAILED' || status === 'SUCCESS'}
               >
                 Delete
-              </BtnFinishWork>
+              </BtnRemoveWork>
             </Dropdown.Menu>
           </Dropdown>
         </Menu.Menu>
       </Menu>
       <Segment attached key="header-body">
-        <Grid>
+        <Grid divided="vertically">
           <Grid.Row columns={2}>
             <Grid.Column width={10}>
               <List relaxed>
@@ -70,24 +86,15 @@ const WorkHeader = ({ data }) => {
                   <List.Icon name="retry" />
                   <List.Content>Worker: {worker}</List.Content>
                 </List.Item>
-                {input && (
-                  <List.Item>
-                    <List.Icon name="input" />
-                    <List.Content>{JSON.stringify(input)}</List.Content>
-                  </List.Item>
-                )}
-                {error && (
-                  <List.Item>
-                    <List.Icon name="error" />
-                    <List.Content>{JSON.stringify(error)}</List.Content>
-                  </List.Item>
-                )}
-                {result && (
-                  <List.Item>
-                    <List.Icon name="result" />
-                    <List.Content>{JSON.stringify(result)}</List.Content>
-                  </List.Item>
-                )}
+                <List.Item>
+                  <List.Icon name="retry" />
+                  <List.Content>
+                    Original:&nbsp;
+                    <Link href={`/work/view?_id=${original}`}>
+                      <a href={`/work/view?_id=${original}`}>{original}</a>
+                    </Link>
+                  </List.Content>
+                </List.Item>
               </List>
             </Grid.Column>
             <Grid.Column width={6}>
@@ -95,36 +102,72 @@ const WorkHeader = ({ data }) => {
                 <List.Item>
                   <List.Icon name="add to calendar" />
                   <List.Content>
-                    Created: {created ? format(created, 'Pp') : 'n/a'}
+                    Created:{' '}
+                    {created ? new Date(created).toLocaleString() : 'n/a'}
                   </List.Content>
                 </List.Item>
                 <List.Item>
                   <List.Icon name="calendar" />
                   <List.Content>
-                    Scheduled: {scheduled ? format(scheduled, 'Ppp') : 'n/a'}
+                    Scheduled:{' '}
+                    {scheduled ? new Date(scheduled).toLocaleString() : 'n/a'}
                   </List.Content>
                 </List.Item>
                 <List.Item>
                   <List.Icon name="hourglass start" />
                   <List.Content>
-                    Started: {started ? format(started, 'Pp') : 'n/a'}
+                    Started:{' '}
+                    {started ? new Date(started).toLocaleString() : 'n/a'}
                   </List.Content>
                 </List.Item>
                 <List.Item>
                   <List.Icon name="hourglass end" />
                   <List.Content>
-                    Stopped: {stopped ? format(stopped, 'Pp') : 'n/a'}
+                    Stopped:{' '}
+                    {stopped ? new Date(stopped).toLocaleString() : 'n/a'}
                   </List.Content>
                 </List.Item>
                 <List.Item>
                   <List.Icon name="ban" />
                   <List.Content>
-                    Timeout: {timeout ? format(timeout, 'Ppp') : 'n/a'}
+                    Timeout:{' '}
+                    {timeout ? new Date(timeout).toLocaleString() : 'n/a'}
+                  </List.Content>
+                </List.Item>
+                <List.Item>
+                  <List.Icon name="ban" />
+                  <List.Content>
+                    Deleted:{' '}
+                    {deleted ? new Date(deleted).toLocaleString() : 'n/a'}
                   </List.Content>
                 </List.Item>
               </List>
             </Grid.Column>
           </Grid.Row>
+          {input && (
+            <Grid.Row secondary columns={1}>
+              <Grid.Column width={16}>
+                <Header size="small">Input</Header>
+                <ReactJson src={input || {}} />
+              </Grid.Column>
+            </Grid.Row>
+          )}
+          {error && (
+            <Grid.Row secondary columns={1}>
+              <Grid.Column width={16}>
+                <Header size="small">Error</Header>
+                <ReactJson src={error || {}} />
+              </Grid.Column>
+            </Grid.Row>
+          )}
+          {result && (
+            <Grid.Row secondary columns={1}>
+              <Grid.Column width={16}>
+                <Header size="small">Result</Header>
+                <ReactJson src={result || {}} />
+              </Grid.Column>
+            </Grid.Row>
+          )}
         </Grid>
       </Segment>
     </>
@@ -148,6 +191,7 @@ export default graphql(gql`
       result
       error
       retries
+      original
       timeout
     }
   }

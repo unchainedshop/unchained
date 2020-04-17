@@ -83,16 +83,11 @@ export default ({
 
 Array.prototype.diff = function(a) {return this.filter(i => a.indexOf(i) !== -1)}; // eslint-disable-line
 
-export const withDataTableLoader = ({
-  query,
-  queryName,
-  queryOptions,
-  itemsPerPage = 5,
-}) =>
+export const withDataTableLoader = ({ query, queryName, itemsPerPage = 5 }) =>
   compose(
     withState('hasMore', 'updateHasMore', true),
     graphql(query, {
-      options: ({ hasMore, updateHasMore, ...props }) => ({
+      options: ({ hasMore, updateHasMore, queryOptions, ...props }) => ({
         variables: {
           offset: 0,
           limit: process.browser ? itemsPerPage : 1,

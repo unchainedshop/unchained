@@ -4,7 +4,7 @@ import { compose, pure, withHandlers, mapProps } from 'recompose';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 
-const BtnFinishWork = ({
+const BtnRemoveWork = ({
   onClick,
   Component = 'button',
   children,
@@ -19,34 +19,34 @@ export default compose(
   withRouter,
   graphql(
     gql`
-      mutation removeQuotation($quotationId: ID!) {
-        removeQuotation(quotationId: $quotationId) {
+      mutation removeWork($workId: ID!) {
+        removeWork(workId: $workId) {
           _id
           status
-          updated
+          deleted
         }
       }
     `,
     {
       options: {
-        refetchQueries: ['quotations'],
+        refetchQueries: ['workQueue'],
       },
     }
   ),
   withHandlers({
-    onClick: ({ quotationId, mutate, router }) => async () => {
+    onClick: ({ workId, mutate, router }) => async () => {
       if (confirm('Really?')) { // eslint-disable-line
         await mutate({
           variables: {
-            quotationId,
+            workId,
           },
         });
-        router.push('/quotations');
+        router.push('/work');
       }
     },
   }),
-  mapProps(({ quotationId, mutate, ...rest }) => ({
+  mapProps(({ workId, mutate, ...rest }) => ({
     ...rest,
   })),
   pure
-)(BtnFinishWork);
+)(BtnRemoveWork);

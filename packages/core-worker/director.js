@@ -12,6 +12,7 @@ const WorkerEventTypes = {
   allocated: 'allocated',
   done: 'done',
   finished: 'finished',
+  deleted: 'deleted',
   // The difference between `done` and `finished` is, that work is `done` after
   // it was computed (no DB write, could be external) and `finished` after
   // the changes are written to the DB
@@ -39,8 +40,14 @@ class WorkerDirector {
     return Object.keys(this.plugins);
   }
 
-  static async work({ workId }) {
-    return WorkQueue.findOne({ _id: workId });
+  static async work(selectorOptions) {
+    return WorkQueue.findOne(this.buildQueueSelector(selectorOptions));
+  }
+
+  static defaultSortOrder() {
+    // for all started operations (failed & success), they have to come descending (latest first),
+    // after it's enqueue order: priority first, then prefer jobs that never run (original not set), then FIFO (created)
+    return { started: -1, priority: -1, original: 1, created: 1 };
   }
 
   static async addWork({
@@ -75,43 +82,57 @@ class WorkerDirector {
     return work;
   }
 
-  static async workQueue({ status = [], skip, limit }) {
+  static buildQueueSelector({ status = [], workId, ...rest }) {
     const filterMap = {
-      [WorkStatus.NEW]: { started: { $exists: false } },
+      [WorkStatus.DELETED]: { deleted: { $exists: true } },
+      [WorkStatus.NEW]: {
+        started: { $exists: false },
+        deleted: { $exists: false },
+      },
       [WorkStatus.ALLOCATED]: {
-        $and: [
-          { started: { $exists: true } },
-          { finished: { $exists: false } },
-        ],
+        started: { $exists: true },
+        finished: { $exists: false },
+        deleted: { $exists: false },
       },
       [WorkStatus.SUCCESS]: { finished: { $exists: true }, success: true },
       [WorkStatus.FAILED]: { finished: { $exists: true }, success: false },
     };
-
-    const query = {
+    const statusQuery = {
       $or: Object.entries(filterMap).reduce(
         (acc, [key, filter]) => (status.includes(key) ? [...acc, filter] : acc),
         []
       ),
     };
+    const query = statusQuery.$or.length > 0 ? statusQuery : {};
+    if (workId) {
+      query._id = workId;
+    }
+    return { ...query, ...rest };
+  }
 
-    const result = WorkQueue.find(query.$or.length > 0 ? query : {}, {
+  static async workQueue({ skip, limit, ...selectorOptions }) {
+    const result = WorkQueue.find(this.buildQueueSelector(selectorOptions), {
       skip,
       limit,
+      sort: this.defaultSortOrder(),
     }).fetch();
 
     return result;
   }
 
   static async allocateWork({ types, worker = WORKER_ID }) {
+    // Find a work item that is scheduled for now and is not started.
+    // Also:
+    // - Restrict by types and worker if provided
+    // - Sort by default queue order
     const result = await WorkQueue.rawCollection().findAndModify(
-      {
-        started: null,
+      this.buildQueueSelector({
+        status: WorkStatus.NEW,
         scheduled: { $lte: new Date() },
         worker: { $in: [null, worker] },
         ...(types ? { type: { $in: types } } : {}),
-      },
-      { created: 1, priority: -1 },
+      }),
+      this.defaultSortOrder(),
       {
         $set: { started: new Date(), worker },
       },
@@ -157,7 +178,11 @@ class WorkerDirector {
     started = new Date(),
     finished = new Date(),
   }) {
-    const originalWork = await this.work({ workId });
+    const workBeforeUpdate = await this.work({
+      workId,
+      status: [WorkStatus.ALLOCATED],
+    });
+    if (!workBeforeUpdate) return null;
 
     WorkQueue.update(
       { _id: workId },
@@ -167,7 +192,7 @@ class WorkerDirector {
           success,
           error,
           result,
-          ...(!originalWork.started ? { started } : {}),
+          ...(!workBeforeUpdate.started ? { started } : {}),
           worker,
         },
       }
@@ -180,6 +205,45 @@ class WorkerDirector {
     this.events.emit(WorkerEventTypes.finished, { work });
 
     return work;
+  }
+
+  static async removeWork({ workId }) {
+    const workBeforeRemoval = await this.work({
+      workId,
+      status: [WorkStatus.NEW, WorkStatus.ALLOCATED],
+    });
+    if (!workBeforeRemoval) return null;
+
+    WorkQueue.update(
+      { _id: workId },
+      {
+        $set: {
+          deleted: new Date(),
+        },
+      }
+    );
+
+    const work = await this.work({ workId });
+    this.events.emit(WorkerEventTypes.deleted, { work });
+
+    return work;
+  }
+
+  static async findOneAndProcessWork({ types, worker }) {
+    const work = await this.allocateWork({
+      types,
+      worker,
+    });
+
+    if (work) {
+      const output = await this.doWork(work);
+      return this.finishWork({
+        ...output,
+        workId: work._id,
+        worker,
+      });
+    }
+    return null;
   }
 }
 

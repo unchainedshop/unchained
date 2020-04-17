@@ -28,7 +28,12 @@ class CronWorker extends BaseWorker {
 
   static type = 'CRON';
 
-  constructor({ WorkerDirector, workerId, cronText = WORKER_CRON_TEXT }) {
+  constructor({
+    WorkerDirector,
+    workerId,
+    batchCount = 0,
+    cronText = WORKER_CRON_TEXT,
+  }) {
     super({ WorkerDirector, workerId });
 
     SyncedCron.add({
@@ -36,29 +41,16 @@ class CronWorker extends BaseWorker {
       schedule(parser) {
         return parser.text(cronText);
       },
-      job: () => {
-        return this.allocateAndWork();
+      job: async () => {
+        const processRecursively = async (recursionCounter = 0) => {
+          if (batchCount && batchCount < recursionCounter) return null;
+          const doneWork = await this.findOneAndProcessWork();
+          if (doneWork) return processRecursively(recursionCounter + 1);
+          return null;
+        };
+        return processRecursively();
       },
     });
-  }
-
-  async allocateAndWork() {
-    const work = await this.WorkerDirector.allocateWork({
-      types: this.getInternalTypes(),
-      workerId: this.workerId,
-    });
-
-    if (work) {
-      const output = await this.WorkerDirector.doWork(work);
-
-      return this.WorkerDirector.finishWork({
-        workId: work._id,
-        worker: this.workerId,
-        ...output,
-      });
-    }
-
-    return false;
   }
 
   start() {

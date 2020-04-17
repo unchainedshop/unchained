@@ -27,8 +27,8 @@ describe('Worker Module', () => {
           }
         `,
         variables: {
-          type: 'HEARTBEAT'
-        }
+          type: 'HEARTBEAT',
+        },
       });
 
       expect(addWorkResult.errors).toBeUndefined();
@@ -44,14 +44,14 @@ describe('Worker Module', () => {
         `,
         variables: {
           // Empty array as status queries the whole queue
-          status: []
-        }
+          status: [],
+        },
       });
 
       expect(workQueue).toHaveLength(1);
 
       const work = workQueue.find(
-        w => w._id === addWorkResult.data.addWork._id
+        (w) => w._id === addWorkResult.data.addWork._id
       );
 
       expect(work.status).toBe('SUCCESS');
@@ -68,8 +68,8 @@ describe('Worker Module', () => {
           }
         `,
         variables: {
-          type: 'EXTERNAL'
-        }
+          type: 'EXTERNAL',
+        },
       });
 
       expect(addWork._id).toBeTruthy();
@@ -84,7 +84,7 @@ describe('Worker Module', () => {
               _id
             }
           }
-        `
+        `,
       });
 
       expect(workQueue).toHaveLength(1);
@@ -103,23 +103,24 @@ describe('Worker Module', () => {
             }
           `,
           variables: {
-            worker: 'TEST-GRAPHQL'
-          }
+            worker: 'TEST-GRAPHQL',
+          },
         });
 
       const results = await Promise.all([
         makeAllocatePromise(),
-        makeAllocatePromise()
+        makeAllocatePromise(),
       ]);
 
       // There should only be one result with allocated work
       expect(
-        results.filter(r => r.data.allocateWork && r.data.allocateWork._id)
+        results.filter((r) => r.data.allocateWork && r.data.allocateWork._id)
       ).toHaveLength(1);
 
       // Hoist workId for later use
-      workId = results.find(r => r.data.allocateWork && r.data.allocateWork._id)
-        .data.allocateWork._id;
+      workId = results.find(
+        (r) => r.data.allocateWork && r.data.allocateWork._id
+      ).data.allocateWork._id;
     });
 
     it('No more work in the queue', async () => {
@@ -130,7 +131,7 @@ describe('Worker Module', () => {
               _id
             }
           }
-        `
+        `,
       });
 
       expect(workQueue).toHaveLength(0);
@@ -153,8 +154,8 @@ describe('Worker Module', () => {
         variables: {
           workId,
           success: true,
-          worker: 'TEST-GRAPHQL'
-        }
+          worker: 'TEST-GRAPHQL',
+        },
       });
 
       expect(finishWork.status).toBe('SUCCESS');
@@ -172,8 +173,8 @@ describe('Worker Module', () => {
           }
         `,
         variables: {
-          type: 'EXTERNAL'
-        }
+          type: 'EXTERNAL',
+        },
       });
 
       expect(addWorkResult.errors).toBeUndefined();
@@ -190,8 +191,8 @@ describe('Worker Module', () => {
         `,
         variables: {
           worker: 'TEST-GRAPHQL',
-          types: ['EXTERNAL']
-        }
+          types: ['EXTERNAL'],
+        },
       });
 
       expect(allocateWorkResult.errors).toBeUndefined();
@@ -206,7 +207,7 @@ describe('Worker Module', () => {
             }
           }
         `,
-        variables: { type: 'HEARTBEAT' }
+        variables: { type: 'HEARTBEAT' },
       });
 
       expect(doWorkResult.errors).toBeUndefined();
@@ -234,8 +235,8 @@ describe('Worker Module', () => {
         `,
         variables: {
           workId: addWorkResult.data.addWork._id,
-          ...doWorkResult.data.doWork
-        }
+          ...doWorkResult.data.doWork,
+        },
       });
 
       expect(finishWorkResult.errors).toBeUndefined();
@@ -257,8 +258,8 @@ describe('Worker Module', () => {
         `,
         variables: {
           type: 'HEARTBEAT',
-          scheduled
-        }
+          scheduled,
+        },
       });
 
       expect(addWorkResult.errors).toBeUndefined();
@@ -272,7 +273,7 @@ describe('Worker Module', () => {
               type
             }
           }
-        `
+        `,
       });
 
       expect(workQueueBefore).toHaveLength(1);
@@ -287,7 +288,7 @@ describe('Worker Module', () => {
               _id
             }
           }
-        `
+        `,
       });
 
       expect(workQueueMiddle).toHaveLength(1);
@@ -303,7 +304,7 @@ describe('Worker Module', () => {
               worker
             }
           }
-        `
+        `,
       });
 
       expect(workQueueAfter).toHaveLength(0);
@@ -322,10 +323,10 @@ describe('Worker Module', () => {
         variables: {
           type: 'HEARTBEAT',
           input: {
-            fails: true
+            fails: true,
           },
-          retries: 2
-        }
+          retries: 2,
+        },
       });
 
       expect(addWorkResult.errors).toBeUndefined();
@@ -344,7 +345,7 @@ describe('Worker Module', () => {
               retries
             }
           }
-        `
+        `,
       });
 
       expect(workQueueBefore).toHaveLength(1);
@@ -367,7 +368,7 @@ describe('Worker Module', () => {
               # schedule
             }
           }
-        `
+        `,
       });
 
       expect(workQueueAfter).toHaveLength(1);

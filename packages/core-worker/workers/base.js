@@ -37,6 +37,13 @@ class BaseWorker {
   stop() {
     throw new Error(`Not implemented on ${this.key}`);
   }
+
+  async findOneAndProcessWork() {
+    return this.WorkerDirector.findOneAndProcessWork({
+      types: this.getInternalTypes(),
+      worker: this.workerId,
+    });
+  }
 }
 
 export default BaseWorker;

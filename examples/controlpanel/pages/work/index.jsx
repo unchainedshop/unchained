@@ -7,8 +7,19 @@ import connectApollo from '../../lib/connectApollo';
 export default connectApollo(({ ...rest }) => (
   <App {...rest}>
     <Container>
-      <h2>Work</h2>
-      <WorkList />
+      <h2>Next in Queue</h2>
+      <WorkList
+        queryOptions={{ pollInterval: 2000 }}
+        limit={0}
+        status={['ALLOCATED', 'NEW']}
+      />
+
+      <h2>50 Most Recently Finished</h2>
+      <WorkList
+        limit={50}
+        queryOptions={{ pollInterval: 5000 }}
+        status={['FAILED', 'SUCCESS']}
+      />
     </Container>
   </App>
 ));

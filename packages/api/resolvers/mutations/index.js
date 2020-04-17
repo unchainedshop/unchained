@@ -108,6 +108,7 @@ import removeBookmark from './removeBookmark';
 import addWork from './addWork';
 import allocateWork from './allocateWork';
 import finishWork from './finishWork';
+import removeWork from './removeWork';
 import doWork from './doWork';
 import heartbeat from './heartbeat';
 
@@ -284,5 +285,6 @@ export default {
   addWork: acl(actions.manageWorker)(addWork),
   allocateWork: acl(actions.manageWorker)(allocateWork),
   finishWork: acl(actions.manageWorker)(finishWork),
+  removeWork: acl(actions.manageWorker)(removeWork),
   doWork: acl(actions.manageWorker)(doWork),
 };

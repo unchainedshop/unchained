@@ -27,10 +27,20 @@ class HttpRequestWorkerPlugin extends WorkerPlugin {
 
   static type = 'HTTP_REQUEST';
 
-  static async doWork({ url, data = {}, headers, method = 'POST' }) {
+  static async doWork({ url, data = {}, headers, method = 'POST' } = {}) {
     log(`${this.key} -> doWork: ${method} ${url} ${data}`, {
       level: 'debug',
     });
+
+    if (!url) {
+      return {
+        success: false,
+        error: {
+          name: 'URL_REQUIRED',
+          message: 'HTTP_REQUEST requires an url',
+        },
+      };
+    }
 
     try {
       const normalizedFetch =

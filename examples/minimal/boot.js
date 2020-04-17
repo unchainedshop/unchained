@@ -47,7 +47,7 @@ if (!DISABLE_WORKER) {
   new CronWorker({
     WorkerDirector,
     workerId: 'CronWorker',
-    cronText: 'every 1 seconds',
+    cronText: 'every 5 seconds',
   }).start();
 }
 

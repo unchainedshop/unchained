@@ -662,7 +662,12 @@ export default [
         worker: String
         started: Date
         finished: Date
-      ): Work
+      ): Work!
+
+      """
+      Manually remove a work
+      """
+      removeWork(workId: ID!): Work!
     }
   `,
 ];
