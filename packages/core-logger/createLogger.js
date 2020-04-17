@@ -31,17 +31,19 @@ const myFormat = printf(
   }
 );
 
+export { transports, format };
+
 export default (moduleName, moreTransports = []) => {
   const loggingMatched = debugStringContainsModule(DEBUG, moduleName);
   return createLogger({
-    format: combine(
-      timestamp(),
-      label({ label: moduleName }),
-      colorize(),
-      myFormat
-    ),
     transports: [
       new transports.Console({
+        format: combine(
+          timestamp(),
+          label({ label: moduleName }),
+          colorize(),
+          myFormat
+        ),
         stderrLevels: ['error'],
         consoleWarnLevels: ['warn'],
         level: loggingMatched ? 'debug' : LOG_LEVEL,

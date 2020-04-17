@@ -4,7 +4,7 @@ import './db/helpers';
 import LocalTransport from './local-transport';
 import { Logs } from './db/collections';
 import runMigrations from './db/schema';
-import createLogger from './createLogger';
+import createLogger, { transports, format } from './createLogger';
 
 let instance = null;
 class Logger {
@@ -12,10 +12,10 @@ class Logger {
     if (!instance) {
       instance = this;
     }
-    const transports = !process.env.LOG_DISABLE_DB_LOGGER
+    const dbTransport = !process.env.LOG_DISABLE_DB_LOGGER
       ? [new LocalTransport({ level: 'info' })]
       : [];
-    this.winston = createLogger('unchained', transports);
+    this.winston = createLogger('unchained', dbTransport);
     return instance;
   }
 }
@@ -29,4 +29,4 @@ export default () => {
   runMigrations();
 };
 
-export { Logger, log, Logs, createLogger };
+export { Logger, log, Logs, createLogger, transports, format };
