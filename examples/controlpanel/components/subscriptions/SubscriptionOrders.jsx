@@ -34,8 +34,7 @@ const SubscriptionOrders = ({ data }) => {
                   {order && (
                     <Link href={`/orders/view?_id=${order._id}`} passHref>
                       <Label horizontal basic>
-                        <Icon name="order" /> {order._id}
-                        ...
+                        <Icon name="order" /> {order._id} ({order.status})
                       </Label>
                     </Link>
                   )}
@@ -59,6 +58,7 @@ export default graphql(gql`
         isTrial
         order {
           _id
+          status
         }
       }
     }
