@@ -9,7 +9,7 @@ const SubscriptionOrders = ({ data }) => {
   return (
     <Segment secondary>
       <Label horizontal attached="top">
-        <Label.Detail>Orders</Label.Detail>
+        <Label.Detail>Orders / Periods</Label.Detail>
       </Label>
       <Table compact>
         <Table.Header>
@@ -24,8 +24,8 @@ const SubscriptionOrders = ({ data }) => {
             {periods.map(({ start, end, isTrial, order }) => (
               <Table.Row key={start}>
                 <Table.Cell singleLine>
-                  {new Date(start).toLocalDateString()} -{' '}
-                  {new Date(end).toLocalDateString()}
+                  {new Date(start).toLocaleDateString()} -{' '}
+                  {new Date(end).toLocaleDateString()}
                 </Table.Cell>
                 <Table.Cell>
                   <code>{isTrial}</code>
