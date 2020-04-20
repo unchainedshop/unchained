@@ -236,7 +236,7 @@ export default [
     }
 
     input SubscriptionDeliveryInput {
-      deliveryProviderInput: ID!
+      deliveryProviderId: ID!
       meta: JSON
     }
 

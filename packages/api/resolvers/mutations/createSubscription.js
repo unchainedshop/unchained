@@ -7,7 +7,7 @@ import {
   ProductWrongStatusError,
 } from '../../errors';
 
-export default function (
+export default async function (
   root,
   { contact, plan, billingAddress, payment, delivery, meta },
   { countryContext, userId, user }

@@ -11,6 +11,18 @@ export const SubscriptionStatus = {
   TERMINATED: 'TERMINATED',
 };
 
+export const PeriodSchema = new SimpleSchema(
+  {
+    orderId: { type: String },
+    start: { type: Date },
+    end: { type: Date },
+    isTrial: { type: Boolean },
+  },
+  {
+    requiredByDefault: true,
+  }
+);
+
 export const Schema = new SimpleSchema(
   {
     userId: { type: String, required: true, index: true },
@@ -29,6 +41,8 @@ export const Schema = new SimpleSchema(
     delivery: { type: Object },
     'delivery.deliveryProviderId': String,
     'delivery.context': contextFields.context,
+    periods: { type: Array },
+    'periods.$': { type: PeriodSchema, required: true },
     ...timestampFields,
     ...contextFields,
     ...logFields,

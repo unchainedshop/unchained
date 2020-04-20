@@ -16,13 +16,13 @@ class LicensedSubscriptions extends SubscriptionAdapter {
     return usageCalculationType === 'LICENSED';
   }
 
+  // eslint-disable-next-line
   async isValidForActivation() {
-    console.log(this);
     return true;
   }
 
+  // eslint-disable-next-line
   async isOverdue() {
-    console.log(this);
     return false;
   }
 }

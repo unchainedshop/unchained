@@ -192,13 +192,16 @@ Subscriptions.generateFromCheckout = async ({ items, order, ...context }) => {
         item,
         { ...template, ...context }
       );
-      const subscription = Subscriptions.createSubscription(subscriptionData);
-      subscription.addOrder(order);
+
+      await Subscriptions.createSubscription({
+        ...subscriptionData,
+        orderIdForFirstPeriod: order._id,
+      });
     })
   );
 };
 
-Subscriptions.createSubscription = (
+Subscriptions.createSubscription = async (
   {
     productId,
     quantity,
@@ -210,6 +213,7 @@ Subscriptions.createSubscription = (
     billingAddress,
     payment,
     delivery,
+    orderIdForFirstPeriod,
   },
   options
 ) => {
@@ -233,7 +237,38 @@ Subscriptions.createSubscription = (
     countryCode,
   });
   const subscription = Subscriptions.findOne({ _id: subscriptionId });
+  Subscriptions.linkOrderToSubscription({
+    orderId: orderIdForFirstPeriod,
+    subscriptionId,
+    period: await subscription.director().nextPeriod(),
+  });
+
   return subscription.process().sendStatusToCustomer(options);
+};
+
+Subscriptions.linkOrderToSubscription = ({
+  subscriptionId,
+  period,
+  orderId,
+}) => {
+  const { start, end, isTrial } = period;
+  Subscriptions.update(
+    { _id: subscriptionId },
+    {
+      $push: {
+        periods: {
+          start,
+          end,
+          isTrial,
+          orderId,
+        },
+      },
+      $set: {
+        updated: new Date(),
+      },
+    }
+  );
+  return Subscriptions.findOne({ _id: subscriptionId });
 };
 
 Subscriptions.updateContext = ({ context, subscriptionId }) => {

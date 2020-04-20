@@ -1,10 +1,25 @@
 import { log } from 'meteor/unchained:core-logger';
+import moment from 'moment';
 
 const SubscriptionError = {
   ADAPTER_NOT_FOUND: 'ADAPTER_NOT_FOUND',
   NOT_IMPLEMENTED: 'NOT_IMPLEMENTED',
   INCOMPLETE_CONFIGURATION: 'INCOMPLETE_CONFIGURATION',
   WRONG_CREDENTIALS: 'WRONG_CREDENTIALS',
+};
+
+const normalizeStartAndEnd = (
+  referenceDate,
+  intervalCount = 1,
+  interval = 'WEEK'
+) => {
+  const start = moment(referenceDate).startOf(
+    interval === 'HOUR' ? 'minute' : 'hour'
+  );
+  return {
+    start: start.toDate(),
+    end: start.add(intervalCount, interval).toDate(),
+  };
 };
 
 class SubscriptionAdapter {
@@ -23,6 +38,40 @@ class SubscriptionAdapter {
       quantity: item.quantity,
       configuration: item.configuration,
       productId: item.productId,
+    };
+  }
+
+  async nextPeriod() {
+    const { subscription } = this.context;
+    const plan = subscription?.product()?.plan;
+    if (!plan) return null;
+
+    if (plan.trialIntervalCount && subscription.periods.length === 0) {
+      return {
+        ...normalizeStartAndEnd(
+          new Date(),
+          plan.trialIntervalCount,
+          plan.trialInterval
+        ),
+        isTrial: false,
+      };
+    }
+
+    const lastEnd = subscription?.periods?.reduce((acc, item) => {
+      if (!acc) return item.end;
+      if (new Date(acc.end).getTime() < new Date(item.end).getTime()) {
+        return item.end;
+      }
+      return acc;
+    }, undefined);
+
+    return {
+      ...normalizeStartAndEnd(
+        lastEnd,
+        plan.billingIntervalCount,
+        plan.billingInterval
+      ),
+      isTrial: false,
     };
   }
 
@@ -67,6 +116,11 @@ class SubscriptionDirector {
   async isOverdue(context) {
     const adapter = this.resolveAdapter(context);
     return adapter.isOverdue(context);
+  }
+
+  async nextPeriod(context) {
+    const adapter = this.resolveAdapter();
+    return adapter.nextPeriod(context);
   }
 
   static adapters = new Map();

@@ -38,15 +38,22 @@ export default [
       meta: JSON
     }
 
+    type SubscriptionPeriod {
+      start: Date!
+      end: Date!
+      isTrial: Boolean!
+      order: Order!
+    }
+
     """
     Subscription
     """
     type Subscription {
       _id: ID!
       user: User!
-      plans: [SubscriptionPlan!]!
-      payment: SubscriptionPayment!
-      delivery: SubscriptionDelivery!
+      plan: SubscriptionPlan!
+      payment: SubscriptionPayment
+      delivery: SubscriptionDelivery
       billingAddress: Address
       contact: Contact
       status: SubscriptionStatus!
@@ -59,6 +66,7 @@ export default [
       currency: Currency
       meta: JSON
       logs(limit: Int = 10, offset: Int = 0): [Log!]!
+      periods: [SubscriptionPeriod!]!
     }
   `,
 ];

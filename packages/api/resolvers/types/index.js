@@ -50,6 +50,9 @@ import LoadedFilterOption from './loaded-filter-option';
 import SearchResult from './search-result';
 import Quotation from './quotation';
 import DeliveryFee from './delivery-fee';
+import SubscriptionPayment from './subscription-payment';
+import SubscriptionDelivery from './subscription-delivery';
+import SubscriptionPeriod from './subscription-period';
 
 export default {
   User,
@@ -104,4 +107,7 @@ export default {
   Quotation,
   SearchResult,
   DeliveryFee,
+  SubscriptionPayment,
+  SubscriptionDelivery,
+  SubscriptionPeriod,
 };
