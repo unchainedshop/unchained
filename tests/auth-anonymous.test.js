@@ -52,14 +52,14 @@ describe('Auth for anonymous users', () => {
             phoneMobile: '+410000000',
             gender: 'm',
             address: null,
-            customFields: null
-          }
-        }
+            customFields: null,
+          },
+        },
       });
       expect(createUser).toMatchObject({
         user: {
-          profile: {}
-        }
+          profile: {},
+        },
       });
     });
   });
@@ -74,22 +74,22 @@ describe('Auth for anonymous users', () => {
               token
             }
           }
-        `
+        `,
       });
       expect(loginAsGuest).toMatchObject({});
     });
     it('user has guest flag', async () => {
       const Users = db.collection('users');
       const user = await Users.findOne({
-        guest: true
+        guest: true,
       });
       expect(user).toMatchObject({
         guest: true,
         emails: [
           {
-            verified: false
-          }
-        ]
+            verified: false,
+          },
+        ],
       });
     });
   });
@@ -107,13 +107,13 @@ describe('Auth for anonymous users', () => {
               }
             }
           }
-        `
+        `,
       });
       expect(loginWithPassword).toMatchObject({
         id: 'admin',
         user: {
-          username: 'admin'
-        }
+          username: 'admin',
+        },
       });
     });
   });
@@ -127,9 +127,9 @@ describe('Auth for anonymous users', () => {
         emails: [
           {
             address: 'userthatforgetspasswords@localhost',
-            verified: true
-          }
-        ]
+            verified: true,
+          },
+        ],
       });
     });
 
@@ -141,10 +141,10 @@ describe('Auth for anonymous users', () => {
               success
             }
           }
-        `
+        `,
       });
       expect(forgotPassword).toEqual({
-        success: true
+        success: true,
       });
     });
   });
@@ -154,14 +154,14 @@ describe('Auth for anonymous users', () => {
       // Reset the password with that token
       const Users = db.collection('users');
       const user = await Users.findOne({
-        'emails.address': 'userthatforgetspasswords@localhost'
+        'emails.address': 'userthatforgetspasswords@localhost',
       });
       const {
         services: {
           password: {
-            reset: { token }
-          }
-        }
+            reset: { token },
+          },
+        },
       } = user;
 
       const { data: { resetPassword } = {} } = await graphqlFetch({
@@ -178,14 +178,14 @@ describe('Auth for anonymous users', () => {
         `,
         variables: {
           newPlainPassword: 'password',
-          token
-        }
+          token,
+        },
       });
       expect(resetPassword).toMatchObject({
         id: 'userthatforgetspasswords',
         user: {
-          _id: 'userthatforgetspasswords'
-        }
+          _id: 'userthatforgetspasswords',
+        },
       });
     });
   });

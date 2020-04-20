@@ -54,8 +54,8 @@ describe('Cart: Quotations', () => {
         `,
         variables: {
           orderId: SimpleOrder._id,
-          quotationId: ProposedQuotation._id
-        }
+          quotationId: ProposedQuotation._id,
+        },
       });
       expect(addCartQuotation).toMatchObject({
         product: {},
@@ -65,7 +65,7 @@ describe('Cart: Quotations', () => {
         quotation: {},
         unitPrice: {},
         total: {},
-        configuration: null
+        configuration: null,
       });
     });
   });

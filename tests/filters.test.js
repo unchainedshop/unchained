@@ -45,23 +45,23 @@ describe('Filters', () => {
             key: 'warehousing.baseUnit',
             title: 'Mengeneinheit Filter',
             type: 'SINGLE_CHOICE',
-            options: ['ST']
-          }
-        }
+            options: ['ST'],
+          },
+        },
       });
       expect(createFilter).toMatchObject({
         isActive: false,
         texts: {
-          title: 'Mengeneinheit Filter'
+          title: 'Mengeneinheit Filter',
         },
         type: 'SINGLE_CHOICE',
         key: 'warehousing.baseUnit',
         options: [
           {
             texts: null,
-            value: 'ST'
-          }
-        ]
+            value: 'ST',
+          },
+        ],
       });
 
       const { data: { search } = {} } = await graphqlFetch({
@@ -96,8 +96,8 @@ describe('Filters', () => {
         `,
         variables: {
           queryString: 'product',
-          filterQuery: null
-        }
+          filterQuery: null,
+        },
       });
       expect(search).toMatchObject({
         totalProducts: 1,
@@ -105,16 +105,16 @@ describe('Filters', () => {
           {
             filteredProducts: 1,
             definition: {
-              key: 'tags'
-            }
+              key: 'tags',
+            },
           },
           {
             filteredProducts: 1,
             definition: {
-              key: 'warehousing.baseUnit'
-            }
-          }
-        ]
+              key: 'warehousing.baseUnit',
+            },
+          },
+        ],
       });
     });
   });

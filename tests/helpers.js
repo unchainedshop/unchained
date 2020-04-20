@@ -30,7 +30,7 @@ export const setupDatabase = async () => {
   const connection = await MongoClient.connect(global.__MONGO_URI__, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
-    poolSize: 1
+    poolSize: 1,
   });
   const db = await connection.db(global.__MONGO_DB_NAME__);
   await db.dropDatabase();
@@ -50,18 +50,18 @@ export const wipeDatabase = async () => {
   const connectionUri = await global.__MONGOD__.getConnectionString();
   const connection = await MongoClient.connect(connectionUri, {
     useNewUrlParser: true,
-    useUnifiedTopology: true
+    useUnifiedTopology: true,
   });
   const db = await connection.db(global.__MONGO_DB_NAME__);
   await db.dropDatabase();
   await connection.close();
 };
 
-const convertLinkToFetch = link => ({ query, ...operation }) =>
+const convertLinkToFetch = (link) => ({ query, ...operation }) =>
   makePromise(
     execute(link, {
       query: gql(query),
-      ...operation
+      ...operation,
     })
   );
 
@@ -69,7 +69,7 @@ export const createAnonymousGraphqlFetch = () => {
   const uri = 'http://localhost:3000/graphql';
   const link = createUploadLink({
     uri,
-    fetch
+    fetch,
   });
   return convertLinkToFetch(link);
 };
@@ -80,8 +80,8 @@ export const createLoggedInGraphqlFetch = (token = ADMIN_TOKEN) => {
     uri,
     fetch,
     headers: {
-      authorization: token
-    }
+      authorization: token,
+    },
   });
   return convertLinkToFetch(link);
 };

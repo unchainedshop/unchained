@@ -23,7 +23,7 @@ describe('basic setup of internationalization and localization context', () => {
     it('add a currency', async () => {
       const {
         data: { createCurrency },
-        errors
+        errors,
       } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation {
@@ -33,12 +33,12 @@ describe('basic setup of internationalization and localization context', () => {
               isActive
             }
           }
-        `
+        `,
       });
       expect(errors).toEqual(undefined);
       expect(createCurrency).toMatchObject({
         isoCode: 'BTC',
-        isActive: true
+        isActive: true,
       });
     });
 
@@ -62,14 +62,14 @@ describe('basic setup of internationalization and localization context', () => {
           currencyId: currency._id,
           currency: {
             isoCode: 'chf',
-            isActive: true
-          }
-        }
+            isActive: true,
+          },
+        },
       });
       expect(errors).toEqual(undefined);
       expect(updateCurrency).toMatchObject({
         isoCode: 'CHF',
-        isActive: true
+        isActive: true,
       });
     });
 
@@ -83,11 +83,11 @@ describe('basic setup of internationalization and localization context', () => {
               isoCode
             }
           }
-        `
+        `,
       });
       expect(errors).toEqual(undefined);
       expect(removeCurrency).toMatchObject({
-        isoCode: 'LTC'
+        isoCode: 'LTC',
       });
       // TODO: Currencies should have delete flags, as orders can depend on them
       expect(await Currencies.countDocuments({ _id: 'ltc' })).toEqual(0);
@@ -97,12 +97,12 @@ describe('basic setup of internationalization and localization context', () => {
       await Currencies.insertOne({
         _id: 'ltc',
         isoCode: 'LTC',
-        isActive: true
+        isActive: true,
       });
       await Currencies.insertOne({
         _id: 'btc',
         isoCode: 'BTC',
-        isActive: false
+        isActive: false,
       });
 
       const { data: { currencies } = {}, errors } = await graphqlFetch({
@@ -112,16 +112,16 @@ describe('basic setup of internationalization and localization context', () => {
               isoCode
             }
           }
-        `
+        `,
       });
       expect(errors).toEqual(undefined);
       expect(currencies).toEqual([
         {
-          isoCode: 'CHF'
+          isoCode: 'CHF',
         },
         {
-          isoCode: 'LTC'
-        }
+          isoCode: 'LTC',
+        },
       ]);
     });
 
@@ -129,7 +129,7 @@ describe('basic setup of internationalization and localization context', () => {
       await Currencies.insertOne({
         _id: 'sigt',
         isoCode: 'SIGT',
-        isActive: false
+        isActive: false,
       });
 
       const { data: { currency } = {}, errors } = await graphqlFetch({
@@ -139,11 +139,11 @@ describe('basic setup of internationalization and localization context', () => {
               isoCode
             }
           }
-        `
+        `,
       });
       expect(errors).toEqual(undefined);
       expect(currency).toMatchObject({
-        isoCode: 'SIGT'
+        isoCode: 'SIGT',
       });
     });
   });
@@ -156,7 +156,7 @@ describe('basic setup of internationalization and localization context', () => {
 
     it('add a country', async () => {
       const {
-        data: { createCountry }
+        data: { createCountry },
       } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation {
@@ -172,13 +172,13 @@ describe('basic setup of internationalization and localization context', () => {
               name(forceLocale: "en")
             }
           }
-        `
+        `,
       });
       expect(createCountry).toMatchObject({
         isoCode: 'CH',
         isActive: true,
         flagEmoji: '🇨🇭',
-        name: 'Switzerland'
+        name: 'Switzerland',
       });
     });
 
@@ -187,7 +187,7 @@ describe('basic setup of internationalization and localization context', () => {
 
       const {
         data: { setBaseCountry },
-        errors
+        errors,
       } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation setBaseCountry($countryId: ID!) {
@@ -197,12 +197,12 @@ describe('basic setup of internationalization and localization context', () => {
           }
         `,
         variables: {
-          countryId: country._id
-        }
+          countryId: country._id,
+        },
       });
       expect(errors).toEqual(undefined);
       expect(setBaseCountry).toMatchObject({
-        isBase: true
+        isBase: true,
       });
     });
 
@@ -233,15 +233,15 @@ describe('basic setup of internationalization and localization context', () => {
           country: {
             isoCode: 'CH',
             isActive: true,
-            defaultCurrencyId: currency._id
-          }
-        }
+            defaultCurrencyId: currency._id,
+          },
+        },
       });
       expect(errors).toEqual(undefined);
       expect(updateCountry).toMatchObject({
         isoCode: 'CH',
         isActive: true,
-        defaultCurrency: { _id: currency._id, isoCode: currency.isoCode }
+        defaultCurrency: { _id: currency._id, isoCode: currency.isoCode },
       });
     });
 
@@ -255,11 +255,11 @@ describe('basic setup of internationalization and localization context', () => {
               isoCode
             }
           }
-        `
+        `,
       });
       expect(errors).toEqual(undefined);
       expect(removeCountry).toMatchObject({
-        isoCode: 'US'
+        isoCode: 'US',
       });
       // TODO: Countries should have delete flags, as orders can depend on them
       expect(await Countries.countDocuments({ _id: 'us' })).toEqual(0);
@@ -269,12 +269,12 @@ describe('basic setup of internationalization and localization context', () => {
       await Countries.insertOne({
         _id: 'uk',
         isoCode: 'UK',
-        isActive: true
+        isActive: true,
       });
       await Countries.insertOne({
         _id: 'it',
         isoCode: 'IT',
-        isActive: false
+        isActive: false,
       });
 
       const { data: { countries } = {}, errors } = await graphqlFetch({
@@ -284,16 +284,16 @@ describe('basic setup of internationalization and localization context', () => {
               isoCode
             }
           }
-        `
+        `,
       });
       expect(errors).toEqual(undefined);
       expect(countries).toEqual([
         {
-          isoCode: 'CH'
+          isoCode: 'CH',
         },
         {
-          isoCode: 'UK'
-        }
+          isoCode: 'UK',
+        },
       ]);
     });
 
@@ -301,7 +301,7 @@ describe('basic setup of internationalization and localization context', () => {
       await Countries.insertOne({
         _id: 'de',
         isoCode: 'DE',
-        isActive: false
+        isActive: false,
       });
 
       const { data: { country } = {}, errors } = await graphqlFetch({
@@ -311,11 +311,11 @@ describe('basic setup of internationalization and localization context', () => {
               isoCode
             }
           }
-        `
+        `,
       });
       expect(errors).toEqual(undefined);
       expect(country).toMatchObject({
-        isoCode: 'DE'
+        isoCode: 'DE',
       });
     });
   });
@@ -338,13 +338,13 @@ describe('basic setup of internationalization and localization context', () => {
               name
             }
           }
-        `
+        `,
       });
       expect(createLanguage).toMatchObject({
         isoCode: 'fr',
         isActive: true,
         isBase: false,
-        name: 'fr'
+        name: 'fr',
       });
     });
 
@@ -353,7 +353,7 @@ describe('basic setup of internationalization and localization context', () => {
 
       const {
         data: { setBaseLanguage },
-        errors
+        errors,
       } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation setBaseLanguage($languageId: ID!) {
@@ -364,13 +364,13 @@ describe('basic setup of internationalization and localization context', () => {
           }
         `,
         variables: {
-          languageId: language._id
-        }
+          languageId: language._id,
+        },
       });
       expect(errors).toEqual(undefined);
       expect(setBaseLanguage).toMatchObject({
         isBase: true,
-        name: 'fr (Base)'
+        name: 'fr (Base)',
       });
     });
 
@@ -394,14 +394,14 @@ describe('basic setup of internationalization and localization context', () => {
           languageId: language._id,
           language: {
             isoCode: 'de',
-            isActive: true
-          }
-        }
+            isActive: true,
+          },
+        },
       });
       expect(errors).toEqual(undefined);
       expect(updateLanguage).toMatchObject({
         isoCode: 'de',
-        isActive: true
+        isActive: true,
       });
     });
 
@@ -415,11 +415,11 @@ describe('basic setup of internationalization and localization context', () => {
               isoCode
             }
           }
-        `
+        `,
       });
       expect(errors).toEqual(undefined);
       expect(removeLanguage).toMatchObject({
-        isoCode: 'US'
+        isoCode: 'US',
       });
       // TODO: Currencies should have delete flags, as orders can depend on them
       expect(await Languages.countDocuments({ _id: 'en' })).toEqual(0);
@@ -429,12 +429,12 @@ describe('basic setup of internationalization and localization context', () => {
       await Languages.insertOne({
         _id: 'es',
         isoCode: 'es',
-        isActive: true
+        isActive: true,
       });
       await Languages.insertOne({
         _id: 'ru',
         isoCode: 'ru',
-        isActive: false
+        isActive: false,
       });
 
       const { data: { languages } = {}, errors } = await graphqlFetch({
@@ -444,16 +444,16 @@ describe('basic setup of internationalization and localization context', () => {
               isoCode
             }
           }
-        `
+        `,
       });
       expect(errors).toEqual(undefined);
       expect(languages).toEqual([
         {
-          isoCode: 'de'
+          isoCode: 'de',
         },
         {
-          isoCode: 'es'
-        }
+          isoCode: 'es',
+        },
       ]);
     });
 
@@ -461,7 +461,7 @@ describe('basic setup of internationalization and localization context', () => {
       await Languages.insertOne({
         _id: 'pl',
         isoCode: 'pl',
-        isActive: false
+        isActive: false,
       });
 
       const { data: { language } = {}, errors } = await graphqlFetch({
@@ -471,18 +471,18 @@ describe('basic setup of internationalization and localization context', () => {
               isoCode
             }
           }
-        `
+        `,
       });
       expect(errors).toEqual(undefined);
       expect(language).toMatchObject({
-        isoCode: 'pl'
+        isoCode: 'pl',
       });
     });
   });
 
   it('user defaults', async () => {
     const {
-      data: { me }
+      data: { me },
     } = await graphqlFetch({
       query: /* GraphQL */ `
         query {
@@ -495,21 +495,21 @@ describe('basic setup of internationalization and localization context', () => {
             }
           }
         }
-      `
+      `,
     });
     expect(me).toMatchObject({
       language: {
-        isoCode: 'de'
+        isoCode: 'de',
       },
       country: {
-        isoCode: 'CH'
-      }
+        isoCode: 'CH',
+      },
     });
   });
 
   it('global shop context', async () => {
     const {
-      data: { shopInfo }
+      data: { shopInfo },
     } = await graphqlFetch({
       query: /* GraphQL */ `
         query {
@@ -528,20 +528,20 @@ describe('basic setup of internationalization and localization context', () => {
             userRoles
           }
         }
-      `
+      `,
     });
     expect(shopInfo).toMatchObject({
       _id: 'root',
       language: {
-        isoCode: 'de'
+        isoCode: 'de',
       },
       country: {
         isoCode: 'CH',
         defaultCurrency: {
-          isoCode: 'CHF'
-        }
+          isoCode: 'CHF',
+        },
       },
-      userRoles: ['admin']
+      userRoles: ['admin'],
     });
   });
 });

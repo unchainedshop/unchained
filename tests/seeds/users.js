@@ -7,8 +7,8 @@ export const Admin = {
   emails: [
     {
       address: 'admin@localhost',
-      verified: true
-    }
+      verified: true,
+    },
   ],
   guest: false,
   created: new Date(),
@@ -16,17 +16,17 @@ export const Admin = {
   roles: ['admin'],
   services: {
     password: {
-      bcrypt: '$2b$10$UjNk75pHOmaIiUMtfmNxPeLrs56qSpA4nRFf7ub6MPI7HF07usCJ2'
+      bcrypt: '$2b$10$UjNk75pHOmaIiUMtfmNxPeLrs56qSpA4nRFf7ub6MPI7HF07usCJ2',
     },
     resume: {
       loginTokens: [
         {
           when: new Date(new Date().getTime() + 1000000),
-          hashedToken: 'XX1ivUOcPmJ/tzP0TRwoVuBLuRZod2t2QtZu+kHTThg='
-        }
-      ]
-    }
-  }
+          hashedToken: 'XX1ivUOcPmJ/tzP0TRwoVuBLuRZod2t2QtZu+kHTThg=',
+        },
+      ],
+    },
+  },
 };
 
 export const User = {
@@ -35,11 +35,11 @@ export const User = {
   emails: [
     {
       address: 'user@localhost',
-      verified: true
-    }
+      verified: true,
+    },
   ],
   profile: {
-    gender: 'm'
+    gender: 'm',
   },
   guest: false,
   created: new Date(),
@@ -47,17 +47,17 @@ export const User = {
   roles: [],
   services: {
     password: {
-      bcrypt: '$2b$10$UjNk75pHOmaIiUMtfmNxPeLrs56qSpA4nRFf7ub6MPI7HF07usCJ2'
+      bcrypt: '$2b$10$UjNk75pHOmaIiUMtfmNxPeLrs56qSpA4nRFf7ub6MPI7HF07usCJ2',
     },
     resume: {
       loginTokens: [
         {
           when: new Date(new Date().getTime() + 1000000),
-          hashedToken: '5VVf9TC/VQVcA271Muuhc4Y2QEtye79UnBR8Ib8oIi8='
-        }
-      ]
-    }
-  }
+          hashedToken: '5VVf9TC/VQVcA271Muuhc4Y2QEtye79UnBR8Ib8oIi8=',
+        },
+      ],
+    },
+  },
 };
 
 export default async function seedUsers(db) {

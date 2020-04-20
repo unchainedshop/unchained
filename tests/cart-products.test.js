@@ -57,27 +57,27 @@ describe('Cart: Product Items', () => {
         variables: {
           productId: SimpleProduct._id,
           quantity: 2,
-          configuration: [{ key: 'length', value: '5' }]
-        }
+          configuration: [{ key: 'length', value: '5' }],
+        },
       });
       expect(addCartProduct).toMatchObject({
         quantity: 2,
         total: {
           currency: 'CHF',
-          amount: 20000
+          amount: 20000,
         },
         taxes: {
-          amount: 1430
+          amount: 1430,
         },
         product: {
-          _id: SimpleProduct._id
+          _id: SimpleProduct._id,
         },
         order: {},
         configuration: [
           {
-            key: 'length'
-          }
-        ]
+            key: 'length',
+          },
+        ],
       });
     });
 
@@ -95,11 +95,11 @@ describe('Cart: Product Items', () => {
           }
         `,
         variables: {
-          productId: SimpleProduct._id
-        }
+          productId: SimpleProduct._id,
+        },
       });
       expect(addCartProduct).toMatchObject({
-        quantity: 1
+        quantity: 1,
       });
     });
   });
@@ -116,10 +116,10 @@ describe('Cart: Product Items', () => {
               }
             }
           }
-        `
+        `,
       });
       expect(emptyCart).toMatchObject({
-        items: []
+        items: [],
       });
     });
   });
@@ -147,26 +147,26 @@ describe('Cart: Product Items', () => {
             {
               productId: SimpleProduct._id,
               quantity: 2,
-              configuration: [{ key: 'height', value: '5' }]
+              configuration: [{ key: 'height', value: '5' }],
             },
             {
               productId: SimpleProduct._id,
               quantity: 2,
-              configuration: [{ key: 'height', value: '5' }]
-            }
-          ]
-        }
+              configuration: [{ key: 'height', value: '5' }],
+            },
+          ],
+        },
       });
       expect(addMultipleCartProducts.pop()).toMatchObject({
         quantity: 4,
         product: {
-          _id: SimpleProduct._id
+          _id: SimpleProduct._id,
         },
         configuration: [
           {
-            key: 'height'
-          }
-        ]
+            key: 'height',
+          },
+        ],
       });
     });
   });
@@ -201,23 +201,23 @@ describe('Cart: Product Items', () => {
           configuration: [
             {
               key: 'height',
-              value: '5'
-            }
-          ]
-        }
+              value: '5',
+            },
+          ],
+        },
       });
       expect(updateCartItem).toMatchObject({
         _id: SimplePosition._id,
         quantity: 10,
         product: {
-          _id: SimpleProduct._id
+          _id: SimpleProduct._id,
         },
         configuration: [
           {
             key: 'height',
-            value: '5'
-          }
-        ]
+            value: '5',
+          },
+        ],
       });
     });
   });
@@ -236,14 +236,14 @@ describe('Cart: Product Items', () => {
           }
         `,
         variables: {
-          itemId: SimplePosition._id
-        }
+          itemId: SimplePosition._id,
+        },
       });
       expect(removeCartItem).toMatchObject({
         _id: SimplePosition._id,
         product: {
-          _id: SimpleProduct._id
-        }
+          _id: SimpleProduct._id,
+        },
       });
     });
   });

@@ -5,7 +5,7 @@ export const SimplePaymentProvider = {
   adapterKey: 'shop.unchained.invoice',
   created: new Date('2019-10-04T13:52:57.938+0000'),
   configuration: [],
-  type: 'INVOICE'
+  type: 'INVOICE',
 };
 
 export const PrePaidPaymentProvider = {
@@ -13,7 +13,7 @@ export const PrePaidPaymentProvider = {
   adapterKey: 'shop.unchained.invoice-prepaid',
   created: new Date('2019-10-04T13:52:57.938+0000'),
   configuration: [],
-  type: 'INVOICE'
+  type: 'INVOICE',
 };
 
 export const GenericPaymentProvider = {
@@ -21,7 +21,7 @@ export const GenericPaymentProvider = {
   adapterKey: 'shop.unchained.datatrans',
   created: new Date('2019-10-04T13:52:57.938+0000'),
   configuration: [],
-  type: 'GENERIC'
+  type: 'GENERIC',
 };
 
 export default async function seedPayments(db) {

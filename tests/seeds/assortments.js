@@ -10,7 +10,7 @@ export const SimpleAssortment = {
   published: new Date('2019-07-30T09:23:57.329+0000'),
   warehousing: {
     sku: 'SKU',
-    baseUnit: 'ST'
+    baseUnit: 'ST',
   },
   tags: ['tag-1', 'tag-2', 'highlight'],
   commerce: {
@@ -21,16 +21,16 @@ export const SimpleAssortment = {
         isTaxable: true,
         isNetPrice: false,
         currencyCode: 'CHF',
-        countryCode: 'CH'
-      }
-    ]
+        countryCode: 'CH',
+      },
+    ],
   },
   supply: {
     weightInGram: 1570,
     heightInMillimeters: 250,
     lengthInMillimeters: 300,
-    widthInMillimeters: 400
-  }
+    widthInMillimeters: 400,
+  },
 };
 
 export const GermanAssortmentText = {
@@ -44,7 +44,7 @@ export const GermanAssortmentText = {
   description: 'text-de',
   labels: ['label-de-1', 'label-de-2'],
   subtitle: 'subsimple assortment de',
-  vendor: 'vendor-de'
+  vendor: 'vendor-de',
 };
 
 export const FrenchAssortmentText = {
@@ -58,7 +58,7 @@ export const FrenchAssortmentText = {
   brand: 'brand-fr-1',
   description: 'text-fr-1',
   subtitle: 'subtitle-fr',
-  vendor: 'vendor-fr-1'
+  vendor: 'vendor-fr-1',
 };
 
 export default async function seedAssortments(db) {

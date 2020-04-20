@@ -42,16 +42,16 @@ describe('Order: Deliveries', () => {
         `,
         variables: {
           orderId: SimpleOrder._id,
-          deliveryProviderId: SendMailDeliveryProvider._id
-        }
+          deliveryProviderId: SendMailDeliveryProvider._id,
+        },
       });
       expect(setOrderDeliveryProvider).toMatchObject({
         _id: SimpleOrder._id,
         delivery: {
           provider: {
-            _id: SendMailDeliveryProvider._id
-          }
-        }
+            _id: SendMailDeliveryProvider._id,
+          },
+        },
       });
     });
   });
@@ -91,23 +91,23 @@ describe('Order: Deliveries', () => {
             orderDeliveryId: SimpleDelivery._id,
             address: {
               firstName: 'Will',
-              lastName: 'Turner'
+              lastName: 'Turner',
             },
             meta: {
-              john: 'wayne'
-            }
-          }
+              john: 'wayne',
+            },
+          },
         }
       );
       expect(updateOrderDeliveryShipping).toMatchObject({
         _id: SimpleDelivery._id,
         meta: {
-          john: 'wayne'
+          john: 'wayne',
         },
         address: {
           firstName: 'Will',
-          lastName: 'Turner'
-        }
+          lastName: 'Turner',
+        },
       });
     });
   });
@@ -144,20 +144,20 @@ describe('Order: Deliveries', () => {
           orderDeliveryId: PickupDelivery._id,
           orderPickUpLocationId: 'zurich',
           meta: {
-            john: 'wayne'
-          }
-        }
+            john: 'wayne',
+          },
+        },
       });
       expect(updateOrderDeliveryPickUp).toMatchObject({
         _id: PickupDelivery._id,
         meta: {
-          john: 'wayne'
+          john: 'wayne',
         },
         activePickUpLocation: {
           _id: 'zurich',
           geoPoint: null,
-          name: 'Zurich'
-        }
+          name: 'Zurich',
+        },
       });
     });
   });

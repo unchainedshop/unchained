@@ -7,23 +7,23 @@ export const ProcessingQuotation = {
   configuration: [
     {
       key: 'length',
-      value: '5'
+      value: '5',
     },
     {
       key: 'height',
-      value: '10'
-    }
+      value: '10',
+    },
   ],
   countryCode: 'CH',
   log: [
     {
       date: new Date('2019-10-14T19:02:36.845+0000'),
       status: 'PROCESSING',
-      info: 'verified elligibility manually'
-    }
+      info: 'verified elligibility manually',
+    },
   ],
   quotationNumber: 'K271P03',
-  updated: new Date('2019-10-14T19:02:36.845+0000')
+  updated: new Date('2019-10-14T19:02:36.845+0000'),
 };
 
 export const ProposedQuotation = {
@@ -35,29 +35,29 @@ export const ProposedQuotation = {
   configuration: [
     {
       key: 'length',
-      value: '5'
+      value: '5',
     },
     {
       key: 'height',
-      value: '10'
-    }
+      value: '10',
+    },
   ],
   countryCode: 'CH',
   log: [
     {
       date: new Date('2019-10-14T19:08:01.178+0000'),
       status: 'PROCESSING',
-      info: 'verified elligibility manually'
+      info: 'verified elligibility manually',
     },
     {
       date: new Date('2019-10-14T19:08:05.366+0000'),
       status: 'PROPOSED',
-      info: 'proposed manually'
-    }
+      info: 'proposed manually',
+    },
   ],
   quotationNumber: 'WGE9DLE7',
   updated: new Date('2019-10-14T19:08:05.381+0000'),
-  expires: new Date('2019-10-14T19:08:05.000+0000')
+  expires: new Date('2019-10-14T19:08:05.000+0000'),
 };
 
 export default async function seedQuotations(db) {

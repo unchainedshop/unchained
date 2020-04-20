@@ -35,13 +35,13 @@ describe('User Bookmarks', () => {
         `,
         variables: {
           productId: SimpleProduct._id,
-          userId: User._id
-        }
+          userId: User._id,
+        },
       });
       expect(createBookmark).toMatchObject({
         user: {
-          _id: User._id
-        }
+          _id: User._id,
+        },
       });
     });
   });
@@ -58,8 +58,8 @@ describe('User Bookmarks', () => {
           }
         `,
         variables: {
-          bookmarkId: bookmark._id
-        }
+          bookmarkId: bookmark._id,
+        },
       });
       expect(removeBookmark._id).toBeTruthy();
     });
@@ -81,13 +81,13 @@ describe('User Bookmarks', () => {
         `,
         variables: {
           productId: SimpleProduct._id,
-          bookmarked: true
-        }
+          bookmarked: true,
+        },
       });
       expect(bookmark).toMatchObject({
         user: {
-          _id: Admin._id
-        }
+          _id: Admin._id,
+        },
       });
     });
   });
@@ -108,15 +108,15 @@ describe('User Bookmarks', () => {
           }
         `,
         variables: {
-          userId: Admin._id
-        }
+          userId: Admin._id,
+        },
       });
       expect(bookmarks).toMatchObject([
         {
           product: {
-            _id: SimpleProduct._id
-          }
-        }
+            _id: SimpleProduct._id,
+          },
+        },
       ]);
     });
   });

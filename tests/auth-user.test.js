@@ -28,13 +28,13 @@ describe('Auth for logged in users', () => {
               }
             }
           }
-        `
+        `,
       });
       expect(me).toMatchObject({
         _id: User._id,
         profile: {
-          gender: 'm'
-        }
+          gender: 'm',
+        },
       });
     });
   });
@@ -49,10 +49,10 @@ describe('Auth for logged in users', () => {
               name
             }
           }
-        `
+        `,
       });
       expect(user).toMatchObject({
-        _id: User._id
+        _id: User._id,
       });
     });
     it('does not allow a user to just retrieve data of other users', async () => {
@@ -65,8 +65,8 @@ describe('Auth for logged in users', () => {
           }
         `,
         variables: {
-          userId: Admin._id
-        }
+          userId: Admin._id,
+        },
       });
       expect(errors.length).toEqual(1);
     });
@@ -84,10 +84,10 @@ describe('Auth for logged in users', () => {
               success
             }
           }
-        `
+        `,
       });
       expect(changePassword).toMatchObject({
-        success: true
+        success: true,
       });
     });
   });
@@ -101,10 +101,10 @@ describe('Auth for logged in users', () => {
               success
             }
           }
-        `
+        `,
       });
       expect(resendVerificationEmail).toMatchObject({
-        success: true
+        success: true,
       });
     });
   });
@@ -114,15 +114,15 @@ describe('Auth for logged in users', () => {
       // Reset the password with that token
       const Users = db.collection('users');
       const user = await Users.findOne({
-        _id: 'user'
+        _id: 'user',
       });
 
       const {
         services: {
           email: {
-            verificationTokens: [{ token }]
-          }
-        }
+            verificationTokens: [{ token }],
+          },
+        },
       } = user;
 
       const { data: { verifyEmail } = {} } = await graphqlFetch({
@@ -138,18 +138,18 @@ describe('Auth for logged in users', () => {
           }
         `,
         variables: {
-          token
-        }
+          token,
+        },
       });
       expect(verifyEmail).toMatchObject({
-        user: {}
+        user: {},
       });
     });
     it('e-mail is tagged as verified', async () => {
       // Reset the password with that token
       const Users = db.collection('users');
       const user = await Users.findOne({
-        _id: 'user'
+        _id: 'user',
       });
 
       expect(user.emails[0].verified).toEqual(true);
@@ -166,8 +166,8 @@ describe('Auth for logged in users', () => {
         emails: [
           {
             address: 'userthatlogsout@localhost',
-            verified: true
-          }
+            verified: true,
+          },
         ],
         services: {
           ...User.services,
@@ -175,11 +175,11 @@ describe('Auth for logged in users', () => {
             loginTokens: [
               {
                 when: new Date(new Date().getTime() + 1000000),
-                hashedToken: 'dF4ilYpWpsSvkb7hdZKqsiYa207t2HI+C+HJcowykZk='
-              }
-            ]
-          }
-        }
+                hashedToken: 'dF4ilYpWpsSvkb7hdZKqsiYa207t2HI+C+HJcowykZk=',
+              },
+            ],
+          },
+        },
       });
       const { data: { logout } = {} } = await graphqlFetch({
         query: /* GraphQL */ `
@@ -190,23 +190,23 @@ describe('Auth for logged in users', () => {
           }
         `,
         variables: {
-          token: 'FWhglvqdNkNX80jZMJ61FvDUkKzCsESVfbui9H8Fg27'
-        }
+          token: 'FWhglvqdNkNX80jZMJ61FvDUkKzCsESVfbui9H8Fg27',
+        },
       });
       expect(logout).toMatchObject({
-        success: true
+        success: true,
       });
     });
     it('token is gone', async () => {
       // Reset the password with that token
       const Users = db.collection('users');
       const user = await Users.findOne({
-        _id: 'userthatlogsout'
+        _id: 'userthatlogsout',
       });
       const {
         services: {
-          resume: { loginTokens }
-        }
+          resume: { loginTokens },
+        },
       } = user;
       expect(loginTokens.length).toEqual(1);
     });

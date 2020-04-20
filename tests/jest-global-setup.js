@@ -27,12 +27,12 @@ const startAndWaitForMeteor = async () => {
             METEOR_PACKAGE_DIRS: '../../packages',
             UNCHAINED_DISABLE_EMAIL_INTERCEPTION: 1,
             DATATRANS_SECRET: 'secret',
-            DATATRANS_SIGN_KEY: '1337'
-          }
+            DATATRANS_SIGN_KEY: '1337',
+          },
         }
       );
       meteorProcess = global.__SUBPROCESS_METEOR__;
-      global.__SUBPROCESS_METEOR__.stdout.on('data', data => {
+      global.__SUBPROCESS_METEOR__.stdout.on('data', (data) => {
         const dataAsString = `${data}`;
         if (process.env.DEBUG) {
           console.log(dataAsString); // eslint-disable-line
@@ -50,7 +50,7 @@ const startAndWaitForMeteor = async () => {
   });
 };
 
-export default async config => {
+export default async (config) => {
   if (!mongoDBRunning) {
     await setupInMemoryMongoDB(config);
     mongoDBRunning = true;

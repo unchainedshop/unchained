@@ -42,16 +42,16 @@ describe('Order: Payments', () => {
         `,
         variables: {
           orderId: SimpleOrder._id,
-          paymentProviderId: PrePaidPaymentProvider._id
-        }
+          paymentProviderId: PrePaidPaymentProvider._id,
+        },
       });
       expect(setOrderPaymentProvider).toMatchObject({
         _id: SimpleOrder._id,
         payment: {
           provider: {
-            _id: PrePaidPaymentProvider._id
-          }
-        }
+            _id: PrePaidPaymentProvider._id,
+          },
+        },
       });
     });
   });
@@ -76,15 +76,15 @@ describe('Order: Payments', () => {
         variables: {
           orderPaymentId: SimplePayment._id,
           meta: {
-            john: 'wayne'
-          }
-        }
+            john: 'wayne',
+          },
+        },
       });
       expect(updateOrderPaymentInvoice).toMatchObject({
         _id: SimplePayment._id,
         meta: {
-          john: 'wayne'
-        }
+          john: 'wayne',
+        },
       });
     });
   });
@@ -111,16 +111,17 @@ describe('Order: Payments', () => {
         variables: {
           orderPaymentId: GenericPayment._id,
           meta: {
-            john: 'wayne'
-          }
-        }
+            john: 'wayne',
+          },
+        },
       });
       expect(updateOrderPaymentGeneric).toMatchObject({
         _id: GenericPayment._id,
         meta: {
-          john: 'wayne'
+          john: 'wayne',
         },
-        sign: '94475d01cf6f1a565046029cc009e4213150fcb2c99bfb5d0c2d879dd98eb04f'
+        sign:
+          '94475d01cf6f1a565046029cc009e4213150fcb2c99bfb5d0c2d879dd98eb04f',
       });
     });
   });

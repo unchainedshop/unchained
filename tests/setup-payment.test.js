@@ -17,7 +17,7 @@ describe('setup payment providers', () => {
   describe('Mutation.createPaymentProvider', () => {
     it('Add an invoice payment provider', async () => {
       const {
-        data: { createPaymentProvider, errors }
+        data: { createPaymentProvider, errors },
       } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation createPaymentProvider(
@@ -42,9 +42,9 @@ describe('setup payment providers', () => {
         variables: {
           paymentProvider: {
             type: 'INVOICE',
-            adapterKey: 'shop.unchained.invoice'
-          }
-        }
+            adapterKey: 'shop.unchained.invoice',
+          },
+        },
       });
       expect(errors).toEqual(undefined);
       expect(createPaymentProvider).toMatchObject({
@@ -52,9 +52,9 @@ describe('setup payment providers', () => {
         configurationError: null,
         deleted: null,
         interface: {
-          _id: 'shop.unchained.invoice'
+          _id: 'shop.unchained.invoice',
         },
-        type: 'INVOICE'
+        type: 'INVOICE',
       });
     });
   });
@@ -62,7 +62,7 @@ describe('setup payment providers', () => {
   describe('Mutation.updatePaymentProvider', () => {
     it('Update a payment provider', async () => {
       const {
-        data: { updatePaymentProvider, errors }
+        data: { updatePaymentProvider, errors },
       } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation updatePaymentProvider(
@@ -90,26 +90,26 @@ describe('setup payment providers', () => {
             configuration: [
               {
                 key: 'gugus',
-                value: 'blub'
-              }
-            ]
-          }
-        }
+                value: 'blub',
+              },
+            ],
+          },
+        },
       });
       expect(errors).toEqual(undefined);
       expect(updatePaymentProvider).toMatchObject({
         configuration: [
           {
             key: 'gugus',
-            value: 'blub'
-          }
+            value: 'blub',
+          },
         ],
         configurationError: null,
         deleted: null,
         interface: {
-          _id: 'shop.unchained.invoice'
+          _id: 'shop.unchained.invoice',
         },
-        type: 'INVOICE'
+        type: 'INVOICE',
       });
     });
   });
@@ -117,7 +117,7 @@ describe('setup payment providers', () => {
   describe('Mutation.removePaymentProvider', () => {
     it('Remove a payment provider', async () => {
       const {
-        data: { removePaymentProvider, errors }
+        data: { removePaymentProvider, errors },
       } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation removePaymentProvider($paymentProviderId: ID!) {
@@ -128,13 +128,13 @@ describe('setup payment providers', () => {
           }
         `,
         variables: {
-          paymentProviderId: SimplePaymentProvider._id
-        }
+          paymentProviderId: SimplePaymentProvider._id,
+        },
       });
       expect(errors).toEqual(undefined);
       expect(removePaymentProvider).toMatchObject({
         deleted: expect.anything(),
-        _id: SimplePaymentProvider._id
+        _id: SimplePaymentProvider._id,
       });
     });
   });

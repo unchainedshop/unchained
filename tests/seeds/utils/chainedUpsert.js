@@ -1,7 +1,7 @@
-const makeUpsert = db => async (collectionName, entity) =>
+const makeUpsert = (db) => async (collectionName, entity) =>
   db.collection(collectionName).findOrInsertOne(entity);
 
-export default db => {
+export default (db) => {
   const upsert = makeUpsert(db);
   const operations = [];
   const commandMap = {};

@@ -22,7 +22,7 @@ describe('public queries', () => {
             _id
           }
         }
-      `
+      `,
     });
 
     expect(errors).toEqual(undefined);
@@ -41,7 +41,7 @@ describe('public queries', () => {
             _id
           }
         }
-      `
+      `,
     });
 
     expect(errors).toEqual(undefined);
@@ -61,7 +61,7 @@ describe('public queries', () => {
             }
           }
         }
-      `
+      `,
     });
 
     expect(errors).toEqual(undefined);
@@ -79,12 +79,16 @@ describe('public queries', () => {
             slug
           }
         }
-      `
+      `,
     });
 
     expect(errors).toEqual(undefined);
-    const de = data.translatedProductTexts.find(texts => texts.locale === 'de');
-    const fr = data.translatedProductTexts.find(texts => texts.locale === 'fr');
+    const de = data.translatedProductTexts.find(
+      (texts) => texts.locale === 'de'
+    );
+    const fr = data.translatedProductTexts.find(
+      (texts) => texts.locale === 'fr'
+    );
     expect(de.slug).toBe('slug-de');
     expect(fr.slug).toBe('slug-fr');
   });
@@ -98,15 +102,15 @@ describe('public queries', () => {
             locale
           }
         }
-      `
+      `,
     });
 
     expect(errors).toEqual(undefined);
     const de = data.translatedProductMediaTexts.find(
-      texts => texts.locale === 'de'
+      (texts) => texts.locale === 'de'
     );
     const fr = data.translatedProductMediaTexts.find(
-      texts => texts.locale === 'fr'
+      (texts) => texts.locale === 'fr'
     );
     expect(de.title).toBe('product-media-title-de');
     expect(fr.title).toBe('product-media-title-fr');

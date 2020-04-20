@@ -26,10 +26,10 @@ describe('Cart Checkout Flow', () => {
               orderNumber
             }
           }
-        `
+        `,
       });
       expect(createCart).toMatchObject({
-        orderNumber: 'wishlist'
+        orderNumber: 'wishlist',
       });
     });
   });
@@ -58,11 +58,11 @@ describe('Cart Checkout Flow', () => {
         variables: {
           productId: SimpleProduct._id,
           orderId: order._id,
-          quantity: 1
-        }
+          quantity: 1,
+        },
       });
       expect(addCartProduct).toMatchObject({
-        quantity: 1
+        quantity: 1,
       });
     });
   });
@@ -90,14 +90,14 @@ describe('Cart Checkout Flow', () => {
             addressLine: 'Strasse 1',
             addressLine2: 'Postfach',
             postalCode: '8000',
-            city: 'Zürich'
-          }
-        }
+            city: 'Zürich',
+          },
+        },
       });
       expect(updateCart).toMatchObject({
         billingAddress: {
-          firstName: 'Hallo'
-        }
+          firstName: 'Hallo',
+        },
       });
     });
 
@@ -125,21 +125,21 @@ describe('Cart Checkout Flow', () => {
           orderId: order._id,
           contact: {
             emailAddress: 'hello@unchained.shop',
-            telNumber: '+41999999999'
+            telNumber: '+41999999999',
           },
           meta: {
-            hi: 'there'
-          }
-        }
+            hi: 'there',
+          },
+        },
       });
       expect(updateCart).toMatchObject({
         contact: {
           emailAddress: 'hello@unchained.shop',
-          telNumber: '+41999999999'
+          telNumber: '+41999999999',
         },
         meta: {
-          hi: 'there'
-        }
+          hi: 'there',
+        },
       });
     });
   });
@@ -160,13 +160,13 @@ describe('Cart Checkout Flow', () => {
           }
         `,
         variables: {
-          orderId: order._id
-        }
+          orderId: order._id,
+        },
       });
 
       expect(checkoutCart).toMatchObject({
         orderNumber: 'wishlist',
-        status: 'CONFIRMED'
+        status: 'CONFIRMED',
       });
     });
   });

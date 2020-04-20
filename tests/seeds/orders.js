@@ -8,34 +8,34 @@ export const SimpleOrder = {
   currency: 'CHF',
   countryCode: 'CH',
   contact: {
-    emailAddress: 'info@unchained.shop'
+    emailAddress: 'info@unchained.shop',
   },
   billingAddress: {
     addressLine: 'Bahnhofplatz 2',
     city: 'Zurich',
-    postalCode: '8001'
+    postalCode: '8001',
   },
   calculation: [
     {
       category: 'ITEMS',
-      amount: 20000
+      amount: 20000,
     },
     {
       category: 'PAYMENT',
-      amount: 0
+      amount: 0,
     },
     {
       category: 'DELIVERY',
-      amount: 0
+      amount: 0,
     },
     {
       category: 'DISCOUNTS',
-      amount: 0
-    }
+      amount: 0,
+    },
   ],
   updated: new Date('2019-10-11T12:48:01.611+0000'),
   paymentId: 'simple-order-payment',
-  deliveryId: 'simple-order-delivery'
+  deliveryId: 'simple-order-delivery',
 };
 
 export const SimplePayment = {
@@ -46,7 +46,7 @@ export const SimplePayment = {
   paymentProviderId: 'simple-payment-provider',
   context: {},
   updated: new Date('2019-10-11T12:48:01.537+0000'),
-  calculation: []
+  calculation: [],
 };
 
 export const GenericPayment = {
@@ -57,7 +57,7 @@ export const GenericPayment = {
   paymentProviderId: 'generic-payment-provider',
   context: {},
   updated: new Date('2019-10-11T12:48:01.537+0000'),
-  calculation: []
+  calculation: [],
 };
 
 export const SimpleDelivery = {
@@ -68,7 +68,7 @@ export const SimpleDelivery = {
   deliveryProviderId: 'simple-delivery-provider',
   context: {},
   calculation: [],
-  updated: new Date('2019-10-11T12:48:01.523+0000')
+  updated: new Date('2019-10-11T12:48:01.523+0000'),
 };
 
 export const PickupDelivery = {
@@ -79,7 +79,7 @@ export const PickupDelivery = {
   deliveryProviderId: 'pickup-delivery-provider',
   context: {},
   calculation: [],
-  updated: new Date('2019-10-11T12:48:01.523+0000')
+  updated: new Date('2019-10-11T12:48:01.523+0000'),
 };
 
 export const SimplePosition = {
@@ -96,12 +96,12 @@ export const SimplePosition = {
       isTaxable: true,
       isNetPrice: false,
       meta: {
-        adapter: 'shop.unchained.pricing.product-price'
-      }
-    }
+        adapter: 'shop.unchained.pricing.product-price',
+      },
+    },
   ],
   scheduling: [],
-  updated: new Date('2019-10-11T12:17:49.529+0000')
+  updated: new Date('2019-10-11T12:17:49.529+0000'),
 };
 
 export const ConfirmedOrder = {
@@ -112,7 +112,7 @@ export const ConfirmedOrder = {
   status: 'CONFIRMED',
   contact: {
     emailAddress: 'info@unchained.shop',
-    telNumber: '+41999999999'
+    telNumber: '+41999999999',
   },
   billingAddress: {
     firstName: 'Hallo',
@@ -120,10 +120,10 @@ export const ConfirmedOrder = {
     addressLine: 'Strasse 1',
     addressLine2: 'Postfach',
     postalCode: '8000',
-    city: 'Zürich'
+    city: 'Zürich',
   },
   context: {
-    hi: 'there'
+    hi: 'there',
   },
   ordered: new Date('2020-03-13T12:28:10.371+0000'),
   confirmed: new Date('2020-03-13T12:28:10.371+0000'),
@@ -131,27 +131,27 @@ export const ConfirmedOrder = {
     {
       date: new Date('2020-03-13T12:28:10.371+0000'),
       status: 'CONFIRMED',
-      info: 'before delivery'
-    }
-  ]
+      info: 'before delivery',
+    },
+  ],
 };
 
 export const ConfirmedOrderPayment = {
   ...SimplePayment,
   _id: 'confirmed-order-payment',
-  orderId: 'confirmed-order'
+  orderId: 'confirmed-order',
 };
 
 export const ConfirmedOrderDelivery = {
   ...SimpleDelivery,
   _id: 'confirmed-order-delivery',
-  orderId: 'confirmed-order'
+  orderId: 'confirmed-order',
 };
 
 export const ConfirmedOrderPosition = {
   ...SimplePosition,
   _id: 'confirmed-order-position',
-  orderId: 'confirmed-order'
+  orderId: 'confirmed-order',
 };
 
 export const PendingOrder = {
@@ -160,26 +160,26 @@ export const PendingOrder = {
   paymentId: 'pending-order-payment',
   deliveryId: 'pending-order-delivery',
   status: 'PENDING',
-  confirmed: null
+  confirmed: null,
 };
 
 export const PendingOrderPayment = {
   ...SimplePayment,
   _id: 'pending-order-payment',
   orderId: 'pending-order',
-  paymentProviderId: 'prepaid-payment-provider'
+  paymentProviderId: 'prepaid-payment-provider',
 };
 
 export const PendingOrderDelivery = {
   ...SimpleDelivery,
   _id: 'pending-order-delivery',
-  orderId: 'pending-order'
+  orderId: 'pending-order',
 };
 
 export const PendingOrderPosition = {
   ...SimplePosition,
   _id: 'pending-order-position',
-  orderId: 'pending-order'
+  orderId: 'pending-order',
 };
 
 export const DiscountedOrder = {
@@ -190,42 +190,42 @@ export const DiscountedOrder = {
   calculation: [
     {
       category: 'ITEMS',
-      amount: 100000
+      amount: 100000,
     },
     {
       category: 'TAXES',
-      amount: 7149.489322191272
+      amount: 7149.489322191272,
     },
     {
       category: 'PAYMENT',
-      amount: 0
+      amount: 0,
     },
     {
       category: 'DELIVERY',
-      amount: 0
+      amount: 0,
     },
     {
       category: 'DISCOUNTS',
       amount: -10000,
-      discountId: 'discounted-order-discount'
+      discountId: 'discounted-order-discount',
     },
     {
       category: 'TAXES',
-      amount: -714.9489322191266
-    }
-  ]
+      amount: -714.9489322191266,
+    },
+  ],
 };
 
 export const DiscountedPayment = {
   ...SimplePayment,
   _id: 'discounted-order-payment',
-  orderId: 'discounted-order'
+  orderId: 'discounted-order',
 };
 
 export const DiscountedDelivery = {
   ...SimpleDelivery,
   _id: 'discounted-order-delivery',
-  orderId: 'discounted-order'
+  orderId: 'discounted-order',
 };
 
 export const DiscountedDiscount = {
@@ -234,7 +234,7 @@ export const DiscountedDiscount = {
   trigger: 'USER',
   orderId: 'discounted-order',
   discountKey: 'shop.unchained.discount.100-off',
-  created: new Date('2019-10-11T12:07:27.123+0000')
+  created: new Date('2019-10-11T12:07:27.123+0000'),
 };
 
 export const DiscountedProductDiscount = {
@@ -243,7 +243,7 @@ export const DiscountedProductDiscount = {
   trigger: 'USER',
   orderId: 'discounted-order',
   discountKey: 'shop.unchained.discount.half-price-manual',
-  created: new Date('2019-10-11T12:48:01.435+0000')
+  created: new Date('2019-10-11T12:48:01.435+0000'),
 };
 
 export const DiscountedPosition = {
@@ -257,8 +257,8 @@ export const DiscountedPosition = {
       isTaxable: true,
       isNetPrice: false,
       meta: {
-        adapter: 'shop.unchained.pricing.product-price'
-      }
+        adapter: 'shop.unchained.pricing.product-price',
+      },
     },
     {
       category: 'DISCOUNT',
@@ -266,8 +266,8 @@ export const DiscountedPosition = {
       isTaxable: true,
       discountId: 'discounted-order-product-discount',
       meta: {
-        adapter: 'shop.unchained.pricing.product-discount'
-      }
+        adapter: 'shop.unchained.pricing.product-discount',
+      },
     },
     {
       category: 'ITEM',
@@ -275,16 +275,16 @@ export const DiscountedPosition = {
       isTaxable: false,
       isNetPrice: false,
       meta: {
-        adapter: 'shop.unchained.pricing.product-swiss-tax'
-      }
+        adapter: 'shop.unchained.pricing.product-swiss-tax',
+      },
     },
     {
       category: 'TAX',
       amount: 8579.387186629523,
       rate: 0.077,
       meta: {
-        adapter: 'shop.unchained.pricing.product-swiss-tax'
-      }
+        adapter: 'shop.unchained.pricing.product-swiss-tax',
+      },
     },
     {
       category: 'DISCOUNT',
@@ -292,18 +292,18 @@ export const DiscountedPosition = {
       isTaxable: false,
       discountId: 'discounted-order-product-discount',
       meta: {
-        adapter: 'shop.unchained.pricing.product-swiss-tax'
-      }
+        adapter: 'shop.unchained.pricing.product-swiss-tax',
+      },
     },
     {
       category: 'TAX',
       amount: -4289.6935933147615,
       rate: 0.077,
       meta: {
-        adapter: 'shop.unchained.pricing.product-swiss-tax'
-      }
-    }
-  ]
+        adapter: 'shop.unchained.pricing.product-swiss-tax',
+      },
+    },
+  ],
 };
 
 export default async function seedOrders(db) {

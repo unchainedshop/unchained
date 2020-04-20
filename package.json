@@ -18,7 +18,7 @@
     "url": "https://github.com/unchainedshop/unchained/issues"
   },
   "scripts": {
-    "lint": "eslint packages --cache --fix --ext=jsx --ext=js",
+    "lint": "eslint packages tests --cache --fix --ext=jsx --ext=js",
     "test": "jest --runInBand",
     "test:watch": "cross-env DEBUG=jest-mongodb:* jest --runInBand --watch --verbose",
     "dev": "run-p --print-label dev:*",

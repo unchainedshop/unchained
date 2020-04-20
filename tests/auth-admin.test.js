@@ -26,9 +26,9 @@ describe('Auth for admin users', () => {
         emails: [
           {
             address: 'guest@localhost',
-            verified: true
-          }
-        ]
+            verified: true,
+          },
+        ],
       });
     });
 
@@ -41,7 +41,7 @@ describe('Auth for admin users', () => {
               name
             }
           }
-        `
+        `,
       });
       expect(users.length).toEqual(2);
     });
@@ -54,7 +54,7 @@ describe('Auth for admin users', () => {
               name
             }
           }
-        `
+        `,
       });
       expect(users.length).toEqual(3);
     });
@@ -70,9 +70,9 @@ describe('Auth for admin users', () => {
         emails: [
           {
             address: 'guest@localhost',
-            verified: true
-          }
-        ]
+            verified: true,
+          },
+        ],
       });
     });
 
@@ -87,11 +87,11 @@ describe('Auth for admin users', () => {
           }
         `,
         variables: {
-          userId: User._id
-        }
+          userId: User._id,
+        },
       });
       expect(user).toMatchObject({
-        _id: User._id
+        _id: User._id,
       });
     });
   });
@@ -106,7 +106,7 @@ describe('Auth for admin users', () => {
         name: 'Octocat.png',
         type: 'image/png',
         size: imageBuffer.length,
-        buffer: imageBuffer.toString('base64')
+        buffer: imageBuffer.toString('base64'),
       };
 
       const { data: { updateUserAvatar } = {} } = await graphqlFetch({
@@ -122,14 +122,14 @@ describe('Auth for admin users', () => {
         `,
         variables: {
           userId: User._id,
-          avatar
-        }
+          avatar,
+        },
       });
       expect(updateUserAvatar).toMatchObject({
         _id: User._id,
         avatar: {
-          name: 'Octocat.png'
-        }
+          name: 'Octocat.png',
+        },
       });
     });
   });
@@ -151,15 +151,15 @@ describe('Auth for admin users', () => {
         `,
         variables: {
           userId: User._id,
-          email
-        }
+          email,
+        },
       });
       expect(updateEmail).toMatchObject({
         _id: User._id,
         primaryEmail: {
           address: email,
-          verified: false
-        }
+          verified: false,
+        },
       });
     });
   });
@@ -181,21 +181,21 @@ describe('Auth for admin users', () => {
         `,
         variables: {
           userId: User._id,
-          email
-        }
+          email,
+        },
       });
       expect(addEmail).toMatchObject({
         _id: User._id,
         emails: [
           {
             address: expect.anything(),
-            verified: expect.anything()
+            verified: expect.anything(),
           },
           {
             address: email,
-            verified: false
-          }
-        ]
+            verified: false,
+          },
+        ],
       });
     });
   });
@@ -217,17 +217,17 @@ describe('Auth for admin users', () => {
         `,
         variables: {
           userId: User._id,
-          email
-        }
+          email,
+        },
       });
       expect(removeEmail).toMatchObject({
         _id: User._id,
         emails: [
           {
             address: expect.anything(),
-            verified: expect.anything()
-          }
-        ]
+            verified: expect.anything(),
+          },
+        ],
       });
     });
   });
@@ -246,12 +246,12 @@ describe('Auth for admin users', () => {
         `,
         variables: {
           userId: Admin._id,
-          tags
-        }
+          tags,
+        },
       });
       expect(setUserTags).toMatchObject({
         _id: Admin._id,
-        tags
+        tags,
       });
     });
   });
@@ -265,8 +265,8 @@ describe('Auth for admin users', () => {
         gender: 'm',
         address: {
           firstName: 'P',
-          lastName: 'K'
-        }
+          lastName: 'K',
+        },
       };
       const { data: { updateUserProfile } = {} } = await graphqlFetch({
         query: /* GraphQL */ `
@@ -290,16 +290,16 @@ describe('Auth for admin users', () => {
         `,
         variables: {
           userId: User._id,
-          profile
-        }
+          profile,
+        },
       });
       expect(updateUserProfile).toMatchObject({
         _id: User._id,
         name: profile.displayName,
         profile: {
           ...profile,
-          birthday: profile.birthday.getTime()
-        }
+          birthday: profile.birthday.getTime(),
+        },
       });
     });
   });
@@ -307,7 +307,7 @@ describe('Auth for admin users', () => {
   describe('Mutation.enrollUser', () => {
     it('enroll a user without a password', async () => {
       const profile = {
-        displayName: 'Admin3'
+        displayName: 'Admin3',
       };
       const email = 'admin3@localhost';
       const password = null;
@@ -331,21 +331,21 @@ describe('Auth for admin users', () => {
         variables: {
           email,
           password,
-          profile
-        }
+          profile,
+        },
       });
       expect(enrollUser).toMatchObject({
         isInitialPassword: true,
         primaryEmail: {
           address: email,
-          verified: false
-        }
+          verified: false,
+        },
       });
     });
 
     it('enroll a user with pre-setting a password', async () => {
       const profile = {
-        displayName: 'Admin4'
+        displayName: 'Admin4',
       };
       const email = 'admin4@localhost';
       const password = 'admin4';
@@ -369,15 +369,15 @@ describe('Auth for admin users', () => {
         variables: {
           email,
           password,
-          profile
-        }
+          profile,
+        },
       });
       expect(enrollUser).toMatchObject({
         isInitialPassword: true,
         primaryEmail: {
           address: email,
-          verified: false
-        }
+          verified: false,
+        },
       });
     });
   });
@@ -395,11 +395,11 @@ describe('Auth for admin users', () => {
         `,
         variables: {
           userId: User._id,
-          newPassword
-        }
+          newPassword,
+        },
       });
       expect(setPassword).toMatchObject({
-        _id: User._id
+        _id: User._id,
       });
     });
   });
@@ -418,12 +418,12 @@ describe('Auth for admin users', () => {
         `,
         variables: {
           userId: User._id,
-          roles
-        }
+          roles,
+        },
       });
       expect(setRoles).toMatchObject({
         _id: User._id,
-        roles
+        roles,
       });
     });
   });

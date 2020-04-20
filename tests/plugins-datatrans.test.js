@@ -27,14 +27,14 @@ describe('Plugins: Datatrans Payments', () => {
       _id: 'datatrans-payment-provider',
       adapterKey: 'shop.unchained.datatrans',
       type: 'GENERIC',
-      configuration: [{ key: 'merchantId', value: merchantId }]
+      configuration: [{ key: 'merchantId', value: merchantId }],
     });
 
     await db.collection('order_payments').findOrInsertOne({
       ...SimplePayment,
       _id: 'datatrans-payment',
       paymentProviderId: 'datatrans-payment-provider',
-      orderId: SimpleOrder._id
+      orderId: SimpleOrder._id,
     });
 
     await db.collection('orders').updateOne(
@@ -42,8 +42,8 @@ describe('Plugins: Datatrans Payments', () => {
       {
         $set: {
           orderNumber: 'datatrans',
-          paymentId: 'datatrans-payment'
-        }
+          paymentId: 'datatrans-payment',
+        },
       }
     );
   });
@@ -72,8 +72,8 @@ describe('Plugins: Datatrans Payments', () => {
         `,
         variables: {
           orderNumber: 'datatrans',
-          transactionContext: {}
-        }
+          transactionContext: {},
+        },
       });
 
       expect(me.cart.payment.sign).toBe(sign);
@@ -112,9 +112,9 @@ describe('Plugins: Datatrans Payments', () => {
       const result = await fetch('http://localhost:3000/graphql/datatrans', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8'
+          'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8',
         },
-        body: params
+        body: params,
       });
       expect(result.status).toBe(200);
 
@@ -153,9 +153,9 @@ describe('Plugins: Datatrans Payments', () => {
       const result = await fetch('http://localhost:3000/graphql/datatrans', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8'
+          'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8',
         },
-        body: params
+        body: params,
       });
       expect(result.status).toBe(200);
 

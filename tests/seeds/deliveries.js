@@ -6,7 +6,7 @@ export const SimpleDeliveryProvider = {
   created: new Date('2019-10-11T10:23:35.959+0000'),
   configuration: [],
   type: 'SHIPPING',
-  updated: new Date('2019-10-11T10:23:37.337+0000')
+  updated: new Date('2019-10-11T10:23:37.337+0000'),
 };
 
 export const SendMailDeliveryProvider = {
@@ -15,7 +15,7 @@ export const SendMailDeliveryProvider = {
   created: new Date('2019-10-11T10:23:35.959+0000'),
   configuration: [],
   type: 'SHIPPING',
-  updated: new Date('2019-10-11T10:23:37.337+0000')
+  updated: new Date('2019-10-11T10:23:37.337+0000'),
 };
 
 export const PickupDeliveryProvider = {
@@ -25,11 +25,11 @@ export const PickupDeliveryProvider = {
   configuration: [
     {
       key: 'stores',
-      value: JSON.stringify([{ _id: 'zurich', name: 'Zurich' }])
-    }
+      value: JSON.stringify([{ _id: 'zurich', name: 'Zurich' }]),
+    },
   ],
   type: 'PICKUP',
-  updated: new Date('2019-10-11T10:23:37.337+0000')
+  updated: new Date('2019-10-11T10:23:37.337+0000'),
 };
 
 export default async function seedPayments(db) {

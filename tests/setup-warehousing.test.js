@@ -17,7 +17,7 @@ describe('setup warehousing providers', () => {
   describe('Mutation.createWarehousingProvider', () => {
     it('add a shipping warehousing provider', async () => {
       const {
-        data: { createWarehousingProvider, errors }
+        data: { createWarehousingProvider, errors },
       } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation createWarehousingProvider(
@@ -44,18 +44,18 @@ describe('setup warehousing providers', () => {
         variables: {
           warehousingProvider: {
             type: 'PHYSICAL',
-            adapterKey: 'shop.unchained.warehousing.google-sheets'
-          }
-        }
+            adapterKey: 'shop.unchained.warehousing.google-sheets',
+          },
+        },
       });
       expect(errors).toEqual(undefined);
       expect(createWarehousingProvider).toMatchObject({
         configurationError: null,
         deleted: null,
         interface: {
-          _id: 'shop.unchained.warehousing.google-sheets'
+          _id: 'shop.unchained.warehousing.google-sheets',
         },
-        type: 'PHYSICAL'
+        type: 'PHYSICAL',
       });
     });
   });
@@ -63,7 +63,7 @@ describe('setup warehousing providers', () => {
   describe('Mutation.updateWarehousingProvider', () => {
     it('Update a warehousing provider', async () => {
       const {
-        data: { updateWarehousingProvider, errors }
+        data: { updateWarehousingProvider, errors },
       } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation updateWarehousingProvider(
@@ -91,26 +91,26 @@ describe('setup warehousing providers', () => {
             configuration: [
               {
                 key: 'gugus',
-                value: 'blub'
-              }
-            ]
-          }
-        }
+                value: 'blub',
+              },
+            ],
+          },
+        },
       });
       expect(errors).toEqual(undefined);
       expect(updateWarehousingProvider).toMatchObject({
         configuration: [
           {
             key: 'gugus',
-            value: 'blub'
-          }
+            value: 'blub',
+          },
         ],
         configurationError: null,
         deleted: null,
         interface: {
-          _id: 'shop.unchained.warehousing.google-sheets'
+          _id: 'shop.unchained.warehousing.google-sheets',
         },
-        type: 'PHYSICAL'
+        type: 'PHYSICAL',
       });
     });
   });
@@ -118,7 +118,7 @@ describe('setup warehousing providers', () => {
   describe('Mutation.removeWarehousingProvider', () => {
     it('Remove a warehousing provider', async () => {
       const {
-        data: { removeWarehousingProvider, errors }
+        data: { removeWarehousingProvider, errors },
       } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation removeWarehousingProvider($warehousingProviderId: ID!) {
@@ -131,13 +131,13 @@ describe('setup warehousing providers', () => {
           }
         `,
         variables: {
-          warehousingProviderId: SimpleWarehousingProvider._id
-        }
+          warehousingProviderId: SimpleWarehousingProvider._id,
+        },
       });
       expect(errors).toEqual(undefined);
       expect(removeWarehousingProvider).toMatchObject({
         deleted: expect.anything(),
-        _id: SimpleWarehousingProvider._id
+        _id: SimpleWarehousingProvider._id,
       });
     });
   });

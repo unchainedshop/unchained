@@ -49,18 +49,18 @@ describe('Products', () => {
           product: {
             title: 'Simple Product',
             type: 'SimpleProduct',
-            tags: ['simple']
-          }
-        }
+            tags: ['simple'],
+          },
+        },
       });
       expect(createProduct).toMatchObject({
         tags: ['simple'],
         status: 'DRAFT',
         texts: {
-          title: 'Simple Product'
+          title: 'Simple Product',
         },
         catalogPrice: null,
-        simulatedPrice: null
+        simulatedPrice: null,
       });
     });
   });

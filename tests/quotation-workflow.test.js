@@ -72,9 +72,9 @@ describe('cart checkout', () => {
           productId: SimpleProduct._id,
           configuration: [
             { key: 'length', value: '5' },
-            { key: 'height', value: '10' }
-          ]
-        }
+            { key: 'height', value: '10' },
+          ],
+        },
       });
       quotationId = requestQuotation._id;
       expect(requestQuotation).toMatchObject({
@@ -92,14 +92,14 @@ describe('cart checkout', () => {
         configuration: [
           {
             key: 'length',
-            value: '5'
+            value: '5',
           },
           {
             key: 'height',
-            value: '10'
-          }
+            value: '10',
+          },
         ],
-        documents: []
+        documents: [],
       });
     });
   });
@@ -132,8 +132,8 @@ describe('cart checkout', () => {
         `,
         variables: {
           quotationId,
-          quotationContext: { hello: 'world' }
-        }
+          quotationContext: { hello: 'world' },
+        },
       });
       expect(verifyQuotation).toMatchObject({
         status: 'PROCESSING',
@@ -141,7 +141,7 @@ describe('cart checkout', () => {
         fullfilled: null,
         rejected: null,
         meta: null,
-        documents: []
+        documents: [],
       });
     });
   });
@@ -174,8 +174,8 @@ describe('cart checkout', () => {
         `,
         variables: {
           quotationId,
-          quotationContext: { hello: 'no world' }
-        }
+          quotationContext: { hello: 'no world' },
+        },
       });
       expect(rejectQuotation.rejected).toBeTruthy();
       expect(rejectQuotation).toMatchObject({
@@ -183,7 +183,7 @@ describe('cart checkout', () => {
         isExpired: true,
         fullfilled: null,
         meta: null,
-        documents: []
+        documents: [],
       });
     });
   });
@@ -219,8 +219,8 @@ describe('cart checkout', () => {
         `,
         variables: {
           quotationId: ProcessingQuotation._id,
-          quotationContext: { hello: 'car' }
-        }
+          quotationContext: { hello: 'car' },
+        },
       });
       expect(makeQuotationProposal).toMatchObject({
         status: 'PROPOSED',
@@ -228,7 +228,7 @@ describe('cart checkout', () => {
         fullfilled: null,
         rejected: null,
         meta: null,
-        documents: []
+        documents: [],
       });
     });
   });
