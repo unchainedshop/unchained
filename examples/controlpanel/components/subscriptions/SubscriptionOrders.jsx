@@ -1,0 +1,66 @@
+import gql from 'graphql-tag';
+import { graphql } from 'react-apollo';
+import React from 'react';
+import { Table, Label, Icon, Segment } from 'semantic-ui-react';
+import Link from 'next/link';
+
+const SubscriptionOrders = ({ data }) => {
+  const periods = data?.subscription?.periods || [];
+  return (
+    <Segment secondary>
+      <Label horizontal attached="top">
+        <Label.Detail>Orders</Label.Detail>
+      </Label>
+      <Table compact>
+        <Table.Header>
+          <Table.Row>
+            <Table.HeaderCell>Period</Table.HeaderCell>
+            <Table.HeaderCell>Is Trial Period</Table.HeaderCell>
+            <Table.HeaderCell>Order</Table.HeaderCell>
+          </Table.Row>
+        </Table.Header>
+        {periods && (
+          <Table.Body>
+            {periods.map(({ start, end, isTrial, order }) => (
+              <Table.Row key={start}>
+                <Table.Cell singleLine>
+                  {new Date(start).toLocalDateString()} -{' '}
+                  {new Date(end).toLocalDateString()}
+                </Table.Cell>
+                <Table.Cell>
+                  <code>{isTrial}</code>
+                </Table.Cell>
+                <Table.Cell>
+                  {order && (
+                    <Link href={`/orders/view?_id=${order._id}`} passHref>
+                      <Label horizontal basic>
+                        <Icon name="order" /> {order._id}
+                        ...
+                      </Label>
+                    </Link>
+                  )}
+                </Table.Cell>
+              </Table.Row>
+            ))}
+          </Table.Body>
+        )}
+      </Table>
+    </Segment>
+  );
+};
+
+export default graphql(gql`
+  query subscriptionOrders($subscriptionId: ID!) {
+    subscription(subscriptionId: $subscriptionId) {
+      _id
+      periods {
+        start
+        end
+        isTrial
+        order {
+          _id
+        }
+      }
+    }
+  }
+`)(SubscriptionOrders);

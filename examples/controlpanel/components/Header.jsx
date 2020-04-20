@@ -103,6 +103,11 @@ const Header = ({ pathname, loggedInUser, logout: doLogout, ...rest }) =>
               <span>Work</span>
             </Menu.Item>
           </Link>
+          <Link href="/subscriptions" passHref>
+            <Menu.Item active={pathname.startsWith('/subscriptions')}>
+              <span>Subscriptions</span>
+            </Menu.Item>
+          </Link>
         </Dropdown.Menu>
       </Dropdown>
       <Menu.Menu position="right">

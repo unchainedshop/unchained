@@ -237,12 +237,14 @@ Subscriptions.createSubscription = async (
     countryCode,
   });
   const subscription = Subscriptions.findOne({ _id: subscriptionId });
-  Subscriptions.linkOrderToSubscription({
-    orderId: orderIdForFirstPeriod,
-    subscriptionId,
-    period: await subscription.director().nextPeriod(),
-  });
-
+  const period = await subscription.director().nextPeriod();
+  if (period) {
+    Subscriptions.linkOrderToSubscription({
+      orderId: orderIdForFirstPeriod,
+      subscriptionId,
+      period,
+    });
+  }
   return subscription.process().sendStatusToCustomer(options);
 };
 
@@ -321,6 +323,13 @@ Subscriptions.updateStatus = ({ status, subscriptionId, info = '' }) => {
       },
     },
   };
+  switch (status) {
+    case [SubscriptionStatus.ACTIVE]:
+      modifier.$set.subscriptionNumber = Subscriptions.newSubscriptionNumber();
+      break;
+    default:
+      break;
+  }
   log(`New Status: ${status}`, { subscriptionId });
   Subscriptions.update({ _id: subscriptionId }, modifier);
   return Subscriptions.findOne({ _id: subscriptionId });
