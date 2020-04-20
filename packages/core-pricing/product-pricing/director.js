@@ -30,6 +30,11 @@ class ProductPricingAdapter {
 
   calculate() {
     const resultRaw = this.result.getRawPricingSheet();
+<<<<<<< HEAD
+=======
+    if (!resultRaw.length && !this.calculation.getRawPricingSheet().length)
+      return null;
+>>>>>>> 3cc1bed... fix: order discounts tests
     resultRaw.forEach(({ amount, category }) =>
       this.log(`Item Calculation -> ${category} ${amount}`)
     );

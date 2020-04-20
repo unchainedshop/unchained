@@ -294,7 +294,7 @@ describe('Worker Module', () => {
       expect(workQueueMiddle).toHaveLength(1);
 
       // Test if work is done eventually
-      await wait(2000);
+      await wait(3000);
 
       const { data: { workQueue: workQueueAfter } = {} } = await graphqlFetch({
         query: /* GraphQL */ `
