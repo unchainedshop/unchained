@@ -27,6 +27,9 @@ WorkQueue.helpers({
   status() {
     return getWorkStatus(this);
   },
+  async original() {
+    return WorkQueue.findOne({ _id: this.originalWorkId });
+  },
 });
 
 export default () => {};

@@ -341,7 +341,9 @@ describe('Worker Module', () => {
           query {
             workQueue {
               _id
-              original
+              original {
+                _id
+              }
               retries
             }
           }
@@ -352,7 +354,7 @@ describe('Worker Module', () => {
 
       const workBefore = workQueueBefore[0];
 
-      expect(workBefore.original).toBe(addWorkResult.data.addWork._id);
+      expect(workBefore.original._id).toBe(addWorkResult.data.addWork._id);
       expect(workBefore.retries).toBe(1);
 
       // Await the expected reschedule time (should be done by the plugin itself)

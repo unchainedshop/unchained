@@ -33,7 +33,7 @@ const WorkHeader = ({ data }) => {
     created,
     scheduled,
     started,
-    stopped,
+    finished,
     input,
     timeout,
     error,
@@ -86,15 +86,19 @@ const WorkHeader = ({ data }) => {
                   <List.Icon name="retry" />
                   <List.Content>Worker: {worker}</List.Content>
                 </List.Item>
-                <List.Item>
-                  <List.Icon name="retry" />
-                  <List.Content>
-                    Original:&nbsp;
-                    <Link href={`/work/view?_id=${original}`}>
-                      <a href={`/work/view?_id=${original}`}>{original}</a>
-                    </Link>
-                  </List.Content>
-                </List.Item>
+                {original && (
+                  <List.Item>
+                    <List.Icon name="retry" />
+                    <List.Content>
+                      Original:&nbsp;
+                      <Link href={`/work/view?_id=${original._id}`}>
+                        <a href={`/work/view?_id=${original._id}`}>
+                          {original._id}
+                        </a>
+                      </Link>
+                    </List.Content>
+                  </List.Item>
+                )}
               </List>
             </Grid.Column>
             <Grid.Column width={6}>
@@ -123,8 +127,8 @@ const WorkHeader = ({ data }) => {
                 <List.Item>
                   <List.Icon name="hourglass end" />
                   <List.Content>
-                    Stopped:{' '}
-                    {stopped ? new Date(stopped).toLocaleString() : 'n/a'}
+                    Finished:{' '}
+                    {finished ? new Date(finished).toLocaleString() : 'n/a'}
                   </List.Content>
                 </List.Item>
                 <List.Item>
@@ -182,7 +186,7 @@ export default graphql(gql`
       scheduled
       status
       started
-      stopped
+      finished
       created
       deleted
       priority
@@ -191,7 +195,9 @@ export default graphql(gql`
       result
       error
       retries
-      original
+      original {
+        _id
+      }
       timeout
     }
   }

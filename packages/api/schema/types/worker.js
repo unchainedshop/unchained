@@ -21,19 +21,19 @@ export default [
       # Timestamp when this work was allocated -> Locked for other workers
       started: Date
 
-      stopped: Date
+      finished: Date
       created: Date!
       updated: Date
       deleted: Date
 
-      priority: Int
+      priority: Int!
       type: WorkType!
 
       # Status is derived from the other fields. E.g. Work without \`started\`
       # field has status \`NEW\`
       status: WorkStatus!
 
-      worker: String      
+      worker: String
       input: JSON
       result: JSON
 
@@ -45,12 +45,12 @@ export default [
       scheduled: Date
 
       # Link to original work: For retries, clones, ...
-      original: ID
+      original: Work
 
       # How many times this work should be retried. A retried work is a clone
-      # with \`retries = parent.retries - 1\` usually. Plugins can implement 
+      # with \`retries = parent.retries - 1\` usually. Plugins can implement
       # different workflows.
-      retries: Int
+      retries: Int!
 
       # If work is \`ALLOCATED\` longer than \`timeout\` it is considered as
       # \`FAILED\` and could be cleaned.

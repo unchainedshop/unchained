@@ -47,7 +47,7 @@ class WorkerDirector {
   static defaultSortOrder() {
     // for all started operations (failed & success), they have to come descending (latest first),
     // after it's enqueue order: priority first, then prefer jobs that never run (original not set), then FIFO (created)
-    return { started: -1, priority: -1, original: 1, created: 1 };
+    return { started: -1, priority: -1, originalWorkId: 1, created: 1 };
   }
 
   static async addWork({
@@ -55,8 +55,8 @@ class WorkerDirector {
     input,
     priority = 0,
     scheduled,
-    original,
-    retries,
+    originalWorkId,
+    retries = 20,
   }) {
     if (!this.plugins[type]) {
       throw new Error(`No plugin registered for type ${type}`);
@@ -70,7 +70,7 @@ class WorkerDirector {
       input,
       priority,
       scheduled: scheduled || created,
-      original,
+      originalWorkId,
       retries,
       created,
     });

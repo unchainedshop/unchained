@@ -51,7 +51,7 @@ const WorkRow = ({ work, relativeDate }) => {
         {work.started && new Date(work.started).toLocaleString()}
       </Table.Cell>
       <Table.Cell>
-        {work.stopped && new Date(work.stopped).toLocaleString()}
+        {work.finished && new Date(work.finished).toLocaleString()}
       </Table.Cell>
     </Table.Row>
   );
@@ -84,7 +84,7 @@ const WorkList = ({ loading, updateHasMore, queryOptions, ...rest }) => {
         <Table.HeaderCell>Created</Table.HeaderCell>
         <Table.HeaderCell>Scheduled</Table.HeaderCell>
         <Table.HeaderCell>Started</Table.HeaderCell>
-        <Table.HeaderCell>Stopped</Table.HeaderCell>
+        <Table.HeaderCell>Finished</Table.HeaderCell>
       </Table.Row>
     </InfiniteDataTable>
   );
@@ -100,7 +100,7 @@ export default withDataTableLoader({
         scheduled
         status
         started
-        stopped
+        finished
         created
       }
     }

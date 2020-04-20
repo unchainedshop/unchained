@@ -631,10 +631,11 @@ export default [
       """
       addWork(
         type: WorkType!
+        priority: Int! = 0
         input: JSON
-        original: ID
+        originalWorkId: ID
         scheduled: Date
-        retries: Int
+        retries: Int! = 20
       ): Work
 
       """

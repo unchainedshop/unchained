@@ -36,7 +36,7 @@ class FailedRescheduler {
         type: work.type,
         input: work.input,
         priority: work.priority,
-        original: work.original || work._id,
+        originalWorkId: work.originalWorkId || work._id,
         retries: work.retries - 1,
         scheduled,
       });
