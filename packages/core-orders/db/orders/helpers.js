@@ -39,19 +39,19 @@ Logs.helpers({
 });
 
 Users.helpers({
-  cart({ countryContext, orderNumber } = {}) {
+  async cart({ countryContext, orderNumber } = {}) {
     const selector = {
       countryCode: countryContext || this.lastLogin.countryContext,
       status: { $eq: OrderStatus.OPEN },
     };
     if (orderNumber) selector.orderNumber = orderNumber;
-    const carts = this.orders(selector);
+    const carts = await this.orders(selector);
     if (carts.length > 0) {
       return carts[0];
     }
     return null;
   },
-  orders({ includeCarts = false, status, ...rest } = {}) {
+  async orders({ includeCarts = false, status, ...rest } = {}) {
     const selector = { userId: this._id, ...rest };
     if (!includeCarts || status) {
       selector.status = status || { $ne: OrderStatus.OPEN };
@@ -699,9 +699,18 @@ Orders.updateCalculation = ({ orderId }) => {
   );
 };
 
-Orders.migrateCart = ({ fromUserId, toUserId, countryContext, mergeCarts }) => {
-  const fromCart = Users.findOne({ _id: fromUserId }).cart({ countryContext });
-  const toCart = Users.findOne({ _id: toUserId }).cart({ countryContext });
+Orders.migrateCart = async ({
+  fromUserId,
+  toUserId,
+  countryContext,
+  mergeCarts,
+}) => {
+  const fromCart = await Users.findOne({ _id: fromUserId }).cart({
+    countryContext,
+  });
+  const toCart = await Users.findOne({ _id: toUserId }).cart({
+    countryContext,
+  });
 
   if (!fromCart) {
     // No cart, don't copy

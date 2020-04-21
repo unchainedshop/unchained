@@ -24,8 +24,8 @@ const SubscriptionOrders = ({ data }) => {
             {periods.map(({ start, end, isTrial, order }) => (
               <Table.Row key={start}>
                 <Table.Cell singleLine>
-                  {new Date(start).toLocaleDateString()} -{' '}
-                  {new Date(end).toLocaleDateString()}
+                  {new Date(start).toLocaleString()} -{' '}
+                  {new Date(end).toLocaleString()}
                 </Table.Cell>
                 <Table.Cell>
                   <code>{isTrial}</code>

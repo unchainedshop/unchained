@@ -18,7 +18,7 @@ export default connectApollo(
           <Grid.Column width={16}>
             <SubscriptionHeader subscriptionId={router.query._id} />
           </Grid.Column>
-          <Grid.Column width={8}>
+          <Grid.Column width={16}>
             <SubscriptionOrders subscriptionId={router.query._id} />
           </Grid.Column>
           {/* <Grid.Column>

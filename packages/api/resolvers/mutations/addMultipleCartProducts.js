@@ -3,7 +3,7 @@ import { Products } from 'meteor/unchained:core-products';
 import { ProductNotFoundError, OrderQuantityTooLowError } from '../../errors';
 import getCart from '../../getCart';
 
-export default function (
+export default async function (
   root,
   { orderId, items },
   { user, userId, countryContext }
@@ -18,7 +18,7 @@ export default function (
     };
   });
 
-  const cart = getCart({ orderId, user, countryContext });
+  const cart = await getCart({ orderId, user, countryContext });
   return itemsWithProducts.map(({ product, quantity, configuration }) => {
     if (quantity < 1)
       throw new OrderQuantityTooLowError({

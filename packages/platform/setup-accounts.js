@@ -6,6 +6,7 @@ import { getFallbackLocale } from 'meteor/unchained:core';
 import { Users } from 'meteor/unchained:core-users';
 import { Orders } from 'meteor/unchained:core-orders';
 import { Bookmarks } from 'meteor/unchained:core-bookmarks';
+import { Promise } from 'meteor/promise';
 import cloneDeep from 'lodash.clonedeep';
 import moniker from 'moniker';
 
@@ -138,13 +139,15 @@ export default ({ mergeUserCartsOnLogin = true } = {}) => {
       countryContext,
     });
     if (userIdBeforeLogin) {
-      Orders.migrateCart({
-        fromUserId: userIdBeforeLogin,
-        toUserId: user._id,
-        locale: normalizedLocale,
-        countryContext,
-        mergeCarts: mergeUserCartsOnLogin,
-      });
+      Promise.await(
+        Orders.migrateCart({
+          fromUserId: userIdBeforeLogin,
+          toUserId: user._id,
+          locale: normalizedLocale,
+          countryContext,
+          mergeCarts: mergeUserCartsOnLogin,
+        })
+      );
 
       Bookmarks.migrateBookmarks({
         fromUserId: userIdBeforeLogin,

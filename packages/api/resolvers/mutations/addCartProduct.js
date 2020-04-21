@@ -3,7 +3,7 @@ import { Products } from 'meteor/unchained:core-products';
 import { ProductNotFoundError, OrderQuantityTooLowError } from '../../errors';
 import getCart from '../../getCart';
 
-export default function (
+export default async function (
   root,
   { orderId, productId, quantity, configuration },
   { user, userId, countryContext }
@@ -17,7 +17,7 @@ export default function (
   if (quantity < 1) throw new OrderQuantityTooLowError({ quantity });
   const product = Products.findOne({ _id: productId });
   if (!product) throw new ProductNotFoundError({ productId });
-  const cart = getCart({ orderId, user, countryContext });
+  const cart = await getCart({ orderId, user, countryContext });
   return cart.addProductItem({
     product,
     quantity,

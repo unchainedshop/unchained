@@ -2,13 +2,13 @@ import { log } from 'meteor/unchained:core-logger';
 import { OrderCheckoutError } from '../../errors';
 import getCart from '../../getCart';
 
-export default function (
+export default async function (
   root,
   { orderId, ...transactionContext },
   { user, userId, countryContext, localeContext }
 ) {
   log('mutation checkoutCart', { orderId, userId });
-  const cart = getCart({ orderId, user, countryContext });
+  const cart = await getCart({ orderId, user, countryContext });
   try {
     return cart.checkout(transactionContext, {
       localeContext,

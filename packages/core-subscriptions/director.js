@@ -46,7 +46,7 @@ class SubscriptionAdapter {
     const plan = subscription?.product()?.plan;
     if (!plan) return null;
 
-    if (plan.trialIntervalCount && subscription.periods.length === 0) {
+    if (plan.trialIntervalCount && !subscription?.periods?.length) {
       return {
         ...normalizeStartAndEnd(
           new Date(),

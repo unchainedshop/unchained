@@ -1,7 +1,7 @@
 import { log } from 'meteor/unchained:core-logger';
 import getCart from '../../getCart';
 
-export default function (
+export default async function (
   root,
   {
     orderId,
@@ -14,7 +14,7 @@ export default function (
   { user, countryContext, userId }
 ) {
   log('mutation updateCart', { userId });
-  let order = getCart({ orderId, user, countryContext });
+  let order = await getCart({ orderId, user, countryContext });
   if (meta) {
     order = order.updateContext(meta);
   }

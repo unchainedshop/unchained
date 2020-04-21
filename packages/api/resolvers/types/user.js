@@ -43,7 +43,7 @@ export default {
     'subscriptions'
   ),
 
-  cart(user, params, context = {}) {
+  async cart(user, params, context = {}) {
     const { countryContext, userId } = context;
     checkAction(actions.viewUserOrders, userId, [user, params, context]);
     return user.cart({ countryContext, ...params });
