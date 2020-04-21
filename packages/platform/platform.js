@@ -5,9 +5,9 @@ import setupAccounts, {
   buildContext,
 } from './setup-accounts';
 import setupWorkqueue, { workerTypeDefs } from './setup-workqueue';
+import setupDatabase, { createFixtures } from './setup-db';
 
-export * from './setup-db';
-export { configureAccountsEmailTemplates, buildContext };
+export { configureAccountsEmailTemplates, buildContext, createFixtures };
 
 const {
   NODE_ENV,
@@ -26,6 +26,7 @@ const isEmailInterceptionEnabled = (options) => {
 };
 
 export const startPlatform = (options = {}) => {
+  setupDatabase(options);
   setupAccounts(options);
   startAPI({
     options,

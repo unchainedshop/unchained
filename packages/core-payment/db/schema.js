@@ -62,7 +62,5 @@ Migrations.add({
 });
 
 export default () => {
-  Meteor.startup(() => {
-    Migrations.migrateTo('latest');
-  });
+  Migrations.migrateTo('latest');
 };

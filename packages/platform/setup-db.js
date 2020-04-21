@@ -1,5 +1,4 @@
-import { Meteor } from 'meteor/meteor';
-import configureUsers, { Users } from 'meteor/unchained:core-users';
+import configureUsers from 'meteor/unchained:core-users';
 import configureLogger from 'meteor/unchained:core-logger';
 import configureDelivery from 'meteor/unchained:core-delivery';
 import configurePayment from 'meteor/unchained:core-payment';
@@ -17,15 +16,9 @@ import configureFilters from 'meteor/unchained:core-filters';
 import configureSubscriptions from 'meteor/unchained:core-subscriptions';
 import createFixtures from './fixtures';
 
-const { FIXTURES } = process.env;
-
 export { createFixtures };
-export default createFixtures;
 
-Meteor.startup(() => {
-  if (!Meteor.isServer) return;
-
-  // connect domain model
+export default () => {
   configureLogger();
   configureCurrencies();
   configureCountries();
@@ -42,8 +35,4 @@ Meteor.startup(() => {
   configureAssortments();
   configureFilters({ skipInvalidationOnStartup: true });
   configureSubscriptions();
-
-  if (FIXTURES && Users.find({ username: 'admin' }).count() === 0) {
-    createFixtures();
-  }
-});
+};
