@@ -22,6 +22,7 @@ Package.onUse((api) => {
   api.use('unchained:core-files@0.47.0');
   api.use('unchained:core@0.47.0');
   api.use('unchained:utils@0.47.0');
+  api.use('unchained:core-worker@0.47.0');
   api.use('unchained:core-users@0.47.0');
   api.use('unchained:core-products@0.47.0');
   api.use('unchained:core-countries@0.47.0');

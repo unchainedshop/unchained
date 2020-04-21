@@ -4,8 +4,6 @@ import { log } from 'meteor/unchained:core-logger';
 
 import BaseWorker from './base';
 
-const { WORKER_CRON_TEXT = 'every 10 minutes' } = process.env;
-
 SyncedCron.config({
   log: true,
 
@@ -32,7 +30,7 @@ class CronWorker extends BaseWorker {
     WorkerDirector,
     workerId,
     batchCount = 0,
-    cronText = WORKER_CRON_TEXT,
+    cronText = 'every 10 minutes',
   }) {
     super({ WorkerDirector, workerId });
 

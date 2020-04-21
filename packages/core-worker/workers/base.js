@@ -4,7 +4,7 @@ import { log } from 'meteor/unchained:core-logger';
 
 import External from '../plugins/external';
 
-const { WORKER_ID } = process.env;
+const { UNCHAINED_WORKER_ID } = process.env;
 
 class BaseWorker {
   static key = 'shop.unchained.worker.base';
@@ -17,7 +17,7 @@ class BaseWorker {
 
   constructor({
     WorkerDirector,
-    workerId = WORKER_ID || `${os.hostname()}:${this.type}`,
+    workerId = UNCHAINED_WORKER_ID || `${os.hostname()}:${this.type}`,
   }) {
     log(`${this.constructor.key} -> Initialized: ${workerId}`);
     this.WorkerDirector = WorkerDirector;

@@ -5,7 +5,7 @@ import { log } from 'meteor/unchained:core-logger';
 import { WorkQueue } from './db/collections';
 import { WorkStatus } from './db/schema';
 
-const { WORKER_ID = os.hostname() } = process.env;
+const { UNCHAINED_WORKER_ID = os.hostname() } = process.env;
 
 const WorkerEventTypes = {
   added: 'added',
@@ -120,7 +120,7 @@ class WorkerDirector {
     return result;
   }
 
-  static async allocateWork({ types, worker = WORKER_ID }) {
+  static async allocateWork({ types, worker = UNCHAINED_WORKER_ID }) {
     // Find a work item that is scheduled for now and is not started.
     // Also:
     // - Restrict by types and worker if provided
@@ -174,7 +174,7 @@ class WorkerDirector {
     result,
     error,
     success,
-    worker = WORKER_ID,
+    worker = UNCHAINED_WORKER_ID,
     started = new Date(),
     finished = new Date(),
   }) {

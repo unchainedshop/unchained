@@ -4,21 +4,38 @@ import setupAccounts, {
   configureAccountsEmailTemplates,
   buildContext,
 } from './setup-accounts';
+import setupWorkqueue, { workerTypeDefs } from './setup-workqueue';
 
 export * from './setup-db';
-export * from './setup-cron';
 export { configureAccountsEmailTemplates, buildContext };
 
-const { NODE_ENV, UNCHAINED_DISABLE_EMAIL_INTERCEPTION } = process.env;
+const {
+  NODE_ENV,
+  UNCHAINED_DISABLE_EMAIL_INTERCEPTION,
+  UNCHAINED_DISABLE_WORKER,
+} = process.env;
+
+const isWorkQueueEnabled = (options) => {
+  if (options?.disableWorker) return false;
+  return NODE_ENV !== 'production' && !UNCHAINED_DISABLE_WORKER;
+};
+
+const isEmailInterceptionEnabled = (options) => {
+  if (options?.disableEmailInterception) return false;
+  return NODE_ENV !== 'production' && !UNCHAINED_DISABLE_EMAIL_INTERCEPTION;
+};
 
 export const startPlatform = (options = {}) => {
   setupAccounts(options);
-  startAPI(options);
-  if (
-    NODE_ENV !== 'production' &&
-    !options.disableEmailInterception &&
-    !UNCHAINED_DISABLE_EMAIL_INTERCEPTION
-  ) {
-    interceptEmails();
-  }
+  startAPI({
+    options,
+    typeDefs: [...workerTypeDefs(), ...(options?.typeDefs || [])],
+  });
+  if (isEmailInterceptionEnabled(options)) interceptEmails(options);
+  if (isWorkQueueEnabled(options))
+    setupWorkqueue({
+      cronText:
+        NODE_ENV !== 'production' ? 'every 2 seconds' : 'every 5 seconds',
+      ...options,
+    });
 };
