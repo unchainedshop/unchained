@@ -1,3 +1,4 @@
+import { Migrations } from 'meteor/percolate:migrations';
 import configureUsers from 'meteor/unchained:core-users';
 import configureLogger from 'meteor/unchained:core-logger';
 import configureDelivery from 'meteor/unchained:core-delivery';
@@ -14,12 +15,16 @@ import configureOrders from 'meteor/unchained:core-orders';
 import configureAssortments from 'meteor/unchained:core-assortments';
 import configureFilters from 'meteor/unchained:core-filters';
 import configureSubscriptions from 'meteor/unchained:core-subscriptions';
+import configureWorker from 'meteor/unchained:core-worker';
 import createFixtures from './fixtures';
 
 export { createFixtures };
 
 export default () => {
+  Migrations.unlock();
+
   configureLogger();
+  configureWorker();
   configureCurrencies();
   configureCountries();
   configureLanguages();

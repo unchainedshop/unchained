@@ -3,6 +3,8 @@ import { Migrations } from 'meteor/percolate:migrations';
 import SimpleSchema from 'simpl-schema';
 import { Logs } from './collections';
 
+const ONE_DAY_IN_SECONDS = 86400;
+
 Logs.attachSchema(
   new SimpleSchema(
     {
@@ -66,4 +68,11 @@ Migrations.add({
 
 export default () => {
   Migrations.migrateTo('latest');
+
+  Logs.rawCollection().createIndex(
+    {
+      created: -1,
+    },
+    { expireAfterSeconds: 2 * ONE_DAY_IN_SECONDS }
+  );
 };

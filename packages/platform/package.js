@@ -14,6 +14,8 @@ Package.onUse((api) => {
   api.use('check');
   api.use('accounts-base');
   api.use('dburles:factory@1.1.0');
+  api.use('percolate:migrations@1.0.2');
+
   api.use('unchained:core@0.47.0');
   api.use('unchained:core-currencies@0.47.0');
   api.use('unchained:core-countries@0.47.0');
