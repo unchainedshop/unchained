@@ -1,4 +1,3 @@
-/* eslint-disable class-methods-use-this */
 import { SyncedCron } from 'meteor/littledata:synced-cron';
 import { log } from 'meteor/unchained:core-logger';
 
@@ -26,6 +25,16 @@ class CronWorker extends BaseWorker {
 
   static type = 'CRON';
 
+  async tick() {
+    const processRecursively = async (recursionCounter = 0) => {
+      if (this.batchCount && this.batchCount < recursionCounter) return null;
+      const doneWork = await this.findOneAndProcessWork();
+      if (doneWork) return processRecursively(recursionCounter + 1);
+      return null;
+    };
+    return processRecursively();
+  }
+
   constructor({
     WorkerDirector,
     workerId,
@@ -33,28 +42,22 @@ class CronWorker extends BaseWorker {
     cronText = 'every 10 minutes',
   }) {
     super({ WorkerDirector, workerId });
-
+    this.batchCount = batchCount;
     SyncedCron.add({
       name: `Allocates work on fixed intervals: ${cronText}`,
       schedule(parser) {
         return parser.text(cronText);
       },
-      job: async () => {
-        const processRecursively = async (recursionCounter = 0) => {
-          if (batchCount && batchCount < recursionCounter) return null;
-          const doneWork = await this.findOneAndProcessWork();
-          if (doneWork) return processRecursively(recursionCounter + 1);
-          return null;
-        };
-        return processRecursively();
-      },
+      job: this.tick.bind(this),
     });
   }
 
+  // eslint-disable-next-line
   start() {
     SyncedCron.start();
   }
 
+  // eslint-disable-next-line
   stop() {
     SyncedCron.pause();
   }
