@@ -33,18 +33,24 @@ const findLocalizedText = (collection, selector, locale) => {
   const exactTranslation = collection.findOne(
     extendSelectorWithLocale(selector, locale)
   );
-  if (exactTranslation) return exactTranslation;
+  if (exactTranslation) {
+    textCache.set(cacheKey, exactTranslation);
+    return exactTranslation;
+  }
 
   const fallbackLocale = getFallbackLocale();
   if (fallbackLocale.normalized !== locale.normalized) {
     const fallbackTranslation = collection.findOne(
       extendSelectorWithLocale(selector, fallbackLocale)
     );
-    if (fallbackTranslation) return fallbackTranslation;
+    if (fallbackTranslation) {
+      textCache.set(cacheKey, fallbackTranslation);
+      return fallbackTranslation;
+    }
   }
 
   const foundText = collection.findOne(selector);
-  cachedText.set(cacheKey, foundText);
+  textCache.set(cacheKey, foundText);
   return foundText;
 };
 
