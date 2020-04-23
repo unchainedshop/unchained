@@ -18,20 +18,17 @@ export default ({ cronText }) => {
   handlers.push(
     new EventListenerWorker({
       WorkerDirector,
-      workerId: 'EventWorker',
     })
   );
   // handlers.push(
   //   new IntervalWorker({
   //     WorkerDirector,
-  //     workerId: 'IntervalWorker',
   //   })
   // );
   if (cronText) {
     handlers.push(
       new CronWorker({
         WorkerDirector,
-        workerId: 'CronWorker',
         cronText,
       })
     );

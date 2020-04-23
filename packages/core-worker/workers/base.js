@@ -18,7 +18,8 @@ class BaseWorker {
 
   constructor({
     WorkerDirector,
-    workerId = UNCHAINED_WORKER_ID || `${os.hostname()}:${this.type}`,
+    workerId = UNCHAINED_WORKER_ID ||
+      `${os.hostname()}:${this.constructor.type}`,
   }) {
     log(`${this.constructor.key} -> Initialized: ${workerId}`);
     this.WorkerDirector = WorkerDirector;
@@ -32,45 +33,62 @@ class BaseWorker {
   }
 
   start() {
-    throw new Error(`Not implemented on ${this.key}`);
+    throw new Error(`Not implemented on ${this.constructor.key}`);
   }
 
   stop() {
-    throw new Error(`Not implemented on ${this.key}`);
+    throw new Error(`Not implemented on ${this.constructor.key}`);
   }
 
-  async autorescheduleTypes() {
+  async autorescheduleTypes(referenceDate = new Date()) {
+    const referenceDateWithoutMilliseconds = new Date(
+      Math.floor(referenceDate.getTime() / 1000) * 1000
+    );
     return Promise.all(
       Object.entries(this.WorkerDirector.autoSchedule).map(
         async ([type, configuration]) => {
           const { cronText, input, ...rest } = configuration;
           const schedule = later.parse.text(cronText);
-          const referenceDate = new Date();
-          const prevDate = later.schedule(schedule).prev(1, referenceDate);
-          const nextDate = later.schedule(schedule).next(1, referenceDate);
-          const work = await this.WorkerDirector.work({
-            type,
-            scheduled: { $gte: prevDate },
-            status: ['NEW', 'ALLOCATED', 'DELETED'],
-          });
-          if (!work) {
-            await this.WorkerDirector.addWork({
+          const prevDate = later
+            .schedule(schedule)
+            .prev(1, referenceDateWithoutMilliseconds);
+          const nextDate = later
+            .schedule(schedule)
+            .next(1, referenceDateWithoutMilliseconds);
+
+          if (
+            nextDate.getTime() === referenceDateWithoutMilliseconds.getTime() &&
+            prevDate.getTime() === referenceDateWithoutMilliseconds.getTime()
+          ) {
+            return;
+          }
+          await this.WorkerDirector.ensureOneWork(
+            {
               type,
               input: input(),
               scheduled: nextDate,
+              worker: this.workerId,
               ...rest,
-            });
-          }
+            },
+            { prevDate }
+          );
         }
       )
     );
   }
 
-  async findOneAndProcessWork() {
-    return this.WorkerDirector.findOneAndProcessWork({
-      types: this.getInternalTypes(),
-      worker: this.workerId,
-    });
+  async process({ maxWorkItemCount, referenceDate } = {}) {
+    const processRecursively = async (recursionCounter = 0) => {
+      if (maxWorkItemCount && maxWorkItemCount < recursionCounter) return null;
+      const doneWork = await this.WorkerDirector.findOneAndProcessWork({
+        types: this.getInternalTypes(),
+        worker: this.workerId,
+      });
+      if (doneWork) return processRecursively(recursionCounter + 1);
+      return null;
+    };
+    await processRecursively();
+    await this.autorescheduleTypes(referenceDate);
   }
 }
 

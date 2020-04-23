@@ -25,17 +25,6 @@ class CronWorker extends BaseWorker {
 
   static type = 'CRON';
 
-  async tick() {
-    const processRecursively = async (recursionCounter = 0) => {
-      if (this.batchCount && this.batchCount < recursionCounter) return null;
-      const doneWork = await this.findOneAndProcessWork();
-      if (doneWork) return processRecursively(recursionCounter + 1);
-      return null;
-    };
-    await processRecursively();
-    await this.autorescheduleTypes();
-  }
-
   constructor({
     WorkerDirector,
     workerId,
@@ -50,15 +39,16 @@ class CronWorker extends BaseWorker {
       schedule(parser) {
         return parser.text(cronText);
       },
-      job: this.tick.bind(this),
+      job: async () => this.process({ maxWorkItemCount: this.batchCount }),
     });
   }
 
   // eslint-disable-next-line
   start() {
-    this.autorescheduleTypes().then(() => {
-      SyncedCron.start();
-    });
+    SyncedCron.start();
+    setTimeout(() => {
+      this.autorescheduleTypes();
+    }, 300);
   }
 
   // eslint-disable-next-line

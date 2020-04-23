@@ -1,4 +1,3 @@
-import { log } from 'meteor/unchained:core-logger';
 import later from 'later';
 import BaseWorker from './base';
 
@@ -12,21 +11,6 @@ class IntervalWorker extends BaseWorker {
 
   static type = 'CRON';
 
-  async tick() {
-    await this.autorescheduleTypes();
-
-    const processRecursively = async (recursionCounter = 0) => {
-      if (this.batchCount && this.batchCount < recursionCounter) return null;
-      const doneWork = await this.findOneAndProcessWork();
-      if (doneWork) {
-        log(doneWork, { level: 'debug' });
-        return processRecursively(recursionCounter + 1);
-      }
-      return null;
-    };
-    return processRecursively();
-  }
-
   constructor({
     WorkerDirector,
     workerId,
@@ -39,12 +23,13 @@ class IntervalWorker extends BaseWorker {
   }
 
   start() {
-    this.autorescheduleTypes().then(() => {
-      this.intervalHandle = setInterval(
-        this.tick.bind(this),
-        this.intervalDelay
-      );
-    });
+    this.intervalHandle = setInterval(
+      async () => this.process({ maxWorkItemCount: this.batchCount }),
+      this.intervalDelay
+    );
+    setTimeout(() => {
+      this.autorescheduleTypes();
+    }, 300);
   }
 
   stop() {

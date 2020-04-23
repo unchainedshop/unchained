@@ -60,6 +60,58 @@ class WorkerDirector {
     return { started: -1, priority: -1, originalWorkId: 1, created: 1 };
   }
 
+  static async ensureOneWork(addWorkData) {
+    const {
+      type,
+      input,
+      priority = 0,
+      scheduled,
+      originalWorkId,
+      retries = 20,
+    } = addWorkData;
+
+    const created = new Date();
+    const selector = this.buildQueueSelector({
+      type,
+      status: [WorkStatus.NEW],
+      scheduled: { $ne: scheduled.getTime() },
+    });
+    try {
+      const workId = `${type}:${scheduled.getTime()}`;
+      const result = await WorkQueue.rawCollection().findAndModify(
+        selector,
+        this.defaultSortOrder(),
+        {
+          $set: {
+            input,
+            priority,
+            worker: null,
+            updated: created,
+          },
+          $setOnInsert: {
+            _id: workId,
+            type,
+            originalWorkId,
+            scheduled,
+            retries,
+            created,
+          },
+        },
+        {
+          upsert: true,
+        }
+      );
+      if (!result.lastErrorObject.updatedExisting) {
+        log(`${this.name} -> Work added ${type} ${scheduled} ${retries}`);
+        const work = await this.work({ workId });
+        this.events.emit(WorkerEventTypes.added, { work });
+      }
+      return result.value;
+    } catch (e) {
+      return null;
+    }
+  }
+
   static async addWork({
     type,
     input,
@@ -72,8 +124,6 @@ class WorkerDirector {
       throw new Error(`No plugin registered for type ${type}`);
     }
 
-    log(`${this.name} -> Work added ${type} ${scheduled} ${retries}`);
-
     const created = new Date();
     const workId = WorkQueue.insert({
       type,
@@ -85,8 +135,8 @@ class WorkerDirector {
       created,
     });
 
-    const work = this.work({ workId });
-
+    log(`${this.name} -> Work added ${type} ${scheduled} ${retries}`);
+    const work = await this.work({ workId });
     this.events.emit(WorkerEventTypes.added, { work });
 
     return work;
@@ -137,7 +187,7 @@ class WorkerDirector {
     // - Sort by default queue order
     const result = await WorkQueue.rawCollection().findAndModify(
       this.buildQueueSelector({
-        status: WorkStatus.NEW,
+        status: [WorkStatus.NEW],
         scheduled: { $lte: new Date() },
         worker: { $in: [null, worker] },
         ...(types ? { type: { $in: types } } : {}),
