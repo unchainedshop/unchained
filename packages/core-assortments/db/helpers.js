@@ -1,5 +1,4 @@
 import 'meteor/dburles:collection-helpers';
-import { Promise } from 'meteor/promise';
 import { Countries } from 'meteor/unchained:core-countries';
 import { Products, ProductStatus } from 'meteor/unchained:core-products';
 import { findUnusedSlug, findPreservingIds } from 'meteor/unchained:utils';
@@ -73,10 +72,10 @@ const zipTreeByDeepness = (tree) => {
   return R.pipe(R.flatten, R.filter(Boolean))(items);
 };
 
-export const resolveAssortmentLinkFromDatabase = ({
-  locale,
-  selector = {},
-} = {}) => (assortmentId, childAssortmentId) => {
+export const resolveAssortmentLinkFromDatabase = ({ selector = {} } = {}) => (
+  assortmentId,
+  childAssortmentId
+) => {
   const assortment = Collections.Assortments.findOne({
     _id: assortmentId,
     ...selector,
@@ -85,7 +84,6 @@ export const resolveAssortmentLinkFromDatabase = ({
     assortment && {
       assortmentId,
       childAssortmentId,
-      assortmentSlug: assortment.getLocalizedTexts(locale).slug,
       parentIds: assortment.parentIds(),
     }
   );
@@ -101,15 +99,14 @@ export const resolveAssortmentProductsFromDatabase = ({
 };
 
 export const makeAssortmentBreadcrumbsBuilder = ({
-  locale,
   resolveAssortmentProducts,
   resolveAssortmentLink,
-}) => {
+} = {}) => {
   return makeBreadcrumbsBuilder({
     resolveAssortmentProducts:
       resolveAssortmentProducts || resolveAssortmentProductsFromDatabase(),
     resolveAssortmentLink:
-      resolveAssortmentLink || resolveAssortmentLinkFromDatabase({ locale }),
+      resolveAssortmentLink || resolveAssortmentLinkFromDatabase(),
   });
 };
 
@@ -421,13 +418,11 @@ Products.helpers({
       .fetch()
       .map(({ assortmentId: id }) => id);
   },
-  assortmentPaths({ locale } = {}) {
-    const build = makeAssortmentBreadcrumbsBuilder({ locale });
-    return Promise.await(
-      build({
-        productId: this._id,
-      })
-    );
+  async assortmentPaths() {
+    const build = makeAssortmentBreadcrumbsBuilder();
+    return build({
+      productId: this._id,
+    });
   },
   siblings({ assortmentId, limit, offset, sort = {} } = {}) {
     const assortmentIds = assortmentId ? [assortmentId] : this.assortmentIds();
@@ -703,13 +698,11 @@ Collections.Assortments.helpers({
 
     return updateCount;
   },
-  assortmentPaths({ locale } = {}) {
-    const build = makeAssortmentBreadcrumbsBuilder({ locale });
-    return Promise.await(
-      build({
-        assortmentId: this._id,
-      })
-    );
+  async assortmentPaths() {
+    const build = makeAssortmentBreadcrumbsBuilder();
+    return build({
+      assortmentId: this._id,
+    });
   },
 });
 

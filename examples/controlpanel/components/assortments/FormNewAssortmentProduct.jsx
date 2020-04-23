@@ -72,7 +72,7 @@ export default compose(
   }),
   withHandlers({
     onSubmitSuccess: () => () => {
-      toast('Producted', { type: toast.TYPE.SUCCESS }); // eslint-disable-line
+      toast('Product added to assortment', { type: toast.TYPE.SUCCESS }); // eslint-disable-line
     },
     onSubmit: ({ addAssortmentProduct }) => ({ assortmentId, productId }) =>
       addAssortmentProduct({

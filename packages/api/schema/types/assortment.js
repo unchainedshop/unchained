@@ -17,7 +17,7 @@ export default [
       productAssignments: [AssortmentProduct!]
       filterAssignments: [AssortmentFilter!]
       linkedAssortments: [AssortmentLink!]
-      assortmentPaths(forceLocale: String): [AssortmentPath!]!
+      assortmentPaths: [AssortmentPath!]!
       children: [Assortment!]
       search(
         queryString: String
@@ -36,12 +36,13 @@ export default [
 
     """
     A connection that represents an uplink from assortment to assortment,
-    assortmentId and assortmentSlug are there for convenience
+    assortmentId and assortmentTexts are there for convenience
     to short-circuit breadcrumb lookups
     """
     type AssortmentPathLink {
       assortmentId: ID!
-      assortmentSlug: String!
+      assortmentSlug: String! @deprecated(reason: "Please use assortmentTexts")
+      assortmentTexts(forceLocale: String): AssortmentTexts!
       link: AssortmentLink
     }
 
