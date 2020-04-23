@@ -21,6 +21,8 @@ const WorkerEventTypes = {
 class WorkerDirector {
   static plugins = {};
 
+  static autoSchedule = {};
+
   static events = new EventEmitter();
 
   static registerPlugin(plugin /* WorkerPlugin */) {
@@ -33,6 +35,14 @@ class WorkerDirector {
 
     log(
       `${this.name} -> Registered ${plugin.type} ${plugin.key}@${plugin.version} (${plugin.label})`
+    );
+  }
+
+  static configureAutoscheduling(plugin, configuration) {
+    const { cronText } = configuration;
+    this.autoSchedule[plugin.type] = configuration;
+    log(
+      `${this.name} -> Configured ${plugin.type} ${plugin.key}@${plugin.version} (${plugin.label}) for Autorun at ${cronText}`
     );
   }
 

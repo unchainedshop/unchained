@@ -38,7 +38,5 @@ export default ({ cronText }) => {
   }
 
   handlers.forEach((handler) => handler.start());
-  return () => {
-    handlers.forEach((handler) => handler.stop());
-  };
+  return handlers;
 };

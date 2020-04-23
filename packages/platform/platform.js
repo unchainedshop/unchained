@@ -25,6 +25,8 @@ const isEmailInterceptionEnabled = (options) => {
   return NODE_ENV !== 'production' && !UNCHAINED_DISABLE_EMAIL_INTERCEPTION;
 };
 
+export const queueWorkers = [];
+
 export const startPlatform = (options = {}) => {
   setupDatabase(options);
   setupAccounts(options);
@@ -33,10 +35,12 @@ export const startPlatform = (options = {}) => {
     typeDefs: [...workerTypeDefs(), ...(options?.typeDefs || [])],
   });
   if (isEmailInterceptionEnabled(options)) interceptEmails(options);
-  if (isWorkQueueEnabled(options))
-    setupWorkqueue({
+  if (isWorkQueueEnabled(options)) {
+    const handlers = setupWorkqueue({
       cronText:
         NODE_ENV !== 'production' ? 'every 2 seconds' : 'every 5 seconds',
       ...options,
     });
+    handlers.forEach((handler) => queueWorkers.push(handler));
+  }
 };

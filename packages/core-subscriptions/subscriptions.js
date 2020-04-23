@@ -1,3 +1,5 @@
+import { WorkerDirector } from 'meteor/unchained:core-worker';
+import GenerateOrders from './worker/generate-orders';
 import './db/subscriptions/helpers';
 import './db/subscriptions/factories';
 import './db/subscriptions/schema';
@@ -8,4 +10,10 @@ export * from './db/subscriptions/schema';
 
 export default () => {
   // configure
+  WorkerDirector.configureAutoscheduling(GenerateOrders, {
+    cronText: 'every 10 seconds',
+    input: () => {
+      return {};
+    },
+  });
 };

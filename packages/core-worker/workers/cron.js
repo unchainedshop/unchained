@@ -32,7 +32,8 @@ class CronWorker extends BaseWorker {
       if (doneWork) return processRecursively(recursionCounter + 1);
       return null;
     };
-    return processRecursively();
+    await processRecursively();
+    await this.autorescheduleTypes();
   }
 
   constructor({
@@ -43,6 +44,7 @@ class CronWorker extends BaseWorker {
   }) {
     super({ WorkerDirector, workerId });
     this.batchCount = batchCount;
+
     SyncedCron.add({
       name: `Allocates work on fixed intervals: ${cronText}`,
       schedule(parser) {
@@ -54,7 +56,9 @@ class CronWorker extends BaseWorker {
 
   // eslint-disable-next-line
   start() {
-    SyncedCron.start();
+    this.autorescheduleTypes().then(() => {
+      SyncedCron.start();
+    });
   }
 
   // eslint-disable-next-line

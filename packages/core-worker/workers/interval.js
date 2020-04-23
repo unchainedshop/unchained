@@ -13,6 +13,8 @@ class IntervalWorker extends BaseWorker {
   static type = 'CRON';
 
   async tick() {
+    await this.autorescheduleTypes();
+
     const processRecursively = async (recursionCounter = 0) => {
       if (this.batchCount && this.batchCount < recursionCounter) return null;
       const doneWork = await this.findOneAndProcessWork();
@@ -37,7 +39,12 @@ class IntervalWorker extends BaseWorker {
   }
 
   start() {
-    this.intervalHandle = setInterval(this.tick.bind(this), this.intervalDelay);
+    this.autorescheduleTypes().then(() => {
+      this.intervalHandle = setInterval(
+        this.tick.bind(this),
+        this.intervalDelay
+      );
+    });
   }
 
   stop() {
