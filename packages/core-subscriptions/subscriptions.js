@@ -12,7 +12,7 @@ export * from './db/subscriptions/schema';
 export default () => {
   // configure
   WorkerDirector.configureAutoscheduling(GenerateOrders, {
-    cronText: 'every 10 seconds',
+    cronText: 'every 59 minutes',
     input: () => {
       return {};
     },
