@@ -63,12 +63,12 @@ class SubscriptionAdapter {
 
     const lastEnd = subscription?.periods?.reduce((acc, item) => {
       if (!acc) return item.end;
-      if (new Date(acc.end).getTime() < new Date(item.end).getTime()) {
-        return item.end;
+      const endDate = new Date(item.end);
+      if (acc.getTime() < endDate.getTime()) {
+        return endDate;
       }
       return acc;
     }, undefined);
-
     return {
       ...normalizeStartAndEnd(
         lastEnd,

@@ -26,8 +26,10 @@ class LicensedSubscriptions extends SubscriptionAdapter {
     return false;
   }
 
+  // eslint-disable-next-line
   async shouldTriggerAction({ period, action }) {
-    return true;
+    // Generate at the beginning of the period
+    return period.start.getTime() <= new Date().getTime();
   }
 }
 

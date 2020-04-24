@@ -26,13 +26,14 @@ class GenerateSubscriptionOrders extends WorkerPlugin {
               period,
               input
             );
-            console.log(subscription.periods, period);
-            const order = await subscription.generateOrder(configuration);
-            await Subscriptions.linkOrderToSubscription({
-              orderId: order._id,
-              subscriptionId: subscription._id,
-              period,
-            });
+            if (configuration) {
+              const order = await subscription.generateOrder(configuration);
+              await Subscriptions.linkOrderToSubscription({
+                orderId: order._id,
+                subscriptionId: subscription._id,
+                period,
+              });
+            }
           } catch (e) {
             return {
               name: e.name,
