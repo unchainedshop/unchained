@@ -38,7 +38,7 @@ export const startPlatform = (options = {}) => {
   if (isWorkQueueEnabled(options)) {
     const handlers = setupWorkqueue({
       cronText:
-        NODE_ENV !== 'production' ? 'every 2 seconds' : 'every 5 seconds',
+        NODE_ENV !== 'production' ? 'every 5 seconds' : 'every 30 seconds',
       ...options,
     });
     handlers.forEach((handler) => queueWorkers.push(handler));

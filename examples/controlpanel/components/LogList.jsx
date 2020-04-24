@@ -83,7 +83,7 @@ export default compose(
       }
     `,
     {
-      options: { pollInterval: 2000 },
+      options: { pollInterval: 1000 },
     }
   ),
   pure

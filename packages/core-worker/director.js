@@ -7,6 +7,8 @@ import { WorkStatus } from './db/schema';
 
 const { UNCHAINED_WORKER_ID = os.hostname() } = process.env;
 
+export const DIRECTOR_MARKED_FAILED_ERROR = 'DIRECTOR_MARKED_FAILED';
+
 const WorkerEventTypes = {
   added: 'added',
   allocated: 'allocated',
@@ -304,6 +306,31 @@ class WorkerDirector {
       });
     }
     return null;
+  }
+
+  static async markOldWorkFailed({ types, worker, referenceDate }) {
+    WorkQueue.update(
+      this.buildQueueSelector({
+        status: [WorkStatus.ALLOCATED],
+        started: { $lte: referenceDate },
+        worker,
+        type: { $in: types },
+      }),
+      {
+        $set: {
+          finished: new Date(),
+          success: false,
+          error: {
+            name: DIRECTOR_MARKED_FAILED_ERROR,
+            message:
+              'Director marked old work as failed after restart. This work was eventually running at the moment when node.js exited.',
+          },
+          result: null,
+          worker,
+        },
+      },
+      { multi: true }
+    );
   }
 }
 

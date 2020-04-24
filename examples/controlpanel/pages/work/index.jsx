@@ -9,7 +9,7 @@ export default connectApollo(({ ...rest }) => (
     <Container>
       <h2>Next in Queue</h2>
       <WorkList
-        queryOptions={{ pollInterval: 2000 }}
+        queryOptions={{ pollInterval: 1000 }}
         limit={0}
         status={['ALLOCATED', 'NEW']}
       />
@@ -17,7 +17,7 @@ export default connectApollo(({ ...rest }) => (
       <h2>50 Most Recently Finished</h2>
       <WorkList
         limit={50}
-        queryOptions={{ pollInterval: 5000 }}
+        queryOptions={{ pollInterval: 3000 }}
         status={['FAILED', 'SUCCESS']}
       />
     </Container>

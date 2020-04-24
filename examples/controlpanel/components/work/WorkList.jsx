@@ -5,15 +5,20 @@ import Link from 'next/link';
 import InfiniteDataTable, { withDataTableLoader } from '../InfiniteDataTable';
 
 const relativeScheduleFromWork = ({ scheduledTime, relativeTime, status }) => {
-  if (status === 'FAILED' || status === 'SUCCESS') return null;
-  if (scheduledTime <= relativeTime) return 'Ready';
-  const seconds = (scheduledTime - relativeTime) / 1000;
-  if (scheduledTime - relativeTime <= 60000)
-    return `Ready in ${Math.round(seconds)} seconds`;
+  if (status === 'FAILED' || status === 'SUCCESS' || status === 'DELETED')
+    return null;
+  const diff = scheduledTime - relativeTime;
+  const seconds = diff / 1000;
   const minutes = seconds / 60;
-  if (scheduledTime - relativeTime <= 3000000)
-    return `Ready in ${Math.round(minutes)} minutes`;
-
+  if (status === 'ALLOCATED') {
+    if (diff <= -3000000) return null;
+    if (diff <= -60000) return `Running ${Math.round(minutes * -1)} minutes`;
+    if (diff <= -1000) return `Running ${Math.round(seconds * -1)} seconds`;
+    return 'Running';
+  }
+  if (scheduledTime <= relativeTime) return 'Ready';
+  if (diff <= 60000) return `Ready in ${Math.round(seconds)} seconds`;
+  if (diff <= 3000000) return `Ready in ${Math.round(minutes)} minutes`;
   return null;
 };
 
