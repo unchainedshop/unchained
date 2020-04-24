@@ -11,13 +11,7 @@ class GenerateSubscriptionOrders extends WorkerPlugin {
   static type = 'SUBSCRIPTION_ORDER_GENERATOR';
 
   static async doWork(input) {
-    // if (input && input.fails) {
-    //   return {
-    //     success: false,
-    //     result: input,
-    //   };
-    // }
-    console.log('GENERATE ORDERS');
+    console.log('GENERATE_ORDERS');
     return {
       success: true,
       result: input,

@@ -50,8 +50,8 @@ class BaseWorker {
   }
 
   async autorescheduleTypes(referenceDate = new Date()) {
-    const referenceDateIn300MillisecondsSlot = new Date(
-      Math.floor(referenceDate.getTime() / 300) * 300
+    const normalizedReferenceDate = new Date(
+      Math.floor(referenceDate.getTime() / 1000) * 1000
     );
     return Promise.all(
       Object.entries(this.WorkerDirector.autoSchedule).map(
@@ -60,7 +60,7 @@ class BaseWorker {
           const schedule = later.parse.text(cronText);
           const nextDate = later
             .schedule(schedule)
-            .next(1, referenceDateIn300MillisecondsSlot);
+            .next(1, normalizedReferenceDate);
           await this.WorkerDirector.ensureOneWork({
             type,
             input: input(),
