@@ -55,9 +55,9 @@ PaymentProviders.helpers({
   },
   charge(context, userId) {
     const director = new PaymentDirector(this);
-    const { credentials, ...strippedResult } = Promise.await(
-      director.charge(this.defaultContext(context))
-    );
+    const result = Promise.await(director.charge(this.defaultContext(context)));
+    if (!result) return false;
+    const { credentials, ...strippedResult } = result;
     if (credentials) {
       PaymentCredentials.upsertCredentials({
         userId,
