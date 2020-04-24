@@ -15,13 +15,13 @@ class EventListenerWorker extends BaseWorker {
     this.onAdded = ({ work }) => {
       this.process({
         maxWorkItemCount: 0,
-        referenceDate: new Date(work.created),
+        referenceDate: new Date(work.scheduled),
       });
     };
     this.onFinished = ({ work }) => {
       this.process({
         maxWorkItemCount: 0,
-        referenceDate: new Date(work.finished),
+        referenceDate: new Date(work.scheduled),
       });
     };
     this.WorkerDirector.events.on(WorkerEventTypes.added, this.onAdded);

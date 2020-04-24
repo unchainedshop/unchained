@@ -39,7 +39,12 @@ class CronWorker extends BaseWorker {
       schedule(parser) {
         return parser.text(cronText);
       },
-      job: async () => this.process({ maxWorkItemCount: this.batchCount }),
+      job: async (intendedAt) => {
+        this.process({
+          maxWorkItemCount: this.batchCount,
+          referenceDate: new Date(intendedAt),
+        });
+      },
     });
   }
 

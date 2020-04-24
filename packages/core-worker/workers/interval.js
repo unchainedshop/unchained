@@ -24,7 +24,13 @@ class IntervalWorker extends BaseWorker {
 
   start() {
     this.intervalHandle = setInterval(
-      async () => this.process({ maxWorkItemCount: this.batchCount }),
+      async () =>
+        this.process({
+          maxWorkItemCount: this.batchCount,
+          referenceDate: new Date(
+            Math.floor(new Date().getTime() / 1000) * 1000
+          ),
+        }),
       this.intervalDelay
     );
     setTimeout(() => {
