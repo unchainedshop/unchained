@@ -62,6 +62,7 @@ class BaseWorker {
             scheduled: nextDate,
             worker: this.workerId,
             ...rest,
+            retries: 0,
           });
         }
       )
