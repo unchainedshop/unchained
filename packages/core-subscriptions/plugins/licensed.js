@@ -25,6 +25,10 @@ class LicensedSubscriptions extends SubscriptionAdapter {
   async isOverdue() {
     return false;
   }
+
+  async shouldTriggerAction({ period, action }) {
+    return true;
+  }
 }
 
 SubscriptionDirector.registerAdapter(LicensedSubscriptions);

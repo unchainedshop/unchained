@@ -20,8 +20,19 @@ class GenerateSubscriptionOrders extends WorkerPlugin {
       await Promise.all(
         subscriptions.map(async (subscription) => {
           try {
-            const period = await subscription.director().nextPeriod();
-            console.log(period);
+            const director = subscription.director();
+            const period = await director.nextPeriod(input);
+            const configuration = await director.orderConfigurationForPeriod(
+              period,
+              input
+            );
+            console.log(subscription.periods, period);
+            const order = await subscription.generateOrder(configuration);
+            await Subscriptions.linkOrderToSubscription({
+              orderId: order._id,
+              subscriptionId: subscription._id,
+              period,
+            });
           } catch (e) {
             return {
               name: e.name,

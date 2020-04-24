@@ -166,41 +166,6 @@ Subscriptions.helpers({
   },
 });
 
-Subscriptions.generateFromCheckout = async ({ items, order, ...context }) => {
-  const payment = order.payment();
-  const delivery = order.delivery();
-  const template = {
-    orderId: order._id,
-    userId: order.userId,
-    countryCode: order.countryCode,
-    currencyCode: order.currency,
-    billingAddress: order.billingAddress,
-    contact: order.contact,
-    payment: {
-      paymentProviderId: payment.paymentProviderId,
-      context: payment.context,
-    },
-    delivery: {
-      deliveryProviderId: delivery.deliveryProviderId,
-      context: delivery.context,
-    },
-    meta: order.meta,
-  };
-  return Promise.all(
-    items.map(async (item) => {
-      const subscriptionData = await SubscriptionDirector.transformOrderItemToSubscription(
-        item,
-        { ...template, ...context }
-      );
-
-      await Subscriptions.createSubscription({
-        ...subscriptionData,
-        orderIdForFirstPeriod: order._id,
-      });
-    })
-  );
-};
-
 Subscriptions.createSubscription = async (
   {
     productId,
@@ -239,7 +204,7 @@ Subscriptions.createSubscription = async (
   const subscription = Subscriptions.findOne({ _id: subscriptionId });
   const period = await subscription.director().nextPeriod();
   if (period) {
-    Subscriptions.linkOrderToSubscription({
+    await Subscriptions.linkOrderToSubscription({
       orderId: orderIdForFirstPeriod,
       subscriptionId,
       period,
@@ -248,7 +213,7 @@ Subscriptions.createSubscription = async (
   return subscription.process().sendStatusToCustomer(options);
 };
 
-Subscriptions.linkOrderToSubscription = ({
+Subscriptions.linkOrderToSubscription = async ({
   subscriptionId,
   period,
   orderId,

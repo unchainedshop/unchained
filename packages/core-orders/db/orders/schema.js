@@ -34,6 +34,7 @@ Orders.attachSchema(
       countryCode: String,
       paymentId: String,
       deliveryId: String,
+      subscriptionId: String,
       ...contextFields,
       ...timestampFields,
       ...calculationFields,

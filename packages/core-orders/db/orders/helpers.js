@@ -5,7 +5,10 @@ import { getFallbackLocale } from 'meteor/unchained:core';
 import { objectInvert } from 'meteor/unchained:utils';
 import { DeliveryProviders } from 'meteor/unchained:core-delivery';
 import { PaymentProviders } from 'meteor/unchained:core-payment';
-import { Subscriptions } from 'meteor/unchained:core-subscriptions';
+import {
+  Subscriptions,
+  SubscriptionDirector,
+} from 'meteor/unchained:core-subscriptions';
 import { Countries } from 'meteor/unchained:core-countries';
 import { Users } from 'meteor/unchained:core-users';
 import { Logs, log } from 'meteor/unchained:core-logger';
@@ -26,6 +29,72 @@ import { OrderDocuments } from '../order-documents/collections';
 import { OrderPositions } from '../order-positions/collections';
 
 const { EMAIL_FROM, UI_ENDPOINT } = process.env;
+
+Subscriptions.generateFromCheckout = async ({ items, order, ...context }) => {
+  const payment = order.payment();
+  const delivery = order.delivery();
+  const template = {
+    orderId: order._id,
+    userId: order.userId,
+    countryCode: order.countryCode,
+    currencyCode: order.currency,
+    billingAddress: order.billingAddress,
+    contact: order.contact,
+    payment: {
+      paymentProviderId: payment.paymentProviderId,
+      context: payment.context,
+    },
+    delivery: {
+      deliveryProviderId: delivery.deliveryProviderId,
+      context: delivery.context,
+    },
+    meta: order.meta,
+  };
+  return Promise.all(
+    items.map(async (item) => {
+      const subscriptionData = await SubscriptionDirector.transformOrderItemToSubscription(
+        item,
+        { ...template, ...context }
+      );
+
+      await Subscriptions.createSubscription({
+        ...subscriptionData,
+        orderIdForFirstPeriod: order._id,
+      });
+    })
+  );
+};
+
+Subscriptions.helpers({
+  async generateOrder({ products, orderContext, ...configuration }) {
+    const order = Orders.createOrder({
+      user: this.user(),
+      currency: this.currencyCode,
+      countryCode: this.countryCode,
+      contact: this.contact,
+      billingAddress: this.billingAddress,
+      subscriptionId: this._id,
+      ...configuration,
+    });
+    if (products) {
+      products.forEach(order.addProductItem);
+    } else {
+      order.addProductItem({
+        product: this.product(),
+        quantity: 1,
+      });
+    }
+    const { paymentProviderId, paymentContext } = this.payment;
+    order.setPaymentProvider({
+      paymentProviderId,
+    });
+    const { deliveryProviderId, deliveryContext } = this.delivery;
+    order.setDeliveryProvider({
+      deliveryProviderId,
+    });
+    return order.checkout({ paymentContext, deliveryContext, orderContext });
+  },
+});
 
 Logs.helpers({
   order() {
@@ -83,6 +152,9 @@ Orders.helpers({
       });
     }
     return Orders.findOne({ _id: this._id });
+  },
+  subscription() {
+    return Subscriptions.findOne({ _id: this.subscriptionId });
   },
   discounts() {
     return OrderDiscounts.find({ orderId: this._id }).fetch();
@@ -258,6 +330,7 @@ Orders.helpers({
     // ???
   },
   generateSubscriptions(context) {
+    if (this.subscriptionId) return;
     const items = this.items().filter((item) => {
       const productPlan = item.product()?.plan;
       return !!productPlan;
@@ -533,18 +606,27 @@ Orders.setPaymentProvider = ({ orderId, paymentProviderId }) => {
   return Orders.findOne({ _id: orderId });
 };
 
-Orders.createOrder = ({ user, currency, countryCode, ...rest }) => {
+Orders.createOrder = ({
+  user,
+  currency,
+  countryCode,
+  billingAddress,
+  contact,
+  ...rest
+}) => {
   const orderId = Orders.insert({
     ...rest,
     created: new Date(),
     status: OrderStatus.OPEN,
-    billingAddress: user.lastBillingAddress,
-    contact: user.isGuest()
-      ? user.lastContact
-      : {
-          telNumber: user.telNumber(),
-          emailAddress: user.primaryEmail()?.address,
-        },
+    billingAddress: billingAddress || user.lastBillingAddress,
+    contact:
+      contact ||
+      (user.isGuest()
+        ? user.lastContact
+        : {
+            telNumber: user.telNumber(),
+            emailAddress: user.primaryEmail()?.address,
+          }),
     userId: user._id,
     currency,
     countryCode,

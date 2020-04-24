@@ -8,6 +8,10 @@ const SubscriptionError = {
   WRONG_CREDENTIALS: 'WRONG_CREDENTIALS',
 };
 
+export const SubscriptionActions = {
+  GENERATE_ORDER: 'GENERATE_ORDER',
+};
+
 const normalizeStartAndEnd = (
   referenceDate,
   intervalCount = 1,
@@ -53,7 +57,7 @@ class SubscriptionAdapter {
           plan.trialIntervalCount,
           plan.trialInterval
         ),
-        isTrial: false,
+        isTrial: true,
       };
     }
 
@@ -72,6 +76,18 @@ class SubscriptionAdapter {
         plan.billingInterval
       ),
       isTrial: false,
+    };
+  }
+
+  // eslint-disable-next-line
+  async shouldTriggerAction({ period, action }) {
+    throw new Error(`Not implemented on ${this.constructor.key}`);
+  }
+
+  // eslint-disable-next-line
+  async configurationForOrder(context) {
+    return {
+      context,
     };
   }
 
@@ -121,6 +137,31 @@ class SubscriptionDirector {
   async nextPeriod(context) {
     const adapter = this.resolveAdapter();
     return adapter.nextPeriod(context);
+  }
+
+  async shouldTriggerAction(context) {
+    const adapter = this.resolveAdapter();
+    return adapter.shouldTriggerAction(context);
+  }
+
+  async configurationForOrder(context) {
+    const adapter = this.resolveAdapter();
+    return adapter.configurationForOrder(context);
+  }
+
+  async orderConfigurationForPeriod(period, context) {
+    const isNewOrderRequired = await this.shouldTriggerAction({
+      ...context,
+      period,
+      action: SubscriptionActions.GENERATE_ORDER,
+    });
+    if (isNewOrderRequired) {
+      return this.configurationForOrder({
+        ...context,
+        period,
+      });
+    }
+    return null;
   }
 
   static adapters = new Map();
