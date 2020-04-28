@@ -150,12 +150,12 @@ OrderDiscounts.removeDiscount = ({ discountId }) => {
     orderId: discount.orderId,
   });
   if (discount.trigger === OrderDiscountTrigger.USER) {
-    const releasedDiscount = Promise.await(discount.release());
+    Promise.await(discount.release());
     OrderDiscounts.remove({ _id: discountId });
     Orders.updateCalculation({
-      orderId: releasedDiscount.orderId,
+      orderId: discount.orderId,
     });
-    return releasedDiscount;
+    return OrderDiscounts.findOne({ _id: discountId });
   }
   OrderDiscounts.remove({ _id: discountId });
   return discount;

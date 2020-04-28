@@ -591,7 +591,7 @@ Collections.Assortments.helpers({
     }
     return this._cachedProductIds; // eslint-disable-line
   },
-  search({ forceLiveCollection, ...query }) {
+  async search({ forceLiveCollection, ...query }) {
     const productIds = this.productIds({ forceLiveCollection });
     const filterIds = this.filterAssignments().map(({ filterId }) => filterId);
     return search({
