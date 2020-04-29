@@ -712,6 +712,9 @@ Orders.migrateCart = ({ fromUserId, toUserId, countryContext, mergeCarts }) => {
       $set: {
         orderId: toCart._id,
       },
+    },
+    {
+      multi: true,
     }
   );
   Orders.updateCalculation({

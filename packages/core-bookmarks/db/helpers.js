@@ -54,6 +54,9 @@ Bookmarks.migrateBookmarks = ({ fromUserId, toUserId, mergeBookmarks }) => {
       $set: {
         userId: toUserId,
       },
+    },
+    {
+      multi: true,
     }
   );
 };
