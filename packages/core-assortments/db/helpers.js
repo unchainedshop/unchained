@@ -250,7 +250,7 @@ Collections.AssortmentProducts.getNewSortKey = (assortmentId) => {
       assortmentId,
     },
     {
-      sort: { sortKey: 1 },
+      sort: { sortKey: -1 },
     }
   ) || { sortKey: 0 };
   return lastAssortmentProduct.sortKey + 1;
@@ -295,7 +295,7 @@ Collections.AssortmentFilters.getNewSortKey = (assortmentId) => {
       assortmentId,
     },
     {
-      sort: { sortKey: 1 },
+      sort: { sortKey: -1 },
     }
   ) || { sortKey: 0 };
   return lastAssortmentFilter.sortKey + 1;
@@ -326,7 +326,7 @@ Collections.AssortmentLinks.getNewSortKey = (parentAssortmentId) => {
       parentAssortmentId,
     },
     {
-      sort: { sortKey: 1 },
+      sort: { sortKey: -1 },
     }
   ) || { sortKey: 0 };
   return lastAssortmentProduct.sortKey + 1;

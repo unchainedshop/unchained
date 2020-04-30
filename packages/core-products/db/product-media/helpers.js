@@ -40,7 +40,7 @@ ProductMedia.getNewSortKey = (productId) => {
       productId,
     },
     {
-      sort: { sortKey: 1 },
+      sort: { sortKey: -1 },
     }
   ) || { sortKey: 0 };
   return lastProductMedia.sortKey + 1;
