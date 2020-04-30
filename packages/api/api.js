@@ -132,6 +132,10 @@ const startUnchainedServer = (options) => {
       res.end();
     }
   });
+
+  return {
+    apolloGraphQLServer: server,
+  };
 };
 
 export default startUnchainedServer;
