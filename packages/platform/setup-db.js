@@ -20,24 +20,24 @@ import createFixtures from './fixtures';
 
 export { createFixtures };
 
-export default () => {
+export default ({ modules = {} } = {}) => {
   Migrations.unlock();
 
-  configureLogger();
-  configureWorker();
-  configureCurrencies();
-  configureCountries();
-  configureLanguages();
-  configureDocuments();
-  configureUsers();
-  configureDelivery();
-  configurePayment();
-  configureWarehousing();
-  configureProducts();
-  configureBookmarks();
-  configureQuotations();
-  configureOrders();
-  configureAssortments();
-  configureFilters({ skipInvalidationOnStartup: true });
-  configureSubscriptions();
+  configureLogger(modules.logger);
+  configureWorker(modules.worker);
+  configureCurrencies(modules.currencies);
+  configureCountries(modules.countries);
+  configureLanguages(modules.languages);
+  configureDocuments(modules.documents);
+  configureUsers(modules.users);
+  configureDelivery(modules.delivery);
+  configurePayment(modules.payment);
+  configureWarehousing(modules.warehousing);
+  configureProducts(modules.products);
+  configureBookmarks(modules.bookmarks);
+  configureQuotations(modules.quotations);
+  configureOrders(modules.orders);
+  configureAssortments(modules.assortments);
+  configureFilters(modules.filters);
+  configureSubscriptions(modules.subscriptions);
 };

@@ -144,11 +144,17 @@ class PaymentDirector {
 
   static adapters = new Map();
 
+  static sortProviders = () => undefined;
+
+  static setSortProviders(fn) {
+    if (fn) this.sortProviders = fn;
+  }
+
   static filteredAdapters(filter) {
     return Array.from(PaymentDirector.adapters)
       .map((entry) => entry[1])
       .filter(filter || (() => true))
-      .sort((entry) => entry.key);
+      .sort(this.sortProviders);
   }
 
   static registerAdapter(adapter) {

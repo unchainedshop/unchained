@@ -187,18 +187,10 @@ Orders.helpers({
       code,
     });
   },
-  supportedDeliveryProviders() {
-    return DeliveryProviders.findProviders().filter((provider) =>
-      provider.isActive(this)
-    );
-  },
-  supportedPaymentProviders() {
-    return PaymentProviders.findProviders().filter((provider) =>
-      provider.isActive(this)
-    );
-  },
   async initPreferredPaymentProvider() {
-    const supportedPaymentProviders = this.supportedPaymentProviders();
+    const supportedPaymentProviders = PaymentProviders.findSupported({
+      order: this,
+    });
     const paymentCredentials = await this.user().paymentCredentials({
       isPreferred: true,
     });
@@ -227,7 +219,9 @@ Orders.helpers({
     return this;
   },
   initPreferredDeliveryProvider() {
-    const supportedDeliveryProviders = this.supportedDeliveryProviders();
+    const supportedDeliveryProviders = DeliveryProviders.findSupported({
+      order: this,
+    });
     if (supportedDeliveryProviders.length > 0) {
       return this.setDeliveryProvider({
         deliveryProviderId: supportedDeliveryProviders[0]._id,

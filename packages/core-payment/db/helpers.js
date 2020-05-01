@@ -206,7 +206,16 @@ PaymentProviders.removeProvider = ({ _id }) => {
   return PaymentProviders.findOne({ _id });
 };
 
-PaymentProviders.findProviderById = (_id) => PaymentProviders.findOne({ _id });
+PaymentProviders.findProviderById = (_id, ...options) =>
+  PaymentProviders.findOne({ _id }, ...options);
 
-PaymentProviders.findProviders = ({ type } = {}) =>
-  PaymentProviders.find({ ...(type ? { type } : {}), deleted: null }).fetch();
+PaymentProviders.findProviders = ({ type } = {}, ...options) =>
+  PaymentProviders.find(
+    { ...(type ? { type } : {}), deleted: null },
+    ...options
+  ).fetch();
+
+PaymentProviders.findSupported = ({ order }, ...options) =>
+  PaymentProviders.findProviders({}, ...options).filter((paymentProvider) =>
+    paymentProvider.isActive(order)
+  );
