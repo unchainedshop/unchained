@@ -618,15 +618,15 @@ Orders.createOrder = ({
     ...rest,
     created: new Date(),
     status: OrderStatus.OPEN,
-    billingAddress: billingAddress || user.lastBillingAddress,
+    billingAddress:
+      billingAddress || user.lastBillingAddress || user.profile?.address,
     contact:
       contact ||
-      (user.isGuest()
-        ? user.lastContact
-        : {
-            telNumber: user.telNumber(),
-            emailAddress: user.primaryEmail()?.address,
-          }),
+      user.lastContact ||
+      (!user.isGuest() && {
+        telNumber: user.telNumber(),
+        emailAddress: user.primaryEmail()?.address,
+      }),
     userId: user._id,
     currency,
     countryCode,

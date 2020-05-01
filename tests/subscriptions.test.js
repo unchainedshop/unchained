@@ -30,7 +30,7 @@ describe('Subscriptions', () => {
       });
       const { data: { checkoutCart } = {} } = await graphqlFetch({
         query: /* GraphQL */ `
-          mutation addCartProduct(
+          mutation prepareAndCheckout(
             $productId: ID!
             $quantity: Int
             $orderId: ID
