@@ -6,7 +6,9 @@ import {
 import { PaymentProviderNotFoundError } from '../../errors';
 
 export default (root, { paymentContext, paymentProviderId }, { userId }) => {
-  log(`mutation registerPaymentCredentials ${paymentContext}`, { userId });
+  log(`mutation registerPaymentCredentials for ${paymentProviderId}`, {
+    userId,
+  });
   if (!PaymentProviders.find({ _id: paymentProviderId }).count())
     throw new PaymentProviderNotFoundError({ paymentProviderId });
   return PaymentCredentials.registerPaymentCredentials({

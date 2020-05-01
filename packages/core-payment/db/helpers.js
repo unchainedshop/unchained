@@ -7,9 +7,9 @@ import { PaymentProviders, PaymentCredentials } from './collections';
 const emptyContext = {};
 
 Users.helpers({
-  async paymentCredentials() {
+  async paymentCredentials(selector = {}) {
     return PaymentCredentials.find(
-      { userId: this._id },
+      { ...selector, userId: this._id },
       {
         sort: {
           created: -1,

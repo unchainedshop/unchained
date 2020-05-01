@@ -136,23 +136,6 @@ Users.helpers({
 });
 
 Orders.helpers({
-  init() {
-    // initialize payment with default values
-    const supportedPaymentProviders = this.supportedPaymentProviders();
-    if (supportedPaymentProviders.length > 0) {
-      this.setPaymentProvider({
-        paymentProviderId: supportedPaymentProviders[0]._id,
-      });
-    }
-    // initialize delivery with default values
-    const supportedDeliveryProviders = this.supportedDeliveryProviders();
-    if (supportedDeliveryProviders.length > 0) {
-      this.setDeliveryProvider({
-        deliveryProviderId: supportedDeliveryProviders[0]._id,
-      });
-    }
-    return Orders.findOne({ _id: this._id });
-  },
   subscription() {
     return Subscriptions.findOne({ _id: this.subscriptionId });
   },
@@ -213,6 +196,44 @@ Orders.helpers({
     return PaymentProviders.findProviders().filter((provider) =>
       provider.isActive(this)
     );
+  },
+  async initPreferredPaymentProvider() {
+    const supportedPaymentProviders = this.supportedPaymentProviders();
+    const paymentCredentials = await this.user().paymentCredentials({
+      isPreferred: true,
+    });
+    if (supportedPaymentProviders.length) {
+      if (paymentCredentials.length) {
+        const foundSupportedPreferredProvider = supportedPaymentProviders.find(
+          (supportedPaymentProvider) => {
+            return paymentCredentials.some((paymentCredential) => {
+              return (
+                supportedPaymentProvider._id ===
+                paymentCredential.paymentProviderId
+              );
+            });
+          }
+        );
+        if (foundSupportedPreferredProvider) {
+          return this.setPaymentProvider({
+            paymentProviderId: foundSupportedPreferredProvider._id,
+          });
+        }
+      }
+      return this.setPaymentProvider({
+        paymentProviderId: supportedPaymentProviders[0]._id,
+      });
+    }
+    return this;
+  },
+  initPreferredDeliveryProvider() {
+    const supportedDeliveryProviders = this.supportedDeliveryProviders();
+    if (supportedDeliveryProviders.length > 0) {
+      return this.setDeliveryProvider({
+        deliveryProviderId: supportedDeliveryProviders[0]._id,
+      });
+    }
+    return this;
   },
   setDeliveryProvider({ deliveryProviderId }) {
     return Orders.setDeliveryProvider({
@@ -631,8 +652,9 @@ Orders.createOrder = ({
     currency,
     countryCode,
   });
-  const order = Orders.findOne({ _id: orderId });
-  return order.init();
+  return Orders.findOne({ _id: orderId })
+    .initPreferredDeliveryProvider()
+    .initPreferredPaymentProvider();
 };
 
 Orders.updateBillingAddress = ({ billingAddress, orderId }) => {
