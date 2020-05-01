@@ -8,7 +8,7 @@ import { Locale } from 'locale';
 import { log } from 'meteor/unchained:core-logger';
 import { makeBreadcrumbsBuilder } from '../breadcrumbs';
 import * as Collections from './collections';
-import zipTreeByDeepness from '../zippers/zipTreeByDeepness';
+import treeZipper from '../tree-zipper';
 
 const eqSet = (as, bs) => {
   return [...as].join(',') === [...bs].join(',');
@@ -522,14 +522,11 @@ Collections.Assortments.helpers({
       }
     ).fetch();
   },
-  productIds({
-    forceLiveCollection = false,
-    zipperFunction = zipTreeByDeepness,
-  } = {}) {
+  productIds({ forceLiveCollection = false } = {}) {
     // eslint-disable-next-line
     if (!this._cachedProductIds || forceLiveCollection) {
       const collectedProductIdTree = this.collectProductIdCacheTree() || [];
-      return [...new Set(zipperFunction(collectedProductIdTree))];
+      return [...new Set(treeZipper.zipTree(collectedProductIdTree))];
     }
     return this._cachedProductIds; // eslint-disable-line
   },

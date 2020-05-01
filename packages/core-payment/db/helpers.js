@@ -218,4 +218,4 @@ PaymentProviders.findProviders = ({ type } = {}, ...options) =>
 PaymentProviders.findSupported = ({ order }, ...options) =>
   PaymentProviders.findProviders({}, ...options)
     .filter((paymentProvider) => paymentProvider.isActive(order))
-    .sort(PaymentDirector.createSortProviders({ order }));
+    .sort(PaymentDirector.sortProviders({ order }));

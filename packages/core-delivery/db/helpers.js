@@ -137,4 +137,4 @@ DeliveryProviders.findProviders = ({ type } = {}, ...options) =>
 DeliveryProviders.findSupported = ({ order }, ...options) =>
   DeliveryProviders.findProviders({}, ...options)
     .filter((deliveryProvider) => deliveryProvider.isActive(order))
-    .sort(DeliveryDirector.createSortProviders({ order }));
+    .sort(DeliveryDirector.sortProviders({ order }));

@@ -169,8 +169,48 @@ These options are available:
 - mergeUserCartsOnLogin: Boolean (Enable/Disable merge mode of carts when user gets logged in)
 - typeDefs: Object (GraphQL Schema that gets merged with the default schema)
 - resolvers: Object (GraphQL Resolvers that get merged with the default API)
+- modules: Core Module specific configuration (see below)
 
-All other options are forwarded to the Apollo Engine, the available options are documented here: https://www.apollographql.com/docs/apollo-server
+Other options are forwarded to the Apollo Engine, the available options are documented here: https://www.apollographql.com/docs/apollo-server
+
+### Module specific options
+
+Custom sorting of delivery and payment providers:
+
+```
+const options = {
+  modules: {
+    delivery: {
+      sortProviders: () => (left, right) => {
+        return (
+          new Date(left.updated).getTime() - new Date(right.updated).getTime()
+        );
+      },
+    },
+    payment: {
+      sortProviders: () => (left, right) => {
+        return (
+          new Date(left.updated).getTime() - new Date(right.updated).getTime()
+        );
+      },
+    },
+  }
+};
+```
+
+Control the zip function to derive a flat sorted array of products out of an assortment tree:
+
+```
+import zipTreeBySimplyFlattening from "meteor/unchained:core-assortments/tree-zipper/zipTreeBySimplyFlattening"
+const options = {
+  modules: {
+    assortments: {
+      zipTree: zipTreeBySimplyFlattening
+    },
+  }
+};
+```
+
 
 ### Package: Settings
 

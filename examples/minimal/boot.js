@@ -93,8 +93,10 @@ Meteor.startup(() => {
     introspection: true,
     modules: {
       delivery: {
-        createSortProviders: ({ order }) => (left, right) => {
-          return 0;
+        sortProviders: () => (left, right) => {
+          return (
+            new Date(left.created).getTime() - new Date(right.created).getTime()
+          );
         },
       },
     },

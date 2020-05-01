@@ -7,8 +7,8 @@ export * from './db/schema';
 export * from './db/collections';
 export * from './director';
 
-export default ({ createSortProviders } = {}) => {
+export default ({ sortProviders } = {}) => {
   // configure
-  DeliveryDirector.setCreateSortProviders(createSortProviders);
+  DeliveryDirector.setSortProviders(sortProviders);
   runMigrations();
 };
