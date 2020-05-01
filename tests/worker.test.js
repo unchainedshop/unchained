@@ -38,6 +38,7 @@ describe('Worker Module', () => {
           query($status: [WorkStatus]) {
             workQueue(status: $status) {
               _id
+              type
               status
             }
           }
@@ -48,7 +49,9 @@ describe('Worker Module', () => {
         },
       });
 
-      expect(workQueue).toHaveLength(1);
+      expect(workQueue.filter(({ type }) => type === 'HEARTBEAT')).toHaveLength(
+        1
+      );
 
       const work = workQueue.find(
         (w) => w._id === addWorkResult.data.addWork._id
@@ -82,20 +85,23 @@ describe('Worker Module', () => {
           query {
             workQueue {
               _id
+              type
             }
           }
         `,
       });
 
-      expect(workQueue).toHaveLength(1);
+      expect(workQueue.filter(({ type }) => type === 'EXTERNAL')).toHaveLength(
+        1
+      );
     });
 
     it('Get work synchroniously. Only one gets it.', async () => {
       const makeAllocatePromise = () =>
         graphqlFetch({
           query: /* GraphQL */ `
-            mutation allocateWork($worker: String) {
-              allocateWork(worker: $worker) {
+            mutation allocateWork($types: [WorkType], $worker: String) {
+              allocateWork(types: $types, worker: $worker) {
                 _id
                 input
                 type
@@ -104,6 +110,7 @@ describe('Worker Module', () => {
           `,
           variables: {
             worker: 'TEST-GRAPHQL',
+            types: ['EXTERNAL'],
           },
         });
 
@@ -114,7 +121,12 @@ describe('Worker Module', () => {
 
       // There should only be one result with allocated work
       expect(
-        results.filter((r) => r.data.allocateWork && r.data.allocateWork._id)
+        results.filter(
+          (r) =>
+            r.data.allocateWork &&
+            r.data.allocateWork.type === 'EXTERNAL' &&
+            r.data.allocateWork._id
+        )
       ).toHaveLength(1);
 
       // Hoist workId for later use
@@ -129,12 +141,15 @@ describe('Worker Module', () => {
           query {
             workQueue {
               _id
+              type
             }
           }
         `,
       });
 
-      expect(workQueue).toHaveLength(0);
+      expect(workQueue.filter(({ type }) => type === 'HEARTBEAT')).toHaveLength(
+        0
+      );
     });
 
     it('Finish successful work.', async () => {
@@ -276,7 +291,9 @@ describe('Worker Module', () => {
         `,
       });
 
-      expect(workQueueBefore).toHaveLength(1);
+      expect(
+        workQueueBefore.filter(({ type }) => type === 'HEARTBEAT')
+      ).toHaveLength(1);
 
       // Test if work is not done immediately
       await wait(1000);
@@ -286,12 +303,17 @@ describe('Worker Module', () => {
           query {
             workQueue {
               _id
+              status
+              type
+              worker
             }
           }
         `,
       });
 
-      expect(workQueueMiddle).toHaveLength(1);
+      expect(
+        workQueueMiddle.filter(({ type }) => type === 'HEARTBEAT')
+      ).toHaveLength(1);
 
       // Test if work is done eventually
       await wait(3000);
@@ -301,13 +323,19 @@ describe('Worker Module', () => {
           query {
             workQueue {
               _id
+              status
+              type
               worker
             }
           }
         `,
       });
 
-      expect(workQueueAfter).toHaveLength(0);
+      console.log({ workQueueAfter });
+
+      expect(
+        workQueueAfter.filter(({ type }) => type === 'HEARTBEAT')
+      ).toHaveLength(0);
     });
 
     it('Worker fails and retries', async () => {
@@ -316,7 +344,9 @@ describe('Worker Module', () => {
           mutation addWork($type: WorkType!, $input: JSON, $retries: Int) {
             addWork(type: $type, input: $input, retries: $retries) {
               _id
+              status
               type
+              worker
             }
           }
         `,
@@ -341,6 +371,9 @@ describe('Worker Module', () => {
           query {
             workQueue {
               _id
+              status
+              type
+              worker
               original {
                 _id
               }
@@ -350,9 +383,11 @@ describe('Worker Module', () => {
         `,
       });
 
-      expect(workQueueBefore).toHaveLength(1);
+      expect(
+        workQueueBefore.filter(({ type }) => type === 'HEARTBEAT')
+      ).toHaveLength(1);
 
-      const workBefore = workQueueBefore[0];
+      const workBefore = workQueueBefore.pop();
 
       expect(workBefore.original._id).toBe(addWorkResult.data.addWork._id);
       expect(workBefore.retries).toBe(1);
@@ -365,6 +400,7 @@ describe('Worker Module', () => {
           query {
             workQueue {
               _id
+              type
               worker
               retries
               # schedule
@@ -373,7 +409,9 @@ describe('Worker Module', () => {
         `,
       });
 
-      expect(workQueueAfter).toHaveLength(1);
+      expect(
+        workQueueAfter.filter(({ type }) => type === 'HEARTBEAT')
+      ).toHaveLength(1);
     });
 
     it.todo('Only admin can interact with worker');

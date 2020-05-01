@@ -1,4 +1,3 @@
-import { format } from 'date-fns';
 import gql from 'graphql-tag';
 import React from 'react';
 import { Table } from 'semantic-ui-react';

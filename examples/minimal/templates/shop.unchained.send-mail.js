@@ -69,8 +69,8 @@ export default (meta, context, { renderToText, renderMjmlToHtml }) => {
   momentDate.locale('de-CH');
   const orderDate = momentDate.format('lll');
   return {
-    to: to => to || 'admin@localhost',
-    from: from => from || EMAIL_FROM,
+    to: (to) => to || 'admin@localhost',
+    from: (from) => from || EMAIL_FROM,
     subject: () =>
       `${EMAIL_WEBSITE_NAME}: Neue Bestellung / ${context.order.orderNumber}`,
     text: () =>
@@ -78,8 +78,8 @@ export default (meta, context, { renderToText, renderMjmlToHtml }) => {
         meta,
         context,
         orderDate,
-        shopName: EMAIL_WEBSITE_NAME
+        shopName: EMAIL_WEBSITE_NAME,
       }),
-    html: () => renderMjmlToHtml(mjmlTemplate, { meta, context, orderDate })
+    html: () => renderMjmlToHtml(mjmlTemplate, { meta, context, orderDate }),
   };
 };
