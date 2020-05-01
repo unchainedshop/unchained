@@ -155,7 +155,7 @@ OrderDiscounts.removeDiscount = ({ discountId }) => {
     Orders.updateCalculation({
       orderId: discount.orderId,
     });
-    return OrderDiscounts.findOne({ _id: discountId });
+    return discount;
   }
   OrderDiscounts.remove({ _id: discountId });
   return discount;
