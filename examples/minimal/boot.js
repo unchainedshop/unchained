@@ -89,7 +89,16 @@ const initializeDatabase = () => {
 
 Meteor.startup(() => {
   configureEmailTemplates();
-  startPlatform({ introspection: true });
+  startPlatform({
+    introspection: true,
+    modules: {
+      delivery: {
+        createSortProviders: ({ order }) => (left, right) => {
+          return 0;
+        },
+      },
+    },
+  });
   initializeDatabase();
   embedControlpanelInMeteorWebApp(WebApp);
 });

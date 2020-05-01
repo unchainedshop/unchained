@@ -138,17 +138,16 @@ export class DeliveryDirector {
 
   static adapters = new Map();
 
-  static sortProviders = () => undefined;
+  static createSortProviders = () => () => undefined;
 
-  static setSortProviders(fn) {
-    if (fn) this.sortProviders = fn;
+  static setCreateSortProviders(fn) {
+    if (fn) this.createSortProviders = fn;
   }
 
   static filteredAdapters(filter) {
     return Array.from(DeliveryDirector.adapters)
       .map((entry) => entry[1])
-      .filter(filter || (() => true))
-      .sort(this.sortProviders);
+      .filter(filter || (() => true));
   }
 
   static registerAdapter(AdapterClass) {

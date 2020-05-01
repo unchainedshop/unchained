@@ -135,6 +135,6 @@ DeliveryProviders.findProviders = ({ type } = {}, ...options) =>
   ).fetch();
 
 DeliveryProviders.findSupported = ({ order }, ...options) =>
-  DeliveryProviders.findProviders({}, ...options).filter((deliveryProvider) =>
-    deliveryProvider.isActive(order)
-  );
+  DeliveryProviders.findProviders({}, ...options)
+    .filter((deliveryProvider) => deliveryProvider.isActive(order))
+    .sort(DeliveryDirector.createSortProviders({ order }));
