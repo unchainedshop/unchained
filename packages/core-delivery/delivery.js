@@ -1,14 +1,14 @@
 import './db/factories';
 import './db/helpers';
 import runMigrations from './db/schema';
-import { DeliveryDirector } from './director';
+import settings from './settings';
 
 export * from './db/schema';
 export * from './db/collections';
 export * from './director';
 
-export default ({ sortProviders } = {}) => {
+export default (options) => {
   // configure
-  DeliveryDirector.setSortProviders(sortProviders);
+  settings.load(options);
   runMigrations();
 };

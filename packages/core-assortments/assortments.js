@@ -1,10 +1,10 @@
 import './db/factories';
 import './db/schema';
-import treeZipper from './tree-zipper';
+import settings from './settings';
 
 export * from './db/helpers';
 export * from './db/collections';
-export default ({ zipTree } = {}) => {
+export default (options) => {
   // configure
-  treeZipper.setZipTree(zipTree);
+  settings.load(options);
 };

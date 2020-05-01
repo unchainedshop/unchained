@@ -7,10 +7,6 @@ export const DeliveryError = {
   WRONG_CREDENTIALS: 'WRONG_CREDENTIALS',
 };
 
-const sortByCreationDate = () => (left, right) => {
-  return new Date(left.created).getTime() - new Date(right.created).getTime();
-};
-
 export class DeliveryAdapter {
   static key = '';
 
@@ -141,12 +137,6 @@ export class DeliveryDirector {
   }
 
   static adapters = new Map();
-
-  static sortProviders = sortByCreationDate;
-
-  static setSortProviders(fn) {
-    this.sortProviders = fn ?? sortByCreationDate;
-  }
 
   static filteredAdapters(filter) {
     return Array.from(DeliveryDirector.adapters)

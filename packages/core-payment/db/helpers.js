@@ -3,6 +3,7 @@ import { Promise } from 'meteor/promise';
 import { Users } from 'meteor/unchained:core-users';
 import { PaymentDirector } from '../director';
 import { PaymentProviders, PaymentCredentials } from './collections';
+import settings from '../settings';
 
 const emptyContext = {};
 
@@ -218,4 +219,4 @@ PaymentProviders.findProviders = ({ type } = {}, ...options) =>
 PaymentProviders.findSupported = ({ order }, ...options) =>
   PaymentProviders.findProviders({}, ...options)
     .filter((paymentProvider) => paymentProvider.isActive(order))
-    .sort(PaymentDirector.sortProviders({ order }));
+    .sort(settings.sortProviders({ order }));

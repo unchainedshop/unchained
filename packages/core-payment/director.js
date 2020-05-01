@@ -7,10 +7,6 @@ const PaymentError = {
   WRONG_CREDENTIALS: 'WRONG_CREDENTIALS',
 };
 
-const sortByCreationDate = () => (left, right) => {
-  return new Date(left.created).getTime() - new Date(right.created).getTime();
-};
-
 class PaymentAdapter {
   static key = '';
 
@@ -147,12 +143,6 @@ class PaymentDirector {
   }
 
   static adapters = new Map();
-
-  static sortProviders = sortByCreationDate;
-
-  static setSortProviders(fn) {
-    this.sortProviders = fn ?? sortByCreationDate;
-  }
 
   static filteredAdapters(filter) {
     return Array.from(PaymentDirector.adapters)

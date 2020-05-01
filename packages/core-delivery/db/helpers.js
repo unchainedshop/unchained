@@ -5,6 +5,7 @@ import { Countries } from 'meteor/unchained:core-countries';
 import { DeliveryPricingDirector } from 'meteor/unchained:core-pricing';
 import { DeliveryProviders } from './collections';
 import { DeliveryDirector } from '../director';
+import settings from '../settings';
 
 const emptyContext = {};
 
@@ -137,4 +138,4 @@ DeliveryProviders.findProviders = ({ type } = {}, ...options) =>
 DeliveryProviders.findSupported = ({ order }, ...options) =>
   DeliveryProviders.findProviders({}, ...options)
     .filter((deliveryProvider) => deliveryProvider.isActive(order))
-    .sort(DeliveryDirector.sortProviders({ order }));
+    .sort(settings.sortProviders({ order }));
