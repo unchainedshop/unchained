@@ -56,7 +56,20 @@ PaymentProviders.helpers({
   },
   charge(context, userId) {
     const director = new PaymentDirector(this);
-    const result = Promise.await(director.charge(this.defaultContext(context)));
+    const normalizedContext = this.defaultContext({
+      ...context,
+      transactionContext: {
+        ...context.transactionContext,
+        paymentCredentials:
+          context.transactionContext?.paymentCredentials ??
+          PaymentCredentials.findOne({
+            userId,
+            paymentProviderId: this._id,
+            isPreferred: true,
+          }),
+      },
+    });
+    const result = Promise.await(director.charge(normalizedContext, userId));
     if (!result) return false;
     const { credentials, ...strippedResult } = result;
     if (credentials) {

@@ -394,7 +394,7 @@ describe('Plugins: Datatrans Payments', () => {
       const credentials = me?.paymentCredentials?.[0];
 
       const {
-        data: { addCartProduct, checkoutCart } = {},
+        data: { addCartProduct, updateCart, checkoutCart } = {},
       } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation addAndCheckout($productId: ID!, $paymentContext: JSON) {
@@ -403,9 +403,11 @@ describe('Plugins: Datatrans Payments', () => {
             }
             updateCart(paymentProviderId: "datatrans-payment-provider") {
               _id
+              status
             }
             checkoutCart(paymentContext: $paymentContext) {
               _id
+              status
             }
           }
         `,
@@ -416,9 +418,44 @@ describe('Plugins: Datatrans Payments', () => {
           },
         },
       });
-      console.log(checkoutCart);
       expect(addCartProduct).toMatchObject(expect.anything());
-      expect(checkoutCart).toMatchObject(expect.anything());
+      expect(updateCart).toMatchObject({
+        status: 'OPEN',
+      });
+      expect(checkoutCart).toMatchObject({
+        status: 'CONFIRMED',
+      });
+    });
+    it('checkout with preferred alias', async () => {
+      const {
+        data: { addCartProduct, updateCart, checkoutCart } = {},
+      } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation addAndCheckout($productId: ID!) {
+            addCartProduct(productId: $productId) {
+              _id
+            }
+            updateCart(paymentProviderId: "datatrans-payment-provider") {
+              _id
+              status
+            }
+            checkoutCart {
+              _id
+              status
+            }
+          }
+        `,
+        variables: {
+          productId: 'simple-product',
+        },
+      });
+      expect(addCartProduct).toMatchObject(expect.anything());
+      expect(updateCart).toMatchObject({
+        status: 'OPEN',
+      });
+      expect(checkoutCart).toMatchObject({
+        status: 'CONFIRMED',
+      });
     });
   });
 });
