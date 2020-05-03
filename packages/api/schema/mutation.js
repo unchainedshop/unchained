@@ -158,7 +158,7 @@ export default [
       removeCartDiscount(discountId: ID!): OrderDiscount!
 
       """
-      Creates a subscription.
+      Create a subscription.
       """
       createSubscription(
         plan: SubscriptionPlanInput!
@@ -168,6 +168,11 @@ export default [
         delivery: SubscriptionDeliveryInput
         meta: JSON
       ): Subscription!
+
+      """
+      Terminate an actively running subscription
+      """
+      terminateSubscription(subscriptionId: ID!): Subscription!
 
       """
       Change the delivery method/provider

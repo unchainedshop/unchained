@@ -54,6 +54,7 @@ export default (role, actions) => {
   role.allow(actions.manageWorker, () => true);
   role.allow(actions.viewSubscriptions, () => true);
   role.allow(actions.viewSubscription, () => true);
+  role.allow(actions.updateSubscription, () => true);
   role.allow(actions.registerPaymentCredentials, () => true);
   role.allow(actions.managePaymentCredentials, () => true);
 };

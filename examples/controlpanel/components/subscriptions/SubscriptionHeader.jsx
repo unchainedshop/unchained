@@ -1,3 +1,4 @@
+import { compose } from 'recompose';
 import gql from 'graphql-tag';
 import Link from 'next/link';
 import { graphql } from 'react-apollo';
@@ -20,7 +21,7 @@ const colorForStatus = (status) => {
   return 'orange';
 };
 
-const SubscriptionHeader = ({ data, loading }) => {
+const SubscriptionHeader = ({ data, loading, terminateSubscription }) => {
   const {
     _id,
     status,
@@ -56,14 +57,14 @@ const SubscriptionHeader = ({ data, loading }) => {
           <Dropdown item icon="wrench" simple>
             <Dropdown.Menu>
               <Dropdown.Header>Options</Dropdown.Header>
-              {/* <Dropdown.Item
-            primary
-            fluid
-            disabled={status !== 'PENDING'}
-            onClick={confirmSubscription}
-          >
-            Terminate
-          </Dropdown.Item> */}
+              <Dropdown.Item
+                primary
+                fluid
+                disabled={status !== 'ACTIVE'}
+                onClick={terminateSubscription}
+              >
+                Terminate
+              </Dropdown.Item>
             </Dropdown.Menu>
           </Dropdown>
         </Menu.Menu>
@@ -147,41 +148,60 @@ const SubscriptionHeader = ({ data, loading }) => {
   );
 };
 
-export default graphql(gql`
-  query subscription($subscriptionId: ID!) {
-    subscription(subscriptionId: $subscriptionId) {
-      _id
-      subscriptionNumber
-      status
-      created
-      updated
-      user {
+export default compose(
+  graphql(
+    gql`
+      mutation terminateSubscription($subscriptionId: ID!) {
+        terminateSubscription(subscriptionId: $subscriptionId) {
+          _id
+          status
+          expires
+        }
+      }
+    `,
+    {
+      name: 'terminateSubscription',
+      options: {
+        refetchQueries: ['subscription', 'subscriptions'],
+      },
+    }
+  ),
+  graphql(gql`
+    query subscription($subscriptionId: ID!) {
+      subscription(subscriptionId: $subscriptionId) {
         _id
-        name
-      }
-      contact {
-        emailAddress
-      }
-      currency {
-        _id
-        isoCode
-      }
-      country {
-        _id
-        isoCode
-        flagEmoji
-      }
-      billingAddress {
-        firstName
-        lastName
-        company
-        postalCode
-        countryCode
-        regionCode
-        city
-        addressLine
-        addressLine2
+        subscriptionNumber
+        status
+        created
+        updated
+        user {
+          _id
+          name
+        }
+        contact {
+          emailAddress
+        }
+        currency {
+          _id
+          isoCode
+        }
+        country {
+          _id
+          isoCode
+          flagEmoji
+        }
+        billingAddress {
+          firstName
+          lastName
+          company
+          postalCode
+          countryCode
+          regionCode
+          city
+          addressLine
+          addressLine2
+        }
       }
     }
-  }
-`)(SubscriptionHeader);
+  `)
+)(SubscriptionHeader);

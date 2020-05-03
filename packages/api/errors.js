@@ -119,3 +119,11 @@ export const PaymentCredentialsNotFoundError = createError(
   'PaymentCredentialsNotFoundError',
   'Payment credentials not found'
 );
+export const SubscriptionWrongStatusError = createError(
+  'SubscriptionWrongStatusError',
+  'The current status of the subscription does not allow this operation'
+);
+export const SubscriptionNotFoundError = createError(
+  'SubscriptionNotFoundError',
+  'Subscription not found'
+);

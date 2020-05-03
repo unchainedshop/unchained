@@ -112,6 +112,7 @@ import removeWork from './removeWork';
 import doWork from './doWork';
 import heartbeat from './heartbeat';
 import createSubscription from './createSubscription';
+import terminateSubscription from './terminateSubscription';
 import registerPaymentCredentials from './registerPaymentCredentials';
 import markPaymentCredentialsPreferred from './markPaymentCredentialsPreferred';
 import removePaymentCredentials from './removePaymentCredentials';
@@ -218,6 +219,7 @@ export default {
   deliverOrder: acl(actions.markOrderDelivered)(deliverOrder),
 
   createSubscription: acl(actions.createSubscription)(createSubscription),
+  terminateSubscription: acl(actions.updateSubscription)(terminateSubscription),
 
   createPaymentProvider: acl(actions.managePaymentProviders)(
     createPaymentProvider
