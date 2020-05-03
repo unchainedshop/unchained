@@ -67,7 +67,7 @@ Subscriptions.generateFromCheckout = async ({ items, order, ...context }) => {
 
 Subscriptions.helpers({
   async generateOrder({ products, orderContext, ...configuration }) {
-    const order = Orders.createOrder({
+    const order = await Orders.createOrder({
       user: this.user(),
       currency: this.currencyCode,
       countryCode: this.countryCode,
@@ -621,7 +621,7 @@ Orders.setPaymentProvider = ({ orderId, paymentProviderId }) => {
   return Orders.findOne({ _id: orderId });
 };
 
-Orders.createOrder = ({
+Orders.createOrder = async ({
   user,
   currency,
   countryCode,
