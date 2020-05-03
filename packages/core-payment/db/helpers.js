@@ -117,7 +117,7 @@ PaymentCredentials.upsertCredentials = ({
   token,
   ...meta
 }) => {
-  const upsertedId = PaymentCredentials.upsert(
+  const { insertedId } = PaymentCredentials.upsert(
     {
       userId,
       paymentProviderId,
@@ -136,7 +136,15 @@ PaymentCredentials.upsertCredentials = ({
       },
     }
   );
-  return upsertedId;
+
+  if (insertedId) {
+    PaymentCredentials.markPreferred({
+      userId,
+      paymentCredentialsId: insertedId,
+    });
+    return insertedId;
+  }
+  return null;
 };
 
 PaymentCredentials.registerPaymentCredentials = ({
@@ -145,19 +153,18 @@ PaymentCredentials.registerPaymentCredentials = ({
   paymentProviderId,
 }) => {
   const paymentProvider = PaymentProviders.findOne({ _id: paymentProviderId });
-  const { token, ...meta } = paymentProvider.register(
+  const registration = paymentProvider.register(
     { transactionContext: paymentContext },
     userId
   );
-  const paymentCredentialsId = PaymentCredentials.insert({
+  if (!registration) return null;
+  const { token, ...meta } = registration;
+  const paymentCredentialsId = PaymentCredentials.upsertCredentials({
     userId,
     paymentProviderId,
     token,
-    meta,
-    isPreferred: false,
-    created: new Date(),
+    ...meta,
   });
-  PaymentCredentials.markPreferred({ userId, paymentCredentialsId });
   return PaymentCredentials.findOne({ _id: paymentCredentialsId });
 };
 

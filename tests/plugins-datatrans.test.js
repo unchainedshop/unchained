@@ -351,8 +351,9 @@ describe('Plugins: Datatrans Payments', () => {
 
       expect(paymentCredential).not.toBe(null);
     });
-
-    it('found valid registrations after registration', async () => {
+  });
+  describe('Checkout', () => {
+    it('checkout with stored alias', async () => {
       const { data: { me } = {} } = await graphqlFetch({
         query: /* GraphQL */ `
           query {
@@ -389,6 +390,35 @@ describe('Plugins: Datatrans Payments', () => {
         paymentProvider: { _id: 'datatrans-payment-provider' },
         user: { _id: 'user' },
       });
+
+      const credentials = me?.paymentCredentials?.[0];
+
+      const {
+        data: { addCartProduct, checkoutCart } = {},
+      } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation addAndCheckout($productId: ID!, $paymentContext: JSON) {
+            addCartProduct(productId: $productId) {
+              _id
+            }
+            updateCart(paymentProviderId: "datatrans-payment-provider") {
+              _id
+            }
+            checkoutCart(paymentContext: $paymentContext) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          productId: 'simple-product',
+          paymentContext: {
+            paymentCredentials: credentials,
+          },
+        },
+      });
+      console.log(checkoutCart);
+      expect(addCartProduct).toMatchObject(expect.anything());
+      expect(checkoutCart).toMatchObject(expect.anything());
     });
   });
 });

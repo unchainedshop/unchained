@@ -292,19 +292,64 @@ class Datatrans extends PaymentAdapter {
         `Datatrans -> Somebody evil attempted to trick us, fix ${sign} === ${validSign}, ${sign2} === ${validSign2}`,
         transactionResponse
       );
-      throw new Error('Signature mismatch');
-    } else if (status === 'error') {
-      this.log('Datatrans -> Registration declined', transactionResponse);
-      throw new Error('Payment declined');
-    } else {
+    }
+    this.log('Datatrans -> Registration declined', transactionResponse);
+    return null;
+  }
+
+  async chargeWithCredentials(paymentCredentials) {
+    const merchantId = this.getMerchantId();
+    const { order } = this.context;
+    const refno = order.paymentId;
+    const { currency, amount } = order.pricing().total();
+    const aliasCC = paymentCredentials.token;
+
+    const result = await datatransAuthorize({
+      ...paymentCredentials.meta,
+      merchantId,
+      refno,
+      amount,
+      currency,
+      aliasCC,
+    });
+    const response =
+      result?.authorizationService?.body?.[0]?.transaction?.[0]?.response?.[0];
+    if (!response || response.status?.[0] !== 'success') {
       this.log(
-        'Datatrans -> Not trying to charge because of missing payment authorization response'
+        'Datatrans -> Payment declined from authorization service',
+        result
+      );
+      throw new Error('Payment declined');
+    }
+
+    const convertedResponse = Object.fromEntries(
+      Object.entries(response).map(([key, values]) => {
+        return [key, values?.[0]];
+      })
+    );
+    return {
+      ...paymentCredentials.meta,
+      merchantId,
+      refno,
+      amount,
+      currency,
+      aliasCC,
+      ...convertedResponse,
+    };
+  }
+
+  async charge(payload) {
+    if (!payload) {
+      this.log(
+        'Datatrans -> Not trying to charge because of missing payment authorization response, return false to provide later'
       );
       return false;
     }
-  }
+    const ignoreSignatureCheck = !!payload.paymentCredentials;
+    const transactionResponse = payload.paymentCredentials
+      ? await this.chargeWithCredentials(payload.paymentCredentials)
+      : payload;
 
-  async charge(transactionResponse) {
     const {
       aliasCC,
       status,
@@ -320,49 +365,44 @@ class Datatrans extends PaymentAdapter {
     const { order } = this.context;
     const refno = order.paymentId;
     const { currency, amount } = order.pricing().total();
-    if (status === 'success') {
-      const validSign = generateSignature(
-        aliasCC,
-        merchantId,
-        amount,
-        currency,
-        refno
-      );
-      const validSign2 = generateSignature(
-        aliasCC,
-        merchantId,
-        amount,
-        currency,
-        uppTransactionId
-      );
-      if (sign === validSign && sign2 === validSign2) {
-        this.log('Datatrans -> Charged successfully', transactionResponse);
-        return {
-          ...transactionResponse,
-          credentials: aliasCC && {
-            token: aliasCC,
-            expy,
-            expm,
-            pmethod,
-            currency,
-            maskedCC,
-          },
-        };
-      }
-      this.log(
-        `Datatrans -> Somebody evil attempted to trick us, fix ${sign} === ${validSign}, ${sign2} === ${validSign2}`,
-        transactionResponse
-      );
-      throw new Error('Signature mismatch');
-    } else if (status === 'error') {
+
+    if (!status || status === 'error') {
       this.log('Datatrans -> Payment declined', transactionResponse);
       throw new Error('Payment declined');
-    } else {
-      this.log(
-        'Datatrans -> Not trying to charge because of missing payment authorization response'
-      );
-      return false;
     }
+    const validSign = generateSignature(
+      aliasCC,
+      merchantId,
+      amount,
+      currency,
+      refno
+    );
+    const validSign2 = generateSignature(
+      aliasCC,
+      merchantId,
+      amount,
+      currency,
+      uppTransactionId
+    );
+    if ((sign === validSign && sign2 === validSign2) || ignoreSignatureCheck) {
+      this.log('Datatrans -> Charged successfully', transactionResponse);
+      return {
+        ...transactionResponse,
+        credentials: aliasCC && {
+          token: aliasCC,
+          expy,
+          expm,
+          pmethod,
+          currency,
+          maskedCC,
+        },
+      };
+    }
+    this.log(
+      `Datatrans -> Somebody evil attempted to trick us, fix ${sign} === ${validSign}, ${sign2} === ${validSign2}`,
+      transactionResponse
+    );
+    throw new Error('Signature mismatch');
   }
 }
 
