@@ -61,6 +61,9 @@ describe('Subscriptions', () => {
               _id
               orderNumber
               status
+              subscription {
+                status
+              }
             }
           }
         `,
@@ -88,6 +91,9 @@ describe('Subscriptions', () => {
       expect(checkoutCart).toMatchObject({
         orderNumber: 'subscriptionCart',
         status: 'CONFIRMED',
+        subscription: {
+          status: 'ACTIVE',
+        },
       });
     });
   });

@@ -1,7 +1,6 @@
 import { Currencies } from 'meteor/unchained:core-currencies';
 import { PaymentProviders } from 'meteor/unchained:core-payment';
 import { DeliveryProviders } from 'meteor/unchained:core-delivery';
-import { Subscriptions } from 'meteor/unchained:core-subscriptions';
 
 import { actions } from '../../roles';
 import { checkTypeResolver } from '../../acl';
@@ -15,11 +14,6 @@ export default {
   async supportedPaymentProviders(obj) {
     return PaymentProviders.findSupported({
       order: obj,
-    });
-  },
-  async subscription(obj) {
-    return Subscriptions.findOne({
-      _id: obj.subscriptionId,
     });
   },
   status(obj) {

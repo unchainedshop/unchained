@@ -73,7 +73,7 @@ Subscriptions.helpers({
       countryCode: this.countryCode,
       contact: this.contact,
       billingAddress: this.billingAddress,
-      subscriptionId: this._id,
+      originSubscriptionId: this._id,
       ...configuration,
     });
     if (products) {
@@ -137,7 +137,9 @@ Users.helpers({
 
 Orders.helpers({
   subscription() {
-    return Subscriptions.findOne({ _id: this.subscriptionId });
+    return Subscriptions.findOne({
+      'periods.orderId': this._id,
+    });
   },
   discounts() {
     return OrderDiscounts.find({ orderId: this._id }).fetch();
@@ -345,7 +347,7 @@ Orders.helpers({
     // ???
   },
   generateSubscriptions(context) {
-    if (this.subscriptionId) return;
+    if (this.originSubscriptionId) return;
     const items = this.items().filter((item) => {
       const productPlan = item.product()?.plan;
       return !!productPlan;
