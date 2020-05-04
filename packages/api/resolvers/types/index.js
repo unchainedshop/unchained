@@ -53,6 +53,8 @@ import DeliveryFee from './delivery-fee';
 import SubscriptionPayment from './subscription-payment';
 import SubscriptionDelivery from './subscription-delivery';
 import SubscriptionPeriod from './subscription-period';
+import SubscriptionPlan from './subscription-plan';
+import Subscription from './subscription';
 
 export default {
   User,
@@ -110,4 +112,6 @@ export default {
   SubscriptionPayment,
   SubscriptionDelivery,
   SubscriptionPeriod,
+  SubscriptionPlan,
+  Subscription,
 };

@@ -147,10 +147,10 @@ describe('Subscriptions', () => {
                 isoCode
               }
               meta
-              logs {
-                message
-              }
               periods {
+                order {
+                  _id
+                }
                 start
                 end
               }
@@ -164,10 +164,11 @@ describe('Subscriptions', () => {
         },
       });
       expect(createSubscription).toMatchObject({
-        orderNumber: 'subscriptionCart',
-        status: 'CONFIRMED',
-        subscription: {
-          status: 'ACTIVE',
+        status: 'INITIAL',
+        plan: {
+          product: {
+            _id: PlanProduct._id,
+          },
         },
       });
     });

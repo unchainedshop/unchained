@@ -23,7 +23,7 @@ export default [
     }
 
     type SubscriptionPlan {
-      product: Product!
+      product: PlanProduct!
       quantity: Int!
       configuration: [ProductConfigurationParameter!]
     }
@@ -42,7 +42,7 @@ export default [
       start: Date!
       end: Date!
       isTrial: Boolean!
-      order: Order!
+      order: Order
     }
 
     """

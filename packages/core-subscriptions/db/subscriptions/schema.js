@@ -28,6 +28,19 @@ export const Schema = new SimpleSchema(
     userId: { type: String, required: true, index: true },
     status: { type: String, required: true, index: true },
     productId: { type: String, required: true, index: true },
+    quantity: { type: Number },
+    configuration: Array,
+    'configuration.$': {
+      type: Object,
+      required: true,
+    },
+    'configuration.$.key': {
+      type: String,
+      required: true,
+    },
+    'configuration.$.value': {
+      type: String,
+    },
     subscriptionNumber: String,
     expires: Date,
     meta: { type: Object, blackbox: true },
