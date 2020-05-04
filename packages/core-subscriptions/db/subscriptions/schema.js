@@ -14,12 +14,12 @@ export const SubscriptionStatus = {
 export const PeriodSchema = new SimpleSchema(
   {
     orderId: { type: String },
-    start: { type: Date },
-    end: { type: Date },
+    start: { type: Date, required: true },
+    end: { type: Date, required: true },
     isTrial: { type: Boolean },
   },
   {
-    requiredByDefault: true,
+    requiredByDefault: false,
   }
 );
 

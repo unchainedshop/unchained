@@ -17,7 +17,7 @@ describe('Subscriptions', () => {
   });
 
   describe('Mutation.createCart (Subscription)', () => {
-    it('create a cart with a specific order number', async () => {
+    it('checking out a plan product generates a new subscription', async () => {
       const { data: { createCart } = {} } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation {
@@ -97,4 +97,81 @@ describe('Subscriptions', () => {
       });
     });
   });
+  describe('Mutation.createSubscription', () => {
+    it('create a new subscription manually', async () => {
+      const { data: { createSubscription } = {} } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation createSubscription($plan: SubscriptionPlanInput!) {
+            createSubscription(plan: $plan) {
+              _id
+              status
+              subscriptionNumber
+              updated
+              expires
+              meta
+              plan {
+                product {
+                  _id
+                }
+                quantity
+                configuration {
+                  key
+                  value
+                }
+              }
+              payment {
+                provider {
+                  _id
+                }
+              }
+              delivery {
+                provider {
+                  _id
+                }
+              }
+              billingAddress {
+                firstName
+              }
+              contact {
+                emailAddress
+              }
+              status
+              created
+              expires
+              isExpired
+              subscriptionNumber
+              country {
+                isoCode
+              }
+              currency {
+                isoCode
+              }
+              meta
+              logs {
+                message
+              }
+              periods {
+                start
+                end
+              }
+            }
+          }
+        `,
+        variables: {
+          plan: {
+            productId: PlanProduct._id,
+          },
+        },
+      });
+      expect(createSubscription).toMatchObject({
+        orderNumber: 'subscriptionCart',
+        status: 'CONFIRMED',
+        subscription: {
+          status: 'ACTIVE',
+        },
+      });
+    });
+  });
+  describe('Mutation.terminateSubscription', () => {});
+  describe('Mutation.updateProductPlan', () => {});
 });
