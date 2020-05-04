@@ -174,6 +174,7 @@ export default compose(
         status
         created
         updated
+        expires
         user {
           _id
           name

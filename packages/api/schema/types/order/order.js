@@ -102,6 +102,7 @@ export default [
       documents(type: OrderDocumentType = CONFIRMATION): [Media!]!
       supportedDeliveryProviders: [DeliveryProvider!]!
       supportedPaymentProviders: [PaymentProvider!]!
+      subscription: Subscription
       logs(limit: Int = 10, offset: Int = 0): [Log!]!
     }
   `,

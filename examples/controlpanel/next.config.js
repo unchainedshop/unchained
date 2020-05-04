@@ -11,7 +11,6 @@ const {
 
 module.exports = withCss({
   assetPrefix: ROOT_URL || '',
-  exportTrailingSlash: true,
   analyzeServer: ['server', 'both'].includes(BUNDLE_ANALYZE),
   analyzeBrowser: ['browser', 'both'].includes(BUNDLE_ANALYZE),
   bundleAnalyzerConfig: {

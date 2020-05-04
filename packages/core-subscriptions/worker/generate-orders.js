@@ -14,7 +14,7 @@ class GenerateSubscriptionOrders extends WorkerPlugin {
 
   static async doWork(input) {
     const subscriptions = Subscriptions.find({
-      status: SubscriptionStatus.ACTIVE,
+      status: { $in: [SubscriptionStatus.ACTIVE, SubscriptionStatus.PAUSED] },
     }).fetch();
     const errors = (
       await Promise.all(

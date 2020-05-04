@@ -12,7 +12,7 @@ export const SubscriptionActions = {
   GENERATE_ORDER: 'GENERATE_ORDER',
 };
 
-const normalizeStartAndEnd = (
+const periodForReferenceDate = (
   referenceDate,
   intervalCount = 1,
   interval = 'WEEK'
@@ -48,12 +48,13 @@ class SubscriptionAdapter {
   async nextPeriod() {
     const { subscription } = this.context;
     const plan = subscription?.product()?.plan;
+    const referenceDate = new Date();
     if (!plan) return null;
 
     if (plan.trialIntervalCount && !subscription?.periods?.length) {
       return {
-        ...normalizeStartAndEnd(
-          new Date(),
+        ...periodForReferenceDate(
+          referenceDate,
           plan.trialIntervalCount,
           plan.trialInterval
         ),
@@ -68,9 +69,9 @@ class SubscriptionAdapter {
         return endDate;
       }
       return acc;
-    }, undefined);
+    }, referenceDate);
     return {
-      ...normalizeStartAndEnd(
+      ...periodForReferenceDate(
         lastEnd,
         plan.billingIntervalCount,
         plan.billingInterval
