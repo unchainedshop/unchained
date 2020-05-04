@@ -292,6 +292,9 @@ Subscriptions.updateStatus = ({ status, subscriptionId, info = '' }) => {
     case [SubscriptionStatus.ACTIVE]:
       modifier.$set.subscriptionNumber = Subscriptions.newSubscriptionNumber();
       break;
+    case [SubscriptionStatus.TERMINATED]:
+      modifier.$set.expires = subscription.periods.pop().end;
+      break;
     default:
       break;
   }
