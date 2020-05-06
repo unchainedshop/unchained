@@ -67,17 +67,23 @@ Subscriptions.helpers({
       context,
     });
   },
-  terminate({ subscriptionContext } = {}, options) {
+  async terminate({ subscriptionContext } = {}, options) {
     if (this.status === SubscriptionStatus.TERMINATED) return this;
-    return this.setStatus(SubscriptionStatus.TERMINATED, 'terminated manually')
-      .process({ subscriptionContext })
-      .sendStatusToCustomer(options);
+    return (
+      await this.setStatus(
+        SubscriptionStatus.TERMINATED,
+        'terminated manually'
+      ).process({ subscriptionContext })
+    ).sendStatusToCustomer(options);
   },
-  activate({ subscriptionContext } = {}, options) {
+  async activate({ subscriptionContext } = {}, options) {
     if (this.status === SubscriptionStatus.TERMINATED) return this;
-    return this.setStatus(SubscriptionStatus.ACTIVE, 'activated manually')
-      .process({ subscriptionContext })
-      .sendStatusToCustomer(options);
+    return (
+      await this.setStatus(
+        SubscriptionStatus.ACTIVE,
+        'activated manually'
+      ).process({ subscriptionContext })
+    ).sendStatusToCustomer(options);
   },
   sendStatusToCustomer(options) {
     const user = this.user();
@@ -99,20 +105,32 @@ Subscriptions.helpers({
     });
     return this;
   },
-  initializeSubscription() {},
-  reactivateSubscription() {},
-  process({ subscriptionContext } = {}) {
+  async initializeSubscription(subscriptionContext, orderId) {
+    const period = await this.director().nextPeriod(subscriptionContext);
+    if (period && (orderId || period.isTrial)) {
+      await Subscriptions.linkOrderToSubscription({
+        orderId,
+        subscriptionId: this._id,
+        period,
+      });
+    }
+  },
+  // eslint-disable-next-line
+  async reactivateSubscription() {},
+  async process({ subscriptionContext, orderIdForFirstPeriod } = {}) {
     if (
       this.status === SubscriptionStatus.INITIAL &&
       this.nextStatus() === SubscriptionStatus.ACTIVE
     ) {
-      this.initializeSubscription(subscriptionContext);
-    }
-    if (
+      await this.initializeSubscription(
+        subscriptionContext,
+        orderIdForFirstPeriod
+      );
+    } else if (
       this.status === SubscriptionStatus.PAUSED &&
       this.nextStatus() === SubscriptionStatus.ACTIVE
     ) {
-      this.reactivateSubscription(subscriptionContext);
+      await this.reactivateSubscription(subscriptionContext);
     }
     return this.setStatus(this.nextStatus(), 'subscription processed');
   },
@@ -193,6 +211,7 @@ Subscriptions.createSubscription = async (
     contact,
     billingAddress,
     payment,
+    periods: [],
     delivery,
     currencyCode:
       currencyCode ||
@@ -202,15 +221,9 @@ Subscriptions.createSubscription = async (
     countryCode,
   });
   const subscription = Subscriptions.findOne({ _id: subscriptionId });
-  const period = await subscription.director().nextPeriod();
-  if (period) {
-    await Subscriptions.linkOrderToSubscription({
-      orderId: orderIdForFirstPeriod,
-      subscriptionId,
-      period,
-    });
-  }
-  return subscription.process().sendStatusToCustomer(options);
+  return (
+    await subscription.process({ orderIdForFirstPeriod })
+  ).sendStatusToCustomer(options);
 };
 
 Subscriptions.linkOrderToSubscription = async ({
@@ -293,7 +306,7 @@ Subscriptions.updateStatus = ({ status, subscriptionId, info = '' }) => {
       modifier.$set.subscriptionNumber = Subscriptions.newSubscriptionNumber();
       break;
     case SubscriptionStatus.TERMINATED:
-      modifier.$set.expires = subscription.periods.pop().end;
+      modifier.$set.expires = subscription.periods?.pop()?.end || new Date();
       break;
     default:
       break;
