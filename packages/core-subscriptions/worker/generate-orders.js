@@ -22,17 +22,21 @@ class GenerateSubscriptionOrders extends WorkerPlugin {
           try {
             const director = subscription.director();
             const period = await director.nextPeriod(input);
-            const configuration = await director.orderConfigurationForPeriod(
-              period,
-              input
-            );
-            if (configuration) {
-              const order = await subscription.generateOrder(configuration);
-              await Subscriptions.linkOrderToSubscription({
-                orderId: order._id,
-                subscriptionId: subscription._id,
+            if (period) {
+              const configuration = await director.orderConfigurationForPeriod(
                 period,
-              });
+                input
+              );
+              if (configuration) {
+                const order = await subscription.generateOrder(configuration);
+                if (order) {
+                  await Subscriptions.linkOrderToSubscription({
+                    orderId: order._id,
+                    subscriptionId: subscription._id,
+                    period,
+                  });
+                }
+              }
             }
           } catch (e) {
             return {

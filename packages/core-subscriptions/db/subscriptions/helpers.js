@@ -106,7 +106,10 @@ Subscriptions.helpers({
     return this;
   },
   async initializeSubscription(subscriptionContext, orderId) {
-    const period = await this.director().nextPeriod(subscriptionContext);
+    const period = await this.director().nextPeriod({
+      subscriptionContext,
+      orderId,
+    });
     if (period && (orderId || period.isTrial)) {
       await Subscriptions.linkOrderToSubscription({
         orderId,

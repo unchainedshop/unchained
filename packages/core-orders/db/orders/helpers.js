@@ -67,6 +67,7 @@ Subscriptions.generateFromCheckout = async ({ items, order, ...context }) => {
 
 Subscriptions.helpers({
   async generateOrder({ products, orderContext, ...configuration }) {
+    if (!this.payment || !this.delivery) return null;
     const order = await Orders.createOrder({
       user: this.user(),
       currency: this.currencyCode,
@@ -85,13 +86,17 @@ Subscriptions.helpers({
       });
     }
     const { paymentProviderId, paymentContext } = this.payment;
-    order.setPaymentProvider({
-      paymentProviderId,
-    });
+    if (paymentProviderId) {
+      order.setPaymentProvider({
+        paymentProviderId,
+      });
+    }
     const { deliveryProviderId, deliveryContext } = this.delivery;
-    order.setDeliveryProvider({
-      deliveryProviderId,
-    });
+    if (deliveryProviderId) {
+      order.setDeliveryProvider({
+        deliveryProviderId,
+      });
+    }
     return order.checkout({ paymentContext, deliveryContext, orderContext });
   },
 });
