@@ -63,7 +63,7 @@ class PaymentAdapter {
 
   // eslint-disable-next-line
   async validate(token) {
-    return true;
+    return false;
   }
 
   // eslint-disable-next-line
