@@ -648,10 +648,12 @@ Orders.createOrder = async ({
     contact:
       contact ||
       user.lastContact ||
-      (!user.isGuest() && {
-        telNumber: user.telNumber(),
-        emailAddress: user.primaryEmail()?.address,
-      }),
+      (!user.isGuest()
+        ? {
+            telNumber: user.telNumber(),
+            emailAddress: user.primaryEmail()?.address,
+          }
+        : {}),
     userId: user._id,
     currency,
     countryCode,
