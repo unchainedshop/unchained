@@ -1,3 +1,3 @@
-# Quotations (Unchained Engine)
+# Subscriptions (Unchained Engine)
 
-This package contains business logic and database abstraction for quotations in Unchained.
+This package contains business logic and database abstraction for subscriptions in Unchained.
