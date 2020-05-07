@@ -24,7 +24,6 @@ Factory.define('user', Users, {
   guest: faker.random.boolean(),
   tags: [faker.random.arrayElement(['studio', 'peka', 'supplier'])],
   lastBillingAddress: fakeAddress,
-  lastDeliveryAddress: fakeAddress,
   avatarId: () => createFakeAvatar()._id,
   ...fakeTimestampFields,
 }).after((user) => {

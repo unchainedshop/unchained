@@ -65,16 +65,22 @@ WarehousingProviders.removeProvider = ({ _id }) => {
   return WarehousingProviders.findOne({ _id });
 };
 
-WarehousingProviders.findProviderById = (_id) =>
-  WarehousingProviders.findOne({ _id });
+WarehousingProviders.findProviderById = (_id, ...options) =>
+  WarehousingProviders.findOne({ _id }, ...options);
 
-WarehousingProviders.findProviders = ({ type } = {}) =>
-  WarehousingProviders.find({
-    ...(type ? { type } : {}),
-    deleted: null,
-  }).fetch();
+WarehousingProviders.findProviders = ({ type } = {}, ...options) =>
+  WarehousingProviders.find(
+    { ...(type ? { type } : {}), deleted: null },
+    ...options
+  ).fetch();
 
-WarehousingProviders.findSupported = ({ product, deliveryProvider }) =>
-  WarehousingProviders.findProviders().filter((warehousingProvider) =>
+WarehousingProviders.findSupported = (
+  { product, deliveryProvider },
+  ...options
+) =>
+  WarehousingProviders.findProviders(
+    {},
+    ...options
+  ).filter((warehousingProvider) =>
     warehousingProvider.isActive({ product, deliveryProvider })
   );

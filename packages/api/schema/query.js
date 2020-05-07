@@ -238,6 +238,16 @@ export default [
       quotation(quotationId: ID!): Quotation
 
       """
+      Get all subscriptions
+      """
+      subscriptions(limit: Int = 10, offset: Int = 0): [Subscription!]!
+
+      """
+      Get a specific quotation by ID
+      """
+      subscription(subscriptionId: ID!): Subscription
+
+      """
       Search products
       """
       search(
@@ -256,6 +266,13 @@ export default [
         offset: Int = 0
         status: [WorkStatus] = [NEW]
       ): [Work]
+
+      """
+      Sign a generic payment provider for registration
+      """
+      signPaymentProviderForCredentialRegistration(
+        paymentProviderId: ID!
+      ): String
 
       """
       Get a specific work unit by ID

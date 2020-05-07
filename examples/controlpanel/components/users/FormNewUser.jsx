@@ -91,7 +91,6 @@ export default compose(
       label: 'Password',
       custom() {
         if (!this.obj.enroll && (!this.value || this.value === '')) {
-          // eslint-disable-line
           return 'required';
         }
         return null;

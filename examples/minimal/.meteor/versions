@@ -49,10 +49,10 @@ mongo-decimal@0.1.1
 mongo-dev-server@1.1.0
 mongo-id@1.0.7
 npm-bcrypt@0.9.3
-npm-mongo@3.7.0
+npm-mongo@3.7.1
 ordered-dict@1.1.0
 ostrio:cookies@2.6.0
-ostrio:files@1.14.0
+ostrio:files@1.14.2
 percolate:migrations@1.0.2
 promise@0.11.2
 raix:eventemitter@1.0.0
@@ -89,6 +89,7 @@ unchained:core-pricing@0.47.0
 unchained:core-products@0.47.0
 unchained:core-quotations@0.47.0
 unchained:core-settings@0.47.0
+unchained:core-subscriptions@0.47.0
 unchained:core-users@0.47.0
 unchained:core-warehousing@0.47.0
 unchained:core-worker@0.47.0

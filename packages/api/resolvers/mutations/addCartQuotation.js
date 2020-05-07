@@ -7,7 +7,7 @@ import {
 } from '../../errors';
 import getCart from '../../getCart';
 
-export default function (
+export default async function (
   root,
   { orderId, quotationId, quantity, configuration },
   { user, userId, countryContext }
@@ -24,7 +24,7 @@ export default function (
   if (quotation.status !== QuotationStatus.PROPOSED) {
     throw new QuotationWrongStatusError({ status: quotation.status });
   }
-  const cart = getCart({ orderId, user, countryContext });
+  const cart = await getCart({ orderId, user, countryContext });
   return cart.addQuotationItem({
     quotation,
     quantity,

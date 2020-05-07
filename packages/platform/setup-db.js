@@ -1,5 +1,5 @@
-import { Meteor } from 'meteor/meteor';
-import configureUsers, { Users } from 'meteor/unchained:core-users';
+import { Migrations } from 'meteor/percolate:migrations';
+import configureUsers from 'meteor/unchained:core-users';
 import configureLogger from 'meteor/unchained:core-logger';
 import configureDelivery from 'meteor/unchained:core-delivery';
 import configurePayment from 'meteor/unchained:core-payment';
@@ -14,34 +14,30 @@ import configureDocuments from 'meteor/unchained:core-documents';
 import configureOrders from 'meteor/unchained:core-orders';
 import configureAssortments from 'meteor/unchained:core-assortments';
 import configureFilters from 'meteor/unchained:core-filters';
+import configureSubscriptions from 'meteor/unchained:core-subscriptions';
+import configureWorker from 'meteor/unchained:core-worker';
 import createFixtures from './fixtures';
 
-const { FIXTURES } = process.env;
-
 export { createFixtures };
-export default createFixtures;
 
-Meteor.startup(() => {
-  if (!Meteor.isServer) return;
+export default ({ modules = {} } = {}) => {
+  Migrations.unlock();
 
-  // connect domain model
-  configureLogger();
-  configureCurrencies();
-  configureCountries();
-  configureLanguages();
-  configureDocuments();
-  configureUsers();
-  configureDelivery();
-  configurePayment();
-  configureWarehousing();
-  configureProducts();
-  configureBookmarks();
-  configureQuotations();
-  configureOrders();
-  configureAssortments();
-  configureFilters({ skipInvalidationOnStartup: true });
-
-  if (FIXTURES && Users.find({ username: 'admin' }).count() === 0) {
-    createFixtures();
-  }
-});
+  configureLogger(modules.logger);
+  configureWorker(modules.worker);
+  configureCurrencies(modules.currencies);
+  configureCountries(modules.countries);
+  configureLanguages(modules.languages);
+  configureDocuments(modules.documents);
+  configureUsers(modules.users);
+  configureDelivery(modules.delivery);
+  configurePayment(modules.payment);
+  configureWarehousing(modules.warehousing);
+  configureProducts(modules.products);
+  configureBookmarks(modules.bookmarks);
+  configureQuotations(modules.quotations);
+  configureOrders(modules.orders);
+  configureAssortments(modules.assortments);
+  configureFilters(modules.filters);
+  configureSubscriptions(modules.subscriptions);
+};

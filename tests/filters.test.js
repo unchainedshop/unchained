@@ -2,12 +2,11 @@ import { setupDatabase, createLoggedInGraphqlFetch } from './helpers';
 import { ADMIN_TOKEN } from './seeds/users';
 
 let connection;
-let db; // eslint-disable-line
 let graphqlFetch;
 
 describe('Filters', () => {
   beforeAll(async () => {
-    [db, connection] = await setupDatabase();
+    [, connection] = await setupDatabase();
     graphqlFetch = await createLoggedInGraphqlFetch(ADMIN_TOKEN);
   });
 

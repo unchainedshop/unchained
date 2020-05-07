@@ -75,7 +75,7 @@ export default compose(
   }),
   withHandlers({
     onSubmitSuccess: () => () => {
-      toast('Linked', { type: toast.TYPE.SUCCESS }); // eslint-disable-line
+      toast('Linked', { type: toast.TYPE.SUCCESS });
     },
     onSubmit: ({ addAssortmentLink }) => ({
       parentAssortmentId,

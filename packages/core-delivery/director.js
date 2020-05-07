@@ -141,8 +141,7 @@ export class DeliveryDirector {
   static filteredAdapters(filter) {
     return Array.from(DeliveryDirector.adapters)
       .map((entry) => entry[1])
-      .filter(filter || (() => true))
-      .sort((entry) => entry.key);
+      .filter(filter || (() => true));
   }
 
   static registerAdapter(AdapterClass) {

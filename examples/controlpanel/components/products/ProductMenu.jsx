@@ -98,8 +98,26 @@ export default compose(
         isActive: router.query.tab === 'ProductBundleItems',
       });
     }
+
+    if (product.__typename === 'PlanProduct') {
+      menuItems.push({
+        name: 'ProductVisualization',
+        description: 'Media',
+        isActive: router.query.tab === 'ProductVisualization',
+      });
+      menuItems.push({
+        name: 'ProductCommerce',
+        description: 'Commerce',
+        isActive: router.query.tab === 'ProductCommerce',
+      });
+      menuItems.push({
+        name: 'ProductPlan',
+        description: 'Subscription',
+        isActive: router.query.tab === 'ProductPlan',
+      });
+    }
     return {
-      typeName: (product && product.__typename) || '', // eslint-disable-line
+      typeName: (product && product.__typename) || '',
       menuItems,
     };
   }),

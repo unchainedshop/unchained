@@ -12,21 +12,28 @@ class EventListenerWorker extends BaseWorker {
   static type = 'EVENT_LISTENER';
 
   start() {
-    this.WorkerDirector.events.on(WorkerEventTypes.added, () =>
-      this.findOneAndProcessWork()
-    );
-    this.WorkerDirector.events.on(WorkerEventTypes.finished, () =>
-      this.findOneAndProcessWork()
-    );
+    this.onAdded = ({ work }) => {
+      this.process({
+        maxWorkItemCount: 0,
+        referenceDate: new Date(work.scheduled),
+      });
+    };
+    this.onFinished = ({ work }) => {
+      this.process({
+        maxWorkItemCount: 0,
+        referenceDate: new Date(work.scheduled),
+      });
+    };
+    this.WorkerDirector.events.on(WorkerEventTypes.added, this.onAdded);
+    this.WorkerDirector.events.on(WorkerEventTypes.finished, this.onFinished);
+    setTimeout(() => {
+      this.autorescheduleTypes();
+    }, 300);
   }
 
   stop() {
-    this.WorkerDirector.events.off(WorkerEventTypes.added, () =>
-      this.findOneAndProcessWork()
-    );
-    this.WorkerDirector.events.off(WorkerEventTypes.finished, () =>
-      this.findOneAndProcessWork()
-    );
+    this.WorkerDirector.events.off(WorkerEventTypes.added, this.onAdded);
+    this.WorkerDirector.events.off(WorkerEventTypes.finished, this.onFinished);
   }
 }
 

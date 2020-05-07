@@ -5,6 +5,10 @@ import { getFallbackLocale } from 'meteor/unchained:core';
 import { objectInvert } from 'meteor/unchained:utils';
 import { DeliveryProviders } from 'meteor/unchained:core-delivery';
 import { PaymentProviders } from 'meteor/unchained:core-payment';
+import {
+  Subscriptions,
+  SubscriptionDirector,
+} from 'meteor/unchained:core-subscriptions';
 import { Countries } from 'meteor/unchained:core-countries';
 import { Users } from 'meteor/unchained:core-users';
 import { Logs, log } from 'meteor/unchained:core-logger';
@@ -26,6 +30,77 @@ import { OrderPositions } from '../order-positions/collections';
 
 const { EMAIL_FROM, UI_ENDPOINT } = process.env;
 
+Subscriptions.generateFromCheckout = async ({ items, order, ...context }) => {
+  const payment = order.payment();
+  const delivery = order.delivery();
+  const template = {
+    orderId: order._id,
+    userId: order.userId,
+    countryCode: order.countryCode,
+    currencyCode: order.currency,
+    billingAddress: order.billingAddress,
+    contact: order.contact,
+    payment: {
+      paymentProviderId: payment.paymentProviderId,
+      context: payment.context,
+    },
+    delivery: {
+      deliveryProviderId: delivery.deliveryProviderId,
+      context: delivery.context,
+    },
+    meta: order.meta,
+  };
+  return Promise.all(
+    items.map(async (item) => {
+      const subscriptionData = await SubscriptionDirector.transformOrderItemToSubscription(
+        item,
+        { ...template, ...context }
+      );
+
+      await Subscriptions.createSubscription({
+        ...subscriptionData,
+        orderIdForFirstPeriod: order._id,
+      });
+    })
+  );
+};
+
+Subscriptions.helpers({
+  async generateOrder({ products, orderContext, ...configuration }) {
+    if (!this.payment || !this.delivery) return null;
+    const order = await Orders.createOrder({
+      user: this.user(),
+      currency: this.currencyCode,
+      countryCode: this.countryCode,
+      contact: this.contact,
+      billingAddress: this.billingAddress,
+      originSubscriptionId: this._id,
+      ...configuration,
+    });
+    if (products) {
+      products.forEach(order.addProductItem);
+    } else {
+      order.addProductItem({
+        product: this.product(),
+        quantity: 1,
+      });
+    }
+    const { paymentProviderId, paymentContext } = this.payment;
+    if (paymentProviderId) {
+      order.setPaymentProvider({
+        paymentProviderId,
+      });
+    }
+    const { deliveryProviderId, deliveryContext } = this.delivery;
+    if (deliveryProviderId) {
+      order.setDeliveryProvider({
+        deliveryProviderId,
+      });
+    }
+    return order.checkout({ paymentContext, deliveryContext, orderContext });
+  },
+});
+
 Logs.helpers({
   order() {
     return (
@@ -38,19 +113,19 @@ Logs.helpers({
 });
 
 Users.helpers({
-  cart({ countryContext, orderNumber } = {}) {
+  async cart({ countryContext, orderNumber } = {}) {
     const selector = {
       countryCode: countryContext || this.lastLogin.countryContext,
       status: { $eq: OrderStatus.OPEN },
     };
     if (orderNumber) selector.orderNumber = orderNumber;
-    const carts = this.orders(selector);
+    const carts = await this.orders(selector);
     if (carts.length > 0) {
       return carts[0];
     }
     return null;
   },
-  orders({ includeCarts = false, status, ...rest } = {}) {
+  async orders({ includeCarts = false, status, ...rest } = {}) {
     const selector = { userId: this._id, ...rest };
     if (!includeCarts || status) {
       selector.status = status || { $ne: OrderStatus.OPEN };
@@ -66,22 +141,10 @@ Users.helpers({
 });
 
 Orders.helpers({
-  init() {
-    // initialize payment with default values
-    const supportedPaymentProviders = this.supportedPaymentProviders();
-    if (supportedPaymentProviders.length > 0) {
-      this.setPaymentProvider({
-        paymentProviderId: supportedPaymentProviders[0]._id,
-      });
-    }
-    // initialize delivery with default values
-    const supportedDeliveryProviders = this.supportedDeliveryProviders();
-    if (supportedDeliveryProviders.length > 0) {
-      this.setDeliveryProvider({
-        deliveryProviderId: supportedDeliveryProviders[0]._id,
-      });
-    }
-    return Orders.findOne({ _id: this._id });
+  subscription() {
+    return Subscriptions.findOne({
+      'periods.orderId': this._id,
+    });
   },
   discounts() {
     return OrderDiscounts.find({ orderId: this._id }).fetch();
@@ -131,15 +194,47 @@ Orders.helpers({
       code,
     });
   },
-  supportedDeliveryProviders() {
-    return DeliveryProviders.findProviders().filter((provider) =>
-      provider.isActive(this)
-    );
+  async initPreferredPaymentProvider() {
+    const supportedPaymentProviders = PaymentProviders.findSupported({
+      order: this,
+    });
+    const paymentCredentials = await this.user().paymentCredentials({
+      isPreferred: true,
+    });
+    if (supportedPaymentProviders.length) {
+      if (paymentCredentials.length) {
+        const foundSupportedPreferredProvider = supportedPaymentProviders.find(
+          (supportedPaymentProvider) => {
+            return paymentCredentials.some((paymentCredential) => {
+              return (
+                supportedPaymentProvider._id ===
+                paymentCredential.paymentProviderId
+              );
+            });
+          }
+        );
+        if (foundSupportedPreferredProvider) {
+          return this.setPaymentProvider({
+            paymentProviderId: foundSupportedPreferredProvider._id,
+          });
+        }
+      }
+      return this.setPaymentProvider({
+        paymentProviderId: supportedPaymentProviders[0]._id,
+      });
+    }
+    return this;
   },
-  supportedPaymentProviders() {
-    return PaymentProviders.findProviders().filter((provider) =>
-      provider.isActive(this)
-    );
+  initPreferredDeliveryProvider() {
+    const supportedDeliveryProviders = DeliveryProviders.findSupported({
+      order: this,
+    });
+    if (supportedDeliveryProviders.length > 0) {
+      return this.setDeliveryProvider({
+        deliveryProviderId: supportedDeliveryProviders[0]._id,
+      });
+    }
+    return this;
   },
   setDeliveryProvider({ deliveryProviderId }) {
     return Orders.setDeliveryProvider({
@@ -208,26 +303,19 @@ Orders.helpers({
     return OrderPayments.findOne({ _id: this.paymentId });
   },
   updateBillingAddress(billingAddress = {}) {
-    Users.updateLastBillingAddress({
-      userId: this.userId,
-      lastBillingAddress: billingAddress,
-    });
     return Orders.updateBillingAddress({
       orderId: this._id,
       billingAddress,
     });
   },
-  updateContact({ contact }) {
-    Users.updateLastContact({
-      userId: this.userId,
-      lastContact: contact,
-    });
+  updateContact(contact = {}) {
     return Orders.updateContact({
       orderId: this._id,
       contact,
     });
   },
   updateContext(context) {
+    if (!this.context && !context) return this;
     return Orders.updateContext({
       orderId: this._id,
       context,
@@ -255,6 +343,17 @@ Orders.helpers({
     // 2. Reserve quantity at Warehousing Provider until order is CANCELLED/FULLFILLED
     // ???
   },
+  generateSubscriptions(context) {
+    if (this.originSubscriptionId) return;
+    const items = this.items().filter((item) => {
+      const productPlan = item.product()?.plan;
+      return !!productPlan;
+    });
+
+    if (items.length > 0) {
+      Subscriptions.generateFromCheckout({ order: this, items, ...context });
+    }
+  },
   checkout(
     { paymentContext, deliveryContext, orderContext } = {},
     { localeContext } = {}
@@ -270,6 +369,7 @@ Orders.helpers({
     const language =
       (localeContext && localeContext.normalized) ||
       (lastUserLanguage && lastUserLanguage.isoCode);
+
     return this.updateContext(orderContext)
       .processOrder({ paymentContext, deliveryContext })
       .sendOrderConfirmationToCustomer({ language });
@@ -290,6 +390,8 @@ Orders.helpers({
   },
   missingInputDataForCheckout() {
     const errors = [];
+    if (this.status !== OrderStatus.OPEN)
+      errors.push(new Error('Order has already been checked out'));
     if (!this.contact) errors.push(new Error('Contact data not provided'));
     if (!this.billingAddress)
       errors.push(new Error('Billing address not provided'));
@@ -357,6 +459,7 @@ Orders.helpers({
     if (this.nextStatus() === OrderStatus.PENDING) {
       // auto charge during transition to pending
       this.payment().charge(paymentContext, this);
+      this.storeLastUserData();
     }
 
     if (this.nextStatus() === OrderStatus.CONFIRMED) {
@@ -369,13 +472,15 @@ Orders.helpers({
           'before delivery'
         );
         this.delivery().send(deliveryContext, newConfirmedOrder);
+        newConfirmedOrder.generateSubscriptions({
+          paymentContext,
+          deliveryContext,
+        });
       } else {
         this.delivery().send(deliveryContext, this);
       }
+      this.reserveItems();
     }
-    // no matter what happens, the items need to
-    // get reserved if we came that far
-    this.reserveItems();
     return this.setStatus(this.nextStatus(), 'order processed');
   },
   setStatus(status, info) {
@@ -403,6 +508,16 @@ Orders.helpers({
       }
     }
     return status;
+  },
+  storeLastUserData() {
+    Users.updateLastBillingAddress({
+      userId: this.userId,
+      lastBillingAddress: this.billingAddress,
+    });
+    Users.updateLastContact({
+      userId: this.userId,
+      lastContact: this.contact,
+    });
   },
   isValidForCheckout() {
     return this.missingInputDataForCheckout().length === 0;
@@ -516,24 +631,34 @@ Orders.setPaymentProvider = ({ orderId, paymentProviderId }) => {
   return Orders.findOne({ _id: orderId });
 };
 
-Orders.createOrder = ({ user, currency, countryCode, ...rest }) => {
+Orders.createOrder = async ({
+  user,
+  currency,
+  countryCode,
+  billingAddress,
+  contact,
+  ...rest
+}) => {
   const orderId = Orders.insert({
     ...rest,
     created: new Date(),
     status: OrderStatus.OPEN,
-    billingAddress: user.lastBillingAddress,
-    contact: user.isGuest()
-      ? user.lastContact
-      : {
-          telNumber: user.telNumber(),
-          emailAddress: user.primaryEmail()?.address,
-        },
+    billingAddress:
+      billingAddress || user.lastBillingAddress || user.profile?.address,
+    contact:
+      contact ||
+      user.lastContact ||
+      (!user.isGuest() && {
+        telNumber: user.telNumber(),
+        emailAddress: user.primaryEmail()?.address,
+      }),
     userId: user._id,
     currency,
     countryCode,
   });
-  const order = Orders.findOne({ _id: orderId });
-  return order.init();
+  return Orders.findOne({ _id: orderId })
+    .initPreferredDeliveryProvider()
+    .initPreferredPaymentProvider();
 };
 
 Orders.updateBillingAddress = ({ billingAddress, orderId }) => {
@@ -552,7 +677,7 @@ Orders.updateBillingAddress = ({ billingAddress, orderId }) => {
 };
 
 Orders.updateContact = ({ contact, orderId }) => {
-  log('Update Contact Information', { orderId });
+  log('Update Contact', { orderId });
   Orders.update(
     { _id: orderId },
     {
@@ -682,9 +807,18 @@ Orders.updateCalculation = ({ orderId }) => {
   );
 };
 
-Orders.migrateCart = ({ fromUserId, toUserId, countryContext, mergeCarts }) => {
-  const fromCart = Users.findOne({ _id: fromUserId }).cart({ countryContext });
-  const toCart = Users.findOne({ _id: toUserId }).cart({ countryContext });
+Orders.migrateCart = async ({
+  fromUserId,
+  toUserId,
+  countryContext,
+  mergeCarts,
+}) => {
+  const fromCart = await Users.findOne({ _id: fromUserId }).cart({
+    countryContext,
+  });
+  const toCart = await Users.findOne({ _id: toUserId }).cart({
+    countryContext,
+  });
 
   if (!fromCart) {
     // No cart, don't copy

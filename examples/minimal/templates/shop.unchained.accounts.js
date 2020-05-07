@@ -34,30 +34,30 @@ const textTemplate = `
   -----------------\n
 `;
 
-export default texts => (
+export default (texts) => (
   meta,
   { locale, ...context },
   { renderToText, renderMjmlToHtml }
 ) => {
   const langCode = locale.substr(0, 2).toLowerCase();
   return {
-    from: from => from || EMAIL_FROM,
+    from: (from) => from || EMAIL_FROM,
     subject: () => texts[langCode].subject,
     text: () =>
       renderToText(textTemplate, {
         meta: {
           ...texts[langCode],
-          ...meta
+          ...meta,
         },
-        context
+        context,
       }),
     html: () =>
       renderMjmlToHtml(mjmlTemplate, {
         meta: {
           ...texts[langCode],
-          ...meta
+          ...meta,
         },
-        context
-      })
+        context,
+      }),
   };
 };

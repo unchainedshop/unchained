@@ -25,28 +25,26 @@ mailman.warnNoEmailPackage = function warnNoEmailPackage() {
 };
 
 export default () => {
-  Meteor.startup(() => {
-    if (!Package.email) {
-      mailman.warnNoEmailPackage();
-      return;
-    }
+  if (!Package.email) {
+    mailman.warnNoEmailPackage();
+    return;
+  }
 
-    mailman.originalSend = Email.send;
-    mailman.send = function mailmanSend(options) {
-      const filename = `${Date.now()}.html`;
-      const header = `<b>from:</b>${options.from}<br><b>to:</b>${options.to}<br><br><b>subject:</b>${options.subject}<hr>`;
-      const content = header + (options.html || options.text);
-      writeFile(filename, content, (err, filePath) => {
-        if (err) {
-          logger.log(err);
-          return;
-        }
-        logger.log('unchained:platform -> Mailman detected an outgoing email');
-        open(filePath);
-      });
-    };
+  mailman.originalSend = Email.send;
+  mailman.send = function mailmanSend(options) {
+    const filename = `${Date.now()}.html`;
+    const header = `<b>from:</b>${options.from}<br><b>to:</b>${options.to}<br><br><b>subject:</b>${options.subject}<hr>`;
+    const content = header + (options.html || options.text);
+    writeFile(filename, content, (err, filePath) => {
+      if (err) {
+        logger.log(err);
+        return;
+      }
+      logger.log('unchained:platform -> Mailman detected an outgoing email');
+      open(filePath);
+    });
+  };
 
-    Email.send = mailman.send;
-    logger.log('unchained:platform -> E-Mail Interception activated');
-  });
+  Email.send = mailman.send;
+  logger.log('unchained:platform -> E-Mail Interception activated');
 };

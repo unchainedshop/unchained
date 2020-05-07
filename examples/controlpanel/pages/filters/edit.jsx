@@ -2,7 +2,7 @@ import React from 'react';
 import { withRouter } from 'next/router';
 import { Grid, Container, Header } from 'semantic-ui-react';
 import App from '../../components/App';
-import FilterOptionList from '../../components/filters/FilterOptionList'; // eslint-disable-line
+import FilterOptionList from '../../components/filters/FilterOptionList';
 import FilterHeader from '../../components/filters/FilterHeader';
 import FilterMenu from '../../components/filters/FilterMenu';
 import FormEditFilterTexts from '../../components/filters/FormEditFilterTexts';

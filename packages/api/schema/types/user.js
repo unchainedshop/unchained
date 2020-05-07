@@ -53,7 +53,6 @@ export default [
       language: Language
       country: Country
       lastBillingAddress: Address
-      lastDeliveryAddress: Address
       lastContact: Contact
       primaryEmail: UserEmail
       emails: [UserEmail!]
@@ -64,6 +63,8 @@ export default [
       quotations: [Quotation!]!
       logs(offset: Int = 10, limit: Int = 0): [Log!]!
       bookmarks: [Bookmark!]!
+      paymentCredentials: [PaymentCredentials!]!
+      subscriptions: [Subscription!]!
     }
   `,
 ];

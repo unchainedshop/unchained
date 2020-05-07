@@ -6,6 +6,7 @@ export const ProductTypes = {
   SimpleProduct: 'SIMPLE_PRODUCT',
   ConfigurableProduct: 'CONFIGURABLE_PRODUCT',
   BundleProduct: 'BUNDLE_PRODUCT',
+  PlanProduct: 'PLAN_PRODUCT',
 };
 
 export const ProductStatus = {
@@ -44,6 +45,17 @@ const ProductSupplySchema = new SimpleSchema(
     heightInMillimeters: Number,
     lengthInMillimeters: Number,
     widthInMillimeters: Number,
+  },
+  { requiredByDefault: false }
+);
+
+const ProductPlanSchema = new SimpleSchema(
+  {
+    billingInterval: String,
+    billingIntervalCount: Number,
+    usageCalculationType: String,
+    trialInterval: String,
+    trialIntervalCount: Number,
   },
   { requiredByDefault: false }
 );
@@ -93,6 +105,7 @@ Products.attachSchema(
       warehousing: ProductWarehousingSchema,
       supply: ProductSupplySchema,
       proxy: ProductProxySchema,
+      plan: ProductPlanSchema,
       bundleItems: {
         type: Array,
         optional: true,

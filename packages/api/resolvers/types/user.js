@@ -25,21 +25,25 @@ export default {
     actions.viewUserPrivateInfos,
     'lastBillingAddress'
   ),
-  lastDeliveryAddress: checkTypeResolver(
-    actions.viewUserPrivateInfos,
-    'lastDeliveryAddress'
-  ),
   lastContact: checkTypeResolver(actions.viewUserPrivateInfos, 'lastContact'),
   emails: checkTypeResolver(actions.viewUserPrivateInfos, 'emails'),
   tags: checkTypeResolver(actions.viewUserPrivateInfos, 'tags'),
   bookmarks: checkTypeResolver(actions.viewUserPrivateInfos, 'bookmarks'),
+  paymentCredentials: checkTypeResolver(
+    actions.viewUserPrivateInfos,
+    'paymentCredentials'
+  ),
 
   orders: checkTypeResolver(actions.viewUserOrders, 'orders'),
   quotations: checkTypeResolver(actions.viewUserQuotations, 'quotations'),
   logs: checkTypeResolver(actions.viewLogs, 'logs'),
   roles: checkTypeResolver(actions.viewUserRoles, 'roles'),
+  subscriptions: checkTypeResolver(
+    actions.viewUserSubscriptions,
+    'subscriptions'
+  ),
 
-  cart(user, params, context = {}) {
+  async cart(user, params, context = {}) {
     const { countryContext, userId } = context;
     checkAction(actions.viewUserOrders, userId, [user, params, context]);
     return user.cart({ countryContext, ...params });

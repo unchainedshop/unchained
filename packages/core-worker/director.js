@@ -5,7 +5,9 @@ import { log } from 'meteor/unchained:core-logger';
 import { WorkQueue } from './db/collections';
 import { WorkStatus } from './db/schema';
 
-const { WORKER_ID = os.hostname() } = process.env;
+const { UNCHAINED_WORKER_ID = os.hostname() } = process.env;
+
+export const DIRECTOR_MARKED_FAILED_ERROR = 'DIRECTOR_MARKED_FAILED';
 
 const WorkerEventTypes = {
   added: 'added',
@@ -21,6 +23,8 @@ const WorkerEventTypes = {
 class WorkerDirector {
   static plugins = {};
 
+  static autoSchedule = {};
+
   static events = new EventEmitter();
 
   static registerPlugin(plugin /* WorkerPlugin */) {
@@ -33,6 +37,14 @@ class WorkerDirector {
 
     log(
       `${this.name} -> Registered ${plugin.type} ${plugin.key}@${plugin.version} (${plugin.label})`
+    );
+  }
+
+  static configureAutoscheduling(plugin, configuration) {
+    const { cronText } = configuration;
+    this.autoSchedule[plugin.type] = configuration;
+    log(
+      `${this.name} -> Configured ${plugin.type} ${plugin.key}@${plugin.version} (${plugin.label}) for Autorun at ${cronText}`
     );
   }
 
@@ -50,6 +62,58 @@ class WorkerDirector {
     return { started: -1, priority: -1, originalWorkId: 1, created: 1 };
   }
 
+  static async ensureOneWork(addWorkData) {
+    const {
+      type,
+      input,
+      priority = 0,
+      scheduled,
+      originalWorkId,
+      retries = 20,
+    } = addWorkData;
+
+    const created = new Date();
+    const selector = this.buildQueueSelector({
+      type,
+      status: [WorkStatus.NEW],
+      scheduled: { $ne: scheduled.getTime() },
+    });
+    try {
+      const workId = `${type}:${scheduled.getTime()}`;
+      const result = await WorkQueue.rawCollection().findAndModify(
+        selector,
+        this.defaultSortOrder(),
+        {
+          $set: {
+            input,
+            priority,
+            worker: null,
+            updated: created,
+          },
+          $setOnInsert: {
+            _id: workId,
+            type,
+            originalWorkId,
+            scheduled,
+            retries,
+            created,
+          },
+        },
+        {
+          upsert: true,
+        }
+      );
+      if (!result.lastErrorObject.updatedExisting) {
+        log(`${this.name} -> Work added ${type} ${scheduled} ${retries}`);
+        const work = await this.work({ workId });
+        this.events.emit(WorkerEventTypes.added, { work });
+      }
+      return result.value;
+    } catch (e) {
+      return null;
+    }
+  }
+
   static async addWork({
     type,
     input,
@@ -62,8 +126,6 @@ class WorkerDirector {
       throw new Error(`No plugin registered for type ${type}`);
     }
 
-    log(`${this.name} -> Work added ${type} ${scheduled} ${retries}`);
-
     const created = new Date();
     const workId = WorkQueue.insert({
       type,
@@ -75,8 +137,8 @@ class WorkerDirector {
       created,
     });
 
-    const work = this.work({ workId });
-
+    log(`${this.name} -> Work added ${type} ${scheduled} ${retries}`);
+    const work = await this.work({ workId });
     this.events.emit(WorkerEventTypes.added, { work });
 
     return work;
@@ -120,14 +182,14 @@ class WorkerDirector {
     return result;
   }
 
-  static async allocateWork({ types, worker = WORKER_ID }) {
+  static async allocateWork({ types, worker = UNCHAINED_WORKER_ID }) {
     // Find a work item that is scheduled for now and is not started.
     // Also:
     // - Restrict by types and worker if provided
     // - Sort by default queue order
     const result = await WorkQueue.rawCollection().findAndModify(
       this.buildQueueSelector({
-        status: WorkStatus.NEW,
+        status: [WorkStatus.NEW],
         scheduled: { $lte: new Date() },
         worker: { $in: [null, worker] },
         ...(types ? { type: { $in: types } } : {}),
@@ -174,7 +236,7 @@ class WorkerDirector {
     result,
     error,
     success,
-    worker = WORKER_ID,
+    worker = UNCHAINED_WORKER_ID,
     started = new Date(),
     finished = new Date(),
   }) {
@@ -244,6 +306,31 @@ class WorkerDirector {
       });
     }
     return null;
+  }
+
+  static async markOldWorkFailed({ types, worker, referenceDate }) {
+    WorkQueue.update(
+      this.buildQueueSelector({
+        status: [WorkStatus.ALLOCATED],
+        started: { $lte: referenceDate },
+        worker,
+        type: { $in: types },
+      }),
+      {
+        $set: {
+          finished: new Date(),
+          success: false,
+          error: {
+            name: DIRECTOR_MARKED_FAILED_ERROR,
+            message:
+              'Director marked old work as failed after restart. This work was eventually running at the moment when node.js exited.',
+          },
+          result: null,
+          worker,
+        },
+      },
+      { multi: true }
+    );
   }
 }
 

@@ -3,12 +3,11 @@ import { SimpleProduct, SimpleProductReview } from './seeds/products';
 import { ADMIN_TOKEN } from './seeds/users';
 
 let connection;
-let db; // eslint-disable-line
 let graphqlFetch;
 
 describe('Products: Reviews', () => {
   beforeAll(async () => {
-    [db, connection] = await setupDatabase();
+    [, connection] = await setupDatabase();
     graphqlFetch = await createLoggedInGraphqlFetch(ADMIN_TOKEN);
   });
 

@@ -158,6 +158,41 @@ export default [
       removeCartDiscount(discountId: ID!): OrderDiscount!
 
       """
+      Create a subscription.
+      """
+      createSubscription(
+        plan: SubscriptionPlanInput!
+        billingAddress: AddressInput
+        contact: ContactInput
+        payment: SubscriptionPaymentInput
+        delivery: SubscriptionDeliveryInput
+        meta: JSON
+      ): Subscription!
+
+      """
+      Update a subscription
+      """
+      updateSubscription(
+        subscriptionId: ID
+        plan: SubscriptionPlanInput
+        billingAddress: AddressInput
+        contact: ContactInput
+        payment: SubscriptionPaymentInput
+        delivery: SubscriptionDeliveryInput
+        meta: JSON
+      ): Order!
+
+      """
+      Activate a subscription
+      """
+      activateSubscription(subscriptionId: ID!): Subscription!
+
+      """
+      Terminate an actively running subscription
+      """
+      terminateSubscription(subscriptionId: ID!): Subscription!
+
+      """
       Change the delivery method/provider
       """
       setOrderDeliveryProvider(orderId: ID!, deliveryProviderId: ID!): Order!
@@ -326,6 +361,11 @@ export default [
         productId: ID!
         supply: UpdateProductSupplyInput!
       ): Product
+
+      """
+      Modify plan part of a product
+      """
+      updateProductPlan(productId: ID!, plan: UpdateProductPlanInput!): Product
 
       """
       Modify warehousing part of a product
@@ -669,6 +709,19 @@ export default [
       Manually remove a work
       """
       removeWork(workId: ID!): Work!
+
+      """
+      Register credentials for an existing payment provider allowing to store and use them
+      for later payments (1-click checkout or subscriptions)
+      """
+      registerPaymentCredentials(
+        paymentContext: JSON!
+        paymentProviderId: ID!
+      ): PaymentCredentials
+      markPaymentCredentialsPreferred(
+        paymentCredentialsId: ID!
+      ): PaymentCredentials
+      removePaymentCredentials(paymentCredentialsId: ID!): PaymentCredentials
     }
   `,
 ];

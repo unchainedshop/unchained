@@ -107,7 +107,23 @@ export const QueryStringRequiredError = createError(
   'QueryStringRequiredError',
   'Query string is required if no assortmentId is provided'
 );
+export const PaymentProviderNotFoundError = createError(
+  'PaymentProviderNotFoundError',
+  'Payment provider not found'
+);
 export const WorkNotFoundOrWrongStatus = createError(
   'WorkNotFoundOrWrongStatus',
   'Could not find work or no work with the correct status'
+);
+export const PaymentCredentialsNotFoundError = createError(
+  'PaymentCredentialsNotFoundError',
+  'Payment credentials not found'
+);
+export const SubscriptionWrongStatusError = createError(
+  'SubscriptionWrongStatusError',
+  'The current status of the subscription does not allow this operation'
+);
+export const SubscriptionNotFoundError = createError(
+  'SubscriptionNotFoundError',
+  'Subscription not found'
 );

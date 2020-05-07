@@ -26,7 +26,9 @@
     }
   },
   "rules": {
-    "prettier/prettier": [ "error" ],
+    "prettier/prettier": [ "error", {
+      "singleQuote": true
+    }],
     "no-underscore-dangle": [ "error", { "allow": [ "_id" ] } ],
     "import/no-unresolved": [ "error", { ignore: ['meteor/'] } ]
   }

@@ -1,5 +1,64 @@
 export default [
   /* GraphQL */ `
+    enum ProductVariationType {
+      """
+      Color Picker
+      """
+      COLOR
+
+      """
+      Text Answers
+      """
+      TEXT
+    }
+
+    type ProductVariationTexts {
+      _id: ID!
+      locale: String
+      title: String
+      subtitle: String
+    }
+
+    type ProductVariationOption {
+      _id: ID!
+      texts(forceLocale: String): ProductVariationTexts
+      value: String
+    }
+
+    type ProductVariation {
+      _id: ID!
+      texts(forceLocale: String): ProductVariationTexts
+      type: ProductVariationType
+      key: String
+      options: [ProductVariationOption!]
+    }
+
+    """
+    Key Value Combination
+    """
+    type ProductVariationAssignmentVector {
+      _id: ID!
+      variation: ProductVariation
+      option: ProductVariationOption
+    }
+
+    """
+    Key Value Combination to Product Assignment
+    """
+    type ProductVariationAssignment {
+      _id: ID!
+
+      """
+      Query string key=val&key=val ...
+      """
+      vectors: [ProductVariationAssignmentVector!]
+
+      """
+      Assigned Product
+      """
+      product: Product
+    }
+
     """
     Configurable Product (Proxy)
     """
@@ -14,6 +73,7 @@ export default [
       media(limit: Int = 10, offset: Int = 0, tags: [String!]): [ProductMedia!]!
       texts(forceLocale: String): ProductTexts
       assortmentPaths: [ProductAssortmentPath!]!
+      siblings(assortmentId: ID, limit: Int = 10, offset: Int = 0): [Product!]!
       reviews(limit: Int = 10, offset: Int = 0): [ProductReview!]!
 
       """

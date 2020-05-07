@@ -38,6 +38,7 @@ import reorderProductMedia from './reorderProductMedia';
 import updateProductCommerce from './updateProductCommerce';
 import updateProductWarehousing from './updateProductWarehousing';
 import updateProductSupply from './updateProductSupply';
+import updateProductPlan from './updateProductPlan';
 import addProductAssignment from './addProductAssignment';
 import removeProductAssignment from './removeProductAssignment';
 import createCart from './createCart';
@@ -48,7 +49,6 @@ import addCartQuotation from './addCartQuotation';
 import updateCart from './updateCart';
 import emptyCart from './emptyCart';
 import updateCartItem from './updateCartItem';
-
 import removeCartItem from './removeCartItem';
 import removeCartDiscount from './removeCartDiscount';
 import removeOrder from './removeOrder';
@@ -111,6 +111,13 @@ import finishWork from './finishWork';
 import removeWork from './removeWork';
 import doWork from './doWork';
 import heartbeat from './heartbeat';
+import createSubscription from './createSubscription';
+import terminateSubscription from './terminateSubscription';
+import activateSubscription from './activateSubscription';
+import updateSubscription from './updateSubscription';
+import registerPaymentCredentials from './registerPaymentCredentials';
+import markPaymentCredentialsPreferred from './markPaymentCredentialsPreferred';
+import removePaymentCredentials from './removePaymentCredentials';
 
 export default {
   ...Accounts,
@@ -126,6 +133,15 @@ export default {
   setUsername: acl(actions.manageUsers)(setUsername),
   setRoles: acl(actions.manageUsers)(setRoles),
   enrollUser: acl(actions.manageUsers)(enrollUser),
+  registerPaymentCredentials: acl(actions.registerPaymentCredentials)(
+    registerPaymentCredentials
+  ),
+  markPaymentCredentialsPreferred: acl(actions.managePaymentCredentials)(
+    markPaymentCredentialsPreferred
+  ),
+  removePaymentCredentials: acl(actions.managePaymentCredentials)(
+    removePaymentCredentials
+  ),
 
   createLanguage: acl(actions.manageLanguages)(createLanguage),
   updateLanguage: acl(actions.manageLanguages)(updateLanguage),
@@ -152,6 +168,7 @@ export default {
     updateProductWarehousing
   ),
   updateProductSupply: acl(actions.manageProducts)(updateProductSupply),
+  updateProductPlan: acl(actions.manageProducts)(updateProductPlan),
   removeProductVariation: acl(actions.manageProducts)(removeProductVariation),
   updateProductVariationTexts: acl(actions.manageProducts)(
     updateProductVariationTexts
@@ -202,6 +219,11 @@ export default {
   confirmOrder: acl(actions.markOrderConfirmed)(confirmOrder),
   payOrder: acl(actions.markOrderPaid)(payOrder),
   deliverOrder: acl(actions.markOrderDelivered)(deliverOrder),
+
+  createSubscription: acl(actions.createSubscription)(createSubscription),
+  terminateSubscription: acl(actions.updateSubscription)(terminateSubscription),
+  activateSubscription: acl(actions.updateSubscription)(activateSubscription),
+  updateSubscription: acl(actions.updateSubscription)(updateSubscription),
 
   createPaymentProvider: acl(actions.managePaymentProviders)(
     createPaymentProvider

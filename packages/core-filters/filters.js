@@ -8,8 +8,7 @@ export * from './search';
 
 export { Filters, FilterTexts };
 
-export default ({ skipInvalidationOnStartup = false }) => {
-  // configure
+export default ({ skipInvalidationOnStartup = true } = {}) => {
   if (!skipInvalidationOnStartup) {
     Meteor.defer(() => {
       Filters.invalidateFilterCaches();

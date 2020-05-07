@@ -26,6 +26,7 @@ import geoposition from './geo-position';
 import bookmark from './bookmark';
 import search from './search';
 import worker from './worker';
+import subscription from './subscription';
 
 export default [
   ...address,
@@ -56,4 +57,5 @@ export default [
   ...bookmark,
   ...search,
   ...worker,
+  ...subscription,
 ];

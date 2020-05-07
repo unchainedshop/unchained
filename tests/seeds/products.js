@@ -33,6 +33,37 @@ export const SimpleProduct = {
   },
 };
 
+export const PlanProduct = {
+  _id: 'plan-product',
+  created: new Date('2019-07-30T09:23:26.253+0000'),
+  type: 'PLAN_PRODUCT',
+  status: 'ACTIVE',
+  sequence: 0,
+  authorId: 'admin',
+  slugs: ['plan'],
+  updated: new Date('2019-09-10T14:29:37.015+0000'),
+  published: new Date('2019-07-30T09:23:57.329+0000'),
+  commerce: {
+    pricing: [
+      {
+        amount: 10000,
+        maxQuantity: 0,
+        isTaxable: true,
+        isNetPrice: false,
+        currencyCode: 'CHF',
+        countryCode: 'CH',
+      },
+    ],
+  },
+  plan: {
+    billingInterval: 'WEEK',
+    billingIntervalCount: 1,
+    usageCalculationType: 'LICENSED',
+    trialInterval: null,
+    trialIntervalCount: null,
+  },
+};
+
 export const GermanProductText = {
   _id: 'german',
   locale: 'de',
@@ -45,6 +76,13 @@ export const GermanProductText = {
   labels: ['label-de-1', 'label-de-2'],
   subtitle: 'subtitle-de',
   vendor: 'vendor-de',
+};
+
+export const GermanPlanProductText = {
+  ...GermanProductText,
+  productId: 'plan-product',
+  slug: 'plan',
+  title: 'weekly subscription',
 };
 
 export const FrenchProductText = {
@@ -149,4 +187,6 @@ export default async function seedProducts(db) {
     .findOrInsertOne(FrenchJpegProductMediaText);
 
   await db.collection('media').findOrInsertOne(JpegMedia);
+  await db.collection('products').findOrInsertOne(PlanProduct);
+  await db.collection('product_texts').findOrInsertOne(GermanPlanProductText);
 }

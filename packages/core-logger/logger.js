@@ -3,7 +3,7 @@ import './db/factories';
 import './db/helpers';
 import LocalTransport from './local-transport';
 import { Logs } from './db/collections';
-import runMigrations from './db/schema';
+import configureSchema from './db/schema';
 import createLogger, { transports, format } from './createLogger';
 
 let instance = null;
@@ -26,7 +26,7 @@ const log = (message, options) => {
 };
 
 export default () => {
-  runMigrations();
+  configureSchema();
 };
 
 export { Logger, log, Logs, createLogger, transports, format };

@@ -1,7 +1,7 @@
 import { Schemas } from 'meteor/unchained:utils';
 import { Migrations } from 'meteor/percolate:migrations';
 import SimpleSchema from 'simpl-schema';
-import { PaymentProviders } from './collections';
+import { PaymentProviders, PaymentCredentials } from './collections';
 
 export const PaymentProviderType = { // eslint-disable-line
   CARD: 'CARD',
@@ -18,6 +18,20 @@ PaymentProviders.attachSchema(
       'configuration.$': { type: Object },
       'configuration.$.key': { type: String },
       'configuration.$.value': { type: String },
+      ...Schemas.timestampFields,
+    },
+    { requiredByDefault: false }
+  )
+);
+
+PaymentCredentials.attachSchema(
+  new SimpleSchema(
+    {
+      paymentProviderId: { type: String, required: true, index: true },
+      userId: { type: String, required: true, index: true },
+      token: String,
+      isPreferred: Boolean,
+      meta: { type: Object, blackbox: true },
       ...Schemas.timestampFields,
     },
     { requiredByDefault: false }
@@ -48,7 +62,5 @@ Migrations.add({
 });
 
 export default () => {
-  Meteor.startup(() => {
-    Migrations.migrateTo('latest');
-  });
+  Migrations.migrateTo('latest');
 };

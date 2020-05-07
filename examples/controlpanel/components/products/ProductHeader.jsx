@@ -56,10 +56,7 @@ const ProductHeader = ({ loading, productId, product = {} }) => [
           <List>
             <List.Item>
               <List.Icon name="cube" />
-              <List.Content>
-                  Product type: {product.__typename // eslint-disable-line
-                }
-              </List.Content>
+              <List.Content>Product type: {product.__typename}</List.Content>
             </List.Item>
             <List.Item>
               <List.Icon name="add to calendar" />

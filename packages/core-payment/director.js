@@ -23,19 +23,23 @@ class PaymentAdapter {
     this.context = context;
   }
 
-  configurationError() { // eslint-disable-line
+  // eslint-disable-next-line
+  configurationError() {
     return PaymentError.NOT_IMPLEMENTED;
   }
 
-  isActive() { // eslint-disable-line
+  // eslint-disable-next-line
+  isActive() {
     return false;
   }
 
-  isPayLaterAllowed() { // eslint-disable-line
+  // eslint-disable-next-line
+  isPayLaterAllowed() {
     return false;
   }
 
-  async charge(transactionContext) {  // eslint-disable-line
+  // eslint-disable-next-line
+  async charge(transactionContext) {
     // if you return true, the status will be changed to PAID
 
     // if you return false, the order payment status stays the
@@ -45,7 +49,25 @@ class PaymentAdapter {
     return false;
   }
 
-  log(message, { level = 'debug', ...options } = {}) { // eslint-disable-line
+  // eslint-disable-next-line
+  async register(transactionContext) {
+    return {
+      token: '',
+    };
+  }
+
+  // eslint-disable-next-line
+  async sign(transactionContext) {
+    return null;
+  }
+
+  // eslint-disable-next-line
+  async validate(token) {
+    return false;
+  }
+
+  // eslint-disable-next-line
+  log(message, { level = 'debug', ...options } = {}) {
     return log(message, { level, ...options });
   }
 }
@@ -74,7 +96,7 @@ class PaymentDirector {
     }
   }
 
-  isActive(context) { // eslint-disable-line
+  isActive(context) {
     try {
       const adapter = this.interface(context);
       return adapter.isActive();
@@ -84,7 +106,7 @@ class PaymentDirector {
     }
   }
 
-  isPayLaterAllowed(context) { // eslint-disable-line
+  isPayLaterAllowed(context) {
     try {
       const adapter = this.interface(context);
       return adapter.isPayLaterAllowed();
@@ -96,8 +118,23 @@ class PaymentDirector {
 
   async charge({ transactionContext, ...context }) {
     const adapter = this.interface(context);
-    const chargeResult = await adapter.charge(transactionContext);
-    return chargeResult;
+    return adapter.charge(transactionContext);
+  }
+
+  async register({ transactionContext, ...context }) {
+    const adapter = this.interface(context);
+    return adapter.register(transactionContext);
+  }
+
+  async sign({ transactionContext, ...context }) {
+    const adapter = this.interface(context);
+    return adapter.sign(transactionContext);
+  }
+
+  async validate({ token, ...context }) {
+    const adapter = this.interface(context);
+    const validated = await adapter.validate(token);
+    return !!validated;
   }
 
   async run(command, context, ...args) {
@@ -110,8 +147,7 @@ class PaymentDirector {
   static filteredAdapters(filter) {
     return Array.from(PaymentDirector.adapters)
       .map((entry) => entry[1])
-      .filter(filter || (() => true))
-      .sort((entry) => entry.key);
+      .filter(filter || (() => true));
   }
 
   static registerAdapter(adapter) {

@@ -31,12 +31,8 @@ class Stripe extends PaymentAdapter {
     }, null);
   }
 
-  getSecretkey() { // eslint-disable-line
-    return STRIPE_SECRET;
-  }
-
   configurationError() { // eslint-disable-line
-    if (!this.getPublishableApiKey() || !this.getSecretkey()) {
+    if (!this.getPublishableApiKey() || !STRIPE_SECRET) {
       return PaymentError.INCOMPLETE_CONFIGURATION;
     }
     if (this.wrongCredentials) {
@@ -58,7 +54,7 @@ class Stripe extends PaymentAdapter {
     if (!stripeToken)
       throw new Error('You have to provide stripeToken in paymentContext');
     const StripeAPI = require('stripe'); // eslint-disable-line
-    const stripe = StripeAPI(this.getSecretkey());
+    const stripe = StripeAPI(STRIPE_SECRET);
     const pricing = this.context.order.pricing();
     const stripeChargeReceipt = await stripe.charges.create({
       amount: Math.round(pricing.total().amount),

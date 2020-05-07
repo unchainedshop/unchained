@@ -1,5 +1,6 @@
 import { Orders } from 'meteor/unchained:core-orders';
 import { Quotations } from 'meteor/unchained:core-quotations';
+import { Subscriptions } from 'meteor/unchained:core-subscriptions';
 
 export default (role, actions) => {
   const isInLoginMutationResponse = (root) => {
@@ -49,6 +50,7 @@ export default (role, actions) => {
   role.allow(actions.viewUserOrders, isInLoginMutationResponse);
   role.allow(actions.viewUserQuotations, isInLoginMutationResponse);
   role.allow(actions.viewUserPrivateInfos, isInLoginMutationResponse);
+  role.allow(actions.viewUserSubscriptions, isInLoginMutationResponse);
   role.allow(actions.reviewProduct, () => false);
   role.allow(actions.updateProductReview, () => false);
   role.allow(actions.manageProductReviews, () => false);
@@ -60,6 +62,11 @@ export default (role, actions) => {
   role.allow(actions.bookmarkProduct, () => false);
   role.allow(actions.voteProductReview, () => false);
   role.allow(actions.manageWorker, () => false);
+  role.allow(actions.viewSubscriptions, () => false);
+  role.allow(actions.updateSubscription, () => false);
+  role.allow(actions.createSubscription, () => false);
+  role.allow(actions.registerPaymentCredentials, () => false);
+  role.allow(actions.managePaymentCredentials, () => false);
 
   // only allow if otp is provided
   role.allow(
@@ -78,6 +85,16 @@ export default (role, actions) => {
       Quotations.find({
         _id: quotationId,
         quotationNumber: otp,
+      }).count() > 0
+  );
+
+  // only allow if otp is provided
+  role.allow(
+    actions.viewSubscription,
+    (root, { quotationId, otp }) =>
+      Subscriptions.find({
+        _id: quotationId,
+        subscriptionNumber: otp,
       }).count() > 0
   );
 

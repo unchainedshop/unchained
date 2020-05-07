@@ -61,13 +61,16 @@ OrderPayments.helpers({
   charge(paymentContext, order) {
     if (this.status !== OrderPaymentStatus.OPEN) return;
     const provider = this.provider();
-    const arbitraryResponseData = provider.charge({
-      transactionContext: {
-        ...(paymentContext || {}),
-        ...this.context,
+    const arbitraryResponseData = provider.charge(
+      {
+        transactionContext: {
+          ...(paymentContext || {}),
+          ...this.context,
+        },
+        order,
       },
-      order,
-    });
+      order.userId
+    );
     if (arbitraryResponseData) {
       this.setStatus(
         OrderPaymentStatus.PAID,

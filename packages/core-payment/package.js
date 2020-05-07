@@ -6,6 +6,10 @@ Package.describe({
   documentation: 'README.md',
 });
 
+Npm.depends({
+  xml2js: '0.4.23',
+});
+
 Package.onUse((api) => {
   api.versionsFrom('1.9');
   api.use('ecmascript');
