@@ -8,7 +8,7 @@ import FormEditProductSupply from '../../components/products/FormEditProductSupp
 import FormEditProductWarehousing from '../../components/products/FormEditProductWarehousing';
 import FormEditProductPlan from '../../components/products/FormEditProductPlan';
 import ProductVariationList from '../../components/products/ProductVariationList';
-import ProductVariationAssignmentList from '../../components/products/ProductVariationAssignmentList'; // eslint-disable-line
+import ProductVariationAssignmentList from '../../components/products/ProductVariationAssignmentList';
 import ProductMediaList from '../../components/products/ProductMediaList';
 import ProductBundleItemList from '../../components/products/ProductBundleItemList';
 import ProductHeader from '../../components/products/ProductHeader';

@@ -108,7 +108,7 @@ export default compose(
   ),
   withHandlers({
     onSubmitSuccess: () => () => {
-      toast('Country saved', { type: toast.TYPE.SUCCESS }); // eslint-disable-line
+      toast('Country saved', { type: toast.TYPE.SUCCESS });
     },
     removeCountry: ({ router, removeCountry, countryId }) => async (event) => {
       event.preventDefault();

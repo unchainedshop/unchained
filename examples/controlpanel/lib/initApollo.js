@@ -67,10 +67,11 @@ function create(initialState, headersOverride, getToken) {
   const cache = new InMemoryCache({
     fragmentMatcher,
     dataIdFromObject: (result) => {
-      if (result._id && result.__typename) { // eslint-disable-line
-        return `${result.__typename}:${result._id}`; // eslint-disable-line
-      } else if (result.id && result.__typename) { // eslint-disable-line
-        return `${result.__typename}:${result.id}`; // eslint-disable-line
+      if (result._id && result.__typename) {
+        return `${result.__typename}:${result._id}`;
+      }
+      if (result.id && result.__typename) {
+        return `${result.__typename}:${result.id}`;
       }
       return null;
     },

@@ -19,7 +19,6 @@ const googleCache = new LRU({
   maxAge, // 1 second in dev
   stale: true,
   dispose() {
-    // eslint-disable-line
     updateGoogleCache();
   },
 });
@@ -41,7 +40,7 @@ async function downloadSpreadsheet() {
       inventory,
     };
   } catch (err) {
-    log(err, { level: 'error' }); // eslint-disable-line
+    log(err, { level: 'error' });
     throw err;
   }
 }
@@ -54,7 +53,7 @@ updateGoogleCache = async () => {
       return sheet;
     }
   } catch (e) {
-    console.error(e); // eslint-disable-line
+    log(e, { level: 'error' });
   }
   return null;
 };

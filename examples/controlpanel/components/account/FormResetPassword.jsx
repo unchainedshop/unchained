@@ -31,7 +31,7 @@ export default compose(
       type: String,
       label: 'Confirm new password',
       custom() {
-        if (this.obj.password !== this.value) { // eslint-disable-line
+        if (this.obj.password !== this.value) {
           return 'mismatch';
         }
         return null;

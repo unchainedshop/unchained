@@ -16,7 +16,7 @@ const AssortmentMenu = ({ menuItems, changeTab }) => (
 
 export default compose(
   withRouter,
-  withProps(({ router }) => { // eslint-disable-line
+  withProps(({ router }) => {
     const menuItems = [
       {
         name: 'AssortmentTranslation',

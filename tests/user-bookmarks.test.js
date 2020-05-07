@@ -3,7 +3,7 @@ import { SimpleProduct } from './seeds/products';
 import { ADMIN_TOKEN, User, Admin } from './seeds/users';
 
 let connection;
-let db;  // eslint-disable-line
+let db;
 let graphqlFetch;
 
 describe('User Bookmarks', () => {

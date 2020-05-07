@@ -2,13 +2,11 @@ import { setupDatabase, createLoggedInGraphqlFetch } from './helpers';
 import { SimpleOrder, ConfirmedOrder, PendingOrder } from './seeds/orders';
 
 let connection;
-// eslint-disable-next-line no-unused-vars
-let db;
 let graphqlFetch;
 
 describe('Order: Management', () => {
   beforeAll(async () => {
-    [db, connection] = await setupDatabase();
+    [, connection] = await setupDatabase();
     graphqlFetch = await createLoggedInGraphqlFetch();
   });
 

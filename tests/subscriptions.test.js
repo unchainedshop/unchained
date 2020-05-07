@@ -2,13 +2,11 @@ import { setupDatabase, createLoggedInGraphqlFetch } from './helpers';
 import { PlanProduct } from './seeds/products';
 
 let connection;
-// eslint-disable-next-line no-unused-vars
-let db;
 let graphqlFetch;
 
 describe('Subscriptions', () => {
   beforeAll(async () => {
-    [db, connection] = await setupDatabase();
+    [, connection] = await setupDatabase();
     graphqlFetch = await createLoggedInGraphqlFetch();
   });
 

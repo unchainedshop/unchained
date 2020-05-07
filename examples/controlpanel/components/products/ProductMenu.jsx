@@ -117,7 +117,7 @@ export default compose(
       });
     }
     return {
-      typeName: (product && product.__typename) || '', // eslint-disable-line
+      typeName: (product && product.__typename) || '',
       menuItems,
     };
   }),

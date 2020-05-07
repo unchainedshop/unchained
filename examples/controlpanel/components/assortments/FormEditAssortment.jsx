@@ -93,7 +93,7 @@ export default compose(
   withFormModel(({ data: { assortment = {} } }) => assortment),
   withHandlers({
     onSubmitSuccess: () => () => {
-      toast('Assortment saved', { type: toast.TYPE.SUCCESS }); // eslint-disable-line
+      toast('Assortment saved', { type: toast.TYPE.SUCCESS });
     },
     onSubmit: ({ assortmentId, schema, updateAssortment }) => (formData) =>
       updateAssortment({

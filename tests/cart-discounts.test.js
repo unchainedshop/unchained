@@ -3,12 +3,11 @@ import { SimpleOrder, DiscountedDiscount } from './seeds/orders';
 import { USER_TOKEN } from './seeds/users';
 
 let connection;
-let db; // eslint-disable-line
 let graphqlFetch;
 
 describe('Cart: Discounts', () => {
   beforeAll(async () => {
-    [db, connection] = await setupDatabase();
+    [, connection] = await setupDatabase();
     graphqlFetch = await createLoggedInGraphqlFetch(USER_TOKEN);
   });
 

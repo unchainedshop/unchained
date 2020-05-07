@@ -6,7 +6,7 @@ import { SimplePaymentProvider } from './seeds/payments';
 import { SimpleOrder, SimplePosition, SimplePayment } from './seeds/orders';
 
 let connection;
-let db; // eslint-disable-line
+let db;
 let graphqlFetch;
 
 describe('Plugins: Datatrans Payments', () => {
