@@ -7,7 +7,7 @@ import {
 } from '../../errors';
 
 export default async function (root, { subscriptionId }, { userId }) {
-  log('mutation terminateSubscription', { userId });
+  log('mutation activateSubscription', { userId });
   const subscription = Subscriptions.findOne({
     _id: subscriptionId,
   });
@@ -16,8 +16,11 @@ export default async function (root, { subscriptionId }, { userId }) {
       subscriptionId,
     });
   }
-  if (subscription.status === ProductStatus.TERMINATED) {
+  if (
+    subscription.status === ProductStatus.ACTIVE ||
+    subscription.status === ProductStatus.TERMINATED
+  ) {
     throw new SubscriptionWrongStatusError({ status: subscription.status });
   }
-  return subscription.terminate();
+  return subscription.activate();
 }

@@ -113,6 +113,8 @@ import doWork from './doWork';
 import heartbeat from './heartbeat';
 import createSubscription from './createSubscription';
 import terminateSubscription from './terminateSubscription';
+import activateSubscription from './activateSubscription';
+import updateSubscription from './updateSubscription';
 import registerPaymentCredentials from './registerPaymentCredentials';
 import markPaymentCredentialsPreferred from './markPaymentCredentialsPreferred';
 import removePaymentCredentials from './removePaymentCredentials';
@@ -220,6 +222,8 @@ export default {
 
   createSubscription: acl(actions.createSubscription)(createSubscription),
   terminateSubscription: acl(actions.updateSubscription)(terminateSubscription),
+  activateSubscription: acl(actions.updateSubscription)(activateSubscription),
+  updateSubscription: acl(actions.updateSubscription)(updateSubscription),
 
   createPaymentProvider: acl(actions.managePaymentProviders)(
     createPaymentProvider

@@ -170,6 +170,11 @@ export default [
       ): Subscription!
 
       """
+      Activate a subscription
+      """
+      activateSubscription(subscriptionId: ID!): Subscription!
+
+      """
       Terminate an actively running subscription
       """
       terminateSubscription(subscriptionId: ID!): Subscription!
