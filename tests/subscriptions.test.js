@@ -98,7 +98,7 @@ describe('Subscriptions', () => {
     });
   });
   describe('Mutation.createSubscription', () => {
-    it('create a new subscription manually', async () => {
+    it('create a new subscription manually will not activate automatically because of missing order', async () => {
       const { data: { createSubscription } = {} } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation createSubscription($plan: SubscriptionPlanInput!) {
@@ -173,6 +173,13 @@ describe('Subscriptions', () => {
       });
     });
   });
-  describe('Mutation.terminateSubscription', () => {});
-  describe('Mutation.updateProductPlan', () => {});
+  describe('Mutation.terminateSubscription', () => {
+    it.todo('Mutation.terminateSubscription');
+  });
+  describe('Mutation.updateSubscription', () => {
+    it.todo('Mutation.updateSubscription');
+  });
+  describe('Mutation.activateSubscription', () => {
+    it.todo('Mutation.activateSubscription');
+  });
 });

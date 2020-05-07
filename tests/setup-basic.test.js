@@ -89,9 +89,12 @@ describe('basic setup of internationalization and localization context', () => {
       expect(removeCurrency).toMatchObject({
         isoCode: 'LTC',
       });
-      // TODO: Currencies should have delete flags, as orders can depend on them
       expect(await Currencies.countDocuments({ _id: 'ltc' })).toEqual(0);
     });
+
+    it.todo(
+      'Currencies should have delete flags, as orders can depend on them'
+    );
 
     it('query active currencies', async () => {
       await Currencies.insertOne({
@@ -261,9 +264,10 @@ describe('basic setup of internationalization and localization context', () => {
       expect(removeCountry).toMatchObject({
         isoCode: 'US',
       });
-      // TODO: Countries should have delete flags, as orders can depend on them
       expect(await Countries.countDocuments({ _id: 'us' })).toEqual(0);
     });
+
+    it.todo('Countries should have delete flags, as orders can depend on them');
 
     it('query active countries', async () => {
       await Countries.insertOne({
@@ -421,9 +425,10 @@ describe('basic setup of internationalization and localization context', () => {
       expect(removeLanguage).toMatchObject({
         isoCode: 'US',
       });
-      // TODO: Currencies should have delete flags, as orders can depend on them
       expect(await Languages.countDocuments({ _id: 'en' })).toEqual(0);
     });
+
+    it.todo('Languages should have delete flags, as orders can depend on them');
 
     it('query active languages', async () => {
       await Languages.insertOne({

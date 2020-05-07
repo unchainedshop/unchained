@@ -3,6 +3,15 @@ import {
   SubscriptionAdapter,
 } from 'meteor/unchained:core-subscriptions';
 
+const rangeMatcher = (date = new Date()) => {
+  const timestamp = date.getTime();
+  return ({ start, end }) => {
+    const startTimestamp = new Date(start).getTime();
+    const endTimestamp = new Date(end).getTime();
+    return startTimestamp <= timestamp && endTimestamp >= timestamp;
+  };
+};
+
 class LicensedSubscriptions extends SubscriptionAdapter {
   static key = 'shop.unchained.subscriptions.licensed';
 
@@ -18,7 +27,9 @@ class LicensedSubscriptions extends SubscriptionAdapter {
 
   // eslint-disable-next-line
   async isValidForActivation() {
-    return true;
+    const periods = this.context?.subscription?.periods || [];
+    const inRange = periods.find(rangeMatcher());
+    return inRange;
   }
 
   // eslint-disable-next-line
@@ -27,9 +38,15 @@ class LicensedSubscriptions extends SubscriptionAdapter {
   }
 
   // eslint-disable-next-line
-  async shouldTriggerAction({ period, action }) {
-    // Generate at the beginning of the period
-    return period.start.getTime() <= new Date().getTime();
+  async configurationForOrder(context) {
+    const { period } = context;
+    const beginningOfPeriod = period.start.getTime() <= new Date().getTime();
+    if (beginningOfPeriod) {
+      return {
+        context,
+      };
+    }
+    return null;
   }
 }
 

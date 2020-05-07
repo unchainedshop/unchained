@@ -8,10 +8,6 @@ const SubscriptionError = {
   WRONG_CREDENTIALS: 'WRONG_CREDENTIALS',
 };
 
-export const SubscriptionActions = {
-  GENERATE_ORDER: 'GENERATE_ORDER',
-};
-
 const periodForReferenceDate = (
   referenceDate,
   intervalCount = 1,
@@ -87,9 +83,7 @@ class SubscriptionAdapter {
 
   // eslint-disable-next-line
   async configurationForOrder(context) {
-    return {
-      context,
-    };
+    throw new Error(`Not implemented on ${this.constructor.key}`);
   }
 
   constructor(context) {
@@ -148,21 +142,6 @@ class SubscriptionDirector {
   async configurationForOrder(context) {
     const adapter = this.resolveAdapter();
     return adapter.configurationForOrder(context);
-  }
-
-  async orderConfigurationForPeriod(period, context) {
-    const isNewOrderRequired = await this.shouldTriggerAction({
-      ...context,
-      period,
-      action: SubscriptionActions.GENERATE_ORDER,
-    });
-    if (isNewOrderRequired) {
-      return this.configurationForOrder({
-        ...context,
-        period,
-      });
-    }
-    return null;
   }
 
   static adapters = new Map();

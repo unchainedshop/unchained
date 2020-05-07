@@ -135,35 +135,28 @@ Subscriptions.helpers({
     });
     return this;
   },
-  async initializeSubscription(subscriptionContext, orderId) {
+  async initializeSubscription(orderIdForFirstPeriod) {
     const period = await this.director().nextPeriod({
-      subscriptionContext,
-      orderId,
+      orderId: orderIdForFirstPeriod,
     });
-    if (period && (orderId || period.isTrial)) {
-      await Subscriptions.linkOrderToSubscription({
-        orderId,
+    if (period && (orderIdForFirstPeriod || period.isTrial)) {
+      const initialized = await Subscriptions.linkOrderToSubscription({
+        orderId: orderIdForFirstPeriod,
         subscriptionId: this._id,
         period,
       });
+      return initialized.process({ orderIdForFirstPeriod });
     }
+    return this.process({ orderIdForFirstPeriod });
   },
   // eslint-disable-next-line
   async reactivateSubscription() {},
   async process({ subscriptionContext, orderIdForFirstPeriod } = {}) {
-    if (
-      this.status === SubscriptionStatus.INITIAL &&
-      this.nextStatus() === SubscriptionStatus.ACTIVE
-    ) {
-      await this.initializeSubscription(
+    if (this.nextStatus() === SubscriptionStatus.ACTIVE) {
+      await this.reactivateSubscription(
         subscriptionContext,
         orderIdForFirstPeriod
       );
-    } else if (
-      this.status === SubscriptionStatus.PAUSED &&
-      this.nextStatus() === SubscriptionStatus.ACTIVE
-    ) {
-      await this.reactivateSubscription(subscriptionContext);
     }
     return this.setStatus(this.nextStatus(), 'subscription processed');
   },
@@ -254,9 +247,10 @@ Subscriptions.createSubscription = async (
     countryCode,
   });
   const subscription = Subscriptions.findOne({ _id: subscriptionId });
-  return (
-    await subscription.process({ orderIdForFirstPeriod })
-  ).sendStatusToCustomer(options);
+  const initialized = await subscription.initializeSubscription(
+    orderIdForFirstPeriod
+  );
+  return initialized.sendStatusToCustomer(options);
 };
 
 Subscriptions.linkOrderToSubscription = async ({

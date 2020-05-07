@@ -23,10 +23,10 @@ class GenerateSubscriptionOrders extends WorkerPlugin {
             const director = subscription.director();
             const period = await director.nextPeriod(input);
             if (period) {
-              const configuration = await director.orderConfigurationForPeriod(
+              const configuration = await director.configurationForOrder({
+                ...input,
                 period,
-                input
-              );
+              });
               if (configuration) {
                 const order = await subscription.generateOrder(configuration);
                 if (order) {
