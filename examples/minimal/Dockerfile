@@ -1,29 +1,40 @@
-FROM pozylon/meteor-docker-auto as bundler
-ADD . /source
+FROM geoffreybooth/meteor-base:1.10.2 as bundler
+
+# Install app dependencies
+RUN mkdir -p /source
 WORKDIR /source
-ENV METEOR_ALLOW_SUPERUSER true
-RUN meteor npm install && \
-  meteor build --server-only --directory /bundle
+ADD package.json /source/
+ADD package-lock.json /source/
+RUN NODE_ENV=development meteor npm install
 
-FROM node:8-alpine as rebuilder
-RUN apk add --no-cache make gcc g++ python sudo
-RUN adduser -D -u 501 -h /home/meteor meteor
-COPY --from=bundler /bundle /rebuild
-WORKDIR /rebuild/bundle/programs/server
-RUN npm install && npm run install --production
+# Build app
+ADD . /source/
+RUN meteor build --server-only --allow-superuser --directory /
 
-FROM node:8-alpine as runtime
 
-# Unchained specific
-RUN mkdir /unchained-uploads
-RUN chmod 777 /unchained-uploads
+
+FROM node:12 as runtime
+
+RUN useradd -u 501 -d /home/meteor meteor
+
+RUN mkdir /unchained-uploads && \
+  chmod 777 /unchained-uploads
+
 VOLUME /unchained-uploads
 
-RUN adduser -D -u 501 -h /home/meteor meteor
-COPY --from=rebuilder /rebuild/bundle /webapp
+# Install app dependencies
+COPY --from=bundler /bundle/programs/server/package* /webapp/programs/server/
+WORKDIR /webapp/programs/server
+RUN NODE_ENV=production npm install
+
+# Copy the app
+COPY --from=bundler /bundle /webapp/
+RUN NODE_ENV=production npm run install --production
 WORKDIR /webapp
+
 ENV PORT 3000
 ENV NODE_ENV production
+
 EXPOSE 3000
 USER meteor
 CMD node main.js
