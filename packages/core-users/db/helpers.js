@@ -179,7 +179,7 @@ Users.updateLastBillingAddress = ({ userId, lastBillingAddress }) => {
 
 Users.updateLastContact = ({ userId, lastContact }) => {
   const user = Users.findOne({ _id: userId });
-  log('Store Last Contact Information', { userId });
+  log('Store Last Contact', { userId });
   const profile = user.profile || {};
   const isGuest = user.isGuest();
   const modifier = {

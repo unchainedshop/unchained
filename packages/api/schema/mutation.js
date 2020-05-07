@@ -170,6 +170,19 @@ export default [
       ): Subscription!
 
       """
+      Update a subscription
+      """
+      updateSubscription(
+        subscriptionId: ID
+        plan: SubscriptionPlanInput
+        billingAddress: AddressInput
+        contact: ContactInput
+        payment: SubscriptionPaymentInput
+        delivery: SubscriptionDeliveryInput
+        meta: JSON
+      ): Order!
+
+      """
       Activate a subscription
       """
       activateSubscription(subscriptionId: ID!): Subscription!

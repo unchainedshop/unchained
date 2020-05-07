@@ -22,7 +22,7 @@ export default async function (
     order = order.updateBillingAddress(billingAddress);
   }
   if (contact) {
-    order = order.updateContact({ contact });
+    order = order.updateContact(contact);
   }
   if (paymentProviderId) {
     order = order.setPaymentProvider({ paymentProviderId });

@@ -30,16 +30,16 @@ export default async function (
     subscription = subscription.updateBillingAddress(billingAddress);
   }
   if (contact) {
-    subscription = subscription.updateContact({ contact });
+    subscription = subscription.updateContact(contact);
   }
-  // if (plan) {
-  //
-  // }
-  // if (payment) {
-  //   subscription = subscription.setPaymentProvider({ paymentProviderId });
-  // }
-  // if (delivery) {
-  //   subscription = subscription.setDeliveryProvider({ deliveryProviderId });
-  // }
+  if (payment) {
+    subscription = subscription.updatePayment(payment);
+  }
+  if (delivery) {
+    subscription = subscription.updateDelivery(delivery);
+  }
+  if (plan) {
+    subscription = subscription.updatePlan(plan);
+  }
   return subscription;
 }

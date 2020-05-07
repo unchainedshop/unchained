@@ -67,6 +67,36 @@ Subscriptions.helpers({
       context,
     });
   },
+  updateBillingAddress(billingAddress = {}) {
+    return Subscriptions.updateBillingAddress({
+      subscriptionId: this._id,
+      billingAddress,
+    });
+  },
+  updateContact(contact = {}) {
+    return Subscriptions.updateContact({
+      subscriptionId: this._id,
+      contact,
+    });
+  },
+  updateDelivery(delivery = {}) {
+    return Subscriptions.updateDelivery({
+      subscriptionId: this._id,
+      delivery,
+    });
+  },
+  updatePayment(payment = {}) {
+    return Subscriptions.updatePayment({
+      subscriptionId: this._id,
+      payment,
+    });
+  },
+  updatePlan(plan = {}) {
+    return Subscriptions.updatePlan({
+      subscriptionId: this._id,
+      plan,
+    });
+  },
   async terminate({ subscriptionContext } = {}, options) {
     if (this.status === SubscriptionStatus.TERMINATED) return this;
     return (
@@ -247,6 +277,76 @@ Subscriptions.linkOrderToSubscription = async ({
         },
       },
       $set: {
+        updated: new Date(),
+      },
+    }
+  );
+  return Subscriptions.findOne({ _id: subscriptionId });
+};
+
+Subscriptions.updateBillingAddress = ({ billingAddress, subscriptionId }) => {
+  log('Update Billing Address', { subscriptionId });
+  Subscriptions.update(
+    { _id: subscriptionId },
+    {
+      $set: {
+        billingAddress,
+        updated: new Date(),
+      },
+    }
+  );
+  return Subscriptions.findOne({ _id: subscriptionId });
+};
+
+Subscriptions.updateContact = ({ contact, subscriptionId }) => {
+  log('Update Contact', { subscriptionId });
+  Subscriptions.update(
+    { _id: subscriptionId },
+    {
+      $set: {
+        contact,
+        updated: new Date(),
+      },
+    }
+  );
+  return Subscriptions.findOne({ _id: subscriptionId });
+};
+
+Subscriptions.updatePayment = ({ payment, subscriptionId }) => {
+  log('Update Payment', { subscriptionId });
+  Subscriptions.update(
+    { _id: subscriptionId },
+    {
+      $set: {
+        payment,
+        updated: new Date(),
+      },
+    }
+  );
+  return Subscriptions.findOne({ _id: subscriptionId });
+};
+
+Subscriptions.updateDelivery = ({ delivery, subscriptionId }) => {
+  log('Update Delivery', { subscriptionId });
+  Subscriptions.update(
+    { _id: subscriptionId },
+    {
+      $set: {
+        delivery,
+        updated: new Date(),
+      },
+    }
+  );
+  return Subscriptions.findOne({ _id: subscriptionId });
+};
+
+Subscriptions.updatePlan = ({ plan, subscriptionId }) => {
+  log('Update Plan', { subscriptionId });
+  Subscriptions.update(
+    { _id: subscriptionId },
+    {
+      $set: {
+        plan,
         updated: new Date(),
       },
     }

@@ -303,20 +303,12 @@ Orders.helpers({
     return OrderPayments.findOne({ _id: this.paymentId });
   },
   updateBillingAddress(billingAddress = {}) {
-    Users.updateLastBillingAddress({
-      userId: this.userId,
-      lastBillingAddress: billingAddress,
-    });
     return Orders.updateBillingAddress({
       orderId: this._id,
       billingAddress,
     });
   },
-  updateContact({ contact }) {
-    Users.updateLastContact({
-      userId: this.userId,
-      lastContact: contact,
-    });
+  updateContact(contact = {}) {
     return Orders.updateContact({
       orderId: this._id,
       contact,
@@ -467,6 +459,7 @@ Orders.helpers({
     if (this.nextStatus() === OrderStatus.PENDING) {
       // auto charge during transition to pending
       this.payment().charge(paymentContext, this);
+      this.storeLastUserData();
     }
 
     if (this.nextStatus() === OrderStatus.CONFIRMED) {
@@ -515,6 +508,16 @@ Orders.helpers({
       }
     }
     return status;
+  },
+  storeLastUserData() {
+    Users.updateLastBillingAddress({
+      userId: this.userId,
+      lastBillingAddress: this.billingAddress,
+    });
+    Users.updateLastContact({
+      userId: this.userId,
+      lastContact: this.contact,
+    });
   },
   isValidForCheckout() {
     return this.missingInputDataForCheckout().length === 0;
@@ -674,7 +677,7 @@ Orders.updateBillingAddress = ({ billingAddress, orderId }) => {
 };
 
 Orders.updateContact = ({ contact, orderId }) => {
-  log('Update Contact Information', { orderId });
+  log('Update Contact', { orderId });
   Orders.update(
     { _id: orderId },
     {
