@@ -31,7 +31,7 @@
   },
   "dependencies": {
     "@babel/runtime": "^7.9.6",
-    "@unchainedshop/controlpanel": "^0.48.0",
+    "@unchainedshop/controlpanel": "^0.48.1",
     "apollo-server-express": "^2.13.0",
     "bcrypt": "^4.0.1",
     "braintree": "^2.22.0",
