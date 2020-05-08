@@ -27,12 +27,12 @@ const isEmailInterceptionEnabled = (options) => {
 
 export const queueWorkers = [];
 
-export const startPlatform = (options = {}) => {
-  setupDatabase(options);
+export const startPlatform = ({ modules, typeDefs, ...options } = {}) => {
+  setupDatabase({ modules, ...options });
   setupAccounts(options);
   startAPI({
-    options,
-    typeDefs: [...workerTypeDefs(), ...(options?.typeDefs || [])],
+    ...options,
+    typeDefs: [...workerTypeDefs(), ...(typeDefs || [])],
   });
   if (isEmailInterceptionEnabled(options)) interceptEmails(options);
   if (isWorkQueueEnabled(options)) {
