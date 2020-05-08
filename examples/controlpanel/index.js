@@ -4,8 +4,8 @@ const path = `${__dirname}/out`;
 const serve = serveStatic(path, {
   index: ['index.html'],
   extensions: ['html'],
-  redirect: false,
-  fallthrough: false,
+  redirect: true,
+  fallthrough: true,
 });
 
 module.exports.embedControlpanelInMeteorWebApp = (WebApp) => {
