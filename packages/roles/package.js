@@ -1,13 +1,13 @@
 Package.describe({
   name: 'unchained:roles',
-  version: '0.47.0',
+  version: '0.48.0',
   summary: 'Unchained Engine: Roles',
   git: 'https://github.com/unchainedshop/unchained',
   documentation: 'README.md',
 });
 
 Package.onUse((api) => {
-  api.versionsFrom('1.9');
+  api.versionsFrom('1.10');
 
   api.use([
     'meteor-base',
