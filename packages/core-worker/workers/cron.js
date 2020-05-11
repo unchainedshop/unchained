@@ -15,6 +15,8 @@ SyncedCron.config({
   utc: true,
 });
 
+export { SyncedCron };
+
 class CronWorker extends BaseWorker {
   static key = 'shop.unchained.worker.cron';
 
