@@ -11,13 +11,13 @@ export { configureAccountsEmailTemplates, buildContext, createFixtures };
 
 const {
   NODE_ENV,
-  UNCHAINED_DISABLE_EMAIL_INTERCEPTION,
-  UNCHAINED_DISABLE_WORKER,
+  UNCHAINED_DISABLE_EMAIL_INTERCEPTION = false,
+  UNCHAINED_DISABLE_WORKER = false,
 } = process.env;
 
 const isWorkQueueEnabled = (options) => {
   if (options?.disableWorker) return false;
-  return NODE_ENV !== 'production' && !UNCHAINED_DISABLE_WORKER;
+  return !UNCHAINED_DISABLE_WORKER;
 };
 
 const isEmailInterceptionEnabled = (options) => {
