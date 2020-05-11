@@ -1,5 +1,6 @@
 import { WorkerDirector } from 'meteor/unchained:core-worker';
 import GenerateSubscriptionOrders from './worker/generate-orders';
+import settings from './settings';
 
 import './db/subscriptions/helpers';
 import './db/subscriptions/factories';
@@ -9,12 +10,13 @@ export * from './director';
 export * from './db/subscriptions/collections';
 export * from './db/subscriptions/schema';
 
-export default () => {
+export default (options) => {
   // configure
-  WorkerDirector.configureAutoscheduling(GenerateSubscriptionOrders, {
-    cronText: 'every 59 minutes',
-    input: () => {
-      return {};
-    },
-  });
+  settings.load(options);
+  if (settings.autoSchedulingCronText) {
+    WorkerDirector.configureAutoscheduling(GenerateSubscriptionOrders, {
+      cronText: settings.autoSchedulingCronText,
+      input: settings.autoSchedulingInput,
+    });
+  }
 };
