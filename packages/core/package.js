@@ -1,6 +1,6 @@
 Package.describe({
   name: 'unchained:core',
-  version: '0.48.0',
+  version: '0.48.2',
   summary: 'Unchained Engine Core: Base Layer',
   git: 'https://github.com/unchainedshop/unchained',
   documentation: 'README.md',

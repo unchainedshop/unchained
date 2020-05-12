@@ -38,6 +38,6 @@ Countries.resolveDefaultCurrencyCode = ({ isoCode }) => {
   const country = Countries.findOne({ isoCode });
   const currency = country && country.defaultCurrency();
   const liveCurrencyCode = (currency && currency.isoCode) || CURRENCY || 'CHF';
-  currencyCodeCache.set(liveCurrencyCode);
+  currencyCodeCache.set(isoCode, liveCurrencyCode);
   return liveCurrencyCode;
 };

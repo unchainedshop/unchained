@@ -2,8 +2,16 @@ import { log } from 'meteor/unchained:core-logger';
 import { Countries } from 'meteor/unchained:core-countries';
 import { Locales, Locale } from 'locale';
 import { Languages } from 'meteor/unchained:core-languages';
+import LRU from 'lru-cache';
 
-const { LANG = 'de', COUNTRY = 'CH' } = process.env;
+const { LANG = 'de', COUNTRY = 'CH', NODE_ENV } = process.env;
+
+const maxAge = NODE_ENV === 'production' ? 1000 * 60 : 1000 * 1; // minute or second
+
+const localeContextCache = new LRU({
+  max: 500,
+  maxAge,
+});
 
 export const systemLocale = new Locale(`${LANG}-${COUNTRY}`);
 
@@ -36,6 +44,10 @@ export const resolveBestCountry = (localeCountry, shopCountry, countries) => {
 };
 
 export const buildLocaleContext = (req) => {
+  const cacheKey = `${req.headers['accept-language']}:${req.headers['x-shop-country']}`;
+  const cachedContext = localeContextCache.get(cacheKey);
+  if (cachedContext) return cachedContext;
+
   // return the parsed locale by bcp47 and
   // return the best resolved normalized locale by locale according to system-wide configuration
   // else fallback to base language & base country
@@ -74,8 +86,10 @@ export const buildLocaleContext = (req) => {
     `Locale Context: Resolved ${localeContext.normalized} ${countryContext}`,
     { level: 'debug' }
   );
-  return {
+  const newContext = {
     localeContext,
     countryContext,
   };
+  localeContextCache.set(cacheKey, newContext);
+  return newContext;
 };
