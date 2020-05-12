@@ -35,7 +35,7 @@ id-map@1.1.0
 inter-process-messaging@0.1.1
 littledata:synced-cron@1.5.1
 livedata@1.0.18
-local-test:unchained:platform@0.48.1
+local-test:unchained:platform@0.48.2
 localstorage@1.2.0
 logging@1.1.20
 meteor@1.9.3
@@ -92,7 +92,7 @@ unchained:core-subscriptions@0.48.0
 unchained:core-users@0.48.0
 unchained:core-warehousing@0.48.0
 unchained:core-worker@0.48.0
-unchained:platform@0.48.1
+unchained:platform@0.48.2
 unchained:roles@0.48.0
 unchained:utils@0.48.0
 underscore@1.0.10

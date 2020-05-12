@@ -89,11 +89,11 @@ unchained:core-pricing@0.48.0
 unchained:core-products@0.48.0
 unchained:core-quotations@0.48.0
 unchained:core-settings@0.48.0
-unchained:core-subscriptions@0.48.0
+unchained:core-subscriptions@0.48.2
 unchained:core-users@0.48.0
 unchained:core-warehousing@0.48.0
-unchained:core-worker@0.48.0
-unchained:platform@0.48.1
+unchained:core-worker@0.48.2
+unchained:platform@0.48.2
 unchained:roles@0.48.0
 unchained:utils@0.48.0
 underscore@1.0.10
