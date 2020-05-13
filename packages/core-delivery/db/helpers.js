@@ -135,7 +135,10 @@ DeliveryProviders.findProviders = ({ type } = {}, ...options) =>
     ...options
   ).fetch();
 
-DeliveryProviders.findSupported = ({ order }, ...options) =>
-  DeliveryProviders.findProviders({}, ...options)
-    .filter((deliveryProvider) => deliveryProvider.isActive(order))
-    .sort(settings.sortProviders({ order }));
+DeliveryProviders.findSupported = ({ order }, ...options) => {
+  const providers = DeliveryProviders.findProviders(
+    {},
+    ...options
+  ).filter((deliveryProvider) => deliveryProvider.isActive(order));
+  return settings.filterSupportedProviders({ providers, order });
+};
