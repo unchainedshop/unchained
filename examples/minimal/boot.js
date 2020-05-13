@@ -92,11 +92,17 @@ Meteor.startup(() => {
   startPlatform({
     introspection: true,
     modules: {
-      delivery: {
-        sortProviders: () => (left, right) => {
-          return (
-            new Date(left.created).getTime() - new Date(right.created).getTime()
-          );
+      payment: {
+        filterSupportedProviders: ({ providers }) => {
+          return providers.sort((left, right) => {
+            if (left.adapterKey < right.adapterKey) {
+              return -1;
+            }
+            if (left.adapterKey > right.adapterKey) {
+              return 1;
+            }
+            return 0;
+          });
         },
       },
     },

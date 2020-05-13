@@ -83,6 +83,11 @@ class PaymentDirector {
 
   interface(context) {
     const Adapter = this.interfaceClass();
+    if (!Adapter) {
+      throw new Error(
+        `Payment Plugin ${this.provider.adapterKey} not available`
+      );
+    }
     return new Adapter(this.provider.configuration, context);
   }
 

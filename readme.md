@@ -181,17 +181,25 @@ Custom sorting of delivery and payment providers:
 const options = {
   modules: {
     delivery: {
-      sortProviders: () => (left, right) => {
-        return (
-          new Date(left.updated).getTime() - new Date(right.updated).getTime()
-        );
+      filterSupportedProviders: ({ order, providers }) => {
+        return providers
+          .sort(
+            (left, right) => {
+              return new Date(left.created).getTime() - new Date(right.created).getTime();
+            }
+            )
+          .map(({ _id }) => _id);
       },
     },
     payment: {
-      sortProviders: () => (left, right) => {
-        return (
-          new Date(left.updated).getTime() - new Date(right.updated).getTime()
-        );
+      filterSupportedProviders: ({ order, providers }) => {
+        return providers
+          .sort(
+            (left, right) => {
+              return new Date(left.created).getTime() - new Date(right.created).getTime();
+            }
+            )
+          .map(({ _id }) => _id);
       },
     },
   }
