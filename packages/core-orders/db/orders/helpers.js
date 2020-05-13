@@ -194,6 +194,11 @@ Orders.helpers({
       code,
     });
   },
+  async initProviders() {
+    return this.initPreferredDeliveryProvider().then((order) =>
+      order.initPreferredPaymentProvider()
+    );
+  },
   async initPreferredPaymentProvider() {
     const supportedPaymentProviders = PaymentProviders.findSupported({
       order: this,
@@ -201,7 +206,17 @@ Orders.helpers({
     const paymentCredentials = await this.user().paymentCredentials({
       isPreferred: true,
     });
-    if (supportedPaymentProviders.length) {
+
+    const paymentProviderId = this.payment()?.paymentProviderId;
+    const isAlreadyInitializedWithSupportedProvider = supportedPaymentProviders.some(
+      (provider) => {
+        return provider._id === paymentProviderId;
+      }
+    );
+    if (
+      supportedPaymentProviders.length > 0 &&
+      !isAlreadyInitializedWithSupportedProvider
+    ) {
       if (paymentCredentials.length) {
         const foundSupportedPreferredProvider = supportedPaymentProviders.find(
           (supportedPaymentProvider) => {
@@ -225,11 +240,22 @@ Orders.helpers({
     }
     return this;
   },
-  initPreferredDeliveryProvider() {
+  async initPreferredDeliveryProvider() {
     const supportedDeliveryProviders = DeliveryProviders.findSupported({
       order: this,
     });
-    if (supportedDeliveryProviders.length > 0) {
+
+    const deliveryProviderId = this.delivery()?.deliveryProviderId;
+    const isAlreadyInitializedWithSupportedProvider = supportedDeliveryProviders.some(
+      (provider) => {
+        return provider._id === deliveryProviderId;
+      }
+    );
+
+    if (
+      supportedDeliveryProviders.length > 0 &&
+      !isAlreadyInitializedWithSupportedProvider
+    ) {
       return this.setDeliveryProvider({
         deliveryProviderId: supportedDeliveryProviders[0]._id,
       });
@@ -658,9 +684,7 @@ Orders.createOrder = async ({
     currency,
     countryCode,
   });
-  return Orders.findOne({ _id: orderId })
-    .initPreferredDeliveryProvider()
-    .initPreferredPaymentProvider();
+  return Orders.findOne({ _id: orderId }).initProviders();
 };
 
 Orders.updateBillingAddress = ({ billingAddress, orderId }) => {
@@ -787,7 +811,7 @@ Orders.updateStatus = ({ status, orderId, info = '' }) => {
 Orders.updateCalculation = ({ orderId }) => {
   OrderDiscounts.updateDiscounts({ orderId });
 
-  const order = Orders.findOne({ _id: orderId });
+  const order = Promise.await(Orders.findOne({ _id: orderId }).initProviders());
   const items = order.items();
 
   const updatedItems = items.map((item) => item.updateCalculation());
@@ -859,4 +883,15 @@ Orders.migrateCart = async ({
   Orders.updateCalculation({
     orderId: toCart._id,
   });
+};
+
+Orders.invalidateProviders = () => {
+  log('Orders: Start invalidating cart providers', { level: 'verbose' });
+  Orders.find({
+    status: { $eq: OrderStatus.OPEN },
+  })
+    .fetch()
+    .forEach((order) => {
+      order.initProviders();
+    });
 };

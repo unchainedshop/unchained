@@ -84,9 +84,9 @@ export class DeliveryDirector {
     return new Adapter(this.provider.configuration, context);
   }
 
-  configurationError() {
+  configurationError(context) {
     try {
-      const adapter = this.interface();
+      const adapter = this.interface(context);
       const error = adapter.configurationError();
       return error;
     } catch (error) {
