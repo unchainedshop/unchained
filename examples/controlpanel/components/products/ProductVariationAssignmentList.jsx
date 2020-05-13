@@ -110,7 +110,7 @@ export default compose(
               }
             }
           }
-          assignments {
+          assignments(includeInactive: true) {
             _id
             vectors {
               _id
