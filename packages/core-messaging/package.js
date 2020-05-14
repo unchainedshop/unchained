@@ -10,6 +10,7 @@ Package.onUse((api) => {
   api.versionsFrom('1.10');
   api.use('ecmascript');
   api.use('unchained:core-logger@0.48.0');
+  api.use('unchained:core-worker@0.48.0');
 
   api.mainModule('messaging.js', 'server');
 });
