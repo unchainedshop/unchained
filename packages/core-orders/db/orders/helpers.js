@@ -425,6 +425,7 @@ Orders.helpers({
       type: 'MESSAGE',
       input: {
         language,
+        template: 'ORDER_CONFIRMATION',
         orderId: this._id,
       },
     });

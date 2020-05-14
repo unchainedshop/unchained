@@ -1,7 +1,4 @@
-import {
-  MessagingDirector,
-  MessagingTemplate,
-} from 'meteor/unchained:core-messaging';
+import { MessagingDirector } from 'meteor/unchained:core-messaging';
 import { Orders } from 'meteor/unchained:core-orders';
 
 const {
@@ -63,7 +60,7 @@ const texts = {
 };
 
 MessagingDirector.configureTemplate(
-  MessagingTemplate.ORDER_CONFIRMATION,
+  'ORDER_CONFIRMATION',
   ({ orderId, language }) => {
     const order = Orders.findOne({ _id: orderId });
     const attachments = [];

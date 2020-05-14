@@ -13,7 +13,6 @@ import 'meteor/unchained:core-warehousing/plugins/google-sheets';
 import 'meteor/unchained:core-discounting/plugins/half-price-manual';
 import 'meteor/unchained:core-discounting/plugins/100-off';
 import 'meteor/unchained:core-documents/plugins/smallinvoice';
-import 'meteor/unchained:core-messaging/plugins/local-mail';
 import 'meteor/unchained:core-payment/plugins/invoice';
 import 'meteor/unchained:core-payment/plugins/invoice-prepaid';
 import 'meteor/unchained:core-payment/plugins/datatrans';
@@ -32,8 +31,7 @@ import 'meteor/unchained:core-worker/plugins/external';
 import 'meteor/unchained:core-worker/plugins/http-request';
 import 'meteor/unchained:core-worker/plugins/heartbeat';
 
-// import configureEmailTemplates from './templates';
-// import './templates';
+import './templates';
 
 const logger = console;
 

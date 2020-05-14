@@ -18,6 +18,4 @@ class Message extends WorkerPlugin {
   }
 }
 
-WorkerDirector.registerPlugin(Message);
-
 export default Message;
