@@ -4,14 +4,14 @@ import WorkerPlugin from './base';
 
 const logger = createLogger('unchained:core-worker');
 
-class SendEmailWorkerPlugin extends WorkerPlugin {
+class EmailWorkerPlugin extends WorkerPlugin {
   static key = 'shop.unchained.worker-plugin.email';
 
   static label = 'Send a Mail through Meteor Mailer';
 
   static version = '1.0';
 
-  static type = 'SEND_EMAIL';
+  static type = 'EMAIL';
 
   static async doWork({ from, to, subject, ...rest } = {}) {
     logger.debug(`${this.key} -> doWork: ${from} -> ${to} (${subject})`);
@@ -21,7 +21,7 @@ class SendEmailWorkerPlugin extends WorkerPlugin {
         success: false,
         error: {
           name: 'RECIPIENT_REQUIRED',
-          message: 'SEND_EMAIL requires a to',
+          message: 'EMAIL requires a to',
         },
       };
     }
@@ -48,6 +48,6 @@ class SendEmailWorkerPlugin extends WorkerPlugin {
   }
 }
 
-WorkerDirector.registerPlugin(SendEmailWorkerPlugin);
+WorkerDirector.registerPlugin(EmailWorkerPlugin);
 
-export default SendEmailWorkerPlugin;
+export default EmailWorkerPlugin;

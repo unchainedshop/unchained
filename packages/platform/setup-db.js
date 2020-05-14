@@ -16,6 +16,8 @@ import configureAssortments from 'meteor/unchained:core-assortments';
 import configureFilters from 'meteor/unchained:core-filters';
 import configureSubscriptions from 'meteor/unchained:core-subscriptions';
 import configureWorker from 'meteor/unchained:core-worker';
+import configureMessaging from 'meteor/unchained:core-messaging';
+
 import createFixtures from './fixtures';
 
 export { createFixtures };
@@ -25,6 +27,7 @@ export default ({ modules = {} } = {}) => {
 
   configureLogger(modules.logger);
   configureWorker(modules.worker);
+  configureMessaging(modules.messaging);
   configureCurrencies(modules.currencies);
   configureCountries(modules.countries);
   configureLanguages(modules.languages);

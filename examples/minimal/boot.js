@@ -30,6 +30,7 @@ import 'meteor/unchained:core-subscriptions/plugins/licensed';
 import 'meteor/unchained:core-worker/plugins/external';
 import 'meteor/unchained:core-worker/plugins/http-request';
 import 'meteor/unchained:core-worker/plugins/heartbeat';
+import 'meteor/unchained:core-worker/plugins/email';
 
 import './templates';
 

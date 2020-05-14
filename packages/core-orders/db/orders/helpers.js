@@ -386,13 +386,13 @@ Orders.helpers({
       throw new Error(errors[0]);
     }
     const lastUserLanguage = this.user().language();
-    const language =
+    const locale =
       (localeContext && localeContext.normalized) ||
       (lastUserLanguage && lastUserLanguage.isoCode);
 
     return this.updateContext(orderContext)
       .processOrder({ paymentContext, deliveryContext })
-      .sendOrderConfirmationToCustomer({ language });
+      .sendOrderConfirmationToCustomer({ locale });
   },
   confirm(
     { orderContext, paymentContext, deliveryContext },
@@ -400,13 +400,13 @@ Orders.helpers({
   ) {
     if (this.status !== OrderStatus.PENDING) return this;
     const lastUserLanguage = this.user().language();
-    const language =
+    const locale =
       (localeContext && localeContext.normalized) ||
       (lastUserLanguage && lastUserLanguage.isoCode);
     return this.updateContext(orderContext)
       .setStatus(OrderStatus.CONFIRMED, 'confirmed manually')
       .processOrder({ paymentContext, deliveryContext })
-      .sendOrderConfirmationToCustomer({ language });
+      .sendOrderConfirmationToCustomer({ locale });
   },
   missingInputDataForCheckout() {
     const errors = [];
@@ -420,11 +420,11 @@ Orders.helpers({
     if (!this.payment()) errors.push('No payment provider selected');
     return errors;
   },
-  sendOrderConfirmationToCustomer({ language }) {
+  sendOrderConfirmationToCustomer({ locale }) {
     WorkerDirector.addWork({
       type: 'MESSAGE',
       input: {
-        language,
+        locale,
         template: 'ORDER_CONFIRMATION',
         orderId: this._id,
       },

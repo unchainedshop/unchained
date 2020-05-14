@@ -61,7 +61,8 @@ const texts = {
 
 MessagingDirector.configureTemplate(
   'ORDER_CONFIRMATION',
-  ({ orderId, language }) => {
+  ({ orderId, locale }) => {
+    const language = locale.split('_')[0];
     const order = Orders.findOne({ _id: orderId });
     const attachments = [];
     // TODO: If order.status is PENDING, we should only send the user
