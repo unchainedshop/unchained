@@ -32,7 +32,8 @@ import 'meteor/unchained:core-worker/plugins/external';
 import 'meteor/unchained:core-worker/plugins/http-request';
 import 'meteor/unchained:core-worker/plugins/heartbeat';
 
-import configureEmailTemplates from './templates';
+// import configureEmailTemplates from './templates';
+// import './templates';
 
 const logger = console;
 
@@ -88,7 +89,6 @@ const initializeDatabase = () => {
 };
 
 Meteor.startup(() => {
-  configureEmailTemplates();
   startPlatform({
     introspection: true,
     modules: {

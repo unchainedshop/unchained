@@ -1,7 +1,6 @@
 import Hashids from 'hashids/cjs';
 import 'meteor/dburles:collection-helpers';
 import { Promise } from 'meteor/promise';
-import { getFallbackLocale } from 'meteor/unchained:core';
 import { objectInvert } from 'meteor/unchained:utils';
 import { DeliveryProviders } from 'meteor/unchained:core-delivery';
 import { PaymentProviders } from 'meteor/unchained:core-payment';
@@ -12,10 +11,7 @@ import {
 import { Countries } from 'meteor/unchained:core-countries';
 import { Users } from 'meteor/unchained:core-users';
 import { Logs, log } from 'meteor/unchained:core-logger';
-import {
-  MessagingDirector,
-  MessagingType,
-} from 'meteor/unchained:core-messaging';
+import { WorkerDirector } from 'meteor/unchained:core-worker';
 import {
   OrderPricingDirector,
   OrderPricingSheet,
@@ -27,8 +23,6 @@ import { OrderDiscounts } from '../order-discounts/collections';
 import { OrderPayments } from '../order-payments/collections';
 import { OrderDocuments } from '../order-documents/collections';
 import { OrderPositions } from '../order-positions/collections';
-
-const { EMAIL_FROM, UI_ENDPOINT } = process.env;
 
 Subscriptions.generateFromCheckout = async ({ items, order, ...context }) => {
   const payment = order.payment();
@@ -427,56 +421,11 @@ Orders.helpers({
     return errors;
   },
   sendOrderConfirmationToCustomer({ language }) {
-    const attachments = [];
-    // TODO: If this.status is PENDING, we should only send the user
-    // a notice that we have received the order but not confirming it
-    const confirmation = this.document({ type: 'ORDER_CONFIRMATION' });
-    if (confirmation) attachments.push(confirmation);
-    if (this.payment().isBlockingOrderFullfillment()) {
-      const invoice = this.document({ type: 'INVOICE' });
-      if (invoice) attachments.push(invoice);
-    } else {
-      const receipt = this.document({ type: 'RECEIPT' });
-      if (receipt) attachments.push(receipt);
-    }
-    const user = this.user();
-    const locale =
-      (user && user.lastLogin && user.lastLogin.locale) ||
-      getFallbackLocale().normalized;
-    const director = new MessagingDirector({
-      locale,
-      order: this,
-      type: MessagingType.EMAIL,
-    });
-    const format = (price) => {
-      const fixedPrice = price / 100;
-      return `${this.currency} ${fixedPrice}`;
-    };
-    director.sendMessage({
-      template: 'shop.unchained.orders.confirmation',
-      attachments,
-      meta: {
-        mailPrefix: `${this.orderNumber}_`,
-        from: EMAIL_FROM,
-        to: this.contact.emailAddress,
-        url: `${UI_ENDPOINT}/order?_id=${this._id}&otp=${this.orderNumber}`,
-        summary: this.pricing().formattedSummary(format),
-        positions: this.items().map((item) => {
-          const productTexts = item.product().getLocalizedTexts(language);
-          const originalProductTexts = item
-            .originalProduct()
-            .getLocalizedTexts(language);
-          const product = productTexts && productTexts.title; // deprected
-          const total = format(item.pricing().sum());
-          const { quantity } = item;
-          return {
-            quantity,
-            product,
-            productTexts,
-            originalProductTexts,
-            total,
-          };
-        }),
+    WorkerDirector.addWork({
+      type: 'MESSAGE',
+      input: {
+        language,
+        orderId: this._id,
       },
     });
     return this;
