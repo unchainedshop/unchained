@@ -21,7 +21,16 @@ class Message extends WorkerPlugin {
 
       if (workConfigurations.length === 1) {
         // just forward
-        return WorkerDirector.doWork(workConfigurations[0]);
+        const wrappedConfiguration = workConfigurations[0];
+        const wrappedResult = await WorkerDirector.doWork(wrappedConfiguration);
+        return {
+          success: wrappedResult.success,
+          result: {
+            wrappedConfiguration,
+            ...wrappedResult.result,
+          },
+          error: wrappedResult.error,
+        };
       }
       if (workConfigurations.length > 0) {
         // split to many
