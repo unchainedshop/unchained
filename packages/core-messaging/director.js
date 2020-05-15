@@ -1,107 +1,54 @@
-import { log } from 'meteor/unchained:core-logger';
-import { defaultEmailResolver, defaultSMSResolver } from './template-resolvers';
+import { createLogger } from 'meteor/unchained:core-logger';
+import mjml from 'mjml';
+import mustache from 'mustache';
 
-const { LANG } = process.env;
-
-const MessagingType = {
-  EMAIL: 'EMAIL',
-  SMS: 'SMS',
-};
-
-class MessagingAdapter {
-  static key = '';
-
-  static label = '';
-
-  static version = '';
-
-  static isActivatedFor() {
-    return false;
-  }
-
-  constructor({ context, resolver }) {
-    this.context = context;
-    this.resolver = resolver;
-  }
-
-  sendMessage() { // eslint-disable-line
-    return null;
-  }
-
-  log(message, { level = 'debug', ...options } = {}) { // eslint-disable-line
-    return log(message, { level, ...options });
-  }
-}
+const logger = createLogger('unchained:core-messaging');
 
 class MessagingDirector {
-  constructor(context) {
-    this.context = {
-      locale: LANG,
-      ...context,
-    };
-  }
-
-  /* FIXME: most sendMessage calls use a `meta` property, that is rather confusing, because
-  you already have order.meta, etc. Maybe just `data` ?
-  */
-  sendMessage(options) {
-    return this.execute('sendMessage', options);
-  }
-
-  execute(name, options) {
-    return this.constructor
-      .sortedAdapters()
-      .filter((AdapterClass) => {
-        const activated = AdapterClass.isActivatedFor(this.context);
-        if (!activated) {
-          log(
-            `${this.constructor.name} -> ${AdapterClass.key} (${AdapterClass.version}) skipped`,
-            {
-              level: 'warn',
-            }
-          );
+  static renderToText(template, data) {
+    try {
+      const rendered = mustache.render(template, data);
+      return rendered;
+    } catch (e) {
+      if (e.getMessages) {
+        const warning = e.getMessages();
+        if (warning) {
+          logger.warn(warning);
         }
-        return activated;
-      })
-      .map((AdapterClass) => {
-        const concreteAdapter = new AdapterClass({
-          context: this.context,
-          resolver: this.constructor.resolvers.get(this.context.type),
-        });
-        log(
-          `${this.constructor.name} -> via ${AdapterClass.key} -> Execute '${name}'`
-        );
-        return concreteAdapter[name](options);
-      }, []);
+        return null;
+      }
+      throw e;
+    }
   }
 
-  static adapters = new Map();
+  static renderMjmlToHtml(template, data) {
+    try {
+      const rendered = mustache.render(template, data);
+      const { html, errors } = mjml(rendered, { minify: true });
+      if (errors && errors.length) logger.warn(JSON.stringify(errors));
+      return html;
+    } catch (e) {
+      if (e.getMessages) {
+        const warning = e.getMessages();
+        if (warning) {
+          logger.warn(warning);
+        }
+        return null;
+      }
+      throw e;
+    }
+  }
 
   static resolvers = new Map();
 
-  static sortedAdapters() {
-    return Array.from(this.adapters)
-      .map((entry) => entry[1])
-      .sort((left, right) => left.key - right.key);
-  }
-
-  static registerAdapter(adapter) {
-    log(
-      `${this.name} -> Registered ${adapter.key} ${adapter.version} (${adapter.label})`
+  static configureTemplate(template, resolver) {
+    logger.info(
+      `${this.name} -> Registered custom template resolver for ${template}`
     );
-    this.adapters.set(adapter.key, adapter);
-  }
-
-  static setTemplateResolver(type, resolver) {
-    log(`${this.name} -> Registered custom template resolver for ${type}`);
-    this.resolvers.set(type, resolver);
+    this.resolvers.set(template, resolver);
   }
 }
 
-MessagingDirector.setTemplateResolver(
-  MessagingType.EMAIL,
-  defaultEmailResolver
-);
-MessagingDirector.setTemplateResolver(MessagingType.SMS, defaultSMSResolver);
+export default MessagingDirector;
 
-export { MessagingType, MessagingDirector, MessagingAdapter };
+export { MessagingDirector };

@@ -25,7 +25,6 @@ Package.onUse((api) => {
   api.use('unchained:core-documents@0.48.0');
   api.use('unchained:core-languages@0.48.0');
   api.use('unchained:core-logger@0.48.0');
-  api.use('unchained:core-messaging@0.48.0');
   api.use('unchained:core-quotations@0.48.0');
   api.use('unchained:core-orders@0.48.0');
   api.use('unchained:core-payment@0.48.0');

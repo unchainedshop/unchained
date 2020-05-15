@@ -36,7 +36,11 @@ Bookmarks.findBookmarks = ({ userId, productId } = {}) =>
     ...(productId ? { productId } : {}),
   }).fetch();
 
-Bookmarks.migrateBookmarks = ({ fromUserId, toUserId, mergeBookmarks }) => {
+Bookmarks.migrateBookmarks = async ({
+  fromUserId,
+  toUserId,
+  mergeBookmarks,
+}) => {
   const fromBookmarks = Users.findOne({ _id: fromUserId }).bookmarks();
 
   if (!fromBookmarks) {

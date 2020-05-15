@@ -20,6 +20,7 @@ Package.onUse((api) => {
   api.use('unchained:core-logger@0.48.0');
   api.use('unchained:core-pricing@0.48.0');
   api.use('unchained:core-countries@0.48.0');
+  api.use('unchained:core-worker@0.48.0');
 
   api.mainModule('delivery.js', 'server');
 });
