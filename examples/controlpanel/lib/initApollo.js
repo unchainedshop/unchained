@@ -6,7 +6,6 @@ import {
 import { onError } from 'apollo-link-error';
 import { ApolloLink } from 'apollo-link';
 import { toast } from 'react-toastify';
-import fetch from 'isomorphic-unfetch';
 import getConfig from 'next/config';
 import { createUploadLink } from 'apollo-upload-client';
 import introspectionQueryResultData from '../schema.json';
@@ -14,11 +13,6 @@ import introspectionQueryResultData from '../schema.json';
 const { publicRuntimeConfig } = getConfig() || {};
 
 let apolloClient = null;
-
-// Polyfill fetch() on the server (used by apollo-client)
-if (!process.browser) {
-  global.fetch = fetch;
-}
 
 const fragmentMatcher = new IntrospectionFragmentMatcher({
   introspectionQueryResultData,
