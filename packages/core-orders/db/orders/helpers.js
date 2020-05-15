@@ -421,8 +421,10 @@ Orders.helpers({
     return errors;
   },
   sendOrderConfirmationToCustomer({ locale }) {
+    // send message with high priority
     WorkerDirector.addWork({
       type: 'MESSAGE',
+      retries: 0,
       input: {
         locale,
         template: 'ORDER_CONFIRMATION',
