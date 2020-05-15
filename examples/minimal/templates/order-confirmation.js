@@ -80,7 +80,8 @@ MessagingDirector.configureTemplate(
       const fixedPrice = price / 100;
       return `${order.currency} ${fixedPrice}`;
     };
-    const meta = {
+    const templateVariables = {
+      ...texts[language],
       shopName: EMAIL_WEBSITE_NAME,
       shopUrl: EMAIL_WEBSITE_URL,
       mailPrefix: `${order.orderNumber}_`,
@@ -110,14 +111,11 @@ MessagingDirector.configureTemplate(
           from: EMAIL_FROM,
           to: order.contact.emailAddress,
           subject: texts[language].subject,
-          text: MessagingDirector.renderToText(textTemplate, {
-            ...texts[language],
-            ...meta,
-          }),
-          html: MessagingDirector.renderMjmlToHtml(mjmlTemplate, {
-            ...texts[language],
-            ...meta,
-          }),
+          text: MessagingDirector.renderToText(textTemplate, templateVariables),
+          html: MessagingDirector.renderMjmlToHtml(
+            mjmlTemplate,
+            templateVariables
+          ),
           attachments,
         },
       },

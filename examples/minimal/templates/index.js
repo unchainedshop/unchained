@@ -1,4 +1,6 @@
 import './order-confirmation';
+import './forward-delivery';
+
 // import { configureAccountsEmailTemplates } from 'meteor/unchained:platform';
 // import {
 //   MessagingDirector,
