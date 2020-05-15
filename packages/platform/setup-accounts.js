@@ -10,17 +10,6 @@ import { Promise } from 'meteor/promise';
 import cloneDeep from 'lodash.clonedeep';
 import moniker from 'moniker';
 
-const { UI_ENDPOINT } = process.env;
-
-Accounts.urls.resetPassword = (token) =>
-  `${UI_ENDPOINT}/set-password?token=${token}`;
-
-Accounts.urls.verifyEmail = (token) =>
-  `${UI_ENDPOINT}/verify-email?token=${token}`;
-
-Accounts.urls.enrollAccount = (token) =>
-  `${UI_ENDPOINT}/enroll-account?token=${token}`;
-
 export const buildContext = (user) => {
   const locale =
     (user && user.lastLogin && user.lastLogin.locale) ||
@@ -28,18 +17,6 @@ export const buildContext = (user) => {
   return {
     user: user || {},
     locale,
-  };
-};
-
-export const configureAccountsEmailTemplates = (
-  accountsTemplateName,
-  templateObject
-) => {
-  Accounts.emailTemplates[accountsTemplateName] = {
-    from: (user) => templateObject(null, buildContext(user)).from(),
-    subject: (user) => templateObject(null, buildContext(user)).subject(),
-    html: (user, url) => templateObject({ url }, buildContext(user)).html(),
-    text: (user, url) => templateObject({ url }, buildContext(user)).text(),
   };
 };
 
@@ -131,7 +108,6 @@ export default ({ mergeUserCartsOnLogin = true } = {}) => {
       normalizedLocale,
     } = [...methodArguments].pop() || {};
 
-    // update the heartbeat
     Users.updateHeartbeat({
       _id: user._id,
       remoteAddress,
@@ -149,11 +125,13 @@ export default ({ mergeUserCartsOnLogin = true } = {}) => {
         })
       );
 
-      Bookmarks.migrateBookmarks({
-        fromUserId: userIdBeforeLogin,
-        toUserId: user._id,
-        mergeBookmarks: mergeUserCartsOnLogin,
-      });
+      Promise.await(
+        Bookmarks.migrateBookmarks({
+          fromUserId: userIdBeforeLogin,
+          toUserId: user._id,
+          mergeBookmarks: mergeUserCartsOnLogin,
+        })
+      );
     }
   });
 
