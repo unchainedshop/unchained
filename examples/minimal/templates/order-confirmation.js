@@ -3,9 +3,9 @@ import { Orders } from 'meteor/unchained:core-orders';
 
 const {
   EMAIL_FROM,
-  UI_ENDPOINT,
-  EMAIL_WEBSITE_NAME,
+  EMAIL_WEBSITE_NAME = 'Unchained Webshop',
   EMAIL_WEBSITE_URL,
+  UI_ENDPOINT,
 } = process.env;
 
 const mjmlTemplate = `
@@ -34,7 +34,9 @@ const mjmlTemplate = `
 `;
 
 const textTemplate = `
-  {{thankyou}} {{shopName}}\n
+  {{subject}}\n
+  \n
+  {{thankyou}}\n
   \n
   -----------------\n
   {{buttonText}}: {{url}}\n
@@ -62,7 +64,6 @@ const texts = {
 MessagingDirector.configureTemplate(
   'ORDER_CONFIRMATION',
   ({ orderId, locale }) => {
-    const language = locale.split('_')[0];
     const order = Orders.findOne({ _id: orderId });
     const attachments = [];
     // TODO: If order.status is PENDING, we should only send the user
@@ -80,18 +81,22 @@ MessagingDirector.configureTemplate(
       const fixedPrice = price / 100;
       return `${order.currency} ${fixedPrice}`;
     };
+    const { subject } = texts[locale.language];
     const templateVariables = {
-      ...texts[language],
+      ...texts[locale.language],
       shopName: EMAIL_WEBSITE_NAME,
       shopUrl: EMAIL_WEBSITE_URL,
+      subject,
       mailPrefix: `${order.orderNumber}_`,
       url: `${UI_ENDPOINT}/order?_id=${order._id}&otp=${order.orderNumber}`,
       summary: order.pricing().formattedSummary(format),
       positions: order.items().map((item) => {
-        const productTexts = item.product().getLocalizedTexts(language);
+        const productTexts = item
+          .product()
+          .getLocalizedTexts(locale.normalized);
         const originalProductTexts = item
           .originalProduct()
-          .getLocalizedTexts(language);
+          .getLocalizedTexts(locale.normalized);
         const product = productTexts && productTexts.title; // deprected
         const total = format(item.pricing().sum());
         const { quantity } = item;
@@ -110,7 +115,7 @@ MessagingDirector.configureTemplate(
         input: {
           from: EMAIL_FROM,
           to: order.contact.emailAddress,
-          subject: texts[language].subject,
+          subject,
           text: MessagingDirector.renderToText(textTemplate, templateVariables),
           html: MessagingDirector.renderMjmlToHtml(
             mjmlTemplate,

@@ -1,5 +1,5 @@
 import { MessagingDirector } from 'meteor/unchained:core-messaging';
-import { Quotations } from 'meteor/unchained:core-quotations';
+import { Subscriptions } from 'meteor/unchained:core-subscriptions';
 
 const {
   EMAIL_FROM,
@@ -10,7 +10,7 @@ const {
 const textTemplate = `
   {{subject}}\n
   \n
-  Status: {{quotation.status}}
+  Status: {{subscription.status}}
   \n
   -----------------\n
   Show: {{url}}\n
@@ -18,22 +18,19 @@ const textTemplate = `
 `;
 
 MessagingDirector.configureTemplate(
-  'QUOTATION_STATUS',
-  ({ quotationId, locale }) => {
-    const quotation = Quotations.findOne({ _id: quotationId });
-    const user = quotation.user();
-    const attachments = [quotation.document({ type: 'PROPOSAL' })].filter(
-      Boolean
-    );
+  'SUBSCRIPTION_STATUS',
+  ({ subscriptionId, locale }) => {
+    const subscription = Subscriptions.findOne({ _id: subscriptionId });
+    const user = subscription.user();
+    const subject = `${EMAIL_WEBSITE_NAME}: Updated Subscription / ${subscription.subscriptionNumber}`;
 
-    const subject = `${EMAIL_WEBSITE_NAME}: Updated Quotation / ${quotation.quotationNumber}`;
     const templateVariables = {
       subject,
-      mailPrefix: `${quotation.quotationNumber}_`,
-      url: `${UI_ENDPOINT}/quotation?_id=${quotation._id}&otp=${
-        quotation.quotationNumber || ''
+      mailPrefix: `${subscription.subscriptionNumber}_`,
+      url: `${UI_ENDPOINT}/subscription?_id=${subscription._id}&otp=${
+        subscription.subscriptionNumber || ''
       }`,
-      quotation,
+      subscription,
       locale,
     };
 
@@ -45,7 +42,6 @@ MessagingDirector.configureTemplate(
           to: user.primaryEmail()?.address,
           subject,
           text: MessagingDirector.renderToText(textTemplate, templateVariables),
-          attachments,
         },
       },
     ];
