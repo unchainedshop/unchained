@@ -374,10 +374,7 @@ Orders.helpers({
       Subscriptions.generateFromCheckout({ order: this, items, ...context });
     }
   },
-  checkout(
-    { paymentContext, deliveryContext, orderContext } = {},
-    { localeContext } = {}
-  ) {
+  checkout({ paymentContext, deliveryContext, orderContext } = {}, options) {
     const errors = [
       ...this.missingInputDataForCheckout(),
       ...this.itemValidationErrors(),
@@ -385,24 +382,15 @@ Orders.helpers({
     if (errors.length > 0) {
       throw new Error(errors[0]);
     }
-    const lastUserLanguage = this.user().language();
-    const locale =
-      (localeContext && localeContext.normalized) ||
-      (lastUserLanguage && lastUserLanguage.isoCode);
+    const locale = this.user().locale(options);
 
     return this.updateContext(orderContext)
       .processOrder({ paymentContext, deliveryContext })
       .sendOrderConfirmationToCustomer({ locale });
   },
-  confirm(
-    { orderContext, paymentContext, deliveryContext },
-    { localeContext }
-  ) {
+  confirm({ orderContext, paymentContext, deliveryContext }, options) {
     if (this.status !== OrderStatus.PENDING) return this;
-    const lastUserLanguage = this.user().language();
-    const locale =
-      (localeContext && localeContext.normalized) ||
-      (lastUserLanguage && lastUserLanguage.isoCode);
+    const locale = this.user().locale(options);
     return this.updateContext(orderContext)
       .setStatus(OrderStatus.CONFIRMED, 'confirmed manually')
       .processOrder({ paymentContext, deliveryContext })

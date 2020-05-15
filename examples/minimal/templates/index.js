@@ -1,5 +1,6 @@
 import './order-confirmation';
 import './forward-delivery';
+import './quotation-status';
 
 // import { configureAccountsEmailTemplates } from 'meteor/unchained:platform';
 // import {
