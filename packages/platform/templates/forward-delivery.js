@@ -68,81 +68,78 @@ const textTemplate = `
   {{/items}}
 `;
 
-MessagingDirector.configureTemplate(
-  'DELIVERY',
-  ({ orderId, transactionContext, config }) => {
-    const order = Orders.findOne({ _id: orderId });
+export default ({ orderId, transactionContext, config }) => {
+  const order = Orders.findOne({ _id: orderId });
 
-    const momentDate = moment(order.ordered);
-    momentDate.locale('de-CH');
-    const orderDate = momentDate.format('lll');
+  const momentDate = moment(order.ordered);
+  momentDate.locale('de-CH');
+  const orderDate = momentDate.format('lll');
 
-    const attachments = [];
-    const deliveryNote = order.document({ type: 'DELIVERY_NOTE' });
-    if (deliveryNote) attachments.push(deliveryNote);
-    if (order.payment().isBlockingOrderFullfillment()) {
-      const invoice = order.document({ type: 'INVOICE' });
-      if (invoice) attachments.push(invoice);
-    } else {
-      const receipt = order.document({ type: 'RECEIPT' });
-      if (receipt) attachments.push(receipt);
-    }
-
-    const items = order.items().map((position) => {
-      const product = position.product();
-      const originalProduct = position.originalProduct();
-      const productTexts = product.getLocalizedTexts();
-      const originalProductTexts = originalProduct.getLocalizedTexts();
-      const pricing = position.pricing();
-      const unitPrice = pricing.unitPrice();
-      return {
-        sku: product.warehousing && product.warehousing.sku,
-        productTexts,
-        originalProductTexts,
-        name: productTexts.title,
-        price: unitPrice?.amount ?? unitPrice.amount / 100,
-        quantity: position.quantity,
-      };
-    });
-
-    const address = transactionContext?.address || order.billingAddress;
-    const configObject = config.reduce((acc, { key, value }) => {
-      return {
-        ...acc,
-        [key]: value,
-      };
-    }, {});
-
-    const subject = `${EMAIL_WEBSITE_NAME}: New Order / ${order.orderNumber}`;
-
-    const templateVariables = {
-      subject,
-      mailPrefix: `${order.orderNumber}_`,
-      items,
-      contact: order.contact || {},
-      total: order.pricing()?.total()?.amount / 100,
-      shopName: EMAIL_WEBSITE_NAME,
-      orderNumber: order.orderNumber,
-      orderDate,
-      ...configObject,
-      address,
-    };
-
-    return [
-      {
-        type: 'EMAIL',
-        input: {
-          from: EMAIL_FROM,
-          to: order.contact.emailAddress,
-          subject,
-          text: MessagingDirector.renderToText(textTemplate, templateVariables),
-          html: MessagingDirector.renderMjmlToHtml(
-            mjmlTemplate,
-            templateVariables
-          ),
-          attachments,
-        },
-      },
-    ];
+  const attachments = [];
+  const deliveryNote = order.document({ type: 'DELIVERY_NOTE' });
+  if (deliveryNote) attachments.push(deliveryNote);
+  if (order.payment().isBlockingOrderFullfillment()) {
+    const invoice = order.document({ type: 'INVOICE' });
+    if (invoice) attachments.push(invoice);
+  } else {
+    const receipt = order.document({ type: 'RECEIPT' });
+    if (receipt) attachments.push(receipt);
   }
-);
+
+  const items = order.items().map((position) => {
+    const product = position.product();
+    const originalProduct = position.originalProduct();
+    const productTexts = product.getLocalizedTexts();
+    const originalProductTexts = originalProduct.getLocalizedTexts();
+    const pricing = position.pricing();
+    const unitPrice = pricing.unitPrice();
+    return {
+      sku: product.warehousing && product.warehousing.sku,
+      productTexts,
+      originalProductTexts,
+      name: productTexts.title,
+      price: unitPrice?.amount ?? unitPrice.amount / 100,
+      quantity: position.quantity,
+    };
+  });
+
+  const address = transactionContext?.address || order.billingAddress;
+  const configObject = config.reduce((acc, { key, value }) => {
+    return {
+      ...acc,
+      [key]: value,
+    };
+  }, {});
+
+  const subject = `${EMAIL_WEBSITE_NAME}: New Order / ${order.orderNumber}`;
+
+  const templateVariables = {
+    subject,
+    mailPrefix: `${order.orderNumber}_`,
+    items,
+    contact: order.contact || {},
+    total: order.pricing()?.total()?.amount / 100,
+    shopName: EMAIL_WEBSITE_NAME,
+    orderNumber: order.orderNumber,
+    orderDate,
+    ...configObject,
+    address,
+  };
+
+  return [
+    {
+      type: 'EMAIL',
+      input: {
+        from: EMAIL_FROM,
+        to: order.contact.emailAddress,
+        subject,
+        text: MessagingDirector.renderToText(textTemplate, templateVariables),
+        html: MessagingDirector.renderMjmlToHtml(
+          mjmlTemplate,
+          templateVariables
+        ),
+        attachments,
+      },
+    },
+  ];
+};

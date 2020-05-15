@@ -3,8 +3,9 @@ import interceptEmails from './intercept-emails';
 import setupAccounts, { buildContext } from './setup-accounts';
 import setupWorkqueue, { workerTypeDefs } from './setup-workqueue';
 import setupDatabase, { createFixtures } from './setup-db';
+import setupTemplates, { MessageTypes } from './setup-templates';
 
-export { buildContext, createFixtures };
+export { buildContext, createFixtures, MessageTypes };
 
 const {
   NODE_ENV,
@@ -27,6 +28,7 @@ export const queueWorkers = [];
 export const startPlatform = ({ modules, typeDefs, ...options } = {}) => {
   setupDatabase({ modules, ...options });
   setupAccounts(options);
+  setupTemplates(options);
   startAPI({
     ...options,
     typeDefs: [...workerTypeDefs(), ...(typeDefs || [])],

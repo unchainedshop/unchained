@@ -108,38 +108,33 @@ const emailConfig = {
   },
 };
 
-MessagingDirector.configureTemplate(
-  'ACCOUNT_ACTION',
-  ({ userId, action, recipientEmail, token }) => {
-    const user = Users.findOne({ _id: userId });
-    const locale = user.locale();
+export default ({ userId, action, recipientEmail, token }) => {
+  const user = Users.findOne({ _id: userId });
+  const locale = user.locale();
 
-    const { url } = emailConfig[action];
-    const { subject, message, buttonText } = emailConfig[action][
-      locale.language
-    ];
+  const { url } = emailConfig[action];
+  const { subject, message, buttonText } = emailConfig[action][locale.language];
 
-    const templateVariables = {
-      subject,
-      message,
-      buttonText,
-      url: url(token),
-    };
+  const templateVariables = {
+    subject,
+    message,
+    buttonText,
+    url: url(token),
+  };
 
-    return [
-      {
-        type: 'EMAIL',
-        input: {
-          from: EMAIL_FROM,
-          to: recipientEmail || user.primaryEmail()?.address,
-          subject,
-          text: MessagingDirector.renderToText(textTemplate, templateVariables),
-          html: MessagingDirector.renderMjmlToHtml(
-            mjmlTemplate,
-            templateVariables
-          ),
-        },
+  return [
+    {
+      type: 'EMAIL',
+      input: {
+        from: EMAIL_FROM,
+        to: recipientEmail || user.primaryEmail()?.address,
+        subject,
+        text: MessagingDirector.renderToText(textTemplate, templateVariables),
+        html: MessagingDirector.renderMjmlToHtml(
+          mjmlTemplate,
+          templateVariables
+        ),
       },
-    ];
-  }
-);
+    },
+  ];
+};

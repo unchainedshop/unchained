@@ -32,8 +32,6 @@ import 'meteor/unchained:core-worker/plugins/http-request';
 import 'meteor/unchained:core-worker/plugins/heartbeat';
 import 'meteor/unchained:core-worker/plugins/email';
 
-import './templates';
-
 const logger = console;
 
 const initializeDatabase = () => {

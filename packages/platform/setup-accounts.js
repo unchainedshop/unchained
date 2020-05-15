@@ -59,9 +59,7 @@ export default ({ mergeUserCartsOnLogin = true } = {}) => {
     if (!guest && !skipEmailVerification) {
       Meteor.setTimeout(() => {
         const { sendVerificationEmail = true } = Accounts._options; // eslint-disable-line
-        if (sendVerificationEmail) {
-          Accounts.sendVerificationEmail(user._id);
-        }
+        Accounts.sendVerificationEmail(user._id);
       }, 1000);
     }
     return newUser;
