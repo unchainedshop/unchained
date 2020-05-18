@@ -4,6 +4,18 @@ Licensed under the EUPL 1.2
 
 [![CLA assistant](https://cla-assistant.io/readme/badge/unchainedshop/unchained)](https://cla-assistant.io/unchainedshop/unchained)
 
+## Architecture
+
+Go to [Architecture](/docs/architecture.md) to view an overview of our architecure.
+
+## Code of conduct
+
+See our [Contributor Covenant Code of Conduct](/docs/code_of_conduct.md) to view our pledge, standards, responsibilites & more.
+
+## Contributing
+
+Please see our [Contribution Guidelines](/docs/contributing.md).
+
 ## Quickstart
 
 ### Prerequisites
