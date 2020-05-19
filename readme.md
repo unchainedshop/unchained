@@ -146,6 +146,28 @@ mutation updateContact {
 }
 ```
 
+Set order payment provider:
+
+```
+mutation SetOrderPaymentProvider{
+    setOrderPaymentProvider(
+      orderId: $orderId
+      paymentProviderId: $paymentProviderId
+    ) 
+  }
+```
+
+Set order delivery provider:
+
+```
+mutation SetOrderDeliverProvider {
+    setOrderDeliveryProvider(
+      orderId: $orderId
+      deliveryProviderId: $deliveryProviderId
+    ) 
+  }
+```
+
 Checkout the cart:
 
 ```
