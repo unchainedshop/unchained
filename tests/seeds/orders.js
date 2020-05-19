@@ -85,8 +85,8 @@ export const PickupDelivery = {
 export const SimplePosition = {
   _id: 'simple-order-position',
   orderId: 'simple-order',
-  productId: 'simple-product',
-  originalProductId: 'simple-product',
+  productId: 'simpleproduct',
+  originalProductId: 'simpleproduct',
   quantity: 3,
   created: new Date('2019-10-11T12:15:42.456+0000'),
   calculation: [

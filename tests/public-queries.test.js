@@ -30,14 +30,14 @@ describe('public queries', () => {
 
     const [product] = data.products;
     expect(product).toBeTruthy();
-    expect(product._id).toBe('simple-product');
+    expect(product._id).toBe('simpleproduct');
   });
 
   it('product', async () => {
     const { data, errors } = await graphqlFetch({
       query: /* GraphQL */ `
         {
-          product(productId: "simple-product") {
+          product(productId: "simpleproduct") {
             _id
           }
         }
@@ -47,14 +47,14 @@ describe('public queries', () => {
     expect(errors).toEqual(undefined);
     const { product } = data;
     expect(product).toBeTruthy();
-    expect(product._id).toBe('simple-product');
+    expect(product._id).toBe('simpleproduct');
   });
 
   it('productCatalogPrices', async () => {
     const { data, errors } = await graphqlFetch({
       query: /* GraphQL */ `
         {
-          productCatalogPrices(productId: "simple-product") {
+          productCatalogPrices(productId: "simpleproduct") {
             price {
               amount
               currency
@@ -74,7 +74,7 @@ describe('public queries', () => {
     const { data, errors } = await graphqlFetch({
       query: /* GraphQL */ `
         {
-          translatedProductTexts(productId: "simple-product") {
+          translatedProductTexts(productId: "simpleproduct") {
             locale
             slug
           }

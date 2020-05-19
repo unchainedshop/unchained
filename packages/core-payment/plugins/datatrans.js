@@ -4,13 +4,15 @@ import {
   PaymentError,
   PaymentCredentials,
 } from 'meteor/unchained:core-payment';
-import { log } from 'meteor/unchained:core-logger';
+import { createLogger } from 'meteor/unchained:core-logger';
 import { OrderPayments } from 'meteor/unchained:core-orders';
 import { WebApp } from 'meteor/webapp';
 import bodyParser from 'body-parser';
 import crypto from 'crypto';
 import fetch from 'isomorphic-unfetch';
 import xml2js from 'xml2js';
+
+const logger = createLogger('unchained:core-payment:datatrans-webhook');
 
 const {
   DATATRANS_SECRET,
@@ -93,7 +95,7 @@ WebApp.connectHandlers.use(DATATRANS_WEBHOOK_PATH, (req, res) => {
               userId,
             }
           );
-          log(
+          logger.info(
             `Datatrans Webhook: Unchained registered payment credentials for ${userId}`,
             { userId }
           );
@@ -105,7 +107,7 @@ WebApp.connectHandlers.use(DATATRANS_WEBHOOK_PATH, (req, res) => {
           .order()
           .checkout({ paymentContext: authorizationResponse });
         res.writeHead(200);
-        log(
+        logger.info(
           `Datatrans Webhook: Unchained confirmed checkout for order ${order.orderNumber}`,
           { orderId: order._id }
         );
@@ -117,9 +119,8 @@ WebApp.connectHandlers.use(DATATRANS_WEBHOOK_PATH, (req, res) => {
         ) {
           // We also confirm a declined payment or a signature mismatch with 200 so
           // datatrans does not retry to send us the failed transaction
-          log(
-            `Datatrans Webhook: Unchained declined checkout with message ${e.message}`,
-            { level: 'warn' }
+          logger.warn(
+            `Datatrans Webhook: Unchained declined checkout with message ${e.message}`
           );
           res.writeHead(200);
           return res.end();
@@ -128,7 +129,7 @@ WebApp.connectHandlers.use(DATATRANS_WEBHOOK_PATH, (req, res) => {
         return res.end(JSON.stringify(e));
       }
     } else {
-      log(`Datatrans Webhook: Reference number not set`, { level: 'warn' });
+      logger.warn(`Datatrans Webhook: Reference number not set`);
     }
   }
   res.writeHead(404);

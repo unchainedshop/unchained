@@ -412,7 +412,7 @@ describe('Plugins: Datatrans Payments', () => {
           }
         `,
         variables: {
-          productId: 'simple-product',
+          productId: 'simpleproduct',
           paymentContext: {
             paymentCredentials: credentials,
           },
@@ -446,7 +446,7 @@ describe('Plugins: Datatrans Payments', () => {
           }
         `,
         variables: {
-          productId: 'simple-product',
+          productId: 'simpleproduct',
         },
       });
       expect(addCartProduct).toMatchObject(expect.anything());

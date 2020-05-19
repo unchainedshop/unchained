@@ -3,12 +3,17 @@ import {
   PaymentAdapter,
   PaymentError,
 } from 'meteor/unchained:core-payment';
-import { createLogger } from 'meteor/unchained:core-logger';
+// import { createLogger } from 'meteor/unchained:core-logger';
 import { WebApp } from 'meteor/webapp';
 import bodyParser from 'body-parser';
 import fetch from 'isomorphic-unfetch';
+import { Mongo } from 'meteor/mongo';
 
-const logger = createLogger('unchained:core-payment:apple-iap');
+// const logger = createLogger('unchained:core-payment:apple-iap');
+
+const AppleTransactions = new Mongo.Collection(
+  'payment_apple_iap_processed_transactions'
+);
 
 const {
   APPLE_IAP_SHARED_SECRET,
@@ -29,12 +34,15 @@ const verifyReceipt = async ({
   password,
   environment = 'sandbox',
 }) => {
+  const payload = {
+    'receipt-data': receiptData,
+  };
+  if (password) {
+    payload['exclude-old-transactions'] = true;
+    payload.password = password;
+  }
   const result = await fetch(environments[environment], {
-    body: JSON.stringify({
-      'receipt-data': receiptData,
-      password,
-      'exclude-old-transactions': true,
-    }),
+    body: JSON.stringify(payload),
     method: 'POST',
     headers: {
       'Content-Type': 'application/xml',
@@ -59,7 +67,7 @@ const verifyReceipt = async ({
 //             }
 //           );
 //           log(
-//             `Datatrans Webhook: Unchained registered payment credentials for ${userId}`,
+//             `AppleIAP Webhook: Unchained registered payment credentials for ${userId}`,
 //             { userId }
 //           );
 //           res.writeHead(200);
@@ -71,7 +79,7 @@ const verifyReceipt = async ({
 //           .checkout({ paymentContext: authorizationResponse });
 //         res.writeHead(200);
 //         log(
-//           `Datatrans Webhook: Unchained confirmed checkout for order ${order.orderNumber}`,
+//           `AppleIAP Webhook: Unchained confirmed checkout for order ${order.orderNumber}`,
 //           { orderId: order._id }
 //         );
 //         return res.end(JSON.stringify(order));
@@ -83,7 +91,7 @@ const verifyReceipt = async ({
 //           // We also confirm a declined payment or a signature mismatch with 200 so
 //           // datatrans does not retry to send us the failed transaction
 //           log(
-//             `Datatrans Webhook: Unchained declined checkout with message ${e.message}`,
+//             `AppleIAP Webhook: Unchained declined checkout with message ${e.message}`,
 //             { level: 'warn' }
 //           );
 //           res.writeHead(200);
@@ -93,14 +101,14 @@ const verifyReceipt = async ({
 //         return res.end(JSON.stringify(e));
 //       }
 //     } else {
-//       log(`Datatrans Webhook: Reference number not set`, { level: 'warn' });
+//       log(`AppleIAP Webhook: Reference number not set`, { level: 'warn' });
 //     }
 //   }
 //   res.writeHead(404);
 //   return res.end();
 // });
 
-class Datatrans extends PaymentAdapter {
+class AppleIAP extends PaymentAdapter {
   static key = 'shop.unchained.apple-iap';
 
   static label = 'Apple In-App-Purchase';
@@ -118,15 +126,8 @@ class Datatrans extends PaymentAdapter {
     return type === 'GENERIC';
   }
 
-  getMerchantId() {
-    return this.config.reduce((current, item) => {
-      if (item.key === 'merchantId') return item.value;
-      return current;
-    }, null);
-  }
-
   configurationError() {
-    if (!this.getMerchantId() || !APPLE_IAP_SHARED_SECRET) {
+    if (!APPLE_IAP_SHARED_SECRET) {
       return PaymentError.INCOMPLETE_CONFIGURATION;
     }
     if (this.wrongCredentials) {
@@ -151,19 +152,114 @@ class Datatrans extends PaymentAdapter {
   }
 
   // eslint-disable-next-line
-  async charge({ receiptData }) {
+  async validate(token) {
+    // once registered receipt transactions are valid by default!
+    return true;
+  }
+
+  async register(transactionResponse) {
+    const { receiptData } = transactionResponse;
     const response = await verifyReceipt({
       receiptData,
       password: APPLE_IAP_SHARED_SECRET,
     });
-    const { status, latest_receipt_info, pending_renewal_info } = response;
+    const { status, latest_receipt_info } = response; // eslint-disable-line
     if (status === 0) {
-      // now check if order products are all part of the receipt
-      console.log({ latest_receipt_info, pending_renewal_info });
-      return response;
+      this.log('Receipt validated and updated for the user', {
+        level: 'verbose',
+      });
+      const [latestTransaction] = latest_receipt_info; // eslint-disable-line
+      return {
+        token: latestTransaction.web_order_line_item_id,
+        transaction: latestTransaction,
+      };
     }
-    throw new Error('Receipt invalid');
+    this.log('Apple IAP -> Receipt invalid', {
+      level: 'warn',
+      status: response.status,
+    });
+    return null;
+  }
+
+  // eslint-disable-next-line
+  async charge(result) {
+    const { transactionIdentifier } = result?.meta;
+    const { order } = this.context;
+
+    if (!transactionIdentifier) {
+      throw new Error(
+        'Apple IAP -> You have to set the transaction id on the order payment'
+      );
+    }
+
+    const { paymentCredentials, receiptData } = result;
+    const receiptResponse =
+      receiptData &&
+      (await verifyReceipt({
+        receiptData,
+        password: APPLE_IAP_SHARED_SECRET,
+      }));
+
+    if (receiptResponse && receiptResponse.status !== 0) {
+      throw new Error('Apple IAP -> Receipt invalid');
+    }
+
+    const transactions = receiptResponse?.latest_receipt_info || [ // eslint-disable-line
+      paymentCredentials?.meta?.transaction,
+    ];
+    const matchedTransaction = transactions.find(
+      (transaction) => transaction?.transaction_id === transactionIdentifier // eslint-disable-line
+    );
+    if (!matchedTransaction) {
+      throw new Error(
+        `Apple IAP -> Cannot match transaction with identifier ${transactionIdentifier}`
+      );
+    }
+
+    const items = Object.entries(
+      order.items().reduce((acc, item) => {
+        return {
+          ...acc,
+          [item.productId]: (acc[item.productId] || 0) + item.quantity,
+        };
+      }, {})
+    );
+
+    if (items.length !== 1) {
+      throw new Error(
+        'Apple IAP -> You can only checkout 1 unique product at once'
+      );
+    }
+
+    const [[productId, quantity]] = items;
+
+    const orderMatchesTransaction =
+      parseInt(matchedTransaction.quantity, 10) === quantity &&
+      matchedTransaction.product_id === productId;
+
+    if (!orderMatchesTransaction)
+      throw new Error(
+        'Apple IAP -> Product in order does not match transaction'
+      );
+
+    const transactionAlreadyProcessed =
+      AppleTransactions.find({
+        transactionIdentifier,
+      }).count() > 0;
+
+    if (transactionAlreadyProcessed)
+      throw new Error('Apple IAP -> Transaction already processed');
+
+    // All good
+    const transactionId = AppleTransactions.insert({
+      transactionIdentifier,
+      matchedTransaction,
+      orderId: order._id,
+    });
+    return {
+      transactionId,
+    };
   }
 }
 
-PaymentDirector.registerAdapter(Datatrans);
+PaymentDirector.registerAdapter(AppleIAP);

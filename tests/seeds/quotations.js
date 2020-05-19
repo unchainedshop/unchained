@@ -3,7 +3,7 @@ export const ProcessingQuotation = {
   created: new Date('2019-10-14T19:02:31.796+0000'),
   status: 'PROCESSING',
   userId: 'user',
-  productId: 'simple-product',
+  productId: 'simpleproduct',
   configuration: [
     {
       key: 'length',
@@ -31,7 +31,7 @@ export const ProposedQuotation = {
   created: new Date('2019-10-14T19:07:56.833+0000'),
   status: 'PROPOSED',
   userId: 'user',
-  productId: 'simple-product',
+  productId: 'simpleproduct',
   configuration: [
     {
       key: 'length',
