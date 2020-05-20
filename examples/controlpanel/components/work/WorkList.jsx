@@ -96,6 +96,7 @@ const WorkList = ({ loading, updateHasMore, queryOptions, ...rest }) => {
 };
 
 export default withDataTableLoader({
+  itemsPerPage: 50,
   queryName: 'workQueue',
   query: gql`
     query workQueue($offset: Int, $limit: Int, $status: [WorkStatus!]!) {

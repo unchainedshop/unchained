@@ -4,7 +4,7 @@ import { DeliveryProviders } from './collections';
 import { DeliveryProviderType } from './schema';
 
 Factory.define('deliveryProvider', DeliveryProviders, {
-  adapterKey: () => 'shop.unchained.send-mail',
+  adapterKey: () => 'shop.unchained.delivery.send-message',
   type: () => DeliveryProviderType.SHIPPING,
   configuration: () => [],
   ...fakeTimestampFields,

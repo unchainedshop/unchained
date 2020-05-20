@@ -6,7 +6,7 @@ The unchained.shop Platform (technical)
 
 **Unchained Engine**
 Backend Engine, OSS.
-- Current version: 0.48.0
+- Current version: 0.49.0
 - [Github Repository][2]
 - DB: MongoDB
 - Programming language: Javascript ES6
@@ -15,7 +15,7 @@ Backend Engine, OSS.
 
 **Unchained.shop Storefront**
 Storefront UI used for unchained.shop, OSS.
-- Current version: 0.48.0
+- Current version: 0.49.0
 - [Github Repository][3]
 - Programming language: Javascript ES6
 - Platform: Vercel Next.js 9
@@ -23,7 +23,7 @@ Storefront UI used for unchained.shop, OSS.
 
 **Unchained Admin UI**
 Unchained on demand Admin UI, Closed Source. A very basic initial version will get released and handed over to the community.
-- Current version: 0.48.0
+- Current version: 0.49.0
 - [Github Repository][2]
 - Programming language: Javascript ES6 (Node.js carbon LTS)
 - Platform: Vercel Next.js 9
