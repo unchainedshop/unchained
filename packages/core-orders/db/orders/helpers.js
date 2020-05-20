@@ -371,7 +371,13 @@ Orders.helpers({
     });
 
     if (items.length > 0) {
-      Subscriptions.generateFromCheckout({ order: this, items, ...context });
+      Promise.await(
+        Subscriptions.generateFromCheckout({
+          order: this,
+          items,
+          ...context,
+        })
+      );
     }
   },
   checkout({ paymentContext, deliveryContext, orderContext } = {}, options) {
