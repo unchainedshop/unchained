@@ -20,14 +20,16 @@ const textTemplate = `
 export default ({ quotationId, locale }) => {
   const quotation = Quotations.findOne({ _id: quotationId });
   const user = quotation.user();
-  const attachments = [quotation.document({ type: 'PROPOSAL' })].filter(
-    Boolean
-  );
+  const attachments = [quotation.document({ type: 'PROPOSAL' })]
+    .filter(Boolean)
+    .map((file) => ({
+      filename: `${quotation.quotationNumber}_${file.name}`,
+      path: file.path,
+    }));
 
   const subject = `${EMAIL_WEBSITE_NAME}: Updated Quotation / ${quotation.quotationNumber}`;
   const templateVariables = {
     subject,
-    mailPrefix: `${quotation.quotationNumber}_`,
     url: `${UI_ENDPOINT}/quotation?_id=${quotation._id}&otp=${
       quotation.quotationNumber || ''
     }`,

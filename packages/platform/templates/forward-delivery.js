@@ -115,7 +115,6 @@ export default ({ orderId, transactionContext, config }) => {
 
   const templateVariables = {
     subject,
-    mailPrefix: `${order.orderNumber}_`,
     items,
     contact: order.contact || {},
     total: order.pricing()?.total()?.amount / 100,
@@ -138,7 +137,10 @@ export default ({ orderId, transactionContext, config }) => {
           mjmlTemplate,
           templateVariables
         ),
-        attachments,
+        attachments: attachments.map((file) => ({
+          filename: `${order.orderNumber}_${file.name}`,
+          path: file.path,
+        })),
       },
     },
   ];

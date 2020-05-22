@@ -85,7 +85,6 @@ export default ({ orderId, locale }) => {
     shopName: EMAIL_WEBSITE_NAME,
     shopUrl: EMAIL_WEBSITE_URL,
     subject,
-    mailPrefix: `${order.orderNumber}_`,
     url: `${UI_ENDPOINT}/order?_id=${order._id}&otp=${order.orderNumber}`,
     summary: order.pricing().formattedSummary(format),
     positions: order.items().map((item) => {
@@ -117,7 +116,10 @@ export default ({ orderId, locale }) => {
           mjmlTemplate,
           templateVariables
         ),
-        attachments,
+        attachments: attachments.map((file) => ({
+          filename: `${order.orderNumber}_${file.name}`,
+          path: file.path,
+        })),
       },
     },
   ];
