@@ -151,8 +151,8 @@ Set order payment provider:
 ```
 mutation SetOrderPaymentProvider{
     setOrderPaymentProvider(
-      orderId: $orderId
-      paymentProviderId: $paymentProviderId
+      orderId
+      paymentProviderId
     ) 
   }
 ```
@@ -162,8 +162,8 @@ Set order delivery provider:
 ```
 mutation SetOrderDeliverProvider {
     setOrderDeliveryProvider(
-      orderId: $orderId
-      deliveryProviderId: $deliveryProviderId
+      orderId
+      deliveryProviderId
     ) 
   }
 ```
