@@ -1,4 +1,4 @@
-FROM engine-pre-flight as bundler
+FROM minimal-pre-flight as bundler
 FROM node:12 as runtime
 
 RUN useradd -u 501 -d /home/meteor meteor
