@@ -9,6 +9,8 @@ minimal-pre-flight:
     dockerfile: Dockerfile.pre-flight
     context: ./examples/minimal
     image: minimal-pre-flight
+    args:
+      COMMIT_ID: "{{ .CommitID }}"
   cached: true
 
 minimal:

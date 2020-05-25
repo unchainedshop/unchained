@@ -7,12 +7,13 @@ ADD package.json /source/
 ADD package-lock.json /source/
 RUN NODE_ENV=development meteor npm install
 
-ENV CI_COMMIT_ID master
+ARG COMMIT_ID
+ENV _COMMIT_ID=${COMMIT_ID}
 
 # Build app
 ADD . /source/
-ADD https://github.com/unchainedshop/unchained/archive/${CI_COMMIT_ID}.tar.gz /archive.tar.gz
+ADD https://github.com/unchainedshop/unchained/archive/${_COMMIT_ID}.tar.gz /archive.tar.gz
 RUN tar -xzf /archive.tar.gz -C /
-RUN cp -R /unchained-${CI_COMMIT_ID}/packages /source
+RUN cp -R /unchained-${_COMMIT_ID}/packages /source
 RUN ls -la /source/packages
 RUN meteor build --server-only --allow-superuser --directory /
