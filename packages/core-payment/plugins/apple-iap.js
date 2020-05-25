@@ -111,12 +111,7 @@ class AppleIAP extends PaymentAdapter {
 
   static version = '1.0';
 
-  static initialConfiguration = [
-    {
-      key: 'merchantId',
-      value: null,
-    },
-  ];
+  static initialConfiguration = [];
 
   static typeSupported(type) {
     return type === 'GENERIC';
