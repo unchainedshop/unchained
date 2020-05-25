@@ -11,7 +11,8 @@ ENV CI_COMMIT_ID master
 
 # Build app
 ADD . /source/
-ADD https://github.com/unchainedshop/unchained/archive/$CI_COMMIT_ID.tar.gz /archive.tar.gz
+ADD https://github.com/unchainedshop/unchained/archive/${CI_COMMIT_ID}.tar.gz /archive.tar.gz
 RUN tar -xzf /archive.tar.gz -C /
-RUN cp -R /unchained-$CI_COMMIT_ID/packages /source
+RUN cp -R /unchained-${CI_COMMIT_ID}/packages /source
+RUN ls -la /source/packages
 RUN meteor build --server-only --allow-superuser --directory /
