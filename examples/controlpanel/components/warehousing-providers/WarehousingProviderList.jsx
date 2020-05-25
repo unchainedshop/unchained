@@ -7,6 +7,7 @@ import InfiniteDataTable, { withDataTableLoader } from '../InfiniteDataTable';
 const WarehousingProviderList = ({ ...rest }) => (
   <InfiniteDataTable
     {...rest}
+    limit={0}
     cols={4}
     createPath="/warehousing-providers/new"
     rowRenderer={(warehousingProvider) => (

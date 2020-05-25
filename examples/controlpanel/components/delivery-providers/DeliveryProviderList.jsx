@@ -8,6 +8,7 @@ const DeliveryProviderList = ({ ...rest }) => (
   <InfiniteDataTable
     {...rest}
     cols={4}
+    limit={0}
     createPath="/delivery-providers/new"
     rowRenderer={(deliveryProvider) => (
       <Table.Row key={deliveryProvider._id}>
