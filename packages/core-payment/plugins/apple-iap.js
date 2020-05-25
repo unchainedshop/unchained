@@ -3,13 +3,13 @@ import {
   PaymentAdapter,
   PaymentError,
 } from 'meteor/unchained:core-payment';
-// import { createLogger } from 'meteor/unchained:core-logger';
+import { createLogger } from 'meteor/unchained:core-logger';
 import { WebApp } from 'meteor/webapp';
 import bodyParser from 'body-parser';
 import fetch from 'isomorphic-unfetch';
 import { Mongo } from 'meteor/mongo';
 
-// const logger = createLogger('unchained:core-payment:apple-iap');
+const logger = createLogger('unchained:core-payment:apple-iap');
 
 const AppleTransactions = new Mongo.Collection(
   'payment_apple_iap_processed_transactions'
@@ -17,12 +17,14 @@ const AppleTransactions = new Mongo.Collection(
 
 const {
   APPLE_IAP_SHARED_SECRET,
-  APPLE_IAP_WEBHOOK_PATH = '/graphql/datatrans',
+  APPLE_IAP_WEBHOOK_PATH = '/graphql/apple-iap',
 } = process.env;
 
 WebApp.connectHandlers.use(
   APPLE_IAP_WEBHOOK_PATH,
-  bodyParser.urlencoded({ extended: false })
+  bodyParser.json({
+    strict: false,
+  })
 );
 
 const environments = {
@@ -51,62 +53,56 @@ const verifyReceipt = async ({
   return result.json();
 };
 
-// WebApp.connectHandlers.use(APPLE_IAP_WEBHOOK_PATH, (req, res) => {
-//   if (req.method === 'POST') {
-//     const authorizationResponse = req.body || {};
-//     const { refno, amount } = authorizationResponse;
-//     if (refno) {
-//       try {
-//         if (amount === '0') {
-//           const [paymentProviderId, userId] = refno.split(':');
-//           const paymentCredentials = PaymentCredentials.registerPaymentCredentials(
-//             {
-//               paymentProviderId,
-//               paymentContext: authorizationResponse,
-//               userId,
-//             }
-//           );
-//           log(
-//             `AppleIAP Webhook: Unchained registered payment credentials for ${userId}`,
-//             { userId }
-//           );
-//           res.writeHead(200);
-//           return res.end(JSON.stringify(paymentCredentials));
-//         }
-//         const orderPayment = OrderPayments.findOne({ _id: refno });
-//         const order = orderPayment
-//           .order()
-//           .checkout({ paymentContext: authorizationResponse });
-//         res.writeHead(200);
-//         log(
-//           `AppleIAP Webhook: Unchained confirmed checkout for order ${order.orderNumber}`,
-//           { orderId: order._id }
-//         );
-//         return res.end(JSON.stringify(order));
-//       } catch (e) {
-//         if (
-//           e.message === 'Payment declined' ||
-//           e.message === 'Signature mismatch'
-//         ) {
-//           // We also confirm a declined payment or a signature mismatch with 200 so
-//           // datatrans does not retry to send us the failed transaction
-//           log(
-//             `AppleIAP Webhook: Unchained declined checkout with message ${e.message}`,
-//             { level: 'warn' }
-//           );
-//           res.writeHead(200);
-//           return res.end();
-//         }
-//         res.writeHead(503);
-//         return res.end(JSON.stringify(e));
-//       }
-//     } else {
-//       log(`AppleIAP Webhook: Reference number not set`, { level: 'warn' });
-//     }
-//   }
-//   res.writeHead(404);
-//   return res.end();
-// });
+WebApp.connectHandlers.use(APPLE_IAP_WEBHOOK_PATH, (req, res) => {
+  if (req.method === 'POST') {
+    try {
+      const responseBody = req.body || {};
+      if (responseBody.password !== APPLE_IAP_SHARED_SECRET) {
+        throw new Error('shared secret not valid');
+      }
+
+      console.log(
+        'APPLE TEST',
+        responseBody,
+        JSON.stringify(responseBody.unified_receipt.latest_receipt_info)
+      );
+      // if (amount === '0') {
+      //   const [paymentProviderId, userId] = refno.split(':');
+      //   const paymentCredentials = PaymentCredentials.registerPaymentCredentials(
+      //     {
+      //       paymentProviderId,
+      //       paymentContext: authorizationResponse,
+      //       userId,
+      //     }
+      //   );
+      //   log(
+      //     `AppleIAP Webhook: Unchained registered payment credentials for ${userId}`,
+      //     { userId }
+      //   );
+      //   res.writeHead(200);
+      //   return res.end(JSON.stringify(paymentCredentials));
+      // }
+      // const orderPayment = OrderPayments.findOne({ _id: refno });
+      // const order = orderPayment
+      //   .order()
+      //   .checkout({ paymentContext: authorizationResponse });
+      // res.writeHead(200);
+      // log(
+      //   `AppleIAP Webhook: Unchained confirmed checkout for order ${order.orderNumber}`,
+      //   { orderId: order._id }
+      // );
+      // return res.end(JSON.stringify(order));
+      res.writeHead(200);
+      return res.end();
+    } catch (e) {
+      logger.error(e.message);
+      res.writeHead(503);
+      return res.end(JSON.stringify(e));
+    }
+  }
+  res.writeHead(404);
+  return res.end();
+});
 
 class AppleIAP extends PaymentAdapter {
   static key = 'shop.unchained.apple-iap';
@@ -204,7 +200,8 @@ class AppleIAP extends PaymentAdapter {
       throw new Error('Apple IAP -> Receipt invalid');
     }
 
-    const transactions = receiptResponse?.latest_receipt_info || [ // eslint-disable-line
+    const transactions = receiptResponse?.latest_receipt_info || [
+      // eslint-disable-line
       paymentCredentials?.meta?.transaction,
     ];
     const matchedTransaction = transactions.find(

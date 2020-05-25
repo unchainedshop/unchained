@@ -1,3 +1,4 @@
+import fetch from 'isomorphic-unfetch';
 import { createLoggedInGraphqlFetch, setupDatabase } from './helpers';
 import { USER_TOKEN } from './seeds/users';
 import { SimplePaymentProvider } from './seeds/payments';
@@ -180,6 +181,44 @@ describe('Plugins: Apple IAP Payments', () => {
         },
       });
       expect(errors[0].extensions.code).toEqual('OrderCheckoutError');
+    });
+  });
+
+  describe('Apple Store Server Notifications', () => {
+    it('notification_type = CANCEL', async () => {
+      const params = {
+        auto_renew_adam_id: 1000,
+        auto_renew_product_id: '',
+        auto_renew_status: true,
+        auto_renew_status_change_date: new Date(),
+        environment: 'Sandbox',
+        expiration_intent: '',
+        notification_type: 'CANCEL',
+        password: '73b61776e7304f8ab1c2404df9192078',
+        unified_receipt: {
+          latest_receipt_info: [
+            {
+              original_transaction_id: transactionIdentifier,
+            },
+          ],
+          status: 0,
+        },
+        bid: '',
+        bvrs: '',
+      };
+      const result = await fetch('http://localhost:3000/graphql/apple-iap', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(params),
+      });
+      expect(result.status).toBe(200);
+
+      const order = await db
+        .collection('orders')
+        .findOne({ _id: 'datatrans-order' });
+      expect(order.status).toBe(null);
     });
   });
 });
