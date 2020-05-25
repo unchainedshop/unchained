@@ -1,0 +1,18 @@
+controlpanel:
+  build:
+    context: ./examples/controlpanel
+    dockerfile: Dockerfile
+  cached: true
+
+minimal-pre-flight:
+  build:
+    dockerfile: Dockerfile.pre-flight
+    context: ./examples/minimal
+    image: minimal-pre-flight
+  cached: true
+
+minimal:
+  build:
+    context: ./examples/minimal
+    dockerfile: Dockerfile.final
+  cached: true

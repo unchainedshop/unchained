@@ -1,0 +1,12 @@
+FROM geoffreybooth/meteor-base:1.10.2
+
+# Install app dependencies
+RUN mkdir -p /source
+WORKDIR /source
+ADD package.json /source/
+ADD package-lock.json /source/
+RUN NODE_ENV=development meteor npm install
+
+# Build app
+ADD . /source/
+RUN meteor build --server-only --allow-superuser --directory /
