@@ -14,6 +14,7 @@ import {
 } from './seeds/apple-iap-receipt';
 import initialBuy from './seeds/apple-iap-initial-buy';
 import didRecover from './seeds/apple-iap-did-recover';
+import didChangeRenewalStatus from './seeds/apple-iap-did-change-renewal-status';
 
 let connection;
 let db;
@@ -259,8 +260,19 @@ describe('Plugins: Apple IAP Payments', () => {
       });
       expect(result.status).toBe(200);
       const subscription = await db.collection('subscriptions').findOne();
-      console.log(subscription);
       expect(subscription?.status).toBe('ACTIVE');
+    });
+    it('notification_type = DID_CHANGE_RENEWAL_STATUS', async () => {
+      const result = await fetch('http://localhost:3000/graphql/apple-iap', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(didChangeRenewalStatus),
+      });
+      expect(result.status).toBe(200);
+      const subscription = await db.collection('subscriptions').findOne();
+      expect(subscription?.status).toBe('TERMINATED');
     });
   });
 });

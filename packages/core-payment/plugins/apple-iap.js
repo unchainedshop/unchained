@@ -6,6 +6,8 @@ import {
 } from 'meteor/unchained:core-payment';
 import { createLogger } from 'meteor/unchained:core-logger';
 import { OrderPayments } from 'meteor/unchained:core-orders';
+import { WorkerDirector } from 'meteor/unchained:core-worker';
+import { SubscriptionStatus } from 'meteor/unchained:core-subscriptions';
 import { WebApp } from 'meteor/webapp';
 import bodyParser from 'body-parser';
 import fetch from 'isomorphic-unfetch';
@@ -58,6 +60,8 @@ const AppleNotificationTypes = {
   INITIAL_BUY: 'INITIAL_BUY',
   DID_RECOVER: 'DID_RECOVER',
   DID_CHANGE_RENEWAL_STATUS: 'DID_CHANGE_RENEWAL_STATUS',
+  DID_FAIL_TO_RENEW: 'DID_FAIL_TO_RENEW',
+  DID_CHANGE_RENEWAL_PREF: 'DID_CHANGE_RENEWAL_PREF',
 };
 
 WebApp.connectHandlers.use(APPLE_IAP_WEBHOOK_PATH, async (req, res) => {
@@ -67,17 +71,6 @@ WebApp.connectHandlers.use(APPLE_IAP_WEBHOOK_PATH, async (req, res) => {
       if (responseBody.password !== APPLE_IAP_SHARED_SECRET) {
         throw new Error('shared secret not valid');
       }
-
-      // console.log(
-      //   'APPLE TEST',
-      //   responseBody,
-      //   JSON.stringify(responseBody.unified_receipt.latest_receipt_info)
-      // );
-
-      // const orderPayment = OrderPayments()
-      // const transaction = AppleTransactions.findOne({
-      //   transactionIdentifier: ,
-      // });
 
       const latestTransaction =
         responseBody?.unified_receipt?.latest_receipt_info[0]; // eslint-disable-line
@@ -104,7 +97,7 @@ WebApp.connectHandlers.use(APPLE_IAP_WEBHOOK_PATH, async (req, res) => {
             },
           });
           logger.verbose(
-            `AppleIAP Webhook: Unchained confirmed checkout for order ${checkedOut.orderNumber}`,
+            `Unchained confirmed checkout for order ${checkedOut.orderNumber}`,
             { orderId: checkedOut._id }
           );
         }
@@ -120,33 +113,43 @@ WebApp.connectHandlers.use(APPLE_IAP_WEBHOOK_PATH, async (req, res) => {
         const originalOrder = originalOrderPayment.order();
         const subscription = originalOrder.subscription();
 
-        const paymentCredentials = PaymentCredentials.registerPaymentCredentials(
-          {
-            paymentProviderId: subscription.payment.paymentProviderId,
-            paymentContext: {
-              receiptData: responseBody?.unified_receipt?.latest_receipt, // eslint-disable-line
-            },
-            userId: subscription.userId,
-          }
-        );
-
-        if (!paymentCredentials) {
-          throw new Error('Could not update payment credentials');
-        }
+        PaymentCredentials.registerPaymentCredentials({
+          paymentProviderId: subscription.payment.paymentProviderId,
+          paymentContext: {
+            receiptData: responseBody?.unified_receipt?.latest_receipt, // eslint-disable-line
+          },
+          userId: subscription.userId,
+        });
 
         if (
           responseBody.notification_type === AppleNotificationTypes.DID_RECOVER
         ) {
           // TODO: Reactivate subscription
-          console.log('recover');
+          logger.verbose(
+            `Processed notification for ${latestTransaction.original_transaction_id} and type ${responseBody.notification_type}`
+          );
         }
 
         if (
           responseBody.notification_type ===
           AppleNotificationTypes.DID_CHANGE_RENEWAL_STATUS
         ) {
-          // TODO: Terminate subscription.
-          console.log('did change renewal status');
+          if (
+            subscription.status !== SubscriptionStatus.TERMINATED &&
+            responseBody.auto_renew_status === 'false'
+          ) {
+            await subscription.terminate();
+          }
+        }
+
+        if (
+          responseBody.notification_type ===
+          AppleNotificationTypes.INTERACTIVE_RENEWAL
+        ) {
+          WorkerDirector.addWork({
+            type: 'SUBSCRIPTION_ORDER_GENERATOR',
+            retries: 0,
+          });
         }
       }
 
@@ -213,11 +216,16 @@ class AppleIAP extends PaymentAdapter {
       password: APPLE_IAP_SHARED_SECRET,
     });
     const { status, latest_receipt_info } = response; // eslint-disable-line
+    // console.log({
+    //   status,
+    //   latestReceiptInfo: latest_receipt_info,
+    // });
     if (status === 0) {
       this.log('Receipt validated and updated for the user', {
         level: 'verbose',
       });
-      const latestTransaction = latest_receipt_info?.pop(); // eslint-disable-line
+      const latestTransaction =
+        latest_receipt_info[latest_receipt_info.length - 1];
       return {
         token: latestTransaction.web_order_line_item_id,
         latestReceiptInfo: latest_receipt_info,
