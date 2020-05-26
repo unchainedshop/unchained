@@ -3,12 +3,17 @@ import { createLoggedInGraphqlFetch, setupDatabase } from './helpers';
 import { USER_TOKEN } from './seeds/users';
 import { SimplePaymentProvider } from './seeds/payments';
 import { SimpleOrder, SimplePosition, SimplePayment } from './seeds/orders';
-import { SimpleProduct } from './seeds/products';
+import { SimpleProduct, PlanProduct } from './seeds/products';
+
 import {
   receiptData,
-  transactionIdentifier,
-  productIdInAppleAppstoreConnext,
+  singleItemProductId,
+  singleItemTransactionIdentifier,
+  subscriptionProductId,
+  subscriptionTransactionIdentifier,
 } from './seeds/apple-iap-receipt';
+import initialBuy from './seeds/apple-iap-initial-buy';
+import didRecover from './seeds/apple-iap-did-recover';
 
 let connection;
 let db;
@@ -21,7 +26,12 @@ describe('Plugins: Apple IAP Payments', () => {
 
     await db.collection('products').findOrInsertOne({
       ...SimpleProduct,
-      _id: productIdInAppleAppstoreConnext,
+      _id: singleItemProductId,
+    });
+
+    await db.collection('products').findOrInsertOne({
+      ...PlanProduct,
+      _id: subscriptionProductId,
     });
 
     // Add a iap provider
@@ -45,7 +55,7 @@ describe('Plugins: Apple IAP Payments', () => {
       _id: 'iap-order-position',
       orderId: 'iap-order',
       quantity: 1,
-      productId: productIdInAppleAppstoreConnext,
+      productId: singleItemProductId,
     });
 
     await db.collection('orders').findOrInsertOne({
@@ -68,7 +78,7 @@ describe('Plugins: Apple IAP Payments', () => {
       _id: 'iap-order-position2',
       orderId: 'iap-order2',
       quantity: 1,
-      productId: productIdInAppleAppstoreConnext,
+      productId: subscriptionProductId,
     });
 
     await db.collection('orders').findOrInsertOne({
@@ -136,7 +146,7 @@ describe('Plugins: Apple IAP Payments', () => {
           orderPaymentId: 'iap-payment',
           orderId: 'iap-order',
           meta: {
-            transactionIdentifier,
+            transactionIdentifier: singleItemTransactionIdentifier,
           },
         },
       });
@@ -172,52 +182,85 @@ describe('Plugins: Apple IAP Payments', () => {
         `,
         variables: {
           paymentProviderId: 'iap-payment-provider',
-          productId: productIdInAppleAppstoreConnext,
+          productId: singleItemProductId,
           paymentContext: {
             receiptData,
-            meta: { transactionIdentifier },
+            meta: { transactionIdentifier: singleItemTransactionIdentifier },
           },
         },
       });
-      expect(errors[0].extensions.code).toEqual('OrderCheckoutError');
+      expect(errors?.[0].extensions.code).toEqual('OrderCheckoutError');
     });
   });
 
-  describe('Apple Store Server Notifications', () => {
-    it('notification_type = CANCEL', async () => {
-      const params = {
-        auto_renew_adam_id: 1000,
-        auto_renew_product_id: '',
-        auto_renew_status: true,
-        auto_renew_status_change_date: new Date(),
-        environment: 'Sandbox',
-        expiration_intent: '',
-        notification_type: 'CANCEL',
-        password: '73b61776e7304f8ab1c2404df9192078',
-        unified_receipt: {
-          latest_receipt_info: [
-            {
-              original_transaction_id: transactionIdentifier,
-            },
-          ],
-          status: 0,
+  describe.only('Apple Store Server Notifications', () => {
+    it('notification_type = INITIAL_BUY', async () => {
+      await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation prepareCart(
+            $paymentProviderId: ID!
+            $orderId: ID
+            $productId: ID!
+            $orderPaymentId: ID!
+            $meta: JSON
+          ) {
+            emptyCart(orderId: $orderId) {
+              _id
+            }
+            addCartProduct(productId: $productId, orderId: $orderId) {
+              _id
+            }
+            updateCart(
+              orderId: $orderId
+              paymentProviderId: $paymentProviderId
+            ) {
+              _id
+            }
+            updateOrderPaymentGeneric(
+              orderPaymentId: $orderPaymentId
+              meta: $meta
+            ) {
+              _id
+              status
+            }
+          }
+        `,
+        variables: {
+          paymentProviderId: 'iap-payment-provider',
+          orderPaymentId: 'iap-payment2',
+          orderId: 'iap-order2',
+          meta: {
+            transactionIdentifier: subscriptionTransactionIdentifier,
+          },
+          productId: subscriptionProductId,
         },
-        bid: '',
-        bvrs: '',
-      };
+      });
+
       const result = await fetch('http://localhost:3000/graphql/apple-iap', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(params),
+        body: JSON.stringify(initialBuy),
       });
       expect(result.status).toBe(200);
-
       const order = await db
         .collection('orders')
-        .findOne({ _id: 'datatrans-order' });
-      expect(order.status).toBe(null);
+        .findOne({ _id: 'iap-order2' });
+      expect(order.status).toBe('CONFIRMED');
+    });
+    it('notification_type = DID_RECOVER', async () => {
+      const result = await fetch('http://localhost:3000/graphql/apple-iap', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(didRecover),
+      });
+      expect(result.status).toBe(200);
+      const subscription = await db.collection('subscriptions').findOne();
+      console.log(subscription);
+      expect(subscription?.status).toBe('ACTIVE');
     });
   });
 });

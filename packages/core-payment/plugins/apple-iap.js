@@ -2,8 +2,10 @@ import {
   PaymentDirector,
   PaymentAdapter,
   PaymentError,
+  PaymentCredentials,
 } from 'meteor/unchained:core-payment';
 import { createLogger } from 'meteor/unchained:core-logger';
+import { OrderPayments } from 'meteor/unchained:core-orders';
 import { WebApp } from 'meteor/webapp';
 import bodyParser from 'body-parser';
 import fetch from 'isomorphic-unfetch';
@@ -40,7 +42,6 @@ const verifyReceipt = async ({
     'receipt-data': receiptData,
   };
   if (password) {
-    payload['exclude-old-transactions'] = true;
     payload.password = password;
   }
   const result = await fetch(environments[environment], {
@@ -53,7 +54,13 @@ const verifyReceipt = async ({
   return result.json();
 };
 
-WebApp.connectHandlers.use(APPLE_IAP_WEBHOOK_PATH, (req, res) => {
+const AppleNotificationTypes = {
+  INITIAL_BUY: 'INITIAL_BUY',
+  DID_RECOVER: 'DID_RECOVER',
+  DID_CHANGE_RENEWAL_STATUS: 'DID_CHANGE_RENEWAL_STATUS',
+};
+
+WebApp.connectHandlers.use(APPLE_IAP_WEBHOOK_PATH, async (req, res) => {
   if (req.method === 'POST') {
     try {
       const responseBody = req.body || {};
@@ -61,37 +68,88 @@ WebApp.connectHandlers.use(APPLE_IAP_WEBHOOK_PATH, (req, res) => {
         throw new Error('shared secret not valid');
       }
 
-      console.log(
-        'APPLE TEST',
-        responseBody,
-        JSON.stringify(responseBody.unified_receipt.latest_receipt_info)
-      );
-      // if (amount === '0') {
-      //   const [paymentProviderId, userId] = refno.split(':');
-      //   const paymentCredentials = PaymentCredentials.registerPaymentCredentials(
-      //     {
-      //       paymentProviderId,
-      //       paymentContext: authorizationResponse,
-      //       userId,
-      //     }
-      //   );
-      //   log(
-      //     `AppleIAP Webhook: Unchained registered payment credentials for ${userId}`,
-      //     { userId }
-      //   );
-      //   res.writeHead(200);
-      //   return res.end(JSON.stringify(paymentCredentials));
-      // }
-      // const orderPayment = OrderPayments.findOne({ _id: refno });
-      // const order = orderPayment
-      //   .order()
-      //   .checkout({ paymentContext: authorizationResponse });
-      // res.writeHead(200);
-      // log(
-      //   `AppleIAP Webhook: Unchained confirmed checkout for order ${order.orderNumber}`,
-      //   { orderId: order._id }
+      // console.log(
+      //   'APPLE TEST',
+      //   responseBody,
+      //   JSON.stringify(responseBody.unified_receipt.latest_receipt_info)
       // );
-      // return res.end(JSON.stringify(order));
+
+      // const orderPayment = OrderPayments()
+      // const transaction = AppleTransactions.findOne({
+      //   transactionIdentifier: ,
+      // });
+
+      const latestTransaction =
+        responseBody?.unified_receipt?.latest_receipt_info[0]; // eslint-disable-line
+
+      if (
+        responseBody.notification_type === AppleNotificationTypes.INITIAL_BUY
+      ) {
+        // Find the cart to checkout
+        const orderPayment = OrderPayments.findOne({
+          'context.meta.transactionIdentifier':
+            latestTransaction.transaction_id,
+        });
+
+        if (!orderPayment)
+          throw new Error('Could not find any matching order payment');
+        const order = orderPayment.order();
+
+        if (order.isCart()) {
+          // checkout if is cart, else just ignore because the cart is already checked out
+          // through submission of the receipt with GraphQL
+          const checkedOut = await order.checkout({
+            paymentContext: {
+              receiptData: responseBody?.unified_receipt?.latest_receipt,
+            },
+          });
+          logger.verbose(
+            `AppleIAP Webhook: Unchained confirmed checkout for order ${checkedOut.orderNumber}`,
+            { orderId: checkedOut._id }
+          );
+        }
+      } else {
+        // Just store payment credentials, use the subscriptions paymentProvider reference and
+        // let the job do the rest
+        const originalOrderPayment = OrderPayments.findOne({
+          'context.meta.transactionIdentifier':
+            latestTransaction.original_transaction_id,
+        });
+        if (!originalOrderPayment)
+          throw new Error('Could not find any matching order payment');
+        const originalOrder = originalOrderPayment.order();
+        const subscription = originalOrder.subscription();
+
+        const paymentCredentials = PaymentCredentials.registerPaymentCredentials(
+          {
+            paymentProviderId: subscription.payment.paymentProviderId,
+            paymentContext: {
+              receiptData: responseBody?.unified_receipt?.latest_receipt, // eslint-disable-line
+            },
+            userId: subscription.userId,
+          }
+        );
+
+        if (!paymentCredentials) {
+          throw new Error('Could not update payment credentials');
+        }
+
+        if (
+          responseBody.notification_type === AppleNotificationTypes.DID_RECOVER
+        ) {
+          // TODO: Reactivate subscription
+          console.log('recover');
+        }
+
+        if (
+          responseBody.notification_type ===
+          AppleNotificationTypes.DID_CHANGE_RENEWAL_STATUS
+        ) {
+          // TODO: Terminate subscription.
+          console.log('did change renewal status');
+        }
+      }
+
       res.writeHead(200);
       return res.end();
     } catch (e) {
@@ -159,10 +217,10 @@ class AppleIAP extends PaymentAdapter {
       this.log('Receipt validated and updated for the user', {
         level: 'verbose',
       });
-      const [latestTransaction] = latest_receipt_info; // eslint-disable-line
+      const latestTransaction = latest_receipt_info?.pop(); // eslint-disable-line
       return {
         token: latestTransaction.web_order_line_item_id,
-        transaction: latestTransaction,
+        latestReceiptInfo: latest_receipt_info,
       };
     }
     this.log('Apple IAP -> Receipt invalid', {
@@ -195,10 +253,9 @@ class AppleIAP extends PaymentAdapter {
       throw new Error('Apple IAP -> Receipt invalid');
     }
 
-    const transactions = receiptResponse?.latest_receipt_info || [
-      // eslint-disable-line
-      paymentCredentials?.meta?.transaction,
-    ];
+    const transactions =
+      receiptResponse?.latest_receipt_info || // eslint-disable-line
+      paymentCredentials?.meta?.latestReceiptInfo;
     const matchedTransaction = transactions.find(
       (transaction) => transaction?.transaction_id === transactionIdentifier // eslint-disable-line
     );

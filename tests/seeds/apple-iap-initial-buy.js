@@ -33,7 +33,7 @@ export default {
   password: '73b61776e7304f8ab1c2404df9192078',
   auto_renew_product_id: '9CqzLNqYuNtPQKsqN',
   notification_type: 'INITIAL_BUY',
-  unified_reciept: {
+  unified_receipt: {
     environment: 'Sandbox',
     status: 0,
     latest_receipt:
