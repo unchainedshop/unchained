@@ -1,6 +1,8 @@
 import { log } from 'meteor/unchained:core-logger';
-import { Subscriptions } from 'meteor/unchained:core-subscriptions';
-import { ProductStatus } from 'meteor/unchained:core-products';
+import {
+  Subscriptions,
+  SubscriptionStatus,
+} from 'meteor/unchained:core-subscriptions';
 import {
   SubscriptionNotFoundError,
   SubscriptionWrongStatusError,
@@ -17,8 +19,8 @@ export default async function (root, { subscriptionId }, { userId }) {
     });
   }
   if (
-    subscription.status === ProductStatus.ACTIVE ||
-    subscription.status === ProductStatus.TERMINATED
+    subscription.status === SubscriptionStatus.ACTIVE ||
+    subscription.status === SubscriptionStatus.TERMINATED
   ) {
     throw new SubscriptionWrongStatusError({ status: subscription.status });
   }

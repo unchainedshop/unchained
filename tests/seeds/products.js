@@ -1,5 +1,5 @@
 export const SimpleProduct = {
-  _id: 'simple-product',
+  _id: 'simpleproduct',
   created: new Date('2019-07-30T09:23:26.253+0000'),
   type: 'SIMPLE_PRODUCT',
   status: 'ACTIVE',
@@ -67,7 +67,7 @@ export const PlanProduct = {
 export const GermanProductText = {
   _id: 'german',
   locale: 'de',
-  productId: 'simple-product',
+  productId: 'simpleproduct',
   slug: 'slug-de',
   title: 'simple product title de',
   updated: new Date('2019-09-10T14:28:46.103+0000'),
@@ -88,7 +88,7 @@ export const GermanPlanProductText = {
 export const FrenchProductText = {
   _id: 'french',
   locale: 'fr',
-  productId: 'simple-product',
+  productId: 'simpleproduct',
   labels: ['label-fr-1'],
   slug: 'slug-fr',
   title: 'simple product title fr',
@@ -136,7 +136,7 @@ export const JpegProductMedia = {
   mediaId: 'jpeg',
   tags: [],
   sortKey: 1,
-  productId: 'simple-product',
+  productId: 'simpleproduct',
   created: new Date('2019-09-10T14:29:01.093+0000'),
 };
 
@@ -160,7 +160,7 @@ export const FrenchJpegProductMediaText = {
 
 export const SimpleProductReview = {
   _id: 'product-review',
-  productId: 'simple-product',
+  productId: 'simpleproduct',
   authorId: 'admin',
   rating: 2,
   title: 'Title of my Review',

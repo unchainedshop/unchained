@@ -4,6 +4,8 @@ Licensed under the EUPL 1.2
 
 [![CLA assistant](https://cla-assistant.io/readme/badge/unchainedshop/unchained)](https://cla-assistant.io/unchainedshop/unchained)
 
+[![Codeship Status for unchainedshop/currybag-website](https://app.codeship.com/projects/2f18b4a0-57dc-0138-8b6d-4230a644a556/status?branch=master)](https://app.codeship.com/projects/391300)
+
 ## Architecture
 
 Go to [Architecture](/docs/architecture.md) to view an overview of our architecure.
@@ -146,25 +148,25 @@ mutation updateContact {
 }
 ```
 
-Set order payment provider:
+Set order payment provider (optional):
 
 ```
 mutation SetOrderPaymentProvider{
     setOrderPaymentProvider(
-      orderId
-      paymentProviderId
-    ) 
+      orderId: "ORDERID",
+      paymentProviderId: "PROVIDER_ID"
+    )
   }
 ```
 
-Set order delivery provider:
+Set order delivery provider (optional):
 
 ```
 mutation SetOrderDeliverProvider {
     setOrderDeliveryProvider(
-      orderId
-      deliveryProviderId
-    ) 
+      orderId: "ORDERID",
+      deliveryProviderId: "PROVIDER_ID"
+    )
   }
 ```
 
@@ -252,7 +254,6 @@ const options = {
   }
 };
 ```
-
 
 ### Package: Settings
 

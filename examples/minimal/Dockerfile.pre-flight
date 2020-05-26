@@ -1,0 +1,19 @@
+FROM geoffreybooth/meteor-base:1.10.2
+
+# Install app dependencies
+RUN mkdir -p /source
+WORKDIR /source
+ADD package.json /source/
+ADD package-lock.json /source/
+RUN NODE_ENV=development meteor npm install
+
+ARG COMMIT_ID
+
+# Build app
+ADD . /source/
+RUN echo https://github.com/unchainedshop/unchained/archive/${COMMIT_ID}.tar.gz
+ADD https://github.com/unchainedshop/unchained/archive/${COMMIT_ID}.tar.gz /archive.tar.gz
+RUN tar -xzf /archive.tar.gz -C /
+RUN cp -R /unchained-${COMMIT_ID}/packages /source
+RUN ls -la /source/packages
+RUN meteor build --server-only --allow-superuser --directory /

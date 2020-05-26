@@ -16,6 +16,7 @@ import 'meteor/unchained:core-documents/plugins/smallinvoice';
 import 'meteor/unchained:core-payment/plugins/invoice';
 import 'meteor/unchained:core-payment/plugins/invoice-prepaid';
 import 'meteor/unchained:core-payment/plugins/datatrans';
+import 'meteor/unchained:core-payment/plugins/apple-iap';
 import 'meteor/unchained:core-pricing/plugins/order-items';
 import 'meteor/unchained:core-pricing/plugins/order-discount';
 import 'meteor/unchained:core-pricing/plugins/order-delivery';
