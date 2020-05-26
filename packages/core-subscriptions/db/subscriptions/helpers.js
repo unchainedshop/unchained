@@ -129,7 +129,7 @@ Subscriptions.helpers({
       orderId: orderIdForFirstPeriod,
     });
     if (period && (orderIdForFirstPeriod || period.isTrial)) {
-      const initialized = await Subscriptions.linkOrderToSubscription({
+      const initialized = await Subscriptions.addSubscriptionPeriod({
         orderId: orderIdForFirstPeriod,
         subscriptionId: this._id,
         period,
@@ -243,7 +243,7 @@ Subscriptions.createSubscription = async (
   return initialized.sendStatusToCustomer({ locale });
 };
 
-Subscriptions.linkOrderToSubscription = async ({
+Subscriptions.addSubscriptionPeriod = async ({
   subscriptionId,
   period,
   orderId,

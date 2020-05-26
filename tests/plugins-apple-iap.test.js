@@ -194,7 +194,7 @@ describe('Plugins: Apple IAP Payments', () => {
     });
   });
 
-  describe.only('Apple Store Server Notifications', () => {
+  describe('Apple Store Server Notifications', () => {
     it('notification_type = INITIAL_BUY', async () => {
       await graphqlFetch({
         query: /* GraphQL */ `
@@ -250,7 +250,7 @@ describe('Plugins: Apple IAP Payments', () => {
         .findOne({ _id: 'iap-order2' });
       expect(order.status).toBe('CONFIRMED');
     });
-    it('notification_type = DID_RECOVER', async () => {
+    it('notification_type = DID_RECOVER should just store the current receipt', async () => {
       const result = await fetch('http://localhost:3000/graphql/apple-iap', {
         method: 'POST',
         headers: {
@@ -262,7 +262,7 @@ describe('Plugins: Apple IAP Payments', () => {
       const subscription = await db.collection('subscriptions').findOne();
       expect(subscription?.status).toBe('ACTIVE');
     });
-    it('notification_type = DID_CHANGE_RENEWAL_STATUS', async () => {
+    it('notification_type = DID_CHANGE_RENEWAL_STATUS should terminate subscription', async () => {
       const result = await fetch('http://localhost:3000/graphql/apple-iap', {
         method: 'POST',
         headers: {

@@ -6,8 +6,10 @@ import {
 } from 'meteor/unchained:core-payment';
 import { createLogger } from 'meteor/unchained:core-logger';
 import { OrderPayments } from 'meteor/unchained:core-orders';
-import { WorkerDirector } from 'meteor/unchained:core-worker';
-import { SubscriptionStatus } from 'meteor/unchained:core-subscriptions';
+import {
+  SubscriptionStatus,
+  Subscriptions,
+} from 'meteor/unchained:core-subscriptions';
 import { WebApp } from 'meteor/webapp';
 import bodyParser from 'body-parser';
 import fetch from 'isomorphic-unfetch';
@@ -64,6 +66,58 @@ const AppleNotificationTypes = {
   DID_CHANGE_RENEWAL_PREF: 'DID_CHANGE_RENEWAL_PREF',
 };
 
+const fixPeriods = ({
+  transactionId,
+  subscriptionId,
+  orderId,
+  transactions,
+}) => {
+  const relevantTransactions = transactions.filter(
+    // eslint-disable-next-line
+    ({ original_transaction_id }) => {
+      return original_transaction_id === transactionId; // eslint-disable-line
+    }
+  );
+
+  const adjustedSubscriptionPeriods = relevantTransactions
+    .map((transaction) => {
+      return {
+        isTrial: transaction.is_trial_period === 'true', // eslint-disable-line
+        start: new Date(parseInt(transaction.purchase_date_ms, 10)),
+        end: new Date(parseInt(transaction.expires_date_ms, 10)),
+        orderId: transaction.transaction_id === transactionId ? orderId : null,
+      };
+    })
+    .sort((left, right) => {
+      return left.end.getTime() - right.end.getTime();
+    });
+
+  Subscriptions.update(
+    {
+      _id: subscriptionId,
+    },
+    {
+      $pull: {
+        periods: { orderId: { $in: [orderId, undefined, null] } },
+      },
+    }
+  );
+
+  Subscriptions.update(
+    {
+      _id: subscriptionId,
+    },
+    {
+      $set: {
+        updated: new Date(),
+      },
+      $push: {
+        periods: { $each: adjustedSubscriptionPeriods },
+      },
+    }
+  );
+};
+
 WebApp.connectHandlers.use(APPLE_IAP_WEBHOOK_PATH, async (req, res) => {
   if (req.method === 'POST') {
     try {
@@ -72,8 +126,8 @@ WebApp.connectHandlers.use(APPLE_IAP_WEBHOOK_PATH, async (req, res) => {
         throw new Error('shared secret not valid');
       }
 
-      const latestTransaction =
-        responseBody?.unified_receipt?.latest_receipt_info[0]; // eslint-disable-line
+      const transactions = responseBody?.unified_receipt?.latest_receipt_info;
+      const latestTransaction = transactions[0]; // eslint-disable-line
 
       if (
         responseBody.notification_type === AppleNotificationTypes.INITIAL_BUY
@@ -96,8 +150,14 @@ WebApp.connectHandlers.use(APPLE_IAP_WEBHOOK_PATH, async (req, res) => {
               receiptData: responseBody?.unified_receipt?.latest_receipt,
             },
           });
+          fixPeriods({
+            transactionId: latestTransaction.original_transaction_id,
+            transactions,
+            subscriptionId: checkedOut.subscription()?._id,
+            orderId: checkedOut._id,
+          });
           logger.verbose(
-            `Unchained confirmed checkout for order ${checkedOut.orderNumber}`,
+            `Confirmed checkout for order ${checkedOut.orderNumber}`,
             { orderId: checkedOut._id }
           );
         }
@@ -121,13 +181,26 @@ WebApp.connectHandlers.use(APPLE_IAP_WEBHOOK_PATH, async (req, res) => {
           userId: subscription.userId,
         });
 
+        fixPeriods({
+          transactionId: latestTransaction.original_transaction_id,
+          transactions,
+          subscriptionId: subscription._id,
+          orderId: originalOrder._id,
+        });
+
+        logger.verbose(
+          `Processed notification for ${latestTransaction.original_transaction_id} and type ${responseBody.notification_type}`
+        );
+
         if (
           responseBody.notification_type === AppleNotificationTypes.DID_RECOVER
         ) {
-          // TODO: Reactivate subscription
-          logger.verbose(
-            `Processed notification for ${latestTransaction.original_transaction_id} and type ${responseBody.notification_type}`
-          );
+          if (
+            subscription.status !== SubscriptionStatus.TERMINATED &&
+            responseBody.auto_renew_status === 'false'
+          ) {
+            await subscription.terminate();
+          }
         }
 
         if (
@@ -141,16 +214,7 @@ WebApp.connectHandlers.use(APPLE_IAP_WEBHOOK_PATH, async (req, res) => {
             await subscription.terminate();
           }
         }
-
-        if (
-          responseBody.notification_type ===
-          AppleNotificationTypes.INTERACTIVE_RENEWAL
-        ) {
-          WorkerDirector.addWork({
-            type: 'SUBSCRIPTION_ORDER_GENERATOR',
-            retries: 0,
-          });
-        }
+        logger.verbose(`Updated subscription from Apple`);
       }
 
       res.writeHead(200);
