@@ -206,13 +206,13 @@ class WorkerDirector {
     return result.value;
   }
 
-  static async doWork({ type, input }) {
+  static async doWork({ type, input, ...options }) {
     const plugin = this.plugins[type];
 
     if (!plugin) log(`${this.name}: No registered plugin for type: ${type}`);
 
     try {
-      const output = await plugin.doWork(input);
+      const output = await plugin.doWork(input, options);
 
       this.events.emit(WorkerEventTypes.done, { output });
 

@@ -7,15 +7,10 @@ import { Products } from 'meteor/unchained:core-products';
 import { Countries } from 'meteor/unchained:core-countries';
 import { Currencies } from 'meteor/unchained:core-currencies';
 import { Logs, log } from 'meteor/unchained:core-logger';
-import {
-  MessagingDirector,
-  MessagingType,
-} from 'meteor/unchained:core-messaging';
+import { WorkerDirector } from 'meteor/unchained:core-worker';
 import { Subscriptions } from './collections';
 import { SubscriptionStatus } from './schema';
 import { SubscriptionDirector } from '../../director';
-
-const { EMAIL_FROM, UI_ENDPOINT } = process.env;
 
 Logs.helpers({
   subscription() {
@@ -99,38 +94,32 @@ Subscriptions.helpers({
   },
   async terminate({ subscriptionContext } = {}, options) {
     if (this.status === SubscriptionStatus.TERMINATED) return this;
+    const locale = this.user().locale(options);
     return (
       await this.setStatus(
         SubscriptionStatus.TERMINATED,
         'terminated manually'
       ).process({ subscriptionContext })
-    ).sendStatusToCustomer(options);
+    ).sendStatusToCustomer({ locale });
   },
   async activate({ subscriptionContext } = {}, options) {
     if (this.status === SubscriptionStatus.TERMINATED) return this;
+    const locale = this.user().locale(options);
     return (
       await this.setStatus(
         SubscriptionStatus.ACTIVE,
         'activated manually'
       ).process({ subscriptionContext })
-    ).sendStatusToCustomer(options);
+    ).sendStatusToCustomer({ locale });
   },
-  sendStatusToCustomer(options) {
-    const user = this.user();
-    const locale = user.locale(options).normalized;
-    const director = new MessagingDirector({
-      locale,
-      subscription: this,
-      type: MessagingType.EMAIL,
-    });
-    director.sendMessage({
-      template: 'shop.unchained.subscriptions.status',
-      meta: {
-        mailPrefix: `${this.subscriptionNumber}_`,
-        from: EMAIL_FROM,
-        to: user.primaryEmail()?.address,
-        url: `${UI_ENDPOINT}/subscription?_id=${this._id}&otp=${this.subscriptionNumber}`,
-        subscription: this,
+  sendStatusToCustomer({ locale }) {
+    WorkerDirector.addWork({
+      type: 'MESSAGE',
+      retries: 0,
+      input: {
+        locale,
+        template: 'SUBSCRIPTION_STATUS',
+        subscriptionId: this._id,
       },
     });
     return this;
@@ -140,7 +129,7 @@ Subscriptions.helpers({
       orderId: orderIdForFirstPeriod,
     });
     if (period && (orderIdForFirstPeriod || period.isTrial)) {
-      const initialized = await Subscriptions.linkOrderToSubscription({
+      const initialized = await Subscriptions.addSubscriptionPeriod({
         orderId: orderIdForFirstPeriod,
         subscriptionId: this._id,
         period,
@@ -247,13 +236,14 @@ Subscriptions.createSubscription = async (
     countryCode,
   });
   const subscription = Subscriptions.findOne({ _id: subscriptionId });
+  const locale = subscription.user().locale(options);
   const initialized = await subscription.initializeSubscription(
     orderIdForFirstPeriod
   );
-  return initialized.sendStatusToCustomer(options);
+  return initialized.sendStatusToCustomer({ locale });
 };
 
-Subscriptions.linkOrderToSubscription = async ({
+Subscriptions.addSubscriptionPeriod = async ({
   subscriptionId,
   period,
   orderId,

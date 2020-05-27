@@ -236,7 +236,10 @@ PaymentProviders.findProviders = ({ type } = {}, ...options) =>
     ...options
   ).fetch();
 
-PaymentProviders.findSupported = ({ order }, ...options) =>
-  PaymentProviders.findProviders({}, ...options)
-    .filter((paymentProvider) => paymentProvider.isActive(order))
-    .sort(settings.sortProviders({ order }));
+PaymentProviders.findSupported = ({ order }, ...options) => {
+  const providers = PaymentProviders.findProviders(
+    {},
+    ...options
+  ).filter((paymentProvider) => paymentProvider.isActive(order));
+  return settings.filterSupportedProviders({ providers, order });
+};

@@ -7,16 +7,11 @@ import { Products } from 'meteor/unchained:core-products';
 import { Countries } from 'meteor/unchained:core-countries';
 import { Currencies } from 'meteor/unchained:core-currencies';
 import { Logs, log } from 'meteor/unchained:core-logger';
-import {
-  MessagingDirector,
-  MessagingType,
-} from 'meteor/unchained:core-messaging';
+import { WorkerDirector } from 'meteor/unchained:core-worker';
 import { Quotations } from './collections';
 import { QuotationDocuments } from '../quotation-documents/collections';
 import { QuotationStatus } from './schema';
 import { QuotationDirector } from '../../director';
-
-const { EMAIL_FROM, UI_ENDPOINT } = process.env;
 
 Logs.helpers({
   quotation() {
@@ -70,49 +65,43 @@ Quotations.helpers({
   },
   verify({ quotationContext } = {}, options) {
     if (this.status !== QuotationStatus.REQUESTED) return this;
+    const locale = this.user().locale(options);
     return this.setStatus(
       QuotationStatus.PROCESSING,
       'verified elligibility manually'
     )
       .process({ quotationContext })
-      .sendStatusToCustomer(options);
+      .sendStatusToCustomer({ locale });
   },
   reject({ quotationContext } = {}, options) {
     if (this.status === QuotationStatus.FULLFILLED) return this;
+    const locale = this.user().locale(options);
     return this.setStatus(QuotationStatus.REJECTED, 'rejected manually')
       .process({ quotationContext })
-      .sendStatusToCustomer(options);
+      .sendStatusToCustomer({ locale });
   },
   propose({ quotationContext } = {}, options) {
     if (this.status !== QuotationStatus.PROCESSING) return this;
+    const locale = this.user().locale(options);
     return this.setStatus(QuotationStatus.PROPOSED, 'proposed manually')
       .process({ quotationContext })
-      .sendStatusToCustomer(options);
+      .sendStatusToCustomer({ locale });
   },
   fullfill({ quotationContext, info } = {}, options) {
     if (this.status === QuotationStatus.FULLFILLED) return this;
+    const locale = this.user().locale(options);
     return this.setStatus(QuotationStatus.FULLFILLED, JSON.stringify(info))
       .process({ quotationContext })
-      .sendStatusToCustomer(options);
+      .sendStatusToCustomer({ locale });
   },
-  sendStatusToCustomer(options) {
-    const user = this.user();
-    const locale = user.locale(options).normalized;
-    const attachments = [this.document({ type: 'PROPOSAL' })].filter(Boolean);
-    const director = new MessagingDirector({
-      locale,
-      quotation: this,
-      type: MessagingType.EMAIL,
-    });
-    director.sendMessage({
-      template: 'shop.unchained.quotations.proposal',
-      attachments,
-      meta: {
-        mailPrefix: `${this.quotationNumber}_`,
-        from: EMAIL_FROM,
-        to: user.primaryEmail()?.address,
-        url: `${UI_ENDPOINT}/quotation?_id=${this._id}&otp=${this.quotationNumber}`,
-        quotation: this,
+  sendStatusToCustomer({ locale }) {
+    WorkerDirector.addWork({
+      type: 'MESSAGE',
+      retries: 0,
+      input: {
+        locale,
+        template: 'QUOTATION_STATUS',
+        quotationId: this._id,
       },
     });
     return this;
@@ -266,7 +255,8 @@ Quotations.requestQuotation = (
     countryCode,
   });
   const quotation = Quotations.findOne({ _id: quotationId });
-  return quotation.process().sendStatusToCustomer(options);
+  const locale = quotation.user().locale(options);
+  return quotation.process().sendStatusToCustomer({ locale });
 };
 
 Quotations.updateContext = ({ context, quotationId }) => {

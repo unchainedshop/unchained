@@ -1,7 +1,7 @@
-import { compose, withState } from 'recompose';
+import { compose } from 'recompose';
 import { graphql } from 'react-apollo';
 import React from 'react';
-import { Table, Icon, Button, Loader } from 'semantic-ui-react';
+import { Table, Icon, Button } from 'semantic-ui-react';
 import InfiniteScroll from 'react-infinite-scroller';
 import Link from 'next/link';
 
@@ -13,9 +13,8 @@ export default ({
   data,
   children,
   loadMoreEntries,
-  updateHasMore,
-  hasMore,
   loading,
+  limit,
   ...rest
 }) => (
   <Table celled {...rest}>
@@ -46,14 +45,7 @@ export default ({
         pageStart={0}
         element={'tbody'}
         loadMore={loadMoreEntries}
-        hasMore={hasMore}
-        loader={
-          <Table.Row>
-            <Table.Cell colSpan={cols}>
-              <Loader active inline="centered" />
-            </Table.Cell>
-          </Table.Row>
-        }
+        hasMore={limit ?? true}
       >
         {items.map(rowRenderer)}
       </InfiniteScroll>
@@ -81,13 +73,10 @@ export default ({
   </Table>
 );
 
-Array.prototype.diff = function(a) {return this.filter(i => a.indexOf(i) !== -1)}; // eslint-disable-line
-
 export const withDataTableLoader = ({ query, queryName, itemsPerPage = 5 }) =>
   compose(
-    withState('hasMore', 'updateHasMore', true),
     graphql(query, {
-      options: ({ hasMore, updateHasMore, queryOptions, ...props }) => ({
+      options: ({ queryOptions, ...props }) => ({
         variables: {
           offset: 0,
           limit: process.browser ? itemsPerPage : 1,
@@ -95,44 +84,27 @@ export const withDataTableLoader = ({ query, queryName, itemsPerPage = 5 }) =>
         },
         ...queryOptions,
       }),
-      props: ({
-        data: { loading, fetchMore, ...data },
-        ownProps: { updateHasMore, hasMore },
-      }) => ({
+      props: ({ data: { loading, fetchMore, stopPolling, ...data } }) => ({
         loading,
-        hasMore:
-          data[queryName] && itemsPerPage > data[queryName].length
-            ? false
-            : hasMore,
         items: data[queryName],
-        loadMoreEntries: () =>
-          fetchMore({
+        loadMoreEntries: () => {
+          stopPolling();
+          return fetchMore({
             variables: {
-              offset:
-                Math.floor(data[queryName].length / itemsPerPage) *
-                itemsPerPage,
-              limit: itemsPerPage,
+              offset: data[queryName].length,
             },
-            updateQuery: (previousResult, { fetchMoreResult }) => {
-              if (!fetchMoreResult || fetchMoreResult[queryName].length === 0) {
-                updateHasMore(false);
-                return previousResult;
-              }
-
-              const oldIds = previousResult[queryName].map((item) => item._id);
-              const newIds = fetchMoreResult[queryName].filter(
-                (item) => oldIds.indexOf(item._id) === -1
-              );
-              if (newIds.length === 0) {
-                updateHasMore(false);
-                return previousResult;
-              }
-
-              const newObj = {};
-              newObj[queryName] = [...previousResult[queryName], ...newIds];
-              return { ...previousResult, ...newObj };
+            updateQuery: (prev, { fetchMoreResult }) => {
+              if (!fetchMoreResult) return prev;
+              return {
+                ...prev,
+                [queryName]: [
+                  ...prev[queryName],
+                  ...fetchMoreResult[queryName],
+                ],
+              };
             },
-          }),
+          });
+        },
       }),
     })
   );

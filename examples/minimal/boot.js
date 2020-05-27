@@ -7,16 +7,16 @@ import { embedControlpanelInMeteorWebApp } from '@unchainedshop/controlpanel';
 
 import 'meteor/unchained:core-delivery/plugins/post';
 import 'meteor/unchained:core-delivery/plugins/pick-mup';
-import 'meteor/unchained:core-delivery/plugins/send-mail';
+import 'meteor/unchained:core-delivery/plugins/send-message';
 import 'meteor/unchained:core-delivery/plugins/stores';
 import 'meteor/unchained:core-warehousing/plugins/google-sheets';
 import 'meteor/unchained:core-discounting/plugins/half-price-manual';
 import 'meteor/unchained:core-discounting/plugins/100-off';
 import 'meteor/unchained:core-documents/plugins/smallinvoice';
-import 'meteor/unchained:core-messaging/plugins/local-mail';
 import 'meteor/unchained:core-payment/plugins/invoice';
 import 'meteor/unchained:core-payment/plugins/invoice-prepaid';
 import 'meteor/unchained:core-payment/plugins/datatrans';
+import 'meteor/unchained:core-payment/plugins/apple-iap';
 import 'meteor/unchained:core-pricing/plugins/order-items';
 import 'meteor/unchained:core-pricing/plugins/order-discount';
 import 'meteor/unchained:core-pricing/plugins/order-delivery';
@@ -31,8 +31,7 @@ import 'meteor/unchained:core-subscriptions/plugins/licensed';
 import 'meteor/unchained:core-worker/plugins/external';
 import 'meteor/unchained:core-worker/plugins/http-request';
 import 'meteor/unchained:core-worker/plugins/heartbeat';
-
-import configureEmailTemplates from './templates';
+import 'meteor/unchained:core-worker/plugins/email';
 
 const logger = console;
 
@@ -88,15 +87,20 @@ const initializeDatabase = () => {
 };
 
 Meteor.startup(() => {
-  configureEmailTemplates();
   startPlatform({
     introspection: true,
     modules: {
-      delivery: {
-        sortProviders: () => (left, right) => {
-          return (
-            new Date(left.created).getTime() - new Date(right.created).getTime()
-          );
+      payment: {
+        filterSupportedProviders: ({ providers }) => {
+          return providers.sort((left, right) => {
+            if (left.adapterKey < right.adapterKey) {
+              return -1;
+            }
+            if (left.adapterKey > right.adapterKey) {
+              return 1;
+            }
+            return 0;
+          });
         },
       },
     },

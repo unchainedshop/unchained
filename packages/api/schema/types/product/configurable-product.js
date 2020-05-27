@@ -92,7 +92,9 @@ export default [
       """
       Complete assignment matrix
       """
-      assignments: [ProductVariationAssignment!]!
+      assignments(
+        includeInactive: Boolean = false
+      ): [ProductVariationAssignment!]!
       meta: JSON
     }
   `,

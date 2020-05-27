@@ -30,7 +30,7 @@ class GenerateSubscriptionOrders extends WorkerPlugin {
               if (configuration) {
                 const order = await subscription.generateOrder(configuration);
                 if (order) {
-                  await Subscriptions.linkOrderToSubscription({
+                  await Subscriptions.addSubscriptionPeriod({
                     orderId: order._id,
                     subscriptionId: subscription._id,
                     period,

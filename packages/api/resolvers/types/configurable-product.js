@@ -5,8 +5,8 @@ export default {
   status(obj) {
     return obj.normalizedStatus();
   },
-  assignments(obj) {
-    return obj.proxyAssignments();
+  assignments(obj, { includeInactive }) {
+    return obj.proxyAssignments({ includeInactive });
   },
   async products(obj, { vectors = [], includeInactive } = {}) {
     return obj.proxyProducts(vectors, { includeInactive });

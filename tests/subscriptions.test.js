@@ -60,6 +60,7 @@ describe('Subscriptions', () => {
               orderNumber
               status
               subscription {
+                _id
                 status
               }
             }
@@ -90,6 +91,7 @@ describe('Subscriptions', () => {
         orderNumber: 'subscriptionCart',
         status: 'CONFIRMED',
         subscription: {
+          _id: expect.anything(),
           status: 'ACTIVE',
         },
       });

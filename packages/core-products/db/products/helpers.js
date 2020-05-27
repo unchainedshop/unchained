@@ -209,11 +209,30 @@ Products.helpers({
   variation(key) {
     return ProductVariations.findOne({ productId: this._id, key });
   },
-  proxyAssignments() {
-    return ((this.proxy && this.proxy.assignments) || []).map((assignment) => ({
-      assignment,
-      product: this,
-    }));
+  proxyAssignments({ includeInactive = false } = {}) {
+    const assignments = this.proxy?.assignments || [];
+
+    const productIds = assignments.map(({ productId }) => productId);
+    const selector = {
+      _id: { $in: productIds },
+      status: includeInactive
+        ? { $in: [ProductStatus.ACTIVE, ProductStatus.DRAFT] }
+        : ProductStatus.ACTIVE,
+    };
+    const supportedProductIds = Products.find(selector, {
+      fields: { _id: 1 },
+    })
+      .fetch()
+      .map(({ _id }) => _id);
+
+    return assignments
+      .filter(({ productId }) => {
+        return supportedProductIds.includes(productId);
+      })
+      .map((assignment) => ({
+        assignment,
+        product: this,
+      }));
   },
   proxyProducts(vectors, { includeInactive = false } = {}) {
     const { proxy = {} } = this;
