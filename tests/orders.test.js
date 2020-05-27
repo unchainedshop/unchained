@@ -4,7 +4,7 @@ import {
   createLoggedInGraphqlFetch,
 } from "./helpers";
 import { SimpleOrder } from "./seeds/orders";
-import { USER_TOKEN, ADMIN_TOKEN } from "./seeds/users";
+import { USER_TOKEN } from "./seeds/users";
 let connection;
 let graphqlFetch;
 
@@ -58,7 +58,28 @@ describe("Order: Management", () => {
           orderId: SimpleOrder._id,
         },
       });
+
       expect(order._id).toEqual(SimpleOrder._id);
+    });
+
+    it("should return not found for non-existing order", async () => {
+      const {
+        errors,
+        data: { order },
+      } = await graphqlFetch({
+        query: /* GraphQL */ `
+          query order($orderId: ID!) {
+            order(orderId: $orderId) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          orderId: "non-existing-id",
+        },
+      });
+
+      expect(errors.length).toEqual(1);
     });
   });
 
