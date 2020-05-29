@@ -35,7 +35,7 @@ export const SimpleProduct = {
 
 export const UnpublishedProduct = {
   _id: "un-published",
-  sequence: 0,
+  sequence: 1,
   status: "DRAFT",
   published: null,
   tags: ["tag-1", "tag-2", "highlight"],

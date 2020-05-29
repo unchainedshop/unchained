@@ -191,4 +191,67 @@ describe("Products", () => {
       expect(errors.length).toEqual(1);
     });
   });
+
+  describe("Mutation.updateProduct should", () => {
+    it("update successfuly when passed valid product ID ", async () => {
+      const { data: { updateProduct } = {} } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation UpdateProduct(
+            $productId: ID!
+            $product: UpdateProductInput!
+          ) {
+            updateProduct(productId: $productId, product: $product) {
+              _id
+              sequence
+              tags
+              meta
+            }
+          }
+        `,
+        variables: {
+          productId: SimpleProduct._id,
+          product: {
+            sequence: 1,
+            tags: ["tag-1", "tag-2", "highlight", "update-tag"],
+            meta: {
+              updated: true,
+            },
+          },
+        },
+      });
+
+      expect(updateProduct).toMatchObject({
+        _id: "simpleproduct",
+        sequence: 1,
+        tags: ["tag-1", "tag-2", "highlight", "update-tag"],
+        meta: { updated: true },
+      });
+    });
+
+    it("return error when passed non-existing product id", async () => {
+      const { errors = {} } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation UpdateProduct(
+            $productId: ID!
+            $product: UpdateProductInput!
+          ) {
+            updateProduct(productId: $productId, product: $product) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          productId: "none-existing-id",
+          product: {
+            sequence: 1,
+            tags: ["tag-1", "tag-2", "highlight", "update-tag"],
+            meta: {
+              updated: true,
+            },
+          },
+        },
+      });
+      expect(errors.length).toEqual(1);
+    });
+  });
 });
