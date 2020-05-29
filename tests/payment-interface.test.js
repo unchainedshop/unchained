@@ -28,6 +28,8 @@ describe("PaymentInterface", () => {
           query PaymentInterfaces($type: PaymentProviderType!) {
             paymentInterfaces(type: $type) {
               _id
+              label
+              version
             }
           }
         `,

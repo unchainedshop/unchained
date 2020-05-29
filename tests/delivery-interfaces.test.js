@@ -28,6 +28,8 @@ describe("DeliveryInterfaces", () => {
           query DeliveryInterfaces($type: DeliveryProviderType!) {
             deliveryInterfaces(type: $type) {
               _id
+              label
+              version
             }
           }
         `,

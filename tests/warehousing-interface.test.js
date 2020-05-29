@@ -28,6 +28,8 @@ describe("WarehousingInterfaces", () => {
           query WarehousingInterfaces($type: WarehousingProviderType!) {
             warehousingInterfaces(type: $type) {
               _id
+              label
+              version
             }
           }
         `,

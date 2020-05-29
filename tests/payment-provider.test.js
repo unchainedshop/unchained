@@ -28,6 +28,17 @@ describe("PaymentProviders", () => {
           query PaymentProviders {
             paymentProviders {
               _id
+              created
+              updated
+              deleted
+              type
+              interface {
+                _id
+                label
+                version
+              }
+              configuration
+              configurationError
             }
           }
         `,
@@ -64,6 +75,17 @@ describe("PaymentProviders", () => {
           query PaymentProvider($paymentProviderId: ID!) {
             paymentProvider(paymentProviderId: $paymentProviderId) {
               _id
+              created
+              updated
+              deleted
+              type
+              interface {
+                _id
+                label
+                version
+              }
+              configuration
+              configurationError
             }
           }
         `,

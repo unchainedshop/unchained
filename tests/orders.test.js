@@ -30,8 +30,46 @@ describe("Order: Management", () => {
             me {
               orders {
                 _id
-                user {
-                  username
+                status
+                created
+                updated
+                ordered
+                orderNumber
+                confirmed
+                fullfilled
+                contact {
+                  telNumber
+                  emailAddress
+                }
+                country {
+                  _id
+                }
+                meta
+                currency {
+                  _id
+                }
+
+                billingAddress {
+                  firstName
+                }
+
+                items {
+                  _id
+                }
+                discounts {
+                  _id
+                }
+                total {
+                  amount
+                }
+                documents {
+                  _id
+                }
+                supportedDeliveryProviders {
+                  _id
+                }
+                supportedPaymentProviders {
+                  _id
                 }
               }
             }
@@ -51,6 +89,47 @@ describe("Order: Management", () => {
           query order($orderId: ID!) {
             order(orderId: $orderId) {
               _id
+              status
+              created
+              updated
+              ordered
+              orderNumber
+              confirmed
+              fullfilled
+              contact {
+                telNumber
+                emailAddress
+              }
+              country {
+                _id
+              }
+              meta
+              currency {
+                _id
+              }
+
+              billingAddress {
+                firstName
+              }
+
+              items {
+                _id
+              }
+              discounts {
+                _id
+              }
+              total {
+                amount
+              }
+              documents {
+                _id
+              }
+              supportedDeliveryProviders {
+                _id
+              }
+              supportedPaymentProviders {
+                _id
+              }
             }
           }
         `,
@@ -62,7 +141,7 @@ describe("Order: Management", () => {
       expect(order._id).toEqual(SimpleOrder._id);
     });
 
-    it("should return not found for non-existing order", async () => {
+    it("should return null for non-existing order", async () => {
       const {
         errors,
         data: { order },
@@ -79,7 +158,7 @@ describe("Order: Management", () => {
         },
       });
 
-      expect(errors.length).toEqual(1);
+      expect(order).toBe(null);
     });
   });
 

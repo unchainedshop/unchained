@@ -28,6 +28,18 @@ describe("WarehousingProviders", () => {
           query WarehousingProviders {
             warehousingProviders {
               _id
+              created
+              updated
+              deleted
+              type
+              interface {
+                _id
+                label
+                version
+              }
+              configuration
+              configurationError
+              isActive
             }
           }
         `,
@@ -64,6 +76,18 @@ describe("WarehousingProviders", () => {
           query WarehousingProvider($warehousingProviderId: ID!) {
             warehousingProvider(warehousingProviderId: $warehousingProviderId) {
               _id
+              created
+              updated
+              deleted
+              type
+              interface {
+                _id
+                label
+                version
+              }
+              configuration
+              configurationError
+              isActive
             }
           }
         `,
