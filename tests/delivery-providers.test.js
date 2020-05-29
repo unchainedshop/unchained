@@ -8,6 +8,7 @@ import { SimpleDeliveryProvider } from "./seeds/deliveries";
 
 let connection;
 let graphqlFetch;
+const deliverProviderFrg = {};
 
 describe("DeliveryProviders", () => {
   beforeAll(async () => {
@@ -28,6 +29,40 @@ describe("DeliveryProviders", () => {
           query DeliveryProviders {
             deliveryProviders {
               _id
+              created
+              updated
+              deleted
+              type
+              interface {
+                _id
+                label
+                version
+              }
+              configuration
+              configurationError
+              isActive
+              simulatedPrice {
+                _id
+                isTaxable
+                isNetPrice
+                country {
+                  _id
+                  isoCode
+                  isActive
+                  isBase
+                  defaultCurrency {
+                    _id
+                    isoCode
+                    isActive
+                  }
+                  flagEmoji
+                  name
+                }
+                price {
+                  amount
+                  currency
+                }
+              }
             }
           }
         `,
@@ -64,6 +99,40 @@ describe("DeliveryProviders", () => {
           query DeliveryProvider($deliveryProviderId: ID!) {
             deliveryProvider(deliveryProviderId: $deliveryProviderId) {
               _id
+              created
+              updated
+              deleted
+              type
+              interface {
+                _id
+                label
+                version
+              }
+              configuration
+              configurationError
+              isActive
+              simulatedPrice {
+                _id
+                isTaxable
+                isNetPrice
+                country {
+                  _id
+                  isoCode
+                  isActive
+                  isBase
+                  defaultCurrency {
+                    _id
+                    isoCode
+                    isActive
+                  }
+                  flagEmoji
+                  name
+                }
+                price {
+                  amount
+                  currency
+                }
+              }
             }
           }
         `,
