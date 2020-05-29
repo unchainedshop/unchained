@@ -27,6 +27,48 @@ describe("TranslatedFilterTexts", () => {
           query Quotations($limit: Int = 10, $offset: Int = 0) {
             quotations(limit: $limit, offset: $offset) {
               _id
+              user {
+                _id
+              }
+              product {
+                _id
+              }
+              status
+              created
+              expires
+              updated
+              isExpired
+              quotationNumber
+              fullfilled
+              rejected
+              country {
+                _id
+              }
+              currency {
+                _id
+                isoCode
+                isActive
+              }
+              meta
+              configuration {
+                key
+                value
+              }
+              documents {
+                _id
+              }
+              logs {
+                _id
+                created
+                level
+                message
+                user {
+                  _id
+                }
+                order {
+                  _id
+                }
+              }
             }
           }
         `,
@@ -61,6 +103,48 @@ describe("TranslatedFilterTexts", () => {
           query Quotation($quotationId: ID!) {
             quotation(quotationId: $quotationId) {
               _id
+              user {
+                _id
+              }
+              product {
+                _id
+              }
+              status
+              created
+              expires
+              updated
+              isExpired
+              quotationNumber
+              fullfilled
+              rejected
+              country {
+                _id
+              }
+              currency {
+                _id
+                isoCode
+                isActive
+              }
+              meta
+              configuration {
+                key
+                value
+              }
+              documents {
+                _id
+              }
+              logs {
+                _id
+                created
+                level
+                message
+                user {
+                  _id
+                }
+                order {
+                  _id
+                }
+              }
             }
           }
         `,

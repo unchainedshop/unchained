@@ -34,6 +34,9 @@ describe("TranslatedFilterTexts", () => {
               filterOptionValue: $filterOptionValue
             ) {
               _id
+              locale
+              title
+              subtitle
             }
           }
         `,

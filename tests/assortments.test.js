@@ -55,6 +55,62 @@ describe("Assortments", () => {
               includeLeaves: $includeLeaves
             ) {
               _id
+              created
+              updated
+              isActive
+              isBase
+              isRoot
+              sequence
+              tags
+              meta
+              texts {
+                _id
+              }
+              productAssignments {
+                _id
+              }
+              filterAssignments {
+                _id
+              }
+              linkedAssortments {
+                _id
+              }
+              assortmentPaths {
+                links {
+                  assortmentId
+                  assortmentTexts {
+                    _id
+                  }
+                  link {
+                    _id
+                  }
+                }
+              }
+              children {
+                _id
+              }
+              search {
+                totalProducts
+                filteredProducts
+                filters {
+                  examinedProducts
+                  filteredProducts
+                  definition {
+                    _id
+                  }
+                  isSelected
+                  options {
+                    filteredProducts
+                    definition {
+                      _id
+                    }
+                    isSelected
+                  }
+                }
+                products {
+                  _id
+                }
+              }
             }
           }
         `,
@@ -134,6 +190,62 @@ describe("Assortments", () => {
           query Assortment($assortmentId: ID) {
             assortment(assortmentId: $assortmentId) {
               _id
+              created
+              updated
+              isActive
+              isBase
+              isRoot
+              sequence
+              tags
+              meta
+              texts {
+                _id
+              }
+              productAssignments {
+                _id
+              }
+              filterAssignments {
+                _id
+              }
+              linkedAssortments {
+                _id
+              }
+              assortmentPaths {
+                links {
+                  assortmentId
+                  assortmentTexts {
+                    _id
+                  }
+                  link {
+                    _id
+                  }
+                }
+              }
+              children {
+                _id
+              }
+              search {
+                totalProducts
+                filteredProducts
+                filters {
+                  examinedProducts
+                  filteredProducts
+                  definition {
+                    _id
+                  }
+                  isSelected
+                  options {
+                    filteredProducts
+                    definition {
+                      _id
+                    }
+                    isSelected
+                  }
+                }
+                products {
+                  _id
+                }
+              }
             }
           }
         `,

@@ -26,6 +26,15 @@ describe("Logs", () => {
           query Logs {
             logs {
               _id
+              created
+              level
+              message
+              user {
+                _id
+              }
+              order {
+                _id
+              }
             }
           }
         `,

@@ -28,6 +28,11 @@ describe("TranslatedAssortmentsText", () => {
           query TranslatedAssortmentTexts($assortmentId: ID!) {
             translatedAssortmentTexts(assortmentId: $assortmentId) {
               _id
+              title
+              description
+              locale
+              subtitle
+              slug
             }
           }
         `,
@@ -36,9 +41,7 @@ describe("TranslatedAssortmentsText", () => {
         },
       });
 
-      expect(translatedAssortmentTexts).toEqual(
-        expect.arrayContaining([{ _id: "german" }, { _id: "french" }])
-      );
+      expect(translatedAssortmentTexts.length).toEqual(2);
     });
 
     it("return empty array when non-existing id is passed", async () => {

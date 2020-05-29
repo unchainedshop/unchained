@@ -36,6 +36,28 @@ describe("Filters", () => {
               includeInactive: $includeInactive
             ) {
               _id
+              updated
+              created
+              isActive
+              texts {
+                _id
+                locale
+                title
+                subtitle
+              }
+              type
+              key
+              key
+              options {
+                _id
+                texts {
+                  _id
+                  locale
+                  title
+                  subtitle
+                }
+                value
+              }
             }
           }
         `,
@@ -80,6 +102,28 @@ describe("Filters", () => {
           query Filter($filterId: ID!) {
             filter(filterId: $filterId) {
               _id
+              updated
+              created
+              isActive
+              texts {
+                _id
+                locale
+                title
+                subtitle
+              }
+              type
+              key
+              key
+              options {
+                _id
+                texts {
+                  _id
+                  locale
+                  title
+                  subtitle
+                }
+                value
+              }
             }
           }
         `,
