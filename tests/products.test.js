@@ -254,4 +254,77 @@ describe("Products", () => {
       expect(errors.length).toEqual(1);
     });
   });
+
+  describe("Mutation.removeProduct should", () => {
+    it("remove product completly when passed valid product ID ", async () => {
+      const { data: { removeProduct } = {} } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation RemoveProduct($productId: ID!) {
+            removeProduct(productId: $productId) {
+              _id
+              sequence
+              status
+            }
+          }
+        `,
+        variables: {
+          productId: SimpleProduct._id,
+        },
+      });
+
+      expect(removeProduct.status).toBe("DELETED");
+    });
+
+    it("return error when attempting to get removed product ", async () => {
+      const { data: { removeProduct } = {} } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation RemoveProduct($productId: ID!) {
+            removeProduct(productId: $productId) {
+              _id
+              sequence
+              status
+            }
+          }
+        `,
+        variables: {
+          productId: SimpleProduct._id,
+        },
+      });
+
+      const { errors = {} } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation RemoveProduct($productId: ID!) {
+            removeProduct(productId: $productId) {
+              _id
+              sequence
+              status
+            }
+          }
+        `,
+        variables: {
+          productId: SimpleProduct._id,
+        },
+      });
+
+      expect(errors.length).toBe(1);
+    });
+
+    it("return error when passed non-existing product id", async () => {
+      const { errors = {} } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation RemoveProduct($productId: ID!) {
+            removeProduct(productId: $productId) {
+              _id
+              sequence
+              status
+            }
+          }
+        `,
+        variables: {
+          productId: "none-existing-id",
+        },
+      });
+      expect(errors.length).toEqual(1);
+    });
+  });
 });
