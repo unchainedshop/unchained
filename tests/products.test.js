@@ -275,8 +275,8 @@ describe("Products", () => {
       expect(removeProduct.status).toBe("DELETED");
     });
 
-    it("return error when attempting to get removed product ", async () => {
-      const { data: { removeProduct } = {} } = await graphqlFetch({
+    it("return error when attempting to delete already removed product ", async () => {
+      const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation RemoveProduct($productId: ID!) {
             removeProduct(productId: $productId) {
@@ -290,22 +290,6 @@ describe("Products", () => {
           productId: SimpleProduct._id,
         },
       });
-
-      const { errors = {} } = await graphqlFetch({
-        query: /* GraphQL */ `
-          mutation RemoveProduct($productId: ID!) {
-            removeProduct(productId: $productId) {
-              _id
-              sequence
-              status
-            }
-          }
-        `,
-        variables: {
-          productId: SimpleProduct._id,
-        },
-      });
-
       expect(errors.length).toBe(1);
     });
 
