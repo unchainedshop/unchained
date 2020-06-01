@@ -584,7 +584,7 @@ describe("Assortments", () => {
   });
 
   describe("mutation.setBaseAssortment for loged in user should", () => {
-    it("update assortment successfuly when passed valid assortment Id", async () => {
+    it("change isBase property to true when passed valid assortment Id", async () => {
       const {
         data: { setBaseAssortment },
       } = await graphqlFetch({
@@ -641,11 +641,6 @@ describe("Assortments", () => {
         `,
         variables: {
           assortmentId: SimpleAssortment[1]._id,
-          assortment: {
-            isRoot: false,
-            tags: ["test-assrtment-1", "test-assortment-2"],
-            isActive: true,
-          },
         },
       });
       expect(setBaseAssortment.isBase).toBe(true);
@@ -681,6 +676,122 @@ describe("Assortments", () => {
         `,
         variables: {
           assortmentId: SimpleAssortment[1]._id,
+        },
+      });
+
+      expect(errors.length).toEqual(1);
+    });
+  });
+
+  describe("mutation.removeAssortment for loged in user should", () => {
+    it("Remove assortment successfuly when passed valid assortment Id", async () => {
+      const {
+        data: { removeAssortment },
+      } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation RemoveAssortment($assortmentId: ID!) {
+            removeAssortment(assortmentId: $assortmentId) {
+              _id
+              created
+              updated
+              isActive
+              isBase
+              isRoot
+              sequence
+              tags
+              meta
+              texts {
+                _id
+                locale
+                slug
+                subtitle
+                description
+              }
+              productAssignments {
+                _id
+                sortKey
+                tags
+                meta
+                assortment {
+                  _id
+                }
+                product {
+                  _id
+                }
+              }
+              filterAssignments {
+                _id
+              }
+              linkedAssortments {
+                _id
+              }
+              assortmentPaths {
+                links {
+                  assortmentId
+                }
+              }
+              children {
+                _id
+              }
+              search {
+                totalProducts
+              }
+            }
+          }
+        `,
+        variables: {
+          assortmentId: SimpleAssortment[2]._id,
+        },
+      });
+
+      const {
+        data: { assortment },
+      } = await graphqlFetch({
+        query: /* GraphQL */ `
+          query Assortment($assortmentId: ID!) {
+            assortment(assortmentId: $assortmentId) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          assortmentId: SimpleAssortment[2]._id,
+        },
+      });
+
+      expect(assortment).toBe(null);
+    });
+
+    it("return error when passed none existing assortment Id", async () => {
+      const { errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation RemoveAssortment($assortmentId: ID!) {
+            removeAssortment(assortmentId: $assortmentId) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          assortmentId: "non-existing-id",
+        },
+      });
+      expect(errors.length).toEqual(1);
+    });
+  });
+
+  describe("mutation.removeAssortment for anonymous user should", () => {
+    it("Return error", async () => {
+      const graphqlAnonymousFetch = await createAnonymousGraphqlFetch();
+      const { errors } = await graphqlAnonymousFetch({
+        query: /* GraphQL */ `
+          mutation RemoveAssortment($assortmentId: ID!) {
+            removeAssortment(assortmentId: $assortmentId) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          assortmentId: SimpleAssortment[3]._id,
         },
       });
 
