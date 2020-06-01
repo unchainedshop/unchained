@@ -369,4 +369,93 @@ describe("Filters", () => {
       expect(errors.length).toEqual(1);
     });
   });
+
+  describe("mutation.removeFilter for loged in User", () => {
+    it("should remove filter successfuly when passed valid filter ID", async () => {
+      const { data: { removeFilter } = {} } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation RemoveFilter($filterId: ID!) {
+            removeFilter(filterId: $filterId) {
+              _id
+              updated
+              created
+              isActive
+              texts {
+                _id
+                locale
+                title
+                subtitle
+              }
+              type
+              key
+              options {
+                _id
+                value
+                texts {
+                  _id
+                }
+              }
+            }
+          }
+        `,
+        variables: {
+          filterId: MultiChoiceFilter._id,
+        },
+      });
+
+      const {
+        data: { filter },
+      } = await graphqlFetch({
+        query: /* GraphQL */ `
+          query Filter($filterId: ID!) {
+            filter(filterId: $filterId) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          filterId: MultiChoiceFilter._id,
+        },
+      });
+
+      expect(filter).toBe(null);
+    });
+
+    it("return error when passed non valid filter ID", async () => {
+      const { errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation RemoveFilter($filterId: ID!) {
+            removeFilter(filterId: $filterId) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          filterId: "non-existing-id",
+        },
+      });
+
+      expect(errors.length).toEqual(1);
+    });
+  });
+
+  describe("mutation.removeFilter for anonymous User", () => {
+    it("return error", async () => {
+      const graphqlAnonymousFetch = await createAnonymousGraphqlFetch();
+      const { errors } = await graphqlAnonymousFetch({
+        query: /* GraphQL */ `
+          mutation RemoveFilter($filterId: ID!) {
+            removeFilter(filterId: $filterId) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          filterId: MultiChoiceFilter._id,
+        },
+      });
+
+      expect(errors.length).toEqual(1);
+    });
+  });
 });
