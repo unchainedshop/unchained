@@ -352,4 +352,142 @@ describe("Assortments", () => {
       expect(Array.isArray(assortments)).toBe(true);
     });
   });
+  describe("mutation.createAssortment for loged in user should", () => {
+    it("Create assortment successfuly", async () => {
+      const {
+        data: { createAssortment },
+      } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation CreateAssortment($assortment: CreateAssortmentInput!) {
+            createAssortment(assortment: $assortment) {
+              _id
+              created
+              updated
+              isActive
+              isBase
+              isRoot
+              sequence
+              tags
+              meta
+              texts {
+                _id
+                locale
+                slug
+                subtitle
+                description
+              }
+              productAssignments {
+                _id
+                sortKey
+                tags
+                meta
+                assortment {
+                  _id
+                }
+                product {
+                  _id
+                }
+              }
+              filterAssignments {
+                _id
+              }
+              linkedAssortments {
+                _id
+              }
+              assortmentPaths {
+                links {
+                  assortmentId
+                }
+              }
+              children {
+                _id
+              }
+              search {
+                totalProducts
+              }
+            }
+          }
+        `,
+        variables: {
+          assortment: {
+            isRoot: true,
+            tags: ["test-assrtment-1", "test-assortment-2"],
+            title: "test assortment",
+          },
+        },
+      });
+      expect(createAssortment.tags).toEqual([
+        "test-assrtment-1",
+        "test-assortment-2",
+      ]);
+    });
+  });
+
+  describe("mutation.createAssortment for anonymous user should", () => {
+    it("Return error", async () => {
+      const graphqlAnonymousFetch = await createAnonymousGraphqlFetch();
+      const { errors } = await graphqlAnonymousFetch({
+        query: /* GraphQL */ `
+          mutation CreateAssortment($assortment: CreateAssortmentInput!) {
+            createAssortment(assortment: $assortment) {
+              _id
+              created
+              updated
+              isActive
+              isBase
+              isRoot
+              sequence
+              tags
+              meta
+              texts {
+                _id
+                locale
+                slug
+                subtitle
+                description
+              }
+              productAssignments {
+                _id
+                sortKey
+                tags
+                meta
+                assortment {
+                  _id
+                }
+                product {
+                  _id
+                }
+              }
+              filterAssignments {
+                _id
+              }
+              linkedAssortments {
+                _id
+              }
+              assortmentPaths {
+                links {
+                  assortmentId
+                }
+              }
+              children {
+                _id
+              }
+              search {
+                totalProducts
+              }
+            }
+          }
+        `,
+        variables: {
+          assortment: {
+            isRoot: true,
+            tags: ["test-assrtment-1", "test-assortment-2"],
+            title: "test assortment",
+          },
+        },
+      });
+
+      expect(errors.length).toEqual(1);
+    });
+  });
 });
