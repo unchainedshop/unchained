@@ -19,7 +19,11 @@ describe("AssortmentTexts", () => {
     await connection.close();
   });
 
+<<<<<<< HEAD
   describe("mutation.updateAssortmentTexts for admin users should", () => {
+=======
+  describe("mutation.updateAssortmentTexts for loged in users should", () => {
+>>>>>>> Add mutation.updateAssortmentTexts tests
     it("Update assortment texts successfuly when passed a valid assortment ID", async () => {
       const {
         data: { updateAssortmentTexts },
