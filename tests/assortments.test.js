@@ -582,4 +582,109 @@ describe("Assortments", () => {
       expect(errors.length).toEqual(1);
     });
   });
+
+  describe("mutation.setBaseAssortment for loged in user should", () => {
+    it("update assortment successfuly when passed valid assortment Id", async () => {
+      const {
+        data: { setBaseAssortment },
+      } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation SetBaseAssortment($assortmentId: ID!) {
+            setBaseAssortment(assortmentId: $assortmentId) {
+              _id
+              created
+              updated
+              isActive
+              isBase
+              isRoot
+              sequence
+              tags
+              meta
+              texts {
+                _id
+                locale
+                slug
+                subtitle
+                description
+              }
+              productAssignments {
+                _id
+                sortKey
+                tags
+                meta
+                assortment {
+                  _id
+                }
+                product {
+                  _id
+                }
+              }
+              filterAssignments {
+                _id
+              }
+              linkedAssortments {
+                _id
+              }
+              assortmentPaths {
+                links {
+                  assortmentId
+                }
+              }
+              children {
+                _id
+              }
+              search {
+                totalProducts
+              }
+            }
+          }
+        `,
+        variables: {
+          assortmentId: SimpleAssortment[1]._id,
+          assortment: {
+            isRoot: false,
+            tags: ["test-assrtment-1", "test-assortment-2"],
+            isActive: true,
+          },
+        },
+      });
+      expect(setBaseAssortment.isBase).toBe(true);
+    });
+
+    it("return error when passed none existing assortment Id", async () => {
+      const { errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation SetBaseAssortment($assortmentId: ID!) {
+            setBaseAssortment(assortmentId: $assortmentId) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          assortmentId: "non-existing-id",
+        },
+      });
+      expect(errors.length).toEqual(1);
+    });
+  });
+
+  describe("mutation.setBaseAssortment for anonymous user should", () => {
+    it("Return error", async () => {
+      const graphqlAnonymousFetch = await createAnonymousGraphqlFetch();
+      const { errors } = await graphqlAnonymousFetch({
+        query: /* GraphQL */ `
+          mutation SetBaseAssortment($assortmentId: ID!) {
+            setBaseAssortment(assortmentId: $assortmentId) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          assortmentId: SimpleAssortment[1]._id,
+        },
+      });
+
+      expect(errors.length).toEqual(1);
+    });
+  });
 });

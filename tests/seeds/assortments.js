@@ -41,7 +41,7 @@ export const SimpleAssortment = [
     type: "SIMPLE_PRODUCT",
     isActive: false,
     isRoot: true,
-    isBase: true,
+    isBase: false,
     sequence: 0,
     authorId: "admin",
     slugs: ["old-slug-de", "slug-de", "slug-fr"],
