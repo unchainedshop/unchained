@@ -283,4 +283,90 @@ describe("Filters", () => {
       });
     });
   });
+
+  describe("mutation.updateFilter for loged in User", () => {
+    it("should update filter successfuly when passed valid filter ID", async () => {
+      const { data: { updateFilter } = {} } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation UpdateFilter($filter: UpdateFilterInput!, $filterId: ID!) {
+            updateFilter(filter: $filter, filterId: $filterId) {
+              _id
+              updated
+              created
+              isActive
+              texts {
+                _id
+                locale
+                title
+                subtitle
+              }
+              type
+              key
+              options {
+                _id
+                value
+                texts {
+                  _id
+                }
+              }
+            }
+          }
+        `,
+        variables: {
+          filterId: MultiChoiceFilter._id,
+          filter: {
+            isActive: true,
+            key: "999",
+          },
+        },
+      });
+
+      expect(updateFilter.key).toEqual("999");
+    });
+
+    it("return error when passed non valid filter ID", async () => {
+      const { errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation UpdateFilter($filter: UpdateFilterInput!, $filterId: ID!) {
+            updateFilter(filter: $filter, filterId: $filterId) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          filterId: "non-existing-id",
+          filter: {
+            isActive: true,
+            key: "999",
+          },
+        },
+      });
+
+      expect(errors.length).toEqual(1);
+    });
+  });
+
+  describe("mutation.updateFilter for anonymous User", () => {
+    it("return error", async () => {
+      const graphqlAnonymousFetch = await createAnonymousGraphqlFetch();
+      const { errors } = await graphqlAnonymousFetch({
+        query: /* GraphQL */ `
+          mutation UpdateFilter($filter: UpdateFilterInput!, $filterId: ID!) {
+            updateFilter(filter: $filter, filterId: $filterId) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          filterId: MultiChoiceFilter._id,
+          filter: {
+            isActive: true,
+            key: "999",
+          },
+        },
+      });
+
+      expect(errors.length).toEqual(1);
+    });
+  });
 });

@@ -1,3 +1,5 @@
+import { SimpleProduct } from "./products";
+
 export const SimpleAssortment = [
   {
     _id: "simple-assortment",
@@ -180,8 +182,20 @@ export const FrenchAssortmentText = {
   vendor: "vendor-fr-1",
 };
 
+export const AssortmentProduct = {
+  _id: "assortment-product-1",
+  assortmentId: "simple-assortment",
+  productId: SimpleProduct._id,
+  labels: ["label-fr-1"],
+  sortKey: 1,
+  tags: ["assortment-et-1"],
+};
+
 export default async function seedAssortments(db) {
   await db.collection("assortments").insertMany(SimpleAssortment);
   await db.collection("assortment_texts").findOrInsertOne(GermanAssortmentText);
   await db.collection("assortment_texts").findOrInsertOne(FrenchAssortmentText);
+  await db
+    .collection("assortment_product")
+    .findOrInsertOne(FrenchAssortmentText);
 }
