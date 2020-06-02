@@ -1,18 +1,20 @@
 /* eslint-disable import/no-extraneous-dependencies */
 /* eslint-disable import/no-unresolved */
-import { MongoClient, Collection } from 'mongodb';
-import { execute, makePromise } from 'apollo-link';
-import { createUploadLink } from 'apollo-upload-client';
-import gql from 'graphql-tag';
-import fetch from 'isomorphic-unfetch';
-import seedUsers, { ADMIN_TOKEN } from './seeds/users';
-import seedProducts from './seeds/products';
-import seedDeliveries from './seeds/deliveries';
-import seedPayments from './seeds/payments';
-import seedWarehousings from './seeds/warehousings';
-import seedOrders from './seeds/orders';
-import seedQuotations from './seeds/quotations';
-import seedFilters from './seeds/filters';
+import { MongoClient, Collection } from "mongodb";
+import { execute, makePromise } from "apollo-link";
+import { createUploadLink } from "apollo-upload-client";
+import gql from "graphql-tag";
+import fetch from "isomorphic-unfetch";
+import seedUsers, { ADMIN_TOKEN } from "./seeds/users";
+import seedProducts from "./seeds/products";
+import seedDeliveries from "./seeds/deliveries";
+import seedPayments from "./seeds/payments";
+import seedWarehousings from "./seeds/warehousings";
+import seedOrders from "./seeds/orders";
+import seedQuotations from "./seeds/quotations";
+import seedFilters from "./seeds/filters";
+import seedLogs from "./seeds/logs";
+import seedAssortments from "./seeds/assortments";
 
 Collection.prototype.findOrInsertOne = async function findOrInsertOne(
   doc,
@@ -42,6 +44,8 @@ export const setupDatabase = async () => {
   await seedOrders(db);
   await seedQuotations(db);
   await seedFilters(db);
+  await seedLogs(db);
+  await seedAssortments(db);
 
   return [db, connection];
 };
@@ -66,7 +70,7 @@ const convertLinkToFetch = (link) => ({ query, ...operation }) =>
   );
 
 export const createAnonymousGraphqlFetch = () => {
-  const uri = 'http://localhost:3000/graphql';
+  const uri = "http://localhost:3000/graphql";
   const link = createUploadLink({
     uri,
     fetch,
@@ -75,7 +79,7 @@ export const createAnonymousGraphqlFetch = () => {
 };
 
 export const createLoggedInGraphqlFetch = (token = ADMIN_TOKEN) => {
-  const uri = 'http://localhost:3000/graphql';
+  const uri = "http://localhost:3000/graphql";
   const link = createUploadLink({
     uri,
     fetch,

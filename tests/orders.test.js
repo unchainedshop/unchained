@@ -4,7 +4,7 @@ import {
   createLoggedInGraphqlFetch,
 } from "./helpers";
 import { SimpleOrder } from "./seeds/orders";
-import { USER_TOKEN, ADMIN_TOKEN } from "./seeds/users";
+import { USER_TOKEN } from "./seeds/users";
 let connection;
 let graphqlFetch;
 
@@ -30,8 +30,46 @@ describe("Order: Management", () => {
             me {
               orders {
                 _id
-                user {
-                  username
+                status
+                created
+                updated
+                ordered
+                orderNumber
+                confirmed
+                fullfilled
+                contact {
+                  telNumber
+                  emailAddress
+                }
+                country {
+                  _id
+                }
+                meta
+                currency {
+                  _id
+                }
+
+                billingAddress {
+                  firstName
+                }
+
+                items {
+                  _id
+                }
+                discounts {
+                  _id
+                }
+                total {
+                  amount
+                }
+                documents {
+                  _id
+                }
+                supportedDeliveryProviders {
+                  _id
+                }
+                supportedPaymentProviders {
+                  _id
                 }
               }
             }
@@ -51,6 +89,47 @@ describe("Order: Management", () => {
           query order($orderId: ID!) {
             order(orderId: $orderId) {
               _id
+              status
+              created
+              updated
+              ordered
+              orderNumber
+              confirmed
+              fullfilled
+              contact {
+                telNumber
+                emailAddress
+              }
+              country {
+                _id
+              }
+              meta
+              currency {
+                _id
+              }
+
+              billingAddress {
+                firstName
+              }
+
+              items {
+                _id
+              }
+              discounts {
+                _id
+              }
+              total {
+                amount
+              }
+              documents {
+                _id
+              }
+              supportedDeliveryProviders {
+                _id
+              }
+              supportedPaymentProviders {
+                _id
+              }
             }
           }
         `,
@@ -58,7 +137,28 @@ describe("Order: Management", () => {
           orderId: SimpleOrder._id,
         },
       });
+
       expect(order._id).toEqual(SimpleOrder._id);
+    });
+
+    it("should return null for non-existing order", async () => {
+      const {
+        errors,
+        data: { order },
+      } = await graphqlFetch({
+        query: /* GraphQL */ `
+          query order($orderId: ID!) {
+            order(orderId: $orderId) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          orderId: "non-existing-id",
+        },
+      });
+
+      expect(order).toBe(null);
     });
   });
 
