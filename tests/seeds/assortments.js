@@ -195,7 +195,5 @@ export default async function seedAssortments(db) {
   await db.collection("assortments").insertMany(SimpleAssortment);
   await db.collection("assortment_texts").findOrInsertOne(GermanAssortmentText);
   await db.collection("assortment_texts").findOrInsertOne(FrenchAssortmentText);
-  await db
-    .collection("assortment_product")
-    .findOrInsertOne(FrenchAssortmentText);
+  await db.collection("assortment_products").findOrInsertOne(AssortmentProduct);
 }

@@ -4,7 +4,7 @@ import {
   createAnonymousGraphqlFetch,
 } from "./helpers";
 import { ADMIN_TOKEN } from "./seeds/users";
-import { SimpleAssortment } from "./seeds/assortments";
+import { SimpleAssortment, AssortmentProduct } from "./seeds/assortments";
 import { SimpleProduct } from "./seeds/products";
 
 let connection;
@@ -148,6 +148,68 @@ describe("AssortmentTexts", () => {
         },
       });
 
+      expect(errors.length).toEqual(1);
+    });
+  });
+
+  describe("mutation.removeAssortmentProduct for admin user should", () => {
+    it("remove assortment product successfuly when passed valid assortment product id", async () => {
+      const {
+        data: { removeAssortmentProduct },
+      } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation RemoveAssortmentProduct($assortmentProductId: ID!) {
+            removeAssortmentProduct(assortmentProductId: $assortmentProductId) {
+              _id
+              sortKey
+              tags
+
+              product {
+                _id
+              }
+            }
+          }
+        `,
+        variables: {
+          assortmentProductId: AssortmentProduct._id,
+        },
+      });
+      expect(removeAssortmentProduct._id).toEqual(AssortmentProduct._id);
+    });
+
+    it("return error when passed in-valid assortment product id", async () => {
+      const { errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation RemoveAssortmentProduct($assortmentProductId: ID!) {
+            removeAssortmentProduct(assortmentProductId: $assortmentProductId) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          assortmentProductId: "none-existing-id",
+        },
+      });
+
+      expect(errors.length).toEqual(1);
+    });
+  });
+
+  describe("mutation.removeAssortmentProduct for anonymous user should", () => {
+    it("return error", async () => {
+      const graphqlAnonymousFetch = await createAnonymousGraphqlFetch();
+      const { errors } = await graphqlAnonymousFetch({
+        query: /* GraphQL */ `
+          mutation RemoveAssortmentProduct($assortmentProductId: ID!) {
+            removeAssortmentProduct(assortmentProductId: $assortmentProductId) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          assortmentProductId: AssortmentProduct._id,
+        },
+      });
       expect(errors.length).toEqual(1);
     });
   });
