@@ -4,7 +4,7 @@ import {
   createAnonymousGraphqlFetch,
 } from "./helpers";
 import { ADMIN_TOKEN } from "./seeds/users";
-import { SimpleAssortment } from "./seeds/assortments";
+import { SimpleAssortment, AssortmentLinks } from "./seeds/assortments";
 
 let connection;
 let graphqlFetch;
@@ -138,6 +138,76 @@ describe("AssortmentLink", () => {
         },
       });
 
+      expect(errors.length).toEqual(1);
+    });
+  });
+
+  describe("mutation.removeAssortmentLink for admin user should", () => {
+    it("Remove assortment link when passed valid ID", async () => {
+      const {
+        data: { removeAssortmentLink },
+      } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation removeAssortmentLink($assortmentLinkId: ID!) {
+            removeAssortmentLink(assortmentLinkId: $assortmentLinkId) {
+              _id
+              sortKey
+              tags
+              meta
+              parent {
+                _id
+              }
+              child {
+                _id
+              }
+            }
+          }
+        `,
+        variables: {
+          assortmentLinkId: AssortmentLinks[0]._id,
+        },
+      });
+
+      const { errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation removeAssortmentLink($assortmentLinkId: ID!) {
+            removeAssortmentLink(assortmentLinkId: $assortmentLinkId) {
+              _id
+              sortKey
+              tags
+              meta
+              parent {
+                _id
+              }
+              child {
+                _id
+              }
+            }
+          }
+        `,
+        variables: {
+          assortmentLinkId: AssortmentLinks[0]._id,
+        },
+      });
+      expect(errors.length).toEqual(1);
+    });
+  });
+
+  describe("mutation.removeAssortmentLink for anonymous user should", () => {
+    it("return error", async () => {
+      const graphqlAnonymousFetch = await createAnonymousGraphqlFetch();
+      const { errors } = await graphqlAnonymousFetch({
+        query: /* GraphQL */ `
+          mutation removeAssortmentLink($assortmentLinkId: ID!) {
+            removeAssortmentLink(assortmentLinkId: $assortmentLinkId) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          assortmentLinkId: AssortmentLinks[0]._id,
+        },
+      });
       expect(errors.length).toEqual(1);
     });
   });
