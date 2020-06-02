@@ -17,7 +17,7 @@ describe("Logs", () => {
     await connection.close();
   });
 
-  describe("Query.Logs for loged in should", () => {
+  describe("Query.Logs for admin user should", () => {
     it("return the first 100 records when no argument is given", async () => {
       const {
         data: { logs },

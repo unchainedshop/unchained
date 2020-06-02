@@ -68,7 +68,7 @@ describe("DeliveryProviders", () => {
         `,
         variables: {},
       });
-      expect(deliveryProviders.length).toEqual(3);
+      expect(deliveryProviders.length).toEqual(2);
     });
 
     it("return list of deliveryProviders based on the given type", async () => {
@@ -86,7 +86,7 @@ describe("DeliveryProviders", () => {
           type: "SHIPPING",
         },
       });
-      expect(deliveryProviders.length).toEqual(2);
+      expect(deliveryProviders.length).toEqual(1);
     });
   });
 

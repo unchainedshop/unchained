@@ -18,7 +18,7 @@ describe("TranslatedFilterTexts", () => {
   afterAll(async () => {
     await connection.close();
   });
-  describe("Query.quotations for loged user should", () => {
+  describe("Query.quotations for admin should", () => {
     it("return list of quotations", async () => {
       const {
         data: { quotations },
@@ -94,7 +94,7 @@ describe("TranslatedFilterTexts", () => {
       expect(errors.length).toEqual(1);
     });
   });
-  describe("Query.quotation for loged user should", () => {
+  describe("Query.quotation for admin user should", () => {
     it("return single quotation when existing id passed", async () => {
       const {
         data: { quotation },

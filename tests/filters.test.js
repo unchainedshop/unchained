@@ -19,7 +19,7 @@ describe("Filters", () => {
     await connection.close();
   });
 
-  describe("Query.filters for loged in user should", () => {
+  describe("Query.filters for admin user should", () => {
     it("return list of active filters", async () => {
       const {
         data: { filters },
@@ -93,7 +93,7 @@ describe("Filters", () => {
     });
   });
 
-  describe("Query.filter for loged in user should", () => {
+  describe("Query.filter for admin user should", () => {
     it("return single filter for existing filter id", async () => {
       const {
         data: { filter },

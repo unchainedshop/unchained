@@ -19,7 +19,7 @@ describe("Assortments", () => {
     await connection.close();
   });
 
-  describe("Query.assortments for loged in user should", () => {
+  describe("Query.assortments for admin user should", () => {
     it("Return the only active assortments when no argument passed", async () => {
       const {
         data: { assortments },
@@ -181,7 +181,7 @@ describe("Assortments", () => {
     });
   });
 
-  describe("Query.assortment for loged in user should", () => {
+  describe("Query.assortment for admin user should", () => {
     it("return single assortment based on id", async () => {
       const {
         data: { assortment },

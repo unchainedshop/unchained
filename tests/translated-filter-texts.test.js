@@ -19,7 +19,7 @@ describe("TranslatedFilterTexts", () => {
     await connection.close();
   });
 
-  describe("Query.translatedFilterTexts for loged in user", () => {
+  describe("Query.translatedFilterTexts for admin user should", () => {
     it("return array of translatedFilterTexts text when existing id is passed", async () => {
       const {
         data: { translatedFilterTexts },

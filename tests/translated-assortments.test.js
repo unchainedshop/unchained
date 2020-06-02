@@ -19,7 +19,7 @@ describe("TranslatedAssortmentsText", () => {
     await connection.close();
   });
 
-  describe("Query.translatedAssortmentsText for loged in user", () => {
+  describe("Query.translatedAssortmentsText for admin user should", () => {
     it("return list of assortment text when existing id is passed", async () => {
       const {
         data: { translatedAssortmentTexts },
