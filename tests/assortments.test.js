@@ -352,7 +352,7 @@ describe("Assortments", () => {
       expect(Array.isArray(assortments)).toBe(true);
     });
   });
-  describe("mutation.createAssortment for loged in user should", () => {
+  describe("mutation.createAssortment for admin user should", () => {
     it("Create assortment successfuly", async () => {
       const {
         data: { createAssortment },
@@ -447,7 +447,7 @@ describe("Assortments", () => {
     });
   });
 
-  describe("mutation.updateAssortment for loged in user should", () => {
+  describe("mutation.updateAssortment for admin user should", () => {
     it("update assortment successfuly when passed valid assortment Id", async () => {
       const {
         data: { updateAssortment },
@@ -583,7 +583,7 @@ describe("Assortments", () => {
     });
   });
 
-  describe("mutation.setBaseAssortment for loged in user should", () => {
+  describe("mutation.setBaseAssortment for admin user should", () => {
     it("change isBase property to true when passed valid assortment Id", async () => {
       const {
         data: { setBaseAssortment },
@@ -683,7 +683,7 @@ describe("Assortments", () => {
     });
   });
 
-  describe("mutation.removeAssortment for loged in user should", () => {
+  describe("mutation.removeAssortment for admin user should", () => {
     it("Remove assortment successfuly when passed valid assortment Id", async () => {
       const {
         data: { removeAssortment },

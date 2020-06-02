@@ -20,7 +20,7 @@ describe("AssortmentTexts", () => {
     await connection.close();
   });
 
-  describe("mutation.addAssortmentProduct for loged in users should", () => {
+  describe("mutation.addAssortmentProduct for admin user should", () => {
     it("add assortmentsuccessfuly when passed valid assortment & product id", async () => {
       const {
         data: { addAssortmentProduct },

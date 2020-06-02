@@ -284,7 +284,7 @@ describe("Filters", () => {
     });
   });
 
-  describe("mutation.updateFilter for loged in User", () => {
+  describe("mutation.updateFilter for admin User", () => {
     it("should update filter successfuly when passed valid filter ID", async () => {
       const { data: { updateFilter } = {} } = await graphqlFetch({
         query: /* GraphQL */ `
@@ -370,7 +370,7 @@ describe("Filters", () => {
     });
   });
 
-  describe("mutation.removeFilter for loged in User", () => {
+  describe("mutation.removeFilter for admin User", () => {
     it("should remove filter successfuly when passed valid filter ID", async () => {
       const { data: { removeFilter } = {} } = await graphqlFetch({
         query: /* GraphQL */ `
