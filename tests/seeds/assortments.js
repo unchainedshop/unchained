@@ -180,8 +180,28 @@ export const FrenchAssortmentText = {
   vendor: "vendor-fr-1",
 };
 
+export const AssortmentLinks = [
+  {
+    _id: "assortment-link-1",
+    sortKey: 1,
+    tags: ["assortment-link-test"],
+    meta: null,
+    parent: SimpleAssortment[0],
+    child: SimpleAssortment[1],
+  },
+  {
+    _id: "assortment-link-2",
+    sortKey: 1,
+    tags: ["assortment-link-test"],
+    meta: null,
+    parent: SimpleAssortment[2],
+    child: SimpleAssortment[3],
+  },
+];
+
 export default async function seedAssortments(db) {
   await db.collection("assortments").insertMany(SimpleAssortment);
   await db.collection("assortment_texts").findOrInsertOne(GermanAssortmentText);
   await db.collection("assortment_texts").findOrInsertOne(FrenchAssortmentText);
+  await db.collection("assortment_links").insertMany(AssortmentLinks);
 }
