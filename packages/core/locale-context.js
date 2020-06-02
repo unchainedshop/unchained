@@ -6,7 +6,7 @@ import LRU from 'lru-cache';
 
 const { LANG = 'de', COUNTRY = 'CH', NODE_ENV } = process.env;
 
-const maxAge = NODE_ENV === 'production' ? 1000 * 60 : 1000 * 1; // minute or second
+const maxAge = NODE_ENV === 'production' ? 1000 * 60 : -1; // minute or second
 
 const localeContextCache = new LRU({
   max: 500,

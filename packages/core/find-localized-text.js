@@ -3,7 +3,7 @@ import { getFallbackLocale } from './locale-context';
 
 const { NODE_ENV } = process.env;
 
-const maxAge = NODE_ENV === 'production' ? 1000 * 30 : 1000 * 1; // 5 seconds or 1 second
+const maxAge = NODE_ENV === 'production' ? 1000 * 30 : -1; // 5 seconds or 1 second
 
 const textCache = new LRU({
   max: 50000,

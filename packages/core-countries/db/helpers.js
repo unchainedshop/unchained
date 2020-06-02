@@ -7,7 +7,7 @@ import { Countries } from './collections';
 
 const { NODE_ENV } = process.env;
 
-const maxAge = NODE_ENV === 'production' ? 1000 * 60 : 1000 * 1; // minute or second
+const maxAge = NODE_ENV === 'production' ? 1000 * 60 : -1; // minute or second
 
 const currencyCodeCache = new LRU({
   max: 500,

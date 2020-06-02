@@ -12,7 +12,7 @@ const {
   GOOGLE_SHEETS_PRIVATE_KEY_DATA,
 } = process.env;
 
-const maxAge = NODE_ENV === 'production' ? 1000 * 60 * 60 : 1000 * 1; // 1 hour or 1 second
+const maxAge = NODE_ENV === 'production' ? 1000 * 60 * 60 : -1; // 1 hour or 1 second
 let updateGoogleCache;
 const googleCache = new LRU({
   max: 500,
