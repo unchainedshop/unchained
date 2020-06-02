@@ -10,7 +10,7 @@ import { SimpleProduct } from "./seeds/products";
 let connection;
 let graphqlFetch;
 
-describe("AssortmentTexts", () => {
+describe("AssortmentProduct", () => {
   beforeAll(async () => {
     [, connection] = await setupDatabase();
     graphqlFetch = await createLoggedInGraphqlFetch(ADMIN_TOKEN);
@@ -20,8 +20,96 @@ describe("AssortmentTexts", () => {
     await connection.close();
   });
 
+  describe("mutation.reorderAssortmentProducts for admin user should", () => {
+    it("reorder assortment product successfuly when passed valid assortment product ID", async () => {
+      const {
+        data: { reorderAssortmentProducts },
+      } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation ReorderAssortmentProducts(
+            $sortKeys: [ReorderAssortmentProductInput!]!
+          ) {
+            reorderAssortmentProducts(sortKeys: $sortKeys) {
+              _id
+              sortKey
+              tags
+              meta
+              assortment {
+                _id
+              }
+              product {
+                _id
+              }
+            }
+          }
+        `,
+        variables: {
+          sortKeys: [
+            {
+              assortmentProductId: AssortmentProduct._id,
+              sortKey: 9,
+            },
+          ],
+        },
+      });
+
+      expect(reorderAssortmentProducts[0].sortKey).toEqual(10);
+    });
+
+    it("return empty array when passed non-existing assortment product ID", async () => {
+      const {
+        data: { reorderAssortmentProducts },
+      } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation ReorderAssortmentProducts(
+            $sortKeys: [ReorderAssortmentProductInput!]!
+          ) {
+            reorderAssortmentProducts(sortKeys: $sortKeys) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          sortKeys: [
+            {
+              assortmentProductId: "none-existing-id",
+              sortKey: 9,
+            },
+          ],
+        },
+      });
+      expect(reorderAssortmentProducts.length).toEqual(0);
+    });
+  });
+
+  describe("mutation.reorderAssortmentProducts for anonymous user should", () => {
+    it("return error", async () => {
+      const graphqlAnonymousFetch = await createAnonymousGraphqlFetch();
+      const { errors } = await graphqlAnonymousFetch({
+        query: /* GraphQL */ `
+          mutation ReorderAssortmentProducts(
+            $sortKeys: [ReorderAssortmentProductInput!]!
+          ) {
+            reorderAssortmentProducts(sortKeys: $sortKeys) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          sortKeys: [
+            {
+              assortmentProductId: "none-existing-id",
+              sortKey: 9,
+            },
+          ],
+        },
+      });
+      expect(errors.length).toEqual(1);
+    });
+  });
+
   describe("mutation.addAssortmentProduct for admin user should", () => {
-    it("add assortmentsuccessfuly when passed valid assortment & product id", async () => {
+    it("add assortment successfuly when passed valid assortment & product id", async () => {
       const {
         data: { addAssortmentProduct },
       } = await graphqlFetch({
