@@ -5,4 +5,7 @@ export default {
   async assortmentPaths(obj, { forceLocale }, { localeContext }) {
     return obj.assortmentPaths(forceLocale || localeContext.normalized);
   },
+  async search(obj, query, context) {
+    return obj.search({ query, context });
+  },
 };

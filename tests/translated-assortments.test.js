@@ -2,14 +2,14 @@ import {
   setupDatabase,
   createLoggedInGraphqlFetch,
   createAnonymousGraphqlFetch,
-} from "./helpers";
-import { ADMIN_TOKEN } from "./seeds/users";
-import { SimpleAssortment } from "./seeds/assortments";
+} from './helpers';
+import { ADMIN_TOKEN } from './seeds/users';
+import { SimpleAssortment } from './seeds/assortments';
 
 let connection;
 let graphqlFetch;
 
-describe("TranslatedAssortmentsText", () => {
+describe('TranslatedAssortmentsText', () => {
   beforeAll(async () => {
     [, connection] = await setupDatabase();
     graphqlFetch = await createLoggedInGraphqlFetch(ADMIN_TOKEN);
@@ -19,8 +19,8 @@ describe("TranslatedAssortmentsText", () => {
     await connection.close();
   });
 
-  describe("Query.translatedAssortmentsText for admin user should", () => {
-    it("return list of assortment text when existing id is passed", async () => {
+  describe('Query.translatedAssortmentsText for admin user should', () => {
+    it('return list of assortment text when existing id is passed', async () => {
       const {
         data: { translatedAssortmentTexts },
       } = await graphqlFetch({
@@ -44,7 +44,7 @@ describe("TranslatedAssortmentsText", () => {
       expect(translatedAssortmentTexts.length).toEqual(2);
     });
 
-    it("return empty array when non-existing id is passed", async () => {
+    it('return empty array when non-existing id is passed', async () => {
       const {
         data: { translatedAssortmentTexts },
       } = await graphqlFetch({
@@ -56,15 +56,15 @@ describe("TranslatedAssortmentsText", () => {
           }
         `,
         variables: {
-          assortmentId: "non-existing-id",
+          assortmentId: 'non-existing-id',
         },
       });
 
       expect(translatedAssortmentTexts.length).toEqual(0);
     });
   });
-  describe("Query.translatedAssortmentTexts for anonymous user should", () => {
-    it("return error", async () => {
+  describe('Query.translatedAssortmentTexts for anonymous user should', () => {
+    it('return error', async () => {
       const graphqlAnonymousFetch = await createAnonymousGraphqlFetch();
       const { errors } = await graphqlAnonymousFetch({
         query: /* GraphQL */ `

@@ -2,14 +2,14 @@ import {
   setupDatabase,
   createLoggedInGraphqlFetch,
   createAnonymousGraphqlFetch,
-} from "./helpers";
-import { ADMIN_TOKEN } from "./seeds/users";
-import { SimpleAssortment } from "./seeds/assortments";
+} from './helpers';
+import { ADMIN_TOKEN } from './seeds/users';
+import { SimpleAssortment } from './seeds/assortments';
 
 let connection;
 let graphqlFetch;
 
-describe("Assortments", () => {
+describe('Assortments', () => {
   beforeAll(async () => {
     [, connection] = await setupDatabase();
     graphqlFetch = await createLoggedInGraphqlFetch(ADMIN_TOKEN);
@@ -19,8 +19,8 @@ describe("Assortments", () => {
     await connection.close();
   });
 
-  describe("Query.assortments for admin user should", () => {
-    it("Return the only active assortments when no argument passed", async () => {
+  describe('Query.assortments for admin user should', () => {
+    it('Return the only active assortments when no argument passed', async () => {
       const {
         data: { assortments },
       } = await graphqlFetch({
@@ -37,7 +37,7 @@ describe("Assortments", () => {
       expect(assortments.length).toEqual(4);
     });
 
-    it("Return active assortments and include leaves", async () => {
+    it('Return active assortments and include leaves', async () => {
       const {
         data: { assortments },
       } = await graphqlFetch({
@@ -121,7 +121,7 @@ describe("Assortments", () => {
 
       expect(assortments.length).toEqual(5);
     });
-    it("Return all assortments and without leaves", async () => {
+    it('Return all assortments and without leaves', async () => {
       const {
         data: { assortments },
       } = await graphqlFetch({
@@ -150,7 +150,7 @@ describe("Assortments", () => {
 
       expect(assortments.length).toEqual(8);
     });
-    it("Return all assortments and include leaves", async () => {
+    it('Return all assortments and include leaves', async () => {
       const {
         data: { assortments },
       } = await graphqlFetch({
@@ -181,8 +181,8 @@ describe("Assortments", () => {
     });
   });
 
-  describe("Query.assortment for admin user should", () => {
-    it("return single assortment based on id", async () => {
+  describe('Query.assortment for admin user should', () => {
+    it('return single assortment based on id', async () => {
       const {
         data: { assortment },
       } = await graphqlFetch({
@@ -255,7 +255,7 @@ describe("Assortments", () => {
       });
       expect(assortment._id).toBe(SimpleAssortment[0]._id);
     });
-    it("return single assortment based on slug", async () => {
+    it('return single assortment based on slug', async () => {
       const {
         data: { assortment },
       } = await graphqlFetch({
@@ -274,7 +274,7 @@ describe("Assortments", () => {
       expect(assortment._id).toBe(SimpleAssortment[0]._id);
     });
 
-    it("return null for non-existing id", async () => {
+    it('return null for non-existing id', async () => {
       const {
         data: { assortment },
       } = await graphqlFetch({
@@ -286,14 +286,14 @@ describe("Assortments", () => {
           }
         `,
         variables: {
-          assortmentId: "non-existing-id",
+          assortmentId: 'non-existing-id',
         },
       });
 
       expect(assortment).toBe(null);
     });
 
-    it("return null for non-existing slug", async () => {
+    it('return null for non-existing slug', async () => {
       const {
         data: { assortment },
       } = await graphqlFetch({
@@ -305,14 +305,14 @@ describe("Assortments", () => {
           }
         `,
         variables: {
-          slug: "non-existing-slug",
+          slug: 'non-existing-slug',
         },
       });
 
       expect(assortment).toBe(null);
     });
 
-    it("return null when either id or slug are non-existing", async () => {
+    it('return null when either id or slug are non-existing', async () => {
       const {
         data: { assortment },
       } = await graphqlFetch({
@@ -325,7 +325,7 @@ describe("Assortments", () => {
         `,
         variables: {
           assortmentId: SimpleAssortment[0]._id,
-          slug: "non-existing-slug",
+          slug: 'non-existing-slug',
         },
       });
 
@@ -333,8 +333,8 @@ describe("Assortments", () => {
     });
   });
 
-  describe("Query.assortments for anonymous user should", () => {
-    it("return assortments", async () => {
+  describe('Query.assortments for anonymous user should', () => {
+    it('return assortments', async () => {
       const graphqlAnonymousFetch = await createAnonymousGraphqlFetch();
       const {
         data: { assortments },
@@ -350,6 +350,450 @@ describe("Assortments", () => {
       });
 
       expect(Array.isArray(assortments)).toBe(true);
+    });
+  });
+  describe('mutation.createAssortment for admin user should', () => {
+    it('Create assortment successfuly', async () => {
+      const {
+        data: { createAssortment },
+      } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation CreateAssortment($assortment: CreateAssortmentInput!) {
+            createAssortment(assortment: $assortment) {
+              _id
+              created
+              updated
+              isActive
+              isBase
+              isRoot
+              sequence
+              tags
+              meta
+              texts {
+                _id
+                locale
+                slug
+                subtitle
+                description
+              }
+              productAssignments {
+                _id
+                sortKey
+                tags
+                meta
+                assortment {
+                  _id
+                }
+                product {
+                  _id
+                }
+              }
+              filterAssignments {
+                _id
+              }
+              linkedAssortments {
+                _id
+              }
+              assortmentPaths {
+                links {
+                  assortmentId
+                }
+              }
+              children {
+                _id
+              }
+              search {
+                totalProducts
+              }
+            }
+          }
+        `,
+        variables: {
+          assortment: {
+            isRoot: true,
+            tags: ['test-assrtment-1', 'test-assortment-2'],
+            title: 'test assortment',
+          },
+        },
+      });
+      expect(createAssortment.tags).toEqual([
+        'test-assrtment-1',
+        'test-assortment-2',
+      ]);
+    });
+  });
+
+  describe('mutation.createAssortment for anonymous user should', () => {
+    it('Return error', async () => {
+      const graphqlAnonymousFetch = await createAnonymousGraphqlFetch();
+      const { errors } = await graphqlAnonymousFetch({
+        query: /* GraphQL */ `
+          mutation CreateAssortment($assortment: CreateAssortmentInput!) {
+            createAssortment(assortment: $assortment) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          assortment: {
+            isRoot: true,
+            tags: ['test-assrtment-1', 'test-assortment-2'],
+            title: 'test assortment',
+          },
+        },
+      });
+
+      expect(errors.length).toEqual(1);
+    });
+  });
+
+  describe('mutation.updateAssortment for admin user should', () => {
+    it('update assortment successfuly when passed valid assortment Id', async () => {
+      const {
+        data: { updateAssortment },
+      } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation UpdateAssortment(
+            $assortment: UpdateAssortmentInput!
+            $assortmentId: ID!
+          ) {
+            updateAssortment(
+              assortment: $assortment
+              assortmentId: $assortmentId
+            ) {
+              _id
+              created
+              updated
+              isActive
+              isBase
+              isRoot
+              sequence
+              tags
+              meta
+              texts {
+                _id
+                locale
+                slug
+                subtitle
+                description
+              }
+              productAssignments {
+                _id
+                sortKey
+                tags
+                meta
+                assortment {
+                  _id
+                }
+                product {
+                  _id
+                }
+              }
+              filterAssignments {
+                _id
+              }
+              linkedAssortments {
+                _id
+              }
+              assortmentPaths {
+                links {
+                  assortmentId
+                }
+              }
+              children {
+                _id
+              }
+              search {
+                totalProducts
+              }
+            }
+          }
+        `,
+        variables: {
+          assortmentId: SimpleAssortment[0]._id,
+          assortment: {
+            isRoot: false,
+            tags: ['test-assrtment-1', 'test-assortment-2'],
+            isActive: true,
+          },
+        },
+      });
+      expect(updateAssortment.tags).toEqual([
+        'test-assrtment-1',
+        'test-assortment-2',
+      ]);
+    });
+
+    it('return error when passed none existing assortment Id', async () => {
+      const { errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation UpdateAssortment(
+            $assortment: UpdateAssortmentInput!
+            $assortmentId: ID!
+          ) {
+            updateAssortment(
+              assortment: $assortment
+              assortmentId: $assortmentId
+            ) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          assortmentId: 'non-existing-id',
+          assortment: {
+            isRoot: false,
+            tags: ['test-assrtment-1', 'test-assortment-2'],
+            isActive: true,
+          },
+        },
+      });
+      expect(errors.length).toEqual(1);
+    });
+  });
+
+  describe('mutation.updateAssortment for anonymous user should', () => {
+    it('Return error', async () => {
+      const graphqlAnonymousFetch = await createAnonymousGraphqlFetch();
+      const { errors } = await graphqlAnonymousFetch({
+        query: /* GraphQL */ `
+          mutation UpdateAssortment(
+            $assortment: UpdateAssortmentInput!
+            $assortmentId: ID!
+          ) {
+            updateAssortment(
+              assortment: $assortment
+              assortmentId: $assortmentId
+            ) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          assortmentId: SimpleAssortment[0]._id,
+          assortment: {
+            isRoot: false,
+            tags: ['test-assrtment-1', 'test-assortment-2'],
+            isActive: true,
+          },
+        },
+      });
+
+      expect(errors.length).toEqual(1);
+    });
+  });
+
+  describe('mutation.setBaseAssortment for admin user should', () => {
+    it('change isBase property to true when passed valid assortment Id', async () => {
+      const {
+        data: { setBaseAssortment },
+      } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation SetBaseAssortment($assortmentId: ID!) {
+            setBaseAssortment(assortmentId: $assortmentId) {
+              _id
+              created
+              updated
+              isActive
+              isBase
+              isRoot
+              sequence
+              tags
+              meta
+              texts {
+                _id
+                locale
+                slug
+                subtitle
+                description
+              }
+              productAssignments {
+                _id
+                sortKey
+                tags
+                meta
+                assortment {
+                  _id
+                }
+                product {
+                  _id
+                }
+              }
+              filterAssignments {
+                _id
+              }
+              linkedAssortments {
+                _id
+              }
+              assortmentPaths {
+                links {
+                  assortmentId
+                }
+              }
+              children {
+                _id
+              }
+              search {
+                totalProducts
+              }
+            }
+          }
+        `,
+        variables: {
+          assortmentId: SimpleAssortment[1]._id,
+        },
+      });
+      expect(setBaseAssortment.isBase).toBe(true);
+    });
+
+    it('return error when passed none existing assortment Id', async () => {
+      const { errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation SetBaseAssortment($assortmentId: ID!) {
+            setBaseAssortment(assortmentId: $assortmentId) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          assortmentId: 'non-existing-id',
+        },
+      });
+      expect(errors.length).toEqual(1);
+    });
+  });
+
+  describe('mutation.setBaseAssortment for anonymous user should', () => {
+    it('Return error', async () => {
+      const graphqlAnonymousFetch = await createAnonymousGraphqlFetch();
+      const { errors } = await graphqlAnonymousFetch({
+        query: /* GraphQL */ `
+          mutation SetBaseAssortment($assortmentId: ID!) {
+            setBaseAssortment(assortmentId: $assortmentId) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          assortmentId: SimpleAssortment[1]._id,
+        },
+      });
+
+      expect(errors.length).toEqual(1);
+    });
+  });
+
+  describe('mutation.removeAssortment for admin user should', () => {
+    it('Remove assortment successfuly when passed valid assortment Id', async () => {
+      await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation RemoveAssortment($assortmentId: ID!) {
+            removeAssortment(assortmentId: $assortmentId) {
+              _id
+              created
+              updated
+              isActive
+              isBase
+              isRoot
+              sequence
+              tags
+              meta
+              texts {
+                _id
+                locale
+                slug
+                subtitle
+                description
+              }
+              productAssignments {
+                _id
+                sortKey
+                tags
+                meta
+                assortment {
+                  _id
+                }
+                product {
+                  _id
+                }
+              }
+              filterAssignments {
+                _id
+              }
+              linkedAssortments {
+                _id
+              }
+              assortmentPaths {
+                links {
+                  assortmentId
+                }
+              }
+              children {
+                _id
+              }
+              search {
+                totalProducts
+              }
+            }
+          }
+        `,
+        variables: {
+          assortmentId: SimpleAssortment[2]._id,
+        },
+      });
+
+      const {
+        data: { assortment },
+      } = await graphqlFetch({
+        query: /* GraphQL */ `
+          query Assortment($assortmentId: ID!) {
+            assortment(assortmentId: $assortmentId) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          assortmentId: SimpleAssortment[2]._id,
+        },
+      });
+
+      expect(assortment).toBe(null);
+    });
+
+    it('return error when passed none existing assortment Id', async () => {
+      const { errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation RemoveAssortment($assortmentId: ID!) {
+            removeAssortment(assortmentId: $assortmentId) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          assortmentId: 'non-existing-id',
+        },
+      });
+      expect(errors.length).toEqual(1);
+    });
+  });
+
+  describe('mutation.removeAssortment for anonymous user should', () => {
+    it('Return error', async () => {
+      const graphqlAnonymousFetch = await createAnonymousGraphqlFetch();
+      const { errors } = await graphqlAnonymousFetch({
+        query: /* GraphQL */ `
+          mutation RemoveAssortment($assortmentId: ID!) {
+            removeAssortment(assortmentId: $assortmentId) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          assortmentId: SimpleAssortment[3]._id,
+        },
+      });
+
+      expect(errors.length).toEqual(1);
     });
   });
 });

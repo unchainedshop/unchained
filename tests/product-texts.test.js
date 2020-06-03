@@ -2,13 +2,14 @@ import {
   setupDatabase,
   createLoggedInGraphqlFetch,
   createAnonymousGraphqlFetch,
-} from "./helpers";
-import { ADMIN_TOKEN } from "./seeds/users";
-import { SimpleProduct } from "./seeds/products";
+} from './helpers';
+import { ADMIN_TOKEN } from './seeds/users';
+import { SimpleProduct } from './seeds/products';
+
 let connection;
 let graphqlFetch;
 
-describe("ProductText", () => {
+describe('ProductText', () => {
   beforeAll(async () => {
     [, connection] = await setupDatabase();
     graphqlFetch = await createLoggedInGraphqlFetch(ADMIN_TOKEN);
@@ -18,8 +19,8 @@ describe("ProductText", () => {
     await connection.close();
   });
 
-  describe("mutation.updateProductWarehousing should for admin user", () => {
-    it("Update product warehousing successfuly", async () => {
+  describe('mutation.updateProductTexts should for admin user', () => {
+    it('Update product texts successfuly', async () => {
       const { data: { updateProductTexts } = {} } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation UpdateProductTexts(
@@ -42,14 +43,14 @@ describe("ProductText", () => {
           productId: SimpleProduct._id,
           texts: [
             {
-              locale: "et",
-              slug: "slug-et",
-              title: "simple product title et",
-              brand: "brand-et",
-              description: "text-et",
-              labels: ["label-et-1", "label-et-2"],
-              subtitle: "subtitle-et",
-              vendor: "vendor-et",
+              locale: 'et',
+              slug: 'slug-et',
+              title: 'simple product title et',
+              brand: 'brand-et',
+              description: 'text-et',
+              labels: ['label-et-1', 'label-et-2'],
+              subtitle: 'subtitle-et',
+              vendor: 'vendor-et',
             },
           ],
         },
@@ -58,7 +59,7 @@ describe("ProductText", () => {
       expect(updateProductTexts.length).toEqual(1);
     });
 
-    it("return error when attempting to update non existing product", async () => {
+    it('return error when attempting to update non existing product', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation UpdateProductTexts(
@@ -71,17 +72,17 @@ describe("ProductText", () => {
           }
         `,
         variables: {
-          productId: "none-existing-id",
+          productId: 'none-existing-id',
           texts: [
             {
-              locale: "et",
-              slug: "slug-et",
-              title: "simple product title et",
-              brand: "brand-et",
-              description: "text-et",
-              labels: ["label-et-1", "label-et-2"],
-              subtitle: "subtitle-et",
-              vendor: "vendor-et",
+              locale: 'et',
+              slug: 'slug-et',
+              title: 'simple product title et',
+              brand: 'brand-et',
+              description: 'text-et',
+              labels: ['label-et-1', 'label-et-2'],
+              subtitle: 'subtitle-et',
+              vendor: 'vendor-et',
             },
           ],
         },
@@ -91,8 +92,8 @@ describe("ProductText", () => {
     });
   });
 
-  describe("mutation.updateProductWarehousing for anonymous user", () => {
-    it("return error", async () => {
+  describe('mutation.updateProductTexts for anonymous user', () => {
+    it('return error', async () => {
       const graphqlAnonymousFetch = await createAnonymousGraphqlFetch();
       const { errors } = await graphqlAnonymousFetch({
         query: /* GraphQL */ `
@@ -109,14 +110,14 @@ describe("ProductText", () => {
           productId: SimpleProduct._id,
           texts: [
             {
-              locale: "et",
-              slug: "slug-et",
-              title: "simple product title et",
-              brand: "brand-et",
-              description: "text-et",
-              labels: ["label-et-1", "label-et-2"],
-              subtitle: "subtitle-et",
-              vendor: "vendor-et",
+              locale: 'et',
+              slug: 'slug-et',
+              title: 'simple product title et',
+              brand: 'brand-et',
+              description: 'text-et',
+              labels: ['label-et-1', 'label-et-2'],
+              subtitle: 'subtitle-et',
+              vendor: 'vendor-et',
             },
           ],
         },

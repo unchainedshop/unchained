@@ -2,13 +2,14 @@ import {
   setupDatabase,
   createLoggedInGraphqlFetch,
   createAnonymousGraphqlFetch,
-} from "./helpers";
-import { ADMIN_TOKEN } from "./seeds/users";
-import { SimpleProduct } from "./seeds/products";
+} from './helpers';
+import { ADMIN_TOKEN } from './seeds/users';
+import { SimpleProduct } from './seeds/products';
+
 let connection;
 let graphqlFetch;
 
-describe("ProductsWarehousing", () => {
+describe('ProductsWarehousing', () => {
   beforeAll(async () => {
     [, connection] = await setupDatabase();
     graphqlFetch = await createLoggedInGraphqlFetch(ADMIN_TOKEN);
@@ -18,8 +19,8 @@ describe("ProductsWarehousing", () => {
     await connection.close();
   });
 
-  describe("mutation.updateProductWarehousing should for admin user", () => {
-    it("Update product warehousing successfuly", async () => {
+  describe('mutation.updateProductWarehousing should for admin user', () => {
+    it('Update product warehousing successfuly', async () => {
       const { data: { updateProductWarehousing } = {} } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation UpdateProductWarehousing(
@@ -64,8 +65,8 @@ describe("ProductsWarehousing", () => {
         variables: {
           productId: SimpleProduct._id,
           warehousing: {
-            sku: "SKU-100",
-            baseUnit: "Kg",
+            sku: 'SKU-100',
+            baseUnit: 'Kg',
           },
         },
       });
@@ -73,7 +74,7 @@ describe("ProductsWarehousing", () => {
       expect(updateProductWarehousing._id).toEqual(SimpleProduct._id);
     });
 
-    it("return error when attempting to update non existing product", async () => {
+    it('return error when attempting to update non existing product', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation UpdateProductWarehousing(
@@ -89,10 +90,10 @@ describe("ProductsWarehousing", () => {
           }
         `,
         variables: {
-          productId: "none-existing-id",
+          productId: 'none-existing-id',
           warehousing: {
-            sku: "SKU-100",
-            baseUnit: "Kg",
+            sku: 'SKU-100',
+            baseUnit: 'Kg',
           },
         },
       });
@@ -101,8 +102,8 @@ describe("ProductsWarehousing", () => {
     });
   });
 
-  describe("mutation.updateProductWarehousing for anonymous user", () => {
-    it("return error", async () => {
+  describe('mutation.updateProductWarehousing for anonymous user', () => {
+    it('return error', async () => {
       const graphqlAnonymousFetch = await createAnonymousGraphqlFetch();
       const { errors } = await graphqlAnonymousFetch({
         query: /* GraphQL */ `
@@ -121,8 +122,8 @@ describe("ProductsWarehousing", () => {
         variables: {
           productId: SimpleProduct._id,
           warehousing: {
-            sku: "SKU-100",
-            baseUnit: "Kg",
+            sku: 'SKU-100',
+            baseUnit: 'Kg',
           },
         },
       });

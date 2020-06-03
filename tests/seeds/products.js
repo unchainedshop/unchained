@@ -33,6 +33,13 @@ export const SimpleProduct = {
   },
 };
 
+export const UnpublishedProduct = {
+  ...SimpleProduct,
+  _id: 'un-published',
+  status: null,
+  published: null,
+};
+
 export const PlanProduct = {
   _id: 'plan-product',
   created: new Date('2019-07-30T09:23:26.253+0000'),
@@ -174,7 +181,9 @@ export default async function seedProducts(db) {
   await db.collection('product_texts').createIndex({
     title: 'text',
   });
-  await db.collection('products').findOrInsertOne(SimpleProduct);
+  await db
+    .collection('products')
+    .insertMany([SimpleProduct, UnpublishedProduct]);
   await db.collection('product_reviews').findOrInsertOne(SimpleProductReview);
   await db.collection('product_texts').findOrInsertOne(GermanProductText);
   await db.collection('product_texts').findOrInsertOne(FrenchProductText);

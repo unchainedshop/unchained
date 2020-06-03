@@ -11,7 +11,7 @@ const cleanQuery = ({ filterQuery, productIds = null, ...query }) => ({
   ...query,
 });
 
-const search = async (rawQuery) => {
+const search = async ({ query: rawQuery, forceLiveCollection, context }) => {
   const query = cleanQuery(rawQuery);
   const filterSelector = resolveFilterSelector(query);
   const productSelector = resolveProductSelector(query);
@@ -22,6 +22,8 @@ const search = async (rawQuery) => {
     filterSelector,
     productSelector,
     sortStage,
+    context,
+    forceLiveCollection,
   };
 
   if (rawQuery?.productIds?.length === 0) {

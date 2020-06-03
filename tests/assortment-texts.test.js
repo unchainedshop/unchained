@@ -2,14 +2,14 @@ import {
   setupDatabase,
   createLoggedInGraphqlFetch,
   createAnonymousGraphqlFetch,
-} from "./helpers";
-import { ADMIN_TOKEN } from "./seeds/users";
-import { SimpleAssortment } from "./seeds/assortments";
+} from './helpers';
+import { ADMIN_TOKEN } from './seeds/users';
+import { SimpleAssortment } from './seeds/assortments';
 
 let connection;
 let graphqlFetch;
 
-describe("AssortmentTexts", () => {
+describe('AssortmentTexts', () => {
   beforeAll(async () => {
     [, connection] = await setupDatabase();
     graphqlFetch = await createLoggedInGraphqlFetch(ADMIN_TOKEN);
@@ -19,8 +19,8 @@ describe("AssortmentTexts", () => {
     await connection.close();
   });
 
-  describe("mutation.updateAssortmentTexts for admin users should", () => {
-    it("Update assortment texts successfuly when passed a valid assortment ID", async () => {
+  describe('mutation.updateAssortmentTexts for admin users should', () => {
+    it('Update assortment texts successfuly when passed a valid assortment ID', async () => {
       const {
         data: { updateAssortmentTexts },
       } = await graphqlFetch({
@@ -43,11 +43,11 @@ describe("AssortmentTexts", () => {
           assortmentId: SimpleAssortment[0]._id,
           texts: [
             {
-              locale: "et",
-              slug: "slug-et",
-              title: "simple assortment et",
-              description: "text-et",
-              subtitle: "subsimple assortment et",
+              locale: 'et',
+              slug: 'slug-et',
+              title: 'simple assortment et',
+              description: 'text-et',
+              subtitle: 'subsimple assortment et',
             },
           ],
         },
@@ -56,7 +56,7 @@ describe("AssortmentTexts", () => {
       expect(updateAssortmentTexts.length).toEqual(1);
     });
 
-    it("return error when passed a non-existing ID", async () => {
+    it('return error when passed a non-existing ID', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation UpdateAssortmentTexts(
@@ -69,14 +69,14 @@ describe("AssortmentTexts", () => {
           }
         `,
         variables: {
-          assortmentId: "none-existing-id",
+          assortmentId: 'none-existing-id',
           texts: [
             {
-              locale: "et",
-              slug: "slug-et",
-              title: "simple assortment et",
-              description: "text-et",
-              subtitle: "subsimple assortment et",
+              locale: 'et',
+              slug: 'slug-et',
+              title: 'simple assortment et',
+              description: 'text-et',
+              subtitle: 'subsimple assortment et',
             },
           ],
         },
@@ -86,8 +86,8 @@ describe("AssortmentTexts", () => {
     });
   });
 
-  describe("mutation.updateAssortmentTexts for anonymous users should", () => {
-    it("return error", async () => {
+  describe('mutation.updateAssortmentTexts for anonymous users should', () => {
+    it('return error', async () => {
       const graphqlAnonymousFetch = await createAnonymousGraphqlFetch();
       const { errors } = await graphqlAnonymousFetch({
         query: /* GraphQL */ `
@@ -104,11 +104,11 @@ describe("AssortmentTexts", () => {
           assortmentId: SimpleAssortment[0]._id,
           texts: [
             {
-              locale: "et",
-              slug: "slug-et",
-              title: "simple assortment et",
-              description: "text-et",
-              subtitle: "subsimple assortment et",
+              locale: 'et',
+              slug: 'slug-et',
+              title: 'simple assortment et',
+              description: 'text-et',
+              subtitle: 'subsimple assortment et',
             },
           ],
         },

@@ -1,3 +1,5 @@
+import { SimpleProduct } from "./products";
+
 export const SimpleAssortment = [
   {
     _id: "simple-assortment",
@@ -41,7 +43,7 @@ export const SimpleAssortment = [
     type: "SIMPLE_PRODUCT",
     isActive: false,
     isRoot: true,
-    isBase: true,
+    isBase: false,
     sequence: 0,
     authorId: "admin",
     slugs: ["old-slug-de", "slug-de", "slug-fr"],
@@ -180,6 +182,15 @@ export const FrenchAssortmentText = {
   vendor: "vendor-fr-1",
 };
 
+export const AssortmentProduct = {
+  _id: "assortment-product-1",
+  assortmentId: "simple-assortment",
+  productId: SimpleProduct._id,
+  labels: ["label-fr-1"],
+  sortKey: 1,
+  tags: ["assortment-et-1"],
+};
+
 export const AssortmentLinks = [
   {
     _id: "assortment-link-1",
@@ -204,4 +215,5 @@ export default async function seedAssortments(db) {
   await db.collection("assortment_texts").findOrInsertOne(GermanAssortmentText);
   await db.collection("assortment_texts").findOrInsertOne(FrenchAssortmentText);
   await db.collection("assortment_links").insertMany(AssortmentLinks);
+  await db.collection("assortment_products").findOrInsertOne(AssortmentProduct);
 }

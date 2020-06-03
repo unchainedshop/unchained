@@ -2,14 +2,14 @@ import {
   setupDatabase,
   createLoggedInGraphqlFetch,
   createAnonymousGraphqlFetch,
-} from "./helpers";
-import { ADMIN_TOKEN } from "./seeds/users";
-import { MultiChoiceFilter } from "./seeds/filters";
+} from './helpers';
+import { ADMIN_TOKEN } from './seeds/users';
+import { MultiChoiceFilter } from './seeds/filters';
 
 let connection;
 let graphqlFetch;
 
-describe("TranslatedFilterTexts", () => {
+describe('TranslatedFilterTexts', () => {
   beforeAll(async () => {
     [, connection] = await setupDatabase();
     graphqlFetch = await createLoggedInGraphqlFetch(ADMIN_TOKEN);
@@ -19,8 +19,8 @@ describe("TranslatedFilterTexts", () => {
     await connection.close();
   });
 
-  describe("Query.translatedFilterTexts for admin user should", () => {
-    it("return array of translatedFilterTexts text when existing id is passed", async () => {
+  describe('Query.translatedFilterTexts for admin user should', () => {
+    it('return array of translatedFilterTexts text when existing id is passed', async () => {
       const {
         data: { translatedFilterTexts },
       } = await graphqlFetch({
@@ -48,7 +48,7 @@ describe("TranslatedFilterTexts", () => {
       expect(translatedFilterTexts.length).toEqual(2);
     });
 
-    it("return empty array for non-existing id is passed", async () => {
+    it('return empty array for non-existing id is passed', async () => {
       const {
         data: { translatedFilterTexts },
       } = await graphqlFetch({
@@ -66,7 +66,7 @@ describe("TranslatedFilterTexts", () => {
           }
         `,
         variables: {
-          filterId: "non-existing-id",
+          filterId: 'non-existing-id',
         },
       });
 
@@ -74,8 +74,8 @@ describe("TranslatedFilterTexts", () => {
     });
   });
 
-  describe("Query.TranslatedFilterTexts for anonymous user should", () => {
-    it("return error", async () => {
+  describe('Query.TranslatedFilterTexts for anonymous user should', () => {
+    it('return error', async () => {
       const graphqlAnonymousFetch = await createAnonymousGraphqlFetch();
       const { errors } = await graphqlAnonymousFetch({
         query: /* GraphQL */ `
@@ -92,7 +92,7 @@ describe("TranslatedFilterTexts", () => {
           }
         `,
         variables: {
-          filterId: "non-existing-id",
+          filterId: 'non-existing-id',
         },
       });
       expect(errors.length).toEqual(1);
