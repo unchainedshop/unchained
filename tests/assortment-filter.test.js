@@ -24,6 +24,96 @@ describe("AssortmentFilter", () => {
     await connection.close();
   });
 
+  describe("mutation.reorderAssortmentFilters for admin users should", () => {
+    it("update sortkey value when passed valid assortment filter ID", async () => {
+      const {
+        data: { reorderAssortmentFilters },
+      } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation ReorderAssortmentFilters(
+            $sortkeys: [ReorderAssortmentFilterInput!]!
+          ) {
+            reorderAssortmentFilters(sortKeys: $sortkeys) {
+              _id
+              sortKey
+              tags
+              meta
+              assortment {
+                _id
+              }
+              filter {
+                _id
+              }
+            }
+          }
+        `,
+        variables: {
+          sortkeys: [
+            {
+              assortmentFilterId: AssortmentFilters[0]._id,
+              sortKey: 10,
+            },
+          ],
+        },
+      });
+
+      expect(reorderAssortmentFilters[0].sortKey).toEqual(11);
+    });
+
+    it("skip when passed invalid assortment filter ID", async () => {
+      const {
+        data: { reorderAssortmentFilters },
+      } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation ReorderAssortmentFilters(
+            $sortkeys: [ReorderAssortmentFilterInput!]!
+          ) {
+            reorderAssortmentFilters(sortKeys: $sortkeys) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          sortkeys: [
+            {
+              assortmentFilterId: "invalid-id",
+              sortKey: 10,
+            },
+          ],
+        },
+      });
+
+      expect(reorderAssortmentFilters.length).toEqual(0);
+    });
+  });
+
+  describe("mutation.reorderAssortmentFilters for anonymous user should", () => {
+    const graphqlAnonymousFetch = createAnonymousGraphqlFetch();
+    it("return error", async () => {
+      const { errors } = await graphqlAnonymousFetch({
+        query: /* GraphQL */ `
+          mutation ReorderAssortmentFilters(
+            $sortkeys: [ReorderAssortmentFilterInput!]!
+          ) {
+            reorderAssortmentFilters(sortKeys: $sortkeys) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          sortkeys: [
+            {
+              assortmentFilterId: AssortmentFilters[0]._id,
+              sortKey: 10,
+            },
+          ],
+        },
+      });
+
+      expect(errors.length).toEqual(1);
+    });
+  });
+
   describe("mutation.addAssortmentFilter for admin users should", () => {
     it("Creates assortment filter successfuly when passed a valid assortment and filter IDs", async () => {
       const {
@@ -88,6 +178,7 @@ describe("AssortmentFilter", () => {
 
       expect(errors.length).toEqual(1);
     });
+
     xit("return error when passed invalid filter ID", async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
@@ -145,8 +236,9 @@ describe("AssortmentFilter", () => {
       expect(errors.length).toEqual(1);
     });
   });
+
   describe("mutation.removeAssortmentFilter for admin users should", () => {
-    it("return error", async () => {
+    it("remove assortment filter successfuly when passed valid ID", async () => {
       const {
         data: { removeAssortmentFilter },
       } = await graphqlFetch({
