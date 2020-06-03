@@ -34,19 +34,10 @@ export const SimpleProduct = {
 };
 
 export const UnpublishedProduct = {
+  ...SimpleProduct,
   _id: 'un-published',
-  sequence: 1,
-  status: 'DRAFT',
+  status: null,
   published: null,
-  tags: ['tag-1', 'tag-2', 'highlight'],
-  created: 1564478606253,
-  updated: 1590774989680,
-  texts: { _id: 'german', title: 'German Title' },
-  media: [{ _id: 'jpeg-product' }],
-  reviews: [{ _id: 'product-review' }],
-  meta: null,
-  assortmentPaths: [],
-  siblings: [],
 };
 
 export const PlanProduct = {

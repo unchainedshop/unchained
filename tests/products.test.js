@@ -130,8 +130,9 @@ describe('Products', () => {
   });
 
   describe('mutation.publishProduct', () => {
-    xit('publish production', async () => {
-      const { errors = {} } = await graphqlFetch({
+    /* TODO: Fix publishProduct */
+    it.only('publish product', async () => {
+      const { data } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation PublishProduct($productId: ID!) {
             publishProduct(productId: $productId) {
@@ -173,13 +174,16 @@ describe('Products', () => {
           productId: UnpublishedProduct._id,
         },
       });
-      console.log(errors);
+      expect(data?.publishProduct).toMatchObject({
+        _id: UnpublishedProduct._id,
+        status: 'ACTIVE',
+      });
     });
 
     it('return error for non-existing product id', async () => {
       const { errors = {} } = await graphqlFetch({
         query: /* GraphQL */ `
-          mutation PublishProduct($productId: ID!) {
+          mutation PublishProduct2($productId: ID!) {
             publishProduct(productId: $productId) {
               _id
             }
