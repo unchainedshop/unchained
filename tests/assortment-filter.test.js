@@ -145,6 +145,48 @@ describe("AssortmentFilter", () => {
       expect(errors.length).toEqual(1);
     });
   });
+  describe("mutation.removeAssortmentFilter for admin users should", () => {
+    it("return error", async () => {
+      const {
+        data: { removeAssortmentFilter },
+      } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation RemoveAssortmentFilter($assortmentFilterId: ID!) {
+            removeAssortmentFilter(assortmentFilterId: $assortmentFilterId) {
+              _id
+              sortKey
+              tags
+              meta
+              assortment {
+                _id
+              }
+              filter {
+                _id
+              }
+            }
+          }
+        `,
+        variables: {
+          assortmentFilterId: AssortmentFilters[0]._id,
+        },
+      });
+
+      const { errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation RemoveAssortmentFilter($assortmentFilterId: ID!) {
+            removeAssortmentFilter(assortmentFilterId: $assortmentFilterId) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          assortmentFilterId: AssortmentFilters[0]._id,
+        },
+      });
+
+      expect(errors.length).toEqual(1);
+    });
+  });
 
   describe("mutation.removeAssortmentFilter for anonymous users should", () => {
     it("return error", async () => {
