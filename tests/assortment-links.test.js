@@ -19,6 +19,100 @@ describe("AssortmentLink", () => {
     await connection.close();
   });
 
+  describe("mutation.reorderAssortmentLinks for admin users should", () => {
+    it("Update assortment link sortkey successfuly when passed a valid assortment link IDs", async () => {
+      const {
+        data: { reorderAssortmentLinks },
+      } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation ReorderAssortmentLinks(
+            $sortKeys: [ReorderAssortmentLinkInput!]!
+          ) {
+            reorderAssortmentLinks(sortKeys: $sortKeys) {
+              _id
+              sortKey
+              tags
+              meta
+              parent {
+                _id
+              }
+              child {
+                _id
+              }
+            }
+          }
+        `,
+        variables: {
+          sortKeys: [
+            {
+              assortmentLinkId: AssortmentLinks[0]._id,
+              sortKey: 10,
+            },
+          ],
+        },
+      });
+
+      expect(reorderAssortmentLinks[0].sortKey).toEqual(11);
+    });
+
+    it("Skip any invalid assortment link provided", async () => {
+      const {
+        data: { reorderAssortmentLinks },
+      } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation ReorderAssortmentLinks(
+            $sortKeys: [ReorderAssortmentLinkInput!]!
+          ) {
+            reorderAssortmentLinks(sortKeys: $sortKeys) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          sortKeys: [
+            {
+              assortmentLinkId: AssortmentLinks[0]._id,
+              sortKey: 10,
+            },
+            {
+              assortmentLinkId: "invalid-assortment-id",
+              sortKey: 10,
+            },
+          ],
+        },
+      });
+
+      expect(reorderAssortmentLinks.length).toEqual(1);
+    });
+  });
+
+  describe("mutation.reorderAssortmentLinks for anonymous users should", () => {
+    it("return error", async () => {
+      const graphqlAnonymousFetch = await createAnonymousGraphqlFetch();
+      const { errors } = await graphqlAnonymousFetch({
+        query: /* GraphQL */ `
+          mutation ReorderAssortmentLinks(
+            $sortKeys: [ReorderAssortmentLinkInput!]!
+          ) {
+            reorderAssortmentLinks(sortKeys: $sortKeys) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          sortKeys: [
+            {
+              assortmentLinkId: AssortmentLinks[0]._id,
+              sortKey: 10,
+            },
+          ],
+        },
+      });
+
+      expect(errors.length).toEqual(1);
+    });
+  });
+
   describe("mutation.addAssortmentLink for admin users should", () => {
     it("Create assortment link successfuly when passed a valid assortment IDs", async () => {
       const {
