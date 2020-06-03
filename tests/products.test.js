@@ -130,8 +130,7 @@ describe('Products', () => {
   });
 
   describe('mutation.publishProduct', () => {
-    /* TODO: Fix publishProduct */
-    it.only('publish product', async () => {
+    it('publish product', async () => {
       const { data } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation PublishProduct($productId: ID!) {
