@@ -6,6 +6,7 @@ export default function (root, { productId }, { userId }) {
   log(`mutation publishProduct ${productId}`, { userId });
   const product = Products.findOne({ _id: productId });
   if (!product) throw new ProductNotFoundError({ productId });
+
   if (!product.publish()) {
     throw new ProductWrongStatusError({ status: product.status });
   }

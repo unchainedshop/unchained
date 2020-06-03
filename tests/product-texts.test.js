@@ -18,7 +18,11 @@ describe("ProductText", () => {
     await connection.close();
   });
 
+<<<<<<< HEAD
   describe("mutation.updateProductWarehousing should for admin user", () => {
+=======
+  describe("mutation.updateProductWarehousing should for loged in user", () => {
+>>>>>>> Add mutation.updateProductTexts tests
     it("Update product warehousing successfuly", async () => {
       const { data: { updateProductTexts } = {} } = await graphqlFetch({
         query: /* GraphQL */ `
