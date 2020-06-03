@@ -33,11 +33,11 @@ Package.onUse((api) => {
   api.use('unchained:core-users@0.49.3');
   api.use('unchained:core-bookmarks@0.49.3');
   api.use('unchained:core-warehousing@0.49.3');
-  api.use('unchained:core-filters@0.49.3');
-  api.use('unchained:core-assortments@0.49.3');
+  api.use('unchained:core-filters@0.49.5');
+  api.use('unchained:core-assortments@0.49.5');
   api.use('unchained:core-worker@0.49.3');
   api.use('unchained:core-subscriptions@0.49.3');
-  api.use('unchained:api@0.49.3');
+  api.use('unchained:api@0.49.5');
 
   api.mainModule('platform.js', 'server');
 });

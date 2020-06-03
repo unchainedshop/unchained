@@ -1,6 +1,6 @@
 Package.describe({
   name: 'unchained:core-assortments',
-  version: '0.49.3',
+  version: '0.49.5',
   summary: 'Unchained Engine Core: Assortments',
   git: 'https://github.com/unchainedshop/unchained',
   documentation: 'README.md',
@@ -17,7 +17,7 @@ Package.onUse((api) => {
   api.use('unchained:utils@0.49.3');
   api.use('unchained:core-countries@0.49.3');
   api.use('unchained:core-products@0.49.3');
-  api.use('unchained:core-filters@0.49.3');
+  api.use('unchained:core-filters@0.49.5');
 
   api.mainModule('assortments.js', 'server');
 });
