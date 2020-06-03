@@ -5,12 +5,11 @@ export default ({
   filterSelector,
   productSelector,
   sortStage,
+  ...rest
 }) => async (productIdResolver) => {
-  const { queryString } = query;
-  if (!queryString) return productIdResolver;
-
   const director = new FilterDirector({
     query,
+    ...rest,
   });
   return director.search(productIdResolver, {
     filterSelector,
