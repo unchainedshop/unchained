@@ -40,7 +40,7 @@ const MultiChoiceFilterOptions = [
   {
     _id: "multichoice-filter:test-filter-option-2",
     texts: {
-      _id: "some-id",
+      _id: "some-id-2",
       locale: "en",
       title: "test-filter-option-2",
       subtitle: "",
@@ -57,7 +57,5 @@ export default async function seedFilters(db) {
   await db
     .collection("filter_texts")
     .findOrInsertOne(FrenchMultiChoiceFilterText);
-  await db
-    .collection("filter_options")
-    .findOrInsertOne(MultiChoiceFilterOptions);
+  await db.collection("filter_options").insertMany(MultiChoiceFilterOptions);
 }
