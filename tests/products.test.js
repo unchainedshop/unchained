@@ -1,10 +1,11 @@
-import { setupDatabase, createLoggedInGraphqlFetch } from "./helpers";
-import { ADMIN_TOKEN } from "./seeds/users";
-import { SimpleProduct, UnpublishedProduct } from "./seeds/products";
+import { setupDatabase, createLoggedInGraphqlFetch } from './helpers';
+import { ADMIN_TOKEN } from './seeds/users';
+import { SimpleProduct, UnpublishedProduct } from './seeds/products';
+
 let connection;
 let graphqlFetch;
 
-describe("Products", () => {
+describe('Products', () => {
   beforeAll(async () => {
     [, connection] = await setupDatabase();
     graphqlFetch = await createLoggedInGraphqlFetch(ADMIN_TOKEN);
@@ -14,8 +15,8 @@ describe("Products", () => {
     await connection.close();
   });
 
-  describe("Mutation.createProduct", () => {
-    it("create a new product", async () => {
+  describe('Mutation.createProduct', () => {
+    it('create a new product', async () => {
       const { data: { createProduct } = {} } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation createProduct($product: CreateProductInput!) {
@@ -46,17 +47,17 @@ describe("Products", () => {
         `,
         variables: {
           product: {
-            title: "Simple Product",
-            type: "SimpleProduct",
-            tags: ["simple"],
+            title: 'Simple Product',
+            type: 'SimpleProduct',
+            tags: ['simple'],
           },
         },
       });
       expect(createProduct).toMatchObject({
-        tags: ["simple"],
-        status: "DRAFT",
+        tags: ['simple'],
+        status: 'DRAFT',
         texts: {
-          title: "Simple Product",
+          title: 'Simple Product',
         },
         catalogPrice: null,
         simulatedPrice: null,
@@ -64,8 +65,8 @@ describe("Products", () => {
     });
   });
 
-  describe("Mutation.unpublishProduct", () => {
-    it("unpublish product", async () => {
+  describe('Mutation.unpublishProduct', () => {
+    it('unpublish product', async () => {
       const { data: { unpublishProduct } = {} } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation UnPublishProduct($productId: ID!) {
@@ -111,7 +112,7 @@ describe("Products", () => {
 
       expect(unpublishProduct.published).toBe(null);
     });
-    it("return error for non-existing product id", async () => {
+    it('return error for non-existing product id', async () => {
       const { errors = {} } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation UnpublishProduct($productId: ID!) {
@@ -121,15 +122,15 @@ describe("Products", () => {
           }
         `,
         variables: {
-          productId: "non-existing-id",
+          productId: 'non-existing-id',
         },
       });
       expect(errors.length).toEqual(1);
     });
   });
 
-  describe("mutation.publishProduct", () => {
-    xit("publish production", async () => {
+  describe('mutation.publishProduct', () => {
+    xit('publish production', async () => {
       const { errors = {} } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation PublishProduct($productId: ID!) {
@@ -175,7 +176,7 @@ describe("Products", () => {
       console.log(errors);
     });
 
-    it("return error for non-existing product id", async () => {
+    it('return error for non-existing product id', async () => {
       const { errors = {} } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation PublishProduct($productId: ID!) {
@@ -185,15 +186,15 @@ describe("Products", () => {
           }
         `,
         variables: {
-          productId: "non-existing-id",
+          productId: 'non-existing-id',
         },
       });
       expect(errors.length).toEqual(1);
     });
   });
 
-  describe("Mutation.updateProduct should", () => {
-    it("update successfuly when passed valid product ID ", async () => {
+  describe('Mutation.updateProduct should', () => {
+    it('update successfuly when passed valid product ID ', async () => {
       const { data: { updateProduct } = {} } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation UpdateProduct(
@@ -212,7 +213,7 @@ describe("Products", () => {
           productId: SimpleProduct._id,
           product: {
             sequence: 1,
-            tags: ["tag-1", "tag-2", "highlight", "update-tag"],
+            tags: ['tag-1', 'tag-2', 'highlight', 'update-tag'],
             meta: {
               updated: true,
             },
@@ -221,14 +222,14 @@ describe("Products", () => {
       });
 
       expect(updateProduct).toMatchObject({
-        _id: "simpleproduct",
+        _id: 'simpleproduct',
         sequence: 1,
-        tags: ["tag-1", "tag-2", "highlight", "update-tag"],
+        tags: ['tag-1', 'tag-2', 'highlight', 'update-tag'],
         meta: { updated: true },
       });
     });
 
-    it("return error when passed non-existing product id", async () => {
+    it('return error when passed non-existing product id', async () => {
       const { errors = {} } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation UpdateProduct(
@@ -241,10 +242,10 @@ describe("Products", () => {
           }
         `,
         variables: {
-          productId: "none-existing-id",
+          productId: 'none-existing-id',
           product: {
             sequence: 1,
-            tags: ["tag-1", "tag-2", "highlight", "update-tag"],
+            tags: ['tag-1', 'tag-2', 'highlight', 'update-tag'],
             meta: {
               updated: true,
             },
@@ -255,8 +256,8 @@ describe("Products", () => {
     });
   });
 
-  describe("Mutation.removeProduct should", () => {
-    it("remove product completly when passed valid product ID ", async () => {
+  describe('Mutation.removeProduct should', () => {
+    it('remove product completly when passed valid product ID ', async () => {
       const { data: { removeProduct } = {} } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation RemoveProduct($productId: ID!) {
@@ -272,10 +273,10 @@ describe("Products", () => {
         },
       });
 
-      expect(removeProduct.status).toBe("DELETED");
+      expect(removeProduct.status).toBe('DELETED');
     });
 
-    it("return error when attempting to delete already removed product ", async () => {
+    it('return error when attempting to delete already removed product ', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation RemoveProduct($productId: ID!) {
@@ -293,7 +294,7 @@ describe("Products", () => {
       expect(errors.length).toBe(1);
     });
 
-    it("return error when passed non-existing product id", async () => {
+    it('return error when passed non-existing product id', async () => {
       const { errors = {} } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation RemoveProduct($productId: ID!) {
@@ -305,7 +306,7 @@ describe("Products", () => {
           }
         `,
         variables: {
-          productId: "none-existing-id",
+          productId: 'none-existing-id',
         },
       });
       expect(errors.length).toEqual(1);

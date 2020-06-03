@@ -2,13 +2,14 @@ import {
   setupDatabase,
   createLoggedInGraphqlFetch,
   createAnonymousGraphqlFetch,
-} from "./helpers";
-import { ADMIN_TOKEN } from "./seeds/users";
-import { SimpleProduct, UnpublishedProduct } from "./seeds/products";
+} from './helpers';
+import { ADMIN_TOKEN } from './seeds/users';
+import { SimpleProduct } from './seeds/products';
+
 let connection;
 let graphqlFetch;
 
-describe("ProductsCommerce", () => {
+describe('ProductsCommerce', () => {
   beforeAll(async () => {
     [, connection] = await setupDatabase();
     graphqlFetch = await createLoggedInGraphqlFetch(ADMIN_TOKEN);
@@ -18,8 +19,8 @@ describe("ProductsCommerce", () => {
     await connection.close();
   });
 
-  describe("mutation.updateProductCommerce for admin user should ", () => {
-    it("Update product pricing successfuly", async () => {
+  describe('mutation.updateProductCommerce for admin user should ', () => {
+    it('Update product pricing successfuly', async () => {
       const { data: { updateProductCommerce } = {} } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation UpdateProductCommerce(
@@ -67,8 +68,8 @@ describe("ProductsCommerce", () => {
                 maxQuantity: 50,
                 isTaxable: true,
                 isNetPrice: false,
-                currencyCode: "CHY",
-                countryCode: "SW",
+                currencyCode: 'CHY',
+                countryCode: 'SW',
               },
             ],
           },
@@ -78,7 +79,7 @@ describe("ProductsCommerce", () => {
       expect(updateProductCommerce._id).toEqual(SimpleProduct._id);
     });
 
-    it("return error when attempting to update non existing product", async () => {
+    it('return error when attempting to update non existing product', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation UpdateProductCommerce(
@@ -91,7 +92,7 @@ describe("ProductsCommerce", () => {
           }
         `,
         variables: {
-          productId: "none-existing-id",
+          productId: 'none-existing-id',
           commerce: {
             pricing: [
               {
@@ -99,8 +100,8 @@ describe("ProductsCommerce", () => {
                 maxQuantity: 50,
                 isTaxable: true,
                 isNetPrice: false,
-                currencyCode: "CHY",
-                countryCode: "SW",
+                currencyCode: 'CHY',
+                countryCode: 'SW',
               },
             ],
           },
@@ -111,8 +112,8 @@ describe("ProductsCommerce", () => {
     });
   });
 
-  describe("mutation.updateProductCommerce for anonymous user", () => {
-    it("return error", async () => {
+  describe('mutation.updateProductCommerce for anonymous user', () => {
+    it('return error', async () => {
       const graphqlAnonymousFetch = await createAnonymousGraphqlFetch();
       const { errors } = await graphqlAnonymousFetch({
         query: /* GraphQL */ `
@@ -134,8 +135,8 @@ describe("ProductsCommerce", () => {
                 maxQuantity: 50,
                 isTaxable: true,
                 isNetPrice: false,
-                currencyCode: "CHY",
-                countryCode: "SW",
+                currencyCode: 'CHY',
+                countryCode: 'SW',
               },
             ],
           },

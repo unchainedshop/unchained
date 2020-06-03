@@ -2,12 +2,13 @@ import {
   setupDatabase,
   createLoggedInGraphqlFetch,
   createAnonymousGraphqlFetch,
-} from "./helpers";
-import { ADMIN_TOKEN } from "./seeds/users";
+} from './helpers';
+import { ADMIN_TOKEN } from './seeds/users';
+
 let connection;
 let graphqlFetch;
 
-describe("Logs", () => {
+describe('Logs', () => {
   beforeAll(async () => {
     [, connection] = await setupDatabase();
     graphqlFetch = await createLoggedInGraphqlFetch(ADMIN_TOKEN);
@@ -17,8 +18,8 @@ describe("Logs", () => {
     await connection.close();
   });
 
-  describe("Query.Logs for admin user should", () => {
-    it("return the first 100 records when no argument is given", async () => {
+  describe('Query.Logs for admin user should', () => {
+    it('return the first 100 records when no argument is given', async () => {
       const {
         data: { logs },
       } = await graphqlFetch({
@@ -61,7 +62,7 @@ describe("Logs", () => {
       expect(logs.length).toEqual(50);
     });
 
-    it("return the last 3 logs of 100 log records", async () => {
+    it('return the last 3 logs of 100 log records', async () => {
       const {
         data: { logs },
       } = await graphqlFetch({
@@ -81,8 +82,8 @@ describe("Logs", () => {
     });
   });
 
-  describe("Query.Logs for anonymous user should", () => {
-    it("return error", async () => {
+  describe('Query.Logs for anonymous user should', () => {
+    it('return error', async () => {
       const graphqlAnonymousFetch = await createAnonymousGraphqlFetch();
       const { errors } = await graphqlAnonymousFetch({
         query: /* GraphQL */ `

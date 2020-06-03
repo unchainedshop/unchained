@@ -2,15 +2,14 @@ import {
   setupDatabase,
   createLoggedInGraphqlFetch,
   createAnonymousGraphqlFetch,
-} from "./helpers";
-import { ADMIN_TOKEN } from "./seeds/users";
-import { SimpleDeliveryProvider } from "./seeds/deliveries";
+} from './helpers';
+import { ADMIN_TOKEN } from './seeds/users';
+import { SimpleDeliveryProvider } from './seeds/deliveries';
 
 let connection;
 let graphqlFetch;
-const deliverProviderFrg = {};
 
-describe("DeliveryProviders", () => {
+describe('DeliveryProviders', () => {
   beforeAll(async () => {
     [, connection] = await setupDatabase();
     graphqlFetch = await createLoggedInGraphqlFetch(ADMIN_TOKEN);
@@ -20,8 +19,8 @@ describe("DeliveryProviders", () => {
     await connection.close();
   });
 
-  describe("Query.deliveryProviders for loggedin user should", () => {
-    it("return array of all deliveryProviders when type is not given", async () => {
+  describe('Query.deliveryProviders for loggedin user should', () => {
+    it('return array of all deliveryProviders when type is not given', async () => {
       const {
         data: { deliveryProviders },
       } = await graphqlFetch({
@@ -71,7 +70,7 @@ describe("DeliveryProviders", () => {
       expect(deliveryProviders.length).toEqual(2);
     });
 
-    it("return list of deliveryProviders based on the given type", async () => {
+    it('return list of deliveryProviders based on the given type', async () => {
       const {
         data: { deliveryProviders },
       } = await graphqlFetch({
@@ -83,15 +82,15 @@ describe("DeliveryProviders", () => {
           }
         `,
         variables: {
-          type: "SHIPPING",
+          type: 'SHIPPING',
         },
       });
       expect(deliveryProviders.length).toEqual(1);
     });
   });
 
-  describe("Query.deliveryProvider for loggedin user should", () => {
-    it("return single deliveryProvider when ID is provided", async () => {
+  describe('Query.deliveryProvider for loggedin user should', () => {
+    it('return single deliveryProvider when ID is provided', async () => {
       const {
         data: { deliveryProvider },
       } = await graphqlFetch({
@@ -143,7 +142,7 @@ describe("DeliveryProviders", () => {
       expect(deliveryProvider._id).toEqual(SimpleDeliveryProvider._id);
     });
 
-    it("return null when non-existing deliveryProviderId is given", async () => {
+    it('return null when non-existing deliveryProviderId is given', async () => {
       const {
         data: { deliveryProvider },
       } = await graphqlFetch({
@@ -155,15 +154,15 @@ describe("DeliveryProviders", () => {
           }
         `,
         variables: {
-          deliveryProviderId: "non-existing-id",
+          deliveryProviderId: 'non-existing-id',
         },
       });
       expect(deliveryProvider).toBe(null);
     });
   });
 
-  describe("Query.deliveryProviders for anonymous user should", () => {
-    it("return error", async () => {
+  describe('Query.deliveryProviders for anonymous user should', () => {
+    it('return error', async () => {
       const graphqlAnonymousFetch = await createAnonymousGraphqlFetch();
       const { errors } = await graphqlAnonymousFetch({
         query: /* GraphQL */ `

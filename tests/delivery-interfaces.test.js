@@ -2,13 +2,13 @@ import {
   setupDatabase,
   createLoggedInGraphqlFetch,
   createAnonymousGraphqlFetch,
-} from "./helpers";
-import { ADMIN_TOKEN } from "./seeds/users";
+} from './helpers';
+import { ADMIN_TOKEN } from './seeds/users';
 
 let connection;
 let graphqlFetch;
 
-describe("DeliveryInterfaces", () => {
+describe('DeliveryInterfaces', () => {
   beforeAll(async () => {
     [, connection] = await setupDatabase();
     graphqlFetch = await createLoggedInGraphqlFetch(ADMIN_TOKEN);
@@ -18,10 +18,9 @@ describe("DeliveryInterfaces", () => {
     await connection.close();
   });
 
-  describe("For logged in users", () => {
-    it("should return list of deliveryinterfaces by type", async () => {
+  describe('For logged in users', () => {
+    it('should return list of deliveryinterfaces by type', async () => {
       const {
-        errors,
         data: { deliveryInterfaces },
       } = await graphqlFetch({
         query: /* GraphQL */ `
@@ -34,7 +33,7 @@ describe("DeliveryInterfaces", () => {
           }
         `,
         variables: {
-          type: "PICKUP",
+          type: 'PICKUP',
         },
       });
 
@@ -42,8 +41,8 @@ describe("DeliveryInterfaces", () => {
     });
   });
 
-  describe("For Anonymous user", () => {
-    it("should return error", async () => {
+  describe('For Anonymous user', () => {
+    it('should return error', async () => {
       const graphqlAnonymousFetch = await createAnonymousGraphqlFetch();
       const { errors } = await graphqlAnonymousFetch({
         query: /* GraphQL */ `
@@ -54,7 +53,7 @@ describe("DeliveryInterfaces", () => {
           }
         `,
         variables: {
-          type: "PICKUP",
+          type: 'PICKUP',
         },
       });
 

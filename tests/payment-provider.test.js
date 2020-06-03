@@ -2,14 +2,14 @@ import {
   setupDatabase,
   createLoggedInGraphqlFetch,
   createAnonymousGraphqlFetch,
-} from "./helpers";
-import { ADMIN_TOKEN } from "./seeds/users";
-import { SimplePaymentProvider } from "./seeds/payments";
+} from './helpers';
+import { ADMIN_TOKEN } from './seeds/users';
+import { SimplePaymentProvider } from './seeds/payments';
 
 let connection;
 let graphqlFetch;
 
-describe("PaymentProviders", () => {
+describe('PaymentProviders', () => {
   beforeAll(async () => {
     [, connection] = await setupDatabase();
     graphqlFetch = await createLoggedInGraphqlFetch(ADMIN_TOKEN);
@@ -19,8 +19,8 @@ describe("PaymentProviders", () => {
     await connection.close();
   });
 
-  describe("Query.paymentProviders when loged in should", () => {
-    it("return array of all paymentProvider when type is not given", async () => {
+  describe('Query.paymentProviders when loged in should', () => {
+    it('return array of all paymentProvider when type is not given', async () => {
       const {
         data: { paymentProviders },
       } = await graphqlFetch({
@@ -47,7 +47,7 @@ describe("PaymentProviders", () => {
       expect(paymentProviders.length).toEqual(3);
     });
 
-    it("return list of paymentProvider of the given type", async () => {
+    it('return list of paymentProvider of the given type', async () => {
       const {
         data: { paymentProviders },
       } = await graphqlFetch({
@@ -59,15 +59,15 @@ describe("PaymentProviders", () => {
           }
         `,
         variables: {
-          type: "INVOICE",
+          type: 'INVOICE',
         },
       });
       expect(paymentProviders.length).toEqual(2);
     });
   });
 
-  describe("Query.paymentProvider when loged in should", () => {
-    it("return single paymentProvider when ID is provided", async () => {
+  describe('Query.paymentProvider when loged in should', () => {
+    it('return single paymentProvider when ID is provided', async () => {
       const {
         data: { paymentProvider },
       } = await graphqlFetch({
@@ -96,7 +96,7 @@ describe("PaymentProviders", () => {
       expect(paymentProvider._id).toEqual(SimplePaymentProvider._id);
     });
 
-    it("return null when non-existing paymentProviderId is given", async () => {
+    it('return null when non-existing paymentProviderId is given', async () => {
       const {
         data: { paymentProvider },
       } = await graphqlFetch({
@@ -108,15 +108,15 @@ describe("PaymentProviders", () => {
           }
         `,
         variables: {
-          paymentProviderId: "non-existing-id",
+          paymentProviderId: 'non-existing-id',
         },
       });
       expect(paymentProvider).toBe(null);
     });
   });
 
-  describe("Query.paymentProviders for anonymous user should", () => {
-    it("return error", async () => {
+  describe('Query.paymentProviders for anonymous user should', () => {
+    it('return error', async () => {
       const graphqlAnonymousFetch = await createAnonymousGraphqlFetch();
       const { errors } = await graphqlAnonymousFetch({
         query: /* GraphQL */ `

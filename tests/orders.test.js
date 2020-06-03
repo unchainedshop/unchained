@@ -2,13 +2,14 @@ import {
   setupDatabase,
   createAnonymousGraphqlFetch,
   createLoggedInGraphqlFetch,
-} from "./helpers";
-import { SimpleOrder } from "./seeds/orders";
-import { USER_TOKEN } from "./seeds/users";
+} from './helpers';
+import { SimpleOrder } from './seeds/orders';
+import { USER_TOKEN } from './seeds/users';
+
 let connection;
 let graphqlFetch;
 
-describe("Order: Management", () => {
+describe('Order: Management', () => {
   beforeAll(async () => {
     [, connection] = await setupDatabase();
     graphqlFetch = await createLoggedInGraphqlFetch(USER_TOKEN);
@@ -18,8 +19,8 @@ describe("Order: Management", () => {
     await connection.close();
   });
 
-  describe("Query.order for loggedin user", () => {
-    it("should return array of current user orders", async () => {
+  describe('Query.order for loggedin user', () => {
+    it('should return array of current user orders', async () => {
       const {
         data: {
           me: { orders },
@@ -81,7 +82,7 @@ describe("Order: Management", () => {
       expect(orders.length).toEqual(2);
     });
 
-    it("should return single user order", async () => {
+    it('should return single user order', async () => {
       const {
         data: { order },
       } = await graphqlFetch({
@@ -141,9 +142,8 @@ describe("Order: Management", () => {
       expect(order._id).toEqual(SimpleOrder._id);
     });
 
-    it("should return null for non-existing order", async () => {
+    it('should return null for non-existing order', async () => {
       const {
-        errors,
         data: { order },
       } = await graphqlFetch({
         query: /* GraphQL */ `
@@ -154,7 +154,7 @@ describe("Order: Management", () => {
           }
         `,
         variables: {
-          orderId: "non-existing-id",
+          orderId: 'non-existing-id',
         },
       });
 
@@ -162,8 +162,8 @@ describe("Order: Management", () => {
     });
   });
 
-  describe("Query.orders for anonymous user", () => {
-    it("should return error", async () => {
+  describe('Query.orders for anonymous user', () => {
+    it('should return error', async () => {
       const graphqlAnonymousFetch = await createAnonymousGraphqlFetch();
       const { errors } = await graphqlAnonymousFetch({
         query: /* GraphQL */ `

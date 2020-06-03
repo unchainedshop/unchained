@@ -2,14 +2,14 @@ import {
   setupDatabase,
   createLoggedInGraphqlFetch,
   createAnonymousGraphqlFetch,
-} from "./helpers";
-import { ADMIN_TOKEN } from "./seeds/users";
-import { ProcessingQuotation, ProposedQuotation } from "./seeds/quotations";
+} from './helpers';
+import { ADMIN_TOKEN } from './seeds/users';
+import { ProposedQuotation } from './seeds/quotations';
 
 let connection;
 let graphqlFetch;
 
-describe("TranslatedFilterTexts", () => {
+describe('TranslatedFilterTexts', () => {
   beforeAll(async () => {
     [, connection] = await setupDatabase();
     graphqlFetch = await createLoggedInGraphqlFetch(ADMIN_TOKEN);
@@ -18,8 +18,8 @@ describe("TranslatedFilterTexts", () => {
   afterAll(async () => {
     await connection.close();
   });
-  describe("Query.quotations for admin should", () => {
-    it("return list of quotations", async () => {
+  describe('Query.quotations for admin should', () => {
+    it('return list of quotations', async () => {
       const {
         data: { quotations },
       } = await graphqlFetch({
@@ -78,8 +78,8 @@ describe("TranslatedFilterTexts", () => {
     });
   });
 
-  describe("Query.quotations for anonymous user should", () => {
-    it("return error", async () => {
+  describe('Query.quotations for anonymous user should', () => {
+    it('return error', async () => {
       const graphqlAnonymousFetch = await createAnonymousGraphqlFetch();
       const { errors } = await graphqlAnonymousFetch({
         query: /* GraphQL */ `
@@ -94,8 +94,8 @@ describe("TranslatedFilterTexts", () => {
       expect(errors.length).toEqual(1);
     });
   });
-  describe("Query.quotation for admin user should", () => {
-    it("return single quotation when existing id passed", async () => {
+  describe('Query.quotation for admin user should', () => {
+    it('return single quotation when existing id passed', async () => {
       const {
         data: { quotation },
       } = await graphqlFetch({
@@ -155,7 +155,7 @@ describe("TranslatedFilterTexts", () => {
       expect(quotation._id).toEqual(ProposedQuotation._id);
     });
 
-    it("return null when non-existing id passed", async () => {
+    it('return null when non-existing id passed', async () => {
       const {
         data: { quotation },
       } = await graphqlFetch({
@@ -167,7 +167,7 @@ describe("TranslatedFilterTexts", () => {
           }
         `,
         variables: {
-          quotationId: "non-existing-id",
+          quotationId: 'non-existing-id',
         },
       });
       expect(quotation).toBe(null);

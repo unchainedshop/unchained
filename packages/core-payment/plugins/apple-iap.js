@@ -126,8 +126,8 @@ WebApp.connectHandlers.use(APPLE_IAP_WEBHOOK_PATH, async (req, res) => {
         throw new Error('shared secret not valid');
       }
 
-      const transactions = responseBody?.unified_receipt?.latest_receipt_info;
-      const latestTransaction = transactions[0]; // eslint-disable-line
+      const transactions = responseBody?.unified_receipt?.latest_receipt_info; // eslint-disable-line
+      const latestTransaction = transactions[0];
 
       if (
         responseBody.notification_type === AppleNotificationTypes.INITIAL_BUY
@@ -147,7 +147,7 @@ WebApp.connectHandlers.use(APPLE_IAP_WEBHOOK_PATH, async (req, res) => {
           // through submission of the receipt with GraphQL
           const checkedOut = await order.checkout({
             paymentContext: {
-              receiptData: responseBody?.unified_receipt?.latest_receipt,
+              receiptData: responseBody?.unified_receipt?.latest_receipt, // eslint-disable-line
             },
           });
           fixPeriods({
