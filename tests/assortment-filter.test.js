@@ -179,7 +179,7 @@ describe("AssortmentFilter", () => {
       expect(errors.length).toEqual(1);
     });
 
-    xit("return error when passed invalid filter ID", async () => {
+    it("return error when passed invalid filter ID", async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation AddAssortmentFilter(

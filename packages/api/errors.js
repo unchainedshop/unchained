@@ -31,6 +31,11 @@ export const AssortmentNotFoundError = createError(
   'AssortmentNotFoundError',
   'Assortment not found'
 );
+
+export const FilterNotFoundError = createError(
+  'FilterNotFoundError',
+  'Filter not found'
+);
 export const UserNotFoundError = createError(
   'UserNotFoundError',
   'Product not found'
