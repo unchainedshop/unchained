@@ -1,5 +1,6 @@
 import { log } from 'meteor/unchained:core-logger';
 import { ProductVariations } from 'meteor/unchained:core-products';
+import { ProductVariationNotFoundError } from '../../errors';
 
 export default function (
   root,
@@ -9,6 +10,11 @@ export default function (
   log(`mutation createProductVariationOption ${productVariationId}`, {
     userId,
   });
+
+  const variation = ProductVariations.findOne({ _id: productVariationId });
+  if (!variation)
+    throw new ProductVariationNotFoundError({ productVariationId });
+
   const { value, title } = inputData;
   ProductVariations.update(
     { _id: productVariationId },
@@ -21,7 +27,7 @@ export default function (
       },
     }
   );
-  const variation = ProductVariations.findOne({ _id: productVariationId });
+
   variation.upsertLocalizedText(localeContext.language, {
     productVariationOptionValue: value,
     title,

@@ -122,6 +122,99 @@ describe('ProductsVariation', () => {
     });
   });
 
+  describe('mutation.createProductVariationOption for admin user should', () => {
+    it('create product variation option successfuly', async () => {
+      const {
+        data: { createProductVariationOption } = {},
+      } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation CreateProductVariationOption(
+            $productVariationId: ID!
+            $option: CreateProductVariationOptionInput!
+          ) {
+            createProductVariationOption(
+              productVariationId: $productVariationId
+              option: $option
+            ) {
+              _id
+              texts {
+                _id
+              }
+              type
+              key
+              options {
+                _id
+              }
+            }
+          }
+        `,
+        variables: {
+          productVariationId: ProductVariations[0]._id,
+          option: {
+            value: 'key-1',
+            title: 'product variation option title',
+          },
+        },
+      });
+      expect(createProductVariationOption._id).not.toBe(null);
+    });
+
+    it('return error when passed invalid product variation ID', async () => {
+      const { errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation CreateProductVariationOption(
+            $productVariationId: ID!
+            $option: CreateProductVariationOptionInput!
+          ) {
+            createProductVariationOption(
+              productVariationId: $productVariationId
+              option: $option
+            ) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          productVariationId: 'invalid-product-variation',
+          option: {
+            value: 'key-1',
+            title: 'product variation option title',
+          },
+        },
+      });
+      expect(errors.length).toEqual(1);
+    });
+  });
+  describe('mutation.createProductVariationOption for anonymous user should', () => {
+    it('return error', async () => {
+      const graphqlAnonymousFetch = await createAnonymousGraphqlFetch();
+      const { errors } = await graphqlAnonymousFetch({
+        query: /* GraphQL */ `
+          mutation CreateProductVariationOption(
+            $productVariationId: ID!
+            $option: CreateProductVariationOptionInput!
+          ) {
+            createProductVariationOption(
+              productVariationId: $productVariationId
+              option: $option
+            ) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          productVariationId: ProductVariations[0]._id,
+          option: {
+            value: 'key-1',
+            title: 'product variation option title',
+          },
+        },
+      });
+
+      expect(errors.length).toEqual(1);
+    });
+  });
+
   describe('mutation.removeProductVariation for admin user should', () => {
     it('remove product variation successfuly', async () => {
       const { data: { removeProductVariation } = {} } = await graphqlFetch({
