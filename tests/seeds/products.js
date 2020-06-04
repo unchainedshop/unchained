@@ -177,6 +177,33 @@ export const SimpleProductReview = {
   votes: [],
 };
 
+export const ProductVariations = [
+  {
+    _id: 'product-color-variation-1',
+    texts: {
+      _id: 'variation-color-1',
+      locale: 'en',
+      title: 'product color variation title',
+      subtitle: null,
+    },
+    type: 'COLOR',
+    key: 'key-3',
+    options: [],
+  },
+  {
+    _id: 'product-text-variation-3',
+    texts: {
+      _id: 'variation-text-3',
+      locale: 'en',
+      title: 'product text variation title ',
+      subtitle: null,
+    },
+    type: 'TEXT',
+    key: 'key-3',
+    options: [],
+  },
+];
+
 export default async function seedProducts(db) {
   await db.collection('product_texts').createIndex({
     title: 'text',
@@ -198,4 +225,5 @@ export default async function seedProducts(db) {
   await db.collection('media').findOrInsertOne(JpegMedia);
   await db.collection('products').findOrInsertOne(PlanProduct);
   await db.collection('product_texts').findOrInsertOne(GermanPlanProductText);
+  await db.collection('product_variations').findOrInsertOne(FrenchProductText);
 }
