@@ -225,5 +225,5 @@ export default async function seedProducts(db) {
   await db.collection('media').findOrInsertOne(JpegMedia);
   await db.collection('products').findOrInsertOne(PlanProduct);
   await db.collection('product_texts').findOrInsertOne(GermanPlanProductText);
-  await db.collection('product_variations').findOrInsertOne(FrenchProductText);
+  await db.collection('product_variations').insertMany(ProductVariations);
 }

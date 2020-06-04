@@ -4,7 +4,7 @@ import {
   createAnonymousGraphqlFetch,
 } from './helpers';
 import { ADMIN_TOKEN } from './seeds/users';
-import { SimpleProduct } from './seeds/products';
+import { SimpleProduct, ProductVariations } from './seeds/products';
 
 let connection;
 let graphqlFetch;
@@ -116,6 +116,67 @@ describe('ProductsVariation', () => {
             type: 'COLOR',
             title: 'product variation title',
           },
+        },
+      });
+      expect(errors.length).toEqual(1);
+    });
+  });
+
+  describe('mutation.removeProductVariation for admin user should', () => {
+    it('remove product variation successfuly', async () => {
+      const { data: { removeProductVariation } = {} } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation RemoveProductVariation($productVariationId: ID!) {
+            removeProductVariation(productVariationId: $productVariationId) {
+              _id
+              texts {
+                _id
+                locale
+                title
+                subtitle
+              }
+              type
+              key
+              options {
+                _id
+              }
+            }
+          }
+        `,
+        variables: {
+          productVariationId: ProductVariations[0]._id,
+        },
+      });
+
+      const { errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation RemoveProductVariation($productVariationId: ID!) {
+            removeProductVariation(productVariationId: $productVariationId) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          productVariationId: ProductVariations[0]._id,
+        },
+      });
+      expect(errors.length).toEqual(1);
+    });
+  });
+
+  describe('mutation.removeProductVariation for anonymous user should', () => {
+    it('return error', async () => {
+      const graphqlAnonymousFetch = await createAnonymousGraphqlFetch();
+      const { errors } = await graphqlAnonymousFetch({
+        query: /* GraphQL */ `
+          mutation RemoveProductVariation($productVariationId: ID!) {
+            removeProductVariation(productVariationId: $productVariationId) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          productVariationId: ProductVariations[0]._id,
         },
       });
       expect(errors.length).toEqual(1);
