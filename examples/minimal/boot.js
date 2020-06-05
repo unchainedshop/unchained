@@ -40,10 +40,12 @@ const initializeDatabase = () => {
     if (Users.find({ username: 'admin' }).count() > 0) {
       return;
     }
+
     const admin = Factory.create('user', {
       username: 'admin',
       roles: ['admin'],
       emails: [{ address: 'admin@localhost', verified: true }],
+      profile: { address: {} },
       guest: false,
     });
     const languages = ['de', 'fr'].map((code, key) => {
@@ -82,6 +84,7 @@ const initializeDatabase = () => {
       \nlanguages: ${languages.join(',')}
       \nuser: admin@localhost / password`);
   } catch (e) {
+    console.log("ERROR: ", e)
     logger.log('database was already initialized');
   }
 };
