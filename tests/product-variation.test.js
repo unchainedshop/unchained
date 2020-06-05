@@ -156,6 +156,7 @@ describe('ProductsVariation', () => {
           },
         },
       });
+
       expect(createProductVariationOption._id).not.toBe(null);
     });
 
@@ -208,6 +209,100 @@ describe('ProductsVariation', () => {
             value: 'key-1',
             title: 'product variation option title',
           },
+        },
+      });
+
+      expect(errors.length).toEqual(1);
+    });
+  });
+
+  describe('mutation.removeProductVariationOption for admin user should', () => {
+    it('remove product variation option successfuly', async () => {
+      const {
+        data: { removeProductVariationOption } = {},
+      } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation RemoveProductVariationOption(
+            $productVariationId: ID!
+            $productVariationOptionValue: String!
+          ) {
+            removeProductVariationOption(
+              productVariationId: $productVariationId
+              productVariationOptionValue: $productVariationOptionValue
+            ) {
+              _id
+              texts {
+                _id
+                locale
+                title
+                subtitle
+              }
+              type
+              key
+              options {
+                _id
+                texts {
+                  title
+                  _id
+                  subtitle
+                  locale
+                }
+                value
+              }
+            }
+          }
+        `,
+        variables: {
+          productVariationId: ProductVariations[1]._id,
+          productVariationOptionValue: 'variation-option-1-value',
+        },
+      });
+      expect(removeProductVariationOption.options.length).toEqual(1);
+    });
+
+    it('return error when passed invalid product variation ID', async () => {
+      const { errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation RemoveProductVariationOption(
+            $productVariationId: ID!
+            $productVariationOptionValue: String!
+          ) {
+            removeProductVariationOption(
+              productVariationId: $productVariationId
+              productVariationOptionValue: $productVariationOptionValue
+            ) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          productVariationId: 'invalid-product-variation',
+          productVariationOptionValue: 'variation-option-2-value',
+        },
+      });
+      expect(errors.length).toEqual(1);
+    });
+  });
+  describe('mutation.removeProductVariationOption for anonymous user should', () => {
+    it('return error', async () => {
+      const graphqlAnonymousFetch = await createAnonymousGraphqlFetch();
+      const { errors } = await graphqlAnonymousFetch({
+        query: /* GraphQL */ `
+          mutation RemoveProductVariationOption(
+            $productVariationId: ID!
+            $productVariationOptionValue: String!
+          ) {
+            removeProductVariationOption(
+              productVariationId: $productVariationId
+              productVariationOptionValue: $productVariationOptionValue
+            ) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          productVariationId: ProductVariations[1]._id,
+          productVariationOptionValue: 'variation-option-2-value',
         },
       });
 

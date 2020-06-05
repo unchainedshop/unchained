@@ -188,7 +188,7 @@ export const ProductVariations = [
     },
     type: 'COLOR',
     key: 'key-3',
-    options: [],
+    options: ['variation-option-4-value', 'variation-option-5-value'],
   },
   {
     _id: 'product-text-variation-3',
@@ -200,7 +200,7 @@ export const ProductVariations = [
     },
     type: 'TEXT',
     key: 'key-3',
-    options: [],
+    options: ['variation-option-1-value', 'variation-option-2-value'],
   },
 ];
 
