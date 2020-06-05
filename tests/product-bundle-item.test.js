@@ -147,4 +147,94 @@ describe('ProductBundleItem', () => {
       expect(errors.length).toEqual(1);
     });
   });
+
+  describe('mutation.removeBundleItem for admin user should', () => {
+    it('remove product bundle item successfuly', async () => {
+      const { data: { removeBundleItem } = {} } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation RemoveBundleItem($productId: ID!, $index: Int!) {
+            removeBundleItem(productId: $productId, index: $index) {
+              _id
+              sequence
+              status
+              tags
+              created
+              updated
+
+              published
+              texts {
+                _id
+                locale
+                slug
+                title
+                subtitle
+                description
+                vendor
+                brand
+                labels
+              }
+              media {
+                _id
+              }
+              reviews {
+                _id
+              }
+              meta
+              assortmentPaths {
+                assortmentProduct {
+                  _id
+                }
+              }
+              siblings {
+                _id
+              }
+            }
+          }
+        `,
+        variables: {
+          productId: SimpleProduct._id,
+          index: 10,
+        },
+      });
+      expect(removeBundleItem._id).toEqual(SimpleProduct._id);
+    });
+
+    it('return error when passed invalid product ID', async () => {
+      const { errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation RemoveBundleItem($productId: ID!, $index: Int!) {
+            removeBundleItem(productId: $productId, index: $index) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          productId: 'invalid-product-id',
+          index: 0,
+        },
+      });
+
+      expect(errors.length).toEqual(1);
+    });
+  });
+
+  describe('mutation.removeBundleItem for anonymous user should', () => {
+    it('return error', async () => {
+      const graphQlAnonymousFetch = await createAnonymousGraphqlFetch();
+      const { errors } = await graphQlAnonymousFetch({
+        query: /* GraphQL */ `
+          mutation RemoveBundleItem($productId: ID!, $index: Int!) {
+            removeBundleItem(productId: $productId, index: $index) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          productId: SimpleProduct._id,
+          index: 0,
+        },
+      });
+      expect(errors.length).toEqual(1);
+    });
+  });
 });
