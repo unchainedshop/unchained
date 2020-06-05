@@ -19,6 +19,101 @@ describe('ProductsVariation', () => {
     await connection.close();
   });
 
+  describe('mutation.reorderProductMedia for admin user should', () => {
+    it('update product media sortkey successfuly when provided valid media ID', async () => {
+      const { data: { reorderProductMedia } = {} } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation ReorderProductmedia(
+            $sortKeys: [ReorderProductMediaInput!]!
+          ) {
+            reorderProductMedia(sortKeys: $sortKeys) {
+              _id
+              tags
+              file {
+                _id
+              }
+              sortKey
+              texts {
+                _id
+              }
+            }
+          }
+        `,
+        variables: {
+          sortKeys: [
+            {
+              productMediaId: JpegProductMedia._id,
+              sortKey: 10,
+            },
+          ],
+        },
+      });
+
+      expect(reorderProductMedia[0].sortKey).toEqual(11);
+    });
+
+    it('skiped any passed sort key passed with in-valid media ID', async () => {
+      const {
+        data: { reorderProductMedia },
+      } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation ReorderProductmedia(
+            $sortKeys: [ReorderProductMediaInput!]!
+          ) {
+            reorderProductMedia(sortKeys: $sortKeys) {
+              _id
+              tags
+              file {
+                _id
+              }
+              sortKey
+              texts {
+                _id
+              }
+            }
+          }
+        `,
+        variables: {
+          sortKeys: [
+            {
+              productMediaId: 'invalid-media-id',
+              sortKey: 10,
+            },
+          ],
+        },
+      });
+      expect(reorderProductMedia.length).toEqual(0);
+    });
+  });
+
+  describe('mutation.reorderProductMedia for anonymous user should', () => {
+    it('return error', async () => {
+      const graphqlAnonymousFetch = await createAnonymousGraphqlFetch();
+
+      const { errors } = await graphqlAnonymousFetch({
+        query: /* GraphQL */ `
+          mutation ReorderProductmedia(
+            $sortKeys: [ReorderProductMediaInput!]!
+          ) {
+            reorderProductMedia(sortKeys: $sortKeys) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          sortKeys: [
+            {
+              productMediaId: JpegProductMedia._id,
+              sortKey: 10,
+            },
+          ],
+        },
+      });
+
+      expect(errors.length).toEqual(1);
+    });
+  });
+
   describe('mutation.updateProductMediaTexts for admin user should', () => {
     it('update product media text successfuly when provided valid media ID', async () => {
       const { data: { updateProductMediaTexts } = {} } = await graphqlFetch({
@@ -83,7 +178,7 @@ describe('ProductsVariation', () => {
   });
 
   describe('mutation.updateProductMediaTexts for anonymous user should', () => {
-    it('remove product media successfuly when provided valid media ID', async () => {
+    it('return error', async () => {
       const graphqlAnonymousFetch = await createAnonymousGraphqlFetch();
 
       const { errors } = await graphqlAnonymousFetch({
@@ -166,7 +261,7 @@ describe('ProductsVariation', () => {
   });
 
   describe('mutation.removeProductMedia for anonymous user should', () => {
-    it('remove product media successfuly when provided valid media ID', async () => {
+    it('return error', async () => {
       const graphqlAnonymousFetch = await createAnonymousGraphqlFetch();
 
       const { errors } = await graphqlAnonymousFetch({
