@@ -25,6 +25,11 @@ export const ProductVariationNotFoundError = createError(
   'Product variation not found'
 );
 
+export const ProductMediaNotFoundError = createError(
+  'ProductMediaNotFoundError',
+  'Product media not found'
+);
+
 export const ProductReviewNotFoundError = createError(
   'ProductReviewNotFoundError',
   'ProductReview not found'
