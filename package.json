@@ -14,12 +14,14 @@
     "Marco Wettstein <maw@panter.ch>",
     "Simon Emanuel Schmid <simon@unchained.shop> (https://unchained.shop)"
   ],
-  "bugs": {
+  "bugs": { 
     "url": "https://github.com/unchainedshop/unchained/issues"
   },
   "scripts": {
     "lint": "eslint packages tests --cache --fix --ext=jsx --ext=js",
+    "lint:ci": "eslint packages tests --ext=jsx --ext=js",
     "test": "jest --runInBand",
+    "test:ci": "jest --ci --runInBand",
     "test:watch": "cross-env DEBUG=jest-mongodb:* jest --runInBand --watch --verbose",
     "dev": "run-p --print-label dev:*",
     "dev:minimal": "cd examples/minimal && npm run dev",
