@@ -2,6 +2,7 @@ import { compose, pure, withState } from "recompose";
 import gql from "graphql-tag";
 import { graphql } from "react-apollo";
 import React, { useState } from "react";
+import { withRouter } from 'next/router';
 import { Table, Icon, Button, Loader, Label, Search } from "semantic-ui-react";
 import InfiniteScroll from "react-infinite-scroller";
 import { escapeRegExp, filter, debounce } from "lodash";
@@ -156,6 +157,7 @@ export const PRODUCT_LIST_QUERY = gql`
 
 export default compose(
   withState("hasMore", "updateHasMore", true),
+  withRouter,
   graphql(PRODUCT_LIST_QUERY, {
     options: () => ({
       variables: {
