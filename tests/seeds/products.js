@@ -249,13 +249,22 @@ export const SimpleProductReview = {
 export const ProductVariationTexts = [
   {
     _id: 'variation-color-1',
+    productVariationId: 'product-color-variation-1',
     locale: 'en',
+    title: 'product color variation title',
+    subtitle: null,
+  },
+  {
+    _id: 'variation-color-7',
+    productVariationId: 'product-color-variation-1',
+    locale: 'de',
     title: 'product color variation title',
     subtitle: null,
   },
   {
     _id: 'variation-text-3',
     locale: 'en',
+    productVariationId: 'product-text-variation-3',
     title: 'product text variation title ',
     subtitle: null,
   },
@@ -314,8 +323,8 @@ export default async function seedProducts(db) {
   await db.collection('media').findOrInsertOne(JpegMedia);
   await db.collection('products').findOrInsertOne(PlanProduct);
   await db.collection('product_texts').findOrInsertOne(GermanPlanProductText);
+  await db.collection('product_variations').insertMany(ProductVariations);
   await db
     .collection('product_variation_texts')
     .insertMany(ProductVariationTexts);
-  await db.collection('product_variations').insertMany(ProductVariations);
 }

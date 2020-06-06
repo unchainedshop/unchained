@@ -49,7 +49,7 @@ describe('ProductsVariation', () => {
         },
       });
 
-      expect(Array.isArray(translatedProductVariationTexts)).toBe(true);
+      expect(translatedProductVariationTexts.length).toEqual(2);
     });
 
     it('return empty array when no match is found', async () => {
