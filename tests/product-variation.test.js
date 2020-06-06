@@ -77,6 +77,33 @@ describe('ProductsVariation', () => {
     });
   });
 
+  describe('query.translatedProductVariationTexts for anonymous user should', () => {
+    it('return valid result', async () => {
+      const graphqlAnonymousFetch = await createAnonymousGraphqlFetch();
+      const {
+        data: { translatedProductVariationTexts } = {},
+      } = await graphqlAnonymousFetch({
+        query: /* GraphQL */ `
+          query TranslatedProductVariationTexts(
+            $productVariationId: ID!
+            $productVariationOptionValue: String
+          ) {
+            translatedProductVariationTexts(
+              productVariationId: $productVariationId
+              productVariationOptionValue: $productVariationOptionValue
+            ) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          productVariationId: ProductVariations[1]._id,
+        },
+      });
+      expect(translatedProductVariationTexts.length).toEqual(1);
+    });
+  });
+
   describe('mutation.createProductVariation for admin user should', () => {
     it('create product variation successfuly', async () => {
       const { data: { createProductVariation } = {} } = await graphqlFetch({
