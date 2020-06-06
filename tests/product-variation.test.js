@@ -4,7 +4,11 @@ import {
   createAnonymousGraphqlFetch,
 } from './helpers';
 import { ADMIN_TOKEN } from './seeds/users';
-import { SimpleProduct, ProductVariations } from './seeds/products';
+import {
+  SimpleProduct,
+  ProductVariations,
+  ProductVariationTexts,
+} from './seeds/products';
 
 let connection;
 let graphqlFetch;
@@ -17,6 +21,60 @@ describe('ProductsVariation', () => {
 
   afterAll(async () => {
     await connection.close();
+  });
+
+  describe('query.translatedProductVariationTexts for admin user should', () => {
+    it('return list of product variation texts when provided valid ID', async () => {
+      const {
+        data: { translatedProductVariationTexts } = {},
+      } = await graphqlFetch({
+        query: /* GraphQL */ `
+          query TranslatedProductVariationTexts(
+            $productVariationId: ID!
+            $productVariationOptionValue: String
+          ) {
+            translatedProductVariationTexts(
+              productVariationId: $productVariationId
+              productVariationOptionValue: $productVariationOptionValue
+            ) {
+              _id
+              locale
+              title
+              subtitle
+            }
+          }
+        `,
+        variables: {
+          productVariationId: ProductVariations[0]._id,
+        },
+      });
+
+      expect(Array.isArray(translatedProductVariationTexts)).toBe(true);
+    });
+
+    it('return empty array when no match is found', async () => {
+      const {
+        data: { translatedProductVariationTexts } = {},
+      } = await graphqlFetch({
+        query: /* GraphQL */ `
+          query TranslatedProductVariationTexts(
+            $productVariationId: ID!
+            $productVariationOptionValue: String
+          ) {
+            translatedProductVariationTexts(
+              productVariationId: $productVariationId
+              productVariationOptionValue: $productVariationOptionValue
+            ) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          productVariationId: 'invalid-product-id',
+        },
+      });
+      expect(translatedProductVariationTexts.length).toEqual(0);
+    });
   });
 
   describe('mutation.createProductVariation for admin user should', () => {
