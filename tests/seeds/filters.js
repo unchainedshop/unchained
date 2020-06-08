@@ -26,6 +26,29 @@ export const FrenchMultiChoiceFilterText = {
   updated: new Date('2020-03-16T09:32:10.943+0000'),
 };
 
+const MultiChoiceFilterOptions = [
+  {
+    _id: 'multichoice-filter:test-filter-option-1',
+    texts: {
+      _id: 'some-id',
+      locale: 'en',
+      title: 'test-filter-option-1',
+      subtitle: '',
+    },
+    value: 'test-filter-option-1',
+  },
+  {
+    _id: 'multichoice-filter:test-filter-option-2',
+    texts: {
+      _id: 'some-id-2',
+      locale: 'en',
+      title: 'test-filter-option-2',
+      subtitle: '',
+    },
+    value: 'test-filter-option-2',
+  },
+];
+
 export default async function seedFilters(db) {
   await db.collection('filters').findOrInsertOne(MultiChoiceFilter);
   await db
@@ -34,4 +57,5 @@ export default async function seedFilters(db) {
   await db
     .collection('filter_texts')
     .findOrInsertOne(FrenchMultiChoiceFilterText);
+  await db.collection('filter_options').insertMany(MultiChoiceFilterOptions);
 }

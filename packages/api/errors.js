@@ -19,6 +19,17 @@ export const ProductNotFoundError = createError(
   'ProductNotFoundError',
   'Product not found'
 );
+
+export const ProductVariationNotFoundError = createError(
+  'ProductVariationNotFoundError',
+  'Product variation not found'
+);
+
+export const ProductMediaNotFoundError = createError(
+  'ProductMediaNotFoundError',
+  'Product media not found'
+);
+
 export const ProductReviewNotFoundError = createError(
   'ProductReviewNotFoundError',
   'ProductReview not found'
@@ -30,6 +41,11 @@ export const ProductWrongStatusError = createError(
 export const AssortmentNotFoundError = createError(
   'AssortmentNotFoundError',
   'Assortment not found'
+);
+
+export const FilterNotFoundError = createError(
+  'FilterNotFoundError',
+  'Filter not found'
 );
 export const UserNotFoundError = createError(
   'UserNotFoundError',

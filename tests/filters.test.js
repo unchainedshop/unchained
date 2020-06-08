@@ -180,6 +180,119 @@ describe('Filters', () => {
     });
   });
 
+  describe('mutation.updateFilterTexts for admin user should', () => {
+    it('update filter texts successfuly when passed valid filter ID', async () => {
+      const {
+        data: { updateFilterTexts },
+      } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation UpdateFilterTexts(
+            $filterId: ID!
+            $filterOptionValue: String
+            $texts: [UpdateFilterTextInput!]!
+          ) {
+            updateFilterTexts(
+              filterId: $filterId
+              filterOptionValue: $filterOptionValue
+              texts: $texts
+            ) {
+              _id
+              locale
+              title
+              subtitle
+            }
+          }
+        `,
+        variables: {
+          filterId: MultiChoiceFilter._id,
+          filterOptionValue: 'Hello world',
+          texts: [
+            {
+              locale: 'en',
+              title: 'english-filter-text',
+              subtitle: 'english-filter-text-subtitle',
+            },
+            {
+              locale: 'am',
+              title: 'amharic-filter-text',
+              subtitle: 'amharic-filter-text-subtitle',
+            },
+          ],
+        },
+      });
+
+      expect(updateFilterTexts.length).toEqual(2);
+    });
+
+    it('return error when passed in-valid filter ID', async () => {
+      const { errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation UpdateFilterTexts(
+            $filterId: ID!
+            $filterOptionValue: String
+            $texts: [UpdateFilterTextInput!]!
+          ) {
+            updateFilterTexts(
+              filterId: $filterId
+              filterOptionValue: $filterOptionValue
+              texts: $texts
+            ) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          filterId: 'invalid-id',
+          filterOptionValue: 'Hello world',
+          texts: [
+            {
+              locale: 'en',
+              title: 'english-filter-text',
+              subtitle: 'english-filter-text-subtitle',
+            },
+          ],
+        },
+      });
+      expect(errors.length).toEqual(1);
+    });
+  });
+
+  describe('mutation.updateFilterTexts for anonymous user should', () => {
+    it('return error', async () => {
+      const graphqlAnonymousFetch = createAnonymousGraphqlFetch();
+      const { errors } = await graphqlAnonymousFetch({
+        query: /* GraphQL */ `
+          mutation UpdateFilterTexts(
+            $filterId: ID!
+            $filterOptionValue: String
+            $texts: [UpdateFilterTextInput!]!
+          ) {
+            updateFilterTexts(
+              filterId: $filterId
+              filterOptionValue: $filterOptionValue
+              texts: $texts
+            ) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          filterId: MultiChoiceFilter._id,
+          filterOptionValue: 'Hello world',
+          texts: [
+            {
+              locale: 'en',
+              title: 'english-filter-text',
+              subtitle: 'english-filter-text-subtitle',
+            },
+          ],
+        },
+      });
+
+      expect(errors.length).toEqual(1);
+    });
+  });
+
   describe('Mutation.createFilter', () => {
     it('create a new single choice filter', async () => {
       const { data: { createFilter } = {} } = await graphqlFetch({

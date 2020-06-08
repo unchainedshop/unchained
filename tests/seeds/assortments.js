@@ -1,4 +1,5 @@
 import { SimpleProduct } from './products';
+import { MultiChoiceFilter } from './filters';
 
 export const SimpleAssortment = [
   {
@@ -191,9 +192,40 @@ export const AssortmentProduct = {
   tags: ['assortment-et-1'],
 };
 
+export const AssortmentLinks = [
+  {
+    _id: 'assortment-link-1',
+    sortKey: 1,
+    tags: ['assortment-link-test'],
+    meta: null,
+    parent: SimpleAssortment[0],
+    child: SimpleAssortment[1],
+  },
+  {
+    _id: 'assortment-link-2',
+    sortKey: 1,
+    tags: ['assortment-link-test'],
+    meta: null,
+    parent: SimpleAssortment[2],
+    child: SimpleAssortment[3],
+  },
+];
+
+export const AssortmentFilters = [
+  {
+    _id: 'assortment-filter-1',
+    sortKey: 1,
+    tags: ['assortment-filter-1'],
+    assortment: SimpleAssortment[1],
+    filter: MultiChoiceFilter,
+  },
+];
+
 export default async function seedAssortments(db) {
   await db.collection('assortments').insertMany(SimpleAssortment);
   await db.collection('assortment_texts').findOrInsertOne(GermanAssortmentText);
   await db.collection('assortment_texts').findOrInsertOne(FrenchAssortmentText);
+  await db.collection('assortment_links').insertMany(AssortmentLinks);
   await db.collection('assortment_products').findOrInsertOne(AssortmentProduct);
+  await db.collection('assortment_filters').insertMany(AssortmentFilters);
 }
