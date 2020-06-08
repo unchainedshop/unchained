@@ -19,6 +19,17 @@ export const ProductNotFoundError = createError(
   'ProductNotFoundError',
   'Product not found'
 );
+
+export const ProductVariationNotFoundError = createError(
+  'ProductVariationNotFoundError',
+  'Product variation not found'
+);
+
+export const ProductMediaNotFoundError = createError(
+  'ProductMediaNotFoundError',
+  'Product media not found'
+);
+
 export const ProductReviewNotFoundError = createError(
   'ProductReviewNotFoundError',
   'ProductReview not found'

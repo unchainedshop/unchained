@@ -2,7 +2,9 @@ import { log } from 'meteor/unchained:core-logger';
 import {
   ProductVariations,
   ProductVariationType,
+  Products,
 } from 'meteor/unchained:core-products';
+import { ProductNotFoundError } from '../../errors';
 
 export default function (
   root,
@@ -12,6 +14,10 @@ export default function (
   log(`mutation createProductVariation ${productId}`, { userId });
   const { key, type, title } = inputData;
   const variation = { created: new Date() };
+  const product = Products.findOne({ _id: productId });
+
+  if (!product) throw new ProductNotFoundError({ productId });
+
   variation.key = key;
   variation.type = ProductVariationType[type];
   variation.productId = productId;

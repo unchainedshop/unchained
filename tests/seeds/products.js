@@ -33,6 +33,76 @@ export const SimpleProduct = {
   },
 };
 
+export const ConfigurableProduct = {
+  _id: 'configurable-product-id',
+  created: new Date('2019-07-30T09:23:26.253+0000'),
+  type: 'CONFIGURABLE_PRODUCT',
+  status: 'ACTIVE',
+  sequence: 0,
+  authorId: 'admin',
+  slugs: ['old-slug-de', 'slug-de', 'slug-fr'],
+  updated: new Date('2019-09-10T14:29:37.015+0000'),
+  published: new Date('2019-07-30T09:23:57.329+0000'),
+  warehousing: {
+    sku: 'SKU',
+    baseUnit: 'ST',
+  },
+  tags: ['tag-1', 'tag-2', 'highlight'],
+  commerce: {
+    pricing: [
+      {
+        amount: 10000,
+        maxQuantity: 0,
+        isTaxable: true,
+        isNetPrice: false,
+        currencyCode: 'CHF',
+        countryCode: 'CH',
+      },
+    ],
+  },
+  supply: {
+    weightInGram: 1570,
+    heightInMillimeters: 250,
+    lengthInMillimeters: 300,
+    widthInMillimeters: 400,
+  },
+};
+
+export const SimpleProductBundle = {
+  _id: 'simpleproduct-bundle',
+  created: new Date('2019-07-30T09:23:26.253+0000'),
+  type: 'BUNDLE_PRODUCT',
+  status: 'ACTIVE',
+  sequence: 0,
+  authorId: 'admin',
+  slugs: ['old-slug-de', 'slug-de', 'slug-fr'],
+  updated: new Date('2019-09-10T14:29:37.015+0000'),
+  published: new Date('2019-07-30T09:23:57.329+0000'),
+  warehousing: {
+    sku: 'SKU',
+    baseUnit: 'ST-bundle',
+  },
+  tags: ['tag-1', 'tag-2', 'highlight'],
+  commerce: {
+    pricing: [
+      {
+        amount: 10000,
+        maxQuantity: 0,
+        isTaxable: true,
+        isNetPrice: false,
+        currencyCode: 'CHF',
+        countryCode: 'CH',
+      },
+    ],
+  },
+  supply: {
+    weightInGram: 1570,
+    heightInMillimeters: 250,
+    lengthInMillimeters: 300,
+    widthInMillimeters: 400,
+  },
+};
+
 export const UnpublishedProduct = {
   ...SimpleProduct,
   _id: 'un-published',
@@ -176,6 +246,56 @@ export const SimpleProductReview = {
   created: new Date('2019-09-10T14:42:16.177+0000'),
   votes: [],
 };
+export const ProductVariationTexts = [
+  {
+    _id: 'variation-color-1',
+    productVariationId: 'product-color-variation-1',
+    locale: 'en',
+    title: 'product color variation title',
+    subtitle: null,
+  },
+  {
+    _id: 'variation-color-7',
+    productVariationId: 'product-color-variation-1',
+    locale: 'de',
+    title: 'product color variation title',
+    subtitle: null,
+  },
+  {
+    _id: 'variation-text-3',
+    locale: 'en',
+    productVariationId: 'product-text-variation-3',
+    title: 'product text variation title ',
+    subtitle: null,
+  },
+];
+
+export const ProductVariations = [
+  {
+    _id: 'product-color-variation-1',
+    texts: {
+      _id: 'variation-color-1',
+      locale: 'en',
+      title: 'product color variation title',
+      subtitle: null,
+    },
+    type: 'COLOR',
+    key: 'key-3',
+    options: ['variation-option-4-value', 'variation-option-5-value'],
+  },
+  {
+    _id: 'product-text-variation-3',
+    texts: {
+      _id: 'variation-text-3',
+      locale: 'en',
+      title: 'product text variation title ',
+      subtitle: null,
+    },
+    type: 'TEXT',
+    key: 'key-3',
+    options: ['variation-option-1-value', 'variation-option-2-value'],
+  },
+];
 
 export default async function seedProducts(db) {
   await db.collection('product_texts').createIndex({
@@ -183,7 +303,12 @@ export default async function seedProducts(db) {
   });
   await db
     .collection('products')
-    .insertMany([SimpleProduct, UnpublishedProduct]);
+    .insertMany([
+      SimpleProduct,
+      UnpublishedProduct,
+      SimpleProductBundle,
+      ConfigurableProduct,
+    ]);
   await db.collection('product_reviews').findOrInsertOne(SimpleProductReview);
   await db.collection('product_texts').findOrInsertOne(GermanProductText);
   await db.collection('product_texts').findOrInsertOne(FrenchProductText);
@@ -198,4 +323,8 @@ export default async function seedProducts(db) {
   await db.collection('media').findOrInsertOne(JpegMedia);
   await db.collection('products').findOrInsertOne(PlanProduct);
   await db.collection('product_texts').findOrInsertOne(GermanPlanProductText);
+  await db.collection('product_variations').insertMany(ProductVariations);
+  await db
+    .collection('product_variation_texts')
+    .insertMany(ProductVariationTexts);
 }
