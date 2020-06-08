@@ -1,3 +1,12 @@
+- name: Checks
+  type: parallel
+  steps:
+    - name: Linting
+      service: ci
+      command: meteor npm run lint:ci
+    - name: Integration Tests
+      service: ci
+      command: meteor npm run test:ci
 - name: Build Unchained Examples
   type: parallel
   encrypted_dockercfg_path: dockercfg.encrypted

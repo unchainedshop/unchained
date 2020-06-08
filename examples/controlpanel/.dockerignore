@@ -1,3 +1,5 @@
 .git
 .next
 node_modules
+.eslintcache
+out

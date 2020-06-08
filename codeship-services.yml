@@ -1,3 +1,9 @@
+ci:
+  build:
+    context: .
+    dockerfile: Dockerfile
+  cached: true
+
 controlpanel:
   build:
     context: ./examples/controlpanel
