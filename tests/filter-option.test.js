@@ -2,14 +2,14 @@ import {
   setupDatabase,
   createLoggedInGraphqlFetch,
   createAnonymousGraphqlFetch,
-} from "./helpers";
-import { ADMIN_TOKEN } from "./seeds/users";
-import { MultiChoiceFilter } from "./seeds/filters";
+} from './helpers';
+import { ADMIN_TOKEN } from './seeds/users';
+import { MultiChoiceFilter } from './seeds/filters';
 
 let connection;
 let graphqlFetch;
 
-describe("FilterOption", () => {
+describe('FilterOption', () => {
   beforeAll(async () => {
     [, connection] = await setupDatabase();
     graphqlFetch = await createLoggedInGraphqlFetch(ADMIN_TOKEN);
@@ -19,8 +19,8 @@ describe("FilterOption", () => {
     await connection.close();
   });
 
-  describe("mutation.createFilterOption for admin users should", () => {
-    it("create filter option successfuly when passed valid filter ID", async () => {
+  describe('mutation.createFilterOption for admin users should', () => {
+    it('create filter option successfuly when passed valid filter ID', async () => {
       const {
         data: { createFilterOption },
       } = await graphqlFetch({
@@ -55,18 +55,18 @@ describe("FilterOption", () => {
         variables: {
           filterId: MultiChoiceFilter._id,
           option: {
-            value: "test-filter-option",
-            title: "test-filter-option-title",
+            value: 'test-filter-option',
+            title: 'test-filter-option-title',
           },
         },
       });
 
       expect(
         createFilterOption.options[createFilterOption.options.length - 1]._id
-      ).toEqual("multichoice-filter:test-filter-option");
+      ).toEqual('multichoice-filter:test-filter-option');
     });
 
-    it("return error when passed invalid filterId", async () => {
+    it('return error when passed invalid filterId', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation CreateFilterOption(
@@ -79,10 +79,10 @@ describe("FilterOption", () => {
           }
         `,
         variables: {
-          filterId: "invalid-id",
+          filterId: 'invalid-id',
           option: {
-            value: "test-filter-option",
-            title: "test-filter-option-title",
+            value: 'test-filter-option',
+            title: 'test-filter-option-title',
           },
         },
       });
@@ -90,8 +90,8 @@ describe("FilterOption", () => {
     });
   });
 
-  describe("mutation.createFilterOption for anonymous users should", () => {
-    it("return error", async () => {
+  describe('mutation.createFilterOption for anonymous users should', () => {
+    it('return error', async () => {
       const graphqlAnonymousFetch = await createAnonymousGraphqlFetch();
       const { errors } = await graphqlAnonymousFetch({
         query: /* GraphQL */ `
@@ -107,8 +107,8 @@ describe("FilterOption", () => {
         variables: {
           filterId: MultiChoiceFilter._id,
           option: {
-            value: "test-filter-option",
-            title: "test-filter-option-title",
+            value: 'test-filter-option',
+            title: 'test-filter-option-title',
           },
         },
       });
@@ -116,8 +116,8 @@ describe("FilterOption", () => {
     });
   });
 
-  describe("mutation.removeFilterOption for admin users should", () => {
-    it("remove filter option successfuly when passed valid filter ID", async () => {
+  describe('mutation.removeFilterOption for admin users should', () => {
+    it('remove filter option successfuly when passed valid filter ID', async () => {
       const {
         data: { removeFilterOption },
       } = await graphqlFetch({
@@ -151,13 +151,13 @@ describe("FilterOption", () => {
         `,
         variables: {
           filterId: MultiChoiceFilter._id,
-          filterOptionValue: "test-filter-option",
+          filterOptionValue: 'test-filter-option',
         },
       });
       expect(removeFilterOption.options.length).toEqual(3);
     });
 
-    it("return error when passed invalid filter ID", async () => {
+    it('return error when passed invalid filter ID', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation RemoveFilterOption(
@@ -173,16 +173,16 @@ describe("FilterOption", () => {
           }
         `,
         variables: {
-          filterId: "invalid-filter-id",
-          filterOptionValue: "test-filter-option",
+          filterId: 'invalid-filter-id',
+          filterOptionValue: 'test-filter-option',
         },
       });
       expect(errors.length).toEqual(1);
     });
   });
 
-  describe("mutation.removeFilterOption for anonymous users should", () => {
-    it("remove filter option successfuly when passed valid filter ID", async () => {
+  describe('mutation.removeFilterOption for anonymous users should', () => {
+    it('remove filter option successfuly when passed valid filter ID', async () => {
       const graphqlAnonymousFetch = await createAnonymousGraphqlFetch();
       const { errors } = await graphqlAnonymousFetch({
         query: /* GraphQL */ `
@@ -200,7 +200,7 @@ describe("FilterOption", () => {
         `,
         variables: {
           filterId: MultiChoiceFilter._id,
-          filterOptionValue: "test-filter-option",
+          filterOptionValue: 'test-filter-option',
         },
       });
       expect(errors.length).toEqual(1);

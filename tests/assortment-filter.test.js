@@ -2,19 +2,15 @@ import {
   setupDatabase,
   createLoggedInGraphqlFetch,
   createAnonymousGraphqlFetch,
-} from "./helpers";
-import { ADMIN_TOKEN } from "./seeds/users";
-import {
-  SimpleAssortment,
-  AssortmentLinks,
-  AssortmentFilters,
-} from "./seeds/assortments";
-import { MultiChoiceFilter } from "./seeds/filters";
+} from './helpers';
+import { ADMIN_TOKEN } from './seeds/users';
+import { SimpleAssortment, AssortmentFilters } from './seeds/assortments';
+import { MultiChoiceFilter } from './seeds/filters';
 
 let connection;
 let graphqlFetch;
 
-describe("AssortmentFilter", () => {
+describe('AssortmentFilter', () => {
   beforeAll(async () => {
     [, connection] = await setupDatabase();
     graphqlFetch = await createLoggedInGraphqlFetch(ADMIN_TOKEN);
@@ -24,8 +20,8 @@ describe("AssortmentFilter", () => {
     await connection.close();
   });
 
-  describe("mutation.reorderAssortmentFilters for admin users should", () => {
-    it("update sortkey value when passed valid assortment filter ID", async () => {
+  describe('mutation.reorderAssortmentFilters for admin users should', () => {
+    it('update sortkey value when passed valid assortment filter ID', async () => {
       const {
         data: { reorderAssortmentFilters },
       } = await graphqlFetch({
@@ -60,7 +56,7 @@ describe("AssortmentFilter", () => {
       expect(reorderAssortmentFilters[0].sortKey).toEqual(11);
     });
 
-    it("skip when passed invalid assortment filter ID", async () => {
+    it('skip when passed invalid assortment filter ID', async () => {
       const {
         data: { reorderAssortmentFilters },
       } = await graphqlFetch({
@@ -76,7 +72,7 @@ describe("AssortmentFilter", () => {
         variables: {
           sortkeys: [
             {
-              assortmentFilterId: "invalid-id",
+              assortmentFilterId: 'invalid-id',
               sortKey: 10,
             },
           ],
@@ -87,9 +83,9 @@ describe("AssortmentFilter", () => {
     });
   });
 
-  describe("mutation.reorderAssortmentFilters for anonymous user should", () => {
+  describe('mutation.reorderAssortmentFilters for anonymous user should', () => {
     const graphqlAnonymousFetch = createAnonymousGraphqlFetch();
-    it("return error", async () => {
+    it('return error', async () => {
       const { errors } = await graphqlAnonymousFetch({
         query: /* GraphQL */ `
           mutation ReorderAssortmentFilters(
@@ -114,8 +110,8 @@ describe("AssortmentFilter", () => {
     });
   });
 
-  describe("mutation.addAssortmentFilter for admin users should", () => {
-    it("Creates assortment filter successfuly when passed a valid assortment and filter IDs", async () => {
+  describe('mutation.addAssortmentFilter for admin users should', () => {
+    it('Creates assortment filter successfuly when passed a valid assortment and filter IDs', async () => {
       const {
         data: { addAssortmentFilter },
       } = await graphqlFetch({
@@ -145,14 +141,14 @@ describe("AssortmentFilter", () => {
         variables: {
           assortmentId: SimpleAssortment[0]._id,
           filterId: MultiChoiceFilter._id,
-          tags: ["assortment-filter-1"],
+          tags: ['assortment-filter-1'],
         },
       });
 
       expect(addAssortmentFilter._id).not.toBe(null);
     });
 
-    it("return error when passed invalid assortment ID", async () => {
+    it('return error when passed invalid assortment ID', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation AddAssortmentFilter(
@@ -170,16 +166,16 @@ describe("AssortmentFilter", () => {
           }
         `,
         variables: {
-          assortmentId: "invalid-assortment-id",
+          assortmentId: 'invalid-assortment-id',
           filterId: MultiChoiceFilter._id,
-          tags: ["assortment-filter-1"],
+          tags: ['assortment-filter-1'],
         },
       });
 
       expect(errors.length).toEqual(1);
     });
 
-    it("return error when passed invalid filter ID", async () => {
+    it('return error when passed invalid filter ID', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation AddAssortmentFilter(
@@ -198,16 +194,16 @@ describe("AssortmentFilter", () => {
         `,
         variables: {
           assortmentId: SimpleAssortment[0]._id,
-          filterId: "invalid-filter-id",
-          tags: ["assortment-filter-1"],
+          filterId: 'invalid-filter-id',
+          tags: ['assortment-filter-1'],
         },
       });
       expect(errors.length).toEqual(1);
     });
   });
 
-  describe("mutation.addAssortmentFilter for anonymous users should", () => {
-    it("return error", async () => {
+  describe('mutation.addAssortmentFilter for anonymous users should', () => {
+    it('return error', async () => {
       const graphqlAnonymousFetch = await createAnonymousGraphqlFetch();
 
       const { errors } = await graphqlAnonymousFetch({
@@ -229,7 +225,7 @@ describe("AssortmentFilter", () => {
         variables: {
           assortmentId: SimpleAssortment[0]._id,
           filterId: MultiChoiceFilter._id,
-          tags: ["assortment-filter-1"],
+          tags: ['assortment-filter-1'],
         },
       });
 
@@ -237,9 +233,10 @@ describe("AssortmentFilter", () => {
     });
   });
 
-  describe("mutation.removeAssortmentFilter for admin users should", () => {
-    it("remove assortment filter successfuly when passed valid ID", async () => {
+  describe('mutation.removeAssortmentFilter for admin users should', () => {
+    it('remove assortment filter successfuly when passed valid ID', async () => {
       const {
+        // eslint-disable-next-line no-unused-vars
         data: { removeAssortmentFilter },
       } = await graphqlFetch({
         query: /* GraphQL */ `
@@ -280,8 +277,8 @@ describe("AssortmentFilter", () => {
     });
   });
 
-  describe("mutation.removeAssortmentFilter for anonymous users should", () => {
-    it("return error", async () => {
+  describe('mutation.removeAssortmentFilter for anonymous users should', () => {
+    it('return error', async () => {
       const graphqlAnonymousFetch = await createAnonymousGraphqlFetch();
       const { errors } = await graphqlAnonymousFetch({
         query: /* GraphQL */ `

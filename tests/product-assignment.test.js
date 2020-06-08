@@ -4,11 +4,7 @@ import {
   createAnonymousGraphqlFetch,
 } from './helpers';
 import { ADMIN_TOKEN } from './seeds/users';
-import {
-  SimpleProduct,
-  SimpleProductBundle,
-  ConfigurableProduct,
-} from './seeds/products';
+import { SimpleProduct, ConfigurableProduct } from './seeds/products';
 
 let connection;
 let graphqlFetch;

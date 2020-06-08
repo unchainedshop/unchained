@@ -2,14 +2,14 @@ import {
   setupDatabase,
   createLoggedInGraphqlFetch,
   createAnonymousGraphqlFetch,
-} from "./helpers";
-import { ADMIN_TOKEN } from "./seeds/users";
-import { SimpleAssortment, AssortmentLinks } from "./seeds/assortments";
+} from './helpers';
+import { ADMIN_TOKEN } from './seeds/users';
+import { SimpleAssortment, AssortmentLinks } from './seeds/assortments';
 
 let connection;
 let graphqlFetch;
 
-describe("AssortmentLink", () => {
+describe('AssortmentLink', () => {
   beforeAll(async () => {
     [, connection] = await setupDatabase();
     graphqlFetch = await createLoggedInGraphqlFetch(ADMIN_TOKEN);
@@ -19,8 +19,8 @@ describe("AssortmentLink", () => {
     await connection.close();
   });
 
-  describe("mutation.reorderAssortmentLinks for admin users should", () => {
-    it("Update assortment link sortkey successfuly when passed a valid assortment link IDs", async () => {
+  describe('mutation.reorderAssortmentLinks for admin users should', () => {
+    it('Update assortment link sortkey successfuly when passed a valid assortment link IDs', async () => {
       const {
         data: { reorderAssortmentLinks },
       } = await graphqlFetch({
@@ -55,7 +55,7 @@ describe("AssortmentLink", () => {
       expect(reorderAssortmentLinks[0].sortKey).toEqual(11);
     });
 
-    it("Skip any invalid assortment link provided", async () => {
+    it('Skip any invalid assortment link provided', async () => {
       const {
         data: { reorderAssortmentLinks },
       } = await graphqlFetch({
@@ -75,7 +75,7 @@ describe("AssortmentLink", () => {
               sortKey: 10,
             },
             {
-              assortmentLinkId: "invalid-assortment-id",
+              assortmentLinkId: 'invalid-assortment-id',
               sortKey: 10,
             },
           ],
@@ -86,8 +86,8 @@ describe("AssortmentLink", () => {
     });
   });
 
-  describe("mutation.reorderAssortmentLinks for anonymous users should", () => {
-    it("return error", async () => {
+  describe('mutation.reorderAssortmentLinks for anonymous users should', () => {
+    it('return error', async () => {
       const graphqlAnonymousFetch = await createAnonymousGraphqlFetch();
       const { errors } = await graphqlAnonymousFetch({
         query: /* GraphQL */ `
@@ -113,8 +113,8 @@ describe("AssortmentLink", () => {
     });
   });
 
-  describe("mutation.addAssortmentLink for admin users should", () => {
-    it("Create assortment link successfuly when passed a valid assortment IDs", async () => {
+  describe('mutation.addAssortmentLink for admin users should', () => {
+    it('Create assortment link successfuly when passed a valid assortment IDs', async () => {
       const {
         data: { addAssortmentLink },
       } = await graphqlFetch({
@@ -145,14 +145,14 @@ describe("AssortmentLink", () => {
         variables: {
           parentAssortmentId: SimpleAssortment[0]._id,
           childAssortmentId: SimpleAssortment[3]._id,
-          tags: ["assortment-link-test"],
+          tags: ['assortment-link-test'],
         },
       });
 
       expect(addAssortmentLink._id).not.toBe(null);
     });
 
-    it("return error when passed invalid parent assortment ID", async () => {
+    it('return error when passed invalid parent assortment ID', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation AddAssortmentLink(
@@ -170,15 +170,15 @@ describe("AssortmentLink", () => {
           }
         `,
         variables: {
-          parentAssortmentId: "invalid-id",
+          parentAssortmentId: 'invalid-id',
           childAssortmentId: SimpleAssortment[3]._id,
-          tags: ["assortment-link-test"],
+          tags: ['assortment-link-test'],
         },
       });
       expect(errors.length).toEqual(1);
     });
 
-    it("return error when passed invalid child assortment ID", async () => {
+    it('return error when passed invalid child assortment ID', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation AddAssortmentLink(
@@ -197,16 +197,16 @@ describe("AssortmentLink", () => {
         `,
         variables: {
           parentAssortmentId: SimpleAssortment[3]._id,
-          childAssortmentId: "invalid-id",
-          tags: ["assortment-link-test"],
+          childAssortmentId: 'invalid-id',
+          tags: ['assortment-link-test'],
         },
       });
       expect(errors.length).toEqual(1);
     });
   });
 
-  describe("mutation.addAssortmentLink for anonymous user should", () => {
-    it("return error", async () => {
+  describe('mutation.addAssortmentLink for anonymous user should', () => {
+    it('return error', async () => {
       const graphqlAnonymousFetch = await createAnonymousGraphqlFetch();
 
       const { errors } = await graphqlAnonymousFetch({
@@ -228,7 +228,7 @@ describe("AssortmentLink", () => {
         variables: {
           parentAssortmentId: SimpleAssortment[0]._id,
           childAssortmentId: SimpleAssortment[3]._id,
-          tags: ["assortment-link-test"],
+          tags: ['assortment-link-test'],
         },
       });
 
@@ -236,9 +236,10 @@ describe("AssortmentLink", () => {
     });
   });
 
-  describe("mutation.removeAssortmentLink for admin user should", () => {
-    it("Remove assortment link when passed valid ID", async () => {
+  describe('mutation.removeAssortmentLink for admin user should', () => {
+    it('Remove assortment link when passed valid ID', async () => {
       const {
+        // eslint-disable-next-line no-unused-vars
         data: { removeAssortmentLink },
       } = await graphqlFetch({
         query: /* GraphQL */ `
@@ -287,8 +288,8 @@ describe("AssortmentLink", () => {
     });
   });
 
-  describe("mutation.removeAssortmentLink for anonymous user should", () => {
-    it("return error", async () => {
+  describe('mutation.removeAssortmentLink for anonymous user should', () => {
+    it('return error', async () => {
       const graphqlAnonymousFetch = await createAnonymousGraphqlFetch();
       const { errors } = await graphqlAnonymousFetch({
         query: /* GraphQL */ `

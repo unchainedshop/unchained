@@ -214,6 +214,7 @@ describe('ProductsVariation', () => {
 
   describe('mutation.removeProductMedia for admin user should', () => {
     it('remove product media successfuly when provided valid media ID', async () => {
+      // eslint-disable-next-line no-unused-vars
       const { data: { removeProductMedia } = {} } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation RemoveProductMedia($productMediaId: ID!) {
