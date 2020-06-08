@@ -1,98 +1,143 @@
-import { compose, pure, withState } from 'recompose';
-import gql from 'graphql-tag';
-import { graphql } from 'react-apollo';
-import React from 'react';
-import { Table, Icon, Button, Loader, Label } from 'semantic-ui-react';
-import InfiniteScroll from 'react-infinite-scroller';
-import Link from 'next/link';
+import { compose, pure, withState } from "recompose";
+import gql from "graphql-tag";
+import { graphql } from "react-apollo";
+import React, { useState } from "react";
+import { withRouter } from 'next/router';
+import { Table, Icon, Button, Loader, Label, Search } from "semantic-ui-react";
+import InfiniteScroll from "react-infinite-scroller";
+import { escapeRegExp, filter, debounce } from "lodash";
+import Link from "next/link";
 
-const ProductList = ({ products, loadMoreEntries, hasMore }) => (
-  <Table celled>
-    <Table.Header>
-      <Table.Row>
-        <Table.HeaderCell colSpan="3">
-          <Link href="/products/new">
-            <Button
-              floated="right"
-              icon
-              labelPosition="left"
-              primary
-              size="small"
-              href="/products/new"
-            >
-              <Icon name="plus" />
-              Add
-            </Button>
-          </Link>
-        </Table.HeaderCell>
-      </Table.Row>
-      <Table.Row>
-        <Table.HeaderCell>Name</Table.HeaderCell>
-        <Table.HeaderCell>Active</Table.HeaderCell>
-        <Table.HeaderCell>Tags</Table.HeaderCell>
-      </Table.Row>
-    </Table.Header>
-    {products && (
-      <InfiniteScroll
-        element={'tbody'}
-        loadMore={loadMoreEntries}
-        hasMore={hasMore}
-        loader={
-          <Table.Row key="product-loader">
-            <Table.Cell colSpan="4">
-              <Loader active inline="centered" />
-            </Table.Cell>
-          </Table.Row>
-        }
-      >
-        {products.map((product) => (
-          <Table.Row key={product._id}>
-            <Table.Cell>
-              <Link href={`/products/edit?_id=${product._id}`}>
-                <a href={`/products/edit?_id=${product._id}`}>
-                  {product.texts.title}
-                </a>
-              </Link>
-            </Table.Cell>
-            <Table.Cell>
-              {product.status === 'ACTIVE' && (
-                <Icon color="green" name="checkmark" size="large" />
-              )}
-            </Table.Cell>
-            <Table.Cell>
-              {product.tags &&
-                product.tags.length > 0 &&
-                product.tags.map((tag) => (
-                  <Label key={tag} color="grey" horizontal>
-                    {tag}
-                  </Label>
-                ))}
-            </Table.Cell>
-          </Table.Row>
-        ))}
-      </InfiniteScroll>
-    )}
-    <Table.Footer fullWidth>
-      <Table.Row>
-        <Table.HeaderCell colSpan="3">
-          <Link href="/products/new">
-            <Button
-              floated="right"
-              icon
-              labelPosition="left"
-              primary
-              size="small"
-              href="/products/new"
-            >
-              <Icon name="plus" />
-              Add
-            </Button>
-          </Link>
-        </Table.HeaderCell>
-      </Table.Row>
-    </Table.Footer>
-  </Table>
-);
+const defaultState = {
+  isLoading: false,
+  results: [],
+  value: "",
+};
+
+const ProductList = ({ router, products, loadMoreEntries, hasMore }) => {
+  const [initialState, setInitialState] = useState(defaultState);
+  const handleResultSelect = (e, { result }) => {
+    setInitialState({ value: result.texts.title });
+    router.push({ pathname: "/products/edit", query: { _id: result._id } });
+  };
+
+  const handleSearchChange = (e, { value }) => {
+    setInitialState({ isLoading: true, value });
+
+    setTimeout(() => {
+      if (initialState.value?.length < 1) return;
+
+      const re = new RegExp(escapeRegExp(setInitialState.value), "i");
+      const isMatch = (result) => re.test(result.texts.title);
+      setInitialState({
+        isLoading: false,
+        results: filter(products, isMatch),
+      });
+    }, 300);
+  };
+  const { loading, value, results } = initialState;
+  const resultRenderer = (result) => <Label content={result.texts.title} />;
+
+  return (
+    <Table celled>
+      <Table.Header>
+        <Table.Row>
+          <Table.HeaderCell colSpan="3">
+            <Search
+              style={{ float: "left" }}
+              loading={loading}
+              onResultSelect={handleResultSelect}
+              onSearchChange={debounce(handleSearchChange, 500, {
+                leading: true,
+              })}
+              results={results}
+              resultRenderer={resultRenderer}
+              value={value}
+            />
+
+            <Link href="/products/new">
+              <Button
+                floated="right"
+                icon
+                labelPosition="left"
+                primary
+                size="small"
+                href="/products/new"
+              >
+                <Icon name="plus" />
+                Add
+              </Button>
+            </Link>
+          </Table.HeaderCell>
+        </Table.Row>
+        <Table.Row>
+          <Table.HeaderCell>Name</Table.HeaderCell>
+          <Table.HeaderCell>Active</Table.HeaderCell>
+          <Table.HeaderCell>Tags</Table.HeaderCell>
+        </Table.Row>
+      </Table.Header>
+      {products && (
+        <InfiniteScroll
+          element={"tbody"}
+          loadMore={loadMoreEntries}
+          hasMore={hasMore}
+          loader={
+            <Table.Row key="product-loader">
+              <Table.Cell colSpan="4">
+                <Loader active inline="centered" />
+              </Table.Cell>
+            </Table.Row>
+          }
+        >
+          {products.map((product) => (
+            <Table.Row key={product._id}>
+              <Table.Cell>
+                <Link href={`/products/edit?_id=${product._id}`}>
+                  <a href={`/products/edit?_id=${product._id}`}>
+                    {product.texts.title}
+                  </a>
+                </Link>
+              </Table.Cell>
+              <Table.Cell>
+                {product.status === "ACTIVE" && (
+                  <Icon color="green" name="checkmark" size="large" />
+                )}
+              </Table.Cell>
+              <Table.Cell>
+                {product.tags &&
+                  product.tags.length > 0 &&
+                  product.tags.map((tag) => (
+                    <Label key={tag} color="grey" horizontal>
+                      {tag}
+                    </Label>
+                  ))}
+              </Table.Cell>
+            </Table.Row>
+          ))}
+        </InfiniteScroll>
+      )}
+      <Table.Footer fullWidth>
+        <Table.Row>
+          <Table.HeaderCell colSpan="3">
+            <Link href="/products/new">
+              <Button
+                floated="right"
+                icon
+                labelPosition="left"
+                primary
+                size="small"
+                href="/products/new"
+              >
+                <Icon name="plus" />
+                Add
+              </Button>
+            </Link>
+          </Table.HeaderCell>
+        </Table.Row>
+      </Table.Footer>
+    </Table>
+  );
+};
 
 const ITEMS_PER_PAGE = 10;
 export const PRODUCT_LIST_QUERY = gql`
@@ -111,7 +156,8 @@ export const PRODUCT_LIST_QUERY = gql`
 `;
 
 export default compose(
-  withState('hasMore', 'updateHasMore', true),
+  withState("hasMore", "updateHasMore", true),
+  withRouter,
   graphql(PRODUCT_LIST_QUERY, {
     options: () => ({
       variables: {
