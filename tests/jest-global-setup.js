@@ -21,6 +21,7 @@ const startAndWaitForMeteor = async () => {
           detached: true,
           cwd: `${process.cwd()}/examples/minimal`,
           env: {
+            STRIPE_SECRET: 'secret', // the test key should be kept secret also, that's why this could be overwritten
             ...process.env,
             NODE_ENV: 'development',
             METEOR_PACKAGE_DIRS: '../../packages',
@@ -29,7 +30,7 @@ const startAndWaitForMeteor = async () => {
             DATATRANS_SIGN_KEY: '1337',
             APPLE_IAP_SHARED_SECRET: '73b61776e7304f8ab1c2404df9192078',
           },
-        }
+        },
       );
       meteorProcess = global.__SUBPROCESS_METEOR__;
       global.__SUBPROCESS_METEOR__.stdout.on('data', (data) => {

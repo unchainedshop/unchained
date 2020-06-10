@@ -1,9 +1,6 @@
 {
   "parser": "babel-eslint",
-  "plugins": [
-    "meteor",
-    "prettier"
-  ],
+  "plugins": ["meteor", "prettier"],
   "extends": [
     "airbnb-base",
     "plugin:meteor/recommended",
@@ -18,18 +15,22 @@
     "import/core-modules": ["meteor"],
     "import/resolver": {
       "meteor": {
-        "extensions": [
-          ".jsx",
-          ".js"
-        ]
+        "extensions": [".jsx", ".js"]
       }
     }
   },
   "rules": {
-    "prettier/prettier": [ "error", {
-      "singleQuote": true
-    }],
-    "no-underscore-dangle": [ "error", { "allow": [ "_id" ] } ],
-    "import/no-unresolved": [ "error", { ignore: ['meteor/'] } ]
+    "prettier/prettier": [
+      "error",
+      {
+        "printWidth": 80,
+        "semi": true,
+        "trailingComma": "all",
+        "singleQuote": true,
+        "proseWrap": "always"
+      }
+    ],
+    "no-underscore-dangle": ["error", { "allow": ["_id"] }],
+    "import/no-unresolved": ["error", { "ignore": ["meteor/"] }]
   }
 }
