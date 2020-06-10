@@ -33,7 +33,7 @@ class ProductPricingAdapter {
     if (!resultRaw.length && !this.calculation.getRawPricingSheet().length)
       return null;
     resultRaw.forEach(({ amount, category }) =>
-      this.log(`Item Calculation -> ${category} ${amount}`)
+      this.log(`Item Calculation -> ${category} ${amount}`),
     );
     return resultRaw;
   }
@@ -89,7 +89,7 @@ class ProductPricingDirector {
             discountId: discount._id,
             configuration: discount.configurationForPricingAdapterKey(
               AdapterClass.key,
-              calculation
+              calculation,
             ),
           }))
           .filter(({ configuration }) => configuration !== null);
@@ -100,7 +100,7 @@ class ProductPricingDirector {
             discounts,
           });
           const nextCalculationResult = Promise.await(
-            concreteAdapter.calculate()
+            concreteAdapter.calculate(),
           );
           if (!nextCalculationResult) return null;
           if (!calculation) return nextCalculationResult;
@@ -131,7 +131,7 @@ class ProductPricingDirector {
 
   static registerAdapter(adapter) {
     log(
-      `${this.name} -> Registered ${adapter.key} ${adapter.version} (${adapter.label})`
+      `${this.name} -> Registered ${adapter.key} ${adapter.version} (${adapter.label})`,
     );
     ProductPricingDirector.adapters.set(adapter.key, adapter);
   }

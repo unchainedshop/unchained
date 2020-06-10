@@ -69,12 +69,12 @@ OrderPayments.helpers({
         },
         order,
       },
-      order.userId
+      order.userId,
     );
     if (arbitraryResponseData) {
       this.setStatus(
         OrderPaymentStatus.PAID,
-        JSON.stringify(arbitraryResponseData)
+        JSON.stringify(arbitraryResponseData),
       );
     }
   },
@@ -105,7 +105,7 @@ OrderPayments.helpers({
     const calculation = pricing.calculate();
     return OrderPayments.update(
       { _id: this._id },
-      { $set: { calculation, updated: new Date() } }
+      { $set: { calculation, updated: new Date() } },
     );
   },
 });
@@ -133,7 +133,7 @@ OrderPayments.updatePayment = ({ orderId, paymentId, context }) => {
     { _id: paymentId },
     {
       $set: { context, updated: new Date() },
-    }
+    },
   );
   Orders.updateCalculation({ orderId });
   return OrderPayments.findOne({ _id: paymentId });

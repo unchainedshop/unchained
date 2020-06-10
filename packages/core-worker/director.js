@@ -30,13 +30,13 @@ class WorkerDirector {
   static registerPlugin(plugin /* WorkerPlugin */) {
     if (this.plugins[plugin.type])
       throw new Error(
-        `${this.name}: There is already a plugin registered with type: ${plugin.type}`
+        `${this.name}: There is already a plugin registered with type: ${plugin.type}`,
       );
 
     this.plugins[plugin.type] = plugin;
 
     log(
-      `${this.name} -> Registered ${plugin.type} ${plugin.key}@${plugin.version} (${plugin.label})`
+      `${this.name} -> Registered ${plugin.type} ${plugin.key}@${plugin.version} (${plugin.label})`,
     );
   }
 
@@ -44,7 +44,7 @@ class WorkerDirector {
     const { cronText } = configuration;
     this.autoSchedule[plugin.type] = configuration;
     log(
-      `${this.name} -> Configured ${plugin.type} ${plugin.key}@${plugin.version} (${plugin.label}) for Autorun at ${cronText}`
+      `${this.name} -> Configured ${plugin.type} ${plugin.key}@${plugin.version} (${plugin.label}) for Autorun at ${cronText}`,
     );
   }
 
@@ -101,7 +101,7 @@ class WorkerDirector {
         },
         {
           upsert: true,
-        }
+        },
       );
       if (!result.lastErrorObject.updatedExisting) {
         log(`${this.name} -> Work added ${type} ${scheduled} ${retries}`);
@@ -162,7 +162,7 @@ class WorkerDirector {
     const statusQuery = {
       $or: Object.entries(filterMap).reduce(
         (acc, [key, filter]) => (status.includes(key) ? [...acc, filter] : acc),
-        []
+        [],
       ),
     };
     const query = statusQuery.$or.length > 0 ? statusQuery : {};
@@ -198,7 +198,7 @@ class WorkerDirector {
       {
         $set: { started: new Date(), worker },
       },
-      { new: true }
+      { new: true },
     );
 
     this.events.emit(WorkerEventTypes.allocated, { work: result.value });
@@ -257,7 +257,7 @@ class WorkerDirector {
           ...(!workBeforeUpdate.started ? { started } : {}),
           worker,
         },
-      }
+      },
     );
 
     const work = await this.work({ workId });
@@ -282,7 +282,7 @@ class WorkerDirector {
         $set: {
           deleted: new Date(),
         },
-      }
+      },
     );
 
     const work = await this.work({ workId });
@@ -329,7 +329,7 @@ class WorkerDirector {
           worker,
         },
       },
-      { multi: true }
+      { multi: true },
     );
   }
 }

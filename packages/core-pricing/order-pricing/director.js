@@ -26,7 +26,7 @@ class OrderPricingAdapter {
   async calculate() {
     const resultRaw = this.result.getRawPricingSheet();
     resultRaw.forEach(({ amount, category }) =>
-      this.log(`Order Calculation -> ${category} ${amount}`)
+      this.log(`Order Calculation -> ${category} ${amount}`),
     );
     return resultRaw;
   }
@@ -68,7 +68,7 @@ class OrderPricingDirector {
             discountId: discount._id,
             configuration: discount.configurationForPricingAdapterKey(
               AdapterClass.key,
-              calculation
+              calculation,
             ),
           }))
           .filter(({ configuration }) => configuration !== null);
@@ -79,7 +79,7 @@ class OrderPricingDirector {
             discounts,
           });
           const nextCalculationResult = Promise.await(
-            concreteAdapter.calculate()
+            concreteAdapter.calculate(),
           );
           return calculation.concat(nextCalculationResult);
         } catch (error) {
@@ -107,7 +107,7 @@ class OrderPricingDirector {
 
   static registerAdapter(adapter) {
     log(
-      `${this.name} -> Registered ${adapter.key} ${adapter.version} (${adapter.label})`
+      `${this.name} -> Registered ${adapter.key} ${adapter.version} (${adapter.label})`,
     );
     OrderPricingDirector.adapters.set(adapter.key, adapter);
   }

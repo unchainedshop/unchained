@@ -8,7 +8,7 @@ export default () => {
       userId,
       email,
       'resetPassword',
-      extraTokenData
+      extraTokenData,
     );
 
     WorkerDirector.addWork({
@@ -33,7 +33,7 @@ export default () => {
       userId,
       email,
       'enrollAccount',
-      extraTokenData
+      extraTokenData,
     );
     WorkerDirector.addWork({
       type: 'MESSAGE',

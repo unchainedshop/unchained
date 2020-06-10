@@ -19,8 +19,8 @@ DeliveryProviders.attachSchema(
       'configuration.$.value': { type: String },
       ...Schemas.timestampFields,
     },
-    { requiredByDefault: false }
-  )
+    { requiredByDefault: false },
+  ),
 );
 
 Migrations.add({
@@ -32,7 +32,7 @@ Migrations.add({
       {
         $set: { adapterKey: 'shop.unchained.post' },
       },
-      { multi: true }
+      { multi: true },
     );
   },
   down() {
@@ -41,7 +41,7 @@ Migrations.add({
       {
         $set: { adapterKey: 'ch.dagobert.post' },
       },
-      { multi: true }
+      { multi: true },
     );
   },
 });

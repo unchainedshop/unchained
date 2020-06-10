@@ -18,7 +18,7 @@ import { Mongo } from 'meteor/mongo';
 const logger = createLogger('unchained:core-payment:apple-iap');
 
 const AppleTransactions = new Mongo.Collection(
-  'payment_apple_iap_processed_transactions'
+  'payment_apple_iap_processed_transactions',
 );
 
 const {
@@ -30,7 +30,7 @@ WebApp.connectHandlers.use(
   APPLE_IAP_WEBHOOK_PATH,
   bodyParser.json({
     strict: false,
-  })
+  }),
 );
 
 const environments = {
@@ -76,7 +76,7 @@ const fixPeriods = ({
     // eslint-disable-next-line
     ({ original_transaction_id }) => {
       return original_transaction_id === transactionId; // eslint-disable-line
-    }
+    },
   );
 
   const adjustedSubscriptionPeriods = relevantTransactions
@@ -100,7 +100,7 @@ const fixPeriods = ({
       $pull: {
         periods: { orderId: { $in: [orderId, undefined, null] } },
       },
-    }
+    },
   );
 
   Subscriptions.update(
@@ -114,7 +114,7 @@ const fixPeriods = ({
       $push: {
         periods: { $each: adjustedSubscriptionPeriods },
       },
-    }
+    },
   );
 };
 
@@ -158,7 +158,7 @@ WebApp.connectHandlers.use(APPLE_IAP_WEBHOOK_PATH, async (req, res) => {
           });
           logger.verbose(
             `Confirmed checkout for order ${checkedOut.orderNumber}`,
-            { orderId: checkedOut._id }
+            { orderId: checkedOut._id },
           );
         }
       } else {
@@ -189,7 +189,7 @@ WebApp.connectHandlers.use(APPLE_IAP_WEBHOOK_PATH, async (req, res) => {
         });
 
         logger.verbose(
-          `Processed notification for ${latestTransaction.original_transaction_id} and type ${responseBody.notification_type}`
+          `Processed notification for ${latestTransaction.original_transaction_id} and type ${responseBody.notification_type}`,
         );
 
         if (
@@ -309,7 +309,7 @@ class AppleIAP extends PaymentAdapter {
 
     if (!transactionIdentifier) {
       throw new Error(
-        'Apple IAP -> You have to set the transaction id on the order payment'
+        'Apple IAP -> You have to set the transaction id on the order payment',
       );
     }
 
@@ -333,7 +333,7 @@ class AppleIAP extends PaymentAdapter {
     );
     if (!matchedTransaction) {
       throw new Error(
-        `Apple IAP -> Cannot match transaction with identifier ${transactionIdentifier}`
+        `Apple IAP -> Cannot match transaction with identifier ${transactionIdentifier}`,
       );
     }
 
@@ -343,12 +343,12 @@ class AppleIAP extends PaymentAdapter {
           ...acc,
           [item.productId]: (acc[item.productId] || 0) + item.quantity,
         };
-      }, {})
+      }, {}),
     );
 
     if (items.length !== 1) {
       throw new Error(
-        'Apple IAP -> You can only checkout 1 unique product at once'
+        'Apple IAP -> You can only checkout 1 unique product at once',
       );
     }
 
@@ -360,7 +360,7 @@ class AppleIAP extends PaymentAdapter {
 
     if (!orderMatchesTransaction)
       throw new Error(
-        'Apple IAP -> Product in order does not match transaction'
+        'Apple IAP -> Product in order does not match transaction',
       );
 
     const transactionAlreadyProcessed =

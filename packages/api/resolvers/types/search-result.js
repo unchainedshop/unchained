@@ -16,7 +16,7 @@ export default {
     }).count(),
   products: async (
     { productSelector, filteredProductIds, sortStage },
-    { offset, limit }
+    { offset, limit },
   ) =>
     findPreservingIds(Products)(
       await productSelector,
@@ -25,7 +25,7 @@ export default {
         skip: offset,
         limit,
         sort: await sortStage,
-      }
+      },
     ),
   filters: async ({
     filterSelector,
@@ -50,7 +50,7 @@ export default {
       },
       {
         fields: { _id: 1 },
-      }
+      },
     ).map(({ _id }) => _id);
 
     return otherFilters.map((filter) => {

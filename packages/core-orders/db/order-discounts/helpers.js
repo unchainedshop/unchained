@@ -83,7 +83,7 @@ OrderDiscounts.createManualOrderDiscount = ({ orderId, code, ...rest }) => {
   const order = Orders.findOne({ _id: orderId });
   const director = new DiscountDirector({ order });
   const discountKey = Promise.await(
-    director.resolveDiscountKeyFromStaticCode({ code })
+    director.resolveDiscountKeyFromStaticCode({ code }),
   );
   if (discountKey) {
     const newDiscount = OrderDiscounts.createDiscount({
@@ -117,7 +117,7 @@ OrderDiscounts.createDiscount = ({
   const normalizedTrigger = trigger || OrderDiscountTrigger.USER;
   log(
     `Create Order Discount: ${discountKey} with trigger ${normalizedTrigger}`,
-    { orderId }
+    { orderId },
   );
   const discountId = OrderDiscounts.insert({
     ...rest,
@@ -139,7 +139,7 @@ OrderDiscounts.updateDiscount = ({ discountId, ...rest }) => {
         updated: new Date(),
         ...rest,
       },
-    }
+    },
   );
   return OrderDiscounts.findOne({ _id: discountId });
 };
@@ -197,8 +197,8 @@ OrderDiscounts.updateDiscounts = ({ orderId }) => {
         if (!isValid) {
           OrderDiscounts.removeDiscount({ discountId: discount._id });
         }
-      })
-    )
+      }),
+    ),
   );
 
   // 2. run auto-system discount
@@ -213,6 +213,6 @@ OrderDiscounts.updateDiscounts = ({ orderId }) => {
         orderId,
         discountKey,
         trigger: OrderDiscountTrigger.SYSTEM,
-      })
+      }),
     );
 };

@@ -4,7 +4,7 @@ import { DeliveryProviders } from 'meteor/unchained:core-delivery';
 export default function (
   root,
   { deliveryProvider, deliveryProviderId },
-  { userId }
+  { userId },
 ) {
   log(`mutation updateDeliveryProvider ${deliveryProviderId}`, { userId });
   const provider = DeliveryProviders.updateProvider({

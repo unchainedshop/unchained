@@ -69,7 +69,7 @@ const datatransAuthorize = async ({
         'Content-Type': 'application/xml',
         Authorization: `Basic ${DATATRANS_SECRET}`,
       },
-    }
+    },
   );
   const xml = await result.text();
   return xml2js.parseStringPromise(xml);
@@ -77,7 +77,7 @@ const datatransAuthorize = async ({
 
 WebApp.connectHandlers.use(
   DATATRANS_WEBHOOK_PATH,
-  bodyParser.urlencoded({ extended: false })
+  bodyParser.urlencoded({ extended: false }),
 );
 
 WebApp.connectHandlers.use(DATATRANS_WEBHOOK_PATH, (req, res) => {
@@ -93,11 +93,11 @@ WebApp.connectHandlers.use(DATATRANS_WEBHOOK_PATH, (req, res) => {
               paymentProviderId,
               paymentContext: authorizationResponse,
               userId,
-            }
+            },
           );
           logger.info(
             `Datatrans Webhook: Unchained registered payment credentials for ${userId}`,
-            { userId }
+            { userId },
           );
           res.writeHead(200);
           return res.end(JSON.stringify(paymentCredentials));
@@ -109,7 +109,7 @@ WebApp.connectHandlers.use(DATATRANS_WEBHOOK_PATH, (req, res) => {
         res.writeHead(200);
         logger.info(
           `Datatrans Webhook: Unchained confirmed checkout for order ${order.orderNumber}`,
-          { orderId: order._id }
+          { orderId: order._id },
         );
         return res.end(JSON.stringify(order));
       } catch (e) {
@@ -120,7 +120,7 @@ WebApp.connectHandlers.use(DATATRANS_WEBHOOK_PATH, (req, res) => {
           // We also confirm a declined payment or a signature mismatch with 200 so
           // datatrans does not retry to send us the failed transaction
           logger.warn(
-            `Datatrans Webhook: Unchained declined checkout with message ${e.message}`
+            `Datatrans Webhook: Unchained declined checkout with message ${e.message}`,
           );
           res.writeHead(200);
           return res.end();
@@ -196,7 +196,7 @@ class Datatrans extends PaymentAdapter {
         merchantId,
         amount,
         currency,
-        refno
+        refno,
       );
       this.log(
         `Datatrans -> Signed for Registration ${JSON.stringify({
@@ -205,7 +205,7 @@ class Datatrans extends PaymentAdapter {
           amount,
           currency,
           refno,
-        })} with ${signature}`
+        })} with ${signature}`,
       );
       return signature;
     }
@@ -219,7 +219,7 @@ class Datatrans extends PaymentAdapter {
       merchantId,
       amount,
       currency,
-      refno
+      refno,
     );
     this.log(
       `Datatrans -> Signed ${JSON.stringify({
@@ -228,7 +228,7 @@ class Datatrans extends PaymentAdapter {
         amount,
         currency,
         refno,
-      })} with ${signature}`
+      })} with ${signature}`,
     );
     return signature;
   }
@@ -269,14 +269,14 @@ class Datatrans extends PaymentAdapter {
         merchantId,
         '0', // amount 0
         currency,
-        refno
+        refno,
       );
       const validSign2 = generateSignature(
         aliasCC,
         merchantId,
         '0', // amount 0
         currency,
-        uppTransactionId
+        uppTransactionId,
       );
       if (sign === validSign && sign2 === validSign2) {
         this.log('Datatrans -> Registered successfully', transactionResponse);
@@ -291,7 +291,7 @@ class Datatrans extends PaymentAdapter {
       }
       this.log(
         `Datatrans -> Somebody evil attempted to trick us, fix ${sign} === ${validSign}, ${sign2} === ${validSign2}`,
-        transactionResponse
+        transactionResponse,
       );
     }
     this.log('Datatrans -> Registration declined', transactionResponse);
@@ -318,7 +318,7 @@ class Datatrans extends PaymentAdapter {
     if (!response || response.status?.[0] !== 'success') {
       this.log(
         'Datatrans -> Payment declined from authorization service',
-        result
+        result,
       );
       throw new Error('Payment declined');
     }
@@ -326,7 +326,7 @@ class Datatrans extends PaymentAdapter {
     const convertedResponse = Object.fromEntries(
       Object.entries(response).map(([key, values]) => {
         return [key, values?.[0]];
-      })
+      }),
     );
     return {
       ...paymentCredentials.meta,
@@ -342,7 +342,7 @@ class Datatrans extends PaymentAdapter {
   async charge(payload) {
     if (!payload) {
       this.log(
-        'Datatrans -> Not trying to charge because of missing payment authorization response, return false to provide later'
+        'Datatrans -> Not trying to charge because of missing payment authorization response, return false to provide later',
       );
       return false;
     }
@@ -376,14 +376,14 @@ class Datatrans extends PaymentAdapter {
       merchantId,
       amount,
       currency,
-      refno
+      refno,
     );
     const validSign2 = generateSignature(
       aliasCC,
       merchantId,
       amount,
       currency,
-      uppTransactionId
+      uppTransactionId,
     );
     if ((sign === validSign && sign2 === validSign2) || ignoreSignatureCheck) {
       this.log('Datatrans -> Charged successfully', transactionResponse);
@@ -401,7 +401,7 @@ class Datatrans extends PaymentAdapter {
     }
     this.log(
       `Datatrans -> Somebody evil attempted to trick us, fix ${sign} === ${validSign}, ${sign2} === ${validSign2}`,
-      transactionResponse
+      transactionResponse,
     );
     throw new Error('Signature mismatch');
   }

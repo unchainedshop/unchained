@@ -10,7 +10,7 @@ export default function (root, { country, countryId }, { userId }) {
         ...country,
         updated: new Date(),
       },
-    }
+    },
   );
   return Countries.findOne({ _id: countryId });
 }

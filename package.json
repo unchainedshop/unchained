@@ -14,7 +14,7 @@
     "Marco Wettstein <maw@panter.ch>",
     "Simon Emanuel Schmid <simon@unchained.shop> (https://unchained.shop)"
   ],
-  "bugs": { 
+  "bugs": {
     "url": "https://github.com/unchainedshop/unchained/issues"
   },
   "scripts": {
@@ -58,7 +58,8 @@
     "jest": "^26.0.1",
     "mongodb": "^3.5.7",
     "npm-run-all": "^4.1.5",
-    "prettier": "^2.0.5"
+    "prettier": "^2.0.5",
+    "stripe": "^8.60.0"
   },
   "eslintConfig": {
     "extends": "@meteorjs/eslint-config-meteor"

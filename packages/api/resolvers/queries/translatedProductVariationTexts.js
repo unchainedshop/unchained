@@ -4,11 +4,11 @@ import { ProductVariationTexts } from 'meteor/unchained:core-products';
 export default function (
   root,
   { productVariationId, productVariationOptionValue },
-  { userId }
+  { userId },
 ) {
   log(
     `query translatedProductVariationTexts ${productVariationId} ${productVariationOptionValue}`,
-    { userId }
+    { userId },
   );
   const selector = {
     productVariationId,

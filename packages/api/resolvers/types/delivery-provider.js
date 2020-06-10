@@ -21,7 +21,7 @@ export default {
         user,
         providerContext: context,
       },
-      requestContext
+      requestContext,
     );
   },
 };

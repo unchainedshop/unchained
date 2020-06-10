@@ -20,7 +20,7 @@ function writeFile(filename, data, done) {
 
 mailman.warnNoEmailPackage = function warnNoEmailPackage() {
   logger.warn(
-    'unchained:platform -> Unchained Mail Manager could not start because you are not using the email package'
+    'unchained:platform -> Unchained Mail Manager could not start because you are not using the email package',
   );
   logger.warn('unchained:platform -> Please run `meteor add email`');
 };
@@ -56,7 +56,7 @@ export default () => {
         return;
       }
       logger.verbose(
-        'unchained:platform -> Mailman detected an outgoing email'
+        'unchained:platform -> Mailman detected an outgoing email',
       );
       open(filePath);
     });

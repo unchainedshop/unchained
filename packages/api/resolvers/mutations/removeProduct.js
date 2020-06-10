@@ -15,7 +15,7 @@ export default function (root, { productId }, { userId }) {
             status: ProductStatus.DELETED,
             updated: new Date(),
           },
-        }
+        },
       );
       break;
     default:

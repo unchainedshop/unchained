@@ -3,6 +3,8 @@ ci:
     context: .
     dockerfile: Dockerfile
   cached: true
+  encrypted_env_file:
+    - env.encrypted
 
 controlpanel:
   build:

@@ -93,7 +93,7 @@ describe('basic setup of internationalization and localization context', () => {
     });
 
     it.todo(
-      'Currencies should have delete flags, as orders can depend on them'
+      'Currencies should have delete flags, as orders can depend on them',
     );
 
     it('query active currencies', async () => {

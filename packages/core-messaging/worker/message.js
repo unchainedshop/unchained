@@ -27,7 +27,7 @@ class Message extends WorkerPlugin {
               originalWorkId: _id,
             });
             return work;
-          })
+          }),
         );
         return { success: true, result: { forked } };
       }

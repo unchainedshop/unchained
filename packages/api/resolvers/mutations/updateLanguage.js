@@ -8,7 +8,7 @@ export default function (root, { language, languageId }, { userId }) {
     {
       updated: new Date(),
       $set: language,
-    }
+    },
   );
   return Languages.findOne({ _id: languageId });
 }

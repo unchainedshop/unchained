@@ -37,10 +37,10 @@ const search = async ({ query: rawQuery, forceLiveCollection, context }) => {
   }
 
   const totalProductIds = fulltextSearch(searchConfiguration)(
-    query?.productIds
+    query?.productIds,
   );
   const filteredProductIds = totalProductIds.then(
-    facetedSearch(searchConfiguration)
+    facetedSearch(searchConfiguration),
   );
 
   return {

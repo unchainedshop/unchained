@@ -21,7 +21,7 @@ WarehousingProviders.helpers({
   },
   estimatedDispatch(context) {
     return Promise.await(
-      new WarehousingDirector(this).estimatedDispatch(context)
+      new WarehousingDirector(this).estimatedDispatch(context),
     );
   },
   estimatedStock(context) {
@@ -48,7 +48,7 @@ WarehousingProviders.updateProvider = ({ _id, ...rest }) => {
         ...rest,
         updated: new Date(),
       },
-    }
+    },
   );
   return WarehousingProviders.findOne({ _id, deleted: null });
 };
@@ -60,7 +60,7 @@ WarehousingProviders.removeProvider = ({ _id }) => {
       $set: {
         deleted: new Date(),
       },
-    }
+    },
   );
   return WarehousingProviders.findOne({ _id });
 };
@@ -71,7 +71,7 @@ WarehousingProviders.findProviderById = (_id, ...options) =>
 WarehousingProviders.findProviders = ({ type } = {}, ...options) =>
   WarehousingProviders.find(
     { ...(type ? { type } : {}), deleted: null },
-    ...options
+    ...options,
   ).fetch();
 
 WarehousingProviders.findSupported = (
@@ -80,7 +80,7 @@ WarehousingProviders.findSupported = (
 ) =>
   WarehousingProviders.findProviders(
     {},
-    ...options
+    ...options,
   ).filter((warehousingProvider) =>
-    warehousingProvider.isActive({ product, deliveryProvider })
+    warehousingProvider.isActive({ product, deliveryProvider }),
   );

@@ -18,7 +18,7 @@ export default ({ cronText }) => {
   handlers.push(
     new EventListenerWorker({
       WorkerDirector,
-    })
+    }),
   );
   // handlers.push(
   //   new IntervalWorker({
@@ -30,7 +30,7 @@ export default ({ cronText }) => {
       new CronWorker({
         WorkerDirector,
         cronText,
-      })
+      }),
     );
   }
 

@@ -4,7 +4,7 @@ import { WarehousingProviders } from 'meteor/unchained:core-warehousing';
 export default (
   root,
   { warehousingProvider, warehousingProviderId },
-  { userId }
+  { userId },
 ) => {
   log(`mutation updateWarehousingProvider ${warehousingProviderId}`, {
     userId,

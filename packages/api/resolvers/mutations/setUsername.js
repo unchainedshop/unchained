@@ -5,7 +5,7 @@ import { UserNotFoundError } from '../../errors';
 export default function (
   root,
   { username, userId: foreignUserId },
-  { userId }
+  { userId },
 ) {
   log(`mutation setUsername ${foreignUserId}`, { userId });
   const user = Users.findOne({ _id: foreignUserId });

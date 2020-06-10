@@ -28,7 +28,7 @@ const ProductCommerceSchema = new SimpleSchema(
     'pricing.$.amount': Number,
     'pricing.$.maxQuantity': Number,
   },
-  { requiredByDefault: false }
+  { requiredByDefault: false },
 );
 
 const ProductWarehousingSchema = new SimpleSchema(
@@ -36,7 +36,7 @@ const ProductWarehousingSchema = new SimpleSchema(
     baseUnit: String,
     sku: { type: String, index: true },
   },
-  { requiredByDefault: false }
+  { requiredByDefault: false },
 );
 
 const ProductSupplySchema = new SimpleSchema(
@@ -46,7 +46,7 @@ const ProductSupplySchema = new SimpleSchema(
     lengthInMillimeters: Number,
     widthInMillimeters: Number,
   },
-  { requiredByDefault: false }
+  { requiredByDefault: false },
 );
 
 const ProductPlanSchema = new SimpleSchema(
@@ -57,7 +57,7 @@ const ProductPlanSchema = new SimpleSchema(
     trialInterval: String,
     trialIntervalCount: Number,
   },
-  { requiredByDefault: false }
+  { requiredByDefault: false },
 );
 
 const ProductProxySchema = new SimpleSchema(
@@ -67,7 +67,7 @@ const ProductProxySchema = new SimpleSchema(
     'assignments.$.vector': { type: Object, blackbox: true },
     'assignments.$.productId': String,
   },
-  { requiredByDefault: false }
+  { requiredByDefault: false },
 );
 
 const ProductConfigurationSchema = new SimpleSchema({
@@ -114,8 +114,8 @@ Products.attachSchema(
       meta: { type: Object, blackbox: true },
       ...Schemas.timestampFields,
     },
-    { requiredByDefault: false }
-  )
+    { requiredByDefault: false },
+  ),
 );
 
 ProductTexts.attachSchema(
@@ -133,6 +133,6 @@ ProductTexts.attachSchema(
       'labels.$': String,
       ...Schemas.timestampFields,
     },
-    { requiredByDefault: false }
-  )
+    { requiredByDefault: false },
+  ),
 );

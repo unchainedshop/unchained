@@ -33,6 +33,6 @@ ProductReviews.attachSchema(
       'votes.$.meta': { type: Object, blackbox: true },
       ...Schemas.timestampFields,
     },
-    { requiredByDefault: false }
-  )
+    { requiredByDefault: false },
+  ),
 );

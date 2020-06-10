@@ -4,7 +4,7 @@ import { ProductVariations } from 'meteor/unchained:core-products';
 export default function (
   root,
   { texts, productVariationId, productVariationOptionValue },
-  { userId }
+  { userId },
 ) {
   log(`mutation updateProductVariationTexts ${productVariationId}`, { userId });
   const productVariation = ProductVariations.findOne({
@@ -14,7 +14,7 @@ export default function (
     productVariation.upsertLocalizedText(locale, {
       productVariationOptionValue,
       ...rest,
-    })
+    }),
   );
   return changedLocalizations;
 }

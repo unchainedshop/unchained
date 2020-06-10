@@ -120,7 +120,7 @@ export default ({ mergeUserCartsOnLogin = true } = {}) => {
           locale: normalizedLocale,
           countryContext,
           mergeCarts: mergeUserCartsOnLogin,
-        })
+        }),
       );
 
       Promise.await(
@@ -128,7 +128,7 @@ export default ({ mergeUserCartsOnLogin = true } = {}) => {
           fromUserId: userIdBeforeLogin,
           toUserId: user._id,
           mergeBookmarks: mergeUserCartsOnLogin,
-        })
+        }),
       );
     }
   });
@@ -141,7 +141,7 @@ export default ({ mergeUserCartsOnLogin = true } = {}) => {
           $set: {
             guest: false,
           },
-        }
+        },
       );
     }
     return true;

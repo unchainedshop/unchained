@@ -5,7 +5,7 @@ import { OrderNotFoundError, OrderWrongStatusError } from '../../errors';
 export default function (
   root,
   { orderId, ...transactionContext },
-  { userId, localeContext }
+  { userId, localeContext },
 ) {
   log('mutation confirmOrder', { orderId, userId });
   const order = Orders.findOne({ _id: orderId });

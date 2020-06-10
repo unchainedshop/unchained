@@ -16,6 +16,7 @@ import 'meteor/unchained:core-documents/plugins/smallinvoice';
 import 'meteor/unchained:core-payment/plugins/invoice';
 import 'meteor/unchained:core-payment/plugins/invoice-prepaid';
 import 'meteor/unchained:core-payment/plugins/datatrans';
+import 'meteor/unchained:core-payment/plugins/stripe';
 import 'meteor/unchained:core-payment/plugins/apple-iap';
 import 'meteor/unchained:core-pricing/plugins/order-items';
 import 'meteor/unchained:core-pricing/plugins/order-discount';
@@ -84,7 +85,7 @@ const initializeDatabase = () => {
       \nlanguages: ${languages.join(',')}
       \nuser: admin@localhost / password`);
   } catch (e) {
-    console.log("ERROR: ", e)
+    console.log('ERROR: ', e);
     logger.log('database was already initialized');
   }
 };

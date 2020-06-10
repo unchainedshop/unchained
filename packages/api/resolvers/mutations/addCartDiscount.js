@@ -4,7 +4,7 @@ import getCart from '../../getCart';
 export default async function (
   root,
   { orderId, code },
-  { userId, user, countryContext }
+  { userId, user, countryContext },
 ) {
   log(`mutation addCartDiscount ${code} ${orderId}`, { userId, orderId });
   const cart = await getCart({ orderId, user, countryContext });

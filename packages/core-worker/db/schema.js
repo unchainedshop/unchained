@@ -33,8 +33,8 @@ WorkQueue.attachSchema(
       timeout: Number,
       ...Schemas.timestampFields,
     },
-    { requiredByDefault: false }
-  )
+    { requiredByDefault: false },
+  ),
 );
 
 Migrations.add({
@@ -48,7 +48,7 @@ Migrations.add({
           original: 'originalWorkId',
         },
       },
-      { bypassCollection2: true, multi: true }
+      { bypassCollection2: true, multi: true },
     );
   },
   down() {
@@ -59,7 +59,7 @@ Migrations.add({
           originalWorkId: 'original',
         },
       },
-      { bypassCollection2: true, multi: true }
+      { bypassCollection2: true, multi: true },
     );
   },
 });
@@ -79,7 +79,7 @@ export default () => {
     {
       created: -1,
     },
-    { expireAfterSeconds: 30 * ONE_DAY_IN_SECONDS }
+    { expireAfterSeconds: 30 * ONE_DAY_IN_SECONDS },
   );
   WorkQueue.rawCollection().createIndex({ started: -1 });
   WorkQueue.rawCollection().createIndex({ finished: 1 });

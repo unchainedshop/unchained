@@ -20,8 +20,8 @@ OrderDiscounts.attachSchema(
       ...contextFields,
       ...timestampFields,
     },
-    { requiredByDefault: false }
-  )
+    { requiredByDefault: false },
+  ),
 );
 
 export default OrderDiscountTrigger;

@@ -4,7 +4,7 @@ import { Currencies } from 'meteor/unchained:core-currencies';
 export default function (
   root,
   { currency: { isoCode, ...currency }, currencyId },
-  { userId }
+  { userId },
 ) {
   log(`mutation updateCurrency ${currencyId}`, { userId });
   Currencies.update(
@@ -15,7 +15,7 @@ export default function (
         ...currency,
         updated: new Date(),
       },
-    }
+    },
   );
   return Currencies.findOne({ _id: currencyId });
 }

@@ -11,7 +11,7 @@ export default function setBaseLanguage(root, { languageId }, { userId }) {
         updated: new Date(),
       },
     },
-    { multi: true }
+    { multi: true },
   );
   Languages.update(
     { _id: languageId },
@@ -20,7 +20,7 @@ export default function setBaseLanguage(root, { languageId }, { userId }) {
         isBase: true,
         updated: new Date(),
       },
-    }
+    },
   );
   return Languages.findOne({ _id: languageId });
 }

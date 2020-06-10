@@ -114,7 +114,7 @@ class GoogleSheets extends WarehousingAdapter {
     const time = parseInt(resolvedRow[selector].value, 10) || 0;
     log(
       `GoogleSheet: Resolve Time ${selector} (${quantity}) for ${sku}: ${time}`,
-      { level: 'verbose' }
+      { level: 'verbose' },
     );
     return time;
   }
@@ -151,7 +151,7 @@ class GoogleSheets extends WarehousingAdapter {
     const timeInHours = await this.getRemoteTime(
       sku.toUpperCase(),
       quantity,
-      selector
+      selector,
     );
     if (!timeInHours) return null;
     return timeInHours * 60 * 60 * 1000;
@@ -166,7 +166,7 @@ class GoogleSheets extends WarehousingAdapter {
     const timeInHours = await this.getRemoteTime(
       sku.toUpperCase(),
       quantity,
-      selector
+      selector,
     );
     if (!timeInHours) return null;
     return timeInHours * 60 * 60 * 1000;

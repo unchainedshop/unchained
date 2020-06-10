@@ -25,7 +25,7 @@ class PaymentPricingAdapter {
   async calculate() {
     const resultRaw = this.result.getRawPricingSheet();
     resultRaw.forEach(({ amount, category }) =>
-      this.log(`Payment Calculation -> ${category} ${amount}`)
+      this.log(`Payment Calculation -> ${category} ${amount}`),
     );
     return resultRaw;
   }
@@ -56,7 +56,7 @@ class PaymentPricingDirector {
   calculate() {
     this.calculation = PaymentPricingDirector.sortedAdapters()
       .filter((AdapterClass) =>
-        AdapterClass.isActivatedFor(this.context.provider)
+        AdapterClass.isActivatedFor(this.context.provider),
       )
       .reduce((calculation, AdapterClass) => {
         try {
@@ -65,7 +65,7 @@ class PaymentPricingDirector {
             calculation,
           });
           const nextCalculationResult = Promise.await(
-            concreteAdapter.calculate()
+            concreteAdapter.calculate(),
           );
           return calculation.concat(nextCalculationResult);
         } catch (error) {
@@ -93,7 +93,7 @@ class PaymentPricingDirector {
 
   static registerAdapter(adapter) {
     log(
-      `${this.name} -> Registered ${adapter.key} ${adapter.version} (${adapter.label})`
+      `${this.name} -> Registered ${adapter.key} ${adapter.version} (${adapter.label})`,
     );
     PaymentPricingDirector.adapters.set(adapter.key, adapter);
   }

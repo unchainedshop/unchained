@@ -5,7 +5,7 @@ import { ProductVariationNotFoundError } from '../../errors';
 export default function (
   root,
   { option: inputData, productVariationId },
-  { localeContext, userId }
+  { localeContext, userId },
 ) {
   log(`mutation createProductVariationOption ${productVariationId}`, {
     userId,
@@ -25,7 +25,7 @@ export default function (
       $addToSet: {
         options: value,
       },
-    }
+    },
   );
 
   variation.upsertLocalizedText(localeContext.language, {

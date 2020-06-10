@@ -11,7 +11,7 @@ export default async function (
     deliveryProviderId,
     meta,
   },
-  { user, countryContext, userId }
+  { user, countryContext, userId },
 ) {
   log('mutation updateCart', { userId });
   let order = await getCart({ orderId, user, countryContext });

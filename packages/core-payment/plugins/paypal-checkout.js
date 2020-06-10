@@ -68,7 +68,7 @@ class PaypalCheckout extends PaymentAdapter {
 
       this.log(
         'Paypal Native -> PAYPAL ORDER',
-        JSON.stringify(order.result, null, 2)
+        JSON.stringify(order.result, null, 2),
       );
       this.log('Paypal Native -> OUR ORDER', this.context.order);
       this.log('Paypal Native -> OUR PRICE', pricing);

@@ -58,7 +58,7 @@ OrderPositions.helpers({
       errors.push(new Error('This product is not available anymore'));
     if (this.quotationId && !this.quotation().isProposalValid())
       errors.push(
-        new Error('Quotation expired or fullfiled, please request a new offer')
+        new Error('Quotation expired or fullfiled, please request a new offer'),
       );
   },
   reserve() {
@@ -75,7 +75,7 @@ OrderPositions.helpers({
     return scheduling.map((schedule) => {
       const context = {
         warehousingProvider: WarehousingProviders.findProviderById(
-          schedule.warehousingProviderId
+          schedule.warehousingProviderId,
         ),
         deliveryProvider: order.delivery().provider(),
         product: this.product(),
@@ -96,7 +96,7 @@ OrderPositions.helpers({
         if (configurationItem.key === key) return configurationItem.value;
         return accumulator;
       },
-      undefined
+      undefined,
     );
   },
   updateCalculation() {
@@ -109,7 +109,7 @@ OrderPositions.helpers({
       { _id: this._id },
       {
         $set: { calculation },
-      }
+      },
     );
     return OrderPositions.findOne({ _id: this._id });
   },
@@ -146,7 +146,7 @@ OrderPositions.helpers({
       { _id: this._id },
       {
         $set: { scheduling },
-      }
+      },
     );
   },
 });
@@ -173,7 +173,7 @@ OrderPositions.upsertPosition = ({
       },
       {
         quantity: existingPosition.quantity + quantity,
-      }
+      },
     );
   }
   return OrderPositions.createPosition({
@@ -198,7 +198,7 @@ OrderPositions.createPosition = ({
     `Create ${quantity}x Position with Product ${productId} ${
       quotationId ? ` (${quotationId})` : ''
     }`,
-    { orderId }
+    { orderId },
   );
   const positionId = OrderPositions.insert({
     ...rest,
@@ -218,7 +218,7 @@ OrderPositions.createPosition = ({
 
 OrderPositions.updatePosition = (
   { orderId, positionId },
-  { quantity = null, configuration = null }
+  { quantity = null, configuration = null },
 ) => {
   const orderPosition = OrderPositions.findOne({
     orderId,
@@ -228,7 +228,7 @@ OrderPositions.updatePosition = (
   if (quantity !== null) {
     log(
       `OrderPosition ${positionId} -> Update Quantity of ${positionId} to ${quantity}x`,
-      { orderId }
+      { orderId },
     );
 
     OrderPositions.update(
@@ -238,15 +238,15 @@ OrderPositions.updatePosition = (
           quantity,
           updated: new Date(),
         },
-      }
+      },
     );
   }
   if (configuration !== null) {
     log(
       `OrderPosition ${positionId} -> Update confiugration of ${positionId} to ${JSON.stringify(
-        configuration
+        configuration,
       )}x`,
-      { orderId }
+      { orderId },
     );
     // check if the variant has changed
     const originalProduct = orderPosition.originalProduct();
@@ -262,7 +262,7 @@ OrderPositions.updatePosition = (
             productId: resolvedProduct._id,
             updated: new Date(),
           },
-        }
+        },
       );
     }
 
@@ -273,7 +273,7 @@ OrderPositions.updatePosition = (
           configuration,
           updated: new Date(),
         },
-      }
+      },
     );
   }
   Orders.updateCalculation({ orderId });

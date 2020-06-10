@@ -15,7 +15,7 @@ const MAX_UNCOMPRESSED_FILTER_PRODUCTS = 1000;
 
 Filters.createFilter = (
   { locale, title, type, key, options, isActive = false, ...rest },
-  { skipInvalidation = false } = {}
+  { skipInvalidation = false } = {},
 ) => {
   const filter = {
     isActive,
@@ -36,7 +36,7 @@ Filters.createFilter = (
 
 Filters.updateFilter = (
   { filterId, ...filter },
-  { skipInvalidation = false } = {}
+  { skipInvalidation = false } = {},
 ) => {
   const modifier = {
     $set: {
@@ -65,7 +65,7 @@ Filters.getLocalizedTexts = (filterId, filterOptionValue, locale) =>
       filterId,
       filterOptionValue: filterOptionValue || { $eq: null },
     },
-    locale
+    locale,
   );
 
 Filters.sync = (syncFn) => {
@@ -82,12 +82,12 @@ Filters.markFiltersDirty = () => {
   const updatedFiltersCount = Filters.update(
     {},
     dirtyModifier,
-    collectionUpdateOptions
+    collectionUpdateOptions,
   );
   const updatedFilterTextsCount = FilterTexts.update(
     {},
     dirtyModifier,
-    collectionUpdateOptions
+    collectionUpdateOptions,
   );
   const timestamp = new Date();
   log(`Filter Sync: Marked Filters dirty at timestamp ${timestamp}`, {
@@ -116,12 +116,12 @@ Filters.cleanFiltersByReferenceDate = (referenceDate) => {
   const updatedFiltersCount = Filters.update(
     selector,
     modifier,
-    collectionUpdateOptions
+    collectionUpdateOptions,
   );
   const updatedFilterTextsCount = FilterTexts.update(
     selector,
     modifier,
-    collectionUpdateOptions
+    collectionUpdateOptions,
   );
   log(
     `Filter Sync: Result of filter cleaning with referenceDate=${referenceDate}`,
@@ -129,7 +129,7 @@ Filters.cleanFiltersByReferenceDate = (referenceDate) => {
       updatedFiltersCount,
       updatedFilterTextsCount,
       level: 'verbose',
-    }
+    },
   );
 };
 
@@ -142,7 +142,7 @@ Filters.updateCleanFilterActivation = () => {
     {
       $set: { isActive: false },
     },
-    { bypassCollection2: true, multi: true }
+    { bypassCollection2: true, multi: true },
   );
   const enabledCleanFiltersCount = Filters.update(
     {
@@ -152,7 +152,7 @@ Filters.updateCleanFilterActivation = () => {
     {
       $set: { isActive: true },
     },
-    { bypassCollection2: true, multi: true }
+    { bypassCollection2: true, multi: true },
   );
 
   log(`Filter Sync: Result of filter activation`, {
@@ -197,7 +197,7 @@ Filters.helpers({
           filterOptionValue: filterOptionValue || null,
         },
       },
-      { bypassCollection2: true }
+      { bypassCollection2: true },
     );
     return FilterTexts.findOne(selector);
   },
@@ -223,8 +223,8 @@ Filters.helpers({
         {
           key: this.key,
           value,
-        }
-      )
+        },
+      ),
     );
     if (!selector) return [];
     const products = Products.find(selector, { fields: { _id: true } }).fetch();
@@ -245,7 +245,7 @@ Filters.helpers({
           ...accumulator,
           [option]: this.collectProductIds({ value: option }),
         }),
-        {}
+        {},
       );
     }
 
@@ -275,7 +275,7 @@ Filters.helpers({
               }
             : cache,
         },
-      }
+      },
     );
   },
   cache() {
@@ -298,7 +298,7 @@ Filters.helpers({
             ...accumulator,
             [key]: value,
           }),
-          {}
+          {},
         ),
       };
       this._isCacheTransformed = true; // eslint-disable-line
@@ -384,7 +384,7 @@ Filters.helpers({
     const filteredByOtherFiltersSet = intersectProductIds({
       productIds: examinedProductIdSet,
       filters: otherFilters.filter(
-        (otherFilter) => otherFilter.key !== this.key
+        (otherFilter) => otherFilter.key !== this.key,
       ),
       filterQuery: queryWithoutOwnFilter,
       forceLiveCollection,

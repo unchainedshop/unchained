@@ -77,7 +77,7 @@ class QuotationDirector {
           `${this.constructor.name} -> ${AdapterClass.key} (${AdapterClass.version}) skipped`,
           {
             level: 'warn',
-          }
+          },
         );
       }
       return activated;
@@ -88,7 +88,7 @@ class QuotationDirector {
     const Adapter = this.findAppropriateAdapters(context).shift();
     if (!Adapter) {
       throw new Error(
-        'No suitable quotation plugin available for this context'
+        'No suitable quotation plugin available for this context',
       );
     }
     return new Adapter({

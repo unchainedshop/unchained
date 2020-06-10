@@ -85,7 +85,7 @@ class PaymentDirector {
     const Adapter = this.interfaceClass();
     if (!Adapter) {
       throw new Error(
-        `Payment Plugin ${this.provider.adapterKey} not available`
+        `Payment Plugin ${this.provider.adapterKey} not available`,
       );
     }
     return new Adapter(this.provider.configuration, context);
@@ -157,7 +157,7 @@ class PaymentDirector {
 
   static registerAdapter(adapter) {
     log(
-      `${this.name} -> Registered ${adapter.key} ${adapter.version} (${adapter.label})`
+      `${this.name} -> Registered ${adapter.key} ${adapter.version} (${adapter.label})`,
     );
     PaymentDirector.adapters.set(adapter.key, adapter);
   }

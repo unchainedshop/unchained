@@ -6,3 +6,4 @@ node_modules
 dockercfg
 codeship.aes
 .npm
+/env

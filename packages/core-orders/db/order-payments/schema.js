@@ -30,8 +30,8 @@ OrderPayments.attachSchema(
       ...calculationFields,
       ...logFields,
     },
-    { requiredByDefault: false }
-  )
+    { requiredByDefault: false },
+  ),
 );
 
 export default OrderPaymentStatus;

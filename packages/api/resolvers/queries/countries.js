@@ -6,7 +6,7 @@ export default function (root, { limit, offset, includeInactive }, { userId }) {
     `query countries: ${limit} ${offset} ${
       includeInactive ? 'includeInactive' : ''
     }`,
-    { userId }
+    { userId },
   );
   const selector = {};
   if (!includeInactive) {

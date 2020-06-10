@@ -40,7 +40,7 @@ class OrderDocumentDirector extends DocumentDirector {
             type: OrderDocumentTypes.ORDER_CONFIRMATION,
             ...meta,
           },
-          rest
+          rest,
         );
       }
     });
@@ -66,7 +66,7 @@ class OrderDocumentDirector extends DocumentDirector {
             status: delivery.status,
             ...meta,
           },
-          rest
+          rest,
         );
       }
     });
@@ -92,7 +92,7 @@ class OrderDocumentDirector extends DocumentDirector {
             status: payment.status,
             ...meta,
           },
-          rest
+          rest,
         );
         const { file: receipt, meta: receiptMeta, ...receiptRest } = files[1];
         this.context.order.addDocument(
@@ -104,7 +104,7 @@ class OrderDocumentDirector extends DocumentDirector {
             status: payment.status,
             ...receiptMeta,
           },
-          receiptRest
+          receiptRest,
         );
       }
     });

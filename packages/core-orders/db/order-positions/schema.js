@@ -41,6 +41,6 @@ OrderPositions.attachSchema(
       ...contextFields,
       ...calculationFields,
     },
-    { requiredByDefault: false }
-  )
+    { requiredByDefault: false },
+  ),
 );

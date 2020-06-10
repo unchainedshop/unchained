@@ -4,7 +4,7 @@ import { Users } from 'meteor/unchained:core-users';
 export default function (
   root,
   params,
-  { userId, remoteAddress, localeContext, countryContext }
+  { userId, remoteAddress, localeContext, countryContext },
 ) {
   log(`mutation updateHeartbeat ${remoteAddress}`, { userId });
   Users.updateHeartbeat({

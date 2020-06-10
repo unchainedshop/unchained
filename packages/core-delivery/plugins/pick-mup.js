@@ -24,7 +24,7 @@ const fetchPickMupLocations = async (key, idsFilter) => {
       },
       body: null,
       method: 'GET',
-    }
+    },
   );
   const result = await data.json();
   const { stores = [] } = result || {};

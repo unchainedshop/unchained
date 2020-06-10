@@ -32,7 +32,7 @@ Users.helpers({
         sort: {
           created: -1,
         },
-      }
+      },
     ).fetch();
   },
 });
@@ -68,7 +68,7 @@ Quotations.helpers({
     const locale = this.user().locale(options);
     return this.setStatus(
       QuotationStatus.PROCESSING,
-      'verified elligibility manually'
+      'verified elligibility manually',
     )
       .process({ quotationContext })
       .sendStatusToCustomer({ locale });
@@ -124,7 +124,7 @@ Quotations.helpers({
   transformItemConfiguration(itemConfiguration) {
     const director = this.director();
     return Promise.await(
-      director.transformItemConfiguration(itemConfiguration)
+      director.transformItemConfiguration(itemConfiguration),
     );
   },
   nextStatus() {
@@ -182,7 +182,7 @@ Quotations.helpers({
             quotationId: this._id,
             ...meta,
           },
-        })
+        }),
       );
     }
     const { rawFile, userId } = objOrString;
@@ -195,7 +195,7 @@ Quotations.helpers({
           quotationId: this._id,
           ...meta,
         },
-      })
+      }),
     );
   },
   documents(options) {
@@ -240,7 +240,7 @@ Quotations.helpers({
 
 Quotations.requestQuotation = (
   { productId, userId, countryCode, configuration },
-  options
+  options,
 ) => {
   log('Create Quotation', { userId });
   const quotationId = Quotations.insert({
@@ -268,7 +268,7 @@ Quotations.updateContext = ({ context, quotationId }) => {
         context,
         updated: new Date(),
       },
-    }
+    },
   );
   return Quotations.findOne({ _id: quotationId });
 };
@@ -284,7 +284,7 @@ Quotations.updateProposal = ({ price, expires, meta, quotationId }) => {
         meta,
         updated: new Date(),
       },
-    }
+    },
   );
   return Quotations.findOne({ _id: quotationId });
 };
@@ -294,7 +294,7 @@ Quotations.newQuotationNumber = () => {
   const hashids = new Hashids(
     'unchained',
     6,
-    'ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890'
+    'ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890',
   );
   while (!quotationNumber) {
     const randomNumber = Math.floor(Math.random() * (999999999 - 1)) + 1;

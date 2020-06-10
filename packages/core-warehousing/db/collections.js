@@ -1,7 +1,7 @@
 import { Mongo } from 'meteor/mongo';
 
 export const WarehousingProviders = new Mongo.Collection(
-  'warehousing-providers'
+  'warehousing-providers',
 );
 
 export default WarehousingProviders;

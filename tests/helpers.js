@@ -66,7 +66,7 @@ const convertLinkToFetch = (link) => ({ query, ...operation }) =>
     execute(link, {
       query: gql(query),
       ...operation,
-    })
+    }),
   );
 
 export const createAnonymousGraphqlFetch = () => {

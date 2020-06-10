@@ -13,8 +13,8 @@ ProductMedia.attachSchema(
       meta: { type: Object, blackbox: true },
       ...Schemas.timestampFields,
     },
-    { requiredByDefault: false }
-  )
+    { requiredByDefault: false },
+  ),
 );
 
 ProductMediaTexts.attachSchema(
@@ -30,6 +30,6 @@ ProductMediaTexts.attachSchema(
       subtitle: String,
       ...Schemas.timestampFields,
     },
-    { requiredByDefault: false }
-  )
+    { requiredByDefault: false },
+  ),
 );

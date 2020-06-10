@@ -4,13 +4,13 @@ import { Assortments } from 'meteor/unchained:core-assortments';
 export default function (
   root,
   { limit, offset, includeInactive, includeLeaves },
-  { userId }
+  { userId },
 ) {
   log(
     `query assortments: ${limit} ${offset} ${
       includeInactive ? 'includeInactive' : ''
     }`,
-    { userId }
+    { userId },
   );
   const selector = {};
   if (!includeLeaves) {
