@@ -17,17 +17,18 @@ const {
   STRIPE_WEBHOOK_PATH = '/graphql/stripe',
 } = process.env;
 
-const logger = createLogger('unchained:core-payment:stripe-webhook');
-
-const stripe = require('stripe')(STRIPE_SECRET);
-
 /*
+Test Webhooks:
 
 brew install stripe/stripe-cli/stripe
 stripe login --api-key sk_....
 stripe listen --forward-to http://localhost:3000/graphql/stripe
 stripe trigger payment_intent.succeeded
 */
+
+const logger = createLogger('unchained:core-payment:stripe-webhook');
+
+const stripe = require('stripe')(STRIPE_SECRET);
 
 WebApp.connectHandlers.use(
   STRIPE_WEBHOOK_PATH,
@@ -212,7 +213,14 @@ class Stripe extends PaymentAdapter {
     const orderPayment = order.payment();
     const paymentIntentObject = paymentIntentId
       ? await stripe.paymentIntents.retrieve(paymentIntentId)
-      : await this.constructor.createOrderPaymentIntent(orderPayment);
+      : await this.constructor.createOrderPaymentIntent(orderPayment, {
+          customer: paymentCredentials.meta?.customer,
+          confirm: true,
+          payment_method: paymentCredentials.token,
+          payment_method_types: paymentCredentials.meta?.payment_method_types, // eslint-disable-line
+          payment_method_options:
+            paymentCredentials.meta?.payment_method_options, // eslint-disable-line
+        });
 
     if (paymentIntentObject.metadata?.orderPaymentId !== orderPayment?._id) {
       throw new Error(
@@ -220,7 +228,6 @@ class Stripe extends PaymentAdapter {
       );
     }
 
-    console.log(paymentIntentObject);
     if (paymentIntentObject.status === 'succeeded') {
       return paymentIntentObject;
     }
