@@ -1,6 +1,6 @@
 Package.describe({
   name: 'unchained:core-worker',
-  version: '0.49.3',
+  version: '0.50.0',
   summary: 'Unchained Engine Core: Worker',
   git: 'https://github.com/unchainedshop/unchained',
   documentation: 'README.md',
@@ -18,8 +18,8 @@ Package.onUse((api) => {
   api.use('littledata:synced-cron@1.5.1');
   api.use('percolate:migrations@1.0.2');
 
-  api.use('unchained:core-logger@0.49.3');
-  api.use('unchained:utils@0.49.3');
+  api.use('unchained:core-logger@0.50.0');
+  api.use('unchained:utils@0.50.0');
 
   api.mainModule('worker.js', 'server');
 });

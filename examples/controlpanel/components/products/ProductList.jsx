@@ -1,59 +1,20 @@
-import { compose, pure, withState } from "recompose";
-import gql from "graphql-tag";
-import { graphql } from "react-apollo";
-import React, { useState } from "react";
+import { compose, pure, withState } from 'recompose';
+import gql from 'graphql-tag';
+import { graphql } from 'react-apollo';
+import React from 'react';
 import { withRouter } from 'next/router';
-import { Table, Icon, Button, Loader, Label, Search } from "semantic-ui-react";
-import InfiniteScroll from "react-infinite-scroller";
-import { escapeRegExp, filter, debounce } from "lodash";
-import Link from "next/link";
+import { Table, Icon, Button, Loader, Label } from 'semantic-ui-react';
+import InfiniteScroll from 'react-infinite-scroller';
+import Link from 'next/link';
+import ProductSearchDropdown from './ProductSearchDropdown';
 
-const defaultState = {
-  isLoading: false,
-  results: [],
-  value: "",
-};
-
-const ProductList = ({ router, products, loadMoreEntries, hasMore }) => {
-  const [initialState, setInitialState] = useState(defaultState);
-  const handleResultSelect = (e, { result }) => {
-    setInitialState({ value: result.texts.title });
-    router.push({ pathname: "/products/edit", query: { _id: result._id } });
-  };
-
-  const handleSearchChange = (e, { value }) => {
-    setInitialState({ isLoading: true, value });
-
-    setTimeout(() => {
-      if (initialState.value?.length < 1) return;
-
-      const re = new RegExp(escapeRegExp(setInitialState.value), "i");
-      const isMatch = (result) => re.test(result.texts.title);
-      setInitialState({
-        isLoading: false,
-        results: filter(products, isMatch),
-      });
-    }, 300);
-  };
-  const { loading, value, results } = initialState;
-  const resultRenderer = (result) => <Label content={result.texts.title} />;
-
+const ProductList = ({ products, loadMoreEntries, hasMore }) => {
   return (
     <Table celled>
       <Table.Header>
         <Table.Row>
           <Table.HeaderCell colSpan="3">
-            <Search
-              style={{ float: "left" }}
-              loading={loading}
-              onResultSelect={handleResultSelect}
-              onSearchChange={debounce(handleSearchChange, 500, {
-                leading: true,
-              })}
-              results={results}
-              resultRenderer={resultRenderer}
-              value={value}
-            />
+            <ProductSearchDropdown />
 
             <Link href="/products/new">
               <Button
@@ -78,7 +39,7 @@ const ProductList = ({ router, products, loadMoreEntries, hasMore }) => {
       </Table.Header>
       {products && (
         <InfiniteScroll
-          element={"tbody"}
+          element={'tbody'}
           loadMore={loadMoreEntries}
           hasMore={hasMore}
           loader={
@@ -99,7 +60,7 @@ const ProductList = ({ router, products, loadMoreEntries, hasMore }) => {
                 </Link>
               </Table.Cell>
               <Table.Cell>
-                {product.status === "ACTIVE" && (
+                {product.status === 'ACTIVE' && (
                   <Icon color="green" name="checkmark" size="large" />
                 )}
               </Table.Cell>
@@ -156,7 +117,7 @@ export const PRODUCT_LIST_QUERY = gql`
 `;
 
 export default compose(
-  withState("hasMore", "updateHasMore", true),
+  withState('hasMore', 'updateHasMore', true),
   withRouter,
   graphql(PRODUCT_LIST_QUERY, {
     options: () => ({
