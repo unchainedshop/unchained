@@ -30,8 +30,8 @@ OrderDeliveries.attachSchema(
       ...calculationFields,
       ...logFields,
     },
-    { requiredByDefault: false }
-  )
+    { requiredByDefault: false },
+  ),
 );
 
 export default OrderDeliveryStatus;

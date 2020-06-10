@@ -5,7 +5,7 @@ import { PaymentProviderNotFoundError } from '../../errors';
 export default (root, { paymentProviderId, ...rest }, { userId }) => {
   log(
     `query signPaymentProviderForCredentialRegistration ${paymentProviderId}`,
-    { userId }
+    { userId },
   );
   const paymentProvider = PaymentProviders.findOne({ _id: paymentProviderId });
   if (!paymentProvider)

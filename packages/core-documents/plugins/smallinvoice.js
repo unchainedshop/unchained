@@ -82,7 +82,7 @@ class SmallinvoiceAPI {
         amount: quantity,
         vat,
         discount: null,
-      })
+      }),
     );
   }
 
@@ -98,7 +98,7 @@ class SmallinvoiceAPI {
         amount: quantity,
         vat,
         discount: null,
-      })
+      }),
     );
   }
 
@@ -138,7 +138,7 @@ class SmallinvoiceAPI {
     if (clientId) {
       const { data: editResult } = this.post(
         `/client/edit/id/${clientId}`,
-        mappedBody
+        mappedBody,
       );
       if (editResult.error) throw new Error(editResult.error);
       return clientId;

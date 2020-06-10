@@ -16,22 +16,22 @@ export const MessageTypes = {
 export default () => {
   MessagingDirector.configureTemplate(
     MessageTypes.ACCOUNT_ACTION,
-    accountActionTemplate
+    accountActionTemplate,
   );
   MessagingDirector.configureTemplate(
     MessageTypes.DELIVERY,
-    forwardDeliveryTemplate
+    forwardDeliveryTemplate,
   );
   MessagingDirector.configureTemplate(
     MessageTypes.ORDER_CONFIRMATION,
-    orderConfirmationTemplate
+    orderConfirmationTemplate,
   );
   MessagingDirector.configureTemplate(
     MessageTypes.QUOTATION_STATUS,
-    quotationStatusTemplate
+    quotationStatusTemplate,
   );
   MessagingDirector.configureTemplate(
     MessageTypes.SUBSCRIPTION_STATUS,
-    subscriptionStatusTemplate
+    subscriptionStatusTemplate,
   );
 };

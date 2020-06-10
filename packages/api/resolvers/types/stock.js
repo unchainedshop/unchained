@@ -19,7 +19,7 @@ export default {
           referenceDate,
           country,
           userId || 'ANONYMOUS',
-        ].join('')
+        ].join(''),
       )
       .digest('hex'),
 };

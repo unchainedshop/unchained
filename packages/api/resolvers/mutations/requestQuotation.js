@@ -6,13 +6,13 @@ import { ProductNotFoundError } from '../../errors';
 export default function (
   root,
   { productId, configuration },
-  { userId, countryContext, localeContext }
+  { userId, countryContext, localeContext },
 ) {
   log(
     `mutation requestQuotation ${productId} ${
       configuration ? JSON.stringify(configuration) : ''
     }`,
-    { userId }
+    { userId },
   );
   const product = Products.findOne({ _id: productId });
   if (!product) throw new ProductNotFoundError({ productId });
@@ -23,7 +23,7 @@ export default function (
       countryCode: countryContext,
       configuration,
     },
-    { localeContext }
+    { localeContext },
   );
   return quotation;
 }

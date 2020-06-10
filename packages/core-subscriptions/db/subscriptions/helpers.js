@@ -31,7 +31,7 @@ Users.helpers({
         sort: {
           created: -1,
         },
-      }
+      },
     ).fetch();
   },
 });
@@ -98,7 +98,7 @@ Subscriptions.helpers({
     return (
       await this.setStatus(
         SubscriptionStatus.TERMINATED,
-        'terminated manually'
+        'terminated manually',
       ).process({ subscriptionContext })
     ).sendStatusToCustomer({ locale });
   },
@@ -108,7 +108,7 @@ Subscriptions.helpers({
     return (
       await this.setStatus(
         SubscriptionStatus.ACTIVE,
-        'activated manually'
+        'activated manually',
       ).process({ subscriptionContext })
     ).sendStatusToCustomer({ locale });
   },
@@ -144,7 +144,7 @@ Subscriptions.helpers({
     if (this.nextStatus() === SubscriptionStatus.ACTIVE) {
       await this.reactivateSubscription(
         subscriptionContext,
-        orderIdForFirstPeriod
+        orderIdForFirstPeriod,
       );
     }
     return this.setStatus(this.nextStatus(), 'subscription processed');
@@ -213,7 +213,7 @@ Subscriptions.createSubscription = async (
     delivery,
     orderIdForFirstPeriod,
   },
-  options
+  options,
 ) => {
   log('Create Subscription', { userId });
   const subscriptionId = Subscriptions.insert({
@@ -238,7 +238,7 @@ Subscriptions.createSubscription = async (
   const subscription = Subscriptions.findOne({ _id: subscriptionId });
   const locale = subscription.user().locale(options);
   const initialized = await subscription.initializeSubscription(
-    orderIdForFirstPeriod
+    orderIdForFirstPeriod,
   );
   return initialized.sendStatusToCustomer({ locale });
 };
@@ -263,7 +263,7 @@ Subscriptions.addSubscriptionPeriod = async ({
       $set: {
         updated: new Date(),
       },
-    }
+    },
   );
   return Subscriptions.findOne({ _id: subscriptionId });
 };
@@ -277,7 +277,7 @@ Subscriptions.updateBillingAddress = ({ billingAddress, subscriptionId }) => {
         billingAddress,
         updated: new Date(),
       },
-    }
+    },
   );
   return Subscriptions.findOne({ _id: subscriptionId });
 };
@@ -291,7 +291,7 @@ Subscriptions.updateContact = ({ contact, subscriptionId }) => {
         contact,
         updated: new Date(),
       },
-    }
+    },
   );
   return Subscriptions.findOne({ _id: subscriptionId });
 };
@@ -305,7 +305,7 @@ Subscriptions.updatePayment = ({ payment, subscriptionId }) => {
         payment,
         updated: new Date(),
       },
-    }
+    },
   );
   return Subscriptions.findOne({ _id: subscriptionId });
 };
@@ -319,7 +319,7 @@ Subscriptions.updateDelivery = ({ delivery, subscriptionId }) => {
         delivery,
         updated: new Date(),
       },
-    }
+    },
   );
   return Subscriptions.findOne({ _id: subscriptionId });
 };
@@ -333,7 +333,7 @@ Subscriptions.updatePlan = ({ plan, subscriptionId }) => {
         plan,
         updated: new Date(),
       },
-    }
+    },
   );
   return Subscriptions.findOne({ _id: subscriptionId });
 };
@@ -347,7 +347,7 @@ Subscriptions.updateContext = ({ context, subscriptionId }) => {
         context,
         updated: new Date(),
       },
-    }
+    },
   );
   return Subscriptions.findOne({ _id: subscriptionId });
 };
@@ -357,7 +357,7 @@ Subscriptions.newSubscriptionNumber = () => {
   const hashids = new Hashids(
     'unchained',
     6,
-    'ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890'
+    'ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890',
   );
   while (!subscriptionNumber) {
     const randomNumber = Math.floor(Math.random() * (999999999 - 1)) + 1;
@@ -365,7 +365,7 @@ Subscriptions.newSubscriptionNumber = () => {
     if (
       Subscriptions.find(
         { subscriptionNumber: newHashID },
-        { limit: 1 }
+        { limit: 1 },
       ).count() === 0
     ) {
       subscriptionNumber = newHashID;

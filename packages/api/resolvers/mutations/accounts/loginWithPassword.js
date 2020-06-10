@@ -6,7 +6,7 @@ import getUserLoginMethod from './getUserLoginMethod';
 export default async function (
   root,
   { username, email, password: hashedPassword, plainPassword },
-  context
+  context,
 ) {
   if (!hashedPassword && !plainPassword) {
     throw new Error('Password is required');
@@ -26,7 +26,7 @@ export default async function (
       if (method === 'no-password') {
         throw new Meteor.Error(
           'no-password',
-          'User has no password set, go to forgot password'
+          'User has no password set, go to forgot password',
         );
       } else if (method) {
         throw new Error(`User is registered with ${method}.`);

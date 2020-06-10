@@ -10,7 +10,7 @@ import {
 export default async function (
   root,
   { contact, plan, billingAddress, payment, delivery, meta },
-  { countryContext, userId, user }
+  { countryContext, userId, user },
 ) {
   log('mutation createSubscription', { userId });
   if (!user) throw new UserNotFoundError({ userId });

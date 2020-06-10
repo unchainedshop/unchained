@@ -52,7 +52,7 @@ class FilterDirector {
     return this.reduceAdapters(async (lastSelector, concreteAdapter) => {
       return concreteAdapter.transformProductSelector(
         await lastSelector,
-        options
+        options,
       );
     }, defaultSelector || null);
   }
@@ -73,14 +73,14 @@ class FilterDirector {
     return this.reduceAdapters(async (lastSelector, concreteAdapter) => {
       return concreteAdapter.transformFilterSelector(
         await lastSelector,
-        options
+        options,
       );
     }, defaultSelector || null);
   }
 
   async reduceAdapters(reducer, initialValue) {
     const adapters = FilterDirector.sortedAdapters().filter((AdapterClass) =>
-      AdapterClass.isActivatedFor(this.context)
+      AdapterClass.isActivatedFor(this.context),
     );
 
     if (adapters.length === 0) {

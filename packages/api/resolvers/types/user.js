@@ -11,11 +11,11 @@ export default {
   username: checkTypeResolver(actions.viewUserPrivateInfos, 'username'),
   isEmailVerified: checkTypeResolver(
     actions.viewUserPrivateInfos,
-    'isEmailVerified'
+    'isEmailVerified',
   ),
   isInitialPassword: checkTypeResolver(
     actions.viewUserPrivateInfos,
-    'isInitialPassword'
+    'isInitialPassword',
   ),
   isGuest: checkTypeResolver(actions.viewUserPrivateInfos, 'isGuest'),
   profile: checkTypeResolver(actions.viewUserPrivateInfos, 'profile'),
@@ -23,7 +23,7 @@ export default {
   country: checkTypeResolver(actions.viewUserPrivateInfos, 'country'),
   lastBillingAddress: checkTypeResolver(
     actions.viewUserPrivateInfos,
-    'lastBillingAddress'
+    'lastBillingAddress',
   ),
   lastContact: checkTypeResolver(actions.viewUserPrivateInfos, 'lastContact'),
   emails: checkTypeResolver(actions.viewUserPrivateInfos, 'emails'),
@@ -31,7 +31,7 @@ export default {
   bookmarks: checkTypeResolver(actions.viewUserPrivateInfos, 'bookmarks'),
   paymentCredentials: checkTypeResolver(
     actions.viewUserPrivateInfos,
-    'paymentCredentials'
+    'paymentCredentials',
   ),
 
   orders: checkTypeResolver(actions.viewUserOrders, 'orders'),
@@ -40,7 +40,7 @@ export default {
   roles: checkTypeResolver(actions.viewUserRoles, 'roles'),
   subscriptions: checkTypeResolver(
     actions.viewUserSubscriptions,
-    'subscriptions'
+    'subscriptions',
   ),
 
   async cart(user, params, context = {}) {

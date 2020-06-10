@@ -9,7 +9,7 @@ import { ProductNotFoundError } from '../../errors';
 export default function (
   root,
   { variation: inputData, productId },
-  { localeContext, userId }
+  { localeContext, userId },
 ) {
   log(`mutation createProductVariation ${productId}`, { userId });
   const { key, type, title } = inputData;

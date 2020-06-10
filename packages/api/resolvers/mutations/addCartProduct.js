@@ -6,13 +6,13 @@ import getCart from '../../getCart';
 export default async function (
   root,
   { orderId, productId, quantity, configuration },
-  { user, userId, countryContext }
+  { user, userId, countryContext },
 ) {
   log(
     `mutation addCartProduct ${productId} ${quantity} ${
       configuration ? JSON.stringify(configuration) : ''
     }`,
-    { userId, orderId }
+    { userId, orderId },
   );
   if (quantity < 1) throw new OrderQuantityTooLowError({ quantity });
   const product = Products.findOne({ _id: productId });

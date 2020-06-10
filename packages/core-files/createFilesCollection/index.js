@@ -22,7 +22,7 @@ export default (collectionName, customSettings = null) => {
     createDefaultSettings(),
     customSettings,
     getSetting('files.default'),
-    getSetting(['files', collectionName])
+    getSetting(['files', collectionName]),
   );
 
   const configByType = Types[mergedSettings.storage.type];

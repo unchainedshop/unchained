@@ -8,7 +8,7 @@ import {
 export default function (
   root,
   { quotationId, ...transactionContext },
-  { userId }
+  { userId },
 ) {
   log('mutation rejectQuotation', { quotationId, userId });
   const quotation = Quotations.findOne({ _id: quotationId });

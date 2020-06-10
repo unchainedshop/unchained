@@ -9,6 +9,6 @@ Bookmarks.attachSchema(
       productId: { type: String, required: true, index: true },
       ...Schemas.timestampFields,
     },
-    { requiredByDefault: false }
-  )
+    { requiredByDefault: false },
+  ),
 );

@@ -329,7 +329,7 @@ describe('ProductsVariation', () => {
               },
             ],
           },
-        }
+        },
       );
 
       expect(updateProductVariationTexts[0]._id).not.toBe(null);

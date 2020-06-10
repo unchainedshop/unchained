@@ -6,7 +6,7 @@ export default {
       {
         orderDelivery: obj,
       },
-      orderPickUpLocationId
+      orderPickUpLocationId,
     );
   },
   pickUpLocations(obj) {

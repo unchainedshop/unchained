@@ -17,6 +17,6 @@ WarehousingProviders.attachSchema(
       'configuration.$.value': { type: String },
       ...Schemas.timestampFields,
     },
-    { requiredByDefault: false }
-  )
+    { requiredByDefault: false },
+  ),
 );

@@ -95,7 +95,7 @@ describe('Order: Deliveries', () => {
               john: 'wayne',
             },
           },
-        }
+        },
       );
       expect(updateOrderDeliveryShipping).toMatchObject({
         _id: SimpleDelivery._id,

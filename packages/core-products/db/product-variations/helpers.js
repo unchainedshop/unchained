@@ -6,7 +6,7 @@ import { ProductVariations, ProductVariationTexts } from './collections';
 ProductVariations.helpers({
   upsertLocalizedText(
     locale,
-    { productVariationOptionValue = null, ...fields }
+    { productVariationOptionValue = null, ...fields },
   ) {
     const selector = {
       productVariationId: this._id,
@@ -23,7 +23,7 @@ ProductVariations.helpers({
           productVariationOptionValue: productVariationOptionValue || null,
         },
       },
-      { bypassCollection2: true }
+      { bypassCollection2: true },
     );
     return ProductVariationTexts.findOne(selector);
   },
@@ -32,7 +32,7 @@ ProductVariations.helpers({
     return ProductVariations.getLocalizedTexts(
       this._id,
       optionValue,
-      parsedLocale
+      parsedLocale,
     );
   },
   optionObject(productVariationOption) {
@@ -47,7 +47,7 @@ ProductVariations.helpers({
 ProductVariations.getLocalizedTexts = (
   productVariationId,
   productVariationOptionValue,
-  locale
+  locale,
 ) =>
   findLocalizedText(
     ProductVariationTexts,
@@ -55,5 +55,5 @@ ProductVariations.getLocalizedTexts = (
       productVariationId,
       productVariationOptionValue: productVariationOptionValue || { $eq: null },
     },
-    locale
+    locale,
   );

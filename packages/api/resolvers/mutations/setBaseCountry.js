@@ -11,7 +11,7 @@ export default function setBaseCountry(root, { countryId }, { userId }) {
         updated: new Date(),
       },
     },
-    { multi: true }
+    { multi: true },
   );
   Countries.update(
     { _id: countryId },
@@ -20,7 +20,7 @@ export default function setBaseCountry(root, { countryId }, { userId }) {
         isBase: true,
         updated: new Date(),
       },
-    }
+    },
   );
   return Countries.findOne({ _id: countryId });
 }

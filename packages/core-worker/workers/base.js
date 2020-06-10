@@ -29,7 +29,7 @@ class BaseWorker {
 
   getInternalTypes() {
     return this.WorkerDirector.getActivePluginTypes().filter(
-      (type) => type !== External.type
+      (type) => type !== External.type,
     );
   }
 
@@ -65,8 +65,8 @@ class BaseWorker {
             ...rest,
             retries: 0,
           });
-        }
-      )
+        },
+      ),
     );
   }
 

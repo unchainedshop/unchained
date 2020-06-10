@@ -99,7 +99,7 @@ describe('Auth for admin users', () => {
   describe('Mutation.updateUserAvatar', () => {
     it('update the avatar of a foreign user', async () => {
       const imageResult = await fetch(
-        'https://assets-cdn.github.com/images/modules/logos_page/Octocat.png'
+        'https://assets-cdn.github.com/images/modules/logos_page/Octocat.png',
       );
       const imageBuffer = await imageResult.buffer();
       const avatar = {

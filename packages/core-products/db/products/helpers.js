@@ -17,7 +17,7 @@ import { ProductStatus, ProductTypes } from './schema';
 
 Products.createProduct = (
   { locale, title, type, sequence, ...rest },
-  { autopublish = false } = {}
+  { autopublish = false } = {},
 ) => {
   const product = {
     created: new Date(),
@@ -60,7 +60,7 @@ ProductTexts.makeSlug = ({ slug, title, productId }, options) => {
   };
   return findUnusedSlug(
     checkSlugIsUnique,
-    options
+    options,
   )({
     existingSlug: slug,
     title: title || productId,
@@ -79,7 +79,7 @@ Products.helpers({
               updated: new Date(),
               published: new Date(),
             },
-          }
+          },
         );
         return true;
       default:
@@ -97,7 +97,7 @@ Products.helpers({
               updated: new Date(),
               published: null,
             },
-          }
+          },
         );
         return true;
       default:
@@ -124,7 +124,7 @@ Products.helpers({
           ...fields,
         },
       },
-      { bypassCollection2: true }
+      { bypassCollection2: true },
     );
 
     Products.update(
@@ -138,7 +138,7 @@ Products.helpers({
         $addToSet: {
           slugs: slug,
         },
-      }
+      },
     );
     Products.update(
       {
@@ -153,7 +153,7 @@ Products.helpers({
           slugs: slug,
         },
       },
-      { multi: true }
+      { multi: true },
     );
     return ProductTexts.findOne({ productId: this._id, locale });
   },
@@ -247,7 +247,7 @@ Products.helpers({
       });
     });
     const productIds = filtered.map(
-      (filteredAssignment) => filteredAssignment.productId
+      (filteredAssignment) => filteredAssignment.productId,
     );
     const selector = {
       _id: { $in: productIds },
@@ -281,9 +281,9 @@ Products.helpers({
               ...context,
               ...dispatch,
             };
-          })
+          }),
         ),
-      []
+      [],
     );
   },
 
@@ -311,9 +311,9 @@ Products.helpers({
               ...context,
               ...stock,
             };
-          })
+          }),
         ),
-      []
+      [],
     );
   },
 
@@ -350,7 +350,7 @@ Products.helpers({
             quantity,
             useNetPrice,
             user ? user._id : 'ANONYMOUS',
-          ].join('')
+          ].join(''),
         )
         .digest('hex'),
       amount: userPrice.amount,
@@ -367,7 +367,7 @@ Products.helpers({
     const pricing = ((this.commerce && this.commerce.pricing) || []).sort(
       (
         { maxQuantity: leftMaxQuantity = 0 },
-        { maxQuantity: rightMaxQuantity = 0 }
+        { maxQuantity: rightMaxQuantity = 0 },
       ) => {
         if (
           leftMaxQuantity === rightMaxQuantity ||
@@ -377,7 +377,7 @@ Products.helpers({
         if (leftMaxQuantity === 0) return -1;
         if (rightMaxQuantity === 0) return 1;
         return leftMaxQuantity - rightMaxQuantity;
-      }
+      },
     );
     const price = pricing.reduce(
       (oldValue, curPrice) => {
@@ -399,7 +399,7 @@ Products.helpers({
         countryCode: country,
         isTaxable: false,
         isNetPrice: false,
-      }
+      },
     );
     if (price.amount !== undefined && price.amount !== null) {
       return {
@@ -419,15 +419,15 @@ Products.helpers({
       const vectors = configuration.filter(({ key: configurationKey }) => {
         const isKeyEqualsVariationKey = Boolean(
           variations.filter(
-            ({ key: variationKey }) => variationKey === configurationKey
-          ).length
+            ({ key: variationKey }) => variationKey === configurationKey,
+          ).length,
         );
         return isKeyEqualsVariationKey;
       });
       const variants = this.proxyProducts(vectors);
       if (variants.length !== 1) {
         throw new Error(
-          'There needs to be exactly one variant left when adding a ConfigurableProduct to the cart, configuration not distinct enough'
+          'There needs to be exactly one variant left when adding a ConfigurableProduct to the cart, configuration not distinct enough',
         );
       }
       const resolvedProduct = variants[0];
@@ -439,7 +439,7 @@ Products.helpers({
   checkIsActive() {
     if (!this.isActive()) {
       throw new Error(
-        'This product is not available for ordering at the moment'
+        'This product is not available for ordering at the moment',
       );
     }
   },
@@ -450,7 +450,7 @@ Products.helpers({
   reviews({ limit, offset }) {
     return ProductReviews.findReviews(
       { productId: this._id },
-      { skip: offset, limit }
+      { skip: offset, limit },
     );
   },
 });

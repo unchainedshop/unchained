@@ -11,7 +11,7 @@ export default function (root, { avatar, userId: foreignUserId }, { userId }) {
           Avatars.insertWithRemoteFile({
             file: avatar,
             userId: normalizedUserId,
-          })
+          }),
         )
       : Promise.await(
           Avatars.insertWithRemoteBuffer({
@@ -20,7 +20,7 @@ export default function (root, { avatar, userId: foreignUserId }, { userId }) {
               buffer: Buffer.from(avatar.buffer, 'base64'),
             },
             userId: normalizedUserId,
-          })
+          }),
         );
   Users.update(
     { _id: normalizedUserId },
@@ -29,7 +29,7 @@ export default function (root, { avatar, userId: foreignUserId }, { userId }) {
         updated: new Date(),
         avatarId: avatarRef._id,
       },
-    }
+    },
   );
   return Users.findOne({ _id: normalizedUserId });
 }

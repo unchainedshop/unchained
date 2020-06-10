@@ -9,13 +9,13 @@ import {
 export default function (
   root,
   { itemId, quantity = null, configuration = null },
-  { userId }
+  { userId },
 ) {
   log(
     `mutation updateCartItem ${itemId} ${quantity} ${JSON.stringify(
-      configuration
+      configuration,
     )}`,
-    { userId }
+    { userId },
   );
   const item = OrderPositions.findOne({ _id: itemId });
   if (!item) throw new OrderItemNotFoundError({ itemId });
@@ -32,7 +32,7 @@ export default function (
         orderId: item.orderId,
         positionId: itemId,
       },
-      { quantity }
+      { quantity },
     );
   }
 
@@ -42,7 +42,7 @@ export default function (
         orderId: item.orderId,
         positionId: itemId,
       },
-      { configuration }
+      { configuration },
     );
   }
 

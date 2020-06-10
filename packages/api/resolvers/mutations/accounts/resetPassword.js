@@ -4,7 +4,7 @@ import hashPassword from '../../../hashPassword';
 export default async function (
   root,
   { token, newPlainPassword, newPassword: newHashedPassword },
-  context
+  context,
 ) {
   if (!newHashedPassword && !newPlainPassword) {
     throw new Error('Password is required');

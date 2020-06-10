@@ -66,20 +66,20 @@ export default {
   deliveryProvider: acl(actions.viewDeliveryProvider)(deliveryProvider),
   deliveryInterfaces: acl(actions.viewDeliveryInterfaces)(deliveryInterfaces),
   warehousingProviders: acl(actions.viewWarehousingProviders)(
-    warehousingProviders
+    warehousingProviders,
   ),
   warehousingProvider: acl(actions.viewWarehousingProvider)(
-    warehousingProvider
+    warehousingProvider,
   ),
   warehousingInterfaces: acl(actions.viewWarehousingInterfaces)(
-    warehousingInterfaces
+    warehousingInterfaces,
   ),
   translatedProductTexts: acl(actions.viewTranslations)(translatedProductTexts),
   translatedProductMediaTexts: acl(actions.viewTranslations)(
-    translatedProductMediaTexts
+    translatedProductMediaTexts,
   ),
   translatedProductVariationTexts: acl(actions.viewTranslations)(
-    translatedProductVariationTexts
+    translatedProductVariationTexts,
   ),
   orders: acl(actions.viewOrders)(orders),
   order: acl(actions.viewOrder)(order),
@@ -90,7 +90,7 @@ export default {
   shopInfo: acl(actions.viewShopInfo)(shopInfo),
   logs: acl(actions.viewLogs)(logs),
   translatedAssortmentTexts: acl(actions.manageAssortments)(
-    translatedAssortmentTexts
+    translatedAssortmentTexts,
   ),
   translatedFilterTexts: acl(actions.manageFilters)(translatedFilterTexts),
   productReview: acl(actions.manageProductReviews)(productReview),
@@ -104,6 +104,6 @@ export default {
 
   work: acl(actions.manageWorker)(work),
   signPaymentProviderForCredentialRegistration: acl(
-    actions.registerPaymentCredentials
+    actions.registerPaymentCredentials,
   )(signPaymentProviderForCredentialRegistration),
 };

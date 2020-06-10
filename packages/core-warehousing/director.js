@@ -61,7 +61,7 @@ class WarehousingDirector {
     const Adapter = this.interfaceClass();
     if (!Adapter) {
       throw new Error(
-        `Warehousing Plugin ${this.provider.adapterKey} not available`
+        `Warehousing Plugin ${this.provider.adapterKey} not available`,
       );
     }
     return new Adapter(this.provider.configuration, context);
@@ -103,7 +103,7 @@ class WarehousingDirector {
       const referenceDate = WarehousingDirector.getReferenceDate(context);
       const warehousingThroughputTime = await this.throughputTime(context);
       const deliveryThroughputTime = deliveryProvider.estimatedDeliveryThroughput(
-        { ...context, warehousingThroughputTime }
+        { ...context, warehousingThroughputTime },
       );
       const shippingTimestamp =
         referenceDate.getTime() + warehousingThroughputTime;

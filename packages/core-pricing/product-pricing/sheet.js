@@ -71,7 +71,7 @@ class ProductPricingSheet extends PricingSheet {
 
   discountPrices(explicitDiscountId) {
     const discountIds = this.getDiscountRows(explicitDiscountId).map(
-      ({ discountId }) => discountId
+      ({ discountId }) => discountId,
     );
 
     return [...new Set(discountIds)]

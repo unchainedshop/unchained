@@ -17,8 +17,8 @@ ProductVariations.attachSchema(
       'options.$': String,
       ...Schemas.timestampFields,
     },
-    { requiredByDefault: false }
-  )
+    { requiredByDefault: false },
+  ),
 );
 
 ProductVariationTexts.attachSchema(
@@ -35,6 +35,6 @@ ProductVariationTexts.attachSchema(
       subtitle: String,
       ...Schemas.timestampFields,
     },
-    { requiredByDefault: false }
-  )
+    { requiredByDefault: false },
+  ),
 );

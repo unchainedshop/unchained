@@ -19,7 +19,7 @@ export default function (root, { profile, userId: foreignUserId }, { userId }) {
         updated: new Date(),
         ...transformedProfile,
       },
-    }
+    },
   );
   return Users.findOne({ _id: normalizedUserId });
 }

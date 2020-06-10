@@ -28,13 +28,13 @@ DeliveryProviders.helpers({
   estimatedDeliveryThroughput(context) {
     return Promise.await(
       new DeliveryDirector(this).estimatedDeliveryThroughput(
-        this.defaultContext(context)
-      )
+        this.defaultContext(context),
+      ),
     );
   },
   isAutoReleaseAllowed(context) {
     return new DeliveryDirector(this).isAutoReleaseAllowed(
-      this.defaultContext(context)
+      this.defaultContext(context),
     );
   },
   run(command, context, ...args) {
@@ -42,18 +42,18 @@ DeliveryProviders.helpers({
       new DeliveryDirector(this).run(
         command,
         this.defaultContext(context),
-        ...args
-      )
+        ...args,
+      ),
     );
   },
   send(context) {
     return Promise.await(
-      new DeliveryDirector(this).send(this.defaultContext(context))
+      new DeliveryDirector(this).send(this.defaultContext(context)),
     );
   },
   orderPrice(
     { country, order, user, useNetPrice, providerContext },
-    requestContext
+    requestContext,
   ) {
     const currency = Countries.resolveDefaultCurrencyCode({
       isoCode: country,
@@ -78,7 +78,7 @@ DeliveryProviders.helpers({
       _id: crypto
         .createHash('sha256')
         .update(
-          [this._id, country, useNetPrice, order ? order._id : ''].join('')
+          [this._id, country, useNetPrice, order ? order._id : ''].join(''),
         )
         .digest('hex'),
       amount: orderPrice.amount,
@@ -109,7 +109,7 @@ DeliveryProviders.updateProvider = ({ _id, ...rest }) => {
         ...rest,
         updated: new Date(),
       },
-    }
+    },
   );
   return DeliveryProviders.findOne({ _id, deleted: null });
 };
@@ -121,7 +121,7 @@ DeliveryProviders.removeProvider = ({ _id }) => {
       $set: {
         deleted: new Date(),
       },
-    }
+    },
   );
   return DeliveryProviders.findOne({ _id });
 };
@@ -132,13 +132,13 @@ DeliveryProviders.findProviderById = (_id, ...options) =>
 DeliveryProviders.findProviders = ({ type } = {}, ...options) =>
   DeliveryProviders.find(
     { ...(type ? { type } : {}), deleted: null },
-    ...options
+    ...options,
   ).fetch();
 
 DeliveryProviders.findSupported = ({ order }, ...options) => {
   const providers = DeliveryProviders.findProviders(
     {},
-    ...options
+    ...options,
   ).filter((deliveryProvider) => deliveryProvider.isActive(order));
   return settings.filterSupportedProviders({ providers, order });
 };

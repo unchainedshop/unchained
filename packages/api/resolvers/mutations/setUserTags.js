@@ -11,7 +11,7 @@ export default function (root, { tags, userId: normalizedUserId }, { userId }) {
         updated: new Date(),
         tags,
       },
-    }
+    },
   );
   return Users.findOne({ _id: normalizedUserId });
 }

@@ -43,8 +43,8 @@ Quotations.attachSchema(
       ...contextFields,
       ...logFields,
     },
-    { requiredByDefault: false }
-  )
+    { requiredByDefault: false },
+  ),
 );
 
 Migrations.add({
@@ -63,7 +63,7 @@ Migrations.add({
             $unset: {
               currency: 1,
             },
-          }
+          },
         );
       });
   },
@@ -80,7 +80,7 @@ Migrations.add({
             $unset: {
               currencyCode: 1,
             },
-          }
+          },
         );
       });
   },

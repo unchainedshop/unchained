@@ -15,7 +15,7 @@ export default (role, actions) => {
   const isMyself = (
     root,
     { userId: foreignUserId } = {},
-    { userId: ownUserId } = {}
+    { userId: ownUserId } = {},
   ) => {
     if (
       root &&
@@ -93,7 +93,7 @@ export default (role, actions) => {
   const isOwnedPaymentCredential = (
     root,
     { paymentCredentialsId },
-    { userId }
+    { userId },
   ) =>
     PaymentCredentials.find({
       _id: paymentCredentialsId,

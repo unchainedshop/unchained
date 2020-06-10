@@ -7,7 +7,7 @@ export default class PricingSheet {
   sum(filterOptions) {
     return this.filterBy(filterOptions).reduce(
       (sum, calculationRow) => sum + calculationRow.amount,
-      0
+      0,
     );
   }
 
@@ -17,9 +17,9 @@ export default class PricingSheet {
         oldCalculation.filter(
           (row) =>
             options[optionKey] === undefined ||
-            row[optionKey] === options[optionKey]
+            row[optionKey] === options[optionKey],
         ),
-      this.calculation
+      this.calculation,
     );
   }
 

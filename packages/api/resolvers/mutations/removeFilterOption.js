@@ -12,7 +12,7 @@ export default function (root, { filterId, filterOptionValue }, { userId }) {
       $pull: {
         options: filterOptionValue,
       },
-    }
+    },
   );
   const filter = Filters.findOne({ _id: filterId });
   return filter;

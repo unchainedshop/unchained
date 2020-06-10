@@ -16,7 +16,7 @@ const eqSet = (as, bs) => {
 
 export const resolveAssortmentLinkFromDatabase = ({ selector = {} } = {}) => (
   assortmentId,
-  childAssortmentId
+  childAssortmentId,
 ) => {
   const assortment = Collections.Assortments.findOne({
     _id: assortmentId,
@@ -36,7 +36,7 @@ export const resolveAssortmentProductsFromDatabase = ({
 } = {}) => (productId) => {
   return Collections.AssortmentProducts.find(
     { productId, ...selector },
-    { fields: { _id: true, assortmentId: true } }
+    { fields: { _id: true, assortmentId: true } },
   ).fetch();
 };
 
@@ -83,7 +83,7 @@ Collections.Assortments.sync = (syncFn) => {
   const referenceDate = Collections.Assortments.markAssortmentTreeDirty();
   syncFn(referenceDate);
   Collections.Assortments.cleanDirtyAssortmentTreeByReferenceDate(
-    referenceDate
+    referenceDate,
   );
   Collections.Assortments.updateCleanAssortmentActivation();
   Collections.Assortments.wipeAssortments();
@@ -95,27 +95,27 @@ Collections.Assortments.markAssortmentTreeDirty = () => {
   const updatedAssortmentCount = Collections.Assortments.update(
     {},
     dirtyModifier,
-    collectionUpdateOptions
+    collectionUpdateOptions,
   );
   const updatedAssortmentTextsCount = Collections.AssortmentTexts.update(
     {},
     dirtyModifier,
-    collectionUpdateOptions
+    collectionUpdateOptions,
   );
   const updatedAssortmentProductsCount = Collections.AssortmentProducts.update(
     {},
     dirtyModifier,
-    collectionUpdateOptions
+    collectionUpdateOptions,
   );
   const updatedAssortmentLinksCount = Collections.AssortmentLinks.update(
     {},
     dirtyModifier,
-    collectionUpdateOptions
+    collectionUpdateOptions,
   );
   const updatedAssortmentFiltersCount = Collections.AssortmentFilters.update(
     {},
     dirtyModifier,
-    collectionUpdateOptions
+    collectionUpdateOptions,
   );
   const timestamp = new Date();
   log(
@@ -127,13 +127,13 @@ Collections.Assortments.markAssortmentTreeDirty = () => {
       updatedAssortmentLinksCount,
       updatedAssortmentFiltersCount,
       level: 'verbose',
-    }
+    },
   );
   return new Date();
 };
 
 Collections.Assortments.cleanDirtyAssortmentTreeByReferenceDate = (
-  referenceDate
+  referenceDate,
 ) => {
   const selector = {
     dirty: true,
@@ -151,27 +151,27 @@ Collections.Assortments.cleanDirtyAssortmentTreeByReferenceDate = (
   const updatedAssortmentCount = Collections.Assortments.update(
     selector,
     modifier,
-    collectionUpdateOptions
+    collectionUpdateOptions,
   );
   const updatedAssortmentTextsCount = Collections.AssortmentTexts.update(
     selector,
     modifier,
-    collectionUpdateOptions
+    collectionUpdateOptions,
   );
   const updatedAssortmentProductsCount = Collections.AssortmentProducts.update(
     selector,
     modifier,
-    collectionUpdateOptions
+    collectionUpdateOptions,
   );
   const updatedAssortmentLinksCount = Collections.AssortmentLinks.update(
     selector,
     modifier,
-    collectionUpdateOptions
+    collectionUpdateOptions,
   );
   const updatedAssortmentFiltersCount = Collections.AssortmentFilters.update(
     selector,
     modifier,
-    collectionUpdateOptions
+    collectionUpdateOptions,
   );
   log(
     `Assortment Sync: Result of assortment cleaning with referenceDate=${referenceDate}`,
@@ -182,7 +182,7 @@ Collections.Assortments.cleanDirtyAssortmentTreeByReferenceDate = (
       updatedAssortmentLinksCount,
       updatedAssortmentFiltersCount,
       level: 'verbose',
-    }
+    },
   );
 };
 
@@ -195,7 +195,7 @@ Collections.Assortments.updateCleanAssortmentActivation = () => {
     {
       $set: { isActive: false },
     },
-    { bypassCollection2: true, multi: true }
+    { bypassCollection2: true, multi: true },
   );
   const enabledCleanAssortmentsCount = Collections.Assortments.update(
     {
@@ -205,7 +205,7 @@ Collections.Assortments.updateCleanAssortmentActivation = () => {
     {
       $set: { isActive: true },
     },
-    { bypassCollection2: true, multi: true }
+    { bypassCollection2: true, multi: true },
   );
 
   log(`Assortment Sync: Result of assortment activation`, {
@@ -219,16 +219,16 @@ Collections.Assortments.wipeAssortments = (onlyDirty = true) => {
   const selector = onlyDirty ? { dirty: true } : {};
   const removedAssortmentCount = Collections.Assortments.remove(selector);
   const removedAssortmentTextCount = Collections.AssortmentTexts.remove(
-    selector
+    selector,
   );
   const removedAssortmentProductsCount = Collections.AssortmentProducts.remove(
-    selector
+    selector,
   );
   const removedAssortmentLinksCount = Collections.AssortmentLinks.remove(
-    selector
+    selector,
   );
   const removedAssortmentFiltersCount = Collections.AssortmentFilters.remove(
-    selector
+    selector,
   );
 
   log(`result of assortment purging with onlyDirty=${onlyDirty}`, {
@@ -251,7 +251,7 @@ Collections.AssortmentProducts.getNewSortKey = (assortmentId) => {
     },
     {
       sort: { sortKey: -1 },
-    }
+    },
   ) || { sortKey: 0 };
   return lastAssortmentProduct.sortKey + 1;
 };
@@ -268,10 +268,10 @@ Collections.AssortmentProducts.updateManualOrder = ({
         },
         {
           $set: { sortKey: sortKey + 1, updated: new Date() },
-        }
+        },
       );
       return assortmentProductId;
-    }
+    },
   );
   const assortmentProducts = Collections.AssortmentProducts.find({
     _id: { $in: changedAssortmentProductIds },
@@ -279,7 +279,7 @@ Collections.AssortmentProducts.updateManualOrder = ({
 
   if (!skipInvalidation) {
     const assortmentIds = assortmentProducts.map(
-      ({ assortmentId }) => assortmentId
+      ({ assortmentId }) => assortmentId,
     );
     Collections.Assortments.find({
       _id: { $in: assortmentIds },
@@ -296,7 +296,7 @@ Collections.AssortmentFilters.getNewSortKey = (assortmentId) => {
     },
     {
       sort: { sortKey: -1 },
-    }
+    },
   ) || { sortKey: 0 };
   return lastAssortmentFilter.sortKey + 1;
 };
@@ -310,10 +310,10 @@ Collections.AssortmentFilters.updateManualOrder = ({ sortKeys }) => {
         },
         {
           $set: { sortKey: sortKey + 1, updated: new Date() },
-        }
+        },
       );
       return assortmentFilterId;
-    }
+    },
   );
   return Collections.AssortmentFilters.find({
     _id: { $in: changedAssortmentFilterIds },
@@ -327,7 +327,7 @@ Collections.AssortmentLinks.getNewSortKey = (parentAssortmentId) => {
     },
     {
       sort: { sortKey: -1 },
-    }
+    },
   ) || { sortKey: 0 };
   return lastAssortmentProduct.sortKey + 1;
 };
@@ -341,10 +341,10 @@ Collections.AssortmentLinks.updateManualOrder = ({ sortKeys }) => {
         },
         {
           $set: { sortKey: sortKey + 1, updated: new Date() },
-        }
+        },
       );
       return assortmentLinkId;
-    }
+    },
   );
   return Collections.AssortmentLinks.find({
     _id: { $in: changedAssortmentLinkIds },
@@ -355,7 +355,7 @@ Products.helpers({
   assortmentIds() {
     return Collections.AssortmentProducts.find(
       { productId: this._id },
-      { fields: { assortmentId: true } }
+      { fields: { assortmentId: true } },
     )
       .fetch()
       .map(({ assortmentId: id }) => id);
@@ -415,7 +415,7 @@ Collections.Assortments.helpers({
           updated: new Date(),
         },
       },
-      { bypassCollection2: true }
+      { bypassCollection2: true },
     );
 
     Collections.Assortments.update(
@@ -429,7 +429,7 @@ Collections.Assortments.helpers({
         $addToSet: {
           slugs: slug,
         },
-      }
+      },
     );
     Collections.Assortments.update(
       {
@@ -444,7 +444,7 @@ Collections.Assortments.helpers({
           slugs: slug,
         },
       },
-      { multi: true }
+      { multi: true },
     );
     return Collections.AssortmentTexts.findOne({
       assortmentId: this._id,
@@ -511,7 +511,7 @@ Collections.Assortments.helpers({
       { assortmentId: this._id },
       {
         sort: { sortKey: 1 },
-      }
+      },
     ).fetch();
   },
   filterAssignments() {
@@ -519,7 +519,7 @@ Collections.Assortments.helpers({
       { assortmentId: this._id },
       {
         sort: { sortKey: 1 },
-      }
+      },
     ).fetch();
   },
   productIds({ forceLiveCollection = false } = {}) {
@@ -553,7 +553,7 @@ Collections.Assortments.helpers({
       },
       {
         sort: { sortKey: 1 },
-      }
+      },
     ).fetch();
   },
   async children({ includeInactive = false } = {}) {
@@ -562,7 +562,7 @@ Collections.Assortments.helpers({
       {
         fields: { childAssortmentId: 1 },
         sort: { sortKey: 1 },
-      }
+      },
     )
       .fetch()
       .map(({ childAssortmentId }) => childAssortmentId);
@@ -578,7 +578,7 @@ Collections.Assortments.helpers({
       {
         fields: { parentAssortmentId: 1 },
         sort: { sortKey: 1 },
-      }
+      },
     )
       .fetch()
       .map(({ parentAssortmentId }) => parentAssortmentId)
@@ -588,17 +588,17 @@ Collections.Assortments.helpers({
     const selector = !includeInactive ? { isActive: true } : {};
     return findPreservingIds(Collections.Assortments)(
       selector,
-      this.parentIds()
+      this.parentIds(),
     );
   },
   collectProductIdCacheTree() {
     const ownProductIds = this.productAssignments().map(
-      ({ productId }) => productId
+      ({ productId }) => productId,
     );
     const linkedAssortments = this.linkedAssortments();
 
     const childAssortments = linkedAssortments.filter(
-      ({ parentAssortmentId }) => parentAssortmentId === this._id
+      ({ parentAssortmentId }) => parentAssortmentId === this._id,
     );
 
     const productIds = childAssortments.map((childAssortment) => {
@@ -626,7 +626,7 @@ Collections.Assortments.helpers({
           updated: new Date(),
           _cachedProductIds: productIds,
         },
-      }
+      },
     );
 
     if (skipUpstreamTraversal) return updateCount;
@@ -650,7 +650,7 @@ Collections.Assortments.helpers({
 
 Collections.AssortmentTexts.makeSlug = (
   { slug, title, assortmentId },
-  options
+  options,
 ) => {
   const checkSlugIsUnique = (newPotentialSlug) => {
     return (
@@ -662,7 +662,7 @@ Collections.AssortmentTexts.makeSlug = (
   };
   return findUnusedSlug(
     checkSlugIsUnique,
-    options
+    options,
   )({
     existingSlug: slug,
     title: title || assortmentId,

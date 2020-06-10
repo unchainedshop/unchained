@@ -10,7 +10,7 @@ export default function (root, { assortment, assortmentId }, { userId }) {
         ...assortment,
         updated: new Date(),
       },
-    }
+    },
   );
   return Assortments.findOne({ _id: assortmentId });
 }

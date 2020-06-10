@@ -25,8 +25,8 @@ Filters.attachSchema(
       meta: { type: Object, blackbox: true },
       ...Schemas.timestampFields,
     },
-    { requiredByDefault: false }
-  )
+    { requiredByDefault: false },
+  ),
 );
 
 FilterTexts.attachSchema(
@@ -39,6 +39,6 @@ FilterTexts.attachSchema(
       subtitle: String,
       ...Schemas.timestampFields,
     },
-    { requiredByDefault: false }
-  )
+    { requiredByDefault: false },
+  ),
 );

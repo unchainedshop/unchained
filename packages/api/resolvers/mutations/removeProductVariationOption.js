@@ -4,7 +4,7 @@ import { ProductVariations } from 'meteor/unchained:core-products';
 export default function (
   root,
   { productVariationId, productVariationOptionValue },
-  { userId }
+  { userId },
 ) {
   log(`mutation removeProductVariation ${productVariationId}`, { userId });
   ProductVariations.update(
@@ -16,7 +16,7 @@ export default function (
       $pull: {
         options: productVariationOptionValue,
       },
-    }
+    },
   );
   const productVariation = ProductVariations.findOne({
     _id: productVariationId,

@@ -11,7 +11,7 @@ export default function setBaseAssortment(root, { assortmentId }, { userId }) {
         updated: new Date(),
       },
     },
-    { multi: true }
+    { multi: true },
   );
   Assortments.update(
     { _id: assortmentId },
@@ -20,7 +20,7 @@ export default function setBaseAssortment(root, { assortmentId }, { userId }) {
         isBase: true,
         updated: new Date(),
       },
-    }
+    },
   );
   return Assortments.findOne({ _id: assortmentId });
 }

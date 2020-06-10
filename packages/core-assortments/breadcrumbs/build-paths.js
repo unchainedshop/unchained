@@ -1,17 +1,17 @@
 const walkAssortmentLinks = (resolveAssortmentLink) => async (
-  rootAssortmentId
+  rootAssortmentId,
 ) => {
   const walk = async (assortmentId, initialPaths = [], childAssortmentId) => {
     const assortmentLink = await resolveAssortmentLink(
       assortmentId,
-      childAssortmentId
+      childAssortmentId,
     );
     if (!assortmentLink) return initialPaths;
 
     const subAsssortmentLinks = await Promise.all(
       assortmentLink.parentIds.map(async (parentAssortmentId) => {
         return walk(parentAssortmentId, initialPaths, assortmentId);
-      })
+      }),
     );
 
     if (subAsssortmentLinks.length > 0) {
@@ -41,7 +41,7 @@ export const walkUpFromProduct = async ({
           ...assortmentProduct,
           links,
         }));
-      })
+      }),
     )
   ).flat();
 };

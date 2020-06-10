@@ -11,7 +11,7 @@ import {
 export default async function (
   root,
   { subscriptionId, contact, plan, billingAddress, payment, delivery, meta },
-  { userId }
+  { userId },
 ) {
   log('mutation updateSubscription', { userId });
   let subscription = Subscriptions.findOne({

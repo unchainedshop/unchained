@@ -31,7 +31,7 @@ const findLocalizedText = (collection, selector, locale) => {
   if (cachedText) return cachedText;
 
   const exactTranslation = collection.findOne(
-    extendSelectorWithLocale(selector, locale)
+    extendSelectorWithLocale(selector, locale),
   );
   if (exactTranslation) {
     textCache.set(cacheKey, exactTranslation);
@@ -41,7 +41,7 @@ const findLocalizedText = (collection, selector, locale) => {
   const fallbackLocale = getFallbackLocale();
   if (fallbackLocale.normalized !== locale.normalized) {
     const fallbackTranslation = collection.findOne(
-      extendSelectorWithLocale(selector, fallbackLocale)
+      extendSelectorWithLocale(selector, fallbackLocale),
     );
     if (fallbackTranslation) {
       textCache.set(cacheKey, fallbackTranslation);

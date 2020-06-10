@@ -5,7 +5,7 @@ import { BookmarkAlreadyExistsError } from '../../errors';
 export default function (
   root,
   { productId, userId: foreignUserId },
-  { userId }
+  { userId },
 ) {
   log(`mutation createBookmark for ${foreignUserId}`, { productId, userId });
   const foundBookmark = Bookmarks.findBookmarks({

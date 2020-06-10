@@ -27,7 +27,7 @@ class DeliveryPricingAdapter {
   calculate() {
     const resultRaw = this.result.getRawPricingSheet();
     resultRaw.forEach(({ amount, category }) =>
-      this.log(`Delivery Calculation -> ${category} ${amount}`)
+      this.log(`Delivery Calculation -> ${category} ${amount}`),
     );
     return resultRaw;
   }
@@ -70,7 +70,7 @@ class DeliveryPricingDirector {
   calculate() {
     this.calculation = DeliveryPricingDirector.sortedAdapters()
       .filter((AdapterClass) =>
-        AdapterClass.isActivatedFor(this.context.provider)
+        AdapterClass.isActivatedFor(this.context.provider),
       )
       .reduce((calculation, AdapterClass) => {
         const discounts = this.context.discounts
@@ -78,7 +78,7 @@ class DeliveryPricingDirector {
             discountId: discount._id,
             configuration: discount.configurationForPricingAdapterKey(
               AdapterClass.key,
-              calculation
+              calculation,
             ),
           }))
           .filter(({ configuration }) => configuration !== null);
@@ -89,7 +89,7 @@ class DeliveryPricingDirector {
             discounts,
           });
           const nextCalculationResult = Promise.await(
-            concreteAdapter.calculate()
+            concreteAdapter.calculate(),
           );
           return calculation.concat(nextCalculationResult);
         } catch (error) {
@@ -118,7 +118,7 @@ class DeliveryPricingDirector {
 
   static registerAdapter(adapter) {
     log(
-      `${this.name} -> Registered ${adapter.key} ${adapter.version} (${adapter.label})`
+      `${this.name} -> Registered ${adapter.key} ${adapter.version} (${adapter.label})`,
     );
     DeliveryPricingDirector.adapters.set(adapter.key, adapter);
   }

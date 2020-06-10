@@ -50,11 +50,11 @@ describe('Worker Module', () => {
       });
 
       expect(workQueue.filter(({ type }) => type === 'HEARTBEAT')).toHaveLength(
-        1
+        1,
       );
 
       const work = workQueue.find(
-        (w) => w._id === addWorkResult.data.addWork._id
+        (w) => w._id === addWorkResult.data.addWork._id,
       );
 
       expect(work.status).toBe('SUCCESS');
@@ -92,7 +92,7 @@ describe('Worker Module', () => {
       });
 
       expect(workQueue.filter(({ type }) => type === 'EXTERNAL')).toHaveLength(
-        1
+        1,
       );
     });
 
@@ -125,13 +125,13 @@ describe('Worker Module', () => {
           (r) =>
             r.data.allocateWork &&
             r.data.allocateWork.type === 'EXTERNAL' &&
-            r.data.allocateWork._id
-        )
+            r.data.allocateWork._id,
+        ),
       ).toHaveLength(1);
 
       // Hoist workId for later use
       workId = results.find(
-        (r) => r.data.allocateWork && r.data.allocateWork._id
+        (r) => r.data.allocateWork && r.data.allocateWork._id,
       ).data.allocateWork._id;
     });
 
@@ -148,7 +148,7 @@ describe('Worker Module', () => {
       });
 
       expect(workQueue.filter(({ type }) => type === 'HEARTBEAT')).toHaveLength(
-        0
+        0,
       );
     });
 
@@ -292,7 +292,7 @@ describe('Worker Module', () => {
       });
 
       expect(
-        workQueueBefore.filter(({ type }) => type === 'HEARTBEAT')
+        workQueueBefore.filter(({ type }) => type === 'HEARTBEAT'),
       ).toHaveLength(1);
 
       // Test if work is not done immediately
@@ -312,7 +312,7 @@ describe('Worker Module', () => {
       });
 
       expect(
-        workQueueMiddle.filter(({ type }) => type === 'HEARTBEAT')
+        workQueueMiddle.filter(({ type }) => type === 'HEARTBEAT'),
       ).toHaveLength(1);
 
       // Test if work is done eventually
@@ -332,7 +332,7 @@ describe('Worker Module', () => {
       });
 
       expect(
-        workQueueAfter.filter(({ type }) => type === 'HEARTBEAT')
+        workQueueAfter.filter(({ type }) => type === 'HEARTBEAT'),
       ).toHaveLength(0);
     });
 
@@ -382,7 +382,7 @@ describe('Worker Module', () => {
       });
 
       expect(
-        workQueueBefore.filter(({ type }) => type === 'HEARTBEAT')
+        workQueueBefore.filter(({ type }) => type === 'HEARTBEAT'),
       ).toHaveLength(1);
 
       const workBefore = workQueueBefore.pop();
@@ -408,7 +408,7 @@ describe('Worker Module', () => {
       });
 
       expect(
-        workQueueAfter.filter(({ type }) => type === 'HEARTBEAT')
+        workQueueAfter.filter(({ type }) => type === 'HEARTBEAT'),
       ).toHaveLength(1);
     });
 

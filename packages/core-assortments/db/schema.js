@@ -18,8 +18,8 @@ Collections.Assortments.attachSchema(
       '_cachedProductIds.$': String,
       ...Schemas.timestampFields,
     },
-    { requiredByDefault: false }
-  )
+    { requiredByDefault: false },
+  ),
 );
 
 Collections.AssortmentTexts.attachSchema(
@@ -33,8 +33,8 @@ Collections.AssortmentTexts.attachSchema(
       slug: { type: String, index: true },
       ...Schemas.timestampFields,
     },
-    { requiredByDefault: false }
-  )
+    { requiredByDefault: false },
+  ),
 );
 
 Collections.AssortmentProducts.attachSchema(
@@ -48,8 +48,8 @@ Collections.AssortmentProducts.attachSchema(
       meta: { type: Object, blackbox: true },
       ...Schemas.timestampFields,
     },
-    { requiredByDefault: false }
-  )
+    { requiredByDefault: false },
+  ),
 );
 
 Collections.AssortmentLinks.attachSchema(
@@ -63,8 +63,8 @@ Collections.AssortmentLinks.attachSchema(
       meta: { type: Object, blackbox: true },
       ...Schemas.timestampFields,
     },
-    { requiredByDefault: false }
-  )
+    { requiredByDefault: false },
+  ),
 );
 
 Collections.AssortmentFilters.attachSchema(
@@ -78,6 +78,6 @@ Collections.AssortmentFilters.attachSchema(
       meta: { type: Object, blackbox: true },
       ...Schemas.timestampFields,
     },
-    { requiredByDefault: false }
-  )
+    { requiredByDefault: false },
+  ),
 );
