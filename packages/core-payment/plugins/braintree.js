@@ -6,10 +6,10 @@ import {
 
 const { BRAINTREE_SANDBOX_TOKEN, BRAINTREE_PRIVATE_KEY } = process.env;
 
-class Paypal extends PaymentAdapter {
-  static key = 'com.paypal';
+class BraintreeDirect extends PaymentAdapter {
+  static key = 'shop.unchained.braintree-direct';
 
-  static label = 'Paypal (Braintree)';
+  static label = 'Braintree Direct';
 
   static version = '1.0';
 
@@ -135,4 +135,4 @@ class Paypal extends PaymentAdapter {
   }
 }
 
-PaymentDirector.registerAdapter(Paypal);
+PaymentDirector.registerAdapter(BraintreeDirect);
