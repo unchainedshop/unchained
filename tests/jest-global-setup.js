@@ -21,7 +21,6 @@ const startAndWaitForMeteor = async () => {
           detached: true,
           cwd: `${process.cwd()}/examples/minimal`,
           env: {
-            STRIPE_SECRET: 'secret', // the test key should be kept secret also, that's why this could be overwritten
             ...process.env,
             NODE_ENV: 'development',
             METEOR_PACKAGE_DIRS: '../../packages',
