@@ -171,9 +171,10 @@ class Stripe extends PaymentAdapter {
     const order = orderPayment.order();
     const pricing = order.pricing();
     const reference = EMAIL_WEBSITE_NAME || order._id;
+    const { currency, amount } = pricing.total();
     const paymentIntent = await stripe.paymentIntents.create({
-      amount: Math.round(pricing.total().amount),
-      currency: order.currency.toLowerCase(),
+      amount: Math.round(amount),
+      currency: currency.toLowerCase(),
       description: `${reference} #${order.orderNumber}`,
       statement_descriptor: order.orderNumber,
       statement_descriptor_suffix: reference,
@@ -222,6 +223,15 @@ class Stripe extends PaymentAdapter {
             paymentCredentials.meta?.payment_method_options, // eslint-disable-line
         });
 
+    const { currency, amount } = order.pricing().total();
+    if (
+      paymentIntentObject.currency !== currency.toLowerCase() ||
+      paymentIntentObject.amount !== Math.round(amount)
+    ) {
+      throw new Error(
+        'The price has changed since you have created the intent!',
+      );
+    }
     if (paymentIntentObject.metadata?.orderPaymentId !== orderPayment?._id) {
       throw new Error(
         'The order payment is different from the initiating intent!',
