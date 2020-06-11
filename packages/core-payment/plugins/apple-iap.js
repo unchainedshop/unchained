@@ -23,6 +23,7 @@ const AppleTransactions = new Mongo.Collection(
 
 const {
   APPLE_IAP_SHARED_SECRET,
+  APPLE_IAP_ENVIRONMENT = 'sandbox',
   APPLE_IAP_WEBHOOK_PATH = '/graphql/apple-iap',
 } = process.env;
 
@@ -33,22 +34,20 @@ WebApp.connectHandlers.use(
   }),
 );
 
+// https://developer.apple.com/documentation/storekit/in-app_purchase/validating_receipts_with_the_app_store
 const environments = {
   sandbox: 'https://sandbox.itunes.apple.com/verifyReceipt',
+  production: 'https://buy.itunes.apple.com/verifyReceipt',
 };
 
-const verifyReceipt = async ({
-  receiptData,
-  password,
-  environment = 'sandbox',
-}) => {
+const verifyReceipt = async ({ receiptData, password }) => {
   const payload = {
     'receipt-data': receiptData,
   };
   if (password) {
     payload.password = password;
   }
-  const result = await fetch(environments[environment], {
+  const result = await fetch(environments[APPLE_IAP_ENVIRONMENT], {
     body: JSON.stringify(payload),
     method: 'POST',
     headers: {
