@@ -1,7 +1,7 @@
 {
   "name": "@unchainedshop/example-minimal",
   "description": "Minimal Bootstrap Project for Unchained Engine",
-  "version": "0.50.0",
+  "version": "0.50.2",
   "license": "EUPL-1.2",
   "homepage": "https://unchained.shop",
   "repository": {
@@ -32,7 +32,7 @@
   "dependencies": {
     "@babel/runtime": "^7.10.2",
     "@paypal/checkout-server-sdk": "^1.0.2",
-    "@unchainedshop/controlpanel": "^0.50.0",
+    "@unchainedshop/controlpanel": "^0.50.2",
     "apollo-server-express": "^2.14.3",
     "bcrypt": "^5.0.0",
     "braintree": "^2.23.0",
@@ -53,7 +53,7 @@
     "open": "^7.0.4",
     "ramda": "^0.27.0",
     "simpl-schema": "^1.7.3",
-    "stripe": "^8.61.0",
+    "stripe": "^8.62.0",
     "xml-js": "^1.6.11"
   },
   "devDependencies": {
@@ -63,7 +63,7 @@
     "babel-eslint": "^10.1.0",
     "cross-env": "^7.0.2",
     "eslint": "^6.7.1",
-    "eslint-config-airbnb-base": "^14.1.0",
+    "eslint-config-airbnb-base": "^14.2.0",
     "eslint-import-resolver-meteor": "^0.4.0",
     "eslint-plugin-import": "^2.21.2",
     "eslint-plugin-meteor": "^7.0.0",
