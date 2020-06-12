@@ -52,7 +52,7 @@
     "mustache": "^4.0.1",
     "open": "^7.0.4",
     "ramda": "^0.27.0",
-    "simpl-schema": "^1.7.3",
+    "simpl-schema": "=1.7.2",
     "stripe": "^8.62.0",
     "xml-js": "^1.6.11"
   },
