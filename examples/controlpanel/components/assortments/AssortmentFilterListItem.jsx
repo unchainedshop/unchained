@@ -5,12 +5,13 @@ import { SortableElement } from 'react-sortable-hoc';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 
-const AssortmentFilterListItem = ({ filter, removeAssortmentFilter }) => (
+const AssortmentFilterListItem = ({ filter, tags, removeAssortmentFilter }) => (
   <Item>
     <Item.Content>
       <Item.Header>
         {filter.texts ? filter.texts.title : filter.key}
       </Item.Header>
+      <span>{JSON.stringify(tags)}</span>
       <Item.Extra>
         <Button secondary floated="right" onClick={removeAssortmentFilter}>
           Delete
