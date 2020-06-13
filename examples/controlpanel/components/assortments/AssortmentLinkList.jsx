@@ -35,8 +35,12 @@ export default compose(
         _id
         linkedAssortments {
           _id
+          tags
+          meta
           parent {
             _id
+            tags
+            meta
             texts {
               _id
               title
@@ -44,6 +48,8 @@ export default compose(
           }
           child {
             _id
+            tags
+            meta
             texts {
               _id
               title

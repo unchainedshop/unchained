@@ -5,7 +5,12 @@ import { Item, Button } from 'semantic-ui-react';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 
-const AssortmentLinkListItem = ({ parent, child, removeAssortmentLink }) => (
+const AssortmentLinkListItem = ({
+  parent,
+  child,
+  tags,
+  removeAssortmentLink,
+}) => (
   <Item>
     <Item.Content>
       <Item.Header>
@@ -20,6 +25,7 @@ const AssortmentLinkListItem = ({ parent, child, removeAssortmentLink }) => (
             {child.texts && child.texts.title}
           </a>
         </Link>
+        {JSON.stringify(tags)}
       </Item.Header>
       <Item.Extra>
         <Button secondary floated="right" onClick={removeAssortmentLink}>
