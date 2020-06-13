@@ -4,6 +4,7 @@ import { compose, withHandlers } from 'recompose';
 import { Item, Button } from 'semantic-ui-react';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
+import { SortableElement } from 'react-sortable-hoc';
 
 const AssortmentLinkListItem = ({
   parent,
@@ -60,5 +61,6 @@ export default compose(
         },
       });
     },
-  })
+  }),
+  SortableElement
 )(AssortmentLinkListItem);
