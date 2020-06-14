@@ -1,0 +1,14 @@
+.cart-img {
+  max-width: 100px;
+}
+
+.cart-counter {
+  background-color: var(--color-brand);
+  color: white;
+  font-weight: bold;
+  border-radius: 50%;
+  min-width: 1.5em;
+  height: 1.5em;
+  line-height: 1.5;
+  font-size: 0.75rem;
+}

@@ -1,0 +1,38 @@
+.overflow-x-auto {
+  overflow-x: auto;
+}
+
+.overflow-hidden {
+  overflow: hidden;
+}
+
+@supports ((position: -webkit-sticky) or (position: sticky)) {
+  @media (min-width: 768px) {
+    .sticky-md-top {
+      position: -webkit-sticky;
+      position: sticky;
+      top: 0;
+      z-index: 1020;
+    }
+  }
+}
+
+@supports ((position: -webkit-sticky) or (position: sticky)) {
+  @media (min-width: 768px) {
+    .sticky-below-header {
+      position: -webkit-sticky;
+      position: sticky;
+      top: 160px;
+      z-index: 1020;
+    }
+  }
+}
+
+.line-height-1-55 {
+  line-height: 1.55;
+}
+
+.search-clear {
+  top: 6px;
+  right: 8px;
+}

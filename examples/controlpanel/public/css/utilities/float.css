@@ -1,0 +1,65 @@
+.clearfix::after {
+  display: block;
+  clear: both;
+  content: '';
+}
+
+.float-left {
+  float: left;
+}
+
+.float-right {
+  float: right;
+}
+
+.float-none {
+  float: none;
+}
+
+@media (min-width: 576px) {
+  .float-sm-left {
+    float: left;
+  }
+  .float-sm-right {
+    float: right;
+  }
+  .float-sm-none {
+    float: none;
+  }
+}
+
+@media (min-width: 768px) {
+  .float-md-left {
+    float: left;
+  }
+  .float-md-right {
+    float: right;
+  }
+  .float-md-none {
+    float: none;
+  }
+}
+
+@media (min-width: 992px) {
+  .float-lg-left {
+    float: left;
+  }
+  .float-lg-right {
+    float: right;
+  }
+  .float-lg-none {
+    float: none;
+  }
+}
+
+@media (min-width: 1200px) {
+  .float-xl-left {
+    float: left;
+  }
+  .float-xl-right {
+    float: right;
+  }
+  .float-xl-none {
+    float: none;
+  }
+}

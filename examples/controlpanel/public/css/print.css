@@ -1,0 +1,21 @@
+@media print {
+  .header,
+  .nav,
+  .footer {
+    display: none;
+  }
+  body {
+    margin: 1.5em;
+    font-size: 14px;
+    font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue",
+      Helvetica, Arial, "Lucida Grande", sans-serif;
+  }
+}
+
+@page {
+  padding: 1.5em;
+  size: auto; /* auto is the initial value */
+
+  /* this affects the margin in the printer settings */
+  margin: 15mm 15mm 15mm 15mm;
+}

@@ -26,7 +26,9 @@ const AssortmentLinkListItem = ({
             {child.texts && child.texts.title}
           </a>
         </Link>
-        {JSON.stringify(tags)}
+        {tags.map((t) => (
+          <span className="ml-2">{t}</span>
+        ))}
       </Item.Header>
       <Item.Extra>
         <Button secondary floated="right" onClick={removeAssortmentLink}>
