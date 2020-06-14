@@ -15,6 +15,7 @@ import 'semantic-ui-css/themes/default/assets/fonts/icons.eot';
 import 'semantic-ui-css/themes/default/assets/fonts/icons.woff';
 import 'semantic-ui-css/themes/default/assets/fonts/icons.woff2';
 import 'uniforms-bridge-simple-schema-2';
+import '../public/css/all.css';
 import Header from './Header';
 import Redirect from './Redirect';
 

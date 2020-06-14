@@ -23,5 +23,6 @@
 @import "components/product-list.css";
 @import "components/cart.css";
 @import "components/list.css";
+@import "components/tag.css";
 
 @import "print.css";

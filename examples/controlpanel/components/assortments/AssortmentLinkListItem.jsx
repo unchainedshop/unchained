@@ -5,39 +5,37 @@ import { Item, Button } from 'semantic-ui-react';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 import { SortableElement } from 'react-sortable-hoc';
+import { useRouter } from 'next/router';
+import TagList from '../tagList';
 
 const AssortmentLinkListItem = ({
   parent,
   child,
   tags,
   removeAssortmentLink,
-}) => (
-  <Item>
-    <Item.Content>
-      <Item.Header>
-        <Link href={`/assortments/edit?_id=${parent._id}&tab=AssortmentLinks`}>
-          <a href={`/assortments/edit?_id=${parent._id}&tab=AssortmentLinks`}>
-            {parent.texts && parent.texts.title}
-          </a>
-        </Link>
+}) => {
+  const router = useRouter();
+  const displayAssortment = (id) => {
+    router.push(`/assortments/edit?_id=${id}&tab=AssortmentLinks`);
+  };
+  return (
+    <Item>
+      <Item.Content>
+        <button type="button" onClick={() => displayAssortment(parent._id)}>
+          {parent.texts && parent.texts.title}
+        </button>
         &nbsp;/&nbsp;
-        <Link href={`/assortments/edit?_id=${child._id}&tab=AssortmentLinks`}>
-          <a href={`/assortments/edit?_id=${child._id}&tab=AssortmentLinks`}>
-            {child.texts && child.texts.title}
-          </a>
-        </Link>
-        {tags.map((t) => (
-          <span className="ml-2">{t}</span>
-        ))}
-      </Item.Header>
-      <Item.Extra>
+        <button type="button" onClick={() => displayAssortment(child._id)}>
+          {child.texts && child.texts.title}
+        </button>
+        <TagList tags={tags} />
         <Button secondary floated="right" onClick={removeAssortmentLink}>
           Delete
         </Button>
-      </Item.Extra>
-    </Item.Content>
-  </Item>
-);
+      </Item.Content>
+    </Item>
+  );
+};
 
 export default compose(
   graphql(

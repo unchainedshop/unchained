@@ -8,24 +8,22 @@ import AssortmentLinkListItem from './AssortmentLinkListItem';
 import FormNewAssortmentLink from './FormNewAssortmentLink';
 
 const AssortmentLinkList = ({ assortmentId, items }) => (
-  <Segment>
-    <Item.Group divided>
-      {items.map(({ _id, ...rest }, index) => (
-        <AssortmentLinkListItem
-          comparedToAssortmentId={assortmentId}
-          key={_id}
-          index={index}
-          _id={_id}
-          {...rest}
-        />
-      ))}
-      <Item>
-        <Item.Content>
-          <FormNewAssortmentLink parentAssortmentId={assortmentId} />
-        </Item.Content>
-      </Item>
-    </Item.Group>
-  </Segment>
+  <Item.Group divided>
+    {items.map(({ _id, ...rest }, index) => (
+      <AssortmentLinkListItem
+        comparedToAssortmentId={assortmentId}
+        key={_id}
+        index={index}
+        _id={_id}
+        {...rest}
+      />
+    ))}
+    <Item>
+      <Item.Content>
+        <FormNewAssortmentLink parentAssortmentId={assortmentId} />
+      </Item.Content>
+    </Item>
+  </Item.Group>
 );
 
 export default compose(
