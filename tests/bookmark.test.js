@@ -1,4 +1,8 @@
-import { setupDatabase, createLoggedInGraphqlFetch } from './helpers';
+import {
+  setupDatabase,
+  createLoggedInGraphqlFetch,
+  createAnonymousGraphqlFetch,
+} from './helpers';
 import { ADMIN_TOKEN, USER_TOKEN } from './seeds/users';
 import { ConfigurableProduct } from './seeds/products';
 import { SimpleBookmarks } from './seeds/bookmark';
@@ -6,12 +10,14 @@ import { SimpleBookmarks } from './seeds/bookmark';
 let connection;
 let graphqlFetch;
 let graphqlNormalUserFetch;
+let graphqlAnonymousUserFetch;
 
 describe('Bookmark', () => {
   beforeAll(async () => {
     [, connection] = await setupDatabase();
     graphqlFetch = await createLoggedInGraphqlFetch(ADMIN_TOKEN);
     graphqlNormalUserFetch = await createLoggedInGraphqlFetch(USER_TOKEN);
+    graphqlAnonymousUserFetch = await createAnonymousGraphqlFetch();
   });
 
   afterAll(async () => {
@@ -338,7 +344,7 @@ describe('Bookmark', () => {
         },
       });
 
-      const { errors } = await graphqlFetch({
+      const { errors } = await graphqlNormalUserFetch({
         query: /* GraphQL */ `
           mutation RemoveBookmark($bookmarkId: ID!) {
             removeBookmark(bookmarkId: $bookmarkId) {
@@ -351,6 +357,63 @@ describe('Bookmark', () => {
         },
       });
       expect(errors.length).toEqual(1);
+    });
+  });
+
+  describe('For anonymous user ', () => {
+    it('remove bookmark a product when provided valid product ID and false second argument', async () => {
+      const {
+        data: { bookmark }, // eslint-disable-line
+      } = await graphqlAnonymousUserFetch({
+        query: /* GraphQL */ `
+          mutation Bookmark($productId: ID!, $bookmarked: Boolean = true) {
+            bookmark(productId: $productId, bookmarked: $bookmarked) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          productId: 'simpleproduct',
+          bookmarked: false,
+        },
+      });
+
+      const {
+        data: {
+          user: { bookmarks },
+        },
+      } = await graphqlAnonymousUserFetch({
+        query: /* GraphQL */ `
+          query userBookmarks {
+            user {
+              bookmarks {
+                _id
+              }
+            }
+          }
+        `,
+        variables: {},
+      });
+      expect(bookmarks.length).toEqual(1);
+    });
+
+    it('bookmark a product when provided valid product ID', async () => {
+      const {
+        data: { bookmark },
+      } = await graphqlAnonymousUserFetch({
+        query: /* GraphQL */ `
+          mutation Bookmark($productId: ID!, $bookmarked: Boolean = true) {
+            bookmark(productId: $productId, bookmarked: $bookmarked) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          productId: ConfigurableProduct._id,
+        },
+      });
+
+      expect(bookmark).not.toBe(null);
     });
   });
 });
