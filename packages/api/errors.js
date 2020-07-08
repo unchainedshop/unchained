@@ -47,6 +47,26 @@ export const FilterNotFoundError = createError(
   'FilterNotFoundError',
   'Filter not found',
 );
+
+export const CountryNotFoundError = createError(
+  'CountryNotFoundError',
+  'Country not found',
+);
+export const CurrencyNotFoundError = createError(
+  'CurrencyNotFoundError',
+  'Currency not found',
+);
+
+export const DeliverProviderNotFoundError = createError(
+  'DeliverProviderNotFoundError',
+  'Delivery provider not found',
+);
+
+export const LanguageNotFoundError = createError(
+  'LanguageNotFoundError',
+  'Language not found',
+);
+
 export const UserNotFoundError = createError(
   'UserNotFoundError',
   'Product not found',
@@ -131,6 +151,12 @@ export const WorkNotFoundOrWrongStatus = createError(
   'WorkNotFoundOrWrongStatus',
   'Could not find work or no work with the correct status',
 );
+
+export const WorkNotFoundError = createError(
+  'WorkNotFoundError',
+  'Work not found',
+);
+
 export const PaymentCredentialsNotFoundError = createError(
   'PaymentCredentialsNotFoundError',
   'Payment credentials not found',
@@ -142,4 +168,9 @@ export const SubscriptionWrongStatusError = createError(
 export const SubscriptionNotFoundError = createError(
   'SubscriptionNotFoundError',
   'Subscription not found',
+);
+
+export const WarehousingProviderNotFoundError = createError(
+  'WarehousingProviderNotFoundError',
+  'Warehousing provider not found',
 );
