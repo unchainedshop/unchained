@@ -10,7 +10,8 @@ export default function (
   log(`mutation createProductVariationOption ${productVariationId}`, {
     userId,
   });
-
+  if (!productVariationId)
+    throw new Error('Invalid product variation ID provided');
   const variation = ProductVariations.findOne({ _id: productVariationId });
   if (!variation)
     throw new ProductVariationNotFoundError({ productVariationId });

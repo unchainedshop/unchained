@@ -3,7 +3,7 @@ import { Bookmarks } from 'meteor/unchained:core-bookmarks';
 
 export default function (root, { productId, bookmarked }, { userId }) {
   log('mutation bookmark', { productId, userId });
-
+  if (!productId) throw new Error('Invalid product ID provided');
   const foundBookmark = Bookmarks.findBookmarks({ productId, userId }).pop();
 
   if (bookmarked) {

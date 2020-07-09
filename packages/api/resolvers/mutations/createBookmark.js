@@ -8,6 +8,7 @@ export default function (
   { userId },
 ) {
   log(`mutation createBookmark for ${foreignUserId}`, { productId, userId });
+  if (!productId) throw new Error('Invalid product ID provided');
   const foundBookmark = Bookmarks.findBookmarks({
     productId,
     userId: foreignUserId,

@@ -3,6 +3,5 @@ import { PaymentProviders } from 'meteor/unchained:core-payment';
 
 export default (root, { paymentProvider }, { userId }) => {
   log('mutation createPaymentProvider', { userId });
-  const provider = PaymentProviders.createProvider({ ...paymentProvider });
-  return provider;
+  return PaymentProviders.createProvider({ ...paymentProvider });
 };

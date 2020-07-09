@@ -7,6 +7,7 @@ export default function (
   { localeContext, userId },
 ) {
   log(`mutation createFilterOption ${filterId}`, { userId });
+  if (!filterId) throw new Error('Invalid filter ID provided');
   const { value, title } = inputData;
   Filters.update(
     { _id: filterId },

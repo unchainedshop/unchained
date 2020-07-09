@@ -7,6 +7,9 @@ export default function (root, { assortmentId, filterId, tags }, { userId }) {
   log(`mutation addAssortmentFilter ${assortmentId} -> ${filterId}`, {
     userId,
   });
+  if (!assortmentId || !filterId)
+    throw new Error('Invalid value provided for assortmentId or filterId');
+
   const assortment = Assortments.findOne({ _id: assortmentId });
   const filter = Filters.findOne({ _id: filterId });
   if (!assortment) throw new AssortmentNotFoundError({ assortmentId });

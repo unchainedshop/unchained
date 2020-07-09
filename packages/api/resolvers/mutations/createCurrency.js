@@ -4,12 +4,11 @@ import { Currencies } from 'meteor/unchained:core-currencies';
 export default function (root, { currency: inputData }, { userId }) {
   log('mutation createCurrency', { userId });
   const { isoCode } = inputData;
-  const currency = { created: new Date() };
+  const currency = {};
   currency.authorId = userId;
   currency.created = new Date();
   currency.isoCode = isoCode.toUpperCase();
   currency.isActive = true;
   const currencyId = Currencies.insert(currency);
-  const currencyObject = Currencies.findOne({ _id: currencyId });
-  return currencyObject;
+  return Currencies.findOne({ _id: currencyId });
 }

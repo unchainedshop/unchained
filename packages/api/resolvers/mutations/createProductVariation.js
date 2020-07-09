@@ -12,6 +12,7 @@ export default function (
   { localeContext, userId },
 ) {
   log(`mutation createProductVariation ${productId}`, { userId });
+  if (!productId) throw new Error('Invalid product ID provided');
   const { key, type, title } = inputData;
   const variation = { created: new Date() };
   const product = Products.findOne({ _id: productId });

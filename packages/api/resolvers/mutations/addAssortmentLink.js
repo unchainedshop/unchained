@@ -11,6 +11,12 @@ export default function (
     `mutation addAssortmentLink ${parentAssortmentId} -> ${childAssortmentId}`,
     { userId },
   );
+
+  if (!parentAssortmentId || !childAssortmentId) {
+    throw new Error(
+      'Invalid value provided for parentAssortmentId or childAssortmentId',
+    );
+  }
   const parent = Assortments.findOne({ _id: parentAssortmentId });
   const child = Assortments.findOne({ _id: childAssortmentId });
 

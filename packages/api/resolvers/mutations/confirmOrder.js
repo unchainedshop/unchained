@@ -8,6 +8,7 @@ export default function (
   { userId, localeContext },
 ) {
   log('mutation confirmOrder', { orderId, userId });
+  if (!orderId) throw new Error('Invalid order ID provided');
   const order = Orders.findOne({ _id: orderId });
   if (!order) throw new OrderNotFoundError({ orderId });
   if (order.status !== OrderStatus.PENDING) {
