@@ -23,6 +23,7 @@ export default [
         queryString: String
         filterQuery: [FilterQueryInput!]
         includeInactive: Boolean = false
+        ignoreChildAssortments: Boolean = false
         orderBy: SearchOrderBy
       ): SearchResult!
     }
