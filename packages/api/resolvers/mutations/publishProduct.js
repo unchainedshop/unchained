@@ -4,6 +4,7 @@ import { ProductNotFoundError, ProductWrongStatusError } from '../../errors';
 
 export default function (root, { productId }, { userId }) {
   log(`mutation publishProduct ${productId}`, { userId });
+  if (!productId) throw new Error('Invalid product ID provided');
   const product = Products.findOne({ _id: productId });
   if (!product) throw new ProductNotFoundError({ productId });
 

@@ -4,6 +4,7 @@ import { ProductNotFoundError } from '../../errors';
 
 export default function (root, { productId, index }) {
   log(`mutation removeBundleItem ${productId}`, { index });
+  if (!productId) throw new Error('Invalid product ID provided');
   const product = Products.findOne(productId);
   if (!product) throw new ProductNotFoundError({ productId });
   const { bundleItems = [] } = product;

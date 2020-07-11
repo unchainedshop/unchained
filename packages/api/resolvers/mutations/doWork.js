@@ -5,6 +5,6 @@ export default async function (root, { type, input }, { userId }) {
   log(`mutation doWork ${type} ${input}`, {
     userId,
   });
-
+  if (!type) throw new Error('Invalid work plugin type provided');
   return WorkerDirector.doWork({ type, input });
 }

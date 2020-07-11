@@ -9,6 +9,8 @@ export default (root, { paymentContext, paymentProviderId }, { userId }) => {
   log(`mutation registerPaymentCredentials for ${paymentProviderId}`, {
     userId,
   });
+  if (!paymentProviderId)
+    throw new Error('Invalid payment provider ID provided');
   if (!PaymentProviders.find({ _id: paymentProviderId }).count())
     throw new PaymentProviderNotFoundError({ paymentProviderId });
   return PaymentCredentials.registerPaymentCredentials({

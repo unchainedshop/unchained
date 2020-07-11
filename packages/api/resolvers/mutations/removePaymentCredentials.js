@@ -4,6 +4,8 @@ import { PaymentCredentialsNotFoundError } from '../../errors';
 
 export default (root, { paymentCredentialsId }, { userId }) => {
   log(`mutation removePaymentCredentials ${paymentCredentialsId}`, { userId });
+  if (!paymentCredentialsId)
+    throw new Error('Invalid payment credential ID provided');
   const removedCredentials = PaymentCredentials.removeCredentials({
     paymentCredentialsId,
   });

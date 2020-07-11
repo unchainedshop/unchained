@@ -11,6 +11,7 @@ export default function (
   { userId },
 ) {
   log('mutation rejectQuotation', { quotationId, userId });
+  if (!quotationId) throw new Error('Invalid quotation ID provided');
   const quotation = Quotations.findOne({ _id: quotationId });
   if (!quotation) throw new QuotationNotFoundError({ quotationId });
   if (quotation.status === QuotationStatus.FULLFILLED) {

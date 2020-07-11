@@ -6,6 +6,8 @@ export default (root, { paymentCredentialsId }, { userId }) => {
   log(`mutation markPaymentCredentialsPreferred ${paymentCredentialsId}`, {
     userId,
   });
+  if (!paymentCredentialsId)
+    throw new Error('Invalid payment credential ID provided');
   const credentials = PaymentCredentials.findOne({ _id: paymentCredentialsId });
   if (!credentials)
     throw new PaymentCredentialsNotFoundError({ paymentCredentialsId });

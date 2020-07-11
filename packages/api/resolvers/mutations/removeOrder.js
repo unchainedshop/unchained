@@ -4,6 +4,7 @@ import { OrderNotFoundError, OrderWrongStatusError } from '../../errors';
 
 export default function (root, { orderId }, { userId }) {
   log('mutation removeOrder', { userId, orderId });
+  if (!orderId) throw new Error('Invalid order ID provided');
   const order = Orders.findOne({ _id: orderId });
   if (!order) throw new OrderNotFoundError({ orderId });
   if (!order.isCart()) {

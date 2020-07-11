@@ -7,6 +7,7 @@ import {
 
 export default function (root, { discountId }, { userId }) {
   log(`mutation removeCartDiscount ${discountId}`, { userId });
+  if (!discountId) throw new Error('Invalid discount ID provided');
   const orderDiscount = OrderDiscounts.findOne({ _id: discountId });
   if (!orderDiscount) throw new OrderDiscountNotFoundError({ orderDiscount });
   const order = orderDiscount.order();

@@ -8,6 +8,7 @@ export default async function (
   { user, userId, countryContext },
 ) {
   log('mutation emptyCart', { userId, orderId });
+  if (!orderId) throw new Error('Invalid order ID provided');
   const cart = await getCart({ orderId, user, countryContext });
   if (!cart) return null;
   OrderPositions.removePositions({ orderId: cart._id });
