@@ -4,6 +4,7 @@ import { ProductMediaNotFoundError } from '../../errors';
 
 export default function (root, { texts, productMediaId }, { userId }) {
   log(`mutation updateProductMediaTexts ${productMediaId}`, { userId });
+  if (!productMediaId) throw new Error('Invalid product media ID provided');
   const productMediaObject = ProductMedia.findOne({ _id: productMediaId });
   if (!productMediaObject)
     throw new ProductMediaNotFoundError({ productMediaId });

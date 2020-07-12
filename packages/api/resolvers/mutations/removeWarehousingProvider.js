@@ -5,8 +5,9 @@ export default (root, { warehousingProviderId }, { userId }) => {
   log(`mutation removeWarehousingProvider ${warehousingProviderId}`, {
     userId,
   });
-  const provider = WarehousingProviders.removeProvider({
+  if (!warehousingProviderId)
+    throw new Error('Invalid warehousing provider ID provided');
+  return WarehousingProviders.removeProvider({
     _id: warehousingProviderId,
   });
-  return provider;
 };

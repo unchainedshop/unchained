@@ -17,6 +17,7 @@ export default function (
     )}`,
     { userId },
   );
+  if (!itemId) throw new Error('Invalid item ID provided');
   const item = OrderPositions.findOne({ _id: itemId });
   if (!item) throw new OrderItemNotFoundError({ itemId });
   const order = item.order();

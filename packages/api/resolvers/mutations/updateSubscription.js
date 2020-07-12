@@ -14,6 +14,7 @@ export default async function (
   { userId },
 ) {
   log('mutation updateSubscription', { userId });
+  if (!subscriptionId) throw new Error('Invalid subscription ID provided');
   let subscription = Subscriptions.findOne({
     _id: subscriptionId,
   });

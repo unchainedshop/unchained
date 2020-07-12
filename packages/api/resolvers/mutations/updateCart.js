@@ -14,6 +14,8 @@ export default async function (
   { user, countryContext, userId },
 ) {
   log('mutation updateCart', { userId });
+  if (!orderId) throw new Error('Invalid order ID provided');
+
   let order = await getCart({ orderId, user, countryContext });
   if (meta) {
     order = order.updateContext(meta);

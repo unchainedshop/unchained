@@ -3,6 +3,7 @@ import { Languages } from 'meteor/unchained:core-languages';
 
 export default function setBaseLanguage(root, { languageId }, { userId }) {
   log(`mutation setBaseLanguage ${languageId}`, { userId });
+  if (!languageId) throw new Error('Invalid country ID provided');
   Languages.update(
     { isBase: true },
     {

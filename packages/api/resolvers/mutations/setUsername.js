@@ -8,6 +8,7 @@ export default function (
   { userId },
 ) {
   log(`mutation setUsername ${foreignUserId}`, { userId });
+  if (!foreignUserId) throw new Error('Invalid user ID provided');
   const user = Users.findOne({ _id: foreignUserId });
   if (!user) throw new UserNotFoundError({ userId: foreignUserId });
   return user.setUsername(username);

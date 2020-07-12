@@ -7,6 +7,8 @@ export default function (
   { userId },
 ) {
   log(`mutation removeProductVariation ${productVariationId}`, { userId });
+  if (!productVariationId)
+    throw new Error('Invalid product variation ID provided');
   ProductVariations.update(
     { _id: productVariationId },
     {

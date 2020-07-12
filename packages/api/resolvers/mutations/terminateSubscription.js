@@ -10,6 +10,7 @@ import {
 
 export default async function (root, { subscriptionId }, { userId }) {
   log('mutation terminateSubscription', { userId });
+  if (!subscriptionId) throw new Error('Invalid subscription ID provided');
   const subscription = Subscriptions.findOne({
     _id: subscriptionId,
   });

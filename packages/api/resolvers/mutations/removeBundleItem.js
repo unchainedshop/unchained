@@ -17,5 +17,5 @@ export default function (root, { productId, index }) {
     },
   });
 
-  return Products.findOne(productId);
+  return Products.findOne({ _id: productId });
 }

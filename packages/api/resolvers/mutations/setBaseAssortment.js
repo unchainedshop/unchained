@@ -3,6 +3,7 @@ import { Assortments } from 'meteor/unchained:core-assortments';
 
 export default function setBaseAssortment(root, { assortmentId }, { userId }) {
   log(`mutation setBaseAssortment ${assortmentId}`, { userId });
+  if (!assortmentId) throw new Error('Invalid assortment ID provided');
   Assortments.update(
     { isBase: true },
     {

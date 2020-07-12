@@ -3,6 +3,7 @@ import { Countries } from 'meteor/unchained:core-countries';
 
 export default function setBaseCountry(root, { countryId }, { userId }) {
   log(`mutation setBaseCountry ${countryId}`, { userId });
+  if (!countryId) throw new Error('Invalid country ID provided');
   Countries.update(
     { isBase: true },
     {

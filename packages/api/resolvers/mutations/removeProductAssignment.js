@@ -4,7 +4,7 @@ import { ProductNotFoundError } from '../../errors';
 
 export default function (root, { proxyId, vectors }, { userId }) {
   log(`mutation removeProductAssignment ${proxyId}`, { userId });
-
+  if (!proxyId) throw new Error('Invalid product/proxy ID provided');
   const product = Products.findOne({ _id: proxyId });
   if (!product) throw new ProductNotFoundError({ proxyId });
 

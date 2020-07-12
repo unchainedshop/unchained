@@ -14,6 +14,7 @@ export default function (
     }`,
     { userId },
   );
+  if (!productId) throw new Error('Invalid product ID provided');
   const product = Products.findOne({ _id: productId });
   if (!product) throw new ProductNotFoundError({ productId });
   const quotation = Quotations.requestQuotation(
