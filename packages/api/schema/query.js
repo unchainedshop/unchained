@@ -38,7 +38,7 @@ export default [
       product(productId: ID, slug: String): Product
 
       """
-      List prices
+      List products specified prices
       """
       productCatalogPrices(productId: ID!): [ProductPrice!]!
 
@@ -220,7 +220,7 @@ export default [
       """
       Get all product reviews
       """
-      productReviews(limit: Int = 10, offset: Int = 0): [ProductReview!]!
+      productReviews(limit: Int = 10, offset: Int = 0): [ProductReview3!]!
 
       """
       Get a specific product review by ID

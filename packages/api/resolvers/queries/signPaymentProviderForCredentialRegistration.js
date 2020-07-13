@@ -7,6 +7,8 @@ export default (root, { paymentProviderId, ...rest }, { userId }) => {
     `query signPaymentProviderForCredentialRegistration ${paymentProviderId}`,
     { userId },
   );
+  if (!paymentProviderId)
+    throw new Error('Invalid payment provider ID provided');
   const paymentProvider = PaymentProviders.findOne({ _id: paymentProviderId });
   if (!paymentProvider)
     throw new PaymentProviderNotFoundError({ paymentProviderId });

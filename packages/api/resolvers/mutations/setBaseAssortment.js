@@ -1,5 +1,6 @@
 import { log } from 'meteor/unchained:core-logger';
 import { Assortments } from 'meteor/unchained:core-assortments';
+import { AssortmentNotFoundError } from '../../errors';
 
 export default function setBaseAssortment(root, { assortmentId }, { userId }) {
   log(`mutation setBaseAssortment ${assortmentId}`, { userId });
@@ -23,5 +24,7 @@ export default function setBaseAssortment(root, { assortmentId }, { userId }) {
       },
     },
   );
-  return Assortments.findOne({ _id: assortmentId });
+  const assortment = Assortments.findOne({ _id: assortmentId });
+  if (!assortment) throw new AssortmentNotFoundError({ assortmentId });
+  return assortment;
 }

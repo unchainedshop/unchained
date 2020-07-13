@@ -1,5 +1,6 @@
 import { log } from 'meteor/unchained:core-logger';
 import { Filters } from 'meteor/unchained:core-filters';
+import { FilterNotFoundError } from '../../errors';
 
 export default function (
   root,
@@ -10,6 +11,8 @@ export default function (
   if (!filterId) throw new Error('Invalid filter ID provided');
 
   const { value, title } = inputData;
+  const filterObject = Filters.findOne({ _id: filterId });
+  if (!filterObject) throw new FilterNotFoundError({ filterId });
   Filters.update(
     { _id: filterId },
     {

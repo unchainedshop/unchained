@@ -11,6 +11,7 @@ export default async function (
     userId,
   });
 
+  if (!workId) throw new Error('Invalid work ID provided');
   const work = await WorkerDirector.finishWork({
     workId,
     result,

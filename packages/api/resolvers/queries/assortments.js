@@ -25,6 +25,5 @@ export default function (
     limit,
     sort,
   };
-  const assortments = Assortments.find(selector, options).fetch();
-  return assortments;
+  return Assortments.find(selector, options).fetch();
 }

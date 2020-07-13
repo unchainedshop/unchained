@@ -1,5 +1,6 @@
 import { log } from 'meteor/unchained:core-logger';
 import { Countries } from 'meteor/unchained:core-countries';
+import { CountryNotFoundError } from '../../errors';
 
 export default function setBaseCountry(root, { countryId }, { userId }) {
   log(`mutation setBaseCountry ${countryId}`, { userId });
@@ -23,5 +24,7 @@ export default function setBaseCountry(root, { countryId }, { userId }) {
       },
     },
   );
-  return Countries.findOne({ _id: countryId });
+  const country = Countries.findOne({ _id: countryId });
+  if (!country) throw new CountryNotFoundError({ countryId });
+  return country;
 }

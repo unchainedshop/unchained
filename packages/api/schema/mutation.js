@@ -23,7 +23,9 @@ export default [
       ): LoginMethodResponse
 
       """
-      Update hearbeat
+      Update hearbeat (updates user activity information such as last
+      login and loged in user IP address, locale and country where they
+      accessed the system)
       """
       heartbeat: User
 
@@ -111,7 +113,10 @@ export default [
       ): OrderItem!
 
       """
-      Change billing address and order contact of an open order (cart)
+      Change billing address and order contact of an open order (cart). All of the parameters
+      except order ID are optional and the update will ocure for parameters provided.
+      If the delivery provider or payment provider ID provided doesn’t already exist new
+      providers will be created with the provided ID.
       """
       updateCart(
         orderId: ID
@@ -123,7 +128,8 @@ export default [
       ): Order!
 
       """
-      Remove all items of an open order (cart) if possible
+      Remove all items of an open order (cart) if possible.
+      if you want to remove single cart item use removeCartItem instead
       """
       emptyCart(orderId: ID): Order
 
@@ -139,7 +145,9 @@ export default [
       ): Order!
 
       """
-      Change the quantity or configuration of an item in an open order
+      Change the quantity or configuration of an item in an open order.align-baselineAll
+      of the parameters are optional except item ID and for the parameters provided the
+      update will be performed accordingly.
       """
       updateCartItem(
         itemId: ID!
@@ -183,22 +191,24 @@ export default [
       ): Order!
 
       """
-      Activate a subscription
+      Activate a subscription by changing the status to ACTIVE
       """
       activateSubscription(subscriptionId: ID!): Subscription!
 
       """
-      Terminate an actively running subscription
+      Terminate an actively running subscription by changing it's status to TERMINATED
       """
       terminateSubscription(subscriptionId: ID!): Subscription!
 
       """
-      Change the delivery method/provider
+      Change the delivery method/provider to an order. If the delivery provider
+      doesn’t exists new delivery provider will be created with the provided ID.
       """
       setOrderDeliveryProvider(orderId: ID!, deliveryProviderId: ID!): Order!
 
       """
-      Change the payment method/provider
+      Change the payment method/provider to an order. If the payment provider
+      doesn’t exists new payment provider will be created with the provided ID.
       """
       setOrderPaymentProvider(orderId: ID!, paymentProviderId: ID!): Order!
 
@@ -408,25 +418,53 @@ export default [
         texts: [UpdateProductMediaTextInput!]!
       ): [ProductMediaTexts!]!
 
+      """
+      Removes product variation with the provided ID
+      """
       removeProductVariation(productVariationId: ID!): ProductVariation!
+
+      """
+      Removes product option value for product variation with the provided variation option value
+      """
       removeProductVariationOption(
         productVariationId: ID!
         productVariationOptionValue: String!
       ): ProductVariation!
+
+      """
+      Update product variation texts with the specified locales for product variations
+      that match the provided variation ID and production option value
+      """
       updateProductVariationTexts(
         productVariationId: ID!
         productVariationOptionValue: String
         texts: [UpdateProductVariationTextInput!]!
       ): [ProductVariationTexts!]!
+
+      """
+      Creates new product variation for a product.
+      """
       createProductVariation(
         productId: ID!
         variation: CreateProductVariationInput!
       ): ProductVariation!
+
+      """
+      Adds one product as bundle for another products
+      """
       createProductBundleItem(
         productId: ID!
         item: CreateProductBundleItemInput!
       ): Product!
+
+      """
+      Removes products bundle item found at the given 0 based index.
+      """
       removeBundleItem(productId: ID!, index: Int!): Product!
+
+      """
+      Adds variation option to an existing product variations
+      """
       createProductVariationOption(
         productVariationId: ID!
         option: CreateProductVariationOptionInput!
@@ -451,55 +489,143 @@ export default [
         vectors: [ProductAssignmentVectorInput!]!
       ): Product!
 
+      """
+      Adds new language along with the user who created it
+      """
       createLanguage(language: CreateLanguageInput!): Language!
+
+      """
+      Updates the specified language.
+      """
       updateLanguage(language: UpdateLanguageInput!, languageId: ID!): Language!
+
+      """
+      Make’s the language provided as the base  and make any other existing base language regular.
+      """
       setBaseLanguage(languageId: ID!): Language!
+
+      """
+      Deletes the specified languages
+      """
       removeLanguage(languageId: ID!): Language!
 
       createCountry(country: CreateCountryInput!): Country!
+
+      """
+      Updates provided country information
+      """
       updateCountry(country: UpdateCountryInput!, countryId: ID!): Country!
+
+      """
+      Make’s the country provided as the base  and make any other existing base country regular.
+      """
       setBaseCountry(countryId: ID!): Country!
+
+      """
+      Deletes the specified country
+      """
       removeCountry(countryId: ID!): Country!
 
       createCurrency(currency: CreateCurrencyInput!): Currency!
+
+      """
+      Updates the specified currency
+      """
       updateCurrency(currency: UpdateCurrencyInput!, currencyId: ID!): Currency!
+
+      """
+      Deletes the specified currency
+      """
       removeCurrency(currencyId: ID!): Currency!
 
+      """
+      Adds new payment provider
+      """
       createPaymentProvider(
         paymentProvider: CreateProviderInput!
       ): PaymentProvider!
+
+      """
+      Updates payment provider information with the provided ID
+      """
       updatePaymentProvider(
         paymentProvider: UpdateProviderInput!
         paymentProviderId: ID!
       ): PaymentProvider!
+
+      """
+      Deletes the specified payment provider by setting the deleted filed to current timestamp.
+      Note the payment provider is still available only it’s status is deleted
+      """
       removePaymentProvider(paymentProviderId: ID!): PaymentProvider!
 
+      """
+      Creates new delivery provider
+      """
       createDeliveryProvider(
         deliveryProvider: CreateProviderInput!
       ): DeliveryProvider!
+
+      """
+      Updates the delivery provider specified
+      """
       updateDeliveryProvider(
         deliveryProvider: UpdateProviderInput!
         deliveryProviderId: ID!
       ): DeliveryProvider!
+
+      """
+      Deletes a delivery provider by setting the deleted field to current timestamp.
+      Note the delivery provider still exists.
+      """
       removeDeliveryProvider(deliveryProviderId: ID!): DeliveryProvider!
 
+      """
+      Creates new warehouse provider.
+      """
       createWarehousingProvider(
         warehousingProvider: CreateProviderInput!
       ): WarehousingProvider!
+
+      """
+      Updates warehousing provider information with the provided ID
+      """
       updateWarehousingProvider(
         warehousingProvider: UpdateProviderInput!
         warehousingProviderId: ID!
       ): WarehousingProvider!
+
+      """
+      Deletes the specified warehousing provider by setting the deleted filed to current timestamp.
+      Note warehousing provider still exists in the system after successful
+      completing of this operation with status deleted.
+      """
       removeWarehousingProvider(
         warehousingProviderId: ID!
       ): WarehousingProvider!
 
+      """
+      Creates new assortment.
+      """
       createAssortment(assortment: CreateAssortmentInput!): Assortment!
+
+      """
+      Updates the provided assortment
+      """
       updateAssortment(
         assortment: UpdateAssortmentInput!
         assortmentId: ID!
       ): Assortment!
+
+      """
+      Makes the assortment provided as the base assortment and make
+      any other existing base assortment regular assortments.
+      """
       setBaseAssortment(assortmentId: ID!): Assortment!
+
+      """
+      Removes assortment with the provided ID
+      """
       removeAssortment(assortmentId: ID!): Assortment!
 
       """
@@ -573,15 +699,38 @@ export default [
         sortKeys: [ReorderAssortmentFilterInput!]!
       ): [AssortmentFilter!]!
 
+      """
+      Creates new Filter along with the user who created it.
+      """
       createFilter(filter: CreateFilterInput!): Filter!
+
+      """
+      Updates the specified filter with the information passed.
+      """
       updateFilter(filter: UpdateFilterInput!, filterId: ID!): Filter!
+
+      """
+      Deletes the specified filter
+      """
       removeFilter(filterId: ID!): Filter!
+
+      """
+      Removes the filter option from the specified filter.
+      """
       removeFilterOption(filterId: ID!, filterOptionValue: String!): Filter!
+
+      """
+      Updates or created specified filter texts for filter with ID provided and locale and optionally filterOptionValue
+      """
       updateFilterTexts(
         filterId: ID!
         filterOptionValue: String
         texts: [UpdateFilterTextInput!]!
       ): [FilterTexts!]!
+
+      """
+      Adds new option to filters
+      """
       createFilterOption(
         filterId: ID!
         option: CreateFilterOptionInput!
@@ -609,7 +758,8 @@ export default [
       removeProductReview(productReviewId: ID!): ProductReview!
 
       """
-      Add a vote to a ProductReview
+      Add a vote to a ProductReview.
+      If there there is a previous vote from the user invoking this it will be removed and updated with the new vote
       """
       addProductReviewVote(
         productReviewId: ID!
@@ -626,7 +776,7 @@ export default [
       ): ProductReview!
 
       """
-      Request for Proposal (RFP)
+      Request for Proposal (RFP) for the specified product
       """
       requestQuotation(
         productId: ID!
@@ -634,7 +784,7 @@ export default [
       ): Quotation!
 
       """
-      Verify quotation request elligibility
+      Verify quotation request elligibility. and marks requested quotations as verified if it is
       """
       verifyQuotation(quotationId: ID!, quotationContext: JSON): Quotation!
 
@@ -644,7 +794,7 @@ export default [
       rejectQuotation(quotationId: ID!, quotationContext: JSON): Quotation!
 
       """
-      Make a proposal as answer to the RFP
+      Make a proposal as answer to the RFP by changing its status to PROCESSED
       """
       makeQuotationProposal(
         quotationId: ID!
@@ -652,7 +802,7 @@ export default [
       ): Quotation!
 
       """
-      Bookmarks a product as currently logged in user
+      toggle Bookmarks state of a product as currently logged in user
       """
       bookmark(productId: ID!, bookmarked: Boolean = true): Bookmark!
 
@@ -718,9 +868,17 @@ export default [
         paymentContext: JSON!
         paymentProviderId: ID!
       ): PaymentCredentials
+
+      """
+      Make's the provided payment credential as the users preferred method of payment.
+      """
       markPaymentCredentialsPreferred(
         paymentCredentialsId: ID!
       ): PaymentCredentials
+
+      """
+      Deletes the specified payment credential
+      """
       removePaymentCredentials(paymentCredentialsId: ID!): PaymentCredentials
     }
   `,

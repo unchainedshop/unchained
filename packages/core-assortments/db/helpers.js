@@ -525,13 +525,16 @@ Collections.Assortments.helpers({
   productIds({ forceLiveCollection = false } = {}) {
     // eslint-disable-next-line
     if (!this._cachedProductIds || forceLiveCollection) {
+      // get array of assortment products and child assortment links to products
       const collectedProductIdTree = this.collectProductIdCacheTree() || [];
       return [...new Set(settings.zipTree(collectedProductIdTree))];
     }
     return this._cachedProductIds; // eslint-disable-line
   },
   async search({ query, forceLiveCollection, ...rest }) {
+    // get related assortment products and products child relation assortment links
     const productIds = this.productIds({ forceLiveCollection });
+    // get assortment filter ID linked with this assortment
     const filterIds = this.filterAssignments().map(({ filterId }) => filterId);
     return search({
       query: {
@@ -591,16 +594,21 @@ Collections.Assortments.helpers({
       this.parentIds(),
     );
   },
+  // returns AssortmentProducts and child assortment links with products.
   collectProductIdCacheTree() {
+    // get assortment products related with this assortment I.E AssortmentProducts
     const ownProductIds = this.productAssignments().map(
       ({ productId }) => productId,
     );
+    // get assortment links parent or child linked with this assortment I.E. AssortmentLinks
     const linkedAssortments = this.linkedAssortments();
 
+    // filter previous result set to get child assortment links
     const childAssortments = linkedAssortments.filter(
       ({ parentAssortmentId }) => parentAssortmentId === this._id,
     );
 
+    // perform the whole function recursively for each child
     const productIds = childAssortments.map((childAssortment) => {
       const assortment = childAssortment.child();
       if (assortment) {
