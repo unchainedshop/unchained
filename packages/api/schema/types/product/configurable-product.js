@@ -73,7 +73,12 @@ export default [
       media(limit: Int = 10, offset: Int = 0, tags: [String!]): [ProductMedia!]!
       texts(forceLocale: String): ProductTexts
       assortmentPaths: [ProductAssortmentPath!]!
-      siblings(assortmentId: ID, limit: Int = 10, offset: Int = 0): [Product!]!
+      siblings(
+        assortmentId: ID
+        limit: Int = 10
+        offset: Int = 0
+        includeInactive: Boolean = false
+      ): [Product!]!
       reviews(limit: Int = 10, offset: Int = 0): [ProductReview!]!
 
       """

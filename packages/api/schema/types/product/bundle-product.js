@@ -16,7 +16,12 @@ export default [
       bundleItems: [ProductBundleItem!]
       reviews(limit: Int = 10, offset: Int = 0): [ProductReview!]!
       assortmentPaths: [ProductAssortmentPath!]!
-      siblings(assortmentId: ID, limit: Int = 10, offset: Int = 0): [Product!]!
+      siblings(
+        assortmentId: ID
+        limit: Int = 10
+        offset: Int = 0
+        includeInactive: Boolean = false
+      ): [Product!]!
       meta: JSON
     }
 

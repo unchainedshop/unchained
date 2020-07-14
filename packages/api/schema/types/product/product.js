@@ -75,7 +75,12 @@ export default [
       reviews: [ProductReview!]!
       meta: JSON
       assortmentPaths: [ProductAssortmentPath!]!
-      siblings(assortmentId: ID, limit: Int = 10, offset: Int = 0): [Product!]!
+      siblings(
+        assortmentId: ID
+        limit: Int = 10
+        offset: Int = 0
+        includeInactive: Boolean = false
+      ): [Product!]!
     }
 
     """

@@ -352,6 +352,7 @@ describe('Filters', () => {
               queryString: $queryString
               filterQuery: $filterQuery
               includeInactive: true
+              ignoreChildAssortments: false
             ) {
               totalProducts
               filters {

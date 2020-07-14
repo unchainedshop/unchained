@@ -66,7 +66,7 @@ export default [
       languages(
         limit: Int = 50
         offset: Int = 0
-        includeInactive: Boolean
+        includeInactive: Boolean = false
       ): [Language]!
 
       """
@@ -256,6 +256,7 @@ export default [
         assortmentId: ID
         orderBy: SearchOrderBy
         includeInactive: Boolean = false
+        ignoreChildAssortments: Boolean = false
       ): SearchResult!
 
       """

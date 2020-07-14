@@ -366,7 +366,13 @@ Products.helpers({
       productId: this._id,
     });
   },
-  siblings({ assortmentId, limit, offset, sort = {} } = {}) {
+  siblings({
+    assortmentId,
+    limit,
+    offset,
+    sort = {},
+    includeInactive = false,
+  } = {}) {
     const assortmentIds = assortmentId ? [assortmentId] : this.assortmentIds();
     if (!assortmentIds.length) return [];
     const productIds = Collections.AssortmentProducts.find({
@@ -384,7 +390,9 @@ Products.helpers({
 
     const productSelector = {
       _id: { $in: productIds },
-      status: { $in: [ProductStatus.ACTIVE, ProductStatus.DRAFT] },
+      status: includeInactive
+        ? { $in: [ProductStatus.ACTIVE, ProductStatus.DRAFT] }
+        : ProductStatus.ACTIVE,
     };
     const productOptions = { skip: offset, limit, sort };
     return Products.find(productSelector, productOptions).fetch();
@@ -522,7 +530,13 @@ Collections.Assortments.helpers({
       },
     ).fetch();
   },
-  productIds({ forceLiveCollection = false } = {}) {
+  productIds({
+    forceLiveCollection = false,
+    ignoreChildAssortments = false,
+  } = {}) {
+    if (ignoreChildAssortments) {
+      return this.productAssignments().map(({ productId }) => productId);
+    }
     // eslint-disable-next-line
     if (!this._cachedProductIds || forceLiveCollection) {
       // get array of assortment products and child assortment links to products
@@ -531,10 +545,16 @@ Collections.Assortments.helpers({
     }
     return this._cachedProductIds; // eslint-disable-line
   },
-  async search({ query, forceLiveCollection, ...rest }) {
-    // get related assortment products and products child relation assortment links
-    const productIds = this.productIds({ forceLiveCollection });
-    // get assortment filter ID linked with this assortment
+  async search({
+    query,
+    ignoreChildAssortments,
+    forceLiveCollection,
+    ...rest
+  }) {
+    const productIds = this.productIds({
+      forceLiveCollection,
+      ignoreChildAssortments,
+    });
     const filterIds = this.filterAssignments().map(({ filterId }) => filterId);
     return search({
       query: {

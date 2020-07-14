@@ -49,7 +49,12 @@ export default [
       ): ProductPrice
       simulatedDiscounts(quantity: Int = 1): [ProductDiscount!]
       assortmentPaths(forceLocale: String): [ProductAssortmentPath!]!
-      siblings(assortmentId: ID, limit: Int = 10, offset: Int = 0): [Product!]!
+      siblings(
+        assortmentId: ID
+        limit: Int = 10
+        offset: Int = 0
+        includeInactive: Boolean = false
+      ): [Product!]!
       salesUnit: String
       salesQuantityPerUnit: String
       reviews(limit: Int = 10, offset: Int = 0): [ProductReview!]!
