@@ -9,7 +9,7 @@ export default function (
   log(
     `query products: ${limit} ${offset} ${
       includeDrafts ? 'includeDrafts' : ''
-    } ${slugs.join(',')}`,
+    } ${slugs?.join(',')}`,
     { userId },
   );
   const selector = {};

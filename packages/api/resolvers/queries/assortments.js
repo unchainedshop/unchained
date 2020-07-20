@@ -9,7 +9,7 @@ export default function (
   log(
     `query assortments: ${limit} ${offset} ${
       includeInactive ? 'includeInactive' : ''
-    } ${slugs.join(',')}`,
+    } ${slugs?.join(',')}`,
     { userId },
   );
   const selector = {};
