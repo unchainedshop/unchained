@@ -12,6 +12,7 @@ export default function (
     } ${slugs?.join(',')}`,
     { userId },
   );
+
   const selector = {};
   const sort = { sequence: 1 };
   const options = { sort };
