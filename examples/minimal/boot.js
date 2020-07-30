@@ -87,8 +87,7 @@ const initializeDatabase = () => {
       \nlanguages: ${languages.join(',')}
       \nuser: admin@localhost / password`);
   } catch (e) {
-    console.log('ERROR: ', e);
-    logger.log('database was already initialized');
+    logger.error(e);
   }
 };
 
