@@ -42,7 +42,10 @@ export class ProductSwissTax extends ProductPricingAdapter {
   static isActivatedFor(ctx) {
     const address =
       ctx.order?.delivery()?.context?.address || ctx.order?.billingAddress;
-    const countryCode = address?.countryCode.toUpperCase().trim();
+    const countryCode =
+      address?.countryCode !== undefined
+        ? address.countryCode?.toUpperCase().trim()
+        : ctx.country?.toUpperCase().trim();
     return countryCode === 'CH' || countryCode === 'LI';
   }
 

@@ -32,8 +32,8 @@ class DeliveryPricingAdapter {
     return resultRaw;
   }
 
+  // eslint-disable-next-line
   log(message, { level = 'debug', ...options } = {}) {
-    // eslint-disable-line
     return log(message, { level, ...options });
   }
 }
