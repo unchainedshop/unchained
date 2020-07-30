@@ -32,7 +32,8 @@ class DeliveryPricingAdapter {
     return resultRaw;
   }
 
-  log(message, { level = 'debug', ...options } = {}) { // eslint-disable-line
+  log(message, { level = 'debug', ...options } = {}) {
+    // eslint-disable-line
     return log(message, { level, ...options });
   }
 }
@@ -69,9 +70,7 @@ class DeliveryPricingDirector {
 
   calculate() {
     this.calculation = DeliveryPricingDirector.sortedAdapters()
-      .filter((AdapterClass) =>
-        AdapterClass.isActivatedFor(this.context.provider),
-      )
+      .filter((AdapterClass) => AdapterClass.isActivatedFor(this.context))
       .reduce((calculation, AdapterClass) => {
         const discounts = this.context.discounts
           .map((discount) => ({
