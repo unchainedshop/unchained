@@ -45,7 +45,10 @@ const calculateAmountToSplit = (configuration, amount) => {
     ? amount * configuration.rate
     : configuration.fixedRate;
 
-  const leftToDeduct = deductionAmount - (configuration.alreadyDeducted || 0);
+  const leftToDeduct =
+    deductionAmount -
+    (configuration.alreadyDeducted || 0) +
+    (configuration.alreadyDeductedFromOrder || 0);
 
   return Math.max(0, Math.min(leftToDeduct, amount));
 };
@@ -95,6 +98,7 @@ class OrderItems extends OrderPricingAdapter {
     );
 
     let alreadyDeducted = 0;
+    let alreadyDeductedFromOrder = 0;
 
     this.discounts.forEach(({ configuration, discountId }) => {
       // First, we deduce the discount from the items
@@ -104,7 +108,7 @@ class OrderItems extends OrderPricingAdapter {
       ] = applyDiscountToMultipleShares(
         itemShares,
         calculateAmountToSplit(
-          { ...configuration, alreadyDeducted },
+          { ...configuration, alreadyDeducted, alreadyDeductedFromOrder },
           totalAmountOfItems,
         ),
       );
@@ -117,7 +121,7 @@ class OrderItems extends OrderPricingAdapter {
       ] = applyDiscountToMultipleShares(
         [deliveryShare, paymentShare],
         calculateAmountToSplit(
-          { ...configuration, alreadyDeducted },
+          { ...configuration, alreadyDeducted, alreadyDeductedFromOrder },
           totalAmountOfPaymentAndDelivery,
         ),
       );
@@ -128,6 +132,7 @@ class OrderItems extends OrderPricingAdapter {
       const taxAmount = itemsTaxAmount + deliveryAndPaymentTaxAmount;
 
       if (discountAmount) {
+        alreadyDeductedFromOrder += discountAmount;
         this.result.addDiscounts({
           amount: discountAmount * -1,
           discountId,
