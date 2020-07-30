@@ -1,9 +1,13 @@
 Package.describe({
   name: 'unchained:api',
-  version: '0.51.1',
+  version: '0.51.2',
   summary: 'Unchained Engine: GraphQL API',
   git: 'https://github.com/unchainedshop/unchained',
   documentation: 'README.md',
+});
+
+Npm.depends({
+  accounting: '0.4.1',
 });
 
 Package.onUse((api) => {
