@@ -11,6 +11,7 @@ const SEARCH_PRODUCTS = gql`
       totalProducts
       products {
         _id
+        status
         texts {
           _id
           title
@@ -61,32 +62,21 @@ const ProductSearchDropdown = () => {
       return false;
     });
     return (
-      <img
-        src={
-          (foundImageObj && foundImageObj.file && foundImageObj.file.url) ||
-          pollyfillImageUrl
-        }
-        alt={
-          (foundImageObj && foundImageObj.file && foundImageObj.texts.title) ||
-          (foundImageObj && foundImageObj.file && foundImageObj.file.name) || // a user-uploaded image is always accompained by name otherwise it's the pollyfill image
-          'Placeholder Image'
-        }
-      />
+      (foundImageObj && foundImageObj.file && foundImageObj.file.url) ||
+      pollyfillImageUrl
     );
   };
 
-  const resultRenderer = (result) => {
-    return (
-      <div className="result">
-        <div className="image">{selectImage(result)}</div>
-        <div className="content">
-          <div className="title">{result.texts.title}</div>
-          <div className="description">{result.texts.description}</div>
-        </div>
-      </div>
-    );
-  };
-  const results = data?.search?.products || [];
+  const results =
+    data?.search?.products.map((result) => {
+      return {
+        id: result._id,
+        title: result.texts.title,
+        description: result.texts.description,
+        image: selectImage(result),
+        active: !(result.status === 'ACTIVE'),
+      };
+    }) || [];
   return (
     <Search
       loading={loading}
@@ -96,7 +86,7 @@ const ProductSearchDropdown = () => {
         leading: true,
       })}
       results={results}
-      resultRenderer={resultRenderer}
+      // resultRenderer={resultRenderer}
     />
   );
 };
