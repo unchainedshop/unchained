@@ -38,8 +38,14 @@ export class DeliverySwissTax extends DeliveryPricingAdapter {
 
   static orderIndex = 20;
 
-  static isActivatedFor() {
-    return true; // check if delivery address is in switzerland?
+  static isActivatedFor(ctx) {
+    const address =
+      ctx.order?.delivery()?.context?.address || ctx.order?.billingAddress;
+    const countryCode =
+      address?.countryCode !== undefined
+        ? address.countryCode?.toUpperCase().trim()
+        : ctx.country?.toUpperCase().trim();
+    return countryCode === 'CH' || countryCode === 'LI';
   }
 
   getTaxRate() {
@@ -54,6 +60,7 @@ export class DeliverySwissTax extends DeliveryPricingAdapter {
         return null;
       },
     )?.value;
+
     if (taxCategoryFromProvider === SwissTaxCategories.REDUCED.value) {
       return SwissTaxCategories.REDUCED.rate(date);
     }
