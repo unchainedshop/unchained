@@ -115,8 +115,8 @@ export default [
       """
       Change billing address and order contact of an open order (cart). All of the parameters
       except order ID are optional and the update will ocure for parameters provided.
-      If the delivery provider or payment provider ID provided doesn’t already exist new
-      providers will be created with the provided ID.
+      If the delivery provider or payment provider ID provided doesn’t already exist new order payment
+      will be created with the provided ID.
       """
       updateCart(
         orderId: ID
