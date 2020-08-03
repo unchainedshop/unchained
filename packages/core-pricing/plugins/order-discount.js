@@ -13,6 +13,12 @@ const resolveRatioAndTaxDivisorForPricingSheet = (pricing, total) => {
   }
   const tax = pricing.taxSum();
   const gross = pricing.gross();
+  if (gross - tax === 0) {
+    return {
+      ratio: 0,
+      taxDivisor: 0,
+    };
+  }
   return {
     ratio: gross / total,
     taxDivisor: gross / (gross - tax),
@@ -43,9 +49,14 @@ const applyDiscountToMultipleShares = (shares, amount) => {
 const calculateAmountToSplit = (configuration, amount) => {
   const deductionAmount = configuration.rate
     ? amount * configuration.rate
-    : Math.min(configuration.fixedRate, amount);
+    : configuration.fixedRate;
 
-  return Math.max(0, deductionAmount - (configuration.alreadyDeducted || 0));
+  const leftInDiscount = Math.max(
+    0,
+    deductionAmount - (configuration.alreadyDeductedForDiscount || 0),
+  );
+  const leftToDeduct = Math.min(configuration.amountLeft, leftInDiscount);
+  return Math.max(0, leftToDeduct);
 };
 
 class OrderItems extends OrderPricingAdapter {
@@ -92,21 +103,23 @@ class OrderItems extends OrderPricingAdapter {
       totalAmountOfPaymentAndDelivery,
     );
 
-    let alreadyDeducted = 0;
+    let amountLeft = totalAmountOfPaymentAndDelivery + totalAmountOfItems;
 
     this.discounts.forEach(({ configuration, discountId }) => {
       // First, we deduce the discount from the items
+      let alreadyDeductedForDiscount = 0;
       const [
         itemsDiscountAmount,
         itemsTaxAmount,
       ] = applyDiscountToMultipleShares(
         itemShares,
         calculateAmountToSplit(
-          { ...configuration, alreadyDeducted },
+          { ...configuration, amountLeft, alreadyDeductedForDiscount },
           totalAmountOfItems,
         ),
       );
-      alreadyDeducted = +itemsDiscountAmount;
+      amountLeft -= itemsDiscountAmount;
+      alreadyDeductedForDiscount += itemsDiscountAmount;
 
       // After the items, we deduct the remaining discount from payment & delivery fees
       const [
@@ -115,15 +128,17 @@ class OrderItems extends OrderPricingAdapter {
       ] = applyDiscountToMultipleShares(
         [deliveryShare, paymentShare],
         calculateAmountToSplit(
-          { ...configuration, alreadyDeducted },
+          { ...configuration, amountLeft, alreadyDeductedForDiscount },
           totalAmountOfPaymentAndDelivery,
         ),
       );
-      alreadyDeducted = +deliveryAndPaymentDiscountAmount;
+      amountLeft -= deliveryAndPaymentDiscountAmount;
+      alreadyDeductedForDiscount += itemsDiscountAmount;
 
       const discountAmount =
         itemsDiscountAmount + deliveryAndPaymentDiscountAmount;
       const taxAmount = itemsTaxAmount + deliveryAndPaymentTaxAmount;
+
       if (discountAmount) {
         this.result.addDiscounts({
           amount: discountAmount * -1,

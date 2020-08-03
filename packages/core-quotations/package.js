@@ -19,7 +19,7 @@ Package.onUse((api) => {
   api.use('aldeed:collection2@3.0.2');
   api.use('aldeed:schema-index@3.0.0');
 
-  api.use('unchained:core-files@0.51.0');
+  api.use('unchained:core-files@0.51.1');
   api.use('unchained:core@0.51.0');
   api.use('unchained:utils@0.51.0');
   api.use('unchained:core-users@0.51.0');

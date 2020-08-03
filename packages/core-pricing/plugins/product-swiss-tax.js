@@ -4,7 +4,32 @@ import {
   ProductPricingAdapter,
 } from 'meteor/unchained:core-pricing';
 
-class ProductSwissTax extends ProductPricingAdapter {
+// https://www.ch.ch/de/mehrwertsteuersatz-schweiz/
+export const SwissTaxCategories = {
+  DEFAULT: {
+    rate: (date) => {
+      const referenceDate = moment(date);
+      if (referenceDate.isBefore('2018-01-01')) {
+        return 0.08;
+      }
+      return 0.077;
+    },
+  },
+  REDUCED: {
+    tag: 'swiss-tax-category:reduced',
+    rate: () => {
+      return 0.025;
+    },
+  },
+  SPECIAL: {
+    tag: 'swiss-tax-category:special',
+    rate: () => {
+      return 0.037;
+    },
+  },
+};
+
+export class ProductSwissTax extends ProductPricingAdapter {
   static key = 'shop.unchained.pricing.product-swiss-tax';
 
   static version = '1.0';
@@ -15,10 +40,13 @@ class ProductSwissTax extends ProductPricingAdapter {
   static orderIndex = 20;
 
   static isActivatedFor(ctx) {
-    if (ctx.country === 'CH') {
-      return true; // check if delivery address is in switzerland?
-    }
-    return false;
+    const address =
+      ctx.order?.delivery()?.context?.address || ctx.order?.billingAddress;
+    const countryCode =
+      address?.countryCode !== undefined
+        ? address.countryCode?.toUpperCase().trim()
+        : ctx.country?.toUpperCase().trim();
+    return countryCode === 'CH' || countryCode === 'LI';
   }
 
   getTaxRate() {
@@ -26,11 +54,15 @@ class ProductSwissTax extends ProductPricingAdapter {
       this.context.order && this.context.order.ordered
         ? new Date(this.context.order.ordered)
         : new Date();
-    const referenceDate = moment(date);
-    if (referenceDate.isSameOrAfter('2018-01-01')) {
-      return 0.077;
+    const { product } = this.context;
+
+    if (product.tags?.includes(SwissTaxCategories.REDUCED.tag)) {
+      return SwissTaxCategories.REDUCED.rate(date);
     }
-    return 0.08;
+    if (product.tags?.includes(SwissTaxCategories.SPECIAL.tag)) {
+      return SwissTaxCategories.SPECIAL.rate(date);
+    }
+    return SwissTaxCategories.DEFAULT.rate(date);
   }
 
   async calculate() {

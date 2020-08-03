@@ -179,6 +179,8 @@ export default [
       Get all root assortments
       """
       assortments(
+        tags: [String!]
+        slugs: [String!]
         limit: Int = 10
         offset: Int = 0
         includeInactive: Boolean = false

@@ -34,6 +34,5 @@ export default (collectionName, customSettings = null) => {
     ...createDefaultFileCollectionConfig(collectionName, mergedSettings),
     ...configByType(collectionName, mergedSettings.storage),
   };
-
   return new FilesCollection(fullconfig);
 };
