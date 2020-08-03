@@ -86,7 +86,6 @@ const ProductSearchDropdown = () => {
         leading: true,
       })}
       results={results}
-      // resultRenderer={resultRenderer}
     />
   );
 };
