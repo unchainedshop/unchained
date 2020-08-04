@@ -45,8 +45,8 @@ mongo-id@1.0.7
 npm-bcrypt@0.9.3
 npm-mongo@3.7.0
 ordered-dict@1.1.0
-ostrio:cookies@2.3.0
-ostrio:files@1.11.2
+ostrio:cookies@2.6.0
+ostrio:files@1.14.2
 percolate:migrations@1.0.2
 promise@0.11.2
 raix:eventemitter@0.1.3
