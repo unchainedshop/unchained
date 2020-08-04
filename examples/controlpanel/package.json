@@ -1,7 +1,7 @@
 {
   "name": "@unchainedshop/controlpanel",
   "description": "Control Panel for Unchained Engine",
-  "version": "0.51.0",
+  "version": "0.51.6",
   "license": "EUPL-1.2",
   "homepage": "https://unchained.shop",
   "main": "index.js",
