@@ -409,55 +409,69 @@ Collections.Assortments.helpers({
       title,
       assortmentId: this._id,
     });
-    Collections.AssortmentTexts.upsert(
+    const modifier = {
+      $set: {
+        updated: new Date(),
+        title,
+        ...fields,
+      },
+      $setOnInsert: {
+        created: new Date(),
+        assortmentId: this._id,
+        locale,
+      },
+    };
+    if (forcedSlug) {
+      modifier.$set.slug = slug;
+    } else {
+      modifier.$setOnInsert.slug = slug;
+    }
+    const { insertedId } = Collections.AssortmentTexts.upsert(
       {
         assortmentId: this._id,
         locale,
       },
-      {
-        $set: {
-          title,
-          locale,
-          slug,
-          ...fields,
-          updated: new Date(),
-        },
-      },
-      { bypassCollection2: true },
+      modifier,
     );
 
-    Collections.Assortments.update(
-      {
-        _id: this._id,
-      },
-      {
-        $set: {
-          updated: new Date(),
+    if (insertedId || forcedSlug) {
+      Collections.Assortments.update(
+        {
+          _id: this._id,
         },
-        $addToSet: {
+        {
+          $set: {
+            updated: new Date(),
+          },
+          $addToSet: {
+            slugs: slug,
+          },
+        },
+      );
+      Collections.Assortments.update(
+        {
+          _id: { $ne: this._id },
           slugs: slug,
         },
-      },
-    );
-    Collections.Assortments.update(
-      {
-        _id: { $ne: this._id },
-        slugs: slug,
-      },
-      {
-        $set: {
-          updated: new Date(),
+        {
+          $set: {
+            updated: new Date(),
+          },
+          $pullAll: {
+            slugs: slug,
+          },
         },
-        $pullAll: {
-          slugs: slug,
-        },
-      },
-      { multi: true },
+        { multi: true },
+      );
+    }
+    return Collections.AssortmentTexts.findOne(
+      insertedId
+        ? { _id: insertedId }
+        : {
+            assortmentId: this._id,
+            locale,
+          },
     );
-    return Collections.AssortmentTexts.findOne({
-      assortmentId: this._id,
-      locale,
-    });
   },
   getLocalizedTexts(locale) {
     const parsedLocale = new Locale(locale);

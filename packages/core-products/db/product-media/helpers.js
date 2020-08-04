@@ -13,11 +13,14 @@ ProductMedia.helpers({
       {
         $set: {
           updated: new Date(),
-          locale,
           ...fields,
         },
+        $setOnInsert: {
+          created: new Date(),
+          productMediaId: this._id,
+          locale,
+        },
       },
-      { bypassCollection2: true },
     );
     return ProductMediaTexts.findOne({ productMediaId: this._id, locale });
   },
