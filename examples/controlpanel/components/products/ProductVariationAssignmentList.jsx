@@ -1,15 +1,15 @@
 import React from 'react';
 import { compose, pure, mapProps, withHandlers } from 'recompose';
-import { Segment, Table, Dropdown, Button } from 'semantic-ui-react';
+import { Segment, Table, Button } from 'semantic-ui-react';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
+import ProductSearchDropdown from './ProductSearchDropdown';
 
 const ProductVariationAssignmentList = ({
   columnTitles,
   addProductAssignment,
   removeProductAssignment,
   rows,
-  productOptions,
 }) => (
   <Segment>
     <Table celled>
@@ -30,16 +30,12 @@ const ProductVariationAssignmentList = ({
               <Table.Cell key={`${column}`}>{column}</Table.Cell>
             ))}
             <Table.Cell>
-              <Dropdown
+              <ProductSearchDropdown
+                onChange={addProductAssignment}
+                value={product ? product._id : ''}
                 optionValues={columns}
                 placeholder="Select Product"
-                fluid
-                search
-                selection
                 disabled={!!(product && product._id)}
-                value={product ? product._id : ''}
-                options={productOptions}
-                onChange={addProductAssignment}
               />
             </Table.Cell>
             <Table.Cell>

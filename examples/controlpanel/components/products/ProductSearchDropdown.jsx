@@ -1,12 +1,17 @@
 import React, { useState } from 'react';
-import { useRouter } from 'next/router';
-import { Search } from 'semantic-ui-react';
-import { debounce, has } from 'lodash';
+import {
+  Dropdown,
+  Header,
+  Image as SemanticImage,
+  Icon,
+  Label,
+} from 'semantic-ui-react';
+import { debounce, has, isEmpty } from 'lodash';
 import { useQuery } from '@apollo/react-hooks';
 import gql from 'graphql-tag';
 
 const SEARCH_PRODUCTS = gql`
-  query search($queryString: String) {
+  query search($queryString: String, $limit: Int) {
     search(queryString: $queryString, includeInactive: true) {
       totalProducts
       products {
@@ -17,7 +22,7 @@ const SEARCH_PRODUCTS = gql`
           title
           description
         }
-        media {
+        media(limit: $limit) {
           texts {
             title
           }
@@ -31,29 +36,36 @@ const SEARCH_PRODUCTS = gql`
   }
 `;
 
-const ProductSearchDropdown = () => {
-  const router = useRouter();
+const ProductSearchDropdown = ({
+  onChange,
+  value,
+  optionValues,
+  placeholder,
+  disabled,
+  uniforms,
+}) => {
   const [queryString, setQueryString] = useState('');
   const { data, loading } = useQuery(SEARCH_PRODUCTS, {
     variables: {
       queryString,
+      limit: 1,
     },
     skip: !queryString,
   });
-  const handleResultSelect = (e, { result }) => {
-    setQueryString(result.texts.title);
-    router.push({ pathname: '/products/edit', query: { _id: result._id } });
-  };
-  const handleSearchChange = (e, { value }) => {
-    setQueryString(value);
+
+  const handleOnChange = (e, result) => {
+    return onChange(result.value);
   };
 
-  const pollyfillImageUrl = 'https://via.placeholder.com/150';
+  const handleSearchChange = (e, result) => {
+    setQueryString(result.searchQuery);
+  };
 
-  const selectImage = (result) => {
-    if (!result.media) return pollyfillImageUrl;
+  const imageComponent = <Icon name="image" size="mini" />;
 
-    const foundImageObj = result.media.find((mediaObj) => {
+  const selectImage = (product) => {
+    if (isEmpty(product.media)) return imageComponent;
+    const foundImageObj = product.media.find((mediaObj) => {
       if (has(mediaObj, 'file.url')) {
         const imageObj = new Image();
         imageObj.src = mediaObj.file.url;
@@ -62,32 +74,58 @@ const ProductSearchDropdown = () => {
       return false;
     });
     return (
-      (foundImageObj && foundImageObj.file && foundImageObj.file.url) ||
-      pollyfillImageUrl
+      (foundImageObj && (
+        <SemanticImage
+          src={foundImageObj && foundImageObj.file && foundImageObj.file.url}
+          alt={foundImageObj.texts.title || product.texts.title}
+        />
+      )) ||
+      imageComponent
     );
   };
 
-  const results =
-    data?.search?.products.map((result) => {
+  const options =
+    data?.search?.products.map((product) => {
       return {
-        id: result._id,
-        title: result.texts.title,
-        description: result.texts.description,
-        image: selectImage(result),
-        active: !(result.status === 'ACTIVE'),
+        key: product._id,
+        value: product._id,
+        text: product.texts.title,
+        content: (
+          <Header>
+            {selectImage(product)}
+            <Header.Content>
+              {product.texts.title}
+              <Header.Subheader>{product.texts.description}</Header.Subheader>
+              <Label
+                color={product.status === 'DRAFT' ? 'red' : 'green'}
+                horizontal
+              >
+                {product.status}
+              </Label>
+            </Header.Content>
+          </Header>
+        ),
       };
     }) || [];
+
   return (
-    <Search
+    <Dropdown
+      search
+      fluid
+      selection
+      placeholder={placeholder || 'Select Product'}
+      name="product"
       loading={loading}
-      style={{ float: 'left' }}
-      onResultSelect={handleResultSelect}
+      onChange={uniforms ? handleOnChange : onChange} // this is to handle uniforms custom field
       onSearchChange={debounce(handleSearchChange, 500, {
         leading: true,
       })}
-      results={results}
+      options={options}
+      {...{ ...(value && { value }) }}
+      {...{ ...(disabled && { disabled }) }}
+      {...{ ...(optionValues && { optionValues }) }}
+      style={{ marginBottom: '1em' }}
     />
   );
 };
-
 export default ProductSearchDropdown;
