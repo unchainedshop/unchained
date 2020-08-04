@@ -13,18 +13,18 @@ ProductVariations.helpers({
       productVariationOptionValue: productVariationOptionValue || { $eq: null },
       locale,
     };
-    ProductVariationTexts.upsert(
-      selector,
-      {
-        $set: {
-          updated: new Date(),
-          locale,
-          ...fields,
-          productVariationOptionValue: productVariationOptionValue || null,
-        },
+    ProductVariationTexts.upsert(selector, {
+      $set: {
+        updated: new Date(),
+        ...fields,
       },
-      { bypassCollection2: true },
-    );
+      $setOnInsert: {
+        productVariationId: this._id,
+        productVariationOptionValue: productVariationOptionValue || null,
+        locale,
+        created: new Date(),
+      },
+    });
     return ProductVariationTexts.findOne(selector);
   },
   getLocalizedTexts(locale, optionValue) {

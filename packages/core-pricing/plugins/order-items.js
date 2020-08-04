@@ -8,7 +8,7 @@ class OrderItems extends OrderPricingAdapter {
 
   static version = '1.0';
 
-  static label = 'Bruttopreis + MwSt. aller Artikel summieren';
+  static label = 'Add Total Value Of Goods to Order';
 
   static orderIndex = 0;
 

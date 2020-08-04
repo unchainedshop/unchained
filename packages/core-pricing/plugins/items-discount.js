@@ -13,12 +13,6 @@ const resolveRatioAndTaxDivisorForPricingSheet = (pricing, total) => {
   }
   const tax = pricing.taxSum();
   const gross = pricing.gross();
-  if (gross - tax === 0) {
-    return {
-      ratio: 0,
-      taxDivisor: 0,
-    };
-  }
   return {
     ratio: gross / total,
     taxDivisor: gross / (gross - tax),
@@ -49,24 +43,19 @@ const applyDiscountToMultipleShares = (shares, amount) => {
 const calculateAmountToSplit = (configuration, amount) => {
   const deductionAmount = configuration.rate
     ? amount * configuration.rate
-    : configuration.fixedRate;
+    : Math.min(configuration.fixedRate, amount);
 
-  const leftInDiscount = Math.max(
-    0,
-    deductionAmount - (configuration.alreadyDeductedForDiscount || 0),
-  );
-  const leftToDeduct = Math.min(configuration.amountLeft, leftInDiscount);
-  return Math.max(0, leftToDeduct);
+  return Math.max(0, deductionAmount - (configuration.alreadyDeducted || 0));
 };
 
-class OrderItems extends OrderPricingAdapter {
-  static key = 'shop.unchained.pricing.order-discount';
+class ItemsDiscount extends OrderPricingAdapter {
+  static key = 'shop.unchained.pricing.items-discount';
 
   static version = '1.0';
 
-  static label = 'Apply Discounts on Total Order Value';
+  static label = 'Apply Discounts on Total Value Of Goods';
 
-  static orderIndex = 90;
+  static orderIndex = 89;
 
   static isActivatedFor() {
     return true;
@@ -80,13 +69,6 @@ class OrderItems extends OrderPricingAdapter {
     const totalAmountOfItems = this.calculation.sum({
       category: OrderPricingSheetRowCategories.Items,
     });
-    const totalAmountOfPaymentAndDelivery =
-      this.calculation.sum({
-        category: OrderPricingSheetRowCategories.Payment,
-      }) +
-      this.calculation.sum({
-        category: OrderPricingSheetRowCategories.Delivery,
-      });
 
     const itemShares = this.context.items.map((item) =>
       resolveRatioAndTaxDivisorForPricingSheet(
@@ -94,51 +76,25 @@ class OrderItems extends OrderPricingAdapter {
         totalAmountOfItems,
       ),
     );
-    const deliveryShare = resolveRatioAndTaxDivisorForPricingSheet(
-      this.context.delivery?.pricing(),
-      totalAmountOfPaymentAndDelivery,
-    );
-    const paymentShare = resolveRatioAndTaxDivisorForPricingSheet(
-      this.context.payment?.pricing(),
-      totalAmountOfPaymentAndDelivery,
-    );
 
-    let amountLeft = totalAmountOfPaymentAndDelivery + totalAmountOfItems;
+    let alreadyDeducted = 0;
 
     this.discounts.forEach(({ configuration, discountId }) => {
       // First, we deduce the discount from the items
-      let alreadyDeductedForDiscount = 0;
       const [
         itemsDiscountAmount,
         itemsTaxAmount,
       ] = applyDiscountToMultipleShares(
         itemShares,
         calculateAmountToSplit(
-          { ...configuration, amountLeft, alreadyDeductedForDiscount },
+          { ...configuration, alreadyDeducted },
           totalAmountOfItems,
         ),
       );
-      amountLeft -= itemsDiscountAmount;
-      alreadyDeductedForDiscount += itemsDiscountAmount;
+      alreadyDeducted = +itemsDiscountAmount;
 
-      // After the items, we deduct the remaining discount from payment & delivery fees
-      const [
-        deliveryAndPaymentDiscountAmount,
-        deliveryAndPaymentTaxAmount,
-      ] = applyDiscountToMultipleShares(
-        [deliveryShare, paymentShare],
-        calculateAmountToSplit(
-          { ...configuration, amountLeft, alreadyDeductedForDiscount },
-          totalAmountOfPaymentAndDelivery,
-        ),
-      );
-      amountLeft -= deliveryAndPaymentDiscountAmount;
-      alreadyDeductedForDiscount += itemsDiscountAmount;
-
-      const discountAmount =
-        itemsDiscountAmount + deliveryAndPaymentDiscountAmount;
-      const taxAmount = itemsTaxAmount + deliveryAndPaymentTaxAmount;
-
+      const discountAmount = itemsDiscountAmount;
+      const taxAmount = itemsTaxAmount;
       if (discountAmount) {
         this.result.addDiscounts({
           amount: discountAmount * -1,
@@ -163,4 +119,4 @@ class OrderItems extends OrderPricingAdapter {
   }
 }
 
-OrderPricingDirector.registerAdapter(OrderItems);
+OrderPricingDirector.registerAdapter(ItemsDiscount);

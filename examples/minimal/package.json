@@ -1,7 +1,7 @@
 {
   "name": "@unchainedshop/example-minimal",
   "description": "Minimal Bootstrap Project for Unchained Engine",
-  "version": "0.51.0",
+  "version": "0.51.6",
   "license": "EUPL-1.2",
   "homepage": "https://unchained.shop",
   "repository": {
@@ -30,10 +30,10 @@
     "debug": "cross-env METEOR_PACKAGE_DIRS=../../packages UI_ENDPOINT=http://localhost:4000 meteor --exclude-archs web.browser.legacy,web.browser debug -p 4010"
   },
   "dependencies": {
-    "@babel/runtime": "^7.10.4",
+    "@babel/runtime": "^7.11.0",
     "@paypal/checkout-server-sdk": "^1.0.2",
-    "@unchainedshop/controlpanel": "^0.51.0",
-    "apollo-server-express": "^2.15.1",
+    "@unchainedshop/controlpanel": "^0.51.6",
+    "apollo-server-express": "^2.16.1",
     "bcrypt": "^5.0.0",
     "braintree": "^2.23.0",
     "emoji-flags": "^1.3.0",
@@ -50,16 +50,16 @@
     "moment": "^2.27.0",
     "moniker": "^0.1.2",
     "mustache": "^4.0.1",
-    "open": "^7.0.4",
-    "ramda": "^0.27.0",
+    "open": "^7.1.0",
+    "ramda": "^0.27.1",
     "simpl-schema": "=1.7.2",
-    "stripe": "^8.69.0",
+    "stripe": "^8.81.0",
     "xml-js": "^1.6.11"
   },
   "devDependencies": {
-    "@babel/core": "^7.10.4",
-    "@babel/preset-env": "^7.10.4",
-    "@babel/register": "^7.10.4",
+    "@babel/core": "^7.11.0",
+    "@babel/preset-env": "^7.11.0",
+    "@babel/register": "^7.10.5",
     "babel-eslint": "^10.1.0",
     "cross-env": "^7.0.2",
     "eslint": "^6.7.1",

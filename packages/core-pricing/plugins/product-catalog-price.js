@@ -8,7 +8,7 @@ class ProductPrice extends ProductPricingAdapter {
 
   static version = '1.0';
 
-  static label = 'Berechnung der Bestellposition: Bruttopreis';
+  static label = 'Add Gross Price to Product';
 
   static orderIndex = 0;
 

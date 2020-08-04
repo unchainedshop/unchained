@@ -110,52 +110,64 @@ Products.helpers({
       title,
       productId: this._id,
     });
-    ProductTexts.upsert(
+    const modifier = {
+      $set: {
+        updated: new Date(),
+        title,
+        ...fields,
+      },
+      $setOnInsert: {
+        created: new Date(),
+        productId: this._id,
+        locale,
+      },
+    };
+    if (forcedSlug) {
+      modifier.$set.slug = slug;
+    } else {
+      modifier.$setOnInsert.slug = slug;
+    }
+    const { insertedId } = ProductTexts.upsert(
       {
         productId: this._id,
         locale,
       },
-      {
-        $set: {
-          updated: new Date(),
-          title,
-          locale,
-          slug,
-          ...fields,
-        },
-      },
-      { bypassCollection2: true },
+      modifier,
     );
 
-    Products.update(
-      {
-        _id: this._id,
-      },
-      {
-        $set: {
-          updated: new Date(),
+    if (insertedId || forcedSlug) {
+      Products.update(
+        {
+          _id: this._id,
         },
-        $addToSet: {
+        {
+          $set: {
+            updated: new Date(),
+          },
+          $addToSet: {
+            slugs: slug,
+          },
+        },
+      );
+      Products.update(
+        {
+          _id: { $ne: this._id },
           slugs: slug,
         },
-      },
-    );
-    Products.update(
-      {
-        _id: { $ne: this._id },
-        slugs: slug,
-      },
-      {
-        $set: {
-          updated: new Date(),
+        {
+          $set: {
+            updated: new Date(),
+          },
+          $pullAll: {
+            slugs: slug,
+          },
         },
-        $pullAll: {
-          slugs: slug,
-        },
-      },
-      { multi: true },
+        { multi: true },
+      );
+    }
+    return ProductTexts.findOne(
+      insertedId ? { _id: insertedId } : { productId: this._id, locale },
     );
-    return ProductTexts.findOne({ productId: this._id, locale });
   },
   addMediaLink({ mediaId, meta, tags = [] }) {
     const sortKey = ProductMedia.getNewSortKey(this._id);

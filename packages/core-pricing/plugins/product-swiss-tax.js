@@ -34,8 +34,7 @@ export class ProductSwissTax extends ProductPricingAdapter {
 
   static version = '1.0';
 
-  static label =
-    'Berechnung der Bestellposition: Nettopreis und MwSt (Schweiz)';
+  static label = 'Apply Swiss Tax on Product';
 
   static orderIndex = 20;
 

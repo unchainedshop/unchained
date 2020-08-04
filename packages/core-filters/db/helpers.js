@@ -187,18 +187,18 @@ Filters.helpers({
       filterOptionValue: filterOptionValue || { $eq: null },
       locale,
     };
-    FilterTexts.upsert(
-      selector,
-      {
-        $set: {
-          updated: new Date(),
-          locale,
-          ...fields,
-          filterOptionValue: filterOptionValue || null,
-        },
+    FilterTexts.upsert(selector, {
+      $set: {
+        updated: new Date(),
+        ...fields,
       },
-      { bypassCollection2: true },
-    );
+      $setOnInsert: {
+        filterId: this._id,
+        filterOptionValue: filterOptionValue || null,
+        locale,
+        created: new Date(),
+      },
+    });
     return FilterTexts.findOne(selector);
   },
   getLocalizedTexts(locale, optionValue) {

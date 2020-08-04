@@ -12,7 +12,7 @@ class ProductDiscount extends ProductPricingAdapter {
 
   static version = '1.0';
 
-  static label = 'Berechnung der Bestellposition: Prozentual-Gutscheine';
+  static label = 'Apply Discounts on Product Price';
 
   static orderIndex = 10;
 
