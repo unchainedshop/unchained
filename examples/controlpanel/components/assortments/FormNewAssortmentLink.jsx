@@ -11,6 +11,8 @@ import ErrorsField from 'uniforms-semantic/ErrorsField';
 import AutoForm from 'uniforms-semantic/AutoForm';
 import withFormSchema from '../../lib/withFormSchema';
 import withFormErrorHandlers from '../../lib/withFormErrorHandlers';
+import FormTagInput from '../FormTagInput';
+
 
 const FormNewAssortmentLink = ({
   assortments,
@@ -21,6 +23,7 @@ const FormNewAssortmentLink = ({
     <Segment basic>
       <AutoField name={'parentAssortmentId'} type="hidden" />
       <AutoField name={'childAssortmentId'} options={assortments} />
+      <AutoField name="tags" component={FormTagInput} options={[]} />
       <ErrorsField />
       <SubmitField value="Add Link" className="primary" />
     </Segment>
@@ -45,10 +48,12 @@ export default compose(
       mutation addAssortmentLink(
         $parentAssortmentId: ID!
         $childAssortmentId: ID!
+        $tags: [String!]
       ) {
         addAssortmentLink(
           parentAssortmentId: $parentAssortmentId
           childAssortmentId: $childAssortmentId
+          tags: $tags
         ) {
           _id
         }
@@ -72,6 +77,12 @@ export default compose(
       optional: false,
       label: 'Subassortment',
     },
+    tags: {
+      type: Array,
+      optional: true,
+      label: 'Tags',
+    },
+    'tags.$': String,
   }),
   withHandlers({
     onSubmitSuccess: () => () => {
@@ -80,13 +91,16 @@ export default compose(
     onSubmit: ({ addAssortmentLink }) => ({
       parentAssortmentId,
       childAssortmentId,
-    }) =>
-      addAssortmentLink({
+      tags,
+    }) => {
+      return addAssortmentLink({
         variables: {
           parentAssortmentId,
           childAssortmentId,
+          tags,
         },
-      }),
+      })
+    },
   }),
   withFormErrorHandlers,
   mapProps(

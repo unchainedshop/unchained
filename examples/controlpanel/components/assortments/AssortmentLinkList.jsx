@@ -49,6 +49,7 @@ export default compose(
               title
             }
           }
+          tags
         }
       }
     }
