@@ -5,12 +5,16 @@ import { Segment } from 'semantic-ui-react';
 import { withRouter } from 'next/router';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
+import { connectField } from 'uniforms';
 import AutoField from 'uniforms-semantic/AutoField';
 import SubmitField from 'uniforms-semantic/SubmitField';
 import ErrorsField from 'uniforms-semantic/ErrorsField';
 import AutoForm from 'uniforms-semantic/AutoForm';
+import ProductSearchDropdown from '../products/ProductSearchDropdown';
 import withFormSchema from '../../lib/withFormSchema';
 import withFormErrorHandlers from '../../lib/withFormErrorHandlers';
+
+const ProductSearchDropdownField = connectField(ProductSearchDropdown);
 
 const FormNewAssortmentProduct = ({
   products,
@@ -20,7 +24,11 @@ const FormNewAssortmentProduct = ({
   <AutoForm {...formProps}>
     <Segment basic>
       <AutoField name={'assortmentId'} type="hidden" />
-      <AutoField name={'productId'} options={products} />
+      <AutoField
+        name={'productId'}
+        options={products}
+        uniforms={true}
+      />
       <ErrorsField />
       <SubmitField value="Add Product" className="primary" />
     </Segment>
@@ -68,6 +76,9 @@ export default compose(
       type: String,
       optional: false,
       label: 'Product',
+      uniforms: {
+        component: ProductSearchDropdownField,
+      },
     },
   }),
   withHandlers({
