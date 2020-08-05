@@ -8,7 +8,10 @@ export default function (root, { texts, productMediaId }, { userId }) {
   if (!productMediaObject)
     throw new ProductMediaNotFoundError({ productMediaId });
   const changedLocalizations = texts.map(({ locale, ...localizations }) =>
-    productMediaObject.upsertLocalizedText(locale, localizations),
+    productMediaObject.upsertLocalizedText(locale, {
+      authorId: userId,
+      ...localizations,
+    }),
   );
   return changedLocalizations;
 }

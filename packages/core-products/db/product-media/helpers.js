@@ -37,6 +37,18 @@ ProductMedia.helpers({
 ProductMedia.getLocalizedTexts = (productMediaId, locale) =>
   findLocalizedText(ProductMediaTexts, { productMediaId }, locale);
 
+ProductMedia.createMedia = ({ productId, ...mediaData }) => {
+  const sortKey = ProductMedia.getNewSortKey(productId);
+  const productMediaId = ProductMedia.insert({
+    tags: [],
+    sortKey,
+    productId,
+    created: new Date(),
+    ...mediaData,
+  });
+  return ProductMedia.findOne({ _id: productMediaId });
+};
+
 ProductMedia.getNewSortKey = (productId) => {
   const lastProductMedia = ProductMedia.findOne(
     {

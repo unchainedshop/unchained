@@ -123,6 +123,7 @@ ProductTexts.attachSchema(
     {
       productId: { type: String, required: true, index: true },
       locale: { type: String, required: true, index: true },
+      authorId: { type: String, required: true },
       vendor: String,
       brand: String,
       title: String,

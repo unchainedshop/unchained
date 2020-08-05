@@ -16,23 +16,23 @@ import { ProductReviews } from '../product-reviews/collections';
 import { ProductStatus, ProductTypes } from './schema';
 
 Products.createProduct = (
-  { locale, title, type, sequence, ...rest },
+  { locale, title, type, sequence, authorId, ...productData },
   { autopublish = false } = {},
 ) => {
-  const product = {
+  const productId = Products.insert({
     created: new Date(),
     type: ProductTypes[type],
     status: ProductStatus.DRAFT,
     sequence: sequence ?? Products.find({}).count() + 10,
-    ...rest,
-  };
-  const productId = Products.insert(product);
-  const productObject = Products.findOne({ _id: productId });
-  productObject.upsertLocalizedText(locale, { title });
+    authorId,
+    ...productData,
+  });
+  const product = Products.findOne({ _id: productId });
+  product.upsertLocalizedText(locale, { title, authorId });
   if (autopublish) {
-    productObject.publish();
+    product.publish();
   }
-  return productObject;
+  return product;
 };
 
 Products.updateProduct = ({ productId, type, ...product }) => {
@@ -169,33 +169,31 @@ Products.helpers({
       insertedId ? { _id: insertedId } : { productId: this._id, locale },
     );
   },
-  addMediaLink({ mediaId, meta, tags = [] }) {
-    const sortKey = ProductMedia.getNewSortKey(this._id);
-    const productMediaId = ProductMedia.insert({
-      mediaId,
-      tags,
-      sortKey,
+  addMediaLink(mediaData) {
+    return ProductMedia.createMedia({
       productId: this._id,
-      created: new Date(),
-      meta,
+      ...mediaData,
     });
-    const productMediaObject = ProductMedia.findOne({ _id: productMediaId });
-    return productMediaObject;
   },
-  addMedia({ rawFile, href, name, userId, meta, tags = [], ...options }) {
+  addMedia({ rawFile, href, name, authorId, meta, tags = [], ...options }) {
     const fileLoader = rawFile
       ? Media.insertWithRemoteFile({
           file: rawFile,
-          userId,
+          userId: authorId,
         })
       : Media.insertWithRemoteURL({
           url: href,
           fileName: name,
-          userId,
+          userId: authorId,
           ...options,
         });
     const file = Promise.await(fileLoader);
-    return this.addMediaLink({ mediaId: file._id, tags, meta });
+    return this.addMediaLink({
+      mediaId: file._id,
+      tags,
+      meta,
+      authorId,
+    });
   },
   getLocalizedTexts(locale) {
     const parsedLocale = new Locale(locale);

@@ -3,7 +3,8 @@ import { Migrations } from 'meteor/percolate:migrations';
 import SimpleSchema from 'simpl-schema';
 import { PaymentProviders, PaymentCredentials } from './collections';
 
-export const PaymentProviderType = { // eslint-disable-line
+export const PaymentProviderType = {
+  // eslint-disable-line
   CARD: 'CARD',
   INVOICE: 'INVOICE',
   GENERIC: 'GENERIC',
@@ -14,6 +15,7 @@ PaymentProviders.attachSchema(
     {
       type: { type: String, required: true, index: true },
       adapterKey: { type: String, required: true },
+      authorId: { type: String, required: true },
       configuration: { type: Array },
       'configuration.$': { type: Object },
       'configuration.$.key': { type: String },
@@ -58,6 +60,39 @@ Migrations.add({
       },
       { multi: true },
     );
+  },
+});
+
+Migrations.add({
+  version: 20200728.4,
+  name: 'Add default authorId to payment',
+  up() {
+    PaymentProviders.find()
+      .fetch()
+      .forEach(({ _id }) => {
+        PaymentProviders.update(
+          { _id },
+          {
+            $set: {
+              authorId: 'root',
+            },
+          },
+        );
+      });
+  },
+  down() {
+    PaymentProviders.find()
+      .fetch()
+      .forEach(({ _id }) => {
+        PaymentProviders.update(
+          { _id },
+          {
+            $unset: {
+              authorId: 1,
+            },
+          },
+        );
+      });
   },
 });
 

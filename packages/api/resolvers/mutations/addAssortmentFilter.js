@@ -11,5 +11,5 @@ export default function (root, { assortmentId, filterId, tags }, { userId }) {
   const filter = Filters.findOne({ _id: filterId });
   if (!assortment) throw new AssortmentNotFoundError({ assortmentId });
   if (!filter) throw new FilterNotFoundError({ filterId });
-  return assortment.addFilter({ filterId, tags });
+  return assortment.addFilter({ filterId, tags, authorId: userId });
 }
