@@ -20,6 +20,8 @@ import 'meteor/unchained:core-payment/plugins/invoice-prepaid';
 import 'meteor/unchained:core-payment/plugins/datatrans';
 import 'meteor/unchained:core-payment/plugins/paypal-checkout';
 import 'meteor/unchained:core-payment/plugins/stripe';
+import 'meteor/unchained:core-payment/plugins/stripe-charges';
+import 'meteor/unchained:core-payment/plugins/bity';
 import 'meteor/unchained:core-payment/plugins/apple-iap';
 import 'meteor/unchained:core-pricing/plugins/order-items';
 import 'meteor/unchained:core-pricing/plugins/order-discount';
