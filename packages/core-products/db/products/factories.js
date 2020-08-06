@@ -57,6 +57,7 @@ Factory.define('configurableProduct', Products, {
 Factory.define('productText', ProductTexts, {
   productId: () => Factory.get('simpleProduct'),
   locale: () => faker.random.arrayElement(['de', 'en']),
+  authorId: () => Factory.get('user'),
   title: () => faker.commerce.productName(),
   vendor: () => faker.company.companyName(),
   brand: () => faker.company.companyName(),

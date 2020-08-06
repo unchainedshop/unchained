@@ -29,13 +29,12 @@ WarehousingProviders.helpers({
   },
 });
 
-WarehousingProviders.createProvider = ({ type, ...rest }) => {
-  const InterfaceClass = new WarehousingDirector(rest).interfaceClass();
+WarehousingProviders.createProvider = (providerData) => {
+  const InterfaceClass = new WarehousingDirector(providerData).interfaceClass();
   const providerId = WarehousingProviders.insert({
-    ...rest,
     created: new Date(),
     configuration: InterfaceClass.initialConfiguration,
-    type,
+    ...providerData,
   });
   return WarehousingProviders.findOne({ _id: providerId });
 };

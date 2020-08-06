@@ -29,6 +29,7 @@ export default function (
   );
 
   variation.upsertLocalizedText(localeContext.language, {
+    authorId: userId,
     productVariationOptionValue: value,
     title,
   });

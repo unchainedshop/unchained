@@ -12,6 +12,7 @@ Factory.createMedia = () =>
 Factory.define('productMediaText', ProductMediaTexts, {
   productMediaId: () => Factory.get('productMedia'),
   locale: () => faker.random.arrayElement(['de', 'en']),
+  authorId: () => Factory.get('user'),
   title: () => faker.lorem.words(),
   subtitle: () => faker.lorem.sentence(),
   ...fakeTimestampFields,
@@ -24,5 +25,6 @@ Factory.define('productMedia', ProductMedia, {
       ? [faker.random.arrayElement(['red', 'green', 'blue'])]
       : [],
   productId: () => Factory.get('simpleProduct'),
+  authorId: () => Factory.get('user'),
   ...fakeTimestampFields,
 });

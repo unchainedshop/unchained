@@ -90,13 +90,12 @@ DeliveryProviders.helpers({
   },
 });
 
-DeliveryProviders.createProvider = ({ type, ...rest }) => {
-  const InterfaceClass = new DeliveryDirector(rest).interfaceClass();
+DeliveryProviders.createProvider = (providerData) => {
+  const InterfaceClass = new DeliveryDirector(providerData).interfaceClass();
   const _id = DeliveryProviders.insert({
-    ...rest,
     created: new Date(),
     configuration: InterfaceClass.initialConfiguration,
-    type,
+    ...providerData,
   });
   return DeliveryProviders.findOne({ _id });
 };

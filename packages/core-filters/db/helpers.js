@@ -14,20 +14,22 @@ const zlib = require('zlib');
 const MAX_UNCOMPRESSED_FILTER_PRODUCTS = 1000;
 
 Filters.createFilter = (
-  { locale, title, type, key, options, isActive = false, ...rest },
+  { locale, title, type, isActive = false, authorId, ...filterData },
   { skipInvalidation = false } = {},
 ) => {
-  const filter = {
+  const filterId = Filters.insert({
     isActive,
     created: new Date(),
     type: FilterTypes[type],
-    key,
-    options,
-    ...rest,
-  };
-  const filterId = Filters.insert(filter);
+    authorId,
+    ...filterData,
+  });
   const filterObject = Filters.findOne({ _id: filterId });
-  filterObject.upsertLocalizedText(locale, { filterOptionValue: null, title });
+  filterObject.upsertLocalizedText(locale, {
+    filterOptionValue: null,
+    title,
+    authorId,
+  });
   if (!skipInvalidation) {
     filterObject.invalidateProductIdCache();
   }

@@ -1,12 +1,9 @@
-import './db/factories';
-import './db/helpers';
-import { Filters, FilterTexts } from './db/collections';
+import runMigrations from './db/schema';
+import { Filters } from './db/collections';
 
-export * from './db/schema';
+export * from './db';
 export * from './director';
 export * from './search';
-
-export { Filters, FilterTexts };
 
 export default ({ skipInvalidationOnStartup = true } = {}) => {
   if (!skipInvalidationOnStartup) {
@@ -14,4 +11,5 @@ export default ({ skipInvalidationOnStartup = true } = {}) => {
       Filters.invalidateFilterCaches();
     });
   }
+  runMigrations();
 };

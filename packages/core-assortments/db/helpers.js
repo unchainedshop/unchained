@@ -60,22 +60,23 @@ Collections.Assortments.createAssortment = ({
   isRoot = false,
   meta = {},
   sequence,
+  authorId,
   ...rest
 }) => {
-  const assortment = {
+  const assortmentId = Collections.Assortments.insert({
     created: new Date(),
     sequence: sequence ?? Collections.Assortments.find({}).count() + 10,
     isBase,
     isActive,
     isRoot,
     meta,
+    authorId,
     ...rest,
-  };
-  const assortmentId = Collections.Assortments.insert(assortment);
+  });
   const assortmentObject = Collections.Assortments.findOne({
     _id: assortmentId,
   });
-  assortmentObject.upsertLocalizedText(locale, { title });
+  assortmentObject.upsertLocalizedText(locale, { title, authorId });
   return assortmentObject;
 };
 

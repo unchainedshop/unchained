@@ -62,7 +62,7 @@ describe('Logs', () => {
       expect(logs.length).toEqual(50);
     });
 
-    it('return the last 3 logs of 100 log records', async () => {
+    it('return the last 3 logs of the 100 first log records', async () => {
       const {
         data: { logs },
       } = await graphqlFetch({
@@ -74,7 +74,7 @@ describe('Logs', () => {
           }
         `,
         variables: {
-          limit: 50,
+          limit: 3,
           offset: 97,
         },
       });

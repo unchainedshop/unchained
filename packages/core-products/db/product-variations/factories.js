@@ -8,6 +8,7 @@ Factory.define('productVariation', ProductVariations, {
   productId: () => Factory.get('configurableProduct'),
   key: () => faker.lorem.slug(),
   type: () => faker.random.arrayElement(Object.values(ProductVariationType)),
+  authorId: () => Factory.get('user'),
   options: () => ['red', 'green', 'blue'],
   ...fakeTimestampFields,
 });
@@ -17,6 +18,7 @@ Factory.define('productVariationText', ProductVariationTexts, {
   productVariationOptionValue: () => null,
   locale: () => faker.random.arrayElement(['de', 'en']),
   title: () => faker.lorem.words(),
+  authorId: () => Factory.get('user'),
   subtitle: () => faker.lorem.sentence(),
   ...fakeTimestampFields,
 });

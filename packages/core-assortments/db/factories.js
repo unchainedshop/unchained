@@ -8,6 +8,7 @@ Factory.define('assortment', Collections.Assortments, {
   isBase: () => false,
   isRoot: () => faker.random.boolean(),
   sequence: () => faker.random.number(),
+  authorId: () => Factory.get('user'),
   tags: () =>
     faker.random.boolean()
       ? [faker.random.arrayElement(['b2b', 'b2e', 'b2c'])]
@@ -22,6 +23,7 @@ Factory.define('assortmentText', Collections.AssortmentTexts, {
   title: () => faker.commerce.productName(),
   subtitle: () => faker.lorem.sentence(),
   description: () => faker.lorem.text(),
+  authorId: () => Factory.get('user'),
   slug: () => faker.lorem.slug(),
   ...fakeTimestampFields,
 });
@@ -30,6 +32,7 @@ Factory.define('assortmentProduct', Collections.AssortmentProducts, {
   assortmentId: () => Factory.get('assortment'),
   productId: () => Factory.get('simpleProduct'),
   sortKey: () => faker.random.number(),
+  authorId: () => Factory.get('user'),
   ...fakeTimestampFields,
 });
 
@@ -37,6 +40,7 @@ Factory.define('assortmentLink', Collections.AssortmentLinks, {
   parentAssortmentId: () => Factory.get('assortment'),
   childAssortmentId: () => Factory.get('assortment'),
   sortKey: () => faker.random.number(),
+  authorId: () => Factory.get('user'),
   ...fakeTimestampFields,
 });
 
@@ -44,5 +48,6 @@ Factory.define('assortmentFilter', Collections.AssortmentFilters, {
   assortmentId: () => Factory.get('assortment'),
   filterId: () => Factory.get('filter'),
   sortKey: () => faker.random.number(),
+  authorId: () => Factory.get('user'),
   ...fakeTimestampFields,
 });
