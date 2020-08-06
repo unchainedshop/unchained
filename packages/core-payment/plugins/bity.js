@@ -6,14 +6,28 @@ import {
 import { createLogger } from 'meteor/unchained:core-logger';
 // import { WebApp } from 'meteor/webapp';
 // import bodyParser from 'body-parser';
+import { OrderPricingSheet } from 'meteor/unchained:core-pricing';
+import crypto from 'crypto';
 
 const logger = createLogger('unchained:core-payment:bity-webhook');
 
 const {
   BITY_CLIENT_ID,
+  BITY_SIGN_KEY = 'secret',
   BITY_API_ENDPOINT = 'https://exchange.api.bity.com/v2/',
   BITY_WEBHOOK_PATH = '/graphql/bity',
 } = process.env;
+
+const signPayload = (parts) => {
+  const resultString = parts.filter(Boolean).join('');
+  const signKeyInBytes = Buffer.from(BITY_SIGN_KEY, 'hex');
+
+  const signedString = crypto
+    .createHmac('sha256', signKeyInBytes)
+    .update(resultString)
+    .digest('hex');
+  return signedString;
+};
 //
 // WebApp.connectHandlers.use(
 //   BITY_WEBHOOK_PATH,
@@ -111,20 +125,34 @@ class Bity extends PaymentAdapter {
     this.log(`Bity -> Sign ${JSON.stringify(transactionContext)}`);
     // Signing the order will estimate a new order in bity, it will also return the orderUUID,
     // the crypto address and the amount based on the cart's total.
-    const payload = {
-      orderUUID: 'asdf',
-      amountBTC: '0.5',
-      walletAddress: '0x053245324534',
-      expires: new Date(), // expiry
-    };
-    const hash = ''; // JSON.stringify(orderUUID + order._id + order.total()); // HMAC Sign with SECRET
+    const { orderPayment } = this.context;
+    const order = orderPayment.order();
+    const pricing = new OrderPricingSheet({
+      calculation: order.calculation,
+      currency: order.currency,
+    });
+    const totalAmount = Math.round(pricing?.total().amount / 10 || 0) * 10;
+
+    const payload = await this.bityFetch(``, {
+      input: {
+        currency: order.currency,
+        amount: totalAmount,
+      },
+      output: {
+        currency: 'BTC',
+      },
+    });
+
+    const signature = signPayload(payload.id, order._id, totalAmount);
     return JSON.stringify({
       payload,
-      hash,
+      signature,
     });
   }
 
   async charge() {
+    const { orderPayment } = this.context;
+    console.log(orderPayment);
     // Get the Bity Order Information from the OrderPayment object, validate that order information is valid with a hash match.
     // Throw if the order does not exist, is too old regarding timestamp_price_guaranteed vs order submission or there is a hash mismatch.
 
