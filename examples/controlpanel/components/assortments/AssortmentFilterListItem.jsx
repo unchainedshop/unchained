@@ -4,15 +4,13 @@ import { Item, Button } from 'semantic-ui-react';
 import { SortableElement } from 'react-sortable-hoc';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
-import TagList from '../tagList';
 
-const AssortmentFilterListItem = ({ filter, tags, removeAssortmentFilter }) => (
+const AssortmentFilterListItem = ({ filter, removeAssortmentFilter }) => (
   <Item>
     <Item.Content>
       <Item.Header>
         {filter.texts ? filter.texts.title : filter.key}
       </Item.Header>
-      <TagList tags={tags} />
       <Item.Extra>
         <Button secondary floated="right" onClick={removeAssortmentFilter}>
           Delete

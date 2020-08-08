@@ -11,14 +11,12 @@ import ErrorsField from 'uniforms-semantic/ErrorsField';
 import AutoForm from 'uniforms-semantic/AutoForm';
 import withFormSchema from '../../lib/withFormSchema';
 import withFormErrorHandlers from '../../lib/withFormErrorHandlers';
-import FormTagInput from '../FormTagInput';
 
 const FormNewAssortmentFilter = ({ filters, removeCountry, ...formProps }) => (
   <AutoForm {...formProps}>
     <Segment basic>
       <AutoField name={'assortmentId'} type="hidden" />
       <AutoField name={'filterId'} options={filters} />
-      <AutoField name="tags" component={FormTagInput} options={[]} />
       <ErrorsField />
       <SubmitField value="Add Filter" className="primary" />
     </Segment>
@@ -41,16 +39,8 @@ export default compose(
   `),
   graphql(
     gql`
-      mutation addAssortmentFilter(
-        $assortmentId: ID!
-        $filterId: ID!
-        $tags: [String!]
-      ) {
-        addAssortmentFilter(
-          assortmentId: $assortmentId
-          filterId: $filterId
-          tags: $tags
-        ) {
+      mutation addAssortmentFilter($assortmentId: ID!, $filterId: ID!) {
+        addAssortmentFilter(assortmentId: $assortmentId, filterId: $filterId) {
           _id
         }
       }
@@ -73,23 +63,16 @@ export default compose(
       optional: false,
       label: 'Filter',
     },
-    tags: {
-      type: Array,
-      optional: true,
-      label: 'Tags',
-    },
-    'tags.$': String,
   }),
   withHandlers({
     onSubmitSuccess: () => () => {
       toast('Filtered', { type: toast.TYPE.SUCCESS });
     },
-    onSubmit: ({ addAssortmentFilter }) => ({ assortmentId, filterId, tags }) =>
+    onSubmit: ({ addAssortmentFilter }) => ({ assortmentId, filterId }) =>
       addAssortmentFilter({
         variables: {
           assortmentId,
           filterId,
-          tags,
         },
       }),
   }),

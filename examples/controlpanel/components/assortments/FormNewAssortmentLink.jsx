@@ -11,23 +11,21 @@ import ErrorsField from 'uniforms-semantic/ErrorsField';
 import AutoForm from 'uniforms-semantic/AutoForm';
 import withFormSchema from '../../lib/withFormSchema';
 import withFormErrorHandlers from '../../lib/withFormErrorHandlers';
-import FormTagInput from '../FormTagInput';
 
 const FormNewAssortmentLink = ({
   assortments,
   removeCountry,
   ...formProps
 }) => (
-  <AutoForm {...formProps}>
-    <Segment basic>
-      <AutoField name={'parentAssortmentId'} type="hidden" />
-      <AutoField name={'childAssortmentId'} options={assortments} />
-      <AutoField name="tags" component={FormTagInput} options={[]} />
-      <ErrorsField />
-      <SubmitField value="Add Link" className="primary" />
-    </Segment>
-  </AutoForm>
-);
+    <AutoForm {...formProps}>
+      <Segment basic>
+        <AutoField name={'parentAssortmentId'} type="hidden" />
+        <AutoField name={'childAssortmentId'} options={assortments} />
+        <ErrorsField />
+        <SubmitField value="Add Link" className="primary" />
+      </Segment>
+    </AutoForm>
+  );
 
 export default compose(
   withRouter,
@@ -39,18 +37,6 @@ export default compose(
           _id
           title
         }
-        linkedAssortments {
-          _id
-          sortKey
-          child {
-            _id
-          }
-          parent {
-            _id
-          }
-          meta
-          tags
-        }
       }
     }
   `),
@@ -59,12 +45,10 @@ export default compose(
       mutation addAssortmentLink(
         $parentAssortmentId: ID!
         $childAssortmentId: ID!
-        $tags: [String!]
       ) {
         addAssortmentLink(
           parentAssortmentId: $parentAssortmentId
           childAssortmentId: $childAssortmentId
-          tags: $tags
         ) {
           _id
         }
@@ -88,12 +72,6 @@ export default compose(
       optional: false,
       label: 'Subassortment',
     },
-    tags: {
-      type: Array,
-      optional: true,
-      label: 'Tags',
-    },
-    'tags.$': String,
   }),
   withHandlers({
     onSubmitSuccess: () => () => {
@@ -102,13 +80,11 @@ export default compose(
     onSubmit: ({ addAssortmentLink }) => ({
       parentAssortmentId,
       childAssortmentId,
-      tags,
     }) =>
       addAssortmentLink({
         variables: {
           parentAssortmentId,
           childAssortmentId,
-          tags,
         },
       }),
   }),

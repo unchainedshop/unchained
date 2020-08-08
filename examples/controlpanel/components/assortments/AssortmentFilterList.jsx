@@ -29,8 +29,6 @@ export default compose(
         _id
         filterAssignments {
           _id
-          meta
-          tags
           filter {
             _id
             key
@@ -38,9 +36,6 @@ export default compose(
               _id
               title
             }
-          }
-          assortment {
-            _id
           }
         }
       }
