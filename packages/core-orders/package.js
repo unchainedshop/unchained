@@ -1,6 +1,6 @@
 Package.describe({
   name: 'unchained:core-orders',
-  version: '0.51.0',
+  version: '0.51.6',
   summary: 'Unchained Engine Core: Orders',
   git: 'https://github.com/unchainedshop/unchained',
   documentation: 'README.md',
@@ -20,19 +20,19 @@ Package.onUse((api) => {
   api.use('aldeed:collection2@3.0.2');
   api.use('aldeed:schema-index@3.0.0');
 
-  api.use('unchained:utils@0.51.0');
-  api.use('unchained:core-files@0.51.1');
-  api.use('unchained:core-logger@0.51.0');
-  api.use('unchained:core-pricing@0.51.0');
-  api.use('unchained:core-users@0.51.0');
-  api.use('unchained:core-countries@0.51.0');
-  api.use('unchained:core-documents@0.51.0');
-  api.use('unchained:core-delivery@0.51.0');
-  api.use('unchained:core-products@0.51.0');
-  api.use('unchained:core-discounting@0.51.0');
-  api.use('unchained:core-payment@0.51.0');
-  api.use('unchained:core-quotations@0.51.0');
-  api.use('unchained:core-subscriptions@0.51.0');
+  api.use('unchained:utils@0.51.6');
+  api.use('unchained:core-files@0.51.6');
+  api.use('unchained:core-logger@0.51.6');
+  api.use('unchained:core-pricing@0.51.6');
+  api.use('unchained:core-users@0.51.6');
+  api.use('unchained:core-countries@0.51.6');
+  api.use('unchained:core-documents@0.51.6');
+  api.use('unchained:core-delivery@0.51.6');
+  api.use('unchained:core-products@0.51.6');
+  api.use('unchained:core-discounting@0.51.6');
+  api.use('unchained:core-payment@0.51.6');
+  api.use('unchained:core-quotations@0.51.6');
+  api.use('unchained:core-subscriptions@0.51.6');
 
   api.mainModule('orders.js', 'server');
 });

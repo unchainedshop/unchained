@@ -8,7 +8,7 @@ class OrderDelivery extends OrderPricingAdapter {
 
   static version = '1.0';
 
-  static label = 'Bruttopreis + MwSt. aller Versandgebühren summieren';
+  static label = 'Add Delivery Fees to Order';
 
   static orderIndex = 10;
 

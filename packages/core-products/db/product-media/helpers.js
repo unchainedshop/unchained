@@ -13,11 +13,14 @@ ProductMedia.helpers({
       {
         $set: {
           updated: new Date(),
-          locale,
           ...fields,
         },
+        $setOnInsert: {
+          created: new Date(),
+          productMediaId: this._id,
+          locale,
+        },
       },
-      { bypassCollection2: true },
     );
     return ProductMediaTexts.findOne({ productMediaId: this._id, locale });
   },
@@ -33,6 +36,18 @@ ProductMedia.helpers({
 
 ProductMedia.getLocalizedTexts = (productMediaId, locale) =>
   findLocalizedText(ProductMediaTexts, { productMediaId }, locale);
+
+ProductMedia.createMedia = ({ productId, ...mediaData }) => {
+  const sortKey = ProductMedia.getNewSortKey(productId);
+  const productMediaId = ProductMedia.insert({
+    tags: [],
+    sortKey,
+    productId,
+    created: new Date(),
+    ...mediaData,
+  });
+  return ProductMedia.findOne({ _id: productMediaId });
+};
 
 ProductMedia.getNewSortKey = (productId) => {
   const lastProductMedia = ProductMedia.findOne(

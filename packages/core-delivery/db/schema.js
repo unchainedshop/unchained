@@ -3,7 +3,8 @@ import { Migrations } from 'meteor/percolate:migrations';
 import SimpleSchema from 'simpl-schema';
 import { DeliveryProviders } from './collections';
 
-export const DeliveryProviderType = { // eslint-disable-line
+export const DeliveryProviderType = {
+  // eslint-disable-line
   SHIPPING: 'SHIPPING',
   PICKUP: 'PICKUP',
 };
@@ -13,6 +14,7 @@ DeliveryProviders.attachSchema(
     {
       type: { type: String, required: true, index: true },
       adapterKey: { type: String, required: true },
+      authorId: { type: String, required: true },
       configuration: { type: Array },
       'configuration.$': { type: Object },
       'configuration.$.key': { type: String },
@@ -43,6 +45,39 @@ Migrations.add({
       },
       { multi: true },
     );
+  },
+});
+
+Migrations.add({
+  version: 20200728.2,
+  name: 'Add default authorId to delivery',
+  up() {
+    DeliveryProviders.find()
+      .fetch()
+      .forEach(({ _id }) => {
+        DeliveryProviders.update(
+          { _id },
+          {
+            $set: {
+              authorId: 'root',
+            },
+          },
+        );
+      });
+  },
+  down() {
+    DeliveryProviders.find()
+      .fetch()
+      .forEach(({ _id }) => {
+        DeliveryProviders.update(
+          { _id },
+          {
+            $unset: {
+              authorId: 1,
+            },
+          },
+        );
+      });
   },
 });
 

@@ -16,23 +16,23 @@ import { ProductReviews } from '../product-reviews/collections';
 import { ProductStatus, ProductTypes } from './schema';
 
 Products.createProduct = (
-  { locale, title, type, sequence, ...rest },
+  { locale, title, type, sequence, authorId, ...productData },
   { autopublish = false } = {},
 ) => {
-  const product = {
+  const productId = Products.insert({
     created: new Date(),
     type: ProductTypes[type],
     status: ProductStatus.DRAFT,
     sequence: sequence ?? Products.find({}).count() + 10,
-    ...rest,
-  };
-  const productId = Products.insert(product);
-  const productObject = Products.findOne({ _id: productId });
-  productObject.upsertLocalizedText(locale, { title });
+    authorId,
+    ...productData,
+  });
+  const product = Products.findOne({ _id: productId });
+  product.upsertLocalizedText(locale, { title, authorId });
   if (autopublish) {
-    productObject.publish();
+    product.publish();
   }
-  return productObject;
+  return product;
 };
 
 Products.updateProduct = ({ productId, type, ...product }) => {
@@ -110,80 +110,90 @@ Products.helpers({
       title,
       productId: this._id,
     });
-    ProductTexts.upsert(
+    const modifier = {
+      $set: {
+        updated: new Date(),
+        title,
+        ...fields,
+      },
+      $setOnInsert: {
+        created: new Date(),
+        productId: this._id,
+        locale,
+      },
+    };
+    if (forcedSlug) {
+      modifier.$set.slug = slug;
+    } else {
+      modifier.$setOnInsert.slug = slug;
+    }
+    const { insertedId } = ProductTexts.upsert(
       {
         productId: this._id,
         locale,
       },
-      {
-        $set: {
-          updated: new Date(),
-          title,
-          locale,
-          slug,
-          ...fields,
-        },
-      },
-      { bypassCollection2: true },
+      modifier,
     );
 
-    Products.update(
-      {
-        _id: this._id,
-      },
-      {
-        $set: {
-          updated: new Date(),
+    if (insertedId || forcedSlug) {
+      Products.update(
+        {
+          _id: this._id,
         },
-        $addToSet: {
+        {
+          $set: {
+            updated: new Date(),
+          },
+          $addToSet: {
+            slugs: slug,
+          },
+        },
+      );
+      Products.update(
+        {
+          _id: { $ne: this._id },
           slugs: slug,
         },
-      },
-    );
-    Products.update(
-      {
-        _id: { $ne: this._id },
-        slugs: slug,
-      },
-      {
-        $set: {
-          updated: new Date(),
+        {
+          $set: {
+            updated: new Date(),
+          },
+          $pullAll: {
+            slugs: slug,
+          },
         },
-        $pullAll: {
-          slugs: slug,
-        },
-      },
-      { multi: true },
+        { multi: true },
+      );
+    }
+    return ProductTexts.findOne(
+      insertedId ? { _id: insertedId } : { productId: this._id, locale },
     );
-    return ProductTexts.findOne({ productId: this._id, locale });
   },
-  addMediaLink({ mediaId, meta, tags = [] }) {
-    const sortKey = ProductMedia.getNewSortKey(this._id);
-    const productMediaId = ProductMedia.insert({
-      mediaId,
-      tags,
-      sortKey,
+  addMediaLink(mediaData) {
+    return ProductMedia.createMedia({
       productId: this._id,
-      created: new Date(),
-      meta,
+      ...mediaData,
     });
-    const productMediaObject = ProductMedia.findOne({ _id: productMediaId });
-    return productMediaObject;
   },
-  addMedia({ rawFile, href, name, userId, meta, tags = [], ...options }) {
+  addMedia({ rawFile, href, name, authorId, meta, tags = [], ...options }) {
     const fileLoader = rawFile
       ? Media.insertWithRemoteFile({
           file: rawFile,
-          userId,
+          userId: authorId,
         })
       : Media.insertWithRemoteURL({
           url: href,
           fileName: name,
-          userId,
+          userId: authorId,
           ...options,
         });
     const file = Promise.await(fileLoader);
-    return this.addMediaLink({ mediaId: file._id, tags, meta });
+    return this.addMediaLink({
+      mediaId: file._id,
+      tags,
+      meta,
+      authorId,
+    });
   },
   getLocalizedTexts(locale) {
     const parsedLocale = new Locale(locale);

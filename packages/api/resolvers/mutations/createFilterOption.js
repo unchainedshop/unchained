@@ -26,6 +26,7 @@ export default function (
   );
   const filter = Filters.findOne({ _id: filterId });
   filter.upsertLocalizedText(localeContext.language, {
+    authorId: userId,
     filterOptionValue: value,
     title,
   });

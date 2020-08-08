@@ -64,7 +64,7 @@ class OrderItems extends OrderPricingAdapter {
 
   static version = '1.0';
 
-  static label = 'Bruttopreis + MwSt. aller Pauschal-Gutscheine summieren';
+  static label = 'Apply Discounts on Total Order Value';
 
   static orderIndex = 90;
 

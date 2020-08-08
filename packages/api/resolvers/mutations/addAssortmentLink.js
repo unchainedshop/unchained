@@ -30,5 +30,9 @@ export default function (
       assortmentId: childAssortmentId,
     });
   }
-  return parent.addLink({ assortmentId: childAssortmentId, tags });
+  return parent.addLink({
+    assortmentId: childAssortmentId,
+    tags,
+    authorId: userId,
+  });
 }

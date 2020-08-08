@@ -15,10 +15,11 @@ export default function (
   });
   if (!productVariation)
     throw new ProductVariationNotFoundError({ productVariationId });
-  const changedLocalizations = texts.map(({ locale, ...rest }) =>
+  const changedLocalizations = texts.map(({ locale, ...localizations }) =>
     productVariation.upsertLocalizedText(locale, {
+      authorId: userId,
       productVariationOptionValue,
-      ...rest,
+      ...localizations,
     }),
   );
   return changedLocalizations;

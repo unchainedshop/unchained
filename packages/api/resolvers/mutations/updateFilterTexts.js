@@ -14,7 +14,11 @@ export default function (
   const filter = Filters.findOne({ _id: filterId });
   if (!filter) throw new FilterNotFoundError({ filterId });
   const changedLocalizations = texts.map(({ locale, ...fields }) =>
-    filter.upsertLocalizedText(locale, { filterOptionValue, ...fields }),
+    filter.upsertLocalizedText(locale, {
+      authorId: userId,
+      filterOptionValue,
+      ...fields,
+    }),
   );
   return changedLocalizations;
 }

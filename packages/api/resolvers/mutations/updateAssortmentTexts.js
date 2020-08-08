@@ -6,7 +6,10 @@ export default function (root, { texts, assortmentId }, { userId }) {
   if (!assortmentId) throw new Error('Invalid assortment ID provided');
   const assortmentObject = Assortments.findOne({ _id: assortmentId });
   const changedLocalizations = texts.map(({ locale, ...localizations }) =>
-    assortmentObject.upsertLocalizedText(locale, localizations),
+    assortmentObject.upsertLocalizedText(locale, {
+      ...localizations,
+      authorId: userId,
+    }),
   );
   return changedLocalizations;
 }

@@ -9,6 +9,7 @@ Factory.define('filter', Filters, {
   type: () => FilterTypes.SINGLE_CHOICE,
   key: () => 'size',
   options: () => ['xs', 'x', 'm', 'l', 'xl'],
+  authorId: () => Factory.get('user'),
   ...fakeTimestampFields,
 });
 
@@ -16,6 +17,7 @@ Factory.define('filterText', FilterTexts, {
   filterId: () => Factory.get('filter'),
   filterOptionValue: () => null,
   locale: () => faker.random.arrayElement(['de', 'en']),
+  authorId: () => Factory.get('user'),
   title: () => faker.lorem.words(),
   subtitle: () => faker.lorem.sentence(),
   ...fakeTimestampFields,

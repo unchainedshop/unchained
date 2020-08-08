@@ -34,7 +34,7 @@ export class DeliverySwissTax extends DeliveryPricingAdapter {
 
   static version = '1.0';
 
-  static label = 'Berechnung MwSt. für Versandgebühren (Schweiz)';
+  static label = 'Apply Swiss Tax on Delivery Fees';
 
   static orderIndex = 20;
 

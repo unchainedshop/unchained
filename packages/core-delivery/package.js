@@ -1,6 +1,6 @@
 Package.describe({
   name: 'unchained:core-delivery',
-  version: '0.51.0',
+  version: '0.51.6',
   summary: 'Unchained Engine Core: Delivery',
   git: 'https://github.com/unchainedshop/unchained',
   documentation: 'README.md',
@@ -16,11 +16,11 @@ Package.onUse((api) => {
   api.use('dburles:collection-helpers@1.1.0');
   api.use('aldeed:collection2@3.0.2');
   api.use('aldeed:schema-index@3.0.0');
-  api.use('unchained:utils@0.51.0');
-  api.use('unchained:core-logger@0.51.0');
-  api.use('unchained:core-pricing@0.51.0');
-  api.use('unchained:core-countries@0.51.0');
-  api.use('unchained:core-worker@0.51.0');
+  api.use('unchained:utils@0.51.6');
+  api.use('unchained:core-logger@0.51.6');
+  api.use('unchained:core-pricing@0.51.6');
+  api.use('unchained:core-countries@0.51.6');
+  api.use('unchained:core-worker@0.51.6');
 
   api.mainModule('delivery.js', 'server');
 });

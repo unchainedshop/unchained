@@ -1,10 +1,9 @@
 // import { checkNpmVersions } from 'meteor/tmeasday:check-npm-versions';
-import './db/factories';
-import './db/helpers';
 import LocalTransport from './local-transport';
-import { Logs } from './db/collections';
 import configureSchema from './db/schema';
 import createLogger, { transports, format } from './createLogger';
+
+export * from './db';
 
 let instance = null;
 class Logger {
@@ -29,4 +28,4 @@ export default () => {
   configureSchema();
 };
 
-export { Logger, log, Logs, createLogger, transports, format };
+export { Logger, log, createLogger, transports, format };

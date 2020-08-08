@@ -1,6 +1,6 @@
 Package.describe({
   name: 'unchained:core-pricing',
-  version: '0.51.5',
+  version: '0.51.6',
   summary: 'Unchained Engine Core: Pricing',
   git: 'https://github.com/unchainedshop/unchained',
   documentation: 'README.md',
@@ -9,7 +9,7 @@ Package.describe({
 Package.onUse((api) => {
   api.versionsFrom('1.10');
   api.use('ecmascript');
-  api.use('unchained:core-logger@0.51.0');
+  api.use('unchained:core-logger@0.51.6');
 
   api.mainModule('pricing.js', 'server');
 });

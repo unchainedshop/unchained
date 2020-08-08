@@ -5,5 +5,6 @@ export default (root, { warehousingProvider }, { userId }) => {
   log('mutation createWarehousingProvider', { userId });
   return WarehousingProviders.createProvider({
     ...warehousingProvider,
+    authorId: userId,
   });
 };
