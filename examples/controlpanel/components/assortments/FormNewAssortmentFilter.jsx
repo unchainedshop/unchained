@@ -39,8 +39,16 @@ export default compose(
   `),
   graphql(
     gql`
-      mutation addAssortmentFilter($assortmentId: ID!, $filterId: ID!) {
-        addAssortmentFilter(assortmentId: $assortmentId, filterId: $filterId) {
+      mutation addAssortmentFilter(
+        $assortmentId: ID!
+        $filterId: ID!
+        $tags: [String!]
+      ) {
+        addAssortmentFilter(
+          assortmentId: $assortmentId
+          filterId: $filterId
+          tags: $tags
+        ) {
           _id
         }
       }
@@ -63,16 +71,23 @@ export default compose(
       optional: false,
       label: 'Filter',
     },
+    tags: {
+      type: Array,
+      optional: true,
+      label: 'Tags',
+    },
+    'tags.$': String,
   }),
   withHandlers({
     onSubmitSuccess: () => () => {
       toast('Filtered', { type: toast.TYPE.SUCCESS });
     },
-    onSubmit: ({ addAssortmentFilter }) => ({ assortmentId, filterId }) =>
+    onSubmit: ({ addAssortmentFilter }) => ({ assortmentId, filterId, tags }) =>
       addAssortmentFilter({
         variables: {
           assortmentId,
           filterId,
+          tags,
         },
       }),
   }),
