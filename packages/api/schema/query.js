@@ -222,7 +222,7 @@ export default [
       """
       Get all product reviews
       """
-      productReviews(limit: Int = 10, offset: Int = 0): [ProductReview3!]!
+      productReviews(limit: Int = 10, offset: Int = 0): [ProductReview!]!
 
       """
       Get a specific product review by ID
