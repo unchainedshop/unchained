@@ -18,7 +18,7 @@ const {
   BITY_WEBHOOK_PATH = '/graphql/bity',
 } = process.env;
 
-const signPayload = (parts) => {
+const signPayload = (...parts) => {
   const resultString = parts.filter(Boolean).join('');
   const signKeyInBytes = Buffer.from(BITY_SIGN_KEY, 'hex');
 
