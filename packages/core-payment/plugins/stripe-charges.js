@@ -80,7 +80,7 @@ class Stripe extends PaymentAdapter {
   static initialConfiguration = [];
 
   static typeSupported(type) {
-    return type === 'CARD';
+    return type === 'GENERIC';
   }
 
   configurationError() {
@@ -95,13 +95,12 @@ class Stripe extends PaymentAdapter {
   }
 
   isActive() {
-    // eslint-disable-line
     if (this.configurationError() === null) return true;
     return false;
   }
 
+  // eslint-disable-next-line
   isPayLaterAllowed() {
-    // eslint-disable-line
     return false;
   }
 
