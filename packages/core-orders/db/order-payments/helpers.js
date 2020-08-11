@@ -78,9 +78,14 @@ OrderPayments.helpers({
       );
     }
   },
-  markPaid() {
+  markPaid(arbitraryResponseData) {
     if (this.status !== OrderPaymentStatus.OPEN) return;
-    this.setStatus(OrderPaymentStatus.PAID, 'mark paid manually');
+    this.setStatus(
+      OrderPaymentStatus.PAID,
+      arbitraryResponseData
+        ? JSON.stringify(arbitraryResponseData)
+        : 'mark paid manually',
+    );
   },
   setStatus(status, info) {
     return OrderPayments.updateStatus({
