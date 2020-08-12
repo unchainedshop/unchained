@@ -8,13 +8,20 @@ import InfiniteScroll from 'react-infinite-scroller';
 import Link from 'next/link';
 import ProductSearchDropdown from './ProductSearchDropdown';
 
-const ProductList = ({ products, loadMoreEntries, hasMore }) => {
+const ProductList = ({ products, loadMoreEntries, hasMore, router }) => {
   return (
     <Table celled>
       <Table.Header>
         <Table.Row>
           <Table.HeaderCell colSpan="3">
-            <ProductSearchDropdown />
+            <ProductSearchDropdown
+              onChange={(e, result) => {
+                router.push({
+                  pathname: '/products/edit',
+                  query: { _id: result.value },
+                });
+              }}
+            />
 
             <Link href="/products/new">
               <Button

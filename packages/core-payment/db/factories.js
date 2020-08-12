@@ -7,5 +7,6 @@ Factory.define('paymentProvider', PaymentProviders, {
   adapterKey: () => 'shop.unchained.invoice',
   type: () => PaymentProviderType.INVOICE,
   configuration: () => [],
+  authorId: () => Factory.get('user'),
   ...fakeTimestampFields,
 });
