@@ -24,11 +24,7 @@ const FormNewAssortmentProduct = ({
   <AutoForm {...formProps}>
     <Segment basic>
       <AutoField name={'assortmentId'} type="hidden" />
-      <AutoField
-        name={'productId'}
-        options={products}
-        uniforms={true}
-      />
+      <AutoField name={'productId'} options={products} uniforms />
       <ErrorsField />
       <SubmitField value="Add Product" className="primary" />
     </Segment>

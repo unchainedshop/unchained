@@ -24,9 +24,11 @@ const SEARCH_PRODUCTS = gql`
         }
         media(limit: $limit) {
           texts {
+            _id
             title
           }
           file {
+            _id
             url
             name
           }

@@ -13,7 +13,6 @@ import withFormSchema from '../../lib/withFormSchema';
 import withFormErrorHandlers from '../../lib/withFormErrorHandlers';
 import FormTagInput from '../FormTagInput';
 
-
 const FormNewAssortmentLink = ({
   assortments,
   removeCountry,
@@ -99,7 +98,7 @@ export default compose(
           childAssortmentId,
           tags,
         },
-      })
+      });
     },
   }),
   withFormErrorHandlers,

@@ -6,6 +6,7 @@
     "plugin:meteor/recommended",
     "plugin:prettier/recommended"
   ],
+  "root": true,
   "env": {
     "node": true,
     "browser": false,
