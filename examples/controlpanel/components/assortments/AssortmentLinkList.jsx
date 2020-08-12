@@ -93,6 +93,7 @@ export default compose(
         },
       });
     },
+    useDragHandle: true,
   }),
   pure,
   SortableContainer

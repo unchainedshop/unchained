@@ -2,9 +2,13 @@ import React from 'react';
 import Link from 'next/link';
 import { compose, withHandlers } from 'recompose';
 import { Item, Button, List, Label, Icon } from 'semantic-ui-react';
-import { SortableElement } from 'react-sortable-hoc';
+import { SortableElement, SortableHandle } from 'react-sortable-hoc';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
+
+const DragHandle = SortableHandle(() => (
+  <Icon name="arrows alternate vertical" link size="small" />
+));
 
 const AssortmentLinkListItem = ({
   parent,
@@ -17,7 +21,8 @@ const AssortmentLinkListItem = ({
       <Item.Content>
         <Item.Header>
           <List as="ol">
-            <List.Item as="li" value="*">
+            <List.Item as="li" value="">
+              <DragHandle />
               <Link
                 href={`/assortments/edit?_id=${parent._id}&tab=AssortmentLinks`}
               >
@@ -34,7 +39,7 @@ const AssortmentLinkListItem = ({
                 </>
               </Link>
               <List.Item as="ol">
-                <List.Item as="li" value="-">
+                <List.Item as="li" value="">
                   <Link
                     href={`/assortments/edit?_id=${child._id}&tab=AssortmentLinks`}
                   >
