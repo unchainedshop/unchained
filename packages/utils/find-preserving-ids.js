@@ -4,8 +4,14 @@ const sortByIndex = {
   index: 1,
 };
 
+const sortBySequence = {
+  sequence: 1,
+};
+
 export default (Collection) => async (selector, ids, options = {}) => {
-  const defaultSort = AMAZON_DOCUMENTDB_COMPAT_MODE ? undefined : sortByIndex;
+  const defaultSort = AMAZON_DOCUMENTDB_COMPAT_MODE
+    ? sortBySequence
+    : sortByIndex;
 
   const { skip, limit, sort = defaultSort } = options;
   const filteredSelector = {
@@ -33,5 +39,5 @@ export default (Collection) => async (selector, ids, options = {}) => {
   );
   const aggregationPointer = aggregateCollection(filteredPipeline);
   const items = await aggregationPointer.toArray();
-  return (items || []).map(item => new Collection._transform(item)); // eslint-disable-line
+  return (items || []).map((item) => new Collection._transform(item)); // eslint-disable-line
 };
