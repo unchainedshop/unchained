@@ -1,6 +1,6 @@
 Package.describe({
   name: 'unchained:core-users',
-  version: '0.51.6',
+  version: '0.52.0',
   summary: 'Unchained Engine Core: Users',
   git: 'https://github.com/unchainedshop/unchained',
   documentation: 'README.md',
@@ -23,11 +23,11 @@ Package.onUse((api) => {
   api.use('aldeed:schema-index@3.0.0');
 
   api.use('percolate:migrations@1.0.2');
-  api.use('unchained:utils@0.51.6');
-  api.use('unchained:core-logger@0.51.6');
-  api.use('unchained:core-languages@0.51.6');
-  api.use('unchained:core-countries@0.51.6');
-  api.use('unchained:core-files@0.51.6');
+  api.use('unchained:utils@0.52.0');
+  api.use('unchained:core-logger@0.52.0');
+  api.use('unchained:core-languages@0.52.0');
+  api.use('unchained:core-countries@0.52.0');
+  api.use('unchained:core-files@0.52.0');
 
   api.mainModule('users.js', 'server');
 });

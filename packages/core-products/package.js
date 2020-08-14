@@ -1,6 +1,6 @@
 Package.describe({
   name: 'unchained:core-products',
-  version: '0.51.6',
+  version: '0.52.0',
   summary: 'Unchained Engine Core: Products',
   git: 'https://github.com/unchainedshop/unchained',
   documentation: 'README.md',
@@ -17,13 +17,13 @@ Package.onUse((api) => {
   api.use('aldeed:schema-index@3.0.0');
   api.use('percolate:migrations@1.0.2');
 
-  api.use('unchained:utils@0.51.6');
-  api.use('unchained:core@0.51.6');
-  api.use('unchained:core-files@0.51.6');
-  api.use('unchained:core-users@0.51.6');
-  api.use('unchained:core-pricing@0.51.6');
-  api.use('unchained:core-warehousing@0.51.6');
-  api.use('unchained:core-countries@0.51.6');
+  api.use('unchained:utils@0.52.0');
+  api.use('unchained:core@0.52.0');
+  api.use('unchained:core-files@0.52.0');
+  api.use('unchained:core-users@0.52.0');
+  api.use('unchained:core-pricing@0.52.0');
+  api.use('unchained:core-warehousing@0.52.0');
+  api.use('unchained:core-countries@0.52.0');
 
   api.mainModule('products.js', 'server');
 });

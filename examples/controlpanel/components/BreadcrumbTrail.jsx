@@ -1,5 +1,5 @@
-import React from "react";
-import { Breadcrumb } from "semantic-ui-react";
+import React from 'react';
+import { Breadcrumb } from 'semantic-ui-react';
 
 const BreadcrumbTrail = ({ assortmentPaths }) => {
   return (
