@@ -163,6 +163,19 @@ describe('Cart: Product Items', () => {
         items: [],
       });
     });
+
+    it('return error when passed invalid orderId', async () => {
+      const { errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation {
+            emptyCart {
+              _id
+            }
+          }
+        `,
+      });
+      expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
+    });
   });
 
   describe('Mutation.addMultipleCartProducts', () => {
