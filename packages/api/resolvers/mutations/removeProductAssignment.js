@@ -1,10 +1,10 @@
 import { log } from 'meteor/unchained:core-logger';
 import { Products } from 'meteor/unchained:core-products';
-import { ProductNotFoundError } from '../../errors';
+import { ProductNotFoundError, InvalidIdError } from '../../errors';
 
 export default function (root, { proxyId, vectors }, { userId }) {
   log(`mutation removeProductAssignment ${proxyId}`, { userId });
-  if (!proxyId) throw new Error('Invalid product/proxy ID provided');
+  if (!proxyId) throw new InvalidIdError({ proxyId });
   const product = Products.findOne({ _id: proxyId });
   if (!product) throw new ProductNotFoundError({ proxyId });
 
