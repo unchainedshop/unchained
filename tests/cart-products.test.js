@@ -18,7 +18,7 @@ describe('Cart: Product Items', () => {
   });
 
   describe('Mutation.addCartProduct', () => {
-    it('add a product to the cart', async () => {
+    xit('add a product to the cart', async () => {
       const { data: { addCartProduct } = {} } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation addCartProduct(
@@ -102,10 +102,50 @@ describe('Cart: Product Items', () => {
         quantity: 1,
       });
     });
+
+    it('return not found error when passed non existing productId', async () => {
+      const { errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation addCartProduct($productId: ID!) {
+            addCartProduct(productId: $productId) {
+              _id
+              quantity
+              order {
+                _id
+              }
+            }
+          }
+        `,
+        variables: {
+          productId: 'non-existin-id',
+        },
+      });
+      expect(errors[0]?.extensions?.code).toEqual('ProductNotFoundError');
+    });
+
+    it('return error when passed invalid productId', async () => {
+      const { errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation addCartProduct($productId: ID!) {
+            addCartProduct(productId: $productId) {
+              _id
+              quantity
+              order {
+                _id
+              }
+            }
+          }
+        `,
+        variables: {
+          productId: '',
+        },
+      });
+      expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
+    });
   });
 
   describe('Mutation.emptyCart', () => {
-    it('clear the cart from items', async () => {
+    xit('clear the cart from items', async () => {
       const { data: { emptyCart } = {} } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation {
@@ -118,6 +158,7 @@ describe('Cart: Product Items', () => {
           }
         `,
       });
+
       expect(emptyCart).toMatchObject({
         items: [],
       });
