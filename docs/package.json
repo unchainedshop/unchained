@@ -3,7 +3,7 @@
     "predev": "gatsby clean",
     "dev": "gatsby develop",
     "build": "gatsby build",
-    "start": "gatsby serve"
+    "start": "gatsby serve -H 0.0.0.0 -p 9000"
   },
   "dependencies": {
     "@unchainedshop/gatsby-theme-apollo-docs": "^4.3.14",
