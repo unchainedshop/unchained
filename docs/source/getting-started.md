@@ -25,13 +25,17 @@ JavaScript, and that you have a recent version of Meteor.js installed.
 npm init unchained
 ```
 
-Your project directory now contains the following folders:
+Your project directory now contains the following folders representing 3 micro services:
 
-- x
-- y
-- z
+- **cms**: Contains a Dockerfile for a PHP based headless CMS [GetCockpit](https://getcockpit.com) )
+- **engine**: Contains a boilerplate Meteor project with unchained as dependency
+- **storefront**: Contains a Next.js based Web App that connects to Unchained and GetCockpit
+
+TODO: @schmidsi
 
 ## Step 2: Write a custom pricing plugin
+
+Next we will add a new file to the project and name it "engine/sausage.js":
 
 ```js
 import {
@@ -95,11 +99,61 @@ class WeatherDependentBarbequeSausagePricing extends ProductPricingAdapter {
 ProductPricingDirector.registerAdapter(WeatherDependentBarbequeSausagePricing);
 ```
 
-## Step 3: Deploy the stack with docker
+When you read though the code you can anticipate the domain logic: All products that have the tag "sausage" will get 1 CHF more expensive when a certain temperatur treshold has been reached at a specific location.
+
+Now let's load that plugin in engine/boot.js
+
+```
+import "./sausage";
+```
+
+## Step 3: Create a new product
+
+Now open the controlpanel and add a new product, tag it with "sausage", set a price and publish it. As always you can use GraphQL mutations to do that:
+
+```graphql
+mutation {
+  createProduct(
+    product: { type: "SimpleProduct", title: "Cervelat", tags: "sausage" }
+  ) {
+    _id
+  }
+}
+```
+
+```graphql
+mutation {
+  updateProductCommerce(
+    productId: "dKn2dvfqjiiJ6DbJA"
+    commerce: {
+      pricing: [{ currencyCode: "CHF", countryCode: "CH", amount: 200 }]
+    }
+  ) {
+    ... on SimpleProduct {
+      simulatedPrice {
+        price {
+          amount
+        }
+      }
+    }
+  }
+  publishProduct(productId: "dKn2dvfqjiiJ6DbJA") {
+    status
+  }
+}
+```
+
+The simulatedPrice is now beeing affected by the pricing plugin, try it by changing the temperature treshold variable in sausage.js
+
+## Step 4: Deploy the stack with docker
+
+To help you deploy your project to production, we provide you with an example docker-compose.yml that works with Docker Desktop. More infos about that process can be found here: https://docs.docker.com/docker-for-mac/kubernetes/
 
 ```bash
 docker stack deploy -c docker-compose.yml my-project
 ```
+
+The exact configuration will differ from this template, as we encourage you to use a reverse proxy like traefik or nginx for SSL termination and a replicated MongoDB with one daemon running in the same datacenter like unchained engine (low latency).
 
 ## Next steps
 
