@@ -137,5 +137,39 @@ describe('setup delivery providers', () => {
         _id: SimpleDeliveryProvider._id,
       });
     });
+
+    it('return not found error when passed non existing deliveryProviderId', async () => {
+      const { errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation removeDeliveryProvider($deliveryProviderId: ID!) {
+            removeDeliveryProvider(deliveryProviderId: $deliveryProviderId) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          deliveryProviderId: 'non-existing-id',
+        },
+      });
+      expect(errors[0]?.extensions?.code).toEqual(
+        'DeliveryProviderNotFoundError',
+      );
+    });
+
+    it('return error when passed invalid deliveryProviderId', async () => {
+      const { errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation removeDeliveryProvider($deliveryProviderId: ID!) {
+            removeDeliveryProvider(deliveryProviderId: $deliveryProviderId) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          deliveryProviderId: '',
+        },
+      });
+      expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
+    });
   });
 });
