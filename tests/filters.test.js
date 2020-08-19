@@ -535,7 +535,7 @@ describe('Filters', () => {
       expect(filter).toBe(null);
     });
 
-    it('return error when passed non valid filter ID', async () => {
+    it('return not found error when passed non existing filter ID', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation RemoveFilter($filterId: ID!) {
@@ -549,7 +549,24 @@ describe('Filters', () => {
         },
       });
 
-      expect(errors.length).toEqual(1);
+      expect(errors[0]?.extensions?.code).toEqual('FilterNotFoundError');
+    });
+
+    it('return error when passed invalid filter ID', async () => {
+      const { errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation RemoveFilter($filterId: ID!) {
+            removeFilter(filterId: $filterId) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          filterId: '',
+        },
+      });
+
+      expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
     });
   });
 
