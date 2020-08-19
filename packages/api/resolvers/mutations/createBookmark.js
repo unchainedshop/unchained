@@ -1,6 +1,11 @@
 import { log } from 'meteor/unchained:core-logger';
 import { Bookmarks } from 'meteor/unchained:core-bookmarks';
-import { BookmarkAlreadyExistsError } from '../../errors';
+import { Products } from 'meteor/unchained:core-products';
+import {
+  BookmarkAlreadyExistsError,
+  InvalidIdError,
+  ProductNotFoundError,
+} from '../../errors';
 
 export default function (
   root,
@@ -8,7 +13,9 @@ export default function (
   { userId },
 ) {
   log(`mutation createBookmark for ${foreignUserId}`, { productId, userId });
-  if (!productId) throw new Error('Invalid product ID provided');
+  if (!productId) throw new InvalidIdError({ productId });
+  const product = Products.findOne({ _id: productId });
+  if (!product) throw new ProductNotFoundError({ productId });
   const foundBookmark = Bookmarks.findBookmarks({
     productId,
     userId: foreignUserId,
