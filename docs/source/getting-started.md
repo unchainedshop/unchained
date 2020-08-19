@@ -1,231 +1,109 @@
 ---
-title: Get started with Apollo Server
+title: Get started with Unchained Engine
+sidebar_title: Create a Project
 ---
 
-> This tutorial walks you through installing and configuring Apollo Server.
-> If you're just getting started with GraphQL or the Apollo
-> platform, we recommend first completing the [full-stack tutorial](https://www.apollographql.com/docs/tutorial/introduction/).
+> This tutorial walks you through installing and configuring Unchained Engine.
+> If you're just getting started with GraphQL or Node.js this will be too hard to follow
 
 This tutorial helps you:
 
-- Obtain a basic understanding of GraphQL principles
-- Define a GraphQL **schema** that represents the structure of your data set
-- Run an instance of Apollo Server that lets you execute queries against your schema
+- Obtain a basic understanding of the architecture
+- Bootstrap a basic unchained backed project
+- Write a pricing plugin
+- Deploy an unchained engine backed project
 
 This tutorial assumes that you are familiar with the command line and
-JavaScript, and that you have a recent version of Node.js (8+) installed.
+JavaScript, and that you have a recent version of Meteor.js installed.
 
 ## Step 1: Create a new project
 
-1.  From your preferred development directory, create a directory for a new project
-    and `cd` into it:
-
-        ```bash
-        mkdir graphql-server-example
-        cd graphql-server-example
-        ```
-
-2.  Initialize a new Node.js project with `npm` (or another package manager you
+1.  Initialize a new Unchained project with `npm` (or another package manager you
     prefer, such as Yarn):
 
-        ```bash
-        npm init --yes
-        ```
-
-Your project directory now contains a `package.json` file.
-
-## Step 2: Install dependencies
-
-Applications that run Apollo Server require two top-level dependencies:
-
-- [`apollo-server`](https://npm.im/apollo-server) is the core library for Apollo Server itself, which helps you define the shape of your data and how to fetch it.
-- [`graphql`](https://npm.im/graphql) is the library used to build a GraphQL schema and execute queries against it.
-
-Run the following command to install both of these dependencies and save them in
-your project's `node_modules` directory:
-
 ```bash
-npm install apollo-server graphql
+npm init unchained
 ```
 
-Also create an empty `index.js` file in your project's root directory:
+Your project directory now contains the following folders:
 
-```bash
-touch index.js
-```
+- x
+- y
+- z
 
-To keep things
-simple, `index.js` will contain **all** of the code for this example application.
+## Step 2: Write a custom pricing plugin
 
-## Step 3: Define your GraphQL schema
+```js
+import {
+  ProductPricingDirector,
+  ProductPricingAdapter
+} from "meteor/unchained:core-pricing";
+import fetch from "isomorphic-unfetch";
 
-Every GraphQL server (including Apollo Server) uses a **schema**
-to define the structure of data that clients can query.
-In this example, we'll create a server for querying a collection
-of books by title and author.
+const PRODUCT_TAG_SAUSAGE = "sausage";
+const SAUSAGE_THRESHOLD_CELSIUS = 20;
 
-Open `index.js` in your preferred editor and paste the following into it:
+class WeatherDependentBarbequeSausagePricing extends ProductPricingAdapter {
+  static key = "shop.unchained.wd-bbq-sausage-pricing";
+  static version = "1.0";
+  static label = "Calculate the price of a sausage 🌭🌦";
+  static orderIndex = 3;
 
-```js:title=index.js
-const { ApolloServer, gql } = require("apollo-server");
-
-// A schema is a collection of type definitions (hence "typeDefs")
-// that together define the "shape" of queries that are executed against
-// your data.
-const typeDefs = gql`
-  # Comments in GraphQL strings (such as this one) start with the hash (#) symbol.
-
-  # This "Book" type defines the queryable fields for every book in our data source.
-  type Book {
-    title: String
-    author: String
+  static isActivatedFor(product) {
+    if (
+      product.tags &&
+      product.tags.length > 0 &&
+      product.tags.indexOf(PRODUCT_TAG_SAUSAGE) !== -1
+    ) {
+      return true;
+    }
+    return false;
   }
 
-  # The "Query" type is special: it lists all of the available queries that
-  # clients can execute, along with the return type for each. In this
-  # case, the "books" query returns an array of zero or more Books (defined above).
-  type Query {
-    books: [Book]
-  }
-`;
-```
+  async calculate() {
+    const { currency, quantity } = this.context;
+    try {
+      const response = await fetch(
+        "https://query.yahooapis.com/v1/public/yql?q=select%20item.condition.temp%20from%20weather.forecast%20where%20woeid%20%3D%20784794&format=json&env=store%3A%2F%2Fdatatables.org%2Falltableswithkeys"
+      );
+      if (response.status === 200) {
+        const { query } = await response.json();
+        const { results, count } = query;
+        if (count > 0) {
+          const { temp: tempFahrenheit } = results.channel.item.condition;
+          const tempCelsius = (parseFloat(tempFahrenheit) - 32) / 1.8;
+          if (tempCelsius > SAUSAGE_THRESHOLD_CELSIUS) {
+            console.log("🌭 -> High season, sausage pricy!!"); // eslint-disable-line
+            this.result.addItem({
+              currency,
+              amount: +100 * quantity,
+              isTaxable: true,
+              isNetPrice: true,
+              meta: { adapter: this.constructor.key }
+            });
+          }
+        }
+      }
+    } catch (e) {
+      console.error("🌭 -> Failed while trying to price weather dependent"); // eslint-disable-line
+    }
 
-This snippet defines a simple, valid GraphQL schema. Clients will be able to execute
-a query named `books`, and our server will return an array of zero or more `Book`s.
-
-## Step 4: Define your data set
-
-Now that we've defined the _structure_ of our data, we can define the data itself.
-Apollo Server can fetch data from any source you connect to (including
-a database, a REST API, a static object storage service, or even another GraphQL
-server). For the purposes of this tutorial, we'll just hardcode some example data.
-
-Add the following to the bottom of `index.js`:
-
-```js:title=index.js
-const books = [
-  {
-    title: "Harry Potter and the Chamber of Secrets",
-    author: "J.K. Rowling"
-  },
-  {
-    title: "Jurassic Park",
-    author: "Michael Crichton"
-  }
-];
-```
-
-This snippet defines a simple data set that clients can query. Notice that the two
-objects in the array each match the structure of the `Book` type we defined in our schema.
-
-## Step 5: Define a resolver
-
-We've defined our data set, but Apollo Server doesn't know that it should
-_use_ that data set when it's executing a query. To fix this, we create a
-**resolver**.
-
-Resolvers tell Apollo Server _how_ to fetch the data associated with a particular
-type. Because our `Book` array is hardcoded, the corresponding resolver is
-straightforward.
-
-Add the following to the bottom of `index.js`:
-
-```js:title=index.js
-// Resolvers define the technique for fetching the types defined in the
-// schema. This resolver retrieves books from the "books" array above.
-const resolvers = {
-  Query: {
-    books: () => books
-  }
-};
-```
-
-## Step 6: Create an instance of `ApolloServer`
-
-We've defined our schema, data set, and resolver. Now we just need to provide
-this information to Apollo Server when we initialize it.
-
-Add the following to the bottom of `index.js`:
-
-```js:title=index.js
-// The ApolloServer constructor requires two parameters: your schema
-// definition and your set of resolvers.
-const server = new ApolloServer({ typeDefs, resolvers });
-
-// The `listen` method launches a web server.
-server.listen().then(({ url }) => {
-  console.log(`🚀  Server ready at ${url}`);
-});
-```
-
-## Step 7: Start the server
-
-We're ready to start our server! Run the following from your project's root
-directory:
-
-```bash
-node index.js
-```
-
-You should see the following output:
-
-```
-🚀 Server ready at http://localhost:4000/
-```
-
-We're up and running!
-
-## Step 8: Execute your first query
-
-We can now execute GraphQL queries on our server. To execute our first query,
-we'll use a tool called **GraphQL Playground**.
-
-> **Note:** If your server is deployed to an environment where `NODE_ENV` is
-> set to `production`, GraphQL Playground and introspection will be disabled by
-> default. To enable them, you'll need to explicitly set `playground: true` and
-> `introspection: true` within [the options to `ApolloServer`'s
-> constructor](https://www.apollographql.com/docs/apollo-server/api/apollo-server/#apolloserver).
-
-With your server still running, visit `http://localhost:4000` in your browser
-to open GraphQL Playground. (Apollo Server hosts GraphQL Playground automatically
-when you run it in development.)
-
-![GraphQL Playground](./images/getting-started/graphql-playground.png)
-
-The GraphQL Playground UI includes:
-
-- A text area (to the left) for writing queries
-- A Play button (the triangle button in the middle) for executing queries
-- A text area (to the right) for viewing query results
-- Views for schema inspection and generated documentation (via tabs on the right side)
-
-Our server supports a single query named `books`. Let's execute it!
-
-Here's a GraphQL **query string** for executing the `books` query:
-
-```graphql
-{
-  books {
-    title
-    author
+    return super.calculate();
   }
 }
+
+ProductPricingDirector.registerAdapter(WeatherDependentBarbequeSausagePricing);
 ```
 
-Paste this string into the left text area and click the Play button. The
-results (from our hardcoded data set) appear on the right:
+## Step 3: Deploy the stack with docker
 
-![The response from our server shows title and author!](./images/getting-started/graphql-playground-response.png)
-
-One of the most important concepts of GraphQL is that clients can choose to query
-_only for the fields they need_. Delete `author` from the query string and execute
-it again. The response updates to include only the `title` field for each book!
+```bash
+docker stack deploy -c docker-compose.yml my-project
+```
 
 ## Next steps
 
-This example application is a great starting point for working with
-Apollo Server. Check out the following resources to learn more about the basics
-of schemas, resolvers, and deployment:
+blabla:
 
 - [Schema basics](/schema/schema/)
 - [Resolvers](/data/resolvers/)
