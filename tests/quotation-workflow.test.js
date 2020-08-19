@@ -185,6 +185,46 @@ describe('cart checkout', () => {
         documents: [],
       });
     });
+
+    it('return not found when passed non existing quotationId', async () => {
+      const { errors } = await adminGraphqlFetch({
+        query: /* GraphQL */ `
+          mutation rejectQuotation($quotationId: ID!, $quotationContext: JSON) {
+            rejectQuotation(
+              quotationId: $quotationId
+              quotationContext: $quotationContext
+            ) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          quotationId: 'non-existing-id',
+          quotationContext: { hello: 'no world' },
+        },
+      });
+      expect(errors[0]?.extensions?.code).toEqual('QuotationNotFoundError');
+    });
+
+    it('return error when passed invalid quotationId', async () => {
+      const { errors } = await adminGraphqlFetch({
+        query: /* GraphQL */ `
+          mutation rejectQuotation($quotationId: ID!, $quotationContext: JSON) {
+            rejectQuotation(
+              quotationId: $quotationId
+              quotationContext: $quotationContext
+            ) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          quotationId: '',
+          quotationContext: { hello: 'no world' },
+        },
+      });
+      expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
+    });
   });
 
   describe('Mutation.makeQuotationProposal', () => {
