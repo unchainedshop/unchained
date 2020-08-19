@@ -8,29 +8,29 @@ title: Get started with Apollo Server
 
 This tutorial helps you:
 
-* Obtain a basic understanding of GraphQL principles
-* Define a GraphQL **schema** that represents the structure of your data set
-* Run an instance of Apollo Server that lets you execute queries against your schema
+- Obtain a basic understanding of GraphQL principles
+- Define a GraphQL **schema** that represents the structure of your data set
+- Run an instance of Apollo Server that lets you execute queries against your schema
 
 This tutorial assumes that you are familiar with the command line and
 JavaScript, and that you have a recent version of Node.js (8+) installed.
 
 ## Step 1: Create a new project
 
-1. From your preferred development directory, create a directory for a new project
-and `cd` into it:
+1.  From your preferred development directory, create a directory for a new project
+    and `cd` into it:
 
-    ```bash
-    mkdir graphql-server-example
-    cd graphql-server-example
-    ```
+        ```bash
+        mkdir graphql-server-example
+        cd graphql-server-example
+        ```
 
-2. Initialize a new Node.js project with `npm` (or another package manager you
-prefer, such as Yarn):
+2.  Initialize a new Node.js project with `npm` (or another package manager you
+    prefer, such as Yarn):
 
-    ```bash
-    npm init --yes
-    ```
+        ```bash
+        npm init --yes
+        ```
 
 Your project directory now contains a `package.json` file.
 
@@ -38,8 +38,8 @@ Your project directory now contains a `package.json` file.
 
 Applications that run Apollo Server require two top-level dependencies:
 
-* [`apollo-server`](https://npm.im/apollo-server) is the core library for Apollo Server itself, which helps you define the shape of your data and how to fetch it.
-* [`graphql`](https://npm.im/graphql) is the library used to build a GraphQL schema and execute queries against it.
+- [`apollo-server`](https://npm.im/apollo-server) is the core library for Apollo Server itself, which helps you define the shape of your data and how to fetch it.
+- [`graphql`](https://npm.im/graphql) is the library used to build a GraphQL schema and execute queries against it.
 
 Run the following command to install both of these dependencies and save them in
 your project's `node_modules` directory:
@@ -54,7 +54,7 @@ Also create an empty `index.js` file in your project's root directory:
 touch index.js
 ```
 
- To keep things
+To keep things
 simple, `index.js` will contain **all** of the code for this example application.
 
 ## Step 3: Define your GraphQL schema
@@ -67,7 +67,7 @@ of books by title and author.
 Open `index.js` in your preferred editor and paste the following into it:
 
 ```js:title=index.js
-const { ApolloServer, gql } = require('apollo-server');
+const { ApolloServer, gql } = require("apollo-server");
 
 // A schema is a collection of type definitions (hence "typeDefs")
 // that together define the "shape" of queries that are executed against
@@ -105,13 +105,13 @@ Add the following to the bottom of `index.js`:
 ```js:title=index.js
 const books = [
   {
-    title: 'Harry Potter and the Chamber of Secrets',
-    author: 'J.K. Rowling',
+    title: "Harry Potter and the Chamber of Secrets",
+    author: "J.K. Rowling"
   },
   {
-    title: 'Jurassic Park',
-    author: 'Michael Crichton',
-  },
+    title: "Jurassic Park",
+    author: "Michael Crichton"
+  }
 ];
 ```
 
@@ -121,8 +121,8 @@ objects in the array each match the structure of the `Book` type we defined in o
 ## Step 5: Define a resolver
 
 We've defined our data set, but Apollo Server doesn't know that it should
- _use_ that data set when it's executing a query. To fix this, we create a
- **resolver**.
+_use_ that data set when it's executing a query. To fix this, we create a
+**resolver**.
 
 Resolvers tell Apollo Server _how_ to fetch the data associated with a particular
 type. Because our `Book` array is hardcoded, the corresponding resolver is
@@ -135,8 +135,8 @@ Add the following to the bottom of `index.js`:
 // schema. This resolver retrieves books from the "books" array above.
 const resolvers = {
   Query: {
-    books: () => books,
-  },
+    books: () => books
+  }
 };
 ```
 
@@ -194,16 +194,16 @@ when you run it in development.)
 
 The GraphQL Playground UI includes:
 
-* A text area (to the left) for writing queries
-* A Play button (the triangle button in the middle) for executing queries
-* A text area (to the right) for viewing query results
-* Views for schema inspection and generated documentation (via tabs on the right side)
+- A text area (to the left) for writing queries
+- A Play button (the triangle button in the middle) for executing queries
+- A text area (to the right) for viewing query results
+- Views for schema inspection and generated documentation (via tabs on the right side)
 
 Our server supports a single query named `books`. Let's execute it!
 
 Here's a GraphQL **query string** for executing the `books` query:
 
-```
+```graphql
 {
   books {
     title
@@ -227,6 +227,6 @@ This example application is a great starting point for working with
 Apollo Server. Check out the following resources to learn more about the basics
 of schemas, resolvers, and deployment:
 
-* [Schema basics](/schema/schema/)
-* [Resolvers](/data/resolvers/)
-* [Deploying with Heroku](/deployment/heroku/)
+- [Schema basics](/schema/schema/)
+- [Resolvers](/data/resolvers/)
+- [Deploying with Heroku](/deployment/heroku/)
