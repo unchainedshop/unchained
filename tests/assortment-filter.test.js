@@ -327,6 +327,42 @@ describe('AssortmentFilter', () => {
 
       expect(errors.length).toEqual(1);
     });
+
+    it('return not found error when passed non existing assortmentFilterId', async () => {
+      const { errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation RemoveAssortmentFilter($assortmentFilterId: ID!) {
+            removeAssortmentFilter(assortmentFilterId: $assortmentFilterId) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          assortmentFilterId: 'invalid-id',
+        },
+      });
+
+      expect(errors[0]?.extensions?.code).toEqual(
+        'AssortmentFilterNotFoundError',
+      );
+    });
+
+    it('return error when passed non existing assortmentFilterId', async () => {
+      const { errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation RemoveAssortmentFilter($assortmentFilterId: ID!) {
+            removeAssortmentFilter(assortmentFilterId: $assortmentFilterId) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          assortmentFilterId: '',
+        },
+      });
+
+      expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
+    });
   });
 
   describe('mutation.removeAssortmentFilter for anonymous users should', () => {
