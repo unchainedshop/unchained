@@ -146,7 +146,7 @@ describe('ProductsVariation', () => {
       expect(createProductVariation._id).not.toBe(null);
     });
 
-    it('return error when passed invalid product ID', async () => {
+    it('return error when passed non existing product ID', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation CreateProductVariation(
@@ -170,7 +170,34 @@ describe('ProductsVariation', () => {
           },
         },
       });
-      expect(errors.length).toEqual(1);
+      expect(errors[0]?.extensions.code).toEqual('ProductNotFoundError');
+    });
+
+    it('return error when passed invalid product ID', async () => {
+      const { errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation CreateProductVariation(
+            $productId: ID!
+            $variation: CreateProductVariationInput!
+          ) {
+            createProductVariation(
+              productId: $productId
+              variation: $variation
+            ) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          productId: '',
+          variation: {
+            key: 'key-1',
+            type: 'COLOR',
+            title: 'product variation title',
+          },
+        },
+      });
+      expect(errors[0]?.extensions.code).toEqual('InvalidIdError');
     });
   });
   describe('mutation.createProductVariation for anonymous user should', () => {
@@ -241,7 +268,7 @@ describe('ProductsVariation', () => {
       expect(createProductVariationOption._id).not.toBe(null);
     });
 
-    it('return error when passed invalid product variation ID', async () => {
+    it('return not found error when passed non existing product variation ID', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation CreateProductVariationOption(
@@ -264,7 +291,35 @@ describe('ProductsVariation', () => {
           },
         },
       });
-      expect(errors.length).toEqual(1);
+      expect(errors[0]?.extensions?.code).toEqual(
+        'ProductVariationNotFoundError',
+      );
+    });
+
+    it('return error when passed invalid product variation ID', async () => {
+      const { errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation CreateProductVariationOption(
+            $productVariationId: ID!
+            $option: CreateProductVariationOptionInput!
+          ) {
+            createProductVariationOption(
+              productVariationId: $productVariationId
+              option: $option
+            ) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          productVariationId: '',
+          option: {
+            value: 'key-1',
+            title: 'product variation option title',
+          },
+        },
+      });
+      expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
     });
   });
   describe('mutation.createProductVariationOption for anonymous user should', () => {
