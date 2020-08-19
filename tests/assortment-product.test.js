@@ -303,9 +303,7 @@ describe('AssortmentProduct', () => {
 
   describe('mutation.removeAssortmentProduct for admin user should', () => {
     it('remove assortment product successfuly when passed valid assortment product id', async () => {
-      const {
-        data: { removeAssortmentProduct },
-      } = await graphqlFetch({
+      await graphqlFetch({
         query: /* GraphQL */ `
           mutation RemoveAssortmentProduct($assortmentProductId: ID!) {
             removeAssortmentProduct(assortmentProductId: $assortmentProductId) {
@@ -323,10 +321,23 @@ describe('AssortmentProduct', () => {
           assortmentProductId: AssortmentProduct._id,
         },
       });
-      expect(removeAssortmentProduct._id).toEqual(AssortmentProduct._id);
+      const { errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation RemoveAssortmentProduct($assortmentProductId: ID!) {
+            removeAssortmentProduct(assortmentProductId: $assortmentProductId) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          assortmentProductId: AssortmentProduct._id,
+        },
+      });
+
+      expect(errors.length).toEqual(1);
     });
 
-    it('return error when passed in-valid assortment product id', async () => {
+    it('return not found error when passed non existing assortment product id', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation RemoveAssortmentProduct($assortmentProductId: ID!) {
@@ -340,7 +351,26 @@ describe('AssortmentProduct', () => {
         },
       });
 
-      expect(errors.length).toEqual(1);
+      expect(errors[0]?.extensions?.code).toEqual(
+        'AssortmentProductNotFoundError',
+      );
+    });
+
+    it('return error when passed invalid assortment product id', async () => {
+      const { errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation RemoveAssortmentProduct($assortmentProductId: ID!) {
+            removeAssortmentProduct(assortmentProductId: $assortmentProductId) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          assortmentProductId: '',
+        },
+      });
+
+      expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
     });
   });
 
