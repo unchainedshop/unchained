@@ -172,6 +172,42 @@ describe('Subscriptions', () => {
         },
       });
     });
+
+    it('return not found error when passed non existing productId', async () => {
+      const { errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation createSubscription($plan: SubscriptionPlanInput!) {
+            createSubscription(plan: $plan) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          plan: {
+            productId: 'invalid-id',
+          },
+        },
+      });
+      expect(errors[0]?.extensions?.code).toEqual('ProductNotFoundError');
+    });
+
+    it('return error when passed invalid productId', async () => {
+      const { errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation createSubscription($plan: SubscriptionPlanInput!) {
+            createSubscription(plan: $plan) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          plan: {
+            productId: '',
+          },
+        },
+      });
+      expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
+    });
   });
   describe('Mutation.terminateSubscription', () => {
     it.todo('Mutation.terminateSubscription');
