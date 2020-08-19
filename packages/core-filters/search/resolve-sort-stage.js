@@ -19,7 +19,9 @@ const normalizeDirection = (textualInput) => {
 const defaultStage = ({ orderBy }) => {
   if (orderBy === ORDER_BY_INDEX || !orderBy) {
     if (AMAZON_DOCUMENTDB_COMPAT_MODE) {
-      return null;
+      return {
+        sequence: 1,
+      };
     }
     return {
       index: 1,
@@ -32,6 +34,7 @@ const defaultStage = ({ orderBy }) => {
   const keyPath = orderBySlices.join('.');
   return {
     [keyPath]: direction === null ? 1 : direction,
+    [AMAZON_DOCUMENTDB_COMPAT_MODE ? 'sequence' : 'index']: 1,
   };
 };
 

@@ -8,8 +8,12 @@ import BtnPublishProduct from './BtnPublishProduct';
 import BtnRemoveProduct from './BtnRemoveProduct';
 import BtnUnpublishProduct from './BtnUnpublishProduct';
 import FormEditProduct from './FormEditProduct';
+import BreadcrumbTrail from '../BreadcrumbTrail';
 
 const ProductHeader = ({ loading, productId, product = {} }) => [
+  product && product.assortmentPaths && (
+    <BreadcrumbTrail assortmentPaths={product.assortmentPaths} />
+  ),
   <Menu fluid attached="top" borderless key="header-title">
     <Menu.Item header>
       Product:&nbsp;
@@ -102,6 +106,17 @@ export default compose(
         texts {
           _id
           title
+        }
+        assortmentPaths {
+          links {
+            link {
+              tags
+            }
+            assortmentId
+            assortmentTexts {
+              title
+            }
+          }
         }
       }
     }

@@ -49,6 +49,7 @@ export default compose(
               title
             }
           }
+          tags
         }
       }
     }
@@ -92,6 +93,7 @@ export default compose(
         },
       });
     },
+    useDragHandle: true,
   }),
   pure,
   SortableContainer

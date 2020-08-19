@@ -79,6 +79,7 @@ export default compose(
           isActive
           isBase
           texts {
+            _id
             title
           }
         }

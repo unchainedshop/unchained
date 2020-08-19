@@ -127,7 +127,7 @@ Products.helpers({
     } else {
       modifier.$setOnInsert.slug = slug;
     }
-    const { insertedId } = ProductTexts.upsert(
+    const { insertedId, numberAffected } = ProductTexts.upsert(
       {
         productId: this._id,
         locale,
@@ -135,7 +135,7 @@ Products.helpers({
       modifier,
     );
 
-    if (insertedId || forcedSlug) {
+    if (insertedId || numberAffected) {
       Products.update(
         {
           _id: this._id,

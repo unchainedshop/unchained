@@ -427,7 +427,7 @@ Collections.Assortments.helpers({
     } else {
       modifier.$setOnInsert.slug = slug;
     }
-    const { insertedId } = Collections.AssortmentTexts.upsert(
+    const { insertedId, numberAffected } = Collections.AssortmentTexts.upsert(
       {
         assortmentId: this._id,
         locale,
@@ -435,7 +435,7 @@ Collections.Assortments.helpers({
       modifier,
     );
 
-    if (insertedId || forcedSlug) {
+    if (insertedId || numberAffected) {
       Collections.Assortments.update(
         {
           _id: this._id,
