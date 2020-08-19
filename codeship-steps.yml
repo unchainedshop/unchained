@@ -37,6 +37,29 @@
           image_name: registry.ucc.dev/unchained/minimal
           image_tag: "stable"
           registry: registry.ucc.dev
+    - name: Docs
+      type: serial
+      steps:
+        - name: Build
+          service: docs
+          type: push
+          image_name: registry.ucc.dev/unchained/docs
+          image_tag: "{{.Branch}}-latest"
+          registry: registry.ucc.dev
+        - name: Tag image as latest
+          service: docs
+          tag: develop
+          type: push
+          image_name: registry.ucc.dev/unchained/docs
+          image_tag: "next"
+          registry: registry.ucc.dev
+        - name: Tag image as stable
+          service: docs
+          tag: master
+          type: push
+          image_name: registry.ucc.dev/unchained/docs
+          image_tag: "stable"
+          registry: registry.ucc.dev
     - name: Controlpanel
       type: serial
       steps:
