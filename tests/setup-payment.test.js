@@ -137,5 +137,41 @@ describe('setup payment providers', () => {
         _id: SimplePaymentProvider._id,
       });
     });
+
+    it('return not found error when passed non existing paymentProviderId', async () => {
+      const { errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation removePaymentProvider($paymentProviderId: ID!) {
+            removePaymentProvider(paymentProviderId: $paymentProviderId) {
+              _id
+              deleted
+            }
+          }
+        `,
+        variables: {
+          paymentProviderId: 'non-existing-id',
+        },
+      });
+      expect(errors[0]?.extensions?.code).toEqual(
+        'PaymentProviderNotFoundError',
+      );
+    });
+
+    it('return error when passed invalid paymentProviderId', async () => {
+      const { errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation removePaymentProvider($paymentProviderId: ID!) {
+            removePaymentProvider(paymentProviderId: $paymentProviderId) {
+              _id
+              deleted
+            }
+          }
+        `,
+        variables: {
+          paymentProviderId: '',
+        },
+      });
+      expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
+    });
   });
 });
