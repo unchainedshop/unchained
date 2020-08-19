@@ -148,7 +148,7 @@ describe('AssortmentFilter', () => {
       expect(addAssortmentFilter._id).not.toBe(null);
     });
 
-    it('return error when passed invalid assortment ID', async () => {
+    it('return error when passed assortment ID that do not exists', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation AddAssortmentFilter(
@@ -172,10 +172,10 @@ describe('AssortmentFilter', () => {
         },
       });
 
-      expect(errors.length).toEqual(1);
+      expect(errors[0].extensions?.code).toEqual('AssortmentNotFoundError');
     });
 
-    it('return error when passed invalid filter ID', async () => {
+    it('return error when passed filter ID that do not exist', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation AddAssortmentFilter(
@@ -198,7 +198,59 @@ describe('AssortmentFilter', () => {
           tags: ['assortment-filter-1'],
         },
       });
-      expect(errors.length).toEqual(1);
+      expect(errors[0]?.extensions?.code).toEqual('FilterNotFoundError');
+    });
+
+    it('return error when passed invalid filter ID', async () => {
+      const { errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation AddAssortmentFilter(
+            $assortmentId: ID!
+            $filterId: ID!
+            $tags: [String!]
+          ) {
+            addAssortmentFilter(
+              assortmentId: $assortmentId
+              filterId: $filterId
+              tags: $tags
+            ) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          assortmentId: SimpleAssortment[0]._id,
+          filterId: '',
+          tags: ['assortment-filter-1'],
+        },
+      });
+      expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
+    });
+    it('return error when passed invalid assortment ID', async () => {
+      const { errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation AddAssortmentFilter(
+            $assortmentId: ID!
+            $filterId: ID!
+            $tags: [String!]
+          ) {
+            addAssortmentFilter(
+              assortmentId: $assortmentId
+              filterId: $filterId
+              tags: $tags
+            ) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          assortmentId: '',
+          filterId: MultiChoiceFilter._id,
+          tags: ['assortment-filter-1'],
+        },
+      });
+
+      expect(errors[0].extensions?.code).toEqual('InvalidIdError');
     });
   });
 

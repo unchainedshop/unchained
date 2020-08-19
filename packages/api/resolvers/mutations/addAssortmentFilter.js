@@ -1,14 +1,18 @@
 import { log } from 'meteor/unchained:core-logger';
 import { Assortments } from 'meteor/unchained:core-assortments';
 import { Filters } from 'meteor/unchained:core-filters';
-import { AssortmentNotFoundError, FilterNotFoundError } from '../../errors';
+import {
+  AssortmentNotFoundError,
+  FilterNotFoundError,
+  InvalidIdError,
+} from '../../errors';
 
 export default function (root, { assortmentId, filterId, tags }, { userId }) {
   log(`mutation addAssortmentFilter ${assortmentId} -> ${filterId}`, {
     userId,
   });
-  if (!assortmentId || !filterId)
-    throw new Error('Invalid value provided for assortmentId or filterId');
+  if (!assortmentId) throw new InvalidIdError({ assortmentId });
+  if (!filterId) throw new InvalidIdError({ filterId });
 
   const assortment = Assortments.findOne({ _id: assortmentId });
   const filter = Filters.findOne({ _id: filterId });
