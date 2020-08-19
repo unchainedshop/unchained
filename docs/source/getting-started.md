@@ -145,7 +145,116 @@ mutation {
 
 The simulatedPrice is now beeing affected by the pricing plugin, try it by changing the temperature treshold variable in sausage.js
 
-## Step 4: Deploy the stack with docker
+## Step 4: Test Cart Checkout
+
+Use the following GraphQL queries/mutations to do your first checkout.
+
+You can browse to http://localhost:4010/graphql to bring up the GraphQL Playground.
+
+To initiate a cart/basket, you need to be logged in. You can login as guest with a simple call:
+
+```
+mutation loginAsGuest {
+  loginAsGuest {
+    id
+    token
+    tokenExpires
+  }
+}
+```
+
+Then set the authorization header in GraphQL Playground for all upcoming operations:
+
+```
+{
+  "Authorization": "Bearer HERE_GOES_THE_TOKEN_FROM_ABOVE"
+}
+```
+
+Get the list of products:
+
+```
+query products {
+  products {
+    _id
+    texts {
+      title
+    }
+    ... on SimpleProduct {
+      simulatedPrice(quantity: 2) {
+        price {
+          amount
+        }
+      }
+    }
+  }
+}
+```
+
+Add the product that you've found to the cart.
+
+```
+mutation addCartProduct {
+  addCartProduct(productId: "A9e2kCJfcF9QZF4o9", quantity: 1) {
+    _id
+    order {
+      items {
+        _id
+        quantity
+      }
+    }
+  }
+}
+```
+
+Tell unchained more about the guy who orders:
+
+```
+mutation updateContact {
+  updateCart(contact: { emailAddress: "hello@localhost" }, billingAddress: {firstName: "Pascal", addressLine: "Haha", postalCode: "5556", city: "somewhere"}) {
+    _id
+  }
+}
+```
+
+Set order payment provider (optional):
+
+```
+mutation SetOrderPaymentProvider{
+    setOrderPaymentProvider(
+      orderId: "ORDERID",
+      paymentProviderId: "PROVIDER_ID"
+    )
+  }
+```
+
+Set order delivery provider (optional):
+
+```
+mutation SetOrderDeliverProvider {
+    setOrderDeliveryProvider(
+      orderId: "ORDERID",
+      deliveryProviderId: "PROVIDER_ID"
+    )
+  }
+```
+
+Checkout the cart:
+
+```
+mutation checkoutCart {
+  checkoutCart {
+    _id
+    orderNumber
+    ordered
+    confirmed
+  }
+}
+```
+
+If everything went well, the e-mail debug window will pop up presenting you a simple order confirmation.
+
+## Step 5: Deploy the stack with docker
 
 To help you deploy your project to production, we provide you with an example docker-compose.yml that works with Docker Desktop. More infos about that process can be found here: https://docs.docker.com/docker-for-mac/kubernetes/
 
