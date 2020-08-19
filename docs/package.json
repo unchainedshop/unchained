@@ -1,9 +1,9 @@
 {
   "scripts": {
-    "prestart": "gatsby clean",
-    "start": "gatsby develop",
+    "predev": "gatsby clean",
+    "dev": "gatsby develop",
     "build": "gatsby build",
-    "serve": "gatsby serve"
+    "start": "gatsby serve"
   },
   "dependencies": {
     "@unchainedshop/gatsby-theme-apollo-docs": "^4.3.13",
