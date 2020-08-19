@@ -130,6 +130,39 @@ describe('Cart: Discounts', () => {
       });
     });
 
+    xit('return not found error when non existing orderId is provided', async () => {
+      const { errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation addCartDiscount($orderId: ID) {
+            addCartDiscount(orderId: $orderId, code: "100off") {
+              code
+            }
+          }
+        `,
+        variables: {
+          orderId: 'non-existing-id',
+        },
+      });
+
+      expect(errors[0]?.extensions?.code).toEqual('OrderNotFoundError');
+    });
+    it('return error when invalid orderId is provided', async () => {
+      const { errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation addCartDiscount($orderId: ID) {
+            addCartDiscount(orderId: $orderId, code: "100off") {
+              code
+            }
+          }
+        `,
+        variables: {
+          orderId: '',
+        },
+      });
+
+      expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
+    });
+
     it('remove order discount from a cart', async () => {
       const { data: { removeCartDiscount } = {} } = await graphqlFetch({
         query: /* GraphQL */ `
