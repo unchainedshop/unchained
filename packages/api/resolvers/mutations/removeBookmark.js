@@ -1,10 +1,10 @@
 import { log } from 'meteor/unchained:core-logger';
 import { Bookmarks } from 'meteor/unchained:core-bookmarks';
-import { BookmarkNotFoundError } from '../../errors';
+import { BookmarkNotFoundError, InvalidIdError } from '../../errors';
 
 export default function (root, { bookmarkId }, { userId }) {
   log('mutation removeBookmark', { bookmarkId, userId });
-  if (!bookmarkId) throw new Error('Invalid bookmark ID provided');
+  if (!bookmarkId) throw new InvalidIdError({ bookmarkId });
   if (!Bookmarks.findBookmarkById(bookmarkId)) {
     throw new BookmarkNotFoundError({ bookmarkId });
   }

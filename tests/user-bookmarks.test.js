@@ -91,7 +91,7 @@ describe('User Bookmarks', () => {
   describe('Mutation.removeBookmark', () => {
     it('remove a bookmark', async () => {
       const bookmark = await Bookmarks.findOne({ userId: User._id });
-      const { data: { removeBookmark } = {} } = await graphqlFetch({
+      await graphqlFetch({
         query: /* GraphQL */ `
           mutation removeBookmark($bookmarkId: ID!) {
             removeBookmark(bookmarkId: $bookmarkId) {
@@ -103,7 +103,52 @@ describe('User Bookmarks', () => {
           bookmarkId: bookmark._id,
         },
       });
-      expect(removeBookmark._id).toBeTruthy();
+
+      const { errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation removeBookmark($bookmarkId: ID!) {
+            removeBookmark(bookmarkId: $bookmarkId) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          bookmarkId: bookmark._id,
+        },
+      });
+      expect(errors.length).toEqual(1);
+    });
+
+    it('return not found error when passed non existin bookmarkId', async () => {
+      const { errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation removeBookmark($bookmarkId: ID!) {
+            removeBookmark(bookmarkId: $bookmarkId) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          bookmarkId: 'non-existing-id',
+        },
+      });
+      expect(errors[0]?.extensions?.code).toEqual('BookmarkNotFoundError');
+    });
+
+    it('return error when passed invalid bookmarkId', async () => {
+      const { errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation removeBookmark($bookmarkId: ID!) {
+            removeBookmark(bookmarkId: $bookmarkId) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          bookmarkId: '',
+        },
+      });
+      expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
     });
   });
 
