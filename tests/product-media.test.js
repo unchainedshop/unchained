@@ -259,6 +259,40 @@ describe('ProductsVariation', () => {
 
       expect(errors.length).toEqual(1);
     });
+
+    it('return not found error when passed non existing productMediaId', async () => {
+      const { errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation RemoveProductMedia($productMediaId: ID!) {
+            removeProductMedia(productMediaId: $productMediaId) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          productMediaId: 'non-existing-id',
+        },
+      });
+
+      expect(errors[0]?.extensions?.code).toEqual('ProductMediaNotFoundError');
+    });
+
+    it('return error when passed invalid productMediaId', async () => {
+      const { errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation RemoveProductMedia($productMediaId: ID!) {
+            removeProductMedia(productMediaId: $productMediaId) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          productMediaId: '',
+        },
+      });
+
+      expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
+    });
   });
 
   describe('mutation.removeProductMedia for anonymous user should', () => {
