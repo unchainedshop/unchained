@@ -66,7 +66,7 @@ describe('Order: Management', () => {
           orderId: ConfirmedOrder._id,
         },
       });
-      expect(errors.length).toEqual(1);
+      expect(errors[0]?.extensions?.code).toEqual('OrderWrongStatusError');
     });
 
     it('confirm a pending order', async () => {
@@ -87,6 +87,38 @@ describe('Order: Management', () => {
         _id: PendingOrder._id,
         status: 'CONFIRMED',
       });
+    });
+
+    it('return not found error when passed non existing orderId', async () => {
+      const { errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation confirmOrder($orderId: ID!) {
+            confirmOrder(orderId: $orderId) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          orderId: 'non-existing-id',
+        },
+      });
+      expect(errors[0]?.extensions?.code).toEqual('OrderNotFoundError');
+    });
+
+    it('return not found error when passed non existing orderId', async () => {
+      const { errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation confirmOrder($orderId: ID!) {
+            confirmOrder(orderId: $orderId) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          orderId: '',
+        },
+      });
+      expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
     });
   });
 
