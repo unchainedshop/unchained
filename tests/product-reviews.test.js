@@ -359,6 +359,52 @@ describe('Products: Reviews', () => {
         ownVotes: [],
       });
     });
+
+    it('return not found error when passed non existing productReviewId', async () => {
+      const { errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation removeProductReviewVote(
+            $productReviewId: ID!
+            $type: ProductReviewVoteType!
+          ) {
+            removeProductReviewVote(
+              productReviewId: $productReviewId
+              type: $type
+            ) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          productReviewId: 'non-existing-id',
+          type: 'DOWNVOTE',
+        },
+      });
+      expect(errors[0]?.extensions?.code).toEqual('ProductReviewNotFoundError');
+    });
+
+    it('return error when passed invalid productReviewId', async () => {
+      const { errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation removeProductReviewVote(
+            $productReviewId: ID!
+            $type: ProductReviewVoteType!
+          ) {
+            removeProductReviewVote(
+              productReviewId: $productReviewId
+              type: $type
+            ) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          productReviewId: '',
+          type: 'DOWNVOTE',
+        },
+      });
+      expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
+    });
   });
   describe('Mutation.removeProductReview', () => {
     it('remove a product review', async () => {
