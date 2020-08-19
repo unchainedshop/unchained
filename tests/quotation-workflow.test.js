@@ -230,5 +230,51 @@ describe('cart checkout', () => {
         documents: [],
       });
     });
+
+    it('return not found error when passed non existing quotationId', async () => {
+      const { errors } = await adminGraphqlFetch({
+        query: /* GraphQL */ `
+          mutation makeQuotationProposal(
+            $quotationId: ID!
+            $quotationContext: JSON
+          ) {
+            makeQuotationProposal(
+              quotationId: $quotationId
+              quotationContext: $quotationContext
+            ) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          quotationId: 'invalid-id',
+          quotationContext: { hello: 'car' },
+        },
+      });
+      expect(errors[0]?.extensions?.code).toEqual('QuotationNotFoundError');
+    });
+
+    it('return error when passed invalid quotationId', async () => {
+      const { errors } = await adminGraphqlFetch({
+        query: /* GraphQL */ `
+          mutation makeQuotationProposal(
+            $quotationId: ID!
+            $quotationContext: JSON
+          ) {
+            makeQuotationProposal(
+              quotationId: $quotationId
+              quotationContext: $quotationContext
+            ) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          quotationId: '',
+          quotationContext: { hello: 'car' },
+        },
+      });
+      expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
+    });
   });
 });
