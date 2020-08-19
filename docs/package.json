@@ -1,0 +1,14 @@
+{
+  "scripts": {
+    "prestart": "gatsby clean",
+    "start": "gatsby develop",
+    "build": "gatsby build",
+    "serve": "gatsby serve"
+  },
+  "dependencies": {
+    "@unchainedshop/gatsby-theme-apollo-docs": "^4.3.10",
+    "gatsby": "2.24.47",
+    "react": "16.13.1",
+    "react-dom": "16.13.1"
+  }
+}
