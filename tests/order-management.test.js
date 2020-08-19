@@ -50,6 +50,40 @@ describe('Order: Management', () => {
         _id: SimpleOrder._id,
       });
     });
+
+    it('return not found error when passed non existing orderId', async () => {
+      const { errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation removeOrder($orderId: ID!) {
+            removeOrder(orderId: $orderId) {
+              _id
+              status
+            }
+          }
+        `,
+        variables: {
+          orderId: 'non-existing-id',
+        },
+      });
+      expect(errors[0]?.extensions?.code).toEqual('OrderNotFoundError');
+    });
+
+    it('return error when passed invalid orderId', async () => {
+      const { errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation removeOrder($orderId: ID!) {
+            removeOrder(orderId: $orderId) {
+              _id
+              status
+            }
+          }
+        `,
+        variables: {
+          orderId: '',
+        },
+      });
+      expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
+    });
   });
 
   describe('Mutation.confirmOrder', () => {
