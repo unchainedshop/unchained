@@ -90,6 +90,40 @@ describe('User Bookmarks', () => {
         },
       });
     });
+
+    it('return not found error when passed non existing productId', async () => {
+      const { errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation bookmark($productId: ID!, $bookmarked: Boolean) {
+            bookmark(productId: $productId, bookmarked: $bookmarked) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          productId: 'non-existing-id',
+          bookmarked: true,
+        },
+      });
+      expect(errors[0]?.extensions?.code).toEqual('ProductNotFoundError');
+    });
+
+    it('return error when passed invalid productId', async () => {
+      const { errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation bookmark($productId: ID!, $bookmarked: Boolean) {
+            bookmark(productId: $productId, bookmarked: $bookmarked) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          productId: '',
+          bookmarked: true,
+        },
+      });
+      expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
+    });
   });
 
   describe('User.bookmarks', () => {

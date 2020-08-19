@@ -1,9 +1,15 @@
 import { log } from 'meteor/unchained:core-logger';
 import { Bookmarks } from 'meteor/unchained:core-bookmarks';
+import { Products } from 'meteor/unchained:core-products';
+import { InvalidIdError, ProductNotFoundError } from '../../errors';
 
 export default function (root, { productId, bookmarked }, { userId }) {
   log('mutation bookmark', { productId, userId });
-  if (!productId) throw new Error('Invalid product ID provided');
+
+  if (!productId) throw new InvalidIdError({ productId });
+  const product = Products.findOne({ _id: productId });
+  if (!product) throw new ProductNotFoundError({ productId });
+
   const foundBookmark = Bookmarks.findBookmarks({ productId, userId }).pop();
 
   if (bookmarked) {
