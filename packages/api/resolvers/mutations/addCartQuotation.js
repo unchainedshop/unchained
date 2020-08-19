@@ -4,6 +4,7 @@ import {
   QuotationNotFoundError,
   QuotationWrongStatusError,
   OrderQuantityTooLowError,
+  InvalidIdError,
 } from '../../errors';
 import getCart from '../../getCart';
 
@@ -18,6 +19,7 @@ export default async function (
     }`,
     { userId, orderId },
   );
+  if (!quotationId) throw new InvalidIdError({ quotationId });
   if (quantity < 1) throw new OrderQuantityTooLowError({ quantity });
   const quotation = Quotations.findOne({ _id: quotationId });
   if (!quotation) throw new QuotationNotFoundError({ quotationId });
