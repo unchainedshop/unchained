@@ -377,6 +377,40 @@ describe('Products: Reviews', () => {
       });
       expect(removeProductReview.deleted).toBeTruthy();
     });
+
+    it('return not found error when passed non existing productReviewId', async () => {
+      const { errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation removeProductReview($productReviewId: ID!) {
+            removeProductReview(productReviewId: $productReviewId) {
+              _id
+              deleted
+            }
+          }
+        `,
+        variables: {
+          productReviewId: 'non-existing-id',
+        },
+      });
+      expect(errors[0]?.extensions?.code).toEqual('ProductReviewNotFoundError');
+    });
+
+    it('return error when passed invalid productReviewId', async () => {
+      const { errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation removeProductReview($productReviewId: ID!) {
+            removeProductReview(productReviewId: $productReviewId) {
+              _id
+              deleted
+            }
+          }
+        `,
+        variables: {
+          productReviewId: '',
+        },
+      });
+      expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
+    });
   });
   describe('Product.reviews', () => {
     it('product returns 1 review that is left', async () => {
