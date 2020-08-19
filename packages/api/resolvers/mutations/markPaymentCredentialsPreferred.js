@@ -1,13 +1,12 @@
 import { log } from 'meteor/unchained:core-logger';
 import { PaymentCredentials } from 'meteor/unchained:core-payment';
-import { PaymentCredentialsNotFoundError } from '../../errors';
+import { PaymentCredentialsNotFoundError, InvalidIdError } from '../../errors';
 
 export default (root, { paymentCredentialsId }, { userId }) => {
   log(`mutation markPaymentCredentialsPreferred ${paymentCredentialsId}`, {
     userId,
   });
-  if (!paymentCredentialsId)
-    throw new Error('Invalid payment credential ID provided');
+  if (!paymentCredentialsId) throw new InvalidIdError({ paymentCredentialsId });
   const credentials = PaymentCredentials.findOne({ _id: paymentCredentialsId });
   if (!credentials)
     throw new PaymentCredentialsNotFoundError({ paymentCredentialsId });
