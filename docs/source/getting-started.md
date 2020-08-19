@@ -266,8 +266,6 @@ The exact configuration will differ from this template, as we encourage you to u
 
 ## Next steps
 
-blabla:
+Get to know the concepts
 
-- [Schema basics](/schema/schema/)
-- [Resolvers](/data/resolvers/)
-- [Deploying with Heroku](/deployment/heroku/)
+- [Carts](concepts/carts)
