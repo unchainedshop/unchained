@@ -66,7 +66,7 @@ describe('FilterOption', () => {
       ).toEqual('multichoice-filter:test-filter-option');
     });
 
-    it('return error when passed invalid filterId', async () => {
+    it('return not found error when passed non existing filterId', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation CreateFilterOption(
@@ -86,7 +86,30 @@ describe('FilterOption', () => {
           },
         },
       });
-      expect(errors.length).toEqual(1);
+      expect(errors[0].extensions?.code).toEqual('FilterNotFoundError');
+    });
+
+    it('return error when passed invalid filterId', async () => {
+      const { errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation CreateFilterOption(
+            $filterId: ID!
+            $option: CreateFilterOptionInput!
+          ) {
+            createFilterOption(filterId: $filterId, option: $option) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          filterId: '',
+          option: {
+            value: 'test-filter-option',
+            title: 'test-filter-option-title',
+          },
+        },
+      });
+      expect(errors[0].extensions?.code).toEqual('InvalidIdError');
     });
   });
 
