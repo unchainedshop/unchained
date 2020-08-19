@@ -267,6 +267,32 @@ describe('basic setup of internationalization and localization context', () => {
       expect(await Countries.countDocuments({ _id: 'us' })).toEqual(0);
     });
 
+    it('return not found error when passed non existing country ID', async () => {
+      const { errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation {
+            removeCountry(countryId: "ethiopia") {
+              _id
+            }
+          }
+        `,
+      });
+      expect(errors[0]?.extensions?.code).toEqual('CountryNotFoundError');
+    });
+
+    it('return error when passed invalid country ID', async () => {
+      const { errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation {
+            removeCountry(countryId: "") {
+              _id
+            }
+          }
+        `,
+      });
+      expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
+    });
+
     it.todo('Countries should have delete flags, as orders can depend on them');
 
     it('query active countries', async () => {
