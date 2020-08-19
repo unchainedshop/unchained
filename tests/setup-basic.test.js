@@ -92,6 +92,34 @@ describe('basic setup of internationalization and localization context', () => {
       expect(await Currencies.countDocuments({ _id: 'ltc' })).toEqual(0);
     });
 
+    it('return not found error when passed non existing currencyId', async () => {
+      const { errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation {
+            removeCurrency(currencyId: "ETB") {
+              _id
+              isoCode
+            }
+          }
+        `,
+      });
+      expect(errors[0]?.extensions?.code).toEqual('CurrencyNotFoundError');
+    });
+
+    it('return error when passed invalid currencyId', async () => {
+      const { errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation {
+            removeCurrency(currencyId: "") {
+              _id
+              isoCode
+            }
+          }
+        `,
+      });
+      expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
+    });
+
     it.todo(
       'Currencies should have delete flags, as orders can depend on them',
     );
