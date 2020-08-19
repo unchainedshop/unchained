@@ -1,6 +1,6 @@
 import { log } from 'meteor/unchained:core-logger';
 import { WorkerDirector } from 'meteor/unchained:core-worker';
-import { WorkNotFoundOrWrongStatus } from '../../errors';
+import { WorkNotFoundOrWrongStatus, InvalidIdError } from '../../errors';
 
 export default async function (
   root,
@@ -11,7 +11,7 @@ export default async function (
     userId,
   });
 
-  if (!workId) throw new Error('Invalid work ID provided');
+  if (!workId) throw new InvalidIdError({ workId });
   const work = await WorkerDirector.finishWork({
     workId,
     result,
