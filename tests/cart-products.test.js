@@ -300,5 +300,43 @@ describe('Cart: Product Items', () => {
         },
       });
     });
+
+    it('return not found error when passed non existing itemId', async () => {
+      const { errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation removeCartItem($itemId: ID!) {
+            removeCartItem(itemId: $itemId) {
+              _id
+              product {
+                _id
+              }
+            }
+          }
+        `,
+        variables: {
+          itemId: 'non-existing-id',
+        },
+      });
+      expect(errors[0]?.extensions?.code).toEqual('OrderItemNotFoundError');
+    });
+
+    it('return error when passed invalid itemId', async () => {
+      const { errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation removeCartItem($itemId: ID!) {
+            removeCartItem(itemId: $itemId) {
+              _id
+              product {
+                _id
+              }
+            }
+          }
+        `,
+        variables: {
+          itemId: '',
+        },
+      });
+      expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
+    });
   });
 });
