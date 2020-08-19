@@ -482,6 +482,34 @@ describe('basic setup of internationalization and localization context', () => {
       expect(await Languages.countDocuments({ _id: 'en' })).toEqual(0);
     });
 
+    it('return not found error when passed non existing languageId', async () => {
+      const { errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation {
+            removeLanguage(languageId: "AMH") {
+              _id
+              isoCode
+            }
+          }
+        `,
+      });
+      expect(errors[0]?.extensions?.code).toEqual('LanguageNotFoundError');
+    });
+
+    it('return error when passed invalid languageId', async () => {
+      const { errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation {
+            removeLanguage(languageId: "") {
+              _id
+              isoCode
+            }
+          }
+        `,
+      });
+      expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
+    });
+
     it.todo('Languages should have delete flags, as orders can depend on them');
 
     it('query active languages', async () => {
