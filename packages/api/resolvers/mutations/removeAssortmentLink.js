@@ -1,10 +1,10 @@
 import { log } from 'meteor/unchained:core-logger';
 import { AssortmentLinks } from 'meteor/unchained:core-assortments';
-import { AssortmentLinkNotFoundError } from '../../errors';
+import { AssortmentLinkNotFoundError, InvalidIdError } from '../../errors';
 
 export default function (root, { assortmentLinkId }, { userId }) {
   log(`mutation removeAssortmentLink ${assortmentLinkId}`, { userId });
-  if (!assortmentLinkId) throw new Error('Invalid assortment link ID provided');
+  if (!assortmentLinkId) throw new InvalidIdError({ assortmentLinkId });
   const assortmentLink = AssortmentLinks.findOne({ _id: assortmentLinkId });
   if (!assortmentLink)
     throw new AssortmentLinkNotFoundError({ assortmentLinkId });

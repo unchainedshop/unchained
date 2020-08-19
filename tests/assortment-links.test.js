@@ -320,15 +320,6 @@ describe('AssortmentLink', () => {
           mutation removeAssortmentLink($assortmentLinkId: ID!) {
             removeAssortmentLink(assortmentLinkId: $assortmentLinkId) {
               _id
-              sortKey
-              tags
-              meta
-              parent {
-                _id
-              }
-              child {
-                _id
-              }
             }
           }
         `,
@@ -337,6 +328,40 @@ describe('AssortmentLink', () => {
         },
       });
       expect(errors.length).toEqual(1);
+    });
+
+    it('return not found error when passed non existing assortmentLinkId', async () => {
+      const { errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation removeAssortmentLink($assortmentLinkId: ID!) {
+            removeAssortmentLink(assortmentLinkId: $assortmentLinkId) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          assortmentLinkId: AssortmentLinks[0]._id,
+        },
+      });
+      expect(errors[0]?.extensions?.code).toEqual(
+        'AssortmentLinkNotFoundError',
+      );
+    });
+
+    it('return error when passed invalid assortmentLinkId', async () => {
+      const { errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation removeAssortmentLink($assortmentLinkId: ID!) {
+            removeAssortmentLink(assortmentLinkId: $assortmentLinkId) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          assortmentLinkId: '',
+        },
+      });
+      expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
     });
   });
 
