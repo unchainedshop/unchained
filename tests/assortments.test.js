@@ -773,7 +773,23 @@ describe('Assortments', () => {
           assortmentId: 'non-existing-id',
         },
       });
-      expect(errors.length).toEqual(1);
+
+      expect(errors[0].extensions?.code).toEqual('AssortmentNotFoundError');
+    });
+    it('return error when passed none existing assortment Id', async () => {
+      const { errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation RemoveAssortment($assortmentId: ID!) {
+            removeAssortment(assortmentId: $assortmentId) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          assortmentId: '',
+        },
+      });
+      expect(errors[0].extensions?.code).toEqual('InvalidIdError');
     });
   });
 

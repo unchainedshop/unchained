@@ -189,3 +189,8 @@ export const WarehousingProviderNotFoundError = createError(
   'WarehousingProviderNotFoundError',
   'Warehousing provider not found',
 );
+
+export const InvalidIdError = createError(
+  'InvalidIdError',
+  'Invalid ID provided',
+);
