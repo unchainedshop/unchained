@@ -21,7 +21,7 @@ module.exports = {
             'getting-started',
             '[Changelog](https://github.com/unchainedshop/unchained/releases)',
           ],
-          Concepts: ['concepts/carts'],
+          Concepts: ['concepts/architecture', 'concepts/carts'],
           Configuration: [
             'config/booting',
             'config/assortments',
