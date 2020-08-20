@@ -254,6 +254,44 @@ describe('Auth for admin users', () => {
         tags,
       });
     });
+
+    it('return not found error when passed non existing userId', async () => {
+      const tags = ['new-tag'];
+      const { errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation setUserTags($tags: [String]!, $userId: ID!) {
+            setUserTags(tags: $tags, userId: $userId) {
+              _id
+              tags
+            }
+          }
+        `,
+        variables: {
+          userId: 'non-existing-id',
+          tags,
+        },
+      });
+      expect(errors[0]?.extensions?.code).toEqual('UserNotFoundError');
+    });
+
+    it('return error when passed invalid userId', async () => {
+      const tags = ['new-tag'];
+      const { errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation setUserTags($tags: [String]!, $userId: ID!) {
+            setUserTags(tags: $tags, userId: $userId) {
+              _id
+              tags
+            }
+          }
+        `,
+        variables: {
+          userId: '',
+          tags,
+        },
+      });
+      expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
+    });
   });
 
   describe('Mutation.updateUserProfile', () => {
