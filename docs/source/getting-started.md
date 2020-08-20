@@ -22,16 +22,27 @@ JavaScript, and that you have a recent version of Meteor.js installed.
     prefer, such as Yarn):
 
 ```bash
-npm init unchained
+mkdir your-awesome-ecommerce-project
+cd your-awesome-ecommerce-project
+
+npm init @unchainedshop
+
+npm run install-all
+npm run dev
 ```
 
-Your project directory now contains the following folders representing 3 micro services:
+Now you have a fully running Unchained E-Commerce environment running locally. Check it out by browsing to the following URLs:
+
+- http://localhost:3000 to see the front-end (storefront)
+- http://localhost:4010 to see the control panel. Login with username: admin@localhost / password: password
+- http://localhost:4010/graphql to see the Unchained GraphQL Playground
+
+Your project directory now contains the following folders representing 3 services:
 
 - **cms**: Contains a Dockerfile for a PHP based headless CMS [GetCockpit](https://getcockpit.com) )
-- **engine**: Contains a boilerplate Meteor project with unchained as dependency
+- **engine**: Contains a boilerplate Meteor project with Unchained as dependency
 - **storefront**: Contains a Next.js based Web App that connects to Unchained and GetCockpit
 
-TODO: @schmidsi
 
 ## Step 2: Write a custom pricing plugin
 
