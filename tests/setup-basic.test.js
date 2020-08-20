@@ -73,6 +73,52 @@ describe('basic setup of internationalization and localization context', () => {
       });
     });
 
+    it('return not found error when passed non existing currencyId', async () => {
+      const { errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation updateCurrency(
+            $currencyId: ID!
+            $currency: UpdateCurrencyInput!
+          ) {
+            updateCurrency(currencyId: $currencyId, currency: $currency) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          currencyId: 'non-existing-id',
+          currency: {
+            isoCode: 'chf',
+            isActive: true,
+          },
+        },
+      });
+      expect(errors[0]?.extensions?.code).toEqual('CurrencyNotFoundError');
+    });
+
+    it('return error when passed invalid currencyId', async () => {
+      const { errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation updateCurrency(
+            $currencyId: ID!
+            $currency: UpdateCurrencyInput!
+          ) {
+            updateCurrency(currencyId: $currencyId, currency: $currency) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          currencyId: '',
+          currency: {
+            isoCode: 'chf',
+            isActive: true,
+          },
+        },
+      });
+      expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
+    });
+
     it('remove a currency', async () => {
       await Currencies.insertOne({ _id: 'ltc', isoCode: 'LTC' });
       const { data: { removeCurrency } = {}, errors } = await graphqlFetch({

@@ -1,6 +1,6 @@
 import { log } from 'meteor/unchained:core-logger';
 import { Currencies } from 'meteor/unchained:core-currencies';
-import { CurrencyNotFoundError } from '../../errors';
+import { CurrencyNotFoundError, InvalidIdError } from '../../errors';
 
 export default function (
   root,
@@ -8,7 +8,7 @@ export default function (
   { userId },
 ) {
   log(`mutation updateCurrency ${currencyId}`, { userId });
-  if (!currencyId) throw new Error('Invalid currency ID provided');
+  if (!currencyId) throw new InvalidIdError({ currencyId });
   const currencyObject = Currencies.findOne({ _id: currencyId });
   if (!currencyObject) throw new CurrencyNotFoundError({ currencyId });
   Currencies.update(
