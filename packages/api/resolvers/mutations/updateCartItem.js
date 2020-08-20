@@ -4,6 +4,7 @@ import {
   OrderQuantityTooLowError,
   OrderItemNotFoundError,
   OrderWrongStatusError,
+  InvalidIdError,
 } from '../../errors';
 
 export default function (
@@ -17,7 +18,7 @@ export default function (
     )}`,
     { userId },
   );
-  if (!itemId) throw new Error('Invalid item ID provided');
+  if (!itemId) throw new InvalidIdError({ itemId });
   const item = OrderPositions.findOne({ _id: itemId });
   if (!item) throw new OrderItemNotFoundError({ itemId });
   const order = item.order();

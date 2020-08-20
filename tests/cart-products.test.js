@@ -275,8 +275,8 @@ describe('Cart: Product Items', () => {
       });
     });
 
-    it('return error when passed invalid orderId', async () => {
-      const { data: { updateCartItem } = {} } = await graphqlFetch({
+    it('return error when passed invalid itemId', async () => {
+      const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation updateCartItem(
             $itemId: ID!
@@ -292,7 +292,7 @@ describe('Cart: Product Items', () => {
           }
         `,
         variables: {
-          itemId: SimplePosition._id,
+          itemId: '',
           configuration: [
             {
               key: 'height',
@@ -301,19 +301,36 @@ describe('Cart: Product Items', () => {
           ],
         },
       });
-      expect(updateCartItem).toMatchObject({
-        _id: SimplePosition._id,
-        quantity: 10,
-        product: {
-          _id: SimpleProduct._id,
+      expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
+    });
+
+    it('return not found error when passed non existing itemId', async () => {
+      const { errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation updateCartItem(
+            $itemId: ID!
+            $configuration: [ProductConfigurationParameterInput!]
+          ) {
+            updateCartItem(
+              itemId: $itemId
+              quantity: 10
+              configuration: $configuration
+            ) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          itemId: 'non-existing',
+          configuration: [
+            {
+              key: 'height',
+              value: '5',
+            },
+          ],
         },
-        configuration: [
-          {
-            key: 'height',
-            value: '5',
-          },
-        ],
       });
+      expect(errors[0]?.extensions?.code).toEqual('OrderItemNotFoundError');
     });
   });
 
