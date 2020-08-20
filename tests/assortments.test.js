@@ -524,7 +524,7 @@ describe('Assortments', () => {
       ]);
     });
 
-    it('return error when passed none existing assortment Id', async () => {
+    it('return not found error when passed none existing assortment Id', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation UpdateAssortment(
@@ -548,7 +548,34 @@ describe('Assortments', () => {
           },
         },
       });
-      expect(errors.length).toEqual(1);
+      expect(errors[0]?.extensions?.code).toEqual('AssortmentNotFoundError');
+    });
+
+    it('return error when passed invalid assortment Id', async () => {
+      const { errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation UpdateAssortment(
+            $assortment: UpdateAssortmentInput!
+            $assortmentId: ID!
+          ) {
+            updateAssortment(
+              assortment: $assortment
+              assortmentId: $assortmentId
+            ) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          assortmentId: '',
+          assortment: {
+            isRoot: false,
+            tags: ['test-assrtment-1', 'test-assortment-2'],
+            isActive: true,
+          },
+        },
+      });
+      expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
     });
   });
 
@@ -579,7 +606,7 @@ describe('Assortments', () => {
         },
       });
 
-      expect(errors.length).toEqual(1);
+      expect(errors[0]?.extensions?.code).toEqual('NoPermissionError');
     });
   });
 
