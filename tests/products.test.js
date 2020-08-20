@@ -112,7 +112,8 @@ describe('Products', () => {
 
       expect(unpublishProduct.published).toBe(null);
     });
-    it('return error for non-existing product id', async () => {
+
+    it('return not found error for non-existing product id', async () => {
       const { errors = {} } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation UnpublishProduct($productId: ID!) {
@@ -125,7 +126,23 @@ describe('Products', () => {
           productId: 'non-existing-id',
         },
       });
-      expect(errors.length).toEqual(1);
+      expect(errors[0]?.extensions?.code).toEqual('ProductNotFoundError');
+    });
+
+    it('return error for invalid product id', async () => {
+      const { errors = {} } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation UnpublishProduct($productId: ID!) {
+            unpublishProduct(productId: $productId) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          productId: '',
+        },
+      });
+      expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
     });
   });
 
