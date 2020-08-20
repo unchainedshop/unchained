@@ -224,7 +224,7 @@ describe('Filters', () => {
       expect(updateFilterTexts.length).toEqual(2);
     });
 
-    it('return error when passed in-valid filter ID', async () => {
+    it('return not found error when passed non existing filter ID', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation UpdateFilterTexts(
@@ -253,7 +253,39 @@ describe('Filters', () => {
           ],
         },
       });
-      expect(errors.length).toEqual(1);
+      expect(errors[0]?.extensions?.code).toEqual('FilterNotFoundError');
+    });
+
+    it('return error when passed  invalid filter ID', async () => {
+      const { errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation UpdateFilterTexts(
+            $filterId: ID!
+            $filterOptionValue: String
+            $texts: [UpdateFilterTextInput!]!
+          ) {
+            updateFilterTexts(
+              filterId: $filterId
+              filterOptionValue: $filterOptionValue
+              texts: $texts
+            ) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          filterId: '',
+          filterOptionValue: 'Hello world',
+          texts: [
+            {
+              locale: 'en',
+              title: 'english-filter-text',
+              subtitle: 'english-filter-text-subtitle',
+            },
+          ],
+        },
+      });
+      expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
     });
   });
 
