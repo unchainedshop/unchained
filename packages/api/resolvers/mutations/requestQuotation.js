@@ -1,7 +1,7 @@
 import { log } from 'meteor/unchained:core-logger';
 import { Products } from 'meteor/unchained:core-products';
 import { Quotations } from 'meteor/unchained:core-quotations';
-import { ProductNotFoundError } from '../../errors';
+import { ProductNotFoundError, InvalidIdError } from '../../errors';
 
 export default function (
   root,
@@ -14,7 +14,7 @@ export default function (
     }`,
     { userId },
   );
-  if (!productId) throw new Error('Invalid product ID provided');
+  if (!productId) throw new InvalidIdError({ productId });
   const product = Products.findOne({ _id: productId });
   if (!product) throw new ProductNotFoundError({ productId });
   const quotation = Quotations.requestQuotation(

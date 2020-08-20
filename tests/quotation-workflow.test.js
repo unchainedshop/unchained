@@ -101,6 +101,60 @@ describe('cart checkout', () => {
         documents: [],
       });
     });
+
+    it('return not found error when passed non existing productId', async () => {
+      const { errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation requestQuotation(
+            $productId: ID!
+            $configuration: [ProductConfigurationParameterInput!]
+          ) {
+            requestQuotation(
+              productId: $productId
+              configuration: $configuration
+            ) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          productId: 'non-existing-id',
+          configuration: [
+            { key: 'length', value: '5' },
+            { key: 'height', value: '10' },
+          ],
+        },
+      });
+
+      expect(errors[0]?.extensions?.code).toEqual('ProductNotFoundError');
+    });
+
+    it('return error when passed invalid productId', async () => {
+      const { errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation requestQuotation(
+            $productId: ID!
+            $configuration: [ProductConfigurationParameterInput!]
+          ) {
+            requestQuotation(
+              productId: $productId
+              configuration: $configuration
+            ) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          productId: '',
+          configuration: [
+            { key: 'length', value: '5' },
+            { key: 'height', value: '10' },
+          ],
+        },
+      });
+
+      expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
+    });
   });
 
   describe('Mutation.verifyQuotation', () => {
