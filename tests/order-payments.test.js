@@ -192,4 +192,8 @@ describe('Order: Payments', () => {
       });
     });
   });
+
+  describe('Mutation.updateOrderPayment', () => {
+    it.todo('all senario tests');
+  });
 });
