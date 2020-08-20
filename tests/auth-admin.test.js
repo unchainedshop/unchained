@@ -426,5 +426,43 @@ describe('Auth for admin users', () => {
         roles,
       });
     });
+
+    it('return error when passed invalid userId', async () => {
+      const roles = ['admin'];
+      const { errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation setRoles($userId: ID!, $roles: [String!]!) {
+            setRoles(roles: $roles, userId: $userId) {
+              _id
+              roles
+            }
+          }
+        `,
+        variables: {
+          userId: '',
+          roles,
+        },
+      });
+      expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
+    });
+
+    it('return not found error when passed non-existing userId', async () => {
+      const roles = ['admin'];
+      const { errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation setRoles($userId: ID!, $roles: [String!]!) {
+            setRoles(roles: $roles, userId: $userId) {
+              _id
+              roles
+            }
+          }
+        `,
+        variables: {
+          userId: 'non-existing',
+          roles,
+        },
+      });
+      expect(errors[0]?.extensions?.code).toEqual('UserNotFoundError');
+    });
   });
 });
