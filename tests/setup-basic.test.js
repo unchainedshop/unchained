@@ -237,6 +237,40 @@ describe('basic setup of internationalization and localization context', () => {
       });
     });
 
+    it('return not found error when passed non existing countryId', async () => {
+      const { errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation setBaseCountry($countryId: ID!) {
+            setBaseCountry(countryId: $countryId) {
+              isBase
+            }
+          }
+        `,
+        variables: {
+          countryId: 'non-existing-id',
+        },
+      });
+
+      expect(errors[0]?.extensions?.code).toEqual('CountryNotFoundError');
+    });
+
+    it('return error when passed invalid countryId', async () => {
+      const { errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation setBaseCountry($countryId: ID!) {
+            setBaseCountry(countryId: $countryId) {
+              isBase
+            }
+          }
+        `,
+        variables: {
+          countryId: '',
+        },
+      });
+
+      expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
+    });
+
     it('update a country', async () => {
       const Currencies = db.collection('currencies');
       const country = await Countries.findOne();
