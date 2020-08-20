@@ -466,6 +466,40 @@ describe('basic setup of internationalization and localization context', () => {
       });
     });
 
+    it('return not found error when passed non-existing languageId', async () => {
+      const { errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation setBaseLanguage($languageId: ID!) {
+            setBaseLanguage(languageId: $languageId) {
+              isBase
+              name
+            }
+          }
+        `,
+        variables: {
+          languageId: 'non-existing-id',
+        },
+      });
+      expect(errors[0]?.extensions?.code).toEqual('LanguageNotFoundError');
+    });
+
+    it('return error when passed invalid languageId', async () => {
+      const { errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation setBaseLanguage($languageId: ID!) {
+            setBaseLanguage(languageId: $languageId) {
+              isBase
+              name
+            }
+          }
+        `,
+        variables: {
+          languageId: '',
+        },
+      });
+      expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
+    });
+
     it('update a language', async () => {
       const language = await Languages.findOne();
 

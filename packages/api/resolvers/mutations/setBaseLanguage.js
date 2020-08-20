@@ -1,10 +1,10 @@
 import { log } from 'meteor/unchained:core-logger';
 import { Languages } from 'meteor/unchained:core-languages';
-import { LanguageNotFoundError } from '../../errors';
+import { LanguageNotFoundError, InvalidIdError } from '../../errors';
 
 export default function setBaseLanguage(root, { languageId }, { userId }) {
   log(`mutation setBaseLanguage ${languageId}`, { userId });
-  if (!languageId) throw new Error('Invalid language ID provided');
+  if (!languageId) throw new InvalidIdError({ languageId });
   Languages.update(
     { isBase: true },
     {
