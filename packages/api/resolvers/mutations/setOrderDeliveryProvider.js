@@ -1,14 +1,15 @@
 import { log } from 'meteor/unchained:core-logger';
 import { Orders } from 'meteor/unchained:core-orders';
-import { OrderNotFoundError } from '../../errors';
+import { OrderNotFoundError, InvalidIdError } from '../../errors';
 
 export default function (root, { orderId, deliveryProviderId }, { userId }) {
   log(`mutation setOrderDeliveryProvider ${deliveryProviderId}`, {
     orderId,
     userId,
   });
-  if (!orderId || !deliveryProviderId)
-    throw new Error('Invalid order or delivery provider ID provided');
+  if (!orderId) throw new InvalidIdError({ orderId });
+  if (!deliveryProviderId) throw new InvalidIdError({ deliveryProviderId });
+
   const order = Orders.findOne({ _id: orderId });
   if (!order) throw new OrderNotFoundError({ orderId });
   return order.setDeliveryProvider({ deliveryProviderId });

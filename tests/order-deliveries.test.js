@@ -52,6 +52,75 @@ describe('Order: Deliveries', () => {
         },
       });
     });
+
+    it('return not found error when passed non existing orderId', async () => {
+      const { errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation setOrderDeliveryProvider(
+            $orderId: ID!
+            $deliveryProviderId: ID!
+          ) {
+            setOrderDeliveryProvider(
+              orderId: $orderId
+              deliveryProviderId: $deliveryProviderId
+            ) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          orderId: 'non-existing-id',
+          deliveryProviderId: SendMailDeliveryProvider._id,
+        },
+      });
+      expect(errors[0]?.extensions?.code).toEqual('OrderNotFoundError');
+    });
+
+    it('return error when passed invalid orderId', async () => {
+      const { errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation setOrderDeliveryProvider(
+            $orderId: ID!
+            $deliveryProviderId: ID!
+          ) {
+            setOrderDeliveryProvider(
+              orderId: $orderId
+              deliveryProviderId: $deliveryProviderId
+            ) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          orderId: '',
+          deliveryProviderId: SendMailDeliveryProvider._id,
+        },
+      });
+      expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
+    });
+
+    it('return error when passed invalid deliveryProviderId', async () => {
+      const { errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation setOrderDeliveryProvider(
+            $orderId: ID!
+            $deliveryProviderId: ID!
+          ) {
+            setOrderDeliveryProvider(
+              orderId: $orderId
+              deliveryProviderId: $deliveryProviderId
+            ) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          orderId: SimpleOrder._id,
+          deliveryProviderId: '',
+        },
+      });
+      expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
+    });
   });
 
   describe('Mutation.updateOrderDeliveryShipping', () => {
