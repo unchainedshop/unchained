@@ -1,11 +1,10 @@
 import { log } from 'meteor/unchained:core-logger';
 import { PaymentProviders } from 'meteor/unchained:core-payment';
-import { PaymentProviderNotFoundError } from '../../errors';
+import { PaymentProviderNotFoundError, InvalidIdError } from '../../errors';
 
 export default (root, { paymentProvider, paymentProviderId }, { userId }) => {
   log(`mutation updatePaymentProvider ${paymentProviderId}`, { userId });
-  if (!paymentProviderId)
-    throw new Error('Invalid payment provider ID provided');
+  if (!paymentProviderId) throw new InvalidIdError({ paymentProviderId });
   const provider = PaymentProviders.findOne({
     _id: paymentProviderId,
     deleted: null,

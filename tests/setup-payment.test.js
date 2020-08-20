@@ -112,6 +112,68 @@ describe('setup payment providers', () => {
         type: 'INVOICE',
       });
     });
+
+    it('return not found error when passed non existing paymentProviderId', async () => {
+      const { errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation updatePaymentProvider(
+            $paymentProvider: UpdateProviderInput!
+            $paymentProviderId: ID!
+          ) {
+            updatePaymentProvider(
+              paymentProvider: $paymentProvider
+              paymentProviderId: $paymentProviderId
+            ) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          paymentProviderId: 'non-existing-id',
+          paymentProvider: {
+            configuration: [
+              {
+                key: 'gugus',
+                value: 'blub',
+              },
+            ],
+          },
+        },
+      });
+      expect(errors[0]?.extensions?.code).toEqual(
+        'PaymentProviderNotFoundError',
+      );
+    });
+
+    it('return error when passed invalid paymentProviderId', async () => {
+      const { errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation updatePaymentProvider(
+            $paymentProvider: UpdateProviderInput!
+            $paymentProviderId: ID!
+          ) {
+            updatePaymentProvider(
+              paymentProvider: $paymentProvider
+              paymentProviderId: $paymentProviderId
+            ) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          paymentProviderId: '',
+          paymentProvider: {
+            configuration: [
+              {
+                key: 'gugus',
+                value: 'blub',
+              },
+            ],
+          },
+        },
+      });
+      expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
+    });
   });
 
   describe('Mutation.removePaymentProvider', () => {
