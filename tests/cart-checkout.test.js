@@ -68,6 +68,32 @@ describe('Cart Checkout Flow', () => {
   });
 
   describe('Mutation.updateCart', () => {
+    it('return error when passed invalid orderId', async () => {
+      const { errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation updateCart($billingAddress: AddressInput, $orderId: ID) {
+            updateCart(orderId: $orderId, billingAddress: $billingAddress) {
+              _id
+              billingAddress {
+                firstName
+              }
+            }
+          }
+        `,
+        variables: {
+          orderId: '',
+          billingAddress: {
+            firstName: 'Hallo',
+            lastName: 'Velo',
+            addressLine: 'Strasse 1',
+            addressLine2: 'Postfach',
+            postalCode: '8000',
+            city: 'Zürich',
+          },
+        },
+      });
+      expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
+    });
     it('update the billingAddress', async () => {
       const Orders = db.collection('orders');
       const order = Orders.findOne({ orderNumber: 'wishlist' });

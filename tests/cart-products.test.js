@@ -274,6 +274,47 @@ describe('Cart: Product Items', () => {
         ],
       });
     });
+
+    it('return error when passed invalid orderId', async () => {
+      const { data: { updateCartItem } = {} } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation updateCartItem(
+            $itemId: ID!
+            $configuration: [ProductConfigurationParameterInput!]
+          ) {
+            updateCartItem(
+              itemId: $itemId
+              quantity: 10
+              configuration: $configuration
+            ) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          itemId: SimplePosition._id,
+          configuration: [
+            {
+              key: 'height',
+              value: '5',
+            },
+          ],
+        },
+      });
+      expect(updateCartItem).toMatchObject({
+        _id: SimplePosition._id,
+        quantity: 10,
+        product: {
+          _id: SimpleProduct._id,
+        },
+        configuration: [
+          {
+            key: 'height',
+            value: '5',
+          },
+        ],
+      });
+    });
   });
 
   describe('Mutation.removeCartItem', () => {
