@@ -494,11 +494,36 @@ describe('ProductsVariation', () => {
           }
         `,
         variables: {
-          productVariationId: 'invalid-product-variation',
+          productVariationId: '',
           productVariationOptionValue: 'variation-option-2-value',
         },
       });
-      expect(errors.length).toEqual(1);
+      expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
+    });
+
+    it('return not found error when passed non existing product variation ID', async () => {
+      const { errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation RemoveProductVariationOption(
+            $productVariationId: ID!
+            $productVariationOptionValue: String!
+          ) {
+            removeProductVariationOption(
+              productVariationId: $productVariationId
+              productVariationOptionValue: $productVariationOptionValue
+            ) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          productVariationId: 'non-existing-id',
+          productVariationOptionValue: 'variation-option-2-value',
+        },
+      });
+      expect(errors[0]?.extensions?.code).toEqual(
+        'ProductVariationNotFoundError',
+      );
     });
   });
 
