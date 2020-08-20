@@ -14,14 +14,147 @@ info:
     name: Apache 2.0
     url: "http://www.apache.org/licenses/LICENSE-2.0.html"
 domains:
-  - name: Get Assortments
+  - name: Queries
     description: Main methods to getch assortments
     usecases:
-      - name: Get Assortments
-        description: Query list of assortments
-        query: query.assortments
-        expand: texts,assortmentPaths,productAssignments
-      - name: Get single assortment
+      - name: assortment
         description: get assortment by it's ID or slug
         query: query.assortment
-        expand: texts,assortmentPaths,productAssignments
+        expand: texts
+      - name: assortments
+        description: Query list of assortments
+        query: query.assortments
+        expand: texts
+      - name: countries
+        description: Query list of countries
+        query: query.countries
+      - name: country
+        description: get country by it's ID
+        query: query.country
+      - name: currencies
+        description: Query list of currencies
+        query: query.currencies
+      - name: currency
+        description: get currency by it's ID
+        query: query.currency
+      - name: deliveryInterfaces
+        description: Get all delivery interfaces filtered by type
+        query: query.deliveryInterfaces
+      - name: deliveryProvider
+        description: Get a specific delivery provider by ID
+        query: query.deliveryProvider
+      - name: deliveryProviders
+        description: Get all delivery providers, optionally filtered by type
+        query: query.deliveryProviders
+      - name: filter
+        description: Get a specific filter by ID
+        query: query.filter
+      - name: filters
+        description: Get all filters
+        query: query.filters
+      - name: language
+        description: Get a specific language by it's ID
+        query: query.language
+      - name: logs
+        description: Get all logs, sorted by most recent creation date first
+        query: query.logs
+      - name: logs
+        description: Get all logs, sorted by most recent creation date first
+        query: query.logs
+      - name: me
+        description: Get currently logged in user
+        query: query.me
+      - name: order
+        description: Get a specific single order, use the otp to get access to the information without beeing logged in as the user that created the order
+        query: query.order
+      - name: orders
+        description: Get list of orders
+        query: query.orders
+      - name: paymentInterfaces
+        description: Get all payment interfaces filtered by type
+        query: query.paymentInterfaces
+      - name: paymentProvider
+        description: Get a specific payment provider by ID
+        query: query.paymentProvider
+      - name: paymentProviders
+        description: Get all payment providers, optionally filtered by type
+        query: query.paymentProviders
+      - name: product
+        description: Get a specific product by id or slug
+        query: query.product
+      - name: productCatalogPrices
+        description: List prices of the specified product
+        query: query.productCatalogPrices
+      - name: productReview
+        description: Get a specific product review by ID
+        query: query.productReview
+      - name: productReviews
+        description: Get list of product reviews
+        query: query.productReviews
+      - name: products
+        description: List of published products filtered either by tags or explicit slugs If a slug is provided, limit and offset don't have any effect on the result
+        query: query.products
+      - name: quotation
+        description: Get a specific quotation by ID
+        query: query.quotation
+      - name: quotations
+        description: Get list of quotations
+        query: query.quotations
+      - name: search
+        description: Search products
+        query: query.search
+      - name: shopInfo
+        description: Get shop-global data and the resolved country/language pair
+        query: query.shopInfo
+      - name: signPaymentProviderForCredentialRegistration
+        description: Sign a generic payment provider for registration
+        query: query.signPaymentProviderForCredentialRegistration
+      - name: subscription
+        description: Get a specific subscription by ID
+        query: query.subscription
+      - name: subscriptions
+        description: Get list of subscriptions
+        query: query.subscriptions
+      - name: translatedAssortmentTexts
+        description: Localization Meta data for assortments
+        query: query.translatedAssortmentTexts
+      - name: translatedFilterTexts
+        description: Localization Filters and Filter Options
+        query: query.translatedFilterTexts
+      - name: translatedProductMediaTexts
+        description: Localization Media title/subtitle of a media that is attached to a product
+        query: query.translatedProductMediaTexts
+      - name: translatedProductTexts
+        description: Localization Meta data for product
+        query: query.translatedProductTexts
+      - name: translatedProductVariationTexts
+        description: Localization Variations and Variation Options
+        query: query.translatedProductVariationTexts
+      - name: user
+        description: Specific user data if userId provided, else returns currently logged in
+        query: query.user
+      - name: users
+        description: Get list of users
+        query: query.users
+      - name: warehousingInterfaces
+        description: Get all warehousing interfaces filtered by type
+        query: query.warehousingInterfaces
+      - name: warehousingProvider
+        description: Get a specific warehousing provider by ID
+        query: query.warehousingProvider
+      - name: warehousingProviders
+        description: Get all delivery providers, optionally filtered by type
+        query: query.warehousingProviders
+      - name: work
+        description: Get a specific work unit by ID
+        query: query.work
+      - name: workQueue
+        description: Get all work from the queue
+        query: query.workQueue
+
+  - name: Mutations
+    description: Methods to update state
+    usecases:
+      - name: createAssortment
+        description: Query list of assortments
+        query: mutation.createAssortment
