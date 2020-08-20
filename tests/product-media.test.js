@@ -146,7 +146,7 @@ describe('ProductsVariation', () => {
       expect(updateProductMediaTexts._id).not.toBe(null);
     });
 
-    it('return error when passed in-valid media ID', async () => {
+    it('return not found error when passed non existing media ID', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation UpdateproductMediaTexts(
@@ -158,9 +158,6 @@ describe('ProductsVariation', () => {
               texts: $texts
             ) {
               _id
-              locale
-              title
-              subtitle
             }
           }
         `,
@@ -173,7 +170,34 @@ describe('ProductsVariation', () => {
           },
         },
       });
-      expect(errors.length).toEqual(1);
+      expect(errors[0]?.extensions?.code).toEqual('ProductMediaNotFoundError');
+    });
+
+    it('return error when passed invalid media ID', async () => {
+      const { errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation UpdateproductMediaTexts(
+            $productMediaId: ID!
+            $texts: [UpdateProductMediaTextInput!]!
+          ) {
+            updateProductMediaTexts(
+              productMediaId: $productMediaId
+              texts: $texts
+            ) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          productMediaId: '',
+          texts: {
+            locale: 'en',
+            title: 'english title',
+            subtitle: 'english title subtitle',
+          },
+        },
+      });
+      expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
     });
   });
 
