@@ -310,6 +310,60 @@ describe('basic setup of internationalization and localization context', () => {
       });
     });
 
+    it('return error when passed invalid countryId', async () => {
+      const Currencies = db.collection('currencies');
+      const currency = await Currencies.findOne();
+
+      const { errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation updateCountry(
+            $countryId: ID!
+            $country: UpdateCountryInput!
+          ) {
+            updateCountry(countryId: $countryId, country: $country) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          countryId: '',
+          country: {
+            isoCode: 'CH',
+            isActive: true,
+            defaultCurrencyId: currency._id,
+          },
+        },
+      });
+      expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
+    });
+
+    it('return not found error when passed non existing countryId', async () => {
+      const Currencies = db.collection('currencies');
+      const currency = await Currencies.findOne();
+
+      const { errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation updateCountry(
+            $countryId: ID!
+            $country: UpdateCountryInput!
+          ) {
+            updateCountry(countryId: $countryId, country: $country) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          countryId: 'non-existing',
+          country: {
+            isoCode: 'CH',
+            isActive: true,
+            defaultCurrencyId: currency._id,
+          },
+        },
+      });
+      expect(errors[0]?.extensions?.code).toEqual('CountryNotFoundError');
+    });
+
     it('remove a country', async () => {
       await Countries.insertOne({ _id: 'us', isoCode: 'US' });
       const { data: { removeCountry } = {}, errors } = await graphqlFetch({
