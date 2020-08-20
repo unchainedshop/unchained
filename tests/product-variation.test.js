@@ -364,7 +364,7 @@ describe('ProductsVariation', () => {
       expect(updateProductVariationTexts[0]._id).not.toBe(null);
     });
 
-    it('return error when passed invalid product variation ID', async () => {
+    it('return not found error when passed non existing product variationId', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation UpdateProductVariationTexts(
@@ -392,7 +392,40 @@ describe('ProductsVariation', () => {
           ],
         },
       });
-      expect(errors.length).toEqual(1);
+      expect(errors[0]?.extensions?.code).toEqual(
+        'ProductVariationNotFoundError',
+      );
+    });
+
+    it('return error when passed invalid productvariationId', async () => {
+      const { errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation UpdateProductVariationTexts(
+            $productVariationId: ID!
+            $productVariationOptionValue: String
+            $texts: [UpdateProductVariationTextInput!]!
+          ) {
+            updateProductVariationTexts(
+              productVariationId: $productVariationId
+              productVariationOptionValue: $productVariationOptionValue
+              texts: $texts
+            ) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          productVariationId: '',
+          productVariationOptionValue: 'variation-option-2-value',
+          texts: [
+            {
+              locale: 'en',
+              title: 'variation option 2 title',
+            },
+          ],
+        },
+      });
+      expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
     });
   });
 

@@ -1,6 +1,6 @@
 import { log } from 'meteor/unchained:core-logger';
 import { ProductVariations } from 'meteor/unchained:core-products';
-import { ProductVariationNotFoundError } from '../../errors';
+import { ProductVariationNotFoundError, InvalidIdError } from '../../errors';
 
 export default function (
   root,
@@ -8,8 +8,7 @@ export default function (
   { userId },
 ) {
   log(`mutation updateProductVariationTexts ${productVariationId}`, { userId });
-  if (!productVariationId)
-    throw new Error('Invalid product variation ID provided');
+  if (!productVariationId) throw new InvalidIdError({ productVariationId });
   const productVariation = ProductVariations.findOne({
     _id: productVariationId,
   });
