@@ -1,0 +1,27 @@
+introspection: http://127.0.0.1:4010/graphql
+servers:
+  - url: http://127.0.0.1:4010
+    description: Development Server
+info:
+  description: |
+    Welcome to unchained API documentation
+  version: 1.0.0
+  title: UnchainedShop API
+  termsOfService: "https://github.com/unchainedshop/unchained/blob/master/docs/contributing.md"
+  contact:
+    email: hello@unchained.shop
+  license:
+    name: Apache 2.0
+    url: "http://www.apache.org/licenses/LICENSE-2.0.html"
+domains:
+  - name: Get Assortments
+    description: Main methods to getch assortments
+    usecases:
+      - name: Get Assortments
+        description: Query list of assortments
+        query: query.assortments
+        expand: texts,assortmentPaths,productAssignments
+      - name: Get single assortment
+        description: get assortment by it's ID or slug
+        query: query.assortment
+        expand: texts,assortmentPaths,productAssignments
