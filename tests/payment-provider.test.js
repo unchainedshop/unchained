@@ -96,9 +96,10 @@ describe('PaymentProviders', () => {
       expect(paymentProvider._id).toEqual(SimplePaymentProvider._id);
     });
 
-    it('return null when non-existing paymentProviderId is given', async () => {
+    it('return not found error when passed non-existing paymentProviderId', async () => {
       const {
         data: { paymentProvider },
+        errors,
       } = await graphqlFetch({
         query: /* GraphQL */ `
           query PaymentProvider($paymentProviderId: ID!) {
@@ -112,6 +113,29 @@ describe('PaymentProviders', () => {
         },
       });
       expect(paymentProvider).toBe(null);
+      expect(errors[0]?.extensions?.code).toEqual(
+        'PaymentProviderNotFoundError',
+      );
+    });
+
+    it('return error when passed invalid paymentProviderId', async () => {
+      const {
+        data: { paymentProvider },
+        errors,
+      } = await graphqlFetch({
+        query: /* GraphQL */ `
+          query PaymentProvider($paymentProviderId: ID!) {
+            paymentProvider(paymentProviderId: $paymentProviderId) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          paymentProviderId: '',
+        },
+      });
+      expect(paymentProvider).toBe(null);
+      expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
     });
   });
 
