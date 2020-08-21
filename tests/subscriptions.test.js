@@ -218,4 +218,11 @@ describe('Subscriptions', () => {
   describe('Mutation.activateSubscription', () => {
     it.todo('Mutation.activateSubscription');
   });
+
+  describe('query.subscriptions', () => {
+    it.todo('all tests');
+  });
+  describe('query.subscription', () => {
+    it.todo('all tests');
+  });
 });
