@@ -1,10 +1,10 @@
 import { log } from 'meteor/unchained:core-logger';
 import { Countries } from 'meteor/unchained:core-countries';
-import { CountryNotFoundError } from '../../errors';
+import { CountryNotFoundError, InvalidIdError } from '../../errors';
 
 export default function (root, { countryId }, { userId }) {
   log(`query country ${countryId}`, { userId });
-  if (!countryId) throw new Error('Invalid country ID provided');
+  if (!countryId) throw new InvalidIdError({ countryId });
 
   const selector = {};
   selector._id = countryId;
