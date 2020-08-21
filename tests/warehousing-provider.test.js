@@ -98,9 +98,10 @@ describe('WarehousingProviders', () => {
       expect(warehousingProvider._id).toEqual(SimpleWarehousingProvider._id);
     });
 
-    it('return null when non-existing warehousingProviderId is given', async () => {
+    it('return not found error when passed non existing warehousingProviderId ', async () => {
       const {
         data: { warehousingProvider },
+        errors,
       } = await graphqlFetch({
         query: /* GraphQL */ `
           query WarehousingProvider($warehousingProviderId: ID!) {
@@ -114,6 +115,29 @@ describe('WarehousingProviders', () => {
         },
       });
       expect(warehousingProvider).toBe(null);
+      expect(errors[0]?.extensions?.code).toEqual(
+        'WarehousingProviderNotFoundError',
+      );
+    });
+
+    it('return error when passed invalid warehousingProviderId ', async () => {
+      const {
+        data: { warehousingProvider },
+        errors,
+      } = await graphqlFetch({
+        query: /* GraphQL */ `
+          query WarehousingProvider($warehousingProviderId: ID!) {
+            warehousingProvider(warehousingProviderId: $warehousingProviderId) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          warehousingProviderId: '',
+        },
+      });
+      expect(warehousingProvider).toBe(null);
+      expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
     });
   });
 
