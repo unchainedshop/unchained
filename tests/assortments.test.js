@@ -274,10 +274,8 @@ describe('Assortments', () => {
       expect(assortment._id).toBe(SimpleAssortment[0]._id);
     });
 
-    it('return null for non-existing id', async () => {
-      const {
-        data: { assortment },
-      } = await graphqlFetch({
+    it('return not found error for non-existing id', async () => {
+      const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
           query Assortment($assortmentId: ID, $slug: String) {
             assortment(assortmentId: $assortmentId, slug: $slug) {
@@ -290,13 +288,11 @@ describe('Assortments', () => {
         },
       });
 
-      expect(assortment).toBe(null);
+      expect(errors[0]?.extensions?.code).toEqual('AssortmentNotFoundError');
     });
 
-    it('return null for non-existing slug', async () => {
-      const {
-        data: { assortment },
-      } = await graphqlFetch({
+    it('return not found error for non-existing slug', async () => {
+      const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
           query Assortment($assortmentId: ID, $slug: String) {
             assortment(assortmentId: $assortmentId, slug: $slug) {
@@ -309,7 +305,41 @@ describe('Assortments', () => {
         },
       });
 
-      expect(assortment).toBe(null);
+      expect(errors[0]?.extensions?.code).toEqual('AssortmentNotFoundError');
+    });
+
+    it('return error for non-existing id', async () => {
+      const { errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          query Assortment($assortmentId: ID, $slug: String) {
+            assortment(assortmentId: $assortmentId, slug: $slug) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          assortmentId: '',
+        },
+      });
+
+      expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
+    });
+
+    it('return error for non-existing slug', async () => {
+      const { errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          query Assortment($assortmentId: ID, $slug: String) {
+            assortment(assortmentId: $assortmentId, slug: $slug) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          slug: '',
+        },
+      });
+
+      expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
     });
 
     it('return null when either id or slug are non-existing', async () => {
