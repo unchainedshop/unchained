@@ -831,6 +831,34 @@ describe('basic setup of internationalization and localization context', () => {
         isoCode: 'pl',
       });
     });
+
+    it('query.language return not found error when passed non existing languageId', async () => {
+      const { data: { language } = {}, errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          query {
+            language(languageId: "amh") {
+              isoCode
+            }
+          }
+        `,
+      });
+      expect(language).toEqual(null);
+      expect(errors[0]?.extensions?.code).toEqual('LanguageNotFoundError');
+    });
+
+    it('query.language return error when passed invalid languageId', async () => {
+      const { data: { language } = {}, errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          query {
+            language(languageId: "") {
+              isoCode
+            }
+          }
+        `,
+      });
+      expect(language).toEqual(null);
+      expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
+    });
   });
 
   it('user defaults', async () => {
@@ -896,8 +924,5 @@ describe('basic setup of internationalization and localization context', () => {
       },
       userRoles: ['admin'],
     });
-  });
-  describe('query.country', () => {
-    it.todo('all tests');
   });
 });
