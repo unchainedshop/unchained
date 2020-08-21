@@ -1,11 +1,11 @@
 import { log } from 'meteor/unchained:core-logger';
 import { ProductReviews } from 'meteor/unchained:core-products';
-import { ProductReviewNotFoundError } from '../../errors';
+import { ProductReviewNotFoundError, InvalidIdError } from '../../errors';
 
 export default function (root, { productReviewId }, { userId }) {
   log(`query productReview ${productReviewId}`, { userId });
 
-  if (!productReviewId) throw new Error('Invalid product review ID provided');
+  if (!productReviewId) throw new InvalidIdError({ productReviewId });
 
   const review = ProductReviews.findReviewById(productReviewId);
 
