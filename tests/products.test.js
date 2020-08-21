@@ -390,4 +390,11 @@ describe('Products', () => {
       expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
     });
   });
+
+  describe('query.product', () => {
+    it.todo('all tests');
+  });
+  describe('query.products', () => {
+    it.todo('all tests');
+  });
 });
