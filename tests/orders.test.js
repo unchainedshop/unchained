@@ -142,9 +142,10 @@ describe('Order: Management', () => {
       expect(order._id).toEqual(SimpleOrder._id);
     });
 
-    it('should return null for non-existing order', async () => {
+    xit('return not found error when passed non existing orderId', async () => {
       const {
         data: { order },
+        errors,
       } = await graphqlFetch({
         query: /* GraphQL */ `
           query order($orderId: ID!) {
@@ -159,6 +160,28 @@ describe('Order: Management', () => {
       });
 
       expect(order).toBe(null);
+      expect(errors[0]?.extensions?.code).toEqual('OrderNotFoundError');
+    });
+
+    xit('return error when passed invalid orderId', async () => {
+      const {
+        data: { order },
+        errors,
+      } = await graphqlFetch({
+        query: /* GraphQL */ `
+          query order($orderId: ID!) {
+            order(orderId: $orderId) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          orderId: '',
+        },
+      });
+
+      expect(order).toBe(null);
+      expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
     });
   });
 
