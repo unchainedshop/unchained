@@ -489,7 +489,7 @@ describe('basic setup of internationalization and localization context', () => {
       ]);
     });
 
-    it('query inactive single country', async () => {
+    it('query.country inactive single country', async () => {
       await Countries.insertOne({
         _id: 'de',
         isoCode: 'DE',
@@ -509,6 +509,32 @@ describe('basic setup of internationalization and localization context', () => {
       expect(country).toMatchObject({
         isoCode: 'DE',
       });
+    });
+
+    it('query.country return not found when passed non existing ID', async () => {
+      const { errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          query {
+            country(countryId: "et") {
+              isoCode
+            }
+          }
+        `,
+      });
+      expect(errors[0]?.extensions?.code).toEqual('CountryNotFoundError');
+    });
+
+    it('query.country return error when passed invalid ID', async () => {
+      const { errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          query {
+            country(countryId: "") {
+              isoCode
+            }
+          }
+        `,
+      });
+      expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
     });
   });
 
@@ -844,5 +870,8 @@ describe('basic setup of internationalization and localization context', () => {
       },
       userRoles: ['admin'],
     });
+  });
+  describe('query.country', () => {
+    it.todo('all tests');
   });
 });
