@@ -155,6 +155,375 @@ domains:
   - name: Mutations
     description: Methods to update state
     usecases:
+      - name: activateSubscription
+        description: Activate a subscription
+        query: mutation.activateSubscription
+      - name: addAssortmentFilter
+        description: Add a new filter to a assortment
+        query: mutation.addAssortmentFilter
+      - name: addAssortmentLink
+        description: Add a new child assortment to an assortment
+        query: mutation.addAssortmentLink
+      - name: addAssortmentProduct
+        description: Add a new product to an assortment
+        query: mutation.addAssortmentProduct
+      - name: addCartDiscount
+        description: Add a new discount to the cart, a new order gets generated with status = open (= order before checkout / cart) if necessary
+        query: mutation.addCartDiscount
+      - name: addCartProduct
+        description: Add a new item to the cart. Order gets generated with status = open (= order before checkout / cart) if necessary.
+        query: mutation.addCartProduct
+      - name: addCartQuotation
+        description: Add a new quotation to the cart.
+        query: mutation.addCartQuotation
+      - name: addEmail
+        description: Update E-Mail address of any user or logged in user if userId is not provided
+        query: mutation.addEmail
+      - name: addMultipleCartProducts
+        description: Add multiple new item to the cart. Order gets generated with status = open (= order before checkout / cart) if necessary.
+        query: mutation.addMultipleCartProducts
+      - name: addProductAssignment
+        description: Link a new product to a ConfigurableProduct by providing a configuration combination that uniquely identifies a row in the assignment matrix
+        query: mutation.addProductAssignment
+      - name: addProductMedia
+        description: Add a new media to a product's visualization
+        query: mutation.addProductMedia
+      - name: addProductReviewVote
+        description: Add a vote to a ProductReview
+        query: mutation.addProductReviewVote
+      - name: addWork
+        description: Add work to the work queue. Each type has its own input shape
+        query: mutation.addWork
+      - name: allocateWork
+        description: Get the next task from the worker queue. This will also mark the task as "started". Optional worker to identify the worker.
+        query: mutation.allocateWork
+      - name: bookmark
+        description: Bookmarks a product as currently logged in user
+        query: mutation.bookmark
+      - name: changePassword
+        description: Change the current user's password. Must be logged in.
+        query: mutation.changePassword
+      - name: checkoutCart
+        description: Process the checkout (automatically charge & deliver if possible), the cart will get transformed to an ordinary order if everything goes well.
+        query: mutation.checkoutCart
+      - name: confirmOrder
+        description: Manually confirm an order which is in progress
+        query: mutation.confirmOrder
       - name: createAssortment
-        description: Query list of assortments
+        description: Creates new assortment
         query: mutation.createAssortment
+      - name: createBookmark
+        description: Create a bookmark for a specific user
+        query: mutation.createBookmark
+      - name: createCart
+        description: Creates an alternative cart. If you use this feature, you should use explicit orderId's when using the cart mutations. Else it will work like a stack and the checkout will use the very first cart of the user.
+        query: mutation.createCart
+      - name: createCountry
+        description: Creates new country
+        query: mutation.createCountry
+      - name: createCurrency
+        description: Creates new currency
+        query: mutation.createCurrency
+      - name: createDeliveryProvider
+        description: Adds new delivery provider
+        query: mutation.createDeliveryProvider
+      - name: createFilter
+        description: Creates new filter
+        query: mutation.createFilter
+      - name: createFilterOption
+        description: Adds options to a filter
+        query: mutation.createFilterOption
+      - name: createLanguage
+        description: Creates new language
+        query: mutation.createLanguage
+      - name: createPaymentProvider
+        description: Adds new payment provider
+        query: mutation.createPaymentProvider
+      - name: createProduct
+        description: Create a new product
+        query: mutation.createProduct
+      - name: createProductBundleItem
+        description: ""
+        query: mutation.createProductBundleItem
+      - name: createProductReview
+        description: Add a new ProductReview
+        query: mutation.createProductReview
+      - name: createProductVariation
+        description: ""
+        query: mutation.createProductVariation
+      - name: createProductVariationOption
+        description: ""
+        query: mutation.createProductVariationOption
+      - name: createSubscription
+        description: Create a subscription.
+        query: mutation.createSubscription
+      - name: createUser
+        description: Create a new user.
+        query: mutation.createUser
+      - name: createWarehousingProvider
+        description: ""
+        query: mutation.createWarehousingProvider
+      - name: deliverOrder
+        description: Manually mark a undelivered order as delivered
+        query: mutation.deliverOrder
+      - name: doWork
+        description: Trigger a registered plugin for "type" to actually do the work with given "input".
+        query: mutation.doWork
+      - name: emptyCart
+        description: Remove all items of an open order (cart) if possible
+        query: mutation.emptyCart
+      - name: enrollUser
+        description: Enroll a new user, setting enroll to true will let the user choose his password (e-mail gets sent)
+        query: mutation.enrollUser
+      - name: finishWork
+        description: Register a work attempt manually. Note Usually, work attempts are handled internally by the inbuilt cron worker. This mutation is part of the interface for "outside" workers.
+        query: mutation.finishWork
+      - name: forgotPassword
+        description: Request a forgot password email.
+        query: mutation.forgotPassword
+      - name: heartbeat
+        description: Update hearbeat
+        query: mutation.heartbeat
+      - name: loginAsGuest
+        description: Login as Guest User (creates an anonymous user and returns logged in token)
+        query: mutation.loginAsGuest
+      - name: loginWithPassword
+        description: Log the user in with a password.
+        query: mutation.loginWithPassword
+      - name: logout
+        description: Log the user out.
+        query: mutation.logout
+      - name: makeQuotationProposal
+        description: Make a proposal as answer to the RFP
+        query: mutation.makeQuotationProposal
+      - name: markPaymentCredentialsPreferred
+        description: ""
+        query: mutation.markPaymentCredentialsPreferred
+      - name: payOrder
+        description: Manually mark an unpaid/partially paid order as fully paid
+        query: mutation.payOrder
+      - name: publishProduct
+        description: Make the product visible on any shop listings (product queries)
+        query: mutation.publishProduct
+      - name: registerPaymentCredentials
+        description: Register credentials for an existing payment provider allowing to store and use them for later payments (1-click checkout or subscriptions)
+        query: mutation.registerPaymentCredentials
+      - name: rejectQuotation
+        description: Reject an RFP, this is possible as long as a quotation is not fullfilled
+        query: mutation.rejectQuotation
+      - name: removeAssortment
+        description: ""
+        query: mutation.removeAssortment
+      - name: removeAssortmentFilter
+        description: Remove a product from an assortment
+        query: mutation.removeAssortmentFilter
+      - name: removeAssortmentLink
+        description: Remove a child/parent assortment link from it's parent
+        query: mutation.removeAssortmentLink
+      - name: removeAssortmentProduct
+        description: Remove a product from an assortment
+        query: mutation.removeAssortmentProduct
+      - name: removeBookmark
+        description: Remove an existing bookmark by ID
+        query: mutation.removeBookmark
+      - name: removeBundleItem
+        description: ""
+        query: mutation.removeBundleItem
+      - name: removeCartDiscount
+        description: Remove a discount from the cart
+        query: mutation.removeCartDiscount
+      - name: removeCartItem
+        description: Remove an item from an open order
+        query: mutation.removeCartItem
+      - name: removeCountry
+        description: ""
+        query: mutation.removeCountry
+      - name: removeCurrency
+        description: ""
+        query: mutation.removeCurrency
+      - name: removeDeliveryProvider
+        description: ""
+        query: mutation.removeDeliveryProvider
+      - name: removeEmail
+        description: Update E-Mail address of any user or logged in user if userId is not provided
+        query: mutation.removeEmail
+      - name: removeFilter
+        description: ""
+        query: mutation.removeFilter
+      - name: removeFilterOption
+        description: ""
+        query: mutation.removeFilterOption
+      - name: removeLanguage
+        description: ""
+        query: mutation.removeLanguage
+      - name: removeOrder
+        description: Remove an order while it's still open
+        query: mutation.removeOrder
+      - name: removePaymentCredentials
+        description: ""
+        query: mutation.removePaymentCredentials
+      - name: removePaymentProvider
+        description: ""
+        query: mutation.removePaymentProvider
+      - name: removeProduct
+        description: Remove the product completely!
+        query: mutation.removeProduct
+      - name: removeProductAssignment
+        description: Unlinks a product from a ConfigurableProduct by providing a configuration combination that uniquely identifies a row in the assignment matrix
+        query: mutation.removeProductAssignment
+      - name: removeProductMedia
+        description: Remove a media asset from a product's visualization
+        query: mutation.removeProductMedia
+      - name: removeProductReview
+        description: Remove an existing ProductReview. The logic to allow/dissallow removal is controlled by product plugin logic
+        query: mutation.removeProductReview
+      - name: removeProductReviewVote
+        description: Remove a vote from a ProductReview
+        query: mutation.removeProductReviewVote
+      - name: removeProductVariation
+        description: ""
+        query: mutation.removeProductVariation
+      - name: removeProductVariationOption
+        description: ""
+        query: mutation.removeProductVariationOption
+      - name: removeWarehousingProvider
+        description: ""
+        query: mutation.removeWarehousingProvider
+      - name: removeWork
+        description: ""
+        query: mutation.removeWork
+      - name: reorderAssortmentFilters
+        description: Reorder the products in an assortment
+        query: mutation.reorderAssortmentFilters
+      - name: reorderAssortmentLinks
+        description: Reorder the child assortment links in it's parent
+        query: mutation.reorderAssortmentLinks
+      - name: reorderAssortmentProducts
+        description: Reorder the products in an assortment
+        query: mutation.reorderAssortmentProducts
+      - name: reorderProductMedia
+        description: Reorder a media asset (first is primary)
+        query: mutation.reorderProductMedia
+      - name: requestQuotation
+        description: Request for Proposal (RFP)
+        query: mutation.requestQuotation
+      - name: resendVerificationEmail
+        description: Send an email with a link the user can use verify their email address.
+        query: mutation.resendVerificationEmail
+      - name: resetPassword
+        description: Reset the password for a user using a token received in email. Logs the user in afterwards.
+        query: mutation.resetPassword
+      - name: setBaseAssortment
+        description: ""
+        query: mutation.setBaseAssortment
+      - name: setBaseCountry
+        description: ""
+        query: mutation.setBaseCountry
+      - name: setBaseLanguage
+        description: ""
+        query: mutation.setBaseLanguage
+      - name: setOrderDeliveryProvider
+        description: Change the delivery method/provider
+        query: mutation.setOrderDeliveryProvider
+      - name: setOrderPaymentProvider
+        description: Change the payment method/provider
+        query: mutation.setOrderPaymentProvider
+      - name: setPassword
+        description: Set a new password for a specific user
+        query: mutation.setPassword
+      - name: setRoles
+        description: Set a new password for a specific user
+        query: mutation.setRoles
+      - name: setUsername
+        description: Set username for a specific user
+        query: mutation.setUsername
+      - name: setUserTags
+        description: Set tags of user
+        query: mutation.setUserTags
+      - name: terminateSubscription
+        description: Terminate an actively running subscription
+        query: mutation.terminateSubscription
+      - name: unpublishProduct
+        description: Hide the product visible from any shop listings (product queries)
+        query: mutation.unpublishProduct
+      - name: updateAssortment
+        description: ""
+        query: mutation.updateAssortment
+      - name: updateAssortmentTexts
+        description: Modify localized texts part of an assortment
+        query: mutation.updateAssortmentTexts
+      - name: updateCart
+        description: Change billing address and order contact of an open order (cart)
+        query: mutation.updateCart
+      - name: updateCartItem
+        description: Change the quantity or configuration of an item in an open order
+        query: mutation.updateCartItem
+      - name: updateCountry
+        description: ""
+        query: mutation.updateCountry
+      - name: updateCurrency
+        description: ""
+        query: mutation.updateCurrency
+      - name: updateDeliveryProvider
+        description: ""
+        query: mutation.updateDeliveryProvider
+      - name: updateEmail
+        description: Update E-Mail address of any user or logged in user if userId is not provided
+        query: mutation.updateEmail
+      - name: updateFilter
+        description: ""
+        query: mutation.updateFilter
+      - name: updateFilterTexts
+        description: ""
+        query: mutation.updateFilterTexts
+      - name: updateLanguage
+        description: ""
+        query: mutation.updateLanguage
+      - name: updatePaymentProvider
+        description: ""
+        query: mutation.updatePaymentProvider
+      - name: updateProduct
+        description: ""
+        query: mutation.updateProduct
+      - name: updateProductCommerce
+        description: Modify commerce part of a product
+        query: mutation.updateProductCommerce
+      - name: updateProductMediaTexts
+        description: Modify localized texts part of a product's media asset
+        query: mutation.updateProductMediaTexts
+      - name: updateProductPlan
+        description: Modify plan part of a product
+        query: mutation.updateProductPlan
+      - name: updateProductReview
+        description: Update an existing ProductReview. The logic to allow/dissallow editing is controlled by product plugin logic
+        query: mutation.updateProductReview
+      - name: updateProductSupply
+        description: Modify delivery part of a product
+        query: mutation.updateProductSupply
+      - name: updateProductTexts
+        description: Modify localized texts part of a product
+        query: mutation.updateProductTexts
+      - name: updateProductVariationTexts
+        description: ""
+        query: mutation.updateProductVariationTexts
+      - name: updateProductWarehousing
+        description: Modify warehousing part of a product
+        query: mutation.updateProductWarehousing
+      - name: updateSubscription
+        description: Update a subscription
+        query: mutation.updateSubscription
+      - name: updateUserAvatar
+        description: Update Avatar of any user or logged in user if userId is not provided
+        query: mutation.updateUserAvatar
+      - name: updateUserProfile
+        description: Update Profile of any user or logged in user if userId is not provided
+        query: mutation.updateUserProfile
+      - name: updateWarehousingProvider
+        description: ""
+        query: mutation.updateWarehousingProvider
+      - name: verifyEmail
+        description: Marks the user's email address as verified. Logs the user in afterwards.
+        query: mutation.verifyEmail
+      - name: verifyQuotation
+        description: Verify quotation request elligibility
+        query: mutation.verifyQuotation
