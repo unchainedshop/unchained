@@ -1,6 +1,6 @@
 import React from 'react';
 import { compose, pure, withProps } from 'recompose';
-import { graphql, withApollo } from 'react-apollo';
+import { graphql, withApollo } from '@apollo/client/react/hoc';
 import gql from 'graphql-tag';
 import EmailsListItem from './EmailsListItem';
 import FormAddEmail from './FormAddEmail';

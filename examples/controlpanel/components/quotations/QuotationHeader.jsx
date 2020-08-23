@@ -1,7 +1,7 @@
 import { compose, mapProps, withHandlers } from 'recompose';
 import gql from 'graphql-tag';
 import Link from 'next/link';
-import { graphql } from 'react-apollo';
+import { graphql } from '@apollo/client/react/hoc';
 import { format } from 'date-fns';
 import React from 'react';
 import { List, Segment, Menu, Dropdown, Label, Grid } from 'semantic-ui-react';

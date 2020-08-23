@@ -3,7 +3,7 @@ import { compose, mapProps } from 'recompose';
 import { format } from 'date-fns';
 import { Menu, Dropdown, Segment, List, Grid } from 'semantic-ui-react';
 import gql from 'graphql-tag';
-import { graphql } from 'react-apollo';
+import { graphql } from '@apollo/client/react/hoc';
 import BtnRemoveAssortment from './BtnRemoveAssortment';
 import FormEditAssortment from './FormEditAssortment';
 import BreadcrumbTrail from '../BreadcrumbTrail';

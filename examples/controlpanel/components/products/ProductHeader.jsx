@@ -3,7 +3,7 @@ import { compose, pure, mapProps } from 'recompose';
 import { format } from 'date-fns';
 import { Menu, Dropdown, Segment, Label, List, Grid } from 'semantic-ui-react';
 import gql from 'graphql-tag';
-import { graphql } from 'react-apollo';
+import { graphql } from '@apollo/client/react/hoc';
 import BtnPublishProduct from './BtnPublishProduct';
 import BtnRemoveProduct from './BtnRemoveProduct';
 import BtnUnpublishProduct from './BtnUnpublishProduct';

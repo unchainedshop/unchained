@@ -2,7 +2,7 @@ import React from 'react';
 import { compose, mapProps, withHandlers } from 'recompose';
 import gql from 'graphql-tag';
 import { withRouter } from 'next/router';
-import { graphql } from 'react-apollo';
+import { graphql } from '@apollo/client/react/hoc';
 import AutoField from 'uniforms-semantic/AutoField';
 import SubmitField from 'uniforms-semantic/SubmitField';
 import ErrorsField from 'uniforms-semantic/ErrorsField';

@@ -1,6 +1,6 @@
 import { compose, mapProps, pure } from 'recompose';
 import gql from 'graphql-tag';
-import { graphql } from 'react-apollo';
+import { graphql } from '@apollo/client/react/hoc';
 import React from 'react';
 import { Table, Segment, Label } from 'semantic-ui-react';
 
