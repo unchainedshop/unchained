@@ -1,22 +1,12 @@
-import { ApolloClient } from 'apollo-client';
-import {
-  InMemoryCache,
-  IntrospectionFragmentMatcher,
-} from 'apollo-cache-inmemory';
-import { onError } from 'apollo-link-error';
-import { ApolloLink } from 'apollo-link';
+import { ApolloClient, ApolloLink, InMemoryCache } from '@apollo/client';
+import { onError } from '@apollo/client/link/error';
 import { toast } from 'react-toastify';
 import getConfig from 'next/config';
 import { createUploadLink } from 'apollo-upload-client';
-import introspectionQueryResultData from '../schema.json';
 
 const { publicRuntimeConfig } = getConfig() || {};
 
 let apolloClient = null;
-
-const fragmentMatcher = new IntrospectionFragmentMatcher({
-  introspectionQueryResultData,
-});
 
 function create(initialState, headersOverride, getToken) {
   const browserFallback =
@@ -58,18 +48,7 @@ function create(initialState, headersOverride, getToken) {
     return forward(operation);
   });
 
-  const cache = new InMemoryCache({
-    fragmentMatcher,
-    dataIdFromObject: (result) => {
-      if (result._id && result.__typename) {
-        return `${result.__typename}:${result._id}`;
-      }
-      if (result.id && result.__typename) {
-        return `${result.__typename}:${result.id}`;
-      }
-      return null;
-    },
-  });
+  const cache = new InMemoryCache();
   return new ApolloClient({
     connectToDevTools: process.browser,
     ssrMode: !process.browser, // Disables forceFetch on the server (so queries are only run once)
