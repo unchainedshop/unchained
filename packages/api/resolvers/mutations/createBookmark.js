@@ -2,7 +2,7 @@ import { log } from 'meteor/unchained:core-logger';
 import { Bookmarks } from 'meteor/unchained:core-bookmarks';
 import { BookmarkAlreadyExistsError } from '../../errors';
 
-export default function (
+export default function createBookmark(
   root,
   { productId, userId: foreignUserId },
   { userId },

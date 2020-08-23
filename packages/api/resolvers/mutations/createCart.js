@@ -3,7 +3,7 @@ import { Orders } from 'meteor/unchained:core-orders';
 import { Countries } from 'meteor/unchained:core-countries';
 import { OrderNumberAlreadyExistsError, UserNotFoundError } from '../../errors';
 
-export default async function (
+export default async function createCart(
   root,
   { orderNumber },
   { countryContext, userId, user },

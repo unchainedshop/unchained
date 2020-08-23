@@ -1,7 +1,5 @@
-/* eslint-disable import/no-extraneous-dependencies */
-/* eslint-disable import/no-unresolved */
 import { MongoClient, Collection } from 'mongodb';
-import { execute, makePromise } from 'apollo-link';
+import { execute, toPromise } from '@apollo/client';
 import { createUploadLink } from 'apollo-upload-client';
 import gql from 'graphql-tag';
 import fetch from 'isomorphic-unfetch';
@@ -62,7 +60,7 @@ export const wipeDatabase = async () => {
 };
 
 const convertLinkToFetch = (link) => ({ query, ...operation }) =>
-  makePromise(
+  toPromise(
     execute(link, {
       query: gql(query),
       ...operation,

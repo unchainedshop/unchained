@@ -3,7 +3,7 @@ import { Products } from 'meteor/unchained:core-products';
 import { Quotations } from 'meteor/unchained:core-quotations';
 import { ProductNotFoundError } from '../../errors';
 
-export default function (
+export default function requestQuotation(
   root,
   { productId, configuration },
   { userId, countryContext, localeContext },

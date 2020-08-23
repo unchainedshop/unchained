@@ -1,7 +1,11 @@
 import { log } from 'meteor/unchained:core-logger';
 import { Users } from 'meteor/unchained:core-users';
 
-export default function (root, { profile, userId: foreignUserId }, { userId }) {
+export default function updateUserProfile(
+  root,
+  { profile, userId: foreignUserId },
+  { userId },
+) {
   const normalizedUserId = foreignUserId || userId;
   log(`mutation updateUserProfile ${normalizedUserId}`, { userId });
 

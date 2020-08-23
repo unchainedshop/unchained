@@ -5,7 +5,7 @@ import {
   OrderWrongStatusError,
 } from '../../errors';
 
-export default function (root, { discountId }, { userId }) {
+export default function removeCartDiscount(root, { discountId }, { userId }) {
   log(`mutation removeCartDiscount ${discountId}`, { userId });
   const orderDiscount = OrderDiscounts.findOne({ _id: discountId });
   if (!orderDiscount) throw new OrderDiscountNotFoundError({ orderDiscount });

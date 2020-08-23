@@ -1,7 +1,7 @@
 import { log } from 'meteor/unchained:core-logger';
 import { Filters } from 'meteor/unchained:core-filters';
 
-export default function (
+export default function updateFilterTexts(
   root,
   { texts, filterId, filterOptionValue },
   { userId },

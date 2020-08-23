@@ -1,7 +1,7 @@
 import { log } from 'meteor/unchained:core-logger';
 import { ProductVariations } from 'meteor/unchained:core-products';
 
-export default function (
+export default function updateProductVariationTexts(
   root,
   { texts, productVariationId, productVariationOptionValue },
   { userId },

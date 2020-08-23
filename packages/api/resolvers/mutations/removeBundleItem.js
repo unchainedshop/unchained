@@ -2,7 +2,7 @@ import { log } from 'meteor/unchained:core-logger';
 import { Products } from 'meteor/unchained:core-products';
 import { ProductNotFoundError } from '../../errors';
 
-export default function (root, { productId, index }) {
+export default function removeBundleItem(root, { productId, index }) {
   log(`mutation removeBundleItem ${productId}`, { index });
   const product = Products.findOne(productId);
   if (!product) throw new ProductNotFoundError({ productId });

@@ -2,8 +2,8 @@ import { log } from 'meteor/unchained:core-logger';
 import { Products } from 'meteor/unchained:core-products';
 import crypto from 'crypto';
 
-export default function (root, { productId }, { userId }) {
-  log(`query product ${productId}`, { userId });
+export default function productCatalogPrices(root, { productId }, { userId }) {
+  log(`query productCatalogPrices ${productId}`, { userId });
   const product = Products.findOne({ _id: productId });
   const prices = (product.commerce && product.commerce.pricing) || [];
   return prices.map((price) => ({

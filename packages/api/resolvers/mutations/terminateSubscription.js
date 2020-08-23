@@ -8,7 +8,11 @@ import {
   SubscriptionWrongStatusError,
 } from '../../errors';
 
-export default async function (root, { subscriptionId }, { userId }) {
+export default async function terminateSubscription(
+  root,
+  { subscriptionId },
+  { userId },
+) {
   log('mutation terminateSubscription', { userId });
   const subscription = Subscriptions.findOne({
     _id: subscriptionId,

@@ -3,7 +3,11 @@ import { Assortments } from 'meteor/unchained:core-assortments';
 import { Filters } from 'meteor/unchained:core-filters';
 import { AssortmentNotFoundError, FilterNotFoundError } from '../../errors';
 
-export default function (root, { assortmentId, filterId, tags }, { userId }) {
+export default function addAssortmentFilter(
+  root,
+  { assortmentId, filterId, tags },
+  { userId },
+) {
   log(`mutation addAssortmentFilter ${assortmentId} -> ${filterId}`, {
     userId,
   });

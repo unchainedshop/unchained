@@ -1,7 +1,11 @@
 import { log } from 'meteor/unchained:core-logger';
 import { Users } from 'meteor/unchained:core-users';
 
-export default function (root, { tags, userId: normalizedUserId }, { userId }) {
+export default function setUserTags(
+  root,
+  { tags, userId: normalizedUserId },
+  { userId },
+) {
   log(`mutation setUserTags ${normalizedUserId}`, { userId });
 
   Users.update(

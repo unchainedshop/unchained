@@ -1,7 +1,11 @@
 import { log } from 'meteor/unchained:core-logger';
 import { Assortments } from 'meteor/unchained:core-assortments';
 
-export default function (root, { assortment, assortmentId }, { userId }) {
+export default function updateAssortment(
+  root,
+  { assortment, assortmentId },
+  { userId },
+) {
   log(`mutation updateAssortment ${assortmentId}`, { userId });
   Assortments.update(
     { _id: assortmentId },
