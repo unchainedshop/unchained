@@ -12,6 +12,7 @@ export default function currencies(
     }`,
     { userId },
   );
+
   const selector = {};
   if (!includeInactive) {
     selector.isActive = true;

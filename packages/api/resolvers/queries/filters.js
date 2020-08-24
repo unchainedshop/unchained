@@ -7,6 +7,7 @@ export default function filters(
   { userId },
 ) {
   log(`query filters: ${limit} ${offset}`, { userId });
+
   const selector = {};
   if (!includeInactive) {
     selector.isActive = true;

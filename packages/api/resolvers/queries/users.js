@@ -10,6 +10,7 @@ export default function users(
     `query users ${limit} ${offset} ${includeGuests ? 'includeGuests' : ''}`,
     { userId },
   );
+
   const selector = {};
   if (!includeGuests) {
     selector.guest = { $ne: true };

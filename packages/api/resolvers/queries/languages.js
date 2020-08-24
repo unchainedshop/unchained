@@ -12,6 +12,7 @@ export default function languages(
     }`,
     { userId },
   );
+
   const selector = {};
   if (!includeInactive) {
     selector.isActive = true;

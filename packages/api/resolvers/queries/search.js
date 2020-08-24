@@ -22,6 +22,8 @@ export default async function searchQuery(root, query, context) {
       context,
     });
   }
+
   if (!queryString) throw new QueryStringRequiredError({});
+
   return search({ query, forceLiveCollection, context });
 }

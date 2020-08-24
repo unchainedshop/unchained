@@ -8,12 +8,16 @@ export default function warehousingProvider(
   { userId },
 ) {
   log(`query warehousingProvider ${warehousingProviderId}`, { userId });
+
   if (!warehousingProviderId)
     throw new InvalidIdError({ warehousingProviderId });
+
   const foundWarehousingProvider = WarehousingProviders.findProviderById(
     warehousingProviderId,
   );
+
   if (!foundWarehousingProvider)
     throw new WarehousingProviderNotFoundError({ warehousingProviderId });
+
   return foundWarehousingProvider;
 }

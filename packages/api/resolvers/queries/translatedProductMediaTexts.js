@@ -7,6 +7,7 @@ export default function translatedProductMediaTexts(
   { userId },
 ) {
   log(`query translatedProductMediaTexts ${productMediaId}`, { userId });
+
   const selector = { productMediaId };
   return ProductMediaTexts.find(selector).fetch();
 }

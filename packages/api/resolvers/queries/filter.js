@@ -6,8 +6,10 @@ export default function filter(root, { filterId }, { userId }) {
   log(`query filter ${filterId}`, { userId });
 
   if (!filterId) throw new InvalidIdError({ filterId });
-  const filter = Filters.findOne({ _id: filterId });
-  if (!filter) throw new FilterNotFoundError({ filterId });
 
-  return filter;
+  const foundFilter = Filters.findOne({ _id: filterId });
+
+  if (!foundFilter) throw new FilterNotFoundError({ filterId });
+
+  return foundFilter;
 }

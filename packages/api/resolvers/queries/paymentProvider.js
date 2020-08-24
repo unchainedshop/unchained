@@ -12,6 +12,7 @@ export default function paymentProvider(
   if (!paymentProviderId) throw new InvalidIdError({ paymentProviderId });
 
   const provider = PaymentProviders.findProviderById(paymentProviderId);
+
   if (!provider) throw new PaymentProviderNotFoundError({ paymentProviderId });
 
   return provider;

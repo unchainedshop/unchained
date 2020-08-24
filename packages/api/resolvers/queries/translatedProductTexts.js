@@ -7,6 +7,7 @@ export default function translatedProductTexts(
   { userId },
 ) {
   log(`query translatedProductTexts ${productId}`, { userId });
+
   const selector = { productId };
   return ProductTexts.find(selector).fetch();
 }

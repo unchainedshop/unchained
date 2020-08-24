@@ -9,6 +9,7 @@ export default function translatedFilterTexts(
   log(`query translatedFilterTexts ${filterId} ${filterOptionValue}`, {
     userId,
   });
+
   const selector = {
     filterId,
     filterOptionValue,

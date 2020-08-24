@@ -6,10 +6,10 @@ export default function quotation(root, { quotationId }, { userId }) {
   log(`query quotation ${quotationId}`, { userId, quotationId });
 
   if (!quotationId) throw new InvalidIdError({ quotationId });
-  const selector = { _id: quotationId };
-  const quotation = Quotations.findOne(selector);
 
-  if (!quotation) throw new QuotationNotFoundError({ quotationId });
+  const foundQuotation = Quotations.findOne({ _id: quotationId });
 
-  return quotationId;
+  if (!foundQuotation) throw new QuotationNotFoundError({ quotationId });
+
+  return foundQuotation;
 }

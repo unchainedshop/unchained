@@ -4,13 +4,12 @@ import { SubscriptionNotFoundError, InvalidIdError } from '../../errors';
 
 export default function subscription(root, { subscriptionId }, { userId }) {
   log(`query subscription ${subscriptionId}`, { userId, subscriptionId });
-
   if (!subscriptionId) throw new InvalidIdError({ subscriptionId });
 
-  const selector = { _id: subscriptionId };
-  const subscription = Subscriptions.findOne(selector);
+  const foundSubscription = Subscriptions.findOne({ _id: subscriptionId });
 
-  if (subscription) throw new SubscriptionNotFoundError({ subscriptionId });
+  if (foundSubscription)
+    throw new SubscriptionNotFoundError({ subscriptionId });
 
-  return subscription;
+  return foundSubscription;
 }

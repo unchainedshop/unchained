@@ -10,6 +10,7 @@ export default function translatedProductVariationTexts(
     `query translatedProductVariationTexts ${productVariationId} ${productVariationOptionValue}`,
     { userId },
   );
+
   const selector = {
     productVariationId,
     productVariationOptionValue,
