@@ -1,6 +1,7 @@
 import facetedSearch from './faceted-search';
 import fulltextSearch from './fulltext-search';
 import resolveProductSelector from './resolve-product-selector';
+import resolveAssortmentSelector from './resolve-assortment-selector';
 import resolveFilterSelector from './resolve-filter-selector';
 import resolveSortStage from './resolve-sort-stage';
 import parseQueryArray from './parse-query-array';
@@ -15,12 +16,14 @@ const search = async ({ query: rawQuery, forceLiveCollection, context }) => {
   const query = cleanQuery(rawQuery);
   const filterSelector = resolveFilterSelector(query);
   const productSelector = resolveProductSelector(query);
+  const assortmentSelector = resolveAssortmentSelector(query);
   const sortStage = resolveSortStage(query);
 
   const searchConfiguration = {
     query,
     filterSelector,
     productSelector,
+    assortmentSelector,
     sortStage,
     context,
     forceLiveCollection,
@@ -32,6 +35,7 @@ const search = async ({ query: rawQuery, forceLiveCollection, context }) => {
     return {
       totalProductIds: [],
       filteredProductIds: [],
+      filteredAssortmentIds: [],
       ...searchConfiguration,
     };
   }
@@ -42,10 +46,19 @@ const search = async ({ query: rawQuery, forceLiveCollection, context }) => {
   const filteredProductIds = totalProductIds.then(
     facetedSearch(searchConfiguration),
   );
+  
+  const totalAssortmentIds = fulltextSearch(searchConfiguration)(
+    query?.assortmentIds,
+  );
+  const filteredAssortmentIds = totalAssortmentIds.then(
+    facetedSearch(searchConfiguration),
+  );
 
   return {
     totalProductIds,
+    totalAssortmentIds,
     filteredProductIds,
+    filteredAssortmentIds,
     ...searchConfiguration,
   };
 };

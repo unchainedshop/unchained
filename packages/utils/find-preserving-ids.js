@@ -37,7 +37,9 @@ export default (Collection) => async (selector, ids, options = {}) => {
     rawCollection.aggregate,
     rawCollection,
   );
+  console.log("filteredPipeline: ", filteredPipeline[0].$match._id)
   const aggregationPointer = aggregateCollection(filteredPipeline);
   const items = await aggregationPointer.toArray();
+  console.log("ITEMSLLL", items)
   return (items || []).map((item) => new Collection._transform(item)); // eslint-disable-line
 };

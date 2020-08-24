@@ -2,19 +2,80 @@ import { compose, withState, withHandlers } from 'recompose';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 import React from 'react';
+import { withRouter } from 'next/router';
 import dynamic from 'next/dynamic';
+import Link from 'next/link';
+import { Button, Icon, Table } from 'semantic-ui-react';
+import SearchDropdown from '../SearchDropdown';
 
 const CytoscapeComponentWithNoSSR = dynamic(
   () => import('./CytoscapeComponent'),
   { ssr: false } // because of a window object
 );
 
-const AssortmentList = ({ data }) => (
-  <CytoscapeComponentWithNoSSR data={data} />
+const AssortmentList = ({ data, router }) => (
+  <Table celled>
+    <Table.Header>
+      <Table.Row>
+        <Table.HeaderCell colSpan="3">
+          <SearchDropdown
+            placeholder="Select Assortment"
+            onChange={(e, result) => {
+              router.push({
+                pathname: '/assortment/edit',
+                query: { _id: result.value },
+              });
+            }}
+            queryType={'assortments'}
+          />
+          <Link href="/assortments/new">
+            <Button
+              floated="right"
+              icon
+              labelPosition="left"
+              primary
+              size="small"
+              href="/assortments/new"
+            >
+              <Icon name="plus" />
+              Add
+            </Button>
+          </Link>
+        </Table.HeaderCell>
+      </Table.Row>
+    </Table.Header>
+    <Table.Body>
+      <Table.Row>
+        <Table.Cell>
+          <CytoscapeComponentWithNoSSR data={data} />
+        </Table.Cell>
+      </Table.Row>
+    </Table.Body>
+    <Table.Footer fullWidth>
+      <Table.Row>
+        <Table.HeaderCell colSpan="3">
+          <Link href="/assortments/new">
+            <Button
+              floated="right"
+              icon
+              labelPosition="left"
+              primary
+              size="small"
+              href="/assortments/new"
+            >
+              <Icon name="plus" />
+              Add
+            </Button>
+          </Link>
+        </Table.HeaderCell>
+      </Table.Row>
+    </Table.Footer>
+  </Table>
 );
 
 export default compose(
   withState('isShowLeafNodes', 'setShowLeafNodes', false),
+  withRouter,
   graphql(gql`
     query assortments($limit: Int, $offset: Int, $isShowLeafNodes: Boolean) {
       assortments(

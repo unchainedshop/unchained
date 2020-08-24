@@ -3,7 +3,7 @@ import { compose, pure, mapProps, withHandlers } from 'recompose';
 import { Segment, Table, Button } from 'semantic-ui-react';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
-import ProductSearchDropdown from './ProductSearchDropdown';
+import SearchDropdown from '../SearchDropdown';
 
 const ProductVariationAssignmentList = ({
   columnTitles,
@@ -30,7 +30,7 @@ const ProductVariationAssignmentList = ({
               <Table.Cell key={`${column}`}>{column}</Table.Cell>
             ))}
             <Table.Cell>
-              <ProductSearchDropdown
+              <SearchDropdown
                 onChange={addProductAssignment}
                 value={product ? product._id : ''}
                 optionValues={columns}

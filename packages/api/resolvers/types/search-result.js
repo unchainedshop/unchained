@@ -1,4 +1,5 @@
 import { Products } from 'meteor/unchained:core-products';
+import { Assortments } from 'meteor/unchained:core-assortments';
 import { Filters } from 'meteor/unchained:core-filters';
 
 import { findPreservingIds } from 'meteor/unchained:utils';
@@ -8,6 +9,11 @@ export default {
     Products.find({
       ...(await productSelector),
       _id: { $in: await totalProductIds },
+    }).count(),
+  totalAssortments: async ({ assortmentSelector, totalAssortmentsIds }) =>
+    Assortments.find({
+      ...(await assortmentSelector),
+      _id: { $in: await totalAssortmentsIds },
     }).count(),
   filteredProducts: async ({ productSelector, filteredProductIds }) =>
     Products.find({
@@ -21,6 +27,19 @@ export default {
     findPreservingIds(Products)(
       await productSelector,
       await filteredProductIds,
+      {
+        skip: offset,
+        limit,
+        sort: await sortStage,
+      },
+    ),
+  assortments: async (
+    { assortmentSelector, filteredAssortmentIds, sortStage },
+    { offset, limit },
+  ) =>
+    findPreservingIds(Assortments)(
+      await assortmentSelector,
+      await filteredAssortmentIds,
       {
         skip: offset,
         limit,

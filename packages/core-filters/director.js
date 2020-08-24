@@ -38,6 +38,11 @@ class FilterAdapter {
     return lastSelector;
   }
 
+  // return a selector that is applied to Filters.find to find relevant filters
+  async transformAssortmentSelector(lastSelector) { // eslint-disable-line
+    return lastSelector;
+  }
+
   log(message, { level = 'debug', ...options } = {}) { // eslint-disable-line
     return log(message, { level, ...options });
   }
@@ -46,6 +51,15 @@ class FilterAdapter {
 class FilterDirector {
   constructor(context) {
     this.context = context;
+  }
+
+  async buildAssortmentSelector(defaultSelector, options = {}) {
+    return this.reduceAdapters(async (lastSelector, concreteAdapter) => {
+      return concreteAdapter.transformAssortmentSelector(
+        await lastSelector,
+        options,
+      );
+    }, defaultSelector || null);
   }
 
   async buildProductSelector(defaultSelector, options = {}) {
@@ -65,6 +79,7 @@ class FilterDirector {
 
   async search(productIdResolver, options = {}) {
     return this.reduceAdapters(async (lastSearchPromise, concreteAdapter) => {
+      debugger;
       return concreteAdapter.search(await lastSearchPromise, options);
     }, productIdResolver || null);
   }

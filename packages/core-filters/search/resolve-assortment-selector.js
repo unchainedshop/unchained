@@ -1,12 +1,11 @@
-import { ProductStatus } from 'meteor/unchained:core-products';
 import { FilterDirector } from 'meteor/unchained:core-filters';
 
 const defaultSelector = ({ includeInactive }) => {
   const selector = {
-    status: { $in: [ProductStatus.ACTIVE, ProductStatus.DRAFT] },
+    isActive: { $in: [true, false] },
   };
   if (!includeInactive) {
-    selector.status = ProductStatus.ACTIVE;
+    selector.isActive = true;
   }
   return selector;
 };
@@ -14,5 +13,5 @@ const defaultSelector = ({ includeInactive }) => {
 export default async (query) => {
   const selector = defaultSelector(query);
   const director = new FilterDirector({ query });
-  return director.buildAssortmentSelector(selector);
+  return director.buildProductSelector(selector);
 };
