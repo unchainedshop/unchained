@@ -2,7 +2,7 @@ import { log } from 'meteor/unchained:core-logger';
 import { DeliveryProviders } from 'meteor/unchained:core-delivery';
 import { DeliverProviderNotFoundError, InvalidIdError } from '../../errors';
 
-export default function (
+export default function updateDeliveryProvider(
   root,
   { deliveryProvider, deliveryProviderId },
   { userId },

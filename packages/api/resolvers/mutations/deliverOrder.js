@@ -7,7 +7,7 @@ import {
   InvalidIdError,
 } from '../../errors';
 
-export default function (root, { orderId }, { userId }) {
+export default function deliverOrder(root, { orderId }, { userId }) {
   log('mutation deliverOrder', { orderId, userId });
   if (!orderId) throw new InvalidIdError({ orderId });
   const order = Orders.findOne({ _id: orderId });

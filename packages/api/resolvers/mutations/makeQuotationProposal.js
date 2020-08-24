@@ -6,7 +6,7 @@ import {
   InvalidIdError,
 } from '../../errors';
 
-export default function (
+export default function makeQuotationProposal(
   root,
   { quotationId, ...transactionContext },
   { userId },

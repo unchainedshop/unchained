@@ -7,7 +7,11 @@ import {
   InvalidIdError,
 } from '../../errors';
 
-export default function (root, { assortmentId, filterId, tags }, { userId }) {
+export default function addAssortmentFilter(
+  root,
+  { assortmentId, filterId, tags },
+  { userId },
+) {
   log(`mutation addAssortmentFilter ${assortmentId} -> ${filterId}`, {
     userId,
   });

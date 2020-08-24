@@ -1,8 +1,7 @@
 import { log } from 'meteor/unchained:core-logger';
 import getCart from '../../getCart';
-import { InvalidIdError } from '../../errors';
 
-export default async function (
+export default async function updateCart(
   root,
   {
     orderId,
@@ -15,7 +14,6 @@ export default async function (
   { user, countryContext, userId },
 ) {
   log('mutation updateCart', { userId });
-  if (!orderId) throw new InvalidIdError({ orderId });
 
   let order = await getCart({ orderId, user, countryContext });
   if (meta) {

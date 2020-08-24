@@ -10,7 +10,7 @@ const filterContext = (graphqlContext) => {
   );
 };
 
-export default function (passedContext, name, ...args) {
+export default function callMethod(passedContext, name, ...args) {
   const handler = Meteor.default_server.method_handlers[name];
   if (!handler) {
     throw new Meteor.Error(404, `Method '${name}' not found`);
@@ -19,7 +19,8 @@ export default function (passedContext, name, ...args) {
   const connection = getConnection();
   const context = {
     connection,
-    setUserId(userId) { // eslint-disable-line
+    // eslint-disable-next-line
+    setUserId(userId) {
       /**
        * This will not make any changes if you don\'t pass setUserId function in context
        */

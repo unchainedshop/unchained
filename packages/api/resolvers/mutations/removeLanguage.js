@@ -2,7 +2,7 @@ import { log } from 'meteor/unchained:core-logger';
 import { Languages } from 'meteor/unchained:core-languages';
 import { LanguageNotFoundError, InvalidIdError } from '../../errors';
 
-export default function (root, { languageId }, { userId }) {
+export default function removeLanguage(root, { languageId }, { userId }) {
   log(`mutation removeLanguage ${languageId}`, { userId });
   if (!languageId) throw new InvalidIdError({ languageId });
   const language = Languages.findOne({ _id: languageId });

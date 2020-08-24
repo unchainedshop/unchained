@@ -9,7 +9,11 @@ import {
   InvalidIdError,
 } from '../../errors';
 
-export default async function (root, { subscriptionId }, { userId }) {
+export default async function terminateSubscription(
+  root,
+  { subscriptionId },
+  { userId },
+) {
   log('mutation terminateSubscription', { userId });
   if (!subscriptionId) throw new InvalidIdError({ subscriptionId });
   const subscription = Subscriptions.findOne({

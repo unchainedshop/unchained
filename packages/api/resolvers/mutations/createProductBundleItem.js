@@ -2,7 +2,7 @@ import { log } from 'meteor/unchained:core-logger';
 import { Products } from 'meteor/unchained:core-products';
 import { ProductNotFoundError, InvalidIdError } from '../../errors';
 
-export default function (root, { productId, item }) {
+export default function createProductBundleItem(root, { productId, item }) {
   log(`mutation createProductBundleItem ${productId}`, { item });
   if (!productId) throw new InvalidIdError({ productId });
   if (!item.productId)

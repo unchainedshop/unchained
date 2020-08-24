@@ -1,6 +1,6 @@
 import { Accounts } from 'meteor/accounts-base';
 
-export default function (email) {
+export default function getUserLoginMethod(email) {
   if (!email) return 'unknown';
   const { services } =
     email.indexOf('@') !== -1

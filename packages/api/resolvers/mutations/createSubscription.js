@@ -8,7 +8,7 @@ import {
   InvalidIdError,
 } from '../../errors';
 
-export default async function (
+export default async function createSubscription(
   root,
   { contact, plan, billingAddress, payment, delivery, meta },
   { countryContext, userId, user },

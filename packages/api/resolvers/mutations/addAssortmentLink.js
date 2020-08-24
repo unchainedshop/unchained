@@ -2,7 +2,7 @@ import { log } from 'meteor/unchained:core-logger';
 import { Assortments } from 'meteor/unchained:core-assortments';
 import { AssortmentNotFoundError, InvalidIdError } from '../../errors';
 
-export default function (
+export default function addAssortmentLink(
   root,
   { parentAssortmentId, childAssortmentId, tags },
   { userId },

@@ -12,6 +12,12 @@ controlpanel:
     dockerfile: Dockerfile
   cached: true
 
+docs:
+  build:
+    context: ./docs
+    dockerfile: Dockerfile
+  cached: true
+
 minimal-pre-flight:
   build:
     dockerfile: Dockerfile.pre-flight

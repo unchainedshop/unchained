@@ -6,7 +6,7 @@ import {
   InvalidIdError,
 } from '../../errors';
 
-export default function (root, { productId }, { userId }) {
+export default function unpublishProduct(root, { productId }, { userId }) {
   log(`mutation unpublishProduct ${productId}`, { userId });
   if (!productId) throw new InvalidIdError({ productId });
   const product = Products.findOne({ _id: productId });

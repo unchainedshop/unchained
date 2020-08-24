@@ -111,23 +111,6 @@ describe('Auth for admin users', () => {
       });
       expect(errors[0]?.extensions?.code).toEqual('UserNotFoundError');
     });
-
-    it('returns error when passed invalid userID', async () => {
-      const { errors } = await graphqlFetch({
-        query: /* GraphQL */ `
-          query user($userId: ID) {
-            user(userId: $userId) {
-              _id
-              name
-            }
-          }
-        `,
-        variables: {
-          userId: '',
-        },
-      });
-      expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
-    });
   });
 
   describe('Mutation.updateUserAvatar', () => {

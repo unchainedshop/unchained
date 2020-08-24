@@ -2,7 +2,7 @@ import { log } from 'meteor/unchained:core-logger';
 import getCart from '../../getCart';
 import { InvalidIdError } from '../../errors';
 
-export default async function (
+export default async function addCartDiscount(
   root,
   { orderId, code },
   { userId, user, countryContext },

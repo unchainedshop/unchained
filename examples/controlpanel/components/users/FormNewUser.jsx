@@ -2,7 +2,7 @@ import React from 'react';
 import { withRouter } from 'next/router';
 import BaseField from 'uniforms/BaseField';
 import nothing from 'uniforms/nothing';
-import { graphql } from 'react-apollo';
+import { graphql } from '@apollo/client/react/hoc';
 import { compose, pure, mapProps, withHandlers } from 'recompose';
 import gql from 'graphql-tag';
 import { Grid, Segment } from 'semantic-ui-react';

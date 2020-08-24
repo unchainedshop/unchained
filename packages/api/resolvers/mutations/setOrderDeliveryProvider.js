@@ -2,7 +2,11 @@ import { log } from 'meteor/unchained:core-logger';
 import { Orders } from 'meteor/unchained:core-orders';
 import { OrderNotFoundError, InvalidIdError } from '../../errors';
 
-export default function (root, { orderId, deliveryProviderId }, { userId }) {
+export default function setOrderDeliveryProvider(
+  root,
+  { orderId, deliveryProviderId },
+  { userId },
+) {
   log(`mutation setOrderDeliveryProvider ${deliveryProviderId}`, {
     orderId,
     userId,

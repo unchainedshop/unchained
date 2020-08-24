@@ -6,7 +6,7 @@ import {
   InvalidIdError,
 } from '../../errors';
 
-export default function (root, { discountId }, { userId }) {
+export default function removeCartDiscount(root, { discountId }, { userId }) {
   log(`mutation removeCartDiscount ${discountId}`, { userId });
   if (!discountId) throw new InvalidIdError({ discountId });
   const orderDiscount = OrderDiscounts.findOne({ _id: discountId });

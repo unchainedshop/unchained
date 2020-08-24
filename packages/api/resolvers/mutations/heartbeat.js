@@ -2,7 +2,7 @@ import { log } from 'meteor/unchained:core-logger';
 import { Users } from 'meteor/unchained:core-users';
 import { UserNotFoundError } from '../../errors';
 
-export default function (
+export default function heartbeat(
   root,
   params,
   { userId, remoteAddress, localeContext, countryContext },

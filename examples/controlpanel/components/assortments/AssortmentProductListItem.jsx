@@ -3,7 +3,7 @@ import { compose, withHandlers } from 'recompose';
 import { Item, Button, Icon } from 'semantic-ui-react';
 import { SortableElement, SortableHandle } from 'react-sortable-hoc';
 import gql from 'graphql-tag';
-import { graphql } from 'react-apollo';
+import { graphql } from '@apollo/client/react/hoc';
 
 const DragHandle = SortableHandle(() => (
   <Icon name="arrows alternate vertical" link size="small" />

@@ -7,7 +7,7 @@ import {
   ProductNotFoundError,
 } from '../../errors';
 
-export default function (
+export default function createBookmark(
   root,
   { productId, userId: foreignUserId },
   { userId },

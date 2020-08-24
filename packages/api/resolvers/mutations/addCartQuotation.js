@@ -8,7 +8,7 @@ import {
 } from '../../errors';
 import getCart from '../../getCart';
 
-export default async function (
+export default async function addCartQuotation(
   root,
   { orderId, quotationId, quantity, configuration },
   { user, userId, countryContext },

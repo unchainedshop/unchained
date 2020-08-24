@@ -2,7 +2,7 @@ import { log } from 'meteor/unchained:core-logger';
 import { Currencies } from 'meteor/unchained:core-currencies';
 import { CurrencyNotFoundError, InvalidIdError } from '../../errors';
 
-export default function (
+export default function updateCurrency(
   root,
   { currency: { isoCode, ...currency }, currencyId },
   { userId },

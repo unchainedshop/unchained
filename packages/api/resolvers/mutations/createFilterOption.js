@@ -2,7 +2,7 @@ import { log } from 'meteor/unchained:core-logger';
 import { Filters } from 'meteor/unchained:core-filters';
 import { FilterNotFoundError, InvalidIdError } from '../../errors';
 
-export default function (
+export default function createFilterOption(
   root,
   { option: inputData, filterId },
   { localeContext, userId },

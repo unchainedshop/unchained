@@ -2,7 +2,7 @@ import { log } from 'meteor/unchained:core-logger';
 import { OrderCheckoutError } from '../../errors';
 import getCart from '../../getCart';
 
-export default async function (
+export default async function checkoutCart(
   root,
   { orderId, ...transactionContext },
   { user, userId, countryContext, localeContext },

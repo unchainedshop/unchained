@@ -3,7 +3,7 @@ import { toast } from 'react-toastify';
 import { compose, pure, mapProps, withHandlers, withState } from 'recompose';
 import { Segment, Container, Menu, Button } from 'semantic-ui-react';
 import gql from 'graphql-tag';
-import { graphql } from 'react-apollo';
+import { graphql } from '@apollo/client/react/hoc';
 import AutoField from 'uniforms-semantic/AutoField';
 import SubmitField from 'uniforms-semantic/SubmitField';
 import ErrorsField from 'uniforms-semantic/ErrorsField';

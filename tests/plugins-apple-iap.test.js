@@ -96,7 +96,7 @@ describe('Plugins: Apple IAP Payments', () => {
 
   describe('Mutation.registerPaymentCredentials (Apple IAP)', () => {
     it('store the receipt as payment credentials', async () => {
-      const { data: { registerPaymentCredentials } = {} } = await graphqlFetch({
+      const { data } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation registerPaymentCredentials(
             $paymentContext: JSON!
@@ -119,7 +119,7 @@ describe('Plugins: Apple IAP Payments', () => {
           paymentProviderId: 'iap-payment-provider',
         },
       });
-      expect(registerPaymentCredentials).toMatchObject({
+      expect(data?.registerPaymentCredentials).toMatchObject({
         isValid: true,
         isPreferred: true,
       });

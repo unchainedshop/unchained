@@ -2,7 +2,7 @@ import { log } from 'meteor/unchained:core-logger';
 import { WorkerDirector } from 'meteor/unchained:core-worker';
 import { WorkNotFoundOrWrongStatus, InvalidIdError } from '../../errors';
 
-export default async function (root, { workId }, { userId }) {
+export default async function removeWork(root, { workId }, { userId }) {
   log(`mutation removeWork ${workId}`, {
     userId,
   });

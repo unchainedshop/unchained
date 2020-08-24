@@ -1,7 +1,7 @@
 import callMethod from '../../../callMethod';
 import hashPassword from '../../../hashPassword';
 
-export default async function (
+export default async function resetPassword(
   root,
   { token, newPlainPassword, newPassword: newHashedPassword },
   context,

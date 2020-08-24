@@ -6,7 +6,7 @@ import {
   InvalidIdError,
 } from '../../errors';
 
-export default function (
+export default function confirmOrder(
   root,
   { orderId, ...transactionContext },
   { userId, localeContext },

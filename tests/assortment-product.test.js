@@ -110,9 +110,7 @@ describe('AssortmentProduct', () => {
 
   describe('mutation.addAssortmentProduct for admin user should', () => {
     it('add assortment successfuly when passed valid assortment & product id', async () => {
-      const {
-        data: { addAssortmentProduct },
-      } = await graphqlFetch({
+      const { data } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation AddAssortmentProduct(
             $assortmentId: ID!
@@ -144,7 +142,7 @@ describe('AssortmentProduct', () => {
         },
       });
 
-      expect(addAssortmentProduct._id).not.toBe(null);
+      expect(data?.addAssortmentProduct._id).not.toBe(null);
     });
 
     it('return not found error when passed non existing product id', async () => {

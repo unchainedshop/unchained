@@ -1,8 +1,8 @@
 import { log } from 'meteor/unchained:core-logger';
 import { PaymentDirector } from 'meteor/unchained:core-payment';
 
-export default function (root, { type }, { userId }) {
-  log(`query payment-interfaces ${type}`, { userId });
+export default function paymentInterfaces(root, { type }, { userId }) {
+  log(`query paymentInterfaces ${type}`, { userId });
   return PaymentDirector.filteredAdapters((Interface) =>
     Interface.typeSupported(type),
   ).map((Interface) => ({

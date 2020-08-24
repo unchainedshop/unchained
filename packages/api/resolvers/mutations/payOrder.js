@@ -7,7 +7,7 @@ import {
   InvalidIdError,
 } from '../../errors';
 
-export default function (root, { orderId }, { userId }) {
+export default function payOrder(root, { orderId }, { userId }) {
   log('mutation payOrder', { orderId, userId });
   if (!orderId) throw new InvalidIdError({ orderId });
 

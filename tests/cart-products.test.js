@@ -3,13 +3,11 @@ import { SimpleProduct } from './seeds/products';
 import { SimplePosition } from './seeds/orders';
 
 let connection;
-// eslint-disable-next-line no-unused-vars
-let db;
 let graphqlFetch;
 
 describe('Cart: Product Items', () => {
   beforeAll(async () => {
-    [db, connection] = await setupDatabase();
+    [, connection] = await setupDatabase();
     graphqlFetch = await createLoggedInGraphqlFetch();
   });
 
@@ -162,19 +160,6 @@ describe('Cart: Product Items', () => {
       expect(emptyCart).toMatchObject({
         items: [],
       });
-    });
-
-    it('return error when passed invalid orderId', async () => {
-      const { errors } = await graphqlFetch({
-        query: /* GraphQL */ `
-          mutation {
-            emptyCart {
-              _id
-            }
-          }
-        `,
-      });
-      expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
     });
   });
 

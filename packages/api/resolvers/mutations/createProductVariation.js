@@ -2,7 +2,7 @@ import { log } from 'meteor/unchained:core-logger';
 import { ProductVariations, Products } from 'meteor/unchained:core-products';
 import { ProductNotFoundError, InvalidIdError } from '../../errors';
 
-export default function (
+export default function createProductVariation(
   root,
   { variation, productId },
   { localeContext, userId },

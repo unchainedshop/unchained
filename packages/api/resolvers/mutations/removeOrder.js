@@ -6,7 +6,7 @@ import {
   InvalidIdError,
 } from '../../errors';
 
-export default function (root, { orderId }, { userId }) {
+export default function removeOrder(root, { orderId }, { userId }) {
   log('mutation removeOrder', { userId, orderId });
   if (!orderId) throw new InvalidIdError({ orderId });
   const order = Orders.findOne({ _id: orderId });
