@@ -25,37 +25,37 @@ const App = ({
   router,
   allowAnonymousAccess,
 }) => (
-    <main>
-      <Header
-        loading={loading}
-        pathname={router.pathname}
-        loggedInUser={currentUser}
-      />
-      {allowAnonymousAccess ? (
-        <Redirect to="/" ifLoggedIn />
-      ) : (
-          <Redirect to="/sign-in" />
-        )}
-      <Segment vertical padded>
-        {loading && (
-          <Dimmer active inverted>
-            <Loader size="large" inverted>
-              Loading
+  <main>
+    <Header
+      loading={loading}
+      pathname={router.pathname}
+      loggedInUser={currentUser}
+    />
+    {allowAnonymousAccess ? (
+      <Redirect to="/" ifLoggedIn />
+    ) : (
+      <Redirect to="/sign-in" />
+    )}
+    <Segment vertical padded>
+      {loading && (
+        <Dimmer active inverted>
+          <Loader size="large" inverted>
+            Loading
           </Loader>
-          </Dimmer>
-        )}
-        {children}
-      </Segment>
-      <Segment basic textAlign="center">
-        Made with &nbsp;
+        </Dimmer>
+      )}
+      {children}
+    </Segment>
+    <Segment basic textAlign="center">
+      Made with &nbsp;
       <span role="img" aria-label="tons of beers">
-          🍻
+        🍻
       </span>
       &nbsp; by the &nbsp;
       <a href="https://unchained.shop">Unchained Team</a>
-      </Segment>
-      <ToastContainer position="top-center" autoClose={3000} />
-    </main>
-  );
+    </Segment>
+    <ToastContainer position="top-center" autoClose={3000} />
+  </main>
+);
 
 export default compose(withRouter, withCurrentUser)(App);

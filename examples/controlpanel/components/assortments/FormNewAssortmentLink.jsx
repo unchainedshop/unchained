@@ -18,16 +18,16 @@ const FormNewAssortmentLink = ({
   removeCountry,
   ...formProps
 }) => (
-    <AutoForm {...formProps}>
-      <Segment basic>
-        <AutoField name={'parentAssortmentId'} type="hidden" />
-        <AutoField name={'childAssortmentId'} options={assortments} />
-        <AutoField name="tags" component={FormTagInput} options={[]} />
-        <ErrorsField />
-        <SubmitField value="Add Link" className="primary" />
-      </Segment>
-    </AutoForm>
-  );
+  <AutoForm {...formProps}>
+    <Segment basic>
+      <AutoField name={'parentAssortmentId'} type="hidden" />
+      <AutoField name={'childAssortmentId'} options={assortments} />
+      <AutoField name="tags" component={FormTagInput} options={[]} />
+      <ErrorsField />
+      <SubmitField value="Add Link" className="primary" />
+    </Segment>
+  </AutoForm>
+);
 
 export default compose(
   withRouter,
