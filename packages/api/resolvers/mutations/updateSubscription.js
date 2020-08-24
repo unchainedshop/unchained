@@ -8,7 +8,7 @@ import {
   SubscriptionWrongStatusError,
 } from '../../errors';
 
-export default async function (
+export default async function updateSubscription(
   root,
   { subscriptionId, contact, plan, billingAddress, payment, delivery, meta },
   { userId },

@@ -1,5 +1,5 @@
 import React from 'react';
-import { withApollo } from 'react-apollo';
+import { withApollo } from '@apollo/client/react/hoc';
 import { compose, pure, mapProps, withHandlers } from 'recompose';
 import AutoField from 'uniforms-semantic/AutoField';
 import SubmitField from 'uniforms-semantic/SubmitField';

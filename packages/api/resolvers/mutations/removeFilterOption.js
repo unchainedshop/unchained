@@ -1,7 +1,11 @@
 import { log } from 'meteor/unchained:core-logger';
 import { Filters } from 'meteor/unchained:core-filters';
 
-export default function (root, { filterId, filterOptionValue }, { userId }) {
+export default function removeFilterOption(
+  root,
+  { filterId, filterOptionValue },
+  { userId },
+) {
   log(`mutation removeFilterOption ${filterId}`, { userId });
   Filters.update(
     { _id: filterId },

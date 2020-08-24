@@ -3,7 +3,7 @@ import { compose, withState, withHandlers } from 'recompose';
 import { Item, Label, Button, Header } from 'semantic-ui-react';
 import { SortableElement } from 'react-sortable-hoc';
 import gql from 'graphql-tag';
-import { graphql } from 'react-apollo';
+import { graphql } from '@apollo/client/react/hoc';
 import FormEditProductMediaTexts from './FormEditProductMediaTexts';
 
 const ProductMediaListItem = ({

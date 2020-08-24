@@ -1,6 +1,6 @@
 import React from 'react';
 import gql from 'graphql-tag';
-import { graphql } from 'react-apollo';
+import { graphql } from '@apollo/client/react/hoc';
 import { Container } from 'semantic-ui-react';
 
 const SystemInfo = ({ data: { shopInfo } = {} } = {}) => (

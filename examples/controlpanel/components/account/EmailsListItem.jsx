@@ -1,6 +1,6 @@
 import React from 'react';
 import { compose, pure, withHandlers } from 'recompose';
-import { graphql, withApollo } from 'react-apollo';
+import { graphql, withApollo } from '@apollo/client/react/hoc';
 import gql from 'graphql-tag';
 import { Message, Button } from 'semantic-ui-react';
 import { resendVerificationEmail } from '../../lib/accounts';

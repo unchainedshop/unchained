@@ -1,6 +1,6 @@
 import React from 'react';
 import { createSink } from 'recompose';
-import { withApollo } from 'react-apollo';
+import { withApollo } from '@apollo/client/react/hoc';
 import { withRouter } from 'next/router';
 import { Message, Container } from 'semantic-ui-react';
 import { verifyEmail } from '../lib/accounts';

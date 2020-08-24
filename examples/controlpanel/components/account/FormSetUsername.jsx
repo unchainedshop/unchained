@@ -4,7 +4,7 @@ import SubmitField from 'uniforms-semantic/SubmitField';
 import ErrorsField from 'uniforms-semantic/ErrorsField';
 import AutoForm from 'uniforms-semantic/AutoForm';
 import { compose, pure, withHandlers } from 'recompose';
-import { graphql, withApollo } from 'react-apollo';
+import { graphql, withApollo } from '@apollo/client/react/hoc';
 import gql from 'graphql-tag';
 import withFormSchema from '../../lib/withFormSchema';
 import withFormErrorHandlers from '../../lib/withFormErrorHandlers';

@@ -1,6 +1,6 @@
 import { format } from 'date-fns';
 import gql from 'graphql-tag';
-import { graphql } from 'react-apollo';
+import { graphql } from '@apollo/client/react/hoc';
 import React from 'react';
 import { Table, Label, Icon, Segment } from 'semantic-ui-react';
 import Link from 'next/link';

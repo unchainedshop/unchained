@@ -2,7 +2,11 @@ import { log } from 'meteor/unchained:core-logger';
 import { Products } from 'meteor/unchained:core-products';
 import { ProductNotFoundError } from '../../errors';
 
-export default function (root, { proxyId, productId, vectors }, { userId }) {
+export default function addProductAssignment(
+  root,
+  { proxyId, productId, vectors },
+  { userId },
+) {
   log(`mutation addProductAssignment ${proxyId} ${productId}`, { userId });
 
   const proxy = Products.findOne({ _id: proxyId });

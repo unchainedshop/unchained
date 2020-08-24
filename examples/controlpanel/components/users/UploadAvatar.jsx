@@ -1,5 +1,5 @@
 import React from 'react';
-import { graphql } from 'react-apollo';
+import { graphql } from '@apollo/client/react/hoc';
 import { compose, pure, withHandlers, withState, mapProps } from 'recompose';
 import gql from 'graphql-tag';
 import { Image } from 'semantic-ui-react';

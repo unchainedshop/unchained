@@ -1,7 +1,11 @@
 import { log } from 'meteor/unchained:core-logger';
 import { FilterTexts } from 'meteor/unchained:core-filters';
 
-export default function (root, { filterId, filterOptionValue }, { userId }) {
+export default function translatedFilterTexts(
+  root,
+  { filterId, filterOptionValue },
+  { userId },
+) {
   log(`query translatedFilterTexts ${filterId} ${filterOptionValue}`, {
     userId,
   });
@@ -9,6 +13,5 @@ export default function (root, { filterId, filterOptionValue }, { userId }) {
     filterId,
     filterOptionValue,
   };
-  const productTexts = FilterTexts.find(selector).fetch();
-  return productTexts;
+  return FilterTexts.find(selector).fetch();
 }

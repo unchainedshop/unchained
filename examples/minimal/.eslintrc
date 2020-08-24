@@ -1,9 +1,8 @@
 {
   "parser": "babel-eslint",
-  "plugins": ["meteor", "prettier"],
+  "plugins": ["prettier"],
   "extends": [
     "airbnb-base",
-    "plugin:meteor/recommended",
     "plugin:prettier/recommended"
   ],
   "root": true,

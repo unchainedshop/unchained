@@ -2,7 +2,11 @@ import { Promise } from 'meteor/promise';
 import { log } from 'meteor/unchained:core-logger';
 import { Avatars, Users } from 'meteor/unchained:core-users';
 
-export default function (root, { avatar, userId: foreignUserId }, { userId }) {
+export default function updateUserAvatar(
+  root,
+  { avatar, userId: foreignUserId },
+  { userId },
+) {
   const normalizedUserId = foreignUserId || userId;
   log(`mutation updateUserAvatar ${normalizedUserId}`, { userId });
   const avatarRef =

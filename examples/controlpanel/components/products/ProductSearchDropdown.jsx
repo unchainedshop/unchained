@@ -7,7 +7,7 @@ import {
   Label,
 } from 'semantic-ui-react';
 import { debounce, has, isEmpty } from 'lodash';
-import { useQuery } from '@apollo/react-hooks';
+import { useQuery } from '@apollo/client';
 import gql from 'graphql-tag';
 
 const SEARCH_PRODUCTS = gql`

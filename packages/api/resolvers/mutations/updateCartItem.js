@@ -6,7 +6,7 @@ import {
   OrderWrongStatusError,
 } from '../../errors';
 
-export default function (
+export default function updateCartItem(
   root,
   { itemId, quantity = null, configuration = null },
   { userId },
