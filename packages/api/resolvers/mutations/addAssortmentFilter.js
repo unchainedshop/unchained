@@ -9,7 +9,7 @@ import {
 
 export default function addAssortmentFilter(
   root,
-  { assortmentId, filterId, tags },
+  { assortmentId, filterId, ...assortmentFilter },
   { userId },
 ) {
   log(`mutation addAssortmentFilter ${assortmentId} -> ${filterId}`, {
@@ -22,5 +22,9 @@ export default function addAssortmentFilter(
   const filter = Filters.findOne({ _id: filterId });
   if (!assortment) throw new AssortmentNotFoundError({ assortmentId });
   if (!filter) throw new FilterNotFoundError({ filterId });
-  return assortment.addFilter({ filterId, tags, authorId: userId });
+  return assortment.addFilter({
+    filterId,
+    authorId: userId,
+    ...assortmentFilter,
+  });
 }

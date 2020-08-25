@@ -4,7 +4,7 @@ import { AssortmentNotFoundError, InvalidIdError } from '../../errors';
 
 export default function addAssortmentLink(
   root,
-  { parentAssortmentId, childAssortmentId, tags },
+  { parentAssortmentId, childAssortmentId, ...assortmentLink },
   { userId },
 ) {
   log(
@@ -29,7 +29,7 @@ export default function addAssortmentLink(
   }
   return parent.addLink({
     assortmentId: childAssortmentId,
-    tags,
     authorId: userId,
+    ...assortmentLink,
   });
 }

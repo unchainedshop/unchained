@@ -16,7 +16,7 @@ describe('Cart: Product Items', () => {
   });
 
   describe('Mutation.addCartProduct', () => {
-    xit('add a product to the cart', async () => {
+    it('add a product to the cart', async () => {
       const { data: { addCartProduct } = {} } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation addCartProduct(
@@ -143,7 +143,7 @@ describe('Cart: Product Items', () => {
   });
 
   describe('Mutation.emptyCart', () => {
-    xit('clear the cart from items', async () => {
+    it('clear the cart from items', async () => {
       const { data: { emptyCart } = {} } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation {

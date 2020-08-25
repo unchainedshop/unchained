@@ -9,7 +9,7 @@ import {
 
 export default function addAssortmentProduct(
   root,
-  { assortmentId, productId, tags },
+  { assortmentId, productId, ...assortmentProduct },
   { userId },
 ) {
   log(`mutation addAssortmentProduct ${assortmentId} -> ${productId}`, {
@@ -21,5 +21,9 @@ export default function addAssortmentProduct(
   if (!assortment) throw new AssortmentNotFoundError({ assortmentId });
   const product = Products.findOne({ _id: productId });
   if (!product) throw new ProductNotFoundError({ productId });
-  return assortment.addProduct({ productId, tags });
+  return assortment.addProduct({
+    productId,
+    authorId: userId,
+    ...assortmentProduct,
+  });
 }

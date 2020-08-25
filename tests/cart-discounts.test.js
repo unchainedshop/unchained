@@ -132,7 +132,7 @@ describe('Cart: Discounts', () => {
       });
     });
 
-    xit('return not found error when non existing orderId is provided', async () => {
+    it('return not found error when non existing orderId is provided', async () => {
       const { errors } = await adminGraphqlFetch({
         query: /* GraphQL */ `
           mutation addCartDiscount($orderId: ID) {

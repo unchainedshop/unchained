@@ -95,7 +95,7 @@ describe('TranslatedFilterTexts', () => {
     });
   });
   describe('Query.quotation for admin user should', () => {
-    xit('return single quotation when existing id passed', async () => {
+    it('return single quotation when existing id passed', async () => {
       const {
         data: { quotation },
       } = await graphqlFetch({
