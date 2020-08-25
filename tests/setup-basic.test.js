@@ -40,6 +40,7 @@ describe('basic setup of internationalization and localization context', () => {
         isoCode: 'BTC',
         isActive: true,
       });
+      await Currencies.deleteOne({ isoCode: 'BTC' });
     });
 
     it('update a currency', async () => {
@@ -136,6 +137,7 @@ describe('basic setup of internationalization and localization context', () => {
         isoCode: 'LTC',
       });
       expect(await Currencies.countDocuments({ _id: 'ltc' })).toEqual(0);
+      await Currencies.deleteOne({ _id: 'ltc' });
     });
 
     it('return not found error when passed non existing currencyId', async () => {
@@ -200,11 +202,13 @@ describe('basic setup of internationalization and localization context', () => {
           isoCode: 'LTC',
         },
       ]);
+      await Currencies.deleteOne({ _id: 'ltc' });
+      await Currencies.deleteOne({ _id: 'btc' });
     });
 
     it('query inactive single currency', async () => {
       await Currencies.insertOne({
-        _id: 'sigt',
+        _id: 'sigt', // hahaha is that signatum?!
         isoCode: 'SIGT',
         isActive: false,
       });
@@ -222,6 +226,7 @@ describe('basic setup of internationalization and localization context', () => {
       expect(currency).toMatchObject({
         isoCode: 'SIGT',
       });
+      await Currencies.deleteOne({ _id: 'sigt' });
     });
 
     it('query.currency return not found error when passed non existing ID', async () => {
@@ -263,7 +268,7 @@ describe('basic setup of internationalization and localization context', () => {
       } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation {
-            createCountry(country: { isoCode: "ch" }) {
+            createCountry(country: { isoCode: "nl" }) {
               _id
               isoCode
               isActive
@@ -278,15 +283,21 @@ describe('basic setup of internationalization and localization context', () => {
         `,
       });
       expect(createCountry).toMatchObject({
-        isoCode: 'CH',
+        isoCode: 'NL',
         isActive: true,
-        flagEmoji: '🇨🇭',
-        name: 'Switzerland',
+        flagEmoji: '🇳🇱',
+        name: 'Netherlands',
       });
+      await Countries.deleteOne({ isoCode: 'NL' });
     });
 
     it('set the base country', async () => {
-      const country = await Countries.findOne();
+      await Countries.insertOne({
+        _id: 'nl',
+        isoCode: 'NL',
+        isActive: true,
+        isBase: false,
+      });
 
       const {
         data: { setBaseCountry },
@@ -300,13 +311,15 @@ describe('basic setup of internationalization and localization context', () => {
           }
         `,
         variables: {
-          countryId: country._id,
+          countryId: 'nl',
         },
       });
       expect(errors).toEqual(undefined);
       expect(setBaseCountry).toMatchObject({
         isBase: true,
       });
+      await Countries.deleteOne({ isoCode: 'NL' });
+      await Countries.updateOne({ isoCode: 'CH' }, { $set: { isBase: true } });
     });
 
     it('return not found error when passed non existing countryId', async () => {
@@ -453,6 +466,7 @@ describe('basic setup of internationalization and localization context', () => {
         isoCode: 'US',
       });
       expect(await Countries.countDocuments({ _id: 'us' })).toEqual(0);
+      await Countries.deleteOne({ _id: 'us' });
     });
 
     it('return not found error when passed non existing country ID', async () => {
@@ -513,6 +527,8 @@ describe('basic setup of internationalization and localization context', () => {
           isoCode: 'UK',
         },
       ]);
+      await Countries.deleteOne({ _id: 'it' });
+      await Countries.deleteOne({ _id: 'uk' });
     });
 
     it('query.country inactive single country', async () => {
@@ -535,6 +551,7 @@ describe('basic setup of internationalization and localization context', () => {
       expect(country).toMatchObject({
         isoCode: 'DE',
       });
+      await Countries.deleteOne({ _id: 'de' });
     });
 
     it('query.country return not found when passed non existing ID', async () => {
@@ -590,11 +607,16 @@ describe('basic setup of internationalization and localization context', () => {
         isBase: false,
         name: 'fr',
       });
+      await Languages.deleteOne({ isoCode: 'fr' });
     });
 
     it('set the base language', async () => {
-      const language = await Languages.findOne();
-
+      await Languages.insertOne({
+        _id: 'fr',
+        isoCode: 'fr',
+        isActive: true,
+        isBase: false,
+      });
       const {
         data: { setBaseLanguage },
         errors,
@@ -608,7 +630,7 @@ describe('basic setup of internationalization and localization context', () => {
           }
         `,
         variables: {
-          languageId: language._id,
+          languageId: 'fr',
         },
       });
       expect(errors).toEqual(undefined);
@@ -616,6 +638,10 @@ describe('basic setup of internationalization and localization context', () => {
         isBase: true,
         name: 'fr (Base)',
       });
+      await Languages.deleteOne({
+        isoCode: 'fr',
+      });
+      await Languages.updateOne({ isoCode: 'de' }, { $set: { isBase: true } });
     });
 
     it('return not found error when passed non-existing languageId', async () => {
@@ -746,6 +772,7 @@ describe('basic setup of internationalization and localization context', () => {
         isoCode: 'US',
       });
       expect(await Languages.countDocuments({ _id: 'en' })).toEqual(0);
+      await Languages.deleteOne({ _id: 'en' });
     });
 
     it('return not found error when passed non existing languageId', async () => {
@@ -808,6 +835,8 @@ describe('basic setup of internationalization and localization context', () => {
           isoCode: 'es',
         },
       ]);
+      await Languages.deleteOne({ _id: 'es' });
+      await Languages.deleteOne({ _id: 'ru' });
     });
 
     it('query inactive single language', async () => {
@@ -830,6 +859,7 @@ describe('basic setup of internationalization and localization context', () => {
       expect(language).toMatchObject({
         isoCode: 'pl',
       });
+      await Languages.deleteOne({ _id: 'pl' });
     });
 
     it('query.language return not found error when passed non existing languageId', async () => {
@@ -861,68 +891,70 @@ describe('basic setup of internationalization and localization context', () => {
     });
   });
 
-  it('user defaults', async () => {
-    const {
-      data: { me },
-    } = await graphqlFetch({
-      query: /* GraphQL */ `
-        query {
-          me {
-            language {
-              isoCode
-            }
-            country {
-              isoCode
-            }
-          }
-        }
-      `,
-    });
-    expect(me).toMatchObject({
-      language: {
-        isoCode: 'de',
-      },
-      country: {
-        isoCode: 'CH',
-      },
-    });
-  });
-
-  it('global shop context', async () => {
-    const {
-      data: { shopInfo },
-    } = await graphqlFetch({
-      query: /* GraphQL */ `
-        query {
-          shopInfo {
-            _id
-            language {
-              isoCode
-            }
-            country {
-              isoCode
-              defaultCurrency {
+  describe('resolved locale context', () => {
+    it('user defaults', async () => {
+      const {
+        data: { me },
+      } = await graphqlFetch({
+        query: /* GraphQL */ `
+          query {
+            me {
+              language {
+                isoCode
+              }
+              country {
                 isoCode
               }
             }
-            version
-            userRoles
           }
-        }
-      `,
-    });
-    expect(shopInfo).toMatchObject({
-      _id: 'root',
-      language: {
-        isoCode: 'de',
-      },
-      country: {
-        isoCode: 'CH',
-        defaultCurrency: {
-          isoCode: 'CHF',
+        `,
+      });
+      expect(me).toMatchObject({
+        language: {
+          isoCode: 'de',
         },
-      },
-      userRoles: ['admin'],
+        country: {
+          isoCode: 'CH',
+        },
+      });
+    });
+
+    it('global shop context', async () => {
+      const {
+        data: { shopInfo },
+      } = await graphqlFetch({
+        query: /* GraphQL */ `
+          query {
+            shopInfo {
+              _id
+              language {
+                isoCode
+              }
+              country {
+                isoCode
+                defaultCurrency {
+                  isoCode
+                }
+              }
+              version
+              userRoles
+            }
+          }
+        `,
+      });
+      expect(shopInfo).toMatchObject({
+        _id: 'root',
+        language: {
+          isoCode: 'de',
+        },
+        country: {
+          isoCode: 'CH',
+          defaultCurrency: {
+            isoCode: 'CHF',
+          },
+        },
+        userRoles: ['admin'],
+      });
     });
   });
 });
