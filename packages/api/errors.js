@@ -172,6 +172,11 @@ export const WorkNotFoundError = createError(
   'Work not found',
 );
 
+export const WorkTypeInvalidError = createError(
+  'WorkTypeInvalidError',
+  'Work type invalid',
+);
+
 export const PaymentCredentialsNotFoundError = createError(
   'PaymentCredentialsNotFoundError',
   'Payment credentials not found',
