@@ -94,6 +94,23 @@ describe('Auth for admin users', () => {
         _id: User._id,
       });
     });
+
+    it('returns not found error when passed non existing userID', async () => {
+      const { errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          query user($userId: ID) {
+            user(userId: $userId) {
+              _id
+              name
+            }
+          }
+        `,
+        variables: {
+          userId: 'non-existing-id',
+        },
+      });
+      expect(errors[0]?.extensions?.code).toEqual('UserNotFoundError');
+    });
   });
 
   describe('Mutation.updateUserAvatar', () => {
@@ -253,6 +270,44 @@ describe('Auth for admin users', () => {
         _id: Admin._id,
         tags,
       });
+    });
+
+    it('return not found error when passed non existing userId', async () => {
+      const tags = ['new-tag'];
+      const { errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation setUserTags($tags: [String]!, $userId: ID!) {
+            setUserTags(tags: $tags, userId: $userId) {
+              _id
+              tags
+            }
+          }
+        `,
+        variables: {
+          userId: 'non-existing-id',
+          tags,
+        },
+      });
+      expect(errors[0]?.extensions?.code).toEqual('UserNotFoundError');
+    });
+
+    it('return error when passed invalid userId', async () => {
+      const tags = ['new-tag'];
+      const { errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation setUserTags($tags: [String]!, $userId: ID!) {
+            setUserTags(tags: $tags, userId: $userId) {
+              _id
+              tags
+            }
+          }
+        `,
+        variables: {
+          userId: '',
+          tags,
+        },
+      });
+      expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
     });
   });
 
@@ -425,6 +480,44 @@ describe('Auth for admin users', () => {
         _id: User._id,
         roles,
       });
+    });
+
+    it('return error when passed invalid userId', async () => {
+      const roles = ['admin'];
+      const { errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation setRoles($userId: ID!, $roles: [String!]!) {
+            setRoles(roles: $roles, userId: $userId) {
+              _id
+              roles
+            }
+          }
+        `,
+        variables: {
+          userId: '',
+          roles,
+        },
+      });
+      expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
+    });
+
+    it('return not found error when passed non-existing userId', async () => {
+      const roles = ['admin'];
+      const { errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation setRoles($userId: ID!, $roles: [String!]!) {
+            setRoles(roles: $roles, userId: $userId) {
+              _id
+              roles
+            }
+          }
+        `,
+        variables: {
+          userId: 'non-existing',
+          roles,
+        },
+      });
+      expect(errors[0]?.extensions?.code).toEqual('UserNotFoundError');
     });
   });
 });

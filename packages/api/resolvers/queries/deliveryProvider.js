@@ -1,5 +1,6 @@
 import { log } from 'meteor/unchained:core-logger';
 import { DeliveryProviders } from 'meteor/unchained:core-delivery';
+import { DeliverProviderNotFoundError, InvalidIdError } from '../../errors';
 
 export default function deliveryProvider(
   root,
@@ -7,5 +8,12 @@ export default function deliveryProvider(
   { userId },
 ) {
   log(`query deliveryProvider ${deliveryProviderId}`, { userId });
-  return DeliveryProviders.findProviderById(deliveryProviderId);
+
+  if (!deliveryProviderId) throw new InvalidIdError({ deliveryProviderId });
+
+  const provider = DeliveryProviders.findProviderById(deliveryProviderId);
+
+  if (!provider) throw new DeliverProviderNotFoundError({ deliveryProviderId });
+
+  return provider;
 }

@@ -3,6 +3,7 @@ import { DeliveryDirector } from 'meteor/unchained:core-delivery';
 
 export default function deliveryInterfaces(root, { type }, { userId }) {
   log(`query deliveryInterfaces ${type}`, { userId });
+
   return DeliveryDirector.filteredAdapters((Interface) =>
     Interface.typeSupported(type),
   ).map((Interface) => ({

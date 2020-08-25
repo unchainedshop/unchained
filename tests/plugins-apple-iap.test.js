@@ -96,7 +96,7 @@ describe('Plugins: Apple IAP Payments', () => {
 
   describe('Mutation.registerPaymentCredentials (Apple IAP)', () => {
     it('store the receipt as payment credentials', async () => {
-      const { data: { registerPaymentCredentials } = {} } = await graphqlFetch({
+      const { data } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation registerPaymentCredentials(
             $paymentContext: JSON!
@@ -119,10 +119,62 @@ describe('Plugins: Apple IAP Payments', () => {
           paymentProviderId: 'iap-payment-provider',
         },
       });
-      expect(registerPaymentCredentials).toMatchObject({
+      expect(data?.registerPaymentCredentials).toMatchObject({
         isValid: true,
         isPreferred: true,
       });
+    });
+
+    it('return not found error when passed non existing paymentProviderId', async () => {
+      const { errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation registerPaymentCredentials(
+            $paymentContext: JSON!
+            $paymentProviderId: ID!
+          ) {
+            registerPaymentCredentials(
+              paymentContext: $paymentContext
+              paymentProviderId: $paymentProviderId
+            ) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          paymentContext: {
+            receiptData,
+          },
+          paymentProviderId: 'non-existing',
+        },
+      });
+      expect(errors[0]?.extensions?.code).toEqual(
+        'PaymentProviderNotFoundError',
+      );
+    });
+
+    it('return error when passed invalid paymentProviderId', async () => {
+      const { errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation registerPaymentCredentials(
+            $paymentContext: JSON!
+            $paymentProviderId: ID!
+          ) {
+            registerPaymentCredentials(
+              paymentContext: $paymentContext
+              paymentProviderId: $paymentProviderId
+            ) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          paymentContext: {
+            receiptData,
+          },
+          paymentProviderId: '',
+        },
+      });
+      expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
     });
     it('checkout with stored receipt in credentials', async () => {
       const {

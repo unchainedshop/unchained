@@ -113,6 +113,68 @@ describe('setup warehousing providers', () => {
         type: 'PHYSICAL',
       });
     });
+
+    it('return not found error when passed non existing warehousingProviderid', async () => {
+      const { errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation updateWarehousingProvider(
+            $warehousingProvider: UpdateProviderInput!
+            $warehousingProviderId: ID!
+          ) {
+            updateWarehousingProvider(
+              warehousingProvider: $warehousingProvider
+              warehousingProviderId: $warehousingProviderId
+            ) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          warehousingProviderId: 'non-existing-id',
+          warehousingProvider: {
+            configuration: [
+              {
+                key: 'gugus',
+                value: 'blub',
+              },
+            ],
+          },
+        },
+      });
+      expect(errors[0]?.extensions?.code).toEqual(
+        'WarehousingProviderNotFoundError',
+      );
+    });
+
+    it('return error when passed invalid warehousingProviderid', async () => {
+      const { errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation updateWarehousingProvider(
+            $warehousingProvider: UpdateProviderInput!
+            $warehousingProviderId: ID!
+          ) {
+            updateWarehousingProvider(
+              warehousingProvider: $warehousingProvider
+              warehousingProviderId: $warehousingProviderId
+            ) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          warehousingProviderId: '',
+          warehousingProvider: {
+            configuration: [
+              {
+                key: 'gugus',
+                value: 'blub',
+              },
+            ],
+          },
+        },
+      });
+      expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
+    });
   });
 
   describe('Mutation.removeWarehousingProvider', () => {
@@ -139,6 +201,46 @@ describe('setup warehousing providers', () => {
         deleted: expect.anything(),
         _id: SimpleWarehousingProvider._id,
       });
+    });
+
+    it('return not found error when passed non existing warehouseProviderId', async () => {
+      const { errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation removeWarehousingProvider($warehousingProviderId: ID!) {
+            removeWarehousingProvider(
+              warehousingProviderId: $warehousingProviderId
+            ) {
+              _id
+              deleted
+            }
+          }
+        `,
+        variables: {
+          warehousingProviderId: 'non-existing-id',
+        },
+      });
+      expect(errors[0]?.extensions?.code).toEqual(
+        'WarehousingProviderNotFoundError',
+      );
+    });
+
+    it('return error when passed invalid warehouseProviderId', async () => {
+      const { errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation removeWarehousingProvider($warehousingProviderId: ID!) {
+            removeWarehousingProvider(
+              warehousingProviderId: $warehousingProviderId
+            ) {
+              _id
+              deleted
+            }
+          }
+        `,
+        variables: {
+          warehousingProviderId: '',
+        },
+      });
+      expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
     });
   });
 });

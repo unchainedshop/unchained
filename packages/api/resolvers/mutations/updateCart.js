@@ -14,6 +14,7 @@ export default async function updateCart(
   { user, countryContext, userId },
 ) {
   log('mutation updateCart', { userId });
+
   let order = await getCart({ orderId, user, countryContext });
   if (meta) {
     order = order.updateContext(meta);

@@ -1,3 +1,4 @@
+// maps each key value pair into a single string
 export default (query) =>
   (query || []).reduce(
     (accumulator, { key, value }) => ({

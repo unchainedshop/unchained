@@ -1,6 +1,6 @@
 import { log } from 'meteor/unchained:core-logger';
 import { ProductMedia } from 'meteor/unchained:core-products';
-import { ProductMediaNotFoundError } from '../../errors';
+import { ProductMediaNotFoundError, InvalidIdError } from '../../errors';
 
 export default function updateProductMediaTexts(
   root,
@@ -8,6 +8,7 @@ export default function updateProductMediaTexts(
   { userId },
 ) {
   log(`mutation updateProductMediaTexts ${productMediaId}`, { userId });
+  if (!productMediaId) throw new InvalidIdError({ productMediaId });
   const productMediaObject = ProductMedia.findOne({ _id: productMediaId });
   if (!productMediaObject)
     throw new ProductMediaNotFoundError({ productMediaId });

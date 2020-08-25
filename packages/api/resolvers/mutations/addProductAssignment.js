@@ -1,6 +1,6 @@
 import { log } from 'meteor/unchained:core-logger';
 import { Products } from 'meteor/unchained:core-products';
-import { ProductNotFoundError } from '../../errors';
+import { ProductNotFoundError, InvalidIdError } from '../../errors';
 
 export default function addProductAssignment(
   root,
@@ -8,6 +8,9 @@ export default function addProductAssignment(
   { userId },
 ) {
   log(`mutation addProductAssignment ${proxyId} ${productId}`, { userId });
+
+  if (!proxyId) throw new InvalidIdError({ proxyId });
+  if (!productId) throw new InvalidIdError({ productId });
 
   const proxy = Products.findOne({ _id: proxyId });
   const product = Products.findOne({ _id: productId });

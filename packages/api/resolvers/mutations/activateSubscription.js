@@ -6,6 +6,7 @@ import {
 import {
   SubscriptionNotFoundError,
   SubscriptionWrongStatusError,
+  InvalidIdError,
 } from '../../errors';
 
 export default async function activateSubscription(
@@ -14,6 +15,8 @@ export default async function activateSubscription(
   { userId },
 ) {
   log('mutation activateSubscription', { userId });
+  if (!subscriptionId) throw new InvalidIdError({ subscriptionId });
+
   const subscription = Subscriptions.findOne({
     _id: subscriptionId,
   });

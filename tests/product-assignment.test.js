@@ -77,6 +77,68 @@ describe('ProductAssignment', () => {
       expect(addProductAssignment._id).not.toBe(null);
     });
 
+    it('return not found error when passed non existing product ID', async () => {
+      const { errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation AddProductAssignment(
+            $proxyId: ID!
+            $productId: ID!
+            $vectors: [ProductAssignmentVectorInput!]!
+          ) {
+            addProductAssignment(
+              proxyId: $proxyId
+              productId: $productId
+              vectors: $vectors
+            ) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          productId: 'non-existin-product-id',
+          proxyId: ConfigurableProduct._id,
+          vectors: [
+            { key: 'key-1', value: 'value-1' },
+            { key: 'key-2', value: 'value-2' },
+            { key: 'key-3', value: 'value-3' },
+          ],
+        },
+      });
+
+      expect(errors[0]?.extensions?.code).toEqual('ProductNotFoundError');
+    });
+
+    it('return not found error when passed non existing proxy ID', async () => {
+      const { errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation AddProductAssignment(
+            $proxyId: ID!
+            $productId: ID!
+            $vectors: [ProductAssignmentVectorInput!]!
+          ) {
+            addProductAssignment(
+              proxyId: $proxyId
+              productId: $productId
+              vectors: $vectors
+            ) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          productId: SimpleProduct._id,
+          proxyId: 'non-exsisting-proxy-id',
+          vectors: [
+            { key: 'key-1', value: 'value-1' },
+            { key: 'key-2', value: 'value-2' },
+            { key: 'key-3', value: 'value-3' },
+          ],
+        },
+      });
+
+      expect(errors[0]?.extensions?.code).toEqual('ProductNotFoundError');
+    });
+
     it('return error when passed invalid product ID', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
@@ -95,7 +157,7 @@ describe('ProductAssignment', () => {
           }
         `,
         variables: {
-          productId: 'invalid-product-id',
+          productId: '',
           proxyId: ConfigurableProduct._id,
           vectors: [
             { key: 'key-1', value: 'value-1' },
@@ -105,7 +167,7 @@ describe('ProductAssignment', () => {
         },
       });
 
-      expect(errors.length).toEqual(1);
+      expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
     });
 
     it('return error when passed invalid proxy ID', async () => {
@@ -127,7 +189,7 @@ describe('ProductAssignment', () => {
         `,
         variables: {
           productId: SimpleProduct._id,
-          proxyId: 'invalid-proxy-id',
+          proxyId: '',
           vectors: [
             { key: 'key-1', value: 'value-1' },
             { key: 'key-2', value: 'value-2' },
@@ -136,7 +198,7 @@ describe('ProductAssignment', () => {
         },
       });
 
-      expect(errors.length).toEqual(1);
+      expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
     });
   });
 
@@ -223,7 +285,7 @@ describe('ProductAssignment', () => {
       expect(removeProductAssignment._id).not.toBe(null);
     });
 
-    it('return error when passed invalid valid proxy  ID', async () => {
+    it('return not found error when passed non existing proxy  ID', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation RemoveProductAssignment(
@@ -241,7 +303,28 @@ describe('ProductAssignment', () => {
         },
       });
 
-      expect(errors.length).toEqual(1);
+      expect(errors[0]?.extensions?.code).toEqual('ProductNotFoundError');
+    });
+
+    it('return error when passed invalid valid proxy  ID', async () => {
+      const { errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation RemoveProductAssignment(
+            $proxyId: ID!
+            $vectors: [ProductAssignmentVectorInput!]!
+          ) {
+            removeProductAssignment(proxyId: $proxyId, vectors: $vectors) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          proxyId: '',
+          vectors: [{ key: 'key-3', value: 'value-3' }],
+        },
+      });
+
+      expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
     });
   });
 

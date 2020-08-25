@@ -1,9 +1,10 @@
 import { log } from 'meteor/unchained:core-logger';
 import { Products } from 'meteor/unchained:core-products';
-import { ProductNotFoundError } from '../../errors';
+import { ProductNotFoundError, InvalidIdError } from '../../errors';
 
 export default function removeBundleItem(root, { productId, index }) {
   log(`mutation removeBundleItem ${productId}`, { index });
+  if (!productId) throw new InvalidIdError({ productId });
   const product = Products.findOne(productId);
   if (!product) throw new ProductNotFoundError({ productId });
   const { bundleItems = [] } = product;
@@ -16,5 +17,5 @@ export default function removeBundleItem(root, { productId, index }) {
     },
   });
 
-  return Products.findOne(productId);
+  return Products.findOne({ _id: productId });
 }

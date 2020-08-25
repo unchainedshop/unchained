@@ -1,14 +1,16 @@
 import { setupDatabase, createLoggedInGraphqlFetch } from './helpers';
 import { SimpleOrder, DiscountedDiscount } from './seeds/orders';
-import { USER_TOKEN } from './seeds/users';
+import { USER_TOKEN, ADMIN_TOKEN } from './seeds/users';
 
 let connection;
 let graphqlFetch;
+let adminGraphqlFetch;
 
 describe('Cart: Discounts', () => {
   beforeAll(async () => {
     [, connection] = await setupDatabase();
     graphqlFetch = await createLoggedInGraphqlFetch(USER_TOKEN);
+    adminGraphqlFetch = await createLoggedInGraphqlFetch(ADMIN_TOKEN);
   });
 
   afterAll(async () => {
@@ -130,6 +132,42 @@ describe('Cart: Discounts', () => {
       });
     });
 
+    it('return not found error when non existing orderId is provided', async () => {
+      const { errors } = await adminGraphqlFetch({
+        query: /* GraphQL */ `
+          mutation addCartDiscount($orderId: ID) {
+            addCartDiscount(orderId: $orderId, code: "100oft") {
+              code
+            }
+          }
+        `,
+        variables: {
+          orderId: 'non-existing-id',
+        },
+      });
+
+      expect(errors[0]?.extensions?.code).toEqual('OrderNotFoundError');
+    });
+
+    it('return error when invalid orderId is provided', async () => {
+      const { errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation addCartDiscount($orderId: ID) {
+            addCartDiscount(orderId: $orderId, code: "100off") {
+              code
+            }
+          }
+        `,
+        variables: {
+          orderId: '',
+        },
+      });
+
+      expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
+    });
+  });
+
+  describe('Mutation.removeCartDiscount', () => {
     it('remove order discount from a cart', async () => {
       const { data: { removeCartDiscount } = {} } = await graphqlFetch({
         query: /* GraphQL */ `
@@ -157,6 +195,40 @@ describe('Cart: Discounts', () => {
           total: {},
         },
       });
+    });
+
+    it('return not found error when passed non existing discountId', async () => {
+      const { errors } = await adminGraphqlFetch({
+        query: /* GraphQL */ `
+          mutation removeCartDiscount($discountId: ID!) {
+            removeCartDiscount(discountId: $discountId) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          discountId: 'non-existing-id',
+        },
+      });
+
+      expect(errors[0]?.extensions?.code).toEqual('OrderDiscountNotFoundError');
+    });
+
+    it('return error when passed invalid discountId', async () => {
+      const { errors } = await adminGraphqlFetch({
+        query: /* GraphQL */ `
+          mutation removeCartDiscount($discountId: ID!) {
+            removeCartDiscount(discountId: $discountId) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          discountId: '',
+        },
+      });
+
+      expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
     });
   });
 });

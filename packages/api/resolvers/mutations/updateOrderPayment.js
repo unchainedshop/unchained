@@ -1,6 +1,6 @@
 import { log } from 'meteor/unchained:core-logger';
 import { OrderPayments } from 'meteor/unchained:core-orders';
-import { OrderPaymentNotFoundError } from '../../errors';
+import { OrderPaymentNotFoundError, InvalidIdError } from '../../errors';
 
 export default function updateOrderPayment(
   root,
@@ -8,6 +8,7 @@ export default function updateOrderPayment(
   { userId },
 ) {
   log(`mutation updateOrderPayment ${orderPaymentId}`, { userId });
+  if (!orderPaymentId) throw new InvalidIdError({ orderPaymentId });
   const orderPayment = OrderPayments.findOne({ _id: orderPaymentId });
   if (!orderPayment)
     throw new OrderPaymentNotFoundError({ data: { orderPaymentId } });

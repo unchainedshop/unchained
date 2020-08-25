@@ -274,10 +274,8 @@ describe('Assortments', () => {
       expect(assortment._id).toBe(SimpleAssortment[0]._id);
     });
 
-    it('return null for non-existing id', async () => {
-      const {
-        data: { assortment },
-      } = await graphqlFetch({
+    it('return not found error for non-existing id', async () => {
+      const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
           query Assortment($assortmentId: ID, $slug: String) {
             assortment(assortmentId: $assortmentId, slug: $slug) {
@@ -290,13 +288,11 @@ describe('Assortments', () => {
         },
       });
 
-      expect(assortment).toBe(null);
+      expect(errors[0]?.extensions?.code).toEqual('AssortmentNotFoundError');
     });
 
-    it('return null for non-existing slug', async () => {
-      const {
-        data: { assortment },
-      } = await graphqlFetch({
+    it('return not found error for non-existing slug', async () => {
+      const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
           query Assortment($assortmentId: ID, $slug: String) {
             assortment(assortmentId: $assortmentId, slug: $slug) {
@@ -309,7 +305,41 @@ describe('Assortments', () => {
         },
       });
 
-      expect(assortment).toBe(null);
+      expect(errors[0]?.extensions?.code).toEqual('AssortmentNotFoundError');
+    });
+
+    it('return error for non-existing id', async () => {
+      const { errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          query Assortment($assortmentId: ID, $slug: String) {
+            assortment(assortmentId: $assortmentId, slug: $slug) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          assortmentId: '',
+        },
+      });
+
+      expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
+    });
+
+    it('return error for non-existing slug', async () => {
+      const { errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          query Assortment($assortmentId: ID, $slug: String) {
+            assortment(assortmentId: $assortmentId, slug: $slug) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          slug: '',
+        },
+      });
+
+      expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
     });
 
     it('return null when either id or slug are non-existing', async () => {
@@ -524,7 +554,7 @@ describe('Assortments', () => {
       ]);
     });
 
-    it('return error when passed none existing assortment Id', async () => {
+    it('return not found error when passed none existing assortment Id', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation UpdateAssortment(
@@ -548,7 +578,34 @@ describe('Assortments', () => {
           },
         },
       });
-      expect(errors.length).toEqual(1);
+      expect(errors[0]?.extensions?.code).toEqual('AssortmentNotFoundError');
+    });
+
+    it('return error when passed invalid assortment Id', async () => {
+      const { errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation UpdateAssortment(
+            $assortment: UpdateAssortmentInput!
+            $assortmentId: ID!
+          ) {
+            updateAssortment(
+              assortment: $assortment
+              assortmentId: $assortmentId
+            ) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          assortmentId: '',
+          assortment: {
+            isRoot: false,
+            tags: ['test-assrtment-1', 'test-assortment-2'],
+            isActive: true,
+          },
+        },
+      });
+      expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
     });
   });
 
@@ -579,7 +636,7 @@ describe('Assortments', () => {
         },
       });
 
-      expect(errors.length).toEqual(1);
+      expect(errors[0]?.extensions?.code).toEqual('NoPermissionError');
     });
   });
 
@@ -646,7 +703,7 @@ describe('Assortments', () => {
       expect(setBaseAssortment.isBase).toBe(true);
     });
 
-    it('return error when passed none existing assortment Id', async () => {
+    it('return not found error when passed none existing assortment Id', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation SetBaseAssortment($assortmentId: ID!) {
@@ -659,7 +716,23 @@ describe('Assortments', () => {
           assortmentId: 'non-existing-id',
         },
       });
-      expect(errors.length).toEqual(1);
+      expect(errors[0]?.extensions?.code).toEqual('AssortmentNotFoundError');
+    });
+
+    it('return error when passed invalid assortment Id', async () => {
+      const { errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation SetBaseAssortment($assortmentId: ID!) {
+            setBaseAssortment(assortmentId: $assortmentId) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          assortmentId: '',
+        },
+      });
+      expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
     });
   });
 
@@ -773,7 +846,23 @@ describe('Assortments', () => {
           assortmentId: 'non-existing-id',
         },
       });
-      expect(errors.length).toEqual(1);
+
+      expect(errors[0].extensions?.code).toEqual('AssortmentNotFoundError');
+    });
+    it('return error when passed none existing assortment Id', async () => {
+      const { errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation RemoveAssortment($assortmentId: ID!) {
+            removeAssortment(assortmentId: $assortmentId) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          assortmentId: '',
+        },
+      });
+      expect(errors[0].extensions?.code).toEqual('InvalidIdError');
     });
   });
 

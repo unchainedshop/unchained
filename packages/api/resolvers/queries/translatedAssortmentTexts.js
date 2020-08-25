@@ -7,6 +7,7 @@ export default function translatedAssortmentTexts(
   { userId },
 ) {
   log(`query translatedAssortmentTexts ${assortmentId}`, { userId });
+
   const selector = { assortmentId };
   return AssortmentTexts.find(selector).fetch();
 }

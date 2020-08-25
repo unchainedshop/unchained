@@ -1,6 +1,6 @@
 import { log } from 'meteor/unchained:core-logger';
 import { ProductReviews } from 'meteor/unchained:core-products';
-import { ProductReviewNotFoundError } from '../../errors';
+import { ProductReviewNotFoundError, InvalidIdError } from '../../errors';
 
 export default function addProductReviewVote(
   root,
@@ -8,6 +8,7 @@ export default function addProductReviewVote(
   { userId },
 ) {
   log(`mutation addProductReviewVote ${productReviewId}`, { userId });
+  if (!productReviewId) throw new InvalidIdError({ productReviewId });
   const productReview = ProductReviews.findOne({ _id: productReviewId });
   if (!productReview) throw new ProductReviewNotFoundError({ productReviewId });
   return productReview.addVote({ type, meta, userId });

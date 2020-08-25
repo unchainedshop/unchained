@@ -1,6 +1,6 @@
 import { log } from 'meteor/unchained:core-logger';
 import { Products } from 'meteor/unchained:core-products';
-import { ProductNotFoundError } from '../../errors';
+import { ProductNotFoundError, InvalidIdError } from '../../errors';
 
 export default function updateProductCommerce(
   root,
@@ -8,6 +8,7 @@ export default function updateProductCommerce(
   { userId },
 ) {
   log(`mutation updateProductCommerce ${productId}`, { userId });
+  if (!productId) throw new InvalidIdError({ productId });
   const productObject = Products.updateProduct({ productId, commerce });
   if (!productObject) throw new ProductNotFoundError({ productId });
   return productObject;

@@ -7,6 +7,7 @@ export default function orders(
   { userId },
 ) {
   log(`query orders: ${limit} ${offset} ${includeCarts}`, { userId });
+
   const selector = {};
   if (!includeCarts) {
     selector.status = { $ne: OrderStatus.OPEN };

@@ -52,6 +52,75 @@ describe('Order: Payments', () => {
         },
       });
     });
+
+    it('returns not found error when passed non existing orderId', async () => {
+      const { errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation setOrderPaymentProvider(
+            $orderId: ID!
+            $paymentProviderId: ID!
+          ) {
+            setOrderPaymentProvider(
+              orderId: $orderId
+              paymentProviderId: $paymentProviderId
+            ) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          orderId: 'non-existing-id',
+          paymentProviderId: PrePaidPaymentProvider._id,
+        },
+      });
+      expect(errors[0]?.extensions?.code).toEqual('OrderNotFoundError');
+    });
+
+    it('returns error when passed invalid paymentProviderId', async () => {
+      const { errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation setOrderPaymentProvider(
+            $orderId: ID!
+            $paymentProviderId: ID!
+          ) {
+            setOrderPaymentProvider(
+              orderId: $orderId
+              paymentProviderId: $paymentProviderId
+            ) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          orderId: SimpleOrder._id,
+          paymentProviderId: '',
+        },
+      });
+      expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
+    });
+
+    it('returns error when passed invalid orderId', async () => {
+      const { errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation setOrderPaymentProvider(
+            $orderId: ID!
+            $paymentProviderId: ID!
+          ) {
+            setOrderPaymentProvider(
+              orderId: $orderId
+              paymentProviderId: $paymentProviderId
+            ) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          orderId: '',
+          paymentProviderId: PrePaidPaymentProvider._id,
+        },
+      });
+      expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
+    });
   });
 
   describe('Mutation.updateOrderPaymentInvoice / Mutation.updateOrderPaymentCard', () => {
@@ -122,5 +191,9 @@ describe('Order: Payments', () => {
           '0bea13199c5abb6d0861d661d565a47f193bc20dc10bad12f00e584a33f01939',
       });
     });
+  });
+
+  describe('Mutation.updateOrderPayment', () => {
+    it.todo('all senario tests');
   });
 });

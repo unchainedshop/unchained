@@ -4,15 +4,17 @@ import {
   createLoggedInGraphqlFetch,
 } from './helpers';
 import { SimpleOrder } from './seeds/orders';
-import { USER_TOKEN } from './seeds/users';
+import { USER_TOKEN, ADMIN_TOKEN } from './seeds/users';
 
 let connection;
 let graphqlFetch;
+let adminGraphqlFetch;
 
 describe('Order: Management', () => {
   beforeAll(async () => {
     [, connection] = await setupDatabase();
     graphqlFetch = await createLoggedInGraphqlFetch(USER_TOKEN);
+    adminGraphqlFetch = await createLoggedInGraphqlFetch(ADMIN_TOKEN);
   });
 
   afterAll(async () => {
@@ -142,9 +144,10 @@ describe('Order: Management', () => {
       expect(order._id).toEqual(SimpleOrder._id);
     });
 
-    it('should return null for non-existing order', async () => {
+    it('return permission error when passed non existing orderId and user is not admin', async () => {
       const {
         data: { order },
+        errors,
       } = await graphqlFetch({
         query: /* GraphQL */ `
           query order($orderId: ID!) {
@@ -159,6 +162,49 @@ describe('Order: Management', () => {
       });
 
       expect(order).toBe(null);
+      expect(errors[0]?.extensions?.code).toEqual('NoPermissionError');
+    });
+
+    it('return not found error when passed non existing orderId and user is admin', async () => {
+      const {
+        data: { order },
+        errors,
+      } = await adminGraphqlFetch({
+        query: /* GraphQL */ `
+          query order($orderId: ID!) {
+            order(orderId: $orderId) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          orderId: 'non-existing-id',
+        },
+      });
+
+      expect(order).toBe(null);
+      expect(errors[0]?.extensions?.code).toEqual('OrderNotFoundError');
+    });
+
+    it('return error when passed invalid orderId and user is admin', async () => {
+      const {
+        data: { order },
+        errors,
+      } = await adminGraphqlFetch({
+        query: /* GraphQL */ `
+          query order($orderId: ID!) {
+            order(orderId: $orderId) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          orderId: '',
+        },
+      });
+
+      expect(order).toBe(null);
+      expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
     });
   });
 

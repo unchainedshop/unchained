@@ -176,10 +176,10 @@ if (STRIPE_SECRET) {
           },
         });
 
-        expect(me.cart.payment.sign).not.toBe('');
-        expect(me.cart.payment.sign).not.toBe(null);
-        expect(me.cart.payment.sign).not.toBe(undefined);
-        idAndSecret = me.cart.payment.sign.split('_secret_');
+        expect(me?.cart?.payment?.sign).not.toBe('');
+        expect(me?.cart?.payment?.sign).not.toBe(null);
+        expect(me?.cart?.payment?.sign).not.toBe(undefined);
+        idAndSecret = me?.cart?.payment?.sign.split('_secret_');
       });
       it('Confirm the payment and checkout the order', async () => {
         const stripe = Stripe(STRIPE_SECRET);

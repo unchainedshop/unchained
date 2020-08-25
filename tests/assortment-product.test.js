@@ -110,9 +110,7 @@ describe('AssortmentProduct', () => {
 
   describe('mutation.addAssortmentProduct for admin user should', () => {
     it('add assortment successfuly when passed valid assortment & product id', async () => {
-      const {
-        data: { addAssortmentProduct },
-      } = await graphqlFetch({
+      const { data } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation AddAssortmentProduct(
             $assortmentId: ID!
@@ -144,10 +142,10 @@ describe('AssortmentProduct', () => {
         },
       });
 
-      expect(addAssortmentProduct._id).not.toBe(null);
+      expect(data?.addAssortmentProduct._id).not.toBe(null);
     });
 
-    it('return error when passed in-valid product id', async () => {
+    it('return not found error when passed non existing product id', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation AddAssortmentProduct(
@@ -180,10 +178,45 @@ describe('AssortmentProduct', () => {
         },
       });
 
-      expect(errors.length).toEqual(1);
+      expect(errors[0]?.extensions?.code).toEqual('ProductNotFoundError');
     });
 
-    it('return error when passed in-valid assortment id', async () => {
+    it('return error when passed in-valid product id', async () => {
+      const { errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation AddAssortmentProduct(
+            $assortmentId: ID!
+            $productId: ID!
+            $tags: [String!]
+          ) {
+            addAssortmentProduct(
+              assortmentId: $assortmentId
+              productId: $productId
+              tags: $tags
+            ) {
+              _id
+              sortKey
+              tags
+              meta
+              assortment {
+                _id
+              }
+              product {
+                _id
+              }
+            }
+          }
+        `,
+        variables: {
+          assortmentId: SimpleAssortment[0]._id,
+          productId: '',
+          tags: ['assortment-product-et'],
+        },
+      });
+
+      expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
+    });
+    it('return not found error when passed non existing assortment id', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation AddAssortmentProduct(
@@ -206,7 +239,33 @@ describe('AssortmentProduct', () => {
         },
       });
 
-      expect(errors.length).toEqual(1);
+      expect(errors[0]?.extensions?.code).toEqual('AssortmentNotFoundError');
+    });
+
+    it('return error when passed in-valid assortment id', async () => {
+      const { errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation AddAssortmentProduct(
+            $assortmentId: ID!
+            $productId: ID!
+            $tags: [String!]
+          ) {
+            addAssortmentProduct(
+              assortmentId: $assortmentId
+              productId: $productId
+              tags: $tags
+            ) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          assortmentId: '',
+          productId: SimpleProduct._id,
+        },
+      });
+
+      expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
     });
   });
 
@@ -242,9 +301,7 @@ describe('AssortmentProduct', () => {
 
   describe('mutation.removeAssortmentProduct for admin user should', () => {
     it('remove assortment product successfuly when passed valid assortment product id', async () => {
-      const {
-        data: { removeAssortmentProduct },
-      } = await graphqlFetch({
+      await graphqlFetch({
         query: /* GraphQL */ `
           mutation RemoveAssortmentProduct($assortmentProductId: ID!) {
             removeAssortmentProduct(assortmentProductId: $assortmentProductId) {
@@ -262,10 +319,23 @@ describe('AssortmentProduct', () => {
           assortmentProductId: AssortmentProduct._id,
         },
       });
-      expect(removeAssortmentProduct._id).toEqual(AssortmentProduct._id);
+      const { errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation RemoveAssortmentProduct($assortmentProductId: ID!) {
+            removeAssortmentProduct(assortmentProductId: $assortmentProductId) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          assortmentProductId: AssortmentProduct._id,
+        },
+      });
+
+      expect(errors.length).toEqual(1);
     });
 
-    it('return error when passed in-valid assortment product id', async () => {
+    it('return not found error when passed non existing assortment product id', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation RemoveAssortmentProduct($assortmentProductId: ID!) {
@@ -279,7 +349,26 @@ describe('AssortmentProduct', () => {
         },
       });
 
-      expect(errors.length).toEqual(1);
+      expect(errors[0]?.extensions?.code).toEqual(
+        'AssortmentProductNotFoundError',
+      );
+    });
+
+    it('return error when passed invalid assortment product id', async () => {
+      const { errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation RemoveAssortmentProduct($assortmentProductId: ID!) {
+            removeAssortmentProduct(assortmentProductId: $assortmentProductId) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          assortmentProductId: '',
+        },
+      });
+
+      expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
     });
   });
 

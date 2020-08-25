@@ -78,6 +78,60 @@ describe('Products: Reviews', () => {
         ownVotes: [],
       });
     });
+
+    it('return not found error when passed non existing productId', async () => {
+      const { errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation createProductReview(
+            $productId: ID!
+            $productReview: ProductReviewInput!
+          ) {
+            createProductReview(
+              productId: $productId
+              productReview: $productReview
+            ) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          productId: 'invalid-product-id',
+          productReview: {
+            rating: 5,
+            title: 'Hello',
+            review: 'World',
+          },
+        },
+      });
+      expect(errors[0]?.extensions?.code).toEqual('ProductNotFoundError');
+    });
+
+    it('return error when passed invalid productId', async () => {
+      const { errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation createProductReview(
+            $productId: ID!
+            $productReview: ProductReviewInput!
+          ) {
+            createProductReview(
+              productId: $productId
+              productReview: $productReview
+            ) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          productId: '',
+          productReview: {
+            rating: 5,
+            title: 'Hello',
+            review: 'World',
+          },
+        },
+      });
+      expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
+    });
   });
   describe('Mutation.updateProductReview', () => {
     it('update a product review', async () => {
@@ -140,6 +194,58 @@ describe('Products: Reviews', () => {
         reports: 0,
         ownVotes: [],
       });
+    });
+
+    it('return not found error when passed non existing productReviewId', async () => {
+      const { errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation updateProductReview(
+            $productReviewId: ID!
+            $productReview: ProductReviewInput!
+          ) {
+            updateProductReview(
+              productReviewId: $productReviewId
+              productReview: $productReview
+            ) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          productReviewId: 'non-existing-id',
+          productReview: {
+            rating: 1,
+            review: 'World2',
+          },
+        },
+      });
+      expect(errors[0]?.extensions?.code).toEqual('ProductReviewNotFoundError');
+    });
+
+    it('return error when passed invalid productReviewId', async () => {
+      const { errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation updateProductReview(
+            $productReviewId: ID!
+            $productReview: ProductReviewInput!
+          ) {
+            updateProductReview(
+              productReviewId: $productReviewId
+              productReview: $productReview
+            ) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          productReviewId: '',
+          productReview: {
+            rating: 1,
+            review: 'World2',
+          },
+        },
+      });
+      expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
     });
   });
   describe('Mutation.addProductReviewVote', () => {
@@ -220,6 +326,58 @@ describe('Products: Reviews', () => {
         ],
       });
     });
+
+    it('return not found error when passed non existing productReviewId', async () => {
+      const { errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation addProductReviewVote(
+            $productReviewId: ID!
+            $type: ProductReviewVoteType!
+            $meta: JSON
+          ) {
+            addProductReviewVote(
+              productReviewId: $productReviewId
+              type: $type
+              meta: $meta
+            ) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          productReviewId: 'non-existing-id',
+          type: 'UPVOTE',
+          meta: {},
+        },
+      });
+      expect(errors[0]?.extensions?.code).toEqual('ProductReviewNotFoundError');
+    });
+
+    it('return error when passed invalid productReviewId', async () => {
+      const { errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation addProductReviewVote(
+            $productReviewId: ID!
+            $type: ProductReviewVoteType!
+            $meta: JSON
+          ) {
+            addProductReviewVote(
+              productReviewId: $productReviewId
+              type: $type
+              meta: $meta
+            ) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          productReviewId: '',
+          type: 'UPVOTE',
+          meta: {},
+        },
+      });
+      expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
+    });
   });
   describe('Mutation.removeProductReviewVote', () => {
     it('remove the downvote from the review', async () => {
@@ -253,6 +411,52 @@ describe('Products: Reviews', () => {
         ownVotes: [],
       });
     });
+
+    it('return not found error when passed non existing productReviewId', async () => {
+      const { errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation removeProductReviewVote(
+            $productReviewId: ID!
+            $type: ProductReviewVoteType!
+          ) {
+            removeProductReviewVote(
+              productReviewId: $productReviewId
+              type: $type
+            ) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          productReviewId: 'non-existing-id',
+          type: 'DOWNVOTE',
+        },
+      });
+      expect(errors[0]?.extensions?.code).toEqual('ProductReviewNotFoundError');
+    });
+
+    it('return error when passed invalid productReviewId', async () => {
+      const { errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation removeProductReviewVote(
+            $productReviewId: ID!
+            $type: ProductReviewVoteType!
+          ) {
+            removeProductReviewVote(
+              productReviewId: $productReviewId
+              type: $type
+            ) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          productReviewId: '',
+          type: 'DOWNVOTE',
+        },
+      });
+      expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
+    });
   });
   describe('Mutation.removeProductReview', () => {
     it('remove a product review', async () => {
@@ -270,6 +474,40 @@ describe('Products: Reviews', () => {
         },
       });
       expect(removeProductReview.deleted).toBeTruthy();
+    });
+
+    it('return not found error when passed non existing productReviewId', async () => {
+      const { errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation removeProductReview($productReviewId: ID!) {
+            removeProductReview(productReviewId: $productReviewId) {
+              _id
+              deleted
+            }
+          }
+        `,
+        variables: {
+          productReviewId: 'non-existing-id',
+        },
+      });
+      expect(errors[0]?.extensions?.code).toEqual('ProductReviewNotFoundError');
+    });
+
+    it('return error when passed invalid productReviewId', async () => {
+      const { errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation removeProductReview($productReviewId: ID!) {
+            removeProductReview(productReviewId: $productReviewId) {
+              _id
+              deleted
+            }
+          }
+        `,
+        variables: {
+          productReviewId: '',
+        },
+      });
+      expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
     });
   });
   describe('Product.reviews', () => {
@@ -326,7 +564,7 @@ describe('Products: Reviews', () => {
     });
   });
   describe('Query.productReview', () => {
-    it('product returns all reviews', async () => {
+    it('return product review by its ID', async () => {
       const { data: { productReview } = {} } = await graphqlFetch({
         query: /* GraphQL */ `
           query productReview($productReviewId: ID!) {
@@ -351,6 +589,50 @@ describe('Products: Reviews', () => {
           _id: SimpleProduct._id,
         },
       });
+    });
+
+    it('return not found error when passed non-existing productReviewId', async () => {
+      const { data, errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          query productReview($productReviewId: ID!) {
+            productReview(productReviewId: $productReviewId) {
+              _id
+              rating
+              title
+              product {
+                _id
+              }
+            }
+          }
+        `,
+        variables: {
+          productReviewId: 'non-existing-id',
+        },
+      });
+      expect(data).toBe(null);
+      expect(errors[0]?.extensions?.code).toEqual('ProductReviewNotFoundError');
+    });
+
+    it('return error when passed invalid productReviewId', async () => {
+      const { data, errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          query productReview($productReviewId: ID!) {
+            productReview(productReviewId: $productReviewId) {
+              _id
+              rating
+              title
+              product {
+                _id
+              }
+            }
+          }
+        `,
+        variables: {
+          productReviewId: '',
+        },
+      });
+      expect(data).toBe(null);
+      expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
     });
   });
 });
