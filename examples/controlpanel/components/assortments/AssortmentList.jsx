@@ -1,6 +1,6 @@
 import { compose, withState, withHandlers } from 'recompose';
 import gql from 'graphql-tag';
-import { graphql } from 'react-apollo';
+import { graphql } from '@apollo/client/react/hoc';
 import React from 'react';
 import { withRouter } from 'next/router';
 import dynamic from 'next/dynamic';

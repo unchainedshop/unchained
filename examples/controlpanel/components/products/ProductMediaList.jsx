@@ -3,7 +3,7 @@ import { compose, pure, withHandlers, mapProps } from 'recompose';
 import { Item, Segment } from 'semantic-ui-react';
 import Dropzone from 'react-dropzone';
 import gql from 'graphql-tag';
-import { graphql } from 'react-apollo';
+import { graphql } from '@apollo/client/react/hoc';
 import { SortableContainer, arrayMove } from 'react-sortable-hoc';
 import ProductMediaListItem from './ProductMediaListItem';
 

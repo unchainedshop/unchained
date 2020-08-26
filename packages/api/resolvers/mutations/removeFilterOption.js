@@ -1,8 +1,16 @@
 import { log } from 'meteor/unchained:core-logger';
 import { Filters } from 'meteor/unchained:core-filters';
+import { FilterNotFoundError, InvalidIdError } from '../../errors';
 
-export default function (root, { filterId, filterOptionValue }, { userId }) {
+export default function removeFilterOption(
+  root,
+  { filterId, filterOptionValue },
+  { userId },
+) {
   log(`mutation removeFilterOption ${filterId}`, { userId });
+  if (!filterId) throw new InvalidIdError({ filterId });
+  const filter = Filters.findOne({ _id: filterId });
+  if (!filter) throw new FilterNotFoundError({ filterId });
   Filters.update(
     { _id: filterId },
     {
@@ -14,6 +22,5 @@ export default function (root, { filterId, filterOptionValue }, { userId }) {
       },
     },
   );
-  const filter = Filters.findOne({ _id: filterId });
-  return filter;
+  return Filters.findOne({ _id: filterId });
 }

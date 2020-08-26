@@ -56,7 +56,7 @@ describe('AssortmentTexts', () => {
       expect(updateAssortmentTexts.length).toEqual(1);
     });
 
-    it('return error when passed a non-existing ID', async () => {
+    it('return not found error when passed a non-existing ID', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation UpdateAssortmentTexts(
@@ -82,7 +82,36 @@ describe('AssortmentTexts', () => {
         },
       });
 
-      expect(errors.length).toEqual(1);
+      expect(errors[0]?.extensions?.code).toEqual('AssortmentNotFoundError');
+    });
+
+    it('return error when passed invalid ID', async () => {
+      const { errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation UpdateAssortmentTexts(
+            $assortmentId: ID!
+            $texts: [UpdateAssortmentTextInput!]!
+          ) {
+            updateAssortmentTexts(assortmentId: $assortmentId, texts: $texts) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          assortmentId: '',
+          texts: [
+            {
+              locale: 'et',
+              slug: 'slug-et',
+              title: 'simple assortment et',
+              description: 'text-et',
+              subtitle: 'subsimple assortment et',
+            },
+          ],
+        },
+      });
+
+      expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
     });
   });
 

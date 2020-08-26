@@ -1,6 +1,6 @@
 import { compose, pure, mapProps, withHandlers } from 'recompose';
 import gql from 'graphql-tag';
-import { graphql } from 'react-apollo';
+import { graphql } from '@apollo/client/react/hoc';
 import React from 'react';
 import { Grid, Segment, Divider } from 'semantic-ui-react';
 import AutoField from 'uniforms-semantic/AutoField';

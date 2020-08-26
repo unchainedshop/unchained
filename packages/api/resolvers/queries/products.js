@@ -1,7 +1,7 @@
 import { log } from 'meteor/unchained:core-logger';
 import { Products, ProductStatus } from 'meteor/unchained:core-products';
 
-export default function (
+export default function products(
   root,
   { limit, offset, tags, includeDrafts, slugs },
   { userId },
@@ -12,6 +12,7 @@ export default function (
     } ${slugs?.join(',')}`,
     { userId },
   );
+
   const selector = {};
   const sort = { sequence: 1, published: -1 };
   const options = { sort };
@@ -32,6 +33,5 @@ export default function (
   } else {
     selector.status = { $in: [ProductStatus.ACTIVE, ProductStatus.DRAFT] };
   }
-  const products = Products.find(selector, options).fetch();
-  return products;
+  return Products.find(selector, options).fetch();
 }

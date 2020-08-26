@@ -4,7 +4,7 @@ import { format } from 'date-fns';
 import gql from 'graphql-tag';
 import React from 'react';
 import { Table, Loader, Label, Icon } from 'semantic-ui-react';
-import { graphql } from 'react-apollo';
+import { graphql } from '@apollo/client/react/hoc';
 
 const defaultLogs = [];
 

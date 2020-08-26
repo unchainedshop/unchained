@@ -3,7 +3,7 @@ import AutoField from 'uniforms-semantic/AutoField';
 import SubmitField from 'uniforms-semantic/SubmitField';
 import ErrorsField from 'uniforms-semantic/ErrorsField';
 import AutoForm from 'uniforms-semantic/AutoForm';
-import { withApollo } from 'react-apollo';
+import { withApollo } from '@apollo/client/react/hoc';
 import { compose, pure, mapProps, withHandlers } from 'recompose';
 import { changePassword } from '../../lib/accounts';
 import withFormSchema from '../../lib/withFormSchema';

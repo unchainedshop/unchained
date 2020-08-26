@@ -3,14 +3,16 @@ import { Quotations, QuotationStatus } from 'meteor/unchained:core-quotations';
 import {
   QuotationNotFoundError,
   QuotationWrongStatusError,
+  InvalidIdError,
 } from '../../errors';
 
-export default function (
+export default function makeQuotationProposal(
   root,
   { quotationId, ...transactionContext },
   { userId },
 ) {
   log('mutation makeQuotationProposal', { quotationId, userId });
+  if (!quotationId) throw new InvalidIdError({ quotationId });
   const quotation = Quotations.findOne({ _id: quotationId });
   if (!quotation) throw new QuotationNotFoundError({ quotationId });
   if (quotation.status !== QuotationStatus.PROCESSING) {

@@ -3,13 +3,11 @@ import { SimpleProduct } from './seeds/products';
 import { SimplePosition } from './seeds/orders';
 
 let connection;
-// eslint-disable-next-line no-unused-vars
-let db;
 let graphqlFetch;
 
 describe('Cart: Product Items', () => {
   beforeAll(async () => {
-    [db, connection] = await setupDatabase();
+    [, connection] = await setupDatabase();
     graphqlFetch = await createLoggedInGraphqlFetch();
   });
 
@@ -102,6 +100,46 @@ describe('Cart: Product Items', () => {
         quantity: 1,
       });
     });
+
+    it('return not found error when passed non existing productId', async () => {
+      const { errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation addCartProduct($productId: ID!) {
+            addCartProduct(productId: $productId) {
+              _id
+              quantity
+              order {
+                _id
+              }
+            }
+          }
+        `,
+        variables: {
+          productId: 'non-existin-id',
+        },
+      });
+      expect(errors[0]?.extensions?.code).toEqual('ProductNotFoundError');
+    });
+
+    it('return error when passed invalid productId', async () => {
+      const { errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation addCartProduct($productId: ID!) {
+            addCartProduct(productId: $productId) {
+              _id
+              quantity
+              order {
+                _id
+              }
+            }
+          }
+        `,
+        variables: {
+          productId: '',
+        },
+      });
+      expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
+    });
   });
 
   describe('Mutation.emptyCart', () => {
@@ -118,6 +156,7 @@ describe('Cart: Product Items', () => {
           }
         `,
       });
+
       expect(emptyCart).toMatchObject({
         items: [],
       });
@@ -220,6 +259,64 @@ describe('Cart: Product Items', () => {
         ],
       });
     });
+
+    it('return error when passed invalid itemId', async () => {
+      const { errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation updateCartItem(
+            $itemId: ID!
+            $configuration: [ProductConfigurationParameterInput!]
+          ) {
+            updateCartItem(
+              itemId: $itemId
+              quantity: 10
+              configuration: $configuration
+            ) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          itemId: '',
+          configuration: [
+            {
+              key: 'height',
+              value: '5',
+            },
+          ],
+        },
+      });
+      expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
+    });
+
+    it('return not found error when passed non existing itemId', async () => {
+      const { errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation updateCartItem(
+            $itemId: ID!
+            $configuration: [ProductConfigurationParameterInput!]
+          ) {
+            updateCartItem(
+              itemId: $itemId
+              quantity: 10
+              configuration: $configuration
+            ) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          itemId: 'non-existing',
+          configuration: [
+            {
+              key: 'height',
+              value: '5',
+            },
+          ],
+        },
+      });
+      expect(errors[0]?.extensions?.code).toEqual('OrderItemNotFoundError');
+    });
   });
 
   describe('Mutation.removeCartItem', () => {
@@ -245,6 +342,44 @@ describe('Cart: Product Items', () => {
           _id: SimpleProduct._id,
         },
       });
+    });
+
+    it('return not found error when passed non existing itemId', async () => {
+      const { errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation removeCartItem($itemId: ID!) {
+            removeCartItem(itemId: $itemId) {
+              _id
+              product {
+                _id
+              }
+            }
+          }
+        `,
+        variables: {
+          itemId: 'non-existing-id',
+        },
+      });
+      expect(errors[0]?.extensions?.code).toEqual('OrderItemNotFoundError');
+    });
+
+    it('return error when passed invalid itemId', async () => {
+      const { errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation removeCartItem($itemId: ID!) {
+            removeCartItem(itemId: $itemId) {
+              _id
+              product {
+                _id
+              }
+            }
+          }
+        `,
+        variables: {
+          itemId: '',
+        },
+      });
+      expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
     });
   });
 });

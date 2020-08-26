@@ -38,7 +38,7 @@ export default [
       product(productId: ID, slug: String): Product
 
       """
-      List prices
+      List products specified prices
       """
       productCatalogPrices(productId: ID!): [ProductPrice!]!
 

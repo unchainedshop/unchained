@@ -67,5 +67,65 @@ describe('Cart: Quotations', () => {
         configuration: null,
       });
     });
+
+    it('return quantity low error when provided quantity that is less than 1', async () => {
+      const { errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation addCartQuotation(
+            $orderId: ID
+            $quotationId: ID!
+            $quantity: Int
+          ) {
+            addCartQuotation(
+              orderId: $orderId
+              quotationId: $quotationId
+              quantity: $quantity
+            ) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          orderId: SimpleOrder._id,
+          quotationId: ProposedQuotation._id,
+          quantity: 0,
+        },
+      });
+      expect(errors[0]?.extensions?.code).toEqual('OrderQuantityTooLowError');
+    });
+
+    it('return not found error when non existing quotation Id is provided', async () => {
+      const { errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation addCartQuotation($orderId: ID, $quotationId: ID!) {
+            addCartQuotation(orderId: $orderId, quotationId: $quotationId) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          orderId: SimpleOrder._id,
+          quotationId: 'non-existing-id',
+        },
+      });
+      expect(errors[0]?.extensions?.code).toEqual('QuotationNotFoundError');
+    });
+
+    it('return error when invalid quotation Id is provided', async () => {
+      const { errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation addCartQuotation($orderId: ID, $quotationId: ID!) {
+            addCartQuotation(orderId: $orderId, quotationId: $quotationId) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          orderId: SimpleOrder._id,
+          quotationId: '',
+        },
+      });
+      expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
+    });
   });
 });

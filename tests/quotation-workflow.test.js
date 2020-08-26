@@ -101,6 +101,60 @@ describe('cart checkout', () => {
         documents: [],
       });
     });
+
+    it('return not found error when passed non existing productId', async () => {
+      const { errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation requestQuotation(
+            $productId: ID!
+            $configuration: [ProductConfigurationParameterInput!]
+          ) {
+            requestQuotation(
+              productId: $productId
+              configuration: $configuration
+            ) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          productId: 'non-existing-id',
+          configuration: [
+            { key: 'length', value: '5' },
+            { key: 'height', value: '10' },
+          ],
+        },
+      });
+
+      expect(errors[0]?.extensions?.code).toEqual('ProductNotFoundError');
+    });
+
+    it('return error when passed invalid productId', async () => {
+      const { errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation requestQuotation(
+            $productId: ID!
+            $configuration: [ProductConfigurationParameterInput!]
+          ) {
+            requestQuotation(
+              productId: $productId
+              configuration: $configuration
+            ) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          productId: '',
+          configuration: [
+            { key: 'length', value: '5' },
+            { key: 'height', value: '10' },
+          ],
+        },
+      });
+
+      expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
+    });
   });
 
   describe('Mutation.verifyQuotation', () => {
@@ -143,6 +197,46 @@ describe('cart checkout', () => {
         documents: [],
       });
     });
+
+    it('return not found error when passed non existing quotationId', async () => {
+      const { errors } = await adminGraphqlFetch({
+        query: /* GraphQL */ `
+          mutation verifyQuotation($quotationId: ID!, $quotationContext: JSON) {
+            verifyQuotation(
+              quotationId: $quotationId
+              quotationContext: $quotationContext
+            ) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          quotationId: 'non-existing-id',
+          quotationContext: { hello: 'world' },
+        },
+      });
+      expect(errors[0]?.extensions?.code).toEqual('QuotationNotFoundError');
+    });
+
+    it('return error when passed invalid quotationId', async () => {
+      const { errors } = await adminGraphqlFetch({
+        query: /* GraphQL */ `
+          mutation verifyQuotation($quotationId: ID!, $quotationContext: JSON) {
+            verifyQuotation(
+              quotationId: $quotationId
+              quotationContext: $quotationContext
+            ) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          quotationId: '',
+          quotationContext: { hello: 'world' },
+        },
+      });
+      expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
+    });
   });
 
   describe('Mutation.rejectQuotation', () => {
@@ -184,6 +278,46 @@ describe('cart checkout', () => {
         meta: null,
         documents: [],
       });
+    });
+
+    it('return not found when passed non existing quotationId', async () => {
+      const { errors } = await adminGraphqlFetch({
+        query: /* GraphQL */ `
+          mutation rejectQuotation($quotationId: ID!, $quotationContext: JSON) {
+            rejectQuotation(
+              quotationId: $quotationId
+              quotationContext: $quotationContext
+            ) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          quotationId: 'non-existing-id',
+          quotationContext: { hello: 'no world' },
+        },
+      });
+      expect(errors[0]?.extensions?.code).toEqual('QuotationNotFoundError');
+    });
+
+    it('return error when passed invalid quotationId', async () => {
+      const { errors } = await adminGraphqlFetch({
+        query: /* GraphQL */ `
+          mutation rejectQuotation($quotationId: ID!, $quotationContext: JSON) {
+            rejectQuotation(
+              quotationId: $quotationId
+              quotationContext: $quotationContext
+            ) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          quotationId: '',
+          quotationContext: { hello: 'no world' },
+        },
+      });
+      expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
     });
   });
 
@@ -229,6 +363,52 @@ describe('cart checkout', () => {
         meta: null,
         documents: [],
       });
+    });
+
+    it('return not found error when passed non existing quotationId', async () => {
+      const { errors } = await adminGraphqlFetch({
+        query: /* GraphQL */ `
+          mutation makeQuotationProposal(
+            $quotationId: ID!
+            $quotationContext: JSON
+          ) {
+            makeQuotationProposal(
+              quotationId: $quotationId
+              quotationContext: $quotationContext
+            ) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          quotationId: 'invalid-id',
+          quotationContext: { hello: 'car' },
+        },
+      });
+      expect(errors[0]?.extensions?.code).toEqual('QuotationNotFoundError');
+    });
+
+    it('return error when passed invalid quotationId', async () => {
+      const { errors } = await adminGraphqlFetch({
+        query: /* GraphQL */ `
+          mutation makeQuotationProposal(
+            $quotationId: ID!
+            $quotationContext: JSON
+          ) {
+            makeQuotationProposal(
+              quotationId: $quotationId
+              quotationContext: $quotationContext
+            ) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          quotationId: '',
+          quotationContext: { hello: 'car' },
+        },
+      });
+      expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
     });
   });
 });

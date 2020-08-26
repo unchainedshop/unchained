@@ -6,7 +6,7 @@ import {
   AssortmentNotFoundError,
 } from '../../errors';
 
-export default async function (root, query, context) {
+export default async function searchQuery(root, query, context) {
   const { userId } = context;
   const forceLiveCollection = false;
   const { queryString, assortmentId, ignoreChildAssortments } = query;
@@ -22,6 +22,8 @@ export default async function (root, query, context) {
       context,
     });
   }
+
   if (!queryString) throw new QueryStringRequiredError({});
+
   return search({ query, forceLiveCollection, context });
 }

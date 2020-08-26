@@ -2,7 +2,7 @@ import React from 'react';
 import { compose, withState, withHandlers } from 'recompose';
 import { Button, List } from 'semantic-ui-react';
 import gql from 'graphql-tag';
-import { graphql } from 'react-apollo';
+import { graphql } from '@apollo/client/react/hoc';
 import FormEditProductVariationTexts from './FormEditProductVariationTexts';
 
 const ProductVariationItem = ({

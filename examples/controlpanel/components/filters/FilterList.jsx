@@ -1,6 +1,6 @@
 import { compose, pure, withState } from 'recompose';
 import gql from 'graphql-tag';
-import { graphql } from 'react-apollo';
+import { graphql } from '@apollo/client/react/hoc';
 import React from 'react';
 import { Table, Icon, Button, Loader } from 'semantic-ui-react';
 import InfiniteScroll from 'react-infinite-scroller';

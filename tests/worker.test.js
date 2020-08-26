@@ -175,6 +175,51 @@ describe('Worker Module', () => {
 
       expect(finishWork.status).toBe('SUCCESS');
     });
+    it('return error when passed invalid workId', async () => {
+      const { errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation finishWork(
+            $workId: ID!
+            $success: Boolean
+            $worker: String
+          ) {
+            finishWork(workId: $workId, success: $success, worker: $worker) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          workId: '',
+          success: true,
+          worker: 'TEST-GRAPHQL',
+        },
+      });
+
+      expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
+    });
+
+    it('return not found error when non existing workId', async () => {
+      const { errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation finishWork(
+            $workId: ID!
+            $success: Boolean
+            $worker: String
+          ) {
+            finishWork(workId: $workId, success: $success, worker: $worker) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          workId: 'invalid-work-id',
+          success: true,
+          worker: 'TEST-GRAPHQL',
+        },
+      });
+
+      expect(errors[0]?.extensions?.code).toEqual('WorkNotFoundOrWrongStatus');
+    });
 
     it('Do work.', async () => {
       const addWorkResult = await graphqlFetch({

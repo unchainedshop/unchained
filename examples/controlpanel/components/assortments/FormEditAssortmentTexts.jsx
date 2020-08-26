@@ -5,7 +5,7 @@ import { Segment, Container, Menu } from 'semantic-ui-react';
 import gql from 'graphql-tag';
 import dynamic from 'next/dynamic';
 import getConfig from 'next/config';
-import { graphql } from 'react-apollo';
+import { graphql } from '@apollo/client/react/hoc';
 import AutoField from 'uniforms-semantic/AutoField';
 import SubmitField from 'uniforms-semantic/SubmitField';
 import ErrorsField from 'uniforms-semantic/ErrorsField';

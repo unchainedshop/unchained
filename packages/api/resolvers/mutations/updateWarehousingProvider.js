@@ -1,5 +1,6 @@
 import { log } from 'meteor/unchained:core-logger';
 import { WarehousingProviders } from 'meteor/unchained:core-warehousing';
+import { WarehousingProviderNotFoundError, InvalidIdError } from '../../errors';
 
 export default (
   root,
@@ -9,9 +10,17 @@ export default (
   log(`mutation updateWarehousingProvider ${warehousingProviderId}`, {
     userId,
   });
-  const provider = WarehousingProviders.updateProvider({
+  if (!warehousingProviderId)
+    throw new InvalidIdError({ warehousingProviderId });
+  const provider = WarehousingProviders.findOne({
+    _id: warehousingProviderId,
+    deleted: null,
+  });
+  if (!provider)
+    throw new WarehousingProviderNotFoundError({ warehousingProviderId });
+
+  return WarehousingProviders.updateProvider({
     _id: warehousingProviderId,
     ...warehousingProvider,
   });
-  return provider;
 };

@@ -7,10 +7,10 @@
 meteor@1.9.3
 webapp@1.9.1
 mongo@1.10.0
-accounts-base@1.6.0
-accounts-password@1.6.0
+accounts-base@1.7.0
+accounts-password@1.6.2
 ecmascript@0.14.3
-email@1.2.3
+email@2.0.0
 disable-oplog@1.0.7
 shell-server@0.5.0
 unchained:platform

@@ -3,7 +3,7 @@ import callMethod from '../../../callMethod';
 import hashPassword from '../../../hashPassword';
 import getUserLoginMethod from './getUserLoginMethod';
 
-export default async function (
+export default async function loginWithPassword(
   root,
   { username, email, password: hashedPassword, plainPassword },
   context,

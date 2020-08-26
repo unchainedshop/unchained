@@ -104,7 +104,7 @@ describe('Cart Checkout Flow', () => {
     it('update the contact', async () => {
       const Orders = db.collection('orders');
       const order = Orders.findOne({ orderNumber: 'wishlist' });
-      const { data: { updateCart } = {} } = await graphqlFetch({
+      const { data } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation updateCart(
             $meta: JSON
@@ -132,7 +132,7 @@ describe('Cart Checkout Flow', () => {
           },
         },
       });
-      expect(updateCart).toMatchObject({
+      expect(data?.updateCart).toMatchObject({
         contact: {
           emailAddress: 'hello@unchained.shop',
           telNumber: '+41999999999',

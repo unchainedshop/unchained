@@ -75,7 +75,7 @@ describe('ProductBundleItem', () => {
       expect(createProductBundleItem._id).toEqual(SimpleProduct._id);
     });
 
-    it('return error when passed invalid product ID', async () => {
+    it('return not found error when passed non existing product ID', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation CreateProductBundleItem(
@@ -95,10 +95,33 @@ describe('ProductBundleItem', () => {
           },
         },
       });
-      expect(errors.length).toEqual(1);
+      expect(errors[0]?.extensions?.code).toEqual('ProductNotFoundError');
     });
 
-    it('return error when passed invalid bundle product ID', async () => {
+    it('return error when passed invalid product ID', async () => {
+      const { errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation CreateProductBundleItem(
+            $productId: ID!
+            $item: CreateProductBundleItemInput!
+          ) {
+            createProductBundleItem(productId: $productId, item: $item) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          productId: '',
+          item: {
+            productId: SimpleProductBundle._id,
+            quantity: 100,
+          },
+        },
+      });
+      expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
+    });
+
+    it('return not found error when passed non existing bundle product ID', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation CreateProductBundleItem(
@@ -118,7 +141,30 @@ describe('ProductBundleItem', () => {
           },
         },
       });
-      expect(errors.length).toEqual(1);
+      expect(errors[0]?.extensions?.code).toEqual('ProductNotFoundError');
+    });
+
+    it('return error when passed invalid bundle product ID', async () => {
+      const { errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation CreateProductBundleItem(
+            $productId: ID!
+            $item: CreateProductBundleItemInput!
+          ) {
+            createProductBundleItem(productId: $productId, item: $item) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          productId: SimpleProductBundle._id,
+          item: {
+            productId: '',
+            quantity: 100,
+          },
+        },
+      });
+      expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
     });
   });
 
@@ -199,7 +245,7 @@ describe('ProductBundleItem', () => {
       expect(removeBundleItem._id).toEqual(SimpleProduct._id);
     });
 
-    it('return error when passed invalid product ID', async () => {
+    it('return not found error when passed non existing product ID', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation RemoveBundleItem($productId: ID!, $index: Int!) {
@@ -214,7 +260,25 @@ describe('ProductBundleItem', () => {
         },
       });
 
-      expect(errors.length).toEqual(1);
+      expect(errors[0]?.extensions?.code).toEqual('ProductNotFoundError');
+    });
+
+    it('return error when passed invalid product ID', async () => {
+      const { errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation RemoveBundleItem($productId: ID!, $index: Int!) {
+            removeBundleItem(productId: $productId, index: $index) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          productId: '',
+          index: 0,
+        },
+      });
+
+      expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
     });
   });
 

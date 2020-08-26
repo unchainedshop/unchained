@@ -4,7 +4,7 @@ import { compose, mapProps, withHandlers } from 'recompose';
 import { Segment } from 'semantic-ui-react';
 import { withRouter } from 'next/router';
 import gql from 'graphql-tag';
-import { graphql } from 'react-apollo';
+import { graphql } from '@apollo/client/react/hoc';
 import { connectField } from 'uniforms';
 import AutoField from 'uniforms-semantic/AutoField';
 import SubmitField from 'uniforms-semantic/SubmitField';

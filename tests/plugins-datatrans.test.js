@@ -137,7 +137,7 @@ describe('Plugins: Datatrans Payments', () => {
         },
       });
 
-      expect(me.cart.payment.sign).toBe(sign);
+      expect(me?.cart?.payment?.sign).toBe(sign);
     });
     it('datatrans accepts the parameters for a payment form', async () => {
       // https://pay.sandbox.datatrans.com/upp/jsp/upStart.jsp?merchantId=1100004624&refno=datatrans&amount=100000&currency=CHF&sign=c3b752995f529d73d38edc0b682d0dd2007540f151c9c892a9c0966948599f72

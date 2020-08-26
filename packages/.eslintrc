@@ -1,25 +1,18 @@
 {
   "parser": "babel-eslint",
-  "plugins": [
-    "meteor",
-    "prettier"
-  ],
-  "extends": [
-    "airbnb-base",
-    "plugin:meteor/recommended",
-    "plugin:prettier/recommended"
-  ],
+  "plugins": ["prettier"],
+  "extends": ["airbnb-base", "plugin:prettier/recommended"],
   "env": {
     "node": true,
     "browser": false,
     "meteor": true
   },
   "rules": {
-    "prettier/prettier": [ "error" ],
+    "prettier/prettier": ["error"],
     "max-classes-per-file": [0],
-    "no-underscore-dangle": [ "error", { "allow": [ "_id" ] } ],
+    "no-underscore-dangle": ["error", { "allow": ["_id"] }],
     "import/no-extraneous-dependencies": [0],
-    "import/no-unresolved": [ 0 ],
-    "import/extensions": [0],
+    "import/no-unresolved": [0],
+    "import/extensions": [0]
   }
 }

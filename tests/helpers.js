@@ -1,10 +1,9 @@
-/* eslint-disable import/no-extraneous-dependencies */
-/* eslint-disable import/no-unresolved */
 import { MongoClient, Collection } from 'mongodb';
-import { execute, makePromise } from 'apollo-link';
+import { execute, toPromise } from '@apollo/client';
 import { createUploadLink } from 'apollo-upload-client';
 import gql from 'graphql-tag';
 import fetch from 'isomorphic-unfetch';
+import seedLocaleData from './seeds/locale-data';
 import seedUsers, { ADMIN_TOKEN } from './seeds/users';
 import seedProducts from './seeds/products';
 import seedDeliveries from './seeds/deliveries';
@@ -36,6 +35,7 @@ export const setupDatabase = async () => {
   });
   const db = await connection.db(global.__MONGO_DB_NAME__);
   await db.dropDatabase();
+  await seedLocaleData(db);
   await seedUsers(db);
   await seedProducts(db);
   await seedDeliveries(db);
@@ -62,7 +62,7 @@ export const wipeDatabase = async () => {
 };
 
 const convertLinkToFetch = (link) => ({ query, ...operation }) =>
-  makePromise(
+  toPromise(
     execute(link, {
       query: gql(query),
       ...operation,

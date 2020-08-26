@@ -2,7 +2,7 @@ import React from 'react';
 import { compose, pure, mapProps } from 'recompose';
 import { Segment, List } from 'semantic-ui-react';
 import gql from 'graphql-tag';
-import { graphql } from 'react-apollo';
+import { graphql } from '@apollo/client/react/hoc';
 import FilterOptionListItem from './FilterOptionListItem';
 import FormNewFilterOption from './FormNewFilterOption';
 

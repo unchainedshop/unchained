@@ -1,7 +1,7 @@
 import { log } from 'meteor/unchained:core-logger';
 import { Assortments } from 'meteor/unchained:core-assortments';
 
-export default function (
+export default function assortments(
   root,
   { tags, slugs, limit, offset, includeInactive, includeLeaves },
   { userId },
@@ -35,6 +35,5 @@ export default function (
     selector.isActive = true;
   }
 
-  const assortments = Assortments.find(selector, options).fetch();
-  return assortments;
+  return Assortments.find(selector, options).fetch();
 }

@@ -5,9 +5,10 @@ import {
   ProductNotFoundError,
   UserNotFoundError,
   ProductWrongStatusError,
+  InvalidIdError,
 } from '../../errors';
 
-export default async function (
+export default async function createSubscription(
   root,
   { contact, plan, billingAddress, payment, delivery, meta },
   { countryContext, userId, user },
@@ -18,6 +19,7 @@ export default async function (
   const product = Products.findOne({
     _id: plan.productId,
   });
+  if (!productId) throw new InvalidIdError({ productId });
   if (!product) {
     throw new ProductNotFoundError({
       productId: plan.productId,

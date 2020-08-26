@@ -1,5 +1,5 @@
 import React from 'react';
-import { withApollo } from 'react-apollo';
+import { withApollo } from '@apollo/client/react/hoc';
 import Link from 'next/link';
 import { Menu, Dropdown } from 'semantic-ui-react';
 import { compose, pure, withHandlers, mapProps } from 'recompose';

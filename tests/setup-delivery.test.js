@@ -112,6 +112,68 @@ describe('setup delivery providers', () => {
         type: 'SHIPPING',
       });
     });
+
+    it('return not found error when passed non existing deliveryProviderId', async () => {
+      const { errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation updateDeliveryProvider(
+            $deliveryProvider: UpdateProviderInput!
+            $deliveryProviderId: ID!
+          ) {
+            updateDeliveryProvider(
+              deliveryProvider: $deliveryProvider
+              deliveryProviderId: $deliveryProviderId
+            ) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          deliveryProviderId: 'non-existing',
+          deliveryProvider: {
+            configuration: [
+              {
+                key: 'gugus',
+                value: 'blub',
+              },
+            ],
+          },
+        },
+      });
+      expect(errors[0]?.extensions?.code).toEqual(
+        'DeliverProviderNotFoundError',
+      );
+    });
+
+    it('return error when passed invalid deliveryProviderId', async () => {
+      const { errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation updateDeliveryProvider(
+            $deliveryProvider: UpdateProviderInput!
+            $deliveryProviderId: ID!
+          ) {
+            updateDeliveryProvider(
+              deliveryProvider: $deliveryProvider
+              deliveryProviderId: $deliveryProviderId
+            ) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          deliveryProviderId: '',
+          deliveryProvider: {
+            configuration: [
+              {
+                key: 'gugus',
+                value: 'blub',
+              },
+            ],
+          },
+        },
+      });
+      expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
+    });
   });
 
   describe('Mutation.removeDeliveryProvider', () => {
@@ -136,6 +198,40 @@ describe('setup delivery providers', () => {
         deleted: expect.anything(),
         _id: SimpleDeliveryProvider._id,
       });
+    });
+
+    it('return not found error when passed non existing deliveryProviderId', async () => {
+      const { errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation removeDeliveryProvider($deliveryProviderId: ID!) {
+            removeDeliveryProvider(deliveryProviderId: $deliveryProviderId) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          deliveryProviderId: 'non-existing-id',
+        },
+      });
+      expect(errors[0]?.extensions?.code).toEqual(
+        'DeliverProviderNotFoundError',
+      );
+    });
+
+    it('return error when passed invalid deliveryProviderId', async () => {
+      const { errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation removeDeliveryProvider($deliveryProviderId: ID!) {
+            removeDeliveryProvider(deliveryProviderId: $deliveryProviderId) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          deliveryProviderId: '',
+        },
+      });
+      expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
     });
   });
 });
