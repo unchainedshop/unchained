@@ -22,7 +22,7 @@ const AssortmentList = ({ data, router }) => (
             placeholder="Select Assortment"
             onChange={(e, result) => {
               router.push({
-                pathname: '/assortment/edit',
+                pathname: '/assortments/edit',
                 query: { _id: result.value },
               });
             }}

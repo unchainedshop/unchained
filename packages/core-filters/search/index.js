@@ -6,9 +6,15 @@ import resolveFilterSelector from './resolve-filter-selector';
 import resolveSortStage from './resolve-sort-stage';
 import parseQueryArray from './parse-query-array';
 
-const cleanQuery = ({ filterQuery, productIds = null, ...query }) => ({
+const cleanQuery = ({
+  filterQuery,
+  assortmentIds = null,
+  productIds = null,
+  ...query
+}) => ({
   filterQuery: parseQueryArray(filterQuery),
   productIds: Promise.resolve(productIds),
+  assortmentIds: Promise.resolve(assortmentIds),
   ...query,
 });
 
@@ -35,6 +41,7 @@ const search = async ({ query: rawQuery, forceLiveCollection, context }) => {
     return {
       totalProductIds: [],
       filteredProductIds: [],
+      totalAssortmentsIds: [],
       filteredAssortmentIds: [],
       ...searchConfiguration,
     };
@@ -43,20 +50,22 @@ const search = async ({ query: rawQuery, forceLiveCollection, context }) => {
   const totalProductIds = fulltextSearch(searchConfiguration)(
     query?.productIds,
   );
+
   const filteredProductIds = totalProductIds.then(
     facetedSearch(searchConfiguration),
   );
-  
-  const totalAssortmentIds = fulltextSearch(searchConfiguration)(
+
+  const totalAssortmentsIds = fulltextSearch(searchConfiguration)(
     query?.assortmentIds,
   );
-  const filteredAssortmentIds = totalAssortmentIds.then(
+
+  const filteredAssortmentIds = totalAssortmentsIds.then(
     facetedSearch(searchConfiguration),
   );
 
   return {
     totalProductIds,
-    totalAssortmentIds,
+    totalAssortmentsIds,
     filteredProductIds,
     filteredAssortmentIds,
     ...searchConfiguration,

@@ -79,7 +79,6 @@ class FilterDirector {
 
   async search(productIdResolver, options = {}) {
     return this.reduceAdapters(async (lastSearchPromise, concreteAdapter) => {
-      debugger;
       return concreteAdapter.search(await lastSearchPromise, options);
     }, productIdResolver || null);
   }
@@ -97,7 +96,6 @@ class FilterDirector {
     const adapters = FilterDirector.sortedAdapters().filter((AdapterClass) =>
       AdapterClass.isActivatedFor(this.context),
     );
-
     if (adapters.length === 0) {
       return null;
     }

@@ -250,7 +250,7 @@ export default [
       subscription(subscriptionId: ID!): Subscription
 
       """
-      Search products
+      Search products or assortments
       """
       search(
         queryString: String
@@ -258,6 +258,7 @@ export default [
         assortmentId: ID
         orderBy: SearchOrderBy
         includeInactive: Boolean = false
+        assortment: Boolean = false
         ignoreChildAssortments: Boolean = false
       ): SearchResult!
 

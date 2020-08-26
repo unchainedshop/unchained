@@ -1,14 +1,19 @@
 import { FilterDirector, FilterAdapter } from 'meteor/unchained:core-filters';
 import { ProductTexts } from 'meteor/unchained:core-products';
+import { AssortmentTexts } from 'meteor/unchained:core-assortments';
 
 const { AMAZON_DOCUMENTDB_COMPAT_MODE } = process.env;
 
-ProductTexts.rawCollection().createIndex({
+const indexConfig = {
   title: 'text',
   subtitle: 'text',
   vendor: 'text',
   brand: 'text',
-});
+};
+
+ProductTexts.rawCollection().createIndex(indexConfig);
+
+AssortmentTexts.rawCollection().createIndex(indexConfig);
 
 class LocalSearch extends FilterAdapter {
   static key = 'shop.unchained.filters.local-search';
@@ -51,13 +56,22 @@ class LocalSearch extends FilterAdapter {
       selector.productId = { $in: new Set(restrictedProductIds) };
     }
 
-    const productIds = ProductTexts.find(selector, {
+    if (query.assortment) {
+      const assortmentsId = AssortmentTexts.find(selector, {
+        fields: {
+          assortmentId: 1,
+        },
+      }).map(({ assortmentId }) => assortmentId);
+
+      return assortmentsId;
+    }
+    const productsId = ProductTexts.find(selector, {
       fields: {
         productId: 1,
       },
     }).map(({ productId }) => productId);
 
-    return productIds;
+    return productsId;
   }
 
   async transformFilterSelector(last) {

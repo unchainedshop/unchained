@@ -22,7 +22,6 @@ const ProductList = ({ products, loadMoreEntries, hasMore, router }) => {
                   query: { _id: result.value },
                 });
               }}
-              queryType={'products'}
             />
 
             <Link href="/products/new">

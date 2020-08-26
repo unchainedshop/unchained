@@ -12,10 +12,11 @@ import gql from 'graphql-tag';
 
 const SEARCH_ASSORTMENTS = gql`
   query search($queryString: String) {
-    search(queryString: $queryString, includeInactive: true) {
+    search(queryString: $queryString, includeInactive: true, assortment: true) {
       totalAssortments
       assortments {
         _id
+        isActive
         texts {
           _id
           title
@@ -65,8 +66,9 @@ const SearchDropdown = ({
 }) => {
   const [queryString, setQueryString] = useState('');
 
-  const QUERY = queryType === 'products' ? SEARCH_PRODUCTS : SEARCH_ASSORTMENTS;
-  
+  const QUERY =
+    queryType === 'assortments' ? SEARCH_ASSORTMENTS : SEARCH_PRODUCTS;
+
   const { data, loading } = useQuery(QUERY, {
     variables: {
       queryString,
@@ -107,7 +109,20 @@ const SearchDropdown = ({
   };
 
   const queryPropertyName =
-    queryType === 'products' ? 'products' : 'assortments';
+    queryType === 'assortments' ? 'assortments' : 'products';
+
+  const status = ({ isActive, status }) => {
+    if (status) {
+      return {
+        status,
+        color: status === 'DRAFT' ? 'red' : 'green',
+      };
+    }
+    return {
+      status: isActive ? 'ACTIVE' : 'DRAFT',
+      color: isActive ? 'green' : 'red',
+    };
+  };
 
   const options =
     data?.search[queryPropertyName].map((item) => {
@@ -121,11 +136,8 @@ const SearchDropdown = ({
             <Header.Content>
               {item.texts.title}
               <Header.Subheader>{item.texts.description}</Header.Subheader>
-              <Label
-                color={item.status === 'DRAFT' ? 'red' : 'green'}
-                horizontal
-              >
-                {item.status}
+              <Label color={status(item).color} horizontal>
+                {status(item).status}
               </Label>
             </Header.Content>
           </Header>

@@ -4,6 +4,7 @@ export default ({
   query,
   filterSelector,
   productSelector,
+  assortmentSelector,
   sortStage,
   ...rest
 }) => async (productIdResolver) => {
@@ -13,7 +14,8 @@ export default ({
   });
   return director.search(productIdResolver, {
     filterSelector,
-    productSelector,
+    ...(productSelector && { productSelector }),
+    ...(assortmentSelector && { assortmentSelector }),
     sortStage,
   });
 };
