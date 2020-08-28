@@ -1,6 +1,6 @@
 introspection: http://127.0.0.1:4010/graphql
 servers:
-  - url: http://127.0.0.1:4010
+  - url: http://127.0.0.1:4010/graphql
     description: Development Server
 info:
   description: |
