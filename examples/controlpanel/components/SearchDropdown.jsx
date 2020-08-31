@@ -28,8 +28,8 @@ const SEARCH_ASSORTMENTS = gql`
 `;
 
 const SEARCH_PRODUCTS = gql`
-  query search($queryString: String, $limit: Int) {
-    search(queryString: $queryString, includeInactive: true) {
+  query searchProducts($queryString: String, $limit: Int) {
+    searchProducts(queryString: $queryString, includeInactive: true) {
       totalProducts
       products {
         _id

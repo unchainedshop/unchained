@@ -250,9 +250,9 @@ export default [
       subscription(subscriptionId: ID!): Subscription
 
       """
-      Search products or assortments
+      Search products
       """
-      search(
+      searchProducts(
         queryString: String
         filterQuery: [FilterQueryInput!]
         assortmentId: ID

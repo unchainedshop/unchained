@@ -398,11 +398,11 @@ describe('Filters', () => {
 
       const { data: { search } = {} } = await graphqlFetch({
         query: /* GraphQL */ `
-          query search(
+          query searchProducts(
             $queryString: String
             $filterQuery: [FilterQueryInput!]
           ) {
-            search(
+            searchProducts(
               queryString: $queryString
               filterQuery: $filterQuery
               includeInactive: true
