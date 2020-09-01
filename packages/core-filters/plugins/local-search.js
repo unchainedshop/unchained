@@ -28,7 +28,7 @@ class LocalSearch extends FilterAdapter {
     return Boolean(context.query);
   }
 
-  async search(productIdResolver) {
+  async search(productIdResolver) { // Search Products
     // eslint-disable-line
     const { query = {} } = this.context;
     const { queryString } = query;
@@ -56,15 +56,6 @@ class LocalSearch extends FilterAdapter {
       selector.productId = { $in: new Set(restrictedProductIds) };
     }
 
-    if (query.assortment) {
-      const assortmentsId = AssortmentTexts.find(selector, {
-        fields: {
-          assortmentId: 1,
-        },
-      }).map(({ assortmentId }) => assortmentId);
-
-      return assortmentsId;
-    }
     const productsId = ProductTexts.find(selector, {
       fields: {
         productId: 1,
@@ -72,6 +63,25 @@ class LocalSearch extends FilterAdapter {
     }).map(({ productId }) => productId);
 
     return productsId;
+  }
+
+  async searchAssortments(assortmentIdResolver) {
+    // eslint-disable-line
+    const { query = {} } = this.context;
+    const { queryString } = query;
+
+    if (!queryString) return assortmentIdResolver;
+
+    const assortmentsId = AssortmentTexts.find(
+      { $text: { $search: queryString } },
+      {
+        fields: {
+          assortmentId: 1,
+        },
+      }
+    ).map(({ assortmentId }) => assortmentId);
+
+    return assortmentsId;
   }
 
   async transformFilterSelector(last) {
@@ -96,5 +106,7 @@ class LocalSearch extends FilterAdapter {
     return last;
   }
 }
+
+export default LocalSearch;
 
 FilterDirector.registerAdapter(LocalSearch);

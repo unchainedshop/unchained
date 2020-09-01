@@ -19,13 +19,13 @@ export default [
       linkedAssortments: [AssortmentLink!]
       assortmentPaths: [AssortmentPath!]!
       children: [Assortment!]
-      search(
+      searchProducts(
         queryString: String
         filterQuery: [FilterQueryInput!]
         includeInactive: Boolean = false
         ignoreChildAssortments: Boolean = false
         orderBy: SearchOrderBy
-      ): SearchResult!
+      ): ProductSearchResult!
     }
 
     """

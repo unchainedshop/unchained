@@ -5,14 +5,16 @@ export default [
     }
 
     """
-    Search result
+    Product search result
     """
-    type SearchResult {
+    type ProductSearchResult {
       totalProducts: Int!
-      totalAssortments: Int!
       filteredProducts: Int!
       filters: [LoadedFilter!]!
       products(limit: Int = 10, offset: Int = 0): [Product!]!
+    }
+
+    type AssortmentSearchResult {
       assortments(limit: Int = 10, offset: Int = 0): [Assortment!]!
     }
   `,

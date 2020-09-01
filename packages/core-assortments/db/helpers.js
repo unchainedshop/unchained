@@ -560,7 +560,7 @@ Collections.Assortments.helpers({
     }
     return this._cachedProductIds; // eslint-disable-line
   },
-  async search({
+  async searchProducts({
     query,
     ignoreChildAssortments,
     forceLiveCollection,

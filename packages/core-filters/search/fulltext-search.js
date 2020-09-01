@@ -12,6 +12,7 @@ export default ({
     query,
     ...rest,
   });
+
   return director.search(productIdResolver, {
     filterSelector,
     ...(productSelector && { productSelector }),

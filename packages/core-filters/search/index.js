@@ -18,18 +18,20 @@ const cleanQuery = ({
   ...query,
 });
 
-const search = async ({ query: rawQuery, forceLiveCollection, context }) => {
+const searchProducts = async ({
+  query: rawQuery,
+  forceLiveCollection,
+  context,
+}) => {
   const query = cleanQuery(rawQuery);
   const filterSelector = resolveFilterSelector(query);
   const productSelector = resolveProductSelector(query);
-  const assortmentSelector = resolveAssortmentSelector(query);
   const sortStage = resolveSortStage(query);
 
   const searchConfiguration = {
     query,
     filterSelector,
     productSelector,
-    assortmentSelector,
     sortStage,
     context,
     forceLiveCollection,
@@ -41,37 +43,53 @@ const search = async ({ query: rawQuery, forceLiveCollection, context }) => {
     return {
       totalProductIds: [],
       filteredProductIds: [],
-      totalAssortmentsIds: [],
-      filteredAssortmentIds: [],
       ...searchConfiguration,
     };
   }
-
   const totalProductIds = fulltextSearch(searchConfiguration)(
-    query?.productIds,
+    query?.productIds
   );
 
   const filteredProductIds = totalProductIds.then(
-    facetedSearch(searchConfiguration),
-  );
-
-  const totalAssortmentsIds = fulltextSearch(searchConfiguration)(
-    query?.assortmentIds,
-  );
-
-  const filteredAssortmentIds = totalAssortmentsIds.then(
-    facetedSearch(searchConfiguration),
+    facetedSearch(searchConfiguration)
   );
 
   return {
     totalProductIds,
-    totalAssortmentsIds,
     filteredProductIds,
-    filteredAssortmentIds,
     ...searchConfiguration,
   };
 };
 
-export default search;
+const searchAssortments = async ({
+  query: rawQuery,
+  forceLiveCollection,
+  context,
+}) => {
+  const query = cleanQuery(rawQuery);
+  const filterSelector = resolveFilterSelector(query);
+  const assortmentSelector = resolveAssortmentSelector(query);
+  const sortStage = resolveSortStage(query);
 
-export { facetedSearch, fulltextSearch, search };
+  const searchConfiguration = {
+    query,
+    filterSelector,
+    assortmentSelector,
+    sortStage,
+    context,
+    forceLiveCollection,
+  };
+
+  const totalAssortmentIds = fulltextSearch(searchConfiguration)(
+    query?.assortmentIds
+  );
+
+  return {
+    totalAssortmentIds,
+    ...searchConfiguration,
+  };
+};
+
+export default searchProducts;
+
+export { facetedSearch, fulltextSearch, searchProducts, searchAssortments };

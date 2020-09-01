@@ -258,9 +258,17 @@ export default [
         assortmentId: ID
         orderBy: SearchOrderBy
         includeInactive: Boolean = false
-        assortment: Boolean = false
         ignoreChildAssortments: Boolean = false
-      ): SearchResult!
+      ): ProductSearchResult!
+
+      """
+      Search assortments
+      """
+      searchAssortments(
+        queryString: String
+        orderBy: SearchOrderBy
+        includeInactive: Boolean = false
+      ): AssortmentSearchResult!
 
       """
       Get all work from the queue

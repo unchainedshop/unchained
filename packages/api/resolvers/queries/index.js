@@ -39,7 +39,8 @@ import productReview from './productReview';
 import productReviews from './productReviews';
 import quotation from './quotation';
 import quotations from './quotations';
-import search from './search';
+import searchProducts from './search-products';
+import searchAssortments from './search-assortments';
 import workQueue from './workQueue';
 import subscription from './subscription';
 import subscriptions from './subscriptions';
@@ -97,7 +98,8 @@ export default {
   productReviews: acl(actions.manageProductReviews)(productReviews),
   quotation: acl(actions.viewQuotation)(quotation),
   quotations: acl(actions.viewQuotations)(quotations),
-  search: acl(actions.search)(search),
+  searchProducts: acl(actions.search)(searchProducts),
+  searchAssortments: acl(actions.search)(searchAssortments),
   workQueue: acl(actions.manageWorker)(workQueue),
   subscription: acl(actions.viewQuotation)(subscription),
   subscriptions: acl(actions.viewQuotations)(subscriptions),
