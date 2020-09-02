@@ -5,7 +5,7 @@ function isFunction(obj) {
   return !!(obj && obj.constructor && obj.call && obj.apply);
 }
 
-export default (schemaDefinition) =>
+const withFormSchema = (schemaDefinition) =>
   withProps((props) => {
     const schema = new SimpleSchema(
       isFunction(schemaDefinition) ? schemaDefinition(props) : schemaDefinition
@@ -14,3 +14,6 @@ export default (schemaDefinition) =>
       schema,
     };
   });
+
+
+export default withFormSchema;

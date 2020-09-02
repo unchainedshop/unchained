@@ -13,8 +13,8 @@ function parseCookies(ctx = {}, options = {}) {
     ctx.req && ctx.req.headers && ctx.req.headers.cookie // eslint-disable-line
       ? ctx.req.headers.cookie
       : process.browser
-      ? document.cookie
-      : '',
+        ? document.cookie
+        : '',
     options
   );
 }
@@ -24,7 +24,7 @@ function getComponentDisplayName(Component) {
   return Component.displayName || Component.name || 'Unknown';
 }
 
-export default (ComposedComponent) => {
+const connectApollo = (ComposedComponent) => {
   class WithData extends React.Component {
     constructor(props) {
       super(props);
@@ -124,3 +124,6 @@ export default (ComposedComponent) => {
 
   return WithData;
 };
+
+
+export default connectApollo;
