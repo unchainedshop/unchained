@@ -10,7 +10,7 @@ const {
 } = process.env;
 
 module.exports = withCss({
-  exportTrailingSlash: true,
+  trailingSlash: true,
   assetPrefix: ROOT_URL || '',
   analyzeServer: ['server', 'both'].includes(BUNDLE_ANALYZE),
   analyzeBrowser: ['browser', 'both'].includes(BUNDLE_ANALYZE),
