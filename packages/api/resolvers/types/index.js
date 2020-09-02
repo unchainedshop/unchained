@@ -47,7 +47,7 @@ import Filter from './filter';
 import FilterOption from './filter-option';
 import LoadedFilter from './loaded-filter';
 import LoadedFilterOption from './loaded-filter-option';
-import ProductSearchResult from './product-search-result';
+import SearchResult from './product-search-result';
 import AssortmentSearchResult from './assortment-search-result';
 import Quotation from './quotation';
 import DeliveryFee from './delivery-fee';
@@ -108,7 +108,7 @@ export default {
   LoadedFilter,
   LoadedFilterOption,
   Quotation,
-  ProductSearchResult,
+  SearchResult,
   AssortmentSearchResult,
   DeliveryFee,
   SubscriptionPayment,

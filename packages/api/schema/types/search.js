@@ -4,10 +4,14 @@ export default [
       default
     }
 
+    directive @deprecated(
+      reason: String = "No longer supported"
+    ) on FIELD_DEFINITION | ENUM_VALUE
+
     """
-    Product search result
+    Search result
     """
-    type ProductSearchResult {
+    type SearchResult {
       totalProducts: Int!
       filteredProducts: Int!
       filters: [LoadedFilter!]!

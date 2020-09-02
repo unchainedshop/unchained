@@ -20,7 +20,7 @@ class FilterAdapter {
     this.context = context;
   }
 
-  async search(productIds) {
+  async searchProducts(productIds) {
     // eslint-disable-line
     return productIds;
   }
@@ -54,20 +54,11 @@ class FilterDirector {
     this.context = context;
   }
 
-  async buildAssortmentSelector(defaultSelector, options = {}) {
-    return this.reduceAdapters(async (lastSelector, concreteAdapter) => {
-      return concreteAdapter.transformProductSelector(
-        await lastSelector,
-        options
-      );
-    }, defaultSelector || null);
-  }
-
   async buildProductSelector(defaultSelector, options = {}) {
     return this.reduceAdapters(async (lastSelector, concreteAdapter) => {
       return concreteAdapter.transformProductSelector(
         await lastSelector,
-        options
+        options,
       );
     }, defaultSelector || null);
   }
@@ -80,17 +71,7 @@ class FilterDirector {
 
   async search(productIdResolver, options = {}) {
     return this.reduceAdapters(async (lastSearchPromise, concreteAdapter) => {
-      // concreteAdapter.context.query.assortmentIds
-      if (
-        concreteAdapter.__proto__.constructor.name === 'LocalSearch' &&
-        options.assortmentSelector
-      ) {
-        return concreteAdapter.searchAssortments(
-          await lastSearchPromise,
-          options
-        );
-      }
-      return concreteAdapter.search(await lastSearchPromise, options);
+      return concreteAdapter.searchProducts(await lastSearchPromise, options);
     }, productIdResolver || null);
   }
 
@@ -98,14 +79,14 @@ class FilterDirector {
     return this.reduceAdapters(async (lastSelector, concreteAdapter) => {
       return concreteAdapter.transformFilterSelector(
         await lastSelector,
-        options
+        options,
       );
     }, defaultSelector || null);
   }
 
   async reduceAdapters(reducer, initialValue) {
     const adapters = FilterDirector.sortedAdapters().filter((AdapterClass) =>
-      AdapterClass.isActivatedFor(this.context)
+      AdapterClass.isActivatedFor(this.context),
     );
     if (adapters.length === 0) {
       return null;
@@ -127,7 +108,7 @@ class FilterDirector {
 
   static registerAdapter(adapter) {
     log(
-      `${this.name} -> Registered ${adapter.key} ${adapter.version} (${adapter.label})`
+      `${this.name} -> Registered ${adapter.key} ${adapter.version} (${adapter.label})`,
     ); // eslint-disable-line
     FilterDirector.adapters.set(adapter.key, adapter);
   }

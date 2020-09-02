@@ -98,6 +98,7 @@ export default {
   productReviews: acl(actions.manageProductReviews)(productReviews),
   quotation: acl(actions.viewQuotation)(quotation),
   quotations: acl(actions.viewQuotations)(quotations),
+  search: acl(actions.search)(searchProducts),
   searchProducts: acl(actions.search)(searchProducts),
   searchAssortments: acl(actions.search)(searchAssortments),
   workQueue: acl(actions.manageWorker)(workQueue),
