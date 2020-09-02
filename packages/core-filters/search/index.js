@@ -93,4 +93,10 @@ const searchAssortments = async ({
 
 export default searchProducts;
 
-export { facetedSearch, fulltextSearch, searchProducts, searchAssortments };
+export {
+  productFacetedSearch,
+  productFulltextSearch,
+  assortmentFulltextSearch,
+  searchProducts,
+  searchAssortments,
+};
