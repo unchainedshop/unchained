@@ -6,7 +6,7 @@
     "start": "gatsby serve -H 0.0.0.0 -p 9000"
   },
   "dependencies": {
-    "@unchainedshop/gatsby-theme-apollo-docs": "^4.3.14",
+    "@unchainedshop/gatsby-theme-apollo-docs": "^4.3.15",
     "gatsby": "2.24.47",
     "react": "16.13.1",
     "react-dom": "16.13.1"
