@@ -109,6 +109,7 @@ export default {
   LoadedFilterOption,
   Quotation,
   SearchResult,
+  ProductSearchResult: SearchResult,
   AssortmentSearchResult,
   DeliveryFee,
   SubscriptionPayment,

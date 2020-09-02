@@ -25,6 +25,11 @@ class FilterAdapter {
     return productIds;
   }
 
+  async searchAssortments(assortmentIds) {
+    // eslint-disable-line
+    return assortmentIds;
+  }
+
   async transformSortStage(lastStage) {
     // eslint-disable-line
     return lastStage;
@@ -69,7 +74,16 @@ class FilterDirector {
     }, defaultStage || null);
   }
 
-  async search(productIdResolver, options = {}) {
+  async searchAssortments(assortmentIdResolver, options = {}) {
+    return this.reduceAdapters(async (lastSearchPromise, concreteAdapter) => {
+      return concreteAdapter.searchAssortments(
+        await lastSearchPromise,
+        options,
+      );
+    }, assortmentIdResolver || null);
+  }
+
+  async searchProducts(productIdResolver, options = {}) {
     return this.reduceAdapters(async (lastSearchPromise, concreteAdapter) => {
       return concreteAdapter.searchProducts(await lastSearchPromise, options);
     }, productIdResolver || null);

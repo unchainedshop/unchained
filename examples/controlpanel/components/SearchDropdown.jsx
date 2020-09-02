@@ -1,14 +1,14 @@
-import React, { useState } from "react";
+import React, { useState } from 'react';
 import {
   Dropdown,
   Header,
   Image as SemanticImage,
   Icon,
   Label,
-} from "semantic-ui-react";
-import { debounce, has, isEmpty } from "lodash";
-import { useQuery } from "@apollo/client";
-import gql from "graphql-tag";
+} from 'semantic-ui-react';
+import { debounce, has, isEmpty } from 'lodash';
+import { useQuery } from '@apollo/client';
+import gql from 'graphql-tag';
 
 const SEARCH_ASSORTMENTS = gql`
   query searchAssortments($queryString: String) {
@@ -62,10 +62,10 @@ const SearchDropdown = ({
   uniforms,
   queryType,
 }) => {
-  const [queryString, setQueryString] = useState("");
+  const [queryString, setQueryString] = useState('');
 
   const QUERY =
-    queryType === "assortments" ? SEARCH_ASSORTMENTS : SEARCH_PRODUCTS;
+    queryType === 'assortments' ? SEARCH_ASSORTMENTS : SEARCH_PRODUCTS;
 
   const { data, loading } = useQuery(QUERY, {
     variables: {
@@ -88,7 +88,7 @@ const SearchDropdown = ({
   const selectImage = (item) => {
     if (isEmpty(item.media)) return imageComponent;
     const foundImageObj = item.media.find((mediaObj) => {
-      if (has(mediaObj, "file.url")) {
+      if (has(mediaObj, 'file.url')) {
         const imageObj = new Image();
         imageObj.src = mediaObj.file.url;
         return imageObj.complete;
@@ -110,17 +110,17 @@ const SearchDropdown = ({
     if (status) {
       return {
         status,
-        color: status === "DRAFT" ? "red" : "green",
+        color: status === 'DRAFT' ? 'red' : 'green',
       };
     }
     return {
-      status: isActive ? "ACTIVE" : "DRAFT",
-      color: isActive ? "green" : "red",
+      status: isActive ? 'ACTIVE' : 'DRAFT',
+      color: isActive ? 'green' : 'red',
     };
   };
 
-  let items =
-    queryType === "assortments"
+  const items =
+    queryType === 'assortments'
       ? data?.searchAssortments.assortments
       : data?.searchProducts.products || [];
 
@@ -150,7 +150,7 @@ const SearchDropdown = ({
       search
       fluid
       selection
-      placeholder={placeholder || "Select item"}
+      placeholder={placeholder || 'Select item'}
       name="item"
       loading={loading}
       onChange={uniforms ? handleOnChange : onChange} // this is to handle uniforms custom field
@@ -161,7 +161,7 @@ const SearchDropdown = ({
       {...{ ...(value && { value }) }}
       {...{ ...(disabled && { disabled }) }}
       {...{ ...(optionValues && { optionValues }) }}
-      style={{ marginBottom: "1em" }}
+      style={{ marginBottom: '1em' }}
     />
   );
 };

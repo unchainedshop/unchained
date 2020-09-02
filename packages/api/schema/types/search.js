@@ -29,6 +29,7 @@ export default [
     }
 
     type AssortmentSearchResult {
+      totalAssortments: Int!
       assortments(limit: Int = 10, offset: Int = 0): [Assortment!]!
     }
   `,
