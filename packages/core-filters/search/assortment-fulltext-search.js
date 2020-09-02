@@ -3,7 +3,6 @@ import { FilterDirector } from 'meteor/unchained:core-filters';
 export default ({
   query,
   filterSelector,
-  productSelector,
   assortmentSelector,
   sortStage,
   ...rest
@@ -12,11 +11,10 @@ export default ({
     query,
     ...rest,
   });
-
-  return director.search(productIdResolver, {
+  
+  return director.searchAssortments(productIdResolver, {
     filterSelector,
-    ...(productSelector && { productSelector }),
-    ...(assortmentSelector && { assortmentSelector }),
+    assortmentSelector,
     sortStage,
   });
 };

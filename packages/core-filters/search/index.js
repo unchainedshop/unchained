@@ -1,5 +1,6 @@
-import facetedSearch from './faceted-search';
-import fulltextSearch from './fulltext-search';
+import productFacetedSearch from './product-faceted-search';
+import productFulltextSearch from './product-fulltext-search';
+import assortmentFulltextSearch from './assortment-fulltext-search';
 import resolveProductSelector from './resolve-product-selector';
 import resolveAssortmentSelector from './resolve-assortment-selector';
 import resolveFilterSelector from './resolve-filter-selector';
@@ -46,12 +47,12 @@ const searchProducts = async ({
       ...searchConfiguration,
     };
   }
-  const totalProductIds = fulltextSearch(searchConfiguration)(
+  const totalProductIds = productFulltextSearch(searchConfiguration)(
     query?.productIds,
   );
 
   const filteredProductIds = totalProductIds.then(
-    facetedSearch(searchConfiguration),
+    productFacetedSearch(searchConfiguration),
   );
 
   return {
@@ -80,8 +81,8 @@ const searchAssortments = async ({
     forceLiveCollection,
   };
 
-  const totalAssortmentIds = fulltextSearch(searchConfiguration)(
-    query?.assortmentIds,
+  const totalAssortmentIds = assortmentFulltextSearch(searchConfiguration)(
+    query?.productIds,
   );
 
   return {
