@@ -271,7 +271,7 @@ export default [
         orderBy: SearchOrderBy
         includeInactive: Boolean = false
         ignoreChildAssortments: Boolean = false
-      ): SearchResult! @deprecated
+      ): ProductSearchResult! @deprecated
 
       """
       Search assortments
