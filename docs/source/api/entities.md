@@ -77,6 +77,7 @@ Set by unchained: authorId, slug history
         }
       },
     },
+    "media": [],
     "variations": {
       "color": {
         "type": "COLOR",
