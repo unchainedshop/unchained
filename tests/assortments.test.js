@@ -38,9 +38,7 @@ describe('Assortments', () => {
     });
 
     it('Return active assortments and include leaves', async () => {
-      const {
-        data: { assortments },
-      } = await graphqlFetch({
+      const result = await graphqlFetch({
         query: /* GraphQL */ `
           query Assortments(
             $limit: Int = 100
@@ -118,8 +116,7 @@ describe('Assortments', () => {
           includeLeaves: true,
         },
       });
-
-      expect(assortments.length).toEqual(5);
+      expect(result.data.assortments.length).toEqual(5);
     });
     it('Return all assortments and without leaves', async () => {
       const {

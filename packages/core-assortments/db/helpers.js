@@ -2,7 +2,7 @@ import 'meteor/dburles:collection-helpers';
 import { Countries } from 'meteor/unchained:core-countries';
 import { Products, ProductStatus } from 'meteor/unchained:core-products';
 import { findUnusedSlug, findPreservingIds } from 'meteor/unchained:utils';
-import { search, Filters } from 'meteor/unchained:core-filters';
+import { searchProducts, Filters } from 'meteor/unchained:core-filters';
 import { findLocalizedText } from 'meteor/unchained:core';
 import { Locale } from 'locale';
 import { log } from 'meteor/unchained:core-logger';
@@ -571,7 +571,7 @@ Collections.Assortments.helpers({
       ignoreChildAssortments,
     });
     const filterIds = this.filterAssignments().map(({ filterId }) => filterId);
-    return search({
+    return searchProducts({
       query: {
         filterIds,
         productIds,
