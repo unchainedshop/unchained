@@ -259,7 +259,7 @@ export default [
         orderBy: SearchOrderBy
         includeInactive: Boolean = false
         ignoreChildAssortments: Boolean = false
-      ): SearchResult! @deprecated
+      ): SearchResult! @deprecated(reason: "Please use searchProducts instead")
 
       """
       Search products
