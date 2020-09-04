@@ -25,7 +25,7 @@ export default [
         includeInactive: Boolean = false
         ignoreChildAssortments: Boolean = false
         orderBy: SearchOrderBy
-      ): SearchResult! @deprecated deprecated(reason: "Please use searchProducts instead")
+      ): SearchResult! @deprecated(reason: "Please use searchProducts instead")
       searchProducts(
         queryString: String
         filterQuery: [FilterQueryInput!]
