@@ -407,9 +407,9 @@ describe('Assortments', () => {
         },
       } = await graphqlAnonymousFetch({
         query: /* GraphQL */ `
-          query Assortment($queryString: ID) {
+          query searchAssortments($queryString: String) {
             searchAssortments(
-              assortmentId: $assortmentId
+              queryString: $queryString
               includeInactive: true
             ) {
               totalAssortments
@@ -429,7 +429,7 @@ describe('Assortments', () => {
           queryString: 'simple-assortment',
         },
       });
-      console.log("ASSORTMENTS", assortments)
+      
       expect(Array.isArray(assortments)).toBe(true);
     });
   });
