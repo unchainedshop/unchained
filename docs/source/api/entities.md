@@ -34,36 +34,43 @@ Set by unchained: authorId, slug history
       },
       "warehousing": {
         "baseUnit": "ST",
-        "sku": "",
+        "sku": ""
       },
       "supply": {
         "weightInGram": 0,
         "heightInMillimeters": 0,
         "lengthInMillimeters": 0,
-        "widthInMillimeters": 0,
+        "widthInMillimeters": 0
       },
       "proxy": {
         "assignments": [
           {
-            "vector": { "color": "red" },
+            "vector": {
+              "color": "red"
+            },
             "productId": "B"
           }
-        ],
+        ]
       },
       "plan": {
         "billingInterval": "daily",
         "billingIntervalCount": 1,
         "usageCalculationType": "metered",
         "trialInterval": "daily",
-        "trialIntervalCount": 1,
+        "trialIntervalCount": 1
       },
-      "bundleItems": [{
-        "productId": "c",
-        "quantity": 1,
-        "configuration": [
-          { "key": "greeting", "value": "For my Darling" }
-        ]
-      }],
+      "bundleItems": [
+        {
+          "productId": "c",
+          "quantity": 1,
+          "configuration": [
+            {
+              "key": "greeting",
+              "value": "For my Darling"
+            }
+          ]
+        }
+      ],
       "meta": {},
       "content": {
         "de": {
@@ -73,11 +80,29 @@ Set by unchained: authorId, slug history
           "slug": "produktname",
           "subtitle": "Kurzbeschreibung",
           "description": "Lange Beschreibung",
-          "labels": ["Neu"]
+          "labels": [
+            "Neu"
+          ]
         }
-      },
+      }
     },
-    "media": [],
+    "media": [
+      {
+        "asset": {
+          "_id": null,
+          "url": "https://www.story.one/media/images/poop-4108423_1920.width-1600.format-jpeg.jpg"
+        },
+        "sortKey": 0,
+        "tags": ["big"],
+        "meta": {},
+        "content": {
+          "de": {
+            "title": "Produktname",
+            "subtitle": "Kurzbeschreibung",
+          }
+        }
+      }
+    ],
     "variations": {
       "color": {
         "type": "COLOR",
@@ -88,7 +113,7 @@ Set by unchained: authorId, slug history
                 "title": "Rot",
                 "subtitle": ""
               }
-            },
+            }
           }
         },
         "content": {
@@ -96,9 +121,27 @@ Set by unchained: authorId, slug history
             "title": "Farbe",
             "subtitle": "Farbvariante"
           }
-        },
+        }
       }
-    }
+    },
+    "reviews": [
+      {
+        "_id": null,
+        "authorId": "root",
+        "rating": 1,
+        "title": "What the?",
+        "review": "That product just sucks big times",
+        "votes": [
+          {
+            "timestamp": "",
+            "userId": "root",
+            "type": "UPVOTE",
+            "meta": {}
+          }
+        ],
+        "meta": {}
+      }
+    ]
   }
 }
 ```
