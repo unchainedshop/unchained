@@ -5,6 +5,8 @@ description: Import Data from any PIM
 
 To upload huge amount of data to Unchained, for example if you pump the data from a PIM or ERP system, we have created a special API.
 
+## Bulk Import API
+
 Using the Bulk API stores the data in the Unchained Work Queue before processing and enables some neat features:
 
 1. Cloud Native: Allows dedicated background or worker instances to do the actual processing
@@ -18,9 +20,36 @@ In some situations, it's propably wise to develop a sync microservice: You have 
 - can not adopt to the JSON described below or
 - needs to merge data from different systems
 
+### Endpoint
 
+The main entry point to send import events is:
+Mutation.sendBulkImportEvents. The mutation takes an array of events that consist out of a type, an operation and a payload.
 
-## Product JSON Schema
+Supported entity types:
+- PRODUCT
+- ASSORTMENT
+- FILTER
+
+Supported operations:
+- CREATE
+- UPDATE
+- REMOVE
+
+All Events follow this JSON Structure:
+
+```json
+{
+  "entity": "ENTITY TYPE",
+  "operation": "OPERATION TYPE",
+  "payload": { ... }
+}
+```
+
+Always try to send as many events at a time, so Unchained can optimize write operations.
+
+## JSON Reference
+
+### Entity Type: Product
 
 Set by unchained:
 - authorId,
@@ -187,7 +216,7 @@ Set by unchained:
 }
 ```
 
-## Assortment JSON Schema
+### Entity Type: Assortment
 
 Set by unchained:
 - authorId,
@@ -254,7 +283,7 @@ Set by unchained:
 }
 ```
 
-## Filter JSON Schema
+### Entity Type: Filter
 
 Set by unchained:
 - authorId,
