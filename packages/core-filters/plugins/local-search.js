@@ -69,9 +69,7 @@ class LocalSearch extends FilterAdapter {
   async searchAssortments(assortmentIdResolver) {
     // eslint-disable-line
     const { query = {} } = this.context;
-    const { queryString } = query;
-
-    if (!queryString) return assortmentIdResolver;
+    const { queryString = '' } = query;
 
     const assortmentsId = AssortmentTexts.find(
       { $text: { $search: queryString } },
