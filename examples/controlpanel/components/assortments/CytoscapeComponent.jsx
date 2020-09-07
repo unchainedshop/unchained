@@ -1,15 +1,14 @@
-import React from "react";
-import Cytoscape from "cytoscape";
-import CytoscapeComponent from "react-cytoscapejs";
-import dagre from "cytoscape-dagre";
+import React from 'react';
+import Cytoscape from 'cytoscape';
+import CytoscapeComponent from 'react-cytoscapejs';
+import dagre from 'cytoscape-dagre';
 
 Cytoscape.use(dagre);
 
-const layout = { name: "dagre", fit: true };
+const layout = { name: 'dagre', fit: true };
 
 const CytoscapeComponentWrapper = ({ data }) => {
   const elements = [];
-
   data.assortments?.forEach((item) => {
     elements.push({
       data: {
@@ -18,13 +17,27 @@ const CytoscapeComponentWrapper = ({ data }) => {
       },
     });
     if (item.linkedAssortments) {
-      item.linkedAssortments.forEach(({ parent, child }) => {
-        // We check whether target exists or not for linking to work properly
-        if (data.assortments.find((item) => item._id === child._id)) {
+      item.linkedAssortments.forEach((linkedAssortment) => {
+        // We check whether child/target exists or not for linking to work properly
+        // parent already exists since we're searching inside its linked assortments
+        // Also, we check for already existing links before adding new ones since 
+        // the parent and child cross-references each other 
+
+        if (
+          data.assortments.find(
+            (assortment) => assortment._id === linkedAssortment.child._id
+          ) &&
+          !elements.find((link) => {
+            return (
+              link.data.source === linkedAssortment.parent._id &&
+              link.data.target === linkedAssortment.child._id
+            );
+          })
+        ) {
           elements.push({
             data: {
-              source: parent._id,
-              target: child._id,
+              source: linkedAssortment.parent._id,
+              target: linkedAssortment.child._id,
             },
           });
         }
@@ -34,24 +47,24 @@ const CytoscapeComponentWrapper = ({ data }) => {
 
   const stylesheet = [
     {
-      selector: "node",
+      selector: 'node',
       style: {
-        content: "data(label)",
-        "text-opacity": 0.5,
-        "text-valign": "center",
-        "text-halign": "right",
-        "background-color": "#11479e",
+        content: 'data(label)',
+        'text-opacity': 0.5,
+        'text-valign': 'center',
+        'text-halign': 'right',
+        'background-color': '#11479e',
       },
     },
 
     {
-      selector: "edge",
+      selector: 'edge',
       style: {
         width: 4,
-        "target-arrow-shape": "triangle",
-        "line-color": "#9dbaea",
-        "target-arrow-color": "#9dbaea",
-        "curve-style": "bezier",
+        'target-arrow-shape': 'triangle',
+        'line-color': '#9dbaea',
+        'target-arrow-color': '#9dbaea',
+        'curve-style': 'bezier',
       },
     },
   ];
@@ -59,7 +72,7 @@ const CytoscapeComponentWrapper = ({ data }) => {
     <CytoscapeComponent
       elements={elements}
       layout={layout}
-      style={{ width: "100%", height: "600px" }}
+      style={{ width: '100%', height: '600px' }}
       stylesheet={stylesheet}
       zoom={2}
     />
