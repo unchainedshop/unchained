@@ -3,11 +3,7 @@ export default [
     enum SearchOrderBy {
       default
     }
-
-    directive @deprecated(
-      reason: String = "No longer supported"
-    ) on FIELD_DEFINITION | ENUM_VALUE
-
+    
     """
     Search result
     """
