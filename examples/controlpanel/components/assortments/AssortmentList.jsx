@@ -3,113 +3,105 @@ import gql from 'graphql-tag';
 import { graphql } from '@apollo/client/react/hoc';
 import React from 'react';
 import { withRouter } from 'next/router';
-import dynamic from 'next/dynamic';
+import { Table, Icon, Button } from 'semantic-ui-react';
 import Link from 'next/link';
-import { Button, Icon, Table } from 'semantic-ui-react';
+import InfiniteDataTable, { withDataTableLoader } from '../InfiniteDataTable';
 import SearchDropdown from '../SearchDropdown';
 
-const CytoscapeComponentWithNoSSR = dynamic(
-  () => import('./CytoscapeComponent'),
-  { ssr: false } // because of a window object
-);
-
-const AssortmentList = ({ data, router }) => (
-  <Table celled>
-    <Table.Header>
-      <Table.Row>
-        <Table.HeaderCell colSpan="3">
-          <SearchDropdown
-            placeholder="Select Assortment"
-            onChange={(e, result) => {
-              router.push({
-                pathname: '/assortments/edit',
-                query: { _id: result.value },
-              });
-            }}
-            queryType={'assortments'}
-          />
-          <Link href="/assortments/new">
-            <Button
-              floated="right"
-              icon
-              labelPosition="left"
-              primary
-              size="small"
-              href="/assortments/new"
-            >
-              <Icon name="plus" />
-              Add
-            </Button>
-          </Link>
-        </Table.HeaderCell>
-      </Table.Row>
-    </Table.Header>
-    <Table.Body>
-      <Table.Row>
+const AssortmentList = ({
+  isShowLeafNodes,
+  setShowLeafNodes,
+  loading,
+  mutate,
+  router,
+  toggleShowLeafNodes,
+  changeBaseAssortment,
+  ...rest
+}) => (
+  <InfiniteDataTable
+    {...rest}
+    cols={3}
+    createPath="/assortments/new"
+    searchComponent={
+      <SearchDropdown
+        placeholder="Select Assortment"
+        onChange={(e, result) => {
+          router.push({
+            pathname: '/assortments/edit',
+            query: { _id: result.value },
+          });
+        }}
+        queryType={'assortments'}
+      />
+    }
+    rowRenderer={(assortment) => (
+      <Table.Row key={assortment._id}>
         <Table.Cell>
-          <CytoscapeComponentWithNoSSR data={data} />
+          <Link href={`/assortments/edit?_id=${assortment._id}`}>
+            <a href={`/assortments/edit?_id=${assortment._id}`}>
+              {assortment.texts.title}
+            </a>
+          </Link>
+        </Table.Cell>
+        <Table.Cell>
+          {assortment.isActive && (
+            <Icon color="green" name="checkmark" size="large" />
+          )}
+        </Table.Cell>
+        <Table.Cell>
+          {assortment.isBase ? (
+            <b>Base</b>
+          ) : (
+            <Button basic name={assortment._id} onClick={changeBaseAssortment}>
+              Define as base assortment
+            </Button>
+          )}
         </Table.Cell>
       </Table.Row>
-    </Table.Body>
-    <Table.Footer fullWidth>
-      <Table.Row>
-        <Table.HeaderCell colSpan="3">
-          <Link href="/assortments/new">
-            <Button
-              floated="right"
-              icon
-              labelPosition="left"
-              primary
-              size="small"
-              href="/assortments/new"
-            >
-              <Icon name="plus" />
-              Add
-            </Button>
-          </Link>
-        </Table.HeaderCell>
-      </Table.Row>
-    </Table.Footer>
-  </Table>
+    )}
+  >
+    <Table.Row>
+      <Table.HeaderCell colSpan={3}>
+        Show non-root nodes? &nbsp;
+        <input
+          type="checkbox"
+          checked={isShowLeafNodes}
+          onChange={toggleShowLeafNodes}
+        />
+      </Table.HeaderCell>
+    </Table.Row>
+    <Table.Row>
+      <Table.HeaderCell>Name</Table.HeaderCell>
+      <Table.HeaderCell>Active?</Table.HeaderCell>
+      <Table.HeaderCell>Base?</Table.HeaderCell>
+    </Table.Row>
+  </InfiniteDataTable>
 );
 
 export default compose(
   withState('isShowLeafNodes', 'setShowLeafNodes', false),
   withRouter,
-  graphql(gql`
-    query assortments($limit: Int, $offset: Int, $isShowLeafNodes: Boolean) {
-      assortments(
-        limit: $limit
-        offset: $offset
-        includeInactive: true
-        includeLeaves: $isShowLeafNodes
-      ) {
-        _id
-        texts {
+  withDataTableLoader({
+    queryName: 'assortments',
+    query: gql`
+      query assortments($limit: Int, $offset: Int, $isShowLeafNodes: Boolean) {
+        assortments(
+          limit: $limit
+          offset: $offset
+          includeInactive: true
+          includeLeaves: $isShowLeafNodes
+        ) {
           _id
-          title
-        }
-        linkedAssortments {
-          _id
-          parent {
+          isActive
+          isBase
+          texts {
             _id
-            texts {
-              _id
-              title
-            }
+            title
           }
-          child {
-            _id
-            texts {
-              _id
-              title
-            }
-          }
-          tags
         }
       }
-    }
-  `),
+    `,
+  }),
   graphql(
     gql`
       mutation changeBaseAssortment($assortmentId: ID!) {

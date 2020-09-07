@@ -10,6 +10,7 @@ export default ({
   cols = 4,
   rowRenderer,
   createPath,
+  searchComponent,
   data,
   children,
   loadMoreEntries,
@@ -21,6 +22,7 @@ export default ({
     <Table.Header>
       <Table.Row>
         <Table.HeaderCell colSpan={cols}>
+          {searchComponent && searchComponent}
           {createPath && (
             <Link href={createPath}>
               <Button
