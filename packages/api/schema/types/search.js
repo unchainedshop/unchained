@@ -3,7 +3,7 @@ export default [
     enum SearchOrderBy {
       default
     }
-    
+
     """
     Search result
     """

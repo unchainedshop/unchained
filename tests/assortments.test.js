@@ -429,7 +429,7 @@ describe('Assortments', () => {
           queryString: 'simple-assortment',
         },
       });
-      
+
       expect(Array.isArray(assortments)).toBe(true);
     });
   });

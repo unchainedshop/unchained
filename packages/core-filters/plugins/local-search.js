@@ -30,7 +30,6 @@ class LocalSearch extends FilterAdapter {
 
   async searchProducts(productIdResolver) {
     // Search Products
-    // eslint-disable-line
     const { query = {} } = this.context;
     const { queryString } = query;
 
@@ -66,8 +65,8 @@ class LocalSearch extends FilterAdapter {
     return productsId;
   }
 
+  // eslint-disable-next-line
   async searchAssortments(assortmentIdResolver) {
-    // eslint-disable-line
     const { query = {} } = this.context;
     const { queryString = '' } = query;
 

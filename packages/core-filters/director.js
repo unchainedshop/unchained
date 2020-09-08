@@ -11,8 +11,8 @@ class FilterAdapter {
 
   static version = '';
 
+  // eslint-disable-next-line
   static isActivatedFor(context) {
-    // eslint-disable-line
     return false;
   }
 
@@ -20,36 +20,36 @@ class FilterAdapter {
     this.context = context;
   }
 
+  // eslint-disable-next-line
   async searchProducts(productIds) {
-    // eslint-disable-line
     return productIds;
   }
 
+  // eslint-disable-next-line
   async searchAssortments(assortmentIds) {
-    // eslint-disable-line
     return assortmentIds;
   }
 
+  // eslint-disable-next-line
   async transformSortStage(lastStage) {
-    // eslint-disable-line
     return lastStage;
   }
 
   // return a selector that is applied to Products.find to find relevant products
   // if no key is provided, it expects either null for all products or a list of products that are relevant
+  // eslint-disable-next-line
   async transformProductSelector(lastSelector, { key, value }) {
-    // eslint-disable-line
     return lastSelector;
   }
 
   // return a selector that is applied to Filters.find to find relevant filters
+  // eslint-disable-next-line
   async transformFilterSelector(lastSelector) {
-    // eslint-disable-line
     return lastSelector;
   }
 
+  // eslint-disable-next-line
   log(message, { level = 'debug', ...options } = {}) {
-    // eslint-disable-line
     return log(message, { level, ...options });
   }
 }
@@ -123,7 +123,7 @@ class FilterDirector {
   static registerAdapter(adapter) {
     log(
       `${this.name} -> Registered ${adapter.key} ${adapter.version} (${adapter.label})`,
-    ); // eslint-disable-line
+    );
     FilterDirector.adapters.set(adapter.key, adapter);
   }
 }

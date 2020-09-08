@@ -11,7 +11,7 @@ export default ({
     query,
     ...rest,
   });
-  
+
   return director.searchAssortments(productIdResolver, {
     filterSelector,
     assortmentSelector,
