@@ -5,7 +5,7 @@ import { Table, Icon, Button } from 'semantic-ui-react';
 import InfiniteScroll from 'react-infinite-scroller';
 import Link from 'next/link';
 
-export default ({
+const InfiniteDataTable = ({
   items,
   cols = 4,
   rowRenderer,
@@ -36,44 +36,44 @@ export default ({
                 <Icon name="plus" />
                 Add
               </Button>
-            </Link>
-          )}
-        </Table.HeaderCell>
-      </Table.Row>
-      {children}
-    </Table.Header>
-    {items && (
-      <InfiniteScroll
-        pageStart={0}
-        element={'tbody'}
-        loadMore={loadMoreEntries}
-        hasMore={limit ?? true}
-      >
-        {items.map(rowRenderer)}
-      </InfiniteScroll>
-    )}
-    <Table.Footer fullWidth>
-      <Table.Row>
-        <Table.HeaderCell colSpan={cols}>
-          {createPath && (
-            <Link href={createPath}>
-              <Button
-                floated="right"
-                icon
-                labelPosition="left"
-                primary
-                size="small"
-                href={createPath}
-              >
-                <Icon name="plus" /> Add
+              </Link>
+            )}
+          </Table.HeaderCell>
+        </Table.Row>
+        {children}
+      </Table.Header>
+      {items && (
+        <InfiniteScroll
+          pageStart={0}
+          element={'tbody'}
+          loadMore={loadMoreEntries}
+          hasMore={limit ?? true}
+        >
+          {items.map(rowRenderer)}
+        </InfiniteScroll>
+      )}
+      <Table.Footer fullWidth>
+        <Table.Row>
+          <Table.HeaderCell colSpan={cols}>
+            {createPath && (
+              <Link href={createPath}>
+                <Button
+                  floated="right"
+                  icon
+                  labelPosition="left"
+                  primary
+                  size="small"
+                  href={createPath}
+                >
+                  <Icon name="plus" /> Add
               </Button>
-            </Link>
-          )}
-        </Table.HeaderCell>
-      </Table.Row>
-    </Table.Footer>
-  </Table>
-);
+              </Link>
+            )}
+          </Table.HeaderCell>
+        </Table.Row>
+      </Table.Footer>
+    </Table>
+  );
 
 export const withDataTableLoader = ({ query, queryName, itemsPerPage = 5 }) =>
   compose(
@@ -110,3 +110,6 @@ export const withDataTableLoader = ({ query, queryName, itemsPerPage = 5 }) =>
       }),
     })
   );
+
+
+export default InfiniteDataTable;

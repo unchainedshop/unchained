@@ -1,7 +1,7 @@
 import React from 'react';
 import { List } from 'semantic-ui-react';
 
-export default ({ latitude, longitude }) => (
+const GeoPoint = ({ latitude, longitude }) => (
   <List>
     <List.Item>
       <a
@@ -14,3 +14,5 @@ export default ({ latitude, longitude }) => (
     </List.Item>
   </List>
 );
+
+export default GeoPoint;

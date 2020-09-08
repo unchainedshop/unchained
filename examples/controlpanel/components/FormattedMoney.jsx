@@ -1,6 +1,6 @@
 import React from 'react';
 
-export default ({ money = { amount: 0, currency: 'CHF' } } = {}) => (
+const FormattedMoney = ({ money = { amount: 0, currency: 'CHF' } } = {}) => (
   <span>
     {money &&
       Intl.NumberFormat([], {
@@ -9,3 +9,6 @@ export default ({ money = { amount: 0, currency: 'CHF' } } = {}) => (
       }).format(money.amount / 100)}
   </span>
 );
+
+
+export default FormattedMoney;

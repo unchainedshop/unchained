@@ -16,8 +16,11 @@ const removeNull = (obj) => {
   return newObj;
 };
 
-export default (mapFn) =>
+const withFormModel = (mapFn) =>
   withProps((props) => {
     const model = removeNull(mapFn(props));
     return { model };
   });
+
+
+export default withFormModel;
