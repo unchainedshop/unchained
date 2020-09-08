@@ -1,6 +1,6 @@
 import { log } from 'meteor/unchained:core-logger';
 import { Assortments } from 'meteor/unchained:core-assortments';
-import { search } from 'meteor/unchained:core-filters';
+import { searchProducts } from 'meteor/unchained:core-filters';
 import {
   QueryStringRequiredError,
   AssortmentNotFoundError,
@@ -15,7 +15,7 @@ export default async function searchQuery(root, query, context) {
   if (assortmentId) {
     const assortment = Assortments.findOne({ _id: assortmentId });
     if (!assortment) throw new AssortmentNotFoundError({ assortmentId });
-    return assortment.search({
+    return assortment.searchProducts({
       query,
       forceLiveCollection,
       ignoreChildAssortments,
@@ -24,6 +24,5 @@ export default async function searchQuery(root, query, context) {
   }
 
   if (!queryString) throw new QueryStringRequiredError({});
-
-  return search({ query, forceLiveCollection, context });
+  return searchProducts({ query, forceLiveCollection, context });
 }

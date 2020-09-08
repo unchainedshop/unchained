@@ -259,7 +259,28 @@ export default [
         orderBy: SearchOrderBy
         includeInactive: Boolean = false
         ignoreChildAssortments: Boolean = false
-      ): SearchResult!
+      ): SearchResult! @deprecated(reason: "Please use searchProducts instead")
+
+      """
+      Search products
+      """
+      searchProducts(
+        queryString: String
+        filterQuery: [FilterQueryInput!]
+        assortmentId: ID
+        orderBy: SearchOrderBy
+        includeInactive: Boolean = false
+        ignoreChildAssortments: Boolean = false
+      ): ProductSearchResult!
+
+      """
+      Search assortments
+      """
+      searchAssortments(
+        queryString: String
+        orderBy: SearchOrderBy
+        includeInactive: Boolean = false
+      ): AssortmentSearchResult!
 
       """
       Get all work from the queue

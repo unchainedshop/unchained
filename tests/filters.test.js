@@ -396,13 +396,13 @@ describe('Filters', () => {
         ],
       });
 
-      const { data: { search } = {} } = await graphqlFetch({
+      const { data: { searchProducts } = {} } = await graphqlFetch({
         query: /* GraphQL */ `
-          query search(
+          query searchProducts(
             $queryString: String
             $filterQuery: [FilterQueryInput!]
           ) {
-            search(
+            searchProducts(
               queryString: $queryString
               filterQuery: $filterQuery
               includeInactive: true
@@ -432,7 +432,8 @@ describe('Filters', () => {
           filterQuery: null,
         },
       });
-      expect(search).toMatchObject({
+
+      expect(searchProducts).toMatchObject({
         totalProducts: 1,
         filters: [
           {

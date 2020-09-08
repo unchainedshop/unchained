@@ -11,7 +11,8 @@ class FilterAdapter {
 
   static version = '';
 
-  static isActivatedFor(context) { // eslint-disable-line
+  static isActivatedFor(context) {
+    // eslint-disable-line
     return false;
   }
 
@@ -19,26 +20,36 @@ class FilterAdapter {
     this.context = context;
   }
 
-  async search(productIds) { // eslint-disable-line
+  async searchProducts(productIds) {
+    // eslint-disable-line
     return productIds;
   }
 
-  async transformSortStage(lastStage) {  // eslint-disable-line
+  async searchAssortments(assortmentIds) {
+    // eslint-disable-line
+    return assortmentIds;
+  }
+
+  async transformSortStage(lastStage) {
+    // eslint-disable-line
     return lastStage;
   }
 
   // return a selector that is applied to Products.find to find relevant products
   // if no key is provided, it expects either null for all products or a list of products that are relevant
-  async transformProductSelector(lastSelector, { key, value }) { // eslint-disable-line
+  async transformProductSelector(lastSelector, { key, value }) {
+    // eslint-disable-line
     return lastSelector;
   }
 
   // return a selector that is applied to Filters.find to find relevant filters
-  async transformFilterSelector(lastSelector) { // eslint-disable-line
+  async transformFilterSelector(lastSelector) {
+    // eslint-disable-line
     return lastSelector;
   }
 
-  log(message, { level = 'debug', ...options } = {}) { // eslint-disable-line
+  log(message, { level = 'debug', ...options } = {}) {
+    // eslint-disable-line
     return log(message, { level, ...options });
   }
 }
@@ -63,9 +74,18 @@ class FilterDirector {
     }, defaultStage || null);
   }
 
-  async search(productIdResolver, options = {}) {
+  async searchAssortments(assortmentIdResolver, options = {}) {
     return this.reduceAdapters(async (lastSearchPromise, concreteAdapter) => {
-      return concreteAdapter.search(await lastSearchPromise, options);
+      return concreteAdapter.searchAssortments(
+        await lastSearchPromise,
+        options,
+      );
+    }, assortmentIdResolver || null);
+  }
+
+  async searchProducts(productIdResolver, options = {}) {
+    return this.reduceAdapters(async (lastSearchPromise, concreteAdapter) => {
+      return concreteAdapter.searchProducts(await lastSearchPromise, options);
     }, productIdResolver || null);
   }
 
@@ -82,7 +102,6 @@ class FilterDirector {
     const adapters = FilterDirector.sortedAdapters().filter((AdapterClass) =>
       AdapterClass.isActivatedFor(this.context),
     );
-
     if (adapters.length === 0) {
       return null;
     }
@@ -102,7 +121,9 @@ class FilterDirector {
   }
 
   static registerAdapter(adapter) {
-    log(`${this.name} -> Registered ${adapter.key} ${adapter.version} (${adapter.label})`) // eslint-disable-line
+    log(
+      `${this.name} -> Registered ${adapter.key} ${adapter.version} (${adapter.label})`,
+    ); // eslint-disable-line
     FilterDirector.adapters.set(adapter.key, adapter);
   }
 }

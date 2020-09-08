@@ -10,10 +10,25 @@ import { debounce, has, isEmpty } from 'lodash';
 import { useQuery } from '@apollo/client';
 import gql from 'graphql-tag';
 
+const SEARCH_ASSORTMENTS = gql`
+  query searchAssortments($queryString: String) {
+    searchAssortments(queryString: $queryString, includeInactive: true) {
+      assortments {
+        _id
+        isActive
+        texts {
+          _id
+          title
+          description
+        }
+      }
+    }
+  }
+`;
+
 const SEARCH_PRODUCTS = gql`
-  query search($queryString: String, $limit: Int) {
-    search(queryString: $queryString, includeInactive: true) {
-      totalProducts
+  query searchProducts($queryString: String, $limit: Int) {
+    searchProducts(queryString: $queryString, includeInactive: true) {
       products {
         _id
         status
@@ -38,16 +53,21 @@ const SEARCH_PRODUCTS = gql`
   }
 `;
 
-const ProductSearchDropdown = ({
+const SearchDropdown = ({
   onChange,
   value,
   optionValues,
   placeholder,
   disabled,
   uniforms,
+  queryType,
 }) => {
   const [queryString, setQueryString] = useState('');
-  const { data, loading } = useQuery(SEARCH_PRODUCTS, {
+
+  const QUERY =
+    queryType === 'assortments' ? SEARCH_ASSORTMENTS : SEARCH_PRODUCTS;
+
+  const { data, loading } = useQuery(QUERY, {
     variables: {
       queryString,
       limit: 1,
@@ -65,9 +85,9 @@ const ProductSearchDropdown = ({
 
   const imageComponent = <Icon name="image" size="mini" />;
 
-  const selectImage = (product) => {
-    if (isEmpty(product.media)) return imageComponent;
-    const foundImageObj = product.media.find((mediaObj) => {
+  const selectImage = (item) => {
+    if (isEmpty(item.media)) return imageComponent;
+    const foundImageObj = item.media.find((mediaObj) => {
       if (has(mediaObj, 'file.url')) {
         const imageObj = new Image();
         imageObj.src = mediaObj.file.url;
@@ -79,30 +99,45 @@ const ProductSearchDropdown = ({
       (foundImageObj && (
         <SemanticImage
           src={foundImageObj && foundImageObj.file && foundImageObj.file.url}
-          alt={foundImageObj.texts.title || product.texts.title}
+          alt={foundImageObj.texts.title || item.texts.title}
         />
       )) ||
       imageComponent
     );
   };
 
-  const options =
-    data?.search?.products.map((product) => {
+  const status = ({ isActive, status }) => {
+    if (status) {
       return {
-        key: product._id,
-        value: product._id,
-        text: product.texts.title,
+        status,
+        color: status === 'DRAFT' ? 'red' : 'green',
+      };
+    }
+    return {
+      status: isActive ? 'ACTIVE' : 'DRAFT',
+      color: isActive ? 'green' : 'red',
+    };
+  };
+
+  const items =
+    queryType === 'assortments'
+      ? data?.searchAssortments.assortments
+      : data?.searchProducts.products || [];
+
+  const options =
+    items?.map((item) => {
+      return {
+        key: item._id,
+        value: item._id,
+        text: item.texts.title,
         content: (
           <Header>
-            {selectImage(product)}
+            {selectImage(item)}
             <Header.Content>
-              {product.texts.title}
-              <Header.Subheader>{product.texts.description}</Header.Subheader>
-              <Label
-                color={product.status === 'DRAFT' ? 'red' : 'green'}
-                horizontal
-              >
-                {product.status}
+              {item.texts.title}
+              <Header.Subheader>{item.texts.description}</Header.Subheader>
+              <Label color={status(item).color} horizontal>
+                {status(item).status}
               </Label>
             </Header.Content>
           </Header>
@@ -115,8 +150,8 @@ const ProductSearchDropdown = ({
       search
       fluid
       selection
-      placeholder={placeholder || 'Select Product'}
-      name="product"
+      placeholder={placeholder || 'Select item'}
+      name="item"
       loading={loading}
       onChange={uniforms ? handleOnChange : onChange} // this is to handle uniforms custom field
       onSearchChange={debounce(handleSearchChange, 500, {
@@ -130,4 +165,4 @@ const ProductSearchDropdown = ({
     />
   );
 };
-export default ProductSearchDropdown;
+export default SearchDropdown;

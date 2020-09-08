@@ -22,8 +22,8 @@ Please see our [Contribution Guidelines](/docs/contributing.md).
 
 ### Prerequisites
 
-- Meteor 1.9
-- Node.js 12 (lts/erbium, see [.nvmrc](.nvmrc))
+- Meteor 1.11
+- Node.js 12.18.3 (lts/erbium, see [.nvmrc](.nvmrc))
 
 ### Run the example
 

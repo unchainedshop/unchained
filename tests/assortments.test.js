@@ -38,9 +38,7 @@ describe('Assortments', () => {
     });
 
     it('Return active assortments and include leaves', async () => {
-      const {
-        data: { assortments },
-      } = await graphqlFetch({
+      const result = await graphqlFetch({
         query: /* GraphQL */ `
           query Assortments(
             $limit: Int = 100
@@ -118,8 +116,7 @@ describe('Assortments', () => {
           includeLeaves: true,
         },
       });
-
-      expect(assortments.length).toEqual(5);
+      expect(result.data.assortments.length).toEqual(5);
     });
     it('Return all assortments and without leaves', async () => {
       const {
@@ -363,6 +360,80 @@ describe('Assortments', () => {
     });
   });
 
+  describe('Query.searchAssortments for admin user should', () => {
+    it('Return assortments successfuly', async () => {
+      const {
+        data: { searchAssortments },
+      } = await graphqlFetch({
+        query: /* GraphQL */ `
+          query searchAssortments($queryString: String) {
+            searchAssortments(
+              queryString: $queryString
+              includeInactive: true
+            ) {
+              totalAssortments
+              assortments {
+                _id
+                isActive
+                texts {
+                  _id
+                  title
+                  description
+                }
+              }
+            }
+          }
+        `,
+        variables: {
+          queryString: 'simple-assortment',
+        },
+      });
+
+      expect(searchAssortments.totalAssortments).toEqual(1);
+      expect(searchAssortments.assortments[0].texts).toMatchObject({
+        _id: 'german',
+        title: 'simple assortment de',
+        description: 'text-de',
+      });
+    });
+  });
+
+  describe('Query.searchAssortments for anonymous user should', () => {
+    it('Return assortments', async () => {
+      const graphqlAnonymousFetch = await createAnonymousGraphqlFetch();
+      const {
+        data: {
+          searchAssortments: { assortments },
+        },
+      } = await graphqlAnonymousFetch({
+        query: /* GraphQL */ `
+          query searchAssortments($queryString: String) {
+            searchAssortments(
+              queryString: $queryString
+              includeInactive: true
+            ) {
+              totalAssortments
+              assortments {
+                _id
+                isActive
+                texts {
+                  _id
+                  title
+                  description
+                }
+              }
+            }
+          }
+        `,
+        variables: {
+          queryString: 'simple-assortment',
+        },
+      });
+      
+      expect(Array.isArray(assortments)).toBe(true);
+    });
+  });
+
   describe('Query.assortments for anonymous user should', () => {
     it('return assortments', async () => {
       const graphqlAnonymousFetch = await createAnonymousGraphqlFetch();
@@ -382,6 +453,7 @@ describe('Assortments', () => {
       expect(Array.isArray(assortments)).toBe(true);
     });
   });
+
   describe('mutation.createAssortment for admin user should', () => {
     it('Create assortment successfuly', async () => {
       const {
