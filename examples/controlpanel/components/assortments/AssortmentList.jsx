@@ -2,15 +2,18 @@ import { compose, withState, withHandlers } from 'recompose';
 import gql from 'graphql-tag';
 import { graphql } from '@apollo/client/react/hoc';
 import React from 'react';
+import { withRouter } from 'next/router';
 import { Table, Icon, Button } from 'semantic-ui-react';
 import Link from 'next/link';
 import InfiniteDataTable, { withDataTableLoader } from '../InfiniteDataTable';
+import SearchDropdown from '../SearchDropdown';
 
 const AssortmentList = ({
   isShowLeafNodes,
   setShowLeafNodes,
   loading,
   mutate,
+  router,
   toggleShowLeafNodes,
   changeBaseAssortment,
   ...rest
@@ -19,6 +22,18 @@ const AssortmentList = ({
     {...rest}
     cols={3}
     createPath="/assortments/new"
+    searchComponent={
+      <SearchDropdown
+        placeholder="Select Assortment"
+        onChange={(e, result) => {
+          router.push({
+            pathname: '/assortments/edit',
+            query: { _id: result.value },
+          });
+        }}
+        queryType={'assortments'}
+      />
+    }
     rowRenderer={(assortment) => (
       <Table.Row key={assortment._id}>
         <Table.Cell>
@@ -65,6 +80,7 @@ const AssortmentList = ({
 
 export default compose(
   withState('isShowLeafNodes', 'setShowLeafNodes', false),
+  withRouter,
   withDataTableLoader({
     queryName: 'assortments',
     query: gql`

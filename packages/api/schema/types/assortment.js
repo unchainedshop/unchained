@@ -25,6 +25,13 @@ export default [
         includeInactive: Boolean = false
         ignoreChildAssortments: Boolean = false
         orderBy: SearchOrderBy
+      ): SearchResult! @deprecated(reason: "Please use searchProducts instead")
+      searchProducts(
+        queryString: String
+        filterQuery: [FilterQueryInput!]
+        includeInactive: Boolean = false
+        ignoreChildAssortments: Boolean = false
+        orderBy: SearchOrderBy
       ): SearchResult!
     }
 

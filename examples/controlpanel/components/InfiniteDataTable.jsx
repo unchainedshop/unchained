@@ -10,6 +10,7 @@ const InfiniteDataTable = ({
   cols = 4,
   rowRenderer,
   createPath,
+  searchComponent,
   data,
   children,
   loadMoreEntries,
@@ -17,21 +18,22 @@ const InfiniteDataTable = ({
   limit,
   ...rest
 }) => (
-    <Table celled {...rest}>
-      <Table.Header>
-        <Table.Row>
-          <Table.HeaderCell colSpan={cols}>
-            {createPath && (
-              <Link href={createPath}>
-                <Button
-                  floated="right"
-                  icon
-                  labelPosition="left"
-                  primary
-                  size="small"
-                  href={createPath}
-                >
-                  <Icon name="plus" />
+  <Table celled {...rest}>
+    <Table.Header>
+      <Table.Row>
+        <Table.HeaderCell colSpan={cols}>
+          {searchComponent && searchComponent}
+          {createPath && (
+            <Link href={createPath}>
+              <Button
+                floated="right"
+                icon
+                labelPosition="left"
+                primary
+                size="small"
+                href={createPath}
+              >
+                <Icon name="plus" />
                 Add
               </Button>
               </Link>

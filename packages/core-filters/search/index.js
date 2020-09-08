@@ -1,17 +1,29 @@
-import facetedSearch from './faceted-search';
-import fulltextSearch from './fulltext-search';
+import productFacetedSearch from './product-faceted-search';
+import productFulltextSearch from './product-fulltext-search';
+import assortmentFulltextSearch from './assortment-fulltext-search';
 import resolveProductSelector from './resolve-product-selector';
+import resolveAssortmentSelector from './resolve-assortment-selector';
 import resolveFilterSelector from './resolve-filter-selector';
 import resolveSortStage from './resolve-sort-stage';
 import parseQueryArray from './parse-query-array';
 
-const cleanQuery = ({ filterQuery, productIds = null, ...query }) => ({
+const cleanQuery = ({
+  filterQuery,
+  assortmentIds = null,
+  productIds = null,
+  ...query
+}) => ({
   filterQuery: parseQueryArray(filterQuery),
   productIds: Promise.resolve(productIds),
+  assortmentIds: Promise.resolve(assortmentIds),
   ...query,
 });
 
-const search = async ({ query: rawQuery, forceLiveCollection, context }) => {
+const searchProducts = async ({
+  query: rawQuery,
+  forceLiveCollection,
+  context,
+}) => {
   const query = cleanQuery(rawQuery);
   const filterSelector = resolveFilterSelector(query);
   const productSelector = resolveProductSelector(query);
@@ -35,12 +47,12 @@ const search = async ({ query: rawQuery, forceLiveCollection, context }) => {
       ...searchConfiguration,
     };
   }
-
-  const totalProductIds = fulltextSearch(searchConfiguration)(
+  const totalProductIds = productFulltextSearch(searchConfiguration)(
     query?.productIds,
   );
+
   const filteredProductIds = totalProductIds.then(
-    facetedSearch(searchConfiguration),
+    productFacetedSearch(searchConfiguration),
   );
 
   return {
@@ -50,6 +62,41 @@ const search = async ({ query: rawQuery, forceLiveCollection, context }) => {
   };
 };
 
-export default search;
+const searchAssortments = async ({
+  query: rawQuery,
+  forceLiveCollection,
+  context,
+}) => {
+  const query = cleanQuery(rawQuery);
+  const filterSelector = resolveFilterSelector(query);
+  const assortmentSelector = resolveAssortmentSelector(query);
+  const sortStage = resolveSortStage(query);
 
-export { facetedSearch, fulltextSearch, search };
+  const searchConfiguration = {
+    query,
+    filterSelector,
+    assortmentSelector,
+    sortStage,
+    context,
+    forceLiveCollection,
+  };
+
+  const totalAssortmentIds = assortmentFulltextSearch(searchConfiguration)(
+    query?.productIds,
+  );
+
+  return {
+    totalAssortmentIds,
+    ...searchConfiguration,
+  };
+};
+
+export default searchProducts;
+
+export {
+  productFacetedSearch,
+  productFulltextSearch,
+  assortmentFulltextSearch,
+  searchProducts,
+  searchAssortments,
+};

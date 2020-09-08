@@ -6,7 +6,8 @@ import { withRouter } from 'next/router';
 import { Table, Icon, Button, Loader, Label } from 'semantic-ui-react';
 import InfiniteScroll from 'react-infinite-scroller';
 import Link from 'next/link';
-import ProductSearchDropdown from './ProductSearchDropdown';
+import SearchDropdown from '../SearchDropdown';
+
 
 const ProductList = ({ products, loadMoreEntries, hasMore, router }) => {
   return (
@@ -14,7 +15,7 @@ const ProductList = ({ products, loadMoreEntries, hasMore, router }) => {
       <Table.Header>
         <Table.Row>
           <Table.HeaderCell colSpan="3">
-            <ProductSearchDropdown
+            <SearchDropdown
               onChange={(e, result) => {
                 router.push({
                   pathname: '/products/edit',

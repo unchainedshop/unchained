@@ -301,6 +301,10 @@ export default async function seedProducts(db) {
   await db.collection('product_texts').createIndex({
     title: 'text',
   });
+  await db.collection('assortment_texts').createIndex({
+    title: 'text',
+  });
+
   await db
     .collection('products')
     .insertMany([

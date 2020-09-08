@@ -10,11 +10,11 @@ import AutoField from 'uniforms-semantic/AutoField';
 import SubmitField from 'uniforms-semantic/SubmitField';
 import ErrorsField from 'uniforms-semantic/ErrorsField';
 import AutoForm from 'uniforms-semantic/AutoForm';
-import ProductSearchDropdown from '../products/ProductSearchDropdown';
+import SearchDropdown from '../SearchDropdown';
 import withFormSchema from '../../lib/withFormSchema';
 import withFormErrorHandlers from '../../lib/withFormErrorHandlers';
 
-const ProductSearchDropdownField = connectField(ProductSearchDropdown);
+const ProductSearchDropdownField = connectField(SearchDropdown);
 
 const FormNewAssortmentProduct = ({
   products,
