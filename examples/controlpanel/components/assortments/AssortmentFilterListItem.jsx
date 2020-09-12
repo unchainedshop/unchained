@@ -1,15 +1,35 @@
 import React from 'react';
+import Link from 'next/link';
 import { compose, withHandlers } from 'recompose';
-import { Item, Button } from 'semantic-ui-react';
-import { SortableElement } from 'react-sortable-hoc';
+import { Item, Button, Icon, List, Label } from 'semantic-ui-react';
+import { SortableElement, SortableHandle } from 'react-sortable-hoc';
 import gql from 'graphql-tag';
 import { graphql } from '@apollo/client/react/hoc';
 
-const AssortmentFilterListItem = ({ filter, removeAssortmentFilter }) => (
+const DragHandle = SortableHandle(() => (
+  <Icon name="arrows alternate vertical" link size="small" />
+));
+
+const AssortmentFilterListItem = ({ filter, removeAssortmentFilter, tags }) => (
   <Item>
     <Item.Content>
       <Item.Header>
-        {filter.texts ? filter.texts.title : filter.key}
+        <List as="ol">
+          <List.Item as="li" value="">
+            <DragHandle />
+            <Link href={`/filters/edit?_id=${filter._id}`}>
+              <>
+                <a href={`/filters/edit?_id=${filter._id}`}>
+                  {filter.texts ? filter.texts.title : filter.key}
+                </a>
+                {tags &&
+                  tags.map((tag) => {
+                    return <Label>{tag}</Label>;
+                  })}
+              </>
+            </Link>
+          </List.Item>
+        </List>
       </Item.Header>
       <Item.Extra>
         <Button secondary floated="right" onClick={removeAssortmentFilter}>
