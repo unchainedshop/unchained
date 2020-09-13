@@ -25,9 +25,9 @@ export const PeriodSchema = new SimpleSchema(
 
 export const Schema = new SimpleSchema(
   {
-    userId: { type: String, required: true, index: true },
-    status: { type: String, required: true, index: true },
-    productId: { type: String, required: true, index: true },
+    userId: { type: String, required: true },
+    status: { type: String, required: true },
+    productId: { type: String, required: true },
     quantity: { type: Number },
     configuration: Array,
     'configuration.$': {
@@ -64,3 +64,7 @@ export const Schema = new SimpleSchema(
 );
 
 Subscriptions.attachSchema(Schema);
+
+Subscriptions.rawCollection().createIndex({ userId: 1 });
+Subscriptions.rawCollection().createIndex({ productId: 1 });
+Subscriptions.rawCollection().createIndex({ status: 1 });
