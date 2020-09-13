@@ -59,10 +59,10 @@ Collections.AssortmentProducts.attachSchema(
 Collections.AssortmentLinks.attachSchema(
   new SimpleSchema(
     {
-      parentAssortmentId: { type: String, required: true, index: true },
-      childAssortmentId: { type: String, required: true, index: true },
+      parentAssortmentId: { type: String, required: true },
+      childAssortmentId: { type: String, required: true },
       sortKey: { type: Number, required: true },
-      tags: { type: Array, index: true },
+      tags: Array,
       'tags.$': String,
       meta: { type: Object, blackbox: true },
       authorId: { type: String, required: true },
@@ -241,6 +241,17 @@ export default () => {
     productId: 1,
   });
   Collections.AssortmentProducts.rawCollection().createIndex({
+    tags: 1,
+  });
+
+  // AssortmentLinks indices
+  Collections.AssortmentLinks.rawCollection().createIndex({
+    parentAssortmentId: 1,
+  });
+  Collections.AssortmentLinks.rawCollection().createIndex({
+    childAssortmentId: 1,
+  });
+  Collections.AssortmentLinks.rawCollection().createIndex({
     tags: 1,
   });
 };
