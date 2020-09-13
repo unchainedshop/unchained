@@ -21,7 +21,7 @@ const calculationFields = {
 OrderPayments.attachSchema(
   new SimpleSchema(
     {
-      orderId: { type: String, index: true },
+      orderId: String,
       paymentProviderId: String,
       paid: Date,
       status: String,
@@ -33,5 +33,7 @@ OrderPayments.attachSchema(
     { requiredByDefault: false },
   ),
 );
+
+OrderPayments.rawCollection().createIndex({ orderId: 1 });
 
 export default OrderPaymentStatus;
