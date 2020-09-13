@@ -21,7 +21,7 @@ export const OrderDeliveryStatus = {
 OrderDeliveries.attachSchema(
   new SimpleSchema(
     {
-      orderId: { type: String, index: true },
+      orderId: String,
       deliveryProviderId: String,
       delivered: Date,
       status: String,
@@ -33,5 +33,7 @@ OrderDeliveries.attachSchema(
     { requiredByDefault: false },
   ),
 );
+
+OrderDeliveries.rawCollection().createIndex({ orderId: 1 });
 
 export default OrderDeliveryStatus;
