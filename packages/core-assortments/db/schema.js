@@ -43,10 +43,10 @@ Collections.AssortmentTexts.attachSchema(
 Collections.AssortmentProducts.attachSchema(
   new SimpleSchema(
     {
-      assortmentId: { type: String, required: true, index: true },
-      productId: { type: String, required: true, index: true },
+      assortmentId: { type: String, required: true },
+      productId: { type: String, required: true },
       sortKey: { type: Number, required: true },
-      tags: { type: Array, index: true },
+      tags: Array,
       'tags.$': String,
       meta: { type: Object, blackbox: true },
       authorId: { type: String, required: true },
@@ -232,4 +232,15 @@ export default () => {
   });
   Collections.AssortmentTexts.rawCollection().createIndex({ locale: 1 });
   Collections.AssortmentTexts.rawCollection().createIndex({ slug: 1 });
+
+  // AssortmentProducts indexes
+  Collections.AssortmentProducts.rawCollection().createIndex({
+    assortmentId: 1,
+  });
+  Collections.AssortmentProducts.rawCollection().createIndex({
+    productId: 1,
+  });
+  Collections.AssortmentProducts.rawCollection().createIndex({
+    tags: 1,
+  });
 };
