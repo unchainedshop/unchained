@@ -13,7 +13,7 @@ export const PaymentProviderType = {
 PaymentProviders.attachSchema(
   new SimpleSchema(
     {
-      type: { type: String, required: true, index: true },
+      type: { type: String, required: true },
       adapterKey: { type: String, required: true },
       authorId: { type: String, required: true },
       configuration: { type: Array },
@@ -29,8 +29,8 @@ PaymentProviders.attachSchema(
 PaymentCredentials.attachSchema(
   new SimpleSchema(
     {
-      paymentProviderId: { type: String, required: true, index: true },
-      userId: { type: String, required: true, index: true },
+      paymentProviderId: { type: String, required: true },
+      userId: { type: String, required: true },
       token: String,
       isPreferred: Boolean,
       meta: { type: Object, blackbox: true },
@@ -98,4 +98,8 @@ Migrations.add({
 
 export default () => {
   Migrations.migrateTo('latest');
+  PaymentProviders.rawCollection().createIndex({ type: 1 });
+
+  PaymentCredentials.rawCollection().createIndex({ paymentProviderId: 1 });
+  PaymentCredentials.rawCollection().createIndex({ userId: 1 });
 };
