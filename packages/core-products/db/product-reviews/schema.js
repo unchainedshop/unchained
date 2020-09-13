@@ -11,8 +11,8 @@ export const ProductReviewVoteTypes = { // eslint-disable-line
 ProductReviews.attachSchema(
   new SimpleSchema(
     {
-      productId: { type: String, required: true, index: true },
-      authorId: { type: String, required: true, index: true },
+      productId: { type: String, required: true },
+      authorId: { type: String, required: true },
       rating: {
         type: SimpleSchema.Integer,
         min: 1,
@@ -36,3 +36,6 @@ ProductReviews.attachSchema(
     { requiredByDefault: false },
   ),
 );
+
+ProductReviews.rawCollection().createIndex({ productId: 1 });
+ProductReviews.rawCollection().createIndex({ authorId: 1 });
