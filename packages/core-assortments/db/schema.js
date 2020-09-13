@@ -6,13 +6,13 @@ import * as Collections from './collections';
 Collections.Assortments.attachSchema(
   new SimpleSchema(
     {
-      isActive: { type: Boolean, index: true },
-      isRoot: { type: Boolean, index: true },
-      sequence: { type: Number, required: true, index: true },
+      isActive: Boolean,
+      isRoot: Boolean,
+      sequence: { type: Number, required: true },
       isBase: Boolean,
-      slugs: { type: Array, index: true },
+      slugs: Array,
       'slugs.$': String,
-      tags: { type: Array, index: true },
+      tags: Array,
       'tags.$': String,
       meta: { type: Object, blackbox: true },
       _cachedProductIds: Array,
@@ -219,4 +219,10 @@ Migrations.add({
 
 export default () => {
   Migrations.migrateTo('latest');
+  // Assortment Indexes
+  Collections.Assortments.rawCollection().createIndex({ isActive: 1 });
+  Collections.Assortments.rawCollection().createIndex({ isRoot: 1 });
+  Collections.Assortments.rawCollection().createIndex({ squence: 1 });
+  Collections.Assortments.rawCollection().createIndex({ slugs: 1 });
+  Collections.Assortments.rawCollection().createIndex({ tags: 1 });
 };
