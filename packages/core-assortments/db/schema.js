@@ -217,6 +217,19 @@ Migrations.add({
   },
 });
 
+Migrations.add({
+  version: 20200913,
+  name: 'drop assortment related indexes',
+  up() {
+    Collections.Assortments.rawCollection().dropIndexes();
+    Collections.AssortmentTexts.rawCollection().dropIndexes();
+    Collections.AssortmentProducts.rawCollection().dropIndexes();
+    Collections.AssortmentLinks.rawCollection().dropIndexes();
+    Collections.AssortmentFilters.rawCollection().dropIndexes();
+  },
+  down() {},
+});
+
 export default () => {
   Migrations.migrateTo('latest');
   // Assortment Indexes
