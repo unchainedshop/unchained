@@ -12,7 +12,7 @@ export const DeliveryProviderType = {
 DeliveryProviders.attachSchema(
   new SimpleSchema(
     {
-      type: { type: String, required: true, index: true },
+      type: { type: String, required: true },
       adapterKey: { type: String, required: true },
       authorId: { type: String, required: true },
       configuration: { type: Array },
@@ -83,4 +83,5 @@ Migrations.add({
 
 export default () => {
   Migrations.migrateTo('latest');
+  DeliveryProviders.rawCollection().createIndex({ type: 1 });
 };
