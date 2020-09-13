@@ -88,18 +88,18 @@ const ProductBundleItemSchema = new SimpleSchema({
 Products.attachSchema(
   new SimpleSchema(
     {
-      sequence: { type: Number, required: true, index: true },
-      slugs: { type: Array, index: true },
+      sequence: { type: Number, required: true },
+      slugs: Array,
       'slugs.$': String,
       type: {
         type: String,
         allowedValues: Object.values(ProductTypes),
         required: true,
       },
-      status: { type: String, index: true },
+      status: String,
       authorId: { type: String, required: true },
       published: Date,
-      tags: { type: Array, index: true },
+      tags: Array,
       'tags.$': String,
       commerce: ProductCommerceSchema,
       warehousing: ProductWarehousingSchema,
@@ -118,16 +118,21 @@ Products.attachSchema(
   ),
 );
 
+Products.rawCollection().createIndex({ sequence: 1 });
+Products.rawCollection().createIndex({ slugs: 1 });
+Products.rawCollection().createIndex({ status: 1 });
+Products.rawCollection().createIndex({ tags: 1 });
+
 ProductTexts.attachSchema(
   new SimpleSchema(
     {
-      productId: { type: String, required: true, index: true },
-      locale: { type: String, required: true, index: true },
+      productId: { type: String, required: true },
+      locale: { type: String, required: true },
       authorId: { type: String, required: true },
       vendor: String,
       brand: String,
       title: String,
-      slug: { type: String, index: true },
+      slug: String,
       subtitle: String,
       description: String,
       labels: Array,
@@ -137,3 +142,7 @@ ProductTexts.attachSchema(
     { requiredByDefault: false },
   ),
 );
+
+ProductTexts.rawCollection().createIndex({ productId: 1 });
+ProductTexts.rawCollection().createIndex({ locale: 1 });
+ProductTexts.rawCollection().createIndex({ slug: 1 });
