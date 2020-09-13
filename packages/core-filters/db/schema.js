@@ -13,12 +13,10 @@ export const FilterTypes = {
 Filters.attachSchema(
   new SimpleSchema(
     {
-      isActive: { type: Boolean, index: true },
+      isActive: Boolean,
       key: {
         type: String,
         required: true,
-        index: true,
-        unique: true,
       },
       type: { type: String, required: true },
       options: Array,
@@ -106,4 +104,7 @@ Migrations.add({
 
 export default () => {
   Migrations.migrateTo('latest');
+  Filters.rawCollection().createIndex({ isActive: 1 });
+  Filters.rawCollection().createIndex({ key: 1 }, { unique: true });
+  Filters.rawCollection().createIndex({ key: 1 }, { unique: true });
 };
