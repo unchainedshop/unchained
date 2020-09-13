@@ -13,7 +13,5 @@ Bookmarks.attachSchema(
   ),
 );
 
-export default () => {
-  Bookmarks.rawCollection().createIndex({ userId: 1 });
-  Bookmarks.rawCollection().createIndex({ productId: 1 });
-};
+Bookmarks.rawCollection().createIndex({ userId: 1 });
+Bookmarks.rawCollection().createIndex({ productId: 1 });

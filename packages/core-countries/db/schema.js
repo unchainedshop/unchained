@@ -8,8 +8,6 @@ Countries.attachSchema(
       isoCode: {
         type: String,
         required: true,
-        index: true,
-        unique: true,
       },
       isActive: Boolean,
       isBase: Boolean,
@@ -20,3 +18,4 @@ Countries.attachSchema(
     { requiredByDefault: false },
   ),
 );
+Countries.rawCollection().createIndex({ isoCode: 1 }, { unique: true });
