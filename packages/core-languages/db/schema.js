@@ -8,8 +8,6 @@ Languages.attachSchema(
       isoCode: {
         type: String,
         required: true,
-        index: true,
-        unique: true,
       },
       isActive: Boolean,
       isBase: Boolean,
@@ -19,3 +17,5 @@ Languages.attachSchema(
     { requiredByDefault: false },
   ),
 );
+
+Languages.rawCollection().createIndex({ isoCode: 1 }, { unique: true });
