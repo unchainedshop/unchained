@@ -5,10 +5,10 @@ import { ProductMedia, ProductMediaTexts } from './collections';
 ProductMedia.attachSchema(
   new SimpleSchema(
     {
-      mediaId: { type: String, required: true, index: true },
-      productId: { type: String, required: true, index: true },
+      mediaId: { type: String, required: true },
+      productId: { type: String, required: true },
       sortKey: { type: Number, required: true },
-      tags: { type: Array, index: true },
+      tags: Array,
       'tags.$': String,
       meta: { type: Object, blackbox: true },
       authorId: { type: String, required: true },
@@ -17,6 +17,10 @@ ProductMedia.attachSchema(
     { requiredByDefault: false },
   ),
 );
+
+ProductMedia.rawCollection().createIndex({ mediaId: 1 });
+ProductMedia.rawCollection().createIndex({ productId: 1 });
+ProductMedia.rawCollection().createIndex({ tags: 1 });
 
 ProductMediaTexts.attachSchema(
   new SimpleSchema(
