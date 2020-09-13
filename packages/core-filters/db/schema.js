@@ -33,9 +33,9 @@ Filters.attachSchema(
 FilterTexts.attachSchema(
   new SimpleSchema(
     {
-      filterId: { type: String, required: true, index: true },
-      filterOptionValue: { type: String, index: true },
-      locale: { type: String, index: true },
+      filterId: { type: String, required: true },
+      filterOptionValue: String,
+      locale: String,
       title: String,
       subtitle: String,
       authorId: { type: String, required: true },
@@ -107,4 +107,9 @@ export default () => {
   Filters.rawCollection().createIndex({ isActive: 1 });
   Filters.rawCollection().createIndex({ key: 1 }, { unique: true });
   Filters.rawCollection().createIndex({ key: 1 }, { unique: true });
+
+  // FilterTexts indexes
+  FilterTexts.rawCollection().createIndex({ filterId: 1 });
+  FilterTexts.rawCollection().createIndex({ filterOptionValue: 1 });
+  FilterTexts.rawCollection().createIndex({ locale: 1 });
 };
