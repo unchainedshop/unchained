@@ -11,7 +11,7 @@ export const ProductVariationType = {
 ProductVariations.attachSchema(
   new SimpleSchema(
     {
-      productId: { type: String, required: true, index: true },
+      productId: { type: String, required: true },
       key: String,
       type: String,
       options: Array,
@@ -23,16 +23,17 @@ ProductVariations.attachSchema(
   ),
 );
 
+ProductVariations.rawCollection().createIndex({ productId: 1 });
+
 ProductVariationTexts.attachSchema(
   new SimpleSchema(
     {
       productVariationId: {
         type: String,
         required: true,
-        index: true,
       },
       productVariationOptionValue: String,
-      locale: { type: String, index: true },
+      locale: String,
       title: String,
       subtitle: String,
       authorId: { type: String, required: true },
@@ -41,3 +42,6 @@ ProductVariationTexts.attachSchema(
     { requiredByDefault: false },
   ),
 );
+
+ProductVariationTexts.rawCollection().createIndex({ productVariationId: 1 });
+ProductVariationTexts.rawCollection().createIndex({ locale: 1 });
