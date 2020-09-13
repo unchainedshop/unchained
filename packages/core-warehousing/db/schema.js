@@ -11,13 +11,13 @@ export const WarehousingProviderType = {
 WarehousingProviders.attachSchema(
   new SimpleSchema(
     {
-      type: { type: String, required: true, index: true },
+      type: { type: String, required: true },
       adapterKey: { type: String, required: true },
       authorId: { type: String, required: true },
-      configuration: { type: Array },
-      'configuration.$': { type: Object },
-      'configuration.$.key': { type: String },
-      'configuration.$.value': { type: String },
+      configuration: Array,
+      'configuration.$': Object,
+      'configuration.$.key': String,
+      'configuration.$.value': String,
       ...Schemas.timestampFields,
     },
     { requiredByDefault: false },
@@ -59,4 +59,5 @@ Migrations.add({
 
 export default () => {
   Migrations.migrateTo('latest');
+  WarehousingProviders.rawCollection().createIndex({ type: 1 });
 };
