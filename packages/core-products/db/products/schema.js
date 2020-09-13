@@ -34,7 +34,7 @@ const ProductCommerceSchema = new SimpleSchema(
 const ProductWarehousingSchema = new SimpleSchema(
   {
     baseUnit: String,
-    sku: { type: String, index: true },
+    sku: String,
   },
   { requiredByDefault: false },
 );
@@ -122,7 +122,7 @@ Products.rawCollection().createIndex({ sequence: 1 });
 Products.rawCollection().createIndex({ slugs: 1 });
 Products.rawCollection().createIndex({ status: 1 });
 Products.rawCollection().createIndex({ tags: 1 });
-
+Products.rawCollection().createIndex({ 'warehousing.sku': 1 });
 ProductTexts.attachSchema(
   new SimpleSchema(
     {
