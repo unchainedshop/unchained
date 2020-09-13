@@ -22,9 +22,9 @@ const calculationFields = {
 Orders.attachSchema(
   new SimpleSchema(
     {
-      userId: { type: String, index: true },
-      status: { type: String, index: true },
-      orderNumber: { type: String, index: true, unique: true },
+      userId: String,
+      status: String,
+      orderNumber: String,
       ordered: Date,
       confirmed: Date,
       fullfilled: Date,
@@ -43,5 +43,9 @@ Orders.attachSchema(
     { requiredByDefault: false },
   ),
 );
+
+Orders.rawCollection().createIndex({ userId: 1 });
+Orders.rawCollection().createIndex({ status: 1 });
+Orders.rawCollection().createIndex({ orderNumber: 1 }, { unique: true });
 
 export default OrderStatus;
