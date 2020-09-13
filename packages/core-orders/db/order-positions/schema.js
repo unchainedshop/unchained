@@ -32,8 +32,8 @@ const calculationFields = {
 OrderPositions.attachSchema(
   new SimpleSchema(
     {
-      productId: { type: String, index: true },
-      orderId: { type: String, index: true },
+      productId: String,
+      orderId: String,
       originalProductId: { type: String },
       quotationId: { type: String },
       quantity: Number,
@@ -44,3 +44,6 @@ OrderPositions.attachSchema(
     { requiredByDefault: false },
   ),
 );
+
+OrderPositions.rawCollection().createIndex({ productId: 1 });
+OrderPositions.rawCollection().createIndex({ orderId: 1 });
