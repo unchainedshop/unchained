@@ -16,9 +16,9 @@ export const QuotationStatus = {
 Quotations.attachSchema(
   new SimpleSchema(
     {
-      userId: { type: String, required: true, index: true },
-      productId: { type: String, required: true, index: true },
-      status: { type: String, required: true, index: true },
+      userId: { type: String, required: true },
+      productId: { type: String, required: true },
+      status: { type: String, required: true },
       quotationNumber: String,
       price: Number,
       expires: Date,
@@ -46,6 +46,10 @@ Quotations.attachSchema(
     { requiredByDefault: false },
   ),
 );
+
+Quotations.rawCollection().createIndex({ userId: 1 });
+Quotations.rawCollection().createIndex({ productId: 1 });
+Quotations.rawCollection().createIndex({ status: 1 });
 
 Migrations.add({
   version: 20191014,
