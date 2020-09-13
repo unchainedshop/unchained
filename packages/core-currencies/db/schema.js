@@ -8,8 +8,6 @@ Currencies.attachSchema(
       isoCode: {
         type: String,
         required: true,
-        index: true,
-        unique: true,
       },
       isActive: Boolean,
       authorId: { type: String, required: true },
@@ -18,3 +16,5 @@ Currencies.attachSchema(
     { requiredByDefault: false },
   ),
 );
+
+Currencies.rawCollection().createIndex({ isoCode: 1 }, { unique: true });
