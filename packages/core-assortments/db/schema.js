@@ -27,12 +27,12 @@ Collections.Assortments.attachSchema(
 Collections.AssortmentTexts.attachSchema(
   new SimpleSchema(
     {
-      assortmentId: { type: String, required: true, index: true },
-      locale: { type: String, required: true, index: true },
+      assortmentId: { type: String, required: true },
+      locale: { type: String, required: true },
       title: String,
       subtitle: String,
       description: String,
-      slug: { type: String, index: true },
+      slug: String,
       authorId: { type: String, required: true },
       ...Schemas.timestampFields,
     },
@@ -225,4 +225,11 @@ export default () => {
   Collections.Assortments.rawCollection().createIndex({ squence: 1 });
   Collections.Assortments.rawCollection().createIndex({ slugs: 1 });
   Collections.Assortments.rawCollection().createIndex({ tags: 1 });
+
+  // AssortmentTexts indexes
+  Collections.AssortmentTexts.rawCollection().createIndex({
+    assortmentId: 1,
+  });
+  Collections.AssortmentTexts.rawCollection().createIndex({ locale: 1 });
+  Collections.AssortmentTexts.rawCollection().createIndex({ slug: 1 });
 };
