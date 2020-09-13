@@ -28,9 +28,8 @@ ProductMediaTexts.attachSchema(
       productMediaId: {
         type: String,
         required: true,
-        index: true,
       },
-      locale: { type: String, index: true },
+      locale: String,
       authorId: { type: String, required: true },
       title: String,
       subtitle: String,
@@ -39,3 +38,6 @@ ProductMediaTexts.attachSchema(
     { requiredByDefault: false },
   ),
 );
+
+ProductMediaTexts.rawCollection().createIndex({ productMediaId: 1 });
+ProductMediaTexts.rawCollection().createIndex({ locale: 1 });
