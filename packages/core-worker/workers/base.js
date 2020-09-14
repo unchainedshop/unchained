@@ -42,7 +42,7 @@ class BaseWorker {
   }
 
   async reset(referenceDate = new Date()) {
-    return this.WorkerDirector.markOldWorkFailed({
+    await this.WorkerDirector.markOldWorkFailed({
       types: this.getInternalTypes(),
       worker: this.workerId,
       referenceDate,
