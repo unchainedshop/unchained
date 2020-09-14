@@ -1,5 +1,7 @@
 import SimpleSchema from 'simpl-schema';
 import { Schemas } from 'meteor/unchained:utils';
+import { Migrations } from 'meteor/percolate:migrations';
+
 import { ProductVariations, ProductVariationTexts } from './collections';
 
 // eslint-disable-next-line
@@ -23,8 +25,6 @@ ProductVariations.attachSchema(
   ),
 );
 
-ProductVariations.rawCollection().createIndex({ productId: 1 });
-
 ProductVariationTexts.attachSchema(
   new SimpleSchema(
     {
@@ -43,5 +43,20 @@ ProductVariationTexts.attachSchema(
   ),
 );
 
-ProductVariationTexts.rawCollection().createIndex({ productVariationId: 1 });
-ProductVariationTexts.rawCollection().createIndex({ locale: 1 });
+Migrations.add({
+  version: 20200915.6,
+  name: 'drop ProductVariations & ProductVariationTexts related indexes',
+  up() {
+    ProductVariations.rawCollection().dropIndexes();
+    ProductVariationTexts.rawCollection().dropIndexes();
+  },
+  down() {},
+});
+
+export default () => {
+  Migrations.migrateTo('latest');
+  ProductVariations.rawCollection().createIndex({ productId: 1 });
+
+  ProductVariationTexts.rawCollection().createIndex({ productVariationId: 1 });
+  ProductVariationTexts.rawCollection().createIndex({ locale: 1 });
+};
