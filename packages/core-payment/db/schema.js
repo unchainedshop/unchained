@@ -96,10 +96,19 @@ Migrations.add({
   },
 });
 
+Migrations.add({
+  version: 20200915.3,
+  name: 'drop PaymentProvider & PaymentCredentials related indexes',
+  up() {
+    PaymentProviders.rawCollection().dropIndexes();
+    PaymentCredentials.rawCollection().dropIndexes();
+  },
+  down() {},
+});
+
 export default () => {
   Migrations.migrateTo('latest');
   PaymentProviders.rawCollection().createIndex({ type: 1 });
-
   PaymentCredentials.rawCollection().createIndex({ paymentProviderId: 1 });
   PaymentCredentials.rawCollection().createIndex({ userId: 1 });
 };
