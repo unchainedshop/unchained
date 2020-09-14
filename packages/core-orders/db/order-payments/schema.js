@@ -1,5 +1,7 @@
 import { Schemas } from 'meteor/unchained:utils';
 import SimpleSchema from 'simpl-schema';
+import { Migrations } from 'meteor/percolate:migrations';
+
 import { OrderPayments } from './collections';
 
 const { logFields, contextFields, timestampFields } = Schemas;
@@ -36,4 +38,16 @@ OrderPayments.attachSchema(
 
 OrderPayments.rawCollection().createIndex({ orderId: 1 });
 
-export default OrderPaymentStatus;
+Migrations.add({
+  version: 20200914.9,
+  name: 'drop OrderPayments related indexes',
+  up() {
+    OrderPayments.rawCollection().dropIndexes();
+  },
+  down() {},
+});
+
+export default () => {
+  Migrations.migrateTo('latest');
+  OrderPayments.rawCollection().createIndex({ orderId: 1 });
+};
