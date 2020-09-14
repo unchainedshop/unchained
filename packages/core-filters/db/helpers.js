@@ -327,12 +327,12 @@ Filters.helpers({
       return allProductIds;
     }
 
-    const reducedValues = values.reduce((accumulator, value) => {
+    const reducedByValues = values.reduce((accumulator, value) => {
       const additionalValues =
         value === undefined ? allProductIds : productIds[value];
       return [...accumulator, ...(additionalValues || [])];
     }, []);
-    return reducedValues;
+    return reducedByValues;
   },
   intersect({ values, forceLiveCollection, productIdSet }) {
     if (!values) return productIdSet;
@@ -340,7 +340,10 @@ Filters.helpers({
       values,
       forceLiveCollection,
     });
-    return new Set(filterOptionProductIds.filter((x) => productIdSet.has(x)));
+    const filterOptionProductIdSet = new Set(filterOptionProductIds);
+    return new Set(
+      [...productIdSet].filter((x) => filterOptionProductIdSet.has(x)),
+    );
   },
   optionsForFilterType(type) {
     if (type === FilterTypes.SWITCH) return ['true', 'false'];
