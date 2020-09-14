@@ -1,6 +1,7 @@
 import { Schemas } from 'meteor/unchained:utils';
 import SimpleSchema from 'simpl-schema';
 import { Migrations } from 'meteor/percolate:migrations';
+
 import { Bookmarks } from './collections';
 
 Bookmarks.attachSchema(
