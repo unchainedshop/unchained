@@ -81,6 +81,15 @@ Migrations.add({
   },
 });
 
+Migrations.add({
+  version: 20200914.4,
+  name: 'drop deliveryProviders related indexes',
+  up() {
+    DeliveryProviders.rawCollection().dropIndexes();
+  },
+  down() {},
+});
+
 export default () => {
   Migrations.migrateTo('latest');
   DeliveryProviders.rawCollection().createIndex({ type: 1 });
