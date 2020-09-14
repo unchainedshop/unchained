@@ -10,7 +10,7 @@ const BreadcrumbTrail = ({ assortmentPaths }) => {
             {pathIndex > 0 && linkIndex === 0 && <br />}
             <Breadcrumb.Section
               key={link.assortmentId}
-              href={`edit?_id=${link.assortmentId}`}
+              href={`?_id=${link.assortmentId}`}
               link
             >
               {link.assortmentTexts.title}
