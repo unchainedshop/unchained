@@ -9,61 +9,68 @@ import {
 import { debounce, has, isEmpty } from 'lodash';
 import { useQuery } from '@apollo/client';
 import gql from 'graphql-tag';
-
-const SEARCH_ASSORTMENTS = gql`
-  query searchAssortments($queryString: String) {
-    searchAssortments(queryString: $queryString, includeInactive: true) {
-      assortments {
-        _id
-        isActive
-        texts {
-          _id
-          title
-          description
-        }
-      }
-    }
-  }
-`;
-
-const SEARCH_PRODUCTS = gql`
-  query searchProducts($queryString: String, $limit: Int) {
-    searchProducts(queryString: $queryString, includeInactive: true) {
-      products {
-        _id
-        status
-        texts {
-          _id
-          title
-          description
-        }
-        media(limit: $limit) {
-          texts {
-            _id
-            title
-          }
-          file {
-            _id
-            url
-            name
-          }
-        }
-      }
-    }
-  }
-`;
+import classnames from 'classnames';
 
 const SearchDropdown = ({
   onChange,
   value,
+  label,
   optionValues,
   placeholder,
   disabled,
   uniforms,
+  className,
   queryType,
+  error,
+  required,
+  id,
+  name,
+  filterIds,
 }) => {
-  const [queryString, setQueryString] = useState('');
+  const SEARCH_ASSORTMENTS = gql`
+    query searchAssortments($queryString: String) {
+      searchAssortments(queryString: $queryString, includeInactive: true) {
+        assortments {
+          _id
+          isActive
+          texts {
+            _id
+            title
+            description
+          }
+        }
+      }
+    }
+  `;
 
+  const SEARCH_PRODUCTS = gql`
+    query searchProducts($queryString: String, $limit: Int) {
+      searchProducts(queryString: $queryString, includeInactive: true) {
+        products {
+          _id
+          status
+          texts {
+            _id
+            title
+            description
+          }
+          media(limit: $limit) {
+            texts {
+              _id
+              title
+            }
+            file {
+              _id
+              url
+              name
+            }
+          }
+        }
+      }
+    }
+  `;
+
+  const [queryString, setQueryString] = useState('');
   const QUERY =
     queryType === 'assortments' ? SEARCH_ASSORTMENTS : SEARCH_PRODUCTS;
 
@@ -95,13 +102,15 @@ const SearchDropdown = ({
       }
       return false;
     });
-    return (
-      (foundImageObj && (
-        <SemanticImage
-          src={foundImageObj && foundImageObj.file && foundImageObj.file.url}
-          alt={foundImageObj.texts.title || item.texts.title}
-        />
-      )) ||
+    return foundImageObj ? (
+      <SemanticImage
+        src={foundImageObj && foundImageObj.file && foundImageObj.file.url}
+        alt={
+          (foundImageObj && foundImageObj.texts && foundImageObj.texts.title) ||
+          item.texts.title
+        }
+      />
+    ) : (
       imageComponent
     );
   };
@@ -119,10 +128,14 @@ const SearchDropdown = ({
     };
   };
 
-  const items =
+  let items =
     queryType === 'assortments'
       ? data?.searchAssortments.assortments
       : data?.searchProducts.products || [];
+
+  items = filterIds
+    ? items?.filter((item) => !filterIds.includes(item._id))
+    : items;
 
   const options =
     items?.map((item) => {
@@ -146,23 +159,30 @@ const SearchDropdown = ({
     }) || [];
 
   return (
-    <Dropdown
-      search
-      fluid
-      selection
-      placeholder={placeholder || 'Select item'}
-      name="item"
-      loading={loading}
-      onChange={uniforms ? handleOnChange : onChange} // this is to handle uniforms custom field
-      onSearchChange={debounce(handleSearchChange, 500, {
-        leading: true,
-      })}
-      options={options}
-      {...{ ...(value && { value }) }}
-      {...{ ...(disabled && { disabled }) }}
-      {...{ ...(optionValues && { optionValues }) }}
-      style={{ marginBottom: '1em' }}
-    />
+    <div
+      className={classnames({ disabled, error, required }, className, 'field')}
+    >
+      {label && <label htmlFor={id}>{label}</label>}
+      <Dropdown
+        name={name || 'item'}
+        disabled={disabled}
+        id={id || 'search-dropdown'}
+        search
+        fluid
+        selection
+        placeholder={placeholder || 'Select item'}
+        loading={loading}
+        onChange={uniforms ? handleOnChange : onChange} // this is to handle uniforms custom field
+        onSearchChange={debounce(handleSearchChange, 500, {
+          leading: true,
+        })}
+        options={options}
+        {...{ ...(value && { value }) }}
+        {...{ ...(disabled && { disabled }) }}
+        {...{ ...(optionValues && { optionValues }) }}
+        style={{ marginBottom: '1em' }}
+      />
+    </div>
   );
 };
 export default SearchDropdown;
