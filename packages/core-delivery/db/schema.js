@@ -1,6 +1,7 @@
 import { Schemas } from 'meteor/unchained:utils';
 import { Migrations } from 'meteor/percolate:migrations';
 import SimpleSchema from 'simpl-schema';
+
 import { DeliveryProviders } from './collections';
 
 export const DeliveryProviderType = {

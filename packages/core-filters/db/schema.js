@@ -1,6 +1,7 @@
 import { Schemas } from 'meteor/unchained:utils';
 import SimpleSchema from 'simpl-schema';
 import { Migrations } from 'meteor/percolate:migrations';
+
 import { Filters, FilterTexts } from './collections';
 
 // eslint-disable-next-line
@@ -100,6 +101,16 @@ Migrations.add({
         );
       });
   },
+});
+
+Migrations.add({
+  version: 20200914.5,
+  name: 'drop filters related indexes',
+  up() {
+    Filters.rawCollection().dropIndexes();
+    FilterTexts.rawCollection().dropIndexes();
+  },
+  down() {},
 });
 
 export default () => {
