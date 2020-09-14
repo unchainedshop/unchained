@@ -63,6 +63,7 @@ const AssortmentLinkListItem = ({
     </Item>
   );
 };
+
 export default compose(
   graphql(
     gql`

@@ -11,12 +11,14 @@ import ErrorsField from 'uniforms-semantic/ErrorsField';
 import AutoForm from 'uniforms-semantic/AutoForm';
 import withFormSchema from '../../lib/withFormSchema';
 import withFormErrorHandlers from '../../lib/withFormErrorHandlers';
+import FormTagInput from '../FormTagInput';
 
 const FormNewAssortmentFilter = ({ filters, removeCountry, ...formProps }) => (
   <AutoForm {...formProps}>
     <Segment basic>
       <AutoField name={'assortmentId'} type="hidden" />
       <AutoField name={'filterId'} options={filters} />
+      <AutoField name="tags" component={FormTagInput} options={[]} />
       <ErrorsField />
       <SubmitField value="Add Filter" className="primary" />
     </Segment>
