@@ -1,6 +1,7 @@
 import { Schemas } from 'meteor/unchained:utils';
 import { Migrations } from 'meteor/percolate:migrations';
 import SimpleSchema from 'simpl-schema';
+
 import { PaymentProviders, PaymentCredentials } from './collections';
 
 export const PaymentProviderType = {
@@ -109,6 +110,7 @@ Migrations.add({
 export default () => {
   Migrations.migrateTo('latest');
   PaymentProviders.rawCollection().createIndex({ type: 1 });
+
   PaymentCredentials.rawCollection().createIndex({ paymentProviderId: 1 });
   PaymentCredentials.rawCollection().createIndex({ userId: 1 });
 };
