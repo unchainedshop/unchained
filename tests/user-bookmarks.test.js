@@ -1,18 +1,14 @@
 import { setupDatabase, createLoggedInGraphqlFetch } from './helpers';
-import { SimpleProduct } from './seeds/products';
+import { UnpublishedProduct } from './seeds/products';
 import { ADMIN_TOKEN, User, Admin } from './seeds/users';
 
 let connection;
-let db;
 let graphqlFetch;
 
 describe('User Bookmarks', () => {
-  let Bookmarks;
-
   beforeAll(async () => {
-    [db, connection] = await setupDatabase();
+    [, connection] = await setupDatabase();
     graphqlFetch = await createLoggedInGraphqlFetch(ADMIN_TOKEN);
-    Bookmarks = db.collection('bookmarks');
   });
 
   afterAll(async () => {
@@ -34,7 +30,7 @@ describe('User Bookmarks', () => {
           }
         `,
         variables: {
-          productId: SimpleProduct._id,
+          productId: UnpublishedProduct._id,
           userId: User._id,
         },
       });
@@ -232,13 +228,7 @@ describe('User Bookmarks', () => {
           userId: Admin._id,
         },
       });
-      expect(bookmarks).toMatchObject([
-        {
-          product: {
-            _id: SimpleProduct._id,
-          },
-        },
-      ]);
+      expect(bookmarks.length).toEqual(2);
     });
   });
 });
