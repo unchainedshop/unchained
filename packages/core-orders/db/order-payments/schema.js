@@ -36,8 +36,6 @@ OrderPayments.attachSchema(
   ),
 );
 
-OrderPayments.rawCollection().createIndex({ orderId: 1 });
-
 Migrations.add({
   version: 20200914.9,
   name: 'drop OrderPayments related indexes',
