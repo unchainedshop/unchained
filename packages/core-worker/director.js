@@ -309,27 +309,30 @@ class WorkerDirector {
   }
 
   static async markOldWorkFailed({ types, worker, referenceDate }) {
-    WorkQueue.update(
+    const workItems = WorkQueue.find(
       this.buildQueueSelector({
         status: [WorkStatus.ALLOCATED],
         started: { $lte: referenceDate },
         worker,
         type: { $in: types },
       }),
-      {
-        $set: {
-          finished: new Date(),
+      { fields: { _id: 1 } },
+    ).fetch();
+
+    return Promise.all(
+      workItems.map(async ({ _id }) => {
+        return this.finishWork({
+          result: null,
           success: false,
           error: {
             name: DIRECTOR_MARKED_FAILED_ERROR,
             message:
               'Director marked old work as failed after restart. This work was eventually running at the moment when node.js exited.',
           },
-          result: null,
+          workId: _id,
           worker,
-        },
-      },
-      { multi: true },
+        });
+      }),
     );
   }
 }
