@@ -103,17 +103,18 @@ const CytoscapeComponentWrapper = ({ assortments }) => {
       layout={layout}
       style={{ width: '100%', height: '600px' }}
       stylesheet={stylesheet}
-      cy={(cy) => {
+      cy={async (cy) => {
         cy.on('add', 'node', () => {
           cy.layout(layout).run();
           cy.fit();
         });
-        cy.on('tap', 'node', async function (evt) {
+        cy.on('tap', 'node', async (evt) => {
           const node = evt.target;
           const { data } = await client.query({
             query: GET_ASSORTMENT_LINKS,
             variables: { assortmentId: node.id() },
           });
+
           const nodeIds = cy.nodes().map((node) => node.id());
           const edges = cy.edges().map((edge) => {
             return {
@@ -121,7 +122,26 @@ const CytoscapeComponentWrapper = ({ assortments }) => {
               target: edge.target().id(),
             };
           });
-          data?.assortment?.linkedAssortments.forEach((linkedAssortment) => {
+
+          // Evaluate parents of children
+          for (const linkedAssortment of data?.assortment?.linkedAssortments) {
+            const result = await client.query({
+              query: GET_ASSORTMENT_LINKS,
+              variables: { assortmentId: linkedAssortment.child._id },
+            });
+
+            const nodeEdges = result.data.assortment.linkedAssortments.map(
+              (lnkAssortment) => {
+                return {
+                  group: 'edges',
+                  data: {
+                    source: lnkAssortment.parent._id,
+                    target: lnkAssortment.child._id,
+                  },
+                };
+              }
+            );
+
             if (
               !nodeIds.find(
                 (nodeId) => nodeId === linkedAssortment.child._id
@@ -141,16 +161,10 @@ const CytoscapeComponentWrapper = ({ assortments }) => {
                     label: linkedAssortment.child.texts.title,
                   },
                 },
-                {
-                  group: 'edges',
-                  data: {
-                    source: linkedAssortment.parent._id,
-                    target: linkedAssortment.child._id,
-                  },
-                },
+                ...nodeEdges,
               ]);
             }
-          });
+          }
         });
       }}
       zoom={2}
