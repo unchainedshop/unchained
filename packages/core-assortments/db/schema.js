@@ -218,7 +218,7 @@ Migrations.add({
 });
 
 Migrations.add({
-  version: 20200913,
+  version: 20200913.0,
   name: 'drop assortment related indexes',
   up() {
     Collections.Assortments.rawCollection().dropIndexes();
@@ -239,7 +239,7 @@ export default () => {
   Collections.Assortments.rawCollection().createIndex({ slugs: 1 });
   Collections.Assortments.rawCollection().createIndex({ tags: 1 });
 
-  // AssortmentTexts indexes
+  // AssortmentTexts indexe
   Collections.AssortmentTexts.rawCollection().createIndex({
     assortmentId: 1,
   });
