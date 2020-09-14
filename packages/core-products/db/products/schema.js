@@ -1,5 +1,7 @@
 import SimpleSchema from 'simpl-schema';
 import { Schemas } from 'meteor/unchained:utils';
+import { Migrations } from 'meteor/percolate:migrations';
+
 import { Products, ProductTexts } from './collections';
 
 export const ProductTypes = {
@@ -118,11 +120,6 @@ Products.attachSchema(
   ),
 );
 
-Products.rawCollection().createIndex({ sequence: 1 });
-Products.rawCollection().createIndex({ slugs: 1 });
-Products.rawCollection().createIndex({ status: 1 });
-Products.rawCollection().createIndex({ tags: 1 });
-Products.rawCollection().createIndex({ 'warehousing.sku': 1 });
 ProductTexts.attachSchema(
   new SimpleSchema(
     {
@@ -143,6 +140,25 @@ ProductTexts.attachSchema(
   ),
 );
 
-ProductTexts.rawCollection().createIndex({ productId: 1 });
-ProductTexts.rawCollection().createIndex({ locale: 1 });
-ProductTexts.rawCollection().createIndex({ slug: 1 });
+Migrations.add({
+  version: 20200915.7,
+  name: 'drop Product & ProductTexts related indexes',
+  up() {
+    Products.rawCollection().dropIndexes();
+    ProductTexts.rawCollection().dropIndexes();
+  },
+  down() {},
+});
+
+export default () => {
+  Migrations.migrateTo('latest');
+  Products.rawCollection().createIndex({ sequence: 1 });
+  Products.rawCollection().createIndex({ slugs: 1 });
+  Products.rawCollection().createIndex({ status: 1 });
+  Products.rawCollection().createIndex({ tags: 1 });
+  Products.rawCollection().createIndex({ 'warehousing.sku': 1 });
+
+  ProductTexts.rawCollection().createIndex({ productId: 1 });
+  ProductTexts.rawCollection().createIndex({ locale: 1 });
+  ProductTexts.rawCollection().createIndex({ slug: 1 });
+};
