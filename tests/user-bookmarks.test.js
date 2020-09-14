@@ -212,7 +212,7 @@ describe('User Bookmarks', () => {
   });
 
   describe('User.bookmarks', () => {
-    it('returns 1 bookmark', async () => {
+    it('returns 2 bookmarks', async () => {
       const { data: { user: { bookmarks } } = {} } = await graphqlFetch({
         query: /* GraphQL */ `
           query bookmarks($userId: ID!) {
