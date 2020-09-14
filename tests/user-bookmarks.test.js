@@ -1,13 +1,14 @@
 import { setupDatabase, createLoggedInGraphqlFetch } from './helpers';
-import { UnpublishedProduct } from './seeds/products';
+import { UnpublishedProduct, SimpleProduct } from './seeds/products';
 import { ADMIN_TOKEN, User, Admin } from './seeds/users';
 
 let connection;
+let db;
 let graphqlFetch;
 
 describe('User Bookmarks', () => {
   beforeAll(async () => {
-    [, connection] = await setupDatabase();
+    [db, connection] = await setupDatabase();
     graphqlFetch = await createLoggedInGraphqlFetch(ADMIN_TOKEN);
   });
 
@@ -86,6 +87,7 @@ describe('User Bookmarks', () => {
 
   describe('Mutation.removeBookmark', () => {
     it('remove a bookmark', async () => {
+      const Bookmarks = db.collection('bookmarks');
       const bookmark = await Bookmarks.findOne({ userId: User._id });
       await graphqlFetch({
         query: /* GraphQL */ `
