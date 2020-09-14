@@ -1,6 +1,7 @@
 import { Schemas } from 'meteor/unchained:utils';
 import SimpleSchema from 'simpl-schema';
 import { Migrations } from 'meteor/percolate:migrations';
+
 import { WarehousingProviders } from './collections';
 
 // eslint-disable-next-line
@@ -55,6 +56,15 @@ Migrations.add({
         );
       });
   },
+});
+
+Migrations.add({
+  version: 20200916.1,
+  name: 'drop WarehousingProvider related indexes',
+  up() {
+    WarehousingProviders.rawCollection().dropIndexes();
+  },
+  down() {},
 });
 
 export default () => {
