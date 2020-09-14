@@ -47,10 +47,6 @@ Quotations.attachSchema(
   ),
 );
 
-Quotations.rawCollection().createIndex({ userId: 1 });
-Quotations.rawCollection().createIndex({ productId: 1 });
-Quotations.rawCollection().createIndex({ status: 1 });
-
 Migrations.add({
   version: 20191014,
   name: 'Store currency in currencyCode field instead of currency',
@@ -89,7 +85,18 @@ Migrations.add({
       });
   },
 });
+Migrations.add({
+  version: 20200915.8,
+  name: 'drop Quotations related indexes',
+  up() {
+    Quotations.rawCollection().dropIndexes();
+  },
+  down() {},
+});
 
 export default () => {
   Migrations.migrateTo('latest');
+  Quotations.rawCollection().createIndex({ userId: 1 });
+  Quotations.rawCollection().createIndex({ productId: 1 });
+  Quotations.rawCollection().createIndex({ status: 1 });
 };
