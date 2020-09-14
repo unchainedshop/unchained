@@ -1,5 +1,7 @@
 import SimpleSchema from 'simpl-schema';
 import { Schemas } from 'meteor/unchained:utils';
+import { Migrations } from 'meteor/percolate:migrations';
+
 import { ProductReviews } from './collections';
 
 export const ProductReviewVoteTypes = { // eslint-disable-line
@@ -37,5 +39,17 @@ ProductReviews.attachSchema(
   ),
 );
 
-ProductReviews.rawCollection().createIndex({ productId: 1 });
-ProductReviews.rawCollection().createIndex({ authorId: 1 });
+Migrations.add({
+  version: 20200915.5,
+  name: 'drop ProductReviews related indexes',
+  up() {
+    ProductReviews.rawCollection().dropIndexes();
+  },
+  down() {},
+});
+
+export default () => {
+  Migrations.migrateTo('latest');
+  ProductReviews.rawCollection().createIndex({ productId: 1 });
+  ProductReviews.rawCollection().createIndex({ authorId: 1 });
+};
