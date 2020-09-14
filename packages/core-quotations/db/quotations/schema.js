@@ -1,6 +1,7 @@
 import { Schemas } from 'meteor/unchained:utils';
 import { Migrations } from 'meteor/percolate:migrations';
 import SimpleSchema from 'simpl-schema';
+
 import { Quotations } from './collections';
 
 const { logFields, contextFields, timestampFields } = Schemas;
@@ -85,6 +86,7 @@ Migrations.add({
       });
   },
 });
+
 Migrations.add({
   version: 20200915.8,
   name: 'drop Quotations related indexes',

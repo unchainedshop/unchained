@@ -1,5 +1,7 @@
 import { Schemas } from 'meteor/unchained:utils';
 import SimpleSchema from 'simpl-schema';
+import { Migrations } from 'meteor/percolate:migrations';
+
 import { Subscriptions } from './collections';
 
 const { logFields, contextFields, timestampFields, Address, Contact } = Schemas;
@@ -65,6 +67,18 @@ export const Schema = new SimpleSchema(
 
 Subscriptions.attachSchema(Schema);
 
-Subscriptions.rawCollection().createIndex({ userId: 1 });
-Subscriptions.rawCollection().createIndex({ productId: 1 });
-Subscriptions.rawCollection().createIndex({ status: 1 });
+Migrations.add({
+  version: 20200915.9,
+  name: 'drop Subscriptions related indexes',
+  up() {
+    Subscriptions.rawCollection().dropIndexes();
+  },
+  down() {},
+});
+
+export default () => {
+  Migrations.migrateTo('latest');
+  Subscriptions.rawCollection().createIndex({ userId: 1 });
+  Subscriptions.rawCollection().createIndex({ productId: 1 });
+  Subscriptions.rawCollection().createIndex({ status: 1 });
+};
