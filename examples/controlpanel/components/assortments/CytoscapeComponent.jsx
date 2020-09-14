@@ -161,7 +161,11 @@ const CytoscapeComponentWrapper = ({ assortments }) => {
                     label: linkedAssortment.child.texts.title,
                   },
                 },
-                ...nodeEdges,
+                ...nodeEdges.filter((edge) => {
+                  return [nodeIds, linkedAssortment.child._id].includes(
+                    edge.data.target
+                  );
+                }),
               ]);
             }
           }
