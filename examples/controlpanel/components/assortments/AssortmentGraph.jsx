@@ -47,7 +47,7 @@ const AssortmentGraph = ({ data, router }) => (
     <Table.Body>
       <Table.Row>
         <Table.Cell>
-          <CytoscapeComponentWithNoSSR data={data} />
+          <CytoscapeComponentWithNoSSR assortments={data.assortments} />
         </Table.Cell>
       </Table.Row>
     </Table.Body>
@@ -86,26 +86,16 @@ export default compose(
       ) {
         _id
         texts {
-          _id
           title
         }
         linkedAssortments {
           _id
           parent {
             _id
-            texts {
-              _id
-              title
-            }
           }
           child {
             _id
-            texts {
-              _id
-              title
-            }
           }
-          tags
         }
       }
     }
