@@ -14,6 +14,7 @@ import seedQuotations from './seeds/quotations';
 import seedFilters from './seeds/filters';
 import seedLogs from './seeds/logs';
 import seedAssortments from './seeds/assortments';
+import seedBookmarks from './seeds/bookmark';
 
 Collection.prototype.findOrInsertOne = async function findOrInsertOne(
   doc,
@@ -46,6 +47,7 @@ export const setupDatabase = async () => {
   await seedFilters(db);
   await seedLogs(db);
   await seedAssortments(db);
+  await seedBookmarks(db);
 
   return [db, connection];
 };

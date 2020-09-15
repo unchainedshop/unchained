@@ -84,11 +84,16 @@ export default (role, actions) => {
       userId,
     }).count() > 0;
 
-  const isOwnedBookmark = (root, { bookmarkId }, { userId }) =>
-    Bookmarks.find({
-      _id: bookmarkId,
-      userId,
-    }).count() > 0;
+  const isOwnedBookmark = (root, { bookmarkId }, { userId }) => {
+    console.log('isOwnedBookmark', bookmarkId, userId);
+    const result =
+      Bookmarks.find({
+        _id: bookmarkId,
+        userId,
+      }).count() > 0;
+
+    return result;
+  };
 
   const isOwnedPaymentCredential = (
     root,
@@ -119,13 +124,13 @@ export default (role, actions) => {
   role.allow(actions.updateSubscription, isOwnedSubscription);
   role.allow(actions.createSubscription, () => true);
   role.allow(actions.reviewProduct, () => true);
-  role.allow(actions.updateProductReview, () => isOwnedProductReview);
+  role.allow(actions.updateProductReview, isOwnedProductReview);
   role.allow(actions.requestQuotation, () => true);
-  role.allow(actions.answerQuotation, () => isOwnedQuotation);
-  role.allow(actions.manageBookmarks, () => isOwnedBookmark);
+  role.allow(actions.answerQuotation, isOwnedQuotation);
+  role.allow(actions.manageBookmarks, isOwnedBookmark);
   role.allow(actions.bookmarkProduct, () => true);
   role.allow(actions.voteProductReview, () => true);
   role.allow(actions.manageWorker, () => false);
   role.allow(actions.registerPaymentCredentials, () => true);
-  role.allow(actions.managePaymentCredentials, () => isOwnedPaymentCredential);
+  role.allow(actions.managePaymentCredentials, isOwnedPaymentCredential);
 };

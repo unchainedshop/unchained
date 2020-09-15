@@ -1,5 +1,5 @@
 import { setupDatabase, createLoggedInGraphqlFetch } from './helpers';
-import { SimpleProduct } from './seeds/products';
+import { UnpublishedProduct, SimpleProduct } from './seeds/products';
 import { ADMIN_TOKEN, User, Admin } from './seeds/users';
 
 let connection;
@@ -7,12 +7,9 @@ let db;
 let graphqlFetch;
 
 describe('User Bookmarks', () => {
-  let Bookmarks;
-
   beforeAll(async () => {
     [db, connection] = await setupDatabase();
     graphqlFetch = await createLoggedInGraphqlFetch(ADMIN_TOKEN);
-    Bookmarks = db.collection('bookmarks');
   });
 
   afterAll(async () => {
@@ -34,7 +31,7 @@ describe('User Bookmarks', () => {
           }
         `,
         variables: {
-          productId: SimpleProduct._id,
+          productId: UnpublishedProduct._id,
           userId: User._id,
         },
       });
@@ -90,6 +87,7 @@ describe('User Bookmarks', () => {
 
   describe('Mutation.removeBookmark', () => {
     it('remove a bookmark', async () => {
+      const Bookmarks = db.collection('bookmarks');
       const bookmark = await Bookmarks.findOne({ userId: User._id });
       await graphqlFetch({
         query: /* GraphQL */ `
@@ -214,7 +212,7 @@ describe('User Bookmarks', () => {
   });
 
   describe('User.bookmarks', () => {
-    it('returns 1 bookmark', async () => {
+    it('returns 2 bookmarks', async () => {
       const { data: { user: { bookmarks } } = {} } = await graphqlFetch({
         query: /* GraphQL */ `
           query bookmarks($userId: ID!) {
@@ -232,13 +230,7 @@ describe('User Bookmarks', () => {
           userId: Admin._id,
         },
       });
-      expect(bookmarks).toMatchObject([
-        {
-          product: {
-            _id: SimpleProduct._id,
-          },
-        },
-      ]);
+      expect(bookmarks.length).toEqual(2);
     });
   });
 });
