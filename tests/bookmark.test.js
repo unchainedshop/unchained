@@ -340,7 +340,7 @@ describe('Bookmark', () => {
           }
         `,
         variables: {
-          bookmarkId: SimpleBookmarks[2]._id,
+          bookmarkId: SimpleBookmarks[1]._id,
         },
       });
 
@@ -361,59 +361,24 @@ describe('Bookmark', () => {
   });
 
   describe('For anonymous user ', () => {
-    it('remove bookmark a product when provided valid product ID and false second argument', async () => {
-      const {
-        data: { bookmark }, // eslint-disable-line
-      } = await graphqlAnonymousUserFetch({
-        query: /* GraphQL */ `
-          mutation Bookmark($productId: ID!, $bookmarked: Boolean = true) {
-            bookmark(productId: $productId, bookmarked: $bookmarked) {
-              _id
-            }
-          }
-        `,
-        variables: {
-          productId: 'simpleproduct',
-          bookmarked: false,
-        },
-      });
-
-      const {
-        data: {
-          user: { bookmarks },
-        },
-      } = await graphqlAnonymousUserFetch({
-        query: /* GraphQL */ `
-          query userBookmarks {
-            user {
-              bookmarks {
+    it('bookmarking is not possible', async () => {
+      await expect(async () => {
+        const {
+          data: { bookmark, error }, // eslint-disable-line
+        } = await graphqlAnonymousUserFetch({
+          query: /* GraphQL */ `
+            mutation Bookmark($productId: ID!, $bookmarked: Boolean = true) {
+              bookmark(productId: $productId, bookmarked: $bookmarked) {
                 _id
               }
             }
-          }
-        `,
-        variables: {},
-      });
-      expect(bookmarks.length).toEqual(1);
-    });
-
-    it('bookmark a product when provided valid product ID', async () => {
-      const {
-        data: { bookmark },
-      } = await graphqlAnonymousUserFetch({
-        query: /* GraphQL */ `
-          mutation Bookmark($productId: ID!, $bookmarked: Boolean = true) {
-            bookmark(productId: $productId, bookmarked: $bookmarked) {
-              _id
-            }
-          }
-        `,
-        variables: {
-          productId: ConfigurableProduct._id,
-        },
-      });
-
-      expect(bookmark).not.toBe(null);
+          `,
+          variables: {
+            productId: 'simpleproduct',
+            bookmarked: false,
+          },
+        });
+      }).rejects.toThrow();
     });
   });
 });
