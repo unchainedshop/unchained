@@ -13,6 +13,7 @@ export default [
         limit: Int = 20
         offset: Int = 0
         includeGuests: Boolean = false
+        queryString: String
       ): [User!]!
 
       """

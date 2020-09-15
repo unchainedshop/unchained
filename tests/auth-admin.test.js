@@ -19,9 +19,15 @@ describe('Auth for admin users', () => {
   describe('Query.users', () => {
     beforeAll(async () => {
       const Users = db.collection('users');
+
+      Users.createIndex({
+        username: 'text',
+      });
+
       await Users.findOrInsertOne({
         ...User,
         _id: 'guest',
+        username: 'guest',
         guest: true,
         emails: [
           {
@@ -57,6 +63,25 @@ describe('Auth for admin users', () => {
         `,
       });
       expect(users.length).toEqual(3);
+    });
+
+    it('returns users by queryString', async () => {
+      const { data: { users } = {} } = await graphqlFetch({
+        query: /* GraphQL */ `
+          query users($queryString: String) {
+            users(queryString: $queryString) {
+              _id
+              name
+            }
+          }
+        `,
+        variables: {
+          queryString: 'guest',
+        },
+      });
+      expect(users[0]).toMatchObject({
+        _id: 'guest',
+      });
     });
   });
 
