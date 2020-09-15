@@ -18,15 +18,14 @@ const AssortmentFilterListItem = ({ filter, removeAssortmentFilter, tags }) => (
           <List.Item as="li" value="">
             <DragHandle />
             <Link href={`/filters/edit?_id=${filter._id}`}>
-              <>
-                <a href={`/filters/edit?_id=${filter._id}`}>
-                  {filter.texts ? filter.texts.title : filter.key}
-                </a>
+              <a href={`/filters/edit?_id=${filter._id}`}>
+                {filter.texts ? filter.texts.title : filter.key}
+                &nbsp;
                 {tags &&
                   tags.map((tag) => {
                     return <Label>{tag}</Label>;
                   })}
-              </>
+              </a>
             </Link>
           </List.Item>
         </List>

@@ -74,6 +74,7 @@ export default compose(
   ),
   mapProps(({ data: { assortment }, ...rest }) => ({
     items: (assortment && assortment.linkedAssortments) || [],
+    useDragHandle: true,
     ...rest,
   })),
   withHandlers({
@@ -93,7 +94,6 @@ export default compose(
         },
       });
     },
-    useDragHandle: true,
   }),
   pure,
   SortableContainer

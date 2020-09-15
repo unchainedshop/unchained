@@ -34,6 +34,7 @@ export default compose(
         _id
         productAssignments {
           _id
+          tags
           product {
             _id
             texts {
@@ -65,6 +66,7 @@ export default compose(
   ),
   mapProps(({ data: { assortment }, ...rest }) => ({
     items: (assortment && assortment.productAssignments) || [],
+    useDragHandle: true,
     ...rest,
   })),
   withHandlers({
@@ -84,7 +86,6 @@ export default compose(
         },
       });
     },
-    useDragHandle: true,
   }),
   pure,
   SortableContainer

@@ -65,6 +65,7 @@ export default compose(
   ),
   mapProps(({ data: { assortment }, ...rest }) => ({
     items: (assortment && assortment.filterAssignments) || [],
+    useDragHandle: true,
     ...rest,
   })),
   withHandlers({

@@ -13,6 +13,7 @@ import AutoForm from 'uniforms-semantic/AutoForm';
 import SearchDropdown from '../SearchDropdown';
 import withFormSchema from '../../lib/withFormSchema';
 import withFormErrorHandlers from '../../lib/withFormErrorHandlers';
+import FormTagInput from '../FormTagInput';
 
 const ProductSearchDropdownField = connectField(SearchDropdown);
 
@@ -25,6 +26,7 @@ const FormNewAssortmentProduct = ({
     <Segment basic>
       <AutoField name={'assortmentId'} type="hidden" />
       <AutoField name={'productId'} options={products} uniforms />
+      <AutoField name="tags" component={FormTagInput} options={[]} />
       <ErrorsField />
       <SubmitField value="Add Product" className="primary" />
     </Segment>
@@ -46,10 +48,15 @@ export default compose(
   `),
   graphql(
     gql`
-      mutation addAssortmentProduct($assortmentId: ID!, $productId: ID!) {
+      mutation addAssortmentProduct(
+        $assortmentId: ID!
+        $productId: ID!
+        $tags: [String!]
+      ) {
         addAssortmentProduct(
           assortmentId: $assortmentId
           productId: $productId
+          tags: $tags
         ) {
           _id
         }
@@ -76,16 +83,27 @@ export default compose(
         component: ProductSearchDropdownField,
       },
     },
+    tags: {
+      type: Array,
+      optional: true,
+      label: 'Tags',
+    },
+    'tags.$': String,
   }),
   withHandlers({
     onSubmitSuccess: () => () => {
       toast('Product added to assortment', { type: toast.TYPE.SUCCESS });
     },
-    onSubmit: ({ addAssortmentProduct }) => ({ assortmentId, productId }) =>
+    onSubmit: ({ addAssortmentProduct }) => ({
+      assortmentId,
+      productId,
+      tags,
+    }) =>
       addAssortmentProduct({
         variables: {
           assortmentId,
           productId,
+          tags,
         },
       }),
   }),
