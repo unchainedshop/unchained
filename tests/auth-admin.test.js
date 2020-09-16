@@ -69,7 +69,7 @@ describe('Auth for admin users', () => {
       const { data: { users } = {} } = await graphqlFetch({
         query: /* GraphQL */ `
           query users($queryString: String) {
-            users(queryString: $queryString) {
+            users(queryString: $queryString, includeGuests: true) {
               _id
               name
             }

@@ -22,14 +22,12 @@ export default function users(
     { userId },
   );
 
+  const selector = {};
+
   if (queryString) {
-    return Users.find(
-      { $text: { $search: queryString } },
-      { skip: offset, limit },
-    );
+    selector.$text = { $search: queryString };
   }
 
-  const selector = {};
   if (!includeGuests) {
     selector.guest = { $ne: true };
   }
