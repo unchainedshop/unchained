@@ -1,7 +1,8 @@
 import { Meteor } from 'meteor/meteor';
-import callMethod from '../../../callMethod';
 import hashPassword from '../../../hashPassword';
 import getUserLoginMethod from './getUserLoginMethod';
+import callMethod from '../../../callMethod';
+import { accountsServer } from '../../../api';
 
 export default async function loginWithPassword(
   root,
@@ -11,6 +12,7 @@ export default async function loginWithPassword(
   if (!hashedPassword && !plainPassword) {
     throw new Error('Password is required');
   }
+
   const password = hashedPassword || hashPassword(plainPassword);
   const user = email ? { email } : { username };
 
@@ -19,7 +21,7 @@ export default async function loginWithPassword(
     password,
   };
   try {
-    return callMethod(context, 'login', methodArguments);
+    return await accountsServer.loginWithService('password', methodArguments);
   } catch (error) {
     if (error.reason === 'User has no password set') {
       const method = getUserLoginMethod(email || username);
