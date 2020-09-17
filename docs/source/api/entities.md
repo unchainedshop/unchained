@@ -29,6 +29,10 @@ Supported entity types:
 - PRODUCT
 - ASSORTMENT
 - FILTER
+- SUBSCRIPTION (coming soon)
+- ORDER (coming soon)
+- USER (coming soon)
+- REVIEWS (coming soon)
 
 Supported operations:
 - CREATE
@@ -47,6 +51,8 @@ All Events follow this JSON Structure:
 
 Always try to send as many events at a time, so Unchained can optimize write operations.
 
+The amount of entities you can submit in one file depends on the size of the entity data and your webserver configuration limits, only split it up when you reach that limit at some point or use the streaming API.
+
 ## JSON Reference
 
 ### Entity Type: Product
@@ -55,6 +61,9 @@ Set by unchained:
 - authorId,
 - slug history
 - _id, contentHash, created & updated if not provided
+
+Languages:
+- The language code in "content" fields should match an existing Language entity's isoCode in Unchained.
 
 ```json
 {
@@ -191,26 +200,6 @@ Set by unchained:
           }
         }
       }
-    ],
-    "reviews": [
-      {
-        "_id": null,
-        "created": null,
-        "updated": null,
-        "authorId": "root",
-        "rating": 1,
-        "title": "What the?",
-        "review": "That product just sucks big times",
-        "votes": [
-          {
-            "timestamp": null,
-            "userId": "root",
-            "type": "UPVOTE",
-            "meta": {}
-          }
-        ],
-        "meta": {}
-      }
     ]
   }
 }
@@ -327,3 +316,33 @@ Set by unchained:
   }
 }
 ```
+
+### Entity Type: Review (coming soon)
+
+```
+{
+  "entity": "REVIEW",
+  "operation": "CREATE",
+  "payload": {
+    "review": {
+        "_id": null,
+        "created": null,
+        "updated": null,
+        "productId": "product"
+        "authorId": "root",
+        "rating": 1,
+        "title": "What the?",
+        "review": "That product just sucks big times",
+        "votes": [
+          {
+            "timestamp": null,
+            "userId": "root",
+            "type": "UPVOTE",
+            "meta": {}
+          }
+        ],
+        "meta": {}
+      }
+    }
+  }
+}
