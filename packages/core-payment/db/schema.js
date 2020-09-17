@@ -1,6 +1,7 @@
 import { Schemas } from 'meteor/unchained:utils';
 import { Migrations } from 'meteor/percolate:migrations';
 import SimpleSchema from 'simpl-schema';
+
 import { PaymentProviders, PaymentCredentials } from './collections';
 
 export const PaymentProviderType = {
@@ -13,7 +14,7 @@ export const PaymentProviderType = {
 PaymentProviders.attachSchema(
   new SimpleSchema(
     {
-      type: { type: String, required: true, index: true },
+      type: { type: String, required: true },
       adapterKey: { type: String, required: true },
       authorId: { type: String, required: true },
       configuration: { type: Array },
@@ -29,8 +30,8 @@ PaymentProviders.attachSchema(
 PaymentCredentials.attachSchema(
   new SimpleSchema(
     {
-      paymentProviderId: { type: String, required: true, index: true },
-      userId: { type: String, required: true, index: true },
+      paymentProviderId: { type: String, required: true },
+      userId: { type: String, required: true },
       token: String,
       isPreferred: Boolean,
       meta: { type: Object, blackbox: true },
@@ -96,6 +97,20 @@ Migrations.add({
   },
 });
 
+Migrations.add({
+  version: 20200915.3,
+  name: 'drop PaymentProvider & PaymentCredentials related indexes',
+  up() {
+    PaymentProviders.rawCollection().dropIndexes();
+    PaymentCredentials.rawCollection().dropIndexes();
+  },
+  down() {},
+});
+
 export default () => {
   Migrations.migrateTo('latest');
+  PaymentProviders.rawCollection().createIndex({ type: 1 });
+
+  PaymentCredentials.rawCollection().createIndex({ paymentProviderId: 1 });
+  PaymentCredentials.rawCollection().createIndex({ userId: 1 });
 };

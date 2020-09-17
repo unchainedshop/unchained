@@ -1,5 +1,7 @@
 import { Schemas } from 'meteor/unchained:utils';
 import SimpleSchema from 'simpl-schema';
+import { Migrations } from 'meteor/percolate:migrations';
+
 import { Subscriptions } from './collections';
 
 const { logFields, contextFields, timestampFields, Address, Contact } = Schemas;
@@ -25,9 +27,9 @@ export const PeriodSchema = new SimpleSchema(
 
 export const Schema = new SimpleSchema(
   {
-    userId: { type: String, required: true, index: true },
-    status: { type: String, required: true, index: true },
-    productId: { type: String, required: true, index: true },
+    userId: { type: String, required: true },
+    status: { type: String, required: true },
+    productId: { type: String, required: true },
     quantity: { type: Number },
     configuration: Array,
     'configuration.$': {
@@ -64,3 +66,19 @@ export const Schema = new SimpleSchema(
 );
 
 Subscriptions.attachSchema(Schema);
+
+Migrations.add({
+  version: 20200915.9,
+  name: 'drop Subscriptions related indexes',
+  up() {
+    Subscriptions.rawCollection().dropIndexes();
+  },
+  down() {},
+});
+
+export default () => {
+  Migrations.migrateTo('latest');
+  Subscriptions.rawCollection().createIndex({ userId: 1 });
+  Subscriptions.rawCollection().createIndex({ productId: 1 });
+  Subscriptions.rawCollection().createIndex({ status: 1 });
+};

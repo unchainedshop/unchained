@@ -1,6 +1,7 @@
 import { Schemas } from 'meteor/unchained:utils';
 import { Migrations } from 'meteor/percolate:migrations';
 import SimpleSchema from 'simpl-schema';
+
 import { DeliveryProviders } from './collections';
 
 export const DeliveryProviderType = {
@@ -12,7 +13,7 @@ export const DeliveryProviderType = {
 DeliveryProviders.attachSchema(
   new SimpleSchema(
     {
-      type: { type: String, required: true, index: true },
+      type: { type: String, required: true },
       adapterKey: { type: String, required: true },
       authorId: { type: String, required: true },
       configuration: { type: Array },
@@ -81,6 +82,16 @@ Migrations.add({
   },
 });
 
+Migrations.add({
+  version: 20200914.4,
+  name: 'drop deliveryProviders related indexes',
+  up() {
+    DeliveryProviders.rawCollection().dropIndexes();
+  },
+  down() {},
+});
+
 export default () => {
   Migrations.migrateTo('latest');
+  DeliveryProviders.rawCollection().createIndex({ type: 1 });
 };

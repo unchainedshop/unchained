@@ -5,6 +5,10 @@ import {
   ProductVariationTexts,
 } from './product-variations/collections';
 import { ProductTexts } from './products/collections';
+import runProductMediaMigrations from './product-media/schema';
+import runProductReviewsMigrations from './product-reviews/schema';
+import runProductVariationsMigrations from './product-variations/schema';
+import runProductsMigrations from './products/schema';
 
 Migrations.add({
   version: 20190506.7,
@@ -137,4 +141,8 @@ Migrations.add({
 
 export default () => {
   Migrations.migrateTo('latest');
+  runProductMediaMigrations();
+  runProductReviewsMigrations();
+  runProductVariationsMigrations();
+  runProductsMigrations();
 };

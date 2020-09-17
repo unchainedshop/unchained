@@ -17,7 +17,6 @@ Package.onUse((api) => {
   api.use('dburles:factory@1.1.0');
   api.use('dburles:collection-helpers@1.1.0');
   api.use('aldeed:collection2@3.0.2');
-  api.use('aldeed:schema-index@3.0.0');
 
   api.use('unchained:core-files@0.52.0');
   api.use('unchained:core@0.52.0');

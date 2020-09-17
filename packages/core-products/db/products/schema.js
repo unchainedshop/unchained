@@ -1,5 +1,7 @@
 import SimpleSchema from 'simpl-schema';
 import { Schemas } from 'meteor/unchained:utils';
+import { Migrations } from 'meteor/percolate:migrations';
+
 import { Products, ProductTexts } from './collections';
 
 export const ProductTypes = {
@@ -34,7 +36,7 @@ const ProductCommerceSchema = new SimpleSchema(
 const ProductWarehousingSchema = new SimpleSchema(
   {
     baseUnit: String,
-    sku: { type: String, index: true },
+    sku: String,
   },
   { requiredByDefault: false },
 );
@@ -88,18 +90,18 @@ const ProductBundleItemSchema = new SimpleSchema({
 Products.attachSchema(
   new SimpleSchema(
     {
-      sequence: { type: Number, required: true, index: true },
-      slugs: { type: Array, index: true },
+      sequence: { type: Number, required: true },
+      slugs: Array,
       'slugs.$': String,
       type: {
         type: String,
         allowedValues: Object.values(ProductTypes),
         required: true,
       },
-      status: { type: String, index: true },
+      status: String,
       authorId: { type: String, required: true },
       published: Date,
-      tags: { type: Array, index: true },
+      tags: Array,
       'tags.$': String,
       commerce: ProductCommerceSchema,
       warehousing: ProductWarehousingSchema,
@@ -121,13 +123,13 @@ Products.attachSchema(
 ProductTexts.attachSchema(
   new SimpleSchema(
     {
-      productId: { type: String, required: true, index: true },
-      locale: { type: String, required: true, index: true },
+      productId: { type: String, required: true },
+      locale: { type: String, required: true },
       authorId: { type: String, required: true },
       vendor: String,
       brand: String,
       title: String,
-      slug: { type: String, index: true },
+      slug: String,
       subtitle: String,
       description: String,
       labels: Array,
@@ -137,3 +139,26 @@ ProductTexts.attachSchema(
     { requiredByDefault: false },
   ),
 );
+
+Migrations.add({
+  version: 20200915.7,
+  name: 'drop Product & ProductTexts related indexes',
+  up() {
+    Products.rawCollection().dropIndexes();
+    ProductTexts.rawCollection().dropIndexes();
+  },
+  down() {},
+});
+
+export default () => {
+  Migrations.migrateTo('latest');
+  Products.rawCollection().createIndex({ sequence: 1 });
+  Products.rawCollection().createIndex({ slugs: 1 });
+  Products.rawCollection().createIndex({ status: 1 });
+  Products.rawCollection().createIndex({ tags: 1 });
+  Products.rawCollection().createIndex({ 'warehousing.sku': 1 });
+
+  ProductTexts.rawCollection().createIndex({ productId: 1 });
+  ProductTexts.rawCollection().createIndex({ locale: 1 });
+  ProductTexts.rawCollection().createIndex({ slug: 1 });
+};

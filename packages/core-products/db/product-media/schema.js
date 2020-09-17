@@ -1,14 +1,16 @@
 import SimpleSchema from 'simpl-schema';
 import { Schemas } from 'meteor/unchained:utils';
+import { Migrations } from 'meteor/percolate:migrations';
+
 import { ProductMedia, ProductMediaTexts } from './collections';
 
 ProductMedia.attachSchema(
   new SimpleSchema(
     {
-      mediaId: { type: String, required: true, index: true },
-      productId: { type: String, required: true, index: true },
+      mediaId: { type: String, required: true },
+      productId: { type: String, required: true },
       sortKey: { type: Number, required: true },
-      tags: { type: Array, index: true },
+      tags: Array,
       'tags.$': String,
       meta: { type: Object, blackbox: true },
       authorId: { type: String, required: true },
@@ -24,9 +26,8 @@ ProductMediaTexts.attachSchema(
       productMediaId: {
         type: String,
         required: true,
-        index: true,
       },
-      locale: { type: String, index: true },
+      locale: String,
       authorId: { type: String, required: true },
       title: String,
       subtitle: String,
@@ -35,3 +36,23 @@ ProductMediaTexts.attachSchema(
     { requiredByDefault: false },
   ),
 );
+
+Migrations.add({
+  version: 20200915.4,
+  name: 'drop ProductMedia & ProductMediaTexts related indexes',
+  up() {
+    ProductMedia.rawCollection().dropIndexes();
+    ProductMediaTexts.rawCollection().dropIndexes();
+  },
+  down() {},
+});
+
+export default () => {
+  Migrations.migrateTo('latest');
+  ProductMedia.rawCollection().createIndex({ mediaId: 1 });
+  ProductMedia.rawCollection().createIndex({ productId: 1 });
+  ProductMedia.rawCollection().createIndex({ tags: 1 });
+
+  ProductMediaTexts.rawCollection().createIndex({ productMediaId: 1 });
+  ProductMediaTexts.rawCollection().createIndex({ locale: 1 });
+};

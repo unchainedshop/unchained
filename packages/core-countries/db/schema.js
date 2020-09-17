@@ -1,5 +1,7 @@
 import { Schemas } from 'meteor/unchained:utils';
 import SimpleSchema from 'simpl-schema';
+import { Migrations } from 'meteor/percolate:migrations';
+
 import { Countries } from './collections';
 
 Countries.attachSchema(
@@ -8,8 +10,6 @@ Countries.attachSchema(
       isoCode: {
         type: String,
         required: true,
-        index: true,
-        unique: true,
       },
       isActive: Boolean,
       isBase: Boolean,
@@ -20,3 +20,17 @@ Countries.attachSchema(
     { requiredByDefault: false },
   ),
 );
+
+Migrations.add({
+  version: 20200914.2,
+  name: 'drop country related indexes',
+  up() {
+    Countries.rawCollection().dropIndexes();
+  },
+  down() {},
+});
+
+export default () => {
+  Migrations.migrateTo('latest');
+  Countries.rawCollection().createIndex({ isoCode: 1 }, { unique: true });
+};
