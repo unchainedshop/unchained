@@ -180,7 +180,7 @@ export default () => {
 
   Collections.Users.rawCollection().createIndex({
     username: 'text',
-    'emails.$.address': 'text',
+    'emails.address': 'text',
     'profile.displayName': 'text',
     'lastBillingAddress.firstName': 'text',
     'lastBillingAddress.lastName': 'text',
