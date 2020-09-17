@@ -1,9 +1,3 @@
-// import { checkNpmVersions } from 'meteor/tmeasday:check-npm-versions';
-//
-// checkNpmVersions({
-//   faker: '4.x',
-// }, 'base');
-
 import Address from './address-schema';
 import Contact from './contact-schema';
 import * as schemaFields from './common-schema-fields';
