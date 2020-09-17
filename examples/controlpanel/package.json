@@ -75,6 +75,9 @@
     "uniforms": "=2.5.0",
     "uniforms-bridge-simple-schema-2": "=2.5.0",
     "uniforms-semantic": "=2.5.0",
-    "url-loader": "^4.1.0"
+    "url-loader": "^4.1.0",
+    "@zeit/next-less": "^1.0.1",
+    "less": "^3.12.2",
+    "semantic-ui-less": "^2.4.1"
   }
 }
