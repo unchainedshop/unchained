@@ -13,6 +13,5 @@ export * from './db/quotations/schema';
 export * from './db/quotation-documents/schema';
 
 export default () => {
-  // configure
   runMigrations();
 };

@@ -4,7 +4,7 @@ import settings from './settings';
 
 import './db/subscriptions/helpers';
 import './db/subscriptions/factories';
-import './db/subscriptions/schema';
+import runMigrations from './db/subscriptions/schema';
 
 export * from './director';
 export * from './db/subscriptions/collections';
@@ -19,4 +19,5 @@ export default (options) => {
       input: settings.autoSchedulingInput,
     });
   }
+  runMigrations();
 };
