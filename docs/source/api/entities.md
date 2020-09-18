@@ -17,8 +17,7 @@ Using the Bulk API stores the data in the Unchained Work Queue before processing
 
 In some situations, it's propably wise to develop a sync microservice: You have a source system that
 - generates "Pull-based" data feeds, or
-- can not adopt to the JSON described below or
-- needs to merge data from different systems
+- can not adopt to the JSON described below
 
 ### Endpoint
 
