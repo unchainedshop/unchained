@@ -46,6 +46,9 @@ export default {
   salesQuantityPerUnit(obj) {
     return obj.commerce && obj.commerce.salesQuantityPerUnit;
   },
+  defaultOrderQuantity(obj) {
+    return obj.commerce && obj.commerce.defaultOrderQuantity;
+  },
   async assortmentPaths(obj, { forceLocale }, { localeContext }) {
     return obj.assortmentPaths(forceLocale || localeContext.normalized);
   },
