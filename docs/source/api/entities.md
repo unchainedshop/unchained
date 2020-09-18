@@ -65,6 +65,9 @@ Set by unchained:
 Languages:
 - The language code in "content" fields should match an existing Language entity's isoCode in Unchained.
 
+Status:
+- You can only use ACTIVE or DRAFT. You have to use the remove operation to set it to DELETED.
+
 ```json
 {
   "entity": "PRODUCT",
@@ -77,11 +80,11 @@ Languages:
       "sequence": "",
       "tags": ["nice"],
       "type": "SimpleProduct",
-      "status": "ACTIVE",
       "published": "2020-01-01T00:00Z",
       "commerce": {
         "salesUnit": "ST",
         "salesQuantityPerUnit": "1",
+        "defaultOrderQuantity": "6",
         "pricing": [
           {
             "isTaxable": true,
@@ -95,24 +98,22 @@ Languages:
       },
       "warehousing": {
         "baseUnit": "ST",
-        "sku": ""
+        "sku": "",
+        "dimensions": {
+          "weightInGram": 0,
+          "heightInMillimeters": 0,
+          "lengthInMillimeters": 0,
+          "widthInMillimeters": 0
+        },
       },
-      "supply": {
-        "weightInGram": 0,
-        "heightInMillimeters": 0,
-        "lengthInMillimeters": 0,
-        "widthInMillimeters": 0
-      },
-      "proxy": {
-        "assignments": [
-          {
-            "vector": {
-              "color": "red"
-            },
-            "productId": "B"
-          }
-        ]
-      },
+      "variationResolvers": [
+        {
+          "vector": {
+            "color": "red"
+          },
+          "productId": "B"
+        }
+      ],
       "plan": {
         "billingInterval": "daily",
         "billingIntervalCount": 1,
