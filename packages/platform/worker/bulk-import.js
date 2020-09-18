@@ -1,4 +1,5 @@
 import WorkerPlugin from 'meteor/unchained:core-worker/workers/base';
+import { WorkerDirector } from 'meteor/unchained:core-worker';
 import { createLogger } from 'meteor/unchained:core-logger';
 import createBulkImporter from '../bulk-importer';
 
@@ -37,5 +38,7 @@ class BulkImport extends WorkerPlugin {
     }
   }
 }
+
+WorkerDirector.registerPlugin(BulkImport);
 
 export default BulkImport;
