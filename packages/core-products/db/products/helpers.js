@@ -28,9 +28,11 @@ Products.createProduct = (
     ...productData,
   });
   const product = Products.findOne({ _id: productId });
-  product.upsertLocalizedText(locale, { title, authorId });
-  if (autopublish) {
-    product.publish();
+  if (locale) {
+    product.upsertLocalizedText(locale, { title, authorId });
+    if (autopublish) {
+      product.publish();
+    }
   }
   return product;
 };

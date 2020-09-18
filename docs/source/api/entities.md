@@ -72,8 +72,8 @@ Status:
   "entity": "PRODUCT",
   "operation": "CREATE",
   "payload": {
+    "_id": "A",
     "specification": {
-      "_id": "A",
       "created": null,
       "updated": null,
       "sequence": "",
@@ -217,8 +217,8 @@ Set by unchained:
   "entity": "ASSORTMENT",
   "operation": "CREATE",
   "payload": {
+    "_id": "A",
     "specification": {
-      "_id": "A",
       "created": null,
       "updated": null,
       "sequence": "",
@@ -283,8 +283,8 @@ Set by unchained:
   "entity": "FILTER",
   "operation": "CREATE",
   "payload": {
+    "_id": null,
     "specification": {
-      "_id": null,
       "created": null,
       "updated": null,
       "key": "size_cm",
@@ -324,8 +324,8 @@ Set by unchained:
   "entity": "REVIEW",
   "operation": "CREATE",
   "payload": {
-    "review": {
-        "_id": null,
+    "_id": null,
+    "specification": {
         "created": null,
         "updated": null,
         "productId": "product"

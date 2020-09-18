@@ -16,9 +16,10 @@ class BulkImport extends WorkerPlugin {
 
   static async doWork({ events }) {
     try {
-      const bulkImporter = createBulkImporter({ logger });
+      const bulkImporter = createBulkImporter({ logger, authorId: 'root' });
       for (let i = 0, len = events.length; i < len; i += 1) {
-        bulkImporter.prepare(events[i]);
+        // eslint-disable-next-line
+        await bulkImporter.prepare(events[i]);
       }
       const result = await bulkImporter.execute();
       return {
