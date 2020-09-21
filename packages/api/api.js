@@ -2,22 +2,12 @@ import { ApolloServer, ApolloError } from 'apollo-server-express';
 import { WebApp } from 'meteor/webapp';
 import { buildLocaleContext } from 'meteor/unchained:core';
 import { log } from 'meteor/unchained:core-logger';
-import { AccountsServer } from '@accounts/server';
-import { AccountsPassword } from '@accounts/password';
-import MongoDBInterface from '@accounts/mongo';
-import { MongoInternals } from 'meteor/mongo';
-import { AccountsModule } from '@accounts/graphql-api';
-import { DatabaseManager } from '@accounts/database-manager';
-import { randomBytes } from 'crypto';
 
 import getUserContext from './user-context';
 import typeDefs from './schema';
 import resolvers from './resolvers';
 import { configureRoles } from './roles';
 
-export { accountsContext } from '@accounts/graphql-api';
-
-export callMethod from './callMethod';
 export hashPassword from './hashPassword';
 export getConnection from './getConnection';
 export getCart from './getCart';
@@ -28,51 +18,6 @@ export * as errors from './errors';
 const { APOLLO_ENGINE_KEY } = process.env;
 
 global._UnchainedAPIVersion = '0.52.0'; // eslint-disable-line
-
-const METEOR_ID_LENGTH = 17;
-const idProvider = () =>
-  randomBytes(30)
-    .toString('base64')
-    .replace(/[\W_]+/g, '')
-    .substr(0, METEOR_ID_LENGTH);
-
-const dateProvider = (date) => date || new Date();
-
-const mongoStorage = new MongoDBInterface(
-  MongoInternals.defaultRemoteCollectionDriver().mongo.db,
-  {
-    convertUserIdToMongoObjectId: false,
-    convertSessionIdToMongoObjectId: false,
-    idProvider,
-    dateProvider,
-  },
-);
-
-const dbManager = new DatabaseManager({
-  sessionStorage: mongoStorage,
-  userStorage: mongoStorage,
-});
-
-const options = {
-  tokenSecret: 'insecure',
-  tokenConfigs: {
-    refreshToken: {
-      expiresIn: '90d',
-    },
-  },
-  // siteUrl: 'http://localhost:4010',
-};
-
-export const accountsPassword = new AccountsPassword();
-
-export const accountsServer = new AccountsServer(
-  { db: dbManager, ...options },
-  {
-    password: accountsPassword,
-  },
-);
-
-AccountsModule.forRoot({ accountsServer });
 
 const logGraphQLServerError = (error) => {
   try {

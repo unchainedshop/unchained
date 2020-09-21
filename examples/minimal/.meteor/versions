@@ -71,6 +71,7 @@ tmeasday:check-npm-versions@0.3.2
 tracker@1.2.0
 unchained:api@0.52.0
 unchained:core@0.52.0
+unchained:core-accountsjs@0.52.0
 unchained:core-assortments@0.52.0
 unchained:core-bookmarks@0.52.0
 unchained:core-countries@0.52.0
