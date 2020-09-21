@@ -1,8 +1,7 @@
 import { Meteor } from 'meteor/meteor';
+import { accountsServer } from 'meteor/unchained:core-accountsjs';
 import hashPassword from '../../../hashPassword';
 import getUserLoginMethod from './getUserLoginMethod';
-import callMethod from '../../../callMethod';
-import { accountsServer } from '../../../api';
 
 export default async function loginWithPassword(
   root,
@@ -14,14 +13,20 @@ export default async function loginWithPassword(
   }
 
   const password = hashedPassword || hashPassword(plainPassword);
-  const user = email ? { email } : { username };
+  const userQuery = email ? { email } : { username };
 
-  const methodArguments = {
-    user,
-    password,
-  };
   try {
-    return await accountsServer.loginWithService('password', methodArguments);
+    const { user, token } = await accountsServer.loginWithService('password', {
+      user: userQuery,
+      password,
+    });
+
+    return {
+      id: user._id,
+      token: token.token,
+      tokenExpires: token.when,
+      type: 'password',
+    };
   } catch (error) {
     if (error.reason === 'User has no password set') {
       const method = getUserLoginMethod(email || username);
