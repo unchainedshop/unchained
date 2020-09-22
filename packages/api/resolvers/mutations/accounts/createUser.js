@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import callMethod from '../../../callMethod';
+import { accountsPassword } from 'meteor/unchained:core-accountsjs';
 import hashPassword from '../../../hashPassword';
 
 export default async function createUser(root, options, context) {
@@ -12,5 +12,5 @@ export default async function createUser(root, options, context) {
     mappedOptions.password = hashPassword(mappedOptions.plainPassword);
     delete mappedOptions.plainPassword;
   }
-  return callMethod(context, 'createUser', mappedOptions);
+  await accountsPassword.createUser(mappedOptions);
 }

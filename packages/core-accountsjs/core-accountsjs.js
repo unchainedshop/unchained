@@ -5,7 +5,7 @@ import { MongoInternals } from 'meteor/mongo';
 import { DatabaseManager } from '@accounts/database-manager';
 import { Random } from 'meteor/random';
 import crypto, { randomBytes } from 'crypto';
-import { destroyToken, hashLoginToken } from './util';
+// import { destroyToken, hashLoginToken } from './util';
 
 const METEOR_ID_LENGTH = 17;
 
@@ -33,17 +33,9 @@ const dbManager = new DatabaseManager({
 });
 
 const options = {
-  // tokenSecret: 'insecure',
-  // tokenConfigs: {
-  //   refreshToken: {
-  //     expiresIn: '90d',
-  //   },
-  // },
-  // createNewSessionTokenOnRefresh: true,
-  // siteUrl: 'http://localhost:4010',
+  siteUrl: Meteor.absoluteUrl(),
+  // sendVerificationEmailAfterSignup: false, // It's set to false by default
 };
-
-// const services =
 
 class UnchainedAccountsPassword extends AccountsPassword {}
 
@@ -108,22 +100,3 @@ export const accountsServer = new UnchainedAccountsServer(
     password: accountsPassword,
   },
 );
-
-// const _getAccountData = (connectionId, field) => {
-//   const data = this._accountData[connectionId];
-//   return data && data[field];
-// };
-
-// const _getLoginToken = (connectionId) => {
-//   return this._getAccountData(connectionId, 'loginToken');
-// };
-
-// accountsServer.logout = () => {
-// const token = accounts._getLoginToken(this.connection.id);
-// accounts._setLoginToken(this.userId, this.connection, null);
-// if (token && this.userId) {
-//   accounts.destroyToken(this.userId, token);
-// }
-// accounts._successfulLogout(this.connection, this.userId);
-// this.setUserId(null);
-// };

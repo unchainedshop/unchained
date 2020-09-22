@@ -2,6 +2,10 @@ import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
 import { check, Match } from 'meteor/check';
 import { Accounts } from 'meteor/accounts-base';
+import {
+  accountsServer,
+  accountsPassword,
+} from 'meteor/unchained:core-accountsjs';
 import { getFallbackLocale } from 'meteor/unchained:core';
 import { Users } from 'meteor/unchained:core-users';
 import { Orders } from 'meteor/unchained:core-orders';
@@ -9,6 +13,10 @@ import { Bookmarks } from 'meteor/unchained:core-bookmarks';
 import { Promise } from 'meteor/promise';
 import cloneDeep from 'lodash.clonedeep';
 import moniker from 'moniker';
+
+const bound = Meteor.bindEnvironment((callback) => {
+  callback();
+});
 
 export const buildContext = (user) => {
   const locale =
@@ -20,23 +28,21 @@ export const buildContext = (user) => {
   };
 };
 
-export default ({ mergeUserCartsOnLogin = true } = {}) => {
-  Accounts.validateNewUser((user) => {
+export default ({
+  mergeUserCartsOnLogin = true,
+  skipEmailVerification = false,
+} = {}) => {
+  accountsServer.options.validateNewUser = (user) => {
     const clone = cloneDeep(user);
     delete clone._id;
     Users.simpleSchema().validate(clone);
-    return true;
-  });
+    return user;
+  };
 
-  Accounts.onCreateUser((options = {}, user = {}) => {
+  accountsServer.on('CreateUserSuccess', async (user) => {
     const newUser = user;
-    const { guest, skipEmailVerification, profile } = options;
-
-    newUser.profile = profile;
-    newUser.guest = !!guest;
     newUser.created = newUser.createdAt || new Date();
     delete newUser.createdAt; // comes from the meteor-apollo-accounts stuff
-
     if (newUser.services.google) {
       newUser.profile = {
         name: newUser.services.google.name,
@@ -46,7 +52,6 @@ export default ({ mergeUserCartsOnLogin = true } = {}) => {
         { address: newUser.services.google.email, verified: true },
       ];
     }
-
     if (newUser.services.facebook) {
       newUser.profile = {
         name: newUser.services.facebook.name,
@@ -56,16 +61,15 @@ export default ({ mergeUserCartsOnLogin = true } = {}) => {
         { address: newUser.services.facebook.email, verified: true },
       ];
     }
-    if (!guest && !skipEmailVerification) {
-      Meteor.setTimeout(() => {
-        const { sendVerificationEmail = true } = Accounts._options; // eslint-disable-line
-        Accounts.sendVerificationEmail(user._id);
-      }, 1000);
+    if (!newUser.guest && !skipEmailVerification) {
+      accountsPassword.sendVerificationEmail(
+        Users.findOne({ _id: user._id }).primaryEmail()?.address,
+      );
     }
     return newUser;
   });
 
-  Accounts.removeOldGuests = (before) => {
+  accountsServer.removeOldGuests = (before) => {
     let newBefore = before;
     if (typeof newBefore === 'undefined') {
       newBefore = new Date();
@@ -88,23 +92,22 @@ export default ({ mergeUserCartsOnLogin = true } = {}) => {
     };
   }
 
-  Accounts.registerLoginHandler('guest', (options) => {
-    if (!options || !options.createGuest) {
-      return undefined;
-    }
-    const guestOptions = createGuestOptions(options.email);
-    return {
-      userId: Accounts.createUser(guestOptions),
-    };
-  });
+  accountsServer.services.guest = {
+    authenticate: (params) => {
+      const guestOptions = createGuestOptions(params.email);
+      return {
+        userId: Accounts.createUser(guestOptions),
+      };
+    },
+  };
 
-  Accounts.onLogin(({ methodArguments, user }) => {
+  accountsServer.on('LoginSuccess', ({ user, connection = {} }) => {
     const {
       userIdBeforeLogin,
       countryContext,
       remoteAddress,
       normalizedLocale,
-    } = [...methodArguments].pop() || {};
+    } = connection;
 
     Users.updateHeartbeat({
       _id: user._id,
@@ -122,7 +125,6 @@ export default ({ mergeUserCartsOnLogin = true } = {}) => {
           mergeCarts: mergeUserCartsOnLogin,
         }),
       );
-
       Promise.await(
         Bookmarks.migrateBookmarks({
           fromUserId: userIdBeforeLogin,
@@ -133,8 +135,8 @@ export default ({ mergeUserCartsOnLogin = true } = {}) => {
     }
   });
 
-  Accounts.validateLoginAttempt(({ type, allowed, user }) => {
-    if (type !== 'guest' && allowed && user.guest) {
+  accountsServer.on('ValidateLogin', ({ service, user, connection }) => {
+    if (service !== 'guest' && user.guest) {
       Users.update(
         { _id: user._id },
         {
