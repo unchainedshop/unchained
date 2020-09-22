@@ -16,10 +16,14 @@ export default async function loginWithPassword(
   const userQuery = email ? { email } : { username };
 
   try {
-    const { user, token } = await accountsServer.loginWithService('password', {
-      user: userQuery,
-      password,
-    });
+    const { user, token } = await accountsServer.loginWithService(
+      'password',
+      {
+        user: userQuery,
+        password,
+      },
+      context,
+    );
 
     return {
       id: user._id,
