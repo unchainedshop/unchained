@@ -11,6 +11,7 @@ Npm.depends({
   '@accounts/mongo': '0.29.0',
   '@accounts/password': '0.29.0',
   '@accounts/server': '0.29.0',
+  '@graphql-modules/core': '0.7.17',
   'lodash.defer': '4.1.0',
 });
 

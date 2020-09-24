@@ -31,7 +31,6 @@
   },
   "dependencies": {
     "@babel/runtime": "^7.11.2",
-    "@graphql-modules/core": "^0.7.17",
     "@paypal/checkout-server-sdk": "^1.0.2",
     "@unchainedshop/controlpanel": "^0.52.0",
     "apollo-server-express": "^2.16.1",
