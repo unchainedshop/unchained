@@ -11,7 +11,6 @@ Npm.depends({
   '@accounts/mongo': '0.29.0',
   '@accounts/password': '0.29.0',
   '@accounts/server': '0.29.0',
-  'lodash.pick': '4.4.0',
   'lodash.defer': '4.1.0',
 });
 

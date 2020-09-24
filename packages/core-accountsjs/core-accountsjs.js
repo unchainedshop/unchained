@@ -5,7 +5,6 @@ import { MongoInternals } from 'meteor/mongo';
 import { DatabaseManager } from '@accounts/database-manager';
 import { Random } from 'meteor/random';
 import crypto, { randomBytes } from 'crypto';
-import pick from 'lodash.pick';
 import defer from 'lodash.defer';
 
 // import { destroyToken, hashLoginToken } from './util';
@@ -117,7 +116,7 @@ class UnchainedAccountsPassword extends AccountsPassword {
     // If user does not provide the validate function only allow some fields
     user = this.options.validateNewUser
       ? await this.options.validateNewUser(user)
-      : pick(user, ['username', 'email', 'password']);
+      : ({ username, email, password } = user);
 
     try {
       const userId = await this.db.createUser(user);
