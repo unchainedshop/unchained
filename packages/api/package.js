@@ -8,6 +8,7 @@ Package.describe({
 
 Npm.depends({
   accounting: '0.4.1',
+  'lodash.omit': '4.5.0',
 });
 
 Package.onUse((api) => {

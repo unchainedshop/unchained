@@ -1,11 +1,41 @@
-import { AccountsServer } from '@accounts/server';
+import { AccountsServer, ServerHooks, AccountsJsError } from '@accounts/server';
 import { AccountsPassword } from '@accounts/password';
 import MongoDBInterface from '@accounts/mongo';
 import { MongoInternals } from 'meteor/mongo';
 import { DatabaseManager } from '@accounts/database-manager';
 import { Random } from 'meteor/random';
 import crypto, { randomBytes } from 'crypto';
+import pick from 'lodash.pick';
+import defer from 'lodash.defer';
+
 // import { destroyToken, hashLoginToken } from './util';
+
+const CreateUserErrors = {
+  /**
+   * Will throw if no username or email is provided.
+   */
+  UsernameOrEmailRequired: 'UsernameOrEmailRequired',
+  /**
+   * Username validation via option `validateUsername` failed.
+   */
+  InvalidUsername: 'InvalidUsername',
+  /**
+   * Email validation via option `validateEmail` failed.
+   */
+  InvalidEmail: 'InvalidEmail',
+  /**
+   * Password validation via option `validatePassword` failed.
+   */
+  InvalidPassword: 'InvalidPassword',
+  /**
+   * Email already exist in the database.
+   */
+  EmailAlreadyExists: 'EmailAlreadyExists',
+  /**
+   * Username already exist in the database.
+   */
+  UsernameAlreadyExists: 'UsernameAlreadyExists',
+};
 
 const METEOR_ID_LENGTH = 17;
 
@@ -37,7 +67,78 @@ const options = {
   // sendVerificationEmailAfterSignup: false, // It's set to false by default
 };
 
-class UnchainedAccountsPassword extends AccountsPassword {}
+class UnchainedAccountsPassword extends AccountsPassword {
+  async createUser(user, options) {
+    if (!user.username && !user.email) {
+      throw new AccountsJsError(
+        this.options.errors.usernameOrEmailRequired,
+        CreateUserErrors.UsernameOrEmailRequired,
+      );
+    }
+
+    if (user.username && !this.options.validateUsername(user.username)) {
+      throw new AccountsJsError(
+        this.options.errors.invalidUsername,
+        CreateUserErrors.InvalidUsername,
+      );
+    }
+
+    if (user.email && !this.options.validateEmail(user.email)) {
+      throw new AccountsJsError(
+        this.options.errors.invalidEmail,
+        CreateUserErrors.InvalidEmail,
+      );
+    }
+
+    if (user.username && (await this.db.findUserByUsername(user.username))) {
+      throw new AccountsJsError(
+        this.options.errors.usernameAlreadyExists,
+        CreateUserErrors.UsernameAlreadyExists,
+      );
+    }
+
+    if (user.email && (await this.db.findUserByEmail(user.email))) {
+      throw new AccountsJsError(
+        this.options.errors.emailAlreadyExists,
+        CreateUserErrors.EmailAlreadyExists,
+      );
+    }
+
+    if (user.password) {
+      if (!this.options.validatePassword(user.password)) {
+        throw new AccountsJsError(
+          this.options.errors.invalidPassword,
+          CreateUserErrors.InvalidPassword,
+        );
+      }
+      user.password = await this.options.hashPassword(user.password);
+    }
+
+    // If user does not provide the validate function only allow some fields
+    user = this.options.validateNewUser
+      ? await this.options.validateNewUser(user)
+      : pick(user, ['username', 'email', 'password']);
+
+    try {
+      const userId = await this.db.createUser(user);
+
+      defer(async () => {
+        if (this.options.sendVerificationEmailAfterSignup && user.email)
+          this.sendVerificationEmail(user.email);
+
+        const userRecord = await this.db.findUserById(userId);
+        this.server
+          .getHooks()
+          .emit(ServerHooks.CreateUserSuccess, { user: userRecord, options });
+      });
+
+      return userId;
+    } catch (e) {
+      await this.server.getHooks().emit(ServerHooks.CreateUserError, user);
+      throw e;
+    }
+  }
+}
 
 export const accountsPassword = new UnchainedAccountsPassword({});
 

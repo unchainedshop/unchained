@@ -1,7 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
 import { check, Match } from 'meteor/check';
-import { Accounts } from 'meteor/accounts-base';
 import {
   accountsServer,
   accountsPassword,
@@ -14,10 +13,6 @@ import { Promise } from 'meteor/promise';
 import cloneDeep from 'lodash.clonedeep';
 import moniker from 'moniker';
 
-const bound = Meteor.bindEnvironment((callback) => {
-  callback();
-});
-
 export const buildContext = (user) => {
   const locale =
     (user && user.lastLogin && user.lastLogin.locale) ||
@@ -28,18 +23,29 @@ export const buildContext = (user) => {
   };
 };
 
-export default ({
-  mergeUserCartsOnLogin = true,
-  skipEmailVerification = false,
-} = {}) => {
-  accountsServer.options.validateNewUser = (user) => {
+export default ({ mergeUserCartsOnLogin = true } = {}) => {
+  accountsPassword.options.validateNewUser = (user) => {
     const clone = cloneDeep(user);
+    if (clone.email) {
+      clone.emails = [
+        {
+          address: clone.email,
+          verified: false,
+        },
+      ];
+      delete clone.email;
+    }
     delete clone._id;
-    Users.simpleSchema().validate(clone);
+    Users.simpleSchema()
+      .extend({
+        password: String,
+      })
+      .omit('created')
+      .validate(clone);
     return user;
   };
 
-  accountsServer.on('CreateUserSuccess', async (user) => {
+  accountsServer.on('CreateUserSuccess', async ({ user, options }) => {
     const newUser = user;
     newUser.created = newUser.createdAt || new Date();
     delete newUser.createdAt; // comes from the meteor-apollo-accounts stuff
@@ -61,7 +67,7 @@ export default ({
         { address: newUser.services.facebook.email, verified: true },
       ];
     }
-    if (!newUser.guest && !skipEmailVerification) {
+    if (!newUser.guest && !options?.skipEmailVerification) {
       accountsPassword.sendVerificationEmail(
         Users.findOne({ _id: user._id }).primaryEmail()?.address,
       );
@@ -86,17 +92,17 @@ export default ({
     check(email, Match.OneOf(String, null, undefined));
     const guestname = `${moniker.choose()}-${Random.hexString(5)}`;
     return {
-      email: email || `${guestname}@localhost`,
+      email: email || `${guestname}@unchained.local`,
       guest: true,
       profile: {},
     };
   }
 
   accountsServer.services.guest = {
-    authenticate: (params) => {
+    authenticate: async (params) => {
       const guestOptions = createGuestOptions(params.email);
       return {
-        userId: Accounts.createUser(guestOptions),
+        userId: await accountsPassword.createUser(guestOptions),
       };
     },
   };

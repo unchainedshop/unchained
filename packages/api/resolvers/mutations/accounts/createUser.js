@@ -1,5 +1,10 @@
 import { Meteor } from 'meteor/meteor';
-import { accountsPassword } from 'meteor/unchained:core-accountsjs';
+import { Users } from 'meteor/unchained:core-users';
+import {
+  accountsPassword,
+  accountsServer,
+} from 'meteor/unchained:core-accountsjs';
+import omit from 'lodash.omit';
 import hashPassword from '../../../hashPassword';
 
 export default async function createUser(root, options, context) {
@@ -12,5 +17,15 @@ export default async function createUser(root, options, context) {
     mappedOptions.password = hashPassword(mappedOptions.plainPassword);
     delete mappedOptions.plainPassword;
   }
-  await accountsPassword.createUser(mappedOptions);
+  const userId = await accountsPassword.createUser(mappedOptions);
+  const { user, token } = await accountsServer.loginWithUser(
+    Users.findOne(userId),
+  );
+
+  return {
+    id: user._id,
+    token: token.token,
+    tokenExpires: token.when,
+    user: omit(user, ['services', 'roles']),
+  };
 }

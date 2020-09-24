@@ -1,4 +1,4 @@
-import callMethod from '../../../callMethod';
+import { accountsPassword } from 'meteor/unchained:core-accountsjs';
 import hashPassword from '../../../hashPassword';
 
 export default async function changePassword(
@@ -20,13 +20,11 @@ export default async function changePassword(
   const newPassword = newHashedPassword || hashPassword(newPlainPassword);
   const oldPassword = oldHashedPassword || hashPassword(oldPlainPassword);
 
-  const { passwordChanged } = callMethod(
-    context,
-    'changePassword',
-    oldPassword,
-    newPassword,
-  );
-  return {
-    success: passwordChanged,
-  };
+  return accountsPassword
+    .changePassword(context.userId, oldPassword, newPassword)
+    .then(() => {
+      return {
+        success: true,
+      };
+    });
 }

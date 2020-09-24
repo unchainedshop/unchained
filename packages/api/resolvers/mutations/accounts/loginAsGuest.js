@@ -3,15 +3,14 @@ import { accountsServer } from 'meteor/unchained:core-accountsjs';
 
 export default async function loginAsGuest(root, methodArguments, context) {
   log('mutation loginAsGuest');
-  const { user, token } = await accountsServer.loginWithService(
-    'guest',
-    methodArguments,
-    context,
-  );
+  const {
+    user: { userId },
+    token,
+  } = await accountsServer.loginWithService('guest', methodArguments, context);
+
   return {
-    id: user._id,
+    id: userId,
     token: token.token,
     tokenExpires: token.when,
-    type: 'guest',
   };
 }

@@ -28,6 +28,7 @@ Package.onUse((api) => {
   api.use('unchained:core-languages@0.52.0');
   api.use('unchained:core-countries@0.52.0');
   api.use('unchained:core-files@0.52.0');
+  api.use('unchained:core-accountsjs@0.52.0');
 
   api.mainModule('users.js', 'server');
 });
