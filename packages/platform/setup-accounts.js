@@ -99,15 +99,14 @@ export default ({ mergeUserCartsOnLogin = true } = {}) => {
   }
 
   accountsServer.services.guest = {
-    authenticate: async (params) => {
+    async authenticate(params) {
       const guestOptions = createGuestOptions(params.email);
-      return {
-        userId: await accountsPassword.createUser(guestOptions),
-      };
+      const userId = await accountsPassword.createUser(guestOptions);
+      return userId;
     },
   };
 
-  accountsServer.on('LoginSuccess', ({ user, connection = {} }) => {
+  accountsServer.on('LoginSuccess', async ({ user, connection = {} }) => {
     const {
       userIdBeforeLogin,
       countryContext,
