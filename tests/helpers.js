@@ -1,5 +1,5 @@
 import { MongoClient, Collection } from 'mongodb';
-import { execute, toPromise } from '@apollo/client';
+import { execute, toPromise } from '@apollo/client/core';
 import { createUploadLink } from 'apollo-upload-client';
 import gql from 'graphql-tag';
 import fetch from 'isomorphic-unfetch';
