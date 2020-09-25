@@ -13,8 +13,8 @@ function parseCookies(ctx = {}, options = {}) {
     ctx.req && ctx.req.headers && ctx.req.headers.cookie // eslint-disable-line
       ? ctx.req.headers.cookie
       : process.browser
-        ? document.cookie
-        : '',
+      ? document.cookie
+      : '',
     options
   );
 }
@@ -124,6 +124,5 @@ const connectApollo = (ComposedComponent) => {
 
   return WithData;
 };
-
 
 export default connectApollo;

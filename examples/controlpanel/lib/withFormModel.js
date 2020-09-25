@@ -22,5 +22,4 @@ const withFormModel = (mapFn) =>
     return { model };
   });
 
-
 export default withFormModel;

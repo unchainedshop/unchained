@@ -1,7 +1,7 @@
 import gql from 'graphql-tag';
 import { getLoginToken, resetStore } from './store';
 
-export default async function (apollo) {
+export default async function logout(apollo) {
   const token = await getLoginToken();
   await resetStore();
 
