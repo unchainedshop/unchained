@@ -30,6 +30,7 @@ The following functions now require an authorId to work properly:
 - assortment.addFilter
 - Products.createProduct
 - product.addMedia (was userId before!)
+- product.addMediaLink
 - DeliveryProviders.createProvider
 - PaymentProviders.createProvider
 - WarehousingProviders.createProvider
