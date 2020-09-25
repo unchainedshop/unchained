@@ -51,7 +51,9 @@ Migrations.add({
   version: 20200915.1,
   name: 'drop OrderPositions related indexes',
   up() {
-    OrderPositions.rawCollection().dropIndexes().catch(() => {});
+    OrderPositions.rawCollection()
+      .dropIndexes()
+      .catch(() => {});
   },
   down() {},
 });

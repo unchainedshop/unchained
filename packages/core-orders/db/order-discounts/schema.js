@@ -22,8 +22,8 @@ OrderDiscounts.attachSchema(
       ...contextFields,
       ...timestampFields,
     },
-    { requiredByDefault: false }
-  )
+    { requiredByDefault: false },
+  ),
 );
 
 Migrations.add({

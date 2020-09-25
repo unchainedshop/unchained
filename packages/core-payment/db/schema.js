@@ -101,8 +101,12 @@ Migrations.add({
   version: 20200915.3,
   name: 'drop PaymentProvider & PaymentCredentials related indexes',
   up() {
-    PaymentProviders.rawCollection().dropIndexes().catch(() => {});
-    PaymentCredentials.rawCollection().dropIndexes().catch(() => {});
+    PaymentProviders.rawCollection()
+      .dropIndexes()
+      .catch(() => {});
+    PaymentCredentials.rawCollection()
+      .dropIndexes()
+      .catch(() => {});
   },
   down() {},
 });

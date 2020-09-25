@@ -4,7 +4,6 @@ import { Users } from 'meteor/unchained:core-users';
 import { Factory } from 'meteor/dburles:factory';
 import { WebApp } from 'meteor/webapp';
 import { embedControlpanelInMeteorWebApp } from '@unchainedshop/controlpanel';
-import { Migrations } from 'meteor/percolate:migrations';
 
 import 'meteor/unchained:core-delivery/plugins/post';
 import 'meteor/unchained:core-delivery/plugins/pick-mup';
@@ -112,6 +111,6 @@ Meteor.startup(() => {
     },
   });
   initializeDatabase();
-  
+
   embedControlpanelInMeteorWebApp(WebApp);
 });

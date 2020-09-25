@@ -17,8 +17,8 @@ Countries.attachSchema(
       defaultCurrencyId: String,
       ...Schemas.timestampFields,
     },
-    { requiredByDefault: false }
-  )
+    { requiredByDefault: false },
+  ),
 );
 
 Migrations.add({

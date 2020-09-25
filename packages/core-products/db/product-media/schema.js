@@ -41,8 +41,12 @@ Migrations.add({
   version: 20200915.4,
   name: 'drop ProductMedia & ProductMediaTexts related indexes',
   up() {
-    ProductMedia.rawCollection().dropIndexes().catch(() => {});
-    ProductMediaTexts.rawCollection().dropIndexes().catch(() => {});
+    ProductMedia.rawCollection()
+      .dropIndexes()
+      .catch(() => {});
+    ProductMediaTexts.rawCollection()
+      .dropIndexes()
+      .catch(() => {});
   },
   down() {},
 });
