@@ -22,15 +22,17 @@ OrderDiscounts.attachSchema(
       ...contextFields,
       ...timestampFields,
     },
-    { requiredByDefault: false },
-  ),
+    { requiredByDefault: false }
+  )
 );
 
 Migrations.add({
   version: 20200914.8,
   name: 'drop OrderDiscount related indexes',
   up() {
-    OrderDiscounts.rawCollection().dropIndexes();
+    OrderDiscounts.rawCollection()
+      .dropIndexes()
+      .catch(() => {});
   },
   down() {},
 });

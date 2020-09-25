@@ -11,15 +11,17 @@ Bookmarks.attachSchema(
       productId: { type: String, required: true },
       ...Schemas.timestampFields,
     },
-    { requiredByDefault: false },
-  ),
+    { requiredByDefault: false }
+  )
 );
 
 Migrations.add({
   version: 20200914.1,
   name: 'drop bookmark related indexes',
   up() {
-    Bookmarks.rawCollection().dropIndexes();
+    Bookmarks.rawCollection()
+      .dropIndexes()
+      .catch(() => {});
   },
   down() {},
 });

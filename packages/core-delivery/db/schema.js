@@ -22,8 +22,8 @@ DeliveryProviders.attachSchema(
       'configuration.$.value': { type: String },
       ...Schemas.timestampFields,
     },
-    { requiredByDefault: false },
-  ),
+    { requiredByDefault: false }
+  )
 );
 
 Migrations.add({
@@ -35,7 +35,7 @@ Migrations.add({
       {
         $set: { adapterKey: 'shop.unchained.post' },
       },
-      { multi: true },
+      { multi: true }
     );
   },
   down() {
@@ -44,7 +44,7 @@ Migrations.add({
       {
         $set: { adapterKey: 'ch.dagobert.post' },
       },
-      { multi: true },
+      { multi: true }
     );
   },
 });
@@ -62,7 +62,7 @@ Migrations.add({
             $set: {
               authorId: 'root',
             },
-          },
+          }
         );
       });
   },
@@ -76,7 +76,7 @@ Migrations.add({
             $unset: {
               authorId: 1,
             },
-          },
+          }
         );
       });
   },
@@ -86,7 +86,9 @@ Migrations.add({
   version: 20200914.4,
   name: 'drop deliveryProviders related indexes',
   up() {
-    DeliveryProviders.rawCollection().dropIndexes();
+    DeliveryProviders.rawCollection()
+      .dropIndexes()
+      .catch(() => {});
   },
   down() {},
 });

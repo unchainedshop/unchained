@@ -16,15 +16,17 @@ Languages.attachSchema(
       authorId: { type: String, required: true },
       ...Schemas.timestampFields,
     },
-    { requiredByDefault: false },
-  ),
+    { requiredByDefault: false }
+  )
 );
 
 Migrations.add({
   version: 20200914.6,
   name: 'drop languages related indexes',
   up() {
-    Languages.rawCollection().dropIndexes();
+    Languages.rawCollection()
+      .dropIndexes()
+      .catch(() => {});
   },
   down() {},
 });

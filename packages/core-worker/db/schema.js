@@ -68,7 +68,7 @@ Migrations.add({
   version: 20200422,
   name: 'drop some indexes',
   up() {
-    WorkQueue.rawCollection().dropIndexes();
+    WorkQueue.rawCollection().dropIndexes().catch(() => {});
   },
   down() {},
 });

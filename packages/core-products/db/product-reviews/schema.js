@@ -43,7 +43,7 @@ Migrations.add({
   version: 20200915.5,
   name: 'drop ProductReviews related indexes',
   up() {
-    ProductReviews.rawCollection().dropIndexes();
+    ProductReviews.rawCollection().dropIndexes().catch(() => {});
   },
   down() {},
 });

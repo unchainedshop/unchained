@@ -27,8 +27,8 @@ Filters.attachSchema(
       authorId: { type: String, required: true },
       ...Schemas.timestampFields,
     },
-    { requiredByDefault: false },
-  ),
+    { requiredByDefault: false }
+  )
 );
 
 FilterTexts.attachSchema(
@@ -42,8 +42,8 @@ FilterTexts.attachSchema(
       authorId: { type: String, required: true },
       ...Schemas.timestampFields,
     },
-    { requiredByDefault: false },
-  ),
+    { requiredByDefault: false }
+  )
 );
 
 Migrations.add({
@@ -59,7 +59,7 @@ Migrations.add({
             $set: {
               authorId: 'root',
             },
-          },
+          }
         );
       });
     FilterTexts.find()
@@ -71,7 +71,7 @@ Migrations.add({
             $set: {
               authorId: 'root',
             },
-          },
+          }
         );
       });
   },
@@ -85,7 +85,7 @@ Migrations.add({
             $unset: {
               authorId: 1,
             },
-          },
+          }
         );
       });
     FilterTexts.find()
@@ -97,7 +97,7 @@ Migrations.add({
             $unset: {
               authorId: 1,
             },
-          },
+          }
         );
       });
   },
@@ -107,8 +107,12 @@ Migrations.add({
   version: 20200914.5,
   name: 'drop filters related indexes',
   up() {
-    Filters.rawCollection().dropIndexes();
-    FilterTexts.rawCollection().dropIndexes();
+    Filters.rawCollection()
+      .dropIndexes()
+      .catch(() => {});
+    FilterTexts.rawCollection()
+      .dropIndexes()
+      .catch(() => {});
   },
   down() {},
 });

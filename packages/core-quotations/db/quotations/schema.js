@@ -91,7 +91,7 @@ Migrations.add({
   version: 20200915.8,
   name: 'drop Quotations related indexes',
   up() {
-    Quotations.rawCollection().dropIndexes();
+    Quotations.rawCollection().dropIndexes().catch(() => {});
   },
   down() {},
 });

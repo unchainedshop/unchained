@@ -50,7 +50,7 @@ Migrations.add({
   version: 20200915.2,
   name: 'drop Orders related indexes',
   up() {
-    Orders.rawCollection().dropIndexes();
+    Orders.rawCollection().dropIndexes().catch(() => {});
   },
   down() {},
 });

@@ -17,15 +17,17 @@ Countries.attachSchema(
       defaultCurrencyId: String,
       ...Schemas.timestampFields,
     },
-    { requiredByDefault: false },
-  ),
+    { requiredByDefault: false }
+  )
 );
 
 Migrations.add({
   version: 20200914.2,
   name: 'drop country related indexes',
   up() {
-    Countries.rawCollection().dropIndexes();
+    Countries.rawCollection()
+      .dropIndexes()
+      .catch(() => {});
   },
   down() {},
 });

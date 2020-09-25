@@ -144,8 +144,8 @@ Migrations.add({
   version: 20200915.7,
   name: 'drop Product & ProductTexts related indexes',
   up() {
-    Products.rawCollection().dropIndexes();
-    ProductTexts.rawCollection().dropIndexes();
+    Products.rawCollection().dropIndexes().catch(() => {});
+    ProductTexts.rawCollection().dropIndexes().catch(() => {});
   },
   down() {},
 });

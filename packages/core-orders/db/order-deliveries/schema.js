@@ -32,15 +32,17 @@ OrderDeliveries.attachSchema(
       ...calculationFields,
       ...logFields,
     },
-    { requiredByDefault: false },
-  ),
+    { requiredByDefault: false }
+  )
 );
 
 Migrations.add({
   version: 20200914.7,
   name: 'drop OrderDeliveries related indexes',
   up() {
-    OrderDeliveries.rawCollection().dropIndexes();
+    OrderDeliveries.rawCollection()
+      .dropIndexes()
+      .catch(() => {});
   },
   down() {},
 });

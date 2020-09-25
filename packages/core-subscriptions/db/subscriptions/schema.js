@@ -71,7 +71,7 @@ Migrations.add({
   version: 20200915.9,
   name: 'drop Subscriptions related indexes',
   up() {
-    Subscriptions.rawCollection().dropIndexes();
+    Subscriptions.rawCollection().dropIndexes().catch(() => {});
   },
   down() {},
 });

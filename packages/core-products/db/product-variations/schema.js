@@ -47,8 +47,8 @@ Migrations.add({
   version: 20200915.6,
   name: 'drop ProductVariations & ProductVariationTexts related indexes',
   up() {
-    ProductVariations.rawCollection().dropIndexes();
-    ProductVariationTexts.rawCollection().dropIndexes();
+    ProductVariations.rawCollection().dropIndexes().catch(() => {});
+    ProductVariationTexts.rawCollection().dropIndexes().catch(() => {});
   },
   down() {},
 });

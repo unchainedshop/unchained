@@ -62,7 +62,7 @@ Migrations.add({
   version: 20200916.1,
   name: 'drop WarehousingProvider related indexes',
   up() {
-    WarehousingProviders.rawCollection().dropIndexes();
+    WarehousingProviders.rawCollection().dropIndexes().catch(() => {});
   },
   down() {},
 });

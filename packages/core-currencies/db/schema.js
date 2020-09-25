@@ -15,15 +15,17 @@ Currencies.attachSchema(
       authorId: { type: String, required: true },
       ...Schemas.timestampFields,
     },
-    { requiredByDefault: false },
-  ),
+    { requiredByDefault: false }
+  )
 );
 
 Migrations.add({
   version: 20200914.3,
   name: 'drop currencies related indexes',
   up() {
-    Currencies.rawCollection().dropIndexes();
+    Currencies.rawCollection()
+      .dropIndexes()
+      .catch(() => {});
   },
   down() {},
 });

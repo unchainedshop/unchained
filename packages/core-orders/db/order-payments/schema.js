@@ -40,7 +40,9 @@ Migrations.add({
   version: 20200914.9,
   name: 'drop OrderPayments related indexes',
   up() {
-    OrderPayments.rawCollection().dropIndexes();
+    OrderPayments.rawCollection()
+      .dropIndexes()
+      .catch(() => {});
   },
   down() {},
 });
