@@ -10,7 +10,7 @@ TBD
 
 ---
 
-# v0.53.0
+# v0.53.0
 
 This new Release is published along our new Documentation Page:
 https://docs.unchained.shop
