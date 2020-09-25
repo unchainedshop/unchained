@@ -175,7 +175,7 @@ class UnchainedAccountsServer extends AccountsServer {
     const token = this.hashLoginToken(stampedLoginToken);
 
     Meteor.users.update(
-      { _id: user._id },
+      { _id: user._id || user }, // can be user object or mere id passed by guest service
       {
         $addToSet: {
           'services.resume.loginTokens': token,
