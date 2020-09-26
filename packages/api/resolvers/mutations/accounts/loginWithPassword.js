@@ -2,6 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { accountsServer } from 'meteor/unchained:core-accountsjs';
 import hashPassword from '../../../hashPassword';
 import getUserLoginMethod from './getUserLoginMethod';
+import { filterContext, evaluateContext } from '../../../callMethod';
 
 export default async function loginWithPassword(
   root,
@@ -22,7 +23,7 @@ export default async function loginWithPassword(
         user: userQuery,
         password,
       },
-      context,
+      evaluateContext(filterContext(context)),
     );
 
     return {

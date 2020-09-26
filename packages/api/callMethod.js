@@ -1,13 +1,27 @@
 import { Meteor } from 'meteor/meteor';
 import getConnection from './getConnection';
 
-const filterContext = (graphqlContext) => {
+export const filterContext = (graphqlContext) => {
   return Object.fromEntries(
     Object.entries(graphqlContext).filter(([key]) => {
       if (key.substr(0, 1) === '_') return false;
       return true;
     }),
   );
+};
+
+export const evaluateContext = (filteredContext) => {
+  const {
+    userId: userIdBeforeLogin,
+    localeContext,
+    ...handlerContext
+  } = filteredContext;
+
+  return {
+    userIdBeforeLogin,
+    normalizedLocale: localeContext && localeContext.normalized,
+    ...handlerContext,
+  };
 };
 
 export default function callMethod(passedContext, name, ...args) {
@@ -27,17 +41,12 @@ export default function callMethod(passedContext, name, ...args) {
     },
     ...filteredContext,
   };
-  const {
-    userId: userIdBeforeLogin,
-    localeContext,
-    ...handlerContext
-  } = filteredContext;
 
-  const retValue = handler.call(context, ...args, {
-    userIdBeforeLogin,
-    normalizedLocale: localeContext && localeContext.normalized,
-    ...handlerContext,
-  });
+  const retValue = handler.call(
+    context,
+    ...args,
+    evaluateContext(filteredContext),
+  );
   connection.close();
   return retValue;
 }
