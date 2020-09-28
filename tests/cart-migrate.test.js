@@ -8,14 +8,13 @@ import { SimpleProduct } from './seeds/products';
 let connection;
 let db;
 let anonymousGraphqlFetch;
-let graphqlFetch;
 let guestToken;
+let loggedInGraphqlFetch;
 
 describe('Guest user cart migration', () => {
   beforeAll(async () => {
     [db, connection] = await setupDatabase({ skipOrders: true }); // just to avoid confusion caused by other orders
     anonymousGraphqlFetch = await createAnonymousGraphqlFetch();
-    graphqlFetch = await createLoggedInGraphqlFetch();
   });
 
   afterAll(async () => {
@@ -38,7 +37,7 @@ describe('Guest user cart migration', () => {
   });
 
   it('add a product to the cart', async () => {
-    const loggedInGraphqlFetch = await createLoggedInGraphqlFetch(
+    loggedInGraphqlFetch = await createLoggedInGraphqlFetch(
       `Bearer ${guestToken}`,
     );
     const result = await loggedInGraphqlFetch({
@@ -105,7 +104,7 @@ describe('Guest user cart migration', () => {
   });
 
   it('check if cart contains product after normal login', async () => {
-    const { data: { loginWithPassword } = {} } = await graphqlFetch({
+    const { data: { loginWithPassword } = {} } = await loggedInGraphqlFetch({
       query: /* GraphQL */ `
         mutation {
           loginWithPassword(username: "admin", plainPassword: "password") {
@@ -118,10 +117,10 @@ describe('Guest user cart migration', () => {
         }
       `,
     });
-    // Although the admin has placed no orders you can find
-    const Orders = db.collection('orders');
-    expect(
-      await Orders.findOne({ userId: loginWithPassword.id }),
-    ).toMatchObject({});
+    // Although the admin has placed no orders you can find an order of his
+    const adminOrders = await db
+      .collection('orders')
+      .findOne({ userId: loginWithPassword.id });
+    expect(adminOrders).toMatchObject({});
   });
 });
