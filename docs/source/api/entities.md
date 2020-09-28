@@ -59,7 +59,7 @@ The amount of entities you can submit in one file depends on the size of the ent
 Set by unchained:
 - authorId,
 - slug history
-- _id, contentHash, created & updated if not provided
+- _id, created & updated if not provided
 
 Languages:
 - The language code in "content" fields should match an existing Language entity's isoCode in Unchained.
@@ -156,7 +156,6 @@ Status:
         "updated": null,
         "asset": {
           "_id": null,
-          "contentHash": null,
           "url": "https://www.story.one/media/images/poop-4108423_1920.width-1600.format-jpeg.jpg"
         },
         "tags": ["big"],

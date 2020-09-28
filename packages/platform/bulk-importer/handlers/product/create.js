@@ -1,45 +1,38 @@
 import { Products } from 'meteor/unchained:core-products';
 import upsertVariations from './upsertVariations';
 import upsertMedia from './upsertMedia';
+import upsertProductContent from './upsertProductContent';
+
+import transformSpecificationToProductStructure from './transformSpecificationToProductStructure';
 
 export default async function createProduct(payload, { logger, authorId }) {
   const { specification, media, variations, _id } = payload;
-  logger.verbose('prepare: create product', payload);
 
-  if (specification) {
-    const {
-      variationResolvers: assignments,
-      content,
-      warehousing: warehousingEmbeddedSupply,
-      ...productData
-    } = specification;
+  if (!specification)
+    throw new Error('Specification is required when creating a new product');
 
-    const { dimensions: supply, ...warehousing } =
-      warehousingEmbeddedSupply || {};
+  const productData = transformSpecificationToProductStructure(specification);
+  logger.debug('create product object', productData);
+  const product = await Products.createProduct({
+    ...productData,
+    _id,
+    authorId,
+  });
 
-    const proxy = assignments ? { assignments } : undefined;
+  if (!specification.content)
+    throw new Error('Product content is required when creating a new product');
 
-    const product = await Products.createProduct({
-      ...productData,
-      _id,
-      warehousing,
-      supply,
-      proxy,
-      authorId,
-    });
+  logger.debug('create localized content for product', specification.content);
+  await upsertProductContent({
+    content: specification.content,
+    product,
+    authorId,
+  });
 
-    await Promise.all(
-      Object.entries(content).map(async ([locale, localizedData]) => {
-        return product.upsertLocalizedText(locale, {
-          ...localizedData,
-          authorId,
-        });
-      })
-    );
-  }
-
+  logger.debug('create product media', media);
   await upsertMedia({ media: media || [], productId: _id, authorId });
 
+  logger.debug('create product variations', variations);
   await upsertVariations({
     variations: variations || [],
     productId: _id,

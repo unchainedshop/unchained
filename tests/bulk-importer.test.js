@@ -16,7 +16,7 @@ describe('Bulk Importer', () => {
   });
 
   describe('Import Products', () => {
-    it('adds 1 Product INSERT event', async () => {
+    it('adds 1 Product CREATE event and 1 UPDATE event', async () => {
       const { data: { addWork } = {} } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation addWork($input: JSON) {
@@ -107,7 +107,9 @@ describe('Bulk Importer', () => {
                   },
                   media: [
                     {
+                      _id: 'product-a-format',
                       asset: {
+                        _id: 'format-v1',
                         fileName: 'format-jpeg.jpg',
                         url:
                           'https://www.story.one/media/images/poop-4108423_1920.width-1600.format-jpeg.jpg',
@@ -141,6 +143,37 @@ describe('Bulk Importer', () => {
                         de: {
                           title: 'Farbe',
                           subtitle: 'Farbvariante',
+                        },
+                      },
+                    },
+                  ],
+                },
+              },
+              {
+                entity: 'PRODUCT',
+                operation: 'UPDATE',
+                payload: {
+                  _id: 'A',
+                  specification: {
+                    tags: ['awesome'],
+                    meta: {
+                      something: 1,
+                    },
+                  },
+                  media: [
+                    {
+                      _id: 'product-a-meteor',
+                      asset: {
+                        _id: 'meteor',
+                        fileName: 'meteor-will-never-die.svg',
+                        url:
+                          'https://docs.meteor.com/images/logo-coralspace-left.svg',
+                      },
+                      tags: ['small'],
+                      meta: {},
+                      content: {
+                        de: {
+                          title: 'Will Meteor die?',
                         },
                       },
                     },
