@@ -1,7 +1,7 @@
 import { Products } from 'meteor/unchained:core-products';
 
 export default async function createProduct(payload, { logger, authorId }) {
-  const { specification, _id } = payload;
+  const { specification, media, variations, _id } = payload;
   logger.verbose('prepare: create product', payload);
 
   if (specification) {
@@ -27,17 +27,18 @@ export default async function createProduct(payload, { logger, authorId }) {
     });
 
     await Promise.all(
-      Object.entries(content).map(([locale, localizedData]) => {
+      Object.entries(content).map(async ([locale, localizedData]) => {
         return product.upsertLocalizedText(locale, {
           ...localizedData,
           authorId,
         });
-      }),
+      })
     );
   }
 
   if (media) {
     // Replace Media Links
+    console.log(media);
   }
 
   if (variations) {
