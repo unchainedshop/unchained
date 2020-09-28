@@ -16,7 +16,7 @@ const AssortmentHeader = ({ loading, assortmentId, assortment = {} }) => {
     <Menu fluid attached="top" borderless key="header-title">
       <Menu.Item header>
         Assortment:
-        {assortment.texts && assortment.texts.title}
+        {assortment.texts?.title}
       </Menu.Item>
       <Menu.Menu position="right">
         <Dropdown item icon="wrench" simple>

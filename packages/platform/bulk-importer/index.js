@@ -44,12 +44,10 @@ export default ({ logger, authorId }) => {
     },
     async execute() {
       logger.verbose(
-        `execute bulk operations for: ${Object.keys(bulkOperations).join(
-          ', ',
-        )}`,
+        `execute bulk operations for: ${Object.keys(bulkOperations).join(', ')}`
       );
       const operationResults = Promise.all(
-        Object.values(bulkOperations).map((o) => o.execute()),
+        Object.values(bulkOperations).map((o) => o.execute())
       );
       return { operationResults };
     },

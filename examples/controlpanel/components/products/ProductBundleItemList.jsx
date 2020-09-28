@@ -45,7 +45,7 @@ const ProductBundleItemList = ({
         options={[
           { label: 'Choose Type', value: null },
           ...(allProducts || []).map((product) => ({
-            label: product.texts.title,
+            label: product.texts?.title,
             value: product._id,
           })),
         ]}

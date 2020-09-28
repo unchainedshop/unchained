@@ -90,7 +90,7 @@ const QuotationHeader = ({
                   {product && (
                     <Link href={`/products/edit?_id=${product._id}`}>
                       <a href={`/products/edit?_id=${product._id}`}>
-                        {`${product.texts.title || product._id}`}
+                        {`${product.texts?.title || product._id}`}
                       </a>
                     </Link>
                   )}

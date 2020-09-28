@@ -38,7 +38,7 @@ const ProductMediaListItem = ({
           />
         ) : (
           <div>
-            <Header as="h3">{texts && texts.title}</Header>
+            <Header as="h3">{texts?.title}</Header>
             <p>{texts && texts.subtitle}</p>
           </div>
         )}

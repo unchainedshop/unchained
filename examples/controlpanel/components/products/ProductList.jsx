@@ -66,7 +66,7 @@ const ProductList = ({ products, loadMoreEntries, hasMore, router }) => {
               <Table.Cell>
                 <Link href={`/products/edit?_id=${product._id}`}>
                   <a href={`/products/edit?_id=${product._id}`}>
-                    {product.texts.title}
+                    {product.texts?.title}
                   </a>
                 </Link>
               </Table.Cell>

@@ -24,7 +24,7 @@ const AssortmentProductListItem = ({
             <Link href={`/products/edit?_id=${product._id}`}>
               <>
                 <a href={`/products/edit?_id=${product._id}`}>
-                  {product.texts && product.texts.title}
+                  {product.texts?.title}
                 </a>
                 {tags &&
                   tags.map((tag) => {

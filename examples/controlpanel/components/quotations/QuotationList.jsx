@@ -39,7 +39,7 @@ const QuotationList = ({ loading, updateHasMore, ...rest }) => (
           {quotation.product && (
             <Link href={`/products/edit?_id=${quotation.product._id}`}>
               <a href={`/products/edit?_id=${quotation.product._id}`}>
-                <b>{quotation.product.texts.title}</b>
+                <b>{quotation.product.texts?.title}</b>
                 <small>
                   &nbsp;(
                   {quotation.product.sku})

@@ -63,10 +63,7 @@ const SearchDropdown = ({
     return foundImageObj ? (
       <SemanticImage
         src={foundImageObj && foundImageObj.file && foundImageObj.file.url}
-        alt={
-          (foundImageObj && foundImageObj.texts && foundImageObj.texts.title) ||
-          item.texts.title
-        }
+        alt={foundImageObj?.texts?.title || item.texts?.title}
       />
     ) : (
       imageComponent
