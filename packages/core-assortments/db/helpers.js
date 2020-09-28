@@ -76,7 +76,9 @@ Collections.Assortments.createAssortment = ({
   const assortmentObject = Collections.Assortments.findOne({
     _id: assortmentId,
   });
-  assortmentObject.upsertLocalizedText(locale, { title, authorId });
+  if (locale) {
+    assortmentObject.upsertLocalizedText(locale, { title, authorId });
+  }
   return assortmentObject;
 };
 

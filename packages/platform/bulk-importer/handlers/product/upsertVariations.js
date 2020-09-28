@@ -10,7 +10,7 @@ export default async ({ variations, authorId, productId }) => {
         productId,
       });
       await Promise.all(
-        options.map(async ({ content: optionContent, optionValue }) => {
+        options.map(async ({ content: optionContent, value: optionValue }) => {
           await Promise.all(
             Object.entries(optionContent).map(
               async ([locale, localizedData]) => {

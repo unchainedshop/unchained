@@ -187,4 +187,60 @@ describe('Bulk Importer', () => {
       expect(addWork).toMatchObject({});
     });
   });
+
+  describe('Import Filters', () => {
+    it('adds 1 CREATE and 1 UPDATE event', async () => {
+      const { data: { addWork } = {} } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation addWork($input: JSON) {
+            addWork(
+              type: BULK_IMPORT
+              input: $input
+              retries: 0
+              priority: 10
+            ) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          input: {
+            events: [
+              {
+                entity: 'FILTER',
+                operation: 'CREATE',
+                payload: {
+                  _id: 'Filter A',
+                  specification: {
+                    key: 'size_cm',
+                    isActive: true,
+                    type: 'SINGLE_CHOICE',
+                    options: [
+                      {
+                        value: '10',
+                        content: {
+                          de: {
+                            title: '10 cm',
+                            subtitle: '',
+                          },
+                        },
+                      },
+                    ],
+                    content: {
+                      de: {
+                        title: 'Size',
+                        subtitle: 'Size of product in centimeters',
+                      },
+                    },
+                    meta: {},
+                  },
+                },
+              },
+            ],
+          },
+        },
+      });
+      expect(addWork).toMatchObject({});
+    });
+  });
 });
