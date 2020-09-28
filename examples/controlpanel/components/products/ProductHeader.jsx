@@ -1,4 +1,5 @@
 import React from 'react';
+import { withRouter } from 'next/router';
 import { compose, pure, mapProps } from 'recompose';
 import { format } from 'date-fns';
 import { Menu, Dropdown, Segment, Label, List, Grid } from 'semantic-ui-react';
@@ -10,9 +11,12 @@ import BtnUnpublishProduct from './BtnUnpublishProduct';
 import FormEditProduct from './FormEditProduct';
 import BreadcrumbTrail from '../BreadcrumbTrail';
 
-const ProductHeader = ({ loading, productId, product = {} }) => [
+const ProductHeader = ({ loading, router, productId, product = {} }) => [
   product && product.assortmentPaths && (
-    <BreadcrumbTrail assortmentPaths={product.assortmentPaths} />
+    <BreadcrumbTrail
+      assortmentPaths={product.assortmentPaths}
+      router={router}
+    />
   ),
   <Menu fluid attached="top" borderless key="header-title">
     <Menu.Item header>
@@ -126,5 +130,6 @@ export default compose(
     loading,
     ...rest,
   })),
+  withRouter,
   pure
 )(ProductHeader);
