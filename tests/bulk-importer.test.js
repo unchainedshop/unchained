@@ -108,6 +108,7 @@ describe('Bulk Importer', () => {
                   media: [
                     {
                       asset: {
+                        fileName: 'format-jpeg.jpg',
                         url:
                           'https://www.story.one/media/images/poop-4108423_1920.width-1600.format-jpeg.jpg',
                       },
