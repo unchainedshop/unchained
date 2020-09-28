@@ -140,7 +140,7 @@ export default ({ mergeUserCartsOnLogin = true } = {}) => {
     }
   });
 
-  accountsServer.on('ValidateLogin', ({ service, user, connection }) => {
+  accountsServer.on('ValidateLogin', ({ service, user }) => {
     if (service !== 'guest' && user.guest) {
       Users.update(
         { _id: user._id },
