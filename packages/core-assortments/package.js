@@ -1,6 +1,6 @@
 Package.describe({
   name: 'unchained:core-assortments',
-  version: '0.52.0',
+  version: '0.53.0',
   summary: 'Unchained Engine Core: Assortments',
   git: 'https://github.com/unchainedshop/unchained',
   documentation: 'README.md',
@@ -12,13 +12,12 @@ Package.onUse((api) => {
   api.use('mongo');
   api.use('dburles:factory@1.1.0');
   api.use('dburles:collection-helpers@1.1.0');
-  api.use('aldeed:collection2@3.0.2');
-  api.use('aldeed:schema-index@3.0.0');
+  api.use('aldeed:collection2@3.2.1');
   api.use('percolate:migrations@1.0.2');
-  api.use('unchained:utils@0.52.0');
-  api.use('unchained:core-countries@0.52.0');
-  api.use('unchained:core-products@0.52.0');
-  api.use('unchained:core-filters@0.52.0');
+  api.use('unchained:utils@0.53.0');
+  api.use('unchained:core-countries@0.53.0');
+  api.use('unchained:core-products@0.53.0');
+  api.use('unchained:core-filters@0.53.0');
 
   api.mainModule('assortments.js', 'server');
 });

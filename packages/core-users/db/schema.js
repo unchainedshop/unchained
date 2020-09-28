@@ -2,6 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { Migrations } from 'meteor/percolate:migrations';
 import SimpleSchema from 'simpl-schema';
 import { Schemas } from 'meteor/unchained:utils';
+import * as Collections from './collections';
 
 const { Address, timestampFields } = Schemas;
 
@@ -176,4 +177,15 @@ Migrations.add({
 
 export default () => {
   Migrations.migrateTo('latest');
+
+  Collections.Users.rawCollection().createIndex({
+    username: 'text',
+    'emails.address': 'text',
+    'profile.displayName': 'text',
+    'lastBillingAddress.firstName': 'text',
+    'lastBillingAddress.lastName': 'text',
+    'lastBillingAddress.company': 'text',
+    'lastBillingAddress.addressLine': 'text',
+    'lastBillingAddress.addressLine2': 'text',
+  });
 };

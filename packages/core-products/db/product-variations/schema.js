@@ -1,5 +1,7 @@
 import SimpleSchema from 'simpl-schema';
 import { Schemas } from 'meteor/unchained:utils';
+import { Migrations } from 'meteor/percolate:migrations';
+
 import { ProductVariations, ProductVariationTexts } from './collections';
 
 // eslint-disable-next-line
@@ -11,7 +13,7 @@ export const ProductVariationType = {
 ProductVariations.attachSchema(
   new SimpleSchema(
     {
-      productId: { type: String, required: true, index: true },
+      productId: { type: String, required: true },
       key: String,
       type: String,
       options: Array,
@@ -29,10 +31,9 @@ ProductVariationTexts.attachSchema(
       productVariationId: {
         type: String,
         required: true,
-        index: true,
       },
       productVariationOptionValue: String,
-      locale: { type: String, index: true },
+      locale: String,
       title: String,
       subtitle: String,
       authorId: { type: String, required: true },
@@ -41,3 +42,25 @@ ProductVariationTexts.attachSchema(
     { requiredByDefault: false },
   ),
 );
+
+Migrations.add({
+  version: 20200915.6,
+  name: 'drop ProductVariations & ProductVariationTexts related indexes',
+  up() {
+    ProductVariations.rawCollection()
+      .dropIndexes()
+      .catch(() => {});
+    ProductVariationTexts.rawCollection()
+      .dropIndexes()
+      .catch(() => {});
+  },
+  down() {},
+});
+
+export default () => {
+  Migrations.migrateTo('latest');
+  ProductVariations.rawCollection().createIndex({ productId: 1 });
+
+  ProductVariationTexts.rawCollection().createIndex({ productVariationId: 1 });
+  ProductVariationTexts.rawCollection().createIndex({ locale: 1 });
+};

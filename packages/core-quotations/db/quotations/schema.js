@@ -1,6 +1,7 @@
 import { Schemas } from 'meteor/unchained:utils';
 import { Migrations } from 'meteor/percolate:migrations';
 import SimpleSchema from 'simpl-schema';
+
 import { Quotations } from './collections';
 
 const { logFields, contextFields, timestampFields } = Schemas;
@@ -16,9 +17,9 @@ export const QuotationStatus = {
 Quotations.attachSchema(
   new SimpleSchema(
     {
-      userId: { type: String, required: true, index: true },
-      productId: { type: String, required: true, index: true },
-      status: { type: String, required: true, index: true },
+      userId: { type: String, required: true },
+      productId: { type: String, required: true },
+      status: { type: String, required: true },
       quotationNumber: String,
       price: Number,
       expires: Date,
@@ -86,6 +87,20 @@ Migrations.add({
   },
 });
 
+Migrations.add({
+  version: 20200915.8,
+  name: 'drop Quotations related indexes',
+  up() {
+    Quotations.rawCollection()
+      .dropIndexes()
+      .catch(() => {});
+  },
+  down() {},
+});
+
 export default () => {
   Migrations.migrateTo('latest');
+  Quotations.rawCollection().createIndex({ userId: 1 });
+  Quotations.rawCollection().createIndex({ productId: 1 });
+  Quotations.rawCollection().createIndex({ status: 1 });
 };

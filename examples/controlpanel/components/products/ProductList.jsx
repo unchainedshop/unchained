@@ -8,7 +8,6 @@ import InfiniteScroll from 'react-infinite-scroller';
 import Link from 'next/link';
 import SearchDropdown from '../SearchDropdown';
 
-
 const ProductList = ({ products, loadMoreEntries, hasMore, router }) => {
   return (
     <Table celled>

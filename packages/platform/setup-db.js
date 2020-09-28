@@ -1,6 +1,6 @@
 import { Migrations } from 'meteor/percolate:migrations';
 import configureUsers from 'meteor/unchained:core-users';
-import configureLogger from 'meteor/unchained:core-logger';
+import configureLogger, { createLogger } from 'meteor/unchained:core-logger';
 import configureDelivery from 'meteor/unchained:core-delivery';
 import configurePayment from 'meteor/unchained:core-payment';
 import configureWarehousing from 'meteor/unchained:core-warehousing';
@@ -22,7 +22,19 @@ import createFixtures from './fixtures';
 
 export { createFixtures };
 
+const logger = createLogger('unchained:platform:migrations');
+
 export default ({ modules = {} } = {}) => {
+  Migrations.config({
+    log: true,
+    logger({ level, message }) {
+      return logger.log({
+        level,
+        message,
+      });
+    },
+    logIfLatest: false,
+  });
   Migrations.unlock();
 
   configureLogger(modules.logger);

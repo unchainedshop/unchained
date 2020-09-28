@@ -1,7 +1,7 @@
 import gql from 'graphql-tag';
 import { storeLoginToken } from './store';
 
-export default async function ({ token }, apollo) {
+export default async function verifyEmail({ token }, apollo) {
   const result = await apollo.mutate({
     mutation: gql`
       mutation verifyEmail($token: String!) {

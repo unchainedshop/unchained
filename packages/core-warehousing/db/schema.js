@@ -1,6 +1,7 @@
 import { Schemas } from 'meteor/unchained:utils';
 import SimpleSchema from 'simpl-schema';
 import { Migrations } from 'meteor/percolate:migrations';
+
 import { WarehousingProviders } from './collections';
 
 // eslint-disable-next-line
@@ -11,13 +12,13 @@ export const WarehousingProviderType = {
 WarehousingProviders.attachSchema(
   new SimpleSchema(
     {
-      type: { type: String, required: true, index: true },
+      type: { type: String, required: true },
       adapterKey: { type: String, required: true },
       authorId: { type: String, required: true },
-      configuration: { type: Array },
-      'configuration.$': { type: Object },
-      'configuration.$.key': { type: String },
-      'configuration.$.value': { type: String },
+      configuration: Array,
+      'configuration.$': Object,
+      'configuration.$.key': String,
+      'configuration.$.value': String,
       ...Schemas.timestampFields,
     },
     { requiredByDefault: false },
@@ -57,6 +58,18 @@ Migrations.add({
   },
 });
 
+Migrations.add({
+  version: 20200916.1,
+  name: 'drop WarehousingProvider related indexes',
+  up() {
+    WarehousingProviders.rawCollection()
+      .dropIndexes()
+      .catch(() => {});
+  },
+  down() {},
+});
+
 export default () => {
   Migrations.migrateTo('latest');
+  WarehousingProviders.rawCollection().createIndex({ type: 1 });
 };

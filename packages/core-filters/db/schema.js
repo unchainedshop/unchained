@@ -1,6 +1,7 @@
 import { Schemas } from 'meteor/unchained:utils';
 import SimpleSchema from 'simpl-schema';
 import { Migrations } from 'meteor/percolate:migrations';
+
 import { Filters, FilterTexts } from './collections';
 
 // eslint-disable-next-line
@@ -13,12 +14,10 @@ export const FilterTypes = {
 Filters.attachSchema(
   new SimpleSchema(
     {
-      isActive: { type: Boolean, index: true },
+      isActive: Boolean,
       key: {
         type: String,
         required: true,
-        index: true,
-        unique: true,
       },
       type: { type: String, required: true },
       options: Array,
@@ -35,9 +34,9 @@ Filters.attachSchema(
 FilterTexts.attachSchema(
   new SimpleSchema(
     {
-      filterId: { type: String, required: true, index: true },
-      filterOptionValue: { type: String, index: true },
-      locale: { type: String, index: true },
+      filterId: { type: String, required: true },
+      filterOptionValue: String,
+      locale: String,
       title: String,
       subtitle: String,
       authorId: { type: String, required: true },
@@ -104,6 +103,27 @@ Migrations.add({
   },
 });
 
+Migrations.add({
+  version: 20200914.5,
+  name: 'drop filters related indexes',
+  up() {
+    Filters.rawCollection()
+      .dropIndexes()
+      .catch(() => {});
+    FilterTexts.rawCollection()
+      .dropIndexes()
+      .catch(() => {});
+  },
+  down() {},
+});
+
 export default () => {
   Migrations.migrateTo('latest');
+  Filters.rawCollection().createIndex({ isActive: 1 });
+  Filters.rawCollection().createIndex({ key: 1 }, { unique: true });
+
+  // FilterTexts indexes
+  FilterTexts.rawCollection().createIndex({ filterId: 1 });
+  FilterTexts.rawCollection().createIndex({ filterOptionValue: 1 });
+  FilterTexts.rawCollection().createIndex({ locale: 1 });
 };

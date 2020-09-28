@@ -115,7 +115,7 @@ const SearchDropdown = ({
     );
   };
 
-  const status = ({ isActive, status }) => {
+  const resolveStatus = ({ isActive, status }) => {
     if (status) {
       return {
         status,
@@ -149,8 +149,8 @@ const SearchDropdown = ({
             <Header.Content>
               {item.texts.title}
               <Header.Subheader>{item.texts.description}</Header.Subheader>
-              <Label color={status(item).color} horizontal>
-                {status(item).status}
+              <Label color={resolveStatus(item).color} horizontal>
+                {resolveStatus(item).status}
               </Label>
             </Header.Content>
           </Header>

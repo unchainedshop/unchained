@@ -85,14 +85,12 @@ export default (role, actions) => {
     }).count() > 0;
 
   const isOwnedBookmark = (root, { bookmarkId }, { userId }) => {
-    console.log('isOwnedBookmark', bookmarkId, userId);
-    const result =
+    return (
       Bookmarks.find({
         _id: bookmarkId,
         userId,
-      }).count() > 0;
-
-    return result;
+      }).count() > 0
+    );
   };
 
   const isOwnedPaymentCredential = (

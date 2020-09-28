@@ -115,7 +115,7 @@ const CytoscapeComponentWrapper = ({ assortments }) => {
             variables: { assortmentId: node.id() },
           });
 
-          const nodeIds = cy.nodes().map((node) => node.id());
+          const nodeIds = cy.nodes().map((n) => n.id());
           const edges = cy.edges().map((edge) => {
             return {
               source: edge.source().id(),
@@ -124,7 +124,9 @@ const CytoscapeComponentWrapper = ({ assortments }) => {
           });
 
           // Evaluate parents of children
+          // eslint-disable-next-line
           for (const linkedAssortment of data?.assortment?.linkedAssortments) {
+            // eslint-disable-next-line
             const result = await client.query({
               query: GET_ASSORTMENT_LINKS,
               variables: { assortmentId: linkedAssortment.child._id },

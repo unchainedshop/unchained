@@ -2,7 +2,7 @@ import gql from 'graphql-tag';
 import { storeLoginToken } from './store';
 import hashPassword from './hashPassword';
 
-export default async function (
+export default async function resetPassword(
   { newPassword, token, disableHashing = false },
   apollo
 ) {

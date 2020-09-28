@@ -1,5 +1,7 @@
 import { Schemas } from 'meteor/unchained:utils';
 import SimpleSchema from 'simpl-schema';
+import { Migrations } from 'meteor/percolate:migrations';
+
 import { OrderDeliveries } from './collections';
 
 const { logFields, contextFields, timestampFields } = Schemas;
@@ -21,7 +23,7 @@ export const OrderDeliveryStatus = {
 OrderDeliveries.attachSchema(
   new SimpleSchema(
     {
-      orderId: { type: String, index: true },
+      orderId: String,
       deliveryProviderId: String,
       delivered: Date,
       status: String,
@@ -34,4 +36,18 @@ OrderDeliveries.attachSchema(
   ),
 );
 
-export default OrderDeliveryStatus;
+Migrations.add({
+  version: 20200914.7,
+  name: 'drop OrderDeliveries related indexes',
+  up() {
+    OrderDeliveries.rawCollection()
+      .dropIndexes()
+      .catch(() => {});
+  },
+  down() {},
+});
+
+export default () => {
+  Migrations.migrateTo('latest');
+  OrderDeliveries.rawCollection().createIndex({ orderId: 1 });
+};

@@ -111,5 +111,6 @@ Meteor.startup(() => {
     },
   });
   initializeDatabase();
+
   embedControlpanelInMeteorWebApp(WebApp);
 });

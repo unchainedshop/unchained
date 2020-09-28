@@ -10,5 +10,4 @@ const FormattedMoney = ({ money = { amount: 0, currency: 'CHF' } } = {}) => (
   </span>
 );
 
-
 export default FormattedMoney;

@@ -15,5 +15,4 @@ const withFormSchema = (schemaDefinition) =>
     };
   });
 
-
 export default withFormSchema;
