@@ -1,15 +1,13 @@
-import { Accounts } from 'meteor/accounts-base';
-import getConnection from '../../../getConnection';
-import callMethod from '../../../callMethod';
+import { accountsServer } from 'meteor/unchained:core-accountsjs';
+
+const logger = console;
 
 export default async function logout(root, { token }, context) {
-  if (token && context.userId) {
-    const hashedToken = Accounts._hashLoginToken(token); // eslint-disable-line
-    Accounts.destroyToken(context.userId, hashedToken);
-  } else if (context.userId) {
-    callMethod(context, 'logout');
+  try {
+    await accountsServer.logout({ token, userId: context.userId });
+    return { success: true };
+  } catch (e) {
+    logger.error(e);
+    return { success: false };
   }
-  const connection = getConnection();
-  Accounts._successfulLogout(connection, context.userId); // eslint-disable-line
-  return { success: true };
 }
