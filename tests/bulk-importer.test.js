@@ -294,4 +294,116 @@ describe('Bulk Importer', () => {
       expect(result).toBe(true);
     });
   });
+
+  describe('Import Assortments', () => {
+    it('adds 2 CREATE and 1 UPDATE event', async () => {
+      const { data: { addWork } = {} } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation addWork($input: JSON) {
+            addWork(
+              type: BULK_IMPORT
+              input: $input
+              retries: 0
+              priority: 10
+            ) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          input: {
+            events: [
+              {
+                entity: 'ASSORTMENT',
+                operation: 'CREATE',
+                payload: {
+                  _id: 'Assortment A',
+                  specification: {
+                    isActive: true,
+                    isBase: true,
+                    isRoot: true,
+                    tags: ['food'],
+                    meta: {},
+                    content: {
+                      de: {
+                        title: 'Groceries',
+                        slug: 'groceries',
+                        subtitle: 'Short description',
+                        description: 'Long description',
+                      },
+                    },
+                  },
+                  products: [
+                    {
+                      _id: 'assortment-product',
+                      productId: 'A',
+                      tags: ['big'],
+                      meta: {},
+                    },
+                  ],
+                  children: [
+                    {
+                      _id: 'assortment-link',
+                      assortmentId: 'Assortment B',
+                      tags: [],
+                      meta: {},
+                    },
+                  ],
+                  filters: [
+                    {
+                      _id: 'assortment-filter',
+                      filterId: 'filter',
+                      tags: [],
+                      meta: {},
+                    },
+                  ],
+                },
+              },
+              {
+                entity: 'ASSORTMENT',
+                operation: 'CREATE',
+                payload: {
+                  _id: 'Assortment B',
+                  specification: {
+                    isActive: true,
+                    isBase: false,
+                    isRoot: false,
+                    content: {
+                      de: {
+                        title: 'Groceries Child Category',
+                        slug: 'groceries',
+                        subtitle: 'Short description',
+                        description: 'Long description',
+                      },
+                    },
+                  },
+                },
+              },
+              {
+                entity: 'ASSORTMENT',
+                operation: 'UPDATE',
+                payload: {
+                  _id: 'Assortment A',
+                  specification: {
+                    tags: ['base'],
+                  },
+                },
+              },
+            ],
+          },
+        },
+      });
+
+      expect(addWork).toMatchObject({});
+
+      const Assortments = db.collection('assortments');
+
+      const result = await intervalUntilTimeout(async () => {
+        const assortment = await Assortments.findOne({ _id: 'Assortment A' });
+        return assortment?.tags.includes('base');
+      }, 1000);
+
+      expect(result).toBe(true);
+    });
+  });
 });
