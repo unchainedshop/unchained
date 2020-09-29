@@ -1,4 +1,3 @@
-import './db/factories';
 import runMigrations from './db/schema';
 import './db/helpers';
 import patchAccounts from './patch-accounts';
