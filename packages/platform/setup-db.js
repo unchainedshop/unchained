@@ -18,10 +18,6 @@ import configureSubscriptions from 'meteor/unchained:core-subscriptions';
 import configureWorker from 'meteor/unchained:core-worker';
 import configureMessaging from 'meteor/unchained:core-messaging';
 
-import createFixtures from './fixtures';
-
-export { createFixtures };
-
 const logger = createLogger('unchained:platform:migrations');
 
 export default ({ modules = {} } = {}) => {
