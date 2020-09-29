@@ -5,6 +5,7 @@ import { Factory } from 'meteor/dburles:factory';
 import { WebApp } from 'meteor/webapp';
 import { embedControlpanelInMeteorWebApp } from '@unchainedshop/controlpanel';
 import { Currencies } from 'meteor/unchained:core-currencies';
+import { Languages } from 'meteor/unchained:core-languages';
 
 import 'meteor/unchained:core-delivery/plugins/post';
 import 'meteor/unchained:core-delivery/plugins/pick-mup';
@@ -54,7 +55,7 @@ const initializeDatabase = () => {
     });
     const languages = ['de', 'fr'].map((code, key) => {
       const isBase = key === 0;
-      const language = Factory.create('language', {
+      const language = Languages.createLanguage({
         isoCode: code,
         isActive: true,
         isBase,
