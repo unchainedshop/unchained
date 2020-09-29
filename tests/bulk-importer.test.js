@@ -1,5 +1,6 @@
 import { setupDatabase, createLoggedInGraphqlFetch } from './helpers';
 import { ADMIN_TOKEN } from './seeds/users';
+import { intervalUntilTimeout } from './lib/wait';
 
 let connection;
 let db;
@@ -185,6 +186,15 @@ describe('Bulk Importer', () => {
         },
       });
       expect(addWork).toMatchObject({});
+
+      const Products = db.collection('products');
+
+      const result = await intervalUntilTimeout(async () => {
+        const product = await Products.findOne({ _id: 'A' });
+        return product?.tags.includes('awesome');
+      }, 1000);
+
+      expect(result).toBe(true);
     });
   });
 
@@ -236,11 +246,52 @@ describe('Bulk Importer', () => {
                   },
                 },
               },
+              {
+                entity: 'FILTER',
+                operation: 'UPDATE',
+                payload: {
+                  _id: 'Filter A',
+                  specification: {
+                    isActive: false,
+                    options: [
+                      {
+                        value: '10',
+                        content: {
+                          de: {
+                            title: '10 cm',
+                            subtitle: '',
+                          },
+                        },
+                      },
+                      {
+                        value: '20',
+                        content: {
+                          de: {
+                            title: '20 cm',
+                            subtitle: '',
+                          },
+                        },
+                      },
+                    ],
+                    meta: {},
+                  },
+                },
+              },
             ],
           },
         },
       });
+
       expect(addWork).toMatchObject({});
+
+      const Filters = db.collection('filters');
+
+      const result = await intervalUntilTimeout(async () => {
+        const filter = await Filters.findOne({ _id: 'Filter A' });
+        return filter.isActive === false;
+      }, 1000);
+
+      expect(result).toBe(true);
     });
   });
 });

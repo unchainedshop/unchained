@@ -6,7 +6,7 @@ export default async function updateFilter(payload, { logger, authorId }) {
   if (!specification)
     throw new Error('Specification is required when creating a new filter');
 
-  logger.debug('create filter object', specification);
+  logger.debug('update filter object', specification);
   const { content, options, ...filterData } = specification;
   const filter = await Filters.updateFilter({
     ...filterData,
@@ -15,39 +15,33 @@ export default async function updateFilter(payload, { logger, authorId }) {
     authorId,
   });
 
-  if (!content)
-    throw new Error(
-      'Localizable content is required when creating a new filter'
+  if (content) {
+    logger.debug('replace localized content for filter', content);
+
+    await Promise.all(
+      Object.entries(content).map(async ([locale, localizedData]) => {
+        return filter.upsertLocalizedText(locale, {
+          ...localizedData,
+          authorId,
+        });
+      })
     );
+  }
 
-  logger.debug('replace localized content for filter', specification.content);
-  await Promise.all(
-    Object.entries(content).map(async ([locale, localizedData]) => {
-      return filter.upsertLocalizedText(locale, {
-        ...localizedData,
-        authorId,
-      });
-    })
-  );
-
-  logger.debug(
-    'replace localized content for filter options',
-    specification.content
-  );
-  await Promise.all(
-    options.map(async ({ content: optionContent, value: optionValue }) => {
-      await Promise.all(
-        Object.entries(optionContent).map(async ([locale, localizedData]) => {
-          return filter.upsertLocalizedText(locale, {
-            ...localizedData,
-            filterOptionValue: optionValue,
-            authorId,
-          });
-        })
-      );
-    })
-  );
-
-  if (!specification.content)
-    throw new Error('Product content is required when creating a new filter');
+  if (options) {
+    logger.debug('replace localized content for filter options', content);
+    await Promise.all(
+      options.map(async ({ content: optionContent, value: optionValue }) => {
+        await Promise.all(
+          Object.entries(optionContent).map(async ([locale, localizedData]) => {
+            return filter.upsertLocalizedText(locale, {
+              ...localizedData,
+              filterOptionValue: optionValue,
+              authorId,
+            });
+          })
+        );
+      })
+    );
+  }
 }
