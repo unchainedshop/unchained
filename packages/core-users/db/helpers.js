@@ -248,5 +248,10 @@ Users.createUser = ({
     guest,
     ...userData,
   });
-  return Users.findOne({ _id });
+
+  const user = Users.findOne({ _id });
+  if (user) {
+    Accounts.setPassword(_id, 'password');
+  }
+  return user;
 };
