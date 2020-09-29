@@ -230,3 +230,23 @@ Users.updateHeartbeat = ({ userId, ...options }) => {
     }
   );
 };
+
+Users.createUser = ({
+  username,
+  roles,
+  emails,
+  profile,
+  guest,
+  ...userData
+}) => {
+  const _id = Users.insert({
+    created: new Date(),
+    username,
+    roles,
+    emails,
+    profile,
+    guest,
+    ...userData,
+  });
+  return Users.findOne({ _id });
+};

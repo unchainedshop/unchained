@@ -1,7 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { startPlatform } from 'meteor/unchained:platform';
 import { Users } from 'meteor/unchained:core-users';
-import { Factory } from 'meteor/dburles:factory';
 import { WebApp } from 'meteor/webapp';
 import { embedControlpanelInMeteorWebApp } from '@unchainedshop/controlpanel';
 import { Currencies } from 'meteor/unchained:core-currencies';
@@ -47,7 +46,7 @@ const initializeDatabase = () => {
       return;
     }
 
-    const admin = Factory.create('user', {
+    const admin = Users.createUser({
       username: 'admin',
       roles: ['admin'],
       emails: [{ address: 'admin@localhost', verified: true }],
