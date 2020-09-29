@@ -2,12 +2,16 @@ import { compose, withState, withHandlers } from 'recompose';
 import gql from 'graphql-tag';
 import { graphql } from '@apollo/client/react/hoc';
 import React from 'react';
+import { withRouter } from 'next/router';
 import { Table, Icon, Button, Loader, Label } from 'semantic-ui-react';
 import InfiniteScroll from 'react-infinite-scroller';
 import Link from 'next/link';
+import SearchDropdown from '../SearchDropdown';
+import { SEARCH_USERS } from '../searchQueries';
 
 const UserList = ({
   users,
+  router,
   loadMoreEntries,
   hasMore,
   isShowGuests,
@@ -17,6 +21,18 @@ const UserList = ({
     <Table.Header>
       <Table.Row>
         <Table.HeaderCell colSpan={3}>
+          <SearchDropdown
+            placeholder="Select User"
+            onChange={(e, result) => {
+              router.push({
+                pathname: '/users/edit',
+                query: { _id: result.value },
+              });
+            }}
+            isShowGuests={isShowGuests}
+            searchQuery={SEARCH_USERS}
+            queryType={'users'}
+          />{' '}
           Show guests? &nbsp;
           <input
             type="checkbox"
@@ -142,6 +158,7 @@ export const USER_LIST_QUERY = gql`
 export default compose(
   withState('hasMore', 'updateHasMore', true),
   withState('isShowGuests', 'setShowGuests', false),
+  withRouter,
   withHandlers({
     toggleShowGuests: ({
       isShowGuests,
