@@ -4,6 +4,7 @@ import { Users } from 'meteor/unchained:core-users';
 import { Factory } from 'meteor/dburles:factory';
 import { WebApp } from 'meteor/webapp';
 import { embedControlpanelInMeteorWebApp } from '@unchainedshop/controlpanel';
+import { Currencies } from 'meteor/unchained:core-currencies';
 
 import 'meteor/unchained:core-delivery/plugins/post';
 import 'meteor/unchained:core-delivery/plugins/pick-mup';
@@ -62,7 +63,7 @@ const initializeDatabase = () => {
       return language.isoCode;
     });
     const currencies = ['CHF'].map((code) => {
-      const currency = Factory.create('currency', {
+      const currency = Currencies.createCurrency({
         isoCode: code,
         isActive: true,
         authorId: admin._id,
