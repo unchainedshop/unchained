@@ -1,5 +1,8 @@
 import { Assortments } from 'meteor/unchained:core-assortments';
 import upsertAssortmentContent from './upsertAssortmentContent';
+import upsertAssortmentProducts from './upsertAssortmentProducts';
+import upsertAssortmentChildren from './upsertAssortmentChildren';
+import upsertAssortmentFilters from './upsertAssortmentFilters';
 
 export default async function createAssortment(payload, { logger, authorId }) {
   const { specification, products, children, filters, _id } = payload;
@@ -26,6 +29,27 @@ export default async function createAssortment(payload, { logger, authorId }) {
   await upsertAssortmentContent({
     content: specification.content,
     assortment,
+    authorId,
+  });
+
+  logger.debug('create product links', products);
+  await upsertAssortmentProducts({
+    products: products || [],
+    assortmentId: _id,
+    authorId,
+  });
+
+  logger.debug('create assortment children', products);
+  await upsertAssortmentChildren({
+    children: children || [],
+    assortmentId: _id,
+    authorId,
+  });
+
+  logger.debug('create assortment filters', products);
+  await upsertAssortmentFilters({
+    filters: filters || [],
+    assortmentId: _id,
     authorId,
   });
 }
