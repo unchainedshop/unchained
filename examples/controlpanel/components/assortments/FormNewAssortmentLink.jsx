@@ -13,6 +13,7 @@ import AutoForm from 'uniforms-semantic/AutoForm';
 import withFormSchema from '../../lib/withFormSchema';
 import withFormErrorHandlers from '../../lib/withFormErrorHandlers';
 import SearchDropdown from '../SearchDropdown';
+import { SEARCH_ASSORTMENTS } from '../searchQueries';
 import FormTagInput from '../FormTagInput';
 
 const AssortmentSearchDropdownField = connectField(SearchDropdown);
@@ -30,6 +31,7 @@ const FormNewAssortmentLink = ({
           name={'childAssortmentId'}
           queryType={'assortments'}
           filterIds={[formProps.model.parentAssortmentId]}
+          searchQuery={SEARCH_ASSORTMENTS}
           uniforms
         />
         <AutoField name="tags" component={FormTagInput} options={[]} />

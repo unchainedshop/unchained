@@ -11,21 +11,23 @@ import SubmitField from 'uniforms-semantic/SubmitField';
 import ErrorsField from 'uniforms-semantic/ErrorsField';
 import AutoForm from 'uniforms-semantic/AutoForm';
 import SearchDropdown from '../SearchDropdown';
+import { SEARCH_PRODUCTS } from '../searchQueries';
 import withFormSchema from '../../lib/withFormSchema';
 import withFormErrorHandlers from '../../lib/withFormErrorHandlers';
 import FormTagInput from '../FormTagInput';
 
 const ProductSearchDropdownField = connectField(SearchDropdown);
 
-const FormNewAssortmentProduct = ({
-  products,
-  removeCountry,
-  ...formProps
-}) => (
+const FormNewAssortmentProduct = ({ removeCountry, ...formProps }) => (
   <AutoForm {...formProps}>
     <Segment basic>
       <AutoField name={'assortmentId'} type="hidden" />
-      <AutoField name={'productId'} options={products} uniforms />
+      <AutoField
+        name={'productId'}
+        searchQuery={SEARCH_PRODUCTS}
+        queryType={'products'}
+        uniforms
+      />
       <AutoField name="tags" component={FormTagInput} options={[]} />
       <ErrorsField />
       <SubmitField value="Add Product" className="primary" />
@@ -35,17 +37,6 @@ const FormNewAssortmentProduct = ({
 
 export default compose(
   withRouter,
-  graphql(gql`
-    query products {
-      products(offset: 0, limit: 0) {
-        _id
-        texts {
-          _id
-          title
-        }
-      }
-    }
-  `),
   graphql(
     gql`
       mutation addAssortmentProduct(
@@ -108,23 +99,10 @@ export default compose(
       }),
   }),
   withFormErrorHandlers,
-  mapProps(
-    ({
+  mapProps(({ assortmentId, addAssortmentProduct, ...rest }) => ({
+    model: {
       assortmentId,
-      addAssortmentProduct,
-      data: { products = [] },
-      ...rest
-    }) => ({
-      products: [{ label: 'Select', value: false }].concat(
-        products.map((product) => ({
-          label: product.texts.title,
-          value: product._id,
-        }))
-      ),
-      model: {
-        assortmentId,
-      },
-      ...rest,
-    })
-  )
+    },
+    ...rest,
+  }))
 )(FormNewAssortmentProduct);

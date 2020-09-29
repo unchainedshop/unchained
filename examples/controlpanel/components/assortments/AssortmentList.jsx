@@ -1,12 +1,13 @@
 import { compose, withState, withHandlers } from 'recompose';
-import gql from 'graphql-tag';
 import { graphql } from '@apollo/client/react/hoc';
 import React from 'react';
 import { withRouter } from 'next/router';
 import { Table, Icon, Button } from 'semantic-ui-react';
 import Link from 'next/link';
+import gql from 'graphql-tag';
 import InfiniteDataTable, { withDataTableLoader } from '../InfiniteDataTable';
 import SearchDropdown from '../SearchDropdown';
+import { SEARCH_ASSORTMENTS } from '../searchQueries';
 
 const AssortmentList = ({
   isShowLeafNodes,
@@ -25,6 +26,7 @@ const AssortmentList = ({
     searchComponent={
       <SearchDropdown
         placeholder="Select Assortment"
+        searchQuery={SEARCH_ASSORTMENTS}
         onChange={(e, result) => {
           router.push({
             pathname: '/assortments/edit',
