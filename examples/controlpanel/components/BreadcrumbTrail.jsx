@@ -1,7 +1,7 @@
 import React from 'react';
 import { Breadcrumb } from 'semantic-ui-react';
 
-const BreadcrumbTrail = ({ assortmentPaths }) => {
+const BreadcrumbTrail = ({ assortmentPaths, router }) => {
   return (
     <Breadcrumb>
       {assortmentPaths.map((path, pathIndex) =>
@@ -10,7 +10,12 @@ const BreadcrumbTrail = ({ assortmentPaths }) => {
             {pathIndex > 0 && linkIndex === 0 && <br />}
             <Breadcrumb.Section
               key={link.assortmentId}
-              href={`?_id=${link.assortmentId}`}
+              onClick={() => {
+                router.push({
+                  pathname: '/assortments/edit',
+                  query: { _id: link.assortmentId },
+                });
+              }}
               link
             >
               {link.assortmentTexts.title}
