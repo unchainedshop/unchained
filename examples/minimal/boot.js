@@ -5,6 +5,7 @@ import { Factory } from 'meteor/dburles:factory';
 import { WebApp } from 'meteor/webapp';
 import { embedControlpanelInMeteorWebApp } from '@unchainedshop/controlpanel';
 import { Currencies } from 'meteor/unchained:core-currencies';
+import { Countries } from 'meteor/unchained:core-countries';
 import { Languages } from 'meteor/unchained:core-languages';
 
 import 'meteor/unchained:core-delivery/plugins/post';
@@ -73,7 +74,7 @@ const initializeDatabase = () => {
     });
     const countries = ['CH'].map((code, key) => {
       const isBase = key === 0;
-      const country = Factory.create('country', {
+      const country = Countries.createCountry({
         isoCode: code,
         isBase,
         isActive: true,
