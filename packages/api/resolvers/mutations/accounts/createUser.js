@@ -6,7 +6,7 @@ import {
 } from 'meteor/unchained:core-accountsjs';
 import hashPassword from '../../../hashPassword';
 
-export default async function createUser(root, options, context) {
+export default async function createUser(root, options) {
   Meteor._nodeCodeMustBeInFiber(); // eslint-disable-line
   if (!options.password && !options.plainPassword) {
     throw new Error('Password is required');

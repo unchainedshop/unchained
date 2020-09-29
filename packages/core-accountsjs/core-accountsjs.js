@@ -61,7 +61,7 @@ const dbManager = new DatabaseManager({
   userStorage: mongoStorage,
 });
 
-const options = {
+const accountsServerOptions = {
   siteUrl: Meteor.absoluteUrl(),
   // sendVerificationEmailAfterSignup: false, // It's set to false by default
 };
@@ -110,13 +110,16 @@ class UnchainedAccountsPassword extends AccountsPassword {
           CreateUserErrors.InvalidPassword,
         );
       }
+      // eslint-disable-next-line no-param-reassign
       user.password = await this.options.hashPassword(user.password);
     }
 
+    const { username, email, password } = user;
     // If user does not provide the validate function only allow some fields
+    // eslint-disable-next-line no-param-reassign
     user = this.options.validateNewUser
       ? await this.options.validateNewUser(user)
-      : ({ username, email, password } = user);
+      : { username, email, password };
 
     try {
       const userId = await this.db.createUser(user);
@@ -195,7 +198,7 @@ class UnchainedAccountsServer extends AccountsServer {
 }
 
 export const accountsServer = new UnchainedAccountsServer(
-  { db: dbManager, ...options },
+  { db: dbManager, ...accountsServerOptions },
   {
     password: accountsPassword,
   },

@@ -42,6 +42,7 @@ export const setupDatabase = async (args) => {
   await seedDeliveries(db);
   await seedPayments(db);
   await seedWarehousings(db);
+  // eslint-disable-next-line no-unused-expressions
   !args?.skipOrders && (await seedOrders(db));
   await seedQuotations(db);
   await seedFilters(db);
