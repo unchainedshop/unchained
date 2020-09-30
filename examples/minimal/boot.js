@@ -39,6 +39,19 @@ import 'meteor/unchained:core-worker/plugins/heartbeat';
 import 'meteor/unchained:core-worker/plugins/email';
 
 const logger = console;
+const addresses = {
+  admin: {
+    firstName: 'Caraig Jackson',
+    lastName: 'Mengistu',
+    company: 'false',
+    postalCode: '52943',
+    countryCode: 'ET',
+    city: 'Addis Ababa',
+    addressLine: '75275 Bole Mikael',
+    addressLine2: 'Bole 908',
+    regionCode: 'false',
+  },
+};
 
 const initializeDatabase = () => {
   try {
@@ -52,6 +65,7 @@ const initializeDatabase = () => {
       emails: [{ address: 'admin@localhost', verified: true }],
       profile: { address: {} },
       guest: false,
+      lastBillingAddress: addresses.admin,
     });
     const languages = ['de', 'fr'].map((code, key) => {
       const isBase = key === 0;
