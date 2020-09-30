@@ -13,7 +13,7 @@ let loggedInGraphqlFetch;
 
 describe('Guest user cart migration', () => {
   beforeAll(async () => {
-    [db, connection] = await setupDatabase({ skipOrders: true }); // just to avoid confusion caused by other orders
+    [db, connection] = await setupDatabase();
     anonymousGraphqlFetch = await createAnonymousGraphqlFetch();
   });
 

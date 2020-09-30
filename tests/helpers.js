@@ -28,7 +28,7 @@ Collection.prototype.findOrInsertOne = async function findOrInsertOne(
   }
 };
 
-export const setupDatabase = async (args) => {
+export const setupDatabase = async () => {
   const connection = await MongoClient.connect(global.__MONGO_URI__, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
@@ -42,8 +42,7 @@ export const setupDatabase = async (args) => {
   await seedDeliveries(db);
   await seedPayments(db);
   await seedWarehousings(db);
-  // eslint-disable-next-line no-unused-expressions
-  !args?.skipOrders && (await seedOrders(db));
+  await seedOrders(db);
   await seedQuotations(db);
   await seedFilters(db);
   await seedLogs(db);
