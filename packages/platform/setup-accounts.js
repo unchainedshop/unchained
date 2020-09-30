@@ -75,19 +75,6 @@ export default ({ mergeUserCartsOnLogin = true } = {}) => {
     return newUser;
   });
 
-  accountsServer.removeOldGuests = (before) => {
-    let newBefore = before;
-    if (typeof newBefore === 'undefined') {
-      newBefore = new Date();
-      newBefore.setHours(newBefore.getHours() - 1);
-    }
-    const res = Meteor.users.remove({
-      created: { $lte: newBefore },
-      guest: true,
-    });
-    return res;
-  };
-
   function createGuestOptions(email) {
     check(email, Match.OneOf(String, null, undefined));
     const guestname = `${moniker.choose()}-${Random.hexString(5)}`;
