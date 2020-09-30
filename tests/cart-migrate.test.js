@@ -10,6 +10,7 @@ let db;
 let anonymousGraphqlFetch;
 let guestToken;
 let loggedInGraphqlFetch;
+let orderId;
 
 describe('Guest user cart migration', () => {
   beforeAll(async () => {
@@ -81,7 +82,7 @@ describe('Guest user cart migration', () => {
         configuration: [{ key: 'length', value: '5' }],
       },
     });
-
+    orderId = result.data.addCartProduct.order._id;
     expect(result.data.addCartProduct).toMatchObject({
       quantity: 2,
       total: {
@@ -117,10 +118,14 @@ describe('Guest user cart migration', () => {
         }
       `,
     });
-    // Although the admin has placed no orders you can find an order of his
-    const adminOrders = await db
-      .collection('orders')
-      .findOne({ userId: loginWithPassword.id });
-    expect(adminOrders).toMatchObject({});
+    // We use settimeout to induce a delay since the hook doesn't set the values immediately
+    setTimeout(async () => {
+      // Although the admin has placed no orders you can find an order of his
+      const adminOrders = await db.collection('orders').findOne({
+        userId: loginWithPassword.id,
+        _id: orderId,
+      });
+      expect(adminOrders).toMatchObject({});
+    }, 0);
   });
 });
