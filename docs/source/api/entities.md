@@ -52,6 +52,10 @@ Always try to send as many events at a time, so Unchained can optimize write ope
 
 The amount of entities you can submit in one file depends on the size of the entity data and your webserver configuration limits, only split it up when you reach that limit at some point or use the streaming API.
 
+```
+curl -X POST -H "Authorization: Bearer XXX" -H "content-type: application/json" --data-binary '{ "events": [] }' -f -v http://localhost:4010/bulk-import
+```
+
 ## JSON Reference
 
 ### Entity Type: Product

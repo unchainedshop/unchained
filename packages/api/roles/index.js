@@ -90,6 +90,7 @@ export const actions = [
   'viewSubscription',
   'registerPaymentCredentials',
   'managePaymentCredentials',
+  'bulkImport',
 ].reduce((oldValue, actionValue) => {
   const newValue = oldValue;
   newValue[actionValue] = actionValue;

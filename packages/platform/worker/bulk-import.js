@@ -16,6 +16,7 @@ class BulkImport extends WorkerPlugin {
 
   static async doWork({ events }) {
     try {
+      if (!events?.length) throw new Error('No events submitted');
       const bulkImporter = createBulkImporter({ logger, authorId: 'root' });
       for (let i = 0, len = events.length; i < len; i += 1) {
         // eslint-disable-next-line
