@@ -1,9 +1,8 @@
-import { Meteor } from 'meteor/meteor';
-import { Random } from 'meteor/random';
 import { check, Match } from 'meteor/check';
 import {
   accountsServer,
   accountsPassword,
+  randomValueHex,
 } from 'meteor/unchained:core-accountsjs';
 import { getFallbackLocale } from 'meteor/unchained:core';
 import { Users } from 'meteor/unchained:core-users';
@@ -77,7 +76,7 @@ export default ({ mergeUserCartsOnLogin = true } = {}) => {
 
   function createGuestOptions(email) {
     check(email, Match.OneOf(String, null, undefined));
-    const guestname = `${moniker.choose()}-${Random.hexString(5)}`;
+    const guestname = `${moniker.choose()}-${randomValueHex(5)}`;
     return {
       email: email || `${guestname}@unchained.local`,
       guest: true,

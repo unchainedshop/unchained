@@ -3,11 +3,15 @@ import { AccountsPassword } from '@accounts/password';
 import MongoDBInterface from '@accounts/mongo';
 import { MongoInternals } from 'meteor/mongo';
 import { DatabaseManager } from '@accounts/database-manager';
-import { Random } from 'meteor/random';
 import crypto, { randomBytes } from 'crypto';
 import defer from 'lodash.defer';
 
-// import { destroyToken, hashLoginToken } from './util';
+export const randomValueHex = (len) => {
+  return crypto
+    .randomBytes(Math.ceil(len / 2))
+    .toString('hex') // convert to hexadecimal format
+    .slice(0, len); // return required number of characters
+};
 
 const CreateUserErrors = {
   /**
@@ -62,8 +66,7 @@ const dbManager = new DatabaseManager({
 });
 
 const accountsServerOptions = {
-  siteUrl: Meteor.absoluteUrl(),
-  // sendVerificationEmailAfterSignup: false, // It's set to false by default
+  siteUrl: process.env.ROOT_URL,
 };
 
 class UnchainedAccountsPassword extends AccountsPassword {
@@ -170,8 +173,10 @@ class UnchainedAccountsServer extends AccountsServer {
   // We override the loginWithUser to use Meteor specific mechanism instead of accountjs JWT
   // https://github.com/accounts-js/accounts/blob/7f4da2d34a88fbf77cccbff799d2a59ce43649b6/packages/server/src/accounts-server.ts#L263
   async loginWithUser(user) {
+    // Random.secret uses a default value of 43
+    // https://github.com/meteor/meteor/blob/devel/packages/random/AbstractRandomGenerator.js#L78
     const stampedLoginToken = {
-      token: Random.secret(),
+      token: randomValueHex(43),
       when: new Date(new Date().getTime() + 1000000),
     };
 
