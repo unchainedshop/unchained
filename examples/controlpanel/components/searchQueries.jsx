@@ -1,8 +1,12 @@
 import gql from 'graphql-tag';
 
 export const SEARCH_USERS = gql`
-  query users($offset: Int, $includeGuests: Boolean) {
-    users(offset: $offset, includeGuests: $includeGuests) {
+  query users($queryString: String, $offset: Int, $includeGuests: Boolean) {
+    users(
+      queryString: $queryString
+      offset: $offset
+      includeGuests: $includeGuests
+    ) {
       _id
       isGuest
       name
