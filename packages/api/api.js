@@ -24,28 +24,28 @@ const defaultContext = (req) => {
   return { remoteAddress };
 };
 
+export const createContextResolver = (context) => async ({ req }) => {
+  const userContext = await getUserContext(req);
+  return {
+    ...userContext,
+    ...buildLocaleContext(req),
+    ...context(req),
+  };
+};
+
 const startUnchainedServer = (options) => {
   const { context = defaultContext, rolesOptions, ...apolloServerOptions } =
     options || {};
 
   configureRoles(rolesOptions);
 
-  const contextResolver = async ({ req }) => {
-    const userContext = await getUserContext(req);
-    return {
-      ...userContext,
-      ...buildLocaleContext(req),
-      ...context(req),
-    };
-  };
-
   const apolloGraphQLServer = createGraphQLServer({
     ...apolloServerOptions,
-    contextResolver,
+    contextResolver: createContextResolver(context),
   });
 
   const bulkImportServer = createBulkImportServer({
-    contextResolver,
+    contextResolver: createContextResolver(context),
   });
 
   return {
