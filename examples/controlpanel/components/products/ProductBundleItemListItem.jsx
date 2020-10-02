@@ -14,9 +14,7 @@ const ProductBundleItemListItem = ({
       <Button onClick={() => removeItem(index)}>X</Button>
     </List.Content>
     <List.Content>
-      <List.Header>
-        {product && product.texts && `${product.texts.title}`}
-      </List.Header>
+      <List.Header>{`${product?.texts?.title}`}</List.Header>
       <List.Description>
         Quantity:
         {quantity}

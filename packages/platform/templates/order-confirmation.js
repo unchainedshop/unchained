@@ -92,7 +92,7 @@ export default ({ orderId, locale }) => {
       const originalProductTexts = item
         .originalProduct()
         .getLocalizedTexts(locale.normalized);
-      const product = productTexts && productTexts.title; // deprected
+      const product = productTexts?.title; // deprected
       const total = format(item.pricing().sum());
       const { quantity } = item;
       return {

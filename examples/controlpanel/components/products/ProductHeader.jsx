@@ -21,7 +21,7 @@ const ProductHeader = ({ loading, router, productId, product = {} }) => [
   <Menu fluid attached="top" borderless key="header-title">
     <Menu.Item header>
       Product:&nbsp;
-      {product.texts && product.texts.title}
+      {product.texts?.title}
     </Menu.Item>
     <Menu.Item>
       <Label color="red" horizontal>

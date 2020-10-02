@@ -307,7 +307,7 @@ class Smallinvoice extends DocumentAdapter {
       const taxRate = (gross / (gross - tax) - 1) * 100;
       return {
         number: product.warehousing && product.warehousing.sku,
-        name: texts.title,
+        name: texts?.title,
         description: texts.subtitle,
         price: unitPrice / 100,
         quantity: position.quantity,
@@ -316,7 +316,8 @@ class Smallinvoice extends DocumentAdapter {
     });
   }
 
-  buildDiscounts() { // eslint-disable-line
+  buildDiscounts() {
+    // eslint-disable-line
     const { order } = this.context;
     const pricing = order.pricing();
     let itemsTax = 0;

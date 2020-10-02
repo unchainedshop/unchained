@@ -8,6 +8,9 @@ export default async (req) => {
   if (req.cookies.meteor_login_token) {
     loginToken = req.cookies.meteor_login_token;
   }
+  if (req.cookies.token) {
+    loginToken = req.cookies.token;
+  }
   if (req.headers.authorization) {
     const [type, token] = req.headers.authorization.split(' ');
     if (type === 'Bearer') {
@@ -29,7 +32,9 @@ export default async (req) => {
     if (currentUser) {
       // find the right login token corresponding, the current user may have
       // several sessions logged on different browsers / computers
-      const tokenInformation = currentUser.services.resume.loginTokens.find(tokenInfo => tokenInfo.hashedToken === hashedToken); // eslint-disable-line
+      const tokenInformation = currentUser.services.resume.loginTokens.find(
+        (tokenInfo) => tokenInfo.hashedToken === hashedToken
+      ); // eslint-disable-line
 
       // get an exploitable token expiration date
       const expiresAt = Accounts._tokenExpiration(tokenInformation.when); // eslint-disable-line

@@ -67,6 +67,7 @@ export default (role, actions) => {
   role.allow(actions.createSubscription, () => false);
   role.allow(actions.registerPaymentCredentials, () => false);
   role.allow(actions.managePaymentCredentials, () => false);
+  role.allow(actions.bulkImport, () => false);
 
   // only allow if otp is provided
   role.allow(

@@ -19,7 +19,7 @@ const AssortmentFilterListItem = ({ filter, removeAssortmentFilter, tags }) => (
             <DragHandle />
             <Link href={`/filters/edit?_id=${filter._id}`}>
               <a href={`/filters/edit?_id=${filter._id}`}>
-                {filter.texts ? filter.texts.title : filter.key}
+                {filter.texts?.title || filter.key}
                 &nbsp;
                 {tags &&
                   tags.map((tag) => {

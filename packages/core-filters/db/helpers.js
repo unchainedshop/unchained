@@ -25,11 +25,13 @@ Filters.createFilter = (
     ...filterData,
   });
   const filterObject = Filters.findOne({ _id: filterId });
-  filterObject.upsertLocalizedText(locale, {
-    filterOptionValue: null,
-    title,
-    authorId,
-  });
+  if (locale) {
+    filterObject.upsertLocalizedText(locale, {
+      filterOptionValue: null,
+      title,
+      authorId,
+    });
+  }
   if (!skipInvalidation) {
     filterObject.invalidateProductIdCache();
   }

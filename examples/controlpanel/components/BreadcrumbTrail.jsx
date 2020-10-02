@@ -18,7 +18,7 @@ const BreadcrumbTrail = ({ assortmentPaths, router }) => {
               }}
               link
             >
-              {link.assortmentTexts.title}
+              {link.assortmentTexts?.title}
             </Breadcrumb.Section>
             {path.links.length !== linkIndex + 1 && <Breadcrumb.Divider />}
           </>

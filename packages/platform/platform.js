@@ -5,6 +5,8 @@ import setupWorkqueue, { workerTypeDefs } from './setup-workqueue';
 import setupDatabase from './setup-db';
 import setupTemplates, { MessageTypes } from './setup-templates';
 
+import './worker/bulk-import';
+
 export { buildContext, MessageTypes };
 
 const {

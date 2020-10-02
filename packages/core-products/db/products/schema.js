@@ -21,6 +21,7 @@ const ProductCommerceSchema = new SimpleSchema(
   {
     salesUnit: String,
     salesQuantityPerUnit: String,
+    defaultOrderQuantity: Number,
     pricing: Array,
     'pricing.$': Object,
     'pricing.$.isTaxable': Boolean,

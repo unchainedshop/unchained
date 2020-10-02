@@ -174,8 +174,8 @@ export default compose(
   ),
   mapProps(({ data: { product, products }, ...rest }) => {
     const variations = (product && product.variations) || [];
-    const columnTitles = variations.map(({ texts, key }) =>
-      texts ? texts.title : key
+    const columnTitles = variations.map(
+      ({ texts, key }) => texts?.title || key
     );
     const columnKeys = variations.map(({ key }) => key);
 
@@ -211,7 +211,7 @@ export default compose(
     const productOptions =
       products &&
       products.map(({ texts, _id }) => ({
-        text: texts && texts.title,
+        text: texts?.title,
         value: _id,
       }));
 

@@ -41,7 +41,7 @@ const AssortmentList = ({
         <Table.Cell>
           <Link href={`/assortments/edit?_id=${assortment._id}`}>
             <a href={`/assortments/edit?_id=${assortment._id}`}>
-              {assortment.texts.title}
+              {assortment.texts?.title}
             </a>
           </Link>
         </Table.Cell>

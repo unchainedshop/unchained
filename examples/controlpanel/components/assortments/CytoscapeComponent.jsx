@@ -43,7 +43,7 @@ const CytoscapeComponentWrapper = ({ assortments }) => {
     elements.push({
       data: {
         id: item._id,
-        label: item.texts.title,
+        label: item.texts?.title,
       },
     });
     if (item.linkedAssortments) {
@@ -160,7 +160,7 @@ const CytoscapeComponentWrapper = ({ assortments }) => {
                   group: 'nodes',
                   data: {
                     id: linkedAssortment.child._id,
-                    label: linkedAssortment.child.texts.title,
+                    label: linkedAssortment.child.texts?.title,
                   },
                 },
                 ...new Set(
