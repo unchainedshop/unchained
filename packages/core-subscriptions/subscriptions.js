@@ -3,7 +3,6 @@ import GenerateSubscriptionOrders from './worker/generate-orders';
 import settings from './settings';
 
 import './db/subscriptions/helpers';
-import './db/subscriptions/factories';
 import runMigrations from './db/subscriptions/schema';
 
 export * from './director';

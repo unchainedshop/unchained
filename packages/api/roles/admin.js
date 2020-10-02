@@ -59,4 +59,5 @@ export default (role, actions) => {
   role.allow(actions.updateSubscription, () => true);
   role.allow(actions.registerPaymentCredentials, () => true);
   role.allow(actions.managePaymentCredentials, () => true);
+  role.allow(actions.bulkImport, () => true);
 };

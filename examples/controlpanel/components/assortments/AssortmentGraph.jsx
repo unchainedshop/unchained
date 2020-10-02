@@ -7,6 +7,7 @@ import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import { Button, Icon, Table } from 'semantic-ui-react';
 import SearchDropdown from '../SearchDropdown';
+import { SEARCH_ASSORTMENTS } from '../searchQueries';
 
 const CytoscapeComponentWithNoSSR = dynamic(
   () => import('./CytoscapeComponent'),
@@ -26,6 +27,7 @@ const AssortmentGraph = ({ data, router }) => (
                 query: { _id: result.value },
               });
             }}
+            searchQuery={SEARCH_ASSORTMENTS}
             queryType={'assortments'}
           />
           <Link href="/assortments/new">

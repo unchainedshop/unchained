@@ -103,7 +103,7 @@ export default compose(
     }) => ({
       filters: [{ label: 'Select', value: false }].concat(
         filters.map((filter) => ({
-          label: filter.texts ? filter.texts.title : filter.key,
+          label: filter.texts?.title || filter.key,
           value: filter._id,
         }))
       ),

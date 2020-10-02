@@ -7,6 +7,7 @@ import { Table, Icon, Button, Loader, Label } from 'semantic-ui-react';
 import InfiniteScroll from 'react-infinite-scroller';
 import Link from 'next/link';
 import SearchDropdown from '../SearchDropdown';
+import { SEARCH_PRODUCTS } from '../searchQueries';
 
 const ProductList = ({ products, loadMoreEntries, hasMore, router }) => {
   return (
@@ -15,12 +16,15 @@ const ProductList = ({ products, loadMoreEntries, hasMore, router }) => {
         <Table.Row>
           <Table.HeaderCell colSpan="3">
             <SearchDropdown
+              placeholder="Select Product"
+              searchQuery={SEARCH_PRODUCTS}
               onChange={(e, result) => {
                 router.push({
                   pathname: '/products/edit',
                   query: { _id: result.value },
                 });
               }}
+              queryType={'products'}
             />
 
             <Link href="/products/new">
@@ -62,7 +66,7 @@ const ProductList = ({ products, loadMoreEntries, hasMore, router }) => {
               <Table.Cell>
                 <Link href={`/products/edit?_id=${product._id}`}>
                   <a href={`/products/edit?_id=${product._id}`}>
-                    {product.texts.title}
+                    {product.texts?.title}
                   </a>
                 </Link>
               </Table.Cell>

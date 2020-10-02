@@ -27,8 +27,7 @@ const OrderPositionList = ({ items }) => (
                 x&nbsp;
                 <Link href={`/products/edit?_id=${item.product._id}`}>
                   <a href={`/products/edit?_id=${item.product._id}`}>
-                    {(item.product.texts && item.product.texts.title) ||
-                      item.product._id}
+                    {item.product.texts?.title || item.product._id}
                   </a>
                 </Link>
               </Table.Cell>

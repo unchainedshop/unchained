@@ -1,4 +1,3 @@
-import './db/factories';
 import configureSchema from './db/schema';
 
 export * from './db/helpers';

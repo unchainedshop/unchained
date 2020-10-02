@@ -2,10 +2,12 @@ import startAPI from 'meteor/unchained:api';
 import interceptEmails from './intercept-emails';
 import setupAccounts, { buildContext } from './setup-accounts';
 import setupWorkqueue, { workerTypeDefs } from './setup-workqueue';
-import setupDatabase, { createFixtures } from './setup-db';
+import setupDatabase from './setup-db';
 import setupTemplates, { MessageTypes } from './setup-templates';
 
-export { buildContext, createFixtures, MessageTypes };
+import './worker/bulk-import';
+
+export { buildContext, MessageTypes };
 
 const {
   NODE_ENV,

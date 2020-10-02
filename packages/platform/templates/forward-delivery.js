@@ -97,7 +97,7 @@ export default ({ orderId, transactionContext, config }) => {
       sku: product.warehousing && product.warehousing.sku,
       productTexts,
       originalProductTexts,
-      name: productTexts.title,
+      name: productTexts?.title,
       price: unitPrice?.amount ?? unitPrice.amount / 100,
       quantity: position.quantity,
     };

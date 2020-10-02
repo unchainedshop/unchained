@@ -11,7 +11,7 @@ const FilterHeader = ({ loading, filter = {} }) => [
   <Menu fluid attached="top" borderless key="header-title">
     <Menu.Item header>
       Filter:&nbsp;
-      {filter.texts && filter.texts.title}
+      {filter.texts?.title}
     </Menu.Item>
     <Menu.Menu position="right">
       <Dropdown item icon="wrench" simple>

@@ -30,7 +30,7 @@ const AssortmentLinkListItem = ({
                   <a
                     href={`/assortments/edit?_id=${parent._id}&tab=AssortmentLinks`}
                   >
-                    {parent.texts && parent.texts.title}
+                    {parent.texts?.title}
                   </a>
                   {tags &&
                     tags.map((tag) => {
@@ -46,7 +46,7 @@ const AssortmentLinkListItem = ({
                     <a
                       href={`/assortments/edit?_id=${child._id}&tab=AssortmentLinks`}
                     >
-                      {child.texts && child.texts.title}
+                      {child.texts?.title}
                     </a>
                   </Link>
                 </List.Item>

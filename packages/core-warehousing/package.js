@@ -16,7 +16,6 @@ Package.onUse((api) => {
   api.use('ecmascript');
   api.use('mongo');
   api.use('promise');
-  api.use('dburles:factory@1.1.0');
   api.use('dburles:collection-helpers@1.1.0');
   api.use('aldeed:collection2@3.2.1');
   api.use('percolate:migrations@1.0.2');

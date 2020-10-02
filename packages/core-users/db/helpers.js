@@ -235,3 +235,28 @@ Users.updateHeartbeat = ({ userId, ...options }) => {
     }
   );
 };
+
+Users.createUser = ({
+  username,
+  roles,
+  emails,
+  profile,
+  guest,
+  ...userData
+}) => {
+  const _id = Users.insert({
+    created: new Date(),
+    username,
+    roles,
+    emails,
+    profile,
+    guest,
+    ...userData,
+  });
+
+  const user = Users.findOne({ _id });
+  if (user) {
+    Accounts.setPassword(_id, 'password');
+  }
+  return user;
+};
