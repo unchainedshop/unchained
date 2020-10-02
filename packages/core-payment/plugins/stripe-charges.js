@@ -9,7 +9,7 @@ import { OrderPayments } from 'meteor/unchained:core-orders';
 
 const {
   STRIPE_SECRET,
-  STRIPE_ENDPOINT_SECRET,
+  STRIPE_CHARGES_ENDPOINT_SECRET,
   EMAIL_WEBSITE_NAME,
   STRIPE_WEBHOOK_PATH = '/graphql/stripe-charges',
 } = process.env;
@@ -29,7 +29,7 @@ const stripe = require('stripe')(STRIPE_SECRET);
 
 WebApp.connectHandlers.use(
   STRIPE_WEBHOOK_PATH,
-  bodyParser.raw({ type: 'application/json' }),
+  bodyParser.raw({ type: 'application/json' })
 );
 
 WebApp.connectHandlers.use(STRIPE_WEBHOOK_PATH, (request, response) => {
@@ -40,7 +40,7 @@ WebApp.connectHandlers.use(STRIPE_WEBHOOK_PATH, (request, response) => {
     event = stripe.webhooks.constructEvent(
       request.body,
       sig,
-      STRIPE_ENDPOINT_SECRET,
+      STRIPE_CHARGES_ENDPOINT_SECRET
     );
   } catch (err) {
     response.writeHead(400);
@@ -50,16 +50,37 @@ WebApp.connectHandlers.use(STRIPE_WEBHOOK_PATH, (request, response) => {
   if (event.type === 'source.chargeable') {
     const source = event.data.object;
     // eslint-disable-next-line
-    const orderPaymentId = source.request?.idempotency_key;
+    const orderPaymentId = source.metadata?.orderPaymentId;
     const orderPayment = OrderPayments.findOne({ _id: orderPaymentId });
-    const order = orderPayment.order().checkout({
-      paymentContext: {
-        stripeToken: source,
-      },
-    });
+    const order = orderPayment.order();
+    const paymentContext = {
+      stripeToken: source,
+    };
+    if (order.isCart()) {
+      order.checkout({
+        paymentContext,
+      });
+      logger.info(
+        `Stripe Webhook: Unchained checked out order ${order.orderNumber}`,
+        { orderId: order._id }
+      );
+    } else {
+      orderPayment.charge(paymentContext, order);
+      logger.info(
+        `Stripe Webhook: Unchained initiated payment for order ${order.orderNumber}`,
+        { orderId: order._id }
+      );
+    }
+  } else if (event.type === 'charge.succeeded') {
+    const charge = event.data.object;
+    // eslint-disable-next-line
+    const orderPaymentId = charge.metadata?.orderPaymentId;
+    const orderPayment = OrderPayments.findOne({ _id: orderPaymentId });
+    const order = orderPayment.order();
+    orderPayment.markPaid(charge);
     logger.info(
-      `Stripe Webhook: Unchained confirmed checkout for order ${order.orderNumber}`,
-      { orderId: order._id },
+      `Stripe Webhook: Unchained marked payment as paid for order ${order.orderNumber}`,
+      { orderId: order._id }
     );
   } else {
     response.writeHead(400);
@@ -108,15 +129,26 @@ class Stripe extends PaymentAdapter {
     if (!stripeToken)
       throw new Error('You have to provide stripeToken in paymentContext');
     const pricing = this.context.order.pricing();
-    const stripeChargeReceipt = await stripe.charges.create({
-      amount: Math.round(pricing.total().amount),
-      currency: this.context.order.currency.toLowerCase(),
-      description: `${EMAIL_WEBSITE_NAME} Order #${this.context.order._id}`,
-      source: stripeToken.id,
-      customer: stripeCustomerId,
-    });
+    const stripeChargeReceipt = await stripe.charges.create(
+      {
+        amount: Math.round(pricing.total().amount),
+        currency: this.context.order.currency.toLowerCase(),
+        description: `${EMAIL_WEBSITE_NAME} Order #${this.context.order._id}`,
+        source: stripeToken.id,
+        customer: stripeCustomerId,
+        metadata: {
+          orderPaymentId: this.context.order.paymentId,
+        },
+      },
+      {
+        idempotencyKey: this.context.order.paymentId,
+      }
+    );
     this.log('Stripe -> ', stripeToken, stripeChargeReceipt);
-    return stripeChargeReceipt;
+    if (stripeChargeReceipt.status === 'succeeded') {
+      return stripeChargeReceipt;
+    }
+    return false;
   }
 }
 
