@@ -1,43 +1,15 @@
-import { AccountsServer, ServerHooks, AccountsJsError } from '@accounts/server';
+import { AccountsServer, ServerHooks } from '@accounts/server';
 import { AccountsPassword } from '@accounts/password';
 import MongoDBInterface from '@accounts/mongo';
 import { MongoInternals } from 'meteor/mongo';
 import { DatabaseManager } from '@accounts/database-manager';
 import crypto, { randomBytes } from 'crypto';
-import defer from 'lodash.defer';
 
 export const randomValueHex = (len) => {
   return crypto
     .randomBytes(Math.ceil(len / 2))
     .toString('hex') // convert to hexadecimal format
     .slice(0, len); // return required number of characters
-};
-
-const CreateUserErrors = {
-  /**
-   * Will throw if no username or email is provided.
-   */
-  UsernameOrEmailRequired: 'UsernameOrEmailRequired',
-  /**
-   * Username validation via option `validateUsername` failed.
-   */
-  InvalidUsername: 'InvalidUsername',
-  /**
-   * Email validation via option `validateEmail` failed.
-   */
-  InvalidEmail: 'InvalidEmail',
-  /**
-   * Password validation via option `validatePassword` failed.
-   */
-  InvalidPassword: 'InvalidPassword',
-  /**
-   * Email already exist in the database.
-   */
-  EmailAlreadyExists: 'EmailAlreadyExists',
-  /**
-   * Username already exist in the database.
-   */
-  UsernameAlreadyExists: 'UsernameAlreadyExists',
 };
 
 const METEOR_ID_LENGTH = 17;
@@ -57,7 +29,7 @@ const mongoStorage = new MongoDBInterface(
     convertSessionIdToMongoObjectId: false,
     idProvider,
     dateProvider,
-  },
+  }
 );
 
 const dbManager = new DatabaseManager({
@@ -114,7 +86,7 @@ class UnchainedAccountsServer extends AccountsServer {
         $addToSet: {
           'services.resume.loginTokens': token,
         },
-      },
+      }
     );
 
     // Take note we returen the stamped token but store the hashed on in the db
@@ -126,11 +98,23 @@ class UnchainedAccountsServer extends AccountsServer {
       user,
     };
   }
+
+  async logout({ userId, token }) {
+    try {
+      this.destroyToken(userId, token);
+      this.hooks.emit(ServerHooks.LogoutSuccess, {
+        user: Meteor.users.findOne({ _id: userId }),
+      });
+    } catch (error) {
+      this.hooks.emit(ServerHooks.LogoutError, error);
+      throw error;
+    }
+  }
 }
 
 export const accountsServer = new UnchainedAccountsServer(
   { db: dbManager, ...accountsServerOptions },
   {
     password: accountsPassword,
-  },
+  }
 );

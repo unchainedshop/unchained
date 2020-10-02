@@ -216,7 +216,7 @@ Users.enrollUser = async ({ password, email, displayName, address }) => {
   if (!params.password) {
     // send an e-mail if password is not set allowing the user to set it
     accountsPassword.sendEnrollmentEmail(
-      Users.findOne({ _id: newUserId }).primaryEmail()?.address,
+      Users.findOne({ _id: newUserId }).primaryEmail()?.address
     );
   }
   return Users.findOne({ _id: newUserId });

@@ -45,7 +45,7 @@ export default function callMethod(passedContext, name, ...args) {
   const retValue = handler.call(
     context,
     ...args,
-    evaluateContext(filteredContext),
+    evaluateContext(filteredContext)
   );
   connection.close();
   return retValue;

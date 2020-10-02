@@ -23,7 +23,7 @@ export default async function loginWithPassword(
         user: userQuery,
         password,
       },
-      evaluateContext(filterContext(context)),
+      evaluateContext(filterContext(context))
     );
 
     return {
