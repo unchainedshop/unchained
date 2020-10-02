@@ -4,7 +4,12 @@ TBD
 
 ## Breaking Changes
 
+The new experimental Bulk Import API allows to import a big list of entities (filters, assortments & products) at the same time.
+
 ## Minor
+
+- [api] Add Product.defaultOrderQuantity
+- [api] Also support "token" in cookies instead of only meteor_login_token
 
 ## Patches
 
