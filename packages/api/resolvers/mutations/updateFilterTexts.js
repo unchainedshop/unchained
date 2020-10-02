@@ -5,7 +5,7 @@ import { FilterNotFoundError, InvalidIdError } from '../../errors';
 export default function updateFilterTexts(
   root,
   { texts, filterId, filterOptionValue },
-  { userId },
+  { userId }
 ) {
   log(`mutation updateFilterTexts ${filterId} ${filterOptionValue}`, {
     userId,
@@ -18,7 +18,7 @@ export default function updateFilterTexts(
       authorId: userId,
       filterOptionValue,
       ...fields,
-    }),
+    })
   );
   return changedLocalizations;
 }

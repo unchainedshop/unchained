@@ -20,7 +20,7 @@ export default function removeProduct(root, { productId }, { userId }) {
             status: ProductStatus.DELETED,
             updated: new Date(),
           },
-        },
+        }
       );
       break;
     default:

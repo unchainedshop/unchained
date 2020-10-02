@@ -36,7 +36,7 @@ const applyDiscountToMultipleShares = (shares, amount) => {
         currentTaxAmount + shareTaxAmount,
       ];
     },
-    [0, 0],
+    [0, 0]
   );
 };
 
@@ -73,8 +73,8 @@ class ItemsDiscount extends OrderPricingAdapter {
     const itemShares = this.context.items.map((item) =>
       resolveRatioAndTaxDivisorForPricingSheet(
         item.pricing(),
-        totalAmountOfItems,
-      ),
+        totalAmountOfItems
+      )
     );
 
     let alreadyDeducted = 0;
@@ -88,8 +88,8 @@ class ItemsDiscount extends OrderPricingAdapter {
         itemShares,
         calculateAmountToSplit(
           { ...configuration, alreadyDeducted },
-          totalAmountOfItems,
-        ),
+          totalAmountOfItems
+        )
       );
       alreadyDeducted = +itemsDiscountAmount;
 

@@ -6,7 +6,7 @@ import { OrderNumberAlreadyExistsError, UserNotFoundError } from '../../errors';
 export default async function createCart(
   root,
   { orderNumber },
-  { countryContext, userId, user },
+  { countryContext, userId, user }
 ) {
   log('mutation createCart', { userId });
   const order = Orders.findOne({ orderNumber });

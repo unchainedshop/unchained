@@ -16,8 +16,8 @@ ProductMedia.attachSchema(
       authorId: { type: String, required: true },
       ...Schemas.timestampFields,
     },
-    { requiredByDefault: false },
-  ),
+    { requiredByDefault: false }
+  )
 );
 
 ProductMediaTexts.attachSchema(
@@ -33,8 +33,8 @@ ProductMediaTexts.attachSchema(
       subtitle: String,
       ...Schemas.timestampFields,
     },
-    { requiredByDefault: false },
-  ),
+    { requiredByDefault: false }
+  )
 );
 
 Migrations.add({

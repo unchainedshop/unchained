@@ -4,7 +4,7 @@ import { AssortmentLinks } from 'meteor/unchained:core-assortments';
 export default function reorderAssortmentLinks(
   root,
   { sortKeys = [] },
-  { userId },
+  { userId }
 ) {
   log('mutation reorderAssortmentLinks', { userId });
   return AssortmentLinks.updateManualOrder({ sortKeys });

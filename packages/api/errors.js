@@ -9,193 +9,193 @@ export const createError = (code, message) =>
 
 export const PermissionSystemError = createError(
   'PermissionSystemError',
-  'Permission System Error',
+  'Permission System Error'
 );
 export const NoPermissionError = createError(
   'NoPermissionError',
-  'Not authorized',
+  'Not authorized'
 );
 export const ProductNotFoundError = createError(
   'ProductNotFoundError',
-  'Product not found',
+  'Product not found'
 );
 
 export const ProductVariationNotFoundError = createError(
   'ProductVariationNotFoundError',
-  'Product variation not found',
+  'Product variation not found'
 );
 
 export const ProductMediaNotFoundError = createError(
   'ProductMediaNotFoundError',
-  'Product media not found',
+  'Product media not found'
 );
 
 export const ProductReviewNotFoundError = createError(
   'ProductReviewNotFoundError',
-  'ProductReview not found',
+  'ProductReview not found'
 );
 export const ProductWrongStatusError = createError(
   'ProductWrongStatusError',
-  'The current status of the product does not allow this operation',
+  'The current status of the product does not allow this operation'
 );
 export const AssortmentNotFoundError = createError(
   'AssortmentNotFoundError',
-  'Assortment not found',
+  'Assortment not found'
 );
 
 export const AssortmentFilterNotFoundError = createError(
   'AssortmentFilterNotFoundError',
-  'Assortment filter not found',
+  'Assortment filter not found'
 );
 
 export const AssortmentLinkNotFoundError = createError(
   'AssortmentLinkNotFoundError',
-  'Assortment link not found',
+  'Assortment link not found'
 );
 
 export const AssortmentProductNotFoundError = createError(
   'AssortmentProductNotFoundError',
-  'Assortment product not found',
+  'Assortment product not found'
 );
 
 export const FilterNotFoundError = createError(
   'FilterNotFoundError',
-  'Filter not found',
+  'Filter not found'
 );
 
 export const CountryNotFoundError = createError(
   'CountryNotFoundError',
-  'Country not found',
+  'Country not found'
 );
 export const CurrencyNotFoundError = createError(
   'CurrencyNotFoundError',
-  'Currency not found',
+  'Currency not found'
 );
 
 export const DeliverProviderNotFoundError = createError(
   'DeliverProviderNotFoundError',
-  'Delivery provider not found',
+  'Delivery provider not found'
 );
 
 export const LanguageNotFoundError = createError(
   'LanguageNotFoundError',
-  'Language not found',
+  'Language not found'
 );
 
 export const UserNotFoundError = createError(
   'UserNotFoundError',
-  'Product not found',
+  'Product not found'
 );
 export const UserNoCartError = createError(
   'UserNoCartError',
-  'No open cart available to checkout',
+  'No open cart available to checkout'
 );
 export const OrderItemNotFoundError = createError(
   'OrderItemNotFoundError',
-  'Order Item not found',
+  'Order Item not found'
 );
 export const OrderNotFoundError = createError(
   'OrderNotFoundError',
-  'Order not found',
+  'Order not found'
 );
 export const OrderNumberAlreadyExistsError = createError(
   'OrderNumberAlreadyExistsError',
-  'This orderNumber has already been used by another order',
+  'This orderNumber has already been used by another order'
 );
 export const OrderDiscountNotFoundError = createError(
   'OrderDiscountNotFoundError',
-  'Order discount not found',
+  'Order discount not found'
 );
 export const OrderDeliveryNotFoundError = createError(
   'OrderDeliveryNotFoundError',
-  'Order delivery not found',
+  'Order delivery not found'
 );
 export const OrderPaymentNotFoundError = createError(
   'OrderDeliveryNotFoundError',
-  'Order delivery not found',
+  'Order delivery not found'
 );
 export const OrderQuantityTooLowError = createError(
   'OrderQuantityTooLowError',
-  'Quantity cannot be lower than 1',
+  'Quantity cannot be lower than 1'
 );
 export const OrderWrongPaymentStatusError = createError(
   'OrderWrongPaymentStatus',
-  'The current status of the payment does not allow this operation',
+  'The current status of the payment does not allow this operation'
 );
 export const OrderWrongDeliveryStatusError = createError(
   'OrderWrongDeliveryStatus',
-  'The current status of the delivery does not allow this operation',
+  'The current status of the delivery does not allow this operation'
 );
 export const OrderWrongStatusError = createError(
   'OrderWrongStatusError',
-  'The current status of the order does not allow this operation',
+  'The current status of the order does not allow this operation'
 );
 export const OrderCheckoutError = createError(
   'OrderCheckoutError',
-  'A problem occured while processing the order',
+  'A problem occured while processing the order'
 );
 export const OrderPaymentConfigurationError = createError(
   'OrderPaymentConfigurationError',
-  'Payment configuration invalid',
+  'Payment configuration invalid'
 );
 export const QuotationWrongStatusError = createError(
   'QuotationWrongStatusError',
-  'The current status of the quotation does not allow this operation',
+  'The current status of the quotation does not allow this operation'
 );
 export const QuotationNotFoundError = createError(
   'QuotationNotFoundError',
-  'Quotation not found',
+  'Quotation not found'
 );
 export const BookmarkAlreadyExistsError = createError(
   'BookmarkAlreadyExistsError',
-  'Bookmark already exists',
+  'Bookmark already exists'
 );
 export const BookmarkNotFoundError = createError(
   'BookmarkNotFoundError',
-  'Bookmark not found',
+  'Bookmark not found'
 );
 export const QueryStringRequiredError = createError(
   'QueryStringRequiredError',
-  'Query string is required if no assortmentId is provided',
+  'Query string is required if no assortmentId is provided'
 );
 export const PaymentProviderNotFoundError = createError(
   'PaymentProviderNotFoundError',
-  'Payment provider not found',
+  'Payment provider not found'
 );
 export const WorkNotFoundOrWrongStatus = createError(
   'WorkNotFoundOrWrongStatus',
-  'Could not find work or no work with the correct status',
+  'Could not find work or no work with the correct status'
 );
 
 export const WorkNotFoundError = createError(
   'WorkNotFoundError',
-  'Work not found',
+  'Work not found'
 );
 
 export const WorkTypeInvalidError = createError(
   'WorkTypeInvalidError',
-  'Work type invalid',
+  'Work type invalid'
 );
 
 export const PaymentCredentialsNotFoundError = createError(
   'PaymentCredentialsNotFoundError',
-  'Payment credentials not found',
+  'Payment credentials not found'
 );
 export const SubscriptionWrongStatusError = createError(
   'SubscriptionWrongStatusError',
-  'The current status of the subscription does not allow this operation',
+  'The current status of the subscription does not allow this operation'
 );
 export const SubscriptionNotFoundError = createError(
   'SubscriptionNotFoundError',
-  'Subscription not found',
+  'Subscription not found'
 );
 
 export const WarehousingProviderNotFoundError = createError(
   'WarehousingProviderNotFoundError',
-  'Warehousing provider not found',
+  'Warehousing provider not found'
 );
 
 export const InvalidIdError = createError(
   'InvalidIdError',
-  'Invalid ID provided',
+  'Invalid ID provided'
 );

@@ -135,7 +135,7 @@ export default ({ orderId, transactionContext, config }) => {
         text: MessagingDirector.renderToText(textTemplate, templateVariables),
         html: MessagingDirector.renderMjmlToHtml(
           mjmlTemplate,
-          templateVariables,
+          templateVariables
         ),
         attachments: attachments.map((file) => ({
           filename: `${order.orderNumber}_${file.name}`,

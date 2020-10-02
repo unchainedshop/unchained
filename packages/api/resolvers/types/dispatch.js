@@ -21,7 +21,7 @@ export default {
           quantity,
           country,
           userId || 'ANONYMOUS',
-        ].join(''),
+        ].join('')
       )
       .digest('hex'),
 };

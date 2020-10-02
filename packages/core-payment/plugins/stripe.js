@@ -32,7 +32,7 @@ const stripe = require('stripe')(STRIPE_SECRET);
 
 WebApp.connectHandlers.use(
   STRIPE_WEBHOOK_PATH,
-  bodyParser.raw({ type: 'application/json' }),
+  bodyParser.raw({ type: 'application/json' })
 );
 
 WebApp.connectHandlers.use(STRIPE_WEBHOOK_PATH, (request, response) => {
@@ -43,7 +43,7 @@ WebApp.connectHandlers.use(STRIPE_WEBHOOK_PATH, (request, response) => {
     event = stripe.webhooks.constructEvent(
       request.body,
       sig,
-      STRIPE_ENDPOINT_SECRET,
+      STRIPE_ENDPOINT_SECRET
     );
   } catch (err) {
     response.writeHead(400);
@@ -61,7 +61,7 @@ WebApp.connectHandlers.use(STRIPE_WEBHOOK_PATH, (request, response) => {
     });
     logger.info(
       `Stripe Webhook: Unchained confirmed checkout for order ${order.orderNumber}`,
-      { orderId: order._id },
+      { orderId: order._id }
     );
   } else if (event.type === 'setup_intent.succeeded') {
     const setupIntent = event.data.object;
@@ -75,7 +75,7 @@ WebApp.connectHandlers.use(STRIPE_WEBHOOK_PATH, (request, response) => {
     });
     logger.info(
       `Datatrans Webhook: Unchained registered payment credentials for ${userId}`,
-      { userId },
+      { userId }
     );
   } else {
     response.writeHead(400);
@@ -146,7 +146,7 @@ class Stripe extends PaymentAdapter {
 
   static async createRegistrationIntent(
     { userId, paymentProviderId },
-    options = {},
+    options = {}
   ) {
     const user = Users.findOne({ _id: userId });
     const customer = await stripe.customers.create({
@@ -194,11 +194,11 @@ class Stripe extends PaymentAdapter {
     const paymentIntent = orderPayment
       ? await this.constructor.createOrderPaymentIntent(
           orderPayment,
-          transactionContext,
+          transactionContext
         )
       : await this.constructor.createRegistrationIntent(
           { userId, paymentProviderId },
-          transactionContext,
+          transactionContext
         );
     return paymentIntent.client_secret;
   }
@@ -206,7 +206,7 @@ class Stripe extends PaymentAdapter {
   async charge({ paymentIntentId, paymentCredentials }) {
     if (!paymentIntentId && !paymentCredentials) {
       throw new Error(
-        'You have to provide an existing intent or a payment method',
+        'You have to provide an existing intent or a payment method'
       );
     }
 
@@ -229,12 +229,12 @@ class Stripe extends PaymentAdapter {
       paymentIntentObject.amount !== Math.round(amount)
     ) {
       throw new Error(
-        'The price has changed since you have created the intent!',
+        'The price has changed since you have created the intent!'
       );
     }
     if (paymentIntentObject.metadata?.orderPaymentId !== orderPayment?._id) {
       throw new Error(
-        'The order payment is different from the initiating intent!',
+        'The order payment is different from the initiating intent!'
       );
     }
 

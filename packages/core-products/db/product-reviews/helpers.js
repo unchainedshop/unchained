@@ -83,7 +83,7 @@ ProductReviews.updateReview = function updateReview({
         ...review,
         updated: new Date(),
       },
-    },
+    }
   );
   return this.findOne({ _id: productReviewId, deleted: null });
 };
@@ -99,7 +99,7 @@ ProductReviews.addVote = function addVote({ productReviewId, type, ...vote }) {
           ...vote,
         },
       },
-    },
+    }
   );
   return this.findOne({ _id: productReviewId, deleted: null });
 };
@@ -115,7 +115,7 @@ ProductReviews.removeVote = function addVote({
       $pull: {
         votes: { userId, type },
       },
-    },
+    }
   );
   return this.findOne({ _id: productReviewId, deleted: null });
 };
@@ -127,7 +127,7 @@ ProductReviews.deleteReview = function deleteReview({ productReviewId }) {
       $set: {
         deleted: new Date(),
       },
-    },
+    }
   );
   return this.findOne({ _id: productReviewId });
 };
@@ -146,6 +146,6 @@ ProductReviews.findReviews = function findReviews(
       ...(authorId ? { authorId } : {}),
       deleted: null,
     },
-    ...options,
+    ...options
   ).fetch();
 };

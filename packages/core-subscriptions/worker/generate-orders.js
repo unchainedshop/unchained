@@ -46,7 +46,7 @@ class GenerateSubscriptionOrders extends WorkerPlugin {
             };
           }
           return null;
-        }),
+        })
       )
     ).filter(Boolean);
 

@@ -95,7 +95,7 @@ class OrderPricingSheet extends PricingSheet {
 
   discountPrices(explicitDiscountId) {
     const discountIds = this.getDiscountRows(explicitDiscountId).map(
-      ({ discountId }) => discountId,
+      ({ discountId }) => discountId
     );
 
     return [...new Set(discountIds)]
@@ -150,10 +150,10 @@ class OrderPricingSheet extends PricingSheet {
       items: formatter(this.total(OrderPricingSheetRowCategories.Items).amount),
       taxes: formatter(this.total(OrderPricingSheetRowCategories.Taxes).amount),
       delivery: formatter(
-        this.total(OrderPricingSheetRowCategories.Delivery).amount,
+        this.total(OrderPricingSheetRowCategories.Delivery).amount
       ),
       payment: formatter(
-        this.total(OrderPricingSheetRowCategories.Payment).amount,
+        this.total(OrderPricingSheetRowCategories.Payment).amount
       ),
       net: formatter(this.total().amount),
     };

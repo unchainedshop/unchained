@@ -13,8 +13,8 @@ Logs.attachSchema(
       meta: { type: Object, blackbox: true },
       ...Schemas.timestampFields,
     },
-    { requiredByDefault: false },
-  ),
+    { requiredByDefault: false }
+  )
 );
 
 Migrations.add({
@@ -36,7 +36,7 @@ Migrations.add({
               orderId: 1,
               userId: 1,
             },
-          },
+          }
         );
       });
   },
@@ -60,7 +60,7 @@ Migrations.add({
               'meta.orderId': 1,
               'meta.userId': 1,
             },
-          },
+          }
         );
       });
   },
@@ -73,6 +73,6 @@ export default () => {
     {
       created: -1,
     },
-    { expireAfterSeconds: 2 * ONE_DAY_IN_SECONDS },
+    { expireAfterSeconds: 2 * ONE_DAY_IN_SECONDS }
   );
 };

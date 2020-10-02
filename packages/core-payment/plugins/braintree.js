@@ -99,7 +99,7 @@ class BraintreeDirect extends PaymentAdapter {
   async charge({ paypalPaymentMethodNonce }) {
     if (!paypalPaymentMethodNonce)
       throw new Error(
-        'You have to provide paypalPaymentMethodNonce in paymentContext',
+        'You have to provide paypalPaymentMethodNonce in paymentContext'
       );
     const braintree = require('braintree'); // eslint-disable-line
     const gateway = this.gateway(braintree);

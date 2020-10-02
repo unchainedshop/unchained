@@ -11,13 +11,13 @@ import getCart from '../../getCart';
 export default async function addCartQuotation(
   root,
   { orderId, quotationId, quantity, configuration },
-  { user, userId, countryContext },
+  { user, userId, countryContext }
 ) {
   log(
     `mutation addCartQuotation ${quotationId} ${quantity} ${
       configuration ? JSON.stringify(configuration) : ''
     }`,
-    { userId, orderId },
+    { userId, orderId }
   );
   if (!quotationId) throw new InvalidIdError({ quotationId });
   if (quantity < 1) throw new OrderQuantityTooLowError({ quantity });

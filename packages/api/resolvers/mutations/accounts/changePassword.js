@@ -9,7 +9,7 @@ export default async function changePassword(
     newPassword: newHashedPassword,
     newPlainPassword,
   },
-  context,
+  context
 ) {
   if (!newHashedPassword && !newPlainPassword) {
     throw new Error('New password is required');
@@ -24,7 +24,7 @@ export default async function changePassword(
     context,
     'changePassword',
     oldPassword,
-    newPassword,
+    newPassword
   );
   return {
     success: passwordChanged,

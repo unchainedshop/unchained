@@ -48,11 +48,11 @@ const searchProducts = async ({
     };
   }
   const totalProductIds = productFulltextSearch(searchConfiguration)(
-    query?.productIds,
+    query?.productIds
   );
 
   const filteredProductIds = totalProductIds.then(
-    productFacetedSearch(searchConfiguration),
+    productFacetedSearch(searchConfiguration)
   );
 
   return {
@@ -82,7 +82,7 @@ const searchAssortments = async ({
   };
 
   const totalAssortmentIds = assortmentFulltextSearch(searchConfiguration)(
-    query?.productIds,
+    query?.productIds
   );
 
   return {

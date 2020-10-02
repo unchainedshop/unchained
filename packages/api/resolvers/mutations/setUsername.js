@@ -5,7 +5,7 @@ import { UserNotFoundError, InvalidIdError } from '../../errors';
 export default function setUsername(
   root,
   { username, userId: foreignUserId },
-  { userId },
+  { userId }
 ) {
   log(`mutation setUsername ${foreignUserId}`, { userId });
   if (!foreignUserId) throw new InvalidIdError({ foreignUserId });

@@ -5,7 +5,7 @@ import { ProductNotFoundError, InvalidIdError } from '../../errors';
 export default function updateProductPlan(
   root,
   { plan, productId },
-  { userId },
+  { userId }
 ) {
   log(`mutation updateProductPlan ${productId}`, { userId });
   if (!productId) throw new InvalidIdError({ productId });

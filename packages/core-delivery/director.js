@@ -78,7 +78,7 @@ export class DeliveryDirector {
     const Adapter = this.interfaceClass();
     if (!Adapter) {
       throw new Error(
-        `Delivery Plugin ${this.provider.adapterKey} not available`,
+        `Delivery Plugin ${this.provider.adapterKey} not available`
       );
     }
     return new Adapter(this.provider.configuration, context);

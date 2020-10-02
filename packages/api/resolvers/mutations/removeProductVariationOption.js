@@ -5,11 +5,11 @@ import { InvalidIdError, ProductVariationNotFoundError } from '../../errors';
 export default function removeProductVariationOption(
   root,
   { productVariationId, productVariationOptionValue },
-  { userId },
+  { userId }
 ) {
   log(
     `mutation removeProductVariationOption ${productVariationId} ${productVariationOptionValue}`,
-    { userId },
+    { userId }
   );
   if (!productVariationId) throw new InvalidIdError({ productVariationId });
   ProductVariations.update(
@@ -21,7 +21,7 @@ export default function removeProductVariationOption(
       $pull: {
         options: productVariationOptionValue,
       },
-    },
+    }
   );
   const productVariation = ProductVariations.findOne({
     _id: productVariationId,

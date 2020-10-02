@@ -4,13 +4,13 @@ import { Countries } from 'meteor/unchained:core-countries';
 export default function countries(
   root,
   { limit, offset, includeInactive },
-  { userId },
+  { userId }
 ) {
   log(
     `query countries: ${limit} ${offset} ${
       includeInactive ? 'includeInactive' : ''
     }`,
-    { userId },
+    { userId }
   );
   const selector = {};
   if (!includeInactive) {

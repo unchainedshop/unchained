@@ -5,7 +5,7 @@ import { UserNotFoundError } from '../../errors';
 export default function setPassword(
   root,
   { newPassword, userId: foreignUserId },
-  { userId: ownUserId },
+  { userId: ownUserId }
 ) {
   log(`mutation setPassword ${foreignUserId}`, { userId: ownUserId });
   const userId = foreignUserId || ownUserId;

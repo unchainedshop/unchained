@@ -5,7 +5,7 @@ import getCart from '../../getCart';
 export default async function emptyCart(
   root,
   { orderId },
-  { user, userId, countryContext },
+  { user, userId, countryContext }
 ) {
   log('mutation emptyCart', { userId, orderId });
   const cart = await getCart({ orderId, user, countryContext });

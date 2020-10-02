@@ -5,7 +5,7 @@ import { AssortmentProductNotFoundError, InvalidIdError } from '../../errors';
 export default function removeAssortmentProduct(
   root,
   { assortmentProductId },
-  { userId },
+  { userId }
 ) {
   log(`mutation removeAssortmentProduct ${assortmentProductId}`, { userId });
   if (!assortmentProductId) throw new InvalidIdError({ assortmentProductId });

@@ -36,7 +36,7 @@ const concatItemsByLevels = (levelArray) => {
         ...acc,
         [level]: [...(acc[level] || []), items],
       };
-    }, {}),
+    }, {})
   );
 };
 

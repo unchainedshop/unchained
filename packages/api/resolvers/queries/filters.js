@@ -4,7 +4,7 @@ import { Filters } from 'meteor/unchained:core-filters';
 export default function filters(
   root,
   { limit, offset, includeInactive },
-  { userId },
+  { userId }
 ) {
   log(`query filters: ${limit} ${offset}`, { userId });
 

@@ -19,7 +19,7 @@ export const ProfileSchema = new SimpleSchema(
       blackbox: true,
     },
   },
-  { requiredByDefault: false },
+  { requiredByDefault: false }
 );
 
 export const LastLoginSchema = new SimpleSchema(
@@ -29,7 +29,7 @@ export const LastLoginSchema = new SimpleSchema(
     countryContext: String,
     remoteAddress: String,
   },
-  { requiredByDefault: false },
+  { requiredByDefault: false }
 );
 
 export const LastContactSchema = new SimpleSchema(
@@ -37,7 +37,7 @@ export const LastContactSchema = new SimpleSchema(
     telNumber: String,
     emailAddress: String,
   },
-  { requiredByDefault: false },
+  { requiredByDefault: false }
 );
 
 export const UserSchema = new SimpleSchema(
@@ -64,7 +64,7 @@ export const UserSchema = new SimpleSchema(
     'roles.$': String,
     ...timestampFields,
   },
-  { requiredByDefault: false },
+  { requiredByDefault: false }
 );
 
 Meteor.users.attachSchema(UserSchema);
@@ -95,7 +95,7 @@ Migrations.add({
               'profile.firstName': 1,
               'profile.lastName': 1,
             },
-          },
+          }
         );
       });
   },
@@ -120,7 +120,7 @@ Migrations.add({
               guest: 1,
               'profile.displayName': 1,
             },
-          },
+          }
         );
       });
   },
@@ -146,7 +146,7 @@ Migrations.add({
               $unset: {
                 'lastLogin.country': 1,
               },
-            },
+            }
           );
         }
       });
@@ -168,7 +168,7 @@ Migrations.add({
               $unset: {
                 'lastLogin.countryContext': 1,
               },
-            },
+            }
           );
         }
       });

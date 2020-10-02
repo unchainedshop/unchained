@@ -5,7 +5,7 @@ import { LanguageNotFoundError, InvalidIdError } from '../../errors';
 export default function updateLanguage(
   root,
   { language, languageId },
-  { userId },
+  { userId }
 ) {
   log(`mutation updateLanguage ${languageId}`, { userId });
   if (!languageId) throw new InvalidIdError({ languageId });
@@ -16,7 +16,7 @@ export default function updateLanguage(
     {
       updated: new Date(),
       $set: language,
-    },
+    }
   );
   return Languages.findOne({ _id: languageId });
 }

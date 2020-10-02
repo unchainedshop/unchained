@@ -21,8 +21,8 @@ ProductVariations.attachSchema(
       authorId: { type: String, required: true },
       ...Schemas.timestampFields,
     },
-    { requiredByDefault: false },
-  ),
+    { requiredByDefault: false }
+  )
 );
 
 ProductVariationTexts.attachSchema(
@@ -39,8 +39,8 @@ ProductVariationTexts.attachSchema(
       authorId: { type: String, required: true },
       ...Schemas.timestampFields,
     },
-    { requiredByDefault: false },
-  ),
+    { requiredByDefault: false }
+  )
 );
 
 Migrations.add({

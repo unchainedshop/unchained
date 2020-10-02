@@ -63,7 +63,7 @@ class FilterDirector {
     return this.reduceAdapters(async (lastSelector, concreteAdapter) => {
       return concreteAdapter.transformProductSelector(
         await lastSelector,
-        options,
+        options
       );
     }, defaultSelector || null);
   }
@@ -78,7 +78,7 @@ class FilterDirector {
     return this.reduceAdapters(async (lastSearchPromise, concreteAdapter) => {
       return concreteAdapter.searchAssortments(
         await lastSearchPromise,
-        options,
+        options
       );
     }, assortmentIdResolver || null);
   }
@@ -93,14 +93,14 @@ class FilterDirector {
     return this.reduceAdapters(async (lastSelector, concreteAdapter) => {
       return concreteAdapter.transformFilterSelector(
         await lastSelector,
-        options,
+        options
       );
     }, defaultSelector || null);
   }
 
   async reduceAdapters(reducer, initialValue) {
     const adapters = FilterDirector.sortedAdapters().filter((AdapterClass) =>
-      AdapterClass.isActivatedFor(this.context),
+      AdapterClass.isActivatedFor(this.context)
     );
     if (adapters.length === 0) {
       return null;
@@ -122,7 +122,7 @@ class FilterDirector {
 
   static registerAdapter(adapter) {
     log(
-      `${this.name} -> Registered ${adapter.key} ${adapter.version} (${adapter.label})`,
+      `${this.name} -> Registered ${adapter.key} ${adapter.version} (${adapter.label})`
     );
     FilterDirector.adapters.set(adapter.key, adapter);
   }

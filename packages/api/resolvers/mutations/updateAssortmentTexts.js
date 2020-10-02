@@ -5,7 +5,7 @@ import { InvalidIdError, AssortmentNotFoundError } from '../../errors';
 export default function updateAssortmentTexts(
   root,
   { texts, assortmentId },
-  { userId },
+  { userId }
 ) {
   log(`mutation updateAssortmentTexts ${assortmentId}`, { userId });
   if (!assortmentId) throw new InvalidIdError({ assortmentId });
@@ -15,7 +15,7 @@ export default function updateAssortmentTexts(
     assortmentObject.upsertLocalizedText(locale, {
       ...localizations,
       authorId: userId,
-    }),
+    })
   );
   return changedLocalizations;
 }

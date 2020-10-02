@@ -32,8 +32,8 @@ OrderDeliveries.attachSchema(
       ...calculationFields,
       ...logFields,
     },
-    { requiredByDefault: false },
-  ),
+    { requiredByDefault: false }
+  )
 );
 
 Migrations.add({

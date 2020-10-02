@@ -23,7 +23,7 @@ Migrations.add({
             $set: {
               authorId: 'root',
             },
-          },
+          }
         );
       });
     ProductMedia.find()
@@ -35,7 +35,7 @@ Migrations.add({
             $set: {
               authorId: 'root',
             },
-          },
+          }
         );
       });
     ProductMediaTexts.find()
@@ -47,7 +47,7 @@ Migrations.add({
             $set: {
               authorId: 'root',
             },
-          },
+          }
         );
       });
     ProductVariations.find()
@@ -59,7 +59,7 @@ Migrations.add({
             $set: {
               authorId: 'root',
             },
-          },
+          }
         );
       });
     ProductVariationTexts.find()
@@ -71,7 +71,7 @@ Migrations.add({
             $set: {
               authorId: 'root',
             },
-          },
+          }
         );
       });
   },
@@ -85,7 +85,7 @@ Migrations.add({
             $unset: {
               authorId: 1,
             },
-          },
+          }
         );
       });
     ProductMedia.find()
@@ -97,7 +97,7 @@ Migrations.add({
             $unset: {
               authorId: 1,
             },
-          },
+          }
         );
       });
     ProductMediaTexts.find()
@@ -109,7 +109,7 @@ Migrations.add({
             $unset: {
               authorId: 1,
             },
-          },
+          }
         );
       });
     ProductVariations.find()
@@ -121,7 +121,7 @@ Migrations.add({
             $unset: {
               authorId: 1,
             },
-          },
+          }
         );
       });
     ProductVariationTexts.find()
@@ -133,7 +133,7 @@ Migrations.add({
             $unset: {
               authorId: 1,
             },
-          },
+          }
         );
       });
   },

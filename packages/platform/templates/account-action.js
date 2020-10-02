@@ -132,7 +132,7 @@ export default ({ userId, action, recipientEmail, token }) => {
         text: MessagingDirector.renderToText(textTemplate, templateVariables),
         html: MessagingDirector.renderMjmlToHtml(
           mjmlTemplate,
-          templateVariables,
+          templateVariables
         ),
       },
     },

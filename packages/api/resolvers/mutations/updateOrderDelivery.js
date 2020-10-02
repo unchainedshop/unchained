@@ -5,7 +5,7 @@ import { OrderDeliveryNotFoundError, InvalidIdError } from '../../errors';
 export default function updateOrderDelivery(
   root,
   { orderDeliveryId, ...context },
-  { userId },
+  { userId }
 ) {
   log(`mutation updateOrderDelivery ${orderDeliveryId}`, { userId });
   if (!orderDeliveryId) throw new InvalidIdError({ orderDeliveryId });

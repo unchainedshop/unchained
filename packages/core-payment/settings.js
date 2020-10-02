@@ -15,7 +15,7 @@ const settings = {
   load({ sortProviders, filterSupportedProviders = allProviders } = {}) {
     if (sortProviders) {
       logger.warn(
-        'sortProviders is deprecated, please specifc filterSupportedProviders instead',
+        'sortProviders is deprecated, please specifc filterSupportedProviders instead'
       );
       this.filterSupportedProviders = ({ providers }) => {
         return providers.sort(sortProviders).map(({ _id }) => _id);

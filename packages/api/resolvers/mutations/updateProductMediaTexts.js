@@ -5,7 +5,7 @@ import { ProductMediaNotFoundError, InvalidIdError } from '../../errors';
 export default function updateProductMediaTexts(
   root,
   { texts, productMediaId },
-  { userId },
+  { userId }
 ) {
   log(`mutation updateProductMediaTexts ${productMediaId}`, { userId });
   if (!productMediaId) throw new InvalidIdError({ productMediaId });
@@ -16,7 +16,7 @@ export default function updateProductMediaTexts(
     productMediaObject.upsertLocalizedText(locale, {
       authorId: userId,
       ...localizations,
-    }),
+    })
   );
   return changedLocalizations;
 }

@@ -5,7 +5,7 @@ import { ProductNotFoundError, InvalidIdError } from '../../errors';
 export default function addProductAssignment(
   root,
   { proxyId, productId, vectors },
-  { userId },
+  { userId }
 ) {
   log(`mutation addProductAssignment ${proxyId} ${productId}`, { userId });
 

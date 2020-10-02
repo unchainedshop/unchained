@@ -28,7 +28,7 @@ const checkAction = (
   action,
   userId,
   args = emptyArray,
-  options = emptyObject,
+  options = emptyObject
 ) => {
   const { key } = options || emptyObject;
   const hasPermission = checkPermission(userId, action, ...args);

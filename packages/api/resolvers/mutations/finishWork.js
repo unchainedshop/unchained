@@ -5,7 +5,7 @@ import { WorkNotFoundOrWrongStatus, InvalidIdError } from '../../errors';
 export default async function finishWork(
   root,
   { workId, result, error, success, worker, started, finished },
-  { userId },
+  { userId }
 ) {
   log(`mutation finishWork ${workId} ${success} ${worker}`, {
     userId,

@@ -28,10 +28,10 @@ class IntervalWorker extends BaseWorker {
         this.process({
           maxWorkItemCount: this.batchCount,
           referenceDate: new Date(
-            Math.floor(new Date().getTime() / 1000) * 1000,
+            Math.floor(new Date().getTime() / 1000) * 1000
           ),
         }),
-      this.intervalDelay,
+      this.intervalDelay
     );
     setTimeout(() => {
       this.autorescheduleTypes();

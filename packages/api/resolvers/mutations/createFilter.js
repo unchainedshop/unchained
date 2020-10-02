@@ -4,7 +4,7 @@ import { Filters } from 'meteor/unchained:core-filters';
 export default function createFilter(
   root,
   { filter },
-  { localeContext, userId },
+  { localeContext, userId }
 ) {
   log('mutation createFilter', { userId });
   return Filters.createFilter({

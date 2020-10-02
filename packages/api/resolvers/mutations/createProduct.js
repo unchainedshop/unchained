@@ -4,7 +4,7 @@ import { Products } from 'meteor/unchained:core-products';
 export default function createProduct(
   root,
   { product },
-  { userId, localeContext },
+  { userId, localeContext }
 ) {
   log('mutation createProduct', { userId });
   return Products.createProduct({

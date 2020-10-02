@@ -13,7 +13,7 @@ export default function setBaseLanguage(root, { languageId }, { userId }) {
         updated: new Date(),
       },
     },
-    { multi: true },
+    { multi: true }
   );
   Languages.update(
     { _id: languageId },
@@ -22,7 +22,7 @@ export default function setBaseLanguage(root, { languageId }, { userId }) {
         isBase: true,
         updated: new Date(),
       },
-    },
+    }
   );
   const language = Languages.findOne({ _id: languageId });
   if (!language) throw new LanguageNotFoundError({ languageId });

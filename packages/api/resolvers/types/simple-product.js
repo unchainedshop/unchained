@@ -24,7 +24,7 @@ export default {
         userId,
         user,
       },
-      requestContext,
+      requestContext
     );
   },
   async simulatedDiscounts(obj, params, requestContext) {
@@ -37,7 +37,7 @@ export default {
         userId,
         user,
       },
-      requestContext,
+      requestContext
     );
   },
   async simulatedDispatches(obj, params, requestContext) {
@@ -52,7 +52,7 @@ export default {
         userId,
         user,
       },
-      requestContext,
+      requestContext
     );
   },
   async simulatedStocks(obj, params, requestContext) {
@@ -66,7 +66,7 @@ export default {
         userId,
         user,
       },
-      requestContext,
+      requestContext
     );
   },
   salesUnit(obj) {

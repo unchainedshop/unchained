@@ -53,11 +53,11 @@ export const buildLocaleContext = (req) => {
   // else fallback to base language & base country
   const languages = Languages.find(
     { isActive: true },
-    { fields: { isoCode: 1, isBase: 1, isActive: 1 } },
+    { fields: { isoCode: 1, isBase: 1, isActive: 1 } }
   ).fetch();
   const countries = Countries.find(
     { isActive: true },
-    { fields: { isoCode: 1, isBase: 1, isActive: 1 } },
+    { fields: { isoCode: 1, isBase: 1, isActive: 1 } }
   ).fetch();
 
   const supportedLocaleStrings = languages.reduce((accumulator, language) => {
@@ -71,20 +71,20 @@ export const buildLocaleContext = (req) => {
 
   const supportedLocales = new Locales(
     supportedLocaleStrings,
-    getFallbackLocale().code,
+    getFallbackLocale().code
   );
   const localeContext = resolveBestSupported(
     req.headers['accept-language'],
-    supportedLocales,
+    supportedLocales
   );
   const countryContext = resolveBestCountry(
     localeContext.country,
     req.headers['x-shop-country'],
-    countries,
+    countries
   );
   log(
     `Locale Context: Resolved ${localeContext.normalized} ${countryContext}`,
-    { level: 'debug' },
+    { level: 'debug' }
   );
   const newContext = {
     localeContext,

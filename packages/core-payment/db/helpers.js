@@ -15,7 +15,7 @@ Users.helpers({
         sort: {
           created: -1,
         },
-      },
+      }
     ).fetch();
   },
 });
@@ -38,12 +38,12 @@ PaymentProviders.helpers({
   },
   isPayLaterAllowed(context) {
     return new PaymentDirector(this).isPayLaterAllowed(
-      this.defaultContext(context),
+      this.defaultContext(context)
     );
   },
   register(context) {
     return Promise.await(
-      new PaymentDirector(this).register(this.defaultContext(context)),
+      new PaymentDirector(this).register(this.defaultContext(context))
     );
   },
   validate(credentials) {
@@ -51,7 +51,7 @@ PaymentProviders.helpers({
   },
   sign(context) {
     return Promise.await(
-      new PaymentDirector(this).sign(this.defaultContext(context)),
+      new PaymentDirector(this).sign(this.defaultContext(context))
     );
   },
   charge(context, userId) {
@@ -109,7 +109,7 @@ PaymentCredentials.markPreferred = ({ userId, paymentCredentialsId }) => {
       $set: {
         isPreferred: true,
       },
-    },
+    }
   );
   PaymentCredentials.update(
     {
@@ -120,7 +120,7 @@ PaymentCredentials.markPreferred = ({ userId, paymentCredentialsId }) => {
       $set: {
         isPreferred: false,
       },
-    },
+    }
   );
 };
 
@@ -147,7 +147,7 @@ PaymentCredentials.upsertCredentials = ({
         token,
         meta,
       },
-    },
+    }
   );
 
   if (insertedId) {
@@ -168,7 +168,7 @@ PaymentCredentials.registerPaymentCredentials = ({
   const paymentProvider = PaymentProviders.findOne({ _id: paymentProviderId });
   const registration = paymentProvider.register(
     { transactionContext: paymentContext },
-    userId,
+    userId
   );
   if (!registration) return null;
   const { token, ...meta } = registration;
@@ -209,7 +209,7 @@ PaymentProviders.updateProvider = ({ _id, ...rest }) => {
         ...rest,
         updated: new Date(),
       },
-    },
+    }
   );
   return PaymentProviders.findOne({ _id, deleted: null });
 };
@@ -221,7 +221,7 @@ PaymentProviders.removeProvider = ({ _id }) => {
       $set: {
         deleted: new Date(),
       },
-    },
+    }
   );
   return PaymentProviders.findOne({ _id });
 };
@@ -232,13 +232,13 @@ PaymentProviders.findProviderById = (_id, ...options) =>
 PaymentProviders.findProviders = ({ type } = {}, ...options) =>
   PaymentProviders.find(
     { ...(type ? { type } : {}), deleted: null },
-    ...options,
+    ...options
   ).fetch();
 
 PaymentProviders.findSupported = ({ order }, ...options) => {
   const providers = PaymentProviders.findProviders(
     {},
-    ...options,
+    ...options
   ).filter((paymentProvider) => paymentProvider.isActive(order));
   return settings.filterSupportedProviders({ providers, order });
 };

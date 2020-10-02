@@ -5,7 +5,7 @@ import { UserNotFoundError, InvalidIdError } from '../../errors';
 export default function setUserTags(
   root,
   { tags, userId: normalizedUserId },
-  { userId },
+  { userId }
 ) {
   log(`mutation setUserTags ${normalizedUserId}`, { userId });
   if (!normalizedUserId) throw new InvalidIdError({ normalizedUserId });
@@ -18,7 +18,7 @@ export default function setUserTags(
         updated: new Date(),
         tags,
       },
-    },
+    }
   );
   return Users.findOne({ _id: normalizedUserId });
 }

@@ -5,7 +5,7 @@ import { InvalidIdError } from '../../errors';
 export default async function addCartDiscount(
   root,
   { orderId, code },
-  { userId, user, countryContext },
+  { userId, user, countryContext }
 ) {
   log(`mutation addCartDiscount ${code} ${orderId}`, { userId, orderId });
   if (!orderId) throw new InvalidIdError({ orderId });

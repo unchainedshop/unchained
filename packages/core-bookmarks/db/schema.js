@@ -11,8 +11,8 @@ Bookmarks.attachSchema(
       productId: { type: String, required: true },
       ...Schemas.timestampFields,
     },
-    { requiredByDefault: false },
-  ),
+    { requiredByDefault: false }
+  )
 );
 
 Migrations.add({

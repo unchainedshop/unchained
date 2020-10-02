@@ -20,7 +20,7 @@ ProductMedia.helpers({
           productMediaId: this._id,
           locale,
         },
-      },
+      }
     );
     return ProductMediaTexts.findOne({ productMediaId: this._id, locale });
   },
@@ -56,7 +56,7 @@ ProductMedia.getNewSortKey = (productId) => {
     },
     {
       sort: { sortKey: -1 },
-    },
+    }
   ) || { sortKey: 0 };
   return lastProductMedia.sortKey + 1;
 };
@@ -69,7 +69,7 @@ ProductMedia.updateManualOrder = ({ sortKeys }) => {
       },
       {
         $set: { sortKey: sortKey + 1, updated: new Date() },
-      },
+      }
     );
     return productMediaId;
   });

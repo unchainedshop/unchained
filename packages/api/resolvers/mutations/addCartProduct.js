@@ -10,13 +10,13 @@ import getCart from '../../getCart';
 export default async function addCartProduct(
   root,
   { orderId, productId, quantity, configuration },
-  { user, userId, countryContext },
+  { user, userId, countryContext }
 ) {
   log(
     `mutation addCartProduct ${productId} ${quantity} ${
       configuration ? JSON.stringify(configuration) : ''
     }`,
-    { userId, orderId },
+    { userId, orderId }
   );
   if (!productId) throw new InvalidIdError({ productId });
   if (quantity < 1) throw new OrderQuantityTooLowError({ quantity });

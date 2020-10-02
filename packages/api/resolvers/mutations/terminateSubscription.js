@@ -12,7 +12,7 @@ import {
 export default async function terminateSubscription(
   root,
   { subscriptionId },
-  { userId },
+  { userId }
 ) {
   log('mutation terminateSubscription', { userId });
   if (!subscriptionId) throw new InvalidIdError({ subscriptionId });

@@ -9,7 +9,7 @@ import {
 export default function confirmOrder(
   root,
   { orderId, ...transactionContext },
-  { userId, localeContext },
+  { userId, localeContext }
 ) {
   log('mutation confirmOrder', { orderId, userId });
   if (!orderId) throw new InvalidIdError({ orderId });

@@ -4,11 +4,11 @@ import { Users } from 'meteor/unchained:core-users';
 export default function users(
   root,
   { limit, offset, includeGuests, queryString },
-  { userId },
+  { userId }
 ) {
   log(
     `query users ${limit} ${offset} ${includeGuests ? 'includeGuests' : ''}`,
-    { userId },
+    { userId }
   );
 
   const selector = {};

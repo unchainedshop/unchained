@@ -13,7 +13,7 @@ export default function setBaseCountry(root, { countryId }, { userId }) {
         updated: new Date(),
       },
     },
-    { multi: true },
+    { multi: true }
   );
   Countries.update(
     { _id: countryId },
@@ -22,7 +22,7 @@ export default function setBaseCountry(root, { countryId }, { userId }) {
         isBase: true,
         updated: new Date(),
       },
-    },
+    }
   );
   const country = Countries.findOne({ _id: countryId });
   if (!country) throw new CountryNotFoundError({ countryId });

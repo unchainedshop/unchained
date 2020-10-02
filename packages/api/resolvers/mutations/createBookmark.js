@@ -10,7 +10,7 @@ import {
 export default function createBookmark(
   root,
   { productId, userId: foreignUserId },
-  { userId },
+  { userId }
 ) {
   log(`mutation createBookmark for ${foreignUserId}`, { productId, userId });
   if (!productId) throw new InvalidIdError({ productId });

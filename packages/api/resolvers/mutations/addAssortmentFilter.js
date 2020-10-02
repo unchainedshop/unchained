@@ -10,7 +10,7 @@ import {
 export default function addAssortmentFilter(
   root,
   { assortmentId, filterId, ...assortmentFilter },
-  { userId },
+  { userId }
 ) {
   log(`mutation addAssortmentFilter ${assortmentId} -> ${filterId}`, {
     userId,

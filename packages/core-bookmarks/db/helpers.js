@@ -61,7 +61,7 @@ Bookmarks.migrateBookmarks = async ({
     },
     {
       multi: true,
-    },
+    }
   );
 };
 

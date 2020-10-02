@@ -5,7 +5,7 @@ import { UserNotFoundError } from '../../errors';
 export default function updateEmail(
   root,
   { email, userId: foreignUserId },
-  { userId: ownUserId },
+  { userId: ownUserId }
 ) {
   log(`mutation updateEmail ${email} ${foreignUserId}`, { userId: ownUserId });
   const userId = foreignUserId || ownUserId;

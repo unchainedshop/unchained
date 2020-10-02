@@ -5,7 +5,7 @@ import { PaymentProviderNotFoundError, InvalidIdError } from '../../errors';
 export default function paymentProvider(
   root,
   { paymentProviderId },
-  { userId },
+  { userId }
 ) {
   log(`query paymentProvider ${paymentProviderId}`, { userId });
 

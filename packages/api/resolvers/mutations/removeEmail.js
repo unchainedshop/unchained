@@ -5,7 +5,7 @@ import { UserNotFoundError } from '../../errors';
 export default function removeEmail(
   root,
   { email, userId: foreignUserId },
-  { userId: ownUserId },
+  { userId: ownUserId }
 ) {
   log(`mutation removeEmail ${email} ${foreignUserId}`, { userId: ownUserId });
   const userId = foreignUserId || ownUserId;

@@ -23,7 +23,7 @@ export default function productCatalogPrices(root, { productId }, { userId }) {
           price.currencyCode,
           price.maxQuantity,
           price.amount,
-        ].join(''),
+        ].join('')
       )
       .digest('hex'),
     ...price,

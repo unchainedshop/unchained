@@ -4,13 +4,13 @@ import { Languages } from 'meteor/unchained:core-languages';
 export default function languages(
   root,
   { limit, offset, includeInactive },
-  { userId },
+  { userId }
 ) {
   log(
     `query languages: ${limit} ${offset} ${
       includeInactive ? 'includeInactive' : ''
     }`,
-    { userId },
+    { userId }
   );
 
   const selector = {};

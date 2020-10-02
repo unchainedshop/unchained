@@ -5,7 +5,7 @@ import { ProductVariationNotFoundError, InvalidIdError } from '../../errors';
 export default function updateProductVariationTexts(
   root,
   { texts, productVariationId, productVariationOptionValue },
-  { userId },
+  { userId }
 ) {
   log(`mutation updateProductVariationTexts ${productVariationId}`, { userId });
   if (!productVariationId) throw new InvalidIdError({ productVariationId });
@@ -19,7 +19,7 @@ export default function updateProductVariationTexts(
       authorId: userId,
       productVariationOptionValue,
       ...localizations,
-    }),
+    })
   );
   return changedLocalizations;
 }

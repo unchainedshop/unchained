@@ -28,8 +28,8 @@ class FailedRescheduler {
         `${this.constructor.key} -> Reschedule failed work ${work._id} ${
           work.type
         } for ${scheduled} (in ${Math.round(
-          workDelayMs / 1000,
-        )}). Remaining retries: ${work.retries}`,
+          workDelayMs / 1000
+        )}). Remaining retries: ${work.retries}`
       );
 
       this.WorkerDirector.addWork({
@@ -46,14 +46,14 @@ class FailedRescheduler {
   start() {
     this.WorkerDirector.events.on(
       WorkerEventTypes.finished,
-      this.handleFinishedWork.bind(this),
+      this.handleFinishedWork.bind(this)
     );
   }
 
   stop() {
     this.WorkerDirector.events.off(
       WorkerEventTypes.finished,
-      this.handleFinishedWork.bind(this),
+      this.handleFinishedWork.bind(this)
     );
   }
 }

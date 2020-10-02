@@ -4,13 +4,13 @@ import { Assortments } from 'meteor/unchained:core-assortments';
 export default function assortments(
   root,
   { tags, slugs, limit, offset, includeInactive, includeLeaves },
-  { userId },
+  { userId }
 ) {
   log(
     `query assortments: ${limit} ${offset} ${
       includeInactive ? 'includeInactive' : ''
     } ${slugs?.join(',')}`,
-    { userId },
+    { userId }
   );
 
   const selector = {};

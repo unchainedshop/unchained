@@ -9,7 +9,7 @@ export default {
     }).count(),
   assortments: async (
     { assortmentsSelector, totalAssortmentIds, sortStage },
-    { offset, limit },
+    { offset, limit }
   ) =>
     findPreservingIds(Assortments)(
       await assortmentsSelector,
@@ -18,6 +18,6 @@ export default {
         skip: offset,
         limit,
         sort: await sortStage,
-      },
+      }
     ),
 };

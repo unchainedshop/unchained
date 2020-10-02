@@ -5,7 +5,7 @@ import { OrderPaymentNotFoundError, InvalidIdError } from '../../errors';
 export default function updateOrderPayment(
   root,
   { orderPaymentId, ...context },
-  { userId },
+  { userId }
 ) {
   log(`mutation updateOrderPayment ${orderPaymentId}`, { userId });
   if (!orderPaymentId) throw new InvalidIdError({ orderPaymentId });

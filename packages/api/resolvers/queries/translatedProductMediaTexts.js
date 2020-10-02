@@ -4,7 +4,7 @@ import { ProductMediaTexts } from 'meteor/unchained:core-products';
 export default function translatedProductMediaTexts(
   root,
   { productMediaId },
-  { userId },
+  { userId }
 ) {
   log(`query translatedProductMediaTexts ${productMediaId}`, { userId });
 

@@ -4,7 +4,7 @@ import { FilterTexts } from 'meteor/unchained:core-filters';
 export default function translatedFilterTexts(
   root,
   { filterId, filterOptionValue },
-  { userId },
+  { userId }
 ) {
   log(`query translatedFilterTexts ${filterId} ${filterOptionValue}`, {
     userId,

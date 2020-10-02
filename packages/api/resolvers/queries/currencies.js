@@ -4,13 +4,13 @@ import { Currencies } from 'meteor/unchained:core-currencies';
 export default function currencies(
   root,
   { limit, offset, includeInactive },
-  { userId },
+  { userId }
 ) {
   log(
     `query currencies: ${limit} ${offset} ${
       includeInactive ? 'includeInactive' : ''
     }`,
-    { userId },
+    { userId }
   );
 
   const selector = {};

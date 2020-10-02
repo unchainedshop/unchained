@@ -42,8 +42,8 @@ Orders.attachSchema(
       ...calculationFields,
       ...logFields,
     },
-    { requiredByDefault: false },
-  ),
+    { requiredByDefault: false }
+  )
 );
 
 Migrations.add({
@@ -57,9 +57,20 @@ Migrations.add({
   down() {},
 });
 
+Migrations.add({
+  version: 20201002,
+  name: 'drop Orders related indexes',
+  up() {
+    Orders.rawCollection()
+      .dropIndexes()
+      .catch(() => {});
+  },
+  down() {},
+});
+
 export default () => {
   Migrations.migrateTo('latest');
   Orders.rawCollection().createIndex({ userId: 1 });
   Orders.rawCollection().createIndex({ status: 1 });
-  Orders.rawCollection().createIndex({ orderNumber: 1 }, { unique: true });
+  Orders.rawCollection().createIndex({ orderNumber: 1 });
 };

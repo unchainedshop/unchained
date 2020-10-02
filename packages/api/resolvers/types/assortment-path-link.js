@@ -15,14 +15,14 @@ export default {
     return findLocalizedText(
       AssortmentTexts,
       { assortmentId: obj.assortmentId },
-      localeContext.normalized,
+      localeContext.normalized
     ).slug;
   },
   async assortmentTexts(obj, { forceLocale } = {}, { localeContext }) {
     return findLocalizedText(
       AssortmentTexts,
       { assortmentId: obj.assortmentId },
-      forceLocale || localeContext.normalized,
+      forceLocale || localeContext.normalized
     );
   },
 };

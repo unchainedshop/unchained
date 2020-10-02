@@ -5,7 +5,7 @@ import { WarehousingProviderNotFoundError, InvalidIdError } from '../../errors';
 export default function warehousingProvider(
   root,
   { warehousingProviderId },
-  { userId },
+  { userId }
 ) {
   log(`query warehousingProvider ${warehousingProviderId}`, { userId });
 
@@ -13,7 +13,7 @@ export default function warehousingProvider(
     throw new InvalidIdError({ warehousingProviderId });
 
   const foundWarehousingProvider = WarehousingProviders.findProviderById(
-    warehousingProviderId,
+    warehousingProviderId
   );
 
   if (!foundWarehousingProvider)
