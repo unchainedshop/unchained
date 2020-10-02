@@ -11,7 +11,7 @@ const {
   STRIPE_SECRET,
   STRIPE_CHARGES_ENDPOINT_SECRET,
   EMAIL_WEBSITE_NAME,
-  STRIPE_WEBHOOK_PATH = '/graphql/stripe-charges',
+  STRIPE_CHARGES_WEBHOOK_PATH = '/graphql/stripe-charges',
 } = process.env;
 
 /*
@@ -28,11 +28,11 @@ const logger = createLogger('unchained:core-payment:stripe-webhook');
 const stripe = require('stripe')(STRIPE_SECRET);
 
 WebApp.connectHandlers.use(
-  STRIPE_WEBHOOK_PATH,
+  STRIPE_CHARGES_WEBHOOK_PATH,
   bodyParser.raw({ type: 'application/json' })
 );
 
-WebApp.connectHandlers.use(STRIPE_WEBHOOK_PATH, (request, response) => {
+WebApp.connectHandlers.use(STRIPE_CHARGES_WEBHOOK_PATH, (request, response) => {
   const sig = request.headers['stripe-signature'];
   let event;
 
