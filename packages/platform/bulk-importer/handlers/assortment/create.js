@@ -32,7 +32,7 @@ export default async function createAssortment(payload, { logger, authorId }) {
     authorId,
   });
 
-  logger.debug('create product links', products);
+  logger.debug('create product products', products);
   await upsertAssortmentProducts({
     products: products || [],
     assortmentId: _id,

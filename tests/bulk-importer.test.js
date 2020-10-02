@@ -352,7 +352,7 @@ describe('Bulk Importer', () => {
                   filters: [
                     {
                       _id: 'assortment-filter',
-                      filterId: 'filter',
+                      filterId: 'Filter A',
                       tags: [],
                       meta: {},
                     },

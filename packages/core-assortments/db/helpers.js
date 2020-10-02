@@ -52,6 +52,22 @@ export const makeAssortmentBreadcrumbsBuilder = ({
   });
 };
 
+Collections.Assortments.updateAssortment = ({
+  assortmentId,
+  ...assortment
+}) => {
+  Collections.Assortments.update(
+    { _id: assortmentId },
+    {
+      $set: {
+        ...assortment,
+        updated: new Date(),
+      },
+    }
+  );
+  return Collections.Assortments.findOne({ _id: assortmentId });
+};
+
 Collections.AssortmentLinks.createAssortmentLink = ({
   parentAssortmentId,
   childAssortmentId,
@@ -75,7 +91,7 @@ Collections.AssortmentProducts.createAssortmentProduct = ({
 }) => {
   const sortKey = Collections.AssortmentProducts.getNewSortKey(assortmentId);
   const assortmentProductId = Collections.AssortmentProducts.insert({
-    assortmentId: this._id,
+    assortmentId,
     productId,
     sortKey,
     created: new Date(),
