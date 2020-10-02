@@ -8,12 +8,11 @@ import { createLogger } from 'meteor/unchained:core-logger';
 import { WebApp } from 'meteor/webapp';
 import bodyParser from 'body-parser';
 import { OrderPricingSheet } from 'meteor/unchained:core-pricing';
-import { acl, roles } from 'meteor/unchained:api';
+import { acl, roles, createContextResolver } from 'meteor/unchained:api';
 import crypto from 'crypto';
 import fetch from 'isomorphic-unfetch';
 import ClientOAuth2 from 'client-oauth2';
 import { Mongo } from 'meteor/mongo';
-import getUserContext from '../auth/getUserContext';
 
 const { checkAction } = acl;
 const { actions } = roles;
@@ -23,6 +22,8 @@ const logger = createLogger('unchained:core-payment:bity-webhook');
 const BityCredentials = new Mongo.Collection('bity_credentials');
 
 let currentToken;
+
+const contextResolver = createContextResolver(() => {});
 
 const {
   BITY_CLIENT_ID,
@@ -82,7 +83,7 @@ const upsertBityCredentials = (user) => {
         },
         expires: user.expires,
       },
-    },
+    }
   );
 };
 
@@ -109,7 +110,7 @@ const getTokenFromDb = (bityAuth) => {
     data.access_token,
     data.refresh_token,
     data.token_type,
-    { data },
+    { data }
   );
   return token;
 };
@@ -158,7 +159,7 @@ const bityExchangeFetch = async ({ path, params }) => {
 WebApp.connectHandlers.use(BITY_OAUTH_INIT_PATH, async (req, res) => {
   if (req.method === 'GET') {
     try {
-      const resolvedContext = await getUserContext(req);
+      const resolvedContext = await contextResolver({ req });
       checkAction(actions.managePaymentProviders, resolvedContext?.userId);
 
       const bityAuth = createBityAuth();
@@ -180,13 +181,13 @@ WebApp.connectHandlers.use(BITY_OAUTH_INIT_PATH, async (req, res) => {
 
 WebApp.connectHandlers.use(
   BITY_OAUTH_PATH,
-  bodyParser.urlencoded({ extended: false }),
+  bodyParser.urlencoded({ extended: false })
 );
 
 WebApp.connectHandlers.use(BITY_OAUTH_PATH, async (req, res) => {
   if (req.method === 'GET') {
     try {
-      const resolvedContext = await getUserContext(req);
+      const resolvedContext = await contextResolver({ req });
       checkAction(actions.managePaymentProviders, resolvedContext?.userId);
 
       const bityAuth = createBityAuth();
@@ -297,7 +298,7 @@ class Bity extends PaymentAdapter {
       JSON.stringify(payload),
       order._id,
       totalAmount,
-      BITY_CLIENT_SECRET,
+      BITY_CLIENT_SECRET
     );
     return JSON.stringify({
       payload,
@@ -320,13 +321,13 @@ class Bity extends PaymentAdapter {
       JSON.stringify(bityPayload),
       order._id,
       totalAmount,
-      BITY_CLIENT_SECRET,
+      BITY_CLIENT_SECRET
     );
     if (bitySignature !== signature) {
       this.log(
         `Bity -> Signature Mismatch ${JSON.stringify(
-          bityPayload,
-        )} ${bitySignature}`,
+          bityPayload
+        )} ${bitySignature}`
       );
       throw new Error('Signature Mismatch');
     }
@@ -355,7 +356,7 @@ class Bity extends PaymentAdapter {
     const bityOrder = await response?.json();
     if (!bityOrder) {
       this.log(
-        `Bity -> Bity Order not found ${JSON.stringify(path)} ${bitySignature}`,
+        `Bity -> Bity Order not found ${JSON.stringify(path)} ${bitySignature}`
       );
       throw new Error('Bity Order not Found');
     }
@@ -363,7 +364,7 @@ class Bity extends PaymentAdapter {
       { _id: order._id },
       {
         $set: { 'context.bityOrder': bityOrder },
-      },
+      }
     );
     return false;
   }
