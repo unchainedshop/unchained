@@ -11,10 +11,10 @@ const SubscriptionError = {
 const periodForReferenceDate = (
   referenceDate,
   intervalCount = 1,
-  interval = 'WEEK',
+  interval = 'WEEK'
 ) => {
   const start = moment(referenceDate).startOf(
-    interval === 'HOUR' ? 'minute' : 'hour',
+    interval === 'HOUR' ? 'minute' : 'hour'
   );
   return {
     start: start.toDate(),
@@ -52,7 +52,7 @@ class SubscriptionAdapter {
         ...periodForReferenceDate(
           referenceDate,
           plan.trialIntervalCount,
-          plan.trialInterval,
+          plan.trialInterval
         ),
         isTrial: true,
       };
@@ -70,7 +70,7 @@ class SubscriptionAdapter {
       ...periodForReferenceDate(
         lastEnd,
         plan.billingIntervalCount,
-        plan.billingInterval,
+        plan.billingInterval
       ),
       isTrial: false,
     };
@@ -105,11 +105,11 @@ class SubscriptionDirector {
   resolveAdapter(context) {
     const { subscription } = this.context;
     const Adapter = this.constructor.findAppropriateAdapters(
-      subscription.product()?.plan,
+      subscription.product()?.plan
     )?.[0];
     if (!Adapter) {
       throw new Error(
-        'No suitable subscription plugin available for this plan configuration',
+        'No suitable subscription plugin available for this plan configuration'
       );
     }
     const adapter = new Adapter({
@@ -162,7 +162,7 @@ class SubscriptionDirector {
           `${this.constructor.name} -> ${AdapterClass.key} (${AdapterClass.version}) skipped`,
           {
             level: 'warn',
-          },
+          }
         );
       }
       return activated;
@@ -174,11 +174,11 @@ class SubscriptionDirector {
     const AdapterClass = this.findAppropriateAdapters(product.plan)?.[0];
     if (!AdapterClass) {
       throw new Error(
-        'No suitable subscription plugin available for this item',
+        'No suitable subscription plugin available for this item'
       );
     }
     const transformedItem = await AdapterClass.transformOrderItemToSubscription(
-      item,
+      item
     );
     return {
       ...subscriptionData,

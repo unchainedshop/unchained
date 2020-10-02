@@ -20,8 +20,8 @@ Collections.Assortments.attachSchema(
       authorId: { type: String, required: true },
       ...Schemas.timestampFields,
     },
-    { requiredByDefault: false },
-  ),
+    { requiredByDefault: false }
+  )
 );
 
 Collections.AssortmentTexts.attachSchema(
@@ -36,8 +36,8 @@ Collections.AssortmentTexts.attachSchema(
       authorId: { type: String, required: true },
       ...Schemas.timestampFields,
     },
-    { requiredByDefault: false },
-  ),
+    { requiredByDefault: false }
+  )
 );
 
 Collections.AssortmentProducts.attachSchema(
@@ -52,8 +52,8 @@ Collections.AssortmentProducts.attachSchema(
       authorId: { type: String, required: true },
       ...Schemas.timestampFields,
     },
-    { requiredByDefault: false },
-  ),
+    { requiredByDefault: false }
+  )
 );
 
 Collections.AssortmentLinks.attachSchema(
@@ -68,8 +68,8 @@ Collections.AssortmentLinks.attachSchema(
       authorId: { type: String, required: true },
       ...Schemas.timestampFields,
     },
-    { requiredByDefault: false },
-  ),
+    { requiredByDefault: false }
+  )
 );
 
 Collections.AssortmentFilters.attachSchema(
@@ -84,8 +84,8 @@ Collections.AssortmentFilters.attachSchema(
       authorId: { type: String, required: true },
       ...Schemas.timestampFields,
     },
-    { requiredByDefault: false },
-  ),
+    { requiredByDefault: false }
+  )
 );
 
 Migrations.add({
@@ -101,7 +101,7 @@ Migrations.add({
             $set: {
               authorId: 'root',
             },
-          },
+          }
         );
       });
     Collections.AssortmentTexts.find()
@@ -113,7 +113,7 @@ Migrations.add({
             $set: {
               authorId: 'root',
             },
-          },
+          }
         );
       });
     Collections.AssortmentProducts.find()
@@ -125,7 +125,7 @@ Migrations.add({
             $set: {
               authorId: 'root',
             },
-          },
+          }
         );
       });
     Collections.AssortmentLinks.find()
@@ -137,7 +137,7 @@ Migrations.add({
             $set: {
               authorId: 'root',
             },
-          },
+          }
         );
       });
     Collections.AssortmentFilters.find()
@@ -149,7 +149,7 @@ Migrations.add({
             $set: {
               authorId: 'root',
             },
-          },
+          }
         );
       });
   },
@@ -163,7 +163,7 @@ Migrations.add({
             $unset: {
               authorId: 1,
             },
-          },
+          }
         );
       });
     Collections.AssortmentTexts.find()
@@ -175,7 +175,7 @@ Migrations.add({
             $unset: {
               authorId: 1,
             },
-          },
+          }
         );
       });
     Collections.AssortmentProducts.find()
@@ -187,7 +187,7 @@ Migrations.add({
             $unset: {
               authorId: 1,
             },
-          },
+          }
         );
       });
     Collections.AssortmentLinks.find()
@@ -199,7 +199,7 @@ Migrations.add({
             $unset: {
               authorId: 1,
             },
-          },
+          }
         );
       });
     Collections.AssortmentFilters.find()
@@ -211,7 +211,7 @@ Migrations.add({
             $unset: {
               authorId: 1,
             },
-          },
+          }
         );
       });
   },

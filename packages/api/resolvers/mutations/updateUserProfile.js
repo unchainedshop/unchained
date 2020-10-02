@@ -4,7 +4,7 @@ import { Users } from 'meteor/unchained:core-users';
 export default function updateUserProfile(
   root,
   { profile, userId: foreignUserId },
-  { userId },
+  { userId }
 ) {
   const normalizedUserId = foreignUserId || userId;
   log(`mutation updateUserProfile ${normalizedUserId}`, { userId });
@@ -23,7 +23,7 @@ export default function updateUserProfile(
         updated: new Date(),
         ...transformedProfile,
       },
-    },
+    }
   );
   return Users.findOne({ _id: normalizedUserId });
 }

@@ -10,13 +10,13 @@ import {
 export default function updateCartItem(
   root,
   { itemId, quantity = null, configuration = null },
-  { userId },
+  { userId }
 ) {
   log(
     `mutation updateCartItem ${itemId} ${quantity} ${JSON.stringify(
-      configuration,
+      configuration
     )}`,
-    { userId },
+    { userId }
   );
   if (!itemId) throw new InvalidIdError({ itemId });
   const item = OrderPositions.findOne({ _id: itemId });
@@ -34,7 +34,7 @@ export default function updateCartItem(
         orderId: item.orderId,
         positionId: itemId,
       },
-      { quantity },
+      { quantity }
     );
   }
 
@@ -44,7 +44,7 @@ export default function updateCartItem(
         orderId: item.orderId,
         positionId: itemId,
       },
-      { configuration },
+      { configuration }
     );
   }
 

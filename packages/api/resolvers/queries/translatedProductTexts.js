@@ -4,7 +4,7 @@ import { ProductTexts } from 'meteor/unchained:core-products';
 export default function translatedProductTexts(
   root,
   { productId },
-  { userId },
+  { userId }
 ) {
   log(`query translatedProductTexts ${productId}`, { userId });
 

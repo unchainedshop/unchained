@@ -5,7 +5,7 @@ import { OrderNotFoundError, InvalidIdError } from '../../errors';
 export default function setOrderDeliveryProvider(
   root,
   { orderId, deliveryProviderId },
-  { userId },
+  { userId }
 ) {
   log(`mutation setOrderDeliveryProvider ${deliveryProviderId}`, {
     orderId,

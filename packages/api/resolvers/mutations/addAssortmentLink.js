@@ -5,11 +5,11 @@ import { AssortmentNotFoundError, InvalidIdError } from '../../errors';
 export default function addAssortmentLink(
   root,
   { parentAssortmentId, childAssortmentId, ...assortmentLink },
-  { userId },
+  { userId }
 ) {
   log(
     `mutation addAssortmentLink ${parentAssortmentId} -> ${childAssortmentId}`,
-    { userId },
+    { userId }
   );
   if (!parentAssortmentId) throw new InvalidIdError({ parentAssortmentId });
   if (!childAssortmentId) throw new InvalidIdError({ childAssortmentId });

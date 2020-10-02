@@ -5,7 +5,7 @@ import { FilterNotFoundError, InvalidIdError } from '../../errors';
 export default function createFilterOption(
   root,
   { option: inputData, filterId },
-  { localeContext, userId },
+  { localeContext, userId }
 ) {
   log(`mutation createFilterOption ${filterId}`, { userId });
 
@@ -22,7 +22,7 @@ export default function createFilterOption(
       $addToSet: {
         options: value,
       },
-    },
+    }
   );
   const filter = Filters.findOne({ _id: filterId });
   filter.upsertLocalizedText(localeContext.language, {

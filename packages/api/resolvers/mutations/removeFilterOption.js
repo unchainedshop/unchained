@@ -5,7 +5,7 @@ import { FilterNotFoundError, InvalidIdError } from '../../errors';
 export default function removeFilterOption(
   root,
   { filterId, filterOptionValue },
-  { userId },
+  { userId }
 ) {
   log(`mutation removeFilterOption ${filterId}`, { userId });
   if (!filterId) throw new InvalidIdError({ filterId });
@@ -20,7 +20,7 @@ export default function removeFilterOption(
       $pull: {
         options: filterOptionValue,
       },
-    },
+    }
   );
   return Filters.findOne({ _id: filterId });
 }

@@ -5,5 +5,5 @@ export default (query) =>
       ...accumulator,
       [key]: accumulator[key] ? accumulator[key].concat(value) : [value],
     }),
-    {},
+    {}
   );

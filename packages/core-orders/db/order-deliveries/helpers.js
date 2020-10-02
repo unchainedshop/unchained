@@ -73,7 +73,7 @@ OrderDeliveries.helpers({
     if (arbitraryResponseData) {
       this.setStatus(
         OrderDeliveryStatus.DELIVERED,
-        JSON.stringify(arbitraryResponseData),
+        JSON.stringify(arbitraryResponseData)
       );
     }
   },
@@ -106,7 +106,7 @@ OrderDeliveries.helpers({
       { _id: this._id },
       {
         $set: { updated: new Date(), calculation },
-      },
+      }
     );
   },
 });
@@ -134,7 +134,7 @@ OrderDeliveries.updateDelivery = ({ deliveryId, orderId, context }) => {
     { _id: deliveryId },
     {
       $set: { context },
-    },
+    }
   );
   Orders.updateCalculation({ orderId });
   return OrderDeliveries.findOne({ _id: deliveryId });

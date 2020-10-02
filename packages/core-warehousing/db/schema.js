@@ -21,8 +21,8 @@ WarehousingProviders.attachSchema(
       'configuration.$.value': String,
       ...Schemas.timestampFields,
     },
-    { requiredByDefault: false },
-  ),
+    { requiredByDefault: false }
+  )
 );
 
 Migrations.add({
@@ -38,7 +38,7 @@ Migrations.add({
             $set: {
               authorId: 'root',
             },
-          },
+          }
         );
       });
   },
@@ -52,7 +52,7 @@ Migrations.add({
             $unset: {
               authorId: 1,
             },
-          },
+          }
         );
       });
   },

@@ -75,7 +75,7 @@ export default (role, actions) => {
       Orders.find({
         _id: orderId,
         orderNumber: otp,
-      }).count() > 0,
+      }).count() > 0
   );
 
   // only allow if otp is provided
@@ -85,7 +85,7 @@ export default (role, actions) => {
       Quotations.find({
         _id: quotationId,
         quotationNumber: otp,
-      }).count() > 0,
+      }).count() > 0
   );
 
   // only allow if otp is provided
@@ -95,7 +95,7 @@ export default (role, actions) => {
       Subscriptions.find({
         _id: quotationId,
         subscriptionNumber: otp,
-      }).count() > 0,
+      }).count() > 0
   );
 
   // only allow if query is not demanding for drafts

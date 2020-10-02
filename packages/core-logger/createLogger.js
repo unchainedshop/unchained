@@ -28,7 +28,7 @@ const myFormat = printf(
   ({ level, message, label: _label, timestamp: _timestamp, ...rest }) => {
     const otherPropsString = stringify(rest);
     return `${_timestamp} [${_label}] ${level}: ${message} ${otherPropsString}`;
-  },
+  }
 );
 
 export { transports, format };
@@ -42,7 +42,7 @@ export default (moduleName, moreTransports = []) => {
           timestamp(),
           label({ label: moduleName }),
           colorize(),
-          myFormat,
+          myFormat
         ),
         stderrLevels: ['error'],
         consoleWarnLevels: ['warn'],

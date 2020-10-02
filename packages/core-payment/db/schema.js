@@ -23,8 +23,8 @@ PaymentProviders.attachSchema(
       'configuration.$.value': { type: String },
       ...Schemas.timestampFields,
     },
-    { requiredByDefault: false },
-  ),
+    { requiredByDefault: false }
+  )
 );
 
 PaymentCredentials.attachSchema(
@@ -37,8 +37,8 @@ PaymentCredentials.attachSchema(
       meta: { type: Object, blackbox: true },
       ...Schemas.timestampFields,
     },
-    { requiredByDefault: false },
-  ),
+    { requiredByDefault: false }
+  )
 );
 
 Migrations.add({
@@ -50,7 +50,7 @@ Migrations.add({
       {
         $set: { adapterKey: 'shop.unchained.invoice' },
       },
-      { multi: true },
+      { multi: true }
     );
   },
   down() {
@@ -59,7 +59,7 @@ Migrations.add({
       {
         $set: { adapterKey: 'ch.dagobert.invoice' },
       },
-      { multi: true },
+      { multi: true }
     );
   },
 });
@@ -77,7 +77,7 @@ Migrations.add({
             $set: {
               authorId: 'root',
             },
-          },
+          }
         );
       });
   },
@@ -91,7 +91,7 @@ Migrations.add({
             $unset: {
               authorId: 1,
             },
-          },
+          }
         );
       });
   },

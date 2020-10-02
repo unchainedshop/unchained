@@ -5,7 +5,7 @@ export default function paymentInterfaces(root, { type }, { userId }) {
   log(`query paymentInterfaces ${type}`, { userId });
 
   return PaymentDirector.filteredAdapters((Interface) =>
-    Interface.typeSupported(type),
+    Interface.typeSupported(type)
   ).map((Interface) => ({
     _id: Interface.key,
     label: Interface.label,

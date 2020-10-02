@@ -5,7 +5,7 @@ import { UserNotFoundError, InvalidIdError } from '../../errors';
 export default function setRoles(
   root,
   { roles, userId: foreignUserId },
-  { userId },
+  { userId }
 ) {
   log(`mutation setRoles ${foreignUserId}`, { userId });
   if (!foreignUserId) throw new InvalidIdError({ foreignUserId });

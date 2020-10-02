@@ -6,7 +6,7 @@ import { MongoInternals } from 'meteor/mongo';
 export default (collectionName) => {
   const gridFSBucket = new MongoInternals.NpmModule.GridFSBucket(
     MongoInternals.defaultRemoteCollectionDriver().mongo.db,
-    { bucketName: collectionName },
+    { bucketName: collectionName }
   );
   const ObjID = MongoInternals.NpmModule.ObjectID;
 
@@ -20,7 +20,7 @@ export default (collectionName) => {
             gridFSBucket.openUploadStream(file.name, {
               contentType: file.type || 'binary/octet-stream',
               metadata,
-            }),
+            })
           )
           .on('error', (err) => {
             console.error(err); // eslint-disable-line
@@ -34,7 +34,7 @@ export default (collectionName) => {
                 $set: { [property]: ver._id.toHexString() },
               });
               this.unlink(this.collection.findOne(file._id), versionName); // Unlink files from FS
-            }),
+            })
           );
       });
     },
@@ -42,7 +42,7 @@ export default (collectionName) => {
       const { gridFsFileId } = file.versions[versionName].meta || {};
       if (gridFsFileId) {
         const readStream = gridFSBucket.openDownloadStream(
-          new ObjID(gridFsFileId),
+          new ObjID(gridFsFileId)
         );
         readStream.on('data', (data) => {
           http.response.write(data);
@@ -60,7 +60,7 @@ export default (collectionName) => {
 
         http.response.setHeader(
           'Content-Disposition',
-          `inline; filename="${file.name}"`,
+          `inline; filename="${file.name}"`
         );
         http.response.setHeader('Cache-Control', this.cacheControl);
       }

@@ -76,7 +76,7 @@ class LocalSearch extends FilterAdapter {
         fields: {
           assortmentId: 1,
         },
-      },
+      }
     ).map(({ assortmentId }) => assortmentId);
 
     return assortmentsId;

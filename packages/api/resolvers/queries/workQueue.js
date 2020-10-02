@@ -4,7 +4,7 @@ import { WorkerDirector } from 'meteor/unchained:core-worker';
 export default async function workQueue(
   root,
   { limit, offset, status = [] },
-  { userId },
+  { userId }
 ) {
   log(`query workQueue ${limit} ${offset} [${status.join(', ')}]`, { userId });
 

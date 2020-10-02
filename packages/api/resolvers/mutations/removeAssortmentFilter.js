@@ -5,7 +5,7 @@ import { AssortmentFilterNotFoundError, InvalidIdError } from '../../errors';
 export default function removeAssortmentFilter(
   root,
   { assortmentFilterId },
-  { userId },
+  { userId }
 ) {
   log(`mutation removeAssortmentFilter ${assortmentFilterId}`, { userId });
   if (!assortmentFilterId) throw new InvalidIdError({ assortmentFilterId });

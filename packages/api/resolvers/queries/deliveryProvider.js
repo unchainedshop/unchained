@@ -5,7 +5,7 @@ import { DeliverProviderNotFoundError, InvalidIdError } from '../../errors';
 export default function deliveryProvider(
   root,
   { deliveryProviderId },
-  { userId },
+  { userId }
 ) {
   log(`query deliveryProvider ${deliveryProviderId}`, { userId });
 

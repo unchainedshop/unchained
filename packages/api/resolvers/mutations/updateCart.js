@@ -11,7 +11,7 @@ export default async function updateCart(
     deliveryProviderId,
     meta,
   },
-  { user, countryContext, userId },
+  { user, countryContext, userId }
 ) {
   log('mutation updateCart', { userId });
 

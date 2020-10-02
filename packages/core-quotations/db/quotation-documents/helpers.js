@@ -40,7 +40,7 @@ class QuotationDocumentDirector extends DocumentDirector {
             type: QuotationDocumentTypes.PROPOSAL,
             ...meta,
           },
-          rest,
+          rest
         );
       }
     });

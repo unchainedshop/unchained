@@ -7,7 +7,7 @@ import { ProductVariationType } from './schema';
 ProductVariations.helpers({
   upsertLocalizedText(
     locale,
-    { productVariationOptionValue = null, ...fields },
+    { productVariationOptionValue = null, ...fields }
   ) {
     const selector = {
       productVariationId: this._id,
@@ -33,7 +33,7 @@ ProductVariations.helpers({
     return ProductVariations.getLocalizedTexts(
       this._id,
       optionValue,
-      parsedLocale,
+      parsedLocale
     );
   },
   optionObject(productVariationOption) {
@@ -69,7 +69,7 @@ ProductVariations.createVariation = ({
 ProductVariations.getLocalizedTexts = (
   productVariationId,
   productVariationOptionValue,
-  locale,
+  locale
 ) =>
   findLocalizedText(
     ProductVariationTexts,
@@ -77,5 +77,5 @@ ProductVariations.getLocalizedTexts = (
       productVariationId,
       productVariationOptionValue: productVariationOptionValue || { $eq: null },
     },
-    locale,
+    locale
   );

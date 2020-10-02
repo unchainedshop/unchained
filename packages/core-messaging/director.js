@@ -43,7 +43,7 @@ class MessagingDirector {
 
   static configureTemplate(template, resolver) {
     logger.info(
-      `${this.name} -> Registered custom template resolver for ${template}`,
+      `${this.name} -> Registered custom template resolver for ${template}`
     );
     this.resolvers.set(template, resolver);
   }

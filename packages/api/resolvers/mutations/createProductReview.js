@@ -6,7 +6,7 @@ import { InvalidIdError, ProductNotFoundError } from '../../errors';
 export default function createProductReview(
   root,
   { productId, productReview },
-  { userId },
+  { userId }
 ) {
   log('mutation createProductReview', { userId, productId });
   if (!productId) throw new InvalidIdError({ productId });

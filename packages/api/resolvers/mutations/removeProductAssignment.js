@@ -5,7 +5,7 @@ import { ProductNotFoundError, InvalidIdError } from '../../errors';
 export default function removeProductAssignment(
   root,
   { proxyId, vectors },
-  { userId },
+  { userId }
 ) {
   log(`mutation removeProductAssignment ${proxyId}`, { userId });
   if (!proxyId) throw new InvalidIdError({ proxyId });

@@ -5,7 +5,7 @@ import { ProductMediaNotFoundError, InvalidIdError } from '../../errors';
 export default function removeProductMedia(
   root,
   { productMediaId },
-  { userId },
+  { userId }
 ) {
   log(`mutation removeProductMedia ${productMediaId}`, { userId });
   if (!productMediaId) throw new InvalidIdError({ productMediaId });

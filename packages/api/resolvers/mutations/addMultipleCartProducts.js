@@ -6,7 +6,7 @@ import getCart from '../../getCart';
 export default async function addMultipleCartProducts(
   root,
   { orderId, items },
-  { user, userId, countryContext },
+  { user, userId, countryContext }
 ) {
   /* verify existence of products */
   const itemsWithProducts = items.map(({ productId, ...item }) => {
@@ -29,7 +29,7 @@ export default async function addMultipleCartProducts(
       `mutation addCartProduct ${product._id} ${quantity} ${
         configuration ? JSON.stringify(configuration) : ''
       }`,
-      { userId, orderId },
+      { userId, orderId }
     );
     return cart.addProductItem({ product, quantity, configuration });
   });

@@ -58,7 +58,7 @@ export class DeliverySwissTax extends DeliveryPricingAdapter {
       ({ key }) => {
         if (key === 'swiss-tax-category') return true;
         return null;
-      },
+      }
     )?.value;
 
     if (taxCategoryFromProvider === SwissTaxCategories.REDUCED.value) {

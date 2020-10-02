@@ -31,7 +31,7 @@ class OrderItems extends OrderPricingAdapter {
       {
         taxes: 0,
         items: 0,
-      },
+      }
     );
     this.result.addItems({ amount: totalAndTaxesOfAllItems.items });
     if (totalAndTaxesOfAllItems.taxes !== 0) {

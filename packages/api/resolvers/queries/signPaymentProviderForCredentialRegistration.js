@@ -5,7 +5,7 @@ import { PaymentProviderNotFoundError, InvalidIdError } from '../../errors';
 export default (root, { paymentProviderId, ...rest }, { userId }) => {
   log(
     `query signPaymentProviderForCredentialRegistration ${paymentProviderId}`,
-    { userId },
+    { userId }
   );
 
   if (!paymentProviderId) throw new InvalidIdError({ paymentProviderId });

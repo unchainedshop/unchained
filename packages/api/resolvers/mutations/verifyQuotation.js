@@ -9,7 +9,7 @@ import {
 export default function verifyQuotation(
   root,
   { quotationId, ...transactionContext },
-  { userId },
+  { userId }
 ) {
   log('mutation verifyQuotation', { quotationId, userId });
   if (!quotationId) throw new InvalidIdError({ quotationId });

@@ -12,7 +12,7 @@ import {
 export default async function activateSubscription(
   root,
   { subscriptionId },
-  { userId },
+  { userId }
 ) {
   log('mutation activateSubscription', { userId });
   if (!subscriptionId) throw new InvalidIdError({ subscriptionId });

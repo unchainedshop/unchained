@@ -31,7 +31,7 @@ Users.helpers({
   isEmailVerified() {
     log(
       'user.isEmailVerified is deprecated, please use user.primaryEmail.verified',
-      { level: 'warn' },
+      { level: 'warn' }
     );
     return !!this.primaryEmail()?.verified;
   },
@@ -57,7 +57,7 @@ Users.helpers({
     return [...this.emails]
       .sort(
         ({ verified: verifiedLeft }, { verified: verifiedRight }) =>
-          verifiedLeft - verifiedRight,
+          verifiedLeft - verifiedRight
       )
       .pop();
   },
@@ -87,7 +87,7 @@ Users.helpers({
             'services.password.initial': true,
             updated: new Date(),
           },
-        },
+        }
       );
     }
     const user = Users.findOne({ _id: this._id });
@@ -102,7 +102,7 @@ Users.helpers({
           updated: new Date(),
           roles,
         },
-      },
+      }
     );
     return Users.findOne({ _id: this._id });
   },
@@ -127,7 +127,7 @@ Users.helpers({
   updateEmail(email, { verified = false, skipEmailVerification = false } = {}) {
     log(
       'user.updateEmail is deprecated, please use user.addEmail and user.removeEmail',
-      { level: 'warn' },
+      { level: 'warn' }
     );
     Accounts.addEmail(this._id, email, verified);
     (this.emails || [])
@@ -211,7 +211,7 @@ Users.enrollUser = async ({ password, email, displayName, address }) => {
         'profile.address': address || null,
         'services.password.initial': true,
       },
-    },
+    }
   );
   if (!params.password) {
     // send an e-mail if password is not set allowing the user to set it
@@ -232,6 +232,6 @@ Users.updateHeartbeat = ({ userId, ...options }) => {
           ...options,
         },
       },
-    },
+    }
   );
 };

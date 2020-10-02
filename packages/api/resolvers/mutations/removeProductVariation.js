@@ -5,7 +5,7 @@ import { ProductVariationNotFoundError, InvalidIdError } from '../../errors';
 export default function removeProductVariation(
   root,
   { productVariationId },
-  { userId },
+  { userId }
 ) {
   log(`mutation removeProductVariation ${productVariationId}`, { userId });
   if (!productVariationId) throw new InvalidIdError({ productVariationId });

@@ -4,13 +4,13 @@ import { Products, ProductStatus } from 'meteor/unchained:core-products';
 export default function products(
   root,
   { limit, offset, tags, includeDrafts, slugs },
-  { userId },
+  { userId }
 ) {
   log(
     `query products: ${limit} ${offset} ${
       includeDrafts ? 'includeDrafts' : ''
     } ${slugs?.join(',')}`,
-    { userId },
+    { userId }
   );
 
   const selector = {};

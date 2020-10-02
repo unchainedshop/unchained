@@ -5,7 +5,7 @@ import { AssortmentNotFoundError, InvalidIdError } from '../../errors';
 export default function updateAssortment(
   root,
   { assortment, assortmentId },
-  { userId },
+  { userId }
 ) {
   log(`mutation updateAssortment ${assortmentId}`, { userId });
   if (!assortmentId) throw new InvalidIdError({ assortmentId });
@@ -18,7 +18,7 @@ export default function updateAssortment(
         ...assortment,
         updated: new Date(),
       },
-    },
+    }
   );
   return Assortments.findOne({ _id: assortmentId });
 }

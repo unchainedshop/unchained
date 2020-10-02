@@ -4,7 +4,7 @@ import { AssortmentFilters } from 'meteor/unchained:core-assortments';
 export default function reorderAssortmentFilters(
   root,
   { sortKeys = [] },
-  { userId },
+  { userId }
 ) {
   log('mutation reorderAssortmentFilters', { userId });
   return AssortmentFilters.updateManualOrder({ sortKeys });

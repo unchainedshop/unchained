@@ -48,14 +48,14 @@ Subscriptions.generateFromCheckout = async ({ items, order, ...context }) => {
     items.map(async (item) => {
       const subscriptionData = await SubscriptionDirector.transformOrderItemToSubscription(
         item,
-        { ...template, ...context },
+        { ...template, ...context }
       );
 
       await Subscriptions.createSubscription({
         ...subscriptionData,
         orderIdForFirstPeriod: order._id,
       });
-    }),
+    })
   );
 };
 
@@ -169,13 +169,13 @@ Orders.helpers({
       payment?.pricing().discountSum(orderDiscountId),
       delivery?.pricing().discountSum(orderDiscountId),
       ...this.items().flatMap((item) =>
-        item.pricing().discountSum(orderDiscountId),
+        item.pricing().discountSum(orderDiscountId)
       ),
       this.pricing().discountSum(orderDiscountId),
     ];
     const amount = prices.reduce(
       (oldValue, price) => oldValue + (price || 0),
-      0,
+      0
     );
     return {
       amount,
@@ -204,7 +204,7 @@ Orders.helpers({
     const isAlreadyInitializedWithSupportedProvider = supportedPaymentProviders.some(
       (provider) => {
         return provider._id === paymentProviderId;
-      },
+      }
     );
     if (
       supportedPaymentProviders.length > 0 &&
@@ -219,7 +219,7 @@ Orders.helpers({
                 paymentCredential.paymentProviderId
               );
             });
-          },
+          }
         );
         if (foundSupportedPreferredProvider) {
           return this.setPaymentProvider({
@@ -242,7 +242,7 @@ Orders.helpers({
     const isAlreadyInitializedWithSupportedProvider = supportedDeliveryProviders.some(
       (provider) => {
         return provider._id === deliveryProviderId;
-      },
+      }
     );
 
     if (
@@ -276,7 +276,7 @@ Orders.helpers({
   },
   addQuotationItem({ quotation, ...quotationItemConfiguration }) {
     const { quantity, configuration } = quotation.transformItemConfiguration(
-      quotationItemConfiguration,
+      quotationItemConfiguration
     );
     const product = quotation.product();
     return this.addProductItem({
@@ -375,7 +375,7 @@ Orders.helpers({
           order: this,
           items,
           ...context,
-        }),
+        })
       );
     }
   },
@@ -440,7 +440,7 @@ Orders.helpers({
         // documents and numbers that are needed for delivery
         const newConfirmedOrder = this.setStatus(
           OrderStatus.CONFIRMED,
-          'before delivery',
+          'before delivery'
         );
         this.delivery().send(deliveryContext, newConfirmedOrder);
         newConfirmedOrder.generateSubscriptions({
@@ -519,7 +519,7 @@ Orders.helpers({
             orderId: this._id,
             ...meta,
           },
-        }),
+        })
       );
     }
     const { rawFile, userId } = objOrString;
@@ -532,7 +532,7 @@ Orders.helpers({
           orderId: this._id,
           ...meta,
         },
-      }),
+      })
     );
   },
   documents(options) {
@@ -585,7 +585,7 @@ Orders.setDeliveryProvider = ({ orderId, deliveryProviderId }) => {
   log(`Set Delivery Provider ${deliveryProviderId}`, { orderId });
   Orders.update(
     { _id: orderId },
-    { $set: { deliveryId, updated: new Date() } },
+    { $set: { deliveryId, updated: new Date() } }
   );
   Orders.updateCalculation({ orderId });
   return Orders.findOne({ _id: orderId });
@@ -641,7 +641,7 @@ Orders.updateBillingAddress = ({ billingAddress, orderId }) => {
         billingAddress,
         updated: new Date(),
       },
-    },
+    }
   );
   Orders.updateCalculation({ orderId });
   return Orders.findOne({ _id: orderId });
@@ -656,7 +656,7 @@ Orders.updateContact = ({ contact, orderId }) => {
         contact,
         updated: new Date(),
       },
-    },
+    }
   );
   Orders.updateCalculation({ orderId });
   return Orders.findOne({ _id: orderId });
@@ -671,7 +671,7 @@ Orders.updateContext = ({ context, orderId }) => {
         context,
         updated: new Date(),
       },
-    },
+    }
   );
   Orders.updateCalculation({ orderId });
   return Orders.findOne({ _id: orderId });
@@ -682,7 +682,7 @@ Orders.getUniqueOrderNumber = () => {
   const hashids = new Hashids(
     'unchained',
     6,
-    'ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890',
+    'ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890'
   );
   while (!orderNumber) {
     const randomNumber = Math.floor(Math.random() * (999999999 - 1)) + 1;
@@ -774,7 +774,7 @@ Orders.updateCalculation = ({ orderId }) => {
         calculation,
         updated: new Date(),
       },
-    },
+    }
   );
 };
 
@@ -803,7 +803,7 @@ Orders.migrateCart = async ({
         $set: {
           userId: toUserId,
         },
-      },
+      }
     );
     Orders.updateCalculation({
       orderId: fromCart._id,
@@ -820,7 +820,7 @@ Orders.migrateCart = async ({
     },
     {
       multi: true,
-    },
+    }
   );
   Orders.updateCalculation({
     orderId: fromCart._id,

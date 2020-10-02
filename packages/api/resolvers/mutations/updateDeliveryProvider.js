@@ -5,7 +5,7 @@ import { DeliverProviderNotFoundError, InvalidIdError } from '../../errors';
 export default function updateDeliveryProvider(
   root,
   { deliveryProvider, deliveryProviderId },
-  { userId },
+  { userId }
 ) {
   log(`mutation updateDeliveryProvider ${deliveryProviderId}`, { userId });
   if (!deliveryProviderId) throw new InvalidIdError({ deliveryProviderId });

@@ -5,7 +5,7 @@ import { ProductReviewNotFoundError, InvalidIdError } from '../../errors';
 export default function removeProductReview(
   root,
   { productReviewId },
-  { userId },
+  { userId }
 ) {
   log('mutation removeProductReview', { userId, productReviewId });
   if (!productReviewId) throw new InvalidIdError({ productReviewId });

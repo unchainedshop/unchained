@@ -42,7 +42,7 @@ const applyDiscountToMultipleShares = (shares, amount) => {
         currentTaxAmount + shareTaxAmount,
       ];
     },
-    [0, 0],
+    [0, 0]
   );
 };
 
@@ -53,7 +53,7 @@ const calculateAmountToSplit = (configuration, amount) => {
 
   const leftInDiscount = Math.max(
     0,
-    deductionAmount - (configuration.alreadyDeductedForDiscount || 0),
+    deductionAmount - (configuration.alreadyDeductedForDiscount || 0)
   );
   const leftToDeduct = Math.min(configuration.amountLeft, leftInDiscount);
   return Math.max(0, leftToDeduct);
@@ -91,16 +91,16 @@ class OrderItems extends OrderPricingAdapter {
     const itemShares = this.context.items.map((item) =>
       resolveRatioAndTaxDivisorForPricingSheet(
         item.pricing(),
-        totalAmountOfItems,
-      ),
+        totalAmountOfItems
+      )
     );
     const deliveryShare = resolveRatioAndTaxDivisorForPricingSheet(
       this.context.delivery?.pricing(),
-      totalAmountOfPaymentAndDelivery,
+      totalAmountOfPaymentAndDelivery
     );
     const paymentShare = resolveRatioAndTaxDivisorForPricingSheet(
       this.context.payment?.pricing(),
-      totalAmountOfPaymentAndDelivery,
+      totalAmountOfPaymentAndDelivery
     );
 
     let amountLeft = totalAmountOfPaymentAndDelivery + totalAmountOfItems;
@@ -115,8 +115,8 @@ class OrderItems extends OrderPricingAdapter {
         itemShares,
         calculateAmountToSplit(
           { ...configuration, amountLeft, alreadyDeductedForDiscount },
-          totalAmountOfItems,
-        ),
+          totalAmountOfItems
+        )
       );
       amountLeft -= itemsDiscountAmount;
       alreadyDeductedForDiscount += itemsDiscountAmount;
@@ -129,8 +129,8 @@ class OrderItems extends OrderPricingAdapter {
         [deliveryShare, paymentShare],
         calculateAmountToSplit(
           { ...configuration, amountLeft, alreadyDeductedForDiscount },
-          totalAmountOfPaymentAndDelivery,
-        ),
+          totalAmountOfPaymentAndDelivery
+        )
       );
       amountLeft -= deliveryAndPaymentDiscountAmount;
       alreadyDeductedForDiscount += itemsDiscountAmount;

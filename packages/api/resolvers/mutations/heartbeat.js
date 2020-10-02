@@ -5,7 +5,7 @@ import { UserNotFoundError } from '../../errors';
 export default function heartbeat(
   root,
   params,
-  { userId, remoteAddress, localeContext, countryContext },
+  { userId, remoteAddress, localeContext, countryContext }
 ) {
   log(`mutation updateHeartbeat ${remoteAddress}`, { userId });
   const user = Users.findOne({ _id: userId });

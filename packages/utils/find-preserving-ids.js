@@ -35,7 +35,7 @@ export default (Collection) => async (selector, ids, options = {}) => {
   const rawCollection = Collection.rawCollection();
   const aggregateCollection = Meteor.wrapAsync(
     rawCollection.aggregate,
-    rawCollection,
+    rawCollection
   );
 
   const aggregationPointer = aggregateCollection(filteredPipeline);

@@ -134,13 +134,13 @@ export default {
   setRoles: acl(actions.manageUsers)(setRoles),
   enrollUser: acl(actions.manageUsers)(enrollUser),
   registerPaymentCredentials: acl(actions.registerPaymentCredentials)(
-    registerPaymentCredentials,
+    registerPaymentCredentials
   ),
   markPaymentCredentialsPreferred: acl(actions.managePaymentCredentials)(
-    markPaymentCredentialsPreferred,
+    markPaymentCredentialsPreferred
   ),
   removePaymentCredentials: acl(actions.managePaymentCredentials)(
-    removePaymentCredentials,
+    removePaymentCredentials
   ),
 
   createLanguage: acl(actions.manageLanguages)(createLanguage),
@@ -165,22 +165,22 @@ export default {
   removeProductMedia: acl(actions.manageProducts)(removeProductMedia),
   updateProductCommerce: acl(actions.manageProducts)(updateProductCommerce),
   updateProductWarehousing: acl(actions.manageProducts)(
-    updateProductWarehousing,
+    updateProductWarehousing
   ),
   updateProductSupply: acl(actions.manageProducts)(updateProductSupply),
   updateProductPlan: acl(actions.manageProducts)(updateProductPlan),
   removeProductVariation: acl(actions.manageProducts)(removeProductVariation),
   updateProductVariationTexts: acl(actions.manageProducts)(
-    updateProductVariationTexts,
+    updateProductVariationTexts
   ),
   removeProductVariationOption: acl(actions.manageProducts)(
-    removeProductVariationOption,
+    removeProductVariationOption
   ),
   createProductVariation: acl(actions.manageProducts)(createProductVariation),
   createProductBundleItem: acl(actions.manageProducts)(createProductBundleItem),
   removeBundleItem: acl(actions.manageProducts)(removeBundleItem),
   createProductVariationOption: acl(actions.manageProducts)(
-    createProductVariationOption,
+    createProductVariationOption
   ),
   addProductAssignment: acl(actions.manageProducts)(addProductAssignment),
   removeProductAssignment: acl(actions.manageProducts)(removeProductAssignment),
@@ -203,17 +203,17 @@ export default {
   setOrderPaymentProvider: acl(actions.updateOrder)(setOrderPaymentProvider),
   setOrderDeliveryProvider: acl(actions.updateOrder)(setOrderDeliveryProvider),
   updateOrderDeliveryShipping: acl(actions.updateOrderDelivery)(
-    updateOrderDelivery,
+    updateOrderDelivery
   ),
   updateOrderDeliveryPickUp: acl(actions.updateOrderDelivery)(
-    updateOrderDelivery,
+    updateOrderDelivery
   ),
   updateOrderPaymentGeneric: acl(actions.updateOrderPayment)(
-    updateOrderPayment,
+    updateOrderPayment
   ),
   updateOrderPaymentCard: acl(actions.updateOrderPayment)(updateOrderPayment),
   updateOrderPaymentInvoice: acl(actions.updateOrderPayment)(
-    updateOrderPayment,
+    updateOrderPayment
   ),
   removeOrder: acl(actions.updateOrder)(removeOrder),
   confirmOrder: acl(actions.markOrderConfirmed)(confirmOrder),
@@ -226,33 +226,33 @@ export default {
   updateSubscription: acl(actions.updateSubscription)(updateSubscription),
 
   createPaymentProvider: acl(actions.managePaymentProviders)(
-    createPaymentProvider,
+    createPaymentProvider
   ),
   updatePaymentProvider: acl(actions.managePaymentProviders)(
-    updatePaymentProvider,
+    updatePaymentProvider
   ),
   removePaymentProvider: acl(actions.managePaymentProviders)(
-    removePaymentProvider,
+    removePaymentProvider
   ),
 
   createDeliveryProvider: acl(actions.manageDeliveryProviders)(
-    createDeliveryProvider,
+    createDeliveryProvider
   ),
   updateDeliveryProvider: acl(actions.manageDeliveryProviders)(
-    updateDeliveryProvider,
+    updateDeliveryProvider
   ),
   removeDeliveryProvider: acl(actions.manageDeliveryProviders)(
-    removeDeliveryProvider,
+    removeDeliveryProvider
   ),
 
   createWarehousingProvider: acl(actions.manageWarehousingProviders)(
-    createWarehousingProvider,
+    createWarehousingProvider
   ),
   updateWarehousingProvider: acl(actions.manageWarehousingProviders)(
-    updateWarehousingProvider,
+    updateWarehousingProvider
   ),
   removeWarehousingProvider: acl(actions.manageWarehousingProviders)(
-    removeWarehousingProvider,
+    removeWarehousingProvider
   ),
 
   createFilter: acl(actions.manageFilters)(createFilter),
@@ -269,22 +269,22 @@ export default {
   updateAssortmentTexts: acl(actions.manageAssortments)(updateAssortmentTexts),
   addAssortmentProduct: acl(actions.manageAssortments)(addAssortmentProduct),
   removeAssortmentProduct: acl(actions.manageAssortments)(
-    removeAssortmentProduct,
+    removeAssortmentProduct
   ),
   reorderAssortmentProducts: acl(actions.manageAssortments)(
-    reorderAssortmentProducts,
+    reorderAssortmentProducts
   ),
   addAssortmentLink: acl(actions.manageAssortments)(addAssortmentLink),
   removeAssortmentLink: acl(actions.manageAssortments)(removeAssortmentLink),
   reorderAssortmentLinks: acl(actions.manageAssortments)(
-    reorderAssortmentLinks,
+    reorderAssortmentLinks
   ),
   addAssortmentFilter: acl(actions.manageAssortments)(addAssortmentFilter),
   removeAssortmentFilter: acl(actions.manageAssortments)(
-    removeAssortmentFilter,
+    removeAssortmentFilter
   ),
   reorderAssortmentFilters: acl(actions.manageAssortments)(
-    reorderAssortmentFilters,
+    reorderAssortmentFilters
   ),
 
   createProductReview: acl(actions.reviewProduct)(createProductReview),
@@ -292,7 +292,7 @@ export default {
   removeProductReview: acl(actions.updateProductReview)(removeProductReview),
   addProductReviewVote: acl(actions.voteProductReview)(addProductReviewVote),
   removeProductReviewVote: acl(actions.voteProductReview)(
-    removeProductReviewVote,
+    removeProductReviewVote
   ),
 
   requestQuotation: acl(actions.requestQuotation)(requestQuotation),

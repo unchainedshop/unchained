@@ -5,7 +5,7 @@ import { ProductNotFoundError, InvalidIdError } from '../../errors';
 export default function createProductVariation(
   root,
   { variation, productId },
-  { localeContext, userId },
+  { localeContext, userId }
 ) {
   log(`mutation createProductVariation ${productId}`, { userId });
   if (!productId) throw new InvalidIdError({ productId });

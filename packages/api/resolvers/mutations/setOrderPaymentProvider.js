@@ -5,7 +5,7 @@ import { OrderNotFoundError, InvalidIdError } from '../../errors';
 export default function setOrderPaymentProvider(
   root,
   { orderId, paymentProviderId },
-  { userId },
+  { userId }
 ) {
   log(`mutation setOrderPaymentProvider ${paymentProviderId}`, {
     orderId,

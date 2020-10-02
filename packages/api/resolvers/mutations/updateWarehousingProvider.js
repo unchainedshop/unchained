@@ -5,7 +5,7 @@ import { WarehousingProviderNotFoundError, InvalidIdError } from '../../errors';
 export default (
   root,
   { warehousingProvider, warehousingProviderId },
-  { userId },
+  { userId }
 ) => {
   log(`mutation updateWarehousingProvider ${warehousingProviderId}`, {
     userId,

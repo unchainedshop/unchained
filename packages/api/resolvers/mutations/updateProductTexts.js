@@ -5,7 +5,7 @@ import { ProductNotFoundError, InvalidIdError } from '../../errors';
 export default function updateProductTexts(
   root,
   { texts, productId },
-  { userId },
+  { userId }
 ) {
   log(`mutation updateProductTexts ${productId}`, { userId });
   if (!productId) throw new InvalidIdError({ productId });
@@ -15,7 +15,7 @@ export default function updateProductTexts(
     product.upsertLocalizedText(locale, {
       authorId: userId,
       localizations,
-    }),
+    })
   );
   return changedLocalizations;
 }

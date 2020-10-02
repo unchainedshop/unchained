@@ -4,7 +4,7 @@ import { AssortmentTexts } from 'meteor/unchained:core-assortments';
 export default function translatedAssortmentTexts(
   root,
   { assortmentId },
-  { userId },
+  { userId }
 ) {
   log(`query translatedAssortmentTexts ${assortmentId}`, { userId });
 

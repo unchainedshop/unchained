@@ -22,7 +22,7 @@ export const PeriodSchema = new SimpleSchema(
   },
   {
     requiredByDefault: false,
-  },
+  }
 );
 
 export const Schema = new SimpleSchema(
@@ -62,7 +62,7 @@ export const Schema = new SimpleSchema(
     ...contextFields,
     ...logFields,
   },
-  { requiredByDefault: false },
+  { requiredByDefault: false }
 );
 
 Subscriptions.attachSchema(Schema);

@@ -7,24 +7,24 @@ const logger = createLogger('unchained:platform');
 const addTextAndMediaToProduct = (productId, slug) => {
   faker.locale = 'de';
   logger.verbose(
-    `unchained:platform -> fixtures: -> productText ${faker.locale}`,
+    `unchained:platform -> fixtures: -> productText ${faker.locale}`
   );
   Factory.create('productText', { productId, locale: 'de', slug });
   faker.locale = 'en';
   logger.verbose(
-    `unchained:platform -> fixtures: -> productText ${faker.locale}`,
+    `unchained:platform -> fixtures: -> productText ${faker.locale}`
   );
   Factory.create('productText', { productId, locale: 'en', slug });
 
   // Add some random images to the product
   Array.from(Array(2)).forEach((value, sortKey) => {
     logger.verbose(
-      `unchained:platform -> fixtures: -> productMedia ${sortKey}`,
+      `unchained:platform -> fixtures: -> productMedia ${sortKey}`
     );
     const productMedia = Factory.create('productMedia', { productId, sortKey });
     faker.locale = 'de';
     logger.verbose(
-      `unchained:platform -> fixtures: -> productMediaText ${faker.locale}`,
+      `unchained:platform -> fixtures: -> productMediaText ${faker.locale}`
     );
     Factory.create('productMediaText', {
       productMediaId: productMedia._id,
@@ -32,7 +32,7 @@ const addTextAndMediaToProduct = (productId, slug) => {
     });
     faker.locale = 'en';
     logger.verbose(
-      `unchained:platform -> fixtures: -> productMediaText ${faker.locale}`,
+      `unchained:platform -> fixtures: -> productMediaText ${faker.locale}`
     );
     Factory.create('productMediaText', {
       productMediaId: productMedia._id,
@@ -44,12 +44,12 @@ const addTextAndMediaToProduct = (productId, slug) => {
 const addTextToAssortment = (assortmentId, slug) => {
   faker.locale = 'de';
   logger.verbose(
-    `unchained:platform -> fixtures: -> assortmentTexts ${faker.locale}`,
+    `unchained:platform -> fixtures: -> assortmentTexts ${faker.locale}`
   );
   Factory.create('assortmentText', { assortmentId, locale: 'de', slug });
   faker.locale = 'en';
   logger.verbose(
-    `unchained:platform -> fixtures: -> assortmentTexts ${faker.locale}`,
+    `unchained:platform -> fixtures: -> assortmentTexts ${faker.locale}`
   );
   Factory.create('assortmentText', { assortmentId, locale: 'en', slug });
 };
@@ -58,7 +58,7 @@ const addVariationsToProduct = (productId) => {
   const addTranslation = (productVariationId, productVariationOptionValue) => {
     faker.locale = 'de';
     logger.verbose(
-      `unchained:platform -> fixtures: --> productVariationText ${faker.locale}`,
+      `unchained:platform -> fixtures: --> productVariationText ${faker.locale}`
     );
     Factory.create('productVariationText', {
       productVariationId,
@@ -67,7 +67,7 @@ const addVariationsToProduct = (productId) => {
     });
     faker.locale = 'en';
     logger.verbose(
-      `unchained:platform -> fixtures: --> productVariationText ${faker.locale}`,
+      `unchained:platform -> fixtures: --> productVariationText ${faker.locale}`
     );
     Factory.create('productVariationText', {
       productVariationId,
@@ -190,7 +190,7 @@ export default () => {
       const addTranslation = (filterId, filterOptionValue) => {
         faker.locale = 'de';
         logger.verbose(
-          `unchained:platform -> fixtures: --> filterText ${faker.locale}`,
+          `unchained:platform -> fixtures: --> filterText ${faker.locale}`
         );
         Factory.create('filterText', {
           filterId,
@@ -199,7 +199,7 @@ export default () => {
         });
         faker.locale = 'en';
         logger.verbose(
-          `unchained:platform -> fixtures: --> filterText ${faker.locale}`,
+          `unchained:platform -> fixtures: --> filterText ${faker.locale}`
         );
         Factory.create('filterText', {
           filterId,

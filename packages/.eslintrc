@@ -7,6 +7,7 @@
     "browser": false,
     "meteor": true
   },
+  "root": true,
   "rules": {
     "prettier/prettier": ["error"],
     "max-classes-per-file": [0],

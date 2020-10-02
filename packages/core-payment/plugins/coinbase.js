@@ -98,7 +98,7 @@ class Coinbase extends PaymentAdapter {
       const charge = await coinbase.resources.Charge.retrieve(chargeCode);
 
       const completed = !!charge.timeline.find(
-        (statusUpdate) => statusUpdate.status === 'COMPLETED',
+        (statusUpdate) => statusUpdate.status === 'COMPLETED'
       );
 
       if (completed) {

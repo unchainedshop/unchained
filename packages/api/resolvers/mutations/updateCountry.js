@@ -5,7 +5,7 @@ import { CountryNotFoundError, InvalidIdError } from '../../errors';
 export default function updateCountry(
   root,
   { country, countryId },
-  { userId },
+  { userId }
 ) {
   log(`mutation updateCountry ${countryId}`, { userId });
   if (!countryId) throw new InvalidIdError({ countryId });
@@ -18,7 +18,7 @@ export default function updateCountry(
         ...country,
         updated: new Date(),
       },
-    },
+    }
   );
   return Countries.findOne({ _id: countryId });
 }

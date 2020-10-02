@@ -4,7 +4,7 @@ import { Users } from 'meteor/unchained:core-users';
 export default function enrollUser(
   root,
   { email, password, profile },
-  { userId },
+  { userId }
 ) {
   log(`mutation enrollUser ${email}`, { userId });
   return Users.enrollUser({
