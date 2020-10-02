@@ -84,7 +84,7 @@ OrderPayments.helpers({
       OrderPaymentStatus.PAID,
       arbitraryResponseData
         ? JSON.stringify(arbitraryResponseData)
-        : 'mark paid manually',
+        : 'mark paid manually'
     );
   },
   setStatus(status, info) {
