@@ -389,7 +389,7 @@ describe('Auth for admin users', () => {
       const profile = {
         displayName: 'Admin3',
       };
-      const email = 'admin3@localhost';
+      const email = 'admin3@unchained.local';
       const password = null;
       const { data: { enrollUser } = {} } = await graphqlFetch({
         query: /* GraphQL */ `
@@ -427,7 +427,7 @@ describe('Auth for admin users', () => {
       const profile = {
         displayName: 'Admin4',
       };
-      const email = 'admin4@localhost';
+      const email = 'admin4@unchained.local';
       const password = 'admin4';
       const { data: { enrollUser } = {} } = await graphqlFetch({
         query: /* GraphQL */ `

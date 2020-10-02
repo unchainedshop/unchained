@@ -1,5 +1,6 @@
 import { Locale } from 'locale';
 import { Accounts } from 'meteor/accounts-base';
+import { accountsPassword } from 'meteor/unchained:core-accountsjs';
 import 'meteor/dburles:collection-helpers';
 import { getFallbackLocale } from 'meteor/unchained:core';
 import { Countries } from 'meteor/unchained:core-countries';
@@ -193,12 +194,14 @@ Users.updateLastContact = ({ userId, lastContact }) => {
   Users.update({ _id: userId }, modifier);
 };
 
-Users.enrollUser = ({ password, email, displayName, address }) => {
-  const options = { email, skipEmailVerification: true };
+Users.enrollUser = async ({ password, email, displayName, address }) => {
+  const params = { email };
   if (password && password !== '') {
-    options.password = password;
+    params.password = password;
   }
-  const newUserId = Accounts.createUser(options);
+  const newUserId = await accountsPassword.createUser(params, {
+    skipEmailVerification: true,
+  });
   Users.update(
     { _id: newUserId },
     {
@@ -210,9 +213,11 @@ Users.enrollUser = ({ password, email, displayName, address }) => {
       },
     }
   );
-  if (!options.password) {
+  if (!params.password) {
     // send an e-mail if password is not set allowing the user to set it
-    Accounts.sendEnrollmentEmail(newUserId);
+    accountsPassword.sendEnrollmentEmail(
+      Users.findOne({ _id: newUserId }).primaryEmail()?.address,
+    );
   }
   return Users.findOne({ _id: newUserId });
 };

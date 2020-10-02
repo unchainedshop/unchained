@@ -17,7 +17,9 @@ describe('Auth for anonymous users', () => {
 
   describe('Mutation.createUser', () => {
     it('create a new user', async () => {
-      const { data: { createUser } = {} } = await graphqlFetch({
+      const {
+        data: { createUser },
+      } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation createUser(
             $username: String
@@ -44,7 +46,7 @@ describe('Auth for anonymous users', () => {
         `,
         variables: {
           username: 'newuser',
-          email: 'newuser@localhost',
+          email: 'newuser@unchained.local',
           password: 'password',
           profile: {
             displayName: 'New User',
@@ -66,7 +68,7 @@ describe('Auth for anonymous users', () => {
 
   describe('Mutation.loginAsGuest', () => {
     it('login as guest', async () => {
-      const { data: { loginAsGuest } = {} } = await graphqlFetch({
+      const result = await graphqlFetch({
         query: /* GraphQL */ `
           mutation {
             loginAsGuest {
@@ -76,7 +78,7 @@ describe('Auth for anonymous users', () => {
           }
         `,
       });
-      expect(loginAsGuest).toMatchObject({});
+      expect(result.data.loginAsGuest).toMatchObject({});
     });
     it('user has guest flag', async () => {
       const Users = db.collection('users');

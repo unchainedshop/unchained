@@ -4,7 +4,6 @@ import createGraphQLServer from './createGraphQLServer';
 import createBulkImportServer from './createBulkImportServer';
 import { configureRoles } from './roles';
 
-export callMethod from './callMethod';
 export hashPassword from './hashPassword';
 export getConnection from './getConnection';
 export getCart from './getCart';

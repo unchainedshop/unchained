@@ -1,9 +1,11 @@
-import { Meteor } from 'meteor/meteor';
-import callMethod from '../../../callMethod';
+import { Users } from 'meteor/unchained:core-users';
+import {
+  accountsPassword,
+  accountsServer,
+} from 'meteor/unchained:core-accountsjs';
 import hashPassword from '../../../hashPassword';
 
-export default async function createUser(root, options, context) {
-  Meteor._nodeCodeMustBeInFiber(); // eslint-disable-line
+export default async function createUser(root, options) {
   if (!options.password && !options.plainPassword) {
     throw new Error('Password is required');
   }
@@ -12,5 +14,16 @@ export default async function createUser(root, options, context) {
     mappedOptions.password = hashPassword(mappedOptions.plainPassword);
     delete mappedOptions.plainPassword;
   }
-  return callMethod(context, 'createUser', mappedOptions);
+  const userId = await accountsPassword.createUser(mappedOptions);
+  const {
+    user: { services, roles, ...userData },
+    token,
+  } = await accountsServer.loginWithUser(Users.findOne(userId));
+
+  return {
+    id: userData._id,
+    token: token.token,
+    tokenExpires: token.when,
+    user: userData,
+  };
 }
