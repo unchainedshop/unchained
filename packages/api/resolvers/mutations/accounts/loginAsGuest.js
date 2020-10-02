@@ -6,7 +6,7 @@ export default async function loginAsGuest(root, methodArguments, context) {
   const { user: id, token } = await accountsServer.loginWithService(
     'guest',
     methodArguments,
-    context,
+    context
   );
 
   return {
