@@ -7,8 +7,10 @@ TBD
 The new experimental Bulk Import API allows to import a big list of entities (filters, assortments & products) at the same time.
 
 ## Minor
-
-- [api] Add Product.defaultOrderQuantity
+- [payment] New Plugin: Bity (https://bity.com)
+- [payment] New Plugin: Stripe Legacy Charges
+- [api] You can now store arbitrary data when using markPaid
+- [api] Add a new field Product.defaultOrderQuantity
 - [api] Also support "token" in cookies instead of only meteor_login_token
 
 ## Patches
