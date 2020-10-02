@@ -8,7 +8,6 @@ import {
 } from 'semantic-ui-react';
 import { debounce, has, isEmpty } from 'lodash';
 import { useQuery } from '@apollo/client';
-import gql from 'graphql-tag';
 import classnames from 'classnames';
 
 const SearchDropdown = ({
@@ -26,58 +25,17 @@ const SearchDropdown = ({
   id,
   name,
   filterIds,
+  searchQuery,
+  limit,
+  isShowGuests,
 }) => {
-  const SEARCH_ASSORTMENTS = gql`
-    query searchAssortments($queryString: String) {
-      searchAssortments(queryString: $queryString, includeInactive: true) {
-        assortments {
-          _id
-          isActive
-          texts {
-            _id
-            title
-            description
-          }
-        }
-      }
-    }
-  `;
-
-  const SEARCH_PRODUCTS = gql`
-    query searchProducts($queryString: String, $limit: Int) {
-      searchProducts(queryString: $queryString, includeInactive: true) {
-        products {
-          _id
-          status
-          texts {
-            _id
-            title
-            description
-          }
-          media(limit: $limit) {
-            texts {
-              _id
-              title
-            }
-            file {
-              _id
-              url
-              name
-            }
-          }
-        }
-      }
-    }
-  `;
-
   const [queryString, setQueryString] = useState('');
-  const QUERY =
-    queryType === 'assortments' ? SEARCH_ASSORTMENTS : SEARCH_PRODUCTS;
 
-  const { data, loading } = useQuery(QUERY, {
+  const { data, loading } = useQuery(searchQuery, {
     variables: {
       queryString,
-      limit: 1,
+      limit: limit || 10,
+      ...(isShowGuests && { includeGuests: isShowGuests }),
     },
     skip: !queryString,
   });
@@ -128,10 +86,12 @@ const SearchDropdown = ({
     };
   };
 
-  let items =
-    queryType === 'assortments'
-      ? data?.searchAssortments.assortments
-      : data?.searchProducts.products || [];
+  const queries = {
+    assortments: data?.searchAssortments?.assortments,
+    products: data?.searchProducts?.products,
+    users: data?.users,
+  };
+  let items = queries[queryType] || [];
 
   items = filterIds
     ? items?.filter((item) => !filterIds.includes(item._id))
@@ -142,16 +102,20 @@ const SearchDropdown = ({
       return {
         key: item._id,
         value: item._id,
-        text: item.texts.title,
+        text: item?.texts?.title || item?.name,
         content: (
           <Header>
-            {selectImage(item)}
+            {!(queryType === 'users') && selectImage(item)}
             <Header.Content>
-              {item.texts.title}
-              <Header.Subheader>{item.texts.description}</Header.Subheader>
-              <Label color={resolveStatus(item).color} horizontal>
-                {resolveStatus(item).status}
-              </Label>
+              {item?.texts?.title || item?.name}
+              {!(queryType === 'users') && (
+                <>
+                  <Header.Subheader>{item.texts.description}</Header.Subheader>
+                  <Label color={resolveStatus(item).color} horizontal>
+                    {resolveStatus(item).status}
+                  </Label>
+                </>
+              )}
             </Header.Content>
           </Header>
         ),
