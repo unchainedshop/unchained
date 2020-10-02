@@ -1,9 +1,11 @@
 import { Meteor } from 'meteor/meteor';
 import { startPlatform } from 'meteor/unchained:platform';
 import { Users } from 'meteor/unchained:core-users';
-import { Factory } from 'meteor/dburles:factory';
 import { WebApp } from 'meteor/webapp';
 import { embedControlpanelInMeteorWebApp } from '@unchainedshop/controlpanel';
+import { Currencies } from 'meteor/unchained:core-currencies';
+import { Countries } from 'meteor/unchained:core-countries';
+import { Languages } from 'meteor/unchained:core-languages';
 
 import 'meteor/unchained:core-delivery/plugins/post';
 import 'meteor/unchained:core-delivery/plugins/pick-mup';
@@ -37,6 +39,19 @@ import 'meteor/unchained:core-worker/plugins/heartbeat';
 import 'meteor/unchained:core-worker/plugins/email';
 
 const logger = console;
+const addresses = {
+  admin: {
+    firstName: 'Caraig Jackson',
+    lastName: 'Mengistu',
+    company: 'false',
+    postalCode: '52943',
+    countryCode: 'ET',
+    city: 'Addis Ababa',
+    addressLine: '75275 Bole Mikael',
+    addressLine2: 'Bole 908',
+    regionCode: 'false',
+  },
+};
 
 const initializeDatabase = () => {
   try {
@@ -44,16 +59,17 @@ const initializeDatabase = () => {
       return;
     }
 
-    const admin = Factory.create('user', {
+    const admin = Users.createUser({
       username: 'admin',
       roles: ['admin'],
       emails: [{ address: 'admin@localhost', verified: true }],
       profile: { address: {} },
       guest: false,
+      lastBillingAddress: addresses.admin,
     });
     const languages = ['de', 'fr'].map((code, key) => {
       const isBase = key === 0;
-      const language = Factory.create('language', {
+      const language = Languages.createLanguage({
         isoCode: code,
         isActive: true,
         isBase,
@@ -62,7 +78,7 @@ const initializeDatabase = () => {
       return language.isoCode;
     });
     const currencies = ['CHF'].map((code) => {
-      const currency = Factory.create('currency', {
+      const currency = Currencies.createCurrency({
         isoCode: code,
         isActive: true,
         authorId: admin._id,
@@ -71,7 +87,7 @@ const initializeDatabase = () => {
     });
     const countries = ['CH'].map((code, key) => {
       const isBase = key === 0;
-      const country = Factory.create('country', {
+      const country = Countries.createCountry({
         isoCode: code,
         isBase,
         isActive: true,

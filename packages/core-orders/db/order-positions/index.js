@@ -1,4 +1,3 @@
-import './factories';
 import './helpers';
 import './schema';
 

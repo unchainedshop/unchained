@@ -37,7 +37,6 @@
     "bcrypt": "^5.0.0",
     "braintree": "^2.24.0",
     "emoji-flags": "^1.3.0",
-    "faker": "^4.1.0",
     "graphql": "^14.7.0",
     "i18n-iso-countries": "^6.0.0",
     "iconv-lite": "^0.6.2",

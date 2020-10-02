@@ -1,4 +1,3 @@
-import './db/factories';
 import runMigrations from './db/schema';
 import settings from './settings';
 
