@@ -41,38 +41,27 @@ export default ({ mergeUserCartsOnLogin = true } = {}) => {
       })
       .omit('created')
       .validate(clone);
-    return user;
-  };
-
-  accountsServer.on('CreateUserSuccess', async ({ user, options }) => {
     const newUser = user;
-    newUser.created = newUser.createdAt || new Date();
-    delete newUser.createdAt; // comes from the meteor-apollo-accounts stuff
-    if (newUser.services.google) {
+    if (user?.services?.google) {
       newUser.profile = {
-        name: newUser.services.google.name,
-        ...newUser.profile,
+        name: user.services.google.name,
+        ...user.profile,
       };
       newUser.emails = [
-        { address: newUser.services.google.email, verified: true },
+        { address: user.services.google.email, verified: true },
       ];
     }
-    if (newUser.services.facebook) {
+    if (user?.services?.facebook) {
       newUser.profile = {
-        name: newUser.services.facebook.name,
-        ...newUser.profile,
+        name: user.services.facebook.name,
+        ...user.profile,
       };
       newUser.emails = [
-        { address: newUser.services.facebook.email, verified: true },
+        { address: user.services.facebook.email, verified: true },
       ];
-    }
-    if (!newUser.guest && !options?.skipEmailVerification) {
-      accountsPassword.sendVerificationEmail(
-        Users.findOne({ _id: user._id }).primaryEmail()?.address,
-      );
     }
     return newUser;
-  });
+  };
 
   function createGuestOptions(email) {
     check(email, Match.OneOf(String, null, undefined));
