@@ -1,12 +1,13 @@
-# vNEXT
+# v0.53.1
 
-TBD
+Minor tweaks and fixes
 
 ## Breaking Changes
 
 The new experimental Bulk Import API allows to import a big list of entities (filters, assortments & products) at the same time.
 
 ## Minor
+- [cp] You can now search for users #242
 - [payment] New Plugin: Bity (https://bity.com)
 - [payment] New Plugin: Stripe Legacy Charges
 - [api] You can now store arbitrary data when using markPaid
@@ -14,6 +15,9 @@ The new experimental Bulk Import API allows to import a big list of entities (fi
 - [api] Also support "token" in cookies instead of only meteor_login_token
 
 ## Patches
+- [great-purge-of-meteor] Remove dburles:factory
+- [pricing] Fix currencyCode in pricing when using multiple currencies for the same country
+
 
 ---
 
@@ -127,6 +131,7 @@ We will rename all unchained core specific env variables and prefix them with UN
 - [ci] Skip caching in CI and dev
 - [cp] Various small ui fixes
 - [platform] Fixes carts on bootup when a delivery / payment provider is not valid anymore.
+- [great-purge-of-meteor] Remove aldeed:index
 
 ---
 
