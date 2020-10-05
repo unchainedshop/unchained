@@ -34,6 +34,9 @@ COPY --from=bundler /bundle /webapp/
 RUN NODE_ENV=production npm run install --production
 WORKDIR /webapp
 
+HEALTHCHECK --start-period=10s --interval=20s --timeout=1s \
+  CMD curl -f http://localhost:3000/graphql -H 'content-type: application/json' --data-binary '{"operationName":null,"variables":{},"query":"{\n  shopInfo {\n    _id\n  }\n}\n"}' || exit
+
 ENV PORT 3000
 ENV NODE_ENV production
 ENV FILE_STORAGE_PATH /unchained-uploads
