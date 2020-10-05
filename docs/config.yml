@@ -1,4 +1,4 @@
-introspection: http://localhost:4010/graphql
+introspection: http://minimal:3000/graphql
 servers:
   - url: https://engine.unchained.shop/graphql
     description: Development Server

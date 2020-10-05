@@ -4,10 +4,10 @@
     "dev": "gatsby develop",
     "build": "gatsby build",
     "start": "gatsby serve -H 0.0.0.0 -p 9000",
-    "api-docs": "dociql --target-dir api config.yml"
+    "api-docs": "dociql --target-dir static/api config.yml"
   },
   "dependencies": {
-    "@unchainedshop/dociql": "github:unchainedshop/dociql#master",
+    "@unchainedshop/dociql": "^1.0.0",
     "@unchainedshop/gatsby-theme-apollo-docs": "^4.3.15",
     "gatsby": "2.24.47",
     "react": "16.13.1",

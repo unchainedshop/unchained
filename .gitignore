@@ -8,3 +8,4 @@ codeship.aes
 .npm
 /env
 /globalConfig.json
+/docs/static/api
