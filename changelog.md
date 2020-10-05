@@ -2,11 +2,11 @@
 
 Minor tweaks and fixes
 
-## Breaking Changes
+## Breaking Changes
 
 The new experimental Bulk Import API allows to import a big list of entities (filters, assortments & products) at the same time.
 
-## Minor
+## Minor
 - [cp] You can now search for users #242
 - [payment] New Plugin: Bity (https://bity.com)
 - [payment] New Plugin: Stripe Legacy Charges
@@ -14,7 +14,7 @@ The new experimental Bulk Import API allows to import a big list of entities (fi
 - [api] Add a new field Product.defaultOrderQuantity
 - [api] Also support "token" in cookies instead of only meteor_login_token
 
-## Patches
+## Patches
 - [great-purge-of-meteor] Remove dburles:factory
 - [pricing] Fix currencyCode in pricing when using multiple currencies for the same country
 
