@@ -7,6 +7,7 @@
     "api-docs": "dociql --target-dir api config.yml"
   },
   "dependencies": {
+    "@unchainedshop/dociql": "github:unchainedshop/dociql#master",
     "@unchainedshop/gatsby-theme-apollo-docs": "^4.3.15",
     "gatsby": "2.24.47",
     "react": "16.13.1",
