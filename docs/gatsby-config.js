@@ -39,7 +39,7 @@ module.exports = {
           Deployment: ['deployment/amazon-documentdb', 'deployment/docker-dev'],
           'API Reference': [
             'api/entities',
-            '[GraphQL API Reference](http://localhost:4400)',
+            '[GraphQL API Reference](https://docs.unchained.shop/api)',
             '[GraphQL API Playground](https://engine.unchained.shop/graphql)',
           ],
         },
