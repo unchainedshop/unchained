@@ -3,12 +3,16 @@
     "predev": "gatsby clean",
     "dev": "gatsby develop",
     "build": "gatsby build",
-    "start": "gatsby serve -H 0.0.0.0 -p 9000"
+    "start": "gatsby serve -H 0.0.0.0 -p 9000",
+    "api-docs": "dociql --target-dir api config.yml"
   },
   "dependencies": {
     "@unchainedshop/gatsby-theme-apollo-docs": "^4.3.15",
     "gatsby": "2.24.47",
     "react": "16.13.1",
     "react-dom": "16.13.1"
+  },
+  "devDependencies": {
+    "coffeescript": "^2.5.1"
   }
 }

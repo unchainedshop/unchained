@@ -1,6 +1,6 @@
-introspection: https://engine.unchained.shop/graphql
+introspection: http://localhost:4010/graphql
 servers:
-  - url: http://127.0.0.1:4010/graphql
+  - url: https://engine.unchained.shop/graphql
     description: Development Server
 info:
   description: |
