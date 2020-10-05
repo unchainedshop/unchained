@@ -17,9 +17,9 @@ class ProductPrice extends ProductPricingAdapter {
   }
 
   async calculate() {
-    const { product, country, quantity } = this.context;
+    const { product, country, currency, quantity } = this.context;
 
-    const price = product.price({ country });
+    const price = product.price({ country, currency });
     if (price === null || price === undefined) return null;
     const itemTotal = price.amount * quantity;
 

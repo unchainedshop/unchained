@@ -52,12 +52,21 @@ DeliveryProviders.helpers({
     );
   },
   orderPrice(
-    { country, order, user, useNetPrice, providerContext },
+    {
+      country,
+      order,
+      currency: currencyCode,
+      user,
+      useNetPrice,
+      providerContext,
+    },
     requestContext
   ) {
-    const currency = Countries.resolveDefaultCurrencyCode({
-      isoCode: country,
-    });
+    const currency =
+      currencyCode ||
+      Countries.resolveDefaultCurrencyCode({
+        isoCode: country,
+      });
     const pricingDirector = new DeliveryPricingDirector({
       providerContext,
       deliveryProvider: this,
