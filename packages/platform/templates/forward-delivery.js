@@ -2,7 +2,11 @@ import { MessagingDirector } from 'meteor/unchained:core-messaging';
 import { Orders } from 'meteor/unchained:core-orders';
 import moment from 'moment';
 
-const { EMAIL_FROM, EMAIL_WEBSITE_NAME = 'Unchained Webshop' } = process.env;
+const {
+  EMAIL_FROM,
+  EMAIL_WEBSITE_NAME = 'Unchained Webshop',
+  ROOT_URL,
+} = process.env;
 
 const mjmlTemplate = `
 <mjml>
@@ -15,6 +19,7 @@ const mjmlTemplate = `
           <mj-text align="left" font-size="20px" color="#232323" font-family="Helvetica Neue" font-weight="200">
             <span>Order number: {{orderNumber}}</span><br/>
             <span>Order date: {{orderDate}}</span>
+            <a href="{{controlpanelLink}}">{{controlpanelLink}}</a>
           </mj-text>
           <mj-text align="left" font-size="20px" color="#232323">Delivery address</mj-text>
           <mj-text align="left">
@@ -50,6 +55,7 @@ const textTemplate = `
   \n
   Order number: {{orderNumber}}\n
   Order date: {{orderDate}}\n
+  Link: {{controlpanelLink}}\n
   \n
   Delivery address:\n
   -----------------\n
@@ -113,6 +119,8 @@ export default ({ orderId, transactionContext, config }) => {
 
   const subject = `${EMAIL_WEBSITE_NAME}: New Order / ${order.orderNumber}`;
 
+  const controlpanelLink = `${ROOT_URL}/orders/view/?_id=${order._id}`;
+
   const templateVariables = {
     subject,
     items,
@@ -121,6 +129,7 @@ export default ({ orderId, transactionContext, config }) => {
     shopName: EMAIL_WEBSITE_NAME,
     orderNumber: order.orderNumber,
     orderDate,
+    controlpanelLink,
     ...configObject,
     address,
   };
@@ -129,8 +138,9 @@ export default ({ orderId, transactionContext, config }) => {
     {
       type: 'EMAIL',
       input: {
-        from: EMAIL_FROM,
-        to: order.contact.emailAddress,
+        from: configObject.from || EMAIL_FROM,
+        to: configObject.to,
+        cc: configObject.cc,
         subject,
         text: MessagingDirector.renderToText(textTemplate, templateVariables),
         html: MessagingDirector.renderMjmlToHtml(

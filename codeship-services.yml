@@ -13,6 +13,8 @@ controlpanel:
   cached: true
 
 docs:
+  depends_on:
+    - minimal
   build:
     context: ./docs
     dockerfile: Dockerfile

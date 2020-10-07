@@ -334,15 +334,21 @@ Products.helpers({
     return [];
   },
 
-  userPrice({ quantity = 1, country, user, useNetPrice }, requestContext) {
-    const currency = Countries.resolveDefaultCurrencyCode({
-      isoCode: country,
-    });
+  userPrice(
+    { quantity = 1, country, currency, user, useNetPrice },
+    requestContext
+  ) {
+    const currencyCode =
+      currency ||
+      Countries.resolveDefaultCurrencyCode({
+        isoCode: country,
+      });
+
     const pricingDirector = new ProductPricingDirector({
       product: this,
       user,
       country,
-      currency,
+      currency: currencyCode,
       quantity,
       requestContext,
     });
@@ -372,10 +378,13 @@ Products.helpers({
       isNetPrice: useNetPrice,
     };
   },
-  price({ country, quantity = 1 }) {
-    const currency = Countries.resolveDefaultCurrencyCode({
-      isoCode: country,
-    });
+  price({ country: countryCode, currency, quantity = 1 }) {
+    const currencyCode =
+      currency ||
+      Countries.resolveDefaultCurrencyCode({
+        isoCode: countryCode,
+      });
+
     const pricing = ((this.commerce && this.commerce.pricing) || []).sort(
       (
         { maxQuantity: leftMaxQuantity = 0 },
@@ -394,8 +403,8 @@ Products.helpers({
     const price = pricing.reduce(
       (oldValue, curPrice) => {
         if (
-          curPrice.currencyCode === currency &&
-          curPrice.countryCode === country &&
+          curPrice.currencyCode === currencyCode &&
+          curPrice.countryCode === countryCode &&
           (!curPrice.maxQuantity || curPrice.maxQuantity >= quantity)
         ) {
           return {
@@ -407,8 +416,8 @@ Products.helpers({
       },
       {
         amount: null,
-        currencyCode: currency,
-        countryCode: country,
+        currencyCode,
+        countryCode,
         isTaxable: false,
         isNetPrice: false,
       }
@@ -417,7 +426,7 @@ Products.helpers({
       return {
         _id: crypto
           .createHash('sha256')
-          .update([this._id, country, currency].join(''))
+          .update([this._id, countryCode, currencyCode].join(''))
           .digest('hex'),
         ...price,
       };
