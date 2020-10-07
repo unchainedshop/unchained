@@ -1,5 +1,5 @@
-import callMethod from '../../../callMethod';
+import { accountsPassword } from 'meteor/unchained:core-accountsjs';
 
 export default async function verifyEmail(root, { token }, context) {
-  return callMethod(context, 'verifyEmail', token);
+  await accountsPassword.verifyEmail(token);
 }
