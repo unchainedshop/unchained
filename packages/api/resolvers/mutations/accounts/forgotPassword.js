@@ -1,8 +1,14 @@
-import callMethod from '../../../callMethod';
+import { accountsPassword } from 'meteor/unchained:core-accountsjs';
 
-export default async function forgotPassword(root, { email }, context) {
-  callMethod(context, 'forgotPassword', { email });
-  return {
-    success: true,
-  };
+export default async function forgotPassword(root, { email }) {
+  try {
+    await accountsPassword.sendResetPasswordEmail(email);
+    return {
+      success: true,
+    };
+  } catch (e) {
+    return {
+      success: false,
+    };
+  }
 }

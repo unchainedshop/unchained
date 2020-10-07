@@ -4,6 +4,7 @@ import MongoDBInterface from '@accounts/mongo';
 import { MongoInternals } from 'meteor/mongo';
 import { DatabaseManager } from '@accounts/database-manager';
 import crypto, { randomBytes } from 'crypto';
+import { WorkerDirector } from 'meteor/unchained:core-worker';
 
 export const randomValueHex = (len) => {
   return crypto
@@ -39,11 +40,34 @@ const dbManager = new DatabaseManager({
 
 const accountsServerOptions = {
   siteUrl: process.env.ROOT_URL,
+  prepareMail: (to, token, user, pathFragment, emailTemplate, from) => {
+    return {
+      recipientEmail: to,
+      action: 'resetPassword',
+      userId: user.id || user._id,
+      token,
+    };
+  },
+  sendMail: ({ action, userId, token, recipientEmail }) => {
+    return WorkerDirector.addWork({
+      type: 'MESSAGE',
+      retries: 0,
+      input: {
+        template: 'ACCOUNT_ACTION',
+        action,
+        recipientEmail,
+        userId,
+        token,
+      },
+    });
+  },
 };
 
 class UnchainedAccountsPassword extends AccountsPassword {}
 
-export const accountsPassword = new UnchainedAccountsPassword({});
+export const accountsPassword = new UnchainedAccountsPassword({
+  returnTokensAfterResetPassword: true,
+});
 
 class UnchainedAccountsServer extends AccountsServer {
   destroyToken = (userId, loginToken) => {
@@ -113,7 +137,10 @@ class UnchainedAccountsServer extends AccountsServer {
 }
 
 export const accountsServer = new UnchainedAccountsServer(
-  { db: dbManager, ...accountsServerOptions },
+  {
+    db: dbManager,
+    ...accountsServerOptions,
+  },
   {
     password: accountsPassword,
   }
