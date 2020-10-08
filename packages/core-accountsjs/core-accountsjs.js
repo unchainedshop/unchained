@@ -70,6 +70,10 @@ export const accountsPassword = new UnchainedAccountsPassword({
 });
 
 class UnchainedAccountsServer extends AccountsServer {
+  DEFAULT_LOGIN_EXPIRATION_DAYS = 90;
+
+  LOGIN_UNEXPIRING_TOKEN_DAYS = 365 * 100;
+
   destroyToken = (userId, loginToken) => {
     this.users.update(userId, {
       $pull: {
@@ -79,6 +83,26 @@ class UnchainedAccountsServer extends AccountsServer {
       },
     });
   };
+
+  getTokenLifetimeMs() {
+    const loginExpirationInDays =
+      this.options.loginExpirationInDays === null
+        ? this.LOGIN_UNEXPIRING_TOKEN_DAYS
+        : this.options.loginExpirationInDays;
+    return (
+      (loginExpirationInDays || this.DEFAULT_LOGIN_EXPIRATION_DAYS) *
+      24 *
+      60 *
+      60 *
+      1000
+    );
+  }
+
+  tokenExpiration(when) {
+    // We pass when through the Date constructor for backwards compatibility;
+    // `when` used to be a number.
+    return new Date(new Date(when).getTime() + this.getTokenLifetimeMs());
+  }
 
   hashLoginToken = (stampedToken) => {
     const { token, when } = stampedToken;

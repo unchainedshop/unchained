@@ -1,4 +1,4 @@
-import { Accounts } from 'meteor/accounts-base';
+import { accountsServer } from 'meteor/unchained:core-accountsjs';
 import { Users } from 'meteor/unchained:core-users';
 import { check } from 'meteor/check';
 
@@ -22,7 +22,7 @@ export default async (req) => {
     check(loginToken, String);
 
     // the hashed token is the key to find the possible current user in the db
-    const hashedToken = Accounts._hashLoginToken(loginToken); // eslint-disable-line
+    const hashedToken = accountsServer.hashLoginToken(loginToken); // eslint-disable-line
 
     const currentUser = Users.findOne({
       'services.resume.loginTokens.hashedToken': hashedToken,
@@ -37,7 +37,7 @@ export default async (req) => {
       ); // eslint-disable-line
 
       // get an exploitable token expiration date
-      const expiresAt = Accounts._tokenExpiration(tokenInformation.when); // eslint-disable-line
+      const expiresAt = accountsServer.tokenExpiration(tokenInformation.when); // eslint-disable-line
 
       // true if the token is expired
       const isExpired = expiresAt < new Date();
