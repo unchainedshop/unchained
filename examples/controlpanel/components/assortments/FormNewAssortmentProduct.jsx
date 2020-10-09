@@ -99,10 +99,7 @@ export default compose(
       }),
   }),
   withFormErrorHandlers,
-  mapProps(
-    ({
-      assortmentId,
-    }) => ({
+  mapProps(({ assortmentId, ...rest }) => ({
     ...rest,
   }))
 )(FormNewAssortmentProduct);
