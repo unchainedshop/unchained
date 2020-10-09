@@ -12,14 +12,13 @@ Npm.depends({
 });
 
 Package.onUse((api) => {
-  api.versionsFrom('1.8.0.2');
+  api.versionsFrom('1.11.1');
   api.use('ecmascript');
   api.mainModule('core-settings.js');
 });
 
 Package.onTest((api) => {
   api.use('ecmascript');
-  api.use('tinytest');
   api.use('unchained:core-settings');
   api.mainModule('core-settings-tests.js');
 });

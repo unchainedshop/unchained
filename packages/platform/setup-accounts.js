@@ -1,5 +1,4 @@
 import { Meteor } from 'meteor/meteor';
-import { Random } from 'meteor/random';
 import { check, Match } from 'meteor/check';
 import { Accounts } from 'meteor/accounts-base';
 import { getFallbackLocale } from 'meteor/unchained:core';
@@ -9,6 +8,14 @@ import { Bookmarks } from 'meteor/unchained:core-bookmarks';
 import { Promise } from 'meteor/promise';
 import cloneDeep from 'lodash.clonedeep';
 import moniker from 'moniker';
+import crypto from 'crypto';
+
+export const randomValueHex = (len) => {
+  return crypto
+    .randomBytes(Math.ceil(len / 2))
+    .toString('hex') // convert to hexadecimal format
+    .slice(0, len); // return required number of characters
+};
 
 export const buildContext = (user) => {
   const locale =
@@ -80,7 +87,7 @@ export default ({ mergeUserCartsOnLogin = true } = {}) => {
 
   function createGuestOptions(email) {
     check(email, Match.OneOf(String, null, undefined));
-    const guestname = `${moniker.choose()}-${Random.hexString(5)}`;
+    const guestname = `${moniker.choose()}-${randomValueHex(5)}`;
     return {
       email: email || `${guestname}@localhost`,
       guest: true,
