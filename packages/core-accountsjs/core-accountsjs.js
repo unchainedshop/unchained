@@ -42,9 +42,16 @@ const accountsServerOptions = {
   siteUrl: process.env.ROOT_URL,
   prepareMail: (to, token, user, pathFragment, emailTemplate, from) => {
     console.log(to, token, user, pathFragment, emailTemplate, from);
+
+    const actionsSet = {
+      'verify-email': 'verifyEmail',
+      'enroll-account': 'enrollAccount',
+      'reset-password': 'resetPassword',
+    };
+
     return {
       recipientEmail: to,
-      action: 'resetPassword',
+      action: actionsSet[pathFragment],
       userId: user.id || user._id,
       token,
     };
