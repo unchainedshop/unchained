@@ -7,7 +7,7 @@ Package.describe({
 });
 
 Package.onUse((api) => {
-  api.versionsFrom('1.10');
+  api.versionsFrom('1.11.1');
   api.use('ecmascript');
   api.mainModule('utils.js', 'server');
 });

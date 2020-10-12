@@ -7,12 +7,12 @@ Package.describe({
 });
 
 Package.onUse((api) => {
-  api.versionsFrom('1.10');
+  api.versionsFrom('1.11.1');
 
   api.use('ecmascript');
-  api.use('random');
   api.use('check');
   api.use('accounts-base');
+  api.use('email');
   api.use('percolate:migrations@1.0.2');
 
   api.use('unchained:core@0.53.1');

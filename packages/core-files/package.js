@@ -11,7 +11,7 @@ Npm.depends({
 });
 
 Package.onUse((api) => {
-  api.versionsFrom('1.10.2');
+  api.versionsFrom('1.11.1');
   api.use('ostrio:files@1.14.2');
   api.use('ecmascript');
   api.use('unchained:core-settings@0.53.1');
@@ -20,7 +20,6 @@ Package.onUse((api) => {
 
 Package.onTest((api) => {
   api.use('ecmascript');
-  api.use('tinytest');
   api.use('unchained:core-files');
   api.mainModule('core-files-tests.js');
 });

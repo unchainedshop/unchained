@@ -11,14 +11,11 @@ Npm.depends({
 });
 
 Package.onUse((api) => {
-  api.versionsFrom('1.10');
+  api.versionsFrom('1.11.1');
 
   api.use('ecmascript');
-  api.use('meteor');
-  api.use('http');
   api.use('webapp');
   api.use('accounts-base');
-  api.use('random');
   api.use('check');
   api.use('unchained:core@0.53.1');
   api.use('unchained:roles@0.53.1');
