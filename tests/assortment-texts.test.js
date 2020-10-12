@@ -20,6 +20,13 @@ describe('AssortmentTexts', () => {
   });
 
   describe('mutation.updateAssortmentTexts for admin users should', () => {
+    const textRecord = {
+      locale: 'et',
+      slug: 'slug-et',
+      title: 'simple assortment et',
+      description: 'text-et',
+      subtitle: 'subsimple assortment et',
+    };
     it('Update assortment texts successfuly when passed a valid assortment ID', async () => {
       const {
         data: { updateAssortmentTexts },
@@ -41,19 +48,12 @@ describe('AssortmentTexts', () => {
         `,
         variables: {
           assortmentId: SimpleAssortment[0]._id,
-          texts: [
-            {
-              locale: 'et',
-              slug: 'slug-et',
-              title: 'simple assortment et',
-              description: 'text-et',
-              subtitle: 'subsimple assortment et',
-            },
-          ],
+          texts: [textRecord],
         },
       });
 
       expect(updateAssortmentTexts.length).toEqual(1);
+      expect(updateAssortmentTexts[0]).toMatchObject(textRecord);
     });
 
     it('return not found error when passed a non-existing ID', async () => {

@@ -244,6 +244,11 @@ describe('Filters', () => {
       });
 
       expect(updateFilterTexts.length).toEqual(2);
+      expect(updateFilterTexts[0]).toMatchObject({
+        locale: 'en',
+        title: 'english-filter-text',
+        subtitle: 'english-filter-text-subtitle',
+      });
     });
 
     it('return not found error when passed non existing filter ID', async () => {

@@ -1,6 +1,6 @@
 Package.describe({
   name: 'unchained:core-discounting',
-  version: '0.53.1',
+  version: '0.53.2',
   summary: 'Unchained Engine Core: Discounting',
   git: 'https://github.com/unchainedshop/unchained',
   documentation: 'README.md',
@@ -9,8 +9,8 @@ Package.describe({
 Package.onUse((api) => {
   api.versionsFrom('1.11.1');
   api.use('ecmascript');
-  api.use('unchained:utils@0.53.1');
-  api.use('unchained:core-logger@0.53.1');
+  api.use('unchained:utils@0.53.2');
+  api.use('unchained:core-logger@0.53.2');
 
   api.mainModule('discounting.js', 'server');
 });

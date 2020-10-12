@@ -13,8 +13,8 @@ export default function updateProductTexts(
   if (!product) throw new ProductNotFoundError({ productId });
   const changedLocalizations = texts.map(({ locale, ...localizations }) =>
     product.upsertLocalizedText(locale, {
+      ...localizations,
       authorId: userId,
-      localizations,
     })
   );
   return changedLocalizations;

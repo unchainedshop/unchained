@@ -362,6 +362,10 @@ describe('ProductsVariation', () => {
       );
 
       expect(updateProductVariationTexts[0]._id).not.toBe(null);
+      expect(updateProductVariationTexts[0]).toMatchObject({
+        locale: 'en',
+        title: 'variation option 2 title',
+      });
     });
 
     it('return not found error when passed non existing product variationId', async () => {

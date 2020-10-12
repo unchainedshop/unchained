@@ -143,7 +143,12 @@ describe('ProductsVariation', () => {
         },
       });
 
-      expect(updateProductMediaTexts._id).not.toBe(null);
+      expect(updateProductMediaTexts[0]._id).not.toBe(null);
+      expect(updateProductMediaTexts[0]).toMatchObject({
+        locale: 'en',
+        title: 'english title',
+        subtitle: 'english title subtitle',
+      });
     });
 
     it('return not found error when passed non existing media ID', async () => {

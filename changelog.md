@@ -1,3 +1,16 @@
+# v0.53.2
+
+Hotfix for broken product text editing through controlpanel
+
+## Minor
+- [cp] Update deps
+- [docs] Add API Reference
+
+## Patches
+- [api] Fix updateProductText not updating text
+
+---
+
 # v0.53.1
 
 Minor tweaks and fixes
