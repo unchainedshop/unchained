@@ -33,7 +33,7 @@ const mongoStorage = new MongoDBInterface(
   }
 );
 
-const dbManager = new DatabaseManager({
+export const dbManager = new DatabaseManager({
   sessionStorage: mongoStorage,
   userStorage: mongoStorage,
 });
@@ -41,6 +41,7 @@ const dbManager = new DatabaseManager({
 const accountsServerOptions = {
   siteUrl: process.env.ROOT_URL,
   prepareMail: (to, token, user, pathFragment, emailTemplate, from) => {
+    console.log(to, token, user, pathFragment, emailTemplate, from);
     return {
       recipientEmail: to,
       action: 'resetPassword',
@@ -104,16 +105,12 @@ class UnchainedAccountsServer extends AccountsServer {
     return new Date(new Date(when).getTime() + this.getTokenLifetimeMs());
   }
 
-  hashLoginToken = (stampedToken) => {
-    const { token, when } = stampedToken;
+  hashLoginToken = (stampedLoginToken) => {
     const hash = crypto.createHash('sha256');
-    hash.update(token);
+    hash.update(stampedLoginToken);
     const hashedToken = hash.digest('base64');
 
-    return {
-      when,
-      hashedToken,
-    };
+    return hashedToken;
   };
 
   // We override the loginWithUser to use Meteor specific mechanism instead of accountjs JWT
@@ -121,18 +118,15 @@ class UnchainedAccountsServer extends AccountsServer {
   async loginWithUser(user) {
     // Random.secret uses a default value of 43
     // https://github.com/meteor/meteor/blob/devel/packages/random/AbstractRandomGenerator.js#L78
-    const stampedLoginToken = {
-      token: randomValueHex(43),
-      when: new Date(new Date().getTime() + 1000000),
-    };
+    const when = new Date(new Date().getTime() + 1000000);
+    const stampedLoginToken = randomValueHex(43);
 
-    const token = this.hashLoginToken(stampedLoginToken);
-
+    const hashedToken = this.hashLoginToken(stampedLoginToken);
     Meteor.users.update(
       { _id: user._id || user }, // can be user object or mere id passed by guest service
       {
         $addToSet: {
-          'services.resume.loginTokens': token,
+          'services.resume.loginTokens': { hashedToken, when },
         },
       }
     );
@@ -140,8 +134,8 @@ class UnchainedAccountsServer extends AccountsServer {
     // Take note we returen the stamped token but store the hashed on in the db
     return {
       token: {
-        when: token.when,
-        token: stampedLoginToken.token,
+        when,
+        token: stampedLoginToken,
       },
       user,
     };
