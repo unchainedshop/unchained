@@ -83,7 +83,7 @@ class UnchainedAccountsServer extends AccountsServer {
   LOGIN_UNEXPIRING_TOKEN_DAYS = 365 * 100;
 
   destroyToken = (userId, loginToken) => {
-    this.users.update(userId, {
+    Meteor.users.update(userId, {
       $pull: {
         'services.resume.loginTokens': {
           $or: [{ hashedToken: loginToken }, { token: loginToken }],
