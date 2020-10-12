@@ -1,6 +1,5 @@
 import { Locale } from 'locale';
-import { Accounts } from 'meteor/accounts-base';
-import { accountsPassword } from 'meteor/unchained:core-accountsjs';
+import { accountsPassword, dbManager } from 'meteor/unchained:core-accountsjs';
 import 'meteor/dburles:collection-helpers';
 import { getFallbackLocale } from 'meteor/unchained:core';
 import { Countries } from 'meteor/unchained:core-countries';
@@ -76,9 +75,9 @@ Users.helpers({
       return profile.displayName;
     return emails && emails[0].address;
   },
-  setPassword(password, options) {
+  setPassword(password) {
     const newPassword = password || uuidv4().split('-').pop();
-    Accounts.setPassword(this._id, newPassword, options);
+    accountsPassword.setPassword(this._id, newPassword);
     if (!password) {
       Users.update(
         { _id: this._id },
@@ -106,38 +105,40 @@ Users.helpers({
     );
     return Users.findOne({ _id: this._id });
   },
-  setUsername(username) {
-    Accounts.setUsername(this._id, username);
+  async setUsername(username) {
+    await dbManager.setUsername(this._id, username);
     return Users.findOne({ _id: this._id });
   },
-  addEmail(email, { verified = false, skipEmailVerification = false } = {}) {
-    Accounts.addEmail(this._id, email, verified);
+  async addEmail(
+    email,
+    { verified = false, skipEmailVerification = false } = {}
+  ) {
+    accountsPassword.addEmail(this._id, email, verified);
     if (!skipEmailVerification) {
-      const { sendVerificationEmail = true } = Accounts._options; // eslint-disable-line
-      if (sendVerificationEmail) {
-        Accounts.sendVerificationEmail(this._id, email);
-      }
+      await accountsPassword.sendVerificationEmail(email);
     }
     return Users.findOne({ _id: this._id });
   },
-  removeEmail(email) {
-    Accounts.removeEmail(this._id, email);
+  async removeEmail(email) {
+    await accountsPassword.removeEmail(this._id, email);
     return Users.findOne({ _id: this._id });
   },
-  updateEmail(email, { verified = false, skipEmailVerification = false } = {}) {
+  async updateEmail(
+    email,
+    { verified = false, skipEmailVerification = false } = {}
+  ) {
     log(
       'user.updateEmail is deprecated, please use user.addEmail and user.removeEmail',
       { level: 'warn' }
     );
-    Accounts.addEmail(this._id, email, verified);
+    accountsPassword.addEmail(this._id, email, verified);
     (this.emails || [])
       .filter(({ address }) => address.toLowerCase() !== email.toLowerCase())
-      .forEach(({ address }) => Accounts.removeEmail(this._id, address));
+      .forEach(({ address }) =>
+        accountsPassword.removeEmail(this._id, address)
+      );
     if (!skipEmailVerification) {
-      const { sendVerificationEmail = true } = Accounts._options; // eslint-disable-line
-      if (sendVerificationEmail) {
-        Accounts.sendVerificationEmail(this._id);
-      }
+      await accountsPassword.sendVerificationEmail(email);
     }
     return Users.findOne({ _id: this._id });
   },
@@ -236,7 +237,7 @@ Users.updateHeartbeat = ({ userId, ...options }) => {
   );
 };
 
-Users.createUser = ({
+Users.createUser = async ({
   username,
   roles,
   emails,
@@ -256,7 +257,7 @@ Users.createUser = ({
 
   const user = Users.findOne({ _id });
   if (user) {
-    Accounts.setPassword(_id, 'password');
+    await accountsPassword.setPassword(_id, 'password');
   }
   return user;
 };
