@@ -11,14 +11,6 @@ import { Bookmarks } from 'meteor/unchained:core-bookmarks';
 import { Promise } from 'meteor/promise';
 import cloneDeep from 'lodash.clonedeep';
 import moniker from 'moniker';
-import crypto from 'crypto';
-
-export const randomValueHex = (len) => {
-  return crypto
-    .randomBytes(Math.ceil(len / 2))
-    .toString('hex') // convert to hexadecimal format
-    .slice(0, len); // return required number of characters
-};
 
 export const buildContext = (user) => {
   const locale =
