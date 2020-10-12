@@ -55,13 +55,13 @@ const addresses = {
   },
 };
 
-const initializeDatabase = () => {
+const initializeDatabase = async () => {
   try {
     if (Users.find({ username: 'admin' }).count() > 0) {
       return;
     }
 
-    const admin = Users.createUser({
+    const admin = await Users.createUser({
       username: 'admin',
       roles: ['admin'],
       emails: [{ address: 'admin@localhost', verified: true }],
@@ -69,6 +69,7 @@ const initializeDatabase = () => {
       guest: false,
       lastBillingAddress: addresses.admin,
     });
+
     const languages = ['de', 'fr'].map((code, key) => {
       const isBase = key === 0;
       const language = Languages.createLanguage({

@@ -1,5 +1,9 @@
 import { Locale } from 'locale';
-import { accountsPassword, dbManager } from 'meteor/unchained:core-accountsjs';
+import {
+  accountsServer,
+  accountsPassword,
+  dbManager,
+} from 'meteor/unchained:core-accountsjs';
 import 'meteor/dburles:collection-helpers';
 import { getFallbackLocale } from 'meteor/unchained:core';
 import { Countries } from 'meteor/unchained:core-countries';
@@ -245,8 +249,7 @@ Users.createUser = async ({
   guest,
   ...userData
 }) => {
-  const _id = Users.insert({
-    created: new Date(),
+  const userId = await accountsPassword.createUser({
     username,
     roles,
     emails,
@@ -254,10 +257,6 @@ Users.createUser = async ({
     guest,
     ...userData,
   });
-
-  const user = Users.findOne({ _id });
-  if (user) {
-    await accountsPassword.setPassword(_id, 'password');
-  }
-  return user;
+  const createdUser = await accountsServer.findUserById(userId);
+  return createdUser;
 };
