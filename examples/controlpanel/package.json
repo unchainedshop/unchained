@@ -1,7 +1,7 @@
 {
   "name": "@unchainedshop/controlpanel",
   "description": "Control Panel for Unchained Engine",
-  "version": "0.53.1",
+  "version": "0.53.2",
   "license": "EUPL-1.2",
   "homepage": "https://unchained.shop",
   "main": "index.js",
@@ -55,7 +55,7 @@
     "graphql-tag": "^2.11.0",
     "less": "^3.12.2",
     "lodash": "^4.17.20",
-    "next": "^9.5.4",
+    "next": "^9.5.5",
     "prettier": "^2.1.2",
     "prop-types": "^15.7.2",
     "react": "^16.13.1",

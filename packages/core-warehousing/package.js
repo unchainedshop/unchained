@@ -1,6 +1,6 @@
 Package.describe({
   name: 'unchained:core-warehousing',
-  version: '0.53.1',
+  version: '0.53.2',
   summary: 'Unchained Engine Core: Warehousing',
   git: 'https://github.com/unchainedshop/unchained',
   documentation: 'README.md',
@@ -20,8 +20,8 @@ Package.onUse((api) => {
   api.use('aldeed:collection2@3.2.1');
   api.use('percolate:migrations@1.0.2');
 
-  api.use('unchained:utils@0.53.1');
-  api.use('unchained:core-logger@0.53.1');
+  api.use('unchained:utils@0.53.2');
+  api.use('unchained:core-logger@0.53.2');
 
   api.mainModule('warehousing.js', 'server');
 });

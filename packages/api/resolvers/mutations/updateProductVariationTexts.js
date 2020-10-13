@@ -16,9 +16,9 @@ export default function updateProductVariationTexts(
     throw new ProductVariationNotFoundError({ productVariationId });
   const changedLocalizations = texts.map(({ locale, ...localizations }) =>
     productVariation.upsertLocalizedText(locale, {
+      ...localizations,
       authorId: userId,
       productVariationOptionValue,
-      ...localizations,
     })
   );
   return changedLocalizations;

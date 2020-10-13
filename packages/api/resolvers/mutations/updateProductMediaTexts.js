@@ -14,8 +14,8 @@ export default function updateProductMediaTexts(
     throw new ProductMediaNotFoundError({ productMediaId });
   const changedLocalizations = texts.map(({ locale, ...localizations }) =>
     productMediaObject.upsertLocalizedText(locale, {
-      authorId: userId,
       ...localizations,
+      authorId: userId,
     })
   );
   return changedLocalizations;
