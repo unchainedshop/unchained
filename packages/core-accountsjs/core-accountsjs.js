@@ -15,7 +15,7 @@ export const randomValueHex = (len) => {
 
 const METEOR_ID_LENGTH = 17;
 
-export const idProvider = () =>
+const idProvider = () =>
   randomBytes(30)
     .toString('base64')
     .replace(/[\W_]+/g, '')
