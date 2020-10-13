@@ -79,9 +79,9 @@ Users.helpers({
       return profile.displayName;
     return emails && emails[0].address;
   },
-  setPassword(password) {
+  async setPassword(password) {
     const newPassword = password || uuidv4().split('-').pop();
-    accountsPassword.setPassword(this._id, newPassword);
+    await accountsPassword.setPassword(this._id, newPassword);
     if (!password) {
       Users.update(
         { _id: this._id },
@@ -135,12 +135,12 @@ Users.helpers({
       'user.updateEmail is deprecated, please use user.addEmail and user.removeEmail',
       { level: 'warn' }
     );
-    accountsPassword.addEmail(this._id, email, verified);
-    (this.emails || [])
-      .filter(({ address }) => address.toLowerCase() !== email.toLowerCase())
-      .forEach(({ address }) =>
-        accountsPassword.removeEmail(this._id, address)
-      );
+    await accountsPassword.addEmail(this._id, email, verified);
+    await Promise.all(
+      (this.emails || [])
+        .filter(({ address }) => address.toLowerCase() !== email.toLowerCase())
+        .map(({ address }) => accountsPassword.removeEmail(this._id, address))
+    );
     if (!skipEmailVerification) {
       await accountsPassword.sendVerificationEmail(email);
     }
