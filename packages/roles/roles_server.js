@@ -1,12 +1,13 @@
 /* eslint-disable */
-import {Meteor} from 'meteor/meteor'
-import {check, Match} from 'meteor/check'
+import { Meteor } from 'meteor/meteor'
+import { check, Match } from 'meteor/check'
+import { Users } from 'meteor/unchained:core-users'
 
 /**
  * Publish user roles
  */
 Meteor.publish('nicolaslopezj_roles', function () {
-  return Meteor.users.find({ _id: this.userId }, { fields: { roles: 1 } })
+  return Users.find({ _id: this.userId }, { fields: { roles: 1 } })
 })
 
 /**
@@ -17,7 +18,7 @@ Meteor.methods({
     var selector = Roles._oldCollection.find({})
     console.log('migrating ' + selector.count() + ' roles...')
     selector.forEach(function (userRoles) {
-      Meteor.users.update(userRoles.userId, { $set: { roles: userRoles.roles } })
+      Users.update(userRoles.userId, { $set: { roles: userRoles.roles } })
       Roles._oldCollection.remove(userRoles)
     })
 
@@ -35,7 +36,7 @@ Roles.addUserToRoles = function (userId, roles) {
     roles = [roles]
   }
 
-  return Meteor.users.update({ _id: userId }, { $addToSet: { roles: { $each: roles } } })
+  return Users.update({ _id: userId }, { $addToSet: { roles: { $each: roles } } })
 }
 
 /**
@@ -48,7 +49,7 @@ Roles.setUserRoles = function (userId, roles) {
     roles = [roles]
   }
 
-  return Meteor.users.update({ _id: userId }, { $set: { roles: roles } })
+  return Users.update({ _id: userId }, { $set: { roles: roles } })
 }
 
 /**
@@ -61,7 +62,7 @@ Roles.removeUserFromRoles = function (userId, roles) {
     roles = [roles]
   }
 
-  return Meteor.users.update({ _id: userId }, { $pullAll: { roles: roles } })
+  return Users.update({ _id: userId }, { $pullAll: { roles: roles } })
 }
 
 /**
@@ -73,7 +74,7 @@ const defaultOptions = {
   mapArgs: (...args) => args
 }
 Roles.action = function (action, userOptions) {
-  const options = {...defaultOptions, ...userOptions}
+  const options = { ...defaultOptions, ...userOptions }
   return function (target, key, descriptor) {
     let fn = descriptor.value || target[key]
     if (typeof fn !== 'function') {
@@ -82,7 +83,7 @@ Roles.action = function (action, userOptions) {
 
     return {
       configurable: true,
-      get () {
+      get() {
         const newFn = (root, params, context, ...other) => {
           const args = options.mapArgs(root, params, context, ...other)
           const hasPermission = Roles.userHasPermission(context.userId, action, ...args)

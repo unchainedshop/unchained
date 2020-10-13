@@ -79,7 +79,7 @@ class UnchainedAccountsServer extends AccountsServer {
   LOGIN_UNEXPIRING_TOKEN_DAYS = 365 * 100;
 
   destroyToken = (userId, loginToken) => {
-    Meteor.users.update(userId, {
+    this.users.update(userId, {
       $pull: {
         'services.resume.loginTokens': {
           $or: [{ hashedToken: loginToken }, { token: loginToken }],
@@ -125,7 +125,7 @@ class UnchainedAccountsServer extends AccountsServer {
     const stampedLoginToken = randomValueHex(43);
 
     const hashedToken = this.hashLoginToken(stampedLoginToken);
-    Meteor.users.update(
+    this.users.update(
       { _id: user._id || user }, // can be user object or mere id passed by guest service
       {
         $addToSet: {
@@ -148,7 +148,7 @@ class UnchainedAccountsServer extends AccountsServer {
     try {
       this.destroyToken(userId, token);
       this.hooks.emit(ServerHooks.LogoutSuccess, {
-        user: Meteor.users.findOne({ _id: userId }),
+        user: this.users.findOne({ _id: userId }),
       });
     } catch (error) {
       this.hooks.emit(ServerHooks.LogoutError, error);

@@ -11,7 +11,6 @@ Package.onUse((api) => {
 
   api.use('ecmascript');
   api.use('check');
-  api.use('accounts-base');
   api.use('email');
   api.use('percolate:migrations@1.0.2');
 

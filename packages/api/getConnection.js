@@ -1,4 +1,3 @@
-import { Accounts } from 'meteor/accounts-base';
 import crypto from 'crypto';
 
 const METEOR_ID_LENGTH = 17;

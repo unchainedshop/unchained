@@ -12,6 +12,8 @@ import { Promise } from 'meteor/promise';
 import cloneDeep from 'lodash.clonedeep';
 import moniker from 'moniker';
 
+accountsServer.users = Users;
+
 export const buildContext = (user) => {
   const locale =
     (user && user.lastLogin && user.lastLogin.locale) ||

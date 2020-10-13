@@ -15,7 +15,6 @@ Package.onUse((api) => {
 
   api.use('ecmascript');
   api.use('webapp');
-  api.use('accounts-base');
   api.use('check');
   api.use('unchained:core@0.53.1');
   api.use('unchained:roles@0.53.1');

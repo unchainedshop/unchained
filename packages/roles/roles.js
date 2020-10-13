@@ -1,4 +1,5 @@
 /* eslint-disable */
+import { Users } from 'meteor/unchained:core-users';
 
 /**
  * Init the variable
@@ -13,7 +14,7 @@ Roles.debug = false
 Roles._roles = {}
 Roles._actions = []
 Roles._helpers = []
-Roles._usersCollection = Meteor.users
+Roles._usersCollection = Users
 Roles._specialRoles = ['__loggedIn__', '__notAdmin__', '__notLoggedIn__', '__all__']
 
 /**
