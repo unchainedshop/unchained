@@ -178,7 +178,7 @@ describe('Auth for admin users', () => {
 
   describe('Mutation.updateEmail', () => {
     it('update the e-mail of a foreign user', async () => {
-      const email = 'newuser@localhost';
+      const email = 'newuser@unchained.localhost';
       const { data: { updateEmail } = {} } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation updateEmail($email: String!, $userId: ID) {

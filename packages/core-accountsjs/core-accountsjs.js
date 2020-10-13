@@ -41,8 +41,6 @@ export const dbManager = new DatabaseManager({
 const accountsServerOptions = {
   siteUrl: process.env.ROOT_URL,
   prepareMail: (to, token, user, pathFragment, emailTemplate, from) => {
-    console.log(to, token, user, pathFragment, emailTemplate, from);
-
     const actionsSet = {
       'verify-email': 'verifyEmail',
       'enroll-account': 'enrollAccount',
@@ -73,9 +71,7 @@ const accountsServerOptions = {
 
 class UnchainedAccountsPassword extends AccountsPassword {}
 
-export const accountsPassword = new UnchainedAccountsPassword({
-  returnTokensAfterResetPassword: true,
-});
+export const accountsPassword = new UnchainedAccountsPassword({});
 
 class UnchainedAccountsServer extends AccountsServer {
   DEFAULT_LOGIN_EXPIRATION_DAYS = 90;
