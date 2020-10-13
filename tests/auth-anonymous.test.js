@@ -128,7 +128,7 @@ describe('Auth for anonymous users', () => {
         _id: 'userthatforgetspasswords',
         emails: [
           {
-            address: 'userthatforgetspasswords@localhost',
+            address: 'userthatforgetspasswords@unchained.localhost',
             verified: true,
           },
         ],
@@ -139,7 +139,9 @@ describe('Auth for anonymous users', () => {
       const { data: { forgotPassword } = {} } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation {
-            forgotPassword(email: "userthatforgetspasswords@localhost") {
+            forgotPassword(
+              email: "userthatforgetspasswords@unchained.localhost"
+            ) {
               success
             }
           }
@@ -152,16 +154,48 @@ describe('Auth for anonymous users', () => {
   });
 
   describe('Mutation.resetPassword', () => {
+    beforeAll(async () => {
+      const Users = db.collection('users');
+      await Users.findOrInsertOne({
+        ...User,
+        _id: 'userthatforgetspasswords',
+        emails: [
+          {
+            address: 'userthatforgetspasswords@unchained.localhost',
+            verified: true,
+          },
+        ],
+      });
+    });
+
+    it('create a reset token', async () => {
+      const { data: { forgotPassword } = {} } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation {
+            forgotPassword(
+              email: "userthatforgetspasswords@unchained.localhost"
+            ) {
+              success
+            }
+          }
+        `,
+      });
+      expect(forgotPassword).toEqual({
+        success: true,
+      });
+    });
+
     it('change password with token from forgotPassword call', async () => {
       // Reset the password with that token
       const Users = db.collection('users');
       const user = await Users.findOne({
-        'emails.address': 'userthatforgetspasswords@localhost',
+        'emails.address': 'userthatforgetspasswords@unchained.localhost',
       });
+
       const {
         services: {
           password: {
-            reset: { token },
+            reset: [{ token }],
           },
         },
       } = user;

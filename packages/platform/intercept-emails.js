@@ -3,6 +3,7 @@ import path from 'path';
 import os from 'os';
 import open from 'open';
 import { createLogger } from 'meteor/unchained:core-logger';
+import { Email } from 'meteor/email';
 
 const logger = createLogger('unchained:platform');
 const mailman = {};

@@ -34,7 +34,7 @@ export const User = {
   username: 'user',
   emails: [
     {
-      address: 'user@localhost',
+      address: 'user@unchained.localhost',
       verified: true,
     },
   ],

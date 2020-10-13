@@ -97,7 +97,7 @@ describe('Auth for logged in users', () => {
       const { data: { resendVerificationEmail } = {} } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation {
-            resendVerificationEmail(email: "user@localhost") {
+            resendVerificationEmail(email: "user@unchained.localhost") {
               success
             }
           }
@@ -110,11 +110,41 @@ describe('Auth for logged in users', () => {
   });
 
   describe('Mutation.verifyEmail', () => {
+    beforeAll(async () => {
+      const Users = db.collection('users');
+      await Users.findOrInsertOne({
+        ...User,
+        _id: 'userthatmustverifyemail',
+        emails: [
+          {
+            address: 'userthatmustverifyemail@unchained.localhost',
+            verified: false,
+          },
+        ],
+      });
+    });
+
+    it('create a verification token', async () => {
+      const { data: { resendVerificationEmail } = {} } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation {
+            resendVerificationEmail(
+              email: "userthatmustverifyemail@unchained.localhost"
+            ) {
+              success
+            }
+          }
+        `,
+      });
+      expect(resendVerificationEmail).toEqual({
+        success: true,
+      });
+    });
     it('verifies the e-mail of user', async () => {
       // Reset the password with that token
       const Users = db.collection('users');
       const user = await Users.findOne({
-        _id: 'user',
+        _id: 'userthatmustverifyemail',
       });
 
       const {
@@ -124,7 +154,6 @@ describe('Auth for logged in users', () => {
           },
         },
       } = user;
-
       const { data: { verifyEmail } = {} } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation verifyEmail($token: String!) {
@@ -149,7 +178,7 @@ describe('Auth for logged in users', () => {
       // Reset the password with that token
       const Users = db.collection('users');
       const user = await Users.findOne({
-        _id: 'user',
+        _id: 'userthatmustverifyemail',
       });
 
       expect(user.emails[0].verified).toEqual(true);

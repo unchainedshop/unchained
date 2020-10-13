@@ -7,10 +7,11 @@ Package.describe({
 });
 
 Package.onUse((api) => {
-  api.versionsFrom('1.10');
+  api.versionsFrom('1.11.1');
   api.use('ecmascript');
   api.use('mongo');
   api.use('promise');
+  api.use('email');
   api.use('dburles:collection-helpers@1.1.0');
   api.use('aldeed:collection2@3.2.1');
   api.use('littledata:synced-cron@1.5.1');

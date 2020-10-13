@@ -1,11 +1,11 @@
-import { Accounts } from 'meteor/accounts-base';
+import { accountsPassword } from 'meteor/unchained:core-accountsjs';
 
 export default async function resendVerificationEmail(
   root,
   { email },
   { userId }
 ) {
-  Accounts.sendVerificationEmail(userId, email);
+  await accountsPassword.sendVerificationEmail(email);
   return {
     success: true,
   };

@@ -2,6 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { Migrations } from 'meteor/percolate:migrations';
 import SimpleSchema from 'simpl-schema';
 import { Schemas } from 'meteor/unchained:utils';
+import { Users } from './collections';
 import * as Collections from './collections';
 
 const { Address, timestampFields } = Schemas;
@@ -67,21 +68,20 @@ export const UserSchema = new SimpleSchema(
   { requiredByDefault: false }
 );
 
-Meteor.users.attachSchema(UserSchema);
+Users.attachSchema(UserSchema);
 
 Migrations.add({
   version: 20180529,
   name: 'Move tags and guest from user.profile to user level',
   up() {
-    Meteor.users
-      .find()
+    Users.find()
       .fetch()
       .forEach((user) => {
         const { profile = {} } = user;
         const displayName =
           profile.displayName ||
           [profile.firstName, profile.lastName].filter(Boolean).join(' ');
-        Meteor.users.update(
+        Users.update(
           { _id: user._id },
           {
             $set: {
@@ -100,13 +100,12 @@ Migrations.add({
       });
   },
   down() {
-    Meteor.users
-      .find()
+    Users.find()
       .fetch()
       .forEach((user) => {
         const { profile = {} } = user;
         const displayName = profile.displayName || '';
-        Meteor.users.update(
+        Users.update(
           { _id: user._id },
           {
             $set: {
@@ -130,14 +129,13 @@ Migrations.add({
   version: 20200103,
   name: 'lastLogin.country to lastLogin.countryContext',
   up() {
-    Meteor.users
-      .find()
+    Users.find()
       .fetch()
       .forEach((user) => {
         const { lastLogin } = user;
         if (lastLogin) {
           const { country } = lastLogin;
-          Meteor.users.update(
+          Users.update(
             { _id: user._id },
             {
               $set: {
@@ -152,14 +150,13 @@ Migrations.add({
       });
   },
   down() {
-    Meteor.users
-      .find()
+    Users.find()
       .fetch()
       .forEach((user) => {
         const { lastLogin } = user;
         if (lastLogin) {
           const { countryContext } = lastLogin;
-          Meteor.users.update(
+          Users.update(
             { _id: user._id },
             {
               $set: {

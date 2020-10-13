@@ -178,7 +178,7 @@ describe('Auth for admin users', () => {
 
   describe('Mutation.updateEmail', () => {
     it('update the e-mail of a foreign user', async () => {
-      const email = 'newuser@localhost';
+      const email = 'newuser@unchained.localhost';
       const { data: { updateEmail } = {} } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation updateEmail($email: String!, $userId: ID) {
@@ -208,7 +208,7 @@ describe('Auth for admin users', () => {
 
   describe('Mutation.addEmail', () => {
     it('add an e-mail to a foreign user', async () => {
-      const email = 'newuser2@localhost';
+      const email = 'newuser2@unchained.local';
       const { data: { addEmail } = {} } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation addEmail($email: String!, $userId: ID) {
@@ -244,7 +244,7 @@ describe('Auth for admin users', () => {
 
   describe('Mutation.removeEmail', () => {
     it('remove an e-mail of a foreign user', async () => {
-      const email = 'newuser2@localhost';
+      const email = 'newuser2@unchained.local';
       const { data: { removeEmail } = {} } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation removeEmail($email: String!, $userId: ID) {
