@@ -166,4 +166,5 @@ export default () => {
   ProductTexts.rawCollection().createIndex({ productId: 1 });
   ProductTexts.rawCollection().createIndex({ locale: 1 });
   ProductTexts.rawCollection().createIndex({ slug: 1 });
+  ProductTexts.rawCollection().createIndex({ locale: 1, productId: 1 });
 };
