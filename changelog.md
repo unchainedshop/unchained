@@ -1,3 +1,13 @@
+# v0.53.3
+
+## Minor
+- [core] Compound indexes for text entities
+
+## Patches
+- [api] Fix rare case where MESSAGE work type lead to an exception
+
+---
+
 # v0.53.2
 
 Hotfix for broken product text editing through controlpanel
