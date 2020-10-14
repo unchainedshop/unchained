@@ -56,18 +56,21 @@ const accountsServerOptions = {
       };
     }
   },
-  sendMail: ({ action, userId, token, recipientEmail }) => {
-    return WorkerDirector.addWork({
-      type: 'MESSAGE',
-      retries: 0,
-      input: {
-        template: 'ACCOUNT_ACTION',
-        action,
-        recipientEmail,
-        userId,
-        token,
-      },
-    });
+  sendMail: (data) => {
+    if (data) {
+      const { action, userId, token, recipientEmail } = data;
+      return WorkerDirector.addWork({
+        type: 'MESSAGE',
+        retries: 0,
+        input: {
+          template: 'ACCOUNT_ACTION',
+          action,
+          recipientEmail,
+          userId,
+          token,
+        },
+      });
+    }
   },
 };
 
