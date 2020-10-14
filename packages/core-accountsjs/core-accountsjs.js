@@ -73,7 +73,9 @@ const accountsServerOptions = {
 
 class UnchainedAccountsPassword extends AccountsPassword {}
 
-export const accountsPassword = new UnchainedAccountsPassword({});
+export const accountsPassword = new UnchainedAccountsPassword({
+  sendVerificationEmailAfterSignup: true,
+});
 
 class UnchainedAccountsServer extends AccountsServer {
   DEFAULT_LOGIN_EXPIRATION_DAYS = 90;
