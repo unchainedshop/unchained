@@ -41,18 +41,20 @@ export const dbManager = new DatabaseManager({
 const accountsServerOptions = {
   siteUrl: process.env.ROOT_URL,
   prepareMail: (to, token, user, pathFragment, emailTemplate, from) => {
-    const actionsSet = {
-      'verify-email': 'verifyEmail',
-      'enroll-account': 'enrollAccount',
-      'reset-password': 'resetPassword',
-    };
+    if (token && pathFragment) {
+      const actionsSet = {
+        'verify-email': 'verifyEmail',
+        'enroll-account': 'enrollAccount',
+        'reset-password': 'resetPassword',
+      };
 
-    return {
-      recipientEmail: to,
-      action: actionsSet[pathFragment],
-      userId: user.id || user._id,
-      token,
-    };
+      return {
+        recipientEmail: to,
+        action: actionsSet[pathFragment],
+        userId: user.id || user._id,
+        token,
+      };
+    }
   },
   sendMail: ({ action, userId, token, recipientEmail }) => {
     return WorkerDirector.addWork({
