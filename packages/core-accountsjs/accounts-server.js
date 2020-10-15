@@ -1,77 +1,45 @@
 import { AccountsServer, ServerHooks } from '@accounts/server';
-import { AccountsPassword } from '@accounts/password';
-import MongoDBInterface from '@accounts/mongo';
-import { MongoInternals } from 'meteor/mongo';
-import { DatabaseManager } from '@accounts/database-manager';
-import crypto, { randomBytes } from 'crypto';
 import { WorkerDirector } from 'meteor/unchained:core-worker';
-
-export const randomValueHex = (len) => {
-  return crypto
-    .randomBytes(Math.ceil(len / 2))
-    .toString('hex') // convert to hexadecimal format
-    .slice(0, len); // return required number of characters
-};
-
-const METEOR_ID_LENGTH = 17;
-
-export const idProvider = () =>
-  randomBytes(30)
-    .toString('base64')
-    .replace(/[\W_]+/g, '')
-    .substr(0, METEOR_ID_LENGTH);
-
-const dateProvider = (date) => date || new Date();
-
-const mongoStorage = new MongoDBInterface(
-  MongoInternals.defaultRemoteCollectionDriver().mongo.db,
-  {
-    convertUserIdToMongoObjectId: false,
-    convertSessionIdToMongoObjectId: false,
-    idProvider,
-    dateProvider,
-  }
-);
-
-export const dbManager = new DatabaseManager({
-  sessionStorage: mongoStorage,
-  userStorage: mongoStorage,
-});
+import crypto from 'crypto';
+import { randomValueHex } from './helpers';
+import { dbManager } from './db-manager';
+import { accountsPassword } from './accounts-password';
 
 const accountsServerOptions = {
   siteUrl: process.env.ROOT_URL,
   prepareMail: (to, token, user, pathFragment, emailTemplate, from) => {
-    const actionsSet = {
-      'verify-email': 'verifyEmail',
-      'enroll-account': 'enrollAccount',
-      'reset-password': 'resetPassword',
-    };
+    if (token && pathFragment) {
+      const actionsSet = {
+        'verify-email': 'verifyEmail',
+        'enroll-account': 'enrollAccount',
+        'reset-password': 'resetPassword',
+      };
 
-    return {
-      recipientEmail: to,
-      action: actionsSet[pathFragment],
-      userId: user.id || user._id,
-      token,
-    };
-  },
-  sendMail: ({ action, userId, token, recipientEmail }) => {
-    return WorkerDirector.addWork({
-      type: 'MESSAGE',
-      retries: 0,
-      input: {
-        template: 'ACCOUNT_ACTION',
-        action,
-        recipientEmail,
-        userId,
+      return {
+        recipientEmail: to,
+        action: actionsSet[pathFragment],
+        userId: user.id || user._id,
         token,
-      },
-    });
+      };
+    }
+  },
+  sendMail: (data) => {
+    if (data) {
+      const { action, userId, token, recipientEmail } = data;
+      return WorkerDirector.addWork({
+        type: 'MESSAGE',
+        retries: 0,
+        input: {
+          template: 'ACCOUNT_ACTION',
+          action,
+          recipientEmail,
+          userId,
+          token,
+        },
+      });
+    }
   },
 };
-
-class UnchainedAccountsPassword extends AccountsPassword {}
-
-export const accountsPassword = new UnchainedAccountsPassword({});
 
 class UnchainedAccountsServer extends AccountsServer {
   DEFAULT_LOGIN_EXPIRATION_DAYS = 90;
@@ -157,6 +125,7 @@ class UnchainedAccountsServer extends AccountsServer {
   }
 }
 
+// eslint-disable-next-line import/prefer-default-export
 export const accountsServer = new UnchainedAccountsServer(
   {
     db: dbManager,

@@ -1,5 +1,6 @@
 import { Migrations } from 'meteor/percolate:migrations';
 import configureUsers from 'meteor/unchained:core-users';
+import configureAccounts from 'meteor/unchained:core-accountsjs';
 import configureLogger, { createLogger } from 'meteor/unchained:core-logger';
 import configureDelivery from 'meteor/unchained:core-delivery';
 import configurePayment from 'meteor/unchained:core-payment';
@@ -41,6 +42,7 @@ export default ({ modules = {} } = {}) => {
   configureLanguages(modules.languages);
   configureDocuments(modules.documents);
   configureUsers(modules.users);
+  configureAccounts(module.accounts);
   configureDelivery(modules.delivery);
   configurePayment(modules.payment);
   configureWarehousing(modules.warehousing);

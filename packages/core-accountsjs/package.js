@@ -18,12 +18,5 @@ Npm.depends({
 Package.onUse((api) => {
   api.versionsFrom('1.10.2');
   api.use('ecmascript');
-  api.mainModule('core-accountsjs.js');
-});
-
-Package.onTest((api) => {
-  api.use('ecmascript');
-  api.use('tinytest');
-  api.use('unchained:core-accountsjs');
-  api.mainModule('core-accountsjs-tests.js');
+  api.mainModule('accountsjs.js');
 });

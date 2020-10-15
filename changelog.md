@@ -1,3 +1,14 @@
+# vNEXT
+
+TBD
+
+## Patches
+- [great-purge-of-meteor] Remove accounts-base and accounts-password from platform package
+- [great-purge-of-meteor] Implement new core-accountsjs package
+- [great-purge-of-meteor] Convert all authentication related mutations within `api/resolvers/mutations/accounts/loginWithPassword.js` to use accounts-js.
+- [great-purge-of-meteor] Convert any Users collection helpers to use accounts-js. 
+
+
 # v0.53.2
 
 Hotfix for broken product text editing through controlpanel
