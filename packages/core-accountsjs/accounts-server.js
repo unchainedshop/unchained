@@ -2,7 +2,6 @@ import { AccountsServer, ServerHooks } from '@accounts/server';
 import { WorkerDirector } from 'meteor/unchained:core-worker';
 import crypto from 'crypto';
 import { randomValueHex } from './helpers';
-import settings from './settings';
 import { dbManager } from './db-manager';
 import { accountsPassword } from './accounts-password';
 
@@ -43,9 +42,9 @@ const accountsServerOptions = {
 };
 
 class UnchainedAccountsServer extends AccountsServer {
-  DEFAULT_LOGIN_EXPIRATION_DAYS = settings.DEFAULT_LOGIN_EXPIRATION_DAYS;
+  DEFAULT_LOGIN_EXPIRATION_DAYS = 90;
 
-  LOGIN_UNEXPIRING_TOKEN_DAYS = settings.LOGIN_UNEXPIRING_TOKEN_DAYS;
+  LOGIN_UNEXPIRING_TOKEN_DAYS = 365 * 100;
 
   destroyToken = (userId, loginToken) => {
     this.users.update(userId, {
