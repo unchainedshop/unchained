@@ -1,9 +1,10 @@
+import { accountsPassword } from './accounts-password';
+
 const sendVerificationEmail = true;
 
 const settings = {
-  sendVerificationEmailAfterSignup: null,
   load({ sendVerificationEmailAfterSignup = sendVerificationEmail } = {}) {
-    this.sendVerificationEmailAfterSignup = sendVerificationEmailAfterSignup;
+    accountsPassword.options.sendVerificationEmailAfterSignup = sendVerificationEmailAfterSignup;
   },
 };
 
