@@ -6,7 +6,7 @@ runs:
       - name: checkout code
         runtime:
           containers:
-            - image: harryadel/unchained-commerce-main:1.0      
+            - image: harryadel/unchained-commerce-main:1.0
         steps:
           - clone:
           - save_to_workspace:
@@ -14,7 +14,7 @@ runs:
                 - source_dir: .
                   dest_dir: .
                   paths:
-                    - '**'
+                    - "**"
       - name: build docker image
         runtime:
           containers:
@@ -27,12 +27,9 @@ runs:
           - run: /kaniko/executor --destination registry/image
         depends:
           - checkout code
-      - name: test stuff 
-        - run:
+      - run:
           name: lint
-          command: meteor npm run lint:ci      
-       steps:
-         - clone:
-         - run:
-             name: test
-             command: meteor npm run test:ci
+          command: meteor npm run lint:ci
+      - run:
+          name: test
+          command: meteor npm run test:ci
