@@ -19,8 +19,8 @@ runs:
         steps:
           - restore_workspace:
               dest_dir: .
-          #- run: /kaniko/executor --no-push
           - run: meteor npm run lint:ci
+          - run: meteor npm run test:ci
         depends:
           - checkout code
       # - name: run checks
