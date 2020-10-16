@@ -4,9 +4,9 @@ runs:
   - name: Application Checks
     tasks:
       - name: checkout code
-        # runtime:
-        #   containers:
-        #     - image: harryadel/unchained-commerce-main:1.0
+        runtime:
+          containers:
+            - image: harryadel/unchained-commerce-main:1.0
         steps:
           - clone:
           - save_to_workspace:
