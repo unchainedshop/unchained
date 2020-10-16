@@ -10,8 +10,8 @@ runs:
         steps:
           - clone:
           - run:
-            name: install
-            command: meteor npm install
+              name: install
+              command: meteor npm install
           - run:
               name: lint
               command: meteor npm run lint:ci
