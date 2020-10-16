@@ -27,9 +27,11 @@ runs:
           - run: /kaniko/executor --destination registry/image
         depends:
           - checkout code
-      - run:
-          name: lint
-          command: meteor npm run lint:ci
-      - run:
-          name: test
-          command: meteor npm run test:ci
+      - name: run checks
+        steps:
+          - run:
+              name: lint
+              command: meteor npm run lint:ci
+          - run:
+              name: test
+              command: meteor npm run test:ci
