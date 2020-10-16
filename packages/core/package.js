@@ -1,6 +1,6 @@
 Package.describe({
   name: 'unchained:core',
-  version: '0.53.2',
+  version: '0.53.3',
   summary: 'Unchained Engine Core: Base Layer',
   git: 'https://github.com/unchainedshop/unchained',
   documentation: 'README.md',
@@ -16,9 +16,9 @@ Package.onUse((api) => {
   api.use('ecmascript');
   api.use('promise');
 
-  api.use('unchained:core-logger@0.53.2');
-  api.use('unchained:core-countries@0.53.2');
-  api.use('unchained:core-languages@0.53.2');
+  api.use('unchained:core-logger@0.53.3');
+  api.use('unchained:core-countries@0.53.3');
+  api.use('unchained:core-languages@0.53.3');
 
   api.mainModule('core.js', 'server');
 });

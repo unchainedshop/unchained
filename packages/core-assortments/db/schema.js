@@ -255,6 +255,10 @@ export default () => {
   });
   Collections.AssortmentTexts.rawCollection().createIndex({ locale: 1 });
   Collections.AssortmentTexts.rawCollection().createIndex({ slug: 1 });
+  Collections.AssortmentTexts.rawCollection().createIndex({
+    locale: 1,
+    assortmentId: 1,
+  });
 
   // AssortmentProducts indexes
   Collections.AssortmentProducts.rawCollection().createIndex({

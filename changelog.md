@@ -8,6 +8,15 @@ TBD
 - [great-purge-of-meteor] Convert all authentication related mutations within `api/resolvers/mutations/accounts/loginWithPassword.js` to use accounts-js.
 - [great-purge-of-meteor] Convert any Users collection helpers to use accounts-js. 
 
+# v0.53.3
+
+## Minor
+- [core] Compound indexes for text entities
+
+## Patches
+- [api] Fix rare case where MESSAGE work type lead to an exception
+
+---
 
 # v0.53.2
 

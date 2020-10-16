@@ -125,5 +125,9 @@ export default () => {
   // FilterTexts indexes
   FilterTexts.rawCollection().createIndex({ filterId: 1 });
   FilterTexts.rawCollection().createIndex({ filterOptionValue: 1 });
-  FilterTexts.rawCollection().createIndex({ locale: 1 });
+  FilterTexts.rawCollection().createIndex({
+    filterId: 1,
+    filterOptionValue: 1,
+    locale: 1,
+  });
 };
