@@ -16,15 +16,11 @@ runs:
                   paths:
                     - "**"
       - name: build docker image
-        runtime:
-          containers:
-            - image: gcr.io/kaniko-project/executor:debug
-        shell: /busybox/sh
         steps:
           - restore_workspace:
               dest_dir: .
           #- run: /kaniko/executor --no-push
-          - run: /kaniko/executor --destination registry/image
+          - run: meteor npm run lint:ci
         depends:
           - checkout code
       # - name: run checks
