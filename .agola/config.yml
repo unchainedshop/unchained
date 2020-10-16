@@ -6,9 +6,12 @@ runs:
       - name: checkout code
         runtime:
           containers:
-            - image: harryadel/unchained-commerce-main:1.0
+            - image: geoffreybooth/meteor-base:1.11.1
         steps:
           - clone:
+          - run:
+            name: install
+            command: meteor npm install
           - run:
               name: lint
               command: meteor npm run lint:ci
