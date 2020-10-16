@@ -1,0 +1,26 @@
+version: v0
+
+runs:
+  - name: Application Checks
+    tasks:
+      - name: build meteor
+        runtime:
+          containers:
+            - image: harryadel/unchained-commerce-main      
+          ste
+
+        steps:
+          - clone:
+          - run:
+              name: lint
+              command: meteor npm run lint:ci
+      tasks:
+      - name: Integration Tests
+        runtime:
+          containers:
+            - image: Dockerfile      
+        steps:
+          - clone:
+          - run:
+              name: test
+              command: meteor npm run test:ci
