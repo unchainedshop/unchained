@@ -9,20 +9,10 @@ runs:
             - image: harryadel/unchained-commerce-main:1.0
         steps:
           - clone:
-          - save_to_workspace:
-              contents:
-                - source_dir: .
-                  dest_dir: .
-                  paths:
-                    - "**"
-      - name: build docker image
-        steps:
-          - restore_workspace:
-              dest_dir: .
           - run: meteor npm run lint:ci
           - run: meteor npm run test:ci
-        depends:
-          - checkout code
+        # depends:
+        #   - checkout code
       # - name: run checks
       #   steps:
       #     - run:
