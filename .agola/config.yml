@@ -29,8 +29,8 @@ runs:
           - checkout code
       - name: test stuff 
         - run:
-            name: lint
-            command: meteor npm run lint:ci      
+          name: lint
+          command: meteor npm run lint:ci      
        steps:
          - clone:
          - run:
