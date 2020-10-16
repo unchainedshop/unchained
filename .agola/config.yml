@@ -8,6 +8,12 @@ runs:
           containers:
             - image: geoffreybooth/meteor-base:1.11.1
         steps:
+          - run:
+              name: ls
+              command: ls
+          - run:
+              name: pwd
+              command: pwd                   
           - clone:
           - run:
               name: install
