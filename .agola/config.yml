@@ -13,7 +13,10 @@ runs:
               command: ls
           - run:
               name: pwd
-              command: pwd                   
+              command: pwd
+          - run:
+              name: install ssh-client    
+              command: apt-get install ssh-client
           - clone:
           - run:
               name: install
