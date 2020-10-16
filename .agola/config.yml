@@ -7,8 +7,6 @@ runs:
         runtime:
           containers:
             - image: harryadel/unchained-commerce-main      
-          ste
-
         steps:
           - clone:
           - run:
