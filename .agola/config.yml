@@ -11,12 +11,7 @@ runs:
           - clone:
           - run:
               name: lint
-              command: meteor npm run lint:ci
-      tasks:
-      - name: Integration Tests
-        runtime:
-          containers:
-            - image: Dockerfile      
+              command: meteor npm run lint:ci      
         steps:
           - clone:
           - run:
