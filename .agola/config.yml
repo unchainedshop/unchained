@@ -30,7 +30,7 @@ runs:
       - name: test stuff 
       - run:
             name: lint
-            command: meteor npm run lint:ci      
+          - command: meteor npm run lint:ci      
       steps:
         - clone:
         - run:
