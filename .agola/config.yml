@@ -28,7 +28,7 @@ runs:
         depends:
           - checkout code
       - name: test stuff 
-        run:
+        - run:
             name: lint
             command: meteor npm run lint:ci      
        steps:
