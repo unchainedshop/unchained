@@ -4,15 +4,28 @@ runs:
   - name: Application Checks
     tasks:
       - name: checkout code
+        # runtime:
+        #   containers:
+        #     - image: harryadel/unchained-commerce-main:1.0
+        steps:
+          - clone:
+          - save_to_workspace:
+              contents:
+                - source_dir: .
+                  dest_dir: .
+                  paths:
+                    - "**"
+      - name: build docker image
         runtime:
           containers:
             - image: harryadel/unchained-commerce-main:1.0
         steps:
-          - clone:
-          - run: meteor npm run lint:ci
-          - run: meteor npm run test:ci
-        # depends:
-        #   - checkout code
+          - restore_workspace:
+              dest_dir: .
+          #- run: /kaniko/executor --no-push
+          - run: /kaniko/executor --destination registry/image
+        depends:
+          - checkout code
       # - name: run checks
       #   steps:
       #     - run:
