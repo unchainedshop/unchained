@@ -12,7 +12,7 @@ export default (options) => {
 
   WebApp.connectHandlers.use(
     BULK_IMPORT_API_PATH,
-    bodyParser.json({ strict: false })
+    bodyParser.json({ strict: false, limit: '10mb' })
   );
   WebApp.connectHandlers.use(BULK_IMPORT_API_PATH, async (req, res) => {
     const resolvedContext = await contextResolver({ req });
