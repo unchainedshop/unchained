@@ -8,29 +8,9 @@ runs:
           containers:
             - image: harryadel/unchained-commerce-main:1.0
         steps:
-          - clone:
-          - save_to_workspace:
-              contents:
-                - source_dir: .
-                  dest_dir: .
-                  paths:
-                    - "**"
-      - name: build docker image
-        runtime:
-          containers:
-            - image: harryadel/unchained-commerce-main:1.0
-        steps:
-          - restore_workspace:
-              dest_dir: .
-          #- run: /kaniko/executor --no-push
-          - run: /kaniko/executor --destination registry/image
-        depends:
-          - checkout code
-      # - name: run checks
-      #   steps:
-      #     - run:
-      #         name: lint
-      #         command: meteor npm run lint:ci
-      #     - run:
-      #         name: test
-      #         command: meteor npm run test:ci
+          - run:
+              name: lint
+              command: meteor npm run lint:ci
+          - run:
+              name: test
+              command: meteor npm run test:ci
