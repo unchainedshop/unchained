@@ -16,7 +16,7 @@ runs:
               command: pwd
           - run:
               name: install ssh-client    
-              command: apt-get install ssh-client
+              command: apt-get install ssh-client -y
           - clone:
           - run:
               name: install
