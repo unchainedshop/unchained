@@ -75,10 +75,10 @@ describe('Bulk Importer', () => {
                       },
                     ],
                     plan: {
-                      billingInterval: 'daily',
+                      billingInterval: 'DAY',
                       billingIntervalCount: 1,
-                      usageCalculationType: 'metered',
-                      trialInterval: 'daily',
+                      usageCalculationType: 'METERED',
+                      trialInterval: 'DAY',
                       trialIntervalCount: 1,
                     },
                     bundleItems: [
