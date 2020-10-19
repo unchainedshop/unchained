@@ -2,7 +2,7 @@ import { log } from 'meteor/unchained:core-logger';
 import { Users } from 'meteor/unchained:core-users';
 import { UserNotFoundError } from '../../errors';
 
-export default function addEmail(
+export default async function addEmail(
   root,
   { email, userId: foreignUserId },
   { userId: ownUserId }
@@ -11,5 +11,6 @@ export default function addEmail(
   const userId = foreignUserId || ownUserId;
   const user = Users.findOne({ _id: userId });
   if (!user) throw new UserNotFoundError({ userId });
-  return user.addEmail(email);
+  const res = await user.addEmail(email);
+  return res;
 }
