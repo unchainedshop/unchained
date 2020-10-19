@@ -1,3 +1,4 @@
+import { log } from 'meteor/unchained:core-logger';
 import { accountsServer } from 'meteor/unchained:core-accountsjs';
 import hashPassword from '../../../hashPassword';
 import { filterContext, evaluateContext } from '../../../callMethod';
@@ -7,6 +8,7 @@ export default async function loginWithPassword(
   { username, email, password: hashedPassword, plainPassword },
   context
 ) {
+  log('mutation loginWithPassword', { username, email });
   if (!hashedPassword && !plainPassword) {
     throw new Error('Password is required');
   }

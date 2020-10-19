@@ -1,3 +1,4 @@
+import { log } from 'meteor/unchained:core-logger';
 import { accountsPassword } from 'meteor/unchained:core-accountsjs';
 import hashPassword from '../../../hashPassword';
 
@@ -11,6 +12,7 @@ export default async function changePassword(
   },
   context
 ) {
+  log('mutation changePassword');
   if (!newHashedPassword && !newPlainPassword) {
     throw new Error('New password is required');
   }

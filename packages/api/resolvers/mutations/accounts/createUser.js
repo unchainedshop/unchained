@@ -1,3 +1,4 @@
+import { log } from 'meteor/unchained:core-logger';
 import {
   accountsPassword,
   accountsServer,
@@ -5,6 +6,7 @@ import {
 import hashPassword from '../../../hashPassword';
 
 export default async function createUser(root, options) {
+  log('mutation createUser', { email: options.email });
   if (!options.password && !options.plainPassword) {
     throw new Error('Password is required');
   }

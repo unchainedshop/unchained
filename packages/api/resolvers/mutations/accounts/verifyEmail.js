@@ -1,3 +1,4 @@
+import { log } from 'meteor/unchained:core-logger';
 import {
   accountsServer,
   accountsPassword,
@@ -5,6 +6,7 @@ import {
 } from 'meteor/unchained:core-accountsjs';
 
 export default async function verifyEmail(root, { token }, context) {
+  log('mutation verifyEmail');
   const user = await dbManager.findUserByEmailVerificationToken(token);
   await accountsPassword.verifyEmail(token);
   const {
