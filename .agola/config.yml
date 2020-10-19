@@ -1,19 +1,13 @@
 version: v0
 
 runs:
-  - name: Application Checks
+  - name: Checks
     tasks:
-      - name: checkout code
+      - name: run checks
         runtime:
           containers:
             - image: geoffreybooth/meteor-base:1.11.1
         steps:
-          - run:
-              name: ls
-              command: ls
-          - run:
-              name: pwd
-              command: pwd
           - run:
               name: install ssh-client    
               command: apt-get install ssh-client -y
