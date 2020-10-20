@@ -1,14 +1,16 @@
 import { setupDatabase, createLoggedInGraphqlFetch } from './helpers';
-import { ADMIN_TOKEN } from './seeds/users';
+import { ADMIN_TOKEN, USER_TOKEN } from './seeds/users';
 import { SimpleProduct, UnpublishedProduct } from './seeds/products';
 
 let connection;
 let graphqlFetch;
+let graphqlFetchAsNormalUser;
 
 describe('Products', () => {
   beforeAll(async () => {
     [, connection] = await setupDatabase();
     graphqlFetch = await createLoggedInGraphqlFetch(ADMIN_TOKEN);
+    graphqlFetchAsNormalUser = await createLoggedInGraphqlFetch(USER_TOKEN);
   });
 
   afterAll(async () => {
@@ -391,9 +393,142 @@ describe('Products', () => {
     });
   });
 
-  describe('query.product', () => {
-    it.todo('all tests');
+  describe('query.product for admin user should', () => {
+    it('return single product specified by the id', async () => {
+      const {
+        data: { product },
+      } = await graphqlFetch({
+        query: /* GraphQL */ `
+          query product($productId: ID, $slug: String) {
+            product(productId: $productId, slug: $slug) {
+              _id
+              sequence
+              status
+              tags
+              created
+              updated
+              published
+              media(limit: 1) {
+                _id
+              }
+              reviews {
+                _id
+              }
+              meta
+              assortmentPaths {
+                assortmentProduct {
+                  _id
+                }
+              }
+              texts {
+                _id
+                locale
+                title
+                subtitle
+                description
+              }
+              siblings {
+                _id
+              }
+            }
+          }
+        `,
+        variables: {
+          productId: 'simpleproduct',
+        },
+      });
+
+      expect(product._id).toEqual('simpleproduct');
+    });
+
+    it('return single product specified by the id', async () => {
+      const {
+        data: { product },
+      } = await graphqlFetch({
+        query: /* GraphQL */ `
+          query product($productId: ID, $slug: String) {
+            product(productId: $productId, slug: $slug) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          slug: 'old-slug-de',
+        },
+      });
+
+      expect(product._id).toEqual('simpleproduct');
+    });
   });
+
+  describe('query.product for normal user should', () => {
+    it('return single product specified by the id', async () => {
+      const {
+        data: { product },
+      } = await graphqlFetchAsNormalUser({
+        query: /* GraphQL */ `
+          query product($productId: ID, $slug: String) {
+            product(productId: $productId, slug: $slug) {
+              _id
+              sequence
+              status
+              tags
+              created
+              updated
+              published
+              media(limit: 1) {
+                _id
+              }
+              reviews {
+                _id
+              }
+              meta
+              assortmentPaths {
+                assortmentProduct {
+                  _id
+                }
+              }
+              texts {
+                _id
+                locale
+                title
+                subtitle
+                description
+              }
+              siblings {
+                _id
+              }
+            }
+          }
+        `,
+        variables: {
+          productId: 'simpleproduct',
+        },
+      });
+
+      expect(product._id).toEqual('simpleproduct');
+    });
+
+    it('return single product specified by the id', async () => {
+      const {
+        data: { product },
+      } = await graphqlFetchAsNormalUser({
+        query: /* GraphQL */ `
+          query product($productId: ID, $slug: String) {
+            product(productId: $productId, slug: $slug) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          slug: 'old-slug-de',
+        },
+      });
+
+      expect(product._id).toEqual('simpleproduct');
+    });
+  });
+
   describe('query.products', () => {
     it.todo('all tests');
   });
