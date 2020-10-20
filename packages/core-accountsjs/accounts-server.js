@@ -9,6 +9,9 @@ const accountsServerOptions = {
   siteUrl: process.env.ROOT_URL,
   prepareMail: (to, token, user, pathFragment, emailTemplate, from) => {
     if (token && pathFragment) {
+      if (user.guest && pathFragment === 'verify-email') {
+        return;
+      }
       const actionsSet = {
         'verify-email': 'verifyEmail',
         'enroll-account': 'enrollAccount',

@@ -1,14 +1,20 @@
-import { setupDatabase, createAnonymousGraphqlFetch } from './helpers';
-import { User } from './seeds/users';
+import {
+  setupDatabase,
+  createAnonymousGraphqlFetch,
+  createLoggedInGraphqlFetch,
+} from './helpers';
+import { User, ADMIN_TOKEN } from './seeds/users';
 
 let connection;
 let db;
 let graphqlFetch;
+let adminGraphqlFetch;
 
 describe('Auth for anonymous users', () => {
   beforeAll(async () => {
     [db, connection] = await setupDatabase();
     graphqlFetch = await createAnonymousGraphqlFetch();
+    adminGraphqlFetch = await createLoggedInGraphqlFetch(ADMIN_TOKEN);
   });
 
   afterAll(async () => {
@@ -68,6 +74,7 @@ describe('Auth for anonymous users', () => {
 
   describe('Mutation.loginAsGuest', () => {
     it('login as guest', async () => {
+      // ensure no e-mail verification gets sent
       const result = await graphqlFetch({
         query: /* GraphQL */ `
           mutation {
@@ -78,6 +85,28 @@ describe('Auth for anonymous users', () => {
           }
         `,
       });
+
+      const { data: { workQueue } = {} } = await adminGraphqlFetch({
+        query: /* GraphQL */ `
+          query($status: [WorkStatus]) {
+            workQueue(status: $status) {
+              _id
+              type
+              status
+            }
+          }
+        `,
+        variables: {
+          // Empty array as status queries the whole queue
+          status: [],
+        },
+      });
+
+      const work = workQueue.filter(
+        ({ type, status }) => type === 'MESSAGE' && status === 'SUCCESS',
+      );
+      expect(work).toHaveLength(0);
+
       expect(result.data.loginAsGuest).toMatchObject({});
     });
     it('user has guest flag', async () => {
