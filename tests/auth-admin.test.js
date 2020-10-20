@@ -528,6 +528,29 @@ describe('Auth for admin users', () => {
     });
   });
 
+  describe('Mutation.setUsername', () => {
+    it('set the username of a foreign user', async () => {
+      const username = 'John Doe';
+      const { data: { setUsername } = {} } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation setUsername($userId: ID!, $username: String!) {
+            setUsername(username: $username, userId: $userId) {
+              username
+            }
+          }
+        `,
+        variables: {
+          userId: User._id,
+          username,
+        },
+      });
+
+      expect(setUsername).toMatchObject({
+        username,
+      });
+    });
+  });
+
   describe('Mutation.setRoles', () => {
     it('set the roles of a foreign user', async () => {
       const roles = ['admin'];
