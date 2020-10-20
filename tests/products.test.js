@@ -653,7 +653,217 @@ describe('Products', () => {
     });
   });
 
-  describe('query.products', () => {
-    it.todo('all tests');
+  describe('query.products for admin user should', () => {
+    it('return list of products when no argument is passed', async () => {
+      const {
+        data: { products },
+      } = await graphqlFetchAsAdmin({
+        query: /* GraphQL */ `
+          query products(
+            $tags: [String!]
+            $slugs: [String!]
+            $limit: Int
+            $offset: Int
+            $includeDrafts: Boolean
+          ) {
+            products(
+              tags: $tags
+              slugs: $slugs
+              limit: $limit
+              offset: $offset
+              includeDrafts: $includeDrafts
+            ) {
+              _id
+              sequence
+              status
+              tags
+              created
+              updated
+              published
+              texts {
+                _id
+              }
+              media {
+                _id
+              }
+              reviews {
+                _id
+              }
+              meta
+              assortmentPaths {
+                assortmentProduct {
+                  _id
+                }
+                links {
+                  assortmentId
+                }
+              }
+              siblings {
+                _id
+              }
+            }
+          }
+        `,
+        variables: {},
+      });
+
+      expect(products.length).toEqual(4);
+    });
+
+    it('return only list of products that include a slug', async () => {
+      const {
+        data: { products },
+      } = await graphqlFetchAsAdmin({
+        query: /* GraphQL */ `
+          query products(
+            $tags: [String!]
+            $slugs: [String!]
+            $limit: Int
+            $offset: Int
+            $includeDrafts: Boolean
+          ) {
+            products(
+              tags: $tags
+              slugs: $slugs
+              limit: $limit
+              offset: $offset
+              includeDrafts: $includeDrafts
+            ) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          slugs: ['old-slug-de'],
+        },
+      });
+
+      expect(products.length).toEqual(3);
+    });
+
+    it('return only list of products that include the tags specified', async () => {
+      const {
+        data: { products },
+      } = await graphqlFetchAsAdmin({
+        query: /* GraphQL */ `
+          query products(
+            $tags: [String!]
+            $slugs: [String!]
+            $limit: Int
+            $offset: Int
+            $includeDrafts: Boolean
+          ) {
+            products(
+              tags: $tags
+              slugs: $slugs
+              limit: $limit
+              offset: $offset
+              includeDrafts: $includeDrafts
+            ) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          tags: ['tag-1'],
+        },
+      });
+
+      expect(products.length).toEqual(3);
+    });
+
+    it('if both slug and tags are provided slugs should take precidence for the result ', async () => {
+      const {
+        data: { products },
+      } = await graphqlFetchAsAdmin({
+        query: /* GraphQL */ `
+          query products(
+            $tags: [String!]
+            $slugs: [String!]
+            $limit: Int
+            $offset: Int
+            $includeDrafts: Boolean
+          ) {
+            products(
+              tags: $tags
+              slugs: $slugs
+              limit: $limit
+              offset: $offset
+              includeDrafts: $includeDrafts
+            ) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          tags: ['test-tag'],
+          slugs: ['test-slug'],
+        },
+      });
+
+      expect(products.length).toEqual(2);
+    });
+
+    it('return number of product if limit is specified as argument', async () => {
+      const {
+        data: { products },
+      } = await graphqlFetchAsAdmin({
+        query: /* GraphQL */ `
+          query products(
+            $tags: [String!]
+            $slugs: [String!]
+            $limit: Int
+            $offset: Int
+            $includeDrafts: Boolean
+          ) {
+            products(
+              tags: $tags
+              slugs: $slugs
+              limit: $limit
+              offset: $offset
+              includeDrafts: $includeDrafts
+            ) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          limit: 1,
+        },
+      });
+
+      expect(products.length).toEqual(1);
+    });
+
+    it('include draft/configurable products if includeDrafts argument is passed as true', async () => {
+      const {
+        data: { products },
+      } = await graphqlFetchAsAdmin({
+        query: /* GraphQL */ `
+          query products(
+            $tags: [String!]
+            $slugs: [String!]
+            $limit: Int
+            $offset: Int
+            $includeDrafts: Boolean
+          ) {
+            products(
+              tags: $tags
+              slugs: $slugs
+              limit: $limit
+              offset: $offset
+              includeDrafts: $includeDrafts
+            ) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          includeDrafts: true,
+        },
+      });
+
+      expect(products.length).toEqual(5);
+    });
   });
 });
