@@ -226,6 +226,7 @@ describe('Auth for admin users', () => {
           email,
         },
       });
+
       const { data: { workQueue } = {} } = await graphqlFetch({
         query: /* GraphQL */ `
           query($status: [WorkStatus]) {
@@ -435,6 +436,28 @@ describe('Auth for admin users', () => {
           profile,
         },
       });
+
+      const { data: { workQueue } = {} } = await graphqlFetch({
+        query: /* GraphQL */ `
+          query($status: [WorkStatus]) {
+            workQueue(status: $status) {
+              _id
+              type
+              status
+            }
+          }
+        `,
+        variables: {
+          // Empty array as status queries the whole queue
+          status: [],
+        },
+      });
+      const work = workQueue.filter(
+        ({ type, status }) => type === 'MESSAGE' && status === 'SUCCESS',
+      );
+      // a length of one means only the enrollment got sent out
+      expect(work).toHaveLength(1);
+
       expect(enrollUser).toMatchObject({
         isInitialPassword: true,
         primaryEmail: {

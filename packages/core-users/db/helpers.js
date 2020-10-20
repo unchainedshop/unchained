@@ -204,9 +204,11 @@ Users.enrollUser = async ({ password, email, displayName, address }) => {
   if (password && password !== '') {
     params.password = password;
   }
+
   const newUserId = await accountsPassword.createUser(params, {
     skipEmailVerification: true,
   });
+
   Users.update(
     { _id: newUserId },
     {
@@ -219,10 +221,9 @@ Users.enrollUser = async ({ password, email, displayName, address }) => {
     }
   );
   if (!params.password) {
+    const userEmail = Users.findOne({ _id: newUserId }).primaryEmail()?.address;
     // send an e-mail if password is not set allowing the user to set it
-    accountsPassword.sendEnrollmentEmail(
-      Users.findOne({ _id: newUserId }).primaryEmail()?.address
-    );
+    accountsPassword.sendEnrollmentEmail(userEmail);
   }
   return Users.findOne({ _id: newUserId });
 };
