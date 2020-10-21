@@ -9,9 +9,15 @@ const accountsServerOptions = {
   siteUrl: process.env.ROOT_URL,
   prepareMail: (to, token, user, pathFragment, emailTemplate, from) => {
     if (token && pathFragment) {
-      if (user.guest && pathFragment === 'verify-email') {
+      // we're not supposed to be sending verifications to guests
+      // nor send verification emails to just **passwordless** enrolled users
+      if (
+        (user.guest || !user?.services?.password?.bcrypt) &&
+        pathFragment === 'verify-email'
+      ) {
         return;
       }
+
       const actionsSet = {
         'verify-email': 'verifyEmail',
         'enroll-account': 'enrollAccount',
