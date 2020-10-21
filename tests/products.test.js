@@ -538,34 +538,6 @@ describe('Products', () => {
           query product($productId: ID, $slug: String) {
             product(productId: $productId, slug: $slug) {
               _id
-              sequence
-              status
-              tags
-              created
-              updated
-              published
-              media(limit: 1) {
-                _id
-              }
-              reviews {
-                _id
-              }
-              meta
-              assortmentPaths {
-                assortmentProduct {
-                  _id
-                }
-              }
-              texts {
-                _id
-                locale
-                title
-                subtitle
-                description
-              }
-              siblings {
-                _id
-              }
             }
           }
         `,
@@ -645,6 +617,108 @@ describe('Products', () => {
 
     it('return InvalidIdError error when passed neither productId or slug', async () => {
       const { errors } = await graphqlFetchAsNormalUser({
+        query: /* GraphQL */ `
+          query product($productId: ID, $slug: String) {
+            product(productId: $productId, slug: $slug) {
+              _id
+            }
+          }
+        `,
+        variables: {},
+      });
+
+      expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
+    });
+  });
+
+  describe('query.product for anonymous user should', () => {
+    it('return single product specified by the id', async () => {
+      const {
+        data: { product },
+      } = await graphqlFetchAsAnonymousUser({
+        query: /* GraphQL */ `
+          query product($productId: ID, $slug: String) {
+            product(productId: $productId, slug: $slug) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          productId: 'simpleproduct',
+        },
+      });
+
+      expect(product._id).toEqual('simpleproduct');
+    });
+
+    it('return single product specified by id with single media file', async () => {
+      const {
+        data: { product },
+      } = await graphqlFetchAsAnonymousUser({
+        query: /* GraphQL */ `
+          query product($productId: ID, $slug: String) {
+            product(productId: $productId, slug: $slug) {
+              _id
+              media(limit: 1) {
+                _id
+                tags
+                file {
+                  _id
+                }
+                sortKey
+                texts {
+                  _id
+                }
+              }
+            }
+          }
+        `,
+        variables: {
+          productId: 'simpleproduct',
+        },
+      });
+
+      expect(product.media.length).toEqual(1);
+    });
+
+    it('return single product specified by the id', async () => {
+      const {
+        data: { product },
+      } = await graphqlFetchAsAnonymousUser({
+        query: /* GraphQL */ `
+          query product($productId: ID, $slug: String) {
+            product(productId: $productId, slug: $slug) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          slug: 'old-slug-de',
+        },
+      });
+
+      expect(product._id).toEqual('simpleproduct');
+    });
+
+    it('return ProductNotFound error when passed non existing slug', async () => {
+      const { errors } = await graphqlFetchAsAnonymousUser({
+        query: /* GraphQL */ `
+          query product($productId: ID, $slug: String) {
+            product(productId: $productId, slug: $slug) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          slug: 'non-existing-slug',
+        },
+      });
+
+      expect(errors[0]?.extensions?.code).toEqual('ProductNotFoundError');
+    });
+
+    it('return InvalidIdError error when passed neither productId or slug', async () => {
+      const { errors } = await graphqlFetchAsAnonymousUser({
         query: /* GraphQL */ `
           query product($productId: ID, $slug: String) {
             product(productId: $productId, slug: $slug) {
