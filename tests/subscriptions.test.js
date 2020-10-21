@@ -1,13 +1,22 @@
-import { setupDatabase, createLoggedInGraphqlFetch } from './helpers';
+import {
+  setupDatabase,
+  createLoggedInGraphqlFetch,
+  createAnonymousGraphqlFetch,
+} from './helpers';
 import { PlanProduct } from './seeds/products';
+import { USER_TOKEN } from './seeds/users';
 
 let connection;
-let graphqlFetch;
+let graphqlFetchAsAdminUser;
+let graphqlFetchAsNormalUser;
+let graphqlFetchAsAnonymousUser;
 
 describe('Subscriptions', () => {
   beforeAll(async () => {
     [, connection] = await setupDatabase();
-    graphqlFetch = await createLoggedInGraphqlFetch();
+    graphqlFetchAsAdminUser = await createLoggedInGraphqlFetch();
+    graphqlFetchAsNormalUser = await createLoggedInGraphqlFetch(USER_TOKEN);
+    graphqlFetchAsAnonymousUser = createAnonymousGraphqlFetch();
   });
 
   afterAll(async () => {
@@ -16,7 +25,7 @@ describe('Subscriptions', () => {
 
   describe('Mutation.createCart (Subscription)', () => {
     it('checking out a plan product generates a new subscription', async () => {
-      const { data: { createCart } = {} } = await graphqlFetch({
+      const { data: { createCart } = {} } = await graphqlFetchAsAdminUser({
         query: /* GraphQL */ `
           mutation {
             createCart(orderNumber: "subscriptionCart") {
@@ -26,7 +35,7 @@ describe('Subscriptions', () => {
           }
         `,
       });
-      const { data: { checkoutCart } = {} } = await graphqlFetch({
+      const { data: { checkoutCart } = {} } = await graphqlFetchAsAdminUser({
         query: /* GraphQL */ `
           mutation prepareAndCheckout(
             $productId: ID!
@@ -99,7 +108,9 @@ describe('Subscriptions', () => {
   });
   describe('Mutation.createSubscription', () => {
     it('create a new subscription manually will not activate automatically because of missing order', async () => {
-      const { data: { createSubscription } = {} } = await graphqlFetch({
+      const {
+        data: { createSubscription } = {},
+      } = await graphqlFetchAsAdminUser({
         query: /* GraphQL */ `
           mutation createSubscription($plan: SubscriptionPlanInput!) {
             createSubscription(plan: $plan) {
@@ -174,7 +185,7 @@ describe('Subscriptions', () => {
     });
 
     it('return not found error when passed non existing productId', async () => {
-      const { errors } = await graphqlFetch({
+      const { errors } = await graphqlFetchAsAdminUser({
         query: /* GraphQL */ `
           mutation createSubscription($plan: SubscriptionPlanInput!) {
             createSubscription(plan: $plan) {
@@ -192,7 +203,7 @@ describe('Subscriptions', () => {
     });
 
     it('return error when passed invalid productId', async () => {
-      const { errors } = await graphqlFetch({
+      const { errors } = await graphqlFetchAsAdminUser({
         query: /* GraphQL */ `
           mutation createSubscription($plan: SubscriptionPlanInput!) {
             createSubscription(plan: $plan) {
@@ -219,8 +230,105 @@ describe('Subscriptions', () => {
     it.todo('Mutation.activateSubscription');
   });
 
-  describe('query.subscriptions', () => {
-    it.todo('all tests');
+  describe('query.subscriptions for admin user should', () => {
+    it('return list of subscriptions', async () => {
+      const {
+        data: { subscriptions },
+      } = await graphqlFetchAsAdminUser({
+        query: /* GraphQL */ `
+          query subscriptions($limit: Int, $offset: Int) {
+            subscriptions(limit: $limit, offset: $offset) {
+              _id
+              status
+              created
+              expires
+              updated
+              isExpired
+              subscriptionNumber
+              meta
+              logs(limit: 10, offset: 0) {
+                _id
+              }
+              periods {
+                start
+                end
+                isTrial
+                order {
+                  _id
+                }
+              }
+              plan {
+                product {
+                  _id
+                }
+                quantity
+              }
+              payment {
+                provider {
+                  _id
+                }
+                meta
+              }
+              user {
+                _id
+              }
+              billingAddress {
+                firstName
+              }
+              contact {
+                telNumber
+                emailAddress
+              }
+              country {
+                _id
+              }
+              currency {
+                _id
+                isoCode
+              }
+              meta
+            }
+          }
+        `,
+        variables: {},
+      });
+
+      expect(subscriptions.length > 0).toBe(true);
+    });
+  });
+
+  describe('query.subscriptions for normal user should', () => {
+    it('return NoPermissionError', async () => {
+      const { errors } = await graphqlFetchAsNormalUser({
+        query: /* GraphQL */ `
+          query subscriptions($limit: Int, $offset: Int) {
+            subscriptions(limit: $limit, offset: $offset) {
+              _id
+            }
+          }
+        `,
+        variables: {},
+      });
+
+      expect(errors[0]?.extensions?.code).toEqual('NoPermissionError');
+    });
+  });
+
+  describe('query.subscriptions for anonymous user should', () => {
+    it('return NoPermissionError', async () => {
+      const { errors } = await graphqlFetchAsAnonymousUser({
+        query: /* GraphQL */ `
+          query subscriptions($limit: Int, $offset: Int) {
+            subscriptions(limit: $limit, offset: $offset) {
+              _id
+            }
+          }
+        `,
+        variables: {},
+      });
+
+      expect(errors[0]?.extensions?.code).toEqual('NoPermissionError');
+    });
   });
   describe('query.subscription', () => {
     it.todo('all tests');
