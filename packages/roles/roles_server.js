@@ -9,7 +9,7 @@ import { Users } from 'meteor/unchained:core-users'
 Roles.addUserToRoles = function (userId, roles) {
   check(userId, String)
   check(roles, Match.OneOf(String, Array))
-  if (!_.isArray(roles)) {
+  if (!Array.isArray(roles)) {
     roles = [roles]
   }
 
@@ -22,7 +22,7 @@ Roles.addUserToRoles = function (userId, roles) {
 Roles.setUserRoles = function (userId, roles) {
   check(userId, String)
   check(roles, Match.OneOf(String, Array))
-  if (!_.isArray(roles)) {
+  if (!Array.isArray(roles)) {
     roles = [roles]
   }
 
@@ -35,7 +35,7 @@ Roles.setUserRoles = function (userId, roles) {
 Roles.removeUserFromRoles = function (userId, roles) {
   check(userId, String)
   check(roles, Match.OneOf(String, Array))
-  if (!_.isArray(roles)) {
+  if (!Array.isArray(roles)) {
     roles = [roles]
   }
 

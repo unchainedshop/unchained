@@ -1,5 +1,26 @@
 /* eslint-disable */
 import { Users } from 'meteor/unchained:core-users';
+import clone from 'lodash.clone';
+import toArray from 'lodash.toarray';
+import union from 'lodash.union';
+
+const has = function (obj, key) {
+  var keyParts = key.split('.');
+
+  return !!obj && (
+    keyParts.length > 1
+      ? has(obj[key.split('.')[0]], keyParts.slice(1).join('.'))
+      : hasOwnProperty.call(obj, key)
+  );
+};
+
+function isFunction(func) {
+  if (func && typeof func === "function") {
+    return true
+  }
+  return false
+}
+
 
 /**
  * Init the variable
@@ -17,24 +38,13 @@ Roles._helpers = []
 Roles._usersCollection = Users
 Roles._specialRoles = ['__loggedIn__', '__notAdmin__', '__notLoggedIn__', '__all__']
 
-/**
- * Old collection
- */
-Roles._oldCollection = new Mongo.Collection('roles')
-
-/**
- * Get the list of roles
- */
-Roles.availableRoles = function () {
-  return _.difference(_.keys(this._roles), this._specialRoles)
-}
 
 /**
  * Check if a user has a role
  */
 Roles.userHasRole = function (userId, role) {
   if (role == '__all__') return true
-  if (role == '__notLoggedIn__' && !userId) return true
+  if (role == '__notLoggedIn__' && !userId) return true
   if (role == '__default__' && userId) return true
   if (
     role == '__notAdmin__' &&
@@ -51,7 +61,7 @@ Roles.registerAction = function (name, adminAllow, adminDeny) {
   check(adminAllow, Match.Optional(Match.Any))
   check(adminDeny, Match.Optional(Match.Any))
 
-  if (!_.contains(this._actions, name)) {
+  if (!this._actions.includes(name)) {
     this._actions.push(name)
   }
 
@@ -71,7 +81,7 @@ Roles.registerHelper = function (name, adminHelper) {
   check(name, String)
   check(adminHelper, Match.Any)
 
-  if (!_.contains(this._helpers, name)) {
+  if (!this._helpers.includes(name)) {
     this._helpers.push(name)
   }
 
@@ -89,7 +99,7 @@ Roles.Role = function (name) {
   if (!(this instanceof Roles.Role))
     throw new Error('use "new" to construct a role')
 
-  if (_.has(Roles._roles, name))
+  if (has(Roles._roles, name))
     throw new Error('"' + name + '" role is already defined')
 
   this.name = name
@@ -107,12 +117,12 @@ Roles.Role.prototype.allow = function (action, allow) {
   check(action, String)
   check(allow, Match.Any)
 
-  if (!_.contains(Roles._actions, action)) {
+  if (!Roles._actions.includes(action)) {
     Roles.registerAction(action)
   }
 
-  if (!_.isFunction(allow)) {
-    var clone = _.clone(allow)
+  if (!isFunction(allow)) {
+    var clone = clone(allow)
     allow = function () {
       return clone
     }
@@ -129,12 +139,12 @@ Roles.Role.prototype.deny = function (action, deny) {
   check(action, String)
   check(deny, Match.Any)
 
-  if (!_.contains(Roles._actions, action)) {
+  if (!Roles._actions.includes(action)) {
     Roles.registerAction(action)
   }
 
-  if (!_.isFunction(deny)) {
-    var clone = _.clone(deny)
+  if (!isFunction(deny)) {
+    var clone = clone(deny)
     deny = function () {
       return clone
     }
@@ -151,12 +161,12 @@ Roles.Role.prototype.helper = function (helper, func) {
   check(helper, String)
   check(func, Match.Any)
 
-  if (!_.contains(Roles._helpers, helper)) {
+  if (!Roles._helpers.includes(helper)) {
     Roles.registerHelper(helper)
   }
 
-  if (!_.isFunction(func)) {
-    var value = _.clone(func)
+  if (!isFunction(func)) {
+    var value = clone(func)
     func = function () {
       return value
     }
@@ -183,7 +193,7 @@ Roles.getUserRoles = function (userId, includeSpecial) {
       roles.push('__notLoggedIn__')
     } else {
       roles.push('__loggedIn__')
-      if (!_.contains(roles, 'admin')) {
+      if (!roles.includes('admin')) {
         roles.push('__notAdmin__')
       }
     }
@@ -198,17 +208,17 @@ Roles.getUserRoles = function (userId, includeSpecial) {
 Roles.helper = function (userId, helper) {
   check(userId, Match.OneOf(String, null, undefined))
   check(helper, String)
-  if (!_.contains(this._helpers, helper)) throw 'Helper "' + helper + '" is not defined'
+  if (!this._helpers.includes(helper)) throw 'Helper "' + helper + '" is not defined'
 
-  var args = _.toArray(arguments).slice(2)
+  var args = toArray(arguments).slice(2)
   var context = { userId: userId }
   var responses = []
   var roles = Roles.getUserRoles(userId, true)
 
-  _.each(roles, (role) => {
+  roles.forEach((role) => {
     if (this._roles[role] && this._roles[role].helpers && this._roles[role].helpers[helper]) {
       var helpers = this._roles[role].helpers[helper]
-      _.each(helpers, (helper) => {
+      helpers.forEach((helper) => {
         responses.push(helper.apply(context, args))
       })
     }
@@ -224,15 +234,15 @@ Roles.allow = function (userId, action) {
   check(userId, Match.OneOf(String, null, undefined))
   check(action, String)
 
-  var args = _.toArray(arguments).slice(2)
+  var args = toArray(arguments).slice(2)
   var self = this
   var context = { userId: userId }
   var allowed = false
   var roles = Roles.getUserRoles(userId, true)
 
-  _.each(roles, function (role) {
+  roles.forEach((role) => {
     if (!allowed && self._roles[role] && self._roles[role].allowRules && self._roles[role].allowRules[action]) {
-      _.each(self._roles[role].allowRules[action], function (func) {
+      self._roles[role].allowRules[action].forEach((func) => {
         var allow = func.apply(context, args)
         if (allow === true) {
           allowed = true
@@ -251,19 +261,19 @@ Roles.deny = function (userId, action) {
   check(userId, Match.OneOf(String, null, undefined))
   check(action, String)
 
-  var args = _.toArray(arguments).slice(2)
+  var args = toArray(arguments).slice(2)
   var context = { userId: userId }
   var denied = false
   var roles = Roles.getUserRoles(userId, true)
 
-  _.each(roles, (role) => {
+  roles.forEach((role) => {
     if (
       !denied &&
       this._roles[role] &&
       this._roles[role].denyRules &&
       this._roles[role].denyRules[action]
     ) {
-      _.each(this._roles[role].denyRules[action], (func) => {
+      this._roles[role].denyRules[action].forEach((func) => {
         var denies = func.apply(context, args)
         if (denies === true) {
           denied = true
@@ -393,7 +403,7 @@ Mongo.Collection.prototype.attachRoles = function (name, dontAllow) {
 
   this.deny({
     insert: function (userId, doc) {
-      var forbiddenFields = _.union.apply(this, Roles.helper(userId, name + '.forbiddenFields'))
+      var forbiddenFields = union.apply(this, Roles.helper(userId, name + '.forbiddenFields'))
 
       for (var i in forbiddenFields) {
         var field = forbiddenFields[i]
@@ -408,7 +418,7 @@ Mongo.Collection.prototype.attachRoles = function (name, dontAllow) {
     },
 
     update: function (userId, doc, fields, modifier) {
-      var forbiddenFields = _.union.apply(this, Roles.helper(userId, name + '.forbiddenFields', doc._id))
+      var forbiddenFields = union.apply(this, Roles.helper(userId, name + '.forbiddenFields', doc._id))
       var types = ['$inc', '$mul', '$rename', '$setOnInsert', '$set', '$unset', '$min', '$max', '$currentDate']
 
       // By some reason following for will itterate even through empty array. This will prevent unwanted habbit.
