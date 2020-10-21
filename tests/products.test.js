@@ -1,16 +1,22 @@
-import { setupDatabase, createLoggedInGraphqlFetch } from './helpers';
+import {
+  setupDatabase,
+  createLoggedInGraphqlFetch,
+  createAnonymousGraphqlFetch,
+} from './helpers';
 import { ADMIN_TOKEN, USER_TOKEN } from './seeds/users';
 import { SimpleProduct, UnpublishedProduct } from './seeds/products';
 
 let connection;
 let graphqlFetchAsAdmin;
 let graphqlFetchAsNormalUser;
+let graphqlFetchAsAnonymousUser;
 
 describe('Products', () => {
   beforeAll(async () => {
     [, connection] = await setupDatabase();
     graphqlFetchAsAdmin = await createLoggedInGraphqlFetch(ADMIN_TOKEN);
     graphqlFetchAsNormalUser = await createLoggedInGraphqlFetch(USER_TOKEN);
+    graphqlFetchAsAnonymousUser = createAnonymousGraphqlFetch();
   });
 
   afterAll(async () => {
@@ -888,33 +894,6 @@ describe('Products', () => {
               includeDrafts: $includeDrafts
             ) {
               _id
-              sequence
-              status
-              tags
-              created
-              updated
-              published
-              texts {
-                _id
-              }
-              media {
-                _id
-              }
-              reviews {
-                _id
-              }
-              meta
-              assortmentPaths {
-                assortmentProduct {
-                  _id
-                }
-                links {
-                  assortmentId
-                }
-              }
-              siblings {
-                _id
-              }
             }
           }
         `,
@@ -1080,6 +1059,220 @@ describe('Products', () => {
 
     it('not return error if includeDrafts is set to false (default value)', async () => {
       const { errors } = await graphqlFetchAsNormalUser({
+        query: /* GraphQL */ `
+          query products(
+            $tags: [String!]
+            $slugs: [String!]
+            $limit: Int
+            $offset: Int
+            $includeDrafts: Boolean
+          ) {
+            products(
+              tags: $tags
+              slugs: $slugs
+              limit: $limit
+              offset: $offset
+              includeDrafts: $includeDrafts
+            ) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          includeDrafts: false,
+        },
+      });
+
+      expect(errors).toEqual(undefined);
+    });
+  });
+
+  describe('query.products for normal user should', () => {
+    it('return list of products when no argument is passed', async () => {
+      const {
+        data: { products },
+      } = await graphqlFetchAsAnonymousUser({
+        query: /* GraphQL */ `
+          query products(
+            $tags: [String!]
+            $slugs: [String!]
+            $limit: Int
+            $offset: Int
+            $includeDrafts: Boolean
+          ) {
+            products(
+              tags: $tags
+              slugs: $slugs
+              limit: $limit
+              offset: $offset
+              includeDrafts: $includeDrafts
+            ) {
+              _id
+            }
+          }
+        `,
+        variables: {},
+      });
+
+      expect(products.length).toEqual(4);
+    });
+
+    it('return only list of products that include a slug', async () => {
+      const {
+        data: { products },
+      } = await graphqlFetchAsAnonymousUser({
+        query: /* GraphQL */ `
+          query products(
+            $tags: [String!]
+            $slugs: [String!]
+            $limit: Int
+            $offset: Int
+            $includeDrafts: Boolean
+          ) {
+            products(
+              tags: $tags
+              slugs: $slugs
+              limit: $limit
+              offset: $offset
+              includeDrafts: $includeDrafts
+            ) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          slugs: ['old-slug-de'],
+        },
+      });
+
+      expect(products.length).toEqual(3);
+    });
+
+    it('return only list of products that include the tags specified', async () => {
+      const {
+        data: { products },
+      } = await graphqlFetchAsAnonymousUser({
+        query: /* GraphQL */ `
+          query products(
+            $tags: [String!]
+            $slugs: [String!]
+            $limit: Int
+            $offset: Int
+            $includeDrafts: Boolean
+          ) {
+            products(
+              tags: $tags
+              slugs: $slugs
+              limit: $limit
+              offset: $offset
+              includeDrafts: $includeDrafts
+            ) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          tags: ['tag-1'],
+        },
+      });
+
+      expect(products.length).toEqual(3);
+    });
+
+    it('if both slug and tags are provided slugs should take precidence for the result ', async () => {
+      const {
+        data: { products },
+      } = await graphqlFetchAsAnonymousUser({
+        query: /* GraphQL */ `
+          query products(
+            $tags: [String!]
+            $slugs: [String!]
+            $limit: Int
+            $offset: Int
+            $includeDrafts: Boolean
+          ) {
+            products(
+              tags: $tags
+              slugs: $slugs
+              limit: $limit
+              offset: $offset
+              includeDrafts: $includeDrafts
+            ) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          tags: ['test-tag'],
+          slugs: ['test-slug'],
+        },
+      });
+
+      expect(products.length).toEqual(2);
+    });
+
+    it('return number of product if limit is specified as argument', async () => {
+      const {
+        data: { products },
+      } = await graphqlFetchAsAnonymousUser({
+        query: /* GraphQL */ `
+          query products(
+            $tags: [String!]
+            $slugs: [String!]
+            $limit: Int
+            $offset: Int
+            $includeDrafts: Boolean
+          ) {
+            products(
+              tags: $tags
+              slugs: $slugs
+              limit: $limit
+              offset: $offset
+              includeDrafts: $includeDrafts
+            ) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          limit: 1,
+        },
+      });
+
+      expect(products.length).toEqual(1);
+    });
+
+    it('return NoPermissionError if includeDrafts is set to true', async () => {
+      const { errors } = await graphqlFetchAsAnonymousUser({
+        query: /* GraphQL */ `
+          query products(
+            $tags: [String!]
+            $slugs: [String!]
+            $limit: Int
+            $offset: Int
+            $includeDrafts: Boolean
+          ) {
+            products(
+              tags: $tags
+              slugs: $slugs
+              limit: $limit
+              offset: $offset
+              includeDrafts: $includeDrafts
+            ) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          includeDrafts: true,
+        },
+      });
+
+      expect(errors[0]?.extensions?.code).toEqual('NoPermissionError');
+    });
+
+    it('not return error if includeDrafts is set to false (default value)', async () => {
+      const { errors } = await graphqlFetchAsAnonymousUser({
         query: /* GraphQL */ `
           query products(
             $tags: [String!]
