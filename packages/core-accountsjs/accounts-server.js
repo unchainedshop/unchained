@@ -5,19 +5,31 @@ import { randomValueHex } from './helpers';
 import { dbManager } from './db-manager';
 import { accountsPassword } from './accounts-password';
 
+const isInitialPassword = (user) => {
+  const { password: { initial } = {} } = user.services || {};
+  return !!initial;
+};
+
 const accountsServerOptions = {
+  useInternalUserObjectSanitizer: false,
   siteUrl: process.env.ROOT_URL,
   prepareMail: (to, token, user, pathFragment, emailTemplate, from) => {
     if (token && pathFragment) {
       // we're not supposed to be sending verifications to guests
-      // nor send verification emails to just **passwordless** enrolled users
-      if (
-        (user.guest || !user?.services?.password?.bcrypt) &&
-        pathFragment === 'verify-email'
-      ) {
+      if (user.guest && pathFragment === 'verify-email') {
         return;
       }
-
+      // enrolled users aren't supposed to get email verification emails
+      // and since email verification is set by default for all users
+      // we redirect such emails to enroll email
+      if (pathFragment === 'verify-email' && isInitialPassword(user)) {
+        return {
+          recipientEmail: to,
+          action: 'enrollAccount',
+          userId: user.id || user._id,
+          token,
+        };
+      }
       const actionsSet = {
         'verify-email': 'verifyEmail',
         'enroll-account': 'enrollAccount',
