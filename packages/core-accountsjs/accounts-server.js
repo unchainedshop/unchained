@@ -22,7 +22,11 @@ const accountsServerOptions = {
       // enrolled users aren't supposed to get email verification emails
       // and since email verification is set by default for all users
       // we redirect such emails to enroll email
-      if (pathFragment === 'verify-email' && isInitialPassword(user)) {
+      if (
+        !user.guest &&
+        isInitialPassword(user) &&
+        pathFragment === 'verify-email'
+      ) {
         // eslint-disable-next-line consistent-return
         return {
           recipientEmail: to,
@@ -31,6 +35,7 @@ const accountsServerOptions = {
           token,
         };
       }
+
       const actionsSet = {
         'verify-email': 'verifyEmail',
         'enroll-account': 'enrollAccount',
