@@ -15,7 +15,7 @@ Npm.depends({
 });
 
 Package.onUse((api) => {
-  api.versionsFrom('1.10.2');
+  api.versionsFrom('1.11.1');
   api.use('ecmascript');
-  api.mainModule('accountsjs.js');
+  api.mainModule('index.js');
 });
