@@ -1,4 +1,3 @@
-import { Meteor } from 'meteor/meteor';
 import { Migrations } from 'meteor/percolate:migrations';
 import SimpleSchema from 'simpl-schema';
 import { Schemas } from 'meteor/unchained:utils';

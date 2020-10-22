@@ -13,7 +13,7 @@ const isInitialPassword = (user) => {
 const accountsServerOptions = {
   useInternalUserObjectSanitizer: false,
   siteUrl: process.env.ROOT_URL,
-  prepareMail: (to, token, user, pathFragment, emailTemplate, from) => {
+  prepareMail: (to, token, user, pathFragment) => {
     if (token && pathFragment) {
       // we're not supposed to be sending verifications to guests
       if (user.guest && pathFragment === 'verify-email') {
@@ -23,6 +23,7 @@ const accountsServerOptions = {
       // and since email verification is set by default for all users
       // we redirect such emails to enroll email
       if (pathFragment === 'verify-email' && isInitialPassword(user)) {
+        // eslint-disable-next-line consistent-return
         return {
           recipientEmail: to,
           action: 'enrollAccount',
@@ -36,6 +37,7 @@ const accountsServerOptions = {
         'reset-password': 'resetPassword',
       };
 
+      // eslint-disable-next-line consistent-return
       return {
         recipientEmail: to,
         action: actionsSet[pathFragment],
@@ -44,6 +46,7 @@ const accountsServerOptions = {
       };
     }
   },
+  // eslint-disable-next-line consistent-return
   sendMail: (data) => {
     if (data) {
       const { action, userId, token, recipientEmail } = data;
