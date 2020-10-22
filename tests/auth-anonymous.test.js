@@ -21,57 +21,6 @@ describe('Auth for anonymous users', () => {
     await connection.close();
   });
 
-  describe('Mutation.createUser', () => {
-    it('create a new user', async () => {
-      const {
-        data: { createUser },
-      } = await graphqlFetch({
-        query: /* GraphQL */ `
-          mutation createUser(
-            $username: String
-            $email: String
-            $password: String
-            $profile: UserProfileInput
-          ) {
-            createUser(
-              username: $username
-              email: $email
-              plainPassword: $password
-              profile: $profile
-            ) {
-              id
-              token
-              user {
-                _id
-                profile {
-                  displayName
-                }
-              }
-            }
-          }
-        `,
-        variables: {
-          username: 'newuser',
-          email: 'newuser@unchained.local',
-          password: 'password',
-          profile: {
-            displayName: 'New User',
-            birthday: new Date(),
-            phoneMobile: '+410000000',
-            gender: 'm',
-            address: null,
-            customFields: null,
-          },
-        },
-      });
-      expect(createUser).toMatchObject({
-        user: {
-          profile: {},
-        },
-      });
-    });
-  });
-
   describe('Mutation.loginAsGuest', () => {
     it('login as guest', async () => {
       // ensure no e-mail verification gets sent
@@ -121,6 +70,57 @@ describe('Auth for anonymous users', () => {
             verified: false,
           },
         ],
+      });
+    });
+  });
+
+  describe('Mutation.createUser', () => {
+    it('create a new user', async () => {
+      const {
+        data: { createUser },
+      } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation createUser(
+            $username: String
+            $email: String
+            $password: String
+            $profile: UserProfileInput
+          ) {
+            createUser(
+              username: $username
+              email: $email
+              plainPassword: $password
+              profile: $profile
+            ) {
+              id
+              token
+              user {
+                _id
+                profile {
+                  displayName
+                }
+              }
+            }
+          }
+        `,
+        variables: {
+          username: 'newuser',
+          email: 'newuser@unchained.local',
+          password: 'password',
+          profile: {
+            displayName: 'New User',
+            birthday: new Date(),
+            phoneMobile: '+410000000',
+            gender: 'm',
+            address: null,
+            customFields: null,
+          },
+        },
+      });
+      expect(createUser).toMatchObject({
+        user: {
+          profile: {},
+        },
       });
     });
   });

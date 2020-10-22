@@ -206,11 +206,6 @@ Users.enrollUser = async ({ password, email, displayName, address }) => {
       },
     }
   );
-  if (!params.password) {
-    const userEmail = Users.findOne({ _id: newUserId }).primaryEmail()?.address;
-    // send an e-mail if password is not set allowing the user to set it
-    accountsPassword.sendEnrollmentEmail(userEmail);
-  }
   return Users.findOne({ _id: newUserId });
 };
 
