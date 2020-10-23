@@ -12,11 +12,10 @@ Npm.depends({
   '@accounts/password': '0.29.0',
   '@accounts/server': '0.29.0',
   '@graphql-modules/core': '0.7.17',
-  'lodash.defer': '4.1.0',
 });
 
 Package.onUse((api) => {
-  api.versionsFrom('1.10.2');
+  api.versionsFrom('1.11.1');
   api.use('ecmascript');
-  api.mainModule('accountsjs.js');
+  api.mainModule('index.js');
 });

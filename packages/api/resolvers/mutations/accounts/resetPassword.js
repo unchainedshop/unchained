@@ -8,8 +8,7 @@ import hashPassword from '../../../hashPassword';
 
 export default async function resetPassword(
   root,
-  { token, newPlainPassword, newPassword: newHashedPassword },
-  context
+  { token, newPlainPassword, newPassword: newHashedPassword }
 ) {
   log('mutation resetPassword');
   if (!newHashedPassword && !newPlainPassword) {

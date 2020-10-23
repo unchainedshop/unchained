@@ -192,7 +192,7 @@ describe('Bulk Importer', () => {
       const result = await intervalUntilTimeout(async () => {
         const product = await Products.findOne({ _id: 'A' });
         return product?.tags.includes('awesome');
-      }, 1000);
+      }, 2000);
 
       expect(result).toBe(true);
     });

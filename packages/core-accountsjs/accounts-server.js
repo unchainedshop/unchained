@@ -5,16 +5,44 @@ import { randomValueHex } from './helpers';
 import { dbManager } from './db-manager';
 import { accountsPassword } from './accounts-password';
 
+const isInitialPassword = (user) => {
+  const { password: { initial } = {} } = user.services || {};
+  return !!initial;
+};
+
 const accountsServerOptions = {
+  useInternalUserObjectSanitizer: false,
   siteUrl: process.env.ROOT_URL,
-  prepareMail: (to, token, user, pathFragment, emailTemplate, from) => {
+  prepareMail: (to, token, user, pathFragment) => {
     if (token && pathFragment) {
+      // we're not supposed to be sending verifications to guests
+      if (user.guest && pathFragment === 'verify-email') {
+        return;
+      }
+      // enrolled users aren't supposed to get email verification emails
+      // and since email verification is set by default for all users
+      // we redirect such emails to enroll email
+      if (
+        !user.guest &&
+        isInitialPassword(user) &&
+        pathFragment === 'verify-email'
+      ) {
+        // eslint-disable-next-line consistent-return
+        return {
+          recipientEmail: to,
+          action: 'enrollAccount',
+          userId: user.id || user._id,
+          token,
+        };
+      }
+
       const actionsSet = {
         'verify-email': 'verifyEmail',
         'enroll-account': 'enrollAccount',
         'reset-password': 'resetPassword',
       };
 
+      // eslint-disable-next-line consistent-return
       return {
         recipientEmail: to,
         action: actionsSet[pathFragment],
@@ -23,6 +51,7 @@ const accountsServerOptions = {
       };
     }
   },
+  // eslint-disable-next-line consistent-return
   sendMail: (data) => {
     if (data) {
       const { action, userId, token, recipientEmail } = data;
