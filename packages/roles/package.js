@@ -11,8 +11,6 @@ Package.onUse((api) => {
 
   Npm.depends({
     'lodash.clone': '4.5.0',
-    'lodash.toarray': '4.4.0',
-    'lodash.union': '4.6.0',
   });
 
   api.use([

@@ -1,8 +1,6 @@
 /* eslint-disable */
 import { Users } from 'meteor/unchained:core-users';
 import clone from 'lodash.clone';
-import toArray from 'lodash.toarray';
-import union from 'lodash.union';
 
 const has = function (obj, key) {
   var keyParts = key.split('.');
@@ -122,6 +120,7 @@ Roles.Role.prototype.allow = function (action, allow) {
   }
 
   if (!isFunction(allow)) {
+    console.log("ALLOW? ", allow)
     var clone = clone(allow)
     allow = function () {
       return clone
@@ -210,7 +209,7 @@ Roles.helper = function (userId, helper) {
   check(helper, String)
   if (!this._helpers.includes(helper)) throw 'Helper "' + helper + '" is not defined'
 
-  var args = toArray(arguments).slice(2)
+  var args = Object.values(arguments).slice(2)
   var context = { userId: userId }
   var responses = []
   var roles = Roles.getUserRoles(userId, true)
@@ -234,7 +233,7 @@ Roles.allow = function (userId, action) {
   check(userId, Match.OneOf(String, null, undefined))
   check(action, String)
 
-  var args = toArray(arguments).slice(2)
+  var args = Object.values(arguments).slice(2)
   var self = this
   var context = { userId: userId }
   var allowed = false
@@ -261,7 +260,7 @@ Roles.deny = function (userId, action) {
   check(userId, Match.OneOf(String, null, undefined))
   check(action, String)
 
-  var args = toArray(arguments).slice(2)
+  var args = Object.values(arguments).slice(2)
   var context = { userId: userId }
   var denied = false
   var roles = Roles.getUserRoles(userId, true)
@@ -403,7 +402,7 @@ Mongo.Collection.prototype.attachRoles = function (name, dontAllow) {
 
   this.deny({
     insert: function (userId, doc) {
-      var forbiddenFields = union.apply(this, Roles.helper(userId, name + '.forbiddenFields'))
+      var forbiddenFields = [...new Set([...this, ...Roles.helper(userId, name + '.forbiddenFields')])];
 
       for (var i in forbiddenFields) {
         var field = forbiddenFields[i]
@@ -418,7 +417,8 @@ Mongo.Collection.prototype.attachRoles = function (name, dontAllow) {
     },
 
     update: function (userId, doc, fields, modifier) {
-      var forbiddenFields = union.apply(this, Roles.helper(userId, name + '.forbiddenFields', doc._id))
+      
+      var forbiddenFields = [...new Set([...this, ...Roles.helper(userId, name + '.forbiddenFields', doc._id)])];
       var types = ['$inc', '$mul', '$rename', '$setOnInsert', '$set', '$unset', '$min', '$max', '$currentDate']
 
       // By some reason following for will itterate even through empty array. This will prevent unwanted habbit.
