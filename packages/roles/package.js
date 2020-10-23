@@ -9,13 +9,18 @@ Package.describe({
 Package.onUse((api) => {
   api.versionsFrom('1.11.1');
 
+  Npm.depends({
+    'lodash.clone': '4.5.0',
+    'lodash.toarray': '4.4.0',
+    'lodash.union': '4.6.0',
+  });
+
   api.use([
     'unchained:core-users',
     'meteor-base',
     'check',
     'mongo',
     'ecmascript',
-    'underscore',
     'dburles:collection-helpers@1.1.0',
   ]);
 

@@ -1,30 +1,7 @@
 /* eslint-disable */
-import { Meteor } from 'meteor/meteor'
 import { check, Match } from 'meteor/check'
 import { Users } from 'meteor/unchained:core-users'
 
-/**
- * Publish user roles
- */
-Meteor.publish('nicolaslopezj_roles', function () {
-  return Users.find({ _id: this.userId }, { fields: { roles: 1 } })
-})
-
-/**
- * Migrate
- */
-Meteor.methods({
-  nicolaslopezj_roles_migrate: function () {
-    var selector = Roles._oldCollection.find({})
-    console.log('migrating ' + selector.count() + ' roles...')
-    selector.forEach(function (userRoles) {
-      Users.update(userRoles.userId, { $set: { roles: userRoles.roles } })
-      Roles._oldCollection.remove(userRoles)
-    })
-
-    console.log('roles migrated')
-  },
-})
 
 /**
  * Adds roles to a user
@@ -32,7 +9,7 @@ Meteor.methods({
 Roles.addUserToRoles = function (userId, roles) {
   check(userId, String)
   check(roles, Match.OneOf(String, Array))
-  if (!_.isArray(roles)) {
+  if (!Array.isArray(roles)) {
     roles = [roles]
   }
 
@@ -45,7 +22,7 @@ Roles.addUserToRoles = function (userId, roles) {
 Roles.setUserRoles = function (userId, roles) {
   check(userId, String)
   check(roles, Match.OneOf(String, Array))
-  if (!_.isArray(roles)) {
+  if (!Array.isArray(roles)) {
     roles = [roles]
   }
 
@@ -58,7 +35,7 @@ Roles.setUserRoles = function (userId, roles) {
 Roles.removeUserFromRoles = function (userId, roles) {
   check(userId, String)
   check(roles, Match.OneOf(String, Array))
-  if (!_.isArray(roles)) {
+  if (!Array.isArray(roles)) {
     roles = [roles]
   }
 
