@@ -25,9 +25,9 @@
   },
   "scripts": {
     "lint": "eslint . --cache  --fix --ext=jsx --ext=js",
-    "dev": "cross-env METEOR_PACKAGE_DIRS=../../packages UI_ENDPOINT=http://localhost:4000 meteor --exclude-archs web.browser.legacy,web.browser --no-release-check --no-lint -p 4010",
+    "dev": "cross-env METEOR_PACKAGE_DIRS=../../packages UI_ENDPOINT=http://localhost:4000 meteor --exclude-archs web.browser.legacy,web.cordova,web.browser --no-release-check --no-lint -p 4010",
     "build": "cross-env METEOR_PACKAGE_DIRS=../../packages UI_ENDPOINT=http://localhost:4000 meteor build --server-only --directory .build",
-    "debug": "cross-env METEOR_PACKAGE_DIRS=../../packages UI_ENDPOINT=http://localhost:4000 meteor --exclude-archs web.browser.legacy,web.browser debug -p 4010"
+    "debug": "cross-env METEOR_PACKAGE_DIRS=../../packages UI_ENDPOINT=http://localhost:4000 meteor --exclude-archs web.browser.legacy,web.cordova,web.browser debug -p 4010"
   },
   "dependencies": {
     "@babel/runtime": "^7.11.2",
