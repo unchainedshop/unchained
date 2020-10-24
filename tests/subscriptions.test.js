@@ -149,6 +149,7 @@ describe('Subscriptions', () => {
               status
               created
               expires
+
               isExpired
               subscriptionNumber
               country {
@@ -239,6 +240,7 @@ describe('Subscriptions', () => {
               created
               expires
               updated
+
               isExpired
               subscriptionNumber
               meta
@@ -256,6 +258,7 @@ describe('Subscriptions', () => {
           subscriptionId: 'initialsubscription',
         },
       });
+
       expect(activateSubscription._id).not.toBe(true);
     });
 
@@ -380,6 +383,7 @@ describe('Subscriptions', () => {
               created
               expires
               updated
+
               isExpired
               subscriptionNumber
               meta
@@ -485,7 +489,111 @@ describe('Subscriptions', () => {
       expect(errors[0]?.extensions?.code).toEqual('NoPermissionError');
     });
   });
-  describe('query.subscription', () => {
-    it.todo('all tests');
+  describe('query.subscription for admin user', () => {
+    it('should return subscription specified by Id', async () => {
+      const {
+        data: { subscription },
+      } = await graphqlFetchAsAdminUser({
+        query: /* GraphQL */ `
+          query subscription($subscriptionId: ID!) {
+            subscription(subscriptionId: $subscriptionId) {
+              _id
+              status
+              created
+              expires
+              updated
+
+              isExpired
+              subscriptionNumber
+              meta
+              logs(limit: 10, offset: 0) {
+                _id
+              }
+              periods {
+                start
+                end
+                isTrial
+                order {
+                  _id
+                }
+              }
+              plan {
+                product {
+                  _id
+                }
+                quantity
+              }
+              payment {
+                provider {
+                  _id
+                }
+                meta
+              }
+              user {
+                _id
+              }
+              billingAddress {
+                firstName
+              }
+              contact {
+                telNumber
+                emailAddress
+              }
+              country {
+                _id
+              }
+              currency {
+                _id
+                isoCode
+              }
+              meta
+            }
+          }
+        `,
+        variables: {
+          subscriptionId: 'activesubscription',
+        },
+      });
+
+      expect(subscription._id).toBe('activesubscription');
+    });
+
+    it('should return expired true by (default) when asked for subsciprion with expiry date of past', async () => {
+      const {
+        data: { subscription },
+      } = await graphqlFetchAsAdminUser({
+        query: /* GraphQL */ `
+          query subscription($subscriptionId: ID!) {
+            subscription(subscriptionId: $subscriptionId) {
+              _id
+              isExpired
+            }
+          }
+        `,
+        variables: {
+          subscriptionId: 'expiredsubscription',
+        },
+      });
+      expect(subscription.isExpired).toBe(true);
+    });
+
+    it('should return expired false by (default) when asked for subsciprion with expiry date in future', async () => {
+      const {
+        data: { subscription },
+      } = await graphqlFetchAsAdminUser({
+        query: /* GraphQL */ `
+          query subscription($subscriptionId: ID!) {
+            subscription(subscriptionId: $subscriptionId) {
+              _id
+              isExpired
+            }
+          }
+        `,
+        variables: {
+          subscriptionId: 'activesubscription',
+        },
+      });
+      expect(subscription.isExpired).toBe(false);
+    });
   });
 });
