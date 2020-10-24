@@ -300,11 +300,9 @@ describe('Plugins: Apple IAP Payments', () => {
       expect(result.status).toBe(200);
       const order = await db
         .collection('orders')
-        .find({ _id: 'iap-order2' })
-        .limit(1).next;
+        .findOne({ _id: 'iap-order2' });
       expect(order.status).toBe('CONFIRMED');
     });
-
     it('notification_type = DID_RECOVER should just store the current receipt', async () => {
       const result = await fetch('http://localhost:3000/graphql/apple-iap', {
         method: 'POST',
@@ -314,16 +312,14 @@ describe('Plugins: Apple IAP Payments', () => {
         body: JSON.stringify(didRecover),
       });
       expect(result.status).toBe(200);
-      const subscription = await db
-        .collection('subscriptions')
-        .find({
-          _id: {
-            $nin: AllSubscriptionIds,
-          },
-        })
-        .limit(1).next;
+      const subscription = await db.collection('subscriptions').findOne({
+        _id: {
+          $nin: AllSubscriptionIds,
+        },
+      });
       expect(subscription?.status).toBe('ACTIVE');
     });
+
     it('notification_type = DID_CHANGE_RENEWAL_STATUS should terminate subscription', async () => {
       const result = await fetch('http://localhost:3000/graphql/apple-iap', {
         method: 'POST',
@@ -333,14 +329,11 @@ describe('Plugins: Apple IAP Payments', () => {
         body: JSON.stringify(didChangeRenewalStatus),
       });
       expect(result.status).toBe(200);
-      const subscription = await db
-        .collection('subscriptions')
-        .find({
-          _id: {
-            $nin: AllSubscriptionIds,
-          },
-        })
-        .limit(1).next;
+      const subscription = await db.collection('subscriptions').findOne({
+        _id: {
+          $nin: AllSubscriptionIds,
+        },
+      });
       expect(subscription?.status).toBe('TERMINATED');
     });
   });

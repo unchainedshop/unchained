@@ -6,7 +6,11 @@ import {
 import { SimpleDeliveryProvider } from './seeds/deliveries';
 import { SimplePaymentProvider } from './seeds/payments';
 import { PlanProduct } from './seeds/products';
-import { ActiveSubscription } from './seeds/subscriptions';
+import {
+  ActiveSubscription,
+  InitialSubscription,
+  TerminatedSubscription,
+} from './seeds/subscriptions';
 import { USER_TOKEN } from './seeds/users';
 
 let connection;
@@ -224,9 +228,148 @@ describe('Subscriptions', () => {
       expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
     });
   });
-  describe('Mutation.terminateSubscription', () => {
-    it.todo('Mutation.terminateSubscription');
+  describe('Mutation.terminateSubscription for admin user should', () => {
+    it('change ACTIVE subscription status to TERMINATED', async () => {
+      const {
+        data: { terminateSubscription },
+      } = await graphqlFetchAsAdminUser({
+        query: /* GraphQL */ `
+          mutation terminateSubscription($subscriptionId: ID!) {
+            terminateSubscription(subscriptionId: $subscriptionId) {
+              _id
+              status
+              billingAddress {
+                firstName
+                lastName
+                company
+                addressLine
+                postalCode
+                countryCode
+                city
+              }
+              plan {
+                product {
+                  _id
+                }
+                quantity
+              }
+              billingAddress {
+                firstName
+              }
+              contact {
+                emailAddress
+                telNumber
+              }
+              payment {
+                provider {
+                  _id
+                }
+              }
+              delivery {
+                provider {
+                  _id
+                }
+              }
+              meta
+            }
+          }
+        `,
+        variables: {
+          subscriptionId: ActiveSubscription._id,
+        },
+      });
+      expect(terminateSubscription.status).toEqual('TERMINATED');
+    });
+
+    it('return SubscriptionWrongStatusError when passed terminated subscription ID', async () => {
+      const { errors } = await graphqlFetchAsAdminUser({
+        query: /* GraphQL */ `
+          mutation terminateSubscription($subscriptionId: ID!) {
+            terminateSubscription(subscriptionId: $subscriptionId) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          subscriptionId: TerminatedSubscription._id,
+        },
+      });
+      expect(errors[0]?.extensions?.code).toEqual(
+        'SubscriptionWrongStatusError',
+      );
+    });
+
+    it('return SubscriptionNotFoundError when passed non existing subscription ID', async () => {
+      const { errors } = await graphqlFetchAsAdminUser({
+        query: /* GraphQL */ `
+          mutation terminateSubscription($subscriptionId: ID!) {
+            terminateSubscription(subscriptionId: $subscriptionId) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          subscriptionId: 'non-existing-id',
+        },
+      });
+      expect(errors[0]?.extensions?.code).toEqual('SubscriptionNotFoundError');
+    });
+
+    it('return InvalidIdError when passed non invalid subscription Id', async () => {
+      const { errors } = await graphqlFetchAsAdminUser({
+        query: /* GraphQL */ `
+          mutation terminateSubscription($subscriptionId: ID!) {
+            terminateSubscription(subscriptionId: $subscriptionId) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          subscriptionId: '',
+        },
+      });
+      expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
+    });
   });
+
+  describe('Mutation.terminateSubscription for normal user should', () => {
+    it('return NoPermissionError', async () => {
+      const { errors } = await graphqlFetchAsNormalUser({
+        query: /* GraphQL */ `
+          mutation terminateSubscription($subscriptionId: ID!) {
+            terminateSubscription(subscriptionId: $subscriptionId) {
+              _id
+              status
+            }
+          }
+        `,
+        variables: {
+          subscriptionId: ActiveSubscription._id,
+        },
+      });
+      expect(errors[0]?.extensions?.code).toEqual('NoPermissionError');
+    });
+  });
+
+  describe('Mutation.terminateSubscription for anonymous user should', () => {
+    it('return NoPermissionError', async () => {
+      const { errors } = await graphqlFetchAsAnonymousUser({
+        query: /* GraphQL */ `
+          mutation terminateSubscription($subscriptionId: ID!) {
+            terminateSubscription(subscriptionId: $subscriptionId) {
+              _id
+              status
+            }
+          }
+        `,
+        variables: {
+          subscriptionId: ActiveSubscription._id,
+        },
+      });
+      expect(errors[0]?.extensions?.code).toEqual('NoPermissionError');
+    });
+  });
+
   describe('Mutation.updateSubscription for admin user should', () => {
     it('update subscription details successfuly', async () => {
       const {
@@ -289,7 +432,7 @@ describe('Subscriptions', () => {
           }
         `,
         variables: {
-          subscriptionId: ActiveSubscription._id,
+          subscriptionId: InitialSubscription._id,
           /* plan: {
             productId: SimpleProduct._id,
             quantity: 3,
@@ -324,7 +467,7 @@ describe('Subscriptions', () => {
       /* console.log(updateSubscription); */
 
       expect(updateSubscription).toMatchObject({
-        _id: ActiveSubscription._id,
+        _id: InitialSubscription._id,
         /* plan: {
           product: {
             _id: SimpleProduct._id,
@@ -397,7 +540,7 @@ describe('Subscriptions', () => {
           }
         `,
         variables: {
-          subscriptionId: ActiveSubscription._id,
+          subscriptionId: InitialSubscription._id,
           billingAddress: {
             firstName: 'Mikael Araya',
             lastName: 'Mengistu',
@@ -411,7 +554,7 @@ describe('Subscriptions', () => {
       });
 
       expect(updateSubscription).toMatchObject({
-        _id: ActiveSubscription._id,
+        _id: InitialSubscription._id,
         billingAddress: {
           firstName: 'Mikael Araya',
           lastName: 'Mengistu',
