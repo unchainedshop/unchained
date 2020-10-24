@@ -17,7 +17,7 @@ describe('Bulk Importer', () => {
   });
 
   describe('Import Products', () => {
-    it('adds 1 Product CREATE event and 1 UPDATE event', async () => {
+    xit('adds 1 Product CREATE event and 1 UPDATE event', async () => {
       const { data: { addWork } = {} } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation addWork($input: JSON) {

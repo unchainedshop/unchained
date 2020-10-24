@@ -85,6 +85,13 @@ export const InitialSubscriptionWithWrongPlan = {
   productId: 'simpleproduct',
 };
 
+export const AllSubscriptionIds = [
+  ActiveSubscription._id,
+  InitialSubscription._id,
+  expiredSubscription._id,
+  InitialSubscriptionWithWrongPlan._id,
+];
+
 export default async function seedSubscription(db) {
   await db.collection('subscriptions').findOrInsertOne(ActiveSubscription);
   await db.collection('subscriptions').findOrInsertOne(InitialSubscription);
