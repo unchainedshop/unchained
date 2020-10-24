@@ -37,7 +37,7 @@ export const InitialSubscription = {
   countryId: 'ch',
   currencyId: 'chf',
   quantity: 1,
-  productId: 'simpleproduct',
+  productId: 'plan-product',
 };
 
 export default async function seedSubscription(db) {

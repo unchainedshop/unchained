@@ -226,8 +226,74 @@ describe('Subscriptions', () => {
   describe('Mutation.updateSubscription', () => {
     it.todo('Mutation.updateSubscription');
   });
-  describe('Mutation.activateSubscription', () => {
-    it.todo('Mutation.activateSubscription');
+  describe('Mutation.activateSubscription for admin user', () => {
+    it('change status of subscription from INITIAL to ACTIVE', async () => {
+      const {
+        data: { activateSubscription },
+      } = await graphqlFetchAsAdminUser({
+        query: /* GraphQL */ `
+          mutation activateSubscription($subscriptionId: ID!) {
+            activateSubscription(subscriptionId: $subscriptionId) {
+              _id
+              status
+              created
+              expires
+              updated
+              isExpired
+              subscriptionNumber
+              meta
+              logs {
+                _id
+                message
+              }
+              periods {
+                start
+              }
+            }
+          }
+        `,
+        variables: {
+          subscriptionId: 'initialsubscription',
+        },
+      });
+      expect(activateSubscription._id).not.toBe(true);
+    });
+  });
+
+  describe('Mutation.activateSubscription for normal user', () => {
+    it('return NoPermissionError', async () => {
+      const { errors } = await graphqlFetchAsNormalUser({
+        query: /* GraphQL */ `
+          mutation activateSubscription($subscriptionId: ID!) {
+            activateSubscription(subscriptionId: $subscriptionId) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          subscriptionId: 'initialsubscription',
+        },
+      });
+      expect(errors[0]?.extensions?.code).toEqual('NoPermissionError');
+    });
+  });
+
+  describe('Mutation.activateSubscription for anonymous user', () => {
+    it('return NoPermissionError', async () => {
+      const { errors } = await graphqlFetchAsNormalUser({
+        query: /* GraphQL */ `
+          mutation activateSubscription($subscriptionId: ID!) {
+            activateSubscription(subscriptionId: $subscriptionId) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          subscriptionId: 'initialsubscription',
+        },
+      });
+      expect(errors[0]?.extensions?.code).toEqual('NoPermissionError');
+    });
   });
 
   describe('query.subscriptions for admin user should', () => {
@@ -293,6 +359,25 @@ describe('Subscriptions', () => {
         variables: {},
       });
       expect(subscriptions.length > 0).toBe(true);
+    });
+
+    it('return number of subscriptions specified by limit starting from a given offset', async () => {
+      const {
+        data: { subscriptions },
+      } = await graphqlFetchAsAdminUser({
+        query: /* GraphQL */ `
+          query subscriptions($limit: Int, $offset: Int) {
+            subscriptions(limit: $limit, offset: $offset) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          limit: 1,
+          offset: 2,
+        },
+      });
+      expect(subscriptions.length).toBe(1);
     });
   });
 
