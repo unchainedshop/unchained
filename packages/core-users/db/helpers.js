@@ -113,24 +113,15 @@ Users.helpers({
     await dbManager.setUsername(this._id, username);
     return Users.findOne({ _id: this._id });
   },
-  async addEmail(
-    email,
-    { verified = false, skipEmailVerification = false } = {}
-  ) {
+  async addEmail(email, { verified = false } = {}) {
     accountsPassword.addEmail(this._id, email, verified);
-    if (!skipEmailVerification) {
-      await accountsPassword.sendVerificationEmail(email);
-    }
     return Users.findOne({ _id: this._id });
   },
   async removeEmail(email) {
     await accountsPassword.removeEmail(this._id, email);
     return Users.findOne({ _id: this._id });
   },
-  async updateEmail(
-    email,
-    { verified = false, skipEmailVerification = false } = {}
-  ) {
+  async updateEmail(email, { verified = false } = {}) {
     log(
       'user.updateEmail is deprecated, please use user.addEmail and user.removeEmail',
       { level: 'warn' }
@@ -141,9 +132,6 @@ Users.helpers({
         .filter(({ address }) => address.toLowerCase() !== email.toLowerCase())
         .map(({ address }) => accountsPassword.removeEmail(this._id, address))
     );
-    if (!skipEmailVerification) {
-      await accountsPassword.sendVerificationEmail(email);
-    }
     return Users.findOne({ _id: this._id });
   },
   logs({ limit, offset }) {
@@ -204,9 +192,9 @@ Users.enrollUser = async ({ password, email, displayName, address }) => {
   if (password && password !== '') {
     params.password = password;
   }
-  const newUserId = await accountsPassword.createUser(params, {
-    skipEmailVerification: true,
-  });
+
+  const newUserId = await accountsPassword.createUser(params);
+
   Users.update(
     { _id: newUserId },
     {
@@ -218,12 +206,6 @@ Users.enrollUser = async ({ password, email, displayName, address }) => {
       },
     }
   );
-  if (!params.password) {
-    // send an e-mail if password is not set allowing the user to set it
-    accountsPassword.sendEnrollmentEmail(
-      Users.findOne({ _id: newUserId }).primaryEmail()?.address
-    );
-  }
   return Users.findOne({ _id: newUserId });
 };
 

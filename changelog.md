@@ -2,6 +2,10 @@
 
 TBD
 
+## Breaking Changes
+
+- [core-users] addEmail and updateEmail no longer send out email verification; you need to trigger the verification using `resendVerificationEmail` mutation.
+
 ## Patches
 - [great-purge-of-meteor] Remove accounts-base and accounts-password from platform package
 - [great-purge-of-meteor] Implement new core-accountsjs package
