@@ -1,3 +1,6 @@
+import { SimpleOrder } from './orders';
+import { PlanProduct } from './products';
+
 export const ActiveSubscription = {
   _id: 'activesubscription',
   status: 'ACTIVE',
@@ -5,10 +8,10 @@ export const ActiveSubscription = {
   expires: new Date('2030/09/10').getTime(),
   subscriptionNumber: 'RANDOME',
   userId: 'admin',
-  productId: 'plan-product',
+  productId: PlanProduct._id,
   periods: [
     {
-      orderId: 'simple-order',
+      orderId: SimpleOrder._id,
       start: new Date(),
       end: new Date('2030/09/10').getTime(),
       isTrial: false,
@@ -26,7 +29,7 @@ export const InitialSubscription = {
   expires: new Date().getTime(),
   periods: [
     {
-      orderId: 'simple-order',
+      orderId: SimpleOrder._id,
       start: new Date(),
       end: 1603399340999,
       isTrial: false,
@@ -37,7 +40,7 @@ export const InitialSubscription = {
   countryId: 'ch',
   currencyId: 'chf',
   quantity: 1,
-  productId: 'plan-product',
+  productId: PlanProduct._id,
 };
 
 export const expiredSubscription = {
@@ -47,7 +50,7 @@ export const expiredSubscription = {
   expires: '2010/01/03',
   periods: [
     {
-      orderId: 'simple-order',
+      orderId: SimpleOrder._id,
       start: new Date('2010/01/01').getTime(),
       end: new Date('2010/01/03').getTime(),
       isTrial: false,
@@ -58,7 +61,7 @@ export const expiredSubscription = {
   countryId: 'ch',
   currencyId: 'chf',
   quantity: 1,
-  productId: 'plan-product',
+  productId: PlanProduct._id,
 };
 
 export const InitialSubscriptionWithWrongPlan = {
@@ -68,7 +71,7 @@ export const InitialSubscriptionWithWrongPlan = {
   expires: new Date().getTime(),
   periods: [
     {
-      orderId: 'simple-order',
+      orderId: SimpleOrder._id,
       start: new Date(),
       end: 1603399340999,
       isTrial: false,

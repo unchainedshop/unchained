@@ -3,7 +3,10 @@ import {
   createLoggedInGraphqlFetch,
   createAnonymousGraphqlFetch,
 } from './helpers';
+import { SimpleDeliveryProvider } from './seeds/deliveries';
+import { SimplePaymentProvider } from './seeds/payments';
 import { PlanProduct } from './seeds/products';
+import { ActiveSubscription } from './seeds/subscriptions';
 import { USER_TOKEN } from './seeds/users';
 
 let connection;
@@ -224,9 +227,248 @@ describe('Subscriptions', () => {
   describe('Mutation.terminateSubscription', () => {
     it.todo('Mutation.terminateSubscription');
   });
-  describe('Mutation.updateSubscription', () => {
-    it.todo('Mutation.updateSubscription');
+  describe('Mutation.updateSubscription for admin user should', () => {
+    it('update subscription details successfuly', async () => {
+      const {
+        data: { updateSubscription },
+      } = await graphqlFetchAsAdminUser({
+        query: /* GraphQL */ `
+          mutation updateSubscription(
+            $subscriptionId: ID
+            $plan: SubscriptionPlanInput
+            $billingAddress: AddressInput
+            $contact: ContactInput
+            $payment: SubscriptionPaymentInput
+            $delivery: SubscriptionDeliveryInput
+            $meta: JSON
+          ) {
+            updateSubscription(
+              subscriptionId: $subscriptionId
+              plan: $plan
+              billingAddress: $billingAddress
+              contact: $contact
+              payment: $payment
+              delivery: $delivery
+              meta: $meta
+            ) {
+              _id
+              billingAddress {
+                firstName
+                lastName
+                company
+                addressLine
+                postalCode
+                countryCode
+                city
+              }
+              plan {
+                product {
+                  _id
+                }
+                quantity
+              }
+              billingAddress {
+                firstName
+              }
+              contact {
+                emailAddress
+                telNumber
+              }
+              payment {
+                provider {
+                  _id
+                }
+              }
+              delivery {
+                provider {
+                  _id
+                }
+              }
+              meta
+            }
+          }
+        `,
+        variables: {
+          subscriptionId: ActiveSubscription._id,
+          /* plan: {
+            productId: SimpleProduct._id,
+            quantity: 3,
+          }, */
+          billingAddress: {
+            firstName: 'Mikael Araya',
+            lastName: 'Mengistu',
+            company: 'Bionic',
+            addressLine: 'Bole, Addis Ababa',
+            postalCode: '123456',
+            city: 'Addis Ababa',
+            countryCode: 'ch',
+          },
+          contact: {
+            emailAddress: 'mikael@unchained.shop',
+            telNumber: '+251912669988',
+          },
+          payment: {
+            paymentProviderId: SimplePaymentProvider._id,
+          },
+          delivery: {
+            deliveryProviderId: SimpleDeliveryProvider._id,
+          },
+          /* meta: {
+            context: {
+              message: 'hello from meta',
+            },
+          }, */
+        },
+      });
+
+      /* console.log(updateSubscription); */
+
+      expect(updateSubscription).toMatchObject({
+        _id: ActiveSubscription._id,
+        /* plan: {
+          product: {
+            _id: SimpleProduct._id,
+          },
+          quantity: 3,
+        }, */
+        billingAddress: {
+          firstName: 'Mikael Araya',
+          lastName: 'Mengistu',
+          company: 'Bionic',
+          addressLine: 'Bole, Addis Ababa',
+          postalCode: '123456',
+          city: 'Addis Ababa',
+          countryCode: 'ch',
+        },
+        contact: {
+          emailAddress: 'mikael@unchained.shop',
+          telNumber: '+251912669988',
+        },
+        payment: {
+          provider: { _id: SimplePaymentProvider._id },
+        },
+        delivery: {
+          provider: { _id: SimpleDeliveryProvider._id },
+        },
+        /* meta: {
+          context: {
+            message: 'hello from meta',
+          },
+        }, */
+      });
+    });
   });
+
+  describe('Mutation.updateSubscription for normal user should', () => {
+    it('Update subscription successfuly', async () => {
+      const {
+        data: { updateSubscription },
+      } = await graphqlFetchAsAdminUser({
+        query: /* GraphQL */ `
+          mutation updateSubscription(
+            $subscriptionId: ID
+            $plan: SubscriptionPlanInput
+            $billingAddress: AddressInput
+            $contact: ContactInput
+            $payment: SubscriptionPaymentInput
+            $delivery: SubscriptionDeliveryInput
+            $meta: JSON
+          ) {
+            updateSubscription(
+              subscriptionId: $subscriptionId
+              plan: $plan
+              billingAddress: $billingAddress
+              contact: $contact
+              payment: $payment
+              delivery: $delivery
+              meta: $meta
+            ) {
+              _id
+              billingAddress {
+                firstName
+                lastName
+                company
+                addressLine
+                postalCode
+                countryCode
+                city
+              }
+            }
+          }
+        `,
+        variables: {
+          subscriptionId: ActiveSubscription._id,
+          billingAddress: {
+            firstName: 'Mikael Araya',
+            lastName: 'Mengistu',
+            company: 'Bionic',
+            addressLine: 'Bole, Addis Ababa',
+            postalCode: '123456',
+            city: 'Addis Ababa',
+            countryCode: 'ch',
+          },
+        },
+      });
+
+      expect(updateSubscription).toMatchObject({
+        _id: ActiveSubscription._id,
+        billingAddress: {
+          firstName: 'Mikael Araya',
+          lastName: 'Mengistu',
+          company: 'Bionic',
+          addressLine: 'Bole, Addis Ababa',
+          postalCode: '123456',
+          city: 'Addis Ababa',
+          countryCode: 'ch',
+        },
+      });
+    });
+  });
+
+  describe('Mutation.updateSubscription for anonymous user should', () => {
+    it('return NoPermissionError', async () => {
+      const { errors } = await graphqlFetchAsAnonymousUser({
+        query: /* GraphQL */ `
+          mutation updateSubscription(
+            $subscriptionId: ID
+            $plan: SubscriptionPlanInput
+            $billingAddress: AddressInput
+            $contact: ContactInput
+            $payment: SubscriptionPaymentInput
+            $delivery: SubscriptionDeliveryInput
+            $meta: JSON
+          ) {
+            updateSubscription(
+              subscriptionId: $subscriptionId
+              plan: $plan
+              billingAddress: $billingAddress
+              contact: $contact
+              payment: $payment
+              delivery: $delivery
+              meta: $meta
+            ) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          subscriptionId: ActiveSubscription._id,
+          billingAddress: {
+            firstName: 'Mikael Araya',
+            lastName: 'Mengistu',
+            company: 'Bionic',
+            addressLine: 'Bole, Addis Ababa',
+            postalCode: '123456',
+            city: 'Addis Ababa',
+            countryCode: 'ch',
+          },
+        },
+      });
+
+      expect(errors[0]?.extensions?.code).toEqual('NoPermissionError');
+    });
+  });
+
   describe('Mutation.activateSubscription for admin user', () => {
     it('change status of subscription from INITIAL to ACTIVE', async () => {
       const {
