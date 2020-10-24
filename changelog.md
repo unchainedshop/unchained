@@ -8,7 +8,17 @@ TBD
 - [great-purge-of-meteor] Convert all authentication related mutations within `api/resolvers/mutations/accounts/loginWithPassword.js` to use accounts-js.
 - [great-purge-of-meteor] Convert any Users collection helpers to use accounts-js. 
 
-# v0.53.3
+---
+
+# v0.54.0
+
+## Minor
+- [logger] Support for JSON Logging through UNCHAINED_LOG_FORMAT=json
+- [api] Larger body limit for the new Bulk Import API
+
+---
+
+# v0.53.2
 
 ## Minor
 - [core] Compound indexes for text entities

@@ -1,7 +1,7 @@
 {
   "name": "@unchainedshop/example-minimal",
   "description": "Minimal Bootstrap Project for Unchained Engine",
-  "version": "0.53.3",
+  "version": "0.54.0",
   "license": "EUPL-1.2",
   "homepage": "https://unchained.shop",
   "repository": {
@@ -25,21 +25,21 @@
   },
   "scripts": {
     "lint": "eslint . --cache  --fix --ext=jsx --ext=js",
-    "dev": "cross-env METEOR_PACKAGE_DIRS=../../packages UI_ENDPOINT=http://localhost:4000 meteor --exclude-archs web.browser.legacy,web.browser --no-release-check --no-lint -p 4010",
+    "dev": "cross-env METEOR_PACKAGE_DIRS=../../packages UI_ENDPOINT=http://localhost:4000 meteor --exclude-archs web.browser.legacy,web.cordova,web.browser --no-release-check --no-lint -p 4010",
     "build": "cross-env METEOR_PACKAGE_DIRS=../../packages UI_ENDPOINT=http://localhost:4000 meteor build --server-only --directory .build",
-    "debug": "cross-env METEOR_PACKAGE_DIRS=../../packages UI_ENDPOINT=http://localhost:4000 meteor --exclude-archs web.browser.legacy,web.browser debug -p 4010"
+    "debug": "cross-env METEOR_PACKAGE_DIRS=../../packages UI_ENDPOINT=http://localhost:4000 meteor --exclude-archs web.browser.legacy,web.cordova,web.browser debug -p 4010"
   },
   "dependencies": {
-    "@babel/runtime": "^7.11.2",
+    "@babel/runtime": "^7.12.1",
     "@paypal/checkout-server-sdk": "^1.0.2",
-    "@unchainedshop/controlpanel": "^0.53.3",
+    "@unchainedshop/controlpanel": "^0.54.0",
     "apollo-server-express": "^2.18.2",
     "bcrypt": "^5.0.0",
     "braintree": "^2.24.0",
     "client-oauth2": "github:unchainedshop/js-client-oauth2#master",
     "emoji-flags": "^1.3.0",
     "graphql": "^14.7.0",
-    "i18n-iso-countries": "^6.1.0",
+    "i18n-iso-countries": "^6.2.0",
     "iconv-lite": "^0.6.2",
     "isomorphic-unfetch": "^3.1.0",
     "locale": "^0.1.0",
@@ -53,13 +53,13 @@
     "open": "^7.3.0",
     "ramda": "^0.27.1",
     "simpl-schema": "^1.10.2",
-    "stripe": "^8.112.0",
+    "stripe": "^8.116.0",
     "xml-js": "^1.6.11"
   },
   "devDependencies": {
-    "@babel/core": "^7.11.6",
-    "@babel/preset-env": "^7.11.5",
-    "@babel/register": "^7.11.5",
+    "@babel/core": "^7.12.3",
+    "@babel/preset-env": "^7.12.1",
+    "@babel/register": "^7.12.1",
     "babel-eslint": "^10.1.0",
     "cross-env": "^7.0.2",
     "eslint": "^7.11.0",
