@@ -5,7 +5,7 @@ export const ActiveSubscription = {
   isExpired: false,
   subscriptionNumber: 'RANDOME',
   userId: 'admin',
-  productId: 'simpleproduct',
+  productId: 'plan-product',
   periods: [
     {
       orderId: 'simple-order',
@@ -40,7 +40,31 @@ export const InitialSubscription = {
   productId: 'plan-product',
 };
 
+export const InitialSubscriptionWithWrongPlan = {
+  _id: 'initialsubscription-wrong-plan',
+  status: 'INITIAL',
+  created: new Date(),
+  isExpired: false,
+  periods: [
+    {
+      orderId: 'simple-order',
+      start: new Date(),
+      end: 1603399340999,
+      isTrial: false,
+    },
+  ],
+  subscriptionNumber: 'RANDOME-wrong',
+  userId: 'admin',
+  countryId: 'ch',
+  currencyId: 'chf',
+  quantity: 1,
+  productId: 'simpleproduct',
+};
+
 export default async function seedSubscription(db) {
   await db.collection('subscriptions').findOrInsertOne(ActiveSubscription);
   await db.collection('subscriptions').findOrInsertOne(InitialSubscription);
+  await db
+    .collection('subscriptions')
+    .findOrInsertOne(InitialSubscriptionWithWrongPlan);
 }

@@ -258,6 +258,77 @@ describe('Subscriptions', () => {
       });
       expect(activateSubscription._id).not.toBe(true);
     });
+
+    it('return  SubscriptionWrongStatusError error when trying to activate ACTIVE subscription', async () => {
+      const { errors } = await graphqlFetchAsAdminUser({
+        query: /* GraphQL */ `
+          mutation activateSubscription($subscriptionId: ID!) {
+            activateSubscription(subscriptionId: $subscriptionId) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          subscriptionId: 'activesubscription',
+        },
+      });
+      expect(errors[0]?.extensions.code).toEqual(
+        'SubscriptionWrongStatusError',
+      );
+    });
+
+    it('return  SubscriptionNotFoundError when passed non existing subscription ID', async () => {
+      const { errors } = await graphqlFetchAsAdminUser({
+        query: /* GraphQL */ `
+          mutation activateSubscription($subscriptionId: ID!) {
+            activateSubscription(subscriptionId: $subscriptionId) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          subscriptionId: 'non-existing-id',
+        },
+      });
+      expect(errors[0]?.extensions.code).toEqual('SubscriptionNotFoundError');
+    });
+
+    it('return  InvalidIdError when passed invalid subscription ID', async () => {
+      const { errors } = await graphqlFetchAsAdminUser({
+        query: /* GraphQL */ `
+          mutation activateSubscription($subscriptionId: ID!) {
+            activateSubscription(subscriptionId: $subscriptionId) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          subscriptionId: '',
+        },
+      });
+      expect(errors[0]?.extensions.code).toEqual('InvalidIdError');
+    });
+
+    it('return  ServerError when passed invalid subscription ID', async () => {
+      const { errors } = await graphqlFetchAsAdminUser({
+        query: /* GraphQL */ `
+          mutation activateSubscription($subscriptionId: ID!) {
+            activateSubscription(subscriptionId: $subscriptionId) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          subscriptionId: 'initialsubscription-wrong-plan',
+        },
+      });
+
+      expect(
+        errors[0]?.message.includes(
+          'No suitable subscription plugin available for this plan configuration',
+        ),
+      ).toBe(true);
+    });
   });
 
   describe('Mutation.activateSubscription for normal user', () => {
