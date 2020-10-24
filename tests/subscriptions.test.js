@@ -489,8 +489,8 @@ describe('Subscriptions', () => {
       expect(errors[0]?.extensions?.code).toEqual('NoPermissionError');
     });
   });
-  describe('query.subscription for admin user', () => {
-    it('should return subscription specified by Id', async () => {
+  describe('query.subscription for admin user should', () => {
+    it('return subscription specified by Id', async () => {
       const {
         data: { subscription },
       } = await graphqlFetchAsAdminUser({
@@ -558,7 +558,7 @@ describe('Subscriptions', () => {
       expect(subscription._id).toBe('activesubscription');
     });
 
-    it('should return expired true by (default) when asked for subsciprion with expiry date of past', async () => {
+    it('return expired true by (default) when asked for subsciprion with expiry date of past', async () => {
       const {
         data: { subscription },
       } = await graphqlFetchAsAdminUser({
@@ -577,7 +577,7 @@ describe('Subscriptions', () => {
       expect(subscription.isExpired).toBe(true);
     });
 
-    it('should return expired false by (default) when asked for subsciprion with expiry date in future', async () => {
+    it('return expired false by (default) when asked for subsciprion with expiry date in future', async () => {
       const {
         data: { subscription },
       } = await graphqlFetchAsAdminUser({
@@ -594,6 +594,78 @@ describe('Subscriptions', () => {
         },
       });
       expect(subscription.isExpired).toBe(false);
+    });
+
+    it('return SubscriptionNotFoundError when passed non existing subscription ID', async () => {
+      const { errors } = await graphqlFetchAsAdminUser({
+        query: /* GraphQL */ `
+          query subscription($subscriptionId: ID!) {
+            subscription(subscriptionId: $subscriptionId) {
+              _id
+              isExpired
+            }
+          }
+        `,
+        variables: {
+          subscriptionId: 'non-existing-id',
+        },
+      });
+      expect(errors[0]?.extensions?.code).toEqual('SubscriptionNotFoundError');
+    });
+
+    it('return InvalidIdError when passed invalid subscription ID', async () => {
+      const { errors } = await graphqlFetchAsAdminUser({
+        query: /* GraphQL */ `
+          query subscription($subscriptionId: ID!) {
+            subscription(subscriptionId: $subscriptionId) {
+              _id
+              isExpired
+            }
+          }
+        `,
+        variables: {
+          subscriptionId: '',
+        },
+      });
+      expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
+    });
+  });
+
+  describe('query.subscription for normal user', () => {
+    it('should return NoPermissionError', async () => {
+      const { errors } = await graphqlFetchAsNormalUser({
+        query: /* GraphQL */ `
+          query subscription($subscriptionId: ID!) {
+            subscription(subscriptionId: $subscriptionId) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          subscriptionId: 'activesubscription',
+        },
+      });
+
+      expect(errors[0]?.extensions?.code).toEqual('NoPermissionError');
+    });
+  });
+
+  describe('query.subscription for anonymous user', () => {
+    it('should return NoPermissionError', async () => {
+      const { errors } = await graphqlFetchAsAnonymousUser({
+        query: /* GraphQL */ `
+          query subscription($subscriptionId: ID!) {
+            subscription(subscriptionId: $subscriptionId) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          subscriptionId: 'activesubscription',
+        },
+      });
+
+      expect(errors[0]?.extensions?.code).toEqual('NoPermissionError');
     });
   });
 });
