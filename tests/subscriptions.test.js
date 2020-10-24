@@ -292,7 +292,6 @@ describe('Subscriptions', () => {
         `,
         variables: {},
       });
-      console.log(subscriptions);
       expect(subscriptions.length > 0).toBe(true);
     });
   });

@@ -1,16 +1,17 @@
 export const ActiveSubscription = {
   _id: 'activesubscription',
-  status: 'INITIAL',
+  status: 'ACTIVE',
   created: new Date(),
   isExpired: false,
   subscriptionNumber: 'RANDOME',
   userId: 'admin',
   productId: 'simpleproduct',
-  period: [
+  periods: [
     {
       orderId: 'simple-order',
-      start: 1603399340831,
+      start: new Date(),
       end: 1603399340999,
+      isTrial: false,
     },
   ],
   countryCode: 'ch',
@@ -18,20 +19,28 @@ export const ActiveSubscription = {
   quantity: 2,
 };
 
-/* export const InitialSubscription = {
+export const InitialSubscription = {
   _id: 'initialsubscription',
   status: 'INITIAL',
-  created: 1603394564831,
-  updated: 1601234555841,
+  created: new Date(),
   isExpired: false,
+  periods: [
+    {
+      orderId: 'simple-order',
+      start: new Date(),
+      end: 1603399340999,
+      isTrial: false,
+    },
+  ],
   subscriptionNumber: 'RANDOME-Initial',
   userId: 'admin',
   countryId: 'ch',
-  currency: 'chf',
-}; */
+  currencyId: 'chf',
+  quantity: 1,
+  productId: 'simpleproduct',
+};
 
 export default async function seedSubscription(db) {
   await db.collection('subscriptions').findOrInsertOne(ActiveSubscription);
-
-  /* await db.collection('subscriptions').findOrInsertOne(InitialSubscription); */
+  await db.collection('subscriptions').findOrInsertOne(InitialSubscription);
 }
