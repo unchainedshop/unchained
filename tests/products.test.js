@@ -472,6 +472,60 @@ describe('Products', () => {
         },
       });
     });
+
+    it('return ProductNotFoundError when passed product ID that does not exist', async () => {
+      const { errors } = await graphqlFetchAsAdmin({
+        query: /* GraphQL */ `
+          mutation updateProductPlan(
+            $productId: ID!
+            $plan: UpdateProductPlanInput!
+          ) {
+            updateProductPlan(productId: $productId, plan: $plan) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          productId: 'non-existing-id',
+          plan: {
+            usageCalculationType: 'METERED',
+            billingInterval: 'MONTH',
+            billingIntervalCount: 1,
+            trialInterval: 'WEEK',
+            trialIntervalCount: 2,
+          },
+        },
+      });
+
+      expect(errors[0]?.extensions?.code).toEqual('ProductNotFoundError');
+    });
+
+    it('return InvalidIdError when passed invalid product ID', async () => {
+      const { errors } = await graphqlFetchAsAdmin({
+        query: /* GraphQL */ `
+          mutation updateProductPlan(
+            $productId: ID!
+            $plan: UpdateProductPlanInput!
+          ) {
+            updateProductPlan(productId: $productId, plan: $plan) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          productId: '',
+          plan: {
+            usageCalculationType: 'METERED',
+            billingInterval: 'MONTH',
+            billingIntervalCount: 1,
+            trialInterval: 'WEEK',
+            trialIntervalCount: 2,
+          },
+        },
+      });
+
+      expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
+    });
   });
 
   describe('Mutation.updateProductPlan for normal user should', () => {
