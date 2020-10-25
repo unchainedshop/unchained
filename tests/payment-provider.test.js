@@ -3,16 +3,23 @@ import {
   createLoggedInGraphqlFetch,
   createAnonymousGraphqlFetch,
 } from './helpers';
-import { ADMIN_TOKEN } from './seeds/users';
-import { SimplePaymentProvider } from './seeds/payments';
+import { ADMIN_TOKEN, USER_TOKEN } from './seeds/users';
+import {
+  SimplePaymentProvider,
+  SimplePaymenttCredential,
+} from './seeds/payments';
 
 let connection;
-let graphqlFetch;
+let graphqlFetchAsAdminUser;
+let graphqlFetchAsNormalUser;
+let graphqlFetchAsAnonymousUser;
 
 describe('PaymentProviders', () => {
   beforeAll(async () => {
     [, connection] = await setupDatabase();
-    graphqlFetch = await createLoggedInGraphqlFetch(ADMIN_TOKEN);
+    graphqlFetchAsAdminUser = await createLoggedInGraphqlFetch(ADMIN_TOKEN);
+    graphqlFetchAsNormalUser = await createLoggedInGraphqlFetch(USER_TOKEN);
+    graphqlFetchAsAnonymousUser = await createAnonymousGraphqlFetch();
   });
 
   afterAll(async () => {
@@ -23,7 +30,7 @@ describe('PaymentProviders', () => {
     it('return array of all paymentProvider when type is not given', async () => {
       const {
         data: { paymentProviders },
-      } = await graphqlFetch({
+      } = await graphqlFetchAsAdminUser({
         query: /* GraphQL */ `
           query PaymentProviders {
             paymentProviders {
@@ -50,7 +57,7 @@ describe('PaymentProviders', () => {
     it('return list of paymentProvider of the given type', async () => {
       const {
         data: { paymentProviders },
-      } = await graphqlFetch({
+      } = await graphqlFetchAsAdminUser({
         query: /* GraphQL */ `
           query PaymentProviders($type: PaymentProviderType) {
             paymentProviders(type: $type) {
@@ -70,7 +77,7 @@ describe('PaymentProviders', () => {
     it('return single paymentProvider when ID is provided', async () => {
       const {
         data: { paymentProvider },
-      } = await graphqlFetch({
+      } = await graphqlFetchAsAdminUser({
         query: /* GraphQL */ `
           query PaymentProvider($paymentProviderId: ID!) {
             paymentProvider(paymentProviderId: $paymentProviderId) {
@@ -100,7 +107,7 @@ describe('PaymentProviders', () => {
       const {
         data: { paymentProvider },
         errors,
-      } = await graphqlFetch({
+      } = await graphqlFetchAsAdminUser({
         query: /* GraphQL */ `
           query PaymentProvider($paymentProviderId: ID!) {
             paymentProvider(paymentProviderId: $paymentProviderId) {
@@ -122,7 +129,7 @@ describe('PaymentProviders', () => {
       const {
         data: { paymentProvider },
         errors,
-      } = await graphqlFetch({
+      } = await graphqlFetchAsAdminUser({
         query: /* GraphQL */ `
           query PaymentProvider($paymentProviderId: ID!) {
             paymentProvider(paymentProviderId: $paymentProviderId) {
@@ -153,6 +160,81 @@ describe('PaymentProviders', () => {
         variables: {},
       });
       expect(errors.length).toEqual(1);
+    });
+  });
+
+  describe('Mutation.removePaymentCredentials for admin user should', () => {
+    it('mark pament provider specified by ID as invalid', async () => {
+      const {
+        data: { removePaymentCredentials } = {},
+      } = await graphqlFetchAsAdminUser({
+        query: /* GraphQL */ `
+          mutation removePaymentCredentials($paymentCredentialsId: ID!) {
+            removePaymentCredentials(
+              paymentCredentialsId: $paymentCredentialsId
+            ) {
+              _id
+              meta
+              token
+              isValid
+              isPreferred
+              paymentProvider {
+                _id
+              }
+            }
+          }
+        `,
+        variables: {
+          paymentCredentialsId: SimplePaymenttCredential._id,
+        },
+      });
+      expect(removePaymentCredentials).toMatchObject({
+        _id: SimplePaymenttCredential._id,
+        isValid: false,
+        isPreferred: true,
+      });
+    });
+  });
+
+  describe('Mutation.removePaymentCredentials for normal user should', () => {
+    it('return NoPermissionError', async () => {
+      const { errors } = await graphqlFetchAsNormalUser({
+        query: /* GraphQL */ `
+          mutation removePaymentCredentials($paymentCredentialsId: ID!) {
+            removePaymentCredentials(
+              paymentCredentialsId: $paymentCredentialsId
+            ) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          paymentCredentialsId: SimplePaymenttCredential._id,
+        },
+      });
+
+      expect(errors[0]?.extensions?.code).toEqual('NoPermissionError');
+    });
+  });
+
+  describe('Mutation.removePaymentCredentials for anonymous user should', () => {
+    it('return NoPermissionError', async () => {
+      const { errors } = await graphqlFetchAsAnonymousUser({
+        query: /* GraphQL */ `
+          mutation removePaymentCredentials($paymentCredentialsId: ID!) {
+            removePaymentCredentials(
+              paymentCredentialsId: $paymentCredentialsId
+            ) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          paymentCredentialsId: SimplePaymenttCredential._id,
+        },
+      });
+
+      expect(errors[0]?.extensions?.code).toEqual('NoPermissionError');
     });
   });
 });

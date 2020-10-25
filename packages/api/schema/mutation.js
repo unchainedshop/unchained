@@ -882,7 +882,9 @@ export default [
       ): PaymentCredentials
 
       """
-      Deletes the specified payment credential
+      Deletes the specified payment credential.
+      Note: the payment credential is not removed from the system,
+      but it's isValid field will be changed to false
       """
       removePaymentCredentials(paymentCredentialsId: ID!): PaymentCredentials
     }
