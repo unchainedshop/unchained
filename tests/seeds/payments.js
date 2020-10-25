@@ -44,6 +44,7 @@ export const GenericPaymentCredential = {
   _id: 'generic-payment-credential',
   paymentProviderId: GenericPaymentProvider._id,
   isPreferred: false,
+  userId: 'user',
 };
 export default async function seedPayments(db) {
   await chainedUpsert(db)
