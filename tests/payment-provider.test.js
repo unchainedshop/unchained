@@ -194,6 +194,58 @@ describe('PaymentProviders', () => {
         isPreferred: true,
       });
     });
+
+    it('return PaymentCredentialNotFoundError when passed non existing payment credential ID', async () => {
+      const { errors } = await graphqlFetchAsAdminUser({
+        query: /* GraphQL */ `
+          mutation removePaymentCredentials($paymentCredentialsId: ID!) {
+            removePaymentCredentials(
+              paymentCredentialsId: $paymentCredentialsId
+            ) {
+              _id
+              meta
+              token
+              isValid
+              isPreferred
+              paymentProvider {
+                _id
+              }
+            }
+          }
+        `,
+        variables: {
+          paymentCredentialsId: 'non-existing-id',
+        },
+      });
+      expect(errors[0]?.extensions?.code).toEqual(
+        'PaymentCredentialsNotFoundError',
+      );
+    });
+
+    it('return InvalidIdError when passed invalid payment credential ID', async () => {
+      const { errors } = await graphqlFetchAsAdminUser({
+        query: /* GraphQL */ `
+          mutation removePaymentCredentials($paymentCredentialsId: ID!) {
+            removePaymentCredentials(
+              paymentCredentialsId: $paymentCredentialsId
+            ) {
+              _id
+              meta
+              token
+              isValid
+              isPreferred
+              paymentProvider {
+                _id
+              }
+            }
+          }
+        `,
+        variables: {
+          paymentCredentialsId: '',
+        },
+      });
+      expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
+    });
   });
 
   describe('Mutation.removePaymentCredentials for normal user should', () => {
