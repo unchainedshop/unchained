@@ -4,7 +4,11 @@ import {
   createAnonymousGraphqlFetch,
 } from './helpers';
 import { ADMIN_TOKEN, USER_TOKEN } from './seeds/users';
-import { SimpleProduct, UnpublishedProduct } from './seeds/products';
+import {
+  PlanProduct,
+  SimpleProduct,
+  UnpublishedProduct,
+} from './seeds/products';
 
 let connection;
 let graphqlFetchAsAdmin;
@@ -396,6 +400,142 @@ describe('Products', () => {
       });
 
       expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
+    });
+  });
+
+  describe('Mutation.updateProductPlan for admin user should', () => {
+    it('update product plan successfuly', async () => {
+      const { data: { updateProductPlan } = {} } = await graphqlFetchAsAdmin({
+        query: /* GraphQL */ `
+          mutation updateProductPlan(
+            $productId: ID!
+            $plan: UpdateProductPlanInput!
+          ) {
+            updateProductPlan(productId: $productId, plan: $plan) {
+              _id
+              sequence
+              status
+              tags
+              created
+              updated
+              published
+              texts {
+                _id
+              }
+              media(limit: 1) {
+                _id
+              }
+              reviews {
+                _id
+              }
+              meta
+              assortmentPaths {
+                assortmentProduct {
+                  _id
+                }
+              }
+              siblings {
+                _id
+              }
+              ... on PlanProduct {
+                plan {
+                  usageCalculationType
+                  billingInterval
+                  billingIntervalCount
+                  trialInterval
+                  trialIntervalCount
+                }
+              }
+            }
+          }
+        `,
+        variables: {
+          productId: PlanProduct._id,
+          plan: {
+            usageCalculationType: 'METERED',
+            billingInterval: 'MONTH',
+            billingIntervalCount: 1,
+            trialInterval: 'WEEK',
+            trialIntervalCount: 2,
+          },
+        },
+      });
+
+      expect(updateProductPlan).toMatchObject({
+        _id: PlanProduct._id,
+        plan: {
+          usageCalculationType: 'METERED',
+          billingInterval: 'MONTH',
+          billingIntervalCount: 1,
+          trialInterval: 'WEEK',
+          trialIntervalCount: 2,
+        },
+      });
+    });
+  });
+
+  describe('Mutation.updateProductPlan for normal user should', () => {
+    it('return NoPermissionError', async () => {
+      const { errors } = await graphqlFetchAsNormalUser({
+        query: /* GraphQL */ `
+          mutation updateProductPlan(
+            $productId: ID!
+            $plan: UpdateProductPlanInput!
+          ) {
+            updateProductPlan(productId: $productId, plan: $plan) {
+              _id
+              ... on PlanProduct {
+                plan {
+                  usageCalculationType
+                  billingInterval
+                  billingIntervalCount
+                  trialInterval
+                  trialIntervalCount
+                }
+              }
+            }
+          }
+        `,
+        variables: {
+          productId: PlanProduct._id,
+          plan: {
+            usageCalculationType: 'LICENSED',
+            billingInterval: 'WEEK',
+            billingIntervalCount: 1,
+            trialInterval: 'MONTH',
+            trialIntervalCount: 2,
+          },
+        },
+      });
+
+      expect(errors[0]?.extensions.code).toEqual('NoPermissionError');
+    });
+  });
+  describe('Mutation.updateProductPlan for anonymous user should', () => {
+    it('return NoPermissionError', async () => {
+      const { errors } = await graphqlFetchAsAnonymousUser({
+        query: /* GraphQL */ `
+          mutation updateProductPlan(
+            $productId: ID!
+            $plan: UpdateProductPlanInput!
+          ) {
+            updateProductPlan(productId: $productId, plan: $plan) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          productId: PlanProduct._id,
+          plan: {
+            usageCalculationType: 'LICENSED',
+            billingInterval: 'WEEK',
+            billingIntervalCount: 1,
+            trialInterval: 'MONTH',
+            trialIntervalCount: 2,
+          },
+        },
+      });
+      expect(errors[0]?.extensions.code).toEqual('NoPermissionError');
     });
   });
 
