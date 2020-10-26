@@ -1,6 +1,6 @@
 Package.describe({
   name: 'unchained:core-pricing',
-  version: '0.54.0',
+  version: '0.54.1',
   summary: 'Unchained Engine Core: Pricing',
   git: 'https://github.com/unchainedshop/unchained',
   documentation: 'README.md',
