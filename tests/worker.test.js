@@ -1,5 +1,6 @@
 import wait from './lib/wait';
 import { setupDatabase, createLoggedInGraphqlFetch } from './helpers';
+import { SimpleWork } from './seeds/work';
 
 let connection;
 let graphqlFetch;
@@ -90,9 +91,8 @@ describe('Worker Module', () => {
           }
         `,
       });
-
       expect(workQueue.filter(({ type }) => type === 'EXTERNAL')).toHaveLength(
-        1,
+        3,
       );
     });
 
@@ -459,5 +459,62 @@ describe('Worker Module', () => {
 
     it.todo('Only admin can interact with worker');
     it.todo('Cleanup Tasks');
+  });
+
+  describe('Query.work for admin user should', () => {
+    it("return the work specified by it's ID", async () => {
+      const {
+        data: { work },
+      } = await graphqlFetch({
+        query: /* GraphQL */ `
+          query work($workId: ID!) {
+            work(workId: $workId) {
+              _id
+              started
+              finished
+              created
+              updated
+              deleted
+              priority
+              type
+              status
+              worker
+              input
+              result
+              error
+              success
+              scheduled
+              retries
+              timeout
+              worker
+
+              original {
+                _id
+              }
+            }
+          }
+        `,
+        variables: {
+          workId: SimpleWork._id,
+        },
+      });
+      expect(work).toMatchObject(SimpleWork);
+    });
+
+    it('return InvalidIdError when passed invalid work ID', async () => {
+      const { errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          query work($workId: ID!) {
+            work(workId: $workId) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          workId: '',
+        },
+      });
+      expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
+    });
   });
 });
