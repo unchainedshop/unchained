@@ -7,13 +7,14 @@ export const SimpleWork = {
   retries: 3,
 };
 
-export const AnotherWork = {
+export const AllocatedWork = {
   ...SimpleWork,
   scheduled: new Date('2030/11/01').getTime(),
-  _id: 'another-work',
+  status: 'ALLOCATED',
+  _id: 'allocated-work',
 };
 
 export default async function seedWorkQueue(db) {
   await db.collection('work_queue').findOrInsertOne(SimpleWork);
-  await db.collection('work_queue').findOrInsertOne(AnotherWork);
+  await db.collection('work_queue').findOrInsertOne(AllocatedWork);
 }

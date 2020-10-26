@@ -4,7 +4,7 @@ import {
   createLoggedInGraphqlFetch,
   createAnonymousGraphqlFetch,
 } from './helpers';
-import { SimpleWork } from './seeds/work';
+import { AllocatedWork, SimpleWork } from './seeds/work';
 import { USER_TOKEN } from './seeds/users';
 
 let connection;
@@ -477,7 +477,6 @@ describe('Worker Module', () => {
     });
 
     it.todo('Only admin can interact with worker');
-    it.todo('Cleanup Tasks');
   });
 
   describe('Query.work for admin user should', () => {
@@ -585,6 +584,110 @@ describe('Worker Module', () => {
         `,
         variables: {
           workId: SimpleWork._id,
+        },
+      });
+      expect(errors[0]?.extensions?.code).toEqual('NoPermissionError');
+    });
+  });
+
+  describe('mutation.removeWork for admin user should', () => {
+    it("return the work specified by it's ID", async () => {
+      const {
+        data: { removeWork },
+      } = await graphqlFetchAsAdminUser({
+        query: /* GraphQL */ `
+          mutation removeWork($workId: ID!) {
+            removeWork(workId: $workId) {
+              _id
+              started
+              finished
+              created
+              updated
+              deleted
+              priority
+              type
+              status
+              worker
+              input
+              result
+              error
+              success
+              scheduled
+              retries
+              timeout
+            }
+          }
+        `,
+        variables: {
+          workId: AllocatedWork._id,
+        },
+      });
+      expect(removeWork.deleted).not.toBe(null);
+    });
+
+    it('return WorkNotFoundOrWrongStatus when passed non-existing work ID', async () => {
+      const { errors } = await graphqlFetchAsAdminUser({
+        query: /* GraphQL */ `
+          mutation removeWork($workId: ID!) {
+            removeWork(workId: $workId) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          workId: 'non-existing-id',
+        },
+      });
+      expect(errors[0]?.extensions?.code).toEqual('WorkNotFoundOrWrongStatus');
+    });
+
+    it('return InvalidIdError when passed invalid work ID', async () => {
+      const { errors } = await graphqlFetchAsAdminUser({
+        query: /* GraphQL */ `
+          mutation removeWork($workId: ID!) {
+            removeWork(workId: $workId) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          workId: '',
+        },
+      });
+      expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
+    });
+  });
+
+  describe('mutation.removeWork for normal user should', () => {
+    it('return NoPermissionError', async () => {
+      const { errors } = await graphqlFetchAsNormalUser({
+        query: /* GraphQL */ `
+          mutation removeWork($workId: ID!) {
+            removeWork(workId: $workId) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          workId: AllocatedWork._id,
+        },
+      });
+      expect(errors[0]?.extensions?.code).toEqual('NoPermissionError');
+    });
+  });
+
+  describe('mutation.removeWork for anonymous user should', () => {
+    it('return NoPermissionError', async () => {
+      const { errors } = await graphqlFetchAsNormalUser({
+        query: /* GraphQL */ `
+          mutation removeWork($workId: ID!) {
+            removeWork(workId: $workId) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          workId: AllocatedWork._id,
         },
       });
       expect(errors[0]?.extensions?.code).toEqual('NoPermissionError');
