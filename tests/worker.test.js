@@ -4,7 +4,7 @@ import {
   createLoggedInGraphqlFetch,
   createAnonymousGraphqlFetch,
 } from './helpers';
-import { AllocatedWork, SimpleWork } from './seeds/work';
+import { AllocatedWork, NewWork } from './seeds/work';
 import { USER_TOKEN } from './seeds/users';
 
 let connection;
@@ -689,10 +689,10 @@ describe('Worker Module', () => {
           }
         `,
         variables: {
-          workId: SimpleWork._id,
+          workId: NewWork._id,
         },
       });
-      expect(work).toMatchObject(SimpleWork);
+      expect(work).toMatchObject(NewWork);
     });
 
     it('return work as null when passed non-existing work ID', async () => {
@@ -741,7 +741,7 @@ describe('Worker Module', () => {
           }
         `,
         variables: {
-          workId: SimpleWork._id,
+          workId: NewWork._id,
         },
       });
       expect(errors[0]?.extensions?.code).toEqual('NoPermissionError');
@@ -759,7 +759,7 @@ describe('Worker Module', () => {
           }
         `,
         variables: {
-          workId: SimpleWork._id,
+          workId: NewWork._id,
         },
       });
       expect(errors[0]?.extensions?.code).toEqual('NoPermissionError');
