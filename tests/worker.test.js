@@ -475,8 +475,184 @@ describe('Worker Module', () => {
         workQueueAfter.filter(({ type }) => type === 'HEARTBEAT'),
       ).toHaveLength(1);
     });
+  });
 
-    it.todo('Only admin can interact with worker');
+  describe('mutation.addWork for normal user should', () => {
+    it('return NoPermissionError', async () => {
+      const { errors } = await graphqlFetchAsNormalUser({
+        query: /* GraphQL */ `
+          mutation addWork($type: WorkType!, $input: JSON) {
+            addWork(type: $type, input: $input) {
+              _id
+              type
+            }
+          }
+        `,
+        variables: {
+          type: 'HEARTBEAT',
+        },
+      });
+
+      expect(errors[0]?.extensions?.code).toEqual('NoPermissionError');
+    });
+  });
+
+  describe('mutation.addWork for anonymous user should', () => {
+    it('return NoPermissionError', async () => {
+      const { errors } = await graphqlFetchAsAnonymousUser({
+        query: /* GraphQL */ `
+          mutation addWork($type: WorkType!, $input: JSON) {
+            addWork(type: $type, input: $input) {
+              _id
+              type
+            }
+          }
+        `,
+        variables: {
+          type: 'HEARTBEAT',
+        },
+      });
+
+      expect(errors[0]?.extensions?.code).toEqual('NoPermissionError');
+    });
+  });
+
+  describe('query.workQueue for normal user should', () => {
+    it('return NoPermissionError', async () => {
+      const { errors } = await graphqlFetchAsNormalUser({
+        query: /* GraphQL */ `
+          query($status: [WorkStatus]) {
+            workQueue(status: $status) {
+              _id
+              type
+              status
+            }
+          }
+        `,
+        variables: {
+          status: [],
+        },
+      });
+
+      expect(errors[0]?.extensions?.code).toEqual('NoPermissionError');
+    });
+  });
+
+  describe('query.workQueue for anonymous user should', () => {
+    it('return NoPermissionError', async () => {
+      const { errors } = await graphqlFetchAsAnonymousUser({
+        query: /* GraphQL */ `
+          query($status: [WorkStatus]) {
+            workQueue(status: $status) {
+              _id
+              type
+              status
+            }
+          }
+        `,
+        variables: {
+          status: [],
+        },
+      });
+
+      expect(errors[0]?.extensions?.code).toEqual('NoPermissionError');
+    });
+  });
+
+  describe('mutation.allocateWork for normal user should', () => {
+    it('return NoPermissionError', async () => {
+      const { errors } = await graphqlFetchAsNormalUser({
+        query: /* GraphQL */ `
+          mutation allocateWork($types: [WorkType], $worker: String) {
+            allocateWork(types: $types, worker: $worker) {
+              _id
+              input
+              type
+            }
+          }
+        `,
+        variables: {
+          worker: 'TEST-GRAPHQL',
+          types: ['EXTERNAL'],
+        },
+      });
+
+      expect(errors[0]?.extensions?.code).toEqual('NoPermissionError');
+    });
+  });
+
+  describe('mutation.allocateWork for anonymous user should', () => {
+    it('return NoPermissionError', async () => {
+      const { errors } = await graphqlFetchAsAnonymousUser({
+        query: /* GraphQL */ `
+          mutation allocateWork($types: [WorkType], $worker: String) {
+            allocateWork(types: $types, worker: $worker) {
+              _id
+              input
+              type
+            }
+          }
+        `,
+        variables: {
+          worker: 'TEST-GRAPHQL',
+          types: ['EXTERNAL'],
+        },
+      });
+
+      expect(errors[0]?.extensions?.code).toEqual('NoPermissionError');
+    });
+  });
+
+  describe('mutation.finishWork for normal user should', () => {
+    it('return NoPermissionError', async () => {
+      const { errors } = await graphqlFetchAsNormalUser({
+        query: /* GraphQL */ `
+          mutation finishWork(
+            $workId: ID!
+            $success: Boolean
+            $worker: String
+          ) {
+            finishWork(workId: $workId, success: $success, worker: $worker) {
+              _id
+              status
+            }
+          }
+        `,
+        variables: {
+          workId,
+          success: true,
+          worker: 'TEST-GRAPHQL',
+        },
+      });
+
+      expect(errors[0]?.extensions?.code).toEqual('NoPermissionError');
+    });
+  });
+
+  describe('mutation.finishWork for anonymous user should', () => {
+    it('return NoPermissionError', async () => {
+      const { errors } = await graphqlFetchAsAnonymousUser({
+        query: /* GraphQL */ `
+          mutation finishWork(
+            $workId: ID!
+            $success: Boolean
+            $worker: String
+          ) {
+            finishWork(workId: $workId, success: $success, worker: $worker) {
+              _id
+              status
+            }
+          }
+        `,
+        variables: {
+          workId,
+          success: true,
+          worker: 'TEST-GRAPHQL',
+        },
+      });
+
+      expect(errors[0]?.extensions?.code).toEqual('NoPermissionError');
+    });
   });
 
   describe('Query.work for admin user should', () => {

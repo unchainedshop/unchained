@@ -5,6 +5,7 @@ export const SimpleWork = {
   scheduled: new Date('2030/10/01').getTime(),
   priority: 100,
   retries: 3,
+  worker: 'TEST-GRAPHQL',
 };
 
 export const AllocatedWork = {
