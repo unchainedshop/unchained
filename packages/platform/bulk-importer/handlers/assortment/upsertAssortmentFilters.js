@@ -1,7 +1,7 @@
 import { AssortmentFilters } from 'meteor/unchained:core-assortments';
 
 export default async ({ filters, authorId, assortmentId }) => {
-  return Promise.all(
+  const assortmentFilterIds = await Promise.all(
     filters.map(async ({ filterId, ...filtersRest }) => {
       const assortmentFilter = await AssortmentFilters.createAssortmentFilter({
         ...filtersRest,
@@ -9,7 +9,12 @@ export default async ({ filters, authorId, assortmentId }) => {
         assortmentId,
         filterId,
       });
-      return assortmentFilter;
+      return assortmentFilter._id;
     })
   );
+
+  AssortmentFilters.remove({
+    _id: { $nin: assortmentFilterIds },
+    assortmentId,
+  });
 };

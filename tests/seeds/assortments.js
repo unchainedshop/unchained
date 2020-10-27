@@ -198,16 +198,16 @@ export const AssortmentLinks = [
     sortKey: 1,
     tags: ['assortment-link-test'],
     meta: null,
-    parent: SimpleAssortment[0],
-    child: SimpleAssortment[1],
+    parentAssortmentId: SimpleAssortment[0]._id,
+    childAssortmentId: SimpleAssortment[1]._id,
   },
   {
     _id: 'assortment-link-2',
     sortKey: 1,
     tags: ['assortment-link-test'],
     meta: null,
-    parent: SimpleAssortment[2],
-    child: SimpleAssortment[3],
+    parentAssortmentId: SimpleAssortment[2]._id,
+    childAssortmentId: SimpleAssortment[3]._id,
   },
 ];
 

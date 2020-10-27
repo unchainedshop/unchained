@@ -71,49 +71,76 @@ Collections.Assortments.updateAssortment = ({
 Collections.AssortmentLinks.createAssortmentLink = ({
   parentAssortmentId,
   childAssortmentId,
+  _id,
   ...rest
 }) => {
   const sortKey = Collections.AssortmentLinks.getNewSortKey(parentAssortmentId);
-  const assortmentProductId = Collections.AssortmentLinks.insert({
+  const selector = {
     parentAssortmentId,
     childAssortmentId,
-    sortKey,
-    created: new Date(),
-    ...rest,
+    ...(_id ? { _id } : {}),
+  };
+  Collections.AssortmentLinks.upsert(selector, {
+    $set: {
+      updated: new Date(),
+      ...rest,
+    },
+    $setOnInsert: {
+      sortKey,
+      created: new Date(),
+    },
   });
-  return Collections.AssortmentLinks.findOne({ _id: assortmentProductId });
+  return Collections.AssortmentLinks.findOne(selector);
 };
 
 Collections.AssortmentProducts.createAssortmentProduct = ({
   productId,
   assortmentId,
+  _id,
   ...rest
 }) => {
   const sortKey = Collections.AssortmentProducts.getNewSortKey(assortmentId);
-  const assortmentProductId = Collections.AssortmentProducts.insert({
-    assortmentId,
+  const selector = {
     productId,
-    sortKey,
-    created: new Date(),
-    ...rest,
+    assortmentId,
+    ...(_id ? { _id } : {}),
+  };
+  Collections.AssortmentProducts.upsert(selector, {
+    $set: {
+      updated: new Date(),
+      ...rest,
+    },
+    $setOnInsert: {
+      sortKey,
+      created: new Date(),
+    },
   });
-  return Collections.AssortmentProducts.findOne({ _id: assortmentProductId });
+  return Collections.AssortmentProducts.findOne(selector);
 };
 
 Collections.AssortmentFilters.createAssortmentFilter = ({
   assortmentId,
   filterId,
+  _id,
   ...rest
 }) => {
   const sortKey = Collections.AssortmentFilters.getNewSortKey(this._id);
-  const assortmentFilterId = Collections.AssortmentFilters.insert({
-    assortmentId,
+  const selector = {
     filterId,
-    sortKey,
-    created: new Date(),
-    ...rest,
+    assortmentId,
+    ...(_id ? { _id } : {}),
+  };
+  Collections.AssortmentFilters.upsert(selector, {
+    $set: {
+      updated: new Date(),
+      ...rest,
+    },
+    $setOnInsert: {
+      sortKey,
+      created: new Date(),
+    },
   });
-  return Collections.AssortmentFilters.findOne({ _id: assortmentFilterId });
+  return Collections.AssortmentFilters.findOne(selector);
 };
 
 Collections.Assortments.createAssortment = ({
@@ -545,10 +572,6 @@ Collections.Assortments.helpers({
     return Collections.Assortments.getLocalizedTexts(this._id, parsedLocale);
   },
   addProduct({ productId, ...rest }, { skipInvalidation = false } = {}) {
-    Collections.AssortmentProducts.remove({
-      assortmentId: this._id,
-      productId,
-    });
     const assortmentProduct = Collections.AssortmentProducts.createAssortmentProduct(
       {
         assortmentId: this._id,
@@ -562,10 +585,6 @@ Collections.Assortments.helpers({
     return assortmentProduct;
   },
   addLink({ assortmentId, ...rest }, { skipInvalidation = false } = {}) {
-    Collections.AssortmentLinks.remove({
-      parentAssortmentId: this._id,
-      childAssortmentId: assortmentId,
-    });
     const assortmentLink = Collections.AssortmentLinks.createAssortmentLink({
       parentAssortmentId: this._id,
       childAssortmentId: assortmentId,
@@ -577,10 +596,6 @@ Collections.Assortments.helpers({
     return assortmentLink;
   },
   addFilter({ filterId, ...rest }) {
-    Collections.AssortmentFilters.remove({
-      assortmentId: this._id,
-      filterId,
-    });
     return Collections.AssortmentFilters.createAssortmentFilter({
       assortmentId: this._id,
       filterId,
