@@ -12,7 +12,7 @@ export * as roles from './roles';
 export * as acl from './acl';
 export * as errors from './errors';
 
-global._UnchainedAPIVersion = '0.54.0'; // eslint-disable-line
+global._UnchainedAPIVersion = '0.54.1'; // eslint-disable-line
 
 const defaultContext = (req) => {
   const remoteAddress =

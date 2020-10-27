@@ -9,7 +9,7 @@ Package.describe({
 Package.onUse((api) => {
   api.versionsFrom('1.11.1');
   api.use('ecmascript');
-  api.use('unchained:core-logger@0.54.0');
+  api.use('unchained:core-logger@0.54.1');
 
   api.mainModule('pricing.js', 'server');
 });
