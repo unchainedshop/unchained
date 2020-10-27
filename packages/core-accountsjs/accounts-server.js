@@ -5,11 +5,6 @@ import { randomValueHex } from './helpers';
 import { dbManager } from './db-manager';
 import { accountsPassword } from './accounts-password';
 
-const isInitialPassword = (user) => {
-  const { password: { initial } = {} } = user.services || {};
-  return !!initial;
-};
-
 const accountsServerOptions = {
   useInternalUserObjectSanitizer: false,
   siteUrl: process.env.ROOT_URL,
@@ -19,23 +14,6 @@ const accountsServerOptions = {
       if (user.guest && pathFragment === 'verify-email') {
         return;
       }
-      // enrolled users aren't supposed to get email verification emails
-      // and since email verification is set by default for all users
-      // we redirect such emails to enroll email
-      if (
-        !user.guest &&
-        isInitialPassword(user) &&
-        pathFragment === 'verify-email'
-      ) {
-        // eslint-disable-next-line consistent-return
-        return {
-          recipientEmail: to,
-          action: 'enrollAccount',
-          userId: user.id || user._id,
-          token,
-        };
-      }
-
       const actionsSet = {
         'verify-email': 'verifyEmail',
         'enroll-account': 'enrollAccount',
