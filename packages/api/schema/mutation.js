@@ -317,6 +317,11 @@ export default [
       ): User
 
       """
+      Send the enrollment email for a user as enrollUser doesn't send it out by default
+      """
+      sendEnrollmentEmail(email: String!): SuccessResponse
+
+      """
       Set username for a specific user
       """
       setUsername(username: String!, userId: ID!): User

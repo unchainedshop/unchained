@@ -4,7 +4,11 @@ TBD
 
 ## Breaking Changes
 
-- [core-users] addEmail and updateEmail no longer send out email verification; you need to trigger the verification using `resendVerificationEmail` mutation.
+- [core-users] `addEmail` and `updateEmail` no longer send out email verification; you need to trigger the verification using `resendVerificationEmail` mutation.
+- [core-users] `enrollUser` doesn't send out the enrollment email by default anymore. You need to trigger it using `sendEnrollmentEmail` mutation. 
+
+## Minor
+= [core-users] `sendEnrollmentEmail` mutation is now available to trigger enrollment emails. 
 
 ## Patches
 - [great-purge-of-meteor] Remove accounts-base and accounts-password from platform package

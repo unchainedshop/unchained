@@ -5,6 +5,7 @@ import changePassword from './changePassword';
 import createUser from './createUser';
 import verifyEmail from './verifyEmail';
 import resendVerificationEmail from './resendVerificationEmail';
+import sendEnrollmentEmail from './sendEnrollmentEmail';
 import forgotPassword from './forgotPassword';
 import resetPassword from './resetPassword';
 
@@ -17,5 +18,6 @@ export default {
   forgotPassword,
   resetPassword,
   resendVerificationEmail,
+  sendEnrollmentEmail,
   changePassword,
 };

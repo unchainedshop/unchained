@@ -416,28 +416,6 @@ describe('Auth for admin users', () => {
         },
       });
 
-      const { data: { workQueue } = {} } = await graphqlFetch({
-        query: /* GraphQL */ `
-          query($status: [WorkStatus]) {
-            workQueue(status: $status) {
-              _id
-              type
-              status
-            }
-          }
-        `,
-        variables: {
-          // Empty array as status queries the whole queue
-          status: [],
-        },
-      });
-      const work = workQueue.filter(
-        ({ type, status }) => type === 'MESSAGE' && status === 'SUCCESS',
-      );
-      // a length of one means only the enrollment got sent out
-      // enrolled users aren't supposed to trigger the email verification
-      expect(work).toHaveLength(1);
-
       expect(enrollUser).toMatchObject({
         isInitialPassword: true,
         primaryEmail: {
@@ -483,6 +461,78 @@ describe('Auth for admin users', () => {
           verified: false,
         },
       });
+    });
+  });
+
+  describe('Mutation.sendEnrollmentEmail', () => {
+    it('should fire off the enrollment email', async () => {
+      const profile = {
+        displayName: 'Admin3',
+      };
+      const email = 'admin3@unchained.local';
+      const password = null;
+      const { data: { enrollUser } = {} } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation enrollUser(
+            $email: String!
+            $password: String
+            $profile: UserProfileInput!
+          ) {
+            enrollUser(email: $email, password: $password, profile: $profile) {
+              _id
+              isInitialPassword
+              primaryEmail {
+                address
+                verified
+              }
+            }
+          }
+        `,
+        variables: {
+          email,
+          password,
+          profile,
+        },
+      });
+
+      const { data: { sendEnrollmentEmail } = {} } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation sendEnrollmentEmail($email: String!) {
+            sendEnrollmentEmail(email: $email) {
+              success
+            }
+          }
+        `,
+        variables: {
+          email,
+        },
+      });
+
+      expect(sendEnrollmentEmail).toMatchObject({
+        success: true,
+      });
+
+      const { data: { workQueue } = {} } = await graphqlFetch({
+        query: /* GraphQL */ `
+          query($status: [WorkStatus]) {
+            workQueue(status: $status) {
+              _id
+              type
+              status
+            }
+          }
+        `,
+        variables: {
+          // Empty array as status queries the whole queue
+          status: [],
+        },
+      });
+      const work = workQueue.filter(
+        ({ type, status }) => type === 'MESSAGE' && status === 'SUCCESS',
+      );
+
+      // a length of two means only the verification email and the enrollment one too
+      expect(work).toHaveLength(2);
     });
   });
 
