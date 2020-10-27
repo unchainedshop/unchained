@@ -95,3 +95,18 @@ export const createLoggedInGraphqlFetch = (token = ADMIN_TOKEN) => {
   });
   return convertLinkToFetch(link);
 };
+
+export const uploadFormData = async ({ token = '', body }) => {
+  const options = token
+    ? {
+        headers: {
+          authorization: token,
+        },
+      }
+    : {};
+  return fetch('http://localhost:3000/graphql', {
+    ...options,
+    method: 'POST',
+    body,
+  }).then((response) => response.json());
+};

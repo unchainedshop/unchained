@@ -1,13 +1,21 @@
+import FormData from 'form-data';
 import {
   setupDatabase,
   createLoggedInGraphqlFetch,
   createAnonymousGraphqlFetch,
+  uploadFormData,
 } from './helpers';
-import { ADMIN_TOKEN } from './seeds/users';
-import { JpegProductMedia } from './seeds/products';
+import { ADMIN_TOKEN, USER_TOKEN } from './seeds/users';
+import { JpegProductMedia, SimpleProduct } from './seeds/products';
 
 let connection;
 let graphqlFetch;
+const fs = require('fs');
+const path = require('path');
+
+const productMediaFile = fs.createReadStream(
+  path.resolve(__dirname, `./assets/image.jpg`),
+);
 
 describe('ProductsVariation', () => {
   beforeAll(async () => {
@@ -17,6 +25,154 @@ describe('ProductsVariation', () => {
 
   afterAll(async () => {
     await connection.close();
+  });
+
+  describe('Mutation.addProductMedia for admin user should', () => {
+    it('upload product media correctly', async () => {
+      const body = new FormData();
+      body.append(
+        'operations',
+        JSON.stringify({
+          query: `
+          mutation addProductMedia($productId: ID!, $media: Upload!){
+            addProductMedia(productId: $productId, media: $media){
+              _id
+              tags
+              sortKey
+              file {
+                _id
+                name
+                type
+                url
+              }
+            }
+          }
+        `,
+          variables: {
+            productId: SimpleProduct._id,
+            media: null,
+          },
+        }),
+      );
+
+      body.append('map', JSON.stringify({ 1: ['variables.media'] }));
+      body.append('1', productMediaFile);
+      const {
+        data: { addProductMedia },
+      } = await uploadFormData({ token: ADMIN_TOKEN, body });
+
+      expect(addProductMedia?.file.name).toEqual('image.jpg');
+    });
+
+    it('return ProductNotFoundError when passed non existing product ID', async () => {
+      const body = new FormData();
+      body.append(
+        'operations',
+        JSON.stringify({
+          query: `
+          mutation addProductMedia($productId: ID!, $media: Upload!){
+            addProductMedia(productId: $productId, media: $media){
+              _id
+            }
+          }
+        `,
+          variables: {
+            productId: 'non-existing-id',
+            media: null,
+          },
+        }),
+      );
+
+      body.append('map', JSON.stringify({ 1: ['variables.media'] }));
+      body.append('1', productMediaFile);
+      const { errors } = await uploadFormData({ token: ADMIN_TOKEN, body });
+
+      expect(errors[0]?.extensions?.code).toEqual('ProductNotFoundError');
+    });
+
+    it('return InvalidIdError when passed Invalid product ID', async () => {
+      const body = new FormData();
+      body.append(
+        'operations',
+        JSON.stringify({
+          query: `
+          mutation addProductMedia($productId: ID!, $media: Upload!){
+            addProductMedia(productId: $productId, media: $media){
+              _id
+            }
+          }
+        `,
+          variables: {
+            productId: '',
+            media: null,
+          },
+        }),
+      );
+
+      body.append('map', JSON.stringify({ 1: ['variables.media'] }));
+      body.append('1', productMediaFile);
+      const { errors } = await uploadFormData({ token: ADMIN_TOKEN, body });
+
+      expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
+    });
+  });
+
+  describe('Mutation.addProductMedia for normal user should', () => {
+    it('return NoPermissionError', async () => {
+      const body = new FormData();
+      body.append(
+        'operations',
+        JSON.stringify({
+          query: `
+          mutation addProductMedia($productId: ID!, $media: Upload!){
+            addProductMedia(productId: $productId, media: $media){
+              _id
+            }
+          }
+        `,
+          variables: {
+            productId: SimpleProduct._id,
+            media: null,
+          },
+        }),
+      );
+
+      body.append('map', JSON.stringify({ 1: ['variables.media'] }));
+      body.append('1', productMediaFile);
+      const { errors } = await uploadFormData({ token: USER_TOKEN, body });
+
+      expect(errors[0]?.extensions?.code).toEqual('NoPermissionError');
+    });
+  });
+
+  describe('Mutation.addProductMedia for anonymous user should', () => {
+    it('return NoPermissionError', async () => {
+      const body = new FormData();
+      body.append(
+        'operations',
+        JSON.stringify({
+          query: `
+          mutation addProductMedia($productId: ID!, $media: Upload!){
+            addProductMedia(productId: $productId, media: $media){
+              _id
+            }
+          }
+        `,
+          variables: {
+            productId: SimpleProduct._id,
+            media: null,
+          },
+        }),
+      );
+
+      body.append('map', JSON.stringify({ 1: ['variables.media'] }));
+      body.append('1', productMediaFile);
+      const { errors } = await uploadFormData({
+        body,
+      });
+
+      expect(errors[0]?.extensions?.code).toEqual('NoPermissionError');
+    });
   });
 
   describe('mutation.reorderProductMedia for admin user should', () => {
