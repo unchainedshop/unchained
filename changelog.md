@@ -17,6 +17,11 @@ TBD
 - [great-purge-of-meteor] Convert any Users collection helpers to use accounts-js. 
 
 ---
+# v0.54.1
+
+## Patches
+- [platform] Fix importing bulk assortments should remove old links
+- [pricing] Fix critical issue with discounts resolving to a total cart value of 0
 
 # v0.54.0
 
