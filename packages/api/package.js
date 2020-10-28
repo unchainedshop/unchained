@@ -30,7 +30,7 @@ Package.onUse((api) => {
   api.use('unchained:core-payment@0.54.1');
   api.use('unchained:core-pricing@0.54.1');
   api.use('unchained:core-products@0.54.1');
-  api.use('unchained:core-accountsjs@0.54.0');
+  api.use('unchained:core-accountsjs@0.54.1');
   api.use('unchained:core-users@0.54.1');
   api.use('unchained:core-bookmarks@0.54.1');
   api.use('unchained:core-warehousing@0.54.1');
