@@ -471,7 +471,7 @@ describe('Auth for admin users', () => {
       };
       const email = 'admin3@unchained.local';
       const password = null;
-      const { data: { enrollUser } = {} } = await graphqlFetch({
+      await graphqlFetch({
         query: /* GraphQL */ `
           mutation enrollUser(
             $email: String!
