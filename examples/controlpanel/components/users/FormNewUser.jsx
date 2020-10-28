@@ -59,21 +59,34 @@ const FormNewUser = (formProps) => (
 
 export default compose(
   withRouter,
-  graphql(gql`
-    mutation enrollUser(
-      $profile: UserProfileInput!
-      $email: String!
-      $password: String
-    ) {
-      enrollUser(profile: $profile, email: $email, password: $password) {
-        _id
-        name
-        primaryEmail {
-          address
+  graphql(
+    gql`
+      mutation enrollUser(
+        $profile: UserProfileInput!
+        $email: String!
+        $password: String
+      ) {
+        enrollUser(profile: $profile, email: $email, password: $password) {
+          _id
+          name
+          primaryEmail {
+            address
+          }
         }
       }
-    }
-  `),
+    `,
+    { name: 'enrollUser' }
+  ),
+  graphql(
+    gql`
+      mutation sendEnrollmentEmail($email: String!) {
+        sendEnrollmentEmail(email: $email) {
+          success
+        }
+      }
+    `,
+    { name: 'sendEnrollmentEmail' }
+  ),
   withFormSchema({
     displayName: {
       type: String,
@@ -110,20 +123,39 @@ export default compose(
         query: { _id: enrollUser._id },
       });
     },
-    onSubmit: ({ mutate, schema }) => async ({ ...dirtyInput }) => {
+    onSubmit: ({ enrollUser, sendEnrollmentEmail, schema }) => async ({
+      ...dirtyInput
+    }) => {
       const { displayName, email, password, enroll } = schema.clean(dirtyInput);
-      return mutate({
+      return enrollUser({
         variables: {
           profile: { displayName },
           email,
           password: !enroll && password ? password : null,
         },
+      }).then((enrollmentResult) => {
+        if (!password) {
+          sendEnrollmentEmail({ variables: { email } });
+        }
+        return enrollmentResult;
       });
     },
   }),
   withFormErrorHandlers,
-  mapProps(({ mutate, data, userId, ...rest }) => ({
-    ...rest,
-  })),
+  mapProps(
+    ({
+      enrollUser,
+      enrollUserResult,
+      sendEnrollmentEmail,
+      sendEnrollmentEmailResult,
+      data,
+      userId,
+      ...rest
+    }) => {
+      return {
+        ...rest,
+      };
+    }
+  ),
   pure
 )(FormNewUser);
