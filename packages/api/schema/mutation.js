@@ -188,7 +188,7 @@ export default [
         payment: SubscriptionPaymentInput
         delivery: SubscriptionDeliveryInput
         meta: JSON
-      ): Order!
+      ): Subscription!
 
       """
       Activate a subscription by changing the status to ACTIVE
@@ -882,7 +882,7 @@ export default [
       ): PaymentCredentials
 
       """
-      Deletes the specified payment credential
+      Deletes the specified payment credential.
       """
       removePaymentCredentials(paymentCredentialsId: ID!): PaymentCredentials
     }

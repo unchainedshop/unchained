@@ -5,12 +5,13 @@ import { UserNotFoundError, InvalidIdError } from '../../errors';
 export default async function setUsername(
   root,
   { username, userId: foreignUserId },
-  { userId }
+  { userId: ownUserId }
 ) {
-  log(`mutation setUsername ${foreignUserId}`, { userId });
-  if (!foreignUserId) throw new InvalidIdError({ foreignUserId });
-  const user = Users.findOne({ _id: foreignUserId });
-  if (!user) throw new UserNotFoundError({ userId: foreignUserId });
+  log(`mutation setUsername ${foreignUserId}`, { userId: ownUserId });
+  const userId = foreignUserId || ownUserId;
+  if (!userId) throw new InvalidIdError({ userId });
+  const user = Users.findOne({ _id: userId });
+  if (!user) throw new UserNotFoundError({ userId });
   const res = await user.setUsername(username);
   return res;
 }

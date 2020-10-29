@@ -199,6 +199,25 @@ describe('Auth for logged in users', () => {
     });
   });
 
+  describe('Mutation.setUsername for normal user should', () => {
+    it('return NoPermissionError', async () => {
+      const { errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation setUsername($username: String!, $userId: ID!) {
+            setUsername(username: $username, userId: $userId) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          userId: Admin._id,
+          username: 'admin-updated',
+        },
+      });
+      expect(errors[0]?.extensions?.code).toEqual('NoPermissionError');
+    });
+  });
+
   describe('Mutation.logout', () => {
     it('log out userthatlogsout', async () => {
       const Users = db.collection('users');

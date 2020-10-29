@@ -1,14 +1,24 @@
 import wait from './lib/wait';
-import { setupDatabase, createLoggedInGraphqlFetch } from './helpers';
+import {
+  setupDatabase,
+  createLoggedInGraphqlFetch,
+  createAnonymousGraphqlFetch,
+} from './helpers';
+import { AllocatedWork, NewWork } from './seeds/work';
+import { USER_TOKEN, ADMIN_TOKEN } from './seeds/users';
 
 let connection;
-let graphqlFetch;
+let graphqlFetchAsAdminUser;
+let graphqlFetchAsNormalUser;
+let graphqlFetchAsAnonymousUser;
 let workId;
 
 describe('Worker Module', () => {
   beforeAll(async () => {
     [, connection] = await setupDatabase();
-    graphqlFetch = await createLoggedInGraphqlFetch();
+    graphqlFetchAsAdminUser = await createLoggedInGraphqlFetch(ADMIN_TOKEN);
+    graphqlFetchAsNormalUser = await createLoggedInGraphqlFetch(USER_TOKEN);
+    graphqlFetchAsAnonymousUser = await createAnonymousGraphqlFetch();
   });
 
   afterAll(async () => {
@@ -17,7 +27,7 @@ describe('Worker Module', () => {
 
   describe('Happy path', () => {
     it('Standard work gets picked up by the WorkEventListenerWorker.', async () => {
-      const addWorkResult = await graphqlFetch({
+      const addWorkResult = await graphqlFetchAsAdminUser({
         query: /* GraphQL */ `
           mutation addWork($type: WorkType!, $input: JSON) {
             addWork(type: $type, input: $input) {
@@ -33,7 +43,7 @@ describe('Worker Module', () => {
 
       expect(addWorkResult.errors).toBeUndefined();
 
-      const { data: { workQueue } = {} } = await graphqlFetch({
+      const { data: { workQueue } = {} } = await graphqlFetchAsAdminUser({
         query: /* GraphQL */ `
           query($status: [WorkStatus]) {
             workQueue(status: $status) {
@@ -61,7 +71,7 @@ describe('Worker Module', () => {
     });
 
     it('Add simple work that cannot fail for external worker', async () => {
-      const { data: { addWork } = {} } = await graphqlFetch({
+      const { data: { addWork } = {} } = await graphqlFetchAsAdminUser({
         query: /* GraphQL */ `
           mutation addWork($type: WorkType!, $input: JSON) {
             addWork(type: $type, input: $input) {
@@ -80,7 +90,7 @@ describe('Worker Module', () => {
     });
 
     it('Work in the queue', async () => {
-      const { data: { workQueue } = {} } = await graphqlFetch({
+      const { data: { workQueue } = {} } = await graphqlFetchAsAdminUser({
         query: /* GraphQL */ `
           query {
             workQueue {
@@ -90,15 +100,14 @@ describe('Worker Module', () => {
           }
         `,
       });
-
       expect(workQueue.filter(({ type }) => type === 'EXTERNAL')).toHaveLength(
-        1,
+        3,
       );
     });
 
     it('Get work synchroniously. Only one gets it.', async () => {
       const makeAllocatePromise = () =>
-        graphqlFetch({
+        graphqlFetchAsAdminUser({
           query: /* GraphQL */ `
             mutation allocateWork($types: [WorkType], $worker: String) {
               allocateWork(types: $types, worker: $worker) {
@@ -136,7 +145,7 @@ describe('Worker Module', () => {
     });
 
     it('No more work in the queue', async () => {
-      const { data: { workQueue } = {} } = await graphqlFetch({
+      const { data: { workQueue } = {} } = await graphqlFetchAsAdminUser({
         query: /* GraphQL */ `
           query {
             workQueue {
@@ -153,7 +162,7 @@ describe('Worker Module', () => {
     });
 
     it('Finish successful work.', async () => {
-      const { data: { finishWork } = {} } = await graphqlFetch({
+      const { data: { finishWork } = {} } = await graphqlFetchAsAdminUser({
         query: /* GraphQL */ `
           mutation finishWork(
             $workId: ID!
@@ -176,7 +185,7 @@ describe('Worker Module', () => {
       expect(finishWork.status).toBe('SUCCESS');
     });
     it('return error when passed invalid workId', async () => {
-      const { errors } = await graphqlFetch({
+      const { errors } = await graphqlFetchAsAdminUser({
         query: /* GraphQL */ `
           mutation finishWork(
             $workId: ID!
@@ -199,7 +208,7 @@ describe('Worker Module', () => {
     });
 
     it('return not found error when non existing workId', async () => {
-      const { errors } = await graphqlFetch({
+      const { errors } = await graphqlFetchAsAdminUser({
         query: /* GraphQL */ `
           mutation finishWork(
             $workId: ID!
@@ -222,7 +231,7 @@ describe('Worker Module', () => {
     });
 
     it('Do work.', async () => {
-      const addWorkResult = await graphqlFetch({
+      const addWorkResult = await graphqlFetchAsAdminUser({
         query: /* GraphQL */ `
           mutation addWork($type: WorkType!, $input: JSON) {
             addWork(type: $type, input: $input) {
@@ -239,7 +248,7 @@ describe('Worker Module', () => {
 
       expect(addWorkResult.errors).toBeUndefined();
 
-      const allocateWorkResult = await graphqlFetch({
+      const allocateWorkResult = await graphqlFetchAsAdminUser({
         query: /* GraphQL */ `
           mutation allocateWork($types: [WorkType], $worker: String) {
             allocateWork(worker: $worker, types: $types) {
@@ -257,7 +266,7 @@ describe('Worker Module', () => {
 
       expect(allocateWorkResult.errors).toBeUndefined();
 
-      const doWorkResult = await graphqlFetch({
+      const doWorkResult = await graphqlFetchAsAdminUser({
         query: /* GraphQL */ `
           mutation doWork($type: WorkType!, $input: JSON) {
             doWork(type: $type, input: $input) {
@@ -273,7 +282,7 @@ describe('Worker Module', () => {
       expect(doWorkResult.errors).toBeUndefined();
       expect(doWorkResult.data.doWork.success).toBe(true);
 
-      const finishWorkResult = await graphqlFetch({
+      const finishWorkResult = await graphqlFetchAsAdminUser({
         query: /* GraphQL */ `
           mutation finishWork(
             $workId: ID!
@@ -307,7 +316,7 @@ describe('Worker Module', () => {
       const scheduled = new Date();
       scheduled.setSeconds(scheduled.getSeconds() + 2);
 
-      const addWorkResult = await graphqlFetch({
+      const addWorkResult = await graphqlFetchAsAdminUser({
         query: /* GraphQL */ `
           mutation addWork($type: WorkType!, $input: JSON, $scheduled: Date) {
             addWork(type: $type, input: $input, scheduled: $scheduled) {
@@ -324,7 +333,9 @@ describe('Worker Module', () => {
 
       expect(addWorkResult.errors).toBeUndefined();
 
-      const { data: { workQueue: workQueueBefore } = {} } = await graphqlFetch({
+      const {
+        data: { workQueue: workQueueBefore } = {},
+      } = await graphqlFetchAsAdminUser({
         query: /* GraphQL */ `
           query {
             workQueue {
@@ -343,7 +354,9 @@ describe('Worker Module', () => {
       // Test if work is not done immediately
       await wait(1000);
 
-      const { data: { workQueue: workQueueMiddle } = {} } = await graphqlFetch({
+      const {
+        data: { workQueue: workQueueMiddle } = {},
+      } = await graphqlFetchAsAdminUser({
         query: /* GraphQL */ `
           query {
             workQueue {
@@ -363,7 +376,9 @@ describe('Worker Module', () => {
       // Test if work is done eventually
       await wait(3000);
 
-      const { data: { workQueue: workQueueAfter } = {} } = await graphqlFetch({
+      const {
+        data: { workQueue: workQueueAfter } = {},
+      } = await graphqlFetchAsAdminUser({
         query: /* GraphQL */ `
           query {
             workQueue {
@@ -382,7 +397,7 @@ describe('Worker Module', () => {
     });
 
     it('Worker fails and retries', async () => {
-      const addWorkResult = await graphqlFetch({
+      const addWorkResult = await graphqlFetchAsAdminUser({
         query: /* GraphQL */ `
           mutation addWork($type: WorkType!, $input: JSON, $retries: Int) {
             addWork(type: $type, input: $input, retries: $retries) {
@@ -409,7 +424,9 @@ describe('Worker Module', () => {
       await wait(1);
 
       // Expect copy & reschedule
-      const { data: { workQueue: workQueueBefore } = {} } = await graphqlFetch({
+      const {
+        data: { workQueue: workQueueBefore } = {},
+      } = await graphqlFetchAsAdminUser({
         query: /* GraphQL */ `
           query {
             workQueue {
@@ -438,7 +455,9 @@ describe('Worker Module', () => {
       // Await the expected reschedule time (should be done by the plugin itself)
       await wait(2000);
 
-      const { data: { workQueue: workQueueAfter } = {} } = await graphqlFetch({
+      const {
+        data: { workQueue: workQueueAfter } = {},
+      } = await graphqlFetchAsAdminUser({
         query: /* GraphQL */ `
           query {
             workQueue {
@@ -456,8 +475,398 @@ describe('Worker Module', () => {
         workQueueAfter.filter(({ type }) => type === 'HEARTBEAT'),
       ).toHaveLength(1);
     });
+  });
 
-    it.todo('Only admin can interact with worker');
-    it.todo('Cleanup Tasks');
+  describe('mutation.addWork for normal user should', () => {
+    it('return NoPermissionError', async () => {
+      const { errors } = await graphqlFetchAsNormalUser({
+        query: /* GraphQL */ `
+          mutation addWork($type: WorkType!, $input: JSON) {
+            addWork(type: $type, input: $input) {
+              _id
+              type
+            }
+          }
+        `,
+        variables: {
+          type: 'HEARTBEAT',
+        },
+      });
+
+      expect(errors[0]?.extensions?.code).toEqual('NoPermissionError');
+    });
+  });
+
+  describe('mutation.addWork for anonymous user should', () => {
+    it('return NoPermissionError', async () => {
+      const { errors } = await graphqlFetchAsAnonymousUser({
+        query: /* GraphQL */ `
+          mutation addWork($type: WorkType!, $input: JSON) {
+            addWork(type: $type, input: $input) {
+              _id
+              type
+            }
+          }
+        `,
+        variables: {
+          type: 'HEARTBEAT',
+        },
+      });
+
+      expect(errors[0]?.extensions?.code).toEqual('NoPermissionError');
+    });
+  });
+
+  describe('query.workQueue for normal user should', () => {
+    it('return NoPermissionError', async () => {
+      const { errors } = await graphqlFetchAsNormalUser({
+        query: /* GraphQL */ `
+          query($status: [WorkStatus]) {
+            workQueue(status: $status) {
+              _id
+              type
+              status
+            }
+          }
+        `,
+        variables: {
+          status: [],
+        },
+      });
+
+      expect(errors[0]?.extensions?.code).toEqual('NoPermissionError');
+    });
+  });
+
+  describe('query.workQueue for anonymous user should', () => {
+    it('return NoPermissionError', async () => {
+      const { errors } = await graphqlFetchAsAnonymousUser({
+        query: /* GraphQL */ `
+          query($status: [WorkStatus]) {
+            workQueue(status: $status) {
+              _id
+              type
+              status
+            }
+          }
+        `,
+        variables: {
+          status: [],
+        },
+      });
+
+      expect(errors[0]?.extensions?.code).toEqual('NoPermissionError');
+    });
+  });
+
+  describe('mutation.allocateWork for normal user should', () => {
+    it('return NoPermissionError', async () => {
+      const { errors } = await graphqlFetchAsNormalUser({
+        query: /* GraphQL */ `
+          mutation allocateWork($types: [WorkType], $worker: String) {
+            allocateWork(types: $types, worker: $worker) {
+              _id
+              input
+              type
+            }
+          }
+        `,
+        variables: {
+          worker: 'TEST-GRAPHQL',
+          types: ['EXTERNAL'],
+        },
+      });
+
+      expect(errors[0]?.extensions?.code).toEqual('NoPermissionError');
+    });
+  });
+
+  describe('mutation.allocateWork for anonymous user should', () => {
+    it('return NoPermissionError', async () => {
+      const { errors } = await graphqlFetchAsAnonymousUser({
+        query: /* GraphQL */ `
+          mutation allocateWork($types: [WorkType], $worker: String) {
+            allocateWork(types: $types, worker: $worker) {
+              _id
+              input
+              type
+            }
+          }
+        `,
+        variables: {
+          worker: 'TEST-GRAPHQL',
+          types: ['EXTERNAL'],
+        },
+      });
+
+      expect(errors[0]?.extensions?.code).toEqual('NoPermissionError');
+    });
+  });
+
+  describe('mutation.finishWork for normal user should', () => {
+    it('return NoPermissionError', async () => {
+      const { errors } = await graphqlFetchAsNormalUser({
+        query: /* GraphQL */ `
+          mutation finishWork(
+            $workId: ID!
+            $success: Boolean
+            $worker: String
+          ) {
+            finishWork(workId: $workId, success: $success, worker: $worker) {
+              _id
+              status
+            }
+          }
+        `,
+        variables: {
+          workId,
+          success: true,
+          worker: 'TEST-GRAPHQL',
+        },
+      });
+
+      expect(errors[0]?.extensions?.code).toEqual('NoPermissionError');
+    });
+  });
+
+  describe('mutation.finishWork for anonymous user should', () => {
+    it('return NoPermissionError', async () => {
+      const { errors } = await graphqlFetchAsAnonymousUser({
+        query: /* GraphQL */ `
+          mutation finishWork(
+            $workId: ID!
+            $success: Boolean
+            $worker: String
+          ) {
+            finishWork(workId: $workId, success: $success, worker: $worker) {
+              _id
+              status
+            }
+          }
+        `,
+        variables: {
+          workId,
+          success: true,
+          worker: 'TEST-GRAPHQL',
+        },
+      });
+
+      expect(errors[0]?.extensions?.code).toEqual('NoPermissionError');
+    });
+  });
+
+  describe('Query.work for admin user should', () => {
+    it("return the work specified by it's ID", async () => {
+      const {
+        data: { work },
+      } = await graphqlFetchAsAdminUser({
+        query: /* GraphQL */ `
+          query work($workId: ID!) {
+            work(workId: $workId) {
+              _id
+              started
+              finished
+              created
+              updated
+              deleted
+              priority
+              type
+              status
+              worker
+              input
+              result
+              error
+              success
+              scheduled
+              retries
+              timeout
+              worker
+
+              original {
+                _id
+              }
+            }
+          }
+        `,
+        variables: {
+          workId: NewWork._id,
+        },
+      });
+      expect(work).toMatchObject(NewWork);
+    });
+
+    it('return work as null when passed non-existing work ID', async () => {
+      const {
+        data: { work },
+      } = await graphqlFetchAsAdminUser({
+        query: /* GraphQL */ `
+          query work($workId: ID!) {
+            work(workId: $workId) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          workId: 'non-existing-id',
+        },
+      });
+      expect(work).toBe(null);
+    });
+
+    it('return InvalidIdError when passed invalid work ID', async () => {
+      const { errors } = await graphqlFetchAsAdminUser({
+        query: /* GraphQL */ `
+          query work($workId: ID!) {
+            work(workId: $workId) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          workId: '',
+        },
+      });
+      expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
+    });
+  });
+
+  describe('Query.work for normal user should', () => {
+    it('return NoPermissionError ', async () => {
+      const { errors } = await graphqlFetchAsNormalUser({
+        query: /* GraphQL */ `
+          query work($workId: ID!) {
+            work(workId: $workId) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          workId: NewWork._id,
+        },
+      });
+      expect(errors[0]?.extensions?.code).toEqual('NoPermissionError');
+    });
+  });
+
+  describe('Query.work for anonymous user should', () => {
+    it('return NoPermissionError ', async () => {
+      const { errors } = await graphqlFetchAsAnonymousUser({
+        query: /* GraphQL */ `
+          query work($workId: ID!) {
+            work(workId: $workId) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          workId: NewWork._id,
+        },
+      });
+      expect(errors[0]?.extensions?.code).toEqual('NoPermissionError');
+    });
+  });
+
+  describe('mutation.removeWork for admin user should', () => {
+    it("return the work specified by it's ID", async () => {
+      const {
+        data: { removeWork },
+      } = await graphqlFetchAsAdminUser({
+        query: /* GraphQL */ `
+          mutation removeWork($workId: ID!) {
+            removeWork(workId: $workId) {
+              _id
+              started
+              finished
+              created
+              updated
+              deleted
+              priority
+              type
+              status
+              worker
+              input
+              result
+              error
+              success
+              scheduled
+              retries
+              timeout
+            }
+          }
+        `,
+        variables: {
+          workId: AllocatedWork._id,
+        },
+      });
+      expect(removeWork.deleted).not.toBe(null);
+    });
+
+    it('return WorkNotFoundOrWrongStatus when passed non-existing work ID', async () => {
+      const { errors } = await graphqlFetchAsAdminUser({
+        query: /* GraphQL */ `
+          mutation removeWork($workId: ID!) {
+            removeWork(workId: $workId) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          workId: 'non-existing-id',
+        },
+      });
+      expect(errors[0]?.extensions?.code).toEqual('WorkNotFoundOrWrongStatus');
+    });
+
+    it('return InvalidIdError when passed invalid work ID', async () => {
+      const { errors } = await graphqlFetchAsAdminUser({
+        query: /* GraphQL */ `
+          mutation removeWork($workId: ID!) {
+            removeWork(workId: $workId) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          workId: '',
+        },
+      });
+      expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
+    });
+  });
+
+  describe('mutation.removeWork for normal user should', () => {
+    it('return NoPermissionError', async () => {
+      const { errors } = await graphqlFetchAsNormalUser({
+        query: /* GraphQL */ `
+          mutation removeWork($workId: ID!) {
+            removeWork(workId: $workId) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          workId: AllocatedWork._id,
+        },
+      });
+      expect(errors[0]?.extensions?.code).toEqual('NoPermissionError');
+    });
+  });
+
+  describe('mutation.removeWork for anonymous user should', () => {
+    it('return NoPermissionError', async () => {
+      const { errors } = await graphqlFetchAsNormalUser({
+        query: /* GraphQL */ `
+          mutation removeWork($workId: ID!) {
+            removeWork(workId: $workId) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          workId: AllocatedWork._id,
+        },
+      });
+      expect(errors[0]?.extensions?.code).toEqual('NoPermissionError');
+    });
   });
 });
