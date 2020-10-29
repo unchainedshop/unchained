@@ -1,7 +1,8 @@
 import { log } from 'meteor/unchained:core-logger';
 import { accountsServer } from 'meteor/unchained:core-accountsjs';
-import hashPassword from '../../../hashPassword';
-import { filterContext, evaluateContext } from '../../../callMethod';
+import hashPassword from '../../hashPassword';
+import filterContext from '../../filterContext';
+import evaluateContext from '../../evaluateContext';
 
 export default async function loginWithPassword(
   root,

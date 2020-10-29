@@ -4,17 +4,19 @@ TBD
 
 ## Breaking Changes
 
-- [core-users] `addEmail` and `updateEmail` no longer send out email verification; you need to trigger the verification using `resendVerificationEmail` mutation.
-- [core-users] `enrollUser` doesn't send out the enrollment email by default anymore. You need to trigger it using `sendEnrollmentEmail` mutation. 
+- [users] `addEmail` and `updateEmail` no longer send out email verification; you need to trigger the verification using `sendVerificationEmail` mutation.
+- [users] `enrollUser` doesn't send out the enrollment email by default anymore. You need to trigger it using `sendEnrollmentEmail` mutation.
+- [api] The functions `getConnection` and `callMethod` have been removed
+- [api] `Mutation.resendVerificationEmail` has been renamed to `Mutation.sendVerificationEmail`
 
 ## Minor
-= [core-users] `sendEnrollmentEmail` mutation is now available to trigger enrollment emails. 
+= [users] `sendEnrollmentEmail` mutation is now available to trigger enrollment emails.
 
 ## Patches
 - [great-purge-of-meteor] Remove accounts-base and accounts-password from platform package
 - [great-purge-of-meteor] Implement new core-accountsjs package
 - [great-purge-of-meteor] Convert all authentication related mutations within `api/resolvers/mutations/accounts/loginWithPassword.js` to use accounts-js.
-- [great-purge-of-meteor] Convert any Users collection helpers to use accounts-js. 
+- [great-purge-of-meteor] Convert any Users collection helpers to use accounts-js.
 
 ---
 # v0.54.1

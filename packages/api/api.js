@@ -5,7 +5,6 @@ import createBulkImportServer from './createBulkImportServer';
 import { configureRoles } from './roles';
 
 export hashPassword from './hashPassword';
-export getConnection from './getConnection';
 export getCart from './getCart';
 export * as roles from './roles';
 export * as acl from './acl';

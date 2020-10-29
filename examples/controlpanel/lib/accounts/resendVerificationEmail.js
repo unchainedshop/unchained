@@ -1,10 +1,10 @@
 import gql from 'graphql-tag';
 
-export default async function resendVerificationEmail({ email }, apollo) {
+export default async function sendVerificationEmail({ email }, apollo) {
   const result = await apollo.mutate({
     mutation: gql`
-      mutation resendVerificationEmail($email: String) {
-        resendVerificationEmail(email: $email) {
+      mutation sendVerificationEmail($email: String) {
+        sendVerificationEmail(email: $email) {
           success
         }
       }
@@ -14,6 +14,6 @@ export default async function resendVerificationEmail({ email }, apollo) {
     },
   });
 
-  const { success } = result.data.resendVerificationEmail;
+  const { success } = result.data.sendVerificationEmail;
   return success;
 }

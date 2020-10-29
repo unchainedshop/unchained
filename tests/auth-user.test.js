@@ -92,18 +92,18 @@ describe('Auth for logged in users', () => {
     });
   });
 
-  describe('Mutation.resendVerificationEmail', () => {
-    it('resend verification e-mail', async () => {
-      const { data: { resendVerificationEmail } = {} } = await graphqlFetch({
+  describe('Mutation.sendVerificationEmail', () => {
+    it('send verification e-mail', async () => {
+      const { data: { sendVerificationEmail } = {} } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation {
-            resendVerificationEmail(email: "user@unchained.localhost") {
+            sendVerificationEmail(email: "user@unchained.localhost") {
               success
             }
           }
         `,
       });
-      expect(resendVerificationEmail).toMatchObject({
+      expect(sendVerificationEmail).toMatchObject({
         success: true,
       });
     });
@@ -125,10 +125,10 @@ describe('Auth for logged in users', () => {
     });
 
     it('create a verification token', async () => {
-      const { data: { resendVerificationEmail } = {} } = await graphqlFetch({
+      const { data: { sendVerificationEmail } = {} } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation {
-            resendVerificationEmail(
+            sendVerificationEmail(
               email: "userthatmustverifyemail@unchained.localhost"
             ) {
               success
@@ -136,7 +136,7 @@ describe('Auth for logged in users', () => {
           }
         `,
       });
-      expect(resendVerificationEmail).toEqual({
+      expect(sendVerificationEmail).toEqual({
         success: true,
       });
     });

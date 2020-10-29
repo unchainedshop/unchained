@@ -66,7 +66,7 @@ export default [
       """
       Send an email with a link the user can use verify their email address.
       """
-      resendVerificationEmail(email: String): SuccessResponse
+      sendVerificationEmail(email: String): SuccessResponse
 
       """
       Login as Guest User (creates an anonymous user and returns logged in token)
