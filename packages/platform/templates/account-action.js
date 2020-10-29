@@ -104,10 +104,6 @@ export default ({ userId, action, recipientEmail, token }) => {
   if (!token || !action) return [];
 
   const user = Users.findOne({ _id: userId });
-  if (user.guest && action === 'verify-email') {
-    return [];
-  }
-
   const locale = user.locale();
   const { url } = emailConfig[action];
   const { subject, message, buttonText } = emailConfig[action][locale.language];

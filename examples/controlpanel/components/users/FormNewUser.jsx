@@ -127,18 +127,17 @@ export default compose(
       ...dirtyInput
     }) => {
       const { displayName, email, password, enroll } = schema.clean(dirtyInput);
-      return enrollUser({
+      const enrollmentResult = await enrollUser({
         variables: {
           profile: { displayName },
           email,
           password: !enroll && password ? password : null,
         },
-      }).then((enrollmentResult) => {
-        if (!password) {
-          sendEnrollmentEmail({ variables: { email } });
-        }
-        return enrollmentResult;
       });
+      if (enroll) {
+        await sendEnrollmentEmail({ variables: { email } });
+      }
+      return enrollmentResult;
     },
   }),
   withFormErrorHandlers,
