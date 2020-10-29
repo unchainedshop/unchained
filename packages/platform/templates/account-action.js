@@ -33,6 +33,13 @@ const mjmlTemplate = `
 </mjml>
 `;
 
+const verifyEmailEnglishConfig = {
+  buttonText: 'Verify email address',
+  message:
+    'We need to ensure that this email is yours as a commercial partner.',
+  subject: `${EMAIL_WEBSITE_NAME}: Verify your email address`,
+};
+
 const textTemplate = `
   {{message}}
   \n
@@ -42,7 +49,7 @@ const textTemplate = `
 `;
 
 const emailConfig = {
-  enrollAccount: {
+  'enroll-account': {
     url: (token) => `${UI_ENDPOINT}/enroll-account?token=${token}`,
     en: {
       buttonText: 'Set password',
@@ -60,7 +67,7 @@ const emailConfig = {
       subject: `${EMAIL_WEBSITE_NAME}: You got a new account`,
     },
   },
-  resetPassword: {
+  'reset-password': {
     url: (token) => `${UI_ENDPOINT}/reset-password?token=${token}`,
     en: {
       buttonText: 'Set new password',
@@ -85,33 +92,19 @@ const emailConfig = {
       subject: `${EMAIL_WEBSITE_NAME}: Set password`,
     },
   },
-  verifyEmail: {
+  'verify-email': {
     url: (token) => `${UI_ENDPOINT}/verify-email?token=${token}`,
-    en: {
-      buttonText: 'Verify email address',
-      message:
-        'We need to ensure that this email is yours as a commercial partner.',
-      subject: `${EMAIL_WEBSITE_NAME}: Verify your email address`,
-    },
-    de: {
-      buttonText: 'E-Mail Adresse verifizieren',
-      message:
-        'Als Geschäftskunde müssen wir sicherstellen, dass diese E-Mail Adresse dir gehört.',
-      subject: `${EMAIL_WEBSITE_NAME}: Verifiziere deine E-Mail Adresse`,
-    },
-    fr: {
-      buttonText: 'Verify email address',
-      message:
-        'We need to ensure that this email is yours as a commercial partner.',
-      subject: `${EMAIL_WEBSITE_NAME}: Verify your email address`,
-    },
+    en: verifyEmailEnglishConfig,
+    de: verifyEmailEnglishConfig,
+    fr: verifyEmailEnglishConfig,
   },
 };
 
 export default ({ userId, action, recipientEmail, token }) => {
+  if (!token || !action) return [];
+
   const user = Users.findOne({ _id: userId });
   const locale = user.locale();
-
   const { url } = emailConfig[action];
   const { subject, message, buttonText } = emailConfig[action][locale.language];
 

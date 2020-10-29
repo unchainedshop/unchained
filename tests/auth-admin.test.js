@@ -178,7 +178,7 @@ describe('Auth for admin users', () => {
 
   describe('Mutation.updateEmail', () => {
     it('update the e-mail of a foreign user', async () => {
-      const email = 'newuser@localhost';
+      const email = 'newuser@unchained.local';
       const { data: { updateEmail } = {} } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation updateEmail($email: String!, $userId: ID) {
@@ -208,7 +208,7 @@ describe('Auth for admin users', () => {
 
   describe('Mutation.addEmail', () => {
     it('add an e-mail to a foreign user', async () => {
-      const email = 'newuser2@localhost';
+      const email = 'newuser2@unchained.local';
       const { data: { addEmail } = {} } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation addEmail($email: String!, $userId: ID) {
@@ -226,6 +226,7 @@ describe('Auth for admin users', () => {
           email,
         },
       });
+
       expect(addEmail).toMatchObject({
         _id: User._id,
         emails: [
@@ -244,7 +245,7 @@ describe('Auth for admin users', () => {
 
   describe('Mutation.removeEmail', () => {
     it('remove an e-mail of a foreign user', async () => {
-      const email = 'newuser2@localhost';
+      const email = 'newuser2@unchained.local';
       const { data: { removeEmail } = {} } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation removeEmail($email: String!, $userId: ID) {
@@ -389,7 +390,7 @@ describe('Auth for admin users', () => {
       const profile = {
         displayName: 'Admin3',
       };
-      const email = 'admin3@localhost';
+      const email = 'admin3@unchained.local';
       const password = null;
       const { data: { enrollUser } = {} } = await graphqlFetch({
         query: /* GraphQL */ `
@@ -414,6 +415,7 @@ describe('Auth for admin users', () => {
           profile,
         },
       });
+
       expect(enrollUser).toMatchObject({
         isInitialPassword: true,
         primaryEmail: {
@@ -422,12 +424,54 @@ describe('Auth for admin users', () => {
         },
       });
     });
+    it('should fire off the enrollment email', async () => {
+      const email = 'admin3@unchained.local';
+
+      const { data: { sendEnrollmentEmail } = {} } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation sendEnrollmentEmail($email: String!) {
+            sendEnrollmentEmail(email: $email) {
+              success
+            }
+          }
+        `,
+        variables: {
+          email,
+        },
+      });
+
+      expect(sendEnrollmentEmail).toMatchObject({
+        success: true,
+      });
+
+      const { data: { workQueue } = {} } = await graphqlFetch({
+        query: /* GraphQL */ `
+          query($status: [WorkStatus]) {
+            workQueue(status: $status) {
+              _id
+              type
+              status
+            }
+          }
+        `,
+        variables: {
+          // Empty array as status queries the whole queue
+          status: [],
+        },
+      });
+      const work = workQueue.filter(
+        ({ type, status }) => type === 'MESSAGE' && status === 'SUCCESS',
+      );
+
+      // length of two means only the verification email and the enrollment got triggered
+      expect(work).toHaveLength(2);
+    });
 
     it('enroll a user with pre-setting a password', async () => {
       const profile = {
         displayName: 'Admin4',
       };
-      const email = 'admin4@localhost';
+      const email = 'admin4@unchained.local';
       const password = 'admin4';
       const { data: { enrollUser } = {} } = await graphqlFetch({
         query: /* GraphQL */ `
@@ -480,6 +524,29 @@ describe('Auth for admin users', () => {
       });
       expect(setPassword).toMatchObject({
         _id: User._id,
+      });
+    });
+  });
+
+  describe('Mutation.setUsername', () => {
+    it('set the username of a foreign user', async () => {
+      const username = 'John Doe';
+      const { data: { setUsername } = {} } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation setUsername($userId: ID!, $username: String!) {
+            setUsername(username: $username, userId: $userId) {
+              username
+            }
+          }
+        `,
+        variables: {
+          userId: User._id,
+          username,
+        },
+      });
+
+      expect(setUsername).toMatchObject({
+        username,
       });
     });
   });

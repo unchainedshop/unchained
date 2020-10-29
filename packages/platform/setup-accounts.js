@@ -1,6 +1,9 @@
-import { Meteor } from 'meteor/meteor';
 import { check, Match } from 'meteor/check';
-import { Accounts } from 'meteor/accounts-base';
+import {
+  accountsServer,
+  accountsPassword,
+  randomValueHex,
+} from 'meteor/unchained:core-accountsjs';
 import { getFallbackLocale } from 'meteor/unchained:core';
 import { Users } from 'meteor/unchained:core-users';
 import { Orders } from 'meteor/unchained:core-orders';
@@ -8,14 +11,8 @@ import { Bookmarks } from 'meteor/unchained:core-bookmarks';
 import { Promise } from 'meteor/promise';
 import cloneDeep from 'lodash.clonedeep';
 import moniker from 'moniker';
-import crypto from 'crypto';
 
-export const randomValueHex = (len) => {
-  return crypto
-    .randomBytes(Math.ceil(len / 2))
-    .toString('hex') // convert to hexadecimal format
-    .slice(0, len); // return required number of characters
-};
+accountsServer.users = Users;
 
 export const buildContext = (user) => {
   const locale =
@@ -28,90 +25,71 @@ export const buildContext = (user) => {
 };
 
 export default ({ mergeUserCartsOnLogin = true } = {}) => {
-  Accounts.validateNewUser((user) => {
+  accountsPassword.options.validateNewUser = (user) => {
     const clone = cloneDeep(user);
+    if (clone.email) {
+      clone.emails = [
+        {
+          address: clone.email,
+          verified: false,
+        },
+      ];
+      delete clone.email;
+    }
     delete clone._id;
-    Users.simpleSchema().validate(clone);
-    return true;
-  });
-
-  Accounts.onCreateUser((options = {}, user = {}) => {
+    Users.simpleSchema()
+      .extend({
+        password: String,
+      })
+      .omit('created')
+      .validate(clone);
     const newUser = user;
-    const { guest, skipEmailVerification, profile } = options;
-
-    newUser.profile = profile;
-    newUser.guest = !!guest;
-    newUser.created = newUser.createdAt || new Date();
-    delete newUser.createdAt; // comes from the meteor-apollo-accounts stuff
-
-    if (newUser.services.google) {
+    if (user?.services?.google) {
       newUser.profile = {
-        name: newUser.services.google.name,
-        ...newUser.profile,
+        name: user.services.google.name,
+        ...user.profile,
       };
       newUser.emails = [
-        { address: newUser.services.google.email, verified: true },
+        { address: user.services.google.email, verified: true },
       ];
     }
-
-    if (newUser.services.facebook) {
+    if (user?.services?.facebook) {
       newUser.profile = {
-        name: newUser.services.facebook.name,
-        ...newUser.profile,
+        name: user.services.facebook.name,
+        ...user.profile,
       };
       newUser.emails = [
-        { address: newUser.services.facebook.email, verified: true },
+        { address: user.services.facebook.email, verified: true },
       ];
-    }
-    if (!guest && !skipEmailVerification) {
-      Meteor.setTimeout(() => {
-        const { sendVerificationEmail = true } = Accounts._options; // eslint-disable-line
-        Accounts.sendVerificationEmail(user._id);
-      }, 1000);
     }
     return newUser;
-  });
-
-  Accounts.removeOldGuests = (before) => {
-    let newBefore = before;
-    if (typeof newBefore === 'undefined') {
-      newBefore = new Date();
-      newBefore.setHours(newBefore.getHours() - 1);
-    }
-    const res = Meteor.users.remove({
-      created: { $lte: newBefore },
-      guest: true,
-    });
-    return res;
   };
 
   function createGuestOptions(email) {
     check(email, Match.OneOf(String, null, undefined));
     const guestname = `${moniker.choose()}-${randomValueHex(5)}`;
     return {
-      email: email || `${guestname}@localhost`,
+      email: email || `${guestname}@unchained.local`,
       guest: true,
       profile: {},
     };
   }
 
-  Accounts.registerLoginHandler('guest', (options) => {
-    if (!options || !options.createGuest) {
-      return undefined;
-    }
-    const guestOptions = createGuestOptions(options.email);
-    return {
-      userId: Accounts.createUser(guestOptions),
-    };
-  });
+  accountsServer.services.guest = {
+    async authenticate(params) {
+      const guestOptions = createGuestOptions(params.email);
+      const userId = await accountsPassword.createUser(guestOptions);
+      return userId;
+    },
+  };
 
-  Accounts.onLogin(({ methodArguments, user }) => {
+  accountsServer.on('LoginSuccess', async ({ user, connection = {} }) => {
     const {
       userIdBeforeLogin,
       countryContext,
       remoteAddress,
       normalizedLocale,
-    } = [...methodArguments].pop() || {};
+    } = connection;
 
     Users.updateHeartbeat({
       _id: user._id,
@@ -129,7 +107,6 @@ export default ({ mergeUserCartsOnLogin = true } = {}) => {
           mergeCarts: mergeUserCartsOnLogin,
         })
       );
-
       Promise.await(
         Bookmarks.migrateBookmarks({
           fromUserId: userIdBeforeLogin,
@@ -140,8 +117,8 @@ export default ({ mergeUserCartsOnLogin = true } = {}) => {
     }
   });
 
-  Accounts.validateLoginAttempt(({ type, allowed, user }) => {
-    if (type !== 'guest' && allowed && user.guest) {
+  accountsServer.on('ValidateLogin', ({ service, user }) => {
+    if (service !== 'guest' && user.guest) {
       Users.update(
         { _id: user._id },
         {

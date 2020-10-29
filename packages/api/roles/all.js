@@ -23,6 +23,7 @@ export default (role, actions) => {
   role.allow(actions.viewWarehousingProvider, () => false);
   role.allow(actions.viewWarehousingInterfaces, () => false);
   role.allow(actions.viewOrders, () => false);
+  role.allow(actions.sendEmail, () => false);
   role.allow(actions.updateUser, () => false);
   role.allow(actions.manageLanguages, () => false);
   role.allow(actions.manageCountries, () => false);

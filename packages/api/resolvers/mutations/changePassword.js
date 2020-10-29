@@ -1,5 +1,6 @@
-import callMethod from '../../../callMethod';
-import hashPassword from '../../../hashPassword';
+import { log } from 'meteor/unchained:core-logger';
+import { accountsPassword } from 'meteor/unchained:core-accountsjs';
+import hashPassword from '../../hashPassword';
 
 export default async function changePassword(
   root,
@@ -11,6 +12,7 @@ export default async function changePassword(
   },
   context
 ) {
+  log('mutation changePassword');
   if (!newHashedPassword && !newPlainPassword) {
     throw new Error('New password is required');
   }
@@ -20,13 +22,11 @@ export default async function changePassword(
   const newPassword = newHashedPassword || hashPassword(newPlainPassword);
   const oldPassword = oldHashedPassword || hashPassword(oldPlainPassword);
 
-  const { passwordChanged } = callMethod(
-    context,
-    'changePassword',
-    oldPassword,
-    newPassword
-  );
-  return {
-    success: passwordChanged,
-  };
+  return accountsPassword
+    .changePassword(context.userId, oldPassword, newPassword)
+    .then(() => {
+      return {
+        success: true,
+      };
+    });
 }

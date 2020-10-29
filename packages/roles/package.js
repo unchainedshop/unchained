@@ -10,8 +10,8 @@ Package.onUse((api) => {
   api.versionsFrom('1.11.1');
 
   api.use([
+    'unchained:core-users',
     'meteor-base',
-    'accounts-base',
     'check',
     'mongo',
     'ecmascript',

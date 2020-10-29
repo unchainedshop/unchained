@@ -3,14 +3,14 @@ import { compose, pure, withHandlers } from 'recompose';
 import { graphql, withApollo } from '@apollo/client/react/hoc';
 import gql from 'graphql-tag';
 import { Message, Button } from 'semantic-ui-react';
-import { resendVerificationEmail } from '../../lib/accounts';
+import { sendVerificationEmail } from '../../lib/accounts';
 
 const EmailsListItem = ({
   removeEmail,
   address,
   verified,
-  resendVerification,
-  disableResendVerificationEmail,
+  sendVerification,
+  disableSendVerificationEmail,
 }) => (
   <div>
     {address}
@@ -26,19 +26,19 @@ const EmailsListItem = ({
       <Message warning visible>
         <Message.Header>
           E-Mail address unverified
-          {!disableResendVerificationEmail && (
+          {!disableSendVerificationEmail && (
             <Button
               type="button"
               floated="right"
               basic
               secondary
-              onClick={resendVerification}
+              onClick={sendVerification}
             >
-              Resend verification mail
+              Send verification mail
             </Button>
           )}
         </Message.Header>
-        <p>Resend and then check your inbox</p>
+        <p>Send and then check your inbox</p>
       </Message>
     )}
   </div>
@@ -65,8 +65,8 @@ export default compose(
           userId,
         },
       }),
-    resendVerification: ({ client, address }) => () =>
-      resendVerificationEmail(
+    sendVerification: ({ client, address }) => () =>
+      sendVerificationEmail(
         {
           email: address,
         },

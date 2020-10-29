@@ -7,7 +7,7 @@ import forgotPassword from './forgotPassword';
 import hashPassword from './hashPassword';
 import loginWithPassword from './loginWithPassword';
 import logout from './logout';
-import resendVerificationEmail from './resendVerificationEmail';
+import sendVerificationEmail from './sendVerificationEmail';
 import resetPassword from './resetPassword';
 import verifyEmail from './verifyEmail';
 import userId from './userId';
@@ -21,7 +21,7 @@ export {
   hashPassword,
   loginWithPassword,
   logout,
-  resendVerificationEmail,
+  sendVerificationEmail,
   resetPassword,
   verifyEmail,
   onTokenChange,

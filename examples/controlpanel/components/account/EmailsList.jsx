@@ -9,7 +9,7 @@ const EmailsList = ({
   userId,
   emails,
   onSubmitSuccess,
-  disableResendVerificationEmail,
+  disableSendVerificationEmail,
 }) => (
   <>
     {emails.map(({ address, verified }) => (
@@ -18,7 +18,7 @@ const EmailsList = ({
         userId={userId}
         address={address}
         verified={verified}
-        disableResendVerificationEmail={disableResendVerificationEmail}
+        disableSendVerificationEmail={disableSendVerificationEmail}
         onSubmitSuccess={onSubmitSuccess}
       />
     ))}

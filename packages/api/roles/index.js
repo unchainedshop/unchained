@@ -45,6 +45,7 @@ export const actions = [
   'viewOrder',
   'viewShopInfo',
   'updateUser',
+  'sendEmail',
   'manageUsers',
   'manageUsers',
   'manageLanguages',

@@ -1,5 +1,9 @@
 import { Locale } from 'locale';
-import { Accounts } from 'meteor/accounts-base';
+import {
+  accountsServer,
+  accountsPassword,
+  dbManager,
+} from 'meteor/unchained:core-accountsjs';
 import 'meteor/dburles:collection-helpers';
 import { getFallbackLocale } from 'meteor/unchained:core';
 import { Countries } from 'meteor/unchained:core-countries';
@@ -75,9 +79,9 @@ Users.helpers({
       return profile.displayName;
     return emails && emails[0].address;
   },
-  setPassword(password, options) {
+  async setPassword(password) {
     const newPassword = password || uuidv4().split('-').pop();
-    Accounts.setPassword(this._id, newPassword, options);
+    await accountsPassword.setPassword(this._id, newPassword);
     if (!password) {
       Users.update(
         { _id: this._id },
@@ -105,39 +109,31 @@ Users.helpers({
     );
     return Users.findOne({ _id: this._id });
   },
-  setUsername(username) {
-    Accounts.setUsername(this._id, username);
+  async setUsername(username) {
+    await dbManager.setUsername(this._id, username);
     return Users.findOne({ _id: this._id });
   },
-  addEmail(email, { verified = false, skipEmailVerification = false } = {}) {
-    Accounts.addEmail(this._id, email, verified);
-    if (!skipEmailVerification) {
-      const { sendVerificationEmail = true } = Accounts._options; // eslint-disable-line
-      if (sendVerificationEmail) {
-        Accounts.sendVerificationEmail(this._id, email);
-      }
-    }
+  async addEmail(email, { verified = false } = {}) {
+    await accountsPassword.addEmail(this._id, email, verified);
     return Users.findOne({ _id: this._id });
   },
-  removeEmail(email) {
-    Accounts.removeEmail(this._id, email);
+  async removeEmail(email) {
+    await accountsPassword.removeEmail(this._id, email);
     return Users.findOne({ _id: this._id });
   },
-  updateEmail(email, { verified = false, skipEmailVerification = false } = {}) {
+  async updateEmail(email, { verified = false } = {}) {
     log(
       'user.updateEmail is deprecated, please use user.addEmail and user.removeEmail',
       { level: 'warn' }
     );
-    Accounts.addEmail(this._id, email, verified);
-    (this.emails || [])
-      .filter(({ address }) => address.toLowerCase() !== email.toLowerCase())
-      .forEach(({ address }) => Accounts.removeEmail(this._id, address));
-    if (!skipEmailVerification) {
-      const { sendVerificationEmail = true } = Accounts._options; // eslint-disable-line
-      if (sendVerificationEmail) {
-        Accounts.sendVerificationEmail(this._id);
-      }
-    }
+    await accountsPassword.addEmail(this._id, email, verified);
+    await Promise.all(
+      (this.emails || [])
+        .filter(({ address }) => address.toLowerCase() !== email.toLowerCase())
+        .map(async ({ address }) =>
+          accountsPassword.removeEmail(this._id, address)
+        )
+    );
     return Users.findOne({ _id: this._id });
   },
   logs({ limit, offset }) {
@@ -193,12 +189,14 @@ Users.updateLastContact = ({ userId, lastContact }) => {
   Users.update({ _id: userId }, modifier);
 };
 
-Users.enrollUser = ({ password, email, displayName, address }) => {
-  const options = { email, skipEmailVerification: true };
+Users.enrollUser = async ({ password, email, displayName, address }) => {
+  const params = { email };
   if (password && password !== '') {
-    options.password = password;
+    params.password = password;
   }
-  const newUserId = Accounts.createUser(options);
+
+  const newUserId = await accountsPassword.createUser(params);
+
   Users.update(
     { _id: newUserId },
     {
@@ -210,10 +208,6 @@ Users.enrollUser = ({ password, email, displayName, address }) => {
       },
     }
   );
-  if (!options.password) {
-    // send an e-mail if password is not set allowing the user to set it
-    Accounts.sendEnrollmentEmail(newUserId);
-  }
   return Users.findOne({ _id: newUserId });
 };
 
@@ -231,7 +225,7 @@ Users.updateHeartbeat = ({ userId, ...options }) => {
   );
 };
 
-Users.createUser = ({
+Users.createUser = async ({
   username,
   roles,
   emails,
@@ -239,8 +233,7 @@ Users.createUser = ({
   guest,
   ...userData
 }) => {
-  const _id = Users.insert({
-    created: new Date(),
+  const userId = await accountsPassword.createUser({
     username,
     roles,
     emails,
@@ -248,10 +241,6 @@ Users.createUser = ({
     guest,
     ...userData,
   });
-
-  const user = Users.findOne({ _id });
-  if (user) {
-    Accounts.setPassword(_id, 'password');
-  }
-  return user;
+  const createdUser = await accountsServer.findUserById(userId);
+  return createdUser;
 };

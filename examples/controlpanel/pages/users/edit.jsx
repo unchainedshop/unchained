@@ -76,7 +76,7 @@ const UsersEdit = ({ router, redirect, changeTab, ...rest }) => (
                   <EmailsList
                     onSubmitSuccess={redirect}
                     userId={router.query._id}
-                    disableResendVerificationEmail
+                    disableSendVerificationEmail
                   />
                 </Segment>
                 <Segment>

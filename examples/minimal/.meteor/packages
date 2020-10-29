@@ -6,8 +6,6 @@
 
 webapp
 mongo@1.10.0
-accounts-base@1.7.0
-accounts-password@1.6.2
 ecmascript
 email@2.0.0
 disable-oplog@1.0.7

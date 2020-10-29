@@ -34,7 +34,7 @@ npm run dev
 Now you have a fully running Unchained E-Commerce environment running locally. Check it out by browsing to the following URLs:
 
 - http://localhost:3000 to see the front-end (storefront)
-- http://localhost:4010 to see the control panel. Login with username: admin@localhost / password: password
+- http://localhost:4010 to see the control panel. Login with username: admin@unchained.local / password: password
 - http://localhost:4010/graphql to see the Unchained GraphQL Playground
 
 Your project directory now contains the following folders representing 3 services:

@@ -15,7 +15,6 @@ Package.onUse((api) => {
 
   api.use('ecmascript');
   api.use('webapp');
-  api.use('accounts-base');
   api.use('check');
   api.use('unchained:core@0.54.1');
   api.use('unchained:roles@0.54.1');
@@ -31,6 +30,7 @@ Package.onUse((api) => {
   api.use('unchained:core-payment@0.54.1');
   api.use('unchained:core-pricing@0.54.1');
   api.use('unchained:core-products@0.54.1');
+  api.use('unchained:core-accountsjs@0.54.1');
   api.use('unchained:core-users@0.54.1');
   api.use('unchained:core-bookmarks@0.54.1');
   api.use('unchained:core-warehousing@0.54.1');

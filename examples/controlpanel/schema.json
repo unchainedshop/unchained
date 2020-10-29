@@ -10738,7 +10738,7 @@
             "deprecationReason": null
           },
           {
-            "name": "resendVerificationEmail",
+            "name": "sendVerificationEmail",
             "description": "Send an email with a link the user can use verify their email address.",
             "args": [
               {

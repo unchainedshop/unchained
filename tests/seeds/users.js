@@ -6,7 +6,7 @@ export const Admin = {
   username: 'admin',
   emails: [
     {
-      address: 'admin@localhost',
+      address: 'admin@unchained.local',
       verified: true,
     },
   ],
@@ -34,7 +34,7 @@ export const User = {
   username: 'user',
   emails: [
     {
-      address: 'user@localhost',
+      address: 'user@unchained.local',
       verified: true,
     },
   ],
