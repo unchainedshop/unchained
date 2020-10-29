@@ -49,7 +49,7 @@ const textTemplate = `
 `;
 
 const emailConfig = {
-  enrollAccount: {
+  'enroll-account': {
     url: (token) => `${UI_ENDPOINT}/enroll-account?token=${token}`,
     en: {
       buttonText: 'Set password',
@@ -67,7 +67,7 @@ const emailConfig = {
       subject: `${EMAIL_WEBSITE_NAME}: You got a new account`,
     },
   },
-  resetPassword: {
+  'reset-password': {
     url: (token) => `${UI_ENDPOINT}/reset-password?token=${token}`,
     en: {
       buttonText: 'Set new password',
@@ -92,7 +92,7 @@ const emailConfig = {
       subject: `${EMAIL_WEBSITE_NAME}: Set password`,
     },
   },
-  verifyEmail: {
+  'verify-email': {
     url: (token) => `${UI_ENDPOINT}/verify-email?token=${token}`,
     en: verifyEmailEnglishConfig,
     de: verifyEmailEnglishConfig,
@@ -101,7 +101,13 @@ const emailConfig = {
 };
 
 export default ({ userId, action, recipientEmail, token }) => {
+  if (!token || !action) return [];
+
   const user = Users.findOne({ _id: userId });
+  if (user.guest && action === 'verify-email') {
+    return [];
+  }
+
   const locale = user.locale();
   const { url } = emailConfig[action];
   const { subject, message, buttonText } = emailConfig[action][locale.language];

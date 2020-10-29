@@ -227,7 +227,6 @@ describe('Auth for admin users', () => {
         },
       });
 
-      console.log(addEmail);
       expect(addEmail).toMatchObject({
         _id: User._id,
         emails: [

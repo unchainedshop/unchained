@@ -9,51 +9,32 @@ const accountsServerOptions = {
   useInternalUserObjectSanitizer: false,
   siteUrl: process.env.ROOT_URL,
   prepareMail: (to, token, user, pathFragment) => {
-    if (token && pathFragment) {
-      // we're not supposed to be sending verifications to guests
-      if (user.guest && pathFragment === 'verify-email') {
-        return;
-      }
-      const actionsSet = {
-        'verify-email': 'verifyEmail',
-        'enroll-account': 'enrollAccount',
-        'reset-password': 'resetPassword',
-      };
-
-      // eslint-disable-next-line consistent-return
-      return {
-        recipientEmail: to,
-        action: actionsSet[pathFragment],
-        userId: user.id || user._id,
-        token,
-      };
-    }
+    return {
+      template: 'ACCOUNT_ACTION',
+      recipientEmail: to,
+      action: pathFragment,
+      userId: user.id || user._id,
+      token,
+    };
   },
-  // eslint-disable-next-line consistent-return
-  sendMail: (data) => {
-    if (data) {
-      const { action, userId, token, recipientEmail } = data;
+  sendMail: (input) => {
+    if (input) {
       return WorkerDirector.addWork({
         type: 'MESSAGE',
         retries: 0,
-        input: {
-          template: 'ACCOUNT_ACTION',
-          action,
-          recipientEmail,
-          userId,
-          token,
-        },
+        input,
       });
     }
+    return true;
   },
 };
 
-class UnchainedAccountsServer extends AccountsServer {
+export class UnchainedAccountsServer extends AccountsServer {
   DEFAULT_LOGIN_EXPIRATION_DAYS = 90;
 
   LOGIN_UNEXPIRING_TOKEN_DAYS = 365 * 100;
 
-  destroyToken = (userId, loginToken) => {
+  destroyToken = async (userId, loginToken) => {
     this.users.update(userId, {
       $pull: {
         'services.resume.loginTokens': {
@@ -121,7 +102,7 @@ class UnchainedAccountsServer extends AccountsServer {
 
   async logout({ userId, token }) {
     try {
-      this.destroyToken(userId, token);
+      await this.destroyToken(userId, token);
       this.hooks.emit(ServerHooks.LogoutSuccess, {
         user: this.users.findOne({ _id: userId }),
       });
