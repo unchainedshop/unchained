@@ -33,7 +33,7 @@ meteor npm install
 meteor npm run dev
 ```
 
-1. Navigate to http://localhost:4000/ to view the controlpanel. You can login with: user: admin@localhost / password: password
+1. Navigate to http://localhost:4000/ to view the controlpanel. You can login with: user: admin@unchained.local / password: password
 
 2. Navigate to http://localhost:4010/graphql to view the GraphQL Playground
 

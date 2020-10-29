@@ -1,14 +1,16 @@
 import { setupDatabase, createLoggedInGraphqlFetch } from './helpers';
-import { User, Admin, USER_TOKEN } from './seeds/users';
+import { User, Admin, USER_TOKEN, ADMIN_TOKEN } from './seeds/users';
 
 let connection;
 let db;
 let graphqlFetch;
+let adminGraphqlFetch;
 
 describe('Auth for logged in users', () => {
   beforeAll(async () => {
     [db, connection] = await setupDatabase();
     graphqlFetch = await createLoggedInGraphqlFetch(USER_TOKEN);
+    adminGraphqlFetch = await createLoggedInGraphqlFetch(ADMIN_TOKEN);
   });
 
   afterAll(async () => {
@@ -97,7 +99,7 @@ describe('Auth for logged in users', () => {
       const { data: { sendVerificationEmail } = {} } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation {
-            sendVerificationEmail(email: "user@unchained.localhost") {
+            sendVerificationEmail(email: "user@unchained.local") {
               success
             }
           }
@@ -106,6 +108,18 @@ describe('Auth for logged in users', () => {
       expect(sendVerificationEmail).toMatchObject({
         success: true,
       });
+    });
+    it('cannot send a verification e-mail to an e-mail not owned by the logged in user', async () => {
+      const { data: { sendVerificationEmail } = {} } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation {
+            sendVerificationEmail(email: "admin@unchained.local") {
+              success
+            }
+          }
+        `,
+      });
+      expect(sendVerificationEmail).toEqual(null);
     });
   });
 
@@ -117,7 +131,7 @@ describe('Auth for logged in users', () => {
         _id: 'userthatmustverifyemail',
         emails: [
           {
-            address: 'userthatmustverifyemail@unchained.localhost',
+            address: 'userthatmustverifyemail@unchained.local',
             verified: false,
           },
         ],
@@ -125,11 +139,11 @@ describe('Auth for logged in users', () => {
     });
 
     it('create a verification token', async () => {
-      const { data: { sendVerificationEmail } = {} } = await graphqlFetch({
+      const { data: { sendVerificationEmail } = {} } = await adminGraphqlFetch({
         query: /* GraphQL */ `
           mutation {
             sendVerificationEmail(
-              email: "userthatmustverifyemail@unchained.localhost"
+              email: "userthatmustverifyemail@unchained.local"
             ) {
               success
             }

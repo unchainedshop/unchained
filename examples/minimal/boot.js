@@ -64,7 +64,7 @@ const initializeDatabase = async () => {
     const admin = await Users.createUser({
       username: 'admin',
       roles: ['admin'],
-      emails: [{ address: 'admin@localhost', verified: true }],
+      emails: [{ address: 'admin@unchained.local', verified: true }],
       profile: { address: {} },
       guest: false,
       lastBillingAddress: addresses.admin,
@@ -104,7 +104,7 @@ const initializeDatabase = async () => {
       \ncountries: ${countries.join(',')}
       \ncurrencies: ${currencies.join(',')}
       \nlanguages: ${languages.join(',')}
-      \nuser: admin@localhost / password`);
+      \nuser: admin@unchained.local / password`);
   } catch (e) {
     logger.error(e);
   }
