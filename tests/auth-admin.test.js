@@ -4,19 +4,17 @@ import {
   createLoggedInGraphqlFetch,
   createAnonymousGraphqlFetch,
 } from './helpers';
-import { Admin, ADMIN_TOKEN, User, USER_TOKEN } from './seeds/users';
+import { Admin, ADMIN_TOKEN, User } from './seeds/users';
 
 let connection;
 let db;
 let graphqlFetchAsAdminUser;
-let graphqlFetchAsNormalUser;
 let graphqlFetchAsAnonymousUser;
 
 describe('Auth for admin users', () => {
   beforeAll(async () => {
     [db, connection] = await setupDatabase();
     graphqlFetchAsAdminUser = await createLoggedInGraphqlFetch(ADMIN_TOKEN);
-    graphqlFetchAsNormalUser = await createLoggedInGraphqlFetch(USER_TOKEN);
     graphqlFetchAsAnonymousUser = await createAnonymousGraphqlFetch();
   });
 
@@ -439,7 +437,9 @@ describe('Auth for admin users', () => {
     it('should fire off the enrollment email', async () => {
       const email = 'admin3@unchained.local';
 
-      const { data: { sendEnrollmentEmail } = {} } = await graphqlFetch({
+      const {
+        data: { sendEnrollmentEmail } = {},
+      } = await graphqlFetchAsAdminUser({
         query: /* GraphQL */ `
           mutation sendEnrollmentEmail($email: String!) {
             sendEnrollmentEmail(email: $email) {
@@ -456,7 +456,7 @@ describe('Auth for admin users', () => {
         success: true,
       });
 
-      const { data: { workQueue } = {} } = await graphqlFetch({
+      const { data: { workQueue } = {} } = await graphqlFetchAsAdminUser({
         query: /* GraphQL */ `
           query($status: [WorkStatus]) {
             workQueue(status: $status) {
@@ -471,7 +471,7 @@ describe('Auth for admin users', () => {
           status: [],
         },
       });
-      const work = workQueue.filter(
+      const work = workQueue?.filter(
         ({ type, status }) => type === 'MESSAGE' && status === 'SUCCESS',
       );
 
@@ -543,7 +543,7 @@ describe('Auth for admin users', () => {
   describe('Mutation.setUsername', () => {
     it('set the username of a foreign user', async () => {
       const username = 'John Doe';
-      const { data: { setUsername } = {} } = await graphqlFetch({
+      const { data: { setUsername } = {} } = await graphqlFetchAsAdminUser({
         query: /* GraphQL */ `
           mutation setUsername($userId: ID!, $username: String!) {
             setUsername(username: $username, userId: $userId) {
@@ -731,43 +731,6 @@ describe('Auth for admin users', () => {
         },
       });
       expect(errors[0]?.extensions?.code).toEqual('UserNotFoundError');
-    });
-
-    it('return InvalidIdError when passed invalid user ID', async () => {
-      const { errors } = await graphqlFetchAsAdminUser({
-        query: /* GraphQL */ `
-          mutation setUsername($username: String!, $userId: ID!) {
-            setUsername(username: $username, userId: $userId) {
-              _id
-              username
-            }
-          }
-        `,
-        variables: {
-          userId: '',
-          username: 'user-updated',
-        },
-      });
-      expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
-    });
-  });
-
-  describe('Mutation.setUsername for normal user should', () => {
-    it('return NoPermissionError', async () => {
-      const { errors } = await graphqlFetchAsNormalUser({
-        query: /* GraphQL */ `
-          mutation setUsername($username: String!, $userId: ID!) {
-            setUsername(username: $username, userId: $userId) {
-              _id
-            }
-          }
-        `,
-        variables: {
-          userId: User._id,
-          username: 'admin-updated',
-        },
-      });
-      expect(errors[0]?.extensions?.code).toEqual('NoPermissionError');
     });
   });
 

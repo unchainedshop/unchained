@@ -5,7 +5,7 @@ import {
   createAnonymousGraphqlFetch,
 } from './helpers';
 import { AllocatedWork, NewWork } from './seeds/work';
-import { USER_TOKEN } from './seeds/users';
+import { USER_TOKEN, ADMIN_TOKEN } from './seeds/users';
 
 let connection;
 let graphqlFetchAsAdminUser;
@@ -16,7 +16,7 @@ let workId;
 describe('Worker Module', () => {
   beforeAll(async () => {
     [, connection] = await setupDatabase();
-    graphqlFetchAsAdminUser = await createLoggedInGraphqlFetch();
+    graphqlFetchAsAdminUser = await createLoggedInGraphqlFetch(ADMIN_TOKEN);
     graphqlFetchAsNormalUser = await createLoggedInGraphqlFetch(USER_TOKEN);
     graphqlFetchAsAnonymousUser = await createAnonymousGraphqlFetch();
   });

@@ -11,7 +11,7 @@ import {
   InitialSubscription,
   TerminatedSubscription,
 } from './seeds/subscriptions';
-import { USER_TOKEN } from './seeds/users';
+import { USER_TOKEN, ADMIN_TOKEN } from './seeds/users';
 
 let connection;
 let graphqlFetchAsAdminUser;
@@ -21,7 +21,7 @@ let graphqlFetchAsAnonymousUser;
 describe('Subscriptions', () => {
   beforeAll(async () => {
     [, connection] = await setupDatabase();
-    graphqlFetchAsAdminUser = await createLoggedInGraphqlFetch();
+    graphqlFetchAsAdminUser = await createLoggedInGraphqlFetch(ADMIN_TOKEN);
     graphqlFetchAsNormalUser = await createLoggedInGraphqlFetch(USER_TOKEN);
     graphqlFetchAsAnonymousUser = createAnonymousGraphqlFetch();
   });
