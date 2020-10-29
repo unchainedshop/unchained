@@ -424,76 +424,8 @@ describe('Auth for admin users', () => {
         },
       });
     });
-
-    it('enroll a user with pre-setting a password', async () => {
-      const profile = {
-        displayName: 'Admin4',
-      };
-      const email = 'admin4@unchained.local';
-      const password = 'admin4';
-      const { data: { enrollUser } = {} } = await graphqlFetch({
-        query: /* GraphQL */ `
-          mutation enrollUser(
-            $email: String!
-            $password: String
-            $profile: UserProfileInput!
-          ) {
-            enrollUser(email: $email, password: $password, profile: $profile) {
-              _id
-              isInitialPassword
-              primaryEmail {
-                address
-                verified
-              }
-            }
-          }
-        `,
-        variables: {
-          email,
-          password,
-          profile,
-        },
-      });
-      expect(enrollUser).toMatchObject({
-        isInitialPassword: true,
-        primaryEmail: {
-          address: email,
-          verified: false,
-        },
-      });
-    });
-  });
-
-  describe('Mutation.sendEnrollmentEmail', () => {
     it('should fire off the enrollment email', async () => {
-      const profile = {
-        displayName: 'Admin3',
-      };
       const email = 'admin3@unchained.local';
-      const password = null;
-      const { data: { enrollUser } = {} } = await graphqlFetch({
-        query: /* GraphQL */ `
-          mutation enrollUser(
-            $email: String!
-            $password: String
-            $profile: UserProfileInput!
-          ) {
-            enrollUser(email: $email, password: $password, profile: $profile) {
-              _id
-              isInitialPassword
-              primaryEmail {
-                address
-                verified
-              }
-            }
-          }
-        `,
-        variables: {
-          email,
-          password,
-          profile,
-        },
-      });
 
       const { data: { sendEnrollmentEmail } = {} } = await graphqlFetch({
         query: /* GraphQL */ `
@@ -531,8 +463,46 @@ describe('Auth for admin users', () => {
         ({ type, status }) => type === 'MESSAGE' && status === 'SUCCESS',
       );
 
-      // a length of two means only the verification email and the enrollment one too
+      // length of two means only the verification email and the enrollment got triggered
       expect(work).toHaveLength(2);
+    });
+
+    it('enroll a user with pre-setting a password', async () => {
+      const profile = {
+        displayName: 'Admin4',
+      };
+      const email = 'admin4@unchained.local';
+      const password = 'admin4';
+      const { data: { enrollUser } = {} } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation enrollUser(
+            $email: String!
+            $password: String
+            $profile: UserProfileInput!
+          ) {
+            enrollUser(email: $email, password: $password, profile: $profile) {
+              _id
+              isInitialPassword
+              primaryEmail {
+                address
+                verified
+              }
+            }
+          }
+        `,
+        variables: {
+          email,
+          password,
+          profile,
+        },
+      });
+      expect(enrollUser).toMatchObject({
+        isInitialPassword: true,
+        primaryEmail: {
+          address: email,
+          verified: false,
+        },
+      });
     });
   });
 
