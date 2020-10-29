@@ -1,4 +1,4 @@
-import { FilesCollection } from 'meteor/ostrio:files';
+import { FilesCollection } from './lib/server';
 
 FilesCollection.prototype.insertWithRemoteBuffer = async function insertWithRemoteBuffer({
   file: { name: fileName, type, size, buffer },
