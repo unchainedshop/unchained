@@ -114,7 +114,7 @@ Users.helpers({
     return Users.findOne({ _id: this._id });
   },
   async addEmail(email, { verified = false } = {}) {
-    accountsPassword.addEmail(this._id, email, verified);
+    await accountsPassword.addEmail(this._id, email, verified);
     return Users.findOne({ _id: this._id });
   },
   async removeEmail(email) {
@@ -130,7 +130,9 @@ Users.helpers({
     await Promise.all(
       (this.emails || [])
         .filter(({ address }) => address.toLowerCase() !== email.toLowerCase())
-        .map(({ address }) => accountsPassword.removeEmail(this._id, address))
+        .map(async ({ address }) =>
+          accountsPassword.removeEmail(this._id, address)
+        )
     );
     return Users.findOne({ _id: this._id });
   },
