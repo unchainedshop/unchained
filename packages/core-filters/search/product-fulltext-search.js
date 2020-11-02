@@ -12,9 +12,10 @@ export default ({
     ...rest,
   });
 
-  return director.searchProducts(productIdResolver, {
+  const foundProductIds = await director.searchProducts(productIdResolver, {
     filterSelector,
     productSelector,
     sortStage,
   });
+  return foundProductIds || [];
 };
