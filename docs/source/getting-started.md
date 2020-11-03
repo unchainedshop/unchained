@@ -64,7 +64,7 @@ class WeatherDependentBarbequeSausagePricing extends ProductPricingAdapter {
   static label = "Calculate the price of a sausage 🌭🌦";
   static orderIndex = 3;
 
-  static isActivatedFor(product) {
+  static isActivatedFor({product}) {
     if (
       product.tags &&
       product.tags.length > 0 &&
