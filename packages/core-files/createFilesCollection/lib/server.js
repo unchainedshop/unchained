@@ -66,7 +66,7 @@ const NOOP = () => {};
  * @param config._preCollectionName {String}  - [Server]  preCollection name
  * @summary Create new instance of FilesCollection
  */
-export class FilesCollection extends FilesCollectionCore {
+export default class FilesCollection extends FilesCollectionCore {
   constructor(config) {
     super();
     let storagePath;

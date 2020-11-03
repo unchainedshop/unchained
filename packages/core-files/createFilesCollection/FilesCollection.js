@@ -1,4 +1,4 @@
-import { FilesCollection } from './lib/server';
+import FilesCollection from './lib/server';
 
 FilesCollection.prototype.insertWithRemoteBuffer = async function insertWithRemoteBuffer({
   file: { name: fileName, type, size, buffer },
