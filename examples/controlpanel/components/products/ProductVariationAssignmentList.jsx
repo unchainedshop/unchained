@@ -80,13 +80,6 @@ const matrixGenerator = (columns, rowContainer, currentIndex) => {
 export default compose(
   graphql(gql`
     query productVariationAssignments($productId: ID) {
-      products(limit: 0) {
-        _id
-        texts {
-          _id
-          title
-        }
-      }
       product(productId: $productId) {
         _id
         ... on ConfigurableProduct {
@@ -172,7 +165,7 @@ export default compose(
       },
     }
   ),
-  mapProps(({ data: { product, products }, ...rest }) => {
+  mapProps(({ data: { product }, ...rest }) => {
     const variations = (product && product.variations) || [];
     const columnTitles = variations.map(
       ({ texts, key }) => texts?.title || key
@@ -208,18 +201,10 @@ export default compose(
       };
     });
 
-    const productOptions =
-      products &&
-      products.map(({ texts, _id }) => ({
-        text: texts?.title,
-        value: _id,
-      }));
-
     return {
       columnTitles,
       columnKeys,
       rows,
-      productOptions,
       isEditingDisabled: !product || product.status === 'DELETED',
       pressDelay: 200,
       ...rest,
