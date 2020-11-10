@@ -19,7 +19,6 @@ Package.onUse((api) => {
     'check',
     'mongo',
     'ecmascript',
-    'dburles:collection-helpers@1.1.0',
   ]);
 
   api.addFiles(['helpers.js', 'roles.js', 'keys.js']);
