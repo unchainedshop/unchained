@@ -18,7 +18,11 @@ import FormTagInput from '../FormTagInput';
 
 const ProductSearchDropdownField = connectField(SearchDropdown);
 
-const FormNewAssortmentProduct = ({ removeCountry, ...formProps }) => (
+const FormNewAssortmentProduct = ({
+  removeCountry,
+  assortmentId,
+  ...formProps
+}) => (
   <AutoForm {...formProps}>
     <Segment basic>
       <AutoField name={'assortmentId'} type="hidden" />
@@ -100,6 +104,9 @@ export default compose(
   }),
   withFormErrorHandlers,
   mapProps(({ assortmentId, ...rest }) => ({
+    model: {
+      assortmentId,
+    },
     ...rest,
   }))
 )(FormNewAssortmentProduct);
