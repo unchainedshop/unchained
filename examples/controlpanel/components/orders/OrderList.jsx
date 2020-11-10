@@ -103,7 +103,8 @@ export default compose(
   withHandlers({
     toggleShowCarts: ({ updateHasMore, isShowCarts, setShowCarts }) => () => {
       setShowCarts(!isShowCarts);
-      updateHasMore(true);
+      // eslint-disable-next-line no-unused-expressions
+      updateHasMore && updateHasMore(true);
     },
   })
 )(OrderList);

@@ -27,9 +27,10 @@ const resolveRatioAndTaxDivisorForPricingSheet = (pricing, total) => {
 
 const resolveAmountAndTax = ({ ratio, taxDivisor }, amount) => {
   const shareAmount = Number.isFinite(ratio) ? amount * ratio : 0;
-  const shareTaxAmount = Number.isFinite(taxDivisor)
-    ? shareAmount - shareAmount / taxDivisor
-    : 0;
+  const shareTaxAmount =
+    Number.isFinite(taxDivisor) && taxDivisor !== 0
+      ? shareAmount - shareAmount / taxDivisor
+      : 0;
   return [shareAmount, shareTaxAmount];
 };
 

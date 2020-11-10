@@ -157,7 +157,7 @@ describe('Auth for anonymous users', () => {
         _id: 'userthatforgetspasswords',
         emails: [
           {
-            address: 'userthatforgetspasswords@unchained.localhost',
+            address: 'userthatforgetspasswords@unchained.local',
             verified: true,
           },
         ],
@@ -168,9 +168,7 @@ describe('Auth for anonymous users', () => {
       const { data: { forgotPassword } = {} } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation {
-            forgotPassword(
-              email: "userthatforgetspasswords@unchained.localhost"
-            ) {
+            forgotPassword(email: "userthatforgetspasswords@unchained.local") {
               success
             }
           }
@@ -190,7 +188,7 @@ describe('Auth for anonymous users', () => {
         _id: 'userthatforgetspasswords',
         emails: [
           {
-            address: 'userthatforgetspasswords@unchained.localhost',
+            address: 'userthatforgetspasswords@unchained.local',
             verified: true,
           },
         ],
@@ -201,9 +199,7 @@ describe('Auth for anonymous users', () => {
       const { data: { forgotPassword } = {} } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation {
-            forgotPassword(
-              email: "userthatforgetspasswords@unchained.localhost"
-            ) {
+            forgotPassword(email: "userthatforgetspasswords@unchained.local") {
               success
             }
           }
@@ -218,7 +214,7 @@ describe('Auth for anonymous users', () => {
       // Reset the password with that token
       const Users = db.collection('users');
       const user = await Users.findOne({
-        'emails.address': 'userthatforgetspasswords@unchained.localhost',
+        'emails.address': 'userthatforgetspasswords@unchained.local',
       });
 
       const {

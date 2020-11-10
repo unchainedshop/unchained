@@ -1,9 +1,15 @@
 import gql from 'graphql-tag';
 
 export const SEARCH_USERS = gql`
-  query users($queryString: String, $offset: Int, $includeGuests: Boolean) {
+  query users(
+    $queryString: String
+    $offset: Int
+    $limit: Int
+    $includeGuests: Boolean
+  ) {
     users(
       queryString: $queryString
+      limit: $limit
       offset: $offset
       includeGuests: $includeGuests
     ) {
@@ -15,9 +21,9 @@ export const SEARCH_USERS = gql`
 `;
 
 export const SEARCH_ASSORTMENTS = gql`
-  query searchAssortments($queryString: String) {
+  query searchAssortments($queryString: String, $offset: Int, $limit: Int) {
     searchAssortments(queryString: $queryString, includeInactive: true) {
-      assortments {
+      assortments(limit: $limit, offset: $offset) {
         _id
         isActive
         texts {
@@ -31,9 +37,9 @@ export const SEARCH_ASSORTMENTS = gql`
 `;
 
 export const SEARCH_PRODUCTS = gql`
-  query searchProducts($queryString: String, $limit: Int) {
+  query searchProducts($queryString: String, $offset: Int, $limit: Int) {
     searchProducts(queryString: $queryString, includeInactive: true) {
-      products {
+      products(limit: $limit, offset: $offset) {
         _id
         status
         texts {
@@ -41,7 +47,7 @@ export const SEARCH_PRODUCTS = gql`
           title
           description
         }
-        media(limit: $limit) {
+        media {
           texts {
             _id
             title

@@ -128,7 +128,10 @@ const SearchDropdown = ({
         name={name || 'item'}
         disabled={disabled}
         id={id || 'search-dropdown'}
-        search
+        search={(allOptions) => {
+          return allOptions; // don't use the internal filter function because options get pre filtered
+        }}
+        deburr={false}
         fluid
         selection
         placeholder={placeholder || 'Select item'}
@@ -138,9 +141,8 @@ const SearchDropdown = ({
           leading: true,
         })}
         options={options}
-        {...{ ...(value && { value }) }}
-        {...{ ...(disabled && { disabled }) }}
-        {...{ ...(optionValues && { optionValues }) }}
+        value={value}
+        optionValues={optionValues}
         style={{ marginBottom: '1em' }}
       />
     </div>

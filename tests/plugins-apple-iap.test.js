@@ -15,6 +15,7 @@ import {
 import initialBuy from './seeds/apple-iap-initial-buy';
 import didRecover from './seeds/apple-iap-did-recover';
 import didChangeRenewalStatus from './seeds/apple-iap-did-change-renewal-status';
+import { AllSubscriptionIds } from './seeds/subscriptions';
 
 let connection;
 let db;
@@ -311,9 +312,14 @@ describe('Plugins: Apple IAP Payments', () => {
         body: JSON.stringify(didRecover),
       });
       expect(result.status).toBe(200);
-      const subscription = await db.collection('subscriptions').findOne();
+      const subscription = await db.collection('subscriptions').findOne({
+        _id: {
+          $nin: AllSubscriptionIds,
+        },
+      });
       expect(subscription?.status).toBe('ACTIVE');
     });
+
     it('notification_type = DID_CHANGE_RENEWAL_STATUS should terminate subscription', async () => {
       const result = await fetch('http://localhost:3000/graphql/apple-iap', {
         method: 'POST',
@@ -323,7 +329,11 @@ describe('Plugins: Apple IAP Payments', () => {
         body: JSON.stringify(didChangeRenewalStatus),
       });
       expect(result.status).toBe(200);
-      const subscription = await db.collection('subscriptions').findOne();
+      const subscription = await db.collection('subscriptions').findOne({
+        _id: {
+          $nin: AllSubscriptionIds,
+        },
+      });
       expect(subscription?.status).toBe('TERMINATED');
     });
   });

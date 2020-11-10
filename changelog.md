@@ -4,15 +4,36 @@ TBD
 
 ## Breaking Changes
 
-- [core-users] addEmail and updateEmail no longer send out email verification; you need to trigger the verification using `resendVerificationEmail` mutation.
+- [users] `addEmail` and `updateEmail` no longer send out email verification; you need to trigger the verification using `sendVerificationEmail` mutation.
+- [users] `enrollUser` doesn't send out the enrollment email by default anymore. You need to trigger it using `sendEnrollmentEmail` mutation.
+- [api] The functions `getConnection` and `callMethod` have been removed
+- [api] `Mutation.resendVerificationEmail` has been renamed to `Mutation.sendVerificationEmail`
+
+## Minor
+= [users] `sendEnrollmentEmail` mutation is now available to trigger enrollment emails.
 
 ## Patches
 - [great-purge-of-meteor] Remove accounts-base and accounts-password from platform package
 - [great-purge-of-meteor] Implement new core-accountsjs package
 - [great-purge-of-meteor] Convert all authentication related mutations within `api/resolvers/mutations/accounts/loginWithPassword.js` to use accounts-js.
-- [great-purge-of-meteor] Convert any Users collection helpers to use accounts-js. 
+- [great-purge-of-meteor] Convert any Users collection helpers to use accounts-js.
 
-# v0.53.3
+---
+# v0.54.1
+
+## Patches
+- [platform] Fix importing bulk assortments should remove old links
+- [pricing] Fix critical issue with discounts resolving to a total cart value of 0
+
+# v0.54.0
+
+## Minor
+- [logger] Support for JSON Logging through UNCHAINED_LOG_FORMAT=json
+- [api] Larger body limit for the new Bulk Import API
+
+---
+
+# v0.53.2
 
 ## Minor
 - [core] Compound indexes for text entities

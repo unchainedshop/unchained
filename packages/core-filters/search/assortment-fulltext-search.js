@@ -12,9 +12,13 @@ export default ({
     ...rest,
   });
 
-  return director.searchAssortments(productIdResolver, {
-    filterSelector,
-    assortmentSelector,
-    sortStage,
-  });
+  const foundAssortmentIds = await director.searchAssortments(
+    productIdResolver,
+    {
+      filterSelector,
+      assortmentSelector,
+      sortStage,
+    }
+  );
+  return foundAssortmentIds || [];
 };

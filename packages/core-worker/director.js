@@ -104,7 +104,9 @@ class WorkerDirector {
         }
       );
       if (!result.lastErrorObject.updatedExisting) {
-        log(`${this.name} -> Work added ${type} ${scheduled} ${retries}`);
+        log(
+          `${this.name} -> Work added again (ensure) ${type} ${scheduled} ${retries}`
+        );
         const work = await this.work({ workId });
         this.events.emit(WorkerEventTypes.added, { work });
       }
@@ -118,7 +120,7 @@ class WorkerDirector {
     type,
     input,
     priority = 0,
-    scheduled,
+    scheduled: rawScheduled,
     originalWorkId,
     retries = 20,
   }) {
@@ -127,11 +129,12 @@ class WorkerDirector {
     }
 
     const created = new Date();
+    const scheduled = rawScheduled || created;
     const workId = WorkQueue.insert({
       type,
       input,
       priority,
-      scheduled: scheduled || created,
+      scheduled,
       originalWorkId,
       retries,
       created,

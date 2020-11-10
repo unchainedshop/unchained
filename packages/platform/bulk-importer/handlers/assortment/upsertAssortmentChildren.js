@@ -5,7 +5,7 @@ export default async ({
   authorId,
   assortmentId: parentAssortmentId,
 }) => {
-  return Promise.all(
+  const assortmentLinkIds = await Promise.all(
     children.map(
       async ({ assortmentId: childAssortmentId, ...childrenRest }) => {
         const assortmentLink = await AssortmentLinks.createAssortmentLink({
@@ -14,8 +14,12 @@ export default async ({
           parentAssortmentId,
           childAssortmentId,
         });
-        return assortmentLink;
+        return assortmentLink._id;
       }
     )
   );
+  AssortmentLinks.remove({
+    _id: { $nin: assortmentLinkIds },
+    parentAssortmentId,
+  });
 };

@@ -8,7 +8,7 @@ export default function subscription(root, { subscriptionId }, { userId }) {
 
   const foundSubscription = Subscriptions.findOne({ _id: subscriptionId });
 
-  if (foundSubscription)
+  if (!foundSubscription)
     throw new SubscriptionNotFoundError({ subscriptionId });
 
   return foundSubscription;

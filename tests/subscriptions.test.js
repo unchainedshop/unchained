@@ -1,13 +1,29 @@
-import { setupDatabase, createLoggedInGraphqlFetch } from './helpers';
+import {
+  setupDatabase,
+  createLoggedInGraphqlFetch,
+  createAnonymousGraphqlFetch,
+} from './helpers';
+import { SimpleDeliveryProvider } from './seeds/deliveries';
+import { SimplePaymentProvider } from './seeds/payments';
 import { PlanProduct } from './seeds/products';
+import {
+  ActiveSubscription,
+  InitialSubscription,
+  TerminatedSubscription,
+} from './seeds/subscriptions';
+import { USER_TOKEN, ADMIN_TOKEN } from './seeds/users';
 
 let connection;
-let graphqlFetch;
+let graphqlFetchAsAdminUser;
+let graphqlFetchAsNormalUser;
+let graphqlFetchAsAnonymousUser;
 
 describe('Subscriptions', () => {
   beforeAll(async () => {
     [, connection] = await setupDatabase();
-    graphqlFetch = await createLoggedInGraphqlFetch();
+    graphqlFetchAsAdminUser = await createLoggedInGraphqlFetch(ADMIN_TOKEN);
+    graphqlFetchAsNormalUser = await createLoggedInGraphqlFetch(USER_TOKEN);
+    graphqlFetchAsAnonymousUser = createAnonymousGraphqlFetch();
   });
 
   afterAll(async () => {
@@ -16,7 +32,7 @@ describe('Subscriptions', () => {
 
   describe('Mutation.createCart (Subscription)', () => {
     it('checking out a plan product generates a new subscription', async () => {
-      const { data: { createCart } = {} } = await graphqlFetch({
+      const { data: { createCart } = {} } = await graphqlFetchAsAdminUser({
         query: /* GraphQL */ `
           mutation {
             createCart(orderNumber: "subscriptionCart") {
@@ -26,7 +42,7 @@ describe('Subscriptions', () => {
           }
         `,
       });
-      const { data: { checkoutCart } = {} } = await graphqlFetch({
+      const { data: { checkoutCart } = {} } = await graphqlFetchAsAdminUser({
         query: /* GraphQL */ `
           mutation prepareAndCheckout(
             $productId: ID!
@@ -99,7 +115,9 @@ describe('Subscriptions', () => {
   });
   describe('Mutation.createSubscription', () => {
     it('create a new subscription manually will not activate automatically because of missing order', async () => {
-      const { data: { createSubscription } = {} } = await graphqlFetch({
+      const {
+        data: { createSubscription } = {},
+      } = await graphqlFetchAsAdminUser({
         query: /* GraphQL */ `
           mutation createSubscription($plan: SubscriptionPlanInput!) {
             createSubscription(plan: $plan) {
@@ -138,6 +156,7 @@ describe('Subscriptions', () => {
               status
               created
               expires
+
               isExpired
               subscriptionNumber
               country {
@@ -174,7 +193,7 @@ describe('Subscriptions', () => {
     });
 
     it('return not found error when passed non existing productId', async () => {
-      const { errors } = await graphqlFetch({
+      const { errors } = await graphqlFetchAsAdminUser({
         query: /* GraphQL */ `
           mutation createSubscription($plan: SubscriptionPlanInput!) {
             createSubscription(plan: $plan) {
@@ -192,7 +211,7 @@ describe('Subscriptions', () => {
     });
 
     it('return error when passed invalid productId', async () => {
-      const { errors } = await graphqlFetch({
+      const { errors } = await graphqlFetchAsAdminUser({
         query: /* GraphQL */ `
           mutation createSubscription($plan: SubscriptionPlanInput!) {
             createSubscription(plan: $plan) {
@@ -209,20 +228,829 @@ describe('Subscriptions', () => {
       expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
     });
   });
-  describe('Mutation.terminateSubscription', () => {
-    it.todo('Mutation.terminateSubscription');
-  });
-  describe('Mutation.updateSubscription', () => {
-    it.todo('Mutation.updateSubscription');
-  });
-  describe('Mutation.activateSubscription', () => {
-    it.todo('Mutation.activateSubscription');
+  describe('Mutation.terminateSubscription for admin user should', () => {
+    it('change ACTIVE subscription status to TERMINATED', async () => {
+      const {
+        data: { terminateSubscription },
+      } = await graphqlFetchAsAdminUser({
+        query: /* GraphQL */ `
+          mutation terminateSubscription($subscriptionId: ID!) {
+            terminateSubscription(subscriptionId: $subscriptionId) {
+              _id
+              status
+              billingAddress {
+                firstName
+                lastName
+                company
+                addressLine
+                postalCode
+                countryCode
+                city
+              }
+              plan {
+                product {
+                  _id
+                }
+                quantity
+              }
+              billingAddress {
+                firstName
+              }
+              contact {
+                emailAddress
+                telNumber
+              }
+              payment {
+                provider {
+                  _id
+                }
+              }
+              delivery {
+                provider {
+                  _id
+                }
+              }
+              meta
+            }
+          }
+        `,
+        variables: {
+          subscriptionId: ActiveSubscription._id,
+        },
+      });
+      expect(terminateSubscription.status).toEqual('TERMINATED');
+    });
+
+    it('return SubscriptionWrongStatusError when passed terminated subscription ID', async () => {
+      const { errors } = await graphqlFetchAsAdminUser({
+        query: /* GraphQL */ `
+          mutation terminateSubscription($subscriptionId: ID!) {
+            terminateSubscription(subscriptionId: $subscriptionId) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          subscriptionId: TerminatedSubscription._id,
+        },
+      });
+      expect(errors[0]?.extensions?.code).toEqual(
+        'SubscriptionWrongStatusError',
+      );
+    });
+
+    it('return SubscriptionNotFoundError when passed non existing subscription ID', async () => {
+      const { errors } = await graphqlFetchAsAdminUser({
+        query: /* GraphQL */ `
+          mutation terminateSubscription($subscriptionId: ID!) {
+            terminateSubscription(subscriptionId: $subscriptionId) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          subscriptionId: 'non-existing-id',
+        },
+      });
+      expect(errors[0]?.extensions?.code).toEqual('SubscriptionNotFoundError');
+    });
+
+    it('return InvalidIdError when passed non invalid subscription Id', async () => {
+      const { errors } = await graphqlFetchAsAdminUser({
+        query: /* GraphQL */ `
+          mutation terminateSubscription($subscriptionId: ID!) {
+            terminateSubscription(subscriptionId: $subscriptionId) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          subscriptionId: '',
+        },
+      });
+      expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
+    });
   });
 
-  describe('query.subscriptions', () => {
-    it.todo('all tests');
+  describe('Mutation.terminateSubscription for normal user should', () => {
+    it('return NoPermissionError', async () => {
+      const { errors } = await graphqlFetchAsNormalUser({
+        query: /* GraphQL */ `
+          mutation terminateSubscription($subscriptionId: ID!) {
+            terminateSubscription(subscriptionId: $subscriptionId) {
+              _id
+              status
+            }
+          }
+        `,
+        variables: {
+          subscriptionId: ActiveSubscription._id,
+        },
+      });
+      expect(errors[0]?.extensions?.code).toEqual('NoPermissionError');
+    });
   });
-  describe('query.subscription', () => {
-    it.todo('all tests');
+
+  describe('Mutation.terminateSubscription for anonymous user should', () => {
+    it('return NoPermissionError', async () => {
+      const { errors } = await graphqlFetchAsAnonymousUser({
+        query: /* GraphQL */ `
+          mutation terminateSubscription($subscriptionId: ID!) {
+            terminateSubscription(subscriptionId: $subscriptionId) {
+              _id
+              status
+            }
+          }
+        `,
+        variables: {
+          subscriptionId: ActiveSubscription._id,
+        },
+      });
+      expect(errors[0]?.extensions?.code).toEqual('NoPermissionError');
+    });
+  });
+
+  describe('Mutation.updateSubscription for admin user should', () => {
+    it('update subscription details successfuly', async () => {
+      const {
+        data: { updateSubscription },
+      } = await graphqlFetchAsAdminUser({
+        query: /* GraphQL */ `
+          mutation updateSubscription(
+            $subscriptionId: ID
+            $plan: SubscriptionPlanInput
+            $billingAddress: AddressInput
+            $contact: ContactInput
+            $payment: SubscriptionPaymentInput
+            $delivery: SubscriptionDeliveryInput
+            $meta: JSON
+          ) {
+            updateSubscription(
+              subscriptionId: $subscriptionId
+              plan: $plan
+              billingAddress: $billingAddress
+              contact: $contact
+              payment: $payment
+              delivery: $delivery
+              meta: $meta
+            ) {
+              _id
+              billingAddress {
+                firstName
+                lastName
+                company
+                addressLine
+                postalCode
+                countryCode
+                city
+              }
+              plan {
+                product {
+                  _id
+                }
+                quantity
+              }
+              billingAddress {
+                firstName
+              }
+              contact {
+                emailAddress
+                telNumber
+              }
+              payment {
+                provider {
+                  _id
+                }
+              }
+              delivery {
+                provider {
+                  _id
+                }
+              }
+              meta
+            }
+          }
+        `,
+        variables: {
+          subscriptionId: InitialSubscription._id,
+          /* plan: {
+            productId: SimpleProduct._id,
+            quantity: 3,
+          }, */
+          billingAddress: {
+            firstName: 'Mikael Araya',
+            lastName: 'Mengistu',
+            company: 'Bionic',
+            addressLine: 'Bole, Addis Ababa',
+            postalCode: '123456',
+            city: 'Addis Ababa',
+            countryCode: 'ch',
+          },
+          contact: {
+            emailAddress: 'mikael@unchained.shop',
+            telNumber: '+251912669988',
+          },
+          payment: {
+            paymentProviderId: SimplePaymentProvider._id,
+          },
+          delivery: {
+            deliveryProviderId: SimpleDeliveryProvider._id,
+          },
+          /* meta: {
+            context: {
+              message: 'hello from meta',
+            },
+          }, */
+        },
+      });
+
+      /* console.log(updateSubscription); */
+
+      expect(updateSubscription).toMatchObject({
+        _id: InitialSubscription._id,
+        /* plan: {
+          product: {
+            _id: SimpleProduct._id,
+          },
+          quantity: 3,
+        }, */
+        billingAddress: {
+          firstName: 'Mikael Araya',
+          lastName: 'Mengistu',
+          company: 'Bionic',
+          addressLine: 'Bole, Addis Ababa',
+          postalCode: '123456',
+          city: 'Addis Ababa',
+          countryCode: 'ch',
+        },
+        contact: {
+          emailAddress: 'mikael@unchained.shop',
+          telNumber: '+251912669988',
+        },
+        payment: {
+          provider: { _id: SimplePaymentProvider._id },
+        },
+        delivery: {
+          provider: { _id: SimpleDeliveryProvider._id },
+        },
+        /* meta: {
+          context: {
+            message: 'hello from meta',
+          },
+        }, */
+      });
+    });
+  });
+
+  describe('Mutation.updateSubscription for normal user should', () => {
+    it('Update subscription successfuly', async () => {
+      const {
+        data: { updateSubscription },
+      } = await graphqlFetchAsAdminUser({
+        query: /* GraphQL */ `
+          mutation updateSubscription(
+            $subscriptionId: ID
+            $plan: SubscriptionPlanInput
+            $billingAddress: AddressInput
+            $contact: ContactInput
+            $payment: SubscriptionPaymentInput
+            $delivery: SubscriptionDeliveryInput
+            $meta: JSON
+          ) {
+            updateSubscription(
+              subscriptionId: $subscriptionId
+              plan: $plan
+              billingAddress: $billingAddress
+              contact: $contact
+              payment: $payment
+              delivery: $delivery
+              meta: $meta
+            ) {
+              _id
+              billingAddress {
+                firstName
+                lastName
+                company
+                addressLine
+                postalCode
+                countryCode
+                city
+              }
+            }
+          }
+        `,
+        variables: {
+          subscriptionId: InitialSubscription._id,
+          billingAddress: {
+            firstName: 'Mikael Araya',
+            lastName: 'Mengistu',
+            company: 'Bionic',
+            addressLine: 'Bole, Addis Ababa',
+            postalCode: '123456',
+            city: 'Addis Ababa',
+            countryCode: 'ch',
+          },
+        },
+      });
+
+      expect(updateSubscription).toMatchObject({
+        _id: InitialSubscription._id,
+        billingAddress: {
+          firstName: 'Mikael Araya',
+          lastName: 'Mengistu',
+          company: 'Bionic',
+          addressLine: 'Bole, Addis Ababa',
+          postalCode: '123456',
+          city: 'Addis Ababa',
+          countryCode: 'ch',
+        },
+      });
+    });
+  });
+
+  describe('Mutation.updateSubscription for anonymous user should', () => {
+    it('return NoPermissionError', async () => {
+      const { errors } = await graphqlFetchAsAnonymousUser({
+        query: /* GraphQL */ `
+          mutation updateSubscription(
+            $subscriptionId: ID
+            $plan: SubscriptionPlanInput
+            $billingAddress: AddressInput
+            $contact: ContactInput
+            $payment: SubscriptionPaymentInput
+            $delivery: SubscriptionDeliveryInput
+            $meta: JSON
+          ) {
+            updateSubscription(
+              subscriptionId: $subscriptionId
+              plan: $plan
+              billingAddress: $billingAddress
+              contact: $contact
+              payment: $payment
+              delivery: $delivery
+              meta: $meta
+            ) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          subscriptionId: ActiveSubscription._id,
+          billingAddress: {
+            firstName: 'Mikael Araya',
+            lastName: 'Mengistu',
+            company: 'Bionic',
+            addressLine: 'Bole, Addis Ababa',
+            postalCode: '123456',
+            city: 'Addis Ababa',
+            countryCode: 'ch',
+          },
+        },
+      });
+
+      expect(errors[0]?.extensions?.code).toEqual('NoPermissionError');
+    });
+  });
+
+  describe('Mutation.activateSubscription for admin user', () => {
+    it('change status of subscription from INITIAL to ACTIVE', async () => {
+      const {
+        data: { activateSubscription },
+      } = await graphqlFetchAsAdminUser({
+        query: /* GraphQL */ `
+          mutation activateSubscription($subscriptionId: ID!) {
+            activateSubscription(subscriptionId: $subscriptionId) {
+              _id
+              status
+              created
+              expires
+              updated
+
+              isExpired
+              subscriptionNumber
+              meta
+              logs {
+                _id
+                message
+              }
+              periods {
+                start
+              }
+            }
+          }
+        `,
+        variables: {
+          subscriptionId: 'initialsubscription',
+        },
+      });
+
+      expect(activateSubscription._id).not.toBe(true);
+    });
+
+    it('return  SubscriptionWrongStatusError error when trying to activate ACTIVE subscription', async () => {
+      const { errors } = await graphqlFetchAsAdminUser({
+        query: /* GraphQL */ `
+          mutation activateSubscription($subscriptionId: ID!) {
+            activateSubscription(subscriptionId: $subscriptionId) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          subscriptionId: 'activesubscription',
+        },
+      });
+      expect(errors[0]?.extensions.code).toEqual(
+        'SubscriptionWrongStatusError',
+      );
+    });
+
+    it('return  SubscriptionNotFoundError when passed non existing subscription ID', async () => {
+      const { errors } = await graphqlFetchAsAdminUser({
+        query: /* GraphQL */ `
+          mutation activateSubscription($subscriptionId: ID!) {
+            activateSubscription(subscriptionId: $subscriptionId) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          subscriptionId: 'non-existing-id',
+        },
+      });
+      expect(errors[0]?.extensions.code).toEqual('SubscriptionNotFoundError');
+    });
+
+    it('return  InvalidIdError when passed invalid subscription ID', async () => {
+      const { errors } = await graphqlFetchAsAdminUser({
+        query: /* GraphQL */ `
+          mutation activateSubscription($subscriptionId: ID!) {
+            activateSubscription(subscriptionId: $subscriptionId) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          subscriptionId: '',
+        },
+      });
+      expect(errors[0]?.extensions.code).toEqual('InvalidIdError');
+    });
+
+    it('return  ServerError when passed invalid subscription ID', async () => {
+      const { errors } = await graphqlFetchAsAdminUser({
+        query: /* GraphQL */ `
+          mutation activateSubscription($subscriptionId: ID!) {
+            activateSubscription(subscriptionId: $subscriptionId) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          subscriptionId: 'initialsubscription-wrong-plan',
+        },
+      });
+
+      expect(
+        errors[0]?.message.includes(
+          'No suitable subscription plugin available for this plan configuration',
+        ),
+      ).toBe(true);
+    });
+  });
+
+  describe('Mutation.activateSubscription for normal user', () => {
+    it('return NoPermissionError', async () => {
+      const { errors } = await graphqlFetchAsNormalUser({
+        query: /* GraphQL */ `
+          mutation activateSubscription($subscriptionId: ID!) {
+            activateSubscription(subscriptionId: $subscriptionId) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          subscriptionId: 'initialsubscription',
+        },
+      });
+      expect(errors[0]?.extensions?.code).toEqual('NoPermissionError');
+    });
+  });
+
+  describe('Mutation.activateSubscription for anonymous user', () => {
+    it('return NoPermissionError', async () => {
+      const { errors } = await graphqlFetchAsNormalUser({
+        query: /* GraphQL */ `
+          mutation activateSubscription($subscriptionId: ID!) {
+            activateSubscription(subscriptionId: $subscriptionId) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          subscriptionId: 'initialsubscription',
+        },
+      });
+      expect(errors[0]?.extensions?.code).toEqual('NoPermissionError');
+    });
+  });
+
+  describe('query.subscriptions for admin user should', () => {
+    it('return list of subscriptions', async () => {
+      const {
+        data: { subscriptions },
+      } = await graphqlFetchAsAdminUser({
+        query: /* GraphQL */ `
+          query subscriptions($limit: Int, $offset: Int) {
+            subscriptions(limit: $limit, offset: $offset) {
+              _id
+              status
+              created
+              expires
+              updated
+
+              isExpired
+              subscriptionNumber
+              meta
+              logs(limit: 10, offset: 0) {
+                _id
+              }
+              periods {
+                start
+                end
+                isTrial
+                order {
+                  _id
+                }
+              }
+              plan {
+                product {
+                  _id
+                }
+                quantity
+              }
+              payment {
+                provider {
+                  _id
+                }
+                meta
+              }
+              user {
+                _id
+              }
+              billingAddress {
+                firstName
+              }
+              contact {
+                telNumber
+                emailAddress
+              }
+              country {
+                _id
+              }
+              currency {
+                _id
+                isoCode
+              }
+              meta
+            }
+          }
+        `,
+        variables: {},
+      });
+      expect(subscriptions.length > 0).toBe(true);
+    });
+
+    it('return number of subscriptions specified by limit starting from a given offset', async () => {
+      const {
+        data: { subscriptions },
+      } = await graphqlFetchAsAdminUser({
+        query: /* GraphQL */ `
+          query subscriptions($limit: Int, $offset: Int) {
+            subscriptions(limit: $limit, offset: $offset) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          limit: 1,
+          offset: 2,
+        },
+      });
+      expect(subscriptions.length).toBe(1);
+    });
+  });
+
+  describe('query.subscriptions for normal user should', () => {
+    it('return NoPermissionError', async () => {
+      const { errors } = await graphqlFetchAsNormalUser({
+        query: /* GraphQL */ `
+          query subscriptions($limit: Int, $offset: Int) {
+            subscriptions(limit: $limit, offset: $offset) {
+              _id
+            }
+          }
+        `,
+        variables: {},
+      });
+
+      expect(errors[0]?.extensions?.code).toEqual('NoPermissionError');
+    });
+  });
+
+  describe('query.subscriptions for anonymous user should', () => {
+    it('return NoPermissionError', async () => {
+      const { errors } = await graphqlFetchAsAnonymousUser({
+        query: /* GraphQL */ `
+          query subscriptions($limit: Int, $offset: Int) {
+            subscriptions(limit: $limit, offset: $offset) {
+              _id
+            }
+          }
+        `,
+        variables: {},
+      });
+
+      expect(errors[0]?.extensions?.code).toEqual('NoPermissionError');
+    });
+  });
+  describe('query.subscription for admin user should', () => {
+    it('return subscription specified by Id', async () => {
+      const {
+        data: { subscription },
+      } = await graphqlFetchAsAdminUser({
+        query: /* GraphQL */ `
+          query subscription($subscriptionId: ID!) {
+            subscription(subscriptionId: $subscriptionId) {
+              _id
+              status
+              created
+              expires
+              updated
+
+              isExpired
+              subscriptionNumber
+              meta
+              logs(limit: 10, offset: 0) {
+                _id
+              }
+              periods {
+                start
+                end
+                isTrial
+                order {
+                  _id
+                }
+              }
+              plan {
+                product {
+                  _id
+                }
+                quantity
+              }
+              payment {
+                provider {
+                  _id
+                }
+                meta
+              }
+              user {
+                _id
+              }
+              billingAddress {
+                firstName
+              }
+              contact {
+                telNumber
+                emailAddress
+              }
+              country {
+                _id
+              }
+              currency {
+                _id
+                isoCode
+              }
+              meta
+            }
+          }
+        `,
+        variables: {
+          subscriptionId: 'activesubscription',
+        },
+      });
+
+      expect(subscription._id).toBe('activesubscription');
+    });
+
+    it('return expired true by (default) when asked for subsciprion with expiry date of past', async () => {
+      const {
+        data: { subscription },
+      } = await graphqlFetchAsAdminUser({
+        query: /* GraphQL */ `
+          query subscription($subscriptionId: ID!) {
+            subscription(subscriptionId: $subscriptionId) {
+              _id
+              isExpired
+            }
+          }
+        `,
+        variables: {
+          subscriptionId: 'expiredsubscription',
+        },
+      });
+      expect(subscription.isExpired).toBe(true);
+    });
+
+    it('return expired false by (default) when asked for subsciprion with expiry date in future', async () => {
+      const {
+        data: { subscription },
+      } = await graphqlFetchAsAdminUser({
+        query: /* GraphQL */ `
+          query subscription($subscriptionId: ID!) {
+            subscription(subscriptionId: $subscriptionId) {
+              _id
+              isExpired
+            }
+          }
+        `,
+        variables: {
+          subscriptionId: 'activesubscription',
+        },
+      });
+      expect(subscription.isExpired).toBe(false);
+    });
+
+    it('return SubscriptionNotFoundError when passed non existing subscription ID', async () => {
+      const { errors } = await graphqlFetchAsAdminUser({
+        query: /* GraphQL */ `
+          query subscription($subscriptionId: ID!) {
+            subscription(subscriptionId: $subscriptionId) {
+              _id
+              isExpired
+            }
+          }
+        `,
+        variables: {
+          subscriptionId: 'non-existing-id',
+        },
+      });
+      expect(errors[0]?.extensions?.code).toEqual('SubscriptionNotFoundError');
+    });
+
+    it('return InvalidIdError when passed invalid subscription ID', async () => {
+      const { errors } = await graphqlFetchAsAdminUser({
+        query: /* GraphQL */ `
+          query subscription($subscriptionId: ID!) {
+            subscription(subscriptionId: $subscriptionId) {
+              _id
+              isExpired
+            }
+          }
+        `,
+        variables: {
+          subscriptionId: '',
+        },
+      });
+      expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
+    });
+  });
+
+  describe('query.subscription for normal user', () => {
+    it('should return NoPermissionError', async () => {
+      const { errors } = await graphqlFetchAsNormalUser({
+        query: /* GraphQL */ `
+          query subscription($subscriptionId: ID!) {
+            subscription(subscriptionId: $subscriptionId) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          subscriptionId: 'activesubscription',
+        },
+      });
+
+      expect(errors[0]?.extensions?.code).toEqual('NoPermissionError');
+    });
+  });
+
+  describe('query.subscription for anonymous user', () => {
+    it('should return NoPermissionError', async () => {
+      const { errors } = await graphqlFetchAsAnonymousUser({
+        query: /* GraphQL */ `
+          query subscription($subscriptionId: ID!) {
+            subscription(subscriptionId: $subscriptionId) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          subscriptionId: 'activesubscription',
+        },
+      });
+
+      expect(errors[0]?.extensions?.code).toEqual('NoPermissionError');
+    });
   });
 });

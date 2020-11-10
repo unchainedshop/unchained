@@ -88,6 +88,7 @@ export default compose(
       ) {
         _id
         texts {
+          _id
           title
         }
         linkedAssortments {

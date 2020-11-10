@@ -84,7 +84,7 @@ export const LanguageNotFoundError = createError(
 
 export const UserNotFoundError = createError(
   'UserNotFoundError',
-  'Product not found'
+  'User not found'
 );
 export const UserNoCartError = createError(
   'UserNoCartError',

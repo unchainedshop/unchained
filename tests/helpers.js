@@ -15,6 +15,8 @@ import seedFilters from './seeds/filters';
 import seedLogs from './seeds/logs';
 import seedAssortments from './seeds/assortments';
 import seedBookmarks from './seeds/bookmark';
+import seedSubscription from './seeds/subscriptions';
+import seedWorkQueue from './seeds/work';
 
 Collection.prototype.findOrInsertOne = async function findOrInsertOne(
   doc,
@@ -48,6 +50,8 @@ export const setupDatabase = async () => {
   await seedLogs(db);
   await seedAssortments(db);
   await seedBookmarks(db);
+  await seedSubscription(db);
+  await seedWorkQueue(db);
 
   return [db, connection];
 };
@@ -90,4 +94,19 @@ export const createLoggedInGraphqlFetch = (token = ADMIN_TOKEN) => {
     },
   });
   return convertLinkToFetch(link);
+};
+
+export const uploadFormData = async ({ token = '', body }) => {
+  const options = token
+    ? {
+        headers: {
+          authorization: token,
+        },
+      }
+    : {};
+  return fetch('http://localhost:3000/graphql', {
+    ...options,
+    method: 'POST',
+    body,
+  }).then((response) => response.json());
 };

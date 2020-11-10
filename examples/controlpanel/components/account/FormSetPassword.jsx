@@ -10,7 +10,7 @@ import withFormSchema from '../../lib/withFormSchema';
 import withFormErrorHandlers from '../../lib/withFormErrorHandlers';
 
 const FormSetPassword = ({
-  resendVerification,
+  sendVerification,
   verified,
   mutate,
   client,

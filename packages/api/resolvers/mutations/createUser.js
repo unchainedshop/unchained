@@ -3,7 +3,7 @@ import {
   accountsPassword,
   accountsServer,
 } from 'meteor/unchained:core-accountsjs';
-import hashPassword from '../../../hashPassword';
+import hashPassword from '../../hashPassword';
 
 export default async function createUser(root, options) {
   log('mutation createUser', { email: options.email });

@@ -29,6 +29,12 @@ export default (role, actions) => {
     return foreignUserId === ownUserId || !foreignUserId;
   };
 
+  const isOwnedEmailAddress = (root, { email } = {}, { user } = {}) => {
+    return user?.emails?.some(
+      (emailRecord) => emailRecord.address.toLowerCase() === email.toLowerCase()
+    );
+  };
+
   const isOwnedOrder = (root, { orderId }, { userId }) =>
     Orders.find({
       _id: orderId,
@@ -110,6 +116,7 @@ export default (role, actions) => {
   role.allow(actions.viewUserSubscriptions, isMyself);
   role.allow(actions.viewUserPrivateInfos, isMyself);
   role.allow(actions.updateUser, isMyself);
+  role.allow(actions.sendEmail, isOwnedEmailAddress);
   role.allow(actions.viewOrder, isOwnedOrder);
   role.allow(actions.updateOrder, isOwnedOrder);
   role.allow(actions.updateOrderItem, isOwnedOrderItem);

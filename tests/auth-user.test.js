@@ -1,14 +1,16 @@
 import { setupDatabase, createLoggedInGraphqlFetch } from './helpers';
-import { User, Admin, USER_TOKEN } from './seeds/users';
+import { User, Admin, USER_TOKEN, ADMIN_TOKEN } from './seeds/users';
 
 let connection;
 let db;
 let graphqlFetch;
+let adminGraphqlFetch;
 
 describe('Auth for logged in users', () => {
   beforeAll(async () => {
     [db, connection] = await setupDatabase();
     graphqlFetch = await createLoggedInGraphqlFetch(USER_TOKEN);
+    adminGraphqlFetch = await createLoggedInGraphqlFetch(ADMIN_TOKEN);
   });
 
   afterAll(async () => {
@@ -92,20 +94,32 @@ describe('Auth for logged in users', () => {
     });
   });
 
-  describe('Mutation.resendVerificationEmail', () => {
-    it('resend verification e-mail', async () => {
-      const { data: { resendVerificationEmail } = {} } = await graphqlFetch({
+  describe('Mutation.sendVerificationEmail', () => {
+    it('send verification e-mail', async () => {
+      const { data: { sendVerificationEmail } = {} } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation {
-            resendVerificationEmail(email: "user@unchained.localhost") {
+            sendVerificationEmail(email: "user@unchained.local") {
               success
             }
           }
         `,
       });
-      expect(resendVerificationEmail).toMatchObject({
+      expect(sendVerificationEmail).toMatchObject({
         success: true,
       });
+    });
+    it('cannot send a verification e-mail to an e-mail not owned by the logged in user', async () => {
+      const { data: { sendVerificationEmail } = {} } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation {
+            sendVerificationEmail(email: "admin@unchained.local") {
+              success
+            }
+          }
+        `,
+      });
+      expect(sendVerificationEmail).toEqual(null);
     });
   });
 
@@ -117,7 +131,7 @@ describe('Auth for logged in users', () => {
         _id: 'userthatmustverifyemail',
         emails: [
           {
-            address: 'userthatmustverifyemail@unchained.localhost',
+            address: 'userthatmustverifyemail@unchained.local',
             verified: false,
           },
         ],
@@ -125,18 +139,18 @@ describe('Auth for logged in users', () => {
     });
 
     it('create a verification token', async () => {
-      const { data: { resendVerificationEmail } = {} } = await graphqlFetch({
+      const { data: { sendVerificationEmail } = {} } = await adminGraphqlFetch({
         query: /* GraphQL */ `
           mutation {
-            resendVerificationEmail(
-              email: "userthatmustverifyemail@unchained.localhost"
+            sendVerificationEmail(
+              email: "userthatmustverifyemail@unchained.local"
             ) {
               success
             }
           }
         `,
       });
-      expect(resendVerificationEmail).toEqual({
+      expect(sendVerificationEmail).toEqual({
         success: true,
       });
     });
@@ -182,6 +196,25 @@ describe('Auth for logged in users', () => {
       });
 
       expect(user.emails[0].verified).toEqual(true);
+    });
+  });
+
+  describe('Mutation.setUsername for normal user should', () => {
+    it('return NoPermissionError', async () => {
+      const { errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation setUsername($username: String!, $userId: ID!) {
+            setUsername(username: $username, userId: $userId) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          userId: Admin._id,
+          username: 'admin-updated',
+        },
+      });
+      expect(errors[0]?.extensions?.code).toEqual('NoPermissionError');
     });
   });
 

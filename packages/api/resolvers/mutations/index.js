@@ -1,6 +1,15 @@
 import { actions } from '../../roles';
 import { checkResolver as acl } from '../../acl';
-import Accounts from './accounts';
+import loginWithPassword from './loginWithPassword';
+import loginAsGuest from './loginAsGuest';
+import logout from './logout';
+import changePassword from './changePassword';
+import createUser from './createUser';
+import verifyEmail from './verifyEmail';
+import sendVerificationEmail from './sendVerificationEmail';
+import sendEnrollmentEmail from './sendEnrollmentEmail';
+import forgotPassword from './forgotPassword';
+import resetPassword from './resetPassword';
 import updateEmail from './updateEmail';
 import addEmail from './addEmail';
 import removeEmail from './removeEmail';
@@ -120,8 +129,16 @@ import markPaymentCredentialsPreferred from './markPaymentCredentialsPreferred';
 import removePaymentCredentials from './removePaymentCredentials';
 
 export default {
-  ...Accounts,
-
+  logout,
+  loginAsGuest,
+  verifyEmail,
+  loginWithPassword,
+  createUser,
+  forgotPassword,
+  resetPassword,
+  sendVerificationEmail: acl(actions.sendEmail)(sendVerificationEmail),
+  sendEnrollmentEmail: acl(actions.sendEmail)(sendEnrollmentEmail),
+  changePassword,
   heartbeat,
   updateEmail: acl(actions.updateUser)(updateEmail),
   addEmail: acl(actions.updateUser)(addEmail),

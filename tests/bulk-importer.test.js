@@ -192,7 +192,7 @@ describe('Bulk Importer', () => {
       const result = await intervalUntilTimeout(async () => {
         const product = await Products.findOne({ _id: 'A' });
         return product?.tags.includes('awesome');
-      }, 2000);
+      }, 3000);
 
       expect(result).toBe(true);
     });
@@ -289,7 +289,7 @@ describe('Bulk Importer', () => {
       const result = await intervalUntilTimeout(async () => {
         const filter = await Filters.findOne({ _id: 'Filter A' });
         return filter.isActive === false;
-      }, 1000);
+      }, 3000);
 
       expect(result).toBe(true);
     });
@@ -387,6 +387,13 @@ describe('Bulk Importer', () => {
                   specification: {
                     tags: ['base'],
                   },
+                  products: [
+                    {
+                      productId: 'A',
+                      tags: ['small'],
+                      meta: {},
+                    },
+                  ],
                 },
               },
             ],
@@ -398,12 +405,26 @@ describe('Bulk Importer', () => {
 
       const Assortments = db.collection('assortments');
 
-      const result = await intervalUntilTimeout(async () => {
+      const assortmentHasBaseTag = await intervalUntilTimeout(async () => {
         const assortment = await Assortments.findOne({ _id: 'Assortment A' });
         return assortment?.tags.includes('base');
       }, 1000);
 
-      expect(result).toBe(true);
+      expect(assortmentHasBaseTag).toBe(true);
+
+      const AssortmentProducts = db.collection('assortment_products');
+
+      const productLinkHasBeenReplaced = await intervalUntilTimeout(
+        async () => {
+          const productLinksCount = await AssortmentProducts.find({
+            assortmentId: 'Assortment A',
+          }).count();
+          return productLinksCount === 1;
+        },
+        1000,
+      );
+
+      expect(productLinkHasBeenReplaced).toBe(true);
     });
   });
 });

@@ -1,8 +1,13 @@
 import { createLogger, format, transports } from 'winston';
 import stringify from 'safe-stable-stringify';
 
-const { DEBUG = '', LOG_LEVEL = 'info' } = process.env;
-const { combine, label, timestamp, colorize, printf } = format;
+const {
+  DEBUG = '',
+  LOG_LEVEL = 'info',
+  UNCHAINED_LOG_FORMAT = 'unchained',
+} = process.env;
+
+const { combine, label, timestamp, colorize, printf, json } = format;
 
 const debugStringContainsModule = (debugString, moduleName) => {
   const loggingMatched = debugString.split(',').reduce((accumulator, name) => {
@@ -31,6 +36,20 @@ const myFormat = printf(
   }
 );
 
+const UnchainedLogFormats = {
+  unchained: (moduleName) =>
+    combine(timestamp(), label({ label: moduleName }), colorize(), myFormat),
+  json,
+};
+
+if (!UnchainedLogFormats[UNCHAINED_LOG_FORMAT.toLowerCase()]) {
+  throw new Error(
+    `UNCHAINED_LOG_FORMAT is invalid, use one of ${Object.keys(
+      UnchainedLogFormats
+    ).join(',')}`
+  );
+}
+
 export { transports, format };
 
 export default (moduleName, moreTransports = []) => {
@@ -38,12 +57,7 @@ export default (moduleName, moreTransports = []) => {
   return createLogger({
     transports: [
       new transports.Console({
-        format: combine(
-          timestamp(),
-          label({ label: moduleName }),
-          colorize(),
-          myFormat
-        ),
+        format: UnchainedLogFormats[UNCHAINED_LOG_FORMAT](moduleName),
         stderrLevels: ['error'],
         consoleWarnLevels: ['warn'],
         level: loggingMatched ? 'debug' : LOG_LEVEL,

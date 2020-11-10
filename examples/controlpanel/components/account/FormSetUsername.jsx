@@ -11,7 +11,7 @@ import withFormErrorHandlers from '../../lib/withFormErrorHandlers';
 import withFormModel from '../../lib/withFormModel';
 
 const FormSetUsername = ({
-  resendVerification,
+  sendVerification,
   verified,
   mutate,
   client,
