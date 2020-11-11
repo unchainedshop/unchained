@@ -1,4 +1,5 @@
-/* eslint-disable */
+import { check } from '@share911/meteor-check';
+import Roles from './roles';
 
 Roles.keys = {};
 
@@ -12,12 +13,12 @@ Roles.keys.collection = new Meteor.Collection('nicolaslopezj_roles_keys');
  * Users can request keys just for them
  */
 Roles.keys.collection.allow({
-  insert: function(userId, doc) {
+  insert(userId, doc) {
     return userId === doc.userId;
   },
-  remove: function(userId, doc) {
+  remove(userId, doc) {
     return userId === doc.userId;
-  }
+  },
 });
 
 /**
@@ -26,11 +27,11 @@ Roles.keys.collection.allow({
  * @param  {Date}   expiresAt Date of expiration
  * @return {String}           Id of the key
  */
-Roles.keys.request = function(userId, expiresAt) {
+Roles.keys.request = function (userId, expiresAt) {
   check(userId, String);
-  var doc = {
-    userId: userId,
-    createdAt: new Date()
+  const doc = {
+    userId,
+    createdAt: new Date(),
   };
   if (expiresAt) {
     check(expiresAt, Date);
@@ -45,22 +46,26 @@ Roles.keys.request = function(userId, expiresAt) {
  * @param  {Boolean} dontDelete True to leave the key in the database
  * @return {String}             Id of the user
  */
-Roles.keys.getUserId = function(key, dontDelete) {
+Roles.keys.getUserId = function (key, dontDelete) {
   check(key, String);
   check(dontDelete, Match.Optional(Boolean));
 
-  var doc = this.collection.findOne({ _id: key, $or: [{ expiresAt: { $exists: false } }, { expiresAt: { $gte: new Date() } }] });
+  const doc = this.collection.findOne({
+    _id: key,
+    $or: [
+      { expiresAt: { $exists: false } },
+      { expiresAt: { $gte: new Date() } },
+    ],
+  });
   if (!doc) return;
 
   if (!dontDelete) {
     if (!doc.expiresAt) {
       console.log('borrando por no tener expire at');
       this.collection.remove({ _id: key });
-    } else {
-      if (moment(doc.expiresAt).isBefore(moment())) {
-        console.log('borrando por expire at ya pasó');
-        this.collection.remove({ _id: key });
-      }
+    } else if (moment(doc.expiresAt).isBefore(moment())) {
+      console.log('borrando por expire at ya pasó');
+      this.collection.remove({ _id: key });
     }
   }
 

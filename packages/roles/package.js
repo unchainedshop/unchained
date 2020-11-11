@@ -11,22 +11,17 @@ Package.onUse((api) => {
 
   Npm.depends({
     'lodash.clone': '4.5.0',
+    'lodash.isobject': '3.0.2',
+    '@share911/meteor-check': '1.0.8',
   });
 
-  api.use([
-    'unchained:core-users',
-    'meteor-base',
-    'check',
-    'mongo',
-    'ecmascript',
-  ]);
+  api.use(['unchained:core-users', 'mongo', 'ecmascript']);
 
-  api.addFiles(['helpers.js', 'roles.js', 'keys.js']);
+  api.addFiles(['common/helpers.js', 'common/roles.js', 'common/keys.js']);
 
-  api.addFiles(['roles_server.js'], 'server');
+  api.addFiles(['server/roles_server.js'], 'server');
 
-  api.export('Roles');
-  api.export('objectHasKey');
+  api.mainModule('index.js');
 });
 
 Package.onTest((api) => {
