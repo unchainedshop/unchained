@@ -14,11 +14,11 @@ Roles.debug = false;
 /**
  * Initialize variables
  */
-Roles._roles = {};
-Roles._actions = [];
-Roles._helpers = [];
-Roles._usersCollection = Users;
-Roles._specialRoles = [
+Roles.roles = {};
+Roles.actions = [];
+Roles.helpers = [];
+Roles.usersCollection = Users;
+Roles.specialRoles = [
   '__loggedIn__',
   '__notAdmin__',
   '__notLoggedIn__',
@@ -29,15 +29,15 @@ Roles._specialRoles = [
  * Check if a user has a role
  */
 Roles.userHasRole = function (userId, role) {
-  if (role == '__all__') return true;
-  if (role == '__notLoggedIn__' && !userId) return true;
-  if (role == '__default__' && userId) return true;
+  if (role === '__all__') return true;
+  if (role === '__notLoggedIn__' && !userId) return true;
+  if (role === '__default__' && userId) return true;
   if (
-    role == '__notAdmin__' &&
-    Roles._usersCollection.find({ _id: userId, roles: 'admin' }).count() === 0
+    role === '__notAdmin__' &&
+    Roles.usersCollection.find({ _id: userId, roles: 'admin' }).count() === 0
   )
     return true;
-  return Roles._usersCollection.find({ _id: userId, roles: role }).count() > 0;
+  return Roles.usersCollection.find({ _id: userId, roles: role }).count() > 0;
 };
 
 /**
@@ -48,8 +48,8 @@ Roles.registerAction = function (name, adminAllow, adminDeny) {
   check(adminAllow, Match.Optional(Match.Any));
   check(adminDeny, Match.Optional(Match.Any));
 
-  if (!this._actions.includes(name)) {
-    this._actions.push(name);
+  if (!this.actions.includes(name)) {
+    this.actions.push(name);
   }
 
   if (adminAllow) {
@@ -68,8 +68,8 @@ Roles.registerHelper = (name, adminHelper) => {
   check(name, String);
   check(adminHelper, Match.Any);
 
-  if (!this._helpers.includes(name)) {
-    this._helpers.push(name);
+  if (!this.helpers.includes(name)) {
+    this.helpers.push(name);
   }
 
   if (adminHelper) {
@@ -86,7 +86,7 @@ Roles.Role = function (name) {
   if (!(this instanceof Roles.Role))
     throw new Error('use "new" to construct a role');
 
-  if (has(Roles._roles, name))
+  if (has(Roles.roles, name))
     throw new Error(`"${name}" role is already defined`);
 
   this.name = name;
@@ -94,7 +94,7 @@ Roles.Role = function (name) {
   this.denyRules = {};
   this.helpers = {};
 
-  Roles._roles[name] = this;
+  Roles.roles[name] = this;
 };
 
 /**
@@ -104,15 +104,14 @@ Roles.Role.prototype.allow = function (action, allow) {
   check(action, String);
   check(allow, Match.Any);
 
-  if (!Roles._actions.includes(action)) {
+  if (!Roles.actions.includes(action)) {
     Roles.registerAction(action);
   }
 
   if (!isFunction(allow)) {
-    console.log('ALLOW? ', allow);
-    var clone = clone(allow);
+    const clonedValue = clone(allow);
     allow = function () {
-      return clone;
+      return clonedValue;
     };
   }
 
@@ -127,14 +126,14 @@ Roles.Role.prototype.deny = function (action, deny) {
   check(action, String);
   check(deny, Match.Any);
 
-  if (!Roles._actions.includes(action)) {
+  if (!Roles.actions.includes(action)) {
     Roles.registerAction(action);
   }
 
   if (!isFunction(deny)) {
-    var clone = clone(deny);
+    const clonedValue = clone(deny);
     deny = function () {
-      return clone;
+      return clonedValue;
     };
   }
 
@@ -149,14 +148,14 @@ Roles.Role.prototype.helper = function (helper, func) {
   check(helper, String);
   check(func, Match.Any);
 
-  if (!Roles._helpers.includes(helper)) {
+  if (!Roles.helpers.includes(helper)) {
     Roles.registerHelper(helper);
   }
 
   if (!isFunction(func)) {
-    const value = clone(func);
+    const clonedValue = clone(func);
     func = function () {
-      return value;
+      return clonedValue;
     };
   }
 
@@ -173,7 +172,7 @@ Roles.Role.prototype.helper = function (helper, func) {
 Roles.getUserRoles = function (userId, includeSpecial) {
   check(userId, Match.OneOf(String, null, undefined));
   check(includeSpecial, Match.Optional(Boolean));
-  const object = Roles._usersCollection.findOne(
+  const object = Roles.usersCollection.findOne(
     { _id: userId },
     { fields: { roles: 1 } }
   );
@@ -196,24 +195,23 @@ Roles.getUserRoles = function (userId, includeSpecial) {
 /**
  * Calls a helper
  */
-Roles.helper = function (userId, helper) {
+Roles.helper = function (userId, helper, ...rest) {
   check(userId, Match.OneOf(String, null, undefined));
   check(helper, String);
-  if (!this._helpers.includes(helper))
-    throw `Helper "${helper}" is not defined`;
+  if (!this.helpers.includes(helper)) throw `Helper "${helper}" is not defined`;
 
-  const args = Object.values(arguments).slice(2);
+  const args = Object.values(rest).slice(2);
   const context = { userId };
   const responses = [];
   const roles = Roles.getUserRoles(userId, true);
 
   roles.forEach((role) => {
     if (
-      this._roles[role] &&
-      this._roles[role].helpers &&
-      this._roles[role].helpers[helper]
+      this.roles[role] &&
+      this.roles[role].helpers &&
+      this.roles[role].helpers[helper]
     ) {
-      const helpers = this._roles[role].helpers[helper];
+      const helpers = this.roles[role].helpers[helper];
       helpers.forEach((helper) => {
         responses.push(helper.apply(context, args));
       });
@@ -239,11 +237,11 @@ Roles.allow = function (userId, action) {
   roles.forEach((role) => {
     if (
       !allowed &&
-      self._roles[role] &&
-      self._roles[role].allowRules &&
-      self._roles[role].allowRules[action]
+      self.roles[role] &&
+      self.roles[role].allowRules &&
+      self.roles[role].allowRules[action]
     ) {
-      self._roles[role].allowRules[action].forEach((func) => {
+      self.roles[role].allowRules[action].forEach((func) => {
         const allow = func.apply(context, args);
         if (allow === true) {
           allowed = true;
@@ -258,11 +256,11 @@ Roles.allow = function (userId, action) {
 /**
  * Returns if the user has permission using deny and deny
  */
-Roles.deny = function (userId, action) {
+Roles.deny = function (userId, action, ...rest) {
   check(userId, Match.OneOf(String, null, undefined));
   check(action, String);
 
-  const args = Object.values(arguments).slice(2);
+  const args = Object.values(rest).slice(2);
   const context = { userId };
   let denied = false;
   const roles = Roles.getUserRoles(userId, true);
@@ -270,11 +268,11 @@ Roles.deny = function (userId, action) {
   roles.forEach((role) => {
     if (
       !denied &&
-      this._roles[role] &&
-      this._roles[role].denyRules &&
-      this._roles[role].denyRules[action]
+      this.roles[role] &&
+      this.roles[role].denyRules &&
+      this.roles[role].denyRules[action]
     ) {
-      this._roles[role].denyRules[action].forEach((func) => {
+      this.roles[role].denyRules[action].forEach((func) => {
         const denies = func.apply(context, args);
         if (denies === true) {
           denied = true;
@@ -292,17 +290,17 @@ Roles.deny = function (userId, action) {
 /**
  * To check if a user has permisisons to execute an action
  */
-Roles.userHasPermission = function () {
-  const allows = this.allow.apply(this, arguments);
-  const denies = this.deny.apply(this, arguments);
+Roles.userHasPermission = function (...args) {
+  const allows = this.allow(...args);
+  const denies = this.deny(...args);
   return allows === true && denies === false;
 };
 
 /**
  * If the user doesn't has permission it will throw a error
  */
-Roles.checkPermission = function () {
-  if (!this.userHasPermission.apply(this, arguments)) {
+Roles.checkPermission = function (...args) {
+  if (!this.userHasPermission(...args)) {
     throw new Meteor.Error(
       'unauthorized',
       'The user has no permission to perform this action'
@@ -314,7 +312,7 @@ Roles.checkPermission = function () {
  * Adds helpers to users
  */
 Roles.setUsersHelpers = function () {
-  Roles._usersCollection.helpers({
+  Roles.usersCollection.helpers({
     /**
      * Returns the user roles
      */
@@ -336,12 +334,10 @@ Roles.setUsersHelpers();
  * The admin role, who recives the default actions.
  */
 Roles.adminRole = new Roles.Role('admin');
-Roles._adminRole = Roles.adminRole; // Backwards compatibility
 /**
  * All the logged in users users
  */
 Roles.loggedInRole = new Roles.Role('__loggedIn__');
-Roles.defaultRole = Roles.loggedInRole; // Backwards compatibility
 /**
  * The users that are not admins
  */
@@ -430,7 +426,7 @@ Mongo.Collection.prototype.attachRoles = function (name, dontAllow) {
         ]),
       ];
 
-      for (const i in forbiddenFields) {
+      Object.values(forbiddenFields).forEach((i) => {
         const field = forbiddenFields[i];
         if (objectHasKey(doc, field)) {
           if (Roles.debug) {
@@ -441,7 +437,7 @@ Mongo.Collection.prototype.attachRoles = function (name, dontAllow) {
 
           return true;
         }
-      }
+      });
     },
 
     update(userId, doc, fields, modifier) {
@@ -468,9 +464,10 @@ Mongo.Collection.prototype.attachRoles = function (name, dontAllow) {
         return false;
       }
 
-      for (const i in forbiddenFields) {
+      Object.values(forbiddenFields).forEach((i) => {
+        // for (const i in forbiddenFields) {
         const field = forbiddenFields[i];
-        for (const j in types) {
+        Object.values(types).forEach((j) => {
           const type = types[j];
           if (objectHasKey(modifier[type], field)) {
             if (Roles.debug) {
@@ -491,8 +488,8 @@ Mongo.Collection.prototype.attachRoles = function (name, dontAllow) {
 
             return true;
           }
-        }
-      }
+        });
+      });
     },
   });
 };
