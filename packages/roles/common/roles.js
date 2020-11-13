@@ -1,11 +1,12 @@
 import { Users } from 'meteor/unchained:core-users';
 import { check, Match } from '@share911/meteor-check';
 import clone from 'lodash.clone';
-import { has, isFunction, willChangeWithParent, objectHasKey } from './helpers';
+import { has, isFunction } from './helpers';
 
 /**
  * Init the variable
  */
+
 // eslint-disable-next-line import/prefer-default-export
 export const Roles = {};
 
@@ -350,146 +351,3 @@ Roles.notLoggedInRole = new Roles.Role('__notLoggedIn__');
  * Always, no exception
  */
 Roles.allRole = new Roles.Role('__all__');
-
-/**
- * A Helper to attach actions to collections easily
- */
-Mongo.Collection.prototype.attachRoles = function (name, dontAllow) {
-  Roles.registerAction(`${name}.insert`, !dontAllow);
-  Roles.registerAction(`${name}.update`, !dontAllow);
-  Roles.registerAction(`${name}.remove`, !dontAllow);
-  Roles.registerHelper(`${name}.forbiddenFields`, []);
-
-  this.allow({
-    insert(userId, doc) {
-      const allows = Roles.allow(userId, `${name}.insert`, userId, doc);
-      if (Roles.debug && !allows) {
-        console.log(`[${name}.insert] not allowed for ${userId}`);
-      }
-
-      return allows;
-    },
-
-    update(userId, doc, fields, modifier) {
-      const allows = Roles.allow(
-        userId,
-        `${name}.update`,
-        userId,
-        doc,
-        fields,
-        modifier
-      );
-      if (Roles.debug && !allows) {
-        console.log(`[${name}.update] not allowed for ${userId}`);
-      }
-
-      return allows;
-    },
-
-    remove(userId, doc) {
-      const allows = Roles.allow(userId, `${name}.remove`, userId, doc);
-      if (Roles.debug && !allows) {
-        console.log(`[${name}.remove] not allowed for ${userId}`);
-      }
-
-      return allows;
-    },
-  });
-
-  this.deny({
-    insert(userId, doc) {
-      return Roles.deny(userId, `${name}.insert`, userId, doc);
-    },
-
-    update(userId, doc, fields, modifier) {
-      return Roles.deny(
-        userId,
-        `${name}.update`,
-        userId,
-        doc,
-        fields,
-        modifier
-      );
-    },
-
-    remove(userId, doc) {
-      return Roles.deny(userId, `${name}.remove`, userId, doc);
-    },
-  });
-
-  this.deny({
-    insert(userId, doc) {
-      const forbiddenFields = [
-        ...new Set([
-          ...this,
-          ...Roles.helper(userId, `${name}.forbiddenFields`),
-        ]),
-      ];
-
-      Object.values(forbiddenFields).forEach((i) => {
-        const field = forbiddenFields[i];
-        if (objectHasKey(doc, field)) {
-          if (Roles.debug) {
-            console.log(
-              `[${name}.forbiddenField] Field ${field} is forbidden for ${userId}`
-            );
-          }
-
-          return true;
-        }
-      });
-    },
-
-    update(userId, doc, fields, modifier) {
-      const forbiddenFields = [
-        ...new Set([
-          ...this,
-          ...Roles.helper(userId, `${name}.forbiddenFields`, doc._id),
-        ]),
-      ];
-      const types = [
-        '$inc',
-        '$mul',
-        '$rename',
-        '$setOnInsert',
-        '$set',
-        '$unset',
-        '$min',
-        '$max',
-        '$currentDate',
-      ];
-
-      // By some reason following for will itterate even through empty array. This will prevent unwanted habbit.
-      if (forbiddenFields.length === 0) {
-        return false;
-      }
-
-      Object.values(forbiddenFields).forEach((i) => {
-        // for (const i in forbiddenFields) {
-        const field = forbiddenFields[i];
-        Object.values(types).forEach((j) => {
-          const type = types[j];
-          if (objectHasKey(modifier[type], field)) {
-            if (Roles.debug) {
-              console.log(
-                `[${name}.forbiddenField] Field ${field} is forbidden for ${userId}`
-              );
-            }
-
-            return true;
-          }
-
-          if (willChangeWithParent(modifier[type], field)) {
-            if (Roles.debug) {
-              console.log(
-                `[${name}.forbiddenField] Field ${field} is forbidden for ${userId} is been changed by a parent object`
-              );
-            }
-
-            return true;
-          }
-        });
-      });
-    },
-  });
-};

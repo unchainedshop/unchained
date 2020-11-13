@@ -11,7 +11,6 @@ Package.onUse((api) => {
 
   Npm.depends({
     'lodash.clone': '4.5.0',
-    'lodash.isobject': '3.0.2',
     '@share911/meteor-check': '1.0.8',
   });
 

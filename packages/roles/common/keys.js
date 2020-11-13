@@ -39,35 +39,3 @@ Roles.keys.request = function (userId, expiresAt) {
   }
   return this.collection.insert(doc);
 };
-
-/**
- * Returns the userId of the specified key and deletes the key from the database
- * @param  {String}  key
- * @param  {Boolean} dontDelete True to leave the key in the database
- * @return {String}             Id of the user
- */
-Roles.keys.getUserId = function (key, dontDelete) {
-  check(key, String);
-  check(dontDelete, Match.Optional(Boolean));
-
-  const doc = this.collection.findOne({
-    _id: key,
-    $or: [
-      { expiresAt: { $exists: false } },
-      { expiresAt: { $gte: new Date() } },
-    ],
-  });
-  if (!doc) return;
-
-  if (!dontDelete) {
-    if (!doc.expiresAt) {
-      console.log('borrando por no tener expire at');
-      this.collection.remove({ _id: key });
-    } else if (moment(doc.expiresAt).isBefore(moment())) {
-      console.log('borrando por expire at ya pasó');
-      this.collection.remove({ _id: key });
-    }
-  }
-
-  return doc.userId;
-};
