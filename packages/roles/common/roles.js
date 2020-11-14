@@ -108,16 +108,16 @@ Roles.Role.prototype.allow = function (action, allow) {
   if (!Roles.actions.includes(action)) {
     Roles.registerAction(action);
   }
-
-  if (!isFunction(allow)) {
-    const clonedValue = clone(allow);
-    allow = function () {
+  let allowFn = allow;
+  if (!isFunction(allowFn)) {
+    const clonedValue = clone(allowFn);
+    allowFn = function () {
       return clonedValue;
     };
   }
 
   this.allowRules[action] = this.allowRules[action] || [];
-  this.allowRules[action].push(allow);
+  this.allowRules[action].push(allowFn);
 };
 
 /**
@@ -130,16 +130,16 @@ Roles.Role.prototype.deny = function (action, deny) {
   if (!Roles.actions.includes(action)) {
     Roles.registerAction(action);
   }
-
-  if (!isFunction(deny)) {
-    const clonedValue = clone(deny);
-    deny = function () {
+  let denyFn = deny;
+  if (!isFunction(denyFn)) {
+    const clonedValue = clone(denyFn);
+    denyFn = function () {
       return clonedValue;
     };
   }
 
   this.denyRules[action] = this.denyRules[action] || [];
-  this.denyRules[action].push(deny);
+  this.denyRules[action].push(denyFn);
 };
 
 /**
@@ -153,9 +153,11 @@ Roles.Role.prototype.helper = function (helper, func) {
     Roles.registerHelper(helper);
   }
 
-  if (!isFunction(func)) {
-    const clonedValue = clone(func);
-    func = function () {
+  let helperFn = func;
+
+  if (!isFunction(helperFn)) {
+    const clonedValue = clone(helperFn);
+    helperFn = function () {
       return clonedValue;
     };
   }
@@ -164,7 +166,7 @@ Roles.Role.prototype.helper = function (helper, func) {
     this.helpers[helper] = [];
   }
 
-  this.helpers[helper].push(func);
+  this.helpers[helper].push(helperFn);
 };
 
 /**
@@ -199,7 +201,8 @@ Roles.getUserRoles = function (userId, includeSpecial) {
 Roles.helper = function (userId, helper, ...rest) {
   check(userId, Match.OneOf(String, null, undefined));
   check(helper, String);
-  if (!this.helpers.includes(helper)) throw `Helper "${helper}" is not defined`;
+  if (!this.helpers.includes(helper))
+    throw new Error(`Helper "${helper}" is not defined`);
 
   const args = Object.values(rest).slice(2);
   const context = { userId };
@@ -213,8 +216,8 @@ Roles.helper = function (userId, helper, ...rest) {
       this.roles[role].helpers[helper]
     ) {
       const helpers = this.roles[role].helpers[helper];
-      helpers.forEach((helper) => {
-        responses.push(helper.apply(context, args));
+      helpers.forEach((hlpr) => {
+        responses.push(hlpr.apply(context, args));
       });
     }
   });
@@ -229,6 +232,7 @@ Roles.allow = function (userId, action) {
   check(userId, Match.OneOf(String, null, undefined));
   check(action, String);
 
+  // eslint-disable-next-line prefer-rest-params
   const args = Object.values(arguments).slice(2);
   const self = this;
   const context = { userId };

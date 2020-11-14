@@ -8,13 +8,14 @@ import Roles from '../common/roles';
 Roles.addUserToRoles = function (userId, roles) {
   check(userId, String);
   check(roles, Match.OneOf(String, Array));
-  if (!Array.isArray(roles)) {
-    roles = [roles];
+  let userRoles = roles;
+  if (!Array.isArray(userRoles)) {
+    userRoles = [userRoles];
   }
 
   return Users.update(
     { _id: userId },
-    { $addToSet: { roles: { $each: roles } } }
+    { $addToSet: { roles: { $each: userRoles } } }
   );
 };
 
@@ -24,11 +25,12 @@ Roles.addUserToRoles = function (userId, roles) {
 Roles.setUserRoles = function (userId, roles) {
   check(userId, String);
   check(roles, Match.OneOf(String, Array));
-  if (!Array.isArray(roles)) {
-    roles = [roles];
+  let userRoles = roles;
+  if (!Array.isArray(userRoles)) {
+    userRoles = [userRoles];
   }
 
-  return Users.update({ _id: userId }, { $set: { roles } });
+  return Users.update({ _id: userId }, { $set: { userRoles } });
 };
 
 /**
@@ -37,11 +39,12 @@ Roles.setUserRoles = function (userId, roles) {
 Roles.removeUserFromRoles = function (userId, roles) {
   check(userId, String);
   check(roles, Match.OneOf(String, Array));
-  if (!Array.isArray(roles)) {
-    roles = [roles];
+  let userRoles = roles;
+  if (!Array.isArray(userRoles)) {
+    userRoles = [userRoles];
   }
 
-  return Users.update({ _id: userId }, { $pullAll: { roles } });
+  return Users.update({ _id: userId }, { $pullAll: { userRoles } });
 };
 
 /**

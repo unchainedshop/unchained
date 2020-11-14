@@ -1,5 +1,3 @@
-import utils from 'util';
-
 const walkAssortmentLinks = (resolveAssortmentLink) => async (
   rootAssortmentId
 ) => {
