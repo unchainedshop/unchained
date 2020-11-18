@@ -102,8 +102,8 @@ export default {
   searchProducts: acl(actions.search)(searchProducts),
   searchAssortments: acl(actions.search)(searchAssortments),
   workQueue: acl(actions.manageWorker)(workQueue),
-  subscription: acl(actions.viewQuotation)(subscription),
-  subscriptions: acl(actions.viewQuotations)(subscriptions),
+  subscription: acl(actions.viewSubscription)(subscription),
+  subscriptions: acl(actions.viewSubscriptions)(subscriptions),
 
   work: acl(actions.manageWorker)(work),
   signPaymentProviderForCredentialRegistration: acl(
