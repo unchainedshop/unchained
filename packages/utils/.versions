@@ -7,10 +7,10 @@ ecmascript-runtime-client@0.11.0
 ecmascript-runtime-server@0.10.0
 fetch@0.1.1
 inter-process-messaging@0.1.1
-local-test:unchained:utils@0.54.1
+local-test:unchained:utils@0.55.0
 meteor@1.9.3
 modern-browsers@0.1.5
 modules@0.15.0
 modules-runtime@0.12.0
 promise@0.11.2
-unchained:utils@0.54.1
+unchained:utils@0.55.0

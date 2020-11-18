@@ -1,7 +1,7 @@
 {
   "name": "@unchainedshop/example-minimal",
   "description": "Minimal Bootstrap Project for Unchained Engine",
-  "version": "0.54.1",
+  "version": "0.55.0",
   "license": "EUPL-1.2",
   "homepage": "https://unchained.shop",
   "repository": {
@@ -30,16 +30,16 @@
     "debug": "cross-env METEOR_PACKAGE_DIRS=../../packages UI_ENDPOINT=http://localhost:4000 meteor --exclude-archs web.browser.legacy,web.cordova,web.browser debug -p 4010"
   },
   "dependencies": {
-    "@babel/runtime": "^7.12.1",
+    "@babel/runtime": "^7.12.5",
     "@paypal/checkout-server-sdk": "^1.0.2",
-    "@unchainedshop/controlpanel": "^0.54.1",
-    "apollo-server-express": "^2.18.2",
+    "@unchainedshop/controlpanel": "^0.55.0",
+    "apollo-server-express": "^2.19.0",
     "bcrypt": "^5.0.0",
     "braintree": "^2.24.0",
     "client-oauth2": "github:unchainedshop/js-client-oauth2#master",
     "emoji-flags": "^1.3.0",
     "graphql": "^14.7.0",
-    "i18n-iso-countries": "^6.2.1",
+    "i18n-iso-countries": "^6.2.2",
     "iconv-lite": "^0.6.2",
     "isomorphic-unfetch": "^3.1.0",
     "locale": "^0.1.0",
@@ -53,7 +53,7 @@
     "open": "^7.3.0",
     "ramda": "^0.27.1",
     "simpl-schema": "^1.10.2",
-    "stripe": "^8.118.0",
+    "stripe": "^8.122.1",
     "xml-js": "^1.6.11"
   },
   "devDependencies": {
@@ -62,8 +62,8 @@
     "@babel/register": "^7.12.1",
     "babel-eslint": "^10.1.0",
     "cross-env": "^7.0.2",
-    "eslint": "^7.12.1",
-    "eslint-config-airbnb-base": "^14.2.0",
+    "eslint": "^7.13.0",
+    "eslint-config-airbnb-base": "^14.2.1",
     "eslint-import-resolver-meteor": "^0.4.0",
     "eslint-plugin-import": "^2.22.1",
     "eslint-plugin-prettier": "^3.1.4",
