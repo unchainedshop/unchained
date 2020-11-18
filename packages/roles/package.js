@@ -10,13 +10,13 @@ Package.onUse((api) => {
   api.versionsFrom('1.11.1');
 
   api.use([
-    'unchained:core-users',
     'meteor-base',
     'check',
     'mongo',
     'ecmascript',
     'underscore',
     'dburles:collection-helpers@1.1.0',
+    'unchained:core-users@0.55.0',
   ]);
 
   api.addFiles(['helpers.js', 'roles.js', 'keys.js']);

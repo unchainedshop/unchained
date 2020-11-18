@@ -1,5 +1,3 @@
-accounts-base@1.7.0
-accounts-password@1.6.2
 aldeed:collection2@3.2.1
 allow-deny@1.1.0
 autoupdate@1.6.0
@@ -14,7 +12,6 @@ dburles:collection-helpers@1.1.0
 ddp@1.4.0
 ddp-client@2.3.3
 ddp-common@1.4.0
-ddp-rate-limiter@1.0.9
 ddp-server@2.3.2
 diff-sequence@1.1.1
 dynamic-import@0.5.2
@@ -34,7 +31,6 @@ inter-process-messaging@0.1.1
 littledata:synced-cron@1.5.1
 livedata@1.0.18
 local-test:unchained:api@0.55.0
-localstorage@1.2.0
 logging@1.1.20
 meteor@1.9.3
 meteor-base@1.4.0
@@ -46,7 +42,6 @@ mongo@1.10.0
 mongo-decimal@0.1.1
 mongo-dev-server@1.1.0
 mongo-id@1.0.7
-npm-bcrypt@0.9.3
 npm-mongo@3.8.1
 ordered-dict@1.1.0
 ostrio:cookies@2.6.0
@@ -55,19 +50,16 @@ percolate:migrations@1.0.2
 promise@0.11.2
 raix:eventemitter@0.1.3
 random@1.2.0
-rate-limit@1.0.9
 reactive-var@1.0.11
 reload@1.3.0
 retry@1.1.0
 routepolicy@1.1.0
-service-configuration@1.0.11
-sha@1.0.9
 socket-stream-client@0.3.1
-srp@1.1.0
 tmeasday:check-npm-versions@0.3.2
 tracker@1.2.0
 unchained:api@0.55.0
 unchained:core@0.55.0
+unchained:core-accountsjs@0.55.0
 unchained:core-assortments@0.55.0
 unchained:core-bookmarks@0.55.0
 unchained:core-countries@0.55.0
