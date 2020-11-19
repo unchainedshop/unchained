@@ -16,9 +16,7 @@ Package.onUse((api) => {
 
   api.use(['unchained:core-users', 'mongo', 'ecmascript']);
 
-  api.addFiles(['common/helpers.js', 'common/roles.js', 'common/keys.js']);
-
-  api.addFiles(['server/roles_server.js'], 'server');
+  api.addFiles(['helpers.js', 'roles.js'], 'server');
 
   api.mainModule('index.js');
 });

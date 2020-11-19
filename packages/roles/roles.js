@@ -6,7 +6,6 @@ import { has, isFunction } from './helpers';
 /**
  * Init the variable
  */
-
 // eslint-disable-next-line import/prefer-default-export
 export const Roles = {};
 
@@ -25,21 +24,6 @@ Roles.specialRoles = [
   '__notLoggedIn__',
   '__all__',
 ];
-
-/**
- * Check if a user has a role
- */
-Roles.userHasRole = function (userId, role) {
-  if (role === '__all__') return true;
-  if (role === '__notLoggedIn__' && !userId) return true;
-  if (role === '__default__' && userId) return true;
-  if (
-    role === '__notAdmin__' &&
-    Roles.usersCollection.find({ _id: userId, roles: 'admin' }).count() === 0
-  )
-    return true;
-  return Roles.usersCollection.find({ _id: userId, roles: role }).count() > 0;
-};
 
 /**
  * Creates a new action
@@ -196,36 +180,6 @@ Roles.getUserRoles = function (userId, includeSpecial) {
 };
 
 /**
- * Calls a helper
- */
-Roles.helper = function (userId, helper, ...rest) {
-  check(userId, Match.OneOf(String, null, undefined));
-  check(helper, String);
-  if (!this.helpers.includes(helper))
-    throw new Error(`Helper "${helper}" is not defined`);
-
-  const args = Object.values(rest).slice(2);
-  const context = { userId };
-  const responses = [];
-  const roles = Roles.getUserRoles(userId, true);
-
-  roles.forEach((role) => {
-    if (
-      this.roles[role] &&
-      this.roles[role].helpers &&
-      this.roles[role].helpers[helper]
-    ) {
-      const helpers = this.roles[role].helpers[helper];
-      helpers.forEach((hlpr) => {
-        responses.push(hlpr.apply(context, args));
-      });
-    }
-  });
-
-  return responses;
-};
-
-/**
  * Returns if the user passes the allow check
  */
 Roles.allow = function (userId, action) {
@@ -302,6 +256,23 @@ Roles.userHasPermission = function (...args) {
 };
 
 /**
+ * Adds roles to a user
+ */
+Roles.addUserToRoles = function (userId, roles) {
+  check(userId, String);
+  check(roles, Match.OneOf(String, Array));
+  let userRoles = roles;
+  if (!Array.isArray(userRoles)) {
+    userRoles = [userRoles];
+  }
+
+  return Users.update(
+    { _id: userId },
+    { $addToSet: { roles: { $each: userRoles } } }
+  );
+};
+
+/**
  * If the user doesn't has permission it will throw a error
  */
 Roles.checkPermission = function (...args) {
@@ -314,28 +285,6 @@ Roles.checkPermission = function (...args) {
 };
 
 /**
- * Adds helpers to users
- */
-Roles.setUsersHelpers = function () {
-  Roles.usersCollection.helpers({
-    /**
-     * Returns the user roles
-     */
-    getRoles(includeSpecial) {
-      return Roles.getUserRoles(this._id, includeSpecial);
-    },
-    /**
-     * To check if the user has a role
-     */
-    hasRole(role) {
-      return Roles.userHasRole(this._id, role);
-    },
-  });
-};
-
-Roles.setUsersHelpers();
-
-/**
  * The admin role, who recives the default actions.
  */
 Roles.adminRole = new Roles.Role('admin');
@@ -343,14 +292,6 @@ Roles.adminRole = new Roles.Role('admin');
  * All the logged in users users
  */
 Roles.loggedInRole = new Roles.Role('__loggedIn__');
-/**
- * The users that are not admins
- */
-Roles.notAdminRole = new Roles.Role('__notAdmin__');
-/**
- * The users that are not logged in
- */
-Roles.notLoggedInRole = new Roles.Role('__notLoggedIn__');
 /**
  * Always, no exception
  */
