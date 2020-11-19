@@ -5,42 +5,9 @@ import {
 
 import getEURexchangeRateForCurrency from '../utils/getEURexchangeRateForCurrency';
 import roundToNext50 from '../utils/roundToNext50';
+import AVAILABLE_CURRENCIES from '../constants/available-exchanges';
 
-const AVAILABLE_CURRENCIES = [
-  'USD',
-  'JPY',
-  'BGN',
-  'CZK',
-  'DKK',
-  'GBP',
-  'HUF',
-  'PLN',
-  'RON',
-  'SEK',
-  'CHF',
-  'ISK',
-  'NOK',
-  'HRK',
-  'RUB',
-  'TRY',
-  'AUD',
-  'BRL',
-  'CAD',
-  'CNY',
-  'HKD',
-  'IDR',
-  'ILS',
-  'INR',
-  'KRW',
-  'MXN',
-  'MYR',
-  'NZD',
-  'PHP',
-  'SGD',
-  'THB',
-  'ZAR',
-];
-class ProductPriceEURExchange extends ProductPricingAdapter {
+class ProductPriceEUR2FiatExchange extends ProductPricingAdapter {
   static key = 'shop.unchained.pricing.price-EUR-fiat-exchange';
 
   static version = '1.0';
@@ -50,7 +17,7 @@ class ProductPriceEURExchange extends ProductPricingAdapter {
   static orderIndex = 1;
 
   static isActivatedFor({ currency }) {
-    return AVAILABLE_CURRENCIES.indexOf(currency) !== -1;
+    return AVAILABLE_CURRENCIES.fiat.indexOf(currency) !== -1;
   }
 
   async calculate() {
@@ -72,4 +39,4 @@ class ProductPriceEURExchange extends ProductPricingAdapter {
   }
 }
 
-ProductPricingDirector.registerAdapter(ProductPriceEURExchange);
+ProductPricingDirector.registerAdapter(ProductPriceEUR2FiatExchange);
