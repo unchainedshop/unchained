@@ -2,6 +2,7 @@ import { Users } from 'meteor/unchained:core-users';
 import { Currencies } from 'meteor/unchained:core-currencies';
 import { Countries } from 'meteor/unchained:core-countries';
 import { Languages } from 'meteor/unchained:core-languages';
+import { hashPassword } from 'meteor/unchained:api';
 
 const logger = console;
 
@@ -10,7 +11,6 @@ export default async () => {
     if (Users.find({ username: 'admin' }).count() > 0) {
       return;
     }
-
     const admin = await Users.createUser({
       username: 'admin',
       roles: ['admin'],
@@ -29,7 +29,7 @@ export default async () => {
         regionCode: 'false',
       },
     });
-    await admin.setPassword('password');
+    await admin.setPassword(hashPassword('password'));
 
     const languages = ['de', 'fr'].map((code, key) => {
       const isBase = key === 0;

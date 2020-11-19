@@ -93,9 +93,6 @@ Users.helpers({
         }
       );
     }
-    const user = Users.findOne({ _id: this._id });
-    user.password = newPassword;
-    return user;
   },
   setRoles(roles) {
     Users.update(

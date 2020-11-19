@@ -329,7 +329,11 @@ export default [
       """
       Set a new password for a specific user
       """
-      setPassword(newPassword: String!, userId: ID!): User
+      setPassword(
+        newPassword: HashedPasswordInput
+        newPlainPassword: String
+        userId: ID!
+      ): User
 
       """
       Set roles of a user
