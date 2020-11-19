@@ -19,9 +19,9 @@ const getEURexchangeRateForCurrency = async (currency) => {
           json.elements?.[0]?.elements
             .filter((e) => e.name.toLowerCase() === 'cube')[0]
             ?.elements[0]?.elements.filter(
-              (a) => a.attributes.currency === currency,
-            )?.[0]?.attributes,
-      ),
+              (a) => a.attributes.currency === currency
+            )?.[0]?.attributes
+      )
   );
   return response;
 };

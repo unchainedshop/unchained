@@ -10,12 +10,17 @@ export default {
       version: Interface.version,
     };
   },
-  async simulatedPrice(obj, { orderId, useNetPrice, context }, requestContext) {
+  async simulatedPrice(
+    obj,
+    { currency, orderId, useNetPrice, context },
+    requestContext
+  ) {
     const { countryContext, user } = requestContext;
     const order = Orders.findOne({ _id: orderId });
     return obj.orderPrice(
       {
         country: countryContext,
+        currency,
         order,
         useNetPrice,
         user,
