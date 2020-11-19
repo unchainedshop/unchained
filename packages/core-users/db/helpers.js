@@ -241,6 +241,5 @@ Users.createUser = async ({
     guest,
     ...userData,
   });
-  const createdUser = await accountsServer.findUserById(userId);
-  return createdUser;
+  return Users.findOne({ _id: userId });
 };

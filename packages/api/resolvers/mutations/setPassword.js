@@ -12,6 +12,6 @@ export default async function setPassword(
   if (!userId) throw new InvalidIdError({ userId });
   const user = Users.findOne({ _id: userId });
   if (!user) throw new UserNotFoundError({ userId });
-  const res = await user.setPassword(newPassword);
-  return res;
+  await user.setPassword(newPassword);
+  return Users.findOne({ _id: userId });
 }
