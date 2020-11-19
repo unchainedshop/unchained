@@ -46,7 +46,7 @@ describe('Products', () => {
                     currency
                   }
                 }
-                simulatedPrice(currency: "EUR") {
+                simulatedPrice {
                   _id
                   price {
                     amount

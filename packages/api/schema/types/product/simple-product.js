@@ -15,7 +15,7 @@ export default [
       texts(forceLocale: String): ProductTexts
       catalogPrice(quantity: Int = 1): ProductPrice
       simulatedPrice(
-        currency: String!
+        currency: String
         useNetPrice: Boolean = false
         quantity: Int = 1
       ): ProductPrice
