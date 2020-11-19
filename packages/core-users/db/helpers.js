@@ -1,9 +1,5 @@
 import { Locale } from 'locale';
-import {
-  accountsServer,
-  accountsPassword,
-  dbManager,
-} from 'meteor/unchained:core-accountsjs';
+import { accountsPassword, dbManager } from 'meteor/unchained:core-accountsjs';
 import 'meteor/dburles:collection-helpers';
 import { getFallbackLocale } from 'meteor/unchained:core';
 import { Countries } from 'meteor/unchained:core-countries';
