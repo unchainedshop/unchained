@@ -40,7 +40,7 @@ describe('DeliveryProviders', () => {
               configuration
               configurationError
               isActive
-              simulatedPrice {
+              simulatedPrice(currency: "EUR") {
                 _id
                 isTaxable
                 isNetPrice
@@ -110,7 +110,7 @@ describe('DeliveryProviders', () => {
               configuration
               configurationError
               isActive
-              simulatedPrice {
+              simulatedPrice(currency: "EUR") {
                 _id
                 isTaxable
                 isNetPrice
