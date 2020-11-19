@@ -14,11 +14,16 @@ export default {
       quantity,
     });
   },
-  async simulatedPrice(obj, { quantity, useNetPrice }, requestContext) {
+  async simulatedPrice(
+    obj,
+    { currency, quantity, useNetPrice },
+    requestContext
+  ) {
     const { countryContext, userId, user } = requestContext;
     return obj.userPrice(
       {
         quantity,
+        currency,
         country: countryContext,
         useNetPrice,
         userId,
