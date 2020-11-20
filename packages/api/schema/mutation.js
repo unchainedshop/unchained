@@ -313,7 +313,8 @@ export default [
       enrollUser(
         profile: UserProfileInput!
         email: String!
-        password: String
+        password: HashedPasswordInput
+        plainPassword: String
       ): User
 
       """

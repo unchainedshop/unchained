@@ -28,7 +28,7 @@ export default compose(
   withApollo,
   graphql(gql`
     mutation setPassword($newPassword: String!, $userId: ID!) {
-      setPassword(newPassword: $newPassword, userId: $userId) {
+      setPassword(newPlainPassword: $newPassword, userId: $userId) {
         _id
       }
     }

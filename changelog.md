@@ -1,5 +1,13 @@
 # vNext
 
+# v0.55.2
+
+# Breaking Changes
+- [users] enrollUser now supports hashed passwords and uses the existing password field for it
+
+## Patches
+- [controlpanel] Fix enrollUser and setPassword
+
 # v0.55.1
 
 ## Minor

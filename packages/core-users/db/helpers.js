@@ -53,7 +53,7 @@ Users.helpers({
     return Avatars.findOne({ _id: this.avatarId });
   },
   primaryEmail() {
-    return [...this.emails]
+    return (this.emails || [])
       .sort(
         ({ verified: verifiedLeft }, { verified: verifiedRight }) =>
           verifiedLeft - verifiedRight
@@ -70,10 +70,10 @@ Users.helpers({
     return this.profile && this.profile.phoneMobile;
   },
   name() {
-    const { profile, emails } = this;
+    const { profile } = this;
     if (profile && profile.displayName && profile.displayName !== '')
       return profile.displayName;
-    return emails && emails[0].address;
+    return this.primaryEmail()?.address || this._id;
   },
   async setPassword(password) {
     const newPassword = password || uuidv4().split('-').pop();
