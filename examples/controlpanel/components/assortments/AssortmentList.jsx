@@ -82,7 +82,6 @@ const AssortmentList = ({
 
 export default compose(
   withState('isShowLeafNodes', 'setShowLeafNodes', false),
-  withRouter,
   withDataTableLoader({
     queryName: 'assortments',
     query: gql`
@@ -104,6 +103,7 @@ export default compose(
       }
     `,
   }),
+  withRouter,
   graphql(
     gql`
       mutation changeBaseAssortment($assortmentId: ID!) {

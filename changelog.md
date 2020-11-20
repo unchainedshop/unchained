@@ -6,6 +6,9 @@
 - [platform] If you used `user.setPassword` before, that function is now async and does not return the user object anymore
 - [api] setPassword mutation now also supports plain passwords if needed.
 
+## Patches
+- [controlpanel] Fix bug in Currency edit form
+- [controlpanel] Fix bug with Assortment list not showing the assortments
 
 # v0.55.0
 

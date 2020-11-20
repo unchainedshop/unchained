@@ -42,7 +42,6 @@ export default compose(
         _id
         isoCode
         isActive
-        name
       }
     }
   `),
