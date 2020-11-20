@@ -68,6 +68,16 @@ Collections.Assortments.updateAssortment = ({
   return Collections.Assortments.findOne({ _id: assortmentId });
 };
 
+Collections.Assortments.invalidateFilterCaches = () => {
+  log('Assortments: Start invalidating assortment caches', {
+    level: 'verbose',
+  });
+  const assortments = Collections.Assortments.find({}).fetch();
+  assortments.forEach((assortment) => {
+    assortment.invalidateProductIdCache({ skipUpstreamTraversal: true });
+  });
+};
+
 Collections.AssortmentLinks.createAssortmentLink = ({
   parentAssortmentId,
   childAssortmentId,
