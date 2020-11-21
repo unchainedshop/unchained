@@ -3,7 +3,7 @@ import {
   ProductPricingAdapter,
 } from 'meteor/unchained:core-pricing';
 
-import getEURexchangeRateForBTC from '../utils/getEURexchangeRateForBTC';
+import getFiatexchangeRateForCrypto from '../utils/getFiatexchangeRateForCrypto';
 import AVAILABLE_CURRENCIES from '../constants/available-exchanges';
 
 class ProductPriceEUR2CryptoExchange extends ProductPricingAdapter {
@@ -24,7 +24,7 @@ class ProductPriceEUR2CryptoExchange extends ProductPricingAdapter {
     const EURprice = product.price({ country, currency: 'EUR' });
     if (!EURprice || !EURprice?.amount) return null;
 
-    const rate = await getEURexchangeRateForBTC(currency);
+    const rate = await getFiatexchangeRateForCrypto('EUR', currency);
 
     const convertedAmount = EURprice?.amount * rate;
     this.resetCalculation();

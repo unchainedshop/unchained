@@ -67,7 +67,7 @@ describe('DeliveryProviders', () => {
         `,
         variables: {},
       });
-      expect(deliveryProviders.length).toEqual(2);
+      expect(deliveryProviders.length).toEqual(3);
     });
 
     it('return list of deliveryProviders based on the given type', async () => {
@@ -85,7 +85,7 @@ describe('DeliveryProviders', () => {
           type: 'SHIPPING',
         },
       });
-      expect(deliveryProviders.length).toEqual(1);
+      expect(deliveryProviders.length).toEqual(2);
     });
   });
 
@@ -140,6 +140,57 @@ describe('DeliveryProviders', () => {
         },
       });
       expect(deliveryProvider._id).toEqual(SimpleDeliveryProvider._id);
+    });
+
+    it('return value for simulatedPrice with the country default currency when no argument is passed', async () => {
+      const {
+        data: { deliveryProvider },
+      } = await graphqlFetch({
+        query: /* GraphQL */ `
+          query DeliveryProvider($deliveryProviderId: ID!) {
+            deliveryProvider(deliveryProviderId: $deliveryProviderId) {
+              _id
+              simulatedPrice {
+                _id
+                price {
+                  amount
+                  currency
+                }
+              }
+            }
+          }
+        `,
+        variables: {
+          deliveryProviderId: SimpleDeliveryProvider._id,
+        },
+      });
+      expect(deliveryProvider?.simulatedPrice?.price?.currency).toEqual('CHF');
+    });
+
+    it('return value for simulatedPrice with value of currency argument passed to it', async () => {
+      const {
+        data: { deliveryProvider },
+      } = await graphqlFetch({
+        query: /* GraphQL */ `
+          query DeliveryProvider($deliveryProviderId: ID!) {
+            deliveryProvider(deliveryProviderId: $deliveryProviderId) {
+              _id
+              simulatedPrice(currency: "EUR") {
+                _id
+                price {
+                  amount
+                  currency
+                }
+              }
+            }
+          }
+        `,
+        variables: {
+          deliveryProviderId: SimpleDeliveryProvider._id,
+        },
+      });
+      console.log(deliveryProvider);
+      expect(deliveryProvider?.simulatedPrice?.price?.currency).toEqual('EUR');
     });
 
     it('return not found error when passed non existing deliveryProviderId', async () => {
