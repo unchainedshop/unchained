@@ -2,6 +2,7 @@ import {
   ProductPricingDirector,
   ProductPricingAdapter,
 } from 'meteor/unchained:core-pricing';
+import { Countries } from 'meteor/unchained:core-countries';
 
 import getFiatexchangeRateForCrypto from '../utils/getFiatexchangeRateForCrypto';
 import AVAILABLE_CURRENCIES from '../constants/available-exchanges';
@@ -21,17 +22,20 @@ class ProductPriceEUR2CryptoExchange extends ProductPricingAdapter {
 
   async calculate() {
     const { product, country, quantity, currency } = this.context;
-    const EURprice = product.price({ country, currency: 'EUR' });
-    if (!EURprice || !EURprice?.amount) return null;
+    const defaultCurrency = Countries.resolveDefaultCurrencyCode({
+      isoCode: country,
+    });
+    const productPrice = product.price({ country, currency: defaultCurrency });
+    if (!productPrice || !productPrice?.amount) return null;
 
-    const rate = await getFiatexchangeRateForCrypto('EUR', currency);
+    const rate = await getFiatexchangeRateForCrypto(defaultCurrency, currency);
 
-    const convertedAmount = EURprice?.amount * rate;
+    const convertedAmount = productPrice?.amount * rate;
     this.resetCalculation();
     this.result.addItem({
       amount: convertedAmount * quantity,
-      isTaxable: EURprice?.isTaxable,
-      isNetPrice: EURprice?.isNetPrice,
+      isTaxable: productPrice?.isTaxable,
+      isNetPrice: productPrice?.isNetPrice,
       meta: { adapter: this.constructor.key },
     });
 

@@ -189,7 +189,6 @@ describe('DeliveryProviders', () => {
           deliveryProviderId: SimpleDeliveryProvider._id,
         },
       });
-      console.log(deliveryProvider);
       expect(deliveryProvider?.simulatedPrice?.price?.currency).toEqual('EUR');
     });
 
