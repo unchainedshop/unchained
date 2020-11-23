@@ -49,7 +49,7 @@ Roles.registerAction = function (name, adminAllow, adminDeny) {
 /**
  * Creates a new helper
  */
-Roles.registerHelper = (name, adminHelper) => {
+Roles.registerHelper = function (name, adminHelper) {
   check(name, String);
   check(adminHelper, Match.Any);
 
@@ -258,7 +258,7 @@ Roles.userHasPermission = function (...args) {
 /**
  * Adds roles to a user
  */
-Roles.addUserToRoles = function (userId, roles) {
+Roles.addUserToRoles = async function (userId, roles) {
   check(userId, String);
   check(roles, Match.OneOf(String, Array));
   let userRoles = roles;
@@ -274,6 +274,7 @@ Roles.addUserToRoles = function (userId, roles) {
 
 /**
  * If the user doesn't has permission it will throw a error
+ * Roles.userHasPermission(userId, action, [extra])
  */
 Roles.checkPermission = function (...args) {
   if (!this.userHasPermission(...args)) {

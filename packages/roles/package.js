@@ -14,7 +14,7 @@ Package.onUse((api) => {
     '@share911/meteor-check': '1.0.8',
   });
 
-  api.use(['unchained:core-users', 'mongo', 'ecmascript']);
+  api.use(['unchained:core-users', 'ecmascript']);
 
   api.addFiles(['helpers.js', 'roles.js'], 'server');
 
