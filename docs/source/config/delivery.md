@@ -15,8 +15,7 @@ const options = {
             (left, right) => {
               return new Date(left.created).getTime() - new Date(right.created).getTime();
             }
-            )
-          .map(({ _id }) => _id);
+            );
       },
     }
   }

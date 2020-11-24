@@ -15,6 +15,7 @@ export default function removeAssortmentProduct(
   if (!assortmentProduct)
     throw new AssortmentProductNotFoundError({ assortmentProductId });
   AssortmentProducts.remove({ _id: assortmentProductId });
+  // TODO: Use Helper fn
   assortmentProduct.assortment().invalidateProductIdCache();
   return assortmentProduct;
 }

@@ -1,9 +1,5 @@
 import { Locale } from 'locale';
-import {
-  accountsServer,
-  accountsPassword,
-  dbManager,
-} from 'meteor/unchained:core-accountsjs';
+import { accountsPassword, dbManager } from 'meteor/unchained:core-accountsjs';
 import 'meteor/dburles:collection-helpers';
 import { getFallbackLocale } from 'meteor/unchained:core';
 import { Countries } from 'meteor/unchained:core-countries';
@@ -57,7 +53,7 @@ Users.helpers({
     return Avatars.findOne({ _id: this.avatarId });
   },
   primaryEmail() {
-    return [...this.emails]
+    return (this.emails || [])
       .sort(
         ({ verified: verifiedLeft }, { verified: verifiedRight }) =>
           verifiedLeft - verifiedRight
@@ -74,10 +70,10 @@ Users.helpers({
     return this.profile && this.profile.phoneMobile;
   },
   name() {
-    const { profile, emails } = this;
+    const { profile } = this;
     if (profile && profile.displayName && profile.displayName !== '')
       return profile.displayName;
-    return emails && emails[0].address;
+    return this.primaryEmail()?.address || this._id;
   },
   async setPassword(password) {
     const newPassword = password || uuidv4().split('-').pop();
@@ -93,9 +89,6 @@ Users.helpers({
         }
       );
     }
-    const user = Users.findOne({ _id: this._id });
-    user.password = newPassword;
-    return user;
   },
   setRoles(roles) {
     Users.update(
@@ -241,6 +234,5 @@ Users.createUser = async ({
     guest,
     ...userData,
   });
-  const createdUser = await accountsServer.findUserById(userId);
-  return createdUser;
+  return Users.findOne({ _id: userId });
 };

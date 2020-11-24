@@ -1,6 +1,28 @@
-# vNEXT
+# vNext
 
-TBD
+# v0.55.2
+
+# Breaking Changes
+- [users] enrollUser now supports hashed passwords and uses the existing password field for it
+
+## Patches
+- [controlpanel] Fix enrollUser and setPassword
+
+# v0.55.1
+
+## Minor
+- [platform] If you used `user.setPassword` before, that function is now async and does not return the user object anymore
+- [api] setPassword mutation now also supports plain passwords if needed.
+
+## Patches
+- [controlpanel] Fix bug in Currency edit form
+- [controlpanel] Fix bug with Assortment list not showing the assortments
+
+# v0.55.0
+
+Attention: If you have used Meteor Accounts specific extensions to extend login functionalities for your unchained-based project, you will have to rewrite all code that depends on Meteor's accounts packages and extend the functionality through accounts-js config, strategies and hooks (https://www.accountsjs.com/docs/introduction).
+
+Look for `Accounts.registerLoginHandler`, `Accounts.onLogin` or Meteor Accounts Password based features like `Accounts.setUsername` or `Accounts.setPassword` to find out if you are affected.
 
 ## Breaking Changes
 
@@ -8,15 +30,21 @@ TBD
 - [users] `enrollUser` doesn't send out the enrollment email by default anymore. You need to trigger it using `sendEnrollmentEmail` mutation.
 - [api] The functions `getConnection` and `callMethod` have been removed
 - [api] `Mutation.resendVerificationEmail` has been renamed to `Mutation.sendVerificationEmail`
+- [api] More specific exceptions when using wrong Id's
+- [platform] New unchained instances now generate an admin user with an E-Mail of `admin@unchained.local` to solve various issues with frontends and services that don't accept addresses like `user@toplevel`. Also it's now very important to seed your database AFTER startPlatform.
 
 ## Minor
-= [users] `sendEnrollmentEmail` mutation is now available to trigger enrollment emails.
+- [users] `sendEnrollmentEmail` mutation is now available to trigger enrollment emails.
+- [api] Enhanced Query.users which now allows to query for users with a fulltext search that takes E-mail addresses into account
+- [api] Better integration tests that cover more business logic than before
 
 ## Patches
 - [great-purge-of-meteor] Remove accounts-base and accounts-password from platform package
 - [great-purge-of-meteor] Implement new core-accountsjs package
 - [great-purge-of-meteor] Convert all authentication related mutations within `api/resolvers/mutations/accounts/loginWithPassword.js` to use accounts-js.
 - [great-purge-of-meteor] Convert any Users collection helpers to use accounts-js.
+- [api] Fixed an issue which prevented Query.subscription from working at all
+- [assortments] Fixed an issue that resulted in totally wrong breadcrumbs in some special edge case (assortmentPaths)
 
 ---
 # v0.54.1

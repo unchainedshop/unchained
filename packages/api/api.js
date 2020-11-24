@@ -6,11 +6,14 @@ import { configureRoles } from './roles';
 
 export hashPassword from './hashPassword';
 export getCart from './getCart';
+export evaluateContext from './evaluateContext';
+export filterContext from './filterContext';
+
 export * as roles from './roles';
 export * as acl from './acl';
 export * as errors from './errors';
 
-global._UnchainedAPIVersion = '0.54.1'; // eslint-disable-line
+global._UnchainedAPIVersion = '0.55.2'; // eslint-disable-line
 
 const defaultContext = (req) => {
   const remoteAddress =

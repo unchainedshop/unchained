@@ -66,7 +66,7 @@ export default compose(
         $email: String!
         $password: String
       ) {
-        enrollUser(profile: $profile, email: $email, password: $password) {
+        enrollUser(profile: $profile, email: $email, plainPassword: $password) {
           _id
           name
           primaryEmail {

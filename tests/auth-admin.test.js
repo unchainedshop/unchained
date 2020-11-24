@@ -406,7 +406,7 @@ describe('Auth for admin users', () => {
         query: /* GraphQL */ `
           mutation enrollUser(
             $email: String!
-            $password: String
+            $password: HashedPasswordInput
             $profile: UserProfileInput!
           ) {
             enrollUser(email: $email, password: $password, profile: $profile) {
@@ -484,15 +484,19 @@ describe('Auth for admin users', () => {
         displayName: 'Admin4',
       };
       const email = 'admin4@unchained.local';
-      const password = 'admin4';
+      const plainPassword = 'admin4';
       const { data: { enrollUser } = {} } = await graphqlFetchAsAdminUser({
         query: /* GraphQL */ `
           mutation enrollUser(
             $email: String!
-            $password: String
+            $plainPassword: String
             $profile: UserProfileInput!
           ) {
-            enrollUser(email: $email, password: $password, profile: $profile) {
+            enrollUser(
+              email: $email
+              plainPassword: $plainPassword
+              profile: $profile
+            ) {
               _id
               isInitialPassword
               primaryEmail {
@@ -504,7 +508,7 @@ describe('Auth for admin users', () => {
         `,
         variables: {
           email,
-          password,
+          plainPassword,
           profile,
         },
       });
@@ -520,18 +524,18 @@ describe('Auth for admin users', () => {
 
   describe('Mutation.setPassword', () => {
     it('set the password of a foreign user', async () => {
-      const newPassword = 'new';
+      const newPlainPassword = 'new';
       const { data: { setPassword } = {} } = await graphqlFetchAsAdminUser({
         query: /* GraphQL */ `
-          mutation setPassword($userId: ID!, $newPassword: String!) {
-            setPassword(newPassword: $newPassword, userId: $userId) {
+          mutation setPassword($userId: ID!, $newPlainPassword: String!) {
+            setPassword(newPlainPassword: $newPlainPassword, userId: $userId) {
               _id
             }
           }
         `,
         variables: {
           userId: User._id,
-          newPassword,
+          newPlainPassword,
         },
       });
       expect(setPassword).toMatchObject({

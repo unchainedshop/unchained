@@ -126,6 +126,7 @@ export default (role, actions) => {
   role.allow(actions.checkoutCart, isOwnedOrderOrCart);
   role.allow(actions.updateCart, isOwnedOrderOrCart);
   role.allow(actions.createCart, () => true);
+  role.allow(actions.viewSubscription, isOwnedSubscription);
   role.allow(actions.updateSubscription, isOwnedSubscription);
   role.allow(actions.createSubscription, () => true);
   role.allow(actions.reviewProduct, () => true);

@@ -1,5 +1,4 @@
 cd packages/utils && meteor publish &&
-cd ../roles && meteor publish &&
 cd ../core-settings && meteor publish &&
 cd ../core-languages && meteor publish &&
 cd ../core-currencies && meteor publish &&
@@ -8,6 +7,7 @@ cd ../core-logger && meteor publish &&
 cd ../core-worker && meteor publish &&
 cd ../core-files && meteor publish &&
 cd ../core && meteor publish &&
+cd ../core-accountsjs && meteor publish &&
 cd ../core-users && meteor publish &&
 cd ../core-documents && meteor publish &&
 cd ../core-pricing && meteor publish &&
@@ -23,5 +23,6 @@ cd ../core-subscriptions && meteor publish &&
 cd ../core-quotations && meteor publish &&
 cd ../core-orders && meteor publish &&
 cd ../core-bookmarks && meteor publish &&
+cd ../roles && meteor publish &&
 cd ../api && meteor publish &&
 cd ../platform && meteor publish

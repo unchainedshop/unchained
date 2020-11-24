@@ -196,9 +196,6 @@ Orders.helpers({
     const supportedPaymentProviders = PaymentProviders.findSupported({
       order: this,
     });
-    const paymentCredentials = await this.user()?.paymentCredentials({
-      isPreferred: true,
-    });
 
     const paymentProviderId = this.payment()?.paymentProviderId;
     const isAlreadyInitializedWithSupportedProvider = supportedPaymentProviders.some(
@@ -210,6 +207,9 @@ Orders.helpers({
       supportedPaymentProviders.length > 0 &&
       !isAlreadyInitializedWithSupportedProvider
     ) {
+      const paymentCredentials = await this.user()?.paymentCredentials({
+        isPreferred: true,
+      });
       if (paymentCredentials?.length) {
         const foundSupportedPreferredProvider = supportedPaymentProviders.find(
           (supportedPaymentProvider) => {

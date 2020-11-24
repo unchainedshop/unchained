@@ -50,15 +50,6 @@ class OrderPricingSheet extends PricingSheet {
     });
   }
 
-  gross() {
-    // tax is included 2 times
-    return this.sum() - this.taxSum();
-  }
-
-  net() {
-    return this.gross() - this.taxSum();
-  }
-
   total(category) {
     if (!category) {
       return {
