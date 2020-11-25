@@ -34,10 +34,10 @@ export const ProductReviewNotFoundError = createError(
   'ProductReviewNotFoundError',
   'ProductReview not found'
 );
-export const ProductWrongStatusError = createError(
-  'ProductWrongStatusError',
-  'The current status of the product does not allow this operation'
-);
+export const ProductWrongStatusError = createError('ProductWrongStatusError', {
+  recieved: String,
+  required: String,
+});
 
 export const ProductWrongTypeError = createError(
   'ProductWrongTypeError',

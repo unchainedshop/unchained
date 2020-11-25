@@ -73,7 +73,7 @@ describe('ProductsSupply', () => {
       expect(updateProductSupply._id).toEqual(SimpleProduct._id);
     });
 
-    it('Update product supply successfuly when passed SIMPLE_PRODUCT type', async () => {
+    it('return error when passed non SIMPLE_PRODUCT type', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation UpdateProductSupply(
@@ -97,8 +97,8 @@ describe('ProductsSupply', () => {
       });
 
       expect(errors?.[0]?.extensions).toMatchObject({
-        code: 'ProductWronStatusError',
-        recieved: PlanProduct.type,
+        code: 'ProductWrongStatusError',
+        received: 'PLAN_PRODUCT',
         required: 'SIMPLE_PRODUCT',
       });
     });
