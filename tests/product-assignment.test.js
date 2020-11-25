@@ -4,7 +4,11 @@ import {
   createAnonymousGraphqlFetch,
 } from './helpers';
 import { ADMIN_TOKEN } from './seeds/users';
-import { SimpleProduct, ConfigurableProduct } from './seeds/products';
+import {
+  SimpleProduct,
+  ConfigurableProduct,
+  PlanProduct,
+} from './seeds/products';
 
 let connection;
 let graphqlFetch;
@@ -20,7 +24,7 @@ describe('ProductAssignment', () => {
   });
 
   describe('mutation.addProductAssignment for admin user should', () => {
-    it('assign proxy to a product when passed valid proxy and product ID', async () => {
+    it('assign proxy to a product when passed valid proxy, product ID and CONFIGURABLE_PRODUCT type', async () => {
       const { data: { addProductAssignment } = {} } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation AddProductAssignment(
@@ -54,6 +58,9 @@ describe('ProductAssignment', () => {
                 links {
                   link {
                     _id
+                    parent {
+                      _id
+                    }
                   }
                 }
               }
@@ -64,8 +71,8 @@ describe('ProductAssignment', () => {
           }
         `,
         variables: {
-          productId: SimpleProduct._id,
-          proxyId: ConfigurableProduct._id,
+          productId: ConfigurableProduct._id,
+          proxyId: SimpleProduct._id,
           vectors: [
             { key: 'key-1', value: 'value-1' },
             { key: 'key-2', value: 'value-2' },
@@ -73,8 +80,42 @@ describe('ProductAssignment', () => {
           ],
         },
       });
+      expect(addProductAssignment.assortmentPaths.length).not.toBe(0);
+    });
 
-      expect(addProductAssignment._id).not.toBe(null);
+    it('return error when passed non CONFIGURABLE_PRODUCT type', async () => {
+      const { errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation AddProductAssignment(
+            $proxyId: ID!
+            $productId: ID!
+            $vectors: [ProductAssignmentVectorInput!]!
+          ) {
+            addProductAssignment(
+              proxyId: $proxyId
+              productId: $productId
+              vectors: $vectors
+            ) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          productId: PlanProduct._id,
+          proxyId: SimpleProduct._id,
+          vectors: [
+            { key: 'key-1', value: 'value-1' },
+            { key: 'key-2', value: 'value-2' },
+            { key: 'key-3', value: 'value-3' },
+          ],
+        },
+      });
+      expect(errors?.[0]?.extensions).toMatchObject({
+        productId: PlanProduct._id,
+        code: 'ProductWrongStatusError',
+        recieved: PlanProduct.type,
+        required: 'CONFIGURABLE_PRODUCT',
+      });
     });
 
     it('return not found error when passed non existing product ID', async () => {
@@ -126,7 +167,7 @@ describe('ProductAssignment', () => {
           }
         `,
         variables: {
-          productId: SimpleProduct._id,
+          productId: ConfigurableProduct._id,
           proxyId: 'non-exsisting-proxy-id',
           vectors: [
             { key: 'key-1', value: 'value-1' },

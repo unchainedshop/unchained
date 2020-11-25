@@ -1,6 +1,11 @@
 import { log } from 'meteor/unchained:core-logger';
-import { Products } from 'meteor/unchained:core-products';
-import { ProductNotFoundError, InvalidIdError } from '../../errors';
+import { Products, ProductTypes } from 'meteor/unchained:core-products';
+
+import {
+  ProductNotFoundError,
+  InvalidIdError,
+  ProductWrongStatusError,
+} from '../../errors';
 
 export default function addProductAssignment(
   root,
@@ -12,10 +17,18 @@ export default function addProductAssignment(
   if (!proxyId) throw new InvalidIdError({ proxyId });
   if (!productId) throw new InvalidIdError({ productId });
 
-  const proxy = Products.findOne({ _id: proxyId });
   const product = Products.findOne({ _id: productId });
 
   if (!product) throw new ProductNotFoundError({ productId });
+  if (product.type !== ProductTypes.ConfigurableProduct)
+    throw new ProductWrongStatusError({
+      productId,
+      recieved: product.type,
+      required: ProductTypes.ConfigurableProduct,
+    });
+
+  const proxy = Products.findOne({ _id: proxyId });
+
   if (!proxy) throw new ProductNotFoundError({ proxyId });
 
   const vector = {};

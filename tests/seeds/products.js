@@ -68,6 +68,21 @@ export const ConfigurableProduct = {
   },
 };
 
+export const ConfigurableProductProxy = {
+  ...ConfigurableProduct,
+  warehousing: {
+    ...ConfigurableProduct.warehousing,
+  },
+  commerce: {
+    ...ConfigurableProduct.commerce,
+    pricing: ConfigurableProduct.pricing,
+  },
+  supply: {
+    ...ConfigurableProduct.supply,
+  },
+  _id: 'configurable-product-proxy-id',
+};
+
 export const SimpleProductBundle = {
   _id: 'simpleproduct-bundle',
   created: new Date('2019-07-30T09:23:26.253+0000'),
@@ -312,6 +327,7 @@ export default async function seedProducts(db) {
       UnpublishedProduct,
       SimpleProductBundle,
       ConfigurableProduct,
+      ConfigurableProductProxy,
     ]);
   await db.collection('product_reviews').findOrInsertOne(SimpleProductReview);
   await db.collection('product_texts').findOrInsertOne(GermanProductText);
