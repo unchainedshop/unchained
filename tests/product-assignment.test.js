@@ -60,12 +60,27 @@ describe('ProductAssignment', () => {
                     _id
                     parent {
                       _id
+                      productAssignments {
+                        _id
+                        product {
+                          _id
+                        }
+                      }
                     }
                   }
                 }
               }
               siblings {
                 _id
+              }
+              ... on ConfigurableProduct {
+                variations {
+                  _id
+                  key
+                  texts {
+                    title
+                  }
+                }
               }
             }
           }
@@ -80,6 +95,7 @@ describe('ProductAssignment', () => {
           ],
         },
       });
+
       expect(addProductAssignment.assortmentPaths.length).not.toBe(0);
     });
 
@@ -112,7 +128,7 @@ describe('ProductAssignment', () => {
       });
       expect(errors?.[0]?.extensions).toMatchObject({
         productId: PlanProduct._id,
-        code: 'ProductWrongStatusError',
+        code: 'ProductWrongTypeError',
         recieved: PlanProduct.type,
         required: 'CONFIGURABLE_PRODUCT',
       });
@@ -279,7 +295,7 @@ describe('ProductAssignment', () => {
   });
 
   describe('mutation.removeProductAssignment for admin user should', () => {
-    it('Updaye proxy to a product when passed valid proxy  ID', async () => {
+    it('Update proxy to a product when passed valid proxy  ID of CONFIGURABLE_PRODUCT type', async () => {
       const { data: { removeProductAssignment } = {} } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation RemoveProductAssignment(
@@ -324,6 +340,31 @@ describe('ProductAssignment', () => {
       });
 
       expect(removeProductAssignment._id).not.toBe(null);
+    });
+
+    it('return error when passed non CONFIGURABLE_PRODUCT type id', async () => {
+      const { errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation RemoveProductAssignment(
+            $proxyId: ID!
+            $vectors: [ProductAssignmentVectorInput!]!
+          ) {
+            removeProductAssignment(proxyId: $proxyId, vectors: $vectors) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          proxyId: SimpleProduct._id,
+          vectors: [{ key: 'key-3', value: 'value-3' }],
+        },
+      });
+
+      expect(errors?.[0]?.extensions).toMatchObject({
+        code: 'ProductWrongTypeError',
+        recieved: SimpleProduct.type,
+        required: 'CONFIGURABLE_PRODUCT',
+      });
     });
 
     it('return not found error when passed non existing proxy  ID', async () => {

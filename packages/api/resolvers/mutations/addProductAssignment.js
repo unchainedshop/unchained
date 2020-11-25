@@ -4,7 +4,7 @@ import { Products, ProductTypes } from 'meteor/unchained:core-products';
 import {
   ProductNotFoundError,
   InvalidIdError,
-  ProductWrongStatusError,
+  ProductWrongTypeError,
 } from '../../errors';
 
 export default function addProductAssignment(
@@ -21,7 +21,7 @@ export default function addProductAssignment(
 
   if (!product) throw new ProductNotFoundError({ productId });
   if (product.type !== ProductTypes.ConfigurableProduct)
-    throw new ProductWrongStatusError({
+    throw new ProductWrongTypeError({
       productId,
       recieved: product.type,
       required: ProductTypes.ConfigurableProduct,
