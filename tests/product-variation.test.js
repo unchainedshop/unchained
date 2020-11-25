@@ -4,7 +4,12 @@ import {
   createAnonymousGraphqlFetch,
 } from './helpers';
 import { ADMIN_TOKEN } from './seeds/users';
-import { SimpleProduct, ProductVariations } from './seeds/products';
+import {
+  SimpleProduct,
+  ProductVariations,
+  ConfigurableProduct,
+  PlanProduct,
+} from './seeds/products';
 
 let connection;
 let graphqlFetch;
@@ -101,7 +106,7 @@ describe('ProductsVariation', () => {
   });
 
   describe('mutation.createProductVariation for admin user should', () => {
-    it('create product variation successfuly', async () => {
+    it('create product variation successfuly when passed CONFIGURABLE_PRODUCT product type', async () => {
       const { data: { createProductVariation } = {} } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation CreateProductVariation(
@@ -125,9 +130,6 @@ describe('ProductsVariation', () => {
                 _id
                 texts {
                   _id
-                  locale
-                  title
-                  subtitle
                 }
                 value
               }
@@ -135,7 +137,7 @@ describe('ProductsVariation', () => {
           }
         `,
         variables: {
-          productId: SimpleProduct._id,
+          productId: ConfigurableProduct._id,
           variation: {
             key: 'key-1',
             type: 'COLOR',
@@ -143,7 +145,46 @@ describe('ProductsVariation', () => {
           },
         },
       });
-      expect(createProductVariation._id).not.toBe(null);
+
+      expect(createProductVariation).toMatchObject({
+        texts: {
+          title: 'product variation title',
+        },
+        key: 'key-1',
+        type: 'COLOR',
+      });
+    });
+
+    it('return error when passed non CONFIGURABLE_PRODUCT product type', async () => {
+      const { errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation CreateProductVariation(
+            $productId: ID!
+            $variation: CreateProductVariationInput!
+          ) {
+            createProductVariation(
+              productId: $productId
+              variation: $variation
+            ) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          productId: PlanProduct._id,
+          variation: {
+            key: 'key-1',
+            type: 'COLOR',
+            title: 'product variation title',
+          },
+        },
+      });
+
+      expect(errors?.[0]?.extensions).toMatchObject({
+        code: 'ProductWrongStatusError',
+        recieved: PlanProduct.type,
+        required: 'CONFIGURABLE_PRODUCT',
+      });
     });
 
     it('return error when passed non existing product ID', async () => {
