@@ -7,7 +7,7 @@ import {
 import {
   ProductNotFoundError,
   InvalidIdError,
-  ProductWrongStatusError,
+  ProductWrongTypeError,
 } from '../../errors';
 
 export default function createProductVariation(
@@ -21,7 +21,8 @@ export default function createProductVariation(
 
   if (!product) throw new ProductNotFoundError({ productId });
   if (product.type !== ProductTypes.ConfigurableProduct)
-    throw new ProductWrongStatusError({
+    throw new ProductWrongTypeError({
+      productId,
       recieved: product.type,
       required: ProductTypes.ConfigurableProduct,
     });

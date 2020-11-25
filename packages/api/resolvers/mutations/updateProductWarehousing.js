@@ -3,7 +3,7 @@ import { Products, ProductTypes } from 'meteor/unchained:core-products';
 import {
   ProductNotFoundError,
   InvalidIdError,
-  ProductWrongStatusError,
+  ProductWrongTypeError,
 } from '../../errors';
 
 export default function updateProductWarehousing(
@@ -16,7 +16,7 @@ export default function updateProductWarehousing(
   const productObject = Products.updateProduct({ productId, warehousing });
   if (!productObject) throw new ProductNotFoundError({ productId });
   if (productObject.type !== ProductTypes.SimpleProduct)
-    throw new ProductWrongStatusError({
+    throw new ProductWrongTypeError({
       productId,
       recieved: productObject.type,
       required: ProductTypes.SimpleProduct,
