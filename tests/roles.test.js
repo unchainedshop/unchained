@@ -1,8 +1,9 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { describe, test, expect } from '@jest/globals';
 import { setupDatabase } from './helpers';
-import { Roles } from '../packages/roles/index';
+import { User } from './seeds/users';
 import { isFunction, has } from '../packages/roles/helpers';
+import { Roles } from '../packages/roles/index';
 
 let connection;
 let db;
@@ -50,6 +51,19 @@ describe('Roles', () => {
         expect.arrayContaining([helperFn]),
       );
     });
+  });
+
+  describe('Attach and Retrieve Roles', () => {
+    // it('should add roles to user document', async () => {
+    //   const val = Roles.addUserToRoles(User._id, 'test_role');
+    //   console.log('VAL: ', val);
+    //   const { roles } = await db.collection('users').findOne({ _id: User._id });
+    //   expect(roles).toEqual(expect.arrayContaining(['test_role']));
+    // });
+    // it('should get roles attach to user', () => {
+    //   Roles.addUserToRoles(User._id, 'test_role');
+    //   console.log('WWWWWWWWWWWWWW: ', Roles.getUserRoles(User._id));
+    // });
   });
 
   describe('Role Helper Registration', () => {

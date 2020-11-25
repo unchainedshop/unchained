@@ -3,6 +3,8 @@ import { check, Match } from '@share911/meteor-check';
 import clone from 'lodash.clone';
 import { has, isFunction } from './helpers';
 
+console.log('IMPORTED', Users);
+
 /**
  * Init the variable
  */
@@ -17,7 +19,6 @@ Roles.debug = false;
 Roles.roles = {};
 Roles.actions = [];
 Roles.helpers = [];
-Roles.usersCollection = Users;
 Roles.specialRoles = [
   '__loggedIn__',
   '__notAdmin__',
@@ -156,13 +157,10 @@ Roles.Role.prototype.helper = function (helper, func) {
 /**
  * Get user roles
  */
-Roles.getUserRoles = function (userId, includeSpecial) {
+Roles.getUserRoles = (userId, includeSpecial) => {
   check(userId, Match.OneOf(String, null, undefined));
   check(includeSpecial, Match.Optional(Boolean));
-  const object = Roles.usersCollection.findOne(
-    { _id: userId },
-    { fields: { roles: 1 } }
-  );
+  const object = Users.findOne({ _id: userId }, { fields: { roles: 1 } });
   const roles = (object && object.roles) || [];
   if (includeSpecial) {
     roles.push('__all__');
@@ -258,14 +256,14 @@ Roles.userHasPermission = function (...args) {
 /**
  * Adds roles to a user
  */
-Roles.addUserToRoles = async function (userId, roles) {
+Roles.addUserToRoles = function (userId, roles) {
   check(userId, String);
   check(roles, Match.OneOf(String, Array));
   let userRoles = roles;
   if (!Array.isArray(userRoles)) {
     userRoles = [userRoles];
   }
-
+  console.log('UPDATE: ', Users);
   return Users.update(
     { _id: userId },
     { $addToSet: { roles: { $each: userRoles } } }

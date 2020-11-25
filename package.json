@@ -21,8 +21,8 @@
     "lint": "eslint packages tests --cache --fix --ext=jsx --ext=js",
     "pretest": "npm run lint --silent",
     "lint:ci": "eslint packages tests --ext=jsx --ext=js",
-    "test": "jest --runInBand tests/*",
-    "test:ci": "jest --ci --runInBand tests/*",
+    "test": "jest --runInBand --detectOpenHandles --forceExit tests/*",
+    "test:ci": "jest --ci --runInBand --detectOpenHandles --forceExit tests/*",
     "test:watch": "cross-env DEBUG=jest-mongodb:* jest --runInBand --watch --verbose tests/*",
     "dev": "run-p --print-label dev:*",
     "dev:minimal": "cd examples/minimal && npm run dev",
@@ -47,6 +47,7 @@
     "eslint-plugin-import": "^2.22.1",
     "eslint-plugin-jsx-a11y": "^6.4.1",
     "eslint-plugin-prettier": "^3.1.4",
+    "fibers": "^5.0.0",
     "form-data": "^3.0.0",
     "graphql": "^15.4.0",
     "graphql-tag": "^2.11.0",
@@ -61,6 +62,7 @@
     "extends": "@meteorjs/eslint-config-meteor"
   },
   "dependencies": {
+    "mongo-lazy-connect": "^2.3.0",
     "subscriptions-transport-ws": "^0.9.18"
   }
 }
