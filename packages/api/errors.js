@@ -38,6 +38,12 @@ export const ProductWrongStatusError = createError(
   'ProductWrongStatusError',
   'The current status of the product does not allow this operation'
 );
+
+export const ProductWrongTypeError = createError(
+  'ProductWrongTypeError',
+  'The current type of the product does not allow this operation'
+);
+
 export const AssortmentNotFoundError = createError(
   'AssortmentNotFoundError',
   'Assortment not found'
