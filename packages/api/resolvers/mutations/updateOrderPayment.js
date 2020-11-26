@@ -1,8 +1,6 @@
 import { log } from 'meteor/unchained:core-logger';
-import {
-  OrderPayments,
-  PaymentProviderType,
-} from 'meteor/unchained:core-orders';
+import { OrderPayments } from 'meteor/unchained:core-orders';
+import { PaymentProviderType } from 'meteor/unchained:core-payment';
 import {
   OrderPaymentNotFoundError,
   InvalidIdError,
@@ -34,10 +32,12 @@ export default function updateOrderPayment(
   const orderPayment = OrderPayments.findOne({ _id: orderPaymentId });
   if (!orderPayment)
     throw new OrderPaymentNotFoundError({ data: { orderPaymentId } });
-  if (orderPayment.provider.type !== PAYMENT_UPDATE_ENDPOINT[fieldName])
+  const providerType = orderPayment?.provider()?.type;
+
+  if (providerType !== PAYMENT_UPDATE_ENDPOINT[fieldName])
     throw new OrderPaymentTypeError({
       orderPaymentId,
-      recieved: orderPayment.provider.type,
+      recieved: providerType,
       required: PAYMENT_UPDATE_ENDPOINT[fieldName],
     });
   return orderPayment.updateContext(context);

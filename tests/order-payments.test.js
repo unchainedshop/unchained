@@ -123,7 +123,7 @@ describe('Order: Payments', () => {
     });
   });
 
-  describe('Mutation.updateOrderPaymentInvoice / Mutation.updateOrderPaymentCard', () => {
+  describe('Mutation.updateOrderPaymentInvoice', () => {
     it('update order payment (invoice & card)', async () => {
       const { data: { updateOrderPaymentInvoice } = {} } = await graphqlFetch({
         query: /* GraphQL */ `
@@ -138,6 +138,7 @@ describe('Order: Payments', () => {
               _id
               meta
               provider {
+                _id
                 type
               }
             }
@@ -150,12 +151,46 @@ describe('Order: Payments', () => {
           },
         },
       });
-      console.log(updateOrderPaymentInvoice);
+
       expect(updateOrderPaymentInvoice).toMatchObject({
         _id: SimplePayment._id,
         meta: {
           john: 'wayne',
         },
+        provider: {
+          type: 'INVOICE',
+        },
+      });
+    });
+
+    it('return error when order payment provider type is not INVOICE', async () => {
+      const { errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation updateOrderPaymentInvoice(
+            $orderPaymentId: ID!
+            $meta: JSON
+          ) {
+            updateOrderPaymentInvoice(
+              orderPaymentId: $orderPaymentId
+              meta: $meta
+            ) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          orderPaymentId: GenericPayment._id,
+          meta: {
+            john: 'wayne',
+          },
+        },
+      });
+
+      expect(errors?.[0]?.extensions).toMatchObject({
+        orderPaymentId: GenericPayment._id,
+        code: 'OrderPaymentTypeError',
+        recieved: 'GENERIC',
+        required: 'INVOICE',
       });
     });
   });
