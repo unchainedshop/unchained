@@ -12,6 +12,7 @@ export default function removeProductAssignment(
   { userId }
 ) {
   log(`mutation removeProductAssignment ${proxyId}`, { userId });
+
   if (!proxyId) throw new InvalidIdError({ proxyId });
   const product = Products.findOne({ _id: proxyId });
   if (!product) throw new ProductNotFoundError({ proxyId });

@@ -1,5 +1,6 @@
 import { log } from 'meteor/unchained:core-logger';
 import { Products, ProductTypes } from 'meteor/unchained:core-products';
+
 import {
   ProductNotFoundError,
   InvalidIdError,
@@ -8,6 +9,7 @@ import {
 
 export default function createProductBundleItem(root, { productId, item }) {
   log(`mutation createProductBundleItem ${productId}`, { item });
+
   if (!productId) throw new InvalidIdError({ productId });
   if (!item.productId)
     throw new InvalidIdError({ bundleItemId: item.productId });
