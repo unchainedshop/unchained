@@ -140,6 +140,10 @@ describe('Order: Deliveries', () => {
               ) {
                 _id
                 meta
+                provider {
+                  _id
+                  type
+                }
                 address {
                   firstName
                   lastName
@@ -170,6 +174,9 @@ describe('Order: Deliveries', () => {
         _id: SimpleDelivery._id,
         meta: {
           john: 'wayne',
+        },
+        provider: {
+          type: 'SHIPPING',
         },
         address: {
           firstName: 'Will',
@@ -216,7 +223,7 @@ describe('Order: Deliveries', () => {
   });
 
   describe('Mutation.updateOrderDeliveryPickUp', () => {
-    it('update order delivery (pickup)', async () => {
+    it('update order delivery pickup successfuly when order delivery provider type is PICKUP', async () => {
       const { data: { updateOrderDeliveryPickUp } = {} } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation updateOrderDeliveryPickUp(
@@ -268,6 +275,39 @@ describe('Order: Deliveries', () => {
           geoPoint: null,
           name: 'Zurich',
         },
+      });
+    });
+
+    it('return error when order delivery provider type is not PICKUP', async () => {
+      const { errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation updateOrderDeliveryPickUp(
+            $orderDeliveryId: ID!
+            $orderPickUpLocationId: ID!
+            $meta: JSON
+          ) {
+            updateOrderDeliveryPickUp(
+              orderDeliveryId: $orderDeliveryId
+              orderPickUpLocationId: $orderPickUpLocationId
+              meta: $meta
+            ) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          orderDeliveryId: SimpleDelivery._id,
+          orderPickUpLocationId: 'zurich',
+          meta: {
+            john: 'wayne',
+          },
+        },
+      });
+      expect(errors?.[0]?.extensions).toMatchObject({
+        orderDeliveryId: SimpleDelivery._id,
+        code: 'OrderDeliveryTypeError',
+        recieved: 'SHIPPING',
+        required: 'PICKUP',
       });
     });
   });
