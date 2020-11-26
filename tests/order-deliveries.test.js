@@ -124,7 +124,7 @@ describe('Order: Deliveries', () => {
   });
 
   describe('Mutation.updateOrderDeliveryShipping', () => {
-    it('update order delivery (shipping)', async () => {
+    it('update order delivery shipping successfuly when order delivery provider type is SHIPPING', async () => {
       const { data: { updateOrderDeliveryShipping } = {} } = await graphqlFetch(
         {
           query: /* GraphQL */ `
@@ -177,6 +177,42 @@ describe('Order: Deliveries', () => {
         },
       });
     });
+
+    it('return error when order delivery provider type is not SHIPPING', async () => {
+      const { errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation updateOrderDeliveryShipping(
+            $orderDeliveryId: ID!
+            $address: AddressInput
+            $meta: JSON
+          ) {
+            updateOrderDeliveryShipping(
+              orderDeliveryId: $orderDeliveryId
+              address: $address
+              meta: $meta
+            ) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          orderDeliveryId: PickupDelivery._id,
+          address: {
+            firstName: 'Will',
+            lastName: 'Turner',
+          },
+          meta: {
+            john: 'wayne',
+          },
+        },
+      });
+      expect(errors?.[0]?.extensions).toMatchObject({
+        orderDeliveryId: PickupDelivery._id,
+        code: 'OrderDeliveryTypeError',
+        recieved: 'PICKUP',
+        required: 'SHIPPING',
+      });
+    });
   });
 
   describe('Mutation.updateOrderDeliveryPickUp', () => {
@@ -195,6 +231,10 @@ describe('Order: Deliveries', () => {
             ) {
               _id
               meta
+              provider {
+                _id
+                type
+              }
               activePickUpLocation {
                 _id
                 name
@@ -220,6 +260,9 @@ describe('Order: Deliveries', () => {
         meta: {
           john: 'wayne',
         },
+        provider: {
+          type: 'PICKUP',
+        },
         activePickUpLocation: {
           _id: 'zurich',
           geoPoint: null,
@@ -227,9 +270,5 @@ describe('Order: Deliveries', () => {
         },
       });
     });
-  });
-
-  describe('Mutation.updateOrderDelivery', () => {
-    it.todo('all tests');
   });
 });

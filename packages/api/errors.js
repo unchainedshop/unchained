@@ -138,6 +138,12 @@ export const OrderWrongDeliveryStatusError = createError(
   'OrderWrongDeliveryStatus',
   'The current status of the delivery does not allow this operation'
 );
+
+export const OrderDeliveryTypeError = createError(
+  'OrderDeliveryTypeError',
+  'The current type of the order delivery does not allow this operation'
+);
+
 export const OrderWrongStatusError = createError(
   'OrderWrongStatusError',
   'The current status of the order does not allow this operation'
