@@ -117,9 +117,15 @@ export const OrderDeliveryNotFoundError = createError(
   'Order delivery not found'
 );
 export const OrderPaymentNotFoundError = createError(
-  'OrderDeliveryNotFoundError',
-  'Order delivery not found'
+  'OrderPaymentNotFoundError',
+  'Order payment not found'
 );
+
+export const OrderPaymentTypeError = createError(
+  'OrderPaymentTypeError',
+  'The current type of the order payment does not allow this operation'
+);
+
 export const OrderQuantityTooLowError = createError(
   'OrderQuantityTooLowError',
   'Quantity cannot be lower than 1'

@@ -137,6 +137,9 @@ describe('Order: Payments', () => {
             ) {
               _id
               meta
+              provider {
+                type
+              }
             }
           }
         `,
@@ -147,6 +150,7 @@ describe('Order: Payments', () => {
           },
         },
       });
+      console.log(updateOrderPaymentInvoice);
       expect(updateOrderPaymentInvoice).toMatchObject({
         _id: SimplePayment._id,
         meta: {
