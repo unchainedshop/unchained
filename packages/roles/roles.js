@@ -3,8 +3,6 @@ import { check, Match } from '@share911/meteor-check';
 import clone from 'lodash.clone';
 import { has, isFunction } from './helpers';
 
-console.log('IMPORTED', Users);
-
 /**
  * Init the variable
  */
@@ -89,7 +87,6 @@ Roles.Role = function (name) {
 Roles.Role.prototype.allow = function (action, allow) {
   check(action, String);
   check(allow, Match.Any);
-
   if (!Roles.actions.includes(action)) {
     Roles.registerAction(action);
   }
@@ -100,7 +97,6 @@ Roles.Role.prototype.allow = function (action, allow) {
       return clonedValue;
     };
   }
-
   this.allowRules[action] = this.allowRules[action] || [];
   this.allowRules[action].push(allowFn);
 };
@@ -183,7 +179,6 @@ Roles.getUserRoles = (userId, includeSpecial) => {
 Roles.allow = function (userId, action) {
   check(userId, Match.OneOf(String, null, undefined));
   check(action, String);
-
   // eslint-disable-next-line prefer-rest-params
   const args = Object.values(arguments).slice(2);
   const self = this;
@@ -193,7 +188,6 @@ Roles.allow = function (userId, action) {
 
   roles.forEach((role) => {
     if (
-      !allowed &&
       self.roles[role] &&
       self.roles[role].allowRules &&
       self.roles[role].allowRules[action]
@@ -224,7 +218,6 @@ Roles.deny = function (userId, action, ...rest) {
 
   roles.forEach((role) => {
     if (
-      !denied &&
       this.roles[role] &&
       this.roles[role].denyRules &&
       this.roles[role].denyRules[action]
@@ -240,7 +233,6 @@ Roles.deny = function (userId, action, ...rest) {
       });
     }
   });
-
   return denied;
 };
 
@@ -263,7 +255,7 @@ Roles.addUserToRoles = function (userId, roles) {
   if (!Array.isArray(userRoles)) {
     userRoles = [userRoles];
   }
-  console.log('UPDATE: ', Users);
+
   return Users.update(
     { _id: userId },
     { $addToSet: { roles: { $each: userRoles } } }

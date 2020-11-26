@@ -1,6 +1,5 @@
 aldeed:collection2@3.2.1
 allow-deny@1.1.0
-autoupdate@1.6.0
 babel-compiler@7.5.3
 babel-runtime@1.5.0
 base64@1.0.12
@@ -25,15 +24,12 @@ email@2.0.0
 es5-shim@4.8.0
 fetch@0.1.1
 geojson-utils@1.0.10
-hot-code-push@1.0.4
 http@1.4.2
 id-map@1.1.0
 inter-process-messaging@0.1.1
 littledata:synced-cron@1.5.1
-livedata@1.0.18
 logging@1.1.20
 meteor@1.9.3
-meteor-base@1.4.0
 minimongo@1.6.0
 modern-browsers@0.1.5
 modules@0.15.0

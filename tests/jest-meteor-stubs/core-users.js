@@ -1,21 +1,26 @@
-const Fiber = require('fibers');
-const Future = require('fibers/future');
-const wrapInFiber = require('./wrapInFiber');
+const sinon = require('sinon');
+require('sinon-mongo');
 
-const fn = Future.wrap(wrapInFiber);
-const future = new Future();
-console.log('FARSIGHT:', future);
-Fiber(function () {
-  const db = fn({
-    url: global.__MONGO_URI__,
-    config: { useNewUrlParser: true, useUnifiedTopology: true },
-    databaseName: global.__MONGO_DB_NAME__,
-    collections: ['users'],
-  }).wait();
-  console.log('SUPPOSED VALUE: ', db);
-  return future.return(db.users);
-}).run();
+const Users = sinon.mongo.collection({
+  update: sinon
+    .stub()
+    .withArgs(
+      { _id: 'user' },
+      { $addToSet: { roles: { $each: ['test_role'] } } },
+    )
+    .returns({ ok: 1, nModified: 1, n: 1 }),
+});
 
-console.log('EXPORTED FUTURE: ', future);
+Users.findOne
+  .withArgs({ _id: 'admin' }, { fields: { roles: 1 } })
+  .returns({ _id: 'admin', roles: ['test_role', 'admin'] });
 
-module.exports.Users = future;
+Users.findOne
+  .withArgs({ _id: 'user' }, { fields: { roles: 1 } })
+  .returns({ _id: 'user', roles: ['test_role'] });
+
+Users.findOne
+  .withArgs({ _id: 'permission_user' }, { fields: { roles: 1 } })
+  .returns({ _id: 'permission_user', roles: ['permission_test_role'] });
+
+module.exports.Users = Users;

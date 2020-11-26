@@ -53,17 +53,58 @@ describe('Roles', () => {
     });
   });
 
-  describe('Attach and Retrieve Roles', () => {
-    // it('should add roles to user document', async () => {
-    //   const val = Roles.addUserToRoles(User._id, 'test_role');
-    //   console.log('VAL: ', val);
-    //   const { roles } = await db.collection('users').findOne({ _id: User._id });
-    //   expect(roles).toEqual(expect.arrayContaining(['test_role']));
-    // });
-    // it('should get roles attach to user', () => {
-    //   Roles.addUserToRoles(User._id, 'test_role');
-    //   console.log('WWWWWWWWWWWWWW: ', Roles.getUserRoles(User._id));
-    // });
+  describe('Add allow and deny to role', () => {
+    it('allow', async () => {
+      const testRole = new Roles.Role('permission_test_role');
+      testRole.allow('view_data', () => true);
+
+      expect(Roles.userHasPermission('permission_user', 'view_data')).toBe(
+        true,
+      );
+    });
+  });
+
+  describe('Retrieve Roles', () => {
+    it('should add roles to user document', async () => {
+      const result = Roles.addUserToRoles(User._id, 'test_role');
+      expect(result).toMatchObject({ ok: 1, nModified: 1, n: 1 });
+    });
+
+    it('should get roles attach to user', () => {
+      const roles = Roles.getUserRoles(User._id);
+      expect(roles).toEqual(expect.arrayContaining(['test_role']));
+    });
+
+    it('should get roles including special ones', () => {
+      const roles = Roles.getUserRoles(User._id, true);
+      expect(roles).toEqual(
+        expect.arrayContaining([
+          'test_role',
+          '__all__',
+          '__loggedIn__',
+          '__notAdmin__',
+        ]),
+      );
+    });
+
+    it('should get admin user roles including special ones', () => {
+      const roles = Roles.getUserRoles('admin', true);
+      expect(roles).toEqual(
+        expect.arrayContaining([
+          'test_role',
+          'admin',
+          '__all__',
+          '__loggedIn__',
+        ]),
+      );
+    });
+
+    it('should get roles including special ones as not logged in user', () => {
+      const roles = Roles.getUserRoles(null, true);
+      expect(roles).toEqual(
+        expect.arrayContaining(['__all__', '__notLoggedIn__']),
+      );
+    });
   });
 
   describe('Role Helper Registration', () => {
