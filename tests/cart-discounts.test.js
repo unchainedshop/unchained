@@ -148,23 +148,6 @@ describe('Cart: Discounts', () => {
 
       expect(errors[0]?.extensions?.code).toEqual('OrderNotFoundError');
     });
-
-    it('return error when invalid orderId is provided', async () => {
-      const { errors } = await graphqlFetch({
-        query: /* GraphQL */ `
-          mutation addCartDiscount($orderId: ID) {
-            addCartDiscount(orderId: $orderId, code: "100off") {
-              code
-            }
-          }
-        `,
-        variables: {
-          orderId: '',
-        },
-      });
-
-      expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
-    });
   });
 
   describe('Mutation.removeCartDiscount', () => {
