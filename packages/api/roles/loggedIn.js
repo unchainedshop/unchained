@@ -81,9 +81,12 @@ export default (role, actions) => {
     return isOwnedOrder(null, { orderId }, { userId });
   };
 
-  const isOwnedProductReview = (root, { productReviewId }, { userId }) =>
-    ProductReviews.findReviewById(productReviewId).userId === userId;
-
+  const isOwnedProductReview = (root, middle, { userId }) => {
+    return (
+      ProductReviews.findReviewById(middle.productReviewId) &&
+      ProductReviews.findReviewById(middle.productReviewId).userId === userId
+    );
+  };
   const isOwnedQuotation = (root, { quotationId }, { userId }) =>
     Quotations.find({
       _id: quotationId,

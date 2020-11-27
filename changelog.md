@@ -1,5 +1,9 @@
 # vNext
 
+# Breaking Changes
+
+- [unchained:roles] Unchained roles package got refactored only keeping a subset of the previous APIs. 
+
 # v0.55.2
 
 # Breaking Changes
