@@ -27,10 +27,9 @@ Roles.specialRoles = [
 /**
  * Creates a new action
  */
-Roles.registerAction = function (name, adminAllow, adminDeny) {
+Roles.registerAction = function (name, adminAllow) {
   check(name, String);
   check(adminAllow, Match.Optional(Match.Any));
-  check(adminDeny, Match.Optional(Match.Any));
 
   if (!this.actions.includes(name)) {
     this.actions.push(name);
@@ -38,10 +37,6 @@ Roles.registerAction = function (name, adminAllow, adminDeny) {
 
   if (adminAllow) {
     Roles.adminRole.allow(name, adminAllow);
-  }
-
-  if (adminDeny) {
-    Roles.adminRole.deny(name, adminDeny);
   }
 };
 
@@ -75,7 +70,6 @@ Roles.Role = function (name) {
 
   this.name = name;
   this.allowRules = {};
-  this.denyRules = {};
   this.helpers = {};
 
   Roles.roles[name] = this;
@@ -99,28 +93,6 @@ Roles.Role.prototype.allow = function (action, allow) {
   }
   this.allowRules[action] = this.allowRules[action] || [];
   this.allowRules[action].push(allowFn);
-};
-
-/**
- * Adds deny properties to a role
- */
-Roles.Role.prototype.deny = function (action, deny) {
-  check(action, String);
-  check(deny, Match.Any);
-
-  if (!Roles.actions.includes(action)) {
-    Roles.registerAction(action);
-  }
-  let denyFn = deny;
-  if (!isFunction(denyFn)) {
-    const clonedValue = clone(denyFn);
-    denyFn = function () {
-      return clonedValue;
-    };
-  }
-
-  this.denyRules[action] = this.denyRules[action] || [];
-  this.denyRules[action].push(denyFn);
 };
 
 /**
@@ -205,44 +177,11 @@ Roles.allow = function (userId, action) {
 };
 
 /**
- * Returns if the user has permission using deny and deny
- */
-Roles.deny = function (userId, action, ...rest) {
-  check(userId, Match.OneOf(String, null, undefined));
-  check(action, String);
-
-  const args = Object.values(rest).slice(2);
-  const context = { userId };
-  let denied = false;
-  const roles = Roles.getUserRoles(userId, true);
-
-  roles.forEach((role) => {
-    if (
-      this.roles[role] &&
-      this.roles[role].denyRules &&
-      this.roles[role].denyRules[action]
-    ) {
-      this.roles[role].denyRules[action].forEach((func) => {
-        const denies = func.apply(context, args);
-        if (denies === true) {
-          denied = true;
-          if (Roles.debug) {
-            console.log(`[${action}] denied for ${userId} with role ${role}`);
-          }
-        }
-      });
-    }
-  });
-  return denied;
-};
-
-/**
  * To check if a user has permisisons to execute an action
  */
 Roles.userHasPermission = function (...args) {
   const allows = this.allow(...args);
-  const denies = this.deny(...args);
-  return allows === true && denies === false;
+  return allows === true;
 };
 
 /**

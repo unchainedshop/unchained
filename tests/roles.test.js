@@ -36,14 +36,6 @@ describe('Roles', () => {
       );
     });
 
-    it('it should register action rule', () => {
-      const denyFn = () => false;
-      testRole.deny(actionName, denyFn);
-      expect(testRole.denyRules[actionName]).toEqual(
-        expect.arrayContaining([denyFn]),
-      );
-    });
-
     it('should register a helper', () => {
       const helperFn = () => true;
       testRole.helper('test_helper', helperFn);
@@ -149,7 +141,6 @@ describe('Roles', () => {
       expect(new Roles.Role('test_role')).toMatchObject({
         name: 'test_role',
         allowRules: {},
-        denyRules: {},
         helpers: {},
       });
     });
