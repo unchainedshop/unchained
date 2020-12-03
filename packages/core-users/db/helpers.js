@@ -53,12 +53,10 @@ Users.helpers({
     return Avatars.findOne({ _id: this.avatarId });
   },
   primaryEmail() {
-    return (this.emails || [])
-      .sort(
-        ({ verified: verifiedLeft }, { verified: verifiedRight }) =>
-          verifiedLeft - verifiedRight
-      )
-      .pop();
+    return (this.emails || []).sort(
+      ({ verified: verifiedLeft }, { verified: verifiedRight }) =>
+        verifiedRight - verifiedLeft
+    )?.[0];
   },
   email() {
     log('user.email is deprecated, please use user.primaryEmail.verified', {
