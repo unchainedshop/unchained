@@ -406,7 +406,14 @@ export default [
       """
       Add a new media to a product's visualization
       """
-      addProductMedia(productId: ID!, media: Upload!): ProductMedia!
+      addProductMedia(
+        productId: ID!
+        media: Upload
+        href: String
+        name: String
+        meta: JSON
+        tags: [String!]
+      ): ProductMedia!
 
       """
       Remove a media asset from a product's visualization
