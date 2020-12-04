@@ -1,5 +1,4 @@
 import { Users } from 'meteor/unchained:core-users';
-import { check, Match } from '@share911/meteor-check';
 import clone from 'lodash.clone';
 import { has, isFunction } from './helpers';
 
@@ -28,9 +27,6 @@ Roles.specialRoles = [
  * Creates a new action
  */
 Roles.registerAction = function (name, adminAllow) {
-  check(name, String);
-  check(adminAllow, Match.Optional(Match.Any));
-
   if (!this.actions.includes(name)) {
     this.actions.push(name);
   }
@@ -44,9 +40,6 @@ Roles.registerAction = function (name, adminAllow) {
  * Creates a new helper
  */
 Roles.registerHelper = function (name, adminHelper) {
-  check(name, String);
-  check(adminHelper, Match.Any);
-
   if (!this.helpers.includes(name)) {
     this.helpers.push(name);
   }
@@ -60,8 +53,6 @@ Roles.registerHelper = function (name, adminHelper) {
  * Constructs a new role
  */
 Roles.Role = function (name) {
-  check(name, String);
-
   if (!(this instanceof Roles.Role))
     throw new Error('use "new" to construct a role');
 
@@ -79,8 +70,6 @@ Roles.Role = function (name) {
  * Adds allow properties to a role
  */
 Roles.Role.prototype.allow = function (action, allow) {
-  check(action, String);
-  check(allow, Match.Any);
   if (!Roles.actions.includes(action)) {
     Roles.registerAction(action);
   }
@@ -99,9 +88,6 @@ Roles.Role.prototype.allow = function (action, allow) {
  * Adds a helper to a role
  */
 Roles.Role.prototype.helper = function (helper, func) {
-  check(helper, String);
-  check(func, Match.Any);
-
   if (!Roles.helpers.includes(helper)) {
     Roles.registerHelper(helper);
   }
@@ -126,8 +112,6 @@ Roles.Role.prototype.helper = function (helper, func) {
  * Get user roles
  */
 Roles.getUserRoles = (userId, includeSpecial) => {
-  check(userId, Match.OneOf(String, null, undefined));
-  check(includeSpecial, Match.Optional(Boolean));
   const object = Users.findOne({ _id: userId }, { fields: { roles: 1 } });
   const roles = (object && object.roles) || [];
   if (includeSpecial) {
@@ -149,8 +133,6 @@ Roles.getUserRoles = (userId, includeSpecial) => {
  * Returns if the user passes the allow check
  */
 Roles.allow = function (userId, action) {
-  check(userId, Match.OneOf(String, null, undefined));
-  check(action, String);
   // eslint-disable-next-line prefer-rest-params
   const args = Object.values(arguments).slice(2);
   const self = this;
@@ -188,8 +170,6 @@ Roles.userHasPermission = function (...args) {
  * Adds roles to a user
  */
 Roles.addUserToRoles = function (userId, roles) {
-  check(userId, String);
-  check(roles, Match.OneOf(String, Array));
   let userRoles = roles;
   if (!Array.isArray(userRoles)) {
     userRoles = [userRoles];
