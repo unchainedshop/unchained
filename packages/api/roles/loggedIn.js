@@ -83,8 +83,7 @@ export default (role, actions) => {
 
   const isOwnedProductReview = (root, middle, { userId }) => {
     return (
-      ProductReviews.findReviewById(middle.productReviewId) &&
-      ProductReviews.findReviewById(middle.productReviewId).userId === userId
+      ProductReviews.findReviewById(middle.productReviewId)?.userId === userId
     );
   };
   const isOwnedQuotation = (root, { quotationId }, { userId }) =>
