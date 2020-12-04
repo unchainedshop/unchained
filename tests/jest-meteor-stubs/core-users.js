@@ -1,5 +1,5 @@
-const sinon = require('sinon');
-require('sinon-mongo');
+import sinon from 'sinon';
+import 'sinon-mongo';
 
 const Users = sinon.mongo.collection({
   update: sinon
