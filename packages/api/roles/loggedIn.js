@@ -121,11 +121,8 @@ export default (role, actions) => {
   role.allow(actions.updateOrder, isOwnedOrder);
   role.allow(actions.updateOrderItem, isOwnedOrderItem);
   role.allow(actions.updateOrderDiscount, isOwnedOrderDiscount);
-  role.allow(actions.updateOrderDeliveryPickUp, isOwnedOrderDelivery);
-  role.allow(actions.updateOrderDeliveryShipping, isOwnedOrderDelivery);
-  role.allow(actions.updateOrderPaymentGeneric, isOwnedOrderPayment);
-  role.allow(actions.updateOrderPaymentInvoice, isOwnedOrderPayment);
-  role.allow(actions.updateOrderPaymentCard, isOwnedOrderPayment);
+  role.allow(actions.updateOrderDelivery, isOwnedOrderDelivery);
+  role.allow(actions.updateOrderPayment, isOwnedOrderPayment);
   role.allow(actions.checkoutCart, isOwnedOrderOrCart);
   role.allow(actions.updateCart, isOwnedOrderOrCart);
   role.allow(actions.createCart, () => true);

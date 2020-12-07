@@ -222,19 +222,19 @@ export default {
   removeCartDiscount: acl(actions.updateOrderDiscount)(removeCartDiscount),
   setOrderPaymentProvider: acl(actions.updateOrder)(setOrderPaymentProvider),
   setOrderDeliveryProvider: acl(actions.updateOrder)(setOrderDeliveryProvider),
-  updateOrderDeliveryShipping: acl(actions.updateOrderDeliveryShipping)(
+  updateOrderDeliveryShipping: acl(actions.updateOrderDelivery)(
     updateOrderDeliveryShipping
   ),
-  updateOrderDeliveryPickUp: acl(actions.updateOrderDeliveryPickUp)(
+  updateOrderDeliveryPickUp: acl(actions.updateOrderDelivery)(
     updateOrderDeliveryPickUp
   ),
-  updateOrderPaymentGeneric: acl(actions.updateOrderPaymentGeneric)(
+  updateOrderPaymentGeneric: acl(actions.updateOrderPayment)(
     updateOrderPaymentGeneric
   ),
-  updateOrderPaymentCard: acl(actions.updateOrderPaymentCard)(
+  updateOrderPaymentCard: acl(actions.updateOrderPayment)(
     updateOrderPaymentCard
   ),
-  updateOrderPaymentInvoice: acl(actions.updateOrderPaymentInvoice)(
+  updateOrderPaymentInvoice: acl(actions.updateOrderPayment)(
     updateOrderPaymentInvoice
   ),
   removeOrder: acl(actions.updateOrder)(removeOrder),
