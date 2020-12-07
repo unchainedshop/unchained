@@ -7,21 +7,14 @@ import {
   OrderPaymentTypeError,
 } from '../../errors';
 
-const PAYMENT_UPDATE_ENDPOINT = {
-  updateOrderPaymentCard: PaymentProviderType.CARD,
-  updateOrderPaymentInvoice: PaymentProviderType.INVOICE,
-  updateOrderPaymentGeneric: PaymentProviderType.GENERIC,
-};
-
-export default function updateOrderPayment(
+export default function updateOrderPaymentInvoice(
   root,
   { orderPaymentId, ...context },
-  { userId },
-  { fieldName }
+  { userId }
 ) {
   log(
-    `mutation updateOrderPayment ${orderPaymentId} ${JSON.stringify(
-      fieldName
+    `mutation updateOrderPaymentInvoice ${orderPaymentId} ${JSON.stringify(
+      context
     )}`,
     {
       userId,
@@ -33,12 +26,11 @@ export default function updateOrderPayment(
   if (!orderPayment)
     throw new OrderPaymentNotFoundError({ data: { orderPaymentId } });
   const providerType = orderPayment?.provider()?.type;
-
-  if (providerType !== PAYMENT_UPDATE_ENDPOINT[fieldName])
+  if (providerType !== PaymentProviderType.INVOICE)
     throw new OrderPaymentTypeError({
       orderPaymentId,
       received: providerType,
-      required: PAYMENT_UPDATE_ENDPOINT[fieldName],
+      required: PaymentProviderType.INVOICE,
     });
   return orderPayment.updateContext(context);
 }

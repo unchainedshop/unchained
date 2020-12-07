@@ -15,13 +15,14 @@ export default function createProductBundleItem(root, { productId, item }) {
     throw new InvalidIdError({ bundleItemId: item.productId });
   const product = Products.findOne(productId);
 
-  const bundleProduct = Products.findOne(item.productId);
-  if (!bundleProduct) throw new ProductNotFoundError({ productId });
+  const bundleItem = Products.findOne(item.productId);
+  if (!bundleItem)
+    throw new ProductNotFoundError({ productId: item.productId });
   if (!product) throw new ProductNotFoundError({ productId });
-  if (bundleProduct.type !== ProductTypes.BundleProduct)
+  if (bundleItem.type !== ProductTypes.BundleProduct)
     throw new ProductWrongTypeError({
       productId,
-      received: bundleProduct.type,
+      received: bundleItem.type,
       required: ProductTypes.BundleProduct,
     });
   Products.update(productId, {
