@@ -38,6 +38,13 @@ export default [
       verified: Boolean!
     }
 
+    type UserLoginTracker
+      timestamp: Date!
+      remoteAddress: String
+      locale: String
+      countryCode: String
+    }
+
     type User {
       _id: ID!
       email: String
@@ -54,6 +61,7 @@ export default [
       country: Country
       lastBillingAddress: Address
       lastContact: Contact
+      lastLogin: UserLoginTracker
       primaryEmail: UserEmail
       emails: [UserEmail!]
       roles: [String!]

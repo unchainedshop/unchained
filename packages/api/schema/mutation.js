@@ -24,7 +24,7 @@ export default [
 
       """
       Update hearbeat (updates user activity information such as last
-      login and loged in user IP address, locale and country where they
+      login and logged in user IP address, locale and country where they
       accessed the system)
       """
       heartbeat: User

@@ -26,6 +26,7 @@ export default {
     'lastBillingAddress'
   ),
   lastContact: checkTypeResolver(actions.viewUserPrivateInfos, 'lastContact'),
+  lastLogin: checkTypeResolver(actions.viewUserPrivateInfos, 'lastLogin'),
   emails: checkTypeResolver(actions.viewUserPrivateInfos, 'emails'),
   tags: checkTypeResolver(actions.viewUserPrivateInfos, 'tags'),
   bookmarks: checkTypeResolver(actions.viewUserPrivateInfos, 'bookmarks'),

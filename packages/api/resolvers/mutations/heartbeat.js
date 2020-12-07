@@ -14,7 +14,7 @@ export default function heartbeat(
     _id: userId,
     remoteAddress,
     locale: localeContext.normalized,
-    country: countryContext,
+    countryContext,
   });
   return Users.findOne({ _id: userId });
 }
