@@ -4,7 +4,7 @@ This is the documentation **source** for this repository.
 
 The **deployed** version of the documentation for this repository is available at:
 
-* https://www.apollographql.com/docs/apollo-server/
+* https://docs.unchained.shop
 
 ## Documentation for the documentation
 
