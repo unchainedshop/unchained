@@ -4,7 +4,6 @@ import {
   ProductPricingAdapter,
 } from 'meteor/unchained:core-pricing';
 
-import roundToNext50 from '../utils/roundToNext50';
 import Cache from '../utils/cache';
 
 const CACHE_PERIOD = 60 * 60 * 0.5; // 30 minutes
@@ -88,7 +87,7 @@ class ProductPriceECBIntraBankExchange extends ProductPricingAdapter {
     const convertedAmount = EURprice.amount * exchange.rate;
     this.resetCalculation();
     this.result.addItem({
-      amount: roundToNext50(convertedAmount) * quantity,
+      amount: convertedAmount * quantity,
       isTaxable: EURprice.isTaxable,
       isNetPrice: EURprice.isNetPrice,
       meta: { adapter: this.constructor.key },
