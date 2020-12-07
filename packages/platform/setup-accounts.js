@@ -2,7 +2,7 @@ import { check, Match } from 'meteor/check';
 import {
   accountsServer,
   accountsPassword,
-  randomValueHex,
+  randomValueHex
 } from 'meteor/unchained:core-accountsjs';
 import { getFallbackLocale } from 'meteor/unchained:core';
 import { Users } from 'meteor/unchained:core-users';
@@ -14,32 +14,32 @@ import moniker from 'moniker';
 
 accountsServer.users = Users;
 
-export const buildContext = (user) => {
+export const buildContext = user => {
   const locale =
     (user && user.lastLogin && user.lastLogin.locale) ||
     getFallbackLocale().normalized;
   return {
     user: user || {},
-    locale,
+    locale
   };
 };
 
 export default ({ mergeUserCartsOnLogin = true } = {}) => {
-  accountsPassword.options.validateNewUser = (user) => {
+  accountsPassword.options.validateNewUser = user => {
     const clone = cloneDeep(user);
     if (clone.email) {
       clone.emails = [
         {
           address: clone.email,
-          verified: false,
-        },
+          verified: false
+        }
       ];
       delete clone.email;
     }
     delete clone._id;
     Users.simpleSchema()
       .extend({
-        password: String,
+        password: String
       })
       .omit('created')
       .validate(clone);
@@ -47,19 +47,19 @@ export default ({ mergeUserCartsOnLogin = true } = {}) => {
     if (user?.services?.google) {
       newUser.profile = {
         name: user.services.google.name,
-        ...user.profile,
+        ...user.profile
       };
       newUser.emails = [
-        { address: user.services.google.email, verified: true },
+        { address: user.services.google.email, verified: true }
       ];
     }
     if (user?.services?.facebook) {
       newUser.profile = {
         name: user.services.facebook.name,
-        ...user.profile,
+        ...user.profile
       };
       newUser.emails = [
-        { address: user.services.facebook.email, verified: true },
+        { address: user.services.facebook.email, verified: true }
       ];
     }
     return newUser;
@@ -71,7 +71,7 @@ export default ({ mergeUserCartsOnLogin = true } = {}) => {
     return {
       email: email || `${guestname}@unchained.local`,
       guest: true,
-      profile: {},
+      profile: {}
     };
   }
 
@@ -80,7 +80,7 @@ export default ({ mergeUserCartsOnLogin = true } = {}) => {
       const guestOptions = createGuestOptions(params.email);
       const userId = await accountsPassword.createUser(guestOptions);
       return userId;
-    },
+    }
   };
 
   accountsServer.on('LoginSuccess', async ({ user, connection = {} }) => {
@@ -88,14 +88,14 @@ export default ({ mergeUserCartsOnLogin = true } = {}) => {
       userIdBeforeLogin,
       countryContext,
       remoteAddress,
-      normalizedLocale,
+      normalizedLocale
     } = connection;
 
     Users.updateHeartbeat({
-      _id: user._id,
+      userId: user._id,
       remoteAddress,
       locale: normalizedLocale,
-      countryContext,
+      countryContext
     });
     if (userIdBeforeLogin) {
       Promise.await(
@@ -104,14 +104,14 @@ export default ({ mergeUserCartsOnLogin = true } = {}) => {
           toUserId: user._id,
           locale: normalizedLocale,
           countryContext,
-          mergeCarts: mergeUserCartsOnLogin,
+          mergeCarts: mergeUserCartsOnLogin
         })
       );
       Promise.await(
         Bookmarks.migrateBookmarks({
           fromUserId: userIdBeforeLogin,
           toUserId: user._id,
-          mergeBookmarks: mergeUserCartsOnLogin,
+          mergeBookmarks: mergeUserCartsOnLogin
         })
       );
     }
@@ -123,8 +123,8 @@ export default ({ mergeUserCartsOnLogin = true } = {}) => {
         { _id: user._id },
         {
           $set: {
-            guest: false,
-          },
+            guest: false
+          }
         }
       );
     }

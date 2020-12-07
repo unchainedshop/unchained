@@ -38,7 +38,7 @@ export default [
       verified: Boolean!
     }
 
-    type UserLoginTracker
+    type UserLoginTracker {
       timestamp: Date!
       remoteAddress: String
       locale: String
@@ -74,5 +74,5 @@ export default [
       paymentCredentials: [PaymentCredentials!]!
       subscriptions: [Subscription!]!
     }
-  `,
+  `
 ];
