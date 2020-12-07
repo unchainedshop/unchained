@@ -144,7 +144,7 @@ describe('Order: Management', () => {
       expect(order._id).toEqual(SimpleOrder._id);
     });
 
-    it('return permission error when passed non existing orderId and user is not admin', async () => {
+    it('return order not found error when passed non existing orderId and user is not admin', async () => {
       const {
         data: { order },
         errors,
@@ -162,7 +162,7 @@ describe('Order: Management', () => {
       });
 
       expect(order).toBe(null);
-      expect(errors[0]?.extensions?.code).toEqual('NoPermissionError');
+      expect(errors[0]?.extensions?.code).toEqual('OrderNotFoundError');
     });
 
     it('return not found error when passed non existing orderId and user is admin', async () => {
