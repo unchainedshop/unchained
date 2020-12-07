@@ -66,8 +66,8 @@ const getEURexchangeRateForCurrency = async (currency) => {
   return response;
 };
 
-class ProductPriceEUR2FiatExchange extends ProductPricingAdapter {
-  static key = 'shop.unchained.pricing.price-EUR-fiat-exchange';
+class ProductPriceECBIntraBankExchange extends ProductPricingAdapter {
+  static key = 'shop.unchained.pricing.price-ECB-intrabank-exchange';
 
   static version = '1.0';
 
@@ -98,4 +98,4 @@ class ProductPriceEUR2FiatExchange extends ProductPricingAdapter {
   }
 }
 
-ProductPricingDirector.registerAdapter(ProductPriceEUR2FiatExchange);
+ProductPricingDirector.registerAdapter(ProductPriceECBIntraBankExchange);
