@@ -14,17 +14,17 @@ export default function createProductBundleItem(root, { productId, item }) {
   if (!item.productId)
     throw new InvalidIdError({ bundleItemId: item.productId });
   const product = Products.findOne(productId);
-
+  if (!product) throw new ProductNotFoundError({ productId });
+  if (product.type !== ProductTypes.BundleProduct)
+    throw new ProductWrongTypeError({
+      productId,
+      received: product.type,
+      required: ProductTypes.BundleProduct,
+    });
   const bundleItem = Products.findOne(item.productId);
   if (!bundleItem)
     throw new ProductNotFoundError({ productId: item.productId });
-  if (!product) throw new ProductNotFoundError({ productId });
-  if (bundleItem.type !== ProductTypes.BundleProduct)
-    throw new ProductWrongTypeError({
-      productId,
-      received: bundleItem.type,
-      required: ProductTypes.BundleProduct,
-    });
+
   Products.update(productId, {
     $set: {
       updated: new Date(),
@@ -34,5 +34,5 @@ export default function createProductBundleItem(root, { productId, item }) {
     },
   });
 
-  return product;
+  return Products.findOne(productId);
 }

@@ -65,18 +65,30 @@ describe('ProductBundleItem', () => {
               siblings {
                 _id
               }
+              ... on BundleProduct {
+                bundleItems {
+                  product {
+                    _id
+                  }
+                  quantity
+                }
+              }
             }
           }
         `,
         variables: {
-          productId: SimpleProduct._id,
+          productId: SimpleProductBundle._id,
           item: {
-            productId: SimpleProductBundle._id,
+            productId: SimpleProduct._id,
             quantity: 100,
           },
         },
       });
-      expect(createProductBundleItem._id).toEqual(SimpleProduct._id);
+
+      expect(createProductBundleItem.bundleItems?.[0]).toMatchObject({
+        product: { _id: SimpleProduct._id },
+        quantity: 100,
+      });
     });
 
     it('return error when passed non BUNDLE_PRODUCT type', async () => {
@@ -101,7 +113,7 @@ describe('ProductBundleItem', () => {
       });
       expect(errors?.[0]?.extensions).toMatchObject({
         code: 'ProductWrongTypeError',
-        received: PlanProduct.type,
+        received: SimpleProduct.type,
         required: 'BUNDLE_PRODUCT',
       });
     });
