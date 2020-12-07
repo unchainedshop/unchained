@@ -16,18 +16,16 @@ export default function addProductAssignment(
 
   if (!proxyId) throw new InvalidIdError({ proxyId });
   if (!productId) throw new InvalidIdError({ productId });
-  const product = Products.findOne({ _id: productId });
-  if (!product) throw new ProductNotFoundError({ productId });
-  if (product.type !== ProductTypes.ConfigurableProduct)
+  const childProduct = Products.findOne({ _id: productId });
+  if (!childProduct) throw new ProductNotFoundError({ productId });
+  const proxyProduct = Products.findOne({ _id: proxyId });
+  if (!proxyProduct) throw new ProductNotFoundError({ proxyId });
+  if (proxyProduct.type !== ProductTypes.ConfigurableProduct)
     throw new ProductWrongTypeError({
-      productId,
-      received: product.type,
+      proxyId,
+      received: proxyProduct.type,
       required: ProductTypes.ConfigurableProduct,
     });
-
-  const proxy = Products.findOne({ _id: proxyId });
-
-  if (!proxy) throw new ProductNotFoundError({ proxyId });
 
   const vector = {};
   vectors.forEach(({ key, value }) => {
