@@ -314,7 +314,7 @@ describe('Order: Payments', () => {
       expect(errors?.[0]?.extensions).toMatchObject({
         orderPaymentId: GenericPayment._id,
         code: 'OrderPaymentTypeError',
-        recieved: 'GENERIC',
+        received: 'GENERIC',
         required: 'INVOICE',
       });
     });
@@ -466,7 +466,7 @@ describe('Order: Payments', () => {
       expect(errors?.[0]?.extensions).toMatchObject({
         orderPaymentId: SimplePayment._id,
         code: 'OrderPaymentTypeError',
-        recieved: 'INVOICE',
+        received: 'INVOICE',
         required: 'GENERIC',
       });
     });

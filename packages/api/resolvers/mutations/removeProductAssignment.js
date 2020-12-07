@@ -19,7 +19,7 @@ export default function removeProductAssignment(
   if (product.type !== ProductTypes.ConfigurableProduct)
     throw new ProductWrongTypeError({
       productId: proxyId,
-      recieved: product.type,
+      received: product.type,
       required: ProductTypes.ConfigurableProduct,
     });
 

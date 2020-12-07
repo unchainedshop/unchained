@@ -21,7 +21,7 @@ export default function addProductAssignment(
   if (product.type !== ProductTypes.ConfigurableProduct)
     throw new ProductWrongTypeError({
       productId,
-      recieved: product.type,
+      received: product.type,
       required: ProductTypes.ConfigurableProduct,
     });
 

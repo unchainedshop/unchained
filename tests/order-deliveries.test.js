@@ -359,7 +359,7 @@ describe('Order: Deliveries', () => {
       expect(errors?.[0]?.extensions).toMatchObject({
         orderDeliveryId: PickupDelivery._id,
         code: 'OrderDeliveryTypeError',
-        recieved: 'PICKUP',
+        received: 'PICKUP',
         required: 'SHIPPING',
       });
     });
@@ -523,7 +523,7 @@ describe('Order: Deliveries', () => {
       expect(errors?.[0]?.extensions).toMatchObject({
         orderDeliveryId: SimpleDelivery._id,
         code: 'OrderDeliveryTypeError',
-        recieved: 'SHIPPING',
+        received: 'SHIPPING',
         required: 'PICKUP',
       });
     });

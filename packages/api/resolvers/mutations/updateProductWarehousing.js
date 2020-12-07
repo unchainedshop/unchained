@@ -20,7 +20,7 @@ export default function updateProductWarehousing(
   if (product?.type !== ProductTypes.SimpleProduct)
     throw new ProductWrongTypeError({
       productId,
-      recieved: product.type,
+      received: product.type,
       required: ProductTypes.SimpleProduct,
     });
 

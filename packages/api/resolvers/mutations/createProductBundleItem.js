@@ -21,7 +21,7 @@ export default function createProductBundleItem(root, { productId, item }) {
   if (bundleProduct.type !== ProductTypes.BundleProduct)
     throw new ProductWrongTypeError({
       productId,
-      recieved: bundleProduct.type,
+      received: bundleProduct.type,
       required: ProductTypes.BundleProduct,
     });
   Products.update(productId, {

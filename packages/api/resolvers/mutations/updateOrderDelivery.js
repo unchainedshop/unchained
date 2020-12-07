@@ -27,7 +27,7 @@ export default function updateOrderDelivery(
   if (deliveryProviderType !== DELIVERY_UPDATE_ENDPOINT[fieldName])
     throw new OrderDeliveryTypeError({
       orderDeliveryId,
-      recieved: deliveryProviderType,
+      received: deliveryProviderType,
       required: DELIVERY_UPDATE_ENDPOINT[fieldName],
     });
 

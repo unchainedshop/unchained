@@ -37,7 +37,7 @@ export default function updateOrderPayment(
   if (providerType !== PAYMENT_UPDATE_ENDPOINT[fieldName])
     throw new OrderPaymentTypeError({
       orderPaymentId,
-      recieved: providerType,
+      received: providerType,
       required: PAYMENT_UPDATE_ENDPOINT[fieldName],
     });
   return orderPayment.updateContext(context);

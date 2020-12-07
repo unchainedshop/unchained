@@ -100,7 +100,7 @@ describe('ProductsWarehousing', () => {
 
       expect(errors?.[0]?.extensions).toMatchObject({
         code: 'ProductWrongTypeError',
-        recieved: PlanProduct.type,
+        received: PlanProduct.type,
         required: 'SIMPLE_PRODUCT',
       });
     });

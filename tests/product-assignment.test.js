@@ -129,7 +129,7 @@ describe('ProductAssignment', () => {
       expect(errors?.[0]?.extensions).toMatchObject({
         productId: PlanProduct._id,
         code: 'ProductWrongTypeError',
-        recieved: PlanProduct.type,
+        received: PlanProduct.type,
         required: 'CONFIGURABLE_PRODUCT',
       });
     });
@@ -362,7 +362,7 @@ describe('ProductAssignment', () => {
 
       expect(errors?.[0]?.extensions).toMatchObject({
         code: 'ProductWrongTypeError',
-        recieved: SimpleProduct.type,
+        received: SimpleProduct.type,
         required: 'CONFIGURABLE_PRODUCT',
       });
     });

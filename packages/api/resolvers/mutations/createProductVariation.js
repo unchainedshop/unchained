@@ -23,7 +23,7 @@ export default function createProductVariation(
   if (product.type !== ProductTypes.ConfigurableProduct)
     throw new ProductWrongTypeError({
       productId,
-      recieved: product.type,
+      received: product.type,
       required: ProductTypes.ConfigurableProduct,
     });
 

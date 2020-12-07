@@ -14,7 +14,7 @@ export default function removeBundleItem(root, { productId, index }) {
   if (product.type !== ProductTypes.BundleProduct)
     throw new ProductWrongTypeError({
       productId,
-      recieved: product.type,
+      received: product.type,
       required: ProductTypes.BundleProduct,
     });
   const { bundleItems = [] } = product;

@@ -101,7 +101,7 @@ describe('ProductBundleItem', () => {
       });
       expect(errors?.[0]?.extensions).toMatchObject({
         code: 'ProductWrongTypeError',
-        recieved: PlanProduct.type,
+        received: PlanProduct.type,
         required: 'BUNDLE_PRODUCT',
       });
     });
@@ -294,7 +294,7 @@ describe('ProductBundleItem', () => {
       expect(errors?.[0]?.extensions).toMatchObject({
         code: 'ProductWrongTypeError',
         productId: 'simpleproduct',
-        recieved: 'SIMPLE_PRODUCT',
+        received: 'SIMPLE_PRODUCT',
         required: 'BUNDLE_PRODUCT',
       });
     });
