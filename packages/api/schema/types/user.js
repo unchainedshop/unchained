@@ -74,5 +74,5 @@ export default [
       paymentCredentials: [PaymentCredentials!]!
       subscriptions: [Subscription!]!
     }
-  `
+  `,
 ];
