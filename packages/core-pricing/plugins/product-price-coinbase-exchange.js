@@ -30,8 +30,6 @@ const getFiatexchangeRateForCrypto = async (base, target) => {
   return data?.rates?.[target];
 };
 
-export default getFiatexchangeRateForCrypto;
-
 class ProductPriceCoinbaseExchange extends ProductPricingAdapter {
   static key = 'shop.unchained.pricing.price-coinbase-exchange';
 
