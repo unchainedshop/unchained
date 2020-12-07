@@ -171,17 +171,43 @@ Migrations.add({
   },
 });
 
+Migrations.add({
+  version: 20201207,
+  name: 'Drop old user user index',
+  up() {
+    Collections.Users.rawCollection().dropIndex(
+      'username_text_emails.address_text_profile.displayName_text_lastBillingAddress.firstName_text_lastBillingAddress.lastName_text_lastBillingAddress.company_text_lastBillingAddress.addressLine_text_lastBillingAddress.addressLine2_text'
+    );
+  },
+  down() {},
+});
+
 export default () => {
   Migrations.migrateTo('latest');
 
   Collections.Users.rawCollection().createIndex({
-    username: 'text',
-    'emails.address': 'text',
-    'profile.displayName': 'text',
-    'lastBillingAddress.firstName': 'text',
-    'lastBillingAddress.lastName': 'text',
-    'lastBillingAddress.company': 'text',
-    'lastBillingAddress.addressLine': 'text',
-    'lastBillingAddress.addressLine2': 'text',
+    username: 1,
   });
+  Collections.Users.rawCollection().createIndex({
+    'emails.address': 1,
+  });
+  Collections.Users.rawCollection().createIndex({
+    'services.resume.loginTokens.hashedToken': 1,
+  });
+
+  Collections.Users.rawCollection().createIndex(
+    {
+      username: 'text',
+      'emails.address': 'text',
+      'profile.displayName': 'text',
+      'lastBillingAddress.firstName': 'text',
+      'lastBillingAddress.lastName': 'text',
+      'lastBillingAddress.company': 'text',
+      'lastBillingAddress.addressLine': 'text',
+      'lastBillingAddress.addressLine2': 'text',
+    },
+    {
+      name: 'user_fulltext_search',
+    }
+  );
 };
