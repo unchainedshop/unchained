@@ -64,7 +64,6 @@ import removeOrder from './removeOrder';
 import setOrderPaymentProvider from './setOrderPaymentProvider';
 import setOrderDeliveryProvider from './setOrderDeliveryProvider';
 import updateOrderPayment from './updateOrderPayment';
-import updateOrderDelivery from './updateOrderDelivery';
 import confirmOrder from './confirmOrder';
 import payOrder from './payOrder';
 import deliverOrder from './deliverOrder';
@@ -127,6 +126,8 @@ import updateSubscription from './updateSubscription';
 import registerPaymentCredentials from './registerPaymentCredentials';
 import markPaymentCredentialsPreferred from './markPaymentCredentialsPreferred';
 import removePaymentCredentials from './removePaymentCredentials';
+import updateOrderDeliveryShipping from './updateOrderDeliveryShipping';
+import updateOrderDeliveryPickUp from './updateOrderDeliveryPickUp';
 
 export default {
   logout,
@@ -219,11 +220,11 @@ export default {
   removeCartDiscount: acl(actions.updateOrderDiscount)(removeCartDiscount),
   setOrderPaymentProvider: acl(actions.updateOrder)(setOrderPaymentProvider),
   setOrderDeliveryProvider: acl(actions.updateOrder)(setOrderDeliveryProvider),
-  updateOrderDeliveryShipping: acl(actions.updateOrderDelivery)(
-    updateOrderDelivery
+  updateOrderDeliveryShipping: acl(actions.updateOrderDeliveryShipping)(
+    updateOrderDeliveryShipping
   ),
-  updateOrderDeliveryPickUp: acl(actions.updateOrderDelivery)(
-    updateOrderDelivery
+  updateOrderDeliveryPickUp: acl(actions.updateOrderDeliveryPickUp)(
+    updateOrderDeliveryPickUp
   ),
   updateOrderPaymentGeneric: acl(actions.updateOrderPayment)(
     updateOrderPayment

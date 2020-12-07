@@ -7,28 +7,22 @@ import {
   OrderDeliveryTypeError,
 } from '../../errors';
 
-const DELIVERY_UPDATE_ENDPOINT = {
-  updateOrderDeliveryShipping: DeliveryProviderType.SHIPPING,
-  updateOrderDeliveryPickUp: DeliveryProviderType.PICKUP,
-};
-
-export default function updateOrderDelivery(
+export default function updateOrderDeliveryShipping(
   root,
   { orderDeliveryId, ...context },
-  { userId },
-  { fieldName }
+  { userId }
 ) {
-  log(`mutation updateOrderDelivery ${orderDeliveryId}`, { userId });
+  log(`mutation updateOrderDeliveryShipping ${orderDeliveryId}`, { userId });
 
   if (!orderDeliveryId) throw new InvalidIdError({ orderDeliveryId });
   const orderDelivery = OrderDeliveries.findOne({ _id: orderDeliveryId });
   if (!orderDelivery) throw new OrderDeliveryNotFoundError({ orderDeliveryId });
   const deliveryProviderType = orderDelivery?.provider()?.type;
-  if (deliveryProviderType !== DELIVERY_UPDATE_ENDPOINT[fieldName])
+  if (deliveryProviderType !== DeliveryProviderType.SHIPPING)
     throw new OrderDeliveryTypeError({
       orderDeliveryId,
       received: deliveryProviderType,
-      required: DELIVERY_UPDATE_ENDPOINT[fieldName],
+      required: DeliveryProviderType.SHIPPING,
     });
 
   return orderDelivery.updateContext(context);
