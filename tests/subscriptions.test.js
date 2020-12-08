@@ -981,6 +981,26 @@ describe('Subscriptions', () => {
       expect(subscription.isExpired).toBe(false);
     });
 
+    it('return expired true when asked for subscription with expiry date in future when referenceDate is even later', async () => {
+      const {
+        data: { subscription },
+      } = await graphqlFetchAsAdminUser({
+        query: /* GraphQL */ `
+          query subscription($subscriptionId: ID!, $referenceDate: Date) {
+            subscription(subscriptionId: $subscriptionId) {
+              _id
+              isExpired(referenceDate: $referenceDate)
+            }
+          }
+        `,
+        variables: {
+          subscriptionId: 'activesubscription',
+          referenceDate: new Date('2030/09/12'),
+        },
+      });
+      expect(subscription.isExpired).toBe(true);
+    });
+
     it('return SubscriptionNotFoundError when passed non existing subscription ID', async () => {
       const { errors } = await graphqlFetchAsAdminUser({
         query: /* GraphQL */ `

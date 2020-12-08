@@ -191,10 +191,10 @@ Subscriptions.helpers({
     }).fetch();
     return logs;
   },
-  isExpired(referenceDate) {
-    const now = new Date() || referenceDate;
+  isExpired({ referenceDate } = {}) {
+    const relevantDate = referenceDate ? new Date(referenceDate) : new Date();
     const expiryDate = new Date(this.expires);
-    const isExpired = now.getTime() > expiryDate.getTime();
+    const isExpired = relevantDate.getTime() > expiryDate.getTime();
     return isExpired;
   },
 });
