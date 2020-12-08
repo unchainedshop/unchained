@@ -196,6 +196,7 @@ PaymentCredentials.removeCredentials = ({ paymentCredentialsId }) => {
 
 PaymentProviders.createProvider = (providerData) => {
   const InterfaceClass = new PaymentDirector(providerData).interfaceClass();
+  if (!InterfaceClass) return null;
   const providerId = PaymentProviders.insert({
     created: new Date(),
     configuration: InterfaceClass.initialConfiguration,

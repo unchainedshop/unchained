@@ -21,7 +21,7 @@ describe('setup delivery providers', () => {
       } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation createDeliveryProvider(
-            $deliveryProvider: CreateProviderInput!
+            $deliveryProvider: CreateDeliveryProviderInput!
           ) {
             createDeliveryProvider(deliveryProvider: $deliveryProvider) {
               _id

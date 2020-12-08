@@ -21,7 +21,7 @@ describe('setup warehousing providers', () => {
       } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation createWarehousingProvider(
-            $warehousingProvider: CreateProviderInput!
+            $warehousingProvider: CreateWarehousingProviderInput!
           ) {
             createWarehousingProvider(
               warehousingProvider: $warehousingProvider

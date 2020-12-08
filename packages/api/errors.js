@@ -217,3 +217,8 @@ export const InvalidIdError = createError(
   'InvalidIdError',
   'Invalid ID provided'
 );
+
+export const ProviderConfigurationInvalid = createError(
+  'ProviderConfigurationInvalid',
+  'Provider Configuration invalid (check if the Adapter Key exists)'
+);

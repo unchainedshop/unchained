@@ -21,7 +21,7 @@ describe('setup payment providers', () => {
       } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation createPaymentProvider(
-            $paymentProvider: CreateProviderInput!
+            $paymentProvider: CreatePaymentProviderInput!
           ) {
             createPaymentProvider(paymentProvider: $paymentProvider) {
               _id
