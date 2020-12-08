@@ -50,38 +50,46 @@ WebApp.connectHandlers.use(STRIPE_WEBHOOK_PATH, (request, response) => {
     return response.end(`Webhook Error: ${err.message}`);
   }
 
-  if (event.type === 'payment_intent.succeeded') {
-    const paymentIntent = event.data.object;
-    const orderPaymentId = paymentIntent.metadata?.orderPaymentId;
-    const orderPayment = OrderPayments.findOne({ _id: orderPaymentId });
-    const order = orderPayment.order().checkout({
-      paymentContext: {
-        paymentIntentId: paymentIntent.id,
-      },
-    });
-    logger.info(
-      `Stripe Webhook: Unchained confirmed checkout for order ${order.orderNumber}`,
-      { orderId: order._id }
-    );
-  } else if (event.type === 'setup_intent.succeeded') {
-    const setupIntent = event.data.object;
-    const { paymentProviderId, userId } = setupIntent.metadata;
-    PaymentCredentials.registerPaymentCredentials({
-      paymentProviderId,
-      paymentContext: {
-        setupIntentId: setupIntent.id,
-      },
-      userId,
-    });
-    logger.info(
-      `Datatrans Webhook: Unchained registered payment credentials for ${userId}`,
-      { userId }
-    );
-  } else {
+  try {
+    if (event.type === 'payment_intent.succeeded') {
+      const paymentIntent = event.data.object;
+      const paymentId = paymentIntent.metadata?.orderPaymentId;
+      OrderPayments.logEvent({
+        paymentId,
+        event,
+      });
+      const orderPayment = OrderPayments.findOne({ _id: paymentId });
+      const order = orderPayment.order().checkout({
+        paymentContext: {
+          paymentIntentId: paymentIntent.id,
+        },
+      });
+      logger.info(
+        `Stripe Webhook: Unchained confirmed checkout for order ${order.orderNumber}`,
+        { orderId: order._id }
+      );
+    } else if (event.type === 'setup_intent.succeeded') {
+      const setupIntent = event.data.object;
+      const { paymentProviderId, userId } = setupIntent.metadata;
+      PaymentCredentials.registerPaymentCredentials({
+        paymentProviderId,
+        paymentContext: {
+          setupIntentId: setupIntent.id,
+        },
+        userId,
+      });
+      logger.info(
+        `Stripe Webhook: Unchained registered payment credentials for ${userId}`,
+        { userId }
+      );
+    } else {
+      response.writeHead(404);
+      return response.end();
+    }
+  } catch (err) {
     response.writeHead(400);
-    return response.end();
+    return response.end(`Webhook Error: ${err.message}`);
   }
-
   // Return a 200 response to acknowledge receipt of the event
   return response.end(JSON.stringify({ received: true }));
 });

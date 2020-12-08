@@ -47,44 +47,49 @@ WebApp.connectHandlers.use(STRIPE_CHARGES_WEBHOOK_PATH, (request, response) => {
     return response.end(`Webhook Error: ${err.message}`);
   }
 
-  if (event.type === 'source.chargeable') {
-    const source = event.data.object;
-    // eslint-disable-next-line
-    const orderPaymentId = source.metadata?.orderPaymentId;
-    const orderPayment = OrderPayments.findOne({ _id: orderPaymentId });
-    const order = orderPayment.order();
-    const paymentContext = {
-      stripeToken: source,
-    };
-    if (order.isCart()) {
-      order.checkout({
-        paymentContext,
-      });
+  try {
+    if (event.type === 'source.chargeable') {
+      const source = event.data.object;
+      // eslint-disable-next-line
+      const orderPaymentId = source.metadata?.orderPaymentId;
+      const orderPayment = OrderPayments.findOne({ _id: orderPaymentId });
+      const order = orderPayment.order();
+      const paymentContext = {
+        stripeToken: source,
+      };
+      if (order.isCart()) {
+        order.checkout({
+          paymentContext,
+        });
+        logger.info(
+          `Stripe Webhook: Unchained checked out order ${order.orderNumber}`,
+          { orderId: order._id }
+        );
+      } else {
+        orderPayment.charge(paymentContext, order);
+        logger.info(
+          `Stripe Webhook: Unchained initiated payment for order ${order.orderNumber}`,
+          { orderId: order._id }
+        );
+      }
+    } else if (event.type === 'charge.succeeded') {
+      const charge = event.data.object;
+      // eslint-disable-next-line
+      const orderPaymentId = charge.metadata?.orderPaymentId;
+      const orderPayment = OrderPayments.findOne({ _id: orderPaymentId });
+      const order = orderPayment.order();
+      orderPayment.markPaid(charge);
       logger.info(
-        `Stripe Webhook: Unchained checked out order ${order.orderNumber}`,
+        `Stripe Webhook: Unchained marked payment as paid for order ${order.orderNumber}`,
         { orderId: order._id }
       );
     } else {
-      orderPayment.charge(paymentContext, order);
-      logger.info(
-        `Stripe Webhook: Unchained initiated payment for order ${order.orderNumber}`,
-        { orderId: order._id }
-      );
+      response.writeHead(404);
+      return response.end();
     }
-  } else if (event.type === 'charge.succeeded') {
-    const charge = event.data.object;
-    // eslint-disable-next-line
-    const orderPaymentId = charge.metadata?.orderPaymentId;
-    const orderPayment = OrderPayments.findOne({ _id: orderPaymentId });
-    const order = orderPayment.order();
-    orderPayment.markPaid(charge);
-    logger.info(
-      `Stripe Webhook: Unchained marked payment as paid for order ${order.orderNumber}`,
-      { orderId: order._id }
-    );
-  } else {
+  } catch (err) {
     response.writeHead(400);
-    return response.end();
+    return response.end(`Webhook Error: ${err.message}`);
   }
 
   // Return a 200 response to acknowledge receipt of the event
