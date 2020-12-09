@@ -24,7 +24,7 @@ export const GenericPaymentProvider = {
   type: 'GENERIC',
 };
 
-export const SimplePaymenttCredential = {
+export const SimplePaymentCredential = {
   paymentProviderId: SimplePaymentProvider._id,
   _id: 'simple-payment-credential',
   userId: 'admin',
@@ -33,14 +33,14 @@ export const SimplePaymenttCredential = {
 };
 
 export const PrePaidPaymentCredential = {
-  ...SimplePaymenttCredential,
+  ...SimplePaymentCredential,
   _id: 'prepaid-payment-credential',
   paymentProviderId: PrePaidPaymentProvider._id,
   isPreferred: false,
 };
 
 export const GenericPaymentCredential = {
-  ...SimplePaymenttCredential,
+  ...SimplePaymentCredential,
   _id: 'generic-payment-credential',
   paymentProviderId: GenericPaymentProvider._id,
   isPreferred: false,
@@ -51,7 +51,7 @@ export default async function seedPayments(db) {
     .upsert('payment-providers', SimplePaymentProvider)
     .upsert('payment-providers', PrePaidPaymentProvider)
     .upsert('payment-providers', GenericPaymentProvider)
-    .upsert('payment_credentials', SimplePaymenttCredential)
+    .upsert('payment_credentials', SimplePaymentCredential)
     .upsert('payment_credentials', PrePaidPaymentCredential)
     .upsert('payment_credentials', GenericPaymentCredential)
     .resolve();

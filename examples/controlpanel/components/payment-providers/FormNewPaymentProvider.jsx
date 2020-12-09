@@ -45,7 +45,7 @@ export default compose(
   `),
   graphql(
     gql`
-      mutation create($paymentProvider: CreateProviderInput!) {
+      mutation create($paymentProvider: CreatePaymentProviderInput!) {
         createPaymentProvider(paymentProvider: $paymentProvider) {
           _id
         }

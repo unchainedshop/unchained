@@ -31,6 +31,7 @@ WarehousingProviders.helpers({
 
 WarehousingProviders.createProvider = (providerData) => {
   const InterfaceClass = new WarehousingDirector(providerData).interfaceClass();
+  if (!InterfaceClass) return null;
   const providerId = WarehousingProviders.insert({
     created: new Date(),
     configuration: InterfaceClass.initialConfiguration,

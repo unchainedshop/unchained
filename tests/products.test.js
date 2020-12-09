@@ -404,7 +404,7 @@ describe('Products', () => {
   });
 
   describe('Mutation.updateProductPlan for admin user should', () => {
-    it('update product plan successfuly', async () => {
+    it('update product plan successfuly when passed PLAN_PRODUCT type', async () => {
       const { data: { updateProductPlan } = {} } = await graphqlFetchAsAdmin({
         query: /* GraphQL */ `
           mutation updateProductPlan(
@@ -470,6 +470,37 @@ describe('Products', () => {
           trialInterval: 'WEEK',
           trialIntervalCount: 2,
         },
+      });
+    });
+
+    it('return error when passed non PLAN_PRODUCT type', async () => {
+      const { errors } = await graphqlFetchAsAdmin({
+        query: /* GraphQL */ `
+          mutation updateProductPlan(
+            $productId: ID!
+            $plan: UpdateProductPlanInput!
+          ) {
+            updateProductPlan(productId: $productId, plan: $plan) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          productId: SimpleProduct._id,
+          plan: {
+            usageCalculationType: 'METERED',
+            billingInterval: 'MONTH',
+            billingIntervalCount: 1,
+            trialInterval: 'WEEK',
+            trialIntervalCount: 2,
+          },
+        },
+      });
+
+      expect(errors?.[0]?.extensions).toMatchObject({
+        code: 'ProductWrongStatusError',
+        received: SimpleProduct.type,
+        required: 'PLAN_PRODUCT',
       });
     });
 

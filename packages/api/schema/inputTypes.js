@@ -147,8 +147,18 @@ export default [
       sortKey: Int!
     }
 
-    input CreateProviderInput {
-      type: String!
+    input CreateWarehousingProviderInput {
+      type: WarehousingProviderType!
+      adapterKey: String!
+    }
+
+    input CreateDeliveryProviderInput {
+      type: DeliveryProviderType!
+      adapterKey: String!
+    }
+
+    input CreatePaymentProviderInput {
+      type: PaymentProviderType!
       adapterKey: String!
     }
 

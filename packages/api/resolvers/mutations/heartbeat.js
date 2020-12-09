@@ -11,10 +11,10 @@ export default function heartbeat(
   const user = Users.findOne({ _id: userId });
   if (!user) throw new UserNotFoundError({ userId });
   Users.updateHeartbeat({
-    _id: userId,
+    userId,
     remoteAddress,
     locale: localeContext.normalized,
-    country: countryContext,
+    countryContext,
   });
   return Users.findOne({ _id: userId });
 }

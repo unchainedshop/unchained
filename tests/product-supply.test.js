@@ -4,7 +4,7 @@ import {
   createAnonymousGraphqlFetch,
 } from './helpers';
 import { ADMIN_TOKEN } from './seeds/users';
-import { SimpleProduct } from './seeds/products';
+import { PlanProduct, SimpleProduct } from './seeds/products';
 
 let connection;
 let graphqlFetch;
@@ -20,7 +20,7 @@ describe('ProductsSupply', () => {
   });
 
   describe('mutation.updateProductSupply should for admin user', () => {
-    it('Update product supply successfuly', async () => {
+    it('Update product supply successfuly when passed SIMPLE_PRODUCT type', async () => {
       const { data: { updateProductSupply } = {} } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation UpdateProductSupply(
@@ -71,6 +71,36 @@ describe('ProductsSupply', () => {
       });
 
       expect(updateProductSupply._id).toEqual(SimpleProduct._id);
+    });
+
+    it('return error when passed non SIMPLE_PRODUCT type', async () => {
+      const { errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation UpdateProductSupply(
+            $productId: ID!
+            $supply: UpdateProductSupplyInput!
+          ) {
+            updateProductSupply(productId: $productId, supply: $supply) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          productId: PlanProduct._id,
+          supply: {
+            weightInGram: 100,
+            heightInMillimeters: 200,
+            lengthInMillimeters: 300,
+            widthInMillimeters: 400,
+          },
+        },
+      });
+
+      expect(errors?.[0]?.extensions).toMatchObject({
+        code: 'ProductWrongTypeError',
+        received: 'PLAN_PRODUCT',
+        required: 'SIMPLE_PRODUCT',
+      });
     });
 
     it('return not found error when passed non existing productId', async () => {

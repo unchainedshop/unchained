@@ -15,9 +15,7 @@ import moniker from 'moniker';
 accountsServer.users = Users;
 
 export const buildContext = (user) => {
-  const locale =
-    (user && user.lastLogin && user.lastLogin.locale) ||
-    getFallbackLocale().normalized;
+  const locale = user?.lastLogin?.locale || getFallbackLocale().normalized;
   return {
     user: user || {},
     locale,
@@ -92,7 +90,7 @@ export default ({ mergeUserCartsOnLogin = true } = {}) => {
     } = connection;
 
     Users.updateHeartbeat({
-      _id: user._id,
+      userId: user._id,
       remoteAddress,
       locale: normalizedLocale,
       countryContext,

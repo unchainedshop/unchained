@@ -45,7 +45,7 @@ export default compose(
   `),
   graphql(
     gql`
-      mutation create($deliveryProvider: CreateProviderInput!) {
+      mutation create($deliveryProvider: CreateDeliveryProviderInput!) {
         createDeliveryProvider(deliveryProvider: $deliveryProvider) {
           _id
         }

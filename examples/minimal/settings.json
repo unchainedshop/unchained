@@ -1,0 +1,11 @@
+{
+  "unchained": {
+    "files": {
+      "default": {
+        "storage": {
+          "type": "gridfs"
+        }
+      }
+    }
+  }
+}

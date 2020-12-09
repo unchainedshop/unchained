@@ -1,6 +1,10 @@
 import { log } from 'meteor/unchained:core-logger';
-import { Products } from 'meteor/unchained:core-products';
-import { ProductNotFoundError, InvalidIdError } from '../../errors';
+import { Products, ProductTypes } from 'meteor/unchained:core-products';
+import {
+  ProductNotFoundError,
+  InvalidIdError,
+  ProductWrongTypeError,
+} from '../../errors';
 
 export default function removeProductAssignment(
   root,
@@ -8,9 +12,16 @@ export default function removeProductAssignment(
   { userId }
 ) {
   log(`mutation removeProductAssignment ${proxyId}`, { userId });
+
   if (!proxyId) throw new InvalidIdError({ proxyId });
   const product = Products.findOne({ _id: proxyId });
   if (!product) throw new ProductNotFoundError({ proxyId });
+  if (product.type !== ProductTypes.ConfigurableProduct)
+    throw new ProductWrongTypeError({
+      productId: proxyId,
+      received: product.type,
+      required: ProductTypes.ConfigurableProduct,
+    });
 
   const vector = {};
   vectors.forEach(({ key, value }) => {

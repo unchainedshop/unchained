@@ -35,11 +35,18 @@ export default (role, actions) => {
     );
   };
 
-  const isOwnedOrder = (root, { orderId }, { userId }) =>
-    Orders.find({
-      _id: orderId,
-      userId,
-    }).count() > 0;
+  const isOwnedOrder = (root, { orderId }, { userId }) => {
+    const order = Orders.findOne(
+      { _id: orderId },
+      {
+        fields: {
+          userId: true,
+        },
+      }
+    );
+    if (!order) return true;
+    return order.userId === userId;
+  };
 
   const isOwnedOrderOrCart = (root, { orderId }, { userId }) => {
     if (orderId) {
@@ -49,67 +56,138 @@ export default (role, actions) => {
   };
 
   const isOwnedSubscription = (root, { subscriptionId }, { userId }) => {
-    return (
-      Subscriptions.find({
-        _id: subscriptionId,
-        userId,
-      }).count() > 0
+    const subscription = Subscriptions.findOne(
+      { _id: subscriptionId },
+      {
+        fields: {
+          userId: true,
+        },
+      }
     );
+    if (!subscription) return true;
+    return subscription.userId === userId;
   };
 
   const isOwnedOrderPayment = (root, { orderPaymentId }, { userId }) => {
-    const payment = OrderPayments.findOne({ _id: orderPaymentId });
+    const payment = OrderPayments.findOne(
+      { _id: orderPaymentId },
+      {
+        fields: {
+          orderId: true,
+        },
+      }
+    );
+    // return true if db entity not found in order
+    // to let the resolver throw a good exception
+    if (!payment) return true;
     const orderId = payment && payment.orderId;
     return isOwnedOrder(null, { orderId }, { userId });
   };
 
   const isOwnedOrderDelivery = (root, { orderDeliveryId }, { userId }) => {
-    const delivery = OrderDeliveries.findOne({ _id: orderDeliveryId });
+    const delivery = OrderDeliveries.findOne(
+      { _id: orderDeliveryId },
+      {
+        fields: {
+          orderId: true,
+        },
+      }
+    );
+    // return true if db entity not found in order
+    // to let the resolver throw a good exception
+    if (!delivery) return true;
     const orderId = delivery && delivery.orderId;
     return isOwnedOrder(null, { orderId }, { userId });
   };
 
   const isOwnedOrderItem = (root, { itemId }, { userId }) => {
-    const item = OrderPositions.findOne({ _id: itemId });
+    const item = OrderPositions.findOne(
+      { _id: itemId },
+      {
+        fields: {
+          orderId: true,
+        },
+      }
+    );
+    // return true if db entity not found in order
+    // to let the resolver throw a good exception
+    if (!item) return true;
     const orderId = item && item.orderId;
     return isOwnedOrder(null, { orderId }, { userId });
   };
 
   const isOwnedOrderDiscount = (root, { discountId }, { userId }) => {
-    const discount = OrderDiscounts.findOne({ _id: discountId });
+    const discount = OrderDiscounts.findOne(
+      { _id: discountId },
+      {
+        fields: {
+          orderId: true,
+        },
+      }
+    );
+    // return true if db entity not found in order
+    // to let the resolver throw a good exception
+    if (!discount) return true;
     const orderId = discount && discount.orderId;
     return isOwnedOrder(null, { orderId }, { userId });
   };
 
-  const isOwnedProductReview = (root, middle, { userId }) => {
-    return (
-      ProductReviews.findReviewById(middle.productReviewId)?.userId === userId
-    );
+  const isOwnedProductReview = (root, { productReviewId }, { userId }) => {
+    const review = ProductReviews.findReviewById(productReviewId);
+    if (!review) return true;
+    return review.userId === userId;
   };
-  const isOwnedQuotation = (root, { quotationId }, { userId }) =>
-    Quotations.find({
-      _id: quotationId,
-      userId,
-    }).count() > 0;
+
+  const isOwnedQuotation = (root, { quotationId }, { userId }) => {
+    const quotation = Quotations.findOne(
+      { _id: quotationId },
+      {
+        fields: {
+          userId: true,
+        },
+      }
+    );
+    // return true if db entity not found in order
+    // to let the resolver throw a good exception
+    if (!quotation) return true;
+    return quotation.userId === userId;
+  };
 
   const isOwnedBookmark = (root, { bookmarkId }, { userId }) => {
-    return (
-      Bookmarks.find({
-        _id: bookmarkId,
-        userId,
-      }).count() > 0
+    const bookmark = Bookmarks.findOne(
+      { _id: bookmarkId },
+      {
+        fields: {
+          userId: true,
+        },
+      }
     );
+    // return true if db entity not found in order
+    // to let the resolver throw a good exception
+    if (!bookmark) return true;
+    return bookmark.userId === userId;
   };
 
   const isOwnedPaymentCredential = (
     root,
     { paymentCredentialsId },
     { userId }
-  ) =>
-    PaymentCredentials.find({
-      _id: paymentCredentialsId,
-      userId,
-    }).count() > 0;
+  ) => {
+    const credentials = PaymentCredentials.findOne(
+      {
+        _id: paymentCredentialsId,
+      },
+      {
+        fields: {
+          userId: true,
+        },
+      }
+    );
+    // return true if db entity not found in order
+    // to let the resolver throw a good exception
+    if (!credentials) return true;
+    return credentials.userId === userId;
+  };
 
   role.allow(actions.viewUser, isMyself);
   role.allow(actions.viewUserRoles, isMyself);

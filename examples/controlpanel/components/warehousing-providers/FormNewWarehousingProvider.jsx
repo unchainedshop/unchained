@@ -45,7 +45,7 @@ export default compose(
   `),
   graphql(
     gql`
-      mutation create($warehousingProvider: CreateProviderInput!) {
+      mutation create($warehousingProvider: CreateWarehousingProviderInput!) {
         createWarehousingProvider(warehousingProvider: $warehousingProvider) {
           _id
         }

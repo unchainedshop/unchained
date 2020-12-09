@@ -24,7 +24,7 @@ export default [
 
       """
       Update hearbeat (updates user activity information such as last
-      login and loged in user IP address, locale and country where they
+      login and logged in user IP address, locale and country where they
       accessed the system)
       """
       heartbeat: User
@@ -552,7 +552,7 @@ export default [
       Adds new payment provider
       """
       createPaymentProvider(
-        paymentProvider: CreateProviderInput!
+        paymentProvider: CreatePaymentProviderInput!
       ): PaymentProvider!
 
       """
@@ -573,7 +573,7 @@ export default [
       Creates new delivery provider
       """
       createDeliveryProvider(
-        deliveryProvider: CreateProviderInput!
+        deliveryProvider: CreateDeliveryProviderInput!
       ): DeliveryProvider!
 
       """
@@ -594,7 +594,7 @@ export default [
       Creates new warehouse provider.
       """
       createWarehousingProvider(
-        warehousingProvider: CreateProviderInput!
+        warehousingProvider: CreateWarehousingProviderInput!
       ): WarehousingProvider!
 
       """

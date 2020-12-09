@@ -8,7 +8,7 @@ import {
   GenericPaymentCredential,
   PrePaidPaymentCredential,
   SimplePaymentProvider,
-  SimplePaymenttCredential,
+  SimplePaymentCredential,
 } from './seeds/payments';
 
 let connection;
@@ -165,6 +165,48 @@ describe('PaymentProviders', () => {
     });
   });
 
+  describe('Mutation.removePaymentCredentials for normal user should', () => {
+    it('return NoPermissionError', async () => {
+      const { errors } = await graphqlFetchAsNormalUser({
+        query: /* GraphQL */ `
+          mutation removePaymentCredentials($paymentCredentialsId: ID!) {
+            removePaymentCredentials(
+              paymentCredentialsId: $paymentCredentialsId
+            ) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          paymentCredentialsId: SimplePaymentCredential._id,
+        },
+      });
+
+      expect(errors[0]?.extensions?.code).toEqual('NoPermissionError');
+    });
+  });
+
+  describe('Mutation.removePaymentCredentials for anonymous user should', () => {
+    it('return NoPermissionError', async () => {
+      const { errors } = await graphqlFetchAsAnonymousUser({
+        query: /* GraphQL */ `
+          mutation removePaymentCredentials($paymentCredentialsId: ID!) {
+            removePaymentCredentials(
+              paymentCredentialsId: $paymentCredentialsId
+            ) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          paymentCredentialsId: SimplePaymentCredential._id,
+        },
+      });
+
+      expect(errors[0]?.extensions?.code).toEqual('NoPermissionError');
+    });
+  });
+
   describe('Mutation.removePaymentCredentials for admin user should', () => {
     it('mark pament provider specified by ID as invalid', async () => {
       const {
@@ -187,7 +229,7 @@ describe('PaymentProviders', () => {
           }
         `,
         variables: {
-          paymentCredentialsId: SimplePaymenttCredential._id,
+          paymentCredentialsId: SimplePaymentCredential._id,
         },
       });
 
@@ -202,7 +244,7 @@ describe('PaymentProviders', () => {
           }
         `,
         variables: {
-          paymentCredentialsId: SimplePaymenttCredential._id,
+          paymentCredentialsId: SimplePaymentCredential._id,
         },
       });
       expect(removePaymentCredentials._id).not.toBe(null);
@@ -254,48 +296,6 @@ describe('PaymentProviders', () => {
         },
       });
       expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
-    });
-  });
-
-  describe('Mutation.removePaymentCredentials for normal user should', () => {
-    it('return NoPermissionError', async () => {
-      const { errors } = await graphqlFetchAsNormalUser({
-        query: /* GraphQL */ `
-          mutation removePaymentCredentials($paymentCredentialsId: ID!) {
-            removePaymentCredentials(
-              paymentCredentialsId: $paymentCredentialsId
-            ) {
-              _id
-            }
-          }
-        `,
-        variables: {
-          paymentCredentialsId: SimplePaymenttCredential._id,
-        },
-      });
-
-      expect(errors[0]?.extensions?.code).toEqual('NoPermissionError');
-    });
-  });
-
-  describe('Mutation.removePaymentCredentials for anonymous user should', () => {
-    it('return NoPermissionError', async () => {
-      const { errors } = await graphqlFetchAsAnonymousUser({
-        query: /* GraphQL */ `
-          mutation removePaymentCredentials($paymentCredentialsId: ID!) {
-            removePaymentCredentials(
-              paymentCredentialsId: $paymentCredentialsId
-            ) {
-              _id
-            }
-          }
-        `,
-        variables: {
-          paymentCredentialsId: SimplePaymenttCredential._id,
-        },
-      });
-
-      expect(errors[0]?.extensions?.code).toEqual('NoPermissionError');
     });
   });
 

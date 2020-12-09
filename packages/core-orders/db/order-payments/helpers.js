@@ -144,6 +144,20 @@ OrderPayments.updatePayment = ({ orderId, paymentId, context }) => {
   return OrderPayments.findOne({ _id: paymentId });
 };
 
+OrderPayments.logEvent = ({ paymentId, event }) => {
+  const date = new Date();
+  const modifier = {
+    $push: {
+      log: {
+        date,
+        status: undefined,
+        info: JSON.stringify(event),
+      },
+    },
+  };
+  OrderPayments.update({ _id: paymentId }, modifier);
+};
+
 OrderPayments.updateStatus = ({ paymentId, status, info = '' }) => {
   log(`OrderPayment ${paymentId} -> New Status: ${status}`);
   const date = new Date();

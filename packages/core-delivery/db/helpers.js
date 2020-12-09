@@ -101,6 +101,7 @@ DeliveryProviders.helpers({
 
 DeliveryProviders.createProvider = (providerData) => {
   const InterfaceClass = new DeliveryDirector(providerData).interfaceClass();
+  if (!InterfaceClass) return null;
   const _id = DeliveryProviders.insert({
     created: new Date(),
     configuration: InterfaceClass.initialConfiguration,

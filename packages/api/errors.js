@@ -38,6 +38,12 @@ export const ProductWrongStatusError = createError(
   'ProductWrongStatusError',
   'The current status of the product does not allow this operation'
 );
+
+export const ProductWrongTypeError = createError(
+  'ProductWrongTypeError',
+  'The current type of the product does not allow this operation'
+);
+
 export const AssortmentNotFoundError = createError(
   'AssortmentNotFoundError',
   'Assortment not found'
@@ -111,9 +117,15 @@ export const OrderDeliveryNotFoundError = createError(
   'Order delivery not found'
 );
 export const OrderPaymentNotFoundError = createError(
-  'OrderDeliveryNotFoundError',
-  'Order delivery not found'
+  'OrderPaymentNotFoundError',
+  'Order payment not found'
 );
+
+export const OrderPaymentTypeError = createError(
+  'OrderPaymentTypeError',
+  'The current type of the order payment does not allow this operation'
+);
+
 export const OrderQuantityTooLowError = createError(
   'OrderQuantityTooLowError',
   'Quantity cannot be lower than 1'
@@ -126,6 +138,12 @@ export const OrderWrongDeliveryStatusError = createError(
   'OrderWrongDeliveryStatus',
   'The current status of the delivery does not allow this operation'
 );
+
+export const OrderDeliveryTypeError = createError(
+  'OrderDeliveryTypeError',
+  'The current type of the order delivery does not allow this operation'
+);
+
 export const OrderWrongStatusError = createError(
   'OrderWrongStatusError',
   'The current status of the order does not allow this operation'
@@ -198,4 +216,9 @@ export const WarehousingProviderNotFoundError = createError(
 export const InvalidIdError = createError(
   'InvalidIdError',
   'Invalid ID provided'
+);
+
+export const ProviderConfigurationInvalid = createError(
+  'ProviderConfigurationInvalid',
+  'Provider Configuration invalid (check if the Adapter Key exists)'
 );
