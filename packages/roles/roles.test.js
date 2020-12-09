@@ -1,9 +1,17 @@
-// eslint-disable-next-line import/no-extraneous-dependencies
-import { describe, test, expect } from '@jest/globals';
-import { setupDatabase } from './helpers';
-import { User } from './seeds/users';
-import { isFunction, has } from '../packages/roles/helpers';
-import { Roles } from '../packages/roles/index';
+import {
+  describe,
+  test,
+  expect,
+  it,
+  beforeAll,
+  afterAll,
+  afterEach,
+  jest,
+} from '@jest/globals';
+import { setupDatabase } from '../../tests/helpers';
+import { User } from '../../tests/seeds/users';
+import { isFunction, has } from './helpers';
+import { Role, Roles } from './index';
 
 let connection;
 let db;
@@ -25,14 +33,14 @@ describe('Roles', () => {
   });
 
   describe('Role utilities', () => {
-    const testRole = new Roles.Role('test_role');
+    const testRole = new Role('test_role');
     const actionName = 'view_secret';
 
     it('should register an action rule', () => {
       const allowFn = () => true;
       testRole.allow(actionName, allowFn);
       expect(testRole.allowRules[actionName]).toEqual(
-        expect.arrayContaining([allowFn]),
+        expect.arrayContaining([allowFn])
       );
     });
 
@@ -40,18 +48,18 @@ describe('Roles', () => {
       const helperFn = () => true;
       testRole.helper('test_helper', helperFn);
       expect(testRole.helpers.test_helper).toEqual(
-        expect.arrayContaining([helperFn]),
+        expect.arrayContaining([helperFn])
       );
     });
   });
 
-  describe('Add allow and deny to role', () => {
+  describe('Add allow to role', () => {
     it('allow', async () => {
-      const testRole = new Roles.Role('permission_test_role');
+      const testRole = new Role('permission_test_role');
       testRole.allow('view_data', () => true);
 
       expect(Roles.userHasPermission('permission_user', 'view_data')).toBe(
-        true,
+        true
       );
     });
   });
@@ -75,7 +83,7 @@ describe('Roles', () => {
           '__all__',
           '__loggedIn__',
           '__notAdmin__',
-        ]),
+        ])
       );
     });
 
@@ -87,14 +95,14 @@ describe('Roles', () => {
           'admin',
           '__all__',
           '__loggedIn__',
-        ]),
+        ])
       );
     });
 
     it('should get roles including special ones as not logged in user', () => {
       const roles = Roles.getUserRoles(null, true);
       expect(roles).toEqual(
-        expect.arrayContaining(['__all__', '__notLoggedIn__']),
+        expect.arrayContaining(['__all__', '__notLoggedIn__'])
       );
     });
   });
@@ -108,7 +116,7 @@ describe('Roles', () => {
     it('should add a helper attaching it to adminRole', () => {
       Roles.registerHelper('test_admin_helper', jest.fn());
       expect(Roles.helpers).toEqual(
-        expect.arrayContaining(['test_admin_helper']),
+        expect.arrayContaining(['test_admin_helper'])
       );
     });
 
@@ -117,7 +125,7 @@ describe('Roles', () => {
       Roles.registerHelper('test_admin_helper');
 
       expect(Roles.helpers).toEqual(
-        expect.arrayContaining(['test_helper', 'test_admin_helper']),
+        expect.arrayContaining(['test_helper', 'test_admin_helper'])
       );
     });
   });
@@ -138,7 +146,7 @@ describe('Roles', () => {
   // Roles.Role
   describe('Role contruction', () => {
     it('should construct a new role', () => {
-      expect(new Roles.Role('test_role')).toMatchObject({
+      expect(new Role('test_role')).toMatchObject({
         name: 'test_role',
         allowRules: {},
         helpers: {},
@@ -147,14 +155,14 @@ describe('Roles', () => {
 
     it('should throw an error if given a role with similar name', () => {
       // eslint-disable-next-line no-new
-      new Roles.Role('test_role');
-      expect(() => new Roles.Role('test_role')).toThrow();
+      new Role('test_role');
+      expect(() => new Role('test_role')).toThrow();
     });
   });
 
   describe('isFunction', () => {
     test('it should return true give a function', () => {
-      expect(isFunction(function () {})).toBe(true);
+      expect(isFunction(() => {})).toBe(true);
     });
 
     test('it should return false given an improper function', () => {

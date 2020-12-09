@@ -1,4 +1,4 @@
-import { Roles } from 'meteor/unchained:roles';
+import { Roles, Role } from 'meteor/unchained:roles';
 
 import all from './all';
 import loggedIn from './loggedIn';
@@ -100,7 +100,7 @@ export const actions = [
 
 export const configureRoles = ({ additionalRoles = {} } = {}) => {
   Object.entries(additionalRoles).forEach(([key, val]) => {
-    allRoles[key] = new Roles.Role(key);
+    allRoles[key] = new Role(key);
     val(allRoles[key], actions);
   });
   all(roles.ALL, actions);

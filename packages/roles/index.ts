@@ -1,2 +1,2 @@
 // eslint-disable-next-line import/prefer-default-export
-export { Roles } from './roles';
+export { Roles, Role } from './roles';

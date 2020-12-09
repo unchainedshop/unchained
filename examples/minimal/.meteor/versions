@@ -53,6 +53,7 @@ routepolicy@1.1.0
 socket-stream-client@0.3.1
 tmeasday:check-npm-versions@0.3.2
 tracker@1.2.0
+typescript@3.7.6
 unchained:api@0.55.2
 unchained:core@0.55.2
 unchained:core-accountsjs@0.55.2

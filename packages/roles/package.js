@@ -13,11 +13,11 @@ Package.onUse((api) => {
     'lodash.clone': '4.5.0',
   });
 
-  api.use(['ecmascript', 'unchained:core-users']);
+  api.use(['ecmascript', 'typescript', 'unchained:core-users']);
 
-  api.addFiles(['helpers.js', 'roles.js'], 'server');
+  api.addFiles(['helpers.ts', 'roles.ts'], 'server');
 
-  api.mainModule('index.js');
+  api.mainModule('index.ts');
 });
 
 Package.onTest((api) => {
