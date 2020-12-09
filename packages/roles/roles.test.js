@@ -51,12 +51,37 @@ describe('Roles', () => {
         expect.arrayContaining([helperFn])
       );
     });
+
+    it('should return true if the user passes the allow check', () => {
+      const permissionTestRole = new Role('permission_test_role');
+      permissionTestRole.allow('view_data', () => true);
+
+      expect(Roles.allow('permission_user', 'view_data')).toBe(true);
+    });
+
+    it("should return false if the user doesn't pass the allow check", () => {
+      const permissionTestRole = new Role('permission_test_role');
+      permissionTestRole.allow('view_data', () => false);
+
+      expect(Roles.allow('permission_user', 'view_data')).toBe(false);
+    });
+
+    it('should return false given a false user id', () => {
+      const permissionTestRole = new Role('permission_test_role');
+      permissionTestRole.allow('view_data', () => false);
+
+      expect(Roles.allow('not_found_user', 'view_data')).toBe(false);
+    });
+
+    it('should return false given a false role', () => {
+      expect(Roles.allow('permission_user', 'view_data')).toBe(false);
+    });
   });
 
   describe('Add allow to role', () => {
     it('allow', async () => {
-      const testRole = new Role('permission_test_role');
-      testRole.allow('view_data', () => true);
+      const permissionTestRole = new Role('permission_test_role');
+      permissionTestRole.allow('view_data', () => true);
 
       expect(Roles.userHasPermission('permission_user', 'view_data')).toBe(
         true
