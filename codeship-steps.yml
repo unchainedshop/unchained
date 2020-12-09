@@ -7,6 +7,9 @@
     - name: Integration Tests
       service: ci
       command: meteor npm run test:ci
+    - name: Packages Unit Tests
+      service: ci
+      command: meteor npm run test:packages:ci  
 - name: Build Unchained Examples
   type: parallel
   encrypted_dockercfg_path: dockercfg.encrypted
