@@ -105,8 +105,8 @@ export const Roles: RolesInterface = {
   /**
    * To check if a user has permisisons to execute an action
    */
-  userHasPermission: function (userId, action) {
-    const allows = this.allow(userId, action);
+  userHasPermission: function (...args) {
+    const allows = this.allow(...args);
     return allows === true;
   },
 
@@ -129,8 +129,8 @@ export const Roles: RolesInterface = {
    * If the user doesn't has permission it will throw a error
    * Roles.userHasPermission(userId, action, [extra])
    */
-  checkPermission: function (userId, action) {
-    if (!this.userHasPermission(userId, action)) {
+  checkPermission: function (...args) {
+    if (!this.userHasPermission(...args)) {
       throw new Meteor.Error(
         'unauthorized',
         'The user has no permission to perform this action'
