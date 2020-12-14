@@ -12,6 +12,7 @@
 
 ## Minor
 - [platform] If you used `user.setPassword` before, that function is now async and does not return the user object anymore
+- [platform] If you used `Users.createUser` before, that function is now async
 - [api] setPassword mutation now also supports plain passwords if needed.
 
 ## Patches
@@ -32,6 +33,11 @@ Look for `Accounts.registerLoginHandler`, `Accounts.onLogin` or Meteor Accounts 
 - [api] `Mutation.resendVerificationEmail` has been renamed to `Mutation.sendVerificationEmail`
 - [api] More specific exceptions when using wrong Id's
 - [platform] New unchained instances now generate an admin user with an E-Mail of `admin@unchained.local` to solve various issues with frontends and services that don't accept addresses like `user@toplevel`. Also it's now very important to seed your database AFTER startPlatform.
+
+You have to remove meteor's native accounts packages from the project to use the new unchained version:
+```
+meteor remove accounts-base accounts-password accounts-oauth
+```
 
 ## Minor
 - [users] `sendEnrollmentEmail` mutation is now available to trigger enrollment emails.
