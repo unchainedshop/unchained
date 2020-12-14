@@ -1,6 +1,12 @@
 # vNext
 
-# v0.55.2
+# v0.55.4
+
+## Minor
+- [api] Type Assertions (#273)
+- Various other bugfixes: #232, #258, #277, #268, #261, #272
+
+# v0.55.3
 
 # Breaking Changes
 - [users] enrollUser now supports hashed passwords and uses the existing password field for it
