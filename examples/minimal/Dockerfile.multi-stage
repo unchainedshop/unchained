@@ -9,6 +9,7 @@ RUN NODE_ENV=development meteor npm install
 
 # Build app
 ADD . /source/
+RUN meteor npm run lint
 RUN meteor build --server-only --allow-superuser --directory /
 
 

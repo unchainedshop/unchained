@@ -11,6 +11,7 @@ WORKDIR /usr/src/app
 COPY package.json /usr/src/app/
 COPY package-lock.json /usr/src/app/
 RUN NODE_ENV=development npm install
+RUN npm run lint
 
 # Build app
 COPY . /usr/src/app/

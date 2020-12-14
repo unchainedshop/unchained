@@ -16,4 +16,6 @@ ADD https://github.com/unchainedshop/unchained/archive/${COMMIT_ID}.tar.gz /arch
 RUN tar -xzf /archive.tar.gz -C /
 RUN cp -R /unchained-${COMMIT_ID}/packages /source
 RUN ls -la /source/packages
+
+RUN meteor npm run lint
 RUN meteor build --server-only --allow-superuser --directory /
