@@ -49,7 +49,9 @@ class ProductPriceCoinbaseExchange extends ProductPricingAdapter {
       isoCode: country,
     });
     const productPrice = product.price({ country, currency: defaultCurrency });
-    if (!productPrice || !productPrice?.amount) return super.calculate();
+    const { calculation = [] } = this.calculation;
+    if (!productPrice || !productPrice?.amount || calculation?.length)
+      return super.calculate();
 
     const rate = await getFiatexchangeRateForCrypto(defaultCurrency, currency);
 
