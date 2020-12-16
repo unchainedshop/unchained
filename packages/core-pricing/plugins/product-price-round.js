@@ -14,27 +14,33 @@ class ProductPriceRound extends ProductPricingAdapter {
 
   static orderIndex = 2;
 
-  static configuration = {};
+  static configurations = {};
+
+  static skip = [];
+
+  static defaultPricision = 50;
 
   static isActivatedFor() {
     return true;
   }
 
-  static configure({ currency, precision }) {
-    this.configuration[currency] = precision;
+  static configure({ defaultPricision, configurations, skip }) {
+    if (defaultPricision) this.defaultPricision = defaultPricision;
+    if (configurations) this.configurations = configurations;
+    if (skip?.length) this.skip = skip;
   }
 
   async calculate() {
     const { currency, quantity } = this.context;
-    const { configuration } = this.constructor;
-    const roundPrecision = configuration?.[currency] || configuration?.default;
+    const { configurations, skip, defaultPrecision } = this.constructor;
+    const { calculation = [] } = this.calculation;
 
-    if (
-      this.calculation?.calculation?.length &&
-      roundPrecision &&
-      configuration?.skip?.indexOf(currency) === -1
-    ) {
-      const [productPrice] = this.calculation?.calculation;
+    if (skip?.indexOf(currency) !== -1) return super.calculate();
+
+    const roundPrecision = configurations?.[currency] || defaultPrecision;
+
+    if (calculation?.length && roundPrecision) {
+      const [productPrice] = calculation;
       this.resetCalculation();
       this.result.addItem({
         amount: roundToNext(productPrice.amount, roundPrecision) * quantity,
