@@ -80,8 +80,10 @@ class ProductPriceECBIntraBankExchange extends ProductPricingAdapter {
 
   async calculate() {
     const { product, country, quantity, currency } = this.context;
+    const { calculation = [] } = this.calculation;
     const EURprice = product.price({ country, currency: 'EUR' });
-    if (!EURprice || !EURprice?.amount) return super.calculate();
+    if (!EURprice || !EURprice?.amount || calculation?.length)
+      return super.calculate();
 
     const exchange = await getEURexchangeRateForCurrency(currency);
     const convertedAmount = EURprice.amount * exchange.rate;
