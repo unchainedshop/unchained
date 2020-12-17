@@ -1,4 +1,4 @@
-import { Assortments } from 'meteor/unchained:core-filters';
+import { Assortments } from 'meteor/unchained:core-assortments';
 
 export default async function removeAssortment(payload, { logger }) {
   const { _id } = payload;
