@@ -6,7 +6,7 @@ import {
 
 import Cache from '../utils/cache';
 
-const CACHE_PERIOD = 60 * 60 * 0.5; // 30 minutes
+const CACHE_PERIOD = 60 * 60 * 24; // 1 day
 
 const SUPPORTED_CURRENCIES = [
   'USD',
@@ -70,7 +70,7 @@ class ProductPriceECBIntraBankExchange extends ProductPricingAdapter {
 
   static version = '1.0';
 
-  static label = 'Convert EUR to X with curreny exchange rate';
+  static label = 'Convert EUR to X with current exchange rate';
 
   static orderIndex = 1;
 

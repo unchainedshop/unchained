@@ -35,7 +35,7 @@ class ProductPriceCoinbaseExchange extends ProductPricingAdapter {
 
   static version = '1.0';
 
-  static label = 'Convert EUR to crypto with curreny exchange rate';
+  static label = 'Convert fiat/crypto to crypto with current exchange rate';
 
   static orderIndex = 1;
 
