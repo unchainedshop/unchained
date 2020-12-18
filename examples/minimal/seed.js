@@ -41,7 +41,7 @@ export default async () => {
       });
       return language.isoCode;
     });
-    const currencies = ['CHF'].map((code) => {
+    const currencies = ['EUR'].map((code) => {
       const currency = Currencies.createCurrency({
         isoCode: code,
         isActive: true,
