@@ -31,12 +31,8 @@ inter-process-messaging@0.1.1
 littledata:synced-cron@1.5.1
 logging@1.1.20
 meteor@1.9.3
-<<<<<<< HEAD
-minimongo@1.6.0
-=======
 meteor-base@1.4.0
 minimongo@1.6.1
->>>>>>> 7581b3f2f1dd6869266d7158f7ba4218d0991897
 modern-browsers@0.1.5
 modules@0.15.0
 modules-runtime@0.12.0
@@ -59,37 +55,6 @@ routepolicy@1.1.0
 socket-stream-client@0.3.1
 tmeasday:check-npm-versions@0.3.2
 tracker@1.2.0
-<<<<<<< HEAD
-typescript@3.7.6
-unchained:api@0.55.2
-unchained:core@0.55.2
-unchained:core-accountsjs@0.55.2
-unchained:core-assortments@0.55.2
-unchained:core-bookmarks@0.55.2
-unchained:core-countries@0.55.2
-unchained:core-currencies@0.55.2
-unchained:core-delivery@0.55.2
-unchained:core-discounting@0.55.2
-unchained:core-documents@0.55.2
-unchained:core-files@0.55.2
-unchained:core-filters@0.55.2
-unchained:core-languages@0.55.2
-unchained:core-logger@0.55.2
-unchained:core-messaging@0.55.2
-unchained:core-orders@0.55.2
-unchained:core-payment@0.55.2
-unchained:core-pricing@0.55.2
-unchained:core-products@0.55.2
-unchained:core-quotations@0.55.2
-unchained:core-settings@0.55.2
-unchained:core-subscriptions@0.55.2
-unchained:core-users@0.55.3
-unchained:core-warehousing@0.55.2
-unchained:core-worker@0.55.2
-unchained:platform@0.55.2
-unchained:roles@0.55.2
-unchained:utils@0.55.2
-=======
 unchained:api@0.55.4
 unchained:core@0.55.4
 unchained:core-accountsjs@0.55.4
@@ -118,7 +83,6 @@ unchained:core-worker@0.55.4
 unchained:platform@0.55.4
 unchained:roles@0.55.4
 unchained:utils@0.55.4
->>>>>>> 7581b3f2f1dd6869266d7158f7ba4218d0991897
 underscore@1.0.10
 url@1.3.1
 webapp@1.9.1
