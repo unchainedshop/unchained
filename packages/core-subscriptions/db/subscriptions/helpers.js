@@ -92,6 +92,34 @@ Subscriptions.helpers({
       plan,
     });
   },
+  updateSubscription({
+    contact,
+    plan,
+    billingAddress,
+    payment,
+    delivery,
+    meta,
+  }) {
+    if (meta) {
+      this.updateContext(meta);
+    }
+    if (billingAddress) {
+      this.updateBillingAddress(billingAddress);
+    }
+    if (contact) {
+      this.updateContact(contact);
+    }
+    if (payment) {
+      this.updatePayment(payment);
+    }
+    if (delivery) {
+      this.updateDelivery(delivery);
+    }
+    if (plan) {
+      this.updatePlan(plan);
+    }
+    return this;
+  },
   async terminate({ subscriptionContext } = {}, options) {
     if (this.status === SubscriptionStatus.TERMINATED) return this;
     const locale = this.user().locale(options);
