@@ -17,15 +17,5 @@ export default function removeBundleItem(root, { productId, index }) {
       received: product.type,
       required: ProductTypes.BundleProduct,
     });
-  const { bundleItems = [] } = product;
-  bundleItems.splice(index, 1);
-
-  Products.update(productId, {
-    $set: {
-      updated: new Date(),
-      bundleItems,
-    },
-  });
-
-  return Products.findOne({ _id: productId });
+  return product.removeBundleItem({ index });
 }

@@ -273,6 +273,19 @@ Products.helpers({
     });
     return Products.findOne(this._id);
   },
+  removeBundleItem({ index }) {
+    const { bundleItems = [] } = this;
+    bundleItems.splice(index, 1);
+
+    Products.update(this._id, {
+      $set: {
+        updated: new Date(),
+        bundleItems,
+      },
+    });
+
+    return Products.findOne(this._id);
+  },
   proxyAssignments({ includeInactive = false } = {}) {
     const assignments = this.proxy?.assignments || [];
 
