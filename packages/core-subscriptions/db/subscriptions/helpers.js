@@ -102,22 +102,22 @@ Subscriptions.helpers({
   }) {
     let result = this;
     if (meta) {
-      result = this.updateContext(meta);
+      result = result.updateContext(meta);
     }
     if (billingAddress) {
-      result = this.updateBillingAddress(billingAddress);
+      result = result.updateBillingAddress(billingAddress);
     }
     if (contact) {
-      result = this.updateContact(contact);
+      result = result.updateContact(contact);
     }
     if (payment) {
-      result = this.updatePayment(payment);
+      result = result.updatePayment(payment);
     }
     if (delivery) {
-      result = this.updateDelivery(delivery);
+      result = result.updateDelivery(delivery);
     }
     if (plan) {
-      result = this.updatePlan(plan);
+      result = result.updatePlan(plan);
     }
     return result;
   },

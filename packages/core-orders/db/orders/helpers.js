@@ -388,19 +388,19 @@ Orders.helpers({
   }) {
     let result = this;
     if (meta) {
-      result = this.updateContext(meta);
+      result = result.updateContext(meta);
     }
     if (billingAddress) {
-      result = this.updateBillingAddress(billingAddress);
+      result = result.updateBillingAddress(billingAddress);
     }
     if (contact) {
-      result = this.updateContact(contact);
+      result = result.updateContact(contact);
     }
     if (paymentProviderId) {
-      result = this.setPaymentProvider({ paymentProviderId });
+      result = result.setPaymentProvider({ paymentProviderId });
     }
     if (deliveryProviderId) {
-      result = this.setDeliveryProvider({ deliveryProviderId });
+      result = result.setDeliveryProvider({ deliveryProviderId });
     }
     return result;
   },
