@@ -147,6 +147,25 @@ Users.helpers({
     });
     return Users.findOne(this._id);
   },
+  updateProfile({ profile }) {
+    const transformedProfile = Object.keys(profile).reduce(
+      (acc, profileKey) => {
+        return {
+          ...acc,
+          [`profile.${profileKey}`]: profile[profileKey],
+        };
+      },
+      {}
+    );
+
+    Users.update(this._id, {
+      $set: {
+        updated: new Date(),
+        ...transformedProfile,
+      },
+    });
+    return Users.findOne(this._id);
+  },
 });
 
 Users.updateLastBillingAddress = ({ userId, lastBillingAddress }) => {
