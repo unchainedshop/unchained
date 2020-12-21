@@ -286,6 +286,21 @@ Products.helpers({
 
     return Products.findOne(this._id);
   },
+  removeProduct() {
+    switch (this.status) {
+      case ProductStatus.DRAFT:
+        Products.update(this._id, {
+          $set: {
+            status: ProductStatus.DELETED,
+            updated: new Date(),
+          },
+        });
+        break;
+      default:
+        throw new Error(`Invalid status', ${this.status}`);
+    }
+    return Products.findOne(this._id);
+  },
   proxyAssignments({ includeInactive = false } = {}) {
     const assignments = this.proxy?.assignments || [];
 
