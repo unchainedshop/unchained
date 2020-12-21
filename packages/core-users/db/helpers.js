@@ -138,6 +138,15 @@ Users.helpers({
     }).fetch();
     return logs;
   },
+  addTags({ tags }) {
+    Users.update(this._id, {
+      $set: {
+        updated: new Date(),
+        tags,
+      },
+    });
+    return Users.findOne(this._id);
+  },
 });
 
 Users.updateLastBillingAddress = ({ userId, lastBillingAddress }) => {

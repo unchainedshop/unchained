@@ -10,3 +10,26 @@ Languages.createLanguage = ({ isoCode, ...languageData }) => {
   });
   return Languages.findOne({ _id });
 };
+
+Languages.helpers({
+  makeBase() {
+    Languages.update(
+      { isBase: true },
+      {
+        $set: {
+          isBase: false,
+          updated: new Date(),
+        },
+      },
+      { multi: true }
+    );
+    Languages.update(this._id, {
+      $set: {
+        isBase: true,
+        updated: new Date(),
+      },
+    });
+
+    return Languages.findOne(this._id);
+  },
+});
