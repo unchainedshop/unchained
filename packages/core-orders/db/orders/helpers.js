@@ -379,6 +379,30 @@ Orders.helpers({
       );
     }
   },
+  updateCart({
+    billingAddress,
+    contact,
+    paymentProviderId,
+    deliveryProviderId,
+    meta,
+  }) {
+    if (meta) {
+      this.updateContext(meta);
+    }
+    if (billingAddress) {
+      this.updateBillingAddress(billingAddress);
+    }
+    if (contact) {
+      this.updateContact(contact);
+    }
+    if (paymentProviderId) {
+      this.setPaymentProvider({ paymentProviderId });
+    }
+    if (deliveryProviderId) {
+      this.setDeliveryProvider({ deliveryProviderId });
+    }
+    return this;
+  },
   checkout({ paymentContext, deliveryContext, orderContext } = {}, options) {
     const errors = [
       ...this.missingInputDataForCheckout(),
