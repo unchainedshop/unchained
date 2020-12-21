@@ -17,6 +17,26 @@ const currencyCodeCache = new LRU({
 const { CURRENCY } = process.env;
 
 Countries.helpers({
+  makeBase() {
+    Countries.update(
+      { isBase: true },
+      {
+        $set: {
+          isBase: false,
+          updated: new Date(),
+        },
+      },
+      { multi: true }
+    );
+    Countries.update(this._id, {
+      $set: {
+        isBase: true,
+        updated: new Date(),
+      },
+    });
+
+    return Countries.findOne(this._id);
+  },
   defaultCurrency() {
     if (this.defaultCurrencyId) {
       return Currencies.findOne({ _id: this.defaultCurrencyId });
