@@ -185,6 +185,17 @@ Filters.invalidateFilterCaches = () => {
 };
 
 Filters.helpers({
+  removeFilterOption({ filterOptionValue }) {
+    Filters.update(this._id, {
+      $set: {
+        updated: new Date(),
+      },
+      $pull: {
+        options: filterOptionValue,
+      },
+    });
+    return Filters.findOne(this._id);
+  },
   upsertLocalizedText(locale, { filterOptionValue, ...fields }) {
     const selector = {
       filterId: this._id,
