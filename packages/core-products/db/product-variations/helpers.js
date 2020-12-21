@@ -43,6 +43,26 @@ ProductVariations.helpers({
       ...this,
     };
   },
+  createVariationOption({ inputData, localeContext, userId }) {
+    const { value, title } = inputData;
+    ProductVariations.update(
+      { _id: this._id },
+      {
+        $set: {
+          updated: new Date(),
+        },
+        $addToSet: {
+          options: value,
+        },
+      }
+    );
+
+    return this.upsertLocalizedText(localeContext.language, {
+      authorId: userId,
+      productVariationOptionValue: value,
+      title,
+    });
+  },
 });
 
 ProductVariations.createVariation = ({
