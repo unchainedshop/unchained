@@ -37,6 +37,27 @@ Products.createProduct = (
   return product;
 };
 
+Products.assignProxy = ({ productId, proxyId, vectors }) => {
+  const vector = {};
+  vectors.forEach(({ key, value }) => {
+    vector[key] = value;
+  });
+  const modifier = {
+    $set: {
+      updated: new Date(),
+    },
+    $push: {
+      'proxy.assignments': {
+        vector,
+        productId,
+      },
+    },
+  };
+
+  Products.update({ _id: proxyId }, modifier);
+  return Products.findOne({ _id: proxyId });
+};
+
 Products.updateProduct = ({ productId, type, ...product }) => {
   const modifier = {
     $set: {
@@ -220,6 +241,37 @@ Products.helpers({
   },
   variation(key) {
     return ProductVariations.findOne({ productId: this._id, key });
+  },
+  assignProxy({ proxyId, vectors }) {
+    const vector = {};
+    vectors.forEach(({ key, value }) => {
+      vector[key] = value;
+    });
+    const modifier = {
+      $set: {
+        updated: new Date(),
+      },
+      $push: {
+        'proxy.assignments': {
+          vector,
+          productId: this._id,
+        },
+      },
+    };
+
+    Products.update({ _id: proxyId }, modifier);
+    return Products.findOne({ _id: proxyId });
+  },
+  createBundleItem({ item }) {
+    Products.update(this._id, {
+      $set: {
+        updated: new Date(),
+      },
+      $push: {
+        bundleItems: item,
+      },
+    });
+    return Products.findOne(this._id);
   },
   proxyAssignments({ includeInactive = false } = {}) {
     const assignments = this.proxy?.assignments || [];

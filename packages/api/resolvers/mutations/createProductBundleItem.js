@@ -25,14 +25,5 @@ export default function createProductBundleItem(root, { productId, item }) {
   if (!bundleItem)
     throw new ProductNotFoundError({ productId: item.productId });
 
-  Products.update(productId, {
-    $set: {
-      updated: new Date(),
-    },
-    $push: {
-      bundleItems: item,
-    },
-  });
-
-  return Products.findOne(productId);
+  return product.createBundleItem({ item });
 }
