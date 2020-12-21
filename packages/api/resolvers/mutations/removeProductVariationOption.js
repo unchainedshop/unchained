@@ -12,22 +12,14 @@ export default function removeProductVariationOption(
     { userId }
   );
   if (!productVariationId) throw new InvalidIdError({ productVariationId });
-  ProductVariations.update(
-    { _id: productVariationId },
-    {
-      $set: {
-        updated: new Date(),
-      },
-      $pull: {
-        options: productVariationOptionValue,
-      },
-    }
-  );
+
   const productVariation = ProductVariations.findOne({
     _id: productVariationId,
   });
   if (!productVariation)
     throw new ProductVariationNotFoundError({ productVariationId });
 
-  return productVariation;
+  return productVariation.removeVariationOption({
+    productVariationOptionValue,
+  });
 }
