@@ -22,21 +22,5 @@ export default function removeProductAssignment(
       received: product.type,
       required: ProductTypes.ConfigurableProduct,
     });
-
-  const vector = {};
-  vectors.forEach(({ key, value }) => {
-    vector[key] = value;
-  });
-  const modifier = {
-    $set: {
-      updated: new Date(),
-    },
-    $pull: {
-      'proxy.assignments': {
-        vector,
-      },
-    },
-  };
-  Products.update({ _id: proxyId }, modifier, { multi: true });
-  return Products.findOne({ _id: proxyId });
+  return product.removeAssignment({ vectors });
 }

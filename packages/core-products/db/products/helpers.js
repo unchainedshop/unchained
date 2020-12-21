@@ -326,6 +326,24 @@ Products.helpers({
         product: this,
       }));
   },
+  removeAssignment({ vectors }) {
+    const vector = {};
+    vectors.forEach(({ key, value }) => {
+      vector[key] = value;
+    });
+    const modifier = {
+      $set: {
+        updated: new Date(),
+      },
+      $pull: {
+        'proxy.assignments': {
+          vector,
+        },
+      },
+    };
+    Products.update(this._id, modifier, { multi: true });
+    return Products.findOne(this._id);
+  },
   proxyProducts(vectors, { includeInactive = false } = {}) {
     const { proxy = {} } = this;
     let filtered = [...(proxy.assignments || [])];
