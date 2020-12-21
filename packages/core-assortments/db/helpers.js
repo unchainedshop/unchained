@@ -819,6 +819,11 @@ Collections.AssortmentProducts.helpers({
   product() {
     return Products.findOne({ _id: this.productId });
   },
+  removeAssortmentProduct() {
+    Collections.AssortmentProducts.remove({ _id: this._id });
+    this.assortment().invalidateProductIdCache();
+    return this;
+  },
 });
 
 Collections.AssortmentFilters.helpers({
