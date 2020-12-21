@@ -386,22 +386,23 @@ Orders.helpers({
     deliveryProviderId,
     meta,
   }) {
+    let result = this;
     if (meta) {
-      this.updateContext(meta);
+      result = this.updateContext(meta);
     }
     if (billingAddress) {
-      this.updateBillingAddress(billingAddress);
+      result = this.updateBillingAddress(billingAddress);
     }
     if (contact) {
-      this.updateContact(contact);
+      result = this.updateContact(contact);
     }
     if (paymentProviderId) {
-      this.setPaymentProvider({ paymentProviderId });
+      result = this.setPaymentProvider({ paymentProviderId });
     }
     if (deliveryProviderId) {
-      this.setDeliveryProvider({ deliveryProviderId });
+      result = this.setDeliveryProvider({ deliveryProviderId });
     }
-    return this;
+    return result;
   },
   checkout({ paymentContext, deliveryContext, orderContext } = {}, options) {
     const errors = [

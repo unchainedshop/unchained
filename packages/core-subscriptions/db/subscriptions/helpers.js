@@ -100,25 +100,26 @@ Subscriptions.helpers({
     delivery,
     meta,
   }) {
+    let result = this;
     if (meta) {
-      this.updateContext(meta);
+      result = this.updateContext(meta);
     }
     if (billingAddress) {
-      this.updateBillingAddress(billingAddress);
+      result = this.updateBillingAddress(billingAddress);
     }
     if (contact) {
-      this.updateContact(contact);
+      result = this.updateContact(contact);
     }
     if (payment) {
-      this.updatePayment(payment);
+      result = this.updatePayment(payment);
     }
     if (delivery) {
-      this.updateDelivery(delivery);
+      result = this.updateDelivery(delivery);
     }
     if (plan) {
-      this.updatePlan(plan);
+      result = this.updatePlan(plan);
     }
-    return this;
+    return result;
   },
   async terminate({ subscriptionContext } = {}, options) {
     if (this.status === SubscriptionStatus.TERMINATED) return this;
