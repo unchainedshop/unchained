@@ -14,12 +14,9 @@ export default function updateProductVariationTexts(
   });
   if (!productVariation)
     throw new ProductVariationNotFoundError({ productVariationId });
-  const changedLocalizations = texts.map(({ locale, ...localizations }) =>
-    productVariation.upsertLocalizedText(locale, {
-      ...localizations,
-      authorId: userId,
-      productVariationOptionValue,
-    })
-  );
-  return changedLocalizations;
+  return productVariation.updateTexts({
+    texts,
+    productVariationOptionValue,
+    userId,
+  });
 }

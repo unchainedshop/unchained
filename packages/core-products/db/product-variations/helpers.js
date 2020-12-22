@@ -28,6 +28,15 @@ ProductVariations.helpers({
     });
     return ProductVariationTexts.findOne(selector);
   },
+  updateTexts({ texts, productVariationOptionValue, userId }) {
+    return texts.map(({ locale, ...localizations }) =>
+      this.upsertLocalizedText(locale, {
+        ...localizations,
+        authorId: userId,
+        productVariationOptionValue,
+      })
+    );
+  },
   getLocalizedTexts(locale, optionValue) {
     const parsedLocale = new Locale(locale);
     return ProductVariations.getLocalizedTexts(
