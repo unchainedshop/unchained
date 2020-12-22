@@ -21,8 +21,8 @@ describe('Order: Management', () => {
     await connection.close();
   });
 
-  describe('Query.order for loggedin user', () => {
-    it('should return array of current user orders', async () => {
+  describe('Query.order for loggedin user should', () => {
+    it('return array of current user orders', async () => {
       const {
         data: {
           me: { orders },
@@ -80,11 +80,10 @@ describe('Order: Management', () => {
         `,
         variables: {},
       });
-
       expect(orders.length).toEqual(2);
     });
 
-    it('should return single user order', async () => {
+    it('return single user order', async () => {
       const {
         data: { order },
       } = await graphqlFetch({
@@ -142,6 +141,67 @@ describe('Order: Management', () => {
       });
 
       expect(order._id).toEqual(SimpleOrder._id);
+    });
+    it('return simulatedPrice for supportedDeliveryProviders using default country currency when currency is not provided', async () => {
+      const {
+        data: { order },
+      } = await graphqlFetch({
+        query: /* GraphQL */ `
+          query order($orderId: ID!) {
+            order(orderId: $orderId) {
+              _id
+              supportedDeliveryProviders {
+                _id
+                simulatedPrice {
+                  _id
+                  price {
+                    amount
+                    currency
+                  }
+                }
+              }
+            }
+          }
+        `,
+        variables: {
+          orderId: SimpleOrder._id,
+        },
+      });
+
+      expect(
+        order.supportedDeliveryProviders?.[0]?.simulatedPrice?.price.currency,
+      ).toEqual('CHF');
+    });
+
+    it('return simulatedPrice for supportedDeliveryProviders using the provided currency when currency is provided', async () => {
+      const {
+        data: { order },
+      } = await graphqlFetch({
+        query: /* GraphQL */ `
+          query order($orderId: ID!) {
+            order(orderId: $orderId) {
+              _id
+              supportedDeliveryProviders {
+                _id
+                simulatedPrice(currency: "EUR") {
+                  _id
+                  price {
+                    amount
+                    currency
+                  }
+                }
+              }
+            }
+          }
+        `,
+        variables: {
+          orderId: SimpleOrder._id,
+        },
+      });
+
+      expect(
+        order.supportedDeliveryProviders?.[0]?.simulatedPrice?.price.currency,
+      ).toEqual('EUR');
     });
 
     it('return order not found error when passed non existing orderId and user is not admin', async () => {
