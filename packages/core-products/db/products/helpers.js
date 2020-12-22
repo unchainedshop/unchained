@@ -192,6 +192,14 @@ Products.helpers({
       insertedId ? { _id: insertedId } : { productId: this._id, locale }
     );
   },
+  updateTexts({ texts, userId }) {
+    return texts.map(({ locale, ...localizations }) =>
+      this.upsertLocalizedText(locale, {
+        ...localizations,
+        authorId: userId,
+      })
+    );
+  },
   addMediaLink(mediaData) {
     return ProductMedia.createMedia({
       productId: this._id,

@@ -11,11 +11,5 @@ export default function updateProductTexts(
   if (!productId) throw new InvalidIdError({ productId });
   const product = Products.findOne({ _id: productId });
   if (!product) throw new ProductNotFoundError({ productId });
-  const changedLocalizations = texts.map(({ locale, ...localizations }) =>
-    product.upsertLocalizedText(locale, {
-      ...localizations,
-      authorId: userId,
-    })
-  );
-  return changedLocalizations;
+  return product.updateTexts({ texts, userId });
 }
