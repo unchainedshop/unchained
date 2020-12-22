@@ -13,12 +13,5 @@ export default function updateFilterTexts(
   if (!filterId) throw new InvalidIdError({ filterId });
   const filter = Filters.findOne({ _id: filterId });
   if (!filter) throw new FilterNotFoundError({ filterId });
-  const changedLocalizations = texts.map(({ locale, ...localizations }) =>
-    filter.upsertLocalizedText(locale, {
-      ...localizations,
-      authorId: userId,
-      filterOptionValue,
-    })
-  );
-  return changedLocalizations;
+  return filter.updateTexts({ texts, filterOptionValue, userId });
 }

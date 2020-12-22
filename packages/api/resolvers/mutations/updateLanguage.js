@@ -11,12 +11,5 @@ export default function updateLanguage(
   if (!languageId) throw new InvalidIdError({ languageId });
   const languageObject = Languages.findOne({ _id: languageId });
   if (!languageObject) throw new LanguageNotFoundError({ languageId });
-  Languages.update(
-    { _id: languageId },
-    {
-      updated: new Date(),
-      $set: language,
-    }
-  );
-  return Languages.findOne({ _id: languageId });
+  return languageObject.updateLanguage({ language });
 }

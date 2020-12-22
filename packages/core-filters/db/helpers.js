@@ -234,6 +234,15 @@ Filters.helpers({
     });
     return Filters.findOne(this._id);
   },
+  updateTexts({ texts, filterOptionValue, userId }) {
+    return texts.map(({ locale, ...localizations }) =>
+      this.upsertLocalizedText(locale, {
+        ...localizations,
+        authorId: userId,
+        filterOptionValue,
+      })
+    );
+  },
   getLocalizedTexts(locale, optionValue) {
     const parsedLocale = new Locale(locale);
     return Filters.getLocalizedTexts(this._id, optionValue, parsedLocale);

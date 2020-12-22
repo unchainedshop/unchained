@@ -32,4 +32,11 @@ Languages.helpers({
 
     return Languages.findOne(this._id);
   },
+  updateLanguage({ language }) {
+    Languages.update(this._id, {
+      updated: new Date(),
+      $set: language,
+    });
+    return Languages.findOne(this._id);
+  },
 });
