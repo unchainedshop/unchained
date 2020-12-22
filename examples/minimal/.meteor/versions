@@ -1,6 +1,5 @@
 aldeed:collection2@3.2.1
 allow-deny@1.1.0
-autoupdate@1.6.0
 babel-compiler@7.5.4
 babel-runtime@1.5.0
 base64@1.0.12
@@ -31,7 +30,6 @@ inter-process-messaging@0.1.1
 littledata:synced-cron@1.5.1
 logging@1.1.20
 meteor@1.9.3
-meteor-base@1.4.0
 minimongo@1.6.1
 modern-browsers@0.1.5
 modules@0.15.0
@@ -55,6 +53,7 @@ routepolicy@1.1.0
 socket-stream-client@0.3.1
 tmeasday:check-npm-versions@0.3.2
 tracker@1.2.0
+typescript@4.1.2
 unchained:api@0.55.4
 unchained:core@0.55.4
 unchained:core-accountsjs@0.55.4
