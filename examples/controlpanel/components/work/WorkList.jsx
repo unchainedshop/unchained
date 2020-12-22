@@ -99,8 +99,8 @@ export default withDataTableLoader({
   itemsPerPage: 50,
   queryName: 'workQueue',
   query: gql`
-    query workQueue($offset: Int, $limit: Int, $status: [WorkStatus!]!) {
-      workQueue(offset: $offset, limit: $limit, status: $status) {
+    query workQueue($offset: Int, $limit: Int, $status: [WorkStatus!]!, $type: [String] = []) {
+      workQueue(offset: $offset, limit: $limit, status: $status, type: $type) {
         _id
         type
         scheduled

@@ -11,6 +11,7 @@ export default connectApollo(({ ...rest }) => (
       <WorkList
         queryOptions={{ pollInterval: 1000 }}
         limit={0}
+        type={[]}
         status={['ALLOCATED', 'NEW']}
       />
 
@@ -18,6 +19,7 @@ export default connectApollo(({ ...rest }) => (
       <WorkList
         queryOptions={{ pollInterval: 5000 }}
         status={['FAILED', 'SUCCESS']}
+        type={[]}
       />
     </Container>
   </App>

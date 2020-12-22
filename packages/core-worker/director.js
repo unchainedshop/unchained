@@ -161,7 +161,7 @@ class WorkerDirector {
     return work;
   }
 
-  static buildQueueSelector({ status = [], workId, ...rest }) {
+  static buildQueueSelector({ status = [], type = [], workId, ...rest }) {
     const filterMap = {
       [WorkStatus.DELETED]: { deleted: { $exists: true } },
       [WorkStatus.NEW]: {
@@ -182,7 +182,17 @@ class WorkerDirector {
         []
       ),
     };
+
     const query = statusQuery.$or.length > 0 ? statusQuery : {};
+    if (type.length !== 0 && Array.isArray(type)) {
+      statusQuery.$and = [];
+      statusQuery.$and.push(
+        ...type.map((t) => ({
+          type: t,
+        }))
+      );
+    }
+
     if (workId) {
       query._id = workId;
     }
