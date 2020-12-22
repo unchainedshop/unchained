@@ -1,3 +1,4 @@
+import { Promise } from 'meteor/promise';
 import { Locale } from 'locale';
 import { accountsPassword, dbManager } from 'meteor/unchained:core-accountsjs';
 import 'meteor/dburles:collection-helpers';
@@ -162,6 +163,29 @@ Users.helpers({
       $set: {
         updated: new Date(),
         ...transformedProfile,
+      },
+    });
+    return Users.findOne(this._id);
+  },
+  async updateAvatar({ avatar }) {
+    const avatarRef =
+      avatar instanceof Promise
+        ? await Avatars.insertWithRemoteFile({
+            file: avatar,
+            userId: this._id,
+          })
+        : await Avatars.insertWithRemoteBuffer({
+            file: {
+              ...avatar,
+              buffer: Buffer.from(avatar.buffer, 'base64'),
+            },
+            userId: this._id,
+          });
+
+    Users.update(this._id, {
+      $set: {
+        updated: new Date(),
+        avatarId: avatarRef._id,
       },
     });
     return Users.findOne(this._id);
