@@ -512,6 +512,25 @@ Products.helpers({
 });
 
 Collections.Assortments.helpers({
+  makeBase() {
+    Collections.Assortments.update(
+      { isBase: true },
+      {
+        $set: {
+          isBase: false,
+          updated: new Date(),
+        },
+      },
+      { multi: true }
+    );
+    Collections.Assortments.update(this._id, {
+      $set: {
+        isBase: true,
+        updated: new Date(),
+      },
+    });
+    return Collections.Assortments.findOne(this._id);
+  },
   country() {
     return Countries.findOne({ isoCode: this.countryCode });
   },
