@@ -26,27 +26,8 @@ export default function updateCartItem(
     throw new OrderWrongStatusError({ status: order.status });
   }
 
-  if (quantity !== null) {
-    if (quantity < 1) throw new OrderQuantityTooLowError({ quantity });
-    // FIXME: positionId is actually
-    OrderPositions.updatePosition(
-      {
-        orderId: item.orderId,
-        positionId: itemId,
-      },
-      { quantity }
-    );
-  }
+  if (quantity && quantity < 1)
+    throw new OrderQuantityTooLowError({ quantity });
 
-  if (configuration !== null) {
-    OrderPositions.updatePosition(
-      {
-        orderId: item.orderId,
-        positionId: itemId,
-      },
-      { configuration }
-    );
-  }
-
-  return OrderPositions.findOne({ _id: itemId });
+  return order.updateItem({ itemId, quantity, configuration });
 }
