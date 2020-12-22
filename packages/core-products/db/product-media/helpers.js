@@ -24,6 +24,14 @@ ProductMedia.helpers({
     );
     return ProductMediaTexts.findOne({ productMediaId: this._id, locale });
   },
+  updateTexts({ texts, userId }) {
+    return texts.map(({ locale, ...localizations }) =>
+      this.upsertLocalizedText(locale, {
+        ...localizations,
+        authorId: userId,
+      })
+    );
+  },
   getLocalizedTexts(locale) {
     const parsedLocale = new Locale(locale);
     return ProductMedia.getLocalizedTexts(this._id, parsedLocale);
