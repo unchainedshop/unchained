@@ -11,15 +11,5 @@ export default function updateCurrency(
   if (!currencyId) throw new InvalidIdError({ currencyId });
   const currencyObject = Currencies.findOne({ _id: currencyId });
   if (!currencyObject) throw new CurrencyNotFoundError({ currencyId });
-  Currencies.update(
-    { _id: currencyId },
-    {
-      $set: {
-        isoCode: isoCode.toUpperCase(),
-        ...currency,
-        updated: new Date(),
-      },
-    }
-  );
-  return Currencies.findOne({ _id: currencyId });
+  return currencyObject.updateCurrency({ isoCode, currency });
 }

@@ -11,14 +11,5 @@ export default function updateCountry(
   if (!countryId) throw new InvalidIdError({ countryId });
   const countryObject = Countries.findOne({ _id: countryId });
   if (!countryObject) throw new CountryNotFoundError({ countryId });
-  Countries.update(
-    { _id: countryId },
-    {
-      $set: {
-        ...country,
-        updated: new Date(),
-      },
-    }
-  );
-  return Countries.findOne({ _id: countryId });
+  return countryObject.updateCountry({ country });
 }

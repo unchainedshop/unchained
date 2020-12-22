@@ -9,3 +9,16 @@ Currencies.createCurrency = ({ isoCode, ...countryData }) => {
   });
   return Currencies.findOne({ _id });
 };
+
+Currencies.helpers({
+  updateCurrency({ isoCode, currency }) {
+    Currencies.update(this._id, {
+      $set: {
+        isoCode: isoCode.toUpperCase(),
+        ...currency,
+        updated: new Date(),
+      },
+    });
+    return Currencies.findOne(this._id);
+  },
+});

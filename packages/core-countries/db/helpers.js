@@ -37,6 +37,15 @@ Countries.helpers({
 
     return Countries.findOne(this._id);
   },
+  updateCountry({ country }) {
+    Countries.update(this._id, {
+      $set: {
+        ...country,
+        updated: new Date(),
+      },
+    });
+    return Countries.findOne(this._id);
+  },
   defaultCurrency() {
     if (this.defaultCurrencyId) {
       return Currencies.findOne({ _id: this.defaultCurrencyId });
