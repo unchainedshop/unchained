@@ -531,6 +531,14 @@ Collections.Assortments.helpers({
     });
     return Collections.Assortments.findOne(this._id);
   },
+  updateTexts({ texts, userId }) {
+    return texts?.map(({ locale, ...localizations }) =>
+      this.upsertLocalizedText(locale, {
+        ...localizations,
+        authorId: userId,
+      })
+    );
+  },
   country() {
     return Countries.findOne({ isoCode: this.countryCode });
   },
