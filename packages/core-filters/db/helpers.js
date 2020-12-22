@@ -216,6 +216,24 @@ Filters.helpers({
     });
     return FilterTexts.findOne(selector);
   },
+  addOption({ inputData, localeContext, userId }) {
+    const { value, title } = inputData;
+    Filters.update(this._id, {
+      $set: {
+        updated: new Date(),
+      },
+      $addToSet: {
+        options: value,
+      },
+    });
+
+    this.upsertLocalizedText(localeContext.language, {
+      authorId: userId,
+      filterOptionValue: value,
+      title,
+    });
+    return Filters.findOne(this._id);
+  },
   getLocalizedTexts(locale, optionValue) {
     const parsedLocale = new Locale(locale);
     return Filters.getLocalizedTexts(this._id, optionValue, parsedLocale);

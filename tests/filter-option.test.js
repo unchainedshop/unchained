@@ -60,7 +60,6 @@ describe('FilterOption', () => {
           },
         },
       });
-
       expect(
         createFilterOption.options[createFilterOption.options.length - 1]._id,
       ).toEqual('multichoice-filter:test-filter-option');

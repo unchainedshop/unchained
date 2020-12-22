@@ -11,6 +11,5 @@ export default function addProductMedia(
   if (!productId) throw new InvalidIdError({ productId });
   const product = Products.findOne({ _id: productId });
   if (!product) throw new ProductNotFoundError({ productId });
-  const productMedia = product.addMedia({ rawFile: media, authorId: userId });
-  return productMedia;
+  return product.addMedia({ rawFile: media, authorId: userId });
 }

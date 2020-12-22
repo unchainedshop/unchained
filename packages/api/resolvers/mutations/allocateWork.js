@@ -9,7 +9,6 @@ export default async function allocateWork(
   log(`mutation allocateWork ${(types || []).join(',')} ${worker}`, {
     userId,
   });
-
   const work = await WorkerDirector.allocateWork({ types, worker });
   return work;
 }
