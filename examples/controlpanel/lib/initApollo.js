@@ -1,8 +1,10 @@
 import { ApolloClient, ApolloLink, InMemoryCache } from '@apollo/client';
+
 import { onError } from '@apollo/client/link/error';
 import { toast } from 'react-toastify';
 import getConfig from 'next/config';
 import { createUploadLink } from 'apollo-upload-client';
+
 
 const { publicRuntimeConfig } = getConfig() || {};
 

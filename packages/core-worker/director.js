@@ -185,12 +185,7 @@ class WorkerDirector {
 
     const query = statusQuery.$or.length > 0 ? statusQuery : {};
     if (type.length !== 0 && Array.isArray(type)) {
-      statusQuery.$and = [];
-      statusQuery.$and.push(
-        ...type.map((t) => ({
-          type: t,
-        }))
-      );
+      statusQuery.$and = [{ type: { $in: type } }];
     }
 
     if (workId) {

@@ -19,7 +19,7 @@ export default connectApollo(({ ...rest }) => (
       <WorkList
         queryOptions={{ pollInterval: 5000 }}
         status={['FAILED', 'SUCCESS']}
-        type={[]}
+        type={['SUBSCRIPTION_ORDER_GENERATOR']}
       />
     </Container>
   </App>
