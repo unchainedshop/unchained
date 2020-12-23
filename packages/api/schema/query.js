@@ -290,7 +290,7 @@ export default [
         limit: Int = 10
         offset: Int = 0
         status: [WorkStatus] = [NEW]
-        type: [String] = []
+        selectTypes: [String] = []
       ): [Work]
 
       """
