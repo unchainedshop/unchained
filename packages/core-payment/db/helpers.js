@@ -20,6 +20,16 @@ Users.helpers({
   },
 });
 
+PaymentProviders.findPaymentInterfaces = ({ type }) => {
+  return PaymentDirector.filteredAdapters((Interface) =>
+    Interface.typeSupported(type)
+  ).map((Interface) => ({
+    _id: Interface.key,
+    label: Interface.label,
+    version: Interface.version,
+  }));
+};
+
 PaymentProviders.helpers({
   transformContext(key, value) {
     return value;
