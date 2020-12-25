@@ -1,7 +1,7 @@
 import { ApolloServer, ApolloError } from 'apollo-server-express';
 import { WebApp } from 'meteor/webapp';
 import { log } from 'meteor/unchained:core-logger';
-import { WorkerDirector } from 'meteor/unchained:core-worker';
+
 import typeDefs from './schema';
 import resolvers from './resolvers';
 
@@ -26,29 +26,6 @@ const logGraphQLServerError = (error) => {
   } catch (e) {} // eslint-disable-line
 };
 
-const localTypes = [
-  /* GraphQL */ `
-    type RegisteredWorkTypes {
-      _id: String!
-    }
-    extend type Query {
-      workTypes(limit: Int, offset: Int): [RegisteredWorkTypes]!
-    }
-  `,
-];
-const localResolvers = [
-  {
-    Query: {
-      workTypes: async (_, { limit, offset }) => {
-        const result = await WorkerDirector.workTypes({
-          skip: offset,
-          limit,
-        });
-        return result;
-      },
-    },
-  },
-];
 export default (options) => {
   const {
     corsOrigins = null, // no cookie handling
@@ -60,8 +37,8 @@ export default (options) => {
   } = options || {};
 
   const server = new ApolloServer({
-    typeDefs: [...typeDefs, ...additionalTypeDefs, ...localTypes],
-    resolvers: [resolvers, ...additionalResolvers, ...localResolvers],
+    typeDefs: [...typeDefs, ...additionalTypeDefs],
+    resolvers: [resolvers, ...additionalResolvers],
     context: contextResolver,
     formatError: (error) => {
       logGraphQLServerError(error);

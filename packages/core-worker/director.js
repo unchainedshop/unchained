@@ -205,6 +205,12 @@ class WorkerDirector {
         { $group: { _id: '$type' } },
         { $limit: limit },
         { $skip: skip },
+        {
+          $project: {
+            _id: '$_id',
+            type: '$_id',
+          },
+        },
       ])
       .toArray();
     return typeList;

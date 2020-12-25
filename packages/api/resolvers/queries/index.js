@@ -42,6 +42,7 @@ import quotations from './quotations';
 import searchProducts from './search-products';
 import searchAssortments from './search-assortments';
 import workQueue from './workQueue';
+import workTypes from './workTypes';
 import subscription from './subscription';
 import subscriptions from './subscriptions';
 import signPaymentProviderForCredentialRegistration from './signPaymentProviderForCredentialRegistration';
@@ -102,6 +103,7 @@ export default {
   searchProducts: acl(actions.search)(searchProducts),
   searchAssortments: acl(actions.search)(searchAssortments),
   workQueue: acl(actions.manageWorker)(workQueue),
+  workTypes: acl(actions.manageWorker)(workTypes),
   subscription: acl(actions.viewSubscription)(subscription),
   subscriptions: acl(actions.viewSubscriptions)(subscriptions),
 

@@ -76,7 +76,6 @@ const WorkList = ({
   const [activeStatus, setActiveStatus] = useState(statusTypes);
   const [relativeDate, setDate] = useState(new Date());
   useEffect(() => {
-    
     const refreshDates = setInterval(() => {
       setDate(new Date());
     }, 1000);
@@ -117,7 +116,7 @@ const WorkList = ({
             placeholder="Select work type"
             searchQuery={SEARCH_WORK_TYPES}
             multiple
-            onChange={(e, {value}) => {
+            onChange={(e, { value }) => {
               setSelectedTypeFilter(value);
               onFilterChange({ filterType: 'type', value });
             }}

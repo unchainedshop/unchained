@@ -304,6 +304,10 @@ export default [
       Get a specific work unit by ID
       """
       work(workId: ID!): Work
+      """
+      Get List of currently registered worker plugins
+      """
+      workTypes(limit: Int, offset: Int): [RegisteredWorkTypes]!
     }
   `,
 ];

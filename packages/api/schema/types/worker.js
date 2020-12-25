@@ -56,5 +56,10 @@ export default [
       # \`FAILED\` and could be cleaned.
       timeout: Int
     }
+
+    type RegisteredWorkTypes {
+      _id: String!
+      type: String!
+    }
   `,
 ];
