@@ -6,11 +6,7 @@ export default function country(root, { countryId }, { userId }) {
   log(`query country ${countryId}`, { userId });
 
   if (!countryId) throw new InvalidIdError({ countryId });
-
-  const selector = {};
-  selector._id = countryId;
-  const foundCountry = Countries.findOne(selector);
-
+  const foundCountry = Countries.findCountry({ countryId });
   if (!foundCountry) throw new CountryNotFoundError({ countryId });
 
   return foundCountry;

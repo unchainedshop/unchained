@@ -80,3 +80,13 @@ Countries.resolveDefaultCurrencyCode = ({ isoCode }) => {
   currencyCodeCache.set(isoCode, liveCurrencyCode);
   return liveCurrencyCode;
 };
+
+Countries.findCountries = ({ limit, offset, includeInactive }) => {
+  const selector = {};
+  if (!includeInactive) selector.isActive = true;
+  return Countries.find(selector, { skip: offset, limit }).fetch();
+};
+
+Countries.findCountry = ({ countryId }) => {
+  return Countries.findOne({ _id: countryId });
+};
