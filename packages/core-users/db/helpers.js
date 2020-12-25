@@ -268,6 +268,9 @@ Users.updateHeartbeat = ({ userId, ...options }) => {
   );
 };
 
+Users.findUser = ({ userId }) => {
+  return Users.findOne({ _id: userId });
+};
 Users.createUser = async ({
   username,
   roles,
