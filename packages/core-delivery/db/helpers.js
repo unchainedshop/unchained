@@ -151,3 +151,13 @@ DeliveryProviders.findSupported = ({ order }, ...options) => {
   ).filter((deliveryProvider) => deliveryProvider.isActive(order));
   return settings.filterSupportedProviders({ providers, order });
 };
+
+DeliveryProviders.findDeliveryInterfaces = ({ type }) => {
+  return DeliveryDirector.filteredAdapters((Interface) =>
+    Interface.typeSupported(type)
+  ).map((Interface) => ({
+    _id: Interface.key,
+    label: Interface.label,
+    version: Interface.version,
+  }));
+};
