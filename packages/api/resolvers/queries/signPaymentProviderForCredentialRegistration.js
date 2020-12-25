@@ -11,6 +11,5 @@ export default (root, { paymentProviderId, ...rest }, { userId }) => {
   const paymentProvider = PaymentProviders.findProviderById(paymentProviderId);
   if (!paymentProvider)
     throw new PaymentProviderNotFoundError({ paymentProviderId });
-
   return paymentProvider.sign({ userId, paymentProviderId, ...rest });
 };

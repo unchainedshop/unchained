@@ -606,8 +606,26 @@ Products.helpers({
   reviews({ limit, offset }) {
     return ProductReviews.findReviews(
       { productId: this._id },
-      { skip: offset, limit }
+      { offset, limit }
     );
+  },
+  catalogPrices() {
+    const prices = (this.commerce && this.commerce.pricing) || [];
+    return prices.map((price) => ({
+      _id: crypto
+        .createHash('sha256')
+        .update(
+          [
+            this._id,
+            price.countryCode,
+            price.currencyCode,
+            price.maxQuantity,
+            price.amount,
+          ].join('')
+        )
+        .digest('hex'),
+      ...price,
+    }));
   },
 });
 
