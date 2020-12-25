@@ -14,6 +14,7 @@ const SearchDropdown = ({
   onChange,
   value,
   label,
+  multiple,
   optionValues,
   placeholder,
   disabled,
@@ -87,6 +88,7 @@ const SearchDropdown = ({
     assortments: data?.searchAssortments?.assortments,
     products: data?.searchProducts?.products,
     users: data?.users,
+    workTypes: data?.workTypes,
   };
   let items = queries[queryType] || [];
 
@@ -99,13 +101,13 @@ const SearchDropdown = ({
       return {
         key: item._id,
         value: item._id,
-        text: item?.texts?.title || item?.name,
+        text: item?.texts?.title || item?.name || item?._id,
         content: (
           <Header>
             {!(queryType === 'users') && selectImage(item)}
             <Header.Content>
-              {item?.texts?.title || item?.name}
-              {!(queryType === 'users') && (
+              {item?.texts?.title || item?.name || item?._id}
+              {!(queryType === 'users') && !(queryType === 'workTypes') && (
                 <>
                   <Header.Subheader>{item.texts.description}</Header.Subheader>
                   <Label color={resolveStatus(item).color} horizontal>
@@ -125,6 +127,7 @@ const SearchDropdown = ({
     >
       {label && <label htmlFor={id}>{label}</label>}
       <Dropdown
+        multiple={multiple}
         name={name || 'item'}
         disabled={disabled}
         id={id || 'search-dropdown'}

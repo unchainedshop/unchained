@@ -5,7 +5,6 @@ import { toast } from 'react-toastify';
 import getConfig from 'next/config';
 import { createUploadLink } from 'apollo-upload-client';
 
-
 const { publicRuntimeConfig } = getConfig() || {};
 
 let apolloClient = null;

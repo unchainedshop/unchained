@@ -3,9 +3,9 @@ import { useQuery } from '@apollo/client';
 
 export const WorkTypesQuery = gql`
   query registeredWorkTypes {
-        workTypes{
-          _id
-        }
+    workTypes {
+      _id
+    }
   }
 `;
 
@@ -14,7 +14,7 @@ const useWorkTypes = () => {
 
   return {
     loading,
-    workTypes : data?.workTypes || []
+    workTypes: data?.workTypes || [],
   };
 };
 

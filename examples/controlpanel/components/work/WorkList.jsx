@@ -1,8 +1,10 @@
 import gql from 'graphql-tag';
 import React, { useEffect, useState } from 'react';
-import { Table } from 'semantic-ui-react';
+import { Checkbox, Table } from 'semantic-ui-react';
 import Link from 'next/link';
 import InfiniteDataTable, { withDataTableLoader } from '../InfiniteDataTable';
+import { SEARCH_WORK_TYPES } from '../searchQueries';
+import SearchDropdown from '../SearchDropdown';
 
 const relativeScheduleFromWork = ({ scheduledTime, relativeTime, status }) => {
   if (status === 'FAILED' || status === 'SUCCESS' || status === 'DELETED')
@@ -62,17 +64,42 @@ const WorkRow = ({ work, relativeDate }) => {
   );
 };
 
-const WorkList = ({ loading, updateHasMore, queryOptions, ...rest }) => {
+const WorkList = ({
+  onFilterChange,
+  statusTypes,
+  loading,
+  updateHasMore,
+  queryOptions,
+  ...rest
+}) => {
+  const [selectedTypeFilter, setSelectedTypeFilter] = useState([]);
+  const [activeStatus, setActiveStatus] = useState(statusTypes);
   const [relativeDate, setDate] = useState(new Date());
   useEffect(() => {
     if (!queryOptions) return () => {};
     const refreshDates = setInterval(() => {
       setDate(new Date());
     }, 1000);
+
     return () => {
       clearInterval(refreshDates);
     };
   }, []); // Add dependencies here
+
+  if (!activeStatus.length) {
+    setActiveStatus(statusTypes);
+  }
+  const onWorkStatusChange = (e, { label, checked }) => {
+    const currentStatus = activeStatus;
+    if (checked) {
+      currentStatus.push(label);
+    } else {
+      currentStatus.splice(currentStatus.indexOf(label), 1);
+    }
+
+    setActiveStatus(currentStatus);
+    onFilterChange({ filterType: 'status', value: activeStatus });
+  };
 
   return (
     <InfiniteDataTable
@@ -83,6 +110,32 @@ const WorkList = ({ loading, updateHasMore, queryOptions, ...rest }) => {
         <WorkRow key={work._id} work={work} relativeDate={relativeDate} />
       )}
     >
+      <Table.Row>
+        <Table.HeaderCell colSpan="2">
+          <SearchDropdown
+            placeholder="Select work type"
+            searchQuery={SEARCH_WORK_TYPES}
+            multiple
+            onChange={(e, result) => {
+              console.log(result);
+              setSelectedTypeFilter(result.value);
+              onFilterChange({ filterType: 'type', value: result.value });
+            }}
+            value={selectedTypeFilter}
+            queryType={'workTypes'}
+          />
+        </Table.HeaderCell>
+        {statusTypes.map((status) => (
+          <Table.HeaderCell>
+            <Checkbox
+              label={status}
+              checked={activeStatus.indexOf(status) !== -1}
+              onChange={onWorkStatusChange}
+            />
+          </Table.HeaderCell>
+        ))}
+      </Table.Row>
+
       <Table.Row>
         <Table.HeaderCell>Work #</Table.HeaderCell>
         <Table.HeaderCell>Status</Table.HeaderCell>
@@ -99,8 +152,18 @@ export default withDataTableLoader({
   itemsPerPage: 50,
   queryName: 'workQueue',
   query: gql`
-    query workQueue($offset: Int, $limit: Int, $status: [WorkStatus!]!, $selectTypes: [String] = []) {
-      workQueue(offset: $offset, limit: $limit, status: $status, selectTypes: $selectTypes) {
+    query workQueue(
+      $offset: Int
+      $limit: Int
+      $status: [WorkStatus!]!
+      $selectTypes: [String] = []
+    ) {
+      workQueue(
+        offset: $offset
+        limit: $limit
+        status: $status
+        selectTypes: $selectTypes
+      ) {
         _id
         type
         scheduled
