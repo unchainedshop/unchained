@@ -190,7 +190,7 @@ class WorkerDirector {
 
     const query = statusQuery.$or.length > 0 ? statusQuery : {};
     if (selectTypes?.length) {
-      statusQuery.$and = [{ type: { $in: selectTypes } }];
+      query.$and = [{ type: { $in: selectTypes } }];
     }
 
     if (workId) {

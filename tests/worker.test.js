@@ -517,6 +517,95 @@ describe('Worker Module', () => {
     });
   });
 
+  describe('query.workQueue for admin user should', () => {
+    it('should return all work type and status in the system', async () => {
+      const {
+        data: { workQueue },
+      } = await graphqlFetchAsAdminUser({
+        query: /* GraphQL */ `
+          query($status: [WorkStatus], $selectTypes: [String]) {
+            workQueue(status: $status, selectTypes: $selectTypes) {
+              _id
+              type
+              status
+            }
+          }
+        `,
+        variables: {
+          status: [],
+          selectTypes: [],
+        },
+      });
+      expect(workQueue.length > 0).toBe(true);
+    });
+
+    it('should return only works that match the type provided', async () => {
+      const {
+        data: { workQueue },
+      } = await graphqlFetchAsAdminUser({
+        query: /* GraphQL */ `
+          query($status: [WorkStatus], $selectTypes: [String]) {
+            workQueue(status: $status, selectTypes: $selectTypes) {
+              _id
+              type
+              status
+            }
+          }
+        `,
+        variables: {
+          status: [],
+          selectTypes: ['EXTERNAL'],
+        },
+      });
+      expect(workQueue.filter((e) => e.type !== 'EXTERNAL').length).toEqual(0);
+    });
+
+    it('should return only works that match the status provided', async () => {
+      const {
+        data: { workQueue },
+      } = await graphqlFetchAsAdminUser({
+        query: /* GraphQL */ `
+          query($status: [WorkStatus], $selectTypes: [String]) {
+            workQueue(status: $status, selectTypes: $selectTypes) {
+              _id
+              type
+              status
+            }
+          }
+        `,
+        variables: {
+          status: ['SUCCESS'],
+          selectTypes: [],
+        },
+      });
+      expect(workQueue.filter((e) => e.status !== 'SUCCESS').length).toEqual(0);
+    });
+
+    it('should only return work types that match status and type provided', async () => {
+      const {
+        data: { workQueue },
+      } = await graphqlFetchAsAdminUser({
+        query: /* GraphQL */ `
+          query($status: [WorkStatus], $selectTypes: [String]) {
+            workQueue(status: $status, selectTypes: $selectTypes) {
+              _id
+              type
+              status
+            }
+          }
+        `,
+        variables: {
+          status: ['SUCCESS'],
+          selectTypes: ['EXTERNAL'],
+        },
+      });
+      expect(
+        workQueue.filter((w) => w.type !== 'EXTERNAL' || w.status !== 'SUCCESS')
+          .length,
+      ).toEqual(0);
+    });
+  });
+
   describe('query.workQueue for normal user should', () => {
     it('return NoPermissionError', async () => {
       const { errors } = await graphqlFetchAsNormalUser({
@@ -553,6 +642,62 @@ describe('Worker Module', () => {
         variables: {
           status: [],
         },
+      });
+
+      expect(errors[0]?.extensions?.code).toEqual('NoPermissionError');
+    });
+  });
+
+  describe('query.workTypes for admin user should', () => {
+    it('return all the registered work types', async () => {
+      const {
+        data: { workTypes },
+      } = await graphqlFetchAsAdminUser({
+        query: /* GraphQL */ `
+          query($limit: Int, $offset: Int) {
+            workTypes(limit: $limit, offset: $offset) {
+              _id
+              type
+            }
+          }
+        `,
+        variables: {
+          limit: 10,
+        },
+      });
+
+      expect(workTypes.length > 0).toBe(true);
+    });
+  });
+
+  describe('query.workTypes for normal user should', () => {
+    it('return NoPermissionError', async () => {
+      const { errors } = await graphqlFetchAsNormalUser({
+        query: /* GraphQL */ `
+          query($limit: Int, $offset: Int) {
+            workTypes(limit: $limit, offset: $offset) {
+              _id
+              type
+            }
+          }
+        `,
+      });
+
+      expect(errors[0]?.extensions?.code).toEqual('NoPermissionError');
+    });
+  });
+
+  describe('query.workTypes for anonymous user should', () => {
+    it('return NoPermissionError', async () => {
+      const { errors } = await graphqlFetchAsAnonymousUser({
+        query: /* GraphQL */ `
+          query($limit: Int, $offset: Int) {
+            workTypes(limit: $limit, offset: $offset) {
+              _id
+              type
+            }
+          }
+        `,
       });
 
       expect(errors[0]?.extensions?.code).toEqual('NoPermissionError');
