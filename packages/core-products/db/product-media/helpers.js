@@ -42,6 +42,10 @@ ProductMedia.helpers({
   },
 });
 
+ProductMediaTexts.findProductMediaTexts = ({ productMediaId }) => {
+  return ProductMediaTexts.find({ productMediaId }).fetch();
+};
+
 ProductMedia.getLocalizedTexts = (productMediaId, locale) =>
   findLocalizedText(ProductMediaTexts, { productMediaId }, locale);
 

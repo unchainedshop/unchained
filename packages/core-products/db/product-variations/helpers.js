@@ -4,6 +4,16 @@ import { Locale } from 'locale';
 import { ProductVariations, ProductVariationTexts } from './collections';
 import { ProductVariationType } from './schema';
 
+ProductVariationTexts.findProductVariationTexts = ({
+  productVariationId,
+  productVariationOptionValue,
+}) => {
+  return ProductVariationTexts.find({
+    productVariationId,
+    productVariationOptionValue,
+  }).fetch();
+};
+
 ProductVariations.helpers({
   upsertLocalizedText(
     locale,

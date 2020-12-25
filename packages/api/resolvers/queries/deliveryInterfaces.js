@@ -3,5 +3,5 @@ import { DeliveryProviders } from 'meteor/unchained:core-delivery';
 
 export default function deliveryInterfaces(root, { type }, { userId }) {
   log(`query deliveryInterfaces ${type}`, { userId });
-  return DeliveryProviders.findDeliveryInterfaces({ type });
+  return DeliveryProviders.findInterfaces({ type });
 }

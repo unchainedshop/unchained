@@ -3,6 +3,16 @@ import 'meteor/dburles:collection-helpers';
 import { WarehousingProviders } from './collections';
 import { WarehousingDirector } from '../director';
 
+WarehousingProviders.findInterfaces = ({ type }) => {
+  return WarehousingDirector.filteredAdapters((Interface) =>
+    Interface.typeSupported(type)
+  ).map((Interface) => ({
+    _id: Interface.key,
+    label: Interface.label,
+    version: Interface.version,
+  }));
+};
+
 WarehousingProviders.helpers({
   transformContext(key, value) {
     return value;

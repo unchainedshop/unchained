@@ -152,7 +152,7 @@ DeliveryProviders.findSupported = ({ order }, ...options) => {
   return settings.filterSupportedProviders({ providers, order });
 };
 
-DeliveryProviders.findDeliveryInterfaces = ({ type }) => {
+DeliveryProviders.findInterfaces = ({ type }) => {
   return DeliveryDirector.filteredAdapters((Interface) =>
     Interface.typeSupported(type)
   ).map((Interface) => ({

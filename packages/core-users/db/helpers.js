@@ -289,3 +289,24 @@ Users.createUser = async ({
   });
   return Users.findOne({ _id: userId });
 };
+
+Users.findUsers = async ({ limit, offset, includeGuests, queryString }) => {
+  const selector = {};
+  if (!includeGuests) selector.guest = { $ne: true };
+  if (queryString) {
+    const userArray = await Users.rawCollection()
+      .find(
+        { ...selector, $text: { $search: queryString } },
+        {
+          skip: offset,
+          limit,
+          projection: { score: { $meta: 'textScore' } },
+          sort: { score: { $meta: 'textScore' } },
+        }
+      )
+      .toArray();
+    return (userArray || []).map((item) => new Users._transform(item)); // eslint-disable-line
+  }
+
+  return Users.find(selector, { skip: offset, limit }).fetch();
+};

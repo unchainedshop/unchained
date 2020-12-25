@@ -20,7 +20,7 @@ Users.helpers({
   },
 });
 
-PaymentProviders.findPaymentInterfaces = ({ type }) => {
+PaymentProviders.findInterfaces = ({ type }) => {
   return PaymentDirector.filteredAdapters((Interface) =>
     Interface.typeSupported(type)
   ).map((Interface) => ({

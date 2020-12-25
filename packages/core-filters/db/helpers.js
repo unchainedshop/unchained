@@ -147,6 +147,13 @@ Filters.cleanFiltersByReferenceDate = (referenceDate) => {
   );
 };
 
+FilterTexts.findFilterTexts = ({ filterId, filterOptionValue }) => {
+  return FilterTexts.find({
+    filterId,
+    filterOptionValue,
+  }).fetch();
+};
+
 Filters.updateCleanFilterActivation = () => {
   const disabledDirtyFiltersCount = Filters.update(
     {

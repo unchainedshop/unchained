@@ -100,6 +100,9 @@ Products.updateProduct = ({ productId, type, ...product }) => {
   Products.update({ _id: productId }, modifier);
   return Products.findOne({ _id: productId });
 };
+ProductTexts.findProductTexts = ({ productId }) => {
+  return ProductTexts.find({ productId }).fetch();
+};
 
 ProductTexts.makeSlug = ({ slug, title, productId }, options) => {
   const checkSlugIsUnique = (newPotentialSlug) => {
