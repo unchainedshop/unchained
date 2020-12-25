@@ -15,6 +15,35 @@ import { ProductReviews } from '../product-reviews/collections';
 
 import { ProductStatus, ProductTypes } from './schema';
 
+Products.findProduct = ({ productId, slug }) => {
+  return productId
+    ? Products.findOne({ _id: productId })
+    : Products.findOne({ slugs: slug });
+};
+
+Products.findProducts = ({ limit, offset, tags, includeDrafts, slugs }) => {
+  const selector = {};
+  const sort = { sequence: 1, published: -1 };
+  const options = { sort };
+
+  if (slugs?.length > 0) {
+    selector.slugs = { $in: slugs };
+  } else {
+    options.skip = offset;
+    options.limit = limit;
+
+    if (tags?.length > 0) {
+      selector.tags = { $all: tags };
+    }
+  }
+  if (!includeDrafts) {
+    selector.status = { $eq: ProductStatus.ACTIVE };
+  } else {
+    selector.status = { $in: [ProductStatus.ACTIVE, ProductStatus.DRAFT] };
+  }
+  return Products.find(selector, options).fetch();
+};
+
 Products.createProduct = (
   { locale, title, type, sequence, authorId, ...productData },
   { autopublish = false } = {}
