@@ -52,6 +52,45 @@ export const makeAssortmentBreadcrumbsBuilder = ({
   });
 };
 
+Collections.Assortments.findAssortmentById = ({ assortmentId, slug }) => {
+  return assortmentId
+    ? Collections.Assortments.findOne({ _id: assortmentId })
+    : Collections.Assortments.findOne({ slugs: slug });
+};
+
+Collections.Assortments.findAssortments = ({
+  tags,
+  slugs,
+  limit,
+  offset,
+  includeInactive,
+  includeLeaves,
+}) => {
+  const selector = {};
+  const sort = { sequence: 1 };
+  const options = { sort };
+
+  if (slugs?.length > 0) {
+    selector.slugs = { $in: slugs };
+  } else {
+    options.skip = offset;
+    options.limit = limit;
+
+    if (tags?.length > 0) {
+      selector.tags = { $all: tags };
+    }
+  }
+
+  if (!includeLeaves) {
+    selector.isRoot = true;
+  }
+  if (!includeInactive) {
+    selector.isActive = true;
+  }
+
+  return Collections.Assortments.find(selector, options).fetch();
+};
+
 Collections.Assortments.updateAssortment = ({
   assortmentId,
   ...assortment
