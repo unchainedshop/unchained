@@ -134,6 +134,23 @@ Users.helpers({
   },
 });
 
+Orders.findOrder = ({ orderId }) => {
+  return Orders.findOne({ _id: orderId });
+};
+
+Orders.findOrders = ({ limit, offset, includeCarts }) => {
+  const selector = {};
+  if (!includeCarts) selector.status = { $ne: OrderStatus.OPEN };
+  const options = {
+    skip: offset,
+    limit,
+    sort: {
+      created: -1,
+    },
+  };
+  return Orders.find(selector, options).fetch();
+};
+
 Orders.helpers({
   subscription() {
     return Subscriptions.findOne({
