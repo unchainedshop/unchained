@@ -103,6 +103,16 @@ Filters.markFiltersDirty = () => {
   return new Date();
 };
 
+Filters.findFilter = ({ filterId }) => {
+  return Filters.findOne({ _id: filterId });
+};
+
+Filters.findFilters = ({ limit, offset, includeInactive }) => {
+  const selector = {};
+  if (!includeInactive) selector.isActive = true;
+  return Filters.find(selector, { skip: offset, limit }).fetch();
+};
+
 Filters.cleanFiltersByReferenceDate = (referenceDate) => {
   const selector = {
     dirty: true,

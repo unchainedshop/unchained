@@ -52,7 +52,7 @@ export const makeAssortmentBreadcrumbsBuilder = ({
   });
 };
 
-Collections.Assortments.findAssortmentById = ({ assortmentId, slug }) => {
+Collections.Assortments.findAssortment = ({ assortmentId, slug }) => {
   return assortmentId
     ? Collections.Assortments.findOne({ _id: assortmentId })
     : Collections.Assortments.findOne({ slugs: slug });

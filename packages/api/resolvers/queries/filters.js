@@ -7,10 +7,5 @@ export default function filters(
   { userId }
 ) {
   log(`query filters: ${limit} ${offset}`, { userId });
-
-  const selector = {};
-  if (!includeInactive) {
-    selector.isActive = true;
-  }
-  return Filters.find(selector, { skip: offset, limit }).fetch();
+  return Filters.findFilters({ limit, offset, includeInactive });
 }
