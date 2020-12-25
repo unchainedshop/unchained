@@ -11,6 +11,18 @@ Languages.createLanguage = ({ isoCode, ...languageData }) => {
   return Languages.findOne({ _id });
 };
 
+Languages.findLanguage = ({ languageId }) => {
+  return Languages.findOne({ _id: languageId });
+};
+
+Languages.findLanguages = ({ limit, offset, includeInactive }) => {
+  const selector = {};
+  if (!includeInactive) selector.isActive = true;
+  return Languages.find(selector, {
+    skip: offset,
+    limit,
+  }).fetch();
+};
 Languages.helpers({
   makeBase() {
     Languages.update(
