@@ -104,9 +104,9 @@ const SearchDropdown = ({
         text: item?.texts?.title || item?.name || item?._id,
         content: (
           <Header>
-            {!(queryType === 'users') && selectImage(item)}
+            {!(queryType === 'users') && !(queryType === 'workTypes') && selectImage(item)}
             <Header.Content>
-              {item?.texts?.title || item?.name || item?._id}
+              {item?.texts?.title || item?.name || item?._id?.toLowerCase()}
               {!(queryType === 'users') && !(queryType === 'workTypes') && (
                 <>
                   <Header.Subheader>{item.texts.description}</Header.Subheader>

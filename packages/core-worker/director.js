@@ -199,7 +199,18 @@ class WorkerDirector {
     return { ...query, ...rest };
   }
 
-  static async workQueue({ skip, limit, ...selectorOptions }) {
+  static async workTypes({ skip = 0, limit = 50 }) {
+    const typeList = await WorkQueue.rawCollection()
+      .aggregate([
+        { $group: { _id: '$type' } },
+        { $limit: limit },
+        { $skip: skip },
+      ])
+      .toArray();
+    return typeList;
+  }
+
+  static workQueue({ skip, limit, ...selectorOptions }) {
     const result = WorkQueue.find(this.buildQueueSelector(selectorOptions), {
       skip,
       limit,

@@ -76,7 +76,7 @@ const WorkList = ({
   const [activeStatus, setActiveStatus] = useState(statusTypes);
   const [relativeDate, setDate] = useState(new Date());
   useEffect(() => {
-    if (!queryOptions) return () => {};
+    
     const refreshDates = setInterval(() => {
       setDate(new Date());
     }, 1000);
@@ -84,11 +84,12 @@ const WorkList = ({
     return () => {
       clearInterval(refreshDates);
     };
-  }, []); // Add dependencies here
+  }, [activeStatus, selectedTypeFilter]); // Add dependencies here
 
   if (!activeStatus.length) {
     setActiveStatus(statusTypes);
   }
+
   const onWorkStatusChange = (e, { label, checked }) => {
     const currentStatus = activeStatus;
     if (checked) {
@@ -116,10 +117,9 @@ const WorkList = ({
             placeholder="Select work type"
             searchQuery={SEARCH_WORK_TYPES}
             multiple
-            onChange={(e, result) => {
-              console.log(result);
-              setSelectedTypeFilter(result.value);
-              onFilterChange({ filterType: 'type', value: result.value });
+            onChange={(e, {value}) => {
+              setSelectedTypeFilter(value);
+              onFilterChange({ filterType: 'type', value });
             }}
             value={selectedTypeFilter}
             queryType={'workTypes'}

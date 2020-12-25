@@ -1,7 +1,7 @@
 import { ApolloServer, ApolloError } from 'apollo-server-express';
 import { WebApp } from 'meteor/webapp';
 import { log } from 'meteor/unchained:core-logger';
-import { WorkQueue } from 'meteor/unchained:core-worker';
+import { WorkerDirector } from 'meteor/unchained:core-worker';
 import typeDefs from './schema';
 import resolvers from './resolvers';
 
@@ -32,18 +32,19 @@ const localTypes = [
       _id: String!
     }
     extend type Query {
-      workTypes: [RegisteredWorkTypes]!
+      workTypes(limit: Int, offset: Int): [RegisteredWorkTypes]!
     }
   `,
 ];
 const localResolvers = [
   {
     Query: {
-      workTypes: async () => {
-        const typeList = await WorkQueue.rawCollection()
-          .aggregate([{ $group: { _id: '$type' } }])
-          .toArray();
-        return typeList;
+      workTypes: async (_, { limit, offset }) => {
+        const result = await WorkerDirector.workTypes({
+          skip: offset,
+          limit,
+        });
+        return result;
       },
     },
   },

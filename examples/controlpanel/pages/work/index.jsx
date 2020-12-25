@@ -11,7 +11,6 @@ export default connectApollo(({ ...rest }) => {
   const [workTypeFilter, setWorkTypeFilter] = useState([]);
 
   const onFilterChange = ({ filterType, value }) => {
-    console.log(value);
     if (filterType === 'workType') {
       setWorkTypeFilter(value);
     } else if (filterType === 'status') {
@@ -22,22 +21,15 @@ export default connectApollo(({ ...rest }) => {
   return (
     <App {...rest}>
       <Container>
-        <h2>Next in Queue</h2>
+        <h2>Work Queue</h2>
         <WorkList
-          queryOptions={{ pollInterval: 1000 }}
+          queryOptions={{ pollInterval: 2000 }}
           limit={0}
           status={workStatusFilter}
           selectTypes={workTypeFilter}
           statusTypes={statusTypes}
           onFilterChange={onFilterChange}
         />
-
-        {/* <h2>Most Recently Finished</h2>            
-            <WorkList
-              queryOptions={{ pollInterval: 5000 }}
-              status={workStatusFilter}
-              selectTypes={workTypeFilter}
-            /> */}
       </Container>
     </App>
   );
