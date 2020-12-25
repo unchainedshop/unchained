@@ -848,6 +848,10 @@ Collections.Assortments.helpers({
   },
 });
 
+Collections.AssortmentTexts.findAssortmentTexts = ({ assortmentId }) => {
+  return Collections.AssortmentTexts.find({ assortmentId }).fetch();
+};
+
 Collections.AssortmentTexts.makeSlug = (
   { slug, title, assortmentId },
   options
