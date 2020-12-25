@@ -10,6 +10,16 @@ Currencies.createCurrency = ({ isoCode, ...countryData }) => {
   return Currencies.findOne({ _id });
 };
 
+Currencies.findCurrencies = ({ limit, offset, includeInactive }) => {
+  const selector = {};
+  if (!includeInactive) selector.isActive = true;
+  return Currencies.find(selector, { skip: offset, limit }).fetch();
+};
+
+Currencies.findCurrency = ({ currencyId }) => {
+  return Currencies.findOne({ _id: currencyId });
+};
+
 Currencies.helpers({
   updateCurrency({ isoCode, currency }) {
     Currencies.update(this._id, {
