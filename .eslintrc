@@ -1,7 +1,13 @@
 {
-  "parser": "babel-eslint",
-  "plugins": ["prettier"],
-  "extends": ["airbnb-base", "plugin:prettier/recommended"],
+  "root": true,
+  "parser": "@typescript-eslint/parser",
+  "plugins": ["@typescript-eslint", "prettier"],
+  "extends": [
+    "airbnb-base",
+    "eslint:recommended",
+    "plugin:@typescript-eslint/recommended",
+    "plugin:prettier/recommended"
+  ],
   "env": {
     "node": true,
     "jest": true
