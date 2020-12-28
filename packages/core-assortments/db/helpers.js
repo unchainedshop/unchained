@@ -52,10 +52,17 @@ export const makeAssortmentBreadcrumbsBuilder = ({
   });
 };
 
-Collections.Assortments.findAssortment = ({ assortmentId, slug }) => {
-  return assortmentId
-    ? Collections.Assortments.findOne({ _id: assortmentId })
-    : Collections.Assortments.findOne({ slugs: slug });
+Collections.Assortments.findAssortment = ({ assortmentId, slug, ...rest }) => {
+  let selector = {};
+
+  if (assortmentId) {
+    selector._id = assortmentId;
+  } else if (slug) {
+    selector.slugs = slug;
+  } else {
+    selector = rest;
+  }
+  return Collections.Assortments.findOne(selector);
 };
 
 Collections.Assortments.findAssortments = ({

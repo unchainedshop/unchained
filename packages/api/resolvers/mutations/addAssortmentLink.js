@@ -14,8 +14,10 @@ export default function addAssortmentLink(
   if (!parentAssortmentId) throw new InvalidIdError({ parentAssortmentId });
   if (!childAssortmentId) throw new InvalidIdError({ childAssortmentId });
 
-  const parent = Assortments.findOne({ _id: parentAssortmentId });
-  const child = Assortments.findOne({ _id: childAssortmentId });
+  const parent = Assortments.findAssortment({
+    assortmentId: parentAssortmentId,
+  });
+  const child = Assortments.findAssortment({ assortmentId: childAssortmentId });
 
   if (!parent) {
     throw new AssortmentNotFoundError({

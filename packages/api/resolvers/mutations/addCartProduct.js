@@ -20,7 +20,7 @@ export default async function addCartProduct(
   );
   if (!productId) throw new InvalidIdError({ productId });
   if (quantity < 1) throw new OrderQuantityTooLowError({ quantity });
-  const product = Products.findOne({ _id: productId });
+  const product = Products.findProduct({ productId });
   if (!product) throw new ProductNotFoundError({ productId });
   const cart = await getCart({ orderId, user, countryContext });
   return cart.addProductItem({
