@@ -10,6 +10,10 @@ import { Quotations } from 'meteor/unchained:core-quotations';
 import { OrderPositions } from './collections';
 import { Orders } from '../orders/collections';
 
+OrderPositions.findItem = ({ itemId }) => {
+  return OrderPositions.findOne(itemId);
+};
+
 OrderPositions.helpers({
   product() {
     return Products.findOne({

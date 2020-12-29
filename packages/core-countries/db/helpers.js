@@ -90,3 +90,7 @@ Countries.findCountries = ({ limit, offset, includeInactive }) => {
 Countries.findCountry = ({ countryId }) => {
   return Countries.findOne({ _id: countryId });
 };
+
+Countries.removeCountry = ({ countryId }) => {
+  return Countries.remove(countryId);
+};

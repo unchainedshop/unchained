@@ -20,6 +20,9 @@ Currencies.findCurrency = ({ currencyId }) => {
   return Currencies.findOne({ _id: currencyId });
 };
 
+Currencies.removeCurrency = ({ currencyId }) => {
+  return Currencies.remove({ _id: currencyId });
+};
 Currencies.helpers({
   updateCurrency({ isoCode, currency }) {
     Currencies.update(this._id, {

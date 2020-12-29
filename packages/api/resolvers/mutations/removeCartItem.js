@@ -9,7 +9,7 @@ import {
 export default function removeCartItem(root, { itemId }, { userId }) {
   log(`mutation removeCartItem ${itemId}`, { userId });
   if (!itemId) throw new InvalidIdError({ itemId });
-  const orderItem = OrderPositions.findOne({ _id: itemId });
+  const orderItem = OrderPositions.findItem({ itemId });
   if (!orderItem) throw new OrderItemNotFoundError({ orderItem });
   const order = orderItem.order();
   if (!order.isCart()) {
