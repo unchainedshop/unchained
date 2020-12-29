@@ -14,6 +14,14 @@ ProductVariationTexts.findProductVariationTexts = ({
   }).fetch();
 };
 
+ProductVariations.findVariation = ({ productVariationId }) => {
+  return ProductVariations.findOne(productVariationId);
+};
+
+ProductVariations.removeVariation = ({ productVariationId }) => {
+  return ProductVariations.remove(productVariationId);
+};
+
 ProductVariations.helpers({
   upsertLocalizedText(
     locale,

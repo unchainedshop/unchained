@@ -9,7 +9,7 @@ export default function removeProductReview(
 ) {
   log('mutation removeProductReview', { userId, productReviewId });
   if (!productReviewId) throw new InvalidIdError({ productReviewId });
-  if (ProductReviews.find({ _id: productReviewId }).count() === 0)
+  if (!ProductReviews.findReviewById(productReviewId))
     throw new ProductReviewNotFoundError({ productReviewId });
   return ProductReviews.deleteReview({
     productReviewId,

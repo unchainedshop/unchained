@@ -170,6 +170,42 @@ Products.removeBundleItem = ({ productId, index }) => {
   return Products.findOne(productId);
 };
 
+Products.removeProduct = ({ productId }) => {
+  const product = Products.findOne(productId);
+  switch (product.status) {
+    case ProductStatus.DRAFT:
+      Products.update(productId, {
+        $set: {
+          status: ProductStatus.DELETED,
+          updated: new Date(),
+        },
+      });
+      break;
+    default:
+      throw new Error(`Invalid status', ${this.status}`);
+  }
+  return Products.findOne(productId);
+};
+
+Products.removeAssignment = ({ productId, vectors }) => {
+  const vector = {};
+  vectors.forEach(({ key, value }) => {
+    vector[key] = value;
+  });
+  const modifier = {
+    $set: {
+      updated: new Date(),
+    },
+    $pull: {
+      'proxy.assignments': {
+        vector,
+      },
+    },
+  };
+  Products.update(productId, modifier, { multi: true });
+  return Products.findOne(productId);
+};
+
 Products.helpers({
   publish() {
     switch (this.status) {
@@ -330,21 +366,6 @@ Products.helpers({
   variation(key) {
     return ProductVariations.findOne({ productId: this._id, key });
   },
-  removeProduct() {
-    switch (this.status) {
-      case ProductStatus.DRAFT:
-        Products.update(this._id, {
-          $set: {
-            status: ProductStatus.DELETED,
-            updated: new Date(),
-          },
-        });
-        break;
-      default:
-        throw new Error(`Invalid status', ${this.status}`);
-    }
-    return Products.findOne(this._id);
-  },
   proxyAssignments({ includeInactive = false } = {}) {
     const assignments = this.proxy?.assignments || [];
 
@@ -369,24 +390,6 @@ Products.helpers({
         assignment,
         product: this,
       }));
-  },
-  removeAssignment({ vectors }) {
-    const vector = {};
-    vectors.forEach(({ key, value }) => {
-      vector[key] = value;
-    });
-    const modifier = {
-      $set: {
-        updated: new Date(),
-      },
-      $pull: {
-        'proxy.assignments': {
-          vector,
-        },
-      },
-    };
-    Products.update(this._id, modifier, { multi: true });
-    return Products.findOne(this._id);
   },
   proxyProducts(vectors, { includeInactive = false } = {}) {
     const { proxy = {} } = this;

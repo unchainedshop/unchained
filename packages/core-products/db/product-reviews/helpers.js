@@ -133,7 +133,7 @@ ProductReviews.deleteReview = function deleteReview({ productReviewId }) {
 };
 
 ProductReviews.findReviewById = function findReviewById(_id, ...options) {
-  return this.findOne({ _id }, ...options);
+  return ProductReviews.findOne({ _id }, ...options);
 };
 
 ProductReviews.findReviews = function findReviews(

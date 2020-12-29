@@ -9,11 +9,11 @@ export default function removeProductVariation(
 ) {
   log(`mutation removeProductVariation ${productVariationId}`, { userId });
   if (!productVariationId) throw new InvalidIdError({ productVariationId });
-  const productVariation = ProductVariations.findOne({
-    _id: productVariationId,
+  const productVariation = ProductVariations.findVariation({
+    productVariationId,
   });
   if (!productVariation)
     throw new ProductVariationNotFoundError({ productVariationId });
-  ProductVariations.remove({ _id: productVariationId });
+  ProductVariations.removeVariation({ productVariationId });
   return productVariation;
 }

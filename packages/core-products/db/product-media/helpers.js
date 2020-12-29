@@ -3,6 +3,14 @@ import { findLocalizedText } from 'meteor/unchained:core';
 import { Locale } from 'locale';
 import { ProductMedia, Media, ProductMediaTexts } from './collections';
 
+ProductMedia.findProductMedia = ({ productMediaId }) => {
+  return ProductMedia.findOne(productMediaId);
+};
+
+ProductMedia.removeProductMedia = ({ productMediaId }) => {
+  return ProductMedia.remove(productMediaId);
+};
+
 ProductMedia.helpers({
   upsertLocalizedText(locale, fields) {
     ProductMediaTexts.upsert(

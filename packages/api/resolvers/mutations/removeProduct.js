@@ -9,9 +9,9 @@ import {
 export default function removeProduct(root, { productId }, { userId }) {
   log(`mutation removeProduct ${productId}`, { userId });
   if (!productId) throw new InvalidIdError({ productId });
-  const product = Products.findOne({ _id: productId });
+  const product = Products.findProduct({ productId });
   if (!product) throw new ProductNotFoundError({ productId });
   if (product.status !== ProductStatus.DRAFT)
     throw new ProductWrongStatusError({ status: product.status });
-  return product.removeProduct();
+  return Products.removeProduct({ productId });
 }

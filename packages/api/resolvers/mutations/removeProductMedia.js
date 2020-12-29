@@ -9,8 +9,8 @@ export default function removeProductMedia(
 ) {
   log(`mutation removeProductMedia ${productMediaId}`, { userId });
   if (!productMediaId) throw new InvalidIdError({ productMediaId });
-  const productMedia = ProductMedia.findOne({ _id: productMediaId });
+  const productMedia = ProductMedia.findProductMedia({ productMediaId });
   if (!productMedia) throw new ProductMediaNotFoundError({ productMediaId });
-  ProductMedia.remove({ _id: productMediaId });
+  ProductMedia.removeProductMedia({ productMediaId });
   return productMedia;
 }
