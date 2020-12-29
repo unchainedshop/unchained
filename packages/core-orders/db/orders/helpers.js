@@ -423,31 +423,6 @@ Orders.helpers({
       );
     }
   },
-  updateCart({
-    billingAddress,
-    contact,
-    paymentProviderId,
-    deliveryProviderId,
-    meta,
-  }) {
-    let result = this;
-    if (meta) {
-      result = result.updateContext(meta);
-    }
-    if (billingAddress) {
-      result = result.updateBillingAddress(billingAddress);
-    }
-    if (contact) {
-      result = result.updateContact(contact);
-    }
-    if (paymentProviderId) {
-      result = result.setPaymentProvider({ paymentProviderId });
-    }
-    if (deliveryProviderId) {
-      result = result.setDeliveryProvider({ deliveryProviderId });
-    }
-    return result;
-  },
   checkout({ paymentContext, deliveryContext, orderContext } = {}, options) {
     const errors = [
       ...this.missingInputDataForCheckout(),

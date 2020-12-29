@@ -15,13 +15,21 @@ export default async function updateCart(
 ) {
   log('mutation updateCart', { userId });
 
-  const order = await getCart({ orderId, user, countryContext });
-
-  return order.updateCart({
-    billingAddress,
-    contact,
-    paymentProviderId,
-    deliveryProviderId,
-    meta,
-  });
+  let order = await getCart({ orderId, user, countryContext });
+  if (meta) {
+    order = order.updateContext(meta);
+  }
+  if (billingAddress) {
+    order = order.updateBillingAddress(billingAddress);
+  }
+  if (contact) {
+    order = order.updateContact(contact);
+  }
+  if (paymentProviderId) {
+    order = order.setPaymentProvider({ paymentProviderId });
+  }
+  if (deliveryProviderId) {
+    order = order.setDeliveryProvider({ deliveryProviderId });
+  }
+  return order;
 }
