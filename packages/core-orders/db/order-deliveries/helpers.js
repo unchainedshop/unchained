@@ -166,3 +166,7 @@ OrderDeliveries.updateStatus = ({ deliveryId, status, info = '' }) => {
   OrderDeliveries.update({ _id: deliveryId }, modifier);
   return OrderDeliveries.findOne({ _id: deliveryId });
 };
+
+OrderDeliveries.findDelivery = ({ orderDeliveryId }) => {
+  return OrderDeliveries.findOne(orderDeliveryId);
+};

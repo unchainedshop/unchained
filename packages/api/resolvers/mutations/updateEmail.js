@@ -9,7 +9,7 @@ export default function updateEmail(
 ) {
   log(`mutation updateEmail ${email} ${foreignUserId}`, { userId: ownUserId });
   const userId = foreignUserId || ownUserId;
-  const user = Users.findOne({ _id: userId });
+  const user = Users.findUser({ userId });
   if (!user) throw new UserNotFoundError({ userId });
   return user.updateEmail(email);
 }

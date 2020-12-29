@@ -9,7 +9,7 @@ export default function paymentProvider(
 ) {
   log(`query paymentProvider ${paymentProviderId}`, { userId });
   if (!paymentProviderId) throw new InvalidIdError({ paymentProviderId });
-  const provider = PaymentProviders.findProviderById(paymentProviderId);
+  const provider = PaymentProviders.findProvider({ paymentProviderId });
   if (!provider) throw new PaymentProviderNotFoundError({ paymentProviderId });
 
   return provider;

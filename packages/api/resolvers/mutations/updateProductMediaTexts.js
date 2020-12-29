@@ -9,7 +9,7 @@ export default function updateProductMediaTexts(
 ) {
   log(`mutation updateProductMediaTexts ${productMediaId}`, { userId });
   if (!productMediaId) throw new InvalidIdError({ productMediaId });
-  const productMedia = ProductMedia.findOne({ _id: productMediaId });
+  const productMedia = ProductMedia.findProductMedia({ productMediaId });
   if (!productMedia) throw new ProductMediaNotFoundError({ productMediaId });
   return productMedia.updateTexts({ texts, userId });
 }

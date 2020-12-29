@@ -244,8 +244,12 @@ PaymentProviders.removeProvider = ({ _id }) => {
   return PaymentProviders.findOne({ _id });
 };
 
-PaymentProviders.findProviderById = (_id, ...options) =>
-  PaymentProviders.findOne({ _id }, ...options);
+PaymentProviders.findProvider = ({ paymentProviderId, rest }, ...options) => {
+  return PaymentProviders.findOne(
+    { _id: paymentProviderId, ...rest },
+    ...options
+  );
+};
 
 PaymentProviders.findProviders = ({ type } = {}, ...options) =>
   PaymentProviders.find(

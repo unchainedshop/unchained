@@ -8,7 +8,7 @@ export default (root, { paymentProviderId, ...rest }, { userId }) => {
     { userId }
   );
   if (!paymentProviderId) throw new InvalidIdError({ paymentProviderId });
-  const paymentProvider = PaymentProviders.findProviderById(paymentProviderId);
+  const paymentProvider = PaymentProviders.findProvider({ paymentProviderId });
   if (!paymentProvider)
     throw new PaymentProviderNotFoundError({ paymentProviderId });
   return paymentProvider.sign({ userId, paymentProviderId, ...rest });

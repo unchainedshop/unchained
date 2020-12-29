@@ -11,7 +11,7 @@ export default function updateFilterTexts(
     userId,
   });
   if (!filterId) throw new InvalidIdError({ filterId });
-  const filter = Filters.findOne({ _id: filterId });
+  const filter = Filters.findFilter({ filterId });
   if (!filter) throw new FilterNotFoundError({ filterId });
   return filter.updateTexts({ texts, filterOptionValue, userId });
 }

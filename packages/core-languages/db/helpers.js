@@ -48,12 +48,10 @@ Languages.setBase = ({ languageId }) => {
 
   return Languages.findOne(languageId);
 };
-Languages.helpers({
-  updateLanguage({ language }) {
-    Languages.update(this._id, {
-      updated: new Date(),
-      $set: language,
-    });
-    return Languages.findOne(this._id);
-  },
-});
+Languages.updateLanguage = ({ languageId, language }) => {
+  Languages.update(languageId, {
+    updated: new Date(),
+    $set: language,
+  });
+  return Languages.findOne(languageId);
+};

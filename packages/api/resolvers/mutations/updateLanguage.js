@@ -9,7 +9,7 @@ export default function updateLanguage(
 ) {
   log(`mutation updateLanguage ${languageId}`, { userId });
   if (!languageId) throw new InvalidIdError({ languageId });
-  const languageObject = Languages.findOne({ _id: languageId });
+  const languageObject = Languages.findLanguage({ languageId });
   if (!languageObject) throw new LanguageNotFoundError({ languageId });
-  return languageObject.updateLanguage({ language });
+  return Languages.updateLanguage({ languageId, language });
 }
