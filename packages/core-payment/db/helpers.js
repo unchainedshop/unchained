@@ -30,6 +30,10 @@ PaymentProviders.findInterfaces = ({ type }) => {
   }));
 };
 
+PaymentProviders.findProvider = ({ paymentProviderId }) => {
+  return PaymentProviders.findOne(paymentProviderId);
+};
+
 PaymentProviders.helpers({
   transformContext(key, value) {
     return value;
