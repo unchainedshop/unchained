@@ -9,7 +9,7 @@ export default function updateAssortmentTexts(
 ) {
   log(`mutation updateAssortmentTexts ${assortmentId}`, { userId });
   if (!assortmentId) throw new InvalidIdError({ assortmentId });
-  const assortment = Assortments.findOne({ _id: assortmentId });
+  const assortment = Assortments.findAssortment({ assortmentId });
   if (!assortment) throw new AssortmentNotFoundError({ assortmentId });
   return assortment.updateTexts({ texts, userId });
 }

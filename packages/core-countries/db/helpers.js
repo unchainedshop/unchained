@@ -36,16 +36,17 @@ Countries.setBase = ({ countryId }) => {
 
   return Countries.findOne(countryId);
 };
+
+Countries.updateCountry = ({ countryId, country }) => {
+  Countries.update(countryId, {
+    $set: {
+      ...country,
+      updated: new Date(),
+    },
+  });
+  return Countries.findOne(countryId);
+};
 Countries.helpers({
-  updateCountry({ country }) {
-    Countries.update(this._id, {
-      $set: {
-        ...country,
-        updated: new Date(),
-      },
-    });
-    return Countries.findOne(this._id);
-  },
   defaultCurrency() {
     if (this.defaultCurrencyId) {
       return Currencies.findOne({ _id: this.defaultCurrencyId });

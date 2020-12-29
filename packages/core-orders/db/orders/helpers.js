@@ -162,28 +162,6 @@ Orders.helpers({
       'periods.orderId': this._id,
     });
   },
-  updateItem({ itemId, quantity, configuration }) {
-    if (quantity && quantity > 0) {
-      OrderPositions.updatePosition(
-        {
-          orderId: this._id,
-          positionId: itemId,
-        },
-        { quantity }
-      );
-    }
-
-    if (configuration !== null) {
-      OrderPositions.updatePosition(
-        {
-          orderId: this._id,
-          positionId: itemId,
-        },
-        { configuration }
-      );
-    }
-    return OrderPositions.findOne({ _id: itemId });
-  },
   discounts() {
     return OrderDiscounts.find({ orderId: this._id }).fetch();
   },
