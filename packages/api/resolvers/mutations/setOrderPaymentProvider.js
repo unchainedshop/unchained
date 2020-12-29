@@ -13,7 +13,7 @@ export default function setOrderPaymentProvider(
   });
   if (!orderId) throw new InvalidIdError({ orderId });
   if (!paymentProviderId) throw new InvalidIdError({ paymentProviderId });
-  const order = Orders.findOne({ _id: orderId });
+  const order = Orders.findOrder({ orderId });
   if (!order) throw new OrderNotFoundError({ orderId });
   return order.setPaymentProvider({ paymentProviderId });
 }

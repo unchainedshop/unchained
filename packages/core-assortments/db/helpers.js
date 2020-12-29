@@ -568,27 +568,27 @@ Products.helpers({
     return Products.find(productSelector, productOptions).fetch();
   },
 });
-
-Collections.Assortments.helpers({
-  makeBase() {
-    Collections.Assortments.update(
-      { isBase: true },
-      {
-        $set: {
-          isBase: false,
-          updated: new Date(),
-        },
-      },
-      { multi: true }
-    );
-    Collections.Assortments.update(this._id, {
+Collections.Assortments.setBase = ({ assortmentId }) => {
+  Collections.Assortments.update(
+    { isBase: true },
+    {
       $set: {
-        isBase: true,
+        isBase: false,
         updated: new Date(),
       },
-    });
-    return Collections.Assortments.findOne(this._id);
-  },
+    },
+    { multi: true }
+  );
+  Collections.Assortments.update(assortmentId, {
+    $set: {
+      isBase: true,
+      updated: new Date(),
+    },
+  });
+  return Collections.Assortments.findOne(assortmentId);
+};
+
+Collections.Assortments.helpers({
   updateTexts({ texts, userId }) {
     return texts?.map(({ locale, ...localizations }) =>
       this.upsertLocalizedText(locale, {

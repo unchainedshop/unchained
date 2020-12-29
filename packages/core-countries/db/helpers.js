@@ -16,27 +16,27 @@ const currencyCodeCache = new LRU({
 
 const { CURRENCY } = process.env;
 
-Countries.helpers({
-  makeBase() {
-    Countries.update(
-      { isBase: true },
-      {
-        $set: {
-          isBase: false,
-          updated: new Date(),
-        },
-      },
-      { multi: true }
-    );
-    Countries.update(this._id, {
+Countries.setBase = ({ countryId }) => {
+  Countries.update(
+    { isBase: true },
+    {
       $set: {
-        isBase: true,
+        isBase: false,
         updated: new Date(),
       },
-    });
+    },
+    { multi: true }
+  );
+  Countries.update(countryId, {
+    $set: {
+      isBase: true,
+      updated: new Date(),
+    },
+  });
 
-    return Countries.findOne(this._id);
-  },
+  return Countries.findOne(countryId);
+};
+Countries.helpers({
   updateCountry({ country }) {
     Countries.update(this._id, {
       $set: {

@@ -90,18 +90,22 @@ ProductVariations.helpers({
       title,
     });
   },
-  removeVariationOption({ productVariationOptionValue }) {
-    ProductVariations.update(this._id, {
-      $set: {
-        updated: new Date(),
-      },
-      $pull: {
-        options: productVariationOptionValue,
-      },
-    });
-    return ProductVariations.findOne(this._id);
-  },
 });
+
+ProductVariations.removeVariationOption = ({
+  productVariationId,
+  productVariationOptionValue,
+}) => {
+  ProductVariations.update(productVariationId, {
+    $set: {
+      updated: new Date(),
+    },
+    $pull: {
+      options: productVariationOptionValue,
+    },
+  });
+  return ProductVariations.findOne(productVariationId);
+};
 
 ProductVariations.createVariation = ({
   type,

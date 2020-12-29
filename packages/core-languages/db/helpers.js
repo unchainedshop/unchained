@@ -27,27 +27,28 @@ Languages.findLanguages = ({ limit, offset, includeInactive }) => {
     limit,
   }).fetch();
 };
-Languages.helpers({
-  makeBase() {
-    Languages.update(
-      { isBase: true },
-      {
-        $set: {
-          isBase: false,
-          updated: new Date(),
-        },
-      },
-      { multi: true }
-    );
-    Languages.update(this._id, {
+
+Languages.setBase = ({ languageId }) => {
+  Languages.update(
+    { isBase: true },
+    {
       $set: {
-        isBase: true,
+        isBase: false,
         updated: new Date(),
       },
-    });
+    },
+    { multi: true }
+  );
+  Languages.update(languageId, {
+    $set: {
+      isBase: true,
+      updated: new Date(),
+    },
+  });
 
-    return Languages.findOne(this._id);
-  },
+  return Languages.findOne(languageId);
+};
+Languages.helpers({
   updateLanguage({ language }) {
     Languages.update(this._id, {
       updated: new Date(),
