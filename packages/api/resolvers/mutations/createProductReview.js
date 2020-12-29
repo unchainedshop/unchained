@@ -10,7 +10,7 @@ export default function createProductReview(
 ) {
   log('mutation createProductReview', { userId, productId });
   if (!productId) throw new InvalidIdError({ productId });
-  const product = Products.findOne({ _id: productId });
+  const product = Products.findProduct({ productId });
   if (!product) throw new ProductNotFoundError({ productId });
   return ProductReviews.createReview({
     productId,

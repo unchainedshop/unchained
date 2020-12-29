@@ -8,7 +8,7 @@ export default function heartbeat(
   { userId, remoteAddress, localeContext, countryContext }
 ) {
   log(`mutation updateHeartbeat ${remoteAddress}`, { userId });
-  const user = Users.findOne({ _id: userId });
+  const user = Users.findUser({ userId });
   if (!user) throw new UserNotFoundError({ userId });
   Users.updateHeartbeat({
     userId,
@@ -16,5 +16,5 @@ export default function heartbeat(
     locale: localeContext.normalized,
     countryContext,
   });
-  return Users.findOne({ _id: userId });
+  return Users.findUser({ userId });
 }
