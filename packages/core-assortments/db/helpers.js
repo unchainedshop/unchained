@@ -65,6 +65,10 @@ Collections.Assortments.findAssortment = ({ assortmentId, slug, ...rest }) => {
   return Collections.Assortments.findOne(selector);
 };
 
+Collections.Assortments.removeAssortment = ({ assortmentId }) => {
+  return Collections.Assortments.remove(assortmentId);
+};
+
 Collections.Assortments.findAssortments = ({
   tags,
   slugs,
@@ -902,6 +906,14 @@ Collections.AssortmentProducts.helpers({
     return this;
   },
 });
+
+Collections.AssortmentFilters.findFilter = ({ assortmentFilterId }) => {
+  return Collections.AssortmentFilters.findOne(assortmentFilterId);
+};
+
+Collections.AssortmentFilters.removeFilter = ({ assortmentFilterId }) => {
+  return Collections.AssortmentFilters.remove(assortmentFilterId);
+};
 
 Collections.AssortmentFilters.helpers({
   assortment() {
