@@ -13,7 +13,7 @@ export default function createProductBundleItem(root, { productId, item }) {
   if (!productId) throw new InvalidIdError({ productId });
   if (!item.productId)
     throw new InvalidIdError({ bundleItemId: item.productId });
-  const product = Products.findOne(productId);
+  const product = Products.findProduct({ productId });
   if (!product) throw new ProductNotFoundError({ productId });
   if (product.type !== ProductTypes.BundleProduct)
     throw new ProductWrongTypeError({
@@ -21,9 +21,9 @@ export default function createProductBundleItem(root, { productId, item }) {
       received: product.type,
       required: ProductTypes.BundleProduct,
     });
-  const bundleItem = Products.findOne(item.productId);
+  const bundleItem = Products.findProduct({ productId: item.productId });
   if (!bundleItem)
     throw new ProductNotFoundError({ productId: item.productId });
 
-  return product.createBundleItem({ item });
+  return Products.createBundleItem({ productId, item });
 }

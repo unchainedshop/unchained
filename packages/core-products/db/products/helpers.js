@@ -143,6 +143,18 @@ Products.addProxyAssignment = ({ productId, proxyId, vectors }) => {
   return Products.findOne({ _id: proxyId });
 };
 
+Products.createBundleItem = ({ productId, item }) => {
+  Products.update(productId, {
+    $set: {
+      updated: new Date(),
+    },
+    $push: {
+      bundleItems: item,
+    },
+  });
+  return Products.findOne(productId);
+};
+
 Products.helpers({
   publish() {
     switch (this.status) {
@@ -302,17 +314,6 @@ Products.helpers({
   },
   variation(key) {
     return ProductVariations.findOne({ productId: this._id, key });
-  },
-  createBundleItem({ item }) {
-    Products.update(this._id, {
-      $set: {
-        updated: new Date(),
-      },
-      $push: {
-        bundleItems: item,
-      },
-    });
-    return Products.findOne(this._id);
   },
   removeBundleItem({ index }) {
     const { bundleItems = [] } = this;
