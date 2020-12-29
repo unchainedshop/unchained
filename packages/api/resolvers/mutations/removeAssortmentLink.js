@@ -9,9 +9,9 @@ export default function removeAssortmentLink(
 ) {
   log(`mutation removeAssortmentLink ${assortmentLinkId}`, { userId });
   if (!assortmentLinkId) throw new InvalidIdError({ assortmentLinkId });
-  const assortmentLink = AssortmentLinks.findOne({ _id: assortmentLinkId });
+  const assortmentLink = AssortmentLinks.findLink({ assortmentLinkId });
   if (!assortmentLink)
     throw new AssortmentLinkNotFoundError({ assortmentLinkId });
-  AssortmentLinks.remove({ _id: assortmentLinkId });
+  AssortmentLinks.removeLink({ assortmentLinkId });
   return assortmentLink;
 }

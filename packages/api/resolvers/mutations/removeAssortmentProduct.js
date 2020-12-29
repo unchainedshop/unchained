@@ -9,8 +9,8 @@ export default function removeAssortmentProduct(
 ) {
   log(`mutation removeAssortmentProduct ${assortmentProductId}`, { userId });
   if (!assortmentProductId) throw new InvalidIdError({ assortmentProductId });
-  const assortmentProduct = AssortmentProducts.findOne({
-    _id: assortmentProductId,
+  const assortmentProduct = AssortmentProducts.findProduct({
+    assortmentProductId,
   });
   if (!assortmentProduct)
     throw new AssortmentProductNotFoundError({ assortmentProductId });

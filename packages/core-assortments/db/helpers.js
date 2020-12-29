@@ -136,6 +136,14 @@ Collections.Assortments.invalidateFilterCaches = () => {
   });
 };
 
+Collections.AssortmentLinks.findLink = ({ assortmentLinkId }) => {
+  return Collections.AssortmentLinks.findOne(assortmentLinkId);
+};
+
+Collections.AssortmentLinks.removeLink = ({ assortmentLinkId }) => {
+  return Collections.AssortmentLinks.remove(assortmentLinkId);
+};
+
 Collections.AssortmentLinks.createAssortmentLink = ({
   parentAssortmentId,
   childAssortmentId,
@@ -892,6 +900,10 @@ Collections.AssortmentLinks.helpers({
     return Collections.Assortments.findOne({ _id: this.parentAssortmentId });
   },
 });
+
+Collections.AssortmentProducts.findProduct = ({ assortmentProductId }) => {
+  return Collections.AssortmentProducts.findOne({ assortmentProductId });
+};
 
 Collections.AssortmentProducts.helpers({
   assortment() {

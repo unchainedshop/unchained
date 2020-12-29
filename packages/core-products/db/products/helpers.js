@@ -155,6 +155,21 @@ Products.createBundleItem = ({ productId, item }) => {
   return Products.findOne(productId);
 };
 
+Products.removeBundleItem = ({ productId, index }) => {
+  const product = Products.findOne(productId);
+  const { bundleItems = [] } = product;
+  bundleItems.splice(index, 1);
+
+  Products.update(productId, {
+    $set: {
+      updated: new Date(),
+      bundleItems,
+    },
+  });
+
+  return Products.findOne(productId);
+};
+
 Products.helpers({
   publish() {
     switch (this.status) {
@@ -314,19 +329,6 @@ Products.helpers({
   },
   variation(key) {
     return ProductVariations.findOne({ productId: this._id, key });
-  },
-  removeBundleItem({ index }) {
-    const { bundleItems = [] } = this;
-    bundleItems.splice(index, 1);
-
-    Products.update(this._id, {
-      $set: {
-        updated: new Date(),
-        bundleItems,
-      },
-    });
-
-    return Products.findOne(this._id);
   },
   removeProduct() {
     switch (this.status) {
