@@ -9,7 +9,7 @@ export default function setRoles(
 ) {
   log(`mutation setRoles ${foreignUserId}`, { userId });
   if (!foreignUserId) throw new InvalidIdError({ foreignUserId });
-  const user = Users.findOne({ _id: foreignUserId });
+  const user = Users.findUser({ userId: foreignUserId });
   if (!user) throw new UserNotFoundError({ userId: foreignUserId });
   return user.setRoles(roles);
 }

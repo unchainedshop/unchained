@@ -20,6 +20,16 @@ Logs.helpers({
   },
 });
 
+Users.setTags = ({ userId, tags }) => {
+  Users.update(userId, {
+    $set: {
+      updated: new Date(),
+      tags,
+    },
+  });
+  return Users.findOne(userId);
+};
+
 Users.helpers({
   isGuest() {
     return !!this.guest;
@@ -138,15 +148,6 @@ Users.helpers({
       },
     }).fetch();
     return logs;
-  },
-  addTags({ tags }) {
-    Users.update(this._id, {
-      $set: {
-        updated: new Date(),
-        tags,
-      },
-    });
-    return Users.findOne(this._id);
   },
   updateProfile({ profile }) {
     const transformedProfile = Object.keys(profile).reduce(

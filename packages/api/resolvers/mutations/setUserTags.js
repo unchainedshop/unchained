@@ -9,7 +9,7 @@ export default function setUserTags(
 ) {
   log(`mutation setUserTags ${normalizedUserId}`, { userId });
   if (!normalizedUserId) throw new InvalidIdError({ normalizedUserId });
-  const user = Users.findOne({ _id: normalizedUserId });
+  const user = Users.findUser({ userId: normalizedUserId });
   if (!user) throw new UserNotFoundError({ normalizedUserId });
-  return user.addTags({ tags });
+  return Users.setTags({ userId, tags });
 }
