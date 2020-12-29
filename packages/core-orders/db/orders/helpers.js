@@ -139,6 +139,10 @@ Orders.findOrder = ({ orderId, ...rest }) => {
   return Orders.findOne(selector);
 };
 
+Orders.removeOrder = ({ orderId }) => {
+  return Orders.remove(orderId);
+};
+
 Orders.findOrders = ({ limit, offset, includeCarts }) => {
   const selector = {};
   if (!includeCarts) selector.status = { $ne: OrderStatus.OPEN };

@@ -15,6 +15,10 @@ Languages.findLanguage = ({ languageId }) => {
   return Languages.findOne({ _id: languageId });
 };
 
+Languages.removeLanguage = ({ languageId }) => {
+  return Languages.remove(languageId);
+};
+
 Languages.findLanguages = ({ limit, offset, includeInactive }) => {
   const selector = {};
   if (!includeInactive) selector.isActive = true;
