@@ -75,8 +75,15 @@ WarehousingProviders.removeProvider = ({ _id }) => {
   return WarehousingProviders.findOne({ _id });
 };
 
-WarehousingProviders.findProviderById = (_id, ...options) =>
-  WarehousingProviders.findOne({ _id }, ...options);
+WarehousingProviders.findProvider = (
+  { warehousingProviderId, ...rest },
+  ...options
+) => {
+  return WarehousingProviders.findOne(
+    { _id: warehousingProviderId, ...rest },
+    ...options
+  );
+};
 
 WarehousingProviders.findProviders = ({ type } = {}, ...options) =>
   WarehousingProviders.find(

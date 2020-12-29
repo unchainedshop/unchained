@@ -9,7 +9,7 @@ export default function updateProductTexts(
 ) {
   log(`mutation updateProductTexts ${productId}`, { userId });
   if (!productId) throw new InvalidIdError({ productId });
-  const product = Products.findOne({ _id: productId });
+  const product = Products.findProduct({ productId });
   if (!product) throw new ProductNotFoundError({ productId });
   return product.updateTexts({ texts, userId });
 }

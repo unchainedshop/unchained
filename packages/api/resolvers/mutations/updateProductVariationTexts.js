@@ -9,8 +9,8 @@ export default function updateProductVariationTexts(
 ) {
   log(`mutation updateProductVariationTexts ${productVariationId}`, { userId });
   if (!productVariationId) throw new InvalidIdError({ productVariationId });
-  const productVariation = ProductVariations.findOne({
-    _id: productVariationId,
+  const productVariation = ProductVariations.findVariation({
+    productVariationId,
   });
   if (!productVariation)
     throw new ProductVariationNotFoundError({ productVariationId });

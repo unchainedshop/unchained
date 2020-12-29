@@ -16,9 +16,7 @@ export default async function updateSubscription(
 ) {
   log('mutation updateSubscription', { userId });
   if (!subscriptionId) throw new InvalidIdError({ subscriptionId });
-  const subscription = Subscriptions.findOne({
-    _id: subscriptionId,
-  });
+  let subscription = Subscriptions.findSubscription({ subscriptionId });
   if (!subscription) {
     throw new SubscriptionNotFoundError({
       subscriptionId,
@@ -27,12 +25,23 @@ export default async function updateSubscription(
   if (subscription.status === SubscriptionStatus.TERMINATED) {
     throw new SubscriptionWrongStatusError({ status: subscription.status });
   }
-  return subscription.updateSubscription({
-    contact,
-    plan,
-    billingAddress,
-    payment,
-    delivery,
-    meta,
-  });
+  if (meta) {
+    subscription = subscription.updateContext(meta);
+  }
+  if (billingAddress) {
+    subscription = subscription.updateBillingAddress(billingAddress);
+  }
+  if (contact) {
+    subscription = subscription.updateContact(contact);
+  }
+  if (payment) {
+    subscription = subscription.updatePayment(payment);
+  }
+  if (delivery) {
+    subscription = subscription.updateDelivery(delivery);
+  }
+  if (plan) {
+    subscription = subscription.updatePlan(plan);
+  }
+  return subscription;
 }

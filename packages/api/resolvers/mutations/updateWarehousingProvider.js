@@ -12,8 +12,8 @@ export default (
   });
   if (!warehousingProviderId)
     throw new InvalidIdError({ warehousingProviderId });
-  const provider = WarehousingProviders.findOne({
-    _id: warehousingProviderId,
+  const provider = WarehousingProviders.findProvider({
+    warehousingProviderId,
     deleted: null,
   });
   if (!provider)

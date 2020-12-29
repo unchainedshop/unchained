@@ -105,35 +105,6 @@ Subscriptions.helpers({
       plan,
     });
   },
-  updateSubscription({
-    contact,
-    plan,
-    billingAddress,
-    payment,
-    delivery,
-    meta,
-  }) {
-    let result = this;
-    if (meta) {
-      result = result.updateContext(meta);
-    }
-    if (billingAddress) {
-      result = result.updateBillingAddress(billingAddress);
-    }
-    if (contact) {
-      result = result.updateContact(contact);
-    }
-    if (payment) {
-      result = result.updatePayment(payment);
-    }
-    if (delivery) {
-      result = result.updateDelivery(delivery);
-    }
-    if (plan) {
-      result = result.updatePlan(plan);
-    }
-    return result;
-  },
   async terminate({ subscriptionContext } = {}, options) {
     if (this.status === SubscriptionStatus.TERMINATED) return this;
     const locale = this.user().locale(options);

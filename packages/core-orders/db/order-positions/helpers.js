@@ -78,9 +78,9 @@ OrderPositions.helpers({
     const { countryCode, userId } = order;
     return scheduling.map((schedule) => {
       const context = {
-        warehousingProvider: WarehousingProviders.findProviderById(
-          schedule.warehousingProviderId
-        ),
+        warehousingProvider: WarehousingProviders.findProvider({
+          warehousingProviderId: schedule.warehousingProviderId,
+        }),
         deliveryProvider: order.delivery().provider(),
         product: this.product(),
         quantity: this.quantity,

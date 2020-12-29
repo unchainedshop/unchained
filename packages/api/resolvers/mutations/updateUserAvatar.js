@@ -9,8 +9,8 @@ export default async function updateUserAvatar(
 ) {
   const normalizedUserId = foreignUserId || userId;
   log(`mutation updateUserAvatar ${normalizedUserId}`, { userId });
-  const user = Users.findOne({ _id: normalizedUserId });
-  if (!user) throw new UserNotFoundError({ userId });
-  const updatedUser = user.updateAvatar({ avatar });
+  const user = Users.findUser({ userId: normalizedUserId });
+  if (!user) throw new UserNotFoundError({ userId: normalizedUserId });
+  const updatedUser = Users.updateAvatar({ userId: normalizedUserId, avatar });
   return updatedUser;
 }

@@ -149,49 +149,47 @@ Users.helpers({
     }).fetch();
     return logs;
   },
-  updateProfile({ profile }) {
-    const transformedProfile = Object.keys(profile).reduce(
-      (acc, profileKey) => {
-        return {
-          ...acc,
-          [`profile.${profileKey}`]: profile[profileKey],
-        };
-      },
-      {}
-    );
-
-    Users.update(this._id, {
-      $set: {
-        updated: new Date(),
-        ...transformedProfile,
-      },
-    });
-    return Users.findOne(this._id);
-  },
-  async updateAvatar({ avatar }) {
-    const avatarRef =
-      avatar instanceof Promise
-        ? await Avatars.insertWithRemoteFile({
-            file: avatar,
-            userId: this._id,
-          })
-        : await Avatars.insertWithRemoteBuffer({
-            file: {
-              ...avatar,
-              buffer: Buffer.from(avatar.buffer, 'base64'),
-            },
-            userId: this._id,
-          });
-
-    Users.update(this._id, {
-      $set: {
-        updated: new Date(),
-        avatarId: avatarRef._id,
-      },
-    });
-    return Users.findOne(this._id);
-  },
 });
+
+Users.updateProfile = ({ userId, profile }) => {
+  const transformedProfile = Object.keys(profile).reduce((acc, profileKey) => {
+    return {
+      ...acc,
+      [`profile.${profileKey}`]: profile[profileKey],
+    };
+  }, {});
+
+  Users.update(userId, {
+    $set: {
+      updated: new Date(),
+      ...transformedProfile,
+    },
+  });
+  return Users.findOne(userId);
+};
+Users.updateAvatar = async ({ userId, avatar }) => {
+  const avatarRef =
+    avatar instanceof Promise
+      ? await Avatars.insertWithRemoteFile({
+          file: avatar,
+          userId,
+        })
+      : await Avatars.insertWithRemoteBuffer({
+          file: {
+            ...avatar,
+            buffer: Buffer.from(avatar.buffer, 'base64'),
+          },
+          userId,
+        });
+
+  Users.update(userId, {
+    $set: {
+      updated: new Date(),
+      avatarId: avatarRef._id,
+    },
+  });
+  return Users.findOne(userId);
+};
 
 Users.updateLastBillingAddress = ({ userId, lastBillingAddress }) => {
   const user = Users.findOne({ _id: userId });
