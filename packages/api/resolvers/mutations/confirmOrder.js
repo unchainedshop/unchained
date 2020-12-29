@@ -13,7 +13,7 @@ export default function confirmOrder(
 ) {
   log('mutation confirmOrder', { orderId, userId });
   if (!orderId) throw new InvalidIdError({ orderId });
-  const order = Orders.findOne({ _id: orderId });
+  const order = Orders.findOrder({ orderId });
   if (!order) throw new OrderNotFoundError({ orderId });
   if (order.status !== OrderStatus.PENDING) {
     throw new OrderWrongStatusError({ status: order.status });

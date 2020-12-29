@@ -9,7 +9,7 @@ export default async function createCart(
   { countryContext, userId, user }
 ) {
   log('mutation createCart', { userId });
-  const order = Orders.findOne({ orderNumber });
+  const order = Orders.findOrder({ orderNumber });
   if (order) throw new OrderNumberAlreadyExistsError({ orderNumber });
   if (!user) throw new UserNotFoundError({ userId });
   return Orders.createOrder({

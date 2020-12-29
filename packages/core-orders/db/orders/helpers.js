@@ -134,8 +134,9 @@ Users.helpers({
   },
 });
 
-Orders.findOrder = ({ orderId }) => {
-  return Orders.findOne({ _id: orderId });
+Orders.findOrder = ({ orderId, ...rest }) => {
+  const selector = orderId ? { _id: orderId } : rest;
+  return Orders.findOne(selector);
 };
 
 Orders.findOrders = ({ limit, offset, includeCarts }) => {

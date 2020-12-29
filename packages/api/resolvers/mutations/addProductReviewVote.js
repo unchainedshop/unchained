@@ -9,7 +9,7 @@ export default function addProductReviewVote(
 ) {
   log(`mutation addProductReviewVote ${productReviewId}`, { userId });
   if (!productReviewId) throw new InvalidIdError({ productReviewId });
-  const productReview = ProductReviews.findOne({ _id: productReviewId });
+  const productReview = ProductReviews.findReviewById(productReviewId);
   if (!productReview) throw new ProductReviewNotFoundError({ productReviewId });
   return productReview.addVote({ type, meta, userId });
 }

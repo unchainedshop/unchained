@@ -16,9 +16,9 @@ export default function addProductAssignment(
 
   if (!proxyId) throw new InvalidIdError({ proxyId });
   if (!productId) throw new InvalidIdError({ productId });
-  const product = Products.findOne({ _id: productId });
+  const product = Products.findProduct({ productId });
   if (!product) throw new ProductNotFoundError({ productId });
-  const proxyProduct = Products.findOne({ _id: proxyId });
+  const proxyProduct = Products.findProduct({ productId: proxyId });
   if (!proxyProduct) throw new ProductNotFoundError({ proxyId });
   if (proxyProduct.type !== ProductTypes.ConfigurableProduct)
     throw new ProductWrongTypeError({
