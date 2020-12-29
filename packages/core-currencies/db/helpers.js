@@ -23,15 +23,13 @@ Currencies.findCurrency = ({ currencyId }) => {
 Currencies.removeCurrency = ({ currencyId }) => {
   return Currencies.remove({ _id: currencyId });
 };
-Currencies.helpers({
-  updateCurrency({ isoCode, currency }) {
-    Currencies.update(this._id, {
-      $set: {
-        isoCode: isoCode.toUpperCase(),
-        ...currency,
-        updated: new Date(),
-      },
-    });
-    return Currencies.findOne(this._id);
-  },
-});
+Currencies.updateCurrency = ({ currencyId, isoCode, currency }) => {
+  Currencies.update(currencyId, {
+    $set: {
+      isoCode: isoCode.toUpperCase(),
+      ...currency,
+      updated: new Date(),
+    },
+  });
+  return Currencies.findOne(currencyId);
+};

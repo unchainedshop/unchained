@@ -1,7 +1,7 @@
 import { DeliveryProviders } from 'meteor/unchained:core-delivery';
 
 export default {
-  async provider(obj) {
-    return DeliveryProviders.findProviderById(obj.deliveryProviderId);
+  async provider({ deliveryProviderId }) {
+    return DeliveryProviders.findProviderById({ deliveryProviderId });
   },
 };

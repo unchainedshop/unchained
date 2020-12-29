@@ -18,7 +18,9 @@ OrderDeliveries.helpers({
     });
   },
   provider() {
-    return DeliveryProviders.findProviderById(this.deliveryProviderId);
+    return DeliveryProviders.findProviderById({
+      deliveryProviderId: this.deliveryProviderId,
+    });
   },
   transformedContextValue(key) {
     const provider = this.provider();

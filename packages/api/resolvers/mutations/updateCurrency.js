@@ -9,7 +9,7 @@ export default function updateCurrency(
 ) {
   log(`mutation updateCurrency ${currencyId}`, { userId });
   if (!currencyId) throw new InvalidIdError({ currencyId });
-  const currencyObject = Currencies.findOne({ _id: currencyId });
+  const currencyObject = Currencies.findCurrency({ currencyId });
   if (!currencyObject) throw new CurrencyNotFoundError({ currencyId });
-  return currencyObject.updateCurrency({ isoCode, currency });
+  return Currencies.updateCurrency({ currencyId, isoCode, currency });
 }
