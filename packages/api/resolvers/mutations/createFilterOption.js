@@ -13,5 +13,5 @@ export default function createFilterOption(
   const filter = Filters.findOne({ _id: filterId });
   if (!filter) throw new FilterNotFoundError({ filterId });
 
-  return filter.addOption({ inputData, localeContext, userId });
+  return Filters.setOptions({ filterId, inputData, localeContext, userId });
 }

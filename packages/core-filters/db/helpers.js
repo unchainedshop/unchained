@@ -183,6 +183,27 @@ Filters.updateCleanFilterActivation = () => {
   });
 };
 
+Filters.setOptions = ({ filterId, inputData, localeContext, userId }) => {
+  const { value, title } = inputData;
+  Filters.update(filterId, {
+    $set: {
+      updated: new Date(),
+    },
+    $addToSet: {
+      options: value,
+    },
+  });
+
+  const filter = Filters.findOne(filterId);
+
+  filter.upsertLocalizedText(localeContext.language, {
+    authorId: userId,
+    filterOptionValue: value,
+    title,
+  });
+  return Filters.findOne(filterId);
+};
+
 Filters.wipeFilters = (onlyDirty = true) => {
   const selector = onlyDirty ? { dirty: true } : {};
   const removedFilterCount = Filters.remove(selector);
