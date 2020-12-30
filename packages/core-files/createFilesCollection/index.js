@@ -34,5 +34,16 @@ export default (collectionName, customSettings = null) => {
     ...createDefaultFileCollectionConfig(collectionName, mergedSettings),
     ...configByType(collectionName, mergedSettings.storage),
   };
-  return new FilesCollection(fullconfig);
+  // console.log(
+  //   'createDefaultFileCollectionConfig',
+  //   createDefaultFileCollectionConfig(collectionName, mergedSettings)
+  // );
+  // console.log(
+  //   'configByType',
+  //   configByType(collectionName, mergedSettings.storage)
+  // );
+
+  // console.log('fullconfig: ', fullconfig);
+
+  return new FilesCollection(collectionName);
 };

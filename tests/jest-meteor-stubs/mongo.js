@@ -1,4 +1,6 @@
-const Collection = jest.fn();
+const Collection = function (name) {
+  this._name = name;
+};
 Collection.prototype.attachSchema = jest.fn();
 Collection.prototype.insert = jest.fn();
 Collection.prototype.update = jest.fn();
@@ -17,6 +19,8 @@ Collection.prototype.after = {
   insert: jest.fn(),
   update: jest.fn(),
 };
+Collection.prototype._ensureIndex = jest.fn();
+Collection.prototype.observe = jest.fn();
 const Mongo = { Collection };
 
 const RemoteCollectionDriver = jest.fn();

@@ -12,6 +12,7 @@ Npm.depends({
   'request-libcurl': '2.2.1',
   'file-type': '16.0.0',
   eventemitter3: '4.0.7',
+  '@reactioncommerce/random': '1.0.2',
 });
 
 Package.onUse((api) => {
@@ -21,7 +22,7 @@ Package.onUse((api) => {
   api.use('ecmascript');
   api.use('webapp', 'server');
   api.use(
-    ['mongo', 'check', 'random', 'ecmascript', 'ostrio:cookies@2.6.1'],
+    ['mongo', 'check', 'ecmascript', 'ostrio:cookies@2.6.1'],
     ['client', 'server']
   );
   api.mainModule('core-files.js');

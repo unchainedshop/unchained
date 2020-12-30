@@ -19,7 +19,7 @@ import WriteStream from './write-stream.js';
  * @const {Function} NOOP - No Operation function, placeholder for required callbacks
  */
 const bound = Meteor.bindEnvironment((callback) => callback());
-const NOOP = () => {};
+const NOOP = () => { };
 
 /*
  * @locus Anywhere
@@ -465,9 +465,9 @@ export default class FilesCollection extends FilesCollectionCore {
 
           result = http
             ? this.protected.call(
-                Object.assign(http, { user, userId }),
-                fileRef || null
-              )
+              Object.assign(http, { user, userId }),
+              fileRef || null
+            )
             : this.protected.call({ user, userId }, fileRef || null);
         } else {
           result = !!userId;
@@ -687,8 +687,7 @@ export default class FilesCollection extends FilesCollectionCore {
 
               opts.___s = true;
               this._debug(
-                `[FilesCollection] [File Start HTTP] ${
-                  opts.file.name || '[no-name]'
+                `[FilesCollection] [File Start HTTP] ${opts.file.name || '[no-name]'
                 } - ${opts.fileId}`
               );
               if (helpers.isObject(opts.file) && opts.file.meta) {
@@ -1027,10 +1026,9 @@ export default class FilesCollection extends FilesCollectionCore {
 
         const _continueUpload = self._continueUpload(_id);
         self._debug(
-          `[FilesCollection] [Abort Method]: ${_id} - ${
-            helpers.isObject(_continueUpload.file)
-              ? _continueUpload.file.path
-              : ''
+          `[FilesCollection] [Abort Method]: ${_id} - ${helpers.isObject(_continueUpload.file)
+            ? _continueUpload.file.path
+            : ''
           }`
         );
 
@@ -1082,8 +1080,7 @@ export default class FilesCollection extends FilesCollectionCore {
     }
 
     this._debug(
-      `[FilesCollection] [Upload] [${transport}] Got #${opts.chunkId}/${
-        opts.fileLength
+      `[FilesCollection] [Upload] [${transport}] Got #${opts.chunkId}/${opts.fileLength
       } chunks, dst: ${opts.file.name || opts.file.fileName}`
     );
 
@@ -1102,9 +1099,8 @@ export default class FilesCollection extends FilesCollectionCore {
     result._id = opts.fileId;
     result.userId = userId || null;
     opts.FSName = opts.FSName.replace(/([^a-z0-9\-\_]+)/gi, '-');
-    result.path = `${this.storagePath(result)}${nodePath.sep}${
-      opts.FSName
-    }${extensionWithDot}`;
+    result.path = `${this.storagePath(result)}${nodePath.sep}${opts.FSName
+      }${extensionWithDot}`;
     result = Object.assign(result, this._dataToSchema(result));
 
     if (this.onBeforeUpload && helpers.isFunction(this.onBeforeUpload)) {
@@ -1386,9 +1382,8 @@ export default class FilesCollection extends FilesCollectionCore {
 
     const { extension, extensionWithDot } = this._getExt(fileName);
 
-    opts.path = `${this.storagePath(opts)}${
-      nodePath.sep
-    }${FSName}${extensionWithDot}`;
+    opts.path = `${this.storagePath(opts)}${nodePath.sep
+      }${FSName}${extensionWithDot}`;
     opts.type = this._getMimeType(opts);
     if (!helpers.isObject(opts.meta)) {
       opts.meta = {};
@@ -1510,9 +1505,8 @@ export default class FilesCollection extends FilesCollectionCore {
         : pathParts[pathParts.length - 1] || FSName;
 
     const { extension, extensionWithDot } = this._getExt(fileName);
-    opts.path = `${this.storagePath(opts)}${
-      nodePath.sep
-    }${FSName}${extensionWithDot}`;
+    opts.path = `${this.storagePath(opts)}${nodePath.sep
+      }${FSName}${extensionWithDot}`;
 
     const storeResult = (result, cb) => {
       result._id = fileId;
@@ -2210,10 +2204,10 @@ export default class FilesCollection extends FilesCollectionCore {
         }
         respond(
           readableStream ||
-            fs.createReadStream(vRef.path, {
-              start: reqRange.start,
-              end: reqRange.end,
-            }),
+          fs.createReadStream(vRef.path, {
+            start: reqRange.start,
+            end: reqRange.end,
+          }),
           206
         );
         break;
