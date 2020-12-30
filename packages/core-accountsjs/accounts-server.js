@@ -79,7 +79,10 @@ export class UnchainedAccountsServer extends AccountsServer {
   async loginWithUser(user) {
     // Random.secret uses a default value of 43
     // https://github.com/meteor/meteor/blob/devel/packages/random/AbstractRandomGenerator.js#L78
-    const when = new Date(new Date().getTime() + 1000000);
+    const date = new Date();
+    const numberOfDaysToAdd = 30;
+
+    const when = new Date(date.setDate(date.getDate() + numberOfDaysToAdd));
     const stampedLoginToken = randomValueHex(43);
 
     const hashedToken = this.hashLoginToken(stampedLoginToken);
