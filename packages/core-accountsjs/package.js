@@ -1,6 +1,6 @@
 Package.describe({
   name: 'unchained:core-accountsjs',
-  version: '0.55.4',
+  version: '0.55.5',
   summary: 'Unchained Engine Core: Accounts',
   git: 'https://github.com/unchainedshop/unchained',
   documentation: 'README.md',
