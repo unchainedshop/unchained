@@ -7,6 +7,6 @@ export default function removeAssortment(root, { assortmentId }, { userId }) {
   if (!assortmentId) throw new InvalidIdError({ assortmentId });
   const assortment = Assortments.findOne({ _id: assortmentId });
   if (!assortment) throw new AssortmentNotFoundError({ assortmentId });
-  Assortments.remove({ _id: assortmentId });
+  Assortments.removeAssortment({ assortmentId });
   return assortment;
 }

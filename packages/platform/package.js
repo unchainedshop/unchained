@@ -1,6 +1,6 @@
 Package.describe({
   name: 'unchained:platform',
-  version: '0.55.5',
+  version: '0.55.6',
   summary: 'Unchained Engine',
   git: 'https://github.com/unchainedshop/unchained',
   documentation: 'README.md',
@@ -33,10 +33,10 @@ Package.onUse((api) => {
   api.use('unchained:core-bookmarks@0.55.4');
   api.use('unchained:core-warehousing@0.55.4');
   api.use('unchained:core-filters@0.55.4');
-  api.use('unchained:core-assortments@0.55.4');
+  api.use('unchained:core-assortments@0.55.5');
   api.use('unchained:core-worker@0.55.4');
   api.use('unchained:core-subscriptions@0.55.4');
-  api.use('unchained:api@0.55.4');
+  api.use('unchained:api@0.55.5');
 
   api.mainModule('platform.js', 'server');
 });

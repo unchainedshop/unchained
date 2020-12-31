@@ -240,6 +240,22 @@ Migrations.add({
   down() {},
 });
 
+Migrations.add({
+  version: 20201231.0,
+  name:
+    'drop all assortment-linked entities with assortmentIds that do not exist anymore',
+  up() {
+    const idArray = Collections.Assortments.find({})
+      .fetch()
+      .map((assortment) => assortment._id);
+    Collections.AssortmentLinks.remove({ _id: { $nin: idArray } });
+    Collections.AssortmentTexts.remove({ _id: { $nin: idArray } });
+    Collections.AssortmentProducts.remove({ _id: { $nin: idArray } });
+    Collections.AssortmentFilters.remove({ _id: { $nin: idArray } });
+  },
+  down() {},
+});
+
 export default () => {
   Migrations.migrateTo('latest');
   // Assortment Indexes

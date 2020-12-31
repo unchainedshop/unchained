@@ -1,6 +1,6 @@
 Package.describe({
   name: 'unchained:api',
-  version: '0.55.4',
+  version: '0.55.6',
   summary: 'Unchained Engine: GraphQL API',
   git: 'https://github.com/unchainedshop/unchained',
   documentation: 'README.md',
@@ -35,7 +35,7 @@ Package.onUse((api) => {
   api.use('unchained:core-bookmarks@0.55.4');
   api.use('unchained:core-warehousing@0.55.4');
   api.use('unchained:core-filters@0.55.4');
-  api.use('unchained:core-assortments@0.55.4');
+  api.use('unchained:core-assortments@0.55.5');
   api.use('unchained:core-subscriptions@0.55.4');
 
   api.mainModule('api.js', 'server');

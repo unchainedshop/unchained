@@ -68,6 +68,14 @@ Collections.Assortments.updateAssortment = ({
   return Collections.Assortments.findOne({ _id: assortmentId });
 };
 
+Collections.Assortments.removeAssortment = ({ assortmentId }) => {
+  Collections.AssortmentLinks.remove({ assortmentId });
+  Collections.AssortmentTexts.remove({ assortmentId });
+  Collections.AssortmentProducts.remove({ assortmentId });
+  Collections.AssortmentFilters.remove({ assortmentId });
+  Collections.Assortments.remove({ _id: assortmentId });
+};
+
 Collections.Assortments.invalidateFilterCaches = () => {
   log('Assortments: Start invalidating assortment caches', {
     level: 'verbose',
