@@ -33,7 +33,7 @@ const WorkRow = ({ work, relativeDate }) => {
     work.status === 'ALLOCATED';
   return (
     <Table.Row
-      key={work._id}
+      key={`${work._id}${new Date().getTime()}`}
       warning={isReady}
       error={work.status === 'FAILED'}
       positive={work.status === 'SUCCESS'}
@@ -108,7 +108,7 @@ const WorkList = ({
       limit={5}
       createPath={null}
       rowRenderer={(work) => (
-        <WorkRow key={work._id} work={work} relativeDate={relativeDate} />
+        <WorkRow key={`${work._id}`} work={work} relativeDate={relativeDate} />
       )}
     >
       <Table.Row>
