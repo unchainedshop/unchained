@@ -105,6 +105,7 @@ const WorkList = ({
     <InfiniteDataTable
       {...rest}
       cols={6}
+      limit={5}
       createPath={null}
       rowRenderer={(work) => (
         <WorkRow key={work._id} work={work} relativeDate={relativeDate} />
@@ -118,14 +119,14 @@ const WorkList = ({
             multiple
             onChange={(e, { value }) => {
               setSelectedTypeFilter(value);
-              onFilterChange({ filterType: 'type', value });
+              onFilterChange({ filterType: 'workType', value });
             }}
             value={selectedTypeFilter}
             queryType={'workTypes'}
           />
         </Table.HeaderCell>
         {statusTypes.map((status) => (
-          <Table.HeaderCell>
+          <Table.HeaderCell key={status}>
             <Checkbox
               label={status}
               checked={activeStatus.indexOf(status) !== -1}
