@@ -248,10 +248,10 @@ Migrations.add({
     const idArray = Collections.Assortments.find({})
       .fetch()
       .map((assortment) => assortment._id);
-    Collections.AssortmentLinks.remove({ _id: { $nin: idArray } });
-    Collections.AssortmentTexts.remove({ _id: { $nin: idArray } });
-    Collections.AssortmentProducts.remove({ _id: { $nin: idArray } });
-    Collections.AssortmentFilters.remove({ _id: { $nin: idArray } });
+    Collections.AssortmentLinks.remove({ assortmentId: { $nin: idArray } });
+    Collections.AssortmentTexts.remove({ assortmentId: { $nin: idArray } });
+    Collections.AssortmentProducts.remove({ assortmentId: { $nin: idArray } });
+    Collections.AssortmentFilters.remove({ assortmentId: { $nin: idArray } });
   },
   down() {},
 });

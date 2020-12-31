@@ -1,6 +1,6 @@
 Package.describe({
   name: 'unchained:core-assortments',
-  version: '0.55.5',
+  version: '0.55.6',
   summary: 'Unchained Engine Core: Assortments',
   git: 'https://github.com/unchainedshop/unchained',
   documentation: 'README.md',
