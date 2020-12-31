@@ -248,10 +248,14 @@ Migrations.add({
     const idArray = Collections.Assortments.find({})
       .fetch()
       .map((assortment) => assortment._id);
-    Collections.AssortmentLinks.remove({ assortmentId: { $nin: idArray } });
-    Collections.AssortmentTexts.remove({ assortmentId: { $nin: idArray } });
-    Collections.AssortmentProducts.remove({ assortmentId: { $nin: idArray } });
-    Collections.AssortmentFilters.remove({ assortmentId: { $nin: idArray } });
+    if (idArray?.length > 0) {
+      Collections.AssortmentLinks.remove({ assortmentId: { $nin: idArray } });
+      Collections.AssortmentTexts.remove({ assortmentId: { $nin: idArray } });
+      Collections.AssortmentProducts.remove({
+        assortmentId: { $nin: idArray },
+      });
+      Collections.AssortmentFilters.remove({ assortmentId: { $nin: idArray } });
+    }
   },
   down() {},
 });
@@ -274,6 +278,12 @@ export default () => {
   Collections.AssortmentTexts.rawCollection().createIndex({
     locale: 1,
     assortmentId: 1,
+  });
+  Collections.AssortmentTexts.rawCollection().createIndex({
+    title: 'text',
+    subtitle: 'text',
+    vendor: 'text',
+    brand: 'text',
   });
 
   // AssortmentProducts indexes

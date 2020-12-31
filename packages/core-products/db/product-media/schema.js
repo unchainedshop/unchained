@@ -53,6 +53,7 @@ Migrations.add({
 
 export default () => {
   Migrations.migrateTo('latest');
+
   ProductMedia.rawCollection().createIndex({ mediaId: 1 });
   ProductMedia.rawCollection().createIndex({ productId: 1 });
   ProductMedia.rawCollection().createIndex({ tags: 1 });

@@ -26,10 +26,6 @@ describe('Auth for admin users', () => {
     beforeAll(async () => {
       const Users = db.collection('users');
 
-      Users.createIndex({
-        username: 'text',
-      });
-
       await Users.findOrInsertOne({
         ...User,
         _id: 'guest',

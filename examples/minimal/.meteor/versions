@@ -57,10 +57,10 @@ routepolicy@1.1.0
 socket-stream-client@0.3.1
 tmeasday:check-npm-versions@0.3.2
 tracker@1.2.0
-unchained:api@0.55.5
+unchained:api@0.55.6
 unchained:core@0.55.4
-unchained:core-accountsjs@0.55.4
-unchained:core-assortments@0.55.5
+unchained:core-accountsjs@0.55.5
+unchained:core-assortments@0.55.6
 unchained:core-bookmarks@0.55.4
 unchained:core-countries@0.55.4
 unchained:core-currencies@0.55.4
@@ -82,7 +82,7 @@ unchained:core-subscriptions@0.55.4
 unchained:core-users@0.55.4
 unchained:core-warehousing@0.55.4
 unchained:core-worker@0.55.4
-unchained:platform@0.55.5
+unchained:platform@0.55.6
 unchained:roles@0.55.4
 unchained:utils@0.55.4
 underscore@1.0.10
