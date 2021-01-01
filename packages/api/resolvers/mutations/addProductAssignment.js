@@ -26,6 +26,6 @@ export default function addProductAssignment(
       received: proxyProduct.type,
       required: ProductTypes.ConfigurableProduct,
     });
-
-  return Products.addProxyAssignment({ productId, proxyId, vectors });
+  Products.addProxyAssignment({ productId, proxyId, vectors });
+  return Products.findProduct({ productId: proxyId });
 }

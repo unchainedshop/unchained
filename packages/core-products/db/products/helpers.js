@@ -140,7 +140,6 @@ Products.addProxyAssignment = ({ productId, proxyId, vectors }) => {
   };
 
   Products.update({ _id: proxyId }, modifier);
-  return Products.findOne({ _id: proxyId });
 };
 
 Products.createBundleItem = ({ productId, item }) => {
