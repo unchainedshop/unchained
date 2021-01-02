@@ -9,7 +9,7 @@ export default function updateDeliveryProvider(
 ) {
   log(`mutation updateDeliveryProvider ${deliveryProviderId}`, { userId });
   if (!deliveryProviderId) throw new InvalidIdError({ deliveryProviderId });
-  const provider = DeliveryProviders.findProviderById({
+  const provider = DeliveryProviders.findProvider({
     deliveryProviderId,
     deleted: null,
   });

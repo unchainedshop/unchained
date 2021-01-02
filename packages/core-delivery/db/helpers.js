@@ -124,7 +124,7 @@ DeliveryProviders.updateProvider = ({ _id, ...rest }) => {
 };
 
 DeliveryProviders.removeProvider = ({ _id }) => {
-  DeliveryProviders.update(
+  return DeliveryProviders.update(
     { _id, deleted: null },
     {
       $set: {
@@ -132,10 +132,9 @@ DeliveryProviders.removeProvider = ({ _id }) => {
       },
     }
   );
-  return DeliveryProviders.findOne({ _id });
 };
 
-DeliveryProviders.findProviderById = ({ deliveryProviderId, rest }) =>
+DeliveryProviders.findProvider = ({ deliveryProviderId, rest }) =>
   DeliveryProviders.findOne({ _id: deliveryProviderId, ...rest });
 
 DeliveryProviders.findProviders = ({ type } = {}, ...options) =>

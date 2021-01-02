@@ -18,7 +18,7 @@ OrderDeliveries.helpers({
     });
   },
   provider() {
-    return DeliveryProviders.findProviderById({
+    return DeliveryProviders.findProvider({
       deliveryProviderId: this.deliveryProviderId,
     });
   },
