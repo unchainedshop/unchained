@@ -10,8 +10,9 @@ export default function createFilterOption(
   log(`mutation createFilterOption ${filterId}`, { userId });
 
   if (!filterId) throw new InvalidIdError({ filterId });
-  const filter = Filters.findOne({ _id: filterId });
+  const filter = Filters.findFilter({ filterId });
   if (!filter) throw new FilterNotFoundError({ filterId });
 
-  return Filters.setOptions({ filterId, inputData, localeContext, userId });
+  Filters.setOptions({ filterId, inputData, localeContext, userId });
+  return Filters.findFilter({ filterId });
 }

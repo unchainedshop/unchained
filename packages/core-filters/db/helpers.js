@@ -104,7 +104,7 @@ Filters.markFiltersDirty = () => {
 };
 
 Filters.findFilter = ({ filterId }) => {
-  return Filters.findOne({ _id: filterId });
+  return Filters.findOne(filterId);
 };
 
 Filters.findFilters = ({ limit, offset, includeInactive }) => {
@@ -201,7 +201,6 @@ Filters.setOptions = ({ filterId, inputData, localeContext, userId }) => {
     filterOptionValue: value,
     title,
   });
-  return Filters.findOne(filterId);
 };
 
 Filters.wipeFilters = (onlyDirty = true) => {

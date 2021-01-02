@@ -16,6 +16,7 @@ export default function bookmark(root, { productId, bookmarked }, { userId }) {
     if (foundBookmark) return foundBookmark;
     return Bookmarks.createBookmark({ productId, userId });
   }
-  if (foundBookmark) Bookmarks.removeBookmark({ _id: foundBookmark._id });
+  if (foundBookmark)
+    Bookmarks.removeBookmark({ bookmarkId: foundBookmark._id });
   return foundBookmark;
 }
