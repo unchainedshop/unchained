@@ -11,5 +11,6 @@ export default function removeFilterOption(
   if (!filterId) throw new InvalidIdError({ filterId });
   const filter = Filters.findFilter({ filterId });
   if (!filter) throw new FilterNotFoundError({ filterId });
-  return filter.removeFilterOption({ filterOptionValue });
+  Filters.removeFilterOption({ filterId, filterOptionValue });
+  return Filters.findFilter({ filterId });
 }

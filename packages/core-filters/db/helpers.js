@@ -57,9 +57,7 @@ Filters.updateFilter = (
 };
 
 Filters.removeFilter = ({ filterId }) => {
-  const removedFilter = Filters.findOne({ _id: filterId });
-  Filters.remove({ _id: filterId });
-  return removedFilter;
+  return Filters.remove({ _id: filterId });
 };
 
 Filters.getLocalizedTexts = (filterId, filterOptionValue, locale) =>
@@ -221,18 +219,18 @@ Filters.invalidateFilterCaches = () => {
     .forEach((filter) => filter.invalidateProductIdCache());
 };
 
+Filters.removeFilterOption = ({ filterId, filterOptionValue }) => {
+  return Filters.update(filterId, {
+    $set: {
+      updated: new Date(),
+    },
+    $pull: {
+      options: filterOptionValue,
+    },
+  });
+};
+
 Filters.helpers({
-  removeFilterOption({ filterOptionValue }) {
-    Filters.update(this._id, {
-      $set: {
-        updated: new Date(),
-      },
-      $pull: {
-        options: filterOptionValue,
-      },
-    });
-    return Filters.findOne(this._id);
-  },
   upsertLocalizedText(locale, { filterOptionValue, ...fields }) {
     const selector = {
       filterId: this._id,

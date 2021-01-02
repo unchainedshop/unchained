@@ -7,5 +7,6 @@ export default function removeFilter(root, { filterId }, { userId }) {
   if (!filterId) throw new InvalidIdError({ filterId });
   const filter = Filters.findFilter({ filterId });
   if (!filter) throw new FilterNotFoundError({ filterId });
-  return Filters.removeFilter({ filterId });
+  Filters.removeFilter({ filterId });
+  return Filters.findFilter({ filterId });
 }
