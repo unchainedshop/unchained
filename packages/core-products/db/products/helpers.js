@@ -143,7 +143,7 @@ Products.addProxyAssignment = ({ productId, proxyId, vectors }) => {
 };
 
 Products.createBundleItem = ({ productId, item }) => {
-  Products.update(productId, {
+  return Products.update(productId, {
     $set: {
       updated: new Date(),
     },
@@ -151,7 +151,6 @@ Products.createBundleItem = ({ productId, item }) => {
       bundleItems: item,
     },
   });
-  return Products.findOne(productId);
 };
 
 Products.removeBundleItem = ({ productId, index }) => {
@@ -159,14 +158,12 @@ Products.removeBundleItem = ({ productId, index }) => {
   const { bundleItems = [] } = product;
   bundleItems.splice(index, 1);
 
-  Products.update(productId, {
+  return Products.update(productId, {
     $set: {
       updated: new Date(),
       bundleItems,
     },
   });
-
-  return Products.findOne(productId);
 };
 
 Products.removeProduct = ({ productId }) => {

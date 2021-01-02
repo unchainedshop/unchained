@@ -25,5 +25,6 @@ export default function createProductBundleItem(root, { productId, item }) {
   if (!bundleItem)
     throw new ProductNotFoundError({ productId: item.productId });
 
-  return Products.createBundleItem({ productId, item });
+  Products.createBundleItem({ productId, item });
+  return Products.findProduct({ productId });
 }

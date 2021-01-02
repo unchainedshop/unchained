@@ -17,5 +17,6 @@ export default function removeBundleItem(root, { productId, index }) {
       received: product.type,
       required: ProductTypes.BundleProduct,
     });
-  return Products.removeBundleItem({ productId, index });
+  Products.removeBundleItem({ productId, index });
+  return Products.findProduct({ productId });
 }
