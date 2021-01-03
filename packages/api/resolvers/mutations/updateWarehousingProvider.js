@@ -12,11 +12,11 @@ export default (
   });
   if (!warehousingProviderId)
     throw new InvalidIdError({ warehousingProviderId });
-  const provider = WarehousingProviders.findProvider({
-    warehousingProviderId,
-    deleted: null,
-  });
-  if (!provider)
+  if (
+    !WarehousingProviders.providerExists({
+      warehousingProviderId,
+    })
+  )
     throw new WarehousingProviderNotFoundError({ warehousingProviderId });
 
   return WarehousingProviders.updateProvider({
