@@ -17,18 +17,17 @@ export default function addAssortmentLink(
   const parent = Assortments.findAssortment({
     assortmentId: parentAssortmentId,
   });
-  const child = Assortments.findAssortment({ assortmentId: childAssortmentId });
 
-  if (!parent) {
+  if (!parent)
     throw new AssortmentNotFoundError({
       assortmentId: parentAssortmentId,
     });
-  }
-  if (!child) {
+
+  if (!Assortments.assortmentExists({ assortmentId: childAssortmentId }))
     throw new AssortmentNotFoundError({
       assortmentId: childAssortmentId,
     });
-  }
+
   return parent.addLink({
     assortmentId: childAssortmentId,
     authorId: userId,

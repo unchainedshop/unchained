@@ -9,8 +9,8 @@ export default function updateAssortment(
 ) {
   log(`mutation updateAssortment ${assortmentId}`, { userId });
   if (!assortmentId) throw new InvalidIdError({ assortmentId });
-  const assortment = Assortments.findAssortment({ assortmentId });
-  if (!assortment) throw new AssortmentNotFoundError({ assortmentId });
+  if (!Assortments.assortmentExists({ assortmentId }))
+    throw new AssortmentNotFoundError({ assortmentId });
   Assortments.updateAssortment({ assortmentId, ...assortmentData });
   return Assortments.findAssortment({ assortmentId });
 }

@@ -19,8 +19,10 @@ export default function addAssortmentProduct(
   if (!productId) throw new InvalidIdError({ productId });
   const assortment = Assortments.findAssortment({ assortmentId });
   if (!assortment) throw new AssortmentNotFoundError({ assortmentId });
+
   if (!Products.productExists({ productId }))
     throw new ProductNotFoundError({ productId });
+
   return assortment.addProduct({
     productId,
     authorId: userId,
