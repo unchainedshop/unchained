@@ -21,8 +21,8 @@ export default function createProductBundleItem(root, { productId, item }) {
       received: product.type,
       required: ProductTypes.BundleProduct,
     });
-  const bundleItem = Products.findProduct({ productId: item.productId });
-  if (!bundleItem)
+
+  if (!Products.productExists({ productId: item.productId }))
     throw new ProductNotFoundError({ productId: item.productId });
 
   Products.createBundleItem({ productId, item });

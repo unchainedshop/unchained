@@ -7,8 +7,8 @@ export default function bookmark(root, { productId, bookmarked }, { userId }) {
   log('mutation bookmark', { productId, userId });
 
   if (!productId) throw new InvalidIdError({ productId });
-  const product = Products.findProduct({ productId });
-  if (!product) throw new ProductNotFoundError({ productId });
+  if (!Products.productExists({ productId }))
+    throw new ProductNotFoundError({ productId });
 
   const foundBookmark = Bookmarks.findBookmarks({ productId, userId }).pop();
 
