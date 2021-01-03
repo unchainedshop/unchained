@@ -24,5 +24,6 @@ export default function updateProductWarehousing(
       required: ProductTypes.SimpleProduct,
     });
 
-  return Products.updateProduct({ productId, warehousing });
+  Products.updateProduct({ productId, warehousing });
+  return Products.findProduct({ productId });
 }

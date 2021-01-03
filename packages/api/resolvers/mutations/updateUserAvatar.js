@@ -11,6 +11,6 @@ export default async function updateUserAvatar(
   log(`mutation updateUserAvatar ${normalizedUserId}`, { userId });
   const user = Users.findUser({ userId: normalizedUserId });
   if (!user) throw new UserNotFoundError({ userId: normalizedUserId });
-  const updatedUser = Users.updateAvatar({ userId: normalizedUserId, avatar });
-  return updatedUser;
+  await Users.updateAvatar({ userId: normalizedUserId, avatar });
+  return Users.findUser({ userId: normalizedUserId });
 }

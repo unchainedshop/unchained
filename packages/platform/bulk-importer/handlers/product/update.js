@@ -10,12 +10,12 @@ export default async function createProduct(payload, { logger, authorId }) {
   if (specification) {
     const productData = transformSpecificationToProductStructure(specification);
     logger.debug('update product object', productData);
-    const product = await Products.updateProduct({
+    await Products.updateProduct({
       ...productData,
       productId: _id,
       authorId,
     });
-
+    const product = Products.findProduct({ productId: _id });
     if (specification.content) {
       logger.debug(
         'replace localized content for product',

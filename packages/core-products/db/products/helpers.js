@@ -97,8 +97,7 @@ Products.updateProduct = ({ productId, type, ...product }) => {
   if (type) {
     modifier.$set.type = ProductTypes[type];
   }
-  Products.update({ _id: productId }, modifier);
-  return Products.findOne({ _id: productId });
+  return Products.update({ _id: productId }, modifier);
 };
 ProductTexts.findProductTexts = ({ productId }) => {
   return ProductTexts.find({ productId }).fetch();

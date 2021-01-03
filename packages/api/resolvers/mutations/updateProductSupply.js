@@ -23,5 +23,6 @@ export default function updateProductSupply(
       received: product?.type,
       required: ProductTypes.SimpleProduct,
     });
-  return Products.updateProduct({ productId, supply });
+  Products.updateProduct({ productId, supply });
+  return Products.findProduct({ productId });
 }

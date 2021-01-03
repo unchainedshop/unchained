@@ -159,13 +159,12 @@ Users.updateProfile = ({ userId, profile }) => {
     };
   }, {});
 
-  Users.update(userId, {
+  return Users.update(userId, {
     $set: {
       updated: new Date(),
       ...transformedProfile,
     },
   });
-  return Users.findOne(userId);
 };
 Users.updateAvatar = async ({ userId, avatar }) => {
   const avatarRef =
@@ -182,13 +181,12 @@ Users.updateAvatar = async ({ userId, avatar }) => {
           userId,
         });
 
-  Users.update(userId, {
+  return Users.update(userId, {
     $set: {
       updated: new Date(),
       avatarId: avatarRef._id,
     },
   });
-  return Users.findOne(userId);
 };
 
 Users.updateLastBillingAddress = ({ userId, lastBillingAddress }) => {

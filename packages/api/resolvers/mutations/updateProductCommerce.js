@@ -9,7 +9,8 @@ export default function updateProductCommerce(
 ) {
   log(`mutation updateProductCommerce ${productId}`, { userId });
   if (!productId) throw new InvalidIdError({ productId });
-  const productObject = Products.updateProduct({ productId, commerce });
+  const productObject = Products.findProduct({ productId });
   if (!productObject) throw new ProductNotFoundError({ productId });
-  return productObject;
+  Products.updateProduct({ productId, commerce });
+  return Products.findProduct({ productId });
 }
