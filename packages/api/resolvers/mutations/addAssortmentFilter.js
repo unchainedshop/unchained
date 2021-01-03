@@ -22,8 +22,8 @@ export default function addAssortmentFilter(
   if (!filterId) throw new InvalidIdError({ filterId });
   const assortment = Assortments.findAssortment({ assortmentId });
   if (!assortment) throw new AssortmentNotFoundError({ assortmentId });
-  const filter = Filters.findFilter({ filterId });
-  if (!filter) throw new FilterNotFoundError({ filterId });
+  if (!Filters.filterExists({ filterId }))
+    throw new FilterNotFoundError({ filterId });
 
   return AssortmentFilters.createAssortmentFilter({
     assortmentId,

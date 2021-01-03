@@ -9,8 +9,8 @@ export default function removeFilterOption(
 ) {
   log(`mutation removeFilterOption ${filterId}`, { userId });
   if (!filterId) throw new InvalidIdError({ filterId });
-  const filter = Filters.findFilter({ filterId });
-  if (!filter) throw new FilterNotFoundError({ filterId });
+  if (!Filters.filterExists({ filterId }))
+    throw new FilterNotFoundError({ filterId });
   Filters.removeFilterOption({ filterId, filterOptionValue });
   return Filters.findFilter({ filterId });
 }
