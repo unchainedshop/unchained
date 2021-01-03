@@ -8,8 +8,7 @@ export default function heartbeat(
   { userId, remoteAddress, localeContext, countryContext }
 ) {
   log(`mutation updateHeartbeat ${remoteAddress}`, { userId });
-  const user = Users.findUser({ userId });
-  if (!user) throw new UserNotFoundError({ userId });
+  if (!Users.userExists({ userId })) throw new UserNotFoundError({ userId });
   Users.updateHeartbeat({
     userId,
     remoteAddress,

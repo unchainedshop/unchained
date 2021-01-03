@@ -91,6 +91,10 @@ Countries.findCountries = ({ limit, offset, includeInactive }) => {
   return Countries.find(selector, { skip: offset, limit }).fetch();
 };
 
+Countries.countryExists = ({ countryId }) => {
+  return !!Countries.find({ _id: countryId }, { limit: 1 }).count();
+};
+
 Countries.findCountry = ({ countryId, isoCode }) => {
   return Countries.findOne(countryId ? { _id: countryId } : { isoCode });
 };

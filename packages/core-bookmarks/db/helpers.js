@@ -36,7 +36,7 @@ Bookmarks.bookmarkExists = ({ userId, productId }) => {
   } else if (userId) {
     selector = { userId };
   }
-  Bookmarks.find(selector, { limit: 1 }).count();
+  return !!Bookmarks.find(selector, { limit: 1 }).count();
 };
 
 Bookmarks.findBookmarks = ({ userId, productId } = {}) =>

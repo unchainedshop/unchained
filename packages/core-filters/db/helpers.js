@@ -137,7 +137,7 @@ Filters.markFiltersDirty = () => {
 };
 
 Filters.filterExists = ({ filterId }) => {
-  return Filters.find({ _id: filterId }).count();
+  return !!Filters.find({ _id: filterId }).count();
 };
 
 Filters.findFilter = ({ filterId }) => {
