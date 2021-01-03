@@ -11,5 +11,6 @@ export default function updateLanguage(
   if (!languageId) throw new InvalidIdError({ languageId });
   const languageObject = Languages.findLanguage({ languageId });
   if (!languageObject) throw new LanguageNotFoundError({ languageId });
-  return Languages.updateLanguage({ languageId, language });
+  Languages.updateLanguage({ languageId, language });
+  return Languages.findLanguage({ languageId });
 }

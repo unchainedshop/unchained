@@ -11,5 +11,6 @@ export default function updateCountry(
   if (!countryId) throw new InvalidIdError({ countryId });
   const countryObject = Countries.findCountry({ countryId });
   if (!countryObject) throw new CountryNotFoundError({ countryId });
-  return Countries.updateCountry({ countryId, country });
+  Countries.updateCountry({ countryId, country });
+  return Countries.findCountry({ countryId });
 }

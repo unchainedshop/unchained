@@ -38,13 +38,12 @@ Countries.setBase = ({ countryId }) => {
 };
 
 Countries.updateCountry = ({ countryId, country }) => {
-  Countries.update(countryId, {
+  return Countries.update(countryId, {
     $set: {
       ...country,
       updated: new Date(),
     },
   });
-  return Countries.findOne(countryId);
 };
 Countries.helpers({
   defaultCurrency() {

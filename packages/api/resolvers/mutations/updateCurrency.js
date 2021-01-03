@@ -11,5 +11,6 @@ export default function updateCurrency(
   if (!currencyId) throw new InvalidIdError({ currencyId });
   const currencyObject = Currencies.findCurrency({ currencyId });
   if (!currencyObject) throw new CurrencyNotFoundError({ currencyId });
-  return Currencies.updateCurrency({ currencyId, isoCode, currency });
+  Currencies.updateCurrency({ currencyId, isoCode, currency });
+  return Currencies.findCurrency({ currencyId });
 }
