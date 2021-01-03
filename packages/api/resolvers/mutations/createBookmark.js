@@ -16,14 +16,8 @@ export default function createBookmark(
   if (!productId) throw new InvalidIdError({ productId });
   if (!Products.productExists({ productId }))
     throw new ProductNotFoundError({ productId });
-  const foundBookmark = Bookmarks.findBookmarks({
-    productId,
-    userId: foreignUserId,
-  }).pop();
-  if (foundBookmark) {
-    throw new BookmarkAlreadyExistsError({
-      bookmarkId: foundBookmark._id,
-    });
-  }
+  if (Bookmarks.bookmarkExists({ productId, userId: foreignUserId }))
+    throw new BookmarkAlreadyExistsError();
+
   return Bookmarks.createBookmark({ userId: foreignUserId, productId });
 }
