@@ -25,7 +25,7 @@ export default async (req) => {
     const hashedToken = accountsServer.hashLoginToken(loginToken); // eslint-disable-line
 
     const currentUser = Users.findUser({
-      'services.resume.loginTokens.hashedToken': hashedToken,
+      hashedToken,
     });
 
     // the current user exists

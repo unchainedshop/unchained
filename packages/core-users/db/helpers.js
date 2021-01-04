@@ -259,7 +259,7 @@ Users.enrollUser = async ({ password, email, displayName, address }) => {
   return Users.findOne({ _id: newUserId });
 };
 
-Users.updateHeartbeat = ({ userId, ...options }) => {
+Users.updateHeartbeat = ({ userId, ...options }) =>
   Users.update(
     { _id: userId },
     {
@@ -271,11 +271,21 @@ Users.updateHeartbeat = ({ userId, ...options }) => {
       },
     }
   );
+
+Users.findUser = ({ userId, resetToken, hashedToken }) => {
+  if (hashedToken) {
+    return Users.findOne({
+      'services.resume.loginTokens.hashedToken': hashedToken,
+    });
+  }
+  if (resetToken) {
+    return Users.findOne({
+      'services.password.reset.token': resetToken,
+    });
+  }
+  return Users.findOne({ _id: userId });
 };
 
-Users.findUser = ({ userId, ...selector }) => {
-  return Users.findOne(userId ? { _id: userId } : selector);
-};
 Users.createUser = async ({
   username,
   roles,
