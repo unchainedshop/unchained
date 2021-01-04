@@ -44,18 +44,50 @@ const searchProducts = async ({
     forceLiveCollection,
   };
 
+  const totalProductIds = productFulltextSearch(searchConfiguration)(
+    query?.productIds
+  );
+
+  const findFilters = async () => {
+    const resolvedFilterSelector = await filterSelector;
+    const extractedFilterIds = resolvedFilterSelector?._id?.$in || [];
+    const otherFilters = Filters.find(resolvedFilterSelector)
+      .fetch()
+      .sort((left, right) => {
+        const leftIndex = extractedFilterIds.indexOf(left._id);
+        const rightIndex = extractedFilterIds.indexOf(right._id);
+        return leftIndex - rightIndex;
+      });
+
+    const relevantProductIds = Products.find(
+      {
+        ...(await productSelector),
+        _id: { $in: await totalProductIds },
+      },
+      {
+        fields: { _id: 1 },
+      }
+    ).map(({ _id }) => _id);
+
+    return otherFilters.map((filter) => {
+      return filter.load({
+        ...query,
+        allProductIdsSet: new Set(relevantProductIds),
+        otherFilters,
+      });
+    });
+  };
+
   if (rawQuery?.productIds?.length === 0) {
     // Restricted to an empty array of products
     // will always lead to an empty result
     return {
-      totalProductIds: [],
-      filteredProductIds: [],
-      ...searchConfiguration,
+      totalProducts: 0,
+      filteredProducts: 0,
+      products: () => [],
+      filters: findFilters,
     };
   }
-  const totalProductIds = productFulltextSearch(searchConfiguration)(
-    query?.productIds
-  );
 
   const filteredProductIds = totalProductIds.then(
     productFacetedSearch(searchConfiguration)
@@ -82,35 +114,7 @@ const searchProducts = async ({
           sort: await sortStage,
         }
       ),
-    filters: async () => {
-      const resolvedFilterSelector = await filterSelector;
-      const extractedFilterIds = resolvedFilterSelector?._id?.$in || [];
-      const otherFilters = Filters.find(resolvedFilterSelector)
-        .fetch()
-        .sort((left, right) => {
-          const leftIndex = extractedFilterIds.indexOf(left._id);
-          const rightIndex = extractedFilterIds.indexOf(right._id);
-          return leftIndex - rightIndex;
-        });
-
-      const relevantProductIds = Products.find(
-        {
-          ...(await productSelector),
-          _id: { $in: await totalProductIds },
-        },
-        {
-          fields: { _id: 1 },
-        }
-      ).map(({ _id }) => _id);
-
-      return otherFilters.map((filter) => {
-        return filter.load({
-          ...query,
-          allProductIdsSet: new Set(relevantProductIds),
-          otherFilters,
-        });
-      });
-    },
+    filters: findFilters,
   };
 };
 
