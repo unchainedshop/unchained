@@ -590,7 +590,7 @@ Collections.Assortments.setBase = ({ assortmentId }) => {
     },
     { multi: true }
   );
-  return Collections.Assortments.update(assortmentId, {
+  return Collections.Assortments.update(
     { _id: assortmentId },
     {
       $set: {

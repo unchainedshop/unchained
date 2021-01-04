@@ -20,8 +20,9 @@ export default function addAssortmentFilter(
   });
   if (!assortmentId) throw new InvalidIdError({ assortmentId });
   if (!filterId) throw new InvalidIdError({ filterId });
-  const assortment = Assortments.findAssortment({ assortmentId });
-  if (!assortment) throw new AssortmentNotFoundError({ assortmentId });
+
+  if (!Assortments.assortmentExists({ assortmentId }))
+    throw new AssortmentNotFoundError({ assortmentId });
   if (!Filters.filterExists({ filterId }))
     throw new FilterNotFoundError({ filterId });
 

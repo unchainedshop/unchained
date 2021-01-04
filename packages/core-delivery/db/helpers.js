@@ -136,7 +136,7 @@ DeliveryProviders.removeProvider = ({ _id }) => {
 
 DeliveryProviders.providerExists = ({ deliveryProviderId }) => {
   return !!DeliveryProviders.find(
-    { _id: deliveryProviderId },
+    { _id: deliveryProviderId, deleted: null },
     { limit: 1 }
   ).count();
 };

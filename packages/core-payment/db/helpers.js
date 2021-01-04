@@ -243,6 +243,7 @@ PaymentProviders.removeProvider = ({ _id }) => {
   );
   return PaymentProviders.findOne({ _id });
 };
+
 PaymentProviders.providerExists = ({ paymentProviderId }) => {
   return !!PaymentProviders.find(
     { _id: paymentProviderId, deleted: null },
