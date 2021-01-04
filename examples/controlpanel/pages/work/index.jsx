@@ -25,6 +25,7 @@ export default connectApollo(({ ...rest }) => {
         <WorkList
           queryOptions={{ pollInterval: 2000 }}
           limit={0}
+          selectTypes={workTypeFilter}
           status={workStatusFilter}
           statusTypes={statusTypes}
           onFilterChange={onFilterChange}
