@@ -144,7 +144,6 @@ describe('Heartbeat', () => {
         `,
         variables: {},
       });
-      console.log(errors);
       expect(errors[0]?.extensions?.code).toEqual('UserNotFoundError');
     });
   });

@@ -72,27 +72,6 @@ Products.createProduct = (
   return product;
 };
 
-Products.assignProxy = ({ productId, proxyId, vectors }) => {
-  const vector = {};
-  vectors.forEach(({ key, value }) => {
-    vector[key] = value;
-  });
-  const modifier = {
-    $set: {
-      updated: new Date(),
-    },
-    $push: {
-      'proxy.assignments': {
-        vector,
-        productId,
-      },
-    },
-  };
-
-  Products.update({ _id: proxyId }, modifier);
-  return Products.findOne({ _id: proxyId });
-};
-
 Products.updateProduct = ({ productId, type, ...product }) => {
   const modifier = {
     $set: {

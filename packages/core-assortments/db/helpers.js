@@ -105,7 +105,7 @@ Collections.Assortments.updateAssortment = ({
   assortmentId,
   ...assortment
 }) => {
-  Collections.Assortments.update(
+  return Collections.Assortments.update(
     { _id: assortmentId },
     {
       $set: {
@@ -114,7 +114,6 @@ Collections.Assortments.updateAssortment = ({
       },
     }
   );
-  return Collections.Assortments.findOne({ _id: assortmentId });
 };
 
 Collections.Assortments.removeAssortment = ({ assortmentId }) => {
@@ -207,7 +206,7 @@ Collections.AssortmentFilters.createAssortmentFilter = ({
   _id,
   ...rest
 }) => {
-  const sortKey = Collections.AssortmentFilters.getNewSortKey(this._id);
+  const sortKey = Collections.AssortmentFilters.getNewSortKey(assortmentId);
   const selector = {
     filterId,
     assortmentId,
@@ -706,13 +705,6 @@ Collections.Assortments.helpers({
       this.invalidateProductIdCache();
     }
     return assortmentLink;
-  },
-  addFilter({ filterId, ...rest }) {
-    return Collections.AssortmentFilters.createAssortmentFilter({
-      assortmentId: this._id,
-      filterId,
-      ...rest,
-    });
   },
   productAssignments() {
     return Collections.AssortmentProducts.find(

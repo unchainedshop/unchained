@@ -1,5 +1,8 @@
 import { log } from 'meteor/unchained:core-logger';
-import { Assortments } from 'meteor/unchained:core-assortments';
+import {
+  Assortments,
+  AssortmentFilters,
+} from 'meteor/unchained:core-assortments';
 import { Filters } from 'meteor/unchained:core-filters';
 import {
   AssortmentNotFoundError,
@@ -22,9 +25,11 @@ export default function addAssortmentFilter(
   const filter = Filters.findFilter({ filterId });
   if (!assortment) throw new AssortmentNotFoundError({ assortmentId });
   if (!filter) throw new FilterNotFoundError({ filterId });
-  return assortment.addFilter({
-    filterId,
+
+  return AssortmentFilters.createAssortmentFilter({
+    assortmentId,
     authorId: userId,
+    filterId,
     ...assortmentFilter,
   });
 }
