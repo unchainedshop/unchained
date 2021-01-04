@@ -96,12 +96,12 @@ export const withDataTableLoader = ({ query, queryName, itemsPerPage = 5 }) =>
               offset: data[queryName].length,
             },
             updateQuery: (prev, { fetchMoreResult }) => {
-            
+            const newPrev = prev?.[queryName] ? prev?.[queryName] : [];
               if (!fetchMoreResult) return prev;
               return {
                 ...prev,
                 [queryName]: [
-                  ...prev[queryName],
+                  ...newPrev,
                   ...fetchMoreResult[queryName],
                 ],
               };

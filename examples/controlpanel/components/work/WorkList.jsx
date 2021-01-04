@@ -33,7 +33,7 @@ const WorkRow = ({ work, relativeDate }) => {
     work.status === 'ALLOCATED';
   return (
     <Table.Row
-      key={`${work._id}${new Date().getTime()}`}
+      key={work._id}
       warning={isReady}
       error={work.status === 'FAILED'}
       positive={work.status === 'SUCCESS'}
@@ -78,7 +78,7 @@ const WorkList = ({
   useEffect(() => {
     const refreshDates = setInterval(() => {
       setDate(new Date());
-    }, 1000);
+    }, 2000);
 
     return () => {
       clearInterval(refreshDates);
@@ -107,8 +107,8 @@ const WorkList = ({
       cols={6}
       limit={5}
       createPath={null}
-      rowRenderer={(work) => (
-        <WorkRow key={`${work._id}`} work={work} relativeDate={relativeDate} />
+      rowRenderer={(work, i) => (
+        <WorkRow key={`${work._id}-${i}`} work={work} relativeDate={relativeDate} />
       )}
     >
       <Table.Row>

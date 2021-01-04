@@ -48,7 +48,19 @@ function create(initialState, headersOverride, getToken) {
     operation.setContext({ headers });
     return forward(operation);
   });
-
+/* 
+  {
+      typePolicies: {
+      Query: {
+      fields: {
+        workQueue: {
+          merge(existing = [], incoming) {      
+            return [...existing, ...incoming ];
+          },
+        },
+      },
+    },
+  }} */
   const cache = new InMemoryCache();
   return new ApolloClient({
     connectToDevTools: process.browser,
