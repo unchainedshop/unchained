@@ -9,7 +9,7 @@ export default function updateProductReview(
 ) {
   log('mutation updateProductReview', { userId, productReviewId });
   if (!productReviewId) throw new InvalidIdError({ productReviewId });
-  if (!ProductReviews.findReviewById(productReviewId))
+  if (!ProductReviews.findReview({ productReviewId }))
     throw new ProductReviewNotFoundError({ productReviewId });
   return ProductReviews.updateReview({
     productReviewId,

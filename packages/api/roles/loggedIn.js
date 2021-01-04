@@ -133,7 +133,7 @@ export default (role, actions) => {
   };
 
   const isOwnedProductReview = (root, { productReviewId }, { userId }) => {
-    const review = ProductReviews.findReviewById(productReviewId);
+    const review = ProductReviews.findReview({ productReviewId });
     if (!review) return true;
     return review.userId === userId;
   };
