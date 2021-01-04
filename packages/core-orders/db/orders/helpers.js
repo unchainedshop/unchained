@@ -140,7 +140,7 @@ Orders.findOrder = ({ orderId, ...rest }, options) => {
 };
 
 Orders.removeOrder = ({ orderId }) => {
-  return Orders.remove(orderId);
+  return Orders.remove({ _id: orderId });
 };
 
 Orders.findOrders = ({

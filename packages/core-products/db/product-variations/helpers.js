@@ -15,11 +15,11 @@ ProductVariationTexts.findProductVariationTexts = ({
 };
 
 ProductVariations.findVariation = ({ productVariationId }) => {
-  return ProductVariations.findOne(productVariationId);
+  return ProductVariations.findOne({ _id: productVariationId });
 };
 
 ProductVariations.removeVariation = ({ productVariationId }) => {
-  return ProductVariations.remove(productVariationId);
+  return ProductVariations.remove({ _id: productVariationId });
 };
 
 ProductVariations.helpers({
@@ -96,14 +96,17 @@ ProductVariations.removeVariationOption = ({
   productVariationId,
   productVariationOptionValue,
 }) => {
-  ProductVariations.update(productVariationId, {
-    $set: {
-      updated: new Date(),
-    },
-    $pull: {
-      options: productVariationOptionValue,
-    },
-  });
+  ProductVariations.update(
+    { _id: productVariationId },
+    {
+      $set: {
+        updated: new Date(),
+      },
+      $pull: {
+        options: productVariationOptionValue,
+      },
+    }
+  );
 };
 
 ProductVariations.createVariation = ({

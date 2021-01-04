@@ -16,7 +16,7 @@ Languages.findLanguage = ({ languageId, isoCode }) => {
 };
 
 Languages.removeLanguage = ({ languageId }) => {
-  return Languages.remove(languageId);
+  return Languages.remove({ _id: languageId });
 };
 
 Languages.findLanguages = ({ limit, offset, includeInactive }) => {
@@ -39,16 +39,22 @@ Languages.setBase = ({ languageId }) => {
     },
     { multi: true }
   );
-  Languages.update(languageId, {
-    $set: {
-      isBase: true,
-      updated: new Date(),
-    },
-  });
+  Languages.update(
+    { _id: languageId },
+    {
+      $set: {
+        isBase: true,
+        updated: new Date(),
+      },
+    }
+  );
 };
 Languages.updateLanguage = ({ languageId, language }) => {
-  return Languages.update(languageId, {
-    updated: new Date(),
-    $set: language,
-  });
+  return Languages.update(
+    { _id: languageId },
+    {
+      updated: new Date(),
+      $set: language,
+    }
+  );
 };

@@ -27,21 +27,27 @@ Countries.setBase = ({ countryId }) => {
     },
     { multi: true }
   );
-  Countries.update(countryId, {
-    $set: {
-      isBase: true,
-      updated: new Date(),
-    },
-  });
+  Countries.update(
+    { _id: countryId },
+    {
+      $set: {
+        isBase: true,
+        updated: new Date(),
+      },
+    }
+  );
 };
 
 Countries.updateCountry = ({ countryId, country }) => {
-  return Countries.update(countryId, {
-    $set: {
-      ...country,
-      updated: new Date(),
-    },
-  });
+  return Countries.update(
+    { _id: countryId },
+    {
+      $set: {
+        ...country,
+        updated: new Date(),
+      },
+    }
+  );
 };
 Countries.helpers({
   defaultCurrency() {
@@ -90,5 +96,5 @@ Countries.findCountry = ({ countryId, isoCode }) => {
 };
 
 Countries.removeCountry = ({ countryId }) => {
-  return Countries.remove(countryId);
+  return Countries.remove({ _id: countryId });
 };

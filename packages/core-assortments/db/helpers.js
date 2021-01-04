@@ -65,7 +65,7 @@ Collections.Assortments.findAssortment = ({ assortmentId, slug, ...rest }) => {
 };
 
 Collections.Assortments.removeAssortment = ({ assortmentId }) => {
-  return Collections.Assortments.remove(assortmentId);
+  return Collections.Assortments.remove({ _id: assortmentId });
 };
 
 Collections.Assortments.findAssortments = ({
@@ -148,7 +148,7 @@ Collections.AssortmentLinks.findLink = ({
 };
 
 Collections.AssortmentLinks.removeLink = ({ assortmentLinkId }) => {
-  return Collections.AssortmentLinks.remove(assortmentLinkId);
+  return Collections.AssortmentLinks.remove({ _id: assortmentLinkId });
 };
 
 Collections.AssortmentLinks.createAssortmentLink = ({
@@ -586,12 +586,15 @@ Collections.Assortments.setBase = ({ assortmentId }) => {
     },
     { multi: true }
   );
-  Collections.Assortments.update(assortmentId, {
-    $set: {
-      isBase: true,
-      updated: new Date(),
-    },
-  });
+  Collections.Assortments.update(
+    { _id: assortmentId },
+    {
+      $set: {
+        isBase: true,
+        updated: new Date(),
+      },
+    }
+  );
 };
 
 Collections.Assortments.helpers({
@@ -887,7 +890,7 @@ Collections.AssortmentLinks.helpers({
 });
 
 Collections.AssortmentProducts.findProduct = ({ assortmentProductId }) => {
-  return Collections.AssortmentProducts.findOne({ assortmentProductId });
+  return Collections.AssortmentProducts.findOne({ _id: assortmentProductId });
 };
 
 Collections.AssortmentProducts.helpers({
@@ -905,11 +908,11 @@ Collections.AssortmentProducts.helpers({
 });
 
 Collections.AssortmentFilters.findFilter = ({ assortmentFilterId }) => {
-  return Collections.AssortmentFilters.findOne(assortmentFilterId);
+  return Collections.AssortmentFilters.findOne({ _id: assortmentFilterId });
 };
 
 Collections.AssortmentFilters.removeFilter = ({ assortmentFilterId }) => {
-  return Collections.AssortmentFilters.remove(assortmentFilterId);
+  return Collections.AssortmentFilters.remove({ _id: assortmentFilterId });
 };
 
 Collections.AssortmentFilters.helpers({

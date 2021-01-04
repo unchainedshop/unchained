@@ -137,7 +137,7 @@ Filters.markFiltersDirty = () => {
 };
 
 Filters.findFilter = ({ filterId }) => {
-  return Filters.findOne(filterId);
+  return Filters.findOne({ _id: filterId });
 };
 
 Filters.findFilters = ({ limit, offset, includeInactive }) => {
@@ -235,14 +235,17 @@ Filters.invalidateFilterCaches = () => {
 };
 
 Filters.removeFilterOption = ({ filterId, filterOptionValue }) => {
-  return Filters.update(filterId, {
-    $set: {
-      updated: new Date(),
-    },
-    $pull: {
-      options: filterOptionValue,
-    },
-  });
+  return Filters.update(
+    { _id: filterId },
+    {
+      $set: {
+        updated: new Date(),
+      },
+      $pull: {
+        options: filterOptionValue,
+      },
+    }
+  );
 };
 
 Filters.helpers({

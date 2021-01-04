@@ -4,11 +4,11 @@ import { Locale } from 'locale';
 import { ProductMedia, Media, ProductMediaTexts } from './collections';
 
 ProductMedia.findProductMedia = ({ productMediaId }) => {
-  return ProductMedia.findOne(productMediaId);
+  return ProductMedia.findOne({ _id: productMediaId });
 };
 
 ProductMedia.removeProductMedia = ({ productMediaId }) => {
-  return ProductMedia.remove(productMediaId);
+  return ProductMedia.remove({ _id: productMediaId });
 };
 
 ProductMedia.helpers({

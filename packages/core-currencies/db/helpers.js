@@ -24,11 +24,14 @@ Currencies.removeCurrency = ({ currencyId }) => {
   return Currencies.remove({ _id: currencyId });
 };
 Currencies.updateCurrency = ({ currencyId, isoCode, ...currency }) => {
-  return Currencies.update(currencyId, {
-    $set: {
-      isoCode: isoCode.toUpperCase(),
-      ...currency,
-      updated: new Date(),
-    },
-  });
+  return Currencies.update(
+    { _id: currencyId },
+    {
+      $set: {
+        isoCode: isoCode.toUpperCase(),
+        ...currency,
+        updated: new Date(),
+      },
+    }
+  );
 };

@@ -21,12 +21,15 @@ Logs.helpers({
 });
 
 Users.setTags = ({ userId, tags }) => {
-  Users.update(userId, {
-    $set: {
-      updated: new Date(),
-      tags,
-    },
-  });
+  Users.update(
+    { _id: userId },
+    {
+      $set: {
+        updated: new Date(),
+        tags,
+      },
+    }
+  );
 };
 
 Users.helpers({
@@ -158,12 +161,15 @@ Users.updateProfile = ({ userId, profile }) => {
     };
   }, {});
 
-  return Users.update(userId, {
-    $set: {
-      updated: new Date(),
-      ...transformedProfile,
-    },
-  });
+  return Users.update(
+    { _id: userId },
+    {
+      $set: {
+        updated: new Date(),
+        ...transformedProfile,
+      },
+    }
+  );
 };
 Users.updateAvatar = async ({ userId, avatar }) => {
   const avatarRef =
@@ -180,12 +186,15 @@ Users.updateAvatar = async ({ userId, avatar }) => {
           userId,
         });
 
-  return Users.update(userId, {
-    $set: {
-      updated: new Date(),
-      avatarId: avatarRef._id,
-    },
-  });
+  return Users.update(
+    { _id: userId },
+    {
+      $set: {
+        updated: new Date(),
+        avatarId: avatarRef._id,
+      },
+    }
+  );
 };
 
 Users.updateLastBillingAddress = ({ userId, lastBillingAddress }) => {

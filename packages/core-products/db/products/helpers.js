@@ -148,40 +148,49 @@ Products.addProxyAssignment = ({ productId, proxyId, vectors }) => {
 };
 
 Products.createBundleItem = ({ productId, item }) => {
-  return Products.update(productId, {
-    $set: {
-      updated: new Date(),
-    },
-    $push: {
-      bundleItems: item,
-    },
-  });
+  return Products.update(
+    { _id: productId },
+    {
+      $set: {
+        updated: new Date(),
+      },
+      $push: {
+        bundleItems: item,
+      },
+    }
+  );
 };
 
 Products.removeBundleItem = ({ productId, index }) => {
   // TODO: There has to be a better MongoDB way to do this!
-  const product = Products.findOne(productId);
+  const product = Products.findOne({ _id: productId });
   const { bundleItems = [] } = product;
   bundleItems.splice(index, 1);
 
-  return Products.update(productId, {
-    $set: {
-      updated: new Date(),
-      bundleItems,
-    },
-  });
+  return Products.update(
+    { _id: productId },
+    {
+      $set: {
+        updated: new Date(),
+        bundleItems,
+      },
+    }
+  );
 };
 
 Products.removeProduct = ({ productId }) => {
-  const product = Products.findOne(productId);
+  const product = Products.findOne({ _id: productId });
   switch (product.status) {
     case ProductStatus.DRAFT:
-      Products.update(productId, {
-        $set: {
-          status: ProductStatus.DELETED,
-          updated: new Date(),
-        },
-      });
+      Products.update(
+        { _id: productId },
+        {
+          $set: {
+            status: ProductStatus.DELETED,
+            updated: new Date(),
+          },
+        }
+      );
       break;
     default:
       throw new Error(`Invalid status', ${this.status}`);
@@ -203,7 +212,7 @@ Products.removeAssignment = ({ productId, vectors }) => {
       },
     },
   };
-  Products.update(productId, modifier, { multi: true });
+  Products.update({ _id: productId }, modifier, { multi: true });
 };
 
 Products.helpers({

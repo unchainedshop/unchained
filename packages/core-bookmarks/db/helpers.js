@@ -23,7 +23,7 @@ Bookmarks.createBookmark = ({ userId, productId, ...rest }) => {
 };
 
 Bookmarks.removeBookmark = ({ bookmarkId }) => {
-  return Bookmarks.remove(bookmarkId);
+  return Bookmarks.remove({ _id: bookmarkId });
 };
 
 Bookmarks.findBookmark = ({ bookmarkId }, options) =>
