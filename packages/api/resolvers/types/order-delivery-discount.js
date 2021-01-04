@@ -4,8 +4,8 @@ export default {
   _id(obj) {
     return `${obj.item._id}:${obj.discountId}`;
   },
-  orderDiscount(obj) {
-    return OrderDiscounts.findOne({ _id: obj.discountId });
+  async orderDiscount(obj) {
+    return OrderDiscounts.findDiscount({ discountId: obj.discountId });
   },
   total(obj) {
     return {

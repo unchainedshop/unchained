@@ -2,7 +2,6 @@ import 'meteor/dburles:collection-helpers';
 import { Countries } from 'meteor/unchained:core-countries';
 import { Products, ProductStatus } from 'meteor/unchained:core-products';
 import { findUnusedSlug, findPreservingIds } from 'meteor/unchained:utils';
-import { searchProducts, Filters } from 'meteor/unchained:core-filters';
 import { findLocalizedText } from 'meteor/unchained:core';
 import { Locale } from 'locale';
 import { log } from 'meteor/unchained:core-logger';
@@ -743,27 +742,6 @@ Collections.Assortments.helpers({
     }
     return this._cachedProductIds; // eslint-disable-line
   },
-  async searchProducts({
-    query,
-    ignoreChildAssortments,
-    forceLiveCollection,
-    ...rest
-  }) {
-    const productIds = this.productIds({
-      forceLiveCollection,
-      ignoreChildAssortments,
-    });
-    const filterIds = this.filterAssignments().map(({ filterId }) => filterId);
-    return searchProducts({
-      query: {
-        filterIds,
-        productIds,
-        ...query,
-      },
-      forceLiveCollection,
-      ...rest,
-    });
-  },
   linkedAssortments() {
     return Collections.AssortmentLinks.find(
       {
@@ -937,8 +915,5 @@ Collections.AssortmentFilters.removeFilter = ({ assortmentFilterId }) => {
 Collections.AssortmentFilters.helpers({
   assortment() {
     return Collections.Assortments.findOne({ _id: this.assortmentId });
-  },
-  filter() {
-    return Filters.findOne({ _id: this.filterId });
   },
 });

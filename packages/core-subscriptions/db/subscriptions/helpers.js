@@ -36,8 +36,8 @@ Users.helpers({
   },
 });
 
-Subscriptions.findSubscription = ({ subscriptionId }) => {
-  return Subscriptions.findOne(subscriptionId);
+Subscriptions.findSubscription = ({ subscriptionId }, options) => {
+  return Subscriptions.findOne({ _id: subscriptionId }, options);
 };
 Subscriptions.findSubscriptions = ({ limit, offset }) => {
   return Subscriptions.find(

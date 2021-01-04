@@ -11,8 +11,8 @@ Languages.createLanguage = ({ isoCode, ...languageData }) => {
   return Languages.findOne({ _id });
 };
 
-Languages.findLanguage = ({ languageId }) => {
-  return Languages.findOne({ _id: languageId });
+Languages.findLanguage = ({ languageId, isoCode }) => {
+  return Languages.findOne(languageId ? { _id: languageId } : { isoCode });
 };
 
 Languages.removeLanguage = ({ languageId }) => {

@@ -3,15 +3,50 @@ import { Locale } from 'locale';
 import { findLocalizedText } from 'meteor/unchained:core';
 import { log } from 'meteor/unchained:core-logger';
 import { Products, ProductStatus } from 'meteor/unchained:core-products';
+import {
+  Assortments,
+  AssortmentFilters,
+} from 'meteor/unchained:core-assortments';
 import { FilterTypes } from './schema';
 import { Filters, FilterTexts } from './collections';
 import { FilterDirector } from '../director';
 import intersectProductIds from '../search/intersect-product-ids';
+import { searchProducts } from '../search';
 
 const util = require('util');
 const zlib = require('zlib');
 
 const MAX_UNCOMPRESSED_FILTER_PRODUCTS = 1000;
+
+Assortments.helpers({
+  async searchProducts({
+    query,
+    ignoreChildAssortments,
+    forceLiveCollection,
+    ...rest
+  }) {
+    const productIds = this.productIds({
+      forceLiveCollection,
+      ignoreChildAssortments,
+    });
+    const filterIds = this.filterAssignments().map(({ filterId }) => filterId);
+    return searchProducts({
+      query: {
+        filterIds,
+        productIds,
+        ...query,
+      },
+      forceLiveCollection,
+      ...rest,
+    });
+  },
+});
+
+AssortmentFilters.helpers({
+  filter() {
+    return Filters.findOne({ _id: this.filterId });
+  },
+});
 
 Filters.createFilter = (
   { locale, title, type, isActive = false, authorId, ...filterData },

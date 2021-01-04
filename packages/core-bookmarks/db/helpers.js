@@ -26,7 +26,8 @@ Bookmarks.removeBookmark = ({ bookmarkId }) => {
   return Bookmarks.remove(bookmarkId);
 };
 
-Bookmarks.findBookmark = ({ bookmarkId }) => Bookmarks.findOne(bookmarkId);
+Bookmarks.findBookmark = ({ bookmarkId }, options) =>
+  Bookmarks.findOne({ _id: bookmarkId }, options);
 
 Bookmarks.findBookmarks = ({ userId, productId } = {}) =>
   Bookmarks.find({

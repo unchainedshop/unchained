@@ -181,6 +181,6 @@ OrderPayments.updateStatus = ({ paymentId, status, info = '' }) => {
   return OrderPayments.findOne({ _id: paymentId });
 };
 
-OrderPayments.findPayment = ({ orderPaymentId }) => {
-  return OrderPayments.findOne(orderPaymentId);
+OrderPayments.findPayment = ({ orderPaymentId }, options) => {
+  return OrderPayments.findOne({ _id: orderPaymentId }, options);
 };

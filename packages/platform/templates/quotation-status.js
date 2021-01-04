@@ -30,9 +30,7 @@ export default ({ quotationId, locale }) => {
   const subject = `${EMAIL_WEBSITE_NAME}: Updated Quotation / ${quotation.quotationNumber}`;
   const templateVariables = {
     subject,
-    url: `${UI_ENDPOINT}/quotation?_id=${quotation._id}&otp=${
-      quotation.quotationNumber || ''
-    }`,
+    url: `${UI_ENDPOINT}/quotation?_id=${quotation._id}`,
     quotation,
     locale,
   };

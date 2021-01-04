@@ -85,7 +85,7 @@ export default ({ orderId, locale }) => {
     shopName: EMAIL_WEBSITE_NAME,
     shopUrl: EMAIL_WEBSITE_URL,
     subject,
-    url: `${UI_ENDPOINT}/order?_id=${order._id}&otp=${order.orderNumber}`,
+    url: `${UI_ENDPOINT}/order?_id=${order._id}`,
     summary: order.pricing().formattedSummary(format),
     positions: order.items().map((item) => {
       const productTexts = item.product().getLocalizedTexts(locale.normalized);

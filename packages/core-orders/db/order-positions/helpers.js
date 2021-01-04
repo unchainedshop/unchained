@@ -10,8 +10,8 @@ import { Quotations } from 'meteor/unchained:core-quotations';
 import { OrderPositions } from './collections';
 import { Orders } from '../orders/collections';
 
-OrderPositions.findItem = ({ itemId }) => {
-  return OrderPositions.findOne(itemId);
+OrderPositions.findItem = ({ itemId }, options) => {
+  return OrderPositions.findOne({ _id: itemId }, options);
 };
 
 OrderPositions.helpers({

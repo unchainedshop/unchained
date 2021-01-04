@@ -16,8 +16,8 @@ Currencies.findCurrencies = ({ limit, offset, includeInactive }) => {
   return Currencies.find(selector, { skip: offset, limit }).fetch();
 };
 
-Currencies.findCurrency = ({ currencyId }) => {
-  return Currencies.findOne({ _id: currencyId });
+Currencies.findCurrency = ({ currencyId, isoCode }) => {
+  return Currencies.findOne(currencyId ? { _id: currencyId } : { isoCode });
 };
 
 Currencies.removeCurrency = ({ currencyId }) => {

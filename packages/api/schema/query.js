@@ -162,9 +162,9 @@ export default [
       ): [Order!]!
 
       """
-      Get a specific single order, use the otp to get access to the information without beeing logged in as the user that created the order
+      Get a specific single order
       """
-      order(orderId: ID!, otp: String): Order
+      order(orderId: ID!): Order
 
       """
       Get all logs, sorted by most recent creation date first

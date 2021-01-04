@@ -37,8 +37,8 @@ Users.helpers({
   },
 });
 
-Quotations.findQuotation = ({ quotationId }) => {
-  return Quotations.findOne({ _id: quotationId });
+Quotations.findQuotation = ({ quotationId }, options) => {
+  return Quotations.findOne({ _id: quotationId }, options);
 };
 
 Quotations.findQuotations = ({ limit, offset }) => {

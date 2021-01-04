@@ -137,8 +137,8 @@ PaymentCredentials.markPreferred = ({ userId, paymentCredentialsId }) => {
   });
 };
 
-PaymentCredentials.findCredentials = ({ paymentCredentialsId }) => {
-  return PaymentCredentials.findOne({ _id: paymentCredentialsId });
+PaymentCredentials.findCredentials = ({ paymentCredentialsId }, options) => {
+  return PaymentCredentials.findOne({ _id: paymentCredentialsId }, options);
 };
 
 PaymentCredentials.upsertCredentials = ({

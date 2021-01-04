@@ -56,8 +56,8 @@ export default (role, actions) => {
   };
 
   const isOwnedSubscription = (root, { subscriptionId }, { userId }) => {
-    const subscription = Subscriptions.findOne(
-      { _id: subscriptionId },
+    const subscription = Subscriptions.findSubscription(
+      { subscriptionId },
       {
         fields: {
           userId: true,
@@ -69,8 +69,8 @@ export default (role, actions) => {
   };
 
   const isOwnedOrderPayment = (root, { orderPaymentId }, { userId }) => {
-    const payment = OrderPayments.findOne(
-      { _id: orderPaymentId },
+    const payment = OrderPayments.findPayment(
+      { orderPaymentId },
       {
         fields: {
           orderId: true,
@@ -85,8 +85,8 @@ export default (role, actions) => {
   };
 
   const isOwnedOrderDelivery = (root, { orderDeliveryId }, { userId }) => {
-    const delivery = OrderDeliveries.findOne(
-      { _id: orderDeliveryId },
+    const delivery = OrderDeliveries.findDelivery(
+      { orderDeliveryId },
       {
         fields: {
           orderId: true,
@@ -101,8 +101,8 @@ export default (role, actions) => {
   };
 
   const isOwnedOrderItem = (root, { itemId }, { userId }) => {
-    const item = OrderPositions.findOne(
-      { _id: itemId },
+    const item = OrderPositions.findItem(
+      { itemId },
       {
         fields: {
           orderId: true,
@@ -117,8 +117,8 @@ export default (role, actions) => {
   };
 
   const isOwnedOrderDiscount = (root, { discountId }, { userId }) => {
-    const discount = OrderDiscounts.findOne(
-      { _id: discountId },
+    const discount = OrderDiscounts.findDiscount(
+      { discountId },
       {
         fields: {
           orderId: true,
@@ -139,8 +139,8 @@ export default (role, actions) => {
   };
 
   const isOwnedQuotation = (root, { quotationId }, { userId }) => {
-    const quotation = Quotations.findOne(
-      { _id: quotationId },
+    const quotation = Quotations.findQuotation(
+      { quotationId },
       {
         fields: {
           userId: true,
@@ -154,8 +154,8 @@ export default (role, actions) => {
   };
 
   const isOwnedBookmark = (root, { bookmarkId }, { userId }) => {
-    const bookmark = Bookmarks.findOne(
-      { _id: bookmarkId },
+    const bookmark = Bookmarks.findBookmark(
+      { bookmarkId },
       {
         fields: {
           userId: true,
@@ -173,9 +173,9 @@ export default (role, actions) => {
     { paymentCredentialsId },
     { userId }
   ) => {
-    const credentials = PaymentCredentials.findOne(
+    const credentials = PaymentCredentials.findCredentials(
       {
-        _id: paymentCredentialsId,
+        paymentCredentialsId,
       },
       {
         fields: {
