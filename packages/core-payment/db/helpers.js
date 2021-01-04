@@ -20,6 +20,16 @@ Users.helpers({
   },
 });
 
+PaymentProviders.findInterfaces = ({ type }) => {
+  return PaymentDirector.filteredAdapters((Interface) =>
+    Interface.typeSupported(type)
+  ).map((Interface) => ({
+    _id: Interface.key,
+    label: Interface.label,
+    version: Interface.version,
+  }));
+};
+
 PaymentProviders.helpers({
   transformContext(key, value) {
     return value;
@@ -127,6 +137,10 @@ PaymentCredentials.markPreferred = ({ userId, paymentCredentialsId }) => {
   });
 };
 
+PaymentCredentials.findCredentials = ({ paymentCredentialsId }, options) => {
+  return PaymentCredentials.findOne({ _id: paymentCredentialsId }, options);
+};
+
 PaymentCredentials.upsertCredentials = ({
   userId,
   paymentProviderId,
@@ -230,8 +244,15 @@ PaymentProviders.removeProvider = ({ _id }) => {
   return PaymentProviders.findOne({ _id });
 };
 
-PaymentProviders.findProviderById = (_id, ...options) =>
-  PaymentProviders.findOne({ _id }, ...options);
+PaymentProviders.findProvider = (
+  { paymentProviderId, ...rest },
+  ...options
+) => {
+  return PaymentProviders.findOne(
+    { _id: paymentProviderId, ...rest },
+    ...options
+  );
+};
 
 PaymentProviders.findProviders = ({ type } = {}, ...options) =>
   PaymentProviders.find(

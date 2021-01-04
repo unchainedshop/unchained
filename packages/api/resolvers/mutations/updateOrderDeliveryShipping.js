@@ -15,7 +15,7 @@ export default function updateOrderDeliveryShipping(
   log(`mutation updateOrderDeliveryShipping ${orderDeliveryId}`, { userId });
 
   if (!orderDeliveryId) throw new InvalidIdError({ orderDeliveryId });
-  const orderDelivery = OrderDeliveries.findOne({ _id: orderDeliveryId });
+  const orderDelivery = OrderDeliveries.findDelivery({ orderDeliveryId });
   if (!orderDelivery) throw new OrderDeliveryNotFoundError({ orderDeliveryId });
   const deliveryProviderType = orderDelivery?.provider()?.type;
   if (deliveryProviderType !== DeliveryProviderType.SHIPPING)

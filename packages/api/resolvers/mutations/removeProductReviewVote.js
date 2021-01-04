@@ -9,7 +9,7 @@ export default function removeProductReviewVote(
 ) {
   log(`mutation removeProductReviewVote ${productReviewId}`, { userId });
   if (!productReviewId) throw new InvalidIdError({ productReviewId });
-  const productReview = ProductReviews.findOne({ _id: productReviewId });
+  const productReview = ProductReviews.findReview({ productReviewId });
   if (!productReview) throw new ProductReviewNotFoundError({ productReviewId });
   return productReview.removeVote({ type, userId });
 }

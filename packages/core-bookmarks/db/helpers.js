@@ -19,16 +19,15 @@ Bookmarks.createBookmark = ({ userId, productId, ...rest }) => {
     userId,
     productId,
   });
-  return Bookmarks.findBookmarkById(bookmarkId);
+  return Bookmarks.findBookmark({ bookmarkId });
 };
 
-Bookmarks.removeBookmark = ({ _id }) => {
-  const bookmark = Bookmarks.findBookmarkById(_id);
-  Bookmarks.remove({ _id });
-  return bookmark;
+Bookmarks.removeBookmark = ({ bookmarkId }) => {
+  return Bookmarks.remove({ _id: bookmarkId });
 };
 
-Bookmarks.findBookmarkById = (_id) => Bookmarks.findOne({ _id });
+Bookmarks.findBookmark = ({ bookmarkId }, options) =>
+  Bookmarks.findOne({ _id: bookmarkId }, options);
 
 Bookmarks.findBookmarks = ({ userId, productId } = {}) =>
   Bookmarks.find({

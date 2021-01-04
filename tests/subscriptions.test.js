@@ -464,8 +464,6 @@ describe('Subscriptions', () => {
         },
       });
 
-      /* console.log(updateSubscription); */
-
       expect(updateSubscription).toMatchObject({
         _id: InitialSubscription._id,
         /* plan: {

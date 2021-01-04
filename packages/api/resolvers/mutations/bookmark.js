@@ -7,7 +7,7 @@ export default function bookmark(root, { productId, bookmarked }, { userId }) {
   log('mutation bookmark', { productId, userId });
 
   if (!productId) throw new InvalidIdError({ productId });
-  const product = Products.findOne({ _id: productId });
+  const product = Products.findProduct({ productId });
   if (!product) throw new ProductNotFoundError({ productId });
 
   const foundBookmark = Bookmarks.findBookmarks({ productId, userId }).pop();
@@ -16,6 +16,7 @@ export default function bookmark(root, { productId, bookmarked }, { userId }) {
     if (foundBookmark) return foundBookmark;
     return Bookmarks.createBookmark({ productId, userId });
   }
-  if (foundBookmark) Bookmarks.removeBookmark({ _id: foundBookmark._id });
+  if (foundBookmark)
+    Bookmarks.removeBookmark({ bookmarkId: foundBookmark._id });
   return foundBookmark;
 }

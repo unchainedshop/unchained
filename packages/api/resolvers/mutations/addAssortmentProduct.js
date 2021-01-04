@@ -17,9 +17,9 @@ export default function addAssortmentProduct(
   });
   if (!assortmentId) throw new InvalidIdError({ assortmentId });
   if (!productId) throw new InvalidIdError({ productId });
-  const assortment = Assortments.findOne({ _id: assortmentId });
+  const assortment = Assortments.findAssortment({ assortmentId });
   if (!assortment) throw new AssortmentNotFoundError({ assortmentId });
-  const product = Products.findOne({ _id: productId });
+  const product = Products.findProduct({ productId });
   if (!product) throw new ProductNotFoundError({ productId });
   return assortment.addProduct({
     productId,

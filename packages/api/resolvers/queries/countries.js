@@ -12,9 +12,5 @@ export default function countries(
     }`,
     { userId }
   );
-  const selector = {};
-  if (!includeInactive) {
-    selector.isActive = true;
-  }
-  return Countries.find(selector, { skip: offset, limit }).fetch();
+  return Countries.findCountries({ limit, offset, includeInactive });
 }

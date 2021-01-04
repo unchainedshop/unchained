@@ -13,7 +13,7 @@ export default function rejectQuotation(
 ) {
   log('mutation rejectQuotation', { quotationId, userId });
   if (!quotationId) throw new InvalidIdError({ quotationId });
-  const quotation = Quotations.findOne({ _id: quotationId });
+  const quotation = Quotations.findQuotation({ quotationId });
   if (!quotation) throw new QuotationNotFoundError({ quotationId });
   if (quotation.status === QuotationStatus.FULLFILLED) {
     throw new QuotationWrongStatusError({ status: quotation.status });

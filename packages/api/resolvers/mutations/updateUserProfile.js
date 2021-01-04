@@ -1,5 +1,6 @@
 import { log } from 'meteor/unchained:core-logger';
 import { Users } from 'meteor/unchained:core-users';
+import { UserNotFoundError } from '../../errors';
 
 export default function updateUserProfile(
   root,
@@ -8,22 +9,8 @@ export default function updateUserProfile(
 ) {
   const normalizedUserId = foreignUserId || userId;
   log(`mutation updateUserProfile ${normalizedUserId}`, { userId });
-
-  const transformedProfile = Object.keys(profile).reduce((acc, profileKey) => {
-    return {
-      ...acc,
-      [`profile.${profileKey}`]: profile[profileKey],
-    };
-  }, {});
-
-  Users.update(
-    { _id: normalizedUserId },
-    {
-      $set: {
-        updated: new Date(),
-        ...transformedProfile,
-      },
-    }
-  );
-  return Users.findOne({ _id: normalizedUserId });
+  const user = Users.findUser({ userId: normalizedUserId });
+  if (!user) throw UserNotFoundError({ id: normalizedUserId });
+  Users.updateProfile({ userId: normalizedUserId, profile });
+  return Users.findUser({ userId: normalizedUserId });
 }

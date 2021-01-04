@@ -10,10 +10,8 @@ export default function translatedProductVariationTexts(
     `query translatedProductVariationTexts ${productVariationId} ${productVariationOptionValue}`,
     { userId }
   );
-
-  const selector = {
+  return ProductVariationTexts.findProductVariationTexts({
     productVariationId,
     productVariationOptionValue,
-  };
-  return ProductVariationTexts.find(selector).fetch();
+  });
 }

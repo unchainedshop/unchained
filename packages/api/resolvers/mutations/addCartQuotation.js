@@ -21,7 +21,7 @@ export default async function addCartQuotation(
   );
   if (!quotationId) throw new InvalidIdError({ quotationId });
   if (quantity < 1) throw new OrderQuantityTooLowError({ quantity });
-  const quotation = Quotations.findOne({ _id: quotationId });
+  const quotation = Quotations.findQuotation({ quotationId });
   if (!quotation) throw new QuotationNotFoundError({ quotationId });
   if (quotation.status !== QuotationStatus.PROPOSED) {
     throw new QuotationWrongStatusError({ status: quotation.status });

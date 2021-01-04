@@ -12,10 +12,5 @@ export default function currencies(
     }`,
     { userId }
   );
-
-  const selector = {};
-  if (!includeInactive) {
-    selector.isActive = true;
-  }
-  return Currencies.find(selector, { skip: offset, limit }).fetch();
+  return Currencies.findCurrencies({ limit, offset, includeInactive });
 }

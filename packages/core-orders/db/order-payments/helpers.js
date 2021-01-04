@@ -18,7 +18,9 @@ OrderPayments.helpers({
     });
   },
   provider() {
-    return PaymentProviders.findProviderById(this.paymentProviderId);
+    return PaymentProviders.findProvider({
+      paymentProviderId: this.paymentProviderId,
+    });
   },
   transformedContextValue(key) {
     const provider = this.provider();
@@ -177,4 +179,8 @@ OrderPayments.updateStatus = ({ paymentId, status, info = '' }) => {
   OrderDocuments.updatePaymentDocuments({ paymentId, date, ...modifier.$set });
   OrderPayments.update({ _id: paymentId }, modifier);
   return OrderPayments.findOne({ _id: paymentId });
+};
+
+OrderPayments.findPayment = ({ orderPaymentId }, options) => {
+  return OrderPayments.findOne({ _id: orderPaymentId }, options);
 };

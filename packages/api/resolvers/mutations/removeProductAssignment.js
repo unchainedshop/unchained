@@ -14,7 +14,7 @@ export default function removeProductAssignment(
   log(`mutation removeProductAssignment ${proxyId}`, { userId });
 
   if (!proxyId) throw new InvalidIdError({ proxyId });
-  const product = Products.findOne({ _id: proxyId });
+  const product = Products.findProduct({ productId: proxyId });
   if (!product) throw new ProductNotFoundError({ proxyId });
   if (product.type !== ProductTypes.ConfigurableProduct)
     throw new ProductWrongTypeError({
@@ -22,21 +22,6 @@ export default function removeProductAssignment(
       received: product.type,
       required: ProductTypes.ConfigurableProduct,
     });
-
-  const vector = {};
-  vectors.forEach(({ key, value }) => {
-    vector[key] = value;
-  });
-  const modifier = {
-    $set: {
-      updated: new Date(),
-    },
-    $pull: {
-      'proxy.assignments': {
-        vector,
-      },
-    },
-  };
-  Products.update({ _id: proxyId }, modifier, { multi: true });
-  return Products.findOne({ _id: proxyId });
+  Products.removeAssignment({ productId: proxyId, vectors });
+  return Products.findProduct({ productId: proxyId });
 }

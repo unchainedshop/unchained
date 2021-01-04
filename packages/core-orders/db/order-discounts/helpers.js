@@ -10,6 +10,10 @@ const ErrorCodes = {
   CODE_NOT_VALID: 'CODE_NOT_VALID',
 };
 
+OrderDiscounts.findDiscount = ({ discountId }, options) => {
+  return OrderDiscounts.findOne({ _id: discountId }, options);
+};
+
 OrderDiscounts.helpers({
   order() {
     return Orders.findOne({

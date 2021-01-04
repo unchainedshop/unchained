@@ -11,27 +11,9 @@ export default function createProductVariationOption(
     userId,
   });
   if (!productVariationId) throw new InvalidIdError({ productVariationId });
-  const variation = ProductVariations.findOne({ _id: productVariationId });
+  const variation = ProductVariations.findVariation({ productVariationId });
   if (!variation)
     throw new ProductVariationNotFoundError({ productVariationId });
 
-  const { value, title } = inputData;
-  ProductVariations.update(
-    { _id: productVariationId },
-    {
-      $set: {
-        updated: new Date(),
-      },
-      $addToSet: {
-        options: value,
-      },
-    }
-  );
-
-  variation.upsertLocalizedText(localeContext.language, {
-    authorId: userId,
-    productVariationOptionValue: value,
-    title,
-  });
-  return variation;
+  return variation.createVariationOption({ inputData, localeContext, userId });
 }

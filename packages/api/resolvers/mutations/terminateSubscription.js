@@ -16,9 +16,7 @@ export default async function terminateSubscription(
 ) {
   log('mutation terminateSubscription', { userId });
   if (!subscriptionId) throw new InvalidIdError({ subscriptionId });
-  const subscription = Subscriptions.findOne({
-    _id: subscriptionId,
-  });
+  const subscription = Subscriptions.findSubscription({ subscriptionId });
   if (!subscription) {
     throw new SubscriptionNotFoundError({
       subscriptionId,

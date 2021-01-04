@@ -9,16 +9,8 @@ export default function setUserTags(
 ) {
   log(`mutation setUserTags ${normalizedUserId}`, { userId });
   if (!normalizedUserId) throw new InvalidIdError({ normalizedUserId });
-  const user = Users.findOne({ _id: normalizedUserId });
+  const user = Users.findUser({ userId: normalizedUserId });
   if (!user) throw new UserNotFoundError({ normalizedUserId });
-  Users.update(
-    { _id: normalizedUserId },
-    {
-      $set: {
-        updated: new Date(),
-        tags,
-      },
-    }
-  );
-  return Users.findOne({ _id: normalizedUserId });
+  Users.setTags({ userId: normalizedUserId, tags });
+  return Users.findUser({ userId: normalizedUserId });
 }

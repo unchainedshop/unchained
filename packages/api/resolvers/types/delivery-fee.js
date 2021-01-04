@@ -8,7 +8,7 @@ export default {
     return isNetPrice || false;
   },
   country({ countryCode }) {
-    return Countries.findOne({ isoCode: countryCode });
+    return Countries.findCountry({ isoCode: countryCode });
   },
   price({ amount, currencyCode }) {
     return {

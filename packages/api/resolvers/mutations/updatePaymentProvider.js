@@ -5,8 +5,8 @@ import { PaymentProviderNotFoundError, InvalidIdError } from '../../errors';
 export default (root, { paymentProvider, paymentProviderId }, { userId }) => {
   log(`mutation updatePaymentProvider ${paymentProviderId}`, { userId });
   if (!paymentProviderId) throw new InvalidIdError({ paymentProviderId });
-  const provider = PaymentProviders.findOne({
-    _id: paymentProviderId,
+  const provider = PaymentProviders.findProvider({
+    paymentProviderId,
     deleted: null,
   });
   if (!provider) throw new PaymentProviderNotFoundError({ paymentProviderId });

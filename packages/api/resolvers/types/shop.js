@@ -4,11 +4,11 @@ import { checkAction } from '../../acl';
 import roles, { actions } from '../../roles';
 
 export default {
-  language(root, _, { localeContext }) {
-    return Languages.findOne({ isoCode: localeContext.language });
+  async language(root, _, { localeContext }) {
+    return Languages.findLanguage({ isoCode: localeContext.language });
   },
-  country(root, _, { countryContext }) {
-    return Countries.findOne({ isoCode: countryContext });
+  async country(root, _, { countryContext }) {
+    return Countries.findCountry({ isoCode: countryContext });
   },
   _id() {
     return 'root';

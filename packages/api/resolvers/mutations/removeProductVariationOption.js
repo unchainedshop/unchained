@@ -12,22 +12,19 @@ export default function removeProductVariationOption(
     { userId }
   );
   if (!productVariationId) throw new InvalidIdError({ productVariationId });
-  ProductVariations.update(
-    { _id: productVariationId },
-    {
-      $set: {
-        updated: new Date(),
-      },
-      $pull: {
-        options: productVariationOptionValue,
-      },
-    }
-  );
-  const productVariation = ProductVariations.findOne({
-    _id: productVariationId,
+
+  const productVariation = ProductVariations.findVariation({
+    productVariationId,
   });
   if (!productVariation)
     throw new ProductVariationNotFoundError({ productVariationId });
 
-  return productVariation;
+  ProductVariations.removeVariationOption({
+    productVariationId,
+    productVariationOptionValue,
+  });
+
+  return ProductVariations.findVariation({
+    productVariationId,
+  });
 }

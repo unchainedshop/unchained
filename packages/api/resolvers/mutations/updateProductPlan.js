@@ -13,12 +13,13 @@ export default function updateProductPlan(
 ) {
   log(`mutation updateProductPlan ${productId}`, { userId });
   if (!productId) throw new InvalidIdError({ productId });
-  const productObject = Products.updateProduct({ productId, plan });
+  const productObject = Products.findProduct({ productId });
   if (!productObject) throw new ProductNotFoundError({ productId });
   if (productObject?.type !== ProductTypes.PlanProduct)
     throw new ProductWrongStatusError({
       received: productObject?.type,
       required: ProductTypes.PlanProduct,
     });
-  return productObject;
+  Products.updateProduct({ productId, plan });
+  return Products.findProduct({ productId });
 }

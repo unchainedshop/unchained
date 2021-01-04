@@ -13,13 +13,9 @@ export default function languages(
     { userId }
   );
 
-  const selector = {};
-  if (!includeInactive) {
-    selector.isActive = true;
-  }
-  const foundLanguages = Languages.find(selector, {
-    skip: offset,
+  return Languages.findLanguages({
     limit,
-  }).fetch();
-  return foundLanguages;
+    offset,
+    includeInactive,
+  });
 }

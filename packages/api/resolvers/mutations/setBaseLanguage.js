@@ -5,26 +5,8 @@ import { LanguageNotFoundError, InvalidIdError } from '../../errors';
 export default function setBaseLanguage(root, { languageId }, { userId }) {
   log(`mutation setBaseLanguage ${languageId}`, { userId });
   if (!languageId) throw new InvalidIdError({ languageId });
-  Languages.update(
-    { isBase: true },
-    {
-      $set: {
-        isBase: false,
-        updated: new Date(),
-      },
-    },
-    { multi: true }
-  );
-  Languages.update(
-    { _id: languageId },
-    {
-      $set: {
-        isBase: true,
-        updated: new Date(),
-      },
-    }
-  );
-  const language = Languages.findOne({ _id: languageId });
+  const language = Languages.findLanguage({ languageId });
   if (!language) throw new LanguageNotFoundError({ languageId });
-  return language;
+  Languages.setBase({ languageId });
+  return Languages.findLanguage({ languageId });
 }

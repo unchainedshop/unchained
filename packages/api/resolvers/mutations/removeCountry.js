@@ -5,8 +5,8 @@ import { CountryNotFoundError, InvalidIdError } from '../../errors';
 export default function removeCountry(root, { countryId }, { userId }) {
   log(`mutation removeCountry ${countryId}`, { userId });
   if (!countryId) throw new InvalidIdError({ countryId });
-  const country = Countries.findOne({ _id: countryId });
+  const country = Countries.findCountry({ countryId });
   if (!country) throw new CountryNotFoundError({ countryId });
-  Countries.remove({ _id: countryId });
+  Countries.removeCountry({ countryId });
   return country;
 }

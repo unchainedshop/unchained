@@ -5,26 +5,9 @@ import { AssortmentNotFoundError, InvalidIdError } from '../../errors';
 export default function setBaseAssortment(root, { assortmentId }, { userId }) {
   log(`mutation setBaseAssortment ${assortmentId}`, { userId });
   if (!assortmentId) throw new InvalidIdError({ assortmentId });
-  Assortments.update(
-    { isBase: true },
-    {
-      $set: {
-        isBase: false,
-        updated: new Date(),
-      },
-    },
-    { multi: true }
-  );
-  Assortments.update(
-    { _id: assortmentId },
-    {
-      $set: {
-        isBase: true,
-        updated: new Date(),
-      },
-    }
-  );
-  const assortment = Assortments.findOne({ _id: assortmentId });
+  const assortment = Assortments.findAssortment({ assortmentId });
   if (!assortment) throw new AssortmentNotFoundError({ assortmentId });
-  return assortment;
+
+  Assortments.setBase({ assortmentId });
+  return Assortments.findAssortment({ assortmentId });
 }

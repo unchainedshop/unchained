@@ -14,14 +14,14 @@ export default async ({
   countryContext,
 }) => {
   if (orderId) {
-    const order = Orders.findOne({ _id: orderId });
+    const order = Orders.findOrder({ orderId });
     if (!order) throw new OrderNotFoundError({ orderId });
     if (!order.isCart()) {
       throw new OrderWrongStatusError({ status: order.status });
     }
     return order;
   }
-  const user = userObject || Users.findOne({ _id: userId });
+  const user = userObject || Users.findUser({ userId });
   if (!user) throw new UserNotFoundError({ userId });
   const cart = await user.cart({ countryContext });
   if (cart) return cart;

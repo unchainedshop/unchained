@@ -9,8 +9,8 @@ export default function updateDeliveryProvider(
 ) {
   log(`mutation updateDeliveryProvider ${deliveryProviderId}`, { userId });
   if (!deliveryProviderId) throw new InvalidIdError({ deliveryProviderId });
-  const provider = DeliveryProviders.findOne({
-    _id: deliveryProviderId,
+  const provider = DeliveryProviders.findProvider({
+    deliveryProviderId,
     deleted: null,
   });
   if (!provider) throw new DeliverProviderNotFoundError({ deliveryProviderId });

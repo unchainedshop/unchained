@@ -5,26 +5,8 @@ import { CountryNotFoundError, InvalidIdError } from '../../errors';
 export default function setBaseCountry(root, { countryId }, { userId }) {
   log(`mutation setBaseCountry ${countryId}`, { userId });
   if (!countryId) throw new InvalidIdError({ countryId });
-  Countries.update(
-    { isBase: true },
-    {
-      $set: {
-        isBase: false,
-        updated: new Date(),
-      },
-    },
-    { multi: true }
-  );
-  Countries.update(
-    { _id: countryId },
-    {
-      $set: {
-        isBase: true,
-        updated: new Date(),
-      },
-    }
-  );
-  const country = Countries.findOne({ _id: countryId });
+  const country = Countries.findCountry({ countryId });
   if (!country) throw new CountryNotFoundError({ countryId });
-  return country;
+  Countries.setBase({ countryId });
+  return Countries.findCountry({ countryId });
 }

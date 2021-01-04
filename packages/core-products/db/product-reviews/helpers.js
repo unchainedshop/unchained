@@ -132,8 +132,11 @@ ProductReviews.deleteReview = function deleteReview({ productReviewId }) {
   return this.findOne({ _id: productReviewId });
 };
 
-ProductReviews.findReviewById = function findReviewById(_id, ...options) {
-  return this.findOne({ _id }, ...options);
+ProductReviews.findReview = function findReview(
+  { productReviewId },
+  ...options
+) {
+  return ProductReviews.findOne({ _id: productReviewId }, ...options);
 };
 
 ProductReviews.findReviews = function findReviews(

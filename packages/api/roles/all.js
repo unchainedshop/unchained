@@ -1,7 +1,3 @@
-import { Orders } from 'meteor/unchained:core-orders';
-import { Quotations } from 'meteor/unchained:core-quotations';
-import { Subscriptions } from 'meteor/unchained:core-subscriptions';
-
 export default (role, actions) => {
   const isInLoginMutationResponse = (root) => {
     // eslint-disable-next-line
@@ -70,36 +66,9 @@ export default (role, actions) => {
   role.allow(actions.registerPaymentCredentials, () => false);
   role.allow(actions.managePaymentCredentials, () => false);
   role.allow(actions.bulkImport, () => false);
-
-  // only allow if otp is provided
-  role.allow(
-    actions.viewOrder,
-    (root, { orderId, otp }) =>
-      Orders.find({
-        _id: orderId,
-        orderNumber: otp,
-      }).count() > 0
-  );
-
-  // only allow if otp is provided
-  role.allow(
-    actions.viewQuotation,
-    (root, { quotationId, otp }) =>
-      Quotations.find({
-        _id: quotationId,
-        quotationNumber: otp,
-      }).count() > 0
-  );
-
-  // only allow if otp is provided
-  role.allow(
-    actions.viewSubscription,
-    (root, { quotationId, otp }) =>
-      Subscriptions.find({
-        _id: quotationId,
-        subscriptionNumber: otp,
-      }).count() > 0
-  );
+  role.allow(actions.viewOrder, () => false);
+  role.allow(actions.viewQuotation, () => false);
+  role.allow(actions.viewSubscription, () => false);
 
   // only allow if query is not demanding for drafts
   role.allow(actions.viewProducts, (root, { includeDrafts }) => !includeDrafts);

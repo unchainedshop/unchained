@@ -14,7 +14,7 @@ export default function setOrderDeliveryProvider(
   if (!orderId) throw new InvalidIdError({ orderId });
   if (!deliveryProviderId) throw new InvalidIdError({ deliveryProviderId });
 
-  const order = Orders.findOne({ _id: orderId });
+  const order = Orders.findOrder({ orderId });
   if (!order) throw new OrderNotFoundError({ orderId });
   return order.setDeliveryProvider({ deliveryProviderId });
 }

@@ -19,7 +19,7 @@ export default function updateCartItem(
     { userId }
   );
   if (!itemId) throw new InvalidIdError({ itemId });
-  const item = OrderPositions.findOne({ _id: itemId });
+  const item = OrderPositions.findItem({ itemId });
   if (!item) throw new OrderItemNotFoundError({ itemId });
   const order = item.order();
   if (!order.isCart()) {
@@ -48,5 +48,5 @@ export default function updateCartItem(
     );
   }
 
-  return OrderPositions.findOne({ _id: itemId });
+  return OrderPositions.findItem({ itemId });
 }

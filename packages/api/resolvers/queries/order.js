@@ -6,11 +6,7 @@ export default function order(root, { orderId }, { userId }) {
   log(`query order ${orderId}`, { userId, orderId });
 
   if (!orderId) throw new InvalidIdError({ orderId });
-
-  const selector = { _id: orderId };
-  const foundOrder = Orders.findOne(selector);
-
+  const foundOrder = Orders.findOrder({ orderId });
   if (!foundOrder) throw new OrderNotFoundError({ orderId });
-
   return foundOrder;
 }

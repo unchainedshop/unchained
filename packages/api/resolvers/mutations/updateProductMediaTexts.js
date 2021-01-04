@@ -9,14 +9,7 @@ export default function updateProductMediaTexts(
 ) {
   log(`mutation updateProductMediaTexts ${productMediaId}`, { userId });
   if (!productMediaId) throw new InvalidIdError({ productMediaId });
-  const productMediaObject = ProductMedia.findOne({ _id: productMediaId });
-  if (!productMediaObject)
-    throw new ProductMediaNotFoundError({ productMediaId });
-  const changedLocalizations = texts.map(({ locale, ...localizations }) =>
-    productMediaObject.upsertLocalizedText(locale, {
-      ...localizations,
-      authorId: userId,
-    })
-  );
-  return changedLocalizations;
+  const productMedia = ProductMedia.findProductMedia({ productMediaId });
+  if (!productMedia) throw new ProductMediaNotFoundError({ productMediaId });
+  return productMedia.updateTexts({ texts, userId });
 }

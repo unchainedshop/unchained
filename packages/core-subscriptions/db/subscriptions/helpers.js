@@ -36,6 +36,19 @@ Users.helpers({
   },
 });
 
+Subscriptions.findSubscription = ({ subscriptionId }, options) => {
+  return Subscriptions.findOne({ _id: subscriptionId }, options);
+};
+Subscriptions.findSubscriptions = ({ limit, offset }) => {
+  return Subscriptions.find(
+    {},
+    {
+      skip: offset,
+      limit,
+    }
+  ).fetch();
+};
+
 Subscriptions.helpers({
   user() {
     return Users.findOne({
@@ -55,42 +68,6 @@ Subscriptions.helpers({
   },
   normalizedStatus() {
     return objectInvert(SubscriptionStatus)[this.status || null];
-  },
-  updateContext(context) {
-    return Subscriptions.updateContext({
-      subscriptionId: this._id,
-      context,
-    });
-  },
-  updateBillingAddress(billingAddress = {}) {
-    return Subscriptions.updateBillingAddress({
-      subscriptionId: this._id,
-      billingAddress,
-    });
-  },
-  updateContact(contact = {}) {
-    return Subscriptions.updateContact({
-      subscriptionId: this._id,
-      contact,
-    });
-  },
-  updateDelivery(delivery = {}) {
-    return Subscriptions.updateDelivery({
-      subscriptionId: this._id,
-      delivery,
-    });
-  },
-  updatePayment(payment = {}) {
-    return Subscriptions.updatePayment({
-      subscriptionId: this._id,
-      payment,
-    });
-  },
-  updatePlan(plan = {}) {
-    return Subscriptions.updatePlan({
-      subscriptionId: this._id,
-      plan,
-    });
   },
   async terminate({ subscriptionContext } = {}, options) {
     if (this.status === SubscriptionStatus.TERMINATED) return this;
@@ -270,7 +247,7 @@ Subscriptions.addSubscriptionPeriod = async ({
 
 Subscriptions.updateBillingAddress = ({ billingAddress, subscriptionId }) => {
   log('Update Billing Address', { subscriptionId });
-  Subscriptions.update(
+  return Subscriptions.update(
     { _id: subscriptionId },
     {
       $set: {
@@ -279,7 +256,6 @@ Subscriptions.updateBillingAddress = ({ billingAddress, subscriptionId }) => {
       },
     }
   );
-  return Subscriptions.findOne({ _id: subscriptionId });
 };
 
 Subscriptions.updateContact = ({ contact, subscriptionId }) => {
@@ -298,7 +274,7 @@ Subscriptions.updateContact = ({ contact, subscriptionId }) => {
 
 Subscriptions.updatePayment = ({ payment, subscriptionId }) => {
   log('Update Payment', { subscriptionId });
-  Subscriptions.update(
+  return Subscriptions.update(
     { _id: subscriptionId },
     {
       $set: {
@@ -307,12 +283,11 @@ Subscriptions.updatePayment = ({ payment, subscriptionId }) => {
       },
     }
   );
-  return Subscriptions.findOne({ _id: subscriptionId });
 };
 
 Subscriptions.updateDelivery = ({ delivery, subscriptionId }) => {
-  log('Update Delivery', { subscriptionId });
-  Subscriptions.update(
+  log('Update subscription Delivery', { subscriptionId });
+  return Subscriptions.update(
     { _id: subscriptionId },
     {
       $set: {
@@ -321,12 +296,11 @@ Subscriptions.updateDelivery = ({ delivery, subscriptionId }) => {
       },
     }
   );
-  return Subscriptions.findOne({ _id: subscriptionId });
 };
 
 Subscriptions.updatePlan = ({ plan, subscriptionId }) => {
-  log('Update Plan', { subscriptionId });
-  Subscriptions.update(
+  log('Update subscription Plan', { subscriptionId });
+  return Subscriptions.update(
     { _id: subscriptionId },
     {
       $set: {
@@ -335,12 +309,11 @@ Subscriptions.updatePlan = ({ plan, subscriptionId }) => {
       },
     }
   );
-  return Subscriptions.findOne({ _id: subscriptionId });
 };
 
 Subscriptions.updateContext = ({ context, subscriptionId }) => {
-  log('Update Arbitrary Context', { subscriptionId });
-  Subscriptions.update(
+  log('Update subscription Arbitrary Context', { subscriptionId });
+  return Subscriptions.update(
     { _id: subscriptionId },
     {
       $set: {
@@ -349,7 +322,6 @@ Subscriptions.updateContext = ({ context, subscriptionId }) => {
       },
     }
   );
-  return Subscriptions.findOne({ _id: subscriptionId });
 };
 
 Subscriptions.newSubscriptionNumber = () => {
