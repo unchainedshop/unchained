@@ -140,6 +140,7 @@ PaymentCredentials.credentialsExists = ({ paymentCredentialsId }) => {
 
 PaymentCredentials.findCredentials = ({ paymentCredentialsId }, options) => {
   return PaymentCredentials.findOne({ _id: paymentCredentialsId }, options);
+};
 
 PaymentCredentials.upsertCredentials = ({
   userId,
@@ -195,7 +196,11 @@ PaymentCredentials.registerPaymentCredentials = ({
     token,
     ...meta,
   });
-  return PaymentCredentials.findOne({ _id: paymentCredentialsId });
+  return PaymentCredentials.findOne(
+    paymentCredentialsId
+      ? { _id: paymentCredentialsId }
+      : { userId, paymentProviderId }
+  );
 };
 
 PaymentCredentials.removeCredentials = ({ paymentCredentialsId }) => {
