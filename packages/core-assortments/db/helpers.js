@@ -136,8 +136,16 @@ Collections.Assortments.invalidateFilterCaches = () => {
   });
 };
 
-Collections.AssortmentLinks.findLink = ({ assortmentLinkId }) => {
-  return Collections.AssortmentLinks.findOne(assortmentLinkId);
+Collections.AssortmentLinks.findLink = ({
+  assortmentLinkId,
+  parentAssortmentId,
+  childAssortmentId,
+}) => {
+  return Collections.AssortmentLinks.findOne(
+    assortmentLinkId
+      ? { _id: assortmentLinkId }
+      : { parentAssortmentId, childAssortmentId }
+  );
 };
 
 Collections.AssortmentLinks.removeLink = ({ assortmentLinkId }) => {

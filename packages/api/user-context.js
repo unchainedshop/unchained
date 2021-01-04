@@ -24,7 +24,7 @@ export default async (req) => {
     // the hashed token is the key to find the possible current user in the db
     const hashedToken = accountsServer.hashLoginToken(loginToken); // eslint-disable-line
 
-    const currentUser = Users.findOne({
+    const currentUser = Users.findUser({
       'services.resume.loginTokens.hashedToken': hashedToken,
     });
 

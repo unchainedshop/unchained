@@ -15,7 +15,7 @@ export default async function resetPassword(
     throw new Error('Password is required');
   }
   const newPassword = newHashedPassword || hashPassword(newPlainPassword);
-  const user = Users.findOne({ 'services.password.reset.token': token });
+  const user = Users.findUser({ 'services.password.reset.token': token });
   await accountsPassword.resetPassword(token, newPassword);
 
   const { token: loginToken } = await accountsServer.loginWithUser(user._id);

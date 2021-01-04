@@ -15,7 +15,6 @@ export default async function createProduct(payload, { logger, authorId }) {
       productId: _id,
       authorId,
     });
-    const product = Products.findProduct({ productId: _id });
     if (specification.content) {
       logger.debug(
         'replace localized content for product',
@@ -23,7 +22,7 @@ export default async function createProduct(payload, { logger, authorId }) {
       );
       await upsertProductContent({
         content: specification.content,
-        product,
+        productId: _id,
         authorId,
       });
     }

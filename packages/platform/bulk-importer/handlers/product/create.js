@@ -13,7 +13,7 @@ export default async function createProduct(payload, { logger, authorId }) {
 
   const productData = transformSpecificationToProductStructure(specification);
   logger.debug('create product object', productData);
-  const product = await Products.createProduct({
+  await Products.createProduct({
     ...productData,
     _id,
     authorId,
@@ -25,7 +25,7 @@ export default async function createProduct(payload, { logger, authorId }) {
   logger.debug('create localized content for product', specification.content);
   await upsertProductContent({
     content: specification.content,
-    product,
+    productId: _id,
     authorId,
   });
 

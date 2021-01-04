@@ -6,7 +6,7 @@ import { findLocalizedText } from 'meteor/unchained:core';
 
 export default {
   async link({ assortmentId, childAssortmentId }) {
-    return AssortmentLinks.findOne({
+    return AssortmentLinks.findLink({
       parentAssortmentId: assortmentId,
       childAssortmentId,
     });

@@ -21,7 +21,7 @@ export default async ({
     }
     return order;
   }
-  const user = userObject || Users.findOne({ _id: userId });
+  const user = userObject || Users.findUser({ userId });
   if (!user) throw new UserNotFoundError({ userId });
   const cart = await user.cart({ countryContext });
   if (cart) return cart;
