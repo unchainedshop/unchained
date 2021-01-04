@@ -29,6 +29,16 @@ Bookmarks.removeBookmark = ({ bookmarkId }) => {
 Bookmarks.findBookmark = ({ bookmarkId }, options) =>
   Bookmarks.findOne({ _id: bookmarkId }, options);
 
+Bookmarks.bookmarkExists = ({ userId, productId }) => {
+  let selector = {};
+  if (productId && userId) {
+    selector = { userId, productId };
+  } else if (userId) {
+    selector = { userId };
+  }
+  return !!Bookmarks.find(selector, { limit: 1 }).count();
+};
+
 Bookmarks.findBookmarks = ({ userId, productId } = {}) =>
   Bookmarks.find({
     ...(userId ? { userId } : {}),

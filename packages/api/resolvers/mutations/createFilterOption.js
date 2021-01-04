@@ -10,6 +10,7 @@ export default function createFilterOption(
   log(`mutation createFilterOption ${filterId}`, { userId });
 
   if (!filterId) throw new InvalidIdError({ filterId });
+
   const filter = Filters.findFilter({ filterId });
   if (!filter) throw new FilterNotFoundError({ filterId });
 

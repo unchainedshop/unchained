@@ -5,8 +5,8 @@ import { CountryNotFoundError, InvalidIdError } from '../../errors';
 export default function setBaseCountry(root, { countryId }, { userId }) {
   log(`mutation setBaseCountry ${countryId}`, { userId });
   if (!countryId) throw new InvalidIdError({ countryId });
-  const country = Countries.findCountry({ countryId });
-  if (!country) throw new CountryNotFoundError({ countryId });
+  if (!Countries.countryExists({ countryId }))
+    throw new CountryNotFoundError({ countryId });
   Countries.setBase({ countryId });
   return Countries.findCountry({ countryId });
 }

@@ -51,6 +51,11 @@ export const makeAssortmentBreadcrumbsBuilder = ({
   });
 };
 
+Collections.Assortments.assortmentExists = ({ assortmentId, slug }) => {
+  const selector = assortmentId ? { _id: assortmentId } : { slugs: slug };
+  return !!Collections.Assortments.find(selector, { limit: 1 }).count();
+};
+
 Collections.Assortments.findAssortment = ({ assortmentId, slug, ...rest }) => {
   let selector = {};
 
@@ -585,7 +590,7 @@ Collections.Assortments.setBase = ({ assortmentId }) => {
     },
     { multi: true }
   );
-  Collections.Assortments.update(
+  return Collections.Assortments.update(
     { _id: assortmentId },
     {
       $set: {

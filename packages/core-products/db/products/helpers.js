@@ -15,10 +15,14 @@ import { ProductReviews } from '../product-reviews/collections';
 
 import { ProductStatus, ProductTypes } from './schema';
 
+Products.productExists = ({ productId, slug }) => {
+  const selector = productId ? { _id: productId } : { slugs: slug };
+  return !!Products.find(selector, { limit: 1 }).count();
+};
+
 Products.findProduct = ({ productId, slug }) => {
-  return productId
-    ? Products.findOne({ _id: productId })
-    : Products.findOne({ slugs: slug });
+  const selector = productId ? { _id: productId } : { slugs: slug };
+  return Products.findOne(selector);
 };
 
 Products.findProducts = ({

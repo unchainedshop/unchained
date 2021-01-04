@@ -272,12 +272,17 @@ Users.updateHeartbeat = ({ userId, ...options }) =>
     }
   );
 
+Users.userExists = ({ userId }) => {
+  return !!Users.find({ _id: userId }, { limit: 1 }).count();
+};
+
 Users.findUser = ({ userId, resetToken, hashedToken }) => {
   if (hashedToken) {
     return Users.findOne({
       'services.resume.loginTokens.hashedToken': hashedToken,
     });
   }
+
   if (resetToken) {
     return Users.findOne({
       'services.password.reset.token': resetToken,

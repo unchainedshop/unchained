@@ -75,6 +75,13 @@ WarehousingProviders.removeProvider = ({ _id }) => {
   return WarehousingProviders.findOne({ _id });
 };
 
+WarehousingProviders.providerExists = ({ warehousingProviderId }) => {
+  return !!WarehousingProviders.find(
+    { _id: warehousingProviderId, deleted: null },
+    { limit: 1 }
+  ).count();
+};
+
 WarehousingProviders.findProvider = (
   { warehousingProviderId, ...rest },
   ...options

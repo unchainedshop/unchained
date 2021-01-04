@@ -14,16 +14,10 @@ export default function createBookmark(
 ) {
   log(`mutation createBookmark for ${foreignUserId}`, { productId, userId });
   if (!productId) throw new InvalidIdError({ productId });
-  const product = Products.findProduct({ productId });
-  if (!product) throw new ProductNotFoundError({ productId });
-  const foundBookmark = Bookmarks.findBookmarks({
-    productId,
-    userId: foreignUserId,
-  }).pop();
-  if (foundBookmark) {
-    throw new BookmarkAlreadyExistsError({
-      bookmarkId: foundBookmark._id,
-    });
-  }
+  if (!Products.productExists({ productId }))
+    throw new ProductNotFoundError({ productId });
+  if (Bookmarks.bookmarkExists({ productId, userId: foreignUserId }))
+    throw new BookmarkAlreadyExistsError();
+
   return Bookmarks.createBookmark({ userId: foreignUserId, productId });
 }

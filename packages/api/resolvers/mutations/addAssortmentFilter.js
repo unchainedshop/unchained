@@ -21,10 +21,10 @@ export default function addAssortmentFilter(
   if (!assortmentId) throw new InvalidIdError({ assortmentId });
   if (!filterId) throw new InvalidIdError({ filterId });
 
-  const assortment = Assortments.findAssortment({ assortmentId });
-  const filter = Filters.findFilter({ filterId });
-  if (!assortment) throw new AssortmentNotFoundError({ assortmentId });
-  if (!filter) throw new FilterNotFoundError({ filterId });
+  if (!Assortments.assortmentExists({ assortmentId }))
+    throw new AssortmentNotFoundError({ assortmentId });
+  if (!Filters.filterExists({ filterId }))
+    throw new FilterNotFoundError({ filterId });
 
   return AssortmentFilters.createAssortmentFilter({
     assortmentId,

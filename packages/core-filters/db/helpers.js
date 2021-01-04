@@ -136,6 +136,10 @@ Filters.markFiltersDirty = () => {
   return new Date();
 };
 
+Filters.filterExists = ({ filterId }) => {
+  return !!Filters.find({ _id: filterId }).count();
+};
+
 Filters.findFilter = ({ filterId }) => {
   return Filters.findOne({ _id: filterId });
 };

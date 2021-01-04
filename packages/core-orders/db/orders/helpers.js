@@ -134,6 +134,11 @@ Users.helpers({
   },
 });
 
+Orders.orderExists = ({ orderId, orderNumber }) => {
+  const selector = orderId ? { _id: orderId } : { orderNumber };
+  return !!Orders.find(selector).count();
+};
+
 Orders.findOrder = ({ orderId, ...rest }, options) => {
   const selector = orderId ? { _id: orderId } : rest;
   return Orders.findOne(selector, options);

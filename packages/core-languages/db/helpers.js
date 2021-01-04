@@ -11,6 +11,10 @@ Languages.createLanguage = ({ isoCode, ...languageData }) => {
   return Languages.findOne({ _id });
 };
 
+Languages.languageExists = ({ languageId }) => {
+  return !!Languages.find({ _id: languageId }, { limit: 1 }).count();
+};
+
 Languages.findLanguage = ({ languageId, isoCode }) => {
   return Languages.findOne(languageId ? { _id: languageId } : { isoCode });
 };

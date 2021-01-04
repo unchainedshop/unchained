@@ -132,6 +132,10 @@ ProductReviews.deleteReview = function deleteReview({ productReviewId }) {
   return this.findOne({ _id: productReviewId });
 };
 
+ProductReviews.reviewExists = ({ productReviewId }) => {
+  return !!ProductReviews.find({ _id: productReviewId }, { limit: 1 }).count();
+};
+
 ProductReviews.findReview = function findReview(
   { productReviewId },
   ...options

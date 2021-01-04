@@ -9,8 +9,8 @@ export default function updateUserProfile(
 ) {
   const normalizedUserId = foreignUserId || userId;
   log(`mutation updateUserProfile ${normalizedUserId}`, { userId });
-  const user = Users.findUser({ userId: normalizedUserId });
-  if (!user) throw UserNotFoundError({ id: normalizedUserId });
+  if (!Users.userExists({ userId: normalizedUserId }))
+    throw UserNotFoundError({ id: normalizedUserId });
   Users.updateProfile({ userId: normalizedUserId, profile });
   return Users.findUser({ userId: normalizedUserId });
 }

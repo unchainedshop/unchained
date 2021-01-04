@@ -132,9 +132,10 @@ PaymentCredentials.markPreferred = ({ userId, paymentCredentialsId }) => {
       },
     }
   );
-  return PaymentCredentials.findOne({
-    _id: paymentCredentialsId,
-  });
+};
+
+PaymentCredentials.credentialsExists = ({ paymentCredentialsId }) => {
+  return !!PaymentCredentials.find({ _id: paymentCredentialsId }).count();
 };
 
 PaymentCredentials.findCredentials = ({ paymentCredentialsId }, options) => {
@@ -195,7 +196,11 @@ PaymentCredentials.registerPaymentCredentials = ({
     token,
     ...meta,
   });
-  return PaymentCredentials.findOne({ _id: paymentCredentialsId });
+  return PaymentCredentials.findOne(
+    paymentCredentialsId
+      ? { _id: paymentCredentialsId }
+      : { userId, paymentProviderId }
+  );
 };
 
 PaymentCredentials.removeCredentials = ({ paymentCredentialsId }) => {
@@ -242,6 +247,13 @@ PaymentProviders.removeProvider = ({ _id }) => {
     }
   );
   return PaymentProviders.findOne({ _id });
+};
+
+PaymentProviders.providerExists = ({ paymentProviderId }) => {
+  return !!PaymentProviders.find(
+    { _id: paymentProviderId, deleted: null },
+    { limit: 1 }
+  ).count();
 };
 
 PaymentProviders.findProvider = (
