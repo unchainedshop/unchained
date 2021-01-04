@@ -19,8 +19,12 @@ export default function removeProductVariationOption(
   if (!productVariation)
     throw new ProductVariationNotFoundError({ productVariationId });
 
-  return ProductVariations.removeVariationOption({
+  ProductVariations.removeVariationOption({
     productVariationId,
     productVariationOptionValue,
+  });
+
+  return ProductVariations.findVariation({
+    productVariationId,
   });
 }

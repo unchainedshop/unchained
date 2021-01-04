@@ -134,24 +134,29 @@ Users.helpers({
   },
 });
 
-Orders.findOrder = ({ orderId, ...rest }) => {
+Orders.findOrder = ({ orderId, ...rest }, options) => {
   const selector = orderId ? { _id: orderId } : rest;
-  return Orders.findOne(selector);
+  return Orders.findOne(selector, options);
 };
 
 Orders.removeOrder = ({ orderId }) => {
   return Orders.remove(orderId);
 };
 
-Orders.findOrders = ({ limit, offset, includeCarts }) => {
+Orders.findOrders = ({
+  limit,
+  offset,
+  includeCarts,
+  sort = {
+    created: -1,
+  },
+}) => {
   const selector = {};
   if (!includeCarts) selector.status = { $ne: OrderStatus.OPEN };
   const options = {
     skip: offset,
     limit,
-    sort: {
-      created: -1,
-    },
+    sort,
   };
   return Orders.find(selector, options).fetch();
 };

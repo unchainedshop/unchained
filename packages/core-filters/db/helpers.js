@@ -181,26 +181,6 @@ Filters.updateCleanFilterActivation = () => {
   });
 };
 
-Filters.setOptions = ({ filterId, inputData, localeContext, userId }) => {
-  const { value, title } = inputData;
-  Filters.update(filterId, {
-    $set: {
-      updated: new Date(),
-    },
-    $addToSet: {
-      options: value,
-    },
-  });
-
-  const filter = Filters.findOne(filterId);
-
-  filter.upsertLocalizedText(localeContext.language, {
-    authorId: userId,
-    filterOptionValue: value,
-    title,
-  });
-};
-
 Filters.wipeFilters = (onlyDirty = true) => {
   const selector = onlyDirty ? { dirty: true } : {};
   const removedFilterCount = Filters.remove(selector);
@@ -251,8 +231,8 @@ Filters.helpers({
     });
     return FilterTexts.findOne(selector);
   },
-  addOption({ inputData, localeContext, userId }) {
-    const { value, title } = inputData;
+  addOption({ option, localeContext, userId }) {
+    const { value, title } = option;
     Filters.update(this._id, {
       $set: {
         updated: new Date(),
@@ -267,7 +247,6 @@ Filters.helpers({
       filterOptionValue: value,
       title,
     });
-    return Filters.findOne(this._id);
   },
   updateTexts({ texts, filterOptionValue, userId }) {
     return texts.map(({ locale, ...localizations }) =>

@@ -3,15 +3,19 @@ import { Logs } from './collections';
 
 Logs.helpers({});
 
-Logs.findLogs = ({ limit, offset }) => {
+Logs.findLogs = ({
+  limit,
+  offset,
+  sort = {
+    created: -1,
+  },
+}) => {
   return Logs.find(
     {},
     {
       skip: offset,
       limit,
-      sort: {
-        created: -1,
-      },
+      sort,
     }
   ).fetch();
 };

@@ -8,5 +8,6 @@ export default function setBaseAssortment(root, { assortmentId }, { userId }) {
   const assortment = Assortments.findAssortment({ assortmentId });
   if (!assortment) throw new AssortmentNotFoundError({ assortmentId });
 
-  return Assortments.setBase({ assortmentId });
+  Assortments.setBase({ assortmentId });
+  return Assortments.findAssortment({ assortmentId });
 }

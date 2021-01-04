@@ -13,5 +13,6 @@ export default function removeProduct(root, { productId }, { userId }) {
   if (!product) throw new ProductNotFoundError({ productId });
   if (product.status !== ProductStatus.DRAFT)
     throw new ProductWrongStatusError({ status: product.status });
-  return Products.removeProduct({ productId });
+  Products.removeProduct({ productId });
+  return Products.findProduct({ productId });
 }

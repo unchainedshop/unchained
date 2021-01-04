@@ -16,7 +16,7 @@ export default {
     requestContext
   ) {
     const { countryContext, user } = requestContext;
-    const order = Orders.findOne({ _id: orderId });
+    const order = Orders.findOrder({ orderId });
     return obj.orderPrice(
       {
         country: countryContext,

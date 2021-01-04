@@ -45,8 +45,6 @@ Languages.setBase = ({ languageId }) => {
       updated: new Date(),
     },
   });
-
-  return Languages.findOne(languageId);
 };
 Languages.updateLanguage = ({ languageId, language }) => {
   return Languages.update(languageId, {

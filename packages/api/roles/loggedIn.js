@@ -36,8 +36,8 @@ export default (role, actions) => {
   };
 
   const isOwnedOrder = (root, { orderId }, { userId }) => {
-    const order = Orders.findOne(
-      { _id: orderId },
+    const order = Orders.findOrder(
+      { orderId },
       {
         fields: {
           userId: true,

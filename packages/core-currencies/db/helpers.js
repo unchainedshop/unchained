@@ -23,7 +23,7 @@ Currencies.findCurrency = ({ currencyId }) => {
 Currencies.removeCurrency = ({ currencyId }) => {
   return Currencies.remove({ _id: currencyId });
 };
-Currencies.updateCurrency = ({ currencyId, isoCode, currency }) => {
+Currencies.updateCurrency = ({ currencyId, isoCode, ...currency }) => {
   return Currencies.update(currencyId, {
     $set: {
       isoCode: isoCode.toUpperCase(),

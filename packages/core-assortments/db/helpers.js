@@ -76,9 +76,9 @@ Collections.Assortments.findAssortments = ({
   offset,
   includeInactive,
   includeLeaves,
+  sort = { sequence: 1 },
 }) => {
   const selector = {};
-  const sort = { sequence: 1 };
   const options = { sort };
 
   if (slugs?.length > 0) {
@@ -585,7 +585,6 @@ Collections.Assortments.setBase = ({ assortmentId }) => {
       updated: new Date(),
     },
   });
-  return Collections.Assortments.findOne(assortmentId);
 };
 
 Collections.Assortments.helpers({

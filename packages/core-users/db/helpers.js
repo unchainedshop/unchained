@@ -27,7 +27,6 @@ Users.setTags = ({ userId, tags }) => {
       tags,
     },
   });
-  return Users.findOne(userId);
 };
 
 Users.helpers({

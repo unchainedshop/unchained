@@ -137,8 +137,8 @@ PaymentCredentials.markPreferred = ({ userId, paymentCredentialsId }) => {
   });
 };
 
-PaymentCredentials.findCredential = ({ paymentCredentialsId }) => {
-  return PaymentCredentials.findOne(paymentCredentialsId);
+PaymentCredentials.findCredentials = ({ paymentCredentialsId }) => {
+  return PaymentCredentials.findOne({ _id: paymentCredentialsId });
 };
 
 PaymentCredentials.upsertCredentials = ({
@@ -244,7 +244,10 @@ PaymentProviders.removeProvider = ({ _id }) => {
   return PaymentProviders.findOne({ _id });
 };
 
-PaymentProviders.findProvider = ({ paymentProviderId, rest }, ...options) => {
+PaymentProviders.findProvider = (
+  { paymentProviderId, ...rest },
+  ...options
+) => {
   return PaymentProviders.findOne(
     { _id: paymentProviderId, ...rest },
     ...options

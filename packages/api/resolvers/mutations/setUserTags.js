@@ -11,5 +11,6 @@ export default function setUserTags(
   if (!normalizedUserId) throw new InvalidIdError({ normalizedUserId });
   const user = Users.findUser({ userId: normalizedUserId });
   if (!user) throw new UserNotFoundError({ normalizedUserId });
-  return Users.setTags({ userId, tags });
+  Users.setTags({ userId: normalizedUserId, tags });
+  return Users.findUser({ userId: normalizedUserId });
 }

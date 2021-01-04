@@ -14,7 +14,7 @@ export default async ({
   countryContext,
 }) => {
   if (orderId) {
-    const order = Orders.findOne({ _id: orderId });
+    const order = Orders.findOrder({ orderId });
     if (!order) throw new OrderNotFoundError({ orderId });
     if (!order.isCart()) {
       throw new OrderWrongStatusError({ status: order.status });

@@ -134,7 +134,7 @@ DeliveryProviders.removeProvider = ({ _id }) => {
   );
 };
 
-DeliveryProviders.findProvider = ({ deliveryProviderId, rest }) =>
+DeliveryProviders.findProvider = ({ deliveryProviderId, ...rest }) =>
   DeliveryProviders.findOne({ _id: deliveryProviderId, ...rest });
 
 DeliveryProviders.findProviders = ({ type } = {}, ...options) =>

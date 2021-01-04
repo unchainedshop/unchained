@@ -33,8 +33,6 @@ Countries.setBase = ({ countryId }) => {
       updated: new Date(),
     },
   });
-
-  return Countries.findOne(countryId);
 };
 
 Countries.updateCountry = ({ countryId, country }) => {

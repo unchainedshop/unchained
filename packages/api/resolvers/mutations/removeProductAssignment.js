@@ -22,5 +22,6 @@ export default function removeProductAssignment(
       received: product.type,
       required: ProductTypes.ConfigurableProduct,
     });
-  return Products.removeAssignment({ productId: proxyId, vectors });
+  Products.removeAssignment({ productId: proxyId, vectors });
+  return Products.findProduct({ productId: proxyId });
 }

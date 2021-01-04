@@ -7,5 +7,6 @@ export default function setBaseLanguage(root, { languageId }, { userId }) {
   if (!languageId) throw new InvalidIdError({ languageId });
   const language = Languages.findLanguage({ languageId });
   if (!language) throw new LanguageNotFoundError({ languageId });
-  return Languages.setBase({ languageId });
+  Languages.setBase({ languageId });
+  return Languages.findLanguage({ languageId });
 }

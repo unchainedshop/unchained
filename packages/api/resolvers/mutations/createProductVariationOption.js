@@ -11,7 +11,7 @@ export default function createProductVariationOption(
     userId,
   });
   if (!productVariationId) throw new InvalidIdError({ productVariationId });
-  const variation = ProductVariations.findOne({ _id: productVariationId });
+  const variation = ProductVariations.findVariation({ productVariationId });
   if (!variation)
     throw new ProductVariationNotFoundError({ productVariationId });
 

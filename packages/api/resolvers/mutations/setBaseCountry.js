@@ -7,5 +7,6 @@ export default function setBaseCountry(root, { countryId }, { userId }) {
   if (!countryId) throw new InvalidIdError({ countryId });
   const country = Countries.findCountry({ countryId });
   if (!country) throw new CountryNotFoundError({ countryId });
-  return Countries.setBase({ countryId });
+  Countries.setBase({ countryId });
+  return Countries.findCountry({ countryId });
 }

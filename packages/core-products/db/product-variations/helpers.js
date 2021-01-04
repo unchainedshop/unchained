@@ -104,7 +104,6 @@ ProductVariations.removeVariationOption = ({
       options: productVariationOptionValue,
     },
   });
-  return ProductVariations.findOne(productVariationId);
 };
 
 ProductVariations.createVariation = ({

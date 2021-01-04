@@ -7,7 +7,7 @@ export default (root, { paymentCredentialsId }, { userId }) => {
     userId,
   });
   if (!paymentCredentialsId) throw new InvalidIdError({ paymentCredentialsId });
-  const credentials = PaymentCredentials.findCredential({
+  const credentials = PaymentCredentials.findCredentials({
     paymentCredentialsId,
   });
   if (!credentials)

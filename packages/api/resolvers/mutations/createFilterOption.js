@@ -4,7 +4,7 @@ import { FilterNotFoundError, InvalidIdError } from '../../errors';
 
 export default function createFilterOption(
   root,
-  { option: inputData, filterId },
+  { option, filterId },
   { localeContext, userId }
 ) {
   log(`mutation createFilterOption ${filterId}`, { userId });
@@ -13,6 +13,6 @@ export default function createFilterOption(
   const filter = Filters.findFilter({ filterId });
   if (!filter) throw new FilterNotFoundError({ filterId });
 
-  Filters.setOptions({ filterId, inputData, localeContext, userId });
+  filter.addOption({ option, localeContext, userId });
   return Filters.findFilter({ filterId });
 }

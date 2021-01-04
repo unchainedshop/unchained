@@ -21,9 +21,15 @@ Products.findProduct = ({ productId, slug }) => {
     : Products.findOne({ slugs: slug });
 };
 
-Products.findProducts = ({ limit, offset, tags, includeDrafts, slugs }) => {
+Products.findProducts = ({
+  limit,
+  offset,
+  tags,
+  includeDrafts,
+  slugs,
+  sort = { sequence: 1, published: -1 },
+}) => {
   const selector = {};
-  const sort = { sequence: 1, published: -1 };
   const options = { sort };
 
   if (slugs?.length > 0) {
@@ -153,6 +159,7 @@ Products.createBundleItem = ({ productId, item }) => {
 };
 
 Products.removeBundleItem = ({ productId, index }) => {
+  // TODO: There has to be a better MongoDB way to do this!
   const product = Products.findOne(productId);
   const { bundleItems = [] } = product;
   bundleItems.splice(index, 1);
@@ -179,7 +186,6 @@ Products.removeProduct = ({ productId }) => {
     default:
       throw new Error(`Invalid status', ${this.status}`);
   }
-  return Products.findOne(productId);
 };
 
 Products.removeAssignment = ({ productId, vectors }) => {
@@ -198,7 +204,6 @@ Products.removeAssignment = ({ productId, vectors }) => {
     },
   };
   Products.update(productId, modifier, { multi: true });
-  return Products.findOne(productId);
 };
 
 Products.helpers({
