@@ -43,6 +43,7 @@ export default [
       media(limit: Int = 10, offset: Int = 0, tags: [String!]): [ProductMedia!]!
       texts(forceLocale: String): ProductTexts
       catalogPrice(quantity: Int = 1): ProductPrice
+      catalogPrices: [ProductPrice]!
       simulatedPrice(
         currency: String
         useNetPrice: Boolean = false

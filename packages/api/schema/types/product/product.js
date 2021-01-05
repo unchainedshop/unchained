@@ -73,6 +73,7 @@ export default [
       texts: ProductTexts
       media(limit: Int = 10, offset: Int = 0, tags: [String!]): [ProductMedia!]!
       reviews: [ProductReview!]!
+      catalogPrices: [ProductPrice]!
       meta: JSON
       assortmentPaths: [ProductAssortmentPath!]!
       siblings(
