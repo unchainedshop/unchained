@@ -12,7 +12,6 @@ import {
 
 import { Locale } from 'locale';
 import crypto from 'crypto';
-import { log } from 'meteor/unchained:core-logger';
 import { Products, ProductTexts } from './collections';
 import { ProductVariations } from '../product-variations/collections';
 import { ProductMedia, Media } from '../product-media/collections';
