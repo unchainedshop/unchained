@@ -25,28 +25,41 @@ const defaultContext = (req) => {
   return { remoteAddress };
 };
 
-export const createContextResolver = (context) => async ({ req }) => {
-  const userContext = await getUserContext(req);
+export const createContextResolver = (context, unchained) => async ({
+  req,
+}) => {
+  const unchainedContext = {
+    modules: await unchained?.instantiateLoaders(req),
+    services: unchained?.services,
+  };
+  const userContext = await getUserContext(req, unchainedContext);
+  const localeContext = await buildLocaleContext(req, unchainedContext);
+  const customContext = await context?.(req, unchainedContext);
   return {
     ...userContext,
-    ...buildLocaleContext(req),
-    ...context(req),
+    ...localeContext,
+    ...unchainedContext,
+    ...customContext,
   };
 };
 
 const startUnchainedServer = (options) => {
-  const { context = defaultContext, rolesOptions, ...apolloServerOptions } =
-    options || {};
+  const {
+    unchained,
+    context = defaultContext,
+    rolesOptions,
+    ...apolloServerOptions
+  } = options || {};
 
   configureRoles(rolesOptions);
 
   const apolloGraphQLServer = createGraphQLServer({
     ...apolloServerOptions,
-    contextResolver: createContextResolver(context),
+    contextResolver: createContextResolver(context, unchained),
   });
 
   const bulkImportServer = createBulkImportServer({
-    contextResolver: createContextResolver(context),
+    contextResolver: createContextResolver(context, unchained),
   });
 
   return {

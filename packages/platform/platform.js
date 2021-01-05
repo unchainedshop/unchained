@@ -2,7 +2,7 @@ import startAPI from 'meteor/unchained:api';
 import interceptEmails from './intercept-emails';
 import setupAccounts, { buildContext } from './setup-accounts';
 import setupWorkqueue, { workerTypeDefs } from './setup-workqueue';
-import setupDatabase from './setup-db';
+import setupCore from './setup-core';
 import setupTemplates, { MessageTypes } from './setup-templates';
 
 import './worker/bulk-import';
@@ -27,13 +27,14 @@ const isEmailInterceptionEnabled = (options) => {
 
 export const queueWorkers = [];
 
-export const startPlatform = ({ modules, typeDefs, ...options } = {}) => {
-  setupDatabase({ modules, ...options });
+export const startPlatform = async ({ modules, typeDefs, ...options } = {}) => {
+  const unchained = await setupCore({ modules, ...options });
   setupAccounts(options);
   setupTemplates(options);
   startAPI({
     ...options,
     typeDefs: [...workerTypeDefs(), ...(typeDefs || [])],
+    unchained,
   });
   if (isEmailInterceptionEnabled(options)) interceptEmails(options);
   if (isWorkQueueEnabled(options)) {

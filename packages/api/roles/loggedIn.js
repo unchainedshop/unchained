@@ -8,8 +8,8 @@ import {
 import { ProductReviews } from 'meteor/unchained:core-products';
 import { Quotations } from 'meteor/unchained:core-quotations';
 import { Subscriptions } from 'meteor/unchained:core-subscriptions';
-import { Bookmarks } from 'meteor/unchained:core-bookmarks';
 import { PaymentCredentials } from 'meteor/unchained:core-payment';
+import { Promise } from 'meteor/promise';
 
 export default (role, actions) => {
   const isMyself = (
@@ -153,14 +153,9 @@ export default (role, actions) => {
     return quotation.userId === userId;
   };
 
-  const isOwnedBookmark = (root, { bookmarkId }, { userId }) => {
-    const bookmark = Bookmarks.findBookmark(
-      { bookmarkId },
-      {
-        fields: {
-          userId: true,
-        },
-      }
+  const isOwnedBookmark = (root, { bookmarkId }, { userId, modules }) => {
+    const bookmark = Promise.await(
+      modules.bookmarks.findBookmarkById(bookmarkId)
     );
     // return true if db entity not found in order
     // to let the resolver throw a good exception

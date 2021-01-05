@@ -1,14 +1,17 @@
 import { log } from 'meteor/unchained:core-logger';
-import { Bookmarks } from 'meteor/unchained:core-bookmarks';
 import { BookmarkNotFoundError, InvalidIdError } from '../../errors';
 
-export default function removeBookmark(root, { bookmarkId }, { userId }) {
+export default async function removeBookmark(
+  root,
+  { bookmarkId },
+  { userId, modules }
+) {
   log('mutation removeBookmark', { bookmarkId, userId });
   if (!bookmarkId) throw new InvalidIdError({ bookmarkId });
-  const bookmark = Bookmarks.findBookmark({ bookmarkId });
+  const bookmark = await modules.bookmarks.findBookmarkById(bookmarkId);
   if (!bookmark) {
     throw new BookmarkNotFoundError({ bookmarkId });
   }
-  Bookmarks.removeBookmark({ bookmarkId });
+  await modules.bookmarks.removeBookmarkById(bookmarkId);
   return bookmark;
 }

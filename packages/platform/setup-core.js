@@ -6,7 +6,9 @@ import configureDelivery from 'meteor/unchained:core-delivery';
 import configurePayment from 'meteor/unchained:core-payment';
 import configureWarehousing from 'meteor/unchained:core-warehousing';
 import configureProducts from 'meteor/unchained:core-products';
-import configureBookmarks from 'meteor/unchained:core-bookmarks';
+import configureBookmarks, {
+  services as bookmarkServices,
+} from 'meteor/unchained:core-bookmarks';
 import configureQuotations from 'meteor/unchained:core-quotations';
 import configureCurrencies from 'meteor/unchained:core-currencies';
 import configureCountries from 'meteor/unchained:core-countries';
@@ -21,7 +23,7 @@ import configureMessaging from 'meteor/unchained:core-messaging';
 
 const logger = createLogger('unchained:platform:migrations');
 
-export default ({ modules = {} } = {}) => {
+export default async ({ modules = {} } = {}) => {
   Migrations.config({
     log: true,
     logger({ level, message }) {
@@ -47,10 +49,18 @@ export default ({ modules = {} } = {}) => {
   configurePayment(modules.payment);
   configureWarehousing(modules.warehousing);
   configureProducts(modules.products);
-  configureBookmarks(modules.bookmarks);
+  const bookmarkLoaders = await configureBookmarks(modules.bookmarks);
   configureQuotations(modules.quotations);
   configureOrders(modules.orders);
   configureAssortments(modules.assortments);
   configureFilters(modules.filters);
   configureSubscriptions(modules.subscriptions);
+  return {
+    instantiateLoaders: async (req) => ({
+      bookmarks: await bookmarkLoaders(req),
+    }),
+    services: {
+      ...bookmarkServices,
+    },
+  };
 };

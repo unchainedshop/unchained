@@ -1,22 +1,38 @@
 import { log } from 'meteor/unchained:core-logger';
-import { Bookmarks } from 'meteor/unchained:core-bookmarks';
 import { Products } from 'meteor/unchained:core-products';
-import { InvalidIdError, ProductNotFoundError } from '../../errors';
+import {
+  InvalidIdError,
+  ProductNotFoundError,
+  BookmarkNotFoundError,
+} from '../../errors';
 
-export default function bookmark(root, { productId, bookmarked }, { userId }) {
+export default async function bookmark(
+  root,
+  { productId, bookmarked },
+  { userId, modules }
+) {
   log('mutation bookmark', { productId, userId });
 
   if (!productId) throw new InvalidIdError({ productId });
   if (!Products.productExists({ productId }))
     throw new ProductNotFoundError({ productId });
 
-  const foundBookmark = Bookmarks.findBookmarks({ productId, userId }).pop();
+  const foundBookmark = await modules.bookmarks.findBookmarkByUserIdAndProductId(
+    { productId, userId }
+  );
 
   if (bookmarked) {
     if (foundBookmark) return foundBookmark;
-    return Bookmarks.createBookmark({ productId, userId });
+    const newBookmarkId = modules.bookmarks.createBookmark({
+      productId,
+      userId,
+    });
+    return modules.bookmarks.findBookmarkById(newBookmarkId);
   }
-  if (foundBookmark)
-    Bookmarks.removeBookmark({ bookmarkId: foundBookmark._id });
+  if (!foundBookmark) {
+    throw new BookmarkNotFoundError({ productId, userId });
+  }
+
+  await modules.bookmarks.removeBookmarkById(foundBookmark._id);
   return foundBookmark;
 }
