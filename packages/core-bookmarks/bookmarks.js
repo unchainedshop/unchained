@@ -26,7 +26,9 @@ export default (config) => {
     });
     const bookmarkByIdLoader = new DataLoader(async (keys) => {
       const results = Bookmarks.find({
-        $in: keys,
+        _id: {
+          $in: keys,
+        },
       }).fetch();
       return keys.map(
         (key) => results.find((result) => result._id === key) || null

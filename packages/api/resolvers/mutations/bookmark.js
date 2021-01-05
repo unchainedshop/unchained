@@ -23,11 +23,12 @@ export default async function bookmark(
 
   if (bookmarked) {
     if (foundBookmark) return foundBookmark;
-    const newBookmarkId = modules.bookmarks.createBookmark({
+    const bookmarkId = await modules.bookmarks.createBookmark({
       productId,
       userId,
     });
-    return modules.bookmarks.findBookmarkById(newBookmarkId);
+
+    return modules.bookmarks.findBookmarkById(bookmarkId);
   }
   if (!foundBookmark) {
     throw new BookmarkNotFoundError({ productId, userId });
