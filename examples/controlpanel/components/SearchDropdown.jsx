@@ -88,7 +88,6 @@ const SearchDropdown = ({
     assortments: data?.searchAssortments?.assortments,
     products: data?.searchProducts?.products,
     users: data?.users,
-    workTypes: data?.workTypes,
   };
   let items = queries[queryType] || [];
 
@@ -104,12 +103,10 @@ const SearchDropdown = ({
         text: item?.texts?.title || item?.name || item?.type,
         content: (
           <Header>
-            {!(queryType === 'users') &&
-              !(queryType === 'workTypes') &&
-              selectImage(item)}
+            {!(queryType === 'users') &&  selectImage(item)}
             <Header.Content>
               {item?.texts?.title || item?.name || item?._id?.toLowerCase()}
-              {!(queryType === 'users') && !(queryType === 'workTypes') && (
+              {!(queryType === 'users') && (
                 <>
                   <Header.Subheader>{item.texts.description}</Header.Subheader>
                   <Label color={resolveStatus(item).color} horizontal>

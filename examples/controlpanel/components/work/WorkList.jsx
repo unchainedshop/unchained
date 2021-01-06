@@ -2,9 +2,8 @@ import gql from 'graphql-tag';
 import React, { useEffect, useState } from 'react';
 import { Checkbox, Table } from 'semantic-ui-react';
 import Link from 'next/link';
+
 import InfiniteDataTable, { withDataTableLoader } from '../InfiniteDataTable';
-import { SEARCH_WORK_TYPES } from '../searchQueries';
-import SearchDropdown from '../SearchDropdown';
 import WorkTypeSelector from './WorkTypeSelector';
 
 const relativeScheduleFromWork = ({ scheduledTime, relativeTime, status }) => {
@@ -84,12 +83,11 @@ const WorkList = ({
     return () => {
       clearInterval(refreshDates);
     };
-  }, [activeStatus, selectedTypeFilter]); // Add dependencies here
+  }, [activeStatus, selectedTypeFilter]);
 
   if (!activeStatus.length) {
     setActiveStatus(statusTypes);
   }
-
   const onWorkStatusChange = (e, { label, checked }) => {
     const currentStatus = [...activeStatus];
     if (checked) {
@@ -97,9 +95,9 @@ const WorkList = ({
     } else {
       currentStatus.splice(currentStatus.indexOf(label), 1);
     }
-
     setActiveStatus(currentStatus);
-    onFilterChange({ filterType: 'status', value: activeStatus });
+    
+    onFilterChange({ filterType: 'status', value: currentStatus });
   };
 
   return (
@@ -122,17 +120,6 @@ const WorkList = ({
               setSelectedTypeFilter(value);
               onFilterChange({ filterType: 'workType', value });
             }}/>
-          {/* <SearchDropdown
-            placeholder="Select work type"
-            searchQuery={SEARCH_WORK_TYPES}
-            multiple
-            onChange={(e, { value }) => {
-              setSelectedTypeFilter(value);
-              onFilterChange({ filterType: 'workType', value });
-            }}
-            value={selectedTypeFilter}
-            queryType={'workTypes'}
-          /> */}
         </Table.HeaderCell>
         {statusTypes.map((status) => (
           <Table.HeaderCell key={status}>

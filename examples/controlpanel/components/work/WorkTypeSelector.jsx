@@ -20,8 +20,8 @@ const WorkTypeSelector = ({ workTypes = [], onChange }) => {
 
 export default compose(
   graphql(SEARCH_WORK_TYPES),
-  mapProps(({ data: {workTypes }, error, loading, ...rest }) => ({
-    workTypes: workTypes?.map(t => ({key: t, value: t, text: t.toLowerCase()})),
+  mapProps(({ data: {activeWorkTypes }, error, loading, ...rest }) => ({
+    workTypes: activeWorkTypes?.map(t => ({key: t, value: t, text: t.toLowerCase()})),
     error,
     loading,
     ...rest

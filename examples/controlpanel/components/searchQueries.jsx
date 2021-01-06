@@ -65,6 +65,6 @@ export const SEARCH_PRODUCTS = gql`
 
 export const SEARCH_WORK_TYPES = gql`
   query searchWorkTypes{
-    workTypes
+    activeWorkTypes
   }
 `;

@@ -199,7 +199,7 @@ class WorkerDirector {
     return { ...query, ...rest };
   }
 
-  static async workTypes() {
+  static async activeWorkTypes() {
     const typeList = await WorkQueue.rawCollection()
       .aggregate([{ $group: { _id: '$type' } }])
       .toArray();

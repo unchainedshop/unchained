@@ -307,7 +307,7 @@ export default [
       """
       Get List of currently registered worker plugins
       """
-      workTypes: [WorkType]!
+      activeWorkTypes: [WorkType]!
     }
   `,
 ];
