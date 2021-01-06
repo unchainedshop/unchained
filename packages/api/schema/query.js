@@ -290,7 +290,7 @@ export default [
         limit: Int = 10
         offset: Int = 0
         status: [WorkStatus] = [NEW]
-        selectTypes: [String] = []
+        selectTypes: [WorkType!] = []
       ): [Work]
 
       """
@@ -307,7 +307,7 @@ export default [
       """
       Get List of currently registered worker plugins
       """
-      workTypes(limit: Int, offset: Int): [RegisteredWorkTypes]!
+      workTypes: [WorkType]!
     }
   `,
 ];

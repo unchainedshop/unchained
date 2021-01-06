@@ -199,21 +199,11 @@ class WorkerDirector {
     return { ...query, ...rest };
   }
 
-  static async workTypes({ skip = 0, limit = 50 }) {
+  static async workTypes() {
     const typeList = await WorkQueue.rawCollection()
-      .aggregate([
-        { $group: { _id: '$type' } },
-        { $limit: limit },
-        { $skip: skip },
-        {
-          $project: {
-            _id: '$_id',
-            type: '$_id',
-          },
-        },
-      ])
+      .aggregate([{ $group: { _id: '$type' } }])
       .toArray();
-    return typeList;
+    return typeList.map((t) => t._id);
   }
 
   static workQueue({ skip, limit, ...selectorOptions }) {

@@ -5,6 +5,7 @@ import Link from 'next/link';
 import InfiniteDataTable, { withDataTableLoader } from '../InfiniteDataTable';
 import { SEARCH_WORK_TYPES } from '../searchQueries';
 import SearchDropdown from '../SearchDropdown';
+import WorkTypeSelector from './WorkTypeSelector';
 
 const relativeScheduleFromWork = ({ scheduledTime, relativeTime, status }) => {
   if (status === 'FAILED' || status === 'SUCCESS' || status === 'DELETED')
@@ -117,7 +118,11 @@ const WorkList = ({
     >
       <Table.Row>
         <Table.HeaderCell colSpan="2">
-          <SearchDropdown
+        <WorkTypeSelector onChange={(e, { value }) => {
+              setSelectedTypeFilter(value);
+              onFilterChange({ filterType: 'workType', value });
+            }}/>
+          {/* <SearchDropdown
             placeholder="Select work type"
             searchQuery={SEARCH_WORK_TYPES}
             multiple
@@ -127,7 +132,7 @@ const WorkList = ({
             }}
             value={selectedTypeFilter}
             queryType={'workTypes'}
-          />
+          /> */}
         </Table.HeaderCell>
         {statusTypes.map((status) => (
           <Table.HeaderCell key={status}>
@@ -160,7 +165,7 @@ export default withDataTableLoader({
       $offset: Int
       $limit: Int
       $status: [WorkStatus!]!
-      $selectTypes: [String] = []
+      $selectTypes: [WorkType!] = []
     ) {
       workQueue(
         offset: $offset

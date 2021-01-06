@@ -57,9 +57,5 @@ export default [
       timeout: Int
     }
 
-    type RegisteredWorkTypes {
-      _id: String!
-      type: String!
-    }
   `,
 ];

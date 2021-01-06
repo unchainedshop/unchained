@@ -64,10 +64,7 @@ export const SEARCH_PRODUCTS = gql`
 `;
 
 export const SEARCH_WORK_TYPES = gql`
-  query searchWorkTypes($offset: Int, $limit: Int) {
-    workTypes(limit: $limit, offset: $offset) {
-      _id
-      type
-    }
+  query searchWorkTypes{
+    workTypes
   }
 `;
