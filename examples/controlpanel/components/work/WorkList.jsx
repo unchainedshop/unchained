@@ -90,7 +90,7 @@ const WorkList = ({
   }
 
   const onWorkStatusChange = (e, { label, checked }) => {
-    const currentStatus = activeStatus;
+    const currentStatus = [...activeStatus];
     if (checked) {
       currentStatus.push(label);
     } else {
@@ -108,7 +108,11 @@ const WorkList = ({
       limit={5}
       createPath={null}
       rowRenderer={(work, i) => (
-        <WorkRow key={`${work._id}-${i}`} work={work} relativeDate={relativeDate} />
+        <WorkRow
+          key={`${work._id}-${i}`}
+          work={work}
+          relativeDate={relativeDate}
+        />
       )}
     >
       <Table.Row>
