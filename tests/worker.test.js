@@ -523,7 +523,7 @@ describe('Worker Module', () => {
         data: { workQueue },
       } = await graphqlFetchAsAdminUser({
         query: /* GraphQL */ `
-          query($status: [WorkStatus], $selectTypes: [String]) {
+          query($status: [WorkStatus], $selectTypes: [WorkType!]) {
             workQueue(status: $status, selectTypes: $selectTypes) {
               _id
               type
@@ -544,7 +544,7 @@ describe('Worker Module', () => {
         data: { workQueue },
       } = await graphqlFetchAsAdminUser({
         query: /* GraphQL */ `
-          query($status: [WorkStatus], $selectTypes: [String]) {
+          query($status: [WorkStatus], $selectTypes: [WorkType!]) {
             workQueue(status: $status, selectTypes: $selectTypes) {
               _id
               type
@@ -565,7 +565,7 @@ describe('Worker Module', () => {
         data: { workQueue },
       } = await graphqlFetchAsAdminUser({
         query: /* GraphQL */ `
-          query($status: [WorkStatus], $selectTypes: [String]) {
+          query($status: [WorkStatus], $selectTypes: [WorkType!]) {
             workQueue(status: $status, selectTypes: $selectTypes) {
               _id
               type
@@ -586,7 +586,7 @@ describe('Worker Module', () => {
         data: { workQueue },
       } = await graphqlFetchAsAdminUser({
         query: /* GraphQL */ `
-          query($status: [WorkStatus], $selectTypes: [String]) {
+          query($status: [WorkStatus], $selectTypes: [WorkType!]) {
             workQueue(status: $status, selectTypes: $selectTypes) {
               _id
               type
@@ -648,17 +648,14 @@ describe('Worker Module', () => {
     });
   });
 
-  describe('query.workTypes for admin user should', () => {
-    it('return all the registered work types', async () => {
+  describe('query.activeWorkTypes for admin user should', () => {
+    it('return all the registered active work types', async () => {
       const {
-        data: { workTypes },
+        data: { activeWorkTypes },
       } = await graphqlFetchAsAdminUser({
         query: /* GraphQL */ `
-          query($limit: Int, $offset: Int) {
-            workTypes(limit: $limit, offset: $offset) {
-              _id
-              type
-            }
+          query {
+            activeWorkTypes
           }
         `,
         variables: {
@@ -666,19 +663,16 @@ describe('Worker Module', () => {
         },
       });
 
-      expect(workTypes.length > 0).toBe(true);
+      expect(activeWorkTypes.length > 0).toBe(true);
     });
   });
 
-  describe('query.workTypes for normal user should', () => {
+  describe('query.activeWorkTypes for normal user should', () => {
     it('return NoPermissionError', async () => {
       const { errors } = await graphqlFetchAsNormalUser({
         query: /* GraphQL */ `
-          query($limit: Int, $offset: Int) {
-            workTypes(limit: $limit, offset: $offset) {
-              _id
-              type
-            }
+          query {
+            activeWorkTypes
           }
         `,
       });
@@ -687,15 +681,12 @@ describe('Worker Module', () => {
     });
   });
 
-  describe('query.workTypes for anonymous user should', () => {
+  describe('query.activeWorkTypes for anonymous user should', () => {
     it('return NoPermissionError', async () => {
       const { errors } = await graphqlFetchAsAnonymousUser({
         query: /* GraphQL */ `
-          query($limit: Int, $offset: Int) {
-            workTypes(limit: $limit, offset: $offset) {
-              _id
-              type
-            }
+          query {
+            activeWorkTypes
           }
         `,
       });

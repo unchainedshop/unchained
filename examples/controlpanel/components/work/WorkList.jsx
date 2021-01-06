@@ -96,7 +96,7 @@ const WorkList = ({
       currentStatus.splice(currentStatus.indexOf(label), 1);
     }
     setActiveStatus(currentStatus);
-    
+
     onFilterChange({ filterType: 'status', value: currentStatus });
   };
 
@@ -116,10 +116,12 @@ const WorkList = ({
     >
       <Table.Row>
         <Table.HeaderCell colSpan="2">
-        <WorkTypeSelector onChange={(e, { value }) => {
+          <WorkTypeSelector
+            onChange={(e, { value }) => {
               setSelectedTypeFilter(value);
               onFilterChange({ filterType: 'workType', value });
-            }}/>
+            }}
+          />
         </Table.HeaderCell>
         {statusTypes.map((status) => (
           <Table.HeaderCell key={status}>

@@ -103,7 +103,7 @@ const SearchDropdown = ({
         text: item?.texts?.title || item?.name || item?.type,
         content: (
           <Header>
-            {!(queryType === 'users') &&  selectImage(item)}
+            {!(queryType === 'users') && selectImage(item)}
             <Header.Content>
               {item?.texts?.title || item?.name || item?._id?.toLowerCase()}
               {!(queryType === 'users') && (
