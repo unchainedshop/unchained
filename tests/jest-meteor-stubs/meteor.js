@@ -13,7 +13,9 @@ const Meteor = {
   users: new Mongo.Collection(),
   userId: jest.fn().mockReturnValue('f00bar'),
   startup: jest.fn(),
-  bindEnvironment: jest.fn(),
+  bindEnvironment: (fn) => {
+    return fn;
+  },
   wrapAsync: jest.fn(),
   Error: jest.fn(Error),
 };

@@ -13,50 +13,103 @@ import FilesCollection from './createFilesCollection/FilesCollection';
 import { setupDatabase } from '../../tests/helpers';
 import { User } from '../../tests/seeds/users';
 
-let connection;
-let db;
-
-describe('Roles', () => {
+let testCollection;
+describe('Meteor Files', () => {
   beforeAll(async () => {
     // eslint-disable-next-line no-unused-vars
-    [db, connection] = await setupDatabase();
+    testCollection = new FilesCollection('test_files_collection');
   });
 
-  afterEach(() => {});
+  it('insertWithRemoteBuffer', async () => {
+    const imageResult = await fetch(
+      'https://assets-cdn.github.com/images/modules/logos_page/Octocat.png'
+    );
+    const imageBuffer = await imageResult.buffer();
 
-  afterAll(async () => {
-    await connection.close();
-  });
+    const file = {
+      fileName: 'Octocat.png',
+      type: 'image/png',
+      size: imageBuffer.length,
+      buffer: imageBuffer,
+    };
 
-  describe('Meteor Files', () => {
-    it('insertWithRemoteBuffer', async () => {
-      const testCollection = new FilesCollection('test_collection');
-
-      const imageResult = await fetch(
-        'https://assets-cdn.github.com/images/modules/logos_page/Octocat.png'
-      );
-      const imageBuffer = await imageResult.buffer();
-
-      const file = {
-        fileName: 'Octocat.png',
-        type: 'image/png',
-        size: imageBuffer.length,
-        buffer: imageBuffer,
-      };
-
-      const result = await testCollection.insertWithRemoteBuffer({
-        file,
-        userId: User._id,
-      });
-      console.log('RESULT: ', result);
-      // const result = await FilesCollection.prototype.insertWithRemoteURL({
-      //   url: 'https://unchained.shop/img/unchained-commerce-snake.svg',
-      //   meta: {},
-      // });
-      // console.log('RESULT: ', result);
-      // expect(testRole.allowRules[actionName]).toEqual(
-      //   expect.arrayContaining([allowFn])
-      // );
+    const result = await testCollection.insertWithRemoteBuffer({
+      file,
+      userId: User._id,
     });
+    const matchingObject = {
+      name: result._id,
+      extension: '',
+      ext: '',
+      extensionWithDot: '.',
+      path: `assets/app/uploads/test_files_collection/${result._id}`,
+      meta: {},
+      type: 'image/png',
+      mime: 'image/png',
+      'mime-type': 'image/png',
+      size: 9115,
+      userId: 'user',
+      versions: {
+        original: {
+          path: `assets/app/uploads/test_files_collection/${result._id}`,
+          size: 9115,
+          type: 'image/png',
+          extension: '',
+        },
+      },
+      _downloadRoute: '/cdn/storage',
+      _collectionName: 'test_files_collection',
+      isVideo: false,
+      isAudio: false,
+      isImage: true,
+      isText: false,
+      isJSON: false,
+      isPDF: false,
+      _storagePath: 'assets/app/uploads/test_files_collection',
+      _id: result._id,
+    };
+    expect(result).toMatchObject(matchingObject);
+  });
+
+  it('insertWithRemoteURL', async () => {
+    const result = await testCollection.insertWithRemoteURL({
+      url:
+        'https://assets-cdn.github.com/images/modules/logos_page/Octocat.png',
+      userId: User._id,
+    });
+
+    const matchingObject = {
+      name: 'Octocat.png',
+      extension: 'png',
+      ext: 'png',
+      extensionWithDot: '.png',
+      path: `assets/app/uploads/test_files_collection/${result._id}.png`,
+      meta: {},
+      type: 'text/html; charset=utf-8',
+      mime: 'text/html; charset=utf-8',
+      'mime-type': 'text/html; charset=utf-8',
+      size: 5142,
+      userId: 'user',
+      versions: {
+        original: {
+          path: `assets/app/uploads/test_files_collection/${result._id}.png`,
+          size: 5142,
+          type: 'text/html; charset=utf-8',
+          extension: 'png',
+        },
+      },
+      _downloadRoute: '/cdn/storage',
+      _collectionName: 'test_files_collection',
+      isVideo: false,
+      isAudio: false,
+      isImage: false,
+      isText: true,
+      isJSON: false,
+      isPDF: false,
+      _storagePath: 'assets/app/uploads/test_files_collection',
+      _id: result._id,
+    };
+
+    expect(result).toMatchObject(matchingObject);
   });
 });

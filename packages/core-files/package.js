@@ -12,6 +12,7 @@ Npm.depends({
   'request-libcurl': '2.2.1',
   'file-type': '16.0.0',
   eventemitter3: '4.0.7',
+  mongodb: '3.6.3',
   '@reactioncommerce/random': '1.0.2',
 });
 

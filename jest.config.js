@@ -21,9 +21,12 @@ module.exports = {
     '^lodash.merge$': '<rootDir>/tests/jest-meteor-stubs/lodash-merge',
     '^fs-extra$':
       '<rootDir>/packages/core-files/.npm/package/node_modules/fs-extra',
-    '^request-libcurl$': '<rootDir>/tests/jest-meteor-stubs/request-libcurl',
+    '^request-libcurl$':
+      '<rootDir>/packages/core-files/.npm/package/node_modules/request-libcurl',
     '^file-type$': '<rootDir>/tests/jest-meteor-stubs/file-type',
     '^eventemitter3$':
       '<rootDir>/packages/core-files/.npm/package/node_modules/eventemitter3',
+    '^mongodb$':
+      '<rootDir>/packages/core-files/.npm/package/node_modules/mongodb',
   },
 };
