@@ -1,5 +1,4 @@
-import { WorkerDirector } from 'meteor/unchained:core-worker';
-import WorkerPlugin from './base';
+import { WorkerDirector, WorkerPlugin } from 'meteor/unchained:core-worker';
 
 class ExternalWorkerPlugin extends WorkerPlugin {
   static key = 'shop.unchained.worker-plugin.external';
