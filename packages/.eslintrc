@@ -1,19 +1,35 @@
 {
-  "parser": "babel-eslint",
-  "plugins": ["prettier"],
-  "extends": ["airbnb-base", "plugin:prettier/recommended"],
+  "root": true,
+  "parser": "@typescript-eslint/parser",
+  "plugins": ["@typescript-eslint", "prettier"],
+  "extends": [
+    "airbnb-base",
+    "eslint:recommended",
+    "plugin:@typescript-eslint/recommended",
+    "plugin:prettier/recommended"
+  ],
   "env": {
     "node": true,
     "browser": false,
     "meteor": true
   },
-  "root": true,
   "rules": {
-    "prettier/prettier": ["error"],
+    "prettier/prettier": [
+      "error",
+      {
+        "printWidth": 80,
+        "semi": true,
+        "trailingComma": "all",
+        "singleQuote": true,
+        "proseWrap": "always"
+      }
+    ],
     "max-classes-per-file": [0],
     "no-underscore-dangle": ["error", { "allow": ["_id"] }],
     "import/no-extraneous-dependencies": [0],
     "import/no-unresolved": [0],
-    "import/extensions": [0]
+    "import/extensions": [0],
+    "no-unused-vars": "off",
+    "@typescript-eslint/no-unused-vars": "error"
   }
 }
