@@ -118,7 +118,6 @@ Migrations.add({
 });
 
 export default () => {
-  Migrations.migrateTo('latest');
   Filters.rawCollection().createIndex({ isActive: 1 });
   Filters.rawCollection().createIndex({ key: 1 }, { unique: true });
 

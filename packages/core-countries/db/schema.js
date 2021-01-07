@@ -12,7 +12,6 @@ Countries.attachSchema(
         required: true,
       },
       isActive: Boolean,
-      isBase: Boolean,
       authorId: { type: String, required: true },
       defaultCurrencyId: String,
       ...Schemas.timestampFields,
@@ -33,6 +32,5 @@ Migrations.add({
 });
 
 export default () => {
-  Migrations.migrateTo('latest');
   Countries.rawCollection().createIndex({ isoCode: 1 }, { unique: true });
 };

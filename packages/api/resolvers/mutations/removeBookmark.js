@@ -8,10 +8,10 @@ export default async function removeBookmark(
 ) {
   log('mutation removeBookmark', { bookmarkId, userId });
   if (!bookmarkId) throw new InvalidIdError({ bookmarkId });
-  const bookmark = await modules.bookmarks.findBookmarkById(bookmarkId);
+  const bookmark = await modules.bookmarks.findById(bookmarkId);
   if (!bookmark) {
     throw new BookmarkNotFoundError({ bookmarkId });
   }
-  await modules.bookmarks.removeBookmarkById(bookmarkId);
+  await modules.bookmarks.removeById(bookmarkId);
   return bookmark;
 }

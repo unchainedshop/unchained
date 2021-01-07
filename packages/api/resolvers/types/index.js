@@ -54,6 +54,7 @@ import SubscriptionDelivery from './subscription-delivery';
 import SubscriptionPeriod from './subscription-period';
 import SubscriptionPlan from './subscription-plan';
 import Subscription from './subscription';
+import Bookmark from './bookmark';
 
 export default {
   User,
@@ -65,6 +66,7 @@ export default {
   Color,
   Media,
   Order,
+  Bookmark,
   PaymentProvider,
   DeliveryProvider,
   WarehousingProvider,

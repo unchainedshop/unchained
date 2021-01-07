@@ -19,7 +19,7 @@ export default async function createBookmark(
   if (!Products.productExists({ productId }))
     throw new ProductNotFoundError({ productId });
 
-  const bookmark = await modules.bookmarks.findBookmarkByUserIdAndProductId({
+  const bookmark = await modules.bookmarks.findByUserIdAndProductId({
     productId,
     userId: foreignUserId,
   });
@@ -27,9 +27,9 @@ export default async function createBookmark(
   if (bookmark)
     throw new BookmarkAlreadyExistsError({ bookmarkId: bookmark._id });
 
-  const bookmarkId = await modules.bookmarks.createBookmark({
+  const bookmarkId = await modules.bookmarks.create({
     userId: foreignUserId,
     productId,
   });
-  return modules.bookmarks.findBookmarkById(bookmarkId);
+  return modules.bookmarks.findById(bookmarkId);
 }

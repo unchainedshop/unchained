@@ -6,7 +6,7 @@ import { Table, Icon, Button } from 'semantic-ui-react';
 import Link from 'next/link';
 import InfiniteDataTable, { withDataTableLoader } from '../InfiniteDataTable';
 
-const LanguageList = ({ changeBaseLanguage, ...rest }) => (
+const LanguageList = ({ ...rest }) => (
   <InfiniteDataTable
     {...rest}
     cols={3}
@@ -28,10 +28,6 @@ const LanguageList = ({ changeBaseLanguage, ...rest }) => (
         <Table.Cell>
           {language.isBase ? (
             <b>Base language</b>
-          ) : (
-            <Button basic name={language._id} onClick={changeBaseLanguage}>
-              Set as base language
-            </Button>
           )}
         </Table.Cell>
       </Table.Row>
@@ -59,25 +55,6 @@ export default compose(
         }
       }
     `,
-  }),
-  graphql(
-    gql`
-      mutation changeBaseLanguage($languageId: ID!) {
-        setBaseLanguage(languageId: $languageId) {
-          _id
-          isBase
-        }
-      }
-    `,
-    {
-      options: {
-        refetchQueries: ['languages'],
-      },
-    }
-  ),
-  withHandlers({
-    changeBaseLanguage: ({ mutate }) => (event, element) =>
-      mutate({ variables: { languageId: element.name } }),
   }),
   pure
 )(LanguageList);

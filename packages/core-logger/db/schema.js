@@ -67,8 +67,6 @@ Migrations.add({
 });
 
 export default () => {
-  Migrations.migrateTo('latest');
-
   Logs.rawCollection().createIndex(
     {
       created: -1,

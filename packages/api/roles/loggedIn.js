@@ -154,9 +154,7 @@ export default (role, actions) => {
   };
 
   const isOwnedBookmark = (root, { bookmarkId }, { userId, modules }) => {
-    const bookmark = Promise.await(
-      modules.bookmarks.findBookmarkById(bookmarkId)
-    );
+    const bookmark = Promise.await(modules.bookmarks.findById(bookmarkId));
     // return true if db entity not found in order
     // to let the resolver throw a good exception
     if (!bookmark) return true;

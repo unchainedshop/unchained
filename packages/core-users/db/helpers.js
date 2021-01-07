@@ -2,7 +2,7 @@ import { Promise } from 'meteor/promise';
 import { Locale } from 'locale';
 import { accountsPassword, dbManager } from 'meteor/unchained:core-accountsjs';
 import 'meteor/dburles:collection-helpers';
-import { getFallbackLocale } from 'meteor/unchained:core';
+import { systemLocale } from 'meteor/unchained:utils';
 import { Countries } from 'meteor/unchained:core-countries';
 import { Languages } from 'meteor/unchained:core-languages';
 import { log, Logs } from 'meteor/unchained:core-logger';
@@ -59,7 +59,7 @@ Users.helpers({
     const locale =
       localeContext ||
       (this.lastLogin?.locale && new Locale(this.lastLogin.locale)) ||
-      getFallbackLocale();
+      systemLocale;
     return locale;
   },
   avatar() {

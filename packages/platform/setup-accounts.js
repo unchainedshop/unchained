@@ -4,23 +4,13 @@ import {
   accountsPassword,
   randomValueHex,
 } from 'meteor/unchained:core-accountsjs';
-import { getFallbackLocale } from 'meteor/unchained:core';
 import { Users } from 'meteor/unchained:core-users';
 import { Orders } from 'meteor/unchained:core-orders';
-import { Bookmarks } from 'meteor/unchained:core-bookmarks';
 import { Promise } from 'meteor/promise';
 import cloneDeep from 'lodash.clonedeep';
 import moniker from 'moniker';
 
 accountsServer.users = Users;
-
-export const buildContext = (user) => {
-  const locale = user?.lastLogin?.locale || getFallbackLocale().normalized;
-  return {
-    user: user || {},
-    locale,
-  };
-};
 
 export default ({ mergeUserCartsOnLogin = true } = {}) => {
   accountsPassword.options.validateNewUser = (user) => {
@@ -87,6 +77,7 @@ export default ({ mergeUserCartsOnLogin = true } = {}) => {
       countryContext,
       remoteAddress,
       normalizedLocale,
+      services,
     } = connection;
 
     Users.updateHeartbeat({
@@ -105,12 +96,14 @@ export default ({ mergeUserCartsOnLogin = true } = {}) => {
           mergeCarts: mergeUserCartsOnLogin,
         })
       );
-      Promise.await(
-        Bookmarks.migrateBookmarks({
+
+      await services.migrateBookmarks(
+        {
           fromUserId: userIdBeforeLogin,
           toUserId: user._id,
           mergeBookmarks: mergeUserCartsOnLogin,
-        })
+        },
+        connection
       );
     }
   });

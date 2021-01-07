@@ -17,23 +17,24 @@ export default async function bookmark(
   if (!Products.productExists({ productId }))
     throw new ProductNotFoundError({ productId });
 
-  const foundBookmark = await modules.bookmarks.findBookmarkByUserIdAndProductId(
-    { productId, userId }
-  );
+  const foundBookmark = await modules.bookmarks.findByUserIdAndProductId({
+    productId,
+    userId,
+  });
 
   if (bookmarked) {
     if (foundBookmark) return foundBookmark;
-    const bookmarkId = await modules.bookmarks.createBookmark({
+    const bookmarkId = await modules.bookmarks.create({
       productId,
       userId,
     });
 
-    return modules.bookmarks.findBookmarkById(bookmarkId);
+    return modules.bookmarks.findById(bookmarkId);
   }
   if (!foundBookmark) {
     throw new BookmarkNotFoundError({ productId, userId });
   }
 
-  await modules.bookmarks.removeBookmarkById(foundBookmark._id);
+  await modules.bookmarks.removeById(foundBookmark._id);
   return foundBookmark;
 }

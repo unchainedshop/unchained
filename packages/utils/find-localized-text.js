@@ -1,5 +1,5 @@
 import LRU from 'lru-cache';
-import { getFallbackLocale } from './locale-context';
+import { systemLocale } from './locale-helpers';
 
 const { NODE_ENV } = process.env;
 
@@ -38,10 +38,9 @@ const findLocalizedText = (collection, selector, locale) => {
     return exactTranslation;
   }
 
-  const fallbackLocale = getFallbackLocale();
-  if (fallbackLocale.normalized !== locale.normalized) {
+  if (systemLocale.normalized !== locale.normalized) {
     const fallbackTranslation = collection.findOne(
-      extendSelectorWithLocale(selector, fallbackLocale)
+      extendSelectorWithLocale(selector, systemLocale)
     );
     if (fallbackTranslation) {
       textCache.set(cacheKey, fallbackTranslation);

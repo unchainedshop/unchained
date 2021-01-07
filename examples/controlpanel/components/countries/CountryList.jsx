@@ -6,7 +6,7 @@ import { Table, Icon, Button } from 'semantic-ui-react';
 import Link from 'next/link';
 import InfiniteDataTable, { withDataTableLoader } from '../InfiniteDataTable';
 
-const CountryList = ({ changeBaseCountry, ...rest }) => (
+const CountryList = ({ ...rest }) => (
   <InfiniteDataTable
     {...rest}
     cols={3}
@@ -25,11 +25,7 @@ const CountryList = ({ changeBaseCountry, ...rest }) => (
         </Table.Cell>
         <Table.Cell>
           {country.isBase ? (
-            <b>Basisland</b>
-          ) : (
-            <Button basic name={country._id} onClick={changeBaseCountry}>
-              Als Basisland festlegen
-            </Button>
+            <b>Base Country</b>
           )}
         </Table.Cell>
       </Table.Row>
@@ -38,7 +34,7 @@ const CountryList = ({ changeBaseCountry, ...rest }) => (
     <Table.Row>
       <Table.HeaderCell>Name</Table.HeaderCell>
       <Table.HeaderCell>Active?</Table.HeaderCell>
-      <Table.HeaderCell>Basisland</Table.HeaderCell>
+      <Table.HeaderCell>Base Country</Table.HeaderCell>
     </Table.Row>
   </InfiniteDataTable>
 );
@@ -57,25 +53,6 @@ export default compose(
         }
       }
     `,
-  }),
-  graphql(
-    gql`
-      mutation changeBaseCountry($countryId: ID!) {
-        setBaseCountry(countryId: $countryId) {
-          _id
-          isBase
-        }
-      }
-    `,
-    {
-      options: {
-        refetchQueries: ['countries'],
-      },
-    }
-  ),
-  withHandlers({
-    changeBaseCountry: ({ mutate }) => (event, element) =>
-      mutate({ variables: { countryId: element.name } }),
   }),
   pure
 )(CountryList);

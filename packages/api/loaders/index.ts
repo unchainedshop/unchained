@@ -1,0 +1,29 @@
+import DataLoader from 'dataloader';
+export interface UnchainedServerLoaders { }
+
+export default async (req, unchained): Promise<UnchainedServerLoaders> => {
+  return {
+    bookmarksByQueryLoader: new DataLoader(async (queries) => {
+      const results = unchained.modules.bookmarks.find({
+        $or: queries,
+      });
+      return queries.map(
+        (key) =>
+          results.find(
+            (result) =>
+              result.userId === key.userId && result.productId === key.productId
+          ) || null
+      );
+    });
+    bookmarkByIdLoader: new DataLoader(async (keys) => {
+      const results = unchained.modules.bookmarks.find({
+        _id: {
+          $in: keys,
+        },
+      });
+      return keys.map(
+        (key) => results.find((result) => result._id === key) || null
+      );
+    });
+  };
+};

@@ -12,3 +12,4 @@ disable-oplog@1.0.7
 unchained:platform
 es5-shim@4.8.0
 meteor@1.9.3
+typescript

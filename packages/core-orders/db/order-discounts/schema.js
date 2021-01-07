@@ -38,7 +38,6 @@ Migrations.add({
 });
 
 export default () => {
-  Migrations.migrateTo('latest');
   OrderDiscounts.rawCollection().createIndex({ orderId: 1 });
   OrderDiscounts.rawCollection().createIndex({ trigger: 1 });
 };

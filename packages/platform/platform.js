@@ -1,13 +1,13 @@
 import startAPI from 'meteor/unchained:api';
+import initCore from 'meteor/unchained:core';
 import interceptEmails from './intercept-emails';
-import setupAccounts, { buildContext } from './setup-accounts';
+import setupAccounts from './setup-accounts';
 import setupWorkqueue, { workerTypeDefs } from './setup-workqueue';
-import setupCore from './setup-core';
+import setupMigrations from './setup-migrations';
 import setupTemplates, { MessageTypes } from './setup-templates';
-
 import './worker/bulk-import';
 
-export { buildContext, MessageTypes };
+export { MessageTypes };
 
 const {
   NODE_ENV,
@@ -28,7 +28,14 @@ const isEmailInterceptionEnabled = (options) => {
 export const queueWorkers = [];
 
 export const startPlatform = async ({ modules, typeDefs, ...options } = {}) => {
-  const unchained = await setupCore({ modules, ...options });
+  const workQueueIsEnabled = isWorkQueueEnabled(options);
+  const emailInterceptionIsEnabled = isEmailInterceptionEnabled(options);
+
+  if (workQueueIsEnabled) {
+    await setupMigrations();
+  }
+  const unchained = await initCore({ modules, ...options });
+
   setupAccounts(options);
   setupTemplates(options);
   startAPI({
@@ -36,8 +43,8 @@ export const startPlatform = async ({ modules, typeDefs, ...options } = {}) => {
     typeDefs: [...workerTypeDefs(), ...(typeDefs || [])],
     unchained,
   });
-  if (isEmailInterceptionEnabled(options)) interceptEmails(options);
-  if (isWorkQueueEnabled(options)) {
+  if (emailInterceptionIsEnabled) interceptEmails(options);
+  if (workQueueIsEnabled) {
     const handlers = setupWorkqueue({
       cronText:
         NODE_ENV !== 'production' ? 'every 2 seconds' : 'every 30 seconds',

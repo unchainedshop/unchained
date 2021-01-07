@@ -5,23 +5,19 @@ Package.describe({
   git: 'https://github.com/unchainedshop/unchained',
   documentation: 'README.md',
 });
-
-Npm.depends({
-  dataloader: '2.0.0',
-});
-
 Package.onUse((api) => {
   api.versionsFrom('1.11.1');
   api.use('ecmascript');
   api.use('mongo');
   api.use('promise');
-  api.use('dburles:collection-helpers@1.1.0');
+  api.use('typescript@4.1.2');
+
   api.use('aldeed:collection2@3.2.1');
 
   api.use('unchained:utils@0.55.4');
   api.use('unchained:core-logger@0.55.4');
 
-  api.mainModule('bookmarks.js', 'server');
+  api.mainModule('bookmarks.ts', 'server');
 });
 
 Package.onTest((api) => {

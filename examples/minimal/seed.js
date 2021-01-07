@@ -32,11 +32,9 @@ export default async () => {
     await admin.setPassword(hashPassword('password'));
 
     const languages = ['de', 'fr'].map((code, key) => {
-      const isBase = key === 0;
       const language = Languages.createLanguage({
         isoCode: code,
         isActive: true,
-        isBase,
         authorId: admin._id,
       });
       return language.isoCode;
@@ -50,10 +48,8 @@ export default async () => {
       return currency._id;
     });
     const countries = ['CH'].map((code, key) => {
-      const isBase = key === 0;
       const country = Countries.createCountry({
         isoCode: code,
-        isBase,
         isActive: true,
         authorId: admin._id,
         defaultCurrencyId: currencies[key],

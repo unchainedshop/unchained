@@ -1,11 +1,17 @@
+import { systemLocale } from 'meteor/unchained:utils';
 import { Languages } from './collections';
+
+Languages.helpers({
+  isBase() {
+    return this.isoCode === systemLocale.language;
+  },
+});
 
 Languages.createLanguage = ({ isoCode, ...languageData }) => {
   const _id = Languages.insert({
     created: new Date(),
     isoCode: isoCode.toLowerCase(),
     isActive: true,
-    isBase: false,
     ...languageData,
   });
   return Languages.findOne({ _id });
@@ -32,27 +38,6 @@ Languages.findLanguages = ({ limit, offset, includeInactive }) => {
   }).fetch();
 };
 
-Languages.setBase = ({ languageId }) => {
-  Languages.update(
-    { isBase: true },
-    {
-      $set: {
-        isBase: false,
-        updated: new Date(),
-      },
-    },
-    { multi: true }
-  );
-  Languages.update(
-    { _id: languageId },
-    {
-      $set: {
-        isBase: true,
-        updated: new Date(),
-      },
-    }
-  );
-};
 Languages.updateLanguage = ({ languageId, language }) => {
   return Languages.update(
     { _id: languageId },

@@ -1,8 +1,12 @@
 import 'meteor/dburles:collection-helpers';
 import { Countries } from 'meteor/unchained:core-countries';
 import { Products, ProductStatus } from 'meteor/unchained:core-products';
-import { findUnusedSlug, findPreservingIds } from 'meteor/unchained:utils';
-import { findLocalizedText } from 'meteor/unchained:core';
+import {
+  findUnusedSlug,
+  findPreservingIds,
+  findLocalizedText,
+} from 'meteor/unchained:utils';
+
 import { Locale } from 'locale';
 import { log } from 'meteor/unchained:core-logger';
 import { makeBreadcrumbsBuilder } from '../breadcrumbs';

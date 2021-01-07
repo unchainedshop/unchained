@@ -12,7 +12,6 @@ Languages.attachSchema(
         required: true,
       },
       isActive: Boolean,
-      isBase: Boolean,
       authorId: { type: String, required: true },
       ...Schemas.timestampFields,
     },
@@ -32,6 +31,5 @@ Migrations.add({
 });
 
 export default () => {
-  Migrations.migrateTo('latest');
   Languages.rawCollection().createIndex({ isoCode: 1 }, { unique: true });
 };

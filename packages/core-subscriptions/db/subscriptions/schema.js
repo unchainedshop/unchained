@@ -79,7 +79,6 @@ Migrations.add({
 });
 
 export default () => {
-  Migrations.migrateTo('latest');
   Subscriptions.rawCollection().createIndex({ userId: 1 });
   Subscriptions.rawCollection().createIndex({ productId: 1 });
   Subscriptions.rawCollection().createIndex({ status: 1 });

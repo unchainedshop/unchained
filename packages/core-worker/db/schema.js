@@ -76,7 +76,6 @@ Migrations.add({
 });
 
 export default () => {
-  Migrations.migrateTo('latest');
   WorkQueue.rawCollection().createIndex(
     {
       created: -1,

@@ -156,7 +156,6 @@ Migrations.add({
 });
 
 export default () => {
-  Migrations.migrateTo('latest');
   Products.rawCollection().createIndex({ sequence: 1 });
   Products.rawCollection().createIndex({ slugs: 1 });
   Products.rawCollection().createIndex({ status: 1 });
