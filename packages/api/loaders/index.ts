@@ -1,5 +1,5 @@
 import DataLoader from 'dataloader';
-export interface UnchainedServerLoaders { }
+export interface UnchainedServerLoaders {}
 
 export default async (req, unchained): Promise<UnchainedServerLoaders> => {
   return {
@@ -14,16 +14,16 @@ export default async (req, unchained): Promise<UnchainedServerLoaders> => {
               result.userId === key.userId && result.productId === key.productId
           ) || null
       );
-    });
-    bookmarkByIdLoader: new DataLoader(async (keys) => {
+    }),
+    bookmarkByIdLoader: new DataLoader(async (ids) => {
       const results = unchained.modules.bookmarks.find({
         _id: {
-          $in: keys,
+          $in: ids,
         },
       });
-      return keys.map(
+      return ids.map(
         (key) => results.find((result) => result._id === key) || null
       );
-    });
+    }),
   };
 };
