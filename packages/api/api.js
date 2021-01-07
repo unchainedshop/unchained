@@ -4,10 +4,10 @@ import createGraphQLServer from './createGraphQLServer';
 import createBulkImportServer from './createBulkImportServer';
 import { configureRoles } from './roles';
 
-export hashPassword from './hashPassword';
-export getCart from './getCart';
-export evaluateContext from './evaluateContext';
-export filterContext from './filterContext';
+export { default as hashPassword } from './hashPassword';
+export { default as getCart } from './getCart';
+export { default as evaluateContext } from './evaluateContext';
+export { default as filterContext } from './filterContext';
 
 export * as roles from './roles';
 export * as acl from './acl';
