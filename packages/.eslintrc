@@ -30,6 +30,16 @@
     "import/no-unresolved": [0],
     "import/extensions": [0],
     "no-unused-vars": "off",
-    "@typescript-eslint/no-unused-vars": "error"
-  }
+    "@typescript-eslint/no-unused-vars": "error",
+    "@typescript-eslint/explicit-module-boundary-types": "off"
+  },
+  "overrides": [
+    {
+      // enable the rule specifically for TypeScript files
+      "files": ["*.ts"],
+      "rules": {
+        "@typescript-eslint/explicit-module-boundary-types": ["error"]
+      }
+    }
+  ]
 }
