@@ -30,6 +30,15 @@ Migrations.add({
   down() {},
 });
 
+Migrations.add({
+  version: 20210108.3,
+  name: 'remove isBase',
+  up() {
+    Languages.update({}, { $unset: { isBase: "" } }, { multi: true, bypassCollection2: true })
+  },
+  down() {},
+});
+
 export default () => {
   Languages.rawCollection().createIndex({ isoCode: 1 }, { unique: true });
 };

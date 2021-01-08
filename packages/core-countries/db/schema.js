@@ -31,6 +31,16 @@ Migrations.add({
   down() {},
 });
 
+
+Migrations.add({
+  version: 20210108.2,
+  name: 'remove isBase',
+  up() {
+    Countries.update({}, { $unset: { isBase: 1 } }, { multi: true, bypassCollection2: true })
+  },
+  down() {},
+});
+
 export default () => {
   Countries.rawCollection().createIndex({ isoCode: 1 }, { unique: true });
 };
