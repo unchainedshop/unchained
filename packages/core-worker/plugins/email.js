@@ -1,7 +1,6 @@
-import { WorkerDirector } from 'meteor/unchained:core-worker';
+import { WorkerDirector, WorkerPlugin } from 'meteor/unchained:core-worker';
 import { createLogger } from 'meteor/unchained:core-logger';
 import { Email } from 'meteor/email';
-import WorkerPlugin from './base';
 
 const logger = createLogger('unchained:core-worker');
 
