@@ -1,8 +1,7 @@
-import { compose, pure, withHandlers } from 'recompose';
+import { compose, pure } from 'recompose';
 import gql from 'graphql-tag';
-import { graphql } from '@apollo/client/react/hoc';
 import React from 'react';
-import { Table, Icon, Button } from 'semantic-ui-react';
+import { Table, Icon } from 'semantic-ui-react';
 import Link from 'next/link';
 import InfiniteDataTable, { withDataTableLoader } from '../InfiniteDataTable';
 
@@ -23,11 +22,7 @@ const CountryList = ({ ...rest }) => (
             <Icon color="green" name="checkmark" size="large" />
           )}
         </Table.Cell>
-        <Table.Cell>
-          {country.isBase ? (
-            <b>Base Country</b>
-          )}
-        </Table.Cell>
+        <Table.Cell>{country.isBase ? <b>Base Country</b> : null}</Table.Cell>
       </Table.Row>
     )}
   >
