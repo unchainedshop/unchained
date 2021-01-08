@@ -3,11 +3,11 @@ import { Users } from 'meteor/unchained:core-users';
 import { check } from 'meteor/check';
 
 export interface UnchainedServerUserContext {
-  userId?: String
-  user?: any
+  userId?: string;
+  user?: any;
 }
 
-export default async (req, unchained): Promise<UnchainedServerUserContext> => {
+export default async (req): Promise<UnchainedServerUserContext> => {
   // there is a possible current user connected!
   let loginToken = req.headers['meteor-login-token'];
   if (req.cookies.meteor_login_token) {

@@ -1,5 +1,7 @@
 import getUserContext, { UnchainedServerUserContext } from './user-context';
-import getLocaleContext, { UnchainedServerLocaleContext } from './locale-context';
+import getLocaleContext, {
+  UnchainedServerLocaleContext,
+} from './locale-context';
 
 import createGraphQLServer from './createGraphQLServer';
 import createBulkImportServer from './createBulkImportServer';
@@ -17,27 +19,34 @@ export * as acl from './acl';
 export * as errors from './errors';
 
 export interface UnchainedAPI {
-  version: String
+  version: string;
 }
 
-export type UnchainedServerContext = UnchainedServerLocaleContext & UnchainedServerUserContext & UnchainedServerLoaders & UnchainedAPI
+export type UnchainedServerContext = UnchainedServerLocaleContext &
+  UnchainedServerUserContext &
+  UnchainedServerLoaders &
+  UnchainedAPI;
 
 export interface UnchainedServerOptions {
-  unchained: UnchainedAPI
-  rolesOptions: any
+  unchained: UnchainedAPI;
+  rolesOptions: any;
 }
 
 const UNCHAINED_API_VERSION = '0.55.4'; // eslint-disable-line
 
 export const createContextResolver = (unchained: UnchainedAPI) => async ({
   req,
-}) : Promise<UnchainedServerContext> => {
-  const loaders = await instantiateLoaders(req, unchained)
-  const intermediateContext : Partial<UnchainedServerContext> = { ...unchained, ...loaders };
-  const userContext = await getUserContext(req, intermediateContext);
-  const localeContext = await getLocaleContext(req, intermediateContext);
+}): Promise<UnchainedServerContext> => {
+  const loaders = await instantiateLoaders(req, unchained);
+  // const intermediateContext: Partial<UnchainedServerContext> = {
+  //   ...unchained,
+  //   ...loaders,
+  // };
+  const userContext = await getUserContext(req /* intermediateContext */);
+  const localeContext = await getLocaleContext(req);
   return {
-    ...intermediateContext,
+    ...unchained,
+    ...loaders,
     ...userContext,
     ...localeContext,
     version: UNCHAINED_API_VERSION,
@@ -45,11 +54,7 @@ export const createContextResolver = (unchained: UnchainedAPI) => async ({
 };
 
 const startUnchainedServer = (options: UnchainedServerOptions) => {
-  const {
-    unchained,
-    rolesOptions,
-    ...apolloServerOptions
-  } = options || {};
+  const { unchained, rolesOptions, ...apolloServerOptions } = options || {};
 
   configureRoles(rolesOptions);
 

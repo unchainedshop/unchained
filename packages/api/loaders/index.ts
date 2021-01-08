@@ -1,5 +1,9 @@
 import DataLoader from 'dataloader';
-export interface UnchainedServerLoaders {}
+
+export interface UnchainedServerLoaders {
+  bookmarksByQueryLoader: any;
+  bookmarkByIdLoader: any;
+}
 
 export default async (req, unchained): Promise<UnchainedServerLoaders> => {
   return {

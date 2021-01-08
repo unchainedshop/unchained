@@ -12,9 +12,9 @@ import { Languages } from 'meteor/unchained:core-languages';
 import LRU from 'lru-cache';
 
 export interface UnchainedServerLocaleContext {
-  remoteAddress?: String
-  localeContext: any
-  countryContext: any
+  remoteAddress?: string;
+  localeContext: any;
+  countryContext: any;
 }
 
 const { NODE_ENV } = process.env;
@@ -26,7 +26,7 @@ const localeContextCache = new LRU({
   maxAge,
 });
 
-const getLocaleContext = (req, unchained): UnchainedServerLocaleContext => {
+const getLocaleContext = (req): UnchainedServerLocaleContext => {
   const cacheKey = `${req.headers['accept-language']}:${req.headers['x-shop-country']}`;
   const cachedContext = localeContextCache.get(cacheKey);
 

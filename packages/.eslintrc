@@ -14,9 +14,7 @@
     "meteor": true
   },
   "rules": {
-    "prettier/prettier": [
-      "error"
-    ],
+    "prettier/prettier": ["error"],
     "max-classes-per-file": [0],
     "no-underscore-dangle": ["error", { "allow": ["_id"] }],
     "import/no-extraneous-dependencies": [0],
@@ -35,7 +33,7 @@
       "rules": {
         "@typescript-eslint/no-unused-vars": "error",
         "@typescript-eslint/no-empty-function": "error",
-        "@typescript-eslint/explicit-module-boundary-types": "error",
+        "@typescript-eslint/explicit-module-boundary-types": "warn",
         "@typescript-eslint/no-var-requires": "error"
       }
     }
