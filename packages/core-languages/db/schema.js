@@ -34,7 +34,11 @@ Migrations.add({
   version: 20210108.3,
   name: 'remove isBase',
   up() {
-    Languages.update({}, { $unset: { isBase: "" } }, { multi: true, bypassCollection2: true })
+    Languages.update(
+      {},
+      { $unset: { isBase: '' } },
+      { multi: true, bypassCollection2: true }
+    );
   },
   down() {},
 });

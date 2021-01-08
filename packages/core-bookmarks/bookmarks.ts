@@ -21,14 +21,24 @@ export const services = {
 };
 
 export interface UnchainedBookmarkAPI {
-  findByUserId({ userId: String }): Promise<Array>;
+  findByUserId(userId: string): Promise<Array>;
+  findByUserIdAndProductId({ userId: string, productId: string }): Promise<any>;
+  findById(bookmarkId: string): Promise<any>;
+  find(query: any): Promise<Array>;
+  replaceUserId(fromUserId: string, toUserId: string): Promise<any>;
+  removeById(bookmarkId: string): Promise<any>;
+  create(data: any): Promise<string>;
+  existsByUserIdAndProductId({
+    userId: string,
+    productId: string,
+  }): Promise<boolean>;
 }
 
 // eslint-disable-next-line
 export default (config): UnchainedBookmarkAPI => {
   createIndexes();
   return {
-    findByUserId: async ({ userId }) => Bookmarks.find({ userId }).fetch(),
+    findByUserId: async (userId) => Bookmarks.find({ userId }).fetch(),
     findByUserIdAndProductId: async ({ userId, productId }) =>
       Bookmarks.findOne({ userId, productId }),
     findById: async (bookmarkId) => Bookmarks.findOne({ _id: bookmarkId }),
