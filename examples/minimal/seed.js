@@ -31,7 +31,7 @@ export default async () => {
     });
     await admin.setPassword(hashPassword('password'));
 
-    const languages = ['de', 'fr'].map((code, key) => {
+    const languages = ['de', 'fr'].map((code) => {
       const language = Languages.createLanguage({
         isoCode: code,
         isActive: true,
