@@ -19,7 +19,7 @@
   },
   "scripts": {
     "lint": "eslint packages tests --cache --fix --ext=js --ext=ts",
-    "pretest": "npm run lint --silent",
+    "pretest": "npm run lint --silent && npm run typecheck",
     "lint:ci": "eslint packages tests --ext=jsx --ext=js",
     "test": "jest --runInBand tests/*",
     "test:ci": "jest --ci --runInBand tests/*",
@@ -29,7 +29,8 @@
     "dev:controlpanel": "cd examples/controlpanel && npm run dev",
     "install": "run-p --print-label install:*",
     "install:minimal": "cd examples/minimal && npm install",
-    "install:controlpanel": "cd examples/controlpanel && npm install"
+    "install:controlpanel": "cd examples/controlpanel && npm install",
+    "typecheck": "tsc"
   },
   "devDependencies": {
     "@apollo/client": "^3.3.6",
