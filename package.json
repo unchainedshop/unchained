@@ -30,13 +30,15 @@
     "install": "run-p --print-label install:*",
     "install:minimal": "cd examples/minimal && npm install",
     "install:controlpanel": "cd examples/controlpanel && npm install",
-    "typecheck": "tsc"
+    "typecheck": "tsc",
+    "typecheck:watch": "tsc --watch"
   },
   "devDependencies": {
     "@apollo/client": "^3.3.6",
     "@babel/core": "^7.12.10",
     "@babel/preset-env": "^7.12.10",
     "@shelf/jest-mongodb": "^1.2.3",
+    "@types/meteor": "^1.4.64",
     "@types/node": "^14.14.16",
     "@typescript-eslint/eslint-plugin": "^4.12.0",
     "@typescript-eslint/parser": "^4.12.0",
@@ -66,6 +68,8 @@
     "extends": "@meteorjs/eslint-config-meteor"
   },
   "dependencies": {
+    "dataloader": "^2.0.0",
+    "locale": "^0.1.0",
     "subscriptions-transport-ws": "^0.9.18"
   }
 }

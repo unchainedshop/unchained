@@ -1,3 +1,4 @@
+import { Mongo } from 'meteor/mongo';
 import createIndexes from './db/schema';
 import { Bookmarks } from './db/collections';
 
@@ -20,22 +21,36 @@ export const services = {
   },
 };
 
-export interface UnchainedBookmarkAPI {
-  findByUserId(userId: string): Promise<Array>;
-  findByUserIdAndProductId({ userId: string, productId: string }): Promise<any>;
-  findById(bookmarkId: string): Promise<any>;
-  find(query: any): Promise<Array>;
-  replaceUserId(fromUserId: string, toUserId: string): Promise<any>;
-  removeById(bookmarkId: string): Promise<any>;
-  create(data: any): Promise<string>;
+export type Bookmark = {
+  userId: string;
+  productId: string;
+};
+
+export type UnchainedBookmarkAPI = {
+  findByUserId(userId: string): Promise<Array<Bookmark>>;
+  findByUserIdAndProductId({
+    userId,
+    productId,
+  }: {
+    userId: string;
+    productId: string;
+  }): Promise<Bookmark>;
+  findById(bookmarkId: string): Promise<Bookmark>;
+  find(query: Mongo.Query<Bookmark>): Promise<Array<Bookmark>>;
+  replaceUserId(fromUserId: string, toUserId: string): Promise<number>;
+  removeById(bookmarkId: string): Promise<number>;
+  create(data: Bookmark): Promise<string>;
   existsByUserIdAndProductId({
-    userId: string,
-    productId: string,
+    userId,
+    productId,
+  }: {
+    userId: string;
+    productId: string;
   }): Promise<boolean>;
-}
+};
 
 // eslint-disable-next-line
-export default (config): UnchainedBookmarkAPI => {
+export default (): UnchainedBookmarkAPI => {
   createIndexes();
   return {
     findByUserId: async (userId) => Bookmarks.find({ userId }).fetch(),
