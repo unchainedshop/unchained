@@ -1,5 +1,6 @@
 declare module 'meteor/unchained:core-users' {
   type User = {
+    _id: string;
     displayName?: string;
     birthday?: Date;
     phoneMobile?: string;

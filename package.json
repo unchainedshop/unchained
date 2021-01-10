@@ -68,6 +68,7 @@
     "extends": "@meteorjs/eslint-config-meteor"
   },
   "dependencies": {
+    "@types/simpl-schema": "^1.10.0",
     "dataloader": "^2.0.0",
     "locale": "^0.1.0",
     "subscriptions-transport-ws": "^0.9.18",
