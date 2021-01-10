@@ -70,6 +70,7 @@
   "dependencies": {
     "dataloader": "^2.0.0",
     "locale": "^0.1.0",
-    "subscriptions-transport-ws": "^0.9.18"
+    "subscriptions-transport-ws": "^0.9.18",
+    "winston": "^3.3.3"
   }
 }
