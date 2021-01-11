@@ -5,8 +5,8 @@ import nodePath from 'path';
 import {
   helpers,
   getExtension,
-  storagePath,
   bound,
+  storagePath,
   dataToSchema,
   getMimeType,
 } from './helpers';

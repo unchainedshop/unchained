@@ -1,6 +1,6 @@
 import fs from 'fs-extra';
 import fileType from 'file-type';
-import nodePath from 'path';
+import { MongoClient } from 'mongodb';
 import { Meteor } from 'meteor/meteor';
 
 const { FILE_STORAGE_PATH } = process.env;
@@ -174,4 +174,116 @@ export const getMimeType = (fileData) => {
     mime = 'application/octet-stream';
   }
   return mime;
+};
+
+export const getUser = async (req) => {
+  // there is a possible current user connected!
+  let loginToken = req.headers['meteor-login-token'];
+  if (req.cookies.meteor_login_token) {
+    loginToken = req.cookies.meteor_login_token;
+  }
+  if (req.cookies.token) {
+    loginToken = req.cookies.token;
+  }
+  if (req.headers.authorization) {
+    const [type, token] = req.headers.authorization.split(' ');
+    if (type === 'Bearer') {
+      loginToken = token;
+    }
+  }
+  if (loginToken) {
+    const connection = await MongoClient.connect(
+      MongoInternals.defaultRemoteCollectionDriver().mongo.client.s.url,
+      {
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
+        poolSize: 1,
+      }
+    );
+
+    const db = await connection.db(
+      MongoInternals.defaultRemoteCollectionDriver().mongo.client.s.options
+        .dbName
+    );
+
+    // the hashed token is the key to find the possible current user in the db
+    const hashedToken = accountsServer.hashLoginToken(loginToken); // eslint-disable-line
+
+    const currentUser = db.collection('users').findOne({
+      'services.resume.loginTokens.hashedToken': hashedToken,
+    });
+
+    // the current user exists
+    if (currentUser) {
+      // find the right login token corresponding, the current user may have
+      // several sessions logged on different browsers / computers
+      const tokenInformation = currentUser.services.resume.loginTokens.find(
+        (tokenInfo) => tokenInfo.hashedToken === hashedToken
+      ); // eslint-disable-line
+
+      // get an exploitable token expiration date
+      const expiresAt = accountsServer.tokenExpiration(tokenInformation.when); // eslint-disable-line
+
+      // true if the token is expired
+      const isExpired = expiresAt < new Date();
+
+      // if the token is still valid, give access to the current user
+      // information in the resolvers context
+      if (!isExpired) {
+        // return a new context object with the current user & her id
+        return {
+          user: currentUser,
+          userId: currentUser._id,
+        };
+      }
+    }
+  }
+
+  return {};
+};
+
+export const notFound = (http) => {
+  const text = 'File Not Found :(';
+
+  if (!http.response.headersSent) {
+    http.response.writeHead(404, {
+      'Content-Type': 'text/plain',
+      'Content-Length': text.length,
+    });
+  }
+  if (!http.response.finished) {
+    http.response.end(text);
+  }
+};
+
+export const formatFileURL = (
+  fileRef,
+  version = 'original',
+  _URIBase = (__meteor_runtime_config__ || {}).ROOT_URL
+) => {
+  let URIBase = _URIBase;
+
+  if (!helpers.isString(URIBase)) {
+    URIBase = (__meteor_runtime_config__ || {}).ROOT_URL || '/';
+  }
+
+  const _root = URIBase.replace(/\/+$/, '');
+  const vRef = (fileRef.versions && fileRef.versions[version]) || fileRef || {};
+
+  let ext;
+  if (helpers.isString(vRef.extension)) {
+    ext = `.${vRef.extension.replace(/^\./, '')}`;
+  } else {
+    ext = '';
+  }
+
+  if (fileRef.public === true) {
+    return (
+      _root +
+      (version === 'original'
+        ? `${fileRef._downloadRoute}/${fileRef._id}${ext}`
+        : `${fileRef._downloadRoute}/${version}-${fileRef._id}${ext}`)
+    );
+  }
+  return `${_root}${fileRef._downloadRoute}/${fileRef._collectionName}/${fileRef._id}/${version}/${fileRef._id}${ext}`;
 };
