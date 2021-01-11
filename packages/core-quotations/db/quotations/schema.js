@@ -99,7 +99,6 @@ Migrations.add({
 });
 
 export default () => {
-  Migrations.migrateTo('latest');
   Quotations.rawCollection().createIndex({ userId: 1 });
   Quotations.rawCollection().createIndex({ productId: 1 });
   Quotations.rawCollection().createIndex({ status: 1 });

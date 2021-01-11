@@ -3,6 +3,7 @@ import countryFlags from 'emoji-flags';
 import countryI18n from 'i18n-iso-countries';
 import { Currencies } from 'meteor/unchained:core-currencies';
 import LRU from 'lru-cache';
+import { systemLocale } from 'meteor/unchained:utils';
 import { Countries } from './collections';
 
 const { NODE_ENV } = process.env;
@@ -15,28 +16,6 @@ const currencyCodeCache = new LRU({
 });
 
 const { CURRENCY } = process.env;
-
-Countries.setBase = ({ countryId }) => {
-  Countries.update(
-    { isBase: true },
-    {
-      $set: {
-        isBase: false,
-        updated: new Date(),
-      },
-    },
-    { multi: true }
-  );
-  Countries.update(
-    { _id: countryId },
-    {
-      $set: {
-        isBase: true,
-        updated: new Date(),
-      },
-    }
-  );
-};
 
 Countries.updateCountry = ({ countryId, country }) => {
   return Countries.update(
@@ -61,6 +40,9 @@ Countries.helpers({
   },
   flagEmoji() {
     return countryFlags.countryCode(this.isoCode).emoji || '❌';
+  },
+  isBase() {
+    return this.isoCode === systemLocale.country;
   },
 });
 

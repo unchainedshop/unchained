@@ -1,6 +1,6 @@
 import 'meteor/dburles:collection-helpers';
 import { Locale } from 'locale';
-import { findLocalizedText } from 'meteor/unchained:core';
+import { findLocalizedText } from 'meteor/unchained:utils';
 import { log } from 'meteor/unchained:core-logger';
 import { Products, ProductStatus } from 'meteor/unchained:core-products';
 import {

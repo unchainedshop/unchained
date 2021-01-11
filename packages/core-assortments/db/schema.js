@@ -261,7 +261,6 @@ Migrations.add({
 });
 
 export default () => {
-  Migrations.migrateTo('latest');
   // Assortment Indexes
   Collections.Assortments.rawCollection().createIndex({ isActive: 1 });
   Collections.Assortments.rawCollection().createIndex({ isRoot: 1 });

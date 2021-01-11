@@ -1,5 +1,5 @@
 import 'meteor/dburles:collection-helpers';
-import { findLocalizedText } from 'meteor/unchained:core';
+import { findLocalizedText } from 'meteor/unchained:utils';
 import { Locale } from 'locale';
 import { ProductVariations, ProductVariationTexts } from './collections';
 import { ProductVariationType } from './schema';

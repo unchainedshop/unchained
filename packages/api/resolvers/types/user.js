@@ -29,7 +29,13 @@ export default {
   lastLogin: checkTypeResolver(actions.viewUserPrivateInfos, 'lastLogin'),
   emails: checkTypeResolver(actions.viewUserPrivateInfos, 'emails'),
   tags: checkTypeResolver(actions.viewUserPrivateInfos, 'tags'),
-  bookmarks: checkTypeResolver(actions.viewUserPrivateInfos, 'bookmarks'),
+
+  async bookmarks(user, params, context = {}) {
+    const { userId, modules } = context;
+    checkAction(actions.viewUserPrivateInfos, userId, [user, params, context]);
+    return modules.bookmarks.findByUserId(user._id);
+  },
+
   paymentCredentials: checkTypeResolver(
     actions.viewUserPrivateInfos,
     'paymentCredentials'

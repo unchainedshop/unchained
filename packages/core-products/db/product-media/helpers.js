@@ -1,5 +1,5 @@
 import 'meteor/dburles:collection-helpers';
-import { findLocalizedText } from 'meteor/unchained:core';
+import { findLocalizedText } from 'meteor/unchained:utils';
 import { Locale } from 'locale';
 import { ProductMedia, Media, ProductMediaTexts } from './collections';
 

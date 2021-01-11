@@ -1,12 +1,11 @@
-import { compose, pure, withHandlers } from 'recompose';
+import { compose, pure } from 'recompose';
 import gql from 'graphql-tag';
-import { graphql } from '@apollo/client/react/hoc';
 import React from 'react';
-import { Table, Icon, Button } from 'semantic-ui-react';
+import { Table, Icon } from 'semantic-ui-react';
 import Link from 'next/link';
 import InfiniteDataTable, { withDataTableLoader } from '../InfiniteDataTable';
 
-const LanguageList = ({ changeBaseLanguage, ...rest }) => (
+const LanguageList = ({ ...rest }) => (
   <InfiniteDataTable
     {...rest}
     cols={3}
@@ -25,15 +24,7 @@ const LanguageList = ({ changeBaseLanguage, ...rest }) => (
             <Icon color="green" name="checkmark" size="large" />
           )}
         </Table.Cell>
-        <Table.Cell>
-          {language.isBase ? (
-            <b>Base language</b>
-          ) : (
-            <Button basic name={language._id} onClick={changeBaseLanguage}>
-              Set as base language
-            </Button>
-          )}
-        </Table.Cell>
+        <Table.Cell>{language.isBase ? <b>Base language</b> : null}</Table.Cell>
       </Table.Row>
     )}
   >
@@ -59,25 +50,6 @@ export default compose(
         }
       }
     `,
-  }),
-  graphql(
-    gql`
-      mutation changeBaseLanguage($languageId: ID!) {
-        setBaseLanguage(languageId: $languageId) {
-          _id
-          isBase
-        }
-      }
-    `,
-    {
-      options: {
-        refetchQueries: ['languages'],
-      },
-    }
-  ),
-  withHandlers({
-    changeBaseLanguage: ({ mutate }) => (event, element) =>
-      mutate({ variables: { languageId: element.name } }),
   }),
   pure
 )(LanguageList);

@@ -1,5 +1,17 @@
 # vNext
 
+We are currently rebuilding parts of Unchained under the hood with a new code structure that helps developers to easily add new resolvers and access the core API's through typescrypt types.
+
+# Breaking Changes
+- [api] `Mutation.setBaseLanguage` removed, base language now set through env `LANG`
+- [api] `Mutation.setBaseCountry` removed, base language now set through env `COUNTRY`
+
+# Major
+- [api] Support for Data Loader
+- [api,bookmarks] The Bookmarks core module has been completely refactored, all business logic is now accessible through the Apollo GraphQL context
+- [utils] Multiple functions have been moved to utils from core.
+- [core] Core now is an umbrella for all core modules and does not provide any other functions except for the function that loads all modules in order and ties together the typescript types
+
 # v0.55.4
 
 ## Minor

@@ -51,7 +51,6 @@ Migrations.add({
 });
 
 export default () => {
-  Migrations.migrateTo('latest');
   ProductReviews.rawCollection().createIndex({ productId: 1 });
   ProductReviews.rawCollection().createIndex({ authorId: 1 });
 };

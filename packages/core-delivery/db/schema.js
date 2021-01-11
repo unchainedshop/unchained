@@ -94,6 +94,5 @@ Migrations.add({
 });
 
 export default () => {
-  Migrations.migrateTo('latest');
   DeliveryProviders.rawCollection().createIndex({ type: 1 });
 };

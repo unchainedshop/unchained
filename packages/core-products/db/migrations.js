@@ -140,7 +140,6 @@ Migrations.add({
 });
 
 export default () => {
-  Migrations.migrateTo('latest');
   runProductMediaMigrations();
   runProductReviewsMigrations();
   runProductVariationsMigrations();

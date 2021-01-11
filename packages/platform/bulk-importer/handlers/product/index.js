@@ -1,3 +1,3 @@
-export create from './create';
-export update from './update';
-export remove from './remove';
+export { default as create } from './create';
+export { default as update } from './update';
+export { default as remove } from './remove';

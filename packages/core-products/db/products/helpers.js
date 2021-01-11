@@ -4,8 +4,12 @@ import { ProductPricingDirector } from 'meteor/unchained:core-pricing';
 import { WarehousingProviders } from 'meteor/unchained:core-warehousing';
 import { DeliveryProviders } from 'meteor/unchained:core-delivery';
 import { Countries } from 'meteor/unchained:core-countries';
-import { findLocalizedText } from 'meteor/unchained:core';
-import { objectInvert, findUnusedSlug } from 'meteor/unchained:utils';
+import {
+  findLocalizedText,
+  objectInvert,
+  findUnusedSlug,
+} from 'meteor/unchained:utils';
+
 import { Locale } from 'locale';
 import crypto from 'crypto';
 import { Products, ProductTexts } from './collections';

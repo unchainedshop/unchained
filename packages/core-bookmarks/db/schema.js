@@ -27,7 +27,6 @@ Migrations.add({
 });
 
 export default () => {
-  Migrations.migrateTo('latest');
   Bookmarks.rawCollection().createIndex({ userId: 1 });
   Bookmarks.rawCollection().createIndex({ productId: 1 });
 };

@@ -4,7 +4,6 @@ const BaseCountry = {
   _id: 'ch',
   isoCode: 'CH',
   isActive: true,
-  isBase: true,
   defaultCurrencyId: 'chf',
 };
 
@@ -12,7 +11,6 @@ const BaseLanguage = {
   _id: 'de',
   isoCode: 'de',
   isActive: true,
-  isBase: true,
 };
 
 const BaseCurrency = {

@@ -25,8 +25,6 @@ import removeCountry from './removeCountry';
 import createCurrency from './createCurrency';
 import updateCurrency from './updateCurrency';
 import removeCurrency from './removeCurrency';
-import setBaseLanguage from './setBaseLanguage';
-import setBaseCountry from './setBaseCountry';
 import createProduct from './createProduct';
 import publishProduct from './publishProduct';
 import removeProduct from './removeProduct';
@@ -165,12 +163,10 @@ export default {
 
   createLanguage: acl(actions.manageLanguages)(createLanguage),
   updateLanguage: acl(actions.manageLanguages)(updateLanguage),
-  setBaseLanguage: acl(actions.manageLanguages)(setBaseLanguage),
   removeLanguage: acl(actions.manageLanguages)(removeLanguage),
 
   createCountry: acl(actions.manageCountries)(createCountry),
   updateCountry: acl(actions.manageCountries)(updateCountry),
-  setBaseCountry: acl(actions.manageCountries)(setBaseCountry),
   removeCountry: acl(actions.manageCountries)(removeCountry),
 
   createProduct: acl(actions.manageProducts)(createProduct),

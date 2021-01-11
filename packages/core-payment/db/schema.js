@@ -112,7 +112,6 @@ Migrations.add({
 });
 
 export default () => {
-  Migrations.migrateTo('latest');
   PaymentProviders.rawCollection().createIndex({ type: 1 });
 
   PaymentCredentials.rawCollection().createIndex({ paymentProviderId: 1 });
