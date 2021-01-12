@@ -5,14 +5,14 @@ export interface UnchainedServerLoaders {
   bookmarkByIdLoader: any;
 }
 
-export default async (req, unchained): Promise<UnchainedServerLoaders> => {
+export default async (_, unchained): Promise<UnchainedServerLoaders> => {
   return {
     bookmarksByQueryLoader: new DataLoader(async (queries) => {
       const results = unchained.modules.bookmarks.find({
         $or: queries,
       });
       return queries.map(
-        (key) =>
+        (key: any) =>
           results.find(
             (result) =>
               result.userId === key.userId && result.productId === key.productId
