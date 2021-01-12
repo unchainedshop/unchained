@@ -39,7 +39,6 @@ mongo-dev-server@1.1.0
 mongo-id@1.0.7
 npm-mongo@3.8.1
 ordered-dict@1.1.0
-ostrio:cookies@2.6.1
 percolate:migrations@1.0.2
 promise@0.11.2
 raix:eventemitter@1.0.0
