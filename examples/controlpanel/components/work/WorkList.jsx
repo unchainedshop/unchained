@@ -75,7 +75,6 @@ const WorkList = ({
   const [selectedTypeFilter, setSelectedTypeFilter] = useState([]);
   const [activeStatus, setActiveStatus] = useState(statusTypes);
   const [relativeDate, setDate] = useState(new Date());
-  console.log(rest)
   useEffect(() => {
     const refreshDates = setInterval(() => {
       setDate(new Date());
