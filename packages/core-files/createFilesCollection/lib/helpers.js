@@ -1,6 +1,7 @@
 import fs from 'fs-extra';
 import fileType from 'file-type';
 import { MongoClient } from 'mongodb';
+import crypto from 'crypto';
 import { Meteor } from 'meteor/meteor';
 
 const { FILE_STORAGE_PATH } = process.env;
@@ -176,72 +177,6 @@ export const getMimeType = (fileData) => {
   return mime;
 };
 
-export const getUser = async (req) => {
-  // there is a possible current user connected!
-  let loginToken = req.headers['meteor-login-token'];
-  if (req.cookies.meteor_login_token) {
-    loginToken = req.cookies.meteor_login_token;
-  }
-  if (req.cookies.token) {
-    loginToken = req.cookies.token;
-  }
-  if (req.headers.authorization) {
-    const [type, token] = req.headers.authorization.split(' ');
-    if (type === 'Bearer') {
-      loginToken = token;
-    }
-  }
-  if (loginToken) {
-    const connection = await MongoClient.connect(
-      MongoInternals.defaultRemoteCollectionDriver().mongo.client.s.url,
-      {
-        useNewUrlParser: true,
-        useUnifiedTopology: true,
-        poolSize: 1,
-      }
-    );
-
-    const db = await connection.db(
-      MongoInternals.defaultRemoteCollectionDriver().mongo.client.s.options
-        .dbName
-    );
-
-    // the hashed token is the key to find the possible current user in the db
-    const hashedToken = accountsServer.hashLoginToken(loginToken); // eslint-disable-line
-
-    const currentUser = db.collection('users').findOne({
-      'services.resume.loginTokens.hashedToken': hashedToken,
-    });
-
-    // the current user exists
-    if (currentUser) {
-      // find the right login token corresponding, the current user may have
-      // several sessions logged on different browsers / computers
-      const tokenInformation = currentUser.services.resume.loginTokens.find(
-        (tokenInfo) => tokenInfo.hashedToken === hashedToken
-      ); // eslint-disable-line
-
-      // get an exploitable token expiration date
-      const expiresAt = accountsServer.tokenExpiration(tokenInformation.when); // eslint-disable-line
-
-      // true if the token is expired
-      const isExpired = expiresAt < new Date();
-
-      // if the token is still valid, give access to the current user
-      // information in the resolvers context
-      if (!isExpired) {
-        // return a new context object with the current user & her id
-        return {
-          user: currentUser,
-          userId: currentUser._id,
-        };
-      }
-    }
-  }
-
-  return {};
-};
-
 export const notFound = (http) => {
   const text = 'File Not Found :(';
 
@@ -256,34 +191,96 @@ export const notFound = (http) => {
   }
 };
 
-export const formatFileURL = (
-  fileRef,
-  version = 'original',
-  _URIBase = (__meteor_runtime_config__ || {}).ROOT_URL
-) => {
-  let URIBase = _URIBase;
+const hashLoginToken = (stampedLoginToken) => {
+  const hash = crypto.createHash('sha256');
+  hash.update(stampedLoginToken);
+  const hashedToken = hash.digest('base64');
 
-  if (!helpers.isString(URIBase)) {
-    URIBase = (__meteor_runtime_config__ || {}).ROOT_URL || '/';
+  return hashedToken;
+};
+const DEFAULT_LOGIN_EXPIRATION_DAYS = 90;
+
+const getTokenLifetimeMs = () => {
+  const LOGIN_UNEXPIRING_TOKEN_DAYS = 365 * 100;
+  return (
+    (LOGIN_UNEXPIRING_TOKEN_DAYS || DEFAULT_LOGIN_EXPIRATION_DAYS) *
+    24 *
+    60 *
+    60 *
+    1000
+  );
+};
+
+const tokenExpiration = (when) => {
+  // We pass when through the Date constructor for backwards compatibility;
+  // `when` used to be a number.
+  return new Date(new Date(when).getTime() + getTokenLifetimeMs());
+};
+
+export const getUser = async (http) => {
+  // there is a possible current user connected!
+  let loginToken = http.request.headers['meteor-login-token'];
+
+  if (http.request.cookies.meteor_login_token) {
+    loginToken = http.cookies.meteor_login_token;
   }
 
-  const _root = URIBase.replace(/\/+$/, '');
-  const vRef = (fileRef.versions && fileRef.versions[version]) || fileRef || {};
-
-  let ext;
-  if (helpers.isString(vRef.extension)) {
-    ext = `.${vRef.extension.replace(/^\./, '')}`;
-  } else {
-    ext = '';
+  if (http.request.cookies.token) {
+    loginToken = http.request.cookies.token;
   }
 
-  if (fileRef.public === true) {
-    return (
-      _root +
-      (version === 'original'
-        ? `${fileRef._downloadRoute}/${fileRef._id}${ext}`
-        : `${fileRef._downloadRoute}/${version}-${fileRef._id}${ext}`)
+  if (http.request.headers.authorization) {
+    const [type, token] = http.request.headers.authorization.split(' ');
+    if (type === 'Bearer') {
+      loginToken = token;
+    }
+  }
+
+  if (loginToken) {
+    const connection = await MongoClient.connect(
+      MongoInternals.defaultRemoteCollectionDriver().mongo.client.s.url,
+      {
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
+        poolSize: 1,
+      }
     );
+
+    const db = await connection.db(
+      MongoInternals.defaultRemoteCollectionDriver().mongo.client.s.options
+        .dbName
+    );
+    // the hashed token is the key to find the possible current user in the db
+    const hashedToken = hashLoginToken(loginToken); // eslint-disable-line
+
+    const currentUser = await db.collection('users').findOne({
+      'services.resume.loginTokens.hashedToken': hashedToken,
+    });
+
+    // the current user exists
+    if (currentUser) {
+      // find the right login token corresponding, the current user may have
+      // several sessions logged on different browsers / computers
+      const tokenInformation = currentUser.services.resume.loginTokens.find(
+        (tokenInfo) => tokenInfo.hashedToken === hashedToken
+      ); // eslint-disable-line
+
+      // get an exploitable token expiration date
+      const expiresAt = tokenExpiration(tokenInformation.when); // eslint-disable-line
+
+      // true if the token is expired
+      const isExpired = expiresAt < new Date();
+      // if the token is still valid, give access to the current user
+      // information in the resolvers context
+      if (!isExpired) {
+        // return a new context object with the current user & her id
+        return {
+          user: currentUser,
+          userId: currentUser._id,
+        };
+      }
+    }
   }
-  return `${_root}${fileRef._downloadRoute}/${fileRef._collectionName}/${fileRef._id}/${version}/${fileRef._id}${ext}`;
+
+  return {};
 };

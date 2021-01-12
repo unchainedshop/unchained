@@ -17,7 +17,6 @@ export default (collectionName, customSettings = null) => {
     getSetting('files.default'),
     getSetting(['files', collectionName])
   );
-  console.log('mergedSettings: ', mergedSettings);
 
   return new FilesCollection({
     collectionName,

@@ -4,19 +4,16 @@ import { Mongo, MongoInternals } from 'meteor/mongo';
 import { WebApp } from 'meteor/webapp';
 import write from './lib/write';
 import load from './lib/load';
-import {
-  helpers,
-  bound,
-  NOOP,
-  getUser,
-  notFound,
-  formatFileURL,
-} from './lib/helpers';
+import { helpers, bound, NOOP, getUser, notFound } from './lib/helpers';
 
 class FilesCollection extends Mongo.Collection {
-  constructor() {
+  constructor({ collectionName, maxSize, extensionRegex }) {
     super();
-    WebApp.connectHandlers.use((httpReq, httpResp, next) => {
+    this._name = collectionName;
+    this.maxSize = maxSize;
+    this.extensionRegex = extensionRegex;
+
+    WebApp.connectHandlers.use(async (httpReq, httpResp, next) => {
       if (
         this.allowedOrigins &&
         httpReq._parsedUrl.path.includes(`${this.downloadRoute}/`) &&
@@ -75,8 +72,8 @@ class FilesCollection extends Mongo.Collection {
 
           const http = { request: httpReq, response: httpResp, params };
 
-          if (this.checkAccess(http)) {
-            this.download(http, uris[1], this.findOne(uris[0]));
+          if (await this.checkAccess(http)) {
+            await this.download(http, uris[1], this.findOne(uris[0]));
           }
         } else {
           next();
@@ -88,13 +85,10 @@ class FilesCollection extends Mongo.Collection {
   }
 
   onBeforeUpload(file) {
-    if (
-      this.options.extensionRegex &&
-      !this.options.extensionRegex.test(file.extension)
-    ) {
+    if (this.extensionRegex && !this.extensionRegex.test(file.extension)) {
       return 'filetype not allowed';
     }
-    if (file.size > this.options.maxSize) {
+    if (file.size > this.maxSize) {
       return 'file too big';
     }
     return true;
@@ -102,9 +96,9 @@ class FilesCollection extends Mongo.Collection {
 
   downloadRoute = '/cdn/storage';
 
-  checkAccess = (http) => {
+  checkAccess = async (http) => {
     let result;
-    const { user, userId } = getUser(http);
+    const { user, userId } = await getUser(http);
 
     if (helpers.isFunction(this.protected)) {
       let fileRef;
@@ -145,7 +139,7 @@ class FilesCollection extends Mongo.Collection {
     return false;
   };
 
-  download(http, version = 'original', fileRef) {
+  async download(http, version = 'original', fileRef) {
     let vRef;
 
     if (fileRef) {
@@ -180,9 +174,9 @@ class FilesCollection extends Mongo.Collection {
       if (
         this.interceptDownload &&
         helpers.isFunction(this.interceptDownload) &&
-        this.interceptDownload(http, fileRef, version) === true
+        (await this.interceptDownload(http, fileRef, version)) === true
       ) {
-        return void 0;
+        return undefined;
       }
 
       fs.stat(vRef.path, (statErr, stats) =>
@@ -210,9 +204,225 @@ class FilesCollection extends Mongo.Collection {
           );
         })
       );
-      return void 0;
+      return undefined;
     }
     return notFound(http);
+  }
+
+  serve(
+    http,
+    fileRef,
+    vRef,
+    version = 'original',
+    readableStream = null,
+    _responseType = '200',
+    force200 = false
+  ) {
+    let partiral = false;
+    let reqRange = false;
+    let dispositionType = '';
+    let start;
+    let end;
+    let take;
+    let responseType = _responseType;
+
+    if (http.params.query.download && http.params.query.download === 'true') {
+      dispositionType = 'attachment; ';
+    } else {
+      dispositionType = 'inline; ';
+    }
+
+    const dispositionName = `filename=\"${encodeURI(
+      vRef.name || fileRef.name
+    ).replace(/\,/g, '%2C')}\"; filename*=UTF-8''${encodeURIComponent(
+      vRef.name || fileRef.name
+    )}; `;
+    const dispositionEncoding = 'charset=UTF-8';
+
+    if (!http.response.headersSent) {
+      http.response.setHeader(
+        'Content-Disposition',
+        dispositionType + dispositionName + dispositionEncoding
+      );
+    }
+
+    if (http.request.headers.range && !force200) {
+      partiral = true;
+      const array = http.request.headers.range.split(/bytes=([0-9]*)-([0-9]*)/);
+      start = parseInt(array[1]);
+      end = parseInt(array[2]);
+      if (isNaN(end)) {
+        end = vRef.size - 1;
+      }
+      take = end - start;
+    } else {
+      start = 0;
+      end = vRef.size - 1;
+      take = vRef.size;
+    }
+
+    if (
+      partiral ||
+      (http.params.query.play && http.params.query.play === 'true')
+    ) {
+      reqRange = { start, end };
+      if (isNaN(start) && !isNaN(end)) {
+        reqRange.start = end - take;
+        reqRange.end = end;
+      }
+      if (!isNaN(start) && isNaN(end)) {
+        reqRange.start = start;
+        reqRange.end = start + take;
+      }
+
+      if (start + take >= vRef.size) {
+        reqRange.end = vRef.size - 1;
+      }
+
+      if (
+        this.strict &&
+        (reqRange.start >= vRef.size - 1 || reqRange.end > vRef.size - 1)
+      ) {
+        responseType = '416';
+      } else {
+        responseType = '206';
+      }
+    } else {
+      responseType = '200';
+    }
+
+    const streamErrorHandler = (error) => {
+      if (!http.response.finished) {
+        http.response.end(error.toString());
+      }
+    };
+
+    const headers = helpers.isFunction(this.responseHeaders)
+      ? this.responseHeaders(responseType, fileRef, vRef, version, http)
+      : this.responseHeaders;
+
+    if (!headers['Cache-Control']) {
+      if (!http.response.headersSent) {
+        http.response.setHeader(
+          'Cache-Control',
+          'public, max-age=31536000, s-maxage=31536000'
+        );
+      }
+    }
+
+    for (const key in headers) {
+      if (!http.response.headersSent) {
+        http.response.setHeader(key, headers[key]);
+      }
+    }
+
+    const respond = (stream, code) => {
+      stream._isEnded = false;
+      const closeStreamCb = (closeError) => {
+        if (!closeError) {
+          stream._isEnded = true;
+        }
+      };
+
+      const closeStream = () => {
+        if (!stream._isEnded) {
+          if (typeof stream.close === 'function') {
+            stream.close(closeStreamCb);
+          } else if (typeof stream.end === 'function') {
+            stream.end(closeStreamCb);
+          } else if (typeof stream.destroy === 'function') {
+            stream.destroy('Got to close this stream', closeStreamCb);
+          }
+        }
+      };
+
+      if (!http.response.headersSent && readableStream) {
+        http.response.writeHead(code);
+      }
+
+      http.response.on('close', closeStream);
+      http.request.on('aborted', () => {
+        http.request.aborted = true;
+        closeStream();
+      });
+
+      stream
+        .on('open', () => {
+          if (!http.response.headersSent) {
+            http.response.writeHead(code);
+          }
+        })
+        .on('abort', () => {
+          closeStream();
+          if (!http.response.finished) {
+            http.response.end();
+          }
+          if (!http.request.aborted) {
+            http.request.destroy();
+          }
+        })
+        .on('error', (err) => {
+          closeStream();
+          streamErrorHandler(err);
+        })
+        .on('end', () => {
+          closeStream();
+          if (!http.response.finished) {
+            http.response.end();
+          }
+        })
+        .pipe(http.response);
+    };
+
+    switch (responseType) {
+      case '400':
+        const text = 'Content-Length mismatch!';
+
+        if (!http.response.headersSent) {
+          http.response.writeHead(400, {
+            'Content-Type': 'text/plain',
+            'Content-Length': text.length,
+          });
+        }
+
+        if (!http.response.finished) {
+          http.response.end(text);
+        }
+        break;
+      case '404':
+        notFound(http);
+        break;
+      case '416':
+        if (!http.response.headersSent) {
+          http.response.writeHead(416);
+        }
+        if (!http.response.finished) {
+          http.response.end();
+        }
+        break;
+      case '206':
+        if (!http.response.headersSent) {
+          http.response.setHeader(
+            'Content-Range',
+            `bytes ${reqRange.start}-${reqRange.end}/${vRef.size}`
+          );
+        }
+        respond(
+          readableStream ||
+            fs.createReadStream(vRef.path, {
+              start: reqRange.start,
+              end: reqRange.end,
+            }),
+          206
+        );
+        break;
+      default:
+        if (!http.response.headersSent) {
+          http.response.setHeader('Content-Length', `${vRef.size}`);
+        }
+        respond(readableStream || fs.createReadStream(vRef.path), 200);
+        break;
+    }
   }
 
   async interceptDownload(http, file, versionName) {
@@ -232,7 +442,6 @@ class FilesCollection extends Mongo.Collection {
       });
       readStream.on('error', () => {
         // not found probably
-        // eslint-disable-next-line no-param-reassign
         http.response.statusCode = 404;
         http.response.end('not found');
       });
@@ -241,7 +450,10 @@ class FilesCollection extends Mongo.Collection {
         'Content-Disposition',
         `inline; filename="${file.name}"`
       );
-      http.response.setHeader('Cache-Control', this.cacheControl);
+      http.response.setHeader(
+        'Cache-Control',
+        'public, max-age=31536000, s-maxage=31536000'
+      );
     }
     return Boolean(gridFsFileId); // Serve file from either GridFS or FS if it wasn't uploaded yet
   }
@@ -452,13 +664,6 @@ class FilesCollection extends Mongo.Collection {
       }
     });
   };
-
-  link(fileRef, version = 'original', URIBase) {
-    if (!fileRef) {
-      return '';
-    }
-    return formatFileURL(fileRef, version, URIBase);
-  }
 }
 
 export default FilesCollection;
