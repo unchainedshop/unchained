@@ -12,19 +12,34 @@ import crypto from 'crypto';
 import fetch from 'isomorphic-unfetch';
 import xml2js from 'xml2js';
 
+// v1 https://docs.datatrans.ch/v1.0.1/docs/getting-started-home
+// https://api-reference.datatrans.ch/xml/
+
 const logger = createLogger('unchained:core-payment:datatrans-webhook');
+
+const Security = {
+  NONE: '',
+  STATIC_SIGN: 'static-sign',
+  DYNAMIC_SIGN: 'dynamic-sign',
+};
 
 const {
   DATATRANS_SECRET,
   DATATRANS_SIGN_KEY,
+  DATATRANS_SIGN2_KEY,
+  DATATRANS_SECURITY = Security.DYNAMIC_SIGN,
   DATATRANS_API_ENDPOINT = 'https://api.sandbox.datatrans.com',
   DATATRANS_WEBHOOK_PATH = '/graphql/datatrans',
 } = process.env;
 
-const generateSignature = (...parts) => {
+const generateSignature = (signKey) => (...parts) => {
   // https://docs.datatrans.ch/docs/security-sign
+  if (DATATRANS_SECURITY.toLowerCase() === Security.STATIC_SIGN)
+    return DATATRANS_SIGN_KEY;
+  if (DATATRANS_SECURITY.toLowerCase() === Security.NONE) return '';
+
   const resultString = parts.filter(Boolean).join('');
-  const signKeyInBytes = Buffer.from(DATATRANS_SIGN_KEY, 'hex');
+  const signKeyInBytes = Buffer.from(signKey, 'hex');
 
   const signedString = crypto
     .createHmac('sha256', signKeyInBytes)
@@ -113,23 +128,16 @@ WebApp.connectHandlers.use(DATATRANS_WEBHOOK_PATH, (req, res) => {
         );
         return res.end(JSON.stringify(order));
       } catch (e) {
-        if (
-          e.message === 'Payment declined' ||
-          e.message === 'Signature mismatch'
-        ) {
-          // We also confirm a declined payment or a signature mismatch with 200 so
-          // datatrans does not retry to send us the failed transaction
-          logger.warn(
-            `Datatrans Webhook: Unchained declined checkout with message ${e.message}`
-          );
-          res.writeHead(200);
-          return res.end();
-        }
-        res.writeHead(503);
+        logger.error(
+          `Datatrans Webhook: Unchained rejected to checkout with message ${JSON.stringify(
+            e
+          )}`
+        );
+        res.writeHead(500);
         return res.end(JSON.stringify(e));
       }
     } else {
-      logger.warn(`Datatrans Webhook: Reference number not set`);
+      logger.error(`Datatrans Webhook: Reference number not set`);
     }
   }
   res.writeHead(404);
@@ -139,9 +147,10 @@ WebApp.connectHandlers.use(DATATRANS_WEBHOOK_PATH, (req, res) => {
 class Datatrans extends PaymentAdapter {
   static key = 'shop.unchained.datatrans';
 
-  static label = 'Datatrans';
+  static label =
+    'Datatrans Legacy (https://docs.datatrans.ch/v1.0.1/docs/getting-started-home)';
 
-  static version = '1.0';
+  static version = '1.0.1';
 
   static initialConfiguration = [
     {
@@ -191,7 +200,7 @@ class Datatrans extends PaymentAdapter {
       const refno = `${this.context.paymentProviderId}:${this.context.userId}`;
       const amount = '0';
       const aliasCC = '';
-      const signature = generateSignature(
+      const signature = generateSignature(DATATRANS_SIGN_KEY)(
         aliasCC,
         merchantId,
         amount,
@@ -214,7 +223,7 @@ class Datatrans extends PaymentAdapter {
     const order = orderPayment.order();
     const refno = orderPayment._id;
     const { currency, amount } = order.pricing().total();
-    const signature = generateSignature(
+    const signature = generateSignature(DATATRANS_SIGN_KEY)(
       aliasCC,
       merchantId,
       amount,
@@ -264,7 +273,7 @@ class Datatrans extends PaymentAdapter {
     } = transactionResponse;
     const merchantId = this.getMerchantId();
     if (status === 'success') {
-      const validSign = generateSignature(
+      const validSign = generateSignature(DATATRANS_SIGN_KEY)(
         aliasCC,
         merchantId,
         '0', // amount 0
@@ -272,6 +281,8 @@ class Datatrans extends PaymentAdapter {
         refno
       );
       const validSign2 = generateSignature(
+        DATATRANS_SIGN2_KEY || DATATRANS_SIGN_KEY
+      )(
         aliasCC,
         merchantId,
         '0', // amount 0
@@ -371,7 +382,7 @@ class Datatrans extends PaymentAdapter {
       this.log('Datatrans -> Payment declined', transactionResponse);
       throw new Error('Payment declined');
     }
-    const validSign = generateSignature(
+    const validSign = generateSignature(DATATRANS_SIGN_KEY)(
       aliasCC,
       merchantId,
       amount,
@@ -379,13 +390,25 @@ class Datatrans extends PaymentAdapter {
       refno
     );
     const validSign2 = generateSignature(
-      aliasCC,
-      merchantId,
-      amount,
-      currency,
-      uppTransactionId
-    );
-    if ((sign === validSign && sign2 === validSign2) || ignoreSignatureCheck) {
+      DATATRANS_SIGN2_KEY || DATATRANS_SIGN_KEY
+    )(aliasCC, merchantId, amount, currency, uppTransactionId);
+    if (DATATRANS_SECURITY.toLowerCase() !== Security.DYNAMIC_SIGN) {
+      if (
+        amount !== transactionResponse.amount ||
+        currency !== transactionResponse.currency
+      ) {
+        this.log(
+          `Datatrans -> Somebody (evil?) attempted to charge the wrong amount`,
+          transactionResponse
+        );
+        throw new Error('Signature mismatch');
+      }
+    }
+    if (
+      (sign === validSign &&
+        ((!sign2 && validSign2 === validSign) || sign2 === validSign2)) ||
+      ignoreSignatureCheck
+    ) {
       this.log('Datatrans -> Charged successfully', transactionResponse);
       return {
         ...transactionResponse,
@@ -400,7 +423,7 @@ class Datatrans extends PaymentAdapter {
       };
     }
     this.log(
-      `Datatrans -> Somebody evil attempted to trick us, fix ${sign} === ${validSign}, ${sign2} === ${validSign2}`,
+      `Datatrans -> Somebody (evil?) used the wrong signature when checking out, fix ${sign} === ${validSign}, ${sign2} === ${validSign2}`,
       transactionResponse
     );
     throw new Error('Signature mismatch');

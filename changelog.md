@@ -11,6 +11,7 @@ We are currently rebuilding parts of Unchained under the hood with a new code st
 - [api,bookmarks] The Bookmarks core module has been completely refactored, all business logic is now accessible through the Apollo GraphQL context
 - [utils] Multiple functions have been moved to utils from core.
 - [core] Core now is an umbrella for all core modules and does not provide any other functions except for the function that loads all modules in order and ties together the typescript types
+- [payment] Our official Datatrans plugin now supports all different security modes for signing a transaction through env `DATATRANS_SECURITY` and `DATATRANS_SIGN2_KEY`. In the meantime Datatrans has released a new modern JSON based 2.0 API. Our Plugin still only supports the legacy API described here https://docs.datatrans.ch/v1.0.1/docs/getting-started-home
 
 # v0.55.4
 
