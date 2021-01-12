@@ -18,7 +18,7 @@ export default function createProductVariation(
   log(`mutation createProductVariation ${productId}`, { userId });
 
   if (!productId) throw new InvalidIdError({ productId });
-  const product = Products.findOne({ _id: productId });
+  const product = Products.findProduct({ productId });
   if (!product) throw new ProductNotFoundError({ productId });
   if (product.type !== ProductTypes.ConfigurableProduct)
     throw new ProductWrongTypeError({

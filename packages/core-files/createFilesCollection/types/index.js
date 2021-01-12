@@ -1,2 +1,2 @@
-export filesystem from './filesystem';
-export gridfs from './gridfs';
+export { default as filesystem } from './filesystem';
+export { default as gridfs } from './gridfs';

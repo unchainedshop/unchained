@@ -134,6 +134,38 @@ Users.helpers({
   },
 });
 
+Orders.orderExists = ({ orderId, orderNumber }) => {
+  const selector = orderId ? { _id: orderId } : { orderNumber };
+  return !!Orders.find(selector).count();
+};
+
+Orders.findOrder = ({ orderId, ...rest }, options) => {
+  const selector = orderId ? { _id: orderId } : rest;
+  return Orders.findOne(selector, options);
+};
+
+Orders.removeOrder = ({ orderId }) => {
+  return Orders.remove({ _id: orderId });
+};
+
+Orders.findOrders = ({
+  limit,
+  offset,
+  includeCarts,
+  sort = {
+    created: -1,
+  },
+}) => {
+  const selector = {};
+  if (!includeCarts) selector.status = { $ne: OrderStatus.OPEN };
+  const options = {
+    skip: offset,
+    limit,
+    sort,
+  };
+  return Orders.find(selector, options).fetch();
+};
+
 Orders.helpers({
   subscription() {
     return Subscriptions.findOne({

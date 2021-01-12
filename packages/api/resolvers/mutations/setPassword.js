@@ -14,9 +14,9 @@ export default async function setPassword(
   if (!newHashedPassword && !newPlainPassword) {
     throw new Error('Password is required');
   }
-  const user = Users.findOne({ _id: userId });
+  const user = Users.findUser({ userId });
   if (!user) throw new UserNotFoundError({ userId });
   const newPassword = newHashedPassword || hashPassword(newPlainPassword);
   await user.setPassword(newPassword);
-  return Users.findOne({ _id: userId });
+  return Users.findUser({ userId });
 }

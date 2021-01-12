@@ -11,7 +11,7 @@ export default {
       product,
     }));
   },
-  product({ assignment }) {
-    return Products.findOne({ _id: assignment.productId });
+  async product({ assignment }) {
+    return Products.findProduct({ productId: assignment.productId });
   },
 };

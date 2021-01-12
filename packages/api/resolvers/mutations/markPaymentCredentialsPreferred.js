@@ -7,8 +7,10 @@ export default (root, { paymentCredentialsId }, { userId }) => {
     userId,
   });
   if (!paymentCredentialsId) throw new InvalidIdError({ paymentCredentialsId });
-  const credentials = PaymentCredentials.findOne({ _id: paymentCredentialsId });
-  if (!credentials)
+  if (!PaymentCredentials.credentialsExists({ paymentCredentialsId }))
     throw new PaymentCredentialsNotFoundError({ paymentCredentialsId });
-  return PaymentCredentials.markPreferred({ paymentCredentialsId, userId });
+  PaymentCredentials.markPreferred({ paymentCredentialsId, userId });
+  return PaymentCredentials.findCredentials({
+    paymentCredentialsId,
+  });
 };

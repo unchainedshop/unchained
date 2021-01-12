@@ -22,7 +22,7 @@ export default function updateOrderPaymentInvoice(
   );
 
   if (!orderPaymentId) throw new InvalidIdError({ orderPaymentId });
-  const orderPayment = OrderPayments.findOne({ _id: orderPaymentId });
+  const orderPayment = OrderPayments.findPayment({ orderPaymentId });
   if (!orderPayment)
     throw new OrderPaymentNotFoundError({ data: { orderPaymentId } });
   const providerType = orderPayment?.provider()?.type;

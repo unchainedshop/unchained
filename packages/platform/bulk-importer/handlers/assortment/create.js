@@ -11,7 +11,7 @@ export default async function createAssortment(payload, { logger, authorId }) {
     throw new Error('Specification is required when creating a new assortment');
 
   logger.debug('create assortment object', specification);
-  const assortment = await Assortments.createAssortment({
+  await Assortments.createAssortment({
     ...specification,
     _id,
     authorId,
@@ -28,7 +28,7 @@ export default async function createAssortment(payload, { logger, authorId }) {
   );
   await upsertAssortmentContent({
     content: specification.content,
-    assortment,
+    assortmentId: _id,
     authorId,
   });
 

@@ -15,7 +15,7 @@ export default function updateProductWarehousing(
   log(`mutation updateProductWarehousing ${productId}`, { userId });
 
   if (!productId) throw new InvalidIdError({ productId });
-  const product = Products.findOne({ _id: productId });
+  const product = Products.findProduct({ productId });
   if (!product) throw new ProductNotFoundError({ productId });
   if (product?.type !== ProductTypes.SimpleProduct)
     throw new ProductWrongTypeError({
@@ -24,5 +24,6 @@ export default function updateProductWarehousing(
       required: ProductTypes.SimpleProduct,
     });
 
-  return Products.updateProduct({ productId, warehousing });
+  Products.updateProduct({ productId, warehousing });
+  return Products.findProduct({ productId });
 }

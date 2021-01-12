@@ -16,7 +16,6 @@ Package.onUse((api) => {
   api.use('percolate:migrations@1.0.2');
 
   api.use('unchained:utils@0.55.4');
-  api.use('unchained:core@0.55.4');
   api.use('unchained:core-files@0.55.4');
   api.use('unchained:core-users@0.55.4');
   api.use('unchained:core-pricing@0.55.4');

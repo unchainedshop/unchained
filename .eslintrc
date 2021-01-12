@@ -1,7 +1,13 @@
 {
-  "parser": "babel-eslint",
-  "plugins": ["prettier"],
-  "extends": ["airbnb-base", "plugin:prettier/recommended"],
+  "root": true,
+  "parser": "@typescript-eslint/parser",
+  "plugins": ["@typescript-eslint", "prettier"],
+  "extends": [
+    "airbnb-base",
+    "eslint:recommended",
+    "plugin:@typescript-eslint/recommended",
+    "plugin:prettier/recommended"
+  ],
   "env": {
     "node": true,
     "jest": true
@@ -28,6 +34,22 @@
           "__MONGOD__"
         ]
       }
-    ]
-  }
+    ],
+    "no-unused-vars": "off",
+    "@typescript-eslint/no-unused-vars": "warn",
+    "@typescript-eslint/no-empty-function": "warn",
+    "@typescript-eslint/explicit-module-boundary-types": "off",
+    "@typescript-eslint/no-var-requires": "off"
+  },
+  "overrides": [
+    {
+      // enable the rule specifically for TypeScript files
+      "files": ["*.ts"],
+      "rules": {
+        "@typescript-eslint/no-unused-vars": "error",
+        "@typescript-eslint/explicit-module-boundary-types": "error",
+        "@typescript-eslint/no-var-requires": "error"
+      }
+    }
+  ]
 }

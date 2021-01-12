@@ -9,13 +9,7 @@ export default function updateAssortmentTexts(
 ) {
   log(`mutation updateAssortmentTexts ${assortmentId}`, { userId });
   if (!assortmentId) throw new InvalidIdError({ assortmentId });
-  const assortmentObject = Assortments.findOne({ _id: assortmentId });
-  if (!assortmentObject) throw new AssortmentNotFoundError({ assortmentId });
-  const changedLocalizations = texts.map(({ locale, ...localizations }) =>
-    assortmentObject.upsertLocalizedText(locale, {
-      ...localizations,
-      authorId: userId,
-    })
-  );
-  return changedLocalizations;
+  const assortment = Assortments.findAssortment({ assortmentId });
+  if (!assortment) throw new AssortmentNotFoundError({ assortmentId });
+  return assortment.updateTexts({ texts, userId });
 }

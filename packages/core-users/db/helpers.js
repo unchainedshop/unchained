@@ -1,7 +1,8 @@
+import { Promise } from 'meteor/promise';
 import { Locale } from 'locale';
 import { accountsPassword, dbManager } from 'meteor/unchained:core-accountsjs';
 import 'meteor/dburles:collection-helpers';
-import { getFallbackLocale } from 'meteor/unchained:core';
+import { systemLocale } from 'meteor/unchained:utils';
 import { Countries } from 'meteor/unchained:core-countries';
 import { Languages } from 'meteor/unchained:core-languages';
 import { log, Logs } from 'meteor/unchained:core-logger';
@@ -18,6 +19,18 @@ Logs.helpers({
     );
   },
 });
+
+Users.setTags = ({ userId, tags }) => {
+  Users.update(
+    { _id: userId },
+    {
+      $set: {
+        updated: new Date(),
+        tags,
+      },
+    }
+  );
+};
 
 Users.helpers({
   isGuest() {
@@ -46,7 +59,7 @@ Users.helpers({
     const locale =
       localeContext ||
       (this.lastLogin?.locale && new Locale(this.lastLogin.locale)) ||
-      getFallbackLocale();
+      systemLocale;
     return locale;
   },
   avatar() {
@@ -140,6 +153,50 @@ Users.helpers({
   },
 });
 
+Users.updateProfile = ({ userId, profile }) => {
+  const transformedProfile = Object.keys(profile).reduce((acc, profileKey) => {
+    return {
+      ...acc,
+      [`profile.${profileKey}`]: profile[profileKey],
+    };
+  }, {});
+
+  return Users.update(
+    { _id: userId },
+    {
+      $set: {
+        updated: new Date(),
+        ...transformedProfile,
+      },
+    }
+  );
+};
+Users.updateAvatar = async ({ userId, avatar }) => {
+  const avatarRef =
+    avatar instanceof Promise
+      ? await Avatars.insertWithRemoteFile({
+          file: avatar,
+          userId,
+        })
+      : await Avatars.insertWithRemoteBuffer({
+          file: {
+            ...avatar,
+            buffer: Buffer.from(avatar.buffer, 'base64'),
+          },
+          userId,
+        });
+
+  return Users.update(
+    { _id: userId },
+    {
+      $set: {
+        updated: new Date(),
+        avatarId: avatarRef._id,
+      },
+    }
+  );
+};
+
 Users.updateLastBillingAddress = ({ userId, lastBillingAddress }) => {
   const user = Users.findOne({ _id: userId });
   log('Store Last Billing Address', { userId });
@@ -202,7 +259,7 @@ Users.enrollUser = async ({ password, email, displayName, address }) => {
   return Users.findOne({ _id: newUserId });
 };
 
-Users.updateHeartbeat = ({ userId, ...options }) => {
+Users.updateHeartbeat = ({ userId, ...options }) =>
   Users.update(
     { _id: userId },
     {
@@ -214,6 +271,24 @@ Users.updateHeartbeat = ({ userId, ...options }) => {
       },
     }
   );
+
+Users.userExists = ({ userId }) => {
+  return !!Users.find({ _id: userId }, { limit: 1 }).count();
+};
+
+Users.findUser = ({ userId, resetToken, hashedToken }) => {
+  if (hashedToken) {
+    return Users.findOne({
+      'services.resume.loginTokens.hashedToken': hashedToken,
+    });
+  }
+
+  if (resetToken) {
+    return Users.findOne({
+      'services.password.reset.token': resetToken,
+    });
+  }
+  return Users.findOne({ _id: userId });
 };
 
 Users.createUser = async ({
@@ -233,4 +308,25 @@ Users.createUser = async ({
     ...userData,
   });
   return Users.findOne({ _id: userId });
+};
+
+Users.findUsers = async ({ limit, offset, includeGuests, queryString }) => {
+  const selector = {};
+  if (!includeGuests) selector.guest = { $ne: true };
+  if (queryString) {
+    const userArray = await Users.rawCollection()
+      .find(
+        { ...selector, $text: { $search: queryString } },
+        {
+          skip: offset,
+          limit,
+          projection: { score: { $meta: 'textScore' } },
+          sort: { score: { $meta: 'textScore' } },
+        }
+      )
+      .toArray();
+    return (userArray || []).map((item) => new Users._transform(item)); // eslint-disable-line
+  }
+
+  return Users.find(selector, { skip: offset, limit }).fetch();
 };

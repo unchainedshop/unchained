@@ -156,7 +156,6 @@ Migrations.add({
 });
 
 export default () => {
-  Migrations.migrateTo('latest');
   Products.rawCollection().createIndex({ sequence: 1 });
   Products.rawCollection().createIndex({ slugs: 1 });
   Products.rawCollection().createIndex({ status: 1 });
@@ -167,4 +166,10 @@ export default () => {
   ProductTexts.rawCollection().createIndex({ locale: 1 });
   ProductTexts.rawCollection().createIndex({ slug: 1 });
   ProductTexts.rawCollection().createIndex({ locale: 1, productId: 1 });
+  ProductTexts.rawCollection().createIndex({
+    title: 'text',
+    subtitle: 'text',
+    vendor: 'text',
+    brand: 'text',
+  });
 };

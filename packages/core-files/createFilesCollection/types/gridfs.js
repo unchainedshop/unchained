@@ -30,10 +30,16 @@ export default (collectionName) => {
             'finish',
             Meteor.bindEnvironment((ver) => {
               const property = `versions.${versionName}.meta.gridFsFileId`;
-              this.collection.update(file._id, {
-                $set: { [property]: ver._id.toHexString() },
-              });
-              this.unlink(this.collection.findOne(file._id), versionName); // Unlink files from FS
+              this.collection.update(
+                { _id: file._id },
+                {
+                  $set: { [property]: ver._id.toHexString() },
+                }
+              );
+              this.unlink(
+                this.collection.findOne({ _id: file._id }),
+                versionName
+              ); // Unlink files from FS
             })
           );
       });

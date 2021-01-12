@@ -20,7 +20,7 @@ Package.onUse((api) => {
 
   api.use('percolate:migrations@1.0.2');
   api.use('unchained:utils@0.55.4');
-  api.use('unchained:core-accountsjs@0.55.4');
+  api.use('unchained:core-accountsjs@0.55.5');
   api.use('unchained:core-logger@0.55.4');
   api.use('unchained:core-languages@0.55.4');
   api.use('unchained:core-countries@0.55.4');

@@ -38,8 +38,8 @@ import 'meteor/unchained:core-worker/plugins/heartbeat';
 import 'meteor/unchained:core-worker/plugins/email';
 import seed from './seed';
 
-Meteor.startup(() => {
-  startPlatform({
+Meteor.startup(async () => {
+  await startPlatform({
     introspection: true,
     modules: {
       payment: {

@@ -58,7 +58,6 @@ Migrations.add({
 });
 
 export default () => {
-  Migrations.migrateTo('latest');
   ProductVariations.rawCollection().createIndex({ productId: 1 });
 
   ProductVariationTexts.rawCollection().createIndex({ productVariationId: 1 });

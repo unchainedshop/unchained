@@ -37,7 +37,9 @@ export const setupDatabase = async () => {
     poolSize: 1,
   });
   const db = await connection.db(global.__MONGO_DB_NAME__);
-  await db.dropDatabase();
+  const collections = await db.collections();
+  await Promise.all(collections.map((collection) => collection.deleteMany({})));
+
   await seedLocaleData(db);
   await seedUsers(db);
   await seedProducts(db);
@@ -63,7 +65,8 @@ export const wipeDatabase = async () => {
     useUnifiedTopology: true,
   });
   const db = await connection.db(global.__MONGO_DB_NAME__);
-  await db.dropDatabase();
+  const collections = await db.collections();
+  await Promise.all(collections.map((collection) => collection.deleteMany({})));
   await connection.close();
 };
 

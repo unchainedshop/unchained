@@ -9,8 +9,7 @@ export default function addProductMedia(
 ) {
   log(`mutation addProductMedia ${productId}`, { userId });
   if (!productId) throw new InvalidIdError({ productId });
-  const product = Products.findOne({ _id: productId });
+  const product = Products.findProduct({ productId });
   if (!product) throw new ProductNotFoundError({ productId });
-  const productMedia = product.addMedia({ rawFile: media, authorId: userId });
-  return productMedia;
+  return product.addMedia({ rawFile: media, authorId: userId });
 }

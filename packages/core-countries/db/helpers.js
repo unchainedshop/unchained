@@ -3,6 +3,7 @@ import countryFlags from 'emoji-flags';
 import countryI18n from 'i18n-iso-countries';
 import { Currencies } from 'meteor/unchained:core-currencies';
 import LRU from 'lru-cache';
+import { systemLocale } from 'meteor/unchained:utils';
 import { Countries } from './collections';
 
 const { NODE_ENV } = process.env;
@@ -16,6 +17,17 @@ const currencyCodeCache = new LRU({
 
 const { CURRENCY } = process.env;
 
+Countries.updateCountry = ({ countryId, country }) => {
+  return Countries.update(
+    { _id: countryId },
+    {
+      $set: {
+        ...country,
+        updated: new Date(),
+      },
+    }
+  );
+};
 Countries.helpers({
   defaultCurrency() {
     if (this.defaultCurrencyId) {
@@ -28,6 +40,9 @@ Countries.helpers({
   },
   flagEmoji() {
     return countryFlags.countryCode(this.isoCode).emoji || '❌';
+  },
+  isBase() {
+    return this.isoCode === systemLocale.country;
   },
 });
 
@@ -50,4 +65,22 @@ Countries.resolveDefaultCurrencyCode = ({ isoCode }) => {
   const liveCurrencyCode = (currency && currency.isoCode) || CURRENCY || 'CHF';
   currencyCodeCache.set(isoCode, liveCurrencyCode);
   return liveCurrencyCode;
+};
+
+Countries.findCountries = ({ limit, offset, includeInactive }) => {
+  const selector = {};
+  if (!includeInactive) selector.isActive = true;
+  return Countries.find(selector, { skip: offset, limit }).fetch();
+};
+
+Countries.countryExists = ({ countryId }) => {
+  return !!Countries.find({ _id: countryId }, { limit: 1 }).count();
+};
+
+Countries.findCountry = ({ countryId, isoCode }) => {
+  return Countries.findOne(countryId ? { _id: countryId } : { isoCode });
+};
+
+Countries.removeCountry = ({ countryId }) => {
+  return Countries.remove({ _id: countryId });
 };

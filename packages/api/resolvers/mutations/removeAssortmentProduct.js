@@ -9,13 +9,10 @@ export default function removeAssortmentProduct(
 ) {
   log(`mutation removeAssortmentProduct ${assortmentProductId}`, { userId });
   if (!assortmentProductId) throw new InvalidIdError({ assortmentProductId });
-  const assortmentProduct = AssortmentProducts.findOne({
-    _id: assortmentProductId,
+  const assortmentProduct = AssortmentProducts.findProduct({
+    assortmentProductId,
   });
   if (!assortmentProduct)
     throw new AssortmentProductNotFoundError({ assortmentProductId });
-  AssortmentProducts.remove({ _id: assortmentProductId });
-  // TODO: Use Helper fn
-  assortmentProduct.assortment().invalidateProductIdCache();
-  return assortmentProduct;
+  return assortmentProduct.removeAssortmentProduct();
 }

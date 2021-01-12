@@ -1,7 +1,15 @@
 import 'meteor/dburles:collection-helpers';
-import { findLocalizedText } from 'meteor/unchained:core';
+import { findLocalizedText } from 'meteor/unchained:utils';
 import { Locale } from 'locale';
 import { ProductMedia, Media, ProductMediaTexts } from './collections';
+
+ProductMedia.findProductMedia = ({ productMediaId }) => {
+  return ProductMedia.findOne({ _id: productMediaId });
+};
+
+ProductMedia.removeProductMedia = ({ productMediaId }) => {
+  return ProductMedia.remove({ _id: productMediaId });
+};
 
 ProductMedia.helpers({
   upsertLocalizedText(locale, fields) {
@@ -24,6 +32,14 @@ ProductMedia.helpers({
     );
     return ProductMediaTexts.findOne({ productMediaId: this._id, locale });
   },
+  updateTexts({ texts, userId }) {
+    return texts.map(({ locale, ...localizations }) =>
+      this.upsertLocalizedText(locale, {
+        ...localizations,
+        authorId: userId,
+      })
+    );
+  },
   getLocalizedTexts(locale) {
     const parsedLocale = new Locale(locale);
     return ProductMedia.getLocalizedTexts(this._id, parsedLocale);
@@ -33,6 +49,10 @@ ProductMedia.helpers({
     return media;
   },
 });
+
+ProductMediaTexts.findProductMediaTexts = ({ productMediaId }) => {
+  return ProductMediaTexts.find({ productMediaId }).fetch();
+};
 
 ProductMedia.getLocalizedTexts = (productMediaId, locale) =>
   findLocalizedText(ProductMediaTexts, { productMediaId }, locale);

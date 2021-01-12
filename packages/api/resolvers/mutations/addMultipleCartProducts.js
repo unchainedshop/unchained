@@ -10,7 +10,7 @@ export default async function addMultipleCartProducts(
 ) {
   /* verify existence of products */
   const itemsWithProducts = items.map(({ productId, ...item }) => {
-    const product = Products.findOne({ _id: productId });
+    const product = Products.findProduct({ productId });
     if (!product) throw new ProductNotFoundError({ productId });
     return {
       ...item,

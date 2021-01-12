@@ -10,6 +10,10 @@ import { Quotations } from 'meteor/unchained:core-quotations';
 import { OrderPositions } from './collections';
 import { Orders } from '../orders/collections';
 
+OrderPositions.findItem = ({ itemId }, options) => {
+  return OrderPositions.findOne({ _id: itemId }, options);
+};
+
 OrderPositions.helpers({
   product() {
     return Products.findOne({
@@ -74,9 +78,9 @@ OrderPositions.helpers({
     const { countryCode, userId } = order;
     return scheduling.map((schedule) => {
       const context = {
-        warehousingProvider: WarehousingProviders.findProviderById(
-          schedule.warehousingProviderId
-        ),
+        warehousingProvider: WarehousingProviders.findProvider({
+          warehousingProviderId: schedule.warehousingProviderId,
+        }),
         deliveryProvider: order.delivery().provider(),
         product: this.product(),
         quantity: this.quantity,

@@ -70,6 +70,5 @@ Migrations.add({
 });
 
 export default () => {
-  Migrations.migrateTo('latest');
   WarehousingProviders.rawCollection().createIndex({ type: 1 });
 };

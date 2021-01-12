@@ -10,12 +10,11 @@ export default async function createProduct(payload, { logger, authorId }) {
   if (specification) {
     const productData = transformSpecificationToProductStructure(specification);
     logger.debug('update product object', productData);
-    const product = await Products.updateProduct({
+    await Products.updateProduct({
       ...productData,
       productId: _id,
       authorId,
     });
-
     if (specification.content) {
       logger.debug(
         'replace localized content for product',
@@ -23,7 +22,7 @@ export default async function createProduct(payload, { logger, authorId }) {
       );
       await upsertProductContent({
         content: specification.content,
-        product,
+        productId: _id,
         authorId,
       });
     }

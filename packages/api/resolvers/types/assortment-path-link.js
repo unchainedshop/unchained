@@ -2,11 +2,11 @@ import {
   AssortmentLinks,
   AssortmentTexts,
 } from 'meteor/unchained:core-assortments';
-import { findLocalizedText } from 'meteor/unchained:core';
+import { findLocalizedText } from 'meteor/unchained:utils';
 
 export default {
   async link({ assortmentId, childAssortmentId }) {
-    return AssortmentLinks.findOne({
+    return AssortmentLinks.findLink({
       parentAssortmentId: assortmentId,
       childAssortmentId,
     });

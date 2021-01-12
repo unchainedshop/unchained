@@ -193,8 +193,8 @@ Add unchained:platform to your meteor project, copy the dependencies part of the
 
 ```
 import { startPlatform } from 'meteor/unchained:platform';
-Meteor.startup(() => {
-  startPlatform(options);
+Meteor.startup(async () => {
+  await startPlatform(options);
 });
 ```
 

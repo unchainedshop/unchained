@@ -8,8 +8,8 @@ import {
 import { ProductReviews } from 'meteor/unchained:core-products';
 import { Quotations } from 'meteor/unchained:core-quotations';
 import { Subscriptions } from 'meteor/unchained:core-subscriptions';
-import { Bookmarks } from 'meteor/unchained:core-bookmarks';
 import { PaymentCredentials } from 'meteor/unchained:core-payment';
+import { Promise } from 'meteor/promise';
 
 export default (role, actions) => {
   const isMyself = (
@@ -36,8 +36,8 @@ export default (role, actions) => {
   };
 
   const isOwnedOrder = (root, { orderId }, { userId }) => {
-    const order = Orders.findOne(
-      { _id: orderId },
+    const order = Orders.findOrder(
+      { orderId },
       {
         fields: {
           userId: true,
@@ -56,8 +56,8 @@ export default (role, actions) => {
   };
 
   const isOwnedSubscription = (root, { subscriptionId }, { userId }) => {
-    const subscription = Subscriptions.findOne(
-      { _id: subscriptionId },
+    const subscription = Subscriptions.findSubscription(
+      { subscriptionId },
       {
         fields: {
           userId: true,
@@ -69,8 +69,8 @@ export default (role, actions) => {
   };
 
   const isOwnedOrderPayment = (root, { orderPaymentId }, { userId }) => {
-    const payment = OrderPayments.findOne(
-      { _id: orderPaymentId },
+    const payment = OrderPayments.findPayment(
+      { orderPaymentId },
       {
         fields: {
           orderId: true,
@@ -85,8 +85,8 @@ export default (role, actions) => {
   };
 
   const isOwnedOrderDelivery = (root, { orderDeliveryId }, { userId }) => {
-    const delivery = OrderDeliveries.findOne(
-      { _id: orderDeliveryId },
+    const delivery = OrderDeliveries.findDelivery(
+      { orderDeliveryId },
       {
         fields: {
           orderId: true,
@@ -101,8 +101,8 @@ export default (role, actions) => {
   };
 
   const isOwnedOrderItem = (root, { itemId }, { userId }) => {
-    const item = OrderPositions.findOne(
-      { _id: itemId },
+    const item = OrderPositions.findItem(
+      { itemId },
       {
         fields: {
           orderId: true,
@@ -117,8 +117,8 @@ export default (role, actions) => {
   };
 
   const isOwnedOrderDiscount = (root, { discountId }, { userId }) => {
-    const discount = OrderDiscounts.findOne(
-      { _id: discountId },
+    const discount = OrderDiscounts.findDiscount(
+      { discountId },
       {
         fields: {
           orderId: true,
@@ -133,14 +133,14 @@ export default (role, actions) => {
   };
 
   const isOwnedProductReview = (root, { productReviewId }, { userId }) => {
-    const review = ProductReviews.findReviewById(productReviewId);
+    const review = ProductReviews.findReview({ productReviewId });
     if (!review) return true;
     return review.userId === userId;
   };
 
   const isOwnedQuotation = (root, { quotationId }, { userId }) => {
-    const quotation = Quotations.findOne(
-      { _id: quotationId },
+    const quotation = Quotations.findQuotation(
+      { quotationId },
       {
         fields: {
           userId: true,
@@ -153,15 +153,8 @@ export default (role, actions) => {
     return quotation.userId === userId;
   };
 
-  const isOwnedBookmark = (root, { bookmarkId }, { userId }) => {
-    const bookmark = Bookmarks.findOne(
-      { _id: bookmarkId },
-      {
-        fields: {
-          userId: true,
-        },
-      }
-    );
+  const isOwnedBookmark = (root, { bookmarkId }, { userId, modules }) => {
+    const bookmark = Promise.await(modules.bookmarks.findById(bookmarkId));
     // return true if db entity not found in order
     // to let the resolver throw a good exception
     if (!bookmark) return true;
@@ -173,9 +166,9 @@ export default (role, actions) => {
     { paymentCredentialsId },
     { userId }
   ) => {
-    const credentials = PaymentCredentials.findOne(
+    const credentials = PaymentCredentials.findCredentials(
       {
-        _id: paymentCredentialsId,
+        paymentCredentialsId,
       },
       {
         fields: {

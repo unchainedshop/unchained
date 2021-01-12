@@ -9,7 +9,7 @@ import {
 export default function removeBundleItem(root, { productId, index }) {
   log(`mutation removeBundleItem ${productId}`, { index });
   if (!productId) throw new InvalidIdError({ productId });
-  const product = Products.findOne(productId);
+  const product = Products.findProduct({ productId });
   if (!product) throw new ProductNotFoundError({ productId });
   if (product.type !== ProductTypes.BundleProduct)
     throw new ProductWrongTypeError({
@@ -17,15 +17,6 @@ export default function removeBundleItem(root, { productId, index }) {
       received: product.type,
       required: ProductTypes.BundleProduct,
     });
-  const { bundleItems = [] } = product;
-  bundleItems.splice(index, 1);
-
-  Products.update(productId, {
-    $set: {
-      updated: new Date(),
-      bundleItems,
-    },
-  });
-
-  return Products.findOne({ _id: productId });
+  Products.removeBundleItem({ productId, index });
+  return Products.findProduct({ productId });
 }

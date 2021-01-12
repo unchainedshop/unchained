@@ -240,8 +240,27 @@ Migrations.add({
   down() {},
 });
 
+Migrations.add({
+  version: 20201231.0,
+  name:
+    'drop all assortment-linked entities with assortmentIds that do not exist anymore',
+  up() {
+    const idArray = Collections.Assortments.find({})
+      .fetch()
+      .map((assortment) => assortment._id);
+    if (idArray?.length > 0) {
+      Collections.AssortmentLinks.remove({ assortmentId: { $nin: idArray } });
+      Collections.AssortmentTexts.remove({ assortmentId: { $nin: idArray } });
+      Collections.AssortmentProducts.remove({
+        assortmentId: { $nin: idArray },
+      });
+      Collections.AssortmentFilters.remove({ assortmentId: { $nin: idArray } });
+    }
+  },
+  down() {},
+});
+
 export default () => {
-  Migrations.migrateTo('latest');
   // Assortment Indexes
   Collections.Assortments.rawCollection().createIndex({ isActive: 1 });
   Collections.Assortments.rawCollection().createIndex({ isRoot: 1 });
@@ -258,6 +277,12 @@ export default () => {
   Collections.AssortmentTexts.rawCollection().createIndex({
     locale: 1,
     assortmentId: 1,
+  });
+  Collections.AssortmentTexts.rawCollection().createIndex({
+    title: 'text',
+    subtitle: 'text',
+    vendor: 'text',
+    brand: 'text',
   });
 
   // AssortmentProducts indexes

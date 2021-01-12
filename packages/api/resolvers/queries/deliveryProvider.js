@@ -11,7 +11,7 @@ export default function deliveryProvider(
 
   if (!deliveryProviderId) throw new InvalidIdError({ deliveryProviderId });
 
-  const provider = DeliveryProviders.findProviderById(deliveryProviderId);
+  const provider = DeliveryProviders.findProvider({ deliveryProviderId });
 
   if (!provider) throw new DeliverProviderNotFoundError({ deliveryProviderId });
 

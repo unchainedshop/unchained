@@ -16,8 +16,8 @@ export default async function createSubscription(
   log('mutation createSubscription', { userId });
   if (!user) throw new UserNotFoundError({ userId });
   const { configuration, quantity, productId } = plan;
-  const product = Products.findOne({
-    _id: plan.productId,
+  const product = Products.findProduct({
+    productId: plan.productId,
   });
   if (!productId) throw new InvalidIdError({ productId });
   if (!product) {

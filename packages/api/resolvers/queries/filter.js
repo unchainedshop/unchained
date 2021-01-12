@@ -7,7 +7,7 @@ export default function filter(root, { filterId }, { userId }) {
 
   if (!filterId) throw new InvalidIdError({ filterId });
 
-  const foundFilter = Filters.findOne({ _id: filterId });
+  const foundFilter = Filters.findFilter({ filterId });
 
   if (!foundFilter) throw new FilterNotFoundError({ filterId });
 

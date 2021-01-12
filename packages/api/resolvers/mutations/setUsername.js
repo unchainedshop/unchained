@@ -10,7 +10,7 @@ export default async function setUsername(
   log(`mutation setUsername ${foreignUserId}`, { userId: ownUserId });
   const userId = foreignUserId || ownUserId;
   if (!userId) throw new InvalidIdError({ userId });
-  const user = Users.findOne({ _id: userId });
+  const user = Users.findUser({ userId });
   if (!user) throw new UserNotFoundError({ userId });
   const res = await user.setUsername(username);
   return res;

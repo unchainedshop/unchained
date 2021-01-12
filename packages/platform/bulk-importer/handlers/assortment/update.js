@@ -9,7 +9,7 @@ export default async function updateAssortment(payload, { logger, authorId }) {
 
   if (specification) {
     logger.debug('update assortment object', specification);
-    const assortment = await Assortments.updateAssortment({
+    await Assortments.updateAssortment({
       ...specification,
       assortmentId: _id,
       authorId,
@@ -22,7 +22,7 @@ export default async function updateAssortment(payload, { logger, authorId }) {
       );
       await upsertAssortmentContent({
         content: specification.content,
-        assortment,
+        assortmentId: _id,
         authorId,
       });
     }

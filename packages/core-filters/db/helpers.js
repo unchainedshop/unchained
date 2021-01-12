@@ -1,17 +1,52 @@
 import 'meteor/dburles:collection-helpers';
 import { Locale } from 'locale';
-import { findLocalizedText } from 'meteor/unchained:core';
+import { findLocalizedText } from 'meteor/unchained:utils';
 import { log } from 'meteor/unchained:core-logger';
 import { Products, ProductStatus } from 'meteor/unchained:core-products';
+import {
+  Assortments,
+  AssortmentFilters,
+} from 'meteor/unchained:core-assortments';
 import { FilterTypes } from './schema';
 import { Filters, FilterTexts } from './collections';
 import { FilterDirector } from '../director';
 import intersectProductIds from '../search/intersect-product-ids';
+import { searchProducts } from '../search';
 
 const util = require('util');
 const zlib = require('zlib');
 
 const MAX_UNCOMPRESSED_FILTER_PRODUCTS = 1000;
+
+Assortments.helpers({
+  async searchProducts({
+    query,
+    ignoreChildAssortments,
+    forceLiveCollection,
+    ...rest
+  }) {
+    const productIds = this.productIds({
+      forceLiveCollection,
+      ignoreChildAssortments,
+    });
+    const filterIds = this.filterAssignments().map(({ filterId }) => filterId);
+    return searchProducts({
+      query: {
+        filterIds,
+        productIds,
+        ...query,
+      },
+      forceLiveCollection,
+      ...rest,
+    });
+  },
+});
+
+AssortmentFilters.helpers({
+  filter() {
+    return Filters.findOne({ _id: this.filterId });
+  },
+});
 
 Filters.createFilter = (
   { locale, title, type, isActive = false, authorId, ...filterData },
@@ -57,9 +92,7 @@ Filters.updateFilter = (
 };
 
 Filters.removeFilter = ({ filterId }) => {
-  const removedFilter = Filters.findOne({ _id: filterId });
-  Filters.remove({ _id: filterId });
-  return removedFilter;
+  return Filters.remove({ _id: filterId });
 };
 
 Filters.getLocalizedTexts = (filterId, filterOptionValue, locale) =>
@@ -103,6 +136,20 @@ Filters.markFiltersDirty = () => {
   return new Date();
 };
 
+Filters.filterExists = ({ filterId }) => {
+  return !!Filters.find({ _id: filterId }).count();
+};
+
+Filters.findFilter = ({ filterId }) => {
+  return Filters.findOne({ _id: filterId });
+};
+
+Filters.findFilters = ({ limit, offset, includeInactive }) => {
+  const selector = {};
+  if (!includeInactive) selector.isActive = true;
+  return Filters.find(selector, { skip: offset, limit }).fetch();
+};
+
 Filters.cleanFiltersByReferenceDate = (referenceDate) => {
   const selector = {
     dirty: true,
@@ -135,6 +182,13 @@ Filters.cleanFiltersByReferenceDate = (referenceDate) => {
       level: 'verbose',
     }
   );
+};
+
+FilterTexts.findFilterTexts = ({ filterId, filterOptionValue }) => {
+  return FilterTexts.find({
+    filterId,
+    filterOptionValue,
+  }).fetch();
 };
 
 Filters.updateCleanFilterActivation = () => {
@@ -184,6 +238,20 @@ Filters.invalidateFilterCaches = () => {
     .forEach((filter) => filter.invalidateProductIdCache());
 };
 
+Filters.removeFilterOption = ({ filterId, filterOptionValue }) => {
+  return Filters.update(
+    { _id: filterId },
+    {
+      $set: {
+        updated: new Date(),
+      },
+      $pull: {
+        options: filterOptionValue,
+      },
+    }
+  );
+};
+
 Filters.helpers({
   upsertLocalizedText(locale, { filterOptionValue, ...fields }) {
     const selector = {
@@ -204,6 +272,32 @@ Filters.helpers({
       },
     });
     return FilterTexts.findOne(selector);
+  },
+  addOption({ option, localeContext, userId }) {
+    const { value, title } = option;
+    Filters.update(this._id, {
+      $set: {
+        updated: new Date(),
+      },
+      $addToSet: {
+        options: value,
+      },
+    });
+
+    this.upsertLocalizedText(localeContext.language, {
+      authorId: userId,
+      filterOptionValue: value,
+      title,
+    });
+  },
+  updateTexts({ texts, filterOptionValue, userId }) {
+    return texts.map(({ locale, ...localizations }) =>
+      this.upsertLocalizedText(locale, {
+        ...localizations,
+        authorId: userId,
+        filterOptionValue,
+      })
+    );
   },
   getLocalizedTexts(locale, optionValue) {
     const parsedLocale = new Locale(locale);

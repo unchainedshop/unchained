@@ -20,6 +20,16 @@ Users.helpers({
   },
 });
 
+PaymentProviders.findInterfaces = ({ type }) => {
+  return PaymentDirector.filteredAdapters((Interface) =>
+    Interface.typeSupported(type)
+  ).map((Interface) => ({
+    _id: Interface.key,
+    label: Interface.label,
+    version: Interface.version,
+  }));
+};
+
 PaymentProviders.helpers({
   transformContext(key, value) {
     return value;
@@ -122,9 +132,14 @@ PaymentCredentials.markPreferred = ({ userId, paymentCredentialsId }) => {
       },
     }
   );
-  return PaymentCredentials.findOne({
-    _id: paymentCredentialsId,
-  });
+};
+
+PaymentCredentials.credentialsExists = ({ paymentCredentialsId }) => {
+  return !!PaymentCredentials.find({ _id: paymentCredentialsId }).count();
+};
+
+PaymentCredentials.findCredentials = ({ paymentCredentialsId }, options) => {
+  return PaymentCredentials.findOne({ _id: paymentCredentialsId }, options);
 };
 
 PaymentCredentials.upsertCredentials = ({
@@ -181,7 +196,11 @@ PaymentCredentials.registerPaymentCredentials = ({
     token,
     ...meta,
   });
-  return PaymentCredentials.findOne({ _id: paymentCredentialsId });
+  return PaymentCredentials.findOne(
+    paymentCredentialsId
+      ? { _id: paymentCredentialsId }
+      : { userId, paymentProviderId }
+  );
 };
 
 PaymentCredentials.removeCredentials = ({ paymentCredentialsId }) => {
@@ -230,8 +249,22 @@ PaymentProviders.removeProvider = ({ _id }) => {
   return PaymentProviders.findOne({ _id });
 };
 
-PaymentProviders.findProviderById = (_id, ...options) =>
-  PaymentProviders.findOne({ _id }, ...options);
+PaymentProviders.providerExists = ({ paymentProviderId }) => {
+  return !!PaymentProviders.find(
+    { _id: paymentProviderId, deleted: null },
+    { limit: 1 }
+  ).count();
+};
+
+PaymentProviders.findProvider = (
+  { paymentProviderId, ...rest },
+  ...options
+) => {
+  return PaymentProviders.findOne(
+    { _id: paymentProviderId, ...rest },
+    ...options
+  );
+};
 
 PaymentProviders.findProviders = ({ type } = {}, ...options) =>
   PaymentProviders.find(

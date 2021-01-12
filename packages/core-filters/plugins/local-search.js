@@ -4,17 +4,6 @@ import { AssortmentTexts } from 'meteor/unchained:core-assortments';
 
 const { AMAZON_DOCUMENTDB_COMPAT_MODE } = process.env;
 
-const indexConfig = {
-  title: 'text',
-  subtitle: 'text',
-  vendor: 'text',
-  brand: 'text',
-};
-
-ProductTexts.rawCollection().createIndex(indexConfig);
-
-AssortmentTexts.rawCollection().createIndex(indexConfig);
-
 class LocalSearch extends FilterAdapter {
   static key = 'shop.unchained.filters.local-search';
 

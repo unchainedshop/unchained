@@ -13,7 +13,7 @@ export default function makeQuotationProposal(
 ) {
   log('mutation makeQuotationProposal', { quotationId, userId });
   if (!quotationId) throw new InvalidIdError({ quotationId });
-  const quotation = Quotations.findOne({ _id: quotationId });
+  const quotation = Quotations.findQuotation({ quotationId });
   if (!quotation) throw new QuotationNotFoundError({ quotationId });
   if (quotation.status !== QuotationStatus.PROCESSING) {
     throw new QuotationWrongStatusError({ status: quotation.status });

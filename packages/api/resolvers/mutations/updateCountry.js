@@ -9,16 +9,8 @@ export default function updateCountry(
 ) {
   log(`mutation updateCountry ${countryId}`, { userId });
   if (!countryId) throw new InvalidIdError({ countryId });
-  const countryObject = Countries.findOne({ _id: countryId });
-  if (!countryObject) throw new CountryNotFoundError({ countryId });
-  Countries.update(
-    { _id: countryId },
-    {
-      $set: {
-        ...country,
-        updated: new Date(),
-      },
-    }
-  );
-  return Countries.findOne({ _id: countryId });
+  if (!Countries.countryExists({ countryId }))
+    throw new CountryNotFoundError({ countryId });
+  Countries.updateCountry({ countryId, country });
+  return Countries.findCountry({ countryId });
 }

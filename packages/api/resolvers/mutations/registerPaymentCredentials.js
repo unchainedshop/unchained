@@ -10,7 +10,7 @@ export default (root, { paymentContext, paymentProviderId }, { userId }) => {
     userId,
   });
   if (!paymentProviderId) throw new InvalidIdError({ paymentProviderId });
-  if (!PaymentProviders.find({ _id: paymentProviderId }).count())
+  if (!PaymentProviders.providerExists({ paymentProviderId }))
     throw new PaymentProviderNotFoundError({ paymentProviderId });
   return PaymentCredentials.registerPaymentCredentials({
     paymentProviderId,

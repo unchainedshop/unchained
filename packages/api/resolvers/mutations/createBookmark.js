@@ -1,5 +1,4 @@
 import { log } from 'meteor/unchained:core-logger';
-import { Bookmarks } from 'meteor/unchained:core-bookmarks';
 import { Products } from 'meteor/unchained:core-products';
 import {
   BookmarkAlreadyExistsError,
@@ -7,23 +6,30 @@ import {
   ProductNotFoundError,
 } from '../../errors';
 
-export default function createBookmark(
+export default async function createBookmark(
   root,
   { productId, userId: foreignUserId },
-  { userId }
+  { userId, modules }
 ) {
-  log(`mutation createBookmark for ${foreignUserId}`, { productId, userId });
+  log(`mutation createBookmark for ${foreignUserId}`, {
+    productId,
+    userId,
+  });
   if (!productId) throw new InvalidIdError({ productId });
-  const product = Products.findOne({ _id: productId });
-  if (!product) throw new ProductNotFoundError({ productId });
-  const foundBookmark = Bookmarks.findBookmarks({
+  if (!Products.productExists({ productId }))
+    throw new ProductNotFoundError({ productId });
+
+  const bookmark = await modules.bookmarks.findByUserIdAndProductId({
     productId,
     userId: foreignUserId,
-  }).pop();
-  if (foundBookmark) {
-    throw new BookmarkAlreadyExistsError({
-      bookmarkId: foundBookmark._id,
-    });
-  }
-  return Bookmarks.createBookmark({ userId: foreignUserId, productId });
+  });
+
+  if (bookmark)
+    throw new BookmarkAlreadyExistsError({ bookmarkId: bookmark._id });
+
+  const bookmarkId = await modules.bookmarks.create({
+    userId: foreignUserId,
+    productId,
+  });
+  return modules.bookmarks.findById(bookmarkId);
 }

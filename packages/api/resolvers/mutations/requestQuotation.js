@@ -15,9 +15,9 @@ export default function requestQuotation(
     { userId }
   );
   if (!productId) throw new InvalidIdError({ productId });
-  const product = Products.findOne({ _id: productId });
-  if (!product) throw new ProductNotFoundError({ productId });
-  const quotation = Quotations.requestQuotation(
+  if (!Products.productExists({ productId }))
+    throw new ProductNotFoundError({ productId });
+  return Quotations.requestQuotation(
     {
       userId,
       productId,
@@ -26,5 +26,4 @@ export default function requestQuotation(
     },
     { localeContext }
   );
-  return quotation;
 }

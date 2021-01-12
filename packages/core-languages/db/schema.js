@@ -12,7 +12,6 @@ Languages.attachSchema(
         required: true,
       },
       isActive: Boolean,
-      isBase: Boolean,
       authorId: { type: String, required: true },
       ...Schemas.timestampFields,
     },
@@ -31,7 +30,19 @@ Migrations.add({
   down() {},
 });
 
+Migrations.add({
+  version: 20210108.3,
+  name: 'remove isBase',
+  up() {
+    Languages.update(
+      {},
+      { $unset: { isBase: '' } },
+      { multi: true, bypassCollection2: true }
+    );
+  },
+  down() {},
+});
+
 export default () => {
-  Migrations.migrateTo('latest');
   Languages.rawCollection().createIndex({ isoCode: 1 }, { unique: true });
 };

@@ -5,8 +5,8 @@ import { CurrencyNotFoundError, InvalidIdError } from '../../errors';
 export default function removeCurrency(root, { currencyId }, { userId }) {
   log(`mutation removeCurrency ${currencyId}`, { userId });
   if (!currencyId) throw new InvalidIdError({ currencyId });
-  const currency = Currencies.findOne({ _id: currencyId });
+  const currency = Currencies.findCurrency({ currencyId });
   if (!currency) throw new CurrencyNotFoundError({ currencyId });
-  Currencies.remove({ _id: currencyId });
+  Currencies.removeCurrency({ currencyId });
   return currency;
 }

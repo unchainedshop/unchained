@@ -18,7 +18,9 @@ OrderDeliveries.helpers({
     });
   },
   provider() {
-    return DeliveryProviders.findProviderById(this.deliveryProviderId);
+    return DeliveryProviders.findProvider({
+      deliveryProviderId: this.deliveryProviderId,
+    });
   },
   transformedContextValue(key) {
     const provider = this.provider();
@@ -163,4 +165,8 @@ OrderDeliveries.updateStatus = ({ deliveryId, status, info = '' }) => {
   });
   OrderDeliveries.update({ _id: deliveryId }, modifier);
   return OrderDeliveries.findOne({ _id: deliveryId });
+};
+
+OrderDeliveries.findDelivery = ({ orderDeliveryId }, options) => {
+  return OrderDeliveries.findOne({ _id: orderDeliveryId }, options);
 };

@@ -59,7 +59,6 @@ Migrations.add({
 });
 
 export default () => {
-  Migrations.migrateTo('latest');
   OrderPositions.rawCollection().createIndex({ productId: 1 });
   OrderPositions.rawCollection().createIndex({ orderId: 1 });
 };

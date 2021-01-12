@@ -124,7 +124,7 @@ DeliveryProviders.updateProvider = ({ _id, ...rest }) => {
 };
 
 DeliveryProviders.removeProvider = ({ _id }) => {
-  DeliveryProviders.update(
+  return DeliveryProviders.update(
     { _id, deleted: null },
     {
       $set: {
@@ -132,11 +132,17 @@ DeliveryProviders.removeProvider = ({ _id }) => {
       },
     }
   );
-  return DeliveryProviders.findOne({ _id });
 };
 
-DeliveryProviders.findProviderById = (_id, ...options) =>
-  DeliveryProviders.findOne({ _id }, ...options);
+DeliveryProviders.providerExists = ({ deliveryProviderId }) => {
+  return !!DeliveryProviders.find(
+    { _id: deliveryProviderId, deleted: null },
+    { limit: 1 }
+  ).count();
+};
+
+DeliveryProviders.findProvider = ({ deliveryProviderId, ...rest }) =>
+  DeliveryProviders.findOne({ _id: deliveryProviderId, ...rest });
 
 DeliveryProviders.findProviders = ({ type } = {}, ...options) =>
   DeliveryProviders.find(
@@ -150,4 +156,14 @@ DeliveryProviders.findSupported = ({ order }, ...options) => {
     ...options
   ).filter((deliveryProvider) => deliveryProvider.isActive(order));
   return settings.filterSupportedProviders({ providers, order });
+};
+
+DeliveryProviders.findInterfaces = ({ type }) => {
+  return DeliveryDirector.filteredAdapters((Interface) =>
+    Interface.typeSupported(type)
+  ).map((Interface) => ({
+    _id: Interface.key,
+    label: Interface.label,
+    version: Interface.version,
+  }));
 };

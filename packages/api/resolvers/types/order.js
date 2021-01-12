@@ -22,8 +22,8 @@ export default {
   total(obj, { category }) {
     return obj.pricing().total(category);
   },
-  currency(obj) {
-    return Currencies.findOne({ isoCode: obj.currency });
+  async currency(obj) {
+    return Currencies.findCurrency({ isoCode: obj.currency });
   },
   meta(obj) {
     return obj.context;

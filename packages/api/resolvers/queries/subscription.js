@@ -5,11 +5,8 @@ import { SubscriptionNotFoundError, InvalidIdError } from '../../errors';
 export default function subscription(root, { subscriptionId }, { userId }) {
   log(`query subscription ${subscriptionId}`, { userId, subscriptionId });
   if (!subscriptionId) throw new InvalidIdError({ subscriptionId });
-
-  const foundSubscription = Subscriptions.findOne({ _id: subscriptionId });
-
+  const foundSubscription = Subscriptions.findSubscription({ subscriptionId });
   if (!foundSubscription)
     throw new SubscriptionNotFoundError({ subscriptionId });
-
   return foundSubscription;
 }

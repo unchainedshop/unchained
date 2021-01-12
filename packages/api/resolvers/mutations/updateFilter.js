@@ -5,8 +5,8 @@ import { FilterNotFoundError, InvalidIdError } from '../../errors';
 export default function updateFilter(root, { filter, filterId }, { userId }) {
   log(`mutation updateFilter ${filterId}`, { userId });
   if (!filterId) throw new InvalidIdError({ filterId });
-  const filterObject = Filters.findOne({ _id: filterId });
-  if (!filterObject) throw new FilterNotFoundError({ filterId });
+  if (!Filters.filterExists({ filterId }))
+    throw new FilterNotFoundError({ filterId });
   return Filters.updateFilter({
     filterId,
     ...filter,

@@ -9,11 +9,9 @@ export default function removeAssortmentFilter(
 ) {
   log(`mutation removeAssortmentFilter ${assortmentFilterId}`, { userId });
   if (!assortmentFilterId) throw new InvalidIdError({ assortmentFilterId });
-  const assortmentFilter = AssortmentFilters.findOne({
-    _id: assortmentFilterId,
-  });
+  const assortmentFilter = AssortmentFilters.findFilter({ assortmentFilterId });
   if (!assortmentFilter)
     throw new AssortmentFilterNotFoundError({ assortmentFilterId });
-  AssortmentFilters.remove({ _id: assortmentFilterId });
+  AssortmentFilters.removeFilter({ assortmentFilterId });
   return assortmentFilter;
 }

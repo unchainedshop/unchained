@@ -9,7 +9,8 @@ export default function updateProduct(
 ) {
   log(`mutation updateProduct ${productId}`, { userId });
   if (!productId) throw new InvalidIdError({ productId });
-  const productObject = Products.updateProduct({ productId, ...product });
-  if (!productObject) throw new ProductNotFoundError({ productId });
-  return productObject;
+  if (!Products.productExists({ productId }))
+    throw new ProductNotFoundError({ productId });
+  Products.updateProduct({ productId, ...product });
+  return Products.findProduct({ productId });
 }

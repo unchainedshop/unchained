@@ -9,7 +9,7 @@ export default async function addEmail(
 ) {
   log(`mutation addEmail ${email} ${foreignUserId}`, { userId: ownUserId });
   const userId = foreignUserId || ownUserId;
-  const user = Users.findOne({ _id: userId });
+  const user = Users.findUser({ userId });
   if (!user) throw new UserNotFoundError({ userId });
   const res = await user.addEmail(email);
   return res;

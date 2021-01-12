@@ -11,9 +11,8 @@ export default async function searchQuery(root, query, context) {
   const forceLiveCollection = false;
   const { queryString, assortmentId, ignoreChildAssortments } = query;
   log(`query search ${assortmentId} ${JSON.stringify(query)}`, { userId });
-
   if (assortmentId) {
-    const assortment = Assortments.findOne({ _id: assortmentId });
+    const assortment = Assortments.findAssortment({ assortmentId });
     if (!assortment) throw new AssortmentNotFoundError({ assortmentId });
     return assortment.searchProducts({
       query,

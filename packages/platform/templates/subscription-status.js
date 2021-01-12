@@ -24,9 +24,7 @@ export default ({ subscriptionId, locale }) => {
 
   const templateVariables = {
     subject,
-    url: `${UI_ENDPOINT}/subscription?_id=${subscription._id}&otp=${
-      subscription.subscriptionNumber || ''
-    }`,
+    url: `${UI_ENDPOINT}/subscription?_id=${subscription._id}`,
     subscription,
     locale,
   };

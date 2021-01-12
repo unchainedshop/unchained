@@ -7,7 +7,7 @@ Package.describe({
 });
 
 Npm.depends({
-  'lru-cache': '5.1.1',
+  'lru-cache': '6.0.0',
   'node-sheets': '1.1.0',
 });
 

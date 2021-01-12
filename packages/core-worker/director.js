@@ -20,6 +20,20 @@ const WorkerEventTypes = {
   // the changes are written to the DB
 };
 
+class WorkerPlugin {
+  static key = '';
+
+  static label = '';
+
+  static version = '';
+
+  static type = '';
+
+  static async doWork() {
+    return { success: false, result: null };
+  }
+}
+
 class WorkerDirector {
   static plugins = {};
 
@@ -341,4 +355,4 @@ class WorkerDirector {
 }
 
 // eslint-disable-next-line import/prefer-default-export
-export { WorkerDirector, WorkerEventTypes };
+export { WorkerDirector, WorkerEventTypes, WorkerPlugin };

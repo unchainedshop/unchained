@@ -31,6 +31,5 @@ Migrations.add({
 });
 
 export default () => {
-  Migrations.migrateTo('latest');
   Currencies.rawCollection().createIndex({ isoCode: 1 }, { unique: true });
 };

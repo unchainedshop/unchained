@@ -32,7 +32,7 @@ export default [
         includeInactive: Boolean = false
         ignoreChildAssortments: Boolean = false
         orderBy: SearchOrderBy
-      ): SearchResult!
+      ): ProductSearchResult!
     }
 
     """

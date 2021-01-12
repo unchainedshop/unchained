@@ -7,11 +7,13 @@ export default function assortment(root, { assortmentId, slug }, { userId }) {
 
   if (!assortmentId === !slug) throw new InvalidIdError({ assortmentId, slug });
 
-  const foundAssortment = assortmentId
-    ? Assortments.findOne({ _id: assortmentId })
-    : Assortments.findOne({ slugs: slug });
+  const foundAssortment = Assortments.findAssortment({
+    assortmentId,
+    slug,
+  });
 
-  if (!foundAssortment) throw new AssortmentNotFoundError({ assortmentId });
+  if (!foundAssortment)
+    throw new AssortmentNotFoundError({ assortmentId, slug });
 
   return foundAssortment;
 }

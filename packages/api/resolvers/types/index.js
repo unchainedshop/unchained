@@ -47,8 +47,6 @@ import Filter from './filter';
 import FilterOption from './filter-option';
 import LoadedFilter from './loaded-filter';
 import LoadedFilterOption from './loaded-filter-option';
-import SearchResult from './product-search-result';
-import AssortmentSearchResult from './assortment-search-result';
 import Quotation from './quotation';
 import DeliveryFee from './delivery-fee';
 import SubscriptionPayment from './subscription-payment';
@@ -56,6 +54,7 @@ import SubscriptionDelivery from './subscription-delivery';
 import SubscriptionPeriod from './subscription-period';
 import SubscriptionPlan from './subscription-plan';
 import Subscription from './subscription';
+import Bookmark from './bookmark';
 
 export default {
   User,
@@ -67,6 +66,7 @@ export default {
   Color,
   Media,
   Order,
+  Bookmark,
   PaymentProvider,
   DeliveryProvider,
   WarehousingProvider,
@@ -108,9 +108,6 @@ export default {
   LoadedFilter,
   LoadedFilterOption,
   Quotation,
-  SearchResult,
-  ProductSearchResult: SearchResult,
-  AssortmentSearchResult,
   DeliveryFee,
   SubscriptionPayment,
   SubscriptionDelivery,

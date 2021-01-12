@@ -4,8 +4,12 @@ import { ProductPricingDirector } from 'meteor/unchained:core-pricing';
 import { WarehousingProviders } from 'meteor/unchained:core-warehousing';
 import { DeliveryProviders } from 'meteor/unchained:core-delivery';
 import { Countries } from 'meteor/unchained:core-countries';
-import { findLocalizedText } from 'meteor/unchained:core';
-import { objectInvert, findUnusedSlug } from 'meteor/unchained:utils';
+import {
+  findLocalizedText,
+  objectInvert,
+  findUnusedSlug,
+} from 'meteor/unchained:utils';
+
 import { Locale } from 'locale';
 import crypto from 'crypto';
 import { Products, ProductTexts } from './collections';
@@ -14,6 +18,45 @@ import { ProductMedia, Media } from '../product-media/collections';
 import { ProductReviews } from '../product-reviews/collections';
 
 import { ProductStatus, ProductTypes } from './schema';
+
+Products.productExists = ({ productId, slug }) => {
+  const selector = productId ? { _id: productId } : { slugs: slug };
+  return !!Products.find(selector, { limit: 1 }).count();
+};
+
+Products.findProduct = ({ productId, slug }) => {
+  const selector = productId ? { _id: productId } : { slugs: slug };
+  return Products.findOne(selector);
+};
+
+Products.findProducts = ({
+  limit,
+  offset,
+  tags,
+  includeDrafts,
+  slugs,
+  sort = { sequence: 1, published: -1 },
+}) => {
+  const selector = {};
+  const options = { sort };
+
+  if (slugs?.length > 0) {
+    selector.slugs = { $in: slugs };
+  } else {
+    options.skip = offset;
+    options.limit = limit;
+
+    if (tags?.length > 0) {
+      selector.tags = { $all: tags };
+    }
+  }
+  if (!includeDrafts) {
+    selector.status = { $eq: ProductStatus.ACTIVE };
+  } else {
+    selector.status = { $in: [ProductStatus.ACTIVE, ProductStatus.DRAFT] };
+  }
+  return Products.find(selector, options).fetch();
+};
 
 Products.createProduct = (
   { locale, title, type, sequence, authorId, ...productData },
@@ -47,8 +90,10 @@ Products.updateProduct = ({ productId, type, ...product }) => {
   if (type) {
     modifier.$set.type = ProductTypes[type];
   }
-  Products.update({ _id: productId }, modifier);
-  return Products.findOne({ _id: productId });
+  return Products.update({ _id: productId }, modifier);
+};
+ProductTexts.findProductTexts = ({ productId }) => {
+  return ProductTexts.find({ productId }).fetch();
 };
 
 ProductTexts.makeSlug = ({ slug, title, productId }, options) => {
@@ -67,6 +112,94 @@ ProductTexts.makeSlug = ({ slug, title, productId }, options) => {
     existingSlug: slug,
     title: title || productId,
   });
+};
+
+Products.addProxyAssignment = ({ productId, proxyId, vectors }) => {
+  const vector = {};
+  vectors.forEach(({ key, value }) => {
+    vector[key] = value;
+  });
+  const modifier = {
+    $set: {
+      updated: new Date(),
+    },
+    $push: {
+      'proxy.assignments': {
+        vector,
+        productId,
+      },
+    },
+  };
+
+  return Products.update({ _id: proxyId }, modifier);
+};
+
+Products.createBundleItem = ({ productId, item }) => {
+  return Products.update(
+    { _id: productId },
+    {
+      $set: {
+        updated: new Date(),
+      },
+      $push: {
+        bundleItems: item,
+      },
+    }
+  );
+};
+
+Products.removeBundleItem = ({ productId, index }) => {
+  // TODO: There has to be a better MongoDB way to do this!
+  const product = Products.findOne({ _id: productId });
+  const { bundleItems = [] } = product;
+  bundleItems.splice(index, 1);
+
+  return Products.update(
+    { _id: productId },
+    {
+      $set: {
+        updated: new Date(),
+        bundleItems,
+      },
+    }
+  );
+};
+
+Products.removeProduct = ({ productId }) => {
+  const product = Products.findOne({ _id: productId });
+  switch (product.status) {
+    case ProductStatus.DRAFT:
+      Products.update(
+        { _id: productId },
+        {
+          $set: {
+            status: ProductStatus.DELETED,
+            updated: new Date(),
+          },
+        }
+      );
+      break;
+    default:
+      throw new Error(`Invalid status', ${this.status}`);
+  }
+};
+
+Products.removeAssignment = ({ productId, vectors }) => {
+  const vector = {};
+  vectors.forEach(({ key, value }) => {
+    vector[key] = value;
+  });
+  const modifier = {
+    $set: {
+      updated: new Date(),
+    },
+    $pull: {
+      'proxy.assignments': {
+        vector,
+      },
+    },
+  };
+  Products.update({ _id: productId }, modifier, { multi: true });
 };
 
 Products.helpers({
@@ -169,6 +302,14 @@ Products.helpers({
     }
     return ProductTexts.findOne(
       insertedId ? { _id: insertedId } : { productId: this._id, locale }
+    );
+  },
+  updateTexts({ texts, userId }) {
+    return texts.map(({ locale, ...localizations }) =>
+      this.upsertLocalizedText(locale, {
+        ...localizations,
+        authorId: userId,
+      })
     );
   },
   addMediaLink(mediaData) {
@@ -471,8 +612,26 @@ Products.helpers({
   reviews({ limit, offset }) {
     return ProductReviews.findReviews(
       { productId: this._id },
-      { skip: offset, limit }
+      { offset, limit }
     );
+  },
+  catalogPrices() {
+    const prices = (this.commerce && this.commerce.pricing) || [];
+    return prices.map((price) => ({
+      _id: crypto
+        .createHash('sha256')
+        .update(
+          [
+            this._id,
+            price.countryCode,
+            price.currencyCode,
+            price.maxQuantity,
+            price.amount,
+          ].join('')
+        )
+        .digest('hex'),
+      ...price,
+    }));
   },
 });
 

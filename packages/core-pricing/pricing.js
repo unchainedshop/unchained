@@ -1,4 +1,4 @@
-export PricingSheet from './pricing-sheet';
+export { default as PricingSheet } from './pricing-sheet';
 
 export * from './delivery-pricing';
 export * from './order-pricing';

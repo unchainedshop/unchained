@@ -183,8 +183,6 @@ Migrations.add({
 });
 
 export default () => {
-  Migrations.migrateTo('latest');
-
   Collections.Users.rawCollection().createIndex({
     username: 1,
   });
