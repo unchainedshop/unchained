@@ -1,4 +1,7 @@
+/* eslint-disable no-param-reassign */
+/* eslint-disable no-underscore-dangle */
 import fs from 'fs';
+import nodeQs from 'querystring';
 import { MongoClient, GridFSBucket, ObjectID } from 'mongodb';
 import { Mongo, MongoInternals } from 'meteor/mongo';
 import { WebApp } from 'meteor/webapp';
@@ -232,9 +235,9 @@ class FilesCollection extends Mongo.Collection {
       dispositionType = 'inline; ';
     }
 
-    const dispositionName = `filename=\"${encodeURI(
+    const dispositionName = `filename="${encodeURI(
       vRef.name || fileRef.name
-    ).replace(/\,/g, '%2C')}\"; filename*=UTF-8''${encodeURIComponent(
+    ).replace(/,/g, '%2C')}"; filename*=UTF-8''${encodeURIComponent(
       vRef.name || fileRef.name
     )}; `;
     const dispositionEncoding = 'charset=UTF-8';
@@ -249,8 +252,8 @@ class FilesCollection extends Mongo.Collection {
     if (http.request.headers.range && !force200) {
       partiral = true;
       const array = http.request.headers.range.split(/bytes=([0-9]*)-([0-9]*)/);
-      start = parseInt(array[1]);
-      end = parseInt(array[2]);
+      start = parseInt(array[1], 10);
+      end = parseInt(array[2], 10);
       if (Number.isNaN(end)) {
         end = vRef.size - 1;
       }
@@ -310,11 +313,11 @@ class FilesCollection extends Mongo.Collection {
       }
     }
 
-    for (const key in headers) {
+    Object.keys(headers).forEach((key) => {
       if (!http.response.headersSent) {
         http.response.setHeader(key, headers[key]);
       }
-    }
+    });
 
     const respond = (stream, code) => {
       stream._isEnded = false;
@@ -374,10 +377,10 @@ class FilesCollection extends Mongo.Collection {
         .pipe(http.response);
     };
 
+    const text = 'Content-Length mismatch!';
+
     switch (responseType) {
       case '400':
-        const text = 'Content-Length mismatch!';
-
         if (!http.response.headersSent) {
           http.response.writeHead(400, {
             'Content-Type': 'text/plain',
@@ -483,11 +486,12 @@ class FilesCollection extends Mongo.Collection {
         fs.unlink(fileRef.versions[version].path, callback || NOOP);
       }
     } else if (helpers.isObject(fileRef.versions)) {
-      for (const vKey in fileRef.versions) {
+      // for (const vKey in fileRef.versions) {
+      Object.keys(fileRef.versions).forEach((vKey) => {
         if (fileRef.versions[vKey] && fileRef.versions[vKey].path) {
           fs.unlink(fileRef.versions[vKey].path, callback || NOOP);
         }
-      }
+      });
     } else {
       fs.unlink(fileRef.path, callback || NOOP);
     }
@@ -548,7 +552,7 @@ class FilesCollection extends Mongo.Collection {
   load = load;
 
   remove(selector, callback) {
-    if (selector === void 0) {
+    if (selector === undefined) {
       return 0;
     }
 
@@ -558,16 +562,20 @@ class FilesCollection extends Mongo.Collection {
         this.unlink(file);
       });
     } else {
-      callback &&
+      if (callback) {
         callback(new Meteor.Error(404, 'Cursor is empty, no files is removed'));
+      }
       return this;
     }
 
     if (this.onAfterRemove) {
       const docs = files.fetch();
+      // eslint-disable-next-line @typescript-eslint/no-this-alias
       const self = this;
-      this.remove(selector, function () {
-        callback && callback.apply(this, arguments);
+      this.remove(selector, function (...args) {
+        if (callback) {
+          callback.apply(this, args);
+        }
         self.onAfterRemove(docs);
       });
     } else {

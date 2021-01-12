@@ -18,7 +18,7 @@ export const helpers = {
     return val && typeof val.valueOf() === 'number';
   },
   isUndefined(obj) {
-    return obj === void 0;
+    return obj === undefined;
   },
   isObject(obj) {
     if (this.isArray(obj) || this.isFunction(obj)) {
@@ -135,8 +135,8 @@ export const dataToSchema = (data) => {
         extension: data.extension,
       },
     },
-    _downloadRoute: '/cdn/storage',
-    _collectionName: data.collectionName,
+    downloadRoute: '/cdn/storage',
+    collectionName: data.collectionName,
   };
 
   // Optional fileId
@@ -146,7 +146,7 @@ export const dataToSchema = (data) => {
 
   ds = { ...ds, ...updateFileTypes(ds) };
 
-  ds._storagePath = data._storagePath || storagePath(data.collectionName);
+  ds.storagePath = data.storagePath || storagePath(data.collectionName);
   return ds;
 };
 

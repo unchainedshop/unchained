@@ -197,15 +197,15 @@ export const JpegMedia = {
       extension: 'jpeg',
     },
   },
-  _downloadRoute: '/cdn/storage',
-  _collectionName: 'media',
+  downloadRoute: '/cdn/storage',
+  collectionName: 'media',
   isVideo: false,
   isAudio: false,
   isImage: true,
   isText: false,
   isJSON: false,
   isPDF: false,
-  _storagePath: 'assets/app/uploads/media',
+  storagePath: 'assets/app/uploads/media',
 };
 
 export const JpegProductMedia = {

@@ -7,7 +7,7 @@ const link = (fileRef, version = 'original', _URIBase = ROOT_URL) => {
     URIBase = ROOT_URL || '/';
   }
 
-  const _root = URIBase.replace(/\/+$/, '');
+  const root = URIBase.replace(/\/+$/, '');
   const vRef = (fileRef.versions && fileRef.versions[version]) || fileRef || {};
 
   let ext;
@@ -19,18 +19,17 @@ const link = (fileRef, version = 'original', _URIBase = ROOT_URL) => {
 
   if (fileRef.public === true) {
     return (
-      _root +
+      root +
       (version === 'original'
-        ? `${fileRef._downloadRoute}/${fileRef._id}${ext}`
-        : `${fileRef._downloadRoute}/${version}-${fileRef._id}${ext}`)
+        ? `${fileRef.downloadRoute}/${fileRef._id}${ext}`
+        : `${fileRef.downloadRoute}/${version}-${fileRef._id}${ext}`)
     );
   }
-  return `${_root}${fileRef._downloadRoute}/${fileRef._collectionName}/${fileRef._id}/${version}/${fileRef._id}${ext}`;
+  return `${root}${fileRef.downloadRoute}/${fileRef.collectionName}/${fileRef._id}/${version}/${fileRef._id}${ext}`;
 };
 
 export default {
   url(obj, { version, baseUrl }) {
-    console.log(link(obj, version, baseUrl));
     return link(obj, version, baseUrl);
   },
 };
