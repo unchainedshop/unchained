@@ -23,8 +23,8 @@ export default connectApollo(({ ...rest }) => {
       <Container>
         <h2>Work Queue</h2>
         <WorkList
-          queryOptions={{ pollInterval: 2000 }}
-          limit={0}
+          queryOptions={{ pollInterval: 2000, fetchPolicy: 'cache-and-network' }}
+          limit={10}
           selectTypes={workTypeFilter}
           status={workStatusFilter}
           statusTypes={statusTypes}

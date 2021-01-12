@@ -45,6 +45,7 @@ const InfiniteDataTable = ({
     {items && (
       <InfiniteScroll
         pageStart={0}
+        
         element={'tbody'}
         loadMore={loadMoreEntries}
         hasMore={limit ?? true}
@@ -90,16 +91,16 @@ export const withDataTableLoader = ({ query, queryName, itemsPerPage = 5 }) =>
         loading,
         items: data[queryName],
         loadMoreEntries: () => {
-          stopPolling();
+          if(queryName!== 'workQueue') stopPolling();
           return fetchMore({
             variables: {
               offset: data[queryName].length,
             },
             updateQuery: (prev, { fetchMoreResult }) => {
-              const newPrev = prev?.[queryName] ? prev?.[queryName] : [];
+              const newPrev = prev?.[queryName] ? prev?.[queryName] : { [queryName] : []};
               if (!fetchMoreResult) return prev;
               return {
-                ...prev,
+                ...newPrev,
                 [queryName]: [...newPrev, ...fetchMoreResult[queryName]],
               };
             },

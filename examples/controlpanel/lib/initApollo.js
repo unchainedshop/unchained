@@ -48,7 +48,20 @@ function create(initialState, headersOverride, getToken) {
     operation.setContext({ headers });
     return forward(operation);
   });
-  const cache = new InMemoryCache();
+  const cache = new InMemoryCache({
+    dataIdFromObject: result => {
+      if(result?.__typename === 'Work') {
+        return `${result.__typename}:${result?._id}:${result?.created}`
+      } else {
+      if (result?._id && result?.__typename) {
+        return `${result.__typename}:${result._id}`;
+      } else if (result?.id && result?.__typename) {
+        return `${result.__typename}:${result.id}`;
+      }
+      return null;
+    }
+    }
+  });
   return new ApolloClient({
     connectToDevTools: process.browser,
     ssrMode: !process.browser, // Disables forceFetch on the server (so queries are only run once)

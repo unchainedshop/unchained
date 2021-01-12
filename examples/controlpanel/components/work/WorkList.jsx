@@ -24,7 +24,7 @@ const relativeScheduleFromWork = ({ scheduledTime, relativeTime, status }) => {
   return null;
 };
 
-const WorkRow = ({ work, relativeDate }) => {
+const WorkRow = ({ key, work, relativeDate }) => {
   const scheduledDate = work.scheduled && new Date(work.scheduled);
   const scheduledTime = scheduledDate && scheduledDate.getTime();
   const relativeTime = relativeDate && relativeDate.getTime();
@@ -33,7 +33,7 @@ const WorkRow = ({ work, relativeDate }) => {
     work.status === 'ALLOCATED';
   return (
     <Table.Row
-      key={work._id}
+      key={key}
       warning={isReady}
       error={work.status === 'FAILED'}
       positive={work.status === 'SUCCESS'}
@@ -75,6 +75,7 @@ const WorkList = ({
   const [selectedTypeFilter, setSelectedTypeFilter] = useState([]);
   const [activeStatus, setActiveStatus] = useState(statusTypes);
   const [relativeDate, setDate] = useState(new Date());
+  console.log(rest)
   useEffect(() => {
     const refreshDates = setInterval(() => {
       setDate(new Date());
@@ -99,12 +100,10 @@ const WorkList = ({
 
     onFilterChange({ filterType: 'status', value: currentStatus });
   };
-
   return (
     <InfiniteDataTable
       {...rest}
       cols={6}
-      limit={5}
       createPath={null}
       rowRenderer={(work, i) => (
         <WorkRow
@@ -147,7 +146,7 @@ const WorkList = ({
 };
 
 export default withDataTableLoader({
-  itemsPerPage: 50,
+  itemsPerPage: 10,
   queryName: 'workQueue',
   query: gql`
     query workQueue(
