@@ -251,7 +251,7 @@ class FilesCollection extends Mongo.Collection {
       const array = http.request.headers.range.split(/bytes=([0-9]*)-([0-9]*)/);
       start = parseInt(array[1]);
       end = parseInt(array[2]);
-      if (isNaN(end)) {
+      if (Number.isNaN(end)) {
         end = vRef.size - 1;
       }
       take = end - start;
@@ -266,11 +266,11 @@ class FilesCollection extends Mongo.Collection {
       (http.params.query.play && http.params.query.play === 'true')
     ) {
       reqRange = { start, end };
-      if (isNaN(start) && !isNaN(end)) {
+      if (Number.isNaN(start) && !Number.isNaN(end)) {
         reqRange.start = end - take;
         reqRange.end = end;
       }
-      if (!isNaN(start) && isNaN(end)) {
+      if (!Number.isNaN(start) && Number.isNaN(end)) {
         reqRange.start = start;
         reqRange.end = start + take;
       }
