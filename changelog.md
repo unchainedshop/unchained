@@ -1,20 +1,36 @@
 # vNext
 
-We are currently rebuilding parts of Unchained under the hood with a new code structure that helps developers to easily add new resolvers and access the core API's through typescrypt types.
+We are currently rebuilding parts of Unchained under the hood with a new code structure that helps developers to easily add new resolvers and access the core API's through typescript types.
 
 ## Breaking Changes
-
 - [api] `Mutation.setBaseLanguage` removed, base language now set through env `LANG`
 - [api] `Mutation.setBaseCountry` removed, base language now set through env `COUNTRY`
 
 ## Major
-
 - [api] New Query.activeWorkTypes to query for all active work types without introspection
 - [api] Support for Data Loader
 - [api,bookmarks] The Bookmarks core module has been completely refactored, all business logic is now accessible through the Apollo GraphQL context
 - [utils] Multiple functions have been moved to utils from core.
-- [core] Core now is an umbrella for all core modules and does not provide any other functions except for the function that loads all modules in order and ties together the typescript types
+- [core] The "core" package now is an umbrella for all core modules and does not provide any other functions except for the function that loads all modules in order and ties together the typescript types
+- [api,core] Business logic and db calls are now wrapped in functions and moved from api to the core packages
+- [pricing] New open-source pricing plugins:
+- - EUR catalog price auto conversion with ECB rates
+- - Crypto catalog price auto conversion with Coinbase rates
+- - Mercantile Rounding
+- [api] Remove OTP based access to an order
 - [payment] Our official Datatrans plugin now supports all different security modes for signing a transaction through env `DATATRANS_SECURITY` and `DATATRANS_SIGN2_KEY`. In the meantime Datatrans has released a new modern JSON based 2.0 API. Our Plugin still only supports the legacy API described here <https://docs.datatrans.ch/v1.0.1/docs/getting-started-home>
+
+## Minor
+- [docs] Added product pricing plugin documentation
+- [controlpanel] Updated theming that better reflects our current CI/CD
+- [controlpanel] New filters for the work queue to find jobs you're interested in
+- [api] Existance checks are now beeing done with count instead of findOne to improve performance
+- [api, pricing] Price simulating functions can now take a forced currency
+- [tests] Index creation is now reused of example project instead of mocked in db setup
+
+## Patches
+- [accountsjs] Regression, default token expiration now after 30 days instead of 20 minutes
+- [bulk] Regression, removal did not work
 
 # v0.55.4
 
