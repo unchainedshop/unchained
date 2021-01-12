@@ -14,17 +14,29 @@ import xml2js from 'xml2js';
 
 const logger = createLogger('unchained:core-payment:datatrans-webhook');
 
+const Security = {
+  NONE: '',
+  STATIC_SIGN: 'static-sign',
+  DYNAMIC_SIGN: 'dynamic-sign',
+};
+
 const {
   DATATRANS_SECRET,
   DATATRANS_SIGN_KEY,
+  DATATRANS_SIGN2_KEY,
+  DATATRANS_SECURITY = 'dynamic-sign',
   DATATRANS_API_ENDPOINT = 'https://api.sandbox.datatrans.com',
   DATATRANS_WEBHOOK_PATH = '/graphql/datatrans',
 } = process.env;
 
-const generateSignature = (...parts) => {
+const generateSignature = (signKey) => (...parts) => {
   // https://docs.datatrans.ch/docs/security-sign
+  if (DATATRANS_SECURITY.toLowerCase() === Security.STATIC_SIGN)
+    return DATATRANS_SIGN_KEY;
+  if (DATATRANS_SECURITY.toLowerCase() === Security.NONE) return '';
+
   const resultString = parts.filter(Boolean).join('');
-  const signKeyInBytes = Buffer.from(DATATRANS_SIGN_KEY, 'hex');
+  const signKeyInBytes = Buffer.from(signKey, 'hex');
 
   const signedString = crypto
     .createHmac('sha256', signKeyInBytes)
@@ -191,7 +203,7 @@ class Datatrans extends PaymentAdapter {
       const refno = `${this.context.paymentProviderId}:${this.context.userId}`;
       const amount = '0';
       const aliasCC = '';
-      const signature = generateSignature(
+      const signature = generateSignature(DATATRANS_SIGN_KEY)(
         aliasCC,
         merchantId,
         amount,
@@ -214,7 +226,7 @@ class Datatrans extends PaymentAdapter {
     const order = orderPayment.order();
     const refno = orderPayment._id;
     const { currency, amount } = order.pricing().total();
-    const signature = generateSignature(
+    const signature = generateSignature(DATATRANS_SIGN_KEY)(
       aliasCC,
       merchantId,
       amount,
@@ -264,7 +276,7 @@ class Datatrans extends PaymentAdapter {
     } = transactionResponse;
     const merchantId = this.getMerchantId();
     if (status === 'success') {
-      const validSign = generateSignature(
+      const validSign = generateSignature(DATATRANS_SIGN_KEY)(
         aliasCC,
         merchantId,
         '0', // amount 0
@@ -272,6 +284,8 @@ class Datatrans extends PaymentAdapter {
         refno
       );
       const validSign2 = generateSignature(
+        DATATRANS_SIGN2_KEY || DATATRANS_SIGN_KEY
+      )(
         aliasCC,
         merchantId,
         '0', // amount 0
@@ -371,7 +385,7 @@ class Datatrans extends PaymentAdapter {
       this.log('Datatrans -> Payment declined', transactionResponse);
       throw new Error('Payment declined');
     }
-    const validSign = generateSignature(
+    const validSign = generateSignature(DATATRANS_SIGN_KEY)(
       aliasCC,
       merchantId,
       amount,
@@ -379,12 +393,8 @@ class Datatrans extends PaymentAdapter {
       refno
     );
     const validSign2 = generateSignature(
-      aliasCC,
-      merchantId,
-      amount,
-      currency,
-      uppTransactionId
-    );
+      DATATRANS_SIGN2_KEY || DATATRANS_SIGN_KEY
+    )(aliasCC, merchantId, amount, currency, uppTransactionId);
     if ((sign === validSign && sign2 === validSign2) || ignoreSignatureCheck) {
       this.log('Datatrans -> Charged successfully', transactionResponse);
       return {
