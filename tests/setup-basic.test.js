@@ -489,19 +489,6 @@ describe('basic setup of internationalization and localization context', () => {
       await Countries.deleteOne({ _id: 'de' });
     });
 
-    it('query.country return not found when passed non existing ID', async () => {
-      const { errors } = await graphqlFetch({
-        query: /* GraphQL */ `
-          query {
-            country(countryId: "et") {
-              isoCode
-            }
-          }
-        `,
-      });
-      expect(errors[0]?.extensions?.code).toEqual('CountryNotFoundError');
-    });
-
     it('query.country return error when passed invalid ID', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
