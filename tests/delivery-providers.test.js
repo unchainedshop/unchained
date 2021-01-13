@@ -192,26 +192,6 @@ describe('DeliveryProviders', () => {
       expect(deliveryProvider?.simulatedPrice?.price?.currency).toEqual('EUR');
     });
 
-    it('return not found error when passed non existing deliveryProviderId', async () => {
-      const {
-        data: { deliveryProvider },
-        errors,
-      } = await graphqlFetch({
-        query: /* GraphQL */ `
-          query DeliveryProvider($deliveryProviderId: ID!) {
-            deliveryProvider(deliveryProviderId: $deliveryProviderId) {
-              _id
-            }
-          }
-        `,
-        variables: {
-          deliveryProviderId: 'non-existing-id',
-        },
-      });
-      expect(deliveryProvider).toBe(null);
-      expect(errors[0]?.extensions?.code).toBe('DeliverProviderNotFoundError');
-    });
-
     it('return error when passed invalid deliveryProviderId', async () => {
       const {
         data: { deliveryProvider },
