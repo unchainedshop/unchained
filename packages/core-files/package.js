@@ -7,7 +7,6 @@ Package.describe({
 });
 
 Npm.depends({
-  'lodash.merge': '4.6.2',
   'fs-extra': '9.0.1',
   'request-libcurl': '2.2.1',
   'file-type': '16.0.0',
