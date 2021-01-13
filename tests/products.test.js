@@ -833,23 +833,6 @@ describe('Products', () => {
       expect(product._id).toEqual('simpleproduct');
     });
 
-    it('return ProductNotFound error when passed non existing product ID', async () => {
-      const { errors } = await graphqlFetchAsAdmin({
-        query: /* GraphQL */ `
-          query product($productId: ID, $slug: String) {
-            product(productId: $productId, slug: $slug) {
-              _id
-            }
-          }
-        `,
-        variables: {
-          productId: 'non-existing-ID',
-        },
-      });
-
-      expect(errors[0]?.extensions?.code).toEqual('ProductNotFoundError');
-    });
-
     it('return InvalidIdError error when passed neither productId or slug', async () => {
       const { errors } = await graphqlFetchAsAdmin({
         query: /* GraphQL */ `
@@ -935,23 +918,6 @@ describe('Products', () => {
       expect(product._id).toEqual('simpleproduct');
     });
 
-    it('return ProductNotFound error when passed non existing slug', async () => {
-      const { errors } = await graphqlFetchAsNormalUser({
-        query: /* GraphQL */ `
-          query product($productId: ID, $slug: String) {
-            product(productId: $productId, slug: $slug) {
-              _id
-            }
-          }
-        `,
-        variables: {
-          slug: 'non-existing-slug',
-        },
-      });
-
-      expect(errors[0]?.extensions?.code).toEqual('ProductNotFoundError');
-    });
-
     it('return InvalidIdError error when passed neither productId or slug', async () => {
       const { errors } = await graphqlFetchAsNormalUser({
         query: /* GraphQL */ `
@@ -1035,23 +1001,6 @@ describe('Products', () => {
       });
 
       expect(product._id).toEqual('simpleproduct');
-    });
-
-    it('return ProductNotFound error when passed non existing slug', async () => {
-      const { errors } = await graphqlFetchAsAnonymousUser({
-        query: /* GraphQL */ `
-          query product($productId: ID, $slug: String) {
-            product(productId: $productId, slug: $slug) {
-              _id
-            }
-          }
-        `,
-        variables: {
-          slug: 'non-existing-slug',
-        },
-      });
-
-      expect(errors[0]?.extensions?.code).toEqual('ProductNotFoundError');
     });
 
     it('return InvalidIdError error when passed neither productId or slug', async () => {
