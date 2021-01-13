@@ -229,19 +229,6 @@ describe('basic setup of internationalization and localization context', () => {
       await Currencies.deleteOne({ _id: 'sigt' });
     });
 
-    it('query.currency return not found error when passed non existing ID', async () => {
-      const { errors } = await graphqlFetch({
-        query: /* GraphQL */ `
-          query {
-            currency(currencyId: "etb") {
-              isoCode
-            }
-          }
-        `,
-      });
-      expect(errors[0]?.extensions?.code).toEqual('CurrencyNotFoundError');
-    });
-
     it('query.currency return error when passed invalid ID', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
