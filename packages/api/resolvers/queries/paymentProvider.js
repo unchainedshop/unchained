@@ -1,6 +1,6 @@
 import { log } from 'meteor/unchained:core-logger';
 import { PaymentProviders } from 'meteor/unchained:core-payment';
-import { PaymentProviderNotFoundError, InvalidIdError } from '../../errors';
+import { InvalidIdError } from '../../errors';
 
 export default function paymentProvider(
   root,
@@ -9,8 +9,5 @@ export default function paymentProvider(
 ) {
   log(`query paymentProvider ${paymentProviderId}`, { userId });
   if (!paymentProviderId) throw new InvalidIdError({ paymentProviderId });
-  const provider = PaymentProviders.findProvider({ paymentProviderId });
-  if (!provider) throw new PaymentProviderNotFoundError({ paymentProviderId });
-
-  return provider;
+  return PaymentProviders.findProvider({ paymentProviderId });
 }
