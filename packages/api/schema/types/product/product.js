@@ -26,6 +26,12 @@ export default [
       maxQuantity: Int
     }
 
+    type ProductPriceRange {
+      _id: ID!
+      minPrice: Money!
+      maxPrice: Money!
+    }
+
     type ProductDiscount {
       _id: ID!
       interface: DiscountInterface
@@ -73,7 +79,6 @@ export default [
       texts: ProductTexts
       media(limit: Int = 10, offset: Int = 0, tags: [String!]): [ProductMedia!]!
       reviews: [ProductReview!]!
-      catalogPrices: [ProductPrice]!
       meta: JSON
       assortmentPaths: [ProductAssortmentPath!]!
       siblings(

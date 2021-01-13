@@ -72,7 +72,6 @@ export default [
       published: Date
       media(limit: Int = 10, offset: Int = 0, tags: [String!]): [ProductMedia!]!
       texts(forceLocale: String): ProductTexts
-      catalogPrices: [ProductPrice]!
       assortmentPaths: [ProductAssortmentPath!]!
       siblings(
         assortmentId: ID
@@ -81,6 +80,18 @@ export default [
         includeInactive: Boolean = false
       ): [Product!]!
       reviews(limit: Int = 10, offset: Int = 0): [ProductReview!]!
+      catalogPriceRange(
+        quantity: Int
+        vectors: [ProductAssignmentVectorInput!]
+        includeInactive: Boolean = false
+      ): ProductPriceRange!
+      simulatedPriceRange(
+        quantity: Int
+        vectors: [ProductAssignmentVectorInput!]
+        includeInactive: Boolean = false
+        currency: String
+        useNetPrice: Boolean = false
+      ): ProductPriceRange!
 
       """
       Reduced list of possible products by key/value combinations

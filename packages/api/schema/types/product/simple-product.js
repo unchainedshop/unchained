@@ -10,7 +10,6 @@ export default [
       tags: [String!]
       created: Date
       updated: Date
-      catalogPrices: [ProductPrice]!
       published: Date
       media(limit: Int = 10, offset: Int = 0, tags: [String!]): [ProductMedia!]!
       texts(forceLocale: String): ProductTexts

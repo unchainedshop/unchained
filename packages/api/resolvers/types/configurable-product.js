@@ -17,4 +17,33 @@ export default {
   async media(obj, props) {
     return obj.media(props);
   },
+  async catalogPriceRange(
+    obj,
+    { quantity, vectors, includeInactive },
+    requestContext
+  ) {
+    const { countryContext } = requestContext;
+    return obj.price({
+      country: countryContext,
+      quantity,
+    });
+  },
+  async simulatedPriceRange(
+    obj,
+    { currency, quantity, useNetPrice, vectors, includeInactive },
+    requestContext
+  ) {
+    const { countryContext, userId, user } = requestContext;
+    return obj.userPrice(
+      {
+        quantity,
+        currency,
+        country: countryContext,
+        useNetPrice,
+        userId,
+        user,
+      },
+      requestContext
+    );
+  },
 };

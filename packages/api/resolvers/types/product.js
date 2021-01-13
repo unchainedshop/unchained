@@ -6,7 +6,4 @@ export default {
     const invertedProductTypes = objectInvert(ProductTypes);
     return invertedProductTypes[obj.type];
   },
-  async catalogPrices(obj) {
-    return obj.catalogPrices();
-  },
 };
