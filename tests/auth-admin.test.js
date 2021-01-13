@@ -121,23 +121,6 @@ describe('Auth for admin users', () => {
         _id: User._id,
       });
     });
-
-    it('returns not found error when passed non existing userID', async () => {
-      const { errors } = await graphqlFetchAsAdminUser({
-        query: /* GraphQL */ `
-          query user($userId: ID) {
-            user(userId: $userId) {
-              _id
-              name
-            }
-          }
-        `,
-        variables: {
-          userId: 'non-existing-id',
-        },
-      });
-      expect(errors[0]?.extensions?.code).toEqual('UserNotFoundError');
-    });
   });
 
   describe('Mutation.updateUserAvatar', () => {
