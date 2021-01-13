@@ -155,26 +155,6 @@ describe('TranslatedFilterTexts', () => {
       expect(quotation._id).toEqual(ProposedQuotation._id);
     });
 
-    it('return not found error when non-existing id ', async () => {
-      const {
-        data: { quotation },
-        errors,
-      } = await graphqlFetch({
-        query: /* GraphQL */ `
-          query Quotation($quotationId: ID!) {
-            quotation(quotationId: $quotationId) {
-              _id
-            }
-          }
-        `,
-        variables: {
-          quotationId: 'non-existing-id',
-        },
-      });
-      expect(quotation).toBe(null);
-      expect(errors[0]?.extensions?.code).toEqual('QuotationNotFoundError');
-    });
-
     it('return error when invalid id ', async () => {
       const {
         data: { quotation },
