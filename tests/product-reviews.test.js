@@ -591,28 +591,6 @@ describe('Products: Reviews', () => {
       });
     });
 
-    it('return not found error when passed non-existing productReviewId', async () => {
-      const { data, errors } = await graphqlFetch({
-        query: /* GraphQL */ `
-          query productReview($productReviewId: ID!) {
-            productReview(productReviewId: $productReviewId) {
-              _id
-              rating
-              title
-              product {
-                _id
-              }
-            }
-          }
-        `,
-        variables: {
-          productReviewId: 'non-existing-id',
-        },
-      });
-      expect(data).toBe(null);
-      expect(errors[0]?.extensions?.code).toEqual('ProductReviewNotFoundError');
-    });
-
     it('return error when passed invalid productReviewId', async () => {
       const { data, errors } = await graphqlFetch({
         query: /* GraphQL */ `
