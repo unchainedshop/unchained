@@ -19,7 +19,6 @@
   },
   "scripts": {
     "lint": "eslint packages tests --cache --fix --ext=js --ext=ts",
-    "pretest": "npm run lint --silent && npm run typecheck",
     "lint:ci": "eslint packages tests --ext=jsx --ext=js",
     "test": "jest --runInBand tests/*",
     "test:ci": "jest --ci --runInBand tests/*",

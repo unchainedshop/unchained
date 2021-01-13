@@ -271,40 +271,6 @@ describe('Assortments', () => {
       expect(assortment._id).toBe(SimpleAssortment[0]._id);
     });
 
-    it('return not found error for non-existing id', async () => {
-      const { errors } = await graphqlFetch({
-        query: /* GraphQL */ `
-          query Assortment($assortmentId: ID, $slug: String) {
-            assortment(assortmentId: $assortmentId, slug: $slug) {
-              _id
-            }
-          }
-        `,
-        variables: {
-          assortmentId: 'non-existing-id',
-        },
-      });
-
-      expect(errors[0]?.extensions?.code).toEqual('AssortmentNotFoundError');
-    });
-
-    it('return not found error for non-existing slug', async () => {
-      const { errors } = await graphqlFetch({
-        query: /* GraphQL */ `
-          query Assortment($assortmentId: ID, $slug: String) {
-            assortment(assortmentId: $assortmentId, slug: $slug) {
-              _id
-            }
-          }
-        `,
-        variables: {
-          slug: 'non-existing-slug',
-        },
-      });
-
-      expect(errors[0]?.extensions?.code).toEqual('AssortmentNotFoundError');
-    });
-
     it('return error for non-existing id', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
