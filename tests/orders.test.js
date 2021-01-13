@@ -204,48 +204,6 @@ describe('Order: Management', () => {
       ).toEqual('EUR');
     });
 
-    it('return order not found error when passed non existing orderId and user is not admin', async () => {
-      const {
-        data: { order },
-        errors,
-      } = await graphqlFetch({
-        query: /* GraphQL */ `
-          query order($orderId: ID!) {
-            order(orderId: $orderId) {
-              _id
-            }
-          }
-        `,
-        variables: {
-          orderId: 'non-existing-id',
-        },
-      });
-
-      expect(order).toBe(null);
-      expect(errors[0]?.extensions?.code).toEqual('OrderNotFoundError');
-    });
-
-    it('return not found error when passed non existing orderId and user is admin', async () => {
-      const {
-        data: { order },
-        errors,
-      } = await adminGraphqlFetch({
-        query: /* GraphQL */ `
-          query order($orderId: ID!) {
-            order(orderId: $orderId) {
-              _id
-            }
-          }
-        `,
-        variables: {
-          orderId: 'non-existing-id',
-        },
-      });
-
-      expect(order).toBe(null);
-      expect(errors[0]?.extensions?.code).toEqual('OrderNotFoundError');
-    });
-
     it('return error when passed invalid orderId and user is admin', async () => {
       const {
         data: { order },
