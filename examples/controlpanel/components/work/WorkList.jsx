@@ -24,7 +24,7 @@ const relativeScheduleFromWork = ({ scheduledTime, relativeTime, status }) => {
   return null;
 };
 
-const WorkRow = ({ key, work, relativeDate }) => {
+const WorkRow = ({  work, relativeDate }) => {
   const scheduledDate = work.scheduled && new Date(work.scheduled);
   const scheduledTime = scheduledDate && scheduledDate.getTime();
   const relativeTime = relativeDate && relativeDate.getTime();
@@ -33,7 +33,6 @@ const WorkRow = ({ key, work, relativeDate }) => {
     work.status === 'ALLOCATED';
   return (
     <Table.Row
-      key={key}
       warning={isReady}
       error={work.status === 'FAILED'}
       positive={work.status === 'SUCCESS'}
@@ -67,6 +66,7 @@ const WorkRow = ({ key, work, relativeDate }) => {
 const WorkList = ({
   onFilterChange,
   statusTypes,
+  selectTypes,
   loading,
   updateHasMore,
   queryOptions,

@@ -4,9 +4,11 @@ import React from 'react';
 import { Table, Icon, Button } from 'semantic-ui-react';
 import InfiniteScroll from 'react-infinite-scroller';
 import Link from 'next/link';
+let previousOffset = 0;
 
 const InfiniteDataTable = ({
   items,
+  hasMore,
   cols = 4,
   rowRenderer,
   createPath,
@@ -17,7 +19,9 @@ const InfiniteDataTable = ({
   loading,
   limit,
   ...rest
-}) => (
+}) => {
+  console.log(items?.length)
+  return(
   <Table celled {...rest}>
     <Table.Header>
       <Table.Row>
@@ -44,11 +48,10 @@ const InfiniteDataTable = ({
     </Table.Header>
     {items && (
       <InfiniteScroll
-        pageStart={0}
-        
+        pageStart={0}        
         element={'tbody'}
         loadMore={loadMoreEntries}
-        hasMore={limit ?? true}
+        hasMore={true}
       >
         {items.map(rowRenderer)}
       </InfiniteScroll>
@@ -74,7 +77,7 @@ const InfiniteDataTable = ({
       </Table.Row>
     </Table.Footer>
   </Table>
-);
+)};
 
 export const withDataTableLoader = ({ query, queryName, itemsPerPage = 5 }) =>
   compose(
@@ -87,14 +90,17 @@ export const withDataTableLoader = ({ query, queryName, itemsPerPage = 5 }) =>
         },
         ...queryOptions,
       }),
-      props: ({ data: { loading, fetchMore, stopPolling, ...data } }) => ({
+      props: ({ data: { loading, fetchMore, stopPolling, ...data } }) => {
+              
+        return ({
         loading,
+        hasMore : true,
         items: data[queryName],
         loadMoreEntries: () => {
-          if(queryName!== 'workQueue') stopPolling();
+          stopPolling();
           return fetchMore({
             variables: {
-              offset: data[queryName].length,
+              offset: data[queryName]?.length,
             },
             updateQuery: (prev, { fetchMoreResult }) => {
               if (!fetchMoreResult) return prev;
@@ -108,7 +114,7 @@ export const withDataTableLoader = ({ query, queryName, itemsPerPage = 5 }) =>
             },
           });
         },
-      }),
+      })},
     })
   );
 
