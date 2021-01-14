@@ -53,29 +53,10 @@ function create(initialState, headersOverride, getToken) {
         Query: {
           fields: {
             workQueue: {
+              keyFields: ['_id'],
               keyArgs: false,
-              merge(existing = [], incoming, {readField, mergeObjects}) {                
-                const merged = existing ? existing.slice(0) : [];
-                const workNameToIndex = Object.create(null);
-                if (existing) {
-                  existing.forEach((work, index) => {
-                    workNameToIndex[readField("_id", work)] = index;
-                  });
-                }
-            
-            incoming.forEach(work => {
-              const name = readField("_id", work);            
-              const index = workNameToIndex[name];              
-              if (typeof index === "number") {
-                merged[index] = mergeObjects(merged[index], work);
-              } else {
-                workNameToIndex[name] = merged.length;
-                merged.push(work);
-              }
-            });
-            
-            return merged;
-  
+              merge(_, incoming) { 
+                return incoming?.sort((a, b) => a.created - b.created);
               },
             },
           }

@@ -4,11 +4,10 @@ import React from 'react';
 import { Table, Icon, Button } from 'semantic-ui-react';
 import InfiniteScroll from 'react-infinite-scroller';
 import Link from 'next/link';
-let previousOffset = 0;
-
+var hasMore = true;
+var previousResult = [];
 const InfiniteDataTable = ({
   items,
-  hasMore,
   cols = 4,
   rowRenderer,
   createPath,
@@ -19,9 +18,7 @@ const InfiniteDataTable = ({
   loading,
   limit,
   ...rest
-}) => {
-  console.log(items?.length)
-  return(
+}) => (
   <Table celled {...rest}>
     <Table.Header>
       <Table.Row>
@@ -48,10 +45,10 @@ const InfiniteDataTable = ({
     </Table.Header>
     {items && (
       <InfiniteScroll
-        pageStart={0}        
+        pageStart={0}
+        hasMore={hasMore}        
         element={'tbody'}
         loadMore={loadMoreEntries}
-        hasMore={true}
       >
         {items.map(rowRenderer)}
       </InfiniteScroll>
@@ -77,7 +74,7 @@ const InfiniteDataTable = ({
       </Table.Row>
     </Table.Footer>
   </Table>
-)};
+);
 
 export const withDataTableLoader = ({ query, queryName, itemsPerPage = 5 }) =>
   compose(
@@ -91,18 +88,20 @@ export const withDataTableLoader = ({ query, queryName, itemsPerPage = 5 }) =>
         ...queryOptions,
       }),
       props: ({ data: { loading, fetchMore, stopPolling, ...data } }) => {
-              
+        
+              hasMore = previousResult?.length !== data?.[queryName]?.length
         return ({
         loading,
-        hasMore : true,
         items: data[queryName],
         loadMoreEntries: () => {
-          stopPolling();
+          if(queryName !== 'workQueue') stopPolling();
           return fetchMore({
             variables: {
               offset: data[queryName]?.length,
             },
             updateQuery: (prev, { fetchMoreResult }) => {
+              hasMore = previousResult?.length !== prev?.[queryName]?.length
+              previousResult = prev?.[queryName];
               if (!fetchMoreResult) return prev;
               return {
                 ...prev,
