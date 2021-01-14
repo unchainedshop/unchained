@@ -54,7 +54,7 @@ function create(initialState, headersOverride, getToken) {
           fields: {
             workQueue: {
               keyFields: ['_id'],
-              keyArgs: false,
+              keyArgs: ['offset'],
               merge(_, incoming) { 
                 return incoming;
               },
