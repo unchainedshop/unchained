@@ -56,7 +56,7 @@ function create(initialState, headersOverride, getToken) {
               keyFields: ['_id'],
               keyArgs: false,
               merge(_, incoming) { 
-                return incoming?.sort((a, b) => a.created - b.created);
+                return incoming;
               },
             },
           }
