@@ -10,9 +10,8 @@
 - [utils] Multiple functions have been moved to utils from core.
 - [core] Core now is an umbrella for all core modules and does not provide any other functions except for the function that loads all modules in order and ties together the typescript types
 - [roles] Roles package got refactored only keeping a fraction of the previous APIs.
- 
-We are currently rebuilding parts of Unchained under the hood with a new code structure that helps developers to easily add new resolvers and access the core API's through typescrypt types.
-
+ We are currently rebuilding parts of Unchained under the hood with a new code structure that helps developers to easily add new resolvers and access the core API's through typescrypt types.
+- [payment] Our official Datatrans plugin now supports all different security modes for signing a transaction through env `DATATRANS_SECURITY` and `DATATRANS_SIGN2_KEY`. In the meantime Datatrans has released a new modern JSON based 2.0 API. Our Plugin still only supports the legacy API described here https://docs.datatrans.ch/v1.0.1/docs/getting-started-home
 
 # v0.55.4
 

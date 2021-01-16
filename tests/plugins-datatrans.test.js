@@ -180,7 +180,7 @@ describe('Plugins: Datatrans Payments', () => {
         },
         body: params,
       });
-      expect(result.status).toBe(200);
+      expect(result.status).toBe(500);
 
       const order = await db
         .collection('orders')

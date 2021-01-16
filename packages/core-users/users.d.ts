@@ -40,6 +40,8 @@ declare module 'meteor/unchained:core-users' {
       resetToken?: string;
       hashedToken?: string;
     }): User;
+
+    static findOne(query: any): User;
   }
 
   // eslint-disable-next-line import/prefer-default-export
