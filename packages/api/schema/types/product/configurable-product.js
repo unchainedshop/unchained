@@ -81,17 +81,17 @@ export default [
       ): [Product!]!
       reviews(limit: Int = 10, offset: Int = 0): [ProductReview!]!
       catalogPriceRange(
-        quantity: Int
+        quantity: Int = 0
         vectors: [ProductAssignmentVectorInput!]
         includeInactive: Boolean = false
-      ): ProductPriceRange!
+      ): ProductPriceRange
       simulatedPriceRange(
         quantity: Int
         vectors: [ProductAssignmentVectorInput!]
         includeInactive: Boolean = false
         currency: String
         useNetPrice: Boolean = false
-      ): ProductPriceRange!
+      ): ProductPriceRange
 
       """
       Reduced list of possible products by key/value combinations

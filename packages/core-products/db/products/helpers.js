@@ -12,6 +12,7 @@ import {
 
 import { Locale } from 'locale';
 import crypto from 'crypto';
+import { log } from 'meteor/unchained:core-logger';
 import { Products, ProductTexts } from './collections';
 import { ProductVariations } from '../product-variations/collections';
 import { ProductMedia, Media } from '../product-media/collections';
@@ -632,6 +633,71 @@ Products.helpers({
         .digest('hex'),
       ...price,
     }));
+  },
+  catalogPriceRange({ quantity = 0, vectors = [], includeInactive = false }) {
+    const proxyProducts = this.proxyProducts(vectors, { includeInactive });
+    const filtered = [];
+    proxyProducts.forEach((p) => {
+      const prices = (p.commerce && p.commerce.pricing) || [];
+      const inRangeProducts = prices?.filter((e) => e.maxQuantity >= quantity);
+      if (inRangeProducts.length) {
+        const max = prices
+          ?.filter((e) => e.maxQuantity >= quantity)
+          .reduce((maxPrice, current) =>
+            current.maxQuantity > maxPrice.maxQuantity ? current : maxPrice
+          );
+        const min = prices
+          ?.filter((e) => e.maxQuantity >= quantity)
+          .reduce((minPrice, current) =>
+            current.maxQuantity < minPrice.maxQuantity ? current : minPrice
+          );
+        filtered.push({ product: p._id, min, max });
+      }
+    });
+    if (!filtered.length) return null;
+    const minPrice = filtered.reduce(
+      (m, current) =>
+        current.min.amount < m.amount
+          ? {
+              amount: current.min.amount,
+              currency: current.min.currencyCode,
+            }
+          : m,
+      {
+        amount: filtered[0]?.min?.amount,
+        currency: filtered[0]?.min?.currencyCode,
+      }
+    );
+    const maxPrice = filtered.reduce(
+      (m, current) =>
+        current.max.amount > m.amount
+          ? {
+              amount: current.max.amount,
+              currency: current.max.currencyCode,
+            }
+          : m,
+      {
+        amount: filtered[0]?.max?.amount,
+        currency: filtered[0]?.max?.currencyCode,
+      }
+    );
+
+    return {
+      _id: crypto
+        .createHash('sha256')
+        .update(
+          [
+            this._id,
+            minPrice.amount,
+            minPrice.currency,
+            maxPrice.amount,
+            maxPrice.currency,
+          ].join('')
+        )
+        .digest('hex'),
+      minPrice,
+      maxPrice,
+    };
   },
 });
 
