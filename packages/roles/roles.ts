@@ -4,29 +4,29 @@ import clone from 'lodash.clone';
 import { has, isFunction } from './helpers';
 
 interface RoleInterface {
-  name: string
+  name: string;
   allowRules: {
-    [name: string]: any
-  }
-  helpers: {}
+    [name: string]: any;
+  };
+  helpers: {};
 }
 
 interface RolesInterface {
   roles: {
     [name: string]: RoleInterface;
-  }
-  actions: string[]
-  helpers: string[]
-  registerAction(name: string): void
-  registerHelper(name: string): void
-  getUserRoles(userId: string, includeSpecial: boolean): string[]
-  allow(userId: string, action: any): boolean
-  userHasPermission(userId: string, action: any): boolean
-  addUserToRoles(userId: string, roles: string | string[]): any
-  checkPermission(userId: string, action: any): void | never
-  adminRole?: RoleInterface
-  loggedInRole?: RoleInterface
-  allRole?: RoleInterface
+  };
+  actions: string[];
+  helpers: string[];
+  registerAction(name: string): void;
+  registerHelper(name: string): void;
+  getUserRoles(userId: string, includeSpecial: boolean): string[];
+  allow(userId: string, action: any): boolean;
+  userHasPermission(userId: string, action: any): boolean;
+  addUserToRoles(userId: string, roles: string | string[]): any;
+  checkPermission(userId: string, action: any): void | never;
+  adminRole?: RoleInterface;
+  loggedInRole?: RoleInterface;
+  allRole?: RoleInterface;
 }
 
 export const Roles: RolesInterface = {
@@ -34,9 +34,9 @@ export const Roles: RolesInterface = {
   actions: [],
   helpers: [],
   /**
-  * Creates a new action
-  */
-  registerAction: function (name: string): void {
+   * Creates a new action
+   */
+  registerAction(name: string): void {
     if (!this.actions.includes(name)) {
       this.actions.push(name);
     }
@@ -45,7 +45,7 @@ export const Roles: RolesInterface = {
   /**
    * Creates a new helper
    */
-  registerHelper: function (name: string): void {
+  registerHelper(name: string): void {
     if (!this.helpers.includes(name)) {
       this.helpers.push(name);
     }
@@ -75,7 +75,7 @@ export const Roles: RolesInterface = {
   /**
    * Returns true if the user passes the allow check
    */
-  allow: function (userId, action) {
+  allow(userId, action) {
     // eslint-disable-next-line prefer-rest-params
     const args = Object.values(arguments).slice(2);
     const self = this;
@@ -101,11 +101,10 @@ export const Roles: RolesInterface = {
     return allowed;
   },
 
-
   /**
    * To check if a user has permisisons to execute an action
    */
-  userHasPermission: function (...args) {
+  userHasPermission(...args) {
     const allows = this.allow(...args);
     return allows === true;
   },
@@ -113,7 +112,7 @@ export const Roles: RolesInterface = {
   /**
    * Adds roles to a user
    */
-  addUserToRoles: function (userId: string, roles: string | string[]) {
+  addUserToRoles(userId: string, roles: string | string[]) {
     let userRoles = roles;
     if (!Array.isArray(userRoles)) {
       userRoles = [userRoles];
@@ -129,7 +128,7 @@ export const Roles: RolesInterface = {
    * If the user doesn't has permission it will throw a error
    * Roles.userHasPermission(userId, action, [extra])
    */
-  checkPermission: function (...args) {
+  checkPermission(...args) {
     if (!this.userHasPermission(...args)) {
       throw new Meteor.Error(
         'unauthorized',
@@ -140,12 +139,13 @@ export const Roles: RolesInterface = {
 };
 
 /**
-* Constructs a new role
-*/
+ * Constructs a new role
+ */
 export class Role implements RoleInterface {
+  allowRules: { [name: string]: any };
 
-  allowRules: { [name: string]: any; };
   helpers: { [name: string]: any };
+
   constructor(public name: string) {
     if (has(Roles.roles, name))
       throw new Error(`"${name}" role is already defined`);
@@ -181,8 +181,8 @@ export class Role implements RoleInterface {
   }
 
   /**
-  * Adds allow properties to a role
-  */
+   * Adds allow properties to a role
+   */
   allow(action: string, allow: any) {
     if (!Roles.actions.includes(action)) {
       Roles.registerAction(action);
@@ -197,12 +197,11 @@ export class Role implements RoleInterface {
     this.allowRules[action] = this.allowRules[action] || [];
     this.allowRules[action].push(allowFn);
   }
-
 }
 
 /**
-* The admin role, who recives the default actions.
-*/
+ * The admin role, who recives the default actions.
+ */
 Roles.adminRole = new Role('admin');
 /**
  * All the logged in users users
@@ -212,4 +211,3 @@ Roles.loggedInRole = new Role('__loggedIn__');
  * Always, no exception
  */
 Roles.allRole = new Role('__all__');
-

@@ -1,4 +1,14 @@
+// declare module "meteor/unchained:core-users" {
+//   import { Collection } from "meteor"
+
+//   export var Users: Collection = {
+//     // custom stuff goes here
+//   }
+// }
+
 declare module 'meteor/unchained:core-users' {
+  import { Mongo } from 'meteor/mongo';
+
   type Email = {
     address: string;
     verified?: boolean;
@@ -33,16 +43,15 @@ declare module 'meteor/unchained:core-users' {
     roles?: string[];
   };
 
-  // TODO: should be `extends Mongo.Collection<User>`
-  class Users {
-    static findUser(args: {
+  class UsersCollection extends Mongo.Collection<User> {
+    findUser: (args: {
       userId?: string;
       resetToken?: string;
       hashedToken?: string;
-    }): User;
-
-    static findOne(query: any): User;
+    }) => User;
   }
+
+  const Users: UsersCollection;
 
   // eslint-disable-next-line import/prefer-default-export
   export { Users };
