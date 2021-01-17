@@ -1,31 +1,16 @@
-import fs from 'fs-extra';
 import Random from '@reactioncommerce/random';
 import nodePath from 'path';
-import request from 'request-libcurl';
+import fetch from 'isomorphic-unfetch';
 import {
   helpers,
   getExtension,
-  bound,
   dataToSchema,
   getMimeType,
   storagePath,
 } from './helpers';
 
-const load = async function (url, _opts = {}, _callback, _proceedAfterUpload) {
+const load = async function (url, _opts = {}) {
   let opts = _opts;
-  let callback = _callback;
-  let proceedAfterUpload = _proceedAfterUpload;
-
-  if (helpers.isFunction(opts)) {
-    proceedAfterUpload = callback;
-    callback = opts;
-    opts = {};
-  } else if (helpers.isBoolean(callback)) {
-    proceedAfterUpload = callback;
-  } else if (helpers.isBoolean(opts)) {
-    proceedAfterUpload = opts;
-  }
-
   if (!helpers.isObject(opts)) {
     opts = {};
   }
@@ -44,85 +29,42 @@ const load = async function (url, _opts = {}, _callback, _proceedAfterUpload) {
     nodePath.sep
   }${FSName}${extensionWithDot}`;
 
-  const storeResult = (result, cb) => {
-    result._id = fileId;
-
-    this.insert(result, async (error, _id) => {
-      if (error) {
-        cb && cb(error);
-      } else {
+  const storeResult = (result) => {
+    const resultObj = result;
+    resultObj._id = fileId;
+    this.insert(resultObj, async (err, _id) => {
+      if (!err) {
         const fileRef = this.findOne(_id);
-        cb && cb(null, fileRef);
-        if (proceedAfterUpload === true) {
-          this.onAfterUpload && (await this.onAfterUpload.call(this, fileRef));
-          this.emit('afterUpload', fileRef);
+        if (this.onAfterUpload) {
+          await this.onAfterUpload.call(this, fileRef);
         }
       }
     });
   };
-
-  fs.ensureFile(opts.path, (efError) => {
-    bound(() => {
-      if (efError) {
-        callback && callback(efError);
-      } else {
-        request(
-          {
-            url,
-            headers: opts.headers || {},
-            wait: true,
-          },
-          (reqError, response) =>
-            bound(() => {
-              if (reqError) {
-                callback && callback(reqError);
-              } else {
-                const result = dataToSchema({
-                  name: fileName,
-                  path: opts.path,
-                  meta: opts.meta,
-                  type:
-                    opts.type ||
-                    response.headers['content-type'] ||
-                    getMimeType({ path: opts.path }),
-                  size:
-                    opts.size ||
-                    parseInt(response.headers['content-length'] || 0),
-                  userId: opts.userId,
-                  collectionName: this._name,
-                  extension,
-                });
-
-                if (!result.size) {
-                  fs.stat(opts.path, (error, stats) =>
-                    bound(() => {
-                      if (error) {
-                        callback && callback(error);
-                      } else {
-                        result.versions.original.size = result.size =
-                          stats.size;
-                        storeResult(result, callback);
-                      }
-                    })
-                  );
-                } else {
-                  storeResult(result, callback);
-                }
-              }
-            })
-        )
-          .pipe(
-            fs.createWriteStream(opts.path, {
-              flags: 'w',
-              mode: this.permissions,
-            })
-          )
-          .send();
-      }
-    });
+  const response = await fetch(url, { headers: opts.headers || {} });
+  if (!response.ok) throw new Error('URL provided responded with 404');
+  const textBlob = await response.text();
+  const size = Buffer.byteLength(textBlob, 'utf8');
+  const result = dataToSchema({
+    name: fileName,
+    path: opts.path,
+    meta: opts.meta,
+    type:
+      opts.type ||
+      response.headers['content-type'] ||
+      getMimeType({ path: opts.path }),
+    size: opts.size || size,
+    userId: opts.userId,
+    collectionName: this._name,
+    extension,
   });
-
-  return this;
+  // throws if not matching
+  this.onBeforeUpload({
+    size: result.size,
+    extension,
+  });
+  storeResult(result);
+  return result;
 };
 
 export default load;

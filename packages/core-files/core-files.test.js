@@ -13,11 +13,15 @@ import FilesCollection from './createFilesCollection/FilesCollection';
 import { setupDatabase } from '../../tests/helpers';
 import { User } from '../../tests/seeds/users';
 
+// test createFilesCollection
+
 let testCollection;
 describe('Meteor Files', () => {
   beforeAll(async () => {
     // eslint-disable-next-line no-unused-vars
-    testCollection = new FilesCollection('test_files_collection');
+    testCollection = new FilesCollection({
+      collectionName: 'test_files_collection',
+    });
   });
 
   it('insertWithRemoteBuffer', async () => {
@@ -71,30 +75,89 @@ describe('Meteor Files', () => {
     expect(result).toMatchObject(matchingObject);
   });
 
-  it('insertWithRemoteURL', async () => {
+  it('insertWithRemoteURL - supplying incorrect file size', async () => {
+    const testOnBeforeUploadCollectionSize = new FilesCollection({
+      collectionName: 'test_onBeforeUpload_files_collection_size',
+      maxSize: 10,
+      extensionRegex: /txt/i,
+    });
+    try {
+      await testOnBeforeUploadCollectionSize.insertWithRemoteURL({
+        url: 'https://www.w3.org/TR/PNG/iso_8859-1.txt',
+        userId: User._id,
+      });
+    } catch (e) {
+      expect(e.message).toEqual('file too big');
+    }
+  });
+
+  it('insertWithRemoteURL - supplying incorrect file type', async () => {
+    const testOnBeforeUploadCollection = new FilesCollection({
+      collectionName: 'test_onBeforeUpload_files_collection',
+      maxSize: 10485760,
+      extensionRegex: /png|jpg|jpeg/i,
+    });
+    try {
+      await testOnBeforeUploadCollection.insertWithRemoteURL({
+        url: 'https://www.w3.org/TR/PNG/iso_8859-1.txt',
+        userId: User._id,
+      });
+    } catch (e) {
+      expect(e.message).toEqual('filetype not allowed');
+    }
+  });
+
+  it('insertWithRemoteURL - provide a non existent URL', async () => {
+    try {
+      await testCollection.insertWithRemoteURL({
+        url: 'https://ihopeawebsitedoesntexistswithsuchaname.surething',
+        userId: User._id,
+      });
+    } catch (e) {
+      expect(e).toEqual({
+        message:
+          'request to https://ihopeawebsitedoesntexistswithsuchaname.surething/ failed, reason: getaddrinfo ENOTFOUND ihopeawebsitedoesntexistswithsuchaname.surething',
+        type: 'system',
+        errno: 'ENOTFOUND',
+        code: 'ENOTFOUND',
+      });
+    }
+  });
+
+  it('insertWithRemoteURL - provide a valid but empty URL', async () => {
+    try {
+      await testCollection.insertWithRemoteURL({
+        url:
+          'https://assets-cdn.github.com/images/modules/logos_page/Octocat.png',
+        userId: User._id,
+      });
+    } catch (e) {
+      expect(e.message).toEqual('URL provided responded with 404');
+    }
+  });
+
+  it('insertWithRemoteURL - provide a working url', async () => {
     const result = await testCollection.insertWithRemoteURL({
-      url:
-        'https://assets-cdn.github.com/images/modules/logos_page/Octocat.png',
+      url: 'https://unchained.shop/img/veloplus-screenshots.png',
       userId: User._id,
     });
-
     const matchingObject = {
-      name: 'Octocat.png',
+      name: 'veloplus-screenshots.png',
       extension: 'png',
       ext: 'png',
       extensionWithDot: '.png',
       path: `assets/app/uploads/test_files_collection/${result._id}.png`,
       meta: {},
-      type: 'text/html; charset=utf-8',
-      mime: 'text/html; charset=utf-8',
-      'mime-type': 'text/html; charset=utf-8',
-      size: 5142,
+      type: 'application/octet-stream',
+      mime: 'application/octet-stream',
+      'mime-type': 'application/octet-stream',
+      size: 1069840,
       userId: 'user',
       versions: {
         original: {
           path: `assets/app/uploads/test_files_collection/${result._id}.png`,
-          size: 5142,
-          type: 'text/html; charset=utf-8',
+          size: 1069840,
+          type: 'application/octet-stream',
           extension: 'png',
         },
       },
@@ -103,7 +166,7 @@ describe('Meteor Files', () => {
       isVideo: false,
       isAudio: false,
       isImage: false,
-      isText: true,
+      isText: false,
       isJSON: false,
       isPDF: false,
       storagePath: 'assets/app/uploads/test_files_collection',
@@ -112,4 +175,6 @@ describe('Meteor Files', () => {
 
     expect(result).toMatchObject(matchingObject);
   });
+
+  // it('supplying correct values to onBeforeUpload', () => {});
 });

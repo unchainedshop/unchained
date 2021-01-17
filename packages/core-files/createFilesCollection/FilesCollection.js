@@ -10,11 +10,11 @@ import load from './lib/load';
 import { helpers, bound, NOOP, getUser, notFound } from './lib/helpers';
 
 class FilesCollection extends Mongo.Collection {
-  constructor({ collectionName, maxSize, extensionRegex }) {
+  constructor({ collectionName, maxSize = 10485760, extensionRegex }) {
     super();
     this._name = collectionName;
     this.maxSize = maxSize;
-    this.extensionRegex = extensionRegex;
+    this.extensionRegex = new RegExp(extensionRegex);
 
     WebApp.connectHandlers.use(async (httpReq, httpResp, next) => {
       if (
@@ -87,15 +87,14 @@ class FilesCollection extends Mongo.Collection {
     });
   }
 
-  onBeforeUpload(file) {
+  onBeforeUpload = (file) => {
     if (this.extensionRegex && !this.extensionRegex.test(file.extension)) {
-      return 'filetype not allowed';
+      throw new Error('filetype not allowed');
     }
     if (file.size > this.maxSize) {
-      return 'file too big';
+      throw new Error('file too big');
     }
-    return true;
-  }
+  };
 
   downloadRoute = '/cdn/storage';
 
@@ -654,23 +653,11 @@ class FilesCollection extends Mongo.Collection {
     meta = {},
     ...rest
   }) {
-    return new Promise((resolve, reject) => {
-      try {
-        this.load(
-          href,
-          {
-            meta,
-            ...rest,
-          },
-          (err, fileObj) => {
-            if (err) return reject(err);
-            return resolve(fileObj);
-          }
-        );
-      } catch (e) {
-        reject(e);
-      }
+    const res = await this.load(href, {
+      meta,
+      ...rest,
     });
+    return res;
   };
 }
 
