@@ -494,12 +494,12 @@ Products.helpers({
       quantity,
       requestContext,
     });
+
     const calculated = pricingDirector.calculate();
     if (!calculated) return null;
 
     const pricing = pricingDirector.resultSheet();
     const userPrice = pricing.unitPrice({ useNetPrice });
-
     return {
       _id: crypto
         .createHash('sha256')
@@ -679,6 +679,83 @@ Products.helpers({
       {
         amount: filtered[0]?.max?.amount,
         currency: filtered[0]?.max?.currencyCode,
+      }
+    );
+
+    return {
+      _id: crypto
+        .createHash('sha256')
+        .update(
+          [
+            this._id,
+            minPrice.amount,
+            minPrice.currency,
+            maxPrice.amount,
+            maxPrice.currency,
+          ].join('')
+        )
+        .digest('hex'),
+      minPrice,
+      maxPrice,
+    };
+  },
+  simulatedPriceRange(
+    {
+      quantity,
+      vectors = [],
+      includeInactive = false,
+      currency,
+      useNetPrice = false,
+    },
+    requestContext
+  ) {
+    const proxyProducts = this.proxyProducts(vectors, { includeInactive });
+    const { userId, user } = requestContext;
+    const filtered = [];
+
+    proxyProducts.forEach((p) => {
+      const prices = (p.commerce && p.commerce.pricing) || [];
+      const inRangeProducts = prices?.filter((e) => e.maxQuantity >= quantity);
+      if (inRangeProducts.length) {
+        const userPrice = p.userPrice(
+          {
+            quantity,
+            currency,
+            country: 'CH',
+            useNetPrice,
+            userId,
+            user,
+          },
+          requestContext
+        );
+        filtered.push(userPrice);
+      }
+    });
+    if (!filtered.length) return null;
+    const minPrice = filtered.reduce(
+      (m, current) =>
+        current.amount < m.amount
+          ? {
+              amount: current.amount,
+              currency: current.currencyCode,
+            }
+          : m,
+      {
+        amount: filtered[0]?.amount,
+        currency: filtered[0]?.currencyCode,
+      }
+    );
+    const maxPrice = filtered.reduce(
+      (m, current) =>
+        current.amount > m.amount
+          ? {
+              amount: current.amount,
+              currency: current.currencyCode,
+            }
+          : m,
+      {
+        amount: filtered[0]?.amount,
+        currency: filtered[0]?.currencyCode,
       }
     );
 
