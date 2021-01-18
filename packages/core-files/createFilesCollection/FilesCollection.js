@@ -5,6 +5,7 @@ import nodeQs from 'querystring';
 import { MongoClient, GridFSBucket, ObjectID } from 'mongodb';
 import { Mongo, MongoInternals } from 'meteor/mongo';
 import { WebApp } from 'meteor/webapp';
+import { Readable } from 'stream';
 import write from './lib/write';
 import load from './lib/load';
 import { helpers, bound, NOOP, getUser, notFound } from './lib/helpers';
@@ -520,29 +521,30 @@ class FilesCollection extends Mongo.Collection {
     return gridFSBucket;
   }
 
-  onAfterUpload = async (file) => {
+  storeInGridFSBucket = async (file, buffer) => {
     const gridFSBucket = await this.getGridFSBucket();
+    // Covert buffer to Readable Stream
+    const readablePhotoStream = new Readable();
+    readablePhotoStream.push(buffer);
+    readablePhotoStream.push(null);
     // Move file to GridFS
     Object.keys(file.versions).forEach((versionName) => {
       const metadata = { ...file.meta, versionName, fileId: file._id };
-      fs.createReadStream(file.versions[versionName].path)
-        .pipe(
-          gridFSBucket.openUploadStream(file.name, {
-            contentType: file.type || 'binary/octet-stream',
-            metadata,
-          })
-        )
-        .on('error', (err) => {
-          console.error(err); // eslint-disable-line
-          throw err;
-        })
-        .on('finish', (ver) => {
-          const property = `versions.${versionName}.meta.gridFsFileId`;
-          this.update(file._id, {
-            $set: { [property]: ver._id.toHexString() },
-          });
-          this.unlink(this.findOne(file._id), versionName); // Unlink files from FS
+      const uploadStream = gridFSBucket.openUploadStream(file.name, {
+        contentType: file.type || 'binary/octet-stream',
+        metadata,
+      });
+      readablePhotoStream.pipe(uploadStream);
+      uploadStream.on('error', (err) => {
+        console.error(err); // eslint-disable-line
+        throw err;
+      });
+      uploadStream.on('finish', (ver) => {
+        const property = `versions.${versionName}.meta.gridFsFileId`;
+        this.update(file._id, {
+          $set: { [property]: ver._id.toHexString() },
         });
+      });
     });
   };
 
@@ -588,27 +590,14 @@ class FilesCollection extends Mongo.Collection {
     meta = {},
     ...rest
   }) => {
-    return new Promise((resolve, reject) => {
-      try {
-        this.write(
-          buffer,
-          {
-            fileName,
-            type,
-            size,
-            meta,
-            ...rest,
-          },
-          (err, fileObj) => {
-            if (err) return reject(err);
-            return resolve(fileObj);
-          },
-          true // proceedAfterUpload
-        );
-      } catch (e) {
-        reject(e);
-      }
+    const res = await this.write(buffer, {
+      fileName,
+      type,
+      size,
+      meta,
+      ...rest,
     });
+    return res;
   };
 
   insertWithRemoteFile = async function insertWithRemoteFile({

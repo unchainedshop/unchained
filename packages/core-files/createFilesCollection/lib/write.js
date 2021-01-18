@@ -1,29 +1,19 @@
 /* eslint-disable no-underscore-dangle */
-import fs from 'fs-extra';
 import Random from '@reactioncommerce/random';
 import nodePath from 'path';
 import {
   helpers,
   getExtension,
-  bound,
   storagePath,
   dataToSchema,
   getMimeType,
 } from './helpers';
 
-const write = function (buffer, _opts = {}, _callback, _proceedAfterUpload) {
+const write = async function (buffer, _opts = {}) {
   let opts = _opts;
-  let callback = _callback;
-  let proceedAfterUpload = _proceedAfterUpload;
 
   if (helpers.isFunction(opts)) {
-    proceedAfterUpload = callback;
-    callback = opts;
     opts = {};
-  } else if (helpers.isBoolean(callback)) {
-    proceedAfterUpload = callback;
-  } else if (helpers.isBoolean(opts)) {
-    proceedAfterUpload = opts;
   }
 
   const fileId = opts.fileId || Random.id();
@@ -58,39 +48,14 @@ const write = function (buffer, _opts = {}, _callback, _proceedAfterUpload) {
 
   result._id = fileId;
 
-  fs.ensureFile(opts.path, (efError) => {
-    bound(() => {
-      if (efError) {
-        callback && callback(efError);
-      } else {
-        const stream = fs.createWriteStream(opts.path, {
-          flags: 'w',
-          mode: 0o644,
-        });
-        stream.end(buffer, (streamErr) => {
-          bound(() => {
-            if (streamErr) {
-              callback && callback(streamErr);
-            } else {
-              this.insert(result, async (insertErr, _id) => {
-                if (insertErr) {
-                  callback && callback(insertErr);
-                } else {
-                  const fileRef = this.findOne(_id);
-                  if (proceedAfterUpload === true) {
-                    this.onAfterUpload &&
-                      (await this.onAfterUpload.call(this, fileRef));
-                  }
-                  callback && callback(null, fileRef);
-                }
-              });
-            }
-          });
-        });
-      }
-    });
+  this.onBeforeUpload({ size: opts.size, extension });
+  this.insert(result, async (err, _id) => {
+    if (!err) {
+      const fileRef = this.findOne(_id);
+      await this.storeInGridFSBucket.call(this, fileRef, buffer);
+    }
   });
-  return this;
+  return result;
 };
 
 export default write;

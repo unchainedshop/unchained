@@ -29,18 +29,6 @@ const load = async function (url, _opts = {}) {
     nodePath.sep
   }${FSName}${extensionWithDot}`;
 
-  const storeResult = (result) => {
-    const resultObj = result;
-    resultObj._id = fileId;
-    this.insert(resultObj, async (err, _id) => {
-      if (!err) {
-        const fileRef = this.findOne(_id);
-        if (this.onAfterUpload) {
-          await this.onAfterUpload.call(this, fileRef);
-        }
-      }
-    });
-  };
   const response = await fetch(url, { headers: opts.headers || {} });
   if (!response.ok) throw new Error('URL provided responded with 404');
   const textBlob = await response.text();
@@ -63,7 +51,14 @@ const load = async function (url, _opts = {}) {
     size: result.size,
     extension,
   });
-  storeResult(result);
+
+  result._id = fileId;
+  this.insert(result, async (err, _id) => {
+    if (!err) {
+      const fileRef = this.findOne(_id);
+      await this.storeInGridFSBucket.call(this, fileRef, textBlob);
+    }
+  });
   return result;
 };
 
