@@ -14,6 +14,7 @@ const SearchDropdown = ({
   onChange,
   value,
   label,
+  multiple,
   optionValues,
   placeholder,
   disabled,
@@ -99,12 +100,12 @@ const SearchDropdown = ({
       return {
         key: item._id,
         value: item._id,
-        text: item?.texts?.title || item?.name,
+        text: item?.texts?.title || item?.name || item?.type,
         content: (
           <Header>
             {!(queryType === 'users') && selectImage(item)}
             <Header.Content>
-              {item?.texts?.title || item?.name}
+              {item?.texts?.title || item?.name || item?._id?.toLowerCase()}
               {!(queryType === 'users') && (
                 <>
                   <Header.Subheader>{item.texts.description}</Header.Subheader>
@@ -125,6 +126,7 @@ const SearchDropdown = ({
     >
       {label && <label htmlFor={id}>{label}</label>}
       <Dropdown
+        multiple={multiple}
         name={name || 'item'}
         disabled={disabled}
         id={id || 'search-dropdown'}

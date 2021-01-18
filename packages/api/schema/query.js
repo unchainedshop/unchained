@@ -290,6 +290,7 @@ export default [
         limit: Int = 10
         offset: Int = 0
         status: [WorkStatus] = [NEW]
+        selectTypes: [WorkType!] = []
       ): [Work]
 
       """
@@ -303,6 +304,10 @@ export default [
       Get a specific work unit by ID
       """
       work(workId: ID!): Work
+      """
+      Get List of currently registered worker plugins
+      """
+      activeWorkTypes: [WorkType!]!
     }
   `,
 ];

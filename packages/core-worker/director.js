@@ -161,7 +161,12 @@ class WorkerDirector {
     return work;
   }
 
-  static buildQueueSelector({ status = [], workId, ...rest }) {
+  static buildQueueSelector({
+    status = [],
+    selectTypes = [],
+    workId,
+    ...rest
+  }) {
     const filterMap = {
       [WorkStatus.DELETED]: { deleted: { $exists: true } },
       [WorkStatus.NEW]: {
@@ -182,14 +187,26 @@ class WorkerDirector {
         []
       ),
     };
+
     const query = statusQuery.$or.length > 0 ? statusQuery : {};
+    if (selectTypes?.length) {
+      query.$and = [{ type: { $in: selectTypes } }];
+    }
+
     if (workId) {
       query._id = workId;
     }
     return { ...query, ...rest };
   }
 
-  static async workQueue({ skip, limit, ...selectorOptions }) {
+  static async activeWorkTypes() {
+    const typeList = await WorkQueue.rawCollection()
+      .aggregate([{ $group: { _id: '$type' } }])
+      .toArray();
+    return typeList.map((t) => t._id);
+  }
+
+  static workQueue({ skip, limit, ...selectorOptions }) {
     const result = WorkQueue.find(this.buildQueueSelector(selectorOptions), {
       skip,
       limit,
