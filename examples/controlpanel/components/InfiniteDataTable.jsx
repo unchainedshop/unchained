@@ -4,7 +4,8 @@ import React from 'react';
 import { Table, Icon, Button } from 'semantic-ui-react';
 import InfiniteScroll from 'react-infinite-scroller';
 import Link from 'next/link';
-
+var hasMore = true;
+var previousResult = [];
 const InfiniteDataTable = ({
   items,
   cols = 4,
@@ -45,9 +46,9 @@ const InfiniteDataTable = ({
     {items && (
       <InfiniteScroll
         pageStart={0}
+        hasMore={hasMore}        
         element={'tbody'}
         loadMore={loadMoreEntries}
-        hasMore={limit ?? true}
       >
         {items.map(rowRenderer)}
       </InfiniteScroll>
@@ -86,16 +87,21 @@ export const withDataTableLoader = ({ query, queryName, itemsPerPage = 5 }) =>
         },
         ...queryOptions,
       }),
-      props: ({ data: { loading, fetchMore, stopPolling, ...data } }) => ({
+      props: ({ data: { loading, fetchMore, stopPolling, ...data } }) => {
+        
+              hasMore = previousResult?.length !== data?.[queryName]?.length
+        return ({
         loading,
         items: data[queryName],
         loadMoreEntries: () => {
-          stopPolling();
+          if(queryName !== 'workQueue') stopPolling();
           return fetchMore({
             variables: {
-              offset: data[queryName].length,
+              offset: data[queryName]?.length,
             },
             updateQuery: (prev, { fetchMoreResult }) => {
+              hasMore = previousResult?.length !== prev?.[queryName]?.length
+              previousResult = prev?.[queryName];
               if (!fetchMoreResult) return prev;
               return {
                 ...prev,
@@ -107,7 +113,7 @@ export const withDataTableLoader = ({ query, queryName, itemsPerPage = 5 }) =>
             },
           });
         },
-      }),
+      })},
     })
   );
 

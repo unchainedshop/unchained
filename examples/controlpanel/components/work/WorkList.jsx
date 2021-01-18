@@ -1,8 +1,10 @@
 import gql from 'graphql-tag';
 import React, { useEffect, useState } from 'react';
-import { Table } from 'semantic-ui-react';
+import { Checkbox, Table } from 'semantic-ui-react';
 import Link from 'next/link';
+
 import InfiniteDataTable, { withDataTableLoader } from '../InfiniteDataTable';
+import WorkTypeSelector from './WorkTypeSelector';
 
 const relativeScheduleFromWork = ({ scheduledTime, relativeTime, status }) => {
   if (status === 'FAILED' || status === 'SUCCESS' || status === 'DELETED')
@@ -22,7 +24,7 @@ const relativeScheduleFromWork = ({ scheduledTime, relativeTime, status }) => {
   return null;
 };
 
-const WorkRow = ({ work, relativeDate }) => {
+const WorkRow = ({  work, relativeDate }) => {
   const scheduledDate = work.scheduled && new Date(work.scheduled);
   const scheduledTime = scheduledDate && scheduledDate.getTime();
   const relativeTime = relativeDate && relativeDate.getTime();
@@ -31,7 +33,6 @@ const WorkRow = ({ work, relativeDate }) => {
     work.status === 'ALLOCATED';
   return (
     <Table.Row
-      key={work._id}
       warning={isReady}
       error={work.status === 'FAILED'}
       positive={work.status === 'SUCCESS'}
@@ -62,27 +63,75 @@ const WorkRow = ({ work, relativeDate }) => {
   );
 };
 
-const WorkList = ({ loading, updateHasMore, queryOptions, ...rest }) => {
+const WorkList = ({
+  onFilterChange,
+  statusTypes,
+  selectTypes,
+  loading,
+  updateHasMore,
+  queryOptions,
+  ...rest
+}) => {
+  const [selectedTypeFilter, setSelectedTypeFilter] = useState([]);
+  const [activeStatus, setActiveStatus] = useState(statusTypes);
   const [relativeDate, setDate] = useState(new Date());
   useEffect(() => {
-    if (!queryOptions) return () => {};
     const refreshDates = setInterval(() => {
       setDate(new Date());
-    }, 1000);
+    }, 2000);
+
     return () => {
       clearInterval(refreshDates);
     };
-  }, []); // Add dependencies here
+  }, [activeStatus, selectedTypeFilter]);
 
+  if (!activeStatus.length) {
+    setActiveStatus(statusTypes);
+  }
+  const onWorkStatusChange = (e, { label, checked }) => {
+    const currentStatus = [...activeStatus];
+    if (checked) {
+      currentStatus.push(label);
+    } else {
+      currentStatus.splice(currentStatus.indexOf(label), 1);
+    }
+    setActiveStatus(currentStatus);
+
+    onFilterChange({ filterType: 'status', value: currentStatus });
+  };
   return (
     <InfiniteDataTable
       {...rest}
       cols={6}
       createPath={null}
-      rowRenderer={(work) => (
-        <WorkRow key={work._id} work={work} relativeDate={relativeDate} />
+      rowRenderer={(work, i) => (
+        <WorkRow
+          key={`${work._id}-${i}`}
+          work={work}
+          relativeDate={relativeDate}
+        />
       )}
     >
+      <Table.Row>
+        <Table.HeaderCell colSpan="2">
+          <WorkTypeSelector
+            onChange={(e, { value }) => {
+              setSelectedTypeFilter(value);
+              onFilterChange({ filterType: 'workType', value });
+            }}
+          />
+        </Table.HeaderCell>
+        {statusTypes.map((status) => (
+          <Table.HeaderCell key={status}>
+            <Checkbox
+              label={status}
+              checked={activeStatus.indexOf(status) !== -1}
+              onChange={onWorkStatusChange}
+            />
+          </Table.HeaderCell>
+        ))}
+      </Table.Row>
+
       <Table.Row>
         <Table.HeaderCell>Work #</Table.HeaderCell>
         <Table.HeaderCell>Status</Table.HeaderCell>
@@ -96,11 +145,21 @@ const WorkList = ({ loading, updateHasMore, queryOptions, ...rest }) => {
 };
 
 export default withDataTableLoader({
-  itemsPerPage: 50,
+  itemsPerPage: 10,
   queryName: 'workQueue',
   query: gql`
-    query workQueue($offset: Int, $limit: Int, $status: [WorkStatus!]!) {
-      workQueue(offset: $offset, limit: $limit, status: $status) {
+    query workQueue(
+      $offset: Int
+      $limit: Int
+      $status: [WorkStatus!]!
+      $selectTypes: [WorkType!] = []
+    ) {
+      workQueue(
+        offset: $offset
+        limit: $limit
+        status: $status
+        selectTypes: $selectTypes
+      ) {
         _id
         type
         scheduled

@@ -1,24 +1,36 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Container } from 'semantic-ui-react';
+
 import App from '../../components/App';
 import WorkList from '../../components/work/WorkList';
 import connectApollo from '../../lib/connectApollo';
 
-export default connectApollo(({ ...rest }) => (
-  <App {...rest}>
-    <Container>
-      <h2>Next in Queue</h2>
-      <WorkList
-        queryOptions={{ pollInterval: 1000 }}
-        limit={0}
-        status={['ALLOCATED', 'NEW']}
-      />
+export default connectApollo(({ ...rest }) => {
+  const statusTypes = ['ALLOCATED', 'NEW', 'FAILED', 'SUCCESS'];
+  const [workStatusFilter, setWorkStatusFilter] = useState([]);
+  const [workTypeFilter, setWorkTypeFilter] = useState([]);
 
-      <h2>Most Recently Finished</h2>
-      <WorkList
-        queryOptions={{ pollInterval: 5000 }}
-        status={['FAILED', 'SUCCESS']}
-      />
-    </Container>
-  </App>
-));
+  const onFilterChange = ({ filterType, value }) => {
+    if (filterType === 'workType') {
+      setWorkTypeFilter(value);
+    } else if (filterType === 'status') {
+      setWorkStatusFilter(value);
+    }
+  };
+
+  return (
+    <App {...rest}>
+      <Container>
+        <h2>Work Queue</h2>
+        <WorkList
+          queryOptions={{ pollInterval: 2000}}
+          limit={10}
+          selectTypes={workTypeFilter}
+          status={workStatusFilter}
+          statusTypes={statusTypes}
+          onFilterChange={onFilterChange}
+        />
+      </Container>
+    </App>
+  );
+});

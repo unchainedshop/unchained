@@ -1,46 +1,70 @@
 # vNext
 
-We are currently rebuilding parts of Unchained under the hood with a new code structure that helps developers to easily add new resolvers and access the core API's through typescrypt types.
+We are currently rebuilding parts of Unchained under the hood with a new code structure that helps developers to easily add new resolvers and access the core API's through typescript types.
 
-# Breaking Changes
+## Breaking Changes
 - [api] `Mutation.setBaseLanguage` removed, base language now set through env `LANG`
 - [api] `Mutation.setBaseCountry` removed, base language now set through env `COUNTRY`
 
-# Major
+## Major
+- [api] New Query.activeWorkTypes to query for all active work types without introspection
 - [api] Support for Data Loader
 - [api,bookmarks] The Bookmarks core module has been completely refactored, all business logic is now accessible through the Apollo GraphQL context
 - [utils] Multiple functions have been moved to utils from core.
-- [core] Core now is an umbrella for all core modules and does not provide any other functions except for the function that loads all modules in order and ties together the typescript types
-- [payment] Our official Datatrans plugin now supports all different security modes for signing a transaction through env `DATATRANS_SECURITY` and `DATATRANS_SIGN2_KEY`. In the meantime Datatrans has released a new modern JSON based 2.0 API. Our Plugin still only supports the legacy API described here https://docs.datatrans.ch/v1.0.1/docs/getting-started-home
+- [core] The "core" package now is an umbrella for all core modules and does not provide any other functions except for the function that loads all modules in order and ties together the typescript types
+- [api,core] Business logic and db calls are now wrapped in functions and moved from api to the core packages
+- [pricing] New open-source pricing plugins:
+- - EUR catalog price auto conversion with ECB rates
+- - Crypto catalog price auto conversion with Coinbase rates
+- - Mercantile Rounding
+- [api] Remove OTP based access to an order
+- [payment] Our official Datatrans plugin now supports all different security modes for signing a transaction through env `DATATRANS_SECURITY` and `DATATRANS_SIGN2_KEY`. In the meantime Datatrans has released a new modern JSON based 2.0 API. Our Plugin still only supports the legacy API described here <https://docs.datatrans.ch/v1.0.1/docs/getting-started-home>
+
+## Minor
+- [docs] Added product pricing plugin documentation
+- [controlpanel] Updated theming that better reflects our current CI/CD
+- [controlpanel] New filters for the work queue to find jobs you're interested in
+- [api] Existance checks are now beeing done with count instead of findOne to improve performance
+- [api, pricing] Price simulating functions can now take a forced currency
+- [tests] Index creation is now reused of example project instead of mocked in db setup
+
+## Patches
+- [accountsjs] Regression, default token expiration now after 30 days instead of 20 minutes
+- [bulk] Regression, removal did not work
 
 # v0.55.4
 
 ## Minor
+
 - [api] Type Assertions (#273)
 - Various other bugfixes: #232, #258, #277, #268, #261, #272
 
 # v0.55.3
 
-# Breaking Changes
+## Breaking Changes
+
 - [users] enrollUser now supports hashed passwords and uses the existing password field for it
 
 ## Patches
+
 - [controlpanel] Fix enrollUser and setPassword
 
 # v0.55.1
 
 ## Minor
+
 - [platform] If you used `user.setPassword` before, that function is now async and does not return the user object anymore
 - [platform] If you used `Users.createUser` before, that function is now async
 - [api] setPassword mutation now also supports plain passwords if needed.
 
 ## Patches
+
 - [controlpanel] Fix bug in Currency edit form
 - [controlpanel] Fix bug with Assortment list not showing the assortments
 
 # v0.55.0
 
-Attention: If you have used Meteor Accounts specific extensions to extend login functionalities for your unchained-based project, you will have to rewrite all code that depends on Meteor's accounts packages and extend the functionality through accounts-js config, strategies and hooks (https://www.accountsjs.com/docs/introduction).
+Attention: If you have used Meteor Accounts specific extensions to extend login functionalities for your unchained-based project, you will have to rewrite all code that depends on Meteor's accounts packages and extend the functionality through accounts-js config, strategies and hooks (<https://www.accountsjs.com/docs/introduction>).
 
 Look for `Accounts.registerLoginHandler`, `Accounts.onLogin` or Meteor Accounts Password based features like `Accounts.setUsername` or `Accounts.setPassword` to find out if you are affected.
 
@@ -54,33 +78,39 @@ Look for `Accounts.registerLoginHandler`, `Accounts.onLogin` or Meteor Accounts 
 - [platform] New unchained instances now generate an admin user with an E-Mail of `admin@unchained.local` to solve various issues with frontends and services that don't accept addresses like `user@toplevel`. Also it's now very important to seed your database AFTER startPlatform.
 
 You have to remove meteor's native accounts packages from the project to use the new unchained version:
+
 ```
 meteor remove accounts-base accounts-password accounts-oauth
 ```
 
 ## Minor
+
 - [users] `sendEnrollmentEmail` mutation is now available to trigger enrollment emails.
 - [api] Enhanced Query.users which now allows to query for users with a fulltext search that takes E-mail addresses into account
 - [api] Better integration tests that cover more business logic than before
 
 ## Patches
+
 - [great-purge-of-meteor] Remove accounts-base and accounts-password from platform package
-- [great-purge-of-meteor] Implement new core-accountsjs package
+- [great-purge-of-meteor] Implement new accountsjs package
 - [great-purge-of-meteor] Convert all authentication related mutations within `api/resolvers/mutations/accounts/loginWithPassword.js` to use accounts-js.
 - [great-purge-of-meteor] Convert any Users collection helpers to use accounts-js.
 - [api] Fixed an issue which prevented Query.subscription from working at all
 - [assortments] Fixed an issue that resulted in totally wrong breadcrumbs in some special edge case (assortmentPaths)
 
 ---
+
 # v0.54.1
 
 ## Patches
+
 - [platform] Fix importing bulk assortments should remove old links
 - [pricing] Fix critical issue with discounts resolving to a total cart value of 0
 
 # v0.54.0
 
 ## Minor
+
 - [logger] Support for JSON Logging through UNCHAINED_LOG_FORMAT=json
 - [api] Larger body limit for the new Bulk Import API
 
@@ -89,9 +119,11 @@ meteor remove accounts-base accounts-password accounts-oauth
 # v0.53.2
 
 ## Minor
+
 - [core] Compound indexes for text entities
 
 ## Patches
+
 - [api] Fix rare case where MESSAGE work type lead to an exception
 
 ---
@@ -101,10 +133,12 @@ meteor remove accounts-base accounts-password accounts-oauth
 Hotfix for broken product text editing through controlpanel
 
 ## Minor
+
 - [cp] Update deps
 - [docs] Add API Reference
 
 ## Patches
+
 - [api] Fix updateProductText not updating text
 
 ---
@@ -118,24 +152,25 @@ Minor tweaks and fixes
 The new experimental Bulk Import API allows to import a big list of entities (filters, assortments & products) at the same time.
 
 ## Minor
+
 - [cp] You can now search for users #242
-- [payment] New Plugin: Bity (https://bity.com)
+- [payment] New Plugin: Bity (<https://bity.com>)
 - [payment] New Plugin: Stripe Legacy Charges
 - [api] You can now store arbitrary data when using markPaid
 - [api] Add a new field Product.defaultOrderQuantity
 - [api] Also support "token" in cookies instead of only meteor_login_token
 
 ## Patches
+
 - [great-purge-of-meteor] Remove dburles:factory
 - [pricing] Fix currencyCode in pricing when using multiple currencies for the same country
-
 
 ---
 
 # v0.53.0
 
 This new Release is published along our new Documentation Page:
-https://docs.unchained.shop
+<https://docs.unchained.shop>
 
 Contributions by: @Mikearaya @harryadel @schmidsi @pozylon
 
@@ -176,7 +211,7 @@ Changes to Filter Plugins: The async method search on a FilterAdapter is now sea
 
 ## Minor
 
-- [platform] Migration messages are now logged through core-logger
+- [platform] Migration messages are now logged through logger
 - [api] Query.assortments now additionally takes a list of tags and slugs
 - [api] Added Query.searchAssortments
 - [api] Rename Query.search to Query.searchProducts (Query.search still works but is marked deprecated)
@@ -255,7 +290,7 @@ We will rename all unchained core specific env variables and prefix them with UN
 - The Environment variable WORKER_ID has been renamed to UNCHAINED_WORKER_ID
 - The Environment variable WORKER_CRON_TEXT has been removed, provide `cronText` as option to startPlatform to configure, use your own env var if still needed.
 - The Environment variable FIXTURES has been removed, we will remove the fixtures and faker helpers in the future.
-- [core-platform] These 3 worker plugins are automatically loaded and started: EventListenerWorker, CronWorker, FailedRescheduler. Please remove the worker boot code from your project like this: https://github.com/unchainedshop/unchained/commit/89278ce018bcc8ef5861e60f91cf5fde9d2caec9#diff-0f4e94ac3eacf892b0b4f09738a49635
+- [platform] These 3 worker plugins are automatically loaded and started: EventListenerWorker, CronWorker, FailedRescheduler. Please remove the worker boot code from your project like this: <https://github.com/unchainedshop/unchained/commit/89278ce018bcc8ef5861e60f91cf5fde9d2caec9#diff-0f4e94ac3eacf892b0b4f09738a49635>
 - [api] `getCart` now returns a promise
 - [users] the `orders` helper now returns a promise
 - [payment] Signature of sign changed slightly, takes transactionContext in first property
@@ -276,7 +311,7 @@ We will rename all unchained core specific env variables and prefix them with UN
 - [delivery] It's now possible to customize the sort order of supported delivery providers `modules.delivery.sortProviders`
 - [payment] It's now possible to customize the sort order of supported payment providers `modules.payment.sortProviders`
 - [filters] Filters now fallback to no invalidation on startup if not configured
-- [logs] Added an index on the created field for logs and also make the log collection expire with a mongodb native feature (https://docs.mongodb.com/manual/tutorial/expire-data/). This should improve db log performance and disk usage
+- [logs] Added an index on the created field for logs and also make the log collection expire with a mongodb native feature (<https://docs.mongodb.com/manual/tutorial/expire-data/>). This should improve db log performance and disk usage
 
 ## Patches
 
