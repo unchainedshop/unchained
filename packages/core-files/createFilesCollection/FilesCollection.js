@@ -556,8 +556,8 @@ class FilesCollection extends Mongo.Collection {
     if (selector === undefined) {
       return 0;
     }
-
     const files = this.find(selector);
+
     if (files.count() > 0) {
       files.forEach((file) => {
         this.unlink(file);
@@ -569,19 +569,16 @@ class FilesCollection extends Mongo.Collection {
       return this;
     }
 
-    if (this.onAfterRemove) {
-      const docs = files.fetch();
-      // eslint-disable-next-line @typescript-eslint/no-this-alias
-      const self = this;
-      this.remove(selector, function (...args) {
-        if (callback) {
-          callback.apply(this, args);
-        }
-        self.onAfterRemove(docs);
-      });
-    } else {
-      this.remove(selector, callback || NOOP);
-    }
+    const docs = files.fetch();
+    // eslint-disable-next-line @typescript-eslint/no-this-alias
+    const self = this;
+    this.remove(selector, async function (...args) {
+      if (callback) {
+        callback.apply(this, args);
+      }
+      await self.onAfterRemove(docs);
+    });
+
     return this;
   }
 
