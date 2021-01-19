@@ -58,6 +58,12 @@ export const User = {
       ],
     },
   },
+  language: {
+    isoCode: 'de',
+  },
+  country: {
+    isoCode: 'CH',
+  },
 };
 
 export default async function seedUsers(db) {
