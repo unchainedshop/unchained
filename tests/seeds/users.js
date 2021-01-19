@@ -27,6 +27,12 @@ export const Admin = {
       ],
     },
   },
+  language: {
+    isoCode: 'de',
+  },
+  country: {
+    isoCode: 'CH',
+  },
 };
 
 export const User = {
