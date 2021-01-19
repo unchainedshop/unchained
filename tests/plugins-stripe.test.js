@@ -71,14 +71,14 @@ if (STRIPE_SECRET) {
       await connection.close();
     });
 
-    describe('Query.signPaymentProviderForCredentialRegistration (Stripe)', () => {
+    describe('Mutation.signPaymentProviderForCredentialRegistration (Stripe)', () => {
       let idAndSecret;
       it('Request a new client secret for the purpose of registration', async () => {
         const {
           data: { signPaymentProviderForCredentialRegistration } = {},
         } = await graphqlFetch({
           query: /* GraphQL */ `
-            query signPaymentProviderForCredentialRegistration(
+            mutation signPaymentProviderForCredentialRegistration(
               $paymentProviderId: ID!
             ) {
               signPaymentProviderForCredentialRegistration(

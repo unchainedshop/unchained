@@ -128,6 +128,7 @@ import updateOrderDeliveryPickUp from './updateOrderDeliveryPickUp';
 import updateOrderPaymentGeneric from './updateOrderPaymentGeneric';
 import updateOrderPaymentCard from './updateOrderPaymentCard';
 import updateOrderPaymentInvoice from './updateOrderPaymentInvoice';
+import signPaymentProviderForCredentialRegistration from './signPaymentProviderForCredentialRegistration';
 
 export default {
   logout,
@@ -327,4 +328,7 @@ export default {
   finishWork: acl(actions.manageWorker)(finishWork),
   removeWork: acl(actions.manageWorker)(removeWork),
   doWork: acl(actions.manageWorker)(doWork),
+  signPaymentProviderForCredentialRegistration: acl(
+    actions.registerPaymentCredentials
+  )(signPaymentProviderForCredentialRegistration),
 };
