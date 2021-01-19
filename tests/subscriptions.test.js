@@ -999,23 +999,6 @@ describe('Subscriptions', () => {
       expect(subscription.isExpired).toBe(true);
     });
 
-    it('return SubscriptionNotFoundError when passed non existing subscription ID', async () => {
-      const { errors } = await graphqlFetchAsAdminUser({
-        query: /* GraphQL */ `
-          query subscription($subscriptionId: ID!) {
-            subscription(subscriptionId: $subscriptionId) {
-              _id
-              isExpired
-            }
-          }
-        `,
-        variables: {
-          subscriptionId: 'non-existing-id',
-        },
-      });
-      expect(errors[0]?.extensions?.code).toEqual('SubscriptionNotFoundError');
-    });
-
     it('return InvalidIdError when passed invalid subscription ID', async () => {
       const { errors } = await graphqlFetchAsAdminUser({
         query: /* GraphQL */ `

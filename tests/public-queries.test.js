@@ -70,24 +70,6 @@ describe('public queries', () => {
     expect(price.currency).toBe('CHF');
   });
 
-  it('query.productCatalogPrices return not found error when passed non existing productId', async () => {
-    const { data, errors } = await graphqlFetch({
-      query: /* GraphQL */ `
-        {
-          productCatalogPrices(productId: "invalid-product-id") {
-            price {
-              amount
-              currency
-            }
-          }
-        }
-      `,
-    });
-
-    expect(data).toEqual(null);
-    expect(errors[0]?.extensions?.code).toEqual('ProductNotFoundError');
-  });
-
   it('query.productCatalogPrices return error when passed invalid productId', async () => {
     const { data, errors } = await graphqlFetch({
       query: /* GraphQL */ `
