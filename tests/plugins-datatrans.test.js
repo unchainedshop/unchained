@@ -76,7 +76,7 @@ describe('Plugins: Datatrans Payments', () => {
     await connection.close();
   });
 
-  describe('Query.signPaymentProviderForCredentialRegistration (Datatrans)', () => {
+  describe('Mutation.signPaymentProviderForCredentialRegistration (Datatrans)', () => {
     const sign =
       '0c83ed74918d05cdd5309389dd8f011881250351f861619fbdfb9f75c711a5db';
 
@@ -85,7 +85,7 @@ describe('Plugins: Datatrans Payments', () => {
         data: { signPaymentProviderForCredentialRegistration } = {},
       } = await graphqlFetch({
         query: /* GraphQL */ `
-          query signPaymentProviderForCredentialRegistration(
+          mutation signPaymentProviderForCredentialRegistration(
             $paymentProviderId: ID!
           ) {
             signPaymentProviderForCredentialRegistration(
