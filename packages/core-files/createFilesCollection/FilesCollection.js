@@ -16,6 +16,8 @@ class FilesCollection extends Mongo.Collection {
     this._name = collectionName;
     this.maxSize = maxSize;
     this.extensionRegex = new RegExp(extensionRegex);
+    this.downloadRoute = '/cdn/storage';
+    this.allowedOrigins = /^http:\/\/localhost:12[0-9]{3}$/;
 
     WebApp.connectHandlers.use(async (httpReq, httpResp, next) => {
       if (
@@ -96,8 +98,6 @@ class FilesCollection extends Mongo.Collection {
       throw new Error('file too big');
     }
   };
-
-  downloadRoute = '/cdn/storage';
 
   checkAccess = async (http) => {
     let result;
@@ -608,25 +608,18 @@ class FilesCollection extends Mongo.Collection {
       stream.on('data', (d) => {
         bufs.push(d);
       });
-      stream.on('end', () => {
+      stream.on('end', async () => {
         const contentLength = bufs.reduce((sum, buf) => sum + buf.length, 0);
         const buf = Buffer.concat(bufs);
         try {
-          this.write(
-            buf,
-            {
-              fileName: filename,
-              type: mimetype,
-              size: contentLength,
-              meta,
-              ...rest,
-            },
-            (err, fileObj) => {
-              if (err) return reject(err);
-              return resolve(fileObj);
-            },
-            true // proceedAfterUpload
-          );
+          const res = await this.write(buf, {
+            fileName: filename,
+            type: mimetype,
+            size: contentLength,
+            meta,
+            ...rest,
+          });
+          resolve(res);
         } catch (e) {
           reject(e);
         }
