@@ -11,6 +11,12 @@ export default async function addProductMedia(
   if (!productId) throw new InvalidIdError({ productId });
   const product = Products.findProduct({ productId });
   if (!product) throw new ProductNotFoundError({ productId });
-  const res = await product.addMedia({ rawFile: media, authorId: userId });
+  const res = await product.addMedia({
+    rawFile: media,
+    authorId: userId,
+    href,
+    meta,
+    tags,
+  });
   return res;
 }
