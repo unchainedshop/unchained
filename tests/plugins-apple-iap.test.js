@@ -182,7 +182,12 @@ describe('Plugins: Apple IAP Payments', () => {
         data: { updateOrderPaymentGeneric, checkoutCart } = {},
       } = await graphqlFetch({
         query: /* GraphQL */ `
-          mutation checkout($orderId: ID!, $orderPaymentId: ID!, $meta: JSON) {
+          mutation checkout(
+            $orderId: ID!
+            $orderPaymentId: ID!
+            $meta: JSON
+            $paymentContext: JSON
+          ) {
             updateOrderPaymentGeneric(
               orderPaymentId: $orderPaymentId
               meta: $meta
@@ -190,7 +195,7 @@ describe('Plugins: Apple IAP Payments', () => {
               _id
               status
             }
-            checkoutCart(orderId: $orderId) {
+            checkoutCart(orderId: $orderId, paymentContext: $paymentContext) {
               _id
               status
             }
@@ -201,6 +206,17 @@ describe('Plugins: Apple IAP Payments', () => {
           orderId: 'iap-order',
           meta: {
             transactionIdentifier: singleItemTransactionIdentifier,
+          },
+          paymentContext: {
+            receiptData,
+            _id: 'iap-payment',
+            created: '2019-10-11T11:52:25.446Z',
+            status: null,
+            orderId: 'iap-order',
+            paymentProviderId: 'iap-payment-provider',
+            context: { meta: { transactionIdentifier: '1000000663090427' } },
+            updated: '2021-01-20T22:34:25.612Z',
+            calculation: [],
           },
         },
       });

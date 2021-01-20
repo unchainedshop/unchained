@@ -138,7 +138,7 @@ export default [
       transformed to an ordinary order if everything goes well.
       """
       checkoutCart(
-        orderId: ID
+        orderId: ID!
         orderContext: JSON
         paymentContext: JSON
         deliveryContext: JSON
