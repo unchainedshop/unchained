@@ -1,4 +1,5 @@
 const Collection = function (name) {
+  // eslint-disable-next-line no-underscore-dangle
   this._name = name;
 };
 Collection.prototype.attachSchema = jest.fn();
@@ -26,6 +27,7 @@ Collection.prototype.after = {
   insert: jest.fn(),
   update: jest.fn(),
 };
+// eslint-disable-next-line no-underscore-dangle
 Collection.prototype._ensureIndex = jest.fn();
 Collection.prototype.observe = jest.fn();
 const Mongo = { Collection };

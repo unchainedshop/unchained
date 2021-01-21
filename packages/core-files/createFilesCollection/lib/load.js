@@ -25,6 +25,7 @@ const load = async function (url, _opts = {}) {
 
   const { extension, extensionWithDot } = getExtension(fileName);
 
+  // eslint-disable-next-line no-underscore-dangle
   opts.path = `${storagePath(this._name)}${
     nodePath.sep
   }${FSName}${extensionWithDot}`;
@@ -43,6 +44,7 @@ const load = async function (url, _opts = {}) {
       getMimeType({ path: opts.path }),
     size: opts.size || size,
     userId: opts.userId,
+    // eslint-disable-next-line no-underscore-dangle
     collectionName: this._name,
     extension,
   });
