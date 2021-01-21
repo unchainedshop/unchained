@@ -12,6 +12,8 @@ We are currently rebuilding parts of Unchained under the hood with a new code st
 - [api,bookmarks] The Bookmarks core module has been completely refactored, all business logic is now accessible through the Apollo GraphQL context
 - [utils] Multiple functions have been moved to utils from core.
 - [core] The "core" package now is an umbrella for all core modules and does not provide any other functions except for the function that loads all modules in order and ties together the typescript types
+- [roles] Roles package got refactored only keeping a fraction of the previous APIs.
+ We are currently rebuilding parts of Unchained under the hood with a new code structure that helps developers to easily add new resolvers and access the core API's through typescrypt types
 - [api,core] Business logic and db calls are now wrapped in functions and moved from api to the core packages
 - [pricing] New open-source pricing plugins:
 - - EUR catalog price auto conversion with ECB rates
@@ -39,7 +41,7 @@ We are currently rebuilding parts of Unchained under the hood with a new code st
 - [api] Type Assertions (#273)
 - Various other bugfixes: #232, #258, #277, #268, #261, #272
 
-# v0.55.3
+# v0.55.3
 
 ## Breaking Changes
 
@@ -49,7 +51,7 @@ We are currently rebuilding parts of Unchained under the hood with a new code st
 
 - [controlpanel] Fix enrollUser and setPassword
 
-# v0.55.1
+# v0.55.1
 
 ## Minor
 
@@ -213,9 +215,9 @@ Changes to Filter Plugins: The async method search on a FilterAdapter is now sea
 
 - [platform] Migration messages are now logged through logger
 - [api] Query.assortments now additionally takes a list of tags and slugs
-- [api] Added Query.searchAssortments
+- [api] Added Query.searchAssortments
 - [api] Rename Query.search to Query.searchProducts (Query.search still works but is marked deprecated)
-- [api] Exception Handling #188
+- [api] Exception Handling #188
 - [api] Extend Query.users with queryString, allowing to do fulltext searches on users as admin #228
 - [core] Refactoring on the underlying Datalayer #190
 - [core] It's now possible to control the tax categories for switzerland (mwst, see product-swiss-tax and delivery-swiss-tax plugins)
@@ -230,16 +232,16 @@ Changes to Filter Plugins: The async method search on a FilterAdapter is now sea
 - [api] Fix edge case with Query.search when slugs is set to null
 - [api] Fix privileges when using Mutation.updateProductReview, Mutation.answerQuotation, Mutation.removeBookmark, Mutation.addPaymentCredentials which were supposed to work as non-admin users
 - [api] Fix float problem edge case with super long numbers in Money type
-- [core] Fix Sort Order when Faceting #211
-- [core] Fix Controlpanel Next.js Warnings #201 #209
-- [core] Fix a Problem where Work Items are not retried after a Restart #200
-- [core] Fix updateCart updating data that should not #198
-- [core] Fix slugs regeneration when title is updated #194
-- [core] Great Purge of Meteor: Removed aldeed:index #216
+- [core] Fix Sort Order when Faceting #211
+- [core] Fix Controlpanel Next.js Warnings #201 #209
+- [core] Fix a Problem where Work Items are not retried after a Restart #200
+- [core] Fix updateCart updating data that should not #198
+- [core] Fix slugs regeneration when title is updated #194
+- [core] Great Purge of Meteor: Removed aldeed:index #216
 - [core] Fix setting the FILE_STORAGE_PATH through env variable for files
 - [core] Fix order discounting when multiple discounts are active at the same time
-- [examples] Minimal: Upgrade to Meteor 1.11.1 #206
-- [examples] Controlpanel: Upgrade to Apollo Client 3 #206
+- [examples] Minimal: Upgrade to Meteor 1.11.1 #206
+- [examples] Controlpanel: Upgrade to Apollo Client 3 #206
 
 ---
 
@@ -271,7 +273,7 @@ We will rename all unchained core specific env variables and prefix them with UN
 - Improve performance by using lru-caches at bottleneck points throughout the system
 - [worker] It's now possible to define an autoscheduling rule for jobs and the system automatically takes care of setting up the jobs
 
-## Patches
+## Patches
 
 - [examples] Fix a regression bug (simple-schema / seeds) when trying to start the minimal example the first time
 - [ci] Skip caching in CI and dev
@@ -283,7 +285,7 @@ We will rename all unchained core specific env variables and prefix them with UN
 
 # v0.48.0
 
-## Breaking Changes
+## Breaking Changes
 We will rename all unchained core specific env variables and prefix them with UNCHAINED\_ in the future, for now:
 
 - The Environment variable DISABLE_WORKER has been renamed to UNCHAINED_DISABLE_WORKER
@@ -316,7 +318,7 @@ We will rename all unchained core specific env variables and prefix them with UN
 ## Patches
 
 - [api] Fixes removeDiscount regression crashing apollo
-- [worker] Now experimental interval worker which does not depend on SyncedCron
+- [worker] Now experimental interval worker which does not depend on SyncedCron
 - [examples] Various Fixes in Controlpanel
 - [examples] Various console output and lint issues
 - [tests] Fixed various tests

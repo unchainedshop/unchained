@@ -7,24 +7,19 @@ Package.describe({
 });
 
 Package.onUse((api) => {
-  api.versionsFrom('1.11.1');
+  api.versionsFrom('1.12');
 
-  api.use([
-    'meteor-base',
-    'check',
-    'mongo',
-    'ecmascript',
-    'underscore',
-    'dburles:collection-helpers@1.1.0',
-    'unchained:core-users@0.55.4',
-  ]);
+  Npm.depends({
+    'lodash.clone': '4.5.0',
+  });
 
-  api.addFiles(['helpers.js', 'roles.js', 'keys.js']);
+  api.use('ecmascript');
+  api.use('unchained:core-users');
+  api.use('typescript');
 
-  api.addFiles(['roles_server.js'], 'server');
+  api.addFiles(['helpers.ts', 'roles.ts'], 'server');
 
-  api.export('Roles');
-  api.export('objectHasKey');
+  api.mainModule('index.ts');
 });
 
 Package.onTest((api) => {

@@ -9,7 +9,7 @@
       command: meteor npm run typecheck
     - name: Integration Tests
       service: ci
-      command: meteor npm run test:ci
+      command: meteor npm run test:ci  
 - name: Build Unchained Examples
   type: parallel
   encrypted_dockercfg_path: dockercfg.encrypted
