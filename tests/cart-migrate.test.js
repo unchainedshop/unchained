@@ -85,7 +85,7 @@ describe('Guest user cart migration', () => {
       },
     });
     orderId = result.data.addCartProduct.order._id;
-    console.log('?????????????: ', result);
+
     expect(result.data.addCartProduct).toMatchObject({
       quantity: 2,
       total: {
