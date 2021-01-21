@@ -8,7 +8,7 @@ interface RoleInterface {
   allowRules: {
     [name: string]: any;
   };
-  helpers: {};
+  helpers: Record<string, unknown>;
 }
 
 interface RolesInterface {
@@ -78,18 +78,17 @@ export const Roles: RolesInterface = {
   allow(userId, action) {
     // eslint-disable-next-line prefer-rest-params
     const args = Object.values(arguments).slice(2);
-    const self = this;
     const context = { userId };
     let allowed = false;
     const roles = Roles.getUserRoles(userId, true);
 
     roles.forEach((role) => {
       if (
-        self.roles[role] &&
-        self.roles[role].allowRules &&
-        self.roles[role].allowRules[action]
+        this.roles[role] &&
+        this.roles[role].allowRules &&
+        this.roles[role].allowRules[action]
       ) {
-        self.roles[role].allowRules[action].forEach((func: any) => {
+        this.roles[role].allowRules[action].forEach((func: any) => {
           const allow = func.apply(context, args);
           if (allow === true) {
             allowed = true;
