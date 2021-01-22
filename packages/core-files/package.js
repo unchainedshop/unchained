@@ -9,7 +9,7 @@ Package.describe({
 Npm.depends({
   'fs-extra': '9.0.1',
   'isomorphic-unfetch': '3.1.0',
-  'file-type': '16.0.0',
+  'file-type': '16.2.0',
   mongodb: '3.6.3',
   '@reactioncommerce/random': '1.0.2',
 });

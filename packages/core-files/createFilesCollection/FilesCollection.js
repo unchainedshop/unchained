@@ -90,11 +90,14 @@ class FilesCollection extends Mongo.Collection {
     });
   }
 
-  onBeforeUpload = (file) => {
-    if (this.extensionRegex && !this.extensionRegex.test(file.extension)) {
+  checkForSizeAndExtension = ({ size, extension }) => {
+    if (!extension) {
+      throw new Error("filetype isn't defined");
+    }
+    if (this.extensionRegex && !this.extensionRegex.test(extension)) {
       throw new Error('filetype not allowed');
     }
-    if (file.size > this.maxSize) {
+    if (size > this.maxSize) {
       throw new Error('file too big');
     }
   };

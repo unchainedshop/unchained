@@ -21,12 +21,14 @@ const write = async function (buffer, _opts = {}) {
   const fileName =
     opts.name || opts.fileName ? opts.name || opts.fileName : FSName;
 
-  const { extension, extensionWithDot } = getExtension(fileName);
+  const { extension, extensionWithDot } = await getExtension(fileName, buffer);
+
   opts.path = `${storagePath(this._name)}${
     nodePath.sep
   }${FSName}${extensionWithDot}`;
 
   opts.type = getMimeType(opts);
+
   if (!helpers.isObject(opts.meta)) {
     opts.meta = {};
   }
@@ -48,7 +50,7 @@ const write = async function (buffer, _opts = {}) {
 
   result._id = fileId;
 
-  this.onBeforeUpload({ size: opts.size, extension });
+  this.checkForSizeAndExtension({ size: opts.size, extension });
   this.insert(result, async (err, _id) => {
     if (!err) {
       const fileRef = this.findOne(_id);

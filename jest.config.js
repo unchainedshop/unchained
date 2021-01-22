@@ -15,15 +15,12 @@ module.exports = {
     '^meteor/webapp$': '<rootDir>/tests/jest-meteor-stubs/webapp',
     '^@reactioncommerce/random$':
       '<rootDir>/packages/core-files/.npm/package/node_modules/@reactioncommerce/random',
-    '^meteor/ostrio:cookies$':
-      '<rootDir>/tests/jest-meteor-stubs/ostrio-cookies',
     '^meteor/check$': '<rootDir>/tests/jest-meteor-stubs/check',
     '^lodash.merge$': '<rootDir>/tests/jest-meteor-stubs/lodash-merge',
     '^fs-extra$':
       '<rootDir>/packages/core-files/.npm/package/node_modules/fs-extra',
-    '^request-libcurl$':
-      '<rootDir>/packages/core-files/.npm/package/node_modules/request-libcurl',
-    '^file-type$': '<rootDir>/tests/jest-meteor-stubs/file-type',
+    '^file-type$':
+      '<rootDir>/packages/core-files/.npm/package/node_modules/file-type',
     '^eventemitter3$':
       '<rootDir>/packages/core-files/.npm/package/node_modules/eventemitter3',
     '^mongodb$':

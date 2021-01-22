@@ -2,13 +2,10 @@ import fs from 'fs-extra';
 import fileType from 'file-type';
 import { MongoClient } from 'mongodb';
 import crypto from 'crypto';
-import { Meteor } from 'meteor/meteor';
 
 const { FILE_STORAGE_PATH } = process.env;
 
 export const NOOP = () => {};
-
-export const bound = Meteor.bindEnvironment((callback) => callback());
 
 export const helpers = {
   isString(val) {
@@ -86,12 +83,21 @@ export const helpers = {
   now: Date.now,
 };
 
-export const getExtension = (fileName) => {
+export const getExtension = async (fileName, buffer) => {
   if (fileName.includes('.')) {
     const extension = (
       fileName.split('.').pop().split('?')[0] || ''
     ).toLowerCase();
     return { ext: extension, extension, extensionWithDot: `.${extension}` };
+  }
+  if (buffer) {
+    const fileExtension = await fileType.fromBuffer(buffer);
+    if (!fileExtension) return { ext: '', extension: '', extensionWithDot: '' };
+    return {
+      ext: fileExtension.ext,
+      extension: fileExtension.ext,
+      extensionWithDot: `.${fileExtension.ext}`,
+    };
   }
   return { ext: '', extension: '', extensionWithDot: '' };
 };
