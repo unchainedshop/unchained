@@ -33,6 +33,7 @@ export default [
         ignoreChildAssortments: Boolean = false
         orderBy: SearchOrderBy
       ): ProductSearchResult!
+      childrenCount(includeInactive: Boolean = false): Int!
     }
 
     """

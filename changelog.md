@@ -5,8 +5,10 @@ We are currently rebuilding parts of Unchained under the hood with a new code st
 ## Breaking Changes
 - [api] `Mutation.setBaseLanguage` removed, base language now set through env `LANG`
 - [api] `Mutation.setBaseCountry` removed, base language now set through env `COUNTRY`
+- [api] Remove OTP based access to an order
 
 ## Major
+- [api] Add Assortment.childrenCount to get a number of child assortments
 - [api] New Query.activeWorkTypes to query for all active work types without introspection
 - [api] Support for Data Loader
 - [api,bookmarks] The Bookmarks core module has been completely refactored, all business logic is now accessible through the Apollo GraphQL context
@@ -19,7 +21,6 @@ We are currently rebuilding parts of Unchained under the hood with a new code st
 - - EUR catalog price auto conversion with ECB rates
 - - Crypto catalog price auto conversion with Coinbase rates
 - - Mercantile Rounding
-- [api] Remove OTP based access to an order
 - [payment] Our official Datatrans plugin now supports all different security modes for signing a transaction through env `DATATRANS_SECURITY` and `DATATRANS_SIGN2_KEY`. In the meantime Datatrans has released a new modern JSON based 2.0 API. Our Plugin still only supports the legacy API described here <https://docs.datatrans.ch/v1.0.1/docs/getting-started-home>
 
 ## Minor
