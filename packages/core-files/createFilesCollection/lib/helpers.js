@@ -7,6 +7,8 @@ const { FILE_STORAGE_PATH } = process.env;
 
 export const NOOP = () => {};
 
+export const bound = Meteor.bindEnvironment((callback) => callback());
+
 export const helpers = {
   isString(val) {
     return val && typeof val.valueOf() === 'string';

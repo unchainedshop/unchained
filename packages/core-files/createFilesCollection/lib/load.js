@@ -43,6 +43,7 @@ const load = async function (url, _opts = {}) {
       getMimeType({ path: opts.path }),
     size: opts.size || size,
     userId: opts.userId,
+    // eslint-disable-next-line no-underscore-dangle
     collectionName: this._name,
     extension,
   });
