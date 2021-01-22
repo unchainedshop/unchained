@@ -18,13 +18,10 @@ Package.onUse((api) => {
   api.versionsFrom('1.11.1');
   api.use('ecmascript');
   api.use('unchained:core-settings@0.61.0');
-  api.use('ecmascript');
   api.use('webapp', 'server');
-  api.use(
-    ['mongo', 'check', 'ecmascript', 'ostrio:cookies@2.6.1'],
-    ['client', 'server']
-  );
-  api.mainModule('core-files.js');
+  api.use(['mongo', 'ecmascript'], ['client', 'server']);
+  api.use('typescript');
+  api.mainModule('core-files.ts');
   api.export('FilesCollection');
 });
 

@@ -236,4 +236,16 @@ describe('Meteor Files', () => {
 
     expect(result).toMatchObject(matchingObject);
   });
+
+  // test for protected and unprotected collections
+
+  it('removes file successfully', async () => {
+    const result = await testCollection.insertWithRemoteURL({
+      url: 'https://unchained.shop/img/veloplus-screenshots.png',
+      userId: User._id,
+    });
+
+    const res = testCollection.remove({ _id: result._id });
+    console.log('RES: ', res);
+  });
 });

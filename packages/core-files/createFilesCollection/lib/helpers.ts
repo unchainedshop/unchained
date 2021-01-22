@@ -2,6 +2,7 @@ import fs from 'fs-extra';
 import fileType from 'file-type';
 import { MongoClient } from 'mongodb';
 import crypto from 'crypto';
+import { Meteor } from 'meteor/meteor';
 
 const { FILE_STORAGE_PATH } = process.env;
 
@@ -85,7 +86,7 @@ export const helpers = {
   now: Date.now,
 };
 
-export const getExtension = async (fileName, buffer) => {
+export const getExtension = async (fileName: string, buffer) => {
   if (fileName.includes('.')) {
     const extension = (
       fileName.split('.').pop().split('?')[0] || ''
@@ -104,7 +105,7 @@ export const getExtension = async (fileName, buffer) => {
   return { ext: '', extension: '', extensionWithDot: '' };
 };
 
-export const storagePath = (collectionName) => {
+export const storagePath = (collectionName: string) => {
   if (FILE_STORAGE_PATH) {
     return `${FILE_STORAGE_PATH}/${collectionName}`;
   }

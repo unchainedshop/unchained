@@ -9,7 +9,7 @@ import {
   storagePath,
 } from './helpers';
 
-const load = async function (url, _opts = {}) {
+const load = async function (url: string, _opts = {}) {
   let opts = _opts;
   if (!helpers.isObject(opts)) {
     opts = {};

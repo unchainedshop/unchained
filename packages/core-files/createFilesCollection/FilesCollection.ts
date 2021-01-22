@@ -4,6 +4,7 @@ import fs from 'fs';
 import nodeQs from 'querystring';
 import { MongoClient, GridFSBucket, ObjectID } from 'mongodb';
 import { Mongo, MongoInternals } from 'meteor/mongo';
+import { Meteor } from 'meteor/meteor';
 import { WebApp } from 'meteor/webapp';
 import { Readable } from 'stream';
 import write from './lib/write';
@@ -479,28 +480,6 @@ class FilesCollection extends Mongo.Collection {
     });
   }
 
-  unlink(fileRef, version, callback) {
-    if (version) {
-      if (
-        helpers.isObject(fileRef.versions) &&
-        helpers.isObject(fileRef.versions[version]) &&
-        fileRef.versions[version].path
-      ) {
-        fs.unlink(fileRef.versions[version].path, callback || NOOP);
-      }
-    } else if (helpers.isObject(fileRef.versions)) {
-      // for (const vKey in fileRef.versions) {
-      Object.keys(fileRef.versions).forEach((vKey) => {
-        if (fileRef.versions[vKey] && fileRef.versions[vKey].path) {
-          fs.unlink(fileRef.versions[vKey].path, callback || NOOP);
-        }
-      });
-    } else {
-      fs.unlink(fileRef.path, callback || NOOP);
-    }
-    return this;
-  }
-
   async getGridFSBucket() {
     const connection = await MongoClient.connect(
       MongoInternals.defaultRemoteCollectionDriver().mongo.client.s.url,
@@ -561,11 +540,7 @@ class FilesCollection extends Mongo.Collection {
     }
     const files = this.find(selector);
 
-    if (files.count() > 0) {
-      files.forEach((file) => {
-        this.unlink(file);
-      });
-    } else {
+    if (!files.count() > 0 && callback) {
       if (callback) {
         callback(new Meteor.Error(404, 'Cursor is empty, no files is removed'));
       }
