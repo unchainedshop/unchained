@@ -6,6 +6,11 @@ Package.describe({
   documentation: 'README.md',
 });
 
+Npm.depends({
+  mustache: '4.1.0',
+  mjml: '4.8.1',
+});
+
 Package.onUse((api) => {
   api.versionsFrom('1.11.1');
   api.use('ecmascript');

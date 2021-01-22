@@ -10,6 +10,11 @@ Npm.depends({
   accounting: '0.4.1',
   'lru-cache': '6.0.0',
   dataloader: '2.0.0',
+  locale: '0.1.0',
+  'lodash.isnumber': '3.0.3',
+  'apollo-server-express': '2.19.2',
+  graphql: '14.7.0',
+  'body-parser': '1.19.0',
 });
 
 Package.onUse((api) => {

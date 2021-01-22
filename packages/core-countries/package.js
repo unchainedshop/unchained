@@ -8,6 +8,8 @@ Package.describe({
 
 Npm.depends({
   'lru-cache': '6.0.0',
+  'emoji-flags': '1.3.0',
+  'i18n-iso-countries': '6.4.0',
 });
 
 Package.onUse((api) => {

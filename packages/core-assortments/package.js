@@ -6,6 +6,10 @@ Package.describe({
   documentation: 'README.md',
 });
 
+Npm.depends({
+  ramda: '0.27.1',
+});
+
 Package.onUse((api) => {
   api.versionsFrom('1.11.1');
   api.use('ecmascript');
