@@ -1,9 +1,10 @@
-import { createLogger, Logs } from 'meteor/unchained:core-logger';
-
-const logger = createLogger('unchained:api');
-
 // we don't log this query because of reasons ;)
-export default function logs(root, { limit, offset }, { userId }) {
+export default function logs(
+  root,
+  { limit, offset },
+  { userId, modules, services }
+) {
+  const logger = services.createLogger('unchained:api');
   logger.info(`query logs: ${limit} ${offset} ${userId}`);
-  return Logs.findLogs({ limit, offset });
+  return modules.logger.findLogs({ limit, offset });
 }
