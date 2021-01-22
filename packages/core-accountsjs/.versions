@@ -1,7 +1,7 @@
-babel-compiler@7.5.4
+babel-compiler@7.6.0
 babel-runtime@1.5.0
-dynamic-import@0.5.4
-ecmascript@0.14.4
+dynamic-import@0.6.0
+ecmascript@0.15.0
 ecmascript-runtime@0.7.0
 ecmascript-runtime-client@0.11.0
 ecmascript-runtime-server@0.10.0
@@ -9,7 +9,8 @@ fetch@0.1.1
 inter-process-messaging@0.1.1
 meteor@1.9.3
 modern-browsers@0.1.5
-modules@0.15.0
+modules@0.16.0
 modules-runtime@0.12.0
 promise@0.11.2
+react-fast-refresh@0.1.0
 unchained:core-accountsjs@0.60.0
