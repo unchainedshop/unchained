@@ -1,4 +1,4 @@
-# vNext
+# v0.60.0
 
 We are currently rebuilding parts of Unchained under the hood with a new code structure that helps developers to easily add new resolvers and access the core API's through typescript types.
 

@@ -13,7 +13,7 @@ const FormRecoverPassword = (formProps) => (
   <AutoForm {...formProps}>
     <AutoField name="email" />
     <ErrorsField />
-    <SubmitField value="Password zurücksetzen" className="primary" />
+    <SubmitField value="Reset password" className="primary" />
   </AutoForm>
 );
 
@@ -22,7 +22,7 @@ export default compose(
   withFormSchema({
     email: {
       type: String,
-      label: 'E-Mail Adresse',
+      label: 'E-Mail Address',
     },
   }),
   withHandlers({

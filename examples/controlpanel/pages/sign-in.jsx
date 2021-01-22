@@ -17,7 +17,7 @@ export default connectApollo(({ ...rest }) => (
           <Grid.Column>
             <Segment textAlign="center" basic size="mini">
               <Link href="/sign-up">
-                <Button as="a" href="/sign-up" primary basic fluid>
+                <Button as="a" href="/sign-up" basic secondary fluid>
                   No user yet? Register now
                 </Button>
               </Link>

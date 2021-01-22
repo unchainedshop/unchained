@@ -25,7 +25,7 @@ export default compose(
   withFormSchema({
     email: {
       type: String,
-      label: 'E-Mail Adresse',
+      label: 'E-Mail Address',
     },
     password: {
       type: String,

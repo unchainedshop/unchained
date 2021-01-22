@@ -46,7 +46,7 @@ const App = ({
     <Segment basic textAlign="center">
       Made with &nbsp;
       <span role="img" aria-label="tons of beers">
-        🍻
+        🍫
       </span>
       &nbsp; by the &nbsp;
       <a href="https://unchained.shop">Unchained Team</a>
