@@ -9,7 +9,13 @@ import { configureRoles } from './roles';
 
 import hashPassword from './hashPassword';
 import getCart from './getCart';
+<<<<<<< HEAD
 import instantiateLoaders, { UnchainedServerLoaders } from './loaders';
+=======
+import evaluateContext from './evaluateContext';
+import filterContext from './filterContext';
+import instantiateLoaders, { UnchainedServerLoaders } from './loaders/index';
+>>>>>>> Fix
 
 export { hashPassword, getCart };
 export * as roles from './roles';
