@@ -117,9 +117,13 @@ describe('Plugins: Datatrans Payments', () => {
     it('request a new signed nonce', async () => {
       const {
         data: { signPaymentProviderForCheckout },
+        errors,
       } = await graphqlFetch({
         query: /* GraphQL */ `
-          mutation sign($transactionContext: JSON, $orderPaymentId: ID!) {
+          mutation signPaymentProviderForCheckout(
+            $transactionContext: JSON
+            $orderPaymentId: ID!
+          ) {
             signPaymentProviderForCheckout(
               transactionContext: $transactionContext
               orderPaymentId: $orderPaymentId

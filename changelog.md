@@ -32,6 +32,7 @@ This is a bugfix release based on learnings from upgrading client projects
 We are currently rebuilding parts of Unchained under the hood with a new code structure that helps developers to easily add new resolvers and access the core API's through typescript types.
 
 ## Breaking Changes
+
 - [api] `Mutation.setBaseLanguage` removed, base language now set through env `LANG`
 - [api] `Mutation.setBaseCountry` removed, base language now set through env `COUNTRY`
 - [api] `isBase` removed for countries and languages
@@ -44,8 +45,10 @@ We are currently rebuilding parts of Unchained under the hood with a new code st
 - [api] NotFoundErrors have been removed from various queries which return an optional single entity, like Query.product(...): Product #299, affects `Query.country`, `Query.currency`, `Query.deliveryProvider`, `Query.filter`, `Query.language`, `Query.order`, `Query.paymentProvider`, `Query.product`, `Query.productCatalogPrices`, `Query.productReview`, `Query.quotation`, `Query.searchProducts (assortmentId)`, `Query.subscription`, `Query.user`, `Query.warehousingProvider`, `Query.work`
 
 ## Major
+
 - [api] Add Assortment.childrenCount to get a number of child assortments
 - [api] New Query.activeWorkTypes to query for all active work types without introspection
+- [api] New mutation.signPaymentProviderForCheckout to sign generic order payment directly
 - [api] Support for Data Loader
 - [api,bookmarks] The Bookmarks core module has been completely refactored, all business logic is now accessible through the Apollo GraphQL context
 - [utils] Multiple functions have been moved to utils from core.
@@ -54,12 +57,13 @@ We are currently rebuilding parts of Unchained under the hood with a new code st
  We are currently rebuilding parts of Unchained under the hood with a new code structure that helps developers to easily add new resolvers and access the core API's through typescript types
 - [api,core] Business logic and db calls are now wrapped in functions and moved from api to the core packages
 - [pricing] New open-source pricing plugins:
-- - EUR catalog price auto conversion with ECB rates
-- - Crypto catalog price auto conversion with Coinbase rates
-- - Mercantile Rounding
+    - - EUR catalog price auto conversion with ECB rates
+    - - Crypto catalog price auto conversion with Coinbase rates
+    - - Mercantile Rounding
 - [payment] Our official Datatrans plugin now supports all different security modes for signing a transaction through env `DATATRANS_SECURITY` and `DATATRANS_SIGN2_KEY`. In the meantime Datatrans has released a new modern JSON based 2.0 API. Our Plugin still only supports the legacy API described here <https://docs.datatrans.ch/v1.0.1/docs/getting-started-home>
 
 ## Minor
+
 - [docs] Added product pricing plugin documentation
 - [controlpanel] Updated theming that better reflects our current CI/CD
 - [controlpanel] New filters for the work queue to find jobs you're interested in
@@ -68,6 +72,7 @@ We are currently rebuilding parts of Unchained under the hood with a new code st
 - [tests] Index creation is now reused of example project instead of mocked in db setup
 
 ## Patches
+
 - [accountsjs] Regression, default token expiration now after 30 days instead of 20 minutes
 - [bulk] Regression, removal did not work
 
@@ -323,6 +328,7 @@ We will rename all unchained core specific env variables and prefix them with UN
 # v0.48.0
 
 ## Breaking Changes
+
 We will rename all unchained core specific env variables and prefix them with UNCHAINED\_ in the future, for now:
 
 - The Environment variable DISABLE_WORKER has been renamed to UNCHAINED_DISABLE_WORKER
