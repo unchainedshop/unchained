@@ -4,7 +4,7 @@ import { PaymentProviderNotFoundError, InvalidIdError } from '../../errors';
 
 export default (root, { paymentProviderId, ...rest }, { userId }) => {
   log(
-    `mutation signPaymentProviderForCredentialRegistration ${paymentProviderId}`,
+    `query signPaymentProviderForCredentialRegistration ${paymentProviderId}`,
     { userId }
   );
   if (!paymentProviderId) throw new InvalidIdError({ paymentProviderId });
