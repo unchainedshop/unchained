@@ -1,5 +1,5 @@
 import { log } from 'meteor/unchained:core-logger';
-import { OrderPayments } from 'meteor/unchained:core-payment';
+import { OrderPayments } from 'meteor/unchained:core-orders';
 import { InvalidIdError, OrderPaymentNotFoundError } from '../../errors';
 
 export default (root, { orderPaymentId, transactionContext }, { userId }) => {
