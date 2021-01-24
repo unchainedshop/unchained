@@ -129,6 +129,7 @@ import updateOrderPaymentGeneric from './updateOrderPaymentGeneric';
 import updateOrderPaymentCard from './updateOrderPaymentCard';
 import updateOrderPaymentInvoice from './updateOrderPaymentInvoice';
 import signPaymentProviderForCredentialRegistration from './signPaymentProviderForCredentialRegistration';
+import signPaymentProviderForCheckout from './signPaymentProviderForCheckout';
 
 export default {
   logout,
@@ -331,4 +332,7 @@ export default {
   signPaymentProviderForCredentialRegistration: acl(
     actions.registerPaymentCredentials
   )(signPaymentProviderForCredentialRegistration),
+  signPaymentProviderForCheckout: acl(actions.registerPaymentCredentials)(
+    signPaymentProviderForCheckout
+  ),
 };

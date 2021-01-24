@@ -886,6 +886,14 @@ export default [
       signPaymentProviderForCredentialRegistration(
         paymentProviderId: ID!
       ): String
+
+      """
+      Sign a generic order payment
+      """
+      signPaymentProviderForCheckout(
+        orderPaymentId: ID!
+        transactionContext: JSON
+      ): String
     }
   `,
 ];
