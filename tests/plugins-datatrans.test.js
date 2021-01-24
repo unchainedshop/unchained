@@ -110,6 +110,32 @@ describe('Plugins: Datatrans Payments', () => {
     });
   });
 
+  describe('mutation.signPaymentProviderForCheckout (Datatrans) should', () => {
+    const sign =
+      'a71685e18e4f89f40be55bb959f02534fa5d72e9fc951a16b6cecd3ecbf7b9ec';
+
+    it('request a new signed nonce', async () => {
+      const {
+        data: { signPaymentProviderForCheckout },
+      } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation sign($transactionContext: JSON, $orderPaymentId: ID!) {
+            signPaymentProviderForCheckout(
+              transactionContext: $transactionContext
+              orderPaymentId: $orderPaymentId
+            )
+          }
+        `,
+        variables: {
+          orderPaymentId: 'generic-order-payment',
+          transactionContext: {},
+        },
+      });
+
+      expect(signPaymentProviderForCheckout).toBe(sign);
+    });
+  });
+
   describe('OrderPaymentGeneric.sign (Datatrans)', () => {
     const sign =
       'a71685e18e4f89f40be55bb959f02534fa5d72e9fc951a16b6cecd3ecbf7b9ec';

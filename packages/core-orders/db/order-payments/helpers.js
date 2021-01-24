@@ -32,6 +32,12 @@ OrderPayments.helpers({
   normalizedStatus() {
     return objectInvert(OrderPaymentStatus)[this.status || null];
   },
+  sign({ transactionContext }) {
+    return this.provider().sign({
+      transactionContext,
+      orderPayment: this,
+    });
+  },
   init() {
     const provider = this.provider();
     const context = provider.defaultContext();
