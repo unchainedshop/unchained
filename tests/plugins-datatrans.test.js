@@ -127,7 +127,7 @@ describe('Plugins: Datatrans Payments', () => {
           }
         `,
         variables: {
-          orderPaymentId: 'generic-order-payment',
+          orderPaymentId: 'datatrans-payment',
           transactionContext: {},
         },
       });
@@ -162,7 +162,6 @@ describe('Plugins: Datatrans Payments', () => {
           transactionContext: {},
         },
       });
-
       expect(me?.cart?.payment?.sign).toBe(sign);
     });
     it('datatrans accepts the parameters for a payment form', async () => {

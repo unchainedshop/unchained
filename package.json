@@ -20,7 +20,7 @@
   },
   "scripts": {
     "lint": "eslint packages tests --cache --fix --ext=js --ext=ts",
-    "pretest": "npm run lint --silent && npm run typecheck",
+    
     "lint:ci": "eslint packages tests --ext=jsx --ext=js",
     "test": "jest --runInBand --detectOpenHandles --forceExit tests/*",
     "test:ci": "npm run test:integration && npm run test:packages",
@@ -75,9 +75,5 @@
   },
   "eslintConfig": {
     "extends": "@meteorjs/eslint-config-meteor"
-  },
-  "dependencies": {
-    "dataloader": "^2.0.0",
-    "locale": "^0.1.0"
   }
 }
