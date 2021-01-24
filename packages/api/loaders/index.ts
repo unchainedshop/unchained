@@ -1,4 +1,5 @@
-import DataLoader from 'dataloader';
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const DataLoader = require('dataloader');
 
 export interface UnchainedServerLoaders {
   bookmarksByQueryLoader: any;

@@ -11,6 +11,8 @@ import { Locales } from 'locale';
 import { Languages } from 'meteor/unchained:core-languages';
 import LRU from 'lru-cache';
 
+const locale = require('locale');
+
 export interface UnchainedServerLocaleContext {
   remoteAddress?: string;
   localeContext: any;
