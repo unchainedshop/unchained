@@ -75,5 +75,9 @@
   },
   "eslintConfig": {
     "extends": "@meteorjs/eslint-config-meteor"
+  },
+  "dependencies": {
+    "dataloader": "^2.0.0",
+    "locale": "^0.1.0"
   }
 }
