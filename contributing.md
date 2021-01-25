@@ -1,6 +1,6 @@
 # Unchained OSS Contributions
 
-To get started, <a href="https://www.clahub.com/agreements/unchainedshop/unchained">sign the Contributor License Agreement</a>.
+To get started, sign the Contributor License Agreement with your first PR.
 
 1. Branch/Fork
 2. Add your changes, add unit and api tests for your new features
