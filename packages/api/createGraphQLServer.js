@@ -32,6 +32,7 @@ export default (options) => {
     typeDefs: additionalTypeDefs = [],
     resolvers: additionalResolvers = [],
     contextResolver,
+    context,
     engine = {},
     ...apolloServerOptions
   } = options || {};
@@ -39,7 +40,11 @@ export default (options) => {
   const server = new ApolloServer({
     typeDefs: [...typeDefs, ...additionalTypeDefs],
     resolvers: [resolvers, ...additionalResolvers],
-    context: contextResolver,
+    context: context
+      ? ({ req, res }) => {
+          return context({ req, res, unchainedContextFn: contextResolver });
+        }
+      : contextResolver,
     formatError: (error) => {
       logGraphQLServerError(error);
       const {

@@ -1,3 +1,9 @@
+# v0.60.1
+
+The last release made it very complicated to mix in arbitrary contexts into the Apollo Server.
+
+- [api] Re-introduce `context` field to startPlatform, allowing access to the unchained context function so it's possible to adjust the Apollo Server context freely
+
 # v0.60.0
 
 We are currently rebuilding parts of Unchained under the hood with a new code structure that helps developers to easily add new resolvers and access the core API's through typescript types.

@@ -58,13 +58,15 @@ const startUnchainedServer = (options: UnchainedServerOptions) => {
 
   configureRoles(rolesOptions);
 
+  const contextResolver = createContextResolver(unchained);
+
   const apolloGraphQLServer = createGraphQLServer({
     ...apolloServerOptions,
-    contextResolver: createContextResolver(unchained),
+    contextResolver,
   });
 
   const bulkImportServer = createBulkImportServer({
-    contextResolver: createContextResolver(unchained),
+    contextResolver,
   });
 
   return {
