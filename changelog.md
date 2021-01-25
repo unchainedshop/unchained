@@ -12,6 +12,7 @@ We are currently rebuilding parts of Unchained under the hood with a new code st
 - [api] `Mutation.setBaseLanguage` removed, base language now set through env `LANG`
 - [api] `Mutation.setBaseCountry` removed, base language now set through env `COUNTRY`
 - [api] Remove OTP based access to an order
+- [assortments] Removed Assortment helpers: `addFilter` & `removeFilter`
 
 ## Major
 - [api] Add Assortment.childrenCount to get a number of child assortments
