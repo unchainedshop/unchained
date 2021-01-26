@@ -163,25 +163,31 @@ Collections.AssortmentLinks.createAssortmentLink = ({
   parentAssortmentId,
   childAssortmentId,
   _id,
-  ...payload
+  sortKey: forceSortKey,
+  ...rest
 }) => {
-  const sortKey =
-    !payload.sortKey &&
-    Collections.AssortmentLinks.getNewSortKey(parentAssortmentId);
   const selector = {
     parentAssortmentId,
     childAssortmentId,
     ...(_id ? { _id } : {}),
   };
+  const $set = {
+    updated: new Date(),
+    ...rest,
+  };
+  const $setOnInsert = {
+    created: new Date(),
+  };
+  if (!forceSortKey) {
+    $setOnInsert.sortKey = Collections.AssortmentLinks.getNewSortKey(
+      parentAssortmentId
+    );
+  } else {
+    $set.sortKey = forceSortKey;
+  }
   Collections.AssortmentLinks.upsert(selector, {
-    $set: {
-      updated: new Date(),
-      ...payload,
-    },
-    $setOnInsert: {
-      sortKey,
-      created: new Date(),
-    },
+    $set,
+    $setOnInsert,
   });
   return Collections.AssortmentLinks.findOne(selector);
 };
@@ -190,25 +196,31 @@ Collections.AssortmentProducts.createAssortmentProduct = ({
   productId,
   assortmentId,
   _id,
-  ...payload
+  sortKey: forceSortKey,
+  ...rest
 }) => {
-  const sortKey =
-    !payload.sortKey &&
-    Collections.AssortmentProducts.getNewSortKey(assortmentId);
   const selector = {
     productId,
     assortmentId,
     ...(_id ? { _id } : {}),
   };
+  const $set = {
+    updated: new Date(),
+    ...rest,
+  };
+  const $setOnInsert = {
+    created: new Date(),
+  };
+  if (!forceSortKey) {
+    $setOnInsert.sortKey = Collections.AssortmentProducts.getNewSortKey(
+      assortmentId
+    );
+  } else {
+    $set.sortKey = forceSortKey;
+  }
   Collections.AssortmentProducts.upsert(selector, {
-    $set: {
-      updated: new Date(),
-      ...payload,
-    },
-    $setOnInsert: {
-      sortKey,
-      created: new Date(),
-    },
+    $set,
+    $setOnInsert,
   });
   return Collections.AssortmentProducts.findOne(selector);
 };
@@ -217,25 +229,31 @@ Collections.AssortmentFilters.createAssortmentFilter = ({
   assortmentId,
   filterId,
   _id,
-  ...payload
+  sortKey: forceSortKey,
+  ...rest
 }) => {
-  const sortKey =
-    !payload.sortKey &&
-    Collections.AssortmentFilters.getNewSortKey(assortmentId);
   const selector = {
     filterId,
     assortmentId,
     ...(_id ? { _id } : {}),
   };
+  const $set = {
+    updated: new Date(),
+    ...rest,
+  };
+  const $setOnInsert = {
+    created: new Date(),
+  };
+  if (!forceSortKey) {
+    $setOnInsert.sortKey = Collections.AssortmentFilters.getNewSortKey(
+      assortmentId
+    );
+  } else {
+    $set.sortKey = forceSortKey;
+  }
   Collections.AssortmentFilters.upsert(selector, {
-    $set: {
-      updated: new Date(),
-      ...payload,
-    },
-    $setOnInsert: {
-      sortKey,
-      created: new Date(),
-    },
+    $set,
+    $setOnInsert,
   });
   return Collections.AssortmentFilters.findOne(selector);
 };
