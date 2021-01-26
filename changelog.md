@@ -12,8 +12,12 @@ We are currently rebuilding parts of Unchained under the hood with a new code st
 ## Breaking Changes
 - [api] `Mutation.setBaseLanguage` removed, base language now set through env `LANG`
 - [api] `Mutation.setBaseCountry` removed, base language now set through env `COUNTRY`
+- [api] `isBase` removed for countries and languages
 - [api] Remove OTP based access to an order
-- [core] Removed Assortment helpers: `addFilter` & `removeFilter`
+- [core] `Filters.removeFilter` now returns id instead of object
+- [core] Removed Assortment helpers `addFilter`, `removeFilter`, `searchProducts`
+- [core] Removed Assortment Filter helper `assortmentFilter.filter`
+- [core] `findProviderById` & `findReviewById` removed
 - [core] You cannot `import 'meteor/unchained:core-worker/plugins/heartbeat'` anymore without typescript package
 
 ## Major
