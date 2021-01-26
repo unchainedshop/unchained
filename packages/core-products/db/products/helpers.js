@@ -12,6 +12,7 @@ import {
 
 import { Locale } from 'locale';
 import crypto from 'crypto';
+import { log } from 'meteor/unchained:core-logger';
 
 import { Products, ProductTexts } from './collections';
 import { ProductVariations } from '../product-variations/collections';
@@ -21,38 +22,33 @@ import { ProductReviews } from '../product-reviews/collections';
 import { ProductStatus, ProductTypes } from './schema';
 
 const getPriceRange = (prices) => {
-  const minPrice = prices.reduce(
-    (m, current) =>
-      current.amount < m.amount
-        ? {
-            amount: current.amount,
-            currency: current.currencyCode,
-          }
-        : m,
+  const { min, max } = prices.reduce(
+    (m, current) => {
+      return {
+        min: current.amount < m.min.amount ? current : m.min,
+        max: current.amount > m.max.amount ? current : m.max,
+      };
+    },
     {
-      amount: prices[0]?.amount,
-      currency: prices[0]?.currencyCode,
+      min: { ...prices[0] },
+      max: { ...prices[0] },
     }
   );
-  const maxPrice = prices.reduce(
-    (m, current) =>
-      current.amount > m.amount
-        ? {
-            amount: current.amount,
-            currency: current.currencyCode,
-          }
-        : m,
-    {
-      amount: prices[0]?.amount,
-      currency: prices[0]?.currencyCode,
-    }
-  );
-  return { minPrice, maxPrice };
-};
 
-Products.productExists = ({ productId, slug }) => {
-  const selector = productId ? { _id: productId } : { slugs: slug };
-  return !!Products.find(selector, { limit: 1 }).count();
+  return {
+    minPrice: {
+      isTaxable: min?.isTaxable,
+      isNetPrice: min?.isNetPrice,
+      amount: Math.round(min?.amount),
+      currency: min?.currencyCode,
+    },
+    maxPrice: {
+      isTaxable: max?.isTaxable,
+      isNetPrice: max?.isNetPrice,
+      amount: Math.round(max?.amount),
+      currency: max?.currencyCode,
+    },
+  };
 };
 
 Products.findProduct = ({ productId, slug }) => {
@@ -648,7 +644,6 @@ Products.helpers({
   },
   catalogPrices() {
     const prices = (this.commerce && this.commerce.pricing) || [];
-
     return prices.map((price) => ({
       _id: crypto
         .createHash('sha256')

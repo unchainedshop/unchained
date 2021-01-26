@@ -28,8 +28,8 @@ export default [
 
     type ProductPriceRange {
       _id: ID!
-      minPrice: Money!
-      maxPrice: Money!
+      minPrice: Price!
+      maxPrice: Price!
     }
 
     type ProductDiscount {
