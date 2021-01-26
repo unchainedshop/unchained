@@ -3,6 +3,7 @@
 The last release made it very complicated to mix in arbitrary contexts into the Apollo Server.
 
 - [api] Re-introduce `context` field to startPlatform, allowing access to the unchained context function so it's possible to adjust the Apollo Server context freely
+- [assortments] Fix regression with forced sortKey parameters when modifying links, filters or products
 
 # v0.60.0
 
@@ -12,7 +13,8 @@ We are currently rebuilding parts of Unchained under the hood with a new code st
 - [api] `Mutation.setBaseLanguage` removed, base language now set through env `LANG`
 - [api] `Mutation.setBaseCountry` removed, base language now set through env `COUNTRY`
 - [api] Remove OTP based access to an order
-- [assortments] Removed Assortment helpers: `addFilter` & `removeFilter`
+- [core] Removed Assortment helpers: `addFilter` & `removeFilter`
+- [core] You cannot `import 'meteor/unchained:core-worker/plugins/heartbeat'` anymore without typescript package
 
 ## Major
 - [api] Add Assortment.childrenCount to get a number of child assortments

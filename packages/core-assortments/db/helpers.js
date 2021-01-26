@@ -163,9 +163,11 @@ Collections.AssortmentLinks.createAssortmentLink = ({
   parentAssortmentId,
   childAssortmentId,
   _id,
-  ...rest
+  ...payload
 }) => {
-  const sortKey = Collections.AssortmentLinks.getNewSortKey(parentAssortmentId);
+  const sortKey =
+    !payload.sortKey &&
+    Collections.AssortmentLinks.getNewSortKey(parentAssortmentId);
   const selector = {
     parentAssortmentId,
     childAssortmentId,
@@ -174,7 +176,7 @@ Collections.AssortmentLinks.createAssortmentLink = ({
   Collections.AssortmentLinks.upsert(selector, {
     $set: {
       updated: new Date(),
-      ...rest,
+      ...payload,
     },
     $setOnInsert: {
       sortKey,
@@ -188,9 +190,11 @@ Collections.AssortmentProducts.createAssortmentProduct = ({
   productId,
   assortmentId,
   _id,
-  ...rest
+  ...payload
 }) => {
-  const sortKey = Collections.AssortmentProducts.getNewSortKey(assortmentId);
+  const sortKey =
+    !payload.sortKey &&
+    Collections.AssortmentProducts.getNewSortKey(assortmentId);
   const selector = {
     productId,
     assortmentId,
@@ -199,7 +203,7 @@ Collections.AssortmentProducts.createAssortmentProduct = ({
   Collections.AssortmentProducts.upsert(selector, {
     $set: {
       updated: new Date(),
-      ...rest,
+      ...payload,
     },
     $setOnInsert: {
       sortKey,
@@ -213,9 +217,11 @@ Collections.AssortmentFilters.createAssortmentFilter = ({
   assortmentId,
   filterId,
   _id,
-  ...rest
+  ...payload
 }) => {
-  const sortKey = Collections.AssortmentFilters.getNewSortKey(assortmentId);
+  const sortKey =
+    !payload.sortKey &&
+    Collections.AssortmentFilters.getNewSortKey(assortmentId);
   const selector = {
     filterId,
     assortmentId,
@@ -224,7 +230,7 @@ Collections.AssortmentFilters.createAssortmentFilter = ({
   Collections.AssortmentFilters.upsert(selector, {
     $set: {
       updated: new Date(),
-      ...rest,
+      ...payload,
     },
     $setOnInsert: {
       sortKey,
