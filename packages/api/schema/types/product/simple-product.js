@@ -14,7 +14,7 @@ export default [
       media(limit: Int = 10, offset: Int = 0, tags: [String!]): [ProductMedia!]!
       texts(forceLocale: String): ProductTexts
       catalogPrice(quantity: Int = 1): ProductPrice
-      leveledCatalogPrices(currency: String): [PriceLevel!]!
+      leveledCatalogPrices(currency: String!): [PriceLevel!]!
       simulatedPrice(
         currency: String
         useNetPrice: Boolean = false
