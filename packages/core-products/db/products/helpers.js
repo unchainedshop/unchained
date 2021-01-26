@@ -12,13 +12,43 @@ import {
 
 import { Locale } from 'locale';
 import crypto from 'crypto';
-import { log } from 'meteor/unchained:core-logger';
+
 import { Products, ProductTexts } from './collections';
 import { ProductVariations } from '../product-variations/collections';
 import { ProductMedia, Media } from '../product-media/collections';
 import { ProductReviews } from '../product-reviews/collections';
 
 import { ProductStatus, ProductTypes } from './schema';
+
+const getPriceRange = (prices) => {
+  const minPrice = prices.reduce(
+    (m, current) =>
+      current.amount < m.amount
+        ? {
+            amount: current.amount,
+            currency: current.currencyCode,
+          }
+        : m,
+    {
+      amount: prices[0]?.amount,
+      currency: prices[0]?.currencyCode,
+    }
+  );
+  const maxPrice = prices.reduce(
+    (m, current) =>
+      current.amount > m.amount
+        ? {
+            amount: current.amount,
+            currency: current.currencyCode,
+          }
+        : m,
+    {
+      amount: prices[0]?.amount,
+      currency: prices[0]?.currencyCode,
+    }
+  );
+  return { minPrice, maxPrice };
+};
 
 Products.productExists = ({ productId, slug }) => {
   const selector = productId ? { _id: productId } : { slugs: slug };
@@ -639,49 +669,17 @@ Products.helpers({
     const proxyProducts = this.proxyProducts(vectors, { includeInactive });
     const filtered = [];
     proxyProducts.forEach((p) => {
-      const prices = (p.commerce && p.commerce.pricing) || [];
-      const inRangeProducts = prices?.filter((e) => e.maxQuantity >= quantity);
-      if (inRangeProducts.length) {
-        const max = prices
-          ?.filter((e) => e.maxQuantity >= quantity)
-          .reduce((maxPrice, current) =>
-            current.maxQuantity > maxPrice.maxQuantity ? current : maxPrice
-          );
-        const min = prices
-          ?.filter((e) => e.maxQuantity >= quantity)
-          .reduce((minPrice, current) =>
-            current.maxQuantity < minPrice.maxQuantity ? current : minPrice
-          );
-        filtered.push({ product: p._id, min, max });
+      const catalogPrice = p.price({
+        country: 'CH',
+        quantity,
+      });
+
+      if (catalogPrice && catalogPrice?.maxQuantity >= quantity) {
+        filtered.push(catalogPrice);
       }
     });
     if (!filtered.length) return null;
-    const minPrice = filtered.reduce(
-      (m, current) =>
-        current.min.amount < m.amount
-          ? {
-              amount: current.min.amount,
-              currency: current.min.currencyCode,
-            }
-          : m,
-      {
-        amount: filtered[0]?.min?.amount,
-        currency: filtered[0]?.min?.currencyCode,
-      }
-    );
-    const maxPrice = filtered.reduce(
-      (m, current) =>
-        current.max.amount > m.amount
-          ? {
-              amount: current.max.amount,
-              currency: current.max.currencyCode,
-            }
-          : m,
-      {
-        amount: filtered[0]?.max?.amount,
-        currency: filtered[0]?.max?.currencyCode,
-      }
-    );
+    const { minPrice, maxPrice } = getPriceRange(filtered);
 
     return {
       _id: crypto
@@ -733,32 +731,7 @@ Products.helpers({
       }
     });
     if (!filtered.length) return null;
-    const minPrice = filtered.reduce(
-      (m, current) =>
-        current.amount < m.amount
-          ? {
-              amount: current.amount,
-              currency: current.currencyCode,
-            }
-          : m,
-      {
-        amount: filtered[0]?.amount,
-        currency: filtered[0]?.currencyCode,
-      }
-    );
-    const maxPrice = filtered.reduce(
-      (m, current) =>
-        current.amount > m.amount
-          ? {
-              amount: current.amount,
-              currency: current.currencyCode,
-            }
-          : m,
-      {
-        amount: filtered[0]?.amount,
-        currency: filtered[0]?.currencyCode,
-      }
-    );
+    const { minPrice, maxPrice } = getPriceRange(filtered);
 
     return {
       _id: crypto
