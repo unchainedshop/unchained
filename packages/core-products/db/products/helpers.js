@@ -618,6 +618,7 @@ Products.helpers({
   },
   catalogPrices() {
     const prices = (this.commerce && this.commerce.pricing) || [];
+
     return prices.map((price) => ({
       _id: crypto
         .createHash('sha256')

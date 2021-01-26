@@ -129,5 +129,28 @@ export default [
       key: String!
       value: String!
     }
+
+    type Price {
+      isTaxable: Boolean!
+      isNetPrice: Boolean!
+      amount: Int!
+      currency: String!
+    }
+
+    type PriceLevel {
+      minQuantity: Int
+      maxQuantity: Int
+      price: Price
+    }
+
+    type ProductCatalogPrice {
+      _id: ID!
+      isTaxable: Boolean!
+      isNetPrice: Boolean!
+      country: Country!
+      currency: Currency!
+      amount: Int!
+      maxQuantity: Int
+    }
   `,
 ];
