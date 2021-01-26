@@ -7,8 +7,8 @@ import External from '../plugins/external';
 
 const { UNCHAINED_WORKER_ID } = process.env;
 
-const defaultWorkerId =
-  UNCHAINED_WORKER_ID || `${os.hostname()}:${this.constructor.type}`;
+const resolveWorkerId = (customWorkerId, type) =>
+  customWorkerId || UNCHAINED_WORKER_ID || `${os.hostname()}:${type}`;
 
 class BaseWorker {
   static key = 'shop.unchained.worker.base';
@@ -19,10 +19,10 @@ class BaseWorker {
 
   static type = 'BASE';
 
-  constructor({ WorkerDirector, workerId = defaultWorkerId }) {
-    log(`${this.constructor.key} -> Initialized: ${workerId}`);
+  constructor({ WorkerDirector, workerId }) {
     this.WorkerDirector = WorkerDirector;
-    this.workerId = workerId;
+    this.workerId = resolveWorkerId(workerId, this.constructor.type);
+    log(`${this.constructor.key} -> Initialized: ${this.workerId}`);
     this.reset();
   }
 
