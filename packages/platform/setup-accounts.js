@@ -53,21 +53,19 @@ export default ({ mergeUserCartsOnLogin = true } = {}) => {
     return newUser;
   };
 
-  function createGuestOptions(email) {
-    check(email, Match.OneOf(String, null, undefined));
-    const guestname = `${moniker.choose()}-${randomValueHex(5)}`;
-    return {
-      email: email || `${guestname}@unchained.local`,
-      guest: true,
-      profile: {},
-    };
-  }
-
   accountsServer.services.guest = {
-    async authenticate(params) {
-      const guestOptions = createGuestOptions(params.email);
-      const userId = await accountsPassword.createUser(guestOptions);
-      return userId;
+    async authenticate(params, context) {
+      check(params.email, Match.OneOf(String, null, undefined));
+      const guestname = `${moniker.choose()}-${randomValueHex(5)}`;
+      const guestUser = await Users.createUser(
+        {
+          email: params.email || `${guestname}@unchained.local`,
+          guest: true,
+          profile: {},
+        },
+        context
+      );
+      return guestUser._id;
     },
   };
 

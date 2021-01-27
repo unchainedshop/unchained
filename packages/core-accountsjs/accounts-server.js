@@ -15,7 +15,7 @@ const accountsServerOptions = {
       action: pathFragment,
       userId: user.id || user._id,
       token,
-      skipEmailVerification: !!user.guest,
+      skipEmailVerification: !!user.guest || !!user.initialPassword,
     };
   },
   sendMail: (input) => {

@@ -38,7 +38,7 @@ Users.helpers({
   },
   isInitialPassword() {
     const { password: { initial } = {} } = this.services || {};
-    return !!initial;
+    return this.initialPassword || !!initial;
   },
   isEmailVerified() {
     log(
@@ -89,17 +89,6 @@ Users.helpers({
   async setPassword(password) {
     const newPassword = password || uuidv4().split('-').pop();
     await accountsPassword.setPassword(this._id, newPassword);
-    if (!password) {
-      Users.update(
-        { _id: this._id },
-        {
-          $set: {
-            'services.password.initial': true,
-            updated: new Date(),
-          },
-        }
-      );
-    }
   },
   setRoles(roles) {
     Users.update(
@@ -237,28 +226,6 @@ Users.updateLastContact = ({ userId, lastContact }) => {
   Users.update({ _id: userId }, modifier);
 };
 
-Users.enrollUser = async ({ password, email, displayName, address }) => {
-  const params = { email };
-  if (password && password !== '') {
-    params.password = password;
-  }
-
-  const newUserId = await accountsPassword.createUser(params);
-
-  Users.update(
-    { _id: newUserId },
-    {
-      $set: {
-        updated: new Date(),
-        'profile.displayName': displayName || null,
-        'profile.address': address || null,
-        'services.password.initial': true,
-      },
-    }
-  );
-  return Users.findOne({ _id: newUserId });
-};
-
 Users.updateHeartbeat = ({ userId, ...options }) =>
   Users.update(
     { _id: userId },
@@ -291,23 +258,12 @@ Users.findUser = ({ userId, resetToken, hashedToken }) => {
   return Users.findOne({ _id: userId });
 };
 
-Users.createUser = async ({
-  username,
-  roles,
-  emails,
-  profile,
-  guest,
-  ...userData
-}) => {
-  const userId = await accountsPassword.createUser({
-    username,
-    roles,
-    emails,
-    profile,
-    guest,
-    ...userData,
-  });
-  return Users.findOne({ _id: userId });
+Users.createUser = async (userData, context) => {
+  const userId = await accountsPassword.createUser(userData, context);
+  if (!userData.password && !userData.guest) {
+    await accountsPassword.sendEnrollmentEmail(userData.email);
+  }
+  return Users.findUser({ userId });
 };
 
 Users.findUsers = async ({ limit, offset, includeGuests, queryString }) => {
