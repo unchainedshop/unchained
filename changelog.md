@@ -1,9 +1,12 @@
-# v0.60.1
+# v0.61.0
 
-The last release made it very complicated to mix in arbitrary contexts into the Apollo Server.
+This is a bugfix release based on learnings from upgrading client projects
 
+## Minor
 - [api] Re-introduce `context` field to startPlatform, allowing access to the unchained context function so it's possible to adjust the Apollo Server context freely
-- [assortments] Fix regression with forced sortKey parameters when modifying links, filters or products
+- [core] Fix regression with forced sortKey parameters when modifying links, filters or products
+- [core] Fix regression with enrollment of users triggering verification e-mail #307
+- [core] Sends custom AccountsJs Hooks `LoginTokenCreated` and `VerifyEmailSuccess` to hook into E-Mail verification (re-enables features based on that prior Unchained < 0.61.0)
 
 # v0.60.0
 

@@ -1,6 +1,10 @@
 import { Promise } from 'meteor/promise';
 import { Locale } from 'locale';
-import { accountsPassword, dbManager } from 'meteor/unchained:core-accountsjs';
+import {
+  accountsPassword,
+  accountsServer,
+  dbManager,
+} from 'meteor/unchained:core-accountsjs';
 import 'meteor/dburles:collection-helpers';
 import { systemLocale } from 'meteor/unchained:utils';
 import { Countries } from 'meteor/unchained:core-countries';
@@ -8,6 +12,8 @@ import { Languages } from 'meteor/unchained:core-languages';
 import { log, Logs } from 'meteor/unchained:core-logger';
 import { v4 as uuidv4 } from 'uuid';
 import { Avatars, Users } from './collections';
+import filterContext from '../filterContext';
+import evaluateContext from '../evaluateContext';
 
 Logs.helpers({
   user() {
@@ -264,6 +270,43 @@ Users.createUser = async (userData, context) => {
     await accountsPassword.sendEnrollmentEmail(userData.email);
   }
   return Users.findUser({ userId });
+};
+
+Users.loginWithService = async (service, params, context) => {
+  const {
+    user: tokenUser,
+    token: loginToken,
+  } = await accountsServer.loginWithService(
+    service,
+    params,
+    evaluateContext(filterContext(context))
+  );
+  await accountsServer
+    .getHooks()
+    .emit('LoginTokenCreated', { user: tokenUser, connection: context });
+  return {
+    id: tokenUser._id,
+    token: loginToken.token,
+    tokenExpires: loginToken.when,
+  };
+};
+
+Users.createLoginToken = async (user, context) => {
+  const {
+    user: tokenUser,
+    token: loginToken,
+  } = await accountsServer.loginWithUser(
+    user,
+    evaluateContext(filterContext(context))
+  );
+  await accountsServer
+    .getHooks()
+    .emit('LoginTokenCreated', { user: tokenUser, connection: context });
+  return {
+    id: tokenUser._id,
+    token: loginToken.token,
+    tokenExpires: loginToken.when,
+  };
 };
 
 Users.findUsers = async ({ limit, offset, includeGuests, queryString }) => {

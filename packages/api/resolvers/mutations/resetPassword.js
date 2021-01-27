@@ -1,9 +1,6 @@
 import { log } from 'meteor/unchained:core-logger';
-import {
-  accountsPassword,
-  dbManager,
-  accountsServer,
-} from 'meteor/unchained:core-accountsjs';
+import { accountsPassword, dbManager } from 'meteor/unchained:core-accountsjs';
+import { Users } from 'meteor/unchained:core-users';
 import hashPassword from '../../hashPassword';
 
 export default async function resetPassword(
@@ -20,14 +17,5 @@ export default async function resetPassword(
   );
   const newPassword = newHashedPassword || hashPassword(newPlainPassword);
   await accountsPassword.resetPassword(token, newPassword, context);
-
-  const {
-    user: tokenUser,
-    token: loginToken,
-  } = await accountsServer.loginWithUser(userWithNewPassword, context);
-  return {
-    id: tokenUser._id,
-    token: loginToken.token,
-    tokenExpires: loginToken.when,
-  };
+  return Users.createLoginToken(userWithNewPassword, context);
 }
