@@ -412,6 +412,29 @@ describe('Auth for admin users', () => {
           verified: false,
         },
       });
+
+      const { data: { workQueue } = {} } = await graphqlFetchAsAdminUser({
+        query: /* GraphQL */ `
+          query($status: [WorkStatus]) {
+            workQueue(status: $status) {
+              _id
+              type
+              status
+              input
+            }
+          }
+        `,
+        variables: {
+          // Empty array as status queries the whole queue
+          status: [],
+        },
+      });
+      const work = workQueue?.filter(
+        ({ type, status }) => type === 'MESSAGE' && status === 'SUCCESS',
+      );
+
+      // length of two means only the enrollment got triggered
+      expect(work).toHaveLength(1);
     });
     it('should fire off the enrollment email', async () => {
       const email = 'admin3@unchained.local';
@@ -442,6 +465,7 @@ describe('Auth for admin users', () => {
               _id
               type
               status
+              input
             }
           }
         `,
@@ -455,7 +479,7 @@ describe('Auth for admin users', () => {
       );
 
       // length of two means only the enrollment got triggered
-      expect(work).toHaveLength(1);
+      expect(work).toHaveLength(2);
     });
 
     it('enroll a user with pre-setting a password', async () => {

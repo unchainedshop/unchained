@@ -52,6 +52,7 @@ export const UserSchema = new SimpleSchema(
     lastBillingAddress: Address,
     lastContact: LastContactSchema,
     guest: Boolean,
+    initialPassword: Boolean,
     tags: Array,
     'tags.$': String,
     avatarId: String,

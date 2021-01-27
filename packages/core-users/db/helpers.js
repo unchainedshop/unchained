@@ -38,7 +38,7 @@ Users.helpers({
   },
   isInitialPassword() {
     const { password: { initial } = {} } = this.services || {};
-    return !!initial;
+    return this.initialPassword || !!initial;
   },
   isEmailVerified() {
     log(
@@ -89,17 +89,6 @@ Users.helpers({
   async setPassword(password) {
     const newPassword = password || uuidv4().split('-').pop();
     await accountsPassword.setPassword(this._id, newPassword);
-    if (!password) {
-      Users.update(
-        { _id: this._id },
-        {
-          $set: {
-            'services.password.initial': true,
-            updated: new Date(),
-          },
-        }
-      );
-    }
   },
   setRoles(roles) {
     Users.update(
@@ -269,22 +258,11 @@ Users.findUser = ({ userId, resetToken, hashedToken }) => {
   return Users.findOne({ _id: userId });
 };
 
-Users.createUser = async ({
-  username,
-  roles,
-  emails,
-  profile,
-  guest,
-  ...userData
-}) => {
-  const userId = await accountsPassword.createUser({
-    username,
-    roles,
-    emails,
-    profile,
-    guest,
-    ...userData,
-  });
+Users.createUser = async (userData, context) => {
+  const userId = await accountsPassword.createUser(userData, context);
+  if (!userData.password) {
+    await accountsPassword.sendEnrollmentEmail(userData.email);
+  }
   return Users.findUser({ userId });
 };
 

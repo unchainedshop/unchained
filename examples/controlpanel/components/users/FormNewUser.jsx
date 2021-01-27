@@ -77,16 +77,6 @@ export default compose(
     `,
     { name: 'enrollUser' }
   ),
-  graphql(
-    gql`
-      mutation sendEnrollmentEmail($email: String!) {
-        sendEnrollmentEmail(email: $email) {
-          success
-        }
-      }
-    `,
-    { name: 'sendEnrollmentEmail' }
-  ),
   withFormSchema({
     displayName: {
       type: String,
@@ -123,9 +113,7 @@ export default compose(
         query: { _id: enrollUser._id },
       });
     },
-    onSubmit: ({ enrollUser, sendEnrollmentEmail, schema }) => async ({
-      ...dirtyInput
-    }) => {
+    onSubmit: ({ enrollUser, schema }) => async ({ ...dirtyInput }) => {
       const { displayName, email, password, enroll } = schema.clean(dirtyInput);
       const enrollmentResult = await enrollUser({
         variables: {
@@ -134,27 +122,14 @@ export default compose(
           password: !enroll && password ? password : null,
         },
       });
-      if (enroll) {
-        await sendEnrollmentEmail({ variables: { email } });
-      }
       return enrollmentResult;
     },
   }),
   withFormErrorHandlers,
-  mapProps(
-    ({
-      enrollUser,
-      enrollUserResult,
-      sendEnrollmentEmail,
-      sendEnrollmentEmailResult,
-      data,
-      userId,
-      ...rest
-    }) => {
-      return {
-        ...rest,
-      };
-    }
-  ),
+  mapProps(({ enrollUser, enrollUserResult, data, userId, ...rest }) => {
+    return {
+      ...rest,
+    };
+  }),
   pure
 )(FormNewUser);

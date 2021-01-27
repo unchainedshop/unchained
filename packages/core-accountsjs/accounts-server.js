@@ -9,14 +9,13 @@ const accountsServerOptions = {
   useInternalUserObjectSanitizer: false,
   siteUrl: process.env.ROOT_URL,
   prepareMail: (to, token, user, pathFragment) => {
-    console.log(user);
     return {
       template: 'ACCOUNT_ACTION',
       recipientEmail: to,
       action: pathFragment,
       userId: user.id || user._id,
       token,
-      skipEmailVerification: !!user.guest,
+      skipEmailVerification: !!user.guest || !!user.initialPassword,
     };
   },
   sendMail: (input) => {

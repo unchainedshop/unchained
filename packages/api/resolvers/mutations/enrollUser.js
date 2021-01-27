@@ -7,11 +7,10 @@ export default async function enrollUser(root, options, context) {
   const mappedOptions = options;
   if (!mappedOptions.password && mappedOptions.plainPassword) {
     mappedOptions.password = hashPassword(mappedOptions.plainPassword);
-    delete mappedOptions.plainPassword;
   }
+  delete mappedOptions.plainPassword;
 
-  return Users.createUser(mappedOptions, {
-    ...context,
-    isEnrollment: true,
-  });
+  mappedOptions.initialPassword = true;
+
+  return Users.createUser(mappedOptions, context);
 }

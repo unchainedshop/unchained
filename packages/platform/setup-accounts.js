@@ -53,36 +53,21 @@ export default ({ mergeUserCartsOnLogin = true } = {}) => {
     return newUser;
   };
 
-  function createGuestOptions(email) {
-    check(email, Match.OneOf(String, null, undefined));
-    const guestname = `${moniker.choose()}-${randomValueHex(5)}`;
-    return {
-      email: email || `${guestname}@unchained.local`,
-      guest: true,
-      profile: {},
-    };
-  }
-
   accountsServer.services.guest = {
     async authenticate(params, context) {
-      const guestOptions = createGuestOptions(params.email);
-      const guestUser = await Users.createUser(guestOptions, context);
+      check(params.email, Match.OneOf(String, null, undefined));
+      const guestname = `${moniker.choose()}-${randomValueHex(5)}`;
+      const guestUser = await Users.createUser(
+        {
+          email: params.email || `${guestname}@unchained.local`,
+          guest: true,
+          profile: {},
+        },
+        context
+      );
       return guestUser._id;
     },
   };
-
-  accountsServer.on('CreateUserSuccess', async ({ user, connection = {} }) => {
-    if (connection.isEnrollment) {
-      Users.update(
-        { _id: user._id },
-        {
-          $set: {
-            'services.password.initial': true,
-          },
-        }
-      );
-    }
-  });
 
   accountsServer.on('LoginSuccess', async ({ user, connection = {} }) => {
     const {
