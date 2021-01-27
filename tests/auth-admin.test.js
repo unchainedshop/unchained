@@ -454,8 +454,8 @@ describe('Auth for admin users', () => {
         ({ type, status }) => type === 'MESSAGE' && status === 'SUCCESS',
       );
 
-      // length of two means only the verification email and the enrollment got triggered
-      expect(work).toHaveLength(2);
+      // length of two means only the enrollment got triggered
+      expect(work).toHaveLength(1);
     });
 
     it('enroll a user with pre-setting a password', async () => {

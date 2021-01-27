@@ -237,28 +237,6 @@ Users.updateLastContact = ({ userId, lastContact }) => {
   Users.update({ _id: userId }, modifier);
 };
 
-Users.enrollUser = async ({ password, email, displayName, address }) => {
-  const params = { email };
-  if (password && password !== '') {
-    params.password = password;
-  }
-
-  const newUserId = await accountsPassword.createUser(params);
-
-  Users.update(
-    { _id: newUserId },
-    {
-      $set: {
-        updated: new Date(),
-        'profile.displayName': displayName || null,
-        'profile.address': address || null,
-        'services.password.initial': true,
-      },
-    }
-  );
-  return Users.findOne({ _id: newUserId });
-};
-
 Users.updateHeartbeat = ({ userId, ...options }) =>
   Users.update(
     { _id: userId },
@@ -307,7 +285,7 @@ Users.createUser = async ({
     guest,
     ...userData,
   });
-  return Users.findOne({ _id: userId });
+  return Users.findUser({ userId });
 };
 
 Users.findUsers = async ({ limit, offset, includeGuests, queryString }) => {

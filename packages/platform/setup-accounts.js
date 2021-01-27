@@ -64,12 +64,25 @@ export default ({ mergeUserCartsOnLogin = true } = {}) => {
   }
 
   accountsServer.services.guest = {
-    async authenticate(params) {
+    async authenticate(params, context) {
       const guestOptions = createGuestOptions(params.email);
-      const userId = await accountsPassword.createUser(guestOptions);
-      return userId;
+      const guestUser = await Users.createUser(guestOptions, context);
+      return guestUser._id;
     },
   };
+
+  accountsServer.on('CreateUserSuccess', async ({ user, connection = {} }) => {
+    if (connection.isEnrollment) {
+      Users.update(
+        { _id: user._id },
+        {
+          $set: {
+            'services.password.initial': true,
+          },
+        }
+      );
+    }
+  });
 
   accountsServer.on('LoginSuccess', async ({ user, connection = {} }) => {
     const {
