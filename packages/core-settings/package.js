@@ -1,6 +1,6 @@
 Package.describe({
   name: 'unchained:core-settings',
-  version: '0.60.0',
+  version: '0.61.0',
   summary:
     'This package contains api to define settings for the unchained engine.',
   git: 'https://github.com/unchainedshop/unchained',

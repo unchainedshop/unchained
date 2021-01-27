@@ -9,11 +9,9 @@ import { configureRoles } from './roles';
 
 import hashPassword from './hashPassword';
 import getCart from './getCart';
-import evaluateContext from './evaluateContext';
-import filterContext from './filterContext';
 import instantiateLoaders, { UnchainedServerLoaders } from './loaders';
 
-export { hashPassword, getCart, evaluateContext, filterContext };
+export { hashPassword, getCart };
 export * as roles from './roles';
 export * as acl from './acl';
 export * as errors from './errors';
@@ -32,7 +30,7 @@ export interface UnchainedServerOptions {
   rolesOptions: any;
 }
 
-const UNCHAINED_API_VERSION = '0.60.0'; // eslint-disable-line
+const UNCHAINED_API_VERSION = '0.61.0'; // eslint-disable-line
 
 export const createContextResolver = (unchained: UnchainedAPI) => async ({
   req,

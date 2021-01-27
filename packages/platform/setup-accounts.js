@@ -69,7 +69,7 @@ export default ({ mergeUserCartsOnLogin = true } = {}) => {
     },
   };
 
-  accountsServer.on('LoginSuccess', async ({ user, connection = {} }) => {
+  accountsServer.on('LoginTokenCreated', async ({ user, connection = {} }) => {
     const {
       userIdBeforeLogin,
       countryContext,

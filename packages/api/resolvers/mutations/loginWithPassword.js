@@ -1,8 +1,6 @@
 import { log } from 'meteor/unchained:core-logger';
-import { accountsServer } from 'meteor/unchained:core-accountsjs';
+import { Users } from 'meteor/unchained:core-users';
 import hashPassword from '../../hashPassword';
-import filterContext from '../../filterContext';
-import evaluateContext from '../../evaluateContext';
 
 export default async function loginWithPassword(
   root,
@@ -17,19 +15,12 @@ export default async function loginWithPassword(
   const password = hashedPassword || hashPassword(plainPassword);
   const userQuery = email ? { email } : { username };
 
-  const { user, token } = await accountsServer.loginWithService(
+  return Users.loginWithService(
     'password',
     {
       user: userQuery,
       password,
     },
-    evaluateContext(filterContext(context))
+    context
   );
-
-  return {
-    id: user._id,
-    token: token.token,
-    tokenExpires: token.when,
-    type: 'password',
-  };
 }
