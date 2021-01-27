@@ -26,6 +26,7 @@ We are currently rebuilding parts of Unchained under the hood with a new code st
 - [core] Removed Assortment Filter helper `assortmentFilter.filter`
 - [core] `findProviderById` & `findReviewById` removed
 - [core] You cannot `import 'meteor/unchained:core-worker/plugins/heartbeat'` anymore without typescript package
+- [api] NotFoundErrors have been removed from various queries which return an optional single entity, like Query.product(...): Product #299
 
 ## Major
 - [api] Add Assortment.childrenCount to get a number of child assortments
