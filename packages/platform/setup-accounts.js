@@ -65,11 +65,12 @@ export default ({ mergeUserCartsOnLogin = true } = {}) => {
         },
         context
       );
-      return guestUser._id;
+      return guestUser;
     },
   };
 
-  accountsServer.on('LoginTokenCreated', async ({ user, connection = {} }) => {
+  accountsServer.on('LoginTokenCreated', async (props) => {
+    const { user, connection = {} } = props;
     const {
       userIdBeforeLogin,
       countryContext,

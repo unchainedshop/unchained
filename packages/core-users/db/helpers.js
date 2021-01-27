@@ -281,9 +281,11 @@ Users.loginWithService = async (service, params, context) => {
     params,
     evaluateContext(filterContext(context))
   );
-  await accountsServer
-    .getHooks()
-    .emit('LoginTokenCreated', { user: tokenUser, connection: context });
+  await accountsServer.getHooks().emit('LoginTokenCreated', {
+    user: tokenUser,
+    connection: context,
+    service,
+  });
   return {
     id: tokenUser._id,
     token: loginToken.token,
@@ -299,9 +301,11 @@ Users.createLoginToken = async (user, context) => {
     user,
     evaluateContext(filterContext(context))
   );
-  await accountsServer
-    .getHooks()
-    .emit('LoginTokenCreated', { user: tokenUser, connection: context });
+  await accountsServer.getHooks().emit('LoginTokenCreated', {
+    user: tokenUser,
+    connection: context,
+    service: null,
+  });
   return {
     id: tokenUser._id,
     token: loginToken.token,

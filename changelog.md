@@ -2,6 +2,10 @@
 
 This is a bugfix release based on learnings from upgrading client projects
 
+## Breaking changes
+- [api] Removes filterContext and evalContext
+- [core] Enrollment E-Mails are sent automatically when `enrollUser` is used with an empty password
+
 ## Minor
 - [api] Re-introduce `context` field to startPlatform, allowing access to the unchained context function so it's possible to adjust the Apollo Server context freely
 - [core] Fix regression with forced sortKey parameters when modifying links, filters or products
@@ -31,7 +35,7 @@ We are currently rebuilding parts of Unchained under the hood with a new code st
 - [utils] Multiple functions have been moved to utils from core.
 - [core] The "core" package now is an umbrella for all core modules and does not provide any other functions except for the function that loads all modules in order and ties together the typescript types
 - [roles] Roles package got refactored only keeping a fraction of the previous APIs.
- We are currently rebuilding parts of Unchained under the hood with a new code structure that helps developers to easily add new resolvers and access the core API's through typescrypt types
+ We are currently rebuilding parts of Unchained under the hood with a new code structure that helps developers to easily add new resolvers and access the core API's through typescript types
 - [api,core] Business logic and db calls are now wrapped in functions and moved from api to the core packages
 - [pricing] New open-source pricing plugins:
 - - EUR catalog price auto conversion with ECB rates
