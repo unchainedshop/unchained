@@ -12,7 +12,6 @@ import {
 
 import { Locale } from 'locale';
 import crypto from 'crypto';
-import { log } from 'meteor/unchained:core-logger';
 
 import { Products, ProductTexts } from './collections';
 import { ProductVariations } from '../product-variations/collections';
@@ -540,15 +539,14 @@ Products.helpers({
         )
         .digest('hex'),
       amount: userPrice.amount,
-      currencyCode: userPrice.currency,
-      countryCode: country,
+      currency: userPrice.currency,
       isTaxable: pricing.taxSum() > 0,
       isNetPrice: useNetPrice,
     };
   },
-  price({ country: countryCode, currency, quantity = 1 }) {
-    const currencyCode =
-      currency ||
+  price({ country: countryCode, currency: currencyCode, quantity = 1 }) {
+    const currency =
+      currencyCode ||
       Countries.resolveDefaultCurrencyCode({
         isoCode: countryCode,
       });
@@ -571,7 +569,7 @@ Products.helpers({
     const price = pricing.reduce(
       (oldValue, curPrice) => {
         if (
-          curPrice.currencyCode === currencyCode &&
+          curPrice.currency === currency &&
           curPrice.countryCode === countryCode &&
           (!curPrice.maxQuantity || curPrice.maxQuantity >= quantity)
         ) {
@@ -584,19 +582,23 @@ Products.helpers({
       },
       {
         amount: null,
-        currencyCode,
+        currency,
         countryCode,
         isTaxable: false,
         isNetPrice: false,
       }
     );
+
     if (price.amount !== undefined && price.amount !== null) {
       return {
         _id: crypto
           .createHash('sha256')
-          .update([this._id, countryCode, currencyCode].join(''))
+          .update([this._id, countryCode, currency].join(''))
           .digest('hex'),
-        ...price,
+        amount: price.amount,
+        currency: price.currency,
+        isTaxable: price.isTaxable,
+        isNetPrice: price.isNetPrice,
       };
     }
     return null;

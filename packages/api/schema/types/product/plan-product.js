@@ -42,12 +42,12 @@ export default [
       published: Date
       media(limit: Int = 10, offset: Int = 0, tags: [String!]): [ProductMedia!]!
       texts(forceLocale: String): ProductTexts
-      catalogPrice(quantity: Int = 1): ProductPrice
+      catalogPrice(quantity: Int = 1): Price
       simulatedPrice(
         currency: String
         useNetPrice: Boolean = false
         quantity: Int = 1
-      ): ProductPrice
+      ): Price
       simulatedDiscounts(quantity: Int = 1): [ProductDiscount!]
       assortmentPaths(forceLocale: String): [ProductAssortmentPath!]!
       siblings(

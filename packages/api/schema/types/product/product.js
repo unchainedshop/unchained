@@ -131,6 +131,7 @@ export default [
     }
 
     type Price {
+      _id: ID!
       isTaxable: Boolean!
       isNetPrice: Boolean!
       amount: Int!
