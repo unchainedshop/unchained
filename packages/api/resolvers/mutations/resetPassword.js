@@ -15,7 +15,7 @@ export default async function resetPassword(
   if (!newHashedPassword && !newPlainPassword) {
     throw new Error('Password is required');
   }
-  const userWithNewPassword = await dbManager.findUserByEmailVerificationToken(
+  const userWithNewPassword = await dbManager.findUserByResetPasswordToken(
     token
   );
   const newPassword = newHashedPassword || hashPassword(newPlainPassword);
