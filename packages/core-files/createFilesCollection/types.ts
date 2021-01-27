@@ -1,3 +1,15 @@
+export interface Options {
+  fileId?: string;
+  name?: string;
+  fileName?: string;
+  headers?: any;
+  path?: string;
+  meta?: any;
+  type?: string;
+  userId?: string;
+  size?: number;
+}
+
 export interface FileTypes {
   isVideo: boolean;
   isAudio: boolean;

@@ -2,7 +2,7 @@ import fileType from 'file-type';
 import crypto from 'crypto';
 import { Meteor } from 'meteor/meteor';
 import { MongoInternals } from 'meteor/mongo';
-import { FileTypes, FileObj } from '../types/index';
+import { FileTypes, FileObj } from './types';
 
 const { FILE_STORAGE_PATH } = process.env;
 

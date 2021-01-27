@@ -7,16 +7,21 @@ import { Mongo, MongoInternals } from 'meteor/mongo';
 import { Meteor } from 'meteor/meteor';
 import { WebApp } from 'meteor/webapp';
 import { Readable } from 'stream';
-import write from './lib/write';
-import load from './lib/load';
+import Random from '@reactioncommerce/random';
+import nodePath from 'path';
+import fetch from 'isomorphic-unfetch';
+import { FileObj, Options } from './types';
 import {
   helpers,
   bound,
   getUser,
   notFound,
   responseHeaders,
-} from './lib/helpers';
-import { FileObj } from './types/index';
+  getExtension,
+  dataToSchema,
+  getMimeType,
+  storagePath,
+} from './helpers';
 
 export default class FilesCollection extends Mongo.Collection<FileObj> {
   _name: string;
@@ -209,14 +214,12 @@ export default class FilesCollection extends Mongo.Collection<FileObj> {
             responseType = '400';
           }
 
-          return this.serve(
+          return this.serve({
             http,
             fileRef,
             vRef,
-            version,
-            null,
-            responseType || '200'
-          );
+            responseType,
+          });
         })
       );
       return undefined;
@@ -224,21 +227,20 @@ export default class FilesCollection extends Mongo.Collection<FileObj> {
     return notFound(http);
   }
 
-  serve(
+  serve({
     http,
     fileRef,
     vRef,
     readableStream = null,
-    _responseType = '200',
-    force200 = false
-  ) {
+    responseType = '200',
+    force200 = false,
+  }) {
     let partiral = false;
     let reqRange: { start?: number; end?: number } = {};
     let dispositionType = '';
     let start;
     let end;
     let take;
-    let responseType = _responseType;
 
     if (http.params.query.download && http.params.query.download === 'true') {
       dispositionType = 'attachment; ';
@@ -513,7 +515,7 @@ export default class FilesCollection extends Mongo.Collection<FileObj> {
       });
       readablePhotoStream.pipe(uploadStream);
       uploadStream.on('error', (err) => {
-      console.error(err); // eslint-disable-line
+        console.error(err); // eslint-disable-line
         throw err;
       });
       uploadStream.on('finish', (ver) => {
@@ -525,35 +527,136 @@ export default class FilesCollection extends Mongo.Collection<FileObj> {
     });
   };
 
-  write = write;
+  async write(buffer, opts: Options) {
+    if (helpers.isFunction(opts)) {
+      opts = {};
+    }
 
-  load = load;
+    const fileId = opts.fileId || Random.id();
+    const FSName = fileId;
+    const fileName =
+      opts.name || opts.fileName ? opts.name || opts.fileName : FSName;
 
-  remove(selector) {
+    const { extension, extensionWithDot } = await getExtension(
+      fileName,
+      buffer
+    );
+
+    opts.path = `${storagePath(this._name)}${
+      nodePath.sep
+    }${FSName}${extensionWithDot}`;
+
+    opts.type = await getMimeType(buffer);
+
+    if (!helpers.isObject(opts.meta)) {
+      opts.meta = {};
+    }
+
+    if (!helpers.isNumber(opts.size)) {
+      opts.size = buffer.length;
+    }
+
+    const result = dataToSchema({
+      name: fileName,
+      path: opts.path,
+      meta: opts.meta,
+      type: opts.type,
+      size: opts.size,
+      userId: opts.userId,
+      collectionName: this._name,
+      extension,
+    });
+
+    result._id = fileId;
+
+    this.checkForSizeAndExtension({ size: opts.size, extension });
+
+    this.insert(result, async (err, _id) => {
+      if (!err) {
+        const fileRef = this.findOne(_id);
+        await this.storeInGridFSBucket.call(this, fileRef, buffer);
+      }
+    });
+    return result;
+  }
+
+  async load(url: string, opts: Options) {
+    const fileId = opts.fileId || Random.id();
+    const FSName = this.namingFunction ? this.namingFunction(opts) : fileId;
+    const pathParts = url.split('/');
+    const fileName =
+      opts.name || opts.fileName
+        ? opts.name || opts.fileName
+        : pathParts[pathParts.length - 1] || FSName;
+
+    const response = await fetch(url, { headers: opts.headers || {} });
+    if (!response.ok) throw new Error('URL provided responded with 404');
+    const buffer = await response.buffer();
+    const size = Buffer.byteLength(buffer);
+    const { extension, extensionWithDot } = await getExtension(
+      fileName,
+      buffer
+    );
+
+    // eslint-disable-next-line no-underscore-dangle
+    opts.path = `${storagePath(this._name)}${
+      nodePath.sep
+    }${FSName}${extensionWithDot}`;
+    const result = dataToSchema({
+      name: fileName,
+      path: opts.path,
+      meta: opts.meta,
+      type:
+        opts.type ||
+        response.headers['content-type'] ||
+        (await getMimeType(buffer)),
+      size: opts.size || size,
+      userId: opts.userId,
+      // eslint-disable-next-line no-underscore-dangle
+      collectionName: this._name,
+      extension,
+    });
+    // throws if not matching
+    this.checkForSizeAndExtension({
+      size: result.size,
+      extension,
+    });
+
+    result._id = fileId;
+    this.insert(result, async (err, _id) => {
+      if (!err) {
+        const fileRef = this.findOne(_id);
+        await this.storeInGridFSBucket.call(this, fileRef, buffer);
+      }
+    });
+    return result;
+  }
+
+  removeFiles(selector) {
     if (selector === undefined) {
       return 0;
     }
     const files = this.find(selector);
 
-    if (!files.count() > 0) {
+    if (!(files.count() > 0)) {
       throw new Meteor.Error(404, 'Cursor is empty, no files is removed');
     }
 
     const docs = files.fetch();
     // eslint-disable-next-line @typescript-eslint/no-this-alias
     const self = this;
-    this.remove(selector, async function (...args) {
+    this.remove(selector, async function () {
       await self.onAfterRemove(docs);
     });
 
     return this;
   }
 
-  insertWithRemoteBuffer = async ({
+  async insertWithRemoteBuffer({
     file: { name: fileName, type, size, buffer },
     meta = {},
     ...rest
-  }) => {
+  }) {
     const res = await this.write(buffer, {
       fileName,
       type,
@@ -562,13 +665,9 @@ export default class FilesCollection extends Mongo.Collection<FileObj> {
       ...rest,
     });
     return res;
-  };
+  }
 
-  insertWithRemoteFile = async function insertWithRemoteFile({
-    file,
-    meta = {},
-    ...rest
-  }) {
+  async insertWithRemoteFile({ file, meta = {}, ...rest }) {
     const { stream, filename, mimetype } = await file;
     return new Promise((resolve, reject) => {
       const bufs: Uint8Array[] = [];
@@ -592,17 +691,13 @@ export default class FilesCollection extends Mongo.Collection<FileObj> {
         }
       });
     });
-  };
+  }
 
-  insertWithRemoteURL = async function insertWithRemoteURL({
-    url: href,
-    meta = {},
-    ...rest
-  }) {
+  async insertWithRemoteURL({ url: href, meta = {}, ...rest }) {
     const res = await this.load(href, {
       meta,
       ...rest,
     });
     return res;
-  };
+  }
 }
