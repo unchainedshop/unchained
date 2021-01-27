@@ -11,7 +11,7 @@ import {
 import fetch from 'isomorphic-unfetch';
 import FilesCollection from './createFilesCollection/FilesCollection';
 import { User } from '../../tests/seeds/users';
-import { getExtension } from './createFilesCollection/lib/helpers';
+import { getExtension } from './createFilesCollection/helpers';
 
 let testCollection;
 let file;
