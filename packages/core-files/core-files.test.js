@@ -11,6 +11,7 @@ import {
 import fetch from 'isomorphic-unfetch';
 import FilesCollection from './createFilesCollection/FilesCollection';
 import { User } from '../../tests/seeds/users';
+import { getExtension } from './createFilesCollection/lib/helpers';
 
 let testCollection;
 let file;
@@ -239,13 +240,23 @@ describe('Meteor Files', () => {
 
   // test for protected and unprotected collections
 
-  it('removes file successfully', async () => {
-    const result = await testCollection.insertWithRemoteURL({
-      url: 'https://unchained.shop/img/veloplus-screenshots.png',
-      userId: User._id,
-    });
+  // it('removes file successfully', async () => {
+  //   const result = await testCollection.insertWithRemoteURL({
+  //     url: 'https://unchained.shop/img/veloplus-screenshots.png',
+  //     userId: User._id,
+  //   });
 
-    const res = testCollection.remove({ _id: result._id });
-    console.log('RES: ', res);
+  //   const res = testCollection.remove({ _id: result._id });
+  //   console.log('RES: ', res);
+  // });
+
+  it('getExtension - return correct extension', async () => {
+    const imageResult = await fetch(
+      'https://unchained.shop/img/veloplus-screenshots.png'
+    );
+    const imageBuffer = await imageResult.buffer();
+
+    const res = await getExtension('test.png', imageBuffer);
+    console.log(res);
   });
 });

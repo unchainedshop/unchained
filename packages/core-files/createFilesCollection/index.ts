@@ -7,7 +7,7 @@ const createDefaultSettings = () => ({
   extensionRegex: null,
 });
 
-export default (collectionName, customSettings = null) => {
+export default (collectionName, customSettings = {}) => {
   const mergedSettings = {
     ...createDefaultSettings(),
     ...customSettings,

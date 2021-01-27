@@ -22,10 +22,11 @@
     "noFallthroughCasesInSwitch": false,
 
     /* Module Resolution Options */
-    "baseUrl": ".",
+    "baseUrl": "./",
     "paths": {
       /* Support absolute /imports/* with a leading '/' */
-      "/*": ["*"]
+      "/*": ["*"],
+      "*": ["./packages/core-files/.npm/package/node_modules/*"],
     },
     "moduleResolution": "node",
     "resolveJsonModule": true,

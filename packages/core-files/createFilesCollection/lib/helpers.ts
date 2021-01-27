@@ -1,45 +1,46 @@
-import fs from 'fs-extra';
 import fileType from 'file-type';
-import { MongoClient } from 'mongodb';
 import crypto from 'crypto';
 import { Meteor } from 'meteor/meteor';
+import { MongoInternals } from 'meteor/mongo';
+import { FileTypes, FileObj } from '../types/index';
 
 const { FILE_STORAGE_PATH } = process.env;
-
-export const NOOP = () => {};
 
 export const bound = Meteor.bindEnvironment((callback) => callback());
 
 export const helpers = {
-  isString(val) {
+  isString(val): boolean {
     return val && typeof val.valueOf() === 'string';
   },
-  isNumber(val) {
+  isNumber(val): boolean {
     return val && typeof val.valueOf() === 'number';
   },
-  isUndefined(obj) {
+  isUndefined(obj): boolean {
     return obj === undefined;
   },
-  isObject(obj) {
+  isObject(obj): boolean {
     if (this.isArray(obj) || this.isFunction(obj)) {
       return false;
     }
     return obj === Object(obj);
   },
-  isArray(obj) {
+  isArray(obj): boolean {
     return Array.isArray(obj);
   },
-  isBoolean(obj) {
+  isDate(dateStr): boolean {
+    return !Number.isNaN(new Date(dateStr).getDate());
+  },
+  isBoolean(obj): boolean {
     return (
       obj === true ||
       obj === false ||
       Object.prototype.toString.call(obj) === '[object Boolean]'
     );
   },
-  isFunction(obj) {
+  isFunction(obj): boolean {
     return typeof obj === 'function' || false;
   },
-  isEmpty(obj) {
+  isEmpty(obj): boolean {
     if (this.isDate(obj)) {
       return false;
     }
@@ -51,11 +52,7 @@ export const helpers = {
     }
     return false;
   },
-  clone(obj) {
-    if (!this.isObject(obj)) return obj;
-    return this.isArray(obj) ? obj.slice() : { ...obj };
-  },
-  has(_obj, path) {
+  has(_obj, path): boolean {
     let obj = _obj;
     if (!this.isObject(obj)) {
       return false;
@@ -75,115 +72,7 @@ export const helpers = {
     }
     return !!length;
   },
-  omit(obj, ...keys) {
-    const clear = { ...obj };
-    for (let i = keys.length - 1; i >= 0; i - 1) {
-      delete clear[keys[i]];
-    }
-
-    return clear;
-  },
   now: Date.now,
-};
-
-export const getExtension = async (fileName: string, buffer) => {
-  if (fileName.includes('.')) {
-    const extension = (
-      fileName.split('.').pop().split('?')[0] || ''
-    ).toLowerCase();
-    return { ext: extension, extension, extensionWithDot: `.${extension}` };
-  }
-  if (buffer) {
-    const fileExtension = await fileType.fromBuffer(buffer);
-    if (!fileExtension) return { ext: '', extension: '', extensionWithDot: '' };
-    return {
-      ext: fileExtension.ext,
-      extension: fileExtension.ext,
-      extensionWithDot: `.${fileExtension.ext}`,
-    };
-  }
-  return { ext: '', extension: '', extensionWithDot: '' };
-};
-
-export const storagePath = (collectionName: string) => {
-  if (FILE_STORAGE_PATH) {
-    return `${FILE_STORAGE_PATH}/${collectionName}`;
-  }
-  return `assets/app/uploads/${collectionName}`;
-};
-
-export const updateFileTypes = (data) => {
-  return {
-    isVideo: /^video\//i.test(data.type),
-    isAudio: /^audio\//i.test(data.type),
-    isImage: /^image\//i.test(data.type),
-    isText: /^text\//i.test(data.type),
-    isJSON: /^application\/json$/i.test(data.type),
-    isPDF: /^application\/(x-)?pdf$/i.test(data.type),
-  };
-};
-
-export const dataToSchema = (data) => {
-  let ds = {
-    name: data.name,
-    extension: data.extension,
-    ext: data.extension,
-    extensionWithDot: `.${data.extension}`,
-    path: data.path,
-    meta: data.meta,
-    type: data.type,
-    mime: data.type,
-    'mime-type': data.type,
-    size: data.size,
-    userId: data.userId || null,
-    versions: {
-      original: {
-        path: data.path,
-        size: data.size,
-        type: data.type,
-        extension: data.extension,
-      },
-    },
-    downloadRoute: '/cdn/storage',
-    collectionName: data.collectionName,
-  };
-
-  // Optional fileId
-  if (data.fileId) {
-    ds._id = data.fileId;
-  }
-
-  ds = { ...ds, ...updateFileTypes(ds) };
-
-  ds.storagePath = data.storagePath || storagePath(data.collectionName);
-  return ds;
-};
-
-export const getMimeType = (fileData) => {
-  let mime;
-  if (helpers.isObject(fileData) && fileData.type) {
-    mime = fileData.type;
-  }
-
-  if (fileData.path && (!mime || !helpers.isString(mime))) {
-    try {
-      let buf = Buffer.alloc(262);
-      const fd = fs.openSync(fileData.path, 'r');
-      const br = fs.readSync(fd, buf, 0, 262, 0);
-      fs.close(fd, NOOP);
-      if (br < 262) {
-        buf = buf.slice(0, br);
-      }
-      ({ mime } = fileType(buf));
-    } catch (e) {
-      // We're good
-    }
-  }
-
-  if (!mime || !helpers.isString(mime)) {
-    mime = 'application/octet-stream';
-  }
-  return mime;
 };
 
 export const notFound = (http) => {
@@ -200,16 +89,145 @@ export const notFound = (http) => {
   }
 };
 
-const hashLoginToken = (stampedLoginToken) => {
+export const getExtension = async (fileName: string, buffer: Buffer) => {
+  if (fileName.includes('.')) {
+    const extension = (
+      fileName.split('.').pop()?.split('?')[0] || ''
+    ).toLowerCase();
+    return { ext: extension, extension, extensionWithDot: `.${extension}` };
+  }
+  if (buffer) {
+    const fileExtension = await fileType.fromBuffer(buffer);
+    if (!fileExtension) return { ext: '', extension: '', extensionWithDot: '' };
+    return {
+      ext: fileExtension.ext,
+      extension: fileExtension.ext,
+      extensionWithDot: `.${fileExtension.ext}`,
+    };
+  }
+  return { ext: '', extension: '', extensionWithDot: '' };
+};
+
+export const responseHeaders = (responseCode, versionRef) => {
+  const headers: {
+    Pragma?: string;
+    'Transfer-Encoding'?: string;
+    'Cache-Control'?: string;
+    'Content-Range'?: string;
+    Connection: string;
+    'Content-Type': string;
+    'Accept-Ranges': string;
+  } = {
+    Connection: 'keep-alive',
+    'Content-Type': versionRef.type || 'application/octet-stream',
+    'Accept-Ranges': 'bytes',
+  };
+  switch (responseCode) {
+    case '206':
+      headers.Pragma = 'private';
+      headers['Transfer-Encoding'] = 'chunked';
+      break;
+    case '400':
+      headers['Cache-Control'] = 'no-cache';
+      break;
+    case '416':
+      headers['Content-Range'] = `bytes */${versionRef.size}`;
+      break;
+    default:
+      break;
+  }
+
+  return headers;
+};
+
+export const storagePath = (collectionName: string) => {
+  if (FILE_STORAGE_PATH) {
+    return `${FILE_STORAGE_PATH}/${collectionName}`;
+  }
+  return `assets/app/uploads/${collectionName}`;
+};
+
+export const updateFileTypes = (type: string): FileTypes => {
+  return {
+    isVideo: /^video\//i.test(type),
+    isAudio: /^audio\//i.test(type),
+    isImage: /^image\//i.test(type),
+    isText: /^text\//i.test(type),
+    isJSON: /^application\/json$/i.test(type),
+    isPDF: /^application\/(x-)?pdf$/i.test(type),
+  };
+};
+
+export const dataToSchema = (data: {
+  name: string;
+  extension: string;
+  ext: string;
+  extensionWithDot: string;
+  path: string;
+  meta: {
+    path: string;
+    size: number;
+    type: string;
+    extension: string;
+  };
+  type: string;
+  size: number;
+  userId: string;
+  collectionName: string;
+  fileId: string;
+  storagePath: string;
+}): FileObj => {
+  const dataSchema = {
+    name: data.name,
+    extension: data.extension,
+    ext: data.extension,
+    extensionWithDot: `.${data.extension}`,
+    path: data.path,
+    meta: data.meta,
+    type: data.type,
+    mime: data.type,
+    'mime-type': data.type,
+    size: data.size,
+    userId: data.userId || '',
+    versions: {
+      original: {
+        path: data.path,
+        size: data.size,
+        type: data.type,
+        extension: data.extension,
+      },
+    },
+    downloadRoute: '/cdn/storage',
+    collectionName: data.collectionName,
+    ...updateFileTypes(data.type),
+    storagePath: data.storagePath || storagePath(data.collectionName),
+    _id: data.fileId,
+  };
+
+  return dataSchema;
+};
+
+export const getMimeType = async (buffer: Buffer): Promise<string> => {
+  let mime;
+  const fileExtension = await fileType.fromBuffer(buffer);
+  mime = fileExtension?.mime;
+
+  if (!mime || !helpers.isString(mime)) {
+    mime = 'application/octet-stream';
+  }
+  return mime;
+};
+
+const hashLoginToken = (stampedLoginToken: string): string => {
   const hash = crypto.createHash('sha256');
   hash.update(stampedLoginToken);
   const hashedToken = hash.digest('base64');
 
   return hashedToken;
 };
-const DEFAULT_LOGIN_EXPIRATION_DAYS = 90;
 
 const getTokenLifetimeMs = () => {
+  const DEFAULT_LOGIN_EXPIRATION_DAYS = 90;
   const LOGIN_UNEXPIRING_TOKEN_DAYS = 365 * 100;
   return (
     (LOGIN_UNEXPIRING_TOKEN_DAYS || DEFAULT_LOGIN_EXPIRATION_DAYS) *
@@ -220,7 +238,7 @@ const getTokenLifetimeMs = () => {
   );
 };
 
-const tokenExpiration = (when) => {
+const tokenExpiration = (when: Date): Date => {
   // We pass when through the Date constructor for backwards compatibility;
   // `when` used to be a number.
   return new Date(new Date(when).getTime() + getTokenLifetimeMs());
@@ -246,19 +264,8 @@ export const getUser = async (http) => {
   }
 
   if (loginToken) {
-    const connection = await MongoClient.connect(
-      MongoInternals.defaultRemoteCollectionDriver().mongo.client.s.url,
-      {
-        useNewUrlParser: true,
-        useUnifiedTopology: true,
-        poolSize: 1,
-      }
-    );
+    const { db } = MongoInternals.defaultRemoteCollectionDriver().mongo;
 
-    const db = await connection.db(
-      MongoInternals.defaultRemoteCollectionDriver().mongo.client.s.options
-        .dbName
-    );
     // the hashed token is the key to find the possible current user in the db
     const hashedToken = hashLoginToken(loginToken); // eslint-disable-line
 

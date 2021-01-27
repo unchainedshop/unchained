@@ -2,31 +2,67 @@
 /* eslint-disable no-underscore-dangle */
 import fs from 'fs';
 import nodeQs from 'querystring';
-import { MongoClient, GridFSBucket, ObjectID } from 'mongodb';
+import { GridFSBucket, ObjectID } from 'mongodb';
 import { Mongo, MongoInternals } from 'meteor/mongo';
 import { Meteor } from 'meteor/meteor';
 import { WebApp } from 'meteor/webapp';
 import { Readable } from 'stream';
 import write from './lib/write';
 import load from './lib/load';
-import { helpers, bound, NOOP, getUser, notFound } from './lib/helpers';
+import {
+  helpers,
+  bound,
+  getUser,
+  notFound,
+  responseHeaders,
+} from './lib/helpers';
+import { FileObj } from './types/index';
 
-class FilesCollection extends Mongo.Collection {
-  constructor({ collectionName, maxSize = 10485760, extensionRegex }) {
-    super();
+export default class FilesCollection extends Mongo.Collection<FileObj> {
+  _name: string;
+
+  maxSize: number;
+
+  extensionRegex: RegExp;
+
+  secure: boolean;
+
+  downloadRoute: string;
+
+  allowedOrigins: RegExp;
+
+  integrityCheck: boolean;
+
+  strict: boolean;
+
+  constructor({
+    collectionName,
+    maxSize = 10485760,
+    extensionRegex,
+    secure = false,
+    integrityCheck = true,
+    strict = true,
+  }) {
+    super(collectionName);
     this._name = collectionName;
     this.maxSize = maxSize;
     this.extensionRegex = new RegExp(extensionRegex);
     this.downloadRoute = '/cdn/storage';
-    this.allowedOrigins = /^http:\/\/localhost:12[0-9]{3}$/;
+    this.allowedOrigins = /^http:\/\/localhost:12[0-9]{3}$/; // Check .test works properly here
+    this.secure = secure;
+    this.integrityCheck = integrityCheck;
+    this.strict = strict;
 
     WebApp.connectHandlers.use(async (httpReq, httpResp, next) => {
       if (
         this.allowedOrigins &&
-        httpReq._parsedUrl.path.includes(`${this.downloadRoute}/`) &&
+        httpReq.url?.includes(`${this.downloadRoute}/`) &&
         !httpResp.headersSent
       ) {
-        if (this.allowedOrigins.test(httpReq.headers.origin)) {
+        if (
+          httpReq.headers.origin &&
+          this.allowedOrigins.test(httpReq.headers.origin)
+        ) {
           httpResp.setHeader('Access-Control-Allow-Credentials', 'true');
           httpResp.setHeader(
             'Access-Control-Allow-Origin',
@@ -55,13 +91,8 @@ class FilesCollection extends Mongo.Collection {
       }
 
       let uri;
-      if (
-        httpReq._parsedUrl.path.includes(`${this.downloadRoute}/${this._name}`)
-      ) {
-        uri = httpReq._parsedUrl.path.replace(
-          `${this.downloadRoute}/${this._name}`,
-          ''
-        );
+      if (httpReq.url?.includes(`${this.downloadRoute}/${this._name}`)) {
+        uri = httpReq.url.replace(`${this.downloadRoute}/${this._name}`, '');
         if (uri.indexOf('/') === 0) {
           uri = uri.substring(1);
         }
@@ -70,9 +101,7 @@ class FilesCollection extends Mongo.Collection {
         if (uris.length === 3) {
           const params = {
             _id: uris[0],
-            query: httpReq._parsedUrl.query
-              ? nodeQs.parse(httpReq._parsedUrl.query)
-              : {},
+            query: httpReq.query ? nodeQs.parse(httpReq.query) : {},
             name: uris[2].split('?')[0],
             version: uris[1],
           };
@@ -91,7 +120,13 @@ class FilesCollection extends Mongo.Collection {
     });
   }
 
-  checkForSizeAndExtension = ({ size, extension }) => {
+  checkForSizeAndExtension = ({
+    size,
+    extension,
+  }: {
+    size: number;
+    extension: string;
+  }): Error | void => {
     if (!extension) {
       throw new Error("filetype isn't defined");
     }
@@ -104,24 +139,8 @@ class FilesCollection extends Mongo.Collection {
   };
 
   checkAccess = async (http) => {
-    let result;
-    const { user, userId } = await getUser(http);
-
-    if (helpers.isFunction(this.protected)) {
-      let fileRef;
-      if (helpers.isObject(http.params) && http.params._id) {
-        fileRef = this.findOne(http.params._id);
-      }
-
-      result = http
-        ? this.protected.call(
-            Object.assign(http, { user, userId }),
-            fileRef || null
-          )
-        : this.protected.call({ user, userId }, fileRef || null);
-    } else {
-      result = !!userId;
-    }
+    const { userId } = await getUser(http);
+    const result = !!userId;
 
     if ((http && result === true) || !http) {
       return true;
@@ -167,17 +186,6 @@ class FilesCollection extends Mongo.Collection {
       return notFound(http);
     }
     if (fileRef) {
-      if (this.downloadCallback) {
-        if (
-          !this.downloadCallback.call(
-            Object.assign(http, getUser(http)),
-            fileRef
-          )
-        ) {
-          return notFound(http);
-        }
-      }
-
       if (
         this.interceptDownload &&
         helpers.isFunction(this.interceptDownload) &&
@@ -220,13 +228,12 @@ class FilesCollection extends Mongo.Collection {
     http,
     fileRef,
     vRef,
-    version = 'original',
     readableStream = null,
     _responseType = '200',
     force200 = false
   ) {
     let partiral = false;
-    let reqRange = false;
+    let reqRange: { start?: number; end?: number } = {};
     let dispositionType = '';
     let start;
     let end;
@@ -288,6 +295,8 @@ class FilesCollection extends Mongo.Collection {
 
       if (
         this.strict &&
+        reqRange.start &&
+        reqRange.end &&
         (reqRange.start >= vRef.size - 1 || reqRange.end > vRef.size - 1)
       ) {
         responseType = '416';
@@ -304,9 +313,7 @@ class FilesCollection extends Mongo.Collection {
       }
     };
 
-    const headers = helpers.isFunction(this.responseHeaders)
-      ? this.responseHeaders(responseType, fileRef, vRef, version, http)
-      : this.responseHeaders;
+    const headers = responseHeaders(responseType, vRef);
 
     if (!headers['Cache-Control']) {
       if (!http.response.headersSent) {
@@ -481,19 +488,7 @@ class FilesCollection extends Mongo.Collection {
   }
 
   async getGridFSBucket() {
-    const connection = await MongoClient.connect(
-      MongoInternals.defaultRemoteCollectionDriver().mongo.client.s.url,
-      {
-        useNewUrlParser: true,
-        useUnifiedTopology: true,
-        poolSize: 1,
-      }
-    );
-
-    const db = await connection.db(
-      MongoInternals.defaultRemoteCollectionDriver().mongo.client.s.options
-        .dbName
-    );
+    const { db } = MongoInternals.defaultRemoteCollectionDriver().mongo;
 
     const gridFSBucket = new GridFSBucket(db, {
       chunkSizeBytes: 1024,
@@ -518,7 +513,7 @@ class FilesCollection extends Mongo.Collection {
       });
       readablePhotoStream.pipe(uploadStream);
       uploadStream.on('error', (err) => {
-        console.error(err); // eslint-disable-line
+      console.error(err); // eslint-disable-line
         throw err;
       });
       uploadStream.on('finish', (ver) => {
@@ -534,26 +529,20 @@ class FilesCollection extends Mongo.Collection {
 
   load = load;
 
-  remove(selector, callback) {
+  remove(selector) {
     if (selector === undefined) {
       return 0;
     }
     const files = this.find(selector);
 
-    if (!files.count() > 0 && callback) {
-      if (callback) {
-        callback(new Meteor.Error(404, 'Cursor is empty, no files is removed'));
-      }
-      return this;
+    if (!files.count() > 0) {
+      throw new Meteor.Error(404, 'Cursor is empty, no files is removed');
     }
 
     const docs = files.fetch();
     // eslint-disable-next-line @typescript-eslint/no-this-alias
     const self = this;
     this.remove(selector, async function (...args) {
-      if (callback) {
-        callback.apply(this, args);
-      }
       await self.onAfterRemove(docs);
     });
 
@@ -582,7 +571,7 @@ class FilesCollection extends Mongo.Collection {
   }) {
     const { stream, filename, mimetype } = await file;
     return new Promise((resolve, reject) => {
-      const bufs = [];
+      const bufs: Uint8Array[] = [];
       stream.on('data', (d) => {
         bufs.push(d);
       });
@@ -617,5 +606,3 @@ class FilesCollection extends Mongo.Collection {
     return res;
   };
 }
-
-export default FilesCollection;

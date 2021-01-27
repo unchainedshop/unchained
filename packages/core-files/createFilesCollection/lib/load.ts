@@ -2,18 +2,26 @@ import Random from '@reactioncommerce/random';
 import nodePath from 'path';
 import fetch from 'isomorphic-unfetch';
 import {
-  helpers,
   getExtension,
   dataToSchema,
   getMimeType,
   storagePath,
 } from './helpers';
 
-const load = async function (url: string, _opts = {}) {
-  let opts = _opts;
-  if (!helpers.isObject(opts)) {
-    opts = {};
-  }
+interface Options {
+  fileId?: string;
+  name?: string;
+  fileName?: string;
+  headers?: any;
+  path?: string;
+  meta?: string;
+  type?: string;
+  userId?: string;
+  size?: number;
+}
+
+const load = async function (url: string, _opts: Options) {
+  const opts = _opts || {};
 
   const fileId = opts.fileId || Random.id();
   const FSName = this.namingFunction ? this.namingFunction(opts) : fileId;
@@ -40,7 +48,7 @@ const load = async function (url: string, _opts = {}) {
     type:
       opts.type ||
       response.headers['content-type'] ||
-      getMimeType({ path: opts.path }),
+      (await getMimeType(buffer)),
     size: opts.size || size,
     userId: opts.userId,
     // eslint-disable-next-line no-underscore-dangle

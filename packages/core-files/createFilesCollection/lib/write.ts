@@ -27,7 +27,7 @@ const write = async function (buffer, _opts = {}) {
     nodePath.sep
   }${FSName}${extensionWithDot}`;
 
-  opts.type = getMimeType(opts);
+  opts.type = await getMimeType(buffer);
 
   if (!helpers.isObject(opts.meta)) {
     opts.meta = {};
@@ -51,9 +51,11 @@ const write = async function (buffer, _opts = {}) {
   result._id = fileId;
 
   this.checkForSizeAndExtension({ size: opts.size, extension });
+
   this.insert(result, async (err, _id) => {
     if (!err) {
       const fileRef = this.findOne(_id);
+      console.log('fileReffileReffileReffileRef: ', fileRef);
       await this.storeInGridFSBucket.call(this, fileRef, buffer);
     }
   });
