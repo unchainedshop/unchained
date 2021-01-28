@@ -1,7 +1,7 @@
 /* eslint-disable no-param-reassign */
 /* eslint-disable no-underscore-dangle */
 import fs from 'fs';
-import nodeQs from 'querystring';
+import { URL } from 'url';
 import { GridFSBucket, ObjectID } from 'mongodb';
 import { Mongo, MongoInternals } from 'meteor/mongo';
 import { Meteor } from 'meteor/meteor';
@@ -106,7 +106,7 @@ export default class FilesCollection extends Mongo.Collection<FileObj> {
         if (uris.length === 3) {
           const params = {
             _id: uris[0],
-            query: httpReq.query ? nodeQs.parse(httpReq.query) : {},
+            query: new URL(httpReq.url).searchParams,
             name: uris[2].split('?')[0],
             version: uris[1],
           };
