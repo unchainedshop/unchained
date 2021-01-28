@@ -26,7 +26,7 @@
     "paths": {
       /* Support absolute /imports/* with a leading '/' */
       "/*": ["*"],
-      "*": ["./packages/core-files/.npm/package/node_modules/*"],
+      "*": ["./packages/core-files/.npm/package/node_modules/*", "./packages/api/.npm/package/node_modules/*"],
     },
     "moduleResolution": "node",
     "resolveJsonModule": true,
