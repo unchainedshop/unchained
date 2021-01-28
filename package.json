@@ -44,6 +44,7 @@
     "@types/connect": "^3.4.34",
     "@types/fs-extra": "^9.0.6",
     "@types/jest": "^26.0.17",
+    "@types/locale": "^0.1.0",
     "@types/lodash.clone": "^4.5.6",
     "@types/meteor": "^1.4.65",
     "@types/node": "^14.14.22",
