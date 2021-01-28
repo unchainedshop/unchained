@@ -46,7 +46,7 @@
     "@types/jest": "^26.0.17",
     "@types/locale": "^0.1.0",
     "@types/lodash.clone": "^4.5.6",
-    "@types/meteor": "^1.4.65",
+    "@types/meteor": "^1.4.66",
     "@types/node": "^14.14.22",
     "@types/simpl-schema": "^1.10.0",
     "@typescript-eslint/eslint-plugin": "^4.14.0",
