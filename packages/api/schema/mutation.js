@@ -318,7 +318,7 @@ export default [
       ): User
 
       """
-      Send the enrollment email for a user as enrollUser doesn't send it out by default
+      Forcefully trigger an enrollment email for already added users by e-mail
       """
       sendEnrollmentEmail(email: String!): SuccessResponse
 
