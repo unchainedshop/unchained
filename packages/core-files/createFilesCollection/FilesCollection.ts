@@ -552,16 +552,14 @@ export default class FilesCollection extends Mongo.Collection<FileObj> {
       opts.meta = {};
     }
 
-    if (!helpers.isNumber(opts.size)) {
-      opts.size = buffer.length;
-    }
+    const size = opts.size || buffer.length;
 
     const result = dataToSchema({
       name: fileName,
       path: opts.path,
       meta: opts.meta,
       type: opts.type,
-      size: opts.size,
+      size,
       userId: opts.userId,
       collectionName: this._name,
       extension,
@@ -569,7 +567,7 @@ export default class FilesCollection extends Mongo.Collection<FileObj> {
 
     result._id = fileId;
 
-    this.checkForSizeAndExtension({ size: opts.size, extension });
+    this.checkForSizeAndExtension({ size, extension });
 
     this.insert(result, async (err, _id) => {
       if (!err) {
@@ -582,7 +580,7 @@ export default class FilesCollection extends Mongo.Collection<FileObj> {
 
   async load(url: string, opts: Options) {
     const fileId = opts.fileId || Random.id();
-    const FSName = this.namingFunction ? this.namingFunction(opts) : fileId;
+    const FSName = fileId;
     const pathParts = url.split('/');
     const fileName =
       opts.name || opts.fileName
@@ -591,7 +589,7 @@ export default class FilesCollection extends Mongo.Collection<FileObj> {
 
     const response = await fetch(url, { headers: opts.headers || {} });
     if (!response.ok) throw new Error('URL provided responded with 404');
-    const buffer = await response.buffer();
+    const buffer = await response.arrayBuffer();
     const size = Buffer.byteLength(buffer);
     const { extension, extensionWithDot } = await getExtension(
       fileName,

@@ -89,7 +89,10 @@ export const notFound = (http) => {
   }
 };
 
-export const getExtension = async (fileName: string, buffer: Buffer) => {
+export const getExtension = async (
+  fileName: string,
+  buffer: Buffer | ArrayBuffer
+) => {
   if (fileName.includes('.')) {
     const extension = (
       fileName.split('.').pop()?.split('?')[0] || ''
@@ -158,25 +161,7 @@ export const updateFileTypes = (type: string): FileTypes => {
   };
 };
 
-export const dataToSchema = (data: {
-  name: string;
-  extension: string;
-  ext: string;
-  extensionWithDot: string;
-  path: string;
-  meta: {
-    path: string;
-    size: number;
-    type: string;
-    extension: string;
-  };
-  type: string;
-  size: number;
-  userId: string;
-  collectionName: string;
-  fileId: string;
-  storagePath: string;
-}): FileObj => {
+export const dataToSchema = (data): FileObj => {
   const dataSchema = {
     name: data.name,
     extension: data.extension,
@@ -207,7 +192,9 @@ export const dataToSchema = (data: {
   return dataSchema;
 };
 
-export const getMimeType = async (buffer: Buffer): Promise<string> => {
+export const getMimeType = async (
+  buffer: Buffer | ArrayBuffer
+): Promise<string> => {
   let mime;
   const fileExtension = await fileType.fromBuffer(buffer);
   mime = fileExtension?.mime;
