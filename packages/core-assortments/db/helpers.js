@@ -288,13 +288,13 @@ Collections.Assortments.createAssortment = ({
   return assortmentObject;
 };
 
-Collections.Assortments.sync = (syncFn) => {
+Collections.Assortments.sync = (syncFn, options) => {
   const referenceDate = Collections.Assortments.markAssortmentTreeDirty();
   syncFn(referenceDate);
   Collections.Assortments.cleanDirtyAssortmentTreeByReferenceDate(
     referenceDate
   );
-  Collections.Assortments.updateCleanAssortmentActivation();
+  Collections.Assortments.updateCleanAssortmentActivation(options);
   Collections.Assortments.wipeAssortments();
 };
 
@@ -395,7 +395,9 @@ Collections.Assortments.cleanDirtyAssortmentTreeByReferenceDate = (
   );
 };
 
-Collections.Assortments.updateCleanAssortmentActivation = () => {
+Collections.Assortments.updateCleanAssortmentActivation = ({
+  autoEnableInactiveAssortments = true,
+} = {}) => {
   const disabledDirtyAssortmentsCount = Collections.Assortments.update(
     {
       isActive: true,
@@ -406,16 +408,18 @@ Collections.Assortments.updateCleanAssortmentActivation = () => {
     },
     { bypassCollection2: true, multi: true }
   );
-  const enabledCleanAssortmentsCount = Collections.Assortments.update(
-    {
-      isActive: false,
-      dirty: { $ne: true },
-    },
-    {
-      $set: { isActive: true },
-    },
-    { bypassCollection2: true, multi: true }
-  );
+  const enabledCleanAssortmentsCount = autoEnableInactiveAssortments
+    ? Collections.Assortments.update(
+        {
+          isActive: false,
+          dirty: { $ne: true },
+        },
+        {
+          $set: { isActive: true },
+        },
+        { bypassCollection2: true, multi: true }
+      )
+    : 0;
 
   log(`Assortment Sync: Result of assortment activation`, {
     disabledDirtyAssortmentsCount,
