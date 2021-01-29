@@ -11,7 +11,7 @@ import {
 import fetch from 'isomorphic-unfetch';
 import FilesCollection from './createFilesCollection/FilesCollection';
 import { User } from '../../tests/seeds/users';
-import { getExtension } from './createFilesCollection/helpers';
+import { getExtension, getMimeType } from './createFilesCollection/helpers';
 
 let testCollection;
 let file;
@@ -210,16 +210,16 @@ describe('Meteor Files', () => {
       extensionWithDot: '.png',
       path: `assets/app/uploads/test_files_collection/${result._id}.png`,
       meta: {},
-      type: 'application/octet-stream',
-      mime: 'application/octet-stream',
-      'mime-type': 'application/octet-stream',
+      type: 'image/png',
+      mime: 'image/png',
+      'mime-type': 'image/png',
       size: 593040,
       userId: 'user',
       versions: {
         original: {
           path: `assets/app/uploads/test_files_collection/${result._id}.png`,
           size: 593040,
-          type: 'application/octet-stream',
+          type: 'image/png',
           extension: 'png',
         },
       },
@@ -227,7 +227,7 @@ describe('Meteor Files', () => {
       collectionName: 'test_files_collection',
       isVideo: false,
       isAudio: false,
-      isImage: false,
+      isImage: true,
       isText: false,
       isJSON: false,
       isPDF: false,
@@ -238,18 +238,6 @@ describe('Meteor Files', () => {
     expect(result).toMatchObject(matchingObject);
   });
 
-  // test for protected and unprotected collections
-
-  // it('removes file successfully', async () => {
-  //   const result = await testCollection.insertWithRemoteURL({
-  //     url: 'https://unchained.shop/img/veloplus-screenshots.png',
-  //     userId: User._id,
-  //   });
-
-  //   const res = testCollection.remove({ _id: result._id });
-  //   console.log('RES: ', res);
-  // });
-
   it('getExtension - return correct extension', async () => {
     const imageResult = await fetch(
       'https://unchained.shop/img/veloplus-screenshots.png'
@@ -257,6 +245,20 @@ describe('Meteor Files', () => {
     const imageBuffer = await imageResult.buffer();
 
     const res = await getExtension('test.png', imageBuffer);
-    console.log(res);
+    expect(res).toMatchObject({
+      ext: 'png',
+      extension: 'png',
+      extensionWithDot: '.png',
+    });
+  });
+
+  it('getMimeType - return correct type', async () => {
+    const imageResult = await fetch(
+      'https://unchained.shop/img/veloplus-screenshots.png'
+    );
+    const imageBuffer = await imageResult.buffer();
+
+    const res = await getMimeType(imageBuffer);
+    expect(res).toMatch('image/png');
   });
 });
