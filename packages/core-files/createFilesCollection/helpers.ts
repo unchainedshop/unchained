@@ -75,6 +75,21 @@ export const helpers = {
   now: Date.now,
 };
 
+export const accessDenied = (http, rc: number): boolean => {
+  const text = 'Access denied!';
+  if (!http.response.headersSent) {
+    http.response.writeHead(rc, {
+      'Content-Type': 'text/plain',
+      'Content-Length': text.length,
+    });
+  }
+
+  if (!http.response.finished) {
+    http.response.end(text);
+  }
+  return false;
+};
+
 export const notFound = (http) => {
   const text = 'File Not Found :(';
 

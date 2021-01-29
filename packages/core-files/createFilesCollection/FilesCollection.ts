@@ -21,6 +21,7 @@ import {
   dataToSchema,
   getMimeType,
   storagePath,
+  accessDenied,
 } from './helpers';
 
 export default class FilesCollection extends Mongo.Collection<FileObj> {
@@ -147,27 +148,17 @@ export default class FilesCollection extends Mongo.Collection<FileObj> {
     const { userId } = await getUser(http);
     const result = !!userId;
 
-    if ((http && result === true) || !http) {
+    if (this.secure && !result) {
+      return accessDenied(http, 401);
+    }
+
+    if ((http && result) || !http) {
       return true;
     }
 
-    const rc = helpers.isNumber(result) ? result : 401;
-
     if (http) {
-      const text = 'Access denied!';
-      if (!http.response.headersSent) {
-        http.response.writeHead(rc, {
-          'Content-Type': 'text/plain',
-          'Content-Length': text.length,
-        });
-      }
-
-      if (!http.response.finished) {
-        http.response.end(text);
-      }
+      return accessDenied(http, 401);
     }
-
-    return false;
   };
 
   async download(http, version = 'original', fileRef) {
@@ -590,7 +581,8 @@ export default class FilesCollection extends Mongo.Collection<FileObj> {
 
     const response = await fetch(url, { headers: opts.headers || {} });
     if (!response.ok) throw new Error('URL provided responded with 404');
-    const buffer = await response.arrayBuffer();
+    const arrayBuffer = await response.arrayBuffer();
+    const buffer = Buffer.from(arrayBuffer);
     const size = Buffer.byteLength(buffer);
     const { extension, extensionWithDot } = await getExtension(
       fileName,
