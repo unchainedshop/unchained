@@ -34,7 +34,10 @@ This is a bugfix release based on learnings from upgrading client projects
 - [platform] Certain fields like `emails` and `services` are now blocked from passing to `Users.createUser`. If you have used `emails` in `createUser` seeding before, use email. If you want to skip e-mail verification forcefully, use `initialPassword: true`. See the changes in the minimal example seed file to get a glimpse.
 - Be sure to use `removeFiles` on files collections instead of simply `files`. `removeFiles` ensure the removal of the document and also the associated GridFS file.
 
-## Minor
+## Major
+- [files] had undergone a similar change to the roles package keeping only the used APIs and improving the package health by adding Typescript.
+
+## Minor
 
 - [examples] Fix minimal example not seeding
 - [api] Fix children not receiving includeInactive
