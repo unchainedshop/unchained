@@ -1,3 +1,5 @@
+import { MongoClient } from 'mongodb';
+
 const Collection = function (name) {
   // eslint-disable-next-line no-underscore-dangle
   this._name = name;
@@ -42,16 +44,20 @@ RemoteCollectionDriver.prototype.find = jest.fn(() => ({
   count: jest.fn(),
   fetch: jest.fn(),
 }));
-const defaultRemoteCollectionDriver = jest.fn(() => ({
-  mongo: {
-    client: {
-      s: {
-        url: global.__MONGO_URI__,
-        options: { dbName: global.__MONGO_DB_NAME__ },
-      },
+const defaultRemoteCollectionDriver = async () => {
+  const connection = await MongoClient.connect(global.__MONGO_URI__, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+    poolSize: 1,
+  });
+  const db = await connection.db(global.__MONGO_DB_NAME__);
+
+  return {
+    mongo: {
+      db,
     },
-  },
-}));
+  };
+};
 
 const MongoInternals = {
   RemoteCollectionDriver,
