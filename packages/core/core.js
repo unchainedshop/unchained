@@ -29,7 +29,7 @@ export default async ({ modules = {} } = {}) => {
   configureLanguages(modules.languages);
   configureDocuments(modules.documents);
   configureUsers(modules.users);
-  configureAccounts(module.accounts);
+  configureAccounts(modules.accounts);
   configureDelivery(modules.delivery);
   configurePayment(modules.payment);
   configureWarehousing(modules.warehousing);
