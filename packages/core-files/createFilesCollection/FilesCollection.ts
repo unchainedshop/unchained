@@ -106,7 +106,7 @@ export default class FilesCollection extends Mongo.Collection<FileObj> {
         if (uris.length === 3) {
           const params = {
             _id: uris[0],
-            query: new URL(httpReq.url).searchParams,
+            query: new URL(httpReq.url, httpReq.headers.referer).searchParams,
             name: uris[2].split('?')[0],
             version: uris[1],
           };
@@ -490,9 +490,8 @@ export default class FilesCollection extends Mongo.Collection<FileObj> {
   }
 
   async getGridFSBucket() {
-    const { db } = MongoInternals.defaultRemoteCollectionDriver().mongo;
-
-    const gridFSBucket = new GridFSBucket(db, {
+    const { mongo } = await MongoInternals.defaultRemoteCollectionDriver();
+    const gridFSBucket = new GridFSBucket(mongo.db, {
       chunkSizeBytes: 1024,
       bucketName: this._name,
     });
@@ -519,9 +518,11 @@ export default class FilesCollection extends Mongo.Collection<FileObj> {
         throw err;
       });
       uploadStream.on('finish', (ver) => {
-        const property = `versions.${versionName}.meta.gridFsFileId`;
-        this.update(file._id, {
-          $set: { [property]: ver._id.toHexString() },
+        bound(() => {
+          const property = `versions.${versionName}.meta.gridFsFileId`;
+          this.update(file._id, {
+            $set: { [property]: ver._id.toHexString() },
+          });
         });
       });
     });
