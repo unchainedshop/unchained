@@ -1,7 +1,7 @@
 /* eslint-disable no-param-reassign */
 /* eslint-disable no-underscore-dangle */
 import fs from 'fs';
-import { URL } from 'url';
+import url from 'url';
 import { GridFSBucket, ObjectID } from 'mongodb';
 import { Mongo, MongoInternals } from 'meteor/mongo';
 import { Meteor } from 'meteor/meteor';
@@ -75,7 +75,6 @@ export default class FilesCollection extends Mongo.Collection<FileObj> {
             httpReq.headers.origin
           );
         }
-
         if (httpReq.method === 'OPTIONS') {
           httpResp.setHeader(
             'Access-Control-Allow-Methods',
@@ -96,29 +95,25 @@ export default class FilesCollection extends Mongo.Collection<FileObj> {
         }
       }
 
-      let uri;
-      if (httpReq.url?.includes(`${this.downloadRoute}/${this._name}`)) {
-        uri = httpReq.url.replace(`${this.downloadRoute}/${this._name}`, '');
+      if (httpReq.url?.includes(this.downloadRoute)) {
+        let uri = httpReq.url.replace(
+          `${this.downloadRoute}/${this._name}`,
+          ''
+        );
         if (uri.indexOf('/') === 0) {
           uri = uri.substring(1);
         }
-
         const uris = uri.split('/');
-        if (uris.length === 3) {
-          const params = {
-            _id: uris[0],
-            query: new URL(httpReq.url, httpReq.headers.referer).searchParams,
-            name: uris[2].split('?')[0],
-            version: uris[1],
-          };
 
-          const http = { request: httpReq, response: httpResp, params };
+        const params = {
+          _id: uris[3],
+          query: url.parse(httpReq.url, true).query,
+          name: uris[2],
+        };
 
-          if (await this.checkAccess(http)) {
-            await this.download(http, uris[1], this.findOne(uris[0]));
-          }
-        } else {
-          next();
+        const http = { request: httpReq, response: httpResp, params };
+        if (await this.allowAccess(http)) {
+          await this.download(http, this.findOne(params._id));
         }
       } else {
         next();
@@ -144,25 +139,19 @@ export default class FilesCollection extends Mongo.Collection<FileObj> {
     }
   };
 
-  checkAccess = async (http) => {
+  allowAccess = async (http): Promise<boolean> => {
     const { userId } = await getUser(http);
     const result = !!userId;
 
     if (this.secure && !result) {
       return accessDenied(http, 401);
     }
-
-    if ((http && result) || !http) {
-      return true;
-    }
-
-    if (http) {
-      return accessDenied(http, 401);
-    }
+    return true;
   };
 
-  async download(http, version = 'original', fileRef) {
+  async download(http, fileRef) {
     let vRef;
+    const version = 'original';
 
     if (fileRef) {
       if (
