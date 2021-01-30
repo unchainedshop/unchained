@@ -45,7 +45,7 @@ export default async () => {
         isActive: true,
         authorId: admin._id,
       });
-      return currency._id;
+      return currency.isoCode;
     });
     const countries = ['CH'].map((code, key) => {
       const country = Countries.createCountry({
