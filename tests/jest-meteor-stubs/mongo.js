@@ -9,7 +9,11 @@ let insertedDoc;
 Collection.prototype.insert = (doc, callback) => {
   // first param is error and second one is inserted doc _id
   insertedDoc = doc;
-  return callback(undefined, Date.now());
+
+  if (callback) {
+    return callback(undefined, Date.now());
+  }
+  return insertedDoc;
 };
 Collection.prototype.update = jest.fn();
 Collection.prototype.remove = jest.fn();
