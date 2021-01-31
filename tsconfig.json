@@ -26,7 +26,9 @@
     "paths": {
       /* Support absolute /imports/* with a leading '/' */
       "/*": ["*"],
-      "*": ["./packages/core-files/.npm/package/node_modules/*", "./packages/api/.npm/package/node_modules/*"],
+      "file-type":["./packages/core-files/.npm/package/node_modules/file-type/index.d.ts"],
+      "@reactioncommerce/random": ["./packages/core-files/.npm/package/node_modules/@reactioncommerce/random"],
+      "dataloader": ["./packages/api/.npm/package/node_modules/dataloader/index.d.ts"]
     },
     "moduleResolution": "node",
     "resolveJsonModule": true,
