@@ -569,7 +569,7 @@ Products.helpers({
     const price = pricing.reduce(
       (oldValue, curPrice) => {
         if (
-          curPrice.currency === currency &&
+          curPrice.currencyCode === currency &&
           curPrice.countryCode === countryCode &&
           (!curPrice.maxQuantity || curPrice.maxQuantity >= quantity)
         ) {
@@ -582,7 +582,7 @@ Products.helpers({
       },
       {
         amount: null,
-        currency,
+        currencyCode: currency,
         countryCode,
         isTaxable: false,
         isNetPrice: false,
@@ -596,7 +596,7 @@ Products.helpers({
           .update([this._id, countryCode, currency].join(''))
           .digest('hex'),
         amount: price.amount,
-        currency: price.currency,
+        currency: price.currencyCode,
         isTaxable: price.isTaxable,
         isNetPrice: price.isNetPrice,
       };
