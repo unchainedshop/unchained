@@ -558,16 +558,16 @@ export default class FilesCollection extends Mongo.Collection<FileObj> {
     return result;
   }
 
-  async load(url: string, opts: Options) {
+  async load(itemUrl: string, opts: Options) {
     const fileId = opts.fileId || Random.id();
     const FSName = fileId;
-    const pathParts = url.split('/');
+    const pathParts = itemUrl.split('/');
     const fileName =
       opts.name || opts.fileName
         ? opts.name || opts.fileName
         : pathParts[pathParts.length - 1] || FSName;
 
-    const response = await fetch(url, { headers: opts.headers || {} });
+    const response = await fetch(itemUrl, { headers: opts.headers || {} });
     if (!response.ok) throw new Error('URL provided responded with 404');
     const arrayBuffer = await response.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
