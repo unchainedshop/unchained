@@ -95,7 +95,7 @@ export default class FilesCollection extends Mongo.Collection<FileObj> {
         }
       }
 
-      if (httpReq.url?.includes(this.downloadRoute)) {
+      if (httpReq.url?.includes(`${this.downloadRoute}/${this._name}`)) {
         let uri = httpReq.url.replace(
           `${this.downloadRoute}/${this._name}`,
           ''
@@ -106,9 +106,8 @@ export default class FilesCollection extends Mongo.Collection<FileObj> {
         const uris = uri.split('/');
 
         const params = {
-          _id: uris[3],
+          _id: uris[0],
           query: url.parse(httpReq.url, true).query,
-          name: uris[2],
         };
 
         const http = { request: httpReq, response: httpResp, params };
