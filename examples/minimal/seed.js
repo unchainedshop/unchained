@@ -45,21 +45,21 @@ export default async () => {
         isActive: true,
         authorId: admin._id,
       });
-      return currency.isoCode;
+      return currency;
     });
     const countries = ['CH'].map((code, key) => {
       const country = Countries.createCountry({
         isoCode: code,
         isActive: true,
         authorId: admin._id,
-        defaultCurrencyId: currencies[key],
+        defaultCurrencyId: currencies[key]._id,
       });
       return country.isoCode;
     });
     logger.log(`
       initialized database with
       \ncountries: ${countries.join(',')}
-      \ncurrencies: ${currencies.join(',')}
+      \ncurrencies: ${currencies.map(c => c.isoCode).join(',')}
       \nlanguages: ${languages.join(',')}
       \nuser: admin@unchained.local / password`);
   } catch (e) {
