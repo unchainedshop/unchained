@@ -261,21 +261,4 @@ describe('Meteor Files', () => {
     const res = await getMimeType(imageBuffer);
     expect(res).toMatch('image/png');
   });
-
-  it('secured collection - should disallow unauthenticated access', async () => {
-    const testNonSecuredCollection = new FilesCollection({
-      collectionName: 'test_secure_collection',
-      secure: true,
-    });
-
-    const result = await testNonSecuredCollection.insertWithRemoteURL({
-      url: 'https://unchained.shop/img/veloplus-screenshots.png',
-      userId: User._id,
-    });
-    const url = `http://localhost:3000/cdn/storage/test_secure_collection/${result._id}/original/${result._id}`;
-
-    const fetchOperation = await fetch(url);
-    expect(fetchOperation.status).toEqual(401);
-    expect(fetchOperation.statusText).toEqual('Unauthorized');
-  });
 });
