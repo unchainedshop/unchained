@@ -18,7 +18,8 @@ export default [
       filterAssignments: [AssortmentFilter!]
       linkedAssortments: [AssortmentLink!]
       assortmentPaths: [AssortmentPath!]!
-      children: [Assortment!]
+      children(includeInactive: Boolean = false): [Assortment!]
+      childrenCount(includeInactive: Boolean = false): Int!
       search(
         queryString: String
         filterQuery: [FilterQueryInput!]
@@ -33,7 +34,6 @@ export default [
         ignoreChildAssortments: Boolean = false
         orderBy: SearchOrderBy
       ): ProductSearchResult!
-      childrenCount(includeInactive: Boolean = false): Int!
     }
 
     """

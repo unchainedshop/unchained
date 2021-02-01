@@ -8,7 +8,6 @@ Package.describe({
 
 Npm.depends({
   moniker: '0.1.2',
-  'lodash.clonedeep': '4.5.0',
   open: '7.3.1',
 });
 
