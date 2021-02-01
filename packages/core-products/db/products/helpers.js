@@ -39,13 +39,13 @@ const getPriceRange = (prices) => {
       isTaxable: min?.isTaxable,
       isNetPrice: min?.isNetPrice,
       amount: Math.round(min?.amount),
-      currency: min?.currencyCode,
+      currency: min?.currency,
     },
     maxPrice: {
       isTaxable: max?.isTaxable,
       isNetPrice: max?.isNetPrice,
       amount: Math.round(max?.amount),
-      currency: max?.currencyCode,
+      currency: max?.currency,
     },
   };
 };
@@ -667,19 +667,25 @@ Products.helpers({
       ...price,
     }));
   },
-  catalogPriceRange({ quantity = 0, vectors = [], includeInactive = false }) {
+  catalogPriceRange({
+    quantity = 0,
+    vectors = [],
+    includeInactive = false,
+    country,
+  }) {
     const proxyProducts = this.proxyProducts(vectors, { includeInactive });
     const filtered = [];
     proxyProducts.forEach((p) => {
       const catalogPrice = p.price({
-        country: 'CH',
+        country,
         quantity,
       });
 
-      if (catalogPrice && catalogPrice?.maxQuantity >= quantity) {
+      if (catalogPrice) {
         filtered.push(catalogPrice);
       }
     });
+
     if (!filtered.length) return null;
     const { minPrice, maxPrice } = getPriceRange(filtered);
 
@@ -706,6 +712,7 @@ Products.helpers({
       vectors = [],
       includeInactive = false,
       currency,
+      country,
       useNetPrice = false,
     },
     requestContext
@@ -715,23 +722,20 @@ Products.helpers({
     const filtered = [];
 
     proxyProducts.forEach((p) => {
-      const prices = (p.commerce && p.commerce.pricing) || [];
-      const inRangeProducts = prices?.filter((e) => e.maxQuantity >= quantity);
-      if (inRangeProducts.length) {
-        const userPrice = p.userPrice(
-          {
-            quantity,
-            currency,
-            country: 'CH',
-            useNetPrice,
-            userId,
-            user,
-          },
-          requestContext
-        );
-        filtered.push(userPrice);
-      }
+      const userPrice = p.userPrice(
+        {
+          quantity,
+          currency,
+          country,
+          useNetPrice,
+          userId,
+          user,
+        },
+        requestContext
+      );
+      if (userPrice) filtered.push(userPrice);
     });
+
     if (!filtered.length) return null;
     const { minPrice, maxPrice } = getPriceRange(filtered);
 
