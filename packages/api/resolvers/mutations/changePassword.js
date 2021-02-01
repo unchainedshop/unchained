@@ -22,11 +22,9 @@ export default async function changePassword(
   const newPassword = newHashedPassword || hashPassword(newPlainPassword);
   const oldPassword = oldHashedPassword || hashPassword(oldPlainPassword);
 
-  return accountsPassword
-    .changePassword(context.userId, oldPassword, newPassword)
-    .then(() => {
-      return {
-        success: true,
-      };
-    });
+  return accountsPassword.changePassword(
+    context.userId,
+    oldPassword,
+    newPassword
+  );
 }
