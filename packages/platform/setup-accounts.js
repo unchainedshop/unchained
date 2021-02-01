@@ -6,7 +6,6 @@ import {
 } from 'meteor/unchained:core-accountsjs';
 import { Users } from 'meteor/unchained:core-users';
 import { Orders } from 'meteor/unchained:core-orders';
-import { Promise } from 'meteor/promise';
 import moniker from 'moniker';
 
 accountsServer.users = Users;
@@ -34,6 +33,7 @@ export default ({ mergeUserCartsOnLogin = true } = {}) => {
           guest: true,
           profile: {},
           password: null,
+          initialPassword: true,
         },
         context
       );
@@ -58,15 +58,13 @@ export default ({ mergeUserCartsOnLogin = true } = {}) => {
       countryContext,
     });
     if (userIdBeforeLogin) {
-      Promise.await(
-        Orders.migrateCart({
-          fromUserId: userIdBeforeLogin,
-          toUserId: user._id,
-          locale: normalizedLocale,
-          countryContext,
-          mergeCarts: mergeUserCartsOnLogin,
-        })
-      );
+      await Orders.migrateCart({
+        fromUserId: userIdBeforeLogin,
+        toUserId: user._id,
+        locale: normalizedLocale,
+        countryContext,
+        mergeCarts: mergeUserCartsOnLogin,
+      });
 
       await services.migrateBookmarks(
         {
@@ -80,8 +78,7 @@ export default ({ mergeUserCartsOnLogin = true } = {}) => {
   });
 
   accountsServer.on('ResetPasswordSuccess', (user) => {
-    console.log('ResetPasswordSuccess', user);
-    Users.update(
+    Users.rawCollection().updateOne(
       { _id: user._id },
       {
         $set: {
@@ -92,8 +89,7 @@ export default ({ mergeUserCartsOnLogin = true } = {}) => {
   });
 
   accountsServer.on('ChangePasswordSuccess', (user) => {
-    console.log('ChangePasswordSuccess', user);
-    Users.update(
+    Users.rawCollection().updateOne(
       { _id: user._id },
       {
         $set: {
@@ -105,7 +101,7 @@ export default ({ mergeUserCartsOnLogin = true } = {}) => {
 
   accountsServer.on('ValidateLogin', ({ service, user }) => {
     if (service !== 'guest' && user.guest) {
-      Users.update(
+      Users.rawCollection().updateOne(
         { _id: user._id },
         {
           $set: {

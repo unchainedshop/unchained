@@ -14,6 +14,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { Avatars, Users } from './collections';
 import filterContext from '../filterContext';
 import evaluateContext from '../evaluateContext';
+import settings from '../settings';
 
 Logs.helpers({
   user() {
@@ -264,23 +265,28 @@ Users.findUser = ({ userId, resetToken, hashedToken }) => {
   return Users.findOne({ _id: userId });
 };
 
-Users.createUser = async (userData, context) => {
+Users.createUser = async (userData, context, { skipMessaging } = {}) => {
   const userId = await accountsPassword.createUser(userData, context);
-  if (userData.password === undefined && !userData.guest && userData.email) {
-    await accountsPassword.sendEnrollmentEmail(userData.email);
+  const autoMessagingEnabled = skipMessaging
+    ? false
+    : settings.autoMessagingAfterUserCreation && userData.email && userId;
+
+  if (autoMessagingEnabled) {
+    if (userData.password === undefined) {
+      await accountsPassword.sendEnrollmentEmail(userData.email);
+    } else {
+      await accountsPassword.sendVerificationEmail(userData.email);
+    }
   }
   return Users.findUser({ userId });
 };
 
-Users.loginWithService = async (service, params, context) => {
+Users.loginWithService = async (service, params, rawContext) => {
+  const context = evaluateContext(filterContext(rawContext));
   const {
     user: tokenUser,
     token: loginToken,
-  } = await accountsServer.loginWithService(
-    service,
-    params,
-    evaluateContext(filterContext(context))
-  );
+  } = await accountsServer.loginWithService(service, params, context);
   await accountsServer.getHooks().emit('LoginTokenCreated', {
     user: tokenUser,
     connection: context,
@@ -293,14 +299,12 @@ Users.loginWithService = async (service, params, context) => {
   };
 };
 
-Users.createLoginToken = async (user, context) => {
+Users.createLoginToken = async (user, rawContext) => {
+  const context = evaluateContext(filterContext(rawContext));
   const {
     user: tokenUser,
     token: loginToken,
-  } = await accountsServer.loginWithUser(
-    user,
-    evaluateContext(filterContext(context))
-  );
+  } = await accountsServer.loginWithUser(user, context);
   await accountsServer.getHooks().emit('LoginTokenCreated', {
     user: tokenUser,
     connection: context,

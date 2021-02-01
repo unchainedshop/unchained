@@ -11,26 +11,30 @@ export default async () => {
     if (Users.find({ username: 'admin' }).count() > 0) {
       return;
     }
-    const admin = await Users.createUser({
-      username: 'admin',
-      roles: ['admin'],
-      email: 'admin@unchained.local',
-      password: hashPassword('password'),
-      initialPassword: true,
-      profile: { address: {} },
-      guest: false,
-      lastBillingAddress: {
-        firstName: 'Caraig Jackson',
-        lastName: 'Mengistu',
-        company: 'false',
-        postalCode: '52943',
-        countryCode: 'ET',
-        city: 'Addis Ababa',
-        addressLine: '75275 Bole Mikael',
-        addressLine2: 'Bole 908',
-        regionCode: 'false',
+    const admin = await Users.createUser(
+      {
+        username: 'admin',
+        roles: ['admin'],
+        email: 'admin@unchained.local',
+        password: hashPassword('password'),
+        initialPassword: true,
+        profile: { address: {} },
+        guest: false,
+        lastBillingAddress: {
+          firstName: 'Caraig Jackson',
+          lastName: 'Mengistu',
+          company: 'false',
+          postalCode: '52943',
+          countryCode: 'ET',
+          city: 'Addis Ababa',
+          addressLine: '75275 Bole Mikael',
+          addressLine2: 'Bole 908',
+          regionCode: 'false',
+        },
       },
-    });
+      {},
+      { skipMessaging: true },
+    );
 
     const languages = ['de', 'fr'].map((code) => {
       const language = Languages.createLanguage({

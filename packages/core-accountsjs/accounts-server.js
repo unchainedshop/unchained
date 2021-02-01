@@ -15,13 +15,12 @@ const accountsServerOptions = {
       action: pathFragment,
       userId: user.id || user._id,
       token,
-      skipEmailVerification: !!user.guest || !!user.initialPassword,
+      skipMessaging: !!user.guest && pathFragment === 'verify-email',
     };
   },
   sendMail: (input) => {
     if (!input) return true;
-    if (input.skipEmailVerification && input.action === 'verify-email')
-      return true;
+    if (input.skipMessaging) return true;
 
     return WorkerDirector.addWork({
       type: 'MESSAGE',

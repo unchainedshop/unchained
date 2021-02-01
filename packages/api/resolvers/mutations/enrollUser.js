@@ -8,12 +8,12 @@ export default async function enrollUser(root, options, context) {
   if (!mappedOptions.password && mappedOptions.plainPassword) {
     mappedOptions.password = hashPassword(mappedOptions.plainPassword);
   }
-  if (!mappedOptions.password) {
-    mappedOptions.password = undefined;
-  }
   delete mappedOptions.plainPassword;
-
   mappedOptions.initialPassword = true;
 
-  return Users.createUser(mappedOptions, context);
+  // Skip Messaging when password is set so we
+  // don't send a verification e-mail after enrollment
+  return Users.createUser(mappedOptions, context, {
+    skipMessaging: !!mappedOptions.password,
+  });
 }
