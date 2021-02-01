@@ -14,7 +14,9 @@ export default async () => {
     const admin = await Users.createUser({
       username: 'admin',
       roles: ['admin'],
-      emails: [{ address: 'admin@unchained.local', verified: true }],
+      email: 'admin@unchained.local',
+      password: hashPassword('password'),
+      initialPassword: true,
       profile: { address: {} },
       guest: false,
       lastBillingAddress: {
@@ -29,7 +31,6 @@ export default async () => {
         regionCode: 'false',
       },
     });
-    await admin.setPassword(hashPassword('password'));
 
     const languages = ['de', 'fr'].map((code) => {
       const language = Languages.createLanguage({
@@ -59,7 +60,7 @@ export default async () => {
     logger.log(`
       initialized database with
       \ncountries: ${countries.join(',')}
-      \ncurrencies: ${currencies.map(c => c.isoCode).join(',')}
+      \ncurrencies: ${currencies.map((c) => c.isoCode).join(',')}
       \nlanguages: ${languages.join(',')}
       \nuser: admin@unchained.local / password`);
   } catch (e) {

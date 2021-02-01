@@ -266,10 +266,8 @@ Users.findUser = ({ userId, resetToken, hashedToken }) => {
 
 Users.createUser = async (userData, context) => {
   const userId = await accountsPassword.createUser(userData, context);
-  if (!userData.password && !userData.guest) {
-    await accountsPassword.sendEnrollmentEmail(
-      userData?.email || userData?.emails[0]?.address
-    );
+  if (!userData.password && !userData.guest && userData.email) {
+    await accountsPassword.sendEnrollmentEmail(userData.email);
   }
   return Users.findUser({ userId });
 };
