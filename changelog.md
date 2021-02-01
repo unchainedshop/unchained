@@ -1,3 +1,16 @@
+# v0.61.1
+
+This is a bugfix release based on learnings from upgrading client projects
+
+## Breaking changes
+- [platform] Certain fields like `emails` and `services` are now blocked from passing to `Users.createUser`. If you have used `emails` in `createUser` seeding before, use email. If you want to skip e-mail verification forcefully, use `isInitialPassword: true`. See the changes in the minimal example seed file to get a glimpse.
+
+## Minor
+- [examples] Fix minimal example not seeding
+- [api] Fix children not receiving includeInactive
+- [core] Fix core not receiving module configuration of users
+- [core] Fix Assortments.sync always auto publishing all assortments
+
 # v0.61.0
 
 This is a bugfix release based on learnings from upgrading client projects
