@@ -33,6 +33,7 @@ export default ({ mergeUserCartsOnLogin = true } = {}) => {
           email: params.email || `${guestname}@unchained.local`,
           guest: true,
           profile: {},
+          password: null,
         },
         context
       );
@@ -76,6 +77,30 @@ export default ({ mergeUserCartsOnLogin = true } = {}) => {
         connection
       );
     }
+  });
+
+  accountsServer.on('ResetPasswordSuccess', (user) => {
+    console.log('ResetPasswordSuccess', user);
+    Users.update(
+      { _id: user._id },
+      {
+        $set: {
+          initialPassword: false,
+        },
+      }
+    );
+  });
+
+  accountsServer.on('ChangePasswordSuccess', (user) => {
+    console.log('ChangePasswordSuccess', user);
+    Users.update(
+      { _id: user._id },
+      {
+        $set: {
+          initialPassword: false,
+        },
+      }
+    );
   });
 
   accountsServer.on('ValidateLogin', ({ service, user }) => {

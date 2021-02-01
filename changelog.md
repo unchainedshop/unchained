@@ -3,7 +3,7 @@
 This is a bugfix release based on learnings from upgrading client projects
 
 ## Breaking changes
-- [platform] Certain fields like `emails` and `services` are now blocked from passing to `Users.createUser`. If you have used `emails` in `createUser` seeding before, use email. If you want to skip e-mail verification forcefully, use `isInitialPassword: true`. See the changes in the minimal example seed file to get a glimpse.
+- [platform] Certain fields like `emails` and `services` are now blocked from passing to `Users.createUser`. If you have used `emails` in `createUser` seeding before, use email. If you want to skip e-mail verification forcefully, use `initialPassword: true`. See the changes in the minimal example seed file to get a glimpse.
 
 ## Minor
 - [examples] Fix minimal example not seeding

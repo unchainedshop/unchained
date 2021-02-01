@@ -8,6 +8,9 @@ export default async function enrollUser(root, options, context) {
   if (!mappedOptions.password && mappedOptions.plainPassword) {
     mappedOptions.password = hashPassword(mappedOptions.plainPassword);
   }
+  if (!mappedOptions.password) {
+    mappedOptions.password = undefined;
+  }
   delete mappedOptions.plainPassword;
 
   mappedOptions.initialPassword = true;

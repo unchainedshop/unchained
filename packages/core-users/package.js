@@ -1,6 +1,6 @@
 Package.describe({
   name: 'unchained:core-users',
-  version: '0.61.1',
+  version: '0.61.2',
   summary: 'Unchained Engine Core: Users',
   git: 'https://github.com/unchainedshop/unchained',
   documentation: 'README.md',
