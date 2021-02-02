@@ -297,7 +297,7 @@
                   "name": null,
                   "ofType": {
                     "kind": "OBJECT",
-                    "name": "ProductPrice",
+                    "name": "Price",
                     "ofType": null
                   }
                 }
@@ -3675,7 +3675,7 @@
             ],
             "type": {
               "kind": "OBJECT",
-              "name": "Money",
+              "name": "Price",
               "ofType": null
             },
             "isDeprecated": false,
@@ -3933,7 +3933,7 @@
             "args": [],
             "type": {
               "kind": "OBJECT",
-              "name": "Money",
+              "name": "Price",
               "ofType": null
             },
             "isDeprecated": false,
@@ -4161,7 +4161,7 @@
             ],
             "type": {
               "kind": "OBJECT",
-              "name": "DeliveryFee",
+              "name": "Price",
               "ofType": null
             },
             "isDeprecated": false,
@@ -4287,7 +4287,7 @@
       },
       {
         "kind": "OBJECT",
-        "name": "DeliveryFee",
+        "name": "Price",
         "description": "",
         "specifiedByUrl": null,
         "fields": [
@@ -4339,50 +4339,6 @@
             "isDeprecated": false,
             "deprecationReason": null
           },
-          {
-            "name": "country",
-            "description": "",
-            "args": [],
-            "type": {
-              "kind": "NON_NULL",
-              "name": null,
-              "ofType": {
-                "kind": "OBJECT",
-                "name": "Country",
-                "ofType": null
-              }
-            },
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "price",
-            "description": "",
-            "args": [],
-            "type": {
-              "kind": "NON_NULL",
-              "name": null,
-              "ofType": {
-                "kind": "OBJECT",
-                "name": "Money",
-                "ofType": null
-              }
-            },
-            "isDeprecated": false,
-            "deprecationReason": null
-          }
-        ],
-        "inputFields": null,
-        "interfaces": [],
-        "enumValues": null,
-        "possibleTypes": null
-      },
-      {
-        "kind": "OBJECT",
-        "name": "Money",
-        "description": "",
-        "specifiedByUrl": null,
-        "fields": [
           {
             "name": "amount",
             "description": "",
@@ -4514,7 +4470,7 @@
               "name": null,
               "ofType": {
                 "kind": "OBJECT",
-                "name": "Money",
+                "name": "Price",
                 "ofType": null
               }
             },
@@ -4580,7 +4536,7 @@
               "name": null,
               "ofType": {
                 "kind": "OBJECT",
-                "name": "Money",
+                "name": "Price",
                 "ofType": null
               }
             },
@@ -4701,7 +4657,7 @@
               "name": null,
               "ofType": {
                 "kind": "OBJECT",
-                "name": "Money",
+                "name": "Price",
                 "ofType": null
               }
             },
@@ -4886,7 +4842,7 @@
             "args": [],
             "type": {
               "kind": "OBJECT",
-              "name": "Money",
+              "name": "Price",
               "ofType": null
             },
             "isDeprecated": false,
@@ -5281,7 +5237,7 @@
               "name": null,
               "ofType": {
                 "kind": "OBJECT",
-                "name": "Money",
+                "name": "Price",
                 "ofType": null
               }
             },
@@ -5404,7 +5360,7 @@
             "args": [],
             "type": {
               "kind": "OBJECT",
-              "name": "Money",
+              "name": "Price",
               "ofType": null
             },
             "isDeprecated": false,
@@ -5429,7 +5385,7 @@
             ],
             "type": {
               "kind": "OBJECT",
-              "name": "Money",
+              "name": "Price",
               "ofType": null
             },
             "isDeprecated": false,
@@ -8894,7 +8850,7 @@
               "name": null,
               "ofType": {
                 "kind": "OBJECT",
-                "name": "Money",
+                "name": "Price",
                 "ofType": null
               }
             },
@@ -9900,8 +9856,49 @@
             ],
             "type": {
               "kind": "OBJECT",
-              "name": "ProductPrice",
+              "name": "Price",
               "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "leveledCatalogPrices",
+            "description": "",
+            "args": [
+              {
+                "name": "currency",
+                "description": "",
+                "type": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "SCALAR",
+                    "name": "String",
+                    "ofType": null
+                  }
+                },
+                "defaultValue": null,
+                "isDeprecated": false,
+                "deprecationReason": null
+              }
+            ],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "LIST",
+                "name": null,
+                "ofType": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "OBJECT",
+                    "name": "PriceLevel",
+                    "ofType": null
+                  }
+                }
+              }
             },
             "isDeprecated": false,
             "deprecationReason": null
@@ -9949,7 +9946,7 @@
             ],
             "type": {
               "kind": "OBJECT",
-              "name": "ProductPrice",
+              "name": "Price",
               "ofType": null
             },
             "isDeprecated": false,
@@ -10221,86 +10218,18 @@
       },
       {
         "kind": "OBJECT",
-        "name": "ProductPrice",
+        "name": "PriceLevel",
         "description": "",
         "specifiedByUrl": null,
         "fields": [
           {
-            "name": "_id",
+            "name": "minQuantity",
             "description": "",
             "args": [],
             "type": {
-              "kind": "NON_NULL",
-              "name": null,
-              "ofType": {
-                "kind": "SCALAR",
-                "name": "ID",
-                "ofType": null
-              }
-            },
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "isTaxable",
-            "description": "",
-            "args": [],
-            "type": {
-              "kind": "NON_NULL",
-              "name": null,
-              "ofType": {
-                "kind": "SCALAR",
-                "name": "Boolean",
-                "ofType": null
-              }
-            },
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "isNetPrice",
-            "description": "",
-            "args": [],
-            "type": {
-              "kind": "NON_NULL",
-              "name": null,
-              "ofType": {
-                "kind": "SCALAR",
-                "name": "Boolean",
-                "ofType": null
-              }
-            },
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "country",
-            "description": "",
-            "args": [],
-            "type": {
-              "kind": "NON_NULL",
-              "name": null,
-              "ofType": {
-                "kind": "OBJECT",
-                "name": "Country",
-                "ofType": null
-              }
-            },
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "price",
-            "description": "",
-            "args": [],
-            "type": {
-              "kind": "NON_NULL",
-              "name": null,
-              "ofType": {
-                "kind": "OBJECT",
-                "name": "Money",
-                "ofType": null
-              }
+              "kind": "SCALAR",
+              "name": "Int",
+              "ofType": null
             },
             "isDeprecated": false,
             "deprecationReason": null
@@ -10312,6 +10241,18 @@
             "type": {
               "kind": "SCALAR",
               "name": "Int",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "price",
+            "description": "",
+            "args": [],
+            "type": {
+              "kind": "OBJECT",
+              "name": "Price",
               "ofType": null
             },
             "isDeprecated": false,
@@ -10366,7 +10307,7 @@
               "name": null,
               "ofType": {
                 "kind": "OBJECT",
-                "name": "Money",
+                "name": "Price",
                 "ofType": null
               }
             },
@@ -18226,7 +18167,7 @@
             "args": [],
             "type": {
               "kind": "OBJECT",
-              "name": "Money",
+              "name": "Price",
               "ofType": null
             },
             "isDeprecated": false,
@@ -18352,7 +18293,7 @@
             "args": [],
             "type": {
               "kind": "OBJECT",
-              "name": "Money",
+              "name": "Price",
               "ofType": null
             },
             "isDeprecated": false,
@@ -18653,7 +18594,7 @@
             "args": [],
             "type": {
               "kind": "OBJECT",
-              "name": "Money",
+              "name": "Price",
               "ofType": null
             },
             "isDeprecated": false,
@@ -18755,7 +18696,7 @@
             "args": [],
             "type": {
               "kind": "OBJECT",
-              "name": "Money",
+              "name": "Price",
               "ofType": null
             },
             "isDeprecated": false,
@@ -18869,7 +18810,7 @@
             "args": [],
             "type": {
               "kind": "OBJECT",
-              "name": "Money",
+              "name": "Price",
               "ofType": null
             },
             "isDeprecated": false,
@@ -22337,6 +22278,186 @@
       },
       {
         "kind": "OBJECT",
+        "name": "ProductPriceRange",
+        "description": "",
+        "specifiedByUrl": null,
+        "fields": [
+          {
+            "name": "_id",
+            "description": "",
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "ID",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "minPrice",
+            "description": "",
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "OBJECT",
+                "name": "Price",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "maxPrice",
+            "description": "",
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "OBJECT",
+                "name": "Price",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          }
+        ],
+        "inputFields": null,
+        "interfaces": [],
+        "enumValues": null,
+        "possibleTypes": null
+      },
+      {
+        "kind": "OBJECT",
+        "name": "ProductCatalogPrice",
+        "description": "",
+        "specifiedByUrl": null,
+        "fields": [
+          {
+            "name": "_id",
+            "description": "",
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "ID",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "isTaxable",
+            "description": "",
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Boolean",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "isNetPrice",
+            "description": "",
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Boolean",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "country",
+            "description": "",
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "OBJECT",
+                "name": "Country",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "currency",
+            "description": "",
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "OBJECT",
+                "name": "Currency",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "amount",
+            "description": "",
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Int",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "maxQuantity",
+            "description": "",
+            "args": [],
+            "type": {
+              "kind": "SCALAR",
+              "name": "Int",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          }
+        ],
+        "inputFields": null,
+        "interfaces": [],
+        "enumValues": null,
+        "possibleTypes": null
+      },
+      {
+        "kind": "OBJECT",
         "name": "ProductVariationAssignmentVector",
         "description": "Key Value Combination",
         "specifiedByUrl": null,
@@ -22798,6 +22919,144 @@
             "deprecationReason": null
           },
           {
+            "name": "catalogPriceRange",
+            "description": "",
+            "args": [
+              {
+                "name": "quantity",
+                "description": "",
+                "type": {
+                  "kind": "SCALAR",
+                  "name": "Int",
+                  "ofType": null
+                },
+                "defaultValue": "0",
+                "isDeprecated": false,
+                "deprecationReason": null
+              },
+              {
+                "name": "vectors",
+                "description": "",
+                "type": {
+                  "kind": "LIST",
+                  "name": null,
+                  "ofType": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "INPUT_OBJECT",
+                      "name": "ProductAssignmentVectorInput",
+                      "ofType": null
+                    }
+                  }
+                },
+                "defaultValue": null,
+                "isDeprecated": false,
+                "deprecationReason": null
+              },
+              {
+                "name": "includeInactive",
+                "description": "",
+                "type": {
+                  "kind": "SCALAR",
+                  "name": "Boolean",
+                  "ofType": null
+                },
+                "defaultValue": "false",
+                "isDeprecated": false,
+                "deprecationReason": null
+              }
+            ],
+            "type": {
+              "kind": "OBJECT",
+              "name": "ProductPriceRange",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "simulatedPriceRange",
+            "description": "",
+            "args": [
+              {
+                "name": "quantity",
+                "description": "",
+                "type": {
+                  "kind": "SCALAR",
+                  "name": "Int",
+                  "ofType": null
+                },
+                "defaultValue": null,
+                "isDeprecated": false,
+                "deprecationReason": null
+              },
+              {
+                "name": "vectors",
+                "description": "",
+                "type": {
+                  "kind": "LIST",
+                  "name": null,
+                  "ofType": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "INPUT_OBJECT",
+                      "name": "ProductAssignmentVectorInput",
+                      "ofType": null
+                    }
+                  }
+                },
+                "defaultValue": null,
+                "isDeprecated": false,
+                "deprecationReason": null
+              },
+              {
+                "name": "includeInactive",
+                "description": "",
+                "type": {
+                  "kind": "SCALAR",
+                  "name": "Boolean",
+                  "ofType": null
+                },
+                "defaultValue": "false",
+                "isDeprecated": false,
+                "deprecationReason": null
+              },
+              {
+                "name": "currency",
+                "description": "",
+                "type": {
+                  "kind": "SCALAR",
+                  "name": "String",
+                  "ofType": null
+                },
+                "defaultValue": null,
+                "isDeprecated": false,
+                "deprecationReason": null
+              },
+              {
+                "name": "useNetPrice",
+                "description": "",
+                "type": {
+                  "kind": "SCALAR",
+                  "name": "Boolean",
+                  "ofType": null
+                },
+                "defaultValue": "false",
+                "isDeprecated": false,
+                "deprecationReason": null
+              }
+            ],
+            "type": {
+              "kind": "OBJECT",
+              "name": "ProductPriceRange",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
             "name": "products",
             "description": "Reduced list of possible products by key/value combinations",
             "args": [
@@ -23154,8 +23413,49 @@
             ],
             "type": {
               "kind": "OBJECT",
-              "name": "ProductPrice",
+              "name": "Price",
               "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "leveledCatalogPrices",
+            "description": "",
+            "args": [
+              {
+                "name": "currency",
+                "description": "",
+                "type": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "SCALAR",
+                    "name": "String",
+                    "ofType": null
+                  }
+                },
+                "defaultValue": null,
+                "isDeprecated": false,
+                "deprecationReason": null
+              }
+            ],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "LIST",
+                "name": null,
+                "ofType": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "OBJECT",
+                    "name": "PriceLevel",
+                    "ofType": null
+                  }
+                }
+              }
             },
             "isDeprecated": false,
             "deprecationReason": null
@@ -23203,7 +23503,7 @@
             ],
             "type": {
               "kind": "OBJECT",
-              "name": "ProductPrice",
+              "name": "Price",
               "ofType": null
             },
             "isDeprecated": false,
@@ -24107,7 +24407,7 @@
               "name": null,
               "ofType": {
                 "kind": "OBJECT",
-                "name": "Money",
+                "name": "Price",
                 "ofType": null
               }
             },
