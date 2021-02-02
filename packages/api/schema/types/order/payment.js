@@ -21,7 +21,7 @@ export default [
       _id: ID!
       provider: PaymentProvider
       status: OrderPaymentStatus
-      fee: Money
+      fee: Price
       paid: Date
       meta: JSON
       discounts: [OrderPaymentDiscount!]
@@ -31,7 +31,7 @@ export default [
       _id: ID!
       provider: PaymentProvider
       status: OrderPaymentStatus
-      fee: Money
+      fee: Price
       paid: Date
       meta: JSON
       discounts: [OrderPaymentDiscount!]
@@ -42,7 +42,7 @@ export default [
       provider: PaymentProvider
       status: OrderPaymentStatus
       paid: Date
-      fee: Money
+      fee: Price
       meta: JSON
       discounts: [OrderPaymentDiscount!]
     }
@@ -51,7 +51,7 @@ export default [
       _id: ID!
       provider: PaymentProvider
       status: OrderPaymentStatus
-      fee: Money
+      fee: Price
       paid: Date
       meta: JSON
       discounts: [OrderPaymentDiscount!]
