@@ -3,6 +3,16 @@ import { Meteor } from 'meteor/meteor';
 import fs from 'fs'; // Required to read files initially uploaded via Meteor-Files
 import { MongoInternals } from 'meteor/mongo';
 
+const getContentDisposition = (fileName, downloadFlag) => {
+  const dispositionType = downloadFlag === 'true' ? 'attachment;' : 'inline;';
+
+  const encodedName = encodeURIComponent(fileName);
+  const dispositionName = `filename="${encodedName}"; filename=*UTF-8"${encodedName}";`;
+  const dispositionEncoding = 'charset=utf-8';
+
+  return `${dispositionType} ${dispositionName} ${dispositionEncoding}`;
+};
+
 export default (collectionName) => {
   const gridFSBucket = new MongoInternals.NpmModule.GridFSBucket(
     MongoInternals.defaultRemoteCollectionDriver().mongo.db,
@@ -24,6 +34,7 @@ export default (collectionName) => {
           )
           .on('error', (err) => {
             console.error(err); // eslint-disable-line
+            this.unlink(this.collection.findOne(file._id), versionName);
             throw err;
           })
           .on(
@@ -66,7 +77,7 @@ export default (collectionName) => {
 
         http.response.setHeader(
           'Content-Disposition',
-          `inline; filename="${file.name}"`
+          getContentDisposition(file.name, http?.params?.query?.download)
         );
         http.response.setHeader('Cache-Control', this.cacheControl);
       }
