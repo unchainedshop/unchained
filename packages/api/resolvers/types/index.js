@@ -48,7 +48,7 @@ import FilterOption from './filter-option';
 import LoadedFilter from './loaded-filter';
 import LoadedFilterOption from './loaded-filter-option';
 import Quotation from './quotation';
-import DeliveryFee from './delivery-fee';
+import Price from './price';
 import SubscriptionPayment from './subscription-payment';
 import SubscriptionDelivery from './subscription-delivery';
 import SubscriptionPeriod from './subscription-period';
@@ -108,7 +108,7 @@ export default {
   LoadedFilter,
   LoadedFilterOption,
   Quotation,
-  DeliveryFee,
+  Price,
   SubscriptionPayment,
   SubscriptionDelivery,
   SubscriptionPeriod,

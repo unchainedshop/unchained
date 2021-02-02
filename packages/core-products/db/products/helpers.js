@@ -39,13 +39,13 @@ const getPriceRange = (prices) => {
       isTaxable: min?.isTaxable,
       isNetPrice: min?.isNetPrice,
       amount: Math.round(min?.amount),
-      currency: min?.currency,
+      currencyCode: min?.currencyCode,
     },
     maxPrice: {
       isTaxable: max?.isTaxable,
       isNetPrice: max?.isNetPrice,
       amount: Math.round(max?.amount),
-      currency: max?.currency,
+      currencyCode: max?.currencyCode,
     },
   };
 };
@@ -544,7 +544,7 @@ Products.helpers({
         )
         .digest('hex'),
       amount: userPrice.amount,
-      currency: userPrice.currency,
+      currencyCode: userPrice.currency,
       isTaxable: pricing.taxSum() > 0,
       isNetPrice: useNetPrice,
     };
@@ -600,10 +600,7 @@ Products.helpers({
           .createHash('sha256')
           .update([this._id, countryCode, currency].join(''))
           .digest('hex'),
-        amount: price.amount,
-        currency: price.currencyCode,
-        isTaxable: price.isTaxable,
-        isNetPrice: price.isNetPrice,
+        ...price,
       };
     }
     return null;

@@ -53,7 +53,7 @@ export default {
           isTaxable: p.isTaxable,
           isNetPrice: p.isNetPrice,
           amount: p.amount,
-          currency: p.currencyCode,
+          currencyCode: p.currencyCode,
         },
       };
     });
