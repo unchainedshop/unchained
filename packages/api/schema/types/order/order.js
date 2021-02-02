@@ -98,7 +98,7 @@ export default [
       payment: OrderPayment
       items: [OrderItem!]
       discounts: [OrderDiscount!]
-      total(category: OrderPriceCategory): Money
+      total(category: OrderPriceCategory): Price
       documents(type: OrderDocumentType = CONFIRMATION): [Media!]!
       supportedDeliveryProviders: [DeliveryProvider!]!
       supportedPaymentProviders: [PaymentProvider!]!
