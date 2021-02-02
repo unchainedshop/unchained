@@ -24,8 +24,8 @@ export default [
       quantity: Int!
       originalProduct: Product!
       quotation: Quotation
-      unitPrice: Money
-      total(category: OrderItemPriceCategory): Money
+      unitPrice: Price
+      total(category: OrderItemPriceCategory): Price
       discounts: [OrderItemDiscount!]
       dispatches: [Dispatch!]
       configuration: [ProductConfigurationParameter!]
