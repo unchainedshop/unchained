@@ -44,23 +44,8 @@ describe('DeliveryProviders', () => {
                 _id
                 isTaxable
                 isNetPrice
-                country {
-                  _id
-                  isoCode
-                  isActive
-                  isBase
-                  defaultCurrency {
-                    _id
-                    isoCode
-                    isActive
-                  }
-                  flagEmoji
-                  name
-                }
-                price {
-                  amount
-                  currency
-                }
+                amount
+                currency
               }
             }
           }
@@ -114,23 +99,8 @@ describe('DeliveryProviders', () => {
                 _id
                 isTaxable
                 isNetPrice
-                country {
-                  _id
-                  isoCode
-                  isActive
-                  isBase
-                  defaultCurrency {
-                    _id
-                    isoCode
-                    isActive
-                  }
-                  flagEmoji
-                  name
-                }
-                price {
-                  amount
-                  currency
-                }
+                amount
+                currency
               }
             }
           }
@@ -152,10 +122,8 @@ describe('DeliveryProviders', () => {
               _id
               simulatedPrice {
                 _id
-                price {
-                  amount
-                  currency
-                }
+                amount
+                currency
               }
             }
           }
@@ -164,7 +132,7 @@ describe('DeliveryProviders', () => {
           deliveryProviderId: SimpleDeliveryProvider._id,
         },
       });
-      expect(deliveryProvider?.simulatedPrice?.price?.currency).toEqual('CHF');
+      expect(deliveryProvider?.simulatedPrice?.currency).toEqual('CHF');
     });
 
     it('return value for simulatedPrice with value of currency argument passed to it', async () => {
@@ -177,10 +145,8 @@ describe('DeliveryProviders', () => {
               _id
               simulatedPrice(currency: "EUR") {
                 _id
-                price {
-                  amount
-                  currency
-                }
+                amount
+                currency
               }
             }
           }
@@ -189,7 +155,7 @@ describe('DeliveryProviders', () => {
           deliveryProviderId: SimpleDeliveryProvider._id,
         },
       });
-      expect(deliveryProvider?.simulatedPrice?.price?.currency).toEqual('EUR');
+      expect(deliveryProvider?.simulatedPrice?.currency).toEqual('EUR');
     });
 
     it('return error when passed invalid deliveryProviderId', async () => {

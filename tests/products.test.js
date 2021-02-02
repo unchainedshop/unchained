@@ -750,7 +750,6 @@ describe('Products', () => {
           productId: 'plan-product',
         },
       });
-      console.log(product);
       expect(product?.simulatedPrice?.currency).toEqual('CHF');
     });
 

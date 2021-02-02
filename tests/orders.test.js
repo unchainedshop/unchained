@@ -154,10 +154,8 @@ describe('Order: Management', () => {
                 _id
                 simulatedPrice {
                   _id
-                  price {
-                    amount
-                    currency
-                  }
+                  amount
+                  currency
                 }
               }
             }
@@ -169,7 +167,7 @@ describe('Order: Management', () => {
       });
 
       expect(
-        order.supportedDeliveryProviders?.[0]?.simulatedPrice?.price.currency,
+        order.supportedDeliveryProviders?.[0]?.simulatedPrice?.currency,
       ).toEqual('CHF');
     });
 
@@ -185,10 +183,8 @@ describe('Order: Management', () => {
                 _id
                 simulatedPrice(currency: "EUR") {
                   _id
-                  price {
-                    amount
-                    currency
-                  }
+                  amount
+                  currency
                 }
               }
             }
@@ -200,7 +196,7 @@ describe('Order: Management', () => {
       });
 
       expect(
-        order.supportedDeliveryProviders?.[0]?.simulatedPrice?.price.currency,
+        order.supportedDeliveryProviders?.[0]?.simulatedPrice?.currency,
       ).toEqual('EUR');
     });
 
