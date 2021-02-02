@@ -1,7 +1,12 @@
 import { Meteor } from 'meteor/meteor';
-
 import fs from 'fs'; // Required to read files initially uploaded via Meteor-Files
 import { MongoInternals } from 'meteor/mongo';
+import os from 'os';
+import { sep } from 'path';
+
+const tmpDir = os.tmpdir();
+
+const FILE_STORAGE_TEMP_FOLDER = fs.mkdtempSync(`${tmpDir}${sep}`);
 
 const getContentDisposition = (fileName, downloadFlag) => {
   const dispositionType = downloadFlag === 'true' ? 'attachment;' : 'inline;';
@@ -21,6 +26,9 @@ export default (collectionName) => {
   const ObjID = MongoInternals.NpmModule.ObjectID;
 
   return {
+    storagePath() {
+      return `${FILE_STORAGE_TEMP_FOLDER}${sep}${this.collectionName}`;
+    },
     onAfterUpload(file) {
       // Move file to GridFS
       Object.keys(file.versions).forEach((versionName) => {
