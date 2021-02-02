@@ -41,7 +41,7 @@ export default [
       """
       List products specified prices
       """
-      productCatalogPrices(productId: ID!): [ProductPrice!]!
+      productCatalogPrices(productId: ID!): [Price!]!
 
       """
       Localization: Meta data for product

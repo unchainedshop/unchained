@@ -17,15 +17,6 @@ export default [
       DELETED
     }
 
-    type ProductPrice {
-      _id: ID!
-      isTaxable: Boolean!
-      isNetPrice: Boolean!
-      country: Country!
-      price: Money!
-      maxQuantity: Int
-    }
-
     type ProductPriceRange {
       _id: ID!
       minPrice: Price!
@@ -35,7 +26,7 @@ export default [
     type ProductDiscount {
       _id: ID!
       interface: DiscountInterface
-      total: Money!
+      total: Price!
     }
 
     type ProductMediaTexts {
@@ -128,14 +119,6 @@ export default [
     type ProductConfigurationParameter {
       key: String!
       value: String!
-    }
-
-    type Price {
-      _id: ID!
-      isTaxable: Boolean!
-      isNetPrice: Boolean!
-      amount: Int!
-      currency: String!
     }
 
     type PriceLevel {

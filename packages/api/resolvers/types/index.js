@@ -2,7 +2,6 @@ import User from './user';
 import LoginMethodResponse from './login-method-response';
 import Product from './product';
 import Color from './color';
-import Money from './money';
 import Media from './media';
 import SimpleProduct from './simple-product';
 import ConfigurableProduct from './configurable-product';
@@ -10,7 +9,6 @@ import PlanProduct from './plan-product';
 import BundleProduct from './bundle-product';
 import ProductBundleItem from './product-bundle-item';
 import ProductMedia from './product-media';
-import ProductPrice from './product-price';
 import Dispatch from './dispatch';
 import Stock from './stock';
 import ProductDiscount from './product-discount';
@@ -62,7 +60,6 @@ export default {
   Shop,
   Country,
   Language,
-  Money,
   Color,
   Media,
   Order,
@@ -88,7 +85,6 @@ export default {
   OrderPaymentGeneric,
   OrderPaymentCard,
   Product,
-  ProductPrice,
   ProductDiscount,
   ProductMedia,
   ProductVariation,
