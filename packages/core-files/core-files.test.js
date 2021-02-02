@@ -103,12 +103,13 @@ describe('Meteor Files', () => {
       file,
       userId: User._id,
     });
+    const tmpDir = result.path.split('/')[2];
     const matchingObject = {
       name: result._id,
       extension: 'png',
       ext: 'png',
       extensionWithDot: '.png',
-      path: `assets/app/uploads/test_files_collection/${result._id}.png`,
+      path: `/tmp/${tmpDir}/test_files_collection/${result._id}.png`,
       meta: {},
       type: 'image/png',
       mime: 'image/png',
@@ -117,7 +118,7 @@ describe('Meteor Files', () => {
       userId: 'user',
       versions: {
         original: {
-          path: `assets/app/uploads/test_files_collection/${result._id}.png`,
+          path: `/tmp/${tmpDir}/test_files_collection/${result._id}.png`,
           size: 593040,
           type: 'image/png',
           extension: 'png',
@@ -131,7 +132,7 @@ describe('Meteor Files', () => {
       isText: false,
       isJSON: false,
       isPDF: false,
-      storagePath: 'assets/app/uploads/test_files_collection',
+      storagePath: `/tmp/${tmpDir}/test_files_collection`,
       _id: result._id,
     };
     expect(result).toMatchObject(matchingObject);
@@ -203,12 +204,13 @@ describe('Meteor Files', () => {
       url: 'https://unchained.shop/img/veloplus-screenshots.png',
       userId: User._id,
     });
+    const tmpDir = result.path.split('/')[2];
     const matchingObject = {
       name: 'veloplus-screenshots.png',
       extension: 'png',
       ext: 'png',
       extensionWithDot: '.png',
-      path: `assets/app/uploads/test_files_collection/${result._id}.png`,
+      path: `/tmp/${tmpDir}/test_files_collection/${result._id}.png`,
       meta: {},
       type: 'image/png',
       mime: 'image/png',
@@ -217,7 +219,7 @@ describe('Meteor Files', () => {
       userId: 'user',
       versions: {
         original: {
-          path: `assets/app/uploads/test_files_collection/${result._id}.png`,
+          path: `/tmp/${tmpDir}/test_files_collection/${result._id}.png`,
           size: 593040,
           type: 'image/png',
           extension: 'png',
@@ -231,7 +233,7 @@ describe('Meteor Files', () => {
       isText: false,
       isJSON: false,
       isPDF: false,
-      storagePath: 'assets/app/uploads/test_files_collection',
+      storagePath: `/tmp/${tmpDir}/test_files_collection`,
       _id: result._id,
     };
 
