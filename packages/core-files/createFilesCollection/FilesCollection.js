@@ -81,7 +81,8 @@ FilesCollection.prototype.insertWithRemoteURL = async function insertWithRemoteU
         (err, fileObj) => {
           if (err) return reject(err);
           return resolve(fileObj);
-        }
+        },
+        true
       );
     } catch (e) {
       reject(e);
