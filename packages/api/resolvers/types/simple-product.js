@@ -33,30 +33,7 @@ export default {
     );
   },
   async leveledCatalogPrices(obj, { currency }) {
-    const prices = obj.catalogPrices();
-
-    let previousMin = 0;
-    const filteredAndSorted = prices
-      .filter((p) => p.currencyCode === currency)
-      .sort((a, b) => a.maxQuantity - b.maxQuantity);
-
-    return filteredAndSorted.map((p, i) => {
-      previousMin = p.maxQuantity;
-      const max = filteredAndSorted[i + 1]
-        ? filteredAndSorted[i + 1]?.maxQuantity
-        : 100000000;
-      const min = i === 0 ? 0 : previousMin;
-      return {
-        minQuantity: min,
-        maxQuantity: i === 0 && p.maxQuantity > 0 ? p.maxQuantity : max,
-        price: {
-          isTaxable: p.isTaxable,
-          isNetPrice: p.isNetPrice,
-          amount: p.amount,
-          currencyCode: p.currencyCode,
-        },
-      };
-    });
+    return obj.leveledCatalogPrices({ currency });
   },
   async simulatedDiscounts(obj, params, requestContext) {
     const { quantity } = params;

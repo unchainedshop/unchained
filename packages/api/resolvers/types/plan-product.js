@@ -32,6 +32,9 @@ export default {
       requestContext
     );
   },
+  async leveledCatalogPrices(obj, { currency }) {
+    return obj.leveledCatalogPrices({ currency });
+  },
   async simulatedDiscounts(obj, params, requestContext) {
     const { quantity } = params;
     const { countryContext, userId, user } = requestContext;
