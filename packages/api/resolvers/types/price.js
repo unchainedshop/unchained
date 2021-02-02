@@ -5,8 +5,8 @@ export default {
   isNetPrice({ isNetPrice }) {
     return isNetPrice || false;
   },
-  currency({ currencyCode }) {
-    return currencyCode;
+  currency(obj) {
+    return obj?.currencyCode || obj?.currency;
   },
   amount({ amount }) {
     return Math.round(amount);

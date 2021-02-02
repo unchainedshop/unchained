@@ -22,7 +22,7 @@ export default [
       provider: DeliveryProvider
       status: OrderDeliveryStatus
       delivered: Date
-      fee: Money
+      fee: Price
       meta: JSON
       discounts: [OrderDeliveryDiscount!]
     }
@@ -32,7 +32,7 @@ export default [
       provider: DeliveryProvider
       status: OrderDeliveryStatus
       delivered: Date
-      fee: Money
+      fee: Price
       meta: JSON
       discounts: [OrderDeliveryDiscount!]
 
@@ -45,10 +45,9 @@ export default [
       provider: DeliveryProvider
       status: OrderDeliveryStatus
       delivered: Date
-      fee: Money
+      fee: Price
       meta: JSON
       discounts: [OrderDeliveryDiscount!]
-
       address: Address
     }
   `,
