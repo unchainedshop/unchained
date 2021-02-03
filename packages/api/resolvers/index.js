@@ -2,6 +2,7 @@ import Query from './queries';
 import Mutation from './mutations';
 import Date from './scalar-date';
 import JSON from './scalar-json';
+import BigInt from './scalar-big-int';
 import Types from './types';
 
 export default {
@@ -10,4 +11,5 @@ export default {
   Date,
   Query,
   Mutation,
+  BigInt,
 };
