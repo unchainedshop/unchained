@@ -1,12 +1,18 @@
+# vNext
+
+- [api] New mutation.signPaymentProviderForCheckout to sign generic order payment directly (OrderPayment.sign still works but is marked deprecated and will be removed in future major releases)
+
 # v0.61.1
 
 This is a bugfix release based on learnings from upgrading client projects
 
 ## Breaking changes
+
 - [core] `Users.createUser` now sends messages by default, you have to explicitly bail out by either providing an option `skipMessaging` to true or set the new `autoMessagingAfterUserCreation` module param of users to `false`. Take a look at your seed scripts.
 - [platform] Certain fields like `emails` and `services` are now blocked from passing to `Users.createUser`. If you have used `emails` in `createUser` seeding before, use email. If you want to skip e-mail verification forcefully, use `initialPassword: true`. See the changes in the minimal example seed file to get a glimpse.
 
 ## Minor
+
 - [examples] Fix minimal example not seeding
 - [api] Fix children not receiving includeInactive
 - [core] Fix core not receiving module configuration of users
@@ -18,10 +24,12 @@ This is a bugfix release based on learnings from upgrading client projects
 This is a bugfix release based on learnings from upgrading client projects
 
 ## Breaking changes
+
 - [api] Removes filterContext and evalContext
 - [core] Enrollment E-Mails are sent automatically when `enrollUser` is used with an empty password
 
 ## Minor
+
 - [api] Re-introduce `context` field to startPlatform, allowing access to the unchained context function so it's possible to adjust the Apollo Server context freely
 - [core] Fix regression with forced sortKey parameters when modifying links, filters or products
 - [core] Fix regression with enrollment of users triggering verification e-mail #307
@@ -48,7 +56,6 @@ We are currently rebuilding parts of Unchained under the hood with a new code st
 
 - [api] Add Assortment.childrenCount to get a number of child assortments
 - [api] New Query.activeWorkTypes to query for all active work types without introspection
-- [api] New mutation.signPaymentProviderForCheckout to sign generic order payment directly
 - [api] Support for Data Loader
 - [api,bookmarks] The Bookmarks core module has been completely refactored, all business logic is now accessible through the Apollo GraphQL context
 - [utils] Multiple functions have been moved to utils from core.
@@ -57,9 +64,9 @@ We are currently rebuilding parts of Unchained under the hood with a new code st
  We are currently rebuilding parts of Unchained under the hood with a new code structure that helps developers to easily add new resolvers and access the core API's through typescript types
 - [api,core] Business logic and db calls are now wrapped in functions and moved from api to the core packages
 - [pricing] New open-source pricing plugins:
-    - - EUR catalog price auto conversion with ECB rates
-    - - Crypto catalog price auto conversion with Coinbase rates
-    - - Mercantile Rounding
+  - - EUR catalog price auto conversion with ECB rates
+  - - Crypto catalog price auto conversion with Coinbase rates
+  - - Mercantile Rounding
 - [payment] Our official Datatrans plugin now supports all different security modes for signing a transaction through env `DATATRANS_SECURITY` and `DATATRANS_SIGN2_KEY`. In the meantime Datatrans has released a new modern JSON based 2.0 API. Our Plugin still only supports the legacy API described here <https://docs.datatrans.ch/v1.0.1/docs/getting-started-home>
 
 ## Minor

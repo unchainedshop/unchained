@@ -6,10 +6,7 @@ export default {
   },
   sign(obj, { transactionContext }) {
     try {
-      return obj.provider().sign({
-        orderPayment: obj,
-        transactionContext,
-      });
+      return obj.sign({ transactionContext });
     } catch (error) {
       throw new OrderPaymentConfigurationError(error);
     }

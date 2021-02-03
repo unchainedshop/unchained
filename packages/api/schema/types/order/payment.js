@@ -60,6 +60,9 @@ export default [
       Sign a transaction with the provider
       """
       sign(transactionContext: JSON): String
+        @deprecated(
+          reason: "Please use mutation.signPaymentProviderForCheckout instead"
+        )
     }
   `,
 ];
