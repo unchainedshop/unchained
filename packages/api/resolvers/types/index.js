@@ -53,8 +53,10 @@ import SubscriptionPeriod from './subscription-period';
 import SubscriptionPlan from './subscription-plan';
 import Subscription from './subscription';
 import Bookmark from './bookmark';
+import ProductCatalogPrice from './product-catalog-price';
 
 export default {
+  ProductCatalogPrice,
   User,
   LoginMethodResponse,
   Shop,

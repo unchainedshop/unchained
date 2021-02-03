@@ -56,7 +56,10 @@ describe('public queries', () => {
         {
           productCatalogPrices(productId: "simpleproduct") {
             amount
-            currency
+            currency {
+              _id
+              isoCode
+            }
           }
         }
       `,
@@ -65,7 +68,7 @@ describe('public queries', () => {
     expect(errors).toEqual(undefined);
     const { amount, currency } = data.productCatalogPrices[0];
     expect(amount).toBe(10000);
-    expect(currency).toBe('CHF');
+    expect(currency.isoCode).toBe('CHF');
   });
 
   it('query.productCatalogPrices return error when passed invalid productId', async () => {
@@ -74,7 +77,10 @@ describe('public queries', () => {
         {
           productCatalogPrices(productId: "") {
             amount
-            currency
+            currency {
+              _id
+              isoCode
+            }
           }
         }
       `,

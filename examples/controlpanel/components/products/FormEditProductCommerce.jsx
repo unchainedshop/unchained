@@ -89,10 +89,11 @@ export default compose(
           _id
           isoCode
         }
-        price {
-          amount
-          currency
+        currency {
+          _id
+          isoCode
         }
+        amount    
       }
     }
   `),
@@ -162,12 +163,12 @@ export default compose(
     const productPricingMap = {};
     const burnedIds = [];
     productPricing.forEach(
-      ({ _id, country, price, isTaxable, isNetPrice, maxQuantity }) => {
-        burnedIds.push(`${country.isoCode}:${price.currency}`);
+      ({ _id, country, currency, amount, isTaxable, isNetPrice, maxQuantity }) => {
+        burnedIds.push(`${country.isoCode}:${currency.isoCode}`);
         productPricingMap[_id] = {
           countryCode: country.isoCode,
-          amount: price.amount,
-          currencyCode: price.currency,
+          amount: amount,
+          currencyCode: currency.isoCode,
           maxQuantity: maxQuantity || 0,
           isTaxable,
           isNetPrice,
