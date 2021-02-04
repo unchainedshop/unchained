@@ -44,4 +44,4 @@ ENV FILE_STORAGE_PATH /unchained-uploads
 
 EXPOSE 3000
 USER meteor
-CMD node -r ./server/file_env.js main.js
+CMD node -r ./file_env.js main.js
