@@ -1,4 +1,4 @@
-FROM geoffreybooth/meteor-base:1.11.1 as bundler
+FROM geoffreybooth/meteor-base:2.0 as bundler
 
 # Install app dependencies
 RUN mkdir -p /source
@@ -26,6 +26,7 @@ RUN apt-get update && apt-get install -y curl pdftk
 
 # Install app dependencies
 COPY --from=bundler /bundle/programs/server/package* /webapp/programs/server/
+COPY --from=bundler /source/file_env.js  /webapp
 WORKDIR /webapp/programs/server
 RUN NODE_ENV=production npm install
 
@@ -43,4 +44,4 @@ ENV FILE_STORAGE_PATH /unchained-uploads
 
 EXPOSE 3000
 USER meteor
-CMD node main.js
+CMD node -r ./server/file_env.js main.js

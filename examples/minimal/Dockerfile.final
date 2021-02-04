@@ -17,6 +17,7 @@ RUN NODE_ENV=production npm install
 
 # Copy the app
 COPY --from=bundler /bundle /webapp/
+COPY --from=bundler /source/file_env.js  /webapp
 RUN NODE_ENV=production npm run install --production
 WORKDIR /webapp
 
@@ -29,4 +30,4 @@ HEALTHCHECK --start-period=10s --interval=20s --timeout=1s \
 
 EXPOSE 3000
 USER meteor
-CMD node main.js
+CMD node -r ./server/file_env.js main.js
