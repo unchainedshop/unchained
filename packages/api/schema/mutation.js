@@ -893,7 +893,7 @@ export default [
       signPaymentProviderForCheckout(
         orderPaymentId: ID!
         transactionContext: JSON
-      ): String
+      ): String!
     }
   `,
 ];

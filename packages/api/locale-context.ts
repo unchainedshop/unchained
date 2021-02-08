@@ -9,9 +9,7 @@ import { log } from 'meteor/unchained:core-logger';
 import { Countries } from 'meteor/unchained:core-countries';
 import { Languages } from 'meteor/unchained:core-languages';
 import LRU from 'lru-cache';
-
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const locale = require('locale');
+import { Locales } from 'locale';
 
 export interface UnchainedServerLocaleContext {
   remoteAddress?: string;
@@ -55,7 +53,7 @@ const getLocaleContext = (req): UnchainedServerLocaleContext => {
     return accumulator.concat(added);
   }, []);
 
-  const supportedLocales = new locale.Locales(
+  const supportedLocales = new Locales(
     supportedLocaleStrings,
     systemLocale.code
   );

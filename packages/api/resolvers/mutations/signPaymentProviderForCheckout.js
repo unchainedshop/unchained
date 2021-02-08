@@ -4,6 +4,7 @@ import { PaymentProviderType } from 'meteor/unchained:core-payment';
 
 import {
   InvalidIdError,
+  OrderPaymentConfigurationError,
   OrderPaymentNotFoundError,
   OrderPaymentTypeError,
 } from '../../errors';
@@ -22,5 +23,10 @@ export default (root, { orderPaymentId, transactionContext }, { userId }) => {
       received: providerType,
       required: PaymentProviderType.GENERIC,
     });
-  return orderPayment.sign({ transactionContext });
+
+  try {
+    return orderPayment.sign({ transactionContext });
+  } catch (error) {
+    throw new OrderPaymentConfigurationError(error);
+  }
 };
