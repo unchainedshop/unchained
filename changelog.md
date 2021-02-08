@@ -32,6 +32,7 @@ This is a bugfix release based on learnings from upgrading client projects
 We are currently rebuilding parts of Unchained under the hood with a new code structure that helps developers to easily add new resolvers and access the core API's through typescript types.
 
 ## Breaking Changes
+- [platform] Account Action E-Mail templates now receive different actions than before, for ex. `verifyEmail` is now `verify-email`
 - [api] `Mutation.setBaseLanguage` removed, base language now set through env `LANG`
 - [api] `Mutation.setBaseCountry` removed, base language now set through env `COUNTRY`
 - [api] `isBase` removed for countries and languages
