@@ -1,6 +1,6 @@
 # vNext
 
-- [schema] `Money` type has been completly removed and replace with `Price`.
+- [schema] `Money` type has been completely removed and replace with `Price`.
   This change will affect the following types and any other type that has fields of this types
 
   ```
@@ -14,12 +14,12 @@
   OrderItem.unitPrice
   OrderItem.total
   OrderPayment.fee
-  
+
   ```
 
 - [api] New mutation.signPaymentProviderForCheckout to sign generic order payment directly (OrderPayment.sign still works but is marked deprecated and will be removed in future major releases)
-  - [api] three new fields added `ConfigurableProduct.simulatedPriceRange` , `ConfigurableProduct.catalogPriceRange`, `SimulateProduct.leveledCatalogPrices` `PlanProduct.leveledCatalogPrices`
-  - [product] `simulatePriceRange` and `catalogPriceRange` helpers added that will return price range of products variations assigned for a particular configurable(proxy) product based on the parameters provided to them.
+- [api] three new fields added `ConfigurableProduct.simulatedPriceRange` , `ConfigurableProduct.catalogPriceRange`, `SimulateProduct.leveledCatalogPrices` `PlanProduct.leveledCatalogPrices`
+- [product] `simulatePriceRange` and `catalogPriceRange` helpers added that will return price range of products variations assigned for a particular configurable(proxy) product based on the parameters provided to them.
 
 # v0.61.1
 
