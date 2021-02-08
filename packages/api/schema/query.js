@@ -294,13 +294,6 @@ export default [
       ): [Work]
 
       """
-      Sign a generic payment provider for registration
-      """
-      signPaymentProviderForCredentialRegistration(
-        paymentProviderId: ID!
-      ): String
-
-      """
       Get a specific work unit by ID
       """
       work(workId: ID!): Work
@@ -308,6 +301,16 @@ export default [
       Get List of currently registered worker plugins
       """
       activeWorkTypes: [WorkType!]!
+
+      """
+      Sign a generic payment provider for registration
+      """
+      signPaymentProviderForCredentialRegistration(
+        paymentProviderId: ID!
+      ): String
+        @deprecated(
+          reason: "Has been deprecated and will be removed on future releases, use mutation.signPaymentProviderForCredentialRegistration instead"
+        )
     }
   `,
 ];

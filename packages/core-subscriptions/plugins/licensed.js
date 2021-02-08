@@ -21,7 +21,8 @@ class LicensedSubscriptions extends SubscriptionAdapter {
 
   static orderIndex = 0;
 
-  static isActivatedFor({ usageCalculationType, ...plan }) {  // eslint-disable-line
+  // eslint-disable-next-line
+  static isActivatedFor({ usageCalculationType, ...plan }) {
     return usageCalculationType === 'LICENSED';
   }
 
@@ -42,9 +43,7 @@ class LicensedSubscriptions extends SubscriptionAdapter {
     const { period } = context;
     const beginningOfPeriod = period.start.getTime() <= new Date().getTime();
     if (beginningOfPeriod) {
-      return {
-        context,
-      };
+      return context;
     }
     return null;
   }

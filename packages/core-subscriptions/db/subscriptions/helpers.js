@@ -89,11 +89,12 @@ Subscriptions.helpers({
       ).process({ subscriptionContext })
     ).sendStatusToCustomer({ locale });
   },
-  sendStatusToCustomer({ locale }) {
+  sendStatusToCustomer({ locale, reason = 'status_change' }) {
     WorkerDirector.addWork({
       type: 'MESSAGE',
       retries: 0,
       input: {
+        reason,
         locale,
         template: 'SUBSCRIPTION_STATUS',
         subscriptionId: this._id,
@@ -101,9 +102,11 @@ Subscriptions.helpers({
     });
     return this;
   },
-  async initializeSubscription(orderIdForFirstPeriod) {
+  async initializeSubscription({ orderIdForFirstPeriod, reason, locale } = {}) {
     const period = await this.director().nextPeriod({
       orderId: orderIdForFirstPeriod,
+      reason,
+      locale,
     });
     if (period && (orderIdForFirstPeriod || period.isTrial)) {
       const initialized = await Subscriptions.addSubscriptionPeriod({
@@ -111,9 +114,9 @@ Subscriptions.helpers({
         subscriptionId: this._id,
         period,
       });
-      return initialized.process({ orderIdForFirstPeriod });
+      return initialized.process({ orderIdForFirstPeriod, reason, locale });
     }
-    return this.process({ orderIdForFirstPeriod });
+    return this.process({ orderIdForFirstPeriod, reason, locale });
   },
   // eslint-disable-next-line
   async reactivateSubscription() {},
@@ -214,10 +217,17 @@ Subscriptions.createSubscription = async (
   });
   const subscription = Subscriptions.findOne({ _id: subscriptionId });
   const locale = subscription.user().locale(options);
-  const initialized = await subscription.initializeSubscription(
-    orderIdForFirstPeriod
-  );
-  return initialized.sendStatusToCustomer({ locale });
+  const reason = 'new_subscription';
+  const initialized = await subscription.initializeSubscription({
+    locale,
+    reason,
+    orderIdForFirstPeriod,
+  });
+  return initialized.sendStatusToCustomer({
+    locale,
+    reason,
+    orderIdForFirstPeriod,
+  });
 };
 
 Subscriptions.addSubscriptionPeriod = async ({
@@ -298,17 +308,29 @@ Subscriptions.updateDelivery = ({ delivery, subscriptionId }) => {
   );
 };
 
-Subscriptions.updatePlan = ({ plan, subscriptionId }) => {
+Subscriptions.updatePlan = async ({ plan, subscriptionId }, options) => {
   log('Update subscription Plan', { subscriptionId });
-  return Subscriptions.update(
+  const result = Subscriptions.update(
     { _id: subscriptionId },
     {
       $set: {
-        plan,
+        ...plan,
+        periods: [],
         updated: new Date(),
       },
     }
   );
+  const updatedSubscription = Subscriptions.findSubscription({
+    subscriptionId,
+  });
+  const reason = 'updated_plan';
+  const locale = updatedSubscription.user().locale(options);
+  const initialized = await updatedSubscription.initializeSubscription({
+    locale,
+    reason,
+  });
+  initialized.sendStatusToCustomer({ locale, reason });
+  return result;
 };
 
 Subscriptions.updateContext = ({ context, subscriptionId }) => {
