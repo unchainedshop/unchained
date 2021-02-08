@@ -45,8 +45,8 @@ import workQueue from './workQueue';
 import activeWorkTypes from './activeWorkTypes';
 import subscription from './subscription';
 import subscriptions from './subscriptions';
-import signPaymentProviderForCredentialRegistration from './signPaymentProviderForCredentialRegistration';
 import work from './work';
+import signPaymentProviderForCredentialRegistration from './signPaymentProviderForCredentialRegistration';
 
 export default {
   me,

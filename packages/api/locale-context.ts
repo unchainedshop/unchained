@@ -7,9 +7,9 @@ import {
 
 import { log } from 'meteor/unchained:core-logger';
 import { Countries } from 'meteor/unchained:core-countries';
-import { Locales } from 'locale';
 import { Languages } from 'meteor/unchained:core-languages';
 import LRU from 'lru-cache';
+import { Locales } from 'locale';
 
 export interface UnchainedServerLocaleContext {
   remoteAddress?: string;
