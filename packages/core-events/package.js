@@ -1,22 +1,20 @@
 Package.describe({
-  name: 'unchained:core-events',
-  version: '0.0.1',
-  // Brief, one-line summary of the package.
-  summary: '',
-  // URL to the Git repository containing the source code for this package.
-  git: '',
-  // By default, Meteor will default to using README.md for documentation.
-  // To avoid submitting documentation, set this field to null.
-  documentation: 'README.md'
+  name: 'unchained:roles',
+  version: '0.61.0',
+  summary: 'Unchained Engine: Events',
+  git: 'https://github.com/unchainedshop/unchained',
+  documentation: 'README.md',
 });
 
-Package.onUse(function(api) {
-  api.versionsFrom('2.0');
+Package.onUse((api) => {
+  api.versionsFrom('1.12');
   api.use('ecmascript');
-  api.mainModule('core-events.js');
+  api.use('typescript');
+  api.addFiles(['index.ts', 'events.ts'], 'server');
+  api.mainModule('index.ts');
 });
 
-Package.onTest(function(api) {
+Package.onTest((api) => {
   api.use('ecmascript');
   api.use('tinytest');
   api.use('unchained:core-events');
