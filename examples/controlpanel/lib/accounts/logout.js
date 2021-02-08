@@ -3,11 +3,10 @@ import { getLoginToken, resetStore } from './store';
 
 export default async function logout(apollo) {
   const token = await getLoginToken();
-  await resetStore();
 
   if (!token) return;
 
-  apollo.mutate({
+  await apollo.mutate({
     mutation: gql`
       mutation logout($token: String) {
         logout(token: $token) {
@@ -19,4 +18,5 @@ export default async function logout(apollo) {
       token,
     },
   });
+  await resetStore();
 }

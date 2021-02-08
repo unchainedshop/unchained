@@ -258,10 +258,55 @@ describe('Auth for logged in users', () => {
       expect(logout).toMatchObject({
         success: true,
       });
+      const user = await Users.findOne({
+        _id: 'userthatlogsout',
+      });
+      const {
+        services: {
+          resume: { loginTokens },
+        },
+      } = user;
+      expect(loginTokens.length).toEqual(1);
     });
-    it('token is gone', async () => {
-      // Reset the password with that token
+    it('log out userthatlogsout without explicit token', async () => {
       const Users = db.collection('users');
+      await Users.findOrInsertOne({
+        ...User,
+        _id: 'userthatlogsout',
+        username: 'userthatlogsout',
+        emails: [
+          {
+            address: 'userthatlogsout@localhost',
+            verified: true,
+          },
+        ],
+        services: {
+          ...User.services,
+          resume: {
+            loginTokens: [
+              {
+                when: new Date(new Date().getTime() + 1000000),
+                hashedToken: 'dF4ilYpWpsSvkb7hdZKqsiYa207t2HI+C+HJcowykZk=',
+              },
+            ],
+          },
+        },
+      });
+      const { data: { logout } = {} } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation logout {
+            logout {
+              success
+            }
+          }
+        `,
+        variables: {
+          token: 'FWhglvqdNkNX80jZMJ61FvDUkKzCsESVfbui9H8Fg27',
+        },
+      });
+      expect(logout).toMatchObject({
+        success: true,
+      });
       const user = await Users.findOne({
         _id: 'userthatlogsout',
       });

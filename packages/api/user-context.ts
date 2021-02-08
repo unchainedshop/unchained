@@ -5,6 +5,7 @@ import { check } from 'meteor/check';
 export interface UnchainedServerUserContext {
   userId?: string;
   user?: any;
+  loginToken?: string;
 }
 
 export default async (req): Promise<UnchainedServerUserContext> => {
@@ -54,9 +55,11 @@ export default async (req): Promise<UnchainedServerUserContext> => {
         return {
           user: currentUser,
           userId: currentUser._id,
+          loginToken,
         };
       }
     }
+    return { loginToken };
   }
 
   return {};

@@ -36,13 +36,16 @@ export class UnchainedAccountsServer extends AccountsServer {
   LOGIN_UNEXPIRING_TOKEN_DAYS = 365 * 100;
 
   destroyToken = async (userId, loginToken) => {
-    this.users.update(userId, {
-      $pull: {
-        'services.resume.loginTokens': {
-          $or: [{ hashedToken: loginToken }, { token: loginToken }],
+    this.users.update(
+      { _id: userId },
+      {
+        $pull: {
+          'services.resume.loginTokens': {
+            $or: [{ hashedToken: loginToken }, { token: loginToken }],
+          },
         },
-      },
-    });
+      }
+    );
   };
 
   getTokenLifetimeMs() {
