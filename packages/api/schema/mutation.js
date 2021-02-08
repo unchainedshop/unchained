@@ -880,6 +880,20 @@ export default [
       Deletes the specified payment credential.
       """
       removePaymentCredentials(paymentCredentialsId: ID!): PaymentCredentials
+      """
+      Sign a generic payment provider for registration
+      """
+      signPaymentProviderForCredentialRegistration(
+        paymentProviderId: ID!
+      ): String
+
+      """
+      Sign a generic order payment
+      """
+      signPaymentProviderForCheckout(
+        orderPaymentId: ID!
+        transactionContext: JSON
+      ): String!
     }
   `,
 ];

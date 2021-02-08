@@ -76,7 +76,7 @@ describe('Plugins: Datatrans Payments', () => {
     await connection.close();
   });
 
-  describe('Query.signPaymentProviderForCredentialRegistration (Datatrans)', () => {
+  describe('Mutation.signPaymentProviderForCredentialRegistration (Datatrans)', () => {
     const sign =
       '0c83ed74918d05cdd5309389dd8f011881250351f861619fbdfb9f75c711a5db';
 
@@ -85,7 +85,7 @@ describe('Plugins: Datatrans Payments', () => {
         data: { signPaymentProviderForCredentialRegistration } = {},
       } = await graphqlFetch({
         query: /* GraphQL */ `
-          query signPaymentProviderForCredentialRegistration(
+          mutation signPaymentProviderForCredentialRegistration(
             $paymentProviderId: ID!
           ) {
             signPaymentProviderForCredentialRegistration(
@@ -107,6 +107,36 @@ describe('Plugins: Datatrans Payments', () => {
       const text = await result.text();
       expect(text).not.toMatch(/incorrect request/);
       expect(text).not.toMatch(/error/);
+    });
+  });
+
+  describe('mutation.signPaymentProviderForCheckout (Datatrans) should', () => {
+    const sign =
+      'a71685e18e4f89f40be55bb959f02534fa5d72e9fc951a16b6cecd3ecbf7b9ec';
+
+    it('request a new signed nonce', async () => {
+      const {
+        data: { signPaymentProviderForCheckout },
+        errors,
+      } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation signPaymentProviderForCheckout(
+            $transactionContext: JSON
+            $orderPaymentId: ID!
+          ) {
+            signPaymentProviderForCheckout(
+              transactionContext: $transactionContext
+              orderPaymentId: $orderPaymentId
+            )
+          }
+        `,
+        variables: {
+          orderPaymentId: 'datatrans-payment',
+          transactionContext: {},
+        },
+      });
+
+      expect(signPaymentProviderForCheckout).toBe(sign);
     });
   });
 
@@ -136,7 +166,6 @@ describe('Plugins: Datatrans Payments', () => {
           transactionContext: {},
         },
       });
-
       expect(me?.cart?.payment?.sign).toBe(sign);
     });
     it('datatrans accepts the parameters for a payment form', async () => {

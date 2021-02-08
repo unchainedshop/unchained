@@ -41,7 +41,13 @@ export default async function updateSubscription(
     Subscriptions.updateDelivery({ delivery, subscriptionId });
   }
   if (plan) {
-    Subscriptions.updatePlan({ plan, subscriptionId });
+    if (subscription.status !== SubscriptionStatus.INITIAL) {
+      // If Subscription is not initial, forcefully add a new Period that OVERLAPS the existing periods
+      throw new Error(
+        'TODO: Unchained currently does not support order splitting for subscriptions, therefore updates to quantity, product and configuration of a subscription is forbidden for non initial subscriptions'
+      );
+    }
+    await Subscriptions.updatePlan({ plan, subscriptionId });
   }
   return Subscriptions.findSubscription({ subscriptionId });
 }
