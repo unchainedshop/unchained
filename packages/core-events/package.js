@@ -1,5 +1,5 @@
 Package.describe({
-  name: 'unchained:roles',
+  name: 'unchained:Event',
   version: '0.61.0',
   summary: 'Unchained Engine: Events',
   git: 'https://github.com/unchainedshop/unchained',
