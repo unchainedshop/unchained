@@ -30,9 +30,9 @@
     "debug": "cross-env METEOR_PACKAGE_DIRS=../../packages UI_ENDPOINT=http://localhost:4000 SERVER_NODE_OPTIONS='-r ./node_env.js' meteor --exclude-archs web.browser.legacy,web.cordova,web.browser debug -p 4010"
   },
   "dependencies": {
-    "@babel/runtime": "^7.12.5",
+    "@babel/runtime": "^7.12.13",
     "@paypal/checkout-server-sdk": "^1.0.2",
-    "@unchainedshop/controlpanel": "^0.61.0",
+    "@unchainedshop/controlpanel": "^0.61.1",
     "bcrypt": "^5.0.0",
     "body-parser": "^1.19.0",
     "client-oauth2": "github:unchainedshop/js-client-oauth2#master",
@@ -42,16 +42,16 @@
     "meteor-node-stubs": "^1.0.1",
     "moment": "^2.29.1",
     "simpl-schema": "^1.10.2",
-    "stripe": "^8.132.0",
+    "stripe": "^8.135.0",
     "xml-js": "^1.6.11"
   },
   "devDependencies": {
-    "@babel/core": "^7.12.10",
-    "@babel/preset-env": "^7.12.11",
-    "@babel/register": "^7.12.10",
+    "@babel/core": "^7.12.13",
+    "@babel/preset-env": "^7.12.13",
+    "@babel/register": "^7.12.13",
     "babel-eslint": "^10.1.0",
     "cross-env": "^7.0.3",
-    "eslint": "^7.18.0",
+    "eslint": "^7.19.0",
     "eslint-config-airbnb-base": "^14.2.1",
     "eslint-import-resolver-meteor": "^0.4.0",
     "eslint-plugin-import": "^2.22.1",
