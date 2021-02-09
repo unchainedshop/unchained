@@ -765,7 +765,7 @@ Products.helpers({
       previousMin = p.maxQuantity;
       const max = filteredAndSorted[i + 1]
         ? filteredAndSorted[i + 1]?.maxQuantity
-        : Number.POSITIVE_INFINITY;
+        : null;
       const min = i === 0 ? 0 : previousMin;
       return {
         minQuantity: min,

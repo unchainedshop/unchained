@@ -122,9 +122,9 @@ export default [
     }
 
     type PriceLevel {
-      minQuantity: Int
+      minQuantity: Int!
       maxQuantity: Int
-      price: Price
+      price: Price!
     }
 
     type ProductCatalogPrice {
