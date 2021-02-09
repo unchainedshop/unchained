@@ -20,6 +20,24 @@ import { ProductReviews } from '../product-reviews/collections';
 
 import { ProductStatus, ProductTypes } from './schema';
 
+const getPriceLevels = (product) => {
+  return (product?.commerce?.pricing || []).sort(
+    (
+      { maxQuantity: leftMaxQuantity = 0 },
+      { maxQuantity: rightMaxQuantity = 0 }
+    ) => {
+      if (
+        leftMaxQuantity === rightMaxQuantity ||
+        (!leftMaxQuantity && !rightMaxQuantity)
+      )
+        return 0;
+      if (leftMaxQuantity === 0) return -1;
+      if (rightMaxQuantity === 0) return 1;
+      return leftMaxQuantity - rightMaxQuantity;
+    }
+  );
+};
+
 const getPriceRange = (prices) => {
   const { min, max } = prices.reduce(
     (m, current) => {
@@ -36,14 +54,14 @@ const getPriceRange = (prices) => {
 
   return {
     minPrice: {
-      isTaxable: min?.isTaxable,
-      isNetPrice: min?.isNetPrice,
+      isTaxable: !!min?.isTaxable,
+      isNetPrice: !!min?.isNetPrice,
       amount: Math.round(min?.amount),
       currencyCode: min?.currencyCode,
     },
     maxPrice: {
-      isTaxable: max?.isTaxable,
-      isNetPrice: max?.isNetPrice,
+      isTaxable: !!max?.isTaxable,
+      isNetPrice: !!max?.isNetPrice,
       amount: Math.round(max?.amount),
       currencyCode: max?.currencyCode,
     },
@@ -556,21 +574,7 @@ Products.helpers({
         isoCode: countryCode,
       });
 
-    const pricing = ((this.commerce && this.commerce.pricing) || []).sort(
-      (
-        { maxQuantity: leftMaxQuantity = 0 },
-        { maxQuantity: rightMaxQuantity = 0 }
-      ) => {
-        if (
-          leftMaxQuantity === rightMaxQuantity ||
-          (!leftMaxQuantity && !rightMaxQuantity)
-        )
-          return 0;
-        if (leftMaxQuantity === 0) return -1;
-        if (rightMaxQuantity === 0) return 1;
-        return leftMaxQuantity - rightMaxQuantity;
-      }
-    );
+    const pricing = getPriceLevels(this);
     const price = pricing.reduce(
       (oldValue, curPrice) => {
         if (
@@ -649,6 +653,8 @@ Products.helpers({
   catalogPrices() {
     const prices = (this.commerce && this.commerce.pricing) || [];
     return prices.map((price) => ({
+      isNetPrice: false,
+      isTaxable: false,
       _id: crypto
         .createHash('sha256')
         .update(
@@ -669,6 +675,7 @@ Products.helpers({
     vectors = [],
     includeInactive = false,
     country,
+    currency,
   }) {
     const proxyProducts = this.proxyProducts(vectors, { includeInactive });
     const filtered = [];
@@ -676,6 +683,7 @@ Products.helpers({
       const catalogPrice = p.price({
         country,
         quantity,
+        currency,
       });
 
       if (catalogPrice) {
@@ -753,28 +761,30 @@ Products.helpers({
       maxPrice,
     };
   },
-  leveledCatalogPrices({ currency }) {
-    const prices = this.catalogPrices();
+  leveledCatalogPrices({ currency: currencyCode, country: countryCode }) {
+    const currency =
+      currencyCode ||
+      Countries.resolveDefaultCurrencyCode({
+        isoCode: countryCode,
+      });
 
-    let previousMin = 0;
-    const filteredAndSorted = prices
-      .filter((p) => p.currencyCode === currency)
-      .sort((a, b) => a.maxQuantity - b.maxQuantity);
+    let previousMax = null;
+    const filteredAndSorted = getPriceLevels(this)
+      .reverse()
+      .filter((p) => p.currencyCode === currency);
 
     return filteredAndSorted.map((p, i) => {
-      previousMin = p.maxQuantity;
-      const max = filteredAndSorted[i + 1]
-        ? filteredAndSorted[i + 1]?.maxQuantity
-        : null;
-      const min = i === 0 ? 0 : previousMin;
+      const max = p.maxQuantity || null;
+      const min = previousMax ? previousMax + 1 : 0;
+      previousMax = p.maxQuantity;
       return {
         minQuantity: min,
         maxQuantity: i === 0 && p.maxQuantity > 0 ? p.maxQuantity : max,
         price: {
-          isTaxable: p.isTaxable,
-          isNetPrice: p.isNetPrice,
+          isTaxable: !!p.isTaxable,
+          isNetPrice: !!p.isNetPrice,
           amount: p.amount,
-          currencyCode: p.currencyCode,
+          currencyCode: currency,
         },
       };
     });

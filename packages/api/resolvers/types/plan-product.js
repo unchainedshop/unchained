@@ -6,11 +6,12 @@ export default {
   status(obj) {
     return obj.normalizedStatus();
   },
-  async catalogPrice(obj, { quantity }, requestContext) {
+  async catalogPrice(obj, { quantity, currency }, requestContext) {
     // listPrice: ProductPrice
     const { countryContext } = requestContext;
     return obj.price({
       country: countryContext,
+      currency,
       quantity,
     });
   },
@@ -32,8 +33,9 @@ export default {
       requestContext
     );
   },
-  async leveledCatalogPrices(obj, { currency }) {
-    return obj.leveledCatalogPrices({ currency });
+  async leveledCatalogPrices(obj, { currency }, requestContext) {
+    const { countryContext } = requestContext;
+    return obj.leveledCatalogPrices({ currency, country: countryContext });
   },
   async simulatedDiscounts(obj, params, requestContext) {
     const { quantity } = params;
