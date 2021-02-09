@@ -585,9 +585,7 @@ Products.helpers({
       countryCode,
     });
     const foundPrice = pricing.find(
-      (level) =>
-        level.minQuantity <= quantity &&
-        (level.maxQuantity === null || level.maxQuantity >= quantity)
+      (level) => !level.maxQuantity || level.maxQuantity >= quantity
     );
 
     const price = {
