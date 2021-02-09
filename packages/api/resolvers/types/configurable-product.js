@@ -19,7 +19,7 @@ export default {
   },
   async catalogPriceRange(
     obj,
-    { quantity, vectors, includeInactive },
+    { quantity, vectors, currency, includeInactive },
     requestContext
   ) {
     const { countryContext } = requestContext;
@@ -28,6 +28,7 @@ export default {
       vectors,
       includeInactive,
       country: countryContext,
+      currency,
     });
   },
   async simulatedPriceRange(

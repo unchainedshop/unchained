@@ -17,12 +17,6 @@ export default [
       DELETED
     }
 
-    type ProductPriceRange {
-      _id: ID!
-      minPrice: Price!
-      maxPrice: Price!
-    }
-
     type ProductDiscount {
       _id: ID!
       interface: DiscountInterface

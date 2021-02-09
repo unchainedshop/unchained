@@ -84,14 +84,15 @@ export default [
         quantity: Int = 0
         vectors: [ProductAssignmentVectorInput!]
         includeInactive: Boolean = false
-      ): ProductPriceRange
+        currency: String
+      ): PriceRange
       simulatedPriceRange(
         quantity: Int
         vectors: [ProductAssignmentVectorInput!]
         includeInactive: Boolean = false
         currency: String
         useNetPrice: Boolean = false
-      ): ProductPriceRange
+      ): PriceRange
 
       """
       Reduced list of possible products by key/value combinations

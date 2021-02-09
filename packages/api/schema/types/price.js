@@ -7,5 +7,11 @@ export default [
       amount: Int!
       currency: String!
     }
+
+    type PriceRange {
+      _id: ID!
+      minPrice: Price!
+      maxPrice: Price!
+    }
   `,
 ];
