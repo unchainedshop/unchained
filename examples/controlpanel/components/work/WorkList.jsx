@@ -24,7 +24,7 @@ const relativeScheduleFromWork = ({ scheduledTime, relativeTime, status }) => {
   return null;
 };
 
-const WorkRow = ({  work, relativeDate }) => {
+const WorkRow = ({ work, relativeDate }) => {
   const scheduledDate = work.scheduled && new Date(work.scheduled);
   const scheduledTime = scheduledDate && scheduledDate.getTime();
   const relativeTime = relativeDate && relativeDate.getTime();
@@ -104,12 +104,8 @@ const WorkList = ({
       {...rest}
       cols={6}
       createPath={null}
-      rowRenderer={(work, i) => (
-        <WorkRow
-          key={`${work._id}-${i}`}
-          work={work}
-          relativeDate={relativeDate}
-        />
+      rowRenderer={(work) => (
+        <WorkRow key={work._id} work={work} relativeDate={relativeDate} />
       )}
     >
       <Table.Row>
@@ -145,7 +141,7 @@ const WorkList = ({
 };
 
 export default withDataTableLoader({
-  itemsPerPage: 10,
+  itemsPerPage: 20,
   queryName: 'workQueue',
   query: gql`
     query workQueue(

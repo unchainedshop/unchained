@@ -1,4 +1,5 @@
 import 'core-js/es';
+import 'intersection-observer';
 import React from 'react';
 import { withRouter } from 'next/router';
 import { ToastContainer } from 'react-toastify';
