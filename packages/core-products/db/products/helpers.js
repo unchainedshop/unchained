@@ -20,22 +20,28 @@ import { ProductReviews } from '../product-reviews/collections';
 
 import { ProductStatus, ProductTypes } from './schema';
 
-const getPriceLevels = (product) => {
-  return (product?.commerce?.pricing || []).sort(
-    (
-      { maxQuantity: leftMaxQuantity = 0 },
-      { maxQuantity: rightMaxQuantity = 0 }
-    ) => {
-      if (
-        leftMaxQuantity === rightMaxQuantity ||
-        (!leftMaxQuantity && !rightMaxQuantity)
-      )
-        return 0;
-      if (leftMaxQuantity === 0) return -1;
-      if (rightMaxQuantity === 0) return 1;
-      return leftMaxQuantity - rightMaxQuantity;
-    }
-  );
+const getPriceLevels = (product, { currencyCode, countryCode }) => {
+  return (product?.commerce?.pricing || [])
+    .sort(
+      (
+        { maxQuantity: leftMaxQuantity = 0 },
+        { maxQuantity: rightMaxQuantity = 0 }
+      ) => {
+        if (
+          leftMaxQuantity === rightMaxQuantity ||
+          (!leftMaxQuantity && !rightMaxQuantity)
+        )
+          return 0;
+        if (leftMaxQuantity === 0) return 1;
+        if (rightMaxQuantity === 0) return -1;
+        return leftMaxQuantity - rightMaxQuantity;
+      }
+    )
+    .filter(
+      (priceLevel) =>
+        priceLevel.currencyCode === currencyCode &&
+        priceLevel.countryCode === countryCode
+    );
 };
 
 const getPriceRange = (prices) => {
@@ -567,42 +573,37 @@ Products.helpers({
       isNetPrice: useNetPrice,
     };
   },
-  price({ country: countryCode, currency: currencyCode, quantity = 1 }) {
-    const currency =
-      currencyCode ||
+  price({ country: countryCode, currency: forcedCurrencyCode, quantity = 1 }) {
+    const currencyCode =
+      forcedCurrencyCode ||
       Countries.resolveDefaultCurrencyCode({
         isoCode: countryCode,
       });
 
-    const pricing = getPriceLevels(this);
-    const price = pricing.reduce(
-      (oldValue, curPrice) => {
-        if (
-          curPrice.currencyCode === currency &&
-          curPrice.countryCode === countryCode &&
-          (!curPrice.maxQuantity || curPrice.maxQuantity >= quantity)
-        ) {
-          return {
-            ...oldValue,
-            ...curPrice,
-          };
-        }
-        return oldValue;
-      },
-      {
-        amount: null,
-        currencyCode: currency,
-        countryCode,
-        isTaxable: false,
-        isNetPrice: false,
-      }
+    const pricing = getPriceLevels(this, {
+      currencyCode,
+      countryCode,
+    });
+    const foundPrice = pricing.find(
+      (level) =>
+        level.minQuantity <= quantity &&
+        (level.maxQuantity === null || level.maxQuantity >= quantity)
     );
+
+    const price = {
+      amount: null,
+      currencyCode,
+      countryCode,
+      isTaxable: false,
+      isNetPrice: false,
+      ...foundPrice,
+    };
 
     if (price.amount !== undefined && price.amount !== null) {
       return {
         _id: crypto
           .createHash('sha256')
-          .update([this._id, countryCode, currency].join(''))
+          .update([this._id, countryCode, currencyCode].join(''))
           .digest('hex'),
         ...price,
       };
@@ -769,21 +770,23 @@ Products.helpers({
       });
 
     let previousMax = null;
-    const filteredAndSorted = getPriceLevels(this)
-      .reverse()
-      .filter((p) => p.currencyCode === currency);
+    const filteredAndSortedPriceLevels = getPriceLevels(this, {
+      currencyCode: currency,
+      countryCode,
+    });
 
-    return filteredAndSorted.map((p, i) => {
-      const max = p.maxQuantity || null;
+    return filteredAndSortedPriceLevels.map((priceLevel, i) => {
+      const max = priceLevel.maxQuantity || null;
       const min = previousMax ? previousMax + 1 : 0;
-      previousMax = p.maxQuantity;
+      previousMax = priceLevel.maxQuantity;
       return {
         minQuantity: min,
-        maxQuantity: i === 0 && p.maxQuantity > 0 ? p.maxQuantity : max,
+        maxQuantity:
+          i === 0 && priceLevel.maxQuantity > 0 ? priceLevel.maxQuantity : max,
         price: {
-          isTaxable: !!p.isTaxable,
-          isNetPrice: !!p.isNetPrice,
-          amount: p.amount,
+          isTaxable: !!priceLevel.isTaxable,
+          isNetPrice: !!priceLevel.isNetPrice,
+          amount: priceLevel.amount,
           currencyCode: currency,
         },
       };

@@ -76,6 +76,10 @@ export default compose(
           isoCode
         }
       }
+      currencies {
+        _id
+        isoCode
+      }
       product(productId: $productId) {
         _id
         status
@@ -114,7 +118,7 @@ export default compose(
       },
     }
   ),
-  withFormSchema(({ data: { countries } }) => ({
+  withFormSchema(({ data: { countries, currencies } }) => ({
     pricing: {
       type: Array,
       minCount: 1,
@@ -127,9 +131,9 @@ export default compose(
       allowedValues: (countries || []).reduce(
         (allCombinations, country) => [
           ...allCombinations,
-          `${country.isoCode} / ${
-            country.defaultCurrency && country.defaultCurrency.isoCode
-          }`,
+          ...currencies.map((currency) => {
+            return `${country.isoCode} / ${currency.isoCode}`;
+          }),
         ],
         [null]
       ),
