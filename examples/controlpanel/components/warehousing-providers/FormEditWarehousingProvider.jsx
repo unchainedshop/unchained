@@ -82,9 +82,6 @@ export default compose(
     `,
     {
       name: 'updateWarehousingProvider',
-      options: {
-        refetchQueries: ['warehousingProvider', 'warehousingProviders'],
-      },
     }
   ),
   graphql(

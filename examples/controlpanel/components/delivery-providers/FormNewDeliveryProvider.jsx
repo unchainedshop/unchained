@@ -9,6 +9,7 @@ import ErrorsField from 'uniforms-semantic/ErrorsField';
 import AutoForm from 'uniforms-semantic/AutoForm';
 import withFormSchema from '../../lib/withFormSchema';
 import withFormErrorHandlers from '../../lib/withFormErrorHandlers';
+import { DELIVERY_PROVIDERS_QUERY } from './DeliveryProviderList';
 
 const defaultProviderType = 'SHIPPING';
 
@@ -54,7 +55,7 @@ export default compose(
     {
       name: 'createDeliveryProvider',
       options: {
-        refetchQueries: ['deliveryProviders'],
+        refetchQueries: [{ query: DELIVERY_PROVIDERS_QUERY }],
       },
     }
   ),

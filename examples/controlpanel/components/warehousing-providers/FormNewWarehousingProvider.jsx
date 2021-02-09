@@ -9,6 +9,7 @@ import ErrorsField from 'uniforms-semantic/ErrorsField';
 import AutoForm from 'uniforms-semantic/AutoForm';
 import withFormSchema from '../../lib/withFormSchema';
 import withFormErrorHandlers from '../../lib/withFormErrorHandlers';
+import { WAREHOUSING_PROVIDERS_QUERY } from './WarehousingProviderList';
 
 const defaultProviderType = 'PHYSICAL';
 
@@ -54,7 +55,7 @@ export default compose(
     {
       name: 'createWarehousingProvider',
       options: {
-        refetchQueries: ['warehousingProviders'],
+        refetchQueries: [{ query: WAREHOUSING_PROVIDERS_QUERY }],
       },
     }
   ),

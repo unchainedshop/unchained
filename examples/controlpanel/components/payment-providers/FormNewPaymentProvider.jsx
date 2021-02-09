@@ -9,6 +9,7 @@ import ErrorsField from 'uniforms-semantic/ErrorsField';
 import AutoForm from 'uniforms-semantic/AutoForm';
 import withFormSchema from '../../lib/withFormSchema';
 import withFormErrorHandlers from '../../lib/withFormErrorHandlers';
+import { PAYMENT_PROVIDERS_QUERY } from './PaymentProviderList';
 
 const defaultProviderType = 'CARD';
 
@@ -54,7 +55,7 @@ export default compose(
     {
       name: 'createPaymentProvider',
       options: {
-        refetchQueries: ['paymentProviders'],
+        refetchQueries: [{ query: PAYMENT_PROVIDERS_QUERY }],
       },
     }
   ),
