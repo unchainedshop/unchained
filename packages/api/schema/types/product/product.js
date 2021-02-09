@@ -123,7 +123,7 @@ export default [
 
     type PriceLevel {
       minQuantity: Int
-      maxQuantity: BigInt
+      maxQuantity: Int
       price: Price
     }
 
