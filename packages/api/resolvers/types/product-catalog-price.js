@@ -1,4 +1,5 @@
 import { Countries } from 'meteor/unchained:core-countries';
+import { Currencies } from 'meteor/unchained:core-currencies';
 
 export default {
   isTaxable({ isTaxable }) {
@@ -10,10 +11,7 @@ export default {
   async country({ countryCode }) {
     return Countries.findCountry({ isoCode: countryCode });
   },
-  price({ amount, currencyCode }) {
-    return {
-      amount,
-      currency: currencyCode,
-    };
+  async currency({ currencyCode }) {
+    return Currencies.findCurrency({ isoCode: currencyCode });
   },
 };

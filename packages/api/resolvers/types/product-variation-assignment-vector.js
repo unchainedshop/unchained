@@ -3,7 +3,7 @@ export default {
     return `${product._id}:${key}=${value}}`;
   },
   option(obj) {
-    return obj.product.variation(obj.key).optionObject(obj.value);
+    return obj.product.variation(obj.key)?.optionObject(obj.value);
   },
   variation(obj) {
     return obj.product.variation(obj.key);

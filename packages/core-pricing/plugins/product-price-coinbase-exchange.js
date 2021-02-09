@@ -48,7 +48,11 @@ class ProductPriceCoinbaseExchange extends ProductPricingAdapter {
     const defaultCurrency = Countries.resolveDefaultCurrencyCode({
       isoCode: country,
     });
-    const productPrice = product.price({ country, currency: defaultCurrency });
+    const productPrice = product.price({
+      country,
+      currency: defaultCurrency,
+      quantity,
+    });
     const { calculation = [] } = this.calculation;
     if (!productPrice || !productPrice?.amount || calculation?.length)
       return super.calculate();

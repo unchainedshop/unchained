@@ -12,12 +12,67 @@ import {
 
 import { Locale } from 'locale';
 import crypto from 'crypto';
+
 import { Products, ProductTexts } from './collections';
 import { ProductVariations } from '../product-variations/collections';
 import { ProductMedia, Media } from '../product-media/collections';
 import { ProductReviews } from '../product-reviews/collections';
 
 import { ProductStatus, ProductTypes } from './schema';
+
+const getPriceLevels = (product, { currencyCode, countryCode }) => {
+  return (product?.commerce?.pricing || [])
+    .sort(
+      (
+        { maxQuantity: leftMaxQuantity = 0 },
+        { maxQuantity: rightMaxQuantity = 0 }
+      ) => {
+        if (
+          leftMaxQuantity === rightMaxQuantity ||
+          (!leftMaxQuantity && !rightMaxQuantity)
+        )
+          return 0;
+        if (leftMaxQuantity === 0) return 1;
+        if (rightMaxQuantity === 0) return -1;
+        return leftMaxQuantity - rightMaxQuantity;
+      }
+    )
+    .filter(
+      (priceLevel) =>
+        priceLevel.currencyCode === currencyCode &&
+        priceLevel.countryCode === countryCode
+    );
+};
+
+const getPriceRange = (prices) => {
+  const { min, max } = prices.reduce(
+    (m, current) => {
+      return {
+        min: current.amount < m.min.amount ? current : m.min,
+        max: current.amount > m.max.amount ? current : m.max,
+      };
+    },
+    {
+      min: { ...prices[0] },
+      max: { ...prices[0] },
+    }
+  );
+
+  return {
+    minPrice: {
+      isTaxable: !!min?.isTaxable,
+      isNetPrice: !!min?.isNetPrice,
+      amount: Math.round(min?.amount),
+      currencyCode: min?.currencyCode,
+    },
+    maxPrice: {
+      isTaxable: !!max?.isTaxable,
+      isNetPrice: !!max?.isNetPrice,
+      amount: Math.round(max?.amount),
+      currencyCode: max?.currencyCode,
+    },
+  };
+};
 
 Products.productExists = ({ productId, slug }) => {
   const selector = productId ? { _id: productId } : { slugs: slug };
@@ -493,12 +548,12 @@ Products.helpers({
       quantity,
       requestContext,
     });
+
     const calculated = pricingDirector.calculate();
     if (!calculated) return null;
 
     const pricing = pricingDirector.resultSheet();
     const userPrice = pricing.unitPrice({ useNetPrice });
-
     return {
       _id: crypto
         .createHash('sha256')
@@ -514,55 +569,34 @@ Products.helpers({
         .digest('hex'),
       amount: userPrice.amount,
       currencyCode: userPrice.currency,
-      countryCode: country,
       isTaxable: pricing.taxSum() > 0,
       isNetPrice: useNetPrice,
     };
   },
-  price({ country: countryCode, currency, quantity = 1 }) {
+  price({ country: countryCode, currency: forcedCurrencyCode, quantity = 1 }) {
     const currencyCode =
-      currency ||
+      forcedCurrencyCode ||
       Countries.resolveDefaultCurrencyCode({
         isoCode: countryCode,
       });
 
-    const pricing = ((this.commerce && this.commerce.pricing) || []).sort(
-      (
-        { maxQuantity: leftMaxQuantity = 0 },
-        { maxQuantity: rightMaxQuantity = 0 }
-      ) => {
-        if (
-          leftMaxQuantity === rightMaxQuantity ||
-          (!leftMaxQuantity && !rightMaxQuantity)
-        )
-          return 0;
-        if (leftMaxQuantity === 0) return -1;
-        if (rightMaxQuantity === 0) return 1;
-        return leftMaxQuantity - rightMaxQuantity;
-      }
+    const pricing = getPriceLevels(this, {
+      currencyCode,
+      countryCode,
+    });
+    const foundPrice = pricing.find(
+      (level) => !level.maxQuantity || level.maxQuantity >= quantity
     );
-    const price = pricing.reduce(
-      (oldValue, curPrice) => {
-        if (
-          curPrice.currencyCode === currencyCode &&
-          curPrice.countryCode === countryCode &&
-          (!curPrice.maxQuantity || curPrice.maxQuantity >= quantity)
-        ) {
-          return {
-            ...oldValue,
-            ...curPrice,
-          };
-        }
-        return oldValue;
-      },
-      {
-        amount: null,
-        currencyCode,
-        countryCode,
-        isTaxable: false,
-        isNetPrice: false,
-      }
-    );
+
+    const price = {
+      amount: null,
+      currencyCode,
+      countryCode,
+      isTaxable: false,
+      isNetPrice: false,
+      ...foundPrice,
+    };
+
     if (price.amount !== undefined && price.amount !== null) {
       return {
         _id: crypto
@@ -632,6 +666,127 @@ Products.helpers({
         .digest('hex'),
       ...price,
     }));
+  },
+  catalogPriceRange({
+    quantity = 0,
+    vectors = [],
+    includeInactive = false,
+    country,
+    currency,
+  }) {
+    const proxyProducts = this.proxyProducts(vectors, { includeInactive });
+    const filtered = [];
+    proxyProducts.forEach((p) => {
+      const catalogPrice = p.price({
+        country,
+        quantity,
+        currency,
+      });
+
+      if (catalogPrice) {
+        filtered.push(catalogPrice);
+      }
+    });
+
+    if (!filtered.length) return null;
+    const { minPrice, maxPrice } = getPriceRange(filtered);
+
+    return {
+      _id: crypto
+        .createHash('sha256')
+        .update(
+          [
+            this._id,
+            minPrice.amount,
+            minPrice.currency,
+            maxPrice.amount,
+            maxPrice.currency,
+          ].join('')
+        )
+        .digest('hex'),
+      minPrice,
+      maxPrice,
+    };
+  },
+  simulatedPriceRange(
+    {
+      quantity,
+      vectors = [],
+      includeInactive = false,
+      currency,
+      country,
+      useNetPrice = false,
+    },
+    requestContext
+  ) {
+    const proxyProducts = this.proxyProducts(vectors, { includeInactive });
+    const { userId, user } = requestContext;
+    const filtered = [];
+
+    proxyProducts.forEach((p) => {
+      const userPrice = p.userPrice(
+        {
+          quantity,
+          currency,
+          country,
+          useNetPrice,
+          userId,
+          user,
+        },
+        requestContext
+      );
+      if (userPrice) filtered.push(userPrice);
+    });
+
+    if (!filtered.length) return null;
+    const { minPrice, maxPrice } = getPriceRange(filtered);
+
+    return {
+      _id: crypto
+        .createHash('sha256')
+        .update(
+          [
+            this._id,
+            minPrice.amount,
+            minPrice.currency,
+            maxPrice.amount,
+            maxPrice.currency,
+          ].join('')
+        )
+        .digest('hex'),
+      minPrice,
+      maxPrice,
+    };
+  },
+  leveledCatalogPrices({ currency: currencyCode, country: countryCode }) {
+    const currency =
+      currencyCode ||
+      Countries.resolveDefaultCurrencyCode({
+        isoCode: countryCode,
+      });
+
+    let previousMax = null;
+    const filteredAndSortedPriceLevels = getPriceLevels(this, {
+      currencyCode: currency,
+      countryCode,
+    });
+
+    return filteredAndSortedPriceLevels.map((priceLevel, i) => {
+      const max = priceLevel.maxQuantity || null;
+      const min = previousMax ? previousMax + 1 : 0;
+      previousMax = priceLevel.maxQuantity;
+      return {
+        minQuantity: min,
+        maxQuantity:
+          i === 0 && priceLevel.maxQuantity > 0 ? priceLevel.maxQuantity : max,
+        price: {
+          isTaxable: !!priceLevel.isTaxable,
+          isNetPrice: !!priceLevel.isNetPrice,
+          amount: priceLevel.amount,
+          currencyCode: currency,
+        },
+      };
+    });
   },
 });
 

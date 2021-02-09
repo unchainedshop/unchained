@@ -15,35 +15,35 @@ export default [
     interface OrderDiscountable {
       _id: ID!
       orderDiscount: OrderDiscount!
-      total: Money!
+      total: Price!
     }
 
     type OrderGlobalDiscount implements OrderDiscountable {
       _id: ID!
       orderDiscount: OrderDiscount!
       order: Order!
-      total: Money!
+      total: Price!
     }
 
     type OrderPaymentDiscount implements OrderDiscountable {
       _id: ID!
       orderDiscount: OrderDiscount!
       payment: OrderPayment!
-      total: Money!
+      total: Price!
     }
 
     type OrderDeliveryDiscount implements OrderDiscountable {
       _id: ID!
       orderDiscount: OrderDiscount!
       delivery: OrderDelivery!
-      total: Money!
+      total: Price!
     }
 
     type OrderItemDiscount implements OrderDiscountable {
       _id: ID!
       orderDiscount: OrderDiscount!
       item: OrderItem!
-      total: Money!
+      total: Price!
     }
 
     type OrderDiscount {
@@ -52,7 +52,7 @@ export default [
       code: String
       order: Order!
       interface: DiscountInterface
-      total: Money!
+      total: Price!
       discounted: [OrderDiscountable!]
     }
   `,

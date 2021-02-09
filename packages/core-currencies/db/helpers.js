@@ -20,8 +20,8 @@ Currencies.currencyExists = ({ currencyId }) => {
   return !!Currencies.find({ _id: currencyId }, { limit: 1 }).count();
 };
 
-Currencies.findCurrency = ({ currencyId }) => {
-  return Currencies.findOne({ _id: currencyId });
+Currencies.findCurrency = ({ currencyId, isoCode }) => {
+  return Currencies.findOne(currencyId ? { _id: currencyId } : { isoCode });
 };
 
 Currencies.removeCurrency = ({ currencyId }) => {

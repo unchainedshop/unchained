@@ -76,6 +76,10 @@ export default compose(
           isoCode
         }
       }
+      currencies {
+        _id
+        isoCode
+      }
       product(productId: $productId) {
         _id
         status
@@ -89,10 +93,11 @@ export default compose(
           _id
           isoCode
         }
-        price {
-          amount
-          currency
+        currency {
+          _id
+          isoCode
         }
+        amount
       }
     }
   `),
@@ -113,7 +118,7 @@ export default compose(
       },
     }
   ),
-  withFormSchema(({ data: { countries } }) => ({
+  withFormSchema(({ data: { countries, currencies } }) => ({
     pricing: {
       type: Array,
       minCount: 1,
@@ -126,9 +131,9 @@ export default compose(
       allowedValues: (countries || []).reduce(
         (allCombinations, country) => [
           ...allCombinations,
-          `${country.isoCode} / ${
-            country.defaultCurrency && country.defaultCurrency.isoCode
-          }`,
+          ...currencies.map((currency) => {
+            return `${country.isoCode} / ${currency.isoCode}`;
+          }),
         ],
         [null]
       ),
@@ -162,12 +167,20 @@ export default compose(
     const productPricingMap = {};
     const burnedIds = [];
     productPricing.forEach(
-      ({ _id, country, price, isTaxable, isNetPrice, maxQuantity }) => {
-        burnedIds.push(`${country.isoCode}:${price.currency}`);
+      ({
+        _id,
+        country,
+        currency,
+        amount,
+        isTaxable,
+        isNetPrice,
+        maxQuantity,
+      }) => {
+        burnedIds.push(`${country.isoCode}:${currency.isoCode}`);
         productPricingMap[_id] = {
           countryCode: country.isoCode,
-          amount: price.amount,
-          currencyCode: price.currency,
+          amount,
+          currencyCode: currency.isoCode,
           maxQuantity: maxQuantity || 0,
           isTaxable,
           isNetPrice,

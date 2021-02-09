@@ -12,7 +12,7 @@ import filter from './filter';
 import language from './language';
 import log from './log';
 import media from './media';
-import money from './money';
+import price from './price';
 import payment from './payment';
 import shop from './shop';
 import stock from './stock';
@@ -43,7 +43,7 @@ export default [
   ...language,
   ...log,
   ...media,
-  ...money,
+  ...price,
   ...payment,
   ...shop,
   ...stock,

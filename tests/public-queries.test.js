@@ -55,9 +55,10 @@ describe('public queries', () => {
       query: /* GraphQL */ `
         {
           productCatalogPrices(productId: "simpleproduct") {
-            price {
-              amount
-              currency
+            amount
+            currency {
+              _id
+              isoCode
             }
           }
         }
@@ -65,9 +66,9 @@ describe('public queries', () => {
     });
 
     expect(errors).toEqual(undefined);
-    const { price } = data.productCatalogPrices[0];
-    expect(price.amount).toBe(10000);
-    expect(price.currency).toBe('CHF');
+    const { amount, currency } = data.productCatalogPrices[0];
+    expect(amount).toBe(10000);
+    expect(currency.isoCode).toBe('CHF');
   });
 
   it('query.productCatalogPrices return error when passed invalid productId', async () => {
@@ -75,9 +76,10 @@ describe('public queries', () => {
       query: /* GraphQL */ `
         {
           productCatalogPrices(productId: "") {
-            price {
-              amount
-              currency
+            amount
+            currency {
+              _id
+              isoCode
             }
           }
         }
