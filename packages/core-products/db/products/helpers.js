@@ -652,8 +652,6 @@ Products.helpers({
   catalogPrices() {
     const prices = (this.commerce && this.commerce.pricing) || [];
     return prices.map((price) => ({
-      isNetPrice: false,
-      isTaxable: false,
       _id: crypto
         .createHash('sha256')
         .update(
