@@ -10,18 +10,8 @@ export interface Options {
   size?: number;
 }
 
-export interface FileTypes {
-  isVideo: boolean;
-  isAudio: boolean;
-  isImage: boolean;
-  isText: boolean;
-  isJSON: boolean;
-  isPDF: boolean;
-}
-
 export interface Version {
   extension: string;
-  path: string;
   size: number;
   type: string;
 }
@@ -35,27 +25,11 @@ export interface FileObj {
 
   type: string;
 
-  path: string;
-
-  isVideo: boolean;
-
-  isAudio: boolean;
-
-  isImage: boolean;
-
-  isText: boolean;
-
-  isJSON: boolean;
-
-  isPDF: boolean;
-
   ext?: string;
 
   extension?: string;
 
   extensionWithDot: string;
-
-  storagePath: string;
 
   downloadRoute: string;
 

@@ -8,7 +8,6 @@ import { Meteor } from 'meteor/meteor';
 import { WebApp } from 'meteor/webapp';
 import { Readable } from 'stream';
 import Random from '@reactioncommerce/random';
-import nodePath from 'path';
 import fetch from 'isomorphic-unfetch';
 import { FileObj, Options } from './types';
 import {
@@ -20,7 +19,6 @@ import {
   getExtension,
   dataToSchema,
   getMimeType,
-  storagePath,
   accessDenied,
 } from './helpers';
 
@@ -517,14 +515,7 @@ export default class FilesCollection extends Mongo.Collection<FileObj> {
     const fileName =
       opts.name || opts.fileName ? opts.name || opts.fileName : FSName;
 
-    const { extension, extensionWithDot } = await getExtension(
-      fileName,
-      buffer
-    );
-
-    opts.path = `${storagePath(this._name)}${
-      nodePath.sep
-    }${FSName}${extensionWithDot}`;
+    const { extension } = await getExtension(fileName, buffer);
 
     opts.type = await getMimeType(buffer);
 
@@ -536,7 +527,6 @@ export default class FilesCollection extends Mongo.Collection<FileObj> {
 
     const result = dataToSchema({
       name: fileName,
-      path: opts.path,
       meta: opts.meta,
       type: opts.type,
       size,
@@ -572,18 +562,10 @@ export default class FilesCollection extends Mongo.Collection<FileObj> {
     const arrayBuffer = await response.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
     const size = Buffer.byteLength(buffer);
-    const { extension, extensionWithDot } = await getExtension(
-      fileName,
-      buffer
-    );
+    const { extension } = await getExtension(fileName, buffer);
 
-    // eslint-disable-next-line no-underscore-dangle
-    opts.path = `${storagePath(this._name)}${
-      nodePath.sep
-    }${FSName}${extensionWithDot}`;
     const result = dataToSchema({
       name: fileName,
-      path: opts.path,
       meta: opts.meta,
       type:
         opts.type ||

@@ -199,13 +199,6 @@ export const JpegMedia = {
   },
   downloadRoute: '/cdn/storage',
   collectionName: 'media',
-  isVideo: false,
-  isAudio: false,
-  isImage: true,
-  isText: false,
-  isJSON: false,
-  isPDF: false,
-  storagePath: 'assets/app/uploads/media',
 };
 
 export const JpegProductMedia = {

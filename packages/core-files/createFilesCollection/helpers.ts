@@ -2,7 +2,7 @@ import fileType from 'file-type';
 import crypto from 'crypto';
 import { Meteor } from 'meteor/meteor';
 import { MongoInternals } from 'meteor/mongo';
-import { FileTypes, FileObj } from './types';
+import { FileObj } from './types';
 
 const { FILE_STORAGE_PATH } = process.env;
 
@@ -158,24 +158,6 @@ export const responseHeaders = (responseCode, versionRef) => {
   return headers;
 };
 
-export const storagePath = (collectionName: string) => {
-  if (FILE_STORAGE_PATH) {
-    return `${FILE_STORAGE_PATH}/${collectionName}`;
-  }
-  return `assets/app/uploads/${collectionName}`;
-};
-
-export const updateFileTypes = (type: string): FileTypes => {
-  return {
-    isVideo: /^video\//i.test(type),
-    isAudio: /^audio\//i.test(type),
-    isImage: /^image\//i.test(type),
-    isText: /^text\//i.test(type),
-    isJSON: /^application\/json$/i.test(type),
-    isPDF: /^application\/(x-)?pdf$/i.test(type),
-  };
-};
-
 export const dataToSchema = (data): FileObj => {
   const dataSchema = {
     name: data.name,
@@ -199,8 +181,6 @@ export const dataToSchema = (data): FileObj => {
     },
     downloadRoute: '/cdn/storage',
     collectionName: data.collectionName,
-    ...updateFileTypes(data.type),
-    storagePath: data.storagePath || storagePath(data.collectionName),
     _id: data.fileId,
   };
 
