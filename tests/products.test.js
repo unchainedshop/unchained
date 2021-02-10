@@ -21,10 +21,7 @@ let graphqlFetchAsAnonymousUser;
 describe('Products', () => {
   beforeAll(async () => {
     [, connection] = await setupDatabase();
-    graphqlFetchAsAdmin = await createLoggedInGraphqlFetch(ADMIN_TOKEN, {
-      'accept-language': 'de',
-      'x-shop-country': 'CH',
-    });
+    graphqlFetchAsAdmin = await createLoggedInGraphqlFetch(ADMIN_TOKEN);
     graphqlFetchAsNormalUser = await createLoggedInGraphqlFetch(USER_TOKEN);
     graphqlFetchAsAnonymousUser = createAnonymousGraphqlFetch();
   });

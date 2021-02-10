@@ -33,8 +33,8 @@ class DocumentDirector {
   }
 
   filteredDocuments({ date, type, status } = {}) {
-    if (!this.context.documents.fetch()) return [];
-    return this.context.documents.fetch().filter((doc) => {
+    if (!this.context.documents) return [];
+    return this.context.documents.filter((doc) => {
       const sameType = !type || doc.meta.type === type;
       const sameDate =
         !date || new Date(doc.meta.date).getTime() === new Date(date).getTime();

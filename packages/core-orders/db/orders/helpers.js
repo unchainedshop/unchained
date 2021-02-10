@@ -585,7 +585,7 @@ Orders.helpers({
     if (type) {
       selector['meta.type'] = type;
     }
-    return OrderDocuments.find(selector, { sort: { 'meta.date': -1 } });
+    return OrderDocuments.find(selector, { sort: { 'meta.date': -1 } }).each();
   },
   document(options) {
     const { type } = options || {};

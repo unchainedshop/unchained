@@ -8,6 +8,7 @@ import { SimpleProduct } from './seeds/products';
 let connection;
 let db;
 let anonymousGraphqlFetch;
+let guestToken;
 let loggedInGraphqlFetch;
 let orderId;
 
@@ -21,12 +22,8 @@ describe('Guest user cart migration', () => {
     await connection.close();
   });
 
-  it('add a product to the cart', async () => {
-    const {
-      data: {
-        loginAsGuest: { token },
-      },
-    } = await anonymousGraphqlFetch({
+  it('login as guest', async () => {
+    const result = await anonymousGraphqlFetch({
       query: /* GraphQL */ `
         mutation {
           loginAsGuest {
@@ -36,13 +33,14 @@ describe('Guest user cart migration', () => {
         }
       `,
     });
-    const guestToken = token;
-    expect(guestToken).toBeTruthy();
+    guestToken = result.data.loginAsGuest.token;
+    expect(result.data.loginAsGuest).toMatchObject({});
+  });
 
+  it('add a product to the cart', async () => {
     loggedInGraphqlFetch = await createLoggedInGraphqlFetch(
       `Bearer ${guestToken}`,
     );
-
     const result = await loggedInGraphqlFetch({
       query: /* GraphQL */ `
         mutation addCartProduct(
@@ -85,7 +83,6 @@ describe('Guest user cart migration', () => {
       },
     });
     orderId = result.data.addCartProduct.order._id;
-
     expect(result.data.addCartProduct).toMatchObject({
       quantity: 2,
       total: {
