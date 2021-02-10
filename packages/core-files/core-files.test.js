@@ -52,7 +52,7 @@ describe('Meteor Files', () => {
     }
   });
 
-  it('insertWithRemoteBuffer - supplying incorrect file size', async () => {
+  it('insertWithRemoteBuffer - supplying incorrect file type', async () => {
     const testOnBeforeUploadCollectionSize = new FilesCollection({
       collectionName:
         'test_onBeforeUpload_insertWithRemoteBuffer_files_collection_size',
