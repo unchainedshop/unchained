@@ -140,6 +140,7 @@ Look for `Accounts.registerLoginHandler`, `Accounts.onLogin` or Meteor Accounts 
 
 ## Breaking Changes
 
+- [api] Auth-related Errors in signup, signin, lost password etc. have other Error Codes now. See https://www.accountsjs.com/docs/api/server/globals#enumerations for more information.
 - [users] `addEmail` and `updateEmail` no longer send out email verification; you need to trigger the verification using `sendVerificationEmail` mutation.
 - [users] `enrollUser` doesn't send out the enrollment email by default anymore. You need to trigger it using `sendEnrollmentEmail` mutation.
 - [api] The functions `getConnection` and `callMethod` have been removed
