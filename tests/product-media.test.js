@@ -401,26 +401,6 @@ describe('ProductsVariation', () => {
     });
   });
 
-  describe('mutation.addProductMedia for admin user should', () => {
-    it('add product media successfully when provided valid media ID', async () => {
-      const { data: { addProductMedia } = {} } = await graphqlFetch({
-        query: /* GraphQL */ `
-          mutation addProductMedia($href: String!, $productId: ID!) {
-            addProductMedia(href: $href, productId: $productId) {
-              _id
-              tags
-            }
-          }
-        `,
-        variables: {
-          href: 'https://unchained.shop/img/veloplus-screenshots.png',
-          productId: SimpleProduct._id,
-        },
-      });
-      expect(addProductMedia._id).not.toBe(SimpleProduct._id);
-    });
-  });
-
   describe('mutation.removeProductMedia for admin user should', () => {
     it('remove product media successfuly when provided valid media ID', async () => {
       // eslint-disable-next-line no-unused-vars
