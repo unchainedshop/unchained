@@ -37,6 +37,7 @@
     "body-parser": "^1.19.0",
     "client-oauth2": "github:unchainedshop/js-client-oauth2#master",
     "dotenv-extended": "^2.9.0",
+    "graphql": "^15.5.0",
     "isomorphic-unfetch": "^3.1.0",
     "locale": "^0.1.0",
     "meteor-node-stubs": "^1.0.1",
