@@ -41,8 +41,8 @@ class LocalSearch extends FilterAdapter {
           $text: { $search: queryString },
         };
 
-    if (restrictedProductIds) {
-      selector.productId = { $in: new Set(restrictedProductIds) };
+    if (restrictedProductIds?.length) {
+      selector.productId = { $in: [...new Set(restrictedProductIds)] };
     }
 
     const productsId = ProductTexts.find(selector, {
