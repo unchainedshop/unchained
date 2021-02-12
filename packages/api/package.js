@@ -1,6 +1,6 @@
 Package.describe({
   name: 'unchained:api',
-  version: '0.61.8',
+  version: '0.61.9',
   summary: 'Unchained Engine: GraphQL API',
   git: 'https://github.com/unchainedshop/unchained',
   documentation: 'README.md',
@@ -12,7 +12,6 @@ Npm.depends({
   dataloader: '2.0.0',
   locale: '0.1.0',
   'lodash.isnumber': '3.0.3',
-  'apollo-server-express': '2.21.0',
   'body-parser': '1.19.0',
 });
 
