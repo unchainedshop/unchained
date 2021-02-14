@@ -15,9 +15,9 @@ Npm.depends({
 });
 
 Package.onUse((api) => {
+  api.versionsFrom('1.12');
   api.use('ecmascript');
   api.use('unchained:core-settings@0.61.0');
-  api.versionsFrom('1.12');
   api.use(['mongo', 'webapp'], 'server');
   api.use('typescript');
   api.mainModule('core-files.ts');
