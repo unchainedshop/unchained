@@ -219,7 +219,7 @@ Quotations.helpers({
     }
     return QuotationDocuments.find(selector, {
       sort: { 'meta.date': -1 },
-    }).each();
+    }).fetch();
   },
   document(options) {
     const { type } = options || {};
