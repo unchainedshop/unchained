@@ -506,10 +506,6 @@ export default class FilesCollection extends Mongo.Collection<FileObj> {
   };
 
   async write(buffer, opts: Options) {
-    if (helpers.isFunction(opts)) {
-      opts = {};
-    }
-
     const fileId = opts.fileId || Random.id();
     const FSName = fileId;
     const fileName =
