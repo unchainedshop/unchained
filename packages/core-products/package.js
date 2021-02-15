@@ -18,11 +18,16 @@ Package.onUse((api) => {
   api.use('unchained:utils@0.61.0');
   api.use('unchained:core-files@0.61.0');
   api.use('unchained:core-users@0.61.0');
+  api.use('unchained:core-events@0.61.0');
   api.use('unchained:core-pricing@0.61.0');
   api.use('unchained:core-warehousing@0.61.0');
   api.use('unchained:core-countries@0.61.0');
 
   api.mainModule('products.js', 'server');
+});
+
+Npm.depends({
+  hashids: '2.2.1',
 });
 
 Package.onTest((api) => {

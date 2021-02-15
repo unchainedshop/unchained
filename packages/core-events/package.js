@@ -1,5 +1,5 @@
 Package.describe({
-  name: 'unchained:Event',
+  name: 'unchained:core-events',
   version: '0.61.0',
   summary: 'Unchained Engine: Events',
   git: 'https://github.com/unchainedshop/unchained',
@@ -10,7 +10,7 @@ Package.onUse((api) => {
   api.versionsFrom('1.12');
   api.use('ecmascript');
   api.use('typescript');
-  api.addFiles(['index.ts', 'events.ts'], 'server');
+
   api.mainModule('index.ts');
 });
 

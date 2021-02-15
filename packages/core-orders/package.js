@@ -17,7 +17,6 @@ Package.onUse((api) => {
   api.use('promise');
   api.use('dburles:collection-helpers@1.1.0');
   api.use('aldeed:collection2@3.2.1');
-  api.use('typescript');
 
   api.use('unchained:utils@0.61.0');
   api.use('unchained:core-files@0.61.0');
@@ -33,7 +32,6 @@ Package.onUse((api) => {
   api.use('unchained:core-quotations@0.61.0');
   api.use('unchained:core-subscriptions@0.61.0');
 
-  api.addFiles(['events.ts'], 'server');
   api.mainModule('orders.js', 'server');
 });
 
