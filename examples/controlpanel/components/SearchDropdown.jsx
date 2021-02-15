@@ -142,9 +142,8 @@ const SearchDropdown = ({
         onSearchChange={debounce(handleSearchChange, 500, {
           leading: true,
         })}
-        options={options}
+        options={options.map((option) => ({ ...option, optionValues }))}
         value={value}
-        optionValues={optionValues}
         style={{ marginBottom: '1em' }}
       />
     </div>

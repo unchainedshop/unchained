@@ -46,7 +46,7 @@ const OrderLogList = ({ logs }) => (
 );
 
 export default compose(
-  defaultProps({ limit: 50, offset: 0 }),
+  defaultProps({ limit: 20, offset: 0 }),
   graphql(gql`
     query orderLogs($orderId: ID!, $offset: Int, $limit: Int) {
       order(orderId: $orderId) {

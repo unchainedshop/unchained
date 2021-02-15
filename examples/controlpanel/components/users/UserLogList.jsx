@@ -42,7 +42,7 @@ const UserLogList = ({ logs }) => (
 );
 
 export default compose(
-  defaultProps({ limit: 50, offset: 0 }),
+  defaultProps({ limit: 20, offset: 0 }),
   graphql(gql`
     query userLogs($userId: ID!, $offset: Int, $limit: Int) {
       user(userId: $userId) {

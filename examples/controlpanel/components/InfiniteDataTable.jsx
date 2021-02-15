@@ -108,13 +108,13 @@ const InfiniteDataTable = ({
   );
 };
 
-export const withDataTableLoader = ({ query, queryName, itemsPerPage = 5 }) =>
+export const withDataTableLoader = ({ query, queryName }) =>
   compose(
     graphql(query, {
-      options: ({ queryOptions, ...props }) => ({
+      options: ({ queryOptions, limit, ...props }) => ({
         variables: {
           offset: 0,
-          limit: itemsPerPage,
+          limit,
           ...props,
         },
         ...queryOptions,
@@ -125,6 +125,7 @@ export const withDataTableLoader = ({ query, queryName, itemsPerPage = 5 }) =>
           itemsCount: data[queryName]?.length || 0,
           items: data[queryName],
           loadMoreEntries: () => {
+            console.log({ data, queryName });
             return fetchMore({
               variables: {
                 offset: data[queryName]?.length,

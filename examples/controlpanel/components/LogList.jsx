@@ -62,7 +62,7 @@ const LogList = ({ data: { logs = defaultLogs, loading }, ...rest }) => (
 );
 
 export default compose(
-  defaultProps({ limit: 50, offset: 0 }),
+  defaultProps({ limit: 20, offset: 0 }),
   graphql(
     gql`
       query logs($offset: Int, $limit: Int) {

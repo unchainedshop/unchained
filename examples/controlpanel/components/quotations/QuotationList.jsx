@@ -1,5 +1,7 @@
 import { format } from 'date-fns';
 import gql from 'graphql-tag';
+import { compose, defaultProps } from 'recompose';
+
 import React from 'react';
 import { Table } from 'semantic-ui-react';
 import Link from 'next/link';
@@ -74,30 +76,33 @@ const QuotationList = ({ loading, updateHasMore, ...rest }) => (
   </InfiniteDataTable>
 );
 
-export default withDataTableLoader({
-  queryName: 'quotations',
-  query: gql`
-    query quotations($offset: Int, $limit: Int) {
-      quotations(offset: $offset, limit: $limit) {
-        _id
-        expires
-        quotationNumber
-        status
-        user {
+export default compose(
+  defaultProps({ limit: 20, offset: 0 }),
+  withDataTableLoader({
+    queryName: 'quotations',
+    query: gql`
+      query quotations($offset: Int, $limit: Int) {
+        quotations(offset: $offset, limit: $limit) {
           _id
-          name
-        }
-        product {
-          _id
-          ... on SimpleProduct {
-            sku
-          }
-          texts {
+          expires
+          quotationNumber
+          status
+          user {
             _id
-            title
+            name
+          }
+          product {
+            _id
+            ... on SimpleProduct {
+              sku
+            }
+            texts {
+              _id
+              title
+            }
           }
         }
       }
-    }
-  `,
-})(QuotationList);
+    `,
+  })
+)(QuotationList);
