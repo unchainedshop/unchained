@@ -22,7 +22,3 @@ Package.onUse((api) => {
 
   api.mainModule('worker.js', 'server');
 });
-
-Npm.depends({
-  later: '1.2.0',
-});
