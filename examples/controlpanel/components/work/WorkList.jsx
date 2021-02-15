@@ -2,6 +2,7 @@ import gql from 'graphql-tag';
 import React, { useEffect, useState } from 'react';
 import { Checkbox, Table } from 'semantic-ui-react';
 import Link from 'next/link';
+import { compose, defaultProps } from 'recompose';
 
 import InfiniteDataTable, { withDataTableLoader } from '../InfiniteDataTable';
 import WorkTypeSelector from './WorkTypeSelector';
@@ -140,30 +141,32 @@ const WorkList = ({
   );
 };
 
-export default withDataTableLoader({
-  itemsPerPage: 20,
-  queryName: 'workQueue',
-  query: gql`
-    query workQueue(
-      $offset: Int
-      $limit: Int
-      $status: [WorkStatus!]!
-      $selectTypes: [WorkType!] = []
-    ) {
-      workQueue(
-        offset: $offset
-        limit: $limit
-        status: $status
-        selectTypes: $selectTypes
+export default compose(
+  defaultProps({ limit: 20, offset: 0 }),
+  withDataTableLoader({
+    queryName: 'workQueue',
+    query: gql`
+      query workQueue(
+        $offset: Int
+        $limit: Int
+        $status: [WorkStatus!]!
+        $selectTypes: [WorkType!] = []
       ) {
-        _id
-        type
-        scheduled
-        status
-        started
-        finished
-        created
+        workQueue(
+          offset: $offset
+          limit: $limit
+          status: $status
+          selectTypes: $selectTypes
+        ) {
+          _id
+          type
+          scheduled
+          status
+          started
+          finished
+          created
+        }
       }
-    }
-  `,
-})(WorkList);
+    `,
+  })
+)(WorkList);

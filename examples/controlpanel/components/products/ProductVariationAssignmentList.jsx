@@ -4,6 +4,7 @@ import { Segment, Table, Button } from 'semantic-ui-react';
 import gql from 'graphql-tag';
 import { graphql } from '@apollo/client/react/hoc';
 import SearchDropdown from '../SearchDropdown';
+import { SEARCH_PRODUCTS } from '../searchQueries';
 
 const ProductVariationAssignmentList = ({
   columnTitles,
@@ -30,13 +31,18 @@ const ProductVariationAssignmentList = ({
               <Table.Cell key={`${column}`}>{column}</Table.Cell>
             ))}
             <Table.Cell>
-              <SearchDropdown
-                onChange={addProductAssignment}
-                value={product ? product._id : ''}
-                optionValues={columns}
-                placeholder="Select Product"
-                disabled={!!(product && product._id)}
-              />
+              {product ? (
+                <div>{product.texts.title}</div>
+              ) : (
+                <SearchDropdown
+                  placeholder="Select Product"
+                  searchQuery={SEARCH_PRODUCTS}
+                  onChange={addProductAssignment(columns)}
+                  queryType={'products'}
+                  value={product ? product._id : ''}
+                  options={columns}
+                />
+              )}
             </Table.Cell>
             <Table.Cell>
               {product && product._id && (
@@ -211,11 +217,9 @@ export default compose(
     };
   }),
   withHandlers({
-    addProductAssignment: ({
-      addProductAssignment,
-      productId,
-      columnKeys,
-    }) => async (_, { value, optionValues }) => {
+    addProductAssignment: ({ addProductAssignment, productId, columnKeys }) => (
+      optionValues
+    ) => async (_, { value }) => {
       await addProductAssignment({
         variables: {
           proxyId: productId,

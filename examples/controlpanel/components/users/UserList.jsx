@@ -1,4 +1,4 @@
-import { compose, withState, withHandlers } from 'recompose';
+import { compose, withState, withHandlers, defaultProps } from 'recompose';
 import gql from 'graphql-tag';
 import { graphql } from '@apollo/client/react/hoc';
 import React from 'react';
@@ -156,6 +156,7 @@ export const USER_LIST_QUERY = gql`
 `;
 
 export default compose(
+  defaultProps({ limit: 20, offset: 0 }),
   withState('hasMore', 'updateHasMore', true),
   withState('isShowGuests', 'setShowGuests', false),
   withRouter,

@@ -46,7 +46,7 @@ const QuotationLogList = ({ logs }) => (
 );
 
 export default compose(
-  defaultProps({ limit: 50, offset: 0 }),
+  defaultProps({ limit: 20, offset: 0 }),
   graphql(gql`
     query quotationLogs($quotationId: ID!, $offset: Int, $limit: Int) {
       quotation(quotationId: $quotationId) {

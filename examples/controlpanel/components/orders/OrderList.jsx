@@ -1,4 +1,4 @@
-import { compose, withHandlers, withState } from 'recompose';
+import { compose, withHandlers, withState, defaultProps } from 'recompose';
 import { format } from 'date-fns';
 import gql from 'graphql-tag';
 import React from 'react';
@@ -78,6 +78,7 @@ const OrderList = ({
 );
 
 export default compose(
+  defaultProps({ limit: 20, offset: 0 }),
   withState('isShowCarts', 'setShowCarts', false),
   withDataTableLoader({
     queryName: 'orders',

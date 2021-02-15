@@ -7,7 +7,7 @@ const BreadcrumbTrail = ({ assortmentPaths, router }) => {
       {assortmentPaths.map((path, pathIndex) =>
         path.links.map((link, linkIndex) => (
           <>
-            {pathIndex > 0 && linkIndex === 0 && <br />}
+            {pathIndex > 0 && linkIndex === 0 && <br key="link.assortmentId" />}
             <Breadcrumb.Section
               key={link.assortmentId}
               onClick={() => {

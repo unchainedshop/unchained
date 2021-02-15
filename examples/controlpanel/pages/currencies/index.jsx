@@ -8,7 +8,7 @@ export default connectApollo((props) => (
   <App {...props}>
     <Container>
       <h2>Currencies</h2>
-      <CurrencyList />
+      <CurrencyList limit={50} />
     </Container>
   </App>
 ));

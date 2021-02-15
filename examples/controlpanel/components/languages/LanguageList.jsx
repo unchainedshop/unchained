@@ -1,4 +1,4 @@
-import { compose, pure } from 'recompose';
+import { compose, pure, defaultProps } from 'recompose';
 import gql from 'graphql-tag';
 import React from 'react';
 import { Table, Icon } from 'semantic-ui-react';
@@ -37,6 +37,7 @@ const LanguageList = ({ ...rest }) => (
 );
 
 export default compose(
+  defaultProps({ limit: 20, offset: 0 }),
   withDataTableLoader({
     queryName: 'languages',
     query: gql`

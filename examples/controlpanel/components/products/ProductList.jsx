@@ -1,4 +1,4 @@
-import { compose, pure, withState } from 'recompose';
+import { compose, pure, withState, defaultProps } from 'recompose';
 import gql from 'graphql-tag';
 import { graphql } from '@apollo/client/react/hoc';
 import React from 'react';
@@ -128,6 +128,7 @@ export const PRODUCT_LIST_QUERY = gql`
 `;
 
 export default compose(
+  defaultProps({ limit: 20, offset: 0 }),
   withState('hasMore', 'updateHasMore', true),
   withRouter,
   graphql(PRODUCT_LIST_QUERY, {

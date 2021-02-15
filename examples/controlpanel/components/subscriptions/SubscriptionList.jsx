@@ -2,6 +2,7 @@ import gql from 'graphql-tag';
 import React from 'react';
 import { Table } from 'semantic-ui-react';
 import Link from 'next/link';
+import { compose, defaultProps } from 'recompose';
 import InfiniteDataTable, { withDataTableLoader } from '../InfiniteDataTable';
 
 const SubscriptionList = ({
@@ -62,21 +63,24 @@ const SubscriptionList = ({
   </InfiniteDataTable>
 );
 
-export default withDataTableLoader({
-  queryName: 'subscriptions',
-  query: gql`
-    query subscriptions($offset: Int, $limit: Int) {
-      subscriptions(offset: $offset, limit: $limit) {
-        _id
-        status
-        expires
-        subscriptionNumber
-        user {
+export default compose(
+  defaultProps({ limit: 20, offset: 0 }),
+  withDataTableLoader({
+    queryName: 'subscriptions',
+    query: gql`
+      query subscriptions($offset: Int, $limit: Int) {
+        subscriptions(offset: $offset, limit: $limit) {
           _id
-          name
+          status
+          expires
+          subscriptionNumber
+          user {
+            _id
+            name
+          }
+          status
         }
-        status
       }
-    }
-  `,
-})(SubscriptionList);
+    `,
+  })
+)(SubscriptionList);
