@@ -8,6 +8,15 @@ const name = 'core-events';
 
 const emitter = new EventEmitter();
 
-export const { emit, off: subscribe, once: subscribeOnce } = emitter;
+export const emit = (eve, val) => {
+  return emitter.emit(eve, val);
+};
+
+export const subscribe = (eve, callBack) => {
+  return emitter.on(eve, callBack);
+};
+export const subscribeOnce = (eve, callBack) => {
+  return emitter.on(eve, callBack);
+};
 
 export default name;
