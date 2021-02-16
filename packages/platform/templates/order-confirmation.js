@@ -1,5 +1,6 @@
 import { MessagingDirector } from 'meteor/unchained:core-messaging';
 import { Orders } from 'meteor/unchained:core-orders';
+import { OrderPricingSheetRowCategories } from 'meteor/unchained:core-pricing';
 
 const {
   EMAIL_FROM,
@@ -80,13 +81,24 @@ export default ({ orderId, locale }) => {
     return `${order.currency} ${fixedPrice}`;
   };
   const { subject } = texts[locale.language];
+  const pricing = order.pricing();
   const templateVariables = {
     ...texts[locale.language],
     shopName: EMAIL_WEBSITE_NAME,
     shopUrl: EMAIL_WEBSITE_URL,
     subject,
     url: `${UI_ENDPOINT}/order?_id=${order._id}`,
-    summary: order.pricing().formattedSummary(format),
+    summary: {
+      items: format(pricing.total(OrderPricingSheetRowCategories.Items).amount),
+      taxes: format(pricing.total(OrderPricingSheetRowCategories.Taxes).amount),
+      delivery: format(
+        pricing.total(OrderPricingSheetRowCategories.Delivery).amount
+      ),
+      payment: format(
+        pricing.total(OrderPricingSheetRowCategories.Payment).amount
+      ),
+      gross: format(pricing.total().amount),
+    },
     positions: order.items().map((item) => {
       const productTexts = item.product().getLocalizedTexts(locale.normalized);
       const originalProductTexts = item

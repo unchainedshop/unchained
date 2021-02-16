@@ -32,10 +32,16 @@ export default class PricingSheet {
   }
 
   net() {
-    return this.sum() - this.taxSum();
+    return this.gross() - this.taxSum();
   }
 
   total(category) {
+    if (!category) {
+      return {
+        amount: this.gross(),
+        currency: this.currency,
+      };
+    }
     return {
       amount: this.sum({ category }),
       currency: this.currency,
