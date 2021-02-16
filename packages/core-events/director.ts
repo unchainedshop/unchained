@@ -1,5 +1,3 @@
-import EventEmitter from 'events';
-
 export abstract class EventAdapter {
   public abstract publish(eventName: string, payload: any): void;
 
@@ -9,33 +7,40 @@ export abstract class EventAdapter {
 class EventDirector {
   private static adapter: EventAdapter;
 
+  private static registeredEvents = new Set();
+
+  static registerEvent(events: string[]): void {
+    if (events.length) {
+      events.forEach((e) => EventDirector.registeredEvents.add(e));
+    }
+  }
+
+  static getRegisteredEvents(): string[] {
+    return Array.from(EventDirector.registeredEvents) as string[];
+  }
+
   static setEventAdapter(adapter: EventAdapter): void {
     EventDirector.adapter = adapter;
   }
 
   static emit(eventName: string, payload: any): void {
+    if (!EventDirector.registeredEvents.has(eventName))
+      throw new Error(`Event with ${eventName} is not registered`);
     EventDirector.adapter.publish(eventName, payload);
   }
 
   static subscribe(eventName: string, callBack: () => void): void {
+    if (!EventDirector.registeredEvents.has(eventName))
+      throw new Error(`Event with ${eventName} is not registered`);
     EventDirector.adapter.subscribe(eventName, callBack);
   }
 }
 
-class EventPlugins extends EventAdapter {
-  eve = new EventEmitter();
-
-  publish(val: string, obj: any) {
-    this.eve.emit(val, obj);
-  }
-
-  subscribe(str, callBack) {
-    return this.eve.once(str, callBack);
-  }
-}
-
-const handler = new EventPlugins();
-EventDirector.setEventAdapter(handler);
-
-export const { emit, subscribe, setEventAdapter } = EventDirector;
+export const {
+  emit,
+  subscribe,
+  setEventAdapter,
+  registerEvent,
+  getRegisteredEvents,
+} = EventDirector;
 export default EventDirector;

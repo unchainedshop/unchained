@@ -36,6 +36,8 @@ import 'meteor/unchained:core-worker/plugins/external';
 import 'meteor/unchained:core-worker/plugins/http-request';
 import 'meteor/unchained:core-worker/plugins/heartbeat';
 import 'meteor/unchained:core-worker/plugins/email';
+import 'meteor/unchained:core-events/plugins/node-event-emitter';
+
 import seed from './seed';
 
 Meteor.startup(async () => {
