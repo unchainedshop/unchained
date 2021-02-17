@@ -6,6 +6,7 @@ import setupWorkqueue, { workerTypeDefs } from './setup-workqueue';
 import setupMigrations from './setup-migrations';
 import setupTemplates, { MessageTypes } from './setup-templates';
 import './worker/bulk-import';
+import generateEventTypeDefs from './generate-registered-events';
 
 export { MessageTypes };
 
@@ -40,7 +41,11 @@ export const startPlatform = async ({ modules, typeDefs, ...options } = {}) => {
   setupTemplates(options);
   startAPI({
     ...options,
-    typeDefs: [...workerTypeDefs(), ...(typeDefs || [])],
+    typeDefs: [
+      ...generateEventTypeDefs(),
+      ...workerTypeDefs(),
+      ...(typeDefs || []),
+    ],
     unchained,
   });
   if (emailInterceptionIsEnabled) interceptEmails(options);
