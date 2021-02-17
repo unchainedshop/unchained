@@ -16,6 +16,7 @@ import {
   OrderPricingDirector,
   OrderPricingSheet,
 } from 'meteor/unchained:core-pricing';
+import { emit } from 'meteor/unchained:core-events';
 import { OrderStatus } from './schema';
 import { Orders } from './collections';
 import { OrderDeliveries } from '../order-deliveries/collections';
@@ -145,6 +146,7 @@ Orders.findOrder = ({ orderId, ...rest }, options) => {
 };
 
 Orders.removeOrder = ({ orderId }) => {
+  emit('ORDER_REMOVE', { payload: { orderId } });
   return Orders.remove({ _id: orderId });
 };
 
@@ -215,10 +217,11 @@ Orders.helpers({
     };
   },
   addDiscount({ code }) {
-    return OrderDiscounts.createManualOrderDiscount({
+    const result = OrderDiscounts.createManualOrderDiscount({
       orderId: this._id,
       code,
     });
+    emit('ORDER_ADD_DISCOUNT', { payload: result });
   },
   async initProviders() {
     const order = await this.initPreferredDeliveryProvider();
@@ -323,7 +326,7 @@ Orders.helpers({
       quantity,
       configuration,
     });
-    return OrderPositions.upsertPosition({
+    const result = OrderPositions.upsertPosition({
       orderId: this._id,
       productId: resolvedProduct._id,
       originalProductId: product._id,
@@ -331,6 +334,8 @@ Orders.helpers({
       configuration,
       ...rest,
     });
+    emit('ORDER_ADD_PRODUCT', { payload: result });
+    return result;
   },
   user() {
     return Users.findOne({
@@ -503,11 +508,13 @@ Orders.helpers({
     if (status === OrderStatus.PENDING) {
       if (this.isAutoConfirmationEnabled()) {
         status = OrderStatus.CONFIRMED;
+        emit('ORDER_CONFIRMED', { payload: this });
       }
     }
     if (status === OrderStatus.CONFIRMED) {
       if (this.isAutoFullfillmentEnabled()) {
         status = OrderStatus.FULLFILLED;
+        emit('ORDER_FULLFILLED', { payload: this });
       }
     }
     return status;
