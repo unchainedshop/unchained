@@ -156,7 +156,7 @@ OrderPayments.updatePayment = ({ orderId, paymentId, context }) => {
   );
   Orders.updateCalculation({ orderId });
   const orderPayment = OrderPayments.findOne({ _id: paymentId });
-  emit('ORDER_UPDATE_PAYMENT', { payload: orderPayment });
+  emit('ORDER_UPDATE_PAYMENT', { payload: { orderPayment } });
   return orderPayment;
 };
 

@@ -235,11 +235,12 @@ Orders.helpers({
     };
   },
   addDiscount({ code }) {
-    const result = OrderDiscounts.createManualOrderDiscount({
+    const discount = OrderDiscounts.createManualOrderDiscount({
       orderId: this._id,
       code,
     });
-    emit('ORDER_ADD_DISCOUNT', { payload: result });
+    emit('ORDER_ADD_DISCOUNT', { payload: { discount } });
+    return discount;
   },
   async initProviders() {
     const order = await this.initPreferredDeliveryProvider();
@@ -352,7 +353,7 @@ Orders.helpers({
       quantity,
       configuration,
     });
-    const result = OrderPositions.upsertPosition({
+    const orderPosition = OrderPositions.upsertPosition({
       orderId: this._id,
       productId: resolvedProduct._id,
       originalProductId: product._id,
@@ -360,8 +361,8 @@ Orders.helpers({
       configuration,
       ...rest,
     });
-    emit('ORDER_ADD_PRODUCT', { payload: result });
-    return result;
+    emit('ORDER_ADD_PRODUCT', { payload: { orderPosition } });
+    return orderPosition;
   },
   user() {
     return Users.findOne({
@@ -544,13 +545,13 @@ Orders.helpers({
     if (status === OrderStatus.PENDING) {
       if (this.isAutoConfirmationEnabled()) {
         status = OrderStatus.CONFIRMED;
-        emit('ORDER_CONFIRMED', { payload: this });
+        emit('ORDER_CONFIRMED', { payload: { order: this } });
       }
     }
     if (status === OrderStatus.CONFIRMED) {
       if (this.isAutoFullfillmentEnabled()) {
         status = OrderStatus.FULLFILLED;
-        emit('ORDER_FULLFILLED', { payload: this });
+        emit('ORDER_FULLFILLED', { payload: { order: this } });
       }
     }
     return status;

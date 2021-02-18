@@ -141,7 +141,7 @@ OrderDeliveries.updateDelivery = ({ deliveryId, orderId, context }) => {
   );
   Orders.updateCalculation({ orderId });
   const orderDelivery = OrderDeliveries.findOne({ _id: deliveryId });
-  emit('ORDER_UPDATE_DELIVERY', { payload: orderDelivery });
+  emit('ORDER_UPDATE_DELIVERY', { payload: { orderDelivery } });
   return orderDelivery;
 };
 
