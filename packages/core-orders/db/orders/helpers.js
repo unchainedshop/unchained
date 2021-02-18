@@ -309,16 +309,24 @@ Orders.helpers({
     return this;
   },
   setDeliveryProvider({ deliveryProviderId }) {
-    return Orders.setDeliveryProvider({
+    const result = Orders.setDeliveryProvider({
       orderId: this._id,
       deliveryProviderId,
     });
+    emit('ORDER_SET_DELIVERY_PROVIDER', {
+      payload: { order: this, deliveryProviderId },
+    });
+    return result;
   },
   setPaymentProvider({ paymentProviderId }) {
-    return Orders.setPaymentProvider({
+    const result = Orders.setPaymentProvider({
       orderId: this._id,
       paymentProviderId,
     });
+    emit('ORDER_SET_PAYMENT_PROVIDER', {
+      payload: { order: this, paymentProviderId },
+    });
+    return result;
   },
   items(props) {
     return OrderPositions.find({
@@ -516,6 +524,7 @@ Orders.helpers({
       }
       this.reserveItems();
     }
+
     return this.setStatus(this.nextStatus(), 'order processed');
   },
   setStatus(status, info) {
@@ -695,7 +704,9 @@ Orders.createOrder = async ({
     currency,
     countryCode,
   });
-  return Orders.findOne({ _id: orderId }).initProviders();
+  const order = Orders.findOne({ _id: orderId });
+  emit('ORDER_CREATE', { payload: { order } });
+  return order.initProviders();
 };
 
 Orders.updateBillingAddress = ({ billingAddress, orderId }) => {
@@ -710,7 +721,9 @@ Orders.updateBillingAddress = ({ billingAddress, orderId }) => {
     }
   );
   Orders.updateCalculation({ orderId });
-  return Orders.findOne({ _id: orderId });
+  const order = Orders.findOne({ _id: orderId });
+  emit('ORDER_UPDATE', { payload: { order, field: 'contact' } });
+  return order;
 };
 
 Orders.updateContact = ({ contact, orderId }) => {
@@ -725,7 +738,9 @@ Orders.updateContact = ({ contact, orderId }) => {
     }
   );
   Orders.updateCalculation({ orderId });
-  return Orders.findOne({ _id: orderId });
+  const order = Orders.findOne({ _id: orderId });
+  emit('ORDER_UPDATE', { payload: { order, field: 'contact' } });
+  return order;
 };
 
 Orders.updateContext = ({ context, orderId }) => {
@@ -740,7 +755,9 @@ Orders.updateContext = ({ context, orderId }) => {
     }
   );
   Orders.updateCalculation({ orderId });
-  return Orders.findOne({ _id: orderId });
+  const order = Orders.findOne({ _id: orderId });
+  emit('ORDER_UPDATE', { payload: { order, field: 'context' } });
+  return order;
 };
 
 Orders.getUniqueOrderNumber = () => {
