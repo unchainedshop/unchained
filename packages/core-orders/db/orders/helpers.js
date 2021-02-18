@@ -678,9 +678,9 @@ Orders.createOrder = async ({
     currency,
     countryCode,
   });
-  const order = Orders.findOne({ _id: orderId }).initProviders();
+  const order = Orders.findOne({ _id: orderId });
   emit('ORDER_CREATE', { payload: { order } });
-  return order;
+  return order.initProviders();
 };
 
 Orders.updateBillingAddress = ({ billingAddress, orderId }) => {
