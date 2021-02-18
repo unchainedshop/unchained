@@ -288,7 +288,7 @@ OrderPositions.updatePosition = (
   emit('ORDER_UPDATE_CART_ITEM', {
     payload: { orderPosition: position },
   });
-  return orderPosition;
+  return position;
 };
 
 OrderPositions.removePosition = ({ positionId }) => {
