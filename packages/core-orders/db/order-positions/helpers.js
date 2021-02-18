@@ -7,6 +7,7 @@ import {
 import { WarehousingProviders } from 'meteor/unchained:core-warehousing';
 import { Products } from 'meteor/unchained:core-products';
 import { Quotations } from 'meteor/unchained:core-quotations';
+import { emit } from 'meteor/unchained:core-events';
 import { OrderPositions } from './collections';
 import { Orders } from '../orders/collections';
 
@@ -281,9 +282,13 @@ OrderPositions.updatePosition = (
     );
   }
   Orders.updateCalculation({ orderId });
-  return OrderPositions.findOne({
+  const position = OrderPositions.findOne({
     _id: positionId,
   });
+  emit('ORDER_UPDATE_CART_ITEM', {
+    payload: { orderPosition: position },
+  });
+  return orderPosition;
 };
 
 OrderPositions.removePosition = ({ positionId }) => {
@@ -291,6 +296,9 @@ OrderPositions.removePosition = ({ positionId }) => {
   log(`Remove Position ${positionId}`, { orderId: position.orderId });
   OrderPositions.remove({ _id: positionId });
   Orders.updateCalculation({ orderId: position.orderId });
+  emit('ORDER_REMOVE_CART_ITEM', {
+    payload: { orderPosition: position },
+  });
   return position;
 };
 
@@ -298,5 +306,6 @@ OrderPositions.removePositions = ({ orderId }) => {
   log('Remove Positions', { orderId });
   const count = OrderPositions.remove({ orderId });
   Orders.updateCalculation({ orderId });
+  emit('ORDER_EMPTY_CART', { payload: { orderId, count } });
   return count;
 };
