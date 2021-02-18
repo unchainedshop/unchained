@@ -40,12 +40,21 @@ const verifyEmailEnglishConfig = {
   subject: `${EMAIL_WEBSITE_NAME}: Verify your email address`,
 };
 
+const passwordChangedEmailEnglishConfig = {
+  message: `
+    Your account password has been successfully changed.\n
+  `,
+  subject: `${EMAIL_WEBSITE_NAME}: Your password has been changed`,
+};
+
 const textTemplate = `
   {{message}}
+  {{#url}}
   \n
   -----------------\n
   {{buttonText}}: {{url}}\n
   -----------------\n
+  {{/url}}
 `;
 
 const emailConfig = {
@@ -97,6 +106,13 @@ const emailConfig = {
     en: verifyEmailEnglishConfig,
     de: verifyEmailEnglishConfig,
     fr: verifyEmailEnglishConfig,
+  },
+  '': {
+    // password changed!
+    url: () => null,
+    en: passwordChangedEmailEnglishConfig,
+    de: passwordChangedEmailEnglishConfig,
+    fr: passwordChangedEmailEnglishConfig,
   },
 };
 
