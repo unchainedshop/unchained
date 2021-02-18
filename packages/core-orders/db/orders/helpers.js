@@ -517,14 +517,14 @@ Orders.helpers({
     }
     if (status === OrderStatus.PENDING) {
       if (this.isAutoConfirmationEnabled()) {
-        status = OrderStatus.CONFIRMED;
         emit('ORDER_CONFIRMED', { payload: { order: this } });
+        status = OrderStatus.CONFIRMED;
       }
     }
     if (status === OrderStatus.CONFIRMED) {
       if (this.isAutoFullfillmentEnabled()) {
-        status = OrderStatus.FULLFILLED;
         emit('ORDER_FULLFILLED', { payload: { order: this } });
+        status = OrderStatus.FULLFILLED;
       }
     }
     return status;
@@ -678,9 +678,9 @@ Orders.createOrder = async ({
     currency,
     countryCode,
   });
-  const order = Orders.findOne({ _id: orderId });
+  const order = Orders.findOne({ _id: orderId }).initProviders();
   emit('ORDER_CREATE', { payload: { order } });
-  return order.initProviders();
+  return order;
 };
 
 Orders.updateBillingAddress = ({ billingAddress, orderId }) => {
