@@ -183,18 +183,54 @@ Migrations.add({
   down() {},
 });
 
-export default () => {
-  Collections.Users.rawCollection().createIndex({
-    username: 1,
-  });
-  Collections.Users.rawCollection().createIndex({
-    'emails.address': 1,
-  });
-  Collections.Users.rawCollection().createIndex({
-    'services.resume.loginTokens.hashedToken': 1,
-  });
+const buildIndexes = async () => {
+  await Collections.Users.rawCollection().createIndex(
+    {
+      username: 1,
+    },
+    {
+      unique: true,
+      sparse: true,
+    }
+  );
+  await Collections.Users.rawCollection().createIndex(
+    {
+      'emails.address': 1,
+    },
+    {
+      unique: true,
+      sparse: true,
+    }
+  );
 
-  Collections.Users.rawCollection().createIndex(
+  await Collections.Users.rawCollection().createIndex(
+    {
+      'services.email.verificationTokens.token': 1,
+    },
+    {
+      sparse: true,
+    }
+  );
+
+  await Collections.Users.rawCollection().createIndex(
+    {
+      'services.password.reset.token': 1,
+    },
+    {
+      sparse: true,
+    }
+  );
+
+  await Collections.Users.rawCollection().createIndex(
+    {
+      'services.resume.loginTokens.hashedToken': 1,
+    },
+    {
+      sparse: true,
+    }
+  );
+
+  await Collections.Users.rawCollection().createIndex(
     {
       username: 'text',
       'emails.address': 'text',
@@ -209,4 +245,15 @@ export default () => {
       name: 'user_fulltext_search',
     }
   );
+};
+
+export default async () => {
+  try {
+    await buildIndexes();
+  } catch (e) {
+    await Collections.Users.rawCollection().dropIndexes();
+    try {
+      await buildIndexes();
+    } catch (e) {} // eslint-disable-line
+  }
 };

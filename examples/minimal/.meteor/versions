@@ -71,7 +71,7 @@ unchained:core-logger@0.61.0
 unchained:core-messaging@0.61.0
 unchained:core-orders@0.61.0
 unchained:core-payment@0.61.0
-unchained:core-pricing@0.61.0
+unchained:core-pricing@0.61.1
 unchained:core-products@0.61.0
 unchained:core-quotations@0.61.0
 unchained:core-settings@0.61.0
