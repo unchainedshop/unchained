@@ -54,6 +54,7 @@ class BaseWorker {
         async ([type, configuration]) => {
           const { cronText, input, ...rest } = configuration;
           const schedule = later.parse.text(cronText);
+          schedule.schedules[0].s = [0]; // ignore seconds
           const nextDate = later.schedule(schedule).next(1, referenceDate);
           nextDate.setMilliseconds(0);
           await this.WorkerDirector.ensureOneWork({
