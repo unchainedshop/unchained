@@ -50,19 +50,9 @@ class OrderPricingSheet extends PricingSheet {
     });
   }
 
-  total(category) {
-    if (!category) {
-      return {
-        amount:
-          this.sum() -
-          this.sum({ category: OrderPricingSheetRowCategories.Taxes }),
-        currency: this.currency,
-      };
-    }
-    return {
-      amount: this.sum({ category }),
-      currency: this.currency,
-    };
+  gross() {
+    // tax is included 2 times, this is only true for Order Pricing!
+    return this.sum() - this.taxSum();
   }
 
   taxSum() {
