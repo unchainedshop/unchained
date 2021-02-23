@@ -32,6 +32,14 @@ const {
   DATATRANS_WEBHOOK_PATH = '/graphql/datatrans',
 } = process.env;
 
+const roundedAmountFromOrder = (order) => {
+  const { currency, amount } = order.pricing().total();
+  return {
+    currency,
+    amount: Math.round(amount),
+  };
+};
+
 const generateSignature = (signKey) => (...parts) => {
   // https://docs.datatrans.ch/docs/security-sign
   if (DATATRANS_SECURITY.toLowerCase() === Security.STATIC_SIGN)
@@ -222,7 +230,7 @@ class Datatrans extends PaymentAdapter {
     const { aliasCC } = transactionContext;
     const order = orderPayment.order();
     const refno = orderPayment._id;
-    const { currency, amount } = order.pricing().total();
+    const { currency, amount } = roundedAmountFromOrder(order);
     const signature = generateSignature(DATATRANS_SIGN_KEY)(
       aliasCC,
       merchantId,
@@ -313,7 +321,7 @@ class Datatrans extends PaymentAdapter {
     const merchantId = this.getMerchantId();
     const { order } = this.context;
     const refno = order.paymentId;
-    const { currency, amount } = order.pricing().total();
+    const { currency, amount } = roundedAmountFromOrder(order);
     const aliasCC = paymentCredentials.token;
 
     const result = await datatransAuthorize({
@@ -376,7 +384,7 @@ class Datatrans extends PaymentAdapter {
     const merchantId = this.getMerchantId();
     const { order } = this.context;
     const refno = order.paymentId;
-    const { currency, amount } = order.pricing().total();
+    const { currency, amount } = roundedAmountFromOrder(order);
 
     if (!status || status === 'error') {
       this.log('Datatrans -> Payment declined', transactionResponse);
