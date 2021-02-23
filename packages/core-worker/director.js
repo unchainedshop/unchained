@@ -90,7 +90,6 @@ class WorkerDirector {
     const selector = this.buildQueueSelector({
       type,
       status: [WorkStatus.NEW],
-      scheduled: { $ne: scheduled.getTime() },
     });
     try {
       const workId = `${type}:${scheduled.getTime()}`;
