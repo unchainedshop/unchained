@@ -31,7 +31,7 @@ class Message extends WorkerPlugin {
         );
         return { success: true, result: { forked } };
       }
-      return { success: false, result: { info: 'Skipped Message' } };
+      return { success: true, result: { info: 'Skipped Message' } };
     } catch (err) {
       logger.warn(err.stack);
       return {
