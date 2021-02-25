@@ -297,8 +297,8 @@ export const ProductVariations = [
   },
 ];
 
-export const SimpleProduct1 = {
-  _id: 'B5qqMGDKCcKLqb5rP',
+export const ProxySimpleProduct1 = {
+  _id: 'proxy-simple-prodcut-1',
   created: new Date('2021-02-24T14:03:28.905Z'),
   type: 'SIMPLE_PRODUCT',
   status: 'ACTIVE',
@@ -335,6 +335,111 @@ export const SimpleProduct1 = {
   },
 };
 
+export const ProxySimpleProduct2 = {
+  _id: 'proxy-simple-product-2',
+  created: new Date('2021-02-25T17:51:16.359Z'),
+  type: 'SIMPLE_PRODUCT',
+  status: 'ACTIVE',
+  sequence: 12,
+  authorId: 'CYV6UpSJydzKQNMx6',
+  slugs: ['simple-product-2'],
+  updated: new Date('2021-02-25T20:32:26.086Z'),
+  commerce: {
+    pricing: [
+      {
+        amount: 500000,
+        maxQuantity: 1,
+        isTaxable: true,
+        isNetPrice: false,
+        currencyCode: 'EUR',
+        countryCode: 'CH',
+      },
+      {
+        amount: 400000,
+        maxQuantity: 5,
+        isTaxable: true,
+        isNetPrice: false,
+        currencyCode: 'EUR',
+        countryCode: 'CH',
+      },
+      {
+        amount: 300000,
+        maxQuantity: 10,
+        isTaxable: true,
+        isNetPrice: false,
+        currencyCode: 'EUR',
+        countryCode: 'CH',
+      },
+    ],
+  },
+  published: new Date('2021-02-25T17:51:37.677Z'),
+};
+export const ProxyProduct = {
+  _id: 'proxy-product',
+  created: new Date('2021-02-24T14:02:42.208Z'),
+  type: 'CONFIGURABLE_PRODUCT',
+  status: 'ACTIVE',
+  sequence: 10,
+  authorId: 'CYV6UpSJydzKQNMx6',
+  slugs: ['configurable-product'],
+  updated: new Date('2021-02-25T20:33:23.191Z'),
+  published: new Date('2021-02-24T14:02:51.039Z'),
+  proxy: {
+    assignments: [
+      {
+        vector: {
+          COLOR: 'red',
+        },
+        productId: ProxySimpleProduct1._id,
+      },
+      {
+        vector: {
+          COLOR: 'red',
+        },
+        productId: ProxySimpleProduct2._id,
+      },
+      {
+        vector: {
+          COLOR: 'blue',
+        },
+        productId: 'E8Y58rvx8HX2bTYNN',
+      },
+    ],
+  },
+};
+
+export const ProxySimpleProduct3 = {
+  _id: 'E8Y58rvx8HX2bTYNN',
+  created: new Date('2021-02-25T17:55:03.018Z'),
+  type: 'SIMPLE_PRODUCT',
+  status: 'ACTIVE',
+  sequence: 13,
+  authorId: 'CYV6UpSJydzKQNMx6',
+  slugs: ['simple-product-3'],
+  updated: new Date('2021-02-25T20:33:07.993Z'),
+  published: new Date('2021-02-25T17:55:07.303Z'),
+  commerce: {
+    pricing: [
+      {
+        amount: 10000000,
+        maxQuantity: 1,
+        isTaxable: true,
+        isNetPrice: false,
+        currencyCode: 'EUR',
+        countryCode: 'CH',
+      },
+      {
+        amount: 5000000,
+        maxQuantity: 5,
+        isTaxable: true,
+        isNetPrice: false,
+        currencyCode: 'EUR',
+        countryCode: 'CH',
+      },
+    ],
+  },
+};
+
 export default async function seedProducts(db) {
   await db
     .collection('products')
@@ -343,7 +448,10 @@ export default async function seedProducts(db) {
       UnpublishedProduct,
       SimpleProductBundle,
       ConfigurableProduct,
-      SimpleProduct1,
+      ProxySimpleProduct1,
+      ProxySimpleProduct2,
+      ProxySimpleProduct3,
+      ProxyProduct,
     ]);
   await db.collection('product_reviews').findOrInsertOne(SimpleProductReview);
   await db.collection('product_texts').findOrInsertOne(GermanProductText);

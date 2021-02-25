@@ -7,8 +7,9 @@ import { ADMIN_TOKEN, USER_TOKEN } from './seeds/users';
 import {
   PlanProduct,
   SimpleProduct,
-  SimpleProduct1,
+  ProxySimpleProduct1,
   UnpublishedProduct,
+  ProxyProduct,
 } from './seeds/products';
 
 let connection;
@@ -1686,10 +1687,90 @@ describe('Products', () => {
           }
         `,
         variables: {
-          productId: SimpleProduct1._id,
+          productId: ProxySimpleProduct1._id,
         },
       });
       expect(product.leveledCatalogPrices?.length).toEqual(3);
+    });
+  });
+
+  describe('query.products.simulatePriceRange should', () => {
+    it('return minimum and maximum simulated price range of a configurable product', async () => {
+      const {
+        data: { product = {} },
+      } = await graphqlFetchAsAdmin({
+        query: /* GraphQL */ `
+          query SimulatedPriceRange($productId: ID!) {
+            product(productId: $productId) {
+              _id
+              status
+              ... on ConfigurableProduct {
+                simulatedPriceRange {
+                  _id
+                  minPrice {
+                    _id
+                    isTaxable
+                    isNetPrice
+                    amount
+                    currency
+                  }
+                  maxPrice {
+                    _id
+                    isTaxable
+                    isNetPrice
+                    amount
+                    currency
+                  }
+                }
+              }
+            }
+          }
+        `,
+        variables: {
+          productId: ProxyProduct._id,
+        },
+      });
+      expect(product.simulatedPriceRange).not.toBe(null);
+    });
+  });
+
+  describe('query.products.catalogPriceRange should', () => {
+    it('return minimum and maximum catalog price range of a configurable product', async () => {
+      const {
+        data: { product = {} },
+      } = await graphqlFetchAsAdmin({
+        query: /* GraphQL */ `
+          query SimulatedPriceRange($productId: ID!) {
+            product(productId: $productId) {
+              _id
+              status
+              ... on ConfigurableProduct {
+                catalogPriceRange {
+                  _id
+                  minPrice {
+                    _id
+                    isTaxable
+                    isNetPrice
+                    amount
+                    currency
+                  }
+                  maxPrice {
+                    _id
+                    isTaxable
+                    isNetPrice
+                    amount
+                    currency
+                  }
+                }
+              }
+            }
+          }
+        `,
+        variables: {
+          productId: ProxyProduct._id,
+        },
+      });
+      expect(product.catalogPriceRange).not.toBe(null);
     });
   });
 });
