@@ -7,6 +7,7 @@ import { ADMIN_TOKEN, USER_TOKEN } from './seeds/users';
 import {
   PlanProduct,
   SimpleProduct,
+  SimpleProduct1,
   UnpublishedProduct,
 } from './seeds/products';
 
@@ -1653,6 +1654,42 @@ describe('Products', () => {
       });
 
       expect(errors).toEqual(undefined);
+    });
+  });
+
+  describe('query.products.leveleCatalogPrice should', () => {
+    it('return catalog price list of a product ', async () => {
+      const {
+        data: { product = [] },
+      } = await graphqlFetchAsAdmin({
+        query: /* GraphQL */ `
+          query product($productId: ID) {
+            product(productId: $productId) {
+              _id
+              ... on SimpleProduct {
+                catalogPrice {
+                  _id
+                }
+                leveledCatalogPrices {
+                  minQuantity
+                  maxQuantity
+                  price {
+                    _id
+                    isTaxable
+                    isNetPrice
+                    amount
+                    currency
+                  }
+                }
+              }
+            }
+          }
+        `,
+        variables: {
+          productId: SimpleProduct1._id,
+        },
+      });
+      expect(product.leveledCatalogPrices?.length).toEqual(3);
     });
   });
 });

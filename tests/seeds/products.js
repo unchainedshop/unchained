@@ -297,6 +297,44 @@ export const ProductVariations = [
   },
 ];
 
+export const SimpleProduct1 = {
+  _id: 'B5qqMGDKCcKLqb5rP',
+  created: new Date('2021-02-24T14:03:28.905Z'),
+  type: 'SIMPLE_PRODUCT',
+  status: 'ACTIVE',
+  sequence: 11,
+  authorId: 'admin',
+  slugs: ['simple-product-1'],
+  updated: new Date('2021-02-25T17:54:42.559Z'),
+  published: new Date('2021-02-24T14:03:32.291Z'),
+  commerce: {
+    pricing: [
+      {
+        amount: 2000000,
+        maxQuantity: 0,
+        isTaxable: true,
+        isNetPrice: false,
+        currencyCode: 'EUR',
+        countryCode: 'CH',
+      },
+      {
+        amount: 1500000,
+        maxQuantity: 7,
+        isTaxable: true,
+        currencyCode: 'EUR',
+        countryCode: 'CH',
+      },
+      {
+        amount: 1000000,
+        maxQuantity: 10,
+        isTaxable: true,
+        currencyCode: 'EUR',
+        countryCode: 'CH',
+      },
+    ],
+  },
+};
+
 export default async function seedProducts(db) {
   await db
     .collection('products')
@@ -305,6 +343,7 @@ export default async function seedProducts(db) {
       UnpublishedProduct,
       SimpleProductBundle,
       ConfigurableProduct,
+      SimpleProduct1,
     ]);
   await db.collection('product_reviews').findOrInsertOne(SimpleProductReview);
   await db.collection('product_texts').findOrInsertOne(GermanProductText);
