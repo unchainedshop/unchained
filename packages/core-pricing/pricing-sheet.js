@@ -35,15 +35,15 @@ export default class PricingSheet {
     return this.gross() - this.taxSum();
   }
 
-  total(category) {
+  total(category, useNetPrice = false) {
     if (!category) {
       return {
-        amount: this.gross(),
+        amount: Math.round(useNetPrice ? this.net() : this.gross()),
         currency: this.currency,
       };
     }
     return {
-      amount: this.sum({ category }),
+      amount: Math.round(this.sum({ category })),
       currency: this.currency,
     };
   }

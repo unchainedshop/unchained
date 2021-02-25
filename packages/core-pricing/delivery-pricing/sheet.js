@@ -72,7 +72,7 @@ class DeliveryPricingSheet extends PricingSheet {
         }
         return {
           discountId,
-          amount,
+          amount: Math.round(amount),
           currency: this.currency,
         };
       })
