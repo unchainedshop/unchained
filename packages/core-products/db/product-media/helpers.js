@@ -58,7 +58,7 @@ ProductMedia.getLocalizedTexts = (productMediaId, locale) =>
   findLocalizedText(ProductMediaTexts, { productMediaId }, locale);
 
 ProductMedia.createMedia = ({ productId, ...mediaData }) => {
-  const sortKey = ProductMedia.getNewSortKey(productId);
+  const sortKey = mediaData.sortKey || ProductMedia.getNewSortKey(productId);
   const productMediaId = ProductMedia.insert({
     tags: [],
     sortKey,
