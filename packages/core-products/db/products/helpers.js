@@ -780,6 +780,10 @@ Products.helpers({
         maxQuantity:
           i === 0 && priceLevel.maxQuantity > 0 ? priceLevel.maxQuantity : max,
         price: {
+          _id: crypto
+            .createHash('sha256')
+            .update([this._id, priceLevel.amount, currency].join(''))
+            .digest('hex'),
           isTaxable: !!priceLevel.isTaxable,
           isNetPrice: !!priceLevel.isNetPrice,
           amount: priceLevel.amount,
