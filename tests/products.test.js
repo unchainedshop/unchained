@@ -10,6 +10,7 @@ import {
   ProxySimpleProduct1,
   UnpublishedProduct,
   ProxyProduct,
+  ProxyPlanProduct1,
 } from './seeds/products';
 
 let connection;
@@ -1070,7 +1071,7 @@ describe('Products', () => {
         variables: {},
       });
 
-      expect(products.length).toEqual(4);
+      expect(products.length).toEqual(10);
     });
 
     it('return only list of products that include a slug', async () => {
@@ -1226,7 +1227,7 @@ describe('Products', () => {
         },
       });
 
-      expect(products.length).toEqual(5);
+      expect(products.length).toEqual(10);
     });
   });
 
@@ -1257,7 +1258,7 @@ describe('Products', () => {
         variables: {},
       });
 
-      expect(products.length).toEqual(4);
+      expect(products.length).toEqual(10);
     });
 
     it('return only list of products that include a slug', async () => {
@@ -1471,7 +1472,7 @@ describe('Products', () => {
         variables: {},
       });
 
-      expect(products.length).toEqual(4);
+      expect(products.length).toEqual(10);
     });
 
     it('return only list of products that include a slug', async () => {
@@ -1659,7 +1660,7 @@ describe('Products', () => {
   });
 
   describe('query.products.leveleCatalogPrice should', () => {
-    it('return catalog price list of a product ', async () => {
+    it('return catalog price list of a SIMPLE_PRODUCT product type  ', async () => {
       const {
         data: { product = [] },
       } = await graphqlFetchAsAdmin({
@@ -1688,6 +1689,40 @@ describe('Products', () => {
         `,
         variables: {
           productId: ProxySimpleProduct1._id,
+        },
+      });
+      expect(product.leveledCatalogPrices?.length).toEqual(3);
+    });
+
+    it('return catalog price list of a for PLAN_PRODUCT product type', async () => {
+      const {
+        data: { product = [] },
+      } = await graphqlFetchAsAdmin({
+        query: /* GraphQL */ `
+          query product($productId: ID) {
+            product(productId: $productId) {
+              _id
+              ... on PlanProduct {
+                catalogPrice {
+                  _id
+                }
+                leveledCatalogPrices {
+                  minQuantity
+                  maxQuantity
+                  price {
+                    _id
+                    isTaxable
+                    isNetPrice
+                    amount
+                    currency
+                  }
+                }
+              }
+            }
+          }
+        `,
+        variables: {
+          productId: ProxyPlanProduct1._id,
         },
       });
       expect(product.leveledCatalogPrices?.length).toEqual(3);
