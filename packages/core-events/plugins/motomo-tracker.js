@@ -9,11 +9,11 @@ const MatomoTracker = (siteId, siteUrl, subscribeTo, options = {}) => {
     throw new Error('Matomo tracker URL is required');
   if (!subscribeTo && typeof subscribeTo !== 'string')
     throw new Error('Event that triggers tracking should be provided');
-  subscribe(subscribeTo, async (e) => {
+  subscribe(subscribeTo, async ({ payload }) => {
     await fetch(
-      `${siteUrl}?idsite=${siteId}&rec=1&action_name=${e.payload.path}&${encode(
-        options
-      )}`
+      `${siteUrl}?idsite=${siteId}&rec=1&action_name=${payload.path}&urlref=${
+        payload?.referrer
+      }&${encode(options)}`
     );
   });
 };

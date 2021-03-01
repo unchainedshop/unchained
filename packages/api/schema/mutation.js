@@ -1,7 +1,7 @@
 export default [
   /* GraphQL */ `
     type Mutation {
-      pageView(path: String!): String!
+      pageView(path: String!, referrer: String): String!
       """
       Log the user in with a password.
       """
