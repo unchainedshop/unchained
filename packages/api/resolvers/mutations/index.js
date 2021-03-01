@@ -130,12 +130,14 @@ import updateOrderPaymentCard from './updateOrderPaymentCard';
 import updateOrderPaymentInvoice from './updateOrderPaymentInvoice';
 import signPaymentProviderForCredentialRegistration from './signPaymentProviderForCredentialRegistration';
 import signPaymentProviderForCheckout from './signPaymentProviderForCheckout';
+import pageView from './pageView';
 
 export default {
   logout,
   loginAsGuest,
   verifyEmail,
   loginWithPassword,
+  pageView,
   createUser,
   forgotPassword,
   resetPassword,
