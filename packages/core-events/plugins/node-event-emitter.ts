@@ -9,7 +9,7 @@ class NodeEventEmitter extends EventAdapter {
   }
 
   subscribe(str, callBack) {
-    return this.eve.once(str, callBack);
+    return this.eve.on(str, callBack);
   }
 }
 
