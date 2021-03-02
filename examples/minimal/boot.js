@@ -62,6 +62,12 @@ Meteor.startup(async () => {
   });
   seed();
   MatomoTracker(1, `https://matomo.ucc.dev/matomo.php`, 'PAGE_VIEW', {});
+  MatomoTracker(
+    1,
+    `https://matomo.ucc.dev/matomo.php`,
+    'ORDER_ADD_PRODUCT',
+    {},
+  );
 
   embedControlpanelInMeteorWebApp(WebApp);
 });
