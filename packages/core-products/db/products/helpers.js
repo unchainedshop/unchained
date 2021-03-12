@@ -65,7 +65,6 @@ const getPriceRange = (prices) => {
         .update(
           [
             this._id,
-            Math.random(),
             min?.isTaxable,
             min?.isNetPrice,
             min?.amount,
@@ -84,7 +83,6 @@ const getPriceRange = (prices) => {
         .update(
           [
             this._id,
-            Math.random(),
             max?.isTaxable,
             max?.isNetPrice,
             max?.amount,
