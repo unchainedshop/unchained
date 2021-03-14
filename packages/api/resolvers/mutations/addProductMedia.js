@@ -14,9 +14,6 @@ export default async function addProductMedia(
   const res = await product.addMedia({
     rawFile: media,
     authorId: userId,
-    href,
-    meta,
-    tags,
   });
   return res;
 }

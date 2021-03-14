@@ -1,13 +1,16 @@
 import { setupDatabase, createLoggedInGraphqlFetch } from './helpers';
+import { ADMIN_TOKEN } from './seeds/users';
 
 let connection;
 let db;
 let graphqlFetch;
+let adminGraphqlFetch;
 
 describe('basic setup of internationalization and localization context', () => {
   beforeAll(async () => {
     [db, connection] = await setupDatabase();
     graphqlFetch = await createLoggedInGraphqlFetch();
+    adminGraphqlFetch = await createLoggedInGraphqlFetch(ADMIN_TOKEN);
   });
 
   afterAll(async () => {

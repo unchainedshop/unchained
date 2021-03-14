@@ -4,8 +4,6 @@ import { Meteor } from 'meteor/meteor';
 import { MongoInternals } from 'meteor/mongo';
 import { FileObj } from './types';
 
-const { FILE_STORAGE_PATH } = process.env;
-
 export const bound = Meteor.bindEnvironment((callback) => callback());
 
 export const helpers = {

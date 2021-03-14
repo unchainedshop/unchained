@@ -5,11 +5,7 @@ import {
   createAnonymousGraphqlFetch,
   uploadFormData,
 } from './helpers';
-<<<<<<< HEAD
 import { ADMIN_TOKEN, USER_TOKEN } from './seeds/users';
-=======
-import { ADMIN_TOKEN } from './seeds/users';
->>>>>>> Add test for addProductMedia mutation
 import { JpegProductMedia, SimpleProduct } from './seeds/products';
 
 let connection;
