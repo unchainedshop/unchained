@@ -228,8 +228,8 @@ export const getUser = async (http) => {
   // there is a possible current user connected!
   let loginToken = http.request.headers['meteor-login-token'];
 
-  if (http.request.cookies.meteor_login_token) {
-    loginToken = http.cookies.meteor_login_token;
+  if (http.request.cookies?.meteor_login_token) {
+    loginToken = http.cookies?.meteor_login_token;
   }
 
   if (http.request.cookies.token) {
