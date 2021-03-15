@@ -8,6 +8,8 @@ ProductMedia.findProductMedia = ({ productMediaId }) => {
 };
 
 ProductMedia.removeProductMedia = ({ productMediaId }) => {
+  const productMedia = ProductMedia.findOne({ _id: productMediaId });
+  Media.removeFiles({ _id: productMedia.mediaId });
   return ProductMedia.remove({ _id: productMediaId });
 };
 
