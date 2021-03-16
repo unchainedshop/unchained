@@ -9,7 +9,7 @@ class EventDirector {
 
   private static registeredEvents = new Set();
 
-  static registerEvent(events: string[]): void {
+  static registerEvents(events: string[]): void {
     if (events.length) {
       events.forEach((e) => EventDirector.registeredEvents.add(e));
     }
@@ -38,7 +38,7 @@ export const {
   emit,
   subscribe,
   setEventAdapter,
-  registerEvent,
+  registerEvents,
   getRegisteredEvents,
 } = EventDirector;
 export default EventDirector;

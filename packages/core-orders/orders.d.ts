@@ -1,5 +1,3 @@
-import { OrderEvent } from './events';
-
 declare module 'meteor/unchained:core-orders' {
   const Orders: any;
 
