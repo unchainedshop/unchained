@@ -1,6 +1,7 @@
 import 'meteor/dburles:collection-helpers';
 import { findLocalizedText } from 'meteor/unchained:utils';
 import { Locale } from 'locale';
+import { emit } from 'meteor/unchained:core-events';
 import { ProductMedia, Media, ProductMediaTexts } from './collections';
 
 ProductMedia.findProductMedia = ({ productMediaId }) => {
@@ -8,7 +9,8 @@ ProductMedia.findProductMedia = ({ productMediaId }) => {
 };
 
 ProductMedia.removeProductMedia = ({ productMediaId }) => {
-  return ProductMedia.remove({ _id: productMediaId });
+  ProductMedia.remove({ _id: productMediaId });
+  emit('PRODUCT_REMOVE_MEDIA', { payload: { productMediaId } });
 };
 
 ProductMedia.helpers({
@@ -33,12 +35,16 @@ ProductMedia.helpers({
     return ProductMediaTexts.findOne({ productMediaId: this._id, locale });
   },
   updateTexts({ texts, userId }) {
-    return texts.map(({ locale, ...localizations }) =>
+    const mediaTexts = texts.map(({ locale, ...localizations }) =>
       this.upsertLocalizedText(locale, {
         ...localizations,
         authorId: userId,
       })
     );
+    emit('PRODUCT_UPDATE_MEDIA_TEXT', {
+      payload: { productMedia: this, mediaTexts },
+    });
+    return mediaTexts;
   },
   getLocalizedTexts(locale) {
     const parsedLocale = new Locale(locale);
@@ -93,5 +99,9 @@ ProductMedia.updateManualOrder = ({ sortKeys }) => {
     );
     return productMediaId;
   });
-  return ProductMedia.find({ _id: { $in: changedMediaIds } }).fetch();
+  const productMedias = ProductMedia.find({
+    _id: { $in: changedMediaIds },
+  }).fetch();
+  emit('PRODUCT_REORDER_MEDIA', { payload: { productMedias } });
+  return productMedias;
 };

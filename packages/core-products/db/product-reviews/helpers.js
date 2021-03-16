@@ -1,5 +1,6 @@
 import 'meteor/dburles:collection-helpers';
 import { Users } from 'meteor/unchained:core-users';
+import { emit } from 'meteor/unchained:core-events';
 import { ProductReviews } from './collections';
 import { ProductReviewVoteTypes } from './schema';
 import { Products } from '../products/collections';
@@ -40,21 +41,26 @@ ProductReviews.helpers({
           type: ProductReviewVoteTypes.UPVOTE,
         });
       }
-      return ProductReviews.addVote({
+      const productReview = ProductReviews.addVote({
         productReviewId: this._id,
         userId,
         type,
         meta,
       });
+      emit('PRODUCT_REVIEW_ADD_VOTE', { payload: { productReview } });
     }
     return this;
   },
   removeVote({ userId, type = ProductReviewVoteTypes.UPVOTE } = {}) {
-    return ProductReviews.removeVote({
+    const removedVote = ProductReviews.removeVote({
       productReviewId: this._id,
       userId,
       type,
     });
+    emit('PRODUCT_REMOVE_REVIEW_VOTE', {
+      payload: { productReviewId: this._id, userId, type },
+    });
+    return removedVote;
   },
 });
 
@@ -69,7 +75,9 @@ ProductReviews.createReview = function createReview({
     authorId,
     ...product,
   });
-  return this.findOne({ _id });
+  const productReview = this.findOne({ _id });
+  emit('PRODUCT_REVIEW_CREATE', { payload: { productReview } });
+  return productReview;
 };
 
 ProductReviews.updateReview = function updateReview({
@@ -85,7 +93,9 @@ ProductReviews.updateReview = function updateReview({
       },
     }
   );
-  return this.findOne({ _id: productReviewId, deleted: null });
+  const productReview = this.findOne({ _id: productReviewId, deleted: null });
+  emit('PRODUCT_UPDATE_REVIEW', { payload: { productReview } });
+  return productReview;
 };
 
 ProductReviews.addVote = function addVote({ productReviewId, type, ...vote }) {
@@ -129,6 +139,7 @@ ProductReviews.deleteReview = function deleteReview({ productReviewId }) {
       },
     }
   );
+  emit('PRODUCT_REMOVE_REVIEW', { payload: { productReviewId } });
   return this.findOne({ _id: productReviewId });
 };
 

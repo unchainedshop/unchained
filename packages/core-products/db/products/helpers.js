@@ -4,6 +4,7 @@ import { ProductPricingDirector } from 'meteor/unchained:core-pricing';
 import { WarehousingProviders } from 'meteor/unchained:core-warehousing';
 import { DeliveryProviders } from 'meteor/unchained:core-delivery';
 import { Countries } from 'meteor/unchained:core-countries';
+import { emit } from 'meteor/unchained:core-events';
 import {
   findLocalizedText,
   objectInvert,
@@ -132,6 +133,7 @@ Products.createProduct = (
       product.publish();
     }
   }
+  emit('PRODUCT_CREATE', { payload: { product } });
   return product;
 };
 
@@ -145,7 +147,8 @@ Products.updateProduct = ({ productId, type, ...product }) => {
   if (type) {
     modifier.$set.type = ProductTypes[type];
   }
-  return Products.update({ _id: productId }, modifier);
+  Products.update({ _id: productId }, modifier);
+  emit('PRODUCT_UPDATE', { payload: { productId, type, ...product } });
 };
 ProductTexts.findProductTexts = ({ productId }) => {
   return ProductTexts.find({ productId }).fetch();
@@ -185,12 +188,12 @@ Products.addProxyAssignment = ({ productId, proxyId, vectors }) => {
       },
     },
   };
-
+  emit('PRODUCT_ADD_ASSIGNMENT', { payload: { productId, proxyId } });
   return Products.update({ _id: proxyId }, modifier);
 };
 
 Products.createBundleItem = ({ productId, item }) => {
-  return Products.update(
+  Products.update(
     { _id: productId },
     {
       $set: {
@@ -201,15 +204,16 @@ Products.createBundleItem = ({ productId, item }) => {
       },
     }
   );
+  emit('PRODUCT_CREATE_BUNDLE_ITEM', { payload: { productId } });
 };
 
 Products.removeBundleItem = ({ productId, index }) => {
   // TODO: There has to be a better MongoDB way to do this!
   const product = Products.findOne({ _id: productId });
   const { bundleItems = [] } = product;
-  bundleItems.splice(index, 1);
+  const removedItem = bundleItems.splice(index, 1);
 
-  return Products.update(
+  Products.update(
     { _id: productId },
     {
       $set: {
@@ -218,6 +222,9 @@ Products.removeBundleItem = ({ productId, index }) => {
       },
     }
   );
+  emit('PRODUCT_REMOVE_BUNDLE_ITEM', {
+    payload: { productId, item: removedItem },
+  });
 };
 
 Products.removeProduct = ({ productId }) => {
@@ -233,6 +240,7 @@ Products.removeProduct = ({ productId }) => {
           },
         }
       );
+      emit('PRODUCT_REMOVE', { payload: { productId } });
       break;
     default:
       throw new Error(`Invalid status', ${this.status}`);
@@ -255,6 +263,7 @@ Products.removeAssignment = ({ productId, vectors }) => {
     },
   };
   Products.update({ _id: productId }, modifier, { multi: true });
+  emit('PRODUCT_REMOVE_ASSIGNMENT', { payload: { productId } });
 };
 
 Products.helpers({
@@ -271,6 +280,7 @@ Products.helpers({
             },
           }
         );
+        emit('PRODUCT_PUBLISH', { payload: { product: this } });
         return true;
       default:
         return false;
@@ -289,6 +299,7 @@ Products.helpers({
             },
           }
         );
+        emit('PRODUCT_UNPUBLISH', { payload: { product: this } });
         return true;
       default:
         return false;
@@ -360,12 +371,16 @@ Products.helpers({
     );
   },
   updateTexts({ texts, userId }) {
-    return texts.map(({ locale, ...localizations }) =>
+    const productTexts = texts.map(({ locale, ...localizations }) =>
       this.upsertLocalizedText(locale, {
         ...localizations,
         authorId: userId,
       })
     );
+    emit('PRODUCT_UPDATE_TEXTS', {
+      payload: { product: this, productTexts },
+    });
+    return productTexts;
   },
   addMediaLink(mediaData) {
     return ProductMedia.createMedia({
@@ -386,12 +401,14 @@ Products.helpers({
           ...options,
         });
     const file = Promise.await(fileLoader);
-    return this.addMediaLink({
+    const productMedia = this.addMediaLink({
       mediaId: file._id,
       tags,
       meta,
       authorId,
     });
+    emit('PRODUCT_ADD_MEDIA', { payload: { productMedia } });
+    return productMedia;
   },
   getLocalizedTexts(locale) {
     const parsedLocale = new Locale(locale);

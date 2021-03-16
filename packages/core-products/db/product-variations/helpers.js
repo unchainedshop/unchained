@@ -1,6 +1,7 @@
 import 'meteor/dburles:collection-helpers';
 import { findLocalizedText } from 'meteor/unchained:utils';
 import { Locale } from 'locale';
+import { emit } from 'meteor/unchained:core-events';
 import { ProductVariations, ProductVariationTexts } from './collections';
 import { ProductVariationType } from './schema';
 
@@ -19,7 +20,8 @@ ProductVariations.findVariation = ({ productVariationId }) => {
 };
 
 ProductVariations.removeVariation = ({ productVariationId }) => {
-  return ProductVariations.remove({ _id: productVariationId });
+  ProductVariations.remove({ _id: productVariationId });
+  emit('PRODUCT_REMOVE_VARIATION', { payload: { productVariationId } });
 };
 
 ProductVariations.helpers({
@@ -47,13 +49,20 @@ ProductVariations.helpers({
     return ProductVariationTexts.findOne(selector);
   },
   updateTexts({ texts, productVariationOptionValue, userId }) {
-    return texts.map(({ locale, ...localizations }) =>
+    const variationTexts = texts.map(({ locale, ...localizations }) =>
       this.upsertLocalizedText(locale, {
         ...localizations,
         authorId: userId,
         productVariationOptionValue,
       })
     );
+    emit('PRODUCT_UPDATE_VARIATION_TEXTS', {
+      payload: {
+        productVariation: this,
+        productVariationTexts: variationTexts,
+      },
+    });
+    return variationTexts;
   },
   getLocalizedTexts(locale, optionValue) {
     const parsedLocale = new Locale(locale);
@@ -84,11 +93,13 @@ ProductVariations.helpers({
       }
     );
 
-    return this.upsertLocalizedText(localeContext.language, {
+    const productVariation = this.upsertLocalizedText(localeContext.language, {
       authorId: userId,
       productVariationOptionValue: value,
       title,
     });
+    emit('PRODUCT_VARIATION_OPTION_CREATE', { payload: { productVariation } });
+    return productVariation;
   },
 });
 
@@ -107,6 +118,9 @@ ProductVariations.removeVariationOption = ({
       },
     }
   );
+  emit('PRODUCT_REMOVE_VARIATION_OPTION', {
+    payload: { productVariationId, productVariationOptionValue },
+  });
 };
 
 ProductVariations.createVariation = ({
@@ -126,6 +140,9 @@ ProductVariations.createVariation = ({
   variation.upsertLocalizedText(locale, {
     title,
     authorId,
+  });
+  emit('PRODUCT_CREATE_VARIATION', {
+    payload: { productVariation: variation },
   });
   return variation;
 };
