@@ -1,8 +1,8 @@
 
 declare module 'meteor/unchained:core-events' {
-const emit: any;
-const registerEvents: any;
-const subscribe: any;
+ const emit: any;
+ const registerEvents: any;
+ const subscribe: any;
 
-    export { emit, registerEvents, subscribe };
+export { emit, registerEvents, subscribe };
 }

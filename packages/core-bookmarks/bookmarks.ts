@@ -1,10 +1,7 @@
-
 import { registerEvents, emit } from 'meteor/unchained:core-events';
 import { Mongo } from 'meteor/mongo';
 import createIndexes from './db/schema';
 import { Bookmarks } from './db/collections';
-
-
 
 export * from './db/collections';
 
@@ -55,12 +52,10 @@ export type UnchainedBookmarkAPI = {
   }): Promise<boolean>;
 };
 
-
-
 // eslint-disable-next-line
 export default (): UnchainedBookmarkAPI => {
   createIndexes();
-  registerEvents(BOOKMARK_EVENTS)
+  registerEvents(BOOKMARK_EVENTS);
   return {
     findByUserId: async (userId) => Bookmarks.find({ userId }).fetch(),
     findByUserIdAndProductId: async ({ userId, productId }) =>
