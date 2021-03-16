@@ -1,4 +1,5 @@
-import { registerEvent } from 'meteor/unchained:core-events';
+import { registerEvents } from 'meteor/unchained:core-events';
+import { Orders } from './db/orders';
 import runMigrations from './db/migrations';
 import settings from './settings';
 
@@ -34,5 +35,5 @@ const ORDER_EVENTS = [
 export default (options) => {
   settings.load(options);
   runMigrations();
-  registerEvent(ORDER_EVENTS);
+  registerEvents(ORDER_EVENTS);
 };

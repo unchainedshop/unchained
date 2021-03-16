@@ -20,6 +20,7 @@ Package.onUse((api) => {
   api.use('unchained:utils@0.61.0');
   api.use('unchained:core-countries@0.61.0');
   api.use('unchained:core-products@0.61.0');
+  api.use('unchained:core-events@0.61.0');
 
   api.mainModule('assortments.js', 'server');
 });
