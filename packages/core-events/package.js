@@ -14,6 +14,10 @@ Package.onUse((api) => {
   api.mainModule('index.ts');
 });
 
+Npm.depends({
+  redis: '3.0.2',
+});
+
 Package.onTest((api) => {
   api.use('ecmascript');
   api.use('tinytest');
