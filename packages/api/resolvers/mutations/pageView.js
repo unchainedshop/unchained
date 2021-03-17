@@ -4,7 +4,7 @@ import { emit } from 'meteor/unchained:core-events';
 export default (
   root,
   { path, referrer },
-  { userId, localeContext, remoteAddress, version, countryContext, req }
+  { userId, localeContext, remoteAddress, version, countryContext }
 ) => {
   log(`mutation pageVeiw ${path} ${referrer}`, {
     localeContext,
@@ -17,7 +17,7 @@ export default (
     payload: {
       path,
       referrer,
-      context: { localeContext, remoteAddress, version, countryContext, req },
+      context: { localeContext, remoteAddress, version, countryContext },
     },
   });
   return path;
