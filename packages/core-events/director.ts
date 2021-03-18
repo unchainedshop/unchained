@@ -45,7 +45,6 @@ class EventDirector {
 export const {
   emit,
   subscribe,
-  unSubscribe,
   setEventAdapter,
   registerEvents,
   getRegisteredEvents,
