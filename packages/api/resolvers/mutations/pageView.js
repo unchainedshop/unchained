@@ -1,5 +1,5 @@
 import { log } from 'meteor/unchained:core-logger';
-import { emit, subscribe } from 'meteor/unchained:core-events';
+import { emit } from 'meteor/unchained:core-events';
 
 export default (
   root,
@@ -13,7 +13,6 @@ export default (
     userId,
     version,
   });
-  subscribe('PAGE_VIEW', (e) => console.log(e, 'hellop'));
   emit('PAGE_VIEW', {
     payload: {
       path,
