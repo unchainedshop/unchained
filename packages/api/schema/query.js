@@ -397,6 +397,16 @@ export default [
         @deprecated(
           reason: "Has been deprecated and will be removed on future releases, use mutation.signPaymentProviderForCredentialRegistration instead"
         )
+
+      """
+      Get a specific work unit by ID
+      """
+      event(eventId: Int!): [Event]
+
+      """
+      Get all emitted events
+      """
+      events(type: String, limit: Int = 10, offset: Int = 0): [Event]
     }
   `,
 ];

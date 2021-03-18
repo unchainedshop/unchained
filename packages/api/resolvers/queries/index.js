@@ -33,7 +33,12 @@ import orders from './orders';
 import order from './order';
 import assortment from './assortment';
 import assortments from './assortments';
+<<<<<<< HEAD
 import assortmentsCount from './assortmentsCount';
+=======
+import events from './events';
+import event from './event';
+>>>>>>> Add queries for event
 import filter from './filter';
 import filters from './filters';
 import translatedAssortmentTexts from './translatedAssortmentTexts';
@@ -147,4 +152,6 @@ export default {
   signPaymentProviderForCredentialRegistration: acl(
     actions.registerPaymentCredentials
   )(signPaymentProviderForCredentialRegistration),
+  event: acl(actions.viewEvent)(event),
+  events: acl(actions.viewEvents)(events),
 };

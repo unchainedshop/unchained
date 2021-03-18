@@ -7,6 +7,8 @@ export default (role, actions) => {
     return false;
   };
 
+  role.allow(actions.viewEvent, () => false);
+  role.allow(actions.viewEvents, () => false);
   role.allow(actions.viewUser, () => false);
   role.allow(actions.viewUsers, () => false);
   role.allow(actions.viewPaymentProviders, () => false);

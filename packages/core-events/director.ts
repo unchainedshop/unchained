@@ -34,7 +34,7 @@ class EventDirector {
     EventDirector.adapter.publish(eventName, payload);
     Events.insert({
       type: eventName,
-      payload,
+      payload: payload?.payload,
       created: new Date(),
     });
     logger.info(

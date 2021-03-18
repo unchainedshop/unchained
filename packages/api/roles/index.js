@@ -14,6 +14,8 @@ const allRoles = roles;
 export default allRoles;
 
 export const actions = [
+  'viewEvent',
+  'viewEvents',
   'viewUserRoles',
   'viewUserOrders',
   'viewUserQuotations',
