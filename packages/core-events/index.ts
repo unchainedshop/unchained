@@ -1,5 +1,8 @@
+import runMigrations from './db/schema';
+
 export * from './director';
+export * from './db';
 
-const name = 'core-events';
-
-export default name;
+export default () => {
+  runMigrations();
+};
