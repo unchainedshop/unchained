@@ -7,6 +7,8 @@ class RedisEventEmitter extends EventAdapter {
     host: '127.0.0.1', // replace with your hostanme or IP address
   });
 
+  private static subscribedEvents = new Set();
+
   redisSubscriber = redis.createClient({
     port: 6379, // replace with your port
     host: '127.0.0.1', // replace with your hostanme or IP address
@@ -18,7 +20,10 @@ class RedisEventEmitter extends EventAdapter {
 
   subscribe(eventName, callBack) {
     this.redisSubscriber.on('message', callBack);
-    this.redisSubscriber.subscribe(eventName);
+    if (!RedisEventEmitter.subscribedEvents.has(eventName)) {
+      this.redisSubscriber.subscribe(eventName);
+      RedisEventEmitter.subscribedEvents.add(eventName);
+    }
   }
 }
 

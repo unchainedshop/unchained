@@ -1,4 +1,5 @@
 import { createLogger } from 'meteor/unchained:core-logger';
+import { Events } from './db';
 
 const logger = createLogger('unchained:core-events');
 export abstract class EventAdapter {
@@ -31,6 +32,11 @@ class EventDirector {
     if (!EventDirector.registeredEvents.has(eventName))
       throw new Error(`Event with ${eventName} is not registered`);
     EventDirector.adapter.publish(eventName, payload);
+    Events.insert({
+      type: eventName,
+      payload,
+      created: new Date(),
+    });
     logger.info(
       `EventDirector -> Emitted to ${eventName} with ${JSON.stringify(payload)}`
     );
