@@ -181,7 +181,8 @@ export default (role, actions) => {
     if (!credentials) return true;
     return credentials.userId === userId;
   };
-
+  role.allow(actions.viewEvent, false);
+  role.allow(actions.viewEvents, false);
   role.allow(actions.viewUser, isMyself);
   role.allow(actions.viewUserRoles, isMyself);
   role.allow(actions.viewUserOrders, isMyself);

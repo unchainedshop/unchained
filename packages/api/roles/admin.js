@@ -1,4 +1,6 @@
 export default (role, actions) => {
+  role.allow(actions.viewEvent, () => true);
+  role.allow(actions.viewEvents, () => true);
   role.allow(actions.viewUser, () => true);
   role.allow(actions.viewUsers, () => true);
   role.allow(actions.viewPaymentProviders, () => true);
