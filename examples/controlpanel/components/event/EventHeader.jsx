@@ -1,34 +1,15 @@
 import gql from 'graphql-tag';
 import { graphql } from '@apollo/client/react/hoc';
 import React from 'react';
-import {
-  List,
-  Segment,
-  Menu,
-  Dropdown,
-  Grid,
-} from 'semantic-ui-react';
-
+import { List, Segment, Menu, Grid } from 'semantic-ui-react';
 
 const EventHeader = ({ data }) => {
   const { event } = data;
-  const {
-    _id,
-    created,
-    type,
-    payload
-  } = event || {};
+  const { _id, created, type, payload } = event || {};
   return (
     <>
       <Menu fluid attached="top" bworkless key="header-title">
         <Menu.Item header>{_id}</Menu.Item>
-        <Menu.Menu position="right">
-          <Dropdown item icon="wrench" simple>
-            <Dropdown.Menu>
-              <Dropdown.Header>Options</Dropdown.Header>
-            </Dropdown.Menu>
-          </Dropdown>
-        </Menu.Menu>
       </Menu>
       <Segment attached key="header-body">
         <Grid divided="vertically">
@@ -42,17 +23,26 @@ const EventHeader = ({ data }) => {
                   </List.Content>
                 </List.Item>
                 <List.Item>
-                  <List.Content>
-                    Type:{' '}
-                    {type}
-                  </List.Content>
+                  <List.Content>Type: {type}</List.Content>
                 </List.Item>
               </List>
             </Grid.Column>
           </Grid.Row>
         </Grid>
+        <textarea
+          readOnly
+          cols={10}
+          style={{
+            width: '50%',
+            minHeight: '30rem',
+            fontFamily: '"Lucida Console", Monaco, monospace',
+            fontSize: '0.8rem',
+            lineHeight: 1.2,
+            resize: 'none',
+          }}
+          defaultValue={JSON.stringify(payload, undefined, 4)}
+        />
       </Segment>
-      <code> {JSON.stringify(payload)} </code>
     </>
   );
 };

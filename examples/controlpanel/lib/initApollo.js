@@ -49,31 +49,31 @@ function create(initialState, headersOverride, getToken) {
     return forward(operation);
   });
   const cache = new InMemoryCache({
-      typePolicies: {
-        Query: {
-          fields: {
-            workQueue: {
-              keyFields: ['_id'],
-              keyArgs: ['offset'],
-              merge(_, incoming) { 
-                return incoming;
-              },
+    typePolicies: {
+      Query: {
+        fields: {
+          workQueue: {
+            keyFields: ['_id'],
+            keyArgs: ['offset'],
+            merge(_, incoming) {
+              return incoming;
             },
-          }
-        }
+          },
+        },
       },
-    dataIdFromObject: result => {
-      if(result?.__typename === 'Work') {
-        return `${result.__typename}:${result?._id}:${result?.created}`
-      } else {
+    },
+    dataIdFromObject: (result) => {
+      if (result?.__typename === 'Work') {
+        return `${result.__typename}:${result?._id}:${result?.created}`;
+      }
       if (result?._id && result?.__typename) {
         return `${result.__typename}:${result._id}`;
-      } else if (result?.id && result?.__typename) {
+      }
+      if (result?.id && result?.__typename) {
         return `${result.__typename}:${result.id}`;
       }
       return null;
-    }
-    }
+    },
   });
   return new ApolloClient({
     connectToDevTools: process.browser,
