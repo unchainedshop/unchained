@@ -401,7 +401,7 @@ export default [
       """
       Get a specific work unit by ID
       """
-      event(eventId: Int!): [Event]
+      event(eventId: ID!): Event
 
       """
       Get all emitted events
