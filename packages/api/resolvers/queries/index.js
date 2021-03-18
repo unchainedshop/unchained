@@ -108,7 +108,6 @@ export default {
   activeWorkTypes: acl(actions.manageWorker)(activeWorkTypes),
   subscription: acl(actions.viewSubscription)(subscription),
   subscriptions: acl(actions.viewSubscriptions)(subscriptions),
-
   work: acl(actions.manageWorker)(work),
   signPaymentProviderForCredentialRegistration: acl(
     actions.registerPaymentCredentials
