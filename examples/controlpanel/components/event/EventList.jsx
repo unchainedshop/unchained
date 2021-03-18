@@ -5,7 +5,6 @@ import Link from 'next/link';
 import { compose, defaultProps } from 'recompose';
 
 import InfiniteDataTable, { withDataTableLoader } from '../InfiniteDataTable';
-import WorkTypeSelector from './EventTypeSelector';
 
 const EventRow = ({ type, created, _id }) => {
   return (
@@ -28,7 +27,6 @@ const EventList = ({
   queryOptions,
   ...rest
 }) => {
-
   return (
     <InfiniteDataTable
       {...rest}
@@ -38,16 +36,6 @@ const EventList = ({
         <EventRow key={_id} type={type} created={created} _id={_id} />
       )}
     >
-      <Table.Row>
-        <Table.HeaderCell colSpan="2">
-          <WorkTypeSelector
-            onChange={(e, { value }) => {
-              onFilterChange({ filterType: 'workType', value });
-            }}
-          />
-        </Table.HeaderCell>
-      </Table.Row>
-
       <Table.Row>
         <Table.HeaderCell>Created</Table.HeaderCell>
         <Table.HeaderCell>Type</Table.HeaderCell>
@@ -61,16 +49,8 @@ export default compose(
   withDataTableLoader({
     queryName: 'events',
     query: gql`
-      query Events(
-        $offset: Int
-        $limit: Int
-        $type: String
-      ) {
-        events(
-          offset: $offset
-          limit: $limit
-          type: $type
-        ) {
+      query Events($offset: Int, $limit: Int, $type: String) {
+        events(offset: $offset, limit: $limit, type: $type) {
           _id
           type
           created
