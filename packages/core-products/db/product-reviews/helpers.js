@@ -48,6 +48,7 @@ ProductReviews.helpers({
         meta,
       });
       emit('PRODUCT_REVIEW_ADD_VOTE', { payload: { productReview } });
+      return productReview;
     }
     return this;
   },
