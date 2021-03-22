@@ -19,7 +19,9 @@ class RedisEventEmitter extends EventAdapter {
   }
 
   subscribe(eventName, callBack) {
-    this.redisSubscriber.on('message', callBack);
+    this.redisSubscriber.on('message', (channelName, payload) =>
+      callBack(payload)
+    );
     if (!RedisEventEmitter.subscribedEvents.has(eventName)) {
       this.redisSubscriber.subscribe(eventName);
       RedisEventEmitter.subscribedEvents.add(eventName);
