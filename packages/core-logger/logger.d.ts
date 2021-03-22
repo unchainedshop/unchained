@@ -6,7 +6,8 @@ declare module 'meteor/unchained:core-logger' {
   };
 
   function log(message: string, options?: Options): void;
+  function createLogger(moduleName: string): void;
 
   // eslint-disable-next-line import/prefer-default-export
-  export { log };
+  export { log, createLogger };
 }

@@ -7,9 +7,9 @@ Package.describe({
 });
 
 Package.onUse((api) => {
-  api.versionsFrom('1.12');
+  api.versionsFrom('1.11.1');
   api.use('ecmascript');
-  api.use('typescript');
+  api.use('typescript@4.1.2');
   api.use('unchained:core-logger@0.61.0');
   api.mainModule('index.ts');
 });

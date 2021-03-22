@@ -1,17 +1,18 @@
 import redis from 'redis';
 import EventDirector, { EventAdapter } from '../director';
 
+const { REDIS_PORT = 6379, REDIS_HOST = '127.0.0.1' } = process.env;
 class RedisEventEmitter extends EventAdapter {
   redisPublisher = redis.createClient({
-    port: 6379, // replace with your port
-    host: '127.0.0.1', // replace with your hostanme or IP address
+    port: REDIS_PORT,
+    host: REDIS_HOST,
   });
 
   private static subscribedEvents = new Set();
 
   redisSubscriber = redis.createClient({
-    port: 6379, // replace with your port
-    host: '127.0.0.1', // replace with your hostanme or IP address
+    port: REDIS_PORT,
+    host: REDIS_HOST,
   });
 
   publish(eventName, payload) {
@@ -19,7 +20,7 @@ class RedisEventEmitter extends EventAdapter {
   }
 
   subscribe(eventName, callBack) {
-    this.redisSubscriber.on('message', (channelName, payload) =>
+    this.redisSubscriber.on('message', (_channelName, payload) =>
       callBack(payload)
     );
     if (!RedisEventEmitter.subscribedEvents.has(eventName)) {
