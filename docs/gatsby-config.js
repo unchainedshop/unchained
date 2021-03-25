@@ -36,6 +36,7 @@ module.exports = {
             'config/products',
             'config/pricing',
             'config/product-pricing',
+            'config/email-template',
             'config/users',
             'config/settings',
           ],
