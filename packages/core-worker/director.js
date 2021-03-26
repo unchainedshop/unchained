@@ -163,6 +163,8 @@ class WorkerDirector {
   static buildQueueSelector({
     status = [],
     selectTypes = [],
+    startDate,
+    endDate = new Date(),
     workId,
     ...rest
   }) {
@@ -191,6 +193,12 @@ class WorkerDirector {
     if (selectTypes?.length) {
       query.$and = [{ type: { $in: selectTypes } }];
     }
+    query.$and = [
+      selectTypes?.length > 0 && { type: { $in: selectTypes } },
+      startDate
+        ? { created: { $gte: startDate, $lte: endDate } }
+        : { created: { $lte: endDate } },
+    ].filter(Boolean);
 
     if (workId) {
       query._id = workId;
