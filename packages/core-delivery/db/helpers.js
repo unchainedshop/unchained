@@ -149,6 +149,14 @@ DeliveryProviders.findProviders = ({ type } = {}, ...options) =>
     ...options
   ).fetch();
 
+DeliveryProviders.count = async ({ type } = {}) => {
+  const count = await DeliveryProviders.rawCollection().countDocuments({
+    ...(type ? { type } : {}),
+    deleted: null,
+  });
+  return count;
+};
+
 DeliveryProviders.findSupported = ({ order }, ...options) => {
   const providers = DeliveryProviders.findProviders(
     {},

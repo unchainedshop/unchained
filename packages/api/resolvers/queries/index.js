@@ -22,6 +22,7 @@ import translatedProductVariationTexts from './translatedProductVariationTexts';
 import paymentProviders from './paymentProviders';
 import paymentProvider from './paymentProvider';
 import paymentInterfaces from './paymentInterfaces';
+import deliveryProvidersCount from './deliveryProvidersCount';
 import deliveryProviders from './deliveryProviders';
 import deliveryProvider from './deliveryProvider';
 import deliveryInterfaces from './deliveryInterfaces';
@@ -71,6 +72,9 @@ export default {
   paymentProviders: acl(actions.viewPaymentProviders)(paymentProviders),
   paymentProvider: acl(actions.viewPaymentProvider)(paymentProvider),
   paymentInterfaces: acl(actions.viewPaymentInterfaces)(paymentInterfaces),
+  deliveryProvidersCount: acl(actions.viewDeliveryProviders)(
+    deliveryProvidersCount
+  ),
   deliveryProviders: acl(actions.viewDeliveryProviders)(deliveryProviders),
   deliveryProvider: acl(actions.viewDeliveryProvider)(deliveryProvider),
   deliveryInterfaces: acl(actions.viewDeliveryInterfaces)(deliveryInterfaces),

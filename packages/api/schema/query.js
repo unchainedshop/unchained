@@ -119,6 +119,11 @@ export default [
       currency(currencyId: ID!): Currency
 
       """
+      Returns total number of delivery providers, optionally filtered by type
+      """
+      deliveryProvidersCount(type: DeliveryProviderType): Int!
+
+      """
       Get all delivery providers, optionally filtered by type
       """
       deliveryProviders(type: DeliveryProviderType): [DeliveryProvider!]!
