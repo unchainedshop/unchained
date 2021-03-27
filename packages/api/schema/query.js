@@ -17,6 +17,11 @@ export default [
       ): [User!]!
 
       """
+      Get total number of users in the system that match query
+      """
+      usersCount(includeGuests: Boolean = false, queryString: String): Int!
+
+      """
       Specific user data if userId provided, else returns currently logged in
       """
       user(userId: ID): User

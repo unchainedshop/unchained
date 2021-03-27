@@ -4,6 +4,7 @@ import { checkResolver as acl } from '../../acl';
 import me from './me';
 import user from './user';
 import users from './users';
+import usersCount from './usersCount';
 import product from './product';
 import products from './products';
 import productCatalogPrices from './productCatalogPrices';
@@ -52,6 +53,7 @@ export default {
   me,
   user: acl(actions.viewUser)(user),
   users: acl(actions.viewUsers)(users),
+  usersCount: acl(actions.viewUsers)(usersCount),
   product: acl(actions.viewProduct)(product),
   products: acl(actions.viewProducts)(products),
   productCatalogPrices: acl(actions.viewProduct)(productCatalogPrices),

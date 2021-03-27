@@ -337,3 +337,18 @@ Users.findUsers = async ({ limit, offset, includeGuests, queryString }) => {
 
   return Users.find(selector, { skip: offset, limit }).fetch();
 };
+
+Users.count = async ({ includeGuests, queryString }) => {
+  const selector = {};
+  let count = 0;
+  if (!includeGuests) selector.guest = { $ne: true };
+  if (queryString) {
+    count = await Users.rawCollection().countDocuments({
+      ...selector,
+      $text: { $search: queryString },
+    });
+  } else {
+    count = await Users.rawCollection().countDocuments(selector);
+  }
+  return count;
+};
