@@ -190,9 +190,6 @@ class WorkerDirector {
     };
 
     const query = statusQuery.$or.length > 0 ? statusQuery : {};
-    if (selectTypes?.length) {
-      query.$and = [{ type: { $in: selectTypes } }];
-    }
     query.$and = [
       selectTypes?.length > 0 && { type: { $in: selectTypes } },
       startDate

@@ -1,7 +1,7 @@
 export const NewWork = {
   _id: 'simple-work',
   type: 'EXTERNAL',
-  created: new Date().getTime(),
+  created: new Date(),
   scheduled: new Date('2030/10/01').getTime(),
   priority: 100,
   retries: 3,
