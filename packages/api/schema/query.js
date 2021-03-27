@@ -154,7 +154,12 @@ export default [
       deliveryInterfaces(type: DeliveryProviderType!): [DeliveryInterface!]!
 
       """
-      Get all delivery providers, optionally filtered by type
+      Returns total number of delivery providers, optionally filtered by type
+      """
+      warehousingProvidersCount(type: WarehousingProviderType): Int!
+
+      """
+      Get all warehousing providers, optionally filtered by type
       """
       warehousingProviders(
         type: WarehousingProviderType

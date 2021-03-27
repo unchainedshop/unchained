@@ -59,6 +59,7 @@ import ordersCount from './ordersCount';
 import productsCount from './productsCount';
 import quotationsCount from './quotationsCount';
 import subscriptionsCount from './subscriptionsCount';
+import warehousingProvidersCount from './warehousingProvidersCount';
 
 export default {
   me,
@@ -87,6 +88,9 @@ export default {
   deliveryProviders: acl(actions.viewDeliveryProviders)(deliveryProviders),
   deliveryProvider: acl(actions.viewDeliveryProvider)(deliveryProvider),
   deliveryInterfaces: acl(actions.viewDeliveryInterfaces)(deliveryInterfaces),
+  warehousingProvidersCount: acl(actions.viewWarehousingProviders)(
+    warehousingProvidersCount
+  ),
   warehousingProviders: acl(actions.viewWarehousingProviders)(
     warehousingProviders
   ),

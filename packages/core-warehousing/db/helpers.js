@@ -98,6 +98,15 @@ WarehousingProviders.findProviders = ({ type } = {}, ...options) =>
     ...options
   ).fetch();
 
+WarehousingProviders.count = async ({ type } = {}) => {
+  const count = await WarehousingProviders.rawCollection().countDocuments({
+    ...(type ? { type } : {}),
+    deleted: null,
+  });
+
+  return count;
+};
+
 WarehousingProviders.findSupported = (
   { product, deliveryProvider },
   ...options
