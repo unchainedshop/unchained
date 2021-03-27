@@ -839,6 +839,50 @@ describe('Subscriptions', () => {
     });
   });
 
+  describe('query.subscriptionsCount for admin user should', () => {
+    it('return total number of subscriptions', async () => {
+      const {
+        data: { subscriptionsCount },
+      } = await graphqlFetchAsAdminUser({
+        query: /* GraphQL */ `
+          query {
+            subscriptionsCount
+          }
+        `,
+        variables: {},
+      });
+      expect(subscriptionsCount > 0).toBe(true);
+    });
+  });
+
+  describe('query.subscriptionsCount for Normal user should', () => {
+    it('return total number of subscriptions', async () => {
+      const { errors } = await graphqlFetchAsNormalUser({
+        query: /* GraphQL */ `
+          query {
+            subscriptionsCount
+          }
+        `,
+        variables: {},
+      });
+      expect(errors[0]?.extensions?.code).toEqual('NoPermissionError');
+    });
+  });
+
+  describe('query.subscriptionsCount for anonymous user should', () => {
+    it('return total number of subscriptions', async () => {
+      const { errors } = await graphqlFetchAsAnonymousUser({
+        query: /* GraphQL */ `
+          query {
+            subscriptionsCount
+          }
+        `,
+        variables: {},
+      });
+      expect(errors[0]?.extensions?.code).toEqual('NoPermissionError');
+    });
+  });
+
   describe('query.subscriptions for normal user should', () => {
     it('return NoPermissionError', async () => {
       const { errors } = await graphqlFetchAsNormalUser({
