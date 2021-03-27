@@ -28,6 +28,38 @@ describe('PaymentProviders', () => {
     await connection.close();
   });
 
+  describe('Query.paymentProvidersCount when loged in should', () => {
+    it('return total number of 3 paymentProvider when type is not given', async () => {
+      const {
+        data: { paymentProvidersCount },
+      } = await graphqlFetchAsAdminUser({
+        query: /* GraphQL */ `
+          query {
+            paymentProvidersCount
+          }
+        `,
+        variables: {},
+      });
+      expect(paymentProvidersCount).toEqual(3);
+    });
+
+    it('return total number of 2 paymentProvider of the given type', async () => {
+      const {
+        data: { paymentProvidersCount },
+      } = await graphqlFetchAsAdminUser({
+        query: /* GraphQL */ `
+          query PaymentProvidersCount($type: PaymentProviderType) {
+            paymentProvidersCount(type: $type)
+          }
+        `,
+        variables: {
+          type: 'INVOICE',
+        },
+      });
+      expect(paymentProvidersCount).toEqual(2);
+    });
+  });
+
   describe('Query.paymentProviders when loged in should', () => {
     it('return array of all paymentProvider when type is not given', async () => {
       const {
@@ -128,8 +160,7 @@ describe('PaymentProviders', () => {
 
   describe('Query.paymentProviders for anonymous user should', () => {
     it('return error', async () => {
-      const graphqlAnonymousFetch = await createAnonymousGraphqlFetch();
-      const { errors } = await graphqlAnonymousFetch({
+      const { errors } = await graphqlFetchAsAnonymousUser({
         query: /* GraphQL */ `
           query PaymentProviders {
             paymentProviders {
@@ -139,7 +170,23 @@ describe('PaymentProviders', () => {
         `,
         variables: {},
       });
-      expect(errors.length).toEqual(1);
+      expect(errors[0]?.extensions.code).toEqual('NoPermissionError');
+    });
+  });
+
+  describe('Query.paymentProvidersCount for anonymous user should', () => {
+    it('return NoPermissionError', async () => {
+      const { errors } = await graphqlFetchAsAnonymousUser({
+        query: /* GraphQL */ `
+          query PaymentProviders {
+            paymentProviders {
+              _id
+            }
+          }
+        `,
+        variables: {},
+      });
+      expect(errors[0]?.extensions.code).toEqual('NoPermissionError');
     });
   });
 
