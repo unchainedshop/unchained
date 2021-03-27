@@ -56,6 +56,7 @@ import filtersCount from './filtersCount';
 import languagesCount from './languagesCount';
 import logsCount from './logsCount';
 import ordersCount from './ordersCount';
+import productsCount from './productsCount';
 
 export default {
   me,
@@ -64,6 +65,7 @@ export default {
   usersCount: acl(actions.viewUsers)(usersCount),
   product: acl(actions.viewProduct)(product),
   products: acl(actions.viewProducts)(products),
+  productsCount: acl(actions.viewProducts)(productsCount),
   productCatalogPrices: acl(actions.viewProduct)(productCatalogPrices),
   languagesCount: acl(actions.viewLanguages)(languagesCount),
   languages: acl(actions.viewLanguages)(languages),

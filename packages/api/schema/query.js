@@ -27,6 +27,16 @@ export default [
       user(userId: ID): User
 
       """
+      Return total number of published products filtered either by tags or explicit slugs
+      If a slug is provided
+      """
+      productsCount(
+        tags: [String!]
+        slugs: [String!]
+        includeDrafts: Boolean = false
+      ): Int!
+
+      """
       Simple list of published products filtered either by tags or explicit slugs
       If a slug is provided, limit and offset don't have any effect on the result
       """
