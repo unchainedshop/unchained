@@ -178,6 +178,11 @@ export default [
       paymentInterfaces(type: PaymentProviderType!): [PaymentInterface!]!
 
       """
+      Returns total number of orders
+      """
+      ordersCount(includeCarts: Boolean = false): Int!
+
+      """
       Get all orders
       """
       orders(

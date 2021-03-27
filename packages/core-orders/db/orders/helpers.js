@@ -166,6 +166,13 @@ Orders.findOrders = ({
   return Orders.find(selector, options).fetch();
 };
 
+Orders.count = async ({ includeCarts }) => {
+  const selector = {};
+  if (!includeCarts) selector.status = { $ne: OrderStatus.OPEN };
+  const count = await Orders.rawCollection().countDocuments(selector);
+  return count;
+};
+
 Orders.helpers({
   subscription() {
     return Subscriptions.findOne({

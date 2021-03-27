@@ -55,6 +55,7 @@ import signPaymentProviderForCredentialRegistration from './signPaymentProviderF
 import filtersCount from './filtersCount';
 import languagesCount from './languagesCount';
 import logsCount from './logsCount';
+import ordersCount from './ordersCount';
 
 export default {
   me,
@@ -98,6 +99,7 @@ export default {
   translatedProductVariationTexts: acl(actions.viewTranslations)(
     translatedProductVariationTexts
   ),
+  ordersCount: acl(actions.viewOrders)(ordersCount),
   orders: acl(actions.viewOrders)(orders),
   order: acl(actions.viewOrder)(order),
   assortmentsCount: acl(actions.viewAssortments)(assortmentsCount),
