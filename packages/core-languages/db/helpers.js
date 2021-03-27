@@ -38,6 +38,13 @@ Languages.findLanguages = ({ limit, offset, includeInactive }) => {
   }).fetch();
 };
 
+Languages.count = async ({ includeInactive }) => {
+  const selector = {};
+  if (!includeInactive) selector.isActive = true;
+  const count = await Languages.rawCollection().countDocuments(selector);
+  return count;
+};
+
 Languages.updateLanguage = ({ languageId, language }) => {
   return Languages.update(
     { _id: languageId },

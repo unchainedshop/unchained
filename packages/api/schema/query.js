@@ -67,6 +67,11 @@ export default [
       ): [ProductVariationTexts!]!
 
       """
+      Returns total number languages
+      """
+      languagesCount(includeInactive: Boolean = false): Int!
+
+      """
       Get all languages
       """
       languages(

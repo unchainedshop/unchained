@@ -53,6 +53,7 @@ import subscriptions from './subscriptions';
 import work from './work';
 import signPaymentProviderForCredentialRegistration from './signPaymentProviderForCredentialRegistration';
 import filtersCount from './filtersCount';
+import languagesCount from './languagesCount';
 
 export default {
   me,
@@ -62,6 +63,7 @@ export default {
   product: acl(actions.viewProduct)(product),
   products: acl(actions.viewProducts)(products),
   productCatalogPrices: acl(actions.viewProduct)(productCatalogPrices),
+  languagesCount: acl(actions.viewLanguages)(languagesCount),
   languages: acl(actions.viewLanguages)(languages),
   language: acl(actions.viewLanguage)(language),
   countriesCount: acl(actions.viewCountries)(countriesCount),
