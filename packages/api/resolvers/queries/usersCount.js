@@ -1,7 +1,7 @@
 import { log } from 'meteor/unchained:core-logger';
 import { Users } from 'meteor/unchained:core-users';
 
-export default async function users(
+export default async function usersCount(
   root,
   { includeGuests, queryString },
   { userId }

@@ -194,6 +194,16 @@ export default [
       ): [Assortment!]!
 
       """
+      Returns total number of assortments that match a given criteria or all if no criteria is given
+      """
+      assortmentsCount(
+        tags: [String!]
+        slugs: [String!]
+        includeInactive: Boolean = false
+        includeLeaves: Boolean = false
+      ): Int!
+
+      """
       Get a specific assortment by ID
       """
       assortment(assortmentId: ID, slug: String): Assortment

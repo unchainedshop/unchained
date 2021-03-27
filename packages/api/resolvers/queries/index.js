@@ -30,6 +30,7 @@ import orders from './orders';
 import order from './order';
 import assortment from './assortment';
 import assortments from './assortments';
+import assortmentsCount from './assortmentsCount';
 import filter from './filter';
 import filters from './filters';
 import translatedAssortmentTexts from './translatedAssortmentTexts';
@@ -87,6 +88,7 @@ export default {
   ),
   orders: acl(actions.viewOrders)(orders),
   order: acl(actions.viewOrder)(order),
+  assortmentsCount: acl(actions.viewAssortments)(assortmentsCount),
   assortments: acl(actions.viewAssortments)(assortments),
   assortment: acl(actions.viewAssortment)(assortment),
   filters: acl(actions.viewFilters)(filters),

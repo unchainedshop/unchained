@@ -110,6 +110,32 @@ Collections.Assortments.findAssortments = ({
   return Collections.Assortments.find(selector, options).fetch();
 };
 
+Collections.Assortments.count = async ({
+  tags,
+  slugs,
+  includeInactive,
+  includeLeaves,
+}) => {
+  const selector = {};
+
+  if (slugs?.length > 0) {
+    selector.slugs = { $in: slugs };
+  } else if (tags?.length > 0) {
+    selector.tags = { $all: tags };
+  }
+
+  if (!includeLeaves) {
+    selector.isRoot = true;
+  }
+  if (!includeInactive) {
+    selector.isActive = true;
+  }
+  const count = await Collections.Assortments.rawCollection().countDocuments(
+    selector
+  );
+  return count;
+};
+
 Collections.Assortments.updateAssortment = ({
   assortmentId,
   ...assortment
