@@ -13,6 +13,7 @@ import language from './language';
 import countriesCount from './countriesCount';
 import countries from './countries';
 import country from './country';
+import currenciesCount from './currenciesCount';
 import currencies from './currencies';
 import currency from './currency';
 import translatedProductTexts from './translatedProductTexts';
@@ -64,6 +65,7 @@ export default {
   countriesCount: acl(actions.viewCountries)(countriesCount),
   countries: acl(actions.viewCountries)(countries),
   country: acl(actions.viewCountry)(country),
+  currenciesCount: acl(actions.viewCurrencies)(currenciesCount),
   currencies: acl(actions.viewCurrencies)(currencies),
   currency: acl(actions.viewCurrency)(currency),
   paymentProviders: acl(actions.viewPaymentProviders)(paymentProviders),

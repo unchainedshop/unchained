@@ -100,6 +100,11 @@ export default [
       country(countryId: ID!): Country
 
       """
+      Returns total number of currencies
+      """
+      currenciesCount(includeInactive: Boolean = false): Int!
+
+      """
       Get all currencies
       """
       currencies(

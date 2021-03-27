@@ -16,6 +16,13 @@ Currencies.findCurrencies = ({ limit, offset, includeInactive }) => {
   return Currencies.find(selector, { skip: offset, limit }).fetch();
 };
 
+Currencies.count = async ({ includeInactive }) => {
+  const selector = {};
+  if (!includeInactive) selector.isActive = true;
+  const count = await Currencies.rawCollection().countDocuments(selector);
+  return count;
+};
+
 Currencies.currencyExists = ({ currencyId }) => {
   return !!Currencies.find({ _id: currencyId }, { limit: 1 }).count();
 };
