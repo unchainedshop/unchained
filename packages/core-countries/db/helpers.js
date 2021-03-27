@@ -73,6 +73,13 @@ Countries.findCountries = ({ limit, offset, includeInactive }) => {
   return Countries.find(selector, { skip: offset, limit }).fetch();
 };
 
+Countries.count = async ({ includeInactive }) => {
+  const selector = {};
+  if (!includeInactive) selector.isActive = true;
+  const count = await Countries.rawCollection().countDocuments(selector);
+  return count;
+};
+
 Countries.countryExists = ({ countryId }) => {
   return !!Countries.find({ _id: countryId }, { limit: 1 }).count();
 };

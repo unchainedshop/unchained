@@ -10,6 +10,7 @@ import products from './products';
 import productCatalogPrices from './productCatalogPrices';
 import languages from './languages';
 import language from './language';
+import countriesCount from './countriesCount';
 import countries from './countries';
 import country from './country';
 import currencies from './currencies';
@@ -60,6 +61,7 @@ export default {
   productCatalogPrices: acl(actions.viewProduct)(productCatalogPrices),
   languages: acl(actions.viewLanguages)(languages),
   language: acl(actions.viewLanguage)(language),
+  countriesCount: acl(actions.viewCountries)(countriesCount),
   countries: acl(actions.viewCountries)(countries),
   country: acl(actions.viewCountry)(country),
   currencies: acl(actions.viewCurrencies)(currencies),

@@ -90,6 +90,11 @@ export default [
       ): [Country!]!
 
       """
+      Returns total number of countries
+      """
+      countriesCount(includeInactive: Boolean = false): Int!
+
+      """
       Get a specific country by ID
       """
       country(countryId: ID!): Country
