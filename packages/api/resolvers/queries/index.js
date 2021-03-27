@@ -54,6 +54,7 @@ import work from './work';
 import signPaymentProviderForCredentialRegistration from './signPaymentProviderForCredentialRegistration';
 import filtersCount from './filtersCount';
 import languagesCount from './languagesCount';
+import logsCount from './logsCount';
 
 export default {
   me,
@@ -106,6 +107,7 @@ export default {
   filters: acl(actions.viewFilters)(filters),
   filter: acl(actions.viewFilter)(filter),
   shopInfo: acl(actions.viewShopInfo)(shopInfo),
+  logsCount: acl(actions.viewLogs)(logsCount),
   logs: acl(actions.viewLogs)(logs),
   translatedAssortmentTexts: acl(actions.manageAssortments)(
     translatedAssortmentTexts
