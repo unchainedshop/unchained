@@ -57,6 +57,7 @@ import languagesCount from './languagesCount';
 import logsCount from './logsCount';
 import ordersCount from './ordersCount';
 import productsCount from './productsCount';
+import quotationsCount from './quotationsCount';
 
 export default {
   me,
@@ -121,6 +122,7 @@ export default {
   productReviews: acl(actions.manageProductReviews)(productReviews),
   quotation: acl(actions.viewQuotation)(quotation),
   quotations: acl(actions.viewQuotations)(quotations),
+  quotationsCount: acl(actions.viewQuotations)(quotationsCount),
   search: acl(actions.search)(searchProducts),
   searchProducts: acl(actions.search)(searchProducts),
   searchAssortments: acl(actions.search)(searchAssortments),

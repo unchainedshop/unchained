@@ -291,6 +291,11 @@ export default [
       productReview(productReviewId: ID!): ProductReview!
 
       """
+      Returns total number of quotations
+      """
+      quotationsCount: Int!
+
+      """
       Get all quotations
       """
       quotations(limit: Int = 10, offset: Int = 0): [Quotation!]!
