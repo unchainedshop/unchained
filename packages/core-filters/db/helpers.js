@@ -150,6 +150,13 @@ Filters.findFilters = ({ limit, offset, includeInactive }) => {
   return Filters.find(selector, { skip: offset, limit }).fetch();
 };
 
+Filters.count = async ({ includeInactive }) => {
+  const selector = {};
+  if (!includeInactive) selector.isActive = true;
+  const count = await Filters.rawCollection().countDocuments(selector);
+  return count;
+};
+
 Filters.cleanFiltersByReferenceDate = (referenceDate) => {
   const selector = {
     dirty: true,

@@ -52,6 +52,7 @@ import subscription from './subscription';
 import subscriptions from './subscriptions';
 import work from './work';
 import signPaymentProviderForCredentialRegistration from './signPaymentProviderForCredentialRegistration';
+import filtersCount from './filtersCount';
 
 export default {
   me,
@@ -99,6 +100,7 @@ export default {
   assortmentsCount: acl(actions.viewAssortments)(assortmentsCount),
   assortments: acl(actions.viewAssortments)(assortments),
   assortment: acl(actions.viewAssortment)(assortment),
+  filtersCount: acl(actions.viewFilters)(filtersCount),
   filters: acl(actions.viewFilters)(filters),
   filter: acl(actions.viewFilter)(filter),
   shopInfo: acl(actions.viewShopInfo)(shopInfo),

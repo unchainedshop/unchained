@@ -237,6 +237,11 @@ export default [
       ): [FilterTexts!]!
 
       """
+      Returns total number of filters
+      """
+      filtersCount(includeInactive: Boolean = false): Int!
+
+      """
       Get all filters
       """
       filters(
