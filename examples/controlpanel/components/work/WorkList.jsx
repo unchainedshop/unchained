@@ -70,6 +70,7 @@ const WorkList = ({
               showYearDropdown
               dropdownMode="select"
               selected={startDate}
+              showTimeInput
             />
           </Table.HeaderCell>
           <Table.HeaderCell>
@@ -85,6 +86,7 @@ const WorkList = ({
               showYearDropdown
               dropdownMode="select"
               selected={endDate}
+              showTimeInput
             />
           </Table.HeaderCell>
         </Table.Row>
