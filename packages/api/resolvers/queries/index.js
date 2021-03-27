@@ -58,6 +58,7 @@ import logsCount from './logsCount';
 import ordersCount from './ordersCount';
 import productsCount from './productsCount';
 import quotationsCount from './quotationsCount';
+import subscriptionsCount from './subscriptionsCount';
 
 export default {
   me,
@@ -130,6 +131,7 @@ export default {
   activeWorkTypes: acl(actions.manageWorker)(activeWorkTypes),
   subscription: acl(actions.viewSubscription)(subscription),
   subscriptions: acl(actions.viewSubscriptions)(subscriptions),
+  subscriptionsCount: acl(actions.viewSubscriptions)(subscriptionsCount),
 
   work: acl(actions.manageWorker)(work),
   signPaymentProviderForCredentialRegistration: acl(

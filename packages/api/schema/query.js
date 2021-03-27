@@ -306,6 +306,11 @@ export default [
       quotation(quotationId: ID!): Quotation
 
       """
+      Returns total number of subscriptions
+      """
+      subscriptionsCount: Int!
+
+      """
       Get all subscriptions
       """
       subscriptions(limit: Int = 10, offset: Int = 0): [Subscription!]!
