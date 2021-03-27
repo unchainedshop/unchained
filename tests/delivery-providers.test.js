@@ -3,23 +3,27 @@ import {
   createLoggedInGraphqlFetch,
   createAnonymousGraphqlFetch,
 } from './helpers';
-import { ADMIN_TOKEN } from './seeds/users';
+import { ADMIN_TOKEN, USER_TOKEN } from './seeds/users';
 import { SimpleDeliveryProvider } from './seeds/deliveries';
 
 let connection;
 let graphqlFetch;
+let graphqlFetchAsAnonymousUser;
+let graphqlFetchAsNormalUser;
 
 describe('DeliveryProviders', () => {
   beforeAll(async () => {
     [, connection] = await setupDatabase();
     graphqlFetch = await createLoggedInGraphqlFetch(ADMIN_TOKEN);
+    graphqlFetchAsNormalUser = await createLoggedInGraphqlFetch(USER_TOKEN);
+    graphqlFetchAsAnonymousUser = await createAnonymousGraphqlFetch();
   });
 
   afterAll(async () => {
     await connection.close();
   });
 
-  describe('Query.deliveryProviders for loggedin user should', () => {
+  describe('Query.deliveryProviders for admin user should', () => {
     it('return array of all deliveryProviders when type is not given', async () => {
       const {
         data: { deliveryProviders },
@@ -71,6 +75,66 @@ describe('DeliveryProviders', () => {
         },
       });
       expect(deliveryProviders.length).toEqual(2);
+    });
+  });
+
+  describe('Query.deliveryProvidersCount for Admin user should', () => {
+    it('return total number of deliveryProviders when type is not given', async () => {
+      const {
+        data: { deliveryProvidersCount },
+      } = await graphqlFetch({
+        query: /* GraphQL */ `
+          query {
+            deliveryProvidersCount
+          }
+        `,
+        variables: {},
+      });
+      expect(deliveryProvidersCount).toEqual(3);
+    });
+
+    it('return total number of deliveryProviders based on the given type', async () => {
+      const {
+        data: { deliveryProvidersCount },
+      } = await graphqlFetch({
+        query: /* GraphQL */ `
+          query DeliveryProvidersCount($type: DeliveryProviderType) {
+            deliveryProvidersCount(type: $type)
+          }
+        `,
+        variables: {
+          type: 'SHIPPING',
+        },
+      });
+      expect(deliveryProvidersCount).toEqual(2);
+    });
+  });
+
+  describe('Query.deliveryProvidersCount for normal user should', () => {
+    it('return total number of deliveryProviders when type is not given', async () => {
+      const { errors } = await graphqlFetchAsNormalUser({
+        query: /* GraphQL */ `
+          query {
+            deliveryProvidersCount
+          }
+        `,
+        variables: {},
+      });
+      expect(errors[0]?.extensions?.code).toBe('NoPermissionError');
+    });
+  });
+
+  describe('Query.deliveryProvidersCount for Anonymous user should', () => {
+    it('return total number of deliveryProviders when type is not given', async () => {
+      const { errors } = await graphqlFetchAsAnonymousUser({
+        query: /* GraphQL */ `
+          query {
+            deliveryProvidersCount
+          }
+        `,
+        variables: {},
+      });
+      expect(errors[0]?.extensions?.code).toBe('NoPermissionError');
     });
   });
 
