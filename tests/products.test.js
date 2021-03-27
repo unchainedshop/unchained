@@ -1231,6 +1231,155 @@ describe('Products', () => {
     });
   });
 
+  describe('query.productsCount for admin user should', () => {
+    it('return total number of products when no argument is passed', async () => {
+      const {
+        data: { productsCount },
+      } = await graphqlFetchAsAdmin({
+        query: /* GraphQL */ `
+          query productsCount(
+            $tags: [String!]
+            $slugs: [String!]
+            $includeDrafts: Boolean
+          ) {
+            productsCount(
+              tags: $tags
+              slugs: $slugs
+              includeDrafts: $includeDrafts
+            )
+          }
+        `,
+        variables: {},
+      });
+
+      expect(productsCount).toEqual(4);
+    });
+
+    it('return only total number of products that include a slug', async () => {
+      const {
+        data: { productsCount },
+      } = await graphqlFetchAsAdmin({
+        query: /* GraphQL */ `
+          query productsCount(
+            $tags: [String!]
+            $slugs: [String!]
+            $includeDrafts: Boolean
+          ) {
+            productsCount(
+              tags: $tags
+              slugs: $slugs
+              includeDrafts: $includeDrafts
+            )
+          }
+        `,
+        variables: {
+          slugs: ['old-slug-de'],
+        },
+      });
+
+      expect(productsCount).toEqual(3);
+    });
+
+    it('return only total number of products that include the tags specified', async () => {
+      const {
+        data: { productsCount },
+      } = await graphqlFetchAsAdmin({
+        query: /* GraphQL */ `
+          query productsCount(
+            $tags: [String!]
+            $slugs: [String!]
+            $includeDrafts: Boolean
+          ) {
+            productsCount(
+              tags: $tags
+              slugs: $slugs
+              includeDrafts: $includeDrafts
+            )
+          }
+        `,
+        variables: {
+          tags: ['tag-1'],
+        },
+      });
+
+      expect(productsCount).toEqual(3);
+    });
+
+    it('include draft products if includeDrafts argument is passed as true', async () => {
+      const {
+        data: { productsCount },
+      } = await graphqlFetchAsAdmin({
+        query: /* GraphQL */ `
+          query productsCount(
+            $tags: [String!]
+            $slugs: [String!]
+            $includeDrafts: Boolean
+          ) {
+            productsCount(
+              tags: $tags
+              slugs: $slugs
+              includeDrafts: $includeDrafts
+            )
+          }
+        `,
+        variables: {
+          includeDrafts: true,
+        },
+      });
+
+      expect(productsCount).toEqual(5);
+    });
+  });
+
+  describe('query.productsCount for anonymous user should', () => {
+    it('return total number of products when no argument is passed', async () => {
+      const {
+        data: { productsCount },
+      } = await graphqlFetchAsAnonymousUser({
+        query: /* GraphQL */ `
+          query productsCount(
+            $tags: [String!]
+            $slugs: [String!]
+            $includeDrafts: Boolean
+          ) {
+            productsCount(
+              tags: $tags
+              slugs: $slugs
+              includeDrafts: $includeDrafts
+            )
+          }
+        `,
+        variables: {},
+      });
+
+      expect(productsCount).toEqual(4);
+    });
+  });
+  describe('query.productsCount for normal user should', () => {
+    it('return total number of products when no argument is passed', async () => {
+      const {
+        data: { productsCount },
+      } = await graphqlFetchAsNormalUser({
+        query: /* GraphQL */ `
+          query productsCount(
+            $tags: [String!]
+            $slugs: [String!]
+            $includeDrafts: Boolean
+          ) {
+            productsCount(
+              tags: $tags
+              slugs: $slugs
+              includeDrafts: $includeDrafts
+            )
+          }
+        `,
+        variables: {},
+      });
+
+      expect(productsCount).toEqual(4);
+    });
+  });
+
   describe('query.products for normal user should', () => {
     it('return list of products when no argument is passed', async () => {
       const {
