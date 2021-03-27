@@ -178,6 +178,11 @@ export default [
       ): [WarehousingInterface!]!
 
       """
+      Returns total number of payment providers, optionally filtered by type
+      """
+      paymentProvidersCount(type: PaymentProviderType): Int!
+
+      """
       Get all payment providers, optionally filtered by type
       """
       paymentProviders(type: PaymentProviderType): [PaymentProvider!]!

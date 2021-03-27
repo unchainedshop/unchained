@@ -279,3 +279,11 @@ PaymentProviders.findSupported = ({ order }, ...options) => {
   ).filter((paymentProvider) => paymentProvider.isActive(order));
   return settings.filterSupportedProviders({ providers, order });
 };
+
+PaymentProviders.count = async ({ type } = {}) => {
+  const count = await PaymentProviders.rawCollection().countDocuments({
+    ...(type ? { type } : {}),
+    deleted: null,
+  });
+  return count;
+};

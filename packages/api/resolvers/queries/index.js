@@ -60,6 +60,7 @@ import productsCount from './productsCount';
 import quotationsCount from './quotationsCount';
 import subscriptionsCount from './subscriptionsCount';
 import warehousingProvidersCount from './warehousingProvidersCount';
+import paymentProvidersCount from './paymentProvidersCount';
 
 export default {
   me,
@@ -80,6 +81,9 @@ export default {
   currencies: acl(actions.viewCurrencies)(currencies),
   currency: acl(actions.viewCurrency)(currency),
   paymentProviders: acl(actions.viewPaymentProviders)(paymentProviders),
+  paymentProvidersCount: acl(actions.viewPaymentProviders)(
+    paymentProvidersCount
+  ),
   paymentProvider: acl(actions.viewPaymentProvider)(paymentProvider),
   paymentInterfaces: acl(actions.viewPaymentInterfaces)(paymentInterfaces),
   deliveryProvidersCount: acl(actions.viewDeliveryProviders)(
