@@ -118,7 +118,7 @@ export default [
     }
 
     input UpdateProductCommercePricingInput {
-      amount: Int!
+      amount: BigInt!
       maxQuantity: Int
       isTaxable: Boolean
       isNetPrice: Boolean
