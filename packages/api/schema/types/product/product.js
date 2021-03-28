@@ -124,7 +124,7 @@ export default [
       isNetPrice: Boolean!
       country: Country!
       currency: Currency!
-      amount: Int!
+      amount: BigInt!
       maxQuantity: Int
     }
   `,
