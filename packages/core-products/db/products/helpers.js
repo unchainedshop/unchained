@@ -222,6 +222,7 @@ Products.createProduct = (
 };
 
 Products.updateProduct = ({ productId, type, ...product }) => {
+  console.log(JSON.stringify(product));
   const modifier = {
     $set: {
       ...product,

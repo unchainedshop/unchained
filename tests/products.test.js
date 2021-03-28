@@ -235,9 +235,8 @@ describe('Products', () => {
 
   describe('Mutation.updateProduct should', () => {
     it('update successfuly when passed valid product ID ', async () => {
-      const { data: { updateProduct } = {}, errors } =
-        await graphqlFetchAsAdmin({
-          query: /* GraphQL */ `
+      const { data: { updateProduct } = {} } = await graphqlFetchAsAdmin({
+        query: /* GraphQL */ `
           mutation UpdateProduct(
             $productId: ID!
             $product: UpdateProductInput!
@@ -248,17 +247,17 @@ describe('Products', () => {
               tags
             }
           `,
-          variables: {
-            productId: SimpleProduct._id,
-            product: {
-              sequence: 1,
-              tags: ['tag-1', 'tag-2', 'highlight', 'update-tag'],
-              meta: {
-                updated: true,
-              },
+        variables: {
+          productId: SimpleProduct._id,
+          product: {
+            sequence: 1,
+            tags: ['tag-1', 'tag-2', 'highlight', 'update-tag'],
+            meta: {
+              updated: true,
             },
           },
-        });
+        },
+      });
 
       expect(updateProduct).toMatchObject({
         _id: 'simpleproduct',
