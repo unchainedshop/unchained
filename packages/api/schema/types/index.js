@@ -1,3 +1,4 @@
+import { BigInt } from 'graphql-scalars';
 import address from './address';
 import assortment from './assortment';
 import color from './color';
