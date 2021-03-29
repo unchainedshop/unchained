@@ -10,9 +10,11 @@ export default async function checkoutCart(
   log('mutation checkoutCart', { orderId, userId });
   const cart = await getCart({ orderId, user, countryContext });
   try {
-    return cart.checkout(transactionContext, {
+    const order = cart.checkout(transactionContext, {
       localeContext,
     });
+    await getCart({ user, countryContext });
+    return order;
   } catch (error) {
     log(error.message, { userId, orderId: cart._id, level: 'error' });
     throw new OrderCheckoutError({
