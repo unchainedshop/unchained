@@ -183,16 +183,29 @@ describe('Auth for anonymous users', () => {
   describe('Mutation.resetPassword', () => {
     beforeAll(async () => {
       const Users = db.collection('users');
-      await Users.findOrInsertOne({
+      const userCopy = {
         ...User,
-        _id: 'userthatforgetspasswords',
-        emails: [
-          {
-            address: 'userthatforgetspasswords@unchained.local',
-            verified: true,
+        username: `${User.username}${Math.random()}`,
+      };
+      delete userCopy._id;
+      await Users.findOneAndUpdate(
+        { _id: 'userthatforgetspasswords' },
+        {
+          $setOnInsert: {
+            ...userCopy,
+            emails: [
+              {
+                address: 'userthatforgetspasswords@unchained.local',
+                verified: true,
+              },
+            ],
           },
-        ],
-      });
+        },
+        {
+          returnOriginal: false,
+          upsert: true,
+        },
+      );
     });
 
     it('create a reset token', async () => {

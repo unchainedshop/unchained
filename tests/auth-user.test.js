@@ -126,9 +126,11 @@ describe('Auth for logged in users', () => {
   describe('Mutation.verifyEmail', () => {
     beforeAll(async () => {
       const Users = db.collection('users');
-      const userCopy = User;
+      const userCopy = {
+        ...User,
+        username: `${User.username}${Math.random()}`,
+      };
       delete userCopy._id;
-      userCopy.username = `${userCopy.username}${Math.random()}`;
       await Users.findOneAndUpdate(
         { _id: 'userthatmustverifyemail' },
         {
