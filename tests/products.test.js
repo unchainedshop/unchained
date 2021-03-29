@@ -7,7 +7,10 @@ import { ADMIN_TOKEN, USER_TOKEN } from './seeds/users';
 import {
   PlanProduct,
   SimpleProduct,
+  ProxySimpleProduct1,
   UnpublishedProduct,
+  ProxyProduct,
+  ProxyPlanProduct1,
 } from './seeds/products';
 
 let connection;
@@ -1068,7 +1071,7 @@ describe('Products', () => {
         variables: {},
       });
 
-      expect(products.length).toEqual(4);
+      expect(products.length).toEqual(10);
     });
 
     it('return only list of products that include a slug', async () => {
@@ -1224,7 +1227,7 @@ describe('Products', () => {
         },
       });
 
-      expect(products.length).toEqual(5);
+      expect(products.length).toEqual(10);
     });
   });
 
@@ -1255,7 +1258,7 @@ describe('Products', () => {
         variables: {},
       });
 
-      expect(products.length).toEqual(4);
+      expect(products.length).toEqual(10);
     });
 
     it('return only list of products that include a slug', async () => {
@@ -1469,7 +1472,7 @@ describe('Products', () => {
         variables: {},
       });
 
-      expect(products.length).toEqual(4);
+      expect(products.length).toEqual(10);
     });
 
     it('return only list of products that include a slug', async () => {
@@ -1653,6 +1656,386 @@ describe('Products', () => {
       });
 
       expect(errors).toEqual(undefined);
+    });
+  });
+
+  describe('query.products.leveleCatalogPrice should', () => {
+    it('return catalog price list of a SIMPLE_PRODUCT product type  ', async () => {
+      const {
+        data: { product = [] },
+      } = await graphqlFetchAsAdmin({
+        query: /* GraphQL */ `
+          query product($productId: ID) {
+            product(productId: $productId) {
+              _id
+              ... on SimpleProduct {
+                catalogPrice {
+                  _id
+                }
+                leveledCatalogPrices {
+                  minQuantity
+                  maxQuantity
+                  price {
+                    _id
+                    isTaxable
+                    isNetPrice
+                    amount
+                    currency
+                  }
+                }
+              }
+            }
+          }
+        `,
+        variables: {
+          productId: ProxySimpleProduct1._id,
+        },
+      });
+      expect(product.leveledCatalogPrices?.length).toEqual(3);
+    });
+
+    it('return catalog price list of a for PLAN_PRODUCT product type', async () => {
+      const {
+        data: { product = [] },
+      } = await graphqlFetchAsAdmin({
+        query: /* GraphQL */ `
+          query product($productId: ID) {
+            product(productId: $productId) {
+              _id
+              ... on PlanProduct {
+                catalogPrice {
+                  _id
+                }
+                leveledCatalogPrices {
+                  minQuantity
+                  maxQuantity
+                  price {
+                    _id
+                    isTaxable
+                    isNetPrice
+                    amount
+                    currency
+                  }
+                }
+              }
+            }
+          }
+        `,
+        variables: {
+          productId: ProxyPlanProduct1._id,
+        },
+      });
+      expect(product.leveledCatalogPrices?.length).toEqual(3);
+    });
+  });
+
+  describe('query.products.simulatePriceRange should', () => {
+    it('return minimum and maximum simulated price range of a configurable product', async () => {
+      const {
+        data: { product = {} },
+      } = await graphqlFetchAsAdmin({
+        query: /* GraphQL */ `
+          query SimulatedPriceRange($productId: ID!) {
+            product(productId: $productId) {
+              _id
+              status
+              ... on ConfigurableProduct {
+                simulatedPriceRange {
+                  _id
+                  minPrice {
+                    _id
+                    isTaxable
+                    isNetPrice
+                    amount
+                    currency
+                  }
+                  maxPrice {
+                    _id
+                    isTaxable
+                    isNetPrice
+                    amount
+                    currency
+                  }
+                }
+              }
+            }
+          }
+        `,
+        variables: {
+          productId: ProxyProduct._id,
+        },
+      });
+      expect(product.simulatedPriceRange).toMatchObject({
+        minPrice: {
+          isTaxable: true,
+          isNetPrice: false,
+          amount: 500000,
+          currency: 'CHF',
+        },
+        maxPrice: {
+          isTaxable: true,
+          isNetPrice: false,
+          amount: 30000000,
+          currency: 'CHF',
+        },
+      });
+    });
+
+    it('return minimum and maximum simulated price range of a configurable product based on quantity argument', async () => {
+      const {
+        data: { product = {} },
+      } = await graphqlFetchAsAdmin({
+        query: /* GraphQL */ `
+          query SimulatedPriceRange($productId: ID!) {
+            product(productId: $productId) {
+              _id
+              status
+              ... on ConfigurableProduct {
+                simulatedPriceRange(quantity: 5) {
+                  _id
+                  minPrice {
+                    _id
+                    isTaxable
+                    isNetPrice
+                    amount
+                    currency
+                  }
+                  maxPrice {
+                    _id
+                    isTaxable
+                    isNetPrice
+                    amount
+                    currency
+                  }
+                }
+              }
+            }
+          }
+        `,
+        variables: {
+          productId: ProxyProduct._id,
+        },
+      });
+      expect(product.simulatedPriceRange).toMatchObject({
+        minPrice: {
+          isTaxable: true,
+          isNetPrice: false,
+          amount: 400000,
+          currency: 'CHF',
+        },
+        maxPrice: {
+          isTaxable: true,
+          isNetPrice: false,
+          amount: 75000000,
+          currency: 'CHF',
+        },
+      });
+    });
+
+    it('return minimum and maximum simulated price range of a configurable product based on vector argument', async () => {
+      const {
+        data: { product = {} },
+      } = await graphqlFetchAsAdmin({
+        query: /* GraphQL */ `
+          query SimulatedPriceRange($productId: ID!) {
+            product(productId: $productId) {
+              _id
+              status
+              ... on ConfigurableProduct {
+                simulatedPriceRange(vectors: [{ key: "COLOR", value: "red" }]) {
+                  _id
+                  minPrice {
+                    _id
+                    isTaxable
+                    isNetPrice
+                    amount
+                    currency
+                  }
+                  maxPrice {
+                    _id
+                    isTaxable
+                    isNetPrice
+                    amount
+                    currency
+                  }
+                }
+              }
+            }
+          }
+        `,
+        variables: {
+          productId: ProxyProduct._id,
+        },
+      });
+      expect(product.simulatedPriceRange).toMatchObject({
+        minPrice: {
+          isTaxable: true,
+          isNetPrice: false,
+          amount: 500000,
+          currency: 'CHF',
+        },
+        maxPrice: {
+          isTaxable: true,
+          isNetPrice: false,
+          amount: 1500000,
+          currency: 'CHF',
+        },
+      });
+    });
+  });
+
+  describe('query.products.catalogPriceRange should', () => {
+    it('return minimum and maximum catalog price range of a configurable product', async () => {
+      const {
+        data: { product = {} },
+      } = await graphqlFetchAsAdmin({
+        query: /* GraphQL */ `
+          query SimulatedPriceRange($productId: ID!) {
+            product(productId: $productId) {
+              _id
+              status
+              ... on ConfigurableProduct {
+                catalogPriceRange {
+                  _id
+                  minPrice {
+                    _id
+                    isTaxable
+                    isNetPrice
+                    amount
+                    currency
+                  }
+                  maxPrice {
+                    _id
+                    isTaxable
+                    isNetPrice
+                    amount
+                    currency
+                  }
+                }
+              }
+            }
+          }
+        `,
+        variables: {
+          productId: ProxyProduct._id,
+        },
+      });
+      expect(product.catalogPriceRange).toMatchObject({
+        minPrice: {
+          isTaxable: true,
+          isNetPrice: false,
+          amount: 500000,
+          currency: 'CHF',
+        },
+        maxPrice: {
+          isTaxable: true,
+          isNetPrice: false,
+          amount: 30000000,
+          currency: 'CHF',
+        },
+      });
+    });
+
+    it('return minimum and maximum catalog price range of a configurable product based on quantity argument', async () => {
+      const {
+        data: { product = {} },
+      } = await graphqlFetchAsAdmin({
+        query: /* GraphQL */ `
+          query SimulatedPriceRange($productId: ID!) {
+            product(productId: $productId) {
+              _id
+              status
+              ... on ConfigurableProduct {
+                catalogPriceRange(quantity: 5) {
+                  _id
+                  minPrice {
+                    _id
+                    isTaxable
+                    isNetPrice
+                    amount
+                    currency
+                  }
+                  maxPrice {
+                    _id
+                    isTaxable
+                    isNetPrice
+                    amount
+                    currency
+                  }
+                }
+              }
+            }
+          }
+        `,
+        variables: {
+          productId: ProxyProduct._id,
+        },
+      });
+      expect(product.catalogPriceRange).toMatchObject({
+        minPrice: {
+          isTaxable: true,
+          isNetPrice: false,
+          amount: 400000,
+          currency: 'CHF',
+        },
+        maxPrice: {
+          isTaxable: true,
+          isNetPrice: false,
+          amount: 75000000,
+          currency: 'CHF',
+        },
+      });
+    });
+
+    it('return minimum and maximum catalog price range of a configurable product based on vector argument', async () => {
+      const {
+        data: { product = {} },
+      } = await graphqlFetchAsAdmin({
+        query: /* GraphQL */ `
+          query SimulatedPriceRange($productId: ID!) {
+            product(productId: $productId) {
+              _id
+              status
+              ... on ConfigurableProduct {
+                catalogPriceRange(vectors: [{ key: "COLOR", value: "red" }]) {
+                  _id
+                  minPrice {
+                    _id
+                    isTaxable
+                    isNetPrice
+                    amount
+                    currency
+                  }
+                  maxPrice {
+                    _id
+                    isTaxable
+                    isNetPrice
+                    amount
+                    currency
+                  }
+                }
+              }
+            }
+          }
+        `,
+        variables: {
+          productId: ProxyProduct._id,
+        },
+      });
+      expect(product.catalogPriceRange).toMatchObject({
+        minPrice: {
+          isTaxable: true,
+          isNetPrice: false,
+          amount: 500000,
+          currency: 'CHF',
+        },
+        maxPrice: {
+          isTaxable: true,
+          isNetPrice: false,
+          amount: 1500000,
+          currency: 'CHF',
+        },
+      });
     });
   });
 });

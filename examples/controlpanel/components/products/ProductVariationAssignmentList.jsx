@@ -192,7 +192,7 @@ export default compose(
     assignments.forEach((assignment) => {
       const selector = {};
       assignment.vectors.forEach((vector) => {
-        selector[vector.variation.key] = vector.option.value;
+        selector[vector?.variation?.key] = vector?.option?.value;
       });
       allAssignedRows[Object.values(selector).join('')] = assignment.product;
     });

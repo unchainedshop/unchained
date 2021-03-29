@@ -297,6 +297,283 @@ export const ProductVariations = [
   },
 ];
 
+export const ProxySimpleProduct1 = {
+  _id: 'proxy-simple-prodcut-1',
+  created: new Date('2021-02-24T14:03:28.905Z'),
+  type: 'SIMPLE_PRODUCT',
+  status: 'ACTIVE',
+  sequence: 11,
+  authorId: 'admin',
+  slugs: ['simple-product-1'],
+  updated: new Date('2021-02-25T17:54:42.559Z'),
+  published: new Date('2021-02-24T14:03:32.291Z'),
+  commerce: {
+    pricing: [
+      {
+        amount: 2000000,
+        maxQuantity: 0,
+        isTaxable: true,
+        isNetPrice: false,
+        currencyCode: 'CHF',
+        countryCode: 'CH',
+      },
+      {
+        amount: 1500000,
+        maxQuantity: 7,
+        isTaxable: true,
+        currencyCode: 'CHF',
+        countryCode: 'CH',
+      },
+      {
+        amount: 1000000,
+        maxQuantity: 10,
+        isTaxable: true,
+        currencyCode: 'CHF',
+        countryCode: 'CH',
+      },
+    ],
+  },
+};
+
+export const ProxySimpleProduct2 = {
+  _id: 'proxy-simple-product-2',
+  created: new Date('2021-02-25T17:51:16.359Z'),
+  type: 'SIMPLE_PRODUCT',
+  status: 'ACTIVE',
+  sequence: 12,
+  authorId: 'admin',
+  slugs: ['simple-product-2'],
+  updated: new Date('2021-02-25T20:32:26.086Z'),
+  commerce: {
+    pricing: [
+      {
+        amount: 500000,
+        maxQuantity: 1,
+        isTaxable: true,
+        isNetPrice: false,
+        currencyCode: 'CHF',
+        countryCode: 'CH',
+      },
+      {
+        amount: 400000,
+        maxQuantity: 5,
+        isTaxable: true,
+        isNetPrice: false,
+        currencyCode: 'CHF',
+        countryCode: 'CH',
+      },
+      {
+        amount: 300000,
+        maxQuantity: 10,
+        isTaxable: true,
+        isNetPrice: false,
+        currencyCode: 'CHF',
+        countryCode: 'CH',
+      },
+    ],
+  },
+  published: new Date('2021-02-25T17:51:37.677Z'),
+};
+
+export const ProxyPlanProduct1 = {
+  _id: 'CbBSxR6wcAbBtubaB',
+  created: new Date('2021-02-25T21:18:02.851Z'),
+  type: 'PLAN_PRODUCT',
+  status: 'ACTIVE',
+  sequence: 14,
+  authorId: 'admin',
+  slugs: ['plan-product-1'],
+  updated: new Date('2021-02-25T21:19:17.247Z'),
+  published: new Date('2021-02-25T21:18:06.969Z'),
+  commerce: {
+    pricing: [
+      {
+        amount: 30000000,
+        maxQuantity: 1,
+        isTaxable: true,
+        isNetPrice: false,
+        currencyCode: 'CHF',
+        countryCode: 'CH',
+      },
+      {
+        amount: 20000000,
+        maxQuantity: 2,
+        isTaxable: true,
+        isNetPrice: false,
+        currencyCode: 'CHF',
+        countryCode: 'CH',
+      },
+      {
+        amount: 10000000,
+        maxQuantity: 3,
+        isTaxable: true,
+        currencyCode: 'CHF',
+        countryCode: 'CH',
+      },
+    ],
+  },
+};
+
+export const ProxyPlanProduct2 = {
+  _id: 'jttYMzKFkqSfimsFi',
+  created: new Date('2021-02-25T21:19:45.376Z'),
+  type: 'PLAN_PRODUCT',
+  status: 'ACTIVE',
+  sequence: 15,
+  authorId: 'admin',
+  slugs: ['plan-product-2'],
+  updated: new Date('2021-02-25T21:20:41.210Z'),
+  published: new Date('2021-02-25T21:19:50.870Z'),
+  commerce: {
+    pricing: [
+      {
+        amount: 10000000,
+        maxQuantity: 1,
+        isTaxable: true,
+        isNetPrice: false,
+        currencyCode: 'CHF',
+        countryCode: 'CH',
+      },
+      {
+        amount: 75000000,
+        maxQuantity: 5,
+        isTaxable: true,
+        currencyCode: 'CHF',
+        countryCode: 'CH',
+      },
+      {
+        amount: 5000000,
+        maxQuantity: 10,
+        isTaxable: true,
+        currencyCode: 'CHF',
+        countryCode: 'CH',
+      },
+    ],
+  },
+};
+
+export const ProxyPlanProduct3 = {
+  _id: 'SLQkYqmA8SttWXwsz',
+  created: new Date('2021-02-25T21:21:06.691Z'),
+  type: 'PLAN_PRODUCT',
+  status: 'ACTIVE',
+  sequence: 16,
+  authorId: 'admin',
+  slugs: ['plan-product-3'],
+  updated: new Date('2021-02-25T21:22:00.501Z'),
+  published: new Date('2021-02-25T21:21:09.956Z'),
+  commerce: {
+    pricing: [
+      {
+        amount: 1000000,
+        maxQuantity: 1,
+        isTaxable: true,
+        isNetPrice: false,
+        currencyCode: 'CHF',
+        countryCode: 'CH',
+      },
+      {
+        amount: 750000,
+        maxQuantity: 5,
+        isTaxable: true,
+        currencyCode: 'CHF',
+        countryCode: 'CH',
+      },
+      {
+        amount: 5000000,
+        maxQuantity: 10,
+        isTaxable: true,
+        currencyCode: 'CHF',
+        countryCode: 'CH',
+      },
+    ],
+  },
+};
+
+export const ProxySimpleProduct3 = {
+  _id: 'E8Y58rvx8HX2bTYNN',
+  created: new Date('2021-02-25T17:55:03.018Z'),
+  type: 'SIMPLE_PRODUCT',
+  status: 'ACTIVE',
+  sequence: 13,
+  authorId: 'admin',
+  slugs: ['simple-product-3'],
+  updated: new Date('2021-02-25T20:33:07.993Z'),
+  published: new Date('2021-02-25T17:55:07.303Z'),
+  commerce: {
+    pricing: [
+      {
+        amount: 10000000,
+        maxQuantity: 1,
+        isTaxable: true,
+        isNetPrice: false,
+        currencyCode: 'CHF',
+        countryCode: 'CH',
+      },
+      {
+        amount: 5000000,
+        maxQuantity: 5,
+        isTaxable: true,
+        isNetPrice: false,
+        currencyCode: 'CHF',
+        countryCode: 'CH',
+      },
+    ],
+  },
+};
+
+export const ProxyProduct = {
+  _id: 'proxy-product',
+  created: new Date('2021-02-24T14:02:42.208Z'),
+  type: 'CONFIGURABLE_PRODUCT',
+  status: 'ACTIVE',
+  sequence: 10,
+  authorId: 'admin',
+  slugs: ['configurable-product'],
+  updated: new Date('2021-02-25T20:33:23.191Z'),
+  published: new Date('2021-02-24T14:02:51.039Z'),
+  proxy: {
+    assignments: [
+      {
+        vector: {
+          COLOR: 'red',
+        },
+        productId: ProxySimpleProduct1._id,
+      },
+      {
+        vector: {
+          COLOR: 'red',
+        },
+        productId: ProxySimpleProduct2._id,
+      },
+      {
+        vector: {
+          COLOR: 'blue',
+        },
+        productId: ProxySimpleProduct3._id,
+      },
+      {
+        vector: {
+          COLOR: 'blue',
+        },
+        productId: ProxyPlanProduct1._id,
+      },
+      {
+        vector: {
+          COLOR: 'blue',
+        },
+        productId: ProxyPlanProduct2._id,
+      },
+      {
+        vector: {
+          COLOR: 'red',
+        },
+        productId: ProxyPlanProduct3._id,
+      },
+    ],
+  },
+};
+
 export default async function seedProducts(db) {
   await db
     .collection('products')
@@ -305,6 +582,13 @@ export default async function seedProducts(db) {
       UnpublishedProduct,
       SimpleProductBundle,
       ConfigurableProduct,
+      ProxySimpleProduct1,
+      ProxySimpleProduct2,
+      ProxySimpleProduct3,
+      ProxyPlanProduct1,
+      ProxyPlanProduct2,
+      ProxyPlanProduct3,
+      ProxyProduct,
     ]);
   await db.collection('product_reviews').findOrInsertOne(SimpleProductReview);
   await db.collection('product_texts').findOrInsertOne(GermanProductText);

@@ -60,12 +60,36 @@ const getPriceRange = (prices) => {
 
   return {
     minPrice: {
+      _id: crypto
+        .createHash('sha256')
+        .update(
+          [
+            this._id,
+            min?.isTaxable,
+            min?.isNetPrice,
+            min?.amount,
+            min?.currencyCode,
+          ].join('')
+        )
+        .digest('hex'),
       isTaxable: !!min?.isTaxable,
       isNetPrice: !!min?.isNetPrice,
       amount: Math.round(min?.amount),
       currencyCode: min?.currencyCode,
     },
     maxPrice: {
+      _id: crypto
+        .createHash('sha256')
+        .update(
+          [
+            this._id,
+            max?.isTaxable,
+            max?.isNetPrice,
+            max?.amount,
+            max?.currencyCode,
+          ].join('')
+        )
+        .digest('hex'),
       isTaxable: !!max?.isTaxable,
       isNetPrice: !!max?.isNetPrice,
       amount: Math.round(max?.amount),
@@ -697,6 +721,7 @@ Products.helpers({
         .update(
           [
             this._id,
+            Math.random(),
             minPrice.amount,
             minPrice.currency,
             maxPrice.amount,
@@ -747,6 +772,7 @@ Products.helpers({
         .update(
           [
             this._id,
+            Math.random(),
             minPrice.amount,
             minPrice.currency,
             maxPrice.amount,
@@ -780,6 +806,10 @@ Products.helpers({
         maxQuantity:
           i === 0 && priceLevel.maxQuantity > 0 ? priceLevel.maxQuantity : max,
         price: {
+          _id: crypto
+            .createHash('sha256')
+            .update([this._id, priceLevel.amount, currency].join(''))
+            .digest('hex'),
           isTaxable: !!priceLevel.isTaxable,
           isNetPrice: !!priceLevel.isNetPrice,
           amount: priceLevel.amount,
