@@ -126,16 +126,27 @@ describe('Auth for logged in users', () => {
   describe('Mutation.verifyEmail', () => {
     beforeAll(async () => {
       const Users = db.collection('users');
-      await Users.findOrInsertOne({
-        ...User,
-        _id: 'userthatmustverifyemail',
-        emails: [
-          {
-            address: 'userthatmustverifyemail@unchained.local',
-            verified: false,
+      const userCopy = User;
+      delete userCopy._id;
+      userCopy.username = `${userCopy.username}${Math.random()}`;
+      await Users.findOneAndUpdate(
+        { _id: 'userthatmustverifyemail' },
+        {
+          $setOnInsert: {
+            ...userCopy,
+            emails: [
+              {
+                address: 'userthatmustverifyemail@unchained.local',
+                verified: false,
+              },
+            ],
           },
-        ],
-      });
+        },
+        {
+          returnOriginal: false,
+          upsert: true,
+        },
+      );
     });
 
     it('create a verification token', async () => {
