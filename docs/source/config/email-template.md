@@ -24,8 +24,8 @@ first import `MessagingDirector` from `unchained:core-messaging`. for demonstrat
 import { MessagingDirector } from 'meteor/unchained:core-messaging';
 
 const template = `
-Hello {{quantity}} thank you for visiting unchained store {{date}} we hope you become part of our community member in the future :).`
-
+Hello, thank you for visiting unchained store {{date}} we hope you become part of our community member in the future :).
+Order number: {{orderNumber}}`
 ```
 
 what is left now is use this to ovewright any of the existing email template. in this case we will over `ACCOUNT_ACTION`.
@@ -35,10 +35,10 @@ next write the function that will combine this template with variables used in i
 Pro Tip: Messaging in unchained is not tied to E-Mails, the `type` that is return inside the config array is just a worker type and the input is just added to the work queue. So you could write your own "SMS_TO_BOSS" work type and call some Twilio API from there. You could even combine SMS_TO_BOSS wit the default e-mail and send the message via two channels.
 
 ```
-const generateorderConfirmationTemplate ({ name }) => {
-
+const generateorderConfirmationTemplate (context) => {
+  const orderNumber = context.order.orderNumber;
   const templateVariables = {
-    name,
+    orderNumber,
     date: new Date().toString()
   };
   const text = MessagingDirector.renderToText(template, templateVariables);
@@ -69,10 +69,8 @@ Meteor.startup(() => {
   ...
   MessagingDirector.configureTemplate(
     MessageTypes.ORDER_CONFIRMATION,
-    orderConfirmationTemplate: generateorderConfirmationTemplate({name: 'john doe'}),
+    generateorderConfirmationTemplate,
   );
 });
 
 ```
-
-Note the second parameter to `MessagingDirector.configureTemplate` accepts array of email configuration, this will enable you to send multiple email to for a certation trigger to multiple reciepents. one such use case might be you need a copy of order confirmation email sent out to your customers sent to you also.
