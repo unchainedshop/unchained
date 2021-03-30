@@ -55,10 +55,10 @@ class WorkerDirector {
   }
 
   static configureAutoscheduling(plugin, configuration) {
-    const { cronText } = configuration;
+    const { schedule } = configuration;
     this.autoSchedule[plugin.type] = configuration;
     log(
-      `${this.name} -> Configured ${plugin.type} ${plugin.key}@${plugin.version} (${plugin.label}) for Autorun at ${cronText}`
+      `${this.name} -> Configured ${plugin.type} ${plugin.key}@${plugin.version} (${plugin.label}) for Autorun at ${schedule}`
     );
   }
 

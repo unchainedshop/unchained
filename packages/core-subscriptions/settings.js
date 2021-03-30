@@ -1,16 +1,18 @@
-const everyHour = 'every 59 minutes';
+import later from 'later';
+
+const everyHourSchedule = later.parse.text('every 59 minutes');
 const emptyObject = () => {
   return {};
 };
 
 const settings = {
-  autoSchedulingCronText: null,
+  autoSchedulingSchedule: null,
   autoSchedulingInput: null,
   load({
-    autoSchedulingCronText = everyHour,
+    autoSchedulingSchedule = everyHourSchedule,
     autoSchedulingInput = emptyObject,
   } = {}) {
-    this.autoSchedulingCronText = autoSchedulingCronText;
+    this.autoSchedulingSchedule = autoSchedulingSchedule;
     this.autoSchedulingInput = autoSchedulingInput || emptyObject;
   },
 };

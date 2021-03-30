@@ -1,6 +1,12 @@
 import later from 'later';
 import BaseWorker from './base';
 
+const { NODE_ENV } = process.env;
+
+const defaultSchedule = later.parse.text(
+  NODE_ENV !== 'production' ? 'every 2 seconds' : 'every 30 seconds'
+);
+
 class IntervalWorker extends BaseWorker {
   static key = 'shop.unchained.worker.cron';
 
@@ -15,11 +21,11 @@ class IntervalWorker extends BaseWorker {
     WorkerDirector,
     workerId,
     batchCount = 0,
-    cronText = 'every 10 minutes',
+    schedule = defaultSchedule,
   }) {
     super({ WorkerDirector, workerId });
     this.batchCount = batchCount;
-    this.intervalDelay = later.parse.text(cronText);
+    this.intervalDelay = schedule;
   }
 
   start() {

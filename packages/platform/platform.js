@@ -45,11 +45,7 @@ export const startPlatform = async ({ modules, typeDefs, ...options } = {}) => {
   });
   if (emailInterceptionIsEnabled) interceptEmails(options);
   if (workQueueIsEnabled) {
-    const handlers = setupWorkqueue({
-      cronText:
-        NODE_ENV !== 'production' ? 'every 2 seconds' : 'every 30 seconds',
-      ...options,
-    });
+    const handlers = setupWorkqueue(options);
     handlers.forEach((handler) => queueWorkers.push(handler));
   }
 };

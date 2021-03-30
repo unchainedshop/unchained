@@ -12,9 +12,9 @@ export * from './db/subscriptions/schema';
 export default (options) => {
   // configure
   settings.load(options);
-  if (settings.autoSchedulingCronText) {
+  if (settings.autoSchedulingSchedule) {
     WorkerDirector.configureAutoscheduling(GenerateSubscriptionOrders, {
-      cronText: settings.autoSchedulingCronText,
+      schedule: settings.autoSchedulingSchedule,
       input: settings.autoSchedulingInput,
     });
   }

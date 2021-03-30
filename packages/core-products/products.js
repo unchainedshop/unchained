@@ -1,4 +1,3 @@
-// import { checkNpmVersions } from 'meteor/tmeasday:check-npm-versions';
 import runMigrations from './db/migrations';
 
 export * from './db/product-media';
