@@ -80,8 +80,7 @@ DeliveryProviders.helpers({
     if (!calculated) return null;
 
     const pricing = pricingDirector.resultSheet();
-    const amount = useNetPrice ? pricing.net() : pricing.gross();
-    const orderPrice = { amount, currency: pricing.currency };
+    const orderPrice = pricing.total(null, useNetPrice);
 
     return {
       _id: crypto

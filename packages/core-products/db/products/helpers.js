@@ -397,7 +397,16 @@ Products.helpers({
       ...mediaData,
     });
   },
-  addMedia({ rawFile, href, name, authorId, meta, tags = [], ...options }) {
+  addMedia({
+    rawFile,
+    href,
+    name,
+    authorId,
+    meta,
+    tags = [],
+    sortKey,
+    ...options
+  }) {
     const fileLoader = rawFile
       ? Media.insertWithRemoteFile({
           file: rawFile,
@@ -415,6 +424,7 @@ Products.helpers({
       tags,
       meta,
       authorId,
+      sortKey,
     });
   },
   getLocalizedTexts(locale) {
