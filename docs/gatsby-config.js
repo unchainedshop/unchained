@@ -37,6 +37,7 @@ module.exports = {
             'config/pricing',
             'config/product-pricing',
             'config/users',
+            'config/subscriptions',
             'config/settings',
           ],
           Deployment: ['deployment/amazon-documentdb', 'deployment/docker-dev'],

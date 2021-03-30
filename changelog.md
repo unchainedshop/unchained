@@ -1,5 +1,8 @@
-# vNext
+# vNEXT
 
+## Breaking changes
+- [core] Remove cron worker `unchained:core-worker/workers/cron`, use the interval worker instead
+- [core] `cronText` has been removed from `configureAutoscheduling` in favor of `schedule`, schedule has to be a later.js compliant schedule definition. If you want to reuse the custom cronText define schedule like `later.parse.text('every 5 mins');` Likewise `autoSchedulingCronText` has been removed from subscription settings and replaced with `autoSchedulingSchedule`
 - [schema] `Money` type has been completely removed and replace with `Price`.
   This change will affect the following types and any other type that has fields of this types
 

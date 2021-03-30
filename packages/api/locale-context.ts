@@ -57,6 +57,7 @@ const getLocaleContext = (req): UnchainedServerLocaleContext => {
     supportedLocaleStrings,
     systemLocale.code
   );
+
   const localeContext = resolveBestSupported(
     req.headers['accept-language'],
     supportedLocales

@@ -8,6 +8,7 @@ Package.describe({
 
 Npm.depends({
   hashids: '2.2.1',
+  later: '1.2.0',
 });
 
 Package.onUse((api) => {

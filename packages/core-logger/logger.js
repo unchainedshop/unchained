@@ -1,4 +1,3 @@
-// import { checkNpmVersions } from 'meteor/tmeasday:check-npm-versions';
 import LocalTransport from './local-transport';
 import configureSchema from './db/schema';
 import createLogger, { transports, format } from './createLogger';
