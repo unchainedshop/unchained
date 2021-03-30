@@ -1252,7 +1252,7 @@ describe('Products', () => {
         variables: {},
       });
 
-      expect(productsCount).toEqual(4);
+      expect(productsCount).toEqual(11);
     });
 
     it('return only total number of products that include a slug', async () => {
@@ -1327,7 +1327,7 @@ describe('Products', () => {
         },
       });
 
-      expect(productsCount).toEqual(5);
+      expect(productsCount).toEqual(12);
     });
   });
 
@@ -1352,7 +1352,7 @@ describe('Products', () => {
         variables: {},
       });
 
-      expect(productsCount).toEqual(4);
+      expect(productsCount).toEqual(11);
     });
   });
   describe('query.productsCount for normal user should', () => {
@@ -1376,7 +1376,7 @@ describe('Products', () => {
         variables: {},
       });
 
-      expect(productsCount).toEqual(4);
+      expect(productsCount).toEqual(11);
     });
   });
 
