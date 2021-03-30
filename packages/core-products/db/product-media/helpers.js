@@ -58,13 +58,13 @@ ProductMedia.getLocalizedTexts = (productMediaId, locale) =>
   findLocalizedText(ProductMediaTexts, { productMediaId }, locale);
 
 ProductMedia.createMedia = ({ productId, ...mediaData }) => {
-  const sortKey = ProductMedia.getNewSortKey(productId);
+  const sortKey = mediaData.sortKey || ProductMedia.getNewSortKey(productId);
   const productMediaId = ProductMedia.insert({
+    ...mediaData,
     tags: [],
     sortKey,
     productId,
     created: new Date(),
-    ...mediaData,
   });
   return ProductMedia.findOne({ _id: productMediaId });
 };

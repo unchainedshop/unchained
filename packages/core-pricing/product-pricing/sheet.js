@@ -64,7 +64,7 @@ class ProductPricingSheet extends PricingSheet {
   unitPrice({ useNetPrice = false } = {}) {
     const amount = useNetPrice ? this.net() : this.gross();
     return {
-      amount: amount / this.quantity,
+      amount: Math.round(amount / this.quantity),
       currency: this.currency,
     };
   }
@@ -85,7 +85,7 @@ class ProductPricingSheet extends PricingSheet {
         }
         return {
           discountId,
-          amount,
+          amount: Math.round(amount),
           currency: this.currency,
         };
       })

@@ -53,7 +53,7 @@ socket-stream-client@0.3.1
 tmeasday:check-npm-versions@0.3.2
 tracker@1.2.0
 typescript@4.1.2
-unchained:api@0.61.10
+unchained:api@0.61.12
 unchained:core@0.61.1
 unchained:core-accountsjs@0.61.2
 unchained:core-assortments@0.61.1
@@ -67,11 +67,11 @@ unchained:core-files@0.61.1
 unchained:core-filters@0.61.0
 unchained:core-languages@0.61.0
 unchained:core-logger@0.61.0
-unchained:core-messaging@0.61.0
+unchained:core-messaging@0.61.1
 unchained:core-orders@0.61.0
 unchained:core-payment@0.61.1
-unchained:core-pricing@0.61.2
-unchained:core-products@0.61.0
+unchained:core-pricing@0.61.3
+unchained:core-products@0.61.3
 unchained:core-quotations@0.61.0
 unchained:core-settings@0.61.0
 unchained:core-subscriptions@0.61.0
