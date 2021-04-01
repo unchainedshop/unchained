@@ -92,15 +92,15 @@ describe('Worker Module', () => {
     it('Work in the queue', async () => {
       const { data: { workQueue } = {} } = await graphqlFetchAsAdminUser({
         query: /* GraphQL */ `
-          query workQueue($endDate: Date) {
-            workQueue(endDate: $endDate, status: []) {
+          query workQueue($created: DateFilterInput) {
+            workQueue(created: $created, status: []) {
               _id
               type
             }
           }
         `,
         variables: {
-          endDate: new Date(),
+          created: { start: new Date(0), end: null },
         },
       });
       expect(workQueue.filter(({ type }) => type === 'EXTERNAL')).toHaveLength(
