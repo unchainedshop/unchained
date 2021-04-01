@@ -506,6 +506,7 @@ Filters.helpers({
     return {
       definition: this,
       examinedProducts: examinedProductIdSet.size,
+      productsCount: examinedProductIdSet.size,
       filteredProducts: filteredProductIdSet.size, // TODO: Implement
       isSelected: Object.prototype.hasOwnProperty.call(filterQuery, this.key),
       options: () => {

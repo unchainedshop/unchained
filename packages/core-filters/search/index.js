@@ -99,6 +99,11 @@ const searchProducts = async ({
         ...(await productSelector),
         _id: { $in: await totalProductIds },
       }).count(),
+    productsCount: async () =>
+      Products.find({
+        ...(await productSelector),
+        _id: { $in: await totalProductIds },
+      }).count(),
     filteredProducts: async () =>
       Products.find({
         ...(await productSelector),
@@ -143,6 +148,11 @@ const searchAssortments = async ({
 
   return {
     totalAssortments: async () =>
+      Assortments.find({
+        ...(await assortmentSelector),
+        _id: { $in: await totalAssortmentIds },
+      }).count(),
+    assortmentsCount: async () =>
       Assortments.find({
         ...(await assortmentSelector),
         _id: { $in: await totalAssortmentIds },
