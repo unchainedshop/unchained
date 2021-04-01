@@ -3,22 +3,19 @@ import { WorkerDirector } from 'meteor/unchained:core-worker';
 
 export default async function workQueue(
   root,
-  {
-    limit,
-    offset,
-    status = [],
-    selectTypes = [],
-    startDate,
-    endDate = new Date(),
-  },
+  { limit, offset, status = [], selectTypes = [], created },
   { userId }
 ) {
-  log(`query workQueue ${limit} ${offset} [${status.join(', ')}]`, { userId });
+  log(
+    `query workQueue ${limit} ${offset} [${status.join(', ')}] ${JSON.stringify(
+      created
+    )}`,
+    { userId }
+  );
   return WorkerDirector.workQueue({
     status,
     selectTypes,
-    startDate,
-    endDate,
+    created,
     skip: offset,
     limit,
   });

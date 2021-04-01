@@ -10,8 +10,8 @@ export default connectApollo(({ ...rest }) => {
   const [workStatusFilter, setWorkStatusFilter] = useState([]);
   const [workTypeFilter, setWorkTypeFilter] = useState([]);
   const [dateRange, setDateRange] = useState({
-    startDate: null,
-    endDate: new Date(),
+    start: new Date(0),
+    end: null,
   });
 
   const onFilterChange = ({ filterType, value }) => {
@@ -24,9 +24,9 @@ export default connectApollo(({ ...rest }) => {
 
   const onDateRangeChange = (date, value) => {
     if (date.toUpperCase() === 'START') {
-      setDateRange({ ...dateRange, startDate: value });
+      setDateRange({ ...dateRange, start: value });
     } else if (date.toUpperCase() === 'END') {
-      setDateRange({ ...dateRange, endDate: value });
+      setDateRange({ ...dateRange, end: value });
     }
   };
 
@@ -42,7 +42,7 @@ export default connectApollo(({ ...rest }) => {
           statusTypes={statusTypes}
           onFilterChange={onFilterChange}
           onDateRangeChange={onDateRangeChange}
-          {...dateRange}
+          created={dateRange}
         />
       </Container>
     </App>

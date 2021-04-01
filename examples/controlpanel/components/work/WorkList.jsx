@@ -15,8 +15,7 @@ const WorkList = ({
   selectTypes,
   loading,
   updateHasMore,
-  startDate,
-  endDate,
+  created,
   queryOptions,
   ...rest
 }) => {
@@ -69,7 +68,7 @@ const WorkList = ({
               showMonthDropdown
               showYearDropdown
               dropdownMode="select"
-              selected={startDate}
+              selected={created.start}
               showTimeInput
             />
           </Table.HeaderCell>
@@ -85,7 +84,7 @@ const WorkList = ({
               showMonthDropdown
               showYearDropdown
               dropdownMode="select"
-              selected={endDate}
+              selected={created.end}
               showTimeInput
             />
           </Table.HeaderCell>
@@ -133,16 +132,14 @@ export default compose(
         $limit: Int
         $status: [WorkStatus!]!
         $selectTypes: [WorkType!] = []
-        $startDate: Date
-        $endDate: Date
+        $created: DateFilterInput
       ) {
         workQueue(
           offset: $offset
           limit: $limit
           status: $status
           selectTypes: $selectTypes
-          startDate: $startDate
-          endDate: $endDate
+          created: $created
         ) {
           _id
           type

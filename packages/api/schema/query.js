@@ -291,8 +291,7 @@ export default [
         offset: Int = 0
         status: [WorkStatus] = [NEW]
         selectTypes: [WorkType!] = []
-        startDate: Date
-        endDate: Date
+        created: DateFilterInput
       ): [Work]
 
       """
