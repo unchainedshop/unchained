@@ -1,6 +1,12 @@
 import { systemLocale } from 'meteor/unchained:utils';
 import { Languages } from './collections';
 
+const buildFindSelector = ({ includeInactive = false }) => {
+  const selector = {};
+  if (!includeInactive) selector.isActive = true;
+  return selector;
+};
+
 Languages.helpers({
   isBase() {
     return this.isoCode === systemLocale.language;
@@ -29,19 +35,17 @@ Languages.removeLanguage = ({ languageId }) => {
   return Languages.remove({ _id: languageId });
 };
 
-Languages.findLanguages = ({ limit, offset, includeInactive }) => {
-  const selector = {};
-  if (!includeInactive) selector.isActive = true;
-  return Languages.find(selector, {
+Languages.findLanguages = ({ limit, offset, ...query }) => {
+  return Languages.find(buildFindSelector(query), {
     skip: offset,
     limit,
   }).fetch();
 };
 
-Languages.count = async ({ includeInactive }) => {
-  const selector = {};
-  if (!includeInactive) selector.isActive = true;
-  const count = await Languages.rawCollection().countDocuments(selector);
+Languages.count = async (query) => {
+  const count = await Languages.rawCollection().countDocuments(
+    buildFindSelector(query)
+  );
   return count;
 };
 

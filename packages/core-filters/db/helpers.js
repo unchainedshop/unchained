@@ -18,6 +18,12 @@ const zlib = require('zlib');
 
 const MAX_UNCOMPRESSED_FILTER_PRODUCTS = 1000;
 
+const buildFindSelector = ({ includeInactive = false }) => {
+  const selector = {};
+  if (!includeInactive) selector.isActive = true;
+  return selector;
+};
+
 Assortments.helpers({
   async searchProducts({
     query,
@@ -144,16 +150,17 @@ Filters.findFilter = ({ filterId }) => {
   return Filters.findOne({ _id: filterId });
 };
 
-Filters.findFilters = ({ limit, offset, includeInactive }) => {
-  const selector = {};
-  if (!includeInactive) selector.isActive = true;
-  return Filters.find(selector, { skip: offset, limit }).fetch();
+Filters.findFilters = ({ limit, offset, ...query }) => {
+  return Filters.find(buildFindSelector(query), {
+    skip: offset,
+    limit,
+  }).fetch();
 };
 
-Filters.count = async ({ includeInactive }) => {
-  const selector = {};
-  if (!includeInactive) selector.isActive = true;
-  const count = await Filters.rawCollection().countDocuments(selector);
+Filters.count = async (query) => {
+  const count = await Filters.rawCollection().countDocuments(
+    buildFindSelector(query)
+  );
   return count;
 };
 

@@ -7,6 +7,10 @@ import settings from '../settings';
 
 const emptyContext = {};
 
+const buildFindSelector = ({ type, deleted = null } = {}) => {
+  return { ...(type ? { type } : {}), deleted };
+};
+
 Users.helpers({
   async paymentCredentials(selector = {}) {
     return PaymentCredentials.find(
@@ -266,11 +270,8 @@ PaymentProviders.findProvider = (
   );
 };
 
-PaymentProviders.findProviders = ({ type } = {}, ...options) =>
-  PaymentProviders.find(
-    { ...(type ? { type } : {}), deleted: null },
-    ...options
-  ).fetch();
+PaymentProviders.findProviders = (query, ...options) =>
+  PaymentProviders.find(buildFindSelector(query), ...options).fetch();
 
 PaymentProviders.findSupported = ({ order }, ...options) => {
   const providers = PaymentProviders.findProviders(
@@ -280,10 +281,9 @@ PaymentProviders.findSupported = ({ order }, ...options) => {
   return settings.filterSupportedProviders({ providers, order });
 };
 
-PaymentProviders.count = async ({ type } = {}) => {
-  const count = await PaymentProviders.rawCollection().countDocuments({
-    ...(type ? { type } : {}),
-    deleted: null,
-  });
+PaymentProviders.count = async (query) => {
+  const count = await PaymentProviders.rawCollection().countDocuments(
+    buildFindSelector(query)
+  );
   return count;
 };

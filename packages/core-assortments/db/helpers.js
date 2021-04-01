@@ -17,6 +17,29 @@ const eqSet = (as, bs) => {
   return [...as].join(',') === [...bs].join(',');
 };
 
+const buildFindSelector = ({
+  slugs = [],
+  tags = [],
+  includeLeaves = false,
+  includeInactive = false,
+}) => {
+  const selector = {};
+
+  if (slugs?.length > 0) {
+    selector.slugs = { $in: slugs };
+  } else if (tags?.length > 0) {
+    selector.tags = { $all: tags };
+  }
+
+  if (!includeLeaves) {
+    selector.isRoot = true;
+  }
+  if (!includeInactive) {
+    selector.isActive = true;
+  }
+  return selector;
+};
+
 export const resolveAssortmentLinkFromDatabase = ({ selector = {} } = {}) => (
   assortmentId,
   childAssortmentId
@@ -78,60 +101,20 @@ Collections.Assortments.removeAssortment = ({ assortmentId }) => {
 };
 
 Collections.Assortments.findAssortments = ({
-  tags,
-  slugs,
-  limit,
-  offset,
-  includeInactive,
-  includeLeaves,
   sort = { sequence: 1 },
+  ...query
 }) => {
-  const selector = {};
   const options = { sort };
 
-  if (slugs?.length > 0) {
-    selector.slugs = { $in: slugs };
-  } else {
-    options.skip = offset;
-    options.limit = limit;
-
-    if (tags?.length > 0) {
-      selector.tags = { $all: tags };
-    }
-  }
-
-  if (!includeLeaves) {
-    selector.isRoot = true;
-  }
-  if (!includeInactive) {
-    selector.isActive = true;
-  }
-
-  return Collections.Assortments.find(selector, options).fetch();
+  return Collections.Assortments.find(
+    buildFindSelector(query),
+    options
+  ).fetch();
 };
 
-Collections.Assortments.count = async ({
-  tags,
-  slugs,
-  includeInactive,
-  includeLeaves,
-}) => {
-  const selector = {};
-
-  if (slugs?.length > 0) {
-    selector.slugs = { $in: slugs };
-  } else if (tags?.length > 0) {
-    selector.tags = { $all: tags };
-  }
-
-  if (!includeLeaves) {
-    selector.isRoot = true;
-  }
-  if (!includeInactive) {
-    selector.isActive = true;
-  }
+Collections.Assortments.count = async (query) => {
   const count = await Collections.Assortments.rawCollection().countDocuments(
-    selector
+    buildFindSelector(query)
   );
   return count;
 };

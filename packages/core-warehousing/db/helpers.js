@@ -92,18 +92,17 @@ WarehousingProviders.findProvider = (
   );
 };
 
-WarehousingProviders.findProviders = ({ type } = {}, ...options) =>
-  WarehousingProviders.find(
-    { ...(type ? { type } : {}), deleted: null },
-    ...options
-  ).fetch();
+const buildFindSelector = ({ type, deleted = null } = {}) => {
+  return { ...(type ? { type } : {}), deleted };
+};
 
-WarehousingProviders.count = async ({ type } = {}) => {
-  const count = await WarehousingProviders.rawCollection().countDocuments({
-    ...(type ? { type } : {}),
-    deleted: null,
-  });
+WarehousingProviders.findProviders = (query, ...options) =>
+  WarehousingProviders.find(buildFindSelector(query), ...options).fetch();
 
+WarehousingProviders.count = async (query) => {
+  const count = await WarehousingProviders.rawCollection().countDocuments(
+    buildFindSelector(query)
+  );
   return count;
 };
 
