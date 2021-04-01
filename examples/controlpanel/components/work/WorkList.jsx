@@ -59,7 +59,7 @@ const WorkList = ({
       >
         <Table.Row>
           <Table.HeaderCell>
-            <span>From</span> <br />
+            <span>Created From</span> <br />
             <DatePicker
               name="startDate"
               onChange={(e) => onDateRangeChange('start', e)}
