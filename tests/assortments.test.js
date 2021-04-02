@@ -96,7 +96,9 @@ describe('Assortments', () => {
                 filteredProducts
                 filters {
                   examinedProducts
+                  productsCount
                   filteredProducts
+                  filteredProductsCount
                   definition {
                     _id
                   }
@@ -349,7 +351,9 @@ describe('Assortments', () => {
                 filteredProducts
                 filters {
                   examinedProducts
+                  productsCount
                   filteredProducts
+                  filteredProductsCount
                   definition {
                     _id
                   }
