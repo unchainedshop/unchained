@@ -30,6 +30,7 @@ const buildFindSelector = ({ includeCarts }) => {
 
   return selector;
 };
+const { ASSIGN_USER_CART } = process.env;
 
 Subscriptions.generateFromCheckout = async ({ items, order, ...context }) => {
   const payment = order.payment();
@@ -820,6 +821,24 @@ Orders.updateCalculation = ({ orderId }) => {
       },
     }
   );
+};
+
+Orders.ensureCartForUser = async ({ userId, countryContext }) => {
+  if (ASSIGN_USER_CART) {
+    const user = Users.findUser({ userId });
+    if (!user) throw new Error('User with the id not found');
+    const cart = await user?.cart({ countryContext });
+    if (cart) return cart;
+
+    return Orders.createOrder({
+      user,
+      currency: Countries.resolveDefaultCurrencyCode({
+        isoCode: countryContext,
+      }),
+      countryCode: countryContext,
+    });
+  }
+  return null;
 };
 
 Orders.migrateCart = async ({

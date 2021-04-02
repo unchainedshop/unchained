@@ -13,7 +13,6 @@ export default async function checkoutCart(
     const order = cart.checkout(transactionContext, {
       localeContext,
     });
-    await getCart({ user, countryContext });
     return order;
   } catch (error) {
     log(error.message, { userId, orderId: cart._id, level: 'error' });

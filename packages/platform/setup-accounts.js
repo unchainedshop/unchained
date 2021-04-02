@@ -66,6 +66,11 @@ export default ({ mergeUserCartsOnLogin = true } = {}) => {
         mergeCarts: mergeUserCartsOnLogin,
       });
 
+      await Orders.ensureCartForUser({
+        userId: user._id,
+        countryContext,
+      });
+
       await services.migrateBookmarks(
         {
           fromUserId: userIdBeforeLogin,

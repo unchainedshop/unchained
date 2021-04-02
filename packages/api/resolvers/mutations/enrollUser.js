@@ -1,6 +1,5 @@
 import { log } from 'meteor/unchained:core-logger';
 import { Users } from 'meteor/unchained:core-users';
-import { getCart } from '../../api';
 import hashPassword from '../../hashPassword';
 
 export default async function enrollUser(root, options, context) {
@@ -16,10 +15,6 @@ export default async function enrollUser(root, options, context) {
   // don't send a verification e-mail after enrollment
   const user = await Users.createUser(mappedOptions, context, {
     skipMessaging: !!mappedOptions.password,
-  });
-  await getCart({
-    user,
-    countryContext: context.countryContext,
   });
 
   return user;

@@ -1,6 +1,5 @@
 import { log } from 'meteor/unchained:core-logger';
 import { Users } from 'meteor/unchained:core-users';
-import getCart from '../../getCart';
 import hashPassword from '../../hashPassword';
 
 export default async function loginWithPassword(
@@ -16,7 +15,7 @@ export default async function loginWithPassword(
   const password = hashedPassword || hashPassword(plainPassword);
   const userQuery = email ? { email } : { username };
 
-  const loginResponse = await Users.loginWithService(
+  return Users.loginWithService(
     'password',
     {
       user: userQuery,
@@ -24,9 +23,4 @@ export default async function loginWithPassword(
     },
     context
   );
-
-  const { id: userId, user = null } = loginResponse;
-  await getCart({ userId, user, countryContext: context.countryContext });
-
-  return loginResponse;
 }

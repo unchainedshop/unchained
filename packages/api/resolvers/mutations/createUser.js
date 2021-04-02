@@ -1,7 +1,6 @@
 import { log } from 'meteor/unchained:core-logger';
 import { Users } from 'meteor/unchained:core-users';
 import hashPassword from '../../hashPassword';
-import getCart from '../../getCart';
 
 export default async function createUser(root, options, context) {
   log('mutation createUser', { email: options.email });
@@ -15,10 +14,6 @@ export default async function createUser(root, options, context) {
   }
 
   const user = await Users.createUser(mappedOptions, context);
-  await getCart({
-    user,
-    countryContext: context.countryContext,
-  });
 
   return Users.createLoginToken(user, context);
 }
