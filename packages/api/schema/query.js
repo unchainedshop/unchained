@@ -291,6 +291,11 @@ export default [
       filter(filterId: ID): Filter
 
       """
+      Returns total number of product reviews
+      """
+      productReviewsCount: Int!
+
+      """
       Get all product reviews
       """
       productReviews(limit: Int = 10, offset: Int = 0): [ProductReview!]!

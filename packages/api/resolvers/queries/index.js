@@ -61,6 +61,7 @@ import quotationsCount from './quotationsCount';
 import subscriptionsCount from './subscriptionsCount';
 import warehousingProvidersCount from './warehousingProvidersCount';
 import paymentProvidersCount from './paymentProvidersCount';
+import productReviewsCount from './productReviewsCount';
 
 export default {
   me,
@@ -129,6 +130,7 @@ export default {
   translatedFilterTexts: acl(actions.manageFilters)(translatedFilterTexts),
   productReview: acl(actions.manageProductReviews)(productReview),
   productReviews: acl(actions.manageProductReviews)(productReviews),
+  productReviewsCount: acl(actions.manageProductReviews)(productReviewsCount),
   quotation: acl(actions.viewQuotation)(quotation),
   quotations: acl(actions.viewQuotations)(quotations),
   quotationsCount: acl(actions.viewQuotations)(quotationsCount),
