@@ -1,14 +1,22 @@
-import { setupDatabase, createLoggedInGraphqlFetch } from './helpers';
+import {
+  setupDatabase,
+  createLoggedInGraphqlFetch,
+  createAnonymousGraphqlFetch,
+} from './helpers';
 import { SimpleProduct, SimpleProductReview } from './seeds/products';
-import { ADMIN_TOKEN } from './seeds/users';
+import { ADMIN_TOKEN, USER_TOKEN } from './seeds/users';
 
 let connection;
 let graphqlFetch;
+let graphqlFetchAsNormalUser;
+let graphqlFetchAsAnonymusUser;
 
 describe('Products: Reviews', () => {
   beforeAll(async () => {
     [, connection] = await setupDatabase();
     graphqlFetch = await createLoggedInGraphqlFetch(ADMIN_TOKEN);
+    graphqlFetchAsNormalUser = await createLoggedInGraphqlFetch(USER_TOKEN);
+    graphqlFetchAsAnonymusUser = await createAnonymousGraphqlFetch();
   });
 
   afterAll(async () => {
@@ -536,6 +544,48 @@ describe('Products: Reviews', () => {
       ]);
     });
   });
+
+  describe('Query.productReviewsCount for admin user should', () => {
+    it('Returns total number of product reviews', async () => {
+      const {
+        data: { productReviewsCount },
+      } = await graphqlFetch({
+        query: /* GraphQL */ `
+          query {
+            productReviewsCount
+          }
+        `,
+      });
+      expect(productReviewsCount).toEqual(1);
+    });
+  });
+
+  describe('Query.productReviewsCount for logged in user should', () => {
+    it('Return NoPermissionError', async () => {
+      const { errors } = await graphqlFetchAsNormalUser({
+        query: /* GraphQL */ `
+          query {
+            productReviewsCount
+          }
+        `,
+      });
+      expect(errors[0]?.extensions.code).toEqual('NoPermissionError');
+    });
+  });
+
+  describe('Query.productReviewsCount for anonymous user should', () => {
+    it('Return NoPermissionError', async () => {
+      const { errors } = await graphqlFetchAsAnonymusUser({
+        query: /* GraphQL */ `
+          query {
+            productReviewsCount
+          }
+        `,
+      });
+      expect(errors[0]?.extensions.code).toEqual('NoPermissionError');
+    });
+  });
+
   describe('Query.productReviews', () => {
     it('product returns all reviews', async () => {
       const { data: { productReviews } = {} } = await graphqlFetch({
