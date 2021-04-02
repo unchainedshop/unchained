@@ -83,7 +83,9 @@ const searchProducts = async ({
     // will always lead to an empty result
     return {
       totalProducts: 0,
+      productsCount: 0,
       filteredProducts: 0,
+      filteredProductsCount: 0,
       products: () => [],
       filters: findFilters,
     };
@@ -105,6 +107,11 @@ const searchProducts = async ({
         _id: { $in: await totalProductIds },
       }).count(),
     filteredProducts: async () =>
+      Products.find({
+        ...(await productSelector),
+        _id: { $in: await filteredProductIds },
+      }).count(),
+    filteredProductsCount: async () =>
       Products.find({
         ...(await productSelector),
         _id: { $in: await filteredProductIds },

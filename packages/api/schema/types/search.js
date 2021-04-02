@@ -12,6 +12,8 @@ export default [
         @deprecated(reason: "Renamed, use the productsCount field")
       productsCount: Int!
       filteredProducts: Int!
+        @deprecated(reason: "Renamed, use the filteredProductsCount field")
+      filteredProductsCount: Int!
       filters: [LoadedFilter!]!
       products(limit: Int = 10, offset: Int = 0): [Product!]!
     }
@@ -24,6 +26,8 @@ export default [
         @deprecated(reason: "Renamed, use the productsCount field")
       productsCount: Int!
       filteredProducts: Int!
+        @deprecated(reason: "Renamed, use the filteredProductsCount field")
+      filteredProductsCount: Int!
       filters: [LoadedFilter!]!
       products(limit: Int = 10, offset: Int = 0): [Product!]!
     }

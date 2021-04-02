@@ -43,6 +43,8 @@ export default [
 
     type LoadedFilterOption {
       filteredProducts: Int!
+        @deprecated(reason: "Renamed, use the filteredProductsCount field")
+      filteredProductsCount: Int!
       definition: FilterOption!
       isSelected: Boolean
     }
@@ -52,6 +54,8 @@ export default [
         @deprecated(reason: "Renamed, use the productsCount field")
       productsCount: Int!
       filteredProducts: Int!
+        @deprecated(reason: "Renamed, use the filteredProductsCount field")
+      filteredProductsCount: Int!
       definition: Filter!
       isSelected: Boolean
       options: [LoadedFilterOption!]

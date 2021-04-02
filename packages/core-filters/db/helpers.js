@@ -471,6 +471,7 @@ Filters.helpers({
         return {
           definition: () => this.optionObject(value),
           filteredProducts: filteredProductIds.size,
+          filteredProductsCount: filteredProductIds.size,
           isSelected: values ? values.indexOf(value) !== -1 : false,
         };
       })
@@ -515,6 +516,7 @@ Filters.helpers({
       examinedProducts: examinedProductIdSet.size,
       productsCount: examinedProductIdSet.size,
       filteredProducts: filteredProductIdSet.size, // TODO: Implement
+      filteredProductsCount: filteredProductIdSet.size, // TODO: Implement
       isSelected: Object.prototype.hasOwnProperty.call(filterQuery, this.key),
       options: () => {
         // The current base for options should be an array of product id's that:
