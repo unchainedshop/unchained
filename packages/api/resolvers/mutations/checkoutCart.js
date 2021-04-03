@@ -12,6 +12,7 @@ export default async function checkoutCart(
   try {
     const order = cart.checkout(transactionContext, {
       localeContext,
+      countryContext,
     });
     return order;
   } catch (error) {

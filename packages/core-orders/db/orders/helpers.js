@@ -434,9 +434,14 @@ Orders.helpers({
     }
     const locale = this.user().locale(options);
 
-    return this.updateContext(orderContext)
+    const updatedOrderContext = this.updateContext(orderContext)
       .processOrder({ paymentContext, deliveryContext })
       .sendOrderConfirmationToCustomer({ locale });
+    Orders.ensureCartForUser({
+      user: this.user(),
+      countryContext: locale.country,
+    });
+    return updatedOrderContext;
   },
   confirm({ orderContext, paymentContext, deliveryContext }, options) {
     if (this.status !== OrderStatus.PENDING) return this;
@@ -823,22 +828,22 @@ Orders.updateCalculation = ({ orderId }) => {
   );
 };
 
-Orders.ensureCartForUser = async ({ userId, countryContext }) => {
-  if (ASSIGN_USER_CART) {
-    const user = Users.findUser({ userId });
-    if (!user) throw new Error('User with the id not found');
-    const cart = await user?.cart({ countryContext });
-    if (cart) return cart;
+Orders.ensureCartForUser = async ({ userId, user, countryContext }) => {
+  if (!ASSIGN_USER_CART) return;
 
-    return Orders.createOrder({
-      user,
-      currency: Countries.resolveDefaultCurrencyCode({
-        isoCode: countryContext,
-      }),
-      countryCode: countryContext,
-    });
-  }
-  return null;
+  const userObject = user || Users.findUser({ userId });
+  if (!userObject) throw new Error('User with the id not found');
+  const cart = await userObject?.cart({ countryContext });
+
+  if (cart) return;
+
+  Orders.createOrder({
+    user: userObject,
+    currency: Countries.resolveDefaultCurrencyCode({
+      isoCode: countryContext,
+    }),
+    countryCode: countryContext,
+  });
 };
 
 Orders.migrateCart = async ({
