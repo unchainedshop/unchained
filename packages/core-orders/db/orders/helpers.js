@@ -24,6 +24,7 @@ import { OrderPayments } from '../order-payments/collections';
 import { OrderDocuments } from '../order-documents/collections';
 import { OrderPositions } from '../order-positions/collections';
 
+<<<<<<< HEAD
 const buildFindSelector = ({ includeCarts }) => {
   const selector = {};
   if (!includeCarts) selector.status = { $ne: OrderStatus.OPEN };
@@ -31,6 +32,9 @@ const buildFindSelector = ({ includeCarts }) => {
   return selector;
 };
 const { ASSIGN_USER_CART } = process.env;
+=======
+const { ENSURE_USER_HAS_CART } = process.env;
+>>>>>>> Add cart initializing functionality @ boot and update Readme.md
 
 Subscriptions.generateFromCheckout = async ({ items, order, ...context }) => {
   const payment = order.payment();
@@ -829,20 +833,23 @@ Orders.updateCalculation = ({ orderId }) => {
 };
 
 Orders.ensureCartForUser = async ({ userId, user, countryContext }) => {
-  if (!ASSIGN_USER_CART) return;
-
+  if (!ENSURE_USER_HAS_CART) return;
   const userObject = user || Users.findUser({ userId });
   if (!userObject) throw new Error('User with the id not found');
-  const cart = await userObject?.cart({ countryContext });
+  const countryCode = countryContext || userObject.lastLogin.countryContext;
+
+  const cart = await userObject?.cart({
+    countryContext: countryCode,
+  });
 
   if (cart) return;
 
   Orders.createOrder({
     user: userObject,
     currency: Countries.resolveDefaultCurrencyCode({
-      isoCode: countryContext,
+      isoCode: countryCode,
     }),
-    countryCode: countryContext,
+    countryCode,
   });
 };
 
@@ -907,4 +914,11 @@ Orders.invalidateProviders = () => {
     .forEach((order) => {
       order.initProviders();
     });
+};
+
+Orders.assignCartForExistingUsers = async ({ assignCartForUsers = false }) => {
+  if (assignCartForUsers) {
+    const users = await Users.find({}).fetch();
+    users.map((user) => Orders.ensureCartForUser({ user }));
+  }
 };

@@ -23,12 +23,15 @@
 - [api] New mutation.signPaymentProviderForCheckout to sign generic order payment directly (OrderPayment.sign still works but is marked deprecated and will be removed in future major releases)
 - [api] three new fields added `ConfigurableProduct.simulatedPriceRange` , `ConfigurableProduct.catalogPriceRange`, `SimulateProduct.leveledCatalogPrices` `PlanProduct.leveledCatalogPrices`
 - [product] `simulatePriceRange` and `catalogPriceRange` helpers added that will return price range of products variations assigned for a particular configurable(proxy) product based on the parameters provided to them.
+- [platform] Now experimental it's possible to assign cart for existing users in the system at boot time by passing `assignCartForUsers` boolean value to `startPlafom`
+- [core] Now experimental related with the above feature it's now possible to ensure users to always have a cart assigned to them by setting env variable `ENSURE_USER_HAS_CART` true.
 
 # v0.61.1
 
 This is a bugfix release based on learnings from upgrading client projects
 
 ## Breaking changes
+
 - [api] Fix `logout` regression with not falling back to the current token when used without explicit token
 - [core] `Users.createUser` now sends messages by default, you have to explicitly bail out by either providing an option `skipMessaging` to true or set the new `autoMessagingAfterUserCreation` module param of users to `false`. Take a look at your seed scripts.
 - [platform] Certain fields like `emails` and `services` are now blocked from passing to `Users.createUser`. If you have used `emails` in `createUser` seeding before, use email. If you want to skip e-mail verification forcefully, use `initialPassword: true`. See the changes in the minimal example seed file to get a glimpse.
@@ -62,6 +65,7 @@ This is a bugfix release based on learnings from upgrading client projects
 We are currently rebuilding parts of Unchained under the hood with a new code structure that helps developers to easily add new resolvers and access the core API's through typescript types.
 
 ## Breaking Changes
+
 - [platform] Account Action E-Mail templates now receive different actions than before, for ex. `verifyEmail` is now `verify-email`
 - [api] `Mutation.setBaseLanguage` removed, base language now set through env `LANG`
 - [api] `Mutation.setBaseCountry` removed, base language now set through env `COUNTRY`
@@ -83,7 +87,7 @@ We are currently rebuilding parts of Unchained under the hood with a new code st
 - [utils] Multiple functions have been moved to utils from core.
 - [core] The "core" package now is an umbrella for all core modules and does not provide any other functions except for the function that loads all modules in order and ties together the typescript types
 - [roles] Roles package got refactored only keeping a fraction of the previous APIs.
- We are currently rebuilding parts of Unchained under the hood with a new code structure that helps developers to easily add new resolvers and access the core API's through typescript types
+  We are currently rebuilding parts of Unchained under the hood with a new code structure that helps developers to easily add new resolvers and access the core API's through typescript types
 - [api,core] Business logic and db calls are now wrapped in functions and moved from api to the core packages
 - [pricing] New open-source pricing plugins:
   - - EUR catalog price auto conversion with ECB rates
