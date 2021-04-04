@@ -10,12 +10,12 @@ export * from './db/collections';
 
 export default (options) => {
   // configure
-  settings.load(options);
   if (settings.autoSchedulingCronText) {
     WorkerDirector.configureAutoscheduling(RemoveStaleGuests, {
       cronText: settings.autoSchedulingCronText,
       input: settings.autoSchedulingInput,
     });
   }
+  settings.load(options);
   runMigrations();
 };
