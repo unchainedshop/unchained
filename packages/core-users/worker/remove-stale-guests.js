@@ -13,27 +13,27 @@ class RemoveStaleGuests extends WorkerPlugin {
 
   static async doWork(input) {
     const guests = await Users.findStaleGuests();
-    // await Promise.all(
-    //   guests.map(async (user) => {
-    //     await Users.removeUser({ userId: user._id });
-    //   })
-    // );
-
-    // if (errors.length) {
-    //   return {
-    //     success: false,
-    //     error: {
-    //       name: 'SOME_SUBSCRIPTIONS_COULD_NOT_PROCESS',
-    //       message: 'Some errors have been reported during order generation',
-    //       logs: errors,
-    //     },
-    //     result: {},
-    //   };
-    // }
-    return {
-      success: true,
-      result: input,
-    };
+    try {
+      await Promise.all(
+        guests.map(async (user) => {
+          await Users.removeUser({ userId: user._id });
+        })
+      );
+      return {
+        success: true,
+        result: input,
+      };
+    } catch (errors) {
+      return {
+        success: false,
+        error: {
+          name: 'SOME_SUBSCRIPTIONS_COULD_NOT_PROCESS',
+          message: 'Some errors have been reported during order generation',
+          logs: errors,
+        },
+        result: {},
+      };
+    }
   }
 }
 
