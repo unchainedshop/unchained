@@ -31,11 +31,17 @@ export default [
     type SubscriptionPayment {
       provider: PaymentProvider
       meta: JSON
+        @deprecated(
+          reason: "Due to ambiguity this field will be removed on future releases,Please write a custom resolver that reflects your business-logic"
+        )
     }
 
     type SubscriptionDelivery {
       provider: DeliveryProvider
       meta: JSON
+        @deprecated(
+          reason: "Due to ambiguity this field will be removed on future releases,Please write a custom resolver that reflects your business-logic"
+        )
     }
 
     type SubscriptionPeriod {
@@ -65,6 +71,9 @@ export default [
       country: Country
       currency: Currency
       meta: JSON
+        @deprecated(
+          reason: "Due to ambiguity this field will be removed on future releases,Please write a custom resolver that reflects your business-logic"
+        )
       logs(limit: Int = 10, offset: Int = 0): [Log!]!
       periods: [SubscriptionPeriod!]!
     }

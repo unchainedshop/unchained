@@ -24,6 +24,9 @@ export default [
       fee: Price
       paid: Date
       meta: JSON
+        @deprecated(
+          reason: "Due to ambiguity this field will be removed on future releases,Please write a custom resolver that reflects your business-logic"
+        )
       discounts: [OrderPaymentDiscount!]
     }
 
@@ -34,6 +37,9 @@ export default [
       fee: Price
       paid: Date
       meta: JSON
+        @deprecated(
+          reason: "Due to ambiguity this field will be removed on future releases,Please write a custom resolver that reflects your business-logic"
+        )
       discounts: [OrderPaymentDiscount!]
     }
 
@@ -44,6 +50,9 @@ export default [
       paid: Date
       fee: Price
       meta: JSON
+        @deprecated(
+          reason: "Due to ambiguity this field will be removed on future releases,Please write a custom resolver that reflects your business-logic"
+        )
       discounts: [OrderPaymentDiscount!]
     }
 
@@ -54,6 +63,9 @@ export default [
       fee: Price
       paid: Date
       meta: JSON
+        @deprecated(
+          reason: "Due to ambiguity this field will be removed on future releases,Please write a custom resolver that reflects your business-logic"
+        )
       discounts: [OrderPaymentDiscount!]
 
       """

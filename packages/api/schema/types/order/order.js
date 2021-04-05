@@ -92,6 +92,9 @@ export default [
       contact: Contact
       country: Country
       meta: JSON
+        @deprecated(
+          reason: "Due to ambiguity this field will be removed on future releases,Please write a custom resolver that reflects your business-logic"
+        )
       currency: Currency
       billingAddress: Address
       delivery: OrderDelivery
