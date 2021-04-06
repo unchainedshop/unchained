@@ -7,6 +7,7 @@ import {
 } from 'meteor/unchained:core-payment';
 
 import { OrderPricingSheet } from 'meteor/unchained:core-pricing';
+import logger from '../logger';
 
 const { COINBASE_COMMERCE_KEY } = process.env;
 
@@ -28,6 +29,7 @@ class Coinbase extends PaymentAdapter {
     return type === 'GENERIC';
   }
 
+  // eslint-disable-next-line
   configurationError() {
     const publicCredentialsValid = !!COINBASE_COMMERCE_KEY;
 
@@ -38,7 +40,6 @@ class Coinbase extends PaymentAdapter {
     try {
       coinbase.Client.init(COINBASE_COMMERCE_KEY);
     } catch (e) {
-      this.log(e);
       return PaymentError.INCOMPLETE_CONFIGURATION;
     }
     return null;
@@ -49,8 +50,8 @@ class Coinbase extends PaymentAdapter {
     return false;
   }
 
-  isPayLaterAllowed() {  // eslint-disable-line
-    // eslint-disable-line
+  // eslint-disable-next-line
+  isPayLaterAllowed() {
     return false;
   }
 
@@ -81,14 +82,15 @@ class Coinbase extends PaymentAdapter {
       };
 
       const checkout = await coinbase.resources.Checkout.create(config);
-      this.log('Coinbase -> Signed', checkout.id);
+      logger.info('Coinbase Plugin: Signed', checkout.id);
       return checkout.id;
     } catch (e) {
-      this.log('Coinbase -> Charge failed', e);
+      logger.warn('Coinbase Plugin: Charge failed', e);
       throw e;
     }
   }
 
+  // eslint-disable-next-line
   async charge(transactionResponse) {
     const { chargeCode } = transactionResponse;
 
@@ -102,13 +104,13 @@ class Coinbase extends PaymentAdapter {
       );
 
       if (completed) {
-        this.log('Coinbase -> Charged successfully', charge);
+        logger.info('Coinbase Plugin: Charged successfully', charge);
         return charge;
       }
-      this.log('Coinbase -> Charge not completed', charge);
+      logger.warn('Coinbase Plugin: Charge not completed', charge);
       throw new Error('Charge not completed');
     } catch (e) {
-      this.log('Coinbase -> Charge failed', e);
+      logger.warn('Coinbase Plugin: Charge failed', e);
       throw e;
     }
   }

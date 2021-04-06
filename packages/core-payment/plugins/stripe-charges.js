@@ -3,9 +3,10 @@ import {
   PaymentAdapter,
   PaymentError,
 } from 'meteor/unchained:core-payment';
-import { createLogger } from 'meteor/unchained:core-logger';
 import bodyParser from 'body-parser';
 import { OrderPayments } from 'meteor/unchained:core-orders';
+
+import logger from '../logger';
 
 const {
   STRIPE_SECRET,
@@ -22,8 +23,6 @@ stripe login --api-key sk_....
 stripe listen --forward-to http://localhost:3000/graphql/stripe
 stripe trigger payment_intent.succeeded
 */
-
-const logger = createLogger('unchained:core-payment:stripe-webhook');
 
 const stripe = require('stripe')(STRIPE_SECRET);
 
@@ -149,10 +148,18 @@ class Stripe extends PaymentAdapter {
         idempotencyKey: this.context.order.paymentId,
       }
     );
-    this.log('Stripe -> ', stripeToken, stripeChargeReceipt);
+
     if (stripeChargeReceipt.status === 'succeeded') {
+      logger.info(
+        `Stripe Plugin: Successfully charged ${stripeToken}`,
+        stripeChargeReceipt
+      );
       return stripeChargeReceipt;
     }
+    logger.warn(
+      `Stripe Plugin: Failed Charge for ${stripeToken}`,
+      stripeChargeReceipt
+    );
     return false;
   }
 }

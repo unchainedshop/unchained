@@ -4,7 +4,6 @@ import {
   PaymentError,
 } from 'meteor/unchained:core-payment';
 import { Orders } from 'meteor/unchained:core-orders';
-import { createLogger } from 'meteor/unchained:core-logger';
 import { WebApp } from 'meteor/webapp';
 import bodyParser from 'body-parser';
 import { OrderPricingSheet } from 'meteor/unchained:core-pricing';
@@ -14,10 +13,10 @@ import fetch from 'isomorphic-unfetch';
 import ClientOAuth2 from 'client-oauth2';
 import { Mongo } from 'meteor/mongo';
 
+import logger from '../logger';
+
 const { checkAction } = acl;
 const { actions } = roles;
-
-const logger = createLogger('unchained:core-payment:bity-webhook');
 
 const BityCredentials = new Mongo.Collection('bity_credentials');
 
@@ -164,7 +163,7 @@ WebApp.connectHandlers.use(BITY_OAUTH_INIT_PATH, async (req, res) => {
 
       const bityAuth = createBityAuth();
       const uri = bityAuth.code.getUri();
-      logger.info(`Bity Login: ${uri}`);
+      logger.info(`Bity Webhook: Login ${uri}`);
       res.writeHead(302, {
         Location: uri,
       });
@@ -253,7 +252,11 @@ class Bity extends PaymentAdapter {
       params,
     });
     if (response?.status !== 200) {
-      logger.error('Response invalid', params, '/orders/estimate', response);
+      logger.error('Bity Plugin: Response invalid', {
+        params,
+        route: '/orders/estimate',
+        response,
+      });
       throw new Error('Could not estimate Bity Currency Conversion');
     }
     return response.json();
@@ -266,7 +269,11 @@ class Bity extends PaymentAdapter {
       params,
     });
     if (response?.status !== 201) {
-      logger.error('Response invalid', params, '/orders', response);
+      logger.error('Bity Plugin: Response invalid', {
+        params,
+        route: '/orders',
+        response,
+      });
       throw new Error('Could not create Bity Order');
     }
     return response.headers.get('Location');
@@ -274,7 +281,7 @@ class Bity extends PaymentAdapter {
 
   async sign({ transactionContext = {} } = {}) {
     // Signing the order will estimate a new order in bity and sign it with private data
-    this.log(`Bity -> Sign ${JSON.stringify(transactionContext)}`);
+    logger.info(`Bity Plugin: Sign ${JSON.stringify(transactionContext)}`);
 
     const { orderPayment } = this.context;
     const order = orderPayment.order();
@@ -324,8 +331,8 @@ class Bity extends PaymentAdapter {
       BITY_CLIENT_SECRET
     );
     if (bitySignature !== signature) {
-      this.log(
-        `Bity -> Signature Mismatch ${JSON.stringify(
+      logger.warn(
+        `Bity Plugin: Signature Mismatch ${JSON.stringify(
           bityPayload
         )} ${bitySignature}`
       );
@@ -351,12 +358,14 @@ class Bity extends PaymentAdapter {
         },
       },
     });
-    this.log(`Bity -> Prepared Bity Order`, path);
+    logger.info(`Bity Plugin: Prepared Bity Order`, path);
     const response = await bityExchangeFetch({ path });
     const bityOrder = await response?.json();
     if (!bityOrder) {
-      this.log(
-        `Bity -> Bity Order not found ${JSON.stringify(path)} ${bitySignature}`
+      logger.warn(
+        `Bity Plugin: Bity Order not found ${JSON.stringify(
+          path
+        )} ${bitySignature}`
       );
       throw new Error('Bity Order not Found');
     }

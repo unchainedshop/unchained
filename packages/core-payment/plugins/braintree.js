@@ -3,6 +3,7 @@ import {
   PaymentAdapter,
   PaymentError,
 } from 'meteor/unchained:core-payment';
+import logger from '../logger';
 
 const { BRAINTREE_SANDBOX_TOKEN, BRAINTREE_PRIVATE_KEY } = process.env;
 
@@ -42,11 +43,13 @@ class BraintreeDirect extends PaymentAdapter {
     }, null);
   }
 
-  getAccessToken() { // eslint-disable-line
+  // eslint-disable-next-line
+  getAccessToken() {
     return BRAINTREE_SANDBOX_TOKEN;
   }
 
-  getPrivateKey() { // eslint-disable-line
+  // eslint-disable-next-line
+  getPrivateKey() {
     return BRAINTREE_PRIVATE_KEY;
   }
 
@@ -66,7 +69,8 @@ class BraintreeDirect extends PaymentAdapter {
     return false;
   }
 
-  isPayLaterAllowed() { // eslint-disable-line
+  // eslint-disable-next-line
+  isPayLaterAllowed() {
     return false;
   }
 
@@ -128,9 +132,10 @@ class BraintreeDirect extends PaymentAdapter {
     };
     const result = await gateway.transaction.sale(saleRequest);
     if (result.success) {
+      logger.info(`Braintree Plugin: ${result.message}`, saleRequest);
       return result;
     }
-    this.log(saleRequest);
+    logger.warn(`Braintree Plugin: ${result.message}`, saleRequest);
     throw new Error(result.message);
   }
 }

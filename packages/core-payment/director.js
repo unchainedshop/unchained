@@ -1,4 +1,4 @@
-import { log } from 'meteor/unchained:core-logger';
+import logger from './logger';
 
 const PaymentError = {
   ADAPTER_NOT_FOUND: 'ADAPTER_NOT_FOUND',
@@ -67,8 +67,8 @@ class PaymentAdapter {
   }
 
   // eslint-disable-next-line
-  log(message, { level = 'debug', ...options } = {}) {
-    return log(message, { level, ...options });
+  log(message, { level = 'debug', ...meta } = {}) {
+    return logger.log(level, message, meta);
   }
 }
 
@@ -106,7 +106,7 @@ class PaymentDirector {
       const adapter = this.interface(context);
       return adapter.isActive();
     } catch (error) {
-      log(error.message, { level: 'error' });
+      logger.error(error.message);
       return false;
     }
   }
@@ -116,7 +116,7 @@ class PaymentDirector {
       const adapter = this.interface(context);
       return adapter.isPayLaterAllowed();
     } catch (error) {
-      log(error.message, { level: 'error' });
+      logger.error(error.message);
       return false;
     }
   }
@@ -156,7 +156,7 @@ class PaymentDirector {
   }
 
   static registerAdapter(adapter) {
-    log(
+    logger.info(
       `${this.name} -> Registered ${adapter.key} ${adapter.version} (${adapter.label})`
     );
     PaymentDirector.adapters.set(adapter.key, adapter);
