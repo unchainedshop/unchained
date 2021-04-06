@@ -24,7 +24,6 @@ import { OrderPayments } from '../order-payments/collections';
 import { OrderDocuments } from '../order-documents/collections';
 import { OrderPositions } from '../order-positions/collections';
 
-<<<<<<< HEAD
 const buildFindSelector = ({ includeCarts }) => {
   const selector = {};
   if (!includeCarts) selector.status = { $ne: OrderStatus.OPEN };
@@ -32,9 +31,7 @@ const buildFindSelector = ({ includeCarts }) => {
   return selector;
 };
 const { ASSIGN_USER_CART } = process.env;
-=======
 const { ENSURE_USER_HAS_CART } = process.env;
->>>>>>> Add cart initializing functionality @ boot and update Readme.md
 
 Subscriptions.generateFromCheckout = async ({ items, order, ...context }) => {
   const payment = order.payment();

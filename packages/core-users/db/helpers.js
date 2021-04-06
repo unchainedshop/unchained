@@ -16,15 +16,6 @@ import filterContext from '../filterContext';
 import evaluateContext from '../evaluateContext';
 import settings from '../settings';
 
-const buildFindSelector = ({ includeGuests, queryString }) => {
-  const selector = {};
-  if (!includeGuests) selector.guest = { $ne: true };
-  if (queryString) {
-    selector.$text = { $search: queryString };
-  }
-  return selector;
-};
-
 Logs.helpers({
   user() {
     return (
@@ -326,32 +317,23 @@ Users.createLoginToken = async (user, rawContext) => {
   };
 };
 
-Users.findUsers = async ({ limit, offset, ...query }) => {
-  if (query?.queryString) {
+Users.findUsers = async ({ limit, offset, includeGuests, queryString }) => {
+  const selector = {};
+  if (!includeGuests) selector.guest = { $ne: true };
+  if (queryString) {
     const userArray = await Users.rawCollection()
-      .find(buildFindSelector(query), {
-        skip: offset,
-        limit,
-        projection: { score: { $meta: 'textScore' } },
-        sort: { score: { $meta: 'textScore' } },
-      })
+      .find(
+        { ...selector, $text: { $search: queryString } },
+        {
+          skip: offset,
+          limit,
+          projection: { score: { $meta: 'textScore' } },
+          sort: { score: { $meta: 'textScore' } },
+        }
+      )
       .toArray();
     return (userArray || []).map((item) => new Users._transform(item)); // eslint-disable-line
   }
 
-  return Users.find(buildFindSelector(query), { skip: offset, limit }).fetch();
-};
-
-Users.count = async (query) => {
-  let count = 0;
-  if (query?.queryString) {
-    count = await Users.rawCollection().countDocuments(
-      buildFindSelector(query)
-    );
-  } else {
-    count = await Users.rawCollection().countDocuments(
-      buildFindSelector(query)
-    );
-  }
-  return count;
+  return Users.find(selector, { skip: offset, limit }).fetch();
 };
