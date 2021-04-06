@@ -4,7 +4,6 @@ import {
   PaymentError,
   PaymentCredentials,
 } from 'meteor/unchained:core-payment';
-import { createLogger } from 'meteor/unchained:core-logger';
 import { OrderPayments } from 'meteor/unchained:core-orders';
 import {
   SubscriptionStatus,
@@ -14,8 +13,7 @@ import { WebApp } from 'meteor/webapp';
 import bodyParser from 'body-parser';
 import fetch from 'isomorphic-unfetch';
 import { Mongo } from 'meteor/mongo';
-
-const logger = createLogger('unchained:core-payment:apple-iap');
+import logger from '../logger';
 
 const AppleTransactions = new Mongo.Collection(
   'payment_apple_iap_processed_transactions'
@@ -155,8 +153,8 @@ WebApp.connectHandlers.use(APPLE_IAP_WEBHOOK_PATH, async (req, res) => {
             subscriptionId: checkedOut.subscription()?._id,
             orderId: checkedOut._id,
           });
-          logger.verbose(
-            `Confirmed checkout for order ${checkedOut.orderNumber}`,
+          logger.info(
+            `Apple IAP Webhook: Confirmed checkout for order ${checkedOut.orderNumber}`,
             { orderId: checkedOut._id }
           );
         }
@@ -187,8 +185,8 @@ WebApp.connectHandlers.use(APPLE_IAP_WEBHOOK_PATH, async (req, res) => {
           orderId: originalOrder._id,
         });
 
-        logger.verbose(
-          `Processed notification for ${latestTransaction.original_transaction_id} and type ${responseBody.notification_type}`
+        logger.info(
+          `Apple IAP Webhook: Processed notification for ${latestTransaction.original_transaction_id} and type ${responseBody.notification_type}`
         );
 
         if (
@@ -213,13 +211,13 @@ WebApp.connectHandlers.use(APPLE_IAP_WEBHOOK_PATH, async (req, res) => {
             await subscription.terminate();
           }
         }
-        logger.verbose(`Updated subscription from Apple`);
+        logger.info(`Apple IAP Webhook: Updated subscription from Apple`);
       }
 
       res.writeHead(200);
       return res.end();
     } catch (e) {
-      logger.error(e.message);
+      logger.warn(`Apple IAP Webhook: ${e.message}`, e);
       res.writeHead(503);
       return res.end(JSON.stringify(e));
     }
@@ -272,6 +270,7 @@ class AppleIAP extends PaymentAdapter {
     return true;
   }
 
+  // eslint-disable-next-line
   async register(transactionResponse) {
     const { receiptData } = transactionResponse;
     const response = await verifyReceipt({
@@ -279,14 +278,13 @@ class AppleIAP extends PaymentAdapter {
       password: APPLE_IAP_SHARED_SECRET,
     });
     const { status, latest_receipt_info } = response; // eslint-disable-line
-    // console.log({
-    //   status,
-    //   latestReceiptInfo: latest_receipt_info,
-    // });
     if (status === 0) {
-      this.log('Receipt validated and updated for the user', {
-        level: 'verbose',
-      });
+      logger.info(
+        'Apple IAP Plugin: Receipt validated and updated for the user',
+        {
+          level: 'verbose',
+        }
+      );
       const latestTransaction =
         latest_receipt_info[latest_receipt_info.length - 1];
       return {
@@ -294,7 +292,7 @@ class AppleIAP extends PaymentAdapter {
         latestReceiptInfo: latest_receipt_info,
       };
     }
-    this.log('Apple IAP -> Receipt invalid', {
+    logger.warn('Apple IAP Plugin: Receipt invalid', {
       level: 'warn',
       status: response.status,
     });
@@ -308,7 +306,7 @@ class AppleIAP extends PaymentAdapter {
 
     if (!transactionIdentifier) {
       throw new Error(
-        'Apple IAP -> You have to set the transaction id on the order payment'
+        'Apple IAP Plugin: You have to set the transaction id on the order payment'
       );
     }
 
@@ -321,7 +319,7 @@ class AppleIAP extends PaymentAdapter {
       }));
 
     if (receiptResponse && receiptResponse.status !== 0) {
-      throw new Error('Apple IAP -> Receipt invalid');
+      throw new Error('Apple IAP Plugin: Receipt invalid');
     }
 
     const transactions =
@@ -332,7 +330,7 @@ class AppleIAP extends PaymentAdapter {
     );
     if (!matchedTransaction) {
       throw new Error(
-        `Apple IAP -> Cannot match transaction with identifier ${transactionIdentifier}`
+        `Apple IAP Plugin: Cannot match transaction with identifier ${transactionIdentifier}`
       );
     }
 
@@ -347,7 +345,7 @@ class AppleIAP extends PaymentAdapter {
 
     if (items.length !== 1) {
       throw new Error(
-        'Apple IAP -> You can only checkout 1 unique product at once'
+        'Apple IAP Plugin: You can only checkout 1 unique product at once'
       );
     }
 
@@ -359,7 +357,7 @@ class AppleIAP extends PaymentAdapter {
 
     if (!orderMatchesTransaction)
       throw new Error(
-        'Apple IAP -> Product in order does not match transaction'
+        'Apple IAP Plugin: Product in order does not match transaction'
       );
 
     const transactionAlreadyProcessed =
@@ -368,7 +366,7 @@ class AppleIAP extends PaymentAdapter {
       }).count() > 0;
 
     if (transactionAlreadyProcessed)
-      throw new Error('Apple IAP -> Transaction already processed');
+      throw new Error('Apple IAP Plugin: Transaction already processed');
 
     // All good
     const transactionId = AppleTransactions.insert({

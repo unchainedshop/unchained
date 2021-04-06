@@ -3,6 +3,7 @@ import {
   PaymentAdapter,
   PaymentError,
 } from 'meteor/unchained:core-payment';
+import logger from '../logger';
 
 const checkoutNodeJssdk = require('@paypal/checkout-server-sdk');
 
@@ -66,8 +67,10 @@ class PaypalCheckout extends PaymentAdapter {
   }
 
   async charge({ orderID }) {
-    if (!orderID)
+    if (!orderID) {
+      logger.warn('Paypal Native Plugin: PRICE MATCH');
       throw new Error('You have to provide orderID in paymentContext');
+    }
 
     try {
       const request = new checkoutNodeJssdk.orders.OrdersGetRequest(orderID);
@@ -79,20 +82,20 @@ class PaypalCheckout extends PaymentAdapter {
       const paypalTotal = order.result.purchase_units[0].amount.value;
 
       if (ourTotal === paypalTotal) {
-        this.log('Paypal Native -> PRICE MATCH');
+        logger.info('Paypal Native Plugin: PRICE MATCH');
         return order;
       }
 
-      this.log(
-        'Paypal Native -> PAYPAL ORDER',
+      logger.warn(
+        'Paypal Native Plugin: Missmatch PAYPAL ORDER',
         JSON.stringify(order.result, null, 2)
       );
-      this.log('Paypal Native -> OUR ORDER', this.context.order);
-      this.log('Paypal Native -> OUR PRICE', pricing);
+      logger.debug('Paypal Native Plugin: OUR ORDER', this.context.order);
+      logger.debug('Paypal Native Plugin: OUR PRICE', pricing);
 
       throw new Error(`Payment mismatch`);
     } catch (e) {
-      this.log('Paypal Native -> Failed', e);
+      logger.warn('Paypal Native Plugin: Failed', e);
       throw new Error(e);
     }
   }

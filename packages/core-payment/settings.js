@@ -1,6 +1,4 @@
-import { createLogger } from 'meteor/unchained:core-logger';
-
-const logger = createLogger('unchained:core-payment');
+import logger from './logger';
 
 const sortByCreationDate = () => (left, right) => {
   return new Date(left.created).getTime() - new Date(right.created).getTime();

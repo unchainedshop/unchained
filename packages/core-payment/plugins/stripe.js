@@ -4,11 +4,12 @@ import {
   PaymentError,
   PaymentCredentials,
 } from 'meteor/unchained:core-payment';
-import { createLogger } from 'meteor/unchained:core-logger';
 import { WebApp } from 'meteor/webapp';
 import bodyParser from 'body-parser';
 import { OrderPayments } from 'meteor/unchained:core-orders';
 import { Users } from 'meteor/unchained:core-users';
+
+import logger from '../logger';
 
 const {
   STRIPE_SECRET,
@@ -25,8 +26,6 @@ stripe login --api-key sk_....
 stripe listen --forward-to http://localhost:3000/graphql/stripe
 stripe trigger payment_intent.succeeded
 */
-
-const logger = createLogger('unchained:core-payment:stripe-webhook');
 
 const stripe = require('stripe')(STRIPE_SECRET);
 
@@ -131,6 +130,7 @@ class Stripe extends PaymentAdapter {
     return !!paymentMethod;
   }
 
+  // eslint-disable-next-line
   async register({ setupIntentId }) {
     if (!setupIntentId) {
       throw new Error('You have to provide a setup intent id');
@@ -148,7 +148,7 @@ class Stripe extends PaymentAdapter {
       };
     }
 
-    this.log('Stripe -> Registration declined', setupIntentId);
+    logger.warn('Stripe Plugin: Registration declined', setupIntentId);
     return null;
   }
 
