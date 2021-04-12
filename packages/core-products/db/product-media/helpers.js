@@ -60,8 +60,8 @@ ProductMedia.getLocalizedTexts = (productMediaId, locale) =>
 ProductMedia.createMedia = ({ productId, ...mediaData }) => {
   const sortKey = mediaData.sortKey || ProductMedia.getNewSortKey(productId);
   const productMediaId = ProductMedia.insert({
-    ...mediaData,
     tags: [],
+    ...mediaData,
     sortKey,
     productId,
     created: new Date(),
