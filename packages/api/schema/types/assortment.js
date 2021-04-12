@@ -13,6 +13,9 @@ export default [
       sequence: Int!
       tags: [String!]
       meta: JSON
+        @deprecated(
+          reason: "Due to ambiguity this field will be removed on future releases,Please write a custom resolver that reflects your business-logic"
+        )
       texts(forceLocale: String): AssortmentTexts
       productAssignments: [AssortmentProduct!]
       filterAssignments: [AssortmentFilter!]
@@ -66,6 +69,9 @@ export default [
       sortKey: Int!
       tags: [String!]
       meta: JSON
+        @deprecated(
+          reason: "Due to ambiguity this field will be removed on future releases,Please write a custom resolver that reflects your business-logic"
+        )
       assortment: Assortment!
       product: Product!
     }
@@ -75,6 +81,9 @@ export default [
       sortKey: Int!
       tags: [String!]
       meta: JSON
+        @deprecated(
+          reason: "Due to ambiguity this field will be removed on future releases,Please write a custom resolver that reflects your business-logic"
+        )
       assortment: Assortment!
       filter: Filter!
     }
@@ -84,6 +93,9 @@ export default [
       sortKey: Int!
       tags: [String!]
       meta: JSON
+        @deprecated(
+          reason: "Due to ambiguity this field will be removed on future releases,Please write a custom resolver that reflects your business-logic"
+        )
       parent: Assortment!
       child: Assortment!
     }
