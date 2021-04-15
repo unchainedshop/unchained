@@ -16,7 +16,7 @@ class EventDirector {
   static registerEvents(events: string[]): void {
     if (events.length) {
       events.forEach((e) => EventDirector.registeredEvents.add(e));
-      logger.info(`${this?.name} Registered ${JSON.stringify(events)}`);
+      logger.info(`EventDirector -> Registered ${JSON.stringify(events)}`);
     }
   }
 
