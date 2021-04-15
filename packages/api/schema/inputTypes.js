@@ -266,5 +266,10 @@ export default [
       quantity: Int = 1
       configuration: [ProductConfigurationParameterInput!]
     }
+
+    input DateFilterInput {
+      start: Date
+      end: Date
+    }
   `,
 ];

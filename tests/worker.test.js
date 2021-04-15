@@ -92,13 +92,16 @@ describe('Worker Module', () => {
     it('Work in the queue', async () => {
       const { data: { workQueue } = {} } = await graphqlFetchAsAdminUser({
         query: /* GraphQL */ `
-          query {
-            workQueue {
+          query workQueue($created: DateFilterInput) {
+            workQueue(created: $created, status: []) {
               _id
               type
             }
           }
         `,
+        variables: {
+          created: { start: new Date(0), end: null },
+        },
       });
       expect(workQueue.filter(({ type }) => type === 'EXTERNAL')).toHaveLength(
         3,
@@ -802,7 +805,6 @@ describe('Worker Module', () => {
               _id
               started
               finished
-              created
               updated
               deleted
               priority
@@ -828,6 +830,7 @@ describe('Worker Module', () => {
           workId: NewWork._id,
         },
       });
+      delete NewWork.created;
       expect(work).toMatchObject(NewWork);
     });
 
