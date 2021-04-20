@@ -8,12 +8,26 @@ export default async function createFilter(payload, { logger, authorId }) {
 
   logger.debug('create filter object', specification);
   const { content, options, ...filterData } = specification;
-  const filter = await Filters.createFilter({
-    ...filterData,
-    _id,
-    options: options.map((option) => option.value),
-    authorId,
-  });
+  let filter;
+  try {
+    filter = await Filters.createFilter({
+      ...filterData,
+      _id,
+      options: options.map((option) => option.value),
+      authorId,
+    });
+  } catch (e) {
+    logger.debug(
+      'entity already exists, falling back to update',
+      specification
+    );
+    filter = await Filters.updateFilter({
+      ...filterData,
+      filterId: _id,
+      options: options.map((option) => option.value),
+      authorId,
+    });
+  }
 
   if (!content)
     throw new Error(

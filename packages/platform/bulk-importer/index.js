@@ -1,3 +1,4 @@
+import { MongoInternals } from 'meteor/mongo';
 import * as AssortmentHandlers from './handlers/assortment';
 import * as ProductHandlers from './handlers/product';
 import * as FilterHandlers from './handlers/filter';
@@ -16,6 +17,16 @@ const runPrepareAsync = async (entity, operation, event, context) => {
       throw new Error(`Entity ${event.entity} unknown`);
   }
 };
+
+export const createBucket = (bucketName) => {
+  const options = { bucketName };
+  return new MongoInternals.NpmModule.GridFSBucket(
+    MongoInternals.defaultRemoteCollectionDriver().mongo.db,
+    options
+  );
+};
+
+export const BulkImportPayloads = createBucket('bulk_import_payloads');
 
 export default ({ logger, authorId }) => {
   const bulkOperations = {};

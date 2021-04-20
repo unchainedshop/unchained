@@ -2,7 +2,6 @@ import { Products } from 'meteor/unchained:core-products';
 import upsertVariations from './upsertVariations';
 import upsertMedia from './upsertMedia';
 import upsertProductContent from './upsertProductContent';
-
 import transformSpecificationToProductStructure from './transformSpecificationToProductStructure';
 
 export default async function createProduct(payload, { logger, authorId }) {
@@ -13,11 +12,23 @@ export default async function createProduct(payload, { logger, authorId }) {
 
   const productData = transformSpecificationToProductStructure(specification);
   logger.debug('create product object', productData);
-  await Products.createProduct({
-    ...productData,
-    _id,
-    authorId,
-  });
+  try {
+    await Products.createProduct({
+      ...productData,
+      _id,
+      authorId,
+    });
+  } catch (e) {
+    logger.debug(
+      'entity already exists, falling back to update',
+      specification
+    );
+    await Products.updateProduct({
+      ...productData,
+      productId: _id,
+      authorId,
+    });
+  }
 
   if (!specification.content)
     throw new Error('Product content is required when creating a new product');
@@ -30,7 +41,12 @@ export default async function createProduct(payload, { logger, authorId }) {
   });
 
   logger.debug('create product media', media);
-  await upsertMedia({ media: media || [], productId: _id, authorId });
+  try {
+    await upsertMedia({ media: media || [], productId: _id, authorId });
+  } catch (e) {
+    // If we cannot create the media, still continue with the sync!
+    logger.warn(e.message);
+  }
 
   logger.debug('create product variations', variations);
   await upsertVariations({

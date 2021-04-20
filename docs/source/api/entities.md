@@ -306,6 +306,7 @@ Set by unchained:
           }
         }
       ],
+      "meta": {},
       "content": {
         "de": {
           "created": null,
@@ -314,8 +315,7 @@ Set by unchained:
           "subtitle": "Size of product in centimeters"
         }
       },
-      "meta": {}
-    }
+    },
   }
 }
 ```

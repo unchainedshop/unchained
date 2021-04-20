@@ -20,7 +20,7 @@ import configureSubscriptions from 'meteor/unchained:core-subscriptions';
 import configureWorker from 'meteor/unchained:core-worker';
 import configureMessaging from 'meteor/unchained:core-messaging';
 
-export default async ({ modules = {} } = {}) => {
+export default async ({ modules = {}, ...otherComponents } = {}) => {
   configureLogger(modules.logger);
   configureWorker(modules.worker);
   configureMessaging(modules.messaging);
@@ -47,5 +47,6 @@ export default async ({ modules = {} } = {}) => {
     services: {
       ...bookmarkServices,
     },
+    ...otherComponents,
   };
 };

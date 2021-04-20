@@ -6,8 +6,8 @@ const upsertAsset = async (asset) => {
     return assetObject;
   } catch (e) {
     const { _id, ...assetData } = asset;
-    Media.update({ _id: asset._id }, { $set: assetData });
-    return Media.findOne({ _id: asset._id });
+    Media.update({ _id }, { $set: assetData });
+    return Media.findOne({ _id });
   }
 };
 
@@ -17,8 +17,8 @@ const upsertMediaObject = async (media) => {
     return mediaObject;
   } catch (e) {
     const { _id, ...mediaData } = media;
-    ProductMedia.update({ _id: media._id }, { $set: mediaData });
-    return ProductMedia.findOne({ _id: media._id });
+    ProductMedia.update({ _id }, { $set: mediaData });
+    return ProductMedia.findOne({ _id });
   }
 };
 

@@ -11,11 +11,23 @@ export default async function createAssortment(payload, { logger, authorId }) {
     throw new Error('Specification is required when creating a new assortment');
 
   logger.debug('create assortment object', specification);
-  await Assortments.createAssortment({
-    ...specification,
-    _id,
-    authorId,
-  });
+  try {
+    await Assortments.createAssortment({
+      ...specification,
+      _id,
+      authorId,
+    });
+  } catch (e) {
+    logger.debug(
+      'entity already exists, falling back to update',
+      specification
+    );
+    await Assortments.updateAssortment({
+      ...specification,
+      assortmentId: _id,
+      authorId,
+    });
+  }
 
   if (!specification.content)
     throw new Error(
