@@ -58,12 +58,6 @@ export default [
       link: AssortmentLink
     }
 
-    type ProductCollection {
-      totalCount: Int!
-      filteredCount: Int!
-      items: [Product!]!
-    }
-
     type AssortmentProduct {
       _id: ID!
       sortKey: Int!

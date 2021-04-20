@@ -6,6 +6,11 @@ export default function filters(
   { limit, offset, includeInactive },
   { userId }
 ) {
-  log(`query filters: ${limit} ${offset}`, { userId });
+  log(
+    `query filters: ${limit} ${offset} ${
+      includeInactive ? 'includeInactive' : ''
+    }`,
+    { userId }
+  );
   return Filters.findFilters({ limit, offset, includeInactive });
 }

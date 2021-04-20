@@ -8,11 +8,13 @@ import { SimpleWarehousingProvider } from './seeds/warehousings';
 
 let connection;
 let graphqlFetch;
+let graphqlAnonymousFetch;
 
 describe('WarehousingProviders', () => {
   beforeAll(async () => {
     [, connection] = await setupDatabase();
     graphqlFetch = await createLoggedInGraphqlFetch(ADMIN_TOKEN);
+    graphqlAnonymousFetch = await createAnonymousGraphqlFetch();
   });
 
   afterAll(async () => {
@@ -64,6 +66,38 @@ describe('WarehousingProviders', () => {
         },
       });
       expect(warehousingProviders.length).toEqual(1);
+    });
+  });
+
+  describe('Query.warehousingProvidersCount when loggedin should', () => {
+    it('return total number of warehousing providers', async () => {
+      const {
+        data: { warehousingProvidersCount },
+      } = await graphqlFetch({
+        query: /* GraphQL */ `
+          query {
+            warehousingProvidersCount
+          }
+        `,
+        variables: {},
+      });
+      expect(warehousingProvidersCount > 0).toBe(true);
+    });
+
+    it('return total number of warehousingProviders based on the given type', async () => {
+      const {
+        data: { warehousingProvidersCount },
+      } = await graphqlFetch({
+        query: /* GraphQL */ `
+          query WarehousingProvidersCount($type: WarehousingProviderType) {
+            warehousingProvidersCount(type: $type)
+          }
+        `,
+        variables: {
+          type: 'PHYSICAL',
+        },
+      });
+      expect(warehousingProvidersCount).toEqual(1);
     });
   });
 
@@ -120,8 +154,7 @@ describe('WarehousingProviders', () => {
   });
 
   describe('Query.warehousingProviders for anonymous user should', () => {
-    it('return error', async () => {
-      const graphqlAnonymousFetch = await createAnonymousGraphqlFetch();
+    it('return NoPermissionError', async () => {
       const { errors } = await graphqlAnonymousFetch({
         query: /* GraphQL */ `
           query WarehousingProviders {
@@ -132,7 +165,21 @@ describe('WarehousingProviders', () => {
         `,
         variables: {},
       });
-      expect(errors.length).toEqual(1);
+      expect(errors[0]?.extensions?.code).toEqual('NoPermissionError');
+    });
+  });
+
+  describe('Query.warehousingProvidersCount for anonymous user should', () => {
+    it('return NoPermissionError', async () => {
+      const { errors } = await graphqlAnonymousFetch({
+        query: /* GraphQL */ `
+          query {
+            warehousingProvidersCount
+          }
+        `,
+        variables: {},
+      });
+      expect(errors[0]?.extensions?.code).toEqual('NoPermissionError');
     });
   });
 });

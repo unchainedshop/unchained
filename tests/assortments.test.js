@@ -3,16 +3,20 @@ import {
   createLoggedInGraphqlFetch,
   createAnonymousGraphqlFetch,
 } from './helpers';
-import { ADMIN_TOKEN } from './seeds/users';
+import { ADMIN_TOKEN, USER_TOKEN } from './seeds/users';
 import { SimpleAssortment } from './seeds/assortments';
 
 let connection;
 let graphqlFetch;
+let graphqlFetchAsAnonymousUser;
+let graphqlFetchAsNormalUser;
 
 describe('Assortments', () => {
   beforeAll(async () => {
     [, connection] = await setupDatabase();
     graphqlFetch = await createLoggedInGraphqlFetch(ADMIN_TOKEN);
+    graphqlFetchAsNormalUser = await createLoggedInGraphqlFetch(USER_TOKEN);
+    graphqlFetchAsAnonymousUser = await createAnonymousGraphqlFetch();
   });
 
   afterAll(async () => {
@@ -92,7 +96,9 @@ describe('Assortments', () => {
                 filteredProducts
                 filters {
                   examinedProducts
+                  productsCount
                   filteredProducts
+                  filteredProductsCount
                   definition {
                     _id
                   }
@@ -178,6 +184,125 @@ describe('Assortments', () => {
     });
   });
 
+  describe('Query.assortmentsCount for admin user should', () => {
+    it('Return number of only active assortments when no argument passed', async () => {
+      const {
+        data: { assortmentsCount },
+      } = await graphqlFetch({
+        query: /* GraphQL */ `
+          query {
+            assortmentsCount
+          }
+        `,
+        variables: {},
+      });
+
+      expect(assortmentsCount).toEqual(4);
+    });
+
+    it('Return number of active assortments and include leaves', async () => {
+      const {
+        data: { assortmentsCount },
+      } = await graphqlFetch({
+        query: /* GraphQL */ `
+          query AssortmentsCount(
+            $includeInactives: Boolean
+            $includeLeaves: Boolean
+          ) {
+            assortmentsCount(
+              includeInactive: $includeInactives
+              includeLeaves: $includeLeaves
+            )
+          }
+        `,
+        variables: {
+          includeLeaves: true,
+        },
+      });
+      expect(assortmentsCount).toEqual(5);
+    });
+    it('Return number assortments of without leaves including inactives', async () => {
+      const {
+        data: { assortmentsCount },
+      } = await graphqlFetch({
+        query: /* GraphQL */ `
+          query AssortmentsCount(
+            $includeInactive: Boolean
+            $includeLeaves: Boolean
+          ) {
+            assortmentsCount(
+              includeInactive: $includeInactive
+              includeLeaves: $includeLeaves
+            )
+          }
+        `,
+        variables: {
+          includeInactive: true,
+          includeLeaves: false,
+        },
+      });
+
+      expect(assortmentsCount).toEqual(8);
+    });
+    it('Return number of all assortments and include leaves', async () => {
+      const {
+        data: { assortmentsCount },
+      } = await graphqlFetch({
+        query: /* GraphQL */ `
+          query AssortmentsCount(
+            $includeInactive: Boolean
+            $includeLeaves: Boolean
+          ) {
+            assortmentsCount(
+              includeInactive: $includeInactive
+              includeLeaves: $includeLeaves
+            )
+          }
+        `,
+        variables: {
+          includeInactive: true,
+          includeLeaves: true,
+        },
+      });
+
+      expect(assortmentsCount).toEqual(10);
+    });
+  });
+
+  describe('Query.assortmentsCount for normal user should', () => {
+    it('Return number of only active assortments when no argument passed', async () => {
+      const {
+        data: { assortmentsCount },
+      } = await graphqlFetchAsNormalUser({
+        query: /* GraphQL */ `
+          query {
+            assortmentsCount
+          }
+        `,
+        variables: {},
+      });
+
+      expect(assortmentsCount).toEqual(4);
+    });
+  });
+
+  describe('Query.assortmentsCount for anonymous user should', () => {
+    it('Return number of only active assortments when no argument passed', async () => {
+      const {
+        data: { assortmentsCount },
+      } = await graphqlFetchAsAnonymousUser({
+        query: /* GraphQL */ `
+          query {
+            assortmentsCount
+          }
+        `,
+        variables: {},
+      });
+
+      expect(assortmentsCount).toEqual(4);
+    });
+  });
+
   describe('Query.assortment for admin user should', () => {
     it('return single assortment based on id', async () => {
       const {
@@ -226,7 +351,9 @@ describe('Assortments', () => {
                 filteredProducts
                 filters {
                   examinedProducts
+                  productsCount
                   filteredProducts
+                  filteredProductsCount
                   definition {
                     _id
                   }

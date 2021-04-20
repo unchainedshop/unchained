@@ -3,16 +3,20 @@ import {
   createLoggedInGraphqlFetch,
   createAnonymousGraphqlFetch,
 } from './helpers';
-import { ADMIN_TOKEN } from './seeds/users';
+import { ADMIN_TOKEN, USER_TOKEN } from './seeds/users';
 import { MultiChoiceFilter } from './seeds/filters';
 
 let connection;
 let graphqlFetch;
+let graphqlFetchAsAnonymousUser;
+let graphqlFetchAsNormalUser;
 
 describe('Filters', () => {
   beforeAll(async () => {
     [, connection] = await setupDatabase();
     graphqlFetch = await createLoggedInGraphqlFetch(ADMIN_TOKEN);
+    graphqlFetchAsNormalUser = await createLoggedInGraphqlFetch(USER_TOKEN);
+    graphqlFetchAsAnonymousUser = await createAnonymousGraphqlFetch();
   });
 
   afterAll(async () => {
@@ -90,6 +94,70 @@ describe('Filters', () => {
         },
       });
       expect(filters.length).toEqual(1);
+    });
+  });
+
+  describe('Query.filtersCount for admin user should', () => {
+    it('return total number of active filters', async () => {
+      const {
+        data: { filtersCount },
+      } = await graphqlFetch({
+        query: /* GraphQL */ `
+          query FiltersCount($includeInactive: Boolean = false) {
+            filtersCount(includeInactive: $includeInactive)
+          }
+        `,
+        variables: {},
+      });
+      expect(filtersCount).toEqual(0);
+    });
+
+    it('return total number of active and in-active filters', async () => {
+      const {
+        data: { filtersCount },
+      } = await graphqlFetch({
+        query: /* GraphQL */ `
+          query Filters($includeInactive: Boolean = false) {
+            filtersCount(includeInactive: $includeInactive)
+          }
+        `,
+        variables: {
+          includeInactive: true,
+        },
+      });
+      expect(filtersCount).toEqual(1);
+    });
+  });
+
+  describe('Query.filtersCount for normal user should', () => {
+    it('return total number of active filters', async () => {
+      const {
+        data: { filtersCount },
+      } = await graphqlFetchAsNormalUser({
+        query: /* GraphQL */ `
+          query FiltersCount($includeInactive: Boolean = false) {
+            filtersCount(includeInactive: $includeInactive)
+          }
+        `,
+        variables: {},
+      });
+      expect(filtersCount).toEqual(0);
+    });
+  });
+
+  describe('Query.filtersCount for Anonymous user should', () => {
+    it('return total number of active filters', async () => {
+      const {
+        data: { filtersCount },
+      } = await graphqlFetchAsAnonymousUser({
+        query: /* GraphQL */ `
+          query FiltersCount($includeInactive: Boolean = false) {
+            filtersCount(includeInactive: $includeInactive)
+          }
+        `,
+        variables: {},
+      });
+      expect(filtersCount).toEqual(0);
     });
   });
 
@@ -394,8 +462,10 @@ describe('Filters', () => {
               ignoreChildAssortments: false
             ) {
               totalProducts
+              productsCount
               filters {
                 filteredProducts
+                filteredProductsCount
                 definition {
                   _id
                   key
@@ -403,6 +473,7 @@ describe('Filters', () => {
                 options {
                   isSelected
                   filteredProducts
+                  filteredProductsCount
                   definition {
                     _id
                     value
@@ -420,15 +491,18 @@ describe('Filters', () => {
 
       expect(searchProducts).toMatchObject({
         totalProducts: 1,
+        productsCount: 1,
         filters: [
           {
             filteredProducts: 1,
+            filteredProductsCount: 1,
             definition: {
               key: 'tags',
             },
           },
           {
             filteredProducts: 1,
+            filteredProductsCount: 1,
             definition: {
               key: 'warehousing.baseUnit',
             },

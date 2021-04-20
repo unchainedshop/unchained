@@ -17,9 +17,24 @@ export default [
       ): [User!]!
 
       """
+      Get total number of users in the system that match query
+      """
+      usersCount(includeGuests: Boolean = false, queryString: String): Int!
+
+      """
       Specific user data if userId provided, else returns currently logged in
       """
       user(userId: ID): User
+
+      """
+      Return total number of published products filtered either by tags or explicit slugs
+      If a slug is provided
+      """
+      productsCount(
+        tags: [String!]
+        slugs: [String!]
+        includeDrafts: Boolean = false
+      ): Int!
 
       """
       Simple list of published products filtered either by tags or explicit slugs
@@ -62,6 +77,11 @@ export default [
       ): [ProductVariationTexts!]!
 
       """
+      Returns total number languages
+      """
+      languagesCount(includeInactive: Boolean = false): Int!
+
+      """
       Get all languages
       """
       languages(
@@ -85,9 +105,19 @@ export default [
       ): [Country!]!
 
       """
+      Returns total number of countries
+      """
+      countriesCount(includeInactive: Boolean = false): Int!
+
+      """
       Get a specific country by ID
       """
       country(countryId: ID!): Country
+
+      """
+      Returns total number of currencies
+      """
+      currenciesCount(includeInactive: Boolean = false): Int!
 
       """
       Get all currencies
@@ -102,6 +132,11 @@ export default [
       Get a specific currency by ID
       """
       currency(currencyId: ID!): Currency
+
+      """
+      Returns total number of delivery providers, optionally filtered by type
+      """
+      deliveryProvidersCount(type: DeliveryProviderType): Int!
 
       """
       Get all delivery providers, optionally filtered by type
@@ -119,7 +154,12 @@ export default [
       deliveryInterfaces(type: DeliveryProviderType!): [DeliveryInterface!]!
 
       """
-      Get all delivery providers, optionally filtered by type
+      Returns total number of delivery providers, optionally filtered by type
+      """
+      warehousingProvidersCount(type: WarehousingProviderType): Int!
+
+      """
+      Get all warehousing providers, optionally filtered by type
       """
       warehousingProviders(
         type: WarehousingProviderType
@@ -138,6 +178,11 @@ export default [
       ): [WarehousingInterface!]!
 
       """
+      Returns total number of payment providers, optionally filtered by type
+      """
+      paymentProvidersCount(type: PaymentProviderType): Int!
+
+      """
       Get all payment providers, optionally filtered by type
       """
       paymentProviders(type: PaymentProviderType): [PaymentProvider!]!
@@ -153,6 +198,11 @@ export default [
       paymentInterfaces(type: PaymentProviderType!): [PaymentInterface!]!
 
       """
+      Returns total number of orders
+      """
+      ordersCount(includeCarts: Boolean = false): Int!
+
+      """
       Get all orders
       """
       orders(
@@ -165,6 +215,11 @@ export default [
       Get a specific single order
       """
       order(orderId: ID!): Order
+
+      """
+      Returns total number of logs
+      """
+      logsCount: Int!
 
       """
       Get all logs, sorted by most recent creation date first
@@ -189,6 +244,16 @@ export default [
       ): [Assortment!]!
 
       """
+      Returns total number of assortments that match a given criteria or all if no criteria is given
+      """
+      assortmentsCount(
+        tags: [String!]
+        slugs: [String!]
+        includeInactive: Boolean = false
+        includeLeaves: Boolean = false
+      ): Int!
+
+      """
       Get a specific assortment by ID
       """
       assortment(assortmentId: ID, slug: String): Assortment
@@ -207,6 +272,11 @@ export default [
       ): [FilterTexts!]!
 
       """
+      Returns total number of filters
+      """
+      filtersCount(includeInactive: Boolean = false): Int!
+
+      """
       Get all filters
       """
       filters(
@@ -221,6 +291,11 @@ export default [
       filter(filterId: ID): Filter
 
       """
+      Returns total number of product reviews
+      """
+      productReviewsCount: Int!
+
+      """
       Get all product reviews
       """
       productReviews(limit: Int = 10, offset: Int = 0): [ProductReview!]!
@@ -231,6 +306,11 @@ export default [
       productReview(productReviewId: ID!): ProductReview!
 
       """
+      Returns total number of quotations
+      """
+      quotationsCount: Int!
+
+      """
       Get all quotations
       """
       quotations(limit: Int = 10, offset: Int = 0): [Quotation!]!
@@ -239,6 +319,11 @@ export default [
       Get a specific quotation by ID
       """
       quotation(quotationId: ID!): Quotation
+
+      """
+      Returns total number of subscriptions
+      """
+      subscriptionsCount: Int!
 
       """
       Get all subscriptions

@@ -4,6 +4,14 @@ import { ProductReviews } from './collections';
 import { ProductReviewVoteTypes } from './schema';
 import { Products } from '../products/collections';
 
+const buildFindSelector = ({ productId, authorId, deleted = null } = {}) => {
+  return {
+    ...(productId ? { productId } : {}),
+    ...(authorId ? { authorId } : {}),
+    deleted,
+  };
+};
+
 ProductReviews.helpers({
   product() {
     return Products.findOne({ _id: this.productId });
@@ -143,16 +151,13 @@ ProductReviews.findReview = function findReview(
   return ProductReviews.findOne({ _id: productReviewId }, ...options);
 };
 
-ProductReviews.findReviews = function findReviews(
-  { productId, authorId } = {},
-  ...options
-) {
-  return this.find(
-    {
-      ...(productId ? { productId } : {}),
-      ...(authorId ? { authorId } : {}),
-      deleted: null,
-    },
-    ...options
-  ).fetch();
+ProductReviews.findReviews = function findReviews(query, ...options) {
+  return this.find(buildFindSelector(query), ...options).fetch();
+};
+
+ProductReviews.count = async (query) => {
+  const count = await ProductReviews.rawCollection().countDocuments(
+    buildFindSelector(query)
+  );
+  return count;
 };

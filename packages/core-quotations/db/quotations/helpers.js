@@ -44,6 +44,12 @@ Quotations.findQuotation = ({ quotationId }, options) => {
 Quotations.findQuotations = ({ limit, offset }) => {
   return Quotations.find({}, { skip: offset, limit }).fetch();
 };
+
+Quotations.count = async () => {
+  const count = await Quotations.rawCollection().countDocuments();
+  return count;
+};
+
 Quotations.helpers({
   user() {
     return Users.findOne({

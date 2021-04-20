@@ -8,11 +8,13 @@ import { ProposedQuotation } from './seeds/quotations';
 
 let connection;
 let graphqlFetch;
+let graphqlAnonymousFetch;
 
 describe('TranslatedFilterTexts', () => {
   beforeAll(async () => {
     [, connection] = await setupDatabase();
     graphqlFetch = await createLoggedInGraphqlFetch(ADMIN_TOKEN);
+    graphqlAnonymousFetch = await createAnonymousGraphqlFetch();
   });
 
   afterAll(async () => {
@@ -80,7 +82,6 @@ describe('TranslatedFilterTexts', () => {
 
   describe('Query.quotations for anonymous user should', () => {
     it('return error', async () => {
-      const graphqlAnonymousFetch = await createAnonymousGraphqlFetch();
       const { errors } = await graphqlAnonymousFetch({
         query: /* GraphQL */ `
           query Quotations($limit: Int = 10, $offset: Int = 0) {
@@ -91,9 +92,40 @@ describe('TranslatedFilterTexts', () => {
         `,
         variables: {},
       });
-      expect(errors.length).toEqual(1);
+      expect(errors[0]?.extensions.code).toEqual('NoPermissionError');
     });
   });
+
+  describe('Query.quotationsCount for admin should', () => {
+    it('return total number of quotations', async () => {
+      const {
+        data: { quotationsCount },
+      } = await graphqlFetch({
+        query: /* GraphQL */ `
+          query {
+            quotationsCount
+          }
+        `,
+        variables: {},
+      });
+      expect(quotationsCount).toEqual(2);
+    });
+  });
+
+  describe('Query.quotationsCount for anonymous user should', () => {
+    it('return NoPermissionError', async () => {
+      const { errors } = await graphqlAnonymousFetch({
+        query: /* GraphQL */ `
+          query {
+            quotationsCount
+          }
+        `,
+        variables: {},
+      });
+      expect(errors[0]?.extensions.code).toEqual('NoPermissionError');
+    });
+  });
+
   describe('Query.quotation for admin user should', () => {
     it('return single quotation when existing id passed', async () => {
       const {

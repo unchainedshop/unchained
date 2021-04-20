@@ -17,6 +17,12 @@ const currencyCodeCache = new LRU({
 
 const { CURRENCY } = process.env;
 
+const buildFindSelector = ({ includeInactive = false }) => {
+  const selector = {};
+  if (!includeInactive) selector.isActive = true;
+  return selector;
+};
+
 Countries.updateCountry = ({ countryId, country }) => {
   return Countries.update(
     { _id: countryId },
@@ -67,10 +73,18 @@ Countries.resolveDefaultCurrencyCode = ({ isoCode }) => {
   return liveCurrencyCode;
 };
 
-Countries.findCountries = ({ limit, offset, includeInactive }) => {
-  const selector = {};
-  if (!includeInactive) selector.isActive = true;
-  return Countries.find(selector, { skip: offset, limit }).fetch();
+Countries.findCountries = ({ limit, offset, ...query }) => {
+  return Countries.find(buildFindSelector(query), {
+    skip: offset,
+    limit,
+  }).fetch();
+};
+
+Countries.count = async (query) => {
+  const count = await Countries.rawCollection().countDocuments(
+    buildFindSelector(query)
+  );
+  return count;
 };
 
 Countries.countryExists = ({ countryId }) => {

@@ -137,6 +137,23 @@ Products.findProducts = ({
   return Products.find(selector, options).fetch();
 };
 
+Products.count = async ({ tags, includeDrafts, slugs }) => {
+  const selector = {};
+
+  if (slugs?.length > 0) {
+    selector.slugs = { $in: slugs };
+  } else if (tags?.length > 0) {
+    selector.tags = { $all: tags };
+  }
+  if (!includeDrafts) {
+    selector.status = { $eq: ProductStatus.ACTIVE };
+  } else {
+    selector.status = { $in: [ProductStatus.ACTIVE, ProductStatus.DRAFT] };
+  }
+  const count = await Products.rawCollection().countDocuments(selector);
+  return count;
+};
+
 Products.createProduct = (
   { locale, title, type, sequence, authorId, ...productData },
   { autopublish = false } = {}

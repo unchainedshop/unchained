@@ -17,6 +17,29 @@ const eqSet = (as, bs) => {
   return [...as].join(',') === [...bs].join(',');
 };
 
+const buildFindSelector = ({
+  slugs = [],
+  tags = [],
+  includeLeaves = false,
+  includeInactive = false,
+}) => {
+  const selector = {};
+
+  if (slugs?.length > 0) {
+    selector.slugs = { $in: slugs };
+  } else if (tags?.length > 0) {
+    selector.tags = { $all: tags };
+  }
+
+  if (!includeLeaves) {
+    selector.isRoot = true;
+  }
+  if (!includeInactive) {
+    selector.isActive = true;
+  }
+  return selector;
+};
+
 export const resolveAssortmentLinkFromDatabase = ({ selector = {} } = {}) => (
   assortmentId,
   childAssortmentId
@@ -78,36 +101,22 @@ Collections.Assortments.removeAssortment = ({ assortmentId }) => {
 };
 
 Collections.Assortments.findAssortments = ({
-  tags,
-  slugs,
-  limit,
-  offset,
-  includeInactive,
-  includeLeaves,
   sort = { sequence: 1 },
+  ...query
 }) => {
-  const selector = {};
   const options = { sort };
 
-  if (slugs?.length > 0) {
-    selector.slugs = { $in: slugs };
-  } else {
-    options.skip = offset;
-    options.limit = limit;
+  return Collections.Assortments.find(
+    buildFindSelector(query),
+    options
+  ).fetch();
+};
 
-    if (tags?.length > 0) {
-      selector.tags = { $all: tags };
-    }
-  }
-
-  if (!includeLeaves) {
-    selector.isRoot = true;
-  }
-  if (!includeInactive) {
-    selector.isActive = true;
-  }
-
-  return Collections.Assortments.find(selector, options).fetch();
+Collections.Assortments.count = async (query) => {
+  const count = await Collections.Assortments.rawCollection().countDocuments(
+    buildFindSelector(query)
+  );
+  return count;
 };
 
 Collections.Assortments.updateAssortment = ({

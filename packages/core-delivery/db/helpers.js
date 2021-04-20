@@ -9,6 +9,13 @@ import settings from '../settings';
 
 const emptyContext = {};
 
+const buildFindSelector = ({ type, deleted = null } = {}) => {
+  return {
+    ...(type ? { type } : {}),
+    deleted,
+  };
+};
+
 DeliveryProviders.helpers({
   transformContext(key, value) {
     return value;
@@ -143,11 +150,15 @@ DeliveryProviders.providerExists = ({ deliveryProviderId }) => {
 DeliveryProviders.findProvider = ({ deliveryProviderId, ...rest }) =>
   DeliveryProviders.findOne({ _id: deliveryProviderId, ...rest });
 
-DeliveryProviders.findProviders = ({ type } = {}, ...options) =>
-  DeliveryProviders.find(
-    { ...(type ? { type } : {}), deleted: null },
-    ...options
-  ).fetch();
+DeliveryProviders.findProviders = (query, ...options) =>
+  DeliveryProviders.find(buildFindSelector(query), ...options).fetch();
+
+DeliveryProviders.count = async (query) => {
+  const count = await DeliveryProviders.rawCollection().countDocuments(
+    buildFindSelector(query)
+  );
+  return count;
+};
 
 DeliveryProviders.findSupported = ({ order }, ...options) => {
   const providers = DeliveryProviders.findProviders(

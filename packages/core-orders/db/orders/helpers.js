@@ -24,6 +24,13 @@ import { OrderPayments } from '../order-payments/collections';
 import { OrderDocuments } from '../order-documents/collections';
 import { OrderPositions } from '../order-positions/collections';
 
+const buildFindSelector = ({ includeCarts }) => {
+  const selector = {};
+  if (!includeCarts) selector.status = { $ne: OrderStatus.OPEN };
+
+  return selector;
+};
+
 Subscriptions.generateFromCheckout = async ({ items, order, ...context }) => {
   const payment = order.payment();
   const delivery = order.delivery();
@@ -151,19 +158,24 @@ Orders.removeOrder = ({ orderId }) => {
 Orders.findOrders = ({
   limit,
   offset,
-  includeCarts,
   sort = {
     created: -1,
   },
+  ...query
 }) => {
-  const selector = {};
-  if (!includeCarts) selector.status = { $ne: OrderStatus.OPEN };
   const options = {
     skip: offset,
     limit,
     sort,
   };
-  return Orders.find(selector, options).fetch();
+  return Orders.find(buildFindSelector(query), options).fetch();
+};
+
+Orders.count = async (query) => {
+  const count = await Orders.rawCollection().countDocuments(
+    buildFindSelector(query)
+  );
+  return count;
 };
 
 Orders.helpers({

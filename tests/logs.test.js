@@ -7,11 +7,13 @@ import { ADMIN_TOKEN } from './seeds/users';
 
 let connection;
 let graphqlFetch;
+let graphqlAnonymousFetch;
 
 describe('Logs', () => {
   beforeAll(async () => {
     [, connection] = await setupDatabase();
     graphqlFetch = await createLoggedInGraphqlFetch(ADMIN_TOKEN);
+    graphqlAnonymousFetch = await createAnonymousGraphqlFetch();
   });
 
   afterAll(async () => {
@@ -84,7 +86,6 @@ describe('Logs', () => {
 
   describe('Query.Logs for anonymous user should', () => {
     it('return error', async () => {
-      const graphqlAnonymousFetch = await createAnonymousGraphqlFetch();
       const { errors } = await graphqlAnonymousFetch({
         query: /* GraphQL */ `
           query Logs($limit: Int = 100, $offset: Int = 0) {
@@ -99,7 +100,37 @@ describe('Logs', () => {
         },
       });
 
-      expect(errors.length).toEqual(1);
+      expect(errors[0]?.extensions.code).toBe('NoPermissionError');
+    });
+  });
+
+  describe('Query.LogsCount for admin user should', () => {
+    it('return the first 100 records when no argument is given', async () => {
+      const {
+        data: { logsCount },
+      } = await graphqlFetch({
+        query: /* GraphQL */ `
+          query LogsCount {
+            logsCount
+          }
+        `,
+        variables: {},
+      });
+      expect(logsCount > 0).toBe(true);
+    });
+  });
+
+  describe('Query.LogsCount for anonymous user should', () => {
+    it('return the first 100 records when no argument is given', async () => {
+      const { errors } = await graphqlAnonymousFetch({
+        query: /* GraphQL */ `
+          query LogsCount {
+            logsCount
+          }
+        `,
+        variables: {},
+      });
+      expect(errors[0]?.extensions.code).toBe('NoPermissionError');
     });
   });
 });

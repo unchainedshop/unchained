@@ -1,5 +1,11 @@
 import { Currencies } from './collections';
 
+const buildFindSelector = ({ includeInactive = false }) => {
+  const selector = {};
+  if (!includeInactive) selector.isActive = true;
+  return selector;
+};
+
 Currencies.createCurrency = ({ isoCode, ...countryData }) => {
   const _id = Currencies.insert({
     created: new Date(),
@@ -10,10 +16,18 @@ Currencies.createCurrency = ({ isoCode, ...countryData }) => {
   return Currencies.findOne({ _id });
 };
 
-Currencies.findCurrencies = ({ limit, offset, includeInactive }) => {
-  const selector = {};
-  if (!includeInactive) selector.isActive = true;
-  return Currencies.find(selector, { skip: offset, limit }).fetch();
+Currencies.findCurrencies = ({ limit, offset, ...query }) => {
+  return Currencies.find(buildFindSelector(query), {
+    skip: offset,
+    limit,
+  }).fetch();
+};
+
+Currencies.count = async (query) => {
+  const count = await Currencies.rawCollection().countDocuments(
+    buildFindSelector(query)
+  );
+  return count;
 };
 
 Currencies.currencyExists = ({ currencyId }) => {

@@ -4,17 +4,19 @@ import {
   createLoggedInGraphqlFetch,
   createAnonymousGraphqlFetch,
 } from './helpers';
-import { Admin, ADMIN_TOKEN, User } from './seeds/users';
+import { Admin, ADMIN_TOKEN, User, USER_TOKEN } from './seeds/users';
 
 let connection;
 let db;
 let graphqlFetchAsAdminUser;
 let graphqlFetchAsAnonymousUser;
+let graphqlFetchAsNormalUser;
 
 describe('Auth for admin users', () => {
   beforeAll(async () => {
     [db, connection] = await setupDatabase();
     graphqlFetchAsAdminUser = await createLoggedInGraphqlFetch(ADMIN_TOKEN);
+    graphqlFetchAsNormalUser = await createLoggedInGraphqlFetch(USER_TOKEN);
     graphqlFetchAsAnonymousUser = await createAnonymousGraphqlFetch();
   });
 
@@ -120,6 +122,75 @@ describe('Auth for admin users', () => {
       expect(user).toMatchObject({
         _id: User._id,
       });
+    });
+  });
+
+  describe('Query.usersCount for admin user', () => {
+    it('returns the 2 default users', async () => {
+      const {
+        data: { usersCount },
+      } = await graphqlFetchAsAdminUser({
+        query: /* GraphQL */ `
+          query {
+            usersCount
+          }
+        `,
+      });
+      expect(usersCount).toEqual(2);
+    });
+    it('returns 3  when using includeGuests', async () => {
+      const {
+        data: { usersCount },
+      } = await graphqlFetchAsAdminUser({
+        query: /* GraphQL */ `
+          query {
+            usersCount(includeGuests: true)
+          }
+        `,
+      });
+      expect(usersCount).toEqual(3);
+    });
+
+    it('returns 1 for queryString guest', async () => {
+      const {
+        data: { usersCount },
+      } = await graphqlFetchAsAdminUser({
+        query: /* GraphQL */ `
+          query usersCount($queryString: String) {
+            usersCount(queryString: $queryString, includeGuests: true)
+          }
+        `,
+        variables: {
+          queryString: 'guest',
+        },
+      });
+      expect(usersCount).toEqual(1);
+    });
+  });
+
+  describe('Query.usersCount for anonymous user', () => {
+    it('return NoPermissionError', async () => {
+      const { errors } = await graphqlFetchAsAnonymousUser({
+        query: /* GraphQL */ `
+          query {
+            usersCount
+          }
+        `,
+      });
+      expect(errors[0]?.extensions?.code).toEqual('NoPermissionError');
+    });
+  });
+
+  describe('Query.usersCount for loged in user', () => {
+    it('return NoPermissionError', async () => {
+      const { errors } = await graphqlFetchAsNormalUser({
+        query: /* GraphQL */ `
+          query {
+            usersCount
+          }
+        `,
+      });
+      expect(errors[0]?.extensions?.code).toEqual('NoPermissionError');
     });
   });
 

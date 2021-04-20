@@ -9,19 +9,65 @@ import { USER_TOKEN, ADMIN_TOKEN } from './seeds/users';
 let connection;
 let graphqlFetch;
 let adminGraphqlFetch;
+let graphqlFetchAsAnonymousUser;
 
 describe('Order: Management', () => {
   beforeAll(async () => {
     [, connection] = await setupDatabase();
     graphqlFetch = await createLoggedInGraphqlFetch(USER_TOKEN);
     adminGraphqlFetch = await createLoggedInGraphqlFetch(ADMIN_TOKEN);
+    graphqlFetchAsAnonymousUser = await createAnonymousGraphqlFetch();
   });
 
   afterAll(async () => {
     await connection.close();
   });
 
-  describe('Query.order for loggedin user should', () => {
+  describe('Query.ordersCount for logged in user should', () => {
+    it('return total number of current user orders', async () => {
+      const { errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          query ordersCount {
+            ordersCount
+          }
+        `,
+        variables: {},
+      });
+      expect(errors[0]?.extensions.code).toEqual('NoPermissionError');
+    });
+  });
+
+  describe('Query.ordersCount for admin user should', () => {
+    it('return total number of current user orders', async () => {
+      const {
+        data: { ordersCount },
+      } = await adminGraphqlFetch({
+        query: /* GraphQL */ `
+          query ordersCount {
+            ordersCount
+          }
+        `,
+        variables: {},
+      });
+      expect(ordersCount).toEqual(2);
+    });
+  });
+
+  describe('Query.ordersCount for anonymous user', () => {
+    it('should return NoPermissionError', async () => {
+      const { errors } = await graphqlFetchAsAnonymousUser({
+        query: /* GraphQL */ `
+          query ordersCount {
+            ordersCount
+          }
+        `,
+        variables: {},
+      });
+      expect(errors[0]?.extensions.code).toEqual('NoPermissionError');
+    });
+  });
+
+  describe('Query.orders for loggedin user should', () => {
     it('return array of current user orders', async () => {
       const {
         data: {
@@ -224,8 +270,7 @@ describe('Order: Management', () => {
 
   describe('Query.orders for anonymous user', () => {
     it('should return error', async () => {
-      const graphqlAnonymousFetch = await createAnonymousGraphqlFetch();
-      const { errors } = await graphqlAnonymousFetch({
+      const { errors } = await graphqlFetchAsAnonymousUser({
         query: /* GraphQL */ `
           query orders {
             orders {
@@ -238,7 +283,7 @@ describe('Order: Management', () => {
         `,
         variables: {},
       });
-      expect(errors.length).toEqual(1);
+      expect(errors[0]?.extensions.code).toEqual('NoPermissionError');
     });
   });
 });

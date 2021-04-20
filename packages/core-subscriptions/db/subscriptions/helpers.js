@@ -49,6 +49,11 @@ Subscriptions.findSubscriptions = ({ limit, offset }) => {
   ).fetch();
 };
 
+Subscriptions.count = async () => {
+  const count = await Subscriptions.rawCollection().countDocuments();
+  return count;
+};
+
 Subscriptions.helpers({
   user() {
     return Users.findOne({

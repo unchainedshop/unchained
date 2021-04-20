@@ -19,3 +19,8 @@ Logs.findLogs = ({
     }
   ).fetch();
 };
+
+Logs.count = async () => {
+  const count = await Logs.rawCollection().countDocuments();
+  return count;
+};
