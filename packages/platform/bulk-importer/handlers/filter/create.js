@@ -49,7 +49,7 @@ export default async function createFilter(payload, { logger, authorId }) {
     specification.content
   );
   await Promise.all(
-    options.map(async ({ content: optionContent, value: optionValue }) => {
+    options?.map(async ({ content: optionContent, value: optionValue }) => {
       await Promise.all(
         Object.entries(optionContent).map(async ([locale, localizedData]) => {
           return filter.upsertLocalizedText(locale, {

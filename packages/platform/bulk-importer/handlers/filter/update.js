@@ -31,7 +31,7 @@ export default async function updateFilter(payload, { logger, authorId }) {
   if (options) {
     logger.debug('replace localized content for filter options', content);
     await Promise.all(
-      options.map(async ({ content: optionContent, value: optionValue }) => {
+      options?.map(async ({ content: optionContent, value: optionValue }) => {
         await Promise.all(
           Object.entries(optionContent).map(async ([locale, localizedData]) => {
             return filter.upsertLocalizedText(locale, {
