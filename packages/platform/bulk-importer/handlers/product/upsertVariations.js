@@ -1,9 +1,18 @@
 import { ProductVariations } from 'meteor/unchained:core-products';
 
+const upsert = async ({ _id, ...entityData }) => {
+  try {
+    return ProductVariations.createVariation({ _id, ...entityData });
+  } catch (e) {
+    ProductVariations.update({ _id }, { $set: entityData });
+    return ProductVariations.findOne({ _id });
+  }
+};
+
 export default async ({ variations, authorId, productId }) => {
-  return Promise.all(
-    variations.map(async ({ asset, content, options, ...variationsRest }) => {
-      const variation = await ProductVariations.createVariation({
+  const variationObjects = await Promise.all(
+    variations.map(async ({ content, options, ...variationsRest }) => {
+      const variation = await upsert({
         authorId,
         ...variationsRest,
         options: options.map((option) => option.value),
@@ -35,4 +44,8 @@ export default async ({ variations, authorId, productId }) => {
       return variation;
     })
   );
+  ProductVariations.remove({
+    productId,
+    _id: { $nin: variationObjects.map((obj) => obj._id) },
+  });
 };
