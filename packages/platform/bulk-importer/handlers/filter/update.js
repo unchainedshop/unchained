@@ -11,7 +11,7 @@ export default async function updateFilter(payload, { logger, authorId }) {
   const filter = await Filters.updateFilter({
     ...filterData,
     filterId: _id,
-    options: options.map((option) => option.value),
+    options: options?.map((option) => option.value) || [],
     authorId,
   });
 

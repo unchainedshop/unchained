@@ -13,7 +13,7 @@ export default async function createFilter(payload, { logger, authorId }) {
     filter = await Filters.createFilter({
       ...filterData,
       _id,
-      options: options.map((option) => option.value),
+      options: options?.map((option) => option.value) || [],
       authorId,
     });
   } catch (e) {
@@ -24,7 +24,7 @@ export default async function createFilter(payload, { logger, authorId }) {
     filter = await Filters.updateFilter({
       ...filterData,
       filterId: _id,
-      options: options.map((option) => option.value),
+      options: options?.map((option) => option.value) || [],
       authorId,
     });
   }
