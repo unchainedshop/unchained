@@ -30,8 +30,10 @@ const buildFindSelector = ({ includeCarts }) => {
 
   return selector;
 };
-const { ASSIGN_USER_CART } = process.env;
-const { ENSURE_USER_HAS_CART } = process.env;
+const {
+  ENSURE_USER_HAS_CART,
+  INITIALIZE_CART_ON_RESTART = false,
+} = process.env;
 
 Subscriptions.generateFromCheckout = async ({ items, order, ...context }) => {
   const payment = order.payment();
@@ -830,6 +832,7 @@ Orders.updateCalculation = ({ orderId }) => {
 };
 
 Orders.ensureCartForUser = async ({ userId, user, countryContext }) => {
+  Orders.invalidateProviders();
   if (!ENSURE_USER_HAS_CART) return;
   const userObject = user || Users.findUser({ userId });
   if (!userObject) throw new Error('User with the id not found');
@@ -903,14 +906,16 @@ Orders.migrateCart = async ({
 };
 
 Orders.invalidateProviders = () => {
-  log('Orders: Start invalidating cart providers', { level: 'verbose' });
-  Orders.find({
-    status: { $eq: OrderStatus.OPEN },
-  })
-    .fetch()
-    .forEach((order) => {
-      order.initProviders();
-    });
+  if (INITIALIZE_CART_ON_RESTART) {
+    log('Orders: Start invalidating cart providers', { level: 'verbose' });
+    Orders.find({
+      status: { $eq: OrderStatus.OPEN },
+    })
+      .fetch()
+      .forEach((order) => {
+        order.initProviders();
+      });
+  }
 };
 
 Orders.assignCartForExistingUsers = async ({ assignCartForUsers = false }) => {

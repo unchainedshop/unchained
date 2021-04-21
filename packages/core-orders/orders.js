@@ -1,4 +1,3 @@
-import { Orders } from './db/orders';
 import runMigrations from './db/migrations';
 
 export * from './db/order-deliveries';
@@ -10,6 +9,5 @@ export * from './db/orders';
 
 export default () => {
   // configure
-  Orders.invalidateProviders();
   runMigrations();
 };
