@@ -16,6 +16,15 @@ import filterContext from '../filterContext';
 import evaluateContext from '../evaluateContext';
 import settings from '../settings';
 
+const buildFindSelector = ({ includeGuests, queryString }) => {
+  const selector = {};
+  if (!includeGuests) selector.guest = { $ne: true };
+  if (queryString) {
+    selector.$text = { $search: queryString };
+  }
+  return selector;
+};
+
 Logs.helpers({
   user() {
     return (
@@ -336,4 +345,18 @@ Users.findUsers = async ({ limit, offset, includeGuests, queryString }) => {
   }
 
   return Users.find(selector, { skip: offset, limit }).fetch();
+};
+
+Users.count = async (query) => {
+  let count = 0;
+  if (query?.queryString) {
+    count = await Users.rawCollection().countDocuments(
+      buildFindSelector(query)
+    );
+  } else {
+    count = await Users.rawCollection().countDocuments(
+      buildFindSelector(query)
+    );
+  }
+  return count;
 };
