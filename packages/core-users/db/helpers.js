@@ -327,19 +327,15 @@ Users.createLoginToken = async (user, rawContext) => {
 };
 
 Users.findUsers = async ({ limit, offset, includeGuests, queryString }) => {
-  const selector = {};
-  if (!includeGuests) selector.guest = { $ne: true };
+  const selector = buildFindSelector({ includeGuests, queryString });
   if (queryString) {
     const userArray = await Users.rawCollection()
-      .find(
-        { ...selector, $text: { $search: queryString } },
-        {
-          skip: offset,
-          limit,
-          projection: { score: { $meta: 'textScore' } },
-          sort: { score: { $meta: 'textScore' } },
-        }
-      )
+      .find(selector, {
+        skip: offset,
+        limit,
+        projection: { score: { $meta: 'textScore' } },
+        sort: { score: { $meta: 'textScore' } },
+      })
       .toArray();
     return (userArray || []).map((item) => new Users._transform(item)); // eslint-disable-line
   }
@@ -348,15 +344,8 @@ Users.findUsers = async ({ limit, offset, includeGuests, queryString }) => {
 };
 
 Users.count = async (query) => {
-  let count = 0;
-  if (query?.queryString) {
-    count = await Users.rawCollection().countDocuments(
-      buildFindSelector(query)
-    );
-  } else {
-    count = await Users.rawCollection().countDocuments(
-      buildFindSelector(query)
-    );
-  }
+  const count = await Users.rawCollection().countDocuments(
+    buildFindSelector(query)
+  );
   return count;
 };
