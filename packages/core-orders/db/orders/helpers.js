@@ -23,6 +23,7 @@ import { OrderDiscounts } from '../order-discounts/collections';
 import { OrderPayments } from '../order-payments/collections';
 import { OrderDocuments } from '../order-documents/collections';
 import { OrderPositions } from '../order-positions/collections';
+import settings from '../../settings';
 
 const buildFindSelector = ({ includeCarts }) => {
   const selector = {};
@@ -30,10 +31,6 @@ const buildFindSelector = ({ includeCarts }) => {
 
   return selector;
 };
-const {
-  ENSURE_USER_HAS_CART,
-  INITIALIZE_CART_ON_RESTART = false,
-} = process.env;
 
 Subscriptions.generateFromCheckout = async ({ items, order, ...context }) => {
   const payment = order.payment();
@@ -832,8 +829,7 @@ Orders.updateCalculation = ({ orderId }) => {
 };
 
 Orders.ensureCartForUser = async ({ userId, user, countryContext }) => {
-  Orders.invalidateProviders();
-  if (!ENSURE_USER_HAS_CART) return;
+  if (!settings.ensureUserHasCart) return;
   const userObject = user || Users.findUser({ userId });
   if (!userObject) throw new Error('User with the id not found');
   const countryCode = countryContext || userObject.lastLogin.countryContext;
@@ -906,21 +902,17 @@ Orders.migrateCart = async ({
 };
 
 Orders.invalidateProviders = () => {
-  if (INITIALIZE_CART_ON_RESTART) {
-    log('Orders: Start invalidating cart providers', { level: 'verbose' });
-    Orders.find({
-      status: { $eq: OrderStatus.OPEN },
-    })
-      .fetch()
-      .forEach((order) => {
-        order.initProviders();
-      });
-  }
+  log('Orders: Start invalidating cart providers', { level: 'verbose' });
+  Orders.find({
+    status: { $eq: OrderStatus.OPEN },
+  })
+    .fetch()
+    .forEach((order) => {
+      order.initProviders();
+    });
 };
 
-Orders.assignCartForExistingUsers = async ({ assignCartForUsers = false }) => {
-  if (assignCartForUsers) {
-    const users = await Users.find({}).fetch();
-    users.map((user) => Orders.ensureCartForUser({ user }));
-  }
+Orders.assignCartForExistingUsers = async () => {
+  const users = await Users.find({}).fetch();
+  users.map((user) => Orders.ensureCartForUser({ user }));
 };

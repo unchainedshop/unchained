@@ -66,11 +66,6 @@ export default ({ mergeUserCartsOnLogin = true } = {}) => {
         mergeCarts: mergeUserCartsOnLogin,
       });
 
-      await Orders.ensureCartForUser({
-        userId: user._id,
-        countryContext,
-      });
-
       await services.migrateBookmarks(
         {
           fromUserId: userIdBeforeLogin,
@@ -80,6 +75,10 @@ export default ({ mergeUserCartsOnLogin = true } = {}) => {
         connection
       );
     }
+    await Orders.ensureCartForUser({
+      userId: user._id,
+      countryContext,
+    });
   });
 
   accountsServer.on('ResetPasswordSuccess', (user) => {
