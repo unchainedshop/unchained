@@ -6,7 +6,7 @@ import createBulkImporter, { BulkImportPayloads } from '../bulk-importer';
 
 const logger = createLogger('unchained:platform:bulk-import');
 
-const unpackEvents = async (payloadId) => {
+const unpackPayload = async ({ payloadId, ...options }) => {
   return new Promise((resolve, reject) => {
     const buffers = [];
     const readStream = BulkImportPayloads.openDownloadStream(payloadId);
@@ -22,7 +22,7 @@ const unpackEvents = async (payloadId) => {
           reject(err);
           return;
         }
-        resolve(data);
+        resolve({ ...data, ...options });
       });
     });
   });
@@ -39,23 +39,36 @@ class BulkImport extends WorkerPlugin {
 
   static async doWork(rawPayload) {
     try {
-      const { events } = rawPayload.payloadId
-        ? await unpackEvents(rawPayload.payloadId)
-        : rawPayload;
+      const {
+        events,
+        createShouldUpsertIfIDExists = false,
+        authorId = 'root',
+      } = rawPayload.payloadId ? await unpackPayload(rawPayload) : rawPayload;
 
       if (!events?.length) throw new Error('No events submitted');
-      const bulkImporter = createBulkImporter({ logger, authorId: 'root' });
+      const bulkImporter = createBulkImporter({
+        logger,
+        authorId,
+        createShouldUpsertIfIDExists,
+      });
       for (let i = 0, len = events.length; i < len; i += 1) {
         // eslint-disable-next-line
         await bulkImporter.prepare(events[i]);
       }
-      const result = await bulkImporter.execute();
+      const [result, error] = await bulkImporter.execute();
+      if (error) {
+        return {
+          success: false,
+          result,
+          error,
+        };
+      }
       return {
         success: true,
         result,
       };
     } catch (err) {
-      logger.warn(err.message, err);
+      logger.error(err.message, err);
       return {
         success: false,
         error: {

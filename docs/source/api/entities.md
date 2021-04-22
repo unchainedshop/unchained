@@ -21,8 +21,20 @@ In some situations, it's propably wise to develop a sync microservice: You have 
 
 ### Endpoint
 
-The main entry point to send import events is:
-Mutation.sendBulkImportEvents. The mutation takes an array of events that consist out of a type, an operation and a payload.
+There is two ways to send bulk import events, one is through GraphQL by adding a BULK_IMPORT work type with an input like this:
+```
+{
+  events: [...],
+  ...options
+}
+```
+
+The other way is to use the REST endpoint /bulk-import:
+```
+curl -X POST -H "Authorization: Bearer XXX" -H "content-type: application/json" --data-binary '{ "events": [] }' -f -v http://localhost:4010/bulk-import?optionA=valueA
+```
+
+Every event consists of a type, an operation and a payload.
 
 Supported entity types:
 - PRODUCT
@@ -48,13 +60,11 @@ All Events follow this JSON Structure:
 }
 ```
 
-Always try to send as many events at a time, so Unchained can optimize write operations.
+Always try to send as many events at a time, so Unchained can optimize write operations. And be aware that because of the MongoDB Document Size limitation you have to use the REST endpoint when you send JSON which is more than 16m of size. If you have a lot of categories and/or products (5K entities+) please use the REST endpoint.
 
-The amount of entities you can submit in one file depends on the size of the entity data and your webserver configuration limits, only split it up when you reach that limit at some point or use the streaming API.
+Options:
 
-```
-curl -X POST -H "Authorization: Bearer XXX" -H "content-type: application/json" --data-binary '{ "events": [] }' -f -v http://localhost:4010/bulk-import
-```
+- `createShouldUpsertIfIDExists`: In some situations, this can be helpful programming forgiving sync code. If you set `createShouldUpsertIfIDExists` to true, CREATE operations will not fail if the entity with the payloadId already exists and the bulk importer instead tries to merge the new product with the existing one by using update methods.
 
 ## JSON Reference
 

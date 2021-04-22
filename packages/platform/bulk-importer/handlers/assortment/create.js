@@ -4,11 +4,21 @@ import upsertAssortmentProducts from './upsertAssortmentProducts';
 import upsertAssortmentChildren from './upsertAssortmentChildren';
 import upsertAssortmentFilters from './upsertAssortmentFilters';
 
-export default async function createAssortment(payload, { logger, authorId }) {
+export default async function createAssortment(
+  payload,
+  { logger, authorId, createShouldUpsertIfIDExists }
+) {
   const { specification, products, children, filters, _id } = payload;
 
   if (!specification)
-    throw new Error('Specification is required when creating a new assortment');
+    throw new Error(
+      `Specification is required when creating new assortment ${_id}`
+    );
+
+  if (!specification.content)
+    throw new Error(
+      `Assortment content is required when creating new assortment${_id}`
+    );
 
   logger.debug('create assortment object', specification);
   try {
@@ -18,6 +28,7 @@ export default async function createAssortment(payload, { logger, authorId }) {
       authorId,
     });
   } catch (e) {
+    if (!createShouldUpsertIfIDExists) throw e;
     logger.debug(
       'entity already exists, falling back to update',
       specification
@@ -28,11 +39,6 @@ export default async function createAssortment(payload, { logger, authorId }) {
       authorId,
     });
   }
-
-  if (!specification.content)
-    throw new Error(
-      'Assortment content is required when creating a new assortment'
-    );
 
   logger.debug(
     'create localized content for assortment',

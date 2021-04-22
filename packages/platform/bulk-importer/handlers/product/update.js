@@ -28,16 +28,6 @@ export default async function createProduct(payload, { logger, authorId }) {
     }
   }
 
-  if (media) {
-    logger.debug('replace product media', media);
-    try {
-      await upsertMedia({ media, productId: _id, authorId });
-    } catch (e) {
-      // If we cannot create the media, still continue with the sync!
-      logger.warn(e.message);
-    }
-  }
-
   if (variations) {
     logger.debug('replace variations', variations);
     await upsertVariations({
@@ -45,5 +35,10 @@ export default async function createProduct(payload, { logger, authorId }) {
       productId: _id,
       authorId,
     });
+  }
+
+  if (media) {
+    logger.debug('replace product media', media);
+    await upsertMedia({ media, productId: _id, authorId });
   }
 }
