@@ -1,16 +1,13 @@
 import { setupDatabase, createLoggedInGraphqlFetch } from './helpers';
-import { ADMIN_TOKEN } from './seeds/users';
 
 let connection;
 let db;
 let graphqlFetch;
-let adminGraphqlFetch;
 
 describe('basic setup of internationalization and localization context', () => {
   beforeAll(async () => {
     [db, connection] = await setupDatabase();
     graphqlFetch = await createLoggedInGraphqlFetch();
-    adminGraphqlFetch = await createLoggedInGraphqlFetch(ADMIN_TOKEN);
   });
 
   afterAll(async () => {
@@ -77,29 +74,6 @@ describe('basic setup of internationalization and localization context', () => {
       });
     });
 
-    it('return not found error when passed non existing currencyId', async () => {
-      const { errors } = await graphqlFetch({
-        query: /* GraphQL */ `
-          mutation updateCurrency(
-            $currencyId: ID!
-            $currency: UpdateCurrencyInput!
-          ) {
-            updateCurrency(currencyId: $currencyId, currency: $currency) {
-              _id
-            }
-          }
-        `,
-        variables: {
-          currencyId: 'non-existing-id',
-          currency: {
-            isoCode: 'chf',
-            isActive: true,
-          },
-        },
-      });
-      expect(errors[0]?.extensions?.code).toEqual('CurrencyNotFoundError');
-    });
-
     it('return error when passed invalid currencyId', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
@@ -141,20 +115,6 @@ describe('basic setup of internationalization and localization context', () => {
       });
       expect(await Currencies.countDocuments({ _id: 'ltc' })).toEqual(0);
       await Currencies.deleteOne({ _id: 'ltc' });
-    });
-
-    it('return not found error when passed non existing currencyId', async () => {
-      const { errors } = await graphqlFetch({
-        query: /* GraphQL */ `
-          mutation {
-            removeCurrency(currencyId: "ETB") {
-              _id
-              isoCode
-            }
-          }
-        `,
-      });
-      expect(errors[0]?.extensions?.code).toEqual('CurrencyNotFoundError');
     });
 
     it('return error when passed invalid currencyId', async () => {
@@ -347,33 +307,6 @@ describe('basic setup of internationalization and localization context', () => {
       expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
     });
 
-    it('return not found error when passed non existing countryId', async () => {
-      const Currencies = db.collection('currencies');
-      const currency = await Currencies.findOne();
-
-      const { errors } = await graphqlFetch({
-        query: /* GraphQL */ `
-          mutation updateCountry(
-            $countryId: ID!
-            $country: UpdateCountryInput!
-          ) {
-            updateCountry(countryId: $countryId, country: $country) {
-              _id
-            }
-          }
-        `,
-        variables: {
-          countryId: 'non-existing',
-          country: {
-            isoCode: 'CH',
-            isActive: true,
-            defaultCurrencyId: currency._id,
-          },
-        },
-      });
-      expect(errors[0]?.extensions?.code).toEqual('CountryNotFoundError');
-    });
-
     it('remove a country', async () => {
       await Countries.insertOne({ _id: 'us', isoCode: 'US' });
       const { data: { removeCountry } = {}, errors } = await graphqlFetch({
@@ -392,19 +325,6 @@ describe('basic setup of internationalization and localization context', () => {
       });
       expect(await Countries.countDocuments({ _id: 'us' })).toEqual(0);
       await Countries.deleteOne({ _id: 'us' });
-    });
-
-    it('return not found error when passed non existing country ID', async () => {
-      const { errors } = await graphqlFetch({
-        query: /* GraphQL */ `
-          mutation {
-            removeCountry(countryId: "ethiopia") {
-              _id
-            }
-          }
-        `,
-      });
-      expect(errors[0]?.extensions?.code).toEqual('CountryNotFoundError');
     });
 
     it('return error when passed invalid country ID', async () => {
@@ -477,19 +397,6 @@ describe('basic setup of internationalization and localization context', () => {
         isoCode: 'DE',
       });
       await Countries.deleteOne({ _id: 'de' });
-    });
-
-    it('query.country return not found when passed non existing ID', async () => {
-      const { errors } = await adminGraphqlFetch({
-        query: /* GraphQL */ `
-          query {
-            country(countryId: "et") {
-              isoCode
-            }
-          }
-        `,
-      });
-      expect(errors[0]?.extensions?.code).toEqual('CountryNotFoundError');
     });
 
     it('query.country return error when passed invalid ID', async () => {
@@ -566,29 +473,6 @@ describe('basic setup of internationalization and localization context', () => {
       });
     });
 
-    it('return not found error when passed non existing languageId', async () => {
-      const { errors } = await graphqlFetch({
-        query: /* GraphQL */ `
-          mutation updateLanguage(
-            $languageId: ID!
-            $language: UpdateLanguageInput!
-          ) {
-            updateLanguage(languageId: $languageId, language: $language) {
-              _id
-            }
-          }
-        `,
-        variables: {
-          languageId: 'non-existing-id',
-          language: {
-            isoCode: 'de',
-            isActive: true,
-          },
-        },
-      });
-      expect(errors[0]?.extensions?.code).toEqual('LanguageNotFoundError');
-    });
-
     it('return error when passed invalid languageId', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
@@ -630,20 +514,6 @@ describe('basic setup of internationalization and localization context', () => {
       });
       expect(await Languages.countDocuments({ _id: 'en' })).toEqual(0);
       await Languages.deleteOne({ _id: 'en' });
-    });
-
-    it('return not found error when passed non existing languageId', async () => {
-      const { errors } = await graphqlFetch({
-        query: /* GraphQL */ `
-          mutation {
-            removeLanguage(languageId: "AMH") {
-              _id
-              isoCode
-            }
-          }
-        `,
-      });
-      expect(errors[0]?.extensions?.code).toEqual('LanguageNotFoundError');
     });
 
     it('return error when passed invalid languageId', async () => {
@@ -717,20 +587,6 @@ describe('basic setup of internationalization and localization context', () => {
         isoCode: 'pl',
       });
       await Languages.deleteOne({ _id: 'pl' });
-    });
-
-    it('query.language return not found error when passed non existing languageId', async () => {
-      const { data: { language } = {}, errors } = await adminGraphqlFetch({
-        query: /* GraphQL */ `
-          query {
-            language(languageId: "amh") {
-              isoCode
-            }
-          }
-        `,
-      });
-      expect(language).toEqual(null);
-      expect(errors[0]?.extensions?.code).toEqual('LanguageNotFoundError');
     });
 
     it('query.language return error when passed invalid languageId', async () => {
