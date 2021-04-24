@@ -625,7 +625,8 @@ export default class FilesCollection extends Mongo.Collection<FileObj> {
   }
 
   async insertWithRemoteFile({ file, meta = {}, ...rest }) {
-    const { stream, filename, mimetype } = await file;
+    const { createReadStream, filename, mimetype } = await file;
+    const stream = createReadStream();
     return new Promise((resolve, reject) => {
       const bufs: Uint8Array[] = [];
       stream.on('data', (d) => {
