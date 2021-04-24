@@ -5,6 +5,6 @@ export const ProductMedia = new Mongo.Collection('product_media');
 export const ProductMediaTexts = new Mongo.Collection('product_media_texts');
 
 export const Media = createFilesCollection('media', {
-  maxSize: 104857600,
-  extensionRegex: /png|jpg|jpeg|pdf/i,
+  maxSize: 1048576000,
+  extensionRegex: /png|jpg|jpeg|pdf|webm|mpg|mp4|avi|wmv|mov|flv|mkv/i,
 });
