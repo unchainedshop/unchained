@@ -507,11 +507,9 @@ export default class FilesCollection extends Mongo.Collection<FileObj> {
 
   async write(buffer, opts: Options) {
     const fileId = opts.fileId || Random.id();
-    const FSName = fileId;
-    const fileName =
-      opts.name || opts.fileName ? opts.name || opts.fileName : FSName;
+    const fileName = opts.name || opts.fileName || fileId;
 
-    const { extension } = await getExtension(fileName, buffer);
+    const fileExtension = await getExtension(fileName, buffer);
 
     opts.type = await getMimeType(buffer);
 
@@ -525,15 +523,17 @@ export default class FilesCollection extends Mongo.Collection<FileObj> {
       name: fileName,
       meta: opts.meta,
       type: opts.type,
+      path: opts.path,
       size,
       userId: opts.userId,
       collectionName: this._name,
-      extension,
+      extension: fileExtension,
+      fileId,
     });
 
     result._id = fileId;
 
-    this.checkForSizeAndExtension({ size, extension });
+    this.checkForSizeAndExtension({ size, extension: fileExtension.extension });
 
     this.insert(result, async (err, _id) => {
       if (!err) {
@@ -546,23 +546,23 @@ export default class FilesCollection extends Mongo.Collection<FileObj> {
 
   async load(itemUrl: string, opts: Options) {
     const fileId = opts.fileId || Random.id();
-    const FSName = fileId;
     const pathParts = itemUrl.split('/');
     const fileName =
       opts.name || opts.fileName
         ? opts.name || opts.fileName
-        : pathParts[pathParts.length - 1] || FSName;
+        : pathParts[pathParts.length - 1] || fileId;
 
     const response = await fetch(itemUrl, { headers: opts.headers || {} });
     if (!response.ok) throw new Error('URL provided responded with 404');
     const arrayBuffer = await response.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
     const size = Buffer.byteLength(buffer);
-    const { extension } = await getExtension(fileName, buffer);
+    const fileExtension = await getExtension(fileName, buffer);
 
     const result = dataToSchema({
       name: fileName,
       meta: opts.meta,
+      path: opts.path,
       type:
         opts.type ||
         response.headers['content-type'] ||
@@ -571,15 +571,15 @@ export default class FilesCollection extends Mongo.Collection<FileObj> {
       userId: opts.userId,
       // eslint-disable-next-line no-underscore-dangle
       collectionName: this._name,
-      extension,
+      extension: fileExtension,
+      fileId,
     });
     // throws if not matching
     this.checkForSizeAndExtension({
       size: result.size,
-      extension,
+      extension: fileExtension.extension,
     });
 
-    result._id = fileId;
     this.insert(result, async (err, _id) => {
       if (!err) {
         const fileRef = this.findOne(_id);

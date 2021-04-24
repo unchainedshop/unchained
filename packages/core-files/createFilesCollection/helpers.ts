@@ -2,7 +2,7 @@ import fileType from 'file-type';
 import crypto from 'crypto';
 import { Meteor } from 'meteor/meteor';
 import { MongoInternals } from 'meteor/mongo';
-import { FileObj } from './types';
+import { FileObj, ExtensionObj, MediaObj } from './types';
 
 export const bound = Meteor.bindEnvironment((callback) => callback());
 
@@ -105,7 +105,7 @@ export const notFound = (http) => {
 export const getExtension = async (
   fileName: string,
   buffer: Buffer | ArrayBuffer
-) => {
+): Promise<ExtensionObj> => {
   if (fileName.includes('.')) {
     const extension = (
       fileName.split('.').pop()?.split('?')[0] || ''
@@ -156,16 +156,14 @@ export const responseHeaders = (responseCode, versionRef) => {
   return headers;
 };
 
-export const dataToSchema = (data): FileObj => {
+export const dataToSchema = (data: MediaObj): FileObj => {
   const dataSchema = {
     name: data.name,
-    extension: data.extension,
-    ext: data.extension,
-    extensionWithDot: `.${data.extension}`,
     path: data.path,
     meta: data.meta,
     type: data.type,
     mime: data.type,
+    ...data.extension,
     'mime-type': data.type,
     size: data.size,
     userId: data.userId || '',
@@ -174,7 +172,7 @@ export const dataToSchema = (data): FileObj => {
         path: data.path,
         size: data.size,
         type: data.type,
-        extension: data.extension,
+        extension: data.extension.extension,
       },
     },
     downloadRoute: '/cdn/storage',

@@ -51,3 +51,20 @@ export interface FileObj {
 
   'mime-type': string;
 }
+export interface ExtensionObj {
+  ext: string;
+  extension: string;
+  extensionWithDot: string;
+}
+
+export interface MediaObj {
+  name: string;
+  path?: string;
+  meta?: Record<string, unknown>;
+  type: string;
+  size: number;
+  userId?: string;
+  collectionName: string;
+  extension: ExtensionObj;
+  fileId: string;
+}
