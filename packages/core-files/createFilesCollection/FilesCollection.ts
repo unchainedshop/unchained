@@ -523,15 +523,12 @@ export default class FilesCollection extends Mongo.Collection<FileObj> {
       name: fileName,
       meta: opts.meta,
       type: opts.type,
-      path: opts.path,
       size,
       userId: opts.userId,
       collectionName: this._name,
       extension: fileExtension,
       fileId,
     });
-
-    result._id = fileId;
 
     this.checkForSizeAndExtension({ size, extension: fileExtension.extension });
 
@@ -562,7 +559,6 @@ export default class FilesCollection extends Mongo.Collection<FileObj> {
     const result = dataToSchema({
       name: fileName,
       meta: opts.meta,
-      path: opts.path,
       type:
         opts.type ||
         response.headers['content-type'] ||
