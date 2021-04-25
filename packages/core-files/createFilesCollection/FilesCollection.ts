@@ -469,7 +469,7 @@ export default class FilesCollection extends Mongo.Collection<FileObj> {
   async getGridFSBucket() {
     const { mongo } = await MongoInternals.defaultRemoteCollectionDriver();
     const gridFSBucket = new GridFSBucket(mongo.db, {
-      chunkSizeBytes: 1024,
+      chunkSizeBytes: 255 * 1024,
       bucketName: this._name,
     });
 
