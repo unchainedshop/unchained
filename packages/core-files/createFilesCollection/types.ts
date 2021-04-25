@@ -59,7 +59,6 @@ export interface ExtensionObj {
 
 export interface MediaObj {
   name: string;
-  path?: string;
   meta?: Record<string, unknown>;
   type: string;
   size: number;

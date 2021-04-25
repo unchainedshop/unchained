@@ -157,9 +157,10 @@ export const responseHeaders = (responseCode, versionRef) => {
 };
 
 export const dataToSchema = (data: MediaObj): FileObj => {
+  const path = `assets/app/uploads/${data.collectionName}/${data.fileId}${data.extension.extensionWithDot}`;
   const dataSchema = {
     name: data.name,
-    path: data.path,
+    path,
     meta: data.meta,
     type: data.type,
     mime: data.type,
@@ -169,7 +170,7 @@ export const dataToSchema = (data: MediaObj): FileObj => {
     userId: data.userId || '',
     versions: {
       original: {
-        path: data.path,
+        path,
         size: data.size,
         type: data.type,
         extension: data.extension.extension,
