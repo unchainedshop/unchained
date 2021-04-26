@@ -8,12 +8,14 @@ Unchained supports a publish-subscribe (pub/sub) event model to keep track of ev
 The `unchained:core-events` module exports three utility functions that can be used to interact with the registered event tracket.
 
 - `registerEvents`: add's custom events that will be tracked. it takes array of event names.
-- `emit`: used to emit events, either pre-built events or custom events registered using `registerEvents`
-- `subscribe`: used for subscribing to events emitted from the registered event tracker.
+- `emit(eventName, payload)`: used to emit events, either pre-built events or custom events registered using `registerEvents`. It take two arguments, name of the event we want to emit and the data associated with the event.
+- `subscribe(eventName: callBack)`: used for subscribing to events emitted from the registered event tracker. it takes two arguments, name of the event we want to subscribe to and a call back that will be provided one argument holding data for the associated event.
 
 Note: to get list of pre-built or custom events registered on unchained use `EventType` resolver inside GraphQL playground.
 
 Every event emitted from the engine is an object that has one property `payload` which is also an object that has different properties based on the event. We recommend you follow the same pattern when implementing custom events.
+
+## Built in Events
 
 Bellow are events tracked under each module under the box:
 
@@ -93,3 +95,100 @@ Bellow are events tracked under each module under the box:
 | :-------------- | :----------------------- |
 | BOOKMARK_CREATE | `{ bookmarkId: string }` |
 | BOOKMARK_REMOVE | `{ bookmarkId: string }` |
+
+### Tracking custom events
+
+In addition to the built in event that come with unchained you can register your own custom event easily.
+
+In order to do this, The custom events need to be registered at platform boot time using `registerEvents` helper function that takes array of event names to be tracked.
+
+```
+import { Meteor } from 'meteor/meteor';
+import { registerEvents } from 'meteor/unchained:core-events';
+
+Meteor.startup(() => {
+  ...
+  startPlatform({...});
+  ...
+  registerEvents([
+      'CUSTOM_EVENT_ONE',
+      'CUSTOM_EVENT_TWO',
+      'CUSTOM_EVENT_THREE',
+  ])
+});
+```
+
+After initializing this at system start up, you can `emit` and `subscribe` in your code base.
+
+```
+import { registerEvents } from 'meteor/unchained:core-events';
+
+subscribe('CUSTOM_EVENT_ONE', ({ payload }) => {
+    console.log(payload.from);
+});
+
+emit('CUSTOM_EVENT_ONE', { from: "fcustom event one"});;
+
+
+```
+
+NOTE: before you can subscribe to an event, make sure it's registered first. Otherwise error will be thrown.
+
+## Setup custom event tracker
+
+We can easily swap the default event tracker module (EventEmitter) used by unchained with out own module by implementing `EventAdapter` interface and registering it on `EventDirector` on system boot time. Both classes are exported from the `core-events` module.
+
+```
+import redis from 'redis';
+import EventDirector, { EventAdapter } from 'meteor/unchained:core-events';
+
+const { REDIS_PORT = 6379, REDIS_HOST = '127.0.0.1' } = process.env;
+
+class RedisEventEmitter extends EventAdapter {
+  redisPublisher = redis.createClient({
+    port: REDIS_PORT,
+    host: REDIS_HOST,
+  });
+
+  redisSubscriber = redis.createClient({
+    port: REDIS_PORT,
+    host: REDIS_HOST,
+  });
+
+  publish(eventName, payload) {
+    this.redisPublisher.publish(eventName, JSON.stringify(payload));
+  }
+
+  subscribe(eventName, callBack) {
+    this.redisSubscriber.on('message', (_channelName, payload) =>
+      callBack(payload)
+    );
+      this.redisSubscriber.subscribe(eventName);
+    }
+  }
+}
+
+const handler = new RedisEventEmitter();
+
+EventDirector.setEventAdapter(handler);
+
+Meteor.startup(() => {
+  ...
+  startPlatform({...});
+  ...
+  registerEvents([
+      'CUSTOM_EVENT_ONE',
+      'CUSTOM_EVENT_TWO',
+      'CUSTOM_EVENT_THREE',
+  ])
+});
+
+```
+
+Explanation:
+
+We have decided to use `redis` for event tracking. In order to do that we have to create new class extending the `EventAddapter` interface and implement the two functions required `subscribe` & `publish`.
+
+in this functions we defined how redis implements the pub/sub model.
+
+Next all we need to is register it in `EventDirector` class using the static function `setEventAdapter`.
