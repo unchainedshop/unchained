@@ -41,6 +41,7 @@ module.exports = {
             'config/email-template',
             'config/users',
             'config/subscriptions',
+            'config/events',
             'config/settings',
           ],
           Deployment: ['deployment/amazon-documentdb', 'deployment/docker-dev'],

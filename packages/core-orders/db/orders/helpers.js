@@ -723,7 +723,7 @@ Orders.updateBillingAddress = ({ billingAddress, orderId }) => {
   );
   Orders.updateCalculation({ orderId });
   const order = Orders.findOne({ _id: orderId });
-  emit('ORDER_UPDATE', { payload: { order, field: 'contact' } });
+  emit('ORDER_UPDATE', { payload: { order, field: 'billing' } });
   return order;
 };
 
