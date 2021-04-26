@@ -33,8 +33,8 @@ function create(initialState, headersOverride, getToken) {
     }
 
     if (networkError) {
-      console.log(`[Network error]: ${networkError}`); // eslint-disable-line
       toast(networkError);
+      console.log(`[Network error]: ${networkError}`); // eslint-disable-line
     }
   });
 
