@@ -171,7 +171,7 @@ Products.createProduct = (
       product.publish();
     }
   }
-  emit('PRODUCT_CREATE', { payload: { product } });
+  emit('PRODUCT_CREATE', { product });
   return product;
 };
 
@@ -186,7 +186,7 @@ Products.updateProduct = ({ productId, type, ...product }) => {
     modifier.$set.type = ProductTypes[type];
   }
   Products.update({ _id: productId }, modifier);
-  emit('PRODUCT_UPDATE', { payload: { productId, type, ...product } });
+  emit('PRODUCT_UPDATE', { productId, type, ...product });
 };
 ProductTexts.findProductTexts = ({ productId }) => {
   return ProductTexts.find({ productId }).fetch();
@@ -226,7 +226,7 @@ Products.addProxyAssignment = ({ productId, proxyId, vectors }) => {
       },
     },
   };
-  emit('PRODUCT_ADD_ASSIGNMENT', { payload: { productId, proxyId } });
+  emit('PRODUCT_ADD_ASSIGNMENT', { productId, proxyId });
   return Products.update({ _id: proxyId }, modifier);
 };
 
@@ -242,7 +242,7 @@ Products.createBundleItem = ({ productId, item }) => {
       },
     }
   );
-  emit('PRODUCT_CREATE_BUNDLE_ITEM', { payload: { productId } });
+  emit('PRODUCT_CREATE_BUNDLE_ITEM', { productId });
 };
 
 Products.removeBundleItem = ({ productId, index }) => {
@@ -278,7 +278,7 @@ Products.removeProduct = ({ productId }) => {
           },
         }
       );
-      emit('PRODUCT_REMOVE', { payload: { productId } });
+      emit('PRODUCT_REMOVE', { productId });
       break;
     default:
       throw new Error(`Invalid status', ${this.status}`);
@@ -301,7 +301,7 @@ Products.removeAssignment = ({ productId, vectors }) => {
     },
   };
   Products.update({ _id: productId }, modifier, { multi: true });
-  emit('PRODUCT_REMOVE_ASSIGNMENT', { payload: { productId } });
+  emit('PRODUCT_REMOVE_ASSIGNMENT', { productId });
 };
 
 Products.helpers({
@@ -318,7 +318,7 @@ Products.helpers({
             },
           }
         );
-        emit('PRODUCT_PUBLISH', { payload: { product: this } });
+        emit('PRODUCT_PUBLISH', { product: this });
         return true;
       default:
         return false;
@@ -337,7 +337,7 @@ Products.helpers({
             },
           }
         );
-        emit('PRODUCT_UNPUBLISH', { payload: { product: this } });
+        emit('PRODUCT_UNPUBLISH', { product: this });
         return true;
       default:
         return false;
@@ -455,7 +455,7 @@ Products.helpers({
       authorId,
       sortKey,
     });
-    emit('PRODUCT_ADD_MEDIA', { payload: { productMedia } });
+    emit('PRODUCT_ADD_MEDIA', { productMedia });
     return productMedia;
   },
   getLocalizedTexts(locale) {

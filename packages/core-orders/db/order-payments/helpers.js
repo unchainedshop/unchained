@@ -100,7 +100,7 @@ OrderPayments.helpers({
         ? JSON.stringify(arbitraryResponseData)
         : 'mark paid manually'
     );
-    emit('ORDER_PAY', { payload: { orderPayment: this } });
+    emit('ORDER_PAY', { orderPayment: this });
   },
   setStatus(status, info) {
     return OrderPayments.updateStatus({
@@ -157,7 +157,7 @@ OrderPayments.updatePayment = ({ orderId, paymentId, context }) => {
   );
   Orders.updateCalculation({ orderId });
   const orderPayment = OrderPayments.findOne({ _id: paymentId });
-  emit('ORDER_UPDATE_PAYMENT', { payload: { orderPayment } });
+  emit('ORDER_UPDATE_PAYMENT', { orderPayment });
   return orderPayment;
 };
 

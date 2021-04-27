@@ -10,7 +10,7 @@ ProductMedia.findProductMedia = ({ productMediaId }) => {
 
 ProductMedia.removeProductMedia = ({ productMediaId }) => {
   ProductMedia.remove({ _id: productMediaId });
-  emit('PRODUCT_REMOVE_MEDIA', { payload: { productMediaId } });
+  emit('PRODUCT_REMOVE_MEDIA', { productMediaId });
 };
 
 ProductMedia.helpers({
@@ -102,6 +102,6 @@ ProductMedia.updateManualOrder = ({ sortKeys }) => {
   const productMedias = ProductMedia.find({
     _id: { $in: changedMediaIds },
   }).fetch();
-  emit('PRODUCT_REORDER_MEDIA', { payload: { productMedias } });
+  emit('PRODUCT_REORDER_MEDIA', { productMedias });
   return productMedias;
 };

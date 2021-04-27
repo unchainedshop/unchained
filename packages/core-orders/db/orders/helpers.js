@@ -159,7 +159,7 @@ Orders.findOrder = ({ orderId, ...rest }, options) => {
 };
 
 Orders.removeOrder = ({ orderId }) => {
-  emit('ORDER_REMOVE', { payload: { orderId } });
+  emit('ORDER_REMOVE', { orderId });
   return Orders.remove({ _id: orderId });
 };
 
@@ -239,7 +239,7 @@ Orders.helpers({
       orderId: this._id,
       code,
     });
-    emit('ORDER_ADD_DISCOUNT', { payload: { discount } });
+    emit('ORDER_ADD_DISCOUNT', { discount });
     return discount;
   },
   async initProviders() {
@@ -361,7 +361,7 @@ Orders.helpers({
       configuration,
       ...rest,
     });
-    emit('ORDER_ADD_PRODUCT', { payload: { orderPosition } });
+    emit('ORDER_ADD_PRODUCT', { orderPosition });
     return orderPosition;
   },
   user() {
@@ -539,19 +539,19 @@ Orders.helpers({
     let { status } = this;
     if (status === OrderStatus.OPEN || !status) {
       if (this.isValidForCheckout()) {
-        emit('ORDER_CHECKOUT', { payload: { order: this } });
+        emit('ORDER_CHECKOUT', { order: this });
         status = OrderStatus.PENDING;
       }
     }
     if (status === OrderStatus.PENDING) {
       if (this.isAutoConfirmationEnabled()) {
-        emit('ORDER_CONFIRMED', { payload: { order: this } });
+        emit('ORDER_CONFIRMED', { order: this });
         status = OrderStatus.CONFIRMED;
       }
     }
     if (status === OrderStatus.CONFIRMED) {
       if (this.isAutoFullfillmentEnabled()) {
-        emit('ORDER_FULLFILLED', { payload: { order: this } });
+        emit('ORDER_FULLFILLED', { order: this });
         status = OrderStatus.FULLFILLED;
       }
     }
@@ -707,7 +707,7 @@ Orders.createOrder = async ({
     countryCode,
   });
   const order = Orders.findOne({ _id: orderId });
-  emit('ORDER_CREATE', { payload: { order } });
+  emit('ORDER_CREATE', { order });
   return order.initProviders();
 };
 
@@ -724,7 +724,7 @@ Orders.updateBillingAddress = ({ billingAddress, orderId }) => {
   );
   Orders.updateCalculation({ orderId });
   const order = Orders.findOne({ _id: orderId });
-  emit('ORDER_UPDATE', { payload: { order, field: 'billing' } });
+  emit('ORDER_UPDATE', { order, field: 'billing' });
   return order;
 };
 
@@ -741,7 +741,7 @@ Orders.updateContact = ({ contact, orderId }) => {
   );
   Orders.updateCalculation({ orderId });
   const order = Orders.findOne({ _id: orderId });
-  emit('ORDER_UPDATE', { payload: { order, field: 'contact' } });
+  emit('ORDER_UPDATE', { order, field: 'contact' });
   return order;
 };
 
@@ -758,7 +758,7 @@ Orders.updateContext = ({ context, orderId }) => {
   );
   Orders.updateCalculation({ orderId });
   const order = Orders.findOne({ _id: orderId });
-  emit('ORDER_UPDATE', { payload: { order, field: 'context' } });
+  emit('ORDER_UPDATE', { order, field: 'context' });
   return order;
 };
 

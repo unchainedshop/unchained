@@ -83,7 +83,7 @@ OrderDeliveries.helpers({
   markDelivered() {
     if (this.status !== OrderDeliveryStatus.OPEN) return;
     this.setStatus(OrderDeliveryStatus.DELIVERED, 'mark delivered manually');
-    emit('ORDER_DELIVER', { payload: { orderDelivery: this } });
+    emit('ORDER_DELIVER', { orderDelivery: this });
   },
   setStatus(status, info) {
     return OrderDeliveries.updateStatus({
@@ -142,7 +142,7 @@ OrderDeliveries.updateDelivery = ({ deliveryId, orderId, context }) => {
   );
   Orders.updateCalculation({ orderId });
   const orderDelivery = OrderDeliveries.findOne({ _id: deliveryId });
-  emit('ORDER_UPDATE_DELIVERY', { payload: { orderDelivery } });
+  emit('ORDER_UPDATE_DELIVERY', { orderDelivery });
   return orderDelivery;
 };
 

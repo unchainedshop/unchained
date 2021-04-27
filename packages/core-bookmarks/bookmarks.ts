@@ -75,7 +75,7 @@ export default (): UnchainedBookmarkAPI => {
         }
       ),
     removeById: async (bookmarkId) => {
-      emit('BOOKMARK_REMOVE', { payload: { bookmarkId } });
+      emit('BOOKMARK_REMOVE', { bookmarkId });
       return Bookmarks.remove({ _id: bookmarkId });
     },
     create: async ({ userId, productId, ...rest }) => {
@@ -85,7 +85,7 @@ export default (): UnchainedBookmarkAPI => {
         userId,
         productId,
       });
-      emit('BOOKMARK_CREATE', { payload: { bookmarkId } });
+      emit('BOOKMARK_CREATE', { bookmarkId });
       return bookmarkId;
     },
     existsByUserIdAndProductId: async ({ productId, userId }) => {

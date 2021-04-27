@@ -306,6 +306,6 @@ OrderPositions.removePositions = ({ orderId }) => {
   log('Remove Positions', { orderId });
   const count = OrderPositions.remove({ orderId });
   Orders.updateCalculation({ orderId });
-  emit('ORDER_EMPTY_CART', { payload: { orderId, count } });
+  emit('ORDER_EMPTY_CART', { orderId, count });
   return count;
 };

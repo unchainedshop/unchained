@@ -147,7 +147,7 @@ OrderDiscounts.updateDiscount = ({ discountId, ...rest }) => {
     }
   );
   const discount = OrderDiscounts.findOne({ _id: discountId });
-  emit('ORDER_UPDATE_DISCOUNT', { payload: { discount } });
+  emit('ORDER_UPDATE_DISCOUNT', { discount });
   return OrderDiscounts.findOne({ _id: discountId });
 };
 
@@ -165,7 +165,7 @@ OrderDiscounts.removeDiscount = ({ discountId }) => {
     return discount;
   }
   OrderDiscounts.remove({ _id: discountId });
-  emit('ORDER_REMOVE_DISCOUNT', { payload: { discount } });
+  emit('ORDER_REMOVE_DISCOUNT', { discount });
   return discount;
 };
 

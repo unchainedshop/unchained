@@ -28,17 +28,17 @@ class EventDirector {
     EventDirector.adapter = adapter;
   }
 
-  static emit(eventName: string, payload: any): void {
+  static emit(eventName: string, data: any): void {
     if (!EventDirector.registeredEvents.has(eventName))
       throw new Error(`Event with ${eventName} is not registered`);
-    EventDirector.adapter.publish(eventName, payload);
+    EventDirector.adapter.publish(eventName, { payload: { ...data } });
     Events.insert({
       type: eventName,
-      payload: payload?.payload,
+      payload: data,
       created: new Date(),
     });
     logger.info(
-      `EventDirector -> Emitted to ${eventName} with ${JSON.stringify(payload)}`
+      `EventDirector -> Emitted to ${eventName} with ${JSON.stringify(data)}`
     );
   }
 

@@ -13,12 +13,11 @@ export default (
     userId,
     version,
   });
+
   emit('PAGE_VIEW', {
-    payload: {
-      path,
-      referrer,
-      context: { localeContext, remoteAddress, version, countryContext },
-    },
+    path,
+    referrer,
+    context: { localeContext, remoteAddress, version, countryContext },
   });
   return path;
 };

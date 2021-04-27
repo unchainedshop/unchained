@@ -21,7 +21,7 @@ ProductVariations.findVariation = ({ productVariationId }) => {
 
 ProductVariations.removeVariation = ({ productVariationId }) => {
   ProductVariations.remove({ _id: productVariationId });
-  emit('PRODUCT_REMOVE_VARIATION', { payload: { productVariationId } });
+  emit('PRODUCT_REMOVE_VARIATION', { productVariationId });
 };
 
 ProductVariations.helpers({
@@ -98,7 +98,7 @@ ProductVariations.helpers({
       productVariationOptionValue: value,
       title,
     });
-    emit('PRODUCT_VARIATION_OPTION_CREATE', { payload: { productVariation } });
+    emit('PRODUCT_VARIATION_OPTION_CREATE', { productVariation });
     return productVariation;
   },
 });

@@ -55,7 +55,7 @@ ProductReviews.helpers({
         type,
         meta,
       });
-      emit('PRODUCT_REVIEW_ADD_VOTE', { payload: { productReview } });
+      emit('PRODUCT_REVIEW_ADD_VOTE', { productReview });
       return productReview;
     }
     return this;
@@ -85,7 +85,7 @@ ProductReviews.createReview = function createReview({
     ...product,
   });
   const productReview = this.findOne({ _id });
-  emit('PRODUCT_REVIEW_CREATE', { payload: { productReview } });
+  emit('PRODUCT_REVIEW_CREATE', { productReview });
   return productReview;
 };
 
@@ -103,7 +103,7 @@ ProductReviews.updateReview = function updateReview({
     }
   );
   const productReview = this.findOne({ _id: productReviewId, deleted: null });
-  emit('PRODUCT_UPDATE_REVIEW', { payload: { productReview } });
+  emit('PRODUCT_UPDATE_REVIEW', { productReview });
   return productReview;
 };
 
@@ -148,7 +148,7 @@ ProductReviews.deleteReview = function deleteReview({ productReviewId }) {
       },
     }
   );
-  emit('PRODUCT_REMOVE_REVIEW', { payload: { productReviewId } });
+  emit('PRODUCT_REMOVE_REVIEW', { productReviewId });
   return this.findOne({ _id: productReviewId });
 };
 

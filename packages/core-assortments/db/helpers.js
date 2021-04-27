@@ -129,7 +129,7 @@ Collections.Assortments.updateAssortment = ({
       },
     }
   );
-  emit('ASSORTMENT_UPDATE', { payload: { assortmentId } });
+  emit('ASSORTMENT_UPDATE', { assortmentId });
 };
 
 Collections.Assortments.removeAssortment = ({ assortmentId }) => {
@@ -143,7 +143,7 @@ Collections.Assortments.removeAssortment = ({ assortmentId }) => {
   Collections.AssortmentProducts.remove({ assortmentId });
   Collections.AssortmentFilters.remove({ assortmentId });
   Collections.Assortments.remove({ _id: assortmentId });
-  emit('ASSORTMENT_REMOVE', { payload: { assortmentId } });
+  emit('ASSORTMENT_REMOVE', { assortmentId });
 };
 
 Collections.Assortments.invalidateFilterCaches = () => {
@@ -169,7 +169,7 @@ Collections.AssortmentLinks.findLink = ({
 };
 
 Collections.AssortmentLinks.removeLink = ({ assortmentLinkId }) => {
-  emit('ASSORTMENT_REMOVE_LINK', { payload: { assortmentLinkId } });
+  emit('ASSORTMENT_REMOVE_LINK', { assortmentLinkId });
   return Collections.AssortmentLinks.remove({ _id: assortmentLinkId });
 };
 
@@ -270,7 +270,7 @@ Collections.AssortmentFilters.createAssortmentFilter = ({
     $setOnInsert,
   });
   const assortmentFilter = Collections.AssortmentFilters.findOne(selector);
-  emit('ASSORTMENT_ADD_FILTER', { payload: { assortmentFilter } });
+  emit('ASSORTMENT_ADD_FILTER', { assortmentFilter });
   return assortmentFilter;
 };
 
@@ -301,7 +301,7 @@ Collections.Assortments.createAssortment = ({
   if (locale) {
     assortmentObject.upsertLocalizedText(locale, { title, authorId });
   }
-  emit('ASSORTMENT_CREATE', { payload: { assortment: assortmentObject } });
+  emit('ASSORTMENT_CREATE', { assortment: assortmentObject });
   return assortmentObject;
 };
 
@@ -515,7 +515,7 @@ Collections.AssortmentProducts.updateManualOrder = ({
       _id: { $in: assortmentIds },
     }).forEach((assortment) => assortment.invalidateProductIdCache());
   }
-  emit('ASSORTMENT_REORDER_PRODUCTS', { payload: { assortmentProducts } });
+  emit('ASSORTMENT_REORDER_PRODUCTS', { assortmentProducts });
   return assortmentProducts;
 };
 
@@ -549,7 +549,7 @@ Collections.AssortmentFilters.updateManualOrder = ({ sortKeys }) => {
     _id: { $in: changedAssortmentFilterIds },
   }).fetch();
 
-  emit('ASSORTMENT_REORDER_FILTERS', { payload: { assortmentFilters } });
+  emit('ASSORTMENT_REORDER_FILTERS', { assortmentFilters });
   return assortmentFilters;
 };
 
@@ -582,7 +582,7 @@ Collections.AssortmentLinks.updateManualOrder = ({ sortKeys }) => {
   const assortmentLinks = Collections.AssortmentLinks.find({
     _id: { $in: changedAssortmentLinkIds },
   }).fetch();
-  emit('ASSORTMENT_REORDER_LINKS', { payload: { assortmentLinks } });
+  emit('ASSORTMENT_REORDER_LINKS', { assortmentLinks });
   return assortmentLinks;
 };
 
@@ -653,7 +653,7 @@ Collections.Assortments.setBase = ({ assortmentId }) => {
       },
     }
   );
-  emit('ASSORTMENT_SET_BASE', { payload: { assortmentId } });
+  emit('ASSORTMENT_SET_BASE', { assortmentId });
 };
 
 Collections.Assortments.helpers({
@@ -757,7 +757,7 @@ Collections.Assortments.helpers({
     if (!skipInvalidation) {
       this.invalidateProductIdCache();
     }
-    emit('ASSORTMENT_ADD_PRODUCT', { payload: { assortmentProduct } });
+    emit('ASSORTMENT_ADD_PRODUCT', { assortmentProduct });
     return assortmentProduct;
   },
   addLink({ assortmentId, ...rest }, { skipInvalidation = false } = {}) {
@@ -978,7 +978,7 @@ Collections.AssortmentFilters.findFilter = ({ assortmentFilterId }) => {
 };
 
 Collections.AssortmentFilters.removeFilter = ({ assortmentFilterId }) => {
-  emit('ASSORTMENT_REMOVE_FILTER', { payload: { assortmentFilterId } });
+  emit('ASSORTMENT_REMOVE_FILTER', { assortmentFilterId });
   return Collections.AssortmentFilters.remove({ _id: assortmentFilterId });
 };
 
