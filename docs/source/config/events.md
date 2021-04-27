@@ -3,13 +3,13 @@ title: "Module: Events"
 description: Configure the Events Module
 ---
 
-Unchained supports a publish-subscribe (pub/sub) event model to keep track of events emitted in each module. By default it uses nodejs EventEmitter module to handle events but can easily extended to use any event tracker module by extending the `EventAdapter` class which we will briefly see later.
+Unchained supports the publish-subscribe (pub/sub) event model to keep track of events emitted in each module. By default it uses nodejs EventEmitter module to handle events but can easily extended to use any event tracker module by extending the `EventAdapter` class which we will briefly see later.
 
-The `unchained:core-events` module exports three utility functions that can be used to interact with the registered event tracket.
+The `unchained:core-events` module exports three utility functions that can be used to interact with the registered event tracker, or register new custom events.
 
 - `registerEvents`: add's custom events that will be tracked. it takes array of event names.
-- `emit(eventName, payload)`: used to emit events, either pre-built events or custom events registered using `registerEvents`. It take two arguments, name of the event we want to emit and the data associated with the event.
-- `subscribe(eventName: callBack)`: used for subscribing to events emitted from the registered event tracker. it takes two arguments, name of the event we want to subscribe to and a call back that will be provided one argument holding data for the associated event.
+- `emit(eventName, payload)`: used to emit events, either pre-built events or custom events registered using `registerEvents`. It take two arguments, name of the event we want to emit and an object of the data associated with the event.
+- `subscribe(eventName: callBack)`: used for subscribing to events emitted by `emit` function. It takes two arguments, name of the event we want to subscribe to and a call back that will be takes one argument holding data for the associated event.
 
 Note: to get list of pre-built or custom events registered on unchained use `EventType` resolver inside GraphQL playground.
 
@@ -21,83 +21,82 @@ Bellow are events tracked under each module under the box:
 
 #### `core-assortments`:
 
-| Event name                  | `payload`                                                   |
-| :-------------------------- | :---------------------------------------------------------- |
-| ASSORTMENT_CREATE           | `{ assortment: {} }`                                        |
-| ASSORTMENT_ADD_FILTER       | `{ assortmentFilter: {} }`                                  |
-| ASSORTMENT_ADD_LINK         | `{ parentAssortmentId: string, childAssortmentId: string }` |
-| ASSORTMENT_ADD_PRODUCT      | `{ assortmentProduct: {} }`                                 |
-| ASSORTMENT_REMOVE           | `{ assortmentId: string }`                                  |
-| ASSORTMENT_REMOVE_FILTER    | `{ assortmentFilterId: string }`                            |
-| ASSORTMENT_REMOVE_LINK      | `{ assortmentLinkId: string }`                              |
-| ASSORTMENT_REORDER_PRODUCTS | `{ assortmentProducts: [] }`                                |
-| ASSORTMENT_REORDER_FILTERS  | `{ assortmentFilters: [] }`                                 |
-| ASSORTMENT_REORDER_LINKS    | `{ assortmentLinks: [] }`                                   |
-| ASSORTMENT_SET_BASE         | `{ assortmentId: string }`                                  |
-| ASSORTMENT_UPDATE           | `{ assortmentId: string }`                                  |
-| ASSORTMENT_UPDATE_TEXTS     | `{ assortmentId: string, assortmentTexts: [] }`             |
+| Event name                  |              Emited when...              | `payload`                                                   |
+| :-------------------------- | :--------------------------------------: | :---------------------------------------------------------- |
+| ASSORTMENT_CREATE           |          Assortment is created           | `{ assortment: {} }`                                        |
+| ASSORTMENT_ADD_FILTER       |       Assortment filter is created       | `{ assortmentFilter: {} }`                                  |
+| ASSORTMENT_ADD_LINK         |        Assortment link is created        | `{ parentAssortmentId: string, childAssortmentId: string }` |
+| ASSORTMENT_ADD_PRODUCT      |    Product is added to an assortment     | `{ assortmentProduct: {} }`                                 |
+| ASSORTMENT_REMOVE           |          Assortment is deleted           | `{ assortmentId: string }`                                  |
+| ASSORTMENT_REMOVE_FILTER    |       Assortment filter is deleted       | `{ assortmentFilterId: string }`                            |
+| ASSORTMENT_REMOVE_LINK      |        Assortment link is removed        | `{ assortmentLinkId: string }`                              |
+| ASSORTMENT_REORDER_PRODUCTS | Assortment product sort order is updated | `{ assortmentProducts: [] }`                                |
+| ASSORTMENT_REORDER_FILTERS  | Assortment filters sort order is updated | `{ assortmentFilters: [] }`                                 |
+| ASSORTMENT_REORDER_LINKS    |        Assortment link is updated        | `{ assortmentLinks: [] }`                                   |
+| ASSORTMENT_SET_BASE         |   Assortment is set as base assortment   | `{ assortmentId: string }`                                  |
+| ASSORTMENT_UPDATE           |          Assortment is updated           | `{ assortmentId: string }`                                  |
+| ASSORTMENT_UPDATE_TEXTS     |        Assortment text is updated        | `{ assortmentId: string, assortmentTexts: [] }`             |
 
 #### `core-products`
 
-| Event name                      | `payload`                                                                 |
-| :------------------------------ | :------------------------------------------------------------------------ |
-| PRODUCT_ADD_ASSIGNMENT          | `{ productId: string, proxyId: string }`                                  |
-| PRODUCT_ADD_MEDIA               | `{ productMedia: {} }`                                                    |
-| PRODUCT_REVIEW_ADD_VOTE         | `{ productReview: {} }`                                                   |
-| PRODUCT_CREATE                  | `{ product: {} }`                                                         |
-| PRODUCT_CREATE_BUNDLE_ITEM      | `{ productId: string }`                                                   |
-| PRODUCT_REVIEW_CREATE           | `{ productReview : {} }`                                                  |
-| PRODUCT_CREATE_VARIATION        | `{ productVariation: {} }`                                                |
-| PRODUCT_VARIATION_OPTION_CREATE | `{ productVariation: {} }`                                                |
-| PRODUCT_REMOVE_BUNDLE_ITEM      | `{ productId: string, item: {} }`                                         |
-| PRODUCT_REMOVE                  | `{ productId: string }`                                                   |
-| PRODUCT_REMOVE_ASSIGNMENT       | `{ productId: string }`                                                   |
-| PRODUCT_REMOVE_MEDIA            | `{ productMediaId: string }`                                              |
-| PRODUCT_REMOVE_REVIEW           | `{ productReviewId: string }`                                             |
-| PRODUCT_REMOVE_REVIEW_VOTE      | `{ productReviewId: string, type: string, userId: string }`               |
-| PRODUCT_REMOVE_VARIATION        | `{ productVariationId: string }`                                          |
-| PRODUCT_REMOVE_VARIATION_OPTION | `{ productVariationId: string, productVariationOptionValue: {} }`         |
-| PRODUCT_REORDER_MEDIA           | `{ productMedias: [] }`                                                   |
-| PRODUCT_UNPUBLISH               | `{ product: {} }`                                                         |
-| PRODUCT_PUBLISH                 | `{ product: {} }`                                                         |
-| PRODUCT_UPDATE                  | `{ productId: string, type: string, [commerce,support,warehousing]: {} }` |
-| PRODUCT_UPDATE_MEDIA_TEXT       | `{productMedia: {}, mediaTexts: {} }`                                     |
-| PRODUCT_UPDATE_REVIEW           | `{ productReview: {} }`                                                   |
-| PRODUCT_UPDATE_TEXTS            | `{ product: {}, productTexts: [] }`                                       |
-| PRODUCT_UPDATE_VARIATION_TEXTS  | `{ productVariation: {}, productVariationTexts: [] }`                     |
+| Event name                      | Emited when...                                               | `payload`                                                                 |
+| :------------------------------ | :----------------------------------------------------------- | :------------------------------------------------------------------------ |
+| PRODUCT_ADD_ASSIGNMENT          | CONFIGURABLE_PRODUCT type is assigned proxy product          | `{ productId: string, proxyId: string }`                                  |
+| PRODUCT_ADD_MEDIA               | Media is added for a product                                 | `{ productMedia: {} }`                                                    |
+| PRODUCT_REVIEW_ADD_VOTE         | Product review is recieves a vote                            | `{ productReview: {} }`                                                   |
+| PRODUCT_CREATE                  | Product is created                                           | `{ product: {} }`                                                         |
+| PRODUCT_CREATE_BUNDLE_ITEM      | BUNDLE_PRODUCT is assigned bundle items                      | `{ productId: string }`                                                   |
+| PRODUCT_REVIEW_CREATE           | Product review is created                                    | `{ productReview : {} }`                                                  |
+| PRODUCT_CREATE_VARIATION        | Product variation is created                                 | `{ productVariation: {} }`                                                |
+| PRODUCT_VARIATION_OPTION_CREATE | Product variation option is created                          | `{ productVariation: {} }`                                                |
+| PRODUCT_REMOVE_BUNDLE_ITEM      | Bundle item is removed from a BUNDLE_PRODUCT type            | `{ productId: string, item: {} }`                                         |
+| PRODUCT_REMOVE                  | Product is deleted                                           | `{ productId: string }`                                                   |
+| PRODUCT_REMOVE_ASSIGNMENT       | Proxy assignment is removed from a CONFIGURABLE_PRODUCT type | `{ productId: string }`                                                   |
+| PRODUCT_REMOVE_MEDIA            | Media is deleted from a product                              | `{ productMediaId: string }`                                              |
+| PRODUCT_REMOVE_REVIEW           | Product review is deleted                                    | `{ productReviewId: string }`                                             |
+| PRODUCT_REMOVE_REVIEW_VOTE      | Product review vote is removed                               | `{ productReviewId: string, type: string, userId: string }`               |
+| PRODUCT_REMOVE_VARIATION        | Product variation is removed from a product                  | `{ productVariationId: string }`                                          |
+| PRODUCT_REMOVE_VARIATION_OPTION | Product variation option is removed                          | `{ productVariationId: string, productVariationOptionValue: {} }`         |
+| PRODUCT_REORDER_MEDIA           | Product media sort order is updated                          | `{ productMedias: [] }`                                                   |
+| PRODUCT_UNPUBLISH               | Product is unpublished                                       | `{ product: {} }`                                                         |
+| PRODUCT_PUBLISH                 | product is published                                         | `{ product: {} }`                                                         |
+| PRODUCT_UPDATE                  | product is updated                                           | `{ productId: string, type: string, [commerce,support,warehousing]: {} }` |
+| PRODUCT_UPDATE_MEDIA_TEXT       | Product media text is updated                                | `{productMedia: {}, mediaTexts: {} }`                                     |
+| PRODUCT_UPDATE_REVIEW           | Product review is updated                                    | `{ productReview: {} }`                                                   |
+| PRODUCT_UPDATE_TEXTS            | Product text is updated                                      | `{ product: {}, productTexts: [] }`                                       |
+| PRODUCT_UPDATE_VARIATION_TEXTS  | product variation text is updated                            | `{ productVariation: {}, productVariationTexts: [] }`                     |
 
 #### `core-orders`
 
-| Event name                  | `payload`                                      |
-| :-------------------------- | :--------------------------------------------- |
-| ORDER_UPDATE_DELIVERY       | `{ orderDelivery: {} }`                        |
-| ORDER_SIGN_PAYMENT          | `{ orderPayment: {}, transactionContext: {} }` |
-| ORDER_REMOVE                | `{ orderId: string }`                          |
-| ORDER_ADD_PRODUCT           | `{ orderPosition : {} }`                       |
-| ORDER_ADD_DISCOUNT          | `{ discount: {} }`                             |
-| ORDER_CONFIRMED             | `{ order: {} }`                                |
-| ORDER_FULLFILLED            | `{ order: {} }`                                |
-| ORDER_UPDATE_DELIVERY       | `{ orderDelivery: {} }`                        |
-| ORDER_UPDATE_PAYMENT        | `{ orderPayment: {} }`                         |
-| ORDER_CREATE                | `{ order: {} }`                                |
-| ORDER_UPDATE                | `{ order: {}, field: string }`                 |
-| ORDER_SET_PAYMENT_PROVIDER  | `{ order: {}, paymentProviderId: string }`     |
-| ORDER_SET_DELIVERY_PROVIDER | `{ order: {}, deliveryProviderId: string }`    |
-| ORDER_EMPTY_CART            | `{ orderId: string, count: number }`           |
-| ORDER_UPDATE_CART_ITEM      | `{ orderPosition: {} }`                        |
-| ORDER_REMOVE_CART_ITEM      | `{ orderPosition: {} }`                        |
-| ORDER_UPDATE_DISCOUNT       | `{ discount: {} }`                             |
-| ORDER_REMOVE_DISCOUNT       | `{ discount: {} }`                             |
-| ORDER_CHECKOUT              | `{ order: {} }`                                |
-| ORDER_PAY                   | `{ orderPayment: {} }`                         |
-| ORDER_DELIVERY              | `{ orderDelivery: {} }`                        |
+| Event name                  | Emitted when...                                | `payload`                                      |
+| :-------------------------- | :--------------------------------------------- | :--------------------------------------------- |
+| ORDER_UPDATE_DELIVERY       | Order delivery information is updated          | `{ orderDelivery: {} }`                        |
+| ORDER_SIGN_PAYMENT          | Order payment provider is signed               | `{ orderPayment: {}, transactionContext: {} }` |
+| ORDER_REMOVE                | Order is deleted                               | `{ orderId: string }`                          |
+| ORDER_ADD_PRODUCT           | Product is added to an order                   | `{ orderPosition : {} }`                       |
+| ORDER_ADD_DISCOUNT          | Discount is added to an order                  | `{ discount: {} }`                             |
+| ORDER_CONFIRMED             | Order is confirmed                             | `{ order: {} }`                                |
+| ORDER_FULLFILLED            | All requested items are fullfiled for an order | `{ order: {} }`                                |
+| ORDER_UPDATE_PAYMENT        | Order payment provider is updated              | `{ orderPayment: {} }`                         |
+| ORDER_CREATE                | New Order is created                           | `{ order: {} }`                                |
+| ORDER_UPDATE                | Order information is updated                   | `{ order: {}, field: string }`                 |
+| ORDER_SET_PAYMENT_PROVIDER  | Payment provider is assigned for an order      | `{ order: {}, paymentProviderId: string }`     |
+| ORDER_SET_DELIVERY_PROVIDER | Delivery provider is assigned to an order      | `{ order: {}, deliveryProviderId: string }`    |
+| ORDER_EMPTY_CART            | All cart items are removed from an order       | `{ orderId: string, count: number }`           |
+| ORDER_UPDATE_CART_ITEM      | Items in Order are updated, eg quantity        | `{ orderPosition: {} }`                        |
+| ORDER_REMOVE_CART_ITEM      | Items are delted from an order                 | `{ orderPosition: {} }`                        |
+| ORDER_UPDATE_DISCOUNT       | Order discount is updated                      | `{ discount: {} }`                             |
+| ORDER_REMOVE_DISCOUNT       | Discount associated with Order is removed      | `{ discount: {} }`                             |
+| ORDER_CHECKOUT              | Order is checked out successfuly               | `{ order: {} }`                                |
+| ORDER_PAY                   | Order payment is complete                      | `{ orderPayment: {} }`                         |
+| ORDER_DELIVERY              | Order delivery status is changed to deliverd   | `{ orderDelivery: {} }`                        |
 
 #### `core-bookmarks`
 
-| Event name      | `payload`                |
-| :-------------- | :----------------------- |
-| BOOKMARK_CREATE | `{ bookmarkId: string }` |
-| BOOKMARK_REMOVE | `{ bookmarkId: string }` |
+| Event name      | Emitted when...         | `payload`                |
+| :-------------- | :---------------------- | :----------------------- |
+| BOOKMARK_CREATE | New bookmark is created | `{ bookmarkId: string }` |
+| BOOKMARK_REMOVE | Bookmark is removed     | `{ bookmarkId: string }` |
 
 ### Tracking custom events
 
