@@ -54,9 +54,9 @@ socket-stream-client@0.3.1
 tmeasday:check-npm-versions@0.3.2
 tracker@1.2.0
 typescript@4.1.2
-unchained:api@0.61.18
+unchained:api@0.61.19
 unchained:core@0.61.2
-unchained:core-accountsjs@0.61.2
+unchained:core-accountsjs@0.61.3
 unchained:core-assortments@0.61.1
 unchained:core-bookmarks@0.61.0
 unchained:core-countries@0.61.0
