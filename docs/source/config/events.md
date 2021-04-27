@@ -21,21 +21,21 @@ Bellow are events tracked under each module under the box:
 
 #### `core-assortments`:
 
-| Event name                  |              Emited when...              | `payload`                                                   |
-| :-------------------------- | :--------------------------------------: | :---------------------------------------------------------- |
-| ASSORTMENT_CREATE           |          Assortment is created           | `{ assortment: {} }`                                        |
-| ASSORTMENT_ADD_FILTER       |       Assortment filter is created       | `{ assortmentFilter: {} }`                                  |
-| ASSORTMENT_ADD_LINK         |        Assortment link is created        | `{ parentAssortmentId: string, childAssortmentId: string }` |
-| ASSORTMENT_ADD_PRODUCT      |    Product is added to an assortment     | `{ assortmentProduct: {} }`                                 |
-| ASSORTMENT_REMOVE           |          Assortment is deleted           | `{ assortmentId: string }`                                  |
-| ASSORTMENT_REMOVE_FILTER    |       Assortment filter is deleted       | `{ assortmentFilterId: string }`                            |
-| ASSORTMENT_REMOVE_LINK      |        Assortment link is removed        | `{ assortmentLinkId: string }`                              |
+| Event name                  | Emited when...                           | `payload`                                                   |
+| :-------------------------- | :--------------------------------------- | :---------------------------------------------------------- |
+| ASSORTMENT_CREATE           | Assortment is created                    | `{ assortment: {} }`                                        |
+| ASSORTMENT_ADD_FILTER       | Assortment filter is created             | `{ assortmentFilter: {} }`                                  |
+| ASSORTMENT_ADD_LINK         | Assortment link is created               | `{ parentAssortmentId: string, childAssortmentId: string }` |
+| ASSORTMENT_ADD_PRODUCT      | Product is added to an assortment        | `{ assortmentProduct: {} }`                                 |
+| ASSORTMENT_REMOVE           | Assortment is deleted                    | `{ assortmentId: string }`                                  |
+| ASSORTMENT_REMOVE_FILTER    | Assortment filter is deleted             | `{ assortmentFilterId: string }`                            |
+| ASSORTMENT_REMOVE_LINK      | Assortment link is removed               | `{ assortmentLinkId: string }`                              |
 | ASSORTMENT_REORDER_PRODUCTS | Assortment product sort order is updated | `{ assortmentProducts: [] }`                                |
 | ASSORTMENT_REORDER_FILTERS  | Assortment filters sort order is updated | `{ assortmentFilters: [] }`                                 |
-| ASSORTMENT_REORDER_LINKS    |        Assortment link is updated        | `{ assortmentLinks: [] }`                                   |
-| ASSORTMENT_SET_BASE         |   Assortment is set as base assortment   | `{ assortmentId: string }`                                  |
-| ASSORTMENT_UPDATE           |          Assortment is updated           | `{ assortmentId: string }`                                  |
-| ASSORTMENT_UPDATE_TEXTS     |        Assortment text is updated        | `{ assortmentId: string, assortmentTexts: [] }`             |
+| ASSORTMENT_REORDER_LINKS    | Assortment link is updated               | `{ assortmentLinks: [] }`                                   |
+| ASSORTMENT_SET_BASE         | Assortment is set as base assortment     | `{ assortmentId: string }`                                  |
+| ASSORTMENT_UPDATE           | Assortment is updated                    | `{ assortmentId: string }`                                  |
+| ASSORTMENT_UPDATE_TEXTS     | Assortment text is updated               | `{ assortmentId: string, assortmentTexts: [] }`             |
 
 #### `core-products`
 
