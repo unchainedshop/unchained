@@ -539,6 +539,7 @@ Orders.helpers({
     let { status } = this;
     if (status === OrderStatus.OPEN || !status) {
       if (this.isValidForCheckout()) {
+        emit('ORDER_CHECKOUT', { payload: { order: this } });
         status = OrderStatus.PENDING;
       }
     }

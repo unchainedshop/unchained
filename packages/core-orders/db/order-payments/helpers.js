@@ -100,6 +100,7 @@ OrderPayments.helpers({
         ? JSON.stringify(arbitraryResponseData)
         : 'mark paid manually'
     );
+    emit('ORDER_PAY', { payload: { orderPayment: this } });
   },
   setStatus(status, info) {
     return OrderPayments.updateStatus({

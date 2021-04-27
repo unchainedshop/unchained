@@ -83,6 +83,7 @@ OrderDeliveries.helpers({
   markDelivered() {
     if (this.status !== OrderDeliveryStatus.OPEN) return;
     this.setStatus(OrderDeliveryStatus.DELIVERED, 'mark delivered manually');
+    emit('ORDER_DELIVER', { payload: { orderDelivery: this } });
   },
   setStatus(status, info) {
     return OrderDeliveries.updateStatus({

@@ -88,6 +88,9 @@ Bellow are events tracked under each module under the box:
 | ORDER_REMOVE_CART_ITEM      | `{ orderPosition: {} }`                        |
 | ORDER_UPDATE_DISCOUNT       | `{ discount: {} }`                             |
 | ORDER_REMOVE_DISCOUNT       | `{ discount: {} }`                             |
+| ORDER_CHECKOUT              | `{ order: {} }`                                |
+| ORDER_PAY                   | `{ orderPayment: {} }`                         |
+| ORDER_DELIVERY              | `{ orderDelivery: {} }`                        |
 
 #### `core-bookmarks`
 
