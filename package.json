@@ -20,7 +20,10 @@
   },
   "scripts": {
     "lint": "eslint packages tests --cache --fix --ext=js --ext=ts",
+<<<<<<< HEAD
     "pretest": "npm run lint --silent && npm run typecheck",
+=======
+>>>>>>> Use custom bigInt scalar
     "lint:ci": "eslint packages tests --ext=jsx --ext=js",
     "test": "jest --runInBand --detectOpenHandles --forceExit tests/*",
     "test:ci": "npm run test:integration && npm run test:packages",
@@ -76,5 +79,12 @@
   },
   "eslintConfig": {
     "extends": "@meteorjs/eslint-config-meteor"
+<<<<<<< HEAD
+=======
+  },
+  "dependencies": {
+    "intersection-observer": "^0.12.0",
+    "jsbi": "^3.1.4"
+>>>>>>> Use custom bigInt scalar
   }
 }

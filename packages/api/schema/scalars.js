@@ -10,6 +10,10 @@ export default [
 >>>>>>> Change JSON type to use graphql-scalars
 =======
     scalar PositiveFloat
+<<<<<<< HEAD
 >>>>>>> Use positiveFloat for currency type
+=======
+    scalar BigInt
+>>>>>>> Use custom bigInt scalar
   `,
 ];

@@ -14,7 +14,6 @@ Npm.depends({
   'lodash.isnumber': '3.0.3',
   'body-parser': '1.19.0',
   'graphql-scalars': '1.9.0',
-  'json-bigint-patch': '0.0.4',
 });
 
 Package.onUse((api) => {
