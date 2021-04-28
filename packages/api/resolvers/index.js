@@ -1,5 +1,9 @@
 import { GraphQLUpload } from 'graphql-upload';
-import { BigIntResolver, JSONResolver } from 'graphql-scalars';
+import {
+  BigIntResolver,
+  JSONResolver,
+  PositiveFloatResolver,
+} from 'graphql-scalars';
 import Query from './queries';
 import Mutation from './mutations';
 import Date from './scalar-date';
@@ -11,6 +15,7 @@ export default {
   BigInt: BigIntResolver,
   JSON: JSONResolver,
   Date,
+  PositiveFloat: PositiveFloatResolver,
   Query,
   Mutation,
 };
