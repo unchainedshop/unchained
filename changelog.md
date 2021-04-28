@@ -23,6 +23,11 @@
 - [api] New mutation.signPaymentProviderForCheckout to sign generic order payment directly (OrderPayment.sign still works but is marked deprecated and will be removed in future major releases)
 - [api] three new fields added `ConfigurableProduct.simulatedPriceRange` , `ConfigurableProduct.catalogPriceRange`, `SimulateProduct.leveledCatalogPrices` `PlanProduct.leveledCatalogPrices`
 - [product] `simulatePriceRange` and `catalogPriceRange` helpers added that will return price range of products variations assigned for a particular configurable(proxy) product based on the parameters provided to them.
+- Be sure to use `removeFiles` on files collections instead of simply `files`. `removeFiles` ensure the removal of the document and also the associated GridFS file.
+
+## Major
+ - [files] had undergone a similar change to the roles package keeping only the used APIs and improving the package health by adding Typescript.
+
 
 # v0.61.1
 
@@ -32,10 +37,6 @@ This is a bugfix release based on learnings from upgrading client projects
 - [api] Fix `logout` regression with not falling back to the current token when used without explicit token
 - [core] `Users.createUser` now sends messages by default, you have to explicitly bail out by either providing an option `skipMessaging` to true or set the new `autoMessagingAfterUserCreation` module param of users to `false`. Take a look at your seed scripts.
 - [platform] Certain fields like `emails` and `services` are now blocked from passing to `Users.createUser`. If you have used `emails` in `createUser` seeding before, use email. If you want to skip e-mail verification forcefully, use `initialPassword: true`. See the changes in the minimal example seed file to get a glimpse.
-- Be sure to use `removeFiles` on files collections instead of simply `files`. `removeFiles` ensure the removal of the document and also the associated GridFS file.
-
-## Major
-- [files] had undergone a similar change to the roles package keeping only the used APIs and improving the package health by adding Typescript.
 
 ## Minor
 
