@@ -78,7 +78,6 @@
     "extends": "@meteorjs/eslint-config-meteor"
   },
   "dependencies": {
-    "intersection-observer": "^0.12.0",
-    "jsbi": "^3.1.4"
+    "intersection-observer": "^0.12.0"
   }
 }
