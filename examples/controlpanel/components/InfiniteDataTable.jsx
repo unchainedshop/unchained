@@ -125,7 +125,6 @@ export const withDataTableLoader = ({ query, queryName }) =>
           itemsCount: data[queryName]?.length || 0,
           items: data[queryName],
           loadMoreEntries: () => {
-            console.log({ data, queryName });
             return fetchMore({
               variables: {
                 offset: data[queryName]?.length,

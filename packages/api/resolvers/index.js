@@ -1,4 +1,9 @@
-import { BigIntResolver, JSONResolver } from 'graphql-scalars';
+import {
+  BigIntResolver,
+  JSONResolver,
+  CurrencyResolver,
+  PositiveFloatResolver,
+} from 'graphql-scalars';
 import Query from './queries';
 import Mutation from './mutations';
 import Date from './scalar-date';
@@ -8,7 +13,7 @@ export default {
   ...Types,
   JSON: JSONResolver,
   Date,
-  BigInt: BigIntResolver,
+  PositiveFloat: PositiveFloatResolver,
   Query,
   Mutation,
 };
