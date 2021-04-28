@@ -3,5 +3,6 @@ export default [
     scalar Date
     scalar JSON
     scalar PositiveFloat
+    scalar BigInt
   `,
 ];
