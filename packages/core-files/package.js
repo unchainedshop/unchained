@@ -11,7 +11,7 @@ Npm.depends({
   'isomorphic-unfetch': '3.1.0',
   'file-type': '16.2.0',
   mongodb: '3.6.3',
-  '@reactioncommerce/random': '1.0.2',
+  uuid: '7.0.1',
 });
 
 Package.onUse((api) => {

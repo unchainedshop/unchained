@@ -7,7 +7,7 @@ import { Mongo, MongoInternals } from 'meteor/mongo';
 import { Meteor } from 'meteor/meteor';
 import { WebApp } from 'meteor/webapp';
 import { Readable } from 'stream';
-import Random from '@reactioncommerce/random';
+import { v4 as uuidv4 } from 'uuid';
 import fetch from 'isomorphic-unfetch';
 import { FileObj, Options } from './types';
 import {
@@ -506,7 +506,7 @@ export default class FilesCollection extends Mongo.Collection<FileObj> {
   };
 
   async write(buffer, opts: Options) {
-    const fileId = opts.fileId || Random.id();
+    const fileId = opts.fileId || uuidv4().split('-').pop();
     const fileName = opts.name || opts.fileName || fileId;
 
     const fileExtension = await getExtension(fileName, buffer);
@@ -542,7 +542,7 @@ export default class FilesCollection extends Mongo.Collection<FileObj> {
   }
 
   async load(itemUrl: string, opts: Options) {
-    const fileId = opts.fileId || Random.id();
+    const fileId = opts.fileId || uuidv4().split('-').pop();
     const pathParts = itemUrl.split('/');
     const fileName =
       opts.name || opts.fileName
