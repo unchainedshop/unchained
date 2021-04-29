@@ -83,8 +83,8 @@ export default [
       _id: ID!
       user: User
       status: OrderStatus
-      created: Timestamp
-      updated: Timestamp
+      created: DateTime
+      updated: DateTime
       ordered: Timestamp
       orderNumber: String
       confirmed: Timestamp

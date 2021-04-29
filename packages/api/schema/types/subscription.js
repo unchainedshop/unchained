@@ -63,9 +63,9 @@ export default [
       billingAddress: Address
       contact: Contact
       status: SubscriptionStatus!
-      created: Timestamp!
+      created: DateTime!
       expires: Timestamp
-      updated: Timestamp
+      updated: DateTime
       isExpired(referenceDate: Timestamp): Boolean
       subscriptionNumber: String
       country: Country

@@ -5,7 +5,7 @@ export default [
     """
     type Log {
       _id: ID!
-      created: Timestamp!
+      created: DateTime!
       level: String!
       message: String!
       user: User

@@ -21,9 +21,9 @@ export default [
       # Timestamp when this work was allocated -> Locked for other workers
       started: Timestamp
       finished: Timestamp
-      created: Timestamp!
-      updated: Timestamp
-      deleted: Timestamp
+      created: DateTime!
+      updated: DateTime
+      deleted: DateTime
 
       priority: Int!
       type: WorkType!

@@ -37,8 +37,8 @@ export default [
       sequence: Int!
       status: ProductStatus!
       tags: [String!]
-      created: Timestamp
-      updated: Timestamp
+      created: DateTime
+      updated: DateTime
       published: Timestamp
       media(limit: Int = 10, offset: Int = 0, tags: [String!]): [ProductMedia!]!
       texts(forceLocale: String): ProductTexts

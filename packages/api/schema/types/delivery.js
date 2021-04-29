@@ -27,9 +27,9 @@ export default [
 
     type DeliveryProvider {
       _id: ID!
-      created: Timestamp
-      updated: Timestamp
-      deleted: Timestamp
+      created: DateTime
+      updated: DateTime
+      deleted: DateTime
       type: DeliveryProviderType
       interface: DeliveryInterface
       configuration: JSON
