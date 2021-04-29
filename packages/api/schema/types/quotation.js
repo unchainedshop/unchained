@@ -52,8 +52,8 @@ export default [
       updated: DateTime
       isExpired(referenceDate: Timestamp): Boolean
       quotationNumber: String
-      fullfilled: Timestamp
-      rejected: Timestamp
+      fullfilled: DateTime
+      rejected: DateTime
       country: Country
       currency: Currency
       configuration: [ProductConfigurationParameter!]

@@ -85,10 +85,10 @@ export default [
       status: OrderStatus
       created: DateTime
       updated: DateTime
-      ordered: Timestamp
+      ordered: DateTime
       orderNumber: String
-      confirmed: Timestamp
-      fullfilled: Timestamp
+      confirmed: DateTime
+      fullfilled: DateTime
       contact: Contact
       country: Country
       currency: Currency

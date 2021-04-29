@@ -287,8 +287,8 @@ export default [
     }
 
     input DateFilterInput {
-      start: Timestamp
-      end: Timestamp
+      start: DateTime
+      end: DateTime
     }
   `,
 ];

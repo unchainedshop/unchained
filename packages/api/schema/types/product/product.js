@@ -60,7 +60,7 @@ export default [
       tags: [String!]
       created: DateTime
       updated: DateTime
-      published: Timestamp
+      published: DateTime
       texts: ProductTexts
       media(limit: Int = 10, offset: Int = 0, tags: [String!]): [ProductMedia!]!
       reviews: [ProductReview!]!

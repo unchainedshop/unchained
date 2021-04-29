@@ -69,7 +69,7 @@ export default [
       tags: [String!]
       created: DateTime
       updated: DateTime
-      published: Timestamp
+      published: DateTime
       media(limit: Int = 10, offset: Int = 0, tags: [String!]): [ProductMedia!]!
       texts(forceLocale: String): ProductTexts
       assortmentPaths: [ProductAssortmentPath!]!
