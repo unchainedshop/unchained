@@ -819,7 +819,6 @@ describe('Worker Module', () => {
               result
               error
               success
-              scheduled
               retries
               timeout
               worker
@@ -835,6 +834,7 @@ describe('Worker Module', () => {
         },
       });
       delete NewWork.created;
+      delete NewWork.scheduled;
       expect(work).toMatchObject(NewWork);
     });
 

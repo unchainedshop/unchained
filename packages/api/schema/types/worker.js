@@ -19,8 +19,8 @@ export default [
     type Work {
       _id: ID!
       # Timestamp when this work was allocated -> Locked for other workers
-      started: Timestamp
-      finished: Timestamp
+      started: DateTime
+      finished: DateTime
       created: DateTime!
       updated: DateTime
       deleted: DateTime
@@ -41,7 +41,7 @@ export default [
       success: Boolean
 
       # If set, the work will not be allocated before this date
-      scheduled: Timestamp
+      scheduled: DateTime
 
       # Link to original work: For retries, clones, ...
       original: Work

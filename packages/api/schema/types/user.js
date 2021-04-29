@@ -17,7 +17,7 @@ export default [
       """
       Expiration date for the token
       """
-      tokenExpires: Timestamp!
+      tokenExpires: DateTime!
 
       """
       The logged in user

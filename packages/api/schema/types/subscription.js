@@ -45,8 +45,8 @@ export default [
     }
 
     type SubscriptionPeriod {
-      start: Timestamp!
-      end: Timestamp!
+      start: DateTime!
+      end: DateTime!
       isTrial: Boolean!
       order: Order
     }
@@ -64,7 +64,7 @@ export default [
       contact: Contact
       status: SubscriptionStatus!
       created: DateTime!
-      expires: Timestamp
+      expires: DateTime
       updated: DateTime
       isExpired(referenceDate: Timestamp): Boolean
       subscriptionNumber: String

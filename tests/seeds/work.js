@@ -2,7 +2,7 @@ export const NewWork = {
   _id: 'simple-work',
   type: 'EXTERNAL',
   created: new Date(),
-  scheduled: new Date('2030/10/01').getTime(),
+  scheduled: new Date('2030/10/01'),
   priority: 100,
   retries: 3,
   status: 'NEW',
@@ -11,7 +11,7 @@ export const NewWork = {
 
 export const AllocatedWork = {
   ...NewWork,
-  scheduled: new Date('2030/11/01').getTime(),
+  scheduled: new Date('2030/11/01'),
   status: 'ALLOCATED',
   _id: 'allocated-work',
 };
