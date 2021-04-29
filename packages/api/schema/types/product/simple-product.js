@@ -8,9 +8,9 @@ export default [
       sequence: Int!
       status: ProductStatus!
       tags: [String!]
-      created: Date
-      updated: Date
-      published: Date
+      created: Timestamp
+      updated: Timestamp
+      published: Timestamp
       media(limit: Int = 10, offset: Int = 0, tags: [String!]): [ProductMedia!]!
       texts(forceLocale: String): ProductTexts
       catalogPrice(quantity: Int = 1, currency: String): Price
@@ -23,12 +23,12 @@ export default [
       simulatedDiscounts(quantity: Int = 1): [ProductDiscount!]
       simulatedDispatches(
         deliveryProviderType: DeliveryProviderType = SHIPPING
-        referenceDate: Date
+        referenceDate: Timestamp
         quantity: Int = 1
       ): [Dispatch!]
       simulatedStocks(
         deliveryProviderType: DeliveryProviderType = SHIPPING
-        referenceDate: Date
+        referenceDate: Timestamp
       ): [Stock!]
       assortmentPaths: [ProductAssortmentPath!]!
       siblings(
