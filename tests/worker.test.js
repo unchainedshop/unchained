@@ -316,7 +316,11 @@ describe('Worker Module', () => {
 
       const addWorkResult = await graphqlFetchAsAdminUser({
         query: /* GraphQL */ `
-          mutation addWork($type: WorkType!, $input: JSON, $scheduled: Date) {
+          mutation addWork(
+            $type: WorkType!
+            $input: JSON
+            $scheduled: Timestamp
+          ) {
             addWork(type: $type, input: $input, scheduled: $scheduled) {
               _id
               type

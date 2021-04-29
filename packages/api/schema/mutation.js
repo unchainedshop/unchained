@@ -870,7 +870,7 @@ export default [
         priority: Int! = 0
         input: JSON
         originalWorkId: ID
-        scheduled: Date
+        scheduled: Timestamp
         retries: Int! = 20
       ): Work
 
@@ -897,8 +897,8 @@ export default [
         error: JSON
         success: Boolean
         worker: String
-        started: Date
-        finished: Date
+        started: Timestamp
+        finished: Timestamp
       ): Work!
 
       """

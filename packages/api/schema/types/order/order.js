@@ -83,12 +83,12 @@ export default [
       _id: ID!
       user: User
       status: OrderStatus
-      created: Date
-      updated: Date
-      ordered: Date
+      created: Timestamp
+      updated: Timestamp
+      ordered: Timestamp
       orderNumber: String
-      confirmed: Date
-      fullfilled: Date
+      confirmed: Timestamp
+      fullfilled: Timestamp
       contact: Contact
       country: Country
       currency: Currency

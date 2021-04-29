@@ -22,7 +22,10 @@ export default [
 
     input UserProfileInput {
       displayName: String
-      birthday: Date
+      birthday: Timestamp
+        @deprecated(
+          reason: "Use strict format that is complient with the format (YYYY-mm-dd) refer to section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times for more information"
+        )
       phoneMobile: String
       gender: String
       address: AddressInput
@@ -284,8 +287,8 @@ export default [
     }
 
     input DateFilterInput {
-      start: Date
-      end: Date
+      start: Timestamp
+      end: Timestamp
     }
   `,
 ];

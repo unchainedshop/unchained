@@ -1,6 +1,5 @@
 export default [
   /* GraphQL */ `
-    scalar Date
     scalar JSON
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -14,6 +13,10 @@ export default [
 >>>>>>> Use positiveFloat for currency type
 =======
     scalar BigInt
+<<<<<<< HEAD
 >>>>>>> Use custom bigInt scalar
+=======
+    scalar Timestamp
+>>>>>>> Replace custom date scalar with timestamp scalar from graphql-scalars
   `,
 ];

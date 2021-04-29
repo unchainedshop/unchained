@@ -4,8 +4,8 @@ export default [
       _id: ID!
       deliveryProvider: DeliveryProvider
       warehousingProvider: WarehousingProvider
-      shipping: Date
-      earliestDelivery: Date
+      shipping: Timestamp
+      earliestDelivery: Timestamp
     }
   `,
 ];
