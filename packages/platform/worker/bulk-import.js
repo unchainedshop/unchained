@@ -56,6 +56,7 @@ class BulkImport extends WorkerPlugin {
         await bulkImporter.prepare(events[i]);
       }
       const [result, error] = await bulkImporter.execute();
+      await bulkImporter.invalidateCaches();
       if (error) {
         return {
           success: false,

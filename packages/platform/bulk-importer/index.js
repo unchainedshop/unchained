@@ -1,4 +1,6 @@
 import { MongoInternals } from 'meteor/mongo';
+import { Assortments } from 'meteor/unchained:core-assortments';
+import { Filters } from 'meteor/unchained:core-filters';
 import * as AssortmentHandlers from './handlers/assortment';
 import * as ProductHandlers from './handlers/product';
 import * as FilterHandlers from './handlers/filter';
@@ -103,6 +105,10 @@ export default (options) => {
       }
       logger.info(`Import finished without errors`);
       return [operationResults, null];
+    },
+    async invalidateCaches() {
+      await Assortments.invalidateFilterCaches();
+      await Filters.invalidateFilterCaches();
     },
   };
 };
