@@ -21,9 +21,13 @@
   "scripts": {
     "lint": "eslint packages tests --cache --fix --ext=js --ext=ts",
 <<<<<<< HEAD
+<<<<<<< HEAD
     "pretest": "npm run lint --silent && npm run typecheck",
 =======
 >>>>>>> Use custom bigInt scalar
+=======
+    "pretest": "npm run lint --silent && npm run typecheck",    
+>>>>>>> Change basic timestamp fields to DateTime type that comply with date-time format
     "lint:ci": "eslint packages tests --ext=jsx --ext=js",
     "test": "jest --runInBand --detectOpenHandles --forceExit tests/*",
     "test:ci": "npm run test:integration && npm run test:packages",

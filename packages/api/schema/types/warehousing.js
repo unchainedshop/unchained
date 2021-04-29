@@ -22,9 +22,9 @@ export default [
 
     type WarehousingProvider {
       _id: ID!
-      created: Timestamp
-      updated: Timestamp
-      deleted: Timestamp
+      created: DateTime
+      updated: DateTime
+      deleted: DateTime
       type: WarehousingProviderType
       interface: WarehousingInterface
       configuration: JSON

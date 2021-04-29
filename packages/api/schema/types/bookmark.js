@@ -4,7 +4,7 @@ export default [
       _id: ID!
       user: User!
       product: Product!
-      created: Timestamp
+      created: DateTime
     }
   `,
 ];

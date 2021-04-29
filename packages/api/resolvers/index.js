@@ -3,7 +3,8 @@ import {
   BigIntResolver,
   JSONResolver,
   PositiveFloatResolver,
-  TimestampResolver
+  TimestampResolver,
+  DateTimeResolver
 } from 'graphql-scalars';
 import Query from './queries';
 import Mutation from './mutations';
@@ -18,5 +19,6 @@ export default {
   BigInt,
   Query,
   Mutation,
+  DateTime: DateTimeResolver,
   Timestamp: TimestampResolver,
 };

@@ -47,9 +47,9 @@ export default [
       user: User!
       product: Product!
       status: QuotationStatus!
-      created: Timestamp!
-      expires: Timestamp
-      updated: Timestamp
+      created: DateTime!
+      expires: DateTime
+      updated: DateTime
       isExpired(referenceDate: Timestamp): Boolean
       quotationNumber: String
       fullfilled: Timestamp

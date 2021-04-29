@@ -32,8 +32,8 @@ export default [
 
     type Filter {
       _id: ID!
-      updated: Timestamp
-      created: Timestamp
+      updated: DateTime
+      created: DateTime
       isActive: Boolean
       texts(forceLocale: String): FilterTexts
       type: FilterType

@@ -42,9 +42,9 @@ export default [
 
     type PaymentProvider {
       _id: ID!
-      created: Timestamp
-      updated: Timestamp
-      deleted: Timestamp
+      created: DateTime
+      updated: DateTime
+      deleted: DateTime
       type: PaymentProviderType
       interface: PaymentInterface
       configuration: JSON
