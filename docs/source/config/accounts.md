@@ -13,6 +13,23 @@ The accounts management system in Unchained Engine is reliant on [accounts-js](h
 
 - `accountsPassword` an instance of [AccountsPassword](https://www.accountsjs.com/docs/api/password/classes/accountspassword) for passwords storage and regulation.
 
-- `accountsServer` an instance of [AccountsServer](https://www.accountsjs.com/docs/api/server/classes/accountsserver/) for users administration. 
+- `accountsServer` an instance of [AccountsServer](https://www.accountsjs.com/docs/api/server/classes/accountsserver/) for users administration.
 
+You can customise options value defined in `accountServer` and `accountsPassword` default values in addition to unchained defined configuration property values by passing `server` and/or `password` objects to `accounts` module configuration object.
 
+In this example we are customising session time and verification email sending after sign up defined by unchained and accountsjs respectivley
+
+```
+const options = {
+  modules: {
+    accounts: {
+        server: {
+          loginExpirationInDays: 1,
+        },
+        password: {
+            sendVerificationEmailAfterSignup: true
+        }
+      },
+  }
+};
+```

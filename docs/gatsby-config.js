@@ -28,6 +28,7 @@ module.exports = {
           ],
           Configuration: [
             'config/booting',
+            'config/accounts',
             'config/assortments',
             'config/delivery',
             'config/files',
