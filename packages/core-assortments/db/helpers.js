@@ -135,7 +135,12 @@ Collections.Assortments.updateAssortment = ({
 };
 
 Collections.Assortments.removeAssortment = ({ assortmentId }) => {
-  Collections.AssortmentLinks.remove({ assortmentId });
+  Collections.AssortmentLinks.remove({
+    $or: [
+      { parentAssortmentId: assortmentId },
+      { childAssortmentId: assortmentId },
+    ],
+  });
   Collections.AssortmentTexts.remove({ assortmentId });
   Collections.AssortmentProducts.remove({ assortmentId });
   Collections.AssortmentFilters.remove({ assortmentId });
