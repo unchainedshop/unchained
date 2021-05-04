@@ -10,7 +10,6 @@ const settings = {
     Object.keys(password).forEach((key) => {
       accountsPassword.options[key] = password[key];
     });
-    console.log(accountsPassword.options);
   },
 };
 
