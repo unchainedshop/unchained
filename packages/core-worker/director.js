@@ -178,8 +178,16 @@ class WorkerDirector {
         finished: { $exists: false },
         deleted: { $exists: false },
       },
-      [WorkStatus.SUCCESS]: { finished: { $exists: true }, success: true },
-      [WorkStatus.FAILED]: { finished: { $exists: true }, success: false },
+      [WorkStatus.SUCCESS]: {
+        finished: { $exists: true },
+        success: true,
+        deleted: { $exists: false },
+      },
+      [WorkStatus.FAILED]: {
+        finished: { $exists: true },
+        success: false,
+        deleted: { $exists: false },
+      },
     };
     const statusQuery = {
       $or: Object.entries(filterMap).reduce(
