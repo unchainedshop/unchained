@@ -232,6 +232,7 @@ const buildIndexes = async () => {
 
   await Collections.Users.rawCollection().createIndex(
     {
+      _id: 'text',
       username: 'text',
       'emails.address': 'text',
       'profile.displayName': 'text',
@@ -242,6 +243,16 @@ const buildIndexes = async () => {
       'lastBillingAddress.addressLine2': 'text',
     },
     {
+      weights: {
+        _id: 9,
+        'emails.address': 7,
+        'profile.displayName': 5,
+        'lastBillingAddress.firstName': 3,
+        'lastBillingAddress.lastName': 3,
+        'lastBillingAddress.company': 1,
+        'lastBillingAddress.addressLine': 1,
+        'lastBillingAddress.addressLine2': 1,
+      },
       name: 'user_fulltext_search',
     }
   );
