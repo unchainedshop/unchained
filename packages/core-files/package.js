@@ -7,15 +7,21 @@ Package.describe({
 });
 
 Npm.depends({
-  'lodash.merge': '4.6.2',
+  'fs-extra': '9.0.1',
+  'isomorphic-unfetch': '3.1.0',
+  'file-type': '16.2.0',
+  mongodb: '3.6.3',
+  uuid: '7.0.1',
 });
 
 Package.onUse((api) => {
-  api.versionsFrom('1.11.1');
-  api.use('ostrio:files@1.14.3');
+  api.versionsFrom('1.12');
   api.use('ecmascript');
   api.use('unchained:core-settings@0.61.0');
-  api.mainModule('core-files.js');
+  api.use(['mongo', 'webapp'], 'server');
+  api.use('typescript');
+  api.mainModule('core-files.ts');
+  api.export('FilesCollection');
 });
 
 Package.onTest((api) => {

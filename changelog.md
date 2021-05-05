@@ -23,6 +23,11 @@
 - [api] New mutation.signPaymentProviderForCheckout to sign generic order payment directly (OrderPayment.sign still works but is marked deprecated and will be removed in future major releases)
 - [api] three new fields added `ConfigurableProduct.simulatedPriceRange` , `ConfigurableProduct.catalogPriceRange`, `SimulateProduct.leveledCatalogPrices` `PlanProduct.leveledCatalogPrices`
 - [product] `simulatePriceRange` and `catalogPriceRange` helpers added that will return price range of products variations assigned for a particular configurable(proxy) product based on the parameters provided to them.
+- Be sure to use `removeFiles` on files collections instead of simply `files`. `removeFiles` ensure the removal of the document and also the associated GridFS file.
+
+## Major
+ - [files] had undergone a similar change to the roles package keeping only the used APIs and improving the package health by adding Typescript.
+
 
 # v0.61.1
 
@@ -33,14 +38,13 @@ This is a bugfix release based on learnings from upgrading client projects
 - [core] `Users.createUser` now sends messages by default, you have to explicitly bail out by either providing an option `skipMessaging` to true or set the new `autoMessagingAfterUserCreation` module param of users to `false`. Take a look at your seed scripts.
 - [platform] Certain fields like `emails` and `services` are now blocked from passing to `Users.createUser`. If you have used `emails` in `createUser` seeding before, use email. If you want to skip e-mail verification forcefully, use `initialPassword: true`. See the changes in the minimal example seed file to get a glimpse.
 
-## Minor
+## Minor
 
 - [examples] Fix minimal example not seeding
 - [api] Fix children not receiving includeInactive
 - [core] Fix core not receiving module configuration of users
 - [core] Fix Assortments.sync always auto publishing all assortments
 - [platform] Fix broken cart migration
-
 # v0.61.0
 
 This is a bugfix release based on learnings from upgrading client projects
@@ -112,7 +116,7 @@ We are currently rebuilding parts of Unchained under the hood with a new code st
 - [api] Type Assertions (#273)
 - Various other bugfixes: #232, #258, #277, #268, #261, #272
 
-# v0.55.3
+# v0.55.3
 
 ## Breaking Changes
 
@@ -304,16 +308,16 @@ Changes to Filter Plugins: The async method search on a FilterAdapter is now sea
 - [api] Fix edge case with Query.search when slugs is set to null
 - [api] Fix privileges when using Mutation.updateProductReview, Mutation.answerQuotation, Mutation.removeBookmark, Mutation.addPaymentCredentials which were supposed to work as non-admin users
 - [api] Fix float problem edge case with super long numbers in Money type
-- [core] Fix Sort Order when Faceting #211
-- [core] Fix Controlpanel Next.js Warnings #201 #209
-- [core] Fix a Problem where Work Items are not retried after a Restart #200
-- [core] Fix updateCart updating data that should not #198
-- [core] Fix slugs regeneration when title is updated #194
-- [core] Great Purge of Meteor: Removed aldeed:index #216
+- [core] Fix Sort Order when Faceting #211
+- [core] Fix Controlpanel Next.js Warnings #201 #209
+- [core] Fix a Problem where Work Items are not retried after a Restart #200
+- [core] Fix updateCart updating data that should not #198
+- [core] Fix slugs regeneration when title is updated #194
+- [core] Great Purge of Meteor: Removed aldeed:index #216
 - [core] Fix setting the FILE_STORAGE_PATH through env variable for files
 - [core] Fix order discounting when multiple discounts are active at the same time
-- [examples] Minimal: Upgrade to Meteor 1.11.1 #206
-- [examples] Controlpanel: Upgrade to Apollo Client 3 #206
+- [examples] Minimal: Upgrade to Meteor 1.11.1 #206
+- [examples] Controlpanel: Upgrade to Apollo Client 3 #206
 
 ---
 
@@ -345,7 +349,7 @@ We will rename all unchained core specific env variables and prefix them with UN
 - Improve performance by using lru-caches at bottleneck points throughout the system
 - [worker] It's now possible to define an autoscheduling rule for jobs and the system automatically takes care of setting up the jobs
 
-## Patches
+## Patches
 
 - [examples] Fix a regression bug (simple-schema / seeds) when trying to start the minimal example the first time
 - [ci] Skip caching in CI and dev
@@ -391,7 +395,7 @@ We will rename all unchained core specific env variables and prefix them with UN
 ## Patches
 
 - [api] Fixes removeDiscount regression crashing apollo
-- [worker] Now experimental interval worker which does not depend on SyncedCron
+- [worker] Now experimental interval worker which does not depend on SyncedCron
 - [examples] Various Fixes in Controlpanel
 - [examples] Various console output and lint issues
 - [tests] Fixed various tests

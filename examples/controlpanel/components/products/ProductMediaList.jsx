@@ -77,6 +77,7 @@ export default compose(
     {
       name: 'addProductMedia',
       options: {
+        errorPolicy: 'all',
         refetchQueries: ['productMedia'],
       },
     }

@@ -414,7 +414,7 @@ Products.helpers({
       ...mediaData,
     });
   },
-  addMedia({
+  async addMedia({
     rawFile,
     href,
     name,
@@ -435,7 +435,7 @@ Products.helpers({
           userId: authorId,
           ...options,
         });
-    const file = Promise.await(fileLoader);
+    const file = await fileLoader;
     return this.addMediaLink({
       mediaId: file._id,
       tags,
