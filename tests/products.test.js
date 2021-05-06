@@ -241,7 +241,10 @@ describe('Products', () => {
 
   describe('Mutation.updateProduct should', () => {
     it('update successfuly when passed valid product ID ', async () => {
-      const { data: { updateProduct } = {} } = await graphqlFetchAsAdmin({
+      const {
+        data: { updateProduct } = {},
+        errors,
+      } = await graphqlFetchAsAdmin({
         query: /* GraphQL */ `
           mutation UpdateProduct(
             $productId: ID!

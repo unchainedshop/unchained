@@ -1028,7 +1028,7 @@ describe('Subscriptions', () => {
         data: { subscription },
       } = await graphqlFetchAsAdminUser({
         query: /* GraphQL */ `
-          query subscription($subscriptionId: ID!, $referenceDate: Date) {
+          query subscription($subscriptionId: ID!, $referenceDate: Timestamp) {
             subscription(subscriptionId: $subscriptionId) {
               _id
               isExpired(referenceDate: $referenceDate)

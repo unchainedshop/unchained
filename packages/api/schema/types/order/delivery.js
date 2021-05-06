@@ -21,7 +21,7 @@ export default [
       _id: ID!
       provider: DeliveryProvider
       status: OrderDeliveryStatus
-      delivered: Date
+      delivered: DateTime
       fee: Price
       meta: JSON
         @deprecated(
@@ -34,7 +34,7 @@ export default [
       _id: ID!
       provider: DeliveryProvider
       status: OrderDeliveryStatus
-      delivered: Date
+      delivered: DateTime
       fee: Price
       meta: JSON
         @deprecated(
@@ -50,7 +50,7 @@ export default [
       _id: ID!
       provider: DeliveryProvider
       status: OrderDeliveryStatus
-      delivered: Date
+      delivered: DateTime
       fee: Price
       meta: JSON
         @deprecated(

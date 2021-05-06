@@ -1,13 +1,19 @@
+import {
+  JSONResolver,
+  DateTimeResolver,
+  TimestampResolver,
+} from 'graphql-scalars';
 import Query from './queries';
 import Mutation from './mutations';
-import Date from './scalar-date';
-import JSON from './scalar-json';
 import Types from './types';
+import BigInt from './scalar-bigint';
 
 export default {
   ...Types,
-  JSON,
-  Date,
+  JSON: JSONResolver,
+  BigInt,
   Query,
   Mutation,
+  DateTime: DateTimeResolver,
+  Timestamp: TimestampResolver,
 };

@@ -1,6 +1,9 @@
 export default [
   /* GraphQL */ `
-    scalar Date
     scalar JSON
+    scalar DateTime
+    scalar PositiveFloat
+    scalar BigInt
+    scalar Timestamp
   `,
 ];

@@ -22,7 +22,7 @@ export default [
       provider: PaymentProvider
       status: OrderPaymentStatus
       fee: Price
-      paid: Date
+      paid: DateTime
       meta: JSON
         @deprecated(
           reason: "Due to ambiguity this field will be removed on future releases,Please write a custom resolver that reflects your business-logic"
@@ -35,7 +35,7 @@ export default [
       provider: PaymentProvider
       status: OrderPaymentStatus
       fee: Price
-      paid: Date
+      paid: DateTime
       meta: JSON
         @deprecated(
           reason: "Due to ambiguity this field will be removed on future releases,Please write a custom resolver that reflects your business-logic"
@@ -47,7 +47,7 @@ export default [
       _id: ID!
       provider: PaymentProvider
       status: OrderPaymentStatus
-      paid: Date
+      paid: DateTime
       fee: Price
       meta: JSON
         @deprecated(
@@ -61,7 +61,7 @@ export default [
       provider: PaymentProvider
       status: OrderPaymentStatus
       fee: Price
-      paid: Date
+      paid: DateTime
       meta: JSON
         @deprecated(
           reason: "Due to ambiguity this field will be removed on future releases,Please write a custom resolver that reflects your business-logic"

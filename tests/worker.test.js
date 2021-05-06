@@ -321,7 +321,11 @@ describe('Worker Module', () => {
 
       const addWorkResult = await graphqlFetchAsAdminUser({
         query: /* GraphQL */ `
-          mutation addWork($type: WorkType!, $input: JSON, $scheduled: Date) {
+          mutation addWork(
+            $type: WorkType!
+            $input: JSON
+            $scheduled: Timestamp
+          ) {
             addWork(type: $type, input: $input, scheduled: $scheduled) {
               _id
               type
@@ -815,7 +819,6 @@ describe('Worker Module', () => {
               result
               error
               success
-              scheduled
               retries
               timeout
               worker
@@ -831,6 +834,7 @@ describe('Worker Module', () => {
         },
       });
       delete NewWork.created;
+      delete NewWork.scheduled;
       expect(work).toMatchObject(NewWork);
     });
 
