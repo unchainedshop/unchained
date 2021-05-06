@@ -139,7 +139,7 @@ const UserList = ({
   </Table>
 );
 
-const ITEMS_PER_PAGE = 10;
+const ITEMS_PER_PAGE = 50;
 export const USER_LIST_QUERY = gql`
   query users($offset: Int, $limit: Int, $includeGuests: Boolean) {
     users(offset: $offset, limit: $limit, includeGuests: $includeGuests) {
