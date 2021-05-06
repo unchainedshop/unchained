@@ -70,7 +70,7 @@ Subscriptions.generateFromCheckout = async ({ items, order, ...context }) => {
 Subscriptions.helpers({
   async generateOrder({ products, orderContext, ...configuration }) {
     if (!this.payment || !this.delivery) return null;
-    const order = await Orders.createOrder({
+    const cart = await Orders.createOrder({
       user: this.user(),
       currency: this.currencyCode,
       countryCode: this.countryCode,
@@ -80,30 +80,31 @@ Subscriptions.helpers({
       ...configuration,
     });
     if (products) {
-      products.forEach(order.addProductItem);
+      products.forEach(cart.addProductItem);
     } else {
-      order.addProductItem({
+      cart.addProductItem({
         product: this.product(),
         quantity: 1,
       });
     }
     const { paymentProviderId, paymentContext } = this.payment;
     if (paymentProviderId) {
-      order.setPaymentProvider({
+      cart.setPaymentProvider({
         paymentProviderId,
       });
     }
     const { deliveryProviderId, deliveryContext } = this.delivery;
     if (deliveryProviderId) {
-      order.setDeliveryProvider({
+      cart.setDeliveryProvider({
         deliveryProviderId,
       });
     }
-    return order.checkout({
+    const order = cart.checkout({
       paymentContext,
       deliveryContext,
       orderContext,
     });
+    return order;
   },
 });
 
