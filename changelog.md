@@ -1,6 +1,7 @@
 # vNEXT
 
 ## Breaking changes
+
 - [core] Remove cron worker `unchained:core-worker/workers/cron`, use the interval worker instead
 - [core] `cronText` has been removed from `configureAutoscheduling` in favor of `schedule`, schedule has to be a later.js compliant schedule definition. If you want to reuse the custom cronText define schedule like `later.parse.text('every 5 mins');` Likewise `autoSchedulingCronText` has been removed from subscription settings and replaced with `autoSchedulingSchedule`
 - [schema] `Money` type has been completely removed and replace with `Price`.
@@ -23,8 +24,9 @@
 - [api] New mutation.signPaymentProviderForCheckout to sign generic order payment directly (OrderPayment.sign still works but is marked deprecated and will be removed in future major releases)
 - [api] three new fields added `ConfigurableProduct.simulatedPriceRange` , `ConfigurableProduct.catalogPriceRange`, `SimulateProduct.leveledCatalogPrices` `PlanProduct.leveledCatalogPrices`
 - [product] `simulatePriceRange` and `catalogPriceRange` helpers added that will return price range of products variations assigned for a particular configurable(proxy) product based on the parameters provided to them.
-- [platform] Now experimental it's possible to assign cart for existing users in the system at boot time by passing `assignCartForUsers` boolean value to `startPlafom`
-- [core] Now experimental related with the above feature it's now possible to ensure users to always have a cart assigned to them by setting env variable `ENSURE_USER_HAS_CART` true.
+- [core] Now experimental it's possible to ensure users to always have a cart assigned to them by setting the module config option `ensureUserHasCart` on the orders module to true.
+- [platform] Additionally related with the above feature it's possible to assign carts for all existing users in the system at boot time by passing `assignCartForUsers` boolean value to `startPlafom` or using the environment variable `UNCHAINED_ASSIGN_CART_FOR_USERS`
+- [platform] You can now disable the invalidation of orders at boot time by passing `invalidateProviders` boolean value to `startPlafom` or using the environment variable `UNCHAINED_INVALIDATE_PROVIDERS`
 
 # v0.61.1
 

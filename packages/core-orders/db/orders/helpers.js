@@ -99,7 +99,11 @@ Subscriptions.helpers({
         deliveryProviderId,
       });
     }
-    return order.checkout({ paymentContext, deliveryContext, orderContext });
+    return order.checkout({
+      paymentContext,
+      deliveryContext,
+      orderContext,
+    });
   },
 });
 
@@ -424,7 +428,10 @@ Orders.helpers({
       );
     }
   },
-  checkout({ paymentContext, deliveryContext, orderContext } = {}, options) {
+  async checkout(
+    { paymentContext, deliveryContext, orderContext } = {},
+    options
+  ) {
     const errors = [
       ...this.missingInputDataForCheckout(),
       ...this.itemValidationErrors(),
@@ -437,7 +444,8 @@ Orders.helpers({
     const updatedOrderContext = this.updateContext(orderContext)
       .processOrder({ paymentContext, deliveryContext })
       .sendOrderConfirmationToCustomer({ locale });
-    Orders.ensureCartForUser({
+
+    await Orders.ensureCartForUser({
       user: this.user(),
       countryContext: locale.country,
     });
@@ -901,7 +909,7 @@ Orders.migrateCart = async ({
   });
 };
 
-Orders.invalidateProviders = () => {
+Orders.invalidateProviders = async () => {
   log('Orders: Start invalidating cart providers', { level: 'verbose' });
   Orders.find({
     status: { $eq: OrderStatus.OPEN },

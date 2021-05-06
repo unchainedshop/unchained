@@ -34,7 +34,7 @@ WebApp.connectHandlers.use(
   bodyParser.raw({ type: 'application/json' })
 );
 
-WebApp.connectHandlers.use(STRIPE_WEBHOOK_PATH, (request, response) => {
+WebApp.connectHandlers.use(STRIPE_WEBHOOK_PATH, async (request, response) => {
   const sig = request.headers['stripe-signature'];
   let event;
 
@@ -46,7 +46,8 @@ WebApp.connectHandlers.use(STRIPE_WEBHOOK_PATH, (request, response) => {
     );
   } catch (err) {
     response.writeHead(400);
-    return response.end(`Webhook Error: ${err.message}`);
+    response.end(`Webhook Error: ${err.message}`);
+    return;
   }
 
   try {
@@ -58,7 +59,7 @@ WebApp.connectHandlers.use(STRIPE_WEBHOOK_PATH, (request, response) => {
         event,
       });
       const orderPayment = OrderPayments.findOne({ _id: paymentId });
-      const order = orderPayment.order().checkout({
+      const order = await orderPayment.order().checkout({
         paymentContext: {
           paymentIntentId: paymentIntent.id,
         },
@@ -83,14 +84,16 @@ WebApp.connectHandlers.use(STRIPE_WEBHOOK_PATH, (request, response) => {
       );
     } else {
       response.writeHead(404);
-      return response.end();
+      response.end();
+      return;
     }
   } catch (err) {
     response.writeHead(400);
-    return response.end(`Webhook Error: ${err.message}`);
+    response.end(`Webhook Error: ${err.message}`);
+    return;
   }
   // Return a 200 response to acknowledge receipt of the event
-  return response.end(JSON.stringify({ received: true }));
+  response.end(JSON.stringify({ received: true }));
 });
 
 class Stripe extends PaymentAdapter {
