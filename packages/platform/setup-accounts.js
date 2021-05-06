@@ -75,6 +75,10 @@ export default ({ mergeUserCartsOnLogin = true } = {}) => {
         connection
       );
     }
+    await Orders.ensureCartForUser({
+      userId: user._id,
+      countryContext,
+    });
   });
 
   accountsServer.on('ResetPasswordSuccess', (user) => {

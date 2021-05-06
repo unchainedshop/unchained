@@ -101,7 +101,7 @@ WebApp.connectHandlers.use(
   bodyParser.urlencoded({ extended: false })
 );
 
-WebApp.connectHandlers.use(DATATRANS_WEBHOOK_PATH, (req, res) => {
+WebApp.connectHandlers.use(DATATRANS_WEBHOOK_PATH, async (req, res) => {
   if (req.method === 'POST') {
     const authorizationResponse = req.body || {};
     const { refno, amount } = authorizationResponse;
@@ -121,10 +121,11 @@ WebApp.connectHandlers.use(DATATRANS_WEBHOOK_PATH, (req, res) => {
             { userId }
           );
           res.writeHead(200);
-          return res.end(JSON.stringify(paymentCredentials));
+          res.end(JSON.stringify(paymentCredentials));
+          return;
         }
         const orderPayment = OrderPayments.findOne({ _id: refno });
-        const order = orderPayment
+        const order = await orderPayment
           .order()
           .checkout({ paymentContext: authorizationResponse });
         res.writeHead(200);
@@ -132,7 +133,8 @@ WebApp.connectHandlers.use(DATATRANS_WEBHOOK_PATH, (req, res) => {
           `Datatrans Webhook: Unchained confirmed checkout for order ${order.orderNumber}`,
           { orderId: order._id }
         );
-        return res.end(JSON.stringify(order));
+        res.end(JSON.stringify(order));
+        return;
       } catch (e) {
         logger.error(
           `Datatrans Webhook: Unchained rejected to checkout with message ${JSON.stringify(
@@ -140,14 +142,15 @@ WebApp.connectHandlers.use(DATATRANS_WEBHOOK_PATH, (req, res) => {
           )}`
         );
         res.writeHead(500);
-        return res.end(JSON.stringify(e));
+        res.end(JSON.stringify(e));
+        return;
       }
     } else {
       logger.error(`Datatrans Webhook: Reference number not set`);
     }
   }
   res.writeHead(404);
-  return res.end();
+  res.end();
 });
 
 class Datatrans extends PaymentAdapter {

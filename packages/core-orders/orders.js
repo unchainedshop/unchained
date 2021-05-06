@@ -1,5 +1,5 @@
-import { Orders } from './db/orders';
 import runMigrations from './db/migrations';
+import settings from './settings';
 
 export * from './db/order-deliveries';
 export * from './db/order-discounts';
@@ -8,8 +8,7 @@ export * from './db/order-payments';
 export * from './db/order-positions';
 export * from './db/orders';
 
-export default () => {
-  // configure
-  Orders.invalidateProviders();
+export default (options) => {
+  settings.load(options);
   runMigrations();
 };

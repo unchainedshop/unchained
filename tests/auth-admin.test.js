@@ -83,6 +83,7 @@ describe('Auth for admin users', () => {
           queryString: 'guest',
         },
       });
+      expect(users.length).toEqual(1);
       expect(users[0]).toMatchObject({
         _id: 'guest',
       });

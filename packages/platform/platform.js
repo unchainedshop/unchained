@@ -6,6 +6,7 @@ import setupWorkqueue, { workerTypeDefs } from './setup-workqueue';
 import setupMigrations from './setup-migrations';
 import setupTemplates, { MessageTypes } from './setup-templates';
 import './worker/bulk-import';
+import setupCarts from './setup-carts';
 
 export { MessageTypes };
 
@@ -47,5 +48,6 @@ export const startPlatform = async ({ modules, typeDefs, ...options } = {}) => {
   if (workQueueIsEnabled) {
     const handlers = setupWorkqueue(options);
     handlers.forEach((handler) => queueWorkers.push(handler));
+    await setupCarts(options);
   }
 };

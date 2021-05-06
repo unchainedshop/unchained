@@ -23,6 +23,7 @@ import { OrderDiscounts } from '../order-discounts/collections';
 import { OrderPayments } from '../order-payments/collections';
 import { OrderDocuments } from '../order-documents/collections';
 import { OrderPositions } from '../order-positions/collections';
+import settings from '../../settings';
 
 const buildFindSelector = ({ includeCarts }) => {
   const selector = {};
@@ -69,7 +70,7 @@ Subscriptions.generateFromCheckout = async ({ items, order, ...context }) => {
 Subscriptions.helpers({
   async generateOrder({ products, orderContext, ...configuration }) {
     if (!this.payment || !this.delivery) return null;
-    const order = await Orders.createOrder({
+    const cart = await Orders.createOrder({
       user: this.user(),
       currency: this.currencyCode,
       countryCode: this.countryCode,
@@ -79,26 +80,31 @@ Subscriptions.helpers({
       ...configuration,
     });
     if (products) {
-      products.forEach(order.addProductItem);
+      products.forEach(cart.addProductItem);
     } else {
-      order.addProductItem({
+      cart.addProductItem({
         product: this.product(),
         quantity: 1,
       });
     }
     const { paymentProviderId, paymentContext } = this.payment;
     if (paymentProviderId) {
-      order.setPaymentProvider({
+      cart.setPaymentProvider({
         paymentProviderId,
       });
     }
     const { deliveryProviderId, deliveryContext } = this.delivery;
     if (deliveryProviderId) {
-      order.setDeliveryProvider({
+      cart.setDeliveryProvider({
         deliveryProviderId,
       });
     }
-    return order.checkout({ paymentContext, deliveryContext, orderContext });
+    const order = cart.checkout({
+      paymentContext,
+      deliveryContext,
+      orderContext,
+    });
+    return order;
   },
 });
 
@@ -423,7 +429,10 @@ Orders.helpers({
       );
     }
   },
-  checkout({ paymentContext, deliveryContext, orderContext } = {}, options) {
+  async checkout(
+    { paymentContext, deliveryContext, orderContext } = {},
+    options
+  ) {
     const errors = [
       ...this.missingInputDataForCheckout(),
       ...this.itemValidationErrors(),
@@ -433,9 +442,15 @@ Orders.helpers({
     }
     const locale = this.user().locale(options);
 
-    return this.updateContext(orderContext)
+    const updatedOrderContext = this.updateContext(orderContext)
       .processOrder({ paymentContext, deliveryContext })
       .sendOrderConfirmationToCustomer({ locale });
+
+    await Orders.ensureCartForUser({
+      user: this.user(),
+      countryContext: locale.country,
+    });
+    return updatedOrderContext;
   },
   confirm({ orderContext, paymentContext, deliveryContext }, options) {
     if (this.status !== OrderStatus.PENDING) return this;
@@ -822,6 +837,27 @@ Orders.updateCalculation = ({ orderId }) => {
   );
 };
 
+Orders.ensureCartForUser = async ({ userId, user, countryContext }) => {
+  if (!settings.ensureUserHasCart) return;
+  const userObject = user || Users.findUser({ userId });
+  if (!userObject) throw new Error('User with the id not found');
+  const countryCode = countryContext || userObject.lastLogin.countryContext;
+
+  const cart = await userObject?.cart({
+    countryContext: countryCode,
+  });
+
+  if (cart) return;
+
+  Orders.createOrder({
+    user: userObject,
+    currency: Countries.resolveDefaultCurrencyCode({
+      isoCode: countryCode,
+    }),
+    countryCode,
+  });
+};
+
 Orders.migrateCart = async ({
   fromUserId,
   toUserId,
@@ -874,7 +910,7 @@ Orders.migrateCart = async ({
   });
 };
 
-Orders.invalidateProviders = () => {
+Orders.invalidateProviders = async () => {
   log('Orders: Start invalidating cart providers', { level: 'verbose' });
   Orders.find({
     status: { $eq: OrderStatus.OPEN },
@@ -883,4 +919,9 @@ Orders.invalidateProviders = () => {
     .forEach((order) => {
       order.initProviders();
     });
+};
+
+Orders.assignCartForExistingUsers = async () => {
+  const users = await Users.find({}).fetch();
+  users.map((user) => Orders.ensureCartForUser({ user }));
 };

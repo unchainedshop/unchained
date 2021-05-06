@@ -31,69 +31,75 @@ WebApp.connectHandlers.use(
   bodyParser.raw({ type: 'application/json' })
 );
 
-WebApp.connectHandlers.use(STRIPE_CHARGES_WEBHOOK_PATH, (request, response) => {
-  const sig = request.headers['stripe-signature'];
-  let event;
+WebApp.connectHandlers.use(
+  STRIPE_CHARGES_WEBHOOK_PATH,
+  async (request, response) => {
+    const sig = request.headers['stripe-signature'];
+    let event;
 
-  try {
-    event = stripe.webhooks.constructEvent(
-      request.body,
-      sig,
-      STRIPE_CHARGES_ENDPOINT_SECRET
-    );
-  } catch (err) {
-    response.writeHead(400);
-    return response.end(`Webhook Error: ${err.message}`);
-  }
+    try {
+      event = stripe.webhooks.constructEvent(
+        request.body,
+        sig,
+        STRIPE_CHARGES_ENDPOINT_SECRET
+      );
+    } catch (err) {
+      response.writeHead(400);
+      response.end(`Webhook Error: ${err.message}`);
+      return;
+    }
 
-  try {
-    if (event.type === 'source.chargeable') {
-      const source = event.data.object;
-      // eslint-disable-next-line
+    try {
+      if (event.type === 'source.chargeable') {
+        const source = event.data.object;
+        // eslint-disable-next-line
       const orderPaymentId = source.metadata?.orderPaymentId;
-      const orderPayment = OrderPayments.findOne({ _id: orderPaymentId });
-      const order = orderPayment.order();
-      const paymentContext = {
-        stripeToken: source,
-      };
-      if (order.isCart()) {
-        order.checkout({
-          paymentContext,
-        });
+        const orderPayment = OrderPayments.findOne({ _id: orderPaymentId });
+        const order = orderPayment.order();
+        const paymentContext = {
+          stripeToken: source,
+        };
+        if (order.isCart()) {
+          await order.checkout({
+            paymentContext,
+          });
+          logger.info(
+            `Stripe Webhook: Unchained checked out order ${order.orderNumber}`,
+            { orderId: order._id }
+          );
+        } else {
+          orderPayment.charge(paymentContext, order);
+          logger.info(
+            `Stripe Webhook: Unchained initiated payment for order ${order.orderNumber}`,
+            { orderId: order._id }
+          );
+        }
+      } else if (event.type === 'charge.succeeded') {
+        const charge = event.data.object;
+        // eslint-disable-next-line
+      const orderPaymentId = charge.metadata?.orderPaymentId;
+        const orderPayment = OrderPayments.findOne({ _id: orderPaymentId });
+        const order = orderPayment.order();
+        orderPayment.markPaid(charge);
         logger.info(
-          `Stripe Webhook: Unchained checked out order ${order.orderNumber}`,
+          `Stripe Webhook: Unchained marked payment as paid for order ${order.orderNumber}`,
           { orderId: order._id }
         );
       } else {
-        orderPayment.charge(paymentContext, order);
-        logger.info(
-          `Stripe Webhook: Unchained initiated payment for order ${order.orderNumber}`,
-          { orderId: order._id }
-        );
+        response.writeHead(404);
+        response.end();
+        return;
       }
-    } else if (event.type === 'charge.succeeded') {
-      const charge = event.data.object;
-      // eslint-disable-next-line
-      const orderPaymentId = charge.metadata?.orderPaymentId;
-      const orderPayment = OrderPayments.findOne({ _id: orderPaymentId });
-      const order = orderPayment.order();
-      orderPayment.markPaid(charge);
-      logger.info(
-        `Stripe Webhook: Unchained marked payment as paid for order ${order.orderNumber}`,
-        { orderId: order._id }
-      );
-    } else {
-      response.writeHead(404);
-      return response.end();
+    } catch (err) {
+      response.writeHead(400);
+      response.end(`Webhook Error: ${err.message}`);
+      return;
     }
-  } catch (err) {
-    response.writeHead(400);
-    return response.end(`Webhook Error: ${err.message}`);
-  }
 
-  // Return a 200 response to acknowledge receipt of the event
-  return response.end(JSON.stringify({ received: true }));
-});
+    // Return a 200 response to acknowledge receipt of the event
+    response.end(JSON.stringify({ received: true }));
+  }
+);
 
 class Stripe extends PaymentAdapter {
   static key = 'shop.unchained.payment.stripe-charges';

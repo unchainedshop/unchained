@@ -13,6 +13,7 @@ export default async function createUser(root, options, context) {
     delete mappedOptions.plainPassword;
   }
 
-  const createdUser = await Users.createUser(mappedOptions, context);
-  return Users.createLoginToken(createdUser, context);
+  const user = await Users.createUser(mappedOptions, context);
+
+  return Users.createLoginToken(user, context);
 }

@@ -9,15 +9,12 @@ import {
   objectInvert,
   findUnusedSlug,
 } from 'meteor/unchained:utils';
-
 import { Locale } from 'locale';
 import crypto from 'crypto';
-
 import { Products, ProductTexts } from './collections';
 import { ProductVariations } from '../product-variations/collections';
 import { ProductMedia, Media } from '../product-media/collections';
 import { ProductReviews } from '../product-reviews/collections';
-
 import { ProductStatus, ProductTypes } from './schema';
 
 const getPriceLevels = (product, { currencyCode, countryCode }) => {
