@@ -355,3 +355,16 @@ Users.count = async (query) => {
   }
   return count;
 };
+
+Users.findStaleGuests = async () => {
+  return Users.find({
+    guest: true,
+    'services.resume.loginTokens.when': {
+      $not: { $gte: new Date() },
+    },
+  }).fetch();
+};
+
+Users.removeUser = async ({ userId }) => {
+  return Users.remove({ _id: userId });
+};
