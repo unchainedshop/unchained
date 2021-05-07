@@ -1,4 +1,5 @@
 import { systemLocale } from 'meteor/unchained:utils';
+import { emit } from 'meteor/unchained:core-events';
 import { Languages } from './collections';
 
 const buildFindSelector = ({ includeInactive = false }) => {
@@ -20,7 +21,9 @@ Languages.createLanguage = ({ isoCode, ...languageData }) => {
     isActive: true,
     ...languageData,
   });
-  return Languages.findOne({ _id });
+  const language = Languages.findOne({ _id });
+  emit('LANGUAGE_CREATE', { language });
+  return language;
 };
 
 Languages.languageExists = ({ languageId }) => {
@@ -32,7 +35,9 @@ Languages.findLanguage = ({ languageId, isoCode }) => {
 };
 
 Languages.removeLanguage = ({ languageId }) => {
-  return Languages.remove({ _id: languageId });
+  const result = Languages.remove({ _id: languageId });
+  emit('LANGUAGE_REMOVE', { languageId });
+  return result;
 };
 
 Languages.findLanguages = ({ limit, offset, ...query }) => {
@@ -50,11 +55,13 @@ Languages.count = async (query) => {
 };
 
 Languages.updateLanguage = ({ languageId, language }) => {
-  return Languages.update(
+  const result = Languages.update(
     { _id: languageId },
     {
       updated: new Date(),
       $set: language,
     }
   );
+  emit('LANGUAGE_UPDATE', { languageId });
+  return result;
 };

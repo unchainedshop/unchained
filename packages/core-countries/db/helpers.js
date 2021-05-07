@@ -4,6 +4,7 @@ import countryI18n from 'i18n-iso-countries';
 import { Currencies } from 'meteor/unchained:core-currencies';
 import LRU from 'lru-cache';
 import { systemLocale } from 'meteor/unchained:utils';
+import { emit } from 'meteor/unchained:core-events';
 import { Countries } from './collections';
 
 const { NODE_ENV } = process.env;
@@ -24,7 +25,7 @@ const buildFindSelector = ({ includeInactive = false }) => {
 };
 
 Countries.updateCountry = ({ countryId, country }) => {
-  return Countries.update(
+  const result = Countries.update(
     { _id: countryId },
     {
       $set: {
@@ -33,6 +34,8 @@ Countries.updateCountry = ({ countryId, country }) => {
       },
     }
   );
+  emit('COUNTRY_UPDATE', { countryId });
+  return result;
 };
 Countries.helpers({
   defaultCurrency() {
@@ -59,7 +62,9 @@ Countries.createCountry = ({ isoCode, ...countryData }) => {
     isActive: true,
     ...countryData,
   });
-  return Countries.findOne({ _id });
+  const country = Countries.findOne({ _id });
+  emit('COUNRY_CREATE', { country });
+  return country;
 };
 
 Countries.resolveDefaultCurrencyCode = ({ isoCode }) => {
@@ -96,5 +101,7 @@ Countries.findCountry = ({ countryId, isoCode }) => {
 };
 
 Countries.removeCountry = ({ countryId }) => {
-  return Countries.remove({ _id: countryId });
+  const result = Countries.remove({ _id: countryId });
+  emit('COUNTRY_REMOVE', { countryId });
+  return result;
 };

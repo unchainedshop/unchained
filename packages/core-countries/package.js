@@ -20,6 +20,7 @@ Package.onUse((api) => {
   api.use('aldeed:collection2@3.2.1');
   api.use('unchained:utils@0.61.0');
   api.use('unchained:core-currencies@0.61.0');
+  api.use('unchained:core-events@0.61.0');
 
   api.mainModule('countries.js', 'server');
 });

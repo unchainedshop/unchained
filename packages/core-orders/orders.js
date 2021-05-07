@@ -1,5 +1,4 @@
 import { registerEvents } from 'meteor/unchained:core-events';
-import { Orders } from './db/orders';
 import runMigrations from './db/migrations';
 import settings from './settings';
 

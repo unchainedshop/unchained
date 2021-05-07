@@ -18,6 +18,7 @@ Package.onUse((api) => {
   api.use('unchained:core-assortments@0.61.0');
   api.use('unchained:core-products@0.61.0');
   api.use('unchained:core-logger@0.61.0');
+  api.use('unchained:core-events@0.61.0');
 
   api.mainModule('filters.js', 'server');
 });
