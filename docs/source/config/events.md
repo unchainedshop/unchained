@@ -130,6 +130,37 @@ Bellow are events tracked under each module under the box:
 | FILTER_UPDATE | Filter is update     | `{ filter: {} }` |
 | FILTER_REMOVE | Filter is removed     | `{ filterId: string }` |
 
+#### `core-payment`
+
+| Event name      | Emitted when...         | `payload`                |
+| :-------------- | :---------------------- | :----------------------- |
+| PAYMENT_PROVIDER_CREATE | New payment provider is created | `{ paymentProvider: {} }` |
+| PAYMENT_PROVIDER_UPDATE | Payment provider is update     | `{ paymentProvider: {} }` |
+| PAYMENT_PROVIDER_REMOVE | Payment provider is removed     | `{ paymentProvider: {} }` |
+
+#### `core-payment`
+
+| Event name      | Emitted when...         | `payload`                |
+| :-------------- | :---------------------- | :----------------------- |
+| PAYMENT_PROVIDER_CREATE | New payment provider is created | `{ paymentProvider: {} }` |
+| PAYMENT_PROVIDER_UPDATE | Payment provider is update     | `{ paymentProvider: {} }` |
+| PAYMENT_PROVIDER_REMOVE | Payment provider is removed     | `{ paymentProvider: {} }` |
+
+#### `core-warehousing`
+
+| Event name      | Emitted when...         | `payload`                |
+| :-------------- | :---------------------- | :----------------------- |
+| WAREHOUSING_PROVIDER_CREATE | New warehousing provider is created | `{ warehousingProvider: {} }` |
+| WAREHOUSING_PROVIDER_UPDATE | Warehousing provider is update     | `{ warehousingProvider: {} }` |
+| WAREHOUSING_PROVIDER_REMOVE | Warehousing provider is removed     | `{ warehousingProvider: {} }` |
+
+#### `core-subscriptions`
+
+| Event name      | Emitted when...         | `payload`                |
+| :-------------- | :---------------------- | :----------------------- |
+| SUBSCRIPTION_CREATE | New subscription is created | `{ subscription: {} }` |
+
+
 ### Tracking custom events
 
 In addition to the built in event that come with unchained you can register your own custom event easily.
