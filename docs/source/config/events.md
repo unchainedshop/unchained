@@ -98,6 +98,38 @@ Bellow are events tracked under each module under the box:
 | BOOKMARK_CREATE | New bookmark is created | `{ bookmarkId: string }` |
 | BOOKMARK_REMOVE | Bookmark is removed     | `{ bookmarkId: string }` |
 
+#### `core-country`
+
+| Event name      | Emitted when...         | `payload`                |
+| :-------------- | :---------------------- | :----------------------- |
+| COUNTRY_CREATE | New country is created | `{ country: {} }` |
+| COUNTRY_UPDATE | Country is update     | `{ countryId: string }` |
+| COUNTRY_REMOVE | Country is removed     | `{ countryId: string }` |
+
+#### `core-currency`
+
+| Event name      | Emitted when...         | `payload`                |
+| :-------------- | :---------------------- | :----------------------- |
+| CURRENCY_CREATE | New currency is created | `{ currency: {} }` |
+| CURRENCY_UPDATE | Currency is update     | `{ currencyId: string }` |
+| CURRENCY_REMOVE | Currency is removed     | `{ currencyId: string }` |
+
+#### `core-language`
+
+| Event name      | Emitted when...         | `payload`                |
+| :-------------- | :---------------------- | :----------------------- |
+| LANGUAGE_CREATE | New language is created | `{ language: {} }` |
+| LANGUAGE_UPDATE | Language is update     | `{ languageId: string }` |
+| LANGUAGE_REMOVE | Language is removed     | `{ languageId: string }` |
+
+#### `core-filter`
+
+| Event name      | Emitted when...         | `payload`                |
+| :-------------- | :---------------------- | :----------------------- |
+| FILTER_CREATE | New filter is created | `{ filter: {} }` |
+| FILTER_UPDATE | Filter is update     | `{ filter: {} }` |
+| FILTER_REMOVE | Filter is removed     | `{ filterId: string }` |
+
 ### Tracking custom events
 
 In addition to the built in event that come with unchained you can register your own custom event easily.
