@@ -120,7 +120,7 @@ Collections.Assortments.updateAssortment = ({
   assortmentId,
   ...assortment
 }) => {
-  Collections.Assortments.update(
+  const result = Collections.Assortments.update(
     { _id: assortmentId },
     {
       $set: {
@@ -130,6 +130,7 @@ Collections.Assortments.updateAssortment = ({
     }
   );
   emit('ASSORTMENT_UPDATE', { assortmentId });
+  return result;
 };
 
 Collections.Assortments.removeAssortment = ({ assortmentId }) => {
@@ -169,8 +170,9 @@ Collections.AssortmentLinks.findLink = ({
 };
 
 Collections.AssortmentLinks.removeLink = ({ assortmentLinkId }) => {
+  const result = Collections.AssortmentLinks.remove({ _id: assortmentLinkId });
   emit('ASSORTMENT_REMOVE_LINK', { assortmentLinkId });
-  return Collections.AssortmentLinks.remove({ _id: assortmentLinkId });
+  return result;
 };
 
 Collections.AssortmentLinks.createAssortmentLink = ({
@@ -644,7 +646,7 @@ Collections.Assortments.setBase = ({ assortmentId }) => {
     },
     { multi: true }
   );
-  Collections.Assortments.update(
+  const result = Collections.Assortments.update(
     { _id: assortmentId },
     {
       $set: {
@@ -654,6 +656,7 @@ Collections.Assortments.setBase = ({ assortmentId }) => {
     }
   );
   emit('ASSORTMENT_SET_BASE', { assortmentId });
+  return result;
 };
 
 Collections.Assortments.helpers({
@@ -978,8 +981,11 @@ Collections.AssortmentFilters.findFilter = ({ assortmentFilterId }) => {
 };
 
 Collections.AssortmentFilters.removeFilter = ({ assortmentFilterId }) => {
+  const result = Collections.AssortmentFilters.remove({
+    _id: assortmentFilterId,
+  });
   emit('ASSORTMENT_REMOVE_FILTER', { assortmentFilterId });
-  return Collections.AssortmentFilters.remove({ _id: assortmentFilterId });
+  return result;
 };
 
 Collections.AssortmentFilters.helpers({

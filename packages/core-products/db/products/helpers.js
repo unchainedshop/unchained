@@ -185,8 +185,9 @@ Products.updateProduct = ({ productId, type, ...product }) => {
   if (type) {
     modifier.$set.type = ProductTypes[type];
   }
-  Products.update({ _id: productId }, modifier);
+  const result = Products.update({ _id: productId }, modifier);
   emit('PRODUCT_UPDATE', { productId, type, ...product });
+  return result;
 };
 ProductTexts.findProductTexts = ({ productId }) => {
   return ProductTexts.find({ productId }).fetch();
@@ -231,7 +232,7 @@ Products.addProxyAssignment = ({ productId, proxyId, vectors }) => {
 };
 
 Products.createBundleItem = ({ productId, item }) => {
-  Products.update(
+  const result = Products.update(
     { _id: productId },
     {
       $set: {
@@ -243,6 +244,7 @@ Products.createBundleItem = ({ productId, item }) => {
     }
   );
   emit('PRODUCT_CREATE_BUNDLE_ITEM', { productId });
+  return result;
 };
 
 Products.removeBundleItem = ({ productId, index }) => {
@@ -251,7 +253,7 @@ Products.removeBundleItem = ({ productId, index }) => {
   const { bundleItems = [] } = product;
   const removedItem = bundleItems.splice(index, 1);
 
-  Products.update(
+  const result = Products.update(
     { _id: productId },
     {
       $set: {
@@ -263,6 +265,7 @@ Products.removeBundleItem = ({ productId, index }) => {
   emit('PRODUCT_REMOVE_BUNDLE_ITEM', {
     payload: { productId, item: removedItem },
   });
+  return result;
 };
 
 Products.removeProduct = ({ productId }) => {

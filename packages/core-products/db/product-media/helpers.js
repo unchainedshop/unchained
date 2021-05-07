@@ -9,8 +9,9 @@ ProductMedia.findProductMedia = ({ productMediaId }) => {
 };
 
 ProductMedia.removeProductMedia = ({ productMediaId }) => {
-  ProductMedia.remove({ _id: productMediaId });
+  const result = ProductMedia.remove({ _id: productMediaId });
   emit('PRODUCT_REMOVE_MEDIA', { productMediaId });
+  return result;
 };
 
 ProductMedia.helpers({

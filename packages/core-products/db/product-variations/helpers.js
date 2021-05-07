@@ -20,8 +20,9 @@ ProductVariations.findVariation = ({ productVariationId }) => {
 };
 
 ProductVariations.removeVariation = ({ productVariationId }) => {
-  ProductVariations.remove({ _id: productVariationId });
+  const result = ProductVariations.remove({ _id: productVariationId });
   emit('PRODUCT_REMOVE_VARIATION', { productVariationId });
+  return result;
 };
 
 ProductVariations.helpers({

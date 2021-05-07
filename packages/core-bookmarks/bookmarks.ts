@@ -75,8 +75,9 @@ export default (): UnchainedBookmarkAPI => {
         }
       ),
     removeById: async (bookmarkId) => {
+      const result = Bookmarks.remove({ _id: bookmarkId });
       emit('BOOKMARK_REMOVE', { bookmarkId });
-      return Bookmarks.remove({ _id: bookmarkId });
+      return result;
     },
     create: async ({ userId, productId, ...rest }) => {
       const bookmarkId = Bookmarks.insert({
