@@ -3,6 +3,7 @@ import 'meteor/dburles:collection-helpers';
 import crypto from 'crypto';
 import { Countries } from 'meteor/unchained:core-countries';
 import { DeliveryPricingDirector } from 'meteor/unchained:core-pricing';
+import { emit } from 'meteor/unchained:core-events';
 import { DeliveryProviders } from './collections';
 import { DeliveryDirector } from '../director';
 import settings from '../settings';
@@ -113,7 +114,9 @@ DeliveryProviders.createProvider = (providerData) => {
     configuration: InterfaceClass.initialConfiguration,
     ...providerData,
   });
-  return DeliveryProviders.findOne({ _id });
+  const deliveryProvider = DeliveryProviders.findOne({ _id });
+  emit('DELIVERY_PROVIDER_CREATE', { deliveryProvider });
+  return deliveryProvider;
 };
 
 DeliveryProviders.updateProvider = ({ _id, ...rest }) => {
@@ -126,11 +129,13 @@ DeliveryProviders.updateProvider = ({ _id, ...rest }) => {
       },
     }
   );
-  return DeliveryProviders.findOne({ _id, deleted: null });
+  const deliveryProvider = DeliveryProviders.findOne({ _id, deleted: null });
+  emit('DELIVERY_PROVIDER_UPDATE', { deliveryProvider });
+  return deliveryProvider;
 };
 
 DeliveryProviders.removeProvider = ({ _id }) => {
-  return DeliveryProviders.update(
+  const result = DeliveryProviders.update(
     { _id, deleted: null },
     {
       $set: {
@@ -138,6 +143,8 @@ DeliveryProviders.removeProvider = ({ _id }) => {
       },
     }
   );
+  emit('DELIVERY_PROVIDER_REMOVE', { deliveryProviderId: _id });
+  return result;
 };
 
 DeliveryProviders.providerExists = ({ deliveryProviderId }) => {

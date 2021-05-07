@@ -1,6 +1,7 @@
 import 'meteor/dburles:collection-helpers';
 import { Promise } from 'meteor/promise';
 import { Users } from 'meteor/unchained:core-users';
+import { emit } from 'meteor/unchained:core-events';
 import { PaymentDirector } from '../director';
 import { PaymentProviders, PaymentCredentials } from './collections';
 import settings from '../settings';
@@ -225,7 +226,9 @@ PaymentProviders.createProvider = (providerData) => {
     configuration: InterfaceClass.initialConfiguration,
     ...providerData,
   });
-  return PaymentProviders.findOne({ _id: providerId });
+  const paymentProvider = PaymentProviders.findOne({ _id: providerId });
+  emit('PAYMENT_PROVIDER_CREATE', { paymentProvider });
+  return paymentProvider;
 };
 
 PaymentProviders.updateProvider = ({ _id, ...rest }) => {
@@ -238,7 +241,9 @@ PaymentProviders.updateProvider = ({ _id, ...rest }) => {
       },
     }
   );
-  return PaymentProviders.findOne({ _id, deleted: null });
+  const paymentProvider = PaymentProviders.findOne({ _id, deleted: null });
+  emit('PAYMENT_PROVIDER_UPDATE', { paymentProvider });
+  return paymentProvider;
 };
 
 PaymentProviders.removeProvider = ({ _id }) => {
@@ -250,7 +255,9 @@ PaymentProviders.removeProvider = ({ _id }) => {
       },
     }
   );
-  return PaymentProviders.findOne({ _id });
+  const paymentProvider = PaymentProviders.findOne({ _id });
+  emit('PAYMENT_PROVIDER_REMOVE', { paymentProvider });
+  return paymentProvider;
 };
 
 PaymentProviders.providerExists = ({ paymentProviderId }) => {

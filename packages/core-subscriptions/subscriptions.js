@@ -1,4 +1,5 @@
 import { WorkerDirector } from 'meteor/unchained:core-worker';
+import { registerEvents } from 'meteor/unchained:core-events';
 import GenerateSubscriptionOrders from './worker/generate-orders';
 import settings from './settings';
 
@@ -19,4 +20,5 @@ export default (options) => {
     });
   }
   runMigrations();
+  registerEvents(['SUBSCRIPTION_CREATE']);
 };
