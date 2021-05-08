@@ -63,7 +63,7 @@ Countries.createCountry = ({ isoCode, ...countryData }) => {
     ...countryData,
   });
   const country = Countries.findOne({ _id });
-  emit('COUNRY_CREATE', { country });
+  emit('COUNTRY_CREATE', { country });
   return country;
 };
 
