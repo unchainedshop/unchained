@@ -70,11 +70,6 @@ export default compose(
         isActive: router.query.tab === 'ProductVisualization',
       });
       menuItems.push({
-        name: 'ProductCommerce',
-        description: 'Commerce',
-        isActive: router.query.tab === 'ProductCommerce',
-      });
-      menuItems.push({
         name: 'ProductProxy',
         description: 'Variations',
         isActive: router.query.tab === 'ProductProxy',
