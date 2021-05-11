@@ -1,6 +1,6 @@
 Package.describe({
   name: 'unchained:core-messaging',
-  version: '0.61.1',
+  version: '1.0.0-beta1',
   summary: 'Unchained Engine Core: Messaging',
   git: 'https://github.com/unchainedshop/unchained',
   documentation: 'README.md',
@@ -12,10 +12,10 @@ Npm.depends({
 });
 
 Package.onUse((api) => {
-  api.versionsFrom('1.11.1');
+  api.versionsFrom('2.2');
   api.use('ecmascript');
-  api.use('unchained:core-logger@0.61.0');
-  api.use('unchained:core-worker@0.61.0');
+  api.use('unchained:core-logger@1.0.0-beta1');
+  api.use('unchained:core-worker@1.0.0-beta1');
 
   api.mainModule('messaging.js', 'server');
 });

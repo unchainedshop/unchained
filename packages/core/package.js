@@ -1,40 +1,40 @@
 Package.describe({
   name: 'unchained:core',
-  version: '0.61.2',
+  version: '1.0.0-beta1',
   summary: 'Unchained Engine Core: Core Umbrella',
   git: 'https://github.com/unchainedshop/unchained',
   documentation: 'README.md',
 });
 
 Package.onUse((api) => {
-  api.versionsFrom('1.11.1');
+  api.versionsFrom('2.2');
 
   api.use('ecmascript');
   api.use('promise');
   api.use('typescript@4.1.2');
 
-  api.use('unchained:core-currencies@0.61.0');
-  api.use('unchained:core-countries@0.61.0');
-  api.use('unchained:core-delivery@0.61.0');
-  api.use('unchained:core-discounting@0.61.0');
-  api.use('unchained:core-documents@0.61.0');
-  api.use('unchained:core-languages@0.61.0');
-  api.use('unchained:core-logger@0.61.0');
-  api.use('unchained:core-messaging@0.61.0');
-  api.use('unchained:core-quotations@0.61.0');
-  api.use('unchained:core-orders@0.61.0');
-  api.use('unchained:core-payment@0.61.0');
-  api.use('unchained:core-pricing@0.61.0');
-  api.use('unchained:core-products@0.61.0');
-  api.use('unchained:core-users@0.61.0');
-  api.use('unchained:core-accountsjs@0.61.0');
-  api.use('unchained:core-bookmarks@0.61.0');
-  api.use('unchained:core-warehousing@0.61.0');
-  api.use('unchained:core-filters@0.61.0');
-  api.use('unchained:core-assortments@0.61.0');
-  api.use('unchained:core-worker@0.61.0');
-  api.use('unchained:core-subscriptions@0.61.0');
-  api.use('unchained:core-events@0.61.0');
+  api.use('unchained:core-currencies@1.0.0-beta1');
+  api.use('unchained:core-countries@1.0.0-beta1');
+  api.use('unchained:core-delivery@1.0.0-beta1');
+  api.use('unchained:core-discounting@1.0.0-beta1');
+  api.use('unchained:core-documents@1.0.0-beta1');
+  api.use('unchained:core-languages@1.0.0-beta1');
+  api.use('unchained:core-logger@1.0.0-beta1');
+  api.use('unchained:core-messaging@1.0.0-beta1');
+  api.use('unchained:core-quotations@1.0.0-beta1');
+  api.use('unchained:core-orders@1.0.0-beta1');
+  api.use('unchained:core-payment@1.0.0-beta1');
+  api.use('unchained:core-pricing@1.0.0-beta1');
+  api.use('unchained:core-products@1.0.0-beta1');
+  api.use('unchained:core-users@1.0.0-beta1');
+  api.use('unchained:core-accountsjs@1.0.0-beta1');
+  api.use('unchained:core-bookmarks@1.0.0-beta1');
+  api.use('unchained:core-warehousing@1.0.0-beta1');
+  api.use('unchained:core-filters@1.0.0-beta1');
+  api.use('unchained:core-assortments@1.0.0-beta1');
+  api.use('unchained:core-worker@1.0.0-beta1');
+  api.use('unchained:core-subscriptions@1.0.0-beta1');
+  api.use('unchained:core-events@1.0.0-beta1');
 
   api.imply([
     'unchained:core-currencies',

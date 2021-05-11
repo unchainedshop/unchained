@@ -1,6 +1,6 @@
 Package.describe({
   name: 'unchained:core-settings',
-  version: '0.61.0',
+  version: '1.0.0-beta1',
   summary:
     'This package contains api to define settings for the unchained engine.',
   git: 'https://github.com/unchainedshop/unchained',
@@ -12,7 +12,7 @@ Npm.depends({
 });
 
 Package.onUse((api) => {
-  api.versionsFrom('1.11.1');
+  api.versionsFrom('2.2');
   api.use('ecmascript');
   api.mainModule('core-settings.js');
 });

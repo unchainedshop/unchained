@@ -1,4 +1,4 @@
-# vNEXT
+# v1.0.0-beta1
 
 ## Breaking changes
 

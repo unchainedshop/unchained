@@ -1,6 +1,6 @@
 Package.describe({
   name: 'unchained:core-accountsjs',
-  version: '0.61.3',
+  version: '1.0.0-beta1',
   summary: 'Unchained Engine Core: Accounts',
   git: 'https://github.com/unchainedshop/unchained',
   documentation: 'README.md',
@@ -15,7 +15,7 @@ Npm.depends({
 });
 
 Package.onUse((api) => {
-  api.versionsFrom('1.11.1');
+  api.versionsFrom('2.2');
   api.use('ecmascript');
   api.mainModule('index.js');
 });

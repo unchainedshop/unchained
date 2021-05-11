@@ -1,6 +1,6 @@
 Package.describe({
   name: 'unchained:core-users',
-  version: '0.61.4',
+  version: '1.0.0-beta1',
   summary: 'Unchained Engine Core: Users',
   git: 'https://github.com/unchainedshop/unchained',
   documentation: 'README.md',
@@ -11,7 +11,7 @@ Npm.depends({
 });
 
 Package.onUse((api) => {
-  api.versionsFrom('1.11.1');
+  api.versionsFrom('2.2');
   api.use('ecmascript');
   api.use('mongo');
   api.use('promise');
@@ -19,12 +19,12 @@ Package.onUse((api) => {
   api.use('aldeed:collection2@3.2.1');
 
   api.use('percolate:migrations@1.0.2');
-  api.use('unchained:utils@0.61.0');
-  api.use('unchained:core-accountsjs@0.61.0');
-  api.use('unchained:core-logger@0.61.0');
-  api.use('unchained:core-languages@0.61.0');
-  api.use('unchained:core-countries@0.61.0');
-  api.use('unchained:core-files@0.61.0');
+  api.use('unchained:utils@1.0.0-beta1');
+  api.use('unchained:core-accountsjs@1.0.0-beta1');
+  api.use('unchained:core-logger@1.0.0-beta1');
+  api.use('unchained:core-languages@1.0.0-beta1');
+  api.use('unchained:core-countries@1.0.0-beta1');
+  api.use('unchained:core-files@1.0.0-beta1');
 
   api.mainModule('users.js', 'server');
 });
