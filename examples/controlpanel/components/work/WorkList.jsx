@@ -1,6 +1,6 @@
 import gql from 'graphql-tag';
 import React, { useEffect, useState } from 'react';
-import { Checkbox, Table } from 'semantic-ui-react';
+import { Checkbox, Table, Segment, Card } from 'semantic-ui-react';
 import { compose, defaultProps } from 'recompose';
 import DatePicker from 'react-datepicker';
 
@@ -49,6 +49,55 @@ const WorkList = ({
 
   return (
     <>
+      <Segment.Group>
+        <Segment>
+          <span>Created From </span>
+          <DatePicker
+            name="startDate"
+            onChange={(e) => onDateRangeChange('start', e)}
+            placeholderText="Start date"
+            dateFormat="dd.MM.yyyy"
+            showMonthDropdown
+            showYearDropdown
+            dropdownMode="select"
+            selected={created.start}
+            showTimeInput
+          />
+          <span> To </span>
+          <DatePicker
+            name="endDate"
+            onChange={(e) => onDateRangeChange('end', e)}
+            placeholderText="End Date"
+            value={new Date()}
+            dateFormat="dd.MM.yyyy"
+            showMonthDropdown
+            showYearDropdown
+            dropdownMode="select"
+            selected={created.end}
+            showTimeInput
+          />
+        </Segment>
+        <Segment header="asdf">
+          <span>Status: </span>
+          {statusTypes.map((status) => (
+            <div key={status}>
+              <Checkbox
+                label={status}
+                checked={activeStatus.indexOf(status) !== -1}
+                onChange={onWorkStatusChange}
+              />
+            </div>
+          ))}
+        </Segment>
+        <Segment>
+          <WorkTypeSelector
+            onChange={(e, { value }) => {
+              setSelectedTypeFilter(value);
+              onFilterChange({ filterType: 'workType', value });
+            }}
+          />
+        </Segment>
+      </Segment.Group>
       <InfiniteDataTable
         {...rest}
         cols={6}
@@ -57,58 +106,6 @@ const WorkList = ({
           <WorkRow key={work._id} work={work} relativeDate={relativeDate} />
         )}
       >
-        <Table.Row>
-          <Table.HeaderCell>
-            <span>Created From</span> <br />
-            <DatePicker
-              name="startDate"
-              onChange={(e) => onDateRangeChange('start', e)}
-              placeholderText="Start date"
-              dateFormat="dd.MM.yyyy"
-              showMonthDropdown
-              showYearDropdown
-              dropdownMode="select"
-              selected={created.start}
-              showTimeInput
-            />
-          </Table.HeaderCell>
-          <Table.HeaderCell>
-            <span>To</span>
-            <br />
-            <DatePicker
-              name="endDate"
-              onChange={(e) => onDateRangeChange('end', e)}
-              placeholderText="End Date"
-              value={new Date()}
-              dateFormat="dd.MM.yyyy"
-              showMonthDropdown
-              showYearDropdown
-              dropdownMode="select"
-              selected={created.end}
-              showTimeInput
-            />
-          </Table.HeaderCell>
-        </Table.Row>
-        <Table.Row>
-          <Table.HeaderCell colSpan="2">
-            <WorkTypeSelector
-              onChange={(e, { value }) => {
-                setSelectedTypeFilter(value);
-                onFilterChange({ filterType: 'workType', value });
-              }}
-            />
-          </Table.HeaderCell>
-          {statusTypes.map((status) => (
-            <Table.HeaderCell key={status}>
-              <Checkbox
-                label={status}
-                checked={activeStatus.indexOf(status) !== -1}
-                onChange={onWorkStatusChange}
-              />
-            </Table.HeaderCell>
-          ))}
-        </Table.Row>
-
         <Table.Row>
           <Table.HeaderCell>Work #</Table.HeaderCell>
           <Table.HeaderCell>Status</Table.HeaderCell>
