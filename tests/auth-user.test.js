@@ -60,7 +60,7 @@ describe('Auth for logged in users', () => {
     it('does not allow a user to just retrieve data of other users', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
-          query($userId: ID) {
+          query ($userId: ID) {
             user(userId: $userId) {
               _id
             }

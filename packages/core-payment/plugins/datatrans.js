@@ -38,22 +38,24 @@ const roundedAmountFromOrder = (order) => {
   };
 };
 
-const generateSignature = (signKey) => (...parts) => {
-  // https://docs.datatrans.ch/docs/security-sign
-  if (DATATRANS_SECURITY.toLowerCase() === Security.STATIC_SIGN)
-    return DATATRANS_SIGN_KEY;
-  if (DATATRANS_SECURITY.toLowerCase() === Security.NONE) return '';
+const generateSignature =
+  (signKey) =>
+  (...parts) => {
+    // https://docs.datatrans.ch/docs/security-sign
+    if (DATATRANS_SECURITY.toLowerCase() === Security.STATIC_SIGN)
+      return DATATRANS_SIGN_KEY;
+    if (DATATRANS_SECURITY.toLowerCase() === Security.NONE) return '';
 
-  const resultString = parts.filter(Boolean).join('');
-  const signKeyInBytes = Buffer.from(signKey, 'hex');
+    const resultString = parts.filter(Boolean).join('');
+    const signKeyInBytes = Buffer.from(signKey, 'hex');
 
-  const signedString = crypto
-    .createHmac('sha256', signKeyInBytes)
-    .update(resultString)
-    .digest('hex');
+    const signedString = crypto
+      .createHmac('sha256', signKeyInBytes)
+      .update(resultString)
+      .digest('hex');
 
-  return signedString;
-};
+    return signedString;
+  };
 
 const datatransAuthorize = async ({
   merchantId,
@@ -109,13 +111,12 @@ WebApp.connectHandlers.use(DATATRANS_WEBHOOK_PATH, async (req, res) => {
       try {
         if (amount === '0') {
           const [paymentProviderId, userId] = refno.split(':');
-          const paymentCredentials = PaymentCredentials.registerPaymentCredentials(
-            {
+          const paymentCredentials =
+            PaymentCredentials.registerPaymentCredentials({
               paymentProviderId,
               paymentContext: authorizationResponse,
               userId,
-            }
-          );
+            });
           logger.info(
             `Datatrans Webhook: Unchained registered payment credentials for ${userId}`,
             { userId }

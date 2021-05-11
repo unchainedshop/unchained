@@ -348,50 +348,49 @@ describe('ProductAssignment', () => {
 
   describe('mutation.removeProductAssignment for admin user should', () => {
     it('Update proxy to a product when passed valid proxy  ID of CONFIGURABLE_PRODUCT type', async () => {
-      const {
-        data: { removeProductAssignment } = {},
-      } = await graphqlFetchAsAdmin({
-        query: /* GraphQL */ `
-          mutation RemoveProductAssignment(
-            $proxyId: ID!
-            $vectors: [ProductAssignmentVectorInput!]!
-          ) {
-            removeProductAssignment(proxyId: $proxyId, vectors: $vectors) {
-              _id
-              sequence
-              status
-              tags
-              created
-              updated
-              published
-              texts {
+      const { data: { removeProductAssignment } = {} } =
+        await graphqlFetchAsAdmin({
+          query: /* GraphQL */ `
+            mutation RemoveProductAssignment(
+              $proxyId: ID!
+              $vectors: [ProductAssignmentVectorInput!]!
+            ) {
+              removeProductAssignment(proxyId: $proxyId, vectors: $vectors) {
                 _id
-              }
-              media {
-                _id
-              }
-              reviews {
-                _id
-              }
-              meta
-              assortmentPaths {
-                links {
-                  link {
-                    _id
+                sequence
+                status
+                tags
+                created
+                updated
+                published
+                texts {
+                  _id
+                }
+                media {
+                  _id
+                }
+                reviews {
+                  _id
+                }
+                meta
+                assortmentPaths {
+                  links {
+                    link {
+                      _id
+                    }
                   }
                 }
-              }
-              siblings {
-                _id
+                siblings {
+                  _id
+                }
               }
             }
-          }
-        `,
-        variables: {
-          proxyId: ConfigurableProduct._id,
-          vectors: [{ key: 'key-3', value: 'value-3' }],
-        },
-      });
+          `,
+          variables: {
+            proxyId: ConfigurableProduct._id,
+            vectors: [{ key: 'key-3', value: 'value-3' }],
+          },
+        });
 
       expect(removeProductAssignment._id).not.toBe(null);
     });

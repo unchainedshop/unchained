@@ -70,13 +70,15 @@ export const wipeDatabase = async () => {
   await connection.close();
 };
 
-const convertLinkToFetch = (link) => ({ query, ...operation }) =>
-  toPromise(
-    execute(link, {
-      query: gql(query),
-      ...operation,
-    }),
-  );
+const convertLinkToFetch =
+  (link) =>
+  ({ query, ...operation }) =>
+    toPromise(
+      execute(link, {
+        query: gql(query),
+        ...operation,
+      }),
+    );
 
 export const createAnonymousGraphqlFetch = () => {
   const uri = 'http://localhost:3000/graphql';

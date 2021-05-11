@@ -21,9 +21,8 @@ export default ({ logger, authorId }) => {
   const bulkOperations = {};
   function bulk(Collection) {
     const raw = Collection.rawCollection();
-    bulkOperations[
-      raw.namespace.collection
-    ] = Collection.rawCollection().initializeOrderedBulkOp();
+    bulkOperations[raw.namespace.collection] =
+      Collection.rawCollection().initializeOrderedBulkOp();
     return bulkOperations[raw.namespace.collection];
   }
 

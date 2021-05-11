@@ -81,22 +81,21 @@ describe('Plugins: Datatrans Payments', () => {
       '0c83ed74918d05cdd5309389dd8f011881250351f861619fbdfb9f75c711a5db';
 
     it('request a new signed nonce', async () => {
-      const {
-        data: { signPaymentProviderForCredentialRegistration } = {},
-      } = await graphqlFetch({
-        query: /* GraphQL */ `
-          mutation signPaymentProviderForCredentialRegistration(
-            $paymentProviderId: ID!
-          ) {
-            signPaymentProviderForCredentialRegistration(
-              paymentProviderId: $paymentProviderId
-            )
-          }
-        `,
-        variables: {
-          paymentProviderId: 'datatrans-payment-provider',
-        },
-      });
+      const { data: { signPaymentProviderForCredentialRegistration } = {} } =
+        await graphqlFetch({
+          query: /* GraphQL */ `
+            mutation signPaymentProviderForCredentialRegistration(
+              $paymentProviderId: ID!
+            ) {
+              signPaymentProviderForCredentialRegistration(
+                paymentProviderId: $paymentProviderId
+              )
+            }
+          `,
+          variables: {
+            paymentProviderId: 'datatrans-payment-provider',
+          },
+        });
 
       expect(signPaymentProviderForCredentialRegistration).toBe(sign);
     });
@@ -422,31 +421,30 @@ describe('Plugins: Datatrans Payments', () => {
 
       const credentials = me?.paymentCredentials?.[0];
 
-      const {
-        data: { addCartProduct, updateCart, checkoutCart } = {},
-      } = await graphqlFetch({
-        query: /* GraphQL */ `
-          mutation addAndCheckout($productId: ID!, $paymentContext: JSON) {
-            addCartProduct(productId: $productId) {
-              _id
+      const { data: { addCartProduct, updateCart, checkoutCart } = {} } =
+        await graphqlFetch({
+          query: /* GraphQL */ `
+            mutation addAndCheckout($productId: ID!, $paymentContext: JSON) {
+              addCartProduct(productId: $productId) {
+                _id
+              }
+              updateCart(paymentProviderId: "datatrans-payment-provider") {
+                _id
+                status
+              }
+              checkoutCart(paymentContext: $paymentContext) {
+                _id
+                status
+              }
             }
-            updateCart(paymentProviderId: "datatrans-payment-provider") {
-              _id
-              status
-            }
-            checkoutCart(paymentContext: $paymentContext) {
-              _id
-              status
-            }
-          }
-        `,
-        variables: {
-          productId: 'simpleproduct',
-          paymentContext: {
-            paymentCredentials: credentials,
+          `,
+          variables: {
+            productId: 'simpleproduct',
+            paymentContext: {
+              paymentCredentials: credentials,
+            },
           },
-        },
-      });
+        });
       expect(addCartProduct).toMatchObject(expect.anything());
       expect(updateCart).toMatchObject({
         status: 'OPEN',
@@ -456,28 +454,27 @@ describe('Plugins: Datatrans Payments', () => {
       });
     });
     it('checkout with preferred alias', async () => {
-      const {
-        data: { addCartProduct, updateCart, checkoutCart } = {},
-      } = await graphqlFetch({
-        query: /* GraphQL */ `
-          mutation addAndCheckout($productId: ID!) {
-            addCartProduct(productId: $productId) {
-              _id
+      const { data: { addCartProduct, updateCart, checkoutCart } = {} } =
+        await graphqlFetch({
+          query: /* GraphQL */ `
+            mutation addAndCheckout($productId: ID!) {
+              addCartProduct(productId: $productId) {
+                _id
+              }
+              updateCart(paymentProviderId: "datatrans-payment-provider") {
+                _id
+                status
+              }
+              checkoutCart {
+                _id
+                status
+              }
             }
-            updateCart(paymentProviderId: "datatrans-payment-provider") {
-              _id
-              status
-            }
-            checkoutCart {
-              _id
-              status
-            }
-          }
-        `,
-        variables: {
-          productId: 'simpleproduct',
-        },
-      });
+          `,
+          variables: {
+            productId: 'simpleproduct',
+          },
+        });
       expect(addCartProduct).toMatchObject(expect.anything());
       expect(updateCart).toMatchObject({
         status: 'OPEN',

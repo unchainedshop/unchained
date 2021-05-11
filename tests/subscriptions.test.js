@@ -115,73 +115,72 @@ describe('Subscriptions', () => {
   });
   describe('Mutation.createSubscription', () => {
     it('create a new subscription manually will not activate automatically because of missing order', async () => {
-      const {
-        data: { createSubscription } = {},
-      } = await graphqlFetchAsAdminUser({
-        query: /* GraphQL */ `
-          mutation createSubscription($plan: SubscriptionPlanInput!) {
-            createSubscription(plan: $plan) {
-              _id
-              status
-              subscriptionNumber
-              updated
-              expires
-              meta
-              plan {
-                product {
-                  _id
+      const { data: { createSubscription } = {} } =
+        await graphqlFetchAsAdminUser({
+          query: /* GraphQL */ `
+            mutation createSubscription($plan: SubscriptionPlanInput!) {
+              createSubscription(plan: $plan) {
+                _id
+                status
+                subscriptionNumber
+                updated
+                expires
+                meta
+                plan {
+                  product {
+                    _id
+                  }
+                  quantity
+                  configuration {
+                    key
+                    value
+                  }
                 }
-                quantity
-                configuration {
-                  key
-                  value
+                payment {
+                  provider {
+                    _id
+                  }
                 }
-              }
-              payment {
-                provider {
-                  _id
+                delivery {
+                  provider {
+                    _id
+                  }
                 }
-              }
-              delivery {
-                provider {
-                  _id
+                billingAddress {
+                  firstName
                 }
-              }
-              billingAddress {
-                firstName
-              }
-              contact {
-                emailAddress
-              }
-              status
-              created
-              expires
+                contact {
+                  emailAddress
+                }
+                status
+                created
+                expires
 
-              isExpired
-              subscriptionNumber
-              country {
-                isoCode
-              }
-              currency {
-                isoCode
-              }
-              meta
-              periods {
-                order {
-                  _id
+                isExpired
+                subscriptionNumber
+                country {
+                  isoCode
                 }
-                start
-                end
+                currency {
+                  isoCode
+                }
+                meta
+                periods {
+                  order {
+                    _id
+                  }
+                  start
+                  end
+                }
               }
             }
-          }
-        `,
-        variables: {
-          plan: {
-            productId: PlanProduct._id,
+          `,
+          variables: {
+            plan: {
+              productId: PlanProduct._id,
+            },
           },
-        },
-      });
+        });
       expect(createSubscription).toMatchObject({
         status: 'INITIAL',
         plan: {

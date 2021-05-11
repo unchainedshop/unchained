@@ -406,7 +406,7 @@ export default [
       """
       Get all emitted events
       """
-      events(type: String, limit: Int = 10, offset: Int = 0): [Event]
+      events(type: String, limit: Int = 10, offset: Int = 0): [Event!]!
     }
   `,
 ];

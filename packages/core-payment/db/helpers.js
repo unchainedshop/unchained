@@ -281,10 +281,9 @@ PaymentProviders.findProviders = (query, ...options) =>
   PaymentProviders.find(buildFindSelector(query), ...options).fetch();
 
 PaymentProviders.findSupported = ({ order }, ...options) => {
-  const providers = PaymentProviders.findProviders(
-    {},
-    ...options
-  ).filter((paymentProvider) => paymentProvider.isActive(order));
+  const providers = PaymentProviders.findProviders({}, ...options).filter(
+    (paymentProvider) => paymentProvider.isActive(order)
+  );
   return settings.filterSupportedProviders({ providers, order });
 };
 

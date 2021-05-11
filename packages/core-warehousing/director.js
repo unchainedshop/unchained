@@ -102,9 +102,11 @@ class WarehousingDirector {
       const { deliveryProvider } = context;
       const referenceDate = WarehousingDirector.getReferenceDate(context);
       const warehousingThroughputTime = await this.throughputTime(context);
-      const deliveryThroughputTime = deliveryProvider.estimatedDeliveryThroughput(
-        { ...context, warehousingThroughputTime }
-      );
+      const deliveryThroughputTime =
+        deliveryProvider.estimatedDeliveryThroughput({
+          ...context,
+          warehousingThroughputTime,
+        });
       const shippingTimestamp =
         referenceDate.getTime() + warehousingThroughputTime;
       const earliestDeliveryTimestamp =

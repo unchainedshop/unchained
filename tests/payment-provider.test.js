@@ -234,29 +234,28 @@ describe('PaymentProviders', () => {
 
   describe('Mutation.removePaymentCredentials for admin user should', () => {
     it('mark pament provider specified by ID as invalid', async () => {
-      const {
-        data: { removePaymentCredentials } = {},
-      } = await graphqlFetchAsAdminUser({
-        query: /* GraphQL */ `
-          mutation removePaymentCredentials($paymentCredentialsId: ID!) {
-            removePaymentCredentials(
-              paymentCredentialsId: $paymentCredentialsId
-            ) {
-              _id
-              meta
-              token
-              isValid
-              isPreferred
-              paymentProvider {
+      const { data: { removePaymentCredentials } = {} } =
+        await graphqlFetchAsAdminUser({
+          query: /* GraphQL */ `
+            mutation removePaymentCredentials($paymentCredentialsId: ID!) {
+              removePaymentCredentials(
+                paymentCredentialsId: $paymentCredentialsId
+              ) {
                 _id
+                meta
+                token
+                isValid
+                isPreferred
+                paymentProvider {
+                  _id
+                }
               }
             }
-          }
-        `,
-        variables: {
-          paymentCredentialsId: SimplePaymentCredential._id,
-        },
-      });
+          `,
+          variables: {
+            paymentCredentialsId: SimplePaymentCredential._id,
+          },
+        });
 
       const { errors } = await graphqlFetchAsAdminUser({
         query: /* GraphQL */ `
@@ -326,29 +325,30 @@ describe('PaymentProviders', () => {
 
   describe('Mutation.markPaymentCredentialsPreferred for admin user should', () => {
     it('mark pament credential specified by ID as prefered', async () => {
-      const {
-        data: { markPaymentCredentialsPreferred } = {},
-      } = await graphqlFetchAsAdminUser({
-        query: /* GraphQL */ `
-          mutation markPaymentCredentialsPreferred($paymentCredentialsId: ID!) {
-            markPaymentCredentialsPreferred(
-              paymentCredentialsId: $paymentCredentialsId
+      const { data: { markPaymentCredentialsPreferred } = {} } =
+        await graphqlFetchAsAdminUser({
+          query: /* GraphQL */ `
+            mutation markPaymentCredentialsPreferred(
+              $paymentCredentialsId: ID!
             ) {
-              _id
-              meta
-              token
-              isValid
-              paymentProvider {
+              markPaymentCredentialsPreferred(
+                paymentCredentialsId: $paymentCredentialsId
+              ) {
                 _id
+                meta
+                token
+                isValid
+                paymentProvider {
+                  _id
+                }
+                isPreferred
               }
-              isPreferred
             }
-          }
-        `,
-        variables: {
-          paymentCredentialsId: PrePaidPaymentCredential._id,
-        },
-      });
+          `,
+          variables: {
+            paymentCredentialsId: PrePaidPaymentCredential._id,
+          },
+        });
       expect(markPaymentCredentialsPreferred).toMatchObject({
         _id: PrePaidPaymentCredential._id,
         isPreferred: true,
@@ -415,23 +415,24 @@ describe('PaymentProviders', () => {
 
   describe('Mutation.markPaymentCredentialsPreferred for normal user should', () => {
     it('mark pament credential specified by ID as prefered', async () => {
-      const {
-        data: { markPaymentCredentialsPreferred } = {},
-      } = await graphqlFetchAsNormalUser({
-        query: /* GraphQL */ `
-          mutation markPaymentCredentialsPreferred($paymentCredentialsId: ID!) {
-            markPaymentCredentialsPreferred(
-              paymentCredentialsId: $paymentCredentialsId
+      const { data: { markPaymentCredentialsPreferred } = {} } =
+        await graphqlFetchAsNormalUser({
+          query: /* GraphQL */ `
+            mutation markPaymentCredentialsPreferred(
+              $paymentCredentialsId: ID!
             ) {
-              _id
-              isPreferred
+              markPaymentCredentialsPreferred(
+                paymentCredentialsId: $paymentCredentialsId
+              ) {
+                _id
+                isPreferred
+              }
             }
-          }
-        `,
-        variables: {
-          paymentCredentialsId: GenericPaymentCredential._id,
-        },
-      });
+          `,
+          variables: {
+            paymentCredentialsId: GenericPaymentCredential._id,
+          },
+        });
 
       expect(markPaymentCredentialsPreferred).toMatchObject({
         _id: GenericPaymentCredential._id,

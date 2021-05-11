@@ -242,8 +242,7 @@ Migrations.add({
 
 Migrations.add({
   version: 20201231.0,
-  name:
-    'drop all assortment-linked entities with assortmentIds that do not exist anymore',
+  name: 'drop all assortment-linked entities with assortmentIds that do not exist anymore',
   up() {
     const idArray = Collections.Assortments.find({})
       .fetch()

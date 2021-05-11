@@ -16,36 +16,35 @@ describe('setup delivery providers', () => {
 
   describe('Mutation.createDeliveryProvider', () => {
     it('create a shipping delivery provider', async () => {
-      const {
-        data: { createDeliveryProvider, errors } = {},
-      } = await graphqlFetch({
-        query: /* GraphQL */ `
-          mutation createDeliveryProvider(
-            $deliveryProvider: CreateDeliveryProviderInput!
-          ) {
-            createDeliveryProvider(deliveryProvider: $deliveryProvider) {
-              _id
-              created
-              updated
-              deleted
-              type
-              interface {
+      const { data: { createDeliveryProvider, errors } = {} } =
+        await graphqlFetch({
+          query: /* GraphQL */ `
+            mutation createDeliveryProvider(
+              $deliveryProvider: CreateDeliveryProviderInput!
+            ) {
+              createDeliveryProvider(deliveryProvider: $deliveryProvider) {
                 _id
-                version
-                label
+                created
+                updated
+                deleted
+                type
+                interface {
+                  _id
+                  version
+                  label
+                }
+                configuration
+                configurationError
               }
-              configuration
-              configurationError
             }
-          }
-        `,
-        variables: {
-          deliveryProvider: {
-            type: 'SHIPPING',
-            adapterKey: 'shop.unchained.post',
+          `,
+          variables: {
+            deliveryProvider: {
+              type: 'SHIPPING',
+              adapterKey: 'shop.unchained.post',
+            },
           },
-        },
-      });
+        });
       expect(errors).toEqual(undefined);
       expect(createDeliveryProvider).toMatchObject({
         configurationError: null,

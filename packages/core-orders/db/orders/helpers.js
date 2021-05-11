@@ -55,10 +55,11 @@ Subscriptions.generateFromCheckout = async ({ items, order, ...context }) => {
   };
   return Promise.all(
     items.map(async (item) => {
-      const subscriptionData = await SubscriptionDirector.transformOrderItemToSubscription(
-        item,
-        { ...template, ...context }
-      );
+      const subscriptionData =
+        await SubscriptionDirector.transformOrderItemToSubscription(item, {
+          ...template,
+          ...context,
+        });
 
       await Subscriptions.createSubscription({
         ...subscriptionData,
@@ -252,11 +253,10 @@ Orders.helpers({
     });
 
     const paymentProviderId = this.payment()?.paymentProviderId;
-    const isAlreadyInitializedWithSupportedProvider = supportedPaymentProviders.some(
-      (provider) => {
+    const isAlreadyInitializedWithSupportedProvider =
+      supportedPaymentProviders.some((provider) => {
         return provider._id === paymentProviderId;
-      }
-    );
+      });
     if (
       supportedPaymentProviders.length > 0 &&
       !isAlreadyInitializedWithSupportedProvider
@@ -293,11 +293,10 @@ Orders.helpers({
     });
 
     const deliveryProviderId = this.delivery()?.deliveryProviderId;
-    const isAlreadyInitializedWithSupportedProvider = supportedDeliveryProviders.some(
-      (provider) => {
+    const isAlreadyInitializedWithSupportedProvider =
+      supportedDeliveryProviders.some((provider) => {
         return provider._id === deliveryProviderId;
-      }
-    );
+      });
 
     if (
       supportedDeliveryProviders.length > 0 &&
@@ -706,9 +705,9 @@ Orders.createOrder = async ({
     currency,
     countryCode,
   });
-  const order = Orders.findOne({ _id: orderId });
+  const order = Orders.findOne({ _id: orderId }).initProviders();
   emit('ORDER_CREATE', { order });
-  return order.initProviders();
+  return order;
 };
 
 Orders.updateBillingAddress = ({ billingAddress, orderId }) => {

@@ -41,31 +41,30 @@ const buildFindSelector = ({
   return selector;
 };
 
-export const resolveAssortmentLinkFromDatabase = ({ selector = {} } = {}) => (
-  assortmentId,
-  childAssortmentId
-) => {
-  const assortment = Collections.Assortments.findOne({
-    _id: assortmentId,
-    ...selector,
-  });
-  return (
-    assortment && {
-      assortmentId,
-      childAssortmentId,
-      parentIds: assortment.parentIds(),
-    }
-  );
-};
+export const resolveAssortmentLinkFromDatabase =
+  ({ selector = {} } = {}) =>
+  (assortmentId, childAssortmentId) => {
+    const assortment = Collections.Assortments.findOne({
+      _id: assortmentId,
+      ...selector,
+    });
+    return (
+      assortment && {
+        assortmentId,
+        childAssortmentId,
+        parentIds: assortment.parentIds(),
+      }
+    );
+  };
 
-export const resolveAssortmentProductsFromDatabase = ({
-  selector = {},
-} = {}) => (productId) => {
-  return Collections.AssortmentProducts.find(
-    { productId, ...selector },
-    { fields: { _id: true, assortmentId: true } }
-  ).fetch();
-};
+export const resolveAssortmentProductsFromDatabase =
+  ({ selector = {} } = {}) =>
+  (productId) => {
+    return Collections.AssortmentProducts.find(
+      { productId, ...selector },
+      { fields: { _id: true, assortmentId: true } }
+    ).fetch();
+  };
 
 export const makeAssortmentBreadcrumbsBuilder = ({
   resolveAssortmentProducts,
@@ -195,9 +194,8 @@ Collections.AssortmentLinks.createAssortmentLink = ({
     created: new Date(),
   };
   if (!forceSortKey) {
-    $setOnInsert.sortKey = Collections.AssortmentLinks.getNewSortKey(
-      parentAssortmentId
-    );
+    $setOnInsert.sortKey =
+      Collections.AssortmentLinks.getNewSortKey(parentAssortmentId);
   } else {
     $set.sortKey = forceSortKey;
   }
@@ -228,9 +226,8 @@ Collections.AssortmentProducts.createAssortmentProduct = ({
     created: new Date(),
   };
   if (!forceSortKey) {
-    $setOnInsert.sortKey = Collections.AssortmentProducts.getNewSortKey(
-      assortmentId
-    );
+    $setOnInsert.sortKey =
+      Collections.AssortmentProducts.getNewSortKey(assortmentId);
   } else {
     $set.sortKey = forceSortKey;
   }
@@ -261,9 +258,8 @@ Collections.AssortmentFilters.createAssortmentFilter = ({
     created: new Date(),
   };
   if (!forceSortKey) {
-    $setOnInsert.sortKey = Collections.AssortmentFilters.getNewSortKey(
-      assortmentId
-    );
+    $setOnInsert.sortKey =
+      Collections.AssortmentFilters.getNewSortKey(assortmentId);
   } else {
     $set.sortKey = forceSortKey;
   }
@@ -450,18 +446,14 @@ Collections.Assortments.updateCleanAssortmentActivation = ({
 Collections.Assortments.wipeAssortments = (onlyDirty = true) => {
   const selector = onlyDirty ? { dirty: true } : {};
   const removedAssortmentCount = Collections.Assortments.remove(selector);
-  const removedAssortmentTextCount = Collections.AssortmentTexts.remove(
-    selector
-  );
-  const removedAssortmentProductsCount = Collections.AssortmentProducts.remove(
-    selector
-  );
-  const removedAssortmentLinksCount = Collections.AssortmentLinks.remove(
-    selector
-  );
-  const removedAssortmentFiltersCount = Collections.AssortmentFilters.remove(
-    selector
-  );
+  const removedAssortmentTextCount =
+    Collections.AssortmentTexts.remove(selector);
+  const removedAssortmentProductsCount =
+    Collections.AssortmentProducts.remove(selector);
+  const removedAssortmentLinksCount =
+    Collections.AssortmentLinks.remove(selector);
+  const removedAssortmentFiltersCount =
+    Collections.AssortmentFilters.remove(selector);
 
   log(`result of assortment purging with onlyDirty=${onlyDirty}`, {
     removedAssortmentCount,
@@ -750,13 +742,12 @@ Collections.Assortments.helpers({
     return Collections.Assortments.getLocalizedTexts(this._id, parsedLocale);
   },
   addProduct({ productId, ...rest }, { skipInvalidation = false } = {}) {
-    const assortmentProduct = Collections.AssortmentProducts.createAssortmentProduct(
-      {
+    const assortmentProduct =
+      Collections.AssortmentProducts.createAssortmentProduct({
         assortmentId: this._id,
         productId,
         ...rest,
-      }
-    );
+      });
     if (!skipInvalidation) {
       this.invalidateProductIdCache();
     }

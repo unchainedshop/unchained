@@ -120,9 +120,7 @@ WarehousingProviders.findSupported = (
   { product, deliveryProvider },
   ...options
 ) =>
-  WarehousingProviders.findProviders(
-    {},
-    ...options
-  ).filter((warehousingProvider) =>
-    warehousingProvider.isActive({ product, deliveryProvider })
+  WarehousingProviders.findProviders({}, ...options).filter(
+    (warehousingProvider) =>
+      warehousingProvider.isActive({ product, deliveryProvider })
   );

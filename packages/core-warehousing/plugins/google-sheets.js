@@ -6,11 +6,8 @@ import Sheets from 'node-sheets';
 import { log } from 'meteor/unchained:core-logger';
 import LRU from 'lru-cache';
 
-const {
-  NODE_ENV,
-  GOOGLE_SHEETS_ID,
-  GOOGLE_SHEETS_PRIVATE_KEY_DATA,
-} = process.env;
+const { NODE_ENV, GOOGLE_SHEETS_ID, GOOGLE_SHEETS_PRIVATE_KEY_DATA } =
+  process.env;
 
 const maxAge = NODE_ENV === 'production' ? 1000 * 60 * 60 : -1; // 1 hour or 1 second
 let updateGoogleCache;

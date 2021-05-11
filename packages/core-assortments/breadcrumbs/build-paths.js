@@ -1,35 +1,34 @@
-const walkAssortmentLinks = (resolveAssortmentLink) => async (
-  rootAssortmentId
-) => {
-  const walk = async (assortmentId, initialPaths = [], childAssortmentId) => {
-    const assortmentLink = await resolveAssortmentLink(
-      assortmentId,
-      childAssortmentId
-    );
-    if (!assortmentLink) return initialPaths;
+const walkAssortmentLinks =
+  (resolveAssortmentLink) => async (rootAssortmentId) => {
+    const walk = async (assortmentId, initialPaths = [], childAssortmentId) => {
+      const assortmentLink = await resolveAssortmentLink(
+        assortmentId,
+        childAssortmentId
+      );
+      if (!assortmentLink) return initialPaths;
 
-    const subAsssortmentLinks = await Promise.all(
-      assortmentLink.parentIds.map(async (parentAssortmentId) => {
-        return walk(parentAssortmentId, initialPaths, assortmentId);
-      })
-    );
-
-    if (subAsssortmentLinks.length > 0) {
-      return subAsssortmentLinks
-        .map((subAsssortmentLink) => {
-          return subAsssortmentLink.map((subSubLinks) => [
-            ...subSubLinks,
-            assortmentLink,
-            ...initialPaths,
-          ]);
+      const subAsssortmentLinks = await Promise.all(
+        assortmentLink.parentIds.map(async (parentAssortmentId) => {
+          return walk(parentAssortmentId, initialPaths, assortmentId);
         })
-        .flat();
-    }
-    return [[assortmentLink, ...initialPaths]];
+      );
+
+      if (subAsssortmentLinks.length > 0) {
+        return subAsssortmentLinks
+          .map((subAsssortmentLink) => {
+            return subAsssortmentLink.map((subSubLinks) => [
+              ...subSubLinks,
+              assortmentLink,
+              ...initialPaths,
+            ]);
+          })
+          .flat();
+      }
+      return [[assortmentLink, ...initialPaths]];
+    };
+    // Recursively walk up the directed graph in reverse
+    return walk(rootAssortmentId, []);
   };
-  // Recursively walk up the directed graph in reverse
-  return walk(rootAssortmentId, []);
-};
 
 export const walkUpFromProduct = async ({
   resolveAssortmentProducts,

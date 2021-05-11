@@ -109,30 +109,26 @@ class OrderItems extends OrderPricingAdapter {
     this.discounts.forEach(({ configuration, discountId }) => {
       // First, we deduce the discount from the items
       let alreadyDeductedForDiscount = 0;
-      const [
-        itemsDiscountAmount,
-        itemsTaxAmount,
-      ] = applyDiscountToMultipleShares(
-        itemShares,
-        calculateAmountToSplit(
-          { ...configuration, amountLeft, alreadyDeductedForDiscount },
-          totalAmountOfItems
-        )
-      );
+      const [itemsDiscountAmount, itemsTaxAmount] =
+        applyDiscountToMultipleShares(
+          itemShares,
+          calculateAmountToSplit(
+            { ...configuration, amountLeft, alreadyDeductedForDiscount },
+            totalAmountOfItems
+          )
+        );
       amountLeft -= itemsDiscountAmount;
       alreadyDeductedForDiscount += itemsDiscountAmount;
 
       // After the items, we deduct the remaining discount from payment & delivery fees
-      const [
-        deliveryAndPaymentDiscountAmount,
-        deliveryAndPaymentTaxAmount,
-      ] = applyDiscountToMultipleShares(
-        [deliveryShare, paymentShare],
-        calculateAmountToSplit(
-          { ...configuration, amountLeft, alreadyDeductedForDiscount },
-          totalAmountOfPaymentAndDelivery
-        )
-      );
+      const [deliveryAndPaymentDiscountAmount, deliveryAndPaymentTaxAmount] =
+        applyDiscountToMultipleShares(
+          [deliveryShare, paymentShare],
+          calculateAmountToSplit(
+            { ...configuration, amountLeft, alreadyDeductedForDiscount },
+            totalAmountOfPaymentAndDelivery
+          )
+        );
       amountLeft -= deliveryAndPaymentDiscountAmount;
       alreadyDeductedForDiscount += itemsDiscountAmount;
 

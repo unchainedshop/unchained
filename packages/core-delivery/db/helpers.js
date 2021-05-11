@@ -168,10 +168,9 @@ DeliveryProviders.count = async (query) => {
 };
 
 DeliveryProviders.findSupported = ({ order }, ...options) => {
-  const providers = DeliveryProviders.findProviders(
-    {},
-    ...options
-  ).filter((deliveryProvider) => deliveryProvider.isActive(order));
+  const providers = DeliveryProviders.findProviders({}, ...options).filter(
+    (deliveryProvider) => deliveryProvider.isActive(order)
+  );
   return settings.filterSupportedProviders({ providers, order });
 };
 

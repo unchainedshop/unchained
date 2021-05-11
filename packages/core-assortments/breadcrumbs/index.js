@@ -6,13 +6,12 @@ export const buildBreadcrumbs = async (options) => {
   return walkUpFromAssortment(options);
 };
 
-export const makeBreadcrumbsBuilder = ({
-  resolveAssortmentProducts,
-  resolveAssortmentLink,
-}) => async ({ productId, assortmentId }) =>
-  buildBreadcrumbs({
-    resolveAssortmentProducts,
-    resolveAssortmentLink,
-    productId,
-    assortmentId,
-  });
+export const makeBreadcrumbsBuilder =
+  ({ resolveAssortmentProducts, resolveAssortmentLink }) =>
+  async ({ productId, assortmentId }) =>
+    buildBreadcrumbs({
+      resolveAssortmentProducts,
+      resolveAssortmentLink,
+      productId,
+      assortmentId,
+    });
