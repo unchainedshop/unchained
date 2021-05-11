@@ -1,6 +1,6 @@
 Package.describe({
   name: 'unchained:api',
-  version: '0.61.12',
+  version: '0.61.19',
   summary: 'Unchained Engine: GraphQL API',
   git: 'https://github.com/unchainedshop/unchained',
   documentation: 'README.md',
@@ -21,6 +21,7 @@ Package.onUse((api) => {
   api.use('ecmascript');
   api.use('webapp');
   api.use('check');
+  api.use('mongo');
   api.use('typescript@4.1.2');
   api.use('unchained:core@0.61.0');
   api.use('unchained:roles@0.61.0');

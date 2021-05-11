@@ -27,6 +27,7 @@ export type UnchainedServerContext = UnchainedServerLocaleContext &
 
 export interface UnchainedServerOptions {
   unchained: UnchainedAPI;
+  bulkImporter: any;
   rolesOptions: any;
 }
 

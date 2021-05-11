@@ -21,7 +21,7 @@ import configureWorker from 'meteor/unchained:core-worker';
 import configureMessaging from 'meteor/unchained:core-messaging';
 import configureEvents, { registerEvents } from 'meteor/unchained:core-events';
 
-export default async ({ modules = {} } = {}) => {
+export default async ({ modules = {}, ...otherComponents } = {}) => {
   configureLogger(modules.logger);
   configureWorker(modules.worker);
   configureMessaging(modules.messaging);
@@ -50,5 +50,6 @@ export default async ({ modules = {} } = {}) => {
     services: {
       ...bookmarkServices,
     },
+    ...otherComponents,
   };
 };

@@ -1,3 +1,6 @@
+import { MongoInternals } from 'meteor/mongo';
+import { Assortments } from 'meteor/unchained:core-assortments';
+import { Filters } from 'meteor/unchained:core-filters';
 import * as AssortmentHandlers from './handlers/assortment';
 import * as ProductHandlers from './handlers/product';
 import * as FilterHandlers from './handlers/filter';
@@ -17,8 +20,21 @@ const runPrepareAsync = async (entity, operation, event, context) => {
   }
 };
 
-export default ({ logger, authorId }) => {
+export const createBucket = (bucketName) => {
+  const options = { bucketName };
+  return new MongoInternals.NpmModule.GridFSBucket(
+    MongoInternals.defaultRemoteCollectionDriver().mongo.db,
+    options
+  );
+};
+
+export const BulkImportPayloads = createBucket('bulk_import_payloads');
+
+export default (options) => {
   const bulkOperations = {};
+  const preparationIssues = [];
+  const { logger } = options;
+
   function bulk(Collection) {
     const raw = Collection.rawCollection();
     bulkOperations[raw.namespace.collection] =
@@ -27,10 +43,13 @@ export default ({ logger, authorId }) => {
   }
 
   const context = {
-    logger,
+    ...options,
     bulk,
-    authorId,
   };
+
+  logger.info(
+    `Configure event import with options: createShouldUpsertIfIDExists=${options.createShouldUpsertIfIDExists}`
+  );
 
   return {
     async prepare(event) {
@@ -43,20 +62,52 @@ export default ({ logger, authorId }) => {
         throw new Error(`Payload missing in ${JSON.stringify(event)}`);
       }
 
-      logger.info(`${operation} ${entity} ${event.payload._id} [START]`);
-      logger.profile(`${operation} ${entity} ${event.payload._id} [DONE]`);
-      return runPrepareAsync(entity, operation, event, context).finally(() => {
-        logger.profile(`${operation} ${entity} ${event.payload._id} [DONE]`);
+      logger.verbose(`${operation} ${entity} ${event.payload._id} [PREPARE]`);
+      logger.profile(`${operation} ${entity} ${event.payload._id} [DONE]`, {
+        level: 'verbose',
       });
+
+      try {
+        await runPrepareAsync(entity, operation, event, context);
+        logger.verbose(`${operation} ${entity} ${event.payload._id} [SUCCESS]`);
+      } catch (e) {
+        logger.verbose(
+          `${operation} ${entity} ${event.payload._id} [FAILED]: ${e.message}`
+        );
+        preparationIssues.push({
+          operation,
+          entity,
+          payloadId: event.payload._id,
+          errorCode: e.name,
+          errorMessage: e.message,
+        });
+      } finally {
+        logger.profile(`${operation} ${entity} ${event.payload._id} [DONE]`, {
+          level: 'verbose',
+        });
+      }
     },
     async execute() {
-      logger.verbose(
-        `execute bulk operations for: ${Object.keys(bulkOperations).join(', ')}`
+      logger.info(
+        `Execute bulk operations for: ${Object.keys(bulkOperations).join(', ')}`
       );
       const operationResults = Promise.all(
         Object.values(bulkOperations).map((o) => o.execute())
       );
-      return { operationResults };
+      if (preparationIssues?.length) {
+        logger.error(
+          `${preparationIssues.length} issues occured while preparing events, import finished with errors`
+        );
+        const errors = {};
+        errors.preparationIssues = preparationIssues;
+        return [operationResults, errors];
+      }
+      logger.info(`Import finished without errors`);
+      return [operationResults, null];
+    },
+    async invalidateCaches() {
+      await Assortments.invalidateFilterCaches();
+      await Filters.invalidateFilterCaches();
     },
   };
 };

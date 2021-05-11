@@ -7,6 +7,7 @@ import setupMigrations from './setup-migrations';
 import setupTemplates, { MessageTypes } from './setup-templates';
 import './worker/bulk-import';
 import setupCarts from './setup-carts';
+import { BulkImportPayloads } from './bulk-importer';
 import generateEventTypeDefs from './generate-registered-events';
 
 export { MessageTypes };
@@ -36,7 +37,13 @@ export const startPlatform = async ({ modules, typeDefs, ...options } = {}) => {
   if (workQueueIsEnabled) {
     await setupMigrations();
   }
-  const unchained = await initCore({ modules, ...options });
+  const unchained = await initCore({
+    modules,
+    bulkImporter: {
+      BulkImportPayloads,
+    },
+    options,
+  });
 
   setupAccounts(options);
   setupTemplates(options);

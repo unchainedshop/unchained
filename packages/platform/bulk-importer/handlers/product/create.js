@@ -2,25 +2,43 @@ import { Products } from 'meteor/unchained:core-products';
 import upsertVariations from './upsertVariations';
 import upsertMedia from './upsertMedia';
 import upsertProductContent from './upsertProductContent';
-
 import transformSpecificationToProductStructure from './transformSpecificationToProductStructure';
 
-export default async function createProduct(payload, { logger, authorId }) {
+export default async function createProduct(
+  payload,
+  { logger, authorId, createShouldUpsertIfIDExists }
+) {
   const { specification, media, variations, _id } = payload;
 
   if (!specification)
-    throw new Error('Specification is required when creating a new product');
+    throw new Error(
+      `Specification is required when creating new product ${_id}`
+    );
+
+  if (!specification.content)
+    throw new Error(`Content is required when creating new product ${_id}`);
 
   const productData = transformSpecificationToProductStructure(specification);
   logger.debug('create product object', productData);
-  await Products.createProduct({
-    ...productData,
-    _id,
-    authorId,
-  });
+  try {
+    await Products.createProduct({
+      ...productData,
+      _id,
+      authorId,
+    });
+  } catch (e) {
+    if (!createShouldUpsertIfIDExists) throw e;
 
-  if (!specification.content)
-    throw new Error('Product content is required when creating a new product');
+    logger.debug(
+      'entity already exists, falling back to update',
+      specification
+    );
+    await Products.updateProduct({
+      ...productData,
+      productId: _id,
+      authorId,
+    });
+  }
 
   logger.debug('create localized content for product', specification.content);
   await upsertProductContent({
@@ -29,13 +47,13 @@ export default async function createProduct(payload, { logger, authorId }) {
     authorId,
   });
 
-  logger.debug('create product media', media);
-  await upsertMedia({ media: media || [], productId: _id, authorId });
-
   logger.debug('create product variations', variations);
   await upsertVariations({
     variations: variations || [],
     productId: _id,
     authorId,
   });
+
+  logger.debug('create product media', media);
+  await upsertMedia({ media: media || [], productId: _id, authorId });
 }

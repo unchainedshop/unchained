@@ -28,11 +28,6 @@ export default async function createProduct(payload, { logger, authorId }) {
     }
   }
 
-  if (media) {
-    logger.debug('replace product media', media);
-    await upsertMedia({ media, productId: _id, authorId });
-  }
-
   if (variations) {
     logger.debug('replace variations', variations);
     await upsertVariations({
@@ -40,5 +35,10 @@ export default async function createProduct(payload, { logger, authorId }) {
       productId: _id,
       authorId,
     });
+  }
+
+  if (media) {
+    logger.debug('replace product media', media);
+    await upsertMedia({ media, productId: _id, authorId });
   }
 }

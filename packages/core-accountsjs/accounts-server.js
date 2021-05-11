@@ -48,6 +48,31 @@ export class UnchainedAccountsServer extends AccountsServer {
     );
   };
 
+  async removeExpiredTokens(userId) {
+    const tokenLifetimeMs = this.getTokenLifetimeMs();
+    const oldestValidDate = new Date(new Date() - tokenLifetimeMs);
+    await this.users.update(
+      {
+        _id: userId,
+        $or: [
+          { 'services.resume.loginTokens.when': { $lt: oldestValidDate } },
+          { 'services.resume.loginTokens.when': { $lt: +oldestValidDate } },
+        ],
+      },
+      {
+        $pull: {
+          'services.resume.loginTokens': {
+            $or: [
+              { when: { $lt: oldestValidDate } },
+              { when: { $lt: +oldestValidDate } },
+            ],
+          },
+        },
+      },
+      { multi: true }
+    );
+  }
+
   getTokenLifetimeMs() {
     const loginExpirationInDays =
       this.options.loginExpirationInDays === null
@@ -86,13 +111,17 @@ export class UnchainedAccountsServer extends AccountsServer {
 
     const when = new Date(date.setDate(date.getDate() + numberOfDaysToAdd));
     const stampedLoginToken = randomValueHex(43);
-
+    const userId = user._id ? user._id : user;
     const hashedToken = this.hashLoginToken(stampedLoginToken);
-    this.users.update(
-      { _id: user._id || user }, // can be user object or mere id passed by guest service
+    await this.removeExpiredTokens(userId);
+    await this.users.update(
+      { _id: userId }, // can be user object or mere id passed by guest service
       {
-        $addToSet: {
-          'services.resume.loginTokens': { hashedToken, when },
+        $push: {
+          'services.resume.loginTokens': {
+            $each: [{ hashedToken, when }],
+            $slice: -100,
+          },
         },
       }
     );
