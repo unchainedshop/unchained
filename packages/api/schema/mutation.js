@@ -174,37 +174,37 @@ export default [
       """
       Create a subscription.
       """
-      createSubscription(
-        plan: SubscriptionPlanInput!
+      createEnrollment(
+        plan: EnrollmentPlanInput!
         billingAddress: AddressInput
         contact: ContactInput
-        payment: SubscriptionPaymentInput
-        delivery: SubscriptionDeliveryInput
+        payment: EnrollmentPaymentInput
+        delivery: EnrollmentDeliveryInput
         meta: JSON
-      ): Subscription!
+      ): Enrollment!
 
       """
       Update a subscription
       """
-      updateSubscription(
+      updateEnrollment(
         subscriptionId: ID
-        plan: SubscriptionPlanInput
+        plan: EnrollmentPlanInput
         billingAddress: AddressInput
         contact: ContactInput
-        payment: SubscriptionPaymentInput
-        delivery: SubscriptionDeliveryInput
+        payment: EnrollmentPaymentInput
+        delivery: EnrollmentDeliveryInput
         meta: JSON
-      ): Subscription!
+      ): Enrollment!
 
       """
       Activate a subscription by changing the status to ACTIVE
       """
-      activateSubscription(subscriptionId: ID!): Subscription!
+      activateEnrollment(subscriptionId: ID!): Enrollment!
 
       """
       Terminate an actively running subscription by changing it's status to TERMINATED
       """
-      terminateSubscription(subscriptionId: ID!): Subscription!
+      terminateEnrollment(subscriptionId: ID!): Enrollment!
 
       """
       Change the delivery method/provider to an order. If the delivery provider

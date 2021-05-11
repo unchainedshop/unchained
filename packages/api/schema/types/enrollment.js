@@ -1,13 +1,13 @@
 export default [
   /* GraphQL */ `
-    enum SubscriptionStatus {
+    enum EnrollmentStatus {
       """
       Initial
       """
       INITIAL
 
       """
-      Active Subscription
+      Active Enrollment
       """
       ACTIVE
 
@@ -22,21 +22,21 @@ export default [
       TERMINATED
     }
 
-    type SubscriptionPlan {
+    type EnrollmentPlan {
       product: PlanProduct!
       quantity: Int!
       configuration: [ProductConfigurationParameter!]
     }
 
-    type SubscriptionPayment {
+    type EnrollmentPayment {
       provider: PaymentProvider
     }
 
-    type SubscriptionDelivery {
+    type EnrollmentDelivery {
       provider: DeliveryProvider
     }
 
-    type SubscriptionPeriod {
+    type EnrollmentPeriod {
       start: Date!
       end: Date!
       isTrial: Boolean!
@@ -44,17 +44,17 @@ export default [
     }
 
     """
-    Subscription
+    Enrollment
     """
-    type Subscription {
+    type Enrollment {
       _id: ID!
       user: User!
-      plan: SubscriptionPlan!
-      payment: SubscriptionPayment
-      delivery: SubscriptionDelivery
+      plan: EnrollmentPlan!
+      payment: EnrollmentPayment
+      delivery: EnrollmentDelivery
       billingAddress: Address
       contact: Contact
-      status: SubscriptionStatus!
+      status: EnrollmentStatus!
       created: Date!
       expires: Date
       updated: Date
@@ -63,7 +63,7 @@ export default [
       country: Country
       currency: Currency
       logs(limit: Int = 10, offset: Int = 0): [Log!]!
-      periods: [SubscriptionPeriod!]!
+      periods: [EnrollmentPeriod!]!
     }
   `,
 ];
