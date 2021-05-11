@@ -97,24 +97,26 @@ export default compose(
     onSubmitSuccess: () => () => {
       toast('Currency saved', { type: toast.TYPE.SUCCESS });
     },
-    removeCurrency: ({ router, currencyId, removeCurrency }) => async (
-      event
-    ) => {
-      event.preventDefault();
-      router.replace({ pathname: '/currencies' });
-      await removeCurrency({
-        variables: {
-          currencyId,
-        },
-      });
-    },
-    onSubmit: ({ currencyId, updateCurrency, schema }) => ({ ...dirtyInput }) =>
-      updateCurrency({
-        variables: {
-          currency: schema.clean(dirtyInput),
-          currencyId,
-        },
-      }),
+    removeCurrency:
+      ({ router, currencyId, removeCurrency }) =>
+      async (event) => {
+        event.preventDefault();
+        router.replace({ pathname: '/currencies' });
+        await removeCurrency({
+          variables: {
+            currencyId,
+          },
+        });
+      },
+    onSubmit:
+      ({ currencyId, updateCurrency, schema }) =>
+      ({ ...dirtyInput }) =>
+        updateCurrency({
+          variables: {
+            currency: schema.clean(dirtyInput),
+            currencyId,
+          },
+        }),
   }),
   withFormErrorHandlers,
   mapProps(({ currencyId, updateCurrency, data, ...rest }) => ({

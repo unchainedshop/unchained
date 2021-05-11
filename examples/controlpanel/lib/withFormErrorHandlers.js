@@ -4,9 +4,11 @@ import withMappedError from './withMappedError';
 export default compose(
   withMappedError,
   withHandlers({
-    onChange: ({ updateMappedError }) => () => {
-      updateMappedError(null);
-    },
+    onChange:
+      ({ updateMappedError }) =>
+      () => {
+        updateMappedError(null);
+      },
     onSubmitFailure: ({ mapError }) => mapError,
   }),
   mapProps(

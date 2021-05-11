@@ -95,13 +95,15 @@ export default compose(
     onSubmitSuccess: () => () => {
       toast('Assortment saved', { type: toast.TYPE.SUCCESS });
     },
-    onSubmit: ({ assortmentId, schema, updateAssortment }) => (formData) =>
-      updateAssortment({
-        variables: {
-          assortment: schema.clean(formData),
-          assortmentId,
-        },
-      }),
+    onSubmit:
+      ({ assortmentId, schema, updateAssortment }) =>
+      (formData) =>
+        updateAssortment({
+          variables: {
+            assortment: schema.clean(formData),
+            assortmentId,
+          },
+        }),
   }),
   withFormErrorHandlers,
   mapProps(({ assortmentId, updateAssortment, ...rest }) => ({

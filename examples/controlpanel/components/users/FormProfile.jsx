@@ -247,13 +247,15 @@ export default compose(
   }),
   withFormModel(({ data: { user } }) => (user && user.profile) || {}),
   withHandlers({
-    onSubmit: ({ userId, mutate, schema }) => ({ ...dirtyInput }) =>
-      mutate({
-        variables: {
-          userId,
-          profile: schema.clean(dirtyInput, { autoConvert: false }),
-        },
-      }),
+    onSubmit:
+      ({ userId, mutate, schema }) =>
+      ({ ...dirtyInput }) =>
+        mutate({
+          variables: {
+            userId,
+            profile: schema.clean(dirtyInput, { autoConvert: false }),
+          },
+        }),
   }),
   withFormErrorHandlers,
   pure

@@ -33,17 +33,19 @@ export default compose(
     }
   ),
   withHandlers({
-    onClick: ({ assortmentId, mutate, router }) => async () => {
-      // eslint-disable-next-line
+    onClick:
+      ({ assortmentId, mutate, router }) =>
+      async () => {
+        // eslint-disable-next-line
       if (confirm('Really?')) {
-        await mutate({
-          variables: {
-            assortmentId,
-          },
-        });
-        router.push('/assortments');
-      }
-    },
+          await mutate({
+            variables: {
+              assortmentId,
+            },
+          });
+          router.push('/assortments');
+        }
+      },
   }),
   mapProps(({ assortmentId, mutate, ...rest }) => ({
     ...rest,

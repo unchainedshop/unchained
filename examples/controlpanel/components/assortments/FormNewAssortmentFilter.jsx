@@ -84,14 +84,16 @@ export default compose(
     onSubmitSuccess: () => () => {
       toast('Filtered', { type: toast.TYPE.SUCCESS });
     },
-    onSubmit: ({ addAssortmentFilter }) => ({ assortmentId, filterId, tags }) =>
-      addAssortmentFilter({
-        variables: {
-          assortmentId,
-          filterId,
-          tags,
-        },
-      }),
+    onSubmit:
+      ({ addAssortmentFilter }) =>
+      ({ assortmentId, filterId, tags }) =>
+        addAssortmentFilter({
+          variables: {
+            assortmentId,
+            filterId,
+            tags,
+          },
+        }),
   }),
   withFormErrorHandlers,
   mapProps(

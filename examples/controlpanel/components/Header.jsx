@@ -159,9 +159,11 @@ const Header = ({ pathname, loggedInUser, logout: doLogout, ...rest }) =>
 export default compose(
   withApollo,
   withHandlers({
-    logout: ({ client }) => async () => {
-      await logout(client);
-    },
+    logout:
+      ({ client }) =>
+      async () => {
+        await logout(client);
+      },
   }),
   mapProps(({ client, ...rest }) => ({ ...rest })),
   pure

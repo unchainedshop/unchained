@@ -7,7 +7,6 @@ export default {
     return obj.normalizedStatus();
   },
   async catalogPrice(obj, { quantity, currency }, requestContext) {
-    // listPrice: ProductPrice
     const { countryContext } = requestContext;
     return obj.price({
       country: countryContext,

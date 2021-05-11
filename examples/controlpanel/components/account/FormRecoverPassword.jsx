@@ -26,7 +26,10 @@ export default compose(
     },
   }),
   withHandlers({
-    onSubmit: ({ client }) => ({ email }) => forgotPassword({ email }, client),
+    onSubmit:
+      ({ client }) =>
+      ({ email }) =>
+        forgotPassword({ email }, client),
   }),
   withFormErrorHandlers,
   mapProps(({ client, ...rest }) => ({ ...rest })),

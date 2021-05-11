@@ -33,12 +33,14 @@ export default compose(
     }
   ),
   withHandlers({
-    onClick: ({ productId, mutate }) => () =>
-      mutate({
-        variables: {
-          productId,
-        },
-      }),
+    onClick:
+      ({ productId, mutate }) =>
+      () =>
+        mutate({
+          variables: {
+            productId,
+          },
+        }),
   }),
   mapProps(({ productId, mutate, ...rest }) => ({
     ...rest,

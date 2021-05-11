@@ -63,14 +63,12 @@ function create(initialState, headersOverride, getToken) {
       },
     },
     dataIdFromObject: (result) => {
-      if (result?.__typename === 'Work') {
-        return `${result.__typename}:${result?._id}:${result?.created}`;
+      const { __typename, _id, id } = result || {};
+      if (_id && __typename) {
+        return `${__typename}:${_id}`;
       }
-      if (result?._id && result?.__typename) {
-        return `${result.__typename}:${result._id}`;
-      }
-      if (result?.id && result?.__typename) {
-        return `${result.__typename}:${result.id}`;
+      if (id && __typename) {
+        return `${__typename}:${id}`;
       }
       return null;
     },

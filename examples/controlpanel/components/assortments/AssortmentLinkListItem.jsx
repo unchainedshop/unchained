@@ -81,13 +81,15 @@ export default compose(
     }
   ),
   withHandlers({
-    removeAssortmentLink: ({ removeAssortmentLink, _id }) => async () => {
-      await removeAssortmentLink({
-        variables: {
-          assortmentLinkId: _id,
-        },
-      });
-    },
+    removeAssortmentLink:
+      ({ removeAssortmentLink, _id }) =>
+      async () => {
+        await removeAssortmentLink({
+          variables: {
+            assortmentLinkId: _id,
+          },
+        });
+      },
   }),
   SortableElement
 )(AssortmentLinkListItem);

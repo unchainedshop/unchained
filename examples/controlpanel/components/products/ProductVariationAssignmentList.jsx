@@ -217,35 +217,34 @@ export default compose(
     };
   }),
   withHandlers({
-    addProductAssignment: ({ addProductAssignment, productId, columnKeys }) => (
-      optionValues
-    ) => async (_, { value }) => {
-      await addProductAssignment({
-        variables: {
-          proxyId: productId,
-          productId: value,
-          vectors: optionValues.map((optionValue, index) => ({
-            key: columnKeys[index],
-            value: optionValue,
-          })),
-        },
-      });
-    },
-    removeProductAssignment: ({
-      removeProductAssignment,
-      productId,
-      columnKeys,
-    }) => async (_, { optionValues }) => {
-      await removeProductAssignment({
-        variables: {
-          proxyId: productId,
-          vectors: optionValues.map((optionValue, index) => ({
-            key: columnKeys[index],
-            value: optionValue,
-          })),
-        },
-      });
-    },
+    addProductAssignment:
+      ({ addProductAssignment, productId, columnKeys }) =>
+      (optionValues) =>
+      async (_, { value }) => {
+        await addProductAssignment({
+          variables: {
+            proxyId: productId,
+            productId: value,
+            vectors: optionValues.map((optionValue, index) => ({
+              key: columnKeys[index],
+              value: optionValue,
+            })),
+          },
+        });
+      },
+    removeProductAssignment:
+      ({ removeProductAssignment, productId, columnKeys }) =>
+      async (_, { optionValues }) => {
+        await removeProductAssignment({
+          variables: {
+            proxyId: productId,
+            vectors: optionValues.map((optionValue, index) => ({
+              key: columnKeys[index],
+              value: optionValue,
+            })),
+          },
+        });
+      },
   }),
   pure
 )(ProductVariationAssignmentList);

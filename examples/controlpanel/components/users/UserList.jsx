@@ -161,14 +161,12 @@ export default compose(
   withState('isShowGuests', 'setShowGuests', false),
   withRouter,
   withHandlers({
-    toggleShowGuests: ({
-      isShowGuests,
-      updateHasMore,
-      setShowGuests,
-    }) => () => {
-      setShowGuests(!isShowGuests);
-      updateHasMore(true);
-    },
+    toggleShowGuests:
+      ({ isShowGuests, updateHasMore, setShowGuests }) =>
+      () => {
+        setShowGuests(!isShowGuests);
+        updateHasMore(true);
+      },
   }),
   graphql(USER_LIST_QUERY, {
     options: ({ isShowGuests }) => ({

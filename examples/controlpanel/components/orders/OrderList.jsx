@@ -102,10 +102,12 @@ export default compose(
     `,
   }),
   withHandlers({
-    toggleShowCarts: ({ updateHasMore, isShowCarts, setShowCarts }) => () => {
-      setShowCarts(!isShowCarts);
-      // eslint-disable-next-line no-unused-expressions
-      updateHasMore && updateHasMore(true);
-    },
+    toggleShowCarts:
+      ({ updateHasMore, isShowCarts, setShowCarts }) =>
+      () => {
+        setShowCarts(!isShowCarts);
+        // eslint-disable-next-line no-unused-expressions
+        updateHasMore && updateHasMore(true);
+      },
   })
 )(OrderList);

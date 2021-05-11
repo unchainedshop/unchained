@@ -125,13 +125,15 @@ export default compose(
     onSubmitSuccess: () => () => {
       toast('Supply settings saved', { type: toast.TYPE.SUCCESS });
     },
-    onSubmit: ({ productId, mutate, schema }) => ({ ...dirtyInput }) =>
-      mutate({
-        variables: {
-          supply: schema.clean(dirtyInput),
-          productId,
-        },
-      }),
+    onSubmit:
+      ({ productId, mutate, schema }) =>
+      ({ ...dirtyInput }) =>
+        mutate({
+          variables: {
+            supply: schema.clean(dirtyInput),
+            productId,
+          },
+        }),
   }),
   withFormErrorHandlers,
   mapProps(({ productId, mutate, data, ...rest }) => ({

@@ -27,9 +27,11 @@ const ProductBundleItemListItem = ({
 export default compose(
   withState('isEditing', 'setIsEditing', false),
   withHandlers({
-    toggleEditing: ({ isEditing, setIsEditing }) => (event) => {
-      if (event && event.preventDefault) event.preventDefault();
-      setIsEditing(!isEditing);
-    },
+    toggleEditing:
+      ({ isEditing, setIsEditing }) =>
+      (event) => {
+        if (event && event.preventDefault) event.preventDefault();
+        setIsEditing(!isEditing);
+      },
   })
 )(ProductBundleItemListItem);

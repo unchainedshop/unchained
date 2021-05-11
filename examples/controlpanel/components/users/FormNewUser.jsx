@@ -107,23 +107,28 @@ export default compose(
     },
   }),
   withHandlers({
-    onSubmitSuccess: ({ router }) => ({ data: { enrollUser } }) => {
-      router.replace({
-        pathname: '/users/edit',
-        query: { _id: enrollUser._id },
-      });
-    },
-    onSubmit: ({ enrollUser, schema }) => async ({ ...dirtyInput }) => {
-      const { displayName, email, password, enroll } = schema.clean(dirtyInput);
-      const enrollmentResult = await enrollUser({
-        variables: {
-          profile: { displayName },
-          email,
-          password: !enroll && password ? password : null,
-        },
-      });
-      return enrollmentResult;
-    },
+    onSubmitSuccess:
+      ({ router }) =>
+      ({ data: { enrollUser } }) => {
+        router.replace({
+          pathname: '/users/edit',
+          query: { _id: enrollUser._id },
+        });
+      },
+    onSubmit:
+      ({ enrollUser, schema }) =>
+      async ({ ...dirtyInput }) => {
+        const { displayName, email, password, enroll } =
+          schema.clean(dirtyInput);
+        const enrollmentResult = await enrollUser({
+          variables: {
+            profile: { displayName },
+            email,
+            password: !enroll && password ? password : null,
+          },
+        });
+        return enrollmentResult;
+      },
   }),
   withFormErrorHandlers,
   mapProps(({ enrollUser, enrollUserResult, data, userId, ...rest }) => {

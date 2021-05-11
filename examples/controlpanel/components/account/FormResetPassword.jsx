@@ -39,13 +39,15 @@ export default compose(
     },
   }),
   withHandlers({
-    onSubmit: ({
-      client,
-      router: {
-        query: { token },
-      },
-    }) => ({ password: newPassword }) =>
-      resetPassword({ newPassword, token, disableHashing: true }, client),
+    onSubmit:
+      ({
+        client,
+        router: {
+          query: { token },
+        },
+      }) =>
+      ({ password: newPassword }) =>
+        resetPassword({ newPassword, token, disableHashing: true }, client),
   }),
   withFormErrorHandlers,
   mapProps(({ client, ...rest }) => ({ ...rest })),

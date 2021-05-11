@@ -89,18 +89,16 @@ export default compose(
     onSubmitSuccess: () => () => {
       toast('Product added to assortment', { type: toast.TYPE.SUCCESS });
     },
-    onSubmit: ({ addAssortmentProduct }) => ({
-      assortmentId,
-      productId,
-      tags,
-    }) =>
-      addAssortmentProduct({
-        variables: {
-          assortmentId,
-          productId,
-          tags,
-        },
-      }),
+    onSubmit:
+      ({ addAssortmentProduct }) =>
+      ({ assortmentId, productId, tags }) =>
+        addAssortmentProduct({
+          variables: {
+            assortmentId,
+            productId,
+            tags,
+          },
+        }),
   }),
   withFormErrorHandlers,
   mapProps(({ assortmentId, ...rest }) => ({

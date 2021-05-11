@@ -110,26 +110,26 @@ export default compose(
     onSubmitSuccess: () => () => {
       toast('Country saved', { type: toast.TYPE.SUCCESS });
     },
-    removeCountry: ({ router, removeCountry, countryId }) => async (event) => {
-      event.preventDefault();
-      router.replace({ pathname: '/countries' });
-      await removeCountry({
-        variables: {
-          countryId,
-        },
-      });
-    },
-    onSubmit: ({ countryId, updateCountry }) => ({
-      isoCode,
-      defaultCurrencyId,
-      isActive,
-    }) =>
-      updateCountry({
-        variables: {
-          country: { isoCode, defaultCurrencyId, isActive },
-          countryId,
-        },
-      }),
+    removeCountry:
+      ({ router, removeCountry, countryId }) =>
+      async (event) => {
+        event.preventDefault();
+        router.replace({ pathname: '/countries' });
+        await removeCountry({
+          variables: {
+            countryId,
+          },
+        });
+      },
+    onSubmit:
+      ({ countryId, updateCountry }) =>
+      ({ isoCode, defaultCurrencyId, isActive }) =>
+        updateCountry({
+          variables: {
+            country: { isoCode, defaultCurrencyId, isActive },
+            countryId,
+          },
+        }),
   }),
   withFormErrorHandlers,
   mapProps(

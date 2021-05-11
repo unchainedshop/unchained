@@ -40,13 +40,15 @@ export default compose(
     },
   }),
   withHandlers({
-    onSubmit: ({ mutate, schema, userId }) => ({ ...dirtyInput }) =>
-      mutate({
-        variables: {
-          ...schema.clean(dirtyInput),
-          userId,
-        },
-      }),
+    onSubmit:
+      ({ mutate, schema, userId }) =>
+      ({ ...dirtyInput }) =>
+        mutate({
+          variables: {
+            ...schema.clean(dirtyInput),
+            userId,
+          },
+        }),
   }),
   withFormErrorHandlers,
   pure

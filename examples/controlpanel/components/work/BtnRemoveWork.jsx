@@ -34,16 +34,18 @@ export default compose(
     }
   ),
   withHandlers({
-    onClick: ({ workId, mutate, router }) => async () => {
+    onClick:
+      ({ workId, mutate, router }) =>
+      async () => {
       if (confirm('Really?')) { // eslint-disable-line
-        await mutate({
-          variables: {
-            workId,
-          },
-        });
-        router.push('/work');
-      }
-    },
+          await mutate({
+            variables: {
+              workId,
+            },
+          });
+          router.push('/work');
+        }
+      },
   }),
   mapProps(({ workId, mutate, ...rest }) => ({
     ...rest,

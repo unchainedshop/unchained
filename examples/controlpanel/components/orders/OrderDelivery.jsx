@@ -182,12 +182,14 @@ export default compose(
     }
   `),
   withHandlers({
-    deliverOrder: ({ deliverOrder, orderId }) => () =>
-      deliverOrder({
-        variables: {
-          orderId,
-        },
-      }),
+    deliverOrder:
+      ({ deliverOrder, orderId }) =>
+      () =>
+        deliverOrder({
+          variables: {
+            orderId,
+          },
+        }),
   }),
   mapProps(({ deliverOrder, data: { order = {} } }) => ({
     ...order.delivery,

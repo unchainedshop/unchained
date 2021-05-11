@@ -104,31 +104,32 @@ export default compose(
     ...rest,
   })),
   withHandlers({
-    onSortEnd: ({ items, reorderProductMedia }) => async ({
-      oldIndex,
-      newIndex,
-    }) => {
-      const sortKeys = arrayMove(items, oldIndex, newIndex).map(
-        (item, sortKey) => ({
-          productMediaId: item._id,
-          sortKey,
-        })
-      );
-      await reorderProductMedia({
-        variables: {
-          sortKeys,
-        },
-      });
-    },
-    onDrop: ({ productId, addProductMedia }) => async (files) => {
-      const media = files[0];
-      await addProductMedia({
-        variables: {
-          media,
-          productId,
-        },
-      });
-    },
+    onSortEnd:
+      ({ items, reorderProductMedia }) =>
+      async ({ oldIndex, newIndex }) => {
+        const sortKeys = arrayMove(items, oldIndex, newIndex).map(
+          (item, sortKey) => ({
+            productMediaId: item._id,
+            sortKey,
+          })
+        );
+        await reorderProductMedia({
+          variables: {
+            sortKeys,
+          },
+        });
+      },
+    onDrop:
+      ({ productId, addProductMedia }) =>
+      async (files) => {
+        const media = files[0];
+        await addProductMedia({
+          variables: {
+            media,
+            productId,
+          },
+        });
+      },
   }),
   pure,
   SortableContainer

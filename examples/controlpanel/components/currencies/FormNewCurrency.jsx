@@ -43,18 +43,22 @@ export default compose(
     },
   }),
   withHandlers({
-    onSubmitSuccess: ({ router }) => ({ data: { createCurrency } }) => {
-      router.replace({
-        pathname: '/currencies/edit',
-        query: { _id: createCurrency._id },
-      });
-    },
-    onSubmit: ({ createCurrency, schema }) => ({ ...dirtyInput }) =>
-      createCurrency({
-        variables: {
-          currency: schema.clean(dirtyInput),
-        },
-      }),
+    onSubmitSuccess:
+      ({ router }) =>
+      ({ data: { createCurrency } }) => {
+        router.replace({
+          pathname: '/currencies/edit',
+          query: { _id: createCurrency._id },
+        });
+      },
+    onSubmit:
+      ({ createCurrency, schema }) =>
+      ({ ...dirtyInput }) =>
+        createCurrency({
+          variables: {
+            currency: schema.clean(dirtyInput),
+          },
+        }),
   }),
   withFormErrorHandlers,
   mapProps(({ createCurrency, ...rest }) => ({

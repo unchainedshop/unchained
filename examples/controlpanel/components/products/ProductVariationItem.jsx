@@ -64,16 +64,20 @@ export default compose(
   ),
   withState('isEditing', 'setIsEditing', false),
   withHandlers({
-    removeVariation: ({ removeProductVariation, _id }) => async () => {
-      await removeProductVariation({
-        variables: {
-          productVariationId: _id,
-        },
-      });
-    },
-    toggleEditing: ({ isEditing, setIsEditing }) => (event) => {
-      if (event && event.preventDefault) event.preventDefault();
-      setIsEditing(!isEditing);
-    },
+    removeVariation:
+      ({ removeProductVariation, _id }) =>
+      async () => {
+        await removeProductVariation({
+          variables: {
+            productVariationId: _id,
+          },
+        });
+      },
+    toggleEditing:
+      ({ isEditing, setIsEditing }) =>
+      (event) => {
+        if (event && event.preventDefault) event.preventDefault();
+        setIsEditing(!isEditing);
+      },
   })
 )(ProductVariationItem);

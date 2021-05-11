@@ -88,13 +88,15 @@ export default compose(
     onSubmitSuccess: () => () => {
       toast('Warehousing settings saved', { type: toast.TYPE.SUCCESS });
     },
-    onSubmit: ({ productId, mutate, schema }) => ({ ...dirtyInput }) =>
-      mutate({
-        variables: {
-          warehousing: schema.clean(dirtyInput),
-          productId,
-        },
-      }),
+    onSubmit:
+      ({ productId, mutate, schema }) =>
+      ({ ...dirtyInput }) =>
+        mutate({
+          variables: {
+            warehousing: schema.clean(dirtyInput),
+            productId,
+          },
+        }),
   }),
   withFormErrorHandlers,
   mapProps(({ productId, mutate, data, ...rest }) => ({

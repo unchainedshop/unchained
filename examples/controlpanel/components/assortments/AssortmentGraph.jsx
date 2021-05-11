@@ -119,9 +119,13 @@ export default compose(
     }
   ),
   withHandlers({
-    changeBaseAssortment: ({ mutate }) => (event, element) =>
-      mutate({ variables: { assortmentId: element.name } }),
-    toggleShowLeafNodes: ({ isShowLeafNodes, setShowLeafNodes }) => () =>
-      setShowLeafNodes(!isShowLeafNodes),
+    changeBaseAssortment:
+      ({ mutate }) =>
+      (event, element) =>
+        mutate({ variables: { assortmentId: element.name } }),
+    toggleShowLeafNodes:
+      ({ isShowLeafNodes, setShowLeafNodes }) =>
+      () =>
+        setShowLeafNodes(!isShowLeafNodes),
   })
 )(AssortmentGraph);

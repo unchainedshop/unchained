@@ -69,22 +69,21 @@ export default compose(
     ...rest,
   })),
   withHandlers({
-    onSortEnd: ({ items, reorderAssortmentFilters }) => async ({
-      oldIndex,
-      newIndex,
-    }) => {
-      const sortKeys = arrayMove(items, oldIndex, newIndex).map(
-        (item, sortKey) => ({
-          assortmentFilterId: item._id,
-          sortKey,
-        })
-      );
-      await reorderAssortmentFilters({
-        variables: {
-          sortKeys,
-        },
-      });
-    },
+    onSortEnd:
+      ({ items, reorderAssortmentFilters }) =>
+      async ({ oldIndex, newIndex }) => {
+        const sortKeys = arrayMove(items, oldIndex, newIndex).map(
+          (item, sortKey) => ({
+            assortmentFilterId: item._id,
+            sortKey,
+          })
+        );
+        await reorderAssortmentFilters({
+          variables: {
+            sortKeys,
+          },
+        });
+      },
   }),
   pure,
   SortableContainer

@@ -33,15 +33,17 @@ export default compose(
     },
   }),
   withHandlers({
-    onSubmit: ({ client }) => ({ email, password }) =>
-      loginWithPassword(
-        {
-          email,
-          password,
-          disableHashing: true,
-        },
-        client
-      ),
+    onSubmit:
+      ({ client }) =>
+      ({ email, password }) =>
+        loginWithPassword(
+          {
+            email,
+            password,
+            disableHashing: true,
+          },
+          client
+        ),
   }),
   withFormErrorHandlers,
   mapProps(({ client, ...rest }) => ({ ...rest })),

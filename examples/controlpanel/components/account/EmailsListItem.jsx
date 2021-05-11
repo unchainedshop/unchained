@@ -58,20 +58,24 @@ export default compose(
     }
   `),
   withHandlers({
-    removeEmail: ({ mutate, userId, address }) => () =>
-      mutate({
-        variables: {
-          email: address,
-          userId,
-        },
-      }),
-    sendVerification: ({ client, address }) => () =>
-      sendVerificationEmail(
-        {
-          email: address,
-        },
-        client
-      ),
+    removeEmail:
+      ({ mutate, userId, address }) =>
+      () =>
+        mutate({
+          variables: {
+            email: address,
+            userId,
+          },
+        }),
+    sendVerification:
+      ({ client, address }) =>
+      () =>
+        sendVerificationEmail(
+          {
+            email: address,
+          },
+          client
+        ),
   }),
   pure
 )(EmailsListItem);

@@ -93,20 +93,22 @@ export default compose(
     })
   ),
   withHandlers({
-    onSubmitSuccess: ({ router }) => ({
-      data: { createWarehousingProvider },
-    }) => {
-      router.replace({
-        pathname: '/warehousing-providers/edit',
-        query: { _id: createWarehousingProvider._id },
-      });
-    },
-    onSubmit: ({ createWarehousingProvider, schema }) => ({ ...dirtyInput }) =>
-      createWarehousingProvider({
-        variables: {
-          warehousingProvider: schema.clean(dirtyInput),
-        },
-      }),
+    onSubmitSuccess:
+      ({ router }) =>
+      ({ data: { createWarehousingProvider } }) => {
+        router.replace({
+          pathname: '/warehousing-providers/edit',
+          query: { _id: createWarehousingProvider._id },
+        });
+      },
+    onSubmit:
+      ({ createWarehousingProvider, schema }) =>
+      ({ ...dirtyInput }) =>
+        createWarehousingProvider({
+          variables: {
+            warehousingProvider: schema.clean(dirtyInput),
+          },
+        }),
   }),
   withFormErrorHandlers,
   mapProps(({ createWarehousingProvider, ...rest }) => ({

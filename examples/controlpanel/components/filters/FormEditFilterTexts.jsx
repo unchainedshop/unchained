@@ -181,19 +181,21 @@ export default compose(
     onSubmitSuccess: () => () => {
       toast('Texts saved', { type: toast.TYPE.SUCCESS });
     },
-    changeSelectedLocale: ({ setSelectedLocale }) => (event, element) => {
-      setSelectedLocale(element.name);
-    },
-    onSubmit: ({ filterId, filterOptionValue, mutate, schema }) => ({
-      ...dirtyInput
-    }) =>
-      mutate({
-        variables: {
-          texts: schema.clean(dirtyInput).texts,
-          filterId,
-          filterOptionValue,
-        },
-      }),
+    changeSelectedLocale:
+      ({ setSelectedLocale }) =>
+      (event, element) => {
+        setSelectedLocale(element.name);
+      },
+    onSubmit:
+      ({ filterId, filterOptionValue, mutate, schema }) =>
+      ({ ...dirtyInput }) =>
+        mutate({
+          variables: {
+            texts: schema.clean(dirtyInput).texts,
+            filterId,
+            filterOptionValue,
+          },
+        }),
   }),
   withFormErrorHandlers,
   mapProps(

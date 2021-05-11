@@ -50,18 +50,22 @@ export default compose(
     },
   }),
   withHandlers({
-    onSubmitSuccess: ({ router }) => ({ data: { createAssortment } }) => {
-      router.replace({
-        pathname: '/assortments/edit',
-        query: { _id: createAssortment._id },
-      });
-    },
-    onSubmit: ({ createAssortment, schema }) => ({ ...dirtyInput }) =>
-      createAssortment({
-        variables: {
-          assortment: schema.clean(dirtyInput),
-        },
-      }),
+    onSubmitSuccess:
+      ({ router }) =>
+      ({ data: { createAssortment } }) => {
+        router.replace({
+          pathname: '/assortments/edit',
+          query: { _id: createAssortment._id },
+        });
+      },
+    onSubmit:
+      ({ createAssortment, schema }) =>
+      ({ ...dirtyInput }) =>
+        createAssortment({
+          variables: {
+            assortment: schema.clean(dirtyInput),
+          },
+        }),
   }),
   withFormErrorHandlers,
   mapProps(({ createAssortment, ...rest }) => ({

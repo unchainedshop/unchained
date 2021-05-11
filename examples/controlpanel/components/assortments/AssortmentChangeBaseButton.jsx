@@ -34,7 +34,9 @@ export default compose(
     }
   ),
   withHandlers({
-    changeBaseAssortment: ({ mutate }) => (event, element) =>
-      mutate({ variables: { assortmentId: element.name } }),
+    changeBaseAssortment:
+      ({ mutate }) =>
+      (event, element) =>
+        mutate({ variables: { assortmentId: element.name } }),
   })
 )(AssortmentChangeBaseButton);

@@ -75,13 +75,15 @@ export default compose(
     onSubmitSuccess: () => () => {
       toast('Tags saved', { type: toast.TYPE.SUCCESS });
     },
-    onSubmit: ({ productId, mutate, schema }) => ({ ...dirtyInput }) =>
-      mutate({
-        variables: {
-          product: schema.clean(dirtyInput),
-          productId,
-        },
-      }),
+    onSubmit:
+      ({ productId, mutate, schema }) =>
+      ({ ...dirtyInput }) =>
+        mutate({
+          variables: {
+            product: schema.clean(dirtyInput),
+            productId,
+          },
+        }),
   }),
   withFormErrorHandlers,
   mapProps(({ productId, mutate, data, ...rest }) => ({

@@ -56,13 +56,15 @@ export default compose(
     }
   ),
   withHandlers({
-    removeAssortmentFilter: ({ removeAssortmentFilter, _id }) => async () => {
-      await removeAssortmentFilter({
-        variables: {
-          assortmentFilterId: _id,
-        },
-      });
-    },
+    removeAssortmentFilter:
+      ({ removeAssortmentFilter, _id }) =>
+      async () => {
+        await removeAssortmentFilter({
+          variables: {
+            assortmentFilterId: _id,
+          },
+        });
+      },
   }),
   SortableElement
 )(AssortmentFilterListItem);

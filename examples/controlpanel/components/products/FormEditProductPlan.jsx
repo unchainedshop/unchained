@@ -149,13 +149,15 @@ export default compose(
     onSubmitSuccess: () => () => {
       toast('Plan settings saved', { type: toast.TYPE.SUCCESS });
     },
-    onSubmit: ({ productId, mutate, schema }) => ({ ...dirtyInput }) =>
-      mutate({
-        variables: {
-          plan: schema.clean(dirtyInput),
-          productId,
-        },
-      }),
+    onSubmit:
+      ({ productId, mutate, schema }) =>
+      ({ ...dirtyInput }) =>
+        mutate({
+          variables: {
+            plan: schema.clean(dirtyInput),
+            productId,
+          },
+        }),
   }),
   withFormErrorHandlers,
   mapProps(({ productId, mutate, data, ...rest }) => ({

@@ -60,21 +60,21 @@ export default compose(
   ),
   withState('isEditing', 'setIsEditing', false),
   withHandlers({
-    removeFilterOption: ({
-      removeFilterOption,
-      value,
-      filterId,
-    }) => async () => {
-      await removeFilterOption({
-        variables: {
-          filterId,
-          filterOptionValue: value,
-        },
-      });
-    },
-    toggleEditing: ({ isEditing, setIsEditing }) => (event) => {
-      if (event && event.preventDefault) event.preventDefault();
-      setIsEditing(!isEditing);
-    },
+    removeFilterOption:
+      ({ removeFilterOption, value, filterId }) =>
+      async () => {
+        await removeFilterOption({
+          variables: {
+            filterId,
+            filterOptionValue: value,
+          },
+        });
+      },
+    toggleEditing:
+      ({ isEditing, setIsEditing }) =>
+      (event) => {
+        if (event && event.preventDefault) event.preventDefault();
+        setIsEditing(!isEditing);
+      },
   })
 )(FilterOptionItem);

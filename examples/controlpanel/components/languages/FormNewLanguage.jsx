@@ -43,18 +43,22 @@ export default compose(
     },
   }),
   withHandlers({
-    onSubmitSuccess: ({ router }) => ({ data: { createLanguage } }) => {
-      router.replace({
-        pathname: '/languages/edit',
-        query: { _id: createLanguage._id },
-      });
-    },
-    onSubmit: ({ createLanguage, schema }) => ({ ...dirtyInput }) =>
-      createLanguage({
-        variables: {
-          language: schema.clean(dirtyInput),
-        },
-      }),
+    onSubmitSuccess:
+      ({ router }) =>
+      ({ data: { createLanguage } }) => {
+        router.replace({
+          pathname: '/languages/edit',
+          query: { _id: createLanguage._id },
+        });
+      },
+    onSubmit:
+      ({ createLanguage, schema }) =>
+      ({ ...dirtyInput }) =>
+        createLanguage({
+          variables: {
+            language: schema.clean(dirtyInput),
+          },
+        }),
   }),
   withFormErrorHandlers,
   mapProps(({ createLanguage, ...rest }) => ({

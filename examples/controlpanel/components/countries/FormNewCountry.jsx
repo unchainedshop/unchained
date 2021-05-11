@@ -43,18 +43,22 @@ export default compose(
     },
   }),
   withHandlers({
-    onSubmitSuccess: ({ router }) => ({ data: { createCountry } }) => {
-      router.replace({
-        pathname: '/countries/edit',
-        query: { _id: createCountry._id },
-      });
-    },
-    onSubmit: ({ createCountry, schema }) => ({ ...dirtyInput }) =>
-      createCountry({
-        variables: {
-          country: schema.clean(dirtyInput),
-        },
-      }),
+    onSubmitSuccess:
+      ({ router }) =>
+      ({ data: { createCountry } }) => {
+        router.replace({
+          pathname: '/countries/edit',
+          query: { _id: createCountry._id },
+        });
+      },
+    onSubmit:
+      ({ createCountry, schema }) =>
+      ({ ...dirtyInput }) =>
+        createCountry({
+          variables: {
+            country: schema.clean(dirtyInput),
+          },
+        }),
   }),
   withFormErrorHandlers,
   mapProps(({ createCountry, ...rest }) => ({

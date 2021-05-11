@@ -112,11 +112,13 @@ export default connectApollo(
   compose(
     withRouter,
     withHandlers({
-      changeTab: ({ router }) => (event, element) => {
-        const newUrl = router;
-        newUrl.query.tab = element.name;
-        router.replace(newUrl);
-      },
+      changeTab:
+        ({ router }) =>
+        (event, element) => {
+          const newUrl = router;
+          newUrl.query.tab = element.name;
+          router.replace(newUrl);
+        },
       redirect: () => () => {
         toast('User updated', { type: toast.TYPE.SUCCESS });
       },

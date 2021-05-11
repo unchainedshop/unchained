@@ -61,13 +61,15 @@ export default compose(
     }
   ),
   withHandlers({
-    removeAssortmentProduct: ({ removeAssortmentProduct, _id }) => async () => {
-      await removeAssortmentProduct({
-        variables: {
-          assortmentProductId: _id,
-        },
-      });
-    },
+    removeAssortmentProduct:
+      ({ removeAssortmentProduct, _id }) =>
+      async () => {
+        await removeAssortmentProduct({
+          variables: {
+            assortmentProductId: _id,
+          },
+        });
+      },
   }),
   SortableElement
 )(AssortmentProductListItem);

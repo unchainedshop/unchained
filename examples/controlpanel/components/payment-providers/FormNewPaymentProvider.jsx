@@ -93,18 +93,22 @@ export default compose(
     })
   ),
   withHandlers({
-    onSubmitSuccess: ({ router }) => ({ data: { createPaymentProvider } }) => {
-      router.replace({
-        pathname: '/payment-providers/edit',
-        query: { _id: createPaymentProvider._id },
-      });
-    },
-    onSubmit: ({ createPaymentProvider, schema }) => ({ ...dirtyInput }) =>
-      createPaymentProvider({
-        variables: {
-          paymentProvider: schema.clean(dirtyInput),
-        },
-      }),
+    onSubmitSuccess:
+      ({ router }) =>
+      ({ data: { createPaymentProvider } }) => {
+        router.replace({
+          pathname: '/payment-providers/edit',
+          query: { _id: createPaymentProvider._id },
+        });
+      },
+    onSubmit:
+      ({ createPaymentProvider, schema }) =>
+      ({ ...dirtyInput }) =>
+        createPaymentProvider({
+          variables: {
+            paymentProvider: schema.clean(dirtyInput),
+          },
+        }),
   }),
   withFormErrorHandlers,
   mapProps(({ createPaymentProvider, ...rest }) => ({

@@ -127,28 +127,26 @@ export default compose(
     onSubmitSuccess: () => () => {
       toast('DeliveryProvider saved', { type: toast.TYPE.SUCCESS });
     },
-    removeDeliveryProvider: ({
-      router,
-      removeDeliveryProvider,
-      deliveryProviderId,
-    }) => async (event) => {
-      event.preventDefault();
-      router.replace({ pathname: '/delivery-providers' });
-      await removeDeliveryProvider({
-        variables: {
-          deliveryProviderId,
-        },
-      });
-    },
-    onSubmit: ({ deliveryProviderId, updateDeliveryProvider }) => ({
-      configuration,
-    }) =>
-      updateDeliveryProvider({
-        variables: {
-          deliveryProvider: { configuration },
-          deliveryProviderId,
-        },
-      }),
+    removeDeliveryProvider:
+      ({ router, removeDeliveryProvider, deliveryProviderId }) =>
+      async (event) => {
+        event.preventDefault();
+        router.replace({ pathname: '/delivery-providers' });
+        await removeDeliveryProvider({
+          variables: {
+            deliveryProviderId,
+          },
+        });
+      },
+    onSubmit:
+      ({ deliveryProviderId, updateDeliveryProvider }) =>
+      ({ configuration }) =>
+        updateDeliveryProvider({
+          variables: {
+            deliveryProvider: { configuration },
+            deliveryProviderId,
+          },
+        }),
   }),
   withFormErrorHandlers,
   mapProps(

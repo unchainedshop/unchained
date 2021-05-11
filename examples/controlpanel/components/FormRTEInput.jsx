@@ -97,9 +97,11 @@ export default compose(
       : RichTextEditor.createEmptyValue()
   ),
   withHandlers({
-    onChange: ({ onChange, updateRichtext }) => (value) => {
-      updateRichtext(value);
-      onChange(value.toString('markdown'));
-    },
+    onChange:
+      ({ onChange, updateRichtext }) =>
+      (value) => {
+        updateRichtext(value);
+        onChange(value.toString('markdown'));
+      },
   })
 )(FormRTEInput);

@@ -34,16 +34,18 @@ export default compose(
     }
   ),
   withHandlers({
-    onClick: ({ orderId, mutate, router }) => async () => {
+    onClick:
+      ({ orderId, mutate, router }) =>
+      async () => {
       if (confirm('Really?')) { // eslint-disable-line
-        await mutate({
-          variables: {
-            orderId,
-          },
-        });
-        router.push('/orders');
-      }
-    },
+          await mutate({
+            variables: {
+              orderId,
+            },
+          });
+          router.push('/orders');
+        }
+      },
   }),
   mapProps(({ orderId, mutate, ...rest }) => ({
     ...rest,

@@ -50,15 +50,19 @@ export default compose(
     },
   })),
   withHandlers({
-    onSubmitSuccess: ({ onSuccess }) => ({ data: { createFilterOption } }) =>
-      onSuccess(createFilterOption._id),
-    onSubmit: ({ mutate, schema, filterId }) => ({ ...dirtyInput }) =>
-      mutate({
-        variables: {
-          option: schema.clean(dirtyInput),
-          filterId,
-        },
-      }),
+    onSubmitSuccess:
+      ({ onSuccess }) =>
+      ({ data: { createFilterOption } }) =>
+        onSuccess(createFilterOption._id),
+    onSubmit:
+      ({ mutate, schema, filterId }) =>
+      ({ ...dirtyInput }) =>
+        mutate({
+          variables: {
+            option: schema.clean(dirtyInput),
+            filterId,
+          },
+        }),
   }),
   withFormErrorHandlers,
   mapProps(({ onSuccess, filterId, mutate, ...rest }) => ({

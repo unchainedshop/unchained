@@ -47,15 +47,17 @@ export default compose(
     };
   }),
   withHandlers({
-    changeTab: ({ router }) => (event, element) => {
-      router.replace({
-        pathname: router.pathname,
-        query: {
-          ...router.query,
-          tab: element.name,
-        },
-      });
-    },
+    changeTab:
+      ({ router }) =>
+      (event, element) => {
+        router.replace({
+          pathname: router.pathname,
+          query: {
+            ...router.query,
+            tab: element.name,
+          },
+        });
+      },
   }),
   pure
 )(AssortmentMenu);

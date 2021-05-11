@@ -128,10 +128,8 @@ export default compose(
     }
   `),
   mapProps(({ data, ...rest }) => {
-    const {
-      languages = [],
-      product = {} /* translatedProductTexts = [] */,
-    } = data;
+    const { languages = [], product = {} /* translatedProductTexts = [] */ } =
+      data;
     const filteredActiveLanguages = languages.filter(
       (language) => !!language.isBase
     );
@@ -245,16 +243,20 @@ export default compose(
     onSubmitSuccess: () => () => {
       toast('Texts saved', { type: toast.TYPE.SUCCESS });
     },
-    changeSelectedLocale: ({ setSelectedLocale }) => (event, element) => {
-      setSelectedLocale(element.name);
-    },
-    onSubmit: ({ productId, mutate, schema }) => ({ ...dirtyInput }) =>
-      mutate({
-        variables: {
-          texts: schema.clean(dirtyInput).texts,
-          productId,
-        },
-      }),
+    changeSelectedLocale:
+      ({ setSelectedLocale }) =>
+      (event, element) => {
+        setSelectedLocale(element.name);
+      },
+    onSubmit:
+      ({ productId, mutate, schema }) =>
+      ({ ...dirtyInput }) =>
+        mutate({
+          variables: {
+            texts: schema.clean(dirtyInput).texts,
+            productId,
+          },
+        }),
   }),
   withFormErrorHandlers,
   mapProps(

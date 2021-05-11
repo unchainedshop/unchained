@@ -97,24 +97,26 @@ export default compose(
     onSubmitSuccess: () => () => {
       toast('Texts saved to database', { type: toast.TYPE.SUCCESS });
     },
-    removeLanguage: ({ router, languageId, removeLanguage }) => async (
-      event
-    ) => {
-      event.preventDefault();
-      router.replace({ pathname: '/languages' });
-      await removeLanguage({
-        variables: {
-          languageId,
-        },
-      });
-    },
-    onSubmit: ({ languageId, mutate, schema }) => ({ ...dirtyInput }) =>
-      mutate({
-        variables: {
-          language: schema.clean(dirtyInput),
-          languageId,
-        },
-      }),
+    removeLanguage:
+      ({ router, languageId, removeLanguage }) =>
+      async (event) => {
+        event.preventDefault();
+        router.replace({ pathname: '/languages' });
+        await removeLanguage({
+          variables: {
+            languageId,
+          },
+        });
+      },
+    onSubmit:
+      ({ languageId, mutate, schema }) =>
+      ({ ...dirtyInput }) =>
+        mutate({
+          variables: {
+            language: schema.clean(dirtyInput),
+            languageId,
+          },
+        }),
   }),
   withFormErrorHandlers,
   mapProps(({ languageId, mutate, data, ...rest }) => ({

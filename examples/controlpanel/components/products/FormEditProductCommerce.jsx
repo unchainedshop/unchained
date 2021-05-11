@@ -226,19 +226,21 @@ export default compose(
     onSubmitSuccess: () => () => {
       toast('Commerce settings saved', { type: toast.TYPE.SUCCESS });
     },
-    onSubmit: ({ productId, mutate, schema }) => ({ pricing }) => {
-      const newPricing = pricing.map(({ countryCurrency, ...rest }) => ({
-        countryCode: countryCurrency.split(' / ')[0],
-        currencyCode: countryCurrency.split(' / ')[1],
-        ...rest,
-      }));
-      return mutate({
-        variables: {
-          commerce: schema.clean({ pricing: newPricing }),
-          productId,
-        },
-      });
-    },
+    onSubmit:
+      ({ productId, mutate, schema }) =>
+      ({ pricing }) => {
+        const newPricing = pricing.map(({ countryCurrency, ...rest }) => ({
+          countryCode: countryCurrency.split(' / ')[0],
+          currencyCode: countryCurrency.split(' / ')[1],
+          ...rest,
+        }));
+        return mutate({
+          variables: {
+            commerce: schema.clean({ pricing: newPricing }),
+            productId,
+          },
+        });
+      },
   }),
   withFormErrorHandlers,
   mapProps(({ productId, mutate, data, ...rest }) => ({

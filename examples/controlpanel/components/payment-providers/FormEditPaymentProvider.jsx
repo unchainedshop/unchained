@@ -127,28 +127,26 @@ export default compose(
     onSubmitSuccess: () => () => {
       toast('PaymentProvider saved', { type: toast.TYPE.SUCCESS });
     },
-    removePaymentProvider: ({
-      router,
-      removePaymentProvider,
-      paymentProviderId,
-    }) => async (event) => {
-      event.preventDefault();
-      router.replace({ pathname: '/payment-providers' });
-      await removePaymentProvider({
-        variables: {
-          paymentProviderId,
-        },
-      });
-    },
-    onSubmit: ({ paymentProviderId, updatePaymentProvider }) => ({
-      configuration,
-    }) =>
-      updatePaymentProvider({
-        variables: {
-          paymentProvider: { configuration },
-          paymentProviderId,
-        },
-      }),
+    removePaymentProvider:
+      ({ router, removePaymentProvider, paymentProviderId }) =>
+      async (event) => {
+        event.preventDefault();
+        router.replace({ pathname: '/payment-providers' });
+        await removePaymentProvider({
+          variables: {
+            paymentProviderId,
+          },
+        });
+      },
+    onSubmit:
+      ({ paymentProviderId, updatePaymentProvider }) =>
+      ({ configuration }) =>
+        updatePaymentProvider({
+          variables: {
+            paymentProvider: { configuration },
+            paymentProviderId,
+          },
+        }),
   }),
   withFormErrorHandlers,
   mapProps(

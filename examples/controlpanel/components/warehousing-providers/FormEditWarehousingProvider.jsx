@@ -126,28 +126,26 @@ export default compose(
     onSubmitSuccess: () => () => {
       toast('WarehousingProvider saved', { type: toast.TYPE.SUCCESS });
     },
-    removeWarehousingProvider: ({
-      router,
-      removeWarehousingProvider,
-      warehousingProviderId,
-    }) => async (event) => {
-      event.preventDefault();
-      router.replace({ pathname: '/warehousing-providers' });
-      await removeWarehousingProvider({
-        variables: {
-          warehousingProviderId,
-        },
-      });
-    },
-    onSubmit: ({ warehousingProviderId, updateWarehousingProvider }) => ({
-      configuration,
-    }) =>
-      updateWarehousingProvider({
-        variables: {
-          warehousingProvider: { configuration },
-          warehousingProviderId,
-        },
-      }),
+    removeWarehousingProvider:
+      ({ router, removeWarehousingProvider, warehousingProviderId }) =>
+      async (event) => {
+        event.preventDefault();
+        router.replace({ pathname: '/warehousing-providers' });
+        await removeWarehousingProvider({
+          variables: {
+            warehousingProviderId,
+          },
+        });
+      },
+    onSubmit:
+      ({ warehousingProviderId, updateWarehousingProvider }) =>
+      ({ configuration }) =>
+        updateWarehousingProvider({
+          variables: {
+            warehousingProvider: { configuration },
+            warehousingProviderId,
+          },
+        }),
   }),
   withFormErrorHandlers,
   mapProps(

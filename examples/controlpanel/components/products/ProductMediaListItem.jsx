@@ -78,17 +78,21 @@ export default compose(
   ),
   withState('isEditing', 'setIsEditing', false),
   withHandlers({
-    removeMedia: ({ removeProductMedia, _id }) => async () => {
-      await removeProductMedia({
-        variables: {
-          productMediaId: _id,
-        },
-      });
-    },
-    toggleEditing: ({ isEditing, setIsEditing }) => (event) => {
-      if (event && event.preventDefault) event.preventDefault();
-      setIsEditing(!isEditing);
-    },
+    removeMedia:
+      ({ removeProductMedia, _id }) =>
+      async () => {
+        await removeProductMedia({
+          variables: {
+            productMediaId: _id,
+          },
+        });
+      },
+    toggleEditing:
+      ({ isEditing, setIsEditing }) =>
+      (event) => {
+        if (event && event.preventDefault) event.preventDefault();
+        setIsEditing(!isEditing);
+      },
   }),
   SortableElement
 )(ProductMediaListItem);

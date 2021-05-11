@@ -55,13 +55,15 @@ export default compose(
     roles: (user && user.roles) || [],
   })),
   withHandlers({
-    onSubmit: ({ mutate, schema, userId }) => ({ ...dirtyInput }) =>
-      mutate({
-        variables: {
-          ...schema.clean(dirtyInput),
-          userId,
-        },
-      }),
+    onSubmit:
+      ({ mutate, schema, userId }) =>
+      ({ ...dirtyInput }) =>
+        mutate({
+          variables: {
+            ...schema.clean(dirtyInput),
+            userId,
+          },
+        }),
   }),
   withFormErrorHandlers,
   mapProps(({ userId, mutate, client, ...rest }) => ({ ...rest })),

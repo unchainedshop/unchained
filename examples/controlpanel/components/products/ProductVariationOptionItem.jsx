@@ -67,21 +67,21 @@ export default compose(
   ),
   withState('isEditing', 'setIsEditing', false),
   withHandlers({
-    removeVariation: ({
-      removeProductVariationOption,
-      value,
-      productVariationId,
-    }) => async () => {
-      await removeProductVariationOption({
-        variables: {
-          productVariationId,
-          productVariationOptionValue: value,
-        },
-      });
-    },
-    toggleEditing: ({ isEditing, setIsEditing }) => (event) => {
-      if (event && event.preventDefault) event.preventDefault();
-      setIsEditing(!isEditing);
-    },
+    removeVariation:
+      ({ removeProductVariationOption, value, productVariationId }) =>
+      async () => {
+        await removeProductVariationOption({
+          variables: {
+            productVariationId,
+            productVariationOptionValue: value,
+          },
+        });
+      },
+    toggleEditing:
+      ({ isEditing, setIsEditing }) =>
+      (event) => {
+        if (event && event.preventDefault) event.preventDefault();
+        setIsEditing(!isEditing);
+      },
   })
 )(ProductVariationOptionItem);

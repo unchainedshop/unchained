@@ -68,16 +68,19 @@ export default compose(
     },
   })),
   withHandlers({
-    onSubmitSuccess: ({ onSuccess }) => ({
-      data: { createProductVariation },
-    }) => onSuccess(createProductVariation._id),
-    onSubmit: ({ mutate, schema, productId }) => ({ ...dirtyInput }) =>
-      mutate({
-        variables: {
-          variation: schema.clean(dirtyInput),
-          productId,
-        },
-      }),
+    onSubmitSuccess:
+      ({ onSuccess }) =>
+      ({ data: { createProductVariation } }) =>
+        onSuccess(createProductVariation._id),
+    onSubmit:
+      ({ mutate, schema, productId }) =>
+      ({ ...dirtyInput }) =>
+        mutate({
+          variables: {
+            variation: schema.clean(dirtyInput),
+            productId,
+          },
+        }),
   }),
   withFormErrorHandlers,
   mapProps(({ onSuccess, productId, mutate, ...rest }) => ({

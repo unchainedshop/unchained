@@ -74,9 +74,14 @@ export default compose(
   connectField,
   withState('ownOptions', 'updateOwnOptions', []),
   withHandlers({
-    onChange: ({ onChange }) => (event, { value }) => onChange(value),
-    onAddItem: ({ ownOptions, updateOwnOptions }) => (event, { value }) =>
-      updateOwnOptions([{ key: value, text: value, value }, ...ownOptions]),
+    onChange:
+      ({ onChange }) =>
+      (event, { value }) =>
+        onChange(value),
+    onAddItem:
+      ({ ownOptions, updateOwnOptions }) =>
+      (event, { value }) =>
+        updateOwnOptions([{ key: value, text: value, value }, ...ownOptions]),
   }),
   mapProps(
     ({ options, ownOptions, updateOwnOptions, value: values, ...rest }) => {

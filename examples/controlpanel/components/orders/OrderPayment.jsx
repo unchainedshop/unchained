@@ -101,12 +101,14 @@ export default compose(
     }
   `),
   withHandlers({
-    payOrder: ({ payOrder, orderId }) => () =>
-      payOrder({
-        variables: {
-          orderId,
-        },
-      }),
+    payOrder:
+      ({ payOrder, orderId }) =>
+      () =>
+        payOrder({
+          variables: {
+            orderId,
+          },
+        }),
   }),
   mapProps(({ payOrder, data: { order = {} } }) => ({
     payOrder,

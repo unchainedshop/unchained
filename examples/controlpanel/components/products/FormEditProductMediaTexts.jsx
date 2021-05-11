@@ -176,19 +176,23 @@ export default compose(
     }
   ),
   withHandlers({
-    changeSelectedLocale: ({ setSelectedLocale }) => (event, element) => {
-      setSelectedLocale(element.name);
-    },
+    changeSelectedLocale:
+      ({ setSelectedLocale }) =>
+      (event, element) => {
+        setSelectedLocale(element.name);
+      },
     onSubmitSuccess: () => () => {
       toast('Texts saved', { type: toast.TYPE.SUCCESS });
     },
-    onSubmit: ({ productMediaId, mutate, schema }) => ({ ...dirtyInput }) =>
-      mutate({
-        variables: {
-          texts: schema.clean(dirtyInput).texts,
-          productMediaId,
-        },
-      }),
+    onSubmit:
+      ({ productMediaId, mutate, schema }) =>
+      ({ ...dirtyInput }) =>
+        mutate({
+          variables: {
+            texts: schema.clean(dirtyInput).texts,
+            productMediaId,
+          },
+        }),
   }),
   withFormErrorHandlers,
   mapProps(

@@ -135,14 +135,16 @@ export default compose(
     }
   ),
   withHandlers({
-    addNewBundleItem: ({ productId, createProductBundleItem }) => (item) => {
-      createProductBundleItem({
-        variables: {
-          productId,
-          item,
-        },
-      });
-    },
+    addNewBundleItem:
+      ({ productId, createProductBundleItem }) =>
+      (item) => {
+        createProductBundleItem({
+          variables: {
+            productId,
+            item,
+          },
+        });
+      },
   }),
 
   mapProps(({ data, ...rest }) => {

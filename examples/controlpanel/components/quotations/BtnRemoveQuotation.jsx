@@ -34,16 +34,18 @@ export default compose(
     }
   ),
   withHandlers({
-    onClick: ({ quotationId, mutate, router }) => async () => {
+    onClick:
+      ({ quotationId, mutate, router }) =>
+      async () => {
       if (confirm('Really?')) { // eslint-disable-line
-        await mutate({
-          variables: {
-            quotationId,
-          },
-        });
-        router.push('/quotations');
-      }
-    },
+          await mutate({
+            variables: {
+              quotationId,
+            },
+          });
+          router.push('/quotations');
+        }
+      },
   }),
   mapProps(({ quotationId, mutate, ...rest }) => ({
     ...rest,

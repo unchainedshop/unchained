@@ -69,16 +69,18 @@ export default compose(
     ${FRAGMENT_AVATAR_FIELDS}
   `),
   withHandlers({
-    handleChange: ({ mutate, userId, updateImageUrl }) => async (files) => {
-      const avatar = files[0];
-      updateImageUrl(URL.createObjectURL(avatar));
-      await mutate({
-        variables: {
-          userId,
-          avatar,
-        },
-      });
-    },
+    handleChange:
+      ({ mutate, userId, updateImageUrl }) =>
+      async (files) => {
+        const avatar = files[0];
+        updateImageUrl(URL.createObjectURL(avatar));
+        await mutate({
+          variables: {
+            userId,
+            avatar,
+          },
+        });
+      },
   }),
   mapProps(({ mutate, imageUrl, data: { user }, ...rest }) => ({
     avatarUrl:

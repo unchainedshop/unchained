@@ -83,8 +83,10 @@ export default compose(
   withState('isShowLeafNodes', 'setShowLeafNodes', false),
   withRouter,
   withHandlers({
-    toggleShowLeafNodes: ({ isShowLeafNodes, setShowLeafNodes }) => () =>
-      setShowLeafNodes(!isShowLeafNodes),
+    toggleShowLeafNodes:
+      ({ isShowLeafNodes, setShowLeafNodes }) =>
+      () =>
+        setShowLeafNodes(!isShowLeafNodes),
   }),
   withDataTableLoader({
     queryName: 'assortments',

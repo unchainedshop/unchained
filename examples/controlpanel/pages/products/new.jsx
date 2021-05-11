@@ -19,9 +19,14 @@ export default connectApollo(
   compose(
     withRouter,
     withHandlers({
-      onSuccess: ({ router }) => (productId) => {
-        router.push({ pathname: '/products/edit', query: { _id: productId } });
-      },
+      onSuccess:
+        ({ router }) =>
+        (productId) => {
+          router.push({
+            pathname: '/products/edit',
+            query: { _id: productId },
+          });
+        },
     })
   )(New)
 );

@@ -33,17 +33,17 @@
     "@babel/runtime": "^7.12.13",
     "@paypal/checkout-server-sdk": "^1.0.2",
     "@unchainedshop/controlpanel": "^0.61.1",
-    "apollo-server-express": "^2.21.0",
-    "bcrypt": "^5.0.0",
+    "apollo-server-express": "^2.24.0",
+    "bcrypt": "^5.0.1",
     "body-parser": "^1.19.0",
     "client-oauth2": "github:unchainedshop/js-client-oauth2#master",
     "dotenv-extended": "^2.9.0",
     "graphql": "^15.5.0",
     "isomorphic-unfetch": "^3.1.0",
     "locale": "^0.1.0",
-    "meteor-node-stubs": "^1.0.1",
+    "meteor-node-stubs": "^1.0.3",
     "moment": "^2.29.1",
-    "simpl-schema": "^1.10.2",
+    "simpl-schema": "^1.12.0",
     "stripe": "^8.135.0",
     "xml-js": "^1.6.11"
   },
@@ -53,11 +53,11 @@
     "@babel/register": "^7.12.13",
     "babel-eslint": "^10.1.0",
     "cross-env": "^7.0.3",
-    "eslint": "^7.19.0",
+    "eslint": "^7.26.0",
     "eslint-config-airbnb-base": "^14.2.1",
     "eslint-import-resolver-meteor": "^0.4.0",
     "eslint-plugin-import": "^2.22.1",
-    "eslint-plugin-prettier": "^3.3.1",
-    "prettier": "^2.2.1"
+    "eslint-plugin-prettier": "^3.4.0",
+    "prettier": "^2.3.0"
   }
 }

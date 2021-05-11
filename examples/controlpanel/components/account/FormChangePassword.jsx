@@ -31,8 +31,10 @@ export default compose(
     },
   }),
   withHandlers({
-    onSubmit: ({ client }) => ({ oldPassword, newPassword }) =>
-      changePassword({ oldPassword, newPassword }, client),
+    onSubmit:
+      ({ client }) =>
+      ({ oldPassword, newPassword }) =>
+        changePassword({ oldPassword, newPassword }, client),
   }),
   withFormErrorHandlers,
   mapProps(({ client, ...rest }) => ({ ...rest })),

@@ -93,18 +93,22 @@ export default compose(
     })
   ),
   withHandlers({
-    onSubmitSuccess: ({ router }) => ({ data: { createDeliveryProvider } }) => {
-      router.replace({
-        pathname: '/delivery-providers/edit',
-        query: { _id: createDeliveryProvider._id },
-      });
-    },
-    onSubmit: ({ createDeliveryProvider, schema }) => ({ ...dirtyInput }) =>
-      createDeliveryProvider({
-        variables: {
-          deliveryProvider: schema.clean(dirtyInput),
-        },
-      }),
+    onSubmitSuccess:
+      ({ router }) =>
+      ({ data: { createDeliveryProvider } }) => {
+        router.replace({
+          pathname: '/delivery-providers/edit',
+          query: { _id: createDeliveryProvider._id },
+        });
+      },
+    onSubmit:
+      ({ createDeliveryProvider, schema }) =>
+      ({ ...dirtyInput }) =>
+        createDeliveryProvider({
+          variables: {
+            deliveryProvider: schema.clean(dirtyInput),
+          },
+        }),
   }),
   withFormErrorHandlers,
   mapProps(({ createDeliveryProvider, ...rest }) => ({

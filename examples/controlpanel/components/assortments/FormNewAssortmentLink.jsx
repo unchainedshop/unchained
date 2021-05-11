@@ -92,19 +92,17 @@ export default compose(
     onSubmitSuccess: () => () => {
       toast('Linked', { type: toast.TYPE.SUCCESS });
     },
-    onSubmit: ({ addAssortmentLink }) => ({
-      parentAssortmentId,
-      childAssortmentId,
-      tags,
-    }) => {
-      return addAssortmentLink({
-        variables: {
-          parentAssortmentId,
-          childAssortmentId,
-          tags,
-        },
-      });
-    },
+    onSubmit:
+      ({ addAssortmentLink }) =>
+      ({ parentAssortmentId, childAssortmentId, tags }) => {
+        return addAssortmentLink({
+          variables: {
+            parentAssortmentId,
+            childAssortmentId,
+            tags,
+          },
+        });
+      },
   }),
   withFormErrorHandlers,
   mapProps(({ parentAssortmentId, addAssortmentLink, ...rest }) => ({

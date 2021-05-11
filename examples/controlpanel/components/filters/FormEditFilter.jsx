@@ -62,13 +62,15 @@ export default compose(
     onSubmitSuccess: () => () => {
       toast('Filter saved', { type: toast.TYPE.SUCCESS });
     },
-    onSubmit: ({ filterId, mutate, schema }) => ({ ...dirtyInput }) =>
-      mutate({
-        variables: {
-          filter: schema.clean(dirtyInput),
-          filterId,
-        },
-      }),
+    onSubmit:
+      ({ filterId, mutate, schema }) =>
+      ({ ...dirtyInput }) =>
+        mutate({
+          variables: {
+            filter: schema.clean(dirtyInput),
+            filterId,
+          },
+        }),
   }),
   withFormErrorHandlers,
   mapProps(({ filterId, mutate, data, ...rest }) => ({

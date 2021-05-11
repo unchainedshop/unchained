@@ -220,12 +220,14 @@ export default compose(
     }
   `),
   withHandlers({
-    confirmOrder: ({ confirmOrder, orderId }) => () =>
-      confirmOrder({
-        variables: {
-          orderId,
-        },
-      }),
+    confirmOrder:
+      ({ confirmOrder, orderId }) =>
+      () =>
+        confirmOrder({
+          variables: {
+            orderId,
+          },
+        }),
   }),
   mapProps(({ confirmOrder, data: { order = {} } }) => ({
     statusColor: colorForStatus(order.status),

@@ -227,23 +227,27 @@ export default compose(
     }
   `),
   withHandlers({
-    verifyQuotation: ({ verifyQuotation, quotationId }) => () =>
-      verifyQuotation({
-        variables: {
-          quotationId,
-        },
-      }),
-    rejectQuotation: ({ rejectQuotation, quotationId }) => () => {
-      const reason = prompt('Reason', ''); // eslint-disable-line
-      return rejectQuotation({
-        variables: {
-          quotationId,
-          quotationContext: {
-            reason,
+    verifyQuotation:
+      ({ verifyQuotation, quotationId }) =>
+      () =>
+        verifyQuotation({
+          variables: {
+            quotationId,
           },
-        },
-      });
-    },
+        }),
+    rejectQuotation:
+      ({ rejectQuotation, quotationId }) =>
+      () => {
+      const reason = prompt('Reason', ''); // eslint-disable-line
+        return rejectQuotation({
+          variables: {
+            quotationId,
+            quotationContext: {
+              reason,
+            },
+          },
+        });
+      },
   }),
   mapProps(
     ({ verifyQuotation, rejectQuotation, data: { quotation = {} } }) => ({

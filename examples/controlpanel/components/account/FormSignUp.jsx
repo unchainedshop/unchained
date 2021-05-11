@@ -31,15 +31,17 @@ export default compose(
     },
   }),
   withHandlers({
-    onSubmit: ({ client }) => ({ email, password }) =>
-      createUser(
-        {
-          email,
-          password,
-          disableHashing: true,
-        },
-        client
-      ),
+    onSubmit:
+      ({ client }) =>
+      ({ email, password }) =>
+        createUser(
+          {
+            email,
+            password,
+            disableHashing: true,
+          },
+          client
+        ),
     onSubmitSuccess: () => (userId) => {
       if (!userId) {
         alert('Signed Up successfully but not logged in automatically'); // eslint-disable-line
