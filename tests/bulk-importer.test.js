@@ -112,8 +112,7 @@ describe('Bulk Importer', () => {
                       asset: {
                         _id: 'format-v1',
                         fileName: 'format-jpeg.jpg',
-                        url:
-                          'https://www.story.one/media/images/poop-4108423_1920.width-1600.format-jpeg.jpg',
+                        url: 'https://www.story.one/media/images/poop-4108423_1920.width-1600.format-jpeg.jpg',
                       },
                       tags: ['big'],
                       meta: {},
@@ -167,8 +166,7 @@ describe('Bulk Importer', () => {
                       asset: {
                         _id: 'meteor',
                         fileName: 'meteor-will-never-die.svg',
-                        url:
-                          'https://docs.meteor.com/images/logo-coralspace-left.svg',
+                        url: 'https://docs.meteor.com/images/logo-coralspace-left.svg',
                       },
                       tags: ['small'],
                       meta: {},

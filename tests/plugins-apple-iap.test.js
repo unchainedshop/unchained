@@ -178,32 +178,35 @@ describe('Plugins: Apple IAP Payments', () => {
       expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
     });
     it('checkout with stored receipt in credentials', async () => {
-      const {
-        data: { updateOrderPaymentGeneric, checkoutCart } = {},
-      } = await graphqlFetch({
-        query: /* GraphQL */ `
-          mutation checkout($orderId: ID!, $orderPaymentId: ID!, $meta: JSON) {
-            updateOrderPaymentGeneric(
-              orderPaymentId: $orderPaymentId
-              meta: $meta
+      const { data: { updateOrderPaymentGeneric, checkoutCart } = {} } =
+        await graphqlFetch({
+          query: /* GraphQL */ `
+            mutation checkout(
+              $orderId: ID!
+              $orderPaymentId: ID!
+              $meta: JSON
             ) {
-              _id
-              status
+              updateOrderPaymentGeneric(
+                orderPaymentId: $orderPaymentId
+                meta: $meta
+              ) {
+                _id
+                status
+              }
+              checkoutCart(orderId: $orderId) {
+                _id
+                status
+              }
             }
-            checkoutCart(orderId: $orderId) {
-              _id
-              status
-            }
-          }
-        `,
-        variables: {
-          orderPaymentId: 'iap-payment',
-          orderId: 'iap-order',
-          meta: {
-            transactionIdentifier: singleItemTransactionIdentifier,
+          `,
+          variables: {
+            orderPaymentId: 'iap-payment',
+            orderId: 'iap-order',
+            meta: {
+              transactionIdentifier: singleItemTransactionIdentifier,
+            },
           },
-        },
-      });
+        });
       expect(updateOrderPaymentGeneric).toMatchObject({
         status: 'OPEN',
       });

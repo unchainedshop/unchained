@@ -408,33 +408,35 @@ describe('Auth for admin users', () => {
           lastName: 'K',
         },
       };
-      const {
-        data: { updateUserProfile } = {},
-      } = await graphqlFetchAsAdminUser({
-        query: /* GraphQL */ `
-          mutation updateUserProfile($profile: UserProfileInput!, $userId: ID) {
-            updateUserProfile(profile: $profile, userId: $userId) {
-              _id
-              name
-              profile {
-                birthday
-                displayName
-                phoneMobile
-                gender
-                birthday
-                address {
-                  firstName
-                  lastName
+      const { data: { updateUserProfile } = {} } =
+        await graphqlFetchAsAdminUser({
+          query: /* GraphQL */ `
+            mutation updateUserProfile(
+              $profile: UserProfileInput!
+              $userId: ID
+            ) {
+              updateUserProfile(profile: $profile, userId: $userId) {
+                _id
+                name
+                profile {
+                  birthday
+                  displayName
+                  phoneMobile
+                  gender
+                  birthday
+                  address {
+                    firstName
+                    lastName
+                  }
                 }
               }
             }
-          }
-        `,
-        variables: {
-          userId: User._id,
-          profile,
-        },
-      });
+          `,
+          variables: {
+            userId: User._id,
+            profile,
+          },
+        });
       expect(updateUserProfile).toMatchObject({
         _id: User._id,
         name: profile.displayName,
@@ -487,7 +489,7 @@ describe('Auth for admin users', () => {
 
       const { data: { workQueue } = {} } = await graphqlFetchAsAdminUser({
         query: /* GraphQL */ `
-          query($status: [WorkStatus]) {
+          query ($status: [WorkStatus]) {
             workQueue(status: $status) {
               _id
               type
@@ -511,20 +513,19 @@ describe('Auth for admin users', () => {
     it('should fire off the enrollment email', async () => {
       const email = 'admin3@unchained.local';
 
-      const {
-        data: { sendEnrollmentEmail } = {},
-      } = await graphqlFetchAsAdminUser({
-        query: /* GraphQL */ `
-          mutation sendEnrollmentEmail($email: String!) {
-            sendEnrollmentEmail(email: $email) {
-              success
+      const { data: { sendEnrollmentEmail } = {} } =
+        await graphqlFetchAsAdminUser({
+          query: /* GraphQL */ `
+            mutation sendEnrollmentEmail($email: String!) {
+              sendEnrollmentEmail(email: $email) {
+                success
+              }
             }
-          }
-        `,
-        variables: {
-          email,
-        },
-      });
+          `,
+          variables: {
+            email,
+          },
+        });
 
       expect(sendEnrollmentEmail).toMatchObject({
         success: true,
@@ -532,7 +533,7 @@ describe('Auth for admin users', () => {
 
       const { data: { workQueue } = {} } = await graphqlFetchAsAdminUser({
         query: /* GraphQL */ `
-          query($status: [WorkStatus]) {
+          query ($status: [WorkStatus]) {
             workQueue(status: $status) {
               _id
               type

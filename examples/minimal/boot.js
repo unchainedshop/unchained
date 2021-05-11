@@ -36,6 +36,9 @@ import 'meteor/unchained:core-worker/plugins/external';
 import 'meteor/unchained:core-worker/plugins/http-request';
 import 'meteor/unchained:core-worker/plugins/heartbeat';
 import 'meteor/unchained:core-worker/plugins/email';
+import 'meteor/unchained:core-events/plugins/node-event-emitter';
+import MatomoTracker from 'meteor/unchained:core-events/plugins/motomo-tracker';
+
 import seed from './seed';
 
 Meteor.startup(async () => {
@@ -63,6 +66,13 @@ Meteor.startup(async () => {
     },
   });
   seed();
+  MatomoTracker(1, `https://matomo.ucc.dev/matomo.php`, 'PAGE_VIEW', {});
+  MatomoTracker(
+    1,
+    `https://matomo.ucc.dev/matomo.php`,
+    'ORDER_ADD_PRODUCT',
+    {},
+  );
 
   embedControlpanelInMeteorWebApp(WebApp);
 });

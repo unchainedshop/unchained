@@ -1,8 +1,11 @@
+import { registerEvents, emit } from 'meteor/unchained:core-events';
 import { Mongo } from 'meteor/mongo';
 import createIndexes from './db/schema';
 import { Bookmarks } from './db/collections';
 
 export * from './db/collections';
+
+const BOOKMARK_EVENTS: string[] = ['BOOKMARK_CREATE', 'BOOKMARK_REMOVE'];
 
 export const services = {
   migrateBookmarks: async (
@@ -52,6 +55,7 @@ export type UnchainedBookmarkAPI = {
 // eslint-disable-next-line
 export default (): UnchainedBookmarkAPI => {
   createIndexes();
+  registerEvents(BOOKMARK_EVENTS);
   return {
     findByUserId: async (userId) => Bookmarks.find({ userId }).fetch(),
     findByUserIdAndProductId: async ({ userId, productId }) =>
@@ -71,7 +75,9 @@ export default (): UnchainedBookmarkAPI => {
         }
       ),
     removeById: async (bookmarkId) => {
-      return Bookmarks.remove({ _id: bookmarkId });
+      const result = Bookmarks.remove({ _id: bookmarkId });
+      emit('BOOKMARK_REMOVE', { bookmarkId });
+      return result;
     },
     create: async ({ userId, productId, ...rest }) => {
       const bookmarkId = Bookmarks.insert({
@@ -80,6 +86,7 @@ export default (): UnchainedBookmarkAPI => {
         userId,
         productId,
       });
+      emit('BOOKMARK_CREATE', { bookmarkId });
       return bookmarkId;
     },
     existsByUserIdAndProductId: async ({ productId, userId }) => {

@@ -1,6 +1,7 @@
 import 'meteor/dburles:collection-helpers';
 import { log } from 'meteor/unchained:core-logger';
 import { DiscountDirector } from 'meteor/unchained:core-discounting';
+import { emit } from 'meteor/unchained:core-events';
 import { OrderDiscounts } from './collections';
 import { OrderDiscountTrigger } from './schema';
 import { Orders } from '../orders/collections';
@@ -145,7 +146,9 @@ OrderDiscounts.updateDiscount = ({ discountId, ...rest }) => {
       },
     }
   );
-  return OrderDiscounts.findOne({ _id: discountId });
+  const discount = OrderDiscounts.findOne({ _id: discountId });
+  emit('ORDER_UPDATE_DISCOUNT', { discount });
+  return discount;
 };
 
 OrderDiscounts.removeDiscount = ({ discountId }) => {
@@ -162,6 +165,7 @@ OrderDiscounts.removeDiscount = ({ discountId }) => {
     return discount;
   }
   OrderDiscounts.remove({ _id: discountId });
+  emit('ORDER_REMOVE_DISCOUNT', { discount });
   return discount;
 };
 

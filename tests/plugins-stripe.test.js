@@ -74,31 +74,29 @@ if (STRIPE_SECRET) {
     describe('Mutation.signPaymentProviderForCredentialRegistration (Stripe)', () => {
       let idAndSecret;
       it('Request a new client secret for the purpose of registration', async () => {
-        const {
-          data: { signPaymentProviderForCredentialRegistration } = {},
-        } = await graphqlFetch({
-          query: /* GraphQL */ `
-            mutation signPaymentProviderForCredentialRegistration(
-              $paymentProviderId: ID!
-            ) {
-              signPaymentProviderForCredentialRegistration(
-                paymentProviderId: $paymentProviderId
-              )
-            }
-          `,
-          variables: {
-            paymentProviderId: 'stripe-payment-provider',
-          },
-        });
+        const { data: { signPaymentProviderForCredentialRegistration } = {} } =
+          await graphqlFetch({
+            query: /* GraphQL */ `
+              mutation signPaymentProviderForCredentialRegistration(
+                $paymentProviderId: ID!
+              ) {
+                signPaymentProviderForCredentialRegistration(
+                  paymentProviderId: $paymentProviderId
+                )
+              }
+            `,
+            variables: {
+              paymentProviderId: 'stripe-payment-provider',
+            },
+          });
 
         expect(signPaymentProviderForCredentialRegistration).not.toBe('');
         expect(signPaymentProviderForCredentialRegistration).not.toBe(null);
         expect(signPaymentProviderForCredentialRegistration).not.toBe(
           undefined,
         );
-        idAndSecret = signPaymentProviderForCredentialRegistration.split(
-          '_secret_',
-        );
+        idAndSecret =
+          signPaymentProviderForCredentialRegistration.split('_secret_');
       });
       it('Confirm the setup intent', async () => {
         const stripe = Stripe(STRIPE_SECRET);
@@ -121,29 +119,31 @@ if (STRIPE_SECRET) {
           status: 'succeeded',
         });
 
-        const {
-          data: { registerPaymentCredentials } = {},
-        } = await graphqlFetch({
-          query: /* GraphQL */ `
-            mutation register($paymentProviderId: ID!, $paymentContext: JSON!) {
-              registerPaymentCredentials(
-                paymentProviderId: $paymentProviderId
-                paymentContext: $paymentContext
+        const { data: { registerPaymentCredentials } = {} } =
+          await graphqlFetch({
+            query: /* GraphQL */ `
+              mutation register(
+                $paymentProviderId: ID!
+                $paymentContext: JSON!
               ) {
-                _id
-                token
-                isValid
-                isPreferred
+                registerPaymentCredentials(
+                  paymentProviderId: $paymentProviderId
+                  paymentContext: $paymentContext
+                ) {
+                  _id
+                  token
+                  isValid
+                  isPreferred
+                }
               }
-            }
-          `,
-          variables: {
-            paymentProviderId: confirmedIntent.metadata.paymentProviderId,
-            paymentContext: {
-              setupIntentId: confirmedIntent.id,
+            `,
+            variables: {
+              paymentProviderId: confirmedIntent.metadata.paymentProviderId,
+              paymentContext: {
+                setupIntentId: confirmedIntent.id,
+              },
             },
-          },
-        });
+          });
         expect(registerPaymentCredentials).toMatchObject({
           isValid: true,
           isPreferred: true,
@@ -260,41 +260,40 @@ if (STRIPE_SECRET) {
           user: { _id: 'user' },
         });
 
-        const {
-          data: { addCartProduct, updateCart, checkoutCart } = {},
-        } = await graphqlFetch({
-          query: /* GraphQL */ `
-            mutation addAndCheckout(
-              $productId: ID!
-              $paymentContext: JSON
-              $paymentProviderId: ID
-            ) {
-              addCartProduct(productId: $productId) {
-                _id
-              }
-              updateCart(paymentProviderId: $paymentProviderId) {
-                _id
-                status
-                payment {
-                  provider {
-                    _id
+        const { data: { addCartProduct, updateCart, checkoutCart } = {} } =
+          await graphqlFetch({
+            query: /* GraphQL */ `
+              mutation addAndCheckout(
+                $productId: ID!
+                $paymentContext: JSON
+                $paymentProviderId: ID
+              ) {
+                addCartProduct(productId: $productId) {
+                  _id
+                }
+                updateCart(paymentProviderId: $paymentProviderId) {
+                  _id
+                  status
+                  payment {
+                    provider {
+                      _id
+                    }
                   }
                 }
+                checkoutCart(paymentContext: $paymentContext) {
+                  _id
+                  status
+                }
               }
-              checkoutCart(paymentContext: $paymentContext) {
-                _id
-                status
-              }
-            }
-          `,
-          variables: {
-            productId: 'simpleproduct',
-            paymentProviderId: 'stripe-payment-provider',
-            paymentContext: {
-              paymentCredentials: credentials,
+            `,
+            variables: {
+              productId: 'simpleproduct',
+              paymentProviderId: 'stripe-payment-provider',
+              paymentContext: {
+                paymentCredentials: credentials,
+              },
             },
-          },
-        });
+          });
         expect(addCartProduct).toMatchObject(expect.anything());
         expect(updateCart).toMatchObject({
           status: 'OPEN',

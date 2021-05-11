@@ -1,3 +1,4 @@
+import { emit } from 'meteor/unchained:core-events';
 import { Currencies } from './collections';
 
 const buildFindSelector = ({ includeInactive = false }) => {
@@ -13,7 +14,9 @@ Currencies.createCurrency = ({ isoCode, ...countryData }) => {
     isActive: true,
     ...countryData,
   });
-  return Currencies.findOne({ _id });
+  const currency = Currencies.findOne({ _id });
+  emit('CURRENCY_CREATE', { currency });
+  return currency;
 };
 
 Currencies.findCurrencies = ({ limit, offset, ...query }) => {
@@ -39,11 +42,13 @@ Currencies.findCurrency = ({ currencyId, isoCode }) => {
 };
 
 Currencies.removeCurrency = ({ currencyId }) => {
-  return Currencies.remove({ _id: currencyId });
+  const result = Currencies.remove({ _id: currencyId });
+  emit('CURRENCY_REMOVE', { currencyId });
+  return result;
 };
 
 Currencies.updateCurrency = ({ currencyId, isoCode, ...currency }) => {
-  return Currencies.update(
+  const result = Currencies.update(
     { _id: currencyId },
     {
       $set: {
@@ -53,4 +58,6 @@ Currencies.updateCurrency = ({ currencyId, isoCode, ...currency }) => {
       },
     }
   );
+  emit('CURRENCY_UPDATE', { currencyId });
+  return result;
 };

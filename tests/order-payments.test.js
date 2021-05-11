@@ -26,34 +26,33 @@ describe('Order: Payments', () => {
 
   describe('Mutation.setOrderPaymentProvider for admin user', () => {
     it('set order payment provider', async () => {
-      const {
-        data: { setOrderPaymentProvider } = {},
-      } = await graphqlFetchAsAdmin({
-        query: /* GraphQL */ `
-          mutation setOrderPaymentProvider(
-            $orderId: ID!
-            $paymentProviderId: ID!
-          ) {
-            setOrderPaymentProvider(
-              orderId: $orderId
-              paymentProviderId: $paymentProviderId
+      const { data: { setOrderPaymentProvider } = {} } =
+        await graphqlFetchAsAdmin({
+          query: /* GraphQL */ `
+            mutation setOrderPaymentProvider(
+              $orderId: ID!
+              $paymentProviderId: ID!
             ) {
-              _id
-              status
-              payment {
+              setOrderPaymentProvider(
+                orderId: $orderId
+                paymentProviderId: $paymentProviderId
+              ) {
                 _id
-                provider {
+                status
+                payment {
                   _id
+                  provider {
+                    _id
+                  }
                 }
               }
             }
-          }
-        `,
-        variables: {
-          orderId: SimpleOrder._id,
-          paymentProviderId: PrePaidPaymentProvider._id,
-        },
-      });
+          `,
+          variables: {
+            orderId: SimpleOrder._id,
+            paymentProviderId: PrePaidPaymentProvider._id,
+          },
+        });
       expect(setOrderPaymentProvider).toMatchObject({
         _id: SimpleOrder._id,
         payment: {
@@ -136,27 +135,26 @@ describe('Order: Payments', () => {
 
   describe('Mutation.setOrderPaymentProvider for logged in user should', () => {
     it('set order payment provider successfuly', async () => {
-      const {
-        data: { setOrderPaymentProvider } = {},
-      } = await graphqlFetchAsNormalUser({
-        query: /* GraphQL */ `
-          mutation setOrderPaymentProvider(
-            $orderId: ID!
-            $paymentProviderId: ID!
-          ) {
-            setOrderPaymentProvider(
-              orderId: $orderId
-              paymentProviderId: $paymentProviderId
+      const { data: { setOrderPaymentProvider } = {} } =
+        await graphqlFetchAsNormalUser({
+          query: /* GraphQL */ `
+            mutation setOrderPaymentProvider(
+              $orderId: ID!
+              $paymentProviderId: ID!
             ) {
-              _id
+              setOrderPaymentProvider(
+                orderId: $orderId
+                paymentProviderId: $paymentProviderId
+              ) {
+                _id
+              }
             }
-          }
-        `,
-        variables: {
-          orderId: SimpleOrder._id,
-          paymentProviderId: PrePaidPaymentProvider._id,
-        },
-      });
+          `,
+          variables: {
+            orderId: SimpleOrder._id,
+            paymentProviderId: PrePaidPaymentProvider._id,
+          },
+        });
       expect(setOrderPaymentProvider).toMatchObject({
         _id: SimpleOrder._id,
       });
@@ -192,34 +190,33 @@ describe('Order: Payments', () => {
 
   describe('Mutation.updateOrderPaymentInvoice for admin user should', () => {
     it('update order payment (invoice & card)', async () => {
-      const {
-        data: { updateOrderPaymentInvoice } = {},
-      } = await graphqlFetchAsAdmin({
-        query: /* GraphQL */ `
-          mutation updateOrderPaymentInvoice(
-            $orderPaymentId: ID!
-            $meta: JSON
-          ) {
-            updateOrderPaymentInvoice(
-              orderPaymentId: $orderPaymentId
-              meta: $meta
+      const { data: { updateOrderPaymentInvoice } = {} } =
+        await graphqlFetchAsAdmin({
+          query: /* GraphQL */ `
+            mutation updateOrderPaymentInvoice(
+              $orderPaymentId: ID!
+              $meta: JSON
             ) {
-              _id
-              meta
-              provider {
+              updateOrderPaymentInvoice(
+                orderPaymentId: $orderPaymentId
+                meta: $meta
+              ) {
                 _id
-                type
+                meta
+                provider {
+                  _id
+                  type
+                }
               }
             }
-          }
-        `,
-        variables: {
-          orderPaymentId: SimplePayment._id,
-          meta: {
-            john: 'wayne',
+          `,
+          variables: {
+            orderPaymentId: SimplePayment._id,
+            meta: {
+              john: 'wayne',
+            },
           },
-        },
-      });
+        });
 
       expect(updateOrderPaymentInvoice).toMatchObject({
         _id: SimplePayment._id,
@@ -322,34 +319,33 @@ describe('Order: Payments', () => {
 
   describe('Mutation.updateOrderPaymentInvoice for logged in user should', () => {
     it('update order payment (invoice & card)', async () => {
-      const {
-        data: { updateOrderPaymentInvoice } = {},
-      } = await graphqlFetchAsNormalUser({
-        query: /* GraphQL */ `
-          mutation updateOrderPaymentInvoice(
-            $orderPaymentId: ID!
-            $meta: JSON
-          ) {
-            updateOrderPaymentInvoice(
-              orderPaymentId: $orderPaymentId
-              meta: $meta
+      const { data: { updateOrderPaymentInvoice } = {} } =
+        await graphqlFetchAsNormalUser({
+          query: /* GraphQL */ `
+            mutation updateOrderPaymentInvoice(
+              $orderPaymentId: ID!
+              $meta: JSON
             ) {
-              _id
-              meta
-              provider {
+              updateOrderPaymentInvoice(
+                orderPaymentId: $orderPaymentId
+                meta: $meta
+              ) {
                 _id
-                type
+                meta
+                provider {
+                  _id
+                  type
+                }
               }
             }
-          }
-        `,
-        variables: {
-          orderPaymentId: SimplePayment._id,
-          meta: {
-            john: 'wayne',
+          `,
+          variables: {
+            orderPaymentId: SimplePayment._id,
+            meta: {
+              john: 'wayne',
+            },
           },
-        },
-      });
+        });
 
       expect(updateOrderPaymentInvoice).toMatchObject({
         _id: SimplePayment._id,
@@ -400,42 +396,40 @@ describe('Order: Payments', () => {
 
   describe('Mutation.updateOrderPaymentGeneric for admin user should', () => {
     it('update order payment successfuly when order payment provider type is generic', async () => {
-      const {
-        data: { updateOrderPaymentGeneric } = {},
-      } = await graphqlFetchAsAdmin({
-        query: /* GraphQL */ `
-          mutation updateOrderPaymentGeneric(
-            $orderPaymentId: ID!
-            $meta: JSON
-          ) {
-            updateOrderPaymentGeneric(
-              orderPaymentId: $orderPaymentId
-              meta: $meta
+      const { data: { updateOrderPaymentGeneric } = {} } =
+        await graphqlFetchAsAdmin({
+          query: /* GraphQL */ `
+            mutation updateOrderPaymentGeneric(
+              $orderPaymentId: ID!
+              $meta: JSON
             ) {
-              _id
-              meta
-              sign
-              provider {
+              updateOrderPaymentGeneric(
+                orderPaymentId: $orderPaymentId
+                meta: $meta
+              ) {
                 _id
-                type
+                meta
+                sign
+                provider {
+                  _id
+                  type
+                }
               }
             }
-          }
-        `,
-        variables: {
-          orderPaymentId: GenericPayment._id,
-          meta: {
-            john: 'wayne',
+          `,
+          variables: {
+            orderPaymentId: GenericPayment._id,
+            meta: {
+              john: 'wayne',
+            },
           },
-        },
-      });
+        });
       expect(updateOrderPaymentGeneric).toMatchObject({
         _id: GenericPayment._id,
         meta: {
           john: 'wayne',
         },
-        sign:
-          '0bea13199c5abb6d0861d661d565a47f193bc20dc10bad12f00e584a33f01939',
+        sign: '0bea13199c5abb6d0861d661d565a47f193bc20dc10bad12f00e584a33f01939',
         provider: {
           type: 'GENERIC',
         },
@@ -474,29 +468,28 @@ describe('Order: Payments', () => {
 
   describe('Mutation.updateOrderPaymentGeneric for logged in user should', () => {
     it('update order payment successfuly when order payment provider type is generic', async () => {
-      const {
-        data: { updateOrderPaymentGeneric } = {},
-      } = await graphqlFetchAsNormalUser({
-        query: /* GraphQL */ `
-          mutation updateOrderPaymentGeneric(
-            $orderPaymentId: ID!
-            $meta: JSON
-          ) {
-            updateOrderPaymentGeneric(
-              orderPaymentId: $orderPaymentId
-              meta: $meta
+      const { data: { updateOrderPaymentGeneric } = {} } =
+        await graphqlFetchAsNormalUser({
+          query: /* GraphQL */ `
+            mutation updateOrderPaymentGeneric(
+              $orderPaymentId: ID!
+              $meta: JSON
             ) {
-              _id
+              updateOrderPaymentGeneric(
+                orderPaymentId: $orderPaymentId
+                meta: $meta
+              ) {
+                _id
+              }
             }
-          }
-        `,
-        variables: {
-          orderPaymentId: GenericPayment._id,
-          meta: {
-            john: 'wayne',
+          `,
+          variables: {
+            orderPaymentId: GenericPayment._id,
+            meta: {
+              john: 'wayne',
+            },
           },
-        },
-      });
+        });
       expect(updateOrderPaymentGeneric).toMatchObject({
         _id: GenericPayment._id,
       });

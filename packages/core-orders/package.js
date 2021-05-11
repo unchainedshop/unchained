@@ -31,6 +31,7 @@ Package.onUse((api) => {
   api.use('unchained:core-payment@0.61.0');
   api.use('unchained:core-quotations@0.61.0');
   api.use('unchained:core-subscriptions@0.61.0');
+  api.use('unchained:core-events@0.61.0');
 
   api.mainModule('orders.js', 'server');
 });

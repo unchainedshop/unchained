@@ -19,6 +19,7 @@ import configureFilters from 'meteor/unchained:core-filters';
 import configureSubscriptions from 'meteor/unchained:core-subscriptions';
 import configureWorker from 'meteor/unchained:core-worker';
 import configureMessaging from 'meteor/unchained:core-messaging';
+import configureEvents, { registerEvents } from 'meteor/unchained:core-events';
 
 export default async ({ modules = {} } = {}) => {
   configureLogger(modules.logger);
@@ -40,6 +41,8 @@ export default async ({ modules = {} } = {}) => {
   configureAssortments(modules.assortments);
   configureFilters(modules.filters);
   configureSubscriptions(modules.subscriptions);
+  configureEvents(modules.events);
+  registerEvents(['PAGE_VIEW']);
   return {
     modules: {
       bookmarks,

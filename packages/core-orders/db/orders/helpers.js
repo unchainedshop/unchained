@@ -16,6 +16,7 @@ import {
   OrderPricingDirector,
   OrderPricingSheet,
 } from 'meteor/unchained:core-pricing';
+import { emit } from 'meteor/unchained:core-events';
 import { OrderStatus } from './schema';
 import { Orders } from './collections';
 import { OrderDeliveries } from '../order-deliveries/collections';
@@ -54,10 +55,11 @@ Subscriptions.generateFromCheckout = async ({ items, order, ...context }) => {
   };
   return Promise.all(
     items.map(async (item) => {
-      const subscriptionData = await SubscriptionDirector.transformOrderItemToSubscription(
-        item,
-        { ...template, ...context }
-      );
+      const subscriptionData =
+        await SubscriptionDirector.transformOrderItemToSubscription(item, {
+          ...template,
+          ...context,
+        });
 
       await Subscriptions.createSubscription({
         ...subscriptionData,
@@ -158,6 +160,7 @@ Orders.findOrder = ({ orderId, ...rest }, options) => {
 };
 
 Orders.removeOrder = ({ orderId }) => {
+  emit('ORDER_REMOVE', { orderId });
   return Orders.remove({ _id: orderId });
 };
 
@@ -233,10 +236,12 @@ Orders.helpers({
     };
   },
   addDiscount({ code }) {
-    return OrderDiscounts.createManualOrderDiscount({
+    const discount = OrderDiscounts.createManualOrderDiscount({
       orderId: this._id,
       code,
     });
+    emit('ORDER_ADD_DISCOUNT', { discount });
+    return discount;
   },
   async initProviders() {
     const order = await this.initPreferredDeliveryProvider();
@@ -248,11 +253,10 @@ Orders.helpers({
     });
 
     const paymentProviderId = this.payment()?.paymentProviderId;
-    const isAlreadyInitializedWithSupportedProvider = supportedPaymentProviders.some(
-      (provider) => {
+    const isAlreadyInitializedWithSupportedProvider =
+      supportedPaymentProviders.some((provider) => {
         return provider._id === paymentProviderId;
-      }
-    );
+      });
     if (
       supportedPaymentProviders.length > 0 &&
       !isAlreadyInitializedWithSupportedProvider
@@ -289,11 +293,10 @@ Orders.helpers({
     });
 
     const deliveryProviderId = this.delivery()?.deliveryProviderId;
-    const isAlreadyInitializedWithSupportedProvider = supportedDeliveryProviders.some(
-      (provider) => {
+    const isAlreadyInitializedWithSupportedProvider =
+      supportedDeliveryProviders.some((provider) => {
         return provider._id === deliveryProviderId;
-      }
-    );
+      });
 
     if (
       supportedDeliveryProviders.length > 0 &&
@@ -306,16 +309,24 @@ Orders.helpers({
     return this;
   },
   setDeliveryProvider({ deliveryProviderId }) {
-    return Orders.setDeliveryProvider({
+    const result = Orders.setDeliveryProvider({
       orderId: this._id,
       deliveryProviderId,
     });
+    emit('ORDER_SET_DELIVERY_PROVIDER', {
+      payload: { order: this, deliveryProviderId },
+    });
+    return result;
   },
   setPaymentProvider({ paymentProviderId }) {
-    return Orders.setPaymentProvider({
+    const result = Orders.setPaymentProvider({
       orderId: this._id,
       paymentProviderId,
     });
+    emit('ORDER_SET_PAYMENT_PROVIDER', {
+      payload: { order: this, paymentProviderId },
+    });
+    return result;
   },
   items(props) {
     return OrderPositions.find({
@@ -341,7 +352,7 @@ Orders.helpers({
       quantity,
       configuration,
     });
-    return OrderPositions.upsertPosition({
+    const orderPosition = OrderPositions.upsertPosition({
       orderId: this._id,
       productId: resolvedProduct._id,
       originalProductId: product._id,
@@ -349,6 +360,8 @@ Orders.helpers({
       configuration,
       ...rest,
     });
+    emit('ORDER_ADD_PRODUCT', { orderPosition });
+    return orderPosition;
   },
   user() {
     return Users.findOne({
@@ -511,6 +524,7 @@ Orders.helpers({
       }
       this.reserveItems();
     }
+
     return this.setStatus(this.nextStatus(), 'order processed');
   },
   setStatus(status, info) {
@@ -524,16 +538,19 @@ Orders.helpers({
     let { status } = this;
     if (status === OrderStatus.OPEN || !status) {
       if (this.isValidForCheckout()) {
+        emit('ORDER_CHECKOUT', { order: this });
         status = OrderStatus.PENDING;
       }
     }
     if (status === OrderStatus.PENDING) {
       if (this.isAutoConfirmationEnabled()) {
+        emit('ORDER_CONFIRMED', { order: this });
         status = OrderStatus.CONFIRMED;
       }
     }
     if (status === OrderStatus.CONFIRMED) {
       if (this.isAutoFullfillmentEnabled()) {
+        emit('ORDER_FULLFILLED', { order: this });
         status = OrderStatus.FULLFILLED;
       }
     }
@@ -688,7 +705,9 @@ Orders.createOrder = async ({
     currency,
     countryCode,
   });
-  return Orders.findOne({ _id: orderId }).initProviders();
+  const order = Orders.findOne({ _id: orderId }).initProviders();
+  emit('ORDER_CREATE', { order });
+  return order;
 };
 
 Orders.updateBillingAddress = ({ billingAddress, orderId }) => {
@@ -703,7 +722,9 @@ Orders.updateBillingAddress = ({ billingAddress, orderId }) => {
     }
   );
   Orders.updateCalculation({ orderId });
-  return Orders.findOne({ _id: orderId });
+  const order = Orders.findOne({ _id: orderId });
+  emit('ORDER_UPDATE', { order, field: 'billing' });
+  return order;
 };
 
 Orders.updateContact = ({ contact, orderId }) => {
@@ -718,7 +739,9 @@ Orders.updateContact = ({ contact, orderId }) => {
     }
   );
   Orders.updateCalculation({ orderId });
-  return Orders.findOne({ _id: orderId });
+  const order = Orders.findOne({ _id: orderId });
+  emit('ORDER_UPDATE', { order, field: 'contact' });
+  return order;
 };
 
 Orders.updateContext = ({ context, orderId }) => {
@@ -733,7 +756,9 @@ Orders.updateContext = ({ context, orderId }) => {
     }
   );
   Orders.updateCalculation({ orderId });
-  return Orders.findOne({ _id: orderId });
+  const order = Orders.findOne({ _id: orderId });
+  emit('ORDER_UPDATE', { order, field: 'context' });
+  return order;
 };
 
 Orders.getUniqueOrderNumber = () => {

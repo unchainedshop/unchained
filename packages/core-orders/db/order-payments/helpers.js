@@ -5,6 +5,7 @@ import {
   PaymentPricingDirector,
   PaymentPricingSheet,
 } from 'meteor/unchained:core-pricing';
+import { emit } from 'meteor/unchained:core-events';
 import { objectInvert } from 'meteor/unchained:utils';
 import { OrderPayments } from './collections';
 import { OrderPaymentStatus } from './schema';
@@ -33,11 +34,16 @@ OrderPayments.helpers({
     return objectInvert(OrderPaymentStatus)[this.status || null];
   },
   sign({ transactionContext }) {
-    return this.provider().sign({
+    const result = this.provider().sign({
       transactionContext,
       orderPayment: this,
     });
+    emit('ORDER_SIGN_PAYMENT', {
+      payload: { orderPayment: this, transactionContext },
+    });
+    return result;
   },
+
   init() {
     const provider = this.provider();
     const context = provider.defaultContext();
@@ -94,6 +100,7 @@ OrderPayments.helpers({
         ? JSON.stringify(arbitraryResponseData)
         : 'mark paid manually'
     );
+    emit('ORDER_PAY', { orderPayment: this });
   },
   setStatus(status, info) {
     return OrderPayments.updateStatus({
@@ -149,7 +156,9 @@ OrderPayments.updatePayment = ({ orderId, paymentId, context }) => {
     }
   );
   Orders.updateCalculation({ orderId });
-  return OrderPayments.findOne({ _id: paymentId });
+  const orderPayment = OrderPayments.findOne({ _id: paymentId });
+  emit('ORDER_UPDATE_PAYMENT', { orderPayment });
+  return orderPayment;
 };
 
 OrderPayments.logEvent = ({ paymentId, event }) => {

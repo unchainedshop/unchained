@@ -27,6 +27,7 @@ import bookmark from './bookmark';
 import search from './search';
 import worker from './worker';
 import subscription from './subscription';
+import events from './events';
 
 export default [
   ...address,
@@ -58,4 +59,5 @@ export default [
   ...search,
   ...worker,
   ...subscription,
+  ...events,
 ];

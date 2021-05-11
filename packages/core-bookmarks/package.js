@@ -16,6 +16,7 @@ Package.onUse((api) => {
 
   api.use('unchained:utils@0.61.0');
   api.use('unchained:core-logger@0.61.0');
+  api.use('unchained:core-events@0.61.0');
 
   api.mainModule('bookmarks.ts', 'server');
 });

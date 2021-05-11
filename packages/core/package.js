@@ -34,6 +34,7 @@ Package.onUse((api) => {
   api.use('unchained:core-assortments@0.61.0');
   api.use('unchained:core-worker@0.61.0');
   api.use('unchained:core-subscriptions@0.61.0');
+  api.use('unchained:core-events@0.61.0');
 
   api.imply([
     'unchained:core-currencies',
@@ -57,6 +58,7 @@ Package.onUse((api) => {
     'unchained:core-assortments',
     'unchained:core-worker',
     'unchained:core-subscriptions',
+    'unchained:core-events',
   ]);
 
   api.mainModule('core.js', 'server');

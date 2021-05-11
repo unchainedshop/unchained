@@ -6,6 +6,7 @@ import {
   DeliveryPricingSheet,
 } from 'meteor/unchained:core-pricing';
 import { objectInvert } from 'meteor/unchained:utils';
+import { emit } from 'meteor/unchained:core-events';
 import { OrderDeliveries } from './collections';
 import { OrderDeliveryStatus } from './schema';
 import { Orders } from '../orders/collections';
@@ -82,6 +83,7 @@ OrderDeliveries.helpers({
   markDelivered() {
     if (this.status !== OrderDeliveryStatus.OPEN) return;
     this.setStatus(OrderDeliveryStatus.DELIVERED, 'mark delivered manually');
+    emit('ORDER_DELIVER', { orderDelivery: this });
   },
   setStatus(status, info) {
     return OrderDeliveries.updateStatus({
@@ -139,7 +141,9 @@ OrderDeliveries.updateDelivery = ({ deliveryId, orderId, context }) => {
     }
   );
   Orders.updateCalculation({ orderId });
-  return OrderDeliveries.findOne({ _id: deliveryId });
+  const orderDelivery = OrderDeliveries.findOne({ _id: deliveryId });
+  emit('ORDER_UPDATE_DELIVERY', { orderDelivery });
+  return orderDelivery;
 };
 
 OrderDeliveries.updateStatus = ({ deliveryId, status, info = '' }) => {

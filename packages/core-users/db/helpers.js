@@ -292,10 +292,8 @@ Users.createUser = async (userData, context, { skipMessaging } = {}) => {
 
 Users.loginWithService = async (service, params, rawContext) => {
   const context = evaluateContext(filterContext(rawContext));
-  const {
-    user: tokenUser,
-    token: loginToken,
-  } = await accountsServer.loginWithService(service, params, context);
+  const { user: tokenUser, token: loginToken } =
+    await accountsServer.loginWithService(service, params, context);
   await accountsServer.getHooks().emit('LoginTokenCreated', {
     user: tokenUser,
     connection: context,
@@ -310,10 +308,8 @@ Users.loginWithService = async (service, params, rawContext) => {
 
 Users.createLoginToken = async (user, rawContext) => {
   const context = evaluateContext(filterContext(rawContext));
-  const {
-    user: tokenUser,
-    token: loginToken,
-  } = await accountsServer.loginWithUser(user, context);
+  const { user: tokenUser, token: loginToken } =
+    await accountsServer.loginWithUser(user, context);
   await accountsServer.getHooks().emit('LoginTokenCreated', {
     user: tokenUser,
     connection: context,

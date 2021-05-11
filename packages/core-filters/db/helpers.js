@@ -7,6 +7,7 @@ import {
   Assortments,
   AssortmentFilters,
 } from 'meteor/unchained:core-assortments';
+import { emit } from 'meteor/unchained:core-events';
 import { FilterTypes } from './schema';
 import { Filters, FilterTexts } from './collections';
 import { FilterDirector } from '../director';
@@ -76,6 +77,7 @@ Filters.createFilter = (
   if (!skipInvalidation) {
     filterObject.invalidateProductIdCache();
   }
+  emit('FILTER_CREATE', { filter: filterObject });
   return filterObject;
 };
 
@@ -94,11 +96,14 @@ Filters.updateFilter = (
   if (!skipInvalidation) {
     filterObject.invalidateProductIdCache();
   }
+  emit('FILTER_UPDATE', { filter: filterObject });
   return filterObject;
 };
 
 Filters.removeFilter = ({ filterId }) => {
-  return Filters.remove({ _id: filterId });
+  const result = Filters.remove({ _id: filterId });
+  emit('FILTER_REMOVE', { filterId });
+  return result;
 };
 
 Filters.getLocalizedTexts = (filterId, filterOptionValue, locale) =>

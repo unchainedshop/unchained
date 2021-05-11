@@ -1,5 +1,6 @@
 import { Promise } from 'meteor/promise';
 import 'meteor/dburles:collection-helpers';
+import { emit } from 'meteor/unchained:core-events';
 import { WarehousingProviders } from './collections';
 import { WarehousingDirector } from '../director';
 
@@ -47,7 +48,9 @@ WarehousingProviders.createProvider = (providerData) => {
     configuration: InterfaceClass.initialConfiguration,
     ...providerData,
   });
-  return WarehousingProviders.findOne({ _id: providerId });
+  const warehousingProvider = WarehousingProviders.findOne({ _id: providerId });
+  emit('WAREHOUSING_PROVIDER_CREATE', { warehousingProvider });
+  return warehousingProvider;
 };
 
 WarehousingProviders.updateProvider = ({ _id, ...rest }) => {
@@ -60,7 +63,12 @@ WarehousingProviders.updateProvider = ({ _id, ...rest }) => {
       },
     }
   );
-  return WarehousingProviders.findOne({ _id, deleted: null });
+  const warehousingProvider = WarehousingProviders.findOne({
+    _id,
+    deleted: null,
+  });
+  emit('WAREHOUSING_PROVIDER_UPDATE', { warehousingProvider });
+  return warehousingProvider;
 };
 
 WarehousingProviders.removeProvider = ({ _id }) => {
@@ -72,7 +80,9 @@ WarehousingProviders.removeProvider = ({ _id }) => {
       },
     }
   );
-  return WarehousingProviders.findOne({ _id });
+  const warehousingProvider = WarehousingProviders.findOne({ _id });
+  emit('WAREHOUSING_PROVIDER_REMOVE', { warehousingProvider });
+  return warehousingProvider;
 };
 
 WarehousingProviders.providerExists = ({ warehousingProviderId }) => {
@@ -110,9 +120,7 @@ WarehousingProviders.findSupported = (
   { product, deliveryProvider },
   ...options
 ) =>
-  WarehousingProviders.findProviders(
-    {},
-    ...options
-  ).filter((warehousingProvider) =>
-    warehousingProvider.isActive({ product, deliveryProvider })
+  WarehousingProviders.findProviders({}, ...options).filter(
+    (warehousingProvider) =>
+      warehousingProvider.isActive({ product, deliveryProvider })
   );

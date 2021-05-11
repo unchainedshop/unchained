@@ -32,27 +32,27 @@ export interface UnchainedServerOptions {
 
 const UNCHAINED_API_VERSION = '0.61.1'; // eslint-disable-line
 
-export const createContextResolver = (unchained: UnchainedAPI) => async (
-  apolloContext
-): Promise<UnchainedServerContext> => {
-  const loaders = await instantiateLoaders(apolloContext.req, unchained);
-  // const intermediateContext: Partial<UnchainedServerContext> = {
-  //   ...unchained,
-  //   ...loaders,
-  // };
-  const userContext = await getUserContext(
-    apolloContext.req /* intermediateContext */
-  );
-  const localeContext = await getLocaleContext(apolloContext.req);
-  return {
-    ...apolloContext,
-    ...unchained,
-    ...loaders,
-    ...userContext,
-    ...localeContext,
-    version: UNCHAINED_API_VERSION,
+export const createContextResolver =
+  (unchained: UnchainedAPI) =>
+  async (apolloContext): Promise<UnchainedServerContext> => {
+    const loaders = await instantiateLoaders(apolloContext.req, unchained);
+    // const intermediateContext: Partial<UnchainedServerContext> = {
+    //   ...unchained,
+    //   ...loaders,
+    // };
+    const userContext = await getUserContext(
+      apolloContext.req /* intermediateContext */
+    );
+    const localeContext = await getLocaleContext(apolloContext.req);
+    return {
+      ...apolloContext,
+      ...unchained,
+      ...loaders,
+      ...userContext,
+      ...localeContext,
+      version: UNCHAINED_API_VERSION,
+    };
   };
-};
 
 const startUnchainedServer = (options: UnchainedServerOptions) => {
   const { unchained, rolesOptions, ...apolloServerOptions } = options || {};

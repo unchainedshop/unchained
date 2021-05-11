@@ -8,6 +8,7 @@ import { Countries } from 'meteor/unchained:core-countries';
 import { Currencies } from 'meteor/unchained:core-currencies';
 import { Logs, log } from 'meteor/unchained:core-logger';
 import { WorkerDirector } from 'meteor/unchained:core-worker';
+import { emit } from 'meteor/unchained:core-events';
 import { Subscriptions } from './collections';
 import { SubscriptionStatus } from './schema';
 import { SubscriptionDirector } from '../../director';
@@ -228,11 +229,13 @@ Subscriptions.createSubscription = async (
     reason,
     orderIdForFirstPeriod,
   });
-  return initialized.sendStatusToCustomer({
+  const subscriptionObject = initialized.sendStatusToCustomer({
     locale,
     reason,
     orderIdForFirstPeriod,
   });
+  emit('SUBSCRIPTION_CREATE', { subscription: subscriptionObject });
+  return subscriptionObject;
 };
 
 Subscriptions.addSubscriptionPeriod = async ({
