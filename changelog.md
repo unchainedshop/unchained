@@ -3,8 +3,8 @@
 ## Breaking changes
 
 - [core] Remove cron worker `unchained:core-worker/workers/cron`, use the interval worker instead
-- [core] `cronText` has been removed from `configureAutoscheduling` in favor of `schedule`, schedule has to be a later.js compliant schedule definition. If you want to reuse the custom cronText define schedule like `later.parse.text('every 5 mins');` Likewise `autoSchedulingCronText` has been removed from subscription settings and replaced with `autoSchedulingSchedule`
-- [schema] `Money` type has been completely removed and replace with `Price`.
+- [core] `cronText` has been removed from `configureAutoscheduling` in favor of `schedule`, `schedule` has to be a later.js compliant schedule definition. If you want to reuse the custom cronText define schedule like `later.parse.text('every 5 mins');` Likewise `autoSchedulingCronText` has been removed from subscription settings and replaced with `autoSchedulingSchedule`
+- [schema] `Money` type has been completely removed and was replaced with `Price`.
   This change will affect the following types and any other type that has fields of this types
 
   ```
@@ -18,15 +18,27 @@
   OrderItem.unitPrice
   OrderItem.total
   OrderPayment.fee
-
   ```
 
+## Major
+
+- [events] NEW core module `events` allows to listen to various elementary events and trigger custom code based on those. See the documentation here https://docs.unchained.shop/config/events/. We also provide two default event backend integrations, one for the local Node.js event emitter and one for Redis. In some cases you will only want to react to an event on a worker instance or even completely fire and forget and let another software pick up the events, for these cases we strongly suggest to use the Redis plugin. An additional MongoDB based event log is available through queries and can be inspected through the controlpanel. We will drop support for the MongoDB logging in the future so please make sure that you don't tail the Unchained Logs collection, consider migrating to `events` instead.
+- [api] We have added a special mutation called `pageView` that you can use to trigger server-side pageView tracking events. That way you can connect Unchained with Trackers like Google Analytics or Matomo in a private way without cookies.
+- [api] New default queries were added for all kind of "count" cases so you don't have to query a whole list just to get the amount of items, this can be quite helpful for pagination: `assortmentsCounts`, `countriesCount`, `currenciesCount`, `deliveryProvidersCount`, `filtersCount`, `languagesCount`, `logsCount`, `ordersCount`, `paymentProvidersCount`, `productReviewsCount`, `productsCount`, `quotationsCount`, `subscriptionsCount`, `usersCount`,`warehousingProvidersCount`,`eventsCount`
 - [api] New mutation.signPaymentProviderForCheckout to sign generic order payment directly (OrderPayment.sign still works but is marked deprecated and will be removed in future major releases)
 - [api] three new fields added `ConfigurableProduct.simulatedPriceRange` , `ConfigurableProduct.catalogPriceRange`, `SimulateProduct.leveledCatalogPrices` `PlanProduct.leveledCatalogPrices`
 - [product] `simulatePriceRange` and `catalogPriceRange` helpers added that will return price range of products variations assigned for a particular configurable(proxy) product based on the parameters provided to them.
 - [core] Now experimental it's possible to ensure users to always have a cart assigned to them by setting the module config option `ensureUserHasCart` on the orders module to true.
 - [platform] Additionally related with the above feature it's possible to assign carts for all existing users in the system at boot time by passing `assignCartForUsers` boolean value to `startPlafom` or using the environment variable `UNCHAINED_ASSIGN_CART_FOR_USERS`
 - [platform] You can now disable the invalidation of orders at boot time by passing `invalidateProviders` boolean value to `startPlafom` or using the environment variable `UNCHAINED_INVALIDATE_PROVIDERS`
+
+## Minor
+
+- [docs] Improved documentation for orders, accounts, events, subscriptions and email-templating
+- [examples] The minimal example now uses Meteor 2.2
+- [examples] We created an experimental Matomo Tracker Plugin that is part of the minimal example
+- [controlpanel] Fixed various issues, especially with loadMore behavior, user search and UX glitches
+- [*] Various additional bugfixes and enhancements between the undocumented releases of 0.61.1 and 0.61.19 mostly targeting bulk-import and accountsjs stabilization.
 
 # v0.61.1
 
@@ -392,7 +404,7 @@ We will rename all unchained core specific env variables and prefix them with UN
 - [delivery] It's now possible to customize the sort order of supported delivery providers `modules.delivery.sortProviders`
 - [payment] It's now possible to customize the sort order of supported payment providers `modules.payment.sortProviders`
 - [filters] Filters now fallback to no invalidation on startup if not configured
-- [logs] Added an index on the created field for logs and also make the log collection expire with a mongodb native feature (<https://docs.mongodb.com/manual/tutorial/expire-data/>). This should improve db log performance and disk usage
+- [logs] Added an index on the created field for logs and also make the log collection expire with a MongoDB native feature (<https://docs.mongodb.com/manual/tutorial/expire-data/>). This should improve db log performance and disk usage
 
 ## Patches
 

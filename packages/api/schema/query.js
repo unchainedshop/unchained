@@ -407,6 +407,11 @@ export default [
       Get all emitted events
       """
       events(type: String, limit: Int = 10, offset: Int = 0): [Event!]!
+
+      """
+      Get total count of all emitted events
+      """
+      eventsCount(type: String): Int!
     }
   `,
 ];

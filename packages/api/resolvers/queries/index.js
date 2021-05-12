@@ -64,6 +64,7 @@ import subscriptionsCount from './subscriptionsCount';
 import warehousingProvidersCount from './warehousingProvidersCount';
 import paymentProvidersCount from './paymentProvidersCount';
 import productReviewsCount from './productReviewsCount';
+import eventsCount from './eventsCount';
 
 export default {
   me,
@@ -151,4 +152,5 @@ export default {
   )(signPaymentProviderForCredentialRegistration),
   event: acl(actions.viewEvent)(event),
   events: acl(actions.viewEvents)(events),
+  eventsCount: acl(actions.viewEvents)(eventsCount),
 };

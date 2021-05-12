@@ -1,9 +1,6 @@
-import { createLogger, Logs } from 'meteor/unchained:core-logger';
-
-const logger = createLogger('unchained:api');
+import { Logs } from 'meteor/unchained:core-logger';
 
 // we don't log this query because of reasons ;)
-export default function logsCount(root, _, { userId }) {
-  logger.info(`query logsCount ${userId}`);
+export default function logsCount() {
   return Logs.count();
 }

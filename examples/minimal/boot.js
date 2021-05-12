@@ -60,7 +60,7 @@ Meteor.startup(async () => {
       },
       accounts: {
         server: {
-          loginExpirationInDays: 0.5,
+          loginExpirationInDays: 10,
         },
       },
     },
