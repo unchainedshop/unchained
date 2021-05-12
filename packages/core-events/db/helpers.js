@@ -4,6 +4,11 @@ const buildFindSelector = ({ type }) => {
   return type ? { type } : {};
 };
 
+Events.findEvent = async ({ eventId, ...rest }, options) => {
+  const selector = eventId ? { _id: eventId } : rest;
+  return Events.findOne(selector, options);
+};
+
 Events.findEvents = async ({
   limit,
   offset,
