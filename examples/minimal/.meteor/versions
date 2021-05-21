@@ -72,14 +72,14 @@ unchained:core-messaging@0.61.1
 unchained:core-orders@0.61.0
 unchained:core-payment@0.61.2
 unchained:core-pricing@0.61.3
-unchained:core-products@0.61.4
+unchained:core-products@0.61.5
 unchained:core-quotations@0.61.0
 unchained:core-settings@0.61.0
 unchained:core-subscriptions@0.61.0
 unchained:core-users@0.61.4
 unchained:core-warehousing@0.61.0
 unchained:core-worker@0.61.4
-unchained:platform@0.61.7
+unchained:platform@0.61.9
 unchained:roles@0.61.0
 unchained:utils@0.61.0
 underscore@1.0.10

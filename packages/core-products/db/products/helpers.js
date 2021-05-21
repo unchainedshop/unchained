@@ -62,6 +62,10 @@ Products.createProduct = (
   { locale, title, type, sequence, authorId, ...productData },
   { autopublish = false } = {}
 ) => {
+  if (productData._id) {
+    // Remove deleted product by _id before creating a new one.
+    Products.permanentlyRemoveDeletedProduct({ productId: productData._id });
+  }
   const productId = Products.insert({
     created: new Date(),
     type: ProductTypes[type],
@@ -163,6 +167,10 @@ Products.removeBundleItem = ({ productId, index }) => {
       },
     }
   );
+};
+
+Products.permanentlyRemoveDeletedProduct = ({ productId }) => {
+  Products.remove({ status: ProductStatus.DELETED, _id: productId });
 };
 
 Products.removeProduct = ({ productId }) => {

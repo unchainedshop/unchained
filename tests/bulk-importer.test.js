@@ -17,7 +17,7 @@ describe('Bulk Importer', () => {
   });
 
   describe('Import Products', () => {
-    it('adds 1 Product CREATE event and 1 UPDATE event', async () => {
+    it('adds 1 Product CREATE event and 1 UPDATE event, followed by DELETE & CREATE again', async () => {
       const { data: { addWork } = {} } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation addWork($input: JSON) {
@@ -181,6 +181,51 @@ describe('Bulk Importer', () => {
                   ],
                 },
               },
+              {
+                entity: 'PRODUCT',
+                operation: 'REMOVE',
+                payload: {
+                  _id: 'A',
+                },
+              },
+              {
+                entity: 'PRODUCT',
+                operation: 'CREATE',
+                payload: {
+                  _id: 'A',
+                  specification: {
+                    tags: ['awesome2'],
+                    type: 'SimpleProduct',
+                    published: '2020-01-01T00:00Z',
+                    commerce: {
+                      salesUnit: 'ST',
+                      salesQuantityPerUnit: '1',
+                      defaultOrderQuantity: '6',
+                      pricing: [
+                        {
+                          isTaxable: true,
+                          isNetPrice: true,
+                          countryCode: 'CH',
+                          currencyCode: 'CHF',
+                          amount: 10000,
+                        },
+                      ],
+                    },
+                    meta: {},
+                    content: {
+                      de: {
+                        vendor: 'Herstellername',
+                        brand: 'Marke',
+                        title: 'Produktname',
+                        slug: 'produktname',
+                        subtitle: 'Short description',
+                        description: 'Long description',
+                        labels: ['Neu'],
+                      },
+                    },
+                  },
+                },
+              },
             ],
           },
         },
@@ -190,8 +235,8 @@ describe('Bulk Importer', () => {
       const Products = db.collection('products');
 
       const result = await intervalUntilTimeout(async () => {
-        const product = await Products.findOne({ _id: 'A' });
-        return product?.tags.includes('awesome');
+        const product = await Products.findOne({ tags: 'awesome2' });
+        return !!product;
       }, 3000);
 
       expect(result).toBe(true);
