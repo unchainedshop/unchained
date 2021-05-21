@@ -1,11 +1,16 @@
 import { ProductMedia, Media } from 'meteor/unchained:core-products';
 
 const upsertAsset = async (asset) => {
+  const { _id, ...assetData } = asset;
+
   try {
-    const assetObject = await Media.insertWithRemoteURL(asset);
+    const assetObject = await Media.insertWithRemoteURL({
+      fileId: _id,
+      ...assetData,
+    });
+    if (!assetObject) throw new Error('Media not created');
     return assetObject;
   } catch (e) {
-    const { _id, ...assetData } = asset;
     Media.update({ _id }, { $set: assetData });
     return Media.findOne({ _id });
   }
