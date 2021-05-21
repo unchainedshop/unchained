@@ -64,7 +64,7 @@ import subscriptionsCount from './subscriptionsCount';
 import warehousingProvidersCount from './warehousingProvidersCount';
 import paymentProvidersCount from './paymentProvidersCount';
 import productReviewsCount from './productReviewsCount';
-import eventsCount from './eventsCount';
+import eventsCount from './eventsCounts';
 
 export default {
   me,
