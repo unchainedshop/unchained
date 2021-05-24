@@ -10,9 +10,9 @@ import { emit } from 'meteor/unchained:core-events';
 
 import { Locale } from 'locale';
 import { log } from 'meteor/unchained:core-logger';
-import { makeBreadcrumbsBuilder } from '../breadcrumbs';
+import { makeBreadcrumbsBuilder } from '../../breadcrumbs';
 import * as Collections from './collections';
-import settings from '../settings';
+import settings from '../../settings';
 
 const eqSet = (as, bs) => {
   return [...as].join(',') === [...bs].join(',');

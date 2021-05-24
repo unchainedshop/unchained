@@ -1,9 +1,10 @@
 import { registerEvents } from 'meteor/unchained:core-events';
-import runMigrations from './db/schema';
+import runMigrations from './db/migrations';
+
 import settings from './settings';
 
-export * from './db/helpers';
-export * from './db/collections';
+export * from './db/assortment-media';
+export * from './db/assortments';
 
 const ASSORTMENT_EVENTS = [
   'ASSORTMENT_CREATE',
@@ -20,6 +21,9 @@ const ASSORTMENT_EVENTS = [
   'ASSORTMENT_SET_BASE',
   'ASSORTMENT_UPDATE',
   'ASSORTMENT_UPDATE_TEXTS',
+  'ASSORTMENT_REORDER_MEDIA',
+  'ASSORTMENT_UPDATE_MEDIA_TEXT',
+  'ASSORTMENT_REMOVE_MEDIA',
 ];
 export default (options) => {
   settings.load(options);
