@@ -33,7 +33,7 @@ export default connectApollo(
                   <FormEditAssortmentTexts assortmentId={router.query._id} />
                 </div>
               )}
-              {router.query.tab === 'AssortmentVisualization' && (
+              {router.query.tab === 'AssortmentMedias' && (
                 <div>
                   <Header as="h3">Catalog Visualization</Header>
                   <AssortmentMediaList assortmentId={router.query._id} />
