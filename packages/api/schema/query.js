@@ -264,6 +264,13 @@ export default [
       translatedAssortmentTexts(assortmentId: ID!): [AssortmentTexts!]!
 
       """
+      Localization: Media title/subtitle of a media that is attached to a assortment
+      """
+      translatedAssortmentMediaTexts(
+        assortmentMediaId: ID!
+      ): [AssortmentMediaTexts!]!
+
+      """
       Localization: Filters and Filter Options
       """
       translatedFilterTexts(

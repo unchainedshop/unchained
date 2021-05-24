@@ -201,6 +201,17 @@ export default [
       sortKey: Int!
     }
 
+    input UpdateAssortmentMediaTextInput {
+      locale: String!
+      title: String
+      subtitle: String
+    }
+
+    input ReorderAssortmentMediaInput {
+      assortmentMediaId: ID!
+      sortKey: Int!
+    }
+
     input CreateFilterInput {
       key: String!
       type: FilterType!
