@@ -287,13 +287,13 @@ export default async function seedAssortments(db) {
   await db.collection('assortment_links').insertMany(AssortmentLinks);
   await db.collection('assortment_products').findOrInsertOne(AssortmentProduct);
   await db.collection('assortment_filters').insertMany(AssortmentFilters);
-  await db.collection('product_media').findOrInsertOne(PngAssortmentMedia);
+  await db.collection('assortment_media').findOrInsertOne(PngAssortmentMedia);
   await db
-    .collection('product_media_texts')
+    .collection('assortment_media_texts')
     .findOrInsertOne(GermanPngAssortmentMediaText);
   await db
-    .collection('product_media_texts')
+    .collection('assortment_media_texts')
     .findOrInsertOne(FrenchPngAssortmentMediaText);
 
-  await db.collection('media').findOrInsertOne(PngMedia);
+  await db.collection('assortment_document').findOrInsertOne(PngMedia);
 }
