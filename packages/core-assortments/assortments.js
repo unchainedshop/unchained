@@ -24,6 +24,7 @@ const ASSORTMENT_EVENTS = [
   'ASSORTMENT_REORDER_MEDIA',
   'ASSORTMENT_UPDATE_MEDIA_TEXT',
   'ASSORTMENT_REMOVE_MEDIA',
+  'ASSORTMENT_ADD_MEDIA',
 ];
 export default (options) => {
   settings.load(options);

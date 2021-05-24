@@ -34,6 +34,7 @@ import order from './order';
 import assortment from './assortment';
 import assortments from './assortments';
 import assortmentsCount from './assortmentsCount';
+import translatedAssortmentMediaTexts from './translatedAssortmentMediaTexts';
 import events from './events';
 import event from './event';
 import filter from './filter';
@@ -120,6 +121,9 @@ export default {
   order: acl(actions.viewOrder)(order),
   assortmentsCount: acl(actions.viewAssortments)(assortmentsCount),
   assortments: acl(actions.viewAssortments)(assortments),
+  translatedAssortmentMediaTexts: acl(actions.viewAssortment)(
+    translatedAssortmentMediaTexts
+  ),
   assortment: acl(actions.viewAssortment)(assortment),
   filtersCount: acl(actions.viewFilters)(filtersCount),
   filters: acl(actions.viewFilters)(filters),

@@ -54,8 +54,10 @@ import SubscriptionPlan from './subscription-plan';
 import Subscription from './subscription';
 import Bookmark from './bookmark';
 import ProductCatalogPrice from './product-catalog-price';
+import AssortmentMedia from './assortment-media';
 
 export default {
+  AssortmentMedia,
   ProductCatalogPrice,
   User,
   LoginMethodResponse,

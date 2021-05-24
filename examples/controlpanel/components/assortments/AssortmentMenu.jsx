@@ -32,6 +32,12 @@ export default compose(
         isActive: router.query && router.query.tab === 'AssortmentLinks',
       },
       {
+        name: 'AssortmentVisualization',
+        description: 'Medias',
+        isActive:
+          router.query && router.query.tab === 'AssortmentVisualization',
+      },
+      {
         name: 'AssortmentProducts',
         description: 'Products',
         isActive: router.query && router.query.tab === 'AssortmentProducts',
