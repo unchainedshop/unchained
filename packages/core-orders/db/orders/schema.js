@@ -72,4 +72,13 @@ export default () => {
   Orders.rawCollection().createIndex({ userId: 1 });
   Orders.rawCollection().createIndex({ status: 1 });
   Orders.rawCollection().createIndex({ orderNumber: 1 });
+  Orders.rawCollection().createIndex(
+    { _id: 'text', userId: 'text', orderNumber: 'text', status: 'text' },
+    {
+      _id: 8,
+      userId: 3,
+      orderNumber: 6,
+      status: 1,
+    }
+  );
 };

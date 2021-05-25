@@ -200,7 +200,7 @@ export default [
       """
       Returns total number of orders
       """
-      ordersCount(includeCarts: Boolean = false): Int!
+      ordersCount(includeCarts: Boolean = false, queryString: String): Int!
 
       """
       Get all orders
@@ -209,6 +209,7 @@ export default [
         limit: Int = 10
         offset: Int = 0
         includeCarts: Boolean = false
+        queryString: String
       ): [Order!]!
 
       """

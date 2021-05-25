@@ -26,10 +26,12 @@ import { OrderDocuments } from '../order-documents/collections';
 import { OrderPositions } from '../order-positions/collections';
 import settings from '../../settings';
 
-const buildFindSelector = ({ includeCarts }) => {
+const buildFindSelector = ({ includeCarts, queryString }) => {
   const selector = {};
   if (!includeCarts) selector.status = { $ne: OrderStatus.OPEN };
-
+  if (queryString) {
+    selector.$text = { $search: queryString };
+  }
   return selector;
 };
 
@@ -164,12 +166,13 @@ Orders.removeOrder = ({ orderId }) => {
   return Orders.remove({ _id: orderId });
 };
 
-Orders.findOrders = ({
+Orders.findOrders = async ({
   limit,
   offset,
   sort = {
     created: -1,
   },
+  queryString,
   ...query
 }) => {
   const options = {
@@ -177,7 +180,19 @@ Orders.findOrders = ({
     limit,
     sort,
   };
-  return Orders.find(buildFindSelector(query), options).fetch();
+  const selector = buildFindSelector(query);
+  if (queryString) {
+    const orderArr = await Users.rawCollection()
+      .find(selector, {
+        ...options,
+        projection: { score: { $meta: 'textScore' } },
+        sort: { score: { $meta: 'textScore' } },
+      })
+      .toArray();
+    return (orderArr || []).map((item) => new Orders._transform(item)); // eslint-disable-line
+  }
+
+  return Orders.find(selector, options).fetch();
 };
 
 Orders.count = async (query) => {
