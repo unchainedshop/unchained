@@ -20,6 +20,35 @@ export const SEARCH_USERS = gql`
   }
 `;
 
+export const SEARCH_ORDERS = gql`
+  query orders(
+    $offset: Int
+    $limit: Int
+    $isShowCarts: Boolean
+    $queryString: String
+  ) {
+    orders(
+      offset: $offset
+      limit: $limit
+      includeCarts: $isShowCarts
+      queryString: $queryString
+    ) {
+      _id
+      ordered
+      orderNumber
+      status
+      user {
+        _id
+        name
+      }
+      total {
+        amount
+        currency
+      }
+    }
+  }
+`;
+
 export const SEARCH_ASSORTMENTS = gql`
   query searchAssortments($queryString: String, $offset: Int, $limit: Int) {
     searchAssortments(queryString: $queryString, includeInactive: true) {

@@ -180,9 +180,9 @@ Orders.findOrders = async ({
     limit,
     sort,
   };
-  const selector = buildFindSelector(query);
+  const selector = buildFindSelector({ queryString, ...query });
   if (queryString) {
-    const orderArr = await Users.rawCollection()
+    const orderArr = await Orders.rawCollection()
       .find(selector, {
         ...options,
         projection: { score: { $meta: 'textScore' } },

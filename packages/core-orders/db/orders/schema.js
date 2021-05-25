@@ -47,7 +47,7 @@ Orders.attachSchema(
 );
 
 Migrations.add({
-  version: 20200915.2,
+  version: 20210525.1,
   name: 'drop Orders related indexes',
   up() {
     Orders.rawCollection()
@@ -75,10 +75,13 @@ export default () => {
   Orders.rawCollection().createIndex(
     { _id: 'text', userId: 'text', orderNumber: 'text', status: 'text' },
     {
-      _id: 8,
-      userId: 3,
-      orderNumber: 6,
-      status: 1,
+      weights: {
+        _id: 8,
+        userId: 3,
+        orderNumber: 6,
+        status: 1,
+      },
+      name: 'order_fulltext_search',
     }
   );
 };

@@ -4,12 +4,17 @@ import gql from 'graphql-tag';
 import React from 'react';
 import { Table } from 'semantic-ui-react';
 import Link from 'next/link';
+import { withRouter } from 'next/router';
+
 import InfiniteDataTable, { withDataTableLoader } from '../InfiniteDataTable';
 import FormattedMoney from '../FormattedMoney';
+import SearchDropdown from '../SearchDropdown';
+import { SEARCH_ORDERS } from '../searchQueries';
 
 const OrderList = ({
   isShowCarts,
   toggleShowCarts,
+  router,
   loading,
   updateHasMore,
   setShowCarts,
@@ -59,6 +64,18 @@ const OrderList = ({
   >
     <Table.Row>
       <Table.HeaderCell colSpan={5}>
+        <SearchDropdown
+          placeholder="Select order"
+          isShowCart={setShowCarts}
+          onChange={(e, result) => {
+            router.push({
+              pathname: '/orders/view',
+              query: { _id: result.value },
+            });
+          }}
+          searchQuery={SEARCH_ORDERS}
+          queryType="orders"
+        />{' '}
         Show carts? &nbsp;
         <input
           type="checkbox"
@@ -80,6 +97,7 @@ const OrderList = ({
 export default compose(
   defaultProps({ limit: 20, offset: 0 }),
   withState('isShowCarts', 'setShowCarts', false),
+  withRouter,
   withDataTableLoader({
     queryName: 'orders',
     query: gql`

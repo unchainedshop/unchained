@@ -29,6 +29,7 @@ const SearchDropdown = ({
   searchQuery,
   limit,
   isShowGuests,
+  isShowCart,
 }) => {
   const [queryString, setQueryString] = useState('');
 
@@ -37,6 +38,7 @@ const SearchDropdown = ({
       queryString,
       limit: limit || 10,
       ...(isShowGuests && { includeGuests: isShowGuests }),
+      ...(isShowCart && { isShowCart }),
     },
     skip: !queryString,
   });
@@ -88,6 +90,7 @@ const SearchDropdown = ({
     assortments: data?.searchAssortments?.assortments,
     products: data?.searchProducts?.products,
     users: data?.users,
+    orders: data?.orders,
   };
   let items = queries[queryType] || [];
 
@@ -100,12 +103,16 @@ const SearchDropdown = ({
       return {
         key: item._id,
         value: item._id,
-        text: item?.texts?.title || item?.name || item?.type,
+        text:
+          item?.texts?.title || item?.name || item?.type || item?.orderNumber,
         content: (
           <Header>
             {!(queryType === 'users') && selectImage(item)}
             <Header.Content>
-              {item?.texts?.title || item?.name || item?._id?.toLowerCase()}
+              {item?.texts?.title ||
+                item?.name ||
+                item?._id?.toLowerCase() ||
+                item?.orderNumber}
               {!(queryType === 'users') && (
                 <>
                   <Header.Subheader>{item.texts.description}</Header.Subheader>
