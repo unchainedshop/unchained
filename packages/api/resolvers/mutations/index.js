@@ -8,6 +8,7 @@ import createUser from './createUser';
 import verifyEmail from './verifyEmail';
 import sendVerificationEmail from './sendVerificationEmail';
 import sendEnrollmentEmail from './sendEnrollmentEmail';
+import addAssortmentMedia from './addAssortmentMedia';
 import forgotPassword from './forgotPassword';
 import resetPassword from './resetPassword';
 import updateEmail from './updateEmail';
@@ -131,6 +132,9 @@ import updateOrderPaymentInvoice from './updateOrderPaymentInvoice';
 import signPaymentProviderForCredentialRegistration from './signPaymentProviderForCredentialRegistration';
 import signPaymentProviderForCheckout from './signPaymentProviderForCheckout';
 import pageView from './pageView';
+import reorderAssortmentMedia from './reorderAssortmentMedia';
+import removeAssortmentMedia from './removeAssortmentMedia';
+import updateAssortmentMediaTexts from './updateAssortmentMediaTexts';
 
 export default {
   logout,
@@ -285,9 +289,17 @@ export default {
   createFilterOption: acl(actions.manageFilters)(createFilterOption),
 
   createAssortment: acl(actions.manageAssortments)(createAssortment),
+  addAssortmentMedia: acl(actions.manageAssortments)(addAssortmentMedia),
   updateAssortment: acl(actions.manageAssortments)(updateAssortment),
   setBaseAssortment: acl(actions.manageAssortments)(setBaseAssortment),
   removeAssortment: acl(actions.manageAssortments)(removeAssortment),
+  reorderAssortmentMedia: acl(actions.manageAssortments)(
+    reorderAssortmentMedia
+  ),
+  removeAssortmentMedia: acl(actions.manageAssortments)(removeAssortmentMedia),
+  updateAssortmentMediaTexts: acl(actions.manageAssortments)(
+    updateAssortmentMediaTexts
+  ),
   updateAssortmentTexts: acl(actions.manageAssortments)(updateAssortmentTexts),
   addAssortmentProduct: acl(actions.manageAssortments)(addAssortmentProduct),
   removeAssortmentProduct: acl(actions.manageAssortments)(

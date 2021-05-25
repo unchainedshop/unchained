@@ -35,4 +35,7 @@ export default {
   async searchProducts(obj, query, context) {
     return obj.searchProducts({ query, context });
   },
+  async media(obj, props) {
+    return obj.media(props);
+  },
 };

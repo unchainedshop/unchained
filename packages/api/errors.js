@@ -64,6 +64,10 @@ export const AssortmentProductNotFoundError = createError(
   'Assortment product not found'
 );
 
+export const AssortmentMediaNotFoundError = createError(
+  'AssortmentMediaNotFoundError',
+  'Assortment media not found'
+);
 export const FilterNotFoundError = createError(
   'FilterNotFoundError',
   'Filter not found'

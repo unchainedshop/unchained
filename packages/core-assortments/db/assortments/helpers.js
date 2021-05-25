@@ -10,9 +10,10 @@ import { emit } from 'meteor/unchained:core-events';
 
 import { Locale } from 'locale';
 import { log } from 'meteor/unchained:core-logger';
-import { makeBreadcrumbsBuilder } from '../breadcrumbs';
+import { makeBreadcrumbsBuilder } from '../../breadcrumbs';
 import * as Collections from './collections';
-import settings from '../settings';
+import settings from '../../settings';
+import { AssortmentDocuments, AssortmentMedia } from '../assortment-media';
 
 const eqSet = (as, bs) => {
   return [...as].join(',') === [...bs].join(',');
@@ -736,6 +737,55 @@ Collections.Assortments.helpers({
             locale,
           }
     );
+  },
+  addMediaLink(mediaData) {
+    return AssortmentMedia.createMedia({
+      assortmentId: this._id,
+      ...mediaData,
+    });
+  },
+  addMedia({
+    rawFile,
+    href,
+    name,
+    authorId,
+    meta,
+    tags = [],
+    sortKey,
+    ...options
+  }) {
+    const fileLoader = rawFile
+      ? AssortmentDocuments.insertWithRemoteFile({
+          file: rawFile,
+          userId: authorId,
+        })
+      : AssortmentDocuments.insertWithRemoteURL({
+          url: href,
+          fileName: name,
+          userId: authorId,
+          ...options,
+        });
+    const file = Promise.await(fileLoader);
+    const assortmentMedia = this.addMediaLink({
+      mediaId: file._id,
+      tags,
+      meta,
+      authorId,
+      sortKey,
+    });
+    emit('ASSORTMENT_ADD_MEDIA', { assortmentMedia });
+    return assortmentMedia;
+  },
+  media({ limit, offset, tags }) {
+    const selector = { assortmentId: this._id };
+    if (tags && tags.length > 0) {
+      selector.tags = { $all: tags };
+    }
+    return AssortmentMedia.find(selector, {
+      skip: offset,
+      limit,
+      sort: { sortKey: 1 },
+    }).fetch();
   },
   getLocalizedTexts(locale) {
     const parsedLocale = new Locale(locale);

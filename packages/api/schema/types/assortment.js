@@ -1,5 +1,20 @@
 export default [
   /* GraphQL */ `
+    type AssortmentMediaTexts {
+      _id: ID!
+      locale: String
+      title: String
+      subtitle: String
+    }
+
+    type AssortmentMedia {
+      _id: ID!
+      tags: [String!]
+      file: Media!
+      sortKey: Int!
+      texts(forceLocale: String): AssortmentMediaTexts
+    }
+
     """
     Assortment
     """
@@ -12,6 +27,11 @@ export default [
       isRoot: Boolean
       sequence: Int!
       tags: [String!]
+      media(
+        limit: Int = 10
+        offset: Int = 0
+        tags: [String!]
+      ): [AssortmentMedia!]!
       meta: JSON
         @deprecated(
           reason: "Due to ambiguity this field will be removed on future releases,Please write a custom resolver that reflects your business-logic"

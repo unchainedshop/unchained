@@ -221,6 +221,65 @@ export const AssortmentFilters = [
   },
 ];
 
+export const PngMedia = {
+  _id: 'assortment-png-media',
+  name: 'Screenshot from 2021-04-19 20-09-19.png',
+  extension: 'png',
+  ext: 'png',
+  extensionWithDot: '.png',
+  path: 'assets/app/uploads/assortment_document/ZcBB9ADJMmvJXbZWa.png',
+  meta: {},
+  type: 'image/png',
+  mime: 'image/png',
+  'mime-type': 'image/png',
+  size: 544892,
+  userId: 'admin',
+  versions: {
+    original: {
+      path: 'assets/app/uploads/assortment_document/ZcBB9ADJMmvJXbZWa.png',
+      size: 544892,
+      type: 'image/png',
+      extension: 'png',
+    },
+  },
+  _downloadRoute: '/cdn/storage',
+  _collectionName: 'assortment_document',
+  isVideo: false,
+  isAudio: false,
+  isImage: true,
+  isText: false,
+  isJSON: false,
+  isPDF: false,
+  _storagePath: 'assets/app/uploads/assortment_document',
+};
+
+export const PngAssortmentMedia = {
+  _id: 'assortment-png',
+  mediaId: 'assortment-png-media',
+  tags: [],
+  sortKey: 1,
+  assortmentId: 'simple-assortment',
+  created: new Date('2019-09-10T14:29:01.093+0000'),
+};
+
+export const GermanPngAssortmentMediaText = {
+  _id: 'german-png-assortment',
+  locale: 'de',
+  assortmentMediaId: 'assortment-png',
+  subtitle: 'assortment-media-subtitle-de',
+  title: 'assortment-media-title-de',
+  updated: new Date('2019-09-10T14:42:16.175+0000'),
+};
+
+export const FrenchPngAssortmentMediaText = {
+  _id: 'french-png-assortment',
+  locale: 'fr',
+  assortmentMediaId: 'assortment-png',
+  subtitle: 'assortment-media-subtitle-fr',
+  title: 'assortment-media-title-fr',
+  updated: new Date('2019-09-10T14:42:16.177+0000'),
+};
+
 export default async function seedAssortments(db) {
   await db.collection('assortments').insertMany(SimpleAssortment);
   await db.collection('assortment_texts').findOrInsertOne(GermanAssortmentText);
@@ -228,4 +287,13 @@ export default async function seedAssortments(db) {
   await db.collection('assortment_links').insertMany(AssortmentLinks);
   await db.collection('assortment_products').findOrInsertOne(AssortmentProduct);
   await db.collection('assortment_filters').insertMany(AssortmentFilters);
+  await db.collection('assortment_media').findOrInsertOne(PngAssortmentMedia);
+  await db
+    .collection('assortment_media_texts')
+    .findOrInsertOne(GermanPngAssortmentMediaText);
+  await db
+    .collection('assortment_media_texts')
+    .findOrInsertOne(FrenchPngAssortmentMediaText);
+
+  await db.collection('assortment_document').findOrInsertOne(PngMedia);
 }

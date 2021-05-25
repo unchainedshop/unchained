@@ -699,6 +699,30 @@ export default [
       reorderAssortmentFilters(
         sortKeys: [ReorderAssortmentFilterInput!]!
       ): [AssortmentFilter!]!
+      """
+      Add a new media to a assortment
+      """
+      addAssortmentMedia(assortmentId: ID!, media: Upload!): AssortmentMedia!
+
+      """
+      Remove a media asset from a assortment
+      """
+      removeAssortmentMedia(assortmentMediaId: ID!): AssortmentMedia!
+
+      """
+      Reorder a media asset (first is primary)
+      """
+      reorderAssortmentMedia(
+        sortKeys: [ReorderAssortmentMediaInput!]!
+      ): [AssortmentMedia!]!
+
+      """
+      Modify localized texts part of a assortment media asset
+      """
+      updateAssortmentMediaTexts(
+        assortmentMediaId: ID!
+        texts: [UpdateAssortmentMediaTextInput!]!
+      ): [AssortmentMediaTexts!]!
 
       """
       Creates new Filter along with the user who created it.
