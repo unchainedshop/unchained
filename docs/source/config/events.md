@@ -36,6 +36,9 @@ Bellow are events tracked under each module under the box:
 | ASSORTMENT_SET_BASE         | Assortment is set as base assortment     | `{ assortmentId: string }`                                  |
 | ASSORTMENT_UPDATE           | Assortment is updated                    | `{ assortmentId: string }`                                  |
 | ASSORTMENT_UPDATE_TEXTS     | Assortment text is updated               | `{ assortmentId: string, assortmentTexts: [] }`             |
+| ASSORTMENT_ADD_MEDIA               | Media is added for a product                                 | `{ assortmentMedia: {} }`|
+| ASSORTMENT_REMOVE_MEDIA            | Media is deleted from a product                              | `{ assortmentMediaId: string }`                                              |
+| ASSORTMENT_UPDATE_MEDIA_TEXT       | Product media text is updated                                | `{assortmentMedia: {}, mediaTexts: {} }`                                     |
 
 #### `core-products`
 

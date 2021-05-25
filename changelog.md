@@ -1,3 +1,24 @@
+# Vnext
+- [assortment-media] it's is now possible to assign media files for assortments.
+- [controlpanel] Assortment media upload, remove & reorder functionalities are available.
+- [api] Added the following query and mutations that can be used to manage assortment medias
+
+```
+Query.translatedAssortmentMediaTexts
+Mutation.addAssortmentMedia
+Mutation.removeAssortmentMedia
+Mutation.reorderAssortmentMedia
+Mutation.updateAssortmentMediaText
+```
+- [schema] Added the following types to be used with assortment medias
+
+```
+AssortmentMediaTexts
+AssortmentMedia
+UpdateAssortmentMediaTextInput
+ReorderAssortmentMediaInput
+
+```
 # v1.0.0-beta1
 
 ## Breaking changes
