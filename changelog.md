@@ -1,4 +1,8 @@
-# Vnext
+# vNEXT
+
+
+# v1.0.0-beta2
+
 - [assortment-media] it's is now possible to assign media files for assortments.
 - [controlpanel] Assortment media upload, remove & reorder functionalities are available.
 - [api] Added the following query and mutations that can be used to manage assortment medias
