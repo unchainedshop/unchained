@@ -4,7 +4,7 @@ import {
   AssortmentMediaTexts,
 } from './assortment-media/collections';
 
-import runAssortmentMediaMigrations from './assortment-media/schema';
+import createAssortmentMediaIndexs from './assortment-media/schema';
 import runAssortmentsMigrations from './assortments/schema';
 
 Migrations.add({
@@ -65,6 +65,6 @@ Migrations.add({
 });
 
 export default () => {
-  runAssortmentMediaMigrations();
+  createAssortmentMediaIndexs();
   runAssortmentsMigrations();
 };

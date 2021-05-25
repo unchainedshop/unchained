@@ -1,6 +1,5 @@
 import SimpleSchema from 'simpl-schema';
 import { Schemas } from 'meteor/unchained:utils';
-import { Migrations } from 'meteor/percolate:migrations';
 
 import { AssortmentMedia, AssortmentMediaTexts } from './collections';
 
@@ -36,20 +35,6 @@ AssortmentMediaTexts.attachSchema(
     { requiredByDefault: false }
   )
 );
-
-Migrations.add({
-  version: 20210524.2,
-  name: 'drop AssortmentMedia & AssortmentMediaTexts related indexes',
-  up() {
-    AssortmentMedia.rawCollection()
-      .dropIndexes()
-      .catch(() => {});
-    AssortmentMediaTexts.rawCollection()
-      .dropIndexes()
-      .catch(() => {});
-  },
-  down() {},
-});
 
 export default () => {
   AssortmentMedia.rawCollection().createIndex({ mediaId: 1 });
