@@ -1,7 +1,7 @@
 import { log } from 'meteor/unchained:core-logger';
 import { Orders } from 'meteor/unchained:core-orders';
 
-export default function orders(
+export default async function orders(
   root,
   { limit, offset, includeCarts, queryString },
   { userId }
