@@ -24,13 +24,13 @@ export const SEARCH_ORDERS = gql`
   query orders(
     $offset: Int
     $limit: Int
-    $isShowCarts: Boolean
+    $includeCarts: Boolean
     $queryString: String
   ) {
     orders(
       offset: $offset
       limit: $limit
-      includeCarts: $isShowCarts
+      includeCarts: $includeCarts
       queryString: $queryString
     ) {
       _id

@@ -66,7 +66,7 @@ const OrderList = ({
       <Table.HeaderCell colSpan={5}>
         <SearchDropdown
           placeholder="Select order"
-          isShowCart={setShowCarts}
+          isShowCart={isShowCarts}
           onChange={(e, result) => {
             router.push({
               pathname: '/orders/view',

@@ -38,7 +38,7 @@ const SearchDropdown = ({
       queryString,
       limit: limit || 10,
       ...(isShowGuests && { includeGuests: isShowGuests }),
-      ...(isShowCart && { isShowCart }),
+      ...(isShowCart && { includeCarts: isShowCart }),
     },
     skip: !queryString,
   });
@@ -115,9 +115,11 @@ const SearchDropdown = ({
                 item?.orderNumber}
               {!(queryType === 'users') && (
                 <>
-                  <Header.Subheader>{item.texts.description}</Header.Subheader>
-                  <Label color={resolveStatus(item).color} horizontal>
-                    {resolveStatus(item).status}
+                  <Header.Subheader>
+                    {item?.texts?.description}
+                  </Header.Subheader>
+                  <Label color={resolveStatus(item)?.color} horizontal>
+                    {resolveStatus(item)?.status}
                   </Label>
                 </>
               )}
