@@ -2,7 +2,7 @@ import { compose, withHandlers, withState, defaultProps } from 'recompose';
 import { format } from 'date-fns';
 import gql from 'graphql-tag';
 import React from 'react';
-import { Table } from 'semantic-ui-react';
+import { Label, Table } from 'semantic-ui-react';
 import Link from 'next/link';
 import { withRouter } from 'next/router';
 
@@ -10,6 +10,7 @@ import InfiniteDataTable, { withDataTableLoader } from '../InfiniteDataTable';
 import FormattedMoney from '../FormattedMoney';
 import SearchDropdown from '../SearchDropdown';
 import { SEARCH_ORDERS } from '../searchQueries';
+import resolveStatus from '../resolveStatus';
 
 const OrderList = ({
   isShowCarts,
@@ -58,7 +59,11 @@ const OrderList = ({
         <Table.Cell>
           <FormattedMoney money={order.total} />
         </Table.Cell>
-        <Table.Cell>{order.status}</Table.Cell>
+        <Table.Cell>
+          <Label color={resolveStatus(order)?.color} horizontal>
+            {resolveStatus(order)?.status}
+          </Label>
+        </Table.Cell>
       </Table.Row>
     )}
   >

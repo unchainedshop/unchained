@@ -10,6 +10,8 @@ import { debounce, has, isEmpty } from 'lodash';
 import { useQuery } from '@apollo/client';
 import classnames from 'classnames';
 
+import resolveStatus from './resolveStatus';
+
 const SearchDropdown = ({
   onChange,
   value,
@@ -71,19 +73,6 @@ const SearchDropdown = ({
     ) : (
       imageComponent
     );
-  };
-
-  const resolveStatus = ({ isActive, status }) => {
-    if (status) {
-      return {
-        status,
-        color: status === 'DRAFT' ? 'red' : 'green',
-      };
-    }
-    return {
-      status: isActive ? 'ACTIVE' : 'DRAFT',
-      color: isActive ? 'green' : 'red',
-    };
   };
 
   const queries = {
