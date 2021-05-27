@@ -163,6 +163,23 @@ describe('Bulk Importer', () => {
                   },
                   media: [
                     {
+                      _id: 'product-a-format',
+                      asset: {
+                        _id: 'format-v1',
+                        fileName: 'format-jpeg.jpg',
+                        url:
+                          'https://www.story.one/media/images/poop-4108423_1920.width-1600.format-jpeg.jpg',
+                      },
+                      tags: ['big'],
+                      meta: {},
+                      content: {
+                        de: {
+                          title: 'Produktname',
+                          subtitle: 'Short description',
+                        },
+                      },
+                    },
+                    {
                       _id: 'product-a-meteor',
                       asset: {
                         _id: 'meteor',
