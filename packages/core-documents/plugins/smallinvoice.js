@@ -5,7 +5,7 @@ import {
   DocumentAdapter,
 } from 'meteor/unchained:core-documents';
 
-const { SMALLINVOICE_TOKEN, LANG } = process.env;
+const { SMALLINVOICE_TOKEN, UNCHAINED_LANG } = process.env;
 
 class SmallinvoiceAPI {
   static Status = {
@@ -287,7 +287,7 @@ class Smallinvoice extends DocumentAdapter {
     super(data);
     const { user } = this.context;
     const language = user && user.language();
-    this.language = language.isoCode || LANG;
+    this.language = language.isoCode || UNCHAINED_LANG;
     this.api = new SmallinvoiceAPI({
       token: SMALLINVOICE_TOKEN,
       language: this.language,
