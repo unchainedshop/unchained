@@ -1,6 +1,8 @@
 require('dotenv-extended').load({
+  path: '../../.env',
+  schema: '../../.env.schema',
   silent: process.env.SUPPRESS_ENV_ERRORS,
-  errorOnMissing: !process.env.SUPPRESS_ENV_ERRORS,
+  errorOnMissing: false,
   errorOnRegex: !process.env.SUPPRESS_ENV_ERRORS,
   errorOnExtra: !process.env.SUPPRESS_ENV_ERRORS,
   includeProcessEnv: true,
