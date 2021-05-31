@@ -5,13 +5,22 @@ import { UserNotFoundError } from '../../errors';
 export default function heartbeat(
   root,
   params,
-  { userId, remoteAddress, localeContext, countryContext }
+  {
+    userId,
+    remoteAddress,
+    remotePort,
+    userAgent,
+    localeContext,
+    countryContext,
+  }
 ) {
   log(`mutation updateHeartbeat ${remoteAddress}`, { userId });
   if (!Users.userExists({ userId })) throw new UserNotFoundError({ userId });
   Users.updateHeartbeat({
     userId,
     remoteAddress,
+    remotePort,
+    userAgent,
     locale: localeContext.normalized,
     countryContext,
   });

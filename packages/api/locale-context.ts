@@ -13,6 +13,8 @@ import LRU from 'lru-cache';
 
 export interface UnchainedServerLocaleContext {
   remoteAddress?: string;
+  remotePort?: string;
+  userAgent?: string;
   localeContext: any;
   countryContext: any;
 }
@@ -26,13 +28,15 @@ const localeContextCache = new LRU({
   maxAge,
 });
 
-const getLocaleContext = (req): UnchainedServerLocaleContext => {
+const getLocaleContext = (req: any): UnchainedServerLocaleContext => {
   const cacheKey = `${req.headers['accept-language']}:${req.headers['x-shop-country']}`;
   const cachedContext = localeContextCache.get(cacheKey);
 
-  const remoteAddress = resolveUserRemoteAddress(req);
+  const userAgent = req.headers['user-agent'];
+  const { remoteAddress, remotePort } = resolveUserRemoteAddress(req);
 
-  if (cachedContext) return { remoteAddress, ...cachedContext };
+  if (cachedContext)
+    return { remoteAddress, remotePort, userAgent, ...cachedContext };
 
   // return the parsed locale by bcp47 and
   // return the best resolved normalized locale by locale according to system-wide configuration
@@ -76,7 +80,7 @@ const getLocaleContext = (req): UnchainedServerLocaleContext => {
   };
   localeContextCache.set(cacheKey, newContext);
 
-  return { remoteAddress, ...newContext };
+  return { remoteAddress, remotePort, userAgent, ...newContext };
 };
 
 export default getLocaleContext;
