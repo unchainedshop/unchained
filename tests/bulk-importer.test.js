@@ -166,8 +166,7 @@ describe('Bulk Importer', () => {
                       asset: {
                         _id: 'format-v1',
                         fileName: 'format-jpeg.jpg',
-                        url:
-                          'https://www.story.one/media/images/poop-4108423_1920.width-1600.format-jpeg.jpg',
+                        url: 'https://www.story.one/media/images/poop-4108423_1920.width-1600.format-jpeg.jpg',
                       },
                       tags: ['big'],
                       meta: {},
