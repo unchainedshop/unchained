@@ -47,6 +47,8 @@ export default ({ mergeUserCartsOnLogin = true } = {}) => {
       userIdBeforeLogin,
       countryContext,
       remoteAddress,
+      remotePort,
+      userAgent,
       normalizedLocale,
       services,
     } = connection;
@@ -54,6 +56,8 @@ export default ({ mergeUserCartsOnLogin = true } = {}) => {
     Users.updateHeartbeat({
       userId: user._id,
       remoteAddress,
+      remotePort,
+      userAgent,
       locale: normalizedLocale,
       countryContext,
     });

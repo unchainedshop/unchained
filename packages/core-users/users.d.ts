@@ -15,6 +15,8 @@ declare module 'meteor/unchained:core-users' {
       locale?: string;
       countryContext?: string;
       remoteAddress?: string;
+      remotePort?: string;
+      userAgent?: string;
     };
     profile?: {
       displayName?: string;

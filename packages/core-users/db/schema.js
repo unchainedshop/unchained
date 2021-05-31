@@ -28,6 +28,8 @@ export const LastLoginSchema = new SimpleSchema(
     locale: String,
     countryContext: String,
     remoteAddress: String,
+    remotePort: String,
+    userAgent: String,
   },
   { requiredByDefault: false }
 );

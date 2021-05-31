@@ -1,5 +1,6 @@
 # vNEXT
 
+- [api,core] Add support for remotePort and userAgent in context and heartbeat #118
 
 # v1.0.0-beta2
 

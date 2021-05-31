@@ -27,11 +27,17 @@ export const resolveBestCountry = (localeCountry, shopCountry, countries) => {
 };
 
 export const resolveUserRemoteAddress = (req) => {
-  return (
+  const remoteAddress =
     req.headers['x-real-ip'] ||
     req.headers['x-forwarded-for'] ||
     req.connection.remoteAddress ||
     req.socket.remoteAddress ||
-    req.connection.socket.remoteAddress
-  );
+    req.connection.socket.remoteAddress;
+
+  const remotePort =
+    req.connection?.remotePort ||
+    req.socket?.remotePort ||
+    req.connection?.socket?.remotePort;
+
+  return { remoteAddress, remotePort };
 };
