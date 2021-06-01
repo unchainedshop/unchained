@@ -1,4 +1,4 @@
-FROM geoffreybooth/meteor-base:2.0 as bundler
+FROM geoffreybooth/meteor-base:2.2 as bundler
 
 # Install app dependencies
 RUN mkdir -p /source
@@ -35,7 +35,7 @@ COPY --from=bundler /bundle /webapp/
 RUN NODE_ENV=production npm run install --production
 WORKDIR /webapp
 
-HEALTHCHECK --start-period=10s --interval=20s --timeout=1s \
+HEALTHCHECK --start-period=10s --interval=20s --timeout=2s \
   CMD curl -f http://localhost:3000/graphql -H 'content-type: application/json' --data-binary '{"operationName":null,"variables":{},"query":"{\n  shopInfo {\n    _id\n  }\n}\n"}' || exit
 
 ENV PORT 3000
