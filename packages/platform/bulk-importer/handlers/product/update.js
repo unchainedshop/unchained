@@ -10,7 +10,7 @@ export default async function createProduct(payload, { logger, authorId }) {
   if (specification) {
     const productData = transformSpecificationToProductStructure(specification);
     logger.debug('update product object', productData);
-    await Products.updateProduct({
+    Products.updateProduct({
       ...productData,
       productId: _id,
       authorId,

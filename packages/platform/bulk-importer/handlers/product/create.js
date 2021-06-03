@@ -21,7 +21,7 @@ export default async function createProduct(
   const productData = transformSpecificationToProductStructure(specification);
   logger.debug('create product object', productData);
   try {
-    await Products.createProduct({
+    Products.createProduct({
       ...productData,
       _id,
       authorId,
@@ -33,7 +33,7 @@ export default async function createProduct(
       'entity already exists, falling back to update',
       specification
     );
-    await Products.updateProduct({
+    Products.updateProduct({
       ...productData,
       productId: _id,
       authorId,
