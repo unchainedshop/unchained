@@ -58,6 +58,17 @@ Migrations.add({
 });
 
 Migrations.add({
+  version: 20210525.1,
+  name: 'drop Orders related indexes',
+  up() {
+    Orders.rawCollection()
+      .dropIndexes()
+      .catch(() => {});
+  },
+  down() {},
+});
+
+Migrations.add({
   version: 20201002,
   name: 'drop Orders related indexes',
   up() {
@@ -68,8 +79,31 @@ Migrations.add({
   down() {},
 });
 
-export default () => {
+const buildIndexes = async () => {
   Orders.rawCollection().createIndex({ userId: 1 });
   Orders.rawCollection().createIndex({ status: 1 });
   Orders.rawCollection().createIndex({ orderNumber: 1 });
+  Orders.rawCollection().createIndex(
+    { _id: 'text', userId: 'text', orderNumber: 'text', status: 'text' },
+    {
+      weights: {
+        _id: 8,
+        userId: 3,
+        orderNumber: 6,
+        status: 1,
+      },
+      name: 'order_fulltext_search',
+    }
+  );
+};
+
+export default async () => {
+  try {
+    await buildIndexes();
+  } catch {
+    await Orders.rawCollection().dropIndexes();
+    try {
+      await buildIndexes();
+    } catch {} // eslint-disable-line
+  }
 };

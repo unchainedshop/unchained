@@ -1,4 +1,4 @@
-FROM geoffreybooth/meteor-base:2.0
+FROM geoffreybooth/meteor-base:2.2
 
 # Install app dependencies
 RUN mkdir -p /source
