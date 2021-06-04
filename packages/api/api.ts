@@ -31,7 +31,7 @@ export interface UnchainedServerOptions {
   rolesOptions: any;
 }
 
-const UNCHAINED_API_VERSION = '1.0.0-beta2'; // eslint-disable-line
+const UNCHAINED_API_VERSION = '1.0.0-beta3'; // eslint-disable-line
 
 export const createContextResolver =
   (unchained: UnchainedAPI) =>

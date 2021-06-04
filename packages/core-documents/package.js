@@ -1,6 +1,6 @@
 Package.describe({
   name: 'unchained:core-documents',
-  version: '1.0.0-beta2',
+  version: '1.0.0-beta3',
   summary: 'Unchained Engine Core: Documents',
   git: 'https://github.com/unchainedshop/unchained',
   documentation: 'README.md',
@@ -10,8 +10,8 @@ Package.onUse((api) => {
   api.versionsFrom('2.2');
   api.use('ecmascript');
   api.use('http@1.4.3');
-  api.use('unchained:utils@1.0.0-beta2');
-  api.use('unchained:core-logger@1.0.0-beta2');
+  api.use('unchained:utils@1.0.0-beta3');
+  api.use('unchained:core-logger@1.0.0-beta3');
 
   api.mainModule('documents.js', 'server');
 });

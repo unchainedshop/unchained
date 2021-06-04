@@ -1,6 +1,9 @@
 # vNEXT
 
+# v1.0.0-beta3
+
 - [api,core] Add support for remotePort and userAgent in context and heartbeat #118
+- [api,core,controlpanel] Users with admin roles can now search for specific orders by userId,orderId,orderNumber & status through the controlpanel #319
 
 # v1.0.0-beta2
 

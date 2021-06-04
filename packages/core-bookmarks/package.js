@@ -1,6 +1,6 @@
 Package.describe({
   name: 'unchained:core-bookmarks',
-  version: '1.0.0-beta2',
+  version: '1.0.0-beta3',
   summary: 'Unchained Engine Core: Warehousing',
   git: 'https://github.com/unchainedshop/unchained',
   documentation: 'README.md',
@@ -14,9 +14,9 @@ Package.onUse((api) => {
 
   api.use('aldeed:collection2@3.2.1');
 
-  api.use('unchained:utils@1.0.0-beta2');
-  api.use('unchained:core-logger@1.0.0-beta2');
-  api.use('unchained:core-events@1.0.0-beta2');
+  api.use('unchained:utils@1.0.0-beta3');
+  api.use('unchained:core-logger@1.0.0-beta3');
+  api.use('unchained:core-events@1.0.0-beta3');
 
   api.mainModule('bookmarks.ts', 'server');
 });
