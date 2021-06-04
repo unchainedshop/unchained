@@ -209,6 +209,7 @@ export default [
         limit: Int = 10
         offset: Int = 0
         includeCarts: Boolean = false
+        queryString: String
       ): [Order!]!
 
       """
