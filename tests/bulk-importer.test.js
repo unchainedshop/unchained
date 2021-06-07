@@ -418,9 +418,9 @@ describe('Bulk Importer', () => {
                   ],
                   media: [
                     {
-                      _id: 'assortment-a-format',
+                      _id: null,
                       asset: {
-                        _id: 'assortment-asset',
+                        _id: null,
                         fileName: 'format-jpeg.jpg',
                         url: 'https://www.story.one/media/images/poop-4108423_1920.width-1600.format-jpeg.jpg',
                       },
@@ -428,7 +428,7 @@ describe('Bulk Importer', () => {
                       meta: {},
                       content: {
                         de: {
-                          title: 'Produktname',
+                          title: 'assormtneName',
                           subtitle: 'Short description',
                         },
                       },
