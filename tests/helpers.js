@@ -59,7 +59,7 @@ export const setupDatabase = async () => {
 };
 
 export const wipeDatabase = async () => {
-  const connectionUri = await global.__MONGOD__.getConnectionString();
+  const connectionUri = await global.__MONGOD__.getUri();
   const connection = await MongoClient.connect(connectionUri, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
