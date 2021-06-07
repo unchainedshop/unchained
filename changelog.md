@@ -1,6 +1,8 @@
 # vNEXT
 - [api] New mutation `logoutAllSession` added that can be used to remove all tokens of current user
 - [platform] Assortment bulk import updated to handle assortment media.
+- [core] Ambiguity of where to set environment variable is fixed. now you can set environment related with the control panel at the root directory of `controlpanel` and environemt variables related with the engine under root directory of `minimal`.
+
 # v1.0.0-beta3
 
 - [api,core] Add support for remotePort and userAgent in context and heartbeat #118
