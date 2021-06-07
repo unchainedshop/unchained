@@ -1,5 +1,5 @@
 # vNEXT
-
+- [platform] Assortment bulk import updated to handle assortment media.
 # v1.0.0-beta3
 
 - [api,core] Add support for remotePort and userAgent in context and heartbeat #118
