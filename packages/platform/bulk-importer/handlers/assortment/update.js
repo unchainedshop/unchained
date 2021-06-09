@@ -3,9 +3,10 @@ import upsertAssortmentContent from './upsertAssortmentContent';
 import upsertAssortmentProducts from './upsertAssortmentProducts';
 import upsertAssortmentChildren from './upsertAssortmentChildren';
 import upsertAssortmentFilters from './upsertAssortmentFilters';
+import upsertMedia from './upsertMedia';
 
 export default async function updateAssortment(payload, { logger, authorId }) {
-  const { specification, products, children, filters, _id } = payload;
+  const { media, specification, products, children, filters, _id } = payload;
 
   if (specification) {
     logger.debug('update assortment object', specification);
@@ -53,5 +54,9 @@ export default async function updateAssortment(payload, { logger, authorId }) {
       assortmentId: _id,
       authorId,
     });
+  }
+  if (media) {
+    logger.debug('update assortment media', media);
+    await upsertMedia({ media: media || [], assortmentId: _id, authorId });
   }
 }

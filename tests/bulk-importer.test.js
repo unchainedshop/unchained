@@ -416,6 +416,24 @@ describe('Bulk Importer', () => {
                       meta: {},
                     },
                   ],
+                  media: [
+                    {
+                      _id: null,
+                      asset: {
+                        _id: null,
+                        fileName: 'format-jpeg.jpg',
+                        url: 'https://www.story.one/media/images/poop-4108423_1920.width-1600.format-jpeg.jpg',
+                      },
+                      tags: ['big'],
+                      meta: {},
+                      content: {
+                        de: {
+                          title: 'assormtneName',
+                          subtitle: 'Short description',
+                        },
+                      },
+                    },
+                  ],
                 },
               },
               {
@@ -453,6 +471,23 @@ describe('Bulk Importer', () => {
                       meta: {},
                     },
                   ],
+                  media: [
+                    {
+                      _id: 'assortment-a-meteor',
+                      asset: {
+                        _id: 'assortment-asset-update',
+                        fileName: 'meteor-will-never-die.svg',
+                        url: 'https://docs.meteor.com/images/logo-coralspace-left.svg',
+                      },
+                      tags: ['small'],
+                      meta: {},
+                      content: {
+                        de: {
+                          title: 'Will Meteor die?',
+                        },
+                      },
+                    },
+                  ],
                 },
               },
             ],
@@ -463,12 +498,24 @@ describe('Bulk Importer', () => {
       expect(addWork).toMatchObject({});
 
       const Assortments = db.collection('assortments');
+      const AssortmentMedia = db.collection('assortment_media');
 
       const assortmentHasBaseTag = await intervalUntilTimeout(async () => {
         const assortment = await Assortments.findOne({ _id: 'Assortment A' });
+
         return assortment?.tags.includes('base');
       }, 1000);
 
+      const updatedAssortmentMediaHasSmallTag = await intervalUntilTimeout(
+        async () => {
+          const assortmentMedia = await AssortmentMedia.findOne({
+            _id: 'assortment-a-meteor',
+          });
+          return assortmentMedia?.tags.includes('small');
+        },
+        1000,
+      );
+      expect(updatedAssortmentMediaHasSmallTag).toBe(true);
       expect(assortmentHasBaseTag).toBe(true);
 
       const AssortmentProducts = db.collection('assortment_products');

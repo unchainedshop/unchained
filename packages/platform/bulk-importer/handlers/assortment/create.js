@@ -1,4 +1,5 @@
 import { Assortments } from 'meteor/unchained:core-assortments';
+import upsertMedia from './upsertMedia';
 import upsertAssortmentContent from './upsertAssortmentContent';
 import upsertAssortmentProducts from './upsertAssortmentProducts';
 import upsertAssortmentChildren from './upsertAssortmentChildren';
@@ -8,7 +9,7 @@ export default async function createAssortment(
   payload,
   { logger, authorId, createShouldUpsertIfIDExists }
 ) {
-  const { specification, products, children, filters, _id } = payload;
+  const { media, specification, products, children, filters, _id } = payload;
 
   if (!specification)
     throw new Error(
@@ -70,4 +71,7 @@ export default async function createAssortment(
     assortmentId: _id,
     authorId,
   });
+
+  logger.debug('create assortment media', media);
+  await upsertMedia({ media: media || [], assortmentId: _id, authorId });
 }

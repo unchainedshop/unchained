@@ -280,7 +280,28 @@ Set by unchained:
         "tags": [],
         "meta": {}
       }
-    ]
+    ],
+    "media": [
+      {
+        "_id": null,
+        "created": null,
+        "updated": null,
+        "asset": {
+          "_id": null,
+          "url": "https://www.story.one/media/images/poop-4108423_1920.width-1600.format-jpeg.jpg"
+        },
+        "tags": ["big"],
+        "meta": {},
+        "content": {
+          "de": {
+            "created": null,
+            "updated": null,
+            "title": "assortmentName",
+            "subtitle": "Short description",
+          }
+        }
+      }
+    ],
   }
 }
 ```
