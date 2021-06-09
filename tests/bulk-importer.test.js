@@ -498,7 +498,7 @@ describe('Bulk Importer', () => {
       expect(addWork).toMatchObject({});
 
       const Assortments = db.collection('assortments');
-      const AssormtnetMedia = db.collection('assortment_media');
+      const AssortmentMedia = db.collection('assortment_media');
 
       const assortmentHasBaseTag = await intervalUntilTimeout(async () => {
         const assortment = await Assortments.findOne({ _id: 'Assortment A' });
@@ -506,16 +506,16 @@ describe('Bulk Importer', () => {
         return assortment?.tags.includes('base');
       }, 1000);
 
-      const updatedAssormtnetMediaHasSmallTag = await intervalUntilTimeout(
+      const updatedAssortmentMediaHasSmallTag = await intervalUntilTimeout(
         async () => {
-          const assortmentMedia = await AssormtnetMedia.findOne({
+          const assortmentMedia = await AssortmentMedia.findOne({
             _id: 'assortment-a-meteor',
           });
           return assortmentMedia?.tags.includes('small');
         },
         1000,
       );
-      expect(updatedAssormtnetMediaHasSmallTag).toBe(true);
+      expect(updatedAssortmentMediaHasSmallTag).toBe(true);
       expect(assortmentHasBaseTag).toBe(true);
 
       const AssortmentProducts = db.collection('assortment_products');
