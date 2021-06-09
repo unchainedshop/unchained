@@ -1,4 +1,4 @@
-require('dotenv-defaults').config({ debug: process.env.DEBUG });
+require('dotenv-extended').load();
 const path = require('path');
 const withCss = require('@zeit/next-css');
 const withLess = require('@zeit/next-less');
