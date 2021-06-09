@@ -1,4 +1,5 @@
 # vNEXT
+- [api] New mutation `logoutAllSession` added that can be used to remove all tokens of current user
 - [platform] Assortment bulk import updated to handle assortment media.
 # v1.0.0-beta3
 

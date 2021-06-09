@@ -3,6 +3,7 @@ import { checkResolver as acl } from '../../acl';
 import loginWithPassword from './loginWithPassword';
 import loginAsGuest from './loginAsGuest';
 import logout from './logout';
+import logoutAllSessions from './logoutAllSessions';
 import changePassword from './changePassword';
 import createUser from './createUser';
 import verifyEmail from './verifyEmail';
@@ -138,6 +139,7 @@ import updateAssortmentMediaTexts from './updateAssortmentMediaTexts';
 
 export default {
   logout,
+  logoutAllSessions,
   loginAsGuest,
   verifyEmail,
   loginWithPassword,
