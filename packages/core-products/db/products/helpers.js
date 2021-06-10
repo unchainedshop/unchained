@@ -292,7 +292,7 @@ Products.removeProduct = ({ productId }) => {
       emit('PRODUCT_REMOVE', { productId });
       break;
     default:
-      throw new Error(`Invalid status', ${this.status}`);
+      throw new Error(`Invalid status', ${product.status}`);
   }
 };
 
