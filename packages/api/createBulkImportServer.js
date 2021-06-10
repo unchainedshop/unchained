@@ -40,8 +40,8 @@ export default (options) => {
                 input: {
                   payloadId: file._id,
                   payloadSize: file.length,
-                  createShouldUpsertIfIDExists: !!req.query
-                    ?.createShouldUpsertIfIDExists,
+                  createShouldUpsertIfIDExists:
+                    !!req.query?.createShouldUpsertIfIDExists,
                   remoteAddress: resolvedContext.remoteAddress,
                 },
                 retries: 0,
