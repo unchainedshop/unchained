@@ -12,51 +12,57 @@ export default (options) => {
   const { contextResolver } = options || {};
 
   WebApp.connectHandlers.use(BULK_IMPORT_API_PATH, async (req, res) => {
-    const resolvedContext = await contextResolver({ req });
-    checkAction(actions.bulkImport, resolvedContext.userId);
+    try {
+      const resolvedContext = await contextResolver({ req });
+      checkAction(actions.bulkImport, resolvedContext.userId);
 
-    const date = new Date().toISOString();
-    if (req.method === 'POST') {
-      req
-        .pipe(
-          resolvedContext.bulkImporter.BulkImportPayloads.openUploadStreamWithId(
-            date,
-            `${date}.json`,
-            {
-              contentType: 'application/json',
-            }
+      const date = new Date().toISOString();
+      if (req.method === 'POST') {
+        req
+          .pipe(
+            resolvedContext.bulkImporter.BulkImportPayloads.openUploadStreamWithId(
+              date,
+              `${date}.json`,
+              {
+                contentType: 'application/json',
+              }
+            )
           )
-        )
-        .on('error', (e) => {
-          logger.error(e.message);
-          res.writeHead(503);
-          res.end(JSON.stringify(e));
-        })
-        .on('finish', async (file) => {
-          try {
-            const { ...work } = await WorkerDirector.addWork({
-              type: 'BULK_IMPORT',
-              input: {
-                payloadId: file._id,
-                payloadSize: file.length,
-                createShouldUpsertIfIDExists:
-                  !!req.query?.createShouldUpsertIfIDExists,
-                remoteAddress: resolvedContext.remoteAddress,
-              },
-              retries: 0,
-              priority: 10,
-            });
-            res.writeHead(200);
-            res.end(JSON.stringify(work));
-          } catch (e) {
+          .on('error', (e) => {
             logger.error(e.message);
             res.writeHead(503);
             res.end(JSON.stringify(e));
-          }
-        });
-    } else {
-      res.writeHead(404);
-      res.end();
+          })
+          .on('finish', async (file) => {
+            try {
+              const { ...work } = await WorkerDirector.addWork({
+                type: 'BULK_IMPORT',
+                input: {
+                  payloadId: file._id,
+                  payloadSize: file.length,
+                  createShouldUpsertIfIDExists: !!req.query
+                    ?.createShouldUpsertIfIDExists,
+                  remoteAddress: resolvedContext.remoteAddress,
+                },
+                retries: 0,
+                priority: 10,
+              });
+              res.writeHead(200);
+              res.end(JSON.stringify(work));
+            } catch (e) {
+              logger.error(e.message);
+              res.writeHead(503);
+              res.end(JSON.stringify(e));
+            }
+          });
+      } else {
+        res.writeHead(404);
+        res.end();
+      }
+    } catch (e) {
+      logger.error(e.message);
+      res.writeHead(503);
+      res.end(JSON.stringify(e));
     }
   });
 
