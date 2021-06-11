@@ -1,10 +1,10 @@
-require('dotenv').config();
+require('dotenv-extended').load();
 const path = require('path');
 const withCss = require('@zeit/next-css');
 const withLess = require('@zeit/next-less');
 
 const {
-  LANG,
+  UNCHAINED_LANG,
   GRAPHQL_ENDPOINT,
   DEBUG = false,
   ROOT_URL,
@@ -29,7 +29,7 @@ module.exports = withCss(
     },
     publicRuntimeConfig: {
       // Will be available on both server and client
-      LANG,
+      UNCHAINED_LANG,
       GRAPHQL_ENDPOINT,
       DEBUG,
     },

@@ -16,7 +16,7 @@ const currencyCodeCache = new LRU({
   maxAge,
 });
 
-const { CURRENCY } = process.env;
+const { UNCHAINED_CURRENCY } = process.env;
 
 const buildFindSelector = ({ includeInactive = false }) => {
   const selector = {};
@@ -73,7 +73,8 @@ Countries.resolveDefaultCurrencyCode = ({ isoCode }) => {
 
   const country = Countries.findOne({ isoCode });
   const currency = country && country.defaultCurrency();
-  const liveCurrencyCode = (currency && currency.isoCode) || CURRENCY || 'CHF';
+  const liveCurrencyCode =
+    (currency && currency.isoCode) || UNCHAINED_CURRENCY || 'CHF';
   currencyCodeCache.set(isoCode, liveCurrencyCode);
   return liveCurrencyCode;
 };

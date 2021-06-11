@@ -101,7 +101,7 @@ export default compose(
     const baseLanguage =
       filteredActiveLanguages.length > 0
         ? filteredActiveLanguages[0].isoCode
-        : publicRuntimeConfig.LANG;
+        : publicRuntimeConfig.UNCHAINED_LANG;
     return {
       data,
       languages,

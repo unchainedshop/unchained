@@ -5,6 +5,7 @@ import { Languages } from 'meteor/unchained:core-languages';
 import { hashPassword } from 'meteor/unchained:api';
 
 const logger = console;
+const { UNCHAINED_COUNTRY, UNCHAINED_CURRENCY, UNCHAINED_LANG } = process.env;
 
 export default async () => {
   try {
@@ -35,8 +36,12 @@ export default async () => {
       {},
       { skipMessaging: true },
     );
-
-    const languages = ['de', 'fr'].map((code) => {
+    const defaultLanguages = ['de', 'fr'];
+    if (UNCHAINED_LANG) {
+      if (!defaultLanguages.includes(UNCHAINED_LANG.toLowerCase()))
+        defaultLanguages.push(UNCHAINED_LANG.toLowerCase());
+    }
+    const languages = defaultLanguages.map((code) => {
       const language = Languages.createLanguage({
         isoCode: code,
         isActive: true,
@@ -44,7 +49,9 @@ export default async () => {
       });
       return language.isoCode;
     });
-    const currencies = ['EUR'].map((code) => {
+    const currencies = [
+      UNCHAINED_CURRENCY ? UNCHAINED_CURRENCY.toUpperCase() : 'EUR',
+    ].map((code) => {
       const currency = Currencies.createCurrency({
         isoCode: code,
         isActive: true,
@@ -52,7 +59,9 @@ export default async () => {
       });
       return currency;
     });
-    const countries = ['CH'].map((code, key) => {
+    const countries = [
+      UNCHAINED_COUNTRY ? UNCHAINED_COUNTRY.toUpperCase() : 'CH',
+    ].map((code, key) => {
       const country = Countries.createCountry({
         isoCode: code,
         isActive: true,
