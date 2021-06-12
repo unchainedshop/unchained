@@ -142,7 +142,7 @@ const Header = ({
           </Link>
         </Dropdown.Menu>
       </Dropdown>
-      {shopInfo?.externalLinks?.length && (
+      {shopInfo?.externalLinks?.length ? (
         <Dropdown item text="External Links">
           <Dropdown.Menu>
             {shopInfo?.externalLinks.map((el) => (
@@ -154,6 +154,8 @@ const Header = ({
             ))}
           </Dropdown.Menu>
         </Dropdown>
+      ) : (
+        ''
       )}
       <Menu.Menu position="right">
         <Dropdown item icon="user">

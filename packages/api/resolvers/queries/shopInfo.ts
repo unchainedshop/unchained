@@ -9,6 +9,6 @@ export default function shopInfo(
   log('query shopInfo', { userId: context.userId });
   return {
     version: context.version,
-    externalLinks: JSON.parse(process.env.EXTERNAL_LINKS || []),
+    externalLinks: JSON.parse(process.env.EXTERNAL_LINKS || '[]'),
   };
 }
