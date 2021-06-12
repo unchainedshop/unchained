@@ -1,1 +1,6 @@
-[{ "href": "/publishers", "title": "Publisher Management UI" }]
+[
+  {
+    "href": "https://google.com",
+    "title": "Publisher Management UI"
+  }
+]
