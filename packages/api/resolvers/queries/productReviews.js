@@ -1,7 +1,7 @@
 import { log } from 'meteor/unchained:core-logger';
 import { ProductReviews } from 'meteor/unchained:core-products';
 
-export default function productReviews(
+export default async function productReviews(
   root,
   { limit, offset, sort, queryString },
   { userId }
