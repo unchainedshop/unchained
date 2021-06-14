@@ -5,12 +5,22 @@ import { ProductReviews } from './collections';
 import { ProductReviewVoteTypes } from './schema';
 import { Products } from '../products/collections';
 
-const buildFindSelector = ({ productId, authorId, deleted = null } = {}) => {
-  return {
+const buildFindSelector = ({
+  productId,
+  authorId,
+  deleted = null,
+  queryString,
+} = {}) => {
+  const selector = {
     ...(productId ? { productId } : {}),
     ...(authorId ? { authorId } : {}),
     deleted,
   };
+
+  if (queryString) {
+    selector.$text = { $search: queryString };
+  }
+  return selector;
 };
 
 ProductReviews.helpers({
@@ -172,4 +182,31 @@ ProductReviews.count = async (query) => {
     buildFindSelector(query)
   );
   return count;
+};
+
+ProductReviews.findReviews = async ({
+  limit,
+  offset,
+  includeGuests,
+  queryString,
+  sort: sortOptions = { author: 1, rating: -1 },
+}) => {
+  const selector = buildFindSelector({ includeGuests, queryString });
+  if (queryString) {
+    const reviewsArray = await ProductReviews.rawCollection()
+      .find(selector, {
+        skip: offset,
+        limit,
+        projection: { score: { $meta: 'textScore' } },
+        sort: { score: { $meta: 'textScore' }, ...sortOptions },
+      })
+      .toArray();
+    return (reviewsArray || []).map((item) => new ProductReviews._transform(item)); // eslint-disable-line
+  }
+
+  return ProductReviews.find(selector, {
+    skip: offset,
+    limit,
+    sort: sortOptions,
+  }).fetch();
 };
