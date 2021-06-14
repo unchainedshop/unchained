@@ -194,14 +194,7 @@ ProductReviews.count = async (query) => {
 
 ProductReviews.findReviews = async (
   { queryString, ...rest },
-  {
-    limit,
-    offset,
-    sort: sortOptions = [
-      { key: 'author', value: 'ASC' },
-      { key: 'rating', value: 'DESC' },
-    ],
-  }
+  { limit, offset, sort: sortOptions = [{ key: 'rating', value: 'DESC' }] }
 ) => {
   const selector = buildFindSelector({ queryString, ...rest });
   if (queryString) {
