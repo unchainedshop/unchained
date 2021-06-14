@@ -1,7 +1,16 @@
 import { log } from 'meteor/unchained:core-logger';
 import { ProductReviews } from 'meteor/unchained:core-products';
 
-export default function productReviews(root, { limit, offset }, { userId }) {
-  log(`query productReviews: ${limit} ${offset}`, { userId });
-  return ProductReviews.findReviews({}, { skip: offset, limit });
+export default function productReviews(
+  root,
+  { limit, offset, sort, queryString },
+  { userId }
+) {
+  log(`query productReviews: ${limit} ${offset} ${queryString || ''}`, {
+    userId,
+  });
+  return ProductReviews.findReviews(
+    { queryString },
+    { skip: offset, limit, sort }
+  );
 }

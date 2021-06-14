@@ -56,12 +56,12 @@ const buildIndexes = async () => {
   await ProductReviews.rawCollection().createIndex(
     {
       title: 'text',
-      comment: 'text',
+      review: 'text',
     },
     {
       weights: {
         title: 3,
-        comment: 5,
+        review: 5,
       },
       name: 'productreview_fulltext_search',
     }
