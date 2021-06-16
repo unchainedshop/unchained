@@ -52,6 +52,27 @@ Now you have a fully functional storefront using unchained instance for API. Che
 
 - http://localhost:3000 to see the front-end (storefront)
 
+## Step 3: Deploy storefront with Vercel
+
+Once you have setup the storefront template and run it locally successfuly the last step we need to do is go live. while you can use any hosting provider for this demo we will be using vercel to handle the deployment since the storefront is also writen with next.js.
+
+1. upload storefront to github.
+
+2. Go to the official [vercel](https://vercel.com/) website and sign up for a new account.
+
+3. Connect the reposotory where storefront code is stored with vercel and give it access to all the necessary privilages.
+
+4. set the required `env` production enviroments
+
+```
+UNCHAINED_ENDPOINT=https://your-unchained-instance.rocks/graphql
+FRONTEND_URL=https://domain-of-your-frontend
+GRAPHQL_ENDPOINT=https://domain-of-your-frontend/api/graphql
+```
+5. deploy the store front
+
+
+
 ## Next steps
 
 Get to know the concepts
