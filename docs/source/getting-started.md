@@ -1,6 +1,6 @@
 ---
 title: Get started with Unchained Engine
-sidebar_title: Create a Project
+sidebar_title: Tutorial
 ---
 
 > This tutorial walks you through installing and configuring Unchained Engine.
