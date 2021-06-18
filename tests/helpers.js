@@ -30,12 +30,23 @@ Collection.prototype.findOrInsertOne = async function findOrInsertOne(
   }
 };
 
-export const setupDatabase = async () => {
-  const connection = await MongoClient.connect(global.__MONGO_URI__, {
+let connection;
+
+export const getConnection = () => connection;
+
+const connect = async () => {
+  if (connection) return;
+  const connectionUri =
+    (await global.__MONGOD__?.getUri()) || global.__MONGO_URI__;
+  connection = await MongoClient.connect(connectionUri, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
     poolSize: 1,
   });
+};
+
+export const setupDatabase = async () => {
+  await connect();
   const db = await connection.db(global.__MONGO_DB_NAME__);
   const collections = await db.collections();
   await Promise.all(collections.map((collection) => collection.deleteMany({})));
@@ -59,15 +70,15 @@ export const setupDatabase = async () => {
 };
 
 export const wipeDatabase = async () => {
-  const connectionUri = await global.__MONGOD__.getUri();
-  const connection = await MongoClient.connect(connectionUri, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  });
+  await connect();
   const db = await connection.db(global.__MONGO_DB_NAME__);
   const collections = await db.collections();
   await Promise.all(collections.map((collection) => collection.deleteMany({})));
-  await connection.close();
+  try {
+    await connection.close();
+  } catch (e) {
+    console.warn(e); // eslint-disable-line
+  }
 };
 
 const convertLinkToFetch =

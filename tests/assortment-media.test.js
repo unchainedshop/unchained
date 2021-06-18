@@ -8,7 +8,6 @@ import {
 import { ADMIN_TOKEN, USER_TOKEN } from './seeds/users';
 import { PngAssortmentMedia, SimpleAssortment } from './seeds/assortments';
 
-let connection;
 let graphqlFetch;
 const fs = require('fs');
 const path = require('path');
@@ -19,12 +18,8 @@ const assortmentMediaFile = fs.createReadStream(
 
 describe('AssortmentMedia', () => {
   beforeAll(async () => {
-    [, connection] = await setupDatabase();
+    await setupDatabase();
     graphqlFetch = await createLoggedInGraphqlFetch(ADMIN_TOKEN);
-  });
-
-  afterAll(async () => {
-    await connection.close();
   });
 
   describe('Mutation.addAssortmentMedia for admin user should', () => {

@@ -13,21 +13,16 @@ import {
 } from './seeds/subscriptions';
 import { USER_TOKEN, ADMIN_TOKEN } from './seeds/users';
 
-let connection;
 let graphqlFetchAsAdminUser;
 let graphqlFetchAsNormalUser;
 let graphqlFetchAsAnonymousUser;
 
 describe('Subscriptions', () => {
   beforeAll(async () => {
-    [, connection] = await setupDatabase();
+    await setupDatabase();
     graphqlFetchAsAdminUser = await createLoggedInGraphqlFetch(ADMIN_TOKEN);
     graphqlFetchAsNormalUser = await createLoggedInGraphqlFetch(USER_TOKEN);
     graphqlFetchAsAnonymousUser = createAnonymousGraphqlFetch();
-  });
-
-  afterAll(async () => {
-    await connection.close();
   });
 
   describe('Mutation.createCart (Subscription)', () => {

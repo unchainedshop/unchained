@@ -6,21 +6,16 @@ import {
 import { SimpleProduct, SimpleProductReview } from './seeds/products';
 import { ADMIN_TOKEN, USER_TOKEN } from './seeds/users';
 
-let connection;
 let graphqlFetch;
 let graphqlFetchAsNormalUser;
 let graphqlFetchAsAnonymusUser;
 
 describe('Products: Reviews', () => {
   beforeAll(async () => {
-    [, connection] = await setupDatabase();
+    await setupDatabase();
     graphqlFetch = await createLoggedInGraphqlFetch(ADMIN_TOKEN);
     graphqlFetchAsNormalUser = await createLoggedInGraphqlFetch(USER_TOKEN);
     graphqlFetchAsAnonymusUser = await createAnonymousGraphqlFetch();
-  });
-
-  afterAll(async () => {
-    await connection.close();
   });
 
   describe('Mutation.createProductReview', () => {

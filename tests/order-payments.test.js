@@ -7,21 +7,16 @@ import { PrePaidPaymentProvider } from './seeds/payments';
 import { SimpleOrder, SimplePayment, GenericPayment } from './seeds/orders';
 import { ADMIN_TOKEN, USER_TOKEN } from './seeds/users';
 
-let connection;
 let graphqlFetchAsAdmin;
 let graphqlFetchAsNormalUser;
 let graphqlFetchAsAnonymousUser;
 
 describe('Order: Payments', () => {
   beforeAll(async () => {
-    [, connection] = await setupDatabase();
+    await setupDatabase();
     graphqlFetchAsAdmin = await createLoggedInGraphqlFetch(ADMIN_TOKEN);
     graphqlFetchAsNormalUser = await createLoggedInGraphqlFetch(USER_TOKEN);
     graphqlFetchAsAnonymousUser = await createAnonymousGraphqlFetch();
-  });
-
-  afterAll(async () => {
-    await connection.close();
   });
 
   describe('Mutation.setOrderPaymentProvider for admin user', () => {

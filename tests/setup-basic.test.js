@@ -1,17 +1,12 @@
 import { setupDatabase, createLoggedInGraphqlFetch } from './helpers';
 
-let connection;
 let db;
 let graphqlFetch;
 
 describe('basic setup of internationalization and localization context', () => {
   beforeAll(async () => {
-    [db, connection] = await setupDatabase();
+    [db] = await setupDatabase();
     graphqlFetch = await createLoggedInGraphqlFetch();
-  });
-
-  afterAll(async () => {
-    await connection.close();
   });
 
   describe('currencies', () => {

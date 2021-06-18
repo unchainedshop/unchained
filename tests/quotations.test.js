@@ -6,20 +6,16 @@ import {
 import { ADMIN_TOKEN } from './seeds/users';
 import { ProposedQuotation } from './seeds/quotations';
 
-let connection;
 let graphqlFetch;
 let graphqlAnonymousFetch;
 
 describe('TranslatedFilterTexts', () => {
   beforeAll(async () => {
-    [, connection] = await setupDatabase();
+    await setupDatabase();
     graphqlFetch = await createLoggedInGraphqlFetch(ADMIN_TOKEN);
     graphqlAnonymousFetch = await createAnonymousGraphqlFetch();
   });
 
-  afterAll(async () => {
-    await connection.close();
-  });
   describe('Query.quotations for admin should', () => {
     it('return list of quotations', async () => {
       const {

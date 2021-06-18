@@ -7,7 +7,6 @@ import {
 import { AllocatedWork, NewWork } from './seeds/work';
 import { USER_TOKEN, ADMIN_TOKEN } from './seeds/users';
 
-let connection;
 let graphqlFetchAsAdminUser;
 let graphqlFetchAsNormalUser;
 let graphqlFetchAsAnonymousUser;
@@ -15,14 +14,10 @@ let workId;
 
 describe('Worker Module', () => {
   beforeAll(async () => {
-    [, connection] = await setupDatabase();
+    await setupDatabase();
     graphqlFetchAsAdminUser = await createLoggedInGraphqlFetch(ADMIN_TOKEN);
     graphqlFetchAsNormalUser = await createLoggedInGraphqlFetch(USER_TOKEN);
     graphqlFetchAsAnonymousUser = await createAnonymousGraphqlFetch();
-  });
-
-  afterAll(async () => {
-    await connection.close();
   });
 
   describe('Happy path', () => {

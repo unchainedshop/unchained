@@ -6,21 +6,16 @@ import {
 import { ADMIN_TOKEN, USER_TOKEN } from './seeds/users';
 import { MultiChoiceFilter } from './seeds/filters';
 
-let connection;
 let graphqlFetch;
 let graphqlFetchAsAnonymousUser;
 let graphqlFetchAsNormalUser;
 
 describe('Filters', () => {
   beforeAll(async () => {
-    [, connection] = await setupDatabase();
+    await setupDatabase();
     graphqlFetch = await createLoggedInGraphqlFetch(ADMIN_TOKEN);
     graphqlFetchAsNormalUser = await createLoggedInGraphqlFetch(USER_TOKEN);
     graphqlFetchAsAnonymousUser = await createAnonymousGraphqlFetch();
-  });
-
-  afterAll(async () => {
-    await connection.close();
   });
 
   describe('Query.filters for admin user should', () => {

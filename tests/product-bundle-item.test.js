@@ -10,17 +10,12 @@ import {
   SimpleProductBundle,
 } from './seeds/products';
 
-let connection;
 let graphqlFetch;
 
 describe('ProductBundleItem', () => {
   beforeAll(async () => {
-    [, connection] = await setupDatabase();
+    await setupDatabase();
     graphqlFetch = await createLoggedInGraphqlFetch(ADMIN_TOKEN);
-  });
-
-  afterAll(async () => {
-    await connection.close();
   });
 
   describe('mutation.createProductBundleItem for admin user should', () => {

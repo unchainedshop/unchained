@@ -7,17 +7,12 @@ import { ADMIN_TOKEN } from './seeds/users';
 import { SimpleAssortment, AssortmentProduct } from './seeds/assortments';
 import { SimpleProduct } from './seeds/products';
 
-let connection;
 let graphqlFetch;
 
 describe('AssortmentProduct', () => {
   beforeAll(async () => {
-    [, connection] = await setupDatabase();
+    await setupDatabase();
     graphqlFetch = await createLoggedInGraphqlFetch(ADMIN_TOKEN);
-  });
-
-  afterAll(async () => {
-    await connection.close();
   });
 
   describe('mutation.reorderAssortmentProducts for admin user should', () => {

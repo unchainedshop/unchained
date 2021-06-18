@@ -5,20 +5,15 @@ import {
 } from './helpers';
 import { User, ADMIN_TOKEN } from './seeds/users';
 
-let connection;
 let db;
 let graphqlFetch;
 let adminGraphqlFetch;
 
 describe('Auth for anonymous users', () => {
   beforeAll(async () => {
-    [db, connection] = await setupDatabase();
+    [db] = await setupDatabase();
     graphqlFetch = await createAnonymousGraphqlFetch();
     adminGraphqlFetch = await createLoggedInGraphqlFetch(ADMIN_TOKEN);
-  });
-
-  afterAll(async () => {
-    await connection.close();
   });
 
   describe('Mutation.loginAsGuest', () => {
@@ -202,7 +197,7 @@ describe('Auth for anonymous users', () => {
           },
         },
         {
-          returnOriginal: false,
+          returnDocument: 'after',
           upsert: true,
         },
       );

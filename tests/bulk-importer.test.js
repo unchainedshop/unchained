@@ -2,18 +2,13 @@ import { setupDatabase, createLoggedInGraphqlFetch } from './helpers';
 import { ADMIN_TOKEN } from './seeds/users';
 import { intervalUntilTimeout } from './lib/wait';
 
-let connection;
 let db;
 let graphqlFetch;
 
 describe('Bulk Importer', () => {
   beforeAll(async () => {
-    [db, connection] = await setupDatabase();
+    [db] = await setupDatabase();
     graphqlFetch = await createLoggedInGraphqlFetch(ADMIN_TOKEN);
-  });
-
-  afterAll(async () => {
-    await connection.close();
   });
 
   describe('Import Products', () => {

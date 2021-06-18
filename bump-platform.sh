@@ -1,3 +1,4 @@
+rm -Rf packages/*/.npm &&
 cd packages/utils && meteor publish &&
 cd ../core-logger && meteor publish &&
 cd ../core-events && meteor publish &&
