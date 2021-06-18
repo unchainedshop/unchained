@@ -15,6 +15,11 @@ export default [
       algorithm: String!
     }
 
+    input ProductReviewSortOptionInput {
+      key: String!
+      value: SortDirection!
+    }
+
     input UserProfileInput {
       displayName: String
       birthday: Date

@@ -2,6 +2,7 @@
 - [api] New mutation `logoutAllSession` added that can be used to remove all tokens of current user
 - [platform] Assortment bulk import updated to handle assortment media.
 - [core] Ambiguity of where to set environment variable is fixed. now you can set environment related with the control panel at the root directory of `controlpanel` and environemt variables related with the engine under root directory of `minimal`.
+- [api] `query.productReviews` is extended to support searching/filtering with title or review and sorting all valid fields of product review.
 ## Breaking changes
 - [core] Environment variables `LANG`, `COUNTRY` & `CURRENCY` have to be prefixed with `UNCHAINED_` to prevent a conflict that may occur with other systems environment variables.
 

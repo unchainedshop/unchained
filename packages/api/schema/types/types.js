@@ -3,5 +3,10 @@ export default [
     type SuccessResponse {
       success: Boolean
     }
+
+    enum SortDirection {
+      ASC
+      DESC
+    }
   `,
 ];
