@@ -37,8 +37,8 @@ class EventDirector {
       payload: data,
       created: new Date(),
     });
-    logger.info(
-      `EventDirector -> Emitted to ${eventName} with ${JSON.stringify(data)}`
+    logger.verbose(
+      `EventDirector -> Emitted ${eventName} with ${JSON.stringify(data)}`
     );
   }
 
