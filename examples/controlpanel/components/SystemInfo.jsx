@@ -29,6 +29,10 @@ export const SHOP_INFO_QUERY = gql`
         isoCode
         name
       }
+      externalLinks {
+        href
+        title
+      }
       country {
         _id
         isoCode
