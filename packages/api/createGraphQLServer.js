@@ -31,7 +31,6 @@ export default (options) => {
     corsOrigins = null, // no cookie handling
     typeDefs: additionalTypeDefs = [],
     resolvers: additionalResolvers = [],
-    contextResolver,
     context,
     engine = {},
     ...apolloServerOptions
@@ -40,11 +39,7 @@ export default (options) => {
   const server = new ApolloServer({
     typeDefs: [...typeDefs, ...additionalTypeDefs],
     resolvers: [resolvers, ...additionalResolvers],
-    context: context
-      ? ({ req, res }) => {
-          return context({ req, res, unchainedContextFn: contextResolver });
-        }
-      : contextResolver,
+    context,
     formatError: (error) => {
       logGraphQLServerError(error);
       const {

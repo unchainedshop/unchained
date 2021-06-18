@@ -29,6 +29,7 @@ export interface UnchainedServerOptions {
   unchained: UnchainedAPI;
   bulkImporter: any;
   rolesOptions: any;
+  context: any;
 }
 
 const UNCHAINED_API_VERSION = '1.0.0-beta3'; // eslint-disable-line
@@ -56,19 +57,30 @@ export const createContextResolver =
   };
 
 const startUnchainedServer = (options: UnchainedServerOptions) => {
-  const { unchained, rolesOptions, ...apolloServerOptions } = options || {};
+  const {
+    unchained,
+    rolesOptions,
+    context: customContext,
+    ...apolloServerOptions
+  } = options || {};
 
   configureRoles(rolesOptions);
 
   const contextResolver = createContextResolver(unchained);
 
+  const context = customContext
+    ? ({ req, res }) => {
+        return customContext({ req, res, unchainedContextFn: contextResolver });
+      }
+    : contextResolver;
+
   const apolloGraphQLServer = createGraphQLServer({
     ...apolloServerOptions,
-    contextResolver,
+    context,
   });
 
   const bulkImportServer = createBulkImportServer({
-    contextResolver,
+    context,
   });
 
   return {

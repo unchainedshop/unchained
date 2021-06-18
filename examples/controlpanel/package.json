@@ -20,7 +20,7 @@
   },
   "scripts": {
     "lint": "eslint . --cache --fix --ext=jsx --ext=js",
-    "dev": "GRAPHQL_ENDPOINT=http://localhost:4010/graphql next -p 4000",
+    "dev": "next -p 4000",
     "preexport": "next build",
     "export": "next export",
     "update-schema": "npx apollo service:download",
@@ -41,7 +41,7 @@
     "cytoscape": "^3.19.0",
     "cytoscape-dagre": "^2.3.2",
     "date-fns": "^2.21.3",
-    "dotenv": "^8.6.0",
+    "dotenv-extended": "^2.9.0",
     "eslint": "^7.26.0",
     "eslint-config-airbnb": "^18.2.1",
     "eslint-config-prettier": "^7.2.0",

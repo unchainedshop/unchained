@@ -9,11 +9,11 @@ const logger = createLogger('unchained:api');
 const { BULK_IMPORT_API_PATH = '/bulk-import' } = process.env;
 
 export default (options) => {
-  const { contextResolver } = options || {};
+  const { context } = options || {};
 
   WebApp.connectHandlers.use(BULK_IMPORT_API_PATH, async (req, res) => {
     try {
-      const resolvedContext = await contextResolver({ req });
+      const resolvedContext = await context({ req });
       checkAction(actions.bulkImport, resolvedContext.userId);
 
       const date = new Date().toISOString();
@@ -40,8 +40,8 @@ export default (options) => {
                 input: {
                   payloadId: file._id,
                   payloadSize: file.length,
-                  createShouldUpsertIfIDExists: !!req.query
-                    ?.createShouldUpsertIfIDExists,
+                  createShouldUpsertIfIDExists:
+                    !!req.query?.createShouldUpsertIfIDExists,
                   remoteAddress: resolvedContext.remoteAddress,
                 },
                 retries: 0,
