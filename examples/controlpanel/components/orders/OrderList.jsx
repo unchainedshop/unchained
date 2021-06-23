@@ -102,7 +102,6 @@ const OrderList = ({
 export default compose(
   defaultProps({ limit: 20, offset: 0 }),
   withState('isShowCarts', 'setShowCarts', false),
-  withRouter,
   withDataTableLoader({
     queryName: 'orders',
     query: gql`
@@ -132,5 +131,6 @@ export default compose(
         // eslint-disable-next-line no-unused-expressions
         updateHasMore && updateHasMore(true);
       },
-  })
+  }),
+  withRouter
 )(OrderList);

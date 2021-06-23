@@ -286,7 +286,7 @@ describe('AssortmentLink', () => {
   describe('mutation.removeAssortmentLink for admin user should', () => {
     it('Remove assortment link when passed valid ID', async () => {
       const {
-        // eslint-disable-next-line no-unused-vars
+        // eslint-disable-next-line
         data: { removeAssortmentLink },
       } = await graphqlFetch({
         query: /* GraphQL */ `

@@ -1,6 +1,6 @@
 Package.describe({
   name: 'unchained:roles',
-  version: '1.0.0-beta5',
+  version: '1.0.0-beta7',
   summary: 'Unchained Engine: Roles',
   git: 'https://github.com/unchainedshop/unchained',
   documentation: 'README.md',
@@ -14,7 +14,7 @@ Package.onUse((api) => {
   api.versionsFrom('1.12');
 
   api.use('ecmascript');
-  api.use('unchained:core-users@1.0.0-beta5');
+  api.use('unchained:core-users@1.0.0-beta7');
   api.use('typescript');
 
   api.addFiles(['helpers.ts', 'roles.ts'], 'server');

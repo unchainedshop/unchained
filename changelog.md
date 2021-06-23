@@ -1,5 +1,9 @@
 # vNEXT
 
+# v1.0.0-beta7
+
+- [core] Update ostrio:files to 2.0.1 to mitigate various download issues
+- [controlpanel] Fid issues with assortment and order lists
 
 # v1.0.0-beta5
 
