@@ -45,11 +45,12 @@ class EventDirector {
   }
 
   static subscribe(eventName: string, callBack: () => void): void {
+    const currentSubscription = eventName + callBack?.toString(); // used to avaoid registering the same event handler callback
     if (!EventDirector.registeredEvents.has(eventName))
       throw new Error(`Event with ${eventName} is not registered`);
-    if (!EventDirector.registeredCallbacks.has(callBack?.toString())) {
+    if (!EventDirector.registeredCallbacks.has(currentSubscription)) {
       EventDirector.adapter.subscribe(eventName, callBack);
-      EventDirector.registeredCallbacks.add(callBack?.toString());
+      EventDirector.registeredCallbacks.add(currentSubscription);
       logger.info(`EventDirector -> Subscribed to ${eventName}`);
     }
   }
