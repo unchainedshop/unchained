@@ -2,14 +2,13 @@ import fetch from 'isomorphic-unfetch';
 import { encode } from 'querystring';
 import { subscribe } from '../director';
 
-const extractOrderParameters = (orderPosition) => {
+const extractOrderParameters = (order) => {
   const orderOptions = {};
   orderOptions.idgoal = 0;
-  orderOptions.ec_id = orderPosition.orderId;
+  orderOptions.ec_id = order._id;
 
   orderOptions.ec_items = JSON.stringify(
-    orderPosition
-      .order()
+    order
       .items()
       .map((i) => [
         `${i.productId} SKU`,
@@ -21,8 +20,8 @@ const extractOrderParameters = (orderPosition) => {
   );
   // eslint-disable-next-line no-underscore-dangle
   orderOptions._ects = new Date().getTime();
-  const pricing = orderPosition.pricing();
-  orderOptions.revenue = orderPosition.order().pricing().total().amount;
+  const pricing = order.pricing();
+  orderOptions.revenue = order.pricing().total().amount;
   orderOptions.ec_tx = pricing.taxSum();
   orderOptions.ec_dt = pricing.discountSum();
 
@@ -39,8 +38,8 @@ const MatomoTracker = (siteId, siteUrl, subscribeTo, options = {}) => {
 
   subscribe(subscribeTo, async ({ payload }) => {
     let orderOptions = {};
-    if (payload?.orderPosition)
-      orderOptions = extractOrderParameters(payload.orderPosition);
+    if (payload?.order && payload?.order?.status === 'CONFIRMED')
+      orderOptions = extractOrderParameters(payload.order);
 
     await fetch(
       `${siteUrl}?idsite=${siteId}&rec=1&action_name=${payload?.path}&urlref=${

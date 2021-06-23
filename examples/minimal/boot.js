@@ -65,6 +65,5 @@ Meteor.startup(async () => {
     },
   });
   seed();
-
   embedControlpanelInMeteorWebApp(WebApp);
 });
