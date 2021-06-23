@@ -2,6 +2,7 @@ import fetch from 'isomorphic-unfetch';
 import { encode } from 'querystring';
 import { subscribe } from '../director';
 
+const parseCurrency = (amount) => parseFloat(amount / 100).toFixed(2);
 const extractOrderParameters = (order) => {
   const orderOptions = {};
   if (order.status === 'CONFIRMED') orderOptions.action = 'trackEcommerceOrder';
@@ -17,15 +18,15 @@ const extractOrderParameters = (order) => {
         `${item.productId}`,
         item.product()?.getLocalizedTexts()?.title,
         ' ',
-        parseFloat(item.pricing().unitPrice().amount),
+        parseCurrency(item.pricing().unitPrice().amount),
         item.quantity,
       ])
   );
   // eslint-disable-next-line no-underscore-dangle
   orderOptions._ects = new Date().getTime();
   const pricing = order.pricing();
-  orderOptions.revenue = parseFloat(order.pricing().total().amount);
-  orderOptions.ec_tx = parseFloat(pricing.taxSum());
+  orderOptions.revenue = parseCurrency(order.pricing().total().amount);
+  orderOptions.ec_tx = parseCurrency(pricing.taxSum());
   orderOptions.ec_dt = pricing.discountSum();
 
   return orderOptions;
@@ -44,7 +45,7 @@ const MatomoTracker = (siteId, siteUrl, subscribeTo, options = {}) => {
     if (payload?.order) orderOptions = extractOrderParameters(payload.order);
     else if (payload?.orderPosition)
       orderOptions = extractOrderParameters(payload.orderPosition?.order());
-
+    console.log(orderOptions);
     await fetch(
       `${siteUrl}?idsite=${siteId}&rec=1&action_name=${
         orderOptions.action ?? payload?.path
