@@ -4,6 +4,9 @@ import { subscribe } from '../director';
 
 const extractOrderParameters = (order) => {
   const orderOptions = {};
+  if (order.status === 'CONFIRMED') orderOptions.action = 'trackEcommerceOrder';
+  if (order.isCart()) orderOptions.action = 'addEcommerceItem';
+
   orderOptions.idgoal = 0;
   orderOptions.ec_id = order._id;
 
@@ -38,13 +41,14 @@ const MatomoTracker = (siteId, siteUrl, subscribeTo, options = {}) => {
 
   subscribe(subscribeTo, async ({ payload }) => {
     let orderOptions = {};
-    if (payload?.order && payload?.order?.status === 'CONFIRMED')
-      orderOptions = extractOrderParameters(payload.order);
+    if (payload?.order) orderOptions = extractOrderParameters(payload.order);
+    else if (payload?.orderPosition)
+      orderOptions = extractOrderParameters(payload.orderPosition.order());
 
     await fetch(
-      `${siteUrl}?idsite=${siteId}&rec=1&action_name=${payload?.path}&urlref=${
-        payload?.referrer
-      }&${encode(options)}&${encode(orderOptions)}`
+      `${siteUrl}?idsite=${siteId}&rec=1&action_name=${
+        orderOptions.action ?? payload?.path
+      }&urlref=${payload?.referrer}&${encode(options)}&${encode(orderOptions)}`
     );
   });
 };
