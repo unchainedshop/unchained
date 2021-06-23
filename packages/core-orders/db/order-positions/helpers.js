@@ -297,7 +297,7 @@ OrderPositions.removePosition = ({ positionId }) => {
   OrderPositions.remove({ _id: positionId });
   Orders.updateCalculation({ orderId: position.orderId });
   emit('ORDER_REMOVE_CART_ITEM', {
-    payload: { orderPosition: position },
+    orderPosition: position,
   });
   return position;
 };

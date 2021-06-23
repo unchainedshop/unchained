@@ -58,10 +58,8 @@ ProductVariations.helpers({
       })
     );
     emit('PRODUCT_UPDATE_VARIATION_TEXTS', {
-      payload: {
-        productVariation: this,
-        productVariationTexts: variationTexts,
-      },
+      productVariation: this,
+      productVariationTexts: variationTexts,
     });
     return variationTexts;
   },
@@ -120,7 +118,8 @@ ProductVariations.removeVariationOption = ({
     }
   );
   emit('PRODUCT_REMOVE_VARIATION_OPTION', {
-    payload: { productVariationId, productVariationOptionValue },
+    productVariationId,
+    productVariationOptionValue,
   });
 };
 
@@ -143,7 +142,7 @@ ProductVariations.createVariation = ({
     authorId,
   });
   emit('PRODUCT_CREATE_VARIATION', {
-    payload: { productVariation: variation },
+    productVariation: variation,
   });
   return variation;
 };

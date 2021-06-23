@@ -329,7 +329,8 @@ Orders.helpers({
       deliveryProviderId,
     });
     emit('ORDER_SET_DELIVERY_PROVIDER', {
-      payload: { order: this, deliveryProviderId },
+      order: this,
+      deliveryProviderId,
     });
     return result;
   },
@@ -339,7 +340,8 @@ Orders.helpers({
       paymentProviderId,
     });
     emit('ORDER_SET_PAYMENT_PROVIDER', {
-      payload: { order: this, paymentProviderId },
+      order: this,
+      paymentProviderId,
     });
     return result;
   },
