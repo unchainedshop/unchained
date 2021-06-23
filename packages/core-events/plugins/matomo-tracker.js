@@ -43,7 +43,7 @@ const MatomoTracker = (siteId, siteUrl, subscribeTo, options = {}) => {
     let orderOptions = {};
     if (payload?.order) orderOptions = extractOrderParameters(payload.order);
     else if (payload?.orderPosition)
-      orderOptions = extractOrderParameters(payload.orderPosition.order());
+      orderOptions = extractOrderParameters(payload.orderPosition?.order());
 
     await fetch(
       `${siteUrl}?idsite=${siteId}&rec=1&action_name=${
