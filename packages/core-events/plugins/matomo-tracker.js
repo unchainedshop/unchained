@@ -14,7 +14,7 @@ const extractOrderParameters = (order) => {
     order
       .items()
       .map((item) => [
-        `${item.productId} SKU`,
+        `${item.productId}`,
         item.product()?.getLocalizedTexts()?.title,
         ' ',
         parseFloat(item.pricing().unitPrice().amount),
