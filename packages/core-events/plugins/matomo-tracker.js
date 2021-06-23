@@ -10,19 +10,19 @@ const extractOrderParameters = (order) => {
   orderOptions.ec_items = JSON.stringify(
     order
       .items()
-      .map((i) => [
-        `${i.productId} SKU`,
+      .map((item) => [
+        `${item.productId} SKU`,
+        item.product()?.getLocalizedTexts()?.title,
         ' ',
-        ' ',
-        `${i.pricing().unitPrice().amount}`,
-        i.quantity,
+        parseFloat(item.pricing().unitPrice().amount),
+        item.quantity,
       ])
   );
   // eslint-disable-next-line no-underscore-dangle
   orderOptions._ects = new Date().getTime();
   const pricing = order.pricing();
-  orderOptions.revenue = order.pricing().total().amount;
-  orderOptions.ec_tx = pricing.taxSum();
+  orderOptions.revenue = parseFloat(order.pricing().total().amount);
+  orderOptions.ec_tx = parseFloat(pricing.taxSum());
   orderOptions.ec_dt = pricing.discountSum();
 
   return orderOptions;

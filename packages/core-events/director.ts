@@ -13,6 +13,8 @@ class EventDirector {
 
   private static registeredEvents = new Set();
 
+  private static registeredCallbacks = new Set();
+
   static registerEvents(events: string[]): void {
     if (events.length) {
       events.forEach((e) => EventDirector.registeredEvents.add(e));
@@ -45,8 +47,11 @@ class EventDirector {
   static subscribe(eventName: string, callBack: () => void): void {
     if (!EventDirector.registeredEvents.has(eventName))
       throw new Error(`Event with ${eventName} is not registered`);
-    EventDirector.adapter.subscribe(eventName, callBack);
-    logger.info(`EventDirector -> Subscribed to ${eventName}`);
+    if (!EventDirector.registeredCallbacks.has(callBack?.toString())) {
+      EventDirector.adapter.subscribe(eventName, callBack);
+      EventDirector.registeredCallbacks.add(callBack?.toString());
+      logger.info(`EventDirector -> Subscribed to ${eventName}`);
+    }
   }
 }
 
