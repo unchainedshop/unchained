@@ -3,29 +3,29 @@ import { encode } from 'querystring';
 import { OrderStatus, Orders } from 'meteor/unchained:core-orders';
 import { subscribe } from '../director';
 
-const parseCurrency = (amount) =>
-  parseFloat(parseFloat(amount / 100).toFixed(2));
+const parseCurrency = (amount) => parseFloat(amount / 100);
 
 const extractOrderParameters = (currentOrder) => {
   const orderOptions = {};
   const order = Orders.findOrder({ orderId: currentOrder._id });
 
   if (order.status === OrderStatus.CONFIRMED) {
+    orderOptions.ec_id = order._id;
     orderOptions.action = 'trackEcommerceOrder';
   }
   if (order.isCart()) {
     orderOptions.action = 'addEcommerceItem';
   }
+
   orderOptions.isCart = order.isCart();
   // eslint-disable-next-line no-underscore-dangle
   orderOptions._ects = new Date().getTime();
-  orderOptions.uid = order.userId;
+  orderOptions.uid = order.user().username;
+  orderOptions._id = order.userId;
   const pricing = order.pricing();
   orderOptions.revenue = parseCurrency(order.pricing().total().amount);
   orderOptions.ec_tx = parseCurrency(pricing.taxSum());
   orderOptions.ec_dt = pricing.discountSum();
-
-  orderOptions.ec_id = order._id;
 
   orderOptions.ec_items = JSON.stringify(
     order
@@ -38,7 +38,7 @@ const extractOrderParameters = (currentOrder) => {
         item.quantity,
       ])
   );
-
+  orderOptions.idgoal = 0;
   return orderOptions;
 };
 
