@@ -1,7 +1,7 @@
 {
   "name": "@unchainedshop/controlpanel",
   "description": "Control Panel for Unchained Engine",
-  "version": "1.0.0-beta8",
+  "version": "1.0.0-beta9",
   "license": "EUPL-1.2",
   "homepage": "https://unchained.shop",
   "main": "index.js",
@@ -21,8 +21,8 @@
   "scripts": {
     "lint": "eslint . --cache --fix --ext=jsx --ext=js",
     "dev": "next -p 4000",
-    "preexport": "GRAPHQL_ENDPOINT= next build",
-    "export": "next export",
+    "preexport": "next build",
+    "export": "GRAPHQL_ENDPOINT= next export",
     "update-schema": "npx apollo service:download",
     "prepublishOnly": "npm run export"
   },
