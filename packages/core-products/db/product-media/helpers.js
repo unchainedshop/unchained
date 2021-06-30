@@ -43,7 +43,8 @@ ProductMedia.helpers({
       })
     );
     emit('PRODUCT_UPDATE_MEDIA_TEXT', {
-      payload: { productMedia: this, mediaTexts },
+      productMedia: this,
+      mediaTexts,
     });
     return mediaTexts;
   },

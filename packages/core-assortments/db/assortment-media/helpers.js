@@ -50,7 +50,8 @@ AssortmentMedia.helpers({
       })
     );
     emit('ASSORTMENT_UPDATE_MEDIA_TEXT', {
-      payload: { assortmentMedia: this, mediaTexts },
+      assortmentMedia: this,
+      mediaTexts,
     });
     return mediaTexts;
   },
