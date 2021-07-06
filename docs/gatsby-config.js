@@ -18,9 +18,9 @@ module.exports = {
         sidebarCategories: {
           null: [
             'index',
-            'getting-started',
             '[Changelog](https://github.com/unchainedshop/unchained/releases)',
           ],
+          'Getting Started': ['quick-start', 'getting-started'],
           Concepts: [
             'concepts/architecture',
             'concepts/carts',
