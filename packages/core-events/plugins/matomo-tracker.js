@@ -8,7 +8,7 @@ const actionMap = {
   ORDER_ADD_PRODUCT: 'addEcommerceItem',
   ORDER_UPDATE_CART_ITEM: 'addEcommerceItem',
   ORDER_REMOVE_CART_ITEM: 'addEcommerceItem',
-  OrDER_CHECKOUT: 'trackEcommerceOrder',
+  ORDER_CHECKOUT: 'trackEcommerceOrder',
 };
 
 const extractOrderParameters = (currentOrder) => {
@@ -57,12 +57,20 @@ const MatomoTracker = (siteId, siteUrl, subscribeTo, options = {}) => {
 
   subscribe(subscribeTo, async ({ payload }) => {
     let orderOptions = {};
-    if (payload?.order || payload?.orderPosition)
+    if (
+      payload?.order ||
+      payload?.payload?.order ||
+      payload?.orderPosition ||
+      payload?.payload?.orderPosition
+    )
       orderOptions = extractOrderParameters(
-        payload?.order || payload?.orderPosition?.order()
+        payload?.order ||
+          payload?.payload?.order ||
+          payload?.orderPosition?.order() ||
+          payload?.payload?.orderPosition?.order()
       );
     await fetch(
-      `${siteUrl}?idsite=${siteId}&rec=1&action_name=${
+      `${siteUrl}/matomo.php?idsite=${siteId}&rec=1&action_name=${
         actionMap[subscribeTo]
       }&${encode(orderOptions)}${extraOptions}`
     );
