@@ -39,7 +39,8 @@ OrderPayments.helpers({
       orderPayment: this,
     });
     emit('ORDER_SIGN_PAYMENT', {
-      payload: { orderPayment: this, transactionContext },
+      orderPayment: this,
+      transactionContext,
     });
     return result;
   },

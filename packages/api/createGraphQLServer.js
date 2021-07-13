@@ -1,7 +1,7 @@
 import { ApolloServer, ApolloError } from 'apollo-server-express';
 import { WebApp } from 'meteor/webapp';
 import { log } from 'meteor/unchained:core-logger';
-
+import getContext, { withContext } from 'meteor/unchained:utils/context';
 import typeDefs from './schema';
 import resolvers from './resolvers';
 
@@ -39,7 +39,9 @@ export default (options) => {
   const server = new ApolloServer({
     typeDefs: [...typeDefs, ...additionalTypeDefs],
     resolvers: [resolvers, ...additionalResolvers],
-    context,
+    context: async () => {
+      return getContext();
+    },
     formatError: (error) => {
       logGraphQLServerError(error);
       const {
@@ -81,8 +83,7 @@ export default (options) => {
         }
       : corsOrigins;
 
-  server.applyMiddleware({
-    app: WebApp.connectHandlers,
+  const middleware = server.getMiddleware({
     path: '/graphql',
     cors: !originFn
       ? undefined
@@ -95,11 +96,6 @@ export default (options) => {
     },
   });
 
-  WebApp.connectHandlers.use('/graphql', (req, res) => {
-    if (req.method === 'GET') {
-      res.end();
-    }
-  });
-
+  WebApp.connectHandlers.use(withContext(context)(middleware));
   return server;
 };

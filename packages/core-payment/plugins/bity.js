@@ -4,10 +4,14 @@ import {
   PaymentError,
 } from 'meteor/unchained:core-payment';
 import { Orders } from 'meteor/unchained:core-orders';
-import { WebApp } from 'meteor/webapp';
 import bodyParser from 'body-parser';
 import { OrderPricingSheet } from 'meteor/unchained:core-pricing';
-import { acl, roles, createContextResolver } from 'meteor/unchained:api';
+import {
+  acl,
+  roles,
+  useMiddlewareWithCurrentContext,
+} from 'meteor/unchained:api';
+import getContext from 'meteor/unchained:utils/context';
 import crypto from 'crypto';
 import fetch from 'isomorphic-unfetch';
 import ClientOAuth2 from 'client-oauth2';
@@ -21,8 +25,6 @@ const { actions } = roles;
 const BityCredentials = new Mongo.Collection('bity_credentials');
 
 let currentToken;
-
-const contextResolver = createContextResolver(() => {});
 
 const {
   BITY_CLIENT_ID,
@@ -155,10 +157,10 @@ const bityExchangeFetch = async ({ path, params }) => {
   return response;
 };
 
-WebApp.connectHandlers.use(BITY_OAUTH_INIT_PATH, async (req, res) => {
+useMiddlewareWithCurrentContext(BITY_OAUTH_INIT_PATH, async (req, res) => {
   if (req.method === 'GET') {
     try {
-      const resolvedContext = await contextResolver({ req });
+      const resolvedContext = await getContext();
       checkAction(actions.managePaymentProviders, resolvedContext?.userId);
 
       const bityAuth = createBityAuth();
@@ -178,17 +180,15 @@ WebApp.connectHandlers.use(BITY_OAUTH_INIT_PATH, async (req, res) => {
   return res.end();
 });
 
-WebApp.connectHandlers.use(
-  BITY_OAUTH_PATH,
-  bodyParser.urlencoded({ extended: false })
-);
+useMiddlewareWithCurrentContext(BITY_OAUTH_PATH, async (req, res, next) => {
+  bodyParser.urlencoded({ extended: false })(req, res, next);
+});
 
-WebApp.connectHandlers.use(BITY_OAUTH_PATH, async (req, res) => {
+useMiddlewareWithCurrentContext(BITY_OAUTH_PATH, async (req, res) => {
   if (req.method === 'GET') {
     try {
-      const resolvedContext = await contextResolver({ req });
+      const resolvedContext = await getContext();
       checkAction(actions.managePaymentProviders, resolvedContext?.userId);
-
       const bityAuth = createBityAuth();
       const user = await bityAuth.code.getToken(req.originalUrl);
       upsertBityCredentials(user);

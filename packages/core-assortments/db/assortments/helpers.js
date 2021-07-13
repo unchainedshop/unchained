@@ -661,7 +661,8 @@ Collections.Assortments.helpers({
       })
     );
     emit('ASSORTMENT_UPDATE_TEXTS', {
-      payload: { assortmentId: this._id, assortmentTexts },
+      assortmentId: this._id,
+      assortmentTexts,
     });
     return assortmentTexts;
   },
@@ -814,10 +815,8 @@ Collections.Assortments.helpers({
       this.invalidateProductIdCache();
     }
     emit('ASSORTMENT_ADD_LINK', {
-      payload: {
-        parentAssortmentId: this._id,
-        childAssortmentId: assortmentId,
-      },
+      parentAssortmentId: this._id,
+      childAssortmentId: assortmentId,
     });
     return assortmentLink;
   },
@@ -1011,7 +1010,7 @@ Collections.AssortmentProducts.helpers({
     Collections.AssortmentProducts.remove({ _id: this._id });
     this.assortment().invalidateProductIdCache();
     emit('ASSORTMENT_REMOVE_PRODUCT', {
-      payload: { assortmentProductId: this._id },
+      assortmentProductId: this._id,
     });
     return this;
   },

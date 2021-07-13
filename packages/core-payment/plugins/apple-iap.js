@@ -9,10 +9,10 @@ import {
   SubscriptionStatus,
   Subscriptions,
 } from 'meteor/unchained:core-subscriptions';
-import { WebApp } from 'meteor/webapp';
 import bodyParser from 'body-parser';
 import fetch from 'isomorphic-unfetch';
 import { Mongo } from 'meteor/mongo';
+import { useMiddlewareWithCurrentContext } from 'meteor/unchained:api';
 import logger from '../logger';
 
 const AppleTransactions = new Mongo.Collection(
@@ -24,13 +24,6 @@ const {
   APPLE_IAP_ENVIRONMENT = 'sandbox',
   APPLE_IAP_WEBHOOK_PATH = '/graphql/apple-iap',
 } = process.env;
-
-WebApp.connectHandlers.use(
-  APPLE_IAP_WEBHOOK_PATH,
-  bodyParser.json({
-    strict: false,
-  })
-);
 
 // https://developer.apple.com/documentation/storekit/in-app_purchase/validating_receipts_with_the_app_store
 const environments = {
@@ -115,7 +108,14 @@ const fixPeriods = ({
   );
 };
 
-WebApp.connectHandlers.use(APPLE_IAP_WEBHOOK_PATH, async (req, res) => {
+useMiddlewareWithCurrentContext(
+  APPLE_IAP_WEBHOOK_PATH,
+  bodyParser.json({
+    strict: false,
+  })
+);
+
+useMiddlewareWithCurrentContext(APPLE_IAP_WEBHOOK_PATH, async (req, res) => {
   if (req.method === 'POST') {
     try {
       const responseBody = req.body || {};
