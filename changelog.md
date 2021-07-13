@@ -47,6 +47,7 @@ ReorderAssortmentMediaInput
 
 ## Breaking changes
 
+- [core] upsertLocalizedText for products and assortments does not automatically change the slug anymore, explicitly set it by providing a slug property
 - [core] Remove cron worker `unchained:core-worker/workers/cron`, use the interval worker instead
 - [core] `cronText` has been removed from `configureAutoscheduling` in favor of `schedule`, `schedule` has to be a later.js compliant schedule definition. If you want to reuse the custom cronText define schedule like `later.parse.text('every 5 mins');` Likewise `autoSchedulingCronText` has been removed from subscription settings and replaced with `autoSchedulingSchedule`
 - [schema] SPECIAL ATTENTION REQUIRED: `Money` type has been completely removed and was replaced with `Price`, this simplifies reading out prices but involves changing potentially a lot of FRONTEND CODE!.
