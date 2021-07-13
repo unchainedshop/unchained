@@ -1,3 +1,4 @@
+import { withContext } from 'meteor/unchained:utils/context';
 import getUserContext, { UnchainedServerUserContext } from './user-context';
 import getLocaleContext, {
   UnchainedServerLocaleContext,
@@ -56,6 +57,8 @@ export const createContextResolver =
     };
   };
 
+let context;
+
 const startUnchainedServer = (options: UnchainedServerOptions) => {
   const {
     unchained,
@@ -68,7 +71,7 @@ const startUnchainedServer = (options: UnchainedServerOptions) => {
 
   const contextResolver = createContextResolver(unchained);
 
-  const context = customContext
+  context = customContext
     ? ({ req, res }) => {
         return customContext({ req, res, unchainedContextFn: contextResolver });
       }
@@ -87,6 +90,17 @@ const startUnchainedServer = (options: UnchainedServerOptions) => {
     apolloGraphQLServer,
     bulkImportServer,
   };
+};
+
+export const getCurrentContextResolver = () => context;
+
+export const useMiddlewareWithCurrentContext = (path, middleware) => {
+  WebApp.connectHandlers.use(
+    path,
+    withContext((req, res, ...rest) =>
+      getCurrentContextResolver()(req, res, ...rest)
+    )(middleware)
+  );
 };
 
 export default startUnchainedServer;

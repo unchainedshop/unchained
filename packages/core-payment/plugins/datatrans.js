@@ -5,7 +5,7 @@ import {
   PaymentCredentials,
 } from 'meteor/unchained:core-payment';
 import { OrderPayments } from 'meteor/unchained:core-orders';
-import { WebApp } from 'meteor/webapp';
+import { useMiddlewareWithCurrentContext } from 'meteor/unchained:api';
 import bodyParser from 'body-parser';
 import crypto from 'crypto';
 import fetch from 'isomorphic-unfetch';
@@ -98,12 +98,12 @@ const datatransAuthorize = async ({
   return xml2js.parseStringPromise(xml);
 };
 
-WebApp.connectHandlers.use(
+useMiddlewareWithCurrentContext(
   DATATRANS_WEBHOOK_PATH,
   bodyParser.urlencoded({ extended: false })
 );
 
-WebApp.connectHandlers.use(DATATRANS_WEBHOOK_PATH, async (req, res) => {
+useMiddlewareWithCurrentContext(DATATRANS_WEBHOOK_PATH, async (req, res) => {
   if (req.method === 'POST') {
     const authorizationResponse = req.body || {};
     const { refno, amount } = authorizationResponse;

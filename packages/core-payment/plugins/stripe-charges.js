@@ -5,6 +5,7 @@ import {
 } from 'meteor/unchained:core-payment';
 import bodyParser from 'body-parser';
 import { OrderPayments } from 'meteor/unchained:core-orders';
+import { useMiddlewareWithCurrentContext } from 'meteor/unchained:api';
 
 import logger from '../logger';
 
@@ -26,12 +27,12 @@ stripe trigger payment_intent.succeeded
 
 const stripe = require('stripe')(STRIPE_SECRET);
 
-WebApp.connectHandlers.use(
+useMiddlewareWithCurrentContext(
   STRIPE_CHARGES_WEBHOOK_PATH,
   bodyParser.raw({ type: 'application/json' })
 );
 
-WebApp.connectHandlers.use(
+useMiddlewareWithCurrentContext(
   STRIPE_CHARGES_WEBHOOK_PATH,
   async (request, response) => {
     const sig = request.headers['stripe-signature'];
@@ -53,7 +54,7 @@ WebApp.connectHandlers.use(
       if (event.type === 'source.chargeable') {
         const source = event.data.object;
         // eslint-disable-next-line
-      const orderPaymentId = source.metadata?.orderPaymentId;
+        const orderPaymentId = source.metadata?.orderPaymentId;
         const orderPayment = OrderPayments.findOne({ _id: orderPaymentId });
         const order = orderPayment.order();
         const paymentContext = {
@@ -77,7 +78,7 @@ WebApp.connectHandlers.use(
       } else if (event.type === 'charge.succeeded') {
         const charge = event.data.object;
         // eslint-disable-next-line
-      const orderPaymentId = charge.metadata?.orderPaymentId;
+        const orderPaymentId = charge.metadata?.orderPaymentId;
         const orderPayment = OrderPayments.findOne({ _id: orderPaymentId });
         const order = orderPayment.order();
         orderPayment.markPaid(charge);
