@@ -1,4 +1,5 @@
 import { ApolloServer, ApolloError } from 'apollo-server-express';
+import { processRequest } from 'graphql-upload';
 import { WebApp } from 'meteor/webapp';
 import { log } from 'meteor/unchained:core-logger';
 import getContext, { withContext } from 'meteor/unchained:utils/context';
@@ -6,6 +7,15 @@ import typeDefs from './schema';
 import resolvers from './resolvers';
 
 const { APOLLO_ENGINE_KEY } = process.env;
+
+const handleUploads = (options) => async (req, res, next) => {
+  const contentType = req.headers['content-type'];
+  const isUpload = contentType && contentType.startsWith('multipart/form-data');
+  if (isUpload) {
+    req.body = await processRequest(req, res, options);
+  }
+  next();
+};
 
 const logGraphQLServerError = (error) => {
   try {
@@ -42,6 +52,7 @@ export default (options) => {
     context: async () => {
       return getContext();
     },
+    uploads: false,
     formatError: (error) => {
       logGraphQLServerError(error);
       const {
@@ -96,6 +107,9 @@ export default (options) => {
     },
   });
 
+  WebApp.connectHandlers.use(
+    handleUploads({ maxFileSize: 10000000, maxFiles: 10 })
+  );
   WebApp.connectHandlers.use(withContext(context)(middleware));
   return server;
 };

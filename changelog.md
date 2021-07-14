@@ -1,5 +1,10 @@
 # vNEXT
 
+# v1.0.0-beta8
+
+Breaking:
+- [core] Upgrade to new GraphQL multi-part standard with graphql-upload pinning to v12, please use the latest graphql-upload-client
+
 # v1.0.0-beta7
 
 - [core] Update ostrio:files to 2.0.1 to mitigate various download issues
