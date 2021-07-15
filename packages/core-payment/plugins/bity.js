@@ -11,7 +11,7 @@ import {
   roles,
   useMiddlewareWithCurrentContext,
 } from 'meteor/unchained:api';
-import { getContext } from 'meteor/unchained:utils/context';
+import getContext from 'meteor/unchained:utils/context';
 import crypto from 'crypto';
 import fetch from 'isomorphic-unfetch';
 import ClientOAuth2 from 'client-oauth2';
