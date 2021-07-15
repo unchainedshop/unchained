@@ -1,9 +1,11 @@
 import React from 'react';
-import { withApollo } from '@apollo/client/react/hoc';
+import { withApollo, graphql } from '@apollo/client/react/hoc';
 import Link from 'next/link';
 import { Menu, Dropdown } from 'semantic-ui-react';
 import { compose, pure, withHandlers, mapProps } from 'recompose';
+
 import { logout } from '../lib/accounts';
+import { SHOP_INFO_QUERY } from './SystemInfo';
 
 const MenuLayout = ({ pathname, children, loading, ...rest }) => (
   <Menu stackable attached="top" size="tiny" {...rest}>
@@ -36,7 +38,13 @@ const MenuLayout = ({ pathname, children, loading, ...rest }) => (
   </Menu>
 );
 
-const Header = ({ pathname, loggedInUser, logout: doLogout, ...rest }) =>
+const Header = ({
+  pathname,
+  loggedInUser,
+  logout: doLogout,
+  data: { shopInfo },
+  ...rest
+}) =>
   loggedInUser ? (
     <MenuLayout pathname={pathname} {...rest}>
       <Dropdown item text="System">
@@ -134,6 +142,21 @@ const Header = ({ pathname, loggedInUser, logout: doLogout, ...rest }) =>
           </Link>
         </Dropdown.Menu>
       </Dropdown>
+      {shopInfo?.externalLinks?.length ? (
+        <Dropdown item text="External Links">
+          <Dropdown.Menu>
+            {shopInfo?.externalLinks.map((el) => (
+              <a href={el.href} target="_blank" rel="noreferrer">
+                <Dropdown.Item active={pathname === el.href}>
+                  <span>{el.title}</span>
+                </Dropdown.Item>
+              </a>
+            ))}
+          </Dropdown.Menu>
+        </Dropdown>
+      ) : (
+        ''
+      )}
       <Menu.Menu position="right">
         <Dropdown item icon="user">
           <Dropdown.Menu>
@@ -158,6 +181,7 @@ const Header = ({ pathname, loggedInUser, logout: doLogout, ...rest }) =>
 
 export default compose(
   withApollo,
+  graphql(SHOP_INFO_QUERY),
   withHandlers({
     logout:
       ({ client }) =>
@@ -165,6 +189,8 @@ export default compose(
         await logout(client);
       },
   }),
-  mapProps(({ client, ...rest }) => ({ ...rest })),
+  mapProps(({ client, ...rest }) => ({
+    ...rest,
+  })),
   pure
 )(Header);

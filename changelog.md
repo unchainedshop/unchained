@@ -1,8 +1,25 @@
 # vNEXT
+
+- [controlpanel] Ambiguity of where to set environment variable is fixed. now you can set environment related with the control panel at the root directory of `controlpanel` and environemt variables related with the engine under root directory of `minimal`.
+- [api] `query.productReviews` is extended to support searching/filtering with title or review and sorting all valid fields of product review.
+- [controlpanel] Now it's possible to add external links to an extended version of unchained control panel or any other site you want to access through the `controlpanel` by providing JSON using the env `EXTERNAL_LINKS` variable inside `example/minimal`. The JSON to be provided has to be an array of external link definitions in the form of objects with href and title properties (`[{ href: string, title: string}]`).
+If an external link file object is found its content will appear in the top menu of the `controlpanel`
+
+# v1.0.0-beta8
+
+Breaking:
+- [core] Upgrade to new GraphQL multi-part standard with graphql-upload pinning to v12, please use the latest graphql-upload-client
+
+# v1.0.0-beta7
+
+- [core] Update ostrio:files to 2.0.1 to mitigate various download issues
+- [controlpanel] Fid issues with assortment and order lists
+
+# v1.0.0-beta5
+
 - [api] New mutation `logoutAllSession` added that can be used to remove all tokens of current user
 - [platform] Assortment bulk import updated to handle assortment media.
-- [core] Ambiguity of where to set environment variable is fixed. now you can set environment related with the control panel at the root directory of `controlpanel` and environemt variables related with the engine under root directory of `minimal`.
-- [api] `query.productReviews` is extended to support searching/filtering with title or review and sorting all valid fields of product review.
+
 ## Breaking changes
 - [core] Environment variables `LANG`, `COUNTRY` & `CURRENCY` have to be prefixed with `UNCHAINED_` to prevent a conflict that may occur with other systems environment variables.
 
@@ -37,6 +54,7 @@ ReorderAssortmentMediaInput
 
 ## Breaking changes
 
+- [core] upsertLocalizedText for products and assortments does not automatically change the slug anymore, explicitly set it by providing a slug property
 - [core] Remove cron worker `unchained:core-worker/workers/cron`, use the interval worker instead
 - [core] `cronText` has been removed from `configureAutoscheduling` in favor of `schedule`, `schedule` has to be a later.js compliant schedule definition. If you want to reuse the custom cronText define schedule like `later.parse.text('every 5 mins');` Likewise `autoSchedulingCronText` has been removed from subscription settings and replaced with `autoSchedulingSchedule`
 - [schema] SPECIAL ATTENTION REQUIRED: `Money` type has been completely removed and was replaced with `Price`, this simplifies reading out prices but involves changing potentially a lot of FRONTEND CODE!.

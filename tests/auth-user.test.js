@@ -1,20 +1,15 @@
 import { setupDatabase, createLoggedInGraphqlFetch } from './helpers';
 import { User, Admin, USER_TOKEN, ADMIN_TOKEN } from './seeds/users';
 
-let connection;
 let db;
 let graphqlFetch;
 let adminGraphqlFetch;
 
 describe('Auth for logged in users', () => {
   beforeAll(async () => {
-    [db, connection] = await setupDatabase();
+    [db] = await setupDatabase();
     graphqlFetch = await createLoggedInGraphqlFetch(USER_TOKEN);
     adminGraphqlFetch = await createLoggedInGraphqlFetch(ADMIN_TOKEN);
-  });
-
-  afterAll(async () => {
-    await connection.close();
   });
 
   describe('Query.me', () => {
@@ -145,7 +140,7 @@ describe('Auth for logged in users', () => {
           },
         },
         {
-          returnOriginal: false,
+          returnDocument: 'after',
           upsert: true,
         },
       );

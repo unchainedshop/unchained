@@ -7,21 +7,16 @@ import { ADMIN_TOKEN, USER_TOKEN } from './seeds/users';
 import { ConfigurableProduct } from './seeds/products';
 import { SimpleBookmarks } from './seeds/bookmark';
 
-let connection;
 let graphqlFetch;
 let graphqlNormalUserFetch;
 let graphqlAnonymousUserFetch;
 
 describe('Bookmark', () => {
   beforeAll(async () => {
-    [, connection] = await setupDatabase();
+    await setupDatabase();
     graphqlFetch = await createLoggedInGraphqlFetch(ADMIN_TOKEN);
     graphqlNormalUserFetch = await createLoggedInGraphqlFetch(USER_TOKEN);
     graphqlAnonymousUserFetch = await createAnonymousGraphqlFetch();
-  });
-
-  afterAll(async () => {
-    await connection.close();
   });
 
   describe('For admin user ', () => {

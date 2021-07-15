@@ -6,14 +6,13 @@ import { SimpleOrder, SimplePosition, SimplePayment } from './seeds/orders';
 
 const { STRIPE_SECRET } = process.env;
 
-let connection;
 let db;
 let graphqlFetch;
 
 if (STRIPE_SECRET) {
   describe('Plugins: Stripe Payments', () => {
     beforeAll(async () => {
-      [db, connection] = await setupDatabase();
+      [db] = await setupDatabase();
       graphqlFetch = await createLoggedInGraphqlFetch(USER_TOKEN);
 
       // Add a stripe provider
@@ -65,10 +64,6 @@ if (STRIPE_SECRET) {
         orderNumber: 'stripe2',
         paymentId: 'stripe-payment2',
       });
-    });
-
-    afterAll(async () => {
-      await connection.close();
     });
 
     describe('Mutation.signPaymentProviderForCredentialRegistration (Stripe)', () => {
@@ -311,6 +306,8 @@ if (STRIPE_SECRET) {
   });
 } else {
   describe.skip('Plugins: Stripe Payments', () => {
-    it('Skipped because secret not set', async () => {});
+    it('Skipped because secret not set', async () => {
+      console.log('skipped'); // eslint-disable-line
+    });
   });
 }

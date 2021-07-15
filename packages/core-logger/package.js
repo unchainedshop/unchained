@@ -1,6 +1,6 @@
 Package.describe({
   name: 'unchained:core-logger',
-  version: '1.0.0-beta3',
+  version: '1.0.0-beta8',
   summary: 'Unchained Engine Core: Logger',
   git: 'https://github.com/unchainedshop/unchained',
   documentation: 'README.md',
@@ -20,7 +20,7 @@ Package.onUse((api) => {
   api.use('percolate:migrations@1.0.2');
   api.use('dburles:collection-helpers@1.1.0');
   api.use('aldeed:collection2@3.2.1');
-  api.use('unchained:utils@1.0.0-beta3');
+  api.use('unchained:utils@1.0.0-beta8');
   api.mainModule('logger.js', 'server');
 });
 

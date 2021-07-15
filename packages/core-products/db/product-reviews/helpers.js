@@ -89,7 +89,9 @@ ProductReviews.helpers({
       type,
     });
     emit('PRODUCT_REMOVE_REVIEW_VOTE', {
-      payload: { productReviewId: this._id, userId, type },
+      productReviewId: this._id,
+      userId,
+      type,
     });
     return removedVote;
   },

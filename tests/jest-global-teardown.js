@@ -1,4 +1,5 @@
 import teardownInMemoryMongoDB from '@shelf/jest-mongodb/teardown';
+import { getConnection } from './helpers';
 
 // Stop MongoDB and Meteor
 async function cleanup() {
@@ -7,6 +8,8 @@ async function cleanup() {
 }
 
 export default async function teardown(globalConfig) {
+  const connection = getConnection();
+  await connection.close();
   global.__SUBPROCESS_METEOR__.unref();
   if (!globalConfig.watch && !globalConfig.watchAll) {
     await cleanup();

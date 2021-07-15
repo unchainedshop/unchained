@@ -5,17 +5,12 @@ import {
 } from './helpers';
 import { ADMIN_TOKEN } from './seeds/users';
 
-let connection;
 let graphqlFetch;
 
 describe('WarehousingInterfaces', () => {
   beforeAll(async () => {
-    [, connection] = await setupDatabase();
+    await setupDatabase();
     graphqlFetch = await createLoggedInGraphqlFetch(ADMIN_TOKEN);
-  });
-
-  afterAll(async () => {
-    await connection.close();
   });
 
   describe('For logged in users', () => {

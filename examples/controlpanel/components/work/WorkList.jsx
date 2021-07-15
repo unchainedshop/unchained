@@ -1,6 +1,6 @@
 import gql from 'graphql-tag';
 import React, { useEffect, useState } from 'react';
-import { Checkbox, Table, Segment, Card } from 'semantic-ui-react';
+import { Checkbox, Table, Segment } from 'semantic-ui-react';
 import { compose, defaultProps } from 'recompose';
 import DatePicker from 'react-datepicker';
 

@@ -81,13 +81,6 @@ const AssortmentList = ({
 export default compose(
   defaultProps({ limit: 20, offset: 0 }),
   withState('isShowLeafNodes', 'setShowLeafNodes', false),
-  withRouter,
-  withHandlers({
-    toggleShowLeafNodes:
-      ({ isShowLeafNodes, setShowLeafNodes }) =>
-      () =>
-        setShowLeafNodes(!isShowLeafNodes),
-  }),
   withDataTableLoader({
     queryName: 'assortments',
     query: gql`
@@ -108,5 +101,12 @@ export default compose(
         }
       }
     `,
+  }),
+  withRouter,
+  withHandlers({
+    toggleShowLeafNodes:
+      ({ isShowLeafNodes, setShowLeafNodes }) =>
+      () =>
+        setShowLeafNodes(!isShowLeafNodes),
   })
 )(AssortmentList);

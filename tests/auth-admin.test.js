@@ -6,7 +6,6 @@ import {
 } from './helpers';
 import { Admin, ADMIN_TOKEN, User, USER_TOKEN } from './seeds/users';
 
-let connection;
 let db;
 let graphqlFetchAsAdminUser;
 let graphqlFetchAsAnonymousUser;
@@ -14,14 +13,10 @@ let graphqlFetchAsNormalUser;
 
 describe('Auth for admin users', () => {
   beforeAll(async () => {
-    [db, connection] = await setupDatabase();
+    [db] = await setupDatabase();
     graphqlFetchAsAdminUser = await createLoggedInGraphqlFetch(ADMIN_TOKEN);
     graphqlFetchAsNormalUser = await createLoggedInGraphqlFetch(USER_TOKEN);
     graphqlFetchAsAnonymousUser = await createAnonymousGraphqlFetch();
-  });
-
-  afterAll(async () => {
-    await connection.close();
   });
 
   describe('Query.users', () => {

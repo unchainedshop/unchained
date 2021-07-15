@@ -11,21 +11,16 @@ import {
   SimplePaymentCredential,
 } from './seeds/payments';
 
-let connection;
 let graphqlFetchAsAdminUser;
 let graphqlFetchAsNormalUser;
 let graphqlFetchAsAnonymousUser;
 
 describe('PaymentProviders', () => {
   beforeAll(async () => {
-    [, connection] = await setupDatabase();
+    await setupDatabase();
     graphqlFetchAsAdminUser = await createLoggedInGraphqlFetch(ADMIN_TOKEN);
     graphqlFetchAsNormalUser = await createLoggedInGraphqlFetch(USER_TOKEN);
     graphqlFetchAsAnonymousUser = await createAnonymousGraphqlFetch();
-  });
-
-  afterAll(async () => {
-    await connection.close();
   });
 
   describe('Query.paymentProvidersCount when loged in should', () => {

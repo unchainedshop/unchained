@@ -17,13 +17,12 @@ import didRecover from './seeds/apple-iap-did-recover';
 import didChangeRenewalStatus from './seeds/apple-iap-did-change-renewal-status';
 import { AllSubscriptionIds } from './seeds/subscriptions';
 
-let connection;
 let db;
 let graphqlFetch;
 
 describe('Plugins: Apple IAP Payments', () => {
   beforeAll(async () => {
-    [db, connection] = await setupDatabase();
+    [db] = await setupDatabase();
     graphqlFetch = await createLoggedInGraphqlFetch(USER_TOKEN);
 
     await db.collection('products').findOrInsertOne({
@@ -89,10 +88,6 @@ describe('Plugins: Apple IAP Payments', () => {
       orderNumber: 'iap2',
       paymentId: 'iap-payment2',
     });
-  });
-
-  afterAll(async () => {
-    await connection.close();
   });
 
   describe('Mutation.registerPaymentCredentials (Apple IAP)', () => {

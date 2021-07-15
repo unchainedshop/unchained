@@ -4,7 +4,6 @@ import { ProcessingQuotation } from './seeds/quotations';
 
 import { USER_TOKEN, ADMIN_TOKEN } from './seeds/users';
 
-let connection;
 let graphqlFetch;
 let adminGraphqlFetch;
 
@@ -12,13 +11,9 @@ describe('cart checkout', () => {
   let quotationId;
 
   beforeAll(async () => {
-    [, connection] = await setupDatabase();
+    await setupDatabase();
     graphqlFetch = await createLoggedInGraphqlFetch(USER_TOKEN);
     adminGraphqlFetch = await createLoggedInGraphqlFetch(ADMIN_TOKEN);
-  });
-
-  afterAll(async () => {
-    await connection.close();
   });
 
   describe('Mutation.requestQuotation', () => {

@@ -6,21 +6,16 @@ import {
 import { SimpleOrder } from './seeds/orders';
 import { USER_TOKEN, ADMIN_TOKEN } from './seeds/users';
 
-let connection;
 let graphqlFetch;
 let adminGraphqlFetch;
 let graphqlFetchAsAnonymousUser;
 
 describe('Order: Management', () => {
   beforeAll(async () => {
-    [, connection] = await setupDatabase();
+    await setupDatabase();
     graphqlFetch = await createLoggedInGraphqlFetch(USER_TOKEN);
     adminGraphqlFetch = await createLoggedInGraphqlFetch(ADMIN_TOKEN);
     graphqlFetchAsAnonymousUser = await createAnonymousGraphqlFetch();
-  });
-
-  afterAll(async () => {
-    await connection.close();
   });
 
   describe('Query.ordersCount for logged in user should', () => {

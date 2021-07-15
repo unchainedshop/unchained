@@ -6,17 +6,12 @@ import {
 import { ADMIN_TOKEN } from './seeds/users';
 import { SimpleAssortment } from './seeds/assortments';
 
-let connection;
 let graphqlFetch;
 
 describe('AssortmentTexts', () => {
   beforeAll(async () => {
-    [, connection] = await setupDatabase();
+    await setupDatabase();
     graphqlFetch = await createLoggedInGraphqlFetch(ADMIN_TOKEN);
-  });
-
-  afterAll(async () => {
-    await connection.close();
   });
 
   describe('mutation.updateAssortmentTexts for admin users should', () => {

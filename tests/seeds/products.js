@@ -38,7 +38,7 @@ export const ConfigurableProduct = {
   created: new Date('2019-07-30T09:23:26.253+0000'),
   type: 'CONFIGURABLE_PRODUCT',
   status: 'ACTIVE',
-  sequence: 0,
+  sequence: 3,
   authorId: 'admin',
   slugs: ['old-slug-de', 'slug-de', 'slug-fr', 'test-slug'],
   updated: new Date('2019-09-10T14:29:37.015+0000'),
@@ -73,7 +73,7 @@ export const SimpleProductBundle = {
   created: new Date('2019-07-30T09:23:26.253+0000'),
   type: 'BUNDLE_PRODUCT',
   status: 'ACTIVE',
-  sequence: 0,
+  sequence: 2,
   authorId: 'admin',
   slugs: ['old-slug-de', 'slug-de', 'slug-fr'],
   updated: new Date('2019-09-10T14:29:37.015+0000'),
@@ -106,6 +106,7 @@ export const SimpleProductBundle = {
 export const UnpublishedProduct = {
   ...SimpleProduct,
   _id: 'un-published',
+  sequence: 1,
   status: null,
   published: null,
 };
@@ -115,7 +116,7 @@ export const PlanProduct = {
   created: new Date('2019-07-30T09:23:26.253+0000'),
   type: 'PLAN_PRODUCT',
   status: 'ACTIVE',
-  sequence: 0,
+  sequence: 20,
   authorId: 'admin',
   slugs: ['plan', 'test-slug'],
   updated: new Date('2019-09-10T14:29:37.015+0000'),
@@ -589,7 +590,9 @@ export default async function seedProducts(db) {
       ProxyPlanProduct2,
       ProxyPlanProduct3,
       ProxyProduct,
+      PlanProduct,
     ]);
+
   await db.collection('product_reviews').findOrInsertOne(SimpleProductReview);
   await db.collection('product_texts').findOrInsertOne(GermanProductText);
   await db.collection('product_texts').findOrInsertOne(FrenchProductText);
@@ -602,7 +605,6 @@ export default async function seedProducts(db) {
     .findOrInsertOne(FrenchJpegProductMediaText);
 
   await db.collection('media').findOrInsertOne(JpegMedia);
-  await db.collection('products').findOrInsertOne(PlanProduct);
   await db.collection('product_texts').findOrInsertOne(GermanPlanProductText);
   await db.collection('product_variations').insertMany(ProductVariations);
   await db

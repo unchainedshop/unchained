@@ -7,21 +7,16 @@ import { SendMailDeliveryProvider } from './seeds/deliveries';
 import { SimpleOrder, SimpleDelivery, PickupDelivery } from './seeds/orders';
 import { ADMIN_TOKEN, USER_TOKEN } from './seeds/users';
 
-let connection;
 let graphqlFetchAsAdmin;
 let graphqlFetchAsNormalUser;
 let graphqlFetchAsAnonymousUser;
 
 describe('Order: Deliveries', () => {
   beforeAll(async () => {
-    [, connection] = await setupDatabase();
+    await setupDatabase();
     graphqlFetchAsAdmin = await createLoggedInGraphqlFetch(ADMIN_TOKEN);
     graphqlFetchAsNormalUser = await createLoggedInGraphqlFetch(USER_TOKEN);
     graphqlFetchAsAnonymousUser = await createAnonymousGraphqlFetch();
-  });
-
-  afterAll(async () => {
-    await connection.close();
   });
 
   describe('Mutation.setOrderDeliveryProvider for admin user', () => {

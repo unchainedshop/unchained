@@ -267,7 +267,8 @@ Products.removeBundleItem = ({ productId, index }) => {
     }
   );
   emit('PRODUCT_REMOVE_BUNDLE_ITEM', {
-    payload: { productId, item: removedItem },
+    productId,
+    item: removedItem,
   });
   return result;
 };
@@ -427,7 +428,8 @@ Products.helpers({
       })
     );
     emit('PRODUCT_UPDATE_TEXTS', {
-      payload: { product: this, productTexts },
+      product: this,
+      productTexts,
     });
     return productTexts;
   },
