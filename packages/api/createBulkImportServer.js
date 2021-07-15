@@ -1,6 +1,6 @@
 import { createLogger } from 'meteor/unchained:core-logger';
 import { WorkerDirector } from 'meteor/unchained:core-worker';
-import getContext, { withContext } from 'meteor/unchained:utils/context';
+import { getContext, withContext } from 'meteor/unchained:utils/context';
 import { checkAction } from './acl';
 import { actions } from './roles';
 
