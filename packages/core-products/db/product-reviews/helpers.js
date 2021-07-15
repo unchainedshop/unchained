@@ -5,12 +5,34 @@ import { ProductReviews } from './collections';
 import { ProductReviewVoteTypes } from './schema';
 import { Products } from '../products/collections';
 
-const buildFindSelector = ({ productId, authorId, deleted = null } = {}) => {
-  return {
+const SORT_DIRECTIONS = {
+  ASC: 1,
+  DESC: -1,
+};
+const buildFindSelector = ({
+  productId,
+  authorId,
+  deleted = null,
+  queryString,
+} = {}) => {
+  const selector = {
     ...(productId ? { productId } : {}),
     ...(authorId ? { authorId } : {}),
     deleted,
   };
+
+  if (queryString) {
+    selector.$text = { $search: queryString };
+  }
+  return selector;
+};
+
+const buildSortOptions = (options) => {
+  const sortBy = {};
+  options?.forEach(({ key, value }) => {
+    sortBy[key] = SORT_DIRECTIONS[value];
+  });
+  return sortBy;
 };
 
 ProductReviews.helpers({
@@ -165,13 +187,36 @@ ProductReviews.findReview = function findReview(
   return ProductReviews.findOne({ _id: productReviewId }, ...options);
 };
 
-ProductReviews.findReviews = function findReviews(query, ...options) {
-  return this.find(buildFindSelector(query), ...options).fetch();
-};
-
 ProductReviews.count = async (query) => {
   const count = await ProductReviews.rawCollection().countDocuments(
     buildFindSelector(query)
   );
   return count;
+};
+
+ProductReviews.findReviews = async (
+  { queryString, ...rest },
+  { limit, offset, sort: sortOptions = [{ key: 'rating', value: 'DESC' }] }
+) => {
+  const selector = buildFindSelector({ queryString, ...rest });
+  if (queryString) {
+    const reviewsArray = await ProductReviews.rawCollection()
+      .find(selector, {
+        skip: offset,
+        limit,
+        projection: { score: { $meta: 'textScore' } },
+        sort: {
+          score: { $meta: 'textScore' },
+          ...buildSortOptions(sortOptions),
+        },
+      })
+      .toArray();
+    return (reviewsArray || []).map((item) => new ProductReviews._transform(item)); // eslint-disable-line
+  }
+
+  return ProductReviews.find(selector, {
+    skip: offset,
+    limit,
+    sort: buildSortOptions(sortOptions),
+  }).fetch();
 };

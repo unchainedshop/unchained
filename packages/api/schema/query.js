@@ -306,7 +306,12 @@ export default [
       """
       Get all product reviews
       """
-      productReviews(limit: Int = 10, offset: Int = 0): [ProductReview!]!
+      productReviews(
+        limit: Int = 10
+        offset: Int = 0
+        sort: [ProductReviewSortOptionInput!]
+        queryString: String
+      ): [ProductReview!]!
 
       """
       Get a specific product review by ID

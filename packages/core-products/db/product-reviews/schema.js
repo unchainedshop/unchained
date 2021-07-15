@@ -50,7 +50,31 @@ Migrations.add({
   down() {},
 });
 
-export default () => {
+const buildIndexes = async () => {
   ProductReviews.rawCollection().createIndex({ productId: 1 });
   ProductReviews.rawCollection().createIndex({ authorId: 1 });
+  await ProductReviews.rawCollection().createIndex(
+    {
+      title: 'text',
+      review: 'text',
+    },
+    {
+      weights: {
+        title: 3,
+        review: 5,
+      },
+      name: 'productreview_fulltext_search',
+    }
+  );
+};
+
+export default async () => {
+  try {
+    await buildIndexes();
+  } catch (e) {
+    await ProductReviews.rawCollection().dropIndexes();
+    try {
+      await buildIndexes();
+    } catch (e) {} // eslint-disable-line
+  }
 };
