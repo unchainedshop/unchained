@@ -99,8 +99,8 @@ if (STRIPE_SECRET) {
           type: 'card',
           card: {
             number: '4242424242424242',
-            exp_month: 6,
-            exp_year: 2021,
+            exp_month: 12,
+            exp_year: 2025,
             cvc: '314',
           },
         });
