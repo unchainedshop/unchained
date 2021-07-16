@@ -3,6 +3,7 @@ import { execute, toPromise } from '@apollo/client/core';
 import { createUploadLink } from 'apollo-upload-client';
 import gql from 'graphql-tag';
 import fetch from 'isomorphic-unfetch';
+import FormData from 'form-data';
 import seedLocaleData from './seeds/locale-data';
 import seedUsers, { ADMIN_TOKEN } from './seeds/users';
 import seedProducts from './seeds/products';
@@ -96,6 +97,7 @@ export const createAnonymousGraphqlFetch = () => {
   const link = createUploadLink({
     uri,
     fetch,
+    FormData,
   });
   return convertLinkToFetch(link);
 };
@@ -105,6 +107,7 @@ export const createLoggedInGraphqlFetch = (token = ADMIN_TOKEN) => {
   const link = createUploadLink({
     uri,
     fetch,
+    FormData,
     headers: {
       authorization: token,
     },
