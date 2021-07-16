@@ -1,4 +1,5 @@
 import fetch from 'isomorphic-unfetch';
+import Blob from 'node-blob';
 import {
   setupDatabase,
   createLoggedInGraphqlFetch,
@@ -196,12 +197,10 @@ describe('Auth for admin users', () => {
         'https://assets-cdn.github.com/images/modules/logos_page/Octocat.png',
       );
       const imageBuffer = await imageResult.buffer();
-      const avatar = {
+      const avatar = new Blob([imageBuffer], {
         name: 'Octocat.png',
         type: 'image/png',
-        size: imageBuffer.length,
-        buffer: imageBuffer.toString('base64'),
-      };
+      });
 
       const { data: { updateUserAvatar } = {} } = await graphqlFetchAsAdminUser(
         {
