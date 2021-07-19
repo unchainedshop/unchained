@@ -9,7 +9,6 @@ const actionMap = {
   ORDER_UPDATE_CART_ITEM: 'addEcommerceItem',
   ORDER_REMOVE_CART_ITEM: 'addEcommerceItem',
   ORDER_CHECKOUT: 'trackEcommerceOrder',
-  PAGE_VIEW: 'trackPageView',
 };
 
 const extractOrderParameters = (orderId) => {
@@ -44,17 +43,6 @@ const extractOrderParameters = (orderId) => {
   return orderOptions;
 };
 
-const extractPageParameters = ({ path, referer }, context) => {
-  return {
-    url: `${context?.origin}${path}`,
-    urlref: referer ?? context?.referer,
-    ua: context?.userAgent,
-    lang: context?.language,
-    uid: context?.userId,
-    _id: context?.userId,
-  };
-};
-
 const MatomoTracker = (siteId, siteUrl, subscribeTo, options = {}) => {
   if (!siteId && (typeof siteId !== 'number' || siteId !== 'string'))
     throw new Error('Matomo siteId is required');
@@ -71,7 +59,7 @@ const MatomoTracker = (siteId, siteUrl, subscribeTo, options = {}) => {
       );
 
     matmoOptions = options?.transform
-      ? options?.transform(subscribeTo, matmoOptions)
+      ? options?.transform(subscribeTo, matmoOptions, context) ?? {}
       : matmoOptions;
 
     await fetch(
