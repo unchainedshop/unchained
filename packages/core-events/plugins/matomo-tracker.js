@@ -56,25 +56,28 @@ const MatomoTracker = (siteId, siteUrl, subscribeTo, options = {}) => {
     : '';
 
   subscribe(subscribeTo, async ({ payload }) => {
-    let orderOptions = {};
-    if (
-      payload?.order ||
-      payload?.payload?.order ||
-      payload?.orderPosition ||
-      payload?.payload?.orderPosition
-    )
-      orderOptions = extractOrderParameters(
-        payload?.order ||
-          payload?.payload?.order ||
-          payload?.orderPosition?.order() ||
-          payload?.payload?.orderPosition?.order()
+    let matmoOptions = {};
+    if (payload?.order || payload?.orderPosition)
+      matmoOptions = extractOrderParameters(
+        payload?.order?._id || payload?.orderPosition?.orderId
       );
+
+    matmoOptions = options?.transform
+      ? options?.transform(subscribeTo, matmoOptions)
+      : matmoOptions;
+
     await fetch(
       `${siteUrl}/matomo.php?idsite=${siteId}&rec=1&action_name=${
         actionMap[subscribeTo]
-      }&${encode(orderOptions)}${extraOptions}`
+      }&${encode(matmoOptions)}${extraOptions}`
     );
   });
 };
 
-export default MatomoTracker;
+export default (siteId, url, options) => {
+  MatomoTracker(siteId, url, 'ORDER_CHECKOUT', options);
+  MatomoTracker(siteId, url, 'ORDER_UPDATE_CART_ITEM', options);
+  MatomoTracker(siteId, url, 'ORDER_ADD_PRODUCT', options);
+  MatomoTracker(siteId, url, 'ORDER_REMOVE_CART_ITEM', options);
+  MatomoTracker(siteId, url, 'PAGE_VIEW', options);
+};
