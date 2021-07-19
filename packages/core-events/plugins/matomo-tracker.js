@@ -9,11 +9,12 @@ const actionMap = {
   ORDER_UPDATE_CART_ITEM: 'addEcommerceItem',
   ORDER_REMOVE_CART_ITEM: 'addEcommerceItem',
   ORDER_CHECKOUT: 'trackEcommerceOrder',
+  PAGE_VIEW: 'trackPageView',
 };
 
-const extractOrderParameters = (currentOrder) => {
+const extractOrderParameters = (orderId) => {
   const orderOptions = {};
-  const order = Orders.findOrder({ orderId: currentOrder._id });
+  const order = Orders.findOrder({ orderId });
 
   if (!order.isCart()) {
     orderOptions.ec_id = order._id;
@@ -43,6 +44,17 @@ const extractOrderParameters = (currentOrder) => {
   return orderOptions;
 };
 
+const extractPageParameters = ({ path, referer }, context) => {
+  return {
+    url: `${context?.origin}${path}`,
+    urlref: referer ?? context?.referer,
+    ua: context?.userAgent,
+    lang: context?.language,
+    uid: context?.userId,
+    _id: context?.userId,
+  };
+};
+
 const MatomoTracker = (siteId, siteUrl, subscribeTo, options = {}) => {
   if (!siteId && (typeof siteId !== 'number' || siteId !== 'string'))
     throw new Error('Matomo siteId is required');
@@ -51,11 +63,7 @@ const MatomoTracker = (siteId, siteUrl, subscribeTo, options = {}) => {
   if (!subscribeTo && typeof subscribeTo !== 'string')
     throw new Error('Event that triggers tracking should be provided');
 
-  const extraOptions = Object.keys(options || {}).length
-    ? `&${encode(options)}`
-    : '';
-
-  subscribe(subscribeTo, async ({ payload }) => {
+  subscribe(subscribeTo, async ({ payload, context }) => {
     let matmoOptions = {};
     if (payload?.order || payload?.orderPosition)
       matmoOptions = extractOrderParameters(
@@ -69,7 +77,7 @@ const MatomoTracker = (siteId, siteUrl, subscribeTo, options = {}) => {
     await fetch(
       `${siteUrl}/matomo.php?idsite=${siteId}&rec=1&action_name=${
         actionMap[subscribeTo]
-      }&${encode(matmoOptions)}${extraOptions}`
+      }&${encode(matmoOptions)}`
     );
   });
 };
@@ -79,5 +87,4 @@ export default (siteId, url, options) => {
   MatomoTracker(siteId, url, 'ORDER_UPDATE_CART_ITEM', options);
   MatomoTracker(siteId, url, 'ORDER_ADD_PRODUCT', options);
   MatomoTracker(siteId, url, 'ORDER_REMOVE_CART_ITEM', options);
-  MatomoTracker(siteId, url, 'PAGE_VIEW', options);
 };

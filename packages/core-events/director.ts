@@ -1,4 +1,5 @@
 import { createLogger } from 'meteor/unchained:core-logger';
+import { getContext } from 'meteor/unchained:utils';
 import { Events } from './db';
 
 const logger = createLogger('unchained:core-events');
@@ -8,12 +9,29 @@ export abstract class EventAdapter {
   public abstract subscribe(eventName: string, callBack: () => void): void;
 }
 
+export type ContextNormalizerFunction = (context: any) => any;
+
+export const defaultNormalizer: ContextNormalizerFunction = (context) => {
+  return {
+    userAgent: context?.userAgent,
+    language: context?.localeContext?.code,
+    country: context?.localeContext?.country,
+    remoteAddress: context?.remoteAddress,
+    referer: context?.req?.headers?.referer,
+    origin: context?.req?.headers?.origin,
+    userId: context?.userId,
+  };
+};
+
 class EventDirector {
   private static adapter: EventAdapter;
 
   private static registeredEvents = new Set();
 
   private static registeredCallbacks = new Set();
+
+  private static contextNormalizer: ContextNormalizerFunction =
+    defaultNormalizer;
 
   static registerEvents(events: string[]): void {
     if (events.length) {
@@ -30,13 +48,23 @@ class EventDirector {
     EventDirector.adapter = adapter;
   }
 
-  static emit(eventName: string, data: any): void {
+  static setContextNormalizer(fn: ContextNormalizerFunction): void {
+    EventDirector.contextNormalizer = fn;
+  }
+
+  static async emit(eventName: string, data: any): Promise<void> {
+    const context = await getContext();
+    const extractedContext = EventDirector.contextNormalizer(context);
     if (!EventDirector.registeredEvents.has(eventName))
       throw new Error(`Event with ${eventName} is not registered`);
-    EventDirector.adapter.publish(eventName, { payload: { ...data } });
+    EventDirector.adapter.publish(eventName, {
+      payload: { ...data },
+      context: extractedContext,
+    });
     Events.insert({
       type: eventName,
       payload: data,
+      context: extractedContext,
       created: new Date(),
     });
     logger.verbose(
@@ -62,5 +90,6 @@ export const {
   setEventAdapter,
   registerEvents,
   getRegisteredEvents,
+  setContextNormalizer,
 } = EventDirector;
 export default EventDirector;
