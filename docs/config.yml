@@ -7,7 +7,7 @@ info:
     Welcome to unchained API documentation
   version: 1.0.0
   title: UnchainedShop API
-  termsOfService: "https://github.com/unchainedshop/unchained/blob/master/docs/contributing.md"
+  termsOfService: "https://github.com/unchainedshop/unchained/blob/master/contributing.md"
   contact:
     email: hello@unchained.shop
   license:

@@ -4,25 +4,45 @@ sidebar_title: Introduction
 description: Overview
 ---
 
-**Unchained Engine is an open-source API-first e-commerce framework that lets you build completely custom shopping experiences**
+**Unchained Engine is an open-source API-first e-commerce framework that lets you build custom shopping experiences**
 
 ![diagram](./images/System-Architecture.png)
 
-
 #### Unchained Engine provides:
 
-*  **Codeability**, so you can tweak the system with endless possibilities not restricted by "customization" or a settings-approach
-*  **GraphQL API**, allowing you to build fast, performant and modern storefronts
-*  **Stateless architecture**, allowing you to scale horizontally and vertically
-*  **Production readiness**, due the fact that the host company uses the Unchained Engine for medium- to big enterprise web shops (Dogfooding)
+- **Codeability**, so you can tweak the system with endless possibilities not restricted by "customization" or a settings-approach
+- **GraphQL API**, allowing you to build fast, performant and modern storefronts
+- **Stateless architecture**, allowing you to scale horizontally and vertically
+- **Production readiness**, due the fact that the host company uses the Unchained Engine for medium- to big enterprise web shops (Dogfooding)
 
 #### Ready to try it out?
 
-import {Button} from '@apollo/space-kit/Button';
-import {Link} from 'gatsby';
+Let's go. Choose what you want to do first and we guide you trough the Unchained Engine setup
 
-<div align="center">
-  <Button as={<Link to="/getting-started/" />} size="large">
-    Get started!
-  </Button>
+import { Button } from "@apollo/space-kit/Button";
+import { Card } from "@apollo/space-kit/Card";
+import { Link } from "gatsby";
+
+<div style={{padding: '0 32px'}}>
+  <Card
+    style={{ marginTop: 32 }}
+    heading="I want to start the engine for development!"
+    description={<span>Getting started tutorial for developers to setup your local environment with an Unchained Engine and a test front-end called <i>Storefront</i> ready for you to use and customize.</span>}
+    actions={
+      <Button as={<Link to="/getting-started-development/" />} size="large">
+        Start engine  🏎
+      </Button>
+    }
+  />
+
+  <Card
+    style={{ marginTop: 48 }}
+    heading="I want to have my shop online in 5min!"
+    description="Quick start tutorial to guide you through the steps to launch our storefront boilerplate shop online with its own unchained engine."
+    actions={
+      <Button as={<Link to="/getting-started-deploy/" />} size="large">
+        Launch shop 🚀
+      </Button>
+    }
+  />
 </div>
