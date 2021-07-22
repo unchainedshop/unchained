@@ -44,7 +44,7 @@ Password:   unchained#rocks
 
 You should see the following admin console in your browser (Yes, the UI can be improved. However, it's an admin console not visible to any customer).
 
-![diagram](./images/AdminConsole.png)
+![diagram](../images/AdminConsole.png)
 
 [localhost:4010/graphql](http://localhost:4010/graphql) opens the graphQL playground for you to easily execute queries and mutations. 
 
@@ -54,12 +54,3 @@ You should see the following admin console in your browser (Yes, the UI can be i
 
 > To test the Unchained Engine the next step will be to setup the test frontend project _Storefront_ created with [React.js](https://reactjs.org/) and [Next.js](https://nextjs.org/) locally.
 
-
-
-## Summary
-
-What did we do so far?
-
-- [http://localhost:3000](http://localhost:3000) to see your web shop front-end (Storefront)
-- [http://localhost:4010](http://localhost:4010) to see the Unchained Engine admin control panel<br />Login with username: _admin@unchained.local_ / password: _unchained#rocks_
-- [http://localhost:4010/graphql](http://localhost:4010/graphql) to see the Unchained Engine graphQL playground

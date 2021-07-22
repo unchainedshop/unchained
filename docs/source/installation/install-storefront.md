@@ -1,13 +1,13 @@
 ---
-title: Setup the shop
-sidebar_title: Install shop
+title: Install and setup the storefront web-app
+sidebar_title: Install store
 ---
 
 > To test the Unchained Engine we setup the test frontend project **Storefront** created with [React.js](https://reactjs.org/) and [Next.js](https://nextjs.org/) locally.
 
 This tutorial helps you:
 
-- Setup a basic Unchained backed shop (web app)
+- Install the shop Storefront locally
 - Conntect to the Unchained Engine via graphQL
 
 ## Step 1: Installation
@@ -55,10 +55,3 @@ If you skipped the step of adding a product in the [Setup the Unchained Engine](
 
 ![diagram](./images/StorefrontSwagShop.png)
 
-## Summary
-
-What did we do so far?
-
-- [http://localhost:3000](http://localhost:3000) to see your web shop front-end (Storefront)
-- [http://localhost:4010](http://localhost:4010) to see the Unchained Engine admin control panel<br />Login with username: _admin@unchained.local_ / password: _unchained#rocks_
-- [http://localhost:4010/graphql](http://localhost:4010/graphql) to see the Unchained Engine graphQL playground

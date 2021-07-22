@@ -17,6 +17,8 @@ description: Overview
 
 #### Ready to try it out?
 
+// TOOD: Add diagram with Unchained Engine / Admin Control Panel / Storefront
+
 Let's go. Choose what you want to do first and we guide you trough the Unchained Engine setup
 
 import { Button } from "@apollo/space-kit/Button";
@@ -24,24 +26,24 @@ import { Card } from "@apollo/space-kit/Card";
 import { Link } from "gatsby";
 
 <div style={{padding: '0 32px'}}>
-  <Card
-    style={{ marginTop: 32 }}
-    heading="I want to start the engine for development!"
-    description={<span>Getting started tutorial for developers to setup your local environment with an Unchained Engine and a test front-end called <i>Storefront</i> ready for you to use and customize.</span>}
+ <Card
+    style={{ marginTop: 48 }}
+    heading="I want to have my eCommerce store online in 15min!"
+    description="Quick start tutorial to guide you through the steps to launch our storefront web app online with its own unchained engine setup."
     actions={
-      <Button as={<Link to="/getting-started-development/" />} size="large">
-        Start engine  🏎
+      <Button as={<Link to="/getting-started-launch-engine/" />} size="large">
+        Launch store 🚀
       </Button>
     }
   />
 
   <Card
-    style={{ marginTop: 48 }}
-    heading="I want to have my shop online in 5min!"
-    description="Quick start tutorial to guide you through the steps to launch our storefront boilerplate shop online with its own unchained engine."
+    style={{ marginTop: 32 }}
+    heading="I want to start the engine locally"
+    description={<span>Getting started tutorial for developers to setup your local environment with an Unchained Engine and our store front-end (storefront) ready for you to use and customize.</span>}
     actions={
-      <Button as={<Link to="/getting-started-deploy/" />} size="large">
-        Launch shop 🚀
+      <Button as={<Link to="/installation/engine/" />} size="large">
+        Start engine  🏎
       </Button>
     }
   />
