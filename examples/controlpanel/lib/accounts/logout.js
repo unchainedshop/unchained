@@ -18,7 +18,7 @@ export default async function logout(apollo) {
       },
     });
   } catch (e) {
-    console.warn(e);
+    console.warn(e); // eslint-disable-line
   }
   await resetStore();
 }

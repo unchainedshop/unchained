@@ -1,9 +1,12 @@
 # vNEXT
 
+# v1.0.0-beta9
+
 - [controlpanel] Ambiguity of where to set environment variable is fixed. now you can set environment related with the control panel at the root directory of `controlpanel` and environemt variables related with the engine under root directory of `minimal`.
 - [api] `query.productReviews` is extended to support searching/filtering with title or review and sorting all valid fields of product review.
 - [controlpanel] Now it's possible to add external links to an extended version of unchained control panel or any other site you want to access through the `controlpanel` by providing JSON using the env `EXTERNAL_LINKS` variable inside `example/minimal`. The JSON to be provided has to be an array of external link definitions in the form of objects with href and title properties (`[{ href: string, title: string}]`).
 If an external link file object is found its content will appear in the top menu of the `controlpanel`
+- [controlpanel] Fix logout with server-side cookies
 
 # v1.0.0-beta8
 

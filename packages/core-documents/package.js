@@ -10,8 +10,8 @@ Package.onUse((api) => {
   api.versionsFrom('2.2');
   api.use('ecmascript');
   api.use('http@1.4.3');
-  api.use('unchained:utils@1.0.0-beta8');
-  api.use('unchained:core-logger@1.0.0-beta8');
+  api.use('unchained:utils@1.0.0-beta9');
+  api.use('unchained:core-logger@1.0.0-beta9');
 
   api.mainModule('documents.js', 'server');
 });

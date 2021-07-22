@@ -49,8 +49,8 @@ socket-stream-client@0.4.0
 tmeasday:check-npm-versions@0.3.2
 tracker@1.2.0
 unchained:core-documents@1.0.0-beta9
-unchained:core-logger@1.0.0-beta8
-unchained:utils@1.0.0-beta8
+unchained:core-logger@1.0.0-beta9
+unchained:utils@1.0.0-beta9
 underscore@1.0.10
 url@1.3.2
 webapp@1.11.1

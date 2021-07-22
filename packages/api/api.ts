@@ -33,7 +33,7 @@ export interface UnchainedServerOptions {
   context: any;
 }
 
-const UNCHAINED_API_VERSION = '1.0.0-beta8'; // eslint-disable-line
+const UNCHAINED_API_VERSION = '1.0.0-beta9'; // eslint-disable-line
 
 export const createContextResolver =
   (unchained: UnchainedAPI) =>

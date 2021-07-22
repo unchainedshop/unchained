@@ -1,7 +1,7 @@
 {
   "name": "@unchainedshop/controlpanel",
   "description": "Control Panel for Unchained Engine",
-  "version": "1.0.0-beta9",
+  "version": "1.0.0-beta10",
   "license": "EUPL-1.2",
   "homepage": "https://unchained.shop",
   "main": "index.js",
@@ -30,6 +30,7 @@
     "serve-static": "^1.14.1"
   },
   "devDependencies": {
+    "@apollo/client": "^3.3.21",
     "@ggascoigne/react-json-view": "^1.19.3",
     "@zeit/next-css": "^1.0.1",
     "@zeit/next-less": "^1.0.1",
