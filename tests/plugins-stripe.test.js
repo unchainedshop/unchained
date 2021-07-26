@@ -243,11 +243,8 @@ if (STRIPE_SECRET) {
         });
         const credentials = me?.paymentCredentials?.[0];
         credentials.meta = {
-          currency: 'CHF',
-          expm: '12',
-          expy: '21',
-          maskedCC: '510000xxxxxx0008',
-          pmethod: 'ECA',
+          customer: 'stripe customer',
+          usage: 'off_session',
         };
         expect(credentials).toMatchObject({
           isPreferred: true,
