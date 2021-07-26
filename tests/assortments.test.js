@@ -59,7 +59,6 @@ describe('Assortments', () => {
               isRoot
               sequence
               tags
-              meta
               texts {
                 _id
               }
@@ -314,7 +313,6 @@ describe('Assortments', () => {
               isRoot
               sequence
               tags
-              meta
               texts {
                 _id
               }
@@ -558,7 +556,6 @@ describe('Assortments', () => {
               isRoot
               sequence
               tags
-              meta
               texts {
                 _id
                 locale
@@ -570,7 +567,6 @@ describe('Assortments', () => {
                 _id
                 sortKey
                 tags
-                meta
                 assortment {
                   _id
                 }
@@ -659,7 +655,6 @@ describe('Assortments', () => {
               isRoot
               sequence
               tags
-              meta
               texts {
                 _id
                 locale
@@ -671,7 +666,6 @@ describe('Assortments', () => {
                 _id
                 sortKey
                 tags
-                meta
                 assortment {
                   _id
                 }
@@ -816,7 +810,6 @@ describe('Assortments', () => {
               isRoot
               sequence
               tags
-              meta
               texts {
                 _id
                 locale
@@ -828,7 +821,6 @@ describe('Assortments', () => {
                 _id
                 sortKey
                 tags
-                meta
                 assortment {
                   _id
                 }
@@ -930,7 +922,6 @@ describe('Assortments', () => {
               isRoot
               sequence
               tags
-              meta
               texts {
                 _id
                 locale
@@ -942,7 +933,6 @@ describe('Assortments', () => {
                 _id
                 sortKey
                 tags
-                meta
                 assortment {
                   _id
                 }

@@ -51,7 +51,6 @@ describe('ProductBundleItem', () => {
               reviews {
                 _id
               }
-              meta
               assortmentPaths {
                 assortmentProduct {
                   _id
@@ -262,7 +261,6 @@ describe('ProductBundleItem', () => {
               reviews {
                 _id
               }
-              meta
               assortmentPaths {
                 assortmentProduct {
                   _id

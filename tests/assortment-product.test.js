@@ -28,7 +28,6 @@ describe('AssortmentProduct', () => {
               _id
               sortKey
               tags
-              meta
               assortment {
                 _id
               }
@@ -120,7 +119,6 @@ describe('AssortmentProduct', () => {
               _id
               sortKey
               tags
-              meta
               assortment {
                 _id
               }
@@ -156,7 +154,6 @@ describe('AssortmentProduct', () => {
               _id
               sortKey
               tags
-              meta
               assortment {
                 _id
               }
@@ -192,7 +189,6 @@ describe('AssortmentProduct', () => {
               _id
               sortKey
               tags
-              meta
               assortment {
                 _id
               }

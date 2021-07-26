@@ -209,7 +209,6 @@ describe('Order: Deliveries', () => {
                 meta: $meta
               ) {
                 _id
-                meta
                 provider {
                   _id
                   type
@@ -245,9 +244,6 @@ describe('Order: Deliveries', () => {
         });
       expect(updateOrderDeliveryShipping).toMatchObject({
         _id: SimpleDelivery._id,
-        meta: {
-          john: 'wayne',
-        },
         provider: {
           type: 'SHIPPING',
         },
@@ -448,7 +444,6 @@ describe('Order: Deliveries', () => {
                 meta: $meta
               ) {
                 _id
-                meta
                 provider {
                   _id
                   type
@@ -475,9 +470,6 @@ describe('Order: Deliveries', () => {
         });
       expect(updateOrderDeliveryPickUp).toMatchObject({
         _id: PickupDelivery._id,
-        meta: {
-          john: 'wayne',
-        },
         provider: {
           type: 'PICKUP',
         },

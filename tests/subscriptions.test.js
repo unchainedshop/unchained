@@ -120,7 +120,6 @@ describe('Subscriptions', () => {
                 subscriptionNumber
                 updated
                 expires
-                meta
                 plan {
                   product {
                     _id
@@ -159,7 +158,6 @@ describe('Subscriptions', () => {
                 currency {
                   isoCode
                 }
-                meta
                 periods {
                   order {
                     _id
@@ -264,7 +262,6 @@ describe('Subscriptions', () => {
                   _id
                 }
               }
-              meta
             }
           }
         `,
@@ -421,7 +418,6 @@ describe('Subscriptions', () => {
                   _id
                 }
               }
-              meta
             }
           }
         `,
@@ -450,22 +446,11 @@ describe('Subscriptions', () => {
           delivery: {
             deliveryProviderId: SimpleDeliveryProvider._id,
           },
-          /* meta: {
-            context: {
-              message: 'hello from meta',
-            },
-          }, */
         },
       });
 
       expect(updateSubscription).toMatchObject({
         _id: InitialSubscription._id,
-        /* plan: {
-          product: {
-            _id: SimpleProduct._id,
-          },
-          quantity: 3,
-        }, */
         billingAddress: {
           firstName: 'Mikael Araya',
           lastName: 'Mengistu',
@@ -485,11 +470,6 @@ describe('Subscriptions', () => {
         delivery: {
           provider: { _id: SimpleDeliveryProvider._id },
         },
-        /* meta: {
-          context: {
-            message: 'hello from meta',
-          },
-        }, */
       });
     });
   });
@@ -620,7 +600,6 @@ describe('Subscriptions', () => {
 
               isExpired
               subscriptionNumber
-              meta
               logs {
                 _id
                 message
@@ -763,7 +742,6 @@ describe('Subscriptions', () => {
 
               isExpired
               subscriptionNumber
-              meta
               logs(limit: 10, offset: 0) {
                 _id
               }
@@ -785,7 +763,6 @@ describe('Subscriptions', () => {
                 provider {
                   _id
                 }
-                meta
               }
               user {
                 _id
@@ -804,7 +781,6 @@ describe('Subscriptions', () => {
                 _id
                 isoCode
               }
-              meta
             }
           }
         `,
@@ -926,7 +902,6 @@ describe('Subscriptions', () => {
 
               isExpired
               subscriptionNumber
-              meta
               logs(limit: 10, offset: 0) {
                 _id
               }
@@ -948,7 +923,6 @@ describe('Subscriptions', () => {
                 provider {
                   _id
                 }
-                meta
               }
               user {
                 _id
@@ -967,7 +941,6 @@ describe('Subscriptions', () => {
                 _id
                 isoCode
               }
-              meta
             }
           }
         `,

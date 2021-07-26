@@ -93,7 +93,6 @@ describe('Products', () => {
               reviews {
                 _id
               }
-              meta
               assortmentPaths {
                 assortmentProduct {
                   _id
@@ -174,7 +173,6 @@ describe('Products', () => {
               reviews {
                 _id
               }
-              meta
               assortmentPaths {
                 assortmentProduct {
                   _id
@@ -246,7 +244,6 @@ describe('Products', () => {
               _id
               sequence
               tags
-              meta
             }
           }
         `,
@@ -266,7 +263,6 @@ describe('Products', () => {
         _id: 'simpleproduct',
         sequence: 1,
         tags: ['tag-1', 'tag-2', 'highlight', 'update-tag'],
-        meta: { updated: true },
       });
     });
 
@@ -422,7 +418,6 @@ describe('Products', () => {
               reviews {
                 _id
               }
-              meta
               assortmentPaths {
                 assortmentProduct {
                   _id
@@ -639,7 +634,6 @@ describe('Products', () => {
               reviews {
                 _id
               }
-              meta
               assortmentPaths {
                 assortmentProduct {
                   _id
@@ -1048,7 +1042,6 @@ describe('Products', () => {
               reviews {
                 _id
               }
-              meta
               assortmentPaths {
                 assortmentProduct {
                   _id

@@ -42,7 +42,6 @@ describe('Products: Reviews', () => {
               rating
               title
               review
-              meta
               upvotes: voteCount(type: UPVOTE)
               downvotes: voteCount(type: DOWNVOTE)
               reports: voteCount(type: REPORT)
@@ -50,7 +49,6 @@ describe('Products: Reviews', () => {
                 _id
                 timestamp
                 type
-                meta
               }
             }
           }
@@ -74,7 +72,6 @@ describe('Products: Reviews', () => {
         rating: 5,
         title: 'Hello',
         review: 'World',
-        meta: {},
         upvotes: 0,
         downvotes: 0,
         reports: 0,
@@ -160,7 +157,6 @@ describe('Products: Reviews', () => {
               rating
               title
               review
-              meta
               upvotes: voteCount(type: UPVOTE)
               downvotes: voteCount(type: DOWNVOTE)
               reports: voteCount(type: REPORT)
@@ -168,7 +164,6 @@ describe('Products: Reviews', () => {
                 _id
                 timestamp
                 type
-                meta
               }
             }
           }
@@ -191,7 +186,6 @@ describe('Products: Reviews', () => {
         rating: 1,
         title: SimpleProductReview.title,
         review: 'World2',
-        meta: {},
         upvotes: 0,
         downvotes: 0,
         reports: 0,
@@ -277,7 +271,6 @@ describe('Products: Reviews', () => {
         variables: {
           productReviewId: SimpleProductReview._id,
           type: 'UPVOTE',
-          meta: {},
         },
       });
       expect(addProductReviewVote).toMatchObject({

@@ -237,7 +237,6 @@ describe('PaymentProviders', () => {
                 paymentCredentialsId: $paymentCredentialsId
               ) {
                 _id
-                meta
                 token
                 isValid
                 isPreferred
@@ -300,7 +299,6 @@ describe('PaymentProviders', () => {
               paymentCredentialsId: $paymentCredentialsId
             ) {
               _id
-              meta
               token
               isValid
               isPreferred
@@ -330,7 +328,6 @@ describe('PaymentProviders', () => {
                 paymentCredentialsId: $paymentCredentialsId
               ) {
                 _id
-                meta
                 token
                 isValid
                 paymentProvider {

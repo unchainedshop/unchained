@@ -111,7 +111,6 @@ describe('Cart Checkout Flow', () => {
                 emailAddress
                 telNumber
               }
-              meta
             }
           }
         `,
@@ -130,9 +129,6 @@ describe('Cart Checkout Flow', () => {
         contact: {
           emailAddress: 'hello@unchained.shop',
           telNumber: '+41999999999',
-        },
-        meta: {
-          hi: 'there',
         },
       });
     });

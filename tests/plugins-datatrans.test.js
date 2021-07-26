@@ -388,7 +388,6 @@ describe('Plugins: Datatrans Payments', () => {
                 paymentProvider {
                   _id
                 }
-                meta
                 token
                 isValid
                 isPreferred
@@ -401,13 +400,6 @@ describe('Plugins: Datatrans Payments', () => {
       expect(me?.paymentCredentials?.[0]).toMatchObject({
         isPreferred: true,
         isValid: true,
-        meta: {
-          currency: 'CHF',
-          expm: '12',
-          expy: '21',
-          maskedCC: '510000xxxxxx0008',
-          pmethod: 'ECA',
-        },
         token: expect.anything(),
         paymentProvider: { _id: 'datatrans-payment-provider' },
         user: { _id: 'user' },

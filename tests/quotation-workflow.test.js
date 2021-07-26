@@ -49,7 +49,6 @@ describe('cart checkout', () => {
               currency {
                 isoCode
               }
-              meta
               configuration {
                 key
                 value
@@ -82,7 +81,6 @@ describe('cart checkout', () => {
         rejected: null,
         country: {},
         currency: {},
-        meta: null,
         configuration: [
           {
             key: 'length',
@@ -169,7 +167,6 @@ describe('cart checkout', () => {
               quotationNumber
               fullfilled
               rejected
-              meta
               documents {
                 _id
                 type
@@ -188,7 +185,6 @@ describe('cart checkout', () => {
         isExpired: false,
         fullfilled: null,
         rejected: null,
-        meta: null,
         documents: [],
       });
     });
@@ -251,7 +247,6 @@ describe('cart checkout', () => {
               quotationNumber
               fullfilled
               rejected
-              meta
               documents {
                 _id
                 type
@@ -270,7 +265,6 @@ describe('cart checkout', () => {
         status: 'REJECTED',
         isExpired: true,
         fullfilled: null,
-        meta: null,
         documents: [],
       });
     });
@@ -336,7 +330,6 @@ describe('cart checkout', () => {
               quotationNumber
               fullfilled
               rejected
-              meta
               documents {
                 _id
                 type
@@ -355,7 +348,6 @@ describe('cart checkout', () => {
         isExpired: true,
         fullfilled: null,
         rejected: null,
-        meta: null,
         documents: [],
       });
     });
