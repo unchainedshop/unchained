@@ -113,10 +113,6 @@ export default [
       assignments(
         includeInactive: Boolean = false
       ): [ProductVariationAssignment!]!
-      meta: JSON
-        @deprecated(
-          reason: "Due to ambiguity this field will be removed on future releases,Please write a custom resolver that reflects your business-logic"
-        )
     }
   `,
 ];

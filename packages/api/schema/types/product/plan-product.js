@@ -61,10 +61,6 @@ export default [
       salesQuantityPerUnit: String
       defaultOrderQuantity: Int
       reviews(limit: Int = 10, offset: Int = 0): [ProductReview!]!
-      meta: JSON
-        @deprecated(
-          reason: "Due to ambiguity this field will be removed on future releases,Please write a custom resolver that reflects your business-logic"
-        )
       plan: ProductPlanConfiguration
     }
   `,

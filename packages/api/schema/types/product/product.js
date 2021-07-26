@@ -64,10 +64,6 @@ export default [
       texts: ProductTexts
       media(limit: Int = 10, offset: Int = 0, tags: [String!]): [ProductMedia!]!
       reviews: [ProductReview!]!
-      meta: JSON
-        @deprecated(
-          reason: "Due to ambiguity this field will be removed on future releases,Please write a custom resolver that reflects your business-logic"
-        )
       assortmentPaths: [ProductAssortmentPath!]!
       siblings(
         assortmentId: ID
@@ -95,10 +91,6 @@ export default [
       rating: Int
       title: String
       review: String
-      meta: JSON
-        @deprecated(
-          reason: "Due to ambiguity this field will be removed on future releases,Please write a custom resolver that reflects your business-logic"
-        )
       voteCount(type: ProductReviewVoteType): Int
       ownVotes: [ProductReviewVote!]!
     }
@@ -107,10 +99,6 @@ export default [
       _id: ID!
       timestamp: Date!
       type: ProductReviewVoteType!
-      meta: JSON
-        @deprecated(
-          reason: "Due to ambiguity this field will be removed on future releases,Please write a custom resolver that reflects your business-logic"
-        )
     }
 
     enum ProductReviewVoteType {
