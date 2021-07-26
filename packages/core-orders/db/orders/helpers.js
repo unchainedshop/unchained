@@ -48,7 +48,10 @@ Subscriptions.generateFromCheckout = async ({ items, order, ...context }) => {
     items.map(async (item) => {
       const subscriptionData = await SubscriptionDirector.transformOrderItemToSubscription(
         item,
-        { ...template, ...context }
+        {
+          ...template,
+          ...context,
+        }
       );
 
       await Subscriptions.createSubscription({
