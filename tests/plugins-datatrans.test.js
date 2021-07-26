@@ -406,6 +406,13 @@ describe('Plugins: Datatrans Payments', () => {
       });
 
       const credentials = me?.paymentCredentials?.[0];
+      credentials.meta = {
+        currency: 'CHF',
+        expm: '12',
+        expy: '21',
+        maskedCC: '510000xxxxxx0008',
+        pmethod: 'ECA',
+      };
 
       const { data: { addCartProduct, updateCart, checkoutCart } = {} } =
         await graphqlFetch({
