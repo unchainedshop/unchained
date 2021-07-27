@@ -233,6 +233,7 @@ if (STRIPE_SECRET) {
                   paymentProvider {
                     _id
                   }
+                  meta
                   token
                   isValid
                   isPreferred
@@ -242,13 +243,14 @@ if (STRIPE_SECRET) {
           `,
         });
         const credentials = me?.paymentCredentials?.[0];
-        credentials.meta = {
-          customer: 'stripe customer',
-          usage: 'off_session',
-        };
+
         expect(credentials).toMatchObject({
           isPreferred: true,
           isValid: true,
+          meta: {
+            customer: 'stripe customer',
+            usage: 'off_session',
+          },
           token: expect.anything(),
           paymentProvider: { _id: 'stripe-payment-provider' },
           user: { _id: 'user' },

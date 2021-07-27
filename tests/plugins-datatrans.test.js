@@ -376,7 +376,7 @@ describe('Plugins: Datatrans Payments', () => {
   });
   describe('Checkout', () => {
     it('checkout with stored alias', async () => {
-      const { data: { me } = {} } = await graphqlFetch({
+      const { data: { me } = {}, errors } = await graphqlFetch({
         query: /* GraphQL */ `
           query {
             me {
@@ -388,6 +388,7 @@ describe('Plugins: Datatrans Payments', () => {
                 paymentProvider {
                   _id
                 }
+                meta
                 token
                 isValid
                 isPreferred
@@ -400,19 +401,19 @@ describe('Plugins: Datatrans Payments', () => {
       expect(me?.paymentCredentials?.[0]).toMatchObject({
         isPreferred: true,
         isValid: true,
+        meta: {
+          currency: 'CHF',
+          expm: '12',
+          expy: '21',
+          maskedCC: '510000xxxxxx0008',
+          pmethod: 'ECA',
+        },
         token: expect.anything(),
         paymentProvider: { _id: 'datatrans-payment-provider' },
         user: { _id: 'user' },
       });
 
       const credentials = me?.paymentCredentials?.[0];
-      credentials.meta = {
-        currency: 'CHF',
-        expm: '12',
-        expy: '21',
-        maskedCC: '510000xxxxxx0008',
-        pmethod: 'ECA',
-      };
 
       const { data: { addCartProduct, updateCart, checkoutCart } = {} } =
         await graphqlFetch({

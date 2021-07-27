@@ -17,7 +17,7 @@ export default [
       CONFIRMED
 
       """
-      Order has been fullfilled completely (all positions in delivery)
+      Order has been fulfilled completely (all positions in delivery)
       """
       FULLFILLED
     }
@@ -91,6 +91,10 @@ export default [
       fullfilled: Date
       contact: Contact
       country: Country
+      meta: JSON
+        @deprecated(
+          reason: "Due to ambiguity this field will be removed on future releases,Please write a custom resolver that reflects your business-logic"
+        )
       currency: Currency
       billingAddress: Address
       delivery: OrderDelivery
