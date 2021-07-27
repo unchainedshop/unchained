@@ -248,7 +248,7 @@ if (STRIPE_SECRET) {
           isPreferred: true,
           isValid: true,
           meta: {
-            customer: 'stripe customer',
+            customer: expect.anything(),
             usage: 'off_session',
           },
           token: expect.anything(),
