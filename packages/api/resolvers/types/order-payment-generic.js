@@ -11,6 +11,9 @@ export default {
       throw new OrderPaymentConfigurationError(error);
     }
   },
+  meta(obj) {
+    return obj.transformedContextValue('meta');
+  },
   discounts(obj) {
     // IMPORTANT: Do not send any parameter to obj.discounts!
     return obj.discounts();

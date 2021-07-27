@@ -32,5 +32,8 @@ export default {
   async currency(obj) {
     return Currencies.findCurrency({ isoCode: obj.currency });
   },
+  meta(obj) {
+    return obj.context;
+  },
   logs: checkTypeResolver(actions.viewLogs, 'logs'),
 };
