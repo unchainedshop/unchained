@@ -48,6 +48,7 @@ module.exports = {
             'config/accounts',
             'config/assortments',
             'config/delivery',
+            'config/extending-schema',
             'config/files',
             'config/filters',
             'config/payment',
