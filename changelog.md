@@ -1,5 +1,10 @@
 # vNEXT
 
+# v1.0.0-beta10
+
+- [core] Reduce core-events logging verbosity
+- [core] Upstream hotfixes from 61.x
+
 # v1.0.0-beta9
 
 - [controlpanel] Ambiguity of where to set environment variable is fixed. now you can set environment related with the control panel at the root directory of `controlpanel` and environemt variables related with the engine under root directory of `minimal`.

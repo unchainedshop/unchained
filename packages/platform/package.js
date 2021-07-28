@@ -1,6 +1,6 @@
 Package.describe({
   name: 'unchained:platform',
-  version: '1.0.0-beta9',
+  version: '1.0.0-beta10',
   summary: 'Unchained Engine',
   git: 'https://github.com/unchainedshop/unchained',
   documentation: 'README.md',
@@ -20,8 +20,8 @@ Package.onUse((api) => {
   api.use('email');
   api.use('percolate:migrations@1.0.2');
 
-  api.use('unchained:core@1.0.0-beta9');
-  api.use('unchained:api@1.0.0-beta9');
+  api.use('unchained:core@1.0.0-beta10');
+  api.use('unchained:api@1.0.0-beta10');
 
   api.mainModule('platform.js', 'server');
 });
