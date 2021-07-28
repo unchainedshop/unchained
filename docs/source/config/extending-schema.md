@@ -110,5 +110,56 @@ This will return with the updated value:
 }
 ```
 
+### List of entity types that hold meta property
+```js
+    Assortment
+    AssortmentProduct
+    AssortmentLink
+    AssortmentFilter
+    Media
+    Product
+    ProductReview
+    ProductReviewVote
+    ConfigurableProduct
+    SimpleProduct
+    BundleProduct
+    PlanProduct
+    Subscription
+    Quotation
+    SubscriptionPayment
+    SubscriptionDelivery
+
+```
+
+Note: While every entity that listed above exposes a meta property there is an exception for Order related entities. Order related entities store `meta` property and other useful information about the order under `context` property. So in order to get the `meta` value of an order you read it from the `context` like so `context.meta`. This entity types are listed below:
+
+```
+  Order
+  OrderDelivery
+  OrderDeliveryPickUp
+  OrderDeliveryShipping
+  OrderPaymentInvoice
+  OrderPaymentCard
+  OrderPaymentGeneric
+  OrderPayment
+```
+
+To make extracting order context data simpler, each order instance holds a helper function `transformedContextValue(propertyName)` to retrieve values stored in the context. So you can call this helper inside a resolver definition like so:
+
+```js
+const resolverDefs = {
+  OrderDelivery: {
+    meta(obj) {
+      return obj.transformedContextValue('meta');
+    },
+    /* or you can define your own custom transformation function
+    by accessing the context property
+    */
+   meta(obj) {
+      return customTransformContext(obj.context)
+    },
+    
+```
+
 For detail reference about graphql schema and how to extend the refer to the official [graphql documentation](https://graphql.org/learn/schema/)
 
