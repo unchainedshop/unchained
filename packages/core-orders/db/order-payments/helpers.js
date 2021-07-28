@@ -25,10 +25,11 @@ OrderPayments.helpers({
   },
   transformedContextValue(key) {
     const provider = this.provider();
+    const ctx = this.context || {};
     if (provider) {
-      return provider.transformContext(key, this.context[key]);
+      return provider.transformContext(key, ctx[key]);
     }
-    return JSON.stringify(this.context[key]);
+    return JSON.stringify(ctx[key]);
   },
   normalizedStatus() {
     return objectInvert(OrderPaymentStatus)[this.status || null];
@@ -80,7 +81,7 @@ OrderPayments.helpers({
       {
         transactionContext: {
           ...(paymentContext || {}),
-          ...this.context,
+          ...(this.context || {}),
         },
         order,
       },
@@ -153,7 +154,7 @@ OrderPayments.updatePayment = ({ orderId, paymentId, context }) => {
   OrderPayments.update(
     { _id: paymentId },
     {
-      $set: { context, updated: new Date() },
+      $set: { context: context || {}, updated: new Date() },
     }
   );
   Orders.updateCalculation({ orderId });
