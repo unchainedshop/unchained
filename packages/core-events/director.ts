@@ -18,7 +18,7 @@ class EventDirector {
   static registerEvents(events: string[]): void {
     if (events.length) {
       events.forEach((e) => EventDirector.registeredEvents.add(e));
-      logger.info(`EventDirector -> Registered ${JSON.stringify(events)}`);
+      logger.verbose(`EventDirector -> Registered ${JSON.stringify(events)}`);
     }
   }
 
@@ -39,7 +39,7 @@ class EventDirector {
       payload: data,
       created: new Date(),
     });
-    logger.info(
+    logger.verbose(
       `EventDirector -> Emitted ${eventName} with ${JSON.stringify(data)}`
     );
   }
@@ -51,7 +51,7 @@ class EventDirector {
     if (!EventDirector.registeredCallbacks.has(currentSubscription)) {
       EventDirector.adapter.subscribe(eventName, callBack);
       EventDirector.registeredCallbacks.add(currentSubscription);
-      logger.info(`EventDirector -> Subscribed to ${eventName}`);
+      logger.verbose(`EventDirector -> Subscribed to ${eventName}`);
     }
   }
 }
