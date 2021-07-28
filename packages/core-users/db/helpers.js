@@ -339,6 +339,19 @@ Users.findUsers = async ({ limit, offset, includeGuests, queryString }) => {
   return Users.find(selector, { skip: offset, limit }).fetch();
 };
 
+Users.findStaleGuests = async () => {
+  return Users.find({
+    guest: true,
+    'services.resume.loginTokens.when': {
+      $not: { $gte: new Date() },
+    },
+  }).fetch();
+};
+
+Users.removeUser = async ({ userId }) => {
+  return Users.remove({ _id: userId });
+};
+
 Users.count = async (query) => {
   const count = await Users.rawCollection().countDocuments(
     buildFindSelector(query)

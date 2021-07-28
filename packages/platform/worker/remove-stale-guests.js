@@ -1,5 +1,6 @@
 import { WorkerDirector } from 'meteor/unchained:core-worker';
 import WorkerPlugin from 'meteor/unchained:core-worker/workers/base';
+import { Users } from 'meteor/unchained:core-users';
 
 class RemoveStaleGuests extends WorkerPlugin {
   static key = 'shop.unchained.worker-plugin.remove-stale-guests';
@@ -11,11 +12,12 @@ class RemoveStaleGuests extends WorkerPlugin {
   static type = 'REMOVE_STALE_GUESTS';
 
   static async doWork(input) {
-    const users = Users.find({
-      guest: true,
-      'services.resume.loginTokens.when': { $not: { gt: new Date() } },
-    }).fetch();
-    console.log(users);
+    const guests = await Users.findStaleGuests();
+    // await Promise.all(
+    //   guests.map(async (user) => {
+    //     await Users.removeUser({ userId: user._id });
+    //   })
+    // );
 
     // if (errors.length) {
     //   return {
