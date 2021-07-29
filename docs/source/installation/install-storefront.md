@@ -43,7 +43,7 @@ And that's it!
 
 Your Unchained E-Commerce environment is fully setup and running locally.
 
-## (Step 3: Connect to a remote test Unchained Engine)
+## Connect to a remote test Unchained Engine)
 
 If you skipped the step of adding a product in the [Setup the Unchained Engine](/getting-started-engine) guide, your store is empty. With a little update of our enviroment we can connect to Unchained's remote test engine which contains some prefilled product data.
 
@@ -54,4 +54,3 @@ If you skipped the step of adding a product in the [Setup the Unchained Engine](
 - Check `localhost:3000` to contain some products.
 
 ![diagram](./images/StorefrontSwagShop.png)
-

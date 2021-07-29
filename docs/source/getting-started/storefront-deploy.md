@@ -1,21 +1,23 @@
 ---
-title: Deploy the web shop with Vercel
-sidebar_title: Deploy shop
+title: Deploy storefront with Vercel
+sidebar_title: Deploy storefront
 ---
 
 > In this section we will walk through on how to deploy your **Storefront** web app to [Vercel](https://vercel.com/)
 
+![diagram](../images/getting-started/Storefront_Setup.png)
+
 This tutorial helps you:
 
-- Deploy your web shop
-- Publish the shop under your domain (or subdomain)
+- Deploy your web storefront
+- Publish the storefront under your domain (or subdomain)
 
-Make sure you have successfully completed the [Setup Shop](/getting-started-shop) guide.
+Make sure you have successfully completed the [Install storefront](/getting-started/storefront-setup) guide.
 
 ## Step 1: Building the app
 
 Before deploying we make sure our app bundles correctly by initiating a production build locally.
-Navigate to the **Storefront** project and run the build command.
+Navigate to the **storefront** project and run the build command.
 
 ```bash
 cd my-storefront-webapp
@@ -39,19 +41,17 @@ Create a Vercal account [here](https://vercel.com/signup). Once logged in you sh
 
 You will need to allow Vercel to access your git repository. Once the repository is connected you should end up in the following screen:
 
-![diagram](./images/VercelProjectSetup.png)
+![diagram](../images/getting-started/VercelProjectSetup.png)
 
 ## Step 3: Setup and run the deployment
 
 Vercel detects automatically that your project is a Next.js app and will the build and deploy settings for you. No action required. 😎
 
-However, we need to set some few **Environment Variables**.
+However, we need to set the UNCHAINED_ENDPOINT in the **Environment Variables** section.
 
-| NAME                   | VALUE                                          |
-| ---------------------- | ---------------------------------------------- |
-| **UNCHAINED_ENDPOINT** |  https://your-unchained-instance.rocks/graphql |
-| _Optional_             |                                                |       
-| FRONTEND_URL           |  https://domain-of-your-frontend               |
-| GRAPHQL_ENDPOINT       |  https://domain-of-your-frontend/api/graphql   |
+| NAME                   | VALUE                                    |
+| ---------------------- | ---------------------------------------- |
+| **UNCHAINED_ENDPOINT** |  https://my-first.unchained.shop/graphql |
+
 
 

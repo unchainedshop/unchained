@@ -44,7 +44,7 @@ Password:   unchained#rocks
 
 You should see the following admin console in your browser (Yes, the UI can be improved. However, it's an admin console not visible to any customer).
 
-![diagram](./images/AdminConsole.png)
+![diagram](../images/gettingStarted/AdminConsole.png)
 
 [localhost:4010/graphql](http://localhost:4010/graphql) opens the graphQL playground for you to easily execute queries and mutations. 
 
