@@ -10,6 +10,7 @@ Npm.depends({
   accounting: '0.4.1',
   'lru-cache': '6.0.0',
   dataloader: '2.0.0',
+  'json-bigint-patch': '0.0.4',
   locale: '0.1.0',
   'lodash.isnumber': '3.0.3',
   'body-parser': '1.19.0',

@@ -20,7 +20,7 @@ Quotations.attachSchema(
       productId: { type: String, required: true },
       status: { type: String, required: true },
       quotationNumber: String,
-      price: Number,
+      price: String,
       expires: Date,
       rejected: Date,
       meta: { type: Object, blackbox: true },

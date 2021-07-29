@@ -27,7 +27,7 @@ const ProductCommerceSchema = new SimpleSchema(
     'pricing.$.isNetPrice': Boolean,
     'pricing.$.countryCode': String,
     'pricing.$.currencyCode': String,
-    'pricing.$.amount': Number,
+    'pricing.$.amount': String,
     'pricing.$.maxQuantity': Number,
   },
   { requiredByDefault: false }
