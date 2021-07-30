@@ -25,20 +25,19 @@ class IntervalWorker extends BaseWorker {
   }) {
     super({ WorkerDirector, workerId });
     this.batchCount = batchCount;
-    this.intervalDelay = schedule;
+
+    const [one, two] = later.schedule(schedule).next(2);
+    const diff = new Date(two).getTime() - new Date(one).getTime();
+    this.intervalDelay = Math.min(1000, diff);
   }
 
   start() {
-    this.intervalHandle = setInterval(
-      async () =>
-        this.process({
-          maxWorkItemCount: this.batchCount,
-          referenceDate: new Date(
-            Math.floor(new Date().getTime() / 1000) * 1000
-          ),
-        }),
-      this.intervalDelay
-    );
+    this.intervalHandle = setInterval(() => {
+      this.process({
+        maxWorkItemCount: this.batchCount,
+        referenceDate: new Date(Math.floor(new Date().getTime() / 1000) * 1000),
+      });
+    }, this.intervalDelay);
     setTimeout(() => {
       this.autorescheduleTypes();
     }, 300);

@@ -1,6 +1,6 @@
 import os from 'os';
 import later from 'later';
-
+import { Promise } from 'meteor/promise';
 import { log } from 'meteor/unchained:core-logger';
 
 import External from '../plugins/external';
