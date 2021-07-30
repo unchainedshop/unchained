@@ -41,6 +41,7 @@ module.exports = {
             'concepts/carts',
             'concepts/search',
           ],
+          Plugins: ['plugins/plugin-overview'],
           Configuration: [
             'config/booting',
             'config/orders',

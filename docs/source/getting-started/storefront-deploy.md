@@ -12,7 +12,7 @@ This tutorial helps you:
 - Deploy your web storefront
 - Publish the storefront under your domain (or subdomain)
 
-Make sure you have successfully completed the [Install storefront](/getting-started/storefront-setup) guide.
+Make sure you have successfully completed the [Install storefront](./storefront-setup) guide.
 
 ## Step 1: Building the app
 
@@ -52,6 +52,3 @@ However, we need to set the UNCHAINED_ENDPOINT in the **Environment Variables** 
 | NAME                   | VALUE                                    |
 | ---------------------- | ---------------------------------------- |
 | **UNCHAINED_ENDPOINT** |  https://my-first.unchained.shop/graphql |
-
-
-

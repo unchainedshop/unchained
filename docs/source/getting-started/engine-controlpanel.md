@@ -57,16 +57,16 @@ Initially the username and password are set as following:
 ## Step 1: Add Payment Provider
 
 One of the basic settings besides the **currency** & **language** is the **payment provider** for your store. We gonna add a simple _Pay per invoice_ method to our shop.<br />
-Check [Further Reading](#further_reading) at the end of this chapter for a (growing) list of payment plugins available for the Unchained Engine.
+Check [Further Reading](#further-reading) at the end of this chapter for a (growing) list of payment plugins available for the Unchained Engine.
 
 - On top choose the menu entry **`System` ➤ `Payment`**
-![diagramm](../images/getting-started/Control_Panel_System_Payment.png)
+  ![diagramm](../images/getting-started/Control_Panel_System_Payment.png)
 - Click on **`Add`** in the empty list view.
 - Select type **`Invoice`**, choose the adapter **`Invoice (manually)`** and click on **`Add new adapter`** to save invoice payment provider.
-![diagramm](../images/getting-started/Control_Panel_Payment_Invoice.png)
+  ![diagramm](../images/getting-started/Control_Panel_Payment_Invoice.png)
 - Click **`Save`** in the next screen as we do not need to add any additional configuration keys in this example project.
 - The new payment provider **INVOICE** should appear in the list.
-![diagramm](../images/getting-started/Control_Panel_Payment_List.png)
+  ![diagramm](../images/getting-started/Control_Panel_Payment_List.png)
 
 ## Step 2: Set Delivery Option
 
@@ -75,43 +75,44 @@ The second important configuration is **delivery option** which defines where an
 - On top choose the menu entry **`System` ➤ `Delivery`**
 - Click on **`Add`** in the empty list view.
 - Select type **`Shipping`**, choose the adapter **`Forward Delivery via Messaging`** and click on **`Add Delivery provider`** to continue.
-![diagramm](../images/getting-started/Control_Panel_Delivery_Shipping.png)
+  ![diagramm](../images/getting-started/Control_Panel_Delivery_Shipping.png)
 - In the configuration window set email addresses (can be non-existing phantom addresses) for the keys **from** and **to**, delete the **cc** key and click **`Save`**.
 - The new delivery provider **SHIPPING** should appear in the list. (You might need to select the delivery list again in the top menu)
-![diagramm](../images/getting-started/Control_Panel_Delivery_List.png)
+  ![diagramm](../images/getting-started/Control_Panel_Delivery_List.png)
 
-
-## Step 3: Add Product 
+## Step 3: Add Product
 
 It's time to add our first product to the store.
+
 - On top choose the menu entry **`Master Data` ➤ `Products`**
 - Click on **`Add`** in the empty product list.
-- Give the product a **name** and set the **type** to `Simple Product`. 
-![diagramm](../images/getting-started/Control_Panel_Product_Toothbrush_Add.png)
+- Give the product a **name** and set the **type** to `Simple Product`.
+  ![diagramm](../images/getting-started/Control_Panel_Product_Toothbrush_Add.png)
 - Click **`Add prodct`** to save the product and navigate to the product detail view.
 - (If you have one ready, add a nice product image under `Media`.)
 - Select **`Commerce`** on the left and set the price for your product.
 - IMPORTANT: If you want to update the product information (e.g. subtitle, description), switch to the tab `fr` first and set a title there (otherwise updating the product throws an error (yes, it's a bug 😒).
 - Per default a product is in the state **draft**. To make it available in the shop we need to **`publish`** it.<br />On the right you find the option to publish (and unpublish) to product.
-![diagramm](../images/getting-started/Control_Panel_Product_Matchbox_Publish.png)
+  ![diagramm](../images/getting-started/Control_Panel_Product_Matchbox_Publish.png)
 - Great! The product is ready to be assigned to a category.
 - Do it again and add a second product!
-
 
 ## Step 4: Create Category (Assortment) with Products
 
 First we gonna add two new categories which are called _Assortments_ in the control panel.
+
 - On top choose the menu entry **`Master Data` ➤ `Assortments`**.
 - Click on **`Add`**.
 - Give your category a **title**, keep the _root node_ option checked.
 - Click **`Add Assortment`** to save the category and navigate to the category detail view.
 - (Same here, add a nice category image under `Media`.)
-![diagram](../images/getting-started/Control_Panel_Assortment_Camping_Details.png)
+  ![diagram](../images/getting-started/Control_Panel_Assortment_Camping_Details.png)
 - Select **`Products`** on the left.
 - Search for the **(exact)** (and yes, can be improve 😝) name of a product you added in [Step 3](#step-3-add-product), select it
-and click **`Add Product`** to link the product to the category 
+  and click **`Add Product`** to link the product to the category
 
 ## Step 5. Admire the Products
+
 Open your local storefront app http://localhost:3000 and verify that the categories appear on the entry page.
 Choose a category to see the underlying products and start shopping! 😎
 
@@ -120,14 +121,13 @@ Choose a category to see the underlying products and start shopping! 😎
 ## Step 6: Place an Order
 Now, you are able to go through a complete check-out and buy a product with the pay-per-invoice payment method.
 
-On successful completion of an order you will find a new entry in the **Orders** list and a detailed order view including the the **Invoice Paid** option. 
-
-
+On successful completion of an order you will find a new entry in the **Orders** list and a detailed order view including the the **Invoice Paid** option.
 
 ## Further Reading
+
 Those are only the basic steps to fill some products into your store and process an order.
 
 Check out further guides in the list below and do not hesitate to contact us if you need help 🍫!
 
-- [Plugins](plugins/plugin-overview)
-- [API](api)
+- [Plugins](../plugins/plugin-overview)
+- [API](https://docs.unchained.shop/api)
