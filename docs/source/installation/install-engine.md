@@ -61,7 +61,7 @@ You should see the following admin console in your browser (Yes, the UI can be i
 
 ![diagram](../images/AdminConsole.png)
 
-[localhost:4010/graphql](http://localhost:4010/graphql) opens the graphQL playground for you to easily execute queries and mutations. 
+[localhost:4010/graphql](http://localhost:4010/graphql) opens the graphQL playground for you to easily execute queries and mutations.
 
 ## Step 3: Add Products
 
