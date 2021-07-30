@@ -51,6 +51,8 @@ Unchained engine
 npm install
 ```
 
+The installation script downloads, installs and initialises all files and packages required to build and run the storefront web app.
+
 ## Step 2: Setup connection
 
 Before running the web app, you need to create an `.env` file in the root directory of _my-storefront-webapp_ and add the graphql API endpoint of your Unchained Engine instance to the settings.

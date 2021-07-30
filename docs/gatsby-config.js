@@ -22,8 +22,8 @@ module.exports = {
           ],
           'Getting Started': [
             'getting-started/engine-launch',
-            'getting-started/engine-controlpanel',
             'getting-started/storefront-setup',
+            'getting-started/engine-controlpanel',
             'getting-started/storefront-deploy',
           ],
           Installation: [
