@@ -1,6 +1,6 @@
 Package.describe({
   name: 'unchained:core-worker',
-  version: '1.0.0-beta10',
+  version: '1.0.0-beta11',
   summary: 'Unchained Engine Core: Worker',
   git: 'https://github.com/unchainedshop/unchained',
   documentation: 'README.md',
