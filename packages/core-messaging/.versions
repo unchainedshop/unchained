@@ -51,7 +51,7 @@ tracker@1.2.0
 typescript@4.3.2
 unchained:core-logger@1.0.0-beta10
 unchained:core-messaging@1.0.0-beta10
-unchained:core-worker@1.0.0-beta10
+unchained:core-worker@1.0.0-beta11
 unchained:utils@1.0.0-beta10
 underscore@1.0.10
 webapp@1.11.1

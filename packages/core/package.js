@@ -32,7 +32,7 @@ Package.onUse((api) => {
   api.use('unchained:core-warehousing@1.0.0-beta10');
   api.use('unchained:core-filters@1.0.0-beta10');
   api.use('unchained:core-assortments@1.0.0-beta10');
-  api.use('unchained:core-worker@1.0.0-beta10');
+  api.use('unchained:core-worker@1.0.0-beta11');
   api.use('unchained:core-subscriptions@1.0.0-beta10');
   api.use('unchained:core-events@1.0.0-beta10');
 

@@ -15,7 +15,7 @@ Package.onUse((api) => {
   api.versionsFrom('2.2');
   api.use('ecmascript');
   api.use('unchained:core-logger@1.0.0-beta10');
-  api.use('unchained:core-worker@1.0.0-beta10');
+  api.use('unchained:core-worker@1.0.0-beta11');
 
   api.mainModule('messaging.js', 'server');
 });

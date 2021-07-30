@@ -55,7 +55,7 @@ unchained:core-delivery@1.0.0-beta10
 unchained:core-events@1.0.0-beta10
 unchained:core-logger@1.0.0-beta10
 unchained:core-pricing@1.0.0-beta10
-unchained:core-worker@1.0.0-beta10
+unchained:core-worker@1.0.0-beta11
 unchained:utils@1.0.0-beta10
 underscore@1.0.10
 webapp@1.11.1

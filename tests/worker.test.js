@@ -21,7 +21,7 @@ describe('Worker Module', () => {
   });
 
   describe('Happy path', () => {
-    it('Standard work gets picked up by the WorkEventListenerWorker.', async () => {
+    it('Standard work gets picked up by the EventListenerWorker.', async () => {
       const addWorkResult = await graphqlFetchAsAdminUser({
         query: /* GraphQL */ `
           mutation addWork($type: WorkType!, $input: JSON) {

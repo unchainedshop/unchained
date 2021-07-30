@@ -65,7 +65,7 @@ unchained:core-settings@1.0.0-beta10
 unchained:core-subscriptions@1.0.0-beta10
 unchained:core-users@1.0.0-beta10
 unchained:core-warehousing@1.0.0-beta10
-unchained:core-worker@1.0.0-beta10
+unchained:core-worker@1.0.0-beta11
 unchained:utils@1.0.0-beta10
 underscore@1.0.10
 webapp@1.11.1

@@ -20,12 +20,12 @@ Package.onUse((api) => {
 
   api.use('unchained:core-files@1.0.0-beta10');
   api.use('unchained:utils@1.0.0-beta10');
-  api.use('unchained:core-worker@1.0.0-beta10');
+  api.use('unchained:core-worker@1.0.0-beta11');
   api.use('unchained:core-users@1.0.0-beta10');
   api.use('unchained:core-products@1.0.0-beta10');
   api.use('unchained:core-countries@1.0.0-beta10');
   api.use('unchained:core-logger@1.0.0-beta10');
-  api.use('unchained:core-worker@1.0.0-beta10');
+  api.use('unchained:core-worker@1.0.0-beta11');
   api.use('unchained:core-events@1.0.0-beta10');
 
   api.mainModule('subscriptions.js', 'server');
