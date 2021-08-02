@@ -1,3 +1,33 @@
+export const ProductPirceInWei = {
+  _id: 'product-price-wei',
+  created: new Date('2021-08-02T16:02:58.768Z'),
+  type: 'SIMPLE_PRODUCT',
+  status: 'ACTIVE',
+  sequence: 11,
+  authorId: 'admin',
+  slugs: ['bigint-product'],
+  updated: new Date('2021-08-02T16:36:29.231Z'),
+  commerce: {
+    pricing: [
+      {
+        amount: 123456789123456800000,
+        maxQuantity: 0,
+        isTaxable: true,
+        isNetPrice: false,
+        currencyCode: 'WEI',
+        countryCode: 'CH',
+      },
+    ],
+  },
+  supply: {
+    weightInGram: 1570,
+    heightInMillimeters: 250,
+    lengthInMillimeters: 300,
+    widthInMillimeters: 400,
+  },
+  published: new Date('2021-08-02T16:36:29.231Z'),
+};
+
 export const SimpleProduct = {
   _id: 'simpleproduct',
   created: new Date('2019-07-30T09:23:26.253+0000'),
@@ -574,6 +604,7 @@ export default async function seedProducts(db) {
       ProxyPlanProduct3,
       ProxyProduct,
       PlanProduct,
+      ProductPirceInWei,
     ]);
 
   await db.collection('product_reviews').findOrInsertOne(SimpleProductReview);

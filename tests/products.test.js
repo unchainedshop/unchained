@@ -11,6 +11,7 @@ import {
   UnpublishedProduct,
   ProxyProduct,
   ProxyPlanProduct1,
+  ProductPirceInWei,
 } from './seeds/products';
 
 let graphqlFetchAsAdmin;
@@ -1240,7 +1241,7 @@ describe('Products', () => {
         variables: {},
       });
 
-      expect(productsCount).toEqual(11);
+      expect(productsCount).toEqual(12);
     });
 
     it('return only total number of products that include a slug', async () => {
@@ -1315,7 +1316,7 @@ describe('Products', () => {
         },
       });
 
-      expect(productsCount).toEqual(12);
+      expect(productsCount).toEqual(13);
     });
   });
 
@@ -1340,7 +1341,7 @@ describe('Products', () => {
         variables: {},
       });
 
-      expect(productsCount).toEqual(11);
+      expect(productsCount).toEqual(12);
     });
   });
   describe('query.productsCount for normal user should', () => {
@@ -1364,7 +1365,7 @@ describe('Products', () => {
         variables: {},
       });
 
-      expect(productsCount).toEqual(11);
+      expect(productsCount).toEqual(12);
     });
   });
 
@@ -2171,6 +2172,96 @@ describe('Products', () => {
           isNetPrice: false,
           amount: 1500000,
           currency: 'CHF',
+        },
+      });
+    });
+  });
+
+  describe('mutation.updateProductCommerce should work with large numbers', () => {
+    it('update product price to 1 wei', async () => {
+      const { data } = await graphqlFetchAsAdmin({
+        query: /* GraphQL */ `
+          mutation updateProductCommerce(
+            $productId: ID!
+            $commerce: UpdateProductCommerceInput!
+          ) {
+            updateProductCommerce(productId: $productId, commerce: $commerce) {
+              _id
+              ... on SimpleProduct {
+                simulatedPrice(currency: "WEI") {
+                  _id
+                  amount
+                }
+                catalogPrice(currency: "WEI") {
+                  _id
+                  amount
+                }
+              }
+            }
+          }
+        `,
+        variables: {
+          productId: SimpleProduct._id,
+          commerce: {
+            pricing: [
+              {
+                amount: 1000000000000000000,
+                currencyCode: 'WEI',
+                countryCode: 'CH',
+              },
+            ],
+          },
+        },
+      });
+      expect(data.updateProductCommerce).toMatchObject({
+        _id: SimpleProduct._id,
+        simulatedPrice: {
+          _id: expect.anything(),
+          amount: 1000000000000000000,
+        },
+        catalogPrice: {
+          _id: expect.anything(),
+          amount: 1000000000000000000,
+        },
+      });
+    });
+  });
+
+  describe('query.product should ', () => {
+    it('return price in WEI', async () => {
+      const {
+        data: { product = {} },
+      } = await graphqlFetchAsAdmin({
+        query: /* GraphQL */ `
+          query PriceInWEI($productId: ID!) {
+            product(productId: $productId) {
+              _id
+              status
+              ... on SimpleProduct {
+                simulatedPrice(currency: "WEI") {
+                  _id
+                  amount
+                }
+                catalogPrice(currency: "WEI") {
+                  _id
+                  amount
+                }
+              }
+            }
+          }
+        `,
+        variables: {
+          productId: ProductPirceInWei._id,
+        },
+      });
+      expect(product).toMatchObject({
+        simulatedPrice: {
+          _id: expect.anything(),
+          amount: ProductPirceInWei.commerce.pricing[0].amount,
+        },
+        catalogPrice: {
+          _id: expect.anything(),
+          amount: ProductPirceInWei.commerce.pricing[0].amount,
         },
       });
     });
