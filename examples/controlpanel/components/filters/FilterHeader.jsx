@@ -41,14 +41,18 @@ const FilterHeader = ({ loading, filter = {} }) => [
               <List.Icon name="add to calendar" />
               <List.Content>
                 Created:{' '}
-                {filter.created ? format(filter.created, 'Pp') : 'Unbekannt'}
+                {filter.created
+                  ? format(new Date(filter.created), 'Pp')
+                  : 'Unbekannt'}
               </List.Content>
             </List.Item>
             <List.Item>
               <List.Icon name="refresh" />
               <List.Content>
                 Updated:{' '}
-                {filter.updated ? format(filter.updated, 'Pp') : 'Unbekannt'}
+                {filter.updated
+                  ? format(new Date(filter.updated), 'Pp')
+                  : 'Unbekannt'}
               </List.Content>
             </List.Item>
           </List>
