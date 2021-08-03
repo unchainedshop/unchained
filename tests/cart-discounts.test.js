@@ -27,12 +27,14 @@ describe('Cart: Discounts', () => {
                   }
                 }
                 total {
+                  _id
                   amount
                 }
               }
               _id
               order {
                 total(category: DISCOUNTS) {
+                  _id
                   amount
                 }
                 discounts {
@@ -71,6 +73,11 @@ describe('Cart: Discounts', () => {
           mutation addCartDiscount($orderId: ID) {
             addCartDiscount(orderId: $orderId, code: "100off") {
               code
+              fee {
+                _id
+                amount
+                currency
+              }
               discounted {
                 _id
                 ... on OrderGlobalDiscount {
@@ -85,6 +92,7 @@ describe('Cart: Discounts', () => {
                   }
                 }
                 total {
+                  _id
                   amount
                 }
               }

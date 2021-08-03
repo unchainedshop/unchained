@@ -39,6 +39,10 @@ describe('Order: Payments', () => {
                   provider {
                     _id
                   }
+                  fee {
+                    _id
+                    amount
+                  }
                 }
               }
             }
