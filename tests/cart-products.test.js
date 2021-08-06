@@ -38,11 +38,11 @@ describe('Cart: Product Items', () => {
               }
               product {
                 _id
-                unitPrice {
-                  _id
-                  currency
-                  amount
-                }
+              }
+              unitPrice {
+                _id
+                currency
+                amount
               }
               order {
                 _id
