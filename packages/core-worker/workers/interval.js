@@ -44,7 +44,7 @@ class IntervalWorker extends BaseWorker {
     this.intervalHandle = Meteor.setInterval(() => {
       this.process({
         maxWorkItemCount: this.batchCount,
-        referenceDate: new Date(Math.floor(new Date().getTime() / 1000) * 1000),
+        referenceDate: this.constructor.floorDate(),
       });
     }, this.intervalDelay);
   }
