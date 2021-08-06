@@ -1,6 +1,6 @@
 Package.describe({
   name: 'unchained:core-countries',
-  version: '1.0.0-beta10',
+  version: '1.0.0-beta13',
   summary: 'Unchained Engine Core: Countries',
   git: 'https://github.com/unchainedshop/unchained',
   documentation: 'README.md',
@@ -18,9 +18,9 @@ Package.onUse((api) => {
   api.use('mongo');
   api.use('dburles:collection-helpers@1.1.0');
   api.use('aldeed:collection2@3.2.1');
-  api.use('unchained:utils@1.0.0-beta10');
-  api.use('unchained:core-currencies@1.0.0-beta10');
-  api.use('unchained:core-events@1.0.0-beta10');
+  api.use('unchained:utils@1.0.0-beta12');
+  api.use('unchained:core-currencies@1.0.0-beta12');
+  api.use('unchained:core-events@1.0.0-beta12');
 
   api.mainModule('countries.js', 'server');
 });
