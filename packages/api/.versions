@@ -5,7 +5,7 @@ babel-runtime@1.5.0
 base64@1.0.12
 binary-heap@1.0.11
 boilerplate-generator@1.7.1
-callback-hook@1.3.0
+callback-hook@1.3.1
 check@1.3.1
 dburles:collection-helpers@1.1.0
 ddp@1.4.0
@@ -19,7 +19,7 @@ ecmascript-runtime@0.7.0
 ecmascript-runtime-client@0.11.1
 ecmascript-runtime-server@0.10.1
 ejson@1.1.1
-email@2.1.0
+email@2.1.1
 fetch@0.1.1
 geojson-utils@1.0.10
 http@1.4.4
@@ -48,7 +48,7 @@ react-fast-refresh@0.1.1
 reactive-var@1.0.11
 reload@1.3.1
 retry@1.1.0
-routepolicy@1.1.0
+routepolicy@1.1.1
 socket-stream-client@0.4.0
 tmeasday:check-npm-versions@0.3.2
 tracker@1.2.0
