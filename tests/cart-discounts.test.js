@@ -73,11 +73,6 @@ describe('Cart: Discounts', () => {
           mutation addCartDiscount($orderId: ID) {
             addCartDiscount(orderId: $orderId, code: "100off") {
               code
-              fee {
-                _id
-                amount
-                currency
-              }
               discounted {
                 _id
                 ... on OrderGlobalDiscount {

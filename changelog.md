@@ -1,7 +1,13 @@
 # vNEXT
 
-# v1.0.0-beta10
+# v1.0.0-beta12
 
+- [core] Fix issue with price id's beeing null (broke stuff that we didn't want to brake)
+- [core] Fix an issue with scheduling jobs based on past or future dates
+- [core] Improved Matomo tracker
+- [docs] New Get Started Tutorial
+- [examples] Seed delivery and payment providers based on environment variables
+- [core] Extended events module to make it possible to transform context for specific needs
 - [core] Reduce core-events logging verbosity
 - [core] Upstream hotfixes from 61.x
 
