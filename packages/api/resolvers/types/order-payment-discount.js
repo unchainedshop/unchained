@@ -13,7 +13,7 @@ export default {
       _id: crypto
         .createHash('sha256')
         .update(
-          [`${obj.item._id}:${obj.discountId}`, obj.amount, obj.currency].join(
+          [`${obj.item._id}-${obj.discountId}`, obj.amount, obj.currency].join(
             ''
           )
         )
