@@ -2,6 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { startPlatform } from 'meteor/unchained:platform';
 import { WebApp } from 'meteor/webapp';
 import { embedControlpanelInMeteorWebApp } from '@unchainedshop/controlpanel';
+import later from 'later';
 
 import 'meteor/unchained:core-delivery/plugins/post';
 import 'meteor/unchained:core-delivery/plugins/pick-mup';
@@ -34,12 +35,19 @@ import 'meteor/unchained:core-quotations/plugins/manual';
 import 'meteor/unchained:core-subscriptions/plugins/licensed';
 import 'meteor/unchained:core-worker/plugins/external';
 import 'meteor/unchained:core-worker/plugins/http-request';
-import 'meteor/unchained:core-worker/plugins/heartbeat';
+import Heartbeat from 'meteor/unchained:core-worker/plugins/heartbeat';
 import 'meteor/unchained:core-worker/plugins/email';
 import 'meteor/unchained:core-events/plugins/node-event-emitter';
+import { WorkerDirector } from 'meteor/unchained:core-worker';
 import seed from './seed';
 
 Meteor.startup(async () => {
+  const every1Minute = later.parse.recur().every(1).minute();
+  WorkerDirector.configureAutoscheduling(Heartbeat, {
+    schedule: every1Minute,
+    input: () => {},
+  });
+
   await startPlatform({
     introspection: true,
     modules: {
