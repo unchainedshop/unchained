@@ -499,7 +499,7 @@ describe('Bulk Importer', () => {
         const assortment = await Assortments.findOne({ _id: 'Assortment A' });
 
         return assortment?.tags.includes('base');
-      }, 1000);
+      }, 3000);
 
       const updatedAssortmentMediaHasSmallTag = await intervalUntilTimeout(
         async () => {
@@ -508,7 +508,7 @@ describe('Bulk Importer', () => {
           });
           return assortmentMedia?.tags.includes('small');
         },
-        1000,
+        3000,
       );
       expect(updatedAssortmentMediaHasSmallTag).toBe(true);
       expect(assortmentHasBaseTag).toBe(true);
@@ -522,7 +522,7 @@ describe('Bulk Importer', () => {
           }).count();
           return productLinksCount === 1;
         },
-        1000,
+        3000,
       );
 
       expect(productLinkHasBeenReplaced).toBe(true);
