@@ -246,7 +246,8 @@ describe('Products', () => {
               sequence
               tags
             }
-          `,
+          }
+        `,
         variables: {
           productId: SimpleProduct._id,
           product: {
@@ -256,7 +257,8 @@ describe('Products', () => {
               updated: true,
             },
           },
-        });
+        },
+      });
 
       expect(updateProduct).toMatchObject({
         _id: 'simpleproduct',
