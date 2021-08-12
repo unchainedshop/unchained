@@ -1,6 +1,8 @@
 import configureUsers from 'meteor/unchained:core-users';
 import configureAccounts from 'meteor/unchained:core-accountsjs';
-import configureLogger from 'meteor/unchained:core-logger';
+import configureLogger, {
+  services as loggerServices,
+} from 'meteor/unchained:core-logger';
 import configureDelivery from 'meteor/unchained:core-delivery';
 import configurePayment from 'meteor/unchained:core-payment';
 import configureWarehousing from 'meteor/unchained:core-warehousing';
@@ -29,7 +31,7 @@ export default async ({
   const moduleOptions = {
     migrationRepository,
   };
-  configureLogger(modules.logger, moduleOptions);
+  const logger = configureLogger(modules.logger);
   configureWorker(modules.worker, moduleOptions);
   configureMessaging(modules.messaging, moduleOptions);
   configureCurrencies(modules.currencies, moduleOptions);
@@ -52,9 +54,11 @@ export default async ({
   return {
     modules: {
       bookmarks,
+      logger,
     },
     services: {
       ...bookmarkServices,
+      ...loggerServices,
     },
     ...otherComponents,
   };
