@@ -15,9 +15,6 @@ WarehousingProviders.findInterfaces = ({ type }) => {
 };
 
 WarehousingProviders.helpers({
-  transformContext(key, value) {
-    return value;
-  },
   defaultContext() {
     return {};
   },

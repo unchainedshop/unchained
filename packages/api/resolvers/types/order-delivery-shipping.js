@@ -1,6 +1,6 @@
 export default {
   address(obj) {
-    return obj.transformedContextValue('address');
+    return obj.context?.address;
   },
   status(obj) {
     return obj.normalizedStatus();

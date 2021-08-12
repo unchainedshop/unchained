@@ -18,9 +18,6 @@ const buildFindSelector = ({ type, deleted = null } = {}) => {
 };
 
 DeliveryProviders.helpers({
-  transformContext(key, value) {
-    return value;
-  },
   defaultContext(context) {
     return context || emptyContext;
   },

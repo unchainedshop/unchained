@@ -23,14 +23,6 @@ OrderDeliveries.helpers({
       deliveryProviderId: this.deliveryProviderId,
     });
   },
-  transformedContextValue(key) {
-    const provider = this.provider();
-    const ctx = this.context || {};
-    if (provider) {
-      return provider.transformContext(key, ctx[key]);
-    }
-    return JSON.stringify(ctx[key]);
-  },
   normalizedStatus() {
     return objectInvert(OrderDeliveryStatus)[this.status || null];
   },
