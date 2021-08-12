@@ -3,7 +3,7 @@
 import createIndexes from './db/schema';
 import { Logs } from './db/collections';
 import LocalTransport from './local-transport';
-import createLogger from './createLogger';
+import createLogger, { transports, format } from './createLogger';
 
 let instance;
 class Logger {
@@ -26,7 +26,7 @@ const log = (message: string, options: any): void => {
   return new Logger().winston.log(level, message, meta);
 };
 
-export { log, createLogger };
+export { Logger, log, createLogger, transports, format, Logs };
 
 export const services = {
   log,

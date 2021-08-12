@@ -117,7 +117,7 @@ Enrollments.helpers({
   },
 });
 
-/* Logs.helpers({
+Logs.helpers({
   order() {
     return (
       this.meta &&
@@ -127,7 +127,7 @@ Enrollments.helpers({
     );
   },
 });
- */
+
 Users.helpers({
   async cart({ countryContext, orderNumber } = {}) {
     const selector = {

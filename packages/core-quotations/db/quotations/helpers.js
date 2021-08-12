@@ -18,7 +18,7 @@ import { QuotationDirector } from '../../director';
 import settings from '../../settings';
 import { updateQuotationDocuments } from '../quotation-documents/helpers';
 
-/* Logs.helpers({
+Logs.helpers({
   quotation() {
     return (
       this.meta &&
@@ -27,7 +27,7 @@ import { updateQuotationDocuments } from '../quotation-documents/helpers';
       })
     );
   },
-}); */
+});
 
 Users.helpers({
   quotations() {

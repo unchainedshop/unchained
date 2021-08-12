@@ -13,7 +13,7 @@ import { Subscriptions } from './collections';
 import { SubscriptionStatus } from './schema';
 import { SubscriptionDirector } from '../../director';
 
-/* Logs.helpers({
+Logs.helpers({
   subscription() {
     return (
       this.meta &&
@@ -22,7 +22,7 @@ import { SubscriptionDirector } from '../../director';
       })
     );
   },
-}); */
+});
 
 Users.helpers({
   subscriptions() {

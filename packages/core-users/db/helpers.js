@@ -48,7 +48,7 @@ const buildFindSelector = ({ includeGuests, queryString }) => {
   return selector;
 };
 
-/* Logs.helpers({
+Logs.helpers({
   user() {
     return (
       this.meta &&
@@ -57,7 +57,7 @@ const buildFindSelector = ({ includeGuests, queryString }) => {
       })
     );
   },
-}); */
+});
 
 Users.setTags = ({ userId, tags }) => {
   Users.update(
