@@ -51,8 +51,8 @@ import searchProducts from './search-products';
 import searchAssortments from './search-assortments';
 import workQueue from './workQueue';
 import activeWorkTypes from './activeWorkTypes';
-import subscription from './subscription';
-import subscriptions from './subscriptions';
+import enrollment from './enrollment';
+import enrollments from './enrollments';
 import work from './work';
 import signPaymentProviderForCredentialRegistration from './signPaymentProviderForCredentialRegistration';
 import filtersCount from './filtersCount';
@@ -61,7 +61,7 @@ import logsCount from './logsCount';
 import ordersCount from './ordersCount';
 import productsCount from './productsCount';
 import quotationsCount from './quotationsCount';
-import subscriptionsCount from './subscriptionsCount';
+import enrollmentsCount from './enrollmentsCount';
 import warehousingProvidersCount from './warehousingProvidersCount';
 import paymentProvidersCount from './paymentProvidersCount';
 import productReviewsCount from './productReviewsCount';
@@ -146,9 +146,9 @@ export default {
   searchAssortments: acl(actions.search)(searchAssortments),
   workQueue: acl(actions.manageWorker)(workQueue),
   activeWorkTypes: acl(actions.manageWorker)(activeWorkTypes),
-  subscription: acl(actions.viewSubscription)(subscription),
-  subscriptions: acl(actions.viewSubscriptions)(subscriptions),
-  subscriptionsCount: acl(actions.viewSubscriptions)(subscriptionsCount),
+  enrollment: acl(actions.viewEnrollment)(enrollment),
+  enrollments: acl(actions.viewEnrollments)(enrollments),
+  enrollmentsCount: acl(actions.viewEnrollments)(enrollmentsCount),
 
   work: acl(actions.manageWorker)(work),
   signPaymentProviderForCredentialRegistration: acl(

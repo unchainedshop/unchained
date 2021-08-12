@@ -7,9 +7,7 @@
     "mutationType": {
       "name": "Mutation"
     },
-    "subscriptionType": {
-      "name": "Subscription"
-    },
+    "subscriptionType": null,
     "types": [
       {
         "kind": "SCALAR",
@@ -4574,7 +4572,7 @@
             "deprecationReason": null
           },
           {
-            "name": "subscriptions",
+            "name": "enrollments",
             "description": null,
             "args": [],
             "type": {
@@ -4588,7 +4586,7 @@
                   "name": null,
                   "ofType": {
                     "kind": "OBJECT",
-                    "name": "Subscription",
+                    "name": "Enrollment",
                     "ofType": null
                   }
                 }
@@ -8453,7 +8451,7 @@
       {
         "kind": "OBJECT",
         "name": "PlanProduct",
-        "description": "Plan (Subscriptionable virtual Product)",
+        "description": "Plan (Virtual Product that somebody can enroll to)",
         "specifiedByUrl": null,
         "fields": [
           {
@@ -9490,12 +9488,12 @@
             "deprecationReason": null
           },
           {
-            "name": "subscription",
+            "name": "enrollment",
             "description": null,
             "args": [],
             "type": {
               "kind": "OBJECT",
-              "name": "Subscription",
+              "name": "Enrollment",
               "ofType": null
             },
             "isDeprecated": false,
@@ -12254,7 +12252,7 @@
             "deprecationReason": null
           },
           {
-            "name": "SUBSCRIPTION_ORDER_GENERATOR",
+            "name": "ENROLLMENT_ORDER_GENERATOR",
             "description": null,
             "isDeprecated": false,
             "deprecationReason": null
@@ -12598,7 +12596,7 @@
       },
       {
         "kind": "ENUM",
-        "name": "SubscriptionStatus",
+        "name": "EnrollmentStatus",
         "description": null,
         "specifiedByUrl": null,
         "fields": null,
@@ -12613,7 +12611,7 @@
           },
           {
             "name": "ACTIVE",
-            "description": "Active Subscription",
+            "description": "Active Enrollment",
             "isDeprecated": false,
             "deprecationReason": null
           },
@@ -12625,7 +12623,7 @@
           },
           {
             "name": "TERMINATED",
-            "description": "Terminated / Ended subscription",
+            "description": "Terminated / Ended enrollment",
             "isDeprecated": false,
             "deprecationReason": null
           }
@@ -12634,7 +12632,7 @@
       },
       {
         "kind": "OBJECT",
-        "name": "SubscriptionPlan",
+        "name": "EnrollmentPlan",
         "description": null,
         "specifiedByUrl": null,
         "fields": [
@@ -12698,7 +12696,7 @@
       },
       {
         "kind": "OBJECT",
-        "name": "SubscriptionPayment",
+        "name": "EnrollmentPayment",
         "description": null,
         "specifiedByUrl": null,
         "fields": [
@@ -12722,7 +12720,7 @@
       },
       {
         "kind": "OBJECT",
-        "name": "SubscriptionDelivery",
+        "name": "EnrollmentDelivery",
         "description": null,
         "specifiedByUrl": null,
         "fields": [
@@ -12746,7 +12744,7 @@
       },
       {
         "kind": "OBJECT",
-        "name": "SubscriptionPeriod",
+        "name": "EnrollmentPeriod",
         "description": null,
         "specifiedByUrl": null,
         "fields": [
@@ -12818,8 +12816,8 @@
       },
       {
         "kind": "OBJECT",
-        "name": "Subscription",
-        "description": "Subscription",
+        "name": "Enrollment",
+        "description": "Enrollment",
         "specifiedByUrl": null,
         "fields": [
           {
@@ -12863,7 +12861,7 @@
               "name": null,
               "ofType": {
                 "kind": "OBJECT",
-                "name": "SubscriptionPlan",
+                "name": "EnrollmentPlan",
                 "ofType": null
               }
             },
@@ -12876,7 +12874,7 @@
             "args": [],
             "type": {
               "kind": "OBJECT",
-              "name": "SubscriptionPayment",
+              "name": "EnrollmentPayment",
               "ofType": null
             },
             "isDeprecated": false,
@@ -12888,7 +12886,7 @@
             "args": [],
             "type": {
               "kind": "OBJECT",
-              "name": "SubscriptionDelivery",
+              "name": "EnrollmentDelivery",
               "ofType": null
             },
             "isDeprecated": false,
@@ -12927,7 +12925,7 @@
               "name": null,
               "ofType": {
                 "kind": "ENUM",
-                "name": "SubscriptionStatus",
+                "name": "EnrollmentStatus",
                 "ofType": null
               }
             },
@@ -13000,7 +12998,7 @@
             "deprecationReason": null
           },
           {
-            "name": "subscriptionNumber",
+            "name": "enrollmentNumber",
             "description": null,
             "args": [],
             "type": {
@@ -13099,7 +13097,7 @@
                   "name": null,
                   "ofType": {
                     "kind": "OBJECT",
-                    "name": "SubscriptionPeriod",
+                    "name": "EnrollmentPeriod",
                     "ofType": null
                   }
                 }
@@ -13634,7 +13632,7 @@
             "deprecationReason": null
           },
           {
-            "name": "SUBSCRIPTION_CREATE",
+            "name": "ENROLLMENT_CREATE",
             "description": null,
             "isDeprecated": false,
             "deprecationReason": null
@@ -16002,7 +16000,7 @@
       },
       {
         "kind": "INPUT_OBJECT",
-        "name": "SubscriptionDeliveryInput",
+        "name": "EnrollmentDeliveryInput",
         "description": null,
         "specifiedByUrl": null,
         "fields": null,
@@ -16042,7 +16040,7 @@
       },
       {
         "kind": "INPUT_OBJECT",
-        "name": "SubscriptionPaymentInput",
+        "name": "EnrollmentPaymentInput",
         "description": null,
         "specifiedByUrl": null,
         "fields": null,
@@ -16082,7 +16080,7 @@
       },
       {
         "kind": "INPUT_OBJECT",
-        "name": "SubscriptionPlanInput",
+        "name": "EnrollmentPlanInput",
         "description": null,
         "specifiedByUrl": null,
         "fields": null,
@@ -18455,8 +18453,8 @@
             "deprecationReason": null
           },
           {
-            "name": "subscriptionsCount",
-            "description": "Returns total number of subscriptions",
+            "name": "enrollmentsCount",
+            "description": "Returns total number of enrollments",
             "args": [],
             "type": {
               "kind": "NON_NULL",
@@ -18471,8 +18469,8 @@
             "deprecationReason": null
           },
           {
-            "name": "subscriptions",
-            "description": "Get all subscriptions",
+            "name": "enrollments",
+            "description": "Get all enrollments",
             "args": [
               {
                 "name": "limit",
@@ -18510,7 +18508,7 @@
                   "name": null,
                   "ofType": {
                     "kind": "OBJECT",
-                    "name": "Subscription",
+                    "name": "Enrollment",
                     "ofType": null
                   }
                 }
@@ -18520,11 +18518,11 @@
             "deprecationReason": null
           },
           {
-            "name": "subscription",
+            "name": "enrollment",
             "description": "Get a specific quotation by ID",
             "args": [
               {
-                "name": "subscriptionId",
+                "name": "enrollmentId",
                 "description": null,
                 "type": {
                   "kind": "NON_NULL",
@@ -18542,7 +18540,7 @@
             ],
             "type": {
               "kind": "OBJECT",
-              "name": "Subscription",
+              "name": "Enrollment",
               "ofType": null
             },
             "isDeprecated": false,
@@ -20134,8 +20132,8 @@
             "deprecationReason": null
           },
           {
-            "name": "createSubscription",
-            "description": "Create a subscription.",
+            "name": "createEnrollment",
+            "description": "Create a enrollment.",
             "args": [
               {
                 "name": "plan",
@@ -20145,7 +20143,7 @@
                   "name": null,
                   "ofType": {
                     "kind": "INPUT_OBJECT",
-                    "name": "SubscriptionPlanInput",
+                    "name": "EnrollmentPlanInput",
                     "ofType": null
                   }
                 },
@@ -20182,7 +20180,7 @@
                 "description": null,
                 "type": {
                   "kind": "INPUT_OBJECT",
-                  "name": "SubscriptionPaymentInput",
+                  "name": "EnrollmentPaymentInput",
                   "ofType": null
                 },
                 "defaultValue": null,
@@ -20194,7 +20192,7 @@
                 "description": null,
                 "type": {
                   "kind": "INPUT_OBJECT",
-                  "name": "SubscriptionDeliveryInput",
+                  "name": "EnrollmentDeliveryInput",
                   "ofType": null
                 },
                 "defaultValue": null,
@@ -20219,7 +20217,7 @@
               "name": null,
               "ofType": {
                 "kind": "OBJECT",
-                "name": "Subscription",
+                "name": "Enrollment",
                 "ofType": null
               }
             },
@@ -20227,11 +20225,11 @@
             "deprecationReason": null
           },
           {
-            "name": "updateSubscription",
-            "description": "Update a subscription",
+            "name": "updateEnrollment",
+            "description": "Update a enrollment",
             "args": [
               {
-                "name": "subscriptionId",
+                "name": "enrollmentId",
                 "description": null,
                 "type": {
                   "kind": "SCALAR",
@@ -20247,7 +20245,7 @@
                 "description": null,
                 "type": {
                   "kind": "INPUT_OBJECT",
-                  "name": "SubscriptionPlanInput",
+                  "name": "EnrollmentPlanInput",
                   "ofType": null
                 },
                 "defaultValue": null,
@@ -20283,7 +20281,7 @@
                 "description": null,
                 "type": {
                   "kind": "INPUT_OBJECT",
-                  "name": "SubscriptionPaymentInput",
+                  "name": "EnrollmentPaymentInput",
                   "ofType": null
                 },
                 "defaultValue": null,
@@ -20295,7 +20293,7 @@
                 "description": null,
                 "type": {
                   "kind": "INPUT_OBJECT",
-                  "name": "SubscriptionDeliveryInput",
+                  "name": "EnrollmentDeliveryInput",
                   "ofType": null
                 },
                 "defaultValue": null,
@@ -20320,7 +20318,7 @@
               "name": null,
               "ofType": {
                 "kind": "OBJECT",
-                "name": "Subscription",
+                "name": "Enrollment",
                 "ofType": null
               }
             },
@@ -20328,11 +20326,11 @@
             "deprecationReason": null
           },
           {
-            "name": "activateSubscription",
-            "description": "Activate a subscription by changing the status to ACTIVE",
+            "name": "activateEnrollment",
+            "description": "Activate a enrollment by changing the status to ACTIVE",
             "args": [
               {
-                "name": "subscriptionId",
+                "name": "enrollmentId",
                 "description": null,
                 "type": {
                   "kind": "NON_NULL",
@@ -20353,7 +20351,7 @@
               "name": null,
               "ofType": {
                 "kind": "OBJECT",
-                "name": "Subscription",
+                "name": "Enrollment",
                 "ofType": null
               }
             },
@@ -20361,11 +20359,11 @@
             "deprecationReason": null
           },
           {
-            "name": "terminateSubscription",
-            "description": "Terminate an actively running subscription by changing it's status to TERMINATED",
+            "name": "terminateEnrollment",
+            "description": "Terminate an actively running enrollment by changing it's status to TERMINATED",
             "args": [
               {
-                "name": "subscriptionId",
+                "name": "enrollmentId",
                 "description": null,
                 "type": {
                   "kind": "NON_NULL",
@@ -20386,7 +20384,7 @@
               "name": null,
               "ofType": {
                 "kind": "OBJECT",
-                "name": "Subscription",
+                "name": "Enrollment",
                 "ofType": null
               }
             },
@@ -25231,7 +25229,7 @@
           },
           {
             "name": "registerPaymentCredentials",
-            "description": "Register credentials for an existing payment provider allowing to store and use them\nfor later payments (1-click checkout or subscriptions)",
+            "description": "Register credentials for an existing payment provider allowing to store and use them\nfor later payments (1-click checkout or enrollments)",
             "args": [
               {
                 "name": "paymentContext",

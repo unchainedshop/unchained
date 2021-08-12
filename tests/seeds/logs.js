@@ -37,7 +37,7 @@ export const logs = [
     created: 1590674402241,
     level: 'info',
     message:
-      'WorkerDirector -> Work added SUBSCRIPTION_ORDER_GENERATOR Thu May 28 2020 17:59:00 GMT+0300 (East Africa Time) 0',
+      'WorkerDirector -> Work added ENROLLMENT_ORDER_GENERATOR Thu May 28 2020 17:59:00 GMT+0300 (East Africa Time) 0',
     user: null,
     order: null,
   },
@@ -46,7 +46,7 @@ export const logs = [
     created: 1590674342985,
     level: 'info',
     message:
-      'WorkerDirector -> Work added SUBSCRIPTION_ORDER_GENERATOR Thu May 28 2020 17:00:00 GMT+0300 (East Africa Time) 0',
+      'WorkerDirector -> Work added ENROLLMENT_ORDER_GENERATOR Thu May 28 2020 17:00:00 GMT+0300 (East Africa Time) 0',
     user: null,
     order: null,
   },
@@ -116,7 +116,7 @@ export const logs = [
     created: 1590673482836,
     level: 'info',
     message:
-      'WorkerDirector -> Work added SUBSCRIPTION_ORDER_GENERATOR Thu May 28 2020 16:59:00 GMT+0300 (East Africa Time) 0',
+      'WorkerDirector -> Work added ENROLLMENT_ORDER_GENERATOR Thu May 28 2020 16:59:00 GMT+0300 (East Africa Time) 0',
     user: null,
     order: null,
   },
@@ -194,7 +194,7 @@ export const logs = [
     created: 1590673478483,
     level: 'info',
     message:
-      'WorkerDirector -> Configured SUBSCRIPTION_ORDER_GENERATOR shop.unchained.worker-plugin.generate-subscription-orders@1.0 (Generates new Orders from Subscriptions) for Autorun at every 59 minutes',
+      'WorkerDirector -> Configured ENROLLMENT_ORDER_GENERATOR shop.unchained.worker-plugin.generate-enrollment-orders@1.0 (Generates new Orders from Enrollments) for Autorun at every 59 minutes',
     user: null,
     order: null,
   },
@@ -239,7 +239,7 @@ export const logs = [
     created: 1590673477765,
     level: 'info',
     message:
-      'SubscriptionDirector -> Registered shop.unchained.subscriptions.licensed 1.0 (Simple Licensed Subscriptions)',
+      'EnrollmentDirector -> Registered shop.unchained.enrollments.licensed 1.0 (Simple Licensed Enrollments)',
     user: null,
     order: null,
   },
@@ -446,7 +446,7 @@ export const logs = [
     created: 1590673468149,
     level: 'info',
     message:
-      'WorkerDirector -> Registered SUBSCRIPTION_ORDER_GENERATOR shop.unchained.worker-plugin.generate-subscription-orders@1.0 (Generates new Orders from Subscriptions)',
+      'WorkerDirector -> Registered ENROLLMENT_ORDER_GENERATOR shop.unchained.worker-plugin.generate-enrollment-orders@1.0 (Generates new Orders from Enrollments)',
     user: null,
     order: null,
   },
@@ -464,7 +464,7 @@ export const logs = [
     created: 1590620402825,
     level: 'info',
     message:
-      'WorkerDirector -> Work added SUBSCRIPTION_ORDER_GENERATOR Thu May 28 2020 02:59:00 GMT+0300 (East Africa Time) 0',
+      'WorkerDirector -> Work added ENROLLMENT_ORDER_GENERATOR Thu May 28 2020 02:59:00 GMT+0300 (East Africa Time) 0',
     user: null,
     order: null,
   },
@@ -473,7 +473,7 @@ export const logs = [
     created: 1590620342497,
     level: 'info',
     message:
-      'WorkerDirector -> Work added SUBSCRIPTION_ORDER_GENERATOR Thu May 28 2020 02:00:00 GMT+0300 (East Africa Time) 0',
+      'WorkerDirector -> Work added ENROLLMENT_ORDER_GENERATOR Thu May 28 2020 02:00:00 GMT+0300 (East Africa Time) 0',
     user: null,
     order: null,
   },
@@ -482,7 +482,7 @@ export const logs = [
     created: 1590616802039,
     level: 'info',
     message:
-      'WorkerDirector -> Work added SUBSCRIPTION_ORDER_GENERATOR Thu May 28 2020 01:59:00 GMT+0300 (East Africa Time) 0',
+      'WorkerDirector -> Work added ENROLLMENT_ORDER_GENERATOR Thu May 28 2020 01:59:00 GMT+0300 (East Africa Time) 0',
     user: null,
     order: null,
   },
@@ -491,7 +491,7 @@ export const logs = [
     created: 1590616742710,
     level: 'info',
     message:
-      'WorkerDirector -> Work added SUBSCRIPTION_ORDER_GENERATOR Thu May 28 2020 01:00:00 GMT+0300 (East Africa Time) 0',
+      'WorkerDirector -> Work added ENROLLMENT_ORDER_GENERATOR Thu May 28 2020 01:00:00 GMT+0300 (East Africa Time) 0',
     user: null,
     order: null,
   },
@@ -536,7 +536,7 @@ export const logs = [
     created: 1590613202285,
     level: 'info',
     message:
-      'WorkerDirector -> Work added SUBSCRIPTION_ORDER_GENERATOR Thu May 28 2020 00:59:00 GMT+0300 (East Africa Time) 0',
+      'WorkerDirector -> Work added ENROLLMENT_ORDER_GENERATOR Thu May 28 2020 00:59:00 GMT+0300 (East Africa Time) 0',
     user: null,
     order: null,
   },
@@ -545,7 +545,7 @@ export const logs = [
     created: 1590613142017,
     level: 'info',
     message:
-      'WorkerDirector -> Work added SUBSCRIPTION_ORDER_GENERATOR Thu May 28 2020 00:00:00 GMT+0300 (East Africa Time) 0',
+      'WorkerDirector -> Work added ENROLLMENT_ORDER_GENERATOR Thu May 28 2020 00:00:00 GMT+0300 (East Africa Time) 0',
     user: null,
     order: null,
   },
@@ -827,7 +827,7 @@ export const logs = [
     created: 1590612007491,
     level: 'info',
     message:
-      'WorkerDirector -> Work added SUBSCRIPTION_ORDER_GENERATOR Wed May 27 2020 23:59:00 GMT+0300 (East Africa Time) 0',
+      'WorkerDirector -> Work added ENROLLMENT_ORDER_GENERATOR Wed May 27 2020 23:59:00 GMT+0300 (East Africa Time) 0',
     user: null,
     order: null,
   },
@@ -853,7 +853,7 @@ export const logs = [
     created: 1590612006923,
     level: 'info',
     message:
-      'WorkerDirector -> Configured SUBSCRIPTION_ORDER_GENERATOR shop.unchained.worker-plugin.generate-subscription-orders@1.0 (Generates new Orders from Subscriptions) for Autorun at every 59 minutes',
+      'WorkerDirector -> Configured ENROLLMENT_ORDER_GENERATOR shop.unchained.worker-plugin.generate-enrollment-orders@1.0 (Generates new Orders from Enrollments) for Autorun at every 59 minutes',
     user: null,
     order: null,
   },
@@ -907,7 +907,7 @@ export const logs = [
     created: 1590611921038,
     level: 'info',
     message:
-      'SubscriptionDirector -> Registered shop.unchained.subscriptions.licensed 1.0 (Simple Licensed Subscriptions)',
+      'EnrollmentDirector -> Registered shop.unchained.enrollments.licensed 1.0 (Simple Licensed Enrollments)',
     user: null,
     order: null,
   },

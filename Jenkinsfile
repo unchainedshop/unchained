@@ -14,8 +14,7 @@ pipeline {
       steps {
         script {
           docker.build("ci:latest")
-          sh 'docker run ci:latest sh -c "meteor npm run lint:ci"'
-          sh 'docker run ci:latest sh -c "meteor npm run test:ci"'
+          sh 'docker run ci:latest sh -c "meteor npm run lint:ci && meteor npm run test:ci"'
         }
       }
     }
@@ -33,6 +32,7 @@ pipeline {
             stage('Building') {
               steps{
                 script {
+                  sh 'cp -R packages ./examples/minimal/packages'
                   minimal = docker.build("registry.ucc.dev/unchained/minimal","-f ./examples/minimal/Dockerfile.multi-stage ./examples/minimal")
                 }
               }

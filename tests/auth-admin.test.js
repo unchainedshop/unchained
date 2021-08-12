@@ -762,7 +762,7 @@ describe('Auth for admin users', () => {
               paymentCredentials {
                 _id
               }
-              subscriptions {
+              enrollments {
                 _id
               }
             }

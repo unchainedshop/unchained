@@ -172,39 +172,39 @@ export default [
       removeCartDiscount(discountId: ID!): OrderDiscount!
 
       """
-      Create a subscription.
+      Create a enrollment.
       """
-      createSubscription(
-        plan: SubscriptionPlanInput!
+      createEnrollment(
+        plan: EnrollmentPlanInput!
         billingAddress: AddressInput
         contact: ContactInput
-        payment: SubscriptionPaymentInput
-        delivery: SubscriptionDeliveryInput
+        payment: EnrollmentPaymentInput
+        delivery: EnrollmentDeliveryInput
         meta: JSON
-      ): Subscription!
+      ): Enrollment!
 
       """
-      Update a subscription
+      Update a enrollment
       """
-      updateSubscription(
-        subscriptionId: ID
-        plan: SubscriptionPlanInput
+      updateEnrollment(
+        enrollmentId: ID
+        plan: EnrollmentPlanInput
         billingAddress: AddressInput
         contact: ContactInput
-        payment: SubscriptionPaymentInput
-        delivery: SubscriptionDeliveryInput
+        payment: EnrollmentPaymentInput
+        delivery: EnrollmentDeliveryInput
         meta: JSON
-      ): Subscription!
+      ): Enrollment!
 
       """
-      Activate a subscription by changing the status to ACTIVE
+      Activate a enrollment by changing the status to ACTIVE
       """
-      activateSubscription(subscriptionId: ID!): Subscription!
+      activateEnrollment(enrollmentId: ID!): Enrollment!
 
       """
-      Terminate an actively running subscription by changing it's status to TERMINATED
+      Terminate an actively running enrollment by changing it's status to TERMINATED
       """
-      terminateSubscription(subscriptionId: ID!): Subscription!
+      terminateEnrollment(enrollmentId: ID!): Enrollment!
 
       """
       Change the delivery method/provider to an order. If the delivery provider
@@ -892,7 +892,7 @@ export default [
 
       """
       Register credentials for an existing payment provider allowing to store and use them
-      for later payments (1-click checkout or subscriptions)
+      for later payments (1-click checkout or enrollments)
       """
       registerPaymentCredentials(
         paymentContext: JSON!

@@ -57,7 +57,7 @@ export default (options) => {
       logGraphQLServerError(error);
       const {
         message,
-        extensions: { exception, code, ...extensions }, // removes exception
+        extensions: { exception, code, ...extensions }, // eslint-disable-line
       } = error;
       return new ApolloError(message, code, {
         code,

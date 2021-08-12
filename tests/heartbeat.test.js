@@ -86,7 +86,7 @@ describe('Heartbeat', () => {
               paymentCredentials {
                 _id
               }
-              subscriptions {
+              enrollments {
                 _id
               }
             }

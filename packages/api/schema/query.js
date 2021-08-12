@@ -334,19 +334,19 @@ export default [
       quotation(quotationId: ID!): Quotation
 
       """
-      Returns total number of subscriptions
+      Returns total number of enrollments
       """
-      subscriptionsCount: Int!
+      enrollmentsCount: Int!
 
       """
-      Get all subscriptions
+      Get all enrollments
       """
-      subscriptions(limit: Int = 10, offset: Int = 0): [Subscription!]!
+      enrollments(limit: Int = 10, offset: Int = 0): [Enrollment!]!
 
       """
       Get a specific quotation by ID
       """
-      subscription(subscriptionId: ID!): Subscription
+      enrollment(enrollmentId: ID!): Enrollment
 
       """
       Search products

@@ -1,5 +1,5 @@
 ---
-title: "Module: Events"
+title: 'Module: Events'
 description: Configure the Events Module
 ---
 
@@ -21,24 +21,24 @@ Bellow are events tracked under each module under the box:
 
 #### `core-assortments`:
 
-| Event name                  | Emited when...                           | `payload`                                                   |
-| :-------------------------- | :--------------------------------------- | :---------------------------------------------------------- |
-| ASSORTMENT_CREATE           | Assortment is created                    | `{ assortment: {} }`                                        |
-| ASSORTMENT_ADD_FILTER       | Assortment filter is created             | `{ assortmentFilter: {} }`                                  |
-| ASSORTMENT_ADD_LINK         | Assortment link is created               | `{ parentAssortmentId: string, childAssortmentId: string }` |
-| ASSORTMENT_ADD_PRODUCT      | Product is added to an assortment        | `{ assortmentProduct: {} }`                                 |
-| ASSORTMENT_REMOVE           | Assortment is deleted                    | `{ assortmentId: string }`                                  |
-| ASSORTMENT_REMOVE_FILTER    | Assortment filter is deleted             | `{ assortmentFilterId: string }`                            |
-| ASSORTMENT_REMOVE_LINK      | Assortment link is removed               | `{ assortmentLinkId: string }`                              |
-| ASSORTMENT_REORDER_PRODUCTS | Assortment product sort order is updated | `{ assortmentProducts: [] }`                                |
-| ASSORTMENT_REORDER_FILTERS  | Assortment filters sort order is updated | `{ assortmentFilters: [] }`                                 |
-| ASSORTMENT_REORDER_LINKS    | Assortment link is updated               | `{ assortmentLinks: [] }`                                   |
-| ASSORTMENT_SET_BASE         | Assortment is set as base assortment     | `{ assortmentId: string }`                                  |
-| ASSORTMENT_UPDATE           | Assortment is updated                    | `{ assortmentId: string }`                                  |
-| ASSORTMENT_UPDATE_TEXTS     | Assortment text is updated               | `{ assortmentId: string, assortmentTexts: [] }`             |
-| ASSORTMENT_ADD_MEDIA               | Media is added for a product                                 | `{ assortmentMedia: {} }`|
-| ASSORTMENT_REMOVE_MEDIA            | Media is deleted from a product                              | `{ assortmentMediaId: string }`                                              |
-| ASSORTMENT_UPDATE_MEDIA_TEXT       | Product media text is updated                                | `{assortmentMedia: {}, mediaTexts: {} }`                                     |
+| Event name                   | Emited when...                           | `payload`                                                   |
+| :--------------------------- | :--------------------------------------- | :---------------------------------------------------------- |
+| ASSORTMENT_CREATE            | Assortment is created                    | `{ assortment: {} }`                                        |
+| ASSORTMENT_ADD_FILTER        | Assortment filter is created             | `{ assortmentFilter: {} }`                                  |
+| ASSORTMENT_ADD_LINK          | Assortment link is created               | `{ parentAssortmentId: string, childAssortmentId: string }` |
+| ASSORTMENT_ADD_PRODUCT       | Product is added to an assortment        | `{ assortmentProduct: {} }`                                 |
+| ASSORTMENT_REMOVE            | Assortment is deleted                    | `{ assortmentId: string }`                                  |
+| ASSORTMENT_REMOVE_FILTER     | Assortment filter is deleted             | `{ assortmentFilterId: string }`                            |
+| ASSORTMENT_REMOVE_LINK       | Assortment link is removed               | `{ assortmentLinkId: string }`                              |
+| ASSORTMENT_REORDER_PRODUCTS  | Assortment product sort order is updated | `{ assortmentProducts: [] }`                                |
+| ASSORTMENT_REORDER_FILTERS   | Assortment filters sort order is updated | `{ assortmentFilters: [] }`                                 |
+| ASSORTMENT_REORDER_LINKS     | Assortment link is updated               | `{ assortmentLinks: [] }`                                   |
+| ASSORTMENT_SET_BASE          | Assortment is set as base assortment     | `{ assortmentId: string }`                                  |
+| ASSORTMENT_UPDATE            | Assortment is updated                    | `{ assortmentId: string }`                                  |
+| ASSORTMENT_UPDATE_TEXTS      | Assortment text is updated               | `{ assortmentId: string, assortmentTexts: [] }`             |
+| ASSORTMENT_ADD_MEDIA         | Media is added for a product             | `{ assortmentMedia: {} }`                                   |
+| ASSORTMENT_REMOVE_MEDIA      | Media is deleted from a product          | `{ assortmentMediaId: string }`                             |
+| ASSORTMENT_UPDATE_MEDIA_TEXT | Product media text is updated            | `{assortmentMedia: {}, mediaTexts: {} }`                    |
 
 #### `core-products`
 
@@ -103,66 +103,65 @@ Bellow are events tracked under each module under the box:
 
 #### `core-country`
 
-| Event name      | Emitted when...         | `payload`                |
-| :-------------- | :---------------------- | :----------------------- |
-| COUNTRY_CREATE | New country is created | `{ country: {} }` |
-| COUNTRY_UPDATE | Country is update     | `{ countryId: string }` |
+| Event name     | Emitted when...        | `payload`               |
+| :------------- | :--------------------- | :---------------------- |
+| COUNTRY_CREATE | New country is created | `{ country: {} }`       |
+| COUNTRY_UPDATE | Country is update      | `{ countryId: string }` |
 | COUNTRY_REMOVE | Country is removed     | `{ countryId: string }` |
 
 #### `core-currency`
 
 | Event name      | Emitted when...         | `payload`                |
 | :-------------- | :---------------------- | :----------------------- |
-| CURRENCY_CREATE | New currency is created | `{ currency: {} }` |
-| CURRENCY_UPDATE | Currency is update     | `{ currencyId: string }` |
+| CURRENCY_CREATE | New currency is created | `{ currency: {} }`       |
+| CURRENCY_UPDATE | Currency is update      | `{ currencyId: string }` |
 | CURRENCY_REMOVE | Currency is removed     | `{ currencyId: string }` |
 
 #### `core-language`
 
 | Event name      | Emitted when...         | `payload`                |
 | :-------------- | :---------------------- | :----------------------- |
-| LANGUAGE_CREATE | New language is created | `{ language: {} }` |
-| LANGUAGE_UPDATE | Language is update     | `{ languageId: string }` |
+| LANGUAGE_CREATE | New language is created | `{ language: {} }`       |
+| LANGUAGE_UPDATE | Language is update      | `{ languageId: string }` |
 | LANGUAGE_REMOVE | Language is removed     | `{ languageId: string }` |
 
 #### `core-filter`
 
-| Event name      | Emitted when...         | `payload`                |
-| :-------------- | :---------------------- | :----------------------- |
-| FILTER_CREATE | New filter is created | `{ filter: {} }` |
-| FILTER_UPDATE | Filter is update     | `{ filter: {} }` |
+| Event name    | Emitted when...       | `payload`              |
+| :------------ | :-------------------- | :--------------------- |
+| FILTER_CREATE | New filter is created | `{ filter: {} }`       |
+| FILTER_UPDATE | Filter is update      | `{ filter: {} }`       |
 | FILTER_REMOVE | Filter is removed     | `{ filterId: string }` |
 
 #### `core-payment`
 
-| Event name      | Emitted when...         | `payload`                |
-| :-------------- | :---------------------- | :----------------------- |
+| Event name              | Emitted when...                 | `payload`                 |
+| :---------------------- | :------------------------------ | :------------------------ |
 | PAYMENT_PROVIDER_CREATE | New payment provider is created | `{ paymentProvider: {} }` |
-| PAYMENT_PROVIDER_UPDATE | Payment provider is update     | `{ paymentProvider: {} }` |
+| PAYMENT_PROVIDER_UPDATE | Payment provider is update      | `{ paymentProvider: {} }` |
 | PAYMENT_PROVIDER_REMOVE | Payment provider is removed     | `{ paymentProvider: {} }` |
 
 #### `core-payment`
 
-| Event name      | Emitted when...         | `payload`                |
-| :-------------- | :---------------------- | :----------------------- |
+| Event name              | Emitted when...                 | `payload`                 |
+| :---------------------- | :------------------------------ | :------------------------ |
 | PAYMENT_PROVIDER_CREATE | New payment provider is created | `{ paymentProvider: {} }` |
-| PAYMENT_PROVIDER_UPDATE | Payment provider is update     | `{ paymentProvider: {} }` |
+| PAYMENT_PROVIDER_UPDATE | Payment provider is update      | `{ paymentProvider: {} }` |
 | PAYMENT_PROVIDER_REMOVE | Payment provider is removed     | `{ paymentProvider: {} }` |
 
 #### `core-warehousing`
 
-| Event name      | Emitted when...         | `payload`                |
-| :-------------- | :---------------------- | :----------------------- |
+| Event name                  | Emitted when...                     | `payload`                     |
+| :-------------------------- | :---------------------------------- | :---------------------------- |
 | WAREHOUSING_PROVIDER_CREATE | New warehousing provider is created | `{ warehousingProvider: {} }` |
-| WAREHOUSING_PROVIDER_UPDATE | Warehousing provider is update     | `{ warehousingProvider: {} }` |
+| WAREHOUSING_PROVIDER_UPDATE | Warehousing provider is update      | `{ warehousingProvider: {} }` |
 | WAREHOUSING_PROVIDER_REMOVE | Warehousing provider is removed     | `{ warehousingProvider: {} }` |
 
-#### `core-subscriptions`
+#### `core-enrollments`
 
-| Event name      | Emitted when...         | `payload`                |
-| :-------------- | :---------------------- | :----------------------- |
-| SUBSCRIPTION_CREATE | New subscription is created | `{ subscription: {} }` |
-
+| Event name        | Emitted when...           | `payload`            |
+| :---------------- | :------------------------ | :------------------- |
+| ENROLLMENT_CREATE | New enrollment is created | `{ enrollment: {} }` |
 
 ### Tracking custom events
 

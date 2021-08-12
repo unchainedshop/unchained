@@ -8,6 +8,7 @@ This is our first major release, it covers all features needed to build highly f
 - [core] upsertLocalizedText for products and assortments does not automatically change the slug anymore, explicitly set it by providing a slug property
 - [core] Remove cron worker `unchained:core-worker/workers/cron`, use the interval worker instead
 - [core] `cronText` has been removed from `configureAutoscheduling` in favor of `schedule`, `schedule` has to be a later.js compliant schedule definition. If you want to reuse the custom cronText define schedule like `later.parse.text('every 5 mins');` Likewise `autoSchedulingCronText` has been removed from subscription settings and replaced with `autoSchedulingSchedule`
+- [core] `core-subscriptions` package is now obsolete and a new `core-enrollments` package with the same functionality has been added. This is to counterfeit problems with GraphQL Subscriptions from the spec.
 - [api] The meta field has been removed, this will affect the following types that previously had a `meta` field
   ```
   Assortment.meta

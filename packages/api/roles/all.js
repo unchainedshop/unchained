@@ -49,7 +49,7 @@ export default (role, actions) => {
   role.allow(actions.viewUserOrders, isInLoginMutationResponse);
   role.allow(actions.viewUserQuotations, isInLoginMutationResponse);
   role.allow(actions.viewUserPrivateInfos, isInLoginMutationResponse);
-  role.allow(actions.viewUserSubscriptions, isInLoginMutationResponse);
+  role.allow(actions.viewUserEnrollments, isInLoginMutationResponse);
   role.allow(actions.reviewProduct, () => false);
   role.allow(actions.updateProductReview, () => false);
   role.allow(actions.manageProductReviews, () => false);
@@ -61,16 +61,16 @@ export default (role, actions) => {
   role.allow(actions.bookmarkProduct, () => false);
   role.allow(actions.voteProductReview, () => false);
   role.allow(actions.manageWorker, () => false);
-  role.allow(actions.viewSubscription, () => false);
-  role.allow(actions.viewSubscriptions, () => false);
-  role.allow(actions.updateSubscription, () => false);
-  role.allow(actions.createSubscription, () => false);
+  role.allow(actions.viewEnrollment, () => false);
+  role.allow(actions.viewEnrollments, () => false);
+  role.allow(actions.updateEnrollment, () => false);
+  role.allow(actions.createEnrollment, () => false);
   role.allow(actions.registerPaymentCredentials, () => false);
   role.allow(actions.managePaymentCredentials, () => false);
   role.allow(actions.bulkImport, () => false);
   role.allow(actions.viewOrder, () => false);
   role.allow(actions.viewQuotation, () => false);
-  role.allow(actions.viewSubscription, () => false);
+  role.allow(actions.viewEnrollment, () => false);
 
   // only allow if query is not demanding for drafts
   role.allow(actions.viewProducts, (root, { includeDrafts }) => !includeDrafts);

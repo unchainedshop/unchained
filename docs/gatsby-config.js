@@ -1,4 +1,4 @@
-const themeOptions = require('@unchainedshop/gatsby-theme-apollo-docs/theme-options')
+const themeOptions = require('@unchainedshop/gatsby-theme-apollo-docs/theme-options');
 
 module.exports = {
   pathPrefix: '/docs/unchained',
@@ -57,7 +57,7 @@ module.exports = {
             'config/product-pricing',
             'config/email-template',
             'config/users',
-            'config/subscriptions',
+            'config/enrollments',
             'config/events',
             'config/settings',
           ],
@@ -70,4 +70,4 @@ module.exports = {
       },
     },
   ],
-}
+};

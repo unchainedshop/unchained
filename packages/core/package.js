@@ -33,7 +33,7 @@ Package.onUse((api) => {
   api.use('unchained:core-filters@1.0.0-beta12');
   api.use('unchained:core-assortments@1.0.0-beta12');
   api.use('unchained:core-worker@1.0.0-beta12');
-  api.use('unchained:core-subscriptions@1.0.0-beta12');
+  api.use('unchained:core-enrollments@1.0.0-beta12');
   api.use('unchained:core-events@1.0.0-beta12');
 
   api.imply([
@@ -57,7 +57,7 @@ Package.onUse((api) => {
     'unchained:core-filters',
     'unchained:core-assortments',
     'unchained:core-worker',
-    'unchained:core-subscriptions',
+    'unchained:core-enrollments',
     'unchained:core-events',
   ]);
 

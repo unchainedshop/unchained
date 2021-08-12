@@ -118,10 +118,10 @@ import finishWork from './finishWork';
 import removeWork from './removeWork';
 import doWork from './doWork';
 import heartbeat from './heartbeat';
-import createSubscription from './createSubscription';
-import terminateSubscription from './terminateSubscription';
-import activateSubscription from './activateSubscription';
-import updateSubscription from './updateSubscription';
+import createEnrollment from './createEnrollment';
+import terminateEnrollment from './terminateEnrollment';
+import activateEnrollment from './activateEnrollment';
+import updateEnrollment from './updateEnrollment';
 import registerPaymentCredentials from './registerPaymentCredentials';
 import markPaymentCredentialsPreferred from './markPaymentCredentialsPreferred';
 import removePaymentCredentials from './removePaymentCredentials';
@@ -248,10 +248,10 @@ export default {
   payOrder: acl(actions.markOrderPaid)(payOrder),
   deliverOrder: acl(actions.markOrderDelivered)(deliverOrder),
 
-  createSubscription: acl(actions.createSubscription)(createSubscription),
-  terminateSubscription: acl(actions.updateSubscription)(terminateSubscription),
-  activateSubscription: acl(actions.updateSubscription)(activateSubscription),
-  updateSubscription: acl(actions.updateSubscription)(updateSubscription),
+  createEnrollment: acl(actions.createEnrollment)(createEnrollment),
+  terminateEnrollment: acl(actions.updateEnrollment)(terminateEnrollment),
+  activateEnrollment: acl(actions.updateEnrollment)(activateEnrollment),
+  updateEnrollment: acl(actions.updateEnrollment)(updateEnrollment),
 
   createPaymentProvider: acl(actions.managePaymentProviders)(
     createPaymentProvider
