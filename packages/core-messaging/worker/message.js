@@ -22,7 +22,8 @@ class Message extends WorkerPlugin {
       if (workConfigurations.length > 0) {
         const forked = await Promise.all(
           workConfigurations.map(async (workConfiguration) => {
-            const { input: _, ...work } = await WorkerDirector.addWork({
+            // eslint-disable-next-line
+            const { input, ...work } = await WorkerDirector.addWork({
               ...workConfiguration,
               originalWorkId: _id,
             });

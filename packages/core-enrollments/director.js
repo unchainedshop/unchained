@@ -29,8 +29,8 @@ class EnrollmentAdapter {
 
   static version = '';
 
+  // eslint-disable-next-line
   static isActivatedFor({ usageCalculationType }) {
-    // eslint-disable-line
     return false;
   }
 
@@ -92,8 +92,8 @@ class EnrollmentAdapter {
     this.context = context;
   }
 
+  // eslint-disable-next-line
   log(message, { level = 'debug', ...options } = {}) {
-    // eslint-disable-line
     return log(message, { level, ...options });
   }
 }
