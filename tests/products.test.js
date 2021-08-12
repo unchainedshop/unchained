@@ -256,8 +256,7 @@ describe('Products', () => {
               updated: true,
             },
           },
-        },
-      });
+        });
 
       expect(updateProduct).toMatchObject({
         _id: 'simpleproduct',
