@@ -22,6 +22,9 @@ This is our first major release, it covers all features needed to build highly f
   Subscription.meta
   SubscriptionDelivery.meta
   SubscriptionPayment.meta
+  Order.meta
+  OrderDelivery.meta
+  OrderPayment.meta
   ```
 - [schema] SPECIAL ATTENTION REQUIRED: `Money` type has been completely removed and was replaced with `Price`, this simplifies reading out prices but involves changing potentially a lot of FRONTEND CODE!.
   This change will affect the following types and any other type that has fields of this types
