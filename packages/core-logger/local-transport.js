@@ -4,10 +4,6 @@ import { Meteor } from 'meteor/meteor';
 import { Logs } from './db/collections';
 
 class LocalTransport extends Transport {
-  constructor(obj) {
-    super(obj);
-  }
-
   log(info, callback) {
     setImmediate(() => {
       this.emit('logged', info);

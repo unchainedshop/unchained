@@ -40,10 +40,6 @@ export type UnchainedLogs = {
   user: any;
   order: any;
 };
-export type Bookmark = {
-  userId: string;
-  productId: string;
-};
 
 export type UnchainedLoggerAPI = {
   findLogs({
