@@ -37,8 +37,8 @@ export default [
     }
 
     type EnrollmentPeriod {
-      start: Timestamp!
-      end: Timestamp!
+      start: DateTime!
+      end: DateTime!
       isTrial: Boolean!
       order: Order
     }
