@@ -43,7 +43,6 @@ describe('ProductsCommerce', () => {
                 reviews {
                   _id
                 }
-                meta
                 assortmentPaths {
                   links {
                     link {
@@ -51,6 +50,9 @@ describe('ProductsCommerce', () => {
                     }
                     assortmentId
                   }
+                }
+                siblings {
+                  _id
                 }
                 siblings {
                   _id
