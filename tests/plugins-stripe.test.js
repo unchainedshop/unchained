@@ -243,6 +243,7 @@ if (STRIPE_SECRET) {
           `,
         });
         const credentials = me?.paymentCredentials?.[0];
+
         expect(credentials).toMatchObject({
           isPreferred: true,
           isValid: true,

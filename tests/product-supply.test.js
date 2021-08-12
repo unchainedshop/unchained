@@ -39,7 +39,6 @@ describe('ProductsSupply', () => {
               reviews {
                 _id
               }
-              meta
               assortmentPaths {
                 links {
                   link {

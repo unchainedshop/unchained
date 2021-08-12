@@ -23,14 +23,6 @@ OrderPayments.helpers({
       paymentProviderId: this.paymentProviderId,
     });
   },
-  transformedContextValue(key) {
-    const provider = this.provider();
-    const ctx = this.context || {};
-    if (provider) {
-      return provider.transformContext(key, ctx[key]);
-    }
-    return JSON.stringify(ctx[key]);
-  },
   normalizedStatus() {
     return objectInvert(OrderPaymentStatus)[this.status || null];
   },

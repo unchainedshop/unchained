@@ -21,7 +21,6 @@ const QuotationHeader = ({
   product,
   expires,
   rejected,
-  meta,
   fullfilled,
   currency,
   statusColor,
@@ -109,12 +108,6 @@ const QuotationHeader = ({
                   </List.Content>
                 </List.Item>
               )}
-              {meta && (
-                <List.Item>
-                  <List.Icon name="user" />
-                  <List.Content>{JSON.stringify(meta)}</List.Content>
-                </List.Item>
-              )}
             </List>
           </Grid.Column>
           <Grid.Column width={6}>
@@ -161,7 +154,6 @@ export default compose(
           status
           created
           updated
-          meta
         }
       }
     `,
@@ -182,7 +174,6 @@ export default compose(
           created
           updated
           rejected
-          meta
         }
       }
     `,
@@ -222,7 +213,6 @@ export default compose(
           _id
           isoCode
         }
-        meta
       }
     }
   `),

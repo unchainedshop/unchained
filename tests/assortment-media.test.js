@@ -407,7 +407,6 @@ describe('AssortmentMedia', () => {
                 type
                 size
                 url
-                meta
               }
               sortKey
               texts {

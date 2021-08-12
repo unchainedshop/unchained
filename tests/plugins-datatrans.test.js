@@ -376,7 +376,7 @@ describe('Plugins: Datatrans Payments', () => {
   });
   describe('Checkout', () => {
     it('checkout with stored alias', async () => {
-      const { data: { me } = {} } = await graphqlFetch({
+      const { data: { me } = {}, errors } = await graphqlFetch({
         query: /* GraphQL */ `
           query {
             me {

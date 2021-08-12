@@ -1,76 +1,31 @@
 # vNEXT
 
-# v1.0.0-beta12
+This is our first major release, it covers all features needed to build highly flexible e-commerce solutions.
 
-- [core] Fix issue with price id's beeing null (broke stuff that we didn't want to brake)
-- [core] Fix an issue with scheduling jobs based on past or future dates
-- [core] Improved Matomo tracker
-- [docs] New Get Started Tutorial
-- [examples] Seed delivery and payment providers based on environment variables
-- [core] Extended events module to make it possible to transform context for specific needs
-- [core] Reduce core-events logging verbosity
-- [core] Upstream hotfixes from 61.x
-
-# v1.0.0-beta9
-
-- [controlpanel] Ambiguity of where to set environment variable is fixed. now you can set environment related with the control panel at the root directory of `controlpanel` and environemt variables related with the engine under root directory of `minimal`.
-- [api] `query.productReviews` is extended to support searching/filtering with title or review and sorting all valid fields of product review.
-- [controlpanel] Now it's possible to add external links to an extended version of unchained control panel or any other site you want to access through the `controlpanel` by providing JSON using the env `EXTERNAL_LINKS` variable inside `example/minimal`. The JSON to be provided has to be an array of external link definitions in the form of objects with href and title properties (`[{ href: string, title: string}]`).
-If an external link file object is found its content will appear in the top menu of the `controlpanel`
-- [controlpanel] Fix logout with server-side cookies
-
-# v1.0.0-beta8
-
-Breaking:
+## Breaking changes
 - [core] Upgrade to new GraphQL multi-part standard with graphql-upload pinning to v12, please use the latest graphql-upload-client
-
-# v1.0.0-beta7
-
-- [core] Update ostrio:files to 2.0.1 to mitigate various download issues
-- [controlpanel] Fid issues with assortment and order lists
-
-# v1.0.0-beta5
-
-- [api] New mutation `logoutAllSession` added that can be used to remove all tokens of current user
-- [platform] Assortment bulk import updated to handle assortment media.
-
-## Breaking changes
 - [core] Environment variables `LANG`, `COUNTRY` & `CURRENCY` have to be prefixed with `UNCHAINED_` to prevent a conflict that may occur with other systems environment variables.
-
-# v1.0.0-beta3
-
-- [api,core] Add support for remotePort and userAgent in context and heartbeat #118
-- [api,core,controlpanel] Users with admin roles can now search for specific orders by userId,orderId,orderNumber & status through the controlpanel #319
-
-# v1.0.0-beta2
-
-- [assortment-media] it's is now possible to assign media files for assortments.
-- [controlpanel] Assortment media upload, remove & reorder functionalities are available.
-- [api] Added the following query and mutations that can be used to manage assortment medias
-
-```
-Query.translatedAssortmentMediaTexts
-Mutation.addAssortmentMedia
-Mutation.removeAssortmentMedia
-Mutation.reorderAssortmentMedia
-Mutation.updateAssortmentMediaText
-```
-- [schema] Added the following types to be used with assortment medias
-
-```
-AssortmentMediaTexts
-AssortmentMedia
-UpdateAssortmentMediaTextInput
-ReorderAssortmentMediaInput
-
-```
-# v1.0.0-beta1
-
-## Breaking changes
-
 - [core] upsertLocalizedText for products and assortments does not automatically change the slug anymore, explicitly set it by providing a slug property
 - [core] Remove cron worker `unchained:core-worker/workers/cron`, use the interval worker instead
 - [core] `cronText` has been removed from `configureAutoscheduling` in favor of `schedule`, `schedule` has to be a later.js compliant schedule definition. If you want to reuse the custom cronText define schedule like `later.parse.text('every 5 mins');` Likewise `autoSchedulingCronText` has been removed from subscription settings and replaced with `autoSchedulingSchedule`
+- [api] The meta field has been removed, this will affect the following types that previously had a `meta` field
+  ```
+  Assortment.meta
+  AssortmentProduct.meta
+  AssortmentFilter.meta
+  AssortmentLink.meta
+  Media.meta
+  Product.meta
+  ProductReview.meta
+  ProductReviewVote.meta
+  Quotation.meta
+  Subscription.meta
+  SubscriptionDelivery.meta
+  SubscriptionPayment.meta
+  Order.meta
+  OrderDelivery.meta
+  OrderPayment.meta
+  ```
 - [schema] SPECIAL ATTENTION REQUIRED: `Money` type has been completely removed and was replaced with `Price`, this simplifies reading out prices but involves changing potentially a lot of FRONTEND CODE!.
   This change will affect the following types and any other type that has fields of this types
 
@@ -88,7 +43,12 @@ ReorderAssortmentMediaInput
   ```
 
 ## Major
-
+- [controlpanel] Now it's possible to add external links to an extended version of unchained control panel or any other site you want to access through the `controlpanel` by providing JSON using the env `EXTERNAL_LINKS` variable inside `example/minimal`. The JSON to be provided has to be an array of external link definitions in the form of objects with href and title properties (`[{ href: string, title: string}]`). If an external link file object is found its content will appear in the top menu of the `controlpanel`
+- [api] `query.productReviews` is extended to support searching/filtering with title or review and sorting all valid fields of product review.
+- [api] New mutation `logoutAllSession` added that can be used to remove all tokens of current user
+- [platform] Assortment bulk import updated to handle assortment media.
+- [api,core] Add support for remotePort and userAgent in context and heartbeat #118
+- [api,core,controlpanel] Users with admin roles can now search for specific orders by userId,orderId,orderNumber & status through the controlpanel #319
 - [core] NEW core module `events` allows to listen to various elementary events and trigger custom code based on those. See the documentation here https://docs.unchained.shop/config/events/. We also provide two default event backend integrations, one for the local Node.js event emitter and one for Redis. In some cases you will only want to react to an event on a worker instance or even completely fire and forget and let another software pick up the events, for these cases we strongly suggest to use the Redis plugin. An additional MongoDB based event log is available through queries and can be inspected through the controlpanel. We will drop support for the MongoDB logging in the future so please make sure that you don't tail the Unchained Logs collection, consider migrating to `events` instead.
 - [core] `simulatePriceRange` and `catalogPriceRange` helpers added that will return price range of products variations assigned for a particular configurable(proxy) product based on the parameters provided to them.
 - [core] Now experimental it's possible to ensure users to always have a cart assigned to them by setting the module config option `ensureUserHasCart` on the orders module to true.
@@ -99,6 +59,20 @@ ReorderAssortmentMediaInput
 - [api] three new fields added `ConfigurableProduct.simulatedPriceRange` , `ConfigurableProduct.catalogPriceRange`, `SimulateProduct.leveledCatalogPrices` `PlanProduct.leveledCatalogPrices`
 - [platform] Additionally related with the above feature it's possible to assign carts for all existing users in the system at boot time by passing `assignCartForUsers` boolean value to `startPlafom` or using the environment variable `UNCHAINED_ASSIGN_CART_FOR_USERS`
 - [platform] You can now disable the invalidation of orders at boot time by passing `invalidateProviders` boolean value to `startPlafom` or using the environment variable `UNCHAINED_INVALIDATE_PROVIDERS`
+- [core] It's is now possible to assign media files for assortments.
+- [controlpanel] Assortment media upload, remove & reorder functionalities are available.
+- [api] Added the following query and mutations that can be used to manage assortment medias
+```
+Query.translatedAssortmentMediaTexts
+Mutation.addAssortmentMedia
+Mutation.removeAssortmentMedia
+Mutation.reorderAssortmentMedia
+Mutation.updateAssortmentMediaText
+AssortmentMediaTexts
+AssortmentMedia
+UpdateAssortmentMediaTextInput
+ReorderAssortmentMediaInput
+```
 
 ## Minor
 
@@ -110,6 +84,18 @@ ReorderAssortmentMediaInput
 - [examples] We created an experimental Matomo Tracker Plugin that is part of the minimal example
 - [controlpanel] Fixed various issues, especially with loadMore behavior, user search and UX glitches
 - [*] Various additional bugfixes and enhancements between the undocumented releases of 0.61.1 and 0.61.19 mostly targeting bulk-import and accountsjs stabilization.
+- [core] Update ostrio:files to 2.0.1 to mitigate various download issues
+- [controlpanel] Find issues with assortment and order lists
+- [controlpanel] Ambiguity of where to set environment variable is fixed. now you can set environment related with the control panel at the root directory of `controlpanel` and environemt variables related with the engine under root directory of `minimal`.
+- [controlpanel] Fix logout with server-side cookies
+- [core] Fix issue with price id's beeing null (broke stuff that we didn't want to brake)
+- [core] Fix an issue with scheduling jobs based on past or future dates
+- [core] Improved Matomo tracker
+- [docs] New Get Started Tutorial
+- [examples] Seed delivery and payment providers based on environment variables
+- [core] Extended events module to make it possible to transform context for specific needs
+- [core] Reduce core-events logging verbosity
+- [core] Upstream hotfixes from 61.x
 
 # v0.61.1
 

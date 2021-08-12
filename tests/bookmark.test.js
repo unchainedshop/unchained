@@ -59,7 +59,6 @@ describe('Bookmark', () => {
                       type
                       size
                       url
-                      meta
                     }
                     sortKey
                     texts {

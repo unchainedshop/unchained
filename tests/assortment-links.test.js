@@ -27,7 +27,6 @@ describe('AssortmentLink', () => {
               _id
               sortKey
               tags
-              meta
               parent {
                 _id
               }
@@ -127,7 +126,6 @@ describe('AssortmentLink', () => {
               _id
               sortKey
               tags
-              meta
               parent {
                 _id
               }
@@ -295,7 +293,6 @@ describe('AssortmentLink', () => {
               _id
               sortKey
               tags
-              meta
               parent {
                 _id
               }

@@ -658,13 +658,6 @@ Orders.helpers({
     }).fetch();
     return logs;
   },
-  transformedContextValue(key) {
-    const provider = this.provider();
-    if (provider) {
-      return provider.transformContext(key, this.context[key]);
-    }
-    return JSON.stringify(this.context[key]);
-  },
   isCart() {
     return (this.status || null) === OrderStatus.OPEN;
   },

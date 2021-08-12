@@ -47,7 +47,6 @@ describe('TranslatedFilterTexts', () => {
                 isoCode
                 isActive
               }
-              meta
               configuration {
                 key
                 value
@@ -153,7 +152,6 @@ describe('TranslatedFilterTexts', () => {
                 isoCode
                 isActive
               }
-              meta
               configuration {
                 key
                 value

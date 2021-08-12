@@ -201,7 +201,6 @@ describe('Order: Payments', () => {
                 meta: $meta
               ) {
                 _id
-                meta
                 provider {
                   _id
                   type
@@ -219,9 +218,6 @@ describe('Order: Payments', () => {
 
       expect(updateOrderPaymentInvoice).toMatchObject({
         _id: SimplePayment._id,
-        meta: {
-          john: 'wayne',
-        },
         provider: {
           type: 'INVOICE',
         },
@@ -330,7 +326,6 @@ describe('Order: Payments', () => {
                 meta: $meta
               ) {
                 _id
-                meta
                 provider {
                   _id
                   type
@@ -348,9 +343,6 @@ describe('Order: Payments', () => {
 
       expect(updateOrderPaymentInvoice).toMatchObject({
         _id: SimplePayment._id,
-        meta: {
-          john: 'wayne',
-        },
         provider: {
           type: 'INVOICE',
         },
@@ -371,7 +363,6 @@ describe('Order: Payments', () => {
               meta: $meta
             ) {
               _id
-              meta
               provider {
                 _id
                 type
@@ -407,7 +398,6 @@ describe('Order: Payments', () => {
                 meta: $meta
               ) {
                 _id
-                meta
                 sign
                 provider {
                   _id
@@ -425,9 +415,6 @@ describe('Order: Payments', () => {
         });
       expect(updateOrderPaymentGeneric).toMatchObject({
         _id: GenericPayment._id,
-        meta: {
-          john: 'wayne',
-        },
         sign: '0bea13199c5abb6d0861d661d565a47f193bc20dc10bad12f00e584a33f01939',
         provider: {
           type: 'GENERIC',

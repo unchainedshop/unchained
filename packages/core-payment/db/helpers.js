@@ -36,9 +36,6 @@ PaymentProviders.findInterfaces = ({ type }) => {
 };
 
 PaymentProviders.helpers({
-  transformContext(key, value) {
-    return value;
-  },
   defaultContext(context) {
     return context || emptyContext;
   },

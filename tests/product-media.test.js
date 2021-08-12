@@ -406,7 +406,6 @@ describe('ProductsVariation', () => {
                 type
                 size
                 url
-                meta
               }
               sortKey
               texts {

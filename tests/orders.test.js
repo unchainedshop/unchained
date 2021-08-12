@@ -88,7 +88,6 @@ describe('Order: Management', () => {
                 country {
                   _id
                 }
-                meta
                 currency {
                   _id
                 }
@@ -146,7 +145,6 @@ describe('Order: Management', () => {
               country {
                 _id
               }
-              meta
               currency {
                 _id
               }

@@ -23,7 +23,7 @@ describe('PaymentProviders', () => {
     graphqlFetchAsAnonymousUser = await createAnonymousGraphqlFetch();
   });
 
-  describe('Query.paymentProvidersCount when loged in should', () => {
+  describe('Query.paymentProvidersCount when logged in should', () => {
     it('return total number of 3 paymentProvider when type is not given', async () => {
       const {
         data: { paymentProvidersCount },
@@ -55,7 +55,7 @@ describe('PaymentProviders', () => {
     });
   });
 
-  describe('Query.paymentProviders when loged in should', () => {
+  describe('Query.paymentProviders when logged in should', () => {
     it('return array of all paymentProvider when type is not given', async () => {
       const {
         data: { paymentProviders },
@@ -102,7 +102,7 @@ describe('PaymentProviders', () => {
     });
   });
 
-  describe('Query.paymentProvider when loged in should', () => {
+  describe('Query.paymentProvider when logged in should', () => {
     it('return single paymentProvider when ID is provided', async () => {
       const {
         data: { paymentProvider },
@@ -228,7 +228,7 @@ describe('PaymentProviders', () => {
   });
 
   describe('Mutation.removePaymentCredentials for admin user should', () => {
-    it('mark pament provider specified by ID as invalid', async () => {
+    it('mark payment provider specified by ID as invalid', async () => {
       const { data: { removePaymentCredentials } = {} } =
         await graphqlFetchAsAdminUser({
           query: /* GraphQL */ `
@@ -237,7 +237,6 @@ describe('PaymentProviders', () => {
                 paymentCredentialsId: $paymentCredentialsId
               ) {
                 _id
-                meta
                 token
                 isValid
                 isPreferred
@@ -300,7 +299,6 @@ describe('PaymentProviders', () => {
               paymentCredentialsId: $paymentCredentialsId
             ) {
               _id
-              meta
               token
               isValid
               isPreferred
@@ -319,7 +317,7 @@ describe('PaymentProviders', () => {
   });
 
   describe('Mutation.markPaymentCredentialsPreferred for admin user should', () => {
-    it('mark pament credential specified by ID as prefered', async () => {
+    it('mark payment credential specified by ID as preferred', async () => {
       const { data: { markPaymentCredentialsPreferred } = {} } =
         await graphqlFetchAsAdminUser({
           query: /* GraphQL */ `
@@ -330,7 +328,6 @@ describe('PaymentProviders', () => {
                 paymentCredentialsId: $paymentCredentialsId
               ) {
                 _id
-                meta
                 token
                 isValid
                 paymentProvider {
@@ -409,7 +406,7 @@ describe('PaymentProviders', () => {
   });
 
   describe('Mutation.markPaymentCredentialsPreferred for normal user should', () => {
-    it('mark pament credential specified by ID as prefered', async () => {
+    it('mark payment credential specified by ID as preferred', async () => {
       const { data: { markPaymentCredentialsPreferred } = {} } =
         await graphqlFetchAsNormalUser({
           query: /* GraphQL */ `

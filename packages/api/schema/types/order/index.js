@@ -3,7 +3,7 @@ import delivery from './delivery';
 import discount from './discount';
 import item from './item';
 import payment from './payment';
-import pickuplocation from './pick-up-location';
+import pickupLocation from './pick-up-location';
 
 export default [
   ...order,
@@ -11,5 +11,5 @@ export default [
   ...discount,
   ...delivery,
   ...payment,
-  ...pickuplocation,
+  ...pickupLocation,
 ];

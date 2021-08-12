@@ -42,7 +42,6 @@ describe('ProductsWarehousing', () => {
               reviews {
                 _id
               }
-              meta
               assortmentPaths {
                 links {
                   link {
