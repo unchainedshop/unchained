@@ -55,9 +55,9 @@ export default [
       billingAddress: Address
       contact: Contact
       status: EnrollmentStatus!
-      created: Timestamp!
-      expires: Timestamp
-      updated: Timestamp
+      created: DateTime!
+      expires: DateTime
+      updated: DateTime
       isExpired(referenceDate: Timestamp): Boolean
       enrollmentNumber: String
       country: Country
