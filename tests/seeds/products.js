@@ -160,7 +160,7 @@ export const GermanPlanProductText = {
   ...GermanProductText,
   productId: 'plan-product',
   slug: 'plan',
-  title: 'weekly subscription',
+  title: 'weekly',
 };
 
 export const FrenchProductText = {

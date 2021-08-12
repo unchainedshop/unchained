@@ -203,13 +203,13 @@ export const PaymentCredentialsNotFoundError = createError(
   'PaymentCredentialsNotFoundError',
   'Payment credentials not found'
 );
-export const SubscriptionWrongStatusError = createError(
-  'SubscriptionWrongStatusError',
-  'The current status of the subscription does not allow this operation'
+export const EnrollmentWrongStatusError = createError(
+  'EnrollmentWrongStatusError',
+  'The current status of the enrollment does not allow this operation'
 );
-export const SubscriptionNotFoundError = createError(
-  'SubscriptionNotFoundError',
-  'Subscription not found'
+export const EnrollmentNotFoundError = createError(
+  'EnrollmentNotFoundError',
+  'Enrollment not found'
 );
 
 export const WarehousingProviderNotFoundError = createError(

@@ -135,9 +135,9 @@ const Header = ({
               <span>Events</span>
             </Menu.Item>
           </Link>
-          <Link href="/subscriptions" passHref>
-            <Menu.Item active={pathname.startsWith('/subscriptions')}>
-              <span>Subscriptions</span>
+          <Link href="/enrollments" passHref>
+            <Menu.Item active={pathname.startsWith('/enrollments')}>
+              <span>Enrollments</span>
             </Menu.Item>
           </Link>
         </Dropdown.Menu>

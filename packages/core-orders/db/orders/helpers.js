@@ -5,9 +5,9 @@ import { objectInvert } from 'meteor/unchained:utils';
 import { DeliveryProviders } from 'meteor/unchained:core-delivery';
 import { PaymentProviders } from 'meteor/unchained:core-payment';
 import {
-  Subscriptions,
-  SubscriptionDirector,
-} from 'meteor/unchained:core-subscriptions';
+  Enrollments,
+  EnrollmentDirector,
+} from 'meteor/unchained:core-enrollments';
 import { Countries } from 'meteor/unchained:core-countries';
 import { Users } from 'meteor/unchained:core-users';
 import { Logs, log } from 'meteor/unchained:core-logger';
@@ -35,7 +35,7 @@ const buildFindSelector = ({ includeCarts, queryString }) => {
   return selector;
 };
 
-Subscriptions.generateFromCheckout = async ({ items, order, ...context }) => {
+Enrollments.generateFromCheckout = async ({ items, order, ...context }) => {
   const payment = order.payment();
   const delivery = order.delivery();
   const template = {
@@ -57,21 +57,21 @@ Subscriptions.generateFromCheckout = async ({ items, order, ...context }) => {
   };
   return Promise.all(
     items.map(async (item) => {
-      const subscriptionData =
-        await SubscriptionDirector.transformOrderItemToSubscription(item, {
+      const enrollmentData =
+        await EnrollmentDirector.transformOrderItemToEnrollment(item, {
           ...template,
           ...context,
         });
 
-      await Subscriptions.createSubscription({
-        ...subscriptionData,
+      await Enrollments.createEnrollment({
+        ...enrollmentData,
         orderIdForFirstPeriod: order._id,
       });
     })
   );
 };
 
-Subscriptions.helpers({
+Enrollments.helpers({
   async generateOrder({ products, orderContext, ...configuration }) {
     if (!this.payment || !this.delivery) return null;
     const cart = await Orders.createOrder({
@@ -80,7 +80,7 @@ Subscriptions.helpers({
       countryCode: this.countryCode,
       contact: this.contact,
       billingAddress: this.billingAddress,
-      originSubscriptionId: this._id,
+      originEnrollmentId: this._id,
       ...configuration,
     });
     if (products) {
@@ -203,8 +203,8 @@ Orders.count = async (query) => {
 };
 
 Orders.helpers({
-  subscription() {
-    return Subscriptions.findOne({
+  enrollment() {
+    return Enrollments.findOne({
       'periods.orderId': this._id,
     });
   },
@@ -442,8 +442,8 @@ Orders.helpers({
     // 2. Reserve quantity at Warehousing Provider until order is CANCELLED/FULLFILLED
     // ???
   },
-  generateSubscriptions(context) {
-    if (this.originSubscriptionId) return;
+  generateEnrollments(context) {
+    if (this.originEnrollmentId) return;
     const items = this.items().filter((item) => {
       const productPlan = item.product()?.plan;
       return !!productPlan;
@@ -451,7 +451,7 @@ Orders.helpers({
 
     if (items.length > 0) {
       Promise.await(
-        Subscriptions.generateFromCheckout({
+        Enrollments.generateFromCheckout({
           order: this,
           items,
           ...context,
@@ -532,7 +532,7 @@ Orders.helpers({
           'before delivery'
         );
         this.delivery().send(deliveryContext, newConfirmedOrder);
-        newConfirmedOrder.generateSubscriptions({
+        newConfirmedOrder.generateEnrollments({
           paymentContext,
           deliveryContext,
         });

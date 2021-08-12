@@ -30,7 +30,7 @@ Package.onUse((api) => {
   api.use('unchained:core-discounting@1.0.0-beta12');
   api.use('unchained:core-payment@1.0.0-beta12');
   api.use('unchained:core-quotations@1.0.0-beta12');
-  api.use('unchained:core-subscriptions@1.0.0-beta12');
+  api.use('unchained:core-enrollments@1.0.0-beta12');
   api.use('unchained:core-events@1.0.0-beta12');
 
   api.mainModule('orders.js', 'server');

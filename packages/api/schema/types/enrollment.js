@@ -17,7 +17,7 @@ export default [
       PAUSED
 
       """
-      Terminated / Ended subscription
+      Terminated / Ended enrollment
       """
       TERMINATED
     }
@@ -59,7 +59,7 @@ export default [
       expires: Date
       updated: Date
       isExpired(referenceDate: Date): Boolean
-      subscriptionNumber: String
+      enrollmentNumber: String
       country: Country
       currency: Currency
       logs(limit: Int = 10, offset: Int = 0): [Log!]!

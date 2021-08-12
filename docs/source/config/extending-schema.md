@@ -1,5 +1,5 @@
 ---
-title: "Module: Extending the Schema"
+title: 'Module: Extending the Schema'
 description: Extending the schema to hold custom types
 ---
 
@@ -10,25 +10,26 @@ Most mutations of unchained accept a JSON type `meta` property for this purpose.
 In this we will extend `product` to hold two custom properties `size` and `expiryDate` for demonstration purposes.
 
 In order to extend the schema, all we need to do is
- - Extend the entity in question to include the custom fields
- - Add a resolver function to resolve the field from the meta field of the entity.
- - Register the type and resolver definitions in unchained passing them to the `startPlatform` function at boot time.
 
- Let's follow the above guide to extend the `Product` entity.
+- Extend the entity in question to include the custom fields
+- Add a resolver function to resolve the field from the meta field of the entity.
+- Register the type and resolver definitions in unchained passing them to the `startPlatform` function at boot time.
 
- **Extend entity include the custom fields**
+Let's follow the above guide to extend the `Product` entity.
 
- ```graphql
- const typeDefs = [
-    /* GraphQL */ `
-      extend type Product {
-        size: String,
-        expiryDate: String
-      }
+**Extend entity include the custom fields**
 
-    `,
-  ];
- ```
+```graphql
+const typeDefs = [
+   /* GraphQL */ `
+     extend type Product {
+       size: String,
+       expiryDate: String
+     }
+
+   `,
+ ];
+```
 
 **Add a resolver function to resolve the fields**
 
@@ -36,48 +37,48 @@ In order to extend the schema, all we need to do is
 const resolverDefs = {
   SimpleProduct: {
     size({ meta = {} }) {
-      return meta?.size;
+      return meta?.size
     },
     expiryDate({ meta = {} }) {
-      return meta?.expiryDate;
+      return meta?.expiryDate
     },
   },
   PlanProduct: {
     size({ meta = {} }) {
-      return meta?.size;
+      return meta?.size
     },
     expiryDate({ meta = {} }) {
-      return meta?.expiryDate;
+      return meta?.expiryDate
     },
   },
   ConfigurableProduct: {
     size({ meta = {} }) {
-      return meta?.size;
+      return meta?.size
     },
     expiryDate({ meta = {} }) {
-      return meta?.expiryDate;
+      return meta?.expiryDate
     },
   },
-};
+}
 ```
+
 **Register the type and resolver definition**
 
 ```js
-import { Meteor } from 'meteor/meteor';
-import { startPlatform } from 'meteor/unchained:platform';
-import { WebApp } from 'meteor/webapp';
-import { embedControlpanelInMeteorWebApp } from '@unchainedshop/controlpanel';
+import { Meteor } from 'meteor/meteor'
+import { startPlatform } from 'meteor/unchained:platform'
+import { WebApp } from 'meteor/webapp'
+import { embedControlpanelInMeteorWebApp } from '@unchainedshop/controlpanel'
 
 Meteor.startup(async () => {
   await startPlatform({
     introspection: true,
     typeDefs: [...typeDefs],
     resolvers: [resolvers],
-  });
-  seed();
-  embedControlpanelInMeteorWebApp(WebApp);
-});
-
+  })
+  seed()
+  embedControlpanelInMeteorWebApp(WebApp)
+})
 ```
 
 That was all, everything is setup and the schema will be updated to include the custom types defined above for product entity.
@@ -104,31 +105,31 @@ This will return with the updated value:
 
 ```json
 {
-    "_id": "test-product-id",
-    "size": "large",
-    "expiryDate": "2023-09-17"
+  "_id": "test-product-id",
+  "size": "large",
+  "expiryDate": "2023-09-17"
 }
 ```
 
 ### List of entity types that hold meta property
-```js
-    Assortment
-    AssortmentProduct
-    AssortmentLink
-    AssortmentFilter
-    Media
-    Product
-    ProductReview
-    ProductReviewVote
-    ConfigurableProduct
-    SimpleProduct
-    BundleProduct
-    PlanProduct
-    Subscription
-    Quotation
-    SubscriptionPayment
-    SubscriptionDelivery
 
+```js
+Assortment
+AssortmentProduct
+AssortmentLink
+AssortmentFilter
+Media
+Product
+ProductReview
+ProductReviewVote
+ConfigurableProduct
+SimpleProduct
+BundleProduct
+PlanProduct
+Enrollment
+Quotation
+EnrollmentPayment
+EnrollmentDelivery
 ```
 
 Note: While every entity that listed above exposes a meta property there is an exception for Order related entities. Order related entities store `meta` property and other useful information about the order under `context` property. So in order to get the `meta` value of an order you read it from the `context`. This entity types are listed below:
@@ -143,7 +144,6 @@ Note: While every entity that listed above exposes a meta property there is an e
   OrderPaymentGeneric
   OrderPayment
 ```
-
 
 ```js
 const resolverDefs = {

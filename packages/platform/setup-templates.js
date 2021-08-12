@@ -3,14 +3,14 @@ import accountActionTemplate from './templates/account-action';
 import forwardDeliveryTemplate from './templates/forward-delivery';
 import orderConfirmationTemplate from './templates/order-confirmation';
 import quotationStatusTemplate from './templates/quotation-status';
-import subscriptionStatusTemplate from './templates/subscription-status';
+import enrollmentStatusTemplate from './templates/enrollment-status';
 
 export const MessageTypes = {
   ACCOUNT_ACTION: 'ACCOUNT_ACTION',
   DELIVERY: 'DELIVERY',
   ORDER_CONFIRMATION: 'ORDER_CONFIRMATION',
   QUOTATION_STATUS: 'QUOTATION_STATUS',
-  SUBSCRIPTION_STATUS: 'SUBSCRIPTION_STATUS',
+  ENROLLMENT_STATUS: 'ENROLLMENT_STATUS',
 };
 
 export default () => {
@@ -31,7 +31,7 @@ export default () => {
     quotationStatusTemplate
   );
   MessagingDirector.configureTemplate(
-    MessageTypes.SUBSCRIPTION_STATUS,
-    subscriptionStatusTemplate
+    MessageTypes.ENROLLMENT_STATUS,
+    enrollmentStatusTemplate
   );
 };

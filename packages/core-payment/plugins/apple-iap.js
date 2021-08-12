@@ -6,9 +6,9 @@ import {
 } from 'meteor/unchained:core-payment';
 import { OrderPayments } from 'meteor/unchained:core-orders';
 import {
-  SubscriptionStatus,
-  Subscriptions,
-} from 'meteor/unchained:core-subscriptions';
+  EnrollmentStatus,
+  Enrollments,
+} from 'meteor/unchained:core-enrollments';
 import bodyParser from 'body-parser';
 import fetch from 'isomorphic-unfetch';
 import { Mongo } from 'meteor/mongo';
@@ -56,12 +56,7 @@ const AppleNotificationTypes = {
   DID_CHANGE_RENEWAL_PREF: 'DID_CHANGE_RENEWAL_PREF',
 };
 
-const fixPeriods = ({
-  transactionId,
-  subscriptionId,
-  orderId,
-  transactions,
-}) => {
+const fixPeriods = ({ transactionId, enrollmentId, orderId, transactions }) => {
   const relevantTransactions = transactions.filter(
     // eslint-disable-next-line
     ({ original_transaction_id }) => {
@@ -69,7 +64,7 @@ const fixPeriods = ({
     }
   );
 
-  const adjustedSubscriptionPeriods = relevantTransactions
+  const adjustedEnrollmentPeriods = relevantTransactions
     .map((transaction) => {
       return {
         isTrial: transaction.is_trial_period === 'true', // eslint-disable-line
@@ -82,9 +77,9 @@ const fixPeriods = ({
       return left.end.getTime() - right.end.getTime();
     });
 
-  Subscriptions.update(
+  Enrollments.update(
     {
-      _id: subscriptionId,
+      _id: enrollmentId,
     },
     {
       $pull: {
@@ -93,16 +88,16 @@ const fixPeriods = ({
     }
   );
 
-  Subscriptions.update(
+  Enrollments.update(
     {
-      _id: subscriptionId,
+      _id: enrollmentId,
     },
     {
       $set: {
         updated: new Date(),
       },
       $push: {
-        periods: { $each: adjustedSubscriptionPeriods },
+        periods: { $each: adjustedEnrollmentPeriods },
       },
     }
   );
@@ -150,7 +145,7 @@ useMiddlewareWithCurrentContext(APPLE_IAP_WEBHOOK_PATH, async (req, res) => {
           fixPeriods({
             transactionId: latestTransaction.original_transaction_id,
             transactions,
-            subscriptionId: checkedOut.subscription()?._id,
+            enrollmentId: checkedOut.enrollment()?._id,
             orderId: checkedOut._id,
           });
           logger.info(
@@ -159,7 +154,7 @@ useMiddlewareWithCurrentContext(APPLE_IAP_WEBHOOK_PATH, async (req, res) => {
           );
         }
       } else {
-        // Just store payment credentials, use the subscriptions paymentProvider reference and
+        // Just store payment credentials, use the enrollments paymentProvider reference and
         // let the job do the rest
         const originalOrderPayment = OrderPayments.findOne({
           'context.meta.transactionIdentifier':
@@ -168,20 +163,20 @@ useMiddlewareWithCurrentContext(APPLE_IAP_WEBHOOK_PATH, async (req, res) => {
         if (!originalOrderPayment)
           throw new Error('Could not find any matching order payment');
         const originalOrder = originalOrderPayment.order();
-        const subscription = originalOrder.subscription();
+        const enrollment = originalOrder.enrollment();
 
         PaymentCredentials.registerPaymentCredentials({
-          paymentProviderId: subscription.payment.paymentProviderId,
+          paymentProviderId: enrollment.payment.paymentProviderId,
           paymentContext: {
             receiptData: responseBody?.unified_receipt?.latest_receipt, // eslint-disable-line
           },
-          userId: subscription.userId,
+          userId: enrollment.userId,
         });
 
         fixPeriods({
           transactionId: latestTransaction.original_transaction_id,
           transactions,
-          subscriptionId: subscription._id,
+          enrollmentId: enrollment._id,
           orderId: originalOrder._id,
         });
 
@@ -193,10 +188,10 @@ useMiddlewareWithCurrentContext(APPLE_IAP_WEBHOOK_PATH, async (req, res) => {
           responseBody.notification_type === AppleNotificationTypes.DID_RECOVER
         ) {
           if (
-            subscription.status !== SubscriptionStatus.TERMINATED &&
+            enrollment.status !== EnrollmentStatus.TERMINATED &&
             responseBody.auto_renew_status === 'false'
           ) {
-            await subscription.terminate();
+            await enrollment.terminate();
           }
         }
 
@@ -205,13 +200,13 @@ useMiddlewareWithCurrentContext(APPLE_IAP_WEBHOOK_PATH, async (req, res) => {
           AppleNotificationTypes.DID_CHANGE_RENEWAL_STATUS
         ) {
           if (
-            subscription.status !== SubscriptionStatus.TERMINATED &&
+            enrollment.status !== EnrollmentStatus.TERMINATED &&
             responseBody.auto_renew_status === 'false'
           ) {
-            await subscription.terminate();
+            await enrollment.terminate();
           }
         }
-        logger.info(`Apple IAP Webhook: Updated subscription from Apple`);
+        logger.info(`Apple IAP Webhook: Updated enrollment from Apple`);
       }
 
       res.writeHead(200);

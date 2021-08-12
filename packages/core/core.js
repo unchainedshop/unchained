@@ -16,7 +16,7 @@ import configureDocuments from 'meteor/unchained:core-documents';
 import configureOrders from 'meteor/unchained:core-orders';
 import configureAssortments from 'meteor/unchained:core-assortments';
 import configureFilters from 'meteor/unchained:core-filters';
-import configureSubscriptions from 'meteor/unchained:core-subscriptions';
+import configureEnrollments from 'meteor/unchained:core-enrollments';
 import configureWorker from 'meteor/unchained:core-worker';
 import configureMessaging from 'meteor/unchained:core-messaging';
 import configureEvents from 'meteor/unchained:core-events';
@@ -40,7 +40,7 @@ export default async ({ modules = {}, ...otherComponents } = {}) => {
   configureOrders(modules.orders);
   configureAssortments(modules.assortments);
   configureFilters(modules.filters);
-  configureSubscriptions(modules.subscriptions);
+  configureEnrollments(modules.enrollments);
   configureEvents(modules.events);
   return {
     modules: {

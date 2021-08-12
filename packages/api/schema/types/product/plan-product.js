@@ -30,7 +30,7 @@ export default [
     }
 
     """
-    Plan (Subscriptionable virtual Product)
+    Plan (Virtual Product that somebody can enroll to)
     """
     type PlanProduct implements Product {
       _id: ID!

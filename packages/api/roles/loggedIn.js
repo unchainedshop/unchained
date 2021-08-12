@@ -7,7 +7,7 @@ import {
 } from 'meteor/unchained:core-orders';
 import { ProductReviews } from 'meteor/unchained:core-products';
 import { Quotations } from 'meteor/unchained:core-quotations';
-import { Enrollments } from 'meteor/unchained:core-subscriptions';
+import { Enrollments } from 'meteor/unchained:core-enrollments';
 import { PaymentCredentials } from 'meteor/unchained:core-payment';
 import { Promise } from 'meteor/promise';
 
@@ -55,17 +55,17 @@ export default (role, actions) => {
     return true;
   };
 
-  const isOwnedEnrollment = (root, { subscriptionId }, { userId }) => {
-    const subscription = Enrollments.findEnrollment(
-      { subscriptionId },
+  const isOwnedEnrollment = (root, { enrollmentId }, { userId }) => {
+    const enrollment = Enrollments.findEnrollment(
+      { enrollmentId },
       {
         fields: {
           userId: true,
         },
       }
     );
-    if (!subscription) return true;
-    return subscription.userId === userId;
+    if (!enrollment) return true;
+    return enrollment.userId === userId;
   };
 
   const isOwnedOrderPayment = (root, { orderPaymentId }, { userId }) => {

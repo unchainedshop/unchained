@@ -45,10 +45,7 @@ export default {
   quotations: checkTypeResolver(actions.viewUserQuotations, 'quotations'),
   logs: checkTypeResolver(actions.viewLogs, 'logs'),
   roles: checkTypeResolver(actions.viewUserRoles, 'roles'),
-  subscriptions: checkTypeResolver(
-    actions.viewUserSubscriptions,
-    'subscriptions'
-  ),
+  enrollments: checkTypeResolver(actions.viewUserEnrollments, 'enrollments'),
 
   async cart(user, params, context = {}) {
     const { countryContext, userId } = context;

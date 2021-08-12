@@ -1,5 +1,5 @@
 ---
-title: "Email template"
+title: 'Email template'
 description: Customize default email templates
 ---
 
@@ -14,7 +14,7 @@ existing message templates are defined [here](https://github.com/unchainedshop/u
 - DELIVERY
 - ORDER_CONFIRMATION
 - QUOTATION_STATUS
-- SUBSCRIPTION_STATUS
+- ENROLLMENT_STATUS
 
 Internally unchained uses [mjml format](https://documentation.mjml.io/) or simple text for email templating.
 

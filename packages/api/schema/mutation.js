@@ -172,7 +172,7 @@ export default [
       removeCartDiscount(discountId: ID!): OrderDiscount!
 
       """
-      Create a subscription.
+      Create a enrollment.
       """
       createEnrollment(
         plan: EnrollmentPlanInput!
@@ -184,10 +184,10 @@ export default [
       ): Enrollment!
 
       """
-      Update a subscription
+      Update a enrollment
       """
       updateEnrollment(
-        subscriptionId: ID
+        enrollmentId: ID
         plan: EnrollmentPlanInput
         billingAddress: AddressInput
         contact: ContactInput
@@ -197,14 +197,14 @@ export default [
       ): Enrollment!
 
       """
-      Activate a subscription by changing the status to ACTIVE
+      Activate a enrollment by changing the status to ACTIVE
       """
-      activateEnrollment(subscriptionId: ID!): Enrollment!
+      activateEnrollment(enrollmentId: ID!): Enrollment!
 
       """
-      Terminate an actively running subscription by changing it's status to TERMINATED
+      Terminate an actively running enrollment by changing it's status to TERMINATED
       """
-      terminateEnrollment(subscriptionId: ID!): Enrollment!
+      terminateEnrollment(enrollmentId: ID!): Enrollment!
 
       """
       Change the delivery method/provider to an order. If the delivery provider
@@ -892,7 +892,7 @@ export default [
 
       """
       Register credentials for an existing payment provider allowing to store and use them
-      for later payments (1-click checkout or subscriptions)
+      for later payments (1-click checkout or enrollments)
       """
       registerPaymentCredentials(
         paymentContext: JSON!
