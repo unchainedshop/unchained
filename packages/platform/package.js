@@ -18,7 +18,6 @@ Package.onUse((api) => {
   api.use('ecmascript');
   api.use('check');
   api.use('email');
-  api.use('percolate:migrations@1.0.2');
 
   api.use('unchained:core@1.0.0-beta12');
   api.use('unchained:api@1.0.0-beta12');

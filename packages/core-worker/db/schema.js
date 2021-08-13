@@ -1,6 +1,5 @@
 /* eslint-disable import/prefer-default-export */
 import { Schemas } from 'meteor/unchained:utils';
-import { Migrations } from 'meteor/percolate:migrations';
 import SimpleSchema from 'simpl-schema';
 
 import { WorkQueue } from './collections';
@@ -36,44 +35,6 @@ WorkQueue.attachSchema(
     { requiredByDefault: false }
   )
 );
-
-Migrations.add({
-  version: 20200420,
-  name: 'original to originalWorkId',
-  up() {
-    WorkQueue.update(
-      {},
-      {
-        $rename: {
-          original: 'originalWorkId',
-        },
-      },
-      { bypassCollection2: true, multi: true }
-    );
-  },
-  down() {
-    WorkQueue.update(
-      {},
-      {
-        $rename: {
-          originalWorkId: 'original',
-        },
-      },
-      { bypassCollection2: true, multi: true }
-    );
-  },
-});
-
-Migrations.add({
-  version: 20200422,
-  name: 'drop some indexes',
-  up() {
-    WorkQueue.rawCollection()
-      .dropIndexes()
-      .catch(() => {});
-  },
-  down() {},
-});
 
 export default () => {
   WorkQueue.rawCollection().createIndex(

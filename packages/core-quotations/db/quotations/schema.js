@@ -1,5 +1,4 @@
 import { Schemas } from 'meteor/unchained:utils';
-import { Migrations } from 'meteor/percolate:migrations';
 import SimpleSchema from 'simpl-schema';
 
 import { Quotations } from './collections';
@@ -47,56 +46,6 @@ Quotations.attachSchema(
     { requiredByDefault: false }
   )
 );
-
-Migrations.add({
-  version: 20191014,
-  name: 'Store currency in currencyCode field instead of currency',
-  up() {
-    Quotations.find()
-      .fetch()
-      .forEach((user) => {
-        Quotations.update(
-          { _id: user._id },
-          {
-            $set: {
-              currencyCode: user.currency || null,
-            },
-            $unset: {
-              currency: 1,
-            },
-          }
-        );
-      });
-  },
-  down() {
-    Quotations.find()
-      .fetch()
-      .forEach((user) => {
-        Quotations.update(
-          { _id: user._id },
-          {
-            $set: {
-              currency: user.currencyCode || null,
-            },
-            $unset: {
-              currencyCode: 1,
-            },
-          }
-        );
-      });
-  },
-});
-
-Migrations.add({
-  version: 20200915.8,
-  name: 'drop Quotations related indexes',
-  up() {
-    Quotations.rawCollection()
-      .dropIndexes()
-      .catch(() => {});
-  },
-  down() {},
-});
 
 export default () => {
   Quotations.rawCollection().createIndex({ userId: 1 });

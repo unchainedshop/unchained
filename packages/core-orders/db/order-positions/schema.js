@@ -1,6 +1,5 @@
 import { Schemas } from 'meteor/unchained:utils';
 import SimpleSchema from 'simpl-schema';
-import { Migrations } from 'meteor/percolate:migrations';
 
 import { OrderPositions } from './collections';
 
@@ -46,17 +45,6 @@ OrderPositions.attachSchema(
     { requiredByDefault: false }
   )
 );
-
-Migrations.add({
-  version: 20200915.1,
-  name: 'drop OrderPositions related indexes',
-  up() {
-    OrderPositions.rawCollection()
-      .dropIndexes()
-      .catch(() => {});
-  },
-  down() {},
-});
 
 export default () => {
   OrderPositions.rawCollection().createIndex({ productId: 1 });

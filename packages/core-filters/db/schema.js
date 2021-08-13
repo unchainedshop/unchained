@@ -1,6 +1,5 @@
 import { Schemas } from 'meteor/unchained:utils';
 import SimpleSchema from 'simpl-schema';
-import { Migrations } from 'meteor/percolate:migrations';
 
 import { Filters, FilterTexts } from './collections';
 
@@ -45,77 +44,6 @@ FilterTexts.attachSchema(
     { requiredByDefault: false }
   )
 );
-
-Migrations.add({
-  version: 20200728.3,
-  name: 'Add default authorId to filters',
-  up() {
-    Filters.find()
-      .fetch()
-      .forEach(({ _id }) => {
-        Filters.update(
-          { _id },
-          {
-            $set: {
-              authorId: 'root',
-            },
-          }
-        );
-      });
-    FilterTexts.find()
-      .fetch()
-      .forEach(({ _id }) => {
-        FilterTexts.update(
-          { _id },
-          {
-            $set: {
-              authorId: 'root',
-            },
-          }
-        );
-      });
-  },
-  down() {
-    Filters.find()
-      .fetch()
-      .forEach(({ _id }) => {
-        Filters.update(
-          { _id },
-          {
-            $unset: {
-              authorId: 1,
-            },
-          }
-        );
-      });
-    FilterTexts.find()
-      .fetch()
-      .forEach(({ _id }) => {
-        FilterTexts.update(
-          { _id },
-          {
-            $unset: {
-              authorId: 1,
-            },
-          }
-        );
-      });
-  },
-});
-
-Migrations.add({
-  version: 20200914.5,
-  name: 'drop filters related indexes',
-  up() {
-    Filters.rawCollection()
-      .dropIndexes()
-      .catch(() => {});
-    FilterTexts.rawCollection()
-      .dropIndexes()
-      .catch(() => {});
-  },
-  down() {},
-});
 
 export default () => {
   Filters.rawCollection().createIndex({ isActive: 1 });

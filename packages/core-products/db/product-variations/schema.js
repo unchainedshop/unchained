@@ -1,6 +1,5 @@
 import SimpleSchema from 'simpl-schema';
 import { Schemas } from 'meteor/unchained:utils';
-import { Migrations } from 'meteor/percolate:migrations';
 
 import { ProductVariations, ProductVariationTexts } from './collections';
 
@@ -42,20 +41,6 @@ ProductVariationTexts.attachSchema(
     { requiredByDefault: false }
   )
 );
-
-Migrations.add({
-  version: 20200915.6,
-  name: 'drop ProductVariations & ProductVariationTexts related indexes',
-  up() {
-    ProductVariations.rawCollection()
-      .dropIndexes()
-      .catch(() => {});
-    ProductVariationTexts.rawCollection()
-      .dropIndexes()
-      .catch(() => {});
-  },
-  down() {},
-});
 
 export default () => {
   ProductVariations.rawCollection().createIndex({ productId: 1 });
