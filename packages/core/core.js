@@ -21,27 +21,34 @@ import configureWorker from 'meteor/unchained:core-worker';
 import configureMessaging from 'meteor/unchained:core-messaging';
 import configureEvents from 'meteor/unchained:core-events';
 
-export default async ({ modules = {}, ...otherComponents } = {}) => {
-  configureLogger(modules.logger);
-  configureWorker(modules.worker);
-  configureMessaging(modules.messaging);
-  configureCurrencies(modules.currencies);
-  configureCountries(modules.countries);
-  configureLanguages(modules.languages);
-  configureDocuments(modules.documents);
-  configureUsers(modules.users);
-  configureAccounts(modules.accounts);
-  configureDelivery(modules.delivery);
-  configurePayment(modules.payment);
-  configureWarehousing(modules.warehousing);
-  configureProducts(modules.products);
-  const bookmarks = await configureBookmarks(modules.bookmarks);
-  configureQuotations(modules.quotations);
-  configureOrders(modules.orders);
-  configureAssortments(modules.assortments);
-  configureFilters(modules.filters);
-  configureEnrollments(modules.enrollments);
-  configureEvents(modules.events);
+export default async ({
+  modules = {},
+  migrationRepository,
+  ...otherComponents
+} = {}) => {
+  const moduleOptions = {
+    migrationRepository,
+  };
+  configureLogger(modules.logger, moduleOptions);
+  configureWorker(modules.worker, moduleOptions);
+  configureMessaging(modules.messaging, moduleOptions);
+  configureCurrencies(modules.currencies, moduleOptions);
+  configureCountries(modules.countries, moduleOptions);
+  configureLanguages(modules.languages, moduleOptions);
+  configureDocuments(modules.documents, moduleOptions);
+  configureUsers(modules.users, moduleOptions);
+  configureAccounts(modules.accounts, moduleOptions);
+  configureDelivery(modules.delivery, moduleOptions);
+  configurePayment(modules.payment, moduleOptions);
+  configureWarehousing(modules.warehousing, moduleOptions);
+  configureProducts(modules.products, moduleOptions);
+  const bookmarks = await configureBookmarks(modules.bookmarks, moduleOptions);
+  configureQuotations(modules.quotations, moduleOptions);
+  configureOrders(modules.orders, moduleOptions);
+  configureAssortments(modules.assortments, moduleOptions);
+  configureFilters(modules.filters, moduleOptions);
+  configureEnrollments(modules.enrollments, moduleOptions);
+  configureEvents(modules.events, moduleOptions);
   return {
     modules: {
       bookmarks,

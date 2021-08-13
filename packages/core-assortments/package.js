@@ -16,7 +16,6 @@ Package.onUse((api) => {
   api.use('mongo');
   api.use('dburles:collection-helpers@1.1.0');
   api.use('aldeed:collection2@3.2.1');
-  api.use('percolate:migrations@1.0.2');
   api.use('unchained:utils@1.0.0-beta12');
   api.use('unchained:core-countries@1.0.0-beta13');
   api.use('unchained:core-products@1.0.0-beta12');

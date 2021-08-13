@@ -1,6 +1,5 @@
 import { registerEvents } from 'meteor/unchained:core-events';
-import runMigrations from './db/migrations';
-
+import runMigrations from './migrations';
 import settings from './settings';
 
 export * from './db/assortment-media';
@@ -26,8 +25,9 @@ const ASSORTMENT_EVENTS = [
   'ASSORTMENT_REMOVE_MEDIA',
   'ASSORTMENT_ADD_MEDIA',
 ];
-export default (options) => {
+
+export default (options, { migrationRepository }) => {
   settings.load(options);
-  runMigrations();
+  runMigrations(migrationRepository);
   registerEvents(ASSORTMENT_EVENTS);
 };

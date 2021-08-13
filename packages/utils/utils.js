@@ -9,6 +9,7 @@ export { default as findPreservingIds } from './find-preserving-ids';
 export { default as findUnusedSlug } from './find-unused-slug';
 export { default as slugify } from './slugify';
 export { default as getContext } from './context';
+export { default as pipePromises } from './pipe-promises';
 
 const Schemas = {
   ...schemaFields,
