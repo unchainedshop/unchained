@@ -940,6 +940,19 @@ export default [
         orderPaymentId: ID!
         transactionContext: JSON
       ): String!
+
+      prepareProductMediaUpload(options: JSON): MediaUploadTicket!
+      prepareAssortmentMediaUpload(options: JSON): MediaUploadTicket!
+      prepareUserAvatarUpload(options: JSON): MediaUploadTicket!
+      addProductMediaLink(
+        mediaUploadTicketId: ID!
+        productID: ID!
+      ): ProductMedia!
+      addAssortmentMediaLink(
+        mediaUploadTicketId: ID!
+        assortmentId: ID!
+      ): AssortmentMedia!
+      linkUserAvatar(mediaUploadTicketId: ID!, userId: ID): User!
     }
   `,
 ];

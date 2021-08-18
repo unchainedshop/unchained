@@ -3,3 +3,4 @@
 // Variables exported by this module can be imported by other packages and
 // applications. See core-files-next-tests.js for an example of importing.
 export const name = 'core-files-next';
+export default name;
