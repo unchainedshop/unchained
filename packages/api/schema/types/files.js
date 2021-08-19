@@ -3,7 +3,7 @@ export default [
     type MediaUploadTicket {
       _id: ID!
       putURL: String!
-      expires: Timestamp!
+      expires: Date!
     }
   `,
 ];

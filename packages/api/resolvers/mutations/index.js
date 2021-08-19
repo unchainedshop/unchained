@@ -139,6 +139,7 @@ import pageView from './pageView';
 import reorderAssortmentMedia from './reorderAssortmentMedia';
 import removeAssortmentMedia from './removeAssortmentMedia';
 import updateAssortmentMediaTexts from './updateAssortmentMediaTexts';
+import prepareProductMediaUpload from './prepareProductMediaUpload';
 
 export default {
   logout,
@@ -357,4 +358,5 @@ export default {
   signPaymentProviderForCheckout: acl(actions.registerPaymentCredentials)(
     signPaymentProviderForCheckout
   ),
+  prepareProductMediaUpload,
 };

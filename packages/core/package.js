@@ -59,6 +59,7 @@ Package.onUse((api) => {
     'unchained:core-worker',
     'unchained:core-enrollments',
     'unchained:core-events',
+    'unchained:core-files-next',
   ]);
 
   api.mainModule('core.js', 'server');

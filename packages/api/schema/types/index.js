@@ -28,6 +28,7 @@ import search from './search';
 import worker from './worker';
 import enrollment from './enrollment';
 import events from './events';
+import files from './files';
 
 export default [
   ...address,
@@ -60,4 +61,5 @@ export default [
   ...worker,
   ...enrollment,
   ...events,
+  ...files,
 ];

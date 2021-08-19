@@ -13,6 +13,10 @@ Package.onUse(function (api) {
   api.mainModule('index.ts');
 });
 
+Npm.depends({
+  minio: '7.0.18',
+});
+
 Package.onTest((api) => {
   api.use('ecmascript');
   api.use('tinytest');
