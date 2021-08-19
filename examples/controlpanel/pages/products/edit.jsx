@@ -14,6 +14,7 @@ import ProductBundleItemList from '../../components/products/ProductBundleItemLi
 import ProductHeader from '../../components/products/ProductHeader';
 import ProductMenu from '../../components/products/ProductMenu';
 import connectApollo from '../../lib/connectApollo';
+import ProductMediaListMinio from '../../components/products/ProductMediaListMinio';
 
 export default connectApollo(
   withRouter(({ changeTab, router, ...rest }) => (
@@ -40,7 +41,7 @@ export default connectApollo(
               {router.query.tab === 'ProductVisualization' && (
                 <div>
                   <Header as="h3">Catalog Visualization</Header>
-                  <ProductMediaList productId={router.query._id} />
+                  <ProductMediaListMinio productId={router.query._id} />
                 </div>
               )}
               {router.query.tab === 'ProductCommerce' && (
