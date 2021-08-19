@@ -8,6 +8,18 @@ import { SortableContainer, arrayMove } from 'react-sortable-hoc';
 
 import ProductMediaListItem from './ProductMediaListItem';
 
+const uploadToMinio = async (file, url) => {
+  const response = await fetch(url, {
+    method: 'PUT',
+    body: file,
+  });
+  if (response.ok) {
+    const jsonValue = await response.json(); // Get JSON value from the response body
+    return Promise.resolve(jsonValue);
+  }
+  return Promise.reject('*** PHP file not found');
+};
+
 const ProductMediaListMinio = ({ items, onDrop, isEditingDisabled }) => (
   <Segment>
     <Item.Group divided>
@@ -135,14 +147,7 @@ export default compose(
         });
         const { putURL } = prepareProductMediaUpload;
         console.log('putURL', file);
-
-        const result = await fetch(putURL, {
-          method: 'PUT',
-          body: file,
-        });
-        if (result.status === 200) {
-          console.log(result);
-        }
+        uploadToMinio(file, putURL).then(console.log).catch(console.log);
       },
   }),
   pure,
