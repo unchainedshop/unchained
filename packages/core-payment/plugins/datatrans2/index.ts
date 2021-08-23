@@ -88,10 +88,9 @@ useMiddlewareWithCurrentContext(DATATRANS_WEBHOOK_PATH, async (req, res) => {
 class Datatrans extends PaymentAdapter {
   static key = 'shop.unchained.datatrans';
 
-  static label =
-    'Datatrans Legacy (https://docs.datatrans.ch/v1.0.1/docs/getting-started-home)';
+  static label = 'Datatrans Modern (https://docs.datatrans.ch)';
 
-  static version = '1.0.1';
+  static version = '2.0.0';
 
   static initialConfiguration = [
     {
@@ -132,7 +131,8 @@ class Datatrans extends PaymentAdapter {
   }
 
   async sign({ transactionContext } = {}) {
-    const { useSecureFields = false, returnMobileToken } = transactionContext;
+    const { useSecureFields = false, returnMobileToken } =
+      transactionContext || {};
     const merchantId = this.getMerchantId();
 
     if (!DATATRANS_SECRET) throw new Error('Credentials not Set');
@@ -179,8 +179,9 @@ class Datatrans extends PaymentAdapter {
       });
     }
 
-    if (result instanceof InitResponseSuccess) {
-      return (result as InitResponseSuccess).transactionId;
+    console.log(result);
+    if (typeof result === InitResponseSuccess) {
+      return JSON.stringify(result);
     }
     throw new Error((result as InitResponseError).error.code);
   }
