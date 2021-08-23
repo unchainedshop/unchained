@@ -146,7 +146,7 @@ export default compose(
           },
         });
         const { putURL } = prepareProductMediaUpload;
-        console.log('putURL', file);
+        console.log('putURL', putURL);
         uploadToMinio(file, putURL).then(console.log).catch(console.log);
       },
   }),
