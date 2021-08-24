@@ -10,12 +10,9 @@ import bodyParser from 'body-parser';
 import { createLogger } from 'meteor/unchained:core-logger';
 import generateSignature, { Security } from './generateSignature';
 import roundedAmountFromOrder from './roundedAmountFromOrder';
-import { authorize, init, InitResponseSuccess } from './api';
-import {
-  InitResponse,
-  InitResponseError,
-  InitResponseSuccess,
-} from './api/types';
+import createDatatransAPI from './api';
+
+import type { ResponseError, InitResponseSuccess } from './api/types';
 
 const logger = createLogger('unchained:core-payment:datatrans2');
 
@@ -114,9 +111,6 @@ class Datatrans extends PaymentAdapter {
     if (!this.getMerchantId() || !DATATRANS_SECRET || !DATATRANS_SIGN_KEY) {
       return PaymentError.INCOMPLETE_CONFIGURATION;
     }
-    if (this.wrongCredentials) {
-      return PaymentError.WRONG_CREDENTIALS;
-    }
     return null;
   }
 
@@ -130,60 +124,44 @@ class Datatrans extends PaymentAdapter {
     return false;
   }
 
-  async sign({ transactionContext } = {}) {
-    const { useSecureFields = false, returnMobileToken } =
-      transactionContext || {};
-    const merchantId = this.getMerchantId();
-
+  get api() {
     if (!DATATRANS_SECRET) throw new Error('Credentials not Set');
+    return createDatatransAPI(
+      DATATRANS_API_ENDPOINT,
+      this.getMerchantId(),
+      DATATRANS_SECRET
+    );
+  }
 
-    const { orderPayment } = this.context;
-    let result: InitResponse;
-    if (!orderPayment) {
-      // sign for registration
-      const currency = 'CHF';
-      const refno = `${this.context.paymentProviderId}:${this.context.userId}`;
-      result = await init({
-        endpoint: DATATRANS_API_ENDPOINT,
-        secret: DATATRANS_SECRET,
-        merchantId,
-        currency,
-        refno,
-        option: {
-          createAlias: true,
-          returnCustomerCountry: true,
-          authenticationOnly: false,
-          rememberMe: 'true',
-          returnMobileToken: Boolean(returnMobileToken),
-        },
-      });
-    } else {
-      // sign for order checkout
-      const order = orderPayment.order();
-      const refno = orderPayment._id;
-      const { currency, amount } = roundedAmountFromOrder(order);
-      result = await init({
-        endpoint: DATATRANS_API_ENDPOINT,
-        secret: DATATRANS_SECRET,
-        merchantId,
-        currency,
-        refno,
-        amount,
-        option: {
-          createAlias: true,
-          returnCustomerCountry: true,
-          authenticationOnly: false,
-          rememberMe: 'true',
-          returnMobileToken: Boolean(returnMobileToken),
-        },
-      });
-    }
+  async sign({ transactionContext } = {}) {
+    const { useSecureFields = false, ...additionalInitPayload } =
+      transactionContext || {};
 
-    console.log(result);
-    if (typeof result === InitResponseSuccess) {
+    const { orderPayment, paymentProviderId, userId } = this.context;
+    const order = orderPayment?.order();
+    const refno = orderPayment ? orderPayment._id : paymentProviderId;
+    const refno2 = userId;
+
+    const price: { amount?: number; currency?: string } = order
+      ? roundedAmountFromOrder(order)
+      : {};
+    const result = await this.api.init({
+      ...additionalInitPayload,
+      currency: price.currency || 'CHF',
+      refno,
+      refno2,
+      customer: {
+        id: userId,
+      },
+      amount: price.amount,
+    });
+    if ((result as InitResponseSuccess).transactionId) {
       return JSON.stringify(result);
     }
-    throw new Error((result as InitResponseError).error.code);
+    const rawError = (result as ResponseError).error;
+    const error = new Error(rawError.message);
+    error.name = `DATATRANS_${rawError.code}`;
+    throw error;
   }
 
   async validate(token) {

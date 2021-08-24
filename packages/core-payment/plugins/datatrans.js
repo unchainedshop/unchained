@@ -184,9 +184,6 @@ class Datatrans extends PaymentAdapter {
     if (!this.getMerchantId() || !DATATRANS_SECRET || !DATATRANS_SIGN_KEY) {
       return PaymentError.INCOMPLETE_CONFIGURATION;
     }
-    if (this.wrongCredentials) {
-      return PaymentError.WRONG_CREDENTIALS;
-    }
     return null;
   }
 

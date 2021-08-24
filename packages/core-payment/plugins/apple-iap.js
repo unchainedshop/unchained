@@ -234,12 +234,9 @@ class AppleIAP extends PaymentAdapter {
     return type === 'GENERIC';
   }
 
-  configurationError() {
+  configurationError() { // eslint-disable-line
     if (!APPLE_IAP_SHARED_SECRET) {
       return PaymentError.INCOMPLETE_CONFIGURATION;
-    }
-    if (this.wrongCredentials) {
-      return PaymentError.WRONG_CREDENTIALS;
     }
     return null;
   }
