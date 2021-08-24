@@ -1,28 +1,15 @@
-import Minio from 'minio';
 import { useMiddlewareWithCurrentContext } from 'meteor/unchained:api';
+import { ProductMediaObject } from 'meteor/unchained:core-products';
 import bodyParser from 'body-parser';
 
-import { ObjectsCollection } from '../db';
-
-const client = new Minio.Client({
-  endPoint: '172.18.0.1',
-  port: 9000,
-  useSSL: false,
-  accessKey: 'G1OSU5GDTK5BVHJ4TOTV',
-  secretKey: '4sTd+rInIhWjUI6H7KLL8mTtIJUBXk+wBy6LvrBE',
-  cacheControl: 'max-age=31536000',
-});
-
-const imageType = 'image/jpg';
-
 useMiddlewareWithCurrentContext(
-  '/minio/',
+  '/graphql/minio/',
   bodyParser.json({
     strict: false,
   })
 );
 
-useMiddlewareWithCurrentContext('/minio/', async (req, res) => {
+useMiddlewareWithCurrentContext('/graphql/minio/', async (req, res) => {
   if (req.method === 'POST' && req.body) {
     const { Records = [], Key, EventName } = req.body;
     if (EventName === 's3:ObjectCreated:Put') {
@@ -35,9 +22,31 @@ useMiddlewareWithCurrentContext('/minio/', async (req, res) => {
           eventSource,
           eventTime,
           eventName,
+          userIdentity,
         },
       ] = Records;
+      const { bucket, object } = s3;
+      const currentId = object.key.split('.')[0];
+
       const uploadedImageUrl = `${responseElements['x-minio-origin-endpoint']}/${Key}`;
+      ProductMediaObject.update(
+        { _id: currentId },
+        {
+          $set: {
+            url: uploadedImageUrl,
+            updated: new Date(),
+          },
+        }
+      );
+
+      const file = ProductMediaObject.findOne({
+        _id: currentId,
+      });
+      console.log(file);
+
+      console.log('s3.object', object);
+      console.log('bucket', bucket);
+      console.log('userIdentity', userIdentity);
       console.log('imageUrl', uploadedImageUrl);
       console.log('eventSource', eventSource);
       console.log('eventTime', eventTime);
@@ -50,5 +59,3 @@ useMiddlewareWithCurrentContext('/minio/', async (req, res) => {
   }
   console.log(req.body);
 });
-
-export default client;

@@ -80,8 +80,11 @@ export default compose(
   `),
   graphql(
     gql`
-      mutation prepareProductMedia($options: JSON!) {
-        prepareProductMediaUpload(options: $options) {
+      mutation prepareProductMedia($mediaName: String!, $productId: String!) {
+        prepareProductMediaUpload(
+          mediaName: $mediaName
+          productId: $productId
+        ) {
           _id
           putURL
           expires
@@ -137,17 +140,16 @@ export default compose(
       ({ productId, prepareProductMedia }) =>
       async (files) => {
         const file = files[0];
-        console.log(file);
         const {
           data: { prepareProductMediaUpload },
         } = await prepareProductMedia({
           variables: {
-            options: { name: file.name },
+            mediaName: file.name,
+            productId,
           },
         });
         const { putURL } = prepareProductMediaUpload;
-        console.log('putURL', putURL);
-        uploadToMinio(file, putURL).then(console.log).catch(console.log);
+        await uploadToMinio(file, putURL);
       },
   }),
   pure,

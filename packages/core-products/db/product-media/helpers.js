@@ -2,7 +2,17 @@ import 'meteor/dburles:collection-helpers';
 import { findLocalizedText } from 'meteor/unchained:utils';
 import { Locale } from 'locale';
 import { emit } from 'meteor/unchained:core-events';
-import { ProductMedia, Media, ProductMediaTexts } from './collections';
+import { createSignedPutURL } from 'meteor/unchained:core-files-next';
+import crypto from 'crypto';
+import { Products } from '../products/collections';
+import {
+  ProductMedia,
+  ProductMediaTexts,
+  Media,
+  ProductMediaObject,
+} from './collections';
+
+const PUT_URL_EXPIRY = 24 * 60 * 60;
 
 ProductMedia.findProductMedia = ({ productMediaId }) => {
   return ProductMedia.findOne({ _id: productMediaId });
@@ -12,6 +22,47 @@ ProductMedia.removeProductMedia = ({ productMediaId }) => {
   const result = ProductMedia.remove({ _id: productMediaId });
   emit('PRODUCT_REMOVE_MEDIA', { productMediaId });
   return result;
+};
+
+ProductMedia.createSignedUploadURL = async (
+  originalFileName,
+  productId,
+  { userId, ...context }
+) => {
+  const random = crypto.randomBytes(16);
+  const hash = crypto
+    .createHash('sha256')
+    .update(
+      [this._id, originalFileName, userId, random, PUT_URL_EXPIRY].join('')
+    )
+    .digest('hex');
+  const extension = originalFileName.substr(originalFileName.lastIndexOf('.'));
+  const hashedName = hash + extension;
+
+  const putURL = await createSignedPutURL(
+    hashedName,
+    'firstbucket',
+    PUT_URL_EXPIRY
+  );
+  const _id = ProductMediaObject.insert({
+    _id: hash,
+    putURL,
+    originalFileName,
+    expires: PUT_URL_EXPIRY,
+    created: new Date(),
+  });
+
+  const product = Products.findProduct({ productId });
+  product.addMediaLink({
+    mediaId: _id,
+    authorId: userId,
+  });
+
+  return {
+    _id,
+    putURL,
+    expires: PUT_URL_EXPIRY,
+  };
 };
 
 ProductMedia.helpers({
@@ -54,6 +105,7 @@ ProductMedia.helpers({
   },
   file() {
     const media = Media.findOne({ _id: this.mediaId });
+
     return media;
   },
 });

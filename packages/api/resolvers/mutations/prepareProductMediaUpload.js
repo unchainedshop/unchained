@@ -1,12 +1,15 @@
 import { log } from 'meteor/unchained:core-logger';
-import { createSignedPutURL } from 'meteor/unchained:core-files-next';
+import { ProductMedia } from 'meteor/unchained:core-products';
 
 export default async function prepareProductMediaUpload(
   root,
-  { options: { name } },
+  { mediaName, productId },
   { userId, ...context }
 ) {
-  log('mutation prepareProductMediaUpload', { name, userId });
+  log('mutation prepareProductMediaUpload', { mediaName, userId });
 
-  return createSignedPutURL(name, { userId, ...context });
+  return ProductMedia.createSignedUploadURL(mediaName, productId, {
+    userId,
+    ...context,
+  });
 }

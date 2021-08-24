@@ -941,7 +941,10 @@ export default [
         transactionContext: JSON
       ): String!
 
-      prepareProductMediaUpload(options: JSON): MediaUploadTicket!
+      prepareProductMediaUpload(
+        mediaName: String!
+        productId: String!
+      ): MediaUploadTicket!
       prepareAssortmentMediaUpload(options: JSON): MediaUploadTicket!
       prepareUserAvatarUpload(options: JSON): MediaUploadTicket!
       addProductMediaLink(

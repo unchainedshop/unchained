@@ -6,5 +6,5 @@
 export { createSignedPutURL } from './minio';
 
 export const name = 'unchained:core-files-next';
-export * from './db';
+
 export default name;
