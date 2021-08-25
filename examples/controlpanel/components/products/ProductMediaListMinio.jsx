@@ -119,7 +119,7 @@ export default compose(
     {
       name: 'addProductMediaLink',
       options: {
-        refetchQueries: [],
+        refetchQueries: ['productMedia'],
       },
     }
   ),

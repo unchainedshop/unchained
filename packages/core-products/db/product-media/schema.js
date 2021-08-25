@@ -1,26 +1,7 @@
 import SimpleSchema from 'simpl-schema';
 import { Schemas } from 'meteor/unchained:utils';
 
-import {
-  ProductMedia,
-  ProductMediaTexts,
-  ProductMediaObject,
-} from './collections';
-
-ProductMediaObject.attachSchema(
-  new SimpleSchema(
-    {
-      putURL: { type: String, required: true },
-      url: { type: String },
-      name: { type: String, required: true },
-      size: { type: String },
-      type: { type: String },
-      expires: { type: Date, required: true },
-      ...Schemas.timestampFields,
-    },
-    { requiredByDefault: false }
-  )
-);
+import { ProductMedia, ProductMediaTexts } from './collections';
 
 ProductMedia.attachSchema(
   new SimpleSchema(
@@ -62,7 +43,4 @@ export default () => {
 
   ProductMediaTexts.rawCollection().createIndex({ productMediaId: 1 });
   ProductMediaTexts.rawCollection().createIndex({ locale: 1 });
-  ProductMediaObject.rawCollection().createIndex({
-    created: -1,
-  });
 };

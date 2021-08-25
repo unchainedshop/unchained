@@ -2,17 +2,12 @@ import 'meteor/dburles:collection-helpers';
 import { findLocalizedText } from 'meteor/unchained:utils';
 import { Locale } from 'locale';
 import { emit } from 'meteor/unchained:core-events';
-import { createSignedPutURL } from 'meteor/unchained:core-files-next';
-import crypto from 'crypto';
-import { Products } from '../products/collections';
 import {
-  ProductMedia,
-  ProductMediaTexts,
-  Media,
-  ProductMediaObject,
-} from './collections';
+  createSignedPutURL,
+  MediaObjects,
+} from 'meteor/unchained:core-files-next';
 
-const PUT_URL_EXPIRY = 24 * 60 * 60;
+import { ProductMedia, ProductMediaTexts } from './collections';
 
 ProductMedia.findProductMedia = ({ productMediaId }) => {
   return ProductMedia.findOne({ _id: productMediaId });
@@ -73,8 +68,7 @@ ProductMedia.helpers({
     return ProductMedia.getLocalizedTexts(this._id, parsedLocale);
   },
   file() {
-    const media = ProductMediaObject.findOne({ _id: this.mediaId });
-
+    const media = MediaObjects.findOne({ _id: this.mediaId });
     return media;
   },
 });

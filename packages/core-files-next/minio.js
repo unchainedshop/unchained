@@ -2,15 +2,27 @@ import Minio from 'minio';
 import crypto from 'crypto';
 import { MediaObjects } from './db';
 
+const {
+  MINIO_ACCESS_KEY,
+  MINIO_SECRET_KEY,
+  MINIO_ENDPOINT,
+  MINIO_PORT,
+  MINIO_BUCKET_NAME,
+} = process.env;
+
 const PUT_URL_EXPIRY = 24 * 60 * 60;
 
 const client = new Minio.Client({
-  endPoint: '172.18.0.1',
-  port: 9000,
+  endPoint: MINIO_ENDPOINT,
+  port: parseInt(MINIO_PORT, 10),
   useSSL: false,
-  accessKey: '8H3FOTEB3W62ATGT3V32',
-  secretKey: 'AIMx5wmsWG9WUpE3WN6qe9SL4oIRklHhtG3yYn+V',
+  accessKey: MINIO_ACCESS_KEY,
+  secretKey: MINIO_SECRET_KEY,
 });
+
+if (!client.bucketExists(MINIO_BUCKET_NAME)) {
+  client.makeBucket(MINIO_BUCKET_NAME);
+}
 
 export const createSignedPutURL = async (fileName, { userId, ...context }) => {
   const random = crypto.randomBytes(16);
@@ -20,13 +32,12 @@ export const createSignedPutURL = async (fileName, { userId, ...context }) => {
     .digest('hex');
   const extension = fileName.substr(fileName.lastIndexOf('.'));
   const hashedName = hash + extension;
-  console.log('hashedName', hashedName);
+
   const putURL = await client.presignedPutObject(
-    'firstbucket',
+    MINIO_BUCKET_NAME,
     hashedName,
     PUT_URL_EXPIRY
   );
-  console.log('putURL', putURL);
 
   const _id = MediaObjects.insert({
     _id: hash,
