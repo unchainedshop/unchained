@@ -14,10 +14,9 @@ const uploadToMinio = async (file, url) => {
     body: file,
   });
   if (response.ok) {
-    const jsonValue = await response.json(); // Get JSON value from the response body
-    return Promise.resolve(jsonValue);
+    return Promise.resolve({});
   }
-  return Promise.reject('*** PHP file not found');
+  return Promise.reject(new Error('error'));
 };
 
 const ProductMediaListMinio = ({ items, onDrop, isEditingDisabled }) => (
@@ -94,7 +93,33 @@ export default compose(
     {
       name: 'prepareProductMedia',
       options: {
-        refetchQueries: ['productMedia'],
+        refetchQueries: [],
+      },
+    }
+  ),
+  graphql(
+    gql`
+      mutation addProductMediaLink($mediaUploadTicketId: ID!, $productId: ID!) {
+        addProductMediaLink(
+          mediaUploadTicketId: $mediaUploadTicketId
+          productID: $productId
+        ) {
+          _id
+          tags
+          file {
+            _id
+            name
+            type
+            size
+            url
+          }
+        }
+      }
+    `,
+    {
+      name: 'addProductMediaLink',
+      options: {
+        refetchQueries: [],
       },
     }
   ),
@@ -137,7 +162,7 @@ export default compose(
         });
       },
     onDrop:
-      ({ productId, prepareProductMedia }) =>
+      ({ productId, prepareProductMedia, addProductMediaLink }) =>
       async (files) => {
         const file = files[0];
         const {
@@ -148,8 +173,16 @@ export default compose(
             productId,
           },
         });
-        const { putURL } = prepareProductMediaUpload;
+        console.log(prepareProductMediaUpload);
+        const { putURL, _id } = prepareProductMediaUpload;
         await uploadToMinio(file, putURL);
+
+        await addProductMediaLink({
+          variables: {
+            mediaUploadTicketId: _id,
+            productId,
+          },
+        });
       },
   }),
   pure,

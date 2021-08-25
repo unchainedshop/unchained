@@ -1,6 +1,7 @@
 import { useMiddlewareWithCurrentContext } from 'meteor/unchained:api';
 import { ProductMediaObject } from 'meteor/unchained:core-products';
 import bodyParser from 'body-parser';
+import { MediaObjects } from '../db/collections';
 
 useMiddlewareWithCurrentContext(
   '/graphql/minio/',
@@ -26,23 +27,21 @@ useMiddlewareWithCurrentContext('/graphql/minio/', async (req, res) => {
         },
       ] = Records;
       const { bucket, object } = s3;
+      const { size, contentType: type } = object;
       const currentId = object.key.split('.')[0];
 
       const uploadedImageUrl = `${responseElements['x-minio-origin-endpoint']}/${Key}`;
-      ProductMediaObject.update(
+      MediaObjects.update(
         { _id: currentId },
         {
           $set: {
             url: uploadedImageUrl,
+            size,
+            type,
             updated: new Date(),
           },
         }
       );
-
-      const file = ProductMediaObject.findOne({
-        _id: currentId,
-      });
-      console.log(file);
 
       console.log('s3.object', object);
       console.log('bucket', bucket);

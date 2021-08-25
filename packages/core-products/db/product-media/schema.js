@@ -12,7 +12,9 @@ ProductMediaObject.attachSchema(
     {
       putURL: { type: String, required: true },
       url: { type: String },
-      originalFileName: { type: String, required: true },
+      name: { type: String, required: true },
+      size: { type: String },
+      type: { type: String },
       expires: { type: Date, required: true },
       ...Schemas.timestampFields,
     },

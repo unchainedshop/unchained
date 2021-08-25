@@ -547,11 +547,14 @@ Products.helpers({
     if (tags && tags.length > 0) {
       selector.tags = { $all: tags };
     }
-    return ProductMedia.find(selector, {
+    console.log(selector);
+    const x = ProductMedia.find(selector, {
       skip: offset,
       limit,
       sort: { sortKey: 1 },
     }).fetch();
+    console.log(x);
+    return x;
   },
   variations() {
     return ProductVariations.find({ productId: this._id }).fetch();

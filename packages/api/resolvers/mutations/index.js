@@ -44,6 +44,7 @@ import createProductVariationOption from './createProductVariationOption';
 import removeProductVariation from './removeProductVariation';
 import updateProductVariationTexts from './updateProductVariationTexts';
 import removeProductVariationOption from './removeProductVariationOption';
+import addProductMediaLink from './addProductMediaLink';
 import addProductMedia from './addProductMedia';
 import removeProductMedia from './removeProductMedia';
 import reorderProductMedia from './reorderProductMedia';
@@ -194,6 +195,10 @@ export default {
   updateProductTexts: acl(actions.manageProducts)(updateProductTexts),
   updateProductMediaTexts: acl(actions.manageProducts)(updateProductMediaTexts),
   addProductMedia: acl(actions.manageProducts)(addProductMedia),
+  addProductMediaLink: acl(actions.manageProducts)(addProductMediaLink),
+  prepareProductMediaUpload: acl(actions.manageProducts)(
+    prepareProductMediaUpload
+  ),
   reorderProductMedia: acl(actions.manageProducts)(reorderProductMedia),
   removeProductMedia: acl(actions.manageProducts)(removeProductMedia),
   updateProductCommerce: acl(actions.manageProducts)(updateProductCommerce),
@@ -358,5 +363,4 @@ export default {
   signPaymentProviderForCheckout: acl(actions.registerPaymentCredentials)(
     signPaymentProviderForCheckout
   ),
-  prepareProductMediaUpload,
 };

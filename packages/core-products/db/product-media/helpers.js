@@ -26,43 +26,12 @@ ProductMedia.removeProductMedia = ({ productMediaId }) => {
 
 ProductMedia.createSignedUploadURL = async (
   originalFileName,
-  productId,
   { userId, ...context }
 ) => {
-  const random = crypto.randomBytes(16);
-  const hash = crypto
-    .createHash('sha256')
-    .update(
-      [this._id, originalFileName, userId, random, PUT_URL_EXPIRY].join('')
-    )
-    .digest('hex');
-  const extension = originalFileName.substr(originalFileName.lastIndexOf('.'));
-  const hashedName = hash + extension;
-
-  const putURL = await createSignedPutURL(
-    hashedName,
-    'firstbucket',
-    PUT_URL_EXPIRY
-  );
-  const _id = ProductMediaObject.insert({
-    _id: hash,
-    putURL,
-    originalFileName,
-    expires: PUT_URL_EXPIRY,
-    created: new Date(),
+  return createSignedPutURL(originalFileName, {
+    userId,
+    ...context,
   });
-
-  const product = Products.findProduct({ productId });
-  product.addMediaLink({
-    mediaId: _id,
-    authorId: userId,
-  });
-
-  return {
-    _id,
-    putURL,
-    expires: PUT_URL_EXPIRY,
-  };
 };
 
 ProductMedia.helpers({
@@ -104,7 +73,7 @@ ProductMedia.helpers({
     return ProductMedia.getLocalizedTexts(this._id, parsedLocale);
   },
   file() {
-    const media = Media.findOne({ _id: this.mediaId });
+    const media = ProductMediaObject.findOne({ _id: this.mediaId });
 
     return media;
   },
