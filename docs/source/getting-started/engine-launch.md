@@ -18,8 +18,8 @@ In order to get a cloud-hosted unchained instance, you need to [sign up](https:/
 
 ## Step 2: Create a new Instance 
 
-1. After registration you will be redirected to the create organsation page.
-Create one by entering your organisation's name and click **Save organisation**.
+1. After registration you will be redirected to the create organization page.
+Create one by entering your organization's name and click **Save organisation**.
 ![diagram](../images/getting-started/Engine_Setup_Organisation.png)
 2. The Instance List page is shown. Click on **Create instance** to proceed.
 ![diagram](../images/getting-started/Engine_Setup_Create_Instance.png)
@@ -38,4 +38,4 @@ More importantly set URL to your SMTP server in order to send and receive mails.
 3. You should see the login window of the Control Panel. 
 ![diagram](../images/getting-started/Engine_Setup_Verification.png) 
 
-Gratulations! 👏🏻 Your Unchained Engine is up and running!
+Congratulations! 👏🏻 Your Unchained Engine is up and running!

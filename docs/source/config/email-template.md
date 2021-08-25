@@ -28,7 +28,7 @@ Hello, thank you for visiting unchained store {{date}} we hope you become part o
 Order number: {{orderNumber}}`
 ```
 
-what is left now is use this to ovewright any of the existing email template. in this case we will over `ACCOUNT_ACTION`.
+what is left now is use this to overweight any of the existing email template. in this case we will over `ACCOUNT_ACTION`.
 
 next write the function that will combine this template with variables used in it using `MessagingDirector.renderToText` static function and return email configuration array of object/s.
 

@@ -1,5 +1,5 @@
 ---
-title: "Cart Behaviour"
+title: "Cart Behavior"
 description: Learn about the cart and it's advanced features
 ---
 

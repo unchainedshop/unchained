@@ -7,7 +7,7 @@ Unchained supports the publish-subscribe (pub/sub) event model to keep track of 
 
 The `unchained:core-events` module exports three utility functions that can be used to interact with the registered event tracker, or register new custom events.
 
-- `registerEvents`: add's custom events that will be tracked. it takes array of event names.
+- `registerEvents`: adds custom events that will be tracked. it takes array of event names.
 - `emit(eventName, payload)`: used to emit events, either pre-built events or custom events registered using `registerEvents`. It take two arguments, name of the event we want to emit and an object of the data associated with the event.
 - `subscribe(eventName: callBack)`: used for subscribing to events emitted by `emit` function. It takes two arguments, name of the event we want to subscribe to and a call back that will be takes one argument holding data for the associated event.
 

@@ -32,7 +32,7 @@ mkdir my-storefront-webapp
 cd my-storefront-webapp
 ```
 
-2. Use the Unchained initialisation script to download the code.
+2. Use the Unchained initialization script to download the code.
 
 ```bash
 npm init @unchainedshop
@@ -47,7 +47,7 @@ Storefront <--
 Unchained engine
 ```
 
-4. Next two steps are to select the directory, as we already created a new empty directory you can simply press `enter`, and whether you want to initialise git which is up to you.
+4. Next two steps are to select the directory, as we already created a new empty directory you can simply press `enter`, and whether you want to initialize git which is up to you.
 
 ```bash
 ? Directory name relative to current directory
@@ -61,7 +61,7 @@ Unchained engine
 npm install
 ```
 
-The installation script downloads, installs and initialises all files and packages required to build and run the storefront web app.
+The installation script downloads, installs and initializes all files and packages required to build and run the storefront web app.
 
 ## Step 2: Setup connection
 
