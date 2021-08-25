@@ -28,7 +28,7 @@ if (!client.bucketExists(MINIO_BUCKET_NAME)) {
 
 export const createSignedPutURL = async (fileName, { userId, ...context }) => {
   if (!client)
-    throw new Error('Requied minio enviroment variables not defined');
+    throw new Error('Required minio environment variables not defined');
   const random = crypto.randomBytes(16);
   const hash = crypto
     .createHash('sha256')
