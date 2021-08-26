@@ -23,7 +23,7 @@ ProductMedia.createSignedUploadURL = async (
   originalFileName,
   { userId, ...context }
 ) => {
-  return createSignedPutURL(originalFileName, {
+  return createSignedPutURL('product-media', originalFileName, {
     userId,
     ...context,
   });

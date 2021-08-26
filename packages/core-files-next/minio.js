@@ -26,7 +26,11 @@ if (!client.bucketExists(MINIO_BUCKET_NAME)) {
   client.makeBucket(MINIO_BUCKET_NAME);
 }
 
-export const createSignedPutURL = async (fileName, { userId, ...context }) => {
+export const createSignedPutURL = async (
+  directoryName = '',
+  fileName,
+  { userId, ...context }
+) => {
   if (!client)
     throw new Error('Required minio environment variables not defined');
   const random = crypto.randomBytes(16);
@@ -39,13 +43,15 @@ export const createSignedPutURL = async (fileName, { userId, ...context }) => {
 
   const putURL = await client.presignedPutObject(
     MINIO_BUCKET_NAME,
-    hashedName,
+    `${directoryName}/${hashedName}`,
     PUT_URL_EXPIRY
   );
+  const { origin, pathname } = new URL(putURL);
 
   const _id = MediaObjects.insert({
-    _id: hash,
+    _id: encodeURIComponent(`${directoryName}/${hash}`),
     putURL,
+    url: origin.concat(pathname),
     name: fileName,
     expires: PUT_URL_EXPIRY,
     created: new Date(),
