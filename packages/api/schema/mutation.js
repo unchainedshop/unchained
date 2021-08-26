@@ -943,7 +943,7 @@ export default [
 
       prepareProductMediaUpload(mediaName: String!): MediaUploadTicket!
       prepareAssortmentMediaUpload(mediaName: String!): MediaUploadTicket!
-      prepareUserAvatarUpload(options: JSON): MediaUploadTicket!
+      prepareUserAvatarUpload(mediaName: String!): MediaUploadTicket!
       addProductMediaLink(
         mediaUploadTicketId: ID!
         productID: ID!
@@ -952,7 +952,7 @@ export default [
         mediaUploadTicketId: ID!
         assortmentId: ID!
       ): AssortmentMedia!
-      linkUserAvatar(mediaUploadTicketId: ID!, userId: ID): User!
+      linkUserAvatar(mediaUploadTicketId: ID!): User!
     }
   `,
 ];

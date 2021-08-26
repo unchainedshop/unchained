@@ -11,6 +11,10 @@ import { Countries } from 'meteor/unchained:core-countries';
 import { Languages } from 'meteor/unchained:core-languages';
 import { log, Logs } from 'meteor/unchained:core-logger';
 import { v4 as uuidv4 } from 'uuid';
+import {
+  createSignedPutURL,
+  MediaObjects,
+} from 'meteor/unchained:core-files-next';
 import { Avatars, Users } from './collections';
 import filterContext from '../filterContext';
 import evaluateContext from '../evaluateContext';
@@ -83,7 +87,7 @@ Users.helpers({
     return locale;
   },
   avatar() {
-    return Avatars.findOne({ _id: this.avatarId });
+    return MediaObjects.findOne({ _id: this.avatarId });
   },
   primaryEmail() {
     return (this.emails || []).sort(
@@ -162,6 +166,28 @@ Users.helpers({
   },
 });
 
+Users.createSignedUploadURL = async (
+  originalFileName,
+  { userId, ...context }
+) => {
+  return createSignedPutURL('user-avatar', originalFileName, {
+    userId,
+    ...context,
+  });
+};
+
+Users.updateAvatarLink = async ({ mediaId, userId }) => {
+  Users.update(
+    { _id: userId },
+    {
+      $set: {
+        updated: new Date(),
+        avatarId: mediaId,
+      },
+    }
+  );
+  return Users.findUser({ userId });
+};
 Users.updateProfile = ({ userId, profile }) => {
   const transformedProfile = Object.keys(profile).reduce((acc, profileKey) => {
     return {

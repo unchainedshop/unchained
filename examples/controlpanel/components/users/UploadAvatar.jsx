@@ -5,6 +5,7 @@ import gql from 'graphql-tag';
 import { Image } from 'semantic-ui-react';
 import Dropzone from 'react-dropzone';
 import squareImage from '../../public/square-image.png';
+import uploadToMinio from '../../lib/uploadToMinio';
 
 const UploadAvatar = ({ avatarUrl, handleChange }) => (
   <div className="fixed-height">
@@ -68,16 +69,58 @@ export default compose(
     }
     ${FRAGMENT_AVATAR_FIELDS}
   `),
+  graphql(
+    gql`
+      mutation prepareUserAvatar($mediaName: String!) {
+        prepareUserAvatarUpload(mediaName: $mediaName) {
+          _id
+          putURL
+          expires
+        }
+      }
+    `,
+    {
+      name: 'prepareUserAvatar',
+      options: {
+        refetchQueries: [],
+      },
+    }
+  ),
+  graphql(
+    gql`
+      mutation linkAvatar($mediaUploadTicketId: ID!) {
+        linkUserAvatar(mediaUploadTicketId: $mediaUploadTicketId) {
+          ...avatarFields
+        }
+      }
+      ${FRAGMENT_AVATAR_FIELDS}
+    `,
+    {
+      name: 'linkAvatar',
+      options: {
+        refetchQueries: [],
+      },
+    }
+  ),
   withHandlers({
     handleChange:
-      ({ mutate, userId, updateImageUrl }) =>
+      ({ mutate, userId, linkAvatar, prepareUserAvatar }) =>
       async (files) => {
         const avatar = files[0];
-        updateImageUrl(URL.createObjectURL(avatar));
-        await mutate({
+        const {
+          data: { prepareUserAvatarUpload },
+        } = await prepareUserAvatar({
           variables: {
-            userId,
-            avatar,
+            mediaName: avatar.name,
+          },
+        });
+        const { _id, putURL } = prepareUserAvatarUpload;
+        await uploadToMinio(avatar, putURL);
+        const {
+          data: { linkUserAvatar },
+        } = await linkAvatar({
+          variables: {
+            mediaUploadTicketId: _id,
           },
         });
       },

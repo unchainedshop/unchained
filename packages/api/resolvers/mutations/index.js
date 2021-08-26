@@ -143,6 +143,8 @@ import updateAssortmentMediaTexts from './updateAssortmentMediaTexts';
 import prepareProductMediaUpload from './prepareProductMediaUpload';
 import prepareAssortmentMediaUpload from './prepareAssortmentMediaUpload';
 import addAssortmentMediaLink from './addAssortmentMediaLink';
+import prepareUserAvatarUpload from './prepareUserAvatarUpload';
+import linkUserAvatar from './linkUserAvatar';
 
 export default {
   logout,
@@ -165,6 +167,8 @@ export default {
   addEmail: acl(actions.updateUser)(addEmail),
   removeEmail: acl(actions.updateUser)(removeEmail),
   updateUserAvatar: acl(actions.updateUser)(updateUserAvatar),
+  prepareUserAvatarUpload: acl(actions.updateUser)(prepareUserAvatarUpload),
+  linkUserAvatar: acl(actions.updateUser)(linkUserAvatar),
   updateUserProfile: acl(actions.updateUser)(updateUserProfile),
   setUserTags: acl(actions.manageUsers)(setUserTags),
   setPassword: acl(actions.manageUsers)(setPassword),
