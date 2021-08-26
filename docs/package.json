@@ -9,7 +9,7 @@
   "dependencies": {
     "@mdx-js/react": "^1.6.22",
     "@unchainedshop/dociql": "^1.0.0",
-    "@unchainedshop/gatsby-theme-apollo-docs": "^4.3.16",
+    "@unchainedshop/gatsby-theme-apollo-docs": "^4.3.20",
     "gatsby": "2.24.47",
     "gatsby-telemetry": "^2.10.0",
     "react": "16.13.1",
