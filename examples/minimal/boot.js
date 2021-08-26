@@ -56,11 +56,6 @@ Meteor.startup(async () => {
           });
         },
       },
-      accounts: {
-        server: {
-          loginExpirationInDays: 10,
-        },
-      },
     },
   });
   seed();
