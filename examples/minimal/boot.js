@@ -31,13 +31,12 @@ import 'meteor/unchained:core-pricing/plugins/delivery-swiss-tax';
 import 'meteor/unchained:core-filters/plugins/strict-equal';
 import 'meteor/unchained:core-filters/plugins/local-search';
 import 'meteor/unchained:core-quotations/plugins/manual';
-import 'meteor/unchained:core-subscriptions/plugins/licensed';
+import 'meteor/unchained:core-enrollments/plugins/licensed';
 import 'meteor/unchained:core-worker/plugins/external';
 import 'meteor/unchained:core-worker/plugins/http-request';
 import 'meteor/unchained:core-worker/plugins/heartbeat';
 import 'meteor/unchained:core-worker/plugins/email';
 import 'meteor/unchained:core-events/plugins/node-event-emitter';
-
 import seed from './seed';
 
 Meteor.startup(async () => {
@@ -65,6 +64,5 @@ Meteor.startup(async () => {
     },
   });
   seed();
-
   embedControlpanelInMeteorWebApp(WebApp);
 });

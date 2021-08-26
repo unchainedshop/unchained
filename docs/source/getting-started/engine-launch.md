@@ -34,4 +34,4 @@ Create one by entering your organisation's name and click **Save organisation**.
 3. You should see the login window of the Control Panel. 
 ![diagram](../images/getting-started/Engine_Setup_Verification.png) 
 
-Gratulations! 👏🏻 Your Unchained Engine is up and running!
+Congratulations! 👏🏻 Your Unchained Engine is up and running!

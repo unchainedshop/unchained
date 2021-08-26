@@ -33,11 +33,8 @@ export default [
     type PaymentCredentials {
       _id: ID!
       user: User!
-      paymentProvider: PaymentProvider!
       meta: JSON
-        @deprecated(
-          reason: "Due to ambiguity this field will be removed on future releases,Please write a custom resolver that reflects your business-logic"
-        )
+      paymentProvider: PaymentProvider!
       token: JSON
       isValid: Boolean!
       isPreferred: Boolean!

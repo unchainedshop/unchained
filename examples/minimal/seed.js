@@ -3,9 +3,23 @@ import { Currencies } from 'meteor/unchained:core-currencies';
 import { Countries } from 'meteor/unchained:core-countries';
 import { Languages } from 'meteor/unchained:core-languages';
 import { hashPassword } from 'meteor/unchained:api';
+import {
+  DeliveryProviders,
+  DeliveryProviderType,
+} from 'meteor/unchained:core-delivery';
+import {
+  PaymentProviders,
+  PaymentProviderType,
+} from 'meteor/unchained:core-payment';
 
 const logger = console;
-const { UNCHAINED_COUNTRY, UNCHAINED_CURRENCY, UNCHAINED_LANG } = process.env;
+const {
+  UNCHAINED_COUNTRY,
+  UNCHAINED_CURRENCY,
+  UNCHAINED_LANG,
+  UNCHAINED_MAIL_RECIPIENT,
+  EMAIL_FROM,
+} = process.env;
 
 export default async () => {
   try {
@@ -36,12 +50,9 @@ export default async () => {
       {},
       { skipMessaging: true },
     );
-    const defaultLanguages = ['de', 'fr'];
-    if (UNCHAINED_LANG) {
-      if (!defaultLanguages.includes(UNCHAINED_LANG.toLowerCase()))
-        defaultLanguages.push(UNCHAINED_LANG.toLowerCase());
-    }
-    const languages = defaultLanguages.map((code) => {
+    const languages = [
+      UNCHAINED_LANG ? UNCHAINED_LANG.toLowerCase() : 'de',
+    ].map((code) => {
       const language = Languages.createLanguage({
         isoCode: code,
         isActive: true,
@@ -50,7 +61,7 @@ export default async () => {
       return language.isoCode;
     });
     const currencies = [
-      UNCHAINED_CURRENCY ? UNCHAINED_CURRENCY.toUpperCase() : 'EUR',
+      UNCHAINED_CURRENCY ? UNCHAINED_CURRENCY.toUpperCase() : 'CHF',
     ].map((code) => {
       const currency = Currencies.createCurrency({
         isoCode: code,
@@ -70,11 +81,33 @@ export default async () => {
       });
       return country.isoCode;
     });
+    const deliveryProvider = DeliveryProviders.createProvider({
+      adapterKey: 'shop.unchained.delivery.send-message',
+      type: DeliveryProviderType.SHIPPING,
+      configuration: [
+        {
+          from: EMAIL_FROM || 'hello@unchained.local',
+          to: UNCHAINED_MAIL_RECIPIENT || 'orders@unchained.local',
+        },
+      ],
+      created: new Date(),
+      authorId: admin._id,
+    });
+    const paymentProvider = PaymentProviders.createProvider({
+      adapterKey: 'shop.unchained.invoice',
+      type: PaymentProviderType.INVOICE,
+      configuration: [],
+      created: new Date(),
+      authorId: admin._id,
+    });
     logger.log(`
       initialized database with
       \ncountries: ${countries.join(',')}
       \ncurrencies: ${currencies.map((c) => c.isoCode).join(',')}
       \nlanguages: ${languages.join(',')}
+      \ndeliveryProvider: ${deliveryProvider._id} (${
+      deliveryProvider.adapterKey
+    })\npaymentProvider: ${paymentProvider._id} (${paymentProvider.adapterKey})
       \nuser: admin@unchained.local / password`);
   } catch (e) {
     logger.error(e);

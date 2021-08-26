@@ -1,6 +1,5 @@
 import { Schemas } from 'meteor/unchained:utils';
 import SimpleSchema from 'simpl-schema';
-import { Migrations } from 'meteor/percolate:migrations';
 
 import { OrderPayments } from './collections';
 
@@ -35,17 +34,6 @@ OrderPayments.attachSchema(
     { requiredByDefault: false }
   )
 );
-
-Migrations.add({
-  version: 20200914.9,
-  name: 'drop OrderPayments related indexes',
-  up() {
-    OrderPayments.rawCollection()
-      .dropIndexes()
-      .catch(() => {});
-  },
-  down() {},
-});
 
 export default () => {
   OrderPayments.rawCollection().createIndex({ orderId: 1 });

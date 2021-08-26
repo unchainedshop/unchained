@@ -1,7 +1,7 @@
 export default (specification) => {
   const {
     variationResolvers: assignments,
-    content,
+    content, // eslint-disable-line
     warehousing: warehousingEmbeddedSupply,
     ...productData
   } = specification;

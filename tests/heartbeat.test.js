@@ -5,20 +5,15 @@ import {
 } from './helpers';
 import { ADMIN_TOKEN, USER_TOKEN } from './seeds/users';
 
-let connection;
 let graphqlFetchAsAdminUser;
 let graphqlFetchAsNormalUser;
 let graphqlfetchAsAnonymousUser;
 describe('Heartbeat', () => {
   beforeAll(async () => {
-    [, connection] = await setupDatabase();
+    await setupDatabase();
     graphqlFetchAsAdminUser = await createLoggedInGraphqlFetch(ADMIN_TOKEN);
     graphqlFetchAsNormalUser = await createLoggedInGraphqlFetch(USER_TOKEN);
     graphqlfetchAsAnonymousUser = await createAnonymousGraphqlFetch();
-  });
-
-  afterAll(async () => {
-    await connection.close();
   });
 
   describe('mutation.heartbeat for admin User should', () => {
@@ -91,7 +86,7 @@ describe('Heartbeat', () => {
               paymentCredentials {
                 _id
               }
-              subscriptions {
+              enrollments {
                 _id
               }
             }

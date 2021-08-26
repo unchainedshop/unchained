@@ -6,17 +6,12 @@ import {
 import { ADMIN_TOKEN } from './seeds/users';
 import { MultiChoiceFilter } from './seeds/filters';
 
-let connection;
 let graphqlFetch;
 
 describe('TranslatedFilterTexts', () => {
   beforeAll(async () => {
-    [, connection] = await setupDatabase();
+    await setupDatabase();
     graphqlFetch = await createLoggedInGraphqlFetch(ADMIN_TOKEN);
-  });
-
-  afterAll(async () => {
-    await connection.close();
   });
 
   describe('Query.translatedFilterTexts for admin user should', () => {

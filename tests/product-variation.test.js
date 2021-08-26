@@ -11,17 +11,12 @@ import {
   PlanProduct,
 } from './seeds/products';
 
-let connection;
 let graphqlFetch;
 
 describe('ProductsVariation', () => {
   beforeAll(async () => {
-    [, connection] = await setupDatabase();
+    await setupDatabase();
     graphqlFetch = await createLoggedInGraphqlFetch(ADMIN_TOKEN);
-  });
-
-  afterAll(async () => {
-    await connection.close();
   });
 
   describe('query.translatedProductVariationTexts for admin user should', () => {
@@ -629,8 +624,7 @@ describe('ProductsVariation', () => {
 
   describe('mutation.removeProductVariation for admin user should', () => {
     it('remove product variation successfuly', async () => {
-      // eslint-disable-next-line no-unused-vars
-      const { data: { removeProductVariation } = {} } = await graphqlFetch({
+      await graphqlFetch({
         query: /* GraphQL */ `
           mutation RemoveProductVariation($productVariationId: ID!) {
             removeProductVariation(productVariationId: $productVariationId) {

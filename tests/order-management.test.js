@@ -1,17 +1,12 @@
 import { setupDatabase, createLoggedInGraphqlFetch } from './helpers';
 import { SimpleOrder, ConfirmedOrder, PendingOrder } from './seeds/orders';
 
-let connection;
 let graphqlFetch;
 
 describe('Order: Management', () => {
   beforeAll(async () => {
-    [, connection] = await setupDatabase();
+    await setupDatabase();
     graphqlFetch = await createLoggedInGraphqlFetch();
-  });
-
-  afterAll(async () => {
-    await connection.close();
   });
 
   describe('Mutation.removeOrder', () => {

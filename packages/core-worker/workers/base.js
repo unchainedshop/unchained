@@ -1,6 +1,6 @@
 import os from 'os';
 import later from 'later';
-
+import { Promise } from 'meteor/promise';
 import { log } from 'meteor/unchained:core-logger';
 
 import External from '../plugins/external';
@@ -48,13 +48,13 @@ class BaseWorker {
     });
   }
 
-  async autorescheduleTypes(referenceDate = new Date()) {
+  async autorescheduleTypes(referenceDate) {
     return Promise.all(
       Object.entries(this.WorkerDirector.autoSchedule).map(
         async ([type, configuration]) => {
           const { schedule, input, ...rest } = configuration;
           const fixedSchedule = { ...schedule };
-          fixedSchedule.schedules[0].s = [0]; // ignore seconds
+          fixedSchedule.schedules[0].s = [0]; // ignore seconds, always run on second 0
           const nextDate = later.schedule(fixedSchedule).next(1, referenceDate);
           nextDate.setMilliseconds(0);
           await this.WorkerDirector.ensureOneWork({
@@ -82,6 +82,11 @@ class BaseWorker {
       return null;
     };
     await processRecursively();
+  }
+
+  static floorDate(d = new Date()) {
+    const floored = new Date(Math.floor(d.getTime() / 1000) * 1000);
+    return floored;
   }
 }
 

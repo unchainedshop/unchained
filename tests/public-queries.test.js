@@ -1,17 +1,11 @@
 import { setupDatabase, createAnonymousGraphqlFetch } from './helpers';
 
-let connection;
-// let db;
 let graphqlFetch;
 
 describe('public queries', () => {
   beforeAll(async () => {
-    [, /* db */ connection] = await setupDatabase();
+    await setupDatabase();
     graphqlFetch = await createAnonymousGraphqlFetch();
-  });
-
-  afterAll(async () => {
-    await connection.close();
   });
 
   it('products', async () => {

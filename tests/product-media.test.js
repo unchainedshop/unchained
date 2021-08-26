@@ -8,7 +8,6 @@ import {
 import { ADMIN_TOKEN, USER_TOKEN } from './seeds/users';
 import { JpegProductMedia, SimpleProduct } from './seeds/products';
 
-let connection;
 let graphqlFetch;
 const fs = require('fs');
 const path = require('path');
@@ -19,12 +18,8 @@ const productMediaFile = fs.createReadStream(
 
 describe('ProductsVariation', () => {
   beforeAll(async () => {
-    [, connection] = await setupDatabase();
+    await setupDatabase();
     graphqlFetch = await createLoggedInGraphqlFetch(ADMIN_TOKEN);
-  });
-
-  afterAll(async () => {
-    await connection.close();
   });
 
   describe('Mutation.addProductMedia for admin user should', () => {
@@ -411,7 +406,6 @@ describe('ProductsVariation', () => {
                 type
                 size
                 url
-                meta
               }
               sortKey
               texts {

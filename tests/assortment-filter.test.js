@@ -7,17 +7,12 @@ import { ADMIN_TOKEN } from './seeds/users';
 import { SimpleAssortment, AssortmentFilters } from './seeds/assortments';
 import { MultiChoiceFilter } from './seeds/filters';
 
-let connection;
 let graphqlFetch;
 
 describe('AssortmentFilter', () => {
   beforeAll(async () => {
-    [, connection] = await setupDatabase();
+    await setupDatabase();
     graphqlFetch = await createLoggedInGraphqlFetch(ADMIN_TOKEN);
-  });
-
-  afterAll(async () => {
-    await connection.close();
   });
 
   describe('mutation.reorderAssortmentFilters for admin users should', () => {
@@ -33,7 +28,6 @@ describe('AssortmentFilter', () => {
               _id
               sortKey
               tags
-              meta
               assortment {
                 _id
               }
@@ -288,7 +282,7 @@ describe('AssortmentFilter', () => {
   describe('mutation.removeAssortmentFilter for admin users should', () => {
     it('remove assortment filter successfuly when passed valid ID', async () => {
       const {
-        // eslint-disable-next-line no-unused-vars
+        // eslint-disable-next-line
         data: { removeAssortmentFilter },
       } = await graphqlFetch({
         query: /* GraphQL */ `
@@ -297,7 +291,6 @@ describe('AssortmentFilter', () => {
               _id
               sortKey
               tags
-              meta
               assortment {
                 _id
               }
@@ -375,7 +368,6 @@ describe('AssortmentFilter', () => {
               _id
               sortKey
               tags
-              meta
               assortment {
                 _id
               }

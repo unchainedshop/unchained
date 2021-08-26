@@ -31,7 +31,8 @@ FilesCollection.prototype.insertWithRemoteBuffer =
 
 FilesCollection.prototype.insertWithRemoteFile =
   async function insertWithRemoteFile({ file, meta = {}, ...rest }) {
-    const { stream, filename, mimetype } = await file;
+    const { filename, mimetype, createReadStream } = await file;
+    const stream = createReadStream();
     return new Promise((resolve, reject) => {
       const bufs = [];
       stream.on('data', (d) => {

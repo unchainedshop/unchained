@@ -26,7 +26,7 @@ import geoposition from './geo-position';
 import bookmark from './bookmark';
 import search from './search';
 import worker from './worker';
-import subscription from './subscription';
+import enrollment from './enrollment';
 import events from './events';
 
 export default [
@@ -58,6 +58,6 @@ export default [
   ...bookmark,
   ...search,
   ...worker,
-  ...subscription,
+  ...enrollment,
   ...events,
 ];

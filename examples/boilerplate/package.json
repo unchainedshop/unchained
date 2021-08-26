@@ -1,0 +1,67 @@
+{
+  "name": "@unchainedshop/engine-boilerplate",
+  "version": "1.0.0-beta12",
+  "license": "EUPL-1.2",
+  "homepage": "https://unchained.shop",
+  "contributors": [
+    "Vedran Rudelj <vedran@unchained.shop> (https://unchained.shop)",
+    "Pascal Kaufmann <pascal@unchained.shop> (https://unchained.shop)",
+    "Marco Wettstein <maw@panter.ch>",
+    "Simon Emanuel Schmid <simon@unchained.shop> (https://unchained.shop)",
+    "Mikael Araya Mengistu <mikaeln@unchained.shop> (https://unchained.shop)"
+  ],
+  "meteor": {
+    "mainModule": {
+      "client": false,
+      "server": "boot.js"
+    }
+  },
+  "scripts": {
+    "lint": "eslint . --cache  --fix --ext=jsx --ext=js",
+    "dev": "cross-env SERVER_NODE_OPTIONS='-r ./node_env.js'  meteor --exclude-archs web.browser.legacy,web.cordova,web.browser --no-release-check --no-lint -p 4010",
+    "build": "cross-env meteor build --server-only --directory .build",
+    "debug": "cross-env SERVER_NODE_OPTIONS='-r ./node_env.js' meteor --exclude-archs web.browser.legacy,web.cordova,web.browser debug -p 4010"
+  },
+  "dependencies": {
+    "@babel/runtime": "^7.12.13",
+    "@unchainedshop/controlpanel": "^1.0.0-beta3",
+    "apollo-server-express": "^2.21.0",
+    "client-oauth2": "github:unchainedshop/js-client-oauth2#master",
+    "dotenv-extended": "^2.9.0",
+    "graphql": "^15.5.0",
+    "isomorphic-unfetch": "^3.1.0",
+    "locale": "^0.1.0",
+    "meteor-node-stubs": "^1.0.1",
+    "moment": "^2.29.1",
+    "simpl-schema": "^1.10.2"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.12.13",
+    "@babel/preset-env": "^7.12.13",
+    "@babel/register": "^7.12.13",
+    "babel-eslint": "^10.1.0",
+    "cross-env": "^7.0.3",
+    "eslint": "^7.19.0",
+    "eslint-config-airbnb-base": "^14.2.1",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-import-resolver-meteor": "^0.4.0",
+    "eslint-plugin-import": "^2.22.1",
+    "eslint-plugin-prettier": "^3.3.1",
+    "prettier": "^2.2.1"
+  },
+  "main": "boot.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/unchainedshop/unchained.git"
+  },
+  "keywords": [
+    "unchained",
+    "headless",
+    "e-commerce",
+    "javascript",
+    "graphql"
+  ],
+  "bugs": {
+    "url": "https://github.com/unchained/unchained/issues"
+  }
+}

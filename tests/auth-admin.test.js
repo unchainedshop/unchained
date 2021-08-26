@@ -1,12 +1,15 @@
-import fetch from 'isomorphic-unfetch';
+import FormData from 'form-data';
 import {
   setupDatabase,
   createLoggedInGraphqlFetch,
   createAnonymousGraphqlFetch,
+  uploadFormData,
 } from './helpers';
 import { Admin, ADMIN_TOKEN, User, USER_TOKEN } from './seeds/users';
 
-let connection;
+const fs = require('fs');
+const path = require('path');
+
 let db;
 let graphqlFetchAsAdminUser;
 let graphqlFetchAsAnonymousUser;
@@ -14,14 +17,10 @@ let graphqlFetchAsNormalUser;
 
 describe('Auth for admin users', () => {
   beforeAll(async () => {
-    [db, connection] = await setupDatabase();
+    [db] = await setupDatabase();
     graphqlFetchAsAdminUser = await createLoggedInGraphqlFetch(ADMIN_TOKEN);
     graphqlFetchAsNormalUser = await createLoggedInGraphqlFetch(USER_TOKEN);
     graphqlFetchAsAnonymousUser = await createAnonymousGraphqlFetch();
-  });
-
-  afterAll(async () => {
-    await connection.close();
   });
 
   describe('Query.users', () => {
@@ -196,40 +195,42 @@ describe('Auth for admin users', () => {
   });
 
   describe('Mutation.updateUserAvatar', () => {
-    it('update the avatar of a foreign user', async () => {
-      const imageResult = await fetch(
-        'https://assets-cdn.github.com/images/modules/logos_page/Octocat.png',
+    it.only('update the avatar of a foreign user', async () => {
+      const avatar = fs.createReadStream(
+        path.resolve(__dirname, `./assets/image.jpg`),
       );
-      const imageBuffer = await imageResult.buffer();
-      const avatar = {
-        name: 'Octocat.png',
-        type: 'image/png',
-        size: imageBuffer.length,
-        buffer: imageBuffer.toString('base64'),
-      };
 
-      const { data: { updateUserAvatar } = {} } = await graphqlFetchAsAdminUser(
-        {
-          query: /* GraphQL */ `
-            mutation updateUserAvatar($userId: ID, $avatar: Upload!) {
-              updateUserAvatar(userId: $userId, avatar: $avatar) {
-                _id
-                avatar {
-                  name
-                }
+      const body = new FormData();
+      body.append(
+        'operations',
+        JSON.stringify({
+          query: `
+          mutation updateUserAvatar($userId: ID, $avatar: Upload!) {
+            updateUserAvatar(userId: $userId, avatar: $avatar) {
+              _id
+              avatar {
+                name
               }
             }
-          `,
+          }
+        `,
           variables: {
             userId: User._id,
-            avatar,
+            avatar: null,
           },
-        },
+        }),
       );
+
+      body.append('map', JSON.stringify({ 1: ['variables.avatar'] }));
+      body.append('1', avatar);
+      const {
+        data: { updateUserAvatar },
+      } = await uploadFormData({ token: ADMIN_TOKEN, body });
+
       expect(updateUserAvatar).toMatchObject({
         _id: User._id,
         avatar: {
-          name: 'Octocat.png',
+          name: 'image.jpg',
         },
       });
     });
@@ -761,7 +762,7 @@ describe('Auth for admin users', () => {
               paymentCredentials {
                 _id
               }
-              subscriptions {
+              enrollments {
                 _id
               }
             }

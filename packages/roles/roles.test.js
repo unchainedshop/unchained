@@ -4,7 +4,6 @@ import {
   expect,
   it,
   beforeAll,
-  afterAll,
   afterEach,
   jest,
 } from '@jest/globals';
@@ -13,23 +12,16 @@ import { User } from '../../tests/seeds/users';
 import { isFunction, has } from './helpers';
 import { Role, Roles } from './index';
 
-let connection;
-let db;
-
 describe('Roles', () => {
   beforeAll(async () => {
     // eslint-disable-next-line no-unused-vars
-    [db, connection] = await setupDatabase();
+    await setupDatabase();
   });
 
   afterEach(() => {
     Roles.roles = {};
     Roles.actions = [];
     Roles.helpers = [];
-  });
-
-  afterAll(async () => {
-    await connection.close();
   });
 
   describe('Role utilities', () => {

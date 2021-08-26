@@ -12,22 +12,22 @@ class EventListenerWorker extends BaseWorker {
   static type = 'EVENT_LISTENER';
 
   start() {
-    this.onAdded = ({ work }) => {
+    this.onAdded = () => {
       this.process({
         maxWorkItemCount: 0,
-        referenceDate: new Date(work.scheduled),
+        referenceDate: this.constructor.floorDate(),
       });
     };
-    this.onFinished = ({ work }) => {
+    this.onFinished = () => {
       this.process({
         maxWorkItemCount: 0,
-        referenceDate: new Date(work.scheduled),
+        referenceDate: this.constructor.floorDate(),
       });
     };
     this.WorkerDirector.events.on(WorkerEventTypes.added, this.onAdded);
     this.WorkerDirector.events.on(WorkerEventTypes.finished, this.onFinished);
     setTimeout(() => {
-      this.autorescheduleTypes();
+      this.autorescheduleTypes(this.constructor.floorDate());
     }, 300);
   }
 

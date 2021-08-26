@@ -6,19 +6,14 @@ import {
 import { ADMIN_TOKEN } from './seeds/users';
 import { SimpleWarehousingProvider } from './seeds/warehousings';
 
-let connection;
 let graphqlFetch;
 let graphqlAnonymousFetch;
 
 describe('WarehousingProviders', () => {
   beforeAll(async () => {
-    [, connection] = await setupDatabase();
+    await setupDatabase();
     graphqlFetch = await createLoggedInGraphqlFetch(ADMIN_TOKEN);
     graphqlAnonymousFetch = await createAnonymousGraphqlFetch();
-  });
-
-  afterAll(async () => {
-    await connection.close();
   });
 
   describe('Query.warehousingProviders when loggedin should', () => {

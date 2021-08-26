@@ -13,21 +13,16 @@ import {
   ProxyPlanProduct1,
 } from './seeds/products';
 
-let connection;
 let graphqlFetchAsAdmin;
 let graphqlFetchAsNormalUser;
 let graphqlFetchAsAnonymousUser;
 
 describe('Products', () => {
   beforeAll(async () => {
-    [, connection] = await setupDatabase();
+    await setupDatabase();
     graphqlFetchAsAdmin = await createLoggedInGraphqlFetch(ADMIN_TOKEN);
     graphqlFetchAsNormalUser = await createLoggedInGraphqlFetch(USER_TOKEN);
     graphqlFetchAsAnonymousUser = createAnonymousGraphqlFetch();
-  });
-
-  afterAll(async () => {
-    await connection.close();
   });
 
   describe('Mutation.createProduct', () => {
@@ -98,7 +93,6 @@ describe('Products', () => {
               reviews {
                 _id
               }
-              meta
               assortmentPaths {
                 assortmentProduct {
                   _id
@@ -179,7 +173,6 @@ describe('Products', () => {
               reviews {
                 _id
               }
-              meta
               assortmentPaths {
                 assortmentProduct {
                   _id
@@ -251,7 +244,6 @@ describe('Products', () => {
               _id
               sequence
               tags
-              meta
             }
           }
         `,
@@ -271,7 +263,6 @@ describe('Products', () => {
         _id: 'simpleproduct',
         sequence: 1,
         tags: ['tag-1', 'tag-2', 'highlight', 'update-tag'],
-        meta: { updated: true },
       });
     });
 
@@ -427,7 +418,6 @@ describe('Products', () => {
               reviews {
                 _id
               }
-              meta
               assortmentPaths {
                 assortmentProduct {
                   _id
@@ -644,7 +634,6 @@ describe('Products', () => {
               reviews {
                 _id
               }
-              meta
               assortmentPaths {
                 assortmentProduct {
                   _id
@@ -1053,7 +1042,6 @@ describe('Products', () => {
               reviews {
                 _id
               }
-              meta
               assortmentPaths {
                 assortmentProduct {
                   _id

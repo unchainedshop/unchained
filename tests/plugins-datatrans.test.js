@@ -5,7 +5,6 @@ import { USER_TOKEN, User } from './seeds/users';
 import { SimplePaymentProvider } from './seeds/payments';
 import { SimpleOrder, SimplePosition, SimplePayment } from './seeds/orders';
 
-let connection;
 let db;
 let graphqlFetch;
 
@@ -17,7 +16,7 @@ describe('Plugins: Datatrans Payments', () => {
   const refno2 = 'datatrans-payment2';
 
   beforeAll(async () => {
-    [db, connection] = await setupDatabase();
+    [db] = await setupDatabase();
     graphqlFetch = await createLoggedInGraphqlFetch(USER_TOKEN);
 
     // Add a datatrans provider
@@ -72,10 +71,6 @@ describe('Plugins: Datatrans Payments', () => {
     });
   });
 
-  afterAll(async () => {
-    await connection.close();
-  });
-
   describe('Mutation.signPaymentProviderForCredentialRegistration (Datatrans)', () => {
     const sign =
       '0c83ed74918d05cdd5309389dd8f011881250351f861619fbdfb9f75c711a5db';
@@ -116,7 +111,6 @@ describe('Plugins: Datatrans Payments', () => {
     it('request a new signed nonce', async () => {
       const {
         data: { signPaymentProviderForCheckout },
-        errors,
       } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation signPaymentProviderForCheckout(

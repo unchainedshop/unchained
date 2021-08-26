@@ -3,6 +3,7 @@ import { execute, toPromise } from '@apollo/client/core';
 import { createUploadLink } from 'apollo-upload-client';
 import gql from 'graphql-tag';
 import fetch from 'isomorphic-unfetch';
+import FormData from 'form-data';
 import seedLocaleData from './seeds/locale-data';
 import seedUsers, { ADMIN_TOKEN } from './seeds/users';
 import seedProducts from './seeds/products';
@@ -15,7 +16,7 @@ import seedFilters from './seeds/filters';
 import seedLogs from './seeds/logs';
 import seedAssortments from './seeds/assortments';
 import seedBookmarks from './seeds/bookmark';
-import seedSubscription from './seeds/subscriptions';
+import seedEnrollment from './seeds/enrollments';
 import seedWorkQueue from './seeds/work';
 
 Collection.prototype.findOrInsertOne = async function findOrInsertOne(
@@ -30,12 +31,23 @@ Collection.prototype.findOrInsertOne = async function findOrInsertOne(
   }
 };
 
-export const setupDatabase = async () => {
-  const connection = await MongoClient.connect(global.__MONGO_URI__, {
+let connection;
+
+export const getConnection = () => connection;
+
+const connect = async () => {
+  if (connection) return;
+  const connectionUri =
+    (await global.__MONGOD__?.getUri()) || global.__MONGO_URI__;
+  connection = await MongoClient.connect(connectionUri, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
     poolSize: 1,
   });
+};
+
+export const setupDatabase = async () => {
+  await connect();
   const db = await connection.db(global.__MONGO_DB_NAME__);
   const collections = await db.collections();
   await Promise.all(collections.map((collection) => collection.deleteMany({})));
@@ -52,22 +64,22 @@ export const setupDatabase = async () => {
   await seedLogs(db);
   await seedAssortments(db);
   await seedBookmarks(db);
-  await seedSubscription(db);
+  await seedEnrollment(db);
   await seedWorkQueue(db);
 
   return [db, connection];
 };
 
 export const wipeDatabase = async () => {
-  const connectionUri = await global.__MONGOD__.getUri();
-  const connection = await MongoClient.connect(connectionUri, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  });
+  await connect();
   const db = await connection.db(global.__MONGO_DB_NAME__);
   const collections = await db.collections();
   await Promise.all(collections.map((collection) => collection.deleteMany({})));
-  await connection.close();
+  try {
+    await connection.close();
+  } catch (e) {
+    console.warn(e); // eslint-disable-line
+  }
 };
 
 const convertLinkToFetch =
@@ -85,6 +97,7 @@ export const createAnonymousGraphqlFetch = () => {
   const link = createUploadLink({
     uri,
     fetch,
+    FormData,
   });
   return convertLinkToFetch(link);
 };
@@ -94,6 +107,7 @@ export const createLoggedInGraphqlFetch = (token = ADMIN_TOKEN) => {
   const link = createUploadLink({
     uri,
     fetch,
+    FormData,
     headers: {
       authorization: token,
     },

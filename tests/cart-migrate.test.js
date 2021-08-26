@@ -5,7 +5,6 @@ import {
 } from './helpers';
 import { SimpleProduct } from './seeds/products';
 
-let connection;
 let db;
 let anonymousGraphqlFetch;
 let guestToken;
@@ -14,12 +13,8 @@ let orderId;
 
 describe('Guest user cart migration', () => {
   beforeAll(async () => {
-    [db, connection] = await setupDatabase();
+    [db] = await setupDatabase();
     anonymousGraphqlFetch = await createAnonymousGraphqlFetch();
-  });
-
-  afterAll(async () => {
-    await connection.close();
   });
 
   it('login as guest', async () => {
@@ -56,6 +51,7 @@ describe('Guest user cart migration', () => {
             _id
             quantity
             total {
+              _id
               currency
               amount
             }

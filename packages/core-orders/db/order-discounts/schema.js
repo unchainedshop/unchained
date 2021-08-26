@@ -1,6 +1,5 @@
 import { Schemas } from 'meteor/unchained:utils';
 import SimpleSchema from 'simpl-schema';
-import { Migrations } from 'meteor/percolate:migrations';
 
 import { OrderDiscounts } from './collections';
 
@@ -25,17 +24,6 @@ OrderDiscounts.attachSchema(
     { requiredByDefault: false }
   )
 );
-
-Migrations.add({
-  version: 20200914.8,
-  name: 'drop OrderDiscount related indexes',
-  up() {
-    OrderDiscounts.rawCollection()
-      .dropIndexes()
-      .catch(() => {});
-  },
-  down() {},
-});
 
 export default () => {
   OrderDiscounts.rawCollection().createIndex({ orderId: 1 });

@@ -23,13 +23,6 @@ OrderPayments.helpers({
       paymentProviderId: this.paymentProviderId,
     });
   },
-  transformedContextValue(key) {
-    const provider = this.provider();
-    if (provider) {
-      return provider.transformContext(key, this.context[key]);
-    }
-    return JSON.stringify(this.context[key]);
-  },
   normalizedStatus() {
     return objectInvert(OrderPaymentStatus)[this.status || null];
   },
@@ -39,7 +32,8 @@ OrderPayments.helpers({
       orderPayment: this,
     });
     emit('ORDER_SIGN_PAYMENT', {
-      payload: { orderPayment: this, transactionContext },
+      orderPayment: this,
+      transactionContext,
     });
     return result;
   },
@@ -79,7 +73,7 @@ OrderPayments.helpers({
       {
         transactionContext: {
           ...(paymentContext || {}),
-          ...this.context,
+          ...(this.context || {}),
         },
         order,
       },
@@ -152,7 +146,7 @@ OrderPayments.updatePayment = ({ orderId, paymentId, context }) => {
   OrderPayments.update(
     { _id: paymentId },
     {
-      $set: { context, updated: new Date() },
+      $set: { context: context || {}, updated: new Date() },
     }
   );
   Orders.updateCalculation({ orderId });

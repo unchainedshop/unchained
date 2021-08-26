@@ -5,4 +5,4 @@ require('dotenv-extended').load({
   errorOnExtra: !process.env.SUPPRESS_ENV_ERRORS,
   includeProcessEnv: true,
 });
-require('./file_env.js');
+require('./file_env');

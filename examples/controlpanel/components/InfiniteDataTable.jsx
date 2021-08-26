@@ -111,7 +111,7 @@ const InfiniteDataTable = ({
 export const withDataTableLoader = ({ query, queryName }) =>
   compose(
     graphql(query, {
-      options: ({ queryOptions, limit, ...props }) => ({
+      options: ({ queryOptions = {}, limit, ...props }) => ({
         variables: {
           offset: 0,
           limit,

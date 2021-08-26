@@ -7,21 +7,16 @@ import { PrePaidPaymentProvider } from './seeds/payments';
 import { SimpleOrder, SimplePayment, GenericPayment } from './seeds/orders';
 import { ADMIN_TOKEN, USER_TOKEN } from './seeds/users';
 
-let connection;
 let graphqlFetchAsAdmin;
 let graphqlFetchAsNormalUser;
 let graphqlFetchAsAnonymousUser;
 
 describe('Order: Payments', () => {
   beforeAll(async () => {
-    [, connection] = await setupDatabase();
+    await setupDatabase();
     graphqlFetchAsAdmin = await createLoggedInGraphqlFetch(ADMIN_TOKEN);
     graphqlFetchAsNormalUser = await createLoggedInGraphqlFetch(USER_TOKEN);
     graphqlFetchAsAnonymousUser = await createAnonymousGraphqlFetch();
-  });
-
-  afterAll(async () => {
-    await connection.close();
   });
 
   describe('Mutation.setOrderPaymentProvider for admin user', () => {
@@ -43,6 +38,10 @@ describe('Order: Payments', () => {
                   _id
                   provider {
                     _id
+                  }
+                  fee {
+                    _id
+                    amount
                   }
                 }
               }
@@ -202,7 +201,6 @@ describe('Order: Payments', () => {
                 meta: $meta
               ) {
                 _id
-                meta
                 provider {
                   _id
                   type
@@ -220,9 +218,6 @@ describe('Order: Payments', () => {
 
       expect(updateOrderPaymentInvoice).toMatchObject({
         _id: SimplePayment._id,
-        meta: {
-          john: 'wayne',
-        },
         provider: {
           type: 'INVOICE',
         },
@@ -331,7 +326,6 @@ describe('Order: Payments', () => {
                 meta: $meta
               ) {
                 _id
-                meta
                 provider {
                   _id
                   type
@@ -349,9 +343,6 @@ describe('Order: Payments', () => {
 
       expect(updateOrderPaymentInvoice).toMatchObject({
         _id: SimplePayment._id,
-        meta: {
-          john: 'wayne',
-        },
         provider: {
           type: 'INVOICE',
         },
@@ -372,7 +363,6 @@ describe('Order: Payments', () => {
               meta: $meta
             ) {
               _id
-              meta
               provider {
                 _id
                 type
@@ -408,7 +398,6 @@ describe('Order: Payments', () => {
                 meta: $meta
               ) {
                 _id
-                meta
                 sign
                 provider {
                   _id
@@ -426,9 +415,6 @@ describe('Order: Payments', () => {
         });
       expect(updateOrderPaymentGeneric).toMatchObject({
         _id: GenericPayment._id,
-        meta: {
-          john: 'wayne',
-        },
         sign: '0bea13199c5abb6d0861d661d565a47f193bc20dc10bad12f00e584a33f01939',
         provider: {
           type: 'GENERIC',

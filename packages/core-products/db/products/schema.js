@@ -1,6 +1,5 @@
 import SimpleSchema from 'simpl-schema';
 import { Schemas } from 'meteor/unchained:utils';
-import { Migrations } from 'meteor/percolate:migrations';
 
 import { Products, ProductTexts } from './collections';
 
@@ -140,20 +139,6 @@ ProductTexts.attachSchema(
     { requiredByDefault: false }
   )
 );
-
-Migrations.add({
-  version: 20200915.7,
-  name: 'drop Product & ProductTexts related indexes',
-  up() {
-    Products.rawCollection()
-      .dropIndexes()
-      .catch(() => {});
-    ProductTexts.rawCollection()
-      .dropIndexes()
-      .catch(() => {});
-  },
-  down() {},
-});
 
 export default () => {
   Products.rawCollection().createIndex({ sequence: 1 });

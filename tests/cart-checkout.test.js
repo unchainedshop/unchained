@@ -1,19 +1,13 @@
 import { setupDatabase, createLoggedInGraphqlFetch } from './helpers';
 import { SimpleProduct } from './seeds/products';
 
-let connection;
-// eslint-disable-next-line no-unused-vars
 let db;
 let graphqlFetch;
 
 describe('Cart Checkout Flow', () => {
   beforeAll(async () => {
-    [db, connection] = await setupDatabase();
+    [db] = await setupDatabase();
     graphqlFetch = await createLoggedInGraphqlFetch();
-  });
-
-  afterAll(async () => {
-    await connection.close();
   });
 
   describe('Mutation.createCart', () => {
@@ -117,7 +111,6 @@ describe('Cart Checkout Flow', () => {
                 emailAddress
                 telNumber
               }
-              meta
             }
           }
         `,
@@ -136,9 +129,6 @@ describe('Cart Checkout Flow', () => {
         contact: {
           emailAddress: 'hello@unchained.shop',
           telNumber: '+41999999999',
-        },
-        meta: {
-          hi: 'there',
         },
       });
     });

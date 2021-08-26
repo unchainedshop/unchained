@@ -15,7 +15,7 @@ Non-hackable software (like SaaS) use the technique of "customizing", meaning th
 
 **Headless / API-first**
 
-User interfaces (like Web Shop Storefronts) rot at a much higher speed as the underlying processes and core systems. User interfaces change at a rapid speed: Technologies are born and die only a few years later, devices like Smartwatches pop up, screen sizes vary. We think it's exxtremely important to have an e-commerce system that is going to stay for the long run like an ERP does, only then it's investable. By completely decoupling the Unchained Engine from any web shop user interface, it's usable in very flexible ways. But of course there are also [cons](https://www.semrush.com/blog/going-headless-ecommerce-store/) to that approach.
+User interfaces (like Web Shop Storefronts) rot at a much higher speed as the underlying processes and core systems. User interfaces change at a rapid speed: Technologies are born and die only a few years later, devices like Smartwatches pop up, screen sizes vary. We think it's extremely important to have an e-commerce system that is going to stay for the long run like an ERP does, only then it's investable. By completely decoupling the Unchained Engine from any web shop user interface, it's usable in very flexible ways. But of course there are also [cons](https://www.semrush.com/blog/going-headless-ecommerce-store/) to that approach.
 
 ## Layered Approach
 
@@ -41,17 +41,17 @@ Unchained Engine is loaded as a framework into a common Node.js project. Current
 
 You don't need to implement your own platform layer if you just want to extend the GraphQL Schema, add new job types or configure core-modules. For these cases, [configuration options](../config/booting) exist.
 
-**Service Gateway** composes functions of multiple modules together to enable sophisticated workflows like a checkout where many different modules have to play together. This layer does not exist yet as the modules currently just interdepend each other.
+**Service Gateway** composes functions of multiple modules together to enable sophisticated workflows like a checkout where many different modules have to play together. This layer does not exist yet as the modules currently just interdependent with each other.
 
 **Core Modules** are thematically split up packages that contain business logic and database abstraction to allow a developer to influence the way the modules behave. You as a developer can change the way a module behaves by configuration and writing plugins.
 
 ## API Design Principles:
 
-1. Unchained is stateless and doesn‘t know browser sessions. All data is beeing held in MongoDB (persistent data, transactional data) or Redis (caching, Pub/Sub).
+1. Unchained is stateless and doesn‘t know browser sessions. All data is being held in MongoDB (persistent data, transactional data) or Redis (caching, Pub/Sub).
 2. Non-logged in users can only read certain data, but not mutate anything. For cases where you need an anonymous user (like letting a client add stuff to cart and checkout without registration) you can use the loginAsGuest mutation that creates a temporary user.
-3. All business logic should stay on the server-side, that way your E-Commerce project stays truly omni-channel and domain logic in the client is reduced to an absolut minimum.
+3. All business logic should stay on the server-side, that way your E-Commerce project stays truly omni-channel and domain logic in the client is reduced to an absolute minimum.
 
 Some consequence of these design decisions:
 
-1. In Unchained, carts are defined as „open orders“ and are stored server side. A user can add something to a cart on one device and then checkout on another. Aftert checkout, the cart becomes an immutable order.
+1. In Unchained, carts are defined as „open orders“ and are stored server side. A user can add something to a cart on one device and then checkout on another. After checkout, the cart becomes an immutable order.
 2. Anonymous users can become real users without loosing order history or bookmarks done as anonymous user. Carts even get merged together if somebody starts anonymously and decides to login during the process of buying a good.

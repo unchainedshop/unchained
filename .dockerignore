@@ -7,7 +7,7 @@ node_modules
 codeship.aes
 dockercfg
 
-packages/*/.npm/package/node_modules
+packages/*/.npm
 
 examples/controlpanel/.git
 examples/controlpanel/.next
@@ -21,3 +21,10 @@ examples/minimal/.build
 examples/minimal/.tmp
 examples/minimal/node_modules
 examples/minimal/.eslintcache
+
+examples/boilerplate/.git
+examples/boilerplate/.meteor/local
+examples/boilerplate/.build
+examples/boilerplate/.tmp
+examples/boilerplate/node_modules
+examples/boilerplate/.eslintcache

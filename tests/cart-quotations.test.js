@@ -3,17 +3,12 @@ import { SimpleOrder } from './seeds/orders';
 import { USER_TOKEN } from './seeds/users';
 import { ProposedQuotation } from './seeds/quotations';
 
-let connection;
 let graphqlFetch;
 
 describe('Cart: Quotations', () => {
   beforeAll(async () => {
-    [, connection] = await setupDatabase();
+    await setupDatabase();
     graphqlFetch = await createLoggedInGraphqlFetch(USER_TOKEN);
-  });
-
-  afterAll(async () => {
-    await connection.close();
   });
 
   describe('Mutation.addCartQuotation', () => {
@@ -37,10 +32,12 @@ describe('Cart: Quotations', () => {
                 _id
               }
               unitPrice {
+                _id
                 amount
                 currency
               }
               total {
+                _id
                 amount
                 currency
               }

@@ -3,7 +3,8 @@ import initCore from 'meteor/unchained:core';
 import interceptEmails from './intercept-emails';
 import setupAccounts from './setup-accounts';
 import setupWorkqueue, { workerTypeDefs } from './setup-workqueue';
-import setupMigrations from './setup-migrations';
+import migrationRepository from './migrations/migrationRepository';
+import runMigrations from './migrations/runMigrations';
 import setupTemplates, { MessageTypes } from './setup-templates';
 import './worker/bulk-import';
 import setupCarts from './setup-carts';
@@ -34,16 +35,18 @@ export const startPlatform = async ({ modules, typeDefs, ...options } = {}) => {
   const workQueueIsEnabled = isWorkQueueEnabled(options);
   const emailInterceptionIsEnabled = isEmailInterceptionEnabled(options);
 
-  if (workQueueIsEnabled) {
-    await setupMigrations();
-  }
   const unchained = await initCore({
     modules,
     bulkImporter: {
       BulkImportPayloads,
     },
+    migrationRepository,
     options,
   });
+
+  if (workQueueIsEnabled) {
+    await runMigrations(migrationRepository);
+  }
 
   setupAccounts(options);
   setupTemplates(options);

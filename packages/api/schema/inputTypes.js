@@ -15,6 +15,11 @@ export default [
       algorithm: String!
     }
 
+    input ProductReviewSortOptionInput {
+      key: String!
+      value: SortDirection!
+    }
+
     input UserProfileInput {
       displayName: String
       birthday: Date
@@ -256,17 +261,17 @@ export default [
       quantity: Int!
     }
 
-    input SubscriptionDeliveryInput {
+    input EnrollmentDeliveryInput {
       deliveryProviderId: ID!
       meta: JSON
     }
 
-    input SubscriptionPaymentInput {
+    input EnrollmentPaymentInput {
       paymentProviderId: ID!
       meta: JSON
     }
 
-    input SubscriptionPlanInput {
+    input EnrollmentPlanInput {
       productId: ID!
       quantity: Int = 1
       configuration: [ProductConfigurationParameterInput!]

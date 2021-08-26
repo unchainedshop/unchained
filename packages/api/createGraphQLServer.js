@@ -1,11 +1,21 @@
 import { ApolloServer, ApolloError } from 'apollo-server-express';
+import { processRequest } from 'graphql-upload';
 import { WebApp } from 'meteor/webapp';
 import { log } from 'meteor/unchained:core-logger';
-
+import getContext, { withContext } from 'meteor/unchained:utils/context';
 import typeDefs from './schema';
 import resolvers from './resolvers';
 
 const { APOLLO_ENGINE_KEY } = process.env;
+
+const handleUploads = (options) => async (req, res, next) => {
+  const contentType = req.headers['content-type'];
+  const isUpload = contentType && contentType.startsWith('multipart/form-data');
+  if (isUpload) {
+    req.body = await processRequest(req, res, options);
+  }
+  next();
+};
 
 const logGraphQLServerError = (error) => {
   try {
@@ -39,12 +49,15 @@ export default (options) => {
   const server = new ApolloServer({
     typeDefs: [...typeDefs, ...additionalTypeDefs],
     resolvers: [resolvers, ...additionalResolvers],
-    context,
+    context: async () => {
+      return getContext();
+    },
+    uploads: false,
     formatError: (error) => {
       logGraphQLServerError(error);
       const {
         message,
-        extensions: { exception, code, ...extensions }, // removes exception
+        extensions: { exception, code, ...extensions }, // eslint-disable-line
       } = error;
       return new ApolloError(message, code, {
         code,
@@ -81,8 +94,7 @@ export default (options) => {
         }
       : corsOrigins;
 
-  server.applyMiddleware({
-    app: WebApp.connectHandlers,
+  const middleware = server.getMiddleware({
     path: '/graphql',
     cors: !originFn
       ? undefined
@@ -95,11 +107,9 @@ export default (options) => {
     },
   });
 
-  WebApp.connectHandlers.use('/graphql', (req, res) => {
-    if (req.method === 'GET') {
-      res.end();
-    }
-  });
-
+  WebApp.connectHandlers.use(
+    handleUploads({ maxFileSize: 10000000, maxFiles: 10 })
+  );
+  WebApp.connectHandlers.use(withContext(context)(middleware));
   return server;
 };

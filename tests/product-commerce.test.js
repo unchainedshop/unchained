@@ -6,17 +6,12 @@ import {
 import { ADMIN_TOKEN } from './seeds/users';
 import { SimpleProduct } from './seeds/products';
 
-let connection;
 let graphqlFetch;
 
 describe('ProductsCommerce', () => {
   beforeAll(async () => {
-    [, connection] = await setupDatabase();
+    await setupDatabase();
     graphqlFetch = await createLoggedInGraphqlFetch(ADMIN_TOKEN);
-  });
-
-  afterAll(async () => {
-    await connection.close();
   });
 
   describe('mutation.updateProductCommerce for admin user should ', () => {
@@ -44,7 +39,6 @@ describe('ProductsCommerce', () => {
               reviews {
                 _id
               }
-              meta
               assortmentPaths {
                 links {
                   link {

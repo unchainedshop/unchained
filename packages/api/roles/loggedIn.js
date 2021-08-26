@@ -7,7 +7,7 @@ import {
 } from 'meteor/unchained:core-orders';
 import { ProductReviews } from 'meteor/unchained:core-products';
 import { Quotations } from 'meteor/unchained:core-quotations';
-import { Subscriptions } from 'meteor/unchained:core-subscriptions';
+import { Enrollments } from 'meteor/unchained:core-enrollments';
 import { PaymentCredentials } from 'meteor/unchained:core-payment';
 import { Promise } from 'meteor/promise';
 
@@ -55,17 +55,17 @@ export default (role, actions) => {
     return true;
   };
 
-  const isOwnedSubscription = (root, { subscriptionId }, { userId }) => {
-    const subscription = Subscriptions.findSubscription(
-      { subscriptionId },
+  const isOwnedEnrollment = (root, { enrollmentId }, { userId }) => {
+    const enrollment = Enrollments.findEnrollment(
+      { enrollmentId },
       {
         fields: {
           userId: true,
         },
       }
     );
-    if (!subscription) return true;
-    return subscription.userId === userId;
+    if (!enrollment) return true;
+    return enrollment.userId === userId;
   };
 
   const isOwnedOrderPayment = (root, { orderPaymentId }, { userId }) => {
@@ -187,7 +187,7 @@ export default (role, actions) => {
   role.allow(actions.viewUserRoles, isMyself);
   role.allow(actions.viewUserOrders, isMyself);
   role.allow(actions.viewUserQuotations, isMyself);
-  role.allow(actions.viewUserSubscriptions, isMyself);
+  role.allow(actions.viewUserEnrollments, isMyself);
   role.allow(actions.viewUserPrivateInfos, isMyself);
   role.allow(actions.updateUser, isMyself);
   role.allow(actions.sendEmail, isOwnedEmailAddress);
@@ -200,9 +200,9 @@ export default (role, actions) => {
   role.allow(actions.checkoutCart, isOwnedOrderOrCart);
   role.allow(actions.updateCart, isOwnedOrderOrCart);
   role.allow(actions.createCart, () => true);
-  role.allow(actions.viewSubscription, isOwnedSubscription);
-  role.allow(actions.updateSubscription, isOwnedSubscription);
-  role.allow(actions.createSubscription, () => true);
+  role.allow(actions.viewEnrollment, isOwnedEnrollment);
+  role.allow(actions.updateEnrollment, isOwnedEnrollment);
+  role.allow(actions.createEnrollment, () => true);
   role.allow(actions.reviewProduct, () => true);
   role.allow(actions.updateProductReview, isOwnedProductReview);
   role.allow(actions.requestQuotation, () => true);

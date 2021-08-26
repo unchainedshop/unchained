@@ -2,19 +2,14 @@ import { setupDatabase, createLoggedInGraphqlFetch } from './helpers';
 import { SimpleOrder, DiscountedDiscount } from './seeds/orders';
 import { USER_TOKEN, ADMIN_TOKEN } from './seeds/users';
 
-let connection;
 let graphqlFetch;
 let adminGraphqlFetch;
 
 describe('Cart: Discounts', () => {
   beforeAll(async () => {
-    [, connection] = await setupDatabase();
+    await setupDatabase();
     graphqlFetch = await createLoggedInGraphqlFetch(USER_TOKEN);
     adminGraphqlFetch = await createLoggedInGraphqlFetch(ADMIN_TOKEN);
-  });
-
-  afterAll(async () => {
-    await connection.close();
   });
 
   describe('Mutation.addCartDiscount', () => {
@@ -32,12 +27,14 @@ describe('Cart: Discounts', () => {
                   }
                 }
                 total {
+                  _id
                   amount
                 }
               }
               _id
               order {
                 total(category: DISCOUNTS) {
+                  _id
                   amount
                 }
                 discounts {
@@ -90,6 +87,7 @@ describe('Cart: Discounts', () => {
                   }
                 }
                 total {
+                  _id
                   amount
                 }
               }

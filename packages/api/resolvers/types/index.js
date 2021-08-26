@@ -47,11 +47,11 @@ import LoadedFilter from './loaded-filter';
 import LoadedFilterOption from './loaded-filter-option';
 import Quotation from './quotation';
 import Price from './price';
-import SubscriptionPayment from './subscription-payment';
-import SubscriptionDelivery from './subscription-delivery';
-import SubscriptionPeriod from './subscription-period';
-import SubscriptionPlan from './subscription-plan';
-import Subscription from './subscription';
+import EnrollmentPayment from './enrollment-payment';
+import EnrollmentDelivery from './enrollment-delivery';
+import EnrollmentPeriod from './enrollment-period';
+import EnrollmentPlan from './enrollment-plan';
+import Enrollment from './enrollment';
 import Bookmark from './bookmark';
 import ProductCatalogPrice from './product-catalog-price';
 import AssortmentMedia from './assortment-media';
@@ -109,9 +109,9 @@ export default {
   LoadedFilterOption,
   Quotation,
   Price,
-  SubscriptionPayment,
-  SubscriptionDelivery,
-  SubscriptionPeriod,
-  SubscriptionPlan,
-  Subscription,
+  EnrollmentPayment,
+  EnrollmentDelivery,
+  EnrollmentPeriod,
+  EnrollmentPlan,
+  Enrollment,
 };

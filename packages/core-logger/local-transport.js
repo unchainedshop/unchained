@@ -8,6 +8,7 @@ class LocalTransport extends Transport {
       this.emit('logged', info);
     });
 
+    // eslint-disable-next-line
     const { level: formattedLevel, message, ...meta } = info;
 
     const level = info[Symbol.for('level')];

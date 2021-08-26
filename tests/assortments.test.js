@@ -6,21 +6,16 @@ import {
 import { ADMIN_TOKEN, USER_TOKEN } from './seeds/users';
 import { SimpleAssortment } from './seeds/assortments';
 
-let connection;
 let graphqlFetch;
 let graphqlFetchAsAnonymousUser;
 let graphqlFetchAsNormalUser;
 
 describe('Assortments', () => {
   beforeAll(async () => {
-    [, connection] = await setupDatabase();
+    await setupDatabase();
     graphqlFetch = await createLoggedInGraphqlFetch(ADMIN_TOKEN);
     graphqlFetchAsNormalUser = await createLoggedInGraphqlFetch(USER_TOKEN);
     graphqlFetchAsAnonymousUser = await createAnonymousGraphqlFetch();
-  });
-
-  afterAll(async () => {
-    await connection.close();
   });
 
   describe('Query.assortments for admin user should', () => {
@@ -64,7 +59,6 @@ describe('Assortments', () => {
               isRoot
               sequence
               tags
-              meta
               texts {
                 _id
               }
@@ -319,7 +313,6 @@ describe('Assortments', () => {
               isRoot
               sequence
               tags
-              meta
               texts {
                 _id
               }
@@ -563,7 +556,6 @@ describe('Assortments', () => {
               isRoot
               sequence
               tags
-              meta
               texts {
                 _id
                 locale
@@ -575,7 +567,6 @@ describe('Assortments', () => {
                 _id
                 sortKey
                 tags
-                meta
                 assortment {
                   _id
                 }
@@ -664,7 +655,6 @@ describe('Assortments', () => {
               isRoot
               sequence
               tags
-              meta
               texts {
                 _id
                 locale
@@ -676,7 +666,6 @@ describe('Assortments', () => {
                 _id
                 sortKey
                 tags
-                meta
                 assortment {
                   _id
                 }
@@ -821,7 +810,6 @@ describe('Assortments', () => {
               isRoot
               sequence
               tags
-              meta
               texts {
                 _id
                 locale
@@ -833,7 +821,6 @@ describe('Assortments', () => {
                 _id
                 sortKey
                 tags
-                meta
                 assortment {
                   _id
                 }
@@ -935,7 +922,6 @@ describe('Assortments', () => {
               isRoot
               sequence
               tags
-              meta
               texts {
                 _id
                 locale
@@ -947,7 +933,6 @@ describe('Assortments', () => {
                 _id
                 sortKey
                 tags
-                meta
                 assortment {
                   _id
                 }

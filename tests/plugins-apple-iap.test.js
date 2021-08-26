@@ -15,15 +15,14 @@ import {
 import initialBuy from './seeds/apple-iap-initial-buy';
 import didRecover from './seeds/apple-iap-did-recover';
 import didChangeRenewalStatus from './seeds/apple-iap-did-change-renewal-status';
-import { AllSubscriptionIds } from './seeds/subscriptions';
+import { AllEnrollmentIds } from './seeds/enrollments';
 
-let connection;
 let db;
 let graphqlFetch;
 
 describe('Plugins: Apple IAP Payments', () => {
   beforeAll(async () => {
-    [db, connection] = await setupDatabase();
+    [db] = await setupDatabase();
     graphqlFetch = await createLoggedInGraphqlFetch(USER_TOKEN);
 
     await db.collection('products').findOrInsertOne({
@@ -89,10 +88,6 @@ describe('Plugins: Apple IAP Payments', () => {
       orderNumber: 'iap2',
       paymentId: 'iap-payment2',
     });
-  });
-
-  afterAll(async () => {
-    await connection.close();
   });
 
   describe('Mutation.registerPaymentCredentials (Apple IAP)', () => {
@@ -315,15 +310,15 @@ describe('Plugins: Apple IAP Payments', () => {
         body: JSON.stringify(didRecover),
       });
       expect(result.status).toBe(200);
-      const subscription = await db.collection('subscriptions').findOne({
+      const enrollment = await db.collection('enrollments').findOne({
         _id: {
-          $nin: AllSubscriptionIds,
+          $nin: AllEnrollmentIds,
         },
       });
-      expect(subscription?.status).toBe('ACTIVE');
+      expect(enrollment?.status).toBe('ACTIVE');
     });
 
-    it('notification_type = DID_CHANGE_RENEWAL_STATUS should terminate subscription', async () => {
+    it('notification_type = DID_CHANGE_RENEWAL_STATUS should terminate enrollment', async () => {
       const result = await fetch('http://localhost:3000/graphql/apple-iap', {
         method: 'POST',
         headers: {
@@ -332,12 +327,12 @@ describe('Plugins: Apple IAP Payments', () => {
         body: JSON.stringify(didChangeRenewalStatus),
       });
       expect(result.status).toBe(200);
-      const subscription = await db.collection('subscriptions').findOne({
+      const enrollment = await db.collection('enrollments').findOne({
         _id: {
-          $nin: AllSubscriptionIds,
+          $nin: AllEnrollmentIds,
         },
       });
-      expect(subscription?.status).toBe('TERMINATED');
+      expect(enrollment?.status).toBe('TERMINATED');
     });
   });
 });

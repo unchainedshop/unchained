@@ -1,7 +1,8 @@
 ---
 title: Advanced deployment settings for storefront web-app to Vercel
-sidebar_title: Vercel deployment of storefront 
+sidebar_title: Vercel deployment of storefront
 ---
+
 Note there are other environment variables you can modify to suit your need while developing locally, below are all the environment variables you can customize with their default values.
 
 ```
@@ -53,7 +54,7 @@ GRAPHQL_ENDPOINT=https://domain-of-your-frontend/api/graphql
 
 Get to know the concepts
 
-- [Carts](concepts/carts)
+- [Carts](../concepts/carts)
 
 4. set the required `env` production environment
 
@@ -69,4 +70,4 @@ GRAPHQL_ENDPOINT=https://domain-of-your-frontend/api/graphql
 
 Get to know the concepts
 
-- [Carts](concepts/carts)
+- [Carts](../concepts/carts)

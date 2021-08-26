@@ -107,7 +107,7 @@ export default compose(
       });
       menuItems.push({
         name: 'ProductPlan',
-        description: 'Subscription',
+        description: 'Enrollment',
         isActive: router.query.tab === 'ProductPlan',
       });
     }

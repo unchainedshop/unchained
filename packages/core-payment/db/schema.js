@@ -1,5 +1,4 @@
 import { Schemas } from 'meteor/unchained:utils';
-import { Migrations } from 'meteor/percolate:migrations';
 import SimpleSchema from 'simpl-schema';
 
 import { PaymentProviders, PaymentCredentials } from './collections';
@@ -40,76 +39,6 @@ PaymentCredentials.attachSchema(
     { requiredByDefault: false }
   )
 );
-
-Migrations.add({
-  version: 20181128,
-  name: 'Rename pament provider keys',
-  up() {
-    PaymentProviders.update(
-      { adapterKey: 'ch.dagobert.invoice' },
-      {
-        $set: { adapterKey: 'shop.unchained.invoice' },
-      },
-      { multi: true }
-    );
-  },
-  down() {
-    PaymentProviders.update(
-      { adapterKey: 'shop.unchained.invoice' },
-      {
-        $set: { adapterKey: 'ch.dagobert.invoice' },
-      },
-      { multi: true }
-    );
-  },
-});
-
-Migrations.add({
-  version: 20200728.4,
-  name: 'Add default authorId to payment',
-  up() {
-    PaymentProviders.find()
-      .fetch()
-      .forEach(({ _id }) => {
-        PaymentProviders.update(
-          { _id },
-          {
-            $set: {
-              authorId: 'root',
-            },
-          }
-        );
-      });
-  },
-  down() {
-    PaymentProviders.find()
-      .fetch()
-      .forEach(({ _id }) => {
-        PaymentProviders.update(
-          { _id },
-          {
-            $unset: {
-              authorId: 1,
-            },
-          }
-        );
-      });
-  },
-});
-
-Migrations.add({
-  version: 20200915.3,
-  name: 'drop PaymentProvider & PaymentCredentials related indexes',
-  up() {
-    PaymentProviders.rawCollection()
-      .dropIndexes()
-      .catch(() => {});
-    PaymentCredentials.rawCollection()
-      .dropIndexes()
-      .catch(() => {});
-  },
-  down() {},
-});
 
 export default () => {
   PaymentProviders.rawCollection().createIndex({ type: 1 });

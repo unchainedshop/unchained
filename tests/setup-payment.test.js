@@ -2,16 +2,11 @@ import { setupDatabase, createLoggedInGraphqlFetch } from './helpers';
 import { SimplePaymentProvider } from './seeds/payments';
 
 describe('setup payment providers', () => {
-  let connection;
   let graphqlFetch;
 
   beforeAll(async () => {
-    [, connection] = await setupDatabase();
+    await setupDatabase();
     graphqlFetch = await createLoggedInGraphqlFetch();
-  });
-
-  afterAll(async () => {
-    await connection.close();
   });
 
   describe('Mutation.createPaymentProvider', () => {

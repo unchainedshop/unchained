@@ -1,5 +1,4 @@
 import { Schemas } from 'meteor/unchained:utils';
-import { Migrations } from 'meteor/percolate:migrations';
 import SimpleSchema from 'simpl-schema';
 
 import { DeliveryProviders } from './collections';
@@ -25,73 +24,6 @@ DeliveryProviders.attachSchema(
     { requiredByDefault: false }
   )
 );
-
-Migrations.add({
-  version: 20181128,
-  name: 'Rename delivery provider keys',
-  up() {
-    DeliveryProviders.update(
-      { adapterKey: 'ch.dagobert.post' },
-      {
-        $set: { adapterKey: 'shop.unchained.post' },
-      },
-      { multi: true }
-    );
-  },
-  down() {
-    DeliveryProviders.update(
-      { adapterKey: 'shop.unchained.post' },
-      {
-        $set: { adapterKey: 'ch.dagobert.post' },
-      },
-      { multi: true }
-    );
-  },
-});
-
-Migrations.add({
-  version: 20200728.2,
-  name: 'Add default authorId to delivery',
-  up() {
-    DeliveryProviders.find()
-      .fetch()
-      .forEach(({ _id }) => {
-        DeliveryProviders.update(
-          { _id },
-          {
-            $set: {
-              authorId: 'root',
-            },
-          }
-        );
-      });
-  },
-  down() {
-    DeliveryProviders.find()
-      .fetch()
-      .forEach(({ _id }) => {
-        DeliveryProviders.update(
-          { _id },
-          {
-            $unset: {
-              authorId: 1,
-            },
-          }
-        );
-      });
-  },
-});
-
-Migrations.add({
-  version: 20200914.4,
-  name: 'drop deliveryProviders related indexes',
-  up() {
-    DeliveryProviders.rawCollection()
-      .dropIndexes()
-      .catch(() => {});
-  },
-  down() {},
-});
 
 export default () => {
   DeliveryProviders.rawCollection().createIndex({ type: 1 });

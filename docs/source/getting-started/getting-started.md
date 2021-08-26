@@ -303,5 +303,5 @@ If everything went well, the e-mail debugs window will pop up presenting you wit
 
 The exact configuration will differ from this template, as we encourage you to use a reverse proxy like traefik or Nginx for SSL termination and a replicated MongoDB with one daemon running in the same datacenter like an unchained engine (low latency).
 
-for more mutation and query options available refere to the [GraphQL API Reference](https://docs.unchained.shop/api)
+for more mutation and query options available refer to the [GraphQL API Reference](https://docs.unchained.shop/api)
 

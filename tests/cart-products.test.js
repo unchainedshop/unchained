@@ -2,17 +2,12 @@ import { setupDatabase, createLoggedInGraphqlFetch } from './helpers';
 import { SimpleProduct } from './seeds/products';
 import { SimplePosition } from './seeds/orders';
 
-let connection;
 let graphqlFetch;
 
 describe('Cart: Product Items', () => {
   beforeAll(async () => {
-    [, connection] = await setupDatabase();
+    await setupDatabase();
     graphqlFetch = await createLoggedInGraphqlFetch();
-  });
-
-  afterAll(async () => {
-    await connection.close();
   });
 
   describe('Mutation.addCartProduct', () => {
@@ -32,15 +27,22 @@ describe('Cart: Product Items', () => {
               _id
               quantity
               total {
+                _id
                 currency
                 amount
               }
               taxes: total(category: TAX) {
+                _id
                 currency
                 amount
               }
               product {
                 _id
+              }
+              unitPrice {
+                _id
+                currency
+                amount
               }
               order {
                 _id

@@ -2,18 +2,13 @@ import { setupDatabase, createLoggedInGraphqlFetch } from './helpers';
 import { UnpublishedProduct, SimpleProduct } from './seeds/products';
 import { ADMIN_TOKEN, User, Admin } from './seeds/users';
 
-let connection;
 let db;
 let graphqlFetch;
 
 describe('User Bookmarks', () => {
   beforeAll(async () => {
-    [db, connection] = await setupDatabase();
+    [db] = await setupDatabase();
     graphqlFetch = await createLoggedInGraphqlFetch(ADMIN_TOKEN);
-  });
-
-  afterAll(async () => {
-    await connection.close();
   });
 
   describe('Mutation.createBookmark', () => {

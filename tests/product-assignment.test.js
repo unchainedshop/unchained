@@ -10,20 +10,15 @@ import {
   PlanProduct,
 } from './seeds/products';
 
-let connection;
 let graphqlFetchAsAdmin;
 let graphqlFetchAsNormalUser;
 let graphqlAnonymousFetch;
 describe('ProductAssignment', () => {
   beforeAll(async () => {
-    [, connection] = await setupDatabase();
+    await setupDatabase();
     graphqlFetchAsAdmin = await createLoggedInGraphqlFetch(ADMIN_TOKEN);
     graphqlFetchAsNormalUser = await createLoggedInGraphqlFetch(USER_TOKEN);
     graphqlAnonymousFetch = await createAnonymousGraphqlFetch();
-  });
-
-  afterAll(async () => {
-    await connection.close();
   });
 
   describe('mutation.addProductAssignment for admin user should', () => {
@@ -57,8 +52,6 @@ describe('ProductAssignment', () => {
                 reviews {
                   _id
                 }
-                meta
-
                 siblings {
                   _id
                 }
@@ -372,7 +365,6 @@ describe('ProductAssignment', () => {
                 reviews {
                   _id
                 }
-                meta
                 assortmentPaths {
                   links {
                     link {
