@@ -4,6 +4,7 @@ import { Locale } from 'locale';
 import { emit } from 'meteor/unchained:core-events';
 import {
   createSignedPutURL,
+  removeObject,
   MediaObjects,
 } from 'meteor/unchained:core-files-next';
 import { AssortmentMedia, AssortmentMediaTexts } from './collections';
@@ -12,7 +13,9 @@ AssortmentMedia.findAssortmentMedia = ({ assortmentMediaId }) => {
   return AssortmentMedia.findOne({ _id: assortmentMediaId });
 };
 
-AssortmentMedia.removeAssortmentMedia = ({ assortmentMediaId }) => {
+AssortmentMedia.removeAssortmentMedia = async ({ assortmentMediaId }) => {
+  const media = AssortmentMedia.findOne({ _id: assortmentMediaId });
+  await removeObject(media.mediaId);
   const result = AssortmentMedia.remove({ _id: assortmentMediaId });
   emit('ASSORTMENT_REMOVE_MEDIA', { assortmentMediaId });
   return result;

@@ -31,18 +31,19 @@ useMiddlewareWithCurrentContext('/graphql/minio/', async (req, res) => {
       const currentId = object.key.split('.')[0];
 
       const uploadedImageUrl = `${responseElements['x-minio-origin-endpoint']}/${Key}`;
-      console.log(uploadedImageUrl);
+
       MediaObjects.update(
         { _id: currentId },
         {
           $set: {
+            url: uploadedImageUrl,
             size,
             type,
             updated: new Date(),
           },
         }
       );
-      console.log(MediaObjects.findOne({ _id: currentId }));
+
       /* console.log('s3.object', object);
       console.log('bucket', bucket);
       console.log('userIdentity', userIdentity);

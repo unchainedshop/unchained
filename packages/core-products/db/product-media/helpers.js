@@ -5,6 +5,7 @@ import { emit } from 'meteor/unchained:core-events';
 import {
   createSignedPutURL,
   MediaObjects,
+  removeObject,
 } from 'meteor/unchained:core-files-next';
 
 import { ProductMedia, ProductMediaTexts } from './collections';

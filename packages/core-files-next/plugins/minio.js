@@ -1,6 +1,6 @@
 import Minio from 'minio';
 import crypto from 'crypto';
-import { MediaObjects } from './db';
+import { MediaObjects } from '../db';
 
 const {
   MINIO_ACCESS_KEY,
@@ -46,12 +46,10 @@ export const createSignedPutURL = async (
     `${directoryName}/${hashedName}`,
     PUT_URL_EXPIRY
   );
-  const { origin, pathname } = new URL(putURL);
 
   const _id = MediaObjects.insert({
     _id: encodeURIComponent(`${directoryName}/${hash}`),
     putURL,
-    url: origin.concat(pathname),
     name: fileName,
     expires: PUT_URL_EXPIRY,
     created: new Date(),
@@ -62,6 +60,17 @@ export const createSignedPutURL = async (
     putURL,
     expires: PUT_URL_EXPIRY,
   };
+};
+
+export const removeObject = async (id, options = {}) => {
+  const object = MediaObjects.findOne({ _id: id });
+  MediaObjects.remove({ _id: id });
+  await client.removeObject(
+    MINIO_BUCKET_NAME,
+    decodeURIComponent(id).concat(
+      object.url.substr(object.url.lastIndexOf('.'))
+    )
+  );
 };
 
 export default client;
