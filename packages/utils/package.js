@@ -8,6 +8,7 @@ Package.describe({
 
 Npm.depends({
   'lru-cache': '6.0.0',
+  hashids: '2.2.8',
 });
 
 Package.onUse((api) => {

@@ -1,4 +1,3 @@
-import Hashids from 'hashids/cjs';
 import 'meteor/dburles:collection-helpers';
 import { Promise } from 'meteor/promise';
 import { objectInvert } from 'meteor/unchained:utils';
@@ -771,19 +770,15 @@ Orders.updateContext = ({ context, orderId }) => {
   return order;
 };
 
-Orders.getUniqueOrderNumber = () => {
+Orders.newOrderNumber = (order) => {
   let orderNumber = null;
-  const hashids = new Hashids(
-    'unchained',
-    6,
-    'ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890'
-  );
+  let i = 0;
   while (!orderNumber) {
-    const randomNumber = Math.floor(Math.random() * (999999999 - 1)) + 1;
-    const newHashID = hashids.encode(randomNumber);
+    const newHashID = settings.orderNumberHashFn(order, i);
     if (Orders.find({ orderNumber: newHashID }, { limit: 1 }).count() === 0) {
       orderNumber = newHashID;
     }
+    i += 1;
   }
   return orderNumber;
 };
@@ -820,7 +815,7 @@ Orders.updateStatus = ({ status, orderId, info = '' }) => {
       }
       if (!order.orderNumber) {
         // Order Numbers can be set by the user
-        modifier.$set.orderNumber = Orders.getUniqueOrderNumber();
+        modifier.$set.orderNumber = Orders.newOrderNumber(order);
       }
       break;
     default:

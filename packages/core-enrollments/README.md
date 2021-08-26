@@ -2,7 +2,4 @@
 
 This package contains business logic and database abstraction for enrollments in Unchained.
 
-## Settings
-
-autoSchedulingSchedule: null
-autoSchedulingInput: function to retrieve input
+Find documentation of available [settings](https://docs.unchained.shop/config/enrollments/) here

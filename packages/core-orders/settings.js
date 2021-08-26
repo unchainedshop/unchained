@@ -1,7 +1,14 @@
+import { generateRandomHash } from 'meteor/unchained:utils';
+
 const settings = {
   ensureUserHasCart: null,
-  load({ ensureUserHasCart = false } = {}) {
+  orderNumberHashFn: null,
+  load({
+    ensureUserHasCart = false,
+    orderNumberHashFn = generateRandomHash,
+  } = {}) {
     this.ensureUserHasCart = ensureUserHasCart;
+    this.orderNumberHashFn = orderNumberHashFn;
   },
 };
 
