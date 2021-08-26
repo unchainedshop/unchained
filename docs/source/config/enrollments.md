@@ -3,14 +3,19 @@ title: 'Module: Enrollments'
 description: Configure the Enrollments Module
 ---
 
-Define the interval that the enrollment generator tries to generate new invoices, defaults:
+- autoSchedulingSchedule: `object` Interval that the enrollment generator tries to generate new invoices, default is `later.parse.text('every 59 minutes')`
+- autoSchedulingInput: `function` custom schedule input, default is an empty object
+- enrollmentNumberHashFn: `(enrollment: Enrollment, try: int) => string | number` function to retrieve a unique generated enrollmentNumber, default is a hashids based function that generates an alphanumeric uppercase string with length 6. If the number has already been taken, the function gets iteratively called with an increasing `try`
+
+Example custom configuration:
 
 ```
 const options = {
   modules: {
     enrollments: {
-      autoSchedulingSchedule: later.parse.text('every 59 minutes'),
-      autoSchedulingInput: {}
+      autoSchedulingSchedule: later.parse.text('every 7 days'),
+      autoSchedulingInput: { hey: "dude" },
+      enrollmentNumberHashFn: (enrollment, try) => (enrollment.sequence + 300000 + try)
     },
   }
 };

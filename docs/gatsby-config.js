@@ -53,6 +53,7 @@ module.exports = {
             'config/filters',
             'config/payment',
             'config/products',
+            'config/quotations',
             'config/pricing',
             'config/product-pricing',
             'config/email-template',
