@@ -5,16 +5,14 @@ import Dropzone from 'react-dropzone';
 import gql from 'graphql-tag';
 import { graphql } from '@apollo/client/react/hoc';
 import { SortableContainer, arrayMove } from 'react-sortable-hoc';
-
-import ProductMediaListItem from './ProductMediaListItem';
-
+import AssortmentMediaListItem from './AssortmentMediaListItem';
 import uploadToMinio from '../../lib/uploadToMinio';
 
-const ProductMediaListMinio = ({ items, onDrop, isEditingDisabled }) => (
+const AssortmentMediaListMinio = ({ items, onDrop, isEditingDisabled }) => (
   <Segment>
     <Item.Group divided>
       {items.map(({ _id, ...rest }, index) => (
-        <ProductMediaListItem
+        <AssortmentMediaListItem
           key={_id}
           index={index}
           _id={_id}
@@ -46,10 +44,9 @@ const ProductMediaListMinio = ({ items, onDrop, isEditingDisabled }) => (
 
 export default compose(
   graphql(gql`
-    query productMedia($productId: ID) {
-      product(productId: $productId) {
+    query assortmentMedia($assortmentId: ID) {
+      assortment(assortmentId: $assortmentId) {
         _id
-        status
         media {
           _id
           tags
@@ -70,8 +67,24 @@ export default compose(
   `),
   graphql(
     gql`
-      mutation prepareProductMedia($mediaName: String!) {
-        prepareProductMediaUpload(mediaName: $mediaName) {
+      mutation addAssortmentMedia($media: Upload!, $assortmentId: ID!) {
+        addAssortmentMedia(media: $media, assortmentId: $assortmentId) {
+          _id
+          tags
+        }
+      }
+    `,
+    {
+      name: 'addAssortmentMedia',
+      options: {
+        refetchQueries: ['assortmentMedia'],
+      },
+    }
+  ),
+  graphql(
+    gql`
+      mutation prepareAssortmentMedia($mediaName: String!) {
+        prepareAssortmentMediaUpload(mediaName: $mediaName) {
           _id
           putURL
           expires
@@ -79,7 +92,7 @@ export default compose(
       }
     `,
     {
-      name: 'prepareProductMedia',
+      name: 'prepareAssortmentMedia',
       options: {
         refetchQueries: [],
       },
@@ -87,10 +100,13 @@ export default compose(
   ),
   graphql(
     gql`
-      mutation addProductMediaLink($mediaUploadTicketId: ID!, $productId: ID!) {
-        addProductMediaLink(
+      mutation addAssortmentMediaLink(
+        $mediaUploadTicketId: ID!
+        $assortmentId: ID!
+      ) {
+        addAssortmentMediaLink(
           mediaUploadTicketId: $mediaUploadTicketId
-          productID: $productId
+          assortmentId: $assortmentId
         ) {
           _id
           tags
@@ -105,72 +121,75 @@ export default compose(
       }
     `,
     {
-      name: 'addProductMediaLink',
+      name: 'addAssortmentMediaLink',
       options: {
-        refetchQueries: ['productMedia'],
+        refetchQueries: ['assortmentMedia'],
       },
     }
   ),
+
   graphql(
     gql`
-      mutation reorderProductMedia($sortKeys: [ReorderProductMediaInput!]!) {
-        reorderProductMedia(sortKeys: $sortKeys) {
+      mutation reorderAssortmentMedia(
+        $sortKeys: [ReorderAssortmentMediaInput!]!
+      ) {
+        reorderAssortmentMedia(sortKeys: $sortKeys) {
           _id
           sortKey
         }
       }
     `,
     {
-      name: 'reorderProductMedia',
+      name: 'reorderAssortmentMedia',
       options: {
-        refetchQueries: ['productMedia'],
+        refetchQueries: ['assortmentMedia'],
       },
     }
   ),
-  mapProps(({ data: { product }, ...rest }) => ({
-    items: (product && product.media) || [],
-    isEditingDisabled: !product || product.status === 'DELETED',
+  mapProps(({ data: { assortment }, ...rest }) => ({
+    items: (assortment && assortment.media) || [],
+    isEditingDisabled: !assortment || assortment.status === 'DELETED',
     pressDelay: 200,
     ...rest,
   })),
   withHandlers({
     onSortEnd:
-      ({ items, reorderProductMedia }) =>
+      ({ items, reorderAssortmentMedia }) =>
       async ({ oldIndex, newIndex }) => {
         const sortKeys = arrayMove(items, oldIndex, newIndex).map(
           (item, sortKey) => ({
-            productMediaId: item._id,
+            assortmentMediaId: item._id,
             sortKey,
           })
         );
-        await reorderProductMedia({
+        await reorderAssortmentMedia({
           variables: {
             sortKeys,
           },
         });
       },
     onDrop:
-      ({ productId, prepareProductMedia, addProductMediaLink }) =>
+      ({ assortmentId, prepareAssortmentMedia, addAssortmentMediaLink }) =>
       async (files) => {
         const file = files[0];
         const {
-          data: { prepareProductMediaUpload },
-        } = await prepareProductMedia({
+          data: { prepareAssortmentMediaUpload },
+        } = await prepareAssortmentMedia({
           variables: {
             mediaName: file.name,
           },
         });
-        const { putURL, _id } = prepareProductMediaUpload;
+        const { putURL, _id } = prepareAssortmentMediaUpload;
         await uploadToMinio(file, putURL);
 
-        await addProductMediaLink({
+        await addAssortmentMediaLink({
           variables: {
             mediaUploadTicketId: _id,
-            productId,
+            assortmentId,
           },
         });
       },
   }),
   pure,
   SortableContainer
-)(ProductMediaListMinio);
+)(AssortmentMediaListMinio);

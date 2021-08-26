@@ -3,10 +3,10 @@ import { findLocalizedText } from 'meteor/unchained:utils';
 import { Locale } from 'locale';
 import { emit } from 'meteor/unchained:core-events';
 import {
-  AssortmentMedia,
-  AssortmentDocuments,
-  AssortmentMediaTexts,
-} from './collections';
+  createSignedPutURL,
+  MediaObjects,
+} from 'meteor/unchained:core-files-next';
+import { AssortmentMedia, AssortmentMediaTexts } from './collections';
 
 AssortmentMedia.findAssortmentMedia = ({ assortmentMediaId }) => {
   return AssortmentMedia.findOne({ _id: assortmentMediaId });
@@ -18,6 +18,15 @@ AssortmentMedia.removeAssortmentMedia = ({ assortmentMediaId }) => {
   return result;
 };
 
+AssortmentMedia.createSignedUploadURL = async (
+  originalFileName,
+  { userId, ...context }
+) => {
+  return createSignedPutURL('assortment-media', originalFileName, {
+    userId,
+    ...context,
+  });
+};
 AssortmentMedia.helpers({
   upsertLocalizedText(locale, fields) {
     AssortmentMediaTexts.upsert(
@@ -60,8 +69,7 @@ AssortmentMedia.helpers({
     return AssortmentMedia.getLocalizedTexts(this._id, parsedLocale);
   },
   file() {
-    const media = AssortmentDocuments.findOne({ _id: this.mediaId });
-    return media;
+    return MediaObjects.findOne({ _id: this.mediaId });
   },
 });
 

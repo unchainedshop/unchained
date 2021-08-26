@@ -68,8 +68,7 @@ ProductMedia.helpers({
     return ProductMedia.getLocalizedTexts(this._id, parsedLocale);
   },
   file() {
-    const media = MediaObjects.findOne({ _id: this.mediaId });
-    return media;
+    return MediaObjects.findOne({ _id: this.mediaId });
   },
 });
 

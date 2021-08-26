@@ -141,6 +141,8 @@ import reorderAssortmentMedia from './reorderAssortmentMedia';
 import removeAssortmentMedia from './removeAssortmentMedia';
 import updateAssortmentMediaTexts from './updateAssortmentMediaTexts';
 import prepareProductMediaUpload from './prepareProductMediaUpload';
+import prepareAssortmentMediaUpload from './prepareAssortmentMediaUpload';
+import addAssortmentMediaLink from './addAssortmentMediaLink';
 
 export default {
   logout,
@@ -304,6 +306,12 @@ export default {
 
   createAssortment: acl(actions.manageAssortments)(createAssortment),
   addAssortmentMedia: acl(actions.manageAssortments)(addAssortmentMedia),
+  prepareAssortmentMediaUpload: acl(actions.manageAssortments)(
+    prepareAssortmentMediaUpload
+  ),
+  addAssortmentMediaLink: acl(actions.manageAssortments)(
+    addAssortmentMediaLink
+  ),
   updateAssortment: acl(actions.manageAssortments)(updateAssortment),
   setBaseAssortment: acl(actions.manageAssortments)(setBaseAssortment),
   removeAssortment: acl(actions.manageAssortments)(removeAssortment),
