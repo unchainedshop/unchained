@@ -13,7 +13,7 @@ import roundedAmountFromOrder from './roundedAmountFromOrder';
 import createDatatransAPI from './api';
 import getPaths from './getPaths';
 
-import type { ResponseError, InitResponseSuccess } from './api/types';
+import type { ResponseError, InitResponseSuccess, ValidateResponseSuccess } from './api/types';
 
 const logger = createLogger('unchained:core-payment:datatrans2');
 
@@ -248,36 +248,25 @@ class Datatrans extends PaymentAdapter {
   }
 
   async validate(token) {
-    const result = await authorize({
-      endpoint: DATATRANS_API_ENDPOINT,
-      secret: DATATRANS_SECRET,
-      merchantId: this.getMerchantId(),
+    const { type, ...meta } = this.context.meta;
+    const result = await this.api.authorize({
       refno: `validate-${new Date().toLocaleString()}`,
       amount: 0,
-      aliasCC: token,
-      ...this.context.meta,
+      [type]: JSON.parse(token),
+      ...meta,
     });
     logger.info(`Datatrans Plugin: Validation Result`, result);
-    return (
-      result?.authorizationService?.body?.[0]?.transaction?.[0]?.response?.[0]
-        ?.status[0] === 'success'
-    );
+    return (result as ValidateResponseSuccess)?.transactionId;
   }
 
   async register(transactionResponse) {
     const {
-      aliasCC,
-      status,
-      uppTransactionId,
-      sign,
-      sign2,
-      expy,
-      expm,
-      pmethod,
-      currency,
-      refno,
-      maskedCC,
+      transactionId
     } = transactionResponse;
+
+    const info = await this.api.status({ transactionId });
+    console.log(info);
+    return null;
     const merchantId = this.getMerchantId();
     if (status === 'success') {
       const validSign = generateSignature({

@@ -262,7 +262,7 @@ export type AuthorizeRequestPayload = {
   amount: number;
   currency: string;
   refno: string;
-  refno2: string;
+  refno2?: string;
   autoSettle?: boolean;
   customer?: Customer;
   billing?: BillingAddress;
@@ -282,7 +282,7 @@ export type AuthorizeRequestPayload = {
   APL?: Record<string, unknown>;
   SWB?: Record<string, unknown>;
   airlineData?: Record<string, unknown>;
-  marketplace: Marketplace;
+  marketplace?: Marketplace;
 };
 
 export type AuthorizeResponseSuccess = {
