@@ -1,15 +1,19 @@
 ---
-title: "Module: Orders"
+title: 'Module: Orders'
 description: Configure the Orders Module
 ---
 
-Enable experimental function that tries to ensure that any user always has an open cart:
+- ensureUserHasCart: `boolean` if set to true, unchained will try to pre-generate a new cart when a user does not have one on various occasions, it's still not guaranteed that a user always has a cart. default is false
+- orderNumberHashFn: `(order: Order, try: int) => string | number` function to retrieve a unique generated orderNumber, default is a hashids based function that generates an alphanumeric uppercase string with length 6. If the number has already been taken, the function gets iteratively called with an increasing `try`
+
+Example custom configuration:
 
 ```
 const options = {
   modules: {
     orders: {
-      ensureUserHasCart: true
+      ensureUserHasCart: true,
+      orderNumberHashFn: (order, try) => (order.sequence + 100000 + try)
     },
   }
 };

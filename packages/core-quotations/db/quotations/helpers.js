@@ -1,4 +1,3 @@
-import Hashids from 'hashids/cjs';
 import 'meteor/dburles:collection-helpers';
 import { Promise } from 'meteor/promise';
 import { objectInvert } from 'meteor/unchained:utils';
@@ -12,6 +11,7 @@ import { Quotations } from './collections';
 import { QuotationDocuments } from '../quotation-documents/collections';
 import { QuotationStatus } from './schema';
 import { QuotationDirector } from '../../director';
+import settings from '../../settings';
 
 Logs.helpers({
   quotation() {
@@ -302,22 +302,18 @@ Quotations.updateProposal = ({ price, expires, meta, quotationId }) => {
   return Quotations.findOne({ _id: quotationId });
 };
 
-Quotations.newQuotationNumber = () => {
+Quotations.newQuotationNumber = (quotation) => {
   let quotationNumber = null;
-  const hashids = new Hashids(
-    'unchained',
-    6,
-    'ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890'
-  );
+  let i = 0;
   while (!quotationNumber) {
-    const randomNumber = Math.floor(Math.random() * (999999999 - 1)) + 1;
-    const newHashID = hashids.encode(randomNumber);
+    const newHashID = settings.quotationNumberHashFn(quotation, i);
     if (
       Quotations.find({ quotationNumber: newHashID }, { limit: 1 }).count() ===
       0
     ) {
       quotationNumber = newHashID;
     }
+    i += 1;
   }
   return quotationNumber;
 };
@@ -348,7 +344,8 @@ Quotations.updateStatus = ({ status, quotationId, info = '' }) => {
       isShouldUpdateDocuments = true;
     case QuotationStatus.PROCESSING: // eslint-disable-line no-fallthrough
       if (!quotation.quotationNumber) {
-        modifier.$set.quotationNumber = Quotations.newQuotationNumber();
+        modifier.$set.quotationNumber =
+          Quotations.newQuotationNumber(quotation);
       }
       break;
     case QuotationStatus.REJECTED:

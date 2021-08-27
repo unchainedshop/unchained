@@ -1,4 +1,3 @@
-import Hashids from 'hashids/cjs';
 import 'meteor/dburles:collection-helpers';
 import { Promise } from 'meteor/promise';
 import { objectInvert } from 'meteor/unchained:utils';
@@ -12,6 +11,7 @@ import { emit } from 'meteor/unchained:core-events';
 import { Enrollments } from './collections';
 import { EnrollmentStatus } from './schema';
 import { EnrollmentDirector } from '../../director';
+import settings from '../../settings';
 
 Logs.helpers({
   enrollment() {
@@ -347,16 +347,11 @@ Enrollments.updateContext = ({ context, enrollmentId }) => {
   );
 };
 
-Enrollments.newEnrollmentNumber = () => {
+Enrollments.newEnrollmentNumber = (enrollment) => {
   let enrollmentNumber = null;
-  const hashids = new Hashids(
-    'unchained',
-    6,
-    'ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890'
-  );
+  let i = 0;
   while (!enrollmentNumber) {
-    const randomNumber = Math.floor(Math.random() * (999999999 - 1)) + 1;
-    const newHashID = hashids.encode(randomNumber);
+    const newHashID = settings.enrollmentNumberHashFn(enrollment, i);
     if (
       Enrollments.find(
         { enrollmentNumber: newHashID },
@@ -365,6 +360,7 @@ Enrollments.newEnrollmentNumber = () => {
     ) {
       enrollmentNumber = newHashID;
     }
+    i += 1;
   }
   return enrollmentNumber;
 };
