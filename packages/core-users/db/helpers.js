@@ -15,6 +15,7 @@ import {
   createSignedPutURL,
   MediaObjects,
   removeObject,
+  uploadObjectStream,
 } from 'meteor/unchained:core-files-next';
 import { Avatars, Users } from './collections';
 import filterContext from '../filterContext';
@@ -210,26 +211,13 @@ Users.updateProfile = ({ userId, profile }) => {
   );
 };
 Users.updateAvatar = async ({ userId, avatar }) => {
-  const avatarRef =
-    avatar instanceof Promise
-      ? await Avatars.insertWithRemoteFile({
-          file: avatar,
-          userId,
-        })
-      : await Avatars.insertWithRemoteBuffer({
-          file: {
-            ...avatar,
-            buffer: Buffer.from(avatar.buffer, 'base64'),
-          },
-          userId,
-        });
-
+  const avatarRef = await uploadObjectStream('user-avatar', avatar, { userId });
   return Users.update(
     { _id: userId },
     {
       $set: {
         updated: new Date(),
-        avatarId: avatarRef._id,
+        avatarId: avatarRef,
       },
     }
   );

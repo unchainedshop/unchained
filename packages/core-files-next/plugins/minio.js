@@ -1,5 +1,6 @@
 import Minio from 'minio';
 import crypto from 'crypto';
+import { Readable } from 'stream';
 import { MediaObjects } from '../db';
 
 const {
@@ -12,6 +13,29 @@ const {
 
 if ((!MINIO_ACCESS_KEY || !MINIO_SECRET_KEY || !MINIO_ENDPOINT, !MINIO_PORT))
   return;
+
+const generateRandomeFileName = (fileName) => {
+  const random = crypto.randomBytes(16);
+  const hash = crypto
+    .createHash('sha256')
+    .update([fileName, random].join(''))
+    .digest('hex');
+  const extension = fileName.substr(fileName.lastIndexOf('.'));
+  const hashedName = hash + extension;
+  return {
+    hash,
+    hashedName,
+  };
+};
+
+function bufferToStream(buffer) {
+  const stream = new Readable();
+  stream.push(buffer);
+  stream.push(null);
+
+  return stream;
+}
+
 const PUT_URL_EXPIRY = 24 * 60 * 60;
 
 const client = new Minio.Client({
@@ -33,13 +57,7 @@ export const createSignedPutURL = async (
 ) => {
   if (!client)
     throw new Error('Required minio environment variables not defined');
-  const random = crypto.randomBytes(16);
-  const hash = crypto
-    .createHash('sha256')
-    .update([this._id, fileName, userId, random, PUT_URL_EXPIRY].join(''))
-    .digest('hex');
-  const extension = fileName.substr(fileName.lastIndexOf('.'));
-  const hashedName = hash + extension;
+  const { hash, hashedName } = generateRandomeFileName(fileName);
 
   const putURL = await client.presignedPutObject(
     MINIO_BUCKET_NAME,
@@ -49,7 +67,6 @@ export const createSignedPutURL = async (
 
   const _id = MediaObjects.insert({
     _id: encodeURIComponent(`${directoryName}/${hash}`),
-    putURL,
     name: fileName,
     expires: PUT_URL_EXPIRY,
     created: new Date(),
@@ -71,6 +88,43 @@ export const removeObject = async (id, options = {}) => {
       object.url.substr(object.url.lastIndexOf('.'))
     )
   );
+};
+
+export const uploadObjectStream = async (directoryName, rawFile, options) => {
+  let stream;
+  let fname;
+  if (rawFile instanceof Promise) {
+    const { filename, createReadStream } = await rawFile;
+    fname = filename;
+    stream = createReadStream();
+  } else {
+    fname = rawFile.filename;
+    stream = bufferToStream(Buffer.from(rawFile.buffer, 'base64'));
+  }
+
+  const { hash, hashedName } = generateRandomeFileName(fname);
+
+  await client.putObject(
+    MINIO_BUCKET_NAME,
+    `${directoryName}/${hashedName}`,
+    stream
+  );
+
+  const _id = MediaObjects.insert({
+    _id: encodeURIComponent(`${directoryName}/${hash}`),
+    url: `http://${MINIO_ENDPOINT}:${MINIO_PORT}/${MINIO_BUCKET_NAME}/${directoryName}/${fname}`,
+    name: fname,
+    expires: PUT_URL_EXPIRY,
+    created: new Date(),
+  });
+
+  return {
+    _id,
+    url: `http://${MINIO_ENDPOINT}:${MINIO_PORT}/${MINIO_BUCKET_NAME}/${directoryName}/${fname}`,
+    name: fname,
+    expires: PUT_URL_EXPIRY,
+    created: new Date(),
+  };
 };
 
 export default client;

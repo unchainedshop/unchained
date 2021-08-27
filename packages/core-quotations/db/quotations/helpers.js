@@ -7,6 +7,7 @@ import { Countries } from 'meteor/unchained:core-countries';
 import { Currencies } from 'meteor/unchained:core-currencies';
 import { Logs, log } from 'meteor/unchained:core-logger';
 import { WorkerDirector } from 'meteor/unchained:core-worker';
+import { uploadObjectStream } from 'meteor/unchained:core-files-next';
 import { Quotations } from './collections';
 import { QuotationDocuments } from '../quotation-documents/collections';
 import { QuotationStatus } from './schema';
@@ -199,17 +200,7 @@ Quotations.helpers({
       );
     }
     const { rawFile, userId } = objOrString;
-    return Promise.await(
-      QuotationDocuments.insertWithRemoteBuffer({
-        file: rawFile,
-        userId,
-        ...options,
-        meta: {
-          quotationId: this._id,
-          ...meta,
-        },
-      })
-    );
+    return uploadObjectStream('quotation-documents', rawFile);
   },
   documents(options) {
     const { type } = options || {};

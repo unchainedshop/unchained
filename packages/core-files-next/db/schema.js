@@ -6,7 +6,6 @@ import { MediaObjects } from './collections';
 MediaObjects.attachSchema(
   new SimpleSchema(
     {
-      putURL: { type: String, required: true },
       url: { type: String },
       name: { type: String, required: true },
       size: { type: String },

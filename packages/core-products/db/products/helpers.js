@@ -16,6 +16,7 @@ import {
 } from 'meteor/unchained:utils';
 import { Locale } from 'locale';
 import crypto from 'crypto';
+import { uploadObjectStream } from 'meteor/unchained:core-files-next';
 import { Products, ProductTexts } from './collections';
 
 import { ProductVariations } from '../product-variations/collections';
@@ -503,7 +504,7 @@ Products.helpers({
       ...mediaData,
     });
   },
-  addMedia({
+  async addMedia({
     rawFile,
     href,
     name,
@@ -514,8 +515,7 @@ Products.helpers({
     ...options
   }) {
     const fileLoader = rawFile
-      ? Media.insertWithRemoteFile({
-          file: rawFile,
+      ? uploadObjectStream('product-medias', rawFile, {
           userId: authorId,
         })
       : Media.insertWithRemoteURL({

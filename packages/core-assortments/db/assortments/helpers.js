@@ -9,6 +9,7 @@ import { emit } from 'meteor/unchained:core-events';
 
 import { Locale } from 'locale';
 import { log } from 'meteor/unchained:core-logger';
+import { uploadObjectStream } from 'meteor/unchained:core-files-next';
 import { makeBreadcrumbsBuilder } from '../../breadcrumbs';
 import * as Collections from './collections';
 import settings from '../../settings';
@@ -638,10 +639,7 @@ Collections.Assortments.helpers({
     ...options
   }) {
     const fileLoader = rawFile
-      ? AssortmentDocuments.insertWithRemoteFile({
-          file: rawFile,
-          userId: authorId,
-        })
+      ? uploadObjectStream('assortment-medias')
       : AssortmentDocuments.insertWithRemoteURL({
           url: href,
           fileName: name,
