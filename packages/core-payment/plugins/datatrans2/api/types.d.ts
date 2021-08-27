@@ -322,6 +322,22 @@ export type ValidateResponseSuccess = {
   acquirerAuthorizationCode?: string;
 };
 
+export type SettleRequestPayload = {
+  transactionId: string;
+  amount: string;
+  currency: string;
+  refno: string;
+  refno2?: string;
+  airlineData?: Record<string, unknown>;
+  marketplace?: Marketplace;
+  extensions?: Record<string, string>;
+};
+
+export type CancelRequestPayload = {
+  transactionId: string;
+  refno: string;
+};
+
 export type InitResponse = InitResponseSuccess | ResponseError;
 
 export type SecureFieldsResponse = SecureFieldsResponseSuccess | ResponseError;
@@ -335,6 +351,10 @@ export type AuthorizeAuthenticatedResponse =
   | ResponseError;
 
 export type ValidateResponse = ValidateResponseSuccess | ResponseError;
+
+export type SettleResponse = true | ResponseError;
+
+export type CancelResponse = true | CancelRequestPayload;
 
 export type FetchDatatransFn = (
   path: string,

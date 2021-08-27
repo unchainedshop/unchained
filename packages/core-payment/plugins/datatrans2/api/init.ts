@@ -1,4 +1,5 @@
 // https://api-reference.datatrans.ch/#operation/init
+import getPaths from '../getPaths';
 
 import type {
   FetchDatatransFn,
@@ -6,13 +7,7 @@ import type {
   InitResponse,
 } from './types';
 
-const { ROOT_URL } = process.env;
-
-const defaultRedirect = {
-  successUrl: `${ROOT_URL}/payment/datatrans/success`,
-  cancelUrl: `${ROOT_URL}/payment/datatrans/cancel`,
-  errorUrl: `${ROOT_URL}/payment/datatrans/error`,
-};
+const defaultRedirect = getPaths();
 
 export default async function init({
   option,

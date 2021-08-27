@@ -4,6 +4,8 @@ import init from './init';
 import secureFields from './secureFields';
 import authorize from './authorize';
 import validate from './validate';
+import settle from './settle';
+import cancel from './cancel';
 import authorizeAuthenticated from './authorizeAuthenticated';
 
 export default function createDatatransAPI(
@@ -20,5 +22,7 @@ export default function createDatatransAPI(
     secureFields,
     status,
     authorizeAuthenticated,
+    settle,
+    cancel,
   };
 }

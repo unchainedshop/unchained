@@ -12,7 +12,7 @@ export default async function secureFields(
   payload: SecureFieldsRequestPayload
 ): Promise<SecureFieldsResponse> {
   const reqBody = {
-    returnUrl: `${ROOT_URL}/payment/datatrans/error`,
+    returnUrl: `${ROOT_URL}/payment/datatrans/secure-fields-return`,
     ...payload,
   };
   const { fetchDatatrans }: { fetchDatatrans: FetchDatatransFn } = this;
