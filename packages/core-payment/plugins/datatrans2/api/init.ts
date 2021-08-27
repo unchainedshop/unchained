@@ -9,9 +9,9 @@ import type {
 const { ROOT_URL } = process.env;
 
 const defaultRedirect = {
-  successUrl: `${ROOT_URL}/payment/success`,
-  cancelUrl: `${ROOT_URL}/payment/cancel`,
-  errorUrl: `${ROOT_URL}/payment/error`,
+  successUrl: `${ROOT_URL}/payment/datatrans/success`,
+  cancelUrl: `${ROOT_URL}/payment/datatrans/cancel`,
+  errorUrl: `${ROOT_URL}/payment/datatrans/error`,
 };
 
 export default async function init({

@@ -116,6 +116,59 @@ export type PaymentMethod =
   | 'VIS'
   | 'WEC';
 
+export type TransactionType = 'payment' | 'credit' | 'card_check';
+
+export type TransactionStatusCode =
+  | 'initialized'
+  | 'challenge_required'
+  | 'challenge_ongoing'
+  | 'authenticated'
+  | 'authorized'
+  | 'settled'
+  | 'canceled'
+  | 'transmitted'
+  | 'failed';
+
+export type ResponseError = {
+  error: {
+    code:
+      | 'UNKNOWN_ERROR'
+      | 'UNAUTHORIZED'
+      | 'INVALID_JSON_PAYLOAD'
+      | 'UNRECOGNIZED_PROPERTY'
+      | 'INVALID_PROPERTY'
+      | 'CLIENT_ERROR'
+      | 'SERVER_ERROR'
+      | 'INVALID_TRANSACTION_STATUS'
+      | 'TRANSACTION_NOT_FOUND'
+      | 'EXPIRED_CARD'
+      | 'INVALID_CARD'
+      | 'BLOCKED_CARD'
+      | 'UNSUPPORTED_CARD'
+      | 'INVALID_ALIAS'
+      | 'INVALID_CVV'
+      | 'DUPLICATE_REFNO'
+      | 'DECLINED'
+      | 'SOFT_DECLINED'
+      | 'INVALID_SIGN'
+      | 'BLOCKED_BY_VELOCITY_CHECKER'
+      | 'THIRD_PARTY_ERROR'
+      | 'REFERRAL'
+      | 'INVALID_SETUP';
+    message: string;
+  };
+};
+
+type Split = {
+  subMerchantId: string;
+  amount: number;
+  comission: number;
+};
+
+export type Marketplace = {
+  splits: Split[];
+};
+
 export type InitRequestPayload = {
   endpoint: string;
   secret: string;
@@ -179,19 +232,6 @@ export type InitResponseSuccess = {
   location?: string;
 };
 
-export type TransactionType = 'payment' | 'credit' | 'card_check';
-
-export type TransactionStatusCode =
-  | 'initialized'
-  | 'challenge_required'
-  | 'challenge_ongoing'
-  | 'authenticated'
-  | 'authorized'
-  | 'settled'
-  | 'canceled'
-  | 'transmitted'
-  | 'failed';
-
 export type StatusRequestPayload = {
   transactionId: string;
 };
@@ -207,46 +247,94 @@ export type StatusResponseSuccess = {
   language: SupportedLanguage;
 };
 
-export type ResponseError = {
-  error: {
-    code:
-      | 'UNKNOWN_ERROR'
-      | 'UNAUTHORIZED'
-      | 'INVALID_JSON_PAYLOAD'
-      | 'UNRECOGNIZED_PROPERTY'
-      | 'INVALID_PROPERTY'
-      | 'CLIENT_ERROR'
-      | 'SERVER_ERROR'
-      | 'INVALID_TRANSACTION_STATUS'
-      | 'TRANSACTION_NOT_FOUND'
-      | 'EXPIRED_CARD'
-      | 'INVALID_CARD'
-      | 'BLOCKED_CARD'
-      | 'UNSUPPORTED_CARD'
-      | 'INVALID_ALIAS'
-      | 'INVALID_CVV'
-      | 'DUPLICATE_REFNO'
-      | 'DECLINED'
-      | 'SOFT_DECLINED'
-      | 'INVALID_SIGN'
-      | 'BLOCKED_BY_VELOCITY_CHECKER'
-      | 'THIRD_PARTY_ERROR'
-      | 'REFERRAL'
-      | 'INVALID_SETUP';
-    message: string;
-  };
-};
-
-export type InitSecureFieldsRequestPayload = {
+export type SecureFieldsRequestPayload = {
   currency: string;
-  returnUrl: string;
+  returnUrl?: string;
   amount?: number;
   ['3D']?: Record<string, unknown>;
 };
 
+export type SecureFieldsResponseSuccess = {
+  transactionId: string;
+};
+
+export type AuthorizeRequestPayload = {
+  amount: number;
+  currency: string;
+  refno: string;
+  refno2: string;
+  autoSettle?: boolean;
+  customer?: Customer;
+  billing?: BillingAddress;
+  shipping?: ShippingAddress;
+  order?: Order;
+  card?: Record<string, unknown>;
+  BON?: Record<string, unknown>;
+  PAP?: Record<string, unknown>;
+  PFC?: Record<string, unknown>;
+  REK?: Record<string, unknown>;
+  KLN?: Record<string, unknown>;
+  TWI?: Record<string, unknown>;
+  INT?: Record<string, unknown>;
+  ESY?: Record<string, unknown>;
+  ACC?: Record<string, unknown>;
+  PAY?: Record<string, unknown>;
+  APL?: Record<string, unknown>;
+  SWB?: Record<string, unknown>;
+  airlineData?: Record<string, unknown>;
+  marketplace: Marketplace;
+};
+
+export type AuthorizeResponseSuccess = {
+  transactionId: string;
+  acquirerAuthorizationCode?: string;
+};
+
+export type AuthorizeAuthenticatedRequestPayload = {
+  transactionId: string;
+  refno: string;
+  amount?: number;
+  refno2?: string;
+  autoSettle?: boolean;
+  CDM?: Record<string, unknown>;
+  ['3D']?: Record<string, unknown>;
+};
+
+export type AuthorizeAuthenticatedResponseSuccess = {
+  acquirerAuthorizationCode?: string;
+};
+
+export type ValidateRequestPayload = {
+  currency: string;
+  refno: string;
+  refno2?: string;
+  card?: Record<string, unknown>;
+  PFC?: Record<string, unknown>;
+  KLN?: Record<string, unknown>;
+  PAP?: Record<string, unknown>;
+  PAY?: Record<string, unknown>;
+  APL?: Record<string, unknown>;
+  ESY?: Record<string, unknown>;
+};
+
+export type ValidateResponseSuccess = {
+  transactionId: string;
+  acquirerAuthorizationCode?: string;
+};
+
 export type InitResponse = InitResponseSuccess | ResponseError;
 
+export type SecureFieldsResponse = SecureFieldsResponseSuccess | ResponseError;
+
 export type StatusResponse = StatusResponseSuccess | ResponseError;
+
+export type AuthorizeResponse = AuthorizeResponseSuccess | ResponseError;
+
+export type AuthorizeAuthenticatedResponse =
+  | AuthorizeAuthenticatedResponseSuccess
+  | ResponseError;
+
+export type ValidateResponse = ValidateResponseSuccess | ResponseError;
 
 export type FetchDatatransFn = (
   path: string,

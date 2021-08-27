@@ -2,22 +2,21 @@
 
 import type {
   FetchDatatransFn,
-  InitSecureFieldsRequestPayload,
-  InitResponse,
+  SecureFieldsRequestPayload,
+  SecureFieldsResponse,
 } from './types';
 
 const { ROOT_URL } = process.env;
 
-export default async function initSecureFields(
-  payload: InitSecureFieldsRequestPayload
-): Promise<InitResponse> {
-  const reqBody = payload;
+export default async function secureFields(
+  payload: SecureFieldsRequestPayload
+): Promise<SecureFieldsResponse> {
+  const reqBody = {
+    returnUrl: `${ROOT_URL}/payment/datatrans/error`,
+    ...payload,
+  };
   const { fetchDatatrans }: { fetchDatatrans: FetchDatatransFn } = this;
   const result = await fetchDatatrans('/v1/transactions/secureFields', reqBody);
   const json = await result.json();
-  const location = result.headers.get('location');
-  return {
-    location,
-    ...json,
-  };
+  return json;
 }

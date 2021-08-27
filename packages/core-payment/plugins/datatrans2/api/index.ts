@@ -1,7 +1,10 @@
 import makeFetcher from './makeFetcher';
-import getTransaction from './getTransaction';
+import status from './status';
 import init from './init';
-import initSecureFields from './initSecureFields';
+import secureFields from './secureFields';
+import authorize from './authorize';
+import validate from './validate';
+import authorizeAuthenticated from './authorizeAuthenticated';
 
 export default function createDatatransAPI(
   endpoint: string,
@@ -12,7 +15,10 @@ export default function createDatatransAPI(
   return {
     fetchDatatrans,
     init,
-    initSecureFields,
-    getTransaction,
+    authorize,
+    validate,
+    secureFields,
+    status,
+    authorizeAuthenticated,
   };
 }

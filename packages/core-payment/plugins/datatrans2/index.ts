@@ -145,6 +145,26 @@ class Datatrans extends PaymentAdapter {
     const price: { amount?: number; currency?: string } = order
       ? roundedAmountFromOrder(order)
       : {};
+
+    if (useSecureFields) {
+      const result = await this.api.secureFields({
+        ...additionalInitPayload,
+        currency: price.currency || 'CHF',
+        refno,
+        refno2,
+        customer: {
+          id: userId,
+        },
+        amount: price.amount,
+      });
+      if ((result as InitResponseSuccess).transactionId) {
+        return JSON.stringify(result);
+      }
+      const rawError = (result as ResponseError).error;
+      const error = new Error(rawError.message);
+      error.name = `DATATRANS_${rawError.code}`;
+      throw error;
+    }
     const result = await this.api.init({
       ...additionalInitPayload,
       currency: price.currency || 'CHF',
