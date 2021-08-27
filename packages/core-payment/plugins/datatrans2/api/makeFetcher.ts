@@ -7,8 +7,8 @@ export default (
 
   return (path: string, body: unknown): Promise<Response> =>
     fetch(`${endpoint}${path}`, {
-      method: 'POST',
-      body: JSON.stringify(body),
+      method: body ? 'POST' : 'GET',
+      body: body ? JSON.stringify(body) : undefined,
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Basic ${Buffer.from(token, 'utf-8').toString(

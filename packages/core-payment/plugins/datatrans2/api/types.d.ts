@@ -59,19 +59,19 @@ export type DT2015Configuration = {
   brandTitle: string;
 };
 
-export type SupportedLanguage = 
-| 'de'
-| 'en'
-| 'fr'
-| 'it'
-| 'es'
-| 'el'
-| 'no'
-| 'da'
-| 'pl'
-| 'pt'
-| 'ru'
-| 'ja';
+export type SupportedLanguage =
+  | 'de'
+  | 'en'
+  | 'fr'
+  | 'it'
+  | 'es'
+  | 'el'
+  | 'no'
+  | 'da'
+  | 'pl'
+  | 'pt'
+  | 'ru'
+  | 'ja';
 
 export type PaymentMethod =
   | 'ACC'
@@ -176,6 +176,7 @@ export type InitResponseSuccess = {
   mobileToken?: string;
   WEC?: Record<string, unknown>;
   ['3D']?: Record<string, unknown>;
+  location?: string;
 };
 
 export type TransactionType = 'payment' | 'credit' | 'card_check';
@@ -234,6 +235,13 @@ export type ResponseError = {
       | 'INVALID_SETUP';
     message: string;
   };
+};
+
+export type InitSecureFieldsRequestPayload = {
+  currency: string;
+  returnUrl: string;
+  amount?: number;
+  ['3D']?: Record<string, unknown>;
 };
 
 export type InitResponse = InitResponseSuccess | ResponseError;
