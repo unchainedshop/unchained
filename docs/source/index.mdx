@@ -37,26 +37,33 @@ import { Button } from '@apollo/space-kit/Button'
 import { Card } from '@apollo/space-kit/Card'
 import { Link } from 'gatsby'
 
-<div style={{padding: '0 32px'}}>
+<div className="launch-card-wrapper">
  <Card
     style={{ marginTop: 48 }}
     heading="I want to have my eCommerce store online in 15min!"
     description="Quick start tutorial to guide you through the steps to launch our storefront web app online with its own unchained engine setup."
     actions={
-      <Button as={<Link to="/getting-started/engine-launch" />} size="large">
+      <Button as={<Link to="/getting-started/engine-launch" />} size="large" className="launch-button">
         Launch store 🚀
       </Button>
     }
   />
+  <Button as={<Link to="/getting-started/engine-launch" />} size="large" className="launch-button-mobile">
+    Launch store 🚀
+  </Button>
 
   <Card
     style={{ marginTop: 32 }}
     heading="I want to start the engine locally"
     description={<span>Getting started tutorial for developers to setup your local environment with an Unchained Engine and our store front-end (storefront) ready for you to use and customize.</span>}
     actions={
-      <Button as={<Link to="/installation/install-engine" />} size="large">
+      <Button as={<Link to="/installation/install-engine" />} size="large" className="launch-button">
         Start engine  🏎
       </Button>
     }
   />
+
+  <Button as={<Link to="/installation/install-engine" />} size="large" className="launch-button-mobile">
+    Start engine  🏎
+  </Button>
 </div>

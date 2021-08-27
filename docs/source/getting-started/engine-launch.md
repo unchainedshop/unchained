@@ -18,23 +18,19 @@ In order to get a cloud-hosted unchained instance, you need to [sign up](https:/
 
 ## Step 2: Create a new Instance 
 
-1. After registration you will be redirected to the create organization page.
-Create one by entering your organization's name and click **Save organisation**.
-![diagram](../images/getting-started/Engine_Setup_Organisation.png)
-2. The Instance List page is shown. Click on **Create instance** to proceed.
+1. After registration you will be redirected to the create organsation page.
+Create one by entering your organisation's name and click **Save organisation**.
+2. The Instances Overview page is shown. Click on **Start a new engine** to proceed.
 ![diagram](../images/getting-started/Engine_Setup_Create_Instance.png)
-3. Provide the information required to create the new engine instance. The following diagram provides an overview of what you should enter in order to successfully create the instance. 
-![diagram](../images/getting-started/Engine_Setup_Instance.png)
-**IMPORTANT** Use <u>unchained.shop</u> for all domain and email settings (e.g. my-name.unchained.shop, my-name@unchained.shop).
-4. In next screen simple ignore the datatrans block. Payment sources can be created using the control panel. Add some values to the fields in order to proceed.
-More importantly set URL to your SMTP server in order to send and receive mails.
-![diagram](../images/getting-started/Engine_Setup_Instance_Mail.png)
-5. If all went well you will see the instance summary page after a few seconds.
+3. Follow the steps, which prompt you to give your shop a name and set a email address to receive order confirmations. <br /><br />Outgoing mails send to your customers use per default the unchained mail server and look like this <u>_noreply@unchained.shop_</u> .<br />However, there is the option to configure **Advanced email settings** which allow you to set your shop's sender email address using your SMTP mail server.
+4. If all went well you will see the Instance Overview page after a few seconds.
 ![diagram](../images/getting-started/Engine_Setup_Instance_Deployed.png) 
 
-## Step 3: Verify engine
-1. Click on **Open App** in the instance summary page to navigate to the Control Panel under your engine's domain.
-2. The URL looks something like <u>my-shop-name.unchained.shop/signup</u>
+
+## Step 3: Verify engine
+
+1. Click on **Open App** in the Instance Overview page to navigate to the Control Panel under your engine's domain.
+2. The URL looks something like <u>my-unchained-shop.unchained.rocks/sign-in</u>
 3. You should see the login window of the Control Panel. 
 ![diagram](../images/getting-started/Engine_Setup_Verification.png) 
 

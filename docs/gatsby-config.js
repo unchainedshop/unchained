@@ -29,13 +29,14 @@ module.exports = {
           Installation: [
             'installation/install-engine',
             'installation/install-storefront',
+            'installation/run-engine-docker',
           ],
           Deployment: [
             'deployment/deploy-engine-galaxy',
             'deployment/deploy-storefront-vercel',
             'deployment/amazon-documentdb',
-            'deployment/docker-dev',
           ],
+          Plugins: ['plugins/plugin-overview'],
           Concepts: [
             'concepts/architecture',
             'concepts/carts',
@@ -69,6 +70,6 @@ module.exports = {
           ],
         },
       },
-    },
+    }
   ],
 };
