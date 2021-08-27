@@ -15,6 +15,8 @@ ProductMedia.findProductMedia = ({ productMediaId }) => {
 };
 
 ProductMedia.removeProductMedia = ({ productMediaId }) => {
+  const media = ProductMedia.findOne({ _id: productMediaId });
+  removeObject(media.mediaId);
   const result = ProductMedia.remove({ _id: productMediaId });
   emit('PRODUCT_REMOVE_MEDIA', { productMediaId });
   return result;

@@ -14,6 +14,7 @@ import { v4 as uuidv4 } from 'uuid';
 import {
   createSignedPutURL,
   MediaObjects,
+  removeObject,
 } from 'meteor/unchained:core-files-next';
 import { Avatars, Users } from './collections';
 import filterContext from '../filterContext';
@@ -177,6 +178,8 @@ Users.createSignedUploadURL = async (
 };
 
 Users.updateAvatarLink = async ({ mediaId, userId }) => {
+  const user = Users.findUser({ userId });
+  removeObject(user.avatarId);
   Users.update(
     { _id: userId },
     {
