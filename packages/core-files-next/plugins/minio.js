@@ -127,4 +127,33 @@ export const uploadObjectStream = async (directoryName, rawFile, options) => {
   };
 };
 
+export const uploadFileFromURL = async (directoryName, fileLink, options) => {
+  const { href } = new URL(fileLink);
+  const filename = href.split('/').pop();
+  const { hash, hashedName } = generateRandomeFileName(filename);
+
+  console.log(filename);
+  await client.fPutObject(
+    MINIO_BUCKET_NAME,
+    `${directoryName}/${hashedName}`,
+    href
+  );
+
+  const _id = MediaObjects.insert({
+    _id: encodeURIComponent(`${directoryName}/${hash}`),
+    url: `http://${MINIO_ENDPOINT}:${MINIO_PORT}/${MINIO_BUCKET_NAME}/${directoryName}/${filename}`,
+    name: filename,
+    expires: PUT_URL_EXPIRY,
+    created: new Date(),
+  });
+
+  return {
+    _id,
+    url: `http://${MINIO_ENDPOINT}:${MINIO_PORT}/${MINIO_BUCKET_NAME}/${directoryName}/${filename}`,
+    name: filename,
+    expires: PUT_URL_EXPIRY,
+    created: new Date(),
+  };
+};
+
 export default client;
