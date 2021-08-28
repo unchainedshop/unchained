@@ -1,6 +1,7 @@
 import Minio from 'minio';
 import crypto from 'crypto';
 import { Readable } from 'stream';
+import http from 'https';
 import { MediaObjects } from '../db';
 
 const {
@@ -9,7 +10,42 @@ const {
   MINIO_ENDPOINT,
   MINIO_PORT,
   MINIO_BUCKET_NAME,
+  NODE_ENV,
 } = process.env;
+
+const protocol = NODE_ENV === 'production' ? 'https://' : 'http://';
+
+const generateMinioUrl = (directoryName, filename) => {
+  return `${protocol}${MINIO_ENDPOINT}:${MINIO_PORT}/${MINIO_BUCKET_NAME}/${directoryName}/${filename}`;
+};
+function downloadFromUrlToBuffer(url) {
+  return new Promise((resolve, reject) => {
+    // eslint-disable-next-line consistent-return
+    const req = http.get(url, (res) => {
+      if (res.statusCode < 200 || res.statusCode >= 300) {
+        return reject(new Error(`statusCode=${res.statusCode}`));
+      }
+
+      const body = [];
+      let buf;
+      res.on('data', (chunk) => {
+        body.push(chunk);
+      });
+      res.on('end', () => {
+        try {
+          buf = Buffer.concat(body);
+        } catch (e) {
+          reject(e);
+        }
+        resolve(Buffer.from(buf, 'base64'));
+      });
+    });
+    req.on('error', (err) => {
+      reject(err);
+    });
+    req.end();
+  });
+}
 
 if ((!MINIO_ACCESS_KEY || !MINIO_SECRET_KEY || !MINIO_ENDPOINT, !MINIO_PORT))
   return;
@@ -112,7 +148,7 @@ export const uploadObjectStream = async (directoryName, rawFile, options) => {
 
   const _id = MediaObjects.insert({
     _id: encodeURIComponent(`${directoryName}/${hash}`),
-    url: `http://${MINIO_ENDPOINT}:${MINIO_PORT}/${MINIO_BUCKET_NAME}/${directoryName}/${fname}`,
+    url: generateMinioUrl(directoryName, fname),
     name: fname,
     expires: PUT_URL_EXPIRY,
     created: new Date(),
@@ -120,28 +156,27 @@ export const uploadObjectStream = async (directoryName, rawFile, options) => {
 
   return {
     _id,
-    url: `http://${MINIO_ENDPOINT}:${MINIO_PORT}/${MINIO_BUCKET_NAME}/${directoryName}/${fname}`,
+    url: generateMinioUrl(directoryName, fname),
     name: fname,
     expires: PUT_URL_EXPIRY,
     created: new Date(),
   };
 };
-
+const bufs = [];
 export const uploadFileFromURL = async (directoryName, fileLink, options) => {
   const { href } = new URL(fileLink);
   const filename = href.split('/').pop();
   const { hash, hashedName } = generateRandomeFileName(filename);
 
-  console.log(filename);
-  await client.fPutObject(
+  const buff = await downloadFromUrlToBuffer(fileLink);
+  await client.putObject(
     MINIO_BUCKET_NAME,
     `${directoryName}/${hashedName}`,
-    href
+    bufferToStream(buff)
   );
-
   const _id = MediaObjects.insert({
     _id: encodeURIComponent(`${directoryName}/${hash}`),
-    url: `http://${MINIO_ENDPOINT}:${MINIO_PORT}/${MINIO_BUCKET_NAME}/${directoryName}/${filename}`,
+    url: generateMinioUrl(directoryName, filename),
     name: filename,
     expires: PUT_URL_EXPIRY,
     created: new Date(),
@@ -149,7 +184,7 @@ export const uploadFileFromURL = async (directoryName, fileLink, options) => {
 
   return {
     _id,
-    url: `http://${MINIO_ENDPOINT}:${MINIO_PORT}/${MINIO_BUCKET_NAME}/${directoryName}/${filename}`,
+    url: generateMinioUrl(directoryName, filename),
     name: filename,
     expires: PUT_URL_EXPIRY,
     created: new Date(),
