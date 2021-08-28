@@ -7,7 +7,10 @@ import { Countries } from 'meteor/unchained:core-countries';
 import { Currencies } from 'meteor/unchained:core-currencies';
 import { Logs, log } from 'meteor/unchained:core-logger';
 import { WorkerDirector } from 'meteor/unchained:core-worker';
-import { uploadObjectStream } from 'meteor/unchained:core-files-next';
+import {
+  uploadObjectStream,
+  uploadFileFromURL,
+} from 'meteor/unchained:core-files-next';
 import { Quotations } from './collections';
 import { QuotationDocuments } from '../quotation-documents/collections';
 import { QuotationStatus } from './schema';
@@ -189,18 +192,21 @@ Quotations.helpers({
   addDocument(objOrString, meta, options = {}) {
     if (typeof objOrString === 'string' || objOrString instanceof String) {
       return Promise.await(
-        QuotationDocuments.insertWithRemoteURL({
-          url: objOrString,
-          ...options,
-          meta: {
-            quotationId: this._id,
-            ...meta,
-          },
-        })
+        uploadFileFromURL(
+          'quotation-documents',
+          { fileLink: objOrString },
+          {
+            ...options,
+            meta: {
+              quotationId: this._id,
+              ...meta,
+            },
+          }
+        )
       );
     }
     const { rawFile, userId } = objOrString;
-    return uploadObjectStream('quotation-documents', rawFile);
+    return uploadObjectStream('quotation-documents', rawFile, { userId });
   },
   documents(options) {
     const { type } = options || {};

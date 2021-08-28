@@ -117,13 +117,14 @@ export const createSignedPutURL = async (
 
 export const removeObject = async (id, options = {}) => {
   const object = MediaObjects.findOne({ _id: id });
-  MediaObjects.remove({ _id: id });
+  const media = MediaObjects.remove({ _id: id });
   await client.removeObject(
     MINIO_BUCKET_NAME,
     decodeURIComponent(id).concat(
       object.url.substr(object.url.lastIndexOf('.'))
     )
   );
+  return media;
 };
 
 export const uploadObjectStream = async (directoryName, rawFile, options) => {
@@ -162,10 +163,14 @@ export const uploadObjectStream = async (directoryName, rawFile, options) => {
     created: new Date(),
   };
 };
-const bufs = [];
-export const uploadFileFromURL = async (directoryName, fileLink, options) => {
+
+export const uploadFileFromURL = async (
+  directoryName,
+  { fileLink, fileName },
+  options
+) => {
   const { href } = new URL(fileLink);
-  const filename = href.split('/').pop();
+  const filename = fileName || href.split('/').pop();
   const { hash, hashedName } = generateRandomeFileName(filename);
 
   const buff = await downloadFromUrlToBuffer(fileLink);

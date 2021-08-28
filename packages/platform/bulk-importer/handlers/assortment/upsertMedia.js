@@ -1,21 +1,23 @@
+import { AssortmentMedia } from 'meteor/unchained:core-assortments';
 import {
-  AssortmentMedia,
-  AssortmentDocuments,
-} from 'meteor/unchained:core-assortments';
+  uploadFileFromURL,
+  MediaObjects,
+} from 'meteor/unchained:core-files-next';
 
 const upsertAsset = async (asset) => {
-  const { _id, ...assetData } = asset;
+  const { _id, fileName, url, ...assetData } = asset;
 
   try {
-    const assetObject = await AssortmentDocuments.insertWithRemoteURL({
+    const assetObject = await uploadFileFromURL('assortment-medias', {
       fileId: _id,
-      ...assetData,
+      fileLink: url,
+      fileName,
     });
     if (!assetObject) throw new Error('Media not created');
     return assetObject;
   } catch (e) {
-    AssortmentDocuments.update({ _id }, { $set: assetData });
-    return AssortmentDocuments.findOne({ _id });
+    MediaObjects.update({ _id }, { $set: { fileName, url, ...assetData } });
+    return MediaObjects.findOne({ _id });
   }
 };
 

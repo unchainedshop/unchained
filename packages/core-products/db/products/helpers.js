@@ -16,11 +16,14 @@ import {
 } from 'meteor/unchained:utils';
 import { Locale } from 'locale';
 import crypto from 'crypto';
-import { uploadObjectStream } from 'meteor/unchained:core-files-next';
+import {
+  uploadObjectStream,
+  uploadFileFromURL,
+} from 'meteor/unchained:core-files-next';
 import { Products, ProductTexts } from './collections';
 
 import { ProductVariations } from '../product-variations/collections';
-import { ProductMedia, Media } from '../product-media/collections';
+import { ProductMedia } from '../product-media/collections';
 import { ProductReviews } from '../product-reviews/collections';
 import { ProductStatus, ProductTypes } from './schema';
 
@@ -518,12 +521,11 @@ Products.helpers({
       ? uploadObjectStream('product-medias', rawFile, {
           userId: authorId,
         })
-      : Media.insertWithRemoteURL({
-          url: href,
-          fileName: name,
-          userId: authorId,
-          ...options,
-        });
+      : uploadFileFromURL(
+          'product-medias',
+          { fileName: name, fileLink: href },
+          { userId: authorId, ...options }
+        );
     const file = Promise.await(fileLoader);
     const productMedia = this.addMediaLink({
       mediaId: file._id,

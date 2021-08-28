@@ -16,7 +16,10 @@ import {
   OrderPricingSheet,
 } from 'meteor/unchained:core-pricing';
 import { emit } from 'meteor/unchained:core-events';
-import { uploadObjectStream } from 'meteor/unchained:core-files-next';
+import {
+  uploadObjectStream,
+  uploadFileFromURL,
+} from 'meteor/unchained:core-files-next';
 import { OrderStatus } from './schema';
 import { Orders } from './collections';
 import { OrderDeliveries } from '../order-deliveries/collections';
@@ -606,14 +609,17 @@ Orders.helpers({
   addDocument(objOrString, meta, options = {}) {
     if (typeof objOrString === 'string' || objOrString instanceof String) {
       return Promise.await(
-        OrderDocuments.insertWithRemoteURL({
-          url: objOrString,
-          ...options,
-          meta: {
-            orderId: this._id,
-            ...meta,
-          },
-        })
+        uploadFileFromURL(
+          'order-documents',
+          { fileLink: objOrString },
+          {
+            ...options,
+            meta: {
+              orderId: this._id,
+              ...meta,
+            },
+          }
+        )
       );
     }
     const { rawFile, userId } = objOrString;

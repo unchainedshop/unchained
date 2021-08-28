@@ -9,11 +9,14 @@ import { emit } from 'meteor/unchained:core-events';
 
 import { Locale } from 'locale';
 import { log } from 'meteor/unchained:core-logger';
-import { uploadObjectStream } from 'meteor/unchained:core-files-next';
+import {
+  uploadObjectStream,
+  uploadFileFromURL,
+} from 'meteor/unchained:core-files-next';
 import { makeBreadcrumbsBuilder } from '../../breadcrumbs';
 import * as Collections from './collections';
 import settings from '../../settings';
-import { AssortmentDocuments, AssortmentMedia } from '../assortment-media';
+import { AssortmentMedia } from '../assortment-media';
 
 const eqSet = (as, bs) => {
   return [...as].join(',') === [...bs].join(',');
@@ -639,13 +642,15 @@ Collections.Assortments.helpers({
     ...options
   }) {
     const fileLoader = rawFile
-      ? uploadObjectStream('assortment-medias')
-      : AssortmentDocuments.insertWithRemoteURL({
-          url: href,
-          fileName: name,
+      ? uploadObjectStream('assortment-medias', rawFile, {
           userId: authorId,
           ...options,
-        });
+        })
+      : uploadFileFromURL(
+          'assortment-medias',
+          { fileLink: href, fileName: name },
+          { userId: authorId, ...options }
+        );
     const file = Promise.await(fileLoader);
     const assortmentMedia = this.addMediaLink({
       mediaId: file._id,
