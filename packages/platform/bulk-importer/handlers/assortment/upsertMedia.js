@@ -8,6 +8,8 @@ const upsertAsset = async (asset) => {
   const { _id, fileName, url, ...assetData } = asset;
 
   try {
+    if (_id && MediaObjects.find({ _id }).count() > 0)
+      throw new Error('Media already exists');
     const assetObject = await uploadFileFromURL('assortment-medias', {
       fileId: _id,
       fileLink: url,

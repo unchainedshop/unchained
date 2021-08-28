@@ -11,6 +11,7 @@ MediaObjects.attachSchema(
       size: { type: String },
       type: { type: String },
       expires: { type: Date, required: true },
+      meta: { type: Object, blackbox: true },
       ...Schemas.timestampFields,
     },
     { requiredByDefault: false }
