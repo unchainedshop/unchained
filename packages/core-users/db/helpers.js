@@ -17,7 +17,7 @@ import {
   removeObjects,
   uploadObjectStream,
 } from 'meteor/unchained:core-files-next';
-import { Avatars, Users } from './collections';
+import { Users } from './collections';
 import filterContext from '../filterContext';
 import evaluateContext from '../evaluateContext';
 import settings from '../settings';
