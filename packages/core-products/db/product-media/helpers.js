@@ -5,7 +5,7 @@ import { emit } from 'meteor/unchained:core-events';
 import {
   createSignedPutURL,
   MediaObjects,
-  removeObject,
+  removeObjects,
 } from 'meteor/unchained:core-files-next';
 
 import { ProductMedia, ProductMediaTexts } from './collections';
@@ -16,7 +16,7 @@ ProductMedia.findProductMedia = ({ productMediaId }) => {
 
 ProductMedia.removeProductMedia = ({ productMediaId }) => {
   const media = ProductMedia.findOne({ _id: productMediaId });
-  removeObject(media.mediaId);
+  removeObjects(media.mediaId);
   const result = ProductMedia.remove({ _id: productMediaId });
   emit('PRODUCT_REMOVE_MEDIA', { productMediaId });
   return result;

@@ -18,6 +18,13 @@ const protocol = NODE_ENV === 'production' ? 'https://' : 'http://';
 const generateMinioUrl = (directoryName, filename) => {
   return `${protocol}${MINIO_ENDPOINT}:${MINIO_PORT}/${MINIO_BUCKET_NAME}/${directoryName}/${filename}`;
 };
+
+const composeObjectName = (object) => {
+  return decodeURIComponent(object._id).concat(
+    object.url.substr(object.url.lastIndexOf('.'))
+  );
+};
+
 function downloadFromUrlToBuffer(url) {
   return new Promise((resolve, reject) => {
     // eslint-disable-next-line consistent-return
@@ -77,14 +84,11 @@ const PUT_URL_EXPIRY = 24 * 60 * 60;
 const client = new Minio.Client({
   endPoint: MINIO_ENDPOINT,
   port: parseInt(MINIO_PORT, 10),
-  useSSL: false,
+  useSSL: NODE_ENV === 'production',
   accessKey: MINIO_ACCESS_KEY,
   secretKey: MINIO_SECRET_KEY,
 });
-
-if (!client.bucketExists(MINIO_BUCKET_NAME)) {
-  client.makeBucket(MINIO_BUCKET_NAME);
-}
+if (NODE_ENV === 'development') client.traceOn(process.stdout);
 
 export const createSignedPutURL = async (
   directoryName = '',
@@ -115,15 +119,33 @@ export const createSignedPutURL = async (
   };
 };
 
-export const removeObject = async (id, options = {}) => {
-  const object = MediaObjects.findOne({ _id: id });
-  const media = MediaObjects.remove({ _id: id });
-  await client.removeObject(
-    MINIO_BUCKET_NAME,
-    decodeURIComponent(id).concat(
-      object.url.substr(object.url.lastIndexOf('.'))
-    )
-  );
+export const removeObjects = async (ids, options = {}) => {
+  const idList = [];
+  if (typeof ids === 'string') {
+    const object = MediaObjects.findOne({ _id: ids });
+    idList.push(composeObjectName(object));
+  } else if (Array.isArray(ids)) {
+    ids.forEach((id) => {
+      idList.push(
+        ...MediaObjects.find(
+          { _id: id },
+          {
+            fields: {
+              _id: true,
+              url: true,
+            },
+          }
+        ).map((o) => composeObjectName(o))
+      );
+    });
+  }
+
+  const media = MediaObjects.remove({
+    _id: {
+      $in: idList,
+    },
+  });
+  await client.removeObjects(MINIO_BUCKET_NAME, idList);
   return media;
 };
 
