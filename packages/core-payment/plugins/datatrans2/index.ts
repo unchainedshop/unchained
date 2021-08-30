@@ -12,8 +12,14 @@ import generateSignature, { Security } from './generateSignature';
 import roundedAmountFromOrder from './roundedAmountFromOrder';
 import createDatatransAPI from './api';
 import getPaths from './getPaths';
+import splitProperties from './splitProperties';
 
-import type { ResponseError, InitResponseSuccess, ValidateResponseSuccess } from './api/types';
+import type {
+  ResponseError,
+  InitResponseSuccess,
+  ValidateResponseSuccess,
+  StatusResponseSuccess,
+} from './api/types';
 
 const logger = createLogger('unchained:core-payment:datatrans2');
 
@@ -248,65 +254,58 @@ class Datatrans extends PaymentAdapter {
   }
 
   async validate(token) {
-    const { type, ...meta } = this.context.meta;
-    const result = await this.api.authorize({
-      refno: `validate-${new Date().toLocaleString()}`,
-      amount: 0,
-      [type]: JSON.parse(token),
-      ...meta,
+    const { objectKey, currency } = this.context.meta;
+    const result = await this.api.validate({
+      refno: `valid-${new Date().getTime()}`,
+      currency,
+      [objectKey]: JSON.parse(token),
     });
     logger.info(`Datatrans Plugin: Validation Result`, result);
     return (result as ValidateResponseSuccess)?.transactionId;
   }
 
   async register(transactionResponse) {
-    const {
-      transactionId
-    } = transactionResponse;
+    const { transactionId } = transactionResponse;
 
-    const info = await this.api.status({ transactionId });
-    console.log(info);
-    return null;
-    const merchantId = this.getMerchantId();
-    if (status === 'success') {
-      const validSign = generateSignature({
-        security: DATATRANS_SECURITY,
-        signKey: DATATRANS_SIGN_KEY,
-      })(
-        aliasCC,
-        merchantId,
-        '0', // amount 0
-        currency,
-        refno
-      );
-      const validSign2 = generateSignature({
-        security: DATATRANS_SECURITY,
-        signKey: DATATRANS_SIGN2_KEY || DATATRANS_SIGN_KEY,
-      })(
-        aliasCC,
-        merchantId,
-        '0', // amount 0
-        currency,
-        uppTransactionId
-      );
-      if (sign === validSign && sign2 === validSign2) {
+    const status = (await this.api.status({
+      transactionId,
+    })) as StatusResponseSuccess;
+    if (status.transactionId) {
+      const parsed = Object.entries(status).reduce(
+        (acc, [objectKey, payload]) => {
+          const { token, info, _id } = splitProperties({ objectKey, payload });
+          if (token) {
+            return {
+              _id,
+              token,
+              info,
+              objectKey,
+            };
+          }
+          return acc;
+        },
+        {}
+      ) as {
+        _id?: string;
+        token?: Record<string, unknown>;
+        info?: Record<string, unknown>;
+        objectKey?: string;
+      };
+      if (parsed.objectKey) {
         logger.info(
-          'Datatrans Plugin: Registered successfully',
-          transactionResponse
+          `Datatrans Plugin: Registration successful with ${parsed.objectKey}`,
+          parsed.info
         );
         return {
-          token: aliasCC,
-          expy,
-          expm,
-          pmethod,
-          currency,
-          maskedCC,
+          ...parsed,
+          paymentMethod: status.paymentMethod,
+          currency: status.currency,
+          language: status.language,
+          type: status.type,
         };
       }
-      logger.info(
-        `Datatrans Plugin: Somebody evil attempted to trick us, fix ${sign} === ${validSign}, ${sign2} === ${validSign2}`,
-        transactionResponse
-      );
+      logger.info(`Datatrans Plugin: Could not parse registration data`, status);
+      return null;
     }
     logger.info('Datatrans Plugin: Registration declined', transactionResponse);
     return null;

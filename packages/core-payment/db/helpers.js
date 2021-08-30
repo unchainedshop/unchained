@@ -147,6 +147,7 @@ PaymentCredentials.findCredentials = ({ paymentCredentialsId }, options) => {
 PaymentCredentials.upsertCredentials = ({
   userId,
   paymentProviderId,
+  _id,
   token,
   ...meta
 }) => {
@@ -154,6 +155,7 @@ PaymentCredentials.upsertCredentials = ({
     {
       userId,
       paymentProviderId,
+      _id: _id || { $exists: true },
     },
     {
       $setOnInsert: {
@@ -191,12 +193,10 @@ PaymentCredentials.registerPaymentCredentials = ({
     userId
   );
   if (!registration) return null;
-  const { token, ...meta } = registration;
   const paymentCredentialsId = PaymentCredentials.upsertCredentials({
     userId,
     paymentProviderId,
-    token,
-    ...meta,
+    ...registration,
   });
   return PaymentCredentials.findOne(
     paymentCredentialsId

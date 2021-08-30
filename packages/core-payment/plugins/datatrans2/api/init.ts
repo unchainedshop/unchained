@@ -11,9 +11,16 @@ const defaultRedirect = getPaths();
 
 export default async function init({
   option,
-  redirect,
+  redirect: userRedirect,
   ...payload
 }: InitRequestPayload): Promise<InitResponse> {
+  const redirect = {
+    ...defaultRedirect,
+    ...(userRedirect || {}),
+  } as Partial<typeof defaultRedirect>;
+  delete redirect?.postUrl;
+  delete redirect?.returnUrl;
+
   const reqBody = {
     ...payload,
     autoSettle: false,
@@ -23,10 +30,7 @@ export default async function init({
       returnCustomerCountry: true,
       authenticationOnly: false,
     },
-    redirect: {
-      ...defaultRedirect,
-      ...(redirect || {}),
-    },
+    redirect,
   };
 
   const { fetchDatatrans }: { fetchDatatrans: FetchDatatransFn } = this;

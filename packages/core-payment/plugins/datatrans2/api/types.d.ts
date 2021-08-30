@@ -245,6 +245,8 @@ export type StatusResponseSuccess = {
   refno2: string;
   paymentMethod: PaymentMethod;
   language: SupportedLanguage;
+  detail: Record<string, unknown>;
+  history: Record<string, unknown>[];
 };
 
 export type SecureFieldsRequestPayload = {
