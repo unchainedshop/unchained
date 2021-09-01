@@ -9,7 +9,6 @@ import AssortmentLinkList from '../../components/assortments/AssortmentLinkList'
 import AssortmentProductList from '../../components/assortments/AssortmentProductList';
 import AssortmentFilterList from '../../components/assortments/AssortmentFilterList';
 import FormEditAssortmentTexts from '../../components/assortments/FormEditAssortmentTexts';
-import AssortmentMediaListMinio from '../../components/assortments/AssortmentMediaListMinio';
 import AssortmentMediaList from '../../components/assortments/AssortmentMediaList';
 
 export default connectApollo(

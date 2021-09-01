@@ -8,7 +8,6 @@ export default async function prepareUserAvatarUpload(
   { userId, ...context }
 ) {
   log('mutation prepareUserAvatarUpload', { mediaName, userId });
-
   return Users.createSignedUploadURL(mediaName, {
     userId,
     ...context,

@@ -57,7 +57,7 @@ function downloadFromUrlToBuffer(url) {
 if ((!MINIO_ACCESS_KEY || !MINIO_SECRET_KEY || !MINIO_ENDPOINT, !MINIO_PORT))
   return;
 
-const generateRandomeFileName = (fileName) => {
+const generateRandomFileName = (fileName) => {
   const random = crypto.randomBytes(16);
   const hash = crypto
     .createHash('sha256')
@@ -97,7 +97,7 @@ export const createSignedPutURL = async (
 ) => {
   if (!client)
     throw new Error('Required minio environment variables not defined');
-  const { hash, hashedName } = generateRandomeFileName(fileName);
+  const { hash, hashedName } = generateRandomFileName(fileName);
 
   const putURL = await client.presignedPutObject(
     MINIO_BUCKET_NAME,
@@ -161,7 +161,7 @@ export const uploadObjectStream = async (directoryName, rawFile, options) => {
     stream = bufferToStream(Buffer.from(rawFile.buffer, 'base64'));
   }
 
-  const { hash, hashedName } = generateRandomeFileName(fname);
+  const { hash, hashedName } = generateRandomFileName(fname);
 
   await client.putObject(
     MINIO_BUCKET_NAME,
@@ -193,7 +193,7 @@ export const uploadFileFromURL = async (
 ) => {
   const { href } = new URL(fileLink);
   const filename = fileName || href.split('/').pop();
-  const { hash, hashedName } = generateRandomeFileName(filename);
+  const { hash, hashedName } = generateRandomFileName(filename);
 
   const buff = await downloadFromUrlToBuffer(fileLink);
   await client.putObject(
