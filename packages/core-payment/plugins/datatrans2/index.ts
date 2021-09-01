@@ -304,7 +304,10 @@ class Datatrans extends PaymentAdapter {
           type: status.type,
         };
       }
-      logger.info(`Datatrans Plugin: Could not parse registration data`, status);
+      logger.info(
+        `Datatrans Plugin: Could not parse registration data`,
+        status
+      );
       return null;
     }
     logger.info('Datatrans Plugin: Registration declined', transactionResponse);
