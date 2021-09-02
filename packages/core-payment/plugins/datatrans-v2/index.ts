@@ -47,7 +47,7 @@ const throwIfResponseError = (result) => {
 class Datatrans extends PaymentAdapter {
   static key = 'shop.unchained.datatrans';
 
-  static label = 'Datatrans Modern (https://docs.datatrans.ch)';
+  static label = 'Datatrans (https://docs.datatrans.ch)';
 
   static version = '2.0.0';
 
