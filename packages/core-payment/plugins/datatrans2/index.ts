@@ -2,23 +2,19 @@ import {
   PaymentDirector,
   PaymentAdapter,
   PaymentError,
-  PaymentCredentials,
 } from 'meteor/unchained:core-payment';
-import { OrderPayments } from 'meteor/unchained:core-orders';
-import { useMiddlewareWithCurrentContext } from 'meteor/unchained:api';
-import bodyParser from 'body-parser';
 import { createLogger } from 'meteor/unchained:core-logger';
-import generateSignature, { Security } from './generateSignature';
 import roundedAmountFromOrder from './roundedAmountFromOrder';
 import createDatatransAPI from './api';
-import getPaths from './getPaths';
 import parseRegistrationData from './parseRegistrationData';
+import './middleware';
 
 import type {
   ResponseError,
   InitResponseSuccess,
   ValidateResponseSuccess,
   StatusResponseSuccess,
+  AuthorizeResponseSuccess,
 } from './api/types';
 
 const logger = createLogger('unchained:core-payment:datatrans2');
@@ -27,130 +23,17 @@ const logger = createLogger('unchained:core-payment:datatrans2');
 const {
   DATATRANS_SECRET,
   DATATRANS_SIGN_KEY,
-  DATATRANS_SIGN2_KEY,
-  DATATRANS_SECURITY = Security.DYNAMIC_SIGN,
   DATATRANS_API_ENDPOINT = 'https://api.sandbox.datatrans.com',
 } = process.env;
 
-const { postUrl, cancelUrl, errorUrl, successUrl, returnUrl } = getPaths(true);
-
-useMiddlewareWithCurrentContext(
-  postUrl,
-  bodyParser.urlencoded({ extended: false })
-);
-
-useMiddlewareWithCurrentContext(
-  cancelUrl,
-  bodyParser.urlencoded({ extended: false })
-);
-
-useMiddlewareWithCurrentContext(
-  errorUrl,
-  bodyParser.urlencoded({ extended: false })
-);
-
-useMiddlewareWithCurrentContext(
-  successUrl,
-  bodyParser.urlencoded({ extended: false })
-);
-
-useMiddlewareWithCurrentContext(
-  returnUrl,
-  bodyParser.urlencoded({ extended: false })
-);
-
-useMiddlewareWithCurrentContext(postUrl, async (req, res) => {
-  if (req.method === 'POST') {
-    const authorizationResponse = req.body || {};
-    const { refno, amount } = authorizationResponse;
-    if (refno) {
-      try {
-        if (amount === '0') {
-          const [paymentProviderId, userId] = refno.split(':');
-          const paymentCredentials =
-            PaymentCredentials.registerPaymentCredentials({
-              paymentProviderId,
-              paymentContext: authorizationResponse,
-              userId,
-            });
-          logger.info(
-            `Datatrans Webhook: Unchained registered payment credentials for ${userId}`,
-            { userId }
-          );
-          res.writeHead(200);
-          res.end(JSON.stringify(paymentCredentials));
-          return;
-        }
-        const orderPayment = OrderPayments.findOne({ _id: refno });
-        const order = await orderPayment
-          .order()
-          .checkout({ paymentContext: authorizationResponse });
-        res.writeHead(200);
-        logger.info(
-          `Datatrans Webhook: Unchained confirmed checkout for order ${order.orderNumber}`,
-          { orderId: order._id }
-        );
-        res.end(JSON.stringify(order));
-        return;
-      } catch (e) {
-        logger.error(
-          `Datatrans Webhook: Unchained rejected to checkout with message ${JSON.stringify(
-            e
-          )}`
-        );
-        res.writeHead(500);
-        res.end(JSON.stringify(e));
-        return;
-      }
-    } else {
-      logger.error(`Datatrans Webhook: Reference number not set`);
-    }
+const throwIfResponseError = (result) => {
+  if ((result as ResponseError).error) {
+    const rawError = (result as ResponseError).error;
+    const error = new Error(rawError.message);
+    error.name = `DATATRANS_${rawError.code}`;
+    throw error;
   }
-  res.writeHead(404);
-  res.end();
-});
-
-useMiddlewareWithCurrentContext(successUrl, async (req, res) => {
-  if (req.method === 'GET') {
-    const { datatransTrxId } = req.query;
-    res.end(`Payment successful\nTransaction ID: ${datatransTrxId}`);
-    return;
-  }
-  res.writeHead(404);
-  res.end();
-});
-
-useMiddlewareWithCurrentContext(errorUrl, async (req, res) => {
-  if (req.method === 'GET') {
-    const { datatransTrxId } = req.query;
-    res.end(`Payment error\nTransaction ID: ${datatransTrxId}`);
-    return;
-  }
-  res.writeHead(404);
-  res.end();
-});
-
-useMiddlewareWithCurrentContext(cancelUrl, async (req, res) => {
-  if (req.method === 'GET') {
-    const { datatransTrxId } = req.query;
-    res.end(`Payment cancelled\nTransaction ID: ${datatransTrxId}`);
-    return;
-  }
-  res.writeHead(404);
-  res.end();
-});
-
-useMiddlewareWithCurrentContext(returnUrl, async (req, res) => {
-  if (req.method === 'GET') {
-    const { datatransTrxId } = req.query;
-    res.end(
-      `Secure Fields Payment authenticated\nTransaction ID: ${datatransTrxId}\nNeeds authorization`
-    );
-  }
-  res.writeHead(404);
-  res.end();
-});
-
+};
 class Datatrans extends PaymentAdapter {
   static key = 'shop.unchained.datatrans';
 
@@ -255,13 +138,8 @@ class Datatrans extends PaymentAdapter {
         },
         amount: price.amount,
       });
-      if ((result as InitResponseSuccess).transactionId) {
-        return JSON.stringify(result);
-      }
-      const rawError = (result as ResponseError).error;
-      const error = new Error(rawError.message);
-      error.name = `DATATRANS_${rawError.code}`;
-      throw error;
+      throwIfResponseError(result);
+      return JSON.stringify(result as InitResponseSuccess);
     }
     const result = await this.api.init({
       ...additionalInitPayload,
@@ -273,13 +151,8 @@ class Datatrans extends PaymentAdapter {
       },
       amount: price.amount,
     });
-    if ((result as InitResponseSuccess).transactionId) {
-      return JSON.stringify(result);
-    }
-    const rawError = (result as ResponseError).error;
-    const error = new Error(rawError.message);
-    error.name = `DATATRANS_${rawError.code}`;
-    throw error;
+    throwIfResponseError(result);
+    return JSON.stringify(result as InitResponseSuccess);
   }
 
   async validate(token) {
@@ -306,60 +179,47 @@ class Datatrans extends PaymentAdapter {
     return null;
   }
 
-  // async chargeWithCredentials(paymentCredentials) {
-  //   const merchantId = this.getMerchantId();
-  //   const { order } = this.context;
-  //   const refno = order.paymentId;
-  //   const { currency, amount } = roundedAmountFromOrder(order);
-  //   const aliasCC = paymentCredentials.token;
-
-  //   const result = await authorize({
-  //     endpoint: DATATRANS_API_ENDPOINT,
-  //     secret: DATATRANS_SECRET,
-  //     ...paymentCredentials.meta,
-  //     merchantId,
-  //     refno,
-  //     amount,
-  //     currency,
-  //     aliasCC,
-  //   });
-  //   const response =
-  //     result?.authorizationService?.body?.[0]?.transaction?.[0]?.response?.[0];
-  //   if (!response || response.status?.[0] !== 'success') {
-  //     logger.info(
-  //       'Datatrans Plugin: Payment declined from authorization service',
-  //       result
-  //     );
-  //     throw new Error('Payment declined');
-  //   }
-
-  //   const convertedResponse = Object.fromEntries(
-  //     Object.entries(response).map(([key, values]) => {
-  //       return [key, values?.[0]];
-  //     })
-  //   );
-  //   return {
-  //     ...paymentCredentials.meta,
-  //     merchantId,
-  //     refno,
-  //     amount,
-  //     currency,
-  //     aliasCC,
-  //     ...convertedResponse,
-  //   };
-  // }
-
-  async authorize(paymentCredentials) {
-    console.log(paymentCredentials);
+  async authorize({ paymentCredentials, extensions }): Promise<string> {
+    const splits = this.getMarketplaceSplits();
+    const { order, userId } = this.context;
+    const orderPayment = order.payment();
+    const refno = orderPayment._id;
+    const refno2 = userId;
+    const { currency, amount } = roundedAmountFromOrder(order);
+    const result = await this.api.authorize({
+      ...extensions,
+      amount,
+      currency,
+      refno,
+      refno2,
+      autoSettle: false,
+      customer: {
+        id: userId,
+      },
+      marketplace: splits.length
+        ? {
+            splits,
+          }
+        : undefined,
+      [paymentCredentials.meta.objectKey]: JSON.parse(paymentCredentials.token),
+    });
+    throwIfResponseError(result);
+    return (result as AuthorizeResponseSuccess).transactionId;
   }
 
-  validateAgainstOrder(transaction: StatusResponseSuccess) {
+  isTransactionAmountValid(transaction: StatusResponseSuccess): boolean {
     const { order } = this.context;
-    console.log(transaction, order);
+    const { currency, amount } = roundedAmountFromOrder(order);
+    if (
+      transaction.currency !== currency ||
+      (transaction.detail.authorize as any)?.amount !== amount
+    ) {
+      return false;
+    }
     return true;
   }
 
-  async settle({ transactionId, refno, refno2, extensions }) {
+  async settle({ transactionId, refno, refno2, extensions }): Promise<boolean> {
     const splits = this.getMarketplaceSplits();
     const { order } = this.context;
     const { currency, amount } = roundedAmountFromOrder(order);
@@ -376,21 +236,28 @@ class Datatrans extends PaymentAdapter {
         : undefined,
       extensions,
     });
+    throwIfResponseError(result);
+    return result as boolean;
+  }
+
+  async cancel({ transactionId, refno }): Promise<boolean> {
+    const result = await this.api.cancel({
+      transactionId,
+      refno,
+    });
     if (!result) {
-      logger.info(`Datatrans Plugin: Settlement failed`, result);
+      logger.info(`Datatrans Plugin: Canceling failed`, result);
       return false;
     }
     return true;
   }
-
-  async cancel() {}
 
   async charge({
     transactionId: rawTransactionId,
     paymentCredentials,
     ...extensions
   }) {
-    if (!rawTransactionId || !paymentCredentials) {
+    if (!rawTransactionId && !paymentCredentials) {
       logger.info(
         'Datatrans Plugin: Not trying to charge because of missing payment authorization response, return false to provide later'
       );
@@ -398,11 +265,17 @@ class Datatrans extends PaymentAdapter {
     }
 
     const transactionId =
-      rawTransactionId || (await this.authorize(paymentCredentials));
+      rawTransactionId ||
+      (await this.authorize({
+        paymentCredentials,
+        extensions,
+      }));
 
-    const transaction = await this.api.status({ transactionId });
+    const transaction: StatusResponseSuccess = (await this.api.status({
+      transactionId,
+    })) as StatusResponseSuccess;
+    const status = transaction?.status;
 
-    const status = (transaction as StatusResponseSuccess)?.status;
     if (!status) {
       logger.info(
         `Datatrans Plugin: Transaction declined / Transaction ID ${transactionId} not found`
@@ -426,24 +299,29 @@ class Datatrans extends PaymentAdapter {
 
     if (status === 'authorized') {
       // either settle or cancel
-      if (!this.validateAgainstOrder(transaction as StatusResponseSuccess)) {
-        logger.info(
-          `Datatrans Plugin: Transaction declined / Transaction ID ${transactionId} because of amount mismatch`
-        );
-        throw new Error('Amount / Currency Mismatch with Cart');
-      }
-      if (this.settleInUnchained()) {
-        // if further deferred settlement is active, don't settle in unchained and hand off
-        // settlement to other systems
-        const settled = await this.settle({
-          transactionId,
-          refno: (transaction as StatusResponseSuccess).refno,
-          refno2: (transaction as StatusResponseSuccess).refno2,
-          extensions,
-        });
-        if (!settled) {
-          throw new Error('Settlement of transaction failed');
+      try {
+        if (!this.isTransactionAmountValid(transaction)) {
+          logger.info(
+            `Datatrans Plugin: Transaction declined / Transaction ID ${transactionId} because of amount/currency mismatch`
+          );
+          throw new Error('Amount / Currency Mismatch with Cart');
         }
+        if (this.settleInUnchained()) {
+          // if further deferred settlement is active, don't settle in unchained and hand off
+          // settlement to other systems
+          await this.settle({
+            transactionId,
+            refno: transaction.refno,
+            refno2: transaction.refno2,
+            extensions,
+          });
+        }
+      } catch (e) {
+        await this.cancel({
+          transactionId,
+          refno: transaction.refno,
+        });
+        throw e;
       }
     }
 
@@ -454,12 +332,14 @@ class Datatrans extends PaymentAdapter {
       // network hicup or registration data parsing error
       // at the dumbest possible moment
       try {
-        credentials = parseRegistrationData(
-          settledTransaction as StatusResponseSuccess
-        );
-        settledTransaction = await this.api.status({ transactionId });
-        if ((settledTransaction as ResponseError)?.error) {
+        credentials = parseRegistrationData(settledTransaction);
+        const result = await this.api.status({
+          transactionId,
+        });
+        if ((result as ResponseError)?.error) {
           settledTransaction = transaction;
+        } else {
+          settledTransaction = result as StatusResponseSuccess;
         }
       } catch (e) {
         logger.error(

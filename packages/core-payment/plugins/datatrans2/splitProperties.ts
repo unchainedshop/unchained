@@ -16,6 +16,7 @@ export default function splitProperties({
 
   if (objectKey === 'card') {
     const { expiryMonth, alias, expiryYear, ...info } = payload;
+    if (!alias) return { info };
     const is3DActive = !!payload['3D']?.xid;
     if (is3DActive) {
       delete info['3D'];
@@ -37,6 +38,7 @@ export default function splitProperties({
 
   if (objectKey === 'PAY') {
     const { signature, protocolVersion, signedMessage, ...info } = payload;
+    if (!signedMessage) return { info };
     return {
       token: JSON.stringify({
         signature,
@@ -49,6 +51,7 @@ export default function splitProperties({
 
   if (objectKey === 'APL') {
     const { data, header, signature, version, ...info } = payload;
+    if (!data) return { info };
     delete info['3D'];
     return {
       token: JSON.stringify({
