@@ -26,12 +26,22 @@ const {
   DATATRANS_API_ENDPOINT = 'https://api.sandbox.datatrans.com',
 } = process.env;
 
+const newDatatransError = ({
+  code,
+  message,
+}: {
+  code: string;
+  message: string;
+}) => {
+  const error = new Error(message);
+  error.name = `DATATRANS_${code}`;
+  return error;
+};
+
 const throwIfResponseError = (result) => {
   if ((result as ResponseError).error) {
     const rawError = (result as ResponseError).error;
-    const error = new Error(rawError.message);
-    error.name = `DATATRANS_${rawError.code}`;
-    throw error;
+    throw newDatatransError(rawError);
   }
 };
 class Datatrans extends PaymentAdapter {
@@ -168,14 +178,13 @@ class Datatrans extends PaymentAdapter {
 
   async register(transactionResponse) {
     const { transactionId } = transactionResponse;
-
-    const status = (await this.api.status({
+    const result = (await this.api.status({
       transactionId,
     })) as StatusResponseSuccess;
-    if (status.transactionId) {
-      return parseRegistrationData(status);
+    logger.info('Datatrans Plugin: Registration Result', result);
+    if (result.transactionId) {
+      return parseRegistrationData(result);
     }
-    logger.info('Datatrans Plugin: Registration declined', transactionResponse);
     return null;
   }
 
@@ -245,11 +254,8 @@ class Datatrans extends PaymentAdapter {
       transactionId,
       refno,
     });
-    if (!result) {
-      logger.info(`Datatrans Plugin: Canceling failed`, result);
-      return false;
-    }
-    return true;
+    throwIfResponseError(result);
+    return result as boolean;
   }
 
   async charge({
@@ -258,7 +264,7 @@ class Datatrans extends PaymentAdapter {
     ...extensions
   }) {
     if (!rawTransactionId && !paymentCredentials) {
-      logger.info(
+      logger.warn(
         'Datatrans Plugin: Not trying to charge because of missing payment authorization response, return false to provide later'
       );
       return false;
@@ -274,37 +280,40 @@ class Datatrans extends PaymentAdapter {
     const transaction: StatusResponseSuccess = (await this.api.status({
       transactionId,
     })) as StatusResponseSuccess;
+    throwIfResponseError(transaction);
     const status = transaction?.status;
 
-    if (!status) {
-      logger.info(
-        `Datatrans Plugin: Transaction declined / Transaction ID ${transactionId} not found`
-      );
-      throw new Error('Transaction not found');
-    }
-
     if (status === 'canceled' || status === 'failed') {
-      logger.info(
+      logger.error(
         `Datatrans Plugin: Transaction declined / Transaction ID ${transactionId} has invalid status`
       );
-      throw new Error('Payment canceled/failed');
+      throw newDatatransError({
+        code: `STATUS_${status.toUpperCase()}`,
+        message: 'Payment declined',
+      });
     }
 
     if (status === 'authenticated') {
-      logger.info(
+      logger.error(
         `Datatrans Plugin: Transaction declined / Transaction ID ${transactionId} not authorized yet`
       );
-      throw new Error('Payment not authorized');
+      throw newDatatransError({
+        code: `STATUS_${status.toUpperCase()}`,
+        message: 'Payment not yet authorized',
+      });
     }
 
     if (status === 'authorized') {
       // either settle or cancel
       try {
         if (!this.isTransactionAmountValid(transaction)) {
-          logger.info(
+          logger.error(
             `Datatrans Plugin: Transaction declined / Transaction ID ${transactionId} because of amount/currency mismatch`
           );
-          throw new Error('Amount / Currency Mismatch with Cart');
+          throw newDatatransError({
+            code: `YOU_HAVE_TO_PAY_THE_FULL_AMOUNT_DUDE`,
+            message: 'Amount / Currency Mismatch with Cart',
+          });
         }
         if (this.settleInUnchained()) {
           // if further deferred settlement is active, don't settle in unchained and hand off
@@ -317,10 +326,14 @@ class Datatrans extends PaymentAdapter {
           });
         }
       } catch (e) {
-        await this.cancel({
-          transactionId,
-          refno: transaction.refno,
-        });
+        try {
+          await this.cancel({
+            transactionId,
+            refno: transaction.refno,
+          });
+        } catch (ee) {
+          //
+        }
         throw e;
       }
     }
@@ -342,7 +355,8 @@ class Datatrans extends PaymentAdapter {
           settledTransaction = result as StatusResponseSuccess;
         }
       } catch (e) {
-        logger.error(
+        // Don't throw further, we don't want to lose cart/settlement links
+        logger.warn(
           `Datatrans Plugin: Existing Transaction could not be retrieved with ID ${transactionId}`
         );
       }
@@ -359,11 +373,12 @@ class Datatrans extends PaymentAdapter {
       status === 'challenge_ongoing' ||
       status === 'transmitted'
     ) {
-      logger.info(`Datatrans Plugin: Transaction in transit`);
+      logger.warn(
+        `Datatrans Plugin: Transaction ID ${transactionId} in transit with status ${status}`
+      );
       return false;
     }
-
-    throw new Error('BLUB');
+    return false;
   }
 }
 

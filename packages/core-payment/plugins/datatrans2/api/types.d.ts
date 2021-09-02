@@ -356,7 +356,7 @@ export type ValidateResponse = ValidateResponseSuccess | ResponseError;
 
 export type SettleResponse = true | ResponseError;
 
-export type CancelResponse = true | CancelRequestPayload;
+export type CancelResponse = true | ResponseError;
 
 export type FetchDatatransFn = (
   path: string,
