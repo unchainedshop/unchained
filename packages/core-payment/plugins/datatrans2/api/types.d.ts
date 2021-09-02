@@ -326,7 +326,7 @@ export type ValidateResponseSuccess = {
 
 export type SettleRequestPayload = {
   transactionId: string;
-  amount: string;
+  amount: number;
   currency: string;
   refno: string;
   refno2?: string;

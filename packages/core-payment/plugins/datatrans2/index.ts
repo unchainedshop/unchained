@@ -12,7 +12,7 @@ import generateSignature, { Security } from './generateSignature';
 import roundedAmountFromOrder from './roundedAmountFromOrder';
 import createDatatransAPI from './api';
 import getPaths from './getPaths';
-import splitProperties from './splitProperties';
+import parseRegistrationData from './parseRegistrationData';
 
 import type {
   ResponseError,
@@ -176,6 +176,35 @@ class Datatrans extends PaymentAdapter {
     }, null);
   }
 
+  settleInUnchained() {
+    return this.config.reduce((current, item) => {
+      if (item.key === 'settleInUnchained') return Boolean(item.value);
+      return current;
+    }, true);
+  }
+
+  getMarketplaceSplits(): {
+    subMerchantId: string;
+    amount: number;
+    comission: number;
+  }[] {
+    return this.config.flatMap((item) => {
+      if (item.key === 'marketplaceSplit') {
+        const [subMerchantId, amount, comission] = item.value
+          .split(';')
+          .map((f) => f.trim());
+        return [
+          {
+            subMerchantId,
+            amount: parseInt(amount, 10),
+            comission: parseInt(comission, 10),
+          },
+        ];
+      }
+      return [];
+    }, null);
+  }
+
   configurationError() {
     if (!this.getMerchantId() || !DATATRANS_SECRET || !DATATRANS_SIGN_KEY) {
       return PaymentError.INCOMPLETE_CONFIGURATION;
@@ -271,170 +300,190 @@ class Datatrans extends PaymentAdapter {
       transactionId,
     })) as StatusResponseSuccess;
     if (status.transactionId) {
-      const parsed = Object.entries(status).reduce(
-        (acc, [objectKey, payload]) => {
-          const { token, info, _id } = splitProperties({ objectKey, payload });
-          if (token) {
-            return {
-              _id,
-              token,
-              info,
-              objectKey,
-            };
-          }
-          return acc;
-        },
-        {}
-      ) as {
-        _id?: string;
-        token?: Record<string, unknown>;
-        info?: Record<string, unknown>;
-        objectKey?: string;
-      };
-      if (parsed.objectKey) {
-        logger.info(
-          `Datatrans Plugin: Registration successful with ${parsed.objectKey}`,
-          parsed.info
-        );
-        return {
-          ...parsed,
-          paymentMethod: status.paymentMethod,
-          currency: status.currency,
-          language: status.language,
-          type: status.type,
-        };
-      }
-      logger.info(
-        `Datatrans Plugin: Could not parse registration data`,
-        status
-      );
-      return null;
+      return parseRegistrationData(status);
     }
     logger.info('Datatrans Plugin: Registration declined', transactionResponse);
     return null;
   }
 
-  async chargeWithCredentials(paymentCredentials) {
-    const merchantId = this.getMerchantId();
-    const { order } = this.context;
-    const refno = order.paymentId;
-    const { currency, amount } = roundedAmountFromOrder(order);
-    const aliasCC = paymentCredentials.token;
+  // async chargeWithCredentials(paymentCredentials) {
+  //   const merchantId = this.getMerchantId();
+  //   const { order } = this.context;
+  //   const refno = order.paymentId;
+  //   const { currency, amount } = roundedAmountFromOrder(order);
+  //   const aliasCC = paymentCredentials.token;
 
-    const result = await authorize({
-      endpoint: DATATRANS_API_ENDPOINT,
-      secret: DATATRANS_SECRET,
-      ...paymentCredentials.meta,
-      merchantId,
-      refno,
-      amount,
-      currency,
-      aliasCC,
-    });
-    const response =
-      result?.authorizationService?.body?.[0]?.transaction?.[0]?.response?.[0];
-    if (!response || response.status?.[0] !== 'success') {
-      logger.info(
-        'Datatrans Plugin: Payment declined from authorization service',
-        result
-      );
-      throw new Error('Payment declined');
-    }
+  //   const result = await authorize({
+  //     endpoint: DATATRANS_API_ENDPOINT,
+  //     secret: DATATRANS_SECRET,
+  //     ...paymentCredentials.meta,
+  //     merchantId,
+  //     refno,
+  //     amount,
+  //     currency,
+  //     aliasCC,
+  //   });
+  //   const response =
+  //     result?.authorizationService?.body?.[0]?.transaction?.[0]?.response?.[0];
+  //   if (!response || response.status?.[0] !== 'success') {
+  //     logger.info(
+  //       'Datatrans Plugin: Payment declined from authorization service',
+  //       result
+  //     );
+  //     throw new Error('Payment declined');
+  //   }
 
-    const convertedResponse = Object.fromEntries(
-      Object.entries(response).map(([key, values]) => {
-        return [key, values?.[0]];
-      })
-    );
-    return {
-      ...paymentCredentials.meta,
-      merchantId,
-      refno,
-      amount,
-      currency,
-      aliasCC,
-      ...convertedResponse,
-    };
+  //   const convertedResponse = Object.fromEntries(
+  //     Object.entries(response).map(([key, values]) => {
+  //       return [key, values?.[0]];
+  //     })
+  //   );
+  //   return {
+  //     ...paymentCredentials.meta,
+  //     merchantId,
+  //     refno,
+  //     amount,
+  //     currency,
+  //     aliasCC,
+  //     ...convertedResponse,
+  //   };
+  // }
+
+  async authorize(paymentCredentials) {
+    console.log(paymentCredentials);
   }
 
-  async charge(payload) {
-    if (!payload) {
+  validateAgainstOrder(transaction: StatusResponseSuccess) {
+    const { order } = this.context;
+    console.log(transaction, order);
+    return true;
+  }
+
+  async settle({ transactionId, refno, refno2, extensions }) {
+    const splits = this.getMarketplaceSplits();
+    const { order } = this.context;
+    const { currency, amount } = roundedAmountFromOrder(order);
+    const result = await this.api.settle({
+      transactionId,
+      amount,
+      refno,
+      refno2,
+      currency,
+      marketplace: splits.length
+        ? {
+            splits,
+          }
+        : undefined,
+      extensions,
+    });
+    if (!result) {
+      logger.info(`Datatrans Plugin: Settlement failed`, result);
+      return false;
+    }
+    return true;
+  }
+
+  async cancel() {}
+
+  async charge({
+    transactionId: rawTransactionId,
+    paymentCredentials,
+    ...extensions
+  }) {
+    if (!rawTransactionId || !paymentCredentials) {
       logger.info(
         'Datatrans Plugin: Not trying to charge because of missing payment authorization response, return false to provide later'
       );
       return false;
     }
-    const ignoreSignatureCheck = !!payload.paymentCredentials;
-    const transactionResponse = payload.paymentCredentials
-      ? await this.chargeWithCredentials(payload.paymentCredentials)
-      : payload;
 
-    const {
-      aliasCC,
-      status,
-      uppTransactionId,
-      sign,
-      sign2,
-      expy,
-      expm,
-      pmethod,
-      maskedCC,
-    } = transactionResponse;
-    const merchantId = this.getMerchantId();
-    const { order } = this.context;
-    const refno = order.paymentId;
-    const { currency, amount } = roundedAmountFromOrder(order);
+    const transactionId =
+      rawTransactionId || (await this.authorize(paymentCredentials));
 
-    if (!status || status === 'error') {
-      logger.info('Datatrans Plugin: Payment declined', transactionResponse);
-      throw new Error('Payment declined');
+    const transaction = await this.api.status({ transactionId });
+
+    const status = (transaction as StatusResponseSuccess)?.status;
+    if (!status) {
+      logger.info(
+        `Datatrans Plugin: Transaction declined / Transaction ID ${transactionId} not found`
+      );
+      throw new Error('Transaction not found');
     }
-    const validSign = generateSignature({
-      security: DATATRANS_SECURITY,
-      signKey: DATATRANS_SIGN_KEY,
-    })(aliasCC, merchantId, amount, currency, refno);
-    const validSign2 = generateSignature({
-      security: DATATRANS_SECURITY,
-      signKey: DATATRANS_SIGN2_KEY || DATATRANS_SIGN_KEY,
-    })(aliasCC, merchantId, amount, currency, uppTransactionId);
-    if (DATATRANS_SECURITY.toLowerCase() !== Security.DYNAMIC_SIGN) {
-      if (
-        amount !== transactionResponse.amount ||
-        currency !== transactionResponse.currency
-      ) {
+
+    if (status === 'canceled' || status === 'failed') {
+      logger.info(
+        `Datatrans Plugin: Transaction declined / Transaction ID ${transactionId} has invalid status`
+      );
+      throw new Error('Payment canceled/failed');
+    }
+
+    if (status === 'authenticated') {
+      logger.info(
+        `Datatrans Plugin: Transaction declined / Transaction ID ${transactionId} not authorized yet`
+      );
+      throw new Error('Payment not authorized');
+    }
+
+    if (status === 'authorized') {
+      // either settle or cancel
+      if (!this.validateAgainstOrder(transaction as StatusResponseSuccess)) {
         logger.info(
-          `Datatrans Plugin: Somebody (evil?) attempted to charge the wrong amount`,
-          transactionResponse
+          `Datatrans Plugin: Transaction declined / Transaction ID ${transactionId} because of amount mismatch`
         );
-        throw new Error('Signature mismatch');
+        throw new Error('Amount / Currency Mismatch with Cart');
+      }
+      if (this.settleInUnchained()) {
+        // if further deferred settlement is active, don't settle in unchained and hand off
+        // settlement to other systems
+        const settled = await this.settle({
+          transactionId,
+          refno: (transaction as StatusResponseSuccess).refno,
+          refno2: (transaction as StatusResponseSuccess).refno2,
+          extensions,
+        });
+        if (!settled) {
+          throw new Error('Settlement of transaction failed');
+        }
       }
     }
-    if (
-      (sign === validSign &&
-        ((!sign2 && validSign2 === validSign) || sign2 === validSign2)) ||
-      ignoreSignatureCheck
-    ) {
-      logger.info(
-        'Datatrans Plugin: Charged successfully',
-        transactionResponse
-      );
+
+    if (status === 'authorized' || status === 'settled') {
+      let settledTransaction = transaction;
+      let credentials;
+      // here we try to guard us against a potential
+      // network hicup or registration data parsing error
+      // at the dumbest possible moment
+      try {
+        credentials = parseRegistrationData(
+          settledTransaction as StatusResponseSuccess
+        );
+        settledTransaction = await this.api.status({ transactionId });
+        if ((settledTransaction as ResponseError)?.error) {
+          settledTransaction = transaction;
+        }
+      } catch (e) {
+        logger.error(
+          `Datatrans Plugin: Existing Transaction could not be retrieved with ID ${transactionId}`
+        );
+      }
       return {
-        ...transactionResponse,
-        credentials: aliasCC && {
-          token: aliasCC,
-          expy,
-          expm,
-          pmethod,
-          currency,
-          maskedCC,
-        },
+        settledTransaction,
+        extensions,
+        credentials,
       };
     }
-    logger.info(
-      `Datatrans Plugin: Somebody (evil?) used the wrong signature when checking out, fix ${sign} === ${validSign}, ${sign2} === ${validSign2}`,
-      transactionResponse
-    );
-    throw new Error('Signature mismatch');
+
+    if (
+      status === 'initialized' ||
+      status === 'challenge_required' ||
+      status === 'challenge_ongoing' ||
+      status === 'transmitted'
+    ) {
+      logger.info(`Datatrans Plugin: Transaction in transit`);
+      return false;
+    }
+
+    throw new Error('BLUB');
   }
 }
 
