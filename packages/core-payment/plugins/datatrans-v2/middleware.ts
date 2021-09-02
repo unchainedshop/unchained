@@ -6,6 +6,8 @@ import { PaymentCredentials } from 'meteor/unchained:core-payment';
 import getPaths from './getPaths';
 import generateSignature, { Security } from './generateSignature';
 
+import type { StatusResponseSuccess } from './api/types';
+
 const { DATATRANS_SIGN2_KEY, DATATRANS_SECURITY = Security.DYNAMIC_SIGN } =
   process.env;
 
@@ -40,16 +42,17 @@ useMiddlewareWithCurrentContext(
 
 useMiddlewareWithCurrentContext(postUrl, async (req, res) => {
   if (req.method === 'POST') {
-    const authorizationResponse = req.body || {};
-    const { refno, amount } = authorizationResponse;
-    if (refno) {
+    const transaction: StatusResponseSuccess = req.body || {};
+
+    if (transaction.status === 'authorized') {
+      const userId = transaction.refno2;
+
       try {
-        if (amount === '0') {
-          const [paymentProviderId, userId] = refno.split(':');
+        if (transaction.type === 'card_check') {
           const paymentCredentials =
             PaymentCredentials.registerPaymentCredentials({
-              paymentProviderId,
-              paymentContext: authorizationResponse,
+              paymentProviderId: transaction.refno,
+              paymentContext: { transactionId: transaction.transactionId },
               userId,
             });
           logger.info(
@@ -60,17 +63,21 @@ useMiddlewareWithCurrentContext(postUrl, async (req, res) => {
           res.end(JSON.stringify(paymentCredentials));
           return;
         }
-        const orderPayment = OrderPayments.findOne({ _id: refno });
-        const order = await orderPayment
-          .order()
-          .checkout({ paymentContext: authorizationResponse });
-        res.writeHead(200);
-        logger.info(
-          `Datatrans Webhook: Unchained confirmed checkout for order ${order.orderNumber}`,
-          { orderId: order._id }
-        );
-        res.end(JSON.stringify(order));
-        return;
+        if (transaction.type === 'payment') {
+          const orderPayment = OrderPayments.findOne({
+            _id: transaction.refno,
+          });
+          const order = await orderPayment.order().checkout({
+            paymentContext: { transactionId: transaction.transactionId },
+          });
+          res.writeHead(200);
+          logger.info(
+            `Datatrans Webhook: Unchained confirmed checkout for order ${order.orderNumber}`,
+            { orderId: order._id }
+          );
+          res.end(JSON.stringify(order));
+          return;
+        }
       } catch (e) {
         logger.error(
           `Datatrans Webhook: Unchained rejected to checkout with message ${JSON.stringify(
@@ -81,8 +88,6 @@ useMiddlewareWithCurrentContext(postUrl, async (req, res) => {
         res.end(JSON.stringify(e));
         return;
       }
-    } else {
-      logger.error(`Datatrans Webhook: Reference number not set`);
     }
   }
   res.writeHead(404);

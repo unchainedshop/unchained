@@ -244,9 +244,27 @@ export type StatusResponseSuccess = {
   refno: string;
   refno2: string;
   paymentMethod: PaymentMethod;
-  language: SupportedLanguage;
   detail: Record<string, unknown>;
+  customer?: Customer;
+  cdm?: Record<string, unknown>;
+  language: SupportedLanguage;
+  card?: Record<string, unknown>;
+  TWI?: Record<string, unknown>;
+  PAP?: Record<string, unknown>;
+  REK?: Record<string, unknown>;
+  ELV?: Record<string, unknown>;
+  KLN?: Record<string, unknown>;
+  INT?: Record<string, unknown>;
+  SWP?: Record<string, unknown>;
+  MFX?: Record<string, unknown>;
+  MPX?: Record<string, unknown>;
+  MDP?: Record<string, unknown>;
+  ESY?: Record<string, unknown>;
+  PFC?: Record<string, unknown>;
+  WEC?: Record<string, unknown>;
+  SCX?: Record<string, unknown>;
   history: Record<string, unknown>[];
+  ep2?: Record<string, unknown>;
 };
 
 export type SecureFieldsRequestPayload = {
