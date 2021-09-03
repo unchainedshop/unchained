@@ -14,7 +14,7 @@ const {
   DATATRANS_SECURITY = Security.DYNAMIC_SIGN,
 } = process.env;
 
-const logger = createLogger('unchained:core-payment:datatrans2');
+const logger = createLogger('unchained:core-payment:datatrans');
 
 const { postUrl, cancelUrl, errorUrl, successUrl, returnUrl } = getPaths(true);
 
@@ -64,8 +64,10 @@ useMiddlewareWithCurrentContext(postUrl, async (req, res) => {
       );
       res.writeHead(403);
       res.end('Hash mismatch');
+      return;
     }
 
+    console.log(req.body);
     const transaction: StatusResponseSuccess = JSON.parse(
       req.body
     ) as StatusResponseSuccess;
@@ -106,9 +108,8 @@ useMiddlewareWithCurrentContext(postUrl, async (req, res) => {
         }
       } catch (e) {
         logger.error(
-          `Datatrans Webhook: Unchained rejected to checkout with message ${JSON.stringify(
-            e
-          )}`
+          `Datatrans Webhook: Unchained rejected to checkout with message`,
+          e
         );
         res.writeHead(500);
         res.end(JSON.stringify(e));

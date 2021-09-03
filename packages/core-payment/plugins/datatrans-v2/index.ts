@@ -17,14 +17,11 @@ import type {
   AuthorizeResponseSuccess,
 } from './api/types';
 
-const logger = createLogger('unchained:core-payment:datatrans2');
+const logger = createLogger('unchained:core-payment:datatrans');
 
 // v2
-const {
-  DATATRANS_SECRET,
-  DATATRANS_SIGN_KEY,
-  DATATRANS_API_ENDPOINT,
-} = process.env;
+const { DATATRANS_SECRET, DATATRANS_SIGN_KEY, DATATRANS_API_ENDPOINT } =
+  process.env;
 
 const newDatatransError = ({
   code,
@@ -166,13 +163,13 @@ class Datatrans extends PaymentAdapter {
   }
 
   async validate(token) {
+    if (!this.context.meta) return false;
     const { objectKey, currency } = this.context.meta;
     const result = await this.api.validate({
       refno: `valid-${new Date().getTime()}`,
       currency,
       [objectKey]: JSON.parse(token),
     });
-    logger.info(`Datatrans Plugin: Validation Result`, result);
     return (result as ValidateResponseSuccess)?.transactionId;
   }
 
@@ -181,7 +178,6 @@ class Datatrans extends PaymentAdapter {
     const result = (await this.api.status({
       transactionId,
     })) as StatusResponseSuccess;
-    logger.info('Datatrans Plugin: Registration Result', result);
     if (result.transactionId) {
       return parseRegistrationData(result);
     }
@@ -223,6 +219,15 @@ class Datatrans extends PaymentAdapter {
       transaction.currency !== currency ||
       (transaction.detail.authorize as any)?.amount !== amount
     ) {
+      logger.verbose(
+        `currency: ${transaction.currency} === ${currency} => ${
+          transaction.currency !== currency
+        }, amount: ${
+          (transaction.detail.authorize as any)?.amount
+        } === ${amount} => ${
+          (transaction.detail.authorize as any)?.amount !== amount
+        }`
+      );
       return false;
     }
     return true;

@@ -18,6 +18,7 @@ const startAndWaitForMeteor = async () => {
             UNCHAINED_DISABLE_EMAIL_INTERCEPTION: 1,
             DATATRANS_SECRET: 'secret',
             DATATRANS_SIGN_KEY: '1337',
+            DATATRANS_API_MOCKS_PATH: '../../tests/mocks/datatrans-v2',
             APPLE_IAP_SHARED_SECRET: '73b61776e7304f8ab1c2404df9192078',
           },
         },
