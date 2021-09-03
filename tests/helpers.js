@@ -35,14 +35,20 @@ let connection;
 
 export const getConnection = () => connection;
 
-const connect = async () => {
-  if (connection) return;
+export const disconnect = async () => {
+  await connection.close();
+};
+
+export const connect = async () => {
+  if (connection && connection.isConnected) return;
   const connectionUri =
     (await global.__MONGOD__?.getUri()) || global.__MONGO_URI__;
   connection = await MongoClient.connect(connectionUri, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
     poolSize: 1,
+    autoReconnect: false,
+    keepAlive: true,
   });
 };
 
@@ -75,11 +81,6 @@ export const wipeDatabase = async () => {
   const db = await connection.db(global.__MONGO_DB_NAME__);
   const collections = await db.collections();
   await Promise.all(collections.map((collection) => collection.deleteMany({})));
-  try {
-    await connection.close();
-  } catch (e) {
-    console.warn(e); // eslint-disable-line
-  }
 };
 
 const convertLinkToFetch =

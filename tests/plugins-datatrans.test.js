@@ -72,10 +72,7 @@ describe('Plugins: Datatrans Payments', () => {
   });
 
   describe('Mutation.signPaymentProviderForCredentialRegistration (Datatrans)', () => {
-    const sign =
-      '0c83ed74918d05cdd5309389dd8f011881250351f861619fbdfb9f75c711a5db';
-
-    it('request a new signed nonce', async () => {
+    it('starts a new transaction and checks if it is valid', async () => {
       const { data: { signPaymentProviderForCredentialRegistration } = {} } =
         await graphqlFetch({
           query: /* GraphQL */ `
@@ -92,11 +89,13 @@ describe('Plugins: Datatrans Payments', () => {
           },
         });
 
-      expect(signPaymentProviderForCredentialRegistration).toBe(sign);
-    });
-    it('datatrans accepts the parameters for a payment form', async () => {
-      // https://pay.sandbox.datatrans.com/upp/jsp/upStart.jsp?merchantId=1100004624&refno=datatrans&amount=100000&currency=CHF&sign=c3b752995f529d73d38edc0b682d0dd2007540f151c9c892a9c0966948599f72
-      const url = `https://pay.sandbox.datatrans.com/upp/jsp/upStart.jsp?merchantId=${merchantId}&refno=${refno}&amount=${amount}&currency=${currency}&sign=${sign}&useAlias=1`;
+      const { location, transactionId } = JSON.parse(
+        signPaymentProviderForCredentialRegistration,
+      );
+
+      const url = `https://pay.sandbox.datatrans.com/v1/start/${transactionId}`;
+      expect(location).toBe(url);
+
       const result = await fetch(url);
       const text = await result.text();
       expect(text).not.toMatch(/incorrect request/);
@@ -105,10 +104,7 @@ describe('Plugins: Datatrans Payments', () => {
   });
 
   describe('mutation.signPaymentProviderForCheckout (Datatrans) should', () => {
-    const sign =
-      'a71685e18e4f89f40be55bb959f02534fa5d72e9fc951a16b6cecd3ecbf7b9ec';
-
-    it('request a new signed nonce', async () => {
+    it('starts a new transaction and checks if it is valid', async () => {
       const {
         data: { signPaymentProviderForCheckout },
       } = await graphqlFetch({
@@ -129,41 +125,13 @@ describe('Plugins: Datatrans Payments', () => {
         },
       });
 
-      expect(signPaymentProviderForCheckout).toBe(sign);
-    });
-  });
+      const { location, transactionId } = JSON.parse(
+        signPaymentProviderForCheckout,
+      );
 
-  describe('OrderPaymentGeneric.sign (Datatrans)', () => {
-    const sign =
-      'a71685e18e4f89f40be55bb959f02534fa5d72e9fc951a16b6cecd3ecbf7b9ec';
+      const url = `https://pay.sandbox.datatrans.com/v1/start/${transactionId}`;
+      expect(location).toBe(url);
 
-    it('request a new signed nonce', async () => {
-      const { data: { me } = {} } = await graphqlFetch({
-        query: /* GraphQL */ `
-          query sign($transactionContext: JSON, $orderNumber: String) {
-            me {
-              cart(orderNumber: $orderNumber) {
-                _id
-                payment {
-                  _id
-                  ... on OrderPaymentGeneric {
-                    sign(transactionContext: $transactionContext)
-                  }
-                }
-              }
-            }
-          }
-        `,
-        variables: {
-          orderNumber: 'datatrans',
-          transactionContext: {},
-        },
-      });
-      expect(me?.cart?.payment?.sign).toBe(sign);
-    });
-    it('datatrans accepts the parameters for a payment form', async () => {
-      // https://pay.sandbox.datatrans.com/upp/jsp/upStart.jsp?merchantId=1100004624&refno=datatrans&amount=100000&currency=CHF&sign=c3b752995f529d73d38edc0b682d0dd2007540f151c9c892a9c0966948599f72
-      const url = `https://pay.sandbox.datatrans.com/upp/jsp/upStart.jsp?merchantId=${merchantId}&refno=${refno}&amount=${amount}&currency=${currency}&sign=${sign}&useAlias=1`;
       const result = await fetch(url);
       const text = await result.text();
       expect(text).not.toMatch(/incorrect request/);
@@ -172,36 +140,20 @@ describe('Plugins: Datatrans Payments', () => {
   });
 
   describe('Datatrans Hooks', () => {
-    it('mocks ingress declined payment webhook call', async () => {
-      const sign =
-        'a71685e18e4f89f40be55bb959f02534fa5d72e9fc951a16b6cecd3ecbf7b9ec';
-
-      const params = new URLSearchParams();
-      params.append('uppMsgType', 'post');
-      params.append('status', 'error');
-      params.append('uppTransactionId', '180710160458378622');
-      params.append('refno', refno);
-      params.append('amount', amount);
-      params.append('errorMessage', 'declined');
-      params.append('sign', sign);
-      params.append('errorCode', '1403');
-      params.append('language', 'en');
-      params.append('pmethod', 'VIS');
-      params.append('merchantId', merchantId);
-      params.append('reqtype', 'CAA');
-      params.append('errorDetail', 'Declined');
-      params.append('currency', currency);
-      params.append('acqErrorCode', '50');
-      params.append('testOnly', 'yes');
-      params.append('expm', '12');
-      params.append('expy', '18');
-      const result = await fetch('http://localhost:3000/graphql/datatrans', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8',
+    it.only('mocks ingress accepted card_check webhook call', async () => {
+      const result = await fetch(
+        'http://localhost:3000/payment/datatrans/webhook',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'datatrans-signature':
+              't=12424123412,s0=c4834800ca758bcd93c7ac639d1debc9dec1cadad60b00a6ba0afbc2466d1553',
+          },
+          body: `{"card":{"3D":{"authenticationResponse":"D"},"alias":"70119122433810042","expiryMonth":"12","expiryYear":"21","info":{"brand":"VISA CREDIT","country":"GB","issuer":"DATATRANS","type":"credit","usage":"consumer"},"masked":"424242xxxxxx4242"},"currency":"CHF","detail":{"authorize":{"acquirerAuthorizationCode":"100055"}},"history":[{"action":"init","date":"2021-09-03T08:00:32Z","ip":"212.232.234.26","source":"api","success":true},{"action":"authorize","date":"2021-09-03T08:00:55Z","ip":"212.232.234.26","source":"redirect","success":true}],"language":"de","paymentMethod":"VIS","refno":"${refno}","refno2":"${User._id}","status":"authorized","transactionId":"210903100032246655","type":"card_check"}`,
         },
-        body: params,
-      });
+      );
+
       expect(result.status).toBe(500);
 
       const order = await db
@@ -245,7 +197,7 @@ describe('Plugins: Datatrans Payments', () => {
       const result = await fetch('http://localhost:3000/graphql/datatrans', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8',
+          'Content-Type': 'application/json; charset=utf-8',
         },
         body: params,
       });
@@ -301,7 +253,7 @@ describe('Plugins: Datatrans Payments', () => {
       const result = await fetch('http://localhost:3000/graphql/datatrans', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8',
+          'Content-Type': 'application/json; charset=utf-8',
         },
         body: params,
       });
@@ -361,7 +313,7 @@ describe('Plugins: Datatrans Payments', () => {
       const result = await fetch('http://localhost:3000/graphql/datatrans', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8',
+          'Content-Type': 'application/json; charset=utf-8',
         },
         body: params,
       });

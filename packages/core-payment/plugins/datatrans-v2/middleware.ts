@@ -20,7 +20,9 @@ const { postUrl, cancelUrl, errorUrl, successUrl, returnUrl } = getPaths(true);
 
 useMiddlewareWithCurrentContext(
   postUrl,
-  bodyParser.urlencoded({ extended: false })
+  bodyParser.text({
+    type: 'application/json',
+  })
 );
 
 useMiddlewareWithCurrentContext(
@@ -43,12 +45,30 @@ useMiddlewareWithCurrentContext(
   bodyParser.urlencoded({ extended: false })
 );
 
-console.log(postUrl);
-
 useMiddlewareWithCurrentContext(postUrl, async (req, res) => {
-  console.log(req);
-  if (req.method === 'POST') {
-    const transaction: StatusResponseSuccess = req.body || {};
+  const signature = req.headers['datatrans-signature'];
+  if (req.method === 'POST' && signature) {
+    const [rawTimestamp, rawHash] = signature.split(',');
+    const [, hash] = rawHash.split('=');
+    const [, timestamp] = rawTimestamp.split('=');
+
+    const comparableSignature = generateSignature({
+      security: DATATRANS_SECURITY,
+      signKey: DATATRANS_SIGN2_KEY || DATATRANS_SIGN_KEY,
+    })(timestamp, req.body);
+
+    if (hash !== comparableSignature) {
+      logger.error(
+        `Datatrans Plugin: Hash mismatch: ${signature} / ${comparableSignature}`,
+        req.body
+      );
+      res.writeHead(403);
+      res.end('Hash mismatch');
+    }
+
+    const transaction: StatusResponseSuccess = JSON.parse(
+      req.body
+    ) as StatusResponseSuccess;
 
     if (transaction.status === 'authorized') {
       const userId = transaction.refno2;

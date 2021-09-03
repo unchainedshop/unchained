@@ -17,7 +17,7 @@ type Paths = {
 
 export default (relative = false): Paths => ({
   postUrl: `${relative ? '' : ROOT_URL}${
-    DATATRANS_WEBHOOK_PATH || '/payment/datatrans'
+    DATATRANS_WEBHOOK_PATH || '/payment/datatrans/webhook'
   }`,
   successUrl: `${relative ? '' : ROOT_URL}${
     DATATRANS_SUCCESS_PATH || '/payment/datatrans/success'

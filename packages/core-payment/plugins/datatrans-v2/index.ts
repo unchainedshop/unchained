@@ -23,7 +23,7 @@ const logger = createLogger('unchained:core-payment:datatrans2');
 const {
   DATATRANS_SECRET,
   DATATRANS_SIGN_KEY,
-  DATATRANS_API_ENDPOINT = 'https://api.sandbox.datatrans.com',
+  DATATRANS_API_ENDPOINT,
 } = process.env;
 
 const newDatatransError = ({
@@ -118,7 +118,7 @@ class Datatrans extends PaymentAdapter {
   get api() {
     if (!DATATRANS_SECRET) throw new Error('Credentials not Set');
     return createDatatransAPI(
-      DATATRANS_API_ENDPOINT,
+      DATATRANS_API_ENDPOINT || 'https://api.sandbox.datatrans.com',
       this.getMerchantId(),
       DATATRANS_SECRET
     );
