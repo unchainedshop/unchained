@@ -1,0 +1,21 @@
+{
+  "name": "@unchained/core-bookmarks",
+  "version": "1.0.0-beta12",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/unchainedshop/unchained.git"
+  },
+  "keywords": [
+    "unchained",
+    "ecommerce"
+  ],
+  "author": "Joël Meiller",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/unchainedshop/unchained/issues"
+  },
+  "homepage": "https://github.com/unchainedshop/unchained#readme",
+  "devDependencies": {
+    "@types/core": "1.0.0-beta12"
+  }
+}
