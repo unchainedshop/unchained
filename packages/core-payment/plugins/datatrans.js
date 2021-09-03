@@ -26,8 +26,8 @@ const {
   DATATRANS_SIGN_KEY,
   DATATRANS_SIGN2_KEY,
   DATATRANS_SECURITY = Security.DYNAMIC_SIGN,
-  DATATRANS_API_ENDPOINT = 'https://api.sandbox.datatrans.com',
-  DATATRANS_WEBHOOK_PATH = '/graphql/datatrans',
+  DATATRANS_API_ENDPOINT,
+  DATATRANS_WEBHOOK_PATH,
 } = process.env;
 
 const roundedAmountFromOrder = (order) => {
@@ -84,7 +84,9 @@ const datatransAuthorize = async ({
 </body>
 </authorizationService>`;
   const result = await fetch(
-    `${DATATRANS_API_ENDPOINT}/upp/jsp/XML_authorize.jsp`,
+    `${
+      DATATRANS_API_ENDPOINT || 'https://api.sandbox.datatrans.com'
+    }/upp/jsp/XML_authorize.jsp`,
     {
       method: 'POST',
       body,
@@ -99,60 +101,63 @@ const datatransAuthorize = async ({
 };
 
 useMiddlewareWithCurrentContext(
-  DATATRANS_WEBHOOK_PATH,
+  DATATRANS_WEBHOOK_PATH || '/graphql/datatrans',
   bodyParser.urlencoded({ extended: false })
 );
 
-useMiddlewareWithCurrentContext(DATATRANS_WEBHOOK_PATH, async (req, res) => {
-  if (req.method === 'POST') {
-    const authorizationResponse = req.body || {};
-    const { refno, amount } = authorizationResponse;
-    if (refno) {
-      try {
-        if (amount === '0') {
-          const [paymentProviderId, userId] = refno.split(':');
-          const paymentCredentials =
-            PaymentCredentials.registerPaymentCredentials({
-              paymentProviderId,
-              paymentContext: authorizationResponse,
-              userId,
-            });
-          logger.info(
-            `Datatrans Webhook: Unchained registered payment credentials for ${userId}`,
-            { userId }
-          );
+useMiddlewareWithCurrentContext(
+  DATATRANS_WEBHOOK_PATH || '/graphql/datatrans',
+  async (req, res) => {
+    if (req.method === 'POST') {
+      const authorizationResponse = req.body || {};
+      const { refno, amount } = authorizationResponse;
+      if (refno) {
+        try {
+          if (amount === '0') {
+            const [paymentProviderId, userId] = refno.split(':');
+            const paymentCredentials =
+              PaymentCredentials.registerPaymentCredentials({
+                paymentProviderId,
+                paymentContext: authorizationResponse,
+                userId,
+              });
+            logger.info(
+              `Datatrans Webhook: Unchained registered payment credentials for ${userId}`,
+              { userId }
+            );
+            res.writeHead(200);
+            res.end(JSON.stringify(paymentCredentials));
+            return;
+          }
+          const orderPayment = OrderPayments.findOne({ _id: refno });
+          const order = await orderPayment
+            .order()
+            .checkout({ paymentContext: authorizationResponse });
           res.writeHead(200);
-          res.end(JSON.stringify(paymentCredentials));
+          logger.info(
+            `Datatrans Webhook: Unchained confirmed checkout for order ${order.orderNumber}`,
+            { orderId: order._id }
+          );
+          res.end(JSON.stringify(order));
+          return;
+        } catch (e) {
+          logger.error(
+            `Datatrans Webhook: Unchained rejected to checkout with message ${JSON.stringify(
+              e
+            )}`
+          );
+          res.writeHead(500);
+          res.end(JSON.stringify(e));
           return;
         }
-        const orderPayment = OrderPayments.findOne({ _id: refno });
-        const order = await orderPayment
-          .order()
-          .checkout({ paymentContext: authorizationResponse });
-        res.writeHead(200);
-        logger.info(
-          `Datatrans Webhook: Unchained confirmed checkout for order ${order.orderNumber}`,
-          { orderId: order._id }
-        );
-        res.end(JSON.stringify(order));
-        return;
-      } catch (e) {
-        logger.error(
-          `Datatrans Webhook: Unchained rejected to checkout with message ${JSON.stringify(
-            e
-          )}`
-        );
-        res.writeHead(500);
-        res.end(JSON.stringify(e));
-        return;
+      } else {
+        logger.error(`Datatrans Webhook: Reference number not set`);
       }
-    } else {
-      logger.error(`Datatrans Webhook: Reference number not set`);
     }
+    res.writeHead(404);
+    res.end();
   }
-  res.writeHead(404);
-  res.end();
-});
+);
 
 class Datatrans extends PaymentAdapter {
   static key = 'shop.unchained.datatrans';

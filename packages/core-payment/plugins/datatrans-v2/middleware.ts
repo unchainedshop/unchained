@@ -8,8 +8,11 @@ import generateSignature, { Security } from './generateSignature';
 
 import type { StatusResponseSuccess } from './api/types';
 
-const { DATATRANS_SIGN2_KEY, DATATRANS_SECURITY = Security.DYNAMIC_SIGN } =
-  process.env;
+const {
+  DATATRANS_SIGN_KEY,
+  DATATRANS_SIGN2_KEY,
+  DATATRANS_SECURITY = Security.DYNAMIC_SIGN,
+} = process.env;
 
 const logger = createLogger('unchained:core-payment:datatrans2');
 
@@ -40,7 +43,10 @@ useMiddlewareWithCurrentContext(
   bodyParser.urlencoded({ extended: false })
 );
 
+console.log(postUrl);
+
 useMiddlewareWithCurrentContext(postUrl, async (req, res) => {
+  console.log(req);
   if (req.method === 'POST') {
     const transaction: StatusResponseSuccess = req.body || {};
 

@@ -7,7 +7,13 @@ export const Security = {
 };
 
 const generateSignature =
-  ({ security, signKey }) =>
+  ({
+    security,
+    signKey,
+  }: {
+    security: '' | 'static-sign' | 'dynamic-sign';
+    signKey: string;
+  }) =>
   (...parts) => {
     // https://docs.datatrans.ch/docs/security-sign
     if (security.toLowerCase() === Security.STATIC_SIGN) return signKey;
