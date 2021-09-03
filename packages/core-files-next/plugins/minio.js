@@ -2,21 +2,19 @@ import Minio from 'minio';
 import crypto from 'crypto';
 import { Readable } from 'stream';
 import http from 'https';
+import { url } from 'inspector';
 import { MediaObjects } from '../db';
 
 const {
   MINIO_ACCESS_KEY,
   MINIO_SECRET_KEY,
   MINIO_ENDPOINT,
-  MINIO_PORT,
   MINIO_BUCKET_NAME,
   NODE_ENV,
 } = process.env;
 
-const protocol = NODE_ENV === 'production' ? 'https://' : 'http://';
-
 const generateMinioUrl = (directoryName, filename) => {
-  return `${protocol}${MINIO_ENDPOINT}:${MINIO_PORT}/${MINIO_BUCKET_NAME}/${directoryName}/${filename}`;
+  return `${MINIO_ENDPOINT}/${MINIO_BUCKET_NAME}/${directoryName}/${filename}`;
 };
 
 const composeObjectName = (object) => {
@@ -54,8 +52,7 @@ function downloadFromUrlToBuffer(url) {
   });
 }
 
-if ((!MINIO_ACCESS_KEY || !MINIO_SECRET_KEY || !MINIO_ENDPOINT, !MINIO_PORT))
-  return;
+if (!MINIO_ACCESS_KEY || !MINIO_SECRET_KEY || !MINIO_ENDPOINT) return;
 
 const generateRandomFileName = (fileName) => {
   const random = crypto.randomBytes(16);
@@ -81,13 +78,22 @@ function bufferToStream(buffer) {
 
 const PUT_URL_EXPIRY = 24 * 60 * 60;
 
-const client = new Minio.Client({
-  endPoint: MINIO_ENDPOINT,
-  port: parseInt(MINIO_PORT, 10),
-  useSSL: NODE_ENV === 'production',
-  accessKey: MINIO_ACCESS_KEY,
-  secretKey: MINIO_SECRET_KEY,
-});
+function connectToMinio() {
+  try {
+    const resolvedUrl = new URL(MINIO_ENDPOINT);
+    return new Minio.Client({
+      endPoint: resolvedUrl.host,
+      useSSL: resolvedUrl.protocol === 'https:',
+      port: resolvedUrl.port || undefined,
+      accessKey: MINIO_ACCESS_KEY,
+      secretKey: MINIO_SECRET_KEY,
+    });
+  } catch (e) {
+    return null;
+  }
+}
+
+const client = connectToMinio();
 if (NODE_ENV === 'development') client.traceOn(process.stdout);
 
 export const createSignedPutURL = async (
@@ -95,8 +101,7 @@ export const createSignedPutURL = async (
   fileName,
   { userId, ...context }
 ) => {
-  if (!client)
-    throw new Error('Required minio environment variables not defined');
+  if (!client) throw new Error('Minio not connected, check env variables');
   const { hash, hashedName } = generateRandomFileName(fileName);
 
   const putURL = await client.presignedPutObject(
