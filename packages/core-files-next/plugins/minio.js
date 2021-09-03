@@ -23,10 +23,10 @@ const composeObjectName = (object) => {
   );
 };
 
-function downloadFromUrlToBuffer(url) {
+function downloadFromUrlToBuffer(fileUrl) {
   return new Promise((resolve, reject) => {
     // eslint-disable-next-line consistent-return
-    const req = http.get(url, (res) => {
+    const req = http.get(fileUrl, (res) => {
       if (res.statusCode < 200 || res.statusCode >= 300) {
         return reject(new Error(`statusCode=${res.statusCode}`));
       }

@@ -217,7 +217,7 @@ Users.updateAvatar = async ({ userId, avatar }) => {
     {
       $set: {
         updated: new Date(),
-        avatarId: avatarRef,
+        avatarId: avatarRef._id,
       },
     }
   );
