@@ -1,7 +1,7 @@
 import { UnchainedBookmarkAPI } from 'core/types';
 import { emit } from 'meteor/unchained:core-events';
 
-export const bookmarksAPI = (Bookmarks: any): UnchainedBookmarkAPI => ({
+export const configurBookmarksAPI = (Bookmarks: any): UnchainedBookmarkAPI => ({
   findByUserId: async (userId) => Bookmarks.find({ userId }).fetch(),
   findByUserIdAndProductId: async ({ userId, productId }) =>
     Bookmarks.findOne({ userId, productId }),
