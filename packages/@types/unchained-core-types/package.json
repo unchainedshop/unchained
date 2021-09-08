@@ -1,5 +1,5 @@
 {
-  "name": "@types/unchained-core",
+  "name": "unchained-core-types",
   "version": "1.0.0-beta12",
   "description": "Types for unchained core meteor packages",
   "repository": {
