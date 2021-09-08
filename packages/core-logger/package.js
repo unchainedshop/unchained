@@ -10,6 +10,7 @@ Npm.depends({
   winston: '3.3.3',
   'winston-transport': '4.4.0',
   'safe-stable-stringify': '1.1.0',
+  'simpl-schema': '1.12.0',
 });
 
 Package.onUse((api) => {
@@ -17,14 +18,18 @@ Package.onUse((api) => {
   api.use('ecmascript');
   api.use('mongo');
   api.use('promise');
-  api.use('dburles:collection-helpers@1.1.0');
-  api.use('aldeed:collection2@3.2.1');
+  api.use('typescript@4.1.2');
+
+  api.use('unchained:core-mongodb@1.0.0-beta12');
   api.use('unchained:utils@1.0.0-beta12');
-  api.mainModule('logger.js', 'server');
+
+  api.mainModule('logger.ts', 'server');
 });
 
 Package.onTest((api) => {
+  api.use('meteortesting:mocha');
   api.use('ecmascript');
   api.use('unchained:core-logger');
-  api.mainModule('logger-tests.js');
+
+  api.mainModule('package.tests.js');
 });

@@ -1,0 +1,25 @@
+{
+  "name": "@types/unchained-core",
+  "version": "1.0.0-beta12",
+  "description": "Types for unchained core meteor packages",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/unchainedshop/unchained.git"
+  },
+  "keywords": [
+    "unchained",
+    "ecommerce"
+  ],
+  "author": "Joël Meiller",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/unchainedshop/unchained/issues"
+  },
+  "homepage": "https://github.com/unchainedshop/unchained#readme",
+  "devDependencies": {
+    "@types/node": "^16.7.10",
+    "mongodb": "^4.1.1",
+    "typescript": "^4.4.2"
+  },
+  "dependencies": {}
+}

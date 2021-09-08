@@ -1,8 +1,8 @@
 {
-  "name": "@unchained/core-bookmarks",
+  "name": "@unchained/utils",
   "version": "1.0.0-beta12",
   "scripts": {
-    "test": "cross-env METEOR_PACKAGE_DIRS=../ TEST_WATCH=1 meteor test-packages ./ --driver-package meteortesting:mocha --port 4200"
+    "test": "TEST_WATCH=1 meteor test-packages ./ --driver-package meteortesting:mocha --port 4200"
   },
   "repository": {
     "type": "git",
@@ -13,19 +13,19 @@
     "ecommerce",
     "core"
   ],
-  "author": "Joël Meiller",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/unchainedshop/unchained/issues"
   },
   "homepage": "https://github.com/unchainedshop/unchained#readme",
   "devDependencies": {
-    "@types/unchained-core": "1.0.0-beta12",
     "chai": "^4.3.4",
-    "cross-env": "^7.0.3",
     "simpl-schema": "^1.12.0"
   },
   "peerDependencies": {
     "simpl-schema": "^1.0.0"
+  },
+  "dependencies": {
+    "locale": "^0.1.0"
   }
 }
