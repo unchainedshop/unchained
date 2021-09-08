@@ -1,2 +1,2 @@
-export * from './db-manager';
+export * from './mongo';
 

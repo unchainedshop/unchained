@@ -27,4 +27,10 @@ DB.Collection = function Collaction(name) {
 
 }
 
+Object.assign(DB.Collection.prototype, {
+  attachSchema: (s) => {},
+  update: (id, doc) => {},
+  insert: (id, doc) => {},
+  find: async () =>  
+})
 

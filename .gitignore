@@ -6,6 +6,7 @@ tsconfig.tsbuildinfo
 .env
 dockercfg
 codeship.aes
+.meteor
 .npm
 /env
 /globalConfig.json
