@@ -17,18 +17,18 @@ Package.onUse((api) => {
   api.use('typescript@4.1.2');
 
   api.use('unchained:utils@1.0.0-beta12');
-  api.use('unchained:core-logger@1.0.0-beta12');
-  api.use('unchained:core-events@1.0.0-beta12');
 
   api.mainModule('bookmarks.ts', 'server');
 });
 
 Package.onTest((api) => {
-  api.use('mongo');
+  api.use('meteortesting:mocha');
   api.use('ecmascript');
   api.use('typescript@4.1.2');
-  
-  api.use('unchained:core-bookmarks');
 
-  api.mainModule('package.tests.js');
+  api.use('unchained:core-mongodb@1.0.0-beta12');
+  api.use('unchained:core-events@1.0.0-beta12');
+  api.use('unchained:core-bookmarks@1.0.0-beta12');
+
+  api.mainModule('bookmarks.tests.js');
 });

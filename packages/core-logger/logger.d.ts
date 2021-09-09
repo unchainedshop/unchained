@@ -1,13 +1,8 @@
-declare module 'meteor/unchained:core-logger' {
-  type Level = 'info' | 'debug' | 'error' | 'warning';
-  type Options = {
-    level?: Level;
-    [key: string]: any;
-  };
+import { LogOptions } from 'unchained-core-types'
 
-  function log(message: string, options?: Options): void;
+declare module 'meteor/unchained:core-logger' {
+  function log(message: string, options?: LogOptions): void;
   function createLogger(moduleName: string): void;
 
-  // eslint-disable-next-line import/prefer-default-export
   export { log, createLogger };
 }

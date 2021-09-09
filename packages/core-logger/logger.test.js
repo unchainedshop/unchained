@@ -9,15 +9,16 @@ import configureLogger, {
 } from 'meteor/unchained:core-logger';
 
 describe('Test exports', () => {
-  it('Configure Logs', async () => {
+  it('Configure Logs', () => {
     assert.isDefined(configureLogs);
-    console.log('DB', db)
     const module = configureLogs({ db });
     assert.ok(module)
-    console.log('MODULE', module)
+    assert.isFunction(module.log)
+    assert.isFunction(module.findLogs)
+    assert.isFunction(module.count)
   });
 
-  it('Utils', async () => {
+  it('Utils', () => {
     assert.isFunction(createLogger);
     assert.isFunction(format);
     assert.isObject(transports);

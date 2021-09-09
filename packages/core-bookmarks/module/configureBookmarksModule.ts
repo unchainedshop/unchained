@@ -1,7 +1,6 @@
-import { BookmarksModule } from 'unchained-core-types';
-import { emit } from 'meteor/unchained:core-events';
+import { BookmarksModule, EventsModule } from 'unchained-core-types';
 
-export const configureBookmarksModule = (Bookmarks: any): BookmarksModule => ({
+export const configureBookmarksModule = (Bookmarks: any, events: EventsModule): BookmarksModule => ({
   findByUserId: async (userId) => Bookmarks.find({ userId }).fetch(),
   findByUserIdAndProductId: async ({ userId, productId }) =>
     Bookmarks.findOne({ userId, productId }),
@@ -21,7 +20,7 @@ export const configureBookmarksModule = (Bookmarks: any): BookmarksModule => ({
     ),
   removeById: async (bookmarkId) => {
     const result = Bookmarks.remove({ _id: bookmarkId });
-    emit('BOOKMARK_REMOVE', { bookmarkId });
+    events.emit('BOOKMARK_REMOVE', { bookmarkId });
     return result;
   },
   create: async ({ userId, productId, ...rest }) => {
@@ -31,7 +30,7 @@ export const configureBookmarksModule = (Bookmarks: any): BookmarksModule => ({
       userId,
       productId,
     });
-    emit('BOOKMARK_CREATE', { bookmarkId });
+    events.emit('BOOKMARK_CREATE', { bookmarkId });
     return bookmarkId;
   },
   existsByUserIdAndProductId: async ({ productId, userId }) => {

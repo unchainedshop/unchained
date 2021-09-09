@@ -22,7 +22,7 @@ Package.onUse((api) => {
   api.use('raix:eventemitter');
   api.use('typescript@4.1.2');
 
-  api.mainModule('index.js');
+  api.mainModule('mongodb.js');
 });
 
 Package.onTest((api) => {
@@ -32,5 +32,5 @@ Package.onTest((api) => {
 
   api.use('unchained:core-mongodb@1.0.0-beta12');
 
-  api.mainModule('package.tests.js');
+  api.mainModule('mongodb.tests.js');
 });

@@ -1,14 +1,12 @@
-import { LogsSchema } from './logs.schema';
+import { LogsSchema } from './LogsSchema';
 const ONE_DAY_IN_SECONDS = 86400;
 
-export const configureLogsCollection = (db) => {
+export const LogsCollection = (db) => {
   const Logs = new db.Collection('logs');
   Logs.attachSchema(LogsSchema);
 
-  Logs.rawCollection().createIndex(
-    {
-      created: -1,
-    },
+  Logs.createIndex(
+    { created: -1 },
     { expireAfterSeconds: 2 * ONE_DAY_IN_SECONDS }
   );
 

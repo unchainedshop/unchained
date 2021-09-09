@@ -15,6 +15,7 @@ describe('Test exports', () => {
     assert.isFunction(TestCollection.find);
 
     TestCollection.attachSchema(new SimpleSchema({ name: String }));
+    TestCollection.createIndex({ name: 1 }, { expireAfterSeconds: 120 })
   });
   it('Collection2', () => {
     assert.isDefined(Collection2);

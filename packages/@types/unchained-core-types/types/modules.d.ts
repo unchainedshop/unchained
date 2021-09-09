@@ -1,3 +1,4 @@
+import { EventsModule } from ".";
 import { BookmarksModule } from "./bookmarks";
 import { LogsModule } from "./logs";
 
@@ -10,7 +11,7 @@ export declare interface Modules {
   delivery: any;
   documents: any;
   enrollments: any;
-  events: any;
+  events: EventsModule;
   filters: any;
   languages: any;
   logger: LogsModule;

@@ -1,18 +1,17 @@
 {
-  "name": "unchained-core-types",
-  "version": "1.0.5",
-  "description": "Types for unchained core meteor packages",
+  "name": "@unchained/core-events",
+  "version": "1.0.0-beta12",
+  "scripts": {
+    "test": "cross-env METEOR_PACKAGE_DIRS=../ TEST_CLIENT=0 TEST_WATCH=1 meteor test-packages ./ --driver-package meteortesting:mocha --port 4200"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/unchainedshop/unchained.git"
   },
-  "types": "types/index.d.ts",
-  "scripts": {
-    "build": "tsc"
-  },
   "keywords": [
     "unchained",
-    "ecommerce"
+    "ecommerce",
+    "core"
   ],
   "author": "Joël Meiller",
   "license": "MIT",
@@ -21,10 +20,8 @@
   },
   "homepage": "https://github.com/unchainedshop/unchained#readme",
   "devDependencies": {
-    "@types/node": "^16.7.10",
-    "mongodb": "^4.1.1",
-    "typescript": "^4.4.2",
-    "winston": "^3.3.3"
-  },
-  "dependencies": {}
+    "chai": "^4.3.4",
+    "cross-env": "^7.0.3",
+    "unchained-core-types": "^1.0.5"
+  }
 }

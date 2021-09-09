@@ -1,10 +1,10 @@
 import { LogsModule } from 'unchained-core-types';
-import { configureLogsCollection } from './db/logs.collection';
+import { LogsCollection } from './db/LogsCollection';
 import { createLogger, format, transports } from './logger/createLogger';
-import { configureLogsModule } from './module/logs.module';
+import { configureLogsModule } from './module/configureLogsModule';
 
 const configureLogs = ({ db }: { db: any }): LogsModule => {
-  const collection = configureLogsCollection(db);
+  const collection = LogsCollection(db);
   const module = configureLogsModule(collection);
 
   return module;

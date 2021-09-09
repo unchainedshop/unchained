@@ -2,8 +2,9 @@
   "name": "@unchained/core-logger",
   "version": "1.0.0-beta12",
   "scripts": {
-    "test": "cross-env METEOR_PACKAGE_DIRS=../ TEST_WATCH=1 meteor test-packages ./ --driver-package meteortesting:mocha --port 4200"
+    "test": "cross-env METEOR_PACKAGE_DIRS=../ TEST_CLIENT=0 TEST_WATCH=1 meteor test-packages ./ --driver-package meteortesting:mocha --port 4200"
   },
+  "types": "logger.d.ts",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/unchainedshop/unchained.git"
@@ -22,7 +23,7 @@
   "devDependencies": {
     "chai": "^4.3.4",
     "cross-env": "^7.0.3",
-    "winston": "3.3.3",
-    "unchained-core-types": "1.0.0-beta17"
+    "unchained-core-types": "^1.0.2",
+    "winston": "3.3.3"
   }
 }

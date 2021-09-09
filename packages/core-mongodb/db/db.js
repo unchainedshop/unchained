@@ -1,7 +1,8 @@
 import { Mongo, MongoInternals } from 'meteor/mongo';
 import { Random } from 'meteor/random';
 import { DDP } from 'meteor/ddp';
-import { configureCollection2 } from './collection2';
+import { configureCollection2 } from './configureCollection2';
+import { configureIndex } from './configureIndex';
 
 const db = Mongo
 
@@ -33,5 +34,6 @@ const db = Mongo
 // });
 
 configureCollection2(db);
+configureIndex(db);
 
 export { db }

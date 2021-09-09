@@ -1,16 +1,15 @@
-import { registerEvents } from 'meteor/unchained:core-events';
-import { BookmarksModule } from 'unchained-core-types';
-import { configureBookmarksModule } from './module/bookmarks.module';
-import { configureBookmarksCollection } from './db/bookmarks.collection';
+import { BookmarksModule, EventsModule } from 'unchained-core-types';
+import { configureBookmarksModule } from './module/configureBookmarksModule';
+import { BookmarksCollection } from './db/BookmarksCollection';
 
 const BOOKMARK_EVENTS: string[] = ['BOOKMARK_CREATE', 'BOOKMARK_REMOVE'];
 
 // eslint-disable-next-line
-export const configureBookmarks = ({ db }: { db: any }): BookmarksModule => {
-  registerEvents(BOOKMARK_EVENTS);
+export const configureBookmarks = ({ db, events }: { db: any, events: EventsModule }): BookmarksModule => {
+  events.registerEvents(BOOKMARK_EVENTS);
 
-  const collection = configureBookmarksCollection(db);
-  const module = configureBookmarksModule(collection);
+  const Bookmarks = BookmarksCollection(db);
+  const module = configureBookmarksModule(Bookmarks, events);
 
   return module;
 };

@@ -25,5 +25,5 @@ Package.onTest((api) => {
   api.use('ecmascript');
   api.use('unchained:utils');
 
-  api.mainModule('package.tests.js');
+  api.mainModule('utils.tests.js');
 });
