@@ -1,8 +1,13 @@
 import Transport from 'winston-transport';
 import { Meteor } from 'meteor/meteor';
-import { Logs } from './db/logs.collection';
 
 export class LocalTransport extends Transport {
+  Logs
+
+  constructor(Logs) {
+    this.Logs = Logs
+  }
+
   log(info, callback) {
     setImmediate(() => {
       this.emit('logged', info);

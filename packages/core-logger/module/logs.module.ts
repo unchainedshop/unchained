@@ -1,6 +1,8 @@
 import { LogsModule } from 'unchained-core-types';
+import { log } from '../logger/log';
 
 export const configureLogsModule = (Logs: any): LogsModule => ({
+  log: (message, options) => log(Logs, message, options),
   findLogs: ({
     limit,
     offset,

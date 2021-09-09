@@ -11,7 +11,6 @@ Npm.depends({
   'winston-transport': '4.4.0',
   'safe-stable-stringify': '1.1.0',
   'simpl-schema': '1.12.0',
-  'unchained-core-types': '1.0.0-beta12',
 });
 
 Package.onUse((api) => {

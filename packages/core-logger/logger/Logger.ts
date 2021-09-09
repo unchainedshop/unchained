@@ -11,12 +11,12 @@ let instance: Instance | null = null;
 export class Logger implements Instance {
   winston: WinstonLogger;
 
-  constructor() {
+  constructor(Logs: any) {
     if (!instance) {
       instance = this;
     }
     const dbTransport = !process.env.LOG_DISABLE_DB_LOGGER
-      ? [new LocalTransport({ level: LogLevel.Info })]
+      ? [new LocalTransport({ Logs, level: LogLevel.Info })]
       : [];
 
     this.winston = createLogger('unchained', dbTransport);

@@ -1,3 +1,4 @@
+import { LoggerOptions } from 'winston';
 export declare enum LogLevel {
     Info = "info",
     Debug = "debug",
@@ -9,7 +10,11 @@ export interface Log {
     message: string;
     meta?: object;
 }
+export interface LogOptions extends LoggerOptions {
+    level: LogLevel;
+}
 export declare interface LogsModule {
+    log: (message: string, options: LogOptions) => void;
     findLogs: (params: {
         limit: number;
         offset: number;

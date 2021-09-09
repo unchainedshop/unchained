@@ -1,14 +1,13 @@
 {
   "name": "unchained-core-types",
-  "version": "1.0.0-beta12",
+  "version": "1.0.0-beta17",
   "description": "Types for unchained core meteor packages",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/unchainedshop/unchained.git"
   },
-  "files": [
-    "lib/*"
-  ],
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
   "scripts": {
     "build": "tsc"
   },
@@ -25,7 +24,8 @@
   "devDependencies": {
     "@types/node": "^16.7.10",
     "mongodb": "^4.1.1",
-    "typescript": "^4.4.2"
+    "typescript": "^4.4.2",
+    "winston": "^3.3.3"
   },
   "dependencies": {}
 }
