@@ -22,16 +22,14 @@ Package.onUse((api) => {
   api.use('raix:eventemitter');
   api.use('typescript@4.1.2');
 
-  api.imply('mongo');
-
   api.mainModule('index.js');
-  api.export(['db', 'Collection2']);
 });
 
 Package.onTest((api) => {
   api.use('meteortesting:mocha');
   api.use('ecmascript');
   api.use('typescript@4.1.2');
+
   api.use('unchained:core-mongodb');
 
   api.mainModule('package.tests.js');

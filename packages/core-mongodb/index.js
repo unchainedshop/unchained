@@ -1,8 +1,5 @@
-export { Collection2 } from './collection2'
-
 export { db } from './db'
+export { Collection2 } from './collection2';
 
-// TODO: Encapsuled MongoDB instance
-// export { db } from './mongo';
 
 
