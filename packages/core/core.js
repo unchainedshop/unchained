@@ -1,7 +1,7 @@
-// import { db } from 'meteor/unchained:core-mongodb';
+import { db } from 'meteor/unchained:core-mongodb';
+
 // import configureUsers from 'meteor/unchained:core-users';
 // import configureAccounts from 'meteor/unchained:core-accountsjs';
-// import configureLogger from 'meteor/unchained:core-logger';
 // import configureDelivery from 'meteor/unchained:core-delivery';
 // import configurePayment from 'meteor/unchained:core-payment';
 // import configureWarehousing from 'meteor/unchained:core-warehousing';
@@ -17,9 +17,11 @@
 // import configureEnrollments from 'meteor/unchained:core-enrollments';
 // import configureWorker from 'meteor/unchained:core-worker';
 // import configureMessaging from 'meteor/unchained:core-messaging';
-// import configureEvents from 'meteor/unchained:core-events';
 
-// import { configureBookmarks } from 'meteor/unchained:core-bookmarks';
+import { configureLogs } from 'meteor/unchained:core-logger';
+import { configureEvents } from 'meteor/unchained:core-events';
+import { configureBookmarks } from 'meteor/unchained:core-bookmarks';
+
 // import { bookmarkServices } from 'meteor/unchained:bookmark-services';
 
 export const initCore = async ({
@@ -51,11 +53,15 @@ export const initCore = async ({
   configureEvents(modules.events, moduleOptions);
   */
 
-  // const bookmarks = await configureBookmarks({ db });
-
+  const logs = configureLogs({ db });
+  const events = configureEvents({ db });
+  const bookmarks = configureBookmarks({ db, events });
+  
   return {
     modules: {
-      // bookmarks,
+      logs,
+      events,
+      bookmarks,
     },
     services: {
       // ...bookmarkServices,
