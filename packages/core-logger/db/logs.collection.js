@@ -1,12 +1,8 @@
-import { Mongo } from 'meteor/mongo'
 import { LogsSchema } from './logs.schema';
-
 const ONE_DAY_IN_SECONDS = 86400;
 
-export const LogsInternal = Mongo.Collection('logs')
-
 export const configureLogsCollection = (db) => {
-  const Logs = db.Collection('logs');
+  const Logs = new db.Collection('logs');
   Logs.attachSchema(LogsSchema);
 
   Logs.rawCollection().createIndex(

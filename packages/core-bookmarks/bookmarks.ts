@@ -6,7 +6,7 @@ import { configureBookmarksCollection } from './db/bookmarks.collection';
 const BOOKMARK_EVENTS: string[] = ['BOOKMARK_CREATE', 'BOOKMARK_REMOVE'];
 
 // eslint-disable-next-line
-export const configureBookmarks = async ({ db }: { db: any }): Promise<BookmarksModule> => {
+export const configureBookmarks = ({ db }: { db: any }): BookmarksModule => {
   registerEvents(BOOKMARK_EVENTS);
 
   const collection = configureBookmarksCollection(db);

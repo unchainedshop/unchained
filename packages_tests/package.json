@@ -2,7 +2,7 @@
   "name": "packages_tests",
   "private": true,
   "scripts": {
-    "start": "meteor run",
+    "start": "METEOR_PACKAGE_DIRS=../packages meteor run",
     "test": "meteor test --once --driver-package meteortesting:mocha",
     "test-app": "TEST_WATCH=1 meteor test --full-app --driver-package meteortesting:mocha",
     "visualize": "meteor --production --extra-packages bundle-visualizer"

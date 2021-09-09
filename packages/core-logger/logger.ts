@@ -3,8 +3,8 @@ import { configureLogsCollection } from './db/logs.collection';
 import { createLogger, format, transports } from './logger/createLogger';
 import { configureLogsModule } from './module/logs.module';
 
-const configureLogs = async (params: { db: any }): Promise<LogsModule> => {
-  const collection = configureLogsCollection(params.db);
+const configureLogs = ({ db }: { db: any }): LogsModule => {
+  const collection = configureLogsCollection(db);
   const module = configureLogsModule(collection);
 
   return module;

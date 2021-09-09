@@ -19,7 +19,7 @@ const defaultCleanOptions = {
   removeNullsFromArrays: false,
 };
 
-export const configureMongoCollection = function (db) {
+export const configureCollection2 = function (db) {
   /**
    * db.Collection.prototype.attachSchema
    * @param {SimpleSchema|Object} ss - SimpleSchema instance or a schema definition object

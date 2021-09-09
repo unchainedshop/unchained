@@ -30,7 +30,7 @@ Package.onTest((api) => {
   api.use('ecmascript');
   api.use('typescript@4.1.2');
 
-  api.use('unchained:core-mongodb');
+  api.use('unchained:core-mongodb@1.0.0-beta12');
 
   api.mainModule('package.tests.js');
 });
