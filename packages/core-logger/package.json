@@ -20,12 +20,19 @@
   },
   "homepage": "https://github.com/unchainedshop/unchained#readme",
   "devDependencies": {
-    "@types/unchained-core": "1.0.0-beta12",
     "chai": "^4.3.4",
-    "cross-env": "^7.0.3"
-  },
-  "dependencies": {
+    "cross-env": "^7.0.3",
     "winston": "3.3.3",
-    "winston-transport": "4.4.0"
+    "winston-transport": "4.4.0",
+    "safe-stable-stringify": "1.1.0",
+    "simpl-schema": "1.12.0",
+    "unchained-core-types": "1.0.0-beta12"
+  },
+  "peerDependencies": {
+    "winston": "3.3.3",
+    "winston-transport": "4.4.0",
+    "safe-stable-stringify": "1.1.0",
+    "simpl-schema": "1.12.0",
+    "unchained-core-types": "1.0.0-beta12"
   }
 }

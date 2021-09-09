@@ -21,10 +21,6 @@
   "homepage": "https://github.com/unchainedshop/unchained#readme",
   "devDependencies": {
     "@types/node": "^16.7.10",
-    "chai": "^4.3.4",
-    "simpl-schema": "^1.12.0"
-  },
-  "peerDependencies": {
-    "simpl-schema": "^1.0.0"
+    "chai": "^4.3.4"
   }
 }

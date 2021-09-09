@@ -22,20 +22,11 @@
     "noFallthroughCasesInSwitch": false,
 
     /* Module Resolution Options */
-    "baseUrl": ".",
-    "paths": {
-      /* Support absolute /imports/* with a leading '/' */
-      "/*": ["*"]
-    },
     "moduleResolution": "node",
     "resolveJsonModule": true,
     "types": ["node"],
-    "typeRoots": ["./node_modules/@types", "./node_modules/unchained-core-types"],
+    "typeRoots": ["@types", "unchained-core-types"],
     "esModuleInterop": true,
     "preserveSymlinks": true
-  },
-  "exclude": [
-    "./examples/**"
-  ],
-  "include": ["packages/**/*"]
+  }
 }

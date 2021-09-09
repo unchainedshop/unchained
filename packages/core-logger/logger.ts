@@ -1,4 +1,4 @@
-import { LogsModule } from 'unchained-core';
+import { LogsModule } from 'unchained-core-types';
 import { configureLogsCollection } from './db/logs.collection';
 import { createLogger, format, transports } from './logger/createLogger';
 import { log } from './logger/log';

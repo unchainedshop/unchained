@@ -1,4 +1,4 @@
-import { LogsModule } from 'unchained-core';
+import { LogsModule } from 'unchained-core-types';
 
 export const configureLogsModule = (Logs: any): LogsModule => ({
   findLogs: ({

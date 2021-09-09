@@ -1,4 +1,4 @@
-import { LogLevel } from 'unchained-core';
+import { LogLevel } from 'unchained-core-types';
 import { LoggerOptions } from 'winston';
 import { Logger } from './Logger';
 

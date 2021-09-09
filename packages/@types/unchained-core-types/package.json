@@ -6,6 +6,12 @@
     "type": "git",
     "url": "git+https://github.com/unchainedshop/unchained.git"
   },
+  "files": [
+    "lib/*"
+  ],
+  "scripts": {
+    "build": "tsc"
+  },
   "keywords": [
     "unchained",
     "ecommerce"

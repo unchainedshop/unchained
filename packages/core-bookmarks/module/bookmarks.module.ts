@@ -1,4 +1,4 @@
-import { BookmarksModule } from 'unchained-core';
+import { BookmarksModule } from 'unchained-core-types';
 import { emit } from 'meteor/unchained:core-events';
 
 export const configureBookmarksModule = (Bookmarks: any): BookmarksModule => ({

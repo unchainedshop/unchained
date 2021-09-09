@@ -11,6 +11,7 @@ Npm.depends({
   'winston-transport': '4.4.0',
   'safe-stable-stringify': '1.1.0',
   'simpl-schema': '1.12.0',
+  'unchained-core-types': '1.0.0-beta12',
 });
 
 Package.onUse((api) => {
@@ -29,6 +30,8 @@ Package.onUse((api) => {
 Package.onTest((api) => {
   api.use('meteortesting:mocha');
   api.use('ecmascript');
+  api.use('typescript@4.1.2');
+
   api.use('unchained:core-logger');
 
   api.mainModule('package.tests.js');

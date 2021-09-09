@@ -1,4 +1,4 @@
-import { LogLevel } from 'unchained-core';
+import { LogLevel } from 'unchained-core-types';
 import { Logger as WinstonLogger } from 'winston';
 import { createLogger } from './createLogger';
 import { LocalTransport } from './LocalTransport';

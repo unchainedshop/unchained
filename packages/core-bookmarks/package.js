@@ -10,7 +10,6 @@ Npm.depends({
   'simpl-schema': '1.12.0',
 });
 
-
 Package.onUse((api) => {
   api.versionsFrom('2.2');
   api.use('ecmascript');
@@ -27,6 +26,9 @@ Package.onUse((api) => {
 Package.onTest((api) => {
   api.use('mongo');
   api.use('ecmascript');
+  api.use('typescript@4.1.2');
+  
   api.use('unchained:core-bookmarks');
+
   api.mainModule('package.tests.js');
 });

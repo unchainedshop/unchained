@@ -1,6 +1,6 @@
 import { registerEvents } from 'meteor/unchained:core-events';
-import { BookmarksModule } from 'unchained-core';
-import { configureBookmarksModule } from './api/bookmarks.api';
+import { BookmarksModule } from 'unchained-core-types';
+import { configureBookmarksModule } from './module/bookmarks.module';
 import { configureBookmarksCollection } from './db/bookmarks.collection';
 
 const BOOKMARK_EVENTS: string[] = ['BOOKMARK_CREATE', 'BOOKMARK_REMOVE'];
