@@ -2,7 +2,6 @@ import Minio from 'minio';
 import crypto from 'crypto';
 import { Readable } from 'stream';
 import http from 'https';
-import { url } from 'inspector';
 import { MediaObjects } from '../db';
 
 const {
@@ -13,8 +12,8 @@ const {
   NODE_ENV,
 } = process.env;
 
-const generateMinioUrl = (directoryName, filename) => {
-  return `${MINIO_ENDPOINT}/${MINIO_BUCKET_NAME}/${directoryName}/${filename}`;
+const generateMinioUrl = (directoryName, hashedFilename) => {
+  return `${MINIO_ENDPOINT}/${MINIO_BUCKET_NAME}/${directoryName}/${hashedFilename}`;
 };
 
 const composeObjectName = (object) => {
@@ -82,13 +81,14 @@ function connectToMinio() {
   try {
     const resolvedUrl = new URL(MINIO_ENDPOINT);
     return new Minio.Client({
-      endPoint: resolvedUrl.host,
+      endPoint: resolvedUrl.hostname,
       useSSL: resolvedUrl.protocol === 'https:',
-      port: resolvedUrl.port || undefined,
+      port: parseInt(resolvedUrl.port, 10) || undefined,
       accessKey: MINIO_ACCESS_KEY,
       secretKey: MINIO_SECRET_KEY,
     });
   } catch (e) {
+    console.error(e);
     return null;
   }
 }
@@ -176,7 +176,7 @@ export const uploadObjectStream = async (directoryName, rawFile, options) => {
 
   const _id = MediaObjects.insert({
     _id: encodeURIComponent(`${directoryName}/${hash}`),
-    url: generateMinioUrl(directoryName, fname),
+    url: generateMinioUrl(directoryName, hashedName),
     name: fname,
     expires: PUT_URL_EXPIRY,
     created: new Date(),
@@ -184,7 +184,7 @@ export const uploadObjectStream = async (directoryName, rawFile, options) => {
 
   return {
     _id,
-    url: generateMinioUrl(directoryName, fname),
+    url: generateMinioUrl(directoryName, hashedName),
     name: fname,
     expires: PUT_URL_EXPIRY,
     created: new Date(),
@@ -208,7 +208,7 @@ export const uploadFileFromURL = async (
   );
   const _id = MediaObjects.insert({
     _id: encodeURIComponent(`${directoryName}/${hash}`),
-    url: generateMinioUrl(directoryName, filename),
+    url: generateMinioUrl(directoryName, hashedName),
     name: filename,
     expires: PUT_URL_EXPIRY,
     created: new Date(),
@@ -216,7 +216,7 @@ export const uploadFileFromURL = async (
 
   return {
     _id,
-    url: generateMinioUrl(directoryName, filename),
+    url: generateMinioUrl(directoryName, hashedName),
     name: filename,
     expires: PUT_URL_EXPIRY,
     created: new Date(),
