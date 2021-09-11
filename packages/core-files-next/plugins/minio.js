@@ -2,6 +2,7 @@ import Minio from 'minio';
 import crypto from 'crypto';
 import { Readable } from 'stream';
 import http from 'https';
+import mimeType from 'mime-types';
 import { MediaObjects } from '../db';
 
 const {
@@ -22,6 +23,9 @@ const composeObjectName = (object) => {
   );
 };
 
+const getMimeType = (extension) => {
+  return mimeType.lookup(extension);
+};
 function downloadFromUrlToBuffer(fileUrl) {
   return new Promise((resolve, reject) => {
     // eslint-disable-next-line consistent-return
@@ -95,6 +99,10 @@ function connectToMinio() {
 
 const client = connectToMinio();
 if (NODE_ENV === 'development') client.traceOn(process.stdout);
+
+const getObjectStats = async (fileName) => {
+  return client.statObject(MINIO_BUCKET_NAME, fileName);
+};
 
 export const createSignedPutURL = async (
   directoryName = '',
@@ -174,10 +182,15 @@ export const uploadObjectStream = async (directoryName, rawFile, options) => {
     stream
   );
 
+  const { size } = await getObjectStats(`${directoryName}/${hashedName}`);
+  const type = getMimeType(fname);
+
   const _id = MediaObjects.insert({
     _id: encodeURIComponent(`${directoryName}/${hash}`),
     url: generateMinioUrl(directoryName, hashedName),
     name: fname,
+    size,
+    type,
     expires: PUT_URL_EXPIRY,
     created: new Date(),
   });
@@ -186,6 +199,8 @@ export const uploadObjectStream = async (directoryName, rawFile, options) => {
     _id,
     url: generateMinioUrl(directoryName, hashedName),
     name: fname,
+    size,
+    type,
     expires: PUT_URL_EXPIRY,
     created: new Date(),
   };
@@ -201,15 +216,21 @@ export const uploadFileFromURL = async (
   const { hash, hashedName } = generateRandomFileName(filename);
 
   const buff = await downloadFromUrlToBuffer(fileLink);
+  const stream = bufferToStream(buff);
   await client.putObject(
     MINIO_BUCKET_NAME,
     `${directoryName}/${hashedName}`,
-    bufferToStream(buff)
+    stream
   );
+  const { size } = await getObjectStats(`${directoryName}/${hashedName}`);
+  const type = getMimeType(filename);
+
   const _id = MediaObjects.insert({
     _id: encodeURIComponent(`${directoryName}/${hash}`),
     url: generateMinioUrl(directoryName, hashedName),
     name: filename,
+    size,
+    type,
     expires: PUT_URL_EXPIRY,
     created: new Date(),
   });
@@ -218,6 +239,8 @@ export const uploadFileFromURL = async (
     _id,
     url: generateMinioUrl(directoryName, hashedName),
     name: filename,
+    size,
+    type,
     expires: PUT_URL_EXPIRY,
     created: new Date(),
   };

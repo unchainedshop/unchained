@@ -69,58 +69,17 @@ export default compose(
     }
     ${FRAGMENT_AVATAR_FIELDS}
   `),
-  graphql(
-    gql`
-      mutation prepareUserAvatar($mediaName: String!) {
-        prepareUserAvatarUpload(mediaName: $mediaName) {
-          _id
-          putURL
-          expires
-        }
-      }
-    `,
-    {
-      name: 'prepareUserAvatar',
-      options: {
-        refetchQueries: [],
-      },
-    }
-  ),
-  graphql(
-    gql`
-      mutation linkAvatar($mediaUploadTicketId: ID!) {
-        linkUserAvatar(mediaUploadTicketId: $mediaUploadTicketId) {
-          ...avatarFields
-        }
-      }
-      ${FRAGMENT_AVATAR_FIELDS}
-    `,
-    {
-      name: 'linkAvatar',
-      options: {
-        refetchQueries: [],
-      },
-    }
-  ),
   withHandlers({
     handleChange:
-      ({ mutate, userId, linkAvatar, prepareUserAvatar }) =>
+      ({ mutate, userId, updateImageUrl }) =>
       async (files) => {
         const avatar = files[0];
-        const {
-          data: { prepareUserAvatarUpload },
-        } = await prepareUserAvatar({
+        console.log(avatar);
+        updateImageUrl(URL.createObjectURL(avatar));
+        await mutate({
           variables: {
-            mediaName: avatar.name,
-          },
-        });
-        const { _id, putURL } = prepareUserAvatarUpload;
-        await uploadToMinio(avatar, putURL);
-        const {
-          data: { linkUserAvatar },
-        } = await linkAvatar({
-          variables: {
-            mediaUploadTicketId: _id,
+            userId,
+            avatar,
           },
         });
       },

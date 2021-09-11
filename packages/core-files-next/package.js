@@ -17,6 +17,7 @@ Package.onUse(function (api) {
 
 Npm.depends({
   minio: '7.0.18',
+  'mime-types': '2.1.32',
 });
 
 Package.onTest((api) => {
