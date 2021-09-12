@@ -153,9 +153,8 @@ export const createSignedPutURL = async (
 };
 
 export const removeObjects = async (ids, options = {}) => {
-  if (typeof ids !== 'string' || !Array.isArray(ids))
+  if (typeof ids !== 'string' && !Array.isArray(ids))
     throw Error('Media id/s to be removed not provided as a string or array');
-
   const idList = [];
   if (typeof ids === 'string') {
     const object = MediaObjects.findOne({ _id: ids });

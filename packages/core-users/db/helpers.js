@@ -211,7 +211,11 @@ Users.updateProfile = ({ userId, profile }) => {
   );
 };
 Users.updateAvatar = async ({ userId, avatar }) => {
-  const avatarRef = await uploadObjectStream('user-avatar', avatar, { userId });
+  const user = Users.findUser({ userId });
+  if (user?.avatarId) await removeObjects(user?.avatarId);
+  const avatarRef = await uploadObjectStream('user-avatars', avatar, {
+    userId,
+  });
   return Users.update(
     { _id: userId },
     {
