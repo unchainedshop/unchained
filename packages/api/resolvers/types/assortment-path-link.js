@@ -3,6 +3,7 @@ import {
   AssortmentTexts,
 } from 'meteor/unchained:core-assortments';
 import { findLocalizedText } from 'meteor/unchained:utils';
+import { Locale } from 'locale';
 
 export default {
   async link({ assortmentId, childAssortmentId }) {
@@ -11,18 +12,20 @@ export default {
       childAssortmentId,
     });
   },
-  async assortmentSlug(obj, params, { localeContext }) {
+  async assortmentSlug(obj, { forceLocale } = {}, { localeContext }) {
+    const locale = new Locale(forceLocale || localeContext.normalized);
     return findLocalizedText(
       AssortmentTexts,
       { assortmentId: obj.assortmentId },
-      localeContext.normalized
+      locale
     ).slug;
   },
   async assortmentTexts(obj, { forceLocale } = {}, { localeContext }) {
+    const locale = new Locale(forceLocale || localeContext.normalized);
     return findLocalizedText(
       AssortmentTexts,
       { assortmentId: obj.assortmentId },
-      forceLocale || localeContext.normalized
+      locale
     );
   },
 };
