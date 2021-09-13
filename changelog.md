@@ -44,6 +44,7 @@ This is our first major release, it covers all features needed to build highly f
   ```
 
 ## Major
+- [core] We have added a new Datatrans v2 plugin which is based on the new Datatrans JSON based API and allows advanced integration processes like marketplace fee splits and secure fields. Datatrans v2 will always use deferred settlement mode when possible, this makes it almost impossible to have the "order checkout failed but still charged" issue that was possible before depending on how the payment process was implemented client-side, leading to manual work and potential client frustration.
 - [core] orderNumber, quotationNumber and enrollmentNumber generation can now be customized, see config
 - [controlpanel] Now it's possible to add external links to an extended version of unchained control panel or any other site you want to access through the `controlpanel` by providing JSON using the env `EXTERNAL_LINKS` variable inside `example/minimal`. The JSON to be provided has to be an array of external link definitions in the form of objects with href and title properties (`[{ href: string, title: string}]`). If an external link file object is found its content will appear in the top menu of the `controlpanel`
 - [api] `query.productReviews` is extended to support searching/filtering with title or review and sorting all valid fields of product review.
