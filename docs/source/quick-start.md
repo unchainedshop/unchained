@@ -16,9 +16,9 @@ This tutorial will help you:
 This guide assumes that you are familiar with the command line and
 JavaScript, and that you have a [nodejs >= v14](https://nodejs.org/en/) installed.
 
-## Step 1: Obtaining unchained instance
+## Step 1: Obtaining Unchained instance
 
-In order to get a free cloud-hosted unchained instance, you need to [sign up here](https://unchained.shop/en/signup).
+In order to get a free cloud-hosted Unchained instance, you need to [sign up here](https://unchained.shop/en/signup).
 Once registered, fill out the forms with all the data required to create an Unchained instance to build your first organization.
 
 After having created an organization, you are able to create an instance of Unchained under that organization. This step will require you to fill out a form with information needed to successfully set up a fresh Unchained instance and its size, domain, UI endpoint, other payment, and delivery-related information.
@@ -64,7 +64,7 @@ Now you have a fully functional storefront using unchained instance for API. Che
 
 - http://localhost:3000 to see the front-end (storefront)
 
-See it in action by adding `Assortments` and `Products` etc... using the unchained control panel.
+See it in action by adding `Assortments` and `Products` etc... using the Unchained Admin UI .
 
 ## Step 3: Deploy youe storefront with Vercel
 

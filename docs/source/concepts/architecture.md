@@ -11,11 +11,11 @@ Usage of OSS prevents vendor lock-in. Using software that is open to the public 
 
 **Hackable / Code-first**
 
-Non-hackable software (like SaaS) use the technique of "customizing", meaning they provide a massive control panel where every aspect of the software can be configured, themed or disabled. Sadly there is always something that needs some extra development work and people need to hire somebody to create a plugin. In Unchained Engine, the software flow is changed through code and not through UI. This means a software developer is always required to configure the platform. It's called "hackable" software and allows to configure even parts of the software that were not intended to get configured by the core developers.
+Non-hackable software (like SaaS) use the technique of "customizing", meaning it provides a massive control panel where every aspect of the software can be configured, themed or disabled. Sadly, there is always something that needs some extra development work and companies need to hire somebody to create a plugin. In Unchained Engine, the software flow is changed through the code and not through the UI. This means a software developer is always required to configure the platform. It's called "hackable" software and allows to configure even parts of the software that were not intended to get configured by the core developers.
 
 **Headless / API-first**
 
-User interfaces (like Web Shop Storefronts) rot at a much higher speed as the underlying processes and core systems. User interfaces change at a rapid speed: Technologies are born and die only a few years later, devices like Smartwatches pop up, screen sizes vary. We think it's extremely important to have an e-commerce system that is going to stay for the long run like an ERP does, only then it's investable. By completely decoupling the Unchained Engine from any web shop user interface, it's usable in very flexible ways. But of course there are also [cons](https://www.semrush.com/blog/going-headless-ecommerce-store/) to that approach.
+User interfaces (like Web Shop Storefronts) rot at a much higher speed as the underlying processes and core systems. User interfaces change at a rapid speed: Technologies are born and die only a few years later, devices like smartwatches pop up, screen sizes vary. We think it's extremely important to have an e-commerce system that is going to stay for the long run like an ERP does, only then it's investable. By completely decoupling the Unchained Engine from any web shop user interface, it's usable in very flexible ways. But of course there are also [cons](https://www.semrush.com/blog/going-headless-ecommerce-store/) to that approach.
 
 ## Layered Approach
 

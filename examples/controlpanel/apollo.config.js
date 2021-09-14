@@ -1,6 +1,6 @@
 module.exports = {
   client: {
-    name: 'Unchained Control Panel',
+    name: 'Unchained Admin UI',
     service: {
       name: 'local',
       url: 'http://localhost:4010/graphql',

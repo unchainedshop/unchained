@@ -9,7 +9,7 @@ sidebar_title: Install engine
 This tutorial helps you:
 
 - Install and run the Unchained Engine locally
-- Log into your admin control panel and add a product.
+- Log into your admin UI and add a product.
 
 # Create a new Unchained Engine
 
@@ -56,5 +56,5 @@ You should see the following admin console in your browser (Yes, the UI can be i
 What did we do so far?
 
 - [http://localhost:3000](http://localhost:3000) to see your web shop front-end (Storefront)
-- [http://localhost:4010](http://localhost:4010) to see the Unchained Engine admin control panel<br />Login with username: _admin@unchained.local_ / password: _password_
+- [http://localhost:4010](http://localhost:4010) to see the Unchained Engine Admin UI<br />Login with username: _admin@unchained.local_ / password: _password_
 - [http://localhost:4010/graphql](http://localhost:4010/graphql) to see the Unchained Engine graphQL playground
