@@ -14,11 +14,11 @@ This tutorial helps you:
 - Deploy an unchained engine backed the project
 
 This Guide assumes that you are familiar with the command line and
-JavaScript, and that you have a [nodejs >= v14](https://nodejs.org/en/)  installed.
+JavaScript, and that you have a [nodejs >= v14](https://nodejs.org/en/) installed.
 
 ## Step 1: Obtaining unchained instance
 
-In order to get a cloud-hosted unchained instance, you need to [sign up](https://unchained.shop/en/signup) and request a 14-day trial.
+In order to get a free cloud-hosted unchained instance, you need to [sign up here](https://unchained.shop/en/signup).
 once registered fill out the forms with all the data required to create an unchained instance to create your first organization.
 
 After creating an organization you are able to create an instance of unchained under that organization. this step will require you to fill out a form with information need to successfully set up a fresh unchained instance and including, size, domain, UI endpoint, other payment, and delivery-related information.
@@ -52,18 +52,19 @@ DATATRANS_ENDPOINT=https://pay.sandbox.datatrans.com/upp/jsp/upStart.jsp
 DATATRANS_MERCHANT=1100019919
 ```
 
-3. Start up the storefront 
+3. Start up the storefront
 
 Once you have set the correct environment variables and installed all the required dependencies run the following command to startup the storefront.
 
 ```
 npm run dev
 ```
+
 Now you have a fully functional storefront using unchained instance for API. Check it out by browsing to the following URLs:
 
 - http://localhost:3000 to see the front-end (storefront)
 
-See it in action by adding `Assortments` and `Products` etc... using the unchained control panel. 
+See it in action by adding `Assortments` and `Products` etc... using the unchained control panel.
 
 ## Step 3: Deploy storefront with Vercel
 
@@ -82,8 +83,8 @@ UNCHAINED_ENDPOINT=https://your-unchained-instance.rocks/graphql
 FRONTEND_URL=https://domain-of-your-frontend
 GRAPHQL_ENDPOINT=https://domain-of-your-frontend/api/graphql
 ```
-5. deploy the storefront
 
+5. deploy the storefront
 
 ## Next steps
 

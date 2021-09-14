@@ -1,4 +1,4 @@
-const themeOptions = require('@unchainedshop/gatsby-theme-apollo-docs/theme-options');
+const themeOptions = require('@unchainedshop/gatsby-theme-apollo-docs/theme-options')
 
 module.exports = {
   pathPrefix: '/docs/unchained',
@@ -20,13 +20,13 @@ module.exports = {
             'index',
             '[Changelog](https://github.com/unchainedshop/unchained/releases)',
           ],
-          'Getting Started': [
+          'Installation (cloud)': [
             'getting-started/engine-launch',
             'getting-started/storefront-setup',
             'getting-started/engine-controlpanel',
             'getting-started/storefront-deploy',
           ],
-          Installation: [
+          'Installation (local)': [
             'installation/install-engine',
             'installation/install-storefront',
             'installation/run-engine-docker',
@@ -70,6 +70,6 @@ module.exports = {
           ],
         },
       },
-    }
+    },
   ],
-};
+}
