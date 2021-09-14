@@ -88,7 +88,7 @@ It's time to add our first product to the store.
 - Click on **`Add`** in the empty product list.
 - Give the product a **name** and set the **type** to `Simple Product`.
   ![diagramm](../images/getting-started/Control_Panel_Product_Toothbrush_Add.png)
-- Click **`Add prodct`** to save the product and navigate to the product detail view.
+- Click **`Add product`** to save the product and navigate to the product detail view.
 - (If you have one ready, add a nice product image under `Media`.)
 - Select **`Commerce`** on the left and set the price for your product.
 - IMPORTANT: If you want to update the product information (e.g. subtitle, description), switch to the tab `fr` first and set a title there (otherwise updating the product throws an error (yes, it's a bug 😒).
