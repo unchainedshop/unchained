@@ -51,7 +51,7 @@ Unchained engine <--
 5. Install the npm packages
 
 ```bash
-npm install
+meteor npm install
 ```
 
 The installation script downloads, installs and initialises all files and packages required to build and run a new Meteor app that has the Unchained Engine backed in.
