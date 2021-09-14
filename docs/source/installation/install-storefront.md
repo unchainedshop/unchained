@@ -68,7 +68,7 @@ The installation script downloads, installs and initialises all files and packag
 Before running the web app, you need to create an `.env` file in the root directory of _my-storefront-webapp_ and add the graphql API endpoint of your local Unchained Engine to the settings.
 
 ```
-UNCHAINED_ENDPOINT=http://localhost:4010/graphql
+printf "UNCHAINED_ENDPOINT=http://localhost:4010/graphql" > .env
 ```
 
 ## Step 3: Start the app
