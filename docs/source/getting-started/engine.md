@@ -36,30 +36,25 @@ Your project directory now contains a Meteor project with Unchained as a depende
 meteor npm run dev
 ```
 
-Open [localhost:4010](http://localhost:4010) to check if your meteor app is running correctly. You should see an **Login Screen**. Well, log-in! 
+Open [localhost:4010](http://localhost:4010) to check if your meteor app is running correctly. You should see an **Login Screen**. Well, log-in!
 
-Username:   admin@unchained.local<br />
-Password:   unchained#rocks
-
+Username: admin@unchained.local<br />
+Password: password
 
 You should see the following admin console in your browser (Yes, the UI can be improved. However, it's an admin console not visible to any customer).
 
 ![diagram](../images/gettingStarted/AdminConsole.png)
 
-[localhost:4010/graphql](http://localhost:4010/graphql) opens the graphQL playground for you to easily execute queries and mutations. 
+[localhost:4010/graphql](http://localhost:4010/graphql) opens the graphQL playground for you to easily execute queries and mutations.
 
 ## (Step 3: Add a new product)
 
-
-
 > To test the Unchained Engine the next step will be to setup the test frontend project _Storefront_ created with [React.js](https://reactjs.org/) and [Next.js](https://nextjs.org/) locally.
-
-
 
 ## Summary
 
 What did we do so far?
 
 - [http://localhost:3000](http://localhost:3000) to see your web shop front-end (Storefront)
-- [http://localhost:4010](http://localhost:4010) to see the Unchained Engine admin control panel<br />Login with username: _admin@unchained.local_ / password: _unchained#rocks_
+- [http://localhost:4010](http://localhost:4010) to see the Unchained Engine admin control panel<br />Login with username: _admin@unchained.local_ / password: _password_
 - [http://localhost:4010/graphql](http://localhost:4010/graphql) to see the Unchained Engine graphQL playground
