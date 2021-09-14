@@ -49,6 +49,6 @@ Vercel detects automatically that your project is a Next.js app and will the bui
 
 However, we need to set the UNCHAINED_ENDPOINT in the **Environment Variables** section.
 
-| NAME                   | VALUE                                    |
-| ---------------------- | ---------------------------------------- |
-| **UNCHAINED_ENDPOINT** |  https://my-first.unchained.shop/graphql |
+| NAME                   | VALUE                                                                          |
+| ---------------------- | ------------------------------------------------------------------------------ |
+| **UNCHAINED_ENDPOINT** |  https://{HERE COMES THE DOMAIN OF YOUR UNCHAINED CLOUD HOSTED ENGINE}/graphql |

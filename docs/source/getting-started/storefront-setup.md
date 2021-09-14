@@ -70,7 +70,7 @@ Before running the web app, you need to create an `.env` file in the root direct
 You retrieve the URL for the endpoint after successful creation of the Unchained Engine instance in [Step 1 - Launch Engine](./engine-launch). Append it with the `graphql` path.
 
 ```
-UNCHAINED_ENDPOINT=https://my-first.unchained.shop/graphql
+UNCHAINED_ENDPOINT=https://{HERE COMES THE DOMAIN OF YOUR ENGINE}/graphql
 ```
 
 Check the [Install engine](../installation/install-engine) guide to create and connect to your local instance of the Unchained Engine.

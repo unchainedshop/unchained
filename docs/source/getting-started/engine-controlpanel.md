@@ -43,7 +43,7 @@ This tutorial helps you to ...
 ## Step 1: Access Control Panel
 
 In order to add content to your store, you need to log into the store's control panel.
-Navigate to your store domain: https://my-first.unchained.shop
+Navigate to the login window of your control panel
 
 Initially the username and password are set as following:
 
