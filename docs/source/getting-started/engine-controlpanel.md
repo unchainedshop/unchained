@@ -108,7 +108,7 @@ First we gonna add two new categories which are called _Assortments_ in the cont
 - (Same here, add a nice category image under `Media`.)
   ![diagram](../images/getting-started/Control_Panel_Assortment_Camping_Details.png)
 - Select **`Products`** on the left.
-- Search for the **(exact)** (and yes, can be improve 😝) name of a product you added in [Step 3](#step-3-add-product), select it
+- Search for the **(exact)** name of the product you added in [Step 3](#step-3-add-product), select it
   and click **`Add Product`** to link the product to the category
 
 ## Step 5. Admire the Products
