@@ -37,6 +37,7 @@ import 'meteor/unchained:core-worker/plugins/http-request';
 import 'meteor/unchained:core-worker/plugins/heartbeat';
 import 'meteor/unchained:core-worker/plugins/email';
 import 'meteor/unchained:core-events/plugins/node-event-emitter';
+import loginWithSingleSignOn from './login-with-single-sign-on';
 import seed from './seed';
 
 Meteor.startup(async () => {
@@ -59,5 +60,21 @@ Meteor.startup(async () => {
     },
   });
   seed();
+
+  // The following lines will activate SSO from Unchained Cloud to your instance,
+  // if you want to further secure your app and close this rabbit hole,
+  // remove the following lines
+  WebApp.connectHandlers.use('/', (req, res, next) => {
+    if (req.query?.token) {
+      loginWithSingleSignOn(req.query.token).then((authCookie) => {
+        res.setHeader('Set-Cookie', authCookie);
+        next();
+      });
+    } else {
+      next();
+    }
+  });
+  // until here
+
   embedControlpanelInMeteorWebApp(WebApp);
 });
