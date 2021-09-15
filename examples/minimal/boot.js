@@ -67,8 +67,10 @@ Meteor.startup(async () => {
   WebApp.connectHandlers.use('/', (req, res, next) => {
     if (req.query?.token) {
       loginWithSingleSignOn(req.query.token).then((authCookie) => {
-        res.setHeader('Set-Cookie', authCookie);
-        next();
+        if (res?.setHeader) {
+          res.setHeader('Set-Cookie', authCookie);
+          next();
+        }
       });
     } else {
       next();

@@ -18,6 +18,7 @@ const {
   UNCHAINED_CURRENCY,
   UNCHAINED_LANG,
   UNCHAINED_MAIL_RECIPIENT,
+  UNCHAINED_SEED_PASSWORD,
   EMAIL_FROM,
 } = process.env;
 
@@ -31,21 +32,13 @@ export default async () => {
         username: 'admin',
         roles: ['admin'],
         email: 'admin@unchained.local',
-        password: hashPassword('password'),
-        initialPassword: true,
+        password: UNCHAINED_SEED_PASSWORD
+          ? hashPassword(UNCHAINED_SEED_PASSWORD)
+          : undefined,
+        initialPassword: UNCHAINED_SEED_PASSWORD ? true : undefined,
         profile: { address: {} },
         guest: false,
-        lastBillingAddress: {
-          firstName: 'Caraig Jackson',
-          lastName: 'Mengistu',
-          company: 'false',
-          postalCode: '52943',
-          countryCode: 'ET',
-          city: 'Addis Ababa',
-          addressLine: '75275 Bole Mikael',
-          addressLine2: 'Bole 908',
-          regionCode: 'false',
-        },
+        lastBillingAddress: {},
       },
       {},
       { skipMessaging: true },
@@ -108,7 +101,7 @@ export default async () => {
       \ndeliveryProvider: ${deliveryProvider._id} (${
       deliveryProvider.adapterKey
     })\npaymentProvider: ${paymentProvider._id} (${paymentProvider.adapterKey})
-      \nuser: admin@unchained.local / password`);
+      \nuser: admin@unchained.local / ${UNCHAINED_SEED_PASSWORD}`);
   } catch (e) {
     logger.error(e);
   }
