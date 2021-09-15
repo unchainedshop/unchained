@@ -7,10 +7,10 @@ sidebar_title: Launch engine
 
 ![diagram](../images/getting-started/Engine_Setup.png)
 
-This tutorial helps you:
+This tutorial will help you:
 
-- Setup a hosted Unchained Engine
-- Access the engine's control panel
+- Set up a hosted Unchained Engine
+- Access the engine's Admin UI
 
 ## Step 1: Sign-up for an Unchained account
 
@@ -28,9 +28,9 @@ In order to get a free cloud-hosted unchained instance, you need to [sign up her
 
 ## Step 3: Verify engine
 
-1. Click on **Open App** in the Instance Overview page to navigate to the Control Panel under your engine's domain.
+1. Click on **Open App** in the Instance Overview page to navigate to the Admin UI under your engine's domain.
 2. The URL looks something like <u>my-unchained-shop.unchained.rocks/sign-in</u>
-3. You should see the login window of the Control Panel. **DON'T TRY TO LOGIN YET, WE WILL GET TO THAT LATER**
+3. You should see the login window of the Admin UI. **DON'T TRY TO LOGIN YET, WE WILL GET TO THAT LATER**
    ![diagram](../images/getting-started/Engine_Setup_Verification.png)
 
 Congratulations! 👏🏻 Your Unchained Engine is up and running!

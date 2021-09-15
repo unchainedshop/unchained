@@ -33,17 +33,17 @@ sidebar_title: Add products
 
 This tutorial helps you to ...
 
-- Log into your Control Panel
-- Fill your store with content using the Control Panel
+- Log into your Admin UI
+- Fill your store with content using the Admin UI
 - Understand the store's data entities
 - Use graphQL queries and mutations to feed and search over the Unchained Engine api.
 
-<p class="info">This is an example application of a management control panel.<br />The Unchained Engine is designed for professional enterprise applications and uses powerful plugins to connect to existing CRM solutions which should be the choice if you build the store.<br />However, to start we can manage a simple shop catalogue and add a basic payment option using the provide Control Panel.</p>
+<p class="info">This is an example application of a management admin UI.<br />The Unchained Engine is designed for professional enterprise applications and uses powerful plugins to connect to existing CRM solutions which should be the choice if you build the store.<br />However, to start we can manage a simple shop catalogue and add a basic payment option using the provide Admin UI.</p>
 
-## Step 1: Access Control Panel
+## Step 1: Access Admin UI
 
-In order to add content to your store, you need to log into the store's control panel.
-Navigate to the login window of your control panel
+In order to add content to your store, you need to log into the store's admin UI.
+Navigate to the login window of your admin UI
 
 Initially the username and password are set as following:
 
@@ -88,7 +88,7 @@ It's time to add our first product to the store.
 - Click on **`Add`** in the empty product list.
 - Give the product a **name** and set the **type** to `Simple Product`.
   ![diagramm](../images/getting-started/Control_Panel_Product_Toothbrush_Add.png)
-- Click **`Add prodct`** to save the product and navigate to the product detail view.
+- Click **`Add product`** to save the product and navigate to the product detail view.
 - (If you have one ready, add a nice product image under `Media`.)
 - Select **`Commerce`** on the left and set the price for your product.
 - IMPORTANT: If you want to update the product information (e.g. subtitle, description), switch to the tab `fr` first and set a title there (otherwise updating the product throws an error (yes, it's a bug 😒).
@@ -99,7 +99,7 @@ It's time to add our first product to the store.
 
 ## Step 4: Create Category (Assortment) with Products
 
-First we gonna add two new categories which are called _Assortments_ in the control panel.
+Firstly, we will add two new categories which are called _Assortments_ in the Admin UI.
 
 - On top choose the menu entry **`Master Data` ➤ `Assortments`**.
 - Click on **`Add`**.

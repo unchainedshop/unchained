@@ -37,7 +37,7 @@ query searchProducts($queryString: String, $limit: Int) {
     }
   }
 ```
-There're multiple options available to further tailor your search result like orderBy, includeInactive, assortmentId.
+There are multiple options available to further tailor your search result like orderBy, includeInactive, assortmentId.
 
 
 The second one is Assortment.searchProducts which provides you with the ability to only search the products attach to an assortment.

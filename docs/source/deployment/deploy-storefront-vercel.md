@@ -28,7 +28,7 @@ Now you have a fully functional storefront using unchained instance for API. Che
 
 - http://localhost:3000 to see the front-end (storefront)
 
-See it in action by adding `Assortments` and `Products` etc... using the unchained control panel.
+See it in action by adding `Assortments` and `Products` etc... using the Unchained Admin UI.
 
 ## Step 3: Deploy storefront with Vercel
 
