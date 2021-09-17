@@ -314,6 +314,7 @@ export type AuthorizeAuthenticatedRequestPayload = {
   transactionId: string;
   refno: string;
   amount?: number;
+  currency?: string;
   refno2?: string;
   autoSettle?: boolean;
   CDM?: Record<string, unknown>;
@@ -321,7 +322,7 @@ export type AuthorizeAuthenticatedRequestPayload = {
 };
 
 export type AuthorizeAuthenticatedResponseSuccess = {
-  acquirerAuthorizationCode?: string;
+  acquirerAuthorizationCode: string;
 };
 
 export type ValidateRequestPayload = {

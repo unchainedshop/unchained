@@ -15,6 +15,7 @@ import type {
   ValidateResponseSuccess,
   StatusResponseSuccess,
   AuthorizeResponseSuccess,
+  AuthorizeAuthenticatedResponseSuccess,
 } from './api/types';
 
 const logger = createLogger('unchained:core-payment:datatrans');
@@ -66,7 +67,7 @@ class Datatrans extends PaymentAdapter {
     }, null);
   }
 
-  settleInUnchained() {
+  shouldSettleInUnchained() {
     return this.config.reduce((current, item) => {
       if (item.key === 'settleInUnchained') return Boolean(item.value);
       return current;
@@ -212,6 +213,28 @@ class Datatrans extends PaymentAdapter {
     return (result as AuthorizeResponseSuccess).transactionId;
   }
 
+  async authorizeAuthenticated({
+    transactionId,
+    refno,
+    refno2,
+    extensions,
+  }): Promise<string> {
+    const { order } = this.context;
+    const { currency, amount } = roundedAmountFromOrder(order);
+    const result = await this.api.authorizeAuthenticated({
+      ...extensions,
+      transactionId,
+      amount,
+      currency,
+      refno,
+      refno2,
+      autoSettle: false,
+    });
+    throwIfResponseError(result);
+    return (result as AuthorizeAuthenticatedResponseSuccess)
+      .acquirerAuthorizationCode;
+  }
+
   isTransactionAmountValid(transaction: StatusResponseSuccess): boolean {
     const { order } = this.context;
     const { currency, amount } = roundedAmountFromOrder(order);
@@ -231,6 +254,21 @@ class Datatrans extends PaymentAdapter {
       return false;
     }
     return true;
+  }
+
+  checkIfTransactionAmountValid(
+    transactionId: string,
+    transaction: StatusResponseSuccess
+  ): void {
+    if (!this.isTransactionAmountValid(transaction)) {
+      logger.error(
+        `Datatrans Plugin: Transaction declined / Transaction ID ${transactionId} because of amount/currency mismatch`
+      );
+      throw newDatatransError({
+        code: `YOU_HAVE_TO_PAY_THE_FULL_AMOUNT_DUDE`,
+        message: 'Amount / Currency Mismatch with Cart',
+      });
+    }
   }
 
   async settle({ transactionId, refno, refno2, extensions }): Promise<boolean> {
@@ -266,6 +304,7 @@ class Datatrans extends PaymentAdapter {
   async charge({
     transactionId: rawTransactionId,
     paymentCredentials,
+    authorizeAuthenticated,
     ...extensions
   }) {
     if (!rawTransactionId && !paymentCredentials) {
@@ -286,7 +325,7 @@ class Datatrans extends PaymentAdapter {
       transactionId,
     })) as StatusResponseSuccess;
     throwIfResponseError(transaction);
-    const status = transaction?.status;
+    let status = transaction?.status;
 
     if (status === 'canceled' || status === 'failed') {
       logger.error(
@@ -299,28 +338,31 @@ class Datatrans extends PaymentAdapter {
     }
 
     if (status === 'authenticated') {
-      logger.error(
-        `Datatrans Plugin: Transaction declined / Transaction ID ${transactionId} not authorized yet`
-      );
-      throw newDatatransError({
-        code: `STATUS_${status.toUpperCase()}`,
-        message: 'Payment not yet authorized',
-      });
+      if (authorizeAuthenticated) {
+        this.checkIfTransactionAmountValid(transactionId, transaction);
+        await this.authorizeAuthenticated({
+          transactionId,
+          refno: transaction.refno,
+          refno2: transaction.refno2,
+          extensions: authorizeAuthenticated,
+        });
+        status = 'authorized';
+      } else {
+        logger.error(
+          `Datatrans Plugin: Transaction declined / Transaction ID ${transactionId} not authorized yet`
+        );
+        throw newDatatransError({
+          code: `STATUS_${status.toUpperCase()}`,
+          message: 'Payment not yet authorized',
+        });
+      }
     }
 
     if (status === 'authorized') {
       // either settle or cancel
       try {
-        if (!this.isTransactionAmountValid(transaction)) {
-          logger.error(
-            `Datatrans Plugin: Transaction declined / Transaction ID ${transactionId} because of amount/currency mismatch`
-          );
-          throw newDatatransError({
-            code: `YOU_HAVE_TO_PAY_THE_FULL_AMOUNT_DUDE`,
-            message: 'Amount / Currency Mismatch with Cart',
-          });
-        }
-        if (this.settleInUnchained()) {
+        this.checkIfTransactionAmountValid(transactionId, transaction);
+        if (this.shouldSettleInUnchained()) {
           // if further deferred settlement is active, don't settle in unchained and hand off
           // settlement to other systems
           await this.settle({
@@ -329,6 +371,7 @@ class Datatrans extends PaymentAdapter {
             refno2: transaction.refno2,
             extensions,
           });
+          status = 'settled';
         }
       } catch (e) {
         try {
