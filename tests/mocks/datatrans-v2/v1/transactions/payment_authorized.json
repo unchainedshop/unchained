@@ -1,0 +1,48 @@
+{
+  "transactionId": "payment_authorized",
+  "type": "payment",
+  "status": "authorized",
+  "currency": "CHF",
+  "refno": "datatrans-payment",
+  "refno2": "user",
+  "paymentMethod": "VIS",
+  "detail": {
+    "authorize": {
+      "amount": 20000,
+      "acquirerAuthorizationCode": "131704"
+    }
+  },
+  "language": "de",
+  "card": {
+    "alias": "70119122433810042",
+    "masked": "424242xxxxxx4242",
+    "expiryMonth": "12",
+    "expiryYear": "21",
+    "info": {
+      "brand": "VISA CREDIT",
+      "type": "credit",
+      "usage": "consumer",
+      "country": "GB",
+      "issuer": "DATATRANS"
+    },
+    "3D": {
+      "authenticationResponse": "D"
+    }
+  },
+  "history": [
+    {
+      "action": "init",
+      "source": "api",
+      "date": "2021-09-03T11:16:50Z",
+      "success": true,
+      "ip": "212.232.234.26"
+    },
+    {
+      "action": "authorize",
+      "source": "redirect",
+      "date": "2021-09-03T11:17:04Z",
+      "success": true,
+      "ip": "212.232.234.26"
+    }
+  ]
+}

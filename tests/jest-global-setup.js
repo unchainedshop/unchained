@@ -2,18 +2,9 @@ import setupInMemoryMongoDB from '@shelf/jest-mongodb/setup';
 import { spawn } from 'child_process';
 import { wipeDatabase } from './helpers';
 
-let meteorProcess = null;
-let mongoDBRunning = false;
-
 const startAndWaitForMeteor = async () => {
   return new Promise((resolve, reject) => {
     try {
-      if (meteorProcess) {
-        global.__SUBPROCESS_METEOR__ = meteorProcess;
-        global.__SUBPROCESS_METEOR__.ref();
-        resolve();
-        return;
-      }
       global.__SUBPROCESS_METEOR__ = spawn(
         'meteor',
         ['--no-release-check', `--no-lint`],
@@ -27,11 +18,11 @@ const startAndWaitForMeteor = async () => {
             UNCHAINED_DISABLE_EMAIL_INTERCEPTION: 1,
             DATATRANS_SECRET: 'secret',
             DATATRANS_SIGN_KEY: '1337',
+            DATATRANS_API_MOCKS_PATH: '../../tests/mocks/datatrans-v2',
             APPLE_IAP_SHARED_SECRET: '73b61776e7304f8ab1c2404df9192078',
           },
         },
       );
-      meteorProcess = global.__SUBPROCESS_METEOR__;
       global.__SUBPROCESS_METEOR__.stdout.on('data', (data) => {
         const dataAsString = `${data}`;
         if (process.env.DEBUG) {
@@ -50,11 +41,10 @@ const startAndWaitForMeteor = async () => {
   });
 };
 
-export default async (config) => {
-  if (!mongoDBRunning) {
-    await setupInMemoryMongoDB(config);
-    mongoDBRunning = true;
+export default async (globalConfig) => {
+  if (!global.__SUBPROCESS_METEOR__) {
+    await setupInMemoryMongoDB(globalConfig);
+    await startAndWaitForMeteor(globalConfig);
+    await wipeDatabase();
   }
-  await startAndWaitForMeteor(config);
-  await wipeDatabase();
 };

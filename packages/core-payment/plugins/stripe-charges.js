@@ -115,13 +115,9 @@ class Stripe extends PaymentAdapter {
     return type === 'GENERIC';
   }
 
-  configurationError() {
-    // eslint-disable-line
+  configurationError() { // eslint-disable-line
     if (!STRIPE_SECRET) {
       return PaymentError.INCOMPLETE_CONFIGURATION;
-    }
-    if (this.wrongCredentials) {
-      return PaymentError.WRONG_CREDENTIALS;
     }
     return null;
   }

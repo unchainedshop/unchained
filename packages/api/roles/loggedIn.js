@@ -31,7 +31,8 @@ export default (role, actions) => {
 
   const isOwnedEmailAddress = (root, { email } = {}, { user } = {}) => {
     return user?.emails?.some(
-      (emailRecord) => emailRecord.address.toLowerCase() === email.toLowerCase()
+      (emailRecord) =>
+        emailRecord.address?.toLowerCase() === email?.toLowerCase()
     );
   };
 

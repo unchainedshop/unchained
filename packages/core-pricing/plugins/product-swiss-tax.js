@@ -45,6 +45,7 @@ export class ProductSwissTax extends ProductPricingAdapter {
       address?.countryCode !== undefined
         ? address.countryCode?.toUpperCase().trim()
         : ctx.country?.toUpperCase().trim();
+
     return countryCode === 'CH' || countryCode === 'LI';
   }
 
