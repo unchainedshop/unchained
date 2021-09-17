@@ -3,7 +3,7 @@ title: 'Plugin: Payment through Datatrans'
 description: Configuration Options for our Datatrans Integration
 ---
 
-Unchained supports both the old XML based legacy API of Datatrans (https://docs.datatrans.ch/v1.0.1/docs/payment-process-overview) and the new transactionId-centric API based on JSON https://docs.datatrans.ch/docs/home
+Unchained supports both the old XML based legacy API of Datatrans [payment process overview](https://docs.datatrans.ch/v1.0.1/docs/payment-process-overview) and the new [transactionId centric API based on JSON](https://docs.datatrans.ch/docs/home)
 If you already have Datatrans chances are high you're still using the legacy API and so you will have to use the legacy Datatrans Unchained Plugin. If you're starting fresh, you will be using the new one.
 
 Activate either of those in your project by selecting to import one (and only one):
@@ -18,7 +18,7 @@ The rest of this page will center around the new v2 plugin. If you need support 
 
 You have to set `DATATRANS_SECRET` and `DATATRANS_SIGN_KEY` on build-time based on the configuration on your Datatrans Merchant Account:
 
-| NAME                     | Default Value                          | Alllowed Values                         |
+| NAME                     | Default Value                          | Allowed Values                         |
 | ------------------------ | -------------------------------------- | --------------------------------------- |
 | `DATATRANS_SECRET`       |                                        |                                         |
 | `DATATRANS_SIGN_KEY`     |                                        |                                         |
@@ -39,7 +39,7 @@ In order to activate live payments, you will have to set the `DATATRANS_API_ENDP
 
 When adding a datatrans payment provider either through the Admin UI or with the `createPaymentProvider`, you will need to tell it with which merchantId it authenticates requests against the Datatrans API, the configuration parameters you can set are:
 
-| KEY                      | Default Value                          | Alllowed Values                         |
+| KEY                      | Default Value                          | Allowed Values                         |
 | ------------------------ | -------------------------------------- | --------------------------------------- |
 | `merchantId`             |                                        |                                         |
 | `settleInUnchained`      | 1                                      | "1", ""                                 |
@@ -49,17 +49,17 @@ Unchained Engine supports Datatrans Marketplace Integration:
 
 You can add multiple `marketplaceSplit` entries to configure marketplace payments. See https://docs.datatrans.ch/docs/marketplace-payments#section-settlement-splits for more information. `settleInUnchained` has to be 1 if you want to use marketplace features.
 
-Of course you can add any additional properties to the configuration if you need that to filter payment providers.
+Of course, you can add any additional properties to the configuration if you need that to filter payment providers.
 
-If you want to use deferred settlement of Unchained Engine for only some specific payment providers, you will have to instantiate multiple providers and select the correct one from the frontend, so in these cases it helps to add additional properties server side that may help the UI distinguish the providers.
+If you want to use a deferred settlement of Unchained Engine for only some specific payment providers, you will have to instantiate multiple providers and select the correct one from the frontend, so in these cases, it helps to add additional properties server-side that may help the UI distinguish the providers.
 
 # Usage in the Frontend
 
-You can easily follow the documentation on https://docs.datatrans.ch/docs/redirect-lightbox and https://docs.datatrans.ch/docs/secure-fields.
+You can easily follow the documentation on [redirect lightbox](https://docs.datatrans.ch/docs/redirect-lightbox) and [secure fields](https://docs.datatrans.ch/docs/secure-fields).
 
 ## Mode: Redirect / Lightbox Instructions
 
-Follow https://docs.datatrans.ch/docs/secure-fields and where it says you have to initialize a transaction you have to call one of these mutations:
+Follow [secure fields](https://docs.datatrans.ch/docs/secure-fields) and where it says you have to initialize a transaction you have to call one of these mutations:
 
 **Cart Checkout**:
 ```/*graphql*/
@@ -110,7 +110,7 @@ checkoutCart(
 }
 ```
 
-This gives Unchained Engine a (second) chance to process the payment and settle the payment. That's how you build rocket solid payment flows in shaky networks.
+This gives Unchained Engine a (second) chance to process and settle the payment. That's how you build rock-solid payment flows in shaky networks.
 
 
 # Mode: Secure Fields
@@ -130,16 +130,16 @@ This will instruct Unchained to authorize an unauthorized transaction before try
 
 # Mode: Mobile SDK
 
-To enable mobile tokens during checkout as stated here https://docs.datatrans.ch/docs/mobile-sdk#section-initializing-transactions, send a special `transactionContext` to `signPaymentProviderForCheckout`: `{ "option": { "returnMobileToken": true } }`
+To enable mobile tokens during checkout as stated [here](https://docs.datatrans.ch/docs/mobile-sdk#section-initializing-transactions), send a special `transactionContext` to `signPaymentProviderForCheckout`: `{ "option": { "returnMobileToken": true } }`
 
 
 # Advanced integration features
 
 **Restrict payment method selection in redirect:**
-You can send any additional properties to /v1/transactions/init by setting properties on the context input fields for ex. if you want to retrict payment methods during checkout you could send `{ "paymentMethods": ["VIS"] }` as value for `transactionContext` in `signPaymentProviderForCheckout` to restrict checkout with that provider to VISA credit cards,
+You can send any additional properties to /v1/transactions/init by setting properties on the context input fields for eg. if you want to restrict payment methods during checkout you could send `{ "paymentMethods": ["VIS"] }` as value for `transactionContext` in `signPaymentProviderForCheckout` to restrict checkout with that provider to VISA credit cards,
 
 **Checkout with alias:**
 Just simply do `checkoutCart` without initializing a transactionId. If the user has valid stored payment credentials for the datatrans payment provider, the plugin will try to use that information and directly checkout and settle the payment.
 
 **Asynchronous Webhook:**
-As stated here https://docs.datatrans.ch/docs/redirect-lightbox#section-webhook there is the possibility of asynchronous webhooks. Don't enable this, else you will have to "poll" the order status after a checkout as webhook-based checkout could still be in-flight and you will miss out on a whole category of errors for the sake of speeding up 1s of processing time.
+As stated [here](https://docs.datatrans.ch/docs/redirect-lightbox#section-webhook) there is the possibility of asynchronous webhooks. Don't enable this, else you will have to "poll" the order status after checkout as webhook-based checkout could still be in-flight and you will miss out on a whole category of errors for the sake of speeding up 1s of processing time.
