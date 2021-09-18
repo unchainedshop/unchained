@@ -7,10 +7,10 @@ import {
 } from 'meteor/unchained:core-pricing';
 import { objectInvert } from 'meteor/unchained:utils';
 import { emit } from 'meteor/unchained:core-events';
+import { MediaObjects } from 'meteor/unchained:core-files-next';
 import { OrderDeliveries } from './collections';
 import { OrderDeliveryStatus } from './schema';
 import { Orders } from '../orders/collections';
-import { OrderDocuments } from '../order-documents/collections';
 
 OrderDeliveries.helpers({
   order() {
@@ -155,7 +155,7 @@ OrderDeliveries.updateStatus = ({ deliveryId, status, info = '' }) => {
   if (status === OrderDeliveryStatus.DELIVERED) {
     modifier.$set.delivered = date;
   }
-  OrderDocuments.updateDeliveryDocuments({
+  MediaObjects.updateDeliveryDocuments({
     deliveryId,
     date,
     ...modifier.$set,
