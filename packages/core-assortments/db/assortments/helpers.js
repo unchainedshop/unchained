@@ -642,12 +642,12 @@ Collections.Assortments.helpers({
     ...options
   }) {
     const fileLoader = rawFile
-      ? uploadObjectStream('assortment-medias', rawFile, {
+      ? uploadObjectStream('assortment-media', rawFile, {
           userId: authorId,
           ...options,
         })
       : uploadFileFromURL(
-          'assortment-medias',
+          'assortment-media',
           { fileLink: href, fileName: name },
           { userId: authorId, ...options }
         );

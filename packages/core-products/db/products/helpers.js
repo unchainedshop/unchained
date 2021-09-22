@@ -518,11 +518,11 @@ Products.helpers({
     ...options
   }) {
     const fileLoader = rawFile
-      ? uploadObjectStream('product-medias', rawFile, {
+      ? uploadObjectStream('product-media', rawFile, {
           userId: authorId,
         })
       : uploadFileFromURL(
-          'product-medias',
+          'product-media',
           { fileName: name, fileLink: href },
           { userId: authorId, ...options }
         );

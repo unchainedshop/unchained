@@ -172,7 +172,7 @@ Users.createSignedUploadURL = async (
   originalFileName,
   { userId, ...context }
 ) => {
-  return createSignedPutURL('user-avatar', originalFileName, {
+  return createSignedPutURL('user-avatars', originalFileName, {
     userId,
     ...context,
   });

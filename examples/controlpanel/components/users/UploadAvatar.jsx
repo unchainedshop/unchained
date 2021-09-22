@@ -5,7 +5,6 @@ import gql from 'graphql-tag';
 import { Image } from 'semantic-ui-react';
 import Dropzone from 'react-dropzone';
 import squareImage from '../../public/square-image.png';
-import uploadToMinio from '../../lib/uploadToMinio';
 
 const UploadAvatar = ({ avatarUrl, handleChange }) => (
   <div className="fixed-height">
@@ -74,7 +73,6 @@ export default compose(
       ({ mutate, userId, updateImageUrl }) =>
       async (files) => {
         const avatar = files[0];
-        console.log(avatar);
         updateImageUrl(URL.createObjectURL(avatar));
         await mutate({
           variables: {
