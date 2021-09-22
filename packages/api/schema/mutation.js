@@ -944,15 +944,11 @@ export default [
       prepareProductMediaUpload(mediaName: String!): MediaUploadTicket!
       prepareAssortmentMediaUpload(mediaName: String!): MediaUploadTicket!
       prepareUserAvatarUpload(mediaName: String!): MediaUploadTicket!
-      addProductMediaLink(
+      confirmMediaUpload(
         mediaUploadTicketId: ID!
-        productID: ID!
-      ): ProductMedia!
-      addAssortmentMediaLink(
-        mediaUploadTicketId: ID!
-        assortmentId: ID!
-      ): AssortmentMedia!
-      linkUserAvatar(mediaUploadTicketId: ID!): User!
+        size: Int!
+        type: String!
+      ): Media!
     }
   `,
 ];

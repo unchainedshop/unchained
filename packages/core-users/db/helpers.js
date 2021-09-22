@@ -178,20 +178,6 @@ Users.createSignedUploadURL = async (
   });
 };
 
-Users.updateAvatarLink = async ({ mediaId, userId }) => {
-  const user = Users.findUser({ userId });
-  removeObjects(user.avatarId);
-  Users.update(
-    { _id: userId },
-    {
-      $set: {
-        updated: new Date(),
-        avatarId: mediaId,
-      },
-    }
-  );
-  return Users.findUser({ userId });
-};
 Users.updateProfile = ({ userId, profile }) => {
   const transformedProfile = Object.keys(profile).reduce((acc, profileKey) => {
     return {

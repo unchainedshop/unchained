@@ -44,7 +44,7 @@ import createProductVariationOption from './createProductVariationOption';
 import removeProductVariation from './removeProductVariation';
 import updateProductVariationTexts from './updateProductVariationTexts';
 import removeProductVariationOption from './removeProductVariationOption';
-import addProductMediaLink from './addProductMediaLink';
+import confirmMediaUpload from './confirmMediaUpload';
 import addProductMedia from './addProductMedia';
 import removeProductMedia from './removeProductMedia';
 import reorderProductMedia from './reorderProductMedia';
@@ -142,9 +142,7 @@ import removeAssortmentMedia from './removeAssortmentMedia';
 import updateAssortmentMediaTexts from './updateAssortmentMediaTexts';
 import prepareProductMediaUpload from './prepareProductMediaUpload';
 import prepareAssortmentMediaUpload from './prepareAssortmentMediaUpload';
-import addAssortmentMediaLink from './addAssortmentMediaLink';
 import prepareUserAvatarUpload from './prepareUserAvatarUpload';
-import linkUserAvatar from './linkUserAvatar';
 
 export default {
   logout,
@@ -168,7 +166,6 @@ export default {
   removeEmail: acl(actions.updateUser)(removeEmail),
   updateUserAvatar: acl(actions.updateUser)(updateUserAvatar),
   prepareUserAvatarUpload: acl(actions.updateUser)(prepareUserAvatarUpload),
-  linkUserAvatar: acl(actions.updateUser)(linkUserAvatar),
   updateUserProfile: acl(actions.updateUser)(updateUserProfile),
   setUserTags: acl(actions.manageUsers)(setUserTags),
   setPassword: acl(actions.manageUsers)(setPassword),
@@ -201,7 +198,7 @@ export default {
   updateProductTexts: acl(actions.manageProducts)(updateProductTexts),
   updateProductMediaTexts: acl(actions.manageProducts)(updateProductMediaTexts),
   addProductMedia: acl(actions.manageProducts)(addProductMedia),
-  addProductMediaLink: acl(actions.manageProducts)(addProductMediaLink),
+  confirmMediaUpload: acl(actions.manageProducts)(confirmMediaUpload),
   prepareProductMediaUpload: acl(actions.manageProducts)(
     prepareProductMediaUpload
   ),
@@ -312,9 +309,6 @@ export default {
   addAssortmentMedia: acl(actions.manageAssortments)(addAssortmentMedia),
   prepareAssortmentMediaUpload: acl(actions.manageAssortments)(
     prepareAssortmentMediaUpload
-  ),
-  addAssortmentMediaLink: acl(actions.manageAssortments)(
-    addAssortmentMediaLink
   ),
   updateAssortment: acl(actions.manageAssortments)(updateAssortment),
   setBaseAssortment: acl(actions.manageAssortments)(setBaseAssortment),
