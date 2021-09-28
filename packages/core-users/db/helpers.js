@@ -169,13 +169,25 @@ Users.helpers({
 });
 
 Users.createSignedUploadURL = async (
-  originalFileName,
-  { userId, ...context }
+  { mediaName, userId },
+  { userId: contextUserId, ...context }
 ) => {
-  return createSignedPutURL('user-avatars', originalFileName, {
-    userId,
+  const uploadedMedia = await createSignedPutURL('user-avatars', mediaName, {
+    userId: contextUserId,
     ...context,
   });
+  const user = Users.findUser({ userId });
+  if (user?.avatarId) await removeObjects(user?.avatarId);
+  Users.update(
+    { _id: userId || contextUserId },
+    {
+      $set: {
+        updated: new Date(),
+        avatarId: uploadedMedia._id,
+      },
+    }
+  );
+  return uploadedMedia;
 };
 
 Users.updateProfile = ({ userId, profile }) => {

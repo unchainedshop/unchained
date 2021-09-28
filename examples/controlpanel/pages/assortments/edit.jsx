@@ -9,8 +9,7 @@ import AssortmentLinkList from '../../components/assortments/AssortmentLinkList'
 import AssortmentProductList from '../../components/assortments/AssortmentProductList';
 import AssortmentFilterList from '../../components/assortments/AssortmentFilterList';
 import FormEditAssortmentTexts from '../../components/assortments/FormEditAssortmentTexts';
-
-import AssortmentMediaListMinio from '../../components/assortments/AssortmentMediaListMinio';
+import AssortmentMediaList from '../../components/assortments/AssortmentMediaList';
 
 export default connectApollo(
   withRouter(({ changeTab, router, ...rest }) => (
@@ -37,7 +36,7 @@ export default connectApollo(
               {router.query.tab === 'AssortmentMedias' && (
                 <div>
                   <Header as="h3">Catalog Visualization</Header>
-                  <AssortmentMediaListMinio assortmentId={router.query._id} />
+                  <AssortmentMediaList assortmentId={router.query._id} />
                 </div>
               )}
               {router.query.tab === 'AssortmentLinks' && (
