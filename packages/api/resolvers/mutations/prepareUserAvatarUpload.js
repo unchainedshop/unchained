@@ -4,8 +4,8 @@ import { Users } from 'meteor/unchained:core-users';
 
 export default async function prepareUserAvatarUpload(
   root,
-  { mediaName },
-  { userId, ...context }
+  { mediaName, userId },
+  { userId: currentUser, ...context }
 ) {
   log('mutation prepareUserAvatarUpload', { mediaName, userId });
   return Users.createSignedUploadURL(mediaName, {

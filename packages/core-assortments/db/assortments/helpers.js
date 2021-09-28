@@ -12,6 +12,7 @@ import { log } from 'meteor/unchained:core-logger';
 import {
   uploadObjectStream,
   uploadFileFromURL,
+  createSignedPutURL,
 } from 'meteor/unchained:core-files-next';
 import { makeBreadcrumbsBuilder } from '../../breadcrumbs';
 import * as Collections from './collections';
@@ -298,6 +299,26 @@ Collections.AssortmentProducts.removeProduct = (
     { _id: assortmentProductId },
     options
   );
+};
+
+AssortmentMedia.createSignedUploadURL = async (
+  { mediaName, assortmentId },
+  { userId, ...context }
+) => {
+  const uploadedMedia = await createSignedPutURL(
+    'assortment-media',
+    mediaName,
+    {
+      userId,
+      ...context,
+    }
+  );
+  const assortment = Collections.Assortments.findAssortment({ assortmentId });
+  assortment.addMediaLink({
+    mediaId: uploadedMedia._id,
+    authorId: userId,
+  });
+  return uploadedMedia;
 };
 
 Collections.AssortmentProducts.createAssortmentProduct = (

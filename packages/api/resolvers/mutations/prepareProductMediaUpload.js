@@ -3,13 +3,16 @@ import { ProductMedia } from 'meteor/unchained:core-products';
 
 export default async function prepareProductMediaUpload(
   root,
-  { mediaName },
+  { mediaName, productId },
   { userId, ...context }
 ) {
   log('mutation prepareProductMediaUpload', { mediaName, userId });
 
-  return ProductMedia.createSignedUploadURL(mediaName, {
-    userId,
-    ...context,
-  });
+  return ProductMedia.createSignedUploadURL(
+    { mediaName, productId },
+    {
+      userId,
+      ...context,
+    }
+  );
 }

@@ -21,15 +21,6 @@ AssortmentMedia.removeAssortmentMedia = async ({ assortmentMediaId }) => {
   return result;
 };
 
-AssortmentMedia.createSignedUploadURL = async (
-  originalFileName,
-  { userId, ...context }
-) => {
-  return createSignedPutURL('assortment-media', originalFileName, {
-    userId,
-    ...context,
-  });
-};
 AssortmentMedia.helpers({
   upsertLocalizedText(locale, fields) {
     AssortmentMediaTexts.upsert(

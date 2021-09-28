@@ -18,6 +18,7 @@ import { Locale } from 'locale';
 import crypto from 'crypto';
 import {
   uploadObjectStream,
+  createSignedPutURL,
   uploadFileFromURL,
 } from 'meteor/unchained:core-files-next';
 import { Products, ProductTexts } from './collections';
@@ -26,6 +27,23 @@ import { ProductVariations } from '../product-variations/collections';
 import { ProductMedia } from '../product-media/collections';
 import { ProductReviews } from '../product-reviews/collections';
 import { ProductStatus, ProductTypes } from './schema';
+
+ProductMedia.createSignedUploadURL = async (
+  { mediaName, productId },
+  { userId, ...context }
+) => {
+  const uploadedMedia = await createSignedPutURL('product-media', mediaName, {
+    userId,
+    ...context,
+  });
+
+  const product = Products.findProduct({ productId });
+  product.addMediaLink({
+    mediaId: uploadedMedia._id,
+    authorId: userId,
+  });
+  return uploadedMedia;
+};
 
 const getPriceLevels = (product, { currencyCode, countryCode }) => {
   return (product?.commerce?.pricing || [])

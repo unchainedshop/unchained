@@ -22,16 +22,6 @@ ProductMedia.removeProductMedia = ({ productMediaId }) => {
   return result;
 };
 
-ProductMedia.createSignedUploadURL = async (
-  originalFileName,
-  { userId, ...context }
-) => {
-  return createSignedPutURL('product-media', originalFileName, {
-    userId,
-    ...context,
-  });
-};
-
 ProductMedia.helpers({
   upsertLocalizedText(locale, fields) {
     ProductMediaTexts.upsert(

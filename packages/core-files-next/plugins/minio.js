@@ -137,7 +137,7 @@ export const createSignedPutURL = async (
   if (!client) throw new Error('Minio not connected, check env variables');
   const { hash, hashedName } = generateRandomFileName(fileName);
 
-  const putUrl = await client.presignedPutObject(
+  const putURL = await client.presignedPutObject(
     MINIO_BUCKET_NAME,
     `${directoryName}/${hashedName}`,
     PUT_URL_EXPIRY
@@ -152,7 +152,7 @@ export const createSignedPutURL = async (
   });
   return {
     _id,
-    putUrl,
+    putURL,
     expires,
   };
 };
@@ -251,12 +251,12 @@ export const uploadFileFromURL = async (
   });
 };
 
-export const linkMedia = ({ mediaTicketId, size, type }) => {
-  const media = MediaObjects.findOne({ _id: mediaTicketId });
-  if (!media) throw new Error(`Media with id ${mediaTicketId} Not found`);
+export const linkMedia = ({ mediaUploadTicketId, size, type }) => {
+  const media = MediaObjects.findOne({ _id: mediaUploadTicketId });
+  if (!media) throw new Error(`Media with id ${mediaUploadTicketId} Not found`);
 
   MediaObjects.update(
-    { _id: mediaTicketId },
+    { _id: mediaUploadTicketId },
     {
       $set: {
         size,
@@ -265,7 +265,7 @@ export const linkMedia = ({ mediaTicketId, size, type }) => {
       },
     }
   );
-  return MediaObjects.findOne({ _id: mediaTicketId });
+  return MediaObjects.findOne({ _id: mediaUploadTicketId });
 };
 
 export default client;
