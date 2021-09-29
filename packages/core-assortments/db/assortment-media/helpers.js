@@ -2,11 +2,7 @@ import 'meteor/dburles:collection-helpers';
 import { findLocalizedText } from 'meteor/unchained:utils';
 import { Locale } from 'locale';
 import { emit } from 'meteor/unchained:core-events';
-import {
-  createSignedPutURL,
-  removeObjects,
-  MediaObjects,
-} from 'meteor/unchained:core-files-next';
+import { removeObjects, MediaObjects } from 'meteor/unchained:core-files-next';
 import { AssortmentMedia, AssortmentMediaTexts } from './collections';
 
 AssortmentMedia.findAssortmentMedia = ({ assortmentMediaId }) => {

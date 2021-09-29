@@ -269,3 +269,17 @@ export const linkMedia = ({ mediaUploadTicketId, size, type }) => {
 };
 
 export default client;
+const mediaTypes = {};
+export const createUploadContainer = (directoryName, fn) => {
+  if (!mediaTypes[directoryName]) mediaTypes[directoryName] = fn;
+  return {
+    createSignedPutURL: async (mediaName, { userId, ...context }) => {
+      const uploadedMedia = await createSignedPutURL(directoryName, mediaName, {
+        userId,
+      });
+      await fn(uploadedMedia._id, { userId, ...context });
+
+      return uploadedMedia;
+    },
+  };
+};

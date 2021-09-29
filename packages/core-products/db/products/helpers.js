@@ -18,7 +18,7 @@ import { Locale } from 'locale';
 import crypto from 'crypto';
 import {
   uploadObjectStream,
-  createSignedPutURL,
+  createUploadContainer,
   uploadFileFromURL,
 } from 'meteor/unchained:core-files-next';
 import { Products, ProductTexts } from './collections';
@@ -28,20 +28,31 @@ import { ProductMedia } from '../product-media/collections';
 import { ProductReviews } from '../product-reviews/collections';
 import { ProductStatus, ProductTypes } from './schema';
 
+const productMediaUploads = createUploadContainer(
+  'product-media',
+  async (mediaId, { productId, userId, ...mediaData }) => {
+    return ProductMedia.createMedia({
+      productId,
+      mediaId,
+      authorId: userId,
+      ...mediaData,
+    });
+  }
+);
+
 ProductMedia.createSignedUploadURL = async (
   { mediaName, productId },
   { userId, ...context }
 ) => {
-  const uploadedMedia = await createSignedPutURL('product-media', mediaName, {
-    userId,
-    ...context,
-  });
-
-  const product = Products.findProduct({ productId });
-  product.addMediaLink({
-    mediaId: uploadedMedia._id,
-    authorId: userId,
-  });
+  const uploadedMedia = await productMediaUploads.createSignedPutURL(
+    'product-media',
+    mediaName,
+    {
+      userId,
+      productId,
+      ...context,
+    }
+  );
   return uploadedMedia;
 };
 

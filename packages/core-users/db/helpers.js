@@ -12,7 +12,7 @@ import { Languages } from 'meteor/unchained:core-languages';
 import { log, Logs } from 'meteor/unchained:core-logger';
 import { v4 as uuidv4 } from 'uuid';
 import {
-  createSignedPutURL,
+  createUploadContainer,
   MediaObjects,
   removeObjects,
   uploadObjectStream,
@@ -21,6 +21,23 @@ import { Users } from './collections';
 import filterContext from '../filterContext';
 import evaluateContext from '../evaluateContext';
 import settings from '../settings';
+
+const userAvatarUploads = createUploadContainer(
+  'user-avatars',
+  async (mediaId, { userId }) => {
+    const user = Users.findUser({ userId });
+    if (user?.avatarId) await removeObjects(user?.avatarId);
+    return Users.update(
+      { _id: userId },
+      {
+        $set: {
+          updated: new Date(),
+          avatarId: mediaId,
+        },
+      }
+    );
+  }
+);
 
 const buildFindSelector = ({ includeGuests, queryString }) => {
   const selector = {};
@@ -168,23 +185,13 @@ Users.helpers({
   },
 });
 
-Users.createSignedUploadURL = async (
-  { mediaName, userId },
-  { userId: contextUserId, ...context }
-) => {
-  const uploadedMedia = await createSignedPutURL('user-avatars', mediaName, {
-    userId: contextUserId,
-    ...context,
-  });
-  const user = Users.findUser({ userId });
-  if (user?.avatarId) await removeObjects(user?.avatarId);
-  Users.update(
-    { _id: userId || contextUserId },
+Users.createSignedUploadURL = async ({ mediaName, userId }, { ...context }) => {
+  const uploadedMedia = await userAvatarUploads.createSignedPutURL(
+    'user-avatars',
+    mediaName,
     {
-      $set: {
-        updated: new Date(),
-        avatarId: uploadedMedia._id,
-      },
+      userId,
+      ...context,
     }
   );
   return uploadedMedia;

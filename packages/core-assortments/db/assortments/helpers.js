@@ -12,7 +12,7 @@ import { log } from 'meteor/unchained:core-logger';
 import {
   uploadObjectStream,
   uploadFileFromURL,
-  createSignedPutURL,
+  createUploadContainer,
 } from 'meteor/unchained:core-files-next';
 import { makeBreadcrumbsBuilder } from '../../breadcrumbs';
 import * as Collections from './collections';
@@ -23,6 +23,17 @@ const eqSet = (as, bs) => {
   return [...as].join(',') === [...bs].join(',');
 };
 
+const assortmentMediaUploads = createUploadContainer(
+  'assortment-media',
+  async (mediaId, { assortmentId, userId, ...mediaData }) => {
+    return AssortmentMedia.createMedia({
+      assortmentId,
+      mediaId,
+      authorId: userId,
+      ...mediaData,
+    });
+  }
+);
 const buildFindSelector = ({
   slugs = [],
   tags = [],
@@ -305,19 +316,16 @@ AssortmentMedia.createSignedUploadURL = async (
   { mediaName, assortmentId },
   { userId, ...context }
 ) => {
-  const uploadedMedia = await createSignedPutURL(
-    'assortment-media',
+  console.log(assortmentMediaUploads);
+  const uploadedMedia = await assortmentMediaUploads.createSignedPutURL(
     mediaName,
     {
       userId,
+      assortmentId,
       ...context,
     }
   );
-  const assortment = Collections.Assortments.findAssortment({ assortmentId });
-  assortment.addMediaLink({
-    mediaId: uploadedMedia._id,
-    authorId: userId,
-  });
+  console.log(uploadedMedia);
   return uploadedMedia;
 };
 
