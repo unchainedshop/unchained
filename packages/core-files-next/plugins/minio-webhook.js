@@ -1,33 +1,24 @@
 import { useMiddlewareWithCurrentContext } from 'meteor/unchained:api';
 import bodyParser from 'body-parser';
-import { MediaObjects } from '../db/collections';
+import { linkMedia } from './minio';
 
 useMiddlewareWithCurrentContext(
-  '/graphql/minio/',
+  '/minio/',
   bodyParser.json({
     strict: false,
   })
 );
 
-useMiddlewareWithCurrentContext('/graphql/minio/', async (req, res) => {
+useMiddlewareWithCurrentContext('/minio/', async (req) => {
   if (req.method === 'POST' && req.body) {
-    const { Records = [], Key, EventName } = req.body;
+    const { Records = [], EventName } = req.body;
+
     if (EventName === 's3:ObjectCreated:Put') {
-      const [{ responseElements, s3 }] = Records;
+      const [{ s3 }] = Records;
       const { object } = s3;
       const { size, contentType: type } = object;
-      const currentId = object.key.split('.')[0];
-
-      MediaObjects.update(
-        { _id: currentId },
-        {
-          $set: {
-            size,
-            type,
-            updated: new Date(),
-          },
-        }
-      );
+      const [currentId] = object.key.split('.');
+      linkMedia({ mediaUploadTicketId: currentId, type, size });
     }
   }
 });
