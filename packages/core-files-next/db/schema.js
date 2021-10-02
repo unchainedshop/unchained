@@ -10,7 +10,7 @@ MediaObjects.attachSchema(
       name: { type: String, required: true },
       size: { type: String },
       type: { type: String },
-      expires: { type: Date, required: true },
+      expires: { type: Date },
       meta: { type: Object, blackbox: true },
       ...Schemas.timestampFields,
     },
@@ -19,6 +19,7 @@ MediaObjects.attachSchema(
 );
 
 export default () => {
+  MediaObjects.createIndex({ expires: 1 }, { expireAfterSeconds: 0 });
   MediaObjects.rawCollection().createIndex({
     created: -1,
   });

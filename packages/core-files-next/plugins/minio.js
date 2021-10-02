@@ -261,6 +261,7 @@ export const linkMedia = ({ mediaUploadTicketId, size, type }) => {
       $set: {
         size,
         type,
+        expires: null,
         updated: new Date(),
       },
     }

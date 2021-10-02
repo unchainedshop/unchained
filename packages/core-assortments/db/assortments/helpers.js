@@ -316,7 +316,6 @@ AssortmentMedia.createSignedUploadURL = async (
   { mediaName, assortmentId },
   { userId, ...context }
 ) => {
-  console.log(assortmentMediaUploads);
   const uploadedMedia = await assortmentMediaUploads.createSignedPutURL(
     mediaName,
     {
@@ -325,7 +324,6 @@ AssortmentMedia.createSignedUploadURL = async (
       ...context,
     }
   );
-  console.log(uploadedMedia);
   return uploadedMedia;
 };
 
