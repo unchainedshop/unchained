@@ -32,15 +32,16 @@ const productMediaUploads = createUploadContainer(
   'product-media',
   async (
     mediaTicketUploadId,
-    linkedProductMediaId,
-    { userId, ...mediaData }
+    linkedAssortmentMediaId,
+    { authorId, ...mediaData }
   ) => {
-    return ProductMedia.createMedia({
-      productId: linkedProductMediaId,
-      mediaId: mediaTicketUploadId,
-      authorId: userId,
+    const result = ProductMedia.createMedia({
       ...mediaData,
+      productId: linkedAssortmentMediaId,
+      authorId,
+      mediaId: mediaTicketUploadId,
     });
+    return result;
   }
 );
 
@@ -48,16 +49,14 @@ ProductMedia.createSignedUploadURL = async (
   { mediaName, productId },
   { userId, ...context }
 ) => {
-  const uploadedMedia = await productMediaUploads.createSignedPutURL(
-    'product-media',
+  return productMediaUploads.createSignedURL(
+    productId,
     mediaName,
     {
-      userId,
-      productId,
-      ...context,
-    }
+      authorId: userId,
+    },
+    context
   );
-  return uploadedMedia;
 };
 
 const getPriceLevels = (product, { currencyCode, countryCode }) => {

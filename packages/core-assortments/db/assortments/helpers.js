@@ -31,10 +31,9 @@ const assortmentMediaUploads = createUploadContainer(
     { authorId, ...mediaData }
   ) => {
     const result = AssortmentMedia.createMedia({
-      assortmentId: linkedAssortmentMediaId,
-
-      authorId,
       ...mediaData,
+      assortmentId: linkedAssortmentMediaId,
+      authorId,
       mediaId: mediaTicketUploadId,
     });
     return result;
@@ -322,13 +321,12 @@ AssortmentMedia.createSignedUploadURL = async (
   { mediaName, assortmentId },
   { userId, ...context }
 ) => {
-  const uploadedMedia = await assortmentMediaUploads.createSignedURL(
+  return assortmentMediaUploads.createSignedURL(
     assortmentId,
     mediaName,
     { authorId: userId },
     context
   );
-  return uploadedMedia;
 };
 
 Collections.AssortmentProducts.createAssortmentProduct = (

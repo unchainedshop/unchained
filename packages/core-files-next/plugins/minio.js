@@ -263,7 +263,8 @@ export const linkMedia = async ({ mediaUploadTicketId, size, type }) => {
   const media = MediaObjects.findOne({ _id: mediaUploadTicketId });
   if (!media) throw new Error(`Media with id ${mediaUploadTicketId} Not found`);
   const { meta } = media;
-  if (!meta?.mediaId) throw new Error('Linked media Id not found');
+  const { mediaId, ...mediaMeta } = meta;
+  if (!mediaId) return null;
   const [mediaType] = decodeURIComponent(mediaUploadTicketId).split('/');
 
   MediaObjects.update(
@@ -277,9 +278,8 @@ export const linkMedia = async ({ mediaUploadTicketId, size, type }) => {
       },
     }
   );
-
-  await mediaContainerRegistry[mediaType](mediaUploadTicketId, meta?.mediaId, {
-    ...meta,
+  await mediaContainerRegistry[mediaType](mediaUploadTicketId, mediaId, {
+    ...mediaMeta,
   });
 
   return MediaObjects.findOne({ _id: mediaUploadTicketId });

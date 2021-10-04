@@ -186,13 +186,11 @@ Users.helpers({
 });
 
 Users.createSignedUploadURL = async ({ mediaName, userId }, { ...context }) => {
-  const uploadedMedia = await userAvatarUploads.createSignedPutURL(
-    'user-avatars',
+  const uploadedMedia = await userAvatarUploads.createSignedURL(
+    userId,
     mediaName,
-    {
-      userId,
-      ...context,
-    }
+    {},
+    context
   );
   return uploadedMedia;
 };
