@@ -25,13 +25,19 @@ const eqSet = (as, bs) => {
 
 const assortmentMediaUploads = createUploadContainer(
   'assortment-media',
-  async (mediaId, { assortmentId, userId, ...mediaData }) => {
-    return AssortmentMedia.createMedia({
-      assortmentId,
-      mediaId,
-      authorId: userId,
+  async (
+    mediaTicketUploadId,
+    linkedAssortmentMediaId,
+    { authorId, ...mediaData }
+  ) => {
+    const result = AssortmentMedia.createMedia({
+      assortmentId: linkedAssortmentMediaId,
+
+      authorId,
       ...mediaData,
+      mediaId: mediaTicketUploadId,
     });
+    return result;
   }
 );
 const buildFindSelector = ({
@@ -316,13 +322,11 @@ AssortmentMedia.createSignedUploadURL = async (
   { mediaName, assortmentId },
   { userId, ...context }
 ) => {
-  const uploadedMedia = await assortmentMediaUploads.createSignedPutURL(
+  const uploadedMedia = await assortmentMediaUploads.createSignedURL(
+    assortmentId,
     mediaName,
-    {
-      userId,
-      assortmentId,
-      ...context,
-    }
+    { authorId: userId },
+    context
   );
   return uploadedMedia;
 };

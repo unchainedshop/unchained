@@ -24,15 +24,15 @@ import settings from '../settings';
 
 const userAvatarUploads = createUploadContainer(
   'user-avatars',
-  async (mediaId, { userId }) => {
+  async (mediaTicketUploadId, linkedUserId, { userId }) => {
     const user = Users.findUser({ userId });
     if (user?.avatarId) await removeObjects(user?.avatarId);
     return Users.update(
-      { _id: userId },
+      { _id: linkedUserId },
       {
         $set: {
           updated: new Date(),
-          avatarId: mediaId,
+          avatarId: mediaTicketUploadId,
         },
       }
     );

@@ -3,13 +3,13 @@ import bodyParser from 'body-parser';
 import { linkMedia } from './minio';
 
 useMiddlewareWithCurrentContext(
-  '/minio/',
+  '/graphql/minio/',
   bodyParser.json({
     strict: false,
   })
 );
 
-useMiddlewareWithCurrentContext('/minio/', async (req) => {
+useMiddlewareWithCurrentContext('/graphql/minio/', async (req) => {
   if (req.method === 'POST' && req.body) {
     const { Records = [], EventName } = req.body;
 

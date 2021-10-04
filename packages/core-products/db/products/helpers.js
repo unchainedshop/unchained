@@ -30,10 +30,14 @@ import { ProductStatus, ProductTypes } from './schema';
 
 const productMediaUploads = createUploadContainer(
   'product-media',
-  async (mediaId, { productId, userId, ...mediaData }) => {
+  async (
+    mediaTicketUploadId,
+    linkedProductMediaId,
+    { userId, ...mediaData }
+  ) => {
     return ProductMedia.createMedia({
-      productId,
-      mediaId,
+      productId: linkedProductMediaId,
+      mediaId: mediaTicketUploadId,
       authorId: userId,
       ...mediaData,
     });

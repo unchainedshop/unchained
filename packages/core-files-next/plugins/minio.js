@@ -12,7 +12,8 @@ const {
   MINIO_BUCKET_NAME,
   NODE_ENV,
 } = process.env;
-const PUT_URL_EXPIRY = 1 * 24 * 60 * 60 * 1000;
+const PUT_URL_EXPIRY = 24 * 60 * 60;
+const mediaContainerRegistry = {};
 
 const generateMinioUrl = (directoryName, hashedFilename) => {
   return `${MINIO_ENDPOINT}/${MINIO_BUCKET_NAME}/${directoryName}/${hashedFilename}`;
@@ -34,6 +35,8 @@ const insertMedia = ({
   type,
   expiryDate,
   created = new Date(),
+  mediaId,
+  ...meta
 }) => {
   const options = {
     _id: encodeURIComponent(`${directoryName}/${hash}`),
@@ -41,6 +44,7 @@ const insertMedia = ({
     name: fileName,
     size,
     type,
+    meta: { mediaId, ...meta },
     expires: expiryDate || new Date(new Date().getTime() + PUT_URL_EXPIRY),
     created,
   };
@@ -131,10 +135,12 @@ const getObjectStats = async (fileName) => {
 
 export const createSignedPutURL = async (
   directoryName = '',
+  linkedMediaId,
   fileName,
   context = {}
 ) => {
   if (!client) throw new Error('Minio not connected, check env variables');
+
   const { hash, hashedName } = generateRandomFileName(fileName);
 
   const putURL = await client.presignedPutObject(
@@ -142,14 +148,16 @@ export const createSignedPutURL = async (
     `${directoryName}/${hashedName}`,
     PUT_URL_EXPIRY
   );
-
   const { _id, expires } = insertMedia({
     directoryName,
     hashedName,
     hash,
     fileName,
     type: getMimeType(fileName),
+    mediaId: linkedMediaId,
+    ...context,
   });
+
   return {
     _id,
     putURL,
@@ -251,9 +259,12 @@ export const uploadFileFromURL = async (
   });
 };
 
-export const linkMedia = ({ mediaUploadTicketId, size, type }) => {
+export const linkMedia = async ({ mediaUploadTicketId, size, type }) => {
   const media = MediaObjects.findOne({ _id: mediaUploadTicketId });
   if (!media) throw new Error(`Media with id ${mediaUploadTicketId} Not found`);
+  const { meta } = media;
+  if (!meta?.mediaId) throw new Error('Linked media Id not found');
+  const [mediaType] = decodeURIComponent(mediaUploadTicketId).split('/');
 
   MediaObjects.update(
     { _id: mediaUploadTicketId },
@@ -266,21 +277,37 @@ export const linkMedia = ({ mediaUploadTicketId, size, type }) => {
       },
     }
   );
+
+  await mediaContainerRegistry[mediaType](mediaUploadTicketId, meta?.mediaId, {
+    ...meta,
+  });
+
   return MediaObjects.findOne({ _id: mediaUploadTicketId });
 };
 
 export default client;
-const mediaTypes = {};
-export const createUploadContainer = (directoryName, fn) => {
-  if (!mediaTypes[directoryName]) mediaTypes[directoryName] = fn;
-  return {
-    createSignedPutURL: async (mediaName, { userId, ...context }) => {
-      const uploadedMedia = await createSignedPutURL(directoryName, mediaName, {
-        userId,
-      });
-      await fn(uploadedMedia._id, { userId, ...context });
 
-      return uploadedMedia;
+export const createUploadContainer = (directoryName, fn) => {
+  if (!mediaContainerRegistry[directoryName])
+    mediaContainerRegistry[directoryName] = fn;
+
+  return {
+    createSignedURL: async (
+      linkedMediaId,
+      mediaName,
+      { ...options },
+      { userId, ...context }
+    ) => {
+      const result = await createSignedPutURL(
+        directoryName,
+        linkedMediaId,
+        mediaName,
+        {
+          userId,
+          ...options,
+        }
+      );
+      return result;
     },
   };
 };
