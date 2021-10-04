@@ -12,7 +12,7 @@ const {
   MINIO_BUCKET_NAME,
   NODE_ENV,
 } = process.env;
-const PUT_URL_EXPIRY = 24 * 60 * 60;
+const PUT_URL_EXPIRY = 1 * 24 * 60 * 60 * 1000;
 
 const generateMinioUrl = (directoryName, hashedFilename) => {
   return `${MINIO_ENDPOINT}/${MINIO_BUCKET_NAME}/${directoryName}/${hashedFilename}`;
@@ -41,7 +41,7 @@ const insertMedia = ({
     name: fileName,
     size,
     type,
-    expires: expiryDate || PUT_URL_EXPIRY,
+    expires: expiryDate || new Date(new Date().getTime() + PUT_URL_EXPIRY),
     created,
   };
 
