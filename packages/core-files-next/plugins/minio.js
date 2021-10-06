@@ -197,7 +197,7 @@ export const removeObjects = async (ids, options = {}) => {
   return media;
 };
 
-export const uploadObjectStream = async (directoryName, rawFile, options) => {
+export const uploadObjectStream = async (directoryName, rawFile, meta) => {
   let stream;
   let fname;
   if (rawFile instanceof Promise) {
@@ -227,13 +227,14 @@ export const uploadObjectStream = async (directoryName, rawFile, options) => {
     size,
     type,
     fileName: fname,
+    ...meta,
   });
 };
 
 export const uploadFileFromURL = async (
   directoryName,
   { fileLink, fileName },
-  options = {}
+  meta = {}
 ) => {
   const { href } = new URL(fileLink);
   const filename = fileName || href.split('/').pop();
@@ -256,6 +257,7 @@ export const uploadFileFromURL = async (
     fileName: filename,
     size,
     type,
+    ...meta,
   });
 };
 

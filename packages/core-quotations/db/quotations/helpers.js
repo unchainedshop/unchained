@@ -206,7 +206,11 @@ Quotations.helpers({
       );
     }
     const { rawFile, userId } = objOrString;
-    return uploadObjectStream('quotation-documents', rawFile, { userId });
+    return uploadObjectStream('quotation-documents', rawFile, {
+      userId,
+      quotationId: this._id,
+      ...meta,
+    });
   },
   documents(options) {
     const { type } = options || {};

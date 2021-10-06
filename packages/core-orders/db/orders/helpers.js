@@ -624,7 +624,11 @@ Orders.helpers({
       );
     }
     const { rawFile, userId } = objOrString;
-    return uploadObjectStream('order-documents', rawFile);
+    return uploadObjectStream('order-documents', rawFile, {
+      orderId: this._id,
+      userId,
+      ...meta,
+    });
   },
   documents(options) {
     const { type } = options || {};
