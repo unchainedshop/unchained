@@ -18,7 +18,7 @@ Package.onUse((api) => {
 
   api.use('unchained:utils@1.0.0-beta12');
 
-  api.mainModule('bookmarks.ts', 'server');
+  api.mainModule('src/bookmarks.ts', 'server');
 });
 
 Package.onTest((api) => {
@@ -30,5 +30,5 @@ Package.onTest((api) => {
   api.use('unchained:core-events@1.0.0-beta12');
   api.use('unchained:core-bookmarks@1.0.0-beta12');
 
-  api.mainModule('bookmarks.tests.js');
+  api.mainModule('test/bookmarks.test.js');
 });

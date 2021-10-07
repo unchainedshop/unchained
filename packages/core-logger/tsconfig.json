@@ -1,32 +1,22 @@
 {
-  "compilerOptions": {
-    /* Basic Options */
-    "target": "es2018",
-    "module": "esNext",
-    "lib": ["esnext", "dom"],
-    "allowJs": true,
-    "checkJs": false,
-    "jsx": "preserve",
+   "compilerOptions": {
     "incremental": true,
-    "noEmit": true,
-
-    /* Strict Type-Checking Options */
-    "strict": true,
-    "noImplicitAny": false,
-    "strictNullChecks": true,
-
-    /* Additional Checks */
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
-    "noImplicitReturns": false,
-    "noFallthroughCasesInSwitch": false,
-
-    /* Module Resolution Options */
-    "moduleResolution": "node",
-    "resolveJsonModule": true,
-    "types": ["node"],
-    "typeRoots": ["node_modules/@types", "node_modules/unchained-core-types"],
+    "allowJs": true,
+    "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
-    "preserveSymlinks": true
-  }
+    "experimentalDecorators": true,
+    "forceConsistentCasingInFileNames": true,
+    "lib": ["esnext"],
+    "module": "esnext",
+    "moduleResolution": "node",
+    "noErrorTruncation": true,
+    "noImplicitReturns": true,
+    "noUnusedLocals": false,
+    "preserveWatchOutput": true,
+    "skipLibCheck": true,
+    "sourceMap": true,
+    "declaration": true,
+    "outDir": "./lib",
+  },
+  "include": ["src"]
 }

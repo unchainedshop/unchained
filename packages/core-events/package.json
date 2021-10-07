@@ -1,7 +1,11 @@
 {
-  "name": "@unchained/core-events",
-  "version": "1.0.0-beta12",
+  "name": "unchained-core-events",
+  "version": "1.0.1",
+  "main": "lib/events.js",
+  "types": "lib/events.d.ts",
+  "type": "module",
   "scripts": {
+    "build": "tsc",
     "test": "cross-env METEOR_PACKAGE_DIRS=../ TEST_CLIENT=0 TEST_WATCH=1 meteor test-packages ./ --driver-package meteortesting:mocha --port 4200"
   },
   "repository": {
@@ -19,9 +23,16 @@
     "url": "https://github.com/unchainedshop/unchained/issues"
   },
   "homepage": "https://github.com/unchainedshop/unchained#readme",
+  "dependencies": {
+    "redis": "3.0.2",
+    "simpl-schema": "1.12.0",
+    "unchained-core-logger": "^1.0.1",
+    "unchained-utils": "^1.0.1"
+  },
   "devDependencies": {
     "chai": "^4.3.4",
     "cross-env": "^7.0.3",
+    "typescript": "^4.4.3",
     "unchained-core-types": "^1.0.5"
   }
 }

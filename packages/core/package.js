@@ -7,7 +7,7 @@ Package.describe({
 });
 
 Npm.depends({
-  'simpl-schema': '1.12.0',
+  'simpl-schema': '1.12.0'
 });
 
 Package.onUse((api) => {
@@ -17,9 +17,9 @@ Package.onUse((api) => {
   api.use('promise');
   api.use('typescript@4.1.2');
 
-  api.use('unchained:core-bookmarks@1.0.0-beta12');
-  api.use('unchained:core-events@1.0.0-beta12');
-  api.use('unchained:core-logger@1.0.0-beta12');
+  // api.use('unchained:core-bookmarks@1.0.0-beta12');
+  // api.use('unchained:core-events@1.0.0-beta12');
+  // api.use('unchained:core-logger@1.0.0-beta12');
   api.use('unchained:core-mongodb@1.0.0-beta12');
 
   // api.use('unchained:core-currencies@1.0.0-beta12');
@@ -44,9 +44,9 @@ Package.onUse((api) => {
 
   api.imply([
     'unchained:core-mongodb',
-    'unchained:core-logger',
-    'unchained:core-events',
-    'unchained:core-bookmarks',
+    // 'unchained:core-logger',
+    // 'unchained:core-events',
+    //'unchained:core-bookmarks',
 
     // 'unchained:core-currencies',
     // 'unchained:core-countries',
@@ -76,7 +76,7 @@ Package.onTest((api) => {
   api.use('meteortesting:mocha');
   api.use('ecmascript');
   api.use('typescript@4.1.2');
-  
+
   api.use('unchained:core@1.0.0-beta12');
 
   api.mainModule('core.tests.js');

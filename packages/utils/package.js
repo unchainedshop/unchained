@@ -17,7 +17,7 @@ Package.onUse((api) => {
   api.versionsFrom('2.2');
   api.use('ecmascript');
 
-  api.mainModule('utils.js', 'server');
+  api.mainModule('lib/utils.js', 'server');
 });
 
 Package.onTest((api) => {
@@ -25,5 +25,5 @@ Package.onTest((api) => {
   api.use('ecmascript');
   api.use('unchained:utils');
 
-  api.mainModule('utils.tests.js');
+  api.mainModule('test/utils.test.js');
 });
