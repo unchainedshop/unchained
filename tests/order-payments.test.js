@@ -415,7 +415,7 @@ describe('Order: Payments', () => {
         });
       expect(updateOrderPaymentGeneric).toMatchObject({
         _id: GenericPayment._id,
-        sign: '0bea13199c5abb6d0861d661d565a47f193bc20dc10bad12f00e584a33f01939',
+        sign: '{"location":"https://pay.sandbox.datatrans.com/v1/start/new-transaction","transactionId":"new-transaction"}',
         provider: {
           type: 'GENERIC',
         },

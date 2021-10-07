@@ -1,6 +1,6 @@
 ---
 title: Install and setup the storefront web-app
-sidebar_title: Install store
+sidebar_title: Install storefront
 ---
 
 > To test the Unchained Engine we setup the test frontend project **Storefront** created with [React.js](https://reactjs.org/) and [Next.js](https://nextjs.org/) locally.
@@ -68,12 +68,12 @@ The installation script downloads, installs and initialises all files and packag
 Before running the web app, you need to create an `.env` file in the root directory of _my-storefront-webapp_ and add the graphql API endpoint of your local Unchained Engine to the settings.
 
 ```
-UNCHAINED_ENDPOINT=http://localhost:4010/graphql
+printf "UNCHAINED_ENDPOINT=http://localhost:4010/graphql" > .env
 ```
 
 ## Step 3: Start the app
 
-Now, start the app by using the following command.
+Now, start the app by using the following command. Make sure that the engine runs that you set the `UNCHAINED_ENDPOINT` environment variable to.
 
 ```bash
 npm run dev

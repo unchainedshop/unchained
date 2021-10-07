@@ -24,7 +24,7 @@ first import `MessagingDirector` from `unchained:core-messaging`. for demonstrat
 import { MessagingDirector } from 'meteor/unchained:core-messaging';
 
 const template = `
-Hello, thank you for visiting unchained store {{date}} we hope you become part of our community member in the future :).
+Hello, thank you for visiting Unchained store {{date}} We hope you become part of our community in the future :).
 Order number: {{orderNumber}}`
 ```
 
@@ -32,7 +32,7 @@ what is left now is use this to overweight any of the existing email template. i
 
 next write the function that will combine this template with variables used in it using `MessagingDirector.renderToText` static function and return email configuration array of object/s.
 
-Pro Tip: Messaging in unchained is not tied to E-Mails, the `type` that is return inside the config array is just a worker type and the input is just added to the work queue. So you could write your own "SMS_TO_BOSS" work type and call some Twilio API from there. You could even combine SMS_TO_BOSS wit the default e-mail and send the message via two channels.
+Pro Tip: Messaging in Unchained is not tied to e-mails, the `type` that is return inside the config array is just a worker type and the input is just added to the work queue. So you could write your own "SMS_TO_BOSS" work type and call some Twilio API from there. You could even combine SMS_TO_BOSS wit the default e-mail and send the message via two channels.
 
 ```
 const generateOrderConfirmationTemplate ({ order }) => {

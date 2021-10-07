@@ -11,6 +11,7 @@ import {
   PaymentProviders,
   PaymentProviderType,
 } from 'meteor/unchained:core-payment';
+import { v4 as uuidv4 } from 'uuid';
 
 const logger = console;
 const {
@@ -18,8 +19,14 @@ const {
   UNCHAINED_CURRENCY,
   UNCHAINED_LANG,
   UNCHAINED_MAIL_RECIPIENT,
+  UNCHAINED_SEED_PASSWORD,
   EMAIL_FROM,
 } = process.env;
+
+const seedPassword =
+  UNCHAINED_SEED_PASSWORD === 'generate'
+    ? uuidv4().split('-').pop()
+    : UNCHAINED_SEED_PASSWORD;
 
 export default async () => {
   try {
@@ -31,21 +38,11 @@ export default async () => {
         username: 'admin',
         roles: ['admin'],
         email: 'admin@unchained.local',
-        password: hashPassword('password'),
-        initialPassword: true,
+        password: seedPassword ? hashPassword(seedPassword) : undefined,
+        initialPassword: seedPassword ? true : undefined,
         profile: { address: {} },
         guest: false,
-        lastBillingAddress: {
-          firstName: 'Caraig Jackson',
-          lastName: 'Mengistu',
-          company: 'false',
-          postalCode: '52943',
-          countryCode: 'ET',
-          city: 'Addis Ababa',
-          addressLine: '75275 Bole Mikael',
-          addressLine2: 'Bole 908',
-          regionCode: 'false',
-        },
+        lastBillingAddress: {},
       },
       {},
       { skipMessaging: true },
@@ -108,7 +105,7 @@ export default async () => {
       \ndeliveryProvider: ${deliveryProvider._id} (${
       deliveryProvider.adapterKey
     })\npaymentProvider: ${paymentProvider._id} (${paymentProvider.adapterKey})
-      \nuser: admin@unchained.local / password`);
+      \nuser: admin@unchained.local / ${seedPassword}`);
   } catch (e) {
     logger.error(e);
   }

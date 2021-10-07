@@ -25,8 +25,8 @@ class Postfinance extends PaymentAdapter {
     return false;
   }
 
-  configurationError() {
-    if (this.wrongCredentials || !POSTFINANCE_SECRET) {
+  configurationError() { // eslint-disable-line
+    if (!POSTFINANCE_SECRET) {
       return PaymentError.WRONG_CREDENTIALS;
     }
     return null;

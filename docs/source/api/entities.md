@@ -3,15 +3,15 @@ title: 'PIM Connector Framework'
 description: Import Data from any PIM
 ---
 
-To upload huge amount of data to Unchained, for example if you pump the data from a PIM or ERP system, we have created a special API.
+We have created a special API to upload large amounts of data, for example from a PIM or ERP system, to the Unchained Engine. 
 
 ## Bulk Import API
 
-Using the Bulk API stores the data in the Unchained Work Queue before processing and enables some neat features:
+The Bulk API stores the data in the Unchained Work Queue before processing and enables some neat features:
 
-1. Cloud Native: Allows dedicated background or worker instances to do the actual processing
-2. Transparent Process: Also stores the result on the work item, making successful and failed imports queryable.
-3. Captures Sync issues and reports those with a Status E-Mail to a central E-Mail Address (Sync error reporting)
+1. Cloud native: Allows dedicated background or worker instances to do the actual processing
+2. Transparent process: Also stores the result on the work item, making successful and failed imports queryable.
+3. Captures sync issues and reports those with a status e-mail to a central e-mail address (sync error reporting)
 4. Performance: Only downloads assets that are not downloaded yet and tries to optimize the actual write calls to the database by using MongoDB bulk operations, making sync processing fast
 5. Push-based: Immediate representation of changes
 
@@ -65,7 +65,7 @@ All Events follow this JSON Structure:
 }
 ```
 
-Always try to send as many events at a time, so Unchained can optimize write operations. And be aware that because of the MongoDB Document Size limitation you have to use the REST endpoint when you send JSON which is more than 16m of size. If you have a lot of categories and/or products (5K entities+) please use the REST endpoint.
+Try to always send as many events at a time, so Unchained can optimize write operations. And be aware that because of the MongoDB Document Size limitation, you have to use the REST endpoint when you send JSON which is more than 16m of size. If you have a lot of categories and/or products (5K entities+) please use the REST endpoint.
 
 Options:
 
@@ -75,7 +75,7 @@ Options:
 
 ### Entity Type: Product
 
-Set by unchained:
+Set by Unchained:
 
 - authorId,
 - slug history
@@ -83,7 +83,7 @@ Set by unchained:
 
 Languages:
 
-- The language code in "content" fields should match an existing Language entity's isoCode in Unchained.
+- The language code in "content" fields should match an existing language entity's isoCode in Unchained.
 
 Status:
 
@@ -226,7 +226,7 @@ Status:
 
 ### Entity Type: Assortment
 
-Set by unchained:
+Set by Unchained:
 
 - authorId,
 - slug history
@@ -315,7 +315,7 @@ Set by unchained:
 
 ### Entity Type: Filter
 
-Set by unchained:
+Set by Unchained:
 
 - authorId,
 - \_id, created & updated if not provided

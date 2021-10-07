@@ -44,8 +44,9 @@ This is our first major release, it covers all features needed to build highly f
   ```
 
 ## Major
+- [core] We have added a new Datatrans v2 plugin which is based on the new Datatrans JSON based API and allows advanced integration processes like marketplace fee splits and secure fields. Datatrans v2 will always use deferred settlement mode when possible, this makes it almost impossible to have the "order checkout failed but still charged" issue that was possible before depending on how the payment process was implemented client-side, leading to manual work and potential client frustration.
 - [core] orderNumber, quotationNumber and enrollmentNumber generation can now be customized, see config
-- [controlpanel] Now it's possible to add external links to an extended version of unchained control panel or any other site you want to access through the `controlpanel` by providing JSON using the env `EXTERNAL_LINKS` variable inside `example/minimal`. The JSON to be provided has to be an array of external link definitions in the form of objects with href and title properties (`[{ href: string, title: string}]`). If an external link file object is found its content will appear in the top menu of the `controlpanel`
+- [controlpanel] Now it's possible to add external links to an extended version of Unchained Admin UI or any other site you want to access through the `controlpanel` by providing JSON using the env `EXTERNAL_LINKS` variable inside `example/minimal`. The JSON to be provided has to be an array of external link definitions in the form of objects with href and title properties (`[{ href: string, title: string}]`). If an external link file object is found its content will appear in the top menu of the `controlpanel`
 - [api] `query.productReviews` is extended to support searching/filtering with title or review and sorting all valid fields of product review.
 - [api] New mutation `logoutAllSession` added that can be used to remove all tokens of current user
 - [platform] Assortment bulk import updated to handle assortment media.
@@ -88,7 +89,7 @@ ReorderAssortmentMediaInput
 - [*] Various additional bugfixes and enhancements between the undocumented releases of 0.61.1 and 0.61.19 mostly targeting bulk-import and accountsjs stabilization.
 - [core] Update ostrio:files to 2.0.1 to mitigate various download issues
 - [controlpanel] Find issues with assortment and order lists
-- [controlpanel] Ambiguity of where to set environment variable is fixed. now you can set environment related with the control panel at the root directory of `controlpanel` and environemt variables related with the engine under root directory of `minimal`.
+- [controlpanel] Ambiguity of where to set environment variable is fixed. Now you can set environment related with the Unchained Admin UI at the root directory of `controlpanel` and environemt variables related with the engine under root directory of `minimal`.
 - [controlpanel] Fix logout with server-side cookies
 - [core] Fix issue with price id's beeing null (broke stuff that we didn't want to brake)
 - [core] Fix an issue with scheduling jobs based on past or future dates
@@ -214,7 +215,7 @@ We are currently rebuilding parts of Unchained under the hood with a new code st
 
 # v0.55.0
 
-Attention: If you have used Meteor Accounts specific extensions to extend login functionalities for your unchained-based project, you will have to rewrite all code that depends on Meteor's accounts packages and extend the functionality through accounts-js config, strategies and hooks (<https://www.accountsjs.com/docs/introduction>).
+Attention: If you have used Meteor Accounts specific extensions to extend login functionalities for your Unchained-based project, you will have to rewrite all code that depends on Meteor's accounts packages and extend the functionality through accounts-js config, strategies and hooks (<https://www.accountsjs.com/docs/introduction>).
 
 Look for `Accounts.registerLoginHandler`, `Accounts.onLogin` or Meteor Accounts Password based features like `Accounts.setUsername` or `Accounts.setPassword` to find out if you are affected.
 
@@ -404,7 +405,7 @@ We will rename all unchained core specific env variables and prefix them with UN
 
 - [api] Siblings return only active products by default now
 - [payment] The existing Stripe v1 plugin has been removed because it was unsafe to use and depended on an old API
-- [messaging] The architecture of the messaging core plugin has been completely revamped, also the default notification e-mail templates are now loaded as part of the platform package reducing the boilerplate code needed when bootstrapping a fresh unchained project. For example the send-mail delivery provider cannot be used anymore due to refactoring of the messaging system. There is a new one ("send-message") that needs to be used for this case.
+- [messaging] The architecture of the messaging core plugin has been completely revamped, also the default notification e-mail templates are now loaded as part of the platform package reducing the boilerplate code needed when bootstrapping a fresh Unchained project. For example the send-mail delivery provider cannot be used anymore due to refactoring of the messaging system. There is a new one ("send-message") that needs to be used for this case.
 - [api] assignments behaves now exactly the same as products, returning only assignments with active products if not specified explicitly with includeInactive = true
 
 ## Minor
@@ -436,7 +437,7 @@ We will rename all unchained core specific env variables and prefix them with UN
 
 ## Breaking Changes
 
-We will rename all unchained core specific env variables and prefix them with UNCHAINED\_ in the future, for now:
+We will rename all Unchained core specific env variables and prefix them with UNCHAINED\_ in the future, for now:
 
 - The Environment variable DISABLE_WORKER has been renamed to UNCHAINED_DISABLE_WORKER
 - The Environment variable WORKER_ID has been renamed to UNCHAINED_WORKER_ID

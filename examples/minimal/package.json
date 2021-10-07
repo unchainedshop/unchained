@@ -38,6 +38,7 @@
     "bcrypt": "^5.0.1",
     "body-parser": "^1.19.0",
     "client-oauth2": "github:unchainedshop/js-client-oauth2#master",
+    "cookie": "^0.4.1",
     "dotenv-extended": "^2.9.0",
     "graphql": "^15.5.1",
     "graphql-upload": "^12.0.0",
@@ -47,6 +48,7 @@
     "moment": "^2.29.1",
     "simpl-schema": "^1.12.0",
     "stripe": "^8.168.0",
+    "uuid": "^8.3.2",
     "xml-js": "^1.6.11"
   },
   "devDependencies": {

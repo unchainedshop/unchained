@@ -11,15 +11,15 @@ This tutorial helps you:
 - Obtain a basic understanding of the architecture
 - Bootstrap a basic unchained backed project
 - Write a pricing plugin
-- Deploy an unchained engine backed the project
+- Deploy an Unchained engine backed the project
 
 This tutorial assumes that you are familiar with the command line and
 JavaScript, and that you have a recent version of Meteor.js installed.
 # Building custom unchained engine
 
-Extending an unchained engine is simple as adding a plugin that is easier to understand and implement. to make it even easier we have created a bare bone unchained template you can use as a starting point. 
+Extending an Unchained engine is simple as adding a plugin that is easier to understand and implement. to make it even easier we have created a bare bone Unchained template you can use as a starting point. 
 
-in this section, we will walk through the steps required to start up a custom unchained engine locally and connecting it to a storefront to perform the task.
+in this section, we will walk through the steps required to start up a custom Unchained engine locally and connecting it to a storefront to perform the task.
 
 ## Step 1: Create a new project
 
@@ -34,7 +34,7 @@ npm init @unchainedshop
 npm run install-all
 ```
 
-The above command will pull a boilerplate unchained engine instance and a storefront that connects with it out of the box in your local environment.
+The above command will pull a boilerplate Unchained engine instance and a storefront that connects with it out of the box in your local environment.
 
 Your project directory now contains the following services:
 
@@ -68,7 +68,7 @@ npm run dev
 Now you have a fully running Unchained E-Commerce environment running locally. Check it out by browsing to the following URLs:
 
 - http://localhost:3000 to see the front-end (storefront)
-- http://localhost:4010 to see the control panel. Login with username: admin@unchained.local / password: password
+- http://localhost:4010 to see the admin UI. Login with username: admin@unchained.local / password: password
 - http://localhost:4010/graphql to see the Unchained GraphQL Playground
 
 
@@ -155,7 +155,7 @@ import "./sausage";
 # Build the Storefront
 ## Step 3: Create a new product
 
-Now open the control panel and add a new product, tag it with "sausage", set a price, and publish it. As always you can use GraphQL mutations to do that:
+Now open the admin UI and add a new product, tag it with "sausage", set a price, and publish it. As always you can use GraphQL mutations to do that:
 
 ```graphql
 mutation {
@@ -253,7 +253,7 @@ mutation addCartProduct {
 }
 ```
 
-Tell unchained more about the guy who orders:
+Tell Unchained more about the guy who orders:
 
 ```
 mutation updateContact {
@@ -301,7 +301,7 @@ mutation checkoutCart {
 If everything went well, the e-mail debugs window will pop up presenting you with a simple order confirmation.
 
 
-The exact configuration will differ from this template, as we encourage you to use a reverse proxy like traefik or Nginx for SSL termination and a replicated MongoDB with one daemon running in the same datacenter like an unchained engine (low latency).
+The exact configuration will differ from this template, as we encourage you to use a reverse proxy like traefik or Nginx for SSL termination and a replicated MongoDB with one daemon running in the same datacenter like an Unchained engine (low latency).
 
 for more mutation and query options available refer to the [GraphQL API Reference](https://docs.unchained.shop/api)
 

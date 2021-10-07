@@ -11,7 +11,7 @@ sidebar_title: Install engine
 This tutorial helps you:
 
 - Install and run locally the Meteor application with the Unchained Engine embedded.
-- Access the local Control Panel example admin app
+- Access the local Admin UI example admin app
 - Open the graphQL playground of your local Unchained Engine
 
 .
@@ -51,7 +51,7 @@ Unchained engine <--
 5. Install the npm packages
 
 ```bash
-npm install
+meteor npm install
 ```
 
 The installation script downloads, installs and initialises all files and packages required to build and run a new Meteor app that has the Unchained Engine backed in.
@@ -67,18 +67,18 @@ Open [localhost:4010](http://localhost:4010) to check if your meteor app is runn
 **Username**: _admin@unchained.local_<br />
 **Password**: _password_
 
-You should see the following admin console in your browser (Yes, the UI can be improved. However, it's an admin console not visible to any customer).
+You should see the following admin console in your browser (Yes, the UI can be improved. However, it's an admin console that is not visible to any customer).
 
 ![diagram](../images/AdminConsole.png)
 
-[localhost:4010/graphql](http://localhost:4010/graphql) opens the graphQL playground for you to easily execute queries and mutations.
+[localhost:4010/graphql](http://localhost:4010/graphql) opens the GraphQL playground for you to easily execute queries and mutations.
 
 ## Step 3: Add Products
 
-If you want to setup the store and add products and categories using the control panel follow the instruction of the [Getting-Started](../getting-started/engine-controlpanel) guide using your local control panel instance under [localhost:4010](http://localhost:4010).
+If you want to set up the store and add products and categories using the admin UI follow the instruction of the [Getting-Started](../getting-started/engine-controlpanel) guide using your local admin UI instance under [localhost:4010](http://localhost:4010).
 
-Follow the examples to learn about how to add products, initiate a check-out and use plugins with graphQL.
+Follow the examples to learn about how to add products, initiate a check-out and use plugins with GraphQL.
 
 ## Next steps
 
-An easy way to test the Unchained Engine is to setup the test storefront web app created with [React.js](https://reactjs.org/) and [Next.js](https://nextjs.org/) locally and connect our local Unchained Engine graphQL API to it which is covered in the next chapter.
+An easy way to test the Unchained Engine is to setup the test storefront web app created with [React.js](https://reactjs.org/) and [Next.js](https://nextjs.org/) locally and connect our local Unchained Engine GraphQL API to it which is covered in the next chapter.
