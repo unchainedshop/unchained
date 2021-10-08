@@ -37,6 +37,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 import { LogsCollection } from './db/LogsCollection';
 import { createLogger, format, transports } from './logger/createLogger';
 import { configureLogsModule } from './module/configureLogsModule';
+import { LogLevel } from './logger/LogLevel';
 var configureLogs = function (_a) {
     var db = _a.db;
     return __awaiter(void 0, void 0, void 0, function () {
@@ -52,5 +53,5 @@ var configureLogs = function (_a) {
         });
     });
 };
-export { configureLogs, createLogger, format, transports };
+export { configureLogs, createLogger, format, transports, LogLevel };
 //# sourceMappingURL=logs.js.map

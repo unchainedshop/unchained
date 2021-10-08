@@ -1,5 +1,6 @@
-import { LogLevel, LogOptions } from 'unchained-core-types';
+import { LogOptions } from 'unchained-core-types';
 import { Logger } from './Logger';
+import { LogLevel } from './LogLevel';
 
 
 export const log = (Logs: any, message: string, options: LogOptions) => {

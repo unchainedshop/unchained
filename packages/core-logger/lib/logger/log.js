@@ -9,8 +9,8 @@ var __rest = (this && this.__rest) || function (s, e) {
         }
     return t;
 };
-import { LogLevel } from 'unchained-core-types';
 import { Logger } from './Logger';
+import { LogLevel } from './LogLevel';
 export var log = function (Logs, message, options) {
     var _a = options || {}, _b = _a.level, level = _b === void 0 ? LogLevel.Info : _b, meta = __rest(_a, ["level"]);
     return new Logger(Logs).winston.log(level, message, meta);

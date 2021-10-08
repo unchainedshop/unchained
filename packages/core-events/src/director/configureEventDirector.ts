@@ -1,13 +1,9 @@
 import { createLogger } from 'unchained-core-logger';
 import { getContext } from 'unchained-utils';
 import { EventDirector } from 'unchained-core-types';
+import { EventAdapter, getEventAdapter, setEventAdapter } from './EventAdapter';
 
 const logger = createLogger('unchained:core-events');
-
-export interface EventAdapter {
-  publish(eventName: string, payload: any): void;
-  subscribe(eventName: string, callBack: () => void): void;
-}
 
 export type ContextNormalizerFunction = (context: any) => any;
 
@@ -27,7 +23,6 @@ export const configureEventDirector = (Events: any): EventDirector => {
   const _registeredEvents = new Set();
   const _registeredCallbacks = new Set();
 
-  let _adapter: EventAdapter;
   let _contextNormalizer = defaultNormalizer;
 
   const EventDirector = {
@@ -42,22 +37,23 @@ export const configureEventDirector = (Events: any): EventDirector => {
       return Array.from(_registeredEvents) as string[];
     },
 
-    setEventAdapter: (adapter: EventAdapter): void => {
-      _adapter = adapter;
-    },
-
     setContextNormalizer: (fn: ContextNormalizerFunction): void => {
       _contextNormalizer = fn;
     },
 
+    setEventAdapter: (adapter: EventAdapter) => {
+      setEventAdapter(adapter)
+    },
+
     emit: async (eventName: string, data: any): Promise<void> => {
+      const adapter = getEventAdapter();
       const context = await getContext();
       const extractedContext = _contextNormalizer(context);
 
       if (!_registeredEvents.has(eventName))
         throw new Error(`Event with ${eventName} is not registered`);
 
-      _adapter.publish(eventName, {
+      adapter.publish(eventName, {
         payload: { ...data },
         context: extractedContext,
       });
@@ -75,13 +71,15 @@ export const configureEventDirector = (Events: any): EventDirector => {
     },
 
     subscribe: (eventName: string, callBack: () => void): void => {
+      const adapter = getEventAdapter();
+
       const currentSubscription = eventName + callBack?.toString(); // used to avaoid registering the same event handler callback
 
       if (!_registeredEvents.has(eventName))
         throw new Error(`Event with ${eventName} is not registered`);
 
       if (!_registeredCallbacks.has(currentSubscription)) {
-        _adapter.subscribe(eventName, callBack);
+        adapter.subscribe(eventName, callBack);
         _registeredCallbacks.add(currentSubscription);
         logger.verbose(`EventDirector -> Subscribed to ${eventName}`);
       }
@@ -90,4 +88,3 @@ export const configureEventDirector = (Events: any): EventDirector => {
 
   return EventDirector;
 };
-

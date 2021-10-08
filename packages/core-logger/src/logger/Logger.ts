@@ -1,7 +1,7 @@
-import { LogLevel } from 'unchained-core-types';
 import { Logger as WinstonLogger } from 'winston';
 import { createLogger } from './createLogger';
 import { LocalTransport } from './LocalTransport';
+import { LogLevel } from './LogLevel';
 
 interface Instance {
   winston: WinstonLogger | null;

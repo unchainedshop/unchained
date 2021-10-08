@@ -26,7 +26,7 @@
   "dependencies": {
     "redis": "3.0.2",
     "simpl-schema": "1.12.0",
-    "unchained-core-logger": "^1.0.1",
+    "unchained-core-logger": "^1.0.2",
     "unchained-utils": "^1.0.1"
   },
   "devDependencies": {

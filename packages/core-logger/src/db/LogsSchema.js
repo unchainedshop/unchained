@@ -1,4 +1,4 @@
-import { SchemaFields } from 'unchained-core-mongodb-utils';
+import { Schemas } from 'unchained-utils';
 import SimpleSchema from 'simpl-schema';
 
 export const LogsSchema = new SimpleSchema(
@@ -6,7 +6,7 @@ export const LogsSchema = new SimpleSchema(
     level: { type: String, required: true },
     message: { type: String, required: true },
     meta: { type: Object, blackbox: true },
-    ...SchemaFields.timestampFields,
+    ...Schemas.timestampFields,
   },
   { requiredByDefault: false }
 );

@@ -1,6 +1,6 @@
-import { LogLevel } from 'unchained-core-types';
 import { createLogger } from './createLogger';
 import { LocalTransport } from './LocalTransport';
+import { LogLevel } from './LogLevel';
 var instance = null;
 var Logger = /** @class */ (function () {
     function Logger(Logs) {

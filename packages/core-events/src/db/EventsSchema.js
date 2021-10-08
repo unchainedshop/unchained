@@ -1,4 +1,4 @@
-import { Schemas } from 'meteor/unchained:utils';
+import { Schemas } from 'unchained-utils';
 import SimpleSchema from 'simpl-schema';
 
 export const EventsSchema = new SimpleSchema(

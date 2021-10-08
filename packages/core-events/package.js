@@ -17,9 +17,7 @@ Package.onUse((api) => {
   api.use('ecmascript');
   api.use('typescript@4.1.2');
 
-  api.use('unchained:core-logger@1.0.0-beta12');
-
-  api.mainModule('events.ts');
+  api.mainModule('lib/events.js');
 });
 
 Package.onTest((api) => {
@@ -30,5 +28,5 @@ Package.onTest((api) => {
   api.use('unchained:core-mongodb@1.0.0-beta12');
   api.use('unchained:core-events@1.0.0-beta12');
 
-  api.mainModule('events.tests.js');
+  api.mainModule('test/events.test.js');
 });
