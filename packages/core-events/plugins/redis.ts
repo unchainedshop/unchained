@@ -1,6 +1,6 @@
 import redis from 'redis';
-// import { setEventAdapter, EventAdapter } from 'unchained-core-events';
-import { setEventAdapter, EventAdapter } from '../src/events';
+import { EventDirector, EventAdapter } from 'meteor/unchained:core-events';
+// import { EventDirector, EventAdapter } from 'unchained-core-events';
 
 const { REDIS_PORT = 6379, REDIS_HOST = '127.0.0.1' } = process.env;
 
@@ -32,4 +32,4 @@ const RedisEventEmitter = (): EventAdapter => {
   };
 };
 
-setEventAdapter(RedisEventEmitter());
+EventDirector.setEventAdapter(RedisEventEmitter());

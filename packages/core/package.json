@@ -20,9 +20,10 @@
   },
   "homepage": "https://github.com/unchainedshop/unchained#readme",
   "dependencies": {
-    "unchained-core-logger": "^1.0.1",
+    "unchained-core-bookmarks": "^1.0.1",
     "unchained-core-events": "^1.0.1",
-    "unchained-core-bookmarks": "^1.0.1"
+    "unchained-core-logger": "^1.0.1",
+    "unchained-utils": "^1.0.1"
   },
   "devDependencies": {
     "chai": "^4.3.4",

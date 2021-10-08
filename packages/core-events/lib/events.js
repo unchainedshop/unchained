@@ -35,21 +35,19 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 import { EventsCollection } from './db/EventsCollection';
-import { configureEventDirector } from './director/configureEventDirector';
 import { configureEventsModule } from './module/configureEventsModule';
-export { setEventAdapter } from './director/EventAdapter';
+export { EventDirector } from './director/EventDirector';
 var GLOBAL_EVENTS = ['PAGE_VIEW'];
 export var configureEvents = function (_a) {
     var db = _a.db;
     return __awaiter(void 0, void 0, void 0, function () {
-        var Events, EventDirector, module;
+        var Events, module;
         return __generator(this, function (_b) {
             switch (_b.label) {
                 case 0: return [4 /*yield*/, EventsCollection(db)];
                 case 1:
                     Events = _b.sent();
-                    EventDirector = configureEventDirector(Events);
-                    module = configureEventsModule(Events, EventDirector);
+                    module = configureEventsModule(Events);
                     module.registerEvents(GLOBAL_EVENTS);
                     return [2 /*return*/, module];
             }

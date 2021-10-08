@@ -16,9 +16,7 @@ Package.onUse((api) => {
   api.use('promise');
   api.use('typescript@4.1.2');
 
-  api.use('unchained:utils@1.0.0-beta12');
-
-  api.mainModule('src/bookmarks.ts', 'server');
+  api.mainModule('lib/bookmarks.js', 'server');
 });
 
 Package.onTest((api) => {

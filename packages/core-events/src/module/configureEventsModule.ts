@@ -1,4 +1,5 @@
 import { EventsModule } from 'unchained-core-types';
+import { configureEventDirector, EventDirector } from '../director/EventDirector';
 
 type FindQuery = {
   type?: string;
@@ -7,8 +8,8 @@ const buildFindSelector = ({ type }: FindQuery) => {
   return type ? { type } : {};
 };
 
-export const configureEventsModule = (Events: any, EventDirector: any): EventsModule => ({
-  ...EventDirector,
+export const configureEventsModule = (Events: any): EventsModule => ({
+  ...configureEventDirector(Events),
   findEvent: async ({ eventId, ...rest }, options) => {
     const selector = eventId ? { _id: eventId } : rest;
     return await Events.findOne(selector, options);

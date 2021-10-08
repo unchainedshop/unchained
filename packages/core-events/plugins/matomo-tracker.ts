@@ -1,10 +1,9 @@
 /* eslint-disable camelcase */
 import fetch from 'isomorphic-unfetch';
 import { encode } from 'querystring';
-// import { Orders } from 'meteor/unchained:core-orders';
-// import { subscribe } from 'meteor/unchained:core-events';
-// import { setEventAdapter, EventAdapter } from 'unchained-core-events';
-// import { subscribe } from '../src/events';
+import { Orders } from 'meteor/unchained:core-orders';
+import { EventDirector } from 'meteor/unchained:core-events';
+// import { EventDirector, EventAdapter } from 'unchained-core-events';
 
 const parseCurrency = (amount: number): number =>
   parseFloat((amount / 100).toString());
@@ -35,7 +34,7 @@ export interface MatomoOptions {
   ) => OrderOption;
 }
 
-/* const extractOrderParameters = (orderId): OrderOption => {
+const extractOrderParameters = (orderId): OrderOption => {
   const order = Orders.findOrder({ orderId });
   const pricing = order.pricing();
   const orderOptions: OrderOption = {
@@ -77,7 +76,7 @@ const MatomoTracker = (
   if (!subscribeTo && typeof subscribeTo !== 'string')
     throw new Error('Event that triggers tracking should be provided');
 
-  subscribe(subscribeTo, async ({ payload, context }) => {
+  EventDirector.subscribe(subscribeTo, async ({ payload, context }) => {
     let matomoOptions: OrderOption = {};
     if (payload?.order || payload?.orderPosition)
       matomoOptions = extractOrderParameters(
@@ -108,4 +107,3 @@ export const initMatomo = (
 };
 
 export default MatomoTracker;
-*/

@@ -9,7 +9,7 @@ var __assign = (this && this.__assign) || function () {
     };
     return __assign.apply(this, arguments);
 };
-import { SchemaFields } from 'unchained-core-mongodb-utils';
+import { Schemas } from 'unchained-utils';
 import SimpleSchema from 'simpl-schema';
-export var BookmarkSchema = new SimpleSchema(__assign({ userId: { type: String, required: true }, productId: { type: String, required: true } }, SchemaFields.timestampFields), { requiredByDefault: false });
+export var BookmarkSchema = new SimpleSchema(__assign({ userId: { type: String, required: true }, productId: { type: String, required: true } }, Schemas.timestampFields), { requiredByDefault: false });
 //# sourceMappingURL=BookmarksSchema.js.map

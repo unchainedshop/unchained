@@ -56,11 +56,12 @@ var __rest = (this && this.__rest) || function (s, e) {
         }
     return t;
 };
+import { configureEventDirector } from '../director/EventDirector';
 var buildFindSelector = function (_a) {
     var type = _a.type;
     return type ? { type: type } : {};
 };
-export var configureEventsModule = function (Events, EventDirector) { return (__assign(__assign({}, EventDirector), { findEvent: function (_a, options) { return __awaiter(void 0, void 0, void 0, function () {
+export var configureEventsModule = function (Events) { return (__assign(__assign({}, configureEventDirector(Events)), { findEvent: function (_a, options) { return __awaiter(void 0, void 0, void 0, function () {
         var selector;
         var eventId = _a.eventId, rest = __rest(_a, ["eventId"]);
         return __generator(this, function (_b) {
