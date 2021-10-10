@@ -32,12 +32,12 @@ const productMediaUploads = createUploadContainer(
   'product-media',
   async (
     mediaTicketUploadId,
-    linkedAssortmentMediaId,
+    linkedProductMediaId,
     { authorId, ...mediaData }
   ) => {
     const result = ProductMedia.createMedia({
       ...mediaData,
-      productId: linkedAssortmentMediaId,
+      productId: linkedProductMediaId,
       authorId,
       mediaId: mediaTicketUploadId,
     });
