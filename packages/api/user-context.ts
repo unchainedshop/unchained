@@ -42,11 +42,8 @@ export default async (req): Promise<UnchainedServerUserContext> => {
         (tokenInfo) => tokenInfo.hashedToken === hashedToken
       ); // eslint-disable-line
 
-      // get an exploitable token expiration date
-      const expiresAt = accountsServer.tokenExpiration(tokenInformation.when); // eslint-disable-line
-
       // true if the token is expired
-      const isExpired = expiresAt < new Date();
+      const isExpired = new Date(tokenInformation.when) < new Date();
 
       // if the token is still valid, give access to the current user
       // information in the resolvers context

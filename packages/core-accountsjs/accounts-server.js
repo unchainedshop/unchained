@@ -31,7 +31,7 @@ const accountsServerOptions = {
 };
 
 export class UnchainedAccountsServer extends AccountsServer {
-  DEFAULT_LOGIN_EXPIRATION_DAYS = 90;
+  DEFAULT_LOGIN_EXPIRATION_DAYS = 30;
 
   LOGIN_UNEXPIRING_TOKEN_DAYS = 365 * 100;
 
@@ -87,10 +87,11 @@ export class UnchainedAccountsServer extends AccountsServer {
     );
   }
 
+  // eslint-disable-next-line class-methods-use-this
   tokenExpiration(when) {
     // We pass when through the Date constructor for backwards compatibility;
     // `when` used to be a number.
-    return new Date(new Date(when).getTime() + this.getTokenLifetimeMs());
+    return new Date(new Date(when).getTime());
   }
 
   hashLoginToken = (stampedLoginToken) => {
@@ -107,9 +108,8 @@ export class UnchainedAccountsServer extends AccountsServer {
     // Random.secret uses a default value of 43
     // https://github.com/meteor/meteor/blob/devel/packages/random/AbstractRandomGenerator.js#L78
     const date = new Date();
-    const numberOfDaysToAdd = 30;
 
-    const when = new Date(date.setDate(date.getDate() + numberOfDaysToAdd));
+    const when = new Date(date.getTime() + this.getTokenLifetimeMs());
     const stampedLoginToken = randomValueHex(43);
     const userId = user._id ? user._id : user;
     const hashedToken = this.hashLoginToken(stampedLoginToken);
