@@ -87,13 +87,6 @@ export class UnchainedAccountsServer extends AccountsServer {
     );
   }
 
-  // eslint-disable-next-line class-methods-use-this
-  tokenExpiration(when) {
-    // We pass when through the Date constructor for backwards compatibility;
-    // `when` used to be a number.
-    return new Date(new Date(when).getTime());
-  }
-
   hashLoginToken = (stampedLoginToken) => {
     const hash = crypto.createHash('sha256');
     hash.update(stampedLoginToken);
