@@ -103,6 +103,7 @@ const getPriceRange = (prices) => {
 
 Products.productExists = ({ productId, slug }) => {
   const selector = productId ? { _id: productId } : { slugs: slug };
+  selector.status = { $ne: ProductStatus.DELETED };
   return !!Products.find(selector, { limit: 1 }).count();
 };
 
