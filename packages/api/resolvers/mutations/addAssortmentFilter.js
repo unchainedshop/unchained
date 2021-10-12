@@ -28,8 +28,8 @@ export default function addAssortmentFilter(
 
   return AssortmentFilters.createAssortmentFilter({
     assortmentId,
-    authorId: userId,
     filterId,
+    authorId: userId,
     ...assortmentFilter,
   });
 }

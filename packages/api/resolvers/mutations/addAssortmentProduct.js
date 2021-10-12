@@ -32,6 +32,7 @@ export default function addAssortmentProduct(
   return AssortmentProducts.createAssortmentProduct({
     assortmentId,
     productId,
+    authorId: userId,
     ...assortmentProduct,
   });
 }

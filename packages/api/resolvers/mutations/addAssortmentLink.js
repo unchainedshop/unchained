@@ -30,6 +30,7 @@ export default function addAssortmentLink(
   return AssortmentLinks.createAssortmentLink({
     parentAssortmentId,
     childAssortmentId,
+    authorId: userId,
     ...assortmentLink,
   });
 }
