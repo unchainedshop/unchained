@@ -1,8 +1,15 @@
 import { AssortmentFilters } from 'meteor/unchained:core-assortments';
+import { Filters } from 'meteor/unchained:core-filters';
 
 const upsert = async ({ _id, ...entityData }) => {
+  if (!Filters.filterExists({ filterId: entityData.filterId })) {
+    throw new Error(`Can't link non-existing filter ${entityData.filterId}`);
+  }
   try {
-    return AssortmentFilters.createAssortmentFilter({ _id, ...entityData });
+    return AssortmentFilters.createAssortmentFilter(
+      { _id, ...entityData },
+      { skipInvalidation: true }
+    );
   } catch (e) {
     AssortmentFilters.update({ _id }, { $set: entityData });
     return AssortmentFilters.findOne({ _id });

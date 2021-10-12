@@ -17,6 +17,11 @@ export default async function updateFilter(payload, { logger, authorId }) {
     authorId,
   });
 
+  if (content || options) {
+    if (!filter)
+      throw new Error(`Can't update non-existing filter ${filter._id}`);
+  }
+
   if (content) {
     logger.debug('replace localized content for filter', content);
     await upsertFilterContent({ content, filter }, { authorId, logger });

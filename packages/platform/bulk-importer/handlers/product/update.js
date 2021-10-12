@@ -28,6 +28,12 @@ export default async function createProduct(payload, { logger, authorId }) {
     }
   }
 
+  if (variations || media) {
+    if (!Products.productExists({ productId: _id })) {
+      throw new Error(`Can't update non-existing product ${_id}`);
+    }
+  }
+
   if (variations) {
     logger.debug('replace variations', variations);
     await upsertVariations({
