@@ -20,6 +20,11 @@ const startAndWaitForMeteor = async () => {
             DATATRANS_SIGN_KEY: '1337',
             DATATRANS_API_MOCKS_PATH: '../../tests/mocks/datatrans-v2',
             APPLE_IAP_SHARED_SECRET: '73b61776e7304f8ab1c2404df9192078',
+            MINIO_ENDPOINT: 'https://console.minio.dev.shared.ucc.dev',
+            MINIO_ACCESS_KEY: 'UBR4Q97CK7PK8GHFUI9N',
+            MINIO_SECRET_KEY: 'U3QzsQlA7I+pIqXe1Hr5taJPYAse6JGARuFvnDMV',
+            MINIO_BUCKET_NAME: 'unchained-test-bucket',
+            MINIO_WEBHOOK_AUTH_TOKEN: 1234567,
           },
         },
       );
@@ -35,7 +40,9 @@ const startAndWaitForMeteor = async () => {
           resolve(dataAsString.substring(19));
         }
       });
+      console.log('inside try');
     } catch (e) {
+      console.log(e);
       reject(e.message);
     }
   });
@@ -43,8 +50,12 @@ const startAndWaitForMeteor = async () => {
 
 export default async (globalConfig) => {
   if (!global.__SUBPROCESS_METEOR__) {
+    console.log('process.env', process.env.DEBUG);
     await setupInMemoryMongoDB(globalConfig);
+    console.log('herererer');
     await startAndWaitForMeteor(globalConfig);
+    console.log('herererer');
     await wipeDatabase();
+    console.log('herererer');
   }
 };

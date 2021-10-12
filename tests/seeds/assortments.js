@@ -295,5 +295,5 @@ export default async function seedAssortments(db) {
     .collection('assortment_media_texts')
     .findOrInsertOne(FrenchPngAssortmentMediaText);
 
-  await db.collection('assortment_document').findOrInsertOne(PngMedia);
+  await db.collection('media_objects').findOrInsertOne(PngMedia);
 }
