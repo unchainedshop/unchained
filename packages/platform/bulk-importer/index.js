@@ -106,8 +106,8 @@ export default (options) => {
       return [operationResults, null];
     },
     async invalidateCaches() {
-      await Assortments.invalidateFilterCaches();
-      await Filters.invalidateFilterCaches();
+      await Assortments.invalidateCache();
+      await Filters.invalidateCache();
     },
   };
 };

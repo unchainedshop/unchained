@@ -17,8 +17,8 @@ cd ../core-discounting && meteor publish &&
 cd ../core-delivery && meteor publish &&
 cd ../core-payment && meteor publish &&
 cd ../core-warehousing && meteor publish &&
-cd ../core-products && meteor publish &&
 cd ../core-assortments && meteor publish &&
+cd ../core-products && meteor publish &&
 cd ../core-filters && meteor publish &&
 cd ../core-enrollments && meteor publish &&
 cd ../core-quotations && meteor publish &&

@@ -22,8 +22,11 @@ export default async ({ filters, authorId, assortmentId }) => {
     })
   );
 
-  AssortmentFilters.remove({
-    _id: { $nin: assortmentFilterIds },
-    assortmentId,
-  });
+  AssortmentFilters.removeFilters(
+    {
+      _id: { $nin: assortmentFilterIds },
+      assortmentId,
+    },
+    { skipInvalidation: true }
+  );
 };

@@ -1,4 +1,4 @@
 import './schema';
-import './helpers';
 
+export * from './helpers';
 export * from './collections';

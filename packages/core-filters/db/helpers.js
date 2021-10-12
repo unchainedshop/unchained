@@ -101,6 +101,7 @@ Filters.updateFilter = (
 };
 
 Filters.removeFilter = ({ filterId }) => {
+  AssortmentFilters.removeFilters({ filterId });
   const result = Filters.remove({ _id: filterId });
   emit('FILTER_REMOVE', { filterId });
   return result;
@@ -115,37 +116,6 @@ Filters.getLocalizedTexts = (filterId, filterOptionValue, locale) =>
     },
     locale
   );
-
-Filters.sync = (syncFn) => {
-  const referenceDate = Filters.markFiltersDirty();
-  syncFn(referenceDate);
-  Filters.cleanFiltersByReferenceDate(referenceDate);
-  Filters.updateCleanFilterActivation();
-  Filters.wipeFilters();
-};
-
-Filters.markFiltersDirty = () => {
-  const dirtyModifier = { $set: { dirty: true } };
-  const collectionUpdateOptions = { bypassCollection2: true, multi: true };
-  const updatedFiltersCount = Filters.update(
-    {},
-    dirtyModifier,
-    collectionUpdateOptions
-  );
-  const updatedFilterTextsCount = FilterTexts.update(
-    {},
-    dirtyModifier,
-    collectionUpdateOptions
-  );
-  const timestamp = new Date();
-  log(`Filter Sync: Marked Filters dirty at timestamp ${timestamp}`, {
-    // eslint-disable-line
-    updatedFiltersCount,
-    updatedFilterTextsCount,
-    level: 'verbose',
-  });
-  return new Date();
-};
 
 Filters.filterExists = ({ filterId }) => {
   return !!Filters.find({ _id: filterId }).count();
@@ -169,40 +139,6 @@ Filters.count = async (query) => {
   return count;
 };
 
-Filters.cleanFiltersByReferenceDate = (referenceDate) => {
-  const selector = {
-    dirty: true,
-    $or: [
-      {
-        updated: { $gte: referenceDate },
-      },
-      {
-        created: { $gte: referenceDate },
-      },
-    ],
-  };
-  const modifier = { $set: { dirty: false } };
-  const collectionUpdateOptions = { bypassCollection2: true, multi: true };
-  const updatedFiltersCount = Filters.update(
-    selector,
-    modifier,
-    collectionUpdateOptions
-  );
-  const updatedFilterTextsCount = FilterTexts.update(
-    selector,
-    modifier,
-    collectionUpdateOptions
-  );
-  log(
-    `Filter Sync: Result of filter cleaning with referenceDate=${referenceDate}`,
-    {
-      updatedFiltersCount,
-      updatedFilterTextsCount,
-      level: 'verbose',
-    }
-  );
-};
-
 FilterTexts.findFilterTexts = ({ filterId, filterOptionValue }) => {
   return FilterTexts.find({
     filterId,
@@ -210,49 +146,9 @@ FilterTexts.findFilterTexts = ({ filterId, filterOptionValue }) => {
   }).fetch();
 };
 
-Filters.updateCleanFilterActivation = () => {
-  const disabledDirtyFiltersCount = Filters.update(
-    {
-      isActive: true,
-      dirty: true,
-    },
-    {
-      $set: { isActive: false },
-    },
-    { bypassCollection2: true, multi: true }
-  );
-  const enabledCleanFiltersCount = Filters.update(
-    {
-      isActive: false,
-      dirty: { $ne: true },
-    },
-    {
-      $set: { isActive: true },
-    },
-    { bypassCollection2: true, multi: true }
-  );
-
-  log(`Filter Sync: Result of filter activation`, {
-    disabledDirtyFiltersCount,
-    enabledCleanFiltersCount,
-    level: 'verbose',
-  });
-};
-
-Filters.wipeFilters = (onlyDirty = true) => {
-  const selector = onlyDirty ? { dirty: true } : {};
-  const removedFilterCount = Filters.remove(selector);
-  const removedFilterTextCount = FilterTexts.remove(selector);
-  log(`Filter Sync: Result of filter purging with onlyDirty=${onlyDirty}`, {
-    removedFilterCount,
-    removedFilterTextCount,
-    level: 'verbose',
-  });
-};
-
-Filters.invalidateFilterCaches = () => {
+Filters.invalidateCache = (selector) => {
   log('Filters: Start invalidating filter caches', { level: 'verbose' });
-  Filters.find()
+  Filters.find(selector || {})
     .fetch()
     .forEach((filter) => filter.invalidateProductIdCache());
 };

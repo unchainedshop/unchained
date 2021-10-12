@@ -1,5 +1,8 @@
 import { log } from 'meteor/unchained:core-logger';
-import { Assortments } from 'meteor/unchained:core-assortments';
+import {
+  Assortments,
+  AssortmentLinks,
+} from 'meteor/unchained:core-assortments';
 import { AssortmentNotFoundError, InvalidIdError } from '../../errors';
 
 export default function addAssortmentLink(
@@ -14,11 +17,7 @@ export default function addAssortmentLink(
   if (!parentAssortmentId) throw new InvalidIdError({ parentAssortmentId });
   if (!childAssortmentId) throw new InvalidIdError({ childAssortmentId });
 
-  const parent = Assortments.findAssortment({
-    assortmentId: parentAssortmentId,
-  });
-
-  if (!parent)
+  if (!Assortments.assortmentExists({ assortmentId: parentAssortmentId }))
     throw new AssortmentNotFoundError({
       assortmentId: parentAssortmentId,
     });
@@ -28,9 +27,9 @@ export default function addAssortmentLink(
       assortmentId: childAssortmentId,
     });
 
-  return parent.addLink({
-    assortmentId: childAssortmentId,
-    authorId: userId,
+  return AssortmentLinks.createAssortmentLink({
+    parentAssortmentId,
+    childAssortmentId,
     ...assortmentLink,
   });
 }

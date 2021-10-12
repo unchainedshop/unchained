@@ -2,7 +2,10 @@ import { AssortmentProducts } from 'meteor/unchained:core-assortments';
 
 const upsert = async ({ _id, ...entityData }) => {
   try {
-    return AssortmentProducts.createAssortmentProduct({ _id, ...entityData });
+    return AssortmentProducts.createAssortmentProduct(
+      { _id, ...entityData },
+      { skipInvalidation: true }
+    );
   } catch (e) {
     AssortmentProducts.update({ _id }, { $set: entityData });
     return AssortmentProducts.findOne({ _id });
@@ -22,8 +25,11 @@ export default async ({ products, authorId, assortmentId }) => {
     })
   );
 
-  AssortmentProducts.remove({
-    _id: { $nin: assortmentProductIds },
-    assortmentId,
-  });
+  AssortmentProducts.removeProduct(
+    {
+      _id: { $nin: assortmentProductIds },
+      assortmentId,
+    },
+    { skipInvalidation: true }
+  );
 };

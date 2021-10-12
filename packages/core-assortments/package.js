@@ -18,7 +18,6 @@ Package.onUse((api) => {
   api.use('aldeed:collection2@3.2.1');
   api.use('unchained:utils@1.0.0-beta12');
   api.use('unchained:core-countries@1.0.0-beta13');
-  api.use('unchained:core-products@1.0.0-beta12');
   api.use('unchained:core-events@1.0.0-beta12');
 
   api.mainModule('assortments.js', 'server');
