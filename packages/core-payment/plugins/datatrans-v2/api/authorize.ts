@@ -6,7 +6,6 @@ import type {
   AuthorizeResponse,
 } from './types';
 
-
 export default async function authorize({
   ...payload
 }: AuthorizeRequestPayload): Promise<AuthorizeResponse> {
