@@ -4,6 +4,7 @@ import {
   createLoggedInGraphqlFetch,
   createAnonymousGraphqlFetch,
   uploadFormData,
+  uploadToMinio,
 } from './helpers';
 import { ADMIN_TOKEN, USER_TOKEN } from './seeds/users';
 import { PngAssortmentMedia, SimpleAssortment } from './seeds/assortments';
@@ -165,6 +166,133 @@ describe('AssortmentMedia', () => {
       });
 
       expect(errors[0]?.extensions?.code).toEqual('NoPermissionError');
+    });
+  });
+
+  describe('Mutation.prepareAssortmentMediaUpload for admin user should', () => {
+    it('return a sign PUT url for media upload', async () => {
+      const {
+        data: { prepareAssortmentMediaUpload },
+      } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation prepareAssortmentMediaUpload(
+            $mediaName: String!
+            $assortmentId: ID!
+          ) {
+            prepareAssortmentMediaUpload(
+              mediaName: $mediaName
+              assortmentId: $assortmentId
+            ) {
+              _id
+              putURL
+              expires
+            }
+          }
+        `,
+        variables: {
+          mediaName: 'test-media',
+          assortmentId: SimpleAssortment[0]._id,
+        },
+      });
+      expect(prepareAssortmentMediaUpload.putURL).not.toBe(null);
+    });
+
+    it('upload to minio successfully', async () => {
+      const {
+        data: { prepareAssortmentMediaUpload },
+      } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation prepareAssortmentMediaUpload(
+            $mediaName: String!
+            $assortmentId: ID!
+          ) {
+            prepareAssortmentMediaUpload(
+              mediaName: $mediaName
+              assortmentId: $assortmentId
+            ) {
+              _id
+              putURL
+              expires
+            }
+          }
+        `,
+        variables: {
+          mediaName: 'test-media',
+          assortmentId: SimpleAssortment[0]._id,
+        },
+      });
+
+      await uploadToMinio(
+        assortmentMediaFile,
+        prepareAssortmentMediaUpload.putURL,
+      );
+
+      expect(prepareAssortmentMediaUpload.putURL).not.toBe(null);
+    });
+
+    it('link uploaded media file with assortment media successfully', async () => {
+      const {
+        data: { prepareAssortmentMediaUpload },
+      } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation prepareAssortmentMediaUpload(
+            $mediaName: String!
+            $assortmentId: ID!
+          ) {
+            prepareAssortmentMediaUpload(
+              mediaName: $mediaName
+              assortmentId: $assortmentId
+            ) {
+              _id
+              putURL
+              expires
+            }
+          }
+        `,
+        variables: {
+          mediaName: 'test-media',
+          assortmentId: SimpleAssortment[0]._id,
+        },
+      });
+
+      await uploadToMinio(
+        assortmentMediaFile,
+        prepareAssortmentMediaUpload.putURL,
+      );
+
+      const {
+        data: { confirmMediaUpload },
+      } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation confirmMediaUpload(
+            $mediaUploadTicketId: ID!
+            $size: Int!
+            $type: String!
+          ) {
+            confirmMediaUpload(
+              mediaUploadTicketId: $mediaUploadTicketId
+              size: $size
+              type: $type
+            ) {
+              _id
+              name
+              type
+              size
+            }
+          }
+        `,
+        variables: {
+          mediaUploadTicketId: prepareAssortmentMediaUpload._id,
+          size: 8000,
+          type: 'image/jpg',
+        },
+      });
+      expect(confirmMediaUpload).toMatchObject({
+        _id: prepareAssortmentMediaUpload._id,
+        name: 'test-media',
+        type: 'image/jpg',
+        size: 8000,
+      });
     });
   });
 

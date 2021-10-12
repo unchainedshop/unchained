@@ -40,9 +40,7 @@ const startAndWaitForMeteor = async () => {
           resolve(dataAsString.substring(19));
         }
       });
-      console.log('inside try');
     } catch (e) {
-      console.log(e);
       reject(e.message);
     }
   });
@@ -50,12 +48,8 @@ const startAndWaitForMeteor = async () => {
 
 export default async (globalConfig) => {
   if (!global.__SUBPROCESS_METEOR__) {
-    console.log('process.env', process.env.DEBUG);
     await setupInMemoryMongoDB(globalConfig);
-    console.log('herererer');
     await startAndWaitForMeteor(globalConfig);
-    console.log('herererer');
     await wipeDatabase();
-    console.log('herererer');
   }
 };
