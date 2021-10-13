@@ -6,6 +6,7 @@ const buildFindSelector = ({ type }) => {
 
 Events.findEvent = async ({ eventId, ...rest }, options) => {
   const selector = eventId ? { _id: eventId } : rest;
+  if (!Object.keys(selector)?.length) return null;
   return Events.findOne(selector, options);
 };
 
