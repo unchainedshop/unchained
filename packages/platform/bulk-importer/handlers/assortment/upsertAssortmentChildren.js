@@ -1,8 +1,23 @@
-import { AssortmentLinks } from 'meteor/unchained:core-assortments';
+import {
+  AssortmentLinks,
+  Assortments,
+} from 'meteor/unchained:core-assortments';
 
 const upsert = async ({ _id, ...entityData }) => {
+  if (
+    !Assortments.assortmentExists({
+      assortmentId: entityData.childAssortmentid,
+    })
+  ) {
+    throw new Error(
+      `Can't link non-existing assortment ${entityData.childAssortmentid}`
+    );
+  }
   try {
-    return AssortmentLinks.createAssortmentLink({ _id, ...entityData });
+    return AssortmentLinks.createAssortmentLink(
+      { _id, ...entityData },
+      { skipInvalidation: true }
+    );
   } catch (e) {
     AssortmentLinks.update({ _id }, { $set: entityData });
     return AssortmentLinks.findOne({ _id });
@@ -27,8 +42,11 @@ export default async ({
       }
     )
   );
-  AssortmentLinks.remove({
-    _id: { $nin: assortmentLinkIds },
-    parentAssortmentId,
-  });
+  AssortmentLinks.removeLinks(
+    {
+      _id: { $nin: assortmentLinkIds },
+      parentAssortmentId,
+    },
+    { skipInvalidation: true }
+  );
 };

@@ -1,5 +1,8 @@
 import { log } from 'meteor/unchained:core-logger';
-import { Assortments } from 'meteor/unchained:core-assortments';
+import {
+  Assortments,
+  AssortmentProducts,
+} from 'meteor/unchained:core-assortments';
 import { Products } from 'meteor/unchained:core-products';
 import {
   AssortmentNotFoundError,
@@ -17,13 +20,17 @@ export default function addAssortmentProduct(
   });
   if (!assortmentId) throw new InvalidIdError({ assortmentId });
   if (!productId) throw new InvalidIdError({ productId });
-  const assortment = Assortments.findAssortment({ assortmentId });
-  if (!assortment) throw new AssortmentNotFoundError({ assortmentId });
+
+  if (!Assortments.assortmentExists({ assortmentId }))
+    throw new AssortmentNotFoundError({
+      assortmentId,
+    });
 
   if (!Products.productExists({ productId }))
     throw new ProductNotFoundError({ productId });
 
-  return assortment.addProduct({
+  return AssortmentProducts.createAssortmentProduct({
+    assortmentId,
     productId,
     authorId: userId,
     ...assortmentProduct,

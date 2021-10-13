@@ -21,6 +21,7 @@ Package.onUse((api) => {
   api.use('unchained:core-warehousing@1.0.0-beta12');
   api.use('unchained:core-countries@1.0.0-beta13');
   api.use('unchained:core-events@1.0.0-beta12');
+  api.use('unchained:core-assortments@1.0.0-beta12');
 
   api.mainModule('products.js', 'server');
 });

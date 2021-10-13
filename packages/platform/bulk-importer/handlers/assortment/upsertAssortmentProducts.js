@@ -1,8 +1,16 @@
 import { AssortmentProducts } from 'meteor/unchained:core-assortments';
 
+import { Products } from 'meteor/unchained:core-products';
+
 const upsert = async ({ _id, ...entityData }) => {
+  if (!Products.productExists({ productId: entityData.productId })) {
+    throw new Error(`Can't link non-existing product ${entityData.productId}`);
+  }
   try {
-    return AssortmentProducts.createAssortmentProduct({ _id, ...entityData });
+    return AssortmentProducts.createAssortmentProduct(
+      { _id, ...entityData },
+      { skipInvalidation: true }
+    );
   } catch (e) {
     AssortmentProducts.update({ _id }, { $set: entityData });
     return AssortmentProducts.findOne({ _id });
@@ -22,8 +30,11 @@ export default async ({ products, authorId, assortmentId }) => {
     })
   );
 
-  AssortmentProducts.remove({
-    _id: { $nin: assortmentProductIds },
-    assortmentId,
-  });
+  AssortmentProducts.removeProduct(
+    {
+      _id: { $nin: assortmentProductIds },
+      assortmentId,
+    },
+    { skipInvalidation: true }
+  );
 };

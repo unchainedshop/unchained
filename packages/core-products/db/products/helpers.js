@@ -6,6 +6,10 @@ import { DeliveryProviders } from 'meteor/unchained:core-delivery';
 import { Countries } from 'meteor/unchained:core-countries';
 import { emit } from 'meteor/unchained:core-events';
 import {
+  AssortmentProducts,
+  makeAssortmentBreadcrumbsBuilder,
+} from 'meteor/unchained:core-assortments';
+import {
   findLocalizedText,
   objectInvert,
   findUnusedSlug,
@@ -13,6 +17,7 @@ import {
 import { Locale } from 'locale';
 import crypto from 'crypto';
 import { Products, ProductTexts } from './collections';
+
 import { ProductVariations } from '../product-variations/collections';
 import { ProductMedia, Media } from '../product-media/collections';
 import { ProductReviews } from '../product-reviews/collections';
@@ -98,6 +103,7 @@ const getPriceRange = (prices) => {
 
 Products.productExists = ({ productId, slug }) => {
   const selector = productId ? { _id: productId } : { slugs: slug };
+  selector.status = { $ne: ProductStatus.DELETED };
   return !!Products.find(selector, { limit: 1 }).count();
 };
 
@@ -281,6 +287,7 @@ Products.removeProduct = ({ productId }) => {
   const product = Products.findOne({ _id: productId });
   switch (product.status) {
     case ProductStatus.DRAFT:
+      AssortmentProducts.removeProduct({ productId });
       Products.update(
         { _id: productId },
         {
@@ -316,7 +323,61 @@ Products.removeAssignment = ({ productId, vectors }) => {
   emit('PRODUCT_REMOVE_ASSIGNMENT', { productId });
 };
 
+AssortmentProducts.helpers({
+  product() {
+    return Products.findOne({ _id: this.productId });
+  },
+});
+
 Products.helpers({
+  assortmentIds() {
+    return AssortmentProducts.find(
+      { productId: this._id },
+      { fields: { assortmentId: true } }
+    )
+      .fetch()
+      .map(({ assortmentId: id }) => id);
+  },
+
+  async assortmentPaths() {
+    const build = makeAssortmentBreadcrumbsBuilder();
+    return build({
+      productId: this._id,
+    });
+  },
+
+  siblings({
+    assortmentId,
+    limit,
+    offset,
+    sort = {},
+    includeInactive = false,
+  } = {}) {
+    const assortmentIds = assortmentId ? [assortmentId] : this.assortmentIds();
+    if (!assortmentIds.length) return [];
+    const productIds = AssortmentProducts.find({
+      $and: [
+        {
+          productId: { $ne: this._id },
+        },
+        {
+          assortmentId: { $in: assortmentIds },
+        },
+      ],
+    })
+      .fetch()
+      .map(({ productId: curProductId }) => curProductId);
+
+    const productSelector = {
+      _id: { $in: productIds },
+      status: includeInactive
+        ? { $in: [ProductStatus.ACTIVE, ProductStatus.DRAFT] }
+        : ProductStatus.ACTIVE,
+    };
+    const productOptions = { skip: offset, limit, sort };
+    return Products.find(productSelector, productOptions).fetch();
+  },
+
   publish() {
     switch (this.status) {
       case ProductStatus.DRAFT:

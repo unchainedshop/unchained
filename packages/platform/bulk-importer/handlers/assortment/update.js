@@ -29,6 +29,12 @@ export default async function updateAssortment(payload, { logger, authorId }) {
     }
   }
 
+  if (products || children || filters || media) {
+    if (!Assortments.assortmentExists({ assortmentId: _id })) {
+      throw new Error(`Can't update non-existing assortment ${_id}`);
+    }
+  }
+
   if (products) {
     logger.debug('update product products', products);
     await upsertAssortmentProducts({
