@@ -551,7 +551,10 @@ describe('AssortmentMedia', () => {
         },
       });
 
-      const { errors } = await graphqlFetch({
+      const {
+        errors,
+        data: { removeAssortmentMedia },
+      } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation RemoveAssortmentMedia($assortmentMediaId: ID!) {
             removeAssortmentMedia(assortmentMediaId: $assortmentMediaId) {

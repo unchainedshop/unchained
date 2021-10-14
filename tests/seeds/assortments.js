@@ -222,40 +222,24 @@ export const AssortmentFilters = [
 ];
 
 export const PngMedia = {
-  _id: 'assortment-png-media',
-  name: 'Screenshot from 2021-04-19 20-09-19.png',
-  extension: 'png',
-  ext: 'png',
-  extensionWithDot: '.png',
-  path: 'assets/app/uploads/assortment_document/ZcBB9ADJMmvJXbZWa.png',
-  meta: {},
+  _id: 'assortment-media%2Fa027f61adea23c0f3a89799b632afe19327767a72c925af434bb9aea346d7836',
+  url: 'https:/minio.dev.shared.ucc.dev/unchained-test-bucket/assortment-media/a027f61adea23c0f3a89799b632afe19327767a72c925af434bb9aea346d7836.png',
+  name: 'Screenshot from 2021-08-24 21-46-19.png',
   type: 'image/png',
-  mime: 'image/png',
-  'mime-type': 'image/png',
-  size: 544892,
-  userId: 'admin',
-  versions: {
-    original: {
-      path: 'assets/app/uploads/assortment_document/ZcBB9ADJMmvJXbZWa.png',
-      size: 544892,
-      type: 'image/png',
-      extension: 'png',
-    },
+  meta: {
+    mediaId: 'ZaYZy6KEWJA6QtnGu',
+    authorId: 'FhMH2xKuTGW20uO8k',
   },
-  _downloadRoute: '/cdn/storage',
-  _collectionName: 'assortment_document',
-  isVideo: false,
-  isAudio: false,
-  isImage: true,
-  isText: false,
-  isJSON: false,
-  isPDF: false,
-  _storagePath: 'assets/app/uploads/assortment_document',
+  expires: null,
+  created: new Date('2021-10-13T12:34:46.699Z'),
+  size: '779663',
+  updated: new Date('2021-10-13T12:34:56.739Z'),
 };
 
 export const PngAssortmentMedia = {
   _id: 'assortment-png',
-  mediaId: 'assortment-png-media',
+  mediaId:
+    'assortment-media%2Fa027f61adea23c0f3a89799b632afe19327767a72c925af434bb9aea346d7836',
   tags: [],
   sortKey: 1,
   assortmentId: 'simple-assortment',

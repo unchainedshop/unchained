@@ -636,7 +636,7 @@ Orders.helpers({
     if (type) {
       selector['meta.type'] = type;
     }
-    return MediaObjects.find(selector, { sort: { 'meta.date': -1 } }).each();
+    return MediaObjects.find(selector, { sort: { 'meta.date': -1 } }).fetch();
   },
   document(options) {
     const { type } = options || {};
