@@ -186,7 +186,7 @@ useMiddlewareWithCurrentContext(BITY_OAUTH_PATH, async (req, res, next) => {
 useMiddlewareWithCurrentContext(BITY_OAUTH_PATH, async (req, res) => {
   if (req.method === 'GET') {
     try {
-      const resolvedContext = req.unchainedContext();
+      const resolvedContext = req.unchainedContext;
       checkAction(actions.managePaymentProviders, resolvedContext?.userId);
       const bityAuth = createBityAuth();
       const user = await bityAuth.code.getToken(req.originalUrl);
