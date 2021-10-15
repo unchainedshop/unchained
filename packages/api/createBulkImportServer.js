@@ -1,6 +1,5 @@
 import { createLogger } from 'meteor/unchained:core-logger';
 import { WorkerDirector } from 'meteor/unchained:core-worker';
-import getContext, { withContext } from 'meteor/unchained:utils/context';
 import { checkAction } from './acl';
 import { actions } from './roles';
 
@@ -10,7 +9,7 @@ const { BULK_IMPORT_API_PATH = '/bulk-import' } = process.env;
 
 const bulkImportMiddleware = async (req, res) => {
   try {
-    const resolvedContext = await getContext();
+    const resolvedContext = req.unchainedContext;
     checkAction(actions.bulkImport, resolvedContext.userId);
 
     const date = new Date().toISOString();
@@ -67,6 +66,10 @@ export default (options) => {
   const { context } = options || {};
   WebApp.connectHandlers.use(
     BULK_IMPORT_API_PATH,
-    withContext(context)(bulkImportMiddleware)
+    async (req, res, ...rest) => {
+      const resolvedContext = await context({ req, res });
+      req.unchainedContext = resolvedContext;
+      bulkImportMiddleware(req, res, ...rest);
+    }
   );
 };

@@ -2,7 +2,6 @@ import { ApolloServer, ApolloError } from 'apollo-server-express';
 import { processRequest } from 'graphql-upload';
 import { WebApp } from 'meteor/webapp';
 import { log } from 'meteor/unchained:core-logger';
-import getContext, { withContext } from 'meteor/unchained:utils/context';
 import typeDefs from './schema';
 import resolvers from './resolvers';
 
@@ -49,8 +48,12 @@ export default (options) => {
   const server = new ApolloServer({
     typeDefs: [...typeDefs, ...additionalTypeDefs],
     resolvers: [resolvers, ...additionalResolvers],
-    context: async () => {
-      return getContext();
+    async context({ req, res }) {
+      return {
+        req,
+        res,
+        ...req.unchainedContext,
+      };
     },
     uploads: false,
     formatError: (error) => {
@@ -110,6 +113,10 @@ export default (options) => {
   WebApp.connectHandlers.use(
     handleUploads({ maxFileSize: 10000000, maxFiles: 10 })
   );
-  WebApp.connectHandlers.use(withContext(context)(middleware));
+  WebApp.connectHandlers.use(async (req, res, ...rest) => {
+    const resolvedContext = await context({ req, res });
+    req.unchainedContext = resolvedContext;
+    middleware(req, res, ...rest);
+  });
   return server;
 };

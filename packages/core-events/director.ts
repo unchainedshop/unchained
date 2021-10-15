@@ -1,5 +1,4 @@
 import { createLogger } from 'meteor/unchained:core-logger';
-import { getContext } from 'meteor/unchained:utils';
 import { Events } from './db';
 
 const logger = createLogger('unchained:core-events');
@@ -53,8 +52,8 @@ class EventDirector {
   }
 
   static async emit(eventName: string, data: any): Promise<void> {
-    const context = await getContext();
-    const extractedContext = EventDirector.contextNormalizer(context);
+    // const context = await getContext();
+    const extractedContext = EventDirector.contextNormalizer(null);
     if (!EventDirector.registeredEvents.has(eventName))
       throw new Error(`Event with ${eventName} is not registered`);
     EventDirector.adapter.publish(eventName, {
