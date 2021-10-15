@@ -1,4 +1,3 @@
-import { withContext } from 'meteor/unchained:utils/context';
 import getUserContext, { UnchainedServerUserContext } from './user-context';
 import getLocaleContext, {
   UnchainedServerLocaleContext,
@@ -37,16 +36,14 @@ const UNCHAINED_API_VERSION = '1.0.0-beta12'; // eslint-disable-line
 
 export const createContextResolver =
   (unchained: UnchainedAPI) =>
-  async (apolloContext): Promise<UnchainedServerContext> => {
-    const loaders = await instantiateLoaders(apolloContext.req, unchained);
+  async ({ req, res, ...apolloContext }): Promise<UnchainedServerContext> => {
+    const loaders = await instantiateLoaders(req, unchained);
     // const intermediateContext: Partial<UnchainedServerContext> = {
     //   ...unchained,
     //   ...loaders,
     // };
-    const userContext = await getUserContext(
-      apolloContext.req /* intermediateContext */
-    );
-    const localeContext = await getLocaleContext(apolloContext.req);
+    const userContext = await getUserContext(req /* intermediateContext */);
+    const localeContext = await getLocaleContext(req);
     return {
       ...apolloContext,
       ...unchained,
@@ -92,15 +89,14 @@ const startUnchainedServer = (options: UnchainedServerOptions) => {
   };
 };
 
-export const getCurrentContextResolver = () => context;
+const getCurrentContextResolver = () => context;
 
 export const useMiddlewareWithCurrentContext = (path, middleware) => {
-  WebApp.connectHandlers.use(
-    path,
-    withContext((req, res, ...rest) =>
-      getCurrentContextResolver()(req, res, ...rest)
-    )(middleware)
-  );
+  WebApp.connectHandlers.use(path, async (req, res, ...rest) => {
+    const currentContextResolver = getCurrentContextResolver();
+    req.unchainedContext = await currentContextResolver({ req, res });
+    return middleware(req, res, ...rest);
+  });
 };
 
 export default startUnchainedServer;

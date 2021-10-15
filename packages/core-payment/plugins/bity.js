@@ -11,7 +11,6 @@ import {
   roles,
   useMiddlewareWithCurrentContext,
 } from 'meteor/unchained:api';
-import getContext from 'meteor/unchained:utils/context';
 import crypto from 'crypto';
 import fetch from 'isomorphic-unfetch';
 import ClientOAuth2 from 'client-oauth2';
@@ -160,7 +159,7 @@ const bityExchangeFetch = async ({ path, params }) => {
 useMiddlewareWithCurrentContext(BITY_OAUTH_INIT_PATH, async (req, res) => {
   if (req.method === 'GET') {
     try {
-      const resolvedContext = await getContext();
+      const resolvedContext = req.unchainedContext;
       checkAction(actions.managePaymentProviders, resolvedContext?.userId);
 
       const bityAuth = createBityAuth();
@@ -187,7 +186,7 @@ useMiddlewareWithCurrentContext(BITY_OAUTH_PATH, async (req, res, next) => {
 useMiddlewareWithCurrentContext(BITY_OAUTH_PATH, async (req, res) => {
   if (req.method === 'GET') {
     try {
-      const resolvedContext = await getContext();
+      const resolvedContext = req.unchainedContext();
       checkAction(actions.managePaymentProviders, resolvedContext?.userId);
       const bityAuth = createBityAuth();
       const user = await bityAuth.code.getToken(req.originalUrl);
