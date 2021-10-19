@@ -71,6 +71,8 @@ export default (role, actions) => {
   role.allow(actions.viewOrder, () => false);
   role.allow(actions.viewQuotation, () => false);
   role.allow(actions.viewEnrollment, () => false);
+  role.allow(actions.authTwoFactor, () => false);
+  role.allow(actions.manageTwoFactor, () => false);
 
   // only allow if query is not demanding for drafts
   role.allow(actions.viewProducts, (root, { includeDrafts }) => !includeDrafts);

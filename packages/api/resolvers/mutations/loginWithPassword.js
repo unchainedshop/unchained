@@ -4,7 +4,7 @@ import hashPassword from '../../hashPassword';
 
 export default async function loginWithPassword(
   root,
-  { username, email, password: hashedPassword, plainPassword },
+  { username, email, password: hashedPassword, plainPassword, totpCode },
   context
 ) {
   log('mutation loginWithPassword', { username, email });
@@ -20,6 +20,7 @@ export default async function loginWithPassword(
     {
       user: userQuery,
       password,
+      code: totpCode,
     },
     context
   );

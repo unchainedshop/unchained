@@ -94,6 +94,8 @@ export const actions = [
   'registerPaymentCredentials',
   'managePaymentCredentials',
   'bulkImport',
+  'authTwoFactor',
+  'manageTwoFactor',
 ].reduce((oldValue, actionValue) => {
   const newValue = oldValue;
   newValue[actionValue] = actionValue;
