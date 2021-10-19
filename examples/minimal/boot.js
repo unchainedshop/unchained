@@ -44,6 +44,13 @@ Meteor.startup(async () => {
   await startPlatform({
     introspection: true,
     modules: {
+      accounts: {
+        password: {
+          twoFactor: {
+            appName: 'Example',
+          },
+        },
+      },
       payment: {
         filterSupportedProviders: ({ providers }) => {
           return providers.sort((left, right) => {

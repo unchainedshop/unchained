@@ -306,6 +306,28 @@ Users.loginWithService = async (service, params, rawContext) => {
   };
 };
 
+Users.buildTOTPSecret = () => {
+  const authSecret = accountsPassword.twoFactor.getNewAuthSecret();
+  console.log(authSecret);
+  return {
+    hex: authSecret.hex,
+    url: authSecret.otpauth_url,
+  };
+};
+
+Users.enableTOTP = async (userId, secret, code) => {
+  console.log(userId, secret, code);
+  return accountsPassword.twoFactor.set(userId, secret, code);
+};
+
+Users.disableTOTP = async (userId, code) => {
+  return accountsPassword.twoFactor.unset(userId, code);
+};
+
+Users.authenticateWithTOTP = async (user, code) => {
+  return accountsPassword.twoFactor.authenticate(user, code);
+};
+
 Users.createLoginToken = async (user, rawContext) => {
   const context = evaluateContext(filterContext(rawContext));
   const { user: tokenUser, token: loginToken } =

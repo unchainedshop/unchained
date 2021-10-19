@@ -80,6 +80,26 @@ export default [
       loginAsGuest: LoginMethodResponse
 
       """
+      In order to activate TOTP, generate a secret and return
+      """
+      buildTOTPSecret: TOTPSecret!
+
+      """
+      In order to activate 2nd factor (TOTP), generate a secret and return
+      """
+      enableTOTP(secret: String!, code: String!): SuccessResponse
+
+      """
+      Disable the 2nd factor (TOTP)
+      """
+      disableTOTP(code: String!): SuccessResponse
+
+      """
+      Authenticate with 2nd factor (TOTP)
+      """
+      authenticateWithTOTP(code: String!): SuccessResponse
+
+      """
       Creates an alternative cart. If you use this feature, you should use explicit orderId's when using the
       cart mutations. Else it will work like a stack and the checkout will use the very first cart of the user.
       """

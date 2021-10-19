@@ -25,6 +25,11 @@ export default [
       user: User
     }
 
+    type TOTPSecret {
+      hex: String!
+      url: String!
+    }
+
     type UserProfile {
       displayName: String
       phoneMobile: String
