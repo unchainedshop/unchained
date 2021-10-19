@@ -63,8 +63,6 @@ export default (role, actions) => {
   role.allow(actions.registerPaymentCredentials, () => true);
   role.allow(actions.managePaymentCredentials, () => true);
   role.allow(actions.bulkImport, () => true);
-
-  // we don't override the actions for two factor, same rules as for every logged in user apply
-  // role.allow(actions.manageTwoFactor, () => false);
-  // role.allow(actions.authTwoFactor, () => false);
+  role.allow(actions.authTwoFactor, () => true);
+  role.allow(actions.manageTwoFactor, () => true);
 };

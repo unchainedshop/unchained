@@ -52,6 +52,10 @@ Users.helpers({
   isGuest() {
     return !!this.guest;
   },
+  isTwoFactorEnabled() {
+    const { 'two-factor': { secret } = {} } = this.services || {};
+    return !!secret;
+  },
   isInitialPassword() {
     const { password: { initial } = {} } = this.services || {};
     return this.initialPassword || !!initial;
@@ -308,24 +312,26 @@ Users.loginWithService = async (service, params, rawContext) => {
 
 Users.buildTOTPSecret = () => {
   const authSecret = accountsPassword.twoFactor.getNewAuthSecret();
-  console.log(authSecret);
-  return {
-    hex: authSecret.hex,
-    url: authSecret.otpauth_url,
-  };
+  return authSecret.otpauth_url;
 };
 
 Users.enableTOTP = async (userId, secret, code) => {
-  console.log(userId, secret, code);
-  return accountsPassword.twoFactor.set(userId, secret, code);
+  await accountsPassword.twoFactor.set(userId, { base32: secret }, code);
+  return true;
 };
 
 Users.disableTOTP = async (userId, code) => {
-  return accountsPassword.twoFactor.unset(userId, code);
-};
-
-Users.authenticateWithTOTP = async (user, code) => {
-  return accountsPassword.twoFactor.authenticate(user, code);
+  await accountsPassword.twoFactor.unset(userId, code);
+  // https://github.com/accounts-js/accounts/issues/1181
+  const wait = async (time) => {
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        resolve(true);
+      }, time);
+    });
+  };
+  await wait(500);
+  return true;
 };
 
 Users.createLoginToken = async (user, rawContext) => {

@@ -191,8 +191,8 @@ export default (role, actions) => {
   role.allow(actions.viewUserEnrollments, isMyself);
   role.allow(actions.viewUserPrivateInfos, isMyself);
   role.allow(actions.updateUser, isMyself);
-  role.allow(actions.manageTwoFactor, isMyself);
   role.allow(actions.authTwoFactor, isMyself);
+  role.allow(actions.manageTwoFactor, isMyself);
 
   role.allow(actions.sendEmail, isOwnedEmailAddress);
   role.allow(actions.viewOrder, isOwnedOrder);

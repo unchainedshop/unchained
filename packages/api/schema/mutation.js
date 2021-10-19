@@ -10,6 +10,7 @@ export default [
         email: String
         password: HashedPasswordInput
         plainPassword: String
+        totpCode: String
       ): LoginMethodResponse
 
       """
@@ -82,22 +83,17 @@ export default [
       """
       In order to activate TOTP, generate a secret and return
       """
-      buildTOTPSecret: TOTPSecret!
+      buildSecretTOTPAuthURL: String!
 
       """
       In order to activate 2nd factor (TOTP), generate a secret and return
       """
-      enableTOTP(secret: String!, code: String!): SuccessResponse
+      enableTOTP(secretBase32: String!, code: String!): User
 
       """
       Disable the 2nd factor (TOTP)
       """
-      disableTOTP(code: String!): SuccessResponse
-
-      """
-      Authenticate with 2nd factor (TOTP)
-      """
-      authenticateWithTOTP(code: String!): SuccessResponse
+      disableTOTP(code: String!, userId: ID): User
 
       """
       Creates an alternative cart. If you use this feature, you should use explicit orderId's when using the

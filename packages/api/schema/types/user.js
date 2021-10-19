@@ -25,11 +25,6 @@ export default [
       user: User
     }
 
-    type TOTPSecret {
-      hex: String!
-      url: String!
-    }
-
     type UserProfile {
       displayName: String
       phoneMobile: String
@@ -60,6 +55,7 @@ export default [
       isEmailVerified: Boolean!
         @deprecated(reason: "Please use primaryEmail.verified instead")
       isGuest: Boolean!
+      isTwoFactorEnabled: Boolean!
       isInitialPassword: Boolean!
       name: String!
       avatar: Media
