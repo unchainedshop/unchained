@@ -57,7 +57,7 @@ describe('AssortmentMedia', () => {
         data: { addAssortmentMedia },
       } = await uploadFormData({ token: ADMIN_TOKEN, body });
       expect(addAssortmentMedia?.file.name).toEqual('image.jpg');
-    });
+    }, 99999);
 
     it('return AssortmentNotFoundError when passed non existing assortment ID', async () => {
       const body = new FormData();
@@ -523,6 +523,7 @@ describe('AssortmentMedia', () => {
   describe('mutation.removeAssortmentMedia for admin user should', () => {
     it('remove assortment media successfuly when provided valid media ID', async () => {
       // eslint-disable-next-line no-unused-vars
+
       await graphqlFetch({
         query: /* GraphQL */ `
           mutation RemoveAssortmentMedia($assortmentMediaId: ID!) {
@@ -551,10 +552,7 @@ describe('AssortmentMedia', () => {
         },
       });
 
-      const {
-        errors,
-        data: { removeAssortmentMedia },
-      } = await graphqlFetch({
+      const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation RemoveAssortmentMedia($assortmentMediaId: ID!) {
             removeAssortmentMedia(assortmentMediaId: $assortmentMediaId) {
@@ -568,7 +566,7 @@ describe('AssortmentMedia', () => {
       });
 
       expect(errors.length).toEqual(1);
-    });
+    }, 99999);
 
     it('return not found error when passed non existing assortmentMediaId', async () => {
       const { errors } = await graphqlFetch({

@@ -39,6 +39,7 @@ const assortmentMediaUploads = createUploadContainer(
     return result;
   }
 );
+
 const buildFindSelector = ({
   slugs = [],
   tags = [],
@@ -673,7 +674,6 @@ Collections.Assortments.helpers({
     const fileLoader = rawFile
       ? uploadObjectStream('assortment-media', rawFile, {
           userId: authorId,
-          ...options,
         })
       : uploadFileFromURL(
           'assortment-media',

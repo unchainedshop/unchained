@@ -10,9 +10,9 @@ ProductMedia.findProductMedia = ({ productMediaId }) => {
   return ProductMedia.findOne({ _id: productMediaId });
 };
 
-ProductMedia.removeProductMedia = ({ productMediaId }) => {
+ProductMedia.removeProductMedia = async ({ productMediaId }) => {
   const media = ProductMedia.findOne({ _id: productMediaId });
-  removeObjects(media.mediaId);
+  await removeObjects(media.mediaId);
   const result = ProductMedia.remove({ _id: productMediaId });
   emit('PRODUCT_REMOVE_MEDIA', { productMediaId });
   return result;
