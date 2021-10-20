@@ -286,6 +286,9 @@ Products.permanentlyRemoveDeletedProduct = ({ productId }) => {
 Products.removeProduct = ({ productId }) => {
   const product = Products.findOne({ _id: productId });
   switch (product.status) {
+    case ProductStatus.ACTIVE:
+      product.unpublish();
+    // falls through
     case ProductStatus.DRAFT:
       AssortmentProducts.removeProduct({ productId });
       Products.update(
