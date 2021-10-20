@@ -13,6 +13,7 @@ import 'meteor/unchained:core-discounting/plugins/100-off';
 import 'meteor/unchained:core-documents/plugins/smallinvoice';
 import 'meteor/unchained:core-payment/plugins/invoice';
 import 'meteor/unchained:core-payment/plugins/invoice-prepaid';
+import 'meteor/unchained:core-payment/plugins/datatrans-v2';
 import 'meteor/unchained:core-payment/plugins/paypal-checkout';
 import 'meteor/unchained:core-pricing/plugins/order-items';
 import 'meteor/unchained:core-pricing/plugins/order-discount';

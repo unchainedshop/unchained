@@ -221,7 +221,7 @@ if (STRIPE_SECRET) {
 
     describe('Checkout', () => {
       it('checkout with stored alias', async () => {
-        const { errors } = await graphqlFetch({
+        const { data: { me } = {} } = await graphqlFetch({
           query: /* GraphQL */ `
             query {
               me {
@@ -242,7 +242,66 @@ if (STRIPE_SECRET) {
             }
           `,
         });
-        console.log(errors);
+        const credentials = me?.paymentCredentials?.[0];
+
+        expect(credentials).toMatchObject({
+          isPreferred: true,
+          isValid: true,
+          meta: {
+            customer: expect.anything(),
+            usage: 'off_session',
+          },
+          token: expect.anything(),
+          paymentProvider: { _id: 'stripe-payment-provider' },
+          user: { _id: 'user' },
+        });
+
+        const { data: { addCartProduct, updateCart, checkoutCart } = {} } =
+          await graphqlFetch({
+            query: /* GraphQL */ `
+              mutation addAndCheckout(
+                $productId: ID!
+                $paymentContext: JSON
+                $paymentProviderId: ID
+              ) {
+                addCartProduct(productId: $productId) {
+                  _id
+                }
+                updateCart(paymentProviderId: $paymentProviderId) {
+                  _id
+                  status
+                  payment {
+                    provider {
+                      _id
+                    }
+                  }
+                }
+                checkoutCart(paymentContext: $paymentContext) {
+                  _id
+                  status
+                }
+              }
+            `,
+            variables: {
+              productId: 'simpleproduct',
+              paymentProviderId: 'stripe-payment-provider',
+              paymentContext: {
+                paymentCredentials: credentials,
+              },
+            },
+          });
+        expect(addCartProduct).toMatchObject(expect.anything());
+        expect(updateCart).toMatchObject({
+          status: 'OPEN',
+          payment: {
+            provider: {
+              _id: 'stripe-payment-provider',
+            },
+          },
+        });
+        expect(checkoutCart).toMatchObject({
+          status: 'CONFIRMED',
+        });
       });
     });
   });

@@ -236,7 +236,7 @@ describe('Plugins: Datatrans Payments', () => {
   });
   describe('Checkout', () => {
     it('checkout with stored alias', async () => {
-      const { errors } = await graphqlFetch({
+      const { data: { me } = {} } = await graphqlFetch({
         query: /* GraphQL */ `
           query {
             me {
@@ -257,8 +257,8 @@ describe('Plugins: Datatrans Payments', () => {
           }
         `,
       });
-      console.log(errors);
-      /* expect(me?.paymentCredentials?.[0]).toMatchObject({
+
+      expect(me?.paymentCredentials?.[0]).toMatchObject({
         user: { _id: 'user' },
         paymentProvider: { _id: 'datatrans-payment-provider' },
         meta: {
@@ -272,7 +272,44 @@ describe('Plugins: Datatrans Payments', () => {
         token: expect.anything(),
         isValid: false,
         isPreferred: true,
-      }); */
+      });
+
+      const credentials = me?.paymentCredentials?.[0];
+
+      const { data: { addCartProduct, updateCart, checkoutCart } = {} } =
+        await graphqlFetch({
+          query: /* GraphQL */ `
+            mutation addAndCheckout($productId: ID!, $paymentContext: JSON) {
+              emptyCart {
+                _id
+              }
+              addCartProduct(productId: $productId) {
+                _id
+              }
+              updateCart(paymentProviderId: "datatrans-payment-provider") {
+                _id
+                status
+              }
+              checkoutCart(paymentContext: $paymentContext) {
+                _id
+                status
+              }
+            }
+          `,
+          variables: {
+            productId: 'simpleproduct',
+            paymentContext: {
+              paymentCredentials: credentials,
+            },
+          },
+        });
+      expect(addCartProduct).toMatchObject(expect.anything());
+      expect(updateCart).toMatchObject({
+        status: 'OPEN',
+      });
+      expect(checkoutCart).toMatchObject({
+        status: 'CONFIRMED',
+      });
     });
     it('checkout with preferred alias', async () => {
       const { data: { addCartProduct, updateCart, checkoutCart } = {} } =
