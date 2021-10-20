@@ -19,7 +19,7 @@ Package.onUse((api) => {
   api.use('aldeed:collection2@3.2.1');
 
   api.use('unchained:utils@1.0.0-beta14');
-  api.use('unchained:core-files-next@1.0.0-beta12');
+  api.use('unchained:core-files-next@1.0.0-beta14');
   api.use('unchained:core-accountsjs@1.0.0-beta14');
   api.use('unchained:core-logger@1.0.0-beta14');
   api.use('unchained:core-languages@1.0.0-beta14');

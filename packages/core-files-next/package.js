@@ -1,6 +1,6 @@
 Package.describe({
   name: 'unchained:core-files-next',
-  version: '1.0.0-beta12',
+  version: '1.0.0-beta14',
   summary: 'Unchained Engine: Files',
   git: 'https://github.com/unchainedshop/unchained',
   documentation: 'README.md',
