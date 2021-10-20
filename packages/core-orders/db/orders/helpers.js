@@ -29,6 +29,7 @@ import { OrderDiscounts } from '../order-discounts/collections';
 import { OrderPayments } from '../order-payments/collections';
 import { OrderPositions } from '../order-positions/collections';
 import settings from '../../settings';
+import { updateOrderDocuments } from '../order-documents/helpers';
 
 const buildFindSelector = ({ includeCarts, queryString }) => {
   const selector = {};
@@ -831,7 +832,7 @@ Orders.updateStatus = ({ status, orderId, info = '' }) => {
       // It's okay if this fails as it is not
       // super-vital to the
       // checkout process
-      MediaObjects.updateOrderDocuments({
+      updateOrderDocuments({
         orderId,
         date: modifier.$set.confirmed || order.confirmed,
         ...modifier.$set,

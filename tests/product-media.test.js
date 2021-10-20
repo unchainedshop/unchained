@@ -139,7 +139,7 @@ describe('ProductsVariation', () => {
         },
       });
       expect(prepareProductMediaUpload.putURL).not.toBe(null);
-    });
+    }, 99999);
 
     it('upload to minio successfully', async () => {
       const {
@@ -169,32 +169,35 @@ describe('ProductsVariation', () => {
       await uploadToMinio(productMediaFile, prepareProductMediaUpload.putURL);
 
       expect(prepareProductMediaUpload.putURL).not.toBe(null);
-    });
+    }, 99999);
 
     it('link uploaded media file with product media successfully', async () => {
       const {
         data: { prepareProductMediaUpload },
-      } = await graphqlFetch({
-        query: /* GraphQL */ `
-          mutation prepareProductMediaUpload(
-            $mediaName: String!
-            $productId: ID!
-          ) {
-            prepareProductMediaUpload(
-              mediaName: $mediaName
-              productId: $productId
+      } = await graphqlFetch(
+        {
+          query: /* GraphQL */ `
+            mutation prepareProductMediaUpload(
+              $mediaName: String!
+              $productId: ID!
             ) {
-              _id
-              putURL
-              expires
+              prepareProductMediaUpload(
+                mediaName: $mediaName
+                productId: $productId
+              ) {
+                _id
+                putURL
+                expires
+              }
             }
-          }
-        `,
-        variables: {
-          mediaName: 'test-media',
-          productId: SimpleProduct._id,
+          `,
+          variables: {
+            mediaName: 'test-media',
+            productId: SimpleProduct._id,
+          },
         },
-      });
+        99999,
+      );
 
       await uploadToMinio(productMediaFile, prepareProductMediaUpload.putURL);
 

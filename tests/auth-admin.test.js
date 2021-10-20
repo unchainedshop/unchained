@@ -233,7 +233,7 @@ describe('Auth for admin users', () => {
           name: 'image.jpg',
         },
       });
-    });
+    }, 99999);
   });
 
   describe('Mutation.updateEmail', () => {

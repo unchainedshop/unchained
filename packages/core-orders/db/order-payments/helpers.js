@@ -7,10 +7,10 @@ import {
 } from 'meteor/unchained:core-pricing';
 import { emit } from 'meteor/unchained:core-events';
 import { objectInvert } from 'meteor/unchained:utils';
-import { MediaObjects } from 'meteor/unchained:core-files-next';
 import { OrderPayments } from './collections';
 import { OrderPaymentStatus } from './schema';
 import { Orders } from '../orders/collections';
+import { updateOrderPaymentDocuments } from '../order-documents/helpers';
 
 OrderPayments.helpers({
   order() {
@@ -185,7 +185,7 @@ OrderPayments.updateStatus = ({ paymentId, status, info = '' }) => {
   if (status === OrderPaymentStatus.PAID) {
     modifier.$set.paid = date;
   }
-  MediaObjects.updateOrderPaymentDocuments({
+  updateOrderPaymentDocuments({
     paymentId,
     date,
     ...modifier.$set,

@@ -16,6 +16,7 @@ import { Quotations } from './collections';
 import { QuotationStatus } from './schema';
 import { QuotationDirector } from '../../director';
 import settings from '../../settings';
+import { updateQuotationDocuments } from '../quotation-documents/helpers';
 
 Logs.helpers({
   quotation() {
@@ -362,7 +363,7 @@ Quotations.updateStatus = ({ status, quotationId, info = '' }) => {
     try {
       // we are now allowed to stop this process, else we could
       // end up with non-proposed but charged orders.
-      MediaObjects.updateQuotationDocuments({
+      updateQuotationDocuments({
         quotationId,
         date,
         ...modifier.$set,

@@ -195,7 +195,7 @@ describe('AssortmentMedia', () => {
         },
       });
       expect(prepareAssortmentMediaUpload.putURL).not.toBe(null);
-    });
+    }, 99999);
 
     it('upload to minio successfully', async () => {
       const {
@@ -228,7 +228,7 @@ describe('AssortmentMedia', () => {
       );
 
       expect(prepareAssortmentMediaUpload.putURL).not.toBe(null);
-    });
+    }, 99999);
 
     it('link uploaded media file with assortment media successfully', async () => {
       const {
