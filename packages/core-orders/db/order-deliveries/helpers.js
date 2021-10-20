@@ -155,7 +155,7 @@ OrderDeliveries.updateStatus = ({ deliveryId, status, info = '' }) => {
   if (status === OrderDeliveryStatus.DELIVERED) {
     modifier.$set.delivered = date;
   }
-  MediaObjects.updateDeliveryDocuments({
+  MediaObjects.updateOrderDeliveryDocuments({
     deliveryId,
     date,
     ...modifier.$set,

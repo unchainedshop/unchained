@@ -831,7 +831,7 @@ Orders.updateStatus = ({ status, orderId, info = '' }) => {
       // It's okay if this fails as it is not
       // super-vital to the
       // checkout process
-      MediaObjects.updateDocuments({
+      MediaObjects.updateOrderDocuments({
         orderId,
         date: modifier.$set.confirmed || order.confirmed,
         ...modifier.$set,

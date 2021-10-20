@@ -175,14 +175,14 @@ class OrderDocumentDirector extends DocumentDirector {
   }
 }
 
-MediaObjects.updateDocuments = ({ orderId, ...rest }) => {
+MediaObjects.updateOrderDocuments = ({ orderId, ...rest }) => {
   const order = Orders.findOne({ _id: orderId });
   const director = new OrderDocumentDirector({ order });
   log('Update Order Documents', { orderId });
   Promise.await(director.updateDocuments({ ...rest }));
 };
 
-MediaObjects.updatePaymentDocuments = ({ paymentId, ...rest }) => {
+MediaObjects.updateOrderPaymentDocuments = ({ paymentId, ...rest }) => {
   const payment = OrderPayments.findOne({ _id: paymentId });
   const order = Orders.findOne({ _id: payment.orderId });
   const director = new OrderDocumentDirector({ order, payment });
@@ -192,7 +192,7 @@ MediaObjects.updatePaymentDocuments = ({ paymentId, ...rest }) => {
   Promise.await(director.updateDocuments({ ...rest }));
 };
 
-MediaObjects.updateDeliveryDocuments = ({ deliveryId, ...rest }) => {
+MediaObjects.updateOrderDeliveryDocuments = ({ deliveryId, ...rest }) => {
   const delivery = OrderDeliveries.findOne({ _id: deliveryId });
   const order = Orders.findOne({ _id: delivery.orderId });
   const director = new OrderDocumentDirector({ order, delivery });

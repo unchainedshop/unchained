@@ -58,7 +58,7 @@ describe('ProductsVariation', () => {
       } = await uploadFormData({ token: ADMIN_TOKEN, body });
 
       expect(addProductMedia?.file.name).toEqual('image.jpg');
-    });
+    }, 99999);
 
     it('return ProductNotFoundError when passed non existing product ID', async () => {
       const body = new FormData();
@@ -558,7 +558,7 @@ describe('ProductsVariation', () => {
       });
 
       expect(errors.length).toEqual(1);
-    });
+    }, 99999);
 
     it('return not found error when passed non existing productMediaId', async () => {
       const { errors } = await graphqlFetch({

@@ -10,9 +10,9 @@ import { WorkerDirector } from 'meteor/unchained:core-worker';
 import {
   uploadObjectStream,
   uploadFileFromURL,
+  MediaObjects,
 } from 'meteor/unchained:core-files-next';
 import { Quotations } from './collections';
-import { QuotationDocuments } from '../quotation-documents/collections';
 import { QuotationStatus } from './schema';
 import { QuotationDirector } from '../../director';
 import settings from '../../settings';
@@ -218,9 +218,9 @@ Quotations.helpers({
     if (type) {
       selector['meta.type'] = type;
     }
-    return QuotationDocuments.find(selector, {
+    return MediaObjects.find(selector, {
       sort: { 'meta.date': -1 },
-    }).each();
+    }).fetch();
   },
   document(options) {
     const { type } = options || {};
@@ -228,7 +228,7 @@ Quotations.helpers({
     if (type) {
       selector['meta.type'] = type;
     }
-    return QuotationDocuments.findOne(selector, { sort: { 'meta.date': -1 } });
+    return MediaObjects.findOne(selector, { sort: { 'meta.date': -1 } });
   },
   logs({ limit, offset }) {
     const selector = { 'meta.quotationId': this._id };
@@ -362,7 +362,7 @@ Quotations.updateStatus = ({ status, quotationId, info = '' }) => {
     try {
       // we are now allowed to stop this process, else we could
       // end up with non-proposed but charged orders.
-      QuotationDocuments.updateDocuments({
+      MediaObjects.updateQuotationDocuments({
         quotationId,
         date,
         ...modifier.$set,

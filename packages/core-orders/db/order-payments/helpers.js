@@ -185,7 +185,11 @@ OrderPayments.updateStatus = ({ paymentId, status, info = '' }) => {
   if (status === OrderPaymentStatus.PAID) {
     modifier.$set.paid = date;
   }
-  MediaObjects.updatePaymentDocuments({ paymentId, date, ...modifier.$set });
+  MediaObjects.updateOrderPaymentDocuments({
+    paymentId,
+    date,
+    ...modifier.$set,
+  });
   OrderPayments.update({ _id: paymentId }, modifier);
   return OrderPayments.findOne({ _id: paymentId });
 };
