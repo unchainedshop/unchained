@@ -34,24 +34,31 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-import { EventsCollection } from './db/EventsCollection';
-import { configureEventsModule } from './module/configureEventsModule';
-export { EventDirector } from './director/EventDirector';
-var GLOBAL_EVENTS = ['PAGE_VIEW'];
-export var configureEvents = function (_a) {
-    var db = _a.db;
+export var migrateBookmarksService = function (_a, _b) {
+    var fromUserId = _a.fromUserId, toUserId = _a.toUserId, mergeBookmarks = _a.mergeBookmarks;
+    var modules = _b.modules;
     return __awaiter(void 0, void 0, void 0, function () {
-        var Events, module;
-        return __generator(this, function (_b) {
-            switch (_b.label) {
-                case 0: return [4 /*yield*/, EventsCollection(db)];
+        var fromBookmarks;
+        return __generator(this, function (_c) {
+            switch (_c.label) {
+                case 0: return [4 /*yield*/, modules.bookmarks.find({ userId: fromUserId })];
                 case 1:
-                    Events = _b.sent();
-                    module = configureEventsModule(Events);
-                    module.registerEvents(GLOBAL_EVENTS);
-                    return [2 /*return*/, module];
+                    fromBookmarks = _c.sent();
+                    if (!fromBookmarks) {
+                        // No bookmarks no copy needed
+                        return [2 /*return*/];
+                    }
+                    if (!!mergeBookmarks) return [3 /*break*/, 3];
+                    return [4 /*yield*/, modules.bookmarks.removeById(toUserId)];
+                case 2:
+                    _c.sent();
+                    _c.label = 3;
+                case 3: return [4 /*yield*/, modules.bookmarks.replaceUserId(fromUserId, toUserId)];
+                case 4:
+                    _c.sent();
+                    return [2 /*return*/];
             }
         });
     });
 };
-//# sourceMappingURL=events.js.map
+//# sourceMappingURL=migrateBookmarksService.js.map

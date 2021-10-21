@@ -1,4 +1,4 @@
-import { Query, TimestampFields } from './common';
+import { Query, TimestampFields, Update } from './common';
 
 export type Event = {
   type: string;
@@ -27,4 +27,8 @@ export interface EventsModule extends EventDirector {
   }) => Promise<Array<Event>>;
 
   count: (query: Query) => Promise<number>;
+
+  insert: (doc: Event) => Promise<string>;
+  update: (eventId: string, doc: Update<Event>) => Promise<void>;
+  remove: (eventId: string) => Promise<void>;
 }

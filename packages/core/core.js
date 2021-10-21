@@ -1,5 +1,7 @@
 import { db } from 'meteor/unchained:core-mongodb';
 
+// import { initDB } from 'unchained-core-mongodb';
+
 // import configureUsers from 'meteor/unchained:core-users';
 // import configureAccounts from 'meteor/unchained:core-accountsjs';
 // import configureDelivery from 'meteor/unchained:core-delivery';
@@ -18,7 +20,7 @@ import { db } from 'meteor/unchained:core-mongodb';
 // import configureWorker from 'meteor/unchained:core-worker';
 // import configureMessaging from 'meteor/unchained:core-messaging';
 
-import { configureBookmarks } from 'unchained-core-bookmarks';
+import { configureBookmarksModule, bookmarkServices } from 'unchained-core-bookmarks';
 import { configureEvents } from 'unchained-core-events';
 import { configureLogs } from 'unchained-core-logger';
 
@@ -32,7 +34,13 @@ export const initCore = async ({
   const moduleOptions = {
     migrationRepository,
   };
-  /*configureLogger(modules.logger, moduleOptions);
+
+  // const db = connectDb() // MongoInternal
+  
+  const logs = await configureLogs({ db });
+  const events = await configureEvents({ db });
+
+  /* configureLogger(modules.logger, moduleOptions);
   configureWorker(modules.worker, moduleOptions);
   configureMessaging(modules.messaging, moduleOptions);
   configureCurrencies(modules.currencies, moduleOptions);
@@ -50,12 +58,9 @@ export const initCore = async ({
   configureAssortments(modules.assortments, moduleOptions);
   configureFilters(modules.filters, moduleOptions);
   configureEnrollments(modules.enrollments, moduleOptions);
-  configureEvents(modules.events, moduleOptions);
-  */
-
-  const logs = await configureLogs({ db });
-  const events = await configureEvents({ db });
-  const bookmarks = await configureBookmarks({ db, events });
+  configureEvents(modules.events, moduleOptions); */
+  
+  const bookmarks = await configureBookmarksModule({ db });
 
   return {
     modules: {
@@ -64,7 +69,7 @@ export const initCore = async ({
       bookmarks,
     },
     services: {
-      // ...bookmarkServices,
+      bookmarkServices,
     },
     ...otherComponents,
   };

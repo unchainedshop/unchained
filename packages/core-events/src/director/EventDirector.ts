@@ -1,6 +1,6 @@
 import { createLogger } from 'unchained-core-logger';
 import { getContext } from 'unchained-utils';
-import { EventDirector as EventDirectorType } from 'unchained-core-types';
+import { Collection, EventDirector as EventDirectorType } from 'unchained-core-types';
 
 const logger = createLogger('unchained:core-events');
 
@@ -101,7 +101,7 @@ export const {
   subscribe,
 } = EventDirector;
 
-export const configureEventDirector = (Events: any): EventDirectorType => {
+export const configureEventDirector = (Events: Collection): EventDirectorType => {
   _Events = Events;
 
   return EventDirector

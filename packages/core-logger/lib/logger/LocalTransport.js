@@ -27,9 +27,9 @@ var __rest = (this && this.__rest) || function (s, e) {
 import Transport from 'winston-transport';
 var LocalTransport = /** @class */ (function (_super) {
     __extends(LocalTransport, _super);
-    function LocalTransport(Logs) {
-        var _this = this;
-        _this.Logs = Logs;
+    function LocalTransport(opts) {
+        var _this = _super.call(this, opts) || this;
+        _this.Logs = opts.Logs;
         return _this;
     }
     LocalTransport.prototype.log = function (info, callback) {

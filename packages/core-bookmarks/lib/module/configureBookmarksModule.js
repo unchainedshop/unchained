@@ -56,94 +56,114 @@ var __rest = (this && this.__rest) || function (s, e) {
         }
     return t;
 };
-export var configureBookmarksModule = function (Bookmarks, events) { return ({
-    findByUserId: function (userId) { return __awaiter(void 0, void 0, void 0, function () { return __generator(this, function (_a) {
-        switch (_a.label) {
-            case 0: return [4 /*yield*/, Bookmarks.find({ userId: userId }).fetch()];
-            case 1: return [2 /*return*/, _a.sent()];
-        }
-    }); }); },
-    findByUserIdAndProductId: function (_a) {
-        var userId = _a.userId, productId = _a.productId;
-        return __awaiter(void 0, void 0, void 0, function () { return __generator(this, function (_b) {
-            switch (_b.label) {
-                case 0: return [4 /*yield*/, Bookmarks.findOne({ userId: userId, productId: productId })];
-                case 1: return [2 /*return*/, _b.sent()];
-            }
-        }); });
-    },
-    findById: function (bookmarkId) { return __awaiter(void 0, void 0, void 0, function () { return __generator(this, function (_a) {
-        switch (_a.label) {
-            case 0: return [4 /*yield*/, Bookmarks.findOne({ _id: bookmarkId })];
-            case 1: return [2 /*return*/, _a.sent()];
-        }
-    }); }); },
-    find: function (query) { return __awaiter(void 0, void 0, void 0, function () { return __generator(this, function (_a) {
-        switch (_a.label) {
-            case 0: return [4 /*yield*/, Bookmarks.find(query).fetch()];
-            case 1: return [2 /*return*/, _a.sent()];
-        }
-    }); }); },
-    replaceUserId: function (fromUserId, toUserId) { return __awaiter(void 0, void 0, void 0, function () {
-        return __generator(this, function (_a) {
-            switch (_a.label) {
-                case 0: return [4 /*yield*/, Bookmarks.update({ userId: fromUserId }, {
-                        $set: {
-                            userId: toUserId
-                        }
-                    }, {
-                        multi: true
-                    })];
-                case 1: return [2 /*return*/, _a.sent()];
-            }
-        });
-    }); },
-    removeById: function (bookmarkId) { return __awaiter(void 0, void 0, void 0, function () {
-        var result;
-        return __generator(this, function (_a) {
-            switch (_a.label) {
-                case 0: return [4 /*yield*/, Bookmarks.remove({ _id: bookmarkId })];
-                case 1:
-                    result = _a.sent();
-                    events.emit('BOOKMARK_REMOVE', { bookmarkId: bookmarkId });
-                    return [2 /*return*/, result];
-            }
-        });
-    }); },
-    create: function (_a) { return __awaiter(void 0, void 0, void 0, function () {
-        var bookmarkId;
-        var userId = _a.userId, productId = _a.productId, rest = __rest(_a, ["userId", "productId"]);
+import { emitEvent, registerEvents } from 'unchained-core-events';
+import { BookmarksCollection } from '../db/BookmarksCollection';
+var BOOKMARK_EVENTS = ['BOOKMARK_CREATE', 'BOOKMARK_REMOVE'];
+export var configureBookmarksModule = function (_a) {
+    var db = _a.db;
+    return __awaiter(void 0, void 0, void 0, function () {
+        var Bookmarks;
         return __generator(this, function (_b) {
             switch (_b.label) {
-                case 0: return [4 /*yield*/, Bookmarks.insert(__assign(__assign({}, rest), { created: new Date(), userId: userId, productId: productId }))];
+                case 0:
+                    registerEvents(BOOKMARK_EVENTS);
+                    return [4 /*yield*/, BookmarksCollection(db)];
                 case 1:
-                    bookmarkId = _b.sent();
-                    events.emit('BOOKMARK_CREATE', { bookmarkId: bookmarkId });
-                    return [2 /*return*/, bookmarkId];
+                    Bookmarks = _b.sent();
+                    return [2 /*return*/, {
+                            findByUserId: function (userId) { return __awaiter(void 0, void 0, void 0, function () { return __generator(this, function (_a) {
+                                switch (_a.label) {
+                                    case 0: return [4 /*yield*/, Bookmarks.find({ userId: userId }).fetch()];
+                                    case 1: return [2 /*return*/, _a.sent()];
+                                }
+                            }); }); },
+                            findByUserIdAndProductId: function (_a) {
+                                var userId = _a.userId, productId = _a.productId;
+                                return __awaiter(void 0, void 0, void 0, function () { return __generator(this, function (_b) {
+                                    switch (_b.label) {
+                                        case 0: return [4 /*yield*/, Bookmarks.findOne({ userId: userId, productId: productId })];
+                                        case 1: return [2 /*return*/, _b.sent()];
+                                    }
+                                }); });
+                            },
+                            findById: function (bookmarkId) { return __awaiter(void 0, void 0, void 0, function () { return __generator(this, function (_a) {
+                                switch (_a.label) {
+                                    case 0: return [4 /*yield*/, Bookmarks.findOne({ _id: bookmarkId })];
+                                    case 1: return [2 /*return*/, _a.sent()];
+                                }
+                            }); }); },
+                            find: function (query) { return __awaiter(void 0, void 0, void 0, function () { return __generator(this, function (_a) {
+                                switch (_a.label) {
+                                    case 0: return [4 /*yield*/, Bookmarks.find(query).fetch()];
+                                    case 1: return [2 /*return*/, _a.sent()];
+                                }
+                            }); }); },
+                            replaceUserId: function (fromUserId, toUserId) { return __awaiter(void 0, void 0, void 0, function () {
+                                return __generator(this, function (_a) {
+                                    switch (_a.label) {
+                                        case 0: return [4 /*yield*/, Bookmarks.update({ userId: fromUserId }, {
+                                                $set: {
+                                                    userId: toUserId
+                                                }
+                                            }, {
+                                                multi: true
+                                            })];
+                                        case 1: return [2 /*return*/, _a.sent()];
+                                    }
+                                });
+                            }); },
+                            removeById: function (bookmarkId) { return __awaiter(void 0, void 0, void 0, function () {
+                                var result;
+                                return __generator(this, function (_a) {
+                                    switch (_a.label) {
+                                        case 0: return [4 /*yield*/, Bookmarks.remove({ _id: bookmarkId })];
+                                        case 1:
+                                            result = _a.sent();
+                                            emitEvent('BOOKMARK_REMOVE', { bookmarkId: bookmarkId });
+                                            return [2 /*return*/, result];
+                                    }
+                                });
+                            }); },
+                            create: function (_a) { return __awaiter(void 0, void 0, void 0, function () {
+                                var bookmarkId;
+                                var userId = _a.userId, productId = _a.productId, rest = __rest(_a, ["userId", "productId"]);
+                                return __generator(this, function (_b) {
+                                    switch (_b.label) {
+                                        case 0: return [4 /*yield*/, Bookmarks.insert(__assign(__assign({}, rest), { created: new Date(), userId: userId, productId: productId }))];
+                                        case 1:
+                                            bookmarkId = _b.sent();
+                                            emitEvent('BOOKMARK_CREATE', { bookmarkId: bookmarkId });
+                                            return [2 /*return*/, bookmarkId];
+                                    }
+                                });
+                            }); },
+                            existsByUserIdAndProductId: function (_a) {
+                                var productId = _a.productId, userId = _a.userId;
+                                return __awaiter(void 0, void 0, void 0, function () {
+                                    var selector, bookmarkCount;
+                                    return __generator(this, function (_b) {
+                                        switch (_b.label) {
+                                            case 0:
+                                                selector = {};
+                                                if (productId && userId) {
+                                                    selector = { userId: userId, productId: productId };
+                                                }
+                                                else if (userId) {
+                                                    selector = { userId: userId };
+                                                }
+                                                return [4 /*yield*/, Bookmarks.find(selector, {
+                                                        limit: 1
+                                                    }).count()];
+                                            case 1:
+                                                bookmarkCount = _b.sent();
+                                                return [2 /*return*/, !!bookmarkCount];
+                                        }
+                                    });
+                                });
+                            }
+                        }];
             }
         });
-    }); },
-    existsByUserIdAndProductId: function (_a) {
-        var productId = _a.productId, userId = _a.userId;
-        return __awaiter(void 0, void 0, void 0, function () {
-            var selector, bookmarkCount;
-            return __generator(this, function (_b) {
-                switch (_b.label) {
-                    case 0:
-                        selector = {};
-                        if (productId && userId) {
-                            selector = { userId: userId, productId: productId };
-                        }
-                        else if (userId) {
-                            selector = { userId: userId };
-                        }
-                        return [4 /*yield*/, Bookmarks.find(selector, { limit: 1 }).count()];
-                    case 1:
-                        bookmarkCount = _b.sent();
-                        return [2 /*return*/, !!bookmarkCount];
-                }
-            });
-        });
-    }
-}); };
+    });
+};
 //# sourceMappingURL=configureBookmarksModule.js.map

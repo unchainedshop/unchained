@@ -1,8 +1,8 @@
 {
   "name": "unchained-core-bookmarks",
   "version": "1.0.1",
-  "main": "lib/bookmarks.js",
-  "types": "lib/bookmarks.d.ts",
+  "main": "lib/bookmarksIndex.js",
+  "types": "lib/bookmarksIndex.d.ts",
   "type": "module",
   "scripts": {
     "build": "tsc",
@@ -25,6 +25,7 @@
   "homepage": "https://github.com/unchainedshop/unchained#readme",
   "dependencies": {
     "simpl-schema": "1.12.0",
+    "unchained-core-events": "^1.0.1",
     "unchained-utils": "^1.0.1"
   },
   "devDependencies": {

@@ -19,7 +19,7 @@ Package.onUse((api) => {
   api.versionsFrom('2.2');
   api.use('ecmascript');
   
-  api.mainModule('lib/logs.js', 'server');
+  api.mainModule('lib/loggerIndex.js', 'server');
 });
 
 Package.onTest((api) => {
@@ -30,5 +30,5 @@ Package.onTest((api) => {
   api.use('unchained:core-mongodb@1.0.0-beta12');
   api.use('unchained:core-logger@1.0.0-beta12');
 
-  api.mainModule('test/logs.test.js');
+  api.mainModule('test/loggerIndex.test.js');
 });

@@ -1,10 +1,32 @@
-import { Mongo, MongoInternals } from 'meteor/mongo';
-import { Random } from 'meteor/random';
-import { DDP } from 'meteor/ddp';
+import { Mongo } from 'meteor/mongo';
+// import { Random } from 'meteor/random';
+// import { DDP } from 'meteor/ddp';
 import { configureCollection2 } from './configureCollection2';
 import { configureIndex } from './configureIndex';
 
-const db = Mongo
+import { MongoClient } from 'mongodb';
+import { log, LogTextColor } from './utils/log'
+
+// or as an es module:
+// import { MongoClient } from 'mongodb'
+
+// Connection URL
+const url = process.env.MONGO_URL || 'mongodb://localhost:27017';
+const client = new MongoClient(url);
+
+// Database Name
+
+const initDb = async ({ dbName }: { dbName: string }) => {
+  // Use connect method to connect to the server
+  log('Initialise MongoDB database', { color: LogTextColor.Crimson });
+  await client.connect();
+  log('Client successfully connected', { color: LogTextColor.Crimson });
+  const db = client.db(dbName);
+  log('Dabase successfully initialised', { color: LogTextColor.Crimson });
+  return db
+};
+
+const db = Mongo;
 
 // mongoDb.Collection = function Collaction(name) {
 //   if (!name) {
@@ -36,4 +58,4 @@ const db = Mongo
 configureCollection2(db);
 configureIndex(db);
 
-export { db }
+export { db, initDb };

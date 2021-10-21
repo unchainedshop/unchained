@@ -56,45 +56,88 @@ var __rest = (this && this.__rest) || function (s, e) {
         }
     return t;
 };
+import { EventsSchema } from '../db/EventsSchema';
 import { configureEventDirector } from '../director/EventDirector';
+import { checkId } from 'unchained-utils';
 var buildFindSelector = function (_a) {
     var type = _a.type;
     return type ? { type: type } : {};
 };
-export var configureEventsModule = function (Events) { return (__assign(__assign({}, configureEventDirector(Events)), { findEvent: function (_a, options) { return __awaiter(void 0, void 0, void 0, function () {
-        var selector;
-        var eventId = _a.eventId, rest = __rest(_a, ["eventId"]);
-        return __generator(this, function (_b) {
-            switch (_b.label) {
-                case 0:
-                    selector = eventId ? { _id: eventId } : rest;
-                    return [4 /*yield*/, Events.findOne(selector, options)];
-                case 1: return [2 /*return*/, _b.sent()];
-            }
-        });
-    }); }, findEvents: function (_a) { return __awaiter(void 0, void 0, void 0, function () {
-        var limit = _a.limit, offset = _a.offset, _b = _a.sort, sort = _b === void 0 ? {
-            created: -1
-        } : _b, query = __rest(_a, ["limit", "offset", "sort"]);
-        return __generator(this, function (_c) {
-            switch (_c.label) {
-                case 0: return [4 /*yield*/, Events.find(buildFindSelector(query), {
-                        skip: offset,
-                        limit: limit,
-                        sort: sort
-                    }).fetch()];
-                case 1: return [2 /*return*/, _c.sent()];
-            }
-        });
-    }); }, count: function (query) { return __awaiter(void 0, void 0, void 0, function () {
-        var count;
-        return __generator(this, function (_a) {
-            switch (_a.label) {
-                case 0: return [4 /*yield*/, Events.rawCollection().countDocuments(buildFindSelector(query))];
-                case 1:
-                    count = _a.sent();
-                    return [2 /*return*/, count];
-            }
-        });
-    }); } })); };
+export var configureEventsModule = function (_a) {
+    var db = _a.db, userId = _a.userId;
+    var Events = new db.Collection('events');
+    return __assign(__assign({}, configureEventDirector(Events)), { findEvent: function (_a, options) { return __awaiter(void 0, void 0, void 0, function () {
+            var selector;
+            var eventId = _a.eventId, rest = __rest(_a, ["eventId"]);
+            return __generator(this, function (_b) {
+                switch (_b.label) {
+                    case 0:
+                        selector = eventId ? { _id: eventId } : rest;
+                        return [4 /*yield*/, Events.findOne(selector, options)];
+                    case 1: return [2 /*return*/, _b.sent()];
+                }
+            });
+        }); }, findEvents: function (_a) { return __awaiter(void 0, void 0, void 0, function () {
+            var limit = _a.limit, offset = _a.offset, _b = _a.sort, sort = _b === void 0 ? {
+                created: -1
+            } : _b, query = __rest(_a, ["limit", "offset", "sort"]);
+            return __generator(this, function (_c) {
+                switch (_c.label) {
+                    case 0: return [4 /*yield*/, Events.find(buildFindSelector(query), {
+                            skip: offset,
+                            limit: limit,
+                            sort: sort
+                        }).fetch()];
+                    case 1: return [2 /*return*/, _c.sent()];
+                }
+            });
+        }); }, count: function (query) { return __awaiter(void 0, void 0, void 0, function () {
+            var count;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, Events.rawCollection().countDocuments(buildFindSelector(query))];
+                    case 1:
+                        count = _a.sent();
+                        return [2 /*return*/, count];
+                }
+            });
+        }); }, insert: function (doc) { return __awaiter(void 0, void 0, void 0, function () {
+            var eventValues, eventId;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        eventValues = EventsSchema.clean(doc);
+                        eventValues.created = new Date();
+                        eventValues.createdBy = userId;
+                        EventsSchema.validate(eventValues);
+                        return [4 /*yield*/, Events.insert(eventValues)];
+                    case 1:
+                        eventId = _a.sent();
+                        return [2 /*return*/, eventId];
+                }
+            });
+        }); }, update: function (eventId, doc) { return __awaiter(void 0, void 0, void 0, function () {
+            var eventValues;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        checkId(eventId);
+                        eventValues = EventsSchema.clean(doc, { isModifier: true });
+                        eventValues.$set.updated = new Date();
+                        eventValues.$set.updatedBy = userId;
+                        EventsSchema.validate(eventValues, { modifier: true });
+                        return [4 /*yield*/, Events.update(eventId, eventValues)];
+                    case 1:
+                        _a.sent();
+                        return [2 /*return*/];
+                }
+            });
+        }); }, remove: function (eventId) { return __awaiter(void 0, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                checkId(eventId);
+                Events.remove(eventId);
+                return [2 /*return*/];
+            });
+        }); } });
+};
 //# sourceMappingURL=configureEventsModule.js.map

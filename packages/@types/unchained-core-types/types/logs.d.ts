@@ -1,5 +1,5 @@
 import { LoggerOptions } from 'winston';
-import { TimestampFields } from './common';
+import { TimestampFields, Update } from './common';
 
 export enum LogLevel {
   Info = 'info',
@@ -27,6 +27,10 @@ export declare interface LogsModule {
   }) => Promise<Array<Log>>;
 
   count: () => Promise<number>;
+
+  insert: (doc: Log) => Promise<string>;
+  update: (eventId: string, doc: Update<Log>) => Promise<void>;
+  remove: (eventId: string) => Promise<void>;
 }
 
 declare module 'meteor/unchained:core-logger' {

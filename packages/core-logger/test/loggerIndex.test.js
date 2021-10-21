@@ -2,6 +2,7 @@ import { assert } from 'chai';
 import { db } from 'meteor/unchained:core-mongodb';
 
 import {
+  log,
   configureLogs,
   createLogger,
   transports,
@@ -24,5 +25,7 @@ describe('Test exports', () => {
     assert.isFunction(createLogger);
     assert.isFunction(format);
     assert.isObject(transports);
+    assert.isFunction(log);
+    log('Test');
   });
 });

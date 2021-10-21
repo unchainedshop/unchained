@@ -7,6 +7,7 @@ export { default as slugify } from "./slugify";
 export { default as getContext } from "./context";
 export { default as pipePromises } from "./pipe-promises";
 export { default as generateRandomHash } from "./generate-random-hash";
+export { checkId } from "./checkId";
 export const Schemas: {
     Address: import("simpl-schema").SimpleSchema;
     Contact: import("simpl-schema").SimpleSchema;
@@ -37,12 +38,24 @@ export const Schemas: {
             type: DateConstructor;
             required: boolean;
         };
+        createdBy: {
+            type: StringConstructor;
+            required: boolean;
+        };
         updated: {
             type: DateConstructor;
             required: boolean;
         };
+        updatedBy: {
+            type: StringConstructor;
+            required: boolean;
+        };
         deleted: {
             type: DateConstructor;
+            required: boolean;
+        };
+        deletedBy: {
+            type: StringConstructor;
             required: boolean;
         };
     };

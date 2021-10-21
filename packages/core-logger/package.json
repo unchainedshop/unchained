@@ -1,8 +1,8 @@
 {
   "name": "unchained-core-logger",
   "version": "1.0.2",
-  "main": "lib/logs.js",
-  "types": "lib/logs.d.ts",
+  "main": "lib/loggerIndex.js",
+  "types": "lib/loggerIndex.d.ts",
   "type": "module",
   "scripts": {
     "build": "tsc",

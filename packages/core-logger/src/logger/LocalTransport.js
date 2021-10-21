@@ -1,10 +1,11 @@
 import Transport from 'winston-transport';
 
 export class LocalTransport extends Transport {
-  Logs
+  Logs;
 
-  constructor(Logs) {
-    this.Logs = Logs
+  constructor(opts) {
+    super(opts);
+    this.Logs = opts.Logs;
   }
 
   log(info, callback) {
@@ -28,7 +29,7 @@ export class LocalTransport extends Transport {
         console.trace(e); // eslint-disable-line
       }
     }, 0);
-    
+
     callback();
   }
 }

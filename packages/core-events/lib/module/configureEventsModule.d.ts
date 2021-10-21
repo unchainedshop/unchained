@@ -1,2 +1,3 @@
 import { EventsModule } from 'unchained-core-types';
-export declare const configureEventsModule: (Events: any) => EventsModule;
+import { ModuleInput } from '../../../@types/unchained-core-types/types/common';
+export declare const configureEventsModule: ({ db, userId, }: ModuleInput) => EventsModule;

@@ -11,6 +11,7 @@ export { default as slugify } from './slugify';
 export { default as getContext } from './context';
 export { default as pipePromises } from './pipe-promises';
 export { default as generateRandomHash } from './generate-random-hash';
+export { checkId } from './checkId'
 
 const Schemas = {
   ...schemaFields,
