@@ -1,6 +1,5 @@
 import 'meteor/dburles:collection-helpers';
 import { Countries } from 'meteor/unchained:core-countries';
-import { Products, ProductStatus } from 'meteor/unchained:core-products';
 import {
   findUnusedSlug,
   findPreservingIds,
@@ -42,20 +41,22 @@ const buildFindSelector = ({
   return selector;
 };
 
-export const resolveAssortmentLinkFromDatabase =
+export const resolveAssortmentLinksFromDatabase =
   ({ selector = {} } = {}) =>
   (assortmentId, childAssortmentId) => {
-    const assortment = Collections.Assortments.findOne({
-      _id: assortmentId,
-      ...selector,
-    });
-    return (
-      assortment && {
-        assortmentId,
-        childAssortmentId,
-        parentIds: assortment.parentIds(),
+    const assortmentLinks = Collections.AssortmentLinks.find(
+      { childAssortmentId: assortmentId, ...selector },
+      {
+        fields: { parentAssortmentId: 1 },
+        sort: { sortKey: 1 },
       }
-    );
+    ).fetch();
+    const parentIds = assortmentLinks.map((link) => link.parentAssortmentId);
+    return {
+      assortmentId,
+      childAssortmentId,
+      parentIds,
+    };
   };
 
 export const resolveAssortmentProductsFromDatabase =
@@ -63,7 +64,10 @@ export const resolveAssortmentProductsFromDatabase =
   (productId) => {
     return Collections.AssortmentProducts.find(
       { productId, ...selector },
-      { fields: { _id: true, assortmentId: true } }
+      {
+        fields: { _id: true, assortmentId: true },
+        sort: { sortKey: 1 },
+      }
     ).fetch();
   };
 
@@ -75,7 +79,7 @@ export const makeAssortmentBreadcrumbsBuilder = ({
     resolveAssortmentProducts:
       resolveAssortmentProducts || resolveAssortmentProductsFromDatabase(),
     resolveAssortmentLink:
-      resolveAssortmentLink || resolveAssortmentLinkFromDatabase(),
+      resolveAssortmentLink || resolveAssortmentLinksFromDatabase(),
   });
 };
 
@@ -133,25 +137,41 @@ Collections.Assortments.updateAssortment = ({
   return result;
 };
 
-Collections.Assortments.removeAssortment = ({ assortmentId }) => {
-  Collections.AssortmentLinks.remove({
-    $or: [
-      { parentAssortmentId: assortmentId },
-      { childAssortmentId: assortmentId },
-    ],
-  });
+Collections.Assortments.removeAssortment = (
+  { assortmentId },
+  { skipInvalidation = false } = {}
+) => {
+  Collections.AssortmentLinks.removeLinks(
+    {
+      $or: [
+        { parentAssortmentId: assortmentId },
+        { childAssortmentId: assortmentId },
+      ],
+    },
+    { skipInvalidation: true }
+  );
+  Collections.AssortmentProducts.removeProducts(
+    { assortmentId },
+    { skipInvalidation: true }
+  );
+  Collections.AssortmentFilters.removeFilters(
+    { assortmentId },
+    { skipInvalidation: true }
+  );
   Collections.AssortmentTexts.remove({ assortmentId });
-  Collections.AssortmentProducts.remove({ assortmentId });
-  Collections.AssortmentFilters.remove({ assortmentId });
   Collections.Assortments.remove({ _id: assortmentId });
+  if (!skipInvalidation) {
+    // Invalidate all assortments
+    Collections.Assortments.invalidateCache();
+  }
   emit('ASSORTMENT_REMOVE', { assortmentId });
 };
 
-Collections.Assortments.invalidateFilterCaches = () => {
+Collections.Assortments.invalidateCache = (selector) => {
   log('Assortments: Start invalidating assortment caches', {
     level: 'verbose',
   });
-  const assortments = Collections.Assortments.find({}).fetch();
+  const assortments = Collections.Assortments.find(selector || {}).fetch();
   assortments.forEach((assortment) => {
     assortment.invalidateProductIdCache({ skipUpstreamTraversal: true });
   });
@@ -169,19 +189,46 @@ Collections.AssortmentLinks.findLink = ({
   );
 };
 
-Collections.AssortmentLinks.removeLink = ({ assortmentLinkId }) => {
-  const result = Collections.AssortmentLinks.remove({ _id: assortmentLinkId });
-  emit('ASSORTMENT_REMOVE_LINK', { assortmentLinkId });
-  return result;
+Collections.AssortmentLinks.removeLinks = (
+  selector,
+  { skipInvalidation = false } = {}
+) => {
+  const assortmentLinks = Collections.AssortmentLinks.find(selector, {
+    fields: { _id: true },
+  }).fetch();
+  Collections.AssortmentLinks.remove(selector);
+  assortmentLinks.forEach((assortmentLink) =>
+    emit('ASSORTMENT_REMOVE_LINK', { assortmentLinkId: assortmentLink._id })
+  );
+  if (!skipInvalidation && assortmentLinks.length) {
+    Collections.Assortments.invalidateCache({
+      _id: {
+        $in: assortmentLinks.map(
+          (assortmentLink) => assortmentLink.parentAssortmentId
+        ),
+      },
+    });
+  }
+  return assortmentLinks;
 };
 
-Collections.AssortmentLinks.createAssortmentLink = ({
-  parentAssortmentId,
-  childAssortmentId,
-  _id,
-  sortKey: forceSortKey,
-  ...rest
-}) => {
+Collections.AssortmentLinks.removeLink = ({ assortmentLinkId }, options) => {
+  return Collections.AssortmentLinks.removeLinks(
+    { _id: assortmentLinkId },
+    options
+  );
+};
+
+Collections.AssortmentLinks.createAssortmentLink = (
+  {
+    parentAssortmentId,
+    childAssortmentId,
+    _id,
+    sortKey: forceSortKey,
+    ...rest
+  },
+  { skipInvalidation = false } = {}
+) => {
   const selector = {
     parentAssortmentId,
     childAssortmentId,
@@ -204,16 +251,55 @@ Collections.AssortmentLinks.createAssortmentLink = ({
     $set,
     $setOnInsert,
   });
-  return Collections.AssortmentLinks.findOne(selector);
+  const assortmentLink = Collections.AssortmentLinks.findOne(selector);
+  if (!skipInvalidation) {
+    Collections.Assortments.invalidateCache({ _id: parentAssortmentId });
+  }
+  emit('ASSORTMENT_ADD_LINK', {
+    assortmentLink,
+  });
+  return assortmentLink;
 };
 
-Collections.AssortmentProducts.createAssortmentProduct = ({
-  productId,
-  assortmentId,
-  _id,
-  sortKey: forceSortKey,
-  ...rest
-}) => {
+Collections.AssortmentProducts.removeProducts = (
+  selector,
+  { skipInvalidation = false } = {}
+) => {
+  const assortmentProducts = Collections.AssortmentProducts.find(selector, {
+    fields: { _id: true, assortmentId: true },
+  }).fetch();
+  Collections.AssortmentProducts.remove(selector);
+  assortmentProducts.forEach((assortmentProduct) =>
+    emit('ASSORTMENT_REMOVE_PRODUCT', {
+      assortmentProductId: assortmentProduct._id,
+    })
+  );
+  if (!skipInvalidation && assortmentProducts.length) {
+    Collections.Assortments.invalidateCache({
+      _id: {
+        $in: assortmentProducts.map(
+          (assortmentProduct) => assortmentProduct.assortmentId
+        ),
+      },
+    });
+  }
+  return assortmentProducts;
+};
+
+Collections.AssortmentProducts.removeProduct = (
+  { assortmentProductId },
+  options
+) => {
+  return Collections.AssortmentProducts.removeProducts(
+    { _id: assortmentProductId },
+    options
+  );
+};
+
+Collections.AssortmentProducts.createAssortmentProduct = (
+  { productId, assortmentId, _id, sortKey: forceSortKey, ...rest },
+  { skipInvalidation = false } = {}
+) => {
   const selector = {
     productId,
     assortmentId,
@@ -236,7 +322,12 @@ Collections.AssortmentProducts.createAssortmentProduct = ({
     $set,
     $setOnInsert,
   });
-  return Collections.AssortmentProducts.findOne(selector);
+  const assortmentProduct = Collections.AssortmentProducts.findOne(selector);
+  if (!skipInvalidation) {
+    Collections.Assortments.invalidateCache({ _id: assortmentId });
+  }
+  emit('ASSORTMENT_ADD_PRODUCT', { assortmentProduct });
+  return assortmentProduct;
 };
 
 Collections.AssortmentFilters.createAssortmentFilter = ({
@@ -302,168 +393,6 @@ Collections.Assortments.createAssortment = ({
   }
   emit('ASSORTMENT_CREATE', { assortment: assortmentObject });
   return assortmentObject;
-};
-
-Collections.Assortments.sync = (syncFn, options) => {
-  const referenceDate = Collections.Assortments.markAssortmentTreeDirty();
-  syncFn(referenceDate);
-  Collections.Assortments.cleanDirtyAssortmentTreeByReferenceDate(
-    referenceDate
-  );
-  Collections.Assortments.updateCleanAssortmentActivation(options);
-  Collections.Assortments.wipeAssortments();
-};
-
-Collections.Assortments.markAssortmentTreeDirty = () => {
-  const dirtyModifier = { $set: { dirty: true } };
-  const collectionUpdateOptions = { bypassCollection2: true, multi: true };
-  const updatedAssortmentCount = Collections.Assortments.update(
-    {},
-    dirtyModifier,
-    collectionUpdateOptions
-  );
-  const updatedAssortmentTextsCount = Collections.AssortmentTexts.update(
-    {},
-    dirtyModifier,
-    collectionUpdateOptions
-  );
-  const updatedAssortmentProductsCount = Collections.AssortmentProducts.update(
-    {},
-    dirtyModifier,
-    collectionUpdateOptions
-  );
-  const updatedAssortmentLinksCount = Collections.AssortmentLinks.update(
-    {},
-    dirtyModifier,
-    collectionUpdateOptions
-  );
-  const updatedAssortmentFiltersCount = Collections.AssortmentFilters.update(
-    {},
-    dirtyModifier,
-    collectionUpdateOptions
-  );
-  const timestamp = new Date();
-  log(
-    `Assortment Sync: Marked Assortment tree dirty at timestamp ${timestamp}`,
-    {
-      updatedAssortmentCount,
-      updatedAssortmentTextsCount,
-      updatedAssortmentProductsCount,
-      updatedAssortmentLinksCount,
-      updatedAssortmentFiltersCount,
-      level: 'verbose',
-    }
-  );
-  return new Date();
-};
-
-Collections.Assortments.cleanDirtyAssortmentTreeByReferenceDate = (
-  referenceDate
-) => {
-  const selector = {
-    dirty: true,
-    $or: [
-      {
-        updated: { $gte: referenceDate },
-      },
-      {
-        created: { $gte: referenceDate },
-      },
-    ],
-  };
-  const modifier = { $set: { dirty: false } };
-  const collectionUpdateOptions = { bypassCollection2: true, multi: true };
-  const updatedAssortmentCount = Collections.Assortments.update(
-    selector,
-    modifier,
-    collectionUpdateOptions
-  );
-  const updatedAssortmentTextsCount = Collections.AssortmentTexts.update(
-    selector,
-    modifier,
-    collectionUpdateOptions
-  );
-  const updatedAssortmentProductsCount = Collections.AssortmentProducts.update(
-    selector,
-    modifier,
-    collectionUpdateOptions
-  );
-  const updatedAssortmentLinksCount = Collections.AssortmentLinks.update(
-    selector,
-    modifier,
-    collectionUpdateOptions
-  );
-  const updatedAssortmentFiltersCount = Collections.AssortmentFilters.update(
-    selector,
-    modifier,
-    collectionUpdateOptions
-  );
-  log(
-    `Assortment Sync: Result of assortment cleaning with referenceDate=${referenceDate}`,
-    {
-      updatedAssortmentCount,
-      updatedAssortmentTextsCount,
-      updatedAssortmentProductsCount,
-      updatedAssortmentLinksCount,
-      updatedAssortmentFiltersCount,
-      level: 'verbose',
-    }
-  );
-};
-
-Collections.Assortments.updateCleanAssortmentActivation = ({
-  autoEnableInactiveAssortments = true,
-} = {}) => {
-  const disabledDirtyAssortmentsCount = Collections.Assortments.update(
-    {
-      isActive: true,
-      dirty: true,
-    },
-    {
-      $set: { isActive: false },
-    },
-    { bypassCollection2: true, multi: true }
-  );
-  const enabledCleanAssortmentsCount = autoEnableInactiveAssortments
-    ? Collections.Assortments.update(
-        {
-          isActive: false,
-          dirty: { $ne: true },
-        },
-        {
-          $set: { isActive: true },
-        },
-        { bypassCollection2: true, multi: true }
-      )
-    : 0;
-
-  log(`Assortment Sync: Result of assortment activation`, {
-    disabledDirtyAssortmentsCount,
-    enabledCleanAssortmentsCount,
-    level: 'verbose',
-  });
-};
-
-Collections.Assortments.wipeAssortments = (onlyDirty = true) => {
-  const selector = onlyDirty ? { dirty: true } : {};
-  const removedAssortmentCount = Collections.Assortments.remove(selector);
-  const removedAssortmentTextCount =
-    Collections.AssortmentTexts.remove(selector);
-  const removedAssortmentProductsCount =
-    Collections.AssortmentProducts.remove(selector);
-  const removedAssortmentLinksCount =
-    Collections.AssortmentLinks.remove(selector);
-  const removedAssortmentFiltersCount =
-    Collections.AssortmentFilters.remove(selector);
-
-  log(`result of assortment purging with onlyDirty=${onlyDirty}`, {
-    removedAssortmentCount,
-    removedAssortmentTextCount,
-    removedAssortmentProductsCount,
-    removedAssortmentLinksCount,
-    removedAssortmentFiltersCount,
-    level: 'verbose',
-  });
 };
 
 Collections.Assortments.getLocalizedTexts = (assortmentId, locale) =>
@@ -581,53 +510,6 @@ Collections.AssortmentLinks.updateManualOrder = ({ sortKeys }) => {
   return assortmentLinks;
 };
 
-Products.helpers({
-  assortmentIds() {
-    return Collections.AssortmentProducts.find(
-      { productId: this._id },
-      { fields: { assortmentId: true } }
-    )
-      .fetch()
-      .map(({ assortmentId: id }) => id);
-  },
-  async assortmentPaths() {
-    const build = makeAssortmentBreadcrumbsBuilder();
-    return build({
-      productId: this._id,
-    });
-  },
-  siblings({
-    assortmentId,
-    limit,
-    offset,
-    sort = {},
-    includeInactive = false,
-  } = {}) {
-    const assortmentIds = assortmentId ? [assortmentId] : this.assortmentIds();
-    if (!assortmentIds.length) return [];
-    const productIds = Collections.AssortmentProducts.find({
-      $and: [
-        {
-          productId: { $ne: this._id },
-        },
-        {
-          assortmentId: { $in: assortmentIds },
-        },
-      ],
-    })
-      .fetch()
-      .map(({ productId: curProductId }) => curProductId);
-
-    const productSelector = {
-      _id: { $in: productIds },
-      status: includeInactive
-        ? { $in: [ProductStatus.ACTIVE, ProductStatus.DRAFT] }
-        : ProductStatus.ACTIVE,
-    };
-    const productOptions = { skip: offset, limit, sort };
-    return Products.find(productSelector, productOptions).fetch();
-  },
-});
 Collections.Assortments.setBase = ({ assortmentId }) => {
   Collections.Assortments.update(
     { isBase: true },
@@ -791,34 +673,6 @@ Collections.Assortments.helpers({
   getLocalizedTexts(locale) {
     const parsedLocale = new Locale(locale);
     return Collections.Assortments.getLocalizedTexts(this._id, parsedLocale);
-  },
-  addProduct({ productId, ...rest }, { skipInvalidation = false } = {}) {
-    const assortmentProduct =
-      Collections.AssortmentProducts.createAssortmentProduct({
-        assortmentId: this._id,
-        productId,
-        ...rest,
-      });
-    if (!skipInvalidation) {
-      this.invalidateProductIdCache();
-    }
-    emit('ASSORTMENT_ADD_PRODUCT', { assortmentProduct });
-    return assortmentProduct;
-  },
-  addLink({ assortmentId, ...rest }, { skipInvalidation = false } = {}) {
-    const assortmentLink = Collections.AssortmentLinks.createAssortmentLink({
-      parentAssortmentId: this._id,
-      childAssortmentId: assortmentId,
-      ...rest,
-    });
-    if (!skipInvalidation) {
-      this.invalidateProductIdCache();
-    }
-    emit('ASSORTMENT_ADD_LINK', {
-      parentAssortmentId: this._id,
-      childAssortmentId: assortmentId,
-    });
-    return assortmentLink;
   },
   productAssignments() {
     return Collections.AssortmentProducts.find(
@@ -1003,29 +857,35 @@ Collections.AssortmentProducts.helpers({
   assortment() {
     return Collections.Assortments.findOne({ _id: this.assortmentId });
   },
-  product() {
-    return Products.findOne({ _id: this.productId });
-  },
-  removeAssortmentProduct() {
-    Collections.AssortmentProducts.remove({ _id: this._id });
-    this.assortment().invalidateProductIdCache();
-    emit('ASSORTMENT_REMOVE_PRODUCT', {
-      assortmentProductId: this._id,
-    });
-    return this;
-  },
 });
 
 Collections.AssortmentFilters.findFilter = ({ assortmentFilterId }) => {
   return Collections.AssortmentFilters.findOne({ _id: assortmentFilterId });
 };
 
-Collections.AssortmentFilters.removeFilter = ({ assortmentFilterId }) => {
-  const result = Collections.AssortmentFilters.remove({
-    _id: assortmentFilterId,
+Collections.AssortmentFilters.removeFilters = (selector) => {
+  const ids = Collections.AssortmentFilters.find(selector, {
+    fields: { _id: true },
+  })
+    .fetch()
+    .map((af) => af._id);
+  Collections.AssortmentFilters.remove(selector);
+  ids.forEach((assortmentFilterId) => {
+    emit('ASSORTMENT_REMOVE_FILTER', { assortmentFilterId });
   });
-  emit('ASSORTMENT_REMOVE_FILTER', { assortmentFilterId });
-  return result;
+  return ids;
+};
+
+Collections.AssortmentFilters.removeFilter = (
+  { assortmentFilterId },
+  options
+) => {
+  return Collections.AssortmentFilters.removeFilters(
+    {
+      _id: assortmentFilterId,
+    },
+    options
+  );
 };
 
 Collections.AssortmentFilters.helpers({

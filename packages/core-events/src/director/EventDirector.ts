@@ -1,5 +1,4 @@
 import { createLogger } from 'unchained-core-logger';
-import { getContext } from 'unchained-utils';
 import { Collection, EventDirector as EventDirectorType } from 'unchained-core-types';
 
 const logger = createLogger('unchained:core-events');
@@ -53,8 +52,8 @@ export const EventDirector: EventDirectorType & { getEventAdapter: () => EventAd
   getEventAdapter: (): EventAdapter => _adapter,
 
   emit: async (eventName: string, data: any): Promise<void> => {
-    const context = getContext();
-    const extractedContext = _contextNormalizer(context);
+    // const context = getContext();
+    const extractedContext = _contextNormalizer(null);
 
     if (!_registeredEvents.has(eventName))
       throw new Error(`Event with ${eventName} is not registered`);

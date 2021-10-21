@@ -10,6 +10,7 @@ export default [
         email: String
         password: HashedPasswordInput
         plainPassword: String
+        totpCode: String
       ): LoginMethodResponse
 
       """
@@ -78,6 +79,21 @@ export default [
       Login as Guest User (creates an anonymous user and returns logged in token)
       """
       loginAsGuest: LoginMethodResponse
+
+      """
+      In order to activate TOTP, generate a secret and return
+      """
+      buildSecretTOTPAuthURL: String!
+
+      """
+      In order to activate 2nd factor (TOTP), generate a secret and return
+      """
+      enableTOTP(secretBase32: String!, code: String!): User
+
+      """
+      Disable the 2nd factor (TOTP)
+      """
+      disableTOTP(code: String!, userId: ID): User
 
       """
       Creates an alternative cart. If you use this feature, you should use explicit orderId's when using the

@@ -1,4 +1,4 @@
-FROM geoffreybooth/meteor-base:2.2 as bundler
+FROM geoffreybooth/meteor-base:2.4 as bundler
 
 # Install app dependencies
 RUN mkdir -p /source
@@ -13,7 +13,7 @@ RUN meteor build --server-only --allow-superuser --directory /
 
 
 
-FROM node:12 as runtime
+FROM node:14 as runtime
 
 RUN useradd -u 501 -d /home/meteor meteor
 

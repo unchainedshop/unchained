@@ -14,6 +14,7 @@ const FormSignIn = ({ loginType, changeLoginType, ...formProps }) => (
     <AutoForm {...formProps}>
       <AutoField id="email" name="email" />
       <AutoField name="password" type="password" />
+      <AutoField name="totpCode" type="text" />
       <ErrorsField />
       <SubmitField value="Sign in" className="primary" />
     </AutoForm>
@@ -31,15 +32,21 @@ export default compose(
       type: String,
       label: 'Password',
     },
+    totpCode: {
+      type: String,
+      label: 'TOTP Code',
+      required: false,
+    },
   }),
   withHandlers({
     onSubmit:
       ({ client }) =>
-      ({ email, password }) =>
+      ({ email, password, totpCode }) =>
         loginWithPassword(
           {
             email,
             password,
+            totpCode,
             disableHashing: true,
           },
           client

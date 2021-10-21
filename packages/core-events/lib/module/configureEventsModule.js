@@ -66,15 +66,17 @@ var buildFindSelector = function (_a) {
 export var configureEventsModule = function (_a) {
     var db = _a.db, userId = _a.userId;
     var Events = new db.Collection('events');
-    return __assign(__assign({}, configureEventDirector(Events)), { findEvent: function (_a, options) { return __awaiter(void 0, void 0, void 0, function () {
+    return __assign(__assign({}, configureEventDirector(Events)), { findEvent: function (_a, options) { var _b; return __awaiter(void 0, void 0, void 0, function () {
             var selector;
             var eventId = _a.eventId, rest = __rest(_a, ["eventId"]);
-            return __generator(this, function (_b) {
-                switch (_b.label) {
+            return __generator(this, function (_c) {
+                switch (_c.label) {
                     case 0:
                         selector = eventId ? { _id: eventId } : rest;
+                        if (!((_b = Object.keys(selector)) === null || _b === void 0 ? void 0 : _b.length))
+                            return [2 /*return*/, null];
                         return [4 /*yield*/, Events.findOne(selector, options)];
-                    case 1: return [2 /*return*/, _b.sent()];
+                    case 1: return [2 /*return*/, _c.sent()];
                 }
             });
         }); }, findEvents: function (_a) { return __awaiter(void 0, void 0, void 0, function () {

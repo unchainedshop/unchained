@@ -1,6 +1,6 @@
 Package.describe({
   name: 'unchained:core-logger',
-  version: '1.0.0-beta12',
+  version: '1.0.0-beta14',
   summary: 'Unchained Engine Core: Logger',
   git: 'https://github.com/unchainedshop/unchained',
   documentation: 'README.md',
@@ -27,8 +27,8 @@ Package.onTest((api) => {
   api.use('ecmascript');
   api.use('typescript@4.1.2');
 
-  api.use('unchained:core-mongodb@1.0.0-beta12');
-  api.use('unchained:core-logger@1.0.0-beta12');
+  api.use('unchained:core-mongodb@1.0.0-beta14');
+  api.use('unchained:core-logger@1.0.0-beta14');
 
   api.mainModule('test/loggerIndex.test.js');
 });

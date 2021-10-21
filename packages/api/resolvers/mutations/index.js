@@ -4,6 +4,9 @@ import loginWithPassword from './loginWithPassword';
 import loginAsGuest from './loginAsGuest';
 import logout from './logout';
 import logoutAllSessions from './logoutAllSessions';
+import buildSecretTOTPAuthURL from './buildSecretTOTPAuthURL';
+import enableTOTP from './enableTOTP';
+import disableTOTP from './disableTOTP';
 import changePassword from './changePassword';
 import createUser from './createUser';
 import verifyEmail from './verifyEmail';
@@ -143,6 +146,9 @@ export default {
   loginAsGuest,
   verifyEmail,
   loginWithPassword,
+  buildSecretTOTPAuthURL: acl(actions.authTwoFactor)(buildSecretTOTPAuthURL),
+  enableTOTP: acl(actions.authTwoFactor)(enableTOTP),
+  disableTOTP: acl(actions.manageTwoFactor)(disableTOTP),
   pageView,
   createUser,
   forgotPassword,

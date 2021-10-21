@@ -17,6 +17,10 @@ export default {
     actions.viewUserPrivateInfos,
     'isInitialPassword'
   ),
+  isTwoFactorEnabled: checkTypeResolver(
+    actions.viewUserPrivateInfos,
+    'isTwoFactorEnabled'
+  ),
   isGuest: checkTypeResolver(actions.viewUserPrivateInfos, 'isGuest'),
   profile: checkTypeResolver(actions.viewUserPrivateInfos, 'profile'),
   language: checkTypeResolver(actions.viewUserPrivateInfos, 'language'),

@@ -3,10 +3,10 @@ import hashPassword from './hashPassword';
 import { storeLoginToken } from './store';
 
 export default async function loginWithPassword(
-  { username, email, password, disableHashing = false },
+  { username, email, password, totpCode, disableHashing = false },
   apollo
 ) {
-  const variables = { username, email };
+  const variables = { username, email, totpCode };
   if (disableHashing) {
     variables.plainPassword = password;
   } else {
@@ -19,12 +19,14 @@ export default async function loginWithPassword(
         $email: String
         $password: HashedPasswordInput
         $plainPassword: String
+        $totpCode: String
       ) {
         loginWithPassword(
           username: $username
           email: $email
           password: $password
           plainPassword: $plainPassword
+          totpCode: $totpCode
         ) {
           id
           token

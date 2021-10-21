@@ -157,6 +157,7 @@ Orders.orderExists = ({ orderId, orderNumber }) => {
 
 Orders.findOrder = ({ orderId, ...rest }, options) => {
   const selector = orderId ? { _id: orderId } : rest;
+  if (!Object.keys(selector)?.length) return null;
   return Orders.findOne(selector, options);
 };
 

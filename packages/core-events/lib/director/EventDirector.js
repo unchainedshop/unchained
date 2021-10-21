@@ -46,7 +46,6 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 import { createLogger } from 'unchained-core-logger';
-import { getContext } from 'unchained-utils';
 var logger = createLogger('unchained:core-events');
 export var defaultNormalizer = function (context) {
     var _a, _b, _c, _d, _e, _f;
@@ -83,12 +82,11 @@ export var EventDirector = {
     },
     getEventAdapter: function () { return _adapter; },
     emit: function (eventName, data) { return __awaiter(void 0, void 0, void 0, function () {
-        var context, extractedContext;
+        var extractedContext;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
-                    context = getContext();
-                    extractedContext = _contextNormalizer(context);
+                    extractedContext = _contextNormalizer(null);
                     if (!_registeredEvents.has(eventName))
                         throw new Error("Event with " + eventName + " is not registered");
                     _adapter === null || _adapter === void 0 ? void 0 : _adapter.publish(eventName, {

@@ -9,7 +9,7 @@ export * from './search';
 export default ({ skipInvalidationOnStartup = true } = {}) => {
   if (!skipInvalidationOnStartup) {
     Meteor.defer(() => {
-      Filters.invalidateFilterCaches();
+      Filters.invalidateCache();
     });
   }
   runMigrations();

@@ -14,5 +14,7 @@ export default function removeAssortmentProduct(
   });
   if (!assortmentProduct)
     throw new AssortmentProductNotFoundError({ assortmentProductId });
-  return assortmentProduct.removeAssortmentProduct();
+
+  AssortmentProducts.removeProduct({ assortmentProductId });
+  return assortmentProduct;
 }
