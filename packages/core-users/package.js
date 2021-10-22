@@ -23,7 +23,7 @@ Package.onUse((api) => {
   api.use('unchained:core-logger@1.0.0-beta15');
   api.use('unchained:core-languages@1.0.0-beta15');
   api.use('unchained:core-countries@1.0.0-beta15');
-  api.use('unchained:core-files@1.0.0-beta15');
+  api.use('unchained:core-files-next@1.0.0-beta15');
 
   api.mainModule('users.js', 'server');
 });
