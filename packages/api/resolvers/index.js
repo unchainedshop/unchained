@@ -4,7 +4,7 @@ import {
   JSONResolver,
   PositiveFloatResolver,
   TimestampResolver,
-  DateTimeResolver
+  DateTimeResolver,
 } from 'graphql-scalars';
 import Query from './queries';
 import Mutation from './mutations';
@@ -16,7 +16,6 @@ export default {
   Upload: GraphQLUpload,
   BigInt: BigIntResolver,
   JSON: JSONResolver,
-  BigInt,
   Query,
   Mutation,
   DateTime: DateTimeResolver,
