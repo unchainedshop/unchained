@@ -24,7 +24,9 @@ const EnrollmentLogList = ({ data }) => {
           <Table.Body>
             {logs.map(({ _id, level, message, created, user }) => (
               <Table.Row key={_id}>
-                <Table.Cell singleLine>{format(created, 'Pp')}</Table.Cell>
+                <Table.Cell singleLine>
+                  {format(new Date(created), 'Pp')}
+                </Table.Cell>
                 <Table.Cell
                   warning={level === 'warn'}
                   error={level === 'error'}

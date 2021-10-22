@@ -24,7 +24,9 @@ const UserOrderList = ({ orders }) => (
             <Table.Cell>
               <Link href={`/orders/view?_id=${order._id}`}>
                 <a href={`/orders/view?_id=${order._id}`}>
-                  {order.ordered ? format(order.ordered, 'Pp') : 'n/a'}
+                  {order.ordered
+                    ? format(new Date(order.ordered), 'Pp')
+                    : 'n/a'}
                 </a>
               </Link>
             </Table.Cell>

@@ -13,6 +13,7 @@ Npm.depends({
   locale: '0.1.0',
   'lodash.isnumber': '3.0.3',
   'body-parser': '1.19.0',
+  'graphql-scalars': '1.9.0',
 });
 
 Package.onUse((api) => {

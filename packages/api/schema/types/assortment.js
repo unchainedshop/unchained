@@ -20,8 +20,8 @@ export default [
     """
     type Assortment {
       _id: ID!
-      created: Date
-      updated: Date
+      created: DateTime
+      updated: DateTime
       isActive: Boolean
       isBase: Boolean
       isRoot: Boolean

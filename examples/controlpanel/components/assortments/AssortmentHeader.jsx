@@ -42,7 +42,7 @@ const AssortmentHeader = ({ loading, assortmentId, assortment = {} }) => {
                 <List.Content>
                   Created:{' '}
                   {assortment.created
-                    ? format(assortment.created, 'Pp')
+                    ? format(new Date(assortment.created), 'Pp')
                     : 'Unbekannt'}
                 </List.Content>
               </List.Item>
@@ -51,7 +51,7 @@ const AssortmentHeader = ({ loading, assortmentId, assortment = {} }) => {
                 <List.Content>
                   Updated:
                   {assortment.updated
-                    ? format(assortment.updated, 'Pp')
+                    ? format(new Date(assortment.updated), 'Pp')
                     : 'Unbekannt'}
                 </List.Content>
               </List.Item>

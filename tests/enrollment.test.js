@@ -992,7 +992,7 @@ describe('Enrollments', () => {
         data: { enrollment },
       } = await graphqlFetchAsAdminUser({
         query: /* GraphQL */ `
-          query enrollment($enrollmentId: ID!, $referenceDate: Date) {
+          query enrollment($enrollmentId: ID!, $referenceDate: Timestamp) {
             enrollment(enrollmentId: $enrollmentId) {
               _id
               isExpired(referenceDate: $referenceDate)

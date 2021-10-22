@@ -16,59 +16,66 @@ describe('ProductsCommerce', () => {
 
   describe('mutation.updateProductCommerce for admin user should ', () => {
     it('Update product pricing successfuly', async () => {
-      const { data: { updateProductCommerce } = {} } = await graphqlFetch({
-        query: /* GraphQL */ `
-          mutation UpdateProductCommerce(
-            $productId: ID!
-            $commerce: UpdateProductCommerceInput!
-          ) {
-            updateProductCommerce(productId: $productId, commerce: $commerce) {
-              _id
-              sequence
-              status
-              tags
-              updated
-              created
-              published
-              texts {
+      const { data: { updateProductCommerce } = {}, errors } =
+        await graphqlFetch({
+          query: /* GraphQL */ `
+            mutation UpdateProductCommerce(
+              $productId: ID!
+              $commerce: UpdateProductCommerceInput!
+            ) {
+              updateProductCommerce(
+                productId: $productId
+                commerce: $commerce
+              ) {
                 _id
-              }
-              media {
-                _id
-              }
-              reviews {
-                _id
-              }
-              assortmentPaths {
-                links {
-                  link {
-                    _id
+                sequence
+                status
+                tags
+                updated
+                created
+                published
+                texts {
+                  _id
+                }
+                media {
+                  _id
+                }
+                reviews {
+                  _id
+                }
+                assortmentPaths {
+                  links {
+                    link {
+                      _id
+                    }
+                    assortmentId
                   }
-                  assortmentId
+                }
+                siblings {
+                  _id
+                }
+                siblings {
+                  _id
                 }
               }
-              siblings {
-                _id
-              }
             }
-          }
-        `,
-        variables: {
-          productId: SimpleProduct._id,
-          commerce: {
-            pricing: [
-              {
-                amount: 100,
-                maxQuantity: 50,
-                isTaxable: true,
-                isNetPrice: false,
-                currencyCode: 'CHY',
-                countryCode: 'SW',
-              },
-            ],
+          `,
+          variables: {
+            productId: SimpleProduct._id,
+            commerce: {
+              pricing: [
+                {
+                  amount: 100,
+                  maxQuantity: 50,
+                  isTaxable: true,
+                  isNetPrice: false,
+                  currencyCode: 'CHY',
+                  countryCode: 'SW',
+                },
+              ],
+            },
           },
-        },
-      });
+        });
 
       expect(updateProductCommerce._id).toEqual(SimpleProduct._id);
     });

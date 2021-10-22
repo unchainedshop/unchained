@@ -28,7 +28,7 @@ const OrderList = ({
     rowRenderer={(order) => (
       <Table.Row key={order._id}>
         <Table.Cell>
-          {order.ordered ? format(order.ordered, 'Pp') : 'n/a'}
+          {order.ordered ? format(new Date(order.ordered), 'Pp') : 'n/a'}
         </Table.Cell>
         <Table.Cell>
           <Link href={`/orders/view?_id=${order._id}`}>

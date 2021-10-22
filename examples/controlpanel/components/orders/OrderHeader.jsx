@@ -125,19 +125,20 @@ const OrderHeader = ({
             <List.Item>
               <List.Icon name="add to calendar" />
               <List.Content>
-                Created: {created ? format(created, 'Pp') : 'n/a'}
+                Created: {created ? format(new Date(created), 'Pp') : 'n/a'}
               </List.Content>
             </List.Item>
             <List.Item>
               <List.Icon name="plus cart" />
               <List.Content>
-                Ordered: {ordered ? format(ordered, 'Pp') : 'n/a'}
+                Ordered: {ordered ? format(new Date(ordered), 'Pp') : 'n/a'}
               </List.Content>
             </List.Item>
             <List.Item>
               <List.Icon name="thumbs outline up" />
               <List.Content>
-                Confirmed: {confirmed ? format(confirmed, 'Pp') : 'n/a'}
+                Confirmed:{' '}
+                {confirmed ? format(new Date(confirmed), 'Pp') : 'n/a'}
               </List.Content>
             </List.Item>
             <List.Item>

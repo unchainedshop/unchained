@@ -115,25 +115,27 @@ const QuotationHeader = ({
               <List.Item>
                 <List.Icon name="add to calendar" />
                 <List.Content>
-                  Created: {created ? format(created, 'Pp') : 'n/a'}
+                  Created: {created ? format(new Date(created), 'Pp') : 'n/a'}
                 </List.Content>
               </List.Item>
               <List.Item>
                 <List.Icon name="hourglass end" />
                 <List.Content>
-                  Expires: {expires ? format(expires, 'Ppp') : 'n/a'}
+                  Expires: {expires ? format(new Date(expires), 'Ppp') : 'n/a'}
                 </List.Content>
               </List.Item>
               <List.Item>
                 <List.Icon name="checkmark box" />
                 <List.Content>
-                  Fullfilled: {fullfilled ? format(fullfilled, 'Pp') : 'n/a'}
+                  Fulfilled:{' '}
+                  {fullfilled ? format(new Date(fullfilled), 'Pp') : 'n/a'}
                 </List.Content>
               </List.Item>
               <List.Item>
                 <List.Icon name="ban" />
                 <List.Content>
-                  Rejected: {rejected ? format(rejected, 'Pp') : 'n/a'}
+                  Rejected:{' '}
+                  {rejected ? format(new Date(rejected), 'Pp') : 'n/a'}
                 </List.Content>
               </List.Item>
             </List>
