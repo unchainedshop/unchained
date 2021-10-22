@@ -10,7 +10,7 @@ Package.onUse(function (api) {
   api.versionsFrom('2.2');
   api.use('ecmascript');
   api.use('typescript@4.1.2');
-  api.use('unchained:core-logger@1.0.0-beta12');
+  api.use('unchained:core-logger@1.0.0-beta14');
 
   api.mainModule('index.ts', 'server');
 });

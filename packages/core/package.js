@@ -35,6 +35,7 @@ Package.onUse((api) => {
   api.use('unchained:core-worker@1.0.0-beta14');
   api.use('unchained:core-enrollments@1.0.0-beta14');
   api.use('unchained:core-events@1.0.0-beta14');
+  api.use('unchained:core-files-next@1.0.0-beta14');
 
   api.imply([
     'unchained:core-currencies',

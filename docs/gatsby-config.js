@@ -1,4 +1,4 @@
-const themeOptions = require('@unchainedshop/gatsby-theme-apollo-docs/theme-options')
+const themeOptions = require('@unchainedshop/gatsby-theme-apollo-docs/theme-options');
 
 module.exports = {
   pathPrefix: '/docs/unchained',
@@ -36,7 +36,6 @@ module.exports = {
             'deployment/deploy-storefront-vercel',
             'deployment/amazon-documentdb',
           ],
-          Plugins: ['plugins/plugin-overview'],
           Concepts: [
             'concepts/architecture',
             'concepts/carts',
@@ -61,7 +60,6 @@ module.exports = {
             'config/users',
             'config/enrollments',
             'config/events',
-            'config/settings',
           ],
           'API Reference': [
             'api/entities',
@@ -72,4 +70,4 @@ module.exports = {
       },
     },
   ],
-}
+};

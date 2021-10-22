@@ -86,7 +86,10 @@ function downloadFromUrlToBuffer(fileUrl) {
   });
 }
 
-if (!MINIO_ACCESS_KEY || !MINIO_SECRET_KEY || !MINIO_ENDPOINT) return;
+if (!MINIO_ACCESS_KEY || !MINIO_SECRET_KEY || !MINIO_ENDPOINT)
+  throw new Error(
+    'Please configure Minio/S3 by providing MINIO_ACCESS_KEY,MINIO_SECRET_KEY & MINIO_ENDPOINT'
+  );
 
 const generateRandomFileName = (fileName) => {
   const random = crypto.randomBytes(16);
