@@ -4,7 +4,7 @@ export default [
       _id: ID!
       isTaxable: Boolean!
       isNetPrice: Boolean!
-      amount: BigInt!
+      amount: Int!
       currency: String!
     }
 
