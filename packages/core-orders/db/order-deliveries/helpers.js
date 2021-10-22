@@ -10,7 +10,7 @@ import { emit } from 'meteor/unchained:core-events';
 import { OrderDeliveries } from './collections';
 import { OrderDeliveryStatus } from './schema';
 import { Orders } from '../orders/collections';
-import { OrderDocuments } from '../order-documents/collections';
+import { updateOrderDeliveryDocuments } from '../order-documents/helpers';
 
 OrderDeliveries.helpers({
   order() {
@@ -155,7 +155,7 @@ OrderDeliveries.updateStatus = ({ deliveryId, status, info = '' }) => {
   if (status === OrderDeliveryStatus.DELIVERED) {
     modifier.$set.delivered = date;
   }
-  OrderDocuments.updateDeliveryDocuments({
+  updateOrderDeliveryDocuments({
     deliveryId,
     date,
     ...modifier.$set,

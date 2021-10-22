@@ -11,10 +11,33 @@ import { Countries } from 'meteor/unchained:core-countries';
 import { Languages } from 'meteor/unchained:core-languages';
 import { log, Logs } from 'meteor/unchained:core-logger';
 import { v4 as uuidv4 } from 'uuid';
-import { Avatars, Users } from './collections';
+import {
+  createUploadContainer,
+  MediaObjects,
+  removeObjects,
+  uploadObjectStream,
+} from 'meteor/unchained:core-files-next';
+import { Users } from './collections';
 import filterContext from '../filterContext';
 import evaluateContext from '../evaluateContext';
 import settings from '../settings';
+
+const userAvatarUploads = createUploadContainer(
+  'user-avatars',
+  async (mediaTicketUploadId, linkedUserId, { userId }) => {
+    const user = Users.findUser({ userId });
+    if (user?.avatarId) await removeObjects(user?.avatarId);
+    return Users.update(
+      { _id: linkedUserId },
+      {
+        $set: {
+          updated: new Date(),
+          avatarId: mediaTicketUploadId,
+        },
+      }
+    );
+  }
+);
 
 const buildFindSelector = ({ includeGuests, queryString }) => {
   const selector = {};
@@ -83,7 +106,7 @@ Users.helpers({
     return locale;
   },
   avatar() {
-    return Avatars.findOne({ _id: this.avatarId });
+    return MediaObjects.findOne({ _id: this.avatarId });
   },
   primaryEmail() {
     return (this.emails || []).sort(
@@ -162,6 +185,16 @@ Users.helpers({
   },
 });
 
+Users.createSignedUploadURL = async ({ mediaName, userId }, { ...context }) => {
+  const uploadedMedia = await userAvatarUploads.createSignedURL(
+    userId,
+    mediaName,
+    {},
+    context
+  );
+  return uploadedMedia;
+};
+
 Users.updateProfile = ({ userId, profile }) => {
   const transformedProfile = Object.keys(profile).reduce((acc, profileKey) => {
     return {
@@ -181,20 +214,11 @@ Users.updateProfile = ({ userId, profile }) => {
   );
 };
 Users.updateAvatar = async ({ userId, avatar }) => {
-  const avatarRef =
-    avatar instanceof Promise
-      ? await Avatars.insertWithRemoteFile({
-          file: avatar,
-          userId,
-        })
-      : await Avatars.insertWithRemoteBuffer({
-          file: {
-            ...avatar,
-            buffer: Buffer.from(avatar.buffer, 'base64'),
-          },
-          userId,
-        });
-
+  const user = Users.findUser({ userId });
+  if (user?.avatarId) await removeObjects(user?.avatarId);
+  const avatarRef = await uploadObjectStream('user-avatars', avatar, {
+    userId,
+  });
   return Users.update(
     { _id: userId },
     {

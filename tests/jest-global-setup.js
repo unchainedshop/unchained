@@ -20,6 +20,9 @@ const startAndWaitForMeteor = async () => {
             DATATRANS_SIGN_KEY: '1337',
             DATATRANS_API_MOCKS_PATH: '../../tests/mocks/datatrans-v2',
             APPLE_IAP_SHARED_SECRET: '73b61776e7304f8ab1c2404df9192078',
+            MINIO_ENDPOINT: 'https:/minio.dev.shared.ucc.dev',
+            MINIO_BUCKET_NAME: 'unchained-test-bucket',
+            MINIO_WEBHOOK_AUTH_TOKEN: 1234567,
           },
         },
       );

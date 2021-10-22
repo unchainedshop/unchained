@@ -1,20 +1,25 @@
-import { ProductMedia, Media } from 'meteor/unchained:core-products';
+import { ProductMedia } from 'meteor/unchained:core-products';
+import {
+  uploadFileFromURL,
+  MediaObjects,
+} from 'meteor/unchained:core-files-next';
 
 const upsertAsset = async (asset) => {
-  const { _id, ...assetData } = asset;
+  const { _id, fileName, url, ...assetData } = asset;
 
   try {
-    if (_id && Media.find({ _id }).count() > 0)
+    if (_id && MediaObjects.find({ _id }).count() > 0)
       throw new Error('Media already exists');
-    const assetObject = await Media.insertWithRemoteURL({
+    const assetObject = await uploadFileFromURL('product-media', {
       fileId: _id,
-      ...assetData,
+      fileName,
+      fileLink: url,
     });
     if (!assetObject) throw new Error('Media not created');
     return assetObject;
   } catch (e) {
-    Media.update({ _id }, { $set: assetData });
-    return Media.findOne({ _id });
+    MediaObjects.update({ _id }, { $set: { fileName, url, ...assetData } });
+    return MediaObjects.findOne({ _id });
   }
 };
 

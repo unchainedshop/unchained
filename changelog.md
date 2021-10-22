@@ -1,8 +1,10 @@
 # vNEXT
 
 This is our first major release, it covers all features needed to build highly flexible e-commerce solutions.
+ 
 
 ## Breaking changes
+- [core] NEW core module `core-files-next` that uses [minio cloud object storage](https://min.io/) compatible with [amazon s3 cloud storage api](https://aws.amazon.com/s3/). This update provides a scalable files storage solution for all the projects that use it. All the previous file management APIs now use this module under the hood in addition there are few new endpoint added that support signed put url based upload namely `prepareUserAvatarUpload`, `prepareProductMediaUpload`, `prepareAssortmentMediaUpload` and `confirmMediaUpload` that can be used to generate signed PUT url for file upload. to learn more on how to use this module refer to [docs](https://docs.unchained.shop/)
 - [core] Upgrade to new GraphQL multi-part standard with graphql-upload pinning to v12, please use the latest graphql-upload-client
 - [core] Environment variables `LANG`, `COUNTRY` & `CURRENCY` have to be prefixed with `UNCHAINED_` to prevent a conflict that may occur with other systems environment variables.
 - [core] upsertLocalizedText for products and assortments does not automatically change the slug anymore, explicitly set it by providing a slug property

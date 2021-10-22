@@ -9,14 +9,36 @@ import { emit } from 'meteor/unchained:core-events';
 
 import { Locale } from 'locale';
 import { log } from 'meteor/unchained:core-logger';
+import {
+  uploadObjectStream,
+  uploadFileFromURL,
+  createUploadContainer,
+} from 'meteor/unchained:core-files-next';
 import { makeBreadcrumbsBuilder } from '../../breadcrumbs';
 import * as Collections from './collections';
 import settings from '../../settings';
-import { AssortmentDocuments, AssortmentMedia } from '../assortment-media';
+import { AssortmentMedia } from '../assortment-media';
 
 const eqSet = (as, bs) => {
   return [...as].join(',') === [...bs].join(',');
 };
+
+const assortmentMediaUploads = createUploadContainer(
+  'assortment-media',
+  async (
+    mediaTicketUploadId,
+    linkedAssortmentMediaId,
+    { authorId, ...mediaData }
+  ) => {
+    const result = AssortmentMedia.createMedia({
+      ...mediaData,
+      assortmentId: linkedAssortmentMediaId,
+      authorId,
+      mediaId: mediaTicketUploadId,
+    });
+    return result;
+  }
+);
 
 const buildFindSelector = ({
   slugs = [],
@@ -293,6 +315,18 @@ Collections.AssortmentProducts.removeProduct = (
   return Collections.AssortmentProducts.removeProducts(
     { _id: assortmentProductId },
     options
+  );
+};
+
+AssortmentMedia.createSignedUploadURL = async (
+  { mediaName, assortmentId },
+  { userId, ...context }
+) => {
+  return assortmentMediaUploads.createSignedURL(
+    assortmentId,
+    mediaName,
+    { authorId: userId },
+    context
   );
 };
 
@@ -638,16 +672,14 @@ Collections.Assortments.helpers({
     ...options
   }) {
     const fileLoader = rawFile
-      ? AssortmentDocuments.insertWithRemoteFile({
-          file: rawFile,
+      ? uploadObjectStream('assortment-media', rawFile, {
           userId: authorId,
         })
-      : AssortmentDocuments.insertWithRemoteURL({
-          url: href,
-          fileName: name,
-          userId: authorId,
-          ...options,
-        });
+      : uploadFileFromURL(
+          'assortment-media',
+          { fileLink: href, fileName: name },
+          { userId: authorId, ...options }
+        );
     const file = Promise.await(fileLoader);
     const assortmentMedia = this.addMediaLink({
       mediaId: file._id,

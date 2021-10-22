@@ -4,6 +4,7 @@ import { createUploadLink } from 'apollo-upload-client';
 import gql from 'graphql-tag';
 import fetch from 'isomorphic-unfetch';
 import FormData from 'form-data';
+import { error } from 'console';
 import seedLocaleData from './seeds/locale-data';
 import seedUsers, { ADMIN_TOKEN } from './seeds/users';
 import seedProducts from './seeds/products';
@@ -128,5 +129,18 @@ export const uploadFormData = async ({ token = '', body }) => {
     ...options,
     method: 'POST',
     body,
-  }).then((response) => response.json());
+  })
+    .then((response) => response.json())
+    .catch((e) => console.log(e));
+};
+
+export const uploadToMinio = async (file, url) => {
+  const response = await fetch(url, {
+    method: 'PUT',
+    body: file,
+  });
+  if (response.ok) {
+    return Promise.resolve({});
+  }
+  return Promise.reject(new Error('error'));
 };

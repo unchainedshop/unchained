@@ -2,17 +2,16 @@ import 'meteor/dburles:collection-helpers';
 import { findLocalizedText } from 'meteor/unchained:utils';
 import { Locale } from 'locale';
 import { emit } from 'meteor/unchained:core-events';
-import {
-  AssortmentMedia,
-  AssortmentDocuments,
-  AssortmentMediaTexts,
-} from './collections';
+import { removeObjects, MediaObjects } from 'meteor/unchained:core-files-next';
+import { AssortmentMedia, AssortmentMediaTexts } from './collections';
 
 AssortmentMedia.findAssortmentMedia = ({ assortmentMediaId }) => {
   return AssortmentMedia.findOne({ _id: assortmentMediaId });
 };
 
-AssortmentMedia.removeAssortmentMedia = ({ assortmentMediaId }) => {
+AssortmentMedia.removeAssortmentMedia = async ({ assortmentMediaId }) => {
+  const media = AssortmentMedia.findOne({ _id: assortmentMediaId });
+  await removeObjects(media.mediaId);
   const result = AssortmentMedia.remove({ _id: assortmentMediaId });
   emit('ASSORTMENT_REMOVE_MEDIA', { assortmentMediaId });
   return result;
@@ -60,8 +59,7 @@ AssortmentMedia.helpers({
     return AssortmentMedia.getLocalizedTexts(this._id, parsedLocale);
   },
   file() {
-    const media = AssortmentDocuments.findOne({ _id: this.mediaId });
-    return media;
+    return MediaObjects.findOne({ _id: this.mediaId });
   },
 });
 

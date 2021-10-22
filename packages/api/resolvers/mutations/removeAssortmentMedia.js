@@ -2,7 +2,7 @@ import { log } from 'meteor/unchained:core-logger';
 import { AssortmentMedia } from 'meteor/unchained:core-assortments';
 import { AssortmentMediaNotFoundError, InvalidIdError } from '../../errors';
 
-export default function removeAssortmentMedia(
+export default async function removeAssortmentMedia(
   root,
   { assortmentMediaId },
   { userId }
@@ -12,8 +12,9 @@ export default function removeAssortmentMedia(
   const assortmentMedia = AssortmentMedia.findAssortmentMedia({
     assortmentMediaId,
   });
+  console.log(assortmentMediaId);
   if (!assortmentMedia)
     throw new AssortmentMediaNotFoundError({ assortmentMediaId });
-  AssortmentMedia.removeAssortmentMedia({ assortmentMediaId });
+  await AssortmentMedia.removeAssortmentMedia({ assortmentMediaId });
   return assortmentMedia;
 }

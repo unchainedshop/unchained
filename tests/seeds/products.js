@@ -178,40 +178,23 @@ export const FrenchProductText = {
 };
 
 export const JpegMedia = {
-  _id: 'jpeg',
-  name: 'iu.jpeg',
-  extension: 'jpeg',
-  ext: 'jpeg',
-  extensionWithDot: '.jpeg',
-  path: 'assets/app/uploads/media/jpeg.jpeg',
-  meta: {},
-  type: 'image/jpeg',
-  mime: 'image/jpeg',
-  'mime-type': 'image/jpeg',
-  size: 1745971,
-  userId: 'admin',
-  versions: {
-    original: {
-      path: 'assets/app/uploads/media/jpeg.jpeg',
-      size: 1745971,
-      type: 'image/jpeg',
-      extension: 'jpeg',
-    },
+  _id: 'product-media%2Fe1674b3a9b69990d532d247382207005a276bb859a22829777ecaa5d6d3d036d',
+  url: 'https://console.minio.dev.shared.ucc.dev/unchained-test-bucket/product-media/e1674b3a9b69990d532d247382207005a276bb859a22829777ecaa5d6d3d036d.png',
+  name: 'Screenshot from 2021-09-07 21-20-22.png',
+  meta: {
+    mediaId: '4CZA6tzAuKuJx5WQc',
+    authorId: 'FhMH2xKuTGW20uO8k',
   },
-  _downloadRoute: '/cdn/storage',
-  _collectionName: 'media',
-  isVideo: false,
-  isAudio: false,
-  isImage: true,
-  isText: false,
-  isJSON: false,
-  isPDF: false,
-  _storagePath: 'assets/app/uploads/media',
+  size: '779663',
+  type: 'image/jpeg',
+  expires: new Date('2021-10-12T18:08:58.218Z'),
+  created: new Date('2021-10-12T18:07:31.818Z'),
 };
 
 export const JpegProductMedia = {
   _id: 'jpeg-product',
-  mediaId: 'jpeg',
+  mediaId:
+    'product-media%2Fe1674b3a9b69990d532d247382207005a276bb859a22829777ecaa5d6d3d036d',
   tags: [],
   sortKey: 1,
   productId: 'simpleproduct',
@@ -604,7 +587,7 @@ export default async function seedProducts(db) {
     .collection('product_media_texts')
     .findOrInsertOne(FrenchJpegProductMediaText);
 
-  await db.collection('media').findOrInsertOne(JpegMedia);
+  await db.collection('media_objects').findOrInsertOne(JpegMedia);
   await db.collection('product_texts').findOrInsertOne(GermanPlanProductText);
   await db.collection('product_variations').insertMany(ProductVariations);
   await db

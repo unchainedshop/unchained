@@ -2,7 +2,6 @@ import User from './user';
 import LoginMethodResponse from './login-method-response';
 import Product from './product';
 import Color from './color';
-import Media from './media';
 import SimpleProduct from './simple-product';
 import ConfigurableProduct from './configurable-product';
 import PlanProduct from './plan-product';
@@ -65,7 +64,6 @@ export default {
   Country,
   Language,
   Color,
-  Media,
   Order,
   Bookmark,
   PaymentProvider,
