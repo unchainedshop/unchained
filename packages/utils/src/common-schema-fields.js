@@ -24,7 +24,7 @@ export const logFields = {
 
 export const timestampFields = {
   created: { type: Date, required: true },
-  createdBy: { type: String, required: true },
+  createdBy: { type: String, required: false }, // Logically it is required but for backwards compatibility it's set to optional
   updated: { type: Date, required: false },
   updatedBy: { type: String, required: false },
   deleted: { type: Date, required: false },

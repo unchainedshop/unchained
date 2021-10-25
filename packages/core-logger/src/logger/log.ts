@@ -1,4 +1,4 @@
-import { LogOptions } from 'unchained-core-types';
+import { LogOptions } from 'unchained-core-types/lib/logs';
 import { Logger } from './Logger';
 import { LogLevel } from './LogLevel';
 

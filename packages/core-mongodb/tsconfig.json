@@ -1,0 +1,22 @@
+{
+  "compilerOptions": {
+    "allowJs": true,
+    "allowSyntheticDefaultImports": true,
+    "declaration": true,
+    "esModuleInterop": true,
+    "experimentalDecorators": true,
+    "forceConsistentCasingInFileNames": true,
+    "incremental": true,
+    "lib": ["esnext"],
+    "module": "esnext",
+    "moduleResolution": "node",
+    "noErrorTruncation": true,
+    "noImplicitReturns": true,
+    "noUnusedLocals": false,
+    "outDir": "./lib",
+    "preserveWatchOutput": true,
+    "skipLibCheck": true,
+    "sourceMap": true,
+  },
+  "include": ["src"]
+}

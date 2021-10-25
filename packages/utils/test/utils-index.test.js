@@ -1,14 +1,14 @@
 import { assert } from 'chai';
 import {
-  Schemas,
   findLocalizedText,
-  objectInvert,
   findPreservingIds,
   findUnusedSlug,
-  slugify,
-  getContext,
-  pipePromises,
+  generateDbMutations,
   generateRandomHash,
+  objectInvert,
+  pipePromises,
+  Schemas,
+  slugify,
 } from 'meteor/unchained:utils';
 
 import {
@@ -17,6 +17,8 @@ import {
   resolveBestCountry,
   resolveUserRemoteAddress,
 } from 'meteor/unchained:utils';
+
+import './generate-db-mutations.test';
 
 describe('Test exports', () => {
   it('Schemas', () => {
@@ -37,8 +39,8 @@ describe('Test exports', () => {
     assert.isFunction(findPreservingIds);
     assert.isFunction(findUnusedSlug);
     assert.isFunction(slugify);
-    assert.isFunction(getContext);
     assert.isFunction(pipePromises);
     assert.isFunction(generateRandomHash);
+    assert.isFunction(generateDbMutations);
   });
 });

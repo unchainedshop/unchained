@@ -1,5 +1,5 @@
 import { assert } from 'chai';
-import { db } from 'meteor/unchained:core-mongodb';
+import { initDb } from 'meteor/unchained:core-mongodb';
 
 import {
   log,
@@ -12,9 +12,9 @@ import {
 describe('Test exports', () => {
   it('Configure Logs', async () => {
     assert.isDefined(configureLogs);
+    const db = initDb()
     const module = await configureLogs({ db });
 
-    console.log('MODULE', module)
     assert.ok(module);
     assert.isFunction(module.log);
     assert.isFunction(module.findLogs);

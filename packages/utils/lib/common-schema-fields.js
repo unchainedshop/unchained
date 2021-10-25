@@ -22,7 +22,7 @@ export var logFields = {
 };
 export var timestampFields = {
     created: { type: Date, required: true },
-    createdBy: { type: String, required: true },
+    createdBy: { type: String, required: false },
     updated: { type: Date, required: false },
     updatedBy: { type: String, required: false },
     deleted: { type: Date, required: false },

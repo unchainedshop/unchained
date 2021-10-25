@@ -1,3 +1,14 @@
+var __assign = (this && this.__assign) || function () {
+    __assign = Object.assign || function(t) {
+        for (var s, i = 1, n = arguments.length; i < n; i++) {
+            s = arguments[i];
+            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+                t[p] = s[p];
+        }
+        return t;
+    };
+    return __assign.apply(this, arguments);
+};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -34,32 +45,51 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
+import { generateDbMutations } from 'unchained-utils';
+import { LogsCollection } from '../db/LogsCollection';
+import { LogsSchema } from '../db/LogsSchema';
 import { log } from '../logger/log';
-export var configureLogsModule = function (Logs) { return ({
-    log: function (message, options) { return log(Logs, message, options); },
-    findLogs: function (_a) {
-        var limit = _a.limit, offset = _a.offset, _b = _a.sort, sort = _b === void 0 ? {
-            created: -1
-        } : _b;
-        return new Promise(function (resolve) {
-            var logs = Logs.find({}, {
-                skip: offset,
-                limit: limit,
-                sort: sort
-            }).fetch();
-            resolve(logs);
-        });
-    },
-    count: function () { return __awaiter(void 0, void 0, void 0, function () {
-        var count;
-        return __generator(this, function (_a) {
-            switch (_a.label) {
-                case 0: return [4 /*yield*/, Logs.rawCollection().countDocuments()];
+export var configureLogsModule = function (_a) {
+    var db = _a.db;
+    return __awaiter(void 0, void 0, void 0, function () {
+        var Logs;
+        return __generator(this, function (_b) {
+            switch (_b.label) {
+                case 0: return [4 /*yield*/, LogsCollection(db)];
                 case 1:
-                    count = _a.sent();
-                    return [2 /*return*/, count];
+                    Logs = _b.sent();
+                    return [2 /*return*/, __assign({ log: function (message, options) { return log(Logs, message, options); }, findLogs: function (_a) {
+                                var limit = _a.limit, offset = _a.offset, _b = _a.sort, sort = _b === void 0 ? {
+                                    created: -1
+                                } : _b;
+                                return __awaiter(void 0, void 0, void 0, function () {
+                                    var logs;
+                                    return __generator(this, function (_c) {
+                                        switch (_c.label) {
+                                            case 0:
+                                                logs = Logs.find({}, {
+                                                    skip: offset,
+                                                    limit: limit,
+                                                    sort: sort
+                                                });
+                                                return [4 /*yield*/, logs.toArray()];
+                                            case 1: return [2 /*return*/, _c.sent()];
+                                        }
+                                    });
+                                });
+                            }, count: function () { return __awaiter(void 0, void 0, void 0, function () {
+                                var count;
+                                return __generator(this, function (_a) {
+                                    switch (_a.label) {
+                                        case 0: return [4 /*yield*/, Logs.countDocuments()];
+                                        case 1:
+                                            count = _a.sent();
+                                            return [2 /*return*/, count];
+                                    }
+                                });
+                            }); } }, generateDbMutations(Logs, LogsSchema))];
             }
         });
-    }); }
-}); };
+    });
+};
 //# sourceMappingURL=configureLogsModule.js.map

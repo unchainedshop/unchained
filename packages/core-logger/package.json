@@ -1,11 +1,12 @@
 {
   "name": "unchained-core-logger",
   "version": "1.0.2",
-  "main": "lib/loggerIndex.js",
-  "types": "lib/loggerIndex.d.ts",
+  "main": "lib/logger-index.js",
+  "types": "lib/logger-index.d.ts",
   "type": "module",
   "scripts": {
     "build": "tsc",
+    "link:core": "npm link unchained-utils unchained-core-types",
     "test": "cross-env METEOR_PACKAGE_DIRS=../ TEST_CLIENT=0 TEST_WATCH=1 meteor test-packages ./ --driver-package meteortesting:mocha --port 4200"
   },
   "repository": {

@@ -1,2 +1,2 @@
-export { db } from './db/db'
+export { db, initDb } from './db/db';
 export { Collection2 } from './db/configureCollection2';

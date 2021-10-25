@@ -1,6 +1,6 @@
 Package.describe({
   name: 'unchained:core-mongodb',
-  version: '1.0.0-beta12',
+  version: '1.0.0-beta14',
   summary: 'Unchained Engine Core: MongoDB',
   git: 'https://github.com/unchainedshop/unchained',
   documentation: 'README.md',
@@ -22,7 +22,7 @@ Package.onUse((api) => {
   api.use('raix:eventemitter');
   api.use('typescript@4.1.2');
 
-  api.mainModule('mongodb.js');
+  api.mainModule('src/mongodb-index.js');
 });
 
 Package.onTest((api) => {
@@ -30,7 +30,7 @@ Package.onTest((api) => {
   api.use('ecmascript');
   api.use('typescript@4.1.2');
 
-  api.use('unchained:core-mongodb@1.0.0-beta12');
+  api.use('unchained:core-mongodb@1.0.0-beta14');
 
-  api.mainModule('mongodb.tests.js');
+  api.mainModule('test/mongodb-index.tests.js');
 });

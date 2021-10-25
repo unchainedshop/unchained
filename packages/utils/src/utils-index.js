@@ -1,6 +1,11 @@
 import Address from './address-schema';
 import Contact from './contact-schema';
-import * as schemaFields from './common-schema-fields';
+import {
+  timestampFields,
+  TimestampFields,
+  contextFields,
+  logFields,
+} from './common-schema-fields';
 
 export { default as findLocalizedText } from './find-localized-text';
 export * from './locale-helpers';
@@ -10,10 +15,14 @@ export { default as findUnusedSlug } from './find-unused-slug';
 export { default as slugify } from './slugify';
 export { default as pipePromises } from './pipe-promises';
 export { default as generateRandomHash } from './generate-random-hash';
-export { checkId } from './checkId'
+export { checkId } from './checkId';
+export { generateDbMutations } from './generate-db-mutations';
 
+export { TimestampFields }
 const Schemas = {
-  ...schemaFields,
+  timestampFields,
+  contextFields,
+  logFields,
   Address,
   Contact,
 };

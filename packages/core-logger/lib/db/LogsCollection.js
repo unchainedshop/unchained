@@ -34,15 +34,13 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-import { LogsSchema } from './LogsSchema';
 var ONE_DAY_IN_SECONDS = 86400;
 export var LogsCollection = function (db) { return __awaiter(void 0, void 0, void 0, function () {
     var Logs;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
-                Logs = new db.Collection('logs');
-                Logs.attachSchema(LogsSchema);
+                Logs = db.collection('logs');
                 return [4 /*yield*/, Logs.createIndex({ created: -1 }, { expireAfterSeconds: 2 * ONE_DAY_IN_SECONDS })];
             case 1:
                 _a.sent();

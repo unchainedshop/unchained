@@ -34,24 +34,24 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-import { LogsCollection } from './db/LogsCollection';
 import { createLogger, format, transports } from './logger/createLogger';
-import { configureLogsModule } from './module/configureLogsModule';
 import { LogLevel } from './logger/LogLevel';
+import { configureLogsModule } from './module/configureLogsModule';
+var log = function (message) { return console.log(message); };
 var configureLogs = function (_a) {
     var db = _a.db;
     return __awaiter(void 0, void 0, void 0, function () {
-        var Logs, module;
+        var module;
         return __generator(this, function (_b) {
             switch (_b.label) {
-                case 0: return [4 /*yield*/, LogsCollection(db)];
+                case 0: return [4 /*yield*/, configureLogsModule({ db: db })];
                 case 1:
-                    Logs = _b.sent();
-                    module = configureLogsModule(Logs);
+                    module = _b.sent();
+                    log = module.log;
                     return [2 /*return*/, module];
             }
         });
     });
 };
-export { configureLogs, createLogger, format, transports, LogLevel };
-//# sourceMappingURL=logs.js.map
+export { log, configureLogs, createLogger, format, transports, LogLevel };
+//# sourceMappingURL=logger-index.js.map

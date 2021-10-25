@@ -1,5 +1,5 @@
 import { assert } from "chai"
-import { db, Collection2 } from "meteor/unchained:core-mongodb"
+import { db, initDb } from "meteor/unchained:core-mongodb"
 import SimpleSchema from "simpl-schema"
 
 describe('Test exports', () => {
@@ -17,7 +17,11 @@ describe('Test exports', () => {
     TestCollection.attachSchema(new SimpleSchema({ name: String }));
     TestCollection.createIndex({ name: 1 }, { expireAfterSeconds: 120 })
   });
-  it('Collection2', () => {
-    assert.isDefined(Collection2);
+  it('initDb', () => {
+    const rawDb = initDb()
+    assert.isDefined(rawDb);
+
+    const testCollection = rawDb.collection('test')
+    assert.ok(testCollection)
   });
 })

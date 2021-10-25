@@ -9,8 +9,6 @@ Package.describe({
 Npm.depends({
   'safe-stable-stringify': '1.1.0',
   'simpl-schema': '1.12.0',
-  'unchained-core-mongodb-utils': '1.0.0',
-  'unchained-utils': '1.0.1',
   winston: '3.3.3',
   'winston-transport': '4.4.0',
 });
@@ -19,7 +17,7 @@ Package.onUse((api) => {
   api.versionsFrom('2.2');
   api.use('ecmascript');
   
-  api.mainModule('lib/loggerIndex.js', 'server');
+  api.mainModule('lib/logger-index.js', 'server');
 });
 
 Package.onTest((api) => {
@@ -30,5 +28,5 @@ Package.onTest((api) => {
   api.use('unchained:core-mongodb@1.0.0-beta14');
   api.use('unchained:core-logger@1.0.0-beta14');
 
-  api.mainModule('test/loggerIndex.test.js');
+  api.mainModule('test/logger-index.test.js');
 });
