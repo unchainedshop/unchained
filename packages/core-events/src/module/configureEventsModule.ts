@@ -1,8 +1,10 @@
-import { EventsModule } from 'unchained-core-types';
+import { Filter } from 'unchained-core-types';
+import { Event, EventsModule } from 'unchained-core-types/lib/events';
+import { ModuleInput } from 'unchained-core-types/types/common';
+import { generateDbMutations } from 'unchained-utils';
+import { EventsCollection } from '../db/EventsCollection';
 import { EventsSchema } from '../db/EventsSchema';
 import { configureEventDirector } from '../director/EventDirector';
-import { checkId } from 'unchained-utils';
-import { ModuleInput } from '../../../@types/unchained-core-types/types/common';
 
 type FindQuery = {
   type?: string;
@@ -11,18 +13,22 @@ const buildFindSelector = ({ type }: FindQuery) => {
   return type ? { type } : {};
 };
 
-export const configureEventsModule = ({
+export const configureEventsModule = async ({
   db,
-  userId,
-}: ModuleInput): EventsModule => {
-  const Events = new db.Collection('events');
+}: ModuleInput): Promise<EventsModule> => {
+  console.log('INIT MODULE', db);
+  const Events = await EventsCollection(db);
 
   return {
     ...configureEventDirector(Events),
+
     findEvent: async ({ eventId, ...rest }, options) => {
       const selector = eventId ? { _id: eventId } : rest;
       if (!Object.keys(selector)?.length) return null;
-      return await Events.findOne(selector, options);
+      return await Events.findOne(
+        selector as unknown as Filter<Event>,
+        options
+      );
     },
 
     findEvents: async ({
@@ -33,39 +39,20 @@ export const configureEventsModule = ({
       },
       ...query
     }) => {
-      return await Events.find(buildFindSelector(query as FindQuery), {
+      const events = Events.find(buildFindSelector(query as FindQuery), {
         skip: offset,
         limit,
         sort,
-      }).fetch();
+      });
+
+      return await events.toArray();
     },
 
     count: async (query) => {
-      const count = await Events.rawCollection().countDocuments(
-        buildFindSelector(query)
-      );
+      const count = await Events.countDocuments(buildFindSelector(query));
       return count;
     },
-    insert: async (doc) => {
-      const eventValues = EventsSchema.clean(doc);
-      eventValues.created = new Date();
-      eventValues.createdBy = userId;
-      EventsSchema.validate(eventValues);
-      const eventId = await Events.insert(eventValues);
-      return eventId;
-    },
-    update: async (eventId, doc) => {
-      checkId(eventId);
-      const eventValues = EventsSchema.clean(doc, { isModifier: true });
-      eventValues.$set.updated = new Date();
-      eventValues.$set.updatedBy = userId;
 
-      EventsSchema.validate(eventValues, { modifier: true });
-      await Events.update(eventId, eventValues);
-    },
-    remove: async (eventId) => {
-      checkId(eventId);
-      Events.remove(eventId);
-    },
+    ...generateDbMutations(Events, EventsSchema),
   };
 };

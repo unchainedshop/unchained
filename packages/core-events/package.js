@@ -17,7 +17,7 @@ Package.onUse((api) => {
   api.use('ecmascript');
   api.use('typescript@4.1.2');
 
-  api.mainModule('lib/eventsIndex.js');
+  api.mainModule('lib/events-index.js', 'server');
 });
 
 Package.onTest((api) => {
@@ -28,5 +28,5 @@ Package.onTest((api) => {
   api.use('unchained:core-mongodb@1.0.0-beta14');
   api.use('unchained:core-events@1.0.0-beta14');
 
-  api.mainModule('test/eventsIndex.test.js');
+  api.mainModule('test/events-index.test.js');
 });

@@ -1,5 +1,6 @@
 import { createLogger } from 'unchained-core-logger';
-import { Collection, EventDirector as EventDirectorType } from 'unchained-core-types';
+import { Collection } from 'unchained-core-types';
+import { Event, EventDirector as EventDirectorType } from 'unchained-core-types/lib/events';
 
 const logger = createLogger('unchained:core-events');
 
@@ -25,11 +26,13 @@ export interface EventAdapter {
 const _registeredEvents = new Set();
 const _registeredCallbacks = new Set();
 
-let _adapter: EventAdapter
+let _adapter: EventAdapter;
 let _contextNormalizer = defaultNormalizer;
 let _Events;
 
-export const EventDirector: EventDirectorType & { getEventAdapter: () => EventAdapter } = {
+export const EventDirector: EventDirectorType & {
+  getEventAdapter: () => EventAdapter;
+} = {
   registerEvents: (events: string[]): void => {
     if (events.length) {
       events.forEach((e) => _registeredEvents.add(e));
@@ -100,8 +103,10 @@ export const {
   subscribe,
 } = EventDirector;
 
-export const configureEventDirector = (Events: Collection): EventDirectorType => {
+export const configureEventDirector = (
+  Events: Collection<Event>
+): EventDirectorType => {
   _Events = Events;
 
-  return EventDirector
+  return EventDirector;
 };

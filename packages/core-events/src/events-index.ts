@@ -10,7 +10,8 @@ let emitEvent: EventsModule['emit'] = EventDirector.emit
 let registerEvents: EventsModule['registerEvents'] = EventDirector.registerEvents
 
 const configureEvents = async ({ db }: ModuleInput): Promise<EventsModule> => {
-  const module = configureEventsModule({ db });
+  console.log('INIT EVENTS', db)
+  const module = await configureEventsModule({ db });
 
   module.registerEvents(GLOBAL_EVENTS);
 
