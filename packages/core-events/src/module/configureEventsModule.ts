@@ -16,7 +16,6 @@ const buildFindSelector = ({ type }: FindQuery) => {
 export const configureEventsModule = async ({
   db,
 }: ModuleInput): Promise<EventsModule> => {
-  console.log('INIT MODULE', db);
   const Events = await EventsCollection(db);
 
   return {

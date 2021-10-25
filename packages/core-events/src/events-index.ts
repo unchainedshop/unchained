@@ -1,5 +1,5 @@
 import { EventsModule } from 'unchained-core-types/types/events';
-import { ModuleInput } from '../../@types/unchained-core-types/types/common';
+import { ModuleInput } from 'unchained-core-types/types/common';
 import { configureEventsModule } from './module/configureEventsModule';
 
 import { EventDirector, EventAdapter } from './director/EventDirector'
@@ -10,7 +10,6 @@ let emitEvent: EventsModule['emit'] = EventDirector.emit
 let registerEvents: EventsModule['registerEvents'] = EventDirector.registerEvents
 
 const configureEvents = async ({ db }: ModuleInput): Promise<EventsModule> => {
-  console.log('INIT EVENTS', db)
   const module = await configureEventsModule({ db });
 
   module.registerEvents(GLOBAL_EVENTS);
