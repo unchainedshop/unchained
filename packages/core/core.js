@@ -1,4 +1,4 @@
-import { db } from 'meteor/unchained:core-mongodb';
+import { initDb } from 'meteor/unchained:core-mongodb';
 
 // import { initDB } from 'unchained-core-mongodb';
 
@@ -24,8 +24,6 @@ import { configureBookmarksModule, bookmarkServices } from 'unchained-core-bookm
 import { configureEvents } from 'unchained-core-events';
 import { configureLogs } from 'unchained-core-logger';
 
-// import { bookmarkServices } from 'meteor/unchained:bookmark-services';
-
 export const initCore = async ({
   modules = {},
   migrationRepository,
@@ -35,7 +33,7 @@ export const initCore = async ({
     migrationRepository,
   };
 
-  // const db = connectDb() // MongoInternal
+  const db = initDb()
   
   const logs = await configureLogs({ db });
   const events = await configureEvents({ db });

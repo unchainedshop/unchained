@@ -1,4 +1,5 @@
-import { Query, TimestampFields } from './common';
+import { ObjectId } from 'bson';
+import { ModuleMutations, Query, TimestampFields, _ID } from './common';
 
 type UserProductFilter = {
   userId: string;
@@ -6,11 +7,12 @@ type UserProductFilter = {
 };
 
 export type Bookmark = {
+  _id?: _ID;
   userId: string;
   productId: string;
 } & TimestampFields;
 
-export declare interface BookmarksModule {
+export declare interface BookmarksModule extends ModuleMutations<Bookmark> {
   findByUserId: (userId: string) => Promise<Array<Bookmark>>;
   findByUserIdAndProductId: (filter: UserProductFilter) => Promise<Bookmark>;
   findById: (bookmarkId: string) => Promise<Bookmark>;

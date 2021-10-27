@@ -16,7 +16,7 @@ Package.onUse((api) => {
   api.use('promise');
   api.use('typescript@4.1.2');
 
-  api.mainModule('lib/bookmarks.js', 'server');
+  api.mainModule('lib/bookmarks-index.js', 'server');
 });
 
 Package.onTest((api) => {
@@ -27,5 +27,5 @@ Package.onTest((api) => {
   api.use('unchained:core-mongodb@1.0.0-beta14');
   api.use('unchained:core-bookmarks@1.0.0-beta14');
 
-  api.mainModule('test/bookmarks.test.js');
+  api.mainModule('test/bookmarks-index.test.js');
 });

@@ -34,8 +34,8 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-import { ObjectId } from 'unchained-core-types';
-import { checkId } from './checkId';
+import { checkId } from './check-id';
+import { generateDbFilterById } from './generate-db-filter-by-id';
 export var generateDbMutations = function (collection, schema) {
     if (!collection)
         throw 'Collection is missing';
@@ -54,7 +54,9 @@ export var generateDbMutations = function (collection, schema) {
                         return [4 /*yield*/, collection.insertOne(values)];
                     case 1:
                         result = _a.sent();
-                        return [2 /*return*/, "" + result];
+                        return [2 /*return*/, typeof result.insertedId === 'string'
+                                ? result.insertedId
+                                : result.insertedId.toHexString()];
                 }
             });
         }); },
@@ -69,7 +71,7 @@ export var generateDbMutations = function (collection, schema) {
                         values.$set.updated = new Date();
                         values.$set.updatedBy = userId;
                         schema.validate(values, { modifier: true });
-                        filter = { _id: new ObjectId(_id) };
+                        filter = generateDbFilterById(_id);
                         return [4 /*yield*/, collection.updateOne(filter, values)];
                     case 1:
                         _a.sent();
@@ -83,11 +85,10 @@ export var generateDbMutations = function (collection, schema) {
                 switch (_a.label) {
                     case 0:
                         checkId(_id);
-                        filter = { _id: new ObjectId(_id) };
+                        filter = generateDbFilterById(_id);
                         return [4 /*yield*/, collection.deleteOne(filter)];
                     case 1:
                         result = _a.sent();
-                        console.log('RESULT', result);
                         return [2 /*return*/, result.deletedCount];
                 }
             });

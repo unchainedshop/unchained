@@ -1,14 +1,3 @@
-var __assign = (this && this.__assign) || function () {
-    __assign = Object.assign || function(t) {
-        for (var s, i = 1, n = arguments.length; i < n; i++) {
-            s = arguments[i];
-            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
-                t[p] = s[p];
-        }
-        return t;
-    };
-    return __assign.apply(this, arguments);
-};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -45,24 +34,15 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-var __rest = (this && this.__rest) || function (s, e) {
-    var t = {};
-    for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
-        t[p] = s[p];
-    if (s != null && typeof Object.getOwnPropertySymbols === "function")
-        for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) {
-            if (e.indexOf(p[i]) < 0 && Object.prototype.propertyIsEnumerable.call(s, p[i]))
-                t[p[i]] = s[p[i]];
-        }
-    return t;
-};
 import { emitEvent, registerEvents } from 'unchained-core-events';
+import { generateDbFilterById, generateDbMutations } from 'unchained-utils';
 import { BookmarksCollection } from '../db/BookmarksCollection';
+import { BookmarkSchema } from '../db/BookmarksSchema';
 var BOOKMARK_EVENTS = ['BOOKMARK_CREATE', 'BOOKMARK_REMOVE'];
 export var configureBookmarksModule = function (_a) {
     var db = _a.db;
     return __awaiter(void 0, void 0, void 0, function () {
-        var Bookmarks;
+        var Bookmarks, mutations;
         return __generator(this, function (_b) {
             switch (_b.label) {
                 case 0:
@@ -70,10 +50,11 @@ export var configureBookmarksModule = function (_a) {
                     return [4 /*yield*/, BookmarksCollection(db)];
                 case 1:
                     Bookmarks = _b.sent();
+                    mutations = generateDbMutations(Bookmarks, BookmarkSchema);
                     return [2 /*return*/, {
                             findByUserId: function (userId) { return __awaiter(void 0, void 0, void 0, function () { return __generator(this, function (_a) {
                                 switch (_a.label) {
-                                    case 0: return [4 /*yield*/, Bookmarks.find({ userId: userId }).fetch()];
+                                    case 0: return [4 /*yield*/, Bookmarks.find({ userId: userId }).toArray()];
                                     case 1: return [2 /*return*/, _a.sent()];
                                 }
                             }); }); },
@@ -86,52 +67,60 @@ export var configureBookmarksModule = function (_a) {
                                     }
                                 }); });
                             },
-                            findById: function (bookmarkId) { return __awaiter(void 0, void 0, void 0, function () { return __generator(this, function (_a) {
-                                switch (_a.label) {
-                                    case 0: return [4 /*yield*/, Bookmarks.findOne({ _id: bookmarkId })];
-                                    case 1: return [2 /*return*/, _a.sent()];
-                                }
-                            }); }); },
+                            findById: function (bookmarkId) { return __awaiter(void 0, void 0, void 0, function () {
+                                var filter, bookmark;
+                                return __generator(this, function (_a) {
+                                    switch (_a.label) {
+                                        case 0:
+                                            filter = generateDbFilterById(bookmarkId);
+                                            return [4 /*yield*/, Bookmarks.findOne({ _id: filter._id })];
+                                        case 1:
+                                            bookmark = _a.sent();
+                                            return [2 /*return*/, bookmark];
+                                    }
+                                });
+                            }); },
                             find: function (query) { return __awaiter(void 0, void 0, void 0, function () { return __generator(this, function (_a) {
                                 switch (_a.label) {
-                                    case 0: return [4 /*yield*/, Bookmarks.find(query).fetch()];
+                                    case 0: return [4 /*yield*/, Bookmarks.find(query).toArray()];
                                     case 1: return [2 /*return*/, _a.sent()];
                                 }
                             }); }); },
                             replaceUserId: function (fromUserId, toUserId) { return __awaiter(void 0, void 0, void 0, function () {
+                                var result;
                                 return __generator(this, function (_a) {
                                     switch (_a.label) {
-                                        case 0: return [4 /*yield*/, Bookmarks.update({ userId: fromUserId }, {
+                                        case 0: return [4 /*yield*/, Bookmarks.updateMany({ userId: fromUserId }, {
                                                 $set: {
                                                     userId: toUserId
                                                 }
-                                            }, {
-                                                multi: true
                                             })];
-                                        case 1: return [2 /*return*/, _a.sent()];
+                                        case 1:
+                                            result = _a.sent();
+                                            return [2 /*return*/, result.upsertedCount];
                                     }
                                 });
                             }); },
                             removeById: function (bookmarkId) { return __awaiter(void 0, void 0, void 0, function () {
-                                var result;
+                                var deletedCount;
                                 return __generator(this, function (_a) {
                                     switch (_a.label) {
-                                        case 0: return [4 /*yield*/, Bookmarks.remove({ _id: bookmarkId })];
+                                        case 0: return [4 /*yield*/, mutations["delete"](bookmarkId)];
                                         case 1:
-                                            result = _a.sent();
+                                            deletedCount = _a.sent();
                                             emitEvent('BOOKMARK_REMOVE', { bookmarkId: bookmarkId });
-                                            return [2 /*return*/, result];
+                                            console.log('DELETE', deletedCount);
+                                            return [2 /*return*/, deletedCount];
                                     }
                                 });
                             }); },
-                            create: function (_a) { return __awaiter(void 0, void 0, void 0, function () {
+                            create: function (doc, userId) { return __awaiter(void 0, void 0, void 0, function () {
                                 var bookmarkId;
-                                var userId = _a.userId, productId = _a.productId, rest = __rest(_a, ["userId", "productId"]);
-                                return __generator(this, function (_b) {
-                                    switch (_b.label) {
-                                        case 0: return [4 /*yield*/, Bookmarks.insert(__assign(__assign({}, rest), { created: new Date(), userId: userId, productId: productId }))];
+                                return __generator(this, function (_a) {
+                                    switch (_a.label) {
+                                        case 0: return [4 /*yield*/, mutations.create(doc, userId)];
                                         case 1:
-                                            bookmarkId = _b.sent();
+                                            bookmarkId = _a.sent();
                                             emitEvent('BOOKMARK_CREATE', { bookmarkId: bookmarkId });
                                             return [2 /*return*/, bookmarkId];
                                     }
@@ -160,7 +149,9 @@ export var configureBookmarksModule = function (_a) {
                                         }
                                     });
                                 });
-                            }
+                            },
+                            update: mutations.update,
+                            "delete": mutations["delete"]
                         }];
             }
         });

@@ -6,7 +6,8 @@
     "type": "git",
     "url": "git+https://github.com/unchainedshop/unchained.git"
   },
-  "types": "types/index.d.ts",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
   "scripts": {
     "build": "tsc"
   },

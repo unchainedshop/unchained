@@ -1,11 +1,13 @@
 {
   "name": "unchained-core-bookmarks",
   "version": "1.0.1",
-  "main": "lib/bookmarksIndex.js",
-  "types": "lib/bookmarksIndex.d.ts",
+  "main": "lib/bookmarks-index.js",
+  "types": "lib/bookmarks-index.d.ts",
   "type": "module",
   "scripts": {
     "build": "tsc",
+    "watch": "tsc --watch",
+    "link:core": "npm link  unchained-utils unchained-core-events unchained-core-types",
     "test": "cross-env METEOR_PACKAGE_DIRS=../ TEST_CLIENT=0 TEST_WATCH=1 meteor test-packages ./ --driver-package meteortesting:mocha --port 4200"
   },
   "repository": {

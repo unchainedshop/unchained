@@ -1,8 +1,9 @@
 import SimpleSchema from 'simpl-schema';
-import { Collection, ModuleMutations, ObjectId } from 'unchained-core-types';
-import { checkId } from './checkId';
+import { Collection, ModuleMutations, _ID } from 'unchained-core-types';
+import { checkId } from './check-id';
+import { generateDbFilterById } from './generate-db-filter-by-id';
 
-export const generateDbMutations = <T extends {}>(
+export const generateDbMutations = <T extends { _id?: _ID }>(
   collection: Collection<T>,
   schema: SimpleSchema
 ): ModuleMutations<T> => {
@@ -15,7 +16,9 @@ export const generateDbMutations = <T extends {}>(
       values.createdBy = userId;
       schema.validate(values);
       const result = await collection.insertOne(values);
-      return `${result}`;
+      return typeof result.insertedId === 'string'
+        ? result.insertedId
+        : result.insertedId.toHexString();
     },
     update: async (_id, doc, userId) => {
       checkId(_id);
@@ -25,15 +28,14 @@ export const generateDbMutations = <T extends {}>(
       values.$set.updatedBy = userId;
 
       schema.validate(values, { modifier: true });
-      const filter = { _id: new ObjectId(_id) };
+      const filter = generateDbFilterById(_id);
       await collection.updateOne(filter, values);
     },
     delete: async (_id) => {
       checkId(_id);
-      const filter = { _id: new ObjectId(_id) };
+      const filter = generateDbFilterById(_id);
       const result = await collection.deleteOne(filter);
-      console.log('RESULT', result)
-      return result.deletedCount
+      return result.deletedCount;
     },
   };
 };

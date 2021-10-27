@@ -15,7 +15,9 @@ const testSchema = new SimpleSchema({
 
 const testCollection = {
   insertOne: () =>
-    new Promise((resolve) => resolve(new ObjectId('qwerASFF1234'))),
+    new Promise((resolve) =>
+      resolve({ insertedId: new ObjectId('qwerASFF1234') })
+    ),
   updateOne: () => new Promise((resolve) => resolve(null)),
   deleteOne: () => new Promise((resolve) => resolve({ deletedCount: 1 })),
 };

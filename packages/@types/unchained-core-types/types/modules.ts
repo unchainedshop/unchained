@@ -1,4 +1,4 @@
-import { EventsModule } from ".";
+import { EventsModule } from "./events";
 import { BookmarksModule } from "./bookmarks";
 import { LogsModule } from "./logs";
 

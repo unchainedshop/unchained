@@ -1,5 +1,6 @@
+import { Sort } from 'mongodb';
 import { LoggerOptions } from 'winston';
-import { TimestampFields, Update } from './common';
+import { ModuleMutations, TimestampFields, _ID } from './common';
 
 export enum LogLevel {
   Info = 'info',
@@ -9,6 +10,7 @@ export enum LogLevel {
 }
 
 export type Log = {
+  _id?: _ID;
   level: LogLevel;
   message: string;
   meta?: object;
@@ -18,24 +20,13 @@ export interface LogOptions extends LoggerOptions {
   level: LogLevel;
 }
 
-export declare interface LogsModule {
+export declare interface LogsModule extends ModuleMutations<Log> {
   log: (message: string, options: LogOptions) => void;
   findLogs: (params: {
     limit: number;
     offset: number;
-    sort?: object;
+    sort?: Sort;
   }) => Promise<Array<Log>>;
 
   count: () => Promise<number>;
-
-  insert: (doc: Log) => Promise<string>;
-  update: (eventId: string, doc: Update<Log>) => Promise<void>;
-  remove: (eventId: string) => Promise<void>;
-}
-
-declare module 'meteor/unchained:core-logger' {
-  function log(message: string, options?: LogOptions): void;
-  function createLogger(moduleName: string): void;
-
-  export { log, createLogger };
 }
