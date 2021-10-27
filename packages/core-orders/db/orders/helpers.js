@@ -16,14 +16,20 @@ import {
   OrderPricingSheet,
 } from 'meteor/unchained:core-pricing';
 import { emit } from 'meteor/unchained:core-events';
+import {
+  uploadObjectStream,
+  uploadFileFromURL,
+  MediaObjects,
+} from 'meteor/unchained:core-files-next';
+
 import { OrderStatus } from './schema';
 import { Orders } from './collections';
 import { OrderDeliveries } from '../order-deliveries/collections';
 import { OrderDiscounts } from '../order-discounts/collections';
 import { OrderPayments } from '../order-payments/collections';
-import { OrderDocuments } from '../order-documents/collections';
 import { OrderPositions } from '../order-positions/collections';
 import settings from '../../settings';
+import { updateOrderDocuments } from '../order-documents/helpers';
 
 const buildFindSelector = ({ includeCarts, queryString }) => {
   const selector = {};
@@ -605,28 +611,25 @@ Orders.helpers({
   addDocument(objOrString, meta, options = {}) {
     if (typeof objOrString === 'string' || objOrString instanceof String) {
       return Promise.await(
-        OrderDocuments.insertWithRemoteURL({
-          url: objOrString,
-          ...options,
-          meta: {
-            orderId: this._id,
-            ...meta,
-          },
-        })
+        uploadFileFromURL(
+          'order-documents',
+          { fileLink: objOrString },
+          {
+            ...options,
+            meta: {
+              orderId: this._id,
+              ...meta,
+            },
+          }
+        )
       );
     }
     const { rawFile, userId } = objOrString;
-    return Promise.await(
-      OrderDocuments.insertWithRemoteBuffer({
-        file: rawFile,
-        userId,
-        ...options,
-        meta: {
-          orderId: this._id,
-          ...meta,
-        },
-      })
-    );
+    return uploadObjectStream('order-documents', rawFile, {
+      orderId: this._id,
+      userId,
+      ...meta,
+    });
   },
   documents(options) {
     const { type } = options || {};
@@ -634,7 +637,7 @@ Orders.helpers({
     if (type) {
       selector['meta.type'] = type;
     }
-    return OrderDocuments.find(selector, { sort: { 'meta.date': -1 } }).each();
+    return MediaObjects.find(selector, { sort: { 'meta.date': -1 } }).fetch();
   },
   document(options) {
     const { type } = options || {};
@@ -642,7 +645,7 @@ Orders.helpers({
     if (type) {
       selector['meta.type'] = type;
     }
-    return OrderDocuments.findOne(selector, { sort: { 'meta.date': -1 } });
+    return MediaObjects.findOne(selector, { sort: { 'meta.date': -1 } });
   },
   country() {
     return Countries.findOne({ isoCode: this.countryCode });
@@ -829,7 +832,7 @@ Orders.updateStatus = ({ status, orderId, info = '' }) => {
       // It's okay if this fails as it is not
       // super-vital to the
       // checkout process
-      OrderDocuments.updateDocuments({
+      updateOrderDocuments({
         orderId,
         date: modifier.$set.confirmed || order.confirmed,
         ...modifier.$set,

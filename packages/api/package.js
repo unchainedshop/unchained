@@ -1,6 +1,6 @@
 Package.describe({
   name: 'unchained:api',
-  version: '1.0.0-beta14',
+  version: '1.0.0-beta15',
   summary: 'Unchained Engine: GraphQL API',
   git: 'https://github.com/unchainedshop/unchained',
   documentation: 'README.md',
@@ -13,6 +13,7 @@ Npm.depends({
   locale: '0.1.0',
   'lodash.isnumber': '3.0.3',
   'body-parser': '1.19.0',
+  'graphql-scalars': '1.9.0',
 });
 
 Package.onUse((api) => {
@@ -23,8 +24,8 @@ Package.onUse((api) => {
   api.use('check');
   api.use('mongo');
   api.use('typescript@4.1.2');
-  api.use('unchained:core@1.0.0-beta14');
-  api.use('unchained:roles@1.0.0-beta14');
+  api.use('unchained:core@1.0.0-beta15');
+  api.use('unchained:roles@1.0.0-beta15');
 
   api.mainModule('api.ts', 'server');
 });

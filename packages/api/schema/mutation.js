@@ -870,7 +870,7 @@ export default [
         priority: Int! = 0
         input: JSON
         originalWorkId: ID
-        scheduled: Date
+        scheduled: Timestamp
         retries: Int! = 20
       ): Work
 
@@ -897,8 +897,8 @@ export default [
         error: JSON
         success: Boolean
         worker: String
-        started: Date
-        finished: Date
+        started: Timestamp
+        finished: Timestamp
       ): Work!
 
       """
@@ -940,6 +940,24 @@ export default [
         orderPaymentId: ID!
         transactionContext: JSON
       ): String!
+
+      prepareProductMediaUpload(
+        mediaName: String!
+        productId: ID!
+      ): MediaUploadTicket!
+      prepareAssortmentMediaUpload(
+        mediaName: String!
+        assortmentId: ID!
+      ): MediaUploadTicket!
+      prepareUserAvatarUpload(
+        mediaName: String!
+        userId: ID
+      ): MediaUploadTicket!
+      confirmMediaUpload(
+        mediaUploadTicketId: ID!
+        size: Int!
+        type: String!
+      ): Media!
     }
   `,
 ];

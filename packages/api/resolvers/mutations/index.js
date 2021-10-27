@@ -44,6 +44,7 @@ import createProductVariationOption from './createProductVariationOption';
 import removeProductVariation from './removeProductVariation';
 import updateProductVariationTexts from './updateProductVariationTexts';
 import removeProductVariationOption from './removeProductVariationOption';
+import confirmMediaUpload from './confirmMediaUpload';
 import addProductMedia from './addProductMedia';
 import removeProductMedia from './removeProductMedia';
 import reorderProductMedia from './reorderProductMedia';
@@ -139,6 +140,9 @@ import pageView from './pageView';
 import reorderAssortmentMedia from './reorderAssortmentMedia';
 import removeAssortmentMedia from './removeAssortmentMedia';
 import updateAssortmentMediaTexts from './updateAssortmentMediaTexts';
+import prepareProductMediaUpload from './prepareProductMediaUpload';
+import prepareAssortmentMediaUpload from './prepareAssortmentMediaUpload';
+import prepareUserAvatarUpload from './prepareUserAvatarUpload';
 
 export default {
   logout,
@@ -161,6 +165,7 @@ export default {
   addEmail: acl(actions.updateUser)(addEmail),
   removeEmail: acl(actions.updateUser)(removeEmail),
   updateUserAvatar: acl(actions.updateUser)(updateUserAvatar),
+  prepareUserAvatarUpload: acl(actions.updateUser)(prepareUserAvatarUpload),
   updateUserProfile: acl(actions.updateUser)(updateUserProfile),
   setUserTags: acl(actions.manageUsers)(setUserTags),
   setPassword: acl(actions.manageUsers)(setPassword),
@@ -193,6 +198,10 @@ export default {
   updateProductTexts: acl(actions.manageProducts)(updateProductTexts),
   updateProductMediaTexts: acl(actions.manageProducts)(updateProductMediaTexts),
   addProductMedia: acl(actions.manageProducts)(addProductMedia),
+  confirmMediaUpload: acl(actions.manageProducts)(confirmMediaUpload),
+  prepareProductMediaUpload: acl(actions.manageProducts)(
+    prepareProductMediaUpload
+  ),
   reorderProductMedia: acl(actions.manageProducts)(reorderProductMedia),
   removeProductMedia: acl(actions.manageProducts)(removeProductMedia),
   updateProductCommerce: acl(actions.manageProducts)(updateProductCommerce),
@@ -298,6 +307,9 @@ export default {
 
   createAssortment: acl(actions.manageAssortments)(createAssortment),
   addAssortmentMedia: acl(actions.manageAssortments)(addAssortmentMedia),
+  prepareAssortmentMediaUpload: acl(actions.manageAssortments)(
+    prepareAssortmentMediaUpload
+  ),
   updateAssortment: acl(actions.manageAssortments)(updateAssortment),
   setBaseAssortment: acl(actions.manageAssortments)(setBaseAssortment),
   removeAssortment: acl(actions.manageAssortments)(removeAssortment),

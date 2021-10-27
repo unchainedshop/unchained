@@ -6,7 +6,6 @@ import settings from './settings';
 
 export * from './director';
 export * from './db/quotations/collections';
-export * from './db/quotation-documents/collections';
 export * from './db/quotations/schema';
 export * from './db/quotation-documents/schema';
 

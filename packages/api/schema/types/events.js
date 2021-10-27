@@ -6,7 +6,7 @@ export default [
       _id: ID!
       type: String!
       payload: JSON
-      created: Date!
+      created: Timestamp!
     }
   `,
 ];

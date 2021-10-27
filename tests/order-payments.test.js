@@ -505,6 +505,7 @@ describe('Order: Payments', () => {
           },
         },
       });
+
       expect(errors?.[0]?.extensions).toMatchObject({
         code: 'NoPermissionError',
       });

@@ -4,6 +4,7 @@ import {
   createLoggedInGraphqlFetch,
   createAnonymousGraphqlFetch,
   uploadFormData,
+  uploadToMinio,
 } from './helpers';
 import { ADMIN_TOKEN, USER_TOKEN } from './seeds/users';
 import { JpegProductMedia, SimpleProduct } from './seeds/products';
@@ -57,7 +58,7 @@ describe('ProductsVariation', () => {
       } = await uploadFormData({ token: ADMIN_TOKEN, body });
 
       expect(addProductMedia?.file.name).toEqual('image.jpg');
-    });
+    }, 99999);
 
     it('return ProductNotFoundError when passed non existing product ID', async () => {
       const body = new FormData();
@@ -109,6 +110,130 @@ describe('ProductsVariation', () => {
       const { errors } = await uploadFormData({ token: ADMIN_TOKEN, body });
 
       expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
+    });
+  });
+
+  describe('Mutation.prepareProductMediaUpload for admin user should', () => {
+    it('return a sign PUT url for media upload', async () => {
+      const {
+        data: { prepareProductMediaUpload },
+      } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation prepareProductMediaUpload(
+            $mediaName: String!
+            $productId: ID!
+          ) {
+            prepareProductMediaUpload(
+              mediaName: $mediaName
+              productId: $productId
+            ) {
+              _id
+              putURL
+              expires
+            }
+          }
+        `,
+        variables: {
+          mediaName: 'test-media',
+          productId: SimpleProduct._id,
+        },
+      });
+      expect(prepareProductMediaUpload.putURL).not.toBe(null);
+    }, 99999);
+
+    it('upload to minio successfully', async () => {
+      const {
+        data: { prepareProductMediaUpload },
+      } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation prepareProductMediaUpload(
+            $mediaName: String!
+            $productId: ID!
+          ) {
+            prepareProductMediaUpload(
+              mediaName: $mediaName
+              productId: $productId
+            ) {
+              _id
+              putURL
+              expires
+            }
+          }
+        `,
+        variables: {
+          mediaName: 'test-media',
+          productId: SimpleProduct._id,
+        },
+      });
+
+      await uploadToMinio(productMediaFile, prepareProductMediaUpload.putURL);
+
+      expect(prepareProductMediaUpload.putURL).not.toBe(null);
+    }, 99999);
+
+    it('link uploaded media file with product media successfully', async () => {
+      const {
+        data: { prepareProductMediaUpload },
+      } = await graphqlFetch(
+        {
+          query: /* GraphQL */ `
+            mutation prepareProductMediaUpload(
+              $mediaName: String!
+              $productId: ID!
+            ) {
+              prepareProductMediaUpload(
+                mediaName: $mediaName
+                productId: $productId
+              ) {
+                _id
+                putURL
+                expires
+              }
+            }
+          `,
+          variables: {
+            mediaName: 'test-media',
+            productId: SimpleProduct._id,
+          },
+        },
+        99999,
+      );
+
+      await uploadToMinio(productMediaFile, prepareProductMediaUpload.putURL);
+
+      const {
+        data: { confirmMediaUpload },
+      } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation confirmMediaUpload(
+            $mediaUploadTicketId: ID!
+            $size: Int!
+            $type: String!
+          ) {
+            confirmMediaUpload(
+              mediaUploadTicketId: $mediaUploadTicketId
+              size: $size
+              type: $type
+            ) {
+              _id
+              name
+              type
+              size
+            }
+          }
+        `,
+        variables: {
+          mediaUploadTicketId: prepareProductMediaUpload._id,
+          size: 8000,
+          type: 'image/jpg',
+        },
+      });
+      expect(confirmMediaUpload).toMatchObject({
+        _id: prepareProductMediaUpload._id,
+        name: 'test-media',
+        type: 'image/jpg',
+        size: 8000,
+      });
     });
   });
 
@@ -436,7 +561,7 @@ describe('ProductsVariation', () => {
       });
 
       expect(errors.length).toEqual(1);
-    });
+    }, 99999);
 
     it('return not found error when passed non existing productMediaId', async () => {
       const { errors } = await graphqlFetch({

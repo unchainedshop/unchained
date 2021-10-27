@@ -124,19 +124,19 @@ const EnrollmentHeader = ({ data, loading, terminateEnrollment }) => {
                 <List.Item>
                   <List.Icon name="add to calendar" />
                   <List.Content>
-                    Created: {created ? format(created, 'Pp') : 'n/a'}
+                    Created: {created ? format(new Date(created), 'Pp') : 'n/a'}
                   </List.Content>
                 </List.Item>
                 <List.Item>
                   <List.Icon name="calendar" />
                   <List.Content>
-                    Updated: {updated ? format(updated, 'Pp') : 'n/a'}
+                    Updated: {updated ? format(new Date(updated), 'Pp') : 'n/a'}
                   </List.Content>
                 </List.Item>
                 <List.Item>
                   <List.Icon name="plus cart" />
                   <List.Content>
-                    Expires: {expires ? format(expires, 'Pp') : 'n/a'}
+                    Expires: {expires ? format(new Date(expires), 'Pp') : 'n/a'}
                   </List.Content>
                 </List.Item>
               </List>

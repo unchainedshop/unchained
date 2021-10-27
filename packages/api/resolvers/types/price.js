@@ -1,3 +1,5 @@
+import accounting from 'accounting';
+
 export default {
   isTaxable({ isTaxable }) {
     return isTaxable || false;
@@ -8,7 +10,10 @@ export default {
   currency(obj) {
     return obj?.currencyCode || obj?.currency;
   },
-  amount({ amount }) {
-    return Math.round(amount);
+  amount(obj) {
+    if (obj.amount) {
+      return accounting.toFixed(obj.amount, 0);
+    }
+    return 0;
   },
 };

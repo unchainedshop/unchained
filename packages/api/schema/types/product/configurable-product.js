@@ -67,9 +67,9 @@ export default [
       sequence: Int!
       status: ProductStatus!
       tags: [String!]
-      created: Date
-      updated: Date
-      published: Date
+      created: DateTime
+      updated: DateTime
+      published: DateTime
       media(limit: Int = 10, offset: Int = 0, tags: [String!]): [ProductMedia!]!
       texts(forceLocale: String): ProductTexts
       assortmentPaths: [ProductAssortmentPath!]!

@@ -60,7 +60,9 @@ const QuotationList = ({ loading, updateHasMore, ...rest }) => (
           )}
         </Table.Cell>
         <Table.Cell>
-          {quotation.expires ? format(quotation.expires, 'Ppp') : 'n/a'}
+          {quotation.expires
+            ? format(new Date(quotation.expires), 'Ppp')
+            : 'n/a'}
         </Table.Cell>
         <Table.Cell>{quotation.status}</Table.Cell>
       </Table.Row>

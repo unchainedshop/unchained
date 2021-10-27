@@ -58,9 +58,9 @@ export default [
       sequence: Int!
       status: ProductStatus!
       tags: [String!]
-      created: Date
-      updated: Date
-      published: Date
+      created: DateTime
+      updated: DateTime
+      published: DateTime
       texts: ProductTexts
       media(limit: Int = 10, offset: Int = 0, tags: [String!]): [ProductMedia!]!
       reviews: [ProductReview!]!
@@ -83,9 +83,9 @@ export default [
 
     type ProductReview {
       _id: ID!
-      created: Date
-      updated: Date
-      deleted: Date
+      created: DateTime
+      updated: DateTime
+      deleted: DateTime
       author: User!
       product: Product!
       rating: Int
@@ -97,7 +97,7 @@ export default [
 
     type ProductReviewVote {
       _id: ID!
-      timestamp: Date!
+      timestamp: Timestamp!
       type: ProductReviewVoteType!
     }
 

@@ -44,7 +44,7 @@ const OrderDelivery = ({
         <List>
           <List.Item>
             Date of Delivery to Provider:{' '}
-            {delivered ? format(delivered, 'Pp') : 'n/a'}
+            {delivered ? format(new Date(delivered), 'Pp') : 'n/a'}
           </List.Item>
         </List>
       </List.Item>

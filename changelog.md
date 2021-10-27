@@ -2,7 +2,15 @@
 
 This is our first major release, it covers all features needed to build highly flexible e-commerce solutions.
 
+
 ## Breaking changes
+- [core] NEW core module `core-files-next` that uses [minio cloud object storage](https://min.io/) compatible with [amazon s3 cloud storage api](https://aws.amazon.com/s3/). This update provides a scalable files storage solution for all the projects that use it. All the previous file management APIs now use this module under the hood in addition there are few new endpoint added that support signed put url based upload namely `prepareUserAvatarUpload`, `prepareProductMediaUpload`, `prepareAssortmentMediaUpload` and `confirmMediaUpload` that can be used to generate signed PUT url for file upload. to learn more on how to use this module refer to [docs](https://docs.unchained.shop/)
+- [api] `Date` values that previously were returned as timestamps are now converted to UTC compliant with the date-time format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar to mitigate issues related to timezone. while mutations that passed timestamp value will not cause an issue, the frontend code that expects UNIX timestamp value for the `DateTime` value needs to be updated. this included but not only
+      - `created`, `updated`, `deleted` values on all entities that previously exposed this fields
+      - `order.ordered`, `order.confirmed`
+      - `product.published`
+      - `quotation.expires`, `quotation.fulfilled`, `quotation.rejected`
+      - `subscription.updated`
 - [core] Upgrade to new GraphQL multi-part standard with graphql-upload pinning to v12, please use the latest graphql-upload-client
 - [core] Environment variables `LANG`, `COUNTRY` & `CURRENCY` have to be prefixed with `UNCHAINED_` to prevent a conflict that may occur with other systems environment variables.
 - [core] upsertLocalizedText for products and assortments does not automatically change the slug anymore, explicitly set it by providing a slug property

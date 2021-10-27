@@ -72,21 +72,27 @@ const ProductHeader = ({ loading, router, productId, product = {} }) => (
                 <List.Icon name="add to calendar" />
                 <List.Content>
                   Created:{' '}
-                  {product.created ? format(product.created, 'Pp') : 'n/a'}
+                  {product.created
+                    ? format(new Date(product.created), 'Pp')
+                    : 'n/a'}
                 </List.Content>
               </List.Item>
               <List.Item key="refresh">
                 <List.Icon name="refresh" />
                 <List.Content>
                   Updated:{' '}
-                  {product.updated ? format(product.updated, 'Pp') : 'n/a'}
+                  {product.updated
+                    ? format(new Date(product.updated), 'Pp')
+                    : 'n/a'}
                 </List.Content>
               </List.Item>
               <List.Item key="eye">
                 <List.Icon name="eye" />
                 <List.Content>
                   Published:{' '}
-                  {product.published ? format(product.published, 'Pp') : 'n/a'}
+                  {product.published
+                    ? format(new Date(product.published), 'Pp')
+                    : 'n/a'}
                 </List.Content>
               </List.Item>
             </List>

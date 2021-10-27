@@ -2,7 +2,6 @@ import 'meteor/dburles:collection-helpers';
 import { Promise } from 'meteor/promise';
 import { log } from 'meteor/unchained:core-logger';
 import { DocumentDirector } from 'meteor/unchained:core-documents';
-import { OrderDocuments } from './collections';
 import { OrderDocumentTypes } from './schema';
 import { Orders } from '../orders/collections';
 import { OrderDeliveries } from '../order-deliveries/collections';
@@ -175,14 +174,14 @@ class OrderDocumentDirector extends DocumentDirector {
   }
 }
 
-OrderDocuments.updateDocuments = ({ orderId, ...rest }) => {
+export const updateOrderDocuments = ({ orderId, ...rest }) => {
   const order = Orders.findOne({ _id: orderId });
   const director = new OrderDocumentDirector({ order });
   log('Update Order Documents', { orderId });
   Promise.await(director.updateDocuments({ ...rest }));
 };
 
-OrderDocuments.updatePaymentDocuments = ({ paymentId, ...rest }) => {
+export const updateOrderPaymentDocuments = ({ paymentId, ...rest }) => {
   const payment = OrderPayments.findOne({ _id: paymentId });
   const order = Orders.findOne({ _id: payment.orderId });
   const director = new OrderDocumentDirector({ order, payment });
@@ -192,7 +191,7 @@ OrderDocuments.updatePaymentDocuments = ({ paymentId, ...rest }) => {
   Promise.await(director.updateDocuments({ ...rest }));
 };
 
-OrderDocuments.updateDeliveryDocuments = ({ deliveryId, ...rest }) => {
+export const updateOrderDeliveryDocuments = ({ deliveryId, ...rest }) => {
   const delivery = OrderDeliveries.findOne({ _id: deliveryId });
   const order = Orders.findOne({ _id: delivery.orderId });
   const director = new OrderDocumentDirector({ order, delivery });

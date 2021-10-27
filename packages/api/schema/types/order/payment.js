@@ -22,7 +22,7 @@ export default [
       provider: PaymentProvider
       status: OrderPaymentStatus
       fee: Price
-      paid: Date
+      paid: DateTime
       discounts: [OrderPaymentDiscount!]
     }
 
@@ -31,7 +31,7 @@ export default [
       provider: PaymentProvider
       status: OrderPaymentStatus
       fee: Price
-      paid: Date
+      paid: DateTime
       discounts: [OrderPaymentDiscount!]
     }
 
@@ -39,7 +39,7 @@ export default [
       _id: ID!
       provider: PaymentProvider
       status: OrderPaymentStatus
-      paid: Date
+      paid: DateTime
       fee: Price
       discounts: [OrderPaymentDiscount!]
     }
@@ -49,7 +49,7 @@ export default [
       provider: PaymentProvider
       status: OrderPaymentStatus
       fee: Price
-      paid: Date
+      paid: DateTime
       discounts: [OrderPaymentDiscount!]
 
       """

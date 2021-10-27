@@ -1,6 +1,6 @@
 Package.describe({
   name: 'unchained:utils',
-  version: '1.0.0-beta14',
+  version: '1.0.0-beta15',
   summary: 'Unchained Engine: Helper Functions',
   git: 'https://github.com/unchainedshop/unchained',
   documentation: 'README.md',
@@ -11,6 +11,7 @@ Npm.depends({
   hashids: '2.2.8',
   locale: '0.1.0',
   'simpl-schema': '1.12.0',
+  fibers: '5.0.0',
 });
 
 Package.onUse((api) => {

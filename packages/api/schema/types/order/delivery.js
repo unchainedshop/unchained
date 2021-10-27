@@ -21,7 +21,7 @@ export default [
       _id: ID!
       provider: DeliveryProvider
       status: OrderDeliveryStatus
-      delivered: Date
+      delivered: DateTime
       fee: Price
       discounts: [OrderDeliveryDiscount!]
     }
@@ -30,7 +30,7 @@ export default [
       _id: ID!
       provider: DeliveryProvider
       status: OrderDeliveryStatus
-      delivered: Date
+      delivered: DateTime
       fee: Price
       discounts: [OrderDeliveryDiscount!]
       pickUpLocations: [OrderPickUpLocation!]!
@@ -41,7 +41,7 @@ export default [
       _id: ID!
       provider: DeliveryProvider
       status: OrderDeliveryStatus
-      delivered: Date
+      delivered: DateTime
       fee: Price
       discounts: [OrderDeliveryDiscount!]
       address: Address

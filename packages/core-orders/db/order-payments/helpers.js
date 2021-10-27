@@ -10,7 +10,7 @@ import { objectInvert } from 'meteor/unchained:utils';
 import { OrderPayments } from './collections';
 import { OrderPaymentStatus } from './schema';
 import { Orders } from '../orders/collections';
-import { OrderDocuments } from '../order-documents/collections';
+import { updateOrderPaymentDocuments } from '../order-documents/helpers';
 
 OrderPayments.helpers({
   order() {
@@ -185,7 +185,11 @@ OrderPayments.updateStatus = ({ paymentId, status, info = '' }) => {
   if (status === OrderPaymentStatus.PAID) {
     modifier.$set.paid = date;
   }
-  OrderDocuments.updatePaymentDocuments({ paymentId, date, ...modifier.$set });
+  updateOrderPaymentDocuments({
+    paymentId,
+    date,
+    ...modifier.$set,
+  });
   OrderPayments.update({ _id: paymentId }, modifier);
   return OrderPayments.findOne({ _id: paymentId });
 };

@@ -28,7 +28,7 @@ const LogList = ({ data: { logs = defaultLogs, loading }, ...rest }) => (
       {logs.map(({ _id, level, message, created, user, order }) => (
         <Table.Row key={_id}>
           <Table.Cell singleLine>
-            {created ? format(created, 'Pp') : null}
+            {created ? format(new Date(created), 'Pp') : null}
           </Table.Cell>
           <Table.Cell
             warning={level === 'warn' ? 'warn' : null}

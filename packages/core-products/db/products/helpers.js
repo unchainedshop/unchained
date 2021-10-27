@@ -16,12 +16,48 @@ import {
 } from 'meteor/unchained:utils';
 import { Locale } from 'locale';
 import crypto from 'crypto';
+import {
+  uploadObjectStream,
+  createUploadContainer,
+  uploadFileFromURL,
+} from 'meteor/unchained:core-files-next';
 import { Products, ProductTexts } from './collections';
 
 import { ProductVariations } from '../product-variations/collections';
-import { ProductMedia, Media } from '../product-media/collections';
+import { ProductMedia } from '../product-media/collections';
 import { ProductReviews } from '../product-reviews/collections';
 import { ProductStatus, ProductTypes } from './schema';
+
+const productMediaUploads = createUploadContainer(
+  'product-media',
+  async (
+    mediaTicketUploadId,
+    linkedProductMediaId,
+    { authorId, ...mediaData }
+  ) => {
+    const result = ProductMedia.createMedia({
+      ...mediaData,
+      productId: linkedProductMediaId,
+      authorId,
+      mediaId: mediaTicketUploadId,
+    });
+    return result;
+  }
+);
+
+ProductMedia.createSignedUploadURL = async (
+  { mediaName, productId },
+  { userId, ...context }
+) => {
+  return productMediaUploads.createSignedURL(
+    productId,
+    mediaName,
+    {
+      authorId: userId,
+    },
+    context
+  );
+};
 
 const getPriceLevels = (product, { currencyCode, countryCode }) => {
   return (product?.commerce?.pricing || [])
@@ -503,7 +539,7 @@ Products.helpers({
       ...mediaData,
     });
   },
-  addMedia({
+  async addMedia({
     rawFile,
     href,
     name,
@@ -514,16 +550,14 @@ Products.helpers({
     ...options
   }) {
     const fileLoader = rawFile
-      ? Media.insertWithRemoteFile({
-          file: rawFile,
+      ? uploadObjectStream('product-media', rawFile, {
           userId: authorId,
         })
-      : Media.insertWithRemoteURL({
-          url: href,
-          fileName: name,
-          userId: authorId,
-          ...options,
-        });
+      : uploadFileFromURL(
+          'product-media',
+          { fileName: name, fileLink: href },
+          { userId: authorId, ...options }
+        );
     const file = Promise.await(fileLoader);
     const productMedia = this.addMediaLink({
       mediaId: file._id,

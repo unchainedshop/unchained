@@ -9,7 +9,7 @@ mongo@1.11.0
 ecmascript@0.15.1
 email@2.0.0
 disable-oplog@1.0.7
-unchained:platform@1.0.0-beta14
+unchained:platform@1.0.0-beta15
 es5-shim@4.8.0
 meteor@1.9.3
 typescript@4.2.2

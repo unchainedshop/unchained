@@ -1,12 +1,12 @@
 import WorkerPlugin from 'meteor/unchained:core-worker/workers/base';
 import { WorkerDirector } from 'meteor/unchained:core-worker';
 import { createLogger } from 'meteor/unchained:core-logger';
-import { Products, ProductMedia, Media } from 'meteor/unchained:core-products';
+import { Products, ProductMedia } from 'meteor/unchained:core-products';
 import {
   Assortments,
   AssortmentMedia,
-  AssortmentDocuments,
 } from 'meteor/unchained:core-assortments';
+import { MediaObjects, removeObjects } from 'meteor/unchained:ore-files-next';
 
 const logger = createLogger('unchained:platform:zombie-killer');
 
@@ -37,31 +37,49 @@ class ZombieKiller extends WorkerPlugin {
         },
       });
 
-      const media = Media.remove({
-        _id: {
-          $nin: ProductMedia.find(
-            {},
-            {
-              fields: {
-                mediaId: true,
-              },
-            }
-          ).map((m) => m.mediaId),
+      const productMediaIds = MediaObjects.find(
+        {
+          _id: {
+            $nin: ProductMedia.find(
+              {},
+              {
+                fields: {
+                  mediaId: true,
+                },
+              }
+            ).map((m) => m.mediaId),
+          },
         },
-      });
+        {
+          fields: {
+            _id: true,
+          },
+        }
+      ).map((i) => i._id);
 
-      const assortmentDocuments = AssortmentDocuments.remove({
-        _id: {
-          $nin: AssortmentMedia.find(
-            {},
-            {
-              fields: {
-                mediaId: true,
-              },
-            }
-          ).map((m) => m.mediaId),
+      const media = await removeObjects(productMediaIds);
+
+      const assortmentMediaIds = MediaObjects.find(
+        {
+          _id: {
+            $nin: AssortmentMedia.find(
+              {},
+              {
+                fields: {
+                  mediaId: true,
+                },
+              }
+            ).map((m) => m.mediaId),
+          },
         },
-      });
+        {
+          fields: {
+            _id: true,
+          },
+        }
+      );
+
+      const assortmentDocuments = await removeObjects(assortmentMediaIds);
 
       const result = {
         productMedia,

@@ -47,13 +47,13 @@ export default [
       user: User!
       product: Product!
       status: QuotationStatus!
-      created: Date!
-      expires: Date
-      updated: Date
-      isExpired(referenceDate: Date): Boolean
+      created: DateTime!
+      expires: DateTime
+      updated: DateTime
+      isExpired(referenceDate: Timestamp): Boolean
       quotationNumber: String
-      fullfilled: Date
-      rejected: Date
+      fullfilled: DateTime
+      rejected: DateTime
       country: Country
       currency: Currency
       configuration: [ProductConfigurationParameter!]

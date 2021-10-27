@@ -37,8 +37,8 @@ export default [
     }
 
     type EnrollmentPeriod {
-      start: Date!
-      end: Date!
+      start: DateTime!
+      end: DateTime!
       isTrial: Boolean!
       order: Order
     }
@@ -55,10 +55,10 @@ export default [
       billingAddress: Address
       contact: Contact
       status: EnrollmentStatus!
-      created: Date!
-      expires: Date
-      updated: Date
-      isExpired(referenceDate: Date): Boolean
+      created: DateTime!
+      expires: DateTime
+      updated: DateTime
+      isExpired(referenceDate: Timestamp): Boolean
       enrollmentNumber: String
       country: Country
       currency: Currency

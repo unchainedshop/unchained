@@ -1,15 +1,19 @@
 import { GraphQLUpload } from 'graphql-upload';
+import {
+  JSONResolver,
+  TimestampResolver,
+  DateTimeResolver,
+} from 'graphql-scalars';
 import Query from './queries';
 import Mutation from './mutations';
-import Date from './scalar-date';
-import JSON from './scalar-json';
 import Types from './types';
 
 export default {
   ...Types,
   Upload: GraphQLUpload,
-  JSON,
-  Date,
+  JSON: JSONResolver,
   Query,
   Mutation,
+  DateTime: DateTimeResolver,
+  Timestamp: TimestampResolver,
 };
