@@ -1,6 +1,6 @@
 Package.describe({
   name: 'unchained:core-mongodb',
-  version: '1.0.0-beta14',
+  version: '1.0.0-beta15',
   summary: 'Unchained Engine Core: MongoDB',
   git: 'https://github.com/unchainedshop/unchained',
   documentation: 'README.md',
@@ -30,7 +30,7 @@ Package.onTest((api) => {
   api.use('ecmascript');
   api.use('typescript@4.1.2');
 
-  api.use('unchained:core-mongodb@1.0.0-beta14');
+  api.use('unchained:core-mongodb@1.0.0-beta15');
 
   api.mainModule('test/mongodb-index.tests.js');
 });
