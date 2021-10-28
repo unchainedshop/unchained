@@ -1,6 +1,6 @@
 {
   "name": "unchained-core-types",
-  "version": "1.0.5",
+  "version": "1.0.8",
   "description": "Types for unchained core meteor packages",
   "repository": {
     "type": "git",
@@ -27,5 +27,8 @@
     "typescript": "^4.4.2",
     "winston": "^3.3.3"
   },
-  "dependencies": {}
+  "dependencies": {},
+  "peerDependencies": {
+    "mongodb": "^4.1.1"
+  }
 }
