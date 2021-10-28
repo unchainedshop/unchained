@@ -1,7 +1,11 @@
-import { createLogger as createWinstonLogger, format, transports } from 'winston';
+import {
+  createLogger as createWinstonLogger,
+  format,
+  transports,
+} from 'winston';
 import stringify from 'safe-stable-stringify';
-import { LogLevel } from './LogLevel';
 import TransportStream from 'winston-transport';
+import { LogLevel } from './LogLevel';
 
 const {
   DEBUG = '',
@@ -12,22 +16,24 @@ const {
 const { combine, label, timestamp, colorize, printf, json } = format;
 
 const debugStringContainsModule = (debugString: string, moduleName: string) => {
-  const loggingMatched = debugString.split(',').reduce((accumulator: any, name: string) => {
-    if (accumulator === false) return accumulator;
-    const nameRegex = name
-      .replace('-', '\\-?')
-      .replace(':*', '\\:?*')
-      .replace('*', '.*');
-    const regExp = new RegExp(`^${nameRegex}$`, 'm');
-    if (regExp.test(moduleName)) {
-      if (name.slice(0, 1) === '-') {
-        // explicitly disable
-        return false;
+  const loggingMatched = debugString
+    .split(',')
+    .reduce((accumulator: any, name: string) => {
+      if (accumulator === false) return accumulator;
+      const nameRegex = name
+        .replace('-', '\\-?')
+        .replace(':*', '\\:?*')
+        .replace('*', '.*');
+      const regExp = new RegExp(`^${nameRegex}$`, 'm');
+      if (regExp.test(moduleName)) {
+        if (name.slice(0, 1) === '-') {
+          // explicitly disable
+          return false;
+        }
+        return true;
       }
-      return true;
-    }
-    return accumulator;
-  }, undefined);
+      return accumulator;
+    }, undefined);
   return loggingMatched || false;
 };
 
@@ -54,7 +60,10 @@ if (!UnchainedLogFormats[UNCHAINED_LOG_FORMAT.toLowerCase()]) {
 
 export { transports, format };
 
-export const createLogger = (moduleName: string, moreTransports: Array<TransportStream> = []) => {
+export const createLogger = (
+  moduleName: string,
+  moreTransports: Array<TransportStream> = []
+) => {
   const loggingMatched = debugStringContainsModule(DEBUG, moduleName);
   return createWinstonLogger({
     transports: [

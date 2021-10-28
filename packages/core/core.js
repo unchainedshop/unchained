@@ -19,7 +19,10 @@ import configureEnrollments from 'meteor/unchained:core-enrollments';
 import configureWorker from 'meteor/unchained:core-worker';
 import configureMessaging from 'meteor/unchained:core-messaging';
 
-import { configureBookmarksModule, bookmarkServices } from 'unchained-core-bookmarks';
+import {
+  configureBookmarksModule,
+  bookmarkServices,
+} from 'unchained-core-bookmarks';
 import { configureEvents } from 'unchained-core-events';
 import { configureLogs } from 'unchained-core-logger';
 
@@ -32,11 +35,11 @@ export const initCore = async ({
     migrationRepository,
   };
 
-  const db = initDb()
-  
+  const db = initDb();
+
   const logs = await configureLogs({ db });
   const events = await configureEvents({ db });
-  
+
   configureLogger(modules.logger, moduleOptions);
   configureWorker(modules.worker, moduleOptions);
   configureUsers(modules.users, moduleOptions);
@@ -56,7 +59,7 @@ export const initCore = async ({
   configureFilters(modules.filters, moduleOptions);
   configureEnrollments(modules.enrollments, moduleOptions);
   configureEvents(modules.events, moduleOptions);
-  
+
   const bookmarks = await configureBookmarksModule({ db });
 
   return {

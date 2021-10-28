@@ -1,5 +1,5 @@
 import startAPI from 'meteor/unchained:api';
-import { initCore } from 'meteor/unchained:core';
+import { initCore } from 'meteor/unchained:core';
 import interceptEmails from './intercept-emails';
 import setupAccounts from './setup-accounts';
 import setupWorkqueue, { workerTypeDefs } from './setup-workqueue';

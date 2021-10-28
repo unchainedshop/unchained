@@ -1,6 +1,6 @@
-import { EventsModule } from "./events";
-import { BookmarksModule } from "./bookmarks";
-import { LogsModule } from "./logs";
+import { EventsModule } from './events';
+import { BookmarksModule } from './bookmarks';
+import { LogsModule } from './logs';
 
 export declare interface Modules {
   accounts: any;

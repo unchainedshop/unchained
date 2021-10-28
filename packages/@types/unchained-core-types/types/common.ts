@@ -1,19 +1,21 @@
-import { Db, UpdateFilter, ObjectId } from "mongodb";
+import { Db, UpdateFilter, ObjectId } from 'mongodb';
 
-export type _ID = string | ObjectId
+export type _ID = string | ObjectId;
 
 export type TimestampFields = {
-  created?: Date,
-  createdBy?: string
-  updated?: Date,
-  updatedBy?: string,
-  deleted?: Date,
-  deletedBy?: string,
+  created?: Date;
+  createdBy?: string;
+  updated?: Date;
+  updatedBy?: string;
+  deleted?: Date;
+  deletedBy?: string;
 };
 
 export type Query = { [x: string]: any };
 
-export interface ModuleInput { db: Db } 
+export interface ModuleInput {
+  db: Db;
+}
 
 export interface ModuleMutations<T extends {}> {
   create: (doc: T, userId?: string) => Promise<string>;

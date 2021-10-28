@@ -23,9 +23,9 @@ export const configureBookmarksModule = async ({
     findByUserIdAndProductId: async ({ userId, productId }) =>
       await Bookmarks.findOne({ userId, productId }),
     findById: async (bookmarkId) => {
-      const filter = generateDbFilterById(bookmarkId)
+      const filter = generateDbFilterById(bookmarkId);
       const bookmark = await Bookmarks.findOne({ _id: filter._id });
-      return bookmark
+      return bookmark;
     },
     find: async (query) => await Bookmarks.find(query).toArray(),
     replaceUserId: async (fromUserId, toUserId) => {
@@ -42,7 +42,7 @@ export const configureBookmarksModule = async ({
     removeById: async (bookmarkId) => {
       const deletedCount = await mutations.delete(bookmarkId);
       emitEvent('BOOKMARK_REMOVE', { bookmarkId });
-      console.log('DELETE', deletedCount)
+      console.log('DELETE', deletedCount);
       return deletedCount;
     },
     create: async (doc: Bookmark, userId?: string) => {

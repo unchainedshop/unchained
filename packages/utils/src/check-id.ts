@@ -1,5 +1,8 @@
-export const checkId = (value: string, error?: { message: string, path?: string }) => {
+export const checkId = (
+  value: string,
+  error?: { message: string; path?: string }
+) => {
   if (typeof value !== 'string') {
-    throw error || { message: 'Invalid id' }
+    throw error || { message: 'Invalid id' };
   }
-}
+};

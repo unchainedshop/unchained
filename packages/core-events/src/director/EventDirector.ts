@@ -1,6 +1,9 @@
 import { createLogger } from 'unchained-core-logger';
 import { Collection } from 'unchained-core-types';
-import { Event, EventDirector as EventDirectorType } from 'unchained-core-types/lib/events';
+import {
+  Event,
+  EventDirector as EventDirectorType,
+} from 'unchained-core-types/lib/events';
 
 const logger = createLogger('unchained:core-events');
 
