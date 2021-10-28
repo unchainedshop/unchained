@@ -39,7 +39,6 @@ export var EventsCollection = function (db) { return __awaiter(void 0, void 0, v
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
-                console.log('TEST');
                 Events = db.collection('events');
                 return [4 /*yield*/, Events.createIndex({ created: -1 })];
             case 1:

@@ -5,9 +5,11 @@
   "types": "lib/logger-index.d.ts",
   "type": "module",
   "scripts": {
-    "build": "tsc",
+    "clean": "rm -r lib",
+    "build": "npm run clean && tsc",
+    "watch": "tsc --watch",
     "link:core": "npm link unchained-utils unchained-core-types",
-    "test": "cross-env METEOR_PACKAGE_DIRS=../ TEST_CLIENT=0 TEST_WATCH=1 meteor test-packages ./ --driver-package meteortesting:mocha --port 4200"
+    "test": "cross-env METEOR_PACKAGE_DIRS=../ TEST_CLIENT=0 TEST_WATCH=1 meteor test-packages ./ --driver-package meteortesting:mocha --port 4210"
   },
   "repository": {
     "type": "git",
@@ -32,6 +34,7 @@
     "winston-transport": "4.4.0"
   },
   "devDependencies": {
+    "@types/winston": "^2.4.4",
     "chai": "^4.3.4",
     "cross-env": "^7.0.3",
     "typescript": "^4.4.3",

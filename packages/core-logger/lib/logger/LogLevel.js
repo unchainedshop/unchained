@@ -1,8 +1,2 @@
-export var LogLevel;
-(function (LogLevel) {
-    LogLevel["Info"] = "info";
-    LogLevel["Debug"] = "debug";
-    LogLevel["Error"] = "error";
-    LogLevel["Warning"] = "warning";
-})(LogLevel || (LogLevel = {}));
+export { LogLevel } from 'unchained-core-types/lib/logs';
 //# sourceMappingURL=LogLevel.js.map

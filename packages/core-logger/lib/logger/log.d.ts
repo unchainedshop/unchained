@@ -1,2 +1,4 @@
+import winston from 'winston';
 import { LogOptions } from 'unchained-core-types/lib/logs';
-export declare const log: (Logs: any, message: string, options: LogOptions) => import("winston").Logger;
+import { Logger } from './Logger';
+export declare const log: (Logs: any, message: string, options: LogOptions) => winston.Logger;

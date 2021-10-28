@@ -38,6 +38,10 @@ import { createLogger, format, transports } from './logger/createLogger';
 import { LogLevel } from './logger/LogLevel';
 import { configureLogsModule } from './module/configureLogsModule';
 var log = function (message) { return console.log(message); };
+// Required to avoid meteor build errors (TypeError: module.runSetters is not a function)
+var setLog = function (l) {
+    log = l;
+};
 var configureLogs = function (_a) {
     var db = _a.db;
     return __awaiter(void 0, void 0, void 0, function () {
@@ -47,11 +51,11 @@ var configureLogs = function (_a) {
                 case 0: return [4 /*yield*/, configureLogsModule({ db: db })];
                 case 1:
                     module = _b.sent();
-                    log = module.log;
+                    setLog(module.log);
                     return [2 /*return*/, module];
             }
         });
     });
 };
-export { log, configureLogs, createLogger, format, transports, LogLevel };
+export { configureLogs, log, createLogger, format, transports, LogLevel };
 //# sourceMappingURL=logger-index.js.map

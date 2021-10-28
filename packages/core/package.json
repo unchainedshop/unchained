@@ -1,6 +1,6 @@
 {
   "name": "@unchained/core",
-  "version": "1.0.0-beta12",
+  "version": "1.0.0-beta15",
   "scripts": {
     "test": "cross-env METEOR_PACKAGE_DIRS=../ TEST_WATCH=1 meteor test-packages ./ --driver-package meteortesting:mocha --port 4200",
     "link:core": "npm link unchained-core-logger unchained-core-events unchained-core-bookmarks unchained-utils"

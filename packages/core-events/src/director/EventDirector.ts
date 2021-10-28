@@ -28,7 +28,7 @@ const _registeredCallbacks = new Set();
 
 let _adapter: EventAdapter;
 let _contextNormalizer = defaultNormalizer;
-let _Events;
+let _Events: Collection<Event>;
 
 export const EventDirector: EventDirectorType & {
   getEventAdapter: () => EventAdapter;
@@ -67,7 +67,7 @@ export const EventDirector: EventDirectorType & {
     });
 
     if (_Events) {
-      await _Events.insert({
+      await _Events.insertOne({
         type: eventName,
         payload: data,
         context: extractedContext,

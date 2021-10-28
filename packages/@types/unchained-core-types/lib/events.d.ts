@@ -3,6 +3,7 @@ import { ModuleMutations, Query, TimestampFields, _ID } from './common';
 export declare type Event = {
     _id?: _ID;
     type: string;
+    context?: object;
     payload?: object;
 } & TimestampFields;
 export declare type ContextNormalizerFunction = (context: any) => any;

@@ -70,9 +70,7 @@ export var configureEventsModule = function (_a) {
         var Events;
         return __generator(this, function (_b) {
             switch (_b.label) {
-                case 0:
-                    console.log('INIT MODULE', db);
-                    return [4 /*yield*/, EventsCollection(db)];
+                case 0: return [4 /*yield*/, EventsCollection(db)];
                 case 1:
                     Events = _b.sent();
                     return [2 /*return*/, __assign(__assign(__assign({}, configureEventDirector(Events)), { findEvent: function (_a, options) { var _b; return __awaiter(void 0, void 0, void 0, function () {

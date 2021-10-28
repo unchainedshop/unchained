@@ -1,4 +1,4 @@
-export function createLogger(moduleName: any, moreTransports?: any[]): import("winston").Logger;
-import { transports } from "winston";
-import { format } from "winston";
+import { format, transports } from 'winston';
+import TransportStream from 'winston-transport';
 export { transports, format };
+export declare const createLogger: (moduleName: string, moreTransports?: Array<TransportStream>) => import("winston").Logger;

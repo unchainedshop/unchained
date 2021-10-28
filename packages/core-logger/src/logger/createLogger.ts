@@ -1,16 +1,18 @@
 import { createLogger as createWinstonLogger, format, transports } from 'winston';
 import stringify from 'safe-stable-stringify';
+import { LogLevel } from './LogLevel';
+import TransportStream from 'winston-transport';
 
 const {
   DEBUG = '',
-  LOG_LEVEL = 'info',
+  LOG_LEVEL = LogLevel.Info,
   UNCHAINED_LOG_FORMAT = 'unchained',
 } = process.env;
 
 const { combine, label, timestamp, colorize, printf, json } = format;
 
-const debugStringContainsModule = (debugString, moduleName) => {
-  const loggingMatched = debugString.split(',').reduce((accumulator, name) => {
+const debugStringContainsModule = (debugString: string, moduleName: string) => {
+  const loggingMatched = debugString.split(',').reduce((accumulator: any, name: string) => {
     if (accumulator === false) return accumulator;
     const nameRegex = name
       .replace('-', '\\-?')
@@ -37,7 +39,7 @@ const myFormat = printf(
 );
 
 const UnchainedLogFormats = {
-  unchained: (moduleName) =>
+  unchained: (moduleName: string) =>
     combine(timestamp(), label({ label: moduleName }), colorize(), myFormat),
   json,
 };
@@ -52,15 +54,15 @@ if (!UnchainedLogFormats[UNCHAINED_LOG_FORMAT.toLowerCase()]) {
 
 export { transports, format };
 
-export const createLogger = (moduleName, moreTransports = []) => {
+export const createLogger = (moduleName: string, moreTransports: Array<TransportStream> = []) => {
   const loggingMatched = debugStringContainsModule(DEBUG, moduleName);
   return createWinstonLogger({
     transports: [
       new transports.Console({
         format: UnchainedLogFormats[UNCHAINED_LOG_FORMAT](moduleName),
-        stderrLevels: ['error'],
-        consoleWarnLevels: ['warn'],
-        level: loggingMatched ? 'debug' : LOG_LEVEL,
+        stderrLevels: [LogLevel.Error],
+        consoleWarnLevels: [LogLevel.Warning],
+        level: loggingMatched ? LogLevel.Debug : LOG_LEVEL,
       }),
       ...moreTransports,
     ],

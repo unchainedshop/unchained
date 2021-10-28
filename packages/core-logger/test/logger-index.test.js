@@ -7,12 +7,13 @@ import {
   createLogger,
   transports,
   format,
+  LogLevel,
 } from 'meteor/unchained:core-logger';
 
 describe('Test exports', () => {
   it('Configure Logs', async () => {
     assert.isDefined(configureLogs);
-    const db = initDb()
+    const db = initDb();
     const module = await configureLogs({ db });
 
     assert.ok(module);
@@ -26,6 +27,6 @@ describe('Test exports', () => {
     assert.isFunction(format);
     assert.isObject(transports);
     assert.isFunction(log);
-    log('Test');
+    log('Test', LogLevel.Warn);
   });
 });

@@ -94,7 +94,7 @@ export var EventDirector = {
                         context: extractedContext
                     });
                     if (!_Events) return [3 /*break*/, 2];
-                    return [4 /*yield*/, _Events.insert({
+                    return [4 /*yield*/, _Events.insertOne({
                             type: eventName,
                             payload: data,
                             context: extractedContext,

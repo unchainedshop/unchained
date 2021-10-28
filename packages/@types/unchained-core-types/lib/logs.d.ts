@@ -5,7 +5,7 @@ export declare enum LogLevel {
     Info = "info",
     Debug = "debug",
     Error = "error",
-    Warning = "warning"
+    Warning = "warn"
 }
 export declare type Log = {
     _id?: _ID;

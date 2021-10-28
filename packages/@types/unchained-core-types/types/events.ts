@@ -4,6 +4,7 @@ import { ModuleMutations, Query, TimestampFields, _ID } from './common';
 export type Event = {
   _id?: _ID;
   type: string;
+  context?: object;
   payload?: object;
 } & TimestampFields;
 

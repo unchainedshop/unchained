@@ -5,10 +5,11 @@
   "types": "lib/events-index.d.ts",
   "type": "module",
   "scripts": {
-    "build": "tsc",
+    "clean": "rm -r lib",
+    "build": "npm run clean && tsc",
     "watch": "tsc --watch",
     "link:core": "npm link  unchained-utils unchained-core-logger unchained-core-types",
-    "test": "cross-env METEOR_PACKAGE_DIRS=../ TEST_CLIENT=0 TEST_WATCH=1 meteor test-packages ./ --driver-package meteortesting:mocha --port 4200"
+    "test": "cross-env METEOR_PACKAGE_DIRS=../ TEST_CLIENT=0 TEST_WATCH=1 meteor test-packages ./ --driver-package meteortesting:mocha --port 4212"
   },
   "repository": {
     "type": "git",

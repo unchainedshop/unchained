@@ -39,20 +39,24 @@ import { EventDirector } from './director/EventDirector';
 var GLOBAL_EVENTS = ['PAGE_VIEW'];
 var emitEvent = EventDirector.emit;
 var registerEvents = EventDirector.registerEvents;
+// Required to avoid meteor build errors (TypeError: module.runSetters is not a function)
+var setEmitEvent = function (emit) {
+    emitEvent = emit;
+};
+var setRegisterEvents = function (register) {
+    registerEvents = register;
+};
 var configureEvents = function (_a) {
     var db = _a.db;
     return __awaiter(void 0, void 0, void 0, function () {
         var module;
         return __generator(this, function (_b) {
             switch (_b.label) {
-                case 0:
-                    console.log('INIT EVENTS', db);
-                    return [4 /*yield*/, configureEventsModule({ db: db })];
+                case 0: return [4 /*yield*/, configureEventsModule({ db: db })];
                 case 1:
                     module = _b.sent();
                     module.registerEvents(GLOBAL_EVENTS);
-                    emitEvent = module.emit;
-                    registerEvents = module.registerEvents;
+                    // setGlobalEventActions(module)
                     return [2 /*return*/, module];
             }
         });

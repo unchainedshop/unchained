@@ -17,7 +17,8 @@
     "preserveWatchOutput": true,
     "skipLibCheck": true,
     "sourceMap": false,
-    "typeRoots": ["node_modules/@types", "node_modules/mongodb"]
+    "typeRoots": ["node_modules/@types", "node_modules/mongodb"],
+    "types": [],
   },
   "include": ["types"]
 }
