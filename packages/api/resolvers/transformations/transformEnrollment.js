@@ -1,3 +1,5 @@
+import { logs } from "./helpers/logs";
+
 export const transformEnrollment = (modules) => (enrollment) => ({
   ...enrollment,
   // Helpers (DEPRECATED)
@@ -6,16 +8,5 @@ export const transformEnrollment = (modules) => (enrollment) => ({
   isExpired: enrollment.isExpired,
   user: enrollment.user,
   // Transform with modules
-  logs: async ({ limit, offset }) => {
-    return await modules.logs.findLogs(
-      { 'meta.enrollmentId': enrollment._id },
-      {
-        skip: offset,
-        limit,
-        sort: {
-          created: -1,
-        },
-      }
-    );
-  },
+  logs: logs(modules, 'enrollmentId', enrollment),
 });

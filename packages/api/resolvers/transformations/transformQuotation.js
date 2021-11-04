@@ -1,3 +1,5 @@
+import { logs } from "./helpers/logs";
+
 export const transformQuotation = (modules) => (quotation) => ({
   ...quotation,
   // Helpers (DEPRECATED)
@@ -9,16 +11,5 @@ export const transformQuotation = (modules) => (quotation) => ({
   product: quotation.product,
   user: quotation.user,
   // Transform with modules 
-  logs: async ({ limit, offset }) => {
-    return await modules.logs.findLogs(
-      { 'meta.quotation': quotation._id },
-      {
-        skip: offset,
-        limit,
-        sort: {
-          created: -1,
-        },
-      }
-    );
-  },
+  logs: logs(modules, 'quotationId', quotation),
 });

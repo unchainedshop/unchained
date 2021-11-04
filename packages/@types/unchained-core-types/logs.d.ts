@@ -1,6 +1,6 @@
 import { Sort } from 'mongodb';
 import { LoggerOptions } from 'winston';
-import { ModuleMutations, TimestampFields, _ID } from './common';
+import { ModuleMutations, Query, TimestampFields, _ID } from './common';
 
 export enum LogLevel {
   Info = 'info',
@@ -26,6 +26,7 @@ export declare interface LogsModule extends ModuleMutations<Log> {
     limit: number;
     offset: number;
     sort?: Sort;
+    query?: Query;
   }) => Promise<Array<Log>>;
 
   count: () => Promise<number>;
