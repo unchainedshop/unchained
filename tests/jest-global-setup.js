@@ -1,6 +1,10 @@
+import dotenv from 'dotenv-extended';
+
 import setupInMemoryMongoDB from '@shelf/jest-mongodb/setup';
 import { spawn } from 'child_process';
 import { wipeDatabase } from './helpers';
+
+dotenv.load();
 
 const startAndWaitForMeteor = async () => {
   return new Promise((resolve, reject) => {
