@@ -4,7 +4,6 @@ import { createUploadLink } from 'apollo-upload-client';
 import gql from 'graphql-tag';
 import fetch from 'isomorphic-unfetch';
 import FormData from 'form-data';
-import { error } from 'console';
 import seedLocaleData from './seeds/locale-data';
 import seedUsers, { ADMIN_TOKEN } from './seeds/users';
 import seedProducts from './seeds/products';
