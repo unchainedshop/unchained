@@ -86,11 +86,6 @@ function downloadFromUrlToBuffer(fileUrl) {
   });
 }
 
-if (!MINIO_ACCESS_KEY || !MINIO_SECRET_KEY || !MINIO_ENDPOINT)
-  throw new Error(
-    'Please configure Minio/S3 by providing MINIO_ACCESS_KEY,MINIO_SECRET_KEY & MINIO_ENDPOINT'
-  );
-
 const generateRandomFileName = (fileName) => {
   const random = crypto.randomBytes(16);
   const hash = crypto
@@ -114,6 +109,13 @@ function bufferToStream(buffer) {
 }
 
 function connectToMinio() {
+  if (!MINIO_ACCESS_KEY || !MINIO_SECRET_KEY || !MINIO_ENDPOINT) {
+    console.error(
+      'Please configure Minio/S3 by providing MINIO_ACCESS_KEY,MINIO_SECRET_KEY & MINIO_ENDPOINT to use upload features'
+    );
+    return null;
+  }
+
   try {
     const resolvedUrl = new URL(MINIO_ENDPOINT);
     return new Minio.Client({
@@ -130,9 +132,11 @@ function connectToMinio() {
 }
 
 const client = connectToMinio();
-if (NODE_ENV === 'development') client.traceOn(process.stdout);
+if (NODE_ENV === 'development') client?.traceOn(process.stdout);
 
 const getObjectStats = async (fileName) => {
+  if (!client) throw new Error('Minio not connected, check env variables');
+
   return client.statObject(MINIO_BUCKET_NAME, fileName);
 };
 
@@ -169,6 +173,8 @@ export const createSignedPutURL = async (
 };
 
 export const removeObjects = async (ids, options = {}) => {
+  if (!client) throw new Error('Minio not connected, check env variables');
+
   if (typeof ids !== 'string' && !Array.isArray(ids))
     throw Error('Media id/s to be removed not provided as a string or array');
   const idList = [];
@@ -201,6 +207,8 @@ export const removeObjects = async (ids, options = {}) => {
 };
 
 export const uploadObjectStream = async (directoryName, rawFile, meta) => {
+  if (!client) throw new Error('Minio not connected, check env variables');
+
   let stream;
   let fname;
   if (rawFile instanceof Promise) {
@@ -239,6 +247,8 @@ export const uploadFileFromURL = async (
   { fileLink, fileName },
   meta = {}
 ) => {
+  if (!client) throw new Error('Minio not connected, check env variables');
+
   const { href } = new URL(fileLink);
   const filename = fileName || href.split('/').pop();
   const { hash, hashedName } = generateRandomFileName(filename);
