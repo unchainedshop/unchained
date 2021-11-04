@@ -4,6 +4,7 @@ pipeline {
   }
   environment {
     REGISTRY_AUTH = credentials('eec0f0c2-9b9d-4b26-8da5-58222499d901')
+    DOTENV_PATH = credentials('unchained-dotenv')
     minimal = ''
     docs = ''
     controlpanel = ''
@@ -13,6 +14,7 @@ pipeline {
     stage('Test') {
       steps {
         script {
+          sh 'cp ${DOTENV_PATH} .env'
           docker.build("ci:latest")
           sh 'docker run ci:latest sh -c "meteor npm run lint:ci && meteor npm run test:ci"'
         }
