@@ -1,4 +1,3 @@
-import { ObjectId } from 'bson';
 import { ModuleMutations, Query, TimestampFields, _ID } from './common';
 
 type UserProductFilter = {

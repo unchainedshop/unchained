@@ -5,7 +5,7 @@ import { Users } from 'meteor/unchained:core-users';
 import { Products } from 'meteor/unchained:core-products';
 import { Countries } from 'meteor/unchained:core-countries';
 import { Currencies } from 'meteor/unchained:core-currencies';
-import { Logs, log } from 'meteor/unchained:core-logger';
+import { log } from 'meteor/unchained:core-logger';
 import { WorkerDirector } from 'meteor/unchained:core-worker';
 import { emit } from 'meteor/unchained:core-events';
 import { Enrollments } from './collections';
@@ -13,16 +13,17 @@ import { EnrollmentStatus } from './schema';
 import { EnrollmentDirector } from '../../director';
 import settings from '../../settings';
 
-Logs.helpers({
-  enrollment() {
-    return (
-      this.meta &&
-      Enrollments.findOne({
-        _id: this.meta.enrollmentId,
-      })
-    );
-  },
-});
+// Remove for now: Not defined on GraphQL schema and not used in code
+// Logs.helpers({
+//   enrollment() {
+//     return (
+//       this.meta &&
+//       Enrollments.findOne({
+//         _id: this.meta.enrollmentId,
+//       })
+//     );
+//   },
+// });
 
 Users.helpers({
   enrollments() {
@@ -163,17 +164,19 @@ Enrollments.helpers({
       info,
     });
   },
-  logs({ limit, offset }) {
-    const selector = { 'meta.enrollmentId': this._id };
-    const logs = Logs.find(selector, {
-      skip: offset,
-      limit,
-      sort: {
-        created: -1,
-      },
-    }).fetch();
-    return logs;
-  },
+  // Question @Pascal: Do we return a function in GraphQL? (how does this work)
+  // --> Moved to API query resolver using the modules pattern
+  // logs({ limit, offset }) {
+  //   const selector = { 'meta.enrollmentId': this._id };
+  //   const logs = Logs.find(selector, {
+  //     skip: offset,
+  //     limit,
+  //     sort: {
+  //       created: -1,
+  //     },
+  //   }).fetch();
+  //   return logs;
+  // },
   isExpired({ referenceDate } = {}) {
     const relevantDate = referenceDate ? new Date(referenceDate) : new Date();
     const expiryDate = new Date(this.expires);

@@ -117,16 +117,17 @@ Enrollments.helpers({
   },
 });
 
-Logs.helpers({
-  order() {
-    return (
-      this.meta &&
-      Orders.findOne({
-        _id: this.meta.orderId,
-      })
-    );
-  },
-});
+// --> Moved to API query resolver using the modules pattern
+// Logs.helpers({
+//   order() {
+//     return (
+//       this.meta &&
+//       Orders.findOne({
+//         _id: this.meta.orderId,
+//       })
+//     );
+//   },
+// });
 
 Users.helpers({
   async cart({ countryContext, orderNumber } = {}) {
@@ -650,17 +651,18 @@ Orders.helpers({
   country() {
     return Countries.findOne({ isoCode: this.countryCode });
   },
-  logs({ limit, offset }) {
-    const selector = { 'meta.orderId': this._id };
-    const logs = Logs.find(selector, {
-      skip: offset,
-      limit,
-      sort: {
-        created: -1,
-      },
-    }).fetch();
-    return logs;
-  },
+  // --> Moved to API query resolver using the modules pattern
+  // logs({ limit, offset }) {
+  //   const selector = { 'meta.orderId': this._id };
+  //   const logs = Logs.find(selector, {
+  //     skip: offset,
+  //     limit,
+  //     sort: {
+  //       created: -1,
+  //     },
+  //   }).fetch();
+  //   return logs;
+  // },
   isCart() {
     return (this.status || null) === OrderStatus.OPEN;
   },

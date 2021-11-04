@@ -1,9 +1,10 @@
-import { createLogger } from 'unchained-core-logger';
+import { createLogger } from 'meteor/unchained:core-logger';
 import { Collection } from 'unchained-core-types';
 import {
   Event,
+  EventAdapter,
   EventDirector as EventDirectorType,
-} from 'unchained-core-types/lib/events';
+} from 'unchained-core-types/events';
 
 const logger = createLogger('unchained:core-events');
 
@@ -20,11 +21,6 @@ export const defaultNormalizer: ContextNormalizerFunction = (context) => {
     userId: context?.userId,
   };
 };
-
-export interface EventAdapter {
-  publish(eventName: string, payload: any): void;
-  subscribe(eventName: string, callBack: (payload?: any) => void): void;
-}
 
 const _registeredEvents = new Set();
 const _registeredCallbacks = new Set();

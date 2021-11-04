@@ -1,5 +1,5 @@
 import { Db } from 'unchained-core-types';
-import { Bookmark } from 'unchained-core-types/lib/bookmarks';
+import { Bookmark } from 'unchained-core-types/bookmarks';
 
 export const BookmarksCollection = async (db: Db) => {
   const Bookmarks = db.collection<Bookmark>('bookmarks');

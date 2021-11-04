@@ -56,7 +56,7 @@ var __rest = (this && this.__rest) || function (s, e) {
         }
     return t;
 };
-import { generateDbMutations } from 'unchained-utils';
+import { generateDbMutations } from 'meteor/unchained:utils';
 import { EventsCollection } from '../db/EventsCollection';
 import { EventsSchema } from '../db/EventsSchema';
 import { configureEventDirector } from '../director/EventDirector';

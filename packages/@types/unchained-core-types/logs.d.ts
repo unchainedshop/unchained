@@ -13,7 +13,7 @@ export type Log = {
   _id?: _ID;
   level: LogLevel;
   message: string;
-  meta?: object;
+  meta?: unknown;
 } & TimestampFields;
 
 export interface LogOptions extends LoggerOptions {

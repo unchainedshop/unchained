@@ -1,5 +1,4 @@
-import { migrateBookmarksService } from "./migrateBookmarksService";
-;
+import { migrateBookmarksService, } from './migrateBookmarksService';
 export var bookmarkServices = {
     migrateBookmarks: migrateBookmarksService
 };

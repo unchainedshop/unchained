@@ -1,7 +1,5 @@
 {
   "compilerOptions": {
-    "allowJs": true,
-    "allowSyntheticDefaultImports": true,
     "declaration": true,
     "esModuleInterop": true,
     "experimentalDecorators": true,
@@ -10,15 +8,11 @@
     "lib": ["esnext"],
     "module": "esnext",
     "moduleResolution": "node",
-    "noErrorTruncation": true,
-    "noImplicitReturns": true,
-    "noUnusedLocals": false,
     "outDir": "./lib",
     "preserveWatchOutput": true,
     "skipLibCheck": true,
-    "sourceMap": false,
     "typeRoots": ["node_modules/@types", "node_modules/mongodb"],
     "types": [],
   },
-  "include": ["types"]
+  "include": ["index.d.ts", "bookmarks.d.ts", "common.d.ts", "index.d.ts", "logs.d.ts", "modules.d.ts"]
 }

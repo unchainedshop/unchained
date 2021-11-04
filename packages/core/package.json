@@ -20,15 +20,9 @@
     "url": "https://github.com/unchainedshop/unchained/issues"
   },
   "homepage": "https://github.com/unchainedshop/unchained#readme",
-  "dependencies": {
-    "unchained-core-bookmarks": "^1.0.1",
-    "unchained-core-events": "^1.0.1",
-    "unchained-core-logger": "^1.0.1",
-    "unchained-utils": "^1.0.1"
-  },
   "devDependencies": {
     "chai": "^4.3.4",
     "cross-env": "^7.0.3",
-    "unchained-core-types": "^1.0.5"
+    "unchained-core-types": "^1.0.10"
   }
 }

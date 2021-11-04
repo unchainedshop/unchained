@@ -1,5 +1,5 @@
 import { Db } from 'unchained-core-types';
-import { Log } from 'unchained-core-types/lib/logs';
+import { Log } from 'unchained-core-types/logs';
 
 const ONE_DAY_IN_SECONDS = 86400;
 

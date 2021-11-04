@@ -1,4 +1,4 @@
-import { MigrateBookmarksService } from "./migrateBookmarksService";
+import { MigrateBookmarksService } from './migrateBookmarksService';
 export interface BookmarkServices {
     migrateBookmarks: MigrateBookmarksService;
 }

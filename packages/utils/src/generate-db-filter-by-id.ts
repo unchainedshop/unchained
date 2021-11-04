@@ -1,4 +1,5 @@
-import { Filter, ObjectId, _ID } from 'unchained-core-types';
+import type { Filter, _ID } from 'unchained-core-types';
+import { ObjectId } from 'bson';
 
 export const generateDbFilterById = (id: any): Filter<{ _id?: _ID }> => {
   const _id =

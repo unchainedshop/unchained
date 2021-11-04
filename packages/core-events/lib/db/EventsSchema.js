@@ -9,7 +9,7 @@ var __assign = (this && this.__assign) || function () {
     };
     return __assign.apply(this, arguments);
 };
-import { Schemas } from 'unchained-utils';
+import { Schemas } from 'meteor/unchained:utils';
 import SimpleSchema from 'simpl-schema';
 export var EventsSchema = new SimpleSchema(__assign({ type: { type: String, required: true }, payload: { type: Object, blackbox: true }, context: { type: Object, blackbox: true } }, Schemas.timestampFields), { requiredByDefault: false });
 //# sourceMappingURL=EventsSchema.js.map

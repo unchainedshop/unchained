@@ -1,4 +1,4 @@
-import { Modules } from "unchained-core-types";
+import { Modules } from 'unchained-core-types';
 export declare type MigrateBookmarksService = (params: {
     fromUserId: string;
     toUserId: string;

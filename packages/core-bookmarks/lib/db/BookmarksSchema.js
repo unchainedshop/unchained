@@ -9,7 +9,7 @@ var __assign = (this && this.__assign) || function () {
     };
     return __assign.apply(this, arguments);
 };
-import { Schemas } from 'unchained-utils';
+import { Schemas } from 'meteor/unchained:utils';
 import SimpleSchema from 'simpl-schema';
 export var BookmarkSchema = new SimpleSchema(__assign({ userId: { type: String, required: true }, productId: { type: String, required: true } }, Schemas.timestampFields), { requiredByDefault: false });
 //# sourceMappingURL=BookmarksSchema.js.map

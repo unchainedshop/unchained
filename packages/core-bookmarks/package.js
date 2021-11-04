@@ -16,7 +16,11 @@ Package.onUse((api) => {
   api.use('promise');
   api.use('typescript@4.1.2');
 
-  api.mainModule('lib/bookmarks-index.js', 'server');
+  api.use('unchained:core-logger@1.0.0-beta15');
+  api.use('unchained:core-events@1.0.0-beta15');
+  api.use('unchained:utils@1.0.0-beta15');
+
+  api.mainModule('src/bookmarks-index.ts', 'server');
 });
 
 Package.onTest((api) => {

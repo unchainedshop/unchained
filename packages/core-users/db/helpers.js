@@ -48,16 +48,17 @@ const buildFindSelector = ({ includeGuests, queryString }) => {
   return selector;
 };
 
-Logs.helpers({
-  user() {
-    return (
-      this.meta &&
-      Users.findOne({
-        _id: this.meta.userId,
-      })
-    );
-  },
-});
+// --> Moved to API query resolver using the modules pattern
+// Logs.helpers({
+//   user() {
+//     return (
+//       this.meta &&
+//       Users.findOne({
+//         _id: this.meta.userId,
+//       })
+//     );
+//   },
+// });
 
 Users.setTags = ({ userId, tags }) => {
   Users.update(

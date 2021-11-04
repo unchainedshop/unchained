@@ -1,1 +1,6 @@
-export { LogLevel } from 'unchained-core-types/lib/logs';
+export enum LogLevel {
+  Info = 'info',
+  Debug = 'debug',
+  Error = 'error',
+  Warning = 'warn',
+}

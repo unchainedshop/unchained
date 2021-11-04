@@ -1,9 +1,10 @@
-import { emitEvent, registerEvents } from 'unchained-core-events';
-import { ObjectId } from 'unchained-core-types';
-import { Bookmark } from 'unchained-core-types/lib/bookmarks';
-import { BookmarksModule } from 'unchained-core-types/types/bookmarks';
-import { ModuleInput } from 'unchained-core-types/types/common';
-import { generateDbFilterById, generateDbMutations } from 'unchained-utils';
+import { emitEvent, registerEvents } from 'meteor/unchained:core-events';
+import { Bookmark, BookmarksModule } from 'unchained-core-types/bookmarks';
+import { ModuleInput } from 'unchained-core-types/common';
+import {
+  generateDbFilterById,
+  generateDbMutations,
+} from 'meteor/unchained:utils';
 import { BookmarksCollection } from '../db/BookmarksCollection';
 import { BookmarkSchema } from '../db/BookmarksSchema';
 

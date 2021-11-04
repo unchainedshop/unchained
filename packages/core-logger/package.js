@@ -16,14 +16,17 @@ Npm.depends({
 Package.onUse((api) => {
   api.versionsFrom('2.2');
   api.use('ecmascript');
+  api.use('typescript@4.4.0');
 
-  api.mainModule('lib/logger-index.js', 'server');
+  api.use('unchained:utils@1.0.0-beta15');
+  
+  api.mainModule('src/logger-index.ts', 'server');
 });
 
 Package.onTest((api) => {
   api.use('meteortesting:mocha');
   api.use('ecmascript');
-  api.use('typescript@4.1.2');
+  api.use('typescript@4.4.0');
 
   api.use('unchained:core-mongodb@1.0.0-beta15');
   api.use('unchained:core-logger@1.0.0-beta15');

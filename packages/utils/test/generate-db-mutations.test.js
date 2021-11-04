@@ -1,7 +1,7 @@
 import { assert } from 'chai';
 import { generateDbMutations, Schemas } from 'meteor/unchained:utils';
 import SimpleSchema from 'simpl-schema';
-import { ObjectId } from 'unchained-core-types';
+import { ObjectId } from 'bson';
 
 const testUserId = 'user-1234';
 

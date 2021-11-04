@@ -4,12 +4,12 @@
 # 'meteor add' and 'meteor remove' will edit this file for you,
 # but you can also edit it by hand.
 
-webapp@1.12.0
+webapp@1.13.0
 mongo@1.13.0
-ecmascript@0.15.3
+ecmascript@0.16.0
 email@2.2.0
 disable-oplog@1.0.7
 unchained:platform
 es5-shim@4.8.0
 meteor@1.10.0
-typescript@4.3.5
+typescript@4.4.0

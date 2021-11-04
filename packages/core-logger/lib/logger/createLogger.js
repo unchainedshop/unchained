@@ -18,13 +18,15 @@ var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
     }
     return to.concat(ar || Array.prototype.slice.call(from));
 };
-import { createLogger as createWinstonLogger, format, transports } from 'winston';
+import { createLogger as createWinstonLogger, format, transports, } from 'winston';
 import stringify from 'safe-stable-stringify';
 import { LogLevel } from './LogLevel';
 var _a = process.env, _b = _a.DEBUG, DEBUG = _b === void 0 ? '' : _b, _c = _a.LOG_LEVEL, LOG_LEVEL = _c === void 0 ? LogLevel.Info : _c, _d = _a.UNCHAINED_LOG_FORMAT, UNCHAINED_LOG_FORMAT = _d === void 0 ? 'unchained' : _d;
 var combine = format.combine, label = format.label, timestamp = format.timestamp, colorize = format.colorize, printf = format.printf, json = format.json;
 var debugStringContainsModule = function (debugString, moduleName) {
-    var loggingMatched = debugString.split(',').reduce(function (accumulator, name) {
+    var loggingMatched = debugString
+        .split(',')
+        .reduce(function (accumulator, name) {
         if (accumulator === false)
             return accumulator;
         var nameRegex = name

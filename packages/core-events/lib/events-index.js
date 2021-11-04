@@ -56,11 +56,12 @@ var configureEvents = function (_a) {
                 case 1:
                     module = _b.sent();
                     module.registerEvents(GLOBAL_EVENTS);
-                    // setGlobalEventActions(module)
+                    setRegisterEvents(module.registerEvents);
+                    setEmitEvent(module.emit);
                     return [2 /*return*/, module];
             }
         });
     });
 };
-export { configureEvents, emitEvent, registerEvents, EventDirector };
+export { configureEvents, emitEvent, registerEvents, EventDirector, };
 //# sourceMappingURL=events-index.js.map

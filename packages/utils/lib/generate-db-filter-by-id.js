@@ -1,6 +1,6 @@
-import { ObjectId } from 'unchained-core-types';
+import { ObjectId } from 'bson';
 export var generateDbFilterById = function (id) {
-    var _id = typeof id === 'string' && id.length === 12 || id.length === 24
+    var _id = (typeof id === 'string' && id.length === 12) || id.length === 24
         ? new ObjectId(id)
         : id;
     return { _id: _id };

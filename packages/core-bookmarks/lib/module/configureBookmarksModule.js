@@ -34,8 +34,8 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-import { emitEvent, registerEvents } from 'unchained-core-events';
-import { generateDbFilterById, generateDbMutations } from 'unchained-utils';
+import { emitEvent, registerEvents } from 'meteor/unchained:core-events';
+import { generateDbFilterById, generateDbMutations, } from 'meteor/unchained:utils';
 import { BookmarksCollection } from '../db/BookmarksCollection';
 import { BookmarkSchema } from '../db/BookmarksSchema';
 var BOOKMARK_EVENTS = ['BOOKMARK_CREATE', 'BOOKMARK_REMOVE'];

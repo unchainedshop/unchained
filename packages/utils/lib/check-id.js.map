@@ -1,1 +1,1 @@
-{"version":3,"file":"check-id.js","sourceRoot":"","sources":["../src/check-id.ts"],"names":[],"mappings":"AAAA,MAAM,CAAC,IAAM,OAAO,GAAG,UAAC,KAAa,EAAE,KAA0C;IAC/E,IAAI,OAAO,KAAK,KAAK,QAAQ,EAAE;QAC7B,MAAM,KAAK,IAAI,EAAE,OAAO,EAAE,YAAY,EAAE,CAAA;KACzC;AACH,CAAC,CAAA"}
+{"version":3,"file":"check-id.js","sourceRoot":"","sources":["../src/check-id.ts"],"names":[],"mappings":"AAAA,MAAM,CAAC,IAAM,OAAO,GAAG,UACrB,KAAa,EACb,KAA0C;IAE1C,IAAI,OAAO,KAAK,KAAK,QAAQ,EAAE;QAC7B,MAAM,KAAK,IAAI,EAAE,OAAO,EAAE,YAAY,EAAE,CAAC;KAC1C;AACH,CAAC,CAAC"}

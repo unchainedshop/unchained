@@ -8,10 +8,6 @@ Package.describe({
 
 Npm.depends({
   'simpl-schema': '1.12.0',
-  'unchained-core-bookmarks': '1.0.3',
-  'unchained-core-events': '1.0.3',
-  'unchained-core-logger': '1.0.3',
-  'unchained-utils': '1.0.2',
 });
 
 Package.onUse((api) => {
@@ -22,11 +18,12 @@ Package.onUse((api) => {
   api.use('typescript@4.1.2');
 
   api.use('unchained:core-mongodb@1.0.0-beta15');
+  api.use('unchained:utils@1.0.0-beta15');
 
-  // api.use('unchained:core-bookmarks@1.0.0-beta15');
-  // api.use('unchained:core-events@1.0.0-beta15');
-  // api.use('unchained:core-logger@1.0.0-beta15');
+  api.use('unchained:core-events@1.0.0-beta15');
+  api.use('unchained:core-logger@1.0.0-beta15');
 
+  api.use('unchained:core-bookmarks@1.0.0-beta15');
   api.use('unchained:core-currencies@1.0.0-beta15');
   api.use('unchained:core-countries@1.0.0-beta13');
   api.use('unchained:core-delivery@1.0.0-beta15');
@@ -48,12 +45,10 @@ Package.onUse((api) => {
   api.use('unchained:core-enrollments@1.0.0-beta15');
 
   api.imply([
-    'unchained:core-mongodb',
+    'unchained:core-logger',
+    'unchained:core-events',
 
-    // 'unchained:core-logger',
-    // 'unchained:core-events',
-    // 'unchained:core-bookmarks',
-
+    'unchained:core-bookmarks',
     'unchained:core-currencies',
     'unchained:core-countries',
     'unchained:core-delivery',

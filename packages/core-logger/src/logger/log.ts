@@ -1,5 +1,5 @@
 import winston from 'winston';
-import { LogOptions } from 'unchained-core-types/lib/logs';
+import { LogOptions } from 'unchained-core-types/logs';
 import { Logger } from './Logger';
 import { LogLevel } from './LogLevel';
 

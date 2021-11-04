@@ -14,7 +14,10 @@ export interface EventAdapter {
   publish(eventName: string, payload: any): void;
   subscribe(eventName: string, callBack: (payload?: any) => void): void;
 }
-
+export interface EventAdapter {
+  publish(eventName: string, payload: any): void;
+  subscribe(eventName: string, callBack: (payload?: any) => void): void;
+}
 export interface EventDirector {
   emit: (eventName: string, data: any) => Promise<void>;
   getRegisteredEvents: () => string[];
@@ -25,7 +28,7 @@ export interface EventDirector {
 }
 export interface EventsModule extends EventDirector, ModuleMutations<Event> {
   findEvent: (
-    params: { eventId: number; query: Query },
+    params: { eventId: _ID; query?: Query },
     options?: FindOptions
   ) => Promise<Event>;
 

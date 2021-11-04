@@ -1,5 +1,5 @@
-import { ModuleInput } from 'unchained-core-types/lib/common';
-import { LogsModule } from 'unchained-core-types/lib/logs';
+import { ModuleInput } from 'unchained-core-types/common';
+import { LogsModule } from 'unchained-core-types/logs';
 import { createLogger, format, transports } from './logger/createLogger';
 import { LogLevel } from './logger/LogLevel';
 import { configureLogsModule } from './module/configureLogsModule';
@@ -20,3 +20,4 @@ const configureLogs = async ({ db }: ModuleInput): Promise<LogsModule> => {
 };
 
 export { configureLogs, log, createLogger, format, transports, LogLevel };
+

@@ -1,5 +1,5 @@
-import { ModuleInput } from 'unchained-core-types/lib/common';
-import { LogsModule } from 'unchained-core-types/lib/logs';
+import { ModuleInput } from 'unchained-core-types/common';
+import { LogsModule } from 'unchained-core-types/logs';
 import { createLogger, format, transports } from './logger/createLogger';
 import { LogLevel } from './logger/LogLevel';
 declare let log: LogsModule['log'];

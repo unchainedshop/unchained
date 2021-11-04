@@ -1,5 +1,5 @@
 import { Db } from 'unchained-core-types';
-import { Event } from 'unchained-core-types/lib/events';
+import { Event } from 'unchained-core-types/events';
 
 export const EventsCollection = async (db: Db) => {
   const Events = db.collection<Event>('events');

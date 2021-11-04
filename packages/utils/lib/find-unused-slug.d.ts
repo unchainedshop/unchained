@@ -6,4 +6,3 @@ declare function _default(checkSlugIsUniqueFn: any, { slugify }?: {
     newSlug: any;
 }) => any;
 export default _default;
-import defaultSlugify from "./slugify";

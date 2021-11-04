@@ -11,6 +11,7 @@ Npm.depends({
   'lodash.isequal': '4.5.0',
   'lodash.isobject': '3.0.2',
   'simpl-schema': '1.12.0',
+  'unchained-core-types': '1.0.10',
 });
 
 Package.onUse((api) => {
@@ -21,6 +22,7 @@ Package.onUse((api) => {
   api.use('ecmascript');
   api.use('raix:eventemitter');
   api.use('typescript@4.1.2');
+  api.use('unchained:utils@1.0.0-beta15');
 
   api.mainModule('src/mongodb-index.js');
 });

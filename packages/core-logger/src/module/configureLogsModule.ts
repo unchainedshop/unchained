@@ -1,6 +1,6 @@
-import { LogsModule } from 'unchained-core-types/lib/logs';
-import { ModuleInput } from 'unchained-core-types/lib/common';
-import { generateDbMutations } from 'unchained-utils';
+import { LogsModule } from 'unchained-core-types/logs';
+import { ModuleInput } from 'unchained-core-types/common';
+import { generateDbMutations } from 'meteor/unchained:utils';
 import { LogsCollection } from '../db/LogsCollection';
 import { LogsSchema } from '../db/LogsSchema';
 import { log } from '../logger/log';

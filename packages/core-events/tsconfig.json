@@ -17,6 +17,10 @@
     "sourceMap": true,
     "declaration": true,
     "outDir": "./lib",
+    "baseUrl": ".", // This must be specified if "paths" is.
+    "paths": {
+      "meteor/unchained:*": ["node_modules/unchained-core-types/index.d.ts"]
+    }
   },
   "include": ["src"]
 }

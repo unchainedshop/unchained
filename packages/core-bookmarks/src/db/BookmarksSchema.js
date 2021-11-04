@@ -1,4 +1,4 @@
-import { Schemas } from 'unchained-utils';
+import { Schemas } from 'meteor/unchained:utils';
 import SimpleSchema from 'simpl-schema';
 
 export const BookmarkSchema = new SimpleSchema(
