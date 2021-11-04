@@ -1,7 +1,7 @@
 import { assert } from "chai"
 import { initCore } from "./core"
 import { log, LogLevel } from 'unchained-core-logger';
-import { emitEvent, registerEvents, EventDirector, EventAdapter } from 'unchained-core-events'
+import { emit, registerEvents, EventDirector, EventAdapter } from 'unchained-core-events'
 
 describe('Initialisation', () => {
   it('Init core without parameters', async () => {
@@ -16,10 +16,10 @@ describe('Initialisation', () => {
     assert.isFunction(log);
     log('Test message', { level: LogLevel.Warning })
 
-    assert.isFunction(emitEvent);
+    assert.isFunction(emit);
     assert.isFunction(registerEvents);
 
     registerEvents(['TEST_EVENT'])
-    emitEvent('TEST_EVENT')
+    emit('TEST_EVENT')
   });
 })

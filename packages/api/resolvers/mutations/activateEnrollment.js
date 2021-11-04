@@ -1,18 +1,19 @@
-import { log } from 'meteor/unchained:core-logger';
 import {
   Enrollments,
   EnrollmentStatus,
 } from 'meteor/unchained:core-enrollments';
+import { log } from 'meteor/unchained:core-logger';
 import {
   EnrollmentNotFoundError,
   EnrollmentWrongStatusError,
   InvalidIdError,
 } from '../../errors';
+import { transformEnrollment } from '../transformations/transformEnrollment';
 
 export default async function activateEnrollment(
   root,
   { enrollmentId },
-  { userId }
+  { modules, userId }
 ) {
   log('mutation activateEnrollment', { userId });
   if (!enrollmentId) throw new InvalidIdError({ enrollmentId });
@@ -29,5 +30,6 @@ export default async function activateEnrollment(
   ) {
     throw new EnrollmentWrongStatusError({ status: enrollment.status });
   }
-  return enrollment.activate();
+  const activeEnrollment = await enrollment.activate();
+  return transformEnrollment(modules)(activeEnrollment);
 }

@@ -1,6 +1,6 @@
 import { log } from 'meteor/unchained:core-logger';
 import { Orders } from 'meteor/unchained:core-orders';
-import { mapOrder } from './order';
+import { transformOrder } from '../transformations/transformOrder';
 
 export default async function orders(
   root,
@@ -10,7 +10,11 @@ export default async function orders(
   log(`query orders: ${limit} ${offset} ${includeCarts} ${queryString}`, {
     userId,
   });
-  return Orders.findOrders({ limit, offset, includeCarts, queryString }).map(
-    mapOrder(modules)
-  );
+  const orders = Orders.findOrders({
+    limit,
+    offset,
+    includeCarts,
+    queryString,
+  });
+  return orders.map(transformOrder(modules));
 }

@@ -47,7 +47,7 @@ declare module 'meteor/unchained:core-logger' {
 
 declare module 'meteor/unchained:core-events' {
   function registerEvents(events: Array<string>): void;
-  function emitEvent(event: string, data: any): Promise<void>;
+  function emit(event: string, data: any): Promise<void>;
   function configureEvent({ db }: ModuleInput): Promise<EventsModule>;
   EventDirector;
   EventAdapter;

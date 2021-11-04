@@ -1,6 +1,6 @@
 import { assert } from 'chai';
 import { initDb } from 'meteor/unchained:core-mongodb';
-import { configureEvents, registerEvents, emitEvent, EventDirector } from 'meteor/unchained:core-events';
+import { configureEvents, registerEvents, emit, EventDirector } from 'meteor/unchained:core-events';
 import '../plugins/node-event-emitter';
 // import '../plugins/matomo-tracker';
 
@@ -20,9 +20,9 @@ describe('Test exports', () => {
 
   it('Check global event actions', () => {
     assert.isFunction(registerEvents)
-    assert.isFunction(emitEvent)
+    assert.isFunction(emit)
     
     registerEvents(['TEST_EVENT', 'TEST_EVENT_2'])
-    emitEvent('TEST_EVENT')
+    emit('TEST_EVENT')
   });
 });

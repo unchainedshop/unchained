@@ -1,5 +1,5 @@
 module.exports = {
-  testPathIgnorePatterns: ["<rootDir>/examples/*"],
+  testPathIgnorePatterns: ["<rootDir>/examples/", "<rootDir>/docs", "<rootDir>/packages"],
   transform: {
     "^.+\\.jsx?$": "babel-jest",
     "^.+\\.ts?$": "ts-jest",

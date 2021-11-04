@@ -1,4 +1,4 @@
-import { emitEvent, registerEvents } from 'meteor/unchained:core-events';
+import { emit, registerEvents } from 'meteor/unchained:core-events';
 import { Bookmark, BookmarksModule } from 'unchained-core-types/bookmarks';
 import { ModuleInput } from 'unchained-core-types/common';
 import {
@@ -42,13 +42,13 @@ export const configureBookmarksModule = async ({
     },
     removeById: async (bookmarkId) => {
       const deletedCount = await mutations.delete(bookmarkId);
-      emitEvent('BOOKMARK_REMOVE', { bookmarkId });
+      emit('BOOKMARK_REMOVE', { bookmarkId });
       console.log('DELETE', deletedCount);
       return deletedCount;
     },
     create: async (doc: Bookmark, userId?: string) => {
       const bookmarkId = await mutations.create(doc, userId);
-      emitEvent('BOOKMARK_CREATE', { bookmarkId });
+      emit('BOOKMARK_CREATE', { bookmarkId });
       return bookmarkId;
     },
     existsByUserIdAndProductId: async ({ productId, userId }) => {

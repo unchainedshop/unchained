@@ -9,7 +9,7 @@ import {
 } from 'meteor/unchained:core-enrollments';
 import { Countries } from 'meteor/unchained:core-countries';
 import { Users } from 'meteor/unchained:core-users';
-import { Logs, log } from 'meteor/unchained:core-logger';
+import { log } from 'meteor/unchained:core-logger';
 import { WorkerDirector } from 'meteor/unchained:core-worker';
 import {
   OrderPricingDirector,
