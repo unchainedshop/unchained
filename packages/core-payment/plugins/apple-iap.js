@@ -42,7 +42,7 @@ const verifyReceipt = async ({ receiptData, password }) => {
     body: JSON.stringify(payload),
     method: 'POST',
     headers: {
-      'Content-Type': 'application/xml',
+      'Content-Type': 'application/json',
     },
   });
   return result.json();
