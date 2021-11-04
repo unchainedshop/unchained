@@ -24,8 +24,11 @@ export const configureBookmarksModule = async ({
     findByUserIdAndProductId: async ({ userId, productId }) =>
       await Bookmarks.findOne({ userId, productId }),
     findById: async (bookmarkId) => {
-      const filter = generateDbFilterById(bookmarkId);
-      const bookmark = await Bookmarks.findOne({ _id: filter._id });
+      let bookmark: Bookmark;
+      if (bookmarkId) {
+        const filter = generateDbFilterById(bookmarkId);
+        bookmark = await Bookmarks.findOne({ _id: filter._id });
+      }
       return bookmark;
     },
     find: async (query) => await Bookmarks.find(query).toArray(),
