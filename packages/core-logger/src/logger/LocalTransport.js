@@ -17,9 +17,10 @@ export class LocalTransport extends Transport {
     const { level: formattedLevel, message, ...meta } = info;
 
     const level = info[Symbol.for('level')];
+    
     setTimeout(() => {
       try {
-        Logs.insert({
+        this.Logs.insert({
           created: new Date(),
           level,
           message,

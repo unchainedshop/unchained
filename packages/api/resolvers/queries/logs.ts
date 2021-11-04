@@ -8,7 +8,7 @@ export default async function logs(
   { limit, offset }: { limit: number; offset: number },
   { modules }: Context
 ) {
-  const logs = await modules.logger.findLogs({ limit, offset });
+  const logs = await modules.logs.findLogs({ limit, offset });
 
   return logs.map((log) => ({
     ...log,

@@ -14,7 +14,7 @@ export declare interface Modules {
   events: EventsModule;
   filters: any;
   languages: any;
-  logger: LogsModule;
+  logs: LogsModule;
   messaging: any;
   orders: any;
   payment: any;
