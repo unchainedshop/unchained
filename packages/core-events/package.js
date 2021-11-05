@@ -15,7 +15,7 @@ Package.onUse((api) => {
   api.versionsFrom('2.2');
   api.use('ecmascript');
   api.use('typescript@4.1.2');
-  
+
   api.use('unchained:utils@1.0.0-beta15');
   api.use('unchained:core-logger@1.0.0-beta15');
 

@@ -8,12 +8,11 @@ import {
   EnrollmentWrongStatusError,
   InvalidIdError,
 } from '../../errors';
-import { transformEnrollment } from '../transformations/transformEnrollment';
 
 export default async function activateEnrollment(
   root,
   { enrollmentId },
-  { modules, userId }
+  { userId }
 ) {
   log('mutation activateEnrollment', { userId });
   if (!enrollmentId) throw new InvalidIdError({ enrollmentId });
@@ -30,6 +29,5 @@ export default async function activateEnrollment(
   ) {
     throw new EnrollmentWrongStatusError({ status: enrollment.status });
   }
-  const activeEnrollment = await enrollment.activate();
-  return transformEnrollment(modules)(activeEnrollment);
+  return enrollment.activate();
 }

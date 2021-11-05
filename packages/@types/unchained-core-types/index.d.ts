@@ -1,9 +1,13 @@
 import winston from 'winston';
-import { _ID } from './';
-import { ModuleInput } from './common';
-import { LogsModule, LogLevel } from './logs';
-import { EventDirector, EventAdapter, EventsModule } from './events';
 import { Collection } from 'mongodb';
+import { _ID } from '.';
+import { ModuleInput } from './common';
+import { LogsModule, LogLevel as LogLevelType } from './logs';
+import {
+  EventDirector as EventDirectorType,
+  EventAdapter as EventAdapterType,
+  EventsModule,
+} from './events';
 
 // Types package only
 export { Modules } from './modules';
@@ -14,7 +18,7 @@ export type {
   Filter,
   ObjectId,
 } from 'mongodb';
-export { ModuleMutations, _ID } from './';
+export { ModuleMutations, _ID } from '.';
 
 declare module 'meteor/unchained:utils' {
   function checkId(
@@ -42,19 +46,19 @@ declare module 'meteor/unchained:core-logger' {
     moduleName: string,
     moreTransports: Array<TransportStream> = []
   ): winston.Logger;
-  const LogLevel;
+  type LogLevel = LogLevelType;
 }
 
 declare module 'meteor/unchained:core-events' {
   function registerEvents(events: Array<string>): void;
   function emit(event: string, data: any): Promise<void>;
   function configureEvent({ db }: ModuleInput): Promise<EventsModule>;
-  EventDirector;
-  EventAdapter;
+  type EventDirector = EventDirectorType;
+  type EventAdapter = EventAdapterType;
 }
 
 declare module 'meteor/unchained:core-users' {
-  class Users {};
+  class Users {}
 }
 
 declare module 'meteor/unchained:core-orders' {

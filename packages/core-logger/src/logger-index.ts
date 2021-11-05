@@ -20,4 +20,3 @@ const configureLogs = async ({ db }: ModuleInput): Promise<LogsModule> => {
 };
 
 export { configureLogs, log, createLogger, format, transports, LogLevel };
-

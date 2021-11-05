@@ -6,7 +6,7 @@ import { EventDirector } from './director/EventDirector';
 
 const GLOBAL_EVENTS = ['PAGE_VIEW'];
 
-let emit: EventsModule['emit'] = EventDirector.emit;
+let { emit } = EventDirector;
 let { registerEvents } = EventDirector;
 
 // Required to avoid meteor build errors (TypeError: module.runSetters is not a function)
@@ -22,9 +22,9 @@ const configureEvents = async ({ db }: ModuleInput): Promise<EventsModule> => {
 
   module.registerEvents(GLOBAL_EVENTS);
 
-  setRegisterEvents(module.registerEvents)
-  setEmitEvent(module.emit)
-  
+  setRegisterEvents(module.registerEvents);
+  setEmitEvent(module.emit);
+
   return module;
 };
 

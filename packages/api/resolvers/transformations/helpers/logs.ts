@@ -1,17 +1,24 @@
 import { Modules } from 'unchained-core-types';
-import { LogsModule } from 'unchained-core-types/logs';
+import { Log } from 'unchained-core-types/logs';
+import { checkTypeResolver } from '../../../acl';
 
 export const logs =
-  (
-    modules: Modules,
-    metaId: string,
-    obj: { _id: string }
-  ): LogsModule['findLogs'] =>
-  async ({ offset, limit }) => {
-    return await modules.logs.findLogs({
+  (metaId: string, action: string) =>
+  async (
+    obj: { _id: string },
+    params: { offset: number; limit: number },
+    context: { modules: Modules }
+  ): Promise<Array<Log>> => {
+    const { modules } = context;
+
+    if (action) {
+      checkTypeResolver(action, 'logs');
+    }
+
+    return modules.logs.findLogs({
       query: { [`meta.${metaId}`]: obj._id },
-      offset,
-      limit,
+      offset: params.offset,
+      limit: params.limit,
       sort: {
         created: -1,
       },

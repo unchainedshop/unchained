@@ -7,8 +7,8 @@ export const generateDbMutations = <T extends { _id?: _ID }>(
   collection: Collection<T>,
   schema: SimpleSchema
 ): ModuleMutations<T> => {
-  if (!collection) throw 'Collection is missing';
-  if (!schema) throw 'Schema is missing';
+  if (!collection) throw new Error('Collection is missing');
+  if (!schema) throw new Error('Schema is missing');
   return {
     create: async (doc, userId) => {
       const values = schema.clean(doc);

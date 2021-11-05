@@ -20,9 +20,9 @@ export const configureBookmarksModule = async ({
   const mutations = generateDbMutations<Bookmark>(Bookmarks, BookmarkSchema);
 
   return {
-    findByUserId: async (userId) => await Bookmarks.find({ userId }).toArray(),
+    findByUserId: async (userId) => Bookmarks.find({ userId }).toArray(),
     findByUserIdAndProductId: async ({ userId, productId }) =>
-      await Bookmarks.findOne({ userId, productId }),
+      Bookmarks.findOne({ userId, productId }),
     findById: async (bookmarkId) => {
       let bookmark: Bookmark;
       if (bookmarkId) {
@@ -31,7 +31,7 @@ export const configureBookmarksModule = async ({
       }
       return bookmark;
     },
-    find: async (query) => await Bookmarks.find(query).toArray(),
+    find: async (query) => Bookmarks.find(query).toArray(),
     replaceUserId: async (fromUserId, toUserId) => {
       const result = await Bookmarks.updateMany(
         { userId: fromUserId },
@@ -46,7 +46,6 @@ export const configureBookmarksModule = async ({
     removeById: async (bookmarkId) => {
       const deletedCount = await mutations.delete(bookmarkId);
       emit('BOOKMARK_REMOVE', { bookmarkId });
-      console.log('DELETE', deletedCount);
       return deletedCount;
     },
     create: async (doc: Bookmark, userId?: string) => {

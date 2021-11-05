@@ -9,6 +9,6 @@ export default async function eventsCount(
   { modules, userId }: Context
 ) {
   logger.info(`query eventsCount ${userId}`);
-  
+
   return modules.events.count({ type });
 }

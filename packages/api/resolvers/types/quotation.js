@@ -1,9 +1,9 @@
 import { actions } from '../../roles';
-import { checkTypeResolver } from '../../acl';
+import { logs } from '../transformations/helpers/logs';
 
 export default {
   status(obj) {
     return obj.normalizedStatus();
   },
-  logs: checkTypeResolver(actions.viewLogs, 'logs'),
+  logs: logs('quotationId', actions.viewLogs),
 };

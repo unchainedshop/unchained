@@ -4,22 +4,24 @@ import { ModuleMutations, Query, TimestampFields, _ID } from './common';
 export type Event = {
   _id?: _ID;
   type: string;
-  context?: object;
-  payload?: object;
+  context?: Record<string, unknown>;
+  payload?: Record<string, unknown>;
 } & TimestampFields;
 
 export type ContextNormalizerFunction = (context: any) => any;
 
 export interface EventAdapter {
-  publish(eventName: string, payload: any): void;
-  subscribe(eventName: string, callBack: (payload?: any) => void): void;
-}
-export interface EventAdapter {
-  publish(eventName: string, payload: any): void;
-  subscribe(eventName: string, callBack: (payload?: any) => void): void;
+  publish(eventName: string, payload: Record<string, unknown>): void;
+  subscribe(
+    eventName: string,
+    callBack: (payload?: Record<string, unknown>) => void
+  ): void;
 }
 export interface EventDirector {
-  emit: (eventName: string, data: any) => Promise<void>;
+  emit: (
+    eventName: string,
+    data: string | Record<string, unknown>
+  ) => Promise<void>;
   getRegisteredEvents: () => string[];
   registerEvents: (events: string[]) => void;
   setContextNormalizer: (fn: ContextNormalizerFunction) => void;

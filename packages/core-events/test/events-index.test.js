@@ -9,7 +9,6 @@ describe('Test exports', () => {
     const db = initDb()
     assert.isDefined(configureEvents);
     const module = await configureEvents({ db });
-    console.log('MODULE', module)
     assert.ok(module);
     assert.isFunction(module.registerEvents);
   });

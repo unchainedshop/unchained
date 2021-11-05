@@ -1,8 +1,8 @@
 import { Modules } from '.';
 
-export declare interface Root {}
+export declare type Root = Record<string, unknown>;
 export declare interface Context {
-  services: any
+  services: any;
   modules: Modules;
   userId: string;
 }

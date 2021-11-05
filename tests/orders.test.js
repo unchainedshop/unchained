@@ -2,15 +2,15 @@ import {
   setupDatabase,
   createAnonymousGraphqlFetch,
   createLoggedInGraphqlFetch,
-} from './helpers';
-import { SimpleOrder } from './seeds/orders';
-import { USER_TOKEN, ADMIN_TOKEN } from './seeds/users';
+} from "./helpers";
+import { SimpleOrder } from "./seeds/orders";
+import { USER_TOKEN, ADMIN_TOKEN } from "./seeds/users";
 
 let graphqlFetch;
 let adminGraphqlFetch;
 let graphqlFetchAsAnonymousUser;
 
-describe('Order: Management', () => {
+describe("Order: Management", () => {
   beforeAll(async () => {
     await setupDatabase();
     graphqlFetch = await createLoggedInGraphqlFetch(USER_TOKEN);
@@ -18,8 +18,8 @@ describe('Order: Management', () => {
     graphqlFetchAsAnonymousUser = await createAnonymousGraphqlFetch();
   });
 
-  describe('Query.ordersCount for logged in user should', () => {
-    it('return total number of current user orders', async () => {
+  describe("Query.ordersCount for logged in user should", () => {
+    it("return total number of current user orders", async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
           query ordersCount {
@@ -28,12 +28,12 @@ describe('Order: Management', () => {
         `,
         variables: {},
       });
-      expect(errors[0]?.extensions.code).toEqual('NoPermissionError');
+      expect(errors[0]?.extensions.code).toEqual("NoPermissionError");
     });
   });
 
-  describe('Query.ordersCount for admin user should', () => {
-    it('return total number of current user orders', async () => {
+  describe("Query.ordersCount for admin user should", () => {
+    it("return total number of current user orders", async () => {
       const {
         data: { ordersCount },
       } = await adminGraphqlFetch({
@@ -48,8 +48,8 @@ describe('Order: Management', () => {
     });
   });
 
-  describe('Query.ordersCount for anonymous user', () => {
-    it('should return NoPermissionError', async () => {
+  describe("Query.ordersCount for anonymous user", () => {
+    it("should return NoPermissionError", async () => {
       const { errors } = await graphqlFetchAsAnonymousUser({
         query: /* GraphQL */ `
           query ordersCount {
@@ -58,12 +58,12 @@ describe('Order: Management', () => {
         `,
         variables: {},
       });
-      expect(errors[0]?.extensions.code).toEqual('NoPermissionError');
+      expect(errors[0]?.extensions.code).toEqual("NoPermissionError");
     });
   });
 
-  describe('Query.orders for loggedin user should', () => {
-    it('return array of current user orders', async () => {
+  describe("Query.orders for loggedin user should", () => {
+    it("return array of current user orders", async () => {
       const {
         data: {
           me: { orders },
@@ -123,7 +123,7 @@ describe('Order: Management', () => {
       expect(orders.length).toEqual(2);
     });
 
-    it('return single user order', async () => {
+    it("return single user order", async () => {
       const {
         data: { order },
       } = await graphqlFetch({
@@ -181,7 +181,7 @@ describe('Order: Management', () => {
 
       expect(order._id).toEqual(SimpleOrder._id);
     });
-    it('return simulatedPrice for supportedDeliveryProviders using default country currency when currency is not provided', async () => {
+    it("return simulatedPrice for supportedDeliveryProviders using default country currency when currency is not provided", async () => {
       const {
         data: { order },
       } = await graphqlFetch({
@@ -206,11 +206,11 @@ describe('Order: Management', () => {
       });
 
       expect(
-        order.supportedDeliveryProviders?.[0]?.simulatedPrice?.currency,
-      ).toEqual('CHF');
+        order.supportedDeliveryProviders?.[0]?.simulatedPrice?.currency
+      ).toEqual("CHF");
     });
 
-    it('return simulatedPrice for supportedDeliveryProviders using the provided currency when currency is provided', async () => {
+    it("return simulatedPrice for supportedDeliveryProviders using the provided currency when currency is provided", async () => {
       const {
         data: { order },
       } = await graphqlFetch({
@@ -235,34 +235,13 @@ describe('Order: Management', () => {
       });
 
       expect(
-        order.supportedDeliveryProviders?.[0]?.simulatedPrice?.currency,
-      ).toEqual('EUR');
-    });
-
-    it('return error when passed invalid orderId and user is admin', async () => {
-      const {
-        data: { order },
-        errors,
-      } = await adminGraphqlFetch({
-        query: /* GraphQL */ `
-          query order($orderId: ID!) {
-            order(orderId: $orderId) {
-              _id
-            }
-          }
-        `,
-        variables: {
-          orderId: '',
-        },
-      });
-
-      expect(order).toBe(null);
-      expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
+        order.supportedDeliveryProviders?.[0]?.simulatedPrice?.currency
+      ).toEqual("EUR");
     });
   });
 
-  describe('Query.orders for anonymous user', () => {
-    it('should return error', async () => {
+  describe("Query.orders for anonymous user", () => {
+    it("should return error", async () => {
       const { errors } = await graphqlFetchAsAnonymousUser({
         query: /* GraphQL */ `
           query orders {
@@ -276,7 +255,55 @@ describe('Order: Management', () => {
         `,
         variables: {},
       });
-      expect(errors[0]?.extensions.code).toEqual('NoPermissionError');
+      expect(errors[0]?.extensions.code).toEqual("NoPermissionError");
+    });
+  });
+
+  describe("Query.orders for admin user", () => {
+    it("should return logs", async () => {
+      const {
+        data: { order },
+      } = await adminGraphqlFetch({
+        query: /* GraphQL */ `
+          query order($orderId: ID!) {
+            order(orderId: $orderId) {
+              _id
+              logs(limit: 10, offset: 0) {
+                _id
+                created
+                level
+              }
+            }
+          }
+        `,
+        variables: {
+          orderId: SimpleOrder._id,
+        },
+      });
+
+      console.log("ORDER", order);
+      expect(order.logs.length).toEqual(10);
+    });
+
+    it("return error when passed invalid orderId and user is admin", async () => {
+      const {
+        data: { order },
+        errors,
+      } = await adminGraphqlFetch({
+        query: /* GraphQL */ `
+          query order($orderId: ID!) {
+            order(orderId: $orderId) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          orderId: "",
+        },
+      });
+
+      expect(order).toBe(null);
+      expect(errors[0]?.extensions?.code).toEqual("InvalidIdError");
     });
   });
 });

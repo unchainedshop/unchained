@@ -22,51 +22,51 @@ export const defaultNormalizer: ContextNormalizerFunction = (context) => {
   };
 };
 
-const _registeredEvents = new Set();
-const _registeredCallbacks = new Set();
+const RegisteredEventsSet = new Set();
+const RegisteredCallbacksSet = new Set();
 
-let _adapter: EventAdapter;
-let _contextNormalizer = defaultNormalizer;
-let _Events: Collection<Event>;
+let Adapter: EventAdapter;
+let ContextNormalizer = defaultNormalizer;
+let Events: Collection<Event>;
 
 export const EventDirector: EventDirectorType & {
   getEventAdapter: () => EventAdapter;
 } = {
   registerEvents: (events: string[]): void => {
     if (events.length) {
-      events.forEach((e) => _registeredEvents.add(e));
+      events.forEach((e) => RegisteredEventsSet.add(e));
       logger.verbose(`EventDirector -> Registered ${JSON.stringify(events)}`);
     }
   },
 
   getRegisteredEvents: (): string[] => {
-    return Array.from(_registeredEvents) as string[];
+    return Array.from(RegisteredEventsSet) as string[];
   },
 
   setContextNormalizer: (fn: ContextNormalizerFunction): void => {
-    _contextNormalizer = fn;
+    ContextNormalizer = fn;
   },
 
   setEventAdapter: (adapter: EventAdapter) => {
-    _adapter = adapter;
+    Adapter = adapter;
   },
 
-  getEventAdapter: (): EventAdapter => _adapter,
+  getEventAdapter: (): EventAdapter => Adapter,
 
   emit: async (eventName: string, data: any): Promise<void> => {
     // const context = getContext();
-    const extractedContext = _contextNormalizer(null);
+    const extractedContext = ContextNormalizer(null);
 
-    if (!_registeredEvents.has(eventName))
+    if (!RegisteredEventsSet.has(eventName))
       throw new Error(`Event with ${eventName} is not registered`);
 
-    _adapter?.publish(eventName, {
+    Adapter?.publish(eventName, {
       payload: { ...data },
       context: extractedContext,
     });
 
-    if (_Events) {
-      await _Events.insertOne({
+    if (Events) {
+      await Events.insertOne({
         type: eventName,
         payload: data,
         context: extractedContext,
@@ -82,12 +82,12 @@ export const EventDirector: EventDirectorType & {
   subscribe: (eventName: string, callBack: () => void): void => {
     const currentSubscription = eventName + callBack?.toString(); // used to avaoid registering the same event handler callback
 
-    if (!_registeredEvents.has(eventName))
+    if (!RegisteredEventsSet.has(eventName))
       throw new Error(`Event with ${eventName} is not registered`);
 
-    if (!_registeredCallbacks.has(currentSubscription)) {
-      _adapter?.subscribe(eventName, callBack);
-      _registeredCallbacks.add(currentSubscription);
+    if (!RegisteredCallbacksSet.has(currentSubscription)) {
+      Adapter?.subscribe(eventName, callBack);
+      RegisteredCallbacksSet.add(currentSubscription);
       logger.verbose(`EventDirector -> Subscribed to ${eventName}`);
     }
   },
@@ -103,9 +103,9 @@ export const {
 } = EventDirector;
 
 export const configureEventDirector = (
-  Events: Collection<Event>
+  EventsCollection: Collection<Event>
 ): EventDirectorType => {
-  _Events = Events;
+  Events = EventsCollection;
 
   return EventDirector;
 };

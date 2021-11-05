@@ -1,12 +1,11 @@
 import { ApolloError } from 'apollo-server-express';
 
-export const createError = (code: string, message: string): any => 
+export const createError = (code: string, message: string): any =>
   class extends ApolloError {
     constructor({ message: explicitMessage, ...data }) {
       super(explicitMessage || message, code, data);
     }
   };
-
 
 export const PermissionSystemError = createError(
   'PermissionSystemError',

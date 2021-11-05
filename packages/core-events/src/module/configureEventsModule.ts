@@ -24,10 +24,7 @@ export const configureEventsModule = async ({
     findEvent: async ({ eventId, ...rest }, options) => {
       const selector = eventId ? { _id: eventId } : rest;
       if (!Object.keys(selector)?.length) return null;
-      return await Events.findOne(
-        selector as unknown as Filter<Event>,
-        options
-      );
+      return Events.findOne(selector as unknown as Filter<Event>, options);
     },
 
     findEvents: async ({
@@ -36,7 +33,7 @@ export const configureEventsModule = async ({
       sort = {
         created: -1,
       },
-      query
+      query,
     }) => {
       const events = Events.find(buildFindSelector(query as FindQuery), {
         skip: offset,
@@ -44,7 +41,7 @@ export const configureEventsModule = async ({
         sort,
       });
 
-      return await events.toArray();
+      return events.toArray();
     },
 
     count: async (query) => {

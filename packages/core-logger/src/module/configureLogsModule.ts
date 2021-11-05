@@ -28,7 +28,7 @@ export const configureLogsModule = async ({
         }
       );
 
-      return await logs.toArray();
+      return logs.toArray();
     },
 
     count: async () => {
