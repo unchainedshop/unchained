@@ -10,9 +10,9 @@ export default (
   endpoint: string,
   merchantId: string,
   secret: string
-): ((path: string, body: unknown) => Promise<Response>) => {
+): ((path: string) => Promise<Response>) => {
   if (DATATRANS_API_MOCKS_PATH) {
-    return async (path: string, body: unknown): Promise<Response> => {
+    return async (path): Promise<Response> => {
       try {
         const filePath = resolve(
           process.env.PWD,

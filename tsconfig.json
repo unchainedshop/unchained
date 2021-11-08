@@ -36,5 +36,5 @@
   "exclude": [
     "examples/**"
   ],
-  "include": ["packages/**/*", "packages/@types/unchained-core-types/types/.d.ts"]
+  "include": ["packages/**/*"]
 }

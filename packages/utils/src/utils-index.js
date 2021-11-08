@@ -2,7 +2,6 @@ import Address from './address-schema';
 import Contact from './contact-schema';
 import {
   timestampFields,
-  TimestampFields,
   contextFields,
   logFields,
 } from './common-schema-fields';
@@ -19,7 +18,6 @@ export { checkId } from './check-id';
 export { generateDbFilterById } from './generate-db-filter-by-id';
 export { generateDbMutations } from './generate-db-mutations';
 
-export { TimestampFields };
 const Schemas = {
   timestampFields,
   contextFields,

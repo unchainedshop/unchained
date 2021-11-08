@@ -13,10 +13,12 @@ export default async (
   return logs.map((log) => ({
     ...log,
     user() {
-      return log.meta &&
+      return (
+        log.meta &&
         (Users as any).findOne({
           _id: (log.meta as any).userId,
-        });
+        })
+      );
     },
     order() {
       return (
