@@ -4,6 +4,7 @@ import SimpleSchema from 'simpl-schema';
 
 import { Events } from './collections';
 
+const TWO_DAYS_SEC = 172800;
 Events.attachSchema(
   new SimpleSchema(
     {
@@ -16,8 +17,11 @@ Events.attachSchema(
 );
 
 export default () => {
-  Events.rawCollection().createIndex({
-    created: -1,
-  });
+  Events.rawCollection().createIndex(
+    {
+      created: -1,
+    },
+    { expireAfterSeconds: TWO_DAYS_SEC }
+  );
   Events.rawCollection().createIndex({ type: 1 });
 };
