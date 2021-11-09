@@ -52,6 +52,9 @@ Meteor.startup(async () => {
           },
         },
       },
+      events: {
+        enable: false,
+      },
       payment: {
         filterSupportedProviders: ({ providers }) => {
           return providers.sort((left, right) => {

@@ -6,7 +6,7 @@ export * from './db';
 
 const GLOBAL_EVENTS = ['PAGE_VIEW'];
 
-export default () => {
+export default ({ enableEvent = true }: { enableEvent: boolean }): void => {
   runMigrations();
-  registerEvents(GLOBAL_EVENTS);
+  if (enableEvent) registerEvents(GLOBAL_EVENTS);
 };

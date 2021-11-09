@@ -1,10 +1,14 @@
 import { getRegisteredEvents } from 'meteor/unchained:core-events';
 
-const generateEventTypeDefs = () => [
-  /* GraphQL */ `
+const generateEventTypeDefs = ({ enable }) =>
+  enable
+    ? [
+        /* GraphQL */ `
+    enum EventType
     extend enum EventType {
-      ${getRegisteredEvents().join(',')}
+      ${getRegisteredEvents().join(',') || ''}
     }
   `,
-];
+      ]
+    : [];
 export default generateEventTypeDefs;

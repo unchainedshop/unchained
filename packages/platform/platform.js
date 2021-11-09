@@ -53,7 +53,7 @@ export const startPlatform = async ({ modules, typeDefs, ...options } = {}) => {
   startAPI({
     ...options,
     typeDefs: [
-      ...generateEventTypeDefs(),
+      ...generateEventTypeDefs(modules?.events),
       ...workerTypeDefs(),
       ...(typeDefs || []),
     ],
