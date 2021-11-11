@@ -2,7 +2,7 @@ import winston from 'winston';
 import { Collection } from 'mongodb';
 import { _ID } from '.';
 import { ModuleInput } from './common';
-import { LogsModule, LogLevel as LogLevelType } from './logs';
+// import { LogsModule, LogLevel as LogLevelType } from './logs';
 import {
   EventDirector as EventDirectorType,
   EventAdapter as EventAdapterType,
@@ -39,15 +39,15 @@ declare module 'meteor/unchained:utils' {
   ): ModuleMutations<T>;
 }
 
-declare module 'meteor/unchained:core-logger' {
-  function configureLogs({ db }: ModuleInput): Promise<LogsModule>;
-  function log(message: string, options: LogOptions): void;
-  function createLogger(
-    moduleName: string,
-    moreTransports: Array<TransportStream> = []
-  ): winston.Logger;
-  type LogLevel = LogLevelType;
-}
+// declare module 'meteor/unchained:core-logger' {
+//   function configureLogs({ db }: ModuleInput): Promise<LogsModule>;
+//   function log(message: string, options: LogOptions): void;
+//   function createLogger(
+//     moduleName: string,
+//     moreTransports: Array<TransportStream> = []
+//   ): winston.Logger;
+//   type LogLevel = LogLevelType;
+// }
 
 declare module 'meteor/unchained:core-events' {
   function registerEvents(events: Array<string>): void;
