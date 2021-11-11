@@ -77,6 +77,7 @@
     "semantic-ui-css": "^2.4.1",
     "semantic-ui-less": "^2.4.1",
     "semantic-ui-react": "^2.0.4",
+    "sharp": "^0.29.2",
     "simpl-schema": "^1.12.0",
     "uniforms": "=2.5.0",
     "uniforms-bridge-simple-schema-2": "=2.5.0",
