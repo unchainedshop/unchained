@@ -4,11 +4,8 @@ tsconfig.tsbuildinfo
 .vscode
 .DS_Store
 .env
-dockercfg
-codeship.aes
 .meteor
 .npm
-/env
 /globalConfig.json
 /docs/static/api
 /lib
