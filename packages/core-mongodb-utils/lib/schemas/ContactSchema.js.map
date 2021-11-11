@@ -1,1 +1,0 @@
-{"version":3,"file":"ContactSchema.js","sourceRoot":"","sources":["../../src/schemas/ContactSchema.js"],"names":[],"mappings":"AAAA,OAAO,YAAY,MAAM,cAAc,CAAC;AAExC,MAAM,CAAC,IAAM,aAAa,GAAG,IAAI,YAAY,CAC3C;IACE,SAAS,EAAE,MAAM;IACjB,YAAY,EAAE,MAAM;CACrB,EACD,EAAE,iBAAiB,EAAE,KAAK,EAAE,CAC7B,CAAC"}
