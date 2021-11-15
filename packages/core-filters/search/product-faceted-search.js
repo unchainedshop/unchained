@@ -1,11 +1,11 @@
 import { FilterDirector } from 'meteor/unchained:core-filters';
 import { Filters } from '../db/collections';
 
-export default ({ query, filterSelector, ...rest }) => {
+export default ({ query, filterSelector, ...options }) => {
   const { filterQuery, forceLiveCollection } = query;
   const director = new FilterDirector({
     query,
-    ...rest,
+    ...options,
   });
 
   return async (productIdResolver) => {

@@ -5,11 +5,11 @@ export default ({
   filterSelector,
   productSelector,
   sortStage,
-  ...rest
+  ...options
 }) => {
   const director = new FilterDirector({
     query,
-    ...rest,
+    ...options,
   });
   return async (productIdResolver) => {
     const foundProductIds = await director.searchProducts(productIdResolver, {
