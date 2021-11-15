@@ -429,17 +429,6 @@ Filters.helpers({
     }, []);
     return reducedByValues;
   },
-  intersect({ values, forceLiveCollection, productIdSet }) {
-    if (!values) return productIdSet;
-    const filterOptionProductIds = this.productIds({
-      values,
-      forceLiveCollection,
-    });
-    const filterOptionProductIdSet = new Set(filterOptionProductIds);
-    return new Set(
-      [...productIdSet].filter((x) => filterOptionProductIdSet.has(x))
-    );
-  },
   optionsForFilterType(type) {
     if (type === FilterTypes.SWITCH) return ['true', 'false'];
     return this.options || [];
@@ -501,6 +490,7 @@ Filters.helpers({
     const filteredByOtherFiltersSet = otherFilters
       .filter((otherFilter) => otherFilter.key !== this.key)
       .reduce((productIdSet, filter) => {
+        if (!filterQuery[filter.key]) return productIdSet;
         const otherFilterProductIds = filter.productIds({
           values: filterQuery[filter.key],
           forceLiveCollection,
