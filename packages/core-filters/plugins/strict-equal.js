@@ -13,11 +13,6 @@ class StrictQualFilter extends FilterAdapter {
     return true;
   }
 
-  matchesFilter(set, productId) {
-    console.log(set, productId);
-    return true;
-  }
-
   async transformProductSelector(lastSelector, { key, value }) { // eslint-disable-line
     if (key) {
       return {
