@@ -6,16 +6,17 @@ export default ({
   productSelector,
   sortStage,
   ...rest
-}) => async (productIdResolver) => {
+}) => {
   const director = new FilterDirector({
     query,
     ...rest,
   });
-
-  const foundProductIds = await director.searchProducts(productIdResolver, {
-    filterSelector,
-    productSelector,
-    sortStage,
-  });
-  return foundProductIds || [];
+  return async (productIdResolver) => {
+    const foundProductIds = await director.searchProducts(productIdResolver, {
+      filterSelector,
+      productSelector,
+      sortStage,
+    });
+    return foundProductIds || [];
+  };
 };

@@ -463,38 +463,59 @@ Filters.helpers({
       .filter(Boolean);
     return mappedOptions;
   },
-  load({ filterQuery, forceLiveCollection, allProductIdsSet, otherFilters }) {
+  load({
+    filterQuery,
+    forceLiveCollection,
+    allProductIdsSet,
+    otherFilters,
+    ...rest
+  }) {
     const values = filterQuery[this.key];
+    const director = new FilterDirector({
+      query: {
+        filterQuery,
+        forceLiveCollection,
+      },
+      ...rest,
+    });
 
     // The examinedProductIdSet is a set of product id's that:
     // - Fit this filter generally
     // - Are part of the preselected product id array
-    const examinedProductIdSet = this.intersect({
+    const filterProductIds = this.productIds({
       values: [undefined],
       forceLiveCollection,
-      productIdSet: allProductIdsSet,
     });
+    const examinedProductIdSet = director.intersect(
+      allProductIdsSet,
+      new Set(filterProductIds)
+    );
 
     // The filteredProductIdSet is a set of product id's that:
     // - Are filtered by all other filters
     // - Are filtered by the currently selected value of this filter
     // or if there is no currently selected value:
     // - Is the same like examinedProductIdSet
-    const queryWithoutOwnFilter = { ...filterQuery };
-    delete queryWithoutOwnFilter[this.key];
-    const filteredByOtherFiltersSet = intersectProductIds({
-      productIds: examinedProductIdSet,
-      filters: otherFilters.filter(
-        (otherFilter) => otherFilter.key !== this.key
-      ),
-      filterQuery: queryWithoutOwnFilter,
-      forceLiveCollection,
-    });
-    const filteredProductIdSet = this.intersect({
-      values: values || [undefined],
-      forceLiveCollection,
-      productIdSet: filteredByOtherFiltersSet,
-    });
+    const filteredByOtherFiltersSet = otherFilters
+      .filter((otherFilter) => otherFilter.key !== this.key)
+      .reduce((productIdSet, filter) => {
+        const otherFilterProductIds = this.productIds({
+          values: filterQuery[filter.key],
+          forceLiveCollection,
+        });
+        return director.intersect(productIdSet, new Set(otherFilterProductIds));
+      }, new Set(examinedProductIdSet));
+
+    const filterProductIdsForValues = values
+      ? this.productIds({
+          values,
+          forceLiveCollection,
+        })
+      : filterProductIds;
+    const filteredProductIdSet = director.intersect(
+      filteredByOtherFiltersSet,
+      new Set(filterProductIdsForValues)
+    );
 
     return {
       definition: this,

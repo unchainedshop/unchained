@@ -30,6 +30,12 @@ class FilterAdapter {
     return assortmentIds;
   }
 
+  // This function is called to check if a filter actually matches a certain productId
+  // eslint-disable-next-line
+  matchesFilter(set, productId) {
+    return set.has(productId);
+  }
+
   // eslint-disable-next-line
   async transformSortStage(lastStage) {
     return lastStage;
@@ -87,6 +93,21 @@ class FilterDirector {
     return this.reduceAdapters(async (lastSearchPromise, concreteAdapter) => {
       return concreteAdapter.searchProducts(await lastSearchPromise, options);
     }, productIdResolver || null);
+  }
+
+  intersect(productIdSet, filterProductIdSet) {
+    return new Set(
+      [...productIdSet].filter((currentProductId) => {
+        return this.reduceAdapters((lastSearchPromise, concreteAdapter) => {
+          return (
+            concreteAdapter.matchesFilter(
+              filterProductIdSet,
+              currentProductId
+            ) || lastSearchPromise
+          );
+        }, false);
+      })
+    );
   }
 
   async buildFilterSelector(defaultSelector, options = {}) {
