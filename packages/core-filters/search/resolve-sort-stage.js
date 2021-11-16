@@ -38,8 +38,8 @@ const defaultStage = ({ orderBy }) => {
   };
 };
 
-export default async (query) => {
+export default async (query, options = {}) => {
   const stage = defaultStage(query);
-  const director = new FilterDirector({ query });
+  const director = new FilterDirector({ query, ...options });
   return director.buildSortStage(stage);
 };

@@ -5,12 +5,12 @@ export default ({
     filterSelector,
     assortmentSelector,
     sortStage,
-    ...rest
+    ...options
   }) =>
   async (productIdResolver) => {
     const director = new FilterDirector({
       query,
-      ...rest,
+      ...options,
     });
 
     const foundAssortmentIds = await director.searchAssortments(

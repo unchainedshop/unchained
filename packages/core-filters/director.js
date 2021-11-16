@@ -11,11 +11,6 @@ class FilterAdapter {
 
   static version = '';
 
-  // eslint-disable-next-line
-  static isActivatedFor(context) {
-    return false;
-  }
-
   constructor(context) {
     this.context = context;
   }
@@ -28,6 +23,12 @@ class FilterAdapter {
   // eslint-disable-next-line
   async searchAssortments(assortmentIds) {
     return assortmentIds;
+  }
+
+  // This function is called to check if a filter actually matches a certain productId
+  // eslint-disable-next-line
+  aggregateProductIds(productIds) {
+    return productIds;
   }
 
   // eslint-disable-next-line
@@ -57,6 +58,10 @@ class FilterAdapter {
 class FilterDirector {
   constructor(context) {
     this.context = context;
+    this.adapterInstances =
+      FilterDirector.sortedAdapters()
+        ?.map((AdapterClass) => new AdapterClass(this.context))
+        .filter(Boolean) || [];
   }
 
   async buildProductSelector(defaultSelector, options = {}) {
@@ -89,6 +94,17 @@ class FilterDirector {
     }, productIdResolver || null);
   }
 
+  intersect(productIdSet, filterProductIdSet) {
+    const reducedProductIdSet = this.adapterInstances.reduce(
+      (lastProductIds, concreteAdapter) =>
+        concreteAdapter.aggregateProductIds(lastProductIds),
+      [...productIdSet].filter((currentProductId) =>
+        filterProductIdSet.has(currentProductId)
+      )
+    );
+    return new Set(reducedProductIdSet);
+  }
+
   async buildFilterSelector(defaultSelector, options = {}) {
     return this.reduceAdapters(async (lastSelector, concreteAdapter) => {
       return concreteAdapter.transformFilterSelector(
@@ -99,17 +115,15 @@ class FilterDirector {
   }
 
   async reduceAdapters(reducer, initialValue) {
-    const adapters = FilterDirector.sortedAdapters().filter((AdapterClass) =>
-      AdapterClass.isActivatedFor(this.context)
-    );
-    if (adapters.length === 0) {
+    if (this.adapterInstances.length === 0) {
       return null;
     }
-
-    return adapters.reduce(async (lastSearchPromise, AdapterClass, index) => {
-      const concreteAdapter = new AdapterClass(this.context);
-      return reducer(lastSearchPromise, concreteAdapter, index);
-    }, Promise.resolve(initialValue));
+    return this.adapterInstances.reduce(
+      async (lastSearchPromise, concreteAdapter, index) => {
+        return reducer(lastSearchPromise, concreteAdapter, index);
+      },
+      Promise.resolve(initialValue)
+    );
   }
 
   static adapters = new Map();

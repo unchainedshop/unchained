@@ -74,6 +74,7 @@ const searchProducts = async ({
         ...query,
         allProductIdsSet: new Set(relevantProductIds),
         otherFilters,
+        context,
       });
     });
   };

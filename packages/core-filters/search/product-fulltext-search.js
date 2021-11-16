@@ -1,18 +1,17 @@
 import { FilterDirector } from 'meteor/unchained:core-filters';
 
 export default ({
+  query,
+  filterSelector,
+  productSelector,
+  sortStage,
+  ...options
+}) => {
+  const director = new FilterDirector({
     query,
-    filterSelector,
-    productSelector,
-    sortStage,
-    ...rest
-  }) =>
-  async (productIdResolver) => {
-    const director = new FilterDirector({
-      query,
-      ...rest,
-    });
-
+    ...options,
+  });
+  return async (productIdResolver) => {
     const foundProductIds = await director.searchProducts(productIdResolver, {
       filterSelector,
       productSelector,
@@ -20,3 +19,4 @@ export default ({
     });
     return foundProductIds || [];
   };
+};

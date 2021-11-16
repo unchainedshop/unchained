@@ -11,7 +11,6 @@ import { emit } from 'meteor/unchained:core-events';
 import { FilterTypes } from './schema';
 import { Filters, FilterTexts } from './collections';
 import { FilterDirector } from '../director';
-import intersectProductIds from '../search/intersect-product-ids';
 import { searchProducts } from '../search';
 
 const util = require('util');
@@ -30,7 +29,7 @@ Assortments.helpers({
     query,
     ignoreChildAssortments,
     forceLiveCollection,
-    ...rest
+    ...options
   }) {
     const productIds = this.productIds({
       forceLiveCollection,
@@ -44,7 +43,7 @@ Assortments.helpers({
         ...query,
       },
       forceLiveCollection,
-      ...rest,
+      ...options,
     });
   },
 });
@@ -226,8 +225,8 @@ Filters.helpers({
     };
   },
 
-  collectProductIds({ value } = {}) {
-    const director = new FilterDirector({ filter: this });
+  collectProductIds({ value, ...options } = {}) {
+    const director = new FilterDirector({ ...options });
     const selector = Promise.await(
       director.buildProductSelector(
         {
@@ -345,29 +344,21 @@ Filters.helpers({
     }, []);
     return reducedByValues;
   },
-  intersect({ values, forceLiveCollection, productIdSet }) {
-    if (!values) return productIdSet;
-    const filterOptionProductIds = this.productIds({
-      values,
-      forceLiveCollection,
-    });
-    const filterOptionProductIdSet = new Set(filterOptionProductIds);
-    return new Set(
-      [...productIdSet].filter((x) => filterOptionProductIdSet.has(x))
-    );
-  },
   optionsForFilterType(type) {
     if (type === FilterTypes.SWITCH) return ['true', 'false'];
     return this.options || [];
   },
-  loadedOptions({ values, forceLiveCollection, productIdSet }) {
+  loadedOptions({ values, forceLiveCollection, productIdSet, director }) {
     const mappedOptions = this.optionsForFilterType(this.type)
       .map((value) => {
-        const filteredProductIds = this.intersect({
+        const filterOptionProductIds = this.productIds({
           values: [value],
           forceLiveCollection,
-          productIdSet,
         });
+        const filteredProductIds = director.intersect(
+          productIdSet,
+          new Set(filterOptionProductIds)
+        );
         if (!filteredProductIds.size) return null;
         return {
           definition: () => this.optionObject(value),
@@ -379,45 +370,67 @@ Filters.helpers({
       .filter(Boolean);
     return mappedOptions;
   },
-  load({ filterQuery, forceLiveCollection, allProductIdsSet, otherFilters }) {
+  load({
+    filterQuery,
+    forceLiveCollection,
+    allProductIdsSet,
+    otherFilters,
+    ...options
+  }) {
     const values = filterQuery[this.key];
+    const director = new FilterDirector({
+      query: {
+        filterQuery,
+        forceLiveCollection,
+      },
+      ...options,
+    });
 
     // The examinedProductIdSet is a set of product id's that:
     // - Fit this filter generally
     // - Are part of the preselected product id array
-    const examinedProductIdSet = this.intersect({
+    const filterProductIds = this.productIds({
       values: [undefined],
       forceLiveCollection,
-      productIdSet: allProductIdsSet,
     });
+    const examinedProductIdSet = director.intersect(
+      allProductIdsSet,
+      new Set(filterProductIds)
+    );
 
     // The filteredProductIdSet is a set of product id's that:
     // - Are filtered by all other filters
     // - Are filtered by the currently selected value of this filter
     // or if there is no currently selected value:
     // - Is the same like examinedProductIdSet
-    const queryWithoutOwnFilter = { ...filterQuery };
-    delete queryWithoutOwnFilter[this.key];
-    const filteredByOtherFiltersSet = intersectProductIds({
-      productIds: examinedProductIdSet,
-      filters: otherFilters.filter(
-        (otherFilter) => otherFilter.key !== this.key
-      ),
-      filterQuery: queryWithoutOwnFilter,
-      forceLiveCollection,
-    });
-    const filteredProductIdSet = this.intersect({
-      values: values || [undefined],
-      forceLiveCollection,
-      productIdSet: filteredByOtherFiltersSet,
-    });
+    const filteredByOtherFiltersSet = otherFilters
+      .filter((otherFilter) => otherFilter.key !== this.key)
+      .reduce((productIdSet, filter) => {
+        if (!filterQuery[filter.key]) return productIdSet;
+        const otherFilterProductIds = filter.productIds({
+          values: filterQuery[filter.key],
+          forceLiveCollection,
+        });
+        return director.intersect(productIdSet, new Set(otherFilterProductIds));
+      }, new Set(examinedProductIdSet));
+
+    const filterProductIdsForValues = values
+      ? this.productIds({
+          values,
+          forceLiveCollection,
+        })
+      : filterProductIds;
+    const filteredProductIdSet = director.intersect(
+      filteredByOtherFiltersSet,
+      new Set(filterProductIdsForValues)
+    );
 
     return {
       definition: this,
       examinedProducts: examinedProductIdSet.size,
       productsCount: examinedProductIdSet.size,
-      filteredProducts: filteredProductIdSet.size, // TODO: Implement
-      filteredProductsCount: filteredProductIdSet.size, // TODO: Implement
+      filteredProducts: filteredProductIdSet.size,
+      filteredProductsCount: filteredProductIdSet.size,
       isSelected: Object.prototype.hasOwnProperty.call(filterQuery, this.key),
       options: () => {
         // The current base for options should be an array of product id's that:
@@ -426,6 +439,7 @@ Filters.helpers({
         // - Are filtered by all other filters
         // - Are not filtered by the currently selected value of this filter
         return this.loadedOptions({
+          director,
           values,
           forceLiveCollection,
           productIdSet: filteredByOtherFiltersSet,
