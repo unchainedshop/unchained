@@ -13,10 +13,6 @@ class LocalSearch extends FilterAdapter {
 
   static orderIndex = 1;
 
-  static isActivatedFor(context) {
-    return Boolean(context.query);
-  }
-
   async searchProducts(productIdResolver) {
     // Search Products
     const { query = {} } = this.context;

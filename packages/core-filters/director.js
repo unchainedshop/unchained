@@ -11,11 +11,6 @@ class FilterAdapter {
 
   static version = '';
 
-  // eslint-disable-next-line
-  static isActivatedFor(context) {
-    return false;
-  }
-
   constructor(context) {
     this.context = context;
   }
@@ -32,8 +27,8 @@ class FilterAdapter {
 
   // This function is called to check if a filter actually matches a certain productId
   // eslint-disable-next-line
-  matchesFilter(set, productId) {
-    return null;
+  aggregateProductIds(productIds) {
+    return productIds;
   }
 
   // eslint-disable-next-line
@@ -63,6 +58,10 @@ class FilterAdapter {
 class FilterDirector {
   constructor(context) {
     this.context = context;
+    this.adapterInstances =
+      FilterDirector.sortedAdapters()
+        ?.map((AdapterClass) => new AdapterClass(this.context))
+        .filter(Boolean) || [];
   }
 
   async buildProductSelector(defaultSelector, options = {}) {
@@ -96,24 +95,14 @@ class FilterDirector {
   }
 
   intersect(productIdSet, filterProductIdSet) {
-    return new Set(
-      [...productIdSet].filter((currentProductId) => {
-        const result = this.reduceAdaptersSync(
-          (lastSearchPromise, concreteAdapter) => {
-            return (
-              concreteAdapter.matchesFilter(
-                filterProductIdSet,
-                currentProductId
-              ) || lastSearchPromise
-            );
-          },
-          null
-        );
-        // by default, just check the that the current id belongs to the set
-        if (result === null) return filterProductIdSet.has(currentProductId);
-        return result;
-      })
+    const reducedProductIdSet = this.adapterInstances.reduce(
+      (lastProductIds, concreteAdapter) =>
+        concreteAdapter.aggregateProductIds(lastProductIds),
+      [...productIdSet].filter((currentProductId) =>
+        filterProductIdSet.has(currentProductId)
+      )
     );
+    return new Set(reducedProductIdSet);
   }
 
   async buildFilterSelector(defaultSelector, options = {}) {
@@ -126,31 +115,15 @@ class FilterDirector {
   }
 
   async reduceAdapters(reducer, initialValue) {
-    const adapters = FilterDirector.sortedAdapters().filter((AdapterClass) =>
-      AdapterClass.isActivatedFor(this.context)
-    );
-    if (adapters.length === 0) {
+    if (this.adapterInstances.length === 0) {
       return null;
     }
-
-    return adapters.reduce(async (lastSearchPromise, AdapterClass, index) => {
-      const concreteAdapter = new AdapterClass(this.context);
-      return reducer(lastSearchPromise, concreteAdapter, index);
-    }, Promise.resolve(initialValue));
-  }
-
-  reduceAdaptersSync(reducer, initialValue) {
-    const adapters = FilterDirector.sortedAdapters().filter((AdapterClass) =>
-      AdapterClass.isActivatedFor(this.context)
+    return this.adapterInstances.reduce(
+      async (lastSearchPromise, concreteAdapter, index) => {
+        return reducer(lastSearchPromise, concreteAdapter, index);
+      },
+      Promise.resolve(initialValue)
     );
-    if (adapters.length === 0) {
-      return null;
-    }
-
-    return adapters.reduce((lastSearchPromise, AdapterClass, index) => {
-      const concreteAdapter = new AdapterClass(this.context);
-      return reducer(lastSearchPromise, concreteAdapter, index);
-    }, initialValue);
   }
 
   static adapters = new Map();
