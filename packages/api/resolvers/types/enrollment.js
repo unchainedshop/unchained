@@ -1,4 +1,4 @@
-import { logs } from '../transformations/helpers/logs';
+// import { logs } from '../transformations/helpers/logs';
 
 export default {
   plan({ quantity, productId, configuration }) {
@@ -9,5 +9,5 @@ export default {
     };
   },
 
-  logs: logs('enrollmentId'),
+  // logs: logs('enrollmentId'),
 };

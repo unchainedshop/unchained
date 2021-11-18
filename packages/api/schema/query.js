@@ -217,15 +217,6 @@ export default [
       """
       order(orderId: ID!): Order
 
-      """
-      Returns total number of logs
-      """
-      logsCount: Int!
-
-      """
-      Get all logs, sorted by most recent creation date first
-      """
-      logs(limit: Int = 100, offset: Int = 0): [Log!]!
 
       """
       Get shop-global data and the resolved country/language pair

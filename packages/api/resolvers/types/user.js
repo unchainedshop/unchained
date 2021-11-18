@@ -1,6 +1,6 @@
 import { actions } from '../../roles';
 import { checkAction, checkTypeResolver } from '../../acl';
-import { logs } from '../transformations/helpers/logs';
+// import { logs } from '../transformations/helpers/logs';
 
 export default {
   _id: checkTypeResolver(actions.viewUserPublicInfos, '_id'),
@@ -57,5 +57,5 @@ export default {
     return user.cart({ countryContext, ...params });
   },
 
-  logs: logs('userId', actions.viewLogs),
+  // logs: logs('userId', actions.viewLogs),
 };

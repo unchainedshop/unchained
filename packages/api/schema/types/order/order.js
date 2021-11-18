@@ -102,7 +102,6 @@ export default [
       supportedDeliveryProviders: [DeliveryProvider!]!
       supportedPaymentProviders: [PaymentProvider!]!
       enrollment: Enrollment
-      logs(limit: Int = 10, offset: Int = 0): [Log!]!
     }
   `,
 ];
