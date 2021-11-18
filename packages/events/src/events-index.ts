@@ -1,5 +1,7 @@
 import { EventDirector } from './EventDirector';
 
+export { EmitAdapter } from './events.types';
+
 const {
   emit,
   getEmitAdapter,

@@ -1,6 +1,6 @@
 {
   "name": "unchained-events",
-  "version": "1.1.0",
+  "version": "1.1.2",
   "main": "lib/events-index.js",
   "types": "lib/events-index.d.ts",
   "type": "module",

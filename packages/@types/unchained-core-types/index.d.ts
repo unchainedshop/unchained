@@ -2,7 +2,7 @@ import { Collection, Db } from 'mongodb';
 import { _ID } from '.';
 import { BookmarksModule } from './bookmarks';
 import { ModuleInput } from './common';
-import { EventsModule } from './events';
+import { EmitAdapter, EventsModule } from './events';
 import { createLogger, format, log, LogLevel, transports } from './logs';
 
 // Types package only
@@ -34,14 +34,6 @@ declare module 'meteor/unchained:utils' {
     schema: SimpleSchema,
     options?: { hasCreateOnly: boolean }
   ): ModuleMutations<T> | ModuleCreateMutation<T>;
-}
-
-export interface EmitAdapter {
-  publish(eventName: string, payload: Record<string, unknown>): void;
-  subscribe(
-    eventName: string,
-    callBack: (payload?: Record<string, unknown>) => void
-  ): void;
 }
 
 declare module 'meteor/unchained:logs' {

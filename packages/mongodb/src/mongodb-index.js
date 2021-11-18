@@ -1,1 +1,1 @@
-export { initDb } from './db/db';
+export { initDb } from './db/initDb';

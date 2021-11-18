@@ -20,5 +20,8 @@ export interface EventDirectorType {
   setContextNormalizer: (fn: ContextNormalizerFunction) => void;
   setEmitAdapter: (adapter: EmitAdapter) => void;
   setEmitHistoryAdapter: (adapter: EmitAdapter) => void;
-  subscribe: (eventName: string, callBack: () => void) => void;
+  subscribe: (
+    eventName: string,
+    callBack: (payload?: Record<string, unknown>) => void
+  ) => void;
 }

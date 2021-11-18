@@ -1,10 +1,9 @@
-import { Filter } from 'unchained-core-types';
-import { Event, EventsModule } from 'unchained-core-types/events';
-import { ModuleInput } from 'unchained-core-types/common';
 import { generateDbMutations } from 'meteor/unchained:utils';
+import { Filter } from 'unchained-core-types';
+import { ModuleInput } from 'unchained-core-types/common';
+import { Event, EventsModule } from 'unchained-core-types/events';
 import { EventsCollection } from '../db/EventsCollection';
 import { EventsSchema } from '../db/EventsSchema';
-import { setEmitHistoryAdapter } from 'unchained-events';
 import { configureEventHistoryAdapter } from './configureEventHistoryAdapter';
 
 type FindQuery = {
@@ -20,7 +19,7 @@ export const configureEventsModule = async ({
   const Events = await EventsCollection(db);
 
   configureEventHistoryAdapter(Events);
-  
+
   return {
     findEvent: async ({ eventId, ...rest }, options) => {
       const selector = eventId ? { _id: eventId } : rest;
