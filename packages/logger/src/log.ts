@@ -1,12 +1,12 @@
 import winston from 'winston';
-import { LogLevel, LogOptions } from './logger.d';
+import { LogLevel, LogOptions } from './logger';
 import { createLogger } from './createLogger';
 
 const logger = createLogger('unchained')
 
 export const log = (
   message: string,
-  options: LogOptions
+  options?: LogOptions
 ): winston.Logger => {
   const { level = LogLevel.Info, ...meta } = options || {};
   return logger.log(level, message, meta);

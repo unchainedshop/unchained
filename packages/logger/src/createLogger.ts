@@ -5,7 +5,7 @@ import {
 } from 'winston';
 import stringify from 'safe-stable-stringify';
 import TransportStream from 'winston-transport';
-import { LogLevel } from './logger.d';
+import { LogLevel } from './logger';
 
 const {
   DEBUG = '',

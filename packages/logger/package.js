@@ -18,8 +18,6 @@ Package.onUse((api) => {
   api.use('ecmascript');
   api.use('typescript@4.4.0');
 
-  api.use('unchained:utils@1.0.0-beta15');
-
   api.mainModule('src/logger-index.ts', 'server');
 });
 
@@ -30,5 +28,5 @@ Package.onTest((api) => {
 
   api.use('unchained:core-logger@1.0.0-beta15');
 
-  api.mainModule('test/logger-index.test.js');
+  api.mainModule('tests/logger-index.test.js');
 });

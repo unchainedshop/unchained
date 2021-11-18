@@ -1,14 +1,14 @@
 {
-  "name": "unchained-logger",
-  "version": "1.0.1",
-  "main": "lib/logger-index.js",
-  "types": "lib/logger-index.d.ts",
+  "name": "unchained-events",
+  "version": "1.0.0",
+  "main": "lib/events-index.js",
+  "types": "lib/events-index.d.ts",
   "type": "module",
   "scripts": {
     "clean": "rm -rf lib",
     "build": "npm run clean && tsc -p tsconfig.build.json",
     "watch": "tsc --watch",
-    "link:core": "npm link unchained-utils unchained-core-types",
+    "link:core": "npm link unchained-utils unchained-logger unchained-core-types",
     "test": "jest --watch"
   },
   "repository": {
@@ -27,10 +27,8 @@
   },
   "homepage": "https://github.com/unchainedshop/unchained#readme",
   "dependencies": {
-    "safe-stable-stringify": "1.1.0",
-    "simpl-schema": "1.12.0",
-    "winston": "3.3.3",
-    "winston-transport": "4.4.0"
+    "redis": "3.0.2",
+    "unchained-logger": "^1.0.1"
   },
   "devDependencies": {
     "@babel/core": "^7.16.0",
