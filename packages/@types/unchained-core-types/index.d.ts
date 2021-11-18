@@ -1,13 +1,9 @@
 import winston from 'winston';
-import { Collection } from 'mongodb';
+import { Collection, Db } from 'mongodb';
 import { _ID } from '.';
 import { ModuleInput } from './common';
-// import { LogsModule, LogLevel as LogLevelType } from './logs';
-import {
-  EventDirector as EventDirectorType,
-  EventAdapter as EventAdapterType,
-  EventsModule,
-} from './events';
+import { EventHistoryModule } from './events';
+import { BookmarksModule } from './bookmarks';
 
 // Types package only
 export { Modules } from './modules';
@@ -18,7 +14,7 @@ export type {
   Filter,
   ObjectId,
 } from 'mongodb';
-export { ModuleMutations, _ID } from '.';
+export { ModuleMutations, ModuleCreateMutation, _ID } from './common';
 
 declare module 'meteor/unchained:utils' {
   function checkId(
@@ -35,26 +31,46 @@ declare module 'meteor/unchained:utils' {
 
   function generateDbMutations<T extends { _id?: _ID }>(
     collection: Collection<T>,
-    schema: SimpleSchema
-  ): ModuleMutations<T>;
+    schema: SimpleSchema,
+    options?: { hasCreateOnly: boolean }
+  ): ModuleMutations<T> | ModuleCreateMutation<T>;
 }
 
-// declare module 'meteor/unchained:core-logger' {
-//   function configureLogs({ db }: ModuleInput): Promise<LogsModule>;
-//   function log(message: string, options: LogOptions): void;
-//   function createLogger(
-//     moduleName: string,
-//     moreTransports: Array<TransportStream> = []
-//   ): winston.Logger;
-//   type LogLevel = LogLevelType;
-// }
+export interface EmitAdapter {
+  publish(eventName: string, payload: Record<string, unknown>): void;
+  subscribe(
+    eventName: string,
+    callBack: (payload?: Record<string, unknown>) => void
+  ): void;
+}
 
-declare module 'meteor/unchained:core-events' {
-  function registerEvents(events: Array<string>): void;
-  function emit(event: string, data: any): Promise<void>;
-  function configureEvent({ db }: ModuleInput): Promise<EventsModule>;
-  type EventDirector = EventDirectorType;
-  type EventAdapter = EventAdapterType;
+declare module 'meteor/unchained:events' {
+  function emit(
+    eventName: string,
+    data?: string | Record<string, unknown>
+  ): Promise<void>;
+  function getEmitAdapter(): EmitAdapter;
+  function getEmitHistoryAdapter(): EmitAdapter;
+  function getRegisteredEvents(): string[];
+  function registerEvents(events: string[]): void;
+  function setEmitAdapter(adapter: EmitAdapter): void;
+  function setEmitHistoryAdapter(adapter: EmitAdapter): void;
+  function subscribe(
+    eventName: string,
+    callBack: (payload?: Record<string, unknown>) => void
+  ): void;
+}
+
+declare module 'meteor/unchained:core-eventhistory' {
+  function configureEventHistoryModule(
+    params: ModuleInput
+  ): Promise<EventHistoryModule>;
+}
+
+declare module 'meteor/unchained:core-bookmarks' {
+  function configureBookmarksModule(
+    params: ModuleInput
+  ): Promise<BookmarksModule>;
 }
 
 declare module 'meteor/unchained:core-users' {
@@ -62,5 +78,11 @@ declare module 'meteor/unchained:core-users' {
 }
 
 declare module 'meteor/unchained:core-orders' {
-  class Orders {}
+  class Orders {
+    findOrder({ orderId: string }): any;
+  }
+}
+
+declare module 'meteor/unchained:mongodb' {
+  function initDb(): Db;
 }

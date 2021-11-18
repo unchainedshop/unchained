@@ -1,5 +1,5 @@
 import { FindOptions, Sort } from 'mongodb';
-import { ModuleMutations, Query, TimestampFields, _ID } from './common';
+import { ModuleCreateMutation, Query, TimestampFields, _ID } from './common';
 
 export type Event = {
   _id?: _ID;
@@ -28,7 +28,8 @@ export interface EventDirector {
   setEventAdapter: (adapter: EventAdapter) => void;
   subscribe: (eventName: string, callBack: () => void) => void;
 }
-export interface EventsModule extends EventDirector, ModuleMutations<Event> {
+
+export interface EventHistoryModule extends ModuleCreateMutation<Event> {
   findEvent: (
     params: { eventId: _ID; query?: Query },
     options?: FindOptions

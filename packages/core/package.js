@@ -17,12 +17,7 @@ Package.onUse((api) => {
   api.use('promise');
   api.use('typescript@4.1.2');
 
-  api.use('unchained:core-mongodb@1.0.0-beta15');
-  api.use('unchained:utils@1.0.0-beta15');
-
-  api.use('unchained:core-events@1.0.0-beta15');
-  api.use('unchained:core-logger@1.0.0-beta15');
-
+  api.use('unchained:core-eventhistory@1.0.0-beta15');
   api.use('unchained:core-bookmarks@1.0.0-beta15');
   api.use('unchained:core-currencies@1.0.0-beta15');
   api.use('unchained:core-countries@1.0.0-beta13');
@@ -45,9 +40,7 @@ Package.onUse((api) => {
   api.use('unchained:core-enrollments@1.0.0-beta15');
 
   api.imply([
-    'unchained:core-logger',
-    'unchained:core-events',
-
+    'unchained:core-eventhistory',
     'unchained:core-bookmarks',
     'unchained:core-currencies',
     'unchained:core-countries',

@@ -1,14 +1,17 @@
 import SimpleSchema from 'simpl-schema';
-import { Collection, ModuleMutations, _ID } from 'unchained-core-types';
+import { Collection, ModuleMutations, ModuleCreateMutation, _ID } from 'unchained-core-types';
 import { checkId } from './check-id';
 import { generateDbFilterById } from './generate-db-filter-by-id';
 
 export const generateDbMutations = <T extends { _id?: _ID }>(
   collection: Collection<T>,
-  schema: SimpleSchema
-): ModuleMutations<T> => {
+  schema: SimpleSchema,
+  options?: { hasCreateOnly?: boolean }
+): ModuleMutations<T> | ModuleCreateMutation<T> => {
   if (!collection) throw new Error('Collection is missing');
   if (!schema) throw new Error('Schema is missing');
+
+  const { hasCreateOnly } = options || { hasCreateOnly: false };
   return {
     create: async (doc, userId) => {
       const values = schema.clean(doc);
@@ -20,22 +23,26 @@ export const generateDbMutations = <T extends { _id?: _ID }>(
         ? result.insertedId
         : result.insertedId.toHexString();
     },
-    update: async (_id, doc, userId) => {
-      checkId(_id);
-      const values = schema.clean(doc, { isModifier: true });
-      values.$set = values.$set || {};
-      values.$set.updated = new Date();
-      values.$set.updatedBy = userId;
+    update: hasCreateOnly
+      ? undefined
+      : async (_id, doc, userId) => {
+          checkId(_id);
+          const values = schema.clean(doc, { isModifier: true });
+          values.$set = values.$set || {};
+          values.$set.updated = new Date();
+          values.$set.updatedBy = userId;
 
-      schema.validate(values, { modifier: true });
-      const filter = generateDbFilterById(_id);
-      await collection.updateOne(filter, values);
-    },
-    delete: async (_id) => {
-      checkId(_id);
-      const filter = generateDbFilterById(_id);
-      const result = await collection.deleteOne(filter);
-      return result.deletedCount;
-    },
+          schema.validate(values, { modifier: true });
+          const filter = generateDbFilterById(_id);
+          await collection.updateOne(filter, values);
+        },
+    delete: hasCreateOnly
+      ? undefined
+      : async (_id) => {
+          checkId(_id);
+          const filter = generateDbFilterById(_id);
+          const result = await collection.deleteOne(filter);
+          return result.deletedCount;
+        },
   };
 };

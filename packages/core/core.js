@@ -1,6 +1,3 @@
-import { initDb } from 'meteor/unchained:core-mongodb';
-// import { initDB } from 'unchained-core-mongodb';
-
 import configureUsers from 'meteor/unchained:core-users';
 import configureAccounts from 'meteor/unchained:core-accountsjs';
 import configureDelivery from 'meteor/unchained:core-delivery';
@@ -23,10 +20,10 @@ import {
   configureBookmarksModule,
   bookmarkServices,
 } from 'meteor/unchained:core-bookmarks';
-import { configureEvents } from 'meteor/unchained:core-events';
-import { configureLogs } from 'meteor/unchained:core-logger';
+import { configureEventHistoryModule } from 'meteor/unchained:core-eventhistory';
 
 export const initCore = async ({
+  db,
   modules = {},
   migrationRepository,
   ...otherComponents
@@ -35,11 +32,7 @@ export const initCore = async ({
     migrationRepository,
   };
 
-  const db = initDb();
-
-  const logs = await configureLogs({ db });
-  const events = await configureEvents({ db });
-
+  const eventhistory = await configureEventHistoryModule({ db });
   const bookmarks = await configureBookmarksModule({ db });
 
   configureWorker(modules.worker, moduleOptions);
@@ -62,8 +55,7 @@ export const initCore = async ({
 
   return {
     modules: {
-      logs,
-      events,
+      eventhistory,
       bookmarks,
     },
     services: {

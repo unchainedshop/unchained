@@ -17,8 +17,11 @@ export interface ModuleInput {
   db: Db;
 }
 
-export interface ModuleMutations<T> {
+export interface ModuleCreateMutation<T> {
   create: (doc: T, userId?: string) => Promise<string>;
+}
+
+export interface ModuleMutations<T> extends ModuleCreateMutation<T> {
   update: (_id: string, doc: UpdateFilter<T>, userId?: string) => Promise<void>;
   delete: (_id: string) => Promise<number>;
 }

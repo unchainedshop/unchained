@@ -19,6 +19,7 @@ Package.onUse((api) => {
   api.use('check');
   api.use('email');
 
+  api.use('unchained:mongodb@1.0.0-beta15');
   api.use('unchained:core@1.0.0-beta15');
   api.use('unchained:api@1.0.0-beta15');
 
@@ -28,5 +29,6 @@ Package.onUse((api) => {
 Package.onTest((api) => {
   api.use('ecmascript');
   api.use('unchained:platform');
+
   api.mainModule('platform-tests.js');
 });

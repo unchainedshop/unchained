@@ -16,7 +16,11 @@
     "skipLibCheck": true,
     "sourceMap": true,
     "target": "esnext",
-    "types": ["node", "jest"]
+    "types": ["node", "jest"],
+    "baseUrl": ".", // This must be specified if "paths" is.
+    "paths": {
+      "meteor/unchained:*": ["node_modules/unchained-core-types/index.d.ts"]
+    }
   },
-  "include": ["src", "test"]
+  "include": ["src", "test", "plugins"]
 }

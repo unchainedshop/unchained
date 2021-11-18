@@ -1,5 +1,5 @@
 import { createLogger } from 'unchained-logger';
-import { ContextNormalizerFunction, EmitAdapter, EventDirectorType } from './events';
+import { ContextNormalizerFunction, EmitAdapter, EventDirectorType } from './events.types';
 
 const logger = createLogger('unchained:events');
 

@@ -1,10 +1,9 @@
 import { Filter } from 'unchained-core-types';
-import { Event, EventsModule } from 'unchained-core-types/events';
+import { Event, EventHistoryModule } from 'unchained-core-types/events';
 import { ModuleInput } from 'unchained-core-types/common';
 import { generateDbMutations } from 'meteor/unchained:utils';
 import { EventsCollection } from '../db/EventsCollection';
 import { EventsSchema } from '../db/EventsSchema';
-import { configureEventDirector } from '../director/EventDirector';
 
 type FindQuery = {
   type?: string;
@@ -13,14 +12,12 @@ const buildFindSelector = ({ type }: FindQuery) => {
   return type ? { type } : {};
 };
 
-export const configureEventsModule = async ({
+export const configureEventHistoryModule = async ({
   db,
-}: ModuleInput): Promise<EventsModule> => {
+}: ModuleInput): Promise<EventHistoryModule> => {
   const Events = await EventsCollection(db);
 
   return {
-    ...configureEventDirector(Events),
-
     findEvent: async ({ eventId, ...rest }, options) => {
       const selector = eventId ? { _id: eventId } : rest;
       if (!Object.keys(selector)?.length) return null;
@@ -49,6 +46,6 @@ export const configureEventsModule = async ({
       return count;
     },
 
-    ...generateDbMutations(Events, EventsSchema),
+    ...generateDbMutations(Events, EventsSchema, { hasCreateOnly: true }),
   };
 };

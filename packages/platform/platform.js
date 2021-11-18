@@ -35,7 +35,12 @@ export const startPlatform = async ({ modules, typeDefs, ...options } = {}) => {
   const workQueueIsEnabled = isWorkQueueEnabled(options);
   const emailInterceptionIsEnabled = isEmailInterceptionEnabled(options);
 
+  // Configure database
+  const db = initDb();
+  
+  // Initialise core using the database
   const unchained = await initCore({
+    db,
     modules,
     bulkImporter: {
       BulkImportPayloads,

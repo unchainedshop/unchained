@@ -7,7 +7,7 @@ LOGGER (DONE)
 
 EVENTS
 1. Create new repo unchained:events
-2. move EventDirector out of core-events _emit_, _setEmitAdapter, _registerEvents_, _setEmitHistoryAdapter_ (core-events) 
+2. move EventDirector out of core-events _emit_, _setEmitAdapter_, _registerEvents_, _setEmitHistoryAdapter_ (core-events) 
 3. Core-events uses db to track events
 
 Async-await 

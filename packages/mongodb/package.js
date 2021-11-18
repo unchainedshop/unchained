@@ -1,25 +1,31 @@
 Package.describe({
-  name: 'unchained:core-events',
+  name: 'unchained:mongodb',
   version: '1.0.0-beta15',
-  summary: 'Unchained Engine: Events',
+  summary: 'Unchained Engine: MongoDB provider for unchained platform',
   git: 'https://github.com/unchainedshop/unchained',
   documentation: 'README.md',
 });
 
 Npm.depends({
-  redis: '3.0.2',
+  'lodash.isempty': '4.4.0',
+  'lodash.isequal': '4.5.0',
+  'lodash.isobject': '3.0.2',
   'simpl-schema': '1.12.0',
+  'unchained-core-types': '1.0.10',
 });
 
 Package.onUse((api) => {
   api.versionsFrom('2.2');
+  api.use('mongo');
+  api.use('promise');
+  api.use('ejson');
   api.use('ecmascript');
+  api.use('raix:eventemitter');
   api.use('typescript@4.1.2');
-
+  
   api.use('unchained:utils@1.0.0-beta15');
-  api.use('unchained:core-logger@1.0.0-beta15');
 
-  api.mainModule('src/events-index.ts', 'server');
+  api.mainModule('src/mongodb-index.js');
 });
 
 Package.onTest((api) => {
@@ -28,7 +34,6 @@ Package.onTest((api) => {
   api.use('typescript@4.1.2');
 
   api.use('unchained:core-mongodb@1.0.0-beta15');
-  api.use('unchained:core-events@1.0.0-beta15');
 
-  api.mainModule('test/events-index.test.js');
+  api.mainModule('test/mongodb-index.tests.js');
 });

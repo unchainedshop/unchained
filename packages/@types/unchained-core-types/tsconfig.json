@@ -14,5 +14,5 @@
     "typeRoots": ["node_modules/@types", "node_modules/mongodb"],
     "types": [],
   },
-  "include": ["index.d.ts", "bookmarks.d.ts", "common.d.ts", "index.d.ts", "logs.d.ts", "modules.d.ts"]
+  "include": ["index.d.ts", "bookmarks.d.ts", "common.d.ts", "events.d.ts", "index.d.ts", "logs.d.ts", "modules.d.ts"]
 }

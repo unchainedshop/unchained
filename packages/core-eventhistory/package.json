@@ -1,14 +1,14 @@
 {
-  "name": "unchained-core-events",
+  "name": "unchained-core-eventshistory",
   "version": "1.0.3",
   "main": "lib/events-index.js",
   "types": "lib/events-index.d.ts",
   "type": "module",
   "scripts": {
     "clean": "rm -rf lib",
-    "build": "npm run clean && tsc",
+    "build": "npm run clean && tsc -p tsconfig.build.json",
     "watch": "tsc --watch",
-    "link:core": "npm link  unchained-utils unchained-core-logger unchained-core-types",
+    "link:core": "npm link  unchained-core-types",
     "test": "cross-env METEOR_PACKAGE_DIRS=../ TEST_CLIENT=0 TEST_WATCH=1 meteor test-packages ./ --driver-package meteortesting:mocha --port 4212"
   },
   "repository": {
@@ -31,6 +31,8 @@
     "simpl-schema": "1.12.0"
   },
   "devDependencies": {
+    "@types/chai": "^4.2.22",
+    "@types/mocha": "^9.0.0",
     "chai": "^4.3.4",
     "cross-env": "^7.0.3",
     "isomorphic-unfetch": "^3.1.0",

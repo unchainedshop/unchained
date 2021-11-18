@@ -1,5 +1,5 @@
 import { assert } from 'chai';
-import { initDb } from 'meteor/unchained:core-mongodb';
+import { initDb } from 'meteor/unchained:mongodb';
 import { configureBookmarksModule } from 'meteor/unchained:core-bookmarks';
 import { Mongo } from 'meteor/mongo';
 
@@ -46,7 +46,7 @@ describe('Test exports', () => {
   });
 
   it('Check backwards compatibility', async () => {
-    const Bookmarks = new Mongo.Collection('bookmarks');
+    const Bookmarks = new Mongo.Collection<any>('bookmarks');
 
     const meteorBookmarkId = Bookmarks.insert({
       userId: 'Legacy-Test-User-1',

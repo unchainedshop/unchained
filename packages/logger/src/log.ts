@@ -1,5 +1,5 @@
 import winston from 'winston';
-import { LogLevel, LogOptions } from './logger';
+import { LogLevel, LogOptions } from './logger.types';
 import { createLogger } from './createLogger';
 
 const logger = createLogger('unchained')

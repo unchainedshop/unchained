@@ -7,7 +7,11 @@ const {
   registerEvents,
   setEmitAdapter,
   setEmitHistoryAdapter,
+  subscribe,
 } = EventDirector;
+
+const GLOBAL_EVENTS = ['PAGE_VIEW'];
+registerEvents(GLOBAL_EVENTS)
 
 export {
   emit,
@@ -16,4 +20,5 @@ export {
   registerEvents,
   setEmitAdapter,
   setEmitHistoryAdapter,
+  subscribe,
 };
