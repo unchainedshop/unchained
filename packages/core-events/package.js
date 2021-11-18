@@ -9,7 +9,7 @@ Package.describe({
 Npm.depends({
   redis: '3.0.2',
   'simpl-schema': '1.12.0',
-  'unchained-events': '1.1.0',
+  'unchained-events': '1.1.2',
 });
 
 Package.onUse((api) => {

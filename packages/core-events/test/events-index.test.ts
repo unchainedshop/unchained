@@ -1,13 +1,33 @@
 import { assert } from 'chai';
 import { initDb } from 'meteor/unchained:mongodb';
 import { configureEventsModule } from 'meteor/unchained:core-events';
+import { emit, registerEvents, getEmitHistoryAdapter } from 'unchained-events';
 
 describe('Test exports', () => {
-  it('Configure Events', async () => {
-    const db = initDb()
+  let module;
+  before(async () => {
+    const db = initDb();
+    module = await configureEventsModule({ db });
+
+    registerEvents(['TEST EVENT']);
+  });
+  it('Configure Events', () => {
     assert.isDefined(configureEventsModule);
-    const module = await configureEventsModule({ db });
     assert.ok(module);
     assert.isFunction(module.findEvent);
+  });
+
+  it('Test event history adapter', async () => {
+    assert.ok(getEmitHistoryAdapter());
+
+    emit('TEST EVENT', { orderId: 'Order1234' });
+
+    const events = await module.findEvents({
+      limit: 10,
+      offset: 0,
+      query: { type: 'TEST EVENT' },
+    });
+
+    assert.isAtLeast(events.length, 1)
   });
 });

@@ -4,6 +4,8 @@ import { ModuleInput } from 'unchained-core-types/common';
 import { generateDbMutations } from 'meteor/unchained:utils';
 import { EventsCollection } from '../db/EventsCollection';
 import { EventsSchema } from '../db/EventsSchema';
+import { setEmitHistoryAdapter } from 'unchained-events';
+import { configureEventHistoryAdapter } from './configureEventHistoryAdapter';
 
 type FindQuery = {
   type?: string;
@@ -17,6 +19,8 @@ export const configureEventsModule = async ({
 }: ModuleInput): Promise<EventsModule> => {
   const Events = await EventsCollection(db);
 
+  configureEventHistoryAdapter(Events);
+  
   return {
     findEvent: async ({ eventId, ...rest }, options) => {
       const selector = eventId ? { _id: eventId } : rest;
