@@ -753,9 +753,6 @@ describe('Auth for admin users', () => {
               quotations {
                 _id
               }
-              logs {
-                _id
-              }
               bookmarks {
                 _id
               }

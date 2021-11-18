@@ -55,18 +55,6 @@ describe('TranslatedFilterTexts', () => {
               documents {
                 _id
               }
-              logs {
-                _id
-                created
-                level
-                message
-                user {
-                  _id
-                }
-                order {
-                  _id
-                }
-              }
             }
           }
         `,
@@ -159,18 +147,6 @@ describe('TranslatedFilterTexts', () => {
               }
               documents {
                 _id
-              }
-              logs {
-                _id
-                created
-                level
-                message
-                user {
-                  _id
-                }
-                order {
-                  _id
-                }
               }
             }
           }

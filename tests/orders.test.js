@@ -260,31 +260,6 @@ describe("Order: Management", () => {
   });
 
   describe("Query.orders for admin user", () => {
-    it("should return logs", async () => {
-      const {
-        data: { order },
-      } = await adminGraphqlFetch({
-        query: /* GraphQL */ `
-          query order($orderId: ID!) {
-            order(orderId: $orderId) {
-              _id
-              logs(limit: 10, offset: 0) {
-                _id
-                created
-                level
-              }
-            }
-          }
-        `,
-        variables: {
-          orderId: SimpleOrder._id,
-        },
-      });
-
-      console.log("ORDER", order);
-      expect(order.logs.length).toEqual(10);
-    });
-
     it("return error when passed invalid orderId and user is admin", async () => {
       const {
         data: { order },

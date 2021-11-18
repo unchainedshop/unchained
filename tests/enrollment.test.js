@@ -599,10 +599,6 @@ describe('Enrollments', () => {
 
               isExpired
               enrollmentNumber
-              logs {
-                _id
-                message
-              }
               periods {
                 start
               }
@@ -736,12 +732,8 @@ describe('Enrollments', () => {
               created
               expires
               updated
-
               isExpired
               enrollmentNumber
-              logs(limit: 10, offset: 0) {
-                _id
-              }
               periods {
                 start
                 end
@@ -896,12 +888,8 @@ describe('Enrollments', () => {
               created
               expires
               updated
-
               isExpired
               enrollmentNumber
-              logs(limit: 10, offset: 0) {
-                _id
-              }
               periods {
                 start
                 end
