@@ -20,7 +20,7 @@ import {
   configureBookmarksModule,
   bookmarkServices,
 } from 'meteor/unchained:core-bookmarks';
-import { configureEventHistoryModule } from 'meteor/unchained:core-eventhistory';
+import { configureEventsModule } from 'meteor/unchained:core-events';
 
 export const initCore = async ({
   db,
@@ -32,7 +32,7 @@ export const initCore = async ({
     migrationRepository,
   };
 
-  const eventhistory = await configureEventHistoryModule({ db });
+  const events = await configureEventsModule({ db });
   const bookmarks = await configureBookmarksModule({ db });
 
   configureWorker(modules.worker, moduleOptions);
@@ -55,7 +55,7 @@ export const initCore = async ({
 
   return {
     modules: {
-      eventhistory,
+      events,
       bookmarks,
     },
     services: {

@@ -1,4 +1,4 @@
-import { registerEvents } from 'meteor/unchained:core-events';
+import { registerEvents } from 'meteor/unchained:events';
 import runMigrations from './db/schema';
 import { Filters } from './db/collections';
 

@@ -5,7 +5,7 @@ import { Users } from 'meteor/unchained:core-users';
 import { Products } from 'meteor/unchained:core-products';
 import { Countries } from 'meteor/unchained:core-countries';
 import { Currencies } from 'meteor/unchained:core-currencies';
-import { log } from 'meteor/unchained:core-logger';
+import { log } from 'unchained-logger';
 import { WorkerDirector } from 'meteor/unchained:core-worker';
 import {
   uploadObjectStream,

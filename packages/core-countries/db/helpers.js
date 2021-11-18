@@ -4,7 +4,7 @@ import countryI18n from 'i18n-iso-countries';
 import { Currencies } from 'meteor/unchained:core-currencies';
 import LRU from 'lru-cache';
 import { systemLocale } from 'meteor/unchained:utils';
-import { emit } from 'meteor/unchained:core-events';
+import { emit } from 'meteor/unchained:events';
 import { Countries } from './collections';
 
 const { NODE_ENV } = process.env;

@@ -1,4 +1,4 @@
-import { log } from 'meteor/unchained:core-logger';
+import { log } from 'unchained-logger';
 import { Enrollments } from 'meteor/unchained:core-enrollments';
 
 export default function enrollmentsCount(root, _, { userId }) {

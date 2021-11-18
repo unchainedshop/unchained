@@ -1,4 +1,4 @@
-import { log } from 'meteor/unchained:core-logger';
+import { log } from 'unchained-logger';
 import { Orders } from 'meteor/unchained:core-orders';
 import { Countries } from 'meteor/unchained:core-countries';
 import { OrderNumberAlreadyExistsError, UserNotFoundError } from '../../errors';

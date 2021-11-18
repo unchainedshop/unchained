@@ -1,6 +1,6 @@
 import WorkerPlugin from 'meteor/unchained:core-worker/workers/base';
 import { WorkerDirector } from 'meteor/unchained:core-worker';
-import { createLogger } from 'meteor/unchained:core-logger';
+import { createLogger } from 'unchained-logger';
 import yj from 'yieldable-json';
 import createBulkImporter, { BulkImportPayloads } from '../bulk-importer';
 

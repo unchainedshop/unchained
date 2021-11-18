@@ -1,4 +1,4 @@
-import { log } from 'meteor/unchained:core-logger';
+import { log } from 'unchained-logger';
 import { Quotations } from 'meteor/unchained:core-quotations';
 
 export default function quotations(root, { limit, offset }, { userId }) {

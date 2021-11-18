@@ -6,11 +6,15 @@ Package.describe({
   documentation: 'README.md',
 });
 
+Npm.depends({
+  'unchained-logger': '1.1.0',
+});
+
 Package.onUse((api) => {
   api.versionsFrom('2.2');
   api.use('ecmascript');
+  
   api.use('unchained:utils@1.0.0-beta15');
-  api.use('unchained:core-logger@1.0.0-beta15');
 
   api.mainModule('discounting.js', 'server');
 });

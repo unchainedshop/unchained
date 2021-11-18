@@ -1,4 +1,4 @@
-import { log } from 'meteor/unchained:core-logger';
+import { log } from 'unchained-logger';
 import { accountsServer } from 'meteor/unchained:core-accountsjs';
 
 const logger = console;

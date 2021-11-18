@@ -1,4 +1,4 @@
-import { log } from 'meteor/unchained:core-logger';
+import { log } from 'unchained-logger';
 import { Countries } from 'meteor/unchained:core-countries';
 import { CountryNotFoundError, InvalidIdError } from '../../errors';
 

@@ -1,7 +1,7 @@
 import 'meteor/dburles:collection-helpers';
 import { findLocalizedText } from 'meteor/unchained:utils';
 import { Locale } from 'locale';
-import { emit } from 'meteor/unchained:core-events';
+import { emit } from 'meteor/unchained:events';
 import { ProductVariations, ProductVariationTexts } from './collections';
 import { ProductVariationType } from './schema';
 

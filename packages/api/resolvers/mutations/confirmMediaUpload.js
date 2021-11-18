@@ -1,4 +1,4 @@
-import { log } from 'meteor/unchained:core-logger';
+import { log } from 'unchained-logger';
 
 import { Users } from 'meteor/unchained:core-users';
 import { linkMedia } from 'meteor/unchained:core-files-next';

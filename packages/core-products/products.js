@@ -1,5 +1,5 @@
 // import { checkNpmVersions } from 'meteor/tmeasday:check-npm-versions';
-import { registerEvents } from 'meteor/unchained:core-events';
+import { registerEvents } from 'meteor/unchained:events';
 import runMigrations from './db/migrations';
 
 export * from './db/product-media';

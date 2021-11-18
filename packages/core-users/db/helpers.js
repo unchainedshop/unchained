@@ -9,7 +9,7 @@ import 'meteor/dburles:collection-helpers';
 import { systemLocale } from 'meteor/unchained:utils';
 import { Countries } from 'meteor/unchained:core-countries';
 import { Languages } from 'meteor/unchained:core-languages';
-import { log } from 'meteor/unchained:core-logger';
+import { log } from 'unchained-logger';
 import { v4 as uuidv4 } from 'uuid';
 import {
   createUploadContainer,

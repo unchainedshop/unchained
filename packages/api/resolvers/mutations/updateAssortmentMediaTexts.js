@@ -1,4 +1,4 @@
-import { log } from 'meteor/unchained:core-logger';
+import { log } from 'unchained-logger';
 import { AssortmentMedia } from 'meteor/unchained:core-assortments';
 import { InvalidIdError, AssortmentMediaNotFoundError } from '../../errors';
 

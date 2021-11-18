@@ -1,4 +1,4 @@
-import { log } from 'meteor/unchained:core-logger';
+import { log } from 'unchained-logger';
 import { Quotations, QuotationStatus } from 'meteor/unchained:core-quotations';
 import {
   QuotationNotFoundError,

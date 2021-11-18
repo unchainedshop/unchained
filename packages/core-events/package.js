@@ -1,7 +1,7 @@
 Package.describe({
-  name: 'unchained:core-eventhistory',
+  name: 'unchained:core-events',
   version: '1.0.0-beta15',
-  summary: 'Unchained Engine: Event History',
+  summary: 'Unchained Engine: Core Events',
   git: 'https://github.com/unchainedshop/unchained',
   documentation: 'README.md',
 });
@@ -19,7 +19,7 @@ Package.onUse((api) => {
   api.use('unchained:events@1.0.0-beta15');
   api.use('unchained:utils@1.0.0-beta15');
 
-  api.mainModule('src/eventhistory-index.ts', 'server');
+  api.mainModule('src/events-index.ts', 'server');
 });
 
 Package.onTest((api) => {
@@ -28,7 +28,7 @@ Package.onTest((api) => {
   api.use('typescript@4.1.2');
   
   api.use('unchained:mongodb@1.0.0-beta15');
-  api.use('unchained:core-eventhistory@1.0.0-beta15');
+  api.use('unchained:core-events@1.0.0-beta15');
 
-  api.mainModule('test/eventhistory-index.test.ts');
+  api.mainModule('test/events-index.test.ts');
 });

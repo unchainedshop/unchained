@@ -1,4 +1,4 @@
-import { log } from 'meteor/unchained:core-logger';
+import { log } from 'unchained-logger';
 import { Root, Context } from 'unchained-core-types/api';
 
 export default async function events(

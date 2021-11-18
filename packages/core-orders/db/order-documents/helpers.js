@@ -1,6 +1,6 @@
 import 'meteor/dburles:collection-helpers';
 import { Promise } from 'meteor/promise';
-import { log } from 'meteor/unchained:core-logger';
+import { log } from 'unchained-logger';
 import { DocumentDirector } from 'meteor/unchained:core-documents';
 import { OrderDocumentTypes } from './schema';
 import { Orders } from '../orders/collections';

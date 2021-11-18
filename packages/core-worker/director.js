@@ -1,6 +1,6 @@
 import os from 'os';
 import { EventEmitter } from 'events';
-import { log } from 'meteor/unchained:core-logger';
+import { log } from 'unchained-logger';
 
 import { WorkQueue } from './db/collections';
 import { WorkStatus } from './db/schema';

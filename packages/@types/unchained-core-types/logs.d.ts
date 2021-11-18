@@ -1,6 +1,9 @@
 import { Sort } from 'mongodb';
-import { LoggerOptions } from 'winston';
+import { LoggerOptions, Logger } from 'winston';
+import TransportStream from 'winston-transport';
 import { ModuleMutations, Query, TimestampFields, _ID } from './common';
+
+export { format, transports } from 'winston';
 
 export enum LogLevel {
   Info = 'info',
@@ -20,14 +23,9 @@ export interface LogOptions extends LoggerOptions {
   level: LogLevel;
 }
 
-export declare interface LogsModule extends ModuleMutations<Log> {
-  log: (message: string, options: LogOptions) => void;
-  findLogs: (params: {
-    limit: number;
-    offset: number;
-    sort?: Sort;
-    query?: Query;
-  }) => Promise<Array<Log>>;
+export type log = (message: string, options?: LogOptions) => void;
+export type createLogger = (
+  moduleName: string,
+  moreTransports?: Array<TransportStream>
+) => Logger;
 
-  count: () => Promise<number>;
-}

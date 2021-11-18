@@ -9,12 +9,13 @@ Package.describe({
 Npm.depends({
   mustache: '4.1.0',
   mjml: '4.8.1',
+  'unchained-logger': '1.1.0',
 });
 
 Package.onUse((api) => {
   api.versionsFrom('2.2');
   api.use('ecmascript');
-  api.use('unchained:core-logger@1.0.0-beta15');
+
   api.use('unchained:core-worker@1.0.0-beta15');
 
   api.mainModule('messaging.js', 'server');

@@ -1,9 +1,9 @@
-import { EventDirector } from 'meteor/unchained:core-events';
+import { getRegisteredEvents } from 'meteor/unchained:events';
 
 const generateEventTypeDefs = () => [
   /* GraphQL */ `
     extend enum EventType {
-      ${EventDirector.getRegisteredEvents().join(',')}
+      ${getRegisteredEvents().join(',')}
     }
   `,
 ];

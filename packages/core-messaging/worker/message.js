@@ -1,6 +1,6 @@
 import { WorkerDirector } from 'meteor/unchained:core-worker';
 import WorkerPlugin from 'meteor/unchained:core-worker/workers/base';
-import { createLogger } from 'meteor/unchained:core-logger';
+import { createLogger } from 'unchained-logger';
 import { MessagingDirector } from '../director';
 
 const logger = createLogger('unchained:core-messaging');

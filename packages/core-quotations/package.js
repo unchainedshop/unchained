@@ -18,7 +18,7 @@ Package.onUse((api) => {
   api.use('unchained:core-users@1.0.0-beta15');
   api.use('unchained:core-products@1.0.0-beta15');
   api.use('unchained:core-countries@1.0.0-beta15');
-  api.use('unchained:core-logger@1.0.0-beta15');
+  'unchained-logger': '1.1.0',;
   api.use('unchained:core-worker@1.0.0-beta15');
 
   api.mainModule('quotations.js', 'server');

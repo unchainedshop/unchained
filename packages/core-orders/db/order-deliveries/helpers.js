@@ -1,12 +1,12 @@
 import 'meteor/dburles:collection-helpers';
-import { log } from 'meteor/unchained:core-logger';
+import { log } from 'unchained-logger';
 import { DeliveryProviders } from 'meteor/unchained:core-delivery';
 import {
   DeliveryPricingDirector,
   DeliveryPricingSheet,
 } from 'meteor/unchained:core-pricing';
 import { objectInvert } from 'meteor/unchained:utils';
-import { emit } from 'meteor/unchained:core-events';
+import { emit } from 'meteor/unchained:events';
 import { OrderDeliveries } from './collections';
 import { OrderDeliveryStatus } from './schema';
 import { Orders } from '../orders/collections';

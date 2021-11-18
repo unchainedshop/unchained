@@ -2,8 +2,9 @@ import winston from 'winston';
 import { Collection, Db } from 'mongodb';
 import { _ID } from '.';
 import { ModuleInput } from './common';
-import { EventHistoryModule } from './events';
+import { EventsModule } from './events';
 import { BookmarksModule } from './bookmarks';
+import { log, createLogger, format, transports, LogLevel } from './logs';
 
 // Types package only
 export { Modules } from './modules';
@@ -44,6 +45,14 @@ export interface EmitAdapter {
   ): void;
 }
 
+
+declare module 'meteor/unchained:logs' {
+  export {
+    log, createLogger, format, transports, LogLevel
+  }
+}
+
+
 declare module 'meteor/unchained:events' {
   function emit(
     eventName: string,
@@ -61,10 +70,10 @@ declare module 'meteor/unchained:events' {
   ): void;
 }
 
-declare module 'meteor/unchained:core-eventhistory' {
-  function configureEventHistoryModule(
+declare module 'meteor/unchained:core-events' {
+  function configureEventsModule(
     params: ModuleInput
-  ): Promise<EventHistoryModule>;
+  ): Promise<EventsModule>;
 }
 
 declare module 'meteor/unchained:core-bookmarks' {

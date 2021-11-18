@@ -29,7 +29,7 @@ export interface EventDirector {
   subscribe: (eventName: string, callBack: () => void) => void;
 }
 
-export interface EventHistoryModule extends ModuleCreateMutation<Event> {
+export interface EventsModule extends ModuleCreateMutation<Event> {
   findEvent: (
     params: { eventId: _ID; query?: Query },
     options?: FindOptions
@@ -43,4 +43,6 @@ export interface EventHistoryModule extends ModuleCreateMutation<Event> {
   }) => Promise<Array<Event>>;
 
   count: (query: Query) => Promise<number>;
+}
+Promise<number>;
 }

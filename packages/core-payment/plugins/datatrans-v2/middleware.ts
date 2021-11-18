@@ -1,7 +1,7 @@
 import { useMiddlewareWithCurrentContext } from 'meteor/unchained:api';
 import { OrderPayments } from 'meteor/unchained:core-orders';
 import bodyParser from 'body-parser';
-import { createLogger } from 'meteor/unchained:core-logger';
+import { createLogger } from 'unchained-logger';
 import { PaymentCredentials } from 'meteor/unchained:core-payment';
 import getPaths from './getPaths';
 import generateSignature, { Security } from './generateSignature';

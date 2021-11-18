@@ -26,7 +26,8 @@
     "mongodb": "^4.1.3",
     "simpl-schema": "^1.12.0",
     "typescript": "^4.4.2",
-    "winston": "^3.3.3"
+    "winston": "3.3.3",
+    "winston-transport": "4.4.0"
   },
   "dependencies": {}
 }

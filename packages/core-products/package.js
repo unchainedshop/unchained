@@ -20,7 +20,7 @@ Package.onUse((api) => {
   api.use('unchained:core-pricing@1.0.0-beta15');
   api.use('unchained:core-warehousing@1.0.0-beta15');
   api.use('unchained:core-countries@1.0.0-beta15');
-  api.use('unchained:core-events@1.0.0-beta15');
+  api.use('unchained:events@1.0.0-beta15');
   api.use('unchained:core-assortments@1.0.0-beta15');
 
   api.mainModule('products.js', 'server');

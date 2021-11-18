@@ -1,4 +1,4 @@
-import { log } from 'meteor/unchained:core-logger';
+import { log } from 'unchained-logger';
 import { ProductMedia } from 'meteor/unchained:core-products';
 import { ProductMediaNotFoundError, InvalidIdError } from '../../errors';
 

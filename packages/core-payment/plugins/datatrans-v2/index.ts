@@ -3,7 +3,7 @@ import {
   PaymentAdapter,
   PaymentError,
 } from 'meteor/unchained:core-payment';
-import { createLogger } from 'meteor/unchained:core-logger';
+import { createLogger } from 'unchained-logger';
 import roundedAmountFromOrder from './roundedAmountFromOrder';
 import createDatatransAPI from './api';
 import parseRegistrationData from './parseRegistrationData';

@@ -3,6 +3,7 @@ import {
   emit,
   getEmitAdapter,
   getEmitHistoryAdapter,
+  getRegisteredEvents,
   registerEvents,
   setEmitAdapter,
   setEmitHistoryAdapter,
@@ -23,6 +24,24 @@ const TestEventEmitter: EmitAdapter = {
 };
 
 describe('Test exports', () => {
+  it('Check registered events', () => {
+    let registeredEvents = getRegisteredEvents();
+    const NEW_TEST_EVENT_1 = 'new test event 1';
+    const NEW_TEST_EVENT_2 = 'new test event 2';
+
+    assert.isTrue(registeredEvents.length === 1);
+    assert.isFalse(registeredEvents.includes(NEW_TEST_EVENT_1));
+    assert.isFalse(registeredEvents.includes(NEW_TEST_EVENT_2));
+
+    registerEvents([NEW_TEST_EVENT_1, NEW_TEST_EVENT_2]);
+
+    registeredEvents = getRegisteredEvents();
+
+    assert.isTrue(registeredEvents.length === 3);
+    assert.isTrue(registeredEvents.includes(NEW_TEST_EVENT_1));
+    assert.isTrue(registeredEvents.includes(NEW_TEST_EVENT_2));
+  });
+
   it('Check set Adapter', () => {
     assert.isUndefined(getEmitAdapter());
     assert.isFunction(setEmitAdapter);
@@ -54,4 +73,6 @@ describe('Test exports', () => {
       done()
     });
   });
+
+  
 });

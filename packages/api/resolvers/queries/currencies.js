@@ -1,4 +1,4 @@
-import { log } from 'meteor/unchained:core-logger';
+import { log } from 'unchained-logger';
 import { Currencies } from 'meteor/unchained:core-currencies';
 
 export default function currencies(

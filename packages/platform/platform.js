@@ -1,4 +1,5 @@
 import startAPI from 'meteor/unchained:api';
+import { initDb } from 'meteor/unchained:mongodb';
 import { initCore } from 'meteor/unchained:core';
 import interceptEmails from './intercept-emails';
 import setupAccounts from './setup-accounts';

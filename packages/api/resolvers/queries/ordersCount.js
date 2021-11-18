@@ -1,4 +1,4 @@
-import { log } from 'meteor/unchained:core-logger';
+import { log } from 'unchained-logger';
 import { Orders } from 'meteor/unchained:core-orders';
 
 export default function ordersCount(root, { includeCarts }, { userId }) {

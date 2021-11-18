@@ -9,13 +9,13 @@ import {
 } from 'meteor/unchained:core-enrollments';
 import { Countries } from 'meteor/unchained:core-countries';
 import { Users } from 'meteor/unchained:core-users';
-import { log } from 'meteor/unchained:core-logger';
+import { log } from 'unchained-logger';
 import { WorkerDirector } from 'meteor/unchained:core-worker';
 import {
   OrderPricingDirector,
   OrderPricingSheet,
 } from 'meteor/unchained:core-pricing';
-import { emit } from 'meteor/unchained:core-events';
+import { emit } from 'meteor/unchained:events';
 import {
   uploadObjectStream,
   uploadFileFromURL,
