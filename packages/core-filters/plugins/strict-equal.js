@@ -9,11 +9,8 @@ class StrictQualFilter extends FilterAdapter {
 
   static orderIndex = 0;
 
-  static isActivatedFor(context) { // eslint-disable-line
-    return true;
-  }
-
-  async transformProductSelector(lastSelector, { key, value }) { // eslint-disable-line
+  // eslint-disable-next-line
+  async transformProductSelector(lastSelector, { key, value }) {
     if (key) {
       return {
         ...lastSelector,
