@@ -1,13 +1,9 @@
 import { FilterDirector } from 'meteor/unchained:core-filters';
 import { Filters } from '../db/collections';
+import intersectSet from '../intersect-set';
 
 export default ({ query, filterSelector, ...options }) => {
   const { filterQuery, forceLiveCollection } = query;
-  const director = new FilterDirector({
-    query,
-    ...options,
-  });
-
   return async (productIdResolver) => {
     if (!filterQuery || filterQuery.length === 0) return productIdResolver;
 
@@ -24,7 +20,7 @@ export default ({ query, filterSelector, ...options }) => {
         forceLiveCollection,
       });
 
-      return director.intersect(productIdSet, new Set(filterOptionProductIds));
+      return intersectSet(productIdSet, new Set(filterOptionProductIds));
     }, new Set(allProductIds));
 
     return [...intersectedProductIds];
