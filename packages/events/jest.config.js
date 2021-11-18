@@ -2,7 +2,5 @@
 export default {
   preset: 'ts-jest/presets/js-with-ts-esm',
   testEnvironment: 'node',
-  transformIgnorePatterns: [
-    'node_modules/(?!(unchained-logger)/)',
-  ],
+  transformIgnorePatterns: ['node_modules/(?!(unchained-logger)/)'],
 };

@@ -26,5 +26,3 @@ Package.onUse((api) => {
 
   api.mainModule('worker.js', 'server');
 });
-
-

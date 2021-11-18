@@ -7,8 +7,8 @@ Package.describe({
 });
 
 Npm.depends({
-    'unchained-events': '1.1.0',
-})
+  'unchained-events': '1.1.0',
+});
 
 Package.onUse((api) => {
   api.versionsFrom('2.2');

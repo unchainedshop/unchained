@@ -13,7 +13,7 @@ Npm.depends({
 Package.onUse((api) => {
   api.versionsFrom('2.2');
   api.use('ecmascript');
-  
+
   api.use('unchained:utils@1.0.0-beta15');
 
   api.mainModule('discounting.js', 'server');

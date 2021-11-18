@@ -1,12 +1,8 @@
-import { Mongo, MongoInternals } from 'meteor/mongo';
-// import { Random } from 'meteor/random';
-// import { DDP } from 'meteor/ddp';
-// import { configureCollection2 } from './configureCollection2';
-import { configureIndex } from './configureIndex';
+import { MongoInternals } from 'meteor/mongo';
+import { Db } from 'mongodb';
 
 // import { MongoClient } from 'mongodb';
 // import { log, LogTextColor } from './utils/log';
-import { Db } from 'mongodb';
 
 // or as an es module:
 // import { MongoClient } from 'mongodb'
@@ -25,12 +21,8 @@ const initDb = (): Db => {
   log('Dabase successfully initialised', { color: LogTextColor.Crimson });
   return db
   */
-  return MongoInternals.defaultRemoteCollectionDriver().mongo.db as unknown as Db;
+  return MongoInternals.defaultRemoteCollectionDriver().mongo
+    .db as unknown as Db;
 };
 
-const db = Mongo;
-
-// configureCollection2(db);
-// configureIndex(db);
-
-export { db, initDb };
+export { initDb };

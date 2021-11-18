@@ -1,6 +1,5 @@
 import { LoggerOptions } from 'winston';
 
-
 export enum LogLevel {
   Info = 'info',
   Debug = 'debug',
@@ -11,4 +10,3 @@ export enum LogLevel {
 export interface LogOptions extends LoggerOptions {
   level: LogLevel;
 }
-

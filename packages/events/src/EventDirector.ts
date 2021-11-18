@@ -1,5 +1,9 @@
 import { createLogger } from 'unchained-logger';
-import { ContextNormalizerFunction, EmitAdapter, EventDirectorType } from './events.types';
+import {
+  ContextNormalizerFunction,
+  EmitAdapter,
+  EventDirectorType,
+} from './events.types';
 
 const logger = createLogger('unchained:events');
 
@@ -86,5 +90,3 @@ export const EventDirector: EventDirectorType = {
     }
   },
 };
-
-

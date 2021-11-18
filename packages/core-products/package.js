@@ -31,7 +31,6 @@ Package.onUse((api) => {
   api.mainModule('products.js', 'server');
 });
 
-
 Package.onTest((api) => {
   api.use('ecmascript');
   api.use('unchained:core-products');

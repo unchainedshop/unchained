@@ -1,5 +1,10 @@
 import SimpleSchema from 'simpl-schema';
-import { Collection, ModuleMutations, ModuleCreateMutation, _ID } from 'unchained-core-types';
+import {
+  Collection,
+  ModuleMutations,
+  ModuleCreateMutation,
+  _ID,
+} from 'unchained-core-types';
 import { checkId } from './check-id';
 import { generateDbFilterById } from './generate-db-filter-by-id';
 

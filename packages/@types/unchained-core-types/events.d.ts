@@ -44,5 +44,3 @@ export interface EventsModule extends ModuleCreateMutation<Event> {
 
   count: (query: Query) => Promise<number>;
 }
-Promise<number>;
-}

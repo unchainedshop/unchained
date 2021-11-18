@@ -9,7 +9,10 @@ export interface EmitAdapter {
 }
 
 export interface EventDirectorType {
-  emit: (eventName: string, data?: string | Record<string, unknown>) => Promise<void>;
+  emit: (
+    eventName: string,
+    data?: string | Record<string, unknown>
+  ) => Promise<void>;
   getEmitAdapter: () => EmitAdapter;
   getEmitHistoryAdapter: () => EmitAdapter;
   getRegisteredEvents: () => string[];

@@ -12,7 +12,7 @@ const {
 } = EventDirector;
 
 const GLOBAL_EVENTS = ['PAGE_VIEW'];
-registerEvents(GLOBAL_EVENTS)
+registerEvents(GLOBAL_EVENTS);
 
 export {
   emit,

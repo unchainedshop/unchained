@@ -1,7 +1,6 @@
-import { Sort } from 'mongodb';
-import { LoggerOptions, Logger } from 'winston';
+import { Logger, LoggerOptions } from 'winston';
 import TransportStream from 'winston-transport';
-import { ModuleMutations, Query, TimestampFields, _ID } from './common';
+import { TimestampFields, _ID } from './common';
 
 export { format, transports } from 'winston';
 
@@ -28,4 +27,3 @@ export type createLogger = (
   moduleName: string,
   moreTransports?: Array<TransportStream>
 ) => Logger;
-

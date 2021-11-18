@@ -77,10 +77,7 @@ const MatomoTracker = (
 
   subscribe(
     subscribeTo,
-    (data: {
-      payload: { order: any; orderPosition: any };
-      context: any;
-    }) => {
+    (data: { payload: { order: any; orderPosition: any }; context: any }) => {
       let matomoOptions: OrderOption = {};
       if (data.payload?.order || data.payload?.orderPosition)
         matomoOptions = extractOrderParameters(

@@ -38,7 +38,7 @@ export const startPlatform = async ({ modules, typeDefs, ...options } = {}) => {
 
   // Configure database
   const db = initDb();
-  
+
   // Initialise core using the database
   const unchained = await initCore({
     db,

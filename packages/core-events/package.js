@@ -26,7 +26,7 @@ Package.onTest((api) => {
   api.use('meteortesting:mocha');
   api.use('ecmascript');
   api.use('typescript@4.1.2');
-  
+
   api.use('unchained:mongodb@1.0.0-beta15');
   api.use('unchained:core-events@1.0.0-beta15');
 

@@ -2,8 +2,6 @@ import crypto from 'crypto';
 import { Currencies } from 'meteor/unchained:core-currencies';
 import { DeliveryProviders } from 'meteor/unchained:core-delivery';
 import { PaymentProviders } from 'meteor/unchained:core-payment';
-// import { logs } from '../transformations/helpers/logs';
-import { actions } from '../../roles';
 
 export default {
   async supportedDeliveryProviders(obj) {
@@ -32,6 +30,4 @@ export default {
   async currency(obj) {
     return Currencies.findCurrency({ isoCode: obj.currency });
   },
-
-  // logs: logs('orderId', actions.viewLogs),
 };

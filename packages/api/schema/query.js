@@ -217,7 +217,6 @@ export default [
       """
       order(orderId: ID!): Order
 
-
       """
       Get shop-global data and the resolved country/language pair
       """

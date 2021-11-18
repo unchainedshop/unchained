@@ -8,7 +8,7 @@ Package.describe({
 
 Npm.depends({
   'unchained-logger': '1.1.0',
-})
+});
 
 Package.onUse((api) => {
   api.versionsFrom('2.2');

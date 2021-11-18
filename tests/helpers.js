@@ -128,7 +128,7 @@ export const uploadFormData = async ({ token = '', body }) => {
     body,
   })
     .then((response) => response.json())
-    .catch((e) => console.log(e));
+    .catch((e) => console.log(e)); // eslint-disable-line
 };
 
 export const uploadToMinio = async (file, url) => {

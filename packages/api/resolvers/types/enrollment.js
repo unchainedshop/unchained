@@ -1,5 +1,3 @@
-// import { logs } from '../transformations/helpers/logs';
-
 export default {
   plan({ quantity, productId, configuration }) {
     return {
@@ -8,6 +6,4 @@ export default {
       configuration,
     };
   },
-
-  // logs: logs('enrollmentId'),
 };

@@ -1,21 +1,20 @@
-import winston from 'winston';
 import { Collection, Db } from 'mongodb';
 import { _ID } from '.';
+import { BookmarksModule } from './bookmarks';
 import { ModuleInput } from './common';
 import { EventsModule } from './events';
-import { BookmarksModule } from './bookmarks';
-import { log, createLogger, format, transports, LogLevel } from './logs';
+import { createLogger, format, log, LogLevel, transports } from './logs';
 
 // Types package only
-export { Modules } from './modules';
 export type {
-  Db,
   Collection,
-  UpdateFilter as Update,
+  Db,
   Filter,
   ObjectId,
+  UpdateFilter as Update,
 } from 'mongodb';
-export { ModuleMutations, ModuleCreateMutation, _ID } from './common';
+export { ModuleCreateMutation, ModuleMutations, _ID } from './common';
+export { Modules } from './modules';
 
 declare module 'meteor/unchained:utils' {
   function checkId(
@@ -45,13 +44,9 @@ export interface EmitAdapter {
   ): void;
 }
 
-
 declare module 'meteor/unchained:logs' {
-  export {
-    log, createLogger, format, transports, LogLevel
-  }
+  export { log, createLogger, format, transports, LogLevel };
 }
-
 
 declare module 'unchained-events' {
   function emit(
@@ -71,9 +66,7 @@ declare module 'unchained-events' {
 }
 
 declare module 'meteor/unchained:core-events' {
-  function configureEventsModule(
-    params: ModuleInput
-  ): Promise<EventsModule>;
+  function configureEventsModule(params: ModuleInput): Promise<EventsModule>;
 }
 
 declare module 'meteor/unchained:core-bookmarks' {

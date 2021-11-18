@@ -22,7 +22,7 @@ Package.onUse((api) => {
   api.use('ecmascript');
   api.use('raix:eventemitter');
   api.use('typescript@4.1.2');
-  
+
   api.use('unchained:utils@1.0.0-beta15');
 
   api.mainModule('src/mongodb-index.js');
