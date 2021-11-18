@@ -94,15 +94,13 @@ class FilterDirector {
     }, productIdResolver || null);
   }
 
-  intersect(productIdSet, filterProductIdSet) {
-    const reducedProductIdSet = this.adapterInstances.reduce(
+  aggregateProductIds(productIds) {
+    const reducedProductIds = this.adapterInstances.reduce(
       (lastProductIds, concreteAdapter) =>
         concreteAdapter.aggregateProductIds(lastProductIds),
-      [...productIdSet].filter((currentProductId) =>
-        filterProductIdSet.has(currentProductId)
-      )
+      productIds
     );
-    return new Set(reducedProductIdSet);
+    return reducedProductIds;
   }
 
   async buildFilterSelector(defaultSelector, options = {}) {

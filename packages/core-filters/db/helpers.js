@@ -11,6 +11,7 @@ import { FilterTypes } from './schema';
 import { Filters, FilterTexts } from './collections';
 import { FilterDirector } from '../director';
 import { searchProducts } from '../search';
+import intersectSet from '../intersect-set';
 
 const util = require('util');
 const zlib = require('zlib');
@@ -311,7 +312,7 @@ Filters.helpers({
   },
 
   collectProductIds({ value, ...options } = {}) {
-    const director = new FilterDirector({ ...options });
+    const director = new FilterDirector({ filter: this, ...options });
     const selector = Promise.await(
       director.buildProductSelector(
         {
@@ -440,14 +441,16 @@ Filters.helpers({
           values: [value],
           forceLiveCollection,
         });
-        const filteredProductIds = director.intersect(
+        const filteredProductIds = intersectSet(
           productIdSet,
           new Set(filterOptionProductIds)
         );
-        if (!filteredProductIds.size) return null;
+        if (!filteredProductIds.length) return null;
         return {
           definition: () => this.optionObject(value),
-          filteredProducts: filteredProductIds.size,
+          filteredProducts: director.aggregateProductIds([
+            ...filteredProductIds,
+          ]).length,
           isSelected: values ? values.indexOf(value) !== -1 : false,
         };
       })
@@ -459,16 +462,10 @@ Filters.helpers({
     forceLiveCollection,
     allProductIdsSet,
     otherFilters,
+    director,
     ...options
   }) {
     const values = filterQuery[this.key];
-    const director = new FilterDirector({
-      query: {
-        filterQuery,
-        forceLiveCollection,
-      },
-      ...options,
-    });
 
     // The examinedProductIdSet is a set of product id's that:
     // - Fit this filter generally
@@ -477,7 +474,7 @@ Filters.helpers({
       values: [undefined],
       forceLiveCollection,
     });
-    const examinedProductIdSet = director.intersect(
+    const examinedProductIdSet = intersectSet(
       allProductIdsSet,
       new Set(filterProductIds)
     );
@@ -495,7 +492,7 @@ Filters.helpers({
           values: filterQuery[filter.key],
           forceLiveCollection,
         });
-        return director.intersect(productIdSet, new Set(otherFilterProductIds));
+        return intersectSet(productIdSet, new Set(otherFilterProductIds));
       }, new Set(examinedProductIdSet));
 
     const filterProductIdsForValues = values
@@ -504,15 +501,17 @@ Filters.helpers({
           forceLiveCollection,
         })
       : filterProductIds;
-    const filteredProductIdSet = director.intersect(
+    const filteredProductIdSet = intersectSet(
       filteredByOtherFiltersSet,
       new Set(filterProductIdsForValues)
     );
 
     return {
       definition: this,
-      examinedProducts: examinedProductIdSet.size,
-      filteredProducts: filteredProductIdSet.size,
+      examinedProducts: director.aggregateProductIds([...examinedProductIdSet])
+        .length,
+      filteredProducts: director.aggregateProductIds([...filteredProductIdSet])
+        .length,
       isSelected: Object.prototype.hasOwnProperty.call(filterQuery, this.key),
       options: () => {
         // The current base for options should be an array of product id's that:

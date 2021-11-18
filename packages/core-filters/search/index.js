@@ -12,6 +12,7 @@ import resolveAssortmentSelector from './resolve-assortment-selector';
 import resolveFilterSelector from './resolve-filter-selector';
 import resolveSortStage from './resolve-sort-stage';
 import parseQueryArray from './parse-query-array';
+import { FilterDirector } from '../director';
 
 const cleanQuery = ({
   filterQuery,
@@ -44,6 +45,8 @@ const searchProducts = async ({
     forceLiveCollection,
   };
 
+  const director = new FilterDirector({ query, context, forceLiveCollection });
+
   const totalProductIds = productFulltextSearch(searchConfiguration)(
     query?.productIds
   );
@@ -72,6 +75,7 @@ const searchProducts = async ({
     return otherFilters.map((filter) => {
       return filter.load({
         ...query,
+        director,
         allProductIdsSet: new Set(relevantProductIds),
         otherFilters,
         context,
@@ -98,17 +102,17 @@ const searchProducts = async ({
     totalProducts: async () =>
       Products.find({
         ...(await productSelector),
-        _id: { $in: await totalProductIds },
+        _id: { $in: director.aggregateProductIds(await totalProductIds) },
       }).count(),
     filteredProducts: async () =>
       Products.find({
         ...(await productSelector),
-        _id: { $in: await filteredProductIds },
+        _id: { $in: director.aggregateProductIds(await filteredProductIds) },
       }).count(),
     products: async ({ offset, limit }) =>
       findPreservingIds(Products)(
         await productSelector,
-        await filteredProductIds,
+        director.aggregateProductIds(await filteredProductIds),
         {
           skip: offset,
           limit,
