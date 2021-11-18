@@ -7,7 +7,7 @@ import {
   Assortments,
   AssortmentFilters,
 } from 'meteor/unchained:core-assortments';
-import { emit } from 'meteor/unchained:events';
+import { emit } from 'unchained-events';
 import { FilterTypes } from './schema';
 import { Filters, FilterTexts } from './collections';
 import { FilterDirector } from '../director';

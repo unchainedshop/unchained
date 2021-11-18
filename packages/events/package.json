@@ -1,6 +1,6 @@
 {
   "name": "unchained-events",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "main": "lib/events-index.js",
   "types": "lib/events-index.d.ts",
   "type": "module",
@@ -28,7 +28,7 @@
   "homepage": "https://github.com/unchainedshop/unchained#readme",
   "dependencies": {
     "redis": "3.0.2",
-    "unchained-logger": "^1.0.1"
+    "unchained-logger": "1.1.0"
   },
   "devDependencies": {
     "@babel/core": "^7.16.0",

@@ -53,7 +53,7 @@ declare module 'meteor/unchained:logs' {
 }
 
 
-declare module 'meteor/unchained:events' {
+declare module 'unchained-events' {
   function emit(
     eventName: string,
     data?: string | Record<string, unknown>

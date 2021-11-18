@@ -14,6 +14,8 @@ Npm.depends({
   'lodash.isnumber': '3.0.3',
   'body-parser': '1.19.0',
   'graphql-scalars': '1.9.0',
+  'unchained-events': '1.1.0',
+  'unchained-logger': '1.1.0',
 });
 
 Package.onUse((api) => {

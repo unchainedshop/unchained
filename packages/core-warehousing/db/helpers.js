@@ -1,6 +1,6 @@
 import { Promise } from 'meteor/promise';
 import 'meteor/dburles:collection-helpers';
-import { emit } from 'meteor/unchained:events';
+import { emit } from 'unchained-events';
 import { WarehousingProviders } from './collections';
 import { WarehousingDirector } from '../director';
 

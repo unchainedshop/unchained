@@ -1,7 +1,7 @@
 import 'meteor/dburles:collection-helpers';
 import { findLocalizedText } from 'meteor/unchained:utils';
 import { Locale } from 'locale';
-import { emit } from 'meteor/unchained:events';
+import { emit } from 'unchained-events';
 import { removeObjects, MediaObjects } from 'meteor/unchained:core-files-next';
 import { AssortmentMedia, AssortmentMediaTexts } from './collections';
 

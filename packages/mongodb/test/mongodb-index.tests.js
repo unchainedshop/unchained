@@ -1,5 +1,5 @@
 import { assert } from "chai"
-import { db, initDb } from "meteor/unchained:core-mongodb"
+import { db, initDb } from "meteor/unchained:mongodb"
 import SimpleSchema from "simpl-schema"
 
 describe('Test exports', () => {

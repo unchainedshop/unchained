@@ -1,4 +1,4 @@
-import { getRegisteredEvents } from 'meteor/unchained:events';
+import { getRegisteredEvents } from 'unchained-events';
 
 const generateEventTypeDefs = () => [
   /* GraphQL */ `

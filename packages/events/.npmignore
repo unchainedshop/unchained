@@ -1,7 +1,10 @@
 src
 test
+tests
 
 .npm
 .versions
 
-package.js
+tsconfig.json
+
+jest.config.js

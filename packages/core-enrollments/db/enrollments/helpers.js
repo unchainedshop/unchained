@@ -7,7 +7,7 @@ import { Countries } from 'meteor/unchained:core-countries';
 import { Currencies } from 'meteor/unchained:core-currencies';
 import { log } from 'unchained-logger';
 import { WorkerDirector } from 'meteor/unchained:core-worker';
-import { emit } from 'meteor/unchained:events';
+import { emit } from 'unchained-events';
 import { Enrollments } from './collections';
 import { EnrollmentStatus } from './schema';
 import { EnrollmentDirector } from '../../director';

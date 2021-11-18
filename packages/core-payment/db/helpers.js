@@ -1,7 +1,7 @@
 import 'meteor/dburles:collection-helpers';
 import { Promise } from 'meteor/promise';
 import { Users } from 'meteor/unchained:core-users';
-import { emit } from 'meteor/unchained:events';
+import { emit } from 'unchained-events';
 import { PaymentDirector } from '../director';
 import { PaymentProviders, PaymentCredentials } from './collections';
 import settings from '../settings';

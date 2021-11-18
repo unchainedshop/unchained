@@ -10,6 +10,7 @@ Npm.depends({
   moniker: '0.1.2',
   open: '7.3.1',
   'yieldable-json': '2.0.1',
+  'unchained-events': '1.1.0',
 });
 
 Package.onUse((api) => {

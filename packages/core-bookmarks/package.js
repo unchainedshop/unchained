@@ -8,6 +8,7 @@ Package.describe({
 
 Npm.depends({
   'simpl-schema': '1.12.0',
+  'unchained-events': '1.1.0',
 });
 
 Package.onUse((api) => {
@@ -16,7 +17,6 @@ Package.onUse((api) => {
   api.use('promise');
   api.use('typescript@4.1.2');
 
-  api.use('unchained:events@1.0.0-beta15');
   api.use('unchained:utils@1.0.0-beta15');
 
   api.mainModule('src/bookmarks-index.ts', 'server');

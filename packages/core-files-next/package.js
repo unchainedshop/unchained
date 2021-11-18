@@ -6,18 +6,18 @@ Package.describe({
   documentation: 'README.md',
 });
 
+Npm.depends({
+  minio: '7.0.18',
+  'mime-types': '2.1.32',
+  'unchained-logger': '1.1.0',
+});
+
 Package.onUse(function (api) {
   api.versionsFrom('2.2');
   api.use('ecmascript');
   api.use('typescript@4.1.2');
-  'unchained-logger': '1.1.0',;
 
   api.mainModule('index.ts', 'server');
-});
-
-Npm.depends({
-  minio: '7.0.18',
-  'mime-types': '2.1.32',
 });
 
 Package.onTest((api) => {

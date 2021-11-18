@@ -74,8 +74,6 @@ unchained:core-quotations@1.0.0-beta15
 unchained:core-users@1.0.0-beta15
 unchained:core-warehousing@1.0.0-beta15
 unchained:core-worker@1.0.0-beta15
-unchained:events@1.0.0-beta15
-unchained:logger@1.0.0-beta15
 unchained:mongodb@1.0.0-beta15
 unchained:platform@1.0.0-beta15
 unchained:roles@1.0.0-beta15

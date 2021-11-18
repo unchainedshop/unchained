@@ -1,26 +1,7 @@
 {
+  "extends": "./tsconfig.build.json",
   "compilerOptions": {
-    "allowJs": true,
-    "allowSyntheticDefaultImports": true,
-    "declaration": true,
-    "esModuleInterop": true,
-    "experimentalDecorators": true,
-    "forceConsistentCasingInFileNames": true,
-    "lib": ["esnext"],
-    "module": "esnext",
-    "moduleResolution": "node",
-    "noImplicitReturns": true,
-    "noUnusedLocals": false,
-    "outDir": "lib",
-    "preserveWatchOutput": true,
-    "skipLibCheck": true,
-    "sourceMap": true,
-    "target": "esnext",
-    "types": ["node", "jest"],
-    "baseUrl": ".", // This must be specified if "paths" is.
-    "paths": {
-      "meteor/unchained:*": ["node_modules/unchained-core-types/index.d.ts"]
-    }
+    "types": ["node", "jest"]
   },
-  "include": ["src", "test", "plugins"]
+  "include": ["src", "tests"]
 }

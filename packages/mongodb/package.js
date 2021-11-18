@@ -33,7 +33,7 @@ Package.onTest((api) => {
   api.use('ecmascript');
   api.use('typescript@4.1.2');
 
-  api.use('unchained:core-mongodb@1.0.0-beta15');
+  api.use('unchained:mongodb@1.0.0-beta15');
 
   api.mainModule('test/mongodb-index.tests.js');
 });

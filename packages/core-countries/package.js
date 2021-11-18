@@ -10,6 +10,8 @@ Npm.depends({
   'lru-cache': '6.0.0',
   'emoji-flags': '1.3.0',
   'i18n-iso-countries': '6.4.0',
+    'unchained-events': '1.1.0',
+
 });
 
 Package.onUse((api) => {
@@ -20,7 +22,6 @@ Package.onUse((api) => {
   api.use('aldeed:collection2@3.2.1');
   
   api.use('unchained:utils@1.0.0-beta15');
-  api.use('unchained:events@1.0.0-beta15');
   
   api.use('unchained:core-currencies@1.0.0-beta15');
 

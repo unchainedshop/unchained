@@ -5,7 +5,7 @@ import {
   PaymentPricingDirector,
   PaymentPricingSheet,
 } from 'meteor/unchained:core-pricing';
-import { emit } from 'meteor/unchained:events';
+import { emit } from 'unchained-events';
 import { objectInvert } from 'meteor/unchained:utils';
 import { OrderPayments } from './collections';
 import { OrderPaymentStatus } from './schema';

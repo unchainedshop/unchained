@@ -1,6 +1,6 @@
 import 'meteor/dburles:collection-helpers';
 import { Users } from 'meteor/unchained:core-users';
-import { emit } from 'meteor/unchained:events';
+import { emit } from 'unchained-events';
 import { ProductReviews } from './collections';
 import { ProductReviewVoteTypes } from './schema';
 import { Products } from '../products/collections';

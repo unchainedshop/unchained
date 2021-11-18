@@ -15,7 +15,7 @@ import {
   OrderPricingDirector,
   OrderPricingSheet,
 } from 'meteor/unchained:core-pricing';
-import { emit } from 'meteor/unchained:events';
+import { emit } from 'unchained-events';
 import {
   uploadObjectStream,
   uploadFileFromURL,

@@ -6,6 +6,10 @@ Package.describe({
   documentation: 'README.md',
 });
 
+Npm.depends({
+  'unchained-logger': '1.1.0',
+})
+
 Package.onUse((api) => {
   api.versionsFrom('2.2');
   api.use('ecmascript');
@@ -18,7 +22,6 @@ Package.onUse((api) => {
   api.use('unchained:core-users@1.0.0-beta15');
   api.use('unchained:core-products@1.0.0-beta15');
   api.use('unchained:core-countries@1.0.0-beta15');
-  'unchained-logger': '1.1.0',;
   api.use('unchained:core-worker@1.0.0-beta15');
 
   api.mainModule('quotations.js', 'server');

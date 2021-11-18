@@ -6,10 +6,6 @@ Package.describe({
   documentation: 'README.md',
 });
 
-Npm.depends({
-  'simpl-schema': '1.12.0',
-});
-
 Package.onUse((api) => {
   api.versionsFrom('2.2');
 

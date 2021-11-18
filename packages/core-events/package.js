@@ -9,6 +9,7 @@ Package.describe({
 Npm.depends({
   redis: '3.0.2',
   'simpl-schema': '1.12.0',
+  'unchained-events': '1.1.0',
 });
 
 Package.onUse((api) => {
@@ -16,7 +17,6 @@ Package.onUse((api) => {
   api.use('ecmascript');
   api.use('typescript@4.1.2');
 
-  api.use('unchained:events@1.0.0-beta15');
   api.use('unchained:utils@1.0.0-beta15');
 
   api.mainModule('src/events-index.ts', 'server');

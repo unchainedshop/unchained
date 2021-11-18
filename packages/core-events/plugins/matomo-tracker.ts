@@ -2,7 +2,7 @@
 import fetch from 'isomorphic-unfetch';
 import { encode } from 'querystring';
 import { Orders } from 'meteor/unchained:core-orders';
-import { subscribe } from 'meteor/unchained:events';
+import { subscribe } from 'unchained-events';
 
 const parseCurrency = (amount: number): number =>
   parseFloat((amount / 100).toString());

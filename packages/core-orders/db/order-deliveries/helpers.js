@@ -6,7 +6,7 @@ import {
   DeliveryPricingSheet,
 } from 'meteor/unchained:core-pricing';
 import { objectInvert } from 'meteor/unchained:utils';
-import { emit } from 'meteor/unchained:events';
+import { emit } from 'unchained-events';
 import { OrderDeliveries } from './collections';
 import { OrderDeliveryStatus } from './schema';
 import { Orders } from '../orders/collections';

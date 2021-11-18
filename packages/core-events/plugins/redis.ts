@@ -1,5 +1,5 @@
 import redis from 'redis';
-import { setEmitAdapter, EmitAdapter } from 'meteor/unchained:events';
+import { setEmitAdapter, EmitAdapter } from 'unchained-events';
 
 const { REDIS_PORT = 6379, REDIS_HOST = '127.0.0.1' } = process.env;
 
