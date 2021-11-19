@@ -10,7 +10,7 @@ EVENTS (DONE)
 2. move EventDirector out of core-events _emit_, _setEmitAdapter_, _registerEvents_, _setEmitHistoryAdapter_ (core-events) 
 3. Core-events uses db to track events
 
-CORE-EVENTS
+CORE-EVENTS (DONE)
 1. Use _setEmitHistoryAdapter_ to create a default History adapter that writes to the database.
 
 Async-await 
@@ -23,5 +23,12 @@ Architecture
 
 | Core | API | DB | EventEmitter | Logger |
 
-INTETRAGION
+INTETRAGION (DONE)
 1. User Logger and Events in core and api packages
+
+
+OPEN QUESTIONS FOR PASCAL
+1. Logs in DB incl. any information in the API is removed. Correct?
+2. Should the setEmitHistoryAdapter be public and overwriteable?
+3. _unchained-logger_ and _unchained-events_ are now (public) npm packages. Shall I revert them to atmosphere packages? Do we have a @unchained namespace for those? 
+4. No changes for now to reduce async-await. I suggest that is something for another day!?
