@@ -21,9 +21,9 @@ const debugStringContainsModule = (debugString: string, moduleName: string) => {
     .reduce((accumulator: any, name: string) => {
       if (accumulator === false) return accumulator;
       const nameRegex = name
-        .replace('-', '\\-?')
-        .replace(':*', '\\:?*')
-        .replace('*', '.*');
+        .replace(new RegExp('-', 'i'), '\\-?')
+        .replace(new RegExp(':*', 'i'), '\\:?*')
+        .replace(new RegExp('*', 'i'), '.*');
       const regExp = new RegExp(`^${nameRegex}$`, 'm');
       if (regExp.test(moduleName)) {
         if (name.slice(0, 1) === '-') {
