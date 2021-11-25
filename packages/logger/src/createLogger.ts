@@ -23,7 +23,7 @@ const debugStringContainsModule = (debugString: string, moduleName: string) => {
       const nameRegex = name
         .replace(new RegExp('-', 'i'), '\\-?')
         .replace(new RegExp(':*', 'i'), '\\:?*')
-        .replace(new RegExp('*', 'i'), '.*');
+        .replace(/\*/i, '.*');
       const regExp = new RegExp(`^${nameRegex}$`, 'm');
       if (regExp.test(moduleName)) {
         if (name.slice(0, 1) === '-') {
