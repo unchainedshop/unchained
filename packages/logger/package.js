@@ -18,5 +18,5 @@ Package.onUse((api) => {
   api.use('ecmascript');
   api.use('typescript');
 
-  api.mainModule('src/logger-index.ts', 'server');
+  api.mainModule('lib/logger-index.js', 'server');
 });
