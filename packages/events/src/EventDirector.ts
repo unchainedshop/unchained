@@ -22,8 +22,8 @@ export const defaultNormalizer: ContextNormalizerFunction = (context) => {
 const RegisteredEventsSet = new Set();
 const RegisteredCallbacksSet = new Set();
 
-let Adapter: EmitAdapter;
-let HistoryAdapter: EmitAdapter;
+let Adapter: EmitAdapter; // Public (customizable)
+let HistoryAdapter: EmitAdapter; // (Per default: Core-events adapter to write into DB)
 let ContextNormalizer = defaultNormalizer;
 
 export const EventDirector: EventDirectorType = {

@@ -8,7 +8,6 @@ Package.describe({
 
 Npm.depends({
   later: '1.2.0',
-  'unchained-logger': '1.1.0',
 });
 
 Package.onUse((api) => {
@@ -17,12 +16,12 @@ Package.onUse((api) => {
   api.use('mongo');
   api.use('promise');
   api.use('email');
-
-  api.use('typescript@4.1.2');
+  api.use('typescript');
   api.use('dburles:collection-helpers@1.1.0');
   api.use('aldeed:collection2@3.2.1');
 
   api.use('unchained:utils@1.0.0-beta15');
+  api.use('unchained:logger@1.0.0-beta15');
 
   api.mainModule('worker.js', 'server');
 });

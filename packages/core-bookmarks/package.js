@@ -15,7 +15,7 @@ Package.onUse((api) => {
   api.versionsFrom('2.2');
   api.use('ecmascript');
   api.use('promise');
-  api.use('typescript@4.1.2');
+  api.use('typescript');
 
   api.use('unchained:utils@1.0.0-beta15');
 
@@ -25,7 +25,7 @@ Package.onUse((api) => {
 Package.onTest((api) => {
   api.use('meteortesting:mocha');
   api.use('ecmascript');
-  api.use('typescript@4.1.2');
+  api.use('typescript');
 
   api.use('unchained:mongodb@1.0.0-beta15');
   api.use('unchained:core-bookmarks@1.0.0-beta15');

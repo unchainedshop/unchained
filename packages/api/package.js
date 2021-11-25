@@ -14,8 +14,6 @@ Npm.depends({
   'lodash.isnumber': '3.0.3',
   'body-parser': '1.19.0',
   'graphql-scalars': '1.9.0',
-  'unchained-events': '1.1.0',
-  'unchained-logger': '1.1.0',
 });
 
 Package.onUse((api) => {
@@ -25,7 +23,8 @@ Package.onUse((api) => {
   api.use('webapp');
   api.use('check');
   api.use('mongo');
-  api.use('typescript@4.1.2');
+  api.use('typescript');
+
   api.use('unchained:core@1.0.0-beta15');
   api.use('unchained:roles@1.0.0-beta15');
 

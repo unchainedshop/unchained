@@ -9,8 +9,6 @@ Package.describe({
 Npm.depends({
   'lru-cache': '6.0.0',
   'node-sheets': '1.1.0',
-  'unchained-events': '1.1.0',
-  'unchained-logger': '1.1.0',
 });
 
 Package.onUse((api) => {
@@ -22,7 +20,9 @@ Package.onUse((api) => {
   api.use('aldeed:collection2@3.2.1');
 
   api.use('unchained:utils@1.0.0-beta15');
-
+  api.use('unchained:events@1.0.0-beta15');
+  api.use('unchained:logger@1.0.0-beta15');
+  
   api.mainModule('warehousing.js', 'server');
 });
 

@@ -40,7 +40,7 @@ declare module 'meteor/unchained:logs' {
   export { log, createLogger, format, transports, LogLevel };
 }
 
-declare module 'unchained-events' {
+declare module 'meteor/unchained:events' {
   function emit(
     eventName: string,
     data?: string | Record<string, unknown>

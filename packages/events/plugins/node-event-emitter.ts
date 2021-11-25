@@ -1,5 +1,6 @@
 import { EventEmitter } from 'events';
-import { setEmitAdapter, EmitAdapter } from 'unchained-events';
+import { EmitAdapter } from 'unchained-core-types/events';
+import { setEmitAdapter } from 'meteor/unchained:events';
 
 const NodeEventEmitter = (): EmitAdapter => {
   const eventEmitter = new EventEmitter();

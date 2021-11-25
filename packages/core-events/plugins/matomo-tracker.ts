@@ -1,3 +1,5 @@
+/* TODO: Move this code into its own community package and add as example to the docs. Remove the code from the core packages. */
+
 /* eslint-disable camelcase */
 import fetch from 'isomorphic-unfetch';
 import { encode } from 'querystring';

@@ -8,12 +8,13 @@ Package.describe({
 
 Npm.depends({
   'lru-cache': '6.0.0',
-  'unchained-logger': '1.1.0',
 });
 
 Package.onUse((api) => {
   api.versionsFrom('2.2');
   api.use('ecmascript');
+
+  api.use('unchained:logger@1.0.0-beta15');
 
   api.mainModule('pricing.js', 'server');
 });
