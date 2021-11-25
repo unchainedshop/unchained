@@ -29,6 +29,12 @@ INTETRAGION (DONE)
 
 OPEN QUESTIONS FOR PASCAL
 1. Logs in DB incl. any information in the API is removed. Correct?
-2. Should the setEmitHistoryAdapter be public and overwriteable?
-3. _unchained-logger_ and _unchained-events_ are now (public) npm packages. Shall I revert them to atmosphere packages? Do we have a @unchained namespace for those? 
-4. No changes for now to reduce async-await. I suggest that is something for another day!?
+2. Should the setEmitHistoryAdapter be public and overwriteable? <-- Adapter (Part of module): Lease as is
+3. _unchained-logger_ and _unchained-events_ are now (public) npm packages. Shall I revert them to atmosphere packages? Do we have a @unchained namespace for those? @unchained-shop/
+ - Versioning? 
+4. No changes for now to reduce async-await. I suggest that is something for another day!? 🍀
+
+
+5. Move events plugins (redis, node).
+6. Breaking changes in README
+7. Atmosphere
