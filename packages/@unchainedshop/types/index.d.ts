@@ -34,6 +34,11 @@ declare module 'meteor/unchained:utils' {
     schema: SimpleSchema,
     options?: { hasCreateOnly: boolean }
   ): ModuleMutations<T> | ModuleCreateMutation<T>;
+
+  function buildDbIndexes(
+    collection: Collection,
+    indexes: Array<() => void>
+  ): void;
 }
 
 declare module 'meteor/unchained:logs' {

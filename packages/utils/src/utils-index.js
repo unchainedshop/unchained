@@ -17,6 +17,7 @@ export { default as generateRandomHash } from './generate-random-hash';
 export { checkId } from './check-id';
 export { generateDbFilterById } from './generate-db-filter-by-id';
 export { generateDbMutations } from './generate-db-mutations';
+export { buildDbIndexes } from './build-db-indexes';
 
 const Schemas = {
   timestampFields,
