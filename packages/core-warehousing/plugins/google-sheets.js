@@ -3,7 +3,7 @@ import {
   WarehousingAdapter,
 } from 'meteor/unchained:core-warehousing';
 import Sheets from 'node-sheets';
-import { log } from 'unchained-logger';
+import { log } from 'meteor/unchained:logger';
 import LRU from 'lru-cache';
 
 const { NODE_ENV, GOOGLE_SHEETS_ID, GOOGLE_SHEETS_PRIVATE_KEY_DATA } =

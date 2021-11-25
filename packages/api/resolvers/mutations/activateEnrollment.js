@@ -2,7 +2,7 @@ import {
   Enrollments,
   EnrollmentStatus,
 } from 'meteor/unchained:core-enrollments';
-import { log } from 'unchained-logger';
+import { log } from 'meteor/unchained:logger';
 import {
   EnrollmentNotFoundError,
   EnrollmentWrongStatusError,

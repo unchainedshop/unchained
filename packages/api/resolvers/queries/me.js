@@ -1,4 +1,4 @@
-import { log } from 'unchained-logger';
+import { log } from 'meteor/unchained:logger';
 import { Users } from 'meteor/unchained:core-users';
 
 export default function me(root, params, { userId, remoteAddress }) {

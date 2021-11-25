@@ -1,4 +1,4 @@
-import { log } from 'unchained-logger';
+import { log } from 'meteor/unchained:logger';
 import { FilterTexts } from 'meteor/unchained:core-filters';
 
 export default function translatedFilterTexts(

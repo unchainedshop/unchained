@@ -1,4 +1,4 @@
-import { log } from 'unchained-logger';
+import { log } from 'meteor/unchained:logger';
 import { ProductTexts } from 'meteor/unchained:core-products';
 
 export default function translatedProductTexts(

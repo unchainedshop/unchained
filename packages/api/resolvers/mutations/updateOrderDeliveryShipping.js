@@ -1,4 +1,4 @@
-import { log } from 'unchained-logger';
+import { log } from 'meteor/unchained:logger';
 import { OrderDeliveries } from 'meteor/unchained:core-orders';
 import { DeliveryProviderType } from 'meteor/unchained:core-delivery';
 import {

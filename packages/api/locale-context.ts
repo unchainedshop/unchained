@@ -5,7 +5,7 @@ import {
   resolveUserRemoteAddress,
 } from 'meteor/unchained:utils';
 
-import { log } from 'unchained-logger';
+import { log } from 'meteor/unchained:logger';
 import { Countries } from 'meteor/unchained:core-countries';
 import { Languages } from 'meteor/unchained:core-languages';
 import LRU from 'lru-cache';

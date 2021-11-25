@@ -1,7 +1,7 @@
 import { assert } from 'chai';
 import { initDb } from 'meteor/unchained:mongodb';
 import { configureEventsModule } from 'meteor/unchained:core-events';
-import { emit, registerEvents, getEmitHistoryAdapter } from 'unchained-events';
+import { emit, registerEvents, getEmitHistoryAdapter } from 'meteor/unchained:events';
 
 describe('Test exports', () => {
   let module;

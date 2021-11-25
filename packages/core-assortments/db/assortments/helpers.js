@@ -5,10 +5,10 @@ import {
   findPreservingIds,
   findLocalizedText,
 } from 'meteor/unchained:utils';
-import { emit } from 'unchained-events';
+import { emit } from 'meteor/unchained:events';
 
 import { Locale } from 'locale';
-import { log } from 'unchained-logger';
+import { log } from 'meteor/unchained:logger';
 import {
   uploadObjectStream,
   uploadFileFromURL,

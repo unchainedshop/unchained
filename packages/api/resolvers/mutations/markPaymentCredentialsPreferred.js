@@ -1,4 +1,4 @@
-import { log } from 'unchained-logger';
+import { log } from 'meteor/unchained:logger';
 import { PaymentCredentials } from 'meteor/unchained:core-payment';
 import { PaymentCredentialsNotFoundError, InvalidIdError } from '../../errors';
 

@@ -1,4 +1,4 @@
-import { log } from 'unchained-logger';
+import { log } from 'meteor/unchained:logger';
 import { ProductVariations } from 'meteor/unchained:core-products';
 import { InvalidIdError, ProductVariationNotFoundError } from '../../errors';
 

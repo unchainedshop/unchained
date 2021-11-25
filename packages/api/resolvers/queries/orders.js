@@ -1,4 +1,4 @@
-import { log } from 'unchained-logger';
+import { log } from 'meteor/unchained:logger';
 import { Orders } from 'meteor/unchained:core-orders';
 
 export default async function orders(

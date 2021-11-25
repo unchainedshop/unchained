@@ -1,4 +1,4 @@
-import { log } from 'unchained-logger';
+import { log } from 'meteor/unchained:logger';
 
 const WarehousingError = {
   ADAPTER_NOT_FOUND: 'ADAPTER_NOT_FOUND',

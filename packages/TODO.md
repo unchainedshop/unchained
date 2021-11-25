@@ -35,6 +35,6 @@ OPEN QUESTIONS FOR PASCAL
 4. No changes for now to reduce async-await. I suggest that is something for another day!? 🍀
 
 
-5. Move events plugins (redis, node).
+5. Move events plugins (redis, node). DONE
 6. Breaking changes in README
 7. Atmosphere

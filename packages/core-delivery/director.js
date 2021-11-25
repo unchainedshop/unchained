@@ -1,4 +1,4 @@
-import { log } from 'unchained-logger';
+import { log } from 'meteor/unchained:logger';
 
 export const DeliveryError = {
   ADAPTER_NOT_FOUND: 'ADAPTER_NOT_FOUND',

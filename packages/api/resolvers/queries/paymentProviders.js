@@ -1,4 +1,4 @@
-import { log } from 'unchained-logger';
+import { log } from 'meteor/unchained:logger';
 import { PaymentProviders } from 'meteor/unchained:core-payment';
 
 export default function paymentProvider(root, { type }, { userId }) {

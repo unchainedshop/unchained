@@ -1,4 +1,4 @@
-import { log } from 'unchained-logger';
+import { log } from 'meteor/unchained:logger';
 import { WorkStatus } from './schema';
 import { WorkQueue } from './collections';
 

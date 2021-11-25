@@ -1,4 +1,4 @@
-import { log } from 'unchained-logger';
+import { log } from 'meteor/unchained:logger';
 import { DeliveryProviders } from 'meteor/unchained:core-delivery';
 import { DeliverProviderNotFoundError, InvalidIdError } from '../../errors';
 

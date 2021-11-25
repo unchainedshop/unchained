@@ -1,4 +1,4 @@
-import { log } from 'unchained-logger';
+import { log } from 'meteor/unchained:logger';
 
 const FilterError = {
   NOT_IMPLEMENTED: 'NOT_IMPLEMENTED',

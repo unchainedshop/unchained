@@ -3,7 +3,7 @@ import 'meteor/dburles:collection-helpers';
 import crypto from 'crypto';
 import { Countries } from 'meteor/unchained:core-countries';
 import { DeliveryPricingDirector } from 'meteor/unchained:core-pricing';
-import { emit } from 'unchained-events';
+import { emit } from 'meteor/unchained:events';
 import { DeliveryProviders } from './collections';
 import { DeliveryDirector } from '../director';
 import settings from '../settings';

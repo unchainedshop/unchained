@@ -1,4 +1,4 @@
-import { log } from 'unchained-logger';
+import { log } from 'meteor/unchained:logger';
 import { Languages } from 'meteor/unchained:core-languages';
 
 export default function createLanguage(root, { language }, { userId }) {

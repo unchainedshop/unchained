@@ -1,6 +1,6 @@
 import WorkerPlugin from 'meteor/unchained:core-worker/workers/base';
 import { WorkerDirector } from 'meteor/unchained:core-worker';
-import { createLogger } from 'unchained-logger';
+import { createLogger } from 'meteor/unchained:logger';
 import { Products, ProductMedia } from 'meteor/unchained:core-products';
 import {
   Assortments,

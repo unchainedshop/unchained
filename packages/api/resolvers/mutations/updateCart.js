@@ -1,4 +1,4 @@
-import { log } from 'unchained-logger';
+import { log } from 'meteor/unchained:logger';
 import getCart from '../../getCart';
 
 export default async function updateCart(

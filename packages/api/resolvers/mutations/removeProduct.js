@@ -1,4 +1,4 @@
-import { log } from 'unchained-logger';
+import { log } from 'meteor/unchained:logger';
 import { Products, ProductStatus } from 'meteor/unchained:core-products';
 import {
   ProductNotFoundError,

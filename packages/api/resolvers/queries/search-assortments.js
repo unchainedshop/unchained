@@ -1,4 +1,4 @@
-import { log } from 'unchained-logger';
+import { log } from 'meteor/unchained:logger';
 import { searchAssortments } from 'meteor/unchained:core-filters';
 
 export default async function searchQuery(root, query, context) {

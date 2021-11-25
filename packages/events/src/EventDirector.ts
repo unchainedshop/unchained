@@ -1,4 +1,4 @@
-import { createLogger } from 'unchained-logger';
+import { createLogger } from 'meteor/unchained:logger';
 import {
   ContextNormalizerFunction,
   EmitAdapter,

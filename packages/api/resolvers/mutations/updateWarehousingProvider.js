@@ -1,4 +1,4 @@
-import { log } from 'unchained-logger';
+import { log } from 'meteor/unchained:logger';
 import { WarehousingProviders } from 'meteor/unchained:core-warehousing';
 import { WarehousingProviderNotFoundError, InvalidIdError } from '../../errors';
 

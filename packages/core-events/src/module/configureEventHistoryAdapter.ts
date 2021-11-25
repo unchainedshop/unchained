@@ -5,7 +5,7 @@ import {
   getEmitHistoryAdapter,
   setEmitHistoryAdapter,
   EmitAdapter,
-} from 'unchained-events';
+} from 'meteor/unchained:events';
 
 export const configureEventHistoryAdapter = (Events: Collection<Event>) => {
   if (!getEmitHistoryAdapter()) {

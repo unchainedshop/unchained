@@ -1,4 +1,4 @@
-import { log } from 'unchained-logger';
+import { log } from 'meteor/unchained:logger';
 import { Assortments } from 'meteor/unchained:core-assortments';
 import { searchProducts } from 'meteor/unchained:core-filters';
 import { QueryStringRequiredError } from '../../errors';

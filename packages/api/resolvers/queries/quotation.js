@@ -1,4 +1,4 @@
-import { log } from 'unchained-logger';
+import { log } from 'meteor/unchained:logger';
 import { Quotations } from 'meteor/unchained:core-quotations';
 import { InvalidIdError } from '../../errors';
 

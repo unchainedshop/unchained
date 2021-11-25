@@ -1,4 +1,4 @@
-import { log } from 'unchained-logger';
+import { log } from 'meteor/unchained:logger';
 import { Users } from 'meteor/unchained:core-users';
 import hashPassword from '../../hashPassword';
 

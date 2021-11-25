@@ -1,4 +1,4 @@
-import { log } from 'unchained-logger';
+import { log } from 'meteor/unchained:logger';
 import { WorkerDirector } from 'meteor/unchained:core-worker';
 import { WorkTypeInvalidError } from '../../errors';
 

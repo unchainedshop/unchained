@@ -1,4 +1,4 @@
-import { log } from 'unchained-logger';
+import { log } from 'meteor/unchained:logger';
 import { Countries } from 'meteor/unchained:core-countries';
 
 export default function countriesCount(root, { includeInactive }, { userId }) {

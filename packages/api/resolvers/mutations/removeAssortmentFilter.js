@@ -1,4 +1,4 @@
-import { log } from 'unchained-logger';
+import { log } from 'meteor/unchained:logger';
 import { AssortmentFilters } from 'meteor/unchained:core-assortments';
 import { AssortmentFilterNotFoundError, InvalidIdError } from '../../errors';
 

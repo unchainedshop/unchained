@@ -1,5 +1,5 @@
 import { Mongo } from 'meteor/mongo';
-import { createLogger } from 'unchained-logger';
+import { createLogger } from 'meteor/unchained:logger';
 import createMigrationRunner from './createMigrationRunner';
 
 const LastMigration = new Mongo.Collection('last_migration');

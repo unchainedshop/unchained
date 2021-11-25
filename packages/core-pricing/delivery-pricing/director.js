@@ -1,5 +1,5 @@
 import { Promise } from 'meteor/promise';
-import { log } from 'unchained-logger';
+import { log } from 'meteor/unchained:logger';
 import { DeliveryPricingSheet } from './sheet';
 
 class DeliveryPricingAdapter {
