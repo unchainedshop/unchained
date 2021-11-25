@@ -8,7 +8,7 @@
     "clean": "rm -rf lib",
     "build": "npm run clean && tsc -p tsconfig.build.json",
     "watch": "tsc --watch",
-    "link:core": "npm link  unchained-core-types unchained-events",
+    "link:core": "npm link  unchained-core-types",
     "test": "cross-env METEOR_PACKAGE_DIRS=../ TEST_CLIENT=0 TEST_WATCH=1 meteor test-packages ./ --driver-package meteortesting:mocha --port 4212"
   },
   "repository": {
@@ -28,8 +28,7 @@
   "homepage": "https://github.com/unchainedshop/unchained#readme",
   "dependencies": {
     "redis": "3.0.2",
-    "simpl-schema": "1.12.0",
-    "unchained-events": "^1.1.2"
+    "simpl-schema": "1.12.0"
   },
   "devDependencies": {
     "@types/chai": "^4.2.22",

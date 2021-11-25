@@ -18,7 +18,5 @@ Package.onUse((api) => {
   api.use('ecmascript');
   api.use('typescript');
 
-  api.use('unchained:utils@1.0.0-beta15');
-
   api.mainModule('src/logger-index.ts', 'server');
 });
