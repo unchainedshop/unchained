@@ -27,7 +27,7 @@ Package.onUse((api) => {
 
   api.use('unchained:events@1.0.0-beta15');
   api.use('unchained:logger@1.0.0-beta15');
-  
+
   api.use('unchained:core@1.0.0-beta15');
   api.use('unchained:roles@1.0.0-beta15');
 

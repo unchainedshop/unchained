@@ -10,7 +10,7 @@ const buildIndexes = (indexes) =>
 export const buildDbIndexes = async (collection, indexes) => {
   let success = true;
   const buildErrors = (await buildIndexes(indexes)).filter(Boolean);
-  
+
   if (buildErrors.length) {
     const dropError = await collection.dropIndexes().catch((e) => e);
 
@@ -23,6 +23,6 @@ export const buildDbIndexes = async (collection, indexes) => {
       }
     }
   }
-  
+
   return success;
 };

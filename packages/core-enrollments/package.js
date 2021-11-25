@@ -9,7 +9,7 @@ Package.describe({
 Npm.depends({
   hashids: '2.2.1',
   later: '1.2.0',
-})
+});
 
 Package.onUse((api) => {
   api.versionsFrom('2.2');
@@ -21,7 +21,7 @@ Package.onUse((api) => {
   api.use('unchained:utils@1.0.0-beta15');
   api.use('unchained:events@1.0.0-beta15');
   api.use('unchained:logger@1.0.0-beta15');
-  
+
   api.use('unchained:core-files-next@1.0.0-beta15');
   api.use('unchained:core-worker@1.0.0-beta15');
   api.use('unchained:core-users@1.0.0-beta15');

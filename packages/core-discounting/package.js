@@ -6,7 +6,6 @@ Package.describe({
   documentation: 'README.md',
 });
 
-
 Package.onUse((api) => {
   api.versionsFrom('2.2');
   api.use('ecmascript');
