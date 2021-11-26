@@ -17,17 +17,15 @@ export interface EmitAdapter {
 }
 
 export interface EventsModule extends ModuleCreateMutation<Event> {
-  findEvent: (
-    params: { eventId: _ID; query?: Query },
-    options?: FindOptions
-  ) => Promise<Event>;
+  findEvent: (params: Query & { eventId: _ID }) => Promise<Event>;
 
-  findEvents: (params: {
-    limit?: number;
-    offset?: number;
-    sort?: Sort;
-    query: Query;
-  }) => Promise<Array<Event>>;
+  findEvents: (
+    params: Query & {
+      limit?: number;
+      offset?: number;
+      sort?: Sort;
+    }
+  ) => Promise<Array<Event>>;
 
   count: (query: Query) => Promise<number>;
 }

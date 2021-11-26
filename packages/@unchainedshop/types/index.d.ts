@@ -3,7 +3,7 @@ import { _ID } from '.';
 import { BookmarksModule } from './bookmarks';
 import { ModuleInput } from './common';
 import { EmitAdapter, EventsModule } from './events';
-import { createLogger, format, log, LogLevel, transports } from './logs';
+import { createLogger as createLoggerType, log as logType, format, LogLevel, LogOptions, transports } from './logs';
 
 // Types package only
 export type {
@@ -35,14 +35,15 @@ declare module 'meteor/unchained:utils' {
     options?: { hasCreateOnly: boolean }
   ): ModuleMutations<T> | ModuleCreateMutation<T>;
 
-  function buildDbIndexes(
-    collection: Collection,
+  function buildDbIndexes<T>(
+    collection: Collection<T>,
     indexes: Array<() => void>
-  ): void;
+  ): Promise<void>;
 }
 
-declare module 'meteor/unchained:logs' {
-  export { log, createLogger, format, transports, LogLevel };
+declare module 'meteor/unchained:logger' {
+  type log = logType;
+  type createLogger = createLoggerType;
 }
 
 declare module 'meteor/unchained:events' {

@@ -19,7 +19,8 @@ export type Log = {
 } & TimestampFields;
 
 export interface LogOptions extends LoggerOptions {
-  level: LogLevel;
+  level?: LogLevel;
+  [x: string]: any;
 }
 
 export type log = (message: string, options?: LogOptions) => void;

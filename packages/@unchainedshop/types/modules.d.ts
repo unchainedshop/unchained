@@ -1,5 +1,6 @@
 import { EventsModule } from './events';
 import { BookmarksModule } from './bookmarks';
+import { CurrenciesModule } from './currencies';
 import { LogsModule } from './logs';
 
 export declare interface Modules {
@@ -7,7 +8,7 @@ export declare interface Modules {
   assortments: any;
   bookmarks: BookmarksModule;
   countries: any;
-  currencies: any;
+  currencies: CurrenciesModule;
   delivery: any;
   documents: any;
   enrollments: any;
