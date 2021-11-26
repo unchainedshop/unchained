@@ -6,10 +6,6 @@ Package.describe({
   documentation: 'README.md',
 });
 
-Npm.depends({
-  'unchained-core-types': '1.0.10',
-});
-
 Package.onUse((api) => {
   api.versionsFrom('2.2');
   api.use('mongo');

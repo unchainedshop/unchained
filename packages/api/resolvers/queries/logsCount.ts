@@ -1,4 +1,4 @@
-import { Root, Context } from 'unchained-core-types/api';
+import { Root, Context } from '@unchainedshop/types/api';
 
 // we don't log this query because of reasons ;)
 export default function logsCount(root: Root, _: any, { modules }: Context) {

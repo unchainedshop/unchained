@@ -16,7 +16,7 @@
     "noUnusedLocals": false,
     "outDir": "lib",
     "paths": {
-      "meteor/unchained:*": ["node_modules/unchained-core-types/index.d.ts"]
+      "meteor/unchained:*": ["node_modules/@unchainedshop/types/index.d.ts"]
     },
     "preserveWatchOutput": true,
     "skipLibCheck": true,

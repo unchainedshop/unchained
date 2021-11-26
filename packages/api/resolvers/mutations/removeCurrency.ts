@@ -1,12 +1,17 @@
+import { Context, Root } from '@unchainedshop/types/api';
 import { log } from 'meteor/unchained:logger';
-import { Currencies } from 'meteor/unchained:core-currencies';
 import { CurrencyNotFoundError, InvalidIdError } from '../../errors';
 
-export default function removeCurrency(root, { currencyId }, { userId }) {
+export default async function removeCurrency(
+  root: Root,
+  { currencyId }: { currencyId: string },
+  { userId, modules }: Context
+) {
   log(`mutation removeCurrency ${currencyId}`, { userId });
   if (!currencyId) throw new InvalidIdError({ currencyId });
-  const currency = Currencies.findCurrency({ currencyId });
+  const currency = await modules.currencies.findCurrency({ currencyId });
   if (!currency) throw new CurrencyNotFoundError({ currencyId });
-  Currencies.removeCurrency({ currencyId });
+
+  await modules.currencies.delete(currencyId);
   return currency;
 }

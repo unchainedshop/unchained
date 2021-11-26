@@ -1,5 +1,5 @@
 import { createLogger } from 'meteor/unchained:logger';
-import { Root, Context } from 'unchained-core-types/api';
+import { Root, Context } from '@unchainedshop/types/api';
 
 const logger = createLogger('unchained:api');
 

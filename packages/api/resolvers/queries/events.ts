@@ -1,5 +1,5 @@
 import { log } from 'meteor/unchained:logger';
-import { Root, Context } from 'unchained-core-types/api';
+import { Root, Context } from '@unchainedshop/types/api';
 
 export default async function events(
   root: Root,
@@ -8,5 +8,5 @@ export default async function events(
 ) {
   log(`query events ${type}`, { userId });
 
-  return modules.events.findEvents({ query: { type }, limit, offset });
+  return modules.events.findEvents({ type, limit, offset });
 }

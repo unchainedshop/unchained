@@ -1,4 +1,4 @@
-import type { Filter, _ID } from 'unchained-core-types';
+import type { Filter, _ID } from '@unchainedshop/types';
 import { ObjectId } from 'bson';
 
 export const generateDbFilterById = (id: unknown): Filter<{ _id?: _ID }> => {

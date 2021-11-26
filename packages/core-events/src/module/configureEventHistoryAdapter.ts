@@ -1,10 +1,9 @@
-import { Collection } from 'unchained-core-types';
-import { Event } from 'unchained-core-types/events';
+import { Collection } from '@unchainedshop/types';
+import { Event, EmitAdapter } from '@unchainedshop/types/events';
 
 import {
   getEmitHistoryAdapter,
   setEmitHistoryAdapter,
-  EmitAdapter,
 } from 'meteor/unchained:events';
 
 export const configureEventHistoryAdapter = (Events: Collection<Event>) => {

@@ -1,4 +1,4 @@
-import { Modules } from 'unchained-core-types';
+import { Modules } from '@unchainedshop/types';
 
 export type MigrateBookmarksService = (
   params: {

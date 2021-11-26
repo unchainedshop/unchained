@@ -7,7 +7,7 @@ const buildFindSelector = ({ includeInactive = false }) => {
   return selector;
 };
 
-Currencies.createCurrency = ({ isoCode, ...countryData }) => {
+/* Currencies.createCurrency = ({ isoCode, ...countryData }) => {
   const _id = Currencies.insert({
     created: new Date(),
     isoCode: isoCode.toUpperCase(),
@@ -17,21 +17,21 @@ Currencies.createCurrency = ({ isoCode, ...countryData }) => {
   const currency = Currencies.findOne({ _id });
   emit('CURRENCY_CREATE', { currency });
   return currency;
-};
+}; */
 
-Currencies.findCurrencies = ({ limit, offset, ...query }) => {
-  return Currencies.find(buildFindSelector(query), {
-    skip: offset,
-    limit,
-  }).fetch();
-};
+// Currencies.findCurrencies = ({ limit, offset, ...query }) => {
+//   return Currencies.find(buildFindSelector(query), {
+//     skip: offset,
+//     limit,
+//   }).fetch();
+// };
 
-Currencies.count = async (query) => {
-  const count = await Currencies.rawCollection().countDocuments(
-    buildFindSelector(query)
-  );
-  return count;
-};
+// Currencies.count = async (query) => {
+//   const count = await Currencies.rawCollection().countDocuments(
+//     buildFindSelector(query)
+//   );
+//   return count;
+// };
 
 Currencies.currencyExists = ({ currencyId }) => {
   return !!Currencies.find({ _id: currencyId }, { limit: 1 }).count();

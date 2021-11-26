@@ -1,6 +1,6 @@
 import { emit, registerEvents } from 'meteor/unchained:events';
-import { Bookmark, BookmarksModule } from 'unchained-core-types/bookmarks';
-import { ModuleInput } from 'unchained-core-types/common';
+import { Bookmark, BookmarksModule } from '@unchainedshop/types/bookmarks';
+import { ModuleInput } from '@unchainedshop/types/common';
 import {
   generateDbFilterById,
   generateDbMutations,
@@ -43,16 +43,7 @@ export const configureBookmarksModule = async ({
       );
       return result.upsertedCount;
     },
-    removeById: async (bookmarkId) => {
-      const deletedCount = await mutations.delete(bookmarkId);
-      emit('BOOKMARK_REMOVE', { bookmarkId });
-      return deletedCount;
-    },
-    create: async (doc: Bookmark, userId?: string) => {
-      const bookmarkId = await mutations.create(doc, userId);
-      emit('BOOKMARK_CREATE', { bookmarkId });
-      return bookmarkId;
-    },
+
     existsByUserIdAndProductId: async ({ productId, userId }) => {
       let selector = {};
       if (productId && userId) {
@@ -66,7 +57,16 @@ export const configureBookmarksModule = async ({
 
       return !!bookmarkCount;
     },
+    create: async (doc: Bookmark, userId?: string) => {
+      const bookmarkId = await mutations.create(doc, userId);
+      emit('BOOKMARK_CREATE', { bookmarkId });
+      return bookmarkId;
+    },
     update: mutations.update,
-    delete: mutations.delete,
+    delete: async (bookmarkId) => {
+      const deletedCount = await mutations.delete(bookmarkId);
+      emit('BOOKMARK_REMOVE', { bookmarkId });
+      return deletedCount;
+    },
   };
 };

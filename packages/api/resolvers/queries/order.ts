@@ -1,6 +1,6 @@
 import { log } from 'meteor/unchained:logger';
 import { Orders } from 'meteor/unchained:core-orders';
-import { Root, Context } from 'unchained-core-types/api';
+import { Root, Context } from '@unchainedshop/types/api';
 import { InvalidIdError } from '../../errors';
 
 export default function order(

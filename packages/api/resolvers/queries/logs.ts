@@ -1,4 +1,4 @@
-import { Root, Context } from 'unchained-core-types/api';
+import { Root, Context } from '@unchainedshop/types/api';
 import { Users } from 'meteor/unchained:core-users';
 import { Orders } from 'meteor/unchained:core-orders';
 

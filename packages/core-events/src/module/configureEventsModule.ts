@@ -1,7 +1,7 @@
 import { generateDbMutations } from 'meteor/unchained:utils';
-import { Filter } from 'unchained-core-types';
-import { ModuleInput } from 'unchained-core-types/common';
-import { Event, EventsModule } from 'unchained-core-types/events';
+import { Filter } from '@unchainedshop/types';
+import { ModuleInput } from '@unchainedshop/types/common';
+import { Event, EventsModule } from '@unchainedshop/types/events';
 import { EventsCollection } from '../db/EventsCollection';
 import { EventsSchema } from '../db/EventsSchema';
 import { configureEventHistoryAdapter } from './configureEventHistoryAdapter';
@@ -33,7 +33,7 @@ export const configureEventsModule = async ({
       sort = {
         created: -1,
       },
-      query,
+      ...query
     }) => {
       const events = Events.find(buildFindSelector(query as FindQuery), {
         skip: offset,
