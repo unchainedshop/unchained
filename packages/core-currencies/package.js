@@ -29,6 +29,6 @@ Package.onTest((api) => {
   api.use('unchained:mongodb@1.0.0-beta15');
   api.use('unchained:core-currencies@1.0.0-beta15');
 
-  api.mainModule('test/currencies-index.test.ts');
+  api.mainModule('tests/currencies-index.test.ts');
 
 });

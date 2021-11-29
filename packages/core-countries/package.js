@@ -15,20 +15,20 @@ Npm.depends({
 Package.onUse((api) => {
   api.versionsFrom('2.2');
   api.use('ecmascript');
-  api.use('mongo');
-  api.use('dburles:collection-helpers@1.1.0');
-  api.use('aldeed:collection2@3.2.1');
+  api.use('typescript');
 
   api.use('unchained:utils@1.0.0-beta15');
   api.use('unchained:events@1.0.0-beta15');
 
   api.use('unchained:core-currencies@1.0.0-beta15');
 
-  api.mainModule('countries.js', 'server');
+  api.mainModule('src/countries-index.ts', 'server');
 });
 
 Package.onTest((api) => {
   api.use('ecmascript');
+  api.use('typescript');
+
   api.use('unchained:core-countries');
-  api.mainModule('countries-tests.js');
+  api.mainModule('tests/countries-index.test.ts');
 });

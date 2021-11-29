@@ -1,6 +1,6 @@
 import { log } from 'meteor/unchained:logger';
 import { Root, Context } from '@unchainedshop/types/api';
-import { InvalidIdError } from '../../errors';
+import { InvalidIdError } from '../../../errors';
 
 export default async function currency(
   root: Root,

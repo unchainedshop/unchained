@@ -1,6 +1,6 @@
 import { Collection, Db } from 'mongodb';
 import { BookmarksModule } from './bookmarks';
-import { _ID, ModuleInput } from './common';
+import { _ID, ModuleInput, TimestampFields } from './common';
 import { CurrenciesModule } from './currencies';
 import { CountriesModule } from './countries';
 import { LanguagesModule } from './languages';
@@ -48,6 +48,10 @@ declare module 'meteor/unchained:utils' {
   ): Promise<void>;
 
   const systemLocale: Locale;
+
+  const Schemas: {
+    timestampFields: TimestampFields
+  }
 }
 
 declare module 'meteor/unchained:logger' {

@@ -1,1 +1,1 @@
-export { configureCountriesModule } from './module/configureCountriesModule';
+export { configureCountriesModule } from './module/configureAssortmentsModule';

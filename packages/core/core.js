@@ -5,8 +5,6 @@ import configurePayment from 'meteor/unchained:core-payment';
 import configureWarehousing from 'meteor/unchained:core-warehousing';
 import configureProducts from 'meteor/unchained:core-products';
 import configureQuotations from 'meteor/unchained:core-quotations';
-import configureCountries from 'meteor/unchained:core-countries';
-import configureLanguages from 'meteor/unchained:core-languages';
 import configureDocuments from 'meteor/unchained:core-documents';
 import configureOrders from 'meteor/unchained:core-orders';
 import configureAssortments from 'meteor/unchained:core-assortments';
@@ -19,8 +17,10 @@ import {
   configureBookmarksModule,
   bookmarkServices,
 } from 'meteor/unchained:core-bookmarks';
+import { configureCountriesModule, countryServices } from 'meteor/unchained:core-countries';
 import { configureCurrenciesModule } from 'meteor/unchained:core-currencies';
 import { configureEventsModule } from 'meteor/unchained:core-events';
+import { configureLanguagesModule } from 'meteor/unchained:core-languages';
 
 export const initCore = async ({
   db,
@@ -34,13 +34,13 @@ export const initCore = async ({
 
   const events = await configureEventsModule({ db });
   const bookmarks = await configureBookmarksModule({ db });
+  const countries = await configureCountriesModule({ db });
   const currencies = await configureCurrenciesModule({ db });
+  const languages = await configureLanguagesModule({ db });
 
   configureWorker(modules.worker, moduleOptions);
   configureUsers(modules.users, moduleOptions);
   configureMessaging(modules.messaging, moduleOptions);
-  configureCountries(modules.countries, moduleOptions);
-  configureLanguages(modules.languages, moduleOptions);
   configureDocuments(modules.documents, moduleOptions);
   configureAccounts(modules.accounts, moduleOptions);
   configureDelivery(modules.delivery, moduleOptions);
@@ -56,11 +56,14 @@ export const initCore = async ({
   return {
     modules: {
       bookmarks,
+      countries,
       currencies,
       events,
+      languages,
     },
     services: {
-      bookmarks: bookmarkServices,
+      bookmark: bookmarkServices,
+      country: countryServices,
     },
     ...otherComponents,
   };

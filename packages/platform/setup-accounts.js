@@ -70,7 +70,7 @@ export default ({ mergeUserCartsOnLogin = true } = {}) => {
         mergeCarts: mergeUserCartsOnLogin,
       });
 
-      await services.bookmarks.migrateBookmarks(
+      await services.bookmark.migrateBookmarks(
         {
           fromUserId: userIdBeforeLogin,
           toUserId: user._id,

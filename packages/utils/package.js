@@ -20,7 +20,6 @@ Package.onUse((api) => {
   api.use('ecmascript');
   api.use('typescript@4.4.0');
 
-  api.use('unchained:events@1.0.0-beta15');
   api.use('unchained:logger@1.0.0-beta15');
 
   api.mainModule('src/utils-index.js', 'server');

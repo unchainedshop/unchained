@@ -1,7 +1,6 @@
 import { assert } from 'chai';
 import { initDb } from 'meteor/unchained:mongodb';
 import { configureCountriesModule } from 'meteor/unchained:core-countries';
-import { Mongo } from 'meteor/mongo';
 
 describe('Test exports', () => {
   let module;

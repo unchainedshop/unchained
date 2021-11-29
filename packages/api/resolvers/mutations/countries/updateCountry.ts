@@ -1,7 +1,7 @@
 import { log } from 'meteor/unchained:logger';
 import { Country } from '@unchainedshop/types/countries';
 import { Context, Root } from '@unchainedshop/types/api';
-import { CountryNotFoundError, InvalidIdError } from '../../errors';
+import { CountryNotFoundError, InvalidIdError } from '../../../errors';
 
 export default async function updateCountry(
   root: Root,

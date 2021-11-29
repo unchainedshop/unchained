@@ -1,5 +1,5 @@
 import { log } from 'meteor/unchained:logger';
-import { CountryNotFoundError, InvalidIdError } from '../../errors';
+import { CountryNotFoundError, InvalidIdError } from '../../../errors';
 import { Country } from '@unchainedshop/types/countries';
 import { Context, Root } from '@unchainedshop/types/api';
 

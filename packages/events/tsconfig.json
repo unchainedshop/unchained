@@ -1,7 +1,8 @@
 {
   "extends": "./tsconfig.build.json",
   "compilerOptions": {
-    "types": ["node", "jest"]
+    "noEmit": true,
+    "types": ["node", "jest"],
   },
   "include": ["src", "plugins", "tests"]
 }
