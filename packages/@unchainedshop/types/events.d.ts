@@ -1,5 +1,5 @@
 import { FindOptions, Sort } from 'mongodb';
-import { ModuleCreateMutation, Query, TimestampFields, _ID } from '@unchainedshop/types/common';
+import { ModuleCreateMutation, Query, TimestampFields, _ID } from './common';
 
 export type Event = {
   _id?: _ID;

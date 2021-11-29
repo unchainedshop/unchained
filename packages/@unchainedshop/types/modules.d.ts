@@ -1,7 +1,8 @@
-import { EventsModule } from '@unchainedshop/types/events';
-import { BookmarksModule } from '@unchainedshop/types/bookmarks';
-import { CurrenciesModule } from '@unchainedshop/types/currencies';
-import { CountriesModule } from '@unchainedshop/types/countries';
+import { EventsModule } from './events';
+import { BookmarksModule } from './bookmarks';
+import { CurrenciesModule } from './currencies';
+import { CountriesModule } from './countries';
+import { LanguagesModule } from './languages';
 
 export interface Modules {
   accounts: any;
@@ -14,7 +15,7 @@ export interface Modules {
   enrollments: any;
   events: EventsModule;
   filters: any;
-  languages: any;
+  languages: LanguagesModule;
   messaging: any;
   orders: any;
   payment: any;

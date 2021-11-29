@@ -1,13 +1,13 @@
 {
-  "name": "@unchainedshop/currencies",
+  "name": "@unchainedshop/languages",
   "version": "1.0.3",
-  "main": "lib/currencies-index.js",
-  "types": "lib/currencies-index.d.ts",
+  "main": "lib/languages-index.js",
+  "types": "lib/languages-index.d.ts",
   "type": "module",
   "scripts": {
     "build": "tsc",
     "watch": "tsc --watch",
-    "link:core": "npm link  @unchainedshop/types",
+    "link:core": "npm link @unchainedshop/types",
     "test": "cross-env METEOR_PACKAGE_DIRS=../ TEST_CLIENT=0 TEST_WATCH=1 meteor test-packages ./ --driver-package meteortesting:mocha --port 4200"
   },
   "repository": {

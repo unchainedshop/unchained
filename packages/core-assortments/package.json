@@ -1,8 +1,8 @@
 {
-  "name": "@unchainedshop/currencies",
+  "name": "@unchainedshop/assortments",
   "version": "1.0.3",
-  "main": "lib/currencies-index.js",
-  "types": "lib/currencies-index.d.ts",
+  "main": "lib/assortments-index.js",
+  "types": "lib/assortments-index.d.ts",
   "type": "module",
   "scripts": {
     "build": "tsc",
@@ -26,6 +26,7 @@
   },
   "homepage": "https://github.com/unchainedshop/unchained#readme",
   "dependencies": {
+    "ramda": "0.27.1",
     "simpl-schema": "1.12.0"
   },
   "devDependencies": {

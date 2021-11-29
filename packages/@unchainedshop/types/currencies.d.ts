@@ -1,4 +1,4 @@
-import { ModuleMutations, Query, TimestampFields, _ID } from '@unchainedshop/types/common';
+import { ModuleMutations, Query, TimestampFields, _ID } from './common';
 
 export type Currency = {
   _id?: _ID;

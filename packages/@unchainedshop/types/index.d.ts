@@ -1,11 +1,11 @@
 import { Collection, Db } from 'mongodb';
-import { _ID } from '.';
-import { BookmarksModule } from '@unchainedshop/types/bookmarks';
-import { ModuleInput } from '@unchainedshop/types/common';
-import { CurrenciesModule } from '@unchainedshop/types/currencies';
-import { CountriesModule } from '@unchainedshop/types/countries';
-import { EmitAdapter, EventsModule } from '@unchainedshop/types/events';
-import { Logger, LogOptions, Transports } from '@unchainedshop/types/logs';
+import { BookmarksModule } from './bookmarks';
+import { _ID, ModuleInput } from './common';
+import { CurrenciesModule } from './currencies';
+import { CountriesModule } from './countries';
+import { LanguagesModule } from './languages';
+import { EmitAdapter, EventsModule } from './events';
+import { Logger, LogOptions, Transports } from './logs';
 import { Locale } from '@types/locale';
 
 // Types package only
@@ -85,10 +85,22 @@ declare module 'meteor/unchained:core-bookmarks' {
   ): Promise<BookmarksModule>;
 }
 
+declare module 'meteor/unchained:core-countries' {
+  function configureCountriesModule(
+    params: ModuleInput
+  ): Promise<CountriesModule>;
+}
+
 declare module 'meteor/unchained:core-currencies' {
   function configureCurrenciesModule(
     params: ModuleInput
   ): Promise<CurrenciesModule>;
+}
+
+declare module 'meteor/unchained:core-languages' {
+  function configureLanguagesModule(
+    params: ModuleInput
+  ): Promise<LanguagesModule>;
 }
 
 declare module 'meteor/unchained:core-users' {

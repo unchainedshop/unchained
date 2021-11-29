@@ -3,7 +3,7 @@ import { CountriesModule, Country } from '@unchainedshop/types/countries';
 import { emit, registerEvents } from 'meteor/unchained:events';
 import { generateDbMutations } from 'meteor/unchained:utils';
 import { CountriesCollection } from '../db/CountriesCollection';
-import { CountriesSchema } from '../db/CountriesSchema';
+import { CountrySchema } from '../db/CountriesSchema';
 import countryFlags from 'emoji-flags';
 import countryI18n from 'i18n-iso-countries';
 import { systemLocale } from 'meteor/unchained:utils';
@@ -30,7 +30,7 @@ export const configureCountriesModule = async ({
 
   const Countries = await CountriesCollection(db);
 
-  const mutations = generateDbMutations<Country>(Countries, CountriesSchema);
+  const mutations = generateDbMutations<Country>(Countries, CountrySchema);
 
   return {
     findCountry: async ({ countryId, isoCode }) => {
@@ -63,14 +63,14 @@ export const configureCountriesModule = async ({
       return !!countryCount;
     },
 
-    name(country, language) {
-      return countryI18n.getName(country.isoCode, language) || language;
+    name(language) {
+      return countryI18n.getName(this.isoCode, language) || language;
     },
-    flagEmoji(country) {
-      return countryFlags.countryCode(country.isoCode).emoji || '❌';
+    flagEmoji() {
+      return countryFlags.countryCode(this.isoCode).emoji || '❌';
     },
-    isBase(country) {
-      return country.isoCode === systemLocale.country;
+    isBase() {
+      return this.isoCode === systemLocale.country;
     },
 
     create: async (doc: Country, userId?: string) => {

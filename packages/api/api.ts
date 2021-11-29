@@ -44,7 +44,7 @@ export const createContextResolver =
     //   ...loaders,
     // };
     const userContext = await getUserContext(req /* intermediateContext */);
-    const localeContext = await getLocaleContext(req);
+    const localeContext = getLocaleContext(req);
     return {
       ...apolloContext,
       ...unchained,

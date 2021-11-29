@@ -1,7 +1,7 @@
 import { Schemas } from 'meteor/unchained:utils';
 import SimpleSchema from 'simpl-schema';
 
-export const CountriesSchema = new SimpleSchema(
+export const CountrySchema = new SimpleSchema(
   {
     isoCode: {
       type: String,

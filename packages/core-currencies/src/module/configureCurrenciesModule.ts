@@ -3,7 +3,7 @@ import { CurrenciesModule, Currency } from '@unchainedshop/types/currencies';
 import { emit, registerEvents } from 'meteor/unchained:events';
 import { generateDbMutations } from 'meteor/unchained:utils';
 import { CurrenciesCollection } from '../db/CurrenciesCollection';
-import { CurrencySchema } from '../db/CurrenciesSchema';
+import { CurrenciesSchema } from '../db/CurrenciesSchema';
 
 const CURRENCY_EVENTS: string[] = ['CURRENCY_CREATE', 'CURRENCY_UPDATE', 'CURRENCY_REMOVE'];
 
@@ -23,7 +23,7 @@ export const configureCurrenciesModule = async ({
 
   const Currencies = await CurrenciesCollection(db);
 
-  const mutations = generateDbMutations<Currency>(Currencies, CurrencySchema);
+  const mutations = generateDbMutations<Currency>(Currencies, CurrenciesSchema);
 
   return {
     findCurrency: async ({ currencyId, isoCode }) => {

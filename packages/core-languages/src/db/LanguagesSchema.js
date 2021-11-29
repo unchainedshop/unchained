@@ -1,7 +1,7 @@
 import { Schemas } from 'meteor/unchained:utils';
 import SimpleSchema from 'simpl-schema';
 
-export const CountriesSchema = new SimpleSchema(
+export const LanguagesSchema = new SimpleSchema(
   {
     isoCode: {
       type: String,
@@ -9,7 +9,6 @@ export const CountriesSchema = new SimpleSchema(
     },
     isActive: Boolean,
     authorId: { type: String, required: true },
-    defaultCurrencyId: String,
     ...Schemas.timestampFields,
   },
   { requiredByDefault: false }

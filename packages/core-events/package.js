@@ -7,7 +7,6 @@ Package.describe({
 });
 
 Npm.depends({
-  redis: '3.0.2',
   'simpl-schema': '1.12.0',
 });
 
