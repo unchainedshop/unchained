@@ -1,7 +1,7 @@
 import { log } from 'meteor/unchained:logger';
-import { Root, Context } from '@unchainedshop/types/api';
+import { Context, Root } from '@unchainedshop/types/api';
 
-export default async function currencies(
+export default async function countries(
   root: Root,
   {
     limit,
@@ -11,10 +11,11 @@ export default async function currencies(
   { modules, userId }: Context
 ) {
   log(
-    `query currencies: ${limit} ${offset} ${
+    `query countries: ${limit} ${offset} ${
       includeInactive ? 'includeInactive' : ''
     }`,
     { userId }
   );
-  return await modules.currencies.findCurrencies({ limit, offset, includeInactive });
+
+  return await modules.countries.findCountries({ limit, offset, includeInactive });
 }

@@ -11,7 +11,7 @@ export type Bookmark = {
   productId: string;
 } & TimestampFields;
 
-export declare interface BookmarksModule extends ModuleMutations<Bookmark> {
+export interface BookmarksModule extends ModuleMutations<Bookmark> {
   findByUserId: (userId: string) => Promise<Array<Bookmark>>;
   findByUserIdAndProductId: (filter: UserProductFilter) => Promise<Bookmark>;
   findById: (bookmarkId: string) => Promise<Bookmark>;

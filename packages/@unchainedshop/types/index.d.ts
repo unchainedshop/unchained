@@ -1,9 +1,12 @@
 import { Collection, Db } from 'mongodb';
 import { _ID } from '.';
-import { BookmarksModule } from './bookmarks';
-import { ModuleInput } from './common';
-import { EmitAdapter, EventsModule } from './events';
-import { createLogger as createLoggerType, log as logType, format, LogLevel, LogOptions, transports } from './logs';
+import { BookmarksModule } from '@unchainedshop/types/bookmarks';
+import { ModuleInput } from '@unchainedshop/types/common';
+import { CurrenciesModule } from '@unchainedshop/types/currencies';
+import { CountriesModule } from '@unchainedshop/types/countries';
+import { EmitAdapter, EventsModule } from '@unchainedshop/types/events';
+import { Logger, LogOptions, Transports } from '@unchainedshop/types/logs';
+import { Locale } from '@types/locale';
 
 // Types package only
 export type {
@@ -13,8 +16,12 @@ export type {
   ObjectId,
   UpdateFilter as Update,
 } from 'mongodb';
-export { ModuleCreateMutation, ModuleMutations, _ID } from './common';
-export { Modules } from './modules';
+export {
+  ModuleCreateMutation,
+  ModuleMutations,
+  _ID,
+} from '@unchainedshop/types/common';
+export { Modules } from '@unchainedshop/types/modules';
 
 declare module 'meteor/unchained:utils' {
   function checkId(
@@ -39,11 +46,16 @@ declare module 'meteor/unchained:utils' {
     collection: Collection<T>,
     indexes: Array<() => void>
   ): Promise<void>;
+
+  const systemLocale: Locale;
 }
 
 declare module 'meteor/unchained:logger' {
-  type log = logType;
-  type createLogger = createLoggerType;
+  function log(message: string, options?: LogOptions): void;
+  function createLogger(
+    moduleName: string,
+    moreTransports?: Transports
+  ): Logger;
 }
 
 declare module 'meteor/unchained:events' {
@@ -71,6 +83,12 @@ declare module 'meteor/unchained:core-bookmarks' {
   function configureBookmarksModule(
     params: ModuleInput
   ): Promise<BookmarksModule>;
+}
+
+declare module 'meteor/unchained:core-currencies' {
+  function configureCurrenciesModule(
+    params: ModuleInput
+  ): Promise<CurrenciesModule>;
 }
 
 declare module 'meteor/unchained:core-users' {

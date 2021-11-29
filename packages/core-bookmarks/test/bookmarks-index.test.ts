@@ -41,7 +41,7 @@ describe('Test exports', () => {
     assert.isUndefined(bookmark.updatedBy);
     assert.equal(bookmark.createdBy, 'Test-User-1');
 
-    const deletedCount = await module.removeById(bookmarkId);
+    const deletedCount = await module.delete(bookmarkId);
     assert.equal(deletedCount, 1);
   });
 

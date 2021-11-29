@@ -19,7 +19,7 @@ export const migrateBookmarksService: MigrateBookmarksService = async (
     return;
   }
   if (!mergeBookmarks) {
-    await modules.bookmarks.removeById(toUserId);
+    await modules.bookmarks.delete(toUserId);
   }
   await modules.bookmarks.replaceUserId(fromUserId, toUserId);
 };

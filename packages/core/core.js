@@ -5,7 +5,6 @@ import configurePayment from 'meteor/unchained:core-payment';
 import configureWarehousing from 'meteor/unchained:core-warehousing';
 import configureProducts from 'meteor/unchained:core-products';
 import configureQuotations from 'meteor/unchained:core-quotations';
-import configureCurrencies from 'meteor/unchained:core-currencies';
 import configureCountries from 'meteor/unchained:core-countries';
 import configureLanguages from 'meteor/unchained:core-languages';
 import configureDocuments from 'meteor/unchained:core-documents';
@@ -20,6 +19,7 @@ import {
   configureBookmarksModule,
   bookmarkServices,
 } from 'meteor/unchained:core-bookmarks';
+import { configureCurrenciesModule } from 'meteor/unchained:core-currencies';
 import { configureEventsModule } from 'meteor/unchained:core-events';
 
 export const initCore = async ({
@@ -34,11 +34,11 @@ export const initCore = async ({
 
   const events = await configureEventsModule({ db });
   const bookmarks = await configureBookmarksModule({ db });
+  const currencies = await configureCurrenciesModule({ db });
 
   configureWorker(modules.worker, moduleOptions);
   configureUsers(modules.users, moduleOptions);
   configureMessaging(modules.messaging, moduleOptions);
-  configureCurrencies(modules.currencies, moduleOptions);
   configureCountries(modules.countries, moduleOptions);
   configureLanguages(modules.languages, moduleOptions);
   configureDocuments(modules.documents, moduleOptions);
@@ -55,8 +55,9 @@ export const initCore = async ({
 
   return {
     modules: {
-      events,
       bookmarks,
+      currencies,
+      events,
     },
     services: {
       bookmarks: bookmarkServices,

@@ -1,9 +1,4 @@
-import { ModuleMutations, Query, TimestampFields, _ID } from './common';
-
-type UserProductFilter = {
-  userId: string;
-  productId: string;
-};
+import { ModuleMutations, Query, TimestampFields, _ID } from '@unchainedshop/types/common';
 
 export type Currency = {
   _id?: _ID;
@@ -12,16 +7,20 @@ export type Currency = {
   authorId: string;
 } & TimestampFields;
 
-export declare interface CurrenciesModule extends ModuleMutations<Currency> {
+type CurrencyQuery = {
+  includeInactive?: boolean;
+};
+export type CurrenciesModule = ModuleMutations<Currency> & {
   findCurrency: (params: {
     currencyId?: string;
     isoCode?: string;
   }) => Promise<Currency>;
-  findCurrencies: (params: Query & {
-    limit?: number;
-    offset?: number;
-    includeInactive?: boolean;
-  }) => Promise<Array<Currency>>;
-  count: (query: Query) => Promise<number>;
+  findCurrencies: (
+    params: CurrencyQuery & {
+      limit?: number;
+      offset?: number;
+    }
+  ) => Promise<Array<Currency>>;
+  count: (query: CurrencyQuery) => Promise<number>;
   currencyExists: (params: { currencyId: string }) => Promise<boolean>;
 }

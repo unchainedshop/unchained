@@ -23,7 +23,7 @@
     "apollo-server-express": "^2.25.2"
   },
   "devDependencies": {
-    "@unchainedshop/types": "^0.9.0",
+    "@unchainedshop/types": "^0.9.1",
     "apollo-server-express": "^2.25.2",
     "chai": "^4.3.4",
     "cross-env": "^7.0.3"

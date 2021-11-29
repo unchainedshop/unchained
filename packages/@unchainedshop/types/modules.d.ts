@@ -1,13 +1,13 @@
-import { EventsModule } from './events';
-import { BookmarksModule } from './bookmarks';
-import { CurrenciesModule } from './currencies';
-import { LogsModule } from './logs';
+import { EventsModule } from '@unchainedshop/types/events';
+import { BookmarksModule } from '@unchainedshop/types/bookmarks';
+import { CurrenciesModule } from '@unchainedshop/types/currencies';
+import { CountriesModule } from '@unchainedshop/types/countries';
 
-export declare interface Modules {
+export interface Modules {
   accounts: any;
   assortments: any;
   bookmarks: BookmarksModule;
-  countries: any;
+  countries: CountriesModule;
   currencies: CurrenciesModule;
   delivery: any;
   documents: any;
@@ -15,7 +15,6 @@ export declare interface Modules {
   events: EventsModule;
   filters: any;
   languages: any;
-  logs: LogsModule;
   messaging: any;
   orders: any;
   payment: any;

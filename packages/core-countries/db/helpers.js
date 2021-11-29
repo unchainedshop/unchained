@@ -24,19 +24,7 @@ const buildFindSelector = ({ includeInactive = false }) => {
   return selector;
 };
 
-Countries.updateCountry = ({ countryId, country }) => {
-  const result = Countries.update(
-    { _id: countryId },
-    {
-      $set: {
-        ...country,
-        updated: new Date(),
-      },
-    }
-  );
-  emit('COUNTRY_UPDATE', { countryId });
-  return result;
-};
+
 Countries.helpers({
   defaultCurrency() {
     if (this.defaultCurrencyId) {
@@ -55,17 +43,7 @@ Countries.helpers({
   },
 });
 
-Countries.createCountry = ({ isoCode, ...countryData }) => {
-  const _id = Countries.insert({
-    created: new Date(),
-    isoCode: isoCode.toUpperCase(),
-    isActive: true,
-    ...countryData,
-  });
-  const country = Countries.findOne({ _id });
-  emit('COUNTRY_CREATE', { country });
-  return country;
-};
+
 
 Countries.resolveDefaultCurrencyCode = ({ isoCode }) => {
   const currencyCode = currencyCodeCache.get(isoCode);
@@ -99,6 +77,34 @@ Countries.countryExists = ({ countryId }) => {
 
 Countries.findCountry = ({ countryId, isoCode }) => {
   return Countries.findOne(countryId ? { _id: countryId } : { isoCode });
+};
+
+
+// Mutations
+Countries.updateCountry = ({ countryId, country }) => {
+  const result = Countries.update(
+    { _id: countryId },
+    {
+      $set: {
+        ...country,
+        updated: new Date(),
+      },
+    }
+  );
+  emit('COUNTRY_UPDATE', { countryId });
+  return result;
+};
+
+Countries.createCountry = ({ isoCode, ...countryData }) => {
+  const _id = Countries.insert({
+    created: new Date(),
+    isoCode: isoCode.toUpperCase(),
+    isActive: true,
+    ...countryData,
+  });
+  const country = Countries.findOne({ _id });
+  emit('COUNTRY_CREATE', { country });
+  return country;
 };
 
 Countries.removeCountry = ({ countryId }) => {

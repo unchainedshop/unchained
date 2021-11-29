@@ -1,6 +1,6 @@
-import { Logger, LoggerOptions } from 'winston';
+import { Logger as WinstonLogger, LoggerOptions } from 'winston';
 import TransportStream from 'winston-transport';
-import { TimestampFields, _ID } from './common';
+import { TimestampFields, _ID } from '@unchainedshop/types/common';
 
 export { format, transports } from 'winston';
 
@@ -24,7 +24,6 @@ export interface LogOptions extends LoggerOptions {
 }
 
 export type log = (message: string, options?: LogOptions) => void;
-export type createLogger = (
-  moduleName: string,
-  moreTransports?: Array<TransportStream>
-) => Logger;
+export type Transports = Array<TransportStream>;
+export type Logger = WinstonLogger
+export type createLogger = (moduleName: string, moreTransports?: Transports) => Logger;

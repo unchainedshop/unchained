@@ -5,7 +5,8 @@ import { generateDbMutations } from 'meteor/unchained:utils';
 import { CurrenciesCollection } from '../db/CurrenciesCollection';
 import { CurrencySchema } from '../db/CurrenciesSchema';
 
-const CURRENCY_EVENTS: string[] = ['CURRENCY_CREATE', 'CURRENCY_REMOVE'];
+const CURRENCY_EVENTS: string[] = ['CURRENCY_CREATE', 'CURRENCY_UPDATE', 'CURRENCY_REMOVE'];
+
 type FindQuery = {
   includeInactive?: boolean;
 };
@@ -15,7 +16,7 @@ const buildFindSelector = ({ includeInactive = false }: FindQuery) => {
   return selector;
 };
 
-export const configureCurrencyModule = async ({
+export const configureCurrenciesModule = async ({
   db,
 }: ModuleInput): Promise<CurrenciesModule> => {
   registerEvents(CURRENCY_EVENTS);
