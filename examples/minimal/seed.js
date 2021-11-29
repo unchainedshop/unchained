@@ -28,7 +28,7 @@ const seedPassword =
     ? uuidv4().split('-').pop()
     : UNCHAINED_SEED_PASSWORD;
 
-export default async () => {
+export default async (context) => {
   try {
     if (Users.find({ username: 'admin' }).count() > 0) {
       return;
