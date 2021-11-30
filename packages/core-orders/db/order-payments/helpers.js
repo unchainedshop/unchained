@@ -26,7 +26,7 @@ OrderPayments.helpers({
   normalizedStatus() {
     return objectInvert(OrderPaymentStatus)[this.status || null];
   },
-  sign({ transactionContext }) {
+  sign({ transactionContext }, { modules }) {
     const result = this.provider().sign({
       transactionContext,
       orderPayment: this,

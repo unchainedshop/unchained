@@ -8,7 +8,7 @@ import {
 import { BookmarksCollection } from '../db/BookmarksCollection';
 import { BookmarkSchema } from '../db/BookmarksSchema';
 
-const BOOKMARK_EVENTS: string[] = ['BOOKMARK_CREATE', 'BOOKMARK_REMOVE'];
+const BOOKMARK_EVENTS: string[] = ['BOOKMARK_CREATE', 'BOOKMARKS_UPDATE', 'BOOKMARK_REMOVE'];
 
 export const configureBookmarksModule = async ({
   db,
@@ -57,14 +57,18 @@ export const configureBookmarksModule = async ({
 
       return !!bookmarkCount;
     },
-    create: async (doc: Bookmark, userId?: string) => {
+    create: async (doc: Bookmark, userId: string) => {
       const bookmarkId = await mutations.create(doc, userId);
       emit('BOOKMARK_CREATE', { bookmarkId });
       return bookmarkId;
     },
-    update: mutations.update,
-    delete: async (bookmarkId) => {
-      const deletedCount = await mutations.delete(bookmarkId);
+    update: async (_id:string, doc: Bookmark, userId: string) => {
+      const bookmarkId = await mutations.update(_id, doc, userId);
+      emit('BOOKMARK_UPDATE', { bookmarkId });
+      return bookmarkId;
+    },
+    delete: async (bookmarkId, userId) => {
+      const deletedCount = await mutations.delete(bookmarkId, userId);
       emit('BOOKMARK_REMOVE', { bookmarkId });
       return deletedCount;
     },

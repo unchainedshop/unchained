@@ -1,6 +1,5 @@
-import { ModuleMutations, Query, TimestampFields, _ID } from './common';
-import { Language } from './languages';
 import { Context } from './api';
+import { ModuleMutations, TimestampFields, _ID } from './common';
 
 export type Country = {
   _id?: _ID;

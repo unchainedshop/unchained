@@ -33,6 +33,11 @@ export const configureCountriesModule = async ({
   const mutations = generateDbMutations<Country>(Countries, CountriesSchema);
 
   return {
+    count: async (query) => {
+      const countryCount = await Countries.find(buildFindSelector(query)).count();
+      return countryCount;
+    },
+
     findCountry: async ({ countryId, isoCode }) => {
       return await Countries.findOne(
         countryId ? { _id: countryId } : { isoCode }
@@ -40,19 +45,14 @@ export const configureCountriesModule = async ({
     },
 
     findCountries: async ({ limit, offset, includeInactive }) => {
-      const countries = await Countries.find(
+      const countries = Countries.find(
         buildFindSelector({ includeInactive }),
         {
           skip: offset,
           limit,
         }
       );
-      return countries.toArray();
-    },
-
-    count: async (query) => {
-      const count = await Countries.find(buildFindSelector(query)).count();
-      return count;
+      return await countries.toArray();
     },
 
     countryExists: async ({ countryId }) => {
@@ -73,18 +73,18 @@ export const configureCountriesModule = async ({
       return country.isoCode === systemLocale.country;
     },
 
-    create: async (doc: Country, userId?: string) => {
+    create: async (doc: Country, userId: string) => {
       const countryId = await mutations.create(doc, userId);
       emit('COUNTRY_CREATE', { countryId });
       return countryId;
     },
-    update: async (_id: string, doc: Country, userId?: string) => {
+    update: async (_id: string, doc: Country, userId: string) => {
       const countryId = await mutations.update(_id, doc, userId);
       emit('COUNTRY_UPDATE', { countryId });
       return countryId;
     },
-    delete: async (countryId) => {
-      const deletedCount = await mutations.delete(countryId);
+    delete: async (countryId, userId) => {
+      const deletedCount = await mutations.delete(countryId, userId);
       emit('COUNTRY_REMOVE', { countryId });
       return deletedCount;
     },

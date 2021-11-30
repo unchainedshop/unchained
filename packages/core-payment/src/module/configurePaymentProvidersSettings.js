@@ -1,4 +1,4 @@
-import logger from './logger';
+import logger from '../../logger';
 
 const sortByCreationDate = () => (left, right) => {
   return new Date(left.created).getTime() - new Date(right.created).getTime();
@@ -8,7 +8,7 @@ const allProviders = ({ providers }) => {
   return providers.sort(sortByCreationDate);
 };
 
-const settings = {
+export const paymentProviderSettings = {
   filterSupportedProviders: null,
   load({ sortProviders, filterSupportedProviders = allProviders } = {}) {
     if (sortProviders) {
@@ -23,5 +23,3 @@ const settings = {
     }
   },
 };
-
-export default settings;

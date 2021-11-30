@@ -2,9 +2,9 @@ import 'meteor/dburles:collection-helpers';
 import { Promise } from 'meteor/promise';
 import { Users } from 'meteor/unchained:core-users';
 import { emit } from 'meteor/unchained:events';
-import { PaymentDirector } from '../director';
+import { PaymentDirector } from '../src/PaymentDirector';
 import { PaymentProviders, PaymentCredentials } from './collections';
-import settings from '../settings';
+import settings from '../src/module/configurePaymentProvidersSettings';
 
 const emptyContext = {};
 
@@ -12,6 +12,7 @@ const buildFindSelector = ({ type, deleted = null } = {}) => {
   return { ...(type ? { type } : {}), deleted };
 };
 
+// TODO: Move to types
 Users.helpers({
   async paymentCredentials(selector = {}) {
     return PaymentCredentials.find(
@@ -35,6 +36,7 @@ PaymentProviders.findInterfaces = ({ type }) => {
   }));
 };
 
+/* 
 PaymentProviders.helpers({
   defaultContext(context) {
     return context || emptyContext;
@@ -93,8 +95,9 @@ PaymentProviders.helpers({
     }
     return strippedResult;
   },
-});
+}); */
 
+/*
 PaymentCredentials.helpers({
   async user() {
     return Users.findOne({
@@ -110,7 +113,7 @@ PaymentCredentials.helpers({
     const provider = await this.paymentProvider();
     return provider.validate(this);
   },
-});
+}); */
 
 PaymentCredentials.markPreferred = ({ userId, paymentCredentialsId }) => {
   PaymentCredentials.update(
@@ -182,28 +185,29 @@ PaymentCredentials.upsertCredentials = ({
   return null;
 };
 
-PaymentCredentials.registerPaymentCredentials = ({
-  paymentContext,
-  userId,
-  paymentProviderId,
-}) => {
-  const paymentProvider = PaymentProviders.findOne({ _id: paymentProviderId });
-  const registration = paymentProvider.register(
-    { transactionContext: paymentContext },
-    userId
-  );
-  if (!registration) return null;
-  const paymentCredentialsId = PaymentCredentials.upsertCredentials({
-    userId,
-    paymentProviderId,
-    ...registration,
-  });
-  return PaymentCredentials.findOne(
-    paymentCredentialsId
-      ? { _id: paymentCredentialsId }
-      : { userId, paymentProviderId }
-  );
-};
+// SERVICE
+// PaymentCredentials.registerPaymentCredentials = ({
+//   paymentContext,
+//   userId,
+//   paymentProviderId,
+// }) => {
+//   const paymentProvider = PaymentProviders.findOne({ _id: paymentProviderId });
+//   const registration = paymentProvider.register(
+//     { transactionContext: paymentContext },
+//     userId
+//   );
+//   if (!registration) return null;
+//   const paymentCredentialsId = PaymentCredentials.upsertCredentials({
+//     userId,
+//     paymentProviderId,
+//     ...registration,
+//   });
+//   return PaymentCredentials.findOne(
+//     paymentCredentialsId
+//       ? { _id: paymentCredentialsId }
+//       : { userId, paymentProviderId }
+//   );
+// };
 
 PaymentCredentials.removeCredentials = ({ paymentCredentialsId }) => {
   const paymentCredentials = PaymentCredentials.findOne({

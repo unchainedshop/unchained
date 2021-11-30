@@ -38,14 +38,14 @@ export const configureLanguagesModule = async ({
     },
 
     findLanguages: async ({ limit, offset, includeInactive }) => {
-      const countries = await Languages.find(
+      const languages = Languages.find(
         buildFindSelector({ includeInactive }),
         {
           skip: offset,
           limit,
         }
       );
-      return countries.toArray();
+      return await languages.toArray();
     },
 
     count: async (query) => {

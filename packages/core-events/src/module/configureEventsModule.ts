@@ -24,7 +24,7 @@ export const configureEventsModule = async ({
     findEvent: async ({ eventId, ...rest }, options) => {
       const selector = eventId ? { _id: eventId } : rest;
       if (!Object.keys(selector)?.length) return null;
-      return Events.findOne(selector as unknown as Filter<Event>, options);
+      return await Events.findOne(selector as unknown as Filter<Event>, options);
     },
 
     findEvents: async ({
@@ -41,7 +41,7 @@ export const configureEventsModule = async ({
         sort,
       });
 
-      return events.toArray();
+      return await events.toArray();
     },
 
     count: async (query) => {

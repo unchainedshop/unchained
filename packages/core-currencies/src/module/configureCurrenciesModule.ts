@@ -33,14 +33,14 @@ export const configureCurrenciesModule = async ({
     },
 
     findCurrencies: async ({ limit, offset, includeInactive }) => {
-      const currencies = await Currencies.find(
+      const currencies = Currencies.find(
         buildFindSelector({ includeInactive }),
         {
           skip: offset,
           limit,
         }
       );
-      return currencies.toArray();
+      return await currencies.toArray();
     },
 
     count: async (query) => {
@@ -56,18 +56,18 @@ export const configureCurrenciesModule = async ({
       return !!currencyCount;
     },
 
-    create: async (doc: Currency, userId?: string) => {
+    create: async (doc: Currency, userId: string) => {
       const currencyId = await mutations.create(doc, userId);
       emit('CURRENCY_CREATE', { currencyId });
       return currencyId;
     },
-    update: async (_id: string, doc: Currency, userId?: string) => {
+    update: async (_id: string, doc: Currency, userId: string) => {
       const currencyId = await mutations.update(_id, doc, userId);
       emit('CURRENCY_UPDATE', { currencyId });
       return currencyId;
     },
-    delete: async (currencyId) => {
-      const deletedCount = await mutations.delete(currencyId);
+    delete: async (currencyId, userId) => {
+      const deletedCount = await mutations.delete(currencyId, userId);
       emit('CURRENCY_REMOVE', { currencyId });
       return deletedCount;
     },
