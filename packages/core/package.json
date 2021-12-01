@@ -23,6 +23,6 @@
   "devDependencies": {
     "chai": "^4.3.4",
     "cross-env": "^7.0.3",
-    "@unchainedshop/ypes": "^0.9.1"
+    "@unchainedshop/types": "^0.9.1"
   }
 }

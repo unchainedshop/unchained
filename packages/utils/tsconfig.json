@@ -19,7 +19,7 @@
     "outDir": "./lib",
     "typeRoots": [
       "./node_modules/@types",
-      "./node_modules/@unchainedshop/ypes"
+      "./node_modules/@unchainedshop/types"
     ],
     "types": [],
   },

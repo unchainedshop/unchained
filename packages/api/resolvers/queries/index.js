@@ -31,7 +31,7 @@ import me from './me';
 import order from './order';
 import orders from './orders';
 import ordersCount from './ordersCount';
-import paymentInterfaces from './paymentInterfaces';
+import paymentInterfaces from './payment/paymentInterfaces';
 import paymentProvider from './paymentProvider';
 import paymentProviders from './paymentProviders';
 import paymentProvidersCount from './paymentProvidersCount';

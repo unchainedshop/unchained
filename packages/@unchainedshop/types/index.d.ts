@@ -1,4 +1,10 @@
-import { Collection, Db } from 'mongodb';
+import {
+  Collection,
+  Db,
+  Filter,
+  ObjectId,
+  UpdateFilter as Update,
+} from 'mongodb';
 import { BookmarksModule } from './bookmarks';
 import { _ID, ModuleInput, TimestampFields } from './common';
 import { CurrenciesModule } from './currencies';
@@ -14,13 +20,8 @@ import {
 } from './payments';
 
 // Types package only
-export type {
-  Collection,
-  Db,
-  Filter,
-  ObjectId,
-  UpdateFilter as Update,
-} from 'mongodb';
+export type { Collection, Db, Filter, ObjectId, Update };
+
 export {
   ModuleCreateMutation,
   ModuleMutations,

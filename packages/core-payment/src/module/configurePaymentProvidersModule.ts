@@ -4,8 +4,9 @@ import {
   PaymentProvider,
   PaymentProviderType,
 } from '@unchainedshop/types/payments';
+import { Collection } from '@unchainedshop/types';
 import { emit, registerEvents } from 'meteor/unchained:events';
-import { Collection, generateDbMutations } from 'meteor/unchained:utils';
+import { generateDbMutations } from 'meteor/unchained:utils';
 import { PaymentProvidersSchema } from '../db/PaymentProvidersSchema';
 import { PaymentAdapter } from '../director/PaymentAdapter';
 import {
@@ -38,6 +39,7 @@ export const configurePaymentProvidersModule = (
   PaymentProviders: Collection<PaymentProvider>
 ): PaymentModule['paymentProviders'] => {
   registerEvents(PAYMENT_PROVIDER_EVENTS);
+  
   const mutations = generateDbMutations<PaymentProvider>(
     PaymentProviders,
     PaymentProvidersSchema
@@ -92,7 +94,7 @@ export const configurePaymentProvidersModule = (
         _id: Adapter.key,
         label: Adapter.label,
         version: Adapter.version,
-      }
+      };
     },
 
     findInterfaces: ({ type }) => {
@@ -106,10 +108,12 @@ export const configurePaymentProvidersModule = (
     },
 
     findSupported: ({ order }) => {
-      const providers = PaymentProviders.find({}).filter((provider: PaymentProvider ) => {
-        const director = PaymentDirector(provider, getDefaultContext(order));
-        return director.isActive();
-      });
+      const providers = PaymentProviders.find({}).filter(
+        (provider: PaymentProvider) => {
+          const director = PaymentDirector(provider, getDefaultContext(order));
+          return director.isActive();
+        }
+      );
 
       return paymentProviderSettings.filterSupportedProviders({
         providers,

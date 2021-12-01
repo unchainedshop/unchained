@@ -1,7 +1,6 @@
 import configureUsers from 'meteor/unchained:core-users';
 import configureAccounts from 'meteor/unchained:core-accountsjs';
 import configureDelivery from 'meteor/unchained:core-delivery';
-import configurePayment from 'meteor/unchained:core-payment';
 import configureWarehousing from 'meteor/unchained:core-warehousing';
 import configureProducts from 'meteor/unchained:core-products';
 import configureQuotations from 'meteor/unchained:core-quotations';
@@ -21,6 +20,7 @@ import { configureCountriesModule, countryServices } from 'meteor/unchained:core
 import { configureCurrenciesModule } from 'meteor/unchained:core-currencies';
 import { configureEventsModule } from 'meteor/unchained:core-events';
 import { configureLanguagesModule } from 'meteor/unchained:core-languages';
+import { configurePaymentModule, paymentServices } from 'meteor/unchained:core-payment';
 
 export const initCore = async ({
   db,
@@ -37,6 +37,7 @@ export const initCore = async ({
   const countries = await configureCountriesModule({ db });
   const currencies = await configureCurrenciesModule({ db });
   const languages = await configureLanguagesModule({ db });
+  const payment = await configurePaymentModule({ db });
 
   configureWorker(modules.worker, moduleOptions);
   configureUsers(modules.users, moduleOptions);
@@ -44,7 +45,6 @@ export const initCore = async ({
   configureDocuments(modules.documents, moduleOptions);
   configureAccounts(modules.accounts, moduleOptions);
   configureDelivery(modules.delivery, moduleOptions);
-  configurePayment(modules.payment, moduleOptions);
   configureWarehousing(modules.warehousing, moduleOptions);
   configureProducts(modules.products, moduleOptions);
   configureQuotations(modules.quotations, moduleOptions);
@@ -60,10 +60,12 @@ export const initCore = async ({
       currencies,
       events,
       languages,
+      payment,
     },
     services: {
       bookmark: bookmarkServices,
       country: countryServices,
+      payment: paymentServices,
     },
     ...otherComponents,
   };
