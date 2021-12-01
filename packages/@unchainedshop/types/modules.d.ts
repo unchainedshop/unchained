@@ -3,6 +3,7 @@ import { BookmarksModule } from './bookmarks';
 import { CurrenciesModule } from './currencies';
 import { CountriesModule } from './countries';
 import { LanguagesModule } from './languages';
+import { PaymentModule } from './payments';
 
 export interface Modules {
   accounts: any;
@@ -18,7 +19,7 @@ export interface Modules {
   languages: LanguagesModule;
   messaging: any;
   orders: any;
-  payment: any;
+  payment: PaymentModule;
   products: any;
   quotations: any;
   users: any;

@@ -57,5 +57,18 @@ export default {
     return user.cart({ countryContext, ...params });
   },
 
-  // logs: logs('userId', actions.viewLogs),
+  async paymentCredentials(user, params, context = {}) {
+    const { userId, modules } = context;
+
+    checkAction(actions.viewUserPrivateInfos, userId, [user, params, context]);
+
+    return await modules.payment.paymentCredentials.findPaymentCredentials(
+      { ...params.selector, userId },
+      {
+        sort: {
+          created: -1,
+        },
+      }
+    );
+  },
 };

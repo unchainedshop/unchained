@@ -2,6 +2,7 @@ import {
   PaymentContext,
   PaymentError,
   PaymentProvider,
+  PaymentDirector as IPaymentDirector
 } from '@unchainedshop/types/payments';
 import { paymentLogger } from '../payment-logger';
 import { PaymentAdapter } from './PaymentAdapter';
@@ -43,20 +44,9 @@ const getAdapterInstance = (
   return new Adapter(provider.configuration, context);
 };
 
-interface IPaymentDirector {
-  configurationError: () => PaymentError; // OPEN QUESTION: Should it be fixed to the PaymentError const
-  isActive: () => boolean;
-  isPayLaterAllowed: () => boolean;
-  charge: (context?: any, userId?: string) => Promise<any>;
-  register: () => Promise<any>;
-  sign: () => Promise<any>;
-  validate: () => Promise<boolean>;
-  run: (command: string, args: any) => Promise<boolean>;
-}
-
 const PaymentDirector = (
   provider: PaymentProvider,
-  { transactionContext, token, ...context }: PaymentContext
+  { transactionContext, token, ...context }: PaymentContext = {}
 ): IPaymentDirector => ({
   configurationError() {
     try {

@@ -1,6 +1,6 @@
 import {
   PaymentCredentials,
-  PaymentModule
+  PaymentModule,
 } from '@unchainedshop/types/payments';
 import { Collection } from 'meteor/unchained:utils';
 
@@ -41,7 +41,7 @@ export const configurePaymentCredentialsModule = (
       return !!credentialsCount;
     },
 
-    findCredentials: async (
+    findPaymentCredential: async (
       { paymentCredentialsId, userId, paymentProviderId },
       options
     ) => {
@@ -51,6 +51,11 @@ export const configurePaymentCredentialsModule = (
           : { userId, paymentProviderId },
         options
       );
+    },
+
+    findPaymentCredentials: async (query, options) => {
+      const credentials = PaymentCredentials.find(query, options);
+      return await credentials.toArray();
     },
 
     upsertCredentials: async ({

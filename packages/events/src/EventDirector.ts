@@ -1,9 +1,12 @@
-import { EmitAdapter } from '@unchainedshop/types/events';
+import {
+  ContextNormalizerFunction,
+  EmitAdapter,
+  EventDirector as IEventDirector,
+} from '@unchainedshop/types/events';
 import { createLogger } from 'meteor/unchained:logger';
 
 const logger = createLogger('unchained:events');
 
-type ContextNormalizerFunction = (context: any) => any;
 
 export const defaultNormalizer: ContextNormalizerFunction = (context) => {
   return {
@@ -23,24 +26,6 @@ const RegisteredCallbacksSet = new Set();
 let Adapter: EmitAdapter; // Public (customizable)
 let HistoryAdapter: EmitAdapter; // (Per default: Core-events adapter to write into DB)
 let ContextNormalizer = defaultNormalizer;
-
-interface IEventDirector {
-  emit: (
-    eventName: string,
-    data?: string | Record<string, unknown>
-  ) => Promise<void>;
-  getEmitAdapter: () => EmitAdapter;
-  getEmitHistoryAdapter: () => EmitAdapter;
-  getRegisteredEvents: () => string[];
-  registerEvents: (events: string[]) => void;
-  setContextNormalizer: (fn: ContextNormalizerFunction) => void;
-  setEmitAdapter: (adapter: EmitAdapter) => void;
-  setEmitHistoryAdapter: (adapter: EmitAdapter) => void;
-  subscribe: (
-    eventName: string,
-    callBack: (payload?: Record<string, unknown>) => void
-  ) => void;
-}
 
 export const EventDirector: IEventDirector = {
   registerEvents: (events: string[]): void => {

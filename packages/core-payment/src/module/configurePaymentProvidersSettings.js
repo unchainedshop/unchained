@@ -1,4 +1,4 @@
-import logger from '../../logger';
+import { paymentLogger } from "../payment-logger";
 
 const sortByCreationDate = () => (left, right) => {
   return new Date(left.created).getTime() - new Date(right.created).getTime();
@@ -12,7 +12,7 @@ export const paymentProviderSettings = {
   filterSupportedProviders: null,
   load({ sortProviders, filterSupportedProviders = allProviders } = {}) {
     if (sortProviders) {
-      logger.warn(
+      paymentLogger.warn(
         'sortProviders is deprecated, please specifc filterSupportedProviders instead'
       );
       this.filterSupportedProviders = ({ providers }) => {

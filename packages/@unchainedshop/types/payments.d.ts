@@ -44,14 +44,14 @@ export enum PaymentError {
 }
 
 export type PaymentContext =
-  | {
-      order: any; // TODO: Replace with order type
-      orderPayment: any; // TODO: Replace with orderPayment type
+  | ({
       userId: string;
       paymentProviderId: string;
-      transactionContext?: any;
-      token?: string;
-    }
+      order?: any; // TODO: Replace with order type
+      orderPayment?: any; // TODO: Replace with orderPayment type
+      transactionContext?: any; // User for singing and charging a payment
+      token?: any; // Used for validation
+    })
   | {
       transactionContext?: never;
       token?: never;
@@ -74,6 +74,17 @@ export class PaymentAdapter {
   validate: (token: string) => Promise<boolean>;
 }
 
+export interface PaymentDirector {
+  configurationError: () => PaymentError; // OPEN QUESTION: Should it be fixed to the PaymentError const
+  isActive: () => boolean;
+  isPayLaterAllowed: () => boolean;
+  charge: (context?: any, userId?: string) => Promise<any>;
+  register: () => Promise<any>;
+  sign: () => Promise<any>;
+  validate: () => Promise<boolean>;
+  run: (command: string, args: any) => Promise<boolean>;
+}
+
 export interface PaymentInterface {
   _id: string;
   label: string;
@@ -81,6 +92,10 @@ export interface PaymentInterface {
 }
 
 export type PaymentModule = {
+  /*
+   * Payment Providers Module
+   */
+
   paymentProviders: ModuleMutations<PaymentProvider> & {
     // Queries
     count: (query: PaymentProviderQuery) => Promise<number>;
@@ -88,65 +103,87 @@ export type PaymentModule = {
       query: Query & {
         paymentProviderId: string;
       },
-      options: FindOptions
+      options?: FindOptions<PaymentProvider>
     ) => Promise<PaymentProvider>;
     findProviders: (
       query: PaymentProviderQuery,
-      options: FindOptions
+      options?: FindOptions<PaymentProvider>
     ) => Promise<Array<PaymentProvider>>;
-    providerExists: (query: { paymentProviderId: string }) => Promise<boolean>;
 
+    findSupported: (
+      query: { order: any } // TODO: Replace order type
+    ) => Array<string>;
+
+    findInterface: (query: PaymentProvider) => PaymentInterface;
     findInterfaces: (query: {
       type: PaymentProviderType;
     }) => Array<PaymentInterface>;
 
+    providerExists: (query: { paymentProviderId: string }) => Promise<boolean>;
+
     // Payment adapter
 
-    configurationError: (
-      paymentProviderId: string,
-      context: PaymentContext
-    ) => Promise<PaymentError>;
+    configurationError: (paymentProvider: PaymentProvider) => PaymentError;
+
     isActive: (
       paymentProviderId: string,
-      context: PaymentContext
+      context?: PaymentContext
     ) => Promise<boolean>;
     isPayLaterAllowed: (
       paymentProviderId: string,
-      context: PaymentContext
+      context?: PaymentContext
     ) => Promise<boolean>;
     charge: (
       paymentProviderId: string,
-      context: PaymentContext
+      context?: PaymentContext
     ) => Promise<any>;
     register: (
       paymentProviderId: string,
-      context: PaymentContext
+      context?: PaymentContext
     ) => Promise<any>;
-    sign: (paymentProviderId: string, context: PaymentContext) => Promise<any>;
+    sign: (paymentProviderId: string, context?: PaymentContext) => Promise<any>;
     validate: (
       paymentProviderId: string,
-      context: PaymentContext
+      context?: PaymentContext
     ) => Promise<any>;
   };
+
+  /*
+   * Payment Credentials Module
+   */
+
   paymentCredentials: {
-    markPreferred: (query: {
-      userId: string;
-      paymentCredentialsId: string;
-    }) => Promise<void>;
+    // Queries
+
     credentialsExists: (query: {
       paymentCredentialsId: string;
     }) => Promise<boolean>;
-    findCredentials: (
+
+    findPaymentCredential: (
       query: {
         paymentCredentialsId?: string;
         userId?: string;
         paymentProviderId?: string;
       },
-      options: FindOptions
+      options?: FindOptions<PaymentCredentials>
     ) => Promise<PaymentCredentials>;
+
+    findPaymentCredentials: (
+      query: Query,
+      options?: FindOptions<PaymentCredentials>
+    ) => Promise<Array<PaymentCredentials>>;
+
+    // Mutations
+
+    markPreferred: (query: {
+      userId: string;
+      paymentCredentialsId: string;
+    }) => Promise<void>;
+
     upsertCredentials: (
       doc: PaymentCredentials & { [x: string]: any }
     ) => Promise<string | null>;
+
     removeCredentials: (
       paymentCredentialsId: string
     ) => Promise<PaymentCredentials>;
@@ -154,51 +191,20 @@ export type PaymentModule = {
 };
 
 export interface PaymentProviderHelperTypes {
-  interface: (provider: PaymentProvider) => {
+  interface: (
+    provider: PaymentProvider,
+    _: never,
+    context: Context
+  ) => {
     _id: string;
     label: string;
     version: string;
   };
-  defaultContext: (
-    provider: PaymentProvider,
-    paymentContext: PaymentContext,
-    context: Context
-  ) => PaymentContext;
   configurationError: (
     provider: PaymentProvider,
-    paymentContext: PaymentContext,
+    _: never,
     context: Context
   ) => PaymentError;
-  isActive: (
-    provider: PaymentProvider,
-    paymentContext: PaymentContext,
-    context: Context
-  ) => boolean;
-  isPayLaterAllowed: (
-    provider: PaymentProvider,
-    paymentContext: PaymentContext,
-    context: Context
-  ) => boolean;
-  register: (
-    provider: PaymentProvider,
-    paymentContext: PaymentContext,
-    context: Context
-  ) => Promise<any>;
-  sign: (
-    provider: PaymentProvider,
-    paymentContext: PaymentContext,
-    context: Context
-  ) => Promise<any>;
-  charge: (
-    provider: PaymentProvider,
-    paymentContext: PaymentContext,
-    context: Context
-  ) => Promise<any>;
-  validate: (
-    provider: PaymentProvider,
-    paymentContext: PaymentContext,
-    context: Context
-  ) => Promise<any>;
 }
 
 export interface PaymentCredentialsHelperTypes {

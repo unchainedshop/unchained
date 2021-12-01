@@ -5,8 +5,13 @@ import { CurrenciesModule } from './currencies';
 import { CountriesModule } from './countries';
 import { LanguagesModule } from './languages';
 import { EmitAdapter, EventsModule } from './events';
+import { User } from './user';
 import { Logger, LogOptions, Transports } from './logs';
 import { Locale } from '@types/locale';
+import {
+  PaymentDirector as IPaymentDirector,
+  PaymentProvider,
+} from './payments';
 
 // Types package only
 export type {
@@ -50,8 +55,8 @@ declare module 'meteor/unchained:utils' {
   const systemLocale: Locale;
 
   const Schemas: {
-    timestampFields: TimestampFields
-  }
+    timestampFields: TimestampFields;
+  };
 }
 
 declare module 'meteor/unchained:logger' {
@@ -107,8 +112,17 @@ declare module 'meteor/unchained:core-languages' {
   ): Promise<LanguagesModule>;
 }
 
+declare module 'meteor/unchained:core-payments' {
+  function configurePaymentModule(params: ModuleInput): Promise<PaymentModule>;
+
+  function PaymentDirector(
+    provider: PaymentProvider,
+    context: PaymentContext
+  ): IPaymentDirector;
+}
+
 declare module 'meteor/unchained:core-users' {
-  class Users {}
+  const Users: Collection<User>;
 }
 
 declare module 'meteor/unchained:core-orders' {

@@ -2,7 +2,7 @@ import {
   PaymentContext,
   PaymentModule,
   PaymentProvider,
-  PaymentProviderType
+  PaymentProviderType,
 } from '@unchainedshop/types/payments';
 import { emit, registerEvents } from 'meteor/unchained:events';
 import { Collection, generateDbMutations } from 'meteor/unchained:utils';
@@ -11,8 +11,9 @@ import { PaymentAdapter } from '../director/PaymentAdapter';
 import {
   getAdapter,
   getFilteredAdapters,
-  PaymentDirector
+  PaymentDirector,
 } from '../director/PaymentDirector';
+import { paymentProviderSettings } from './configurePaymentProvidersSettings';
 
 const PAYMENT_PROVIDER_EVENTS: string[] = [
   'PAYMENT_PROVIDER_CREATE',
@@ -85,22 +86,43 @@ export const configurePaymentProvidersModule = (
       return !!providerCount;
     },
 
+    findInterface: (paymentProvider) => {
+      const Adapter = getAdapter(paymentProvider);
+      return {
+        _id: Adapter.key,
+        label: Adapter.label,
+        version: Adapter.version,
+      }
+    },
+
     findInterfaces: ({ type }) => {
-      return getFilteredAdapters((Adapter: typeof PaymentAdapter) => Adapter.typeSupported(type)).map(
-        (Adapter) => ({
-          _id: Adapter.key,
-          label: Adapter.label,
-          version: Adapter.version,
-        })
-      );
+      return getFilteredAdapters((Adapter: typeof PaymentAdapter) =>
+        Adapter.typeSupported(type)
+      ).map((Adapter) => ({
+        _id: Adapter.key,
+        label: Adapter.label,
+        version: Adapter.version,
+      }));
+    },
+
+    findSupported: ({ order }) => {
+      const providers = PaymentProviders.find({}).filter((provider: PaymentProvider ) => {
+        const director = PaymentDirector(provider, getDefaultContext(order));
+        return director.isActive();
+      });
+
+      return paymentProviderSettings.filterSupportedProviders({
+        providers,
+        order,
+      });
     },
 
     // Payment Adapter
 
-    configurationError: async (paymentProviderId, context) => {
-      const adapter = await getPaymentAdapter(paymentProviderId, context);
-      return adapter.configurationError();
+    configurationError: (paymentProvider) => {
+      return PaymentDirector(paymentProvider).configurationError();
     },
+
     isActive: async (paymentProviderId, context) => {
       const adapter = await getPaymentAdapter(paymentProviderId, context);
       return adapter.isActive();
@@ -167,11 +189,4 @@ export const configurePaymentProvidersModule = (
       return deletedCount;
     },
   };
-
-  // PaymentProviders.findSupported = ({ order }, ...options) => {
-  //   const providers = PaymentProviders.findProviders({}, ...options).filter(
-  //     (paymentProvider) => paymentProvider.isActive(order)
-  //   );
-  //   return settings.filterSupportedProviders({ providers, order });
-  // };
 };
