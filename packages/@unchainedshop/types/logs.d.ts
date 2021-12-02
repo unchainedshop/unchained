@@ -1,6 +1,6 @@
 import { Logger as WinstonLogger, LoggerOptions } from 'winston';
 import TransportStream from 'winston-transport';
-import { TimestampFields, _ID } from '@unchainedshop/types/common';
+import { TimestampFields, _ID } from './common';
 
 export { format, transports } from 'winston';
 

@@ -1,6 +1,11 @@
-import { FindOptions } from 'mongodb';
 import { Context } from './api';
-import { ModuleMutations, Query, TimestampFields, _ID } from './common';
+import {
+  FindOptions,
+  ModuleMutations,
+  Query,
+  TimestampFields,
+  _ID,
+} from './common';
 import { User } from './user';
 
 export enum PaymentProviderType {
@@ -44,14 +49,14 @@ export enum PaymentError {
 }
 
 export type PaymentContext =
-  | ({
+  | {
       userId: string;
       paymentProviderId: string;
       order?: any; // TODO: Replace with order type
       orderPayment?: any; // TODO: Replace with orderPayment type
       transactionContext?: any; // User for singing and charging a payment
       token?: any; // Used for validation
-    })
+    }
   | {
       transactionContext?: never;
       token?: never;
@@ -164,6 +169,7 @@ export type PaymentModule = {
         paymentCredentialsId?: string;
         userId?: string;
         paymentProviderId?: string;
+        isPreferred?: boolean;
       },
       options?: FindOptions<PaymentCredentials>
     ) => Promise<PaymentCredentials>;

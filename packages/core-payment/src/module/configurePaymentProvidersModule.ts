@@ -4,9 +4,12 @@ import {
   PaymentProvider,
   PaymentProviderType,
 } from '@unchainedshop/types/payments';
-import { Collection } from '@unchainedshop/types';
+import { Collection } from '@unchainedshop/types/common';
 import { emit, registerEvents } from 'meteor/unchained:events';
-import { generateDbMutations } from 'meteor/unchained:utils';
+import {
+  generateDbMutations,
+  generateDbFilterById,
+} from 'meteor/unchained:utils';
 import { PaymentProvidersSchema } from '../db/PaymentProvidersSchema';
 import { PaymentAdapter } from '../director/PaymentAdapter';
 import {
@@ -39,7 +42,7 @@ export const configurePaymentProvidersModule = (
   PaymentProviders: Collection<PaymentProvider>
 ): PaymentModule['paymentProviders'] => {
   registerEvents(PAYMENT_PROVIDER_EVENTS);
-  
+
   const mutations = generateDbMutations<PaymentProvider>(
     PaymentProviders,
     PaymentProvidersSchema
@@ -49,9 +52,9 @@ export const configurePaymentProvidersModule = (
     paymentProviderId: string,
     context: PaymentContext
   ) => {
-    const provider = await PaymentProviders.findOne({
-      _id: paymentProviderId,
-    });
+    const provider = await PaymentProviders.findOne(
+      generateDbFilterById(paymentProviderId)
+    );
 
     return PaymentDirector(provider, getDefaultContext(context));
   };
@@ -65,9 +68,10 @@ export const configurePaymentProvidersModule = (
       return providerCount;
     },
 
+    /* @ts-ignore */
     findProvider: async ({ paymentProviderId, ...query }, options) => {
       return await PaymentProviders.findOne(
-        { _id: paymentProviderId, ...query },
+        paymentProviderId ? generateDbFilterById(paymentProviderId) : query,
         options
       );
     },
@@ -82,7 +86,7 @@ export const configurePaymentProvidersModule = (
 
     providerExists: async ({ paymentProviderId }) => {
       const providerCount = await PaymentProviders.find(
-        { _id: paymentProviderId, deleted: null },
+        generateDbFilterById(paymentProviderId, { deleted: null }),
         { limit: 1 }
       ).count();
       return !!providerCount;
@@ -179,7 +183,9 @@ export const configurePaymentProvidersModule = (
 
     update: async (_id: string, doc: PaymentProvider, userId: string) => {
       const paymentProviderId = await mutations.update(_id, doc, userId);
-      const paymentProvider = await PaymentProviders.findOne({ _id });
+      const paymentProvider = await PaymentProviders.findOne(
+        generateDbFilterById(_id)
+      );
       emit('PAYMENT_PROVIDER_UPDATE', { paymentProvider });
 
       return paymentProviderId;
@@ -187,7 +193,9 @@ export const configurePaymentProvidersModule = (
 
     delete: async (_id, userId) => {
       const deletedCount = await mutations.delete(_id, userId);
-      const paymentProvider = PaymentProviders.findOne({ _id });
+      const paymentProvider = PaymentProviders.findOne(
+        generateDbFilterById(_id)
+      );
 
       emit('PAYMENT_PROVIDER_REMOVE', { paymentProvider });
       return deletedCount;

@@ -1,4 +1,6 @@
-import { Db, UpdateFilter, ObjectId } from 'mongodb';
+import { Db, Collection, UpdateFilter, Filter, ObjectId, FindOptions, Sort } from 'mongodb';
+
+export { Db, Collection, FindOptions, UpdateFilter as Update, Filter, Sort };
 
 export type _ID = string | ObjectId;
 
@@ -22,6 +24,10 @@ export interface ModuleCreateMutation<T> {
 }
 
 export interface ModuleMutations<T> extends ModuleCreateMutation<T> {
-  update: (_id: string, doc: UpdateFilter<T>, userId: string) => Promise<string>;
+  update: (
+    _id: string,
+    doc: UpdateFilter<T>,
+    userId: string
+  ) => Promise<string>;
   delete: (_id: string, userId: string) => Promise<number>;
 }

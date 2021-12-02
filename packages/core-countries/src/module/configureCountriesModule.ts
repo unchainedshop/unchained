@@ -1,12 +1,15 @@
 import { ModuleInput } from '@unchainedshop/types/common';
 import { CountriesModule, Country } from '@unchainedshop/types/countries';
-import { emit, registerEvents } from 'meteor/unchained:events';
-import { generateDbMutations } from 'meteor/unchained:utils';
-import { CountriesCollection } from '../db/CountriesCollection';
-import { CountriesSchema } from '../db/CountriesSchema';
 import countryFlags from 'emoji-flags';
 import countryI18n from 'i18n-iso-countries';
-import { systemLocale } from 'meteor/unchained:utils';
+import { emit, registerEvents } from 'meteor/unchained:events';
+import {
+  generateDbFilterById,
+  generateDbMutations,
+  systemLocale,
+} from 'meteor/unchained:utils';
+import { CountriesCollection } from '../db/CountriesCollection';
+import { CountriesSchema } from '../db/CountriesSchema';
 
 const COUNTRY_EVENTS: string[] = [
   'COUNTRY_CREATE',
@@ -34,30 +37,29 @@ export const configureCountriesModule = async ({
 
   return {
     count: async (query) => {
-      const countryCount = await Countries.find(buildFindSelector(query)).count();
+      const countryCount = await Countries.find(
+        buildFindSelector(query)
+      ).count();
       return countryCount;
     },
 
     findCountry: async ({ countryId, isoCode }) => {
       return await Countries.findOne(
-        countryId ? { _id: countryId } : { isoCode }
+        countryId ? generateDbFilterById(countryId) : { isoCode }
       );
     },
 
     findCountries: async ({ limit, offset, includeInactive }) => {
-      const countries = Countries.find(
-        buildFindSelector({ includeInactive }),
-        {
-          skip: offset,
-          limit,
-        }
-      );
+      const countries = Countries.find(buildFindSelector({ includeInactive }), {
+        skip: offset,
+        limit,
+      });
       return await countries.toArray();
     },
 
     countryExists: async ({ countryId }) => {
       const countryCount = await Countries.find(
-        { _id: countryId },
+        generateDbFilterById(countryId),
         { limit: 1 }
       ).count();
       return !!countryCount;

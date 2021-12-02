@@ -1,4 +1,4 @@
-import { Db } from '@unchainedshop/types';
+import { Db } from '@unchainedshop/types/common';
 import { Bookmark } from '@unchainedshop/types/bookmarks';
 
 export const BookmarksCollection = async (db: Db) => {

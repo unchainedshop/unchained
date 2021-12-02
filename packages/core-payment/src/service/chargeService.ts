@@ -14,12 +14,14 @@ export const chargeService: ChargeService = async (
   { modules, userId }
 ) => {
   const normalizedContext = {
-    ...context,
+    ...paymentContext,
+    userId,
+    paymentProviderId,
     transactionContext: {
       ...paymentContext.transactionContext,
       paymentCredentials:
         paymentContext.transactionContext?.paymentCredentials ??
-        modules.payment.paymentCredentials.findCredential({
+        modules.payment.paymentCredentials.findPaymentCredential({
           userId,
           paymentProviderId,
           isPreferred: true,
@@ -27,9 +29,9 @@ export const chargeService: ChargeService = async (
     },
   };
 
-  const result = await modules.payment.paymentProvider.charge(
+  const result = await modules.payment.paymentProviders.charge(
+    paymentProviderId,
     normalizedContext,
-    userId
   );
 
   if (!result) return false;

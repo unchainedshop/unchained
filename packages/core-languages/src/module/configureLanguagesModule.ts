@@ -1,7 +1,7 @@
 import { ModuleInput } from '@unchainedshop/types/common';
 import { LanguagesModule, Language } from '@unchainedshop/types/languages';
 import { emit, registerEvents } from 'meteor/unchained:events';
-import { generateDbMutations } from 'meteor/unchained:utils';
+import { generateDbMutations, generateDbFilterById } from 'meteor/unchained:utils';
 import { LanguagesCollection } from '../db/LanguagesCollection';
 import { LanguagesSchema } from '../db/LanguagesSchema';
 import { systemLocale } from 'meteor/unchained:utils';
@@ -33,7 +33,7 @@ export const configureLanguagesModule = async ({
   return {
     findLanguage: async ({ languageId, isoCode }) => {
       return await Languages.findOne(
-        languageId ? { _id: languageId } : { isoCode }
+        languageId ? generateDbFilterById(languageId) : { isoCode }
       );
     },
 

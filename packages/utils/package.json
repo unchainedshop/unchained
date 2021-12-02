@@ -5,8 +5,10 @@
   "types": "lib/utils-index.d.ts",
   "type": "module",
   "scripts": {
-    "build": "tsc",
+    "clean": "rm -rf lib",
+    "build": "npm run clean && tsc -p tsconfig.build.json",
     "watch": "tsc --watch",
+    "link:core": "npm link @unchainedshop/types",
     "test": "TEST_WATCH=1 meteor test-packages ./ --driver-package meteortesting:mocha --port 4200"
   },
   "repository": {
@@ -32,7 +34,7 @@
   },
   "devDependencies": {
     "@types/simpl-schema": "^1.12.0",
-    "@unchainedshop/types": "^0.9.0",
+    "@unchainedshop/types": "^0.9.2",
     "chai": "^4.3.4",
     "typescript": "^4.4.3"
   }

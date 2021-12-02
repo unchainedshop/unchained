@@ -1,4 +1,4 @@
-import { Db } from '@unchainedshop/types';
+import { Db } from '@unchainedshop/types/common';
 import { Language } from '@unchainedshop/types/languages';
 import { buildDbIndexes } from 'meteor/unchained:utils'
 

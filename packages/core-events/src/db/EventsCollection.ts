@@ -1,4 +1,4 @@
-import { Db } from '@unchainedshop/types';
+import { Db } from '@unchainedshop/types/common';
 import { Event } from '@unchainedshop/types/events';
 import { buildDbIndexes } from 'meteor/unchained:utils';
 

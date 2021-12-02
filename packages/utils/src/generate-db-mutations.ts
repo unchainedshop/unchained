@@ -4,7 +4,7 @@ import {
   ModuleMutations,
   ModuleCreateMutation,
   _ID,
-} from '@unchainedshop/types';
+} from '@unchainedshop/types/common';
 import { checkId } from './check-id';
 import { generateDbFilterById } from './generate-db-filter-by-id';
 
@@ -45,9 +45,9 @@ export const generateDbMutations = <T extends { _id?: _ID }>(
           const filter = generateDbFilterById(_id, { deleted: null });
           const result = await collection.updateOne(filter, values);
 
-          return result.upsertedId._id.toHexString();
+          return result.upsertedId.toHexString();
         },
-        
+
     delete: hasCreateOnly
       ? undefined
       : async (_id, userId) => {

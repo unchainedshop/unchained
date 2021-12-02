@@ -1,11 +1,11 @@
-import { LogLevel } from '@unchainedshop/types/logs';
+import { LogLevel } from 'meteor/unchained:logger';
 import {
   PaymentConfiguration,
   PaymentContext,
-  PaymentError,
   PaymentProviderType
 } from '@unchainedshop/types/payments';
 import { paymentLogger } from '../payment-logger';
+import { PaymentError } from './PaymentError';
 
 export class PaymentAdapter {
   static key = '';

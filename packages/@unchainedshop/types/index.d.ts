@@ -1,33 +1,25 @@
-import {
-  Collection,
-  Db,
-  Filter,
-  ObjectId,
-  UpdateFilter as Update,
-} from 'mongodb';
 import { BookmarksModule } from './bookmarks';
-import { _ID, ModuleInput, TimestampFields } from './common';
+import {
+  Db,
+  Collection,
+  _ID,
+  Filter,
+  ModuleInput,
+  TimestampFields,
+} from './common';
 import { CurrenciesModule } from './currencies';
 import { CountriesModule } from './countries';
 import { LanguagesModule } from './languages';
 import { EmitAdapter, EventsModule } from './events';
 import { User } from './user';
-import { Logger, LogOptions, Transports } from './logs';
+import { Logger, LogOptions, Transports, LogLevel } from './logs';
 import { Locale } from '@types/locale';
 import {
   PaymentDirector as IPaymentDirector,
   PaymentProvider,
 } from './payments';
 
-// Types package only
-export type { Collection, Db, Filter, ObjectId, Update };
-
-export {
-  ModuleCreateMutation,
-  ModuleMutations,
-  _ID,
-} from '@unchainedshop/types/common';
-export { Modules } from '@unchainedshop/types/modules';
+export { Modules } from './modules';
 
 declare module 'meteor/unchained:utils' {
   function checkId(
@@ -40,7 +32,10 @@ declare module 'meteor/unchained:utils' {
       | undefined
   ): void;
 
-  function generateDbFilterById(id: any): Filter<{ _id?: _ID }>;
+  function generateDbFilterById<T extends { _id?: _ID }>(
+    id: any,
+    query?: Filter<T>
+  ): Filter<T>;
 
   function generateDbMutations<T extends { _id?: _ID }>(
     collection: Collection<T>,
@@ -66,6 +61,7 @@ declare module 'meteor/unchained:logger' {
     moduleName: string,
     moreTransports?: Transports
   ): Logger;
+  const LogLevel;
 }
 
 declare module 'meteor/unchained:events' {

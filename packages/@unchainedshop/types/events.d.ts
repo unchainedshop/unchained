@@ -1,5 +1,4 @@
-import { FindOptions, Sort } from 'mongodb';
-import { ModuleCreateMutation, Query, TimestampFields, _ID } from './common';
+import { ModuleCreateMutation, Query, TimestampFields, _ID, FindOptions, Sort } from './common';
 
 export type Event = {
   _id?: _ID;
@@ -36,14 +35,18 @@ export interface EventDirector {
 }
 
 export interface EventsModule extends ModuleCreateMutation<Event> {
-  findEvent: (params: Query & { eventId: _ID }) => Promise<Event>;
+  findEvent: (
+    params: Query & { eventId: _ID },
+    options?: FindOptions
+  ) => Promise<Event>;
 
   findEvents: (
     params: Query & {
       limit?: number;
       offset?: number;
       sort?: Sort;
-    }
+    },
+    options?: FindOptions
   ) => Promise<Array<Event>>;
 
   count: (query: Query) => Promise<number>;

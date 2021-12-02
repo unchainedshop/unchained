@@ -12,7 +12,20 @@
     "preserveWatchOutput": true,
     "skipLibCheck": true,
     "typeRoots": ["node_modules/@types", "node_modules/mongodb"],
-    "types": [],
+    "types": []
   },
-  "include": ["index.d.ts", "bookmarks.d.ts", "common.d.ts", "events.d.ts", "index.d.ts", "logs.d.ts", "modules.d.ts"]
+  "include": [
+    "index.d.ts",
+    "api.d.ts",
+    "bookmarks.d.ts",
+    "common.d.ts",
+    "countries.d.ts",
+    "currencies.d.ts",
+    "events.d.ts",
+    "index.d.ts",
+    "languages.d.ts",
+    "logs.d.ts",
+    "modules.d.ts",
+    "payments.d.ts"
+  ]
 }

@@ -1,7 +1,10 @@
 import { ModuleInput } from '@unchainedshop/types/common';
 import { CurrenciesModule, Currency } from '@unchainedshop/types/currencies';
 import { emit, registerEvents } from 'meteor/unchained:events';
-import { generateDbMutations } from 'meteor/unchained:utils';
+import {
+  generateDbMutations,
+  generateDbFilterById,
+} from 'meteor/unchained:utils';
 import { CurrenciesCollection } from '../db/CurrenciesCollection';
 import { CurrenciesSchema } from '../db/CurrenciesSchema';
 
@@ -28,7 +31,7 @@ export const configureCurrenciesModule = async ({
   return {
     findCurrency: async ({ currencyId, isoCode }) => {
       return await Currencies.findOne(
-        currencyId ? { _id: currencyId } : { isoCode }
+        currencyId ? generateDbFilterById(currencyId) : { isoCode }
       );
     },
 

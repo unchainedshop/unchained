@@ -1,6 +1,6 @@
 import { assert } from 'chai';
 import { initDb } from 'meteor/unchained:mongodb';
-import { configureCurrenciesModule } from 'meteor/unchained:core-currencies';
+import { configurePaymentModule } from 'meteor/unchained:core-payment';
 import { Mongo } from 'meteor/mongo';
 
 describe('Test exports', () => {
@@ -8,13 +8,13 @@ describe('Test exports', () => {
 
   before(async () => {
     const db = initDb();
-    module = await configureCurrenciesModule({ db });
+    module = await configurePaymentModule({ db });
   });
 
   it('Check Bookmarks module', async () => {
     assert.ok(module);
     assert.isFunction(module.findCurrency);
-    assert.isFunction(module.findCurrencies);
+    assert.isFunction(module.findPayment);
     assert.isFunction(module.currencyExists);
     assert.isFunction(module.create);
     assert.isFunction(module.update);

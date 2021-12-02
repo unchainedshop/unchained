@@ -2,7 +2,8 @@ import {
   PaymentCredentials,
   PaymentModule,
 } from '@unchainedshop/types/payments';
-import { Collection } from 'meteor/unchained:utils';
+import { Collection } from '@unchainedshop/types/common';
+import { generateDbFilterById } from 'meteor/unchained:utils';
 
 export const configurePaymentCredentialsModule = (
   PaymentCredentials: Collection<PaymentCredentials>
@@ -35,9 +36,9 @@ export const configurePaymentCredentialsModule = (
     markPreferred,
 
     credentialsExists: async ({ paymentCredentialsId }) => {
-      const credentialsCount = await PaymentCredentials.find({
-        _id: paymentCredentialsId,
-      }).count();
+      const credentialsCount = await PaymentCredentials.find(
+        generateDbFilterById(paymentCredentialsId)
+      ).count();
       return !!credentialsCount;
     },
 
@@ -47,7 +48,7 @@ export const configurePaymentCredentialsModule = (
     ) => {
       return await PaymentCredentials.findOne(
         paymentCredentialsId
-          ? { _id: paymentCredentialsId }
+          ? generateDbFilterById(paymentCredentialsId)
           : { userId, paymentProviderId },
         options
       );
@@ -66,20 +67,26 @@ export const configurePaymentCredentialsModule = (
       ...meta
     }) => {
       const result = await PaymentCredentials.updateOne(
-        {
-          userId,
-          paymentProviderId,
-          _id: _id || { $exists: true },
-        },
+        _id
+          ? generateDbFilterById(_id, {
+              userId,
+              paymentProviderId,
+            })
+          : {
+              userId,
+              paymentProviderId,
+            },
         {
           $setOnInsert: {
             userId,
             paymentProviderId,
             isPreferred: false,
             created: new Date(),
+            createdBy: userId,
           },
           $set: {
             updated: new Date(),
+            updatedBy: userId,
             token,
             meta,
           },
@@ -89,7 +96,7 @@ export const configurePaymentCredentialsModule = (
         }
       );
 
-      if (!!result.upsertedCount) {
+      if (result.upsertedCount > 0) {
         await markPreferred({
           userId,
           paymentCredentialsId: result.upsertedId.toHexString(),
@@ -99,12 +106,10 @@ export const configurePaymentCredentialsModule = (
       return null;
     },
     removeCredentials: async (paymentCredentialsId) => {
-      const paymentCredentials = PaymentCredentials.findOne({
-        _id: paymentCredentialsId,
-      });
-      PaymentCredentials.deleteOne({
-        _id: paymentCredentialsId,
-      });
+      const paymentCredentials = PaymentCredentials.findOne(
+        generateDbFilterById(paymentCredentialsId)
+      );
+      PaymentCredentials.deleteOne(generateDbFilterById(paymentCredentialsId));
       return paymentCredentials;
     },
   };

@@ -1,6 +1,5 @@
-import { generateDbMutations } from 'meteor/unchained:utils';
-import { Filter } from '@unchainedshop/types';
-import { ModuleInput } from '@unchainedshop/types/common';
+import { generateDbFilterById, generateDbMutations } from 'meteor/unchained:utils';
+import { ModuleInput, Filter } from '@unchainedshop/types/common';
 import { Event, EventsModule } from '@unchainedshop/types/events';
 import { EventsCollection } from '../db/EventsCollection';
 import { EventsSchema } from '../db/EventsSchema';
@@ -22,7 +21,7 @@ export const configureEventsModule = async ({
 
   return {
     findEvent: async ({ eventId, ...rest }, options) => {
-      const selector = eventId ? { _id: eventId } : rest;
+      const selector = eventId ? generateDbFilterById(eventId) : rest;
       if (!Object.keys(selector)?.length) return null;
       return await Events.findOne(selector as unknown as Filter<Event>, options);
     },

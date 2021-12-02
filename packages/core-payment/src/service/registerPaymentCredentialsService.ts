@@ -1,7 +1,7 @@
 import { Context } from '@unchainedshop/types/api';
 import {
   PaymentContext,
-  PaymentCredentials,
+  PaymentCredentials
 } from '@unchainedshop/types/payments';
 
 export type RegisterPaymentCredentialsService = (
@@ -14,23 +14,19 @@ export type RegisterPaymentCredentialsService = (
 
 export const registerPaymentCredentialsService: RegisterPaymentCredentialsService =
   async ({ paymentContext, paymentProviderId }, { modules, userId }) => {
-    const paymentProvider = await modules.payment.paymentProviders.findOne({
-      _id: paymentProviderId,
-    });
-    const registration = paymentProvider.register(
-      { transactionContext: paymentContext },
-      userId
-    );
+    const registration = await modules.payment.paymentProviders.register(paymentProviderId, paymentContext)
     if (!registration) return null;
+
     const paymentCredentialsId =
-      modules.payment.paymentCredentials.upsertCredentials({
+      await modules.payment.paymentCredentials.upsertCredentials({
         userId,
         paymentProviderId,
         ...registration,
       });
-    return modules.payment.paymentCredentials.findCredentials(
-      paymentCredentialsId
-        ? { _id: paymentCredentialsId }
-        : { userId, paymentProviderId }
-    );
+
+    return await modules.payment.paymentCredentials.findPaymentCredential({
+      paymentCredentialsId,
+      userId,
+      paymentProviderId,
+    });
   };

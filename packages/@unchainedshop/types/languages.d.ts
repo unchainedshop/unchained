@@ -1,4 +1,4 @@
-import { Context } from 'vm';
+import { Context } from './api';
 import { ModuleMutations, TimestampFields, _ID } from './common';
 
 export type Language = {

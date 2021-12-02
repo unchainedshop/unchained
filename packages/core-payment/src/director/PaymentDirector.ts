@@ -1,18 +1,13 @@
 import {
   PaymentContext,
-  PaymentError,
   PaymentProvider,
-  PaymentDirector as IPaymentDirector
+  PaymentDirector as IPaymentDirector,
 } from '@unchainedshop/types/payments';
 import { paymentLogger } from '../payment-logger';
 import { PaymentAdapter } from './PaymentAdapter';
+import { PaymentError } from './PaymentError';
 
-// const PaymentError = {
-//   ADAPTER_NOT_FOUND: 'ADAPTER_NOT_FOUND',
-//   NOT_IMPLEMENTED: 'NOT_IMPLEMENTED',
-//   INCOMPLETE_CONFIGURATION: 'INCOMPLETE_CONFIGURATION',
-//   WRONG_CREDENTIALS: 'WRONG_CREDENTIALS',
-// };
+
 
 const Adapters: Map<string, typeof PaymentAdapter> = new Map();
 

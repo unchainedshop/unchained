@@ -22,14 +22,12 @@
   },
   "homepage": "https://github.com/unchainedshop/unchained#readme",
   "devDependencies": {
+    "@types/locale": "^0.1.1",
     "@types/node": "^16.7.10",
-    "mongodb": "^4.1.3",
+    "mongodb": "^4.2.1",
     "simpl-schema": "^1.12.0",
     "typescript": "^4.4.2",
     "winston": "3.3.3",
     "winston-transport": "4.4.0"
-  },
-  "dependencies": {
-    "@types/locale": "^0.1.1"
   }
 }
