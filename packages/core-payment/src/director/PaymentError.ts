@@ -1,4 +1,3 @@
-
 export enum PaymentError {
   ADAPTER_NOT_FOUND = 'ADAPTER_NOT_FOUND',
   NOT_IMPLEMENTED = 'NOT_IMPLEMENTED',

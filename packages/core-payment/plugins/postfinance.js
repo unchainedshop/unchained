@@ -1,5 +1,5 @@
 import {
-  PaymentDirector,
+  registerAdapter,
   PaymentAdapter,
   PaymentError,
 } from 'meteor/unchained:core-payment';
@@ -33,4 +33,4 @@ class Postfinance extends PaymentAdapter {
   }
 }
 
-PaymentDirector.registerAdapter(Postfinance);
+registerAdapter(Postfinance);

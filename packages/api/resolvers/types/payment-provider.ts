@@ -1,6 +1,6 @@
 import { PaymentProviderHelperTypes } from '@unchainedshop/types/payments';
 
-export const PaymentProviderTypes: PaymentProviderHelperTypes = {
+export const PaymentProvider: PaymentProviderHelperTypes = {
   interface(obj, _, { modules }) {
     const Interface = modules.payment.paymentProviders.findInterface(obj);
     if (!Interface) return null;

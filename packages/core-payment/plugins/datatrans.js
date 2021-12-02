@@ -1,8 +1,9 @@
 import {
-  PaymentDirector,
+  registerAdapter,
   PaymentAdapter,
   PaymentError,
   PaymentCredentials,
+  paymentLogger,
 } from 'meteor/unchained:core-payment';
 import { OrderPayments } from 'meteor/unchained:core-orders';
 import { useMiddlewareWithCurrentContext } from 'meteor/unchained:api';
@@ -10,7 +11,6 @@ import bodyParser from 'body-parser';
 import crypto from 'crypto';
 import fetch from 'isomorphic-unfetch';
 import xml2js from 'xml2js';
-import logger from '../logger';
 
 // v1 https://docs.datatrans.ch/v1.0.1/docs/getting-started-home
 // https://api-reference.datatrans.ch/xml/
@@ -121,7 +121,7 @@ useMiddlewareWithCurrentContext(
                 paymentContext: authorizationResponse,
                 userId,
               });
-            logger.info(
+            paymentLogger.info(
               `Datatrans Webhook: Unchained registered payment credentials for ${userId}`,
               { userId }
             );
@@ -134,14 +134,14 @@ useMiddlewareWithCurrentContext(
             .order()
             .checkout({ paymentContext: authorizationResponse });
           res.writeHead(200);
-          logger.info(
+          paymentLogger.info(
             `Datatrans Webhook: Unchained confirmed checkout for order ${order.orderNumber}`,
             { orderId: order._id }
           );
           res.end(JSON.stringify(order));
           return;
         } catch (e) {
-          logger.error(
+          paymentLogger.error(
             `Datatrans Webhook: Unchained rejected to checkout with message ${JSON.stringify(
               e
             )}`
@@ -151,7 +151,7 @@ useMiddlewareWithCurrentContext(
           return;
         }
       } else {
-        logger.error(`Datatrans Webhook: Reference number not set`);
+        paymentLogger.error(`Datatrans Webhook: Reference number not set`);
       }
     }
     res.writeHead(404);
@@ -219,7 +219,7 @@ class Datatrans extends PaymentAdapter {
         currency,
         refno
       );
-      logger.info(
+      paymentLogger.info(
         `Datatrans Plugin: Signed for Registration ${JSON.stringify({
           aliasCC,
           merchantId,
@@ -242,7 +242,7 @@ class Datatrans extends PaymentAdapter {
       currency,
       refno
     );
-    logger.info(
+    paymentLogger.info(
       `Datatrans Plugin: Signed ${JSON.stringify({
         aliasCC,
         merchantId,
@@ -262,7 +262,7 @@ class Datatrans extends PaymentAdapter {
       aliasCC: token,
       ...this.context.meta,
     });
-    logger.info(`Datatrans Plugin: Validation Result`, result);
+    paymentLogger.info(`Datatrans Plugin: Validation Result`, result);
     return (
       result?.authorizationService?.body?.[0]?.transaction?.[0]?.response?.[0]
         ?.status[0] === 'success'
@@ -302,7 +302,7 @@ class Datatrans extends PaymentAdapter {
         uppTransactionId
       );
       if (sign === validSign && sign2 === validSign2) {
-        logger.info(
+        paymentLogger.info(
           'Datatrans Plugin: Registered successfully',
           transactionResponse
         );
@@ -315,12 +315,12 @@ class Datatrans extends PaymentAdapter {
           maskedCC,
         };
       }
-      logger.info(
+      paymentLogger.info(
         `Datatrans Plugin: Somebody evil attempted to trick us, fix ${sign} === ${validSign}, ${sign2} === ${validSign2}`,
         transactionResponse
       );
     }
-    logger.info('Datatrans Plugin: Registration declined', transactionResponse);
+    paymentLogger.info('Datatrans Plugin: Registration declined', transactionResponse);
     return null;
   }
 
@@ -342,7 +342,7 @@ class Datatrans extends PaymentAdapter {
     const response =
       result?.authorizationService?.body?.[0]?.transaction?.[0]?.response?.[0];
     if (!response || response.status?.[0] !== 'success') {
-      logger.info(
+      paymentLogger.info(
         'Datatrans Plugin: Payment declined from authorization service',
         result
       );
@@ -367,7 +367,7 @@ class Datatrans extends PaymentAdapter {
 
   async charge(payload) {
     if (!payload) {
-      logger.info(
+      paymentLogger.info(
         'Datatrans Plugin: Not trying to charge because of missing payment authorization response, return false to provide later'
       );
       return false;
@@ -394,7 +394,7 @@ class Datatrans extends PaymentAdapter {
     const { currency, amount } = roundedAmountFromOrder(order);
 
     if (!status || status === 'error') {
-      logger.info('Datatrans Plugin: Payment declined', transactionResponse);
+      paymentLogger.info('Datatrans Plugin: Payment declined', transactionResponse);
       throw new Error('Payment declined');
     }
     const validSign = generateSignature(DATATRANS_SIGN_KEY)(
@@ -412,7 +412,7 @@ class Datatrans extends PaymentAdapter {
         amount !== transactionResponse.amount ||
         currency !== transactionResponse.currency
       ) {
-        logger.info(
+        paymentLogger.info(
           `Datatrans Plugin: Somebody (evil?) attempted to charge the wrong amount`,
           transactionResponse
         );
@@ -424,7 +424,7 @@ class Datatrans extends PaymentAdapter {
         ((!sign2 && validSign2 === validSign) || sign2 === validSign2)) ||
       ignoreSignatureCheck
     ) {
-      logger.info(
+      paymentLogger.info(
         'Datatrans Plugin: Charged successfully',
         transactionResponse
       );
@@ -440,7 +440,7 @@ class Datatrans extends PaymentAdapter {
         },
       };
     }
-    logger.info(
+    paymentLogger.info(
       `Datatrans Plugin: Somebody (evil?) used the wrong signature when checking out, fix ${sign} === ${validSign}, ${sign2} === ${validSign2}`,
       transactionResponse
     );
@@ -448,4 +448,4 @@ class Datatrans extends PaymentAdapter {
   }
 }
 
-PaymentDirector.registerAdapter(Datatrans);
+registerAdapter(Datatrans);

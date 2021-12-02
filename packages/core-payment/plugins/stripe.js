@@ -1,15 +1,14 @@
 import {
-  PaymentDirector,
+  registerAdapter,
   PaymentAdapter,
   PaymentError,
   PaymentCredentials,
+  paymentLogger,
 } from 'meteor/unchained:core-payment';
 import bodyParser from 'body-parser';
 import { OrderPayments } from 'meteor/unchained:core-orders';
 import { Users } from 'meteor/unchained:core-users';
 import { useMiddlewareWithCurrentContext } from 'meteor/unchained:api';
-
-import logger from '../logger';
 
 const {
   STRIPE_SECRET,
@@ -66,7 +65,7 @@ useMiddlewareWithCurrentContext(
             paymentIntentId: paymentIntent.id,
           },
         });
-        logger.info(
+        paymentLogger.info(
           `Stripe Webhook: Unchained confirmed checkout for order ${order.orderNumber}`,
           { orderId: order._id }
         );
@@ -80,7 +79,7 @@ useMiddlewareWithCurrentContext(
           },
           userId,
         });
-        logger.info(
+        paymentLogger.info(
           `Stripe Webhook: Unchained registered payment credentials for ${userId}`,
           { userId }
         );
@@ -154,7 +153,7 @@ class Stripe extends PaymentAdapter {
       };
     }
 
-    logger.warn('Stripe Plugin: Registration declined', setupIntentId);
+    paymentLogger.warn('Stripe Plugin: Registration declined', setupIntentId);
     return null;
   }
 
@@ -260,4 +259,4 @@ class Stripe extends PaymentAdapter {
   }
 }
 
-PaymentDirector.registerAdapter(Stripe);
+registerAdapter(Stripe);

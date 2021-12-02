@@ -1,6 +1,6 @@
 import { LanguageHelperTypes } from '@unchainedshop/types/languages';
 
-const languageTypes: LanguageHelperTypes = {
+export const Language: LanguageHelperTypes = {
   isBase(language, _, { modules }) {
     return modules.languages.isBase(language);
   },
@@ -10,5 +10,3 @@ const languageTypes: LanguageHelperTypes = {
     }`;
   },
 };
-
-export default languageTypes;

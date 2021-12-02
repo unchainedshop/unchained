@@ -22,6 +22,7 @@
   },
   "homepage": "https://github.com/unchainedshop/unchained#readme",
   "devDependencies": {
+    "@types/express": "^4.17.13",
     "@types/locale": "^0.1.1",
     "@types/node": "^16.7.10",
     "mongodb": "^4.2.1",

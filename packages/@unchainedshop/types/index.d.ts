@@ -12,12 +12,13 @@ import { CountriesModule } from './countries';
 import { LanguagesModule } from './languages';
 import { EmitAdapter, EventsModule } from './events';
 import { User } from './user';
-import { Logger, LogOptions, Transports, LogLevel } from './logs';
+import { Logger, LogOptions, Transports } from './logs';
 import { Locale } from '@types/locale';
 import {
   PaymentDirector as IPaymentDirector,
   PaymentProvider,
 } from './payments';
+import { Request } from 'express';
 
 export { Modules } from './modules';
 
@@ -47,6 +48,17 @@ declare module 'meteor/unchained:utils' {
     collection: Collection<T>,
     indexes: Array<() => void>
   ): Promise<void>;
+
+  function resolveBestSupported(language: string, locales: Locales): Locale;
+  function resolveBestCountry(
+    contextCountry: string,
+    headerCountry: string | string[],
+    countries: Array<Country>
+  ): string;
+  function resolveUserRemoteAddress(req: Request): {
+    remoteAddress: string;
+    remotePort: string;
+  };
 
   const systemLocale: Locale;
 
@@ -116,6 +128,8 @@ declare module 'meteor/unchained:core-payments' {
     provider: PaymentProvider,
     context: PaymentContext
   ): IPaymentDirector;
+
+  const PaymentProviderType;
 }
 
 declare module 'meteor/unchained:core-users' {

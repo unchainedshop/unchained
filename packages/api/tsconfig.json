@@ -22,7 +22,7 @@
     "skipLibCheck": true,
     "sourceMap": true,
     "target": "esnext",
-    "types": ["node"]
+    "types": ["node", "express"]
   },
   "include": ["loaders", "resolvers", "roles", "schema"]
 }

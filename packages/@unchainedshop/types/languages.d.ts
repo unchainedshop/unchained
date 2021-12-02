@@ -1,5 +1,5 @@
 import { Context } from './api';
-import { ModuleMutations, TimestampFields, _ID } from './common';
+import { FindOptions, ModuleMutations, TimestampFields, _ID } from './common';
 
 export type Language = {
   _id?: _ID;
@@ -21,7 +21,8 @@ export interface LanguagesModule extends ModuleMutations<Language> {
     params: LanguageQuery & {
       limit?: number;
       offset?: number;
-    }
+    },
+    options?: FindOptions
   ) => Promise<Array<Language>>;
   count: (query: LanguageQuery) => Promise<number>;
   languageExists: (params: { languageId: string }) => Promise<boolean>;

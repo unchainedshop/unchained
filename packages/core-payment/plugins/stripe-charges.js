@@ -1,13 +1,12 @@
 import {
-  PaymentDirector,
+  registerAdapter,
   PaymentAdapter,
   PaymentError,
+  paymentLogger,
 } from 'meteor/unchained:core-payment';
 import bodyParser from 'body-parser';
 import { OrderPayments } from 'meteor/unchained:core-orders';
 import { useMiddlewareWithCurrentContext } from 'meteor/unchained:api';
-
-import logger from '../logger';
 
 const {
   STRIPE_SECRET,
@@ -64,13 +63,13 @@ useMiddlewareWithCurrentContext(
           await order.checkout({
             paymentContext,
           });
-          logger.info(
+          paymentLogger.info(
             `Stripe Webhook: Unchained checked out order ${order.orderNumber}`,
             { orderId: order._id }
           );
         } else {
           orderPayment.charge(paymentContext, order);
-          logger.info(
+          paymentLogger.info(
             `Stripe Webhook: Unchained initiated payment for order ${order.orderNumber}`,
             { orderId: order._id }
           );
@@ -82,7 +81,7 @@ useMiddlewareWithCurrentContext(
         const orderPayment = OrderPayments.findOne({ _id: orderPaymentId });
         const order = orderPayment.order();
         orderPayment.markPaid(charge);
-        logger.info(
+        paymentLogger.info(
           `Stripe Webhook: Unchained marked payment as paid for order ${order.orderNumber}`,
           { orderId: order._id }
         );
@@ -153,13 +152,13 @@ class Stripe extends PaymentAdapter {
     );
 
     if (stripeChargeReceipt.status === 'succeeded') {
-      logger.info(
+      paymentLogger.info(
         `Stripe Plugin: Successfully charged ${stripeToken}`,
         stripeChargeReceipt
       );
       return stripeChargeReceipt;
     }
-    logger.warn(
+    paymentLogger.warn(
       `Stripe Plugin: Failed Charge for ${stripeToken}`,
       stripeChargeReceipt
     );
@@ -167,4 +166,4 @@ class Stripe extends PaymentAdapter {
   }
 }
 
-PaymentDirector.registerAdapter(Stripe);
+registerAdapter(Stripe);

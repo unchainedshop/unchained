@@ -10,15 +10,12 @@ import { configureRoles } from './roles';
 import hashPassword from './hashPassword';
 import getCart from './getCart';
 import instantiateLoaders, { UnchainedServerLoaders } from './loaders';
+import { UnchainedAPI } from '@unchainedshop/types/api';
 
 export { hashPassword, getCart };
 export * as roles from './roles';
 export * as acl from './acl';
 export * as errors from './errors';
-
-export interface UnchainedAPI {
-  version: string;
-}
 
 export type UnchainedServerContext = UnchainedServerLocaleContext &
   UnchainedServerUserContext &
@@ -44,7 +41,18 @@ export const createContextResolver =
     //   ...loaders,
     // };
     const userContext = await getUserContext(req /* intermediateContext */);
-    const localeContext = getLocaleContext(req);
+
+    const languages = await unchained.modules.languages.findLanguages(
+      { includeInactive: false },
+      { projection: { isoCode: 1, isActive: 1 } }
+    );
+
+    const countries = await unchained.modules.countries.findCountries(
+      { includeInactive: false },
+      { projection: { isoCode: 1, isActive: 1 } }
+    );
+    
+    const localeContext = getLocaleContext(req, languages, countries);
     return {
       ...apolloContext,
       ...unchained,

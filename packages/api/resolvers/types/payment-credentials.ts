@@ -1,9 +1,9 @@
-import { Users } from 'meteor/unchained:user';
+import { Users } from 'meteor/unchained:core-users';
 import { PaymentCredentialsHelperTypes } from '@unchainedshop/types/payments';
 
-export const PaymentCredentialsTypes: PaymentCredentialsHelperTypes = {
+export const PaymentCredentials: PaymentCredentialsHelperTypes = {
   async user(obj) {
-    return Users.findOne({
+    return (Users as any).findOne({
       _id: obj.userId,
     });
   },

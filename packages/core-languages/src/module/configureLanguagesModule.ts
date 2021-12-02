@@ -37,12 +37,13 @@ export const configureLanguagesModule = async ({
       );
     },
 
-    findLanguages: async ({ limit, offset, includeInactive }) => {
+    findLanguages: async ({ limit, offset, includeInactive }, options) => {
       const languages = Languages.find(
         buildFindSelector({ includeInactive }),
         {
           skip: offset,
           limit,
+          ...options,
         }
       );
       return await languages.toArray();

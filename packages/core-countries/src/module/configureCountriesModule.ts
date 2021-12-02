@@ -49,10 +49,11 @@ export const configureCountriesModule = async ({
       );
     },
 
-    findCountries: async ({ limit, offset, includeInactive }) => {
+    findCountries: async ({ limit, offset, includeInactive }, options) => {
       const countries = Countries.find(buildFindSelector({ includeInactive }), {
         skip: offset,
         limit,
+        ...options,
       });
       return await countries.toArray();
     },

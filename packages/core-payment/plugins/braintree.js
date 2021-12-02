@@ -1,9 +1,9 @@
 import {
-  PaymentDirector,
+  registerAdapter,
   PaymentAdapter,
   PaymentError,
+  paymentLogger,
 } from 'meteor/unchained:core-payment';
-import logger from '../logger';
 
 const { BRAINTREE_SANDBOX_TOKEN, BRAINTREE_PRIVATE_KEY } = process.env;
 
@@ -132,12 +132,12 @@ class BraintreeDirect extends PaymentAdapter {
     };
     const result = await gateway.transaction.sale(saleRequest);
     if (result.success) {
-      logger.info(`Braintree Plugin: ${result.message}`, saleRequest);
+      paymentLogger.info(`Braintree Plugin: ${result.message}`, saleRequest);
       return result;
     }
-    logger.warn(`Braintree Plugin: ${result.message}`, saleRequest);
+    paymentLogger.warn(`Braintree Plugin: ${result.message}`, saleRequest);
     throw new Error(result.message);
   }
 }
 
-PaymentDirector.registerAdapter(BraintreeDirect);
+registerAdapter(BraintreeDirect);

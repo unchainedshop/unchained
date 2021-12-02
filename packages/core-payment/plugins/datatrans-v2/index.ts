@@ -1,5 +1,5 @@
 import {
-  PaymentDirector,
+  registerAdapter,
   PaymentAdapter,
   PaymentError,
 } from 'meteor/unchained:core-payment';
@@ -430,4 +430,4 @@ class Datatrans extends PaymentAdapter {
   }
 }
 
-PaymentDirector.registerAdapter(Datatrans);
+registerAdapter(Datatrans);

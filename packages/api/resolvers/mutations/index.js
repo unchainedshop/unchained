@@ -72,7 +72,7 @@ import payOrder from './payOrder';
 import deliverOrder from './deliverOrder';
 import createPaymentProvider from './payment/createPaymentProvider';
 import updatePaymentProvider from './payment/updatePaymentProvider';
-import removePaymentProvider from './removePaymentProvider';
+import removePaymentProvider from './payment/removePaymentProvider';
 import createDeliveryProvider from './createDeliveryProvider';
 import updateDeliveryProvider from './updateDeliveryProvider';
 import removeDeliveryProvider from './removeDeliveryProvider';

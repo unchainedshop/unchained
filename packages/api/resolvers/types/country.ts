@@ -1,7 +1,7 @@
 import { Context } from '@unchainedshop/types/api';
 import { CountryHelperTypes } from '@unchainedshop/types/countries';
 
-const countryTypes: CountryHelperTypes = {
+export const Country: CountryHelperTypes = {
   flagEmoji(country, _, { modules }: Context) {
     return modules.countries.flagEmoji(country);
   },
@@ -15,5 +15,3 @@ const countryTypes: CountryHelperTypes = {
     );
   },
 };
-
-export default countryTypes
