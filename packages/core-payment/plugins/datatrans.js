@@ -2,7 +2,6 @@ import {
   registerAdapter,
   PaymentAdapter,
   PaymentError,
-  PaymentCredentials,
   paymentLogger,
 } from 'meteor/unchained:core-payment';
 import { OrderPayments } from 'meteor/unchained:core-orders';
@@ -115,12 +114,14 @@ useMiddlewareWithCurrentContext(
         try {
           if (amount === '0') {
             const [paymentProviderId, userId] = refno.split(':');
-            const paymentCredentials =
-              PaymentCredentials.registerPaymentCredentials({
+            const { services } = req.unchainedContext;
+            const paymentCredentials = services.registerPaymentCredentials(
+              {
                 paymentProviderId,
                 paymentContext: authorizationResponse,
-                userId,
-              });
+              },
+              req.unchainedContext
+            );
             paymentLogger.info(
               `Datatrans Webhook: Unchained registered payment credentials for ${userId}`,
               { userId }

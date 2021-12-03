@@ -1,22 +1,24 @@
 import {
-  registerAdapter,
+  PaymentAdapter as IPaymentAdapter,
+} from '@unchainedshop/types/payments';
+import {
   PaymentAdapter,
   PaymentError,
+  registerAdapter,
 } from 'meteor/unchained:core-payment';
 import { createLogger } from 'meteor/unchained:logger';
-import roundedAmountFromOrder from './roundedAmountFromOrder';
 import createDatatransAPI from './api';
-import parseRegistrationData from './parseRegistrationData';
-import './middleware';
-
 import type {
-  ResponseError,
-  InitResponseSuccess,
-  ValidateResponseSuccess,
-  StatusResponseSuccess,
-  AuthorizeResponseSuccess,
   AuthorizeAuthenticatedResponseSuccess,
+  AuthorizeResponseSuccess,
+  InitResponseSuccess,
+  ResponseError,
+  StatusResponseSuccess,
+  ValidateResponseSuccess,
 } from './api/types';
+import './middleware';
+import parseRegistrationData from './parseRegistrationData';
+import roundedAmountFromOrder from './roundedAmountFromOrder';
 
 const logger = createLogger('unchained:core-payment:datatrans');
 
@@ -60,11 +62,8 @@ class Datatrans extends PaymentAdapter {
     return type === 'GENERIC';
   }
 
-  getMerchantId() {
-    return this.config.reduce((current, item) => {
-      if (item.key === 'merchantId') return item.value;
-      return current;
-    }, null);
+  getMerchantId(): string | undefined {
+    return this.config.find((item) => item.key === 'merchantId')?.value;
   }
 
   shouldSettleInUnchained() {
@@ -122,9 +121,9 @@ class Datatrans extends PaymentAdapter {
     );
   }
 
-  async sign({ transactionContext } = {}) {
+  async sign(context: any = {}) {
     const { useSecureFields = false, ...additionalInitPayload } =
-      transactionContext || {};
+      context.transactionContext || {};
 
     const { orderPayment, paymentProviderId, userId } = this.context;
     const order = orderPayment?.order();
@@ -430,4 +429,5 @@ class Datatrans extends PaymentAdapter {
   }
 }
 
+/* @ts-ignore */
 registerAdapter(Datatrans);

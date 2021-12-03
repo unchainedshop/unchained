@@ -41,7 +41,7 @@ const getAdapterInstance = (
 
 const PaymentDirector = (
   provider: PaymentProvider,
-  { transactionContext, token, ...context }: PaymentContext = {}
+  { transactionContext, token, ...context }: PaymentContext
 ): IPaymentDirector => ({
   configurationError() {
     try {

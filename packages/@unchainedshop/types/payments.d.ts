@@ -48,35 +48,24 @@ export enum PaymentError {
   WRONG_CREDENTIALS = 'WRONG_CREDENTIALS',
 }
 
-export type PaymentContext =
-  | {
-      userId: string;
-      paymentProviderId: string;
-      order?: any; // TODO: Replace with order type
-      orderPayment?: any; // TODO: Replace with orderPayment type
-      transactionContext?: any; // User for singing and charging a payment
-      token?: any; // Used for validation
-    }
-  | {
-      transactionContext?: never;
-      token?: never;
-    };
+export interface PaymentContext {
+  userId: string;
+  paymentProviderId?: string;
+  order?: any; // TODO: Replace with order type
+  orderPayment?: any; // TODO: Replace with orderPayment type
+  transactionContext?: any; // User for singing and charging a payment
+  token?: any; // Used for validation
+  meta?: any
+}
 
-export class PaymentAdapter {
-  static key: string;
-  static label: string;
-  static version: string;
-  static typeSupported: (type: PaymentProviderType) => boolean;
-
-  constructor(config: PaymentConfiguration, context: PaymentContext);
-
+export interface PaymentAdapter {
   charge: (context: any) => Promise<any>;
   configurationError: (context: any) => PaymentError | string; // OPEN QUESTION: Should it be fixed to the PaymentError const
   isActive: (context: any) => boolean;
   isPayLaterAllowed: (context: any) => boolean;
   register: (context: any) => Promise<any>;
   sign: (context: any) => Promise<any>;
-  validate: (token: string) => Promise<boolean>;
+  validate: (token: any) => Promise<any>;
 }
 
 export interface PaymentDirector {
@@ -86,7 +75,7 @@ export interface PaymentDirector {
   charge: (context?: any, userId?: string) => Promise<any>;
   register: () => Promise<any>;
   sign: () => Promise<any>;
-  validate: () => Promise<boolean>;
+  validate: () => Promise<any>;
   run: (command: string, args: any) => Promise<boolean>;
 }
 

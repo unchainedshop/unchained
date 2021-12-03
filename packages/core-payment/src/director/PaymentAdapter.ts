@@ -2,12 +2,13 @@ import { LogLevel } from 'meteor/unchained:logger';
 import {
   PaymentConfiguration,
   PaymentContext,
-  PaymentProviderType
+  PaymentProviderType,
+  PaymentAdapter as IPaymentAdapter
 } from '@unchainedshop/types/payments';
 import { paymentLogger } from '../payment-logger';
 import { PaymentError } from './PaymentError';
 
-export class PaymentAdapter {
+export class PaymentAdapter implements IPaymentAdapter {
   static key = '';
 
   static label = '';
@@ -20,10 +21,10 @@ export class PaymentAdapter {
     return false;
   }
 
-  private config = {};
-  private context = {};
+  protected config = null;
+  protected context = null;
 
-  constructor(config: PaymentConfiguration, context: PaymentContext | {}) {
+  constructor(config: PaymentConfiguration, context: PaymentContext | {}) {
     this.config = config;
     this.context = context;
   }

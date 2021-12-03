@@ -15,9 +15,12 @@ import { User } from './user';
 import { Logger, LogOptions, Transports } from './logs';
 import { Locale } from '@types/locale';
 import {
-  PaymentAdapter,
+  PaymentAdapter as IPaymentAdapter,
+  PaymentConfiguration,
+  PaymentContext,
   PaymentDirector as IPaymentDirector,
   PaymentProvider,
+  PaymentProviderType,
 } from './payments';
 import { Request } from 'express';
 import { FilesModule, IFileAdapter } from './files';
@@ -141,10 +144,20 @@ declare module 'meteor/unchained:core-payments' {
     context: PaymentContext
   ): IPaymentDirector;
 
-  function registerAdapter(adapter: PaymentAdapter): void;
-  function getAdapter(key: string): PaymentAdapter;
+  function registerAdapter(adapter: IPaymentAdapter): void;
+  function getAdapter(key: string): IPaymentAdapter;
   
-  const PaymentAdapter;
+  class PaymentAdapter implements IPaymentAdapter {
+    static key: string;
+    static label: string;
+    static version: string;
+    static typeSupported: (type: PaymentProviderType) => boolean;
+
+    public config: PaymentConfiguration | null;
+    public context: PaymentContext | null;
+
+    constructor(config: PaymentConfiguration, context: PaymentContext);
+  };
   const PaymentError;
   
   const paymentLogger;
