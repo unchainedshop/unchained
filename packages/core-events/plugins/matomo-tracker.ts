@@ -1,8 +1,10 @@
+/* TODO: Move this code into its own community package and add as example to the docs. Remove the code from the core packages. */
+
 /* eslint-disable camelcase */
 import fetch from 'isomorphic-unfetch';
 import { encode } from 'querystring';
 import { Orders } from 'meteor/unchained:core-orders';
-import { subscribe } from 'meteor/unchained:core-events';
+import { subscribe } from 'meteor/unchained:events';
 
 const parseCurrency = (amount: number): number =>
   parseFloat((amount / 100).toString());
@@ -34,7 +36,7 @@ export interface MatomoOptions {
 }
 
 const extractOrderParameters = (orderId): OrderOption => {
-  const order = Orders.findOrder({ orderId });
+  const order = (Orders as any).findOrder({ orderId });
   const pricing = order.pricing();
   const orderOptions: OrderOption = {
     idgoal: 0,
@@ -75,23 +77,26 @@ const MatomoTracker = (
   if (!subscribeTo && typeof subscribeTo !== 'string')
     throw new Error('Event that triggers tracking should be provided');
 
-  subscribe(subscribeTo, async ({ payload, context }) => {
-    let matomoOptions: OrderOption = {};
-    if (payload?.order || payload?.orderPosition)
-      matomoOptions = extractOrderParameters(
-        payload?.order?._id || payload?.orderPosition?.orderId
+  subscribe(
+    subscribeTo,
+    (data: { payload: { order: any; orderPosition: any }; context: any }) => {
+      let matomoOptions: OrderOption = {};
+      if (data.payload?.order || data.payload?.orderPosition)
+        matomoOptions = extractOrderParameters(
+          data.payload?.order?._id || data.payload?.orderPosition?.orderId
+        );
+
+      matomoOptions = options?.transform
+        ? options?.transform(subscribeTo, matomoOptions, data.context) ?? {}
+        : matomoOptions;
+
+      fetch(
+        `${siteUrl}/matomo.php?idsite=${siteId}&rec=1&action_name=${
+          actionMap[subscribeTo]
+        }&${encode(matomoOptions)}`
       );
-
-    matomoOptions = options?.transform
-      ? options?.transform(subscribeTo, matomoOptions, context) ?? {}
-      : matomoOptions;
-
-    await fetch(
-      `${siteUrl}/matomo.php?idsite=${siteId}&rec=1&action_name=${
-        actionMap[subscribeTo]
-      }&${encode(matomoOptions)}`
-    );
-  });
+    }
+  );
 };
 
 export const initMatomo = (

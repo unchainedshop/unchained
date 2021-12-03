@@ -9,7 +9,7 @@ import 'meteor/dburles:collection-helpers';
 import { systemLocale } from 'meteor/unchained:utils';
 import { Countries } from 'meteor/unchained:core-countries';
 import { Languages } from 'meteor/unchained:core-languages';
-import { log, Logs } from 'meteor/unchained:core-logger';
+import { log } from 'meteor/unchained:logger';
 import { v4 as uuidv4 } from 'uuid';
 import {
   createUploadContainer,
@@ -48,16 +48,17 @@ const buildFindSelector = ({ includeGuests, queryString }) => {
   return selector;
 };
 
-Logs.helpers({
-  user() {
-    return (
-      this.meta &&
-      Users.findOne({
-        _id: this.meta.userId,
-      })
-    );
-  },
-});
+// --> Moved to API query resolver using the modules pattern
+// Logs.helpers({
+//   user() {
+//     return (
+//       this.meta &&
+//       Users.findOne({
+//         _id: this.meta.userId,
+//       })
+//     );
+//   },
+// });
 
 Users.setTags = ({ userId, tags }) => {
   Users.update(
@@ -172,17 +173,18 @@ Users.helpers({
     );
     return Users.findOne({ _id: this._id });
   },
-  logs({ limit, offset }) {
-    const selector = { 'meta.userId': this._id };
-    const logs = Logs.find(selector, {
-      skip: offset,
-      limit,
-      sort: {
-        created: -1,
-      },
-    }).fetch();
-    return logs;
-  },
+  // --> Moved to API query resolver using the modules pattern
+  // logs({ limit, offset }) {
+  //   const selector = { 'meta.userId': this._id };
+  //   const logs = Logs.find(selector, {
+  //     skip: offset,
+  //     limit,
+  //     sort: {
+  //       created: -1,
+  //     },
+  //   }).fetch();
+  //   return logs;
+  // },
 });
 
 Users.createSignedUploadURL = async ({ mediaName, userId }, { ...context }) => {

@@ -41,7 +41,7 @@ import filter from './filter';
 import filters from './filters';
 import translatedAssortmentTexts from './translatedAssortmentTexts';
 import translatedFilterTexts from './translatedFilterTexts';
-import logs from './logs';
+// import logs from './logs';
 import shopInfo from './shopInfo';
 import productReview from './productReview';
 import productReviews from './productReviews';
@@ -57,7 +57,7 @@ import work from './work';
 import signPaymentProviderForCredentialRegistration from './signPaymentProviderForCredentialRegistration';
 import filtersCount from './filtersCount';
 import languagesCount from './languagesCount';
-import logsCount from './logsCount';
+// import logsCount from './logsCount';
 import ordersCount from './ordersCount';
 import productsCount from './productsCount';
 import quotationsCount from './quotationsCount';
@@ -129,8 +129,8 @@ export default {
   filters: acl(actions.viewFilters)(filters),
   filter: acl(actions.viewFilter)(filter),
   shopInfo: acl(actions.viewShopInfo)(shopInfo),
-  logsCount: acl(actions.viewLogs)(logsCount),
-  logs: acl(actions.viewLogs)(logs),
+  // logsCount: acl(actions.viewLogs)(logsCount),
+  // logs: acl(actions.viewLogs)(logs),
   translatedAssortmentTexts: acl(actions.manageAssortments)(
     translatedAssortmentTexts
   ),

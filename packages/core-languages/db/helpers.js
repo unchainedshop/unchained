@@ -1,5 +1,5 @@
 import { systemLocale } from 'meteor/unchained:utils';
-import { emit } from 'meteor/unchained:core-events';
+import { emit } from 'meteor/unchained:events';
 import { Languages } from './collections';
 
 const buildFindSelector = ({ includeInactive = false }) => {

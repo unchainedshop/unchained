@@ -1,8 +1,8 @@
-import { log } from 'meteor/unchained:core-logger';
 import {
   Enrollments,
   EnrollmentStatus,
 } from 'meteor/unchained:core-enrollments';
+import { log } from 'meteor/unchained:logger';
 import {
   EnrollmentNotFoundError,
   EnrollmentWrongStatusError,

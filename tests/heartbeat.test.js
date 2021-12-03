@@ -77,9 +77,6 @@ describe('Heartbeat', () => {
               quotations {
                 _id
               }
-              logs {
-                _id
-              }
               bookmarks {
                 _id
               }

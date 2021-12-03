@@ -1,4 +1,4 @@
-import { log } from 'meteor/unchained:core-logger';
+import { log } from 'meteor/unchained:logger';
 import { ProductReviews, Products } from 'meteor/unchained:core-products';
 
 import { InvalidIdError, ProductNotFoundError } from '../../errors';

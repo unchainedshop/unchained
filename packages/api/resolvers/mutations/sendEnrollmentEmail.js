@@ -1,4 +1,4 @@
-import { log } from 'meteor/unchained:core-logger';
+import { log } from 'meteor/unchained:logger';
 import { accountsPassword } from 'meteor/unchained:core-accountsjs';
 
 export default async function sendEnrollmentEmail(root, { email }) {

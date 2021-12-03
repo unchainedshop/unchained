@@ -1,4 +1,4 @@
-import { emit } from 'meteor/unchained:core-events';
+import { emit } from 'meteor/unchained:events';
 import { Currencies } from './collections';
 
 const buildFindSelector = ({ includeInactive = false }) => {

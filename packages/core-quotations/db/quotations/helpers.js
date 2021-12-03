@@ -5,7 +5,7 @@ import { Users } from 'meteor/unchained:core-users';
 import { Products } from 'meteor/unchained:core-products';
 import { Countries } from 'meteor/unchained:core-countries';
 import { Currencies } from 'meteor/unchained:core-currencies';
-import { Logs, log } from 'meteor/unchained:core-logger';
+import { log } from 'meteor/unchained:logger';
 import { WorkerDirector } from 'meteor/unchained:core-worker';
 import {
   uploadObjectStream,
@@ -18,16 +18,16 @@ import { QuotationDirector } from '../../director';
 import settings from '../../settings';
 import { updateQuotationDocuments } from '../quotation-documents/helpers';
 
-Logs.helpers({
-  quotation() {
-    return (
-      this.meta &&
-      Quotations.findOne({
-        _id: this.meta.quotationId,
-      })
-    );
-  },
-});
+// Logs.helpers({
+//   quotation() {
+//     return (
+//       this.meta &&
+//       Quotations.findOne({
+//         _id: this.meta.quotationId,
+//       })
+//     );
+//   },
+// });
 
 Users.helpers({
   quotations() {
@@ -231,17 +231,18 @@ Quotations.helpers({
     }
     return MediaObjects.findOne(selector, { sort: { 'meta.date': -1 } });
   },
-  logs({ limit, offset }) {
-    const selector = { 'meta.quotationId': this._id };
-    const logs = Logs.find(selector, {
-      skip: offset,
-      limit,
-      sort: {
-        created: -1,
-      },
-    }).fetch();
-    return logs;
-  },
+  // --> Moved to API query resolver using the modules pattern
+  // logs({ limit, offset }) {
+  //   const selector = { 'meta.quotationId': this._id };
+  //   const logs = Logs.find(selector, {
+  //     skip: offset,
+  //     limit,
+  //     sort: {
+  //       created: -1,
+  //     },
+  //   }).fetch();
+  //   return logs;
+  // },
   isProposalValid() {
     return this.status === QuotationStatus.PROPOSED && !this.isExpired();
   },

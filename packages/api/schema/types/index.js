@@ -10,7 +10,6 @@ import discount from './discount';
 import dispatch from './dispatch';
 import filter from './filter';
 import language from './language';
-import log from './log';
 import media from './media';
 import price from './price';
 import payment from './payment';
@@ -43,7 +42,6 @@ export default [
   ...dispatch,
   ...filter,
   ...language,
-  ...log,
   ...media,
   ...price,
   ...payment,

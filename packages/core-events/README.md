@@ -1,3 +1,3 @@
-# Events (Unchained Engine)
+# Core Events (Unchained Engine)
 
-This package contains business logic for the event emitter abstraction layer
+This package defines the event module which ensures the emitted events are written to the database as an Event History and offers a core module to search for events.

@@ -6,18 +6,19 @@ Package.describe({
   documentation: 'README.md',
 });
 
-Package.onUse(function (api) {
-  api.versionsFrom('2.2');
-  api.use('ecmascript');
-  api.use('typescript@4.1.2');
-  api.use('unchained:core-logger@1.0.0-beta15');
-
-  api.mainModule('index.ts', 'server');
-});
-
 Npm.depends({
   minio: '7.0.18',
   'mime-types': '2.1.32',
+});
+
+Package.onUse(function (api) {
+  api.versionsFrom('2.2');
+  api.use('ecmascript');
+  api.use('typescript');
+
+  api.use('unchained:logger@1.0.0-beta15');
+
+  api.mainModule('index.ts', 'server');
 });
 
 Package.onTest((api) => {

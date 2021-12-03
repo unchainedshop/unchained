@@ -1,4 +1,4 @@
-import { log } from 'meteor/unchained:core-logger';
+import { log } from 'meteor/unchained:logger';
 import { Orders } from 'meteor/unchained:core-orders';
 
 export default async function orders(
@@ -9,5 +9,10 @@ export default async function orders(
   log(`query orders: ${limit} ${offset} ${includeCarts} ${queryString}`, {
     userId,
   });
-  return Orders.findOrders({ limit, offset, includeCarts, queryString });
+  return Orders.findOrders({
+    limit,
+    offset,
+    includeCarts,
+    queryString,
+  });
 }

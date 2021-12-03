@@ -18,6 +18,7 @@ describe('TranslatedFilterTexts', () => {
 
   describe('Query.quotations for admin should', () => {
     it('return list of quotations', async () => {
+      jest.setTimeout(10000);
       const {
         data: { quotations },
       } = await graphqlFetch({
@@ -53,18 +54,6 @@ describe('TranslatedFilterTexts', () => {
               }
               documents {
                 _id
-              }
-              logs {
-                _id
-                created
-                level
-                message
-                user {
-                  _id
-                }
-                order {
-                  _id
-                }
               }
             }
           }
@@ -158,18 +147,6 @@ describe('TranslatedFilterTexts', () => {
               }
               documents {
                 _id
-              }
-              logs {
-                _id
-                created
-                level
-                message
-                user {
-                  _id
-                }
-                order {
-                  _id
-                }
               }
             }
           }

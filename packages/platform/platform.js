@@ -1,5 +1,6 @@
 import startAPI from 'meteor/unchained:api';
-import initCore from 'meteor/unchained:core';
+import { initDb } from 'meteor/unchained:mongodb';
+import { initCore } from 'meteor/unchained:core';
 import interceptEmails from './intercept-emails';
 import setupAccounts from './setup-accounts';
 import setupWorkqueue, { workerTypeDefs } from './setup-workqueue';
@@ -35,7 +36,12 @@ export const startPlatform = async ({ modules, typeDefs, ...options } = {}) => {
   const workQueueIsEnabled = isWorkQueueEnabled(options);
   const emailInterceptionIsEnabled = isEmailInterceptionEnabled(options);
 
+  // Configure database
+  const db = initDb();
+
+  // Initialise core using the database
   const unchained = await initCore({
+    db,
     modules,
     bulkImporter: {
       BulkImportPayloads,

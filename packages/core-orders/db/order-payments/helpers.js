@@ -1,11 +1,11 @@
 import 'meteor/dburles:collection-helpers';
-import { log } from 'meteor/unchained:core-logger';
+import { log } from 'meteor/unchained:logger';
 import { PaymentProviders } from 'meteor/unchained:core-payment';
 import {
   PaymentPricingDirector,
   PaymentPricingSheet,
 } from 'meteor/unchained:core-pricing';
-import { emit } from 'meteor/unchained:core-events';
+import { emit } from 'meteor/unchained:events';
 import { objectInvert } from 'meteor/unchained:utils';
 import { OrderPayments } from './collections';
 import { OrderPaymentStatus } from './schema';

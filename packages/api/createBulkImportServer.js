@@ -1,4 +1,4 @@
-import { createLogger } from 'meteor/unchained:core-logger';
+import { createLogger } from 'meteor/unchained:logger';
 import { WorkerDirector } from 'meteor/unchained:core-worker';
 import { checkAction } from './acl';
 import { actions } from './roles';

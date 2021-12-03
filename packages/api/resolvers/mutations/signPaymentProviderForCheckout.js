@@ -1,4 +1,4 @@
-import { log } from 'meteor/unchained:core-logger';
+import { log } from 'meteor/unchained:logger';
 import { OrderPayments } from 'meteor/unchained:core-orders';
 import { PaymentProviderType } from 'meteor/unchained:core-payment';
 

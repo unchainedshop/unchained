@@ -47,7 +47,7 @@ export const expiredEnrollment = {
   _id: 'expiredenrollment',
   status: 'TERMINATED',
   created: new Date(),
-  expires: '2010/01/03',
+  expires: new Date('2010/01/03'),
   periods: [
     {
       orderId: SimpleOrder._id,

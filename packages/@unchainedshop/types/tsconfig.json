@@ -1,0 +1,18 @@
+{
+  "compilerOptions": {
+    "declaration": true,
+    "esModuleInterop": true,
+    "experimentalDecorators": true,
+    "forceConsistentCasingInFileNames": true,
+    "incremental": true,
+    "lib": ["esnext"],
+    "module": "esnext",
+    "moduleResolution": "node",
+    "outDir": "./lib",
+    "preserveWatchOutput": true,
+    "skipLibCheck": true,
+    "typeRoots": ["node_modules/@types", "node_modules/mongodb"],
+    "types": [],
+  },
+  "include": ["index.d.ts", "bookmarks.d.ts", "common.d.ts", "events.d.ts", "index.d.ts", "logs.d.ts", "modules.d.ts"]
+}

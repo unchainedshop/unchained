@@ -1,4 +1,4 @@
-import { log } from 'meteor/unchained:core-logger';
+import { log } from 'meteor/unchained:logger';
 import { AssortmentMediaTexts } from 'meteor/unchained:core-assortments';
 
 export default function translatedAssortmentMediaTexts(

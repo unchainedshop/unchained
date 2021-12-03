@@ -75,7 +75,6 @@ export default [
       cart(orderNumber: String): Order
       orders(includeCarts: Boolean = false): [Order!]!
       quotations: [Quotation!]!
-      logs(offset: Int = 10, limit: Int = 0): [Log!]!
       bookmarks: [Bookmark!]!
       paymentCredentials: [PaymentCredentials!]!
       enrollments: [Enrollment!]!

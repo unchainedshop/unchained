@@ -2,7 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import os from 'os';
 import open from 'open';
-import { createLogger } from 'meteor/unchained:core-logger';
+import { createLogger } from 'meteor/unchained:logger';
 import { Email } from 'meteor/email';
 
 const logger = createLogger('unchained:platform');

@@ -29,13 +29,12 @@
     },
     "moduleResolution": "node",
     "resolveJsonModule": true,
-    "types": ["node"],
-    "typeRoots": ["./node_modules/@types"],
+    "typeRoots": ["./node_modules/@types", "./node_modules/unchained-core-types"],
     "esModuleInterop": true,
     "preserveSymlinks": true
   },
   "exclude": [
-    "./examples/**"
+    "examples/**"
   ],
   "include": ["packages/**/*"]
 }

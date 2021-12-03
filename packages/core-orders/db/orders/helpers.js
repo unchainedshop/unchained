@@ -9,13 +9,13 @@ import {
 } from 'meteor/unchained:core-enrollments';
 import { Countries } from 'meteor/unchained:core-countries';
 import { Users } from 'meteor/unchained:core-users';
-import { Logs, log } from 'meteor/unchained:core-logger';
+import { log } from 'meteor/unchained:logger';
 import { WorkerDirector } from 'meteor/unchained:core-worker';
 import {
   OrderPricingDirector,
   OrderPricingSheet,
 } from 'meteor/unchained:core-pricing';
-import { emit } from 'meteor/unchained:core-events';
+import { emit } from 'meteor/unchained:events';
 import {
   uploadObjectStream,
   uploadFileFromURL,
@@ -117,16 +117,17 @@ Enrollments.helpers({
   },
 });
 
-Logs.helpers({
-  order() {
-    return (
-      this.meta &&
-      Orders.findOne({
-        _id: this.meta.orderId,
-      })
-    );
-  },
-});
+// --> Moved to API query resolver using the modules pattern
+// Logs.helpers({
+//   order() {
+//     return (
+//       this.meta &&
+//       Orders.findOne({
+//         _id: this.meta.orderId,
+//       })
+//     );
+//   },
+// });
 
 Users.helpers({
   async cart({ countryContext, orderNumber } = {}) {
@@ -650,17 +651,18 @@ Orders.helpers({
   country() {
     return Countries.findOne({ isoCode: this.countryCode });
   },
-  logs({ limit, offset }) {
-    const selector = { 'meta.orderId': this._id };
-    const logs = Logs.find(selector, {
-      skip: offset,
-      limit,
-      sort: {
-        created: -1,
-      },
-    }).fetch();
-    return logs;
-  },
+  // --> Moved to API query resolver using the modules pattern
+  // logs({ limit, offset }) {
+  //   const selector = { 'meta.orderId': this._id };
+  //   const logs = Logs.find(selector, {
+  //     skip: offset,
+  //     limit,
+  //     sort: {
+  //       created: -1,
+  //     },
+  //   }).fetch();
+  //   return logs;
+  // },
   isCart() {
     return (this.status || null) === OrderStatus.OPEN;
   },

@@ -1,4 +1,4 @@
-import { log } from 'meteor/unchained:core-logger';
+import { log } from 'meteor/unchained:logger';
 import { Users } from 'meteor/unchained:core-users';
 import { UserNotFoundError, InvalidIdError } from '../../errors';
 

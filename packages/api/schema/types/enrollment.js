@@ -48,22 +48,21 @@ export default [
     """
     type Enrollment {
       _id: ID!
-      user: User!
-      plan: EnrollmentPlan!
-      payment: EnrollmentPayment
-      delivery: EnrollmentDelivery
       billingAddress: Address
       contact: Contact
-      status: EnrollmentStatus!
-      created: DateTime!
-      expires: DateTime
-      updated: DateTime
-      isExpired(referenceDate: Timestamp): Boolean
-      enrollmentNumber: String
       country: Country
+      created: DateTime!
       currency: Currency
-      logs(limit: Int = 10, offset: Int = 0): [Log!]!
+      delivery: EnrollmentDelivery
+      enrollmentNumber: String
+      expires: DateTime
+      isExpired(referenceDate: Timestamp): Boolean
+      payment: EnrollmentPayment
       periods: [EnrollmentPeriod!]!
+      plan: EnrollmentPlan!
+      status: EnrollmentStatus!
+      updated: DateTime
+      user: User!
     }
   `,
 ];

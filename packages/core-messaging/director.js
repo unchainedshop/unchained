@@ -1,4 +1,4 @@
-import { createLogger } from 'meteor/unchained:core-logger';
+import { createLogger } from 'meteor/unchained:logger';
 import mjml from 'mjml';
 import mustache from 'mustache';
 

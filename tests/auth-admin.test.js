@@ -195,7 +195,7 @@ describe('Auth for admin users', () => {
   });
 
   describe('Mutation.updateUserAvatar', () => {
-    it.only('update the avatar of a foreign user', async () => {
+    it('update the avatar of a foreign user', async () => {
       const avatar = fs.createReadStream(
         path.resolve(__dirname, `./assets/image.jpg`),
       );
@@ -751,9 +751,6 @@ describe('Auth for admin users', () => {
                 _id
               }
               quotations {
-                _id
-              }
-              logs {
                 _id
               }
               bookmarks {

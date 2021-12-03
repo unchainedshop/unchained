@@ -1,0 +1,36 @@
+{
+  "name": "unchained-mongodb",
+  "version": "1.0.0",
+  "description": "MongoDB provider for unchained platform",
+  "main": "lib/mongodb-index.js",
+  "types": "lib/mongodb-index.d.ts",
+  "type": "module",
+  "scripts": {
+    "build": "tsc",
+    "build:watch": "npm run build --watch",
+    "test": "TEST_CLIENT=0 TEST_WATCH=1 meteor test-packages ./ --driver-package meteortesting:mocha --port 4200"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/unchainedshop/unchained.git"
+  },
+  "keywords": [
+    "unchained",
+    "ecommerce"
+  ],
+  "author": "Joël Meiller",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/unchainedshop/unchained/issues"
+  },
+  "homepage": "https://github.com/unchainedshop/unchained#readme",
+  "dependencies": {
+    "mongodb": "^4.1.3"
+  },
+  "devDependencies": {
+    "@types/node": "^16.7.10",
+    "chai": "^4.3.4",
+    "typescript": "^4.4.4",
+    "unchained-core-types": "^1.0.5"
+  }
+}

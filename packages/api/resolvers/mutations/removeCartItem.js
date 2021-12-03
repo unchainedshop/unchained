@@ -1,4 +1,4 @@
-import { log } from 'meteor/unchained:core-logger';
+import { log } from 'meteor/unchained:logger';
 import { OrderPositions } from 'meteor/unchained:core-orders';
 import {
   OrderItemNotFoundError,

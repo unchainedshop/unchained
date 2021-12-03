@@ -1,5 +1,5 @@
 import 'meteor/dburles:collection-helpers';
-import { log } from 'meteor/unchained:core-logger';
+import { log } from 'meteor/unchained:logger';
 import {
   ProductPricingDirector,
   ProductPricingSheet,
@@ -7,7 +7,7 @@ import {
 import { WarehousingProviders } from 'meteor/unchained:core-warehousing';
 import { Products } from 'meteor/unchained:core-products';
 import { Quotations } from 'meteor/unchained:core-quotations';
-import { emit } from 'meteor/unchained:core-events';
+import { emit } from 'meteor/unchained:events';
 import { OrderPositions } from './collections';
 import { Orders } from '../orders/collections';
 

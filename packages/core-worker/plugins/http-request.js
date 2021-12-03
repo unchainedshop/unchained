@@ -1,5 +1,5 @@
 import { WorkerDirector, WorkerPlugin } from 'meteor/unchained:core-worker';
-import { log } from 'meteor/unchained:core-logger';
+import { log } from 'meteor/unchained:logger';
 import fetch from 'isomorphic-unfetch';
 
 const postFetch = async (url, { data, headers }) => {

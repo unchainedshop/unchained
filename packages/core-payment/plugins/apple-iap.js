@@ -269,7 +269,7 @@ class AppleIAP extends PaymentAdapter {
       receiptData,
       password: APPLE_IAP_SHARED_SECRET,
     });
-    const { status, latest_receipt_info } = response; // eslint-disable-line
+    const { status, latest_receipt_info: latestReceiptInfo } = response; // eslint-disable-line
     if (status === 0) {
       logger.info(
         'Apple IAP Plugin: Receipt validated and updated for the user',
@@ -277,11 +277,10 @@ class AppleIAP extends PaymentAdapter {
           level: 'verbose',
         }
       );
-      const latestTransaction =
-        latest_receipt_info[latest_receipt_info.length - 1];
+      const latestTransaction = latestReceiptInfo[latestReceiptInfo.length - 1]; // eslint-disable-line
       return {
-        token: latestTransaction.web_order_line_item_id,
-        latestReceiptInfo: latest_receipt_info,
+        token: latestTransaction.web_order_line_item_id, // eslint-disable-line
+        latestReceiptInfo,
       };
     }
     logger.warn('Apple IAP Plugin: Receipt invalid', {
@@ -293,7 +292,7 @@ class AppleIAP extends PaymentAdapter {
 
   // eslint-disable-next-line
   async charge(result) {
-    const { transactionIdentifier } = result?.meta;
+    const { transactionIdentifier } = result?.meta || {};
     const { order } = this.context;
 
     if (!transactionIdentifier) {
@@ -345,7 +344,7 @@ class AppleIAP extends PaymentAdapter {
 
     const orderMatchesTransaction =
       parseInt(matchedTransaction.quantity, 10) === quantity &&
-      matchedTransaction.product_id === productId;
+      matchedTransaction.product_id === productId; // eslint-disable-line
 
     if (!orderMatchesTransaction)
       throw new Error(

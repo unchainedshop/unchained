@@ -1,4 +1,4 @@
-import { log } from 'meteor/unchained:core-logger';
+import { log } from 'meteor/unchained:logger';
 
 const QuotationError = {
   ADAPTER_NOT_FOUND: 'ADAPTER_NOT_FOUND',

@@ -56,10 +56,10 @@ unchained:core-assortments@1.0.0-beta15
 unchained:core-countries@1.0.0-beta15
 unchained:core-currencies@1.0.0-beta15
 unchained:core-enrollments@1.0.0-beta15
-unchained:core-events@1.0.0-beta15
+unchained:events@1.0.0-beta15
 unchained:core-files@1.0.0-beta15
 unchained:core-languages@1.0.0-beta15
-unchained:core-logger@1.0.0-beta15
+unchained:logger@1.0.0-beta15
 unchained:core-pricing@1.0.0-beta15
 unchained:core-products@1.0.0-beta15
 unchained:core-settings@1.0.0-beta15

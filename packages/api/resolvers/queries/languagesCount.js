@@ -1,4 +1,4 @@
-import { log } from 'meteor/unchained:core-logger';
+import { log } from 'meteor/unchained:logger';
 import { Languages } from 'meteor/unchained:core-languages';
 
 export default function languagesCount(root, { includeInactive }, { userId }) {

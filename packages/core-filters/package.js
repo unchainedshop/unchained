@@ -13,11 +13,13 @@ Package.onUse((api) => {
   api.use('promise');
   api.use('dburles:collection-helpers@1.1.0');
   api.use('aldeed:collection2@3.2.1');
+
   api.use('unchained:utils@1.0.0-beta15');
+  api.use('unchained:events@1.0.0-beta15');
+  api.use('unchained:logger@1.0.0-beta15');
+
   api.use('unchained:core-assortments@1.0.0-beta15');
   api.use('unchained:core-products@1.0.0-beta15');
-  api.use('unchained:core-logger@1.0.0-beta15');
-  api.use('unchained:core-events@1.0.0-beta15');
 
   api.mainModule('filters.js', 'server');
 });
