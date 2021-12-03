@@ -1,5 +1,5 @@
 import { Db } from '@unchainedshop/types/common';
-import { User } from '@unchainedshop/types/users';
+import { User } from '@unchainedshop/types/user';
 import { buildDbIndexes } from 'meteor/unchained:utils';
 
 export const UsersCollection = async (db: Db) => {
@@ -7,7 +7,7 @@ export const UsersCollection = async (db: Db) => {
 
   await buildDbIndexes<User>(Users, [
     () =>
-      Users.rawCollection().createIndex(
+      Users.createIndex(
         {
           username: 1,
         },
@@ -17,7 +17,7 @@ export const UsersCollection = async (db: Db) => {
         }
       ),
     () =>
-      Users.rawCollection().createIndex(
+      Users.createIndex(
         {
           'emails.address': 1,
         },
@@ -28,7 +28,7 @@ export const UsersCollection = async (db: Db) => {
       ),
 
     () =>
-      Users.rawCollection().createIndex(
+      Users.createIndex(
         {
           'services.email.verificationTokens.token': 1,
         },
@@ -38,7 +38,7 @@ export const UsersCollection = async (db: Db) => {
       ),
 
     () =>
-      Users.rawCollection().createIndex(
+      Users.createIndex(
         {
           'services.password.reset.token': 1,
         },
@@ -48,7 +48,7 @@ export const UsersCollection = async (db: Db) => {
       ),
 
     () =>
-      Users.rawCollection().createIndex(
+      Users.createIndex(
         {
           'services.resume.loginTokens.hashedToken': 1,
         },
@@ -58,7 +58,7 @@ export const UsersCollection = async (db: Db) => {
       ),
 
     () =>
-      Users.rawCollection().createIndex(
+      Users.createIndex(
         {
           _id: 'text',
           username: 'text',

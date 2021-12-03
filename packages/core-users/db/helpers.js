@@ -20,7 +20,7 @@ import {
 import { Users } from './collections';
 import filterContext from '../filterContext';
 import evaluateContext from '../evaluateContext';
-import settings from '../settings';
+import settings from '../src/users-settings';
 
 const userAvatarUploads = createUploadContainer(
   'user-avatars',

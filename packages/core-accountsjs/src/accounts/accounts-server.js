@@ -1,7 +1,7 @@
 import { AccountsServer, ServerHooks } from '@accounts/server';
 import { WorkerDirector } from 'meteor/unchained:core-worker';
 import crypto from 'crypto';
-import { randomValueHex } from './helpers';
+import { randomValueHex } from './utils/helpers';
 import { dbManager } from './db-manager';
 import { accountsPassword } from './accounts-password';
 

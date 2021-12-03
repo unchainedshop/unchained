@@ -39,7 +39,7 @@ export const LastContactSchema = new SimpleSchema(
   { requiredByDefault: false }
 );
 
-export const UserSchema = new SimpleSchema(
+export const UsersSchema = new SimpleSchema(
   {
     emails: Array,
     'emails.$': Object,

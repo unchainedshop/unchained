@@ -1,7 +1,9 @@
 import { Locale } from 'locale';
 import { Context } from './api';
-import { TimestampFields, _ID } from './common';
+import { TimestampFields, Update, _ID } from './common';
 import { Language } from './languages';
+import { UpdateFilter } from './node_modules/mongodb';
+import { Country } from './countries';
 
 interface Address {
   firstName?: string;
@@ -15,7 +17,7 @@ interface Address {
   countryCode?: string;
 }
 
-interface UserProfile {
+export interface UserProfile {
   displayName?: string;
   birthday?: Date;
   phoneMobile?: string;
@@ -44,18 +46,19 @@ interface Email {
 }
 
 export type User = {
+  _id?: _ID;
+  avatarId?: string;
   emails: Array<Email>;
-  username?: string;
-  lastLogin?: UserLastLogin;
-  profile?: UserProfile;
-  lastBillingAddress?: Address;
-  lastContact?: UserLastContact;
   guest: boolean;
   initialPassword: boolean;
-  tags?: Array<string>;
-  avatarId?: string;
-  services: unknown;
+  lastBillingAddress?: Address;
+  lastContact?: UserLastContact;
+  lastLogin?: UserLastLogin;
+  profile?: UserProfile;
   roles: Array<string>;
+  services: unknown;
+  tags?: Array<string>;
+  username?: string;
 } & TimestampFields;
 
 type UserQuery = {
@@ -63,7 +66,7 @@ type UserQuery = {
   queryString?: string;
 };
 
-export type UsersModule = ModuleMutations<User> & {
+export type UsersModule = {
   // Queries
   count: (query: UserQuery) => Promise<number>;
   findUser: (query: {
@@ -80,72 +83,36 @@ export type UsersModule = ModuleMutations<User> & {
   userExists: (query: { userId: string }) => Promise<boolean>;
 
   // Mutations
-  createUser: (
-    doc: User,
-    userId: string,
-    context: any,
-    options: { skipMessaging?: boolean }
-  ) => Promise<User>;
-
-  createLogintoken: (
-    user: User,
-    context: Context
-  ) => Promise<{
-    id: string;
-    token: string;
-    tokenExpires: string;
-    user?: User;
-  }>;
-  loginWithService: (
-    service: string,
-    params:
-      | { email: string; password: string; code: string }
-      | { username: string; password: string; code: string },
-    context: any
-  ) => Promise<{
-    id: string;
-    token: string;
-    tokenExpires: string;
-    user?: User;
-  }>;
-
   updateProfile: (
     _id: string,
     doc: UpdateFilter<UserProfile>,
     userId: string
-  ) => Promise<string>;
+  ) => Promise<User>;
   updateLastBillingAddress: (
     _id: string,
-    doc: UpdateFilter<Address>,
+    doc: Address,
     userId: string
-  ) => Promise<string>;
+  ) => Promise<User>;
   updateLastContact: (
     _id: string,
-    doc: UpdateFilter<UserLastContact>,
+    doc: UserLastContact,
     userId: string
-  ) => Promise<string>;
+  ) => Promise<User>;
   updateHeartbeat: (
     _id: string,
     doc: UserLastLogin,
     userId: string
-  ) => Promise<string>;
-
-  addEmail: (params: {
-    userId: string;
-    email: string;
-    verified?: boolean;
-  }) => Promise<User>;
-  removeEmail: (params: { userId: string; email: string }) => Promise<User>;
-  updateEmail: (params: {
-    userId: string;
-    email: string;
-    verified?: boolean;
-  }) => Promise<User>;
-
-  setPassword: (params: { userId: string; password: string }) => Promise<User>;
-  setUsername: (params: { userId: string; username: string }) => Promise<User>;
-  setTags: (params: { userId: string; tags: Array<string> }) => Promise<User>;
-  setRoles: (params: { userId: string; roles: Array<string> }) => Promise<User>;
+  ) => Promise<User>;
+  updateRoles: (
+    _id: string,
+    roles: Array<string>,
+    userId: string
+  ) => Promise<User>;
+  updateTags: (
+    _id: string,
+    tags: Array<string>,
+    userId: string
+  ) => Promise<User>;
 };
 
 export interface UserHelperTypes {
@@ -178,5 +145,5 @@ export interface UserHelperTypes {
   telNumber: (user: User) => string;
   name: (user: User) => string;
 
-  createSignedUploadURL: (fileName: string) => Promise<File>
+  createSignedUploadURL: (fileName: string) => Promise<File>;
 }

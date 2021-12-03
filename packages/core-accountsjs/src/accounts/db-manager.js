@@ -1,7 +1,7 @@
 import MongoDBInterface from '@accounts/mongo';
 import { MongoInternals } from 'meteor/mongo';
 import { DatabaseManager } from '@accounts/database-manager';
-import { idProvider, dateProvider } from './helpers';
+import { idProvider, dateProvider } from './utils/helpers';
 
 const mongoStorage = new MongoDBInterface(
   MongoInternals.defaultRemoteCollectionDriver().mongo.db,

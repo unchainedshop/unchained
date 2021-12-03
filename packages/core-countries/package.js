@@ -27,9 +27,12 @@ Package.onUse((api) => {
 });
 
 Package.onTest((api) => {
+  api.use('meteortesting:mocha');
   api.use('ecmascript');
   api.use('typescript');
 
+  api.use('unchained:mongodb@1.0.0-beta15');
   api.use('unchained:core-countries');
+  
   api.mainModule('tests/countries-index.test.ts');
 });

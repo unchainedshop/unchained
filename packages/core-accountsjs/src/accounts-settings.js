@@ -1,7 +1,7 @@
-import { accountsPassword } from './accounts-password';
-import { accountsServer } from './accounts-server';
+import { accountsPassword } from './accounts/accounts-password';
+import { accountsServer } from './accounts/accounts-server';
 
-const settings = {
+export const accountsSettings = {
   load({ server = {}, password = {} } = {}) {
     accountsPassword.options.sendVerificationEmailAfterSignup = false;
     Object.keys(server).forEach((key) => {
@@ -12,5 +12,3 @@ const settings = {
     });
   },
 };
-
-export default settings;

@@ -1,95 +1,194 @@
 import { ModuleInput } from '@unchainedshop/types/common';
-import { CountriesModule, Country } from '@unchainedshop/types/countries';
-import countryFlags from 'emoji-flags';
-import countryI18n from 'i18n-iso-countries';
-import { emit, registerEvents } from 'meteor/unchained:events';
+import { User, UsersModule } from '@unchainedshop/types/user';
+import { log } from 'meteor/unchained:logger';
 import {
   generateDbFilterById,
   generateDbMutations,
-  systemLocale,
 } from 'meteor/unchained:utils';
-import { CountriesCollection } from '../db/CountriesCollection';
-import { CountriesSchema } from '../db/CountriesSchema';
-
-const COUNTRY_EVENTS: string[] = [
-  'COUNTRY_CREATE',
-  'COUNTRY_UPDATE',
-  'COUNTRY_REMOVE',
-];
+import { UsersCollection } from '../db/UsersCollection';
+import { UsersSchema } from '../db/UsersSchema';
 
 type FindQuery = {
-  includeInactive?: boolean;
+  includeGuests?: boolean;
+  queryString?: string;
 };
-const buildFindSelector = ({ includeInactive = false }: FindQuery) => {
-  const selector: { isActive?: true } = {};
-  if (!includeInactive) selector.isActive = true;
+
+const buildFindSelector = ({ includeGuests, queryString }: FindQuery) => {
+  const selector: any = {};
+  if (!includeGuests) selector.guest = { $ne: true };
+  if (queryString) {
+    selector.$text = { $search: queryString };
+  }
   return selector;
 };
 
-export const configureCountriesModule = async ({
+export const configureUsersModule = async ({
   db,
-}: ModuleInput): Promise<CountriesModule> => {
-  registerEvents(COUNTRY_EVENTS);
+}: ModuleInput): Promise<UsersModule> => {
+  const Users = await UsersCollection(db);
 
-  const Countries = await CountriesCollection(db);
-
-  const mutations = generateDbMutations<Country>(Countries, CountriesSchema);
+  const mutations = generateDbMutations<User>(Users, UsersSchema);
 
   return {
+    // Queries
     count: async (query) => {
-      const countryCount = await Countries.find(
-        buildFindSelector(query)
-      ).count();
-      return countryCount;
+      const userCount = await Users.find(buildFindSelector(query)).count();
+      return userCount;
     },
 
-    findCountry: async ({ countryId, isoCode }) => {
-      return await Countries.findOne(
-        countryId ? generateDbFilterById(countryId) : { isoCode }
-      );
+    findUser: async ({ userId, resetToken, hashedToken }) => {
+      if (hashedToken) {
+        return await Users.findOne({
+          'services.resume.loginTokens.hashedToken': hashedToken,
+        });
+      }
+
+      if (resetToken) {
+        return await Users.findOne({
+          'services.password.reset.token': resetToken,
+        });
+      }
+      return await Users.findOne(generateDbFilterById(userId));
     },
 
-    findCountries: async ({ limit, offset, includeInactive }, options) => {
-      const countries = Countries.find(buildFindSelector({ includeInactive }), {
-        skip: offset,
-        limit,
-        ...options,
+    findUsers: async ({ limit, offset, includeGuests, queryString }) => {
+      const selector = buildFindSelector({ includeGuests, queryString });
+
+      if (queryString) {
+        return await Users.find(selector, {
+          skip: offset,
+          limit,
+          projection: { score: { $meta: 'textScore' } },
+          sort: { score: { $meta: 'textScore' } },
+        }).toArray();
+      }
+
+      return await Users.find(selector, { skip: offset, limit }).toArray();
+    },
+
+    userExists: async ({ userId }) => {
+      const userCount = await Users.find(generateDbFilterById(userId), {
+        limit: 1,
+      }).count();
+      return !!userCount;
+    },
+
+    // Mutations
+    updateProfile: async (_id, profile, userId) => {
+      const userFilter = generateDbFilterById(_id);
+      const modifier = Object.keys(profile).reduce((acc, profileKey) => {
+        return {
+          ...acc,
+          [`profile.${profileKey}`]: profile[profileKey],
+        };
+      }, {});
+
+      await Users.updateOne(userFilter, {
+        $set: {
+          updated: new Date(),
+          updatedBy: userId,
+          ...modifier,
+        },
       });
-      return await countries.toArray();
+
+      return await Users.findOne(userFilter);
     },
 
-    countryExists: async ({ countryId }) => {
-      const countryCount = await Countries.find(
-        generateDbFilterById(countryId),
-        { limit: 1 }
-      ).count();
-      return !!countryCount;
+    updateLastBillingAddress: async (_id, lastBillingAddress, userId) => {
+      const userFilter = generateDbFilterById(_id);
+      const user = await Users.findOne(userFilter);
+
+      log('Store Last Billing Address', { userId });
+
+      const modifier = {
+        $set: {
+          lastBillingAddress,
+          updated: new Date(),
+          updatedBy: userId,
+        },
+      };
+      const profile = user.profile || {};
+      const isGuest = !!user.guest;
+
+      if (!profile.displayName || isGuest) {
+        modifier.$set['profile.displayName'] = [
+          lastBillingAddress.firstName,
+          lastBillingAddress.lastName,
+        ]
+          .filter(Boolean)
+          .join(' ');
+      }
+
+      await Users.updateOne(userFilter, modifier);
+
+      return await Users.findOne(userFilter);
     },
 
-    name(country, language) {
-      return countryI18n.getName(country.isoCode, language) || language;
-    },
-    flagEmoji(country) {
-      return countryFlags.countryCode(country.isoCode).emoji || '❌';
-    },
-    isBase(country) {
-      return country.isoCode === systemLocale.country;
+    updateLastContact: async (_id, lastContact, userId) => {
+      const userFilter = generateDbFilterById(_id);
+      const user = await Users.findOne(userFilter);
+
+      log('Store Last Contact', { userId });
+
+      const profile = user.profile || {};
+      const isGuest = !!user.guest;
+
+      const modifier = {
+        $set: {
+          updated: new Date(),
+          updatedBy: userId,
+          lastContact,
+        },
+      };
+
+      if ((!profile.phoneMobile || isGuest) && lastContact.telNumber) {
+        // Backport the contact phone number to the user profile
+        modifier.$set['profile.phoneMobile'] = lastContact.telNumber;
+      }
+
+      await Users.updateOne(userFilter, modifier);
+
+      return await Users.findOne(userFilter);
     },
 
-    create: async (doc: Country, userId: string) => {
-      const countryId = await mutations.create(doc, userId);
-      emit('COUNTRY_CREATE', { countryId });
-      return countryId;
+    updateHeartbeat: async (_id, lastLogin, userId) => {
+      const userFilter = generateDbFilterById(_id);
+
+      await Users.updateOne(userFilter, {
+        $set: {
+          lastLogin: {
+            timestamp: new Date(),
+            ...lastLogin,
+          },
+        },
+      });
+
+      return await Users.findOne(userFilter);
     },
-    update: async (_id: string, doc: Country, userId: string) => {
-      const countryId = await mutations.update(_id, doc, userId);
-      emit('COUNTRY_UPDATE', { countryId });
-      return countryId;
+
+    updateRoles: async (_id, roles, userId) => {
+      const userFilter = generateDbFilterById(_id);
+
+      await Users.updateOne(userFilter, {
+        $set: {
+          updated: new Date(),
+          updateBy: userId,
+          roles,
+        },
+      });
+      return await Users.findOne(userFilter);
     },
-    delete: async (countryId, userId) => {
-      const deletedCount = await mutations.delete(countryId, userId);
-      emit('COUNTRY_REMOVE', { countryId });
-      return deletedCount;
+    updateTags: async (_id, tags, userId) => {
+      const userFilter = generateDbFilterById(_id);
+
+      await Users.updateOne(userFilter, {
+        $set: {
+          updated: new Date(),
+          updateBy: userId,
+          tags,
+        },
+      });
+      return await Users.findOne(userFilter);
     },
   };
 };

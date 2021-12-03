@@ -203,9 +203,9 @@ declare module 'meteor/unchained:core-payments' {
 }
 
 declare module 'meteor/unchained:core-users' {
-  export const Users: {
-    findUser: any;
-  };
+  export function configureUsersModule(
+    params: ModuleInput
+  ): Promise<UsersModule>;
 }
 
 declare module 'meteor/unchained:core-orders' {

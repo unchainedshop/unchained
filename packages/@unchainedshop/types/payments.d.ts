@@ -6,7 +6,7 @@ import {
   TimestampFields,
   _ID,
 } from './common';
-import { User } from './user';
+import { User } from './users';
 
 export enum PaymentProviderType {
   CARD = 'CARD',

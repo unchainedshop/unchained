@@ -1,6 +1,6 @@
 const defaultAutoMessagingAfterUserCreation = true;
 
-const settings = {
+export const userSettings = {
   autoMessagingAfterUserCreation: null,
   load({
     autoMessagingAfterUserCreation = defaultAutoMessagingAfterUserCreation,
@@ -9,5 +9,3 @@ const settings = {
       autoMessagingAfterUserCreation ?? defaultAutoMessagingAfterUserCreation;
   },
 };
-
-export default settings;
