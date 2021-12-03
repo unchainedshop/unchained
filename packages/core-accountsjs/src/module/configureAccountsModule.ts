@@ -3,13 +3,13 @@ import { userSettings } from 'src/users-settings';
 import { v4 as uuidv4 } from 'uuid';
 import evaluateContext from './utils/evaluateContext';
 import filterContext from './utils/filterContext';
-import { AuthenticationModule } from '@unchainedshop/types/authentication';
+import { AccountsModule } from '@unchainedshop/types/authentication';
 import { accountsPassword } from '../accounts/accounts-password';
 import { accountsServer } from '../accounts/accounts-server';
 import { dbManager } from '../accounts/db-manager';
 
-export const configureAuthenticationModule =
-  async (): Promise<AuthenticationModule> => {
+export const configureAccountsModule =
+  async (): Promise<AccountsModule> => {
     return {
       // Mutations
       createUser: async (userData, options = {}) => {

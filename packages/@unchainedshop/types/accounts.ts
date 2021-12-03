@@ -6,7 +6,7 @@ interface EmailData {
   verified?: boolean;
 }
 
-export type AuthenticationModule = {
+export type AccountsModule = {
   // Mutations
   createUser: (
     userData: {

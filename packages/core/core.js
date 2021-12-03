@@ -1,5 +1,3 @@
-import configureUsers from 'meteor/unchained:core-users';
-import configureAccounts from 'meteor/unchained:core-accountsjs';
 import configureDelivery from 'meteor/unchained:core-delivery';
 import configureWarehousing from 'meteor/unchained:core-warehousing';
 import configureProducts from 'meteor/unchained:core-products';
@@ -11,6 +9,12 @@ import configureFilters from 'meteor/unchained:core-filters';
 import configureEnrollments from 'meteor/unchained:core-enrollments';
 import configureWorker from 'meteor/unchained:core-worker';
 import configureMessaging from 'meteor/unchained:core-messaging';
+
+import {
+  configureAccountsModule,
+  accountsServices,
+  accountsSettings,
+} from 'meteor/unchained:core-accountsjs';
 
 import {
   configureBookmarksModule,
@@ -31,6 +35,10 @@ import {
   configurePaymentModule,
   paymentServices,
 } from 'meteor/unchained:core-payment';
+import {
+  configureUsersModule,
+  usersSettings,
+} from 'meteor/unchained:core-users';
 
 export const initCore = async ({
   db,
@@ -42,6 +50,7 @@ export const initCore = async ({
     migrationRepository,
   };
 
+  const accounts = await configureAccountsModule();
   const events = await configureEventsModule({ db });
   const files = await configureFilesModule({ db });
   const bookmarks = await configureBookmarksModule({ db });
@@ -49,9 +58,12 @@ export const initCore = async ({
   const currencies = await configureCurrenciesModule({ db });
   const languages = await configureLanguagesModule({ db });
   const payment = await configurePaymentModule({ db });
+  const users = await configureUsersModule({ db });
+
+  accountsSettings(modules.accounts);
+  usersSettings(modules.users);
 
   configureWorker(modules.worker, moduleOptions);
-  configureUsers(modules.users, moduleOptions);
   configureMessaging(modules.messaging, moduleOptions);
   configureDocuments(modules.documents, moduleOptions);
   configureAccounts(modules.accounts, moduleOptions);
@@ -66,6 +78,7 @@ export const initCore = async ({
 
   return {
     modules: {
+      accounts,
       bookmarks,
       countries,
       currencies,
@@ -73,12 +86,14 @@ export const initCore = async ({
       files,
       languages,
       payment,
+      users,
     },
     services: {
-      bookmark: bookmarkServices,
-      country: countryServices,
+      accounts: accountsServices,
+      bookmarks: bookmarkServices,
+      countries: countryServices,
       payment: paymentServices,
-      files: fileServices
+      files: fileServices,
     },
     ...otherComponents,
   };
