@@ -16,11 +16,21 @@ import {
   configureBookmarksModule,
   bookmarkServices,
 } from 'meteor/unchained:core-bookmarks';
-import { configureCountriesModule, countryServices } from 'meteor/unchained:core-countries';
+import {
+  configureCountriesModule,
+  countryServices,
+} from 'meteor/unchained:core-countries';
 import { configureCurrenciesModule } from 'meteor/unchained:core-currencies';
 import { configureEventsModule } from 'meteor/unchained:core-events';
+import {
+  configureFilesModule,
+  fileServices,
+} from 'meteor/unchained:core-files-next';
 import { configureLanguagesModule } from 'meteor/unchained:core-languages';
-import { configurePaymentModule, paymentServices } from 'meteor/unchained:core-payment';
+import {
+  configurePaymentModule,
+  paymentServices,
+} from 'meteor/unchained:core-payment';
 
 export const initCore = async ({
   db,
@@ -33,6 +43,7 @@ export const initCore = async ({
   };
 
   const events = await configureEventsModule({ db });
+  const files = await configureFilesModule({ db });
   const bookmarks = await configureBookmarksModule({ db });
   const countries = await configureCountriesModule({ db });
   const currencies = await configureCurrenciesModule({ db });
@@ -59,6 +70,7 @@ export const initCore = async ({
       countries,
       currencies,
       events,
+      files,
       languages,
       payment,
     },
@@ -66,6 +78,7 @@ export const initCore = async ({
       bookmark: bookmarkServices,
       country: countryServices,
       payment: paymentServices,
+      files: fileServices
     },
     ...otherComponents,
   };

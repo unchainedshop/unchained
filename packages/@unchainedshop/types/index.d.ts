@@ -23,7 +23,7 @@ import {
   PaymentProviderType,
 } from './payments';
 import { Request } from 'express';
-import { FilesModule, IFileAdapter } from './files';
+import { FilesModule, IFileAdapter, UploadFileData } from './files';
 
 export { Modules } from './modules';
 
@@ -102,14 +102,31 @@ declare module 'meteor/unchained:core-events' {
   function configureEventsModule(params: ModuleInput): Promise<EventsModule>;
 }
 
-declare module 'meteor/unchained:core-files' {
+declare module 'meteor/unchained:core-files-next' {
   function configureFilesModule(params: ModuleInput): Promise<FilesModule>;
 
-  class FileAdapter implements IFileAdapter {
-    constructor(context: Context)
-  };
-}
+  function setFileAdapter(adapter: FileAdapter): void;
+  function getFileAdapter(): FileAdapter;
 
+  function composeFileName(file: File): string;
+  function createSignedURL(
+    directoryName: string,
+    fileName: string
+  ): Promise<UploadFileData | null>;
+  function registerFileUpload(
+    directoryName: string,
+    fn: (params: any) => Promise<any>
+  ): void;
+  function removeFiles(fileIds: string | Array<string>): Promise<number>;
+  function uploadFileFromStream(
+    directoryName: string,
+    rawFile: any
+  ): Promise<UploadFileData | null>;
+  function uploadFileFromURL(
+    directoryName: string,
+    file: { fileLink: string; fileName: string }
+  ): Promise<UploadFileData | null>;
+}
 
 declare module 'meteor/unchained:core-bookmarks' {
   function configureBookmarksModule(
@@ -146,7 +163,7 @@ declare module 'meteor/unchained:core-payments' {
 
   function registerAdapter(adapter: IPaymentAdapter): void;
   function getAdapter(key: string): IPaymentAdapter;
-  
+
   class PaymentAdapter implements IPaymentAdapter {
     static key: string;
     static label: string;
@@ -157,9 +174,9 @@ declare module 'meteor/unchained:core-payments' {
     public context: PaymentContext | null;
 
     constructor(config: PaymentConfiguration, context: PaymentContext);
-  };
+  }
   const PaymentError;
-  
+
   const paymentLogger;
 
   const PaymentProviderType;

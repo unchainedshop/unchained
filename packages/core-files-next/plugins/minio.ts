@@ -7,6 +7,7 @@ import { MediaObjects } from '../db';
 import { Context } from '@unchainedshop/types/api';
 import { File } from '@unchainedshop/types/files';
 
+/*
 const {
   MINIO_ACCESS_KEY,
   MINIO_SECRET_KEY,
@@ -28,6 +29,7 @@ const composeObjectName = (file: File) => {
   );
 };
 
+/*
 const insertMedia = ({
   directoryName,
   hash,
@@ -56,6 +58,7 @@ const insertMedia = ({
   return options;
 };
 
+/*
 const getMimeType = (extension) => {
   return mimeType.lookup(extension);
 };
@@ -87,7 +90,7 @@ function downloadFromUrlToBuffer(fileUrl: string) {
     req.end();
   });
 }
-
+/*
 const generateRandomFileName = (fileName: string) => {
   const random = crypto.randomBytes(16);
   const hash = crypto
@@ -132,16 +135,17 @@ function connectToMinio() {
     return null;
   }
 }
-
+/*
 const client = connectToMinio();
 if (NODE_ENV === 'development') client?.traceOn(process.stdout);
-
+*/
+/*
 const getObjectStats = async (fileName: string) => {
   if (!client) throw new Error('Minio not connected, check env variables');
 
   return client.statObject(MINIO_BUCKET_NAME, fileName);
 };
-
+*/
 export const createSignedPutURL = async (
   directoryName = '',
   linkedMediaId: string,
@@ -174,6 +178,7 @@ export const createSignedPutURL = async (
   };
 };
 
+/* 
 export const removeObjects = async (ids: string | Array<string>) => {
   if (!client) throw new Error('Minio not connected, check env variables');
 
@@ -275,6 +280,7 @@ export const uploadFileFromURL = async (
     ...meta,
   });
 };
+*/
 
 export const linkMedia = async ({ mediaUploadTicketId, size, type }, { modules }: Context) => {
   const media = await modules.files.findFile({ fileId: mediaUploadTicketId });
@@ -302,8 +308,9 @@ export const linkMedia = async ({ mediaUploadTicketId, size, type }, { modules }
   return MediaObjects.findOne({ _id: mediaUploadTicketId });
 };
 
-export default client;
+// export default client;
 
+/* 
 export const createUploadContainer = (directoryName, fn) => {
   if (!mediaContainerRegistry[directoryName])
     mediaContainerRegistry[directoryName] = fn;
@@ -312,7 +319,7 @@ export const createUploadContainer = (directoryName, fn) => {
     createSignedURL: async (
       linkedMediaId,
       mediaName,
-      { ...options },
+      options,
       { userId, ...context }
     ) => {
       const result = await createSignedPutURL(
@@ -327,4 +334,4 @@ export const createUploadContainer = (directoryName, fn) => {
       return result;
     },
   };
-};
+};*/

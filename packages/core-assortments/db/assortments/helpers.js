@@ -326,7 +326,7 @@ AssortmentMedia.createSignedUploadURL = async (
     assortmentId,
     mediaName,
     { authorId: userId },
-    context
+    context,  
   );
 };
 

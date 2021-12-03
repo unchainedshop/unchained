@@ -1,17 +1,20 @@
 import { log } from 'meteor/unchained:logger';
 
 import { Users } from 'meteor/unchained:core-users';
-import { linkMedia } from 'meteor/unchained:core-files-next';
 import { UserNotFoundError } from '../../errors';
 
 export default function confirmMediaUpload(
   root,
   { mediaUploadTicketId, size, type },
-  { modules, userId }
+  context
 ) {
-  log(`mutation confirmMediaUpload `, { userId });
-  const user = Users.findUser({ userId });
+  log(`mutation confirmMediaUpload `, { userId: context.userId });
 
-  if (!user) throw new UserNotFoundError({ userId });
-  return linkMedia({ mediaUploadTicketId, size, type }, { modules, userId });
+  const user = Users.findUser({ userId: context.userId });
+  if (!user) throw new UserNotFoundError({ userId: context.userId });
+
+  return await context.services.linkMedia(
+    { externalFileId: mediaUploadTicketId, size, type },
+    context
+  );
 }

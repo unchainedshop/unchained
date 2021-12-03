@@ -6,7 +6,7 @@ import {
   Assortments,
   AssortmentMedia,
 } from 'meteor/unchained:core-assortments';
-import { MediaObjects, removeObjects } from 'meteor/unchained:ore-files-next';
+import { MediaObjects, removeObjects } from 'meteor/unchained:core-files-next';
 
 const logger = createLogger('unchained:platform:zombie-killer');
 
