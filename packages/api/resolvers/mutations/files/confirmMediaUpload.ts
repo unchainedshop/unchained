@@ -1,12 +1,13 @@
 import { log } from 'meteor/unchained:logger';
 
 import { Users } from 'meteor/unchained:core-users';
-import { UserNotFoundError } from '../../errors';
+import { UserNotFoundError } from '../../../errors';
+import { Context, Root } from '@unchainedshop/types/api';
 
-export default function confirmMediaUpload(
-  root,
+export default async function confirmMediaUpload(
+  root: Root,
   { mediaUploadTicketId, size, type },
-  context
+  context: Context
 ) {
   log(`mutation confirmMediaUpload `, { userId: context.userId });
 

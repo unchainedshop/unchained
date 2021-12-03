@@ -164,7 +164,7 @@ declare module 'meteor/unchained:core-payments' {
   function registerAdapter(adapter: IPaymentAdapter): void;
   function getAdapter(key: string): IPaymentAdapter;
 
-  class PaymentAdapter implements IPaymentAdapter {
+  export class PaymentAdapter implements IPaymentAdapter {
     static key: string;
     static label: string;
     static version: string;
@@ -183,11 +183,13 @@ declare module 'meteor/unchained:core-payments' {
 }
 
 declare module 'meteor/unchained:core-users' {
-  const Users: Collection<User>;
+  export const Users: {
+    findUser: any;
+  };
 }
 
 declare module 'meteor/unchained:core-orders' {
-  class Orders {
+  export const Orders: {
     findOrder({ orderId: string }): any;
   }
 }

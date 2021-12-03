@@ -2,6 +2,7 @@
   "name": "@unchained/api",
   "version": "1.0.0-beta15",
   "scripts": {
+    "link:core": "npm link @unchainedshop/types",
     "test": "cross-env METEOR_PACKAGE_DIRS=../ TEST_WATCH=1 meteor test-packages ./ --driver-package meteortesting:mocha --port 4200"
   },
   "repository": {
