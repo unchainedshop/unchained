@@ -7,7 +7,7 @@ import { MediaObjects } from '../db';
 import { Context } from '@unchainedshop/types/api';
 import { File } from '@unchainedshop/types/files';
 
-/*
+
 const {
   MINIO_ACCESS_KEY,
   MINIO_SECRET_KEY,
@@ -18,18 +18,18 @@ const {
 const PUT_URL_EXPIRY = 24 * 60 * 60;
 const mediaContainerRegistry = {};
 
-const generateMinioUrl = (directoryName: string, hashedFilename: string) => {
+const generateMinioUrl = (directoryName, hashedFilename) => {
   return `${MINIO_ENDPOINT}/${MINIO_BUCKET_NAME}/${directoryName}/${hashedFilename}`;
 };
 
 // Returns the file name with extension from its ID and url bucket name is included in the ID on insert operation
-const composeObjectName = (file: File) => {
+const composeObjectName = (file) => {
   return decodeURIComponent(file.externalFileId).concat(
     file.url ? file.url.substr(file.url.lastIndexOf('.')) : ''
   );
 };
 
-/*
+
 const insertMedia = ({
   directoryName,
   hash,
@@ -58,11 +58,11 @@ const insertMedia = ({
   return options;
 };
 
-/*
+
 const getMimeType = (extension) => {
   return mimeType.lookup(extension);
 };
-function downloadFromUrlToBuffer(fileUrl: string) {
+function downloadFromUrlToBuffer(fileUrl) {
   return new Promise((resolve, reject) => {
     // eslint-disable-next-line consistent-return
     const req = https.get(fileUrl, (res) => {
@@ -70,7 +70,7 @@ function downloadFromUrlToBuffer(fileUrl: string) {
         return reject(new Error(`statusCode=${res.statusCode}`));
       }
 
-      const body: any = [];
+      const body = [];
       let buf;
       res.on('data', (chunk) => {
         body.push(chunk);
@@ -90,8 +90,8 @@ function downloadFromUrlToBuffer(fileUrl: string) {
     req.end();
   });
 }
-/*
-const generateRandomFileName = (fileName: string) => {
+
+const generateRandomFileName = (fileName) => {
   const random = crypto.randomBytes(16);
   const hash = crypto
     .createHash('sha256')
@@ -105,7 +105,7 @@ const generateRandomFileName = (fileName: string) => {
   };
 };
 
-function bufferToStream(buffer: any) {
+function bufferToStream(buffer) {
   const stream = new Readable();
   stream.push(buffer);
   stream.push(null);
@@ -135,21 +135,21 @@ function connectToMinio() {
     return null;
   }
 }
-/*
+
 const client = connectToMinio();
 if (NODE_ENV === 'development') client?.traceOn(process.stdout);
-*/
-/*
-const getObjectStats = async (fileName: string) => {
+
+
+const getObjectStats = async (fileName) => {
   if (!client) throw new Error('Minio not connected, check env variables');
 
   return client.statObject(MINIO_BUCKET_NAME, fileName);
 };
-*/
+
 export const createSignedPutURL = async (
   directoryName = '',
-  linkedMediaId: string,
-  fileName: string,
+  linkedMediaId,
+  fileName,
   context = {}
 ) => {
   if (!client) throw new Error('Minio not connected, check env variables');
@@ -178,8 +178,8 @@ export const createSignedPutURL = async (
   };
 };
 
-/* 
-export const removeObjects = async (ids: string | Array<string>) => {
+
+export const removeObjects = async (ids) => {
   if (!client) throw new Error('Minio not connected, check env variables');
 
   if (typeof ids !== 'string' && !Array.isArray(ids))
@@ -280,9 +280,9 @@ export const uploadFileFromURL = async (
     ...meta,
   });
 };
-*/
 
-export const linkMedia = async ({ mediaUploadTicketId, size, type }, { modules }: Context) => {
+
+export const linkMedia = async ({ mediaUploadTicketId, size, type }, { modules }) => {
   const media = await modules.files.findFile({ fileId: mediaUploadTicketId });
   if (!media) throw new Error(`Media with id ${mediaUploadTicketId} Not found`);
   const { meta } = media;
@@ -308,9 +308,9 @@ export const linkMedia = async ({ mediaUploadTicketId, size, type }, { modules }
   return MediaObjects.findOne({ _id: mediaUploadTicketId });
 };
 
-// export default client;
+export default client;
 
-/* 
+
 export const createUploadContainer = (directoryName, fn) => {
   if (!mediaContainerRegistry[directoryName])
     mediaContainerRegistry[directoryName] = fn;
@@ -334,4 +334,4 @@ export const createUploadContainer = (directoryName, fn) => {
       return result;
     },
   };
-};*/
+};

@@ -1,12 +1,10 @@
 import { ModuleInput } from '@unchainedshop/types/common';
 import { File, FilesModule, UploadFileData } from '@unchainedshop/types/files';
-import { ListIndexesCursor } from '@unchainedshop/types/node_modules/mongodb';
 import { emit, registerEvents } from 'meteor/unchained:events';
 import {
-  generateDbMutations,
-  generateDbFilterById,
+  generateDbFilterById, generateDbMutations
 } from 'meteor/unchained:utils';
-import { FileDirector } from 'src/director/FileDirector';
+import { FileDirector } from '../director/FileDirector';
 import { FilesCollection } from '../db/FilesCollection';
 import { FilesSchema } from '../db/FilesSchema';
 
@@ -129,37 +127,6 @@ export const configureFilesModule = async ({
       const fileId = await mutations.insert(file);
 
       return await Files.findOne(generateDbFilterById(fileId));
-    },
-
-    linkFile: async ({ externalFileId, size, type }) => {
-      const file = await Files.findOne({ externalFileId });
-
-      if (!file)
-        throw new Error(`Media with external id ${externalFileId} Not found`);
-
-      const { meta } = file;
-      const { mediaId, ...mediaMeta } = meta;
-      if (!mediaId) return null;
-      
-      const [mediaType] = decodeURIComponent(externalFileId).split('/');
-
-      await Files.updateOne(
-        { _id: file._id },
-        {
-          $set: {
-            size,
-            type,
-            expires: null,
-            updated: new Date(),
-          },
-        }
-      );
-
-      await mediaContainerRegistry[mediaType](mediaUploadTicketId, mediaId, {
-        ...mediaMeta,
-      });
-
-      return await Files.findOne({ _id: file._id });
     },
   };
 };

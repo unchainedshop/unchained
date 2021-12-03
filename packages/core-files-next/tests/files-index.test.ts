@@ -1,48 +1,49 @@
 import { assert } from 'chai';
 import { initDb } from 'meteor/unchained:mongodb';
-import { configureFilesModule } from 'meteor/unchained:core-files-next';
+import {
+  configureFilesModule,
+  fileServices,
+  setFileAdapter,
+  getFileAdapter,
+  createSignedURL,
+  registerFileUploadCallback,
+  getFileUploadCallback,
+  removeFiles,
+  uploadFileFromStream,
+  uploadFileFromURL,
+} from 'meteor/unchained:core-files-next';
 import { Mongo } from 'meteor/mongo';
+import { FilesModule } from '@unchainedshop/types/files';
 
 describe('Test exports', () => {
-  let module;
+  let module: FilesModule;
 
   before(async () => {
     const db = initDb();
     module = await configureFilesModule({ db });
   });
 
-  it('Check Bookmarks module', async () => {
+  it('Check files module', () => {
     assert.ok(module);
-    assert.isFunction(module.findCurrency);
-    assert.isFunction(module.findFiles);
-    assert.isFunction(module.currencyExists);
+    assert.isFunction(module.findFile);
     assert.isFunction(module.create);
     assert.isFunction(module.update);
     assert.isFunction(module.delete);
   });
 
-  it('Mutate currency', async () => {
-    const currencyId = await module.create(
-      {
-        authorId: 'Test-User-1',
-        isoCode: 'CHF',
-      },
-      'Test-User-1'
-    );
+  it('Check file services', () => {
+    assert.ok(fileServices);
+    assert.ok(fileServices.linkFileService);
+  });
 
-    assert.ok(currencyId);
-    const currency = await module.findCurrency(currencyId);
-
-    assert.ok(currency);
-    assert.equal(currency._id, currencyId);
-    assert.equal(currency.isoCode, 'CHF');
-    assert.equal(currency.userId, 'Test-User-1');
-    assert.isDefined(currency.created);
-    assert.isUndefined(currency.updated);
-    assert.isUndefined(currency.updatedBy);
-    assert.equal(currency.createdBy, 'Test-User-1');
-
-    const deletedCount = await module.delete(currencyId);
-    assert.equal(deletedCount, 1);
+  it('Check director expors', () => {
+    assert.isFunction(setFileAdapter);
+    assert.isFunction(getFileAdapter);
+    assert.isFunction(createSignedURL);
+    assert.isFunction(registerFileUploadCallback);
+    assert.isFunction(getFileUploadCallback);
+    assert.isFunction(removeFiles);
+    assert.isFunction(uploadFileFromStream);
+    assert.isFunction(uploadFileFromURL);
   });
 });

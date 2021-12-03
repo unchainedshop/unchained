@@ -1,7 +1,6 @@
 import {
   FileAdapter,
   FileDirector as IFileDirector,
-  SignedPutURLData,
 } from '@unchainedshop/types/files';
 
 const DefaultFileAdapter: FileAdapter = {

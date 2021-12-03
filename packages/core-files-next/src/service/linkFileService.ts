@@ -1,7 +1,6 @@
 import { Context } from '@unchainedshop/types/api';
 import { File } from '@unchainedshop/types/files';
-import { FileDirector } from 'src/director/FileDirector';
-
+import { FileDirector } from '../director/FileDirector';
 
 export type LinkFileService = (
   params: { externalFileId: string; size: number; type: string },

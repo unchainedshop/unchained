@@ -18,13 +18,18 @@ Package.onUse(function (api) {
   api.use('typescript');
 
   api.use('unchained:logger@1.0.0-beta15');
+  api.use('unchained:events@1.0.0-beta15');
 
   api.mainModule('src/files-index.ts', 'server');
 });
 
 Package.onTest((api) => {
+  api.use('meteortesting:mocha');
   api.use('ecmascript');
-  api.use('tinytest');
-  api.use('unchained:core-files-next');
-  api.mainModule('tests/files-index.test.js');
+  api.use('typescript');
+
+  api.use('unchained:mongodb@1.0.0-beta15');
+  api.use('unchained:core-files-next@1.0.0-beta15');
+
+  api.mainModule('tests/files-index.test.ts');
 });

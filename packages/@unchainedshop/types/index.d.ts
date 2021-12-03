@@ -23,7 +23,12 @@ import {
   PaymentProviderType,
 } from './payments';
 import { Request } from 'express';
-import { FilesModule, IFileAdapter, UploadFileData } from './files';
+import {
+  FilesModule,
+  IFileAdapter,
+  UploadFileCallback,
+  UploadFileData,
+} from './files';
 
 export { Modules } from './modules';
 
@@ -82,66 +87,77 @@ declare module 'meteor/unchained:logger' {
 }
 
 declare module 'meteor/unchained:events' {
-  function emit(
+  export function emit(
     eventName: string,
     data?: string | Record<string, unknown>
   ): Promise<void>;
-  function getEmitAdapter(): EmitAdapter;
-  function getEmitHistoryAdapter(): EmitAdapter;
-  function getRegisteredEvents(): string[];
-  function registerEvents(events: string[]): void;
-  function setEmitAdapter(adapter: EmitAdapter): void;
-  function setEmitHistoryAdapter(adapter: EmitAdapter): void;
-  function subscribe(
+  export function getEmitAdapter(): EmitAdapter;
+  export function getEmitHistoryAdapter(): EmitAdapter;
+  export function getRegisteredEvents(): string[];
+  export function registerEvents(events: string[]): void;
+  export function setEmitAdapter(adapter: EmitAdapter): void;
+  export function setEmitHistoryAdapter(adapter: EmitAdapter): void;
+  export function subscribe(
     eventName: string,
     callBack: (payload?: Record<string, unknown>) => void
   ): void;
 }
 
 declare module 'meteor/unchained:core-events' {
-  function configureEventsModule(params: ModuleInput): Promise<EventsModule>;
+  export function configureEventsModule(
+    params: ModuleInput
+  ): Promise<EventsModule>;
 }
 
 declare module 'meteor/unchained:core-files-next' {
-  function configureFilesModule(params: ModuleInput): Promise<FilesModule>;
+  export function configureFilesModule(
+    params: ModuleInput
+  ): Promise<FilesModule>;
 
-  function setFileAdapter(adapter: FileAdapter): void;
-  function getFileAdapter(): FileAdapter;
+  export const fileServices: any;
 
-  function composeFileName(file: File): string;
-  function createSignedURL(
+  export function setFileAdapter(adapter: FileAdapter): void;
+  export function getFileAdapter(): FileAdapter;
+
+  export function composeFileName(file: File): string;
+  export function createSignedURL(
     directoryName: string,
     fileName: string
   ): Promise<UploadFileData | null>;
-  function registerFileUpload(
+  export function registerFileUploadCallback(
     directoryName: string,
-    fn: (params: any) => Promise<any>
+    callback: UploadFileCallback
   ): void;
-  function removeFiles(fileIds: string | Array<string>): Promise<number>;
-  function uploadFileFromStream(
+  export function getFileUploadCallback(
+    directoryName: string
+  ): UploadFileCallback;
+  export function removeFiles(fileIds: string | Array<string>): Promise<number>;
+  export function uploadFileFromStream(
     directoryName: string,
     rawFile: any
   ): Promise<UploadFileData | null>;
-  function uploadFileFromURL(
+  export function uploadFileFromURL(
     directoryName: string,
     file: { fileLink: string; fileName: string }
   ): Promise<UploadFileData | null>;
 }
 
 declare module 'meteor/unchained:core-bookmarks' {
-  function configureBookmarksModule(
+  export function configureBookmarksModule(
     params: ModuleInput
   ): Promise<BookmarksModule>;
+  export const bookmarkServices: any;
 }
 
 declare module 'meteor/unchained:core-countries' {
-  function configureCountriesModule(
+  export function configureCountriesModule(
     params: ModuleInput
   ): Promise<CountriesModule>;
+  export const countryServices: any;
 }
 
 declare module 'meteor/unchained:core-currencies' {
-  function configureCurrenciesModule(
+  export function configureCurrenciesModule(
     params: ModuleInput
   ): Promise<CurrenciesModule>;
 }
@@ -153,16 +169,18 @@ declare module 'meteor/unchained:core-languages' {
 }
 
 declare module 'meteor/unchained:core-payments' {
-  function configurePaymentModule(params: ModuleInput): Promise<PaymentModule>;
-  const paymentServices;
+  export function configurePaymentModule(
+    params: ModuleInput
+  ): Promise<PaymentModule>;
+  export const paymentServices;
 
-  function PaymentDirector(
+  export function PaymentDirector(
     provider: PaymentProvider,
     context: PaymentContext
   ): IPaymentDirector;
 
-  function registerAdapter(adapter: IPaymentAdapter): void;
-  function getAdapter(key: string): IPaymentAdapter;
+  export function registerAdapter(adapter: IPaymentAdapter): void;
+  export function getAdapter(key: string): IPaymentAdapter;
 
   export class PaymentAdapter implements IPaymentAdapter {
     static key: string;
@@ -175,11 +193,11 @@ declare module 'meteor/unchained:core-payments' {
 
     constructor(config: PaymentConfiguration, context: PaymentContext);
   }
-  const PaymentError;
+  export const PaymentError;
 
-  const paymentLogger;
+  export const paymentLogger;
 
-  const PaymentProviderType;
+  export const PaymentProviderType;
 }
 
 declare module 'meteor/unchained:core-users' {
@@ -191,9 +209,9 @@ declare module 'meteor/unchained:core-users' {
 declare module 'meteor/unchained:core-orders' {
   export const Orders: {
     findOrder({ orderId: string }): any;
-  }
+  };
 }
 
 declare module 'meteor/unchained:mongodb' {
-  function initDb(): Db;
+  export function initDb(): Db;
 }
