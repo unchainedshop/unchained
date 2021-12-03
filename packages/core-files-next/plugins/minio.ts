@@ -4,6 +4,8 @@ import { Readable } from 'stream';
 import https from 'https';
 import mimeType from 'mime-types';
 import { MediaObjects } from '../db';
+import { Context } from '@unchainedshop/types/api';
+import { File } from '@unchainedshop/types/files';
 
 const {
   MINIO_ACCESS_KEY,
@@ -15,14 +17,14 @@ const {
 const PUT_URL_EXPIRY = 24 * 60 * 60;
 const mediaContainerRegistry = {};
 
-const generateMinioUrl = (directoryName, hashedFilename) => {
+const generateMinioUrl = (directoryName: string, hashedFilename: string) => {
   return `${MINIO_ENDPOINT}/${MINIO_BUCKET_NAME}/${directoryName}/${hashedFilename}`;
 };
 
 // Returns the file name with extension from its ID and url bucket name is included in the ID on insert operation
-const composeObjectName = (object) => {
-  return decodeURIComponent(object._id).concat(
-    object.url.substr(object.url.lastIndexOf('.'))
+const composeObjectName = (file: File) => {
+  return decodeURIComponent(file.externalFileId).concat(
+    file.url ? file.url.substr(file.url.lastIndexOf('.')) : ''
   );
 };
 
@@ -57,7 +59,7 @@ const insertMedia = ({
 const getMimeType = (extension) => {
   return mimeType.lookup(extension);
 };
-function downloadFromUrlToBuffer(fileUrl) {
+function downloadFromUrlToBuffer(fileUrl: string) {
   return new Promise((resolve, reject) => {
     // eslint-disable-next-line consistent-return
     const req = https.get(fileUrl, (res) => {
@@ -65,7 +67,7 @@ function downloadFromUrlToBuffer(fileUrl) {
         return reject(new Error(`statusCode=${res.statusCode}`));
       }
 
-      const body = [];
+      const body: any = [];
       let buf;
       res.on('data', (chunk) => {
         body.push(chunk);
@@ -86,7 +88,7 @@ function downloadFromUrlToBuffer(fileUrl) {
   });
 }
 
-const generateRandomFileName = (fileName) => {
+const generateRandomFileName = (fileName: string) => {
   const random = crypto.randomBytes(16);
   const hash = crypto
     .createHash('sha256')
@@ -100,7 +102,7 @@ const generateRandomFileName = (fileName) => {
   };
 };
 
-function bufferToStream(buffer) {
+function bufferToStream(buffer: any) {
   const stream = new Readable();
   stream.push(buffer);
   stream.push(null);
@@ -134,7 +136,7 @@ function connectToMinio() {
 const client = connectToMinio();
 if (NODE_ENV === 'development') client?.traceOn(process.stdout);
 
-const getObjectStats = async (fileName) => {
+const getObjectStats = async (fileName: string) => {
   if (!client) throw new Error('Minio not connected, check env variables');
 
   return client.statObject(MINIO_BUCKET_NAME, fileName);
@@ -142,8 +144,8 @@ const getObjectStats = async (fileName) => {
 
 export const createSignedPutURL = async (
   directoryName = '',
-  linkedMediaId,
-  fileName,
+  linkedMediaId: string,
+  fileName: string,
   context = {}
 ) => {
   if (!client) throw new Error('Minio not connected, check env variables');
@@ -172,15 +174,15 @@ export const createSignedPutURL = async (
   };
 };
 
-export const removeObjects = async (ids, options = {}) => {
+export const removeObjects = async (ids: string | Array<string>) => {
   if (!client) throw new Error('Minio not connected, check env variables');
 
   if (typeof ids !== 'string' && !Array.isArray(ids))
     throw Error('Media id/s to be removed not provided as a string or array');
   const idList = [];
   if (typeof ids === 'string') {
-    const object = MediaObjects.findOne({ _id: ids });
-    idList.push(composeObjectName(object));
+    const file = MediaObjects.findOne({ _id: ids });
+    idList.push(composeObjectName(file));
   } else if (Array.isArray(ids)) {
     ids.forEach((id) => {
       idList.push(
@@ -274,8 +276,8 @@ export const uploadFileFromURL = async (
   });
 };
 
-export const linkMedia = async ({ mediaUploadTicketId, size, type }) => {
-  const media = MediaObjects.findOne({ _id: mediaUploadTicketId });
+export const linkMedia = async ({ mediaUploadTicketId, size, type }, { modules }: Context) => {
+  const media = await modules.files.findFile({ fileId: mediaUploadTicketId });
   if (!media) throw new Error(`Media with id ${mediaUploadTicketId} Not found`);
   const { meta } = media;
   const { mediaId, ...mediaMeta } = meta;

@@ -15,10 +15,12 @@ import { User } from './user';
 import { Logger, LogOptions, Transports } from './logs';
 import { Locale } from '@types/locale';
 import {
+  PaymentAdapter,
   PaymentDirector as IPaymentDirector,
   PaymentProvider,
 } from './payments';
 import { Request } from 'express';
+import { FilesModule, IFileAdapter } from './files';
 
 export { Modules } from './modules';
 
@@ -97,6 +99,15 @@ declare module 'meteor/unchained:core-events' {
   function configureEventsModule(params: ModuleInput): Promise<EventsModule>;
 }
 
+declare module 'meteor/unchained:core-files' {
+  function configureFilesModule(params: ModuleInput): Promise<FilesModule>;
+
+  class FileAdapter implements IFileAdapter {
+    constructor(context: Context)
+  };
+}
+
+
 declare module 'meteor/unchained:core-bookmarks' {
   function configureBookmarksModule(
     params: ModuleInput
@@ -123,11 +134,20 @@ declare module 'meteor/unchained:core-languages' {
 
 declare module 'meteor/unchained:core-payments' {
   function configurePaymentModule(params: ModuleInput): Promise<PaymentModule>;
+  const paymentServices;
 
   function PaymentDirector(
     provider: PaymentProvider,
     context: PaymentContext
   ): IPaymentDirector;
+
+  function registerAdapter(adapter: PaymentAdapter): void;
+  function getAdapter(key: string): PaymentAdapter;
+  
+  const PaymentAdapter;
+  const PaymentError;
+  
+  const paymentLogger;
 
   const PaymentProviderType;
 }

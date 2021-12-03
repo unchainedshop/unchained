@@ -1,7 +1,8 @@
-import { EventsModule } from './events';
 import { BookmarksModule } from './bookmarks';
-import { CurrenciesModule } from './currencies';
 import { CountriesModule } from './countries';
+import { CurrenciesModule } from './currencies';
+import { EventsModule } from './events';
+import { FilesModule } from './files';
 import { LanguagesModule } from './languages';
 import { PaymentModule } from './payments';
 
@@ -15,6 +16,7 @@ export interface Modules {
   documents: any;
   enrollments: any;
   events: EventsModule;
+  files: FilesModule;
   filters: any;
   languages: LanguagesModule;
   messaging: any;

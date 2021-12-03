@@ -1,4 +1,4 @@
-import { LanguageHelperTypes } from '@unchainedshop/types/languages';
+import { LanguageHelperTypes } from "@unchainedshop/types/languages";
 
 export const Language: LanguageHelperTypes = {
   isBase(language, _, { modules }) {

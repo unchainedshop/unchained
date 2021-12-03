@@ -9,6 +9,7 @@ Package.describe({
 Npm.depends({
   minio: '7.0.18',
   'mime-types': '2.1.32',
+  'simpl-schema': '1.12.0',
 });
 
 Package.onUse(function (api) {
@@ -18,12 +19,12 @@ Package.onUse(function (api) {
 
   api.use('unchained:logger@1.0.0-beta15');
 
-  api.mainModule('index.ts', 'server');
+  api.mainModule('src/files-index.ts', 'server');
 });
 
 Package.onTest((api) => {
   api.use('ecmascript');
   api.use('tinytest');
   api.use('unchained:core-files-next');
-  api.mainModule('core-files-next-tests.js');
+  api.mainModule('tests/files-index.test.js');
 });

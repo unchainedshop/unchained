@@ -7,11 +7,11 @@ import { UserNotFoundError } from '../../errors';
 export default function confirmMediaUpload(
   root,
   { mediaUploadTicketId, size, type },
-  { userId }
+  { modules, userId }
 ) {
   log(`mutation confirmMediaUpload `, { userId });
   const user = Users.findUser({ userId });
 
   if (!user) throw new UserNotFoundError({ userId });
-  return linkMedia({ mediaUploadTicketId, size, type });
+  return linkMedia({ mediaUploadTicketId, size, type }, { modules, userId });
 }

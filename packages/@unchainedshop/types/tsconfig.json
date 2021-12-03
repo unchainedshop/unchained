@@ -22,6 +22,7 @@
     "countries.d.ts",
     "currencies.d.ts",
     "events.d.ts",
+    "files.d.ts",
     "index.d.ts",
     "languages.d.ts",
     "logs.d.ts",
