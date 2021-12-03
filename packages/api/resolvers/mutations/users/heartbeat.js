@@ -1,6 +1,6 @@
 import { log } from 'meteor/unchained:logger';
 import { Users } from 'meteor/unchained:core-users';
-import { UserNotFoundError } from '../../errors';
+import { UserNotFoundError } from '../../../errors';
 
 export default function heartbeat(
   root,

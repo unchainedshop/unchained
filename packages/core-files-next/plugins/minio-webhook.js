@@ -1,6 +1,5 @@
 import { useMiddlewareWithCurrentContext } from 'meteor/unchained:api';
 import bodyParser from 'body-parser';
-import { linkMedia } from './minio';
 
 const { MINIO_WEBHOOK_AUTH_TOKEN } = process.env;
 

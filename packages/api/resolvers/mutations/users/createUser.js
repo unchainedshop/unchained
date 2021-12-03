@@ -1,6 +1,6 @@
 import { log } from 'meteor/unchained:logger';
 import { Users } from 'meteor/unchained:core-users';
-import hashPassword from '../../hashPassword';
+import hashPassword from '../../../hashPassword';
 
 export default async function createUser(root, options, context) {
   log('mutation createUser', { email: options.email });

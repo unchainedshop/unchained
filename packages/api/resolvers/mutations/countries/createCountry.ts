@@ -12,5 +12,5 @@ export default async function createCountry(
   return await modules.countries.create({
     ...country,
     authorId: userId,
-  });
+  }, userId);
 }

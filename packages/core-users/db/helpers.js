@@ -285,24 +285,7 @@ Users.updateHeartbeat = ({ userId, ...options }) =>
     }
   );
 
-Users.userExists = ({ userId }) => {
-  return !!Users.find({ _id: userId }, { limit: 1 }).count();
-};
 
-Users.findUser = ({ userId, resetToken, hashedToken }) => {
-  if (hashedToken) {
-    return Users.findOne({
-      'services.resume.loginTokens.hashedToken': hashedToken,
-    });
-  }
-
-  if (resetToken) {
-    return Users.findOne({
-      'services.password.reset.token': resetToken,
-    });
-  }
-  return Users.findOne({ _id: userId });
-};
 
 Users.createUser = async (userData, context, { skipMessaging } = {}) => {
   const userId = await accountsPassword.createUser(userData, context);
@@ -375,6 +358,28 @@ Users.createLoginToken = async (user, rawContext) => {
     tokenExpires: loginToken.when,
   };
 };
+
+/* Queries */
+
+Users.userExists = ({ userId }) => {
+  return !!Users.find({ _id: userId }, { limit: 1 }).count();
+};
+
+Users.findUser = ({ userId, resetToken, hashedToken }) => {
+  if (hashedToken) {
+    return Users.findOne({
+      'services.resume.loginTokens.hashedToken': hashedToken,
+    });
+  }
+
+  if (resetToken) {
+    return Users.findOne({
+      'services.password.reset.token': resetToken,
+    });
+  }
+  return Users.findOne({ _id: userId });
+};
+
 
 Users.findUsers = async ({ limit, offset, includeGuests, queryString }) => {
   const selector = buildFindSelector({ includeGuests, queryString });

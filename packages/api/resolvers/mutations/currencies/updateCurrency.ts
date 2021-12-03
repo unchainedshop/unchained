@@ -16,6 +16,6 @@ export default async function updateCurrency(
   });
   if (!currencyExists) throw new CurrencyNotFoundError({ currencyId });
 
-  await modules.currencies.update(currencyId, currency);
+  await modules.currencies.update(currencyId, currency, userId);
   return modules.currencies.findCurrency({ currencyId });
 }

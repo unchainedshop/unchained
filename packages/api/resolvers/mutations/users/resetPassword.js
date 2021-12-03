@@ -1,7 +1,7 @@
 import { log } from 'meteor/unchained:logger';
 import { accountsPassword, dbManager } from 'meteor/unchained:core-accountsjs';
 import { Users } from 'meteor/unchained:core-users';
-import hashPassword from '../../hashPassword';
+import hashPassword from '../../../hashPassword';
 
 export default async function resetPassword(
   root,

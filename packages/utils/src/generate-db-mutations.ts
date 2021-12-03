@@ -42,7 +42,8 @@ export const generateDbMutations = <T extends { _id?: _ID }>(
           values.$set.updatedBy = userId;
 
           schema.validate(values, { modifier: true });
-          const filter = generateDbFilterById(_id, { deleted: null });
+          const filter = generateDbFilterById(_id);
+          filter.deleted = null
           const result = await collection.updateOne(filter, values);
 
           return result.upsertedId.toHexString();
@@ -52,7 +53,8 @@ export const generateDbMutations = <T extends { _id?: _ID }>(
       ? undefined
       : async (_id, userId) => {
           checkId(_id);
-          const filter = generateDbFilterById(_id, { deleted: null });
+          const filter = generateDbFilterById(_id)
+          filter.deleted = null
           const values = schema.clean(
             { deleted: new Date(), deletedBy: userId },
             { isModifier: true }

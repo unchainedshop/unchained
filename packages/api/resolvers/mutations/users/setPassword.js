@@ -1,7 +1,7 @@
 import { log } from 'meteor/unchained:logger';
 import { Users } from 'meteor/unchained:core-users';
-import { UserNotFoundError, InvalidIdError } from '../../errors';
-import hashPassword from '../../hashPassword';
+import { UserNotFoundError, InvalidIdError } from '../../../errors';
+import hashPassword from '../../../hashPassword';
 
 export default async function setPassword(
   root,

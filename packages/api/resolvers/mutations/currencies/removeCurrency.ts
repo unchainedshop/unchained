@@ -12,6 +12,6 @@ export default async function removeCurrency(
   const currency = await modules.currencies.findCurrency({ currencyId });
   if (!currency) throw new CurrencyNotFoundError({ currencyId });
 
-  await modules.currencies.delete(currencyId);
+  await modules.currencies.delete(currencyId, userId);
   return currency;
 }

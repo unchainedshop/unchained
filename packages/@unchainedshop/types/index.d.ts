@@ -6,12 +6,14 @@ import {
   Filter,
   ModuleInput,
   TimestampFields,
+  ModuleMutations,
+  ModuleCreateMutation,
 } from './common';
 import { CurrenciesModule } from './currencies';
 import { CountriesModule } from './countries';
 import { LanguagesModule } from './languages';
 import { EmitAdapter, EventsModule } from './events';
-import { User } from './user';
+import { User } from './users';
 import { Logger, LogOptions, Transports } from './logs';
 import { Locale } from '@types/locale';
 import {

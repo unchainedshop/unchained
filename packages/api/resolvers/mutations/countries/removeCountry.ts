@@ -13,6 +13,6 @@ export default async function removeCountry(
   if (!countryId) throw new InvalidIdError({ countryId });
   const country = await modules.countries.findCountry({ countryId });
   if (!country) throw new CountryNotFoundError({ countryId });
-  await modules.countries.delete(countryId);
+  await modules.countries.delete(countryId, userId);
   return country;
 }

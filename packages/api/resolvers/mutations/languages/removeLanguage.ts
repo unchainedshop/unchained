@@ -13,7 +13,7 @@ export default async function removeLanguage(
   const language = await modules.languages.findLanguage({ languageId });
   if (!language) throw new LanguageNotFoundError({ languageId });
 
-  await modules.languages.delete(languageId);
+  await modules.languages.delete(languageId, userId);
 
   return language;
 }
