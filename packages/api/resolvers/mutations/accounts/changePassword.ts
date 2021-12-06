@@ -1,18 +1,24 @@
 import { log } from 'meteor/unchained:logger';
-import { accountsPassword } from 'meteor/unchained:core-accountsjs';
+import { Context, Root } from '@unchainedshop/types/api';
 import hashPassword from '../../../hashPassword';
 
 export default async function changePassword(
-  root,
+  root: Root,
   {
     oldPassword: oldHashedPassword,
     oldPlainPassword,
     newPassword: newHashedPassword,
     newPlainPassword,
+  }: {
+    oldPassword: string
+    oldPlainPassword: string;
+    newPassword: string
+    newPlainPassword: string;
   },
-  context
+  { modules, userId }: Context
 ) {
-  log('mutation changePassword');
+  log('mutation changePassword', { userId });
+
   if (!newHashedPassword && !newPlainPassword) {
     throw new Error('New password is required');
   }

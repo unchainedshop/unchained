@@ -1,3 +1,4 @@
+import { AccountsModule } from './accounts';
 import { UsersModule } from './user';
 import { BookmarksModule } from './bookmarks';
 import { CountriesModule } from './countries';
@@ -8,7 +9,7 @@ import { LanguagesModule } from './languages';
 import { PaymentModule } from './payments';
 
 export interface Modules {
-  accounts: any;
+  accounts: AccountsModule;
   assortments: any;
   bookmarks: BookmarksModule;
   countries: CountriesModule;

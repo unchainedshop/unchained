@@ -6,11 +6,15 @@ import { AccountsModule, AccountsOptions } from '@unchainedshop/types/accounts';
 import { accountsPassword } from '../accounts/accounts-password';
 import { accountsServer } from '../accounts/accounts-server';
 import { dbManager } from '../accounts/db-manager';
+import hashPassword from './utils/hashPassword';
 
 export const configureAccountsModule = async ({
   autoMessagingAfterUserCreation,
 }: AccountsOptions): Promise<AccountsModule> => {
   return {
+    emit: async (event, meta) =>
+      await accountsServer.getHooks().emit(event, meta),
+
     // Mutations
     createUser: async (userData, options = {}) => {
       const { skipMessaging } = options;
@@ -30,19 +34,19 @@ export const configureAccountsModule = async ({
     },
 
     // Email
-    addEmail: async (userId, { email, verified = false }) => {
-      await accountsPassword.addEmail(userId, email, verified);
+    addEmail: async (userId, email) => {
+      await accountsPassword.addEmail(userId, email, false);
     },
-    removeEmail: async (userId, { email }) => {
+    removeEmail: async (userId, email) => {
       await accountsPassword.removeEmail(userId, email);
     },
-    updateEmail: async (userId, { email, verified = false }, user) => {
+    updateEmail: async (userId, email, user) => {
       log(
         'user.updateEmail is deprecated, please use user.addEmail and user.removeEmail',
         { level: LogLevel.Warning }
       );
 
-      await accountsPassword.addEmail(userId, email, verified);
+      await accountsPassword.addEmail(userId, email, false);
       await Promise.all(
         (user.emails || [])
           .filter(
@@ -53,19 +57,28 @@ export const configureAccountsModule = async ({
           )
       );
     },
+    findUnverifiedUserByToken: async (token: string) => {
+      return await dbManager.findUserByEmailVerificationToken(token);
+    },
+    sendVerificationEmail: async (email: string) => {
+      await accountsPassword.sendVerificationEmail(email);
+    },
+    verifyEmail: async (token: string) => {
+      await accountsPassword.verifyEmail(token);
+    },
 
     // Autentication
-    createLogintoken: async (user, rawContext) => {
+    createLogintoken: async (userId, rawContext) => {
       const context = evaluateContext(filterContext(rawContext));
       const { user: tokenUser, token: loginToken } =
-        await accountsServer.loginWithUser(user);
+        await accountsServer.loginWithUser(userId);
       await accountsServer.getHooks().emit('LoginTokenCreated', {
         user: tokenUser,
         connection: context,
         service: null,
       });
       return {
-        id: tokenUser._id,
+        id: userId,
         token: loginToken.token,
         tokenExpires: loginToken.when,
       };
@@ -92,9 +105,38 @@ export const configureAccountsModule = async ({
       };
     },
 
-    setPassword: async (_id, password) => {
+    setPassword: async (userId, password) => {
       const newPassword = password || uuidv4().split('-').pop();
-      await accountsPassword.setPassword(_id, newPassword);
+      await accountsPassword.setPassword(userId, newPassword);
+    },
+    changePassword: async (
+      userId,
+      {
+        newPassword: newHashedPassword,
+        newPlainPassword,
+        oldPassword: oldHashedPassword,
+        oldPlainPassword,
+      }
+    ) => {
+      const newPassword = newHashedPassword || hashPassword(newPlainPassword);
+      const oldPassword = oldHashedPassword || hashPassword(oldPlainPassword);
+
+      await accountsPassword.changePassword(userId, oldPassword, newPassword);
+    },
+    sendResetPasswordEmail: async (email) =>
+      await accountsPassword.sendResetPasswordEmail(email),
+
+    resetPassword: async (
+      userId,
+      { token, newPlainPassword, newPassword: newHashedPassword },
+      context
+    ) => {
+      const userWithNewPassword = await dbManager.findUserByResetPasswordToken(
+        token
+      );
+      const newPassword = newHashedPassword || hashPassword(newPlainPassword);
+      await accountsPassword.resetPassword(token, newPassword, context);
+      return accountsServer.createLoginToken(userId, context);
     },
 
     setUsername: async (_id, username) => {

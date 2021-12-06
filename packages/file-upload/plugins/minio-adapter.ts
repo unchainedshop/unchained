@@ -17,8 +17,6 @@ const {
 } = process.env;
 const PUT_URL_EXPIRY = 24 * 60 * 60;
 
-const FileUploadRegistry = new Map<string, (params: any) => Promise<any>>();
-
 const connectToMinio = () => {
   if (!MINIO_ACCESS_KEY || !MINIO_SECRET_KEY || !MINIO_ENDPOINT) {
     log(
@@ -144,15 +142,7 @@ export const MinioAdapter: FileAdapter = {
     };
   },
 
-  registerFileUploadCallback(directoryName, fn) {
-    if (!FileUploadRegistry.has(directoryName)) {
-      FileUploadRegistry.set(directoryName, fn);
-    }
-  },
-
-  getFileUploadCallback(directoryName) { return FileUploadRegistry.get(directoryName) },
-
-  async removeFiles(composedFileIds) {
+    async removeFiles(composedFileIds) {
     if (!client) throw new Error('Minio not connected, check env variables');
 
     await client.removeObjects(MINIO_BUCKET_NAME, composedFileIds);
