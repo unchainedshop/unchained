@@ -5,8 +5,9 @@ import { Context, Root } from '@unchainedshop/types/api';
 export default async function prepareUserAvatarUpload(
   root: Root,
   params: { mediaName: string; userId: string },
-  { modules, userId }: Context
+  context: Context
 ) {
+  const { modules, services, userId } = context;
   const normalizedUserId = params.userId || userId;
 
   log(`mutation prepareUserAvatarUpload ${normalizedUserId}`, {
@@ -18,6 +19,7 @@ export default async function prepareUserAvatarUpload(
     'user-avatars',
     params.mediaName,
     { userId: normalizedUserId },
-    userId
+    userId,
+    (file) => services.users.updateUserAvatarAfterUpload({ file }, context)
   );
 }

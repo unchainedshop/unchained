@@ -10,10 +10,7 @@ const DefaultFileAdapter: FileAdapter = {
   createSignedURL() {
     return new Promise<null>((resolve) => resolve(null));
   },
-  registerFileUploadCallback() {},
-  getFileUploadCallback() {
-    return () => new Promise((resolve) => resolve());
-  },
+  
   removeFiles() {
     return new Promise<void>((resolve) => resolve());
   },
@@ -26,6 +23,7 @@ const DefaultFileAdapter: FileAdapter = {
 };
 
 let Adapter: FileAdapter = DefaultFileAdapter;
+const FileUploadRegistry = new Map<string, (params: any) => Promise<any>>();
 
 export const FileDirector: IFileDirector = {
   setFileUploadAdapter: (adapter) => {
@@ -33,6 +31,16 @@ export const FileDirector: IFileDirector = {
   },
 
   getFileUploadAdapter: () => Adapter,
+
+  registerFileUploadCallback(directoryName, fn) {
+    if (!FileUploadRegistry.has(directoryName)) {
+      FileUploadRegistry.set(directoryName, fn);
+    }
+  },
+
+  getFileUploadCallback(directoryName) {
+    return FileUploadRegistry.get(directoryName);
+  },
 
   ...Adapter,
 };

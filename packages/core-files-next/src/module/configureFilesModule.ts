@@ -60,7 +60,7 @@ export const configureFilesModule = async ({
     },
 
     // Plugin
-    createSignedURL: async (directoryName, fileName, meta, userId) => {
+    createSignedURL: async (directoryName, fileName, meta, userId, uploadFileCallback) => {
       const uploadFileData = await FileUpload.createSignedURL(
         directoryName,
         fileName
@@ -68,6 +68,8 @@ export const configureFilesModule = async ({
       const file = getFileFromFileData(uploadFileData, meta);
 
       const fileId = await mutations.create(file, userId);
+
+      FileUpload.registerFileUploadCallback(directoryName, uploadFileCallback);
 
       return await Files.findOne(generateDbFilterById(fileId));
     },

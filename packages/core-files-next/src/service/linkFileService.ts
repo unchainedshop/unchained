@@ -14,10 +14,7 @@ export const linkFileService = async (
   const file = await modules.files.findFile({ externalId });
 
   if (!file) throw new Error(`Media with external id ${externalId} Not found`);
-
-  const { meta } = file;
-  const { mediaId, ...mediaMeta } = meta;
-  if (!mediaId) return null;
+  if (!file.meta.mediaId) return null;
 
   const [directoryName] = decodeURIComponent(externalId).split('/');
 

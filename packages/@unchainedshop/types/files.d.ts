@@ -29,6 +29,7 @@ export type FilesModule = ModuleMutations<File> & {
     fileName: string,
     meta: any,
     userId: string,
+    uploadFileCallback: UploadFileCallback,
   ) => Promise<File | null>;
   removeFiles: (fileIds: string | Array<string>) => Promise<number>;
   uploadFileFromStream: (
@@ -66,7 +67,6 @@ interface SignedPutURLData {
   url: string;
 }
 
-type UploadFileCallback = (file: File) => Promise<void>;
 
 export interface FileAdapter {
   composeFileName: (file: File) => string;
@@ -74,11 +74,6 @@ export interface FileAdapter {
     directoryName: string,
     fileName: string
   ) => Promise<UploadFileData | null>;
-  registerFileUploadCallback: (
-    directoryName: string,
-    callback: UploadFileCallback
-  ) => void;
-  getFileUploadCallback: (directoryName: string) => UploadFileCallback;
   removeFiles: (composedFileIds: Array<string>) => Promise<void>;
   uploadFileFromStream: (
     directoryName: string,
@@ -90,7 +85,15 @@ export interface FileAdapter {
   ) => Promise<UploadFileData | null>;
 }
 
+type UploadFileCallback = (file) => Promise<void>;
+
 export interface FileDirector extends FileAdapter {
   setFileUploadAdapter(adapter: FileAdapter): void;
   getFileUploadAdapter(): FileAdapter;
+  registerFileUploadCallback: (
+    directoryName: string,
+    callback: UploadFileCallback
+  ) => void;
+  getFileUploadCallback: (directoryName: string) => UploadFileCallback;
+  
 }

@@ -37,6 +37,7 @@ import {
 } from 'meteor/unchained:core-payment';
 import {
   configureUsersModule,
+  userServices,
   usersSettings,
 } from 'meteor/unchained:core-users';
 
@@ -94,6 +95,7 @@ export const initCore = async ({
       countries: countryServices,
       payment: paymentServices,
       files: fileServices,
+      users: userServices,
     },
     ...otherComponents,
   };

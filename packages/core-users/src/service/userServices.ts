@@ -1,3 +1,12 @@
-export interface UserServices {}
+import {
+  updateUserAvatarAfterUploadService,
+  UpdateUserAvatarAfterUploadService,
+} from './updateUserAvatarAfterUploadService';
 
-export const userServices: UserServices = {};
+export interface UserServices {
+  updateUserAvatarAfterUpload: UpdateUserAvatarAfterUploadService;
+}
+
+export const userServices: UserServices = {
+  updateUserAvatarAfterUpload: updateUserAvatarAfterUploadService,
+};

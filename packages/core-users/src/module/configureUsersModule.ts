@@ -5,7 +5,6 @@ import {
   generateDbFilterById,
   generateDbMutations,
 } from 'meteor/unchained:utils';
-import { registerFileUploadCallback, removeFiles } from 'meteor/unchained:file-upload';
 import { UsersCollection } from '../db/UsersCollection';
 import { UsersSchema } from '../db/UsersSchema';
 
@@ -32,25 +31,6 @@ export const configureUsersModule = async ({
     Users,
     UsersSchema
   ) as ModuleMutations<User>;
-
-  // Link file with user after upload
-  registerFileUploadCallback('user-avatars', async (file, userId) => {
-    const userFilter = generateDbFilterById(file.meta.userId)
-    
-    const user = await Users.findOne(userFilter);
-    if (user?.avatarId) await removeFiles([user?.avatarId]);
-    
-    await Users.updateOne(
-      userFilter,
-      {
-        $set: {
-          avatarId: file._id,
-          updated: new Date(),
-          updatedBy: userId,
-        },
-      }
-    );
-  });
 
   return {
     // Queries
