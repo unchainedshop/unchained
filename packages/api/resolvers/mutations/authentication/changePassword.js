@@ -1,6 +1,6 @@
 import { log } from 'meteor/unchained:logger';
 import { accountsPassword } from 'meteor/unchained:core-accountsjs';
-import hashPassword from '../../hashPassword';
+import hashPassword from '../../../hashPassword';
 
 export default async function changePassword(
   root,

@@ -1,4 +1,4 @@
-import { ModuleInput } from '@unchainedshop/types/common';
+import { ModuleInput, ModuleMutations } from '@unchainedshop/types/common';
 import { CurrenciesModule, Currency } from '@unchainedshop/types/currencies';
 import { emit, registerEvents } from 'meteor/unchained:events';
 import {
@@ -26,7 +26,7 @@ export const configureCurrenciesModule = async ({
 
   const Currencies = await CurrenciesCollection(db);
 
-  const mutations = generateDbMutations<Currency>(Currencies, CurrenciesSchema);
+  const mutations = generateDbMutations<Currency>(Currencies, CurrenciesSchema) as ModuleMutations<Currency>;
 
   return {
     findCurrency: async ({ currencyId, isoCode }) => {
@@ -64,8 +64,8 @@ export const configureCurrenciesModule = async ({
       emit('CURRENCY_CREATE', { currencyId });
       return currencyId;
     },
-    update: async (_id: string, doc: Currency, userId: string) => {
-      const currencyId = await mutations.update(_id, doc, userId);
+    update: async (_id: string, doc: Partial<Currency>, userId: string) => {
+      const currencyId = await mutations.update(_id, { $set: doc }, userId);
       emit('CURRENCY_UPDATE', { currencyId });
       return currencyId;
     },

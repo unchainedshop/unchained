@@ -1,4 +1,4 @@
-import { ModuleInput } from '@unchainedshop/types/common';
+import { ModuleInput, ModuleMutations } from '@unchainedshop/types/common';
 import { CountriesModule, Country } from '@unchainedshop/types/countries';
 import countryFlags from 'emoji-flags';
 import countryI18n from 'i18n-iso-countries';
@@ -33,7 +33,10 @@ export const configureCountriesModule = async ({
 
   const Countries = await CountriesCollection(db);
 
-  const mutations = generateDbMutations<Country>(Countries, CountriesSchema);
+  const mutations = generateDbMutations<Country>(
+    Countries,
+    CountriesSchema
+  ) as ModuleMutations<Country>;
 
   return {
     count: async (query) => {
@@ -81,8 +84,8 @@ export const configureCountriesModule = async ({
       emit('COUNTRY_CREATE', { countryId });
       return countryId;
     },
-    update: async (_id: string, doc: Country, userId: string) => {
-      const countryId = await mutations.update(_id, doc, userId);
+    update: async (_id: string, doc: Partial<Country>, userId: string) => {
+      const countryId = await mutations.update(_id, { $set: doc }, userId);
       emit('COUNTRY_UPDATE', { countryId });
       return countryId;
     },

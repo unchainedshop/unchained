@@ -12,7 +12,7 @@ import {
 import { CurrenciesModule } from './currencies';
 import { CountriesModule } from './countries';
 import { LanguagesModule } from './languages';
-import { EmitAdapter, EventsModule } from './events';
+import { EmitAdapter, EventDirector, EventsModule } from './events';
 import { User } from './users';
 import { Logger, LogOptions, Transports } from './logs';
 import { Locale } from '@types/locale';
@@ -26,6 +26,7 @@ import {
 } from './payments';
 import { Request } from 'express';
 import {
+  FileDirector,
   FilesModule,
   IFileAdapter,
   UploadFileCallback,
@@ -117,31 +118,6 @@ declare module 'meteor/unchained:core-files-next' {
   ): Promise<FilesModule>;
 
   export const fileServices: any;
-
-  export function setFileAdapter(adapter: FileAdapter): void;
-  export function getFileAdapter(): FileAdapter;
-
-  export function composeFileName(file: File): string;
-  export function createSignedURL(
-    directoryName: string,
-    fileName: string
-  ): Promise<UploadFileData | null>;
-  export function registerFileUploadCallback(
-    directoryName: string,
-    callback: UploadFileCallback
-  ): void;
-  export function getFileUploadCallback(
-    directoryName: string
-  ): UploadFileCallback;
-  export function removeFiles(fileIds: string | Array<string>): Promise<number>;
-  export function uploadFileFromStream(
-    directoryName: string,
-    rawFile: any
-  ): Promise<UploadFileData | null>;
-  export function uploadFileFromURL(
-    directoryName: string,
-    file: { fileLink: string; fileName: string }
-  ): Promise<UploadFileData | null>;
 }
 
 declare module 'meteor/unchained:core-bookmarks' {
@@ -202,6 +178,21 @@ declare module 'meteor/unchained:core-payments' {
   export const PaymentProviderType;
 }
 
+declare module 'meteor/unchained:file-upload' {
+  export const setFileUploadAdapter: FileDirector['setFileAdapter'];
+  export const getFileUploadAdapter: FileDirector['getFileAdapter'];
+
+  export const composeFileName: FileDirector['composeFileName'];
+  export const createSignedURL: FileDirector['createSignedURL'];
+
+  export const registerFileUploadCallback: FileDirector['registerFileUploadCallback'];
+  export const getFileUploadCallback: FileDirector['getFileUploadCallback'];
+
+  export const removeFiles = FileDirector['removeFiles'];
+  export const uploadFileFromStream: FileDirector['uploadFileFromStream'];
+  export const uploadFileFromURL: FileDirector['uploadFileFromStream'];
+}
+
 declare module 'meteor/unchained:core-users' {
   export function configureUsersModule(
     params: ModuleInput
@@ -211,6 +202,12 @@ declare module 'meteor/unchained:core-users' {
 declare module 'meteor/unchained:core-orders' {
   export const Orders: {
     findOrder({ orderId: string }): any;
+  };
+}
+
+declare module 'meteor/unchained:core-products' {
+  export const Products: {
+    productExists({ productId: string }): any
   };
 }
 

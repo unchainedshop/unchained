@@ -46,7 +46,9 @@ export const generateDbMutations = <T extends { _id?: _ID }>(
           filter.deleted = null
           const result = await collection.updateOne(filter, values);
 
-          return result.upsertedId.toHexString();
+          return typeof result.upsertedId === 'string'
+            ? result.upsertedId
+            : result.upsertedId.toHexString();
         },
 
     delete: hasCreateOnly

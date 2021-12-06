@@ -6,7 +6,7 @@ import {
   TimestampFields,
   _ID,
 } from './common';
-import { User } from './users';
+import { User } from '@unchainedshop/types/user';
 
 export enum PaymentProviderType {
   CARD = 'CARD',

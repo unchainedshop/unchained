@@ -1,8 +1,8 @@
 import { File, FileAdapter } from '@unchainedshop/types/files';
+import { setFileUploadAdapter } from 'meteor/unchained:file-upload';
 import crypto from 'crypto';
 import https from 'https';
 import { log, LogLevel } from 'meteor/unchained:logger';
-import { setFileAdapter } from 'meteor/unchained:core-files-next';
 import mimeType from 'mime-types';
 import Minio from 'minio';
 import { Readable } from 'stream';
@@ -225,4 +225,4 @@ export const MinioAdapter: FileAdapter = {
   },
 };
 
-setFileAdapter(MinioAdapter);
+setFileUploadAdapter(MinioAdapter);

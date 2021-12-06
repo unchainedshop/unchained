@@ -28,11 +28,11 @@ const DefaultFileAdapter: FileAdapter = {
 let Adapter: FileAdapter = DefaultFileAdapter;
 
 export const FileDirector: IFileDirector = {
-  setFileAdapter: (adapter) => {
+  setFileUploadAdapter: (adapter) => {
     Adapter = adapter;
   },
 
-  getFileAdapter: () => Adapter,
+  getFileUploadAdapter: () => Adapter,
 
   ...Adapter,
 };

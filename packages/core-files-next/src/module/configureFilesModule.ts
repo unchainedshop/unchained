@@ -1,17 +1,18 @@
-import { ModuleInput } from '@unchainedshop/types/common';
+import { ModuleInput, ModuleMutations } from '@unchainedshop/types/common';
 import { File, FilesModule, UploadFileData } from '@unchainedshop/types/files';
 import { emit, registerEvents } from 'meteor/unchained:events';
 import {
-  generateDbFilterById, generateDbMutations
+  generateDbFilterById,
+  generateDbMutations,
 } from 'meteor/unchained:utils';
-import { FileDirector } from '../director/FileDirector';
-import { FilesCollection } from '../db/FilesCollection';
-import { FilesSchema } from '../db/FilesSchema';
+import FileUpload from 'meteor/unchained:file-upload';
+import { MediaObjectsCollection } from '../db/MediaObjectsCollection';
+import { MediaObjectsSchema } from '../db/MediaObjectsSchema';
 
 const FILE_EVENTS: string[] = ['FILE_CREATE', 'FILE_UPDATE', 'FILE_REMOVE'];
 
 const getFileFromFileData = (fileData: UploadFileData, meta: any) => ({
-  externalFileId: encodeURIComponent(
+  externalId: encodeURIComponent(
     `${fileData.directoryName}/${fileData.hash}`
   ),
   expires: meta.expiryDate || fileData.expiryDate,
@@ -27,14 +28,17 @@ export const configureFilesModule = async ({
 }: ModuleInput): Promise<FilesModule> => {
   registerEvents(FILE_EVENTS);
 
-  const Files = await FilesCollection(db);
+  const Files = await MediaObjectsCollection(db);
 
-  const mutations = generateDbMutations<File>(Files, FilesSchema);
+  const mutations = generateDbMutations<File>(
+    Files,
+    MediaObjectsSchema
+  ) as ModuleMutations<File>;
 
   return {
-    findFile: async ({ fileId, externalFileId }, options) => {
+    findFile: async ({ fileId, externalId }, options) => {
       return await Files.findOne(
-        fileId ? generateDbFilterById(fileId) : { externalFileId },
+        fileId ? generateDbFilterById(fileId) : { externalId },
         options
       );
     },
@@ -45,7 +49,7 @@ export const configureFilesModule = async ({
       return fileId;
     },
     update: async (_id: string, doc: File, userId: string) => {
-      const fileId = await mutations.update(_id, doc, userId);
+      const fileId = await mutations.update(_id, { $set: doc }, userId);
       emit('FILE_UPDATE', { fileId });
       return fileId;
     },
@@ -56,14 +60,14 @@ export const configureFilesModule = async ({
     },
 
     // Plugin
-    createSignedURL: async (directoryName, fileName, meta) => {
-      const uploadFileData = await FileDirector.createSignedURL(
+    createSignedURL: async (directoryName, fileName, meta, userId) => {
+      const uploadFileData = await FileUpload.createSignedURL(
         directoryName,
         fileName
       );
       const file = getFileFromFileData(uploadFileData, meta);
 
-      const fileId = await mutations.insert(file);
+      const fileId = await mutations.create(file, userId);
 
       return await Files.findOne(generateDbFilterById(fileId));
     },
@@ -77,11 +81,11 @@ export const configureFilesModule = async ({
       const idList = [];
 
       if (typeof fileIds === 'string') {
-        const file = await Files.findOne({ externalFileId: fileIds });
-        idList.push(FileDirector.composeFileName(file));
+        const file = await Files.findOne({ externalId: fileIds });
+        idList.push(FileUpload.composeFileName(file));
       } else {
         const files = Files.find(
-          { externalFileId: { $in: fileIds } },
+          { externalId: { $in: fileIds } },
           {
             projection: {
               _id: 1,
@@ -90,14 +94,14 @@ export const configureFilesModule = async ({
             },
           }
         );
-        const ids = await files.map(FileDirector.composeFileName).toArray();
+        const ids = await files.map(FileUpload.composeFileName).toArray();
         idList.push(...ids);
       }
 
-      await FileDirector.removeFiles(idList);
+      await FileUpload.removeFiles(idList);
 
       const deletedFilesResult = await Files.deleteMany({
-        externalFileId: {
+        externalId: {
           $in: typeof fileIds === 'string' ? [fileIds] : fileIds,
         },
       });
@@ -105,26 +109,26 @@ export const configureFilesModule = async ({
       return deletedFilesResult.deletedCount;
     },
 
-    uploadFileFromStream: async (directoryName, rawFile, meta) => {
-      const uploadFileData = await FileDirector.uploadFileFromStream(
+    uploadFileFromStream: async (directoryName, rawFile, meta, userId) => {
+      const uploadFileData = await FileUpload.uploadFileFromStream(
         directoryName,
         rawFile
       );
       const file = getFileFromFileData(uploadFileData, meta);
 
-      const fileId = await mutations.insert(file);
+      const fileId = await mutations.create(file, userId);
 
       return await Files.findOne(generateDbFilterById(fileId));
     },
 
-    uploadFileFromURL: async (directoryName, fileInput, meta) => {
-      const uploadFileData = await FileDirector.uploadFileFromURL(
+    uploadFileFromURL: async (directoryName, fileInput, meta, userId) => {
+      const uploadFileData = await FileUpload.uploadFileFromURL(
         directoryName,
         fileInput
       );
       const file = getFileFromFileData(uploadFileData, meta);
 
-      const fileId = await mutations.insert(file);
+      const fileId = await mutations.create(file, userId);
 
       return await Files.findOne(generateDbFilterById(fileId));
     },

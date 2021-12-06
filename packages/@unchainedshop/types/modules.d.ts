@@ -1,3 +1,4 @@
+import { UsersModule } from './user';
 import { BookmarksModule } from './bookmarks';
 import { CountriesModule } from './countries';
 import { CurrenciesModule } from './currencies';
@@ -24,7 +25,7 @@ export interface Modules {
   payment: PaymentModule;
   products: any;
   quotations: any;
-  users: any;
+  users: UsersModule;
   warehousing: any;
   worker: any;
 }

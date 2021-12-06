@@ -1,4 +1,4 @@
-export default function evaluateContext(filteredContext) {
+export const evaluateContext = (filteredContext) => {
   const {
     userId: userIdBeforeLogin,
     localeContext,

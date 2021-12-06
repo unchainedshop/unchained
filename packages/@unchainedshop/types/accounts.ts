@@ -6,7 +6,11 @@ interface EmailData {
   verified?: boolean;
 }
 
-export type AccountsModule = {
+export interface AccountsOptions {
+  autoMessagingAfterUserCreation?: boolean
+}
+
+export interface AccountsModule {
   // Mutations
   createUser: (
     userData: {

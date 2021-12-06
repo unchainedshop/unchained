@@ -4,16 +4,17 @@ import {
   BookmarkAlreadyExistsError,
   InvalidIdError,
   ProductNotFoundError,
-} from '../../errors';
+} from '../../../errors';
+import { Context, Root } from '@unchainedshop/types/api';
 
 export default async function createBookmark(
-  root,
-  { productId, userId: foreignUserId },
-  { userId, modules }
+  root: Root,
+  { productId, userId }: { productId: string; userId: string },
+  { modules, userId: currenctUserId }: Context
 ) {
-  log(`mutation createBookmark for ${foreignUserId}`, {
+  log(`mutation createBookmark for ${userId}`, {
     productId,
-    userId,
+    userId: currenctUserId,
   });
   if (!productId) throw new InvalidIdError({ productId });
   if (!Products.productExists({ productId }))
@@ -21,15 +22,19 @@ export default async function createBookmark(
 
   const bookmark = await modules.bookmarks.findByUserIdAndProductId({
     productId,
-    userId: foreignUserId,
+    userId,
   });
 
   if (bookmark)
     throw new BookmarkAlreadyExistsError({ bookmarkId: bookmark._id });
 
-  const bookmarkId = await modules.bookmarks.create({
-    userId: foreignUserId,
-    productId,
-  });
-  return modules.bookmarks.findById(bookmarkId);
+  const bookmarkId = await modules.bookmarks.create(
+    {
+      userId,
+      productId,
+    },
+    currenctUserId
+  );
+
+  return await modules.bookmarks.findById(bookmarkId);
 }

@@ -9,10 +9,10 @@ import {
 export type File = {
   _id?: _ID;
   expires?: Date;
-  externalFileId: string;
+  externalId: string;
   meta?: Record<string, unknown>;
   name: string;
-  size?: string;
+  size?: number;
   type?: string;
   url?: string;
 } & TimestampFields;
@@ -20,7 +20,7 @@ export type File = {
 export type FilesModule = ModuleMutations<File> & {
   // Query
   findFile: (
-    params: { fileId?: string; externalFileId?: string },
+    params: { fileId?: string; externalId?: string },
     options?: FindOptions
   ) => Promise<File>;
   // Plugin
@@ -28,17 +28,20 @@ export type FilesModule = ModuleMutations<File> & {
     directoryName: string,
     fileName: string,
     meta: any,
+    userId: string,
   ) => Promise<File | null>;
   removeFiles: (fileIds: string | Array<string>) => Promise<number>;
   uploadFileFromStream: (
     directoryName: string,
     rawFile: any,
-    meta?: any
+    meta: any,
+    userId: string,
   ) => Promise<File | null>;
   uploadFileFromURL: (
     directoryName: string,
     file: { fileLink: string; fileName: string },
-    meta?: any
+    meta: any,
+    userId: string,
   ) => Promise<File | null>;
 };
 
@@ -88,6 +91,6 @@ export interface FileAdapter {
 }
 
 export interface FileDirector extends FileAdapter {
-  setFileAdapter(adapter: FileAdapter): void;
-  getFileAdapter(): FileAdapter;
+  setFileUploadAdapter(adapter: FileAdapter): void;
+  getFileUploadAdapter(): FileAdapter;
 }

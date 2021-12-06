@@ -1,10 +1,11 @@
-import { ModuleInput } from '@unchainedshop/types/common';
+import { ModuleInput, ModuleMutations } from '@unchainedshop/types/common';
 import { User, UsersModule } from '@unchainedshop/types/user';
 import { log } from 'meteor/unchained:logger';
 import {
   generateDbFilterById,
   generateDbMutations,
 } from 'meteor/unchained:utils';
+import { registerFileUploadCallback, removeFiles } from 'meteor/unchained:file-upload';
 import { UsersCollection } from '../db/UsersCollection';
 import { UsersSchema } from '../db/UsersSchema';
 
@@ -27,7 +28,29 @@ export const configureUsersModule = async ({
 }: ModuleInput): Promise<UsersModule> => {
   const Users = await UsersCollection(db);
 
-  const mutations = generateDbMutations<User>(Users, UsersSchema);
+  const mutations = generateDbMutations<User>(
+    Users,
+    UsersSchema
+  ) as ModuleMutations<User>;
+
+  // Link file with user after upload
+  registerFileUploadCallback('user-avatars', async (file, userId) => {
+    const userFilter = generateDbFilterById(file.meta.userId)
+    
+    const user = await Users.findOne(userFilter);
+    if (user?.avatarId) await removeFiles([user?.avatarId]);
+    
+    await Users.updateOne(
+      userFilter,
+      {
+        $set: {
+          avatarId: file._id,
+          updated: new Date(),
+          updatedBy: userId,
+        },
+      }
+    );
+  });
 
   return {
     // Queries
@@ -76,20 +99,33 @@ export const configureUsersModule = async ({
     // Mutations
     updateProfile: async (_id, profile, userId) => {
       const userFilter = generateDbFilterById(_id);
-      const modifier = Object.keys(profile).reduce((acc, profileKey) => {
-        return {
-          ...acc,
-          [`profile.${profileKey}`]: profile[profileKey],
-        };
-      }, {});
+      const modifier = {
+        $set: Object.keys(profile).reduce((acc, profileKey) => {
+          return {
+            ...acc,
+            [`profile.${profileKey}`]: profile[profileKey],
+          };
+        }, {}),
+      };
 
-      await Users.updateOne(userFilter, {
+      await mutations.update(_id, modifier, userId);
+
+      return await Users.findOne(userFilter);
+    },
+
+    updateAvatar: async (_id, fileId, userId) => {
+      const userFilter = generateDbFilterById(_id);
+      log('Update Avatar', { userId: _id });
+
+      const modifier = {
         $set: {
+          avatarId: fileId,
           updated: new Date(),
           updatedBy: userId,
-          ...modifier,
         },
-      });
+      };
+
+      await mutations.update(_id, modifier, userId);
 
       return await Users.findOne(userFilter);
     },
@@ -119,7 +155,7 @@ export const configureUsersModule = async ({
           .join(' ');
       }
 
-      await Users.updateOne(userFilter, modifier);
+      await mutations.update(_id, modifier, userId);
 
       return await Users.findOne(userFilter);
     },
@@ -146,22 +182,24 @@ export const configureUsersModule = async ({
         modifier.$set['profile.phoneMobile'] = lastContact.telNumber;
       }
 
-      await Users.updateOne(userFilter, modifier);
+      await mutations.update(_id, modifier, userId);
 
       return await Users.findOne(userFilter);
     },
 
-    updateHeartbeat: async (_id, lastLogin, userId) => {
-      const userFilter = generateDbFilterById(_id);
+    updateHeartbeat: async (userId, lastLogin) => {
+      const userFilter = generateDbFilterById(userId);
 
-      await Users.updateOne(userFilter, {
+      const modifier = {
         $set: {
           lastLogin: {
             timestamp: new Date(),
             ...lastLogin,
           },
         },
-      });
+      };
+
+      await mutations.update(userId, modifier, userId);
 
       return await Users.findOne(userFilter);
     },
@@ -169,25 +207,30 @@ export const configureUsersModule = async ({
     updateRoles: async (_id, roles, userId) => {
       const userFilter = generateDbFilterById(_id);
 
-      await Users.updateOne(userFilter, {
+      const modifier = {
         $set: {
           updated: new Date(),
           updateBy: userId,
           roles,
         },
-      });
+      };
+      await mutations.update(_id, modifier, userId);
+
       return await Users.findOne(userFilter);
     },
     updateTags: async (_id, tags, userId) => {
       const userFilter = generateDbFilterById(_id);
 
-      await Users.updateOne(userFilter, {
+      const modifier = {
         $set: {
           updated: new Date(),
           updateBy: userId,
           tags,
         },
-      });
+      };
+
+      await mutations.update(_id, modifier, userId);
+
       return await Users.findOne(userFilter);
     },
   };

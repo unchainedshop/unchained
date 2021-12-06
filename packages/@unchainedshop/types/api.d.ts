@@ -3,11 +3,14 @@ import { Modules } from './modules';
 
 export declare type Root = Record<string, unknown>;
 export declare interface Context {
-  services: any;
+  countryContext: string;
+  localeContext: Locale;
   modules: Modules;
+  remoteAddress: string;
+  remotePort: string;
+  services: any;
+  userAgent: string;
   userId: string;
-  localeContext: Locale
-  countryContext: string
 }
 
 export interface UnchainedAPI {

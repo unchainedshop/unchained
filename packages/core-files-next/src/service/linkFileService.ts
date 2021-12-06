@@ -1,26 +1,25 @@
 import { Context } from '@unchainedshop/types/api';
 import { File } from '@unchainedshop/types/files';
-import { FileDirector } from '../director/FileDirector';
+import { getFileUploadCallback } from 'meteor/unchained:file-upload';
 
 export type LinkFileService = (
-  params: { externalFileId: string; size: number; type: string },
+  params: { externalId: string; size: number; type: string },
   context: Context
 ) => Promise<File>;
 
 export const linkFileService = async (
-  { externalFileId, size, type },
+  { externalId, size, type },
   { modules, userId }
 ) => {
-  const file = await modules.files.findFile({ externalFileId });
+  const file = await modules.files.findFile({ externalId });
 
-  if (!file)
-    throw new Error(`Media with external id ${externalFileId} Not found`);
+  if (!file) throw new Error(`Media with external id ${externalId} Not found`);
 
   const { meta } = file;
   const { mediaId, ...mediaMeta } = meta;
   if (!mediaId) return null;
 
-  const [directoryName] = decodeURIComponent(externalFileId).split('/');
+  const [directoryName] = decodeURIComponent(externalId).split('/');
 
   await modules.files.update(file._id, {
     $set: {
@@ -31,7 +30,7 @@ export const linkFileService = async (
     },
   });
 
-  await FileDirector.getFileUploadCallback(directoryName)(file);
+  await getFileUploadCallback(directoryName)(file);
 
   return await modules.files.findFile({ fileId: file._id });
 };

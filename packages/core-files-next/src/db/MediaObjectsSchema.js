@@ -1,10 +1,10 @@
 import { Schemas } from 'meteor/unchained:utils';
 import SimpleSchema from 'simpl-schema';
 
-export const FilesSchema = new SimpleSchema(
+export const MediaObjectsSchema = new SimpleSchema(
   {
     expires: { type: Date },
-    externalFileId: { type: String, required: true },
+    externalId: { type: String, required: true },
     meta: { type: Object, blackbox: true },
     name: { type: String, required: true },
     size: { type: String },

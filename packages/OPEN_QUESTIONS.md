@@ -7,3 +7,6 @@
 4. Same question for the PaymentEror. Is this fixed to the constant or are there more errors available?
 
 5. Logical vs physical delete: Does it depend? Or should it be a logical delete?
+
+6. File Id: Now it is a manually created string. Keep it or change the externalId pattern?
+

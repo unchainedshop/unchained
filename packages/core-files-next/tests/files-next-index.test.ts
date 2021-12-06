@@ -3,14 +3,6 @@ import { initDb } from 'meteor/unchained:mongodb';
 import {
   configureFilesModule,
   fileServices,
-  setFileAdapter,
-  getFileAdapter,
-  createSignedURL,
-  registerFileUploadCallback,
-  getFileUploadCallback,
-  removeFiles,
-  uploadFileFromStream,
-  uploadFileFromURL,
 } from 'meteor/unchained:core-files-next';
 import { Mongo } from 'meteor/mongo';
 import { FilesModule } from '@unchainedshop/types/files';
@@ -34,16 +26,5 @@ describe('Test exports', () => {
   it('Check file services', () => {
     assert.ok(fileServices);
     assert.ok(fileServices.linkFileService);
-  });
-
-  it('Check director expors', () => {
-    assert.isFunction(setFileAdapter);
-    assert.isFunction(getFileAdapter);
-    assert.isFunction(createSignedURL);
-    assert.isFunction(registerFileUploadCallback);
-    assert.isFunction(getFileUploadCallback);
-    assert.isFunction(removeFiles);
-    assert.isFunction(uploadFileFromStream);
-    assert.isFunction(uploadFileFromURL);
   });
 });

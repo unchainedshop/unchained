@@ -4,6 +4,8 @@ import { TimestampFields, Update, _ID } from './common';
 import { Language } from './languages';
 import { UpdateFilter } from './node_modules/mongodb';
 import { Country } from './countries';
+import { File } from './files';
+import { PaymentCredentials } from './payments';
 
 interface Address {
   firstName?: string;
@@ -47,7 +49,7 @@ interface Email {
 
 export type User = {
   _id?: _ID;
-  avatarId?: string;
+  avatarId?: _ID;
   emails: Array<Email>;
   guest: boolean;
   initialPassword: boolean;
@@ -56,7 +58,7 @@ export type User = {
   lastLogin?: UserLastLogin;
   profile?: UserProfile;
   roles: Array<string>;
-  services: unknown;
+  services: any;
   tags?: Array<string>;
   username?: string;
 } & TimestampFields;
@@ -70,7 +72,7 @@ export type UsersModule = {
   // Queries
   count: (query: UserQuery) => Promise<number>;
   findUser: (query: {
-    userId?: string;
+    userId?: _ID;
     resetToken?: string;
     hashedToken?: string;
   }) => Promise<User>;
@@ -84,10 +86,11 @@ export type UsersModule = {
 
   // Mutations
   updateProfile: (
-    _id: string,
+    _id: sting,
     doc: UpdateFilter<UserProfile>,
     userId: string
   ) => Promise<User>;
+  updateAvatar: (_id: string, fileId: string, userId: string) => Promise<User>;
   updateLastBillingAddress: (
     _id: string,
     doc: Address,
@@ -98,11 +101,7 @@ export type UsersModule = {
     doc: UserLastContact,
     userId: string
   ) => Promise<User>;
-  updateHeartbeat: (
-    _id: string,
-    doc: UserLastLogin,
-    userId: string
-  ) => Promise<User>;
+  updateHeartbeat: (userId: string, doc: UserLastLogin) => Promise<User>;
   updateRoles: (
     _id: string,
     roles: Array<string>,
@@ -115,35 +114,34 @@ export type UsersModule = {
   ) => Promise<User>;
 };
 
-export interface UserHelperTypes {
-  isGuest: (user: User) => boolean;
-  isTwoFactorEnabled: (user: User) => boolean;
-  isInitialPassword: (user: User) => boolean;
-  isEmailVerified: (user: User) => boolean;
-  language: (
-    user: User,
-    params: { localeContext: Locale },
-    context: Context
-  ) => Language;
-  country: (
-    user: User,
-    params: { localeContext: Locale },
-    context: Context
-  ) => Country;
-  locale: (
-    user: User,
-    params: { localeContext: Locale },
-    context: Context
-  ) => Locale;
-  avatar: (
-    user: User,
-    params: { localeContext: Locale },
-    context: Context
-  ) => File;
-  primaryEmail: (user: User) => Email;
-  email: (user: User) => string;
-  telNumber: (user: User) => string;
-  name: (user: User) => string;
+type HelperType<P, T> = (user: User, params: P, context: Context) => T;
 
-  createSignedUploadURL: (fileName: string) => Promise<File>;
+export interface UserHelperTypes {
+  _id: HelperType<any, boolean>;
+  avatar: HelperType<{ localeContext: Locale }, Promise<File>>;
+  bookmarks: HelperType<any, Promise<Array<Bookmark>>>;
+  cart: HelperType<any, any>;
+  country: HelperType<{ localeContext: Locale }, Promise<Country>>;
+  email: HelperType<any, string>;
+  emails: HelperType<any, Array<string>>;
+  enrollments: HelperType<any, any>;
+  isEmailVerified: HelperType<any, boolean>;
+  isGuest: HelperType<any, boolean>;
+  isInitialPassword: HelperType<any, boolean>;
+  isTwoFactorEnabled: HelperType<any, boolean>;
+  language: HelperType<{ localeContext: Locale }, Promise<Language>>;
+  lastBillingAddress: HelperType<any, Address>;
+  lastContact: HelperType<any, UserLastContact>;
+  lastLogin: HelperType<any, UserLastLogin>;
+  locale: HelperType<{ localeContext: Locale }, Locale>;
+  name: HelperType<any, string>;
+  orders: HelperType<any, any>;
+  paymentCredentials: HelperType<any, Promise<Array<PaymentCredentials>>>;
+  primaryEmail: HelperType<any, Email>;
+  profile: HelperType<any, UserProfile>;
+  quotations: HelperType<any, any>;
+  roles: HelperType<any, Array<string>>;
+  tags: HelperType<any, Array<string>>;
+  telNumber: HelperType<any, string>;
+  username: HelperType<any, string>;
 }

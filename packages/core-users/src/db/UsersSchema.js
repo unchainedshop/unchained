@@ -1,5 +1,6 @@
 import SimpleSchema from 'simpl-schema';
 import { Schemas } from 'meteor/unchained:utils';
+import { ObjectId } from 'bson';
 
 const { Address, timestampFields } = Schemas;
 
