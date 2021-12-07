@@ -6,18 +6,21 @@ export interface AccountsOptions {
   autoMessagingAfterUserCreation?: boolean;
 }
 
+export interface UserData {
+  email?: string;
+  initialPassword?: boolean
+  password: string;
+  plainPassword?: string;
+  profile?: UserProfile;
+  username?: string;
+}
+
 export interface AccountsModule {
   emit: (event: string, meta: any) => Promise<void>;
 
   // Mutations
   createUser: (
-    userData: {
-      email?: string;
-      password: string;
-      plainPassword?: string;
-      profile?: UserProfile;
-      username?: string;
-    },
+    userData: UserData,
     context: any,
     options: { skipMessaging?: boolean }
   ) => Promise<string>;
@@ -31,7 +34,7 @@ export interface AccountsModule {
   sendVerificationEmail: (email: string) => Promise<void>;
 
   // Authentication
-  createLogintoken: (
+  createLoginToken: (
     userId: string,
     context: Context
   ) => Promise<{
@@ -51,21 +54,25 @@ export interface AccountsModule {
     tokenExpires: Date;
   }>;
 
+  setUsername: (userId: string, username: string) => Promise<void>;
+  setPassword: (userId: string, params: {
+      newPassword?: string;
+      newPlainPassword?: string;
+    }) => Promise<void>;
   changePassword: (
     userId: string,
-    { newPassword: string, newPlainPassword: string,  oldPassword: string, oldPlainPassword: string }
+    params: {
+      newPassword?: string;
+      newPlainPassword?: string;
+      oldPassword?: string;
+      oldPlainPassword?: string;
+    }
   ) => Promise<void>;
-  sendResetPasswordEmail: (email: string) => Promise<void>;
   resetPassword: (
-    userId: string,
-    { token: string, newPlainPassword: string, newPassword: string }
-  ) => Promise<{
-    id: string;
-    token: string;
-    tokenExpires: Date;
-  }>;
-  setPassword: (userId: string, password: string) => Promise<void>;
-  setUsername: (userId: string, username: string) => Promise<void>;
+    params: { newPassword?: string; newPlainPassword?: string; token: string },
+    context: Context
+  ) => Promise<AccountsUser>;
+  sendResetPasswordEmail: (email: string) => Promise<boolean>;
 
   // TOTP
   buildTOTPSecret: () => string;

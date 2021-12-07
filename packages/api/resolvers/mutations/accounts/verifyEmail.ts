@@ -19,5 +19,5 @@ export default async function verifyEmail(
 
   await modules.accounts.emit('VerifyEmailSuccess', verifiedUser);
 
-  return modules.accounts.createLogintoken(unverifiedUser.id, context);
+  return modules.accounts.createLoginToken(unverifiedUser.id, context);
 }

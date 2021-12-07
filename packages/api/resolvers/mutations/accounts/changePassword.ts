@@ -4,34 +4,24 @@ import hashPassword from '../../../hashPassword';
 
 export default async function changePassword(
   root: Root,
-  {
-    oldPassword: oldHashedPassword,
-    oldPlainPassword,
-    newPassword: newHashedPassword,
-    newPlainPassword,
-  }: {
-    oldPassword: string
-    oldPlainPassword: string;
-    newPassword: string
-    newPlainPassword: string;
+  params: {
+    oldPassword?: string;
+    oldPlainPassword?: string;
+    newPassword?: string;
+    newPlainPassword?: string;
   },
   { modules, userId }: Context
 ) {
   log('mutation changePassword', { userId });
 
-  if (!newHashedPassword && !newPlainPassword) {
+  if (!params.newPassword && !params.newPlainPassword) {
     throw new Error('New password is required');
   }
-  if (!oldHashedPassword && !oldPlainPassword) {
+  if (!params.oldPassword && !params.oldPlainPassword) {
     throw new Error('Old password is required');
   }
-  const newPassword = newHashedPassword || hashPassword(newPlainPassword);
-  const oldPassword = oldHashedPassword || hashPassword(oldPlainPassword);
 
-  await accountsPassword.changePassword(
-    context.userId,
-    oldPassword,
-    newPassword
-  );
+  await modules.accounts.changePassword(userId, params);
+  
   return { success: true };
 }

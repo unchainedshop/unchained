@@ -17,9 +17,9 @@ export const configureAccountsModule = async ({
 
     // Mutations
     createUser: async (userData, options = {}) => {
-      const { skipMessaging } = options;
       const userId = await accountsPassword.createUser(userData);
-      const autoMessagingEnabled = skipMessaging
+
+      const autoMessagingEnabled = options.skipMessaging
         ? false
         : autoMessagingAfterUserCreation && userData.email && userId;
 
@@ -68,7 +68,7 @@ export const configureAccountsModule = async ({
     },
 
     // Autentication
-    createLogintoken: async (userId, rawContext) => {
+    createLoginToken: async (userId, rawContext) => {
       const context = evaluateContext(filterContext(rawContext));
       const { user: tokenUser, token: loginToken } =
         await accountsServer.loginWithUser(userId);
@@ -105,10 +105,18 @@ export const configureAccountsModule = async ({
       };
     },
 
-    setPassword: async (userId, password) => {
-      const newPassword = password || uuidv4().split('-').pop();
+    setPassword: async (
+      userId,
+      { newPassword: newHashedPassword, newPlainPassword }
+    ) => {
+      const newPassword =
+        newHashedPassword ||
+        (newPlainPassword && hashPassword(newPlainPassword)) ||
+        uuidv4().split('-').pop();
+
       await accountsPassword.setPassword(userId, newPassword);
     },
+
     changePassword: async (
       userId,
       {
@@ -123,20 +131,22 @@ export const configureAccountsModule = async ({
 
       await accountsPassword.changePassword(userId, oldPassword, newPassword);
     },
-    sendResetPasswordEmail: async (email) =>
-      await accountsPassword.sendResetPasswordEmail(email),
+    sendResetPasswordEmail: async (email) => {
+      await accountsPassword.sendResetPasswordEmail(email);
+
+      return true;
+    },
 
     resetPassword: async (
-      userId,
-      { token, newPlainPassword, newPassword: newHashedPassword },
+      { newPassword: newHashedPassword, newPlainPassword, token },
       context
     ) => {
-      const userWithNewPassword = await dbManager.findUserByResetPasswordToken(
-        token
-      );
+      const user = await dbManager.findUserByResetPasswordToken(token);
+
       const newPassword = newHashedPassword || hashPassword(newPlainPassword);
       await accountsPassword.resetPassword(token, newPassword, context);
-      return accountsServer.createLoginToken(userId, context);
+
+      return user;
     },
 
     setUsername: async (_id, username) => {

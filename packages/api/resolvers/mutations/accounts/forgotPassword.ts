@@ -1,16 +1,14 @@
 import { log } from 'meteor/unchained:logger';
-import { accountsPassword } from 'meteor/unchained:core-accountsjs';
+import { Context, Root } from '@unchainedshop/types/api';
 
-export default async function forgotPassword(root, { email }) {
-  log('mutation forgotPassword', { email });
-  try {
-    await accountsPassword.sendResetPasswordEmail(email);
-    return {
-      success: true,
-    };
-  } catch (e) {
-    return {
-      success: false,
-    };
-  }
+export default async function forgotPassword(
+  root: Root,
+  { email }: { email: string },
+  { modules, userId }: Context
+) {
+  log('mutation forgotPassword', { email, userId });
+
+  return await modules.accounts
+    .sendResetPasswordEmail(email)
+    .catch(() => false);
 }

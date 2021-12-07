@@ -1,21 +1,26 @@
 import { log } from 'meteor/unchained:logger';
-import { accountsPassword, dbManager } from 'meteor/unchained:core-accountsjs';
-import { Users } from 'meteor/unchained:core-users';
-import hashPassword from '../../../hashPassword';
+import { Context, Root } from '@unchainedshop/types/api';
 
 export default async function resetPassword(
-  root,
-  { token, newPlainPassword, newPassword: newHashedPassword },
-  context
+  root: Root,
+  params: { newPassword?: string; newPlainPassword?: string; token: string },
+  context: Context
 ) {
-  log('mutation resetPassword');
-  if (!newHashedPassword && !newPlainPassword) {
+  const { modules, userId } = context;
+
+  log('mutation resetPassword', { userId });
+
+  if (!params.newPassword && !params.newPlainPassword) {
     throw new Error('Password is required');
   }
-  const userWithNewPassword = await dbManager.findUserByResetPasswordToken(
-    token
+
+  const userWithNewPassword = await modules.accounts.resetPassword(
+    params,
+    context
   );
-  const newPassword = newHashedPassword || hashPassword(newPlainPassword);
-  await accountsPassword.resetPassword(token, newPassword, context);
-  return Users.createLoginToken(userWithNewPassword, context);
+
+  return await modules.accounts.createLoginToken(
+    userWithNewPassword.id,
+    context
+  );
 }

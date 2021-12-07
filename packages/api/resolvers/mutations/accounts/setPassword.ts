@@ -1,22 +1,24 @@
 import { log } from 'meteor/unchained:logger';
-import { Users } from 'meteor/unchained:core-users';
+import { Context, Root } from '@unchainedshop/types/api';
 import { UserNotFoundError, InvalidIdError } from '../../../errors';
-import hashPassword from '../../../hashPassword';
 
 export default async function setPassword(
-  root,
-  { newPassword: newHashedPassword, newPlainPassword, userId: foreignUserId },
-  { userId: ownUserId }
+  root: Root,
+  params: { newPassword: string; newPlainPassword: string; userId: string },
+  { modules, userId }: Context
 ) {
-  log(`mutation setPassword ${foreignUserId}`, { userId: ownUserId });
-  const userId = foreignUserId || ownUserId;
-  if (!userId) throw new InvalidIdError({ userId });
-  if (!newHashedPassword && !newPlainPassword) {
+  const normalizedUserId = params.userId || userId;
+
+  log(`mutation setPassword ${normalizedUserId}`, { userId });
+
+  if (!normalizedUserId) throw new InvalidIdError({ userId: normalizedUserId });
+  if (!params.newPassword && !params.newPlainPassword) {
     throw new Error('Password is required');
   }
-  const user = Users.findUser({ userId });
+  const user = await modules.users.findUser({ userId: normalizedUserId });
   if (!user) throw new UserNotFoundError({ userId });
-  const newPassword = newHashedPassword || hashPassword(newPlainPassword);
-  await user.setPassword(newPassword);
-  return Users.findUser({ userId });
+
+  await modules.accounts.setPassword(userId, params);
+
+  return user;
 }
