@@ -15,10 +15,10 @@ export default async function setPassword(
   if (!params.newPassword && !params.newPlainPassword) {
     throw new Error('Password is required');
   }
-  const user = await modules.users.findUser({ userId: normalizedUserId });
-  if (!user) throw new UserNotFoundError({ userId });
+  if (!(await modules.users.userExists({ userId: normalizedUserId })))
+    throw new UserNotFoundError({ userId: normalizedUserId });
 
   await modules.accounts.setPassword(userId, params);
 
-  return user;
+  return await modules.users.findUser({ userId: normalizedUserId });
 }

@@ -11,8 +11,8 @@ export default async function removeEmail(
 
   log(`mutation removeEmail ${params.email} ${normalizedUserId}`, { userId });
 
-  const user = await modules.users.findUser({ userId: normalizedUserId });
-  if (!user) throw new UserNotFoundError({ userId });
+  if (!(await modules.users.userExists({ userId: normalizedUserId })))
+    throw new UserNotFoundError({ userId: normalizedUserId });
 
   await modules.accounts.removeEmail(normalizedUserId, params.email);
 

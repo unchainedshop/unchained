@@ -43,22 +43,31 @@ export interface AccountsModule {
     tokenExpires: Date;
   }>;
   loginWithService: (
-    service: string,
     params:
-      | { email: string; password: string; code: string }
-      | { username: string; password: string; code: string },
-    context: any
+      | { service: 'guest' }
+      | {
+          service: 'password';
+          user: { email: string } | { username: string };
+          password: string;
+          code?: string;
+        },
+    context: Context
   ) => Promise<{
     id: string;
     token: string;
     tokenExpires: Date;
   }>;
+  logout: (params: { token?: string }, context: Context) => Promise<{ success: boolean; error: any }>;
 
+  // User Management
   setUsername: (userId: string, username: string) => Promise<void>;
-  setPassword: (userId: string, params: {
+  setPassword: (
+    userId: string,
+    params: {
       newPassword?: string;
       newPlainPassword?: string;
-    }) => Promise<void>;
+    }
+  ) => Promise<void>;
   changePassword: (
     userId: string,
     params: {

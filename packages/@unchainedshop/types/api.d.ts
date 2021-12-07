@@ -5,12 +5,13 @@ export declare type Root = Record<string, unknown>;
 export declare interface Context {
   countryContext: string;
   localeContext: Locale;
+  loginToken?: string;
   modules: Modules;
   remoteAddress: string;
   remotePort: string;
   services: any;
   userAgent: string;
-  userId: string;
+  userId?: string;
 }
 
 export interface UnchainedAPI {

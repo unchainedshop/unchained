@@ -11,8 +11,8 @@ export default async function addEmail(
 
   log(`mutation addEmail ${params.email} ${normalizedUserId}`, { userId });
 
-  const user = await modules.users.findUser({ userId: normalizedUserId });
-  if (!user) throw new UserNotFoundError({ userId });
+  if (!(await modules.users.userExists({ userId: normalizedUserId })))
+    throw new UserNotFoundError({ userId: normalizedUserId });
 
   await modules.accounts.addEmail(normalizedUserId, params.email);
 

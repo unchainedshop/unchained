@@ -2,23 +2,21 @@ import { log } from 'meteor/unchained:logger';
 import { Context, Root } from '@unchainedshop/types/api';
 import { UserNotFoundError } from '../../../errors';
 
-export default async function updateEmail(
+export default async function disableTOTP(
   root: Root,
-  params: { email: string; userId?: string },
+  params: { code: string; userId: string },
   { modules, userId }: Context
 ) {
   const normalizedUserId = params.userId || userId;
 
-  log(`mutation updateEmail ${params.email} ${normalizedUserId}`, { userId });
+  log(`mutation disableTOTP ${params.code} ${normalizedUserId}`, {
+    userId,
+  });
 
   const user = await modules.users.findUser({ userId: normalizedUserId });
   if (!user) throw new UserNotFoundError({ userId: normalizedUserId });
 
-  await modules.accounts.updateEmail(
-    normalizedUserId,
-    params.email,
-    user
-  );
+  await modules.accounts.disableTOTP(normalizedUserId, params.code);
 
-  return await modules.users.findUser({ userId: normalizedUserId });
+  return user;
 }

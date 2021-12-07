@@ -4,18 +4,18 @@ import { UserNotFoundError, InvalidIdError } from '../../../errors';
 
 export default async function setUsername(
   root: Root,
-  params: { username: string, userId: string },
+  params: { username: string; userId: string },
   { modules, userId }: Context
 ) {
-  const normalizedUserId = params.userId || userId
+  const normalizedUserId = params.userId || userId;
 
   log(`mutation setUsername ${normalizedUserId}`, { userId });
-  
+
   if (!normalizedUserId) throw new InvalidIdError({ userId: normalizedUserId });
-  const user = await modules.users.findUser({ userId: normalizedUserId });
-  if (!user) throw new UserNotFoundError({ userId });
+  if (!(await modules.users.userExists({ userId: normalizedUserId })))
+    throw new UserNotFoundError({ userId: normalizedUserId });
 
   await modules.accounts.setUsername(normalizedUserId, params.username);
-  
-  return user
+
+  return await modules.users.findUser({ userId: normalizedUserId });
 }

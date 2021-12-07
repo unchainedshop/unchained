@@ -84,17 +84,17 @@ export const configureAccountsModule = async ({
       };
     },
 
-    loginWithService: async (service, params, rawContext) => {
+    loginWithService: async (params, rawContext) => {
       const context = evaluateContext(filterContext(rawContext));
 
       /* @ts-ignore */
       const { user: tokenUser, token: loginToken } =
-        await accountsServer.loginWithService(service, params, context);
+        await accountsServer.loginWithService(params.service, params, context);
 
       await accountsServer.getHooks().emit('LoginTokenCreated', {
         user: tokenUser,
         connection: context,
-        service,
+        service: params.service,
       });
 
       return {
@@ -105,6 +105,22 @@ export const configureAccountsModule = async ({
       };
     },
 
+    logout: async ({ token }, { loginToken, userId }) => {
+      const logoutError = await accountsServer.logout({
+        token: token || accountsServer.hashLoginToken(loginToken),
+        userId,
+      }).catch(error => error);
+
+      return {
+        success: !logoutError,
+        error: logoutError,
+      };
+    },
+
+    // User management
+    setUsername: async (_id, username) => {
+      await dbManager.setUsername(_id, username);
+    },
     setPassword: async (
       userId,
       { newPassword: newHashedPassword, newPlainPassword }
@@ -149,10 +165,6 @@ export const configureAccountsModule = async ({
       return user;
     },
 
-    setUsername: async (_id, username) => {
-      await dbManager.setUsername(_id, username);
-    },
-
     // TOTP
     buildTOTPSecret: () => {
       const authSecret = accountsPassword.twoFactor.getNewAuthSecret();
@@ -171,7 +183,7 @@ export const configureAccountsModule = async ({
     disableTOTP: async (userId, code) => {
       await accountsPassword.twoFactor.unset(userId, code);
       // https://github.com/accounts-js/accounts/issues/1181
-      const wait = async (time) => {
+      const wait = async (time: number) => {
         return new Promise((resolve) => {
           setTimeout(() => {
             resolve(true);
