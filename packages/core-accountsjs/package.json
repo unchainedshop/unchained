@@ -30,7 +30,8 @@
     "@accounts/database-manager": "0.33.1",
     "@accounts/mongo": "0.33.5",
     "@accounts/password": "0.32.1",
-    "@accounts/server": "0.33.1"
+    "@accounts/server": "0.33.1",
+    "@graphql-modules/core": "0.7.17"
   },
   "devDependencies": {
     "@types/chai": "^4.2.22",
