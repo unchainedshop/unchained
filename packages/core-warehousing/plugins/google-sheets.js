@@ -1,5 +1,5 @@
 import {
-  WarehousingDirector,
+  registerAdapter,
   WarehousingAdapter,
 } from 'meteor/unchained:core-warehousing';
 import Sheets from 'node-sheets';
@@ -170,4 +170,4 @@ class GoogleSheets extends WarehousingAdapter {
   }
 }
 
-WarehousingDirector.registerAdapter(GoogleSheets);
+registerAdapter(GoogleSheets);
