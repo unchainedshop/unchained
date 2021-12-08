@@ -1,5 +1,5 @@
 {
-  "name": "@unchainedshop/payments",
+  "name": "@unchainedshop/core-payments",
   "version": "1.0.3",
   "main": "lib/payments-index.js",
   "types": "lib/payments-index.d.ts",

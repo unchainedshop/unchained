@@ -1,5 +1,5 @@
 {
-  "name": "@unchainedshop/events",
+  "name": "@unchainedshop/core-events",
   "version": "0.9.0",
   "main": "lib/events-index.js",
   "types": "lib/events-index.d.ts",

@@ -1,5 +1,5 @@
 {
-  "name": "@unchainedshop/languages",
+  "name": "@unchainedshop/core-languages",
   "version": "1.0.3",
   "main": "lib/languages-index.js",
   "types": "lib/languages-index.d.ts",

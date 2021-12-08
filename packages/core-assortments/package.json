@@ -1,5 +1,5 @@
 {
-  "name": "@unchainedshop/assortments",
+  "name": "@unchainedshop/core-assortments",
   "version": "1.0.3",
   "main": "lib/assortments-index.js",
   "types": "lib/assortments-index.d.ts",

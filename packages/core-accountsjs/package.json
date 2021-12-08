@@ -1,5 +1,5 @@
 {
-  "name": "@unchainedshop/accountsjs",
+  "name": "@unchainedshop/core-accountsjs",
   "version": "1.0.3",
   "main": "lib/accounts-index.js",
   "types": "lib/accounts-index.d.ts",

@@ -1,5 +1,5 @@
 {
-  "name": "@unchainedshop/countries",
+  "name": "@unchainedshop/core-countries",
   "version": "1.0.3",
   "main": "lib/countries-index.js",
   "types": "lib/countries-index.d.ts",

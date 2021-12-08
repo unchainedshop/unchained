@@ -1,5 +1,5 @@
 {
-  "name": "@unchainedshop/currencies",
+  "name": "@unchainedshop/core-currencies",
   "version": "1.0.3",
   "main": "lib/currencies-index.js",
   "types": "lib/currencies-index.d.ts",
