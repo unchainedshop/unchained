@@ -32,6 +32,7 @@ import {
   UploadFileCallback,
   UploadFileData,
 } from './files';
+import exp from 'constants';
 
 export { Modules } from './modules';
 
@@ -139,6 +140,12 @@ declare module 'meteor/unchained:core-currencies' {
     params: ModuleInput
   ): Promise<CurrenciesModule>;
 }
+
+declare module 'meteor/unchained:core-discounting' {
+  export const DiscountAdapter
+  export const DiscountDirector
+}
+
 
 declare module 'meteor/unchained:core-languages' {
   function configureLanguagesModule(

@@ -21,6 +21,6 @@ export interface UnchainedAPI {
 }
 
 export interface LocaleContext {
-  localeContext: Locale,
-  countryContext: string,
+  localeContext: Locale;
+  countryContext: string;
 }
