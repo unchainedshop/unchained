@@ -1,9 +1,9 @@
 import {
-  registerAdapter,
+  registerWarehousingAdapter,
   WarehousingAdapter,
 } from 'meteor/unchained:core-warehousing';
 import Sheets from 'node-sheets';
-import { log } from 'meteor/unchained:logger';
+import { log, LogLevel } from 'meteor/unchained:logger';
 import LRU from 'lru-cache';
 
 const { NODE_ENV, GOOGLE_SHEETS_ID, GOOGLE_SHEETS_PRIVATE_KEY_DATA } =
@@ -30,14 +30,14 @@ async function downloadSpreadsheet() {
     const delivery = await gs.tables('delivery!A:ZZZ');
     const inventory = await gs.tables('inventory!A:ZZZ');
     log(`GoogleSheet: Updated cache with TTL: ${maxAge}`, {
-      level: 'verbose',
+      level: LogLevel.Verbose,
     });
     return {
       delivery,
       inventory,
     };
   } catch (err) {
-    log(err, { level: 'error' });
+    log(err, { level: LogLevel.Error });
     throw err;
   }
 }
@@ -50,7 +50,7 @@ updateGoogleCache = async () => {
       return sheet;
     }
   } catch (e) {
-    log(e, { level: 'error' });
+    log(e, { level: LogLevel.Error });
   }
   return null;
 };
@@ -77,7 +77,7 @@ class GoogleSheets extends WarehousingAdapter {
     return type === 'PHYSICAL';
   }
 
-  static async getRows(name) {
+  static async getRows(name: string) {
     const cachedTables = googleCache.get('tables');
     let tables = cachedTables;
     if (!cachedTables) {
@@ -88,7 +88,7 @@ class GoogleSheets extends WarehousingAdapter {
   }
 
   // eslint-disable-next-line
-  isActive(context) {
+  isActive() {
     return true;
   }
 
@@ -97,7 +97,8 @@ class GoogleSheets extends WarehousingAdapter {
     return null;
   }
 
-  async getRemoteTime(sku, quantity, selector) {
+  async getRemoteTime(sku, quantity: number, selector: string) {
+    /* @ts-ignore */
     const rows = await this.constructor.getRows('delivery');
     const resolvedRow = rows.reduce((result, row) => {
       const parsedQuantity = parseInt(row.Quantity.value, 10);
@@ -111,12 +112,13 @@ class GoogleSheets extends WarehousingAdapter {
     const time = parseInt(resolvedRow[selector].value, 10) || 0;
     log(
       `GoogleSheet: Resolve Time ${selector} (${quantity}) for ${sku}: ${time}`,
-      { level: 'verbose' }
+      { level: LogLevel.Verbose }
     );
     return time;
   }
 
   async getRemoteInventory(sku) {
+    /* @ts-ignore */
     const rows = await this.constructor.getRows('inventory');
     const resolvedRow = [].concat(rows).reduce((result, row) => {
       if (result || !row) return result;
@@ -129,7 +131,7 @@ class GoogleSheets extends WarehousingAdapter {
     if (!resolvedRow) return null;
     const amount = parseInt(resolvedRow.Stock.value, 10) || 0;
     log(`GoogleSheet: Resolve Inventory for ${sku}: ${amount}`, {
-      level: 'verbose',
+      level: LogLevel.Verbose,
     });
     return amount;
   }
@@ -140,7 +142,7 @@ class GoogleSheets extends WarehousingAdapter {
     return this.getRemoteInventory(sku);
   }
 
-  async productionTime(quantity) {
+  async productionTime(quantity: number) {
     const { product } = this.context;
     const { sku } = product.warehousing || {};
     if (!sku) return null;
@@ -170,4 +172,4 @@ class GoogleSheets extends WarehousingAdapter {
   }
 }
 
-registerAdapter(GoogleSheets);
+registerWarehousingAdapter(GoogleSheets);

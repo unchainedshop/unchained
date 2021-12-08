@@ -14,16 +14,27 @@ import { CountriesModule } from './countries';
 import { LanguagesModule } from './languages';
 import { EmitAdapter, EventDirector, EventsModule } from './events';
 import { User } from './users';
-import { Logger, LogOptions, Transports } from './logs';
+import { Logger, LogLevel as LogLevelType, LogOptions, Transports } from './logs';
 import { Locale } from '@types/locale';
 import {
   PaymentAdapter as IPaymentAdapter,
   PaymentConfiguration,
   PaymentContext,
   PaymentDirector as IPaymentDirector,
+  PaymentModule,
+  PaymentError,
   PaymentProvider,
   PaymentProviderType,
 } from './payments';
+import {
+  WarehousingModule,
+  WarehousingAdapter as IWarehousingAdapter,
+  WarehousingContext,
+  WarehousingDirector as IWarehousingDirector,
+  WarehousingError as WarehousingErrorType,
+  WarehousingProvider,
+  WarehousingProviderTypeType as WarehousingProviderTypeTypeType,
+} from './warehousing';
 import { Request } from 'express';
 import {
   FileDirector,
@@ -82,11 +93,12 @@ declare module 'meteor/unchained:utils' {
 }
 
 declare module 'meteor/unchained:logger' {
-  function log(message: string, options?: LogOptions): void;
-  function createLogger(
+  export function log(message: string, options?: LogOptions): void;
+  export function createLogger(
     moduleName: string,
     moreTransports?: Transports
   ): Logger;
+
   const LogLevel;
 }
 
@@ -164,8 +176,8 @@ declare module 'meteor/unchained:core-payments' {
     context: PaymentContext
   ): IPaymentDirector;
 
-  export function registerAdapter(adapter: IPaymentAdapter): void;
-  export function getAdapter(key: string): IPaymentAdapter;
+  export function registerAdapter(adapter: typeof IPaymentAdapter): void;
+  export function getAdapter(key: string): typeof IPaymentAdapter;
 
   export class PaymentAdapter implements IPaymentAdapter {
     static key: string;
@@ -183,6 +195,37 @@ declare module 'meteor/unchained:core-payments' {
   export const paymentLogger;
 
   export const PaymentProviderType;
+}
+
+declare module 'meteor/unchained:core-warehousing' {
+  export function configureWarehousingModule(
+    params: ModuleInput
+  ): Promise<WarehousingModule>;
+  
+  export function WarehousingDirector(
+    provider: WarehousingProvider,
+  ): IWarehousingDirector;
+
+  export function registerWarehousingAdapter(adapter: typeof IWarehousingAdapter): void;
+  export function getWarehousingAdapter(key: string): typeof IWarehousingAdapter;
+
+  export class WarehousingAdapter implements IWarehousingAdapter {
+    static key: string;
+    static label: string;
+    static version: string;
+    static typeSupported: (type: WarehousingProviderTypeType) => boolean;
+
+    public config: WarehousingProvider['configuration'];
+    public context: WarehousingContext;
+
+    constructor(
+      config: WarehousingProvider['configuration'],
+      context: WarehousingContext
+    );
+  }
+  export const WarehousingError: WarehousingErrorType;
+
+  export const WarehousingProviderType: WarehousingProviderTypeType;
 }
 
 declare module 'meteor/unchained:file-upload' {

@@ -5,6 +5,7 @@ import { TimestampFields, _ID } from './common';
 export { format, transports } from 'winston';
 
 export enum LogLevel {
+  Verbose = 'verbose',
   Info = 'info',
   Debug = 'debug',
   Error = 'error',

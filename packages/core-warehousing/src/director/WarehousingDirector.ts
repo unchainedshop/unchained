@@ -15,14 +15,14 @@ const getFilteredAdapters = (filter) => {
     .filter(filter || (() => true));
 };
 
-const registerAdapter = (adapter: typeof WarehousingAdapter) => {
+const registerWarehousingAdapter = (adapter: typeof WarehousingAdapter) => {
   log(
     `WarehousingDirector -> Registered ${adapter.key} ${adapter.version} (${adapter.label})`
   );
   Adapters.set(adapter.key, adapter);
 };
 
-const getAdapter = (provider: WarehousingProvider) => {
+const getWarehousindAdapter = (provider: WarehousingProvider) => {
   return Adapters.get(provider.adapterKey);
 };
 
@@ -30,7 +30,7 @@ const getAdapterInstance = (
   provider: WarehousingProvider,
   context: WarehousingContext
 ) => {
-  const Adapter = getAdapter(provider);
+  const Adapter = getWarehousingAdapter(provider);
   if (!Adapter) {
     throw new Error(`Warehousing Plugin ${provider.adapterKey} not available`);
   }
@@ -128,8 +128,8 @@ const WarehousingDirector = (
 };
 
 export {
-  getAdapter,
+  getWarehousingAdapter,
   getFilteredAdapters,
-  registerAdapter,
+  registerWarehousingAdapter,
   WarehousingDirector,
 };

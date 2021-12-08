@@ -14,7 +14,7 @@ import { WarehousingProvidersCollection } from 'src/db/WarehousingProvidersColle
 import { WarehousingProvidersSchema } from '../db/WarehousingProvidersSchema';
 import { WarehousingAdapter } from '../director/WarehousingAdapter';
 import {
-  getAdapter,
+  getWarehousingAdapter,
   getFilteredAdapters,
   WarehousingDirector,
 } from '../director/WarehousingDirector';
@@ -86,7 +86,7 @@ export const configureWarehousingModule = async ({
     },
 
     findInterface: (warehousingProvider) => {
-      const Adapter = getAdapter(warehousingProvider);
+      const Adapter = getWarehousingAdapter(warehousingProvider);
       return {
         _id: Adapter.key,
         label: Adapter.label,
@@ -124,7 +124,7 @@ export const configureWarehousingModule = async ({
 
     // Mutations
     create: async (doc, userId) => {
-      const Adapter = getAdapter(doc);
+      const Adapter = getWarehousingAdapter(doc);
       if (!Adapter) return null;
 
       const warehousingProviderId = await mutations.create(
