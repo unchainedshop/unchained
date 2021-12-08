@@ -28,6 +28,7 @@ Package.onTest((api) => {
   api.use('ecmascript');
   api.use('typescript');
 
+  api.use('unchained:mongodb');
   api.use('unchained:core-warehousing');
 
   api.mainModule('tests/warehousing-index.test.ts');

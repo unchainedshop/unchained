@@ -10,7 +10,7 @@ import {
   generateDbFilterById,
   generateDbMutations,
 } from 'meteor/unchained:utils';
-import { WarehousingProvidersCollection } from 'src/db/WarehousingProvidersCollection';
+import { WarehousingProvidersCollection } from '../db/WarehousingProvidersCollection';
 import { WarehousingProvidersSchema } from '../db/WarehousingProvidersSchema';
 import { WarehousingAdapter } from '../director/WarehousingAdapter';
 import {
