@@ -104,15 +104,22 @@ export const configureWarehousingModule = async ({
       }));
     },
 
-    findSupported: async (context) => {
+    findSupported: async () => {
       const providers = WarehousingProviders.find(buildFindSelector({})).filter(
-        (provider: WarehousingProvider) => {
-          const director = WarehousingDirector(provider);
-          return director.isActive(context);
-        }
+        (provider: WarehousingProvider) =>
+          WarehousingDirector(provider).isActive()
       );
 
       return await providers.toArray();
+    },
+
+    // Adapter
+
+    configurationError: (provider: WarehousingProvider) => {
+      return WarehousingDirector(provider).configurationError();
+    },
+    isActive: (provider: WarehousingProvider) => {
+      return WarehousingDirector(provider).isActive();
     },
 
     // Mutations

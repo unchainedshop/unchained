@@ -71,9 +71,9 @@ const WarehousingDirector = (
       }
     },
 
-    isActive(context: WarehousingContext) {
+    isActive() {
       try {
-        const adapter = getAdapterInstance(provider, context);
+        const adapter = getAdapterInstance(provider, {});
         return adapter.isActive();
       } catch (error) {
         log(error.message, { level: LogLevel.Error });

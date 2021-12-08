@@ -4,7 +4,7 @@ import {
   PaymentProvider,
   PaymentProviderType,
 } from '@unchainedshop/types/payments';
-import { Collection } from '@unchainedshop/types/common';
+import { Collection, ModuleMutations } from '@unchainedshop/types/common';
 import { emit, registerEvents } from 'meteor/unchained:events';
 import {
   generateDbMutations,
@@ -46,7 +46,7 @@ export const configurePaymentProvidersModule = (
   const mutations = generateDbMutations<PaymentProvider>(
     PaymentProviders,
     PaymentProvidersSchema
-  );
+  ) as ModuleMutations<PaymentProvider>;
 
   const getPaymentAdapter = async (
     paymentProviderId: string,
@@ -128,7 +128,10 @@ export const configurePaymentProvidersModule = (
     // Payment Adapter
 
     configurationError: (paymentProvider) => {
-      return PaymentDirector(paymentProvider).configurationError();
+      return PaymentDirector(
+        paymentProvider,
+        getDefaultContext()
+      ).configurationError();
     },
 
     isActive: async (paymentProviderId, context) => {
@@ -174,9 +177,9 @@ export const configurePaymentProvidersModule = (
         userId
       );
 
-      const paymentProvider = await PaymentProviders.findOne({
-        _id: paymentProviderId,
-      });
+      const paymentProvider = await PaymentProviders.findOne(
+        generateDbFilterById(paymentProviderId)
+      );
       emit('PAYMENT_PROVIDER_CREATE', { paymentProvider });
       return paymentProviderId;
     },

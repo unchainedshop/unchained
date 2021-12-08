@@ -1,4 +1,5 @@
 export { configurePaymentModule } from './module/configurePaymentModule';
+
 export { paymentServices } from './service/paymentServices'
 
 export { PaymentDirector, registerAdapter, getAdapter } from './director/PaymentDirector'

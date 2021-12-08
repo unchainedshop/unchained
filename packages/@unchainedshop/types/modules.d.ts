@@ -7,6 +7,7 @@ import { EventsModule } from './events';
 import { FilesModule } from './files';
 import { LanguagesModule } from './languages';
 import { PaymentModule } from './payments';
+import { WarehousingModule } from './warehousing';
 
 export interface Modules {
   accounts: AccountsModule;
@@ -27,6 +28,6 @@ export interface Modules {
   products: any;
   quotations: any;
   users: UsersModule;
-  warehousing: any;
+  warehousing: WarehousingModule;
   worker: any;
 }

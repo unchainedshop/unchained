@@ -49,7 +49,7 @@ export enum PaymentError {
 }
 
 export interface PaymentContext {
-  userId: string;
+  userId?: string;
   paymentProviderId?: string;
   order?: any; // TODO: Replace with order type
   orderPayment?: any; // TODO: Replace with orderPayment type
