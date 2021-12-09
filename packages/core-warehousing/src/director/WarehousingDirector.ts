@@ -22,7 +22,7 @@ const registerWarehousingAdapter = (adapter: typeof WarehousingAdapter) => {
   Adapters.set(adapter.key, adapter);
 };
 
-const getWarehousindAdapter = (provider: WarehousingProvider) => {
+const getWarehousingAdapter = (provider: WarehousingProvider) => {
   return Adapters.get(provider.adapterKey);
 };
 

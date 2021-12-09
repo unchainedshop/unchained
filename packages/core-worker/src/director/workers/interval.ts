@@ -1,5 +1,4 @@
 import later from 'later';
-import { Meteor } from 'meteor/meteor';
 import BaseWorker from './base';
 
 const { NODE_ENV } = process.env;
@@ -29,28 +28,32 @@ class IntervalWorker extends BaseWorker {
 
   static type = 'CRON';
 
+  private batchCount: number;
+  private intervalDelay: number;
+  private intervalHandle;
+
   constructor({
-    WorkerDirector,
     workerId,
     batchCount = 0,
     schedule = defaultSchedule,
   }) {
-    super({ WorkerDirector, workerId });
+    super({ workerId });
     this.batchCount = batchCount;
     this.intervalDelay = scheduleToInterval(schedule);
   }
 
   start() {
-    this.intervalHandle = Meteor.setInterval(() => {
+    this.intervalHandle = setInterval(() => {
       this.process({
         maxWorkItemCount: this.batchCount,
+        /* @ts-ignore */
         referenceDate: this.constructor.floorDate(),
       });
     }, this.intervalDelay);
   }
 
   stop() {
-    Meteor.clearInterval(this.intervalHandle);
+    clearInterval(this.intervalHandle);
   }
 }
 

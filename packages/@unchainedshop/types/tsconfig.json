@@ -5,6 +5,7 @@
     "experimentalDecorators": true,
     "forceConsistentCasingInFileNames": true,
     "incremental": true,
+    "isolatedModules": true,
     "lib": ["esnext"],
     "module": "esnext",
     "moduleResolution": "node",
@@ -27,6 +28,8 @@
     "languages.d.ts",
     "logs.d.ts",
     "modules.d.ts",
-    "payments.d.ts"
+    "payments.d.ts",
+    "warehousing.d.ts",
+    "worker.d.ts"
   ]
 }

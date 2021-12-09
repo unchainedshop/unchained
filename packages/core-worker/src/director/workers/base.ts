@@ -3,7 +3,8 @@ import later from 'later';
 import { Promise } from 'meteor/promise';
 import { log } from 'meteor/unchained:logger';
 
-import External from '../plugins/external';
+import External from '../../../plugins/external';
+import { WorkerDirector } from 'director';
 
 const { UNCHAINED_WORKER_ID } = process.env;
 
@@ -19,45 +20,50 @@ class BaseWorker {
 
   static type = 'BASE';
 
-  constructor({ WorkerDirector, workerId }) {
-    this.WorkerDirector = WorkerDirector;
+  protected workerId: string
+
+  constructor({ workerId }) {
+    /* @ts-ignore */
     this.workerId = resolveWorkerId(workerId, this.constructor.type);
+    /* @ts-ignore */
     log(`${this.constructor.key} -> Initialized: ${this.workerId}`);
     this.reset();
   }
 
   getInternalTypes() {
-    return this.WorkerDirector.getActivePluginTypes().filter(
+    return WorkerDirector.getActivePluginTypes().filter(
       (type) => type !== External.type
     );
   }
 
   start() {
+    /* @ts-ignore */
     throw new Error(`Not implemented on ${this.constructor.key}`);
   }
 
   stop() {
+    /* @ts-ignore */
     throw new Error(`Not implemented on ${this.constructor.key}`);
   }
 
   async reset(referenceDate = new Date()) {
-    await this.WorkerDirector.markOldWorkFailed({
+    await WorkerDirector.markOldWorkFailed({
       types: this.getInternalTypes(),
       worker: this.workerId,
       referenceDate,
     });
   }
 
-  async autorescheduleTypes(referenceDate) {
+  async autorescheduleTypes(referenceDate: Date) {
     return Promise.all(
-      Object.entries(this.WorkerDirector.autoSchedule).map(
+      Object.entries(WorkerDirector.autoSchedule).map(
         async ([type, configuration]) => {
           const { schedule, input, ...rest } = configuration;
           const fixedSchedule = { ...schedule };
           fixedSchedule.schedules[0].s = [0]; // ignore seconds, always run on second 0
           const nextDate = later.schedule(fixedSchedule).next(1, referenceDate);
           nextDate.setMilliseconds(0);
-          await this.WorkerDirector.ensureOneWork({
+          await WorkerDirector.ensureOneWork({
             type,
             input: input(),
             scheduled: nextDate,
@@ -70,11 +76,11 @@ class BaseWorker {
     );
   }
 
-  async process({ maxWorkItemCount, referenceDate } = {}) {
-    await this.autorescheduleTypes(referenceDate);
+  async process(params: { maxWorkItemCount?: number, referenceDate?: Date } = {}) {
+    await this.autorescheduleTypes(params.referenceDate);
     const processRecursively = async (recursionCounter = 0) => {
-      if (maxWorkItemCount && maxWorkItemCount < recursionCounter) return null;
-      const doneWork = await this.WorkerDirector.findOneAndProcessWork({
+      if (params.maxWorkItemCount && params.maxWorkItemCount < recursionCounter) return null;
+      const doneWork = await WorkerDirector.findOneAndProcessWork({
         types: this.getInternalTypes(),
         worker: this.workerId,
       });

@@ -67,9 +67,7 @@ export interface WarehousingInterface {
 
 export type WarehousingModule = ModuleMutations<WarehousingProvider> & {
   findProvider: (
-    query: {
-      warehousingProviderId?: string;
-    },
+    query: { warehousingProviderId: string },
     options?: FindOptions<WarehousingProvider>
   ) => Promise<WarehousingProvider>;
   findProviders: (
@@ -92,7 +90,11 @@ export type WarehousingModule = ModuleMutations<WarehousingProvider> & {
   isActive: (provider: WarehousingProvider) => boolean;
 };
 
-type HelperType<P, T> = (provider: WarehousingProvider, params: P, context: Context) => T;
+type HelperType<P, T> = (
+  provider: WarehousingProvider,
+  params: P,
+  context: Context
+) => T;
 
 export interface WarehousingProviderHelperTypes {
   configurationError: HelperType<never, WarehousingError>;

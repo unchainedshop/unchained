@@ -1,6 +1,6 @@
-import { Db, Collection, UpdateFilter, Filter, ObjectId, FindOptions, Sort } from 'mongodb';
+import { Db, Collection, UpdateFilter, Filter, ObjectId, FindOptions, Sort, ModifyResult, Projection, } from 'mongodb';
 
-export { Db, Collection, FindOptions, UpdateFilter as Update, Filter, Sort };
+export { Db, Collection, FindOptions, UpdateFilter as Update, Filter, Sort, ModifyResult, Projection };
 
 export type _ID = string | ObjectId;
 

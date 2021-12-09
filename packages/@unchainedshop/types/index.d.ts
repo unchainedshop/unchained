@@ -22,9 +22,9 @@ import {
   PaymentContext,
   PaymentDirector as IPaymentDirector,
   PaymentModule,
-  PaymentError,
+  PaymentError as PaymentErrorType,
   PaymentProvider,
-  PaymentProviderType,
+  PaymentProviderType as PaymentProviderTypeType,
 } from './payments';
 import {
   WarehousingModule,
@@ -99,7 +99,7 @@ declare module 'meteor/unchained:logger' {
     moreTransports?: Transports
   ): Logger;
 
-  const LogLevel;
+  export const LogLevel: typeof LogLevelType;
 }
 
 declare module 'meteor/unchained:events' {
@@ -154,10 +154,9 @@ declare module 'meteor/unchained:core-currencies' {
 }
 
 declare module 'meteor/unchained:core-discounting' {
-  export const DiscountAdapter
-  export const DiscountDirector
+  export const DiscountAdapter;
+  export const DiscountDirector;
 }
-
 
 declare module 'meteor/unchained:core-languages' {
   function configureLanguagesModule(
@@ -183,31 +182,35 @@ declare module 'meteor/unchained:core-payments' {
     static key: string;
     static label: string;
     static version: string;
-    static typeSupported: (type: PaymentProviderType) => boolean;
+    static typeSupported: (type: PaymentProviderTypeType) => boolean;
 
     public config: PaymentConfiguration | null;
     public context: PaymentContext | null;
 
     constructor(config: PaymentConfiguration, context: PaymentContext);
   }
-  export const PaymentError;
+  export const PaymentError: typeof PaymentErrorType;
 
   export const paymentLogger;
 
-  export const PaymentProviderType;
+  export const PaymentProviderType: typeof PaymentProviderTypeType;
 }
 
 declare module 'meteor/unchained:core-warehousing' {
   export function configureWarehousingModule(
     params: ModuleInput
   ): Promise<WarehousingModule>;
-  
+
   export function WarehousingDirector(
-    provider: WarehousingProvider,
+    provider: WarehousingProvider
   ): IWarehousingDirector;
 
-  export function registerWarehousingAdapter(adapter: typeof IWarehousingAdapter): void;
-  export function getWarehousingAdapter(key: string): typeof IWarehousingAdapter;
+  export function registerWarehousingAdapter(
+    adapter: typeof IWarehousingAdapter
+  ): void;
+  export function getWarehousingAdapter(
+    key: string
+  ): typeof IWarehousingAdapter;
 
   export class WarehousingAdapter implements IWarehousingAdapter {
     static key: string;
@@ -223,9 +226,9 @@ declare module 'meteor/unchained:core-warehousing' {
       context: WarehousingContext
     );
   }
-  export const WarehousingError: WarehousingErrorType;
+  export const WarehousingError: typeof WarehousingErrorType;
 
-  export const WarehousingProviderType: WarehousingProviderTypeType;
+  export const WarehousingProviderType: typeof WarehousingProviderTypeType;
 }
 
 declare module 'meteor/unchained:file-upload' {
@@ -257,7 +260,7 @@ declare module 'meteor/unchained:core-orders' {
 
 declare module 'meteor/unchained:core-products' {
   export const Products: {
-    productExists({ productId: string }): any
+    productExists({ productId: string }): any;
   };
 }
 

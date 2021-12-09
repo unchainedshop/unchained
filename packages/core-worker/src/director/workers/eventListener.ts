@@ -1,4 +1,5 @@
-import { WorkerEventTypes } from '../director';
+import { WorkerEventTypes } from '../../../director';
+import { WorkerDirector } from '../WorkerDirector';
 import BaseWorker from './base';
 
 class EventListenerWorker extends BaseWorker {
@@ -11,29 +12,35 @@ class EventListenerWorker extends BaseWorker {
 
   static type = 'EVENT_LISTENER';
 
+  private onAdded: () => void;
+  private onFinished: () => void;
+
   start() {
     this.onAdded = () => {
       this.process({
         maxWorkItemCount: 0,
+        /* @ts-ignore */
         referenceDate: this.constructor.floorDate(),
       });
     };
     this.onFinished = () => {
       this.process({
         maxWorkItemCount: 0,
+        /* @ts-ignore */
         referenceDate: this.constructor.floorDate(),
       });
     };
-    this.WorkerDirector.events.on(WorkerEventTypes.added, this.onAdded);
-    this.WorkerDirector.events.on(WorkerEventTypes.finished, this.onFinished);
+    WorkerDirector.onEmit(WorkerEventTypes.added, this.onAdded);
+    WorkerDirector.onEmit(WorkerEventTypes.finished, this.onFinished);
     setTimeout(() => {
+      /* @ts-ignore */
       this.autorescheduleTypes(this.constructor.floorDate());
     }, 300);
   }
 
   stop() {
-    this.WorkerDirector.events.off(WorkerEventTypes.added, this.onAdded);
-    this.WorkerDirector.events.off(WorkerEventTypes.finished, this.onFinished);
+    WorkerDirector.offEmit(WorkerEventTypes.added, this.onAdded);
+    WorkerDirector.offEmit(WorkerEventTypes.finished, this.onFinished);
   }
 }
 
