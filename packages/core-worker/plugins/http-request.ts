@@ -1,5 +1,5 @@
 import { WorkerDirector, WorkerPlugin } from 'meteor/unchained:core-worker';
-import { log } from 'meteor/unchained:logger';
+import { log, LogLevel } from 'meteor/unchained:logger';
 import fetch from 'isomorphic-unfetch';
 
 const postFetch = async (url, { data, headers }) => {
@@ -17,18 +17,20 @@ const nonPostFetch = async (url, { headers, method = 'GET' }) => {
   });
 };
 
-class HttpRequestWorkerPlugin extends WorkerPlugin {
-  static key = 'shop.unchained.worker-plugin.http-request';
+const HttpRequestWorkerPlugin: WorkerPlugin<
+  { url?: string; data?: any; headers?: any; method: 'POST' | 'GET' },
+  any
+> = {
+  key: 'shop.unchained.worker-plugin.http-request',
+  label: 'Request a resource via http request. 200 = success',
+  version: '1.0',
+  type: 'HTTP_REQUEST',
 
-  static label = 'Request a resource via http request. 200 = success';
-
-  static version = '1.0';
-
-  static type = 'HTTP_REQUEST';
-
-  static async doWork({ url, data = {}, headers, method = 'POST' } = {}) {
+  async doWork(
+    { url, data = {}, headers, method = 'POST' } = { method: 'POST' }
+  ) {
     log(`${this.key} -> doWork: ${method} ${url} ${data}`, {
-      level: 'debug',
+      level: LogLevel.Debug,
     });
 
     if (!url) {
@@ -65,8 +67,8 @@ class HttpRequestWorkerPlugin extends WorkerPlugin {
         },
       };
     }
-  }
-}
+  },
+};
 
 WorkerDirector.registerPlugin(HttpRequestWorkerPlugin);
 

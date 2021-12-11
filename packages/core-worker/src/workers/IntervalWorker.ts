@@ -1,5 +1,6 @@
+import { Modules } from '@unchainedshop/types/modules';
 import later from 'later';
-import BaseWorker from './base';
+import BaseWorker from './BaseWorker';
 
 const { NODE_ENV } = process.env;
 
@@ -30,14 +31,20 @@ class IntervalWorker extends BaseWorker {
 
   private batchCount: number;
   private intervalDelay: number;
-  private intervalHandle;
+  private intervalHandle: NodeJS.Timer;
 
   constructor({
+    modules,
     workerId,
     batchCount = 0,
     schedule = defaultSchedule,
+  }: {
+    modules: Modules;
+    workerId: string;
+    batchCount?: number;
+    schedule?: Date;
   }) {
-    super({ workerId });
+    super({ modules, workerId });
     this.batchCount = batchCount;
     this.intervalDelay = scheduleToInterval(schedule);
   }

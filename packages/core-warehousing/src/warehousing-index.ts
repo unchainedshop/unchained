@@ -2,10 +2,11 @@ export { configureWarehousingModule } from './module/configureWarehousingModule'
 
 export { warehousingServices } from './service/warehousingServices';
 
+
 export {
   WarehousingDirector,
-  registerAdapter,
-  getAdapter,
+  getWarehousingAdapter,
+  registerWarehousingAdapter,
 } from './director/WarehousingDirector';
 export { WarehousingAdapter } from './director/WarehousingAdapter';
 export { WarehousingError } from './director/WarehousingError';

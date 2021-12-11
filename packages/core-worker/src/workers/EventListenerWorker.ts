@@ -1,6 +1,6 @@
-import { WorkerEventTypes } from '../../../director';
-import { WorkerDirector } from '../WorkerDirector';
-import BaseWorker from './base';
+import { WorkerEventTypes } from '../director/WorkerEventTypes';
+import { WorkerDirector } from '../director/WorkerDirector';
+import BaseWorker from './BaseWorker';
 
 class EventListenerWorker extends BaseWorker {
   static key = 'shop.unchained.worker.event-listener';
@@ -30,8 +30,10 @@ class EventListenerWorker extends BaseWorker {
         referenceDate: this.constructor.floorDate(),
       });
     };
-    WorkerDirector.onEmit(WorkerEventTypes.added, this.onAdded);
-    WorkerDirector.onEmit(WorkerEventTypes.finished, this.onFinished);
+
+    WorkerDirector.onEmit(WorkerEventTypes.ADDED, this.onAdded);
+    WorkerDirector.onEmit(WorkerEventTypes.FINISHED, this.onFinished);
+
     setTimeout(() => {
       /* @ts-ignore */
       this.autorescheduleTypes(this.constructor.floorDate());
@@ -39,8 +41,8 @@ class EventListenerWorker extends BaseWorker {
   }
 
   stop() {
-    WorkerDirector.offEmit(WorkerEventTypes.added, this.onAdded);
-    WorkerDirector.offEmit(WorkerEventTypes.finished, this.onFinished);
+    WorkerDirector.offEmit(WorkerEventTypes.ADDED, this.onAdded);
+    WorkerDirector.offEmit(WorkerEventTypes.FINISHED, this.onFinished);
   }
 }
 

@@ -1,7 +1,7 @@
 import { Schemas } from 'meteor/unchained:utils';
 import SimpleSchema from 'simpl-schema';
 
-export const WorkQueuesSchema = new SimpleSchema(
+export const WorkQueueSchema = new SimpleSchema(
   {
     finished: Date,
     originalWorkId: { type: String },

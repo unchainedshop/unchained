@@ -8,6 +8,7 @@ import { FilesModule } from './files';
 import { LanguagesModule } from './languages';
 import { PaymentModule } from './payments';
 import { WarehousingModule } from './warehousing';
+import { WorkerModule } from './worker';
 
 export interface Modules {
   accounts: AccountsModule;
@@ -29,5 +30,5 @@ export interface Modules {
   quotations: any;
   users: UsersModule;
   warehousing: WarehousingModule;
-  worker: any;
+  worker: WorkerModule;
 }

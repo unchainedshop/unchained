@@ -67,7 +67,7 @@ export const startPlatform = async ({ modules, typeDefs, ...options } = {}) => {
   });
   if (emailInterceptionIsEnabled) interceptEmails(options);
   if (workQueueIsEnabled) {
-    const handlers = setupWorkqueue(options);
+    const handlers = setupWorkqueue(modules, options);
     handlers.forEach((handler) => queueWorkers.push(handler));
     await setupCarts(options);
   }

@@ -11,3 +11,5 @@
 6. File Id: Now it is a manually created string. Keep it or change the externalId pattern?
 
 7. What is the context in a plugin meant to be? general context incl. modules and services. Specific context for function.
+
+8. Why are the events of the core-worker not emitted using the events library, but directly with the node event emitter?

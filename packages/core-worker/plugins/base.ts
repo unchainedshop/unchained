@@ -6,18 +6,15 @@ console.warn(
 /**
  * @deprecated Use `import { WorkerPlugin } from 'meteor/unchained:core-worker';` instead
  */
-class DeprecatedWorkerPlugin extends WorkerPlugin {
-  static key = '';
+const DeprecatedWorkerPlugin: WorkerPlugin<void, null> = {
+  key: '',
+  label: '',
+  version: '',
+  type: '',
 
-  static label = '';
-
-  static version = '';
-
-  static type = '';
-
-  static async doWork() {
+  async doWork() {
     return { success: false, result: null };
-  }
-}
+  },
+};
 
 export default DeprecatedWorkerPlugin;

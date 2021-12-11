@@ -15,13 +15,13 @@ export enum WorkStatus {
   DELETED = 'DELETED',
 }
 
-export type WorkQueue = {
+export type Work = {
   _id?: _ID;
   error?: any;
   finished?: Date;
   input?: any;
   originalWorkId?: string;
-  priority: Number;
+  priority: number;
   result?: any;
   retries: number;
   scheduled: Date;
@@ -32,7 +32,7 @@ export type WorkQueue = {
   worker?: string;
 } & TimestampFields;
 
-interface WorkQueueData {
+export interface WorkData {
   type: string;
   input: any;
   originalWorkId?: string;
@@ -41,40 +41,42 @@ interface WorkQueueData {
   scheduled?: Date;
 }
 
+interface WorkResult<Result> {
+  success: boolean;
+  result?: Result;
+  error?: any;
+}
+
 export interface WorkerPlugin<Args, Result> {
   key: string;
   label: string;
   version: string;
   type: string;
-  doWork(args: Args): Promise<{ success: boolean; result?: Result }>;
+  doWork(args: Args): Promise<WorkResult<Result>>;
 }
 
 export interface WorkerDirector {
   getActivePluginTypes: () => Array<string>;
   getPlugin: (type: string) => WorkerPlugin;
   registerPlugin: (plugin: WorkerPlugin) => void;
-  configureAutoscheduling: (
-    plugin: WorkerPlugin,
-    workQueue: WorkQueue,
-  ) => void;
 
-  emit: (eventName: string, payload: any) => void
-  onEmit: (eventName: string, payload: any) => void
-  offEmit: (eventName: string, payload: any) => void
+  configureAutoscheduling: (plugin: WorkerPlugin, work: Work) => void;
+  getAutoSchedules: () => Array<Array<string, Work>>
 
-  doWork: (workQueue: WorkQueue) => Promise<{ success: boolean, result?: any }>
+  emit: (eventName: string, payload: any) => void;
+  onEmit: (eventName: string, payload: any) => void;
+  offEmit: (eventName: string, payload: any) => void;
+
+  doWork: (work: Work) => Promise<WorkResult<any>>;
 }
 
 export type WorkerModule = {
-  activeWorkTypes: () => Promise<Array<WorkQueue>>;
+  activeWorkTypes: () => Promise<Array<string>>;
+  findWork: (query: {
+    workId?: string;
+    originalWorkId?: string;
+  }) => Promise<Work>;
   findWorkQueue: (
-    query: {
-      workQueueId?: string;
-      originalWorkId?: string;
-    },
-    options?: FindOptions<WorkQueue>
-  ) => Promise<WorkQueue>;
-  findWorkQueues: (
     query: {
       created: { end?: Date; start?: Date };
       selectTypes: Array<string>;
@@ -83,39 +85,38 @@ export type WorkerModule = {
       limit?: number;
       skip?: number;
     }
-  ) => Promise<Array<WorkQueue>>;
-  workQueueExists: (query: {
-    workQueueId?: string;
+  ) => Promise<Array<Work>>;
+  workExists: (query: {
+    workId?: string;
     originalWorkId?: string;
   }) => Promise<boolean>;
 
   // Transformations
-  status: (workQueue: WorkQueue) => WorkStatus;
+  status: (work: Work) => WorkStatus;
 
   // Mutations
-  addWork: (data: WorkQueueData, userId: string) => Promise<WorkQueue>;
+  addWork: (data: WorkData, userId: string) => Promise<Work>;
 
   allocateWork: (doc: {
     types: Array<Worker>;
     worker: string;
-  }) => Promise<WorkQueue>;
+  }) => Promise<Work>;
 
-  ensureOneWork: (data: WorkQueueData, userId) => Promise<WorkQueue>;
+  doWork: (work: Work) => Promise<WorkResult<any>>;
+
+  ensureOneWork: (work: Work) => Promise<Work>;
 
   finishWork: (
     _id: string,
-    data: {
-      error?: any;
-      finished: Date;
-      result?: any;
+    data: WorkResult<any> & {
+      finished?: Date;
       started?: Date;
-      success: boolean;
       worker: string;
     },
     userId: string
-  ) => Promise<WorkQueue | null>;
+  ) => Promise<Work | null>;
 
-  deleteWork: (_id: string, userId: string) => Promise<WorkQueue | null>;
+  deleteWork: (_id: string, userId: string) => Promise<Work | null>;
 
   markOldWorkAsFailed: (
     params: {
@@ -123,13 +124,13 @@ export type WorkerModule = {
       worker: string;
       referenceDate: Date;
     },
-    userId
-  ) => Promise<Array<WorkQueue>>;
+    userId?: string
+  ) => Promise<Array<Work>>;
 };
 
-type HelperType<P, T> = (provider: WorkQueue, params: P, context: Context) => T;
+type HelperType<P, T> = (provider: Work, params: P, context: Context) => T;
 
-export interface WorkQueueHelperTypes {
+export interface WorkHelperTypes {
   status: HelperType<never, WorkStatus>;
-  original: HelperType<never, Promise<WorkQueue>>;
+  original: HelperType<never, Promise<Work>>;
 }

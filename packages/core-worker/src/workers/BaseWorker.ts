@@ -1,10 +1,13 @@
 import os from 'os';
 import later from 'later';
-import { Promise } from 'meteor/promise';
 import { log } from 'meteor/unchained:logger';
+import { dbIdToString } from 'meteor/unchained:utils';
+import { Modules } from '@unchainedshop/types/modules';
 
-import External from '../../../plugins/external';
-import { WorkerDirector } from 'director';
+import External from '../../plugins/external';
+import { WorkerDirector } from '../director/WorkerDirector';
+import { Module } from 'module';
+import { Work } from '@unchainedshop/types/worker';
 
 const { UNCHAINED_WORKER_ID } = process.env;
 
@@ -20,9 +23,11 @@ class BaseWorker {
 
   static type = 'BASE';
 
-  protected workerId: string
+  protected workerId: string;
+  protected modules: Modules;
 
-  constructor({ workerId }) {
+  constructor({ modules, workerId }) {
+    this.modules = modules;
     /* @ts-ignore */
     this.workerId = resolveWorkerId(workerId, this.constructor.type);
     /* @ts-ignore */
@@ -47,7 +52,7 @@ class BaseWorker {
   }
 
   async reset(referenceDate = new Date()) {
-    await WorkerDirector.markOldWorkFailed({
+    await this.modules.worker.markOldWorkAsFailed({
       types: this.getInternalTypes(),
       worker: this.workerId,
       referenceDate,
@@ -56,37 +61,57 @@ class BaseWorker {
 
   async autorescheduleTypes(referenceDate: Date) {
     return Promise.all(
-      Object.entries(WorkerDirector.autoSchedule).map(
-        async ([type, configuration]) => {
-          const { schedule, input, ...rest } = configuration;
-          const fixedSchedule = { ...schedule };
-          fixedSchedule.schedules[0].s = [0]; // ignore seconds, always run on second 0
-          const nextDate = later.schedule(fixedSchedule).next(1, referenceDate);
-          nextDate.setMilliseconds(0);
-          await WorkerDirector.ensureOneWork({
-            type,
-            input: input(),
-            scheduled: nextDate,
-            worker: this.workerId,
-            ...rest,
-            retries: 0,
-          });
-        }
-      )
+      WorkerDirector.getAutoSchedules().map(async ([type, work]) => {
+        const { schedule, input, ...rest } = work;
+        const fixedSchedule = { ...schedule };
+        fixedSchedule.schedules[0].s = [0]; // ignore seconds, always run on second 0
+        const nextDate = later.schedule(fixedSchedule).next(1, referenceDate);
+        nextDate.setMilliseconds(0);
+        await this.modules.worker.ensureOneWork({
+          type,
+          input: input(),
+          scheduled: nextDate,
+          worker: this.workerId,
+          ...rest,
+          retries: 0,
+        });
+      })
     );
   }
 
-  async process(params: { maxWorkItemCount?: number, referenceDate?: Date } = {}) {
+  async process(
+    params: { maxWorkItemCount?: number; referenceDate?: Date } = {}
+  ) {
     await this.autorescheduleTypes(params.referenceDate);
     const processRecursively = async (recursionCounter = 0) => {
-      if (params.maxWorkItemCount && params.maxWorkItemCount < recursionCounter) return null;
-      const doneWork = await WorkerDirector.findOneAndProcessWork({
+      if (params.maxWorkItemCount && params.maxWorkItemCount < recursionCounter)
+        return null;
+
+      const work = await this.modules.worker.allocateWork({
         types: this.getInternalTypes(),
         worker: this.workerId,
       });
+
+      let doneWork: Work | null = null;
+
+      if (work) {
+        const output = await this.modules.worker.doWork(work);
+
+        doneWork = await this.modules.worker.finishWork(
+          dbIdToString(work._id),
+          {
+            ...output,
+            started: work.started,
+            worker: this.workerId,
+          },
+          '0'
+        );
+      }
       if (doneWork) return processRecursively(recursionCounter + 1);
+
       return null;
     };
+
     await processRecursively();
   }
 

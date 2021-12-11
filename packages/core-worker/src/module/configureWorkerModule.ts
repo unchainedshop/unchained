@@ -1,25 +1,25 @@
 import {
-  Filter, ModifyResult, ModuleInput,
-  ModuleMutations, Projection, Query,
-  Sort
+  Filter,
+  ModifyResult,
+  ModuleInput,
+  ModuleMutations,
+  Projection,
+  Query,
+  Sort,
 } from '@unchainedshop/types/common';
-import {
-  WorkerModule,
-  WorkQueue,
-  WorkStatus
-} from '@unchainedshop/types/worker';
-import { registerEvents } from 'meteor/unchained:events';
+import { WorkerModule, Work } from '@unchainedshop/types/worker';
 import { log, LogLevel } from 'meteor/unchained:logger';
 import {
   generateDbFilterById,
-  generateDbMutations
+  generateDbMutations,
 } from 'meteor/unchained:utils';
 import os from 'os';
-import { WorkQueuesCollection } from '../db/WorkQueuesCollection';
-import { WorkQueuesSchema } from '../db/WorkQueuesSchema';
+import { WorkStatus } from '../director/WorkStatus';
+import { WorkQueueCollection } from '../db/WorkQueueCollection';
+import { WorkQueueSchema } from '../db/WorkQueueSchema';
 import {
   DIRECTOR_MARKED_FAILED_ERROR,
-  WorkerDirector
+  WorkerDirector,
 } from '../director/WorkerDirector';
 import { WorkerEventTypes } from '../director/WorkerEventTypes';
 
@@ -29,13 +29,13 @@ const buildQuerySelector = ({
   created = { start: null, end: null },
   selectTypes = [],
   status = [],
-  workQueueId,
+  workId,
   ...rest
 }: Query & {
   created?: { end?: Date; start?: Date };
   selectTypes?: Array<string>;
   status?: Array<WorkStatus>;
-  workQueueId?: string;
+  workId?: string;
 }) => {
   const filterMap = {
     [WorkStatus.DELETED]: { deleted: { $exists: true } },
@@ -67,7 +67,7 @@ const buildQuerySelector = ({
     ),
   };
 
-  let query: Filter<WorkQueue> = statusQuery.$or.length > 0 ? statusQuery : {};
+  let query: Filter<Work> = statusQuery.$or.length > 0 ? statusQuery : {};
 
   query.$and = [
     selectTypes?.length > 0 && { type: { $in: selectTypes } },
@@ -76,8 +76,8 @@ const buildQuerySelector = ({
       : { created: { $gte: created?.start || new Date(0) } },
   ].filter(Boolean);
 
-  if (workQueueId) {
-    query = generateDbFilterById(workQueueId, query);
+  if (workId) {
+    query = generateDbFilterById(workId, query);
   }
 
   return { ...query, ...rest };
@@ -93,25 +93,25 @@ const defaultSort = {
 export const configureWorkerModule = async ({
   db,
 }: ModuleInput): Promise<WorkerModule> => {
-  const WorkQueues = await WorkQueuesCollection(db);
+  const WorkQueue = await WorkQueueCollection(db);
 
-  const mutations = generateDbMutations<WorkQueue>(
-    WorkQueues,
-    WorkQueuesSchema
-  ) as ModuleMutations<WorkQueue>;
+  const mutations = generateDbMutations<Work>(
+    WorkQueue,
+    WorkQueueSchema
+  ) as ModuleMutations<Work>;
 
   const finishWork: WorkerModule['finishWork'] = async (
-    workQueueId,
+    workId,
     { error, finished, result, started, success, worker = UNCHAINED_WORKER_ID },
     userId
   ) => {
-    const workBeforeUpdate = await WorkQueues.findOne(
-      buildQuerySelector({ workQueueId, status: [WorkStatus.ALLOCATED] })
+    const workBeforeUpdate = await WorkQueue.findOne(
+      buildQuerySelector({ workId, status: [WorkStatus.ALLOCATED] })
     );
     if (!workBeforeUpdate) return null;
 
     await mutations.update(
-      workQueueId,
+      workId,
       {
         $set: {
           finished,
@@ -125,14 +125,14 @@ export const configureWorkerModule = async ({
       userId
     );
 
-    const work = await WorkQueues.findOne(generateDbFilterById(workQueueId));
+    const work = await WorkQueue.findOne(generateDbFilterById(workId));
 
-    log(`Finished work ${workQueueId}`, {
+    log(`Finished work ${workId}`, {
       level: LogLevel.Verbose,
       work,
     });
 
-    WorkerDirector.emit(WorkerEventTypes.FINISHED, { work });
+    WorkerDirector.emit(WorkerEventTypes.FINISHED, { work, userId });
 
     return work;
   };
@@ -140,21 +140,20 @@ export const configureWorkerModule = async ({
   return {
     // Queries
     activeWorkTypes: async () => {
-      const typeList = await WorkQueues.aggregate([
+      const typeList = await WorkQueue.aggregate([
         { $group: { _id: '$type' } },
       ]).toArray();
-      return typeList.map((t) => t._id);
+      return typeList.map((t) => t._id as string);
     },
 
-    findWorkQueue: async ({ workQueueId, originalWorkId }, options) => {
-      return await WorkQueues.findOne(
-        workQueueId ? generateDbFilterById(workQueueId) : { originalWorkId },
-        options
+    findWork: async ({ workId, originalWorkId }) => {
+      return await WorkQueue.findOne(
+        workId ? generateDbFilterById(workId) : { originalWorkId }
       );
     },
 
-    findWorkQueues: async ({ limit, skip, ...selectorOptions }) => {
-      const workQueues = WorkQueues.find(buildQuerySelector(selectorOptions), {
+    findWorkQueue: async ({ limit, skip, ...selectorOptions }) => {
+      const workQueues = WorkQueue.find(buildQuerySelector(selectorOptions), {
         skip,
         limit,
         sort: defaultSort,
@@ -163,29 +162,29 @@ export const configureWorkerModule = async ({
       return await workQueues.toArray();
     },
 
-    workQueueExists: async ({ workQueueId, originalWorkId }) => {
-      const queueCount = await WorkQueues.find(
-        workQueueId ? generateDbFilterById(workQueueId) : { originalWorkId },
+    workExists: async ({ workId, originalWorkId }) => {
+      const queueCount = await WorkQueue.find(
+        workId ? generateDbFilterById(workId) : { originalWorkId },
         { limit: 1 }
       ).count();
       return !!queueCount;
     },
 
     // Transformations
-    status: (workQueue) => {
-      if (workQueue.deleted) {
+    status: (work) => {
+      if (work.deleted) {
         return WorkStatus.DELETED;
       }
-      if (!workQueue.started && !workQueue.finished) {
+      if (!work.started && !work.finished) {
         return WorkStatus.NEW;
       }
-      if (workQueue.started && !workQueue.finished) {
+      if (work.started && !work.finished) {
         return WorkStatus.ALLOCATED;
       }
-      if (workQueue.started && workQueue.finished && workQueue.success) {
+      if (work.started && work.finished && work.success) {
         return WorkStatus.SUCCESS;
       }
-      if (workQueue.started && workQueue.finished && !workQueue.success) {
+      if (work.started && work.finished && !work.success) {
         return WorkStatus.FAILED;
       }
 
@@ -204,7 +203,7 @@ export const configureWorkerModule = async ({
       }
 
       const created = new Date();
-      const workQueueId = await mutations.create(
+      const workId = await mutations.create(
         {
           type,
           input,
@@ -218,15 +217,15 @@ export const configureWorkerModule = async ({
       );
 
       log(
-        `WorkerDirector -> Work added ${workQueueId} (${type} / ${
+        `WorkerDirector -> Work added ${workId} (${type} / ${
           scheduled || created
         } / ${retries})`,
         { userId }
       );
 
-      const work = await WorkQueues.findOne(generateDbFilterById(workQueueId));
+      const work = await WorkQueue.findOne(generateDbFilterById(workId));
 
-      WorkerDirector.emit(WorkerEventTypes.ADDED, { work });
+      WorkerDirector.emit(WorkerEventTypes.ADDED, { work, userId });
 
       return work;
     },
@@ -243,23 +242,27 @@ export const configureWorkerModule = async ({
         ...(types ? { type: { $in: types } } : {}),
       });
       const result = await /* @ts-ignore */
-      (WorkQueues.findOneAndUpdate(
+      (Work.findOneAndUpdate(
         query,
         {
           $set: { started: new Date(), worker },
         },
         { sort: defaultSort, returnNewDocument: true }
-      ) as Promise<ModifyResult<WorkQueue>>);
+      ) as Promise<ModifyResult<Work>>);
 
       WorkerDirector.emit(WorkerEventTypes.ALLOCATED, { work: result.value });
 
       return result.value;
     },
 
-    ensureOneWork: async (
-      { type, input, priority = 0, scheduled, originalWorkId, retries = 20 },
-      userId
-    ) => {
+    ensureOneWork: async ({
+      type,
+      input,
+      priority = 0,
+      scheduled,
+      originalWorkId,
+      retries = 20,
+    }) => {
       const created = new Date();
       const query = buildQuerySelector({
         type,
@@ -268,7 +271,7 @@ export const configureWorkerModule = async ({
       try {
         const workId = `${type}:${scheduled.getTime()}`;
         const result = await /* @ts-ignore */
-        (WorkQueues.findOneAndUpdate(
+        (Work.findOneAndUpdate(
           query,
           {
             $set: {
@@ -276,7 +279,6 @@ export const configureWorkerModule = async ({
               priority,
               worker: null,
               updated: created,
-              updatedBy: userId,
             },
             $setOnInsert: {
               _id: workId,
@@ -285,7 +287,6 @@ export const configureWorkerModule = async ({
               scheduled,
               retries,
               created,
-              createdBy: userId,
             },
           },
           {
@@ -293,14 +294,16 @@ export const configureWorkerModule = async ({
             returnNewDocument: true,
             upsert: true,
           }
-        ) as Promise<ModifyResult<WorkQueue>>);
+        ) as Promise<ModifyResult<Work>>);
 
         if (!result.lastErrorObject.updatedExisting) {
           log(
             `WorkerDirector -> Work added again (ensure) ${type} ${scheduled} ${retries}`
           );
 
-          WorkerDirector.emit(WorkerEventTypes.ADDED, { work: result.value });
+          WorkerDirector.emit(WorkerEventTypes.ADDED, {
+            work: result.value,
+          });
         }
         return result.value;
       } catch (e) {
@@ -308,39 +311,43 @@ export const configureWorkerModule = async ({
       }
     },
 
+    doWork: (work) => {
+      return WorkerDirector.doWork(work);
+    },
+
     finishWork,
 
-    deleteWork: async (workQueueId, userId) => {
-      const workBeforeRemoval = await WorkQueues.findOne(
+    deleteWork: async (workId, userId) => {
+      const workBeforeRemoval = await WorkQueue.findOne(
         buildQuerySelector({
-          workQueueId,
+          workId,
           status: [WorkStatus.NEW, WorkStatus.ALLOCATED],
         })
       );
       if (!workBeforeRemoval) return null;
 
-      await mutations.delete(workQueueId, userId);
+      await mutations.delete(workId, userId);
 
-      const work = await WorkQueues.findOne(generateDbFilterById(workQueueId));
+      const work = await WorkQueue.findOne(generateDbFilterById(workId));
 
-      WorkerDirector.emit(WorkerEventTypes.DELETED, { work });
+      WorkerDirector.emit(WorkerEventTypes.DELETED, { work, userId });
 
       return work;
     },
 
     markOldWorkAsFailed: async ({ types, worker, referenceDate }, userId) => {
-      const workQueues = await WorkQueues.find(
+      const workQueue = await WorkQueue.find(
         buildQuerySelector({
           status: [WorkStatus.ALLOCATED],
           started: { $lte: referenceDate },
           worker,
           type: { $in: types },
         }),
-        { type: 1, sort: { test: 1 } } as Projection<WorkQueue>
+        { type: 1, sort: { test: 1 } } as Projection<Work>
       ).toArray();
 
       return Promise.all(
-        workQueues.map(
+        workQueue.map(
           async ({ _id }) =>
             await finishWork(
               typeof _id === 'string' ? _id : _id.toHexString(),
@@ -360,37 +367,5 @@ export const configureWorkerModule = async ({
         )
       );
     },
-
-    /* create: async (doc, userId) => {
-      const Adapter = getWorkerAdapter(doc);
-      if (!Adapter) return null;
-
-      const workQueueId = await mutations.create(
-        { configuration: [], ...doc },
-        userId
-      );
-
-      const workQueue = await WorkQueues.findOne(
-        generateDbFilterById(workQueueId)
-      );
-      emit('WORK_QUEUE_CREATE', { workQueue });
-      return workQueueId;
-    },
-
-    update: async (_id: string, doc: WorkQueue, userId: string) => {
-      const workQueueId = await mutations.update(_id, doc, userId);
-      const workQueue = await WorkQueues.findOne(generateDbFilterById(_id));
-      emit('WORK_QUEUE_UPDATE', { workQueue });
-
-      return workQueueId;
-    },
-
-    delete: async (_id, userId) => {
-      const deletedCount = await mutations.delete(_id, userId);
-      const workQueue = WorkQueues.findOne(generateDbFilterById(_id));
-
-      emit('WORK_QUEUE_REMOVE', { workQueue });
-      return deletedCount;
-    },*/
   };
 };

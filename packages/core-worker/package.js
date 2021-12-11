@@ -8,20 +8,27 @@ Package.describe({
 
 Npm.depends({
   later: '1.2.0',
+  'simpl-schema': '1.12.0',
 });
 
 Package.onUse((api) => {
   api.versionsFrom('2.2');
   api.use('ecmascript');
-  api.use('mongo');
-  api.use('promise');
-  api.use('email');
   api.use('typescript');
-  api.use('dburles:collection-helpers@1.1.0');
-  api.use('aldeed:collection2@3.2.1');
 
   api.use('unchained:utils@1.0.0-beta15');
   api.use('unchained:logger@1.0.0-beta15');
 
-  api.mainModule('worker.js', 'server');
+  api.mainModule('src/worker-index.ts', 'server');
+});
+
+Package.onTest((api) => {
+  api.use('meteortesting:mocha');
+  api.use('ecmascript');
+  api.use('typescript');
+
+  api.use('unchained:mongodb');
+  api.use('unchained:core-worker');
+
+  api.mainModule('tests/worker-index.test.ts');
 });

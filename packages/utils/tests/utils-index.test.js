@@ -1,23 +1,21 @@
 import { assert } from 'chai';
 import {
+  dbIdToString,
   findLocalizedText,
   findPreservingIds,
   findUnusedSlug,
+  generateDbFilterById,
   generateDbMutations,
   generateRandomHash,
   objectInvert,
   pipePromises,
+  resolveBestCountry,
+  resolveBestSupported,
+  resolveUserRemoteAddress,
   Schemas,
   slugify,
-} from 'meteor/unchained:utils';
-
-import {
   systemLocale,
-  resolveBestSupported,
-  resolveBestCountry,
-  resolveUserRemoteAddress,
 } from 'meteor/unchained:utils';
-
 import './generate-db-mutations.test';
 
 describe('Test exports', () => {
@@ -40,6 +38,8 @@ describe('Test exports', () => {
     assert.isFunction(findUnusedSlug);
     assert.isFunction(slugify);
     assert.isFunction(pipePromises);
+    assert.isFunction(dbIdToString);
+    assert.isFunction(generateDbFilterById);
     assert.isFunction(generateRandomHash);
     assert.isFunction(generateDbMutations);
   });

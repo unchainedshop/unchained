@@ -11,16 +11,21 @@ export const workerTypeDefs = () => [
   `,
 ];
 
-export default (options) => {
+export default (
+  modules,
+  { workerId, batchCount, schedule }
+) => {
   const handlers = [
-    new FailedRescheduler({ WorkerDirector, ...options }),
+    new FailedRescheduler({ modules, workerId }),
     new EventListenerWorker({
-      WorkerDirector,
-      ...options,
+      modules,
+      workerId,
     }),
     new IntervalWorker({
-      WorkerDirector,
-      ...options,
+      modules,
+      workerId,
+      batchCount,
+      schedule,
     }),
   ];
 

@@ -1,8 +1,8 @@
 import { actions } from '../../roles';
 import { checkResolver as acl } from '../../acl';
 
-import activeWorkTypes from './activeWorkTypes';
-import assortment from './assortment';
+import activeWorkTypes from './worker/activeWorkTypes';
+import assortment from './assortments/assortment';
 import assortments from './assortments';
 import assortmentsCount from './assortmentsCount';
 import countries from './countries/countries';
@@ -45,11 +45,11 @@ import productsCount from './productsCount';
 import quotation from './quotation';
 import quotations from './quotations';
 import quotationsCount from './quotationsCount';
-import searchAssortments from './search-assortments';
+import searchAssortments from './assortments/search-assortments';
 import searchProducts from './search-products';
 import shopInfo from './shopInfo';
-import signPaymentProviderForCredentialRegistration from './signPaymentProviderForCredentialRegistration';
-import translatedAssortmentMediaTexts from './translatedAssortmentMediaTexts';
+import signPaymentProviderForCredentialRegistration from './payment/signPaymentProviderForCredentialRegistration';
+import translatedAssortmentMediaTexts from './assortments/translatedAssortmentMediaTexts';
 import translatedAssortmentTexts from './translatedAssortmentTexts';
 import translatedFilterTexts from './translatedFilterTexts';
 import translatedProductMediaTexts from './translatedProductMediaTexts';
@@ -62,7 +62,7 @@ import warehousingInterfaces from './warehousingInterfaces';
 import warehousingProvider from './warehousingProvider';
 import warehousingProviders from './warehousingProviders';
 import warehousingProvidersCount from './warehousingProvidersCount';
-import work from './work';
+import work from './worker/work';
 import workQueue from './workQueue';
 
 export default {

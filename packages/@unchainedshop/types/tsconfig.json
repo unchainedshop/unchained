@@ -17,6 +17,7 @@
   },
   "include": [
     "index.d.ts",
+    "accounts.d.ts",
     "api.d.ts",
     "bookmarks.d.ts",
     "common.d.ts",
@@ -29,6 +30,7 @@
     "logs.d.ts",
     "modules.d.ts",
     "payments.d.ts",
+    "user.d.ts",
     "warehousing.d.ts",
     "worker.d.ts"
   ]

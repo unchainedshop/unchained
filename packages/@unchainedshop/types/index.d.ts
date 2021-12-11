@@ -14,7 +14,12 @@ import { CountriesModule } from './countries';
 import { LanguagesModule } from './languages';
 import { EmitAdapter, EventDirector, EventsModule } from './events';
 import { User } from './users';
-import { Logger, LogLevel as LogLevelType, LogOptions, Transports } from './logs';
+import {
+  Logger,
+  LogLevel as LogLevelType,
+  LogOptions,
+  Transports,
+} from './logs';
 import { Locale } from '@types/locale';
 import {
   PaymentAdapter as IPaymentAdapter,
@@ -35,6 +40,11 @@ import {
   WarehousingProvider,
   WarehousingProviderTypeType as WarehousingProviderTypeTypeType,
 } from './warehousing';
+import {
+  WorkerDirector as WorkerDirectorType,
+  WorkerPlugin as IWorkerPlugin,
+  WorkerModule,
+} from './worker';
 import { Request } from 'express';
 import {
   FileDirector,
@@ -57,6 +67,8 @@ declare module 'meteor/unchained:utils' {
         }
       | undefined
   ): void;
+
+  function dbIdToString(_id: _ID): string;
 
   function generateDbFilterById<T extends { _id?: _ID }>(
     id: any,
@@ -103,20 +115,14 @@ declare module 'meteor/unchained:logger' {
 }
 
 declare module 'meteor/unchained:events' {
-  export function emit(
-    eventName: string,
-    data?: string | Record<string, unknown>
-  ): Promise<void>;
-  export function getEmitAdapter(): EmitAdapter;
-  export function getEmitHistoryAdapter(): EmitAdapter;
-  export function getRegisteredEvents(): string[];
-  export function registerEvents(events: string[]): void;
-  export function setEmitAdapter(adapter: EmitAdapter): void;
-  export function setEmitHistoryAdapter(adapter: EmitAdapter): void;
-  export function subscribe(
-    eventName: string,
-    callBack: (payload?: Record<string, unknown>) => void
-  ): void;
+  export const emit: EventDirector['emit'];
+  export const getEmitAdapter: EventDirector['getEmitAdapter'];
+  export const getEmitHistoryAdapter: EventDirector['getEmitHistoryAdapter'];
+  export const getRegisteredEvents: EventDirector['getRegisteredEvents'];
+  export const registerEvents: EventDirector['registerEvents'];
+  export const setEmitAdapter: EventDirector['setEmitAdapter'];
+  export const setEmitHistoryAdapter: EventDirector['setEmitHistoryAdapter'];
+  export const subscribe: EventDirector['subscribe'];
 }
 
 declare module 'meteor/unchained:core-events' {
@@ -229,6 +235,16 @@ declare module 'meteor/unchained:core-warehousing' {
   export const WarehousingError: typeof WarehousingErrorType;
 
   export const WarehousingProviderType: typeof WarehousingProviderTypeType;
+}
+
+declare module 'meteor/unchained:core-worker' {
+  export function configureWorkerModule(
+    params: ModuleInput
+  ): Promise<WorkerModule>;
+
+  export const WorkerDirector: typeof WorkerDirectorType;
+
+  export type WorkerPlugin<Args, Result> = IWorkerPlugin<Args, Result>;
 }
 
 declare module 'meteor/unchained:file-upload' {

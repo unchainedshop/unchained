@@ -8,7 +8,7 @@ import {
   AssortmentNotFoundError,
   FilterNotFoundError,
   InvalidIdError,
-} from '../../errors';
+} from '../../../errors';
 
 export default function addAssortmentFilter(
   root,

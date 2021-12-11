@@ -4,16 +4,16 @@ import { Email } from 'meteor/email';
 
 const logger = createLogger('unchained:core-worker');
 
-class EmailWorkerPlugin extends WorkerPlugin {
-  static key = 'shop.unchained.worker-plugin.email';
+const EmailWorkerPlugin: WorkerPlugin<
+  { from?: string; to?: string; subject?: string; [x: string]: any },
+  void
+> = {
+  key: 'shop.unchained.worker-plugin.email',
+  label: 'Send a Mail through Meteor Mailer',
+  version: '1.0',
+  type: 'EMAIL',
 
-  static label = 'Send a Mail through Meteor Mailer';
-
-  static version = '1.0';
-
-  static type = 'EMAIL';
-
-  static async doWork({ from, to, subject, ...rest } = {}) {
+  async doWork({ from, to, subject, ...rest } = {}) {
     logger.debug(`${this.key} -> doWork: ${from} -> ${to} (${subject})`);
 
     if (!to) {
@@ -45,8 +45,8 @@ class EmailWorkerPlugin extends WorkerPlugin {
         },
       };
     }
-  }
-}
+  },
+};
 
 WorkerDirector.registerPlugin(EmailWorkerPlugin);
 

@@ -15,6 +15,7 @@ export { default as slugify } from './slugify';
 export { default as pipePromises } from './pipe-promises';
 export { default as generateRandomHash } from './generate-random-hash';
 export { checkId } from './check-id';
+export { dbIdToString } from './db-id-to-string';
 export { generateDbFilterById } from './generate-db-filter-by-id';
 export { generateDbMutations } from './generate-db-mutations';
 export { buildDbIndexes } from './build-db-indexes';
