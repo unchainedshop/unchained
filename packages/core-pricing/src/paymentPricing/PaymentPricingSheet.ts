@@ -1,11 +1,11 @@
-import { BasePricingSheet } from '../BasePricingSheet';
+import { BasePricingSheet, PricingSheetParams } from '../BasePricingSheet';
 
-enum PaymentPricingSheetRowCategory {
+export enum PaymentPricingSheetRowCategory {
   Item = 'ITEM',
   Payment = 'PAYMENT',
   Discount = 'DISCOUNT',
   Tax = 'TAX',
-};
+}
 
 interface Calculation<Category> {
   amount: number;
@@ -17,98 +17,112 @@ interface Calculation<Category> {
   meta?: any;
 }
 
-export type PaymentPricingCalculation = Calculation<PaymentPricingSheetRowCategory>;
+export type PaymentPricingCalculation =
+  Calculation<PaymentPricingSheetRowCategory>;
 
+export const PaymentPricingSheet = (
+  params: PricingSheetParams<PaymentPricingCalculation>
+) => {
+  const basePricingSheet = BasePricingSheet<
+    PaymentPricingSheetRowCategory,
+    PaymentPricingCalculation
+  >(params);
 
-class PaymentPricingSheet extends BasePricingSheet<PaymentPricingSheetRowCategory, PaymentPricingCalculation> {
-  addFee({ amount, isTaxable, isNetPrice, meta }) {
-    this.calculation.push({
-      category: PaymentPricingSheetRowCategory.Payment,
-      amount,
-      isTaxable,
-      isNetPrice,
-      meta,
-    });
-  }
+  const pricingSheet = {
+    ...basePricingSheet,
+    addFee({ amount, isTaxable, isNetPrice, meta }) {
+      basePricingSheet.calculation.push({
+        category: PaymentPricingSheetRowCategory.Payment,
+        amount,
+        isTaxable,
+        isNetPrice,
+        meta,
+      });
+    },
 
-  addDiscount({ amount, isTaxable, isNetPrice, discountId, meta }) {
-    this.calculation.push({
-      category: PaymentPricingSheetRowCategory.Discount,
-      amount,
-      isTaxable,
-      isNetPrice,
-      discountId,
-      meta,
-    });
-  }
+    addDiscount({ amount, isTaxable, isNetPrice, discountId, meta }) {
+      basePricingSheet.calculation.push({
+        category: PaymentPricingSheetRowCategory.Discount,
+        amount,
+        isTaxable,
+        isNetPrice,
+        discountId,
+        meta,
+      });
+    },
 
-  addTax({ amount, rate, meta }) {
-    this.calculation.push({
-      category: PaymentPricingSheetRowCategory.Tax,
-      amount,
-      isTaxable: false,
-      isNetPrice: false,
-      rate,
-      meta,
-    });
-  }
+    addTax({ amount, rate, meta }) {
+      basePricingSheet.calculation.push({
+        category: PaymentPricingSheetRowCategory.Tax,
+        amount,
+        isTaxable: false,
+        isNetPrice: false,
+        rate,
+        meta,
+      });
+    },
 
-  taxSum() {
-    return this.sum({
-      category: PaymentPricingSheetRowCategory.Tax,
-    });
-  }
+    taxSum() {
+      return basePricingSheet.sum({
+        category: PaymentPricingSheetRowCategory.Tax,
+      });
+    },
 
-  feeSum() {
-    return this.sum({
-      category: PaymentPricingSheetRowCategory.Payment,
-    });
-  }
+    feeSum() {
+      return basePricingSheet.sum({
+        category: PaymentPricingSheetRowCategory.Payment,
+      });
+    },
 
-  discountSum(discountId) {
-    return this.sum({
-      category: PaymentPricingSheetRowCategory.Discount,
-      discountId,
-    });
-  }
+    discountSum(discountId: string) {
+      return basePricingSheet.sum({
+        category: PaymentPricingSheetRowCategory.Discount,
+        discountId,
+      });
+    },
 
-  discountPrices(explicitDiscountId) {
-    const discountIds = this.getDiscountRows(explicitDiscountId).map(
-      ({ discountId }) => discountId
-    );
+    discountPrices(explicitDiscountId: string) {
+      const discountIds = pricingSheet
+        .getDiscountRows(explicitDiscountId)
+        .map(({ discountId }) => discountId);
 
-    return [...new Set(discountIds)]
-      .map((discountId) => {
-        const amount = this.sum({
-          category: PaymentPricingSheetRowCategory.Discount,
-          discountId,
-        });
-        if (!amount) {
-          return null;
-        }
-        return {
-          discountId,
-          amount: Math.round(amount),
-          currency: this.currency,
-        };
-      })
-      .filter(Boolean);
-  }
+      return [...new Set(discountIds)]
+        .map((discountId) => {
+          const amount = basePricingSheet.sum({
+            category: PaymentPricingSheetRowCategory.Discount,
+            discountId,
+          });
+          if (!amount) {
+            return null;
+          }
+          return {
+            discountId,
+            amount: Math.round(amount),
+            currency: basePricingSheet.currency,
+          };
+        })
+        .filter(Boolean);
+    },
 
-  getFeeRows() {
-    return this.filterBy({ category: PaymentPricingSheetRowCategory.Item });
-  }
+    getFeeRows() {
+      return basePricingSheet.filterBy({
+        category: PaymentPricingSheetRowCategory.Item,
+      });
+    },
 
-  getDiscountRows(discountId) {
-    return this.filterBy({
-      category: PaymentPricingSheetRowCategory.Discount,
-      discountId,
-    });
-  }
+    getDiscountRows(discountId: string) {
+      return basePricingSheet.filterBy({
+        category: PaymentPricingSheetRowCategory.Discount,
+        discountId,
+      });
+    },
 
-  getTaxRows() {
-    return this.filterBy({ category: PaymentPricingSheetRowCategory.Tax });
-  }
-}
+    getTaxRows() {
+      return basePricingSheet.filterBy({
+        category: PaymentPricingSheetRowCategory.Tax,
+      });
+    },
+  };
 
-export { PaymentPricingSheet, PaymentPricingSheetRowCategory };
+  return pricingSheet;
+};

@@ -5,6 +5,11 @@ export interface DiscountConfiguration {
   fixedRate?: number;
 }
 
+export interface Discount {
+  discountId: string;
+  configuration: DiscountConfiguration;
+}
+
 export interface DiscountContext {
   order: Order;
   orderDiscount: OrderDiscount;

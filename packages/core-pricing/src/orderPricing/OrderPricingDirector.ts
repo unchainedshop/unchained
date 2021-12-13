@@ -1,150 +1,68 @@
-import { _ID } from '@unchainedshop/types/common';
-import { Modules } from '@unchainedshop/types/modules';
-import { PaymentProvider } from '@unchainedshop/types/payments';
-import { Order, OrderDelivery, OrderDiscount } from '@unchainedshop/types/orders';
 import { Context } from '@unchainedshop/types/api';
-import { log, LogLevel } from 'meteor/unchained:logger';
-import { OrderPricingCalculation } from '.';
-import { OrderPricingSheet } from './OrderPricingSheet';
+import {
+  Order,
+  OrderDelivery,
+  OrderDiscount,
+  OrderPosition
+} from '@unchainedshop/types/orders';
+import { PaymentProvider } from '@unchainedshop/types/payments';
+import { User } from '@unchainedshop/types/user';
+import { BasePricingDirector } from 'src/basePricing/BasePricingDirector';
+import {
+  OrderPricingCalculation,
+  OrderPricingSheet
+} from './OrderPricingSheet';
 
 interface OrderPricingContext {
-  modules: Modules;
-  userId?: string;
-  order?: Order; // TODO: Replace with order type
-  orderItems?: Array<any>; // TODO: Replace with order items type
-  orderDelivery?: OrderDelivery;
-  payment: PaymentProvider;
-  discounts: Array<any>; // TODO: Define Discounting Adapter class type
+  discounts: Array<OrderDiscount>;
+  order: Order;
+  orderDelivery: OrderDelivery;
+  orderPositions: Array<OrderPosition>;
+  paymentProvider: PaymentProvider;
+  user: User;
 }
 
-class OrderPricingAdapter {
-  static key = '';
-
-  static label = '';
-
-  static version = '';
-
-  static orderIndex = 0;
-
-  static isActivatedFor() {
-    return false;
+export class OrderPricingDirector extends BasePricingDirector<
+  OrderPricingContext,
+  OrderPricingCalculation
+> {
+  constructor(pricingContext: { order: Order }, requestContext: Context) {
+    super(pricingContext, requestContext);
   }
 
-  public context: OrderPricingContext & Context;
-  public discounts: Array<string>;
-  public calculation: OrderPricingSheet;
-  public result: OrderPricingSheet;
-
-  constructor(
-    {
-      pricingContext,
-      calculation,
-      discounts,
-    }: {
-      pricingContext: OrderPricingContext;
-      calculation: Array<OrderPricingCalculation>;
-      discounts: Array<any>;
-    },
-    requestContext: Context
-  ) {
-    this.context = { ...pricingContext, ...requestContext };
-    const { currency } = this.context.order;
-    this.discounts = discounts;
-    this.calculation = new OrderPricingSheet({ calculation, currency });
-    this.result = new OrderPricingSheet({ currency });
-  }
-
-  async calculate() {
-    const resultRaw = this.result.getRawPricingSheet();
-    resultRaw.forEach(({ amount, category }) =>
-      this.log(`Order Calculation -> ${category} ${amount}`)
-    );
-    return resultRaw;
-  }
-
-  log(message: string, { level = LogLevel.Debug, ...options } = {}) {
-    // eslint-disable-line
-    return log(message, { level, ...options });
-  }
-}
-
-class OrderPricingDirector {
-  private context: Context;
-
-  constructor({ order, context }: { order: any; context: Context}) {
-    this.context = this.buildContext(order, context);
-  }
-
-  buildContext(order, context) {
-
+  buildPricingContext({ order }: { order: Order }): OrderPricingContext {
+    // TODO: use modules
+    /* @ts-ignore */
     const user = order.user();
-    const items = order.items();
-    const delivery = order.delivery();
-    const payment = order.payment();
-    const discounts = order.discounts() as Array<OrderDiscount>;
+    // TODO: use modules
+    /* @ts-ignore */
+    const orderPositions = order.items();
+    // TODO: use modules
+    /* @ts-ignore */
+    const orderDelivery = order.delivery();
+    // TODO: use modules
+    /* @ts-ignore */
+    const paymentProvider = order.payment();
+    // TODO: use modules
+    /* @ts-ignore */
+    const discounts = order.discounts();
+
     return {
-      order,
-      items,
-      user,
-      delivery,
-      payment,
       discounts,
+      order,
+      orderDelivery,
+      orderPositions,
+      paymentProvider,
+      user,
     };
   }
 
-  calculate() {
-    this.calculation = OrderPricingDirector.sortedAdapters()
-      .filter((AdapterClass) => AdapterClass.isActivatedFor(this.context.order))
-      .reduce((calculation, AdapterClass) => {
-        const discounts = this.context.discounts
-          .map((discount) => ({
-            discountId: discount._id,
-            configuration: discount.configurationForPricingAdapterKey(
-              AdapterClass.key,
-              calculation
-            ),
-          }))
-          .filter(({ configuration }) => configuration !== null);
-          
-        try {
-          const concreteAdapter = new AdapterClass({
-            context: this.context,
-            calculation,
-            discounts,
-          });
-          const nextCalculationResult = Promise.await(
-            concreteAdapter.calculate()
-          );
-          return calculation.concat(nextCalculationResult);
-        } catch (error) {
-          log(error, { level: 'error' });
-        }
-        return calculation;
-      }, []);
-    return this.calculation;
-  }
-
   resultSheet() {
-    return new OrderPricingSheet({
+    const pricingSheet = OrderPricingSheet({
       calculation: this.calculation,
-      currency: this.context.order.currency,
+      currency: this.pricingContext.order.currency,
     });
-  }
 
-  static adapters = new Map();
-
-  static sortedAdapters() {
-    return Array.from(OrderPricingDirector.adapters)
-      .map((entry) => entry[1])
-      .sort((left, right) => left.orderIndex - right.orderIndex);
-  }
-
-  static registerAdapter(adapter) {
-    log(
-      `${this.name} -> Registered ${adapter.key} ${adapter.version} (${adapter.label})`
-    );
-    OrderPricingDirector.adapters.set(adapter.key, adapter);
+    return pricingSheet;
   }
 }
-
-export { OrderPricingDirector, OrderPricingAdapter };

@@ -2,8 +2,10 @@ import fetch from 'isomorphic-unfetch';
 import {
   ProductPricingDirector,
   ProductPricingAdapter,
+  ProductPricingAdapterContext,
+  IPricingAdapter,
 } from 'meteor/unchained:core-pricing';
-import Cache from '../utils/cache';
+import Cache from './utils/cache';
 
 const CACHE_PERIOD = 60 * 60 * 0.1; // 10 minutes
 const SUPPORTED_CURRENCIES = [
@@ -29,8 +31,10 @@ const getFiatexchangeRateForCrypto = async (base, target) => {
   return data?.rates?.[target];
 };
 
+const ADAPTER_KEY = 'shop.unchained.pricing.price-coinbase-exchange';
+
 class ProductPriceCoinbaseExchange extends ProductPricingAdapter {
-  static key = 'shop.unchained.pricing.price-coinbase-exchange';
+  static key = ADAPTER_KEY;
 
   static version = '1.0';
 
@@ -38,15 +42,16 @@ class ProductPriceCoinbaseExchange extends ProductPricingAdapter {
 
   static orderIndex = 1;
 
-  static isActivatedFor({ currency }) {
+  static async isActivatedFor({ currency }) {
     return SUPPORTED_CURRENCIES.indexOf(currency.toUpperCase()) !== -1;
   }
 
   async calculate() {
     const { product, country, quantity, currency } = this.context;
-    const defaultCurrency = this.context.modules.countries.resolveDefaultCurrencyCode({
-      isoCode: country,
-    });
+    const defaultCurrency =
+      this.context.services.countries.resolveDefaultCurrencyCode({
+        isoCode: country,
+      });
     const productPrice = product.price({
       country,
       currency: defaultCurrency,
@@ -64,7 +69,7 @@ class ProductPriceCoinbaseExchange extends ProductPricingAdapter {
       amount: convertedAmount * quantity,
       isTaxable: productPrice?.isTaxable,
       isNetPrice: productPrice?.isNetPrice,
-      meta: { adapter: this.constructor.key },
+      meta: { adapter: ADAPTER_KEY },
     });
 
     return super.calculate();

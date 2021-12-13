@@ -1,11 +1,11 @@
+/* @ts-ignore */
 import moment from 'moment';
-import { DeliveryPricingCalculation } from '../src/deliveryPricing/DeliveryPricingSheet';
 import {
   DeliveryPricingDirector,
   DeliveryPricingAdapter,
   DeliveryPricingAdapterContext,
-  Discount,
-} from '../src/deliveryPricing/DeliveryPricingDirector';
+  IPricingAdapter,
+} from 'meteor/unchained:core-pricing';
 
 // https://www.ch.ch/de/mehrwertsteuersatz-schweiz/
 export const SwissTaxCategories = {
@@ -41,7 +41,7 @@ export class DeliverySwissTax extends DeliveryPricingAdapter {
 
   static orderIndex = 20;
 
-  static async isActivatedFor(context: DeliveryPricingAdapterContext) {
+  static async isActivatedFor(context) {
     const address =
       // TODO: use modules
       /* @ts-ignore */
@@ -52,14 +52,6 @@ export class DeliverySwissTax extends DeliveryPricingAdapter {
         ? address.countryCode?.toUpperCase().trim()
         : context.country?.toUpperCase().trim();
     return countryCode === 'CH' || countryCode === 'LI';
-  }
-
-  constructor(props: {
-    context: DeliveryPricingAdapterContext;
-    calculation: Array<DeliveryPricingCalculation>;
-    discounts: Array<Discount>;
-  }) {
-    super(props);
   }
 
   getTaxRate() {
@@ -123,6 +115,4 @@ export class DeliverySwissTax extends DeliveryPricingAdapter {
   }
 }
 
-DeliveryPricingDirector.registerAdapter(
-  DeliverySwissTax as typeof DeliveryPricingAdapter
-);
+DeliveryPricingDirector.registerAdapter(DeliverySwissTax);
