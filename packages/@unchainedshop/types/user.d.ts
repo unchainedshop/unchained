@@ -1,23 +1,11 @@
 import { Locale } from 'locale';
 import { Context } from './api';
-import { TimestampFields, Update, _ID } from './common';
+import { Address, Contact, TimestampFields, Update, _ID } from './common';
 import { Language } from './languages';
 import { UpdateFilter } from './node_modules/mongodb';
 import { Country } from './countries';
 import { File } from './files';
 import { PaymentCredentials } from './payments';
-
-interface Address {
-  firstName?: string;
-  lastName?: string;
-  company?: string;
-  addressLine?: string;
-  addressLine2?: string;
-  city?: string;
-  postalCode?: string;
-  regionCode?: string;
-  countryCode?: string;
-}
 
 export interface UserProfile {
   displayName?: string;
@@ -37,11 +25,6 @@ interface UserLastLogin {
   userAgent?: string;
 }
 
-interface UserLastContact {
-  telNumber?: string;
-  emailAddress?: string;
-}
-
 interface Email {
   address: string;
   verified: boolean;
@@ -54,7 +37,7 @@ export type User = {
   guest: boolean;
   initialPassword: boolean;
   lastBillingAddress?: Address;
-  lastContact?: UserLastContact;
+  lastContact?: Contact;
   lastLogin?: UserLastLogin;
   profile?: UserProfile;
   roles: Array<string>;
@@ -98,7 +81,7 @@ export type UsersModule = {
   ) => Promise<User>;
   updateLastContact: (
     _id: string,
-    doc: UserLastContact,
+    doc: Contact,
     userId: string
   ) => Promise<User>;
   updateHeartbeat: (userId: string, doc: UserLastLogin) => Promise<User>;
@@ -131,7 +114,7 @@ export interface UserHelperTypes {
   isTwoFactorEnabled: HelperType<any, boolean>;
   language: HelperType<{ localeContext: Locale }, Promise<Language>>;
   lastBillingAddress: HelperType<any, Address>;
-  lastContact: HelperType<any, UserLastContact>;
+  lastContact: HelperType<any, Contact>;
   lastLogin: HelperType<any, UserLastLogin>;
   locale: HelperType<{ localeContext: Locale }, Locale>;
   name: HelperType<any, string>;

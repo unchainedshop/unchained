@@ -21,6 +21,7 @@ import {
   Transports,
 } from './logs';
 import { Locale } from '@types/locale';
+import { DiscountAdapter } from './discounting';
 import {
   PaymentAdapter as IPaymentAdapter,
   PaymentConfiguration,
@@ -160,8 +161,29 @@ declare module 'meteor/unchained:core-currencies' {
 }
 
 declare module 'meteor/unchained:core-discounting' {
-  export const DiscountAdapter;
-  export const DiscountDirector;
+  export class DiscountAdapter implements IDiscountAdapter {
+    static key: string;
+    static label: string;
+    static version: string;
+    static orderIndex: number;
+
+    static isManualAdditionAllowed(code: string): boolean
+
+    // return true if a discount is allowed to get removed manually by a user
+    static isManualRemovalAllowed(): boolean
+
+    public context: DiscountContext;
+  }
+
+  export class DiscountDirector {
+    interfaceClass: (discountKey: string) => typeof IDiscountAdapter;
+    interface: (discountKey: string) => IDiscountAdapter;
+    resolveDiscountKeyFromStaticCode: (options) => Promise<string>;
+    findSystemDiscounts: () => Promise<Array<string>>;
+
+    static sortedAdapters: () => Array<typeof IDiscountAdapter>;
+    static registerAdapter: (adapter: typeof IDiscountAdapter) => void;
+  }
 }
 
 declare module 'meteor/unchained:core-languages' {

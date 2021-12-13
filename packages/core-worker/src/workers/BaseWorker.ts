@@ -1,13 +1,10 @@
-import os from 'os';
+import { Modules } from '@unchainedshop/types/modules';
+import { Work } from '@unchainedshop/types/worker';
 import later from 'later';
 import { log } from 'meteor/unchained:logger';
 import { dbIdToString } from 'meteor/unchained:utils';
-import { Modules } from '@unchainedshop/types/modules';
-
-import External from '../../plugins/external';
+import os from 'os';
 import { WorkerDirector } from '../director/WorkerDirector';
-import { Module } from 'module';
-import { Work } from '@unchainedshop/types/worker';
 
 const { UNCHAINED_WORKER_ID } = process.env;
 
@@ -37,7 +34,7 @@ class BaseWorker {
 
   getInternalTypes() {
     return WorkerDirector.getActivePluginTypes().filter(
-      (type) => type !== External.type
+      (type) => type !== 'EXTERNAL'
     );
   }
 

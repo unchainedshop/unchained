@@ -7,7 +7,7 @@ import {
 } from 'meteor/unchained:core-worker';
 import { initDb } from 'meteor/unchained:mongodb';
 
-import ExternalWorkerPlugin from '../plugins/external'
+import ExternalWorkerPlugin from '../plugins/external';
 
 describe('Test exports', () => {
   let module: WorkerModule;
@@ -15,16 +15,18 @@ describe('Test exports', () => {
 
   before(async () => {
     db = initDb();
-    module = await configureWorkerModule({ db });
+    module = await configureWorkerModule({ db }).catch((error) => {
+      console.warn('ERROR', error);
+      return null;
+    });
     assert.ok(module);
   });
-  
 
   it('Check queries', () => {
     assert.isFunction(module.addWork);
   });
 
   it('Check director', () => {
-    WorkerDirector.doWork({ type: ExternalWorkerPlugin.type })
+    WorkerDirector.doWork({ type: ExternalWorkerPlugin.type });
   });
 });

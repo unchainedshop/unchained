@@ -10,6 +10,7 @@ export default {
       version: Interface.version,
     };
   },
+  
   async simulatedPrice(
     obj,
     { currency, orderId, useNetPrice, context },

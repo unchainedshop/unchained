@@ -1,5 +1,6 @@
 import { log } from 'meteor/unchained:logger';
-import { DiscountAdapter, DiscountContext } from './DiscountAdapter';
+import { DiscountContext } from '@unchainedshop/types/discounting'
+import { DiscountAdapter } from './DiscountAdapter';
 
 type IDiscountAdapter = typeof DiscountAdapter
 
@@ -44,14 +45,14 @@ export class DiscountDirector {
     return discounts.find(({ isValid }) => isValid === true)?.key;
   }
 
-  async findSystemDiscounts(options) {
+  async findSystemDiscounts() {
     if (!this.context.order) return [];
     const discounts = await Promise.all(
       DiscountDirector.sortedAdapters().map(async (AdapterClass) => {
         const adapter = new AdapterClass({ context: this.context });
         return {
           key: AdapterClass.key,
-          isValid: await adapter.isValidForSystemTriggering(options),
+          isValid: await adapter.isValidForSystemTriggering(),
         };
       })
     );

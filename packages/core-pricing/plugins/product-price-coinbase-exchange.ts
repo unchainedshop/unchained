@@ -3,7 +3,6 @@ import {
   ProductPricingDirector,
   ProductPricingAdapter,
 } from 'meteor/unchained:core-pricing';
-import { Countries } from 'meteor/unchained:core-countries';
 import Cache from '../utils/cache';
 
 const CACHE_PERIOD = 60 * 60 * 0.1; // 10 minutes
@@ -45,7 +44,7 @@ class ProductPriceCoinbaseExchange extends ProductPricingAdapter {
 
   async calculate() {
     const { product, country, quantity, currency } = this.context;
-    const defaultCurrency = Countries.resolveDefaultCurrencyCode({
+    const defaultCurrency = this.context.modules.countries.resolveDefaultCurrencyCode({
       isoCode: country,
     });
     const productPrice = product.price({

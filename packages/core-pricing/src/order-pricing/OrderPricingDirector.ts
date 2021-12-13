@@ -1,6 +1,21 @@
-import { Promise } from 'meteor/promise';
-import { log } from 'meteor/unchained:logger';
-import { OrderPricingSheet } from './sheet';
+import { _ID } from '@unchainedshop/types/common';
+import { Modules } from '@unchainedshop/types/modules';
+import { PaymentProvider } from '@unchainedshop/types/payments';
+import { Order, OrderDelivery } from '@unchainedshop/types/orders';
+import { Context } from '@unchainedshop/types/api';
+import { log, LogLevel } from 'meteor/unchained:logger';
+import { OrderPricingCalculation } from '.';
+import { OrderPricingSheet } from './OrderPricingSheet';
+
+interface OrderPricingContext {
+  modules: Modules;
+  userId?: string;
+  order?: Order; // TODO: Replace with order type
+  orderItems?: Array<any>; // TODO: Replace with order items type
+  orderDelivery?: OrderDelivery;
+  payment: PaymentProvider;
+  discounts: Array<any>; // TODO: Define Discounting Adapter class type
+}
 
 class OrderPricingAdapter {
   static key = '';
@@ -15,7 +30,20 @@ class OrderPricingAdapter {
     return false;
   }
 
-  constructor({ context, calculation, discounts }) {
+  public context: OrderPricingContext;
+  public discounts: Array<string>;
+  public calculation: OrderPricingSheet;
+  public result: OrderPricingSheet;
+
+  constructor({
+    context,
+    calculation,
+    discounts,
+  }: {
+    context: Context;
+    calculation: Array<OrderPricingCalculation>;
+    discounts: Array<any>;
+  }) {
     this.context = context;
     const { currency } = this.context.order;
     this.discounts = discounts;
@@ -31,19 +59,21 @@ class OrderPricingAdapter {
     return resultRaw;
   }
 
-  log(message, { level = 'debug', ...options } = {}) { // eslint-disable-line
+  log(message: string, { level = LogLevel.Debug, ...options } = {}) {
+    // eslint-disable-line
     return log(message, { level, ...options });
   }
 }
 
 class OrderPricingDirector {
-  constructor({ item }) {
-    this.item = item;
-    this.context = this.buildContext();
+  private context: Context;
+
+  constructor({ order, context }: { order: any; context: Context}) {
+    this.context = this.buildContext(order, context);
   }
 
-  buildContext() {
-    const order = this.item;
+  buildContext(order, context) {
+
     const user = order.user();
     const items = order.items();
     const delivery = order.delivery();

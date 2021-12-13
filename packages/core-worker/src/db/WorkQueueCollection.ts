@@ -15,14 +15,12 @@ export const WorkQueueCollection = async (db: Db) => {
         },
         { expireAfterSeconds: 30 * ONE_DAY_IN_SECONDS }
       ),
-    () => {
-      WorkQueue.createIndex({ started: -1 });
-      WorkQueue.createIndex({ finished: 1 });
-      WorkQueue.createIndex({ scheduled: 1 });
-      WorkQueue.createIndex({ priority: -1 });
-      WorkQueue.createIndex({ type: 1 });
-      WorkQueue.createIndex({ originalWorkId: 1 });
-    },
+    () => WorkQueue.createIndex({ started: -1 }),
+    () => WorkQueue.createIndex({ finished: 1 }),
+    () => WorkQueue.createIndex({ scheduled: 1 }),
+    () => WorkQueue.createIndex({ priority: -1 }),
+    () => WorkQueue.createIndex({ type: 1 }),
+    () => WorkQueue.createIndex({ originalWorkId: 1 }),
   ]);
 
   return WorkQueue;

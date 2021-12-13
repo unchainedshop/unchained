@@ -1,11 +1,8 @@
 import { log, LogLevel } from 'meteor/unchained:logger';
 
-export interface DiscountContext {
-  order: any;
-  orderDiscount: any;
-}
+import { DiscountContext, DiscountAdapter as IDiscountAdapter } from '@unchainedshop/types/discounting'
 
-export class DiscountAdapter {
+export class DiscountAdapter implements IDiscountAdapter {
   static key = '';
 
   static label = '';
@@ -40,7 +37,7 @@ export class DiscountAdapter {
   // get removed from the order before any price calculation
   // takes place.
   // eslint-disable-next-line
-  async isValidForSystemTriggering(options) {
+  async isValidForSystemTriggering() {
     return false;
   }
 

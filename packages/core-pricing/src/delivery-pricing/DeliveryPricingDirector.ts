@@ -1,6 +1,28 @@
+import { Modules } from '@unchainedshop/types/modules';
 import { Promise } from 'meteor/promise';
-import { log } from 'meteor/unchained:logger';
-import { DeliveryPricingSheet } from './sheet';
+import { log, LogLevel } from 'meteor/unchained:logger';
+import { DeliveryPricingCalculation } from './DeliveryPricingSheet';
+import { DeliveryPricingSheet } from './DeliveryPricingSheet';
+import { User } from '@unchainedshop/types/user';
+import { Context } from '@unchainedshop/types/api';
+import { Order, OrderDelivery } from '@unchainedshop/types/orders';
+import { DiscountConfiguration } from '@unchainedshop/types/discounts';
+
+interface Discount {
+  discountId: string;
+  configuration: DiscountConfiguration;
+}
+
+interface DeliveryPricingContext {
+  user?: User;
+  currency?: string;
+  country?: string;
+  quantity?: number;
+  order?: Order;
+  orderDelivery?: OrderDelivery;
+  deliveryProvider?: any; // TODO: Replace with delivery provider
+  discounts: Array<Discount>;
+}
 
 class DeliveryPricingAdapter {
   static key = '';
@@ -15,16 +37,35 @@ class DeliveryPricingAdapter {
     return false;
   }
 
-  constructor({ context, calculation, discounts }) {
-    this.context = context;
+  public requestContext: Context;
+
+  public context: DeliveryPricingContext;
+  public discounts: Array<Discount>;
+  public calculation: DeliveryPricingSheet;
+  public result: DeliveryPricingSheet;
+
+  constructor(
+    {
+      pricingContext,
+      calculation,
+      discounts,
+    }: {
+      pricingContext: DeliveryPricingContext;
+      calculation: Array<DeliveryPricingCalculation>;
+      discounts: Array<Discount>;
+    },
+    requestContext: Context
+  ) {
+    this.requestContext = requestContext;
+    this.context = pricingContext;
     this.discounts = discounts;
 
-    const { currency } = context;
+    const { currency } = pricingContext;
     this.calculation = new DeliveryPricingSheet({ calculation, currency });
     this.result = new DeliveryPricingSheet({ currency });
   }
 
-  calculate() {
+  calculate(): Array<DeliveryPricingCalculation> {
     const resultRaw = this.result.getRawPricingSheet();
     resultRaw.forEach(({ amount, category }) =>
       this.log(`Delivery Calculation -> ${category} ${amount}`)
@@ -33,21 +74,26 @@ class DeliveryPricingAdapter {
   }
 
   // eslint-disable-next-line
-  log(message, { level = 'debug', ...options } = {}) {
+  log(message: string, { level = LogLevel.Debug, ...options } = {}) {
     return log(message, { level, ...options });
   }
 }
 
 class DeliveryPricingDirector {
-  constructor({ item, providerContext, ...context }) {
-    this.context = {
+  private context: Context;
+  private pricingContext: DeliveryPricingContext;
+  private calculation: Array<DeliveryPricingCalculation>;
+
+  constructor({ item, providerContext, ...pricingContext }, context: Context) {
+    this.pricingContext = {
       discounts: [],
-      ...this.constructor.buildContext(item, providerContext),
+      /* @ts-ignore */
+      ...this.buildContext(item, providerContext),
       ...context,
     };
   }
 
-  static buildContext(item, providerContext) {
+  static buildContext(item: OrderDelivery, providerContext: any) {
     if (!item) {
       return {
         ...providerContext,
@@ -92,7 +138,7 @@ class DeliveryPricingDirector {
           );
           return calculation.concat(nextCalculationResult);
         } catch (error) {
-          log(error, { level: 'error' });
+          log(error, { level: LogLevel.Error });
         }
         return calculation;
       }, []);
@@ -115,7 +161,7 @@ class DeliveryPricingDirector {
       .sort((left, right) => left.orderIndex - right.orderIndex);
   }
 
-  static registerAdapter(adapter) {
+  static registerAdapter(adapter: typeof DeliveryPricingAdapter) {
     log(
       `${this.name} -> Registered ${adapter.key} ${adapter.version} (${adapter.label})`
     );

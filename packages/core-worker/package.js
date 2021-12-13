@@ -19,7 +19,7 @@ Package.onUse((api) => {
   api.use('unchained:utils@1.0.0-beta15');
   api.use('unchained:logger@1.0.0-beta15');
 
-  api.mainModule('src/worker-index.ts', 'server');
+  api.mainModule('lib/worker-index.js', 'server');
 });
 
 Package.onTest((api) => {

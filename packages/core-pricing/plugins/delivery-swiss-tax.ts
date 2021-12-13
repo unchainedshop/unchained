@@ -38,7 +38,7 @@ export class DeliverySwissTax extends DeliveryPricingAdapter {
 
   static orderIndex = 20;
 
-  static isActivatedFor(ctx) {
+  static async isActivatedFor(ctx) {
     const address =
       ctx.order?.delivery()?.context?.address || ctx.order?.billingAddress;
     const countryCode =

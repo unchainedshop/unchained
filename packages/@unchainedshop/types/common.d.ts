@@ -1,8 +1,33 @@
-import { Db, Collection, UpdateFilter, Filter, ObjectId, FindOptions, Sort, ModifyResult, Projection, } from 'mongodb';
+import {
+  Db,
+  Collection,
+  UpdateFilter,
+  Filter,
+  ObjectId,
+  FindOptions,
+  Sort,
+  ModifyResult,
+  Projection,
+} from 'mongodb';
 
-export { Db, Collection, FindOptions, UpdateFilter as Update, Filter, Sort, ModifyResult, Projection };
+export {
+  Db,
+  Collection,
+  FindOptions,
+  UpdateFilter as Update,
+  Filter,
+  Sort,
+  ModifyResult,
+  Projection,
+};
 
 export type _ID = string | ObjectId;
+
+export type LogFields = Array<{
+  date: Date;
+  type: string;
+  info: string;
+}>;
 
 export type TimestampFields = {
   created?: Date;
@@ -30,4 +55,21 @@ export interface ModuleMutations<T> extends ModuleCreateMutation<T> {
     userId: string
   ) => Promise<string>;
   delete: (_id: string, userId: string) => Promise<number>;
+}
+
+export interface Address {
+  addressLine?: string;
+  addressLine2?: string;
+  city?: string;
+  company?: string;
+  countryCode?: string;
+  firstName?: string;
+  lastName?: string;
+  postalCode?: string;
+  regionCode?: string;
+}
+
+export interface Contact {
+  telNumber?: string;
+  emailAddress?: string;
 }

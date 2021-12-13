@@ -56,6 +56,7 @@ DeliveryProviders.helpers({
       new DeliveryDirector(this).send(this.defaultContext(context))
     );
   },
+
   orderPrice(
     {
       country,
@@ -64,6 +65,13 @@ DeliveryProviders.helpers({
       user,
       useNetPrice,
       providerContext,
+      /* { country?: string,
+      currency?: string,
+      order: Order,
+      useNetPrice?: boolean,
+      user: User,
+      providerContext: any,
+      } */
     },
     requestContext
   ) {
