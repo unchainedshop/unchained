@@ -1,6 +1,6 @@
 import { Promise } from 'meteor/promise';
 import { log } from 'meteor/unchained:logger';
-import { PaymentPricingSheet } from './sheet';
+import { PaymentPricingSheet } from './PaymentPricingSheet';
 
 class PaymentPricingAdapter {
   static key = '';

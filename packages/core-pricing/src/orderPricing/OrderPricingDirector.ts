@@ -1,7 +1,7 @@
 import { _ID } from '@unchainedshop/types/common';
 import { Modules } from '@unchainedshop/types/modules';
 import { PaymentProvider } from '@unchainedshop/types/payments';
-import { Order, OrderDelivery } from '@unchainedshop/types/orders';
+import { Order, OrderDelivery, OrderDiscount } from '@unchainedshop/types/orders';
 import { Context } from '@unchainedshop/types/api';
 import { log, LogLevel } from 'meteor/unchained:logger';
 import { OrderPricingCalculation } from '.';
@@ -30,21 +30,24 @@ class OrderPricingAdapter {
     return false;
   }
 
-  public context: OrderPricingContext;
+  public context: OrderPricingContext & Context;
   public discounts: Array<string>;
   public calculation: OrderPricingSheet;
   public result: OrderPricingSheet;
 
-  constructor({
-    context,
-    calculation,
-    discounts,
-  }: {
-    context: Context;
-    calculation: Array<OrderPricingCalculation>;
-    discounts: Array<any>;
-  }) {
-    this.context = context;
+  constructor(
+    {
+      pricingContext,
+      calculation,
+      discounts,
+    }: {
+      pricingContext: OrderPricingContext;
+      calculation: Array<OrderPricingCalculation>;
+      discounts: Array<any>;
+    },
+    requestContext: Context
+  ) {
+    this.context = { ...pricingContext, ...requestContext };
     const { currency } = this.context.order;
     this.discounts = discounts;
     this.calculation = new OrderPricingSheet({ calculation, currency });
@@ -78,7 +81,7 @@ class OrderPricingDirector {
     const items = order.items();
     const delivery = order.delivery();
     const payment = order.payment();
-    const discounts = order.discounts();
+    const discounts = order.discounts() as Array<OrderDiscount>;
     return {
       order,
       items,
@@ -102,6 +105,7 @@ class OrderPricingDirector {
             ),
           }))
           .filter(({ configuration }) => configuration !== null);
+          
         try {
           const concreteAdapter = new AdapterClass({
             context: this.context,

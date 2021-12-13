@@ -1,4 +1,4 @@
-import { PricingSheet } from '../pricing-sheet';
+import { BasePricingSheet } from '../BasePricingSheet';
 
 enum OrderPricingSheetRowCategory {
   Items = 'ITEMS',
@@ -17,7 +17,7 @@ interface Calculation<Category> {
 
 export type OrderPricingCalculation = Calculation<OrderPricingSheetRowCategory>;
 
-export class OrderPricingSheet extends PricingSheet<
+export class OrderPricingSheet extends BasePricingSheet<
   OrderPricingSheetRowCategory,
   OrderPricingCalculation
 > {

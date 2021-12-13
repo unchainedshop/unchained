@@ -5,15 +5,19 @@ import { DeliveryPricingCalculation } from './DeliveryPricingSheet';
 import { DeliveryPricingSheet } from './DeliveryPricingSheet';
 import { User } from '@unchainedshop/types/user';
 import { Context } from '@unchainedshop/types/api';
-import { Order, OrderDelivery } from '@unchainedshop/types/orders';
-import { DiscountConfiguration } from '@unchainedshop/types/discounts';
+import {
+  Order,
+  OrderDelivery,
+  OrderDiscount,
+} from '@unchainedshop/types/orders';
+import { DiscountConfiguration } from '@unchainedshop/types/discounting';
 
-interface Discount {
+export interface Discount {
   discountId: string;
   configuration: DiscountConfiguration;
 }
 
-interface DeliveryPricingContext {
+export interface DeliveryPricingAdapterContext extends Context {
   user?: User;
   currency?: string;
   country?: string;
@@ -24,7 +28,11 @@ interface DeliveryPricingContext {
   discounts: Array<Discount>;
 }
 
-class DeliveryPricingAdapter {
+interface IDeliveryPricingAdapter {
+  calculate: () => Promise<Array<DeliveryPricingCalculation>>;
+}
+
+class DeliveryPricingAdapter implements IDeliveryPricingAdapter {
   static key = '';
 
   static label = '';
@@ -33,39 +41,33 @@ class DeliveryPricingAdapter {
 
   static orderIndex = 0;
 
-  static isActivatedFor() {
+  static async isActivatedFor(context: DeliveryPricingAdapterContext) {
     return false;
   }
 
-  public requestContext: Context;
-
-  public context: DeliveryPricingContext;
+  public context: DeliveryPricingAdapterContext;
   public discounts: Array<Discount>;
   public calculation: DeliveryPricingSheet;
   public result: DeliveryPricingSheet;
 
-  constructor(
-    {
-      pricingContext,
-      calculation,
-      discounts,
-    }: {
-      pricingContext: DeliveryPricingContext;
-      calculation: Array<DeliveryPricingCalculation>;
-      discounts: Array<Discount>;
-    },
-    requestContext: Context
-  ) {
-    this.requestContext = requestContext;
-    this.context = pricingContext;
+  constructor({
+    context,
+    calculation,
+    discounts,
+  }: {
+    context: DeliveryPricingAdapterContext;
+    calculation: Array<DeliveryPricingCalculation>;
+    discounts: Array<Discount>;
+  }) {
+    this.context = context;
     this.discounts = discounts;
 
-    const { currency } = pricingContext;
+    const { currency } = context;
     this.calculation = new DeliveryPricingSheet({ calculation, currency });
     this.result = new DeliveryPricingSheet({ currency });
   }
 
-  calculate(): Array<DeliveryPricingCalculation> {
+  async calculate() {
     const resultRaw = this.result.getRawPricingSheet();
     resultRaw.forEach(({ amount, category }) =>
       this.log(`Delivery Calculation -> ${category} ${amount}`)
@@ -79,30 +81,50 @@ class DeliveryPricingAdapter {
   }
 }
 
+interface DeliveryPricingContext {
+  user?: User;
+  currency?: string;
+  country?: string;
+  quantity?: number;
+  order?: Order;
+  orderDelivery?: OrderDelivery;
+  deliveryProvider?: any; // TODO: Replace with delivery provider
+  discounts: Array<OrderDiscount>;
+}
+
 class DeliveryPricingDirector {
-  private context: Context;
+  private requestContext: Context;
   private pricingContext: DeliveryPricingContext;
   private calculation: Array<DeliveryPricingCalculation>;
 
-  constructor({ item, providerContext, ...pricingContext }, context: Context) {
+  constructor(
+    { item, providerContext, ...pricingContext },
+    requestContext: Context
+  ) {
+    this.requestContext = requestContext;
     this.pricingContext = {
       discounts: [],
       /* @ts-ignore */
-      ...this.buildContext(item, providerContext),
-      ...context,
+      ...this.buildContext(item, providerContext, requestContext),
+      ...pricingContext,
     };
   }
 
-  static buildContext(item: OrderDelivery, providerContext: any) {
-    if (!item) {
-      return {
-        ...providerContext,
-      };
-    }
+  static buildContext(
+    item: OrderDelivery,
+    providerContext: any,
+    requestContext: Context
+  ) {
+    if (!item) return providerContext;
+
+    // TODO: use modules
+    /* @ts-ignore */
     const order = item.order();
+    /* @ts-ignore */
     const provider = item.provider();
     const user = order.user();
     const discounts = order.discounts();
+
     return {
       provider,
       order,
@@ -114,25 +136,31 @@ class DeliveryPricingDirector {
     };
   }
 
-  calculate() {
+  async calculate() {
     this.calculation = DeliveryPricingDirector.sortedAdapters()
-      .filter((AdapterClass) => AdapterClass.isActivatedFor(this.context))
-      .reduce((calculation, AdapterClass) => {
-        const discounts = this.context.discounts
+      .filter((Adapter) =>
+        Adapter.isActivatedFor(this.pricingContext, this.requestContext)
+      )
+      .reduce((calculation, Adapter) => {
+        const discounts = this.pricingContext.discounts
           .map((discount) => ({
             discountId: discount._id,
+            // TODO: Use modules to get configuration
+            /* @ts-ignore */
             configuration: discount.configurationForPricingAdapterKey(
-              AdapterClass.key,
+              Adapter.key,
               calculation
             ),
           }))
           .filter(({ configuration }) => configuration !== null);
+
         try {
-          const concreteAdapter = new AdapterClass({
-            context: this.context,
+          const concreteAdapter = new Adapter({
+            context: { ...this.pricingContext, ...this.requestContext },
             calculation,
             discounts,
           });
+
           const nextCalculationResult = Promise.await(
             concreteAdapter.calculate()
           );
@@ -148,8 +176,8 @@ class DeliveryPricingDirector {
   resultSheet() {
     return new DeliveryPricingSheet({
       calculation: this.calculation,
-      currency: this.context.currency,
-      quantity: this.context.quantity,
+      currency: this.pricingContext.currency,
+      quantity: this.pricingContext.quantity,
     });
   }
 

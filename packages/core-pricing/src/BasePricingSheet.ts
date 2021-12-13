@@ -1,11 +1,10 @@
-interface PricingOptions {}
 type BaseCalculation<Category> = {
   category: Category;
   amount: number;
   meta?: any;
 };
 
-export class PricingSheet<
+export abstract class BasePricingSheet<
   Category,
   Calculation extends BaseCalculation<Category>
 > {

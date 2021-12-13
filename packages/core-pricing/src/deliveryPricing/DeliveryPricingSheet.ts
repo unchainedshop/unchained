@@ -1,4 +1,4 @@
-import { PricingSheet } from '../pricing-sheet';
+import { BasePricingSheet } from '../BasePricingSheet';
 
 export enum DeliveryPricingSheetRowCategory {
   Delivery = 'DELIVERY',
@@ -20,7 +20,7 @@ interface Calculation<Category> {
 export type DeliveryPricingCalculation =
   Calculation<DeliveryPricingSheetRowCategory>;
 
-export class DeliveryPricingSheet extends PricingSheet<
+export class DeliveryPricingSheet extends BasePricingSheet<
   DeliveryPricingSheetRowCategory,
   DeliveryPricingCalculation
 > {

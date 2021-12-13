@@ -1,8 +1,8 @@
-export { PricingSheet } from './pricing-sheet';
+export { BasePricingSheet } from './BasePricingSheet';
 
-export * from './delivery-pricing';
-export * from './order-pricing';
-export * from './payment-pricing';
+export * from './deliveryPricing';
+export * from './orderPricing';
+export * from './paymentPricing';
 export * from './product-pricing';
 export default () => {
   // configure

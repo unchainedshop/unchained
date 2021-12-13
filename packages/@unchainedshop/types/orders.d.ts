@@ -1,4 +1,4 @@
-import { Address, Contact, LogFields, TimestampFields } from './common';
+import { Address, Contact, LogFields, TimestampFields, _ID } from './common';
 
 export enum OrderStatus {
   OPEN = 'OPEN', // Null value is mapped to OPEN status
@@ -33,6 +33,7 @@ export enum OrderDocumentTypes {
 }
 
 export type Order = {
+  _id: _ID;
   billingAddress?: Address;
   calculation: Array<any>;
   confirmed?: Date;
@@ -52,6 +53,7 @@ export type Order = {
   TimestampFields;
 
 export type OrderPosition = {
+  _id: _ID;
   calculation: Array<any>;
   configuration: Array<{ key: string; value: string }>;
   context?: any;
@@ -64,6 +66,7 @@ export type OrderPosition = {
 } & TimestampFields;
 
 export type OrderDiscount = {
+  _id: _ID;
   orderId: string;
   code?: string;
   trigger: OrderDiscountTrigger;
@@ -73,6 +76,7 @@ export type OrderDiscount = {
 } & TimestampFields;
 
 export type OrderDelivery = {
+  _id: _ID;
   orderId: string;
   deliveryProviderId: string;
   delivered?: Date;
@@ -83,6 +87,7 @@ export type OrderDelivery = {
   TimestampFields;
 
 export type OrderPayment = {
+  _id: _ID;
   orderId: string;
   context?: any;
   paid?: Date;

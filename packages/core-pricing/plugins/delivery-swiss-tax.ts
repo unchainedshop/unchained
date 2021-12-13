@@ -1,8 +1,11 @@
 import moment from 'moment';
+import { DeliveryPricingCalculation } from '../src/deliveryPricing/DeliveryPricingSheet';
 import {
   DeliveryPricingDirector,
   DeliveryPricingAdapter,
-} from 'meteor/unchained:core-pricing';
+  DeliveryPricingAdapterContext,
+  Discount,
+} from '../src/deliveryPricing/DeliveryPricingDirector';
 
 // https://www.ch.ch/de/mehrwertsteuersatz-schweiz/
 export const SwissTaxCategories = {
@@ -38,14 +41,25 @@ export class DeliverySwissTax extends DeliveryPricingAdapter {
 
   static orderIndex = 20;
 
-  static async isActivatedFor(ctx) {
+  static async isActivatedFor(context: DeliveryPricingAdapterContext) {
     const address =
-      ctx.order?.delivery()?.context?.address || ctx.order?.billingAddress;
+      // TODO: use modules
+      /* @ts-ignore */
+      context.order?.delivery()?.context?.address ||
+      context.order?.billingAddress;
     const countryCode =
       address?.countryCode !== undefined
         ? address.countryCode?.toUpperCase().trim()
-        : ctx.country?.toUpperCase().trim();
+        : context.country?.toUpperCase().trim();
     return countryCode === 'CH' || countryCode === 'LI';
+  }
+
+  constructor(props: {
+    context: DeliveryPricingAdapterContext;
+    calculation: Array<DeliveryPricingCalculation>;
+    discounts: Array<Discount>;
+  }) {
+    super(props);
   }
 
   getTaxRate() {
@@ -54,7 +68,9 @@ export class DeliverySwissTax extends DeliveryPricingAdapter {
         ? new Date(this.context.order.ordered)
         : new Date();
 
-    const taxCategoryFromProvider = this.context?.provider?.configuration?.find(
+    // TODO: use modules
+    /* @ts-ignore */
+    const taxCategoryFromProvider = this.context.provider?.configuration?.find(
       ({ key }) => {
         if (key === 'swiss-tax-category') return true;
         return null;
@@ -62,10 +78,10 @@ export class DeliverySwissTax extends DeliveryPricingAdapter {
     )?.value;
 
     if (taxCategoryFromProvider === SwissTaxCategories.REDUCED.value) {
-      return SwissTaxCategories.REDUCED.rate(date);
+      return SwissTaxCategories.REDUCED.rate();
     }
     if (taxCategoryFromProvider === SwissTaxCategories.SPECIAL.value) {
-      return SwissTaxCategories.SPECIAL.rate(date);
+      return SwissTaxCategories.SPECIAL.rate();
     }
     return SwissTaxCategories.DEFAULT.rate(date);
   }
@@ -82,11 +98,14 @@ export class DeliverySwissTax extends DeliveryPricingAdapter {
             ...row,
             amount: -taxAmount,
             isTaxable: false,
+            isNetPrice: false,
+            /* @ts-ignore */
             meta: { adapter: this.constructor.key },
           });
           this.result.addTax({
             amount: taxAmount,
             rate: taxRate,
+            /* @ts-ignore */
             meta: { adapter: this.constructor.key },
           });
         } else {
@@ -94,12 +113,16 @@ export class DeliverySwissTax extends DeliveryPricingAdapter {
           this.result.addTax({
             amount: taxAmount,
             rate: taxRate,
+            /* @ts-ignore */
             meta: { adapter: this.constructor.key },
           });
         }
       });
-    return super.calculate();
+
+    return await super.calculate();
   }
 }
 
-DeliveryPricingDirector.registerAdapter(DeliverySwissTax);
+DeliveryPricingDirector.registerAdapter(
+  DeliverySwissTax as typeof DeliveryPricingAdapter
+);
