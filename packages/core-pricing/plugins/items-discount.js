@@ -1,7 +1,7 @@
 import {
   OrderPricingDirector,
   OrderPricingAdapter,
-  OrderPricingSheetRowCategories,
+  OrderPricingSheetRowCategory,
 } from 'meteor/unchained:core-pricing';
 
 const resolveRatioAndTaxDivisorForPricingSheet = (pricing, total) => {
@@ -57,7 +57,7 @@ class ItemsDiscount extends OrderPricingAdapter {
 
   static orderIndex = 89;
 
-  static isActivatedFor() {
+  static async isActivatedFor() {
     return true;
   }
 
@@ -67,11 +67,14 @@ class ItemsDiscount extends OrderPricingAdapter {
     // add it to the order item calculation
 
     const totalAmountOfItems = this.calculation.sum({
-      category: OrderPricingSheetRowCategories.Items,
+      category: OrderPricingSheetRowCategory.Items,
     });
 
-    const itemShares = this.context.items.map((item) =>
+    const itemShares = this.context.orderPositions.map((item) =>
       resolveRatioAndTaxDivisorForPricingSheet(
+        // TODO: use modules
+        // this.context.modules.orders.orderPosition.pricing(item),
+        /* @ts-ignore */
         item.pricing(),
         totalAmountOfItems
       )
@@ -98,6 +101,7 @@ class ItemsDiscount extends OrderPricingAdapter {
           amount: discountAmount * -1,
           discountId,
           meta: {
+            /* @ts-ignore */
             adapter: this.constructor.key,
           },
         });
@@ -106,6 +110,7 @@ class ItemsDiscount extends OrderPricingAdapter {
             amount: taxAmount * -1,
             meta: {
               discountId,
+              /* @ts-ignore */
               adapter: this.constructor.key,
             },
           });

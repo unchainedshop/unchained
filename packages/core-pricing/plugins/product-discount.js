@@ -1,11 +1,17 @@
 import {
+  Discount,
+  DiscountConfiguration,
+} from '@unchainedshop/types/discounting';
+import {
   ProductPricingDirector,
   ProductPricingAdapter,
-  ProductPricingSheetRowCategories,
+  ProductPricingSheetRowCategory,
 } from 'meteor/unchained:core-pricing';
 
-const applyRate = ({ rate, fixedRate }, amount) =>
-  rate ? amount * rate : Math.min(fixedRate, amount);
+const applyRate = (
+  { rate, fixedRate },
+  amount
+) => (rate ? amount * rate : Math.min(fixedRate, amount));
 
 class ProductDiscount extends ProductPricingAdapter {
   static key = 'shop.unchained.pricing.product-discount';
@@ -16,7 +22,7 @@ class ProductDiscount extends ProductPricingAdapter {
 
   static orderIndex = 10;
 
-  static isActivatedFor() {
+  static async isActivatedFor() {
     return true;
   }
 
@@ -26,20 +32,21 @@ class ProductDiscount extends ProductPricingAdapter {
     const amount = applyRate(configuration, total);
     this.result.addDiscount({
       amount: amount * -1,
+      discountId,
       isNetPrice,
       isTaxable,
-      discountId,
+      // @ts-ignore */
       meta: { adapter: this.constructor.key, ...meta },
     });
   }
 
   async calculate() {
     const taxableTotal = this.calculation.sum({
-      category: ProductPricingSheetRowCategories.Item,
+      category: ProductPricingSheetRowCategory.Item,
       isTaxable: true,
     });
     const nonTaxableTotal = this.calculation.sum({
-      category: ProductPricingSheetRowCategories.Item,
+      category: ProductPricingSheetRowCategory.Item,
       isTaxable: false,
     });
 

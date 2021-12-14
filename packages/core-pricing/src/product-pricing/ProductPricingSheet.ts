@@ -1,4 +1,4 @@
-import { BasePricingSheet, PricingSheetParams } from '../BasePricingSheet';
+import { BasePricingSheet, PricingSheetParams } from '../basePricing/BasePricingSheet';
 
 export enum ProductPricingSheetRowCategory {
   Item = 'ITEM',

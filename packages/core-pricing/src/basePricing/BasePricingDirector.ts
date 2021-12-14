@@ -1,10 +1,5 @@
 import { Context } from '@unchainedshop/types/api';
-import { Discount } from '@unchainedshop/types/discounting';
-import {
-  Order,
-  OrderDelivery,
-  OrderDiscount,
-} from '@unchainedshop/types/orders';
+import { Order, OrderDiscount } from '@unchainedshop/types/orders';
 import { User } from '@unchainedshop/types/user';
 import { log, LogLevel } from 'meteor/unchained:logger';
 import { IPricingAdapter } from './BasePricingAdapter';

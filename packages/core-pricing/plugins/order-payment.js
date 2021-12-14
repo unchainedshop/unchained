@@ -12,15 +12,17 @@ class OrderPayment extends OrderPricingAdapter {
 
   static orderIndex = 20;
 
-  static isActivatedFor() {
+  static async isActivatedFor() {
     return true;
   }
 
   async calculate() {
     // just add tax + net price to order pricing
-    const { payment } = this.context;
-    if (payment) {
-      const pricing = payment.pricing();
+    const { orderPayment } = this.context;
+    if (orderPayment) {
+      // TODO: use module
+      // @ts-ignore */
+      const pricing = orderPayment.pricing();
       const tax = pricing.taxSum();
       const paymentFees = pricing.gross();
 

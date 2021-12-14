@@ -18,21 +18,21 @@ class ProductPriceRound extends ProductPricingAdapter {
 
   static skip = [];
 
-  static defaultPricision = 50;
+  static defaultPrecision = 50;
 
-  static isActivatedFor() {
+  static async isActivatedFor() {
     return true;
   }
 
-  static configure({ defaultPricision, configurations, skip }) {
-    if (defaultPricision) this.defaultPricision = defaultPricision;
+  static configure({ defaultPrecision, configurations, skip }) {
+    if (defaultPrecision) this.defaultPrecision = defaultPrecision;
     if (configurations) this.configurations = configurations;
     if (skip?.length) this.skip = skip;
   }
 
   async calculate() {
     const { currency, quantity } = this.context;
-    const { configurations, skip, defaultPrecision } = this.constructor;
+    const { configurations, skip, defaultPrecision } = ProductPriceRound;
     const { calculation = [] } = this.calculation;
 
     if (skip?.indexOf(currency) !== -1) return super.calculate();
@@ -46,6 +46,7 @@ class ProductPriceRound extends ProductPricingAdapter {
         amount: roundToNext(productPrice.amount, roundPrecision) * quantity,
         isTaxable: productPrice.isTaxable,
         isNetPrice: productPrice.isNetPrice,
+        /* @ts-ignore */
         meta: { adapter: this.constructor.key },
       });
     }

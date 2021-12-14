@@ -1,4 +1,4 @@
-import { BasePricingSheet, PricingSheetParams } from '../BasePricingSheet';
+import { BasePricingSheet, PricingSheetParams } from '../basePricing/BasePricingSheet';
 
 export enum DeliveryPricingSheetRowCategory {
   Delivery = 'DELIVERY',
@@ -27,7 +27,7 @@ export const DeliveryPricingSheet = (
     DeliveryPricingSheetRowCategory,
     DeliveryPricingCalculation
   >(params);
-  
+
   const pricingSheet = {
     ...basePricingSheet,
     addDiscount({ amount, isTaxable, isNetPrice, discountId, meta }) {

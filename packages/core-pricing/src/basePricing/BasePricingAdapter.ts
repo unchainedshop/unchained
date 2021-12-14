@@ -43,3 +43,5 @@ export class BasePricingAdapter<
     return log(message, { level, ...options });
   }
 }
+
+export type IPricingAdapter = typeof BasePricingAdapter;

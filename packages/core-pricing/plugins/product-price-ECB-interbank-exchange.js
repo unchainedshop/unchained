@@ -2,9 +2,10 @@ import fetch from 'isomorphic-unfetch';
 import {
   ProductPricingDirector,
   ProductPricingAdapter,
+  ProductPricingAdapterContext,
 } from 'meteor/unchained:core-pricing';
 
-import Cache from '../utils/cache';
+import Cache from './utils/cache';
 
 const CACHE_PERIOD = 60 * 60 * 24; // 1 day
 
@@ -74,8 +75,8 @@ class ProductPriceECBIntraBankExchange extends ProductPricingAdapter {
 
   static orderIndex = 1;
 
-  static isActivatedFor({ currency }) {
-    return SUPPORTED_CURRENCIES.indexOf(currency) !== -1;
+  static async isActivatedFor(context) {
+    return SUPPORTED_CURRENCIES.indexOf(context.currency) !== -1;
   }
 
   async calculate() {
@@ -92,6 +93,7 @@ class ProductPriceECBIntraBankExchange extends ProductPricingAdapter {
       amount: convertedAmount * quantity,
       isTaxable: EURprice.isTaxable,
       isNetPrice: EURprice.isNetPrice,
+      /* @ts-ignore */
       meta: { adapter: this.constructor.key },
     });
 

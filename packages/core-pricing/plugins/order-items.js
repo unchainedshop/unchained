@@ -12,15 +12,17 @@ class OrderItems extends OrderPricingAdapter {
 
   static orderIndex = 0;
 
-  static isActivatedFor() {
+  static async isActivatedFor() {
     return true;
   }
 
   async calculate() {
     // just sum up all products items prices, taxes & fees
-    const totalAndTaxesOfAllItems = this.context.items.reduce(
-      (current, item) => {
-        const pricing = item.pricing();
+    const totalAndTaxesOfAllItems = this.context.orderPositions.reduce(
+      (current, orderPosition) => {
+        // TODO: use module
+        // @ts-ignore */
+        const pricing = orderPosition.pricing();
         const tax = pricing.taxSum();
         const items = pricing.gross();
         return {

@@ -12,15 +12,17 @@ class OrderDelivery extends OrderPricingAdapter {
 
   static orderIndex = 10;
 
-  static isActivatedFor() {
+  static async isActivatedFor() {
     return true;
   }
 
   async calculate() {
     // just add tax + net price to order pricing
-    const { delivery } = this.context;
-    if (delivery) {
-      const pricing = delivery.pricing();
+    const { orderDelivery } = this.context;
+    if (orderDelivery) {
+      // TODO: use module
+      // @ts-ignore */
+      const pricing = orderDelivery.pricing();
       const tax = pricing.taxSum();
       const shipping = pricing.gross();
 

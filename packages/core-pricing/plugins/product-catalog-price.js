@@ -12,7 +12,7 @@ class ProductPrice extends ProductPricingAdapter {
 
   static orderIndex = 0;
 
-  static isActivatedFor() {
+  static async isActivatedFor() {
     return true;
   }
 
@@ -27,6 +27,7 @@ class ProductPrice extends ProductPricingAdapter {
       amount: itemTotal,
       isTaxable: price.isTaxable,
       isNetPrice: price.isNetPrice,
+      // @ts-ignore */
       meta: { adapter: this.constructor.key },
     });
 

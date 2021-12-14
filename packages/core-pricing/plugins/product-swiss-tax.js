@@ -2,6 +2,7 @@ import moment from 'moment';
 import {
   ProductPricingDirector,
   ProductPricingAdapter,
+  ProductPricingAdapterContext,
 } from 'meteor/unchained:core-pricing';
 
 // https://www.ch.ch/de/mehrwertsteuersatz-schweiz/
@@ -38,13 +39,16 @@ export class ProductSwissTax extends ProductPricingAdapter {
 
   static orderIndex = 20;
 
-  static isActivatedFor(ctx) {
+  static async isActivatedFor(context) {
     const address =
-      ctx.order?.delivery()?.context?.address || ctx.order?.billingAddress;
+      // TODO: use modules
+      /* @ts-ignore */
+      context.order.delivery()?.context?.address ||
+      context.order.billingAddress;
     const countryCode =
       address?.countryCode !== undefined
         ? address.countryCode?.toUpperCase().trim()
-        : ctx.country?.toUpperCase().trim();
+        : context.country?.toUpperCase().trim();
 
     return countryCode === 'CH' || countryCode === 'LI';
   }
@@ -57,10 +61,10 @@ export class ProductSwissTax extends ProductPricingAdapter {
     const { product } = this.context;
 
     if (product.tags?.includes(SwissTaxCategories.REDUCED.tag)) {
-      return SwissTaxCategories.REDUCED.rate(date);
+      return SwissTaxCategories.REDUCED.rate();
     }
     if (product.tags?.includes(SwissTaxCategories.SPECIAL.tag)) {
-      return SwissTaxCategories.SPECIAL.rate(date);
+      return SwissTaxCategories.SPECIAL.rate();
     }
     return SwissTaxCategories.DEFAULT.rate(date);
   }
@@ -77,11 +81,13 @@ export class ProductSwissTax extends ProductPricingAdapter {
             ...row,
             amount: -taxAmount,
             isTaxable: false,
+            /* @ts-ignore */
             meta: { adapter: this.constructor.key },
           });
           this.result.addTax({
             amount: taxAmount,
             rate: taxRate,
+            /* @ts-ignore */
             meta: { adapter: this.constructor.key },
           });
         } else {

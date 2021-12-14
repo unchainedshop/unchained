@@ -25,12 +25,12 @@ export class ProductPricingDirector extends BasePricingDirector<
   ProductPricingCalculation
 > {
   buildPricingContext({
-    item,
+    item: orderPosition,
     ...pricingContext
   }: {
     item: OrderPosition;
   }): ProductPricingContext {
-    if (!item)
+    if (!orderPosition)
       return {
         discounts: [],
         ...pricingContext,
@@ -38,10 +38,10 @@ export class ProductPricingDirector extends BasePricingDirector<
 
     // TODO: use modules
     /* @ts-ignore */
-    const product = item.product();
+    const product = orderPosition.product();
     // TODO: use modules
     /* @ts-ignore */
-    const order = item.order();
+    const order = orderPosition.order();
     const user = order.user();
     const discounts = order.discounts();
 
@@ -51,7 +51,7 @@ export class ProductPricingDirector extends BasePricingDirector<
       discounts,
       order,
       product,
-      quantity: item.quantity,
+      quantity: orderPosition.quantity,
       user,
     };
   }

@@ -1,8 +1,9 @@
 import { Order, OrderDiscount } from './orders';
 
 export interface DiscountConfiguration {
-  rate?: number;
   fixedRate?: number;
+  rate?: number;
+  isNetPrice?: boolean;
 }
 
 export interface Discount {

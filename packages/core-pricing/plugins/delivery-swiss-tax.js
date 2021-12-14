@@ -3,8 +3,6 @@ import moment from 'moment';
 import {
   DeliveryPricingDirector,
   DeliveryPricingAdapter,
-  DeliveryPricingAdapterContext,
-  IPricingAdapter,
 } from 'meteor/unchained:core-pricing';
 
 // https://www.ch.ch/de/mehrwertsteuersatz-schweiz/

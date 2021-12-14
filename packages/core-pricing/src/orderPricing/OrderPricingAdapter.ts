@@ -3,22 +3,24 @@ import { Discount } from '@unchainedshop/types/discounting';
 import {
   Order,
   OrderDelivery,
-  OrderPosition,
+  OrderPayment,
+  OrderPosition
 } from '@unchainedshop/types/orders';
 import { PaymentProvider } from '@unchainedshop/types/payments';
 import { User } from '@unchainedshop/types/user';
-import { BasePricingAdapter } from 'src/basePricing/BasePricingAdapter';
+import { BasePricingAdapter } from '../basePricing/BasePricingAdapter';
 import {
   OrderPricingCalculation,
-  OrderPricingSheet,
+  OrderPricingSheet
 } from './OrderPricingSheet';
 
 interface OrderPricingAdapterContext extends Context {
+  currency?: string;
   discounts: Array<Discount>;
   order: Order;
   orderDelivery: OrderDelivery;
   orderPositions: Array<OrderPosition>;
-  paymentProvider: PaymentProvider;
+  orderPayment: OrderPayment;
   user: User;
 }
 
@@ -40,7 +42,8 @@ export class OrderPricingAdapter extends BasePricingAdapter<OrderPricingAdapterC
     discounts: Array<Discount>;
   }) {
     super({ context, discounts });
-    const { currency } = this.context.order;
+
+    const { currency } = this.context;
     this.calculation = OrderPricingSheet({ calculation, currency });
     this.result = OrderPricingSheet({ currency });
   }

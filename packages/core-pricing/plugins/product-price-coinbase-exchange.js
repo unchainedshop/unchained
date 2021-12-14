@@ -3,7 +3,6 @@ import {
   ProductPricingDirector,
   ProductPricingAdapter,
   ProductPricingAdapterContext,
-  IPricingAdapter,
 } from 'meteor/unchained:core-pricing';
 import Cache from './utils/cache';
 
@@ -42,8 +41,8 @@ class ProductPriceCoinbaseExchange extends ProductPricingAdapter {
 
   static orderIndex = 1;
 
-  static async isActivatedFor({ currency }) {
-    return SUPPORTED_CURRENCIES.indexOf(currency.toUpperCase()) !== -1;
+  static async isActivatedFor(context) {
+    return SUPPORTED_CURRENCIES.indexOf(context.currency.toUpperCase()) !== -1;
   }
 
   async calculate() {

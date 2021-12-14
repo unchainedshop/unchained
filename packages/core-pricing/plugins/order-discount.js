@@ -1,7 +1,7 @@
 import {
   OrderPricingDirector,
   OrderPricingAdapter,
-  OrderPricingSheetRowCategories,
+  OrderPricingSheetRowCategory,
 } from 'meteor/unchained:core-pricing';
 
 const resolveRatioAndTaxDivisorForPricingSheet = (pricing, total) => {
@@ -69,7 +69,7 @@ class OrderItems extends OrderPricingAdapter {
 
   static orderIndex = 90;
 
-  static isActivatedFor() {
+  static async isActivatedFor() {
     return true;
   }
 
@@ -79,28 +79,34 @@ class OrderItems extends OrderPricingAdapter {
     // add it to the order item calculation
 
     const totalAmountOfItems = this.calculation.sum({
-      category: OrderPricingSheetRowCategories.Items,
+      category: OrderPricingSheetRowCategory.Items,
     });
     const totalAmountOfPaymentAndDelivery =
       this.calculation.sum({
-        category: OrderPricingSheetRowCategories.Payment,
+        category: OrderPricingSheetRowCategory.Payment,
       }) +
       this.calculation.sum({
-        category: OrderPricingSheetRowCategories.Delivery,
+        category: OrderPricingSheetRowCategory.Delivery,
       });
 
-    const itemShares = this.context.items.map((item) =>
+    const itemShares = this.context.orderPositions.map((orderPosition) =>
       resolveRatioAndTaxDivisorForPricingSheet(
-        item.pricing(),
+        // TODO: use module
+        // @ts-ignore */
+        orderPosition.pricing(),
         totalAmountOfItems
       )
     );
     const deliveryShare = resolveRatioAndTaxDivisorForPricingSheet(
-      this.context.delivery?.pricing(),
+      // TODO: use module
+      // @ts-ignore */
+      this.context.orderDelivery.pricing(),
       totalAmountOfPaymentAndDelivery
     );
     const paymentShare = resolveRatioAndTaxDivisorForPricingSheet(
-      this.context.payment?.pricing(),
+      // TODO: use module
+      // @ts-ignore */
+      this.context.orderPayment?.pricing(),
       totalAmountOfPaymentAndDelivery
     );
 
@@ -141,6 +147,7 @@ class OrderItems extends OrderPricingAdapter {
           amount: discountAmount * -1,
           discountId,
           meta: {
+            /* @ts-ignore */
             adapter: this.constructor.key,
           },
         });
@@ -149,6 +156,7 @@ class OrderItems extends OrderPricingAdapter {
             amount: taxAmount * -1,
             meta: {
               discountId,
+              /* @ts-ignore */
               adapter: this.constructor.key,
             },
           });

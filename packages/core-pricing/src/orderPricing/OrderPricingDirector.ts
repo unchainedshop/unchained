@@ -3,22 +3,25 @@ import {
   Order,
   OrderDelivery,
   OrderDiscount,
+  OrderPayment,
   OrderPosition
 } from '@unchainedshop/types/orders';
 import { PaymentProvider } from '@unchainedshop/types/payments';
 import { User } from '@unchainedshop/types/user';
 import { BasePricingDirector } from 'src/basePricing/BasePricingDirector';
+import { ProductPricingCalculation } from 'src/product-pricing';
 import {
   OrderPricingCalculation,
   OrderPricingSheet
 } from './OrderPricingSheet';
 
 interface OrderPricingContext {
+  currency?: string;
   discounts: Array<OrderDiscount>;
   order: Order;
   orderDelivery: OrderDelivery;
   orderPositions: Array<OrderPosition>;
-  paymentProvider: PaymentProvider;
+  orderPayment?: OrderPayment;
   user: User;
 }
 
@@ -42,17 +45,18 @@ export class OrderPricingDirector extends BasePricingDirector<
     const orderDelivery = order.delivery();
     // TODO: use modules
     /* @ts-ignore */
-    const paymentProvider = order.payment();
+    const orderPayment = order.payment();
     // TODO: use modules
     /* @ts-ignore */
     const discounts = order.discounts();
 
     return {
+      currency: order.currency,
       discounts,
       order,
       orderDelivery,
       orderPositions,
-      paymentProvider,
+      orderPayment,
       user,
     };
   }
