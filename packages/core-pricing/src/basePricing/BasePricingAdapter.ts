@@ -10,7 +10,8 @@ export interface BasePricingAdapterContext extends Context {
 }
 
 export class BasePricingAdapter<
-  PricingContext extends BasePricingAdapterContext
+  PricingContext extends BasePricingAdapterContext,
+  PricingCalculation
 > {
   static key = '';
 
@@ -32,10 +33,15 @@ export class BasePricingAdapter<
     discounts,
   }: {
     context: PricingContext;
+    calculation: Array<PricingCalculation>;
     discounts: Array<Discount>;
   }) {
     this.context = context;
     this.discounts = discounts;
+  }
+
+  async calculate() {
+    return [];
   }
 
   // eslint-disable-next-line
@@ -44,4 +50,4 @@ export class BasePricingAdapter<
   }
 }
 
-export type IPricingAdapter = typeof BasePricingAdapter;
+export type PricingAdapter = typeof BasePricingAdapter;

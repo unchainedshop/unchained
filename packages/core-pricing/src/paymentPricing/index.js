@@ -1,6 +1,6 @@
 export {
   PaymentPricingCalculation,
-  PaymnetPricingSheet,
+  PaymentPricingSheet,
   PaymentPricingSheetRowCategory,
 } from './PaymentPricingSheet';
 

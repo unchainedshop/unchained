@@ -2,7 +2,7 @@ import { Context } from '@unchainedshop/types/api';
 import { Order, OrderPayment } from '@unchainedshop/types/orders';
 import { PaymentProvider } from '@unchainedshop/types/payments';
 import { User } from '@unchainedshop/types/user';
-import { BasePricingDirector } from 'src/basePricing/BasePricingDirector';
+import { BasePricingDirector } from '../basePricing/BasePricingDirector';
 import {
   PaymentPricingCalculation,
   PaymentPricingSheet,

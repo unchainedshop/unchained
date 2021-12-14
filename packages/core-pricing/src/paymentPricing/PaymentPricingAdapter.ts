@@ -3,7 +3,7 @@ import { Order, OrderPayment } from '@unchainedshop/types/orders';
 import { PaymentProvider } from '@unchainedshop/types/payments';
 import { User } from '@unchainedshop/types/user';
 import { log, LogLevel } from 'meteor/unchained:logger';
-import { BasePricingAdapter } from 'src/basePricing/BasePricingAdapter';
+import { BasePricingAdapter } from '../basePricing/BasePricingAdapter';
 import {
   PaymentPricingCalculation,
   PaymentPricingSheet,
@@ -16,7 +16,7 @@ export interface PaymentPricingAdapterContext extends Context {
   provider: PaymentProvider;
 }
 
-export class PaymentPricingAdapter extends BasePricingAdapter<PaymentPricingAdapterContext> {
+export class PaymentPricingAdapter extends BasePricingAdapter<PaymentPricingAdapterContext, PaymentPricingCalculation> {
   static async isActivatedFor(context: PaymentPricingAdapterContext) {
     return false;
   }
@@ -25,7 +25,7 @@ export class PaymentPricingAdapter extends BasePricingAdapter<PaymentPricingAdap
   public result;
 
   constructor({ context, calculation }) {
-    super({ context, discounts: [] });
+    super({ context, calculation, discounts: [] });
 
     const { currency } = this.context.order;
     this.calculation = PaymentPricingSheet({ calculation, currency });

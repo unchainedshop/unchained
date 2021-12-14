@@ -2,7 +2,8 @@ import { Context } from '@unchainedshop/types/api';
 import { Discount } from '@unchainedshop/types/discounting';
 import { Order } from '@unchainedshop/types/orders';
 import { User } from '@unchainedshop/types/user';
-import { BasePricingAdapter } from 'src/basePricing/BasePricingAdapter';
+import { ProductPricingCalculation } from '.';
+import { BasePricingAdapter } from '../basePricing/BasePricingAdapter';
 import { ProductPricingSheet } from './ProductPricingSheet';
 
 export interface ProductPricingAdapterContext extends Context {
@@ -15,12 +16,12 @@ export interface ProductPricingAdapterContext extends Context {
   user: User;
 }
 
-export class ProductPricingAdapter extends BasePricingAdapter<ProductPricingAdapterContext> {
+export class ProductPricingAdapter extends BasePricingAdapter<ProductPricingAdapterContext, ProductPricingCalculation> {
   public calculation;
   public result;
 
   constructor({ context, calculation, discounts }) {
-    super({ context, discounts });
+    super({ context, calculation, discounts });
 
     const { currency, quantity } = context;
     this.calculation = ProductPricingSheet({

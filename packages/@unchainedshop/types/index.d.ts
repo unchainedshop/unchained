@@ -167,10 +167,10 @@ declare module 'meteor/unchained:core-discounting' {
     static version: string;
     static orderIndex: number;
 
-    static isManualAdditionAllowed(code: string): boolean
+    static isManualAdditionAllowed(code: string): boolean;
 
     // return true if a discount is allowed to get removed manually by a user
-    static isManualRemovalAllowed(): boolean
+    static isManualRemovalAllowed(): boolean;
 
     public context: DiscountContext;
   }
@@ -222,6 +222,36 @@ declare module 'meteor/unchained:core-payments' {
   export const paymentLogger;
 
   export const PaymentProviderType: typeof PaymentProviderTypeType;
+}
+
+declare module 'meteor/unchained:core-pricing' {
+  export class DeliveryPricingAdapter {}
+  export type DeliveryPricingAdapterContext = {};
+  export type DeliveryPricingCalculation = {};
+  export const DeliveryPricingSheet;
+  export type DeliveryPricingSheetRowCategory = {};
+  export class DeliveryPricingDirector {}
+
+  export class OrderPricingAdapter {}
+  export type OrderPricingAdapterContext = {};
+  export type OrderPricingCalculation = {};
+  export const OrderPricingSheet;
+  export type OrderPricingSheetRowCategory = {};
+  export class OrderPricingDirector {}
+
+  export class PaymentPricingAdapter {}
+  export type PaymentPricingAdapterContext = {};
+  export type PaymentPricingCalculation = {};
+  export const PaymentPricingSheet;
+  export type PaymentPricingSheetRowCategory = {};
+  export class PaymentPricingDirector {}
+
+  export class ProductPricingAdapter {}
+  export type ProductPricingAdapterContext = {};
+  export type ProductPricingCalculation = {};
+  export const ProductPricingSheet;
+  export type ProductPricingSheetRowCategory = {};
+  export class ProductPricingDirector {}
 }
 
 declare module 'meteor/unchained:core-warehousing' {

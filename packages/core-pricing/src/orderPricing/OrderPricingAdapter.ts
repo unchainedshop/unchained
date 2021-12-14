@@ -24,7 +24,10 @@ interface OrderPricingAdapterContext extends Context {
   user: User;
 }
 
-export class OrderPricingAdapter extends BasePricingAdapter<OrderPricingAdapterContext> {
+export class OrderPricingAdapter extends BasePricingAdapter<
+  OrderPricingAdapterContext,
+  OrderPricingCalculation
+> {
   static async isActivatedFor(context: OrderPricingAdapterContext) {
     return false;
   }
@@ -41,7 +44,7 @@ export class OrderPricingAdapter extends BasePricingAdapter<OrderPricingAdapterC
     calculation: Array<OrderPricingCalculation>;
     discounts: Array<Discount>;
   }) {
-    super({ context, discounts });
+    super({ context, calculation, discounts });
 
     const { currency } = this.context;
     this.calculation = OrderPricingSheet({ calculation, currency });

@@ -4,7 +4,7 @@ import {
   OrderPosition,
 } from '@unchainedshop/types/orders';
 import { User } from '@unchainedshop/types/user';
-import { BasePricingDirector } from 'src/basePricing/BasePricingDirector';
+import { BasePricingDirector } from '../basePricing/BasePricingDirector';
 import {
   ProductPricingCalculation,
   ProductPricingSheet,

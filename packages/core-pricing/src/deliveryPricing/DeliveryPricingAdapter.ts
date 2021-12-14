@@ -2,7 +2,7 @@ import { Context } from '@unchainedshop/types/api';
 import { Discount } from '@unchainedshop/types/discounting';
 import { Order, OrderDelivery } from '@unchainedshop/types/orders';
 import { User } from '@unchainedshop/types/user';
-import { BasePricingAdapter } from 'src/basePricing/BasePricingAdapter';
+import { BasePricingAdapter } from '../basePricing/BasePricingAdapter';
 import {
   DeliveryPricingCalculation,
   DeliveryPricingSheet,
@@ -19,12 +19,15 @@ export interface DeliveryPricingAdapterContext extends Context {
   user: User;
 }
 
-export class DeliveryPricingAdapter extends BasePricingAdapter<DeliveryPricingAdapterContext> {
+export class DeliveryPricingAdapter extends BasePricingAdapter<
+  DeliveryPricingAdapterContext,
+  DeliveryPricingCalculation
+> {
   static async isActivatedFor(context: DeliveryPricingAdapterContext) {
     return false;
   }
 
-  public calculation;
+  public calculation
   public result;
 
   constructor({
@@ -36,7 +39,7 @@ export class DeliveryPricingAdapter extends BasePricingAdapter<DeliveryPricingAd
     calculation: Array<DeliveryPricingCalculation>;
     discounts: Array<Discount>;
   }) {
-    super({ context, discounts });
+    super({ context, calculation, discounts });
 
     const { currency } = context;
     this.calculation = DeliveryPricingSheet({ calculation, currency });
