@@ -1,9 +1,7 @@
 import { HTTP } from 'meteor/http';
+/* @ts-ignore */
 import moment from 'moment';
-import {
-  DocumentDirector,
-  DocumentAdapter,
-} from 'meteor/unchained:core-documents';
+import { DocumentAdapter, DocumentDirector } from 'meteor/unchained:core-documents';
 
 const { SMALLINVOICE_TOKEN, UNCHAINED_LANG } = process.env;
 
@@ -278,15 +276,16 @@ class Smallinvoice extends DocumentAdapter {
 
   static version = '1.0';
 
-  static isActivatedFor() {
+  static async isActivatedFor() {
     if (!SMALLINVOICE_TOKEN) return false;
     return true;
   }
 
-  constructor(data) {
-    super(data);
+  constructor(context) {
+    super(context);
+
     const { user } = this.context;
-    const language = user && user.language();
+    const language = this.context.services.users.getUserLanguage(user);
     this.language = language.isoCode || UNCHAINED_LANG;
     this.api = new SmallinvoiceAPI({
       token: SMALLINVOICE_TOKEN,
@@ -297,9 +296,14 @@ class Smallinvoice extends DocumentAdapter {
 
   buildItems() {
     const { order } = this.context;
-    return order.items().map((position) => {
+
+    return this.context.orderPositions.map((position) => {
+      // TODO: use modules
+      /* @ts-ignore */
       const product = position.product();
       const texts = product.getLocalizedTexts(this.language);
+      // TODO: use modules
+      /* @ts-ignore */
       const pricing = position.pricing();
       const unitPrice = pricing.unitPrice().amount;
       const tax = pricing.taxSum();
@@ -319,9 +323,13 @@ class Smallinvoice extends DocumentAdapter {
   buildDiscounts() {
     // eslint-disable-line
     const { order } = this.context;
+    // TODO: use modules
+    /* @ts-ignore */
     const pricing = order.pricing();
     let itemsTax = 0;
-    order.items().forEach((position) => {
+    this.context.orderPositions.forEach((position) => {
+      // TODO: use modules
+      /* @ts-ignore */
       itemsTax += position.pricing().taxSum();
     });
     const discounts = pricing.discountSum();

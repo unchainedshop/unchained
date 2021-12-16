@@ -1,4 +1,5 @@
 import { Modules } from '@unchainedshop/types';
+import { Context } from '@unchainedshop/types/api';
 
 export type MigrateBookmarksService = (
   params: {
@@ -6,12 +7,12 @@ export type MigrateBookmarksService = (
     toUserId: string;
     mergeBookmarks: () => void;
   },
-  context: { modules: Modules }
+  context: Context
 ) => Promise<void>;
 
 export const migrateBookmarksService: MigrateBookmarksService = async (
   { fromUserId, toUserId, mergeBookmarks },
-  { modules }
+  { modules, userId }
 ) => {
   const fromBookmarks = await modules.bookmarks.find({ userId: fromUserId });
   if (!fromBookmarks) {
@@ -19,7 +20,7 @@ export const migrateBookmarksService: MigrateBookmarksService = async (
     return;
   }
   if (!mergeBookmarks) {
-    await modules.bookmarks.delete(toUserId);
+    await modules.bookmarks.deleteByUserId(toUserId, userId);
   }
-  await modules.bookmarks.replaceUserId(fromUserId, toUserId);
+  await modules.bookmarks.replaceUserId(fromUserId, toUserId, userId);
 };

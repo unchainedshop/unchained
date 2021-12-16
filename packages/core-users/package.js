@@ -7,6 +7,7 @@ Package.describe({
 });
 
 Npm.depends({
+  locale: '0.1.0',
   uuid: '7.0.1',
 });
 

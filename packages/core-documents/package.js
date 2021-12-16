@@ -9,16 +9,20 @@ Package.describe({
 Package.onUse((api) => {
   api.versionsFrom('2.2');
   api.use('ecmascript');
+  api.use('typescript');
   api.use('http@2.0.0');
 
   api.use('unchained:utils@1.0.0-beta15');
   api.use('unchained:logger@1.0.0-beta15');
 
-  api.mainModule('documents.js', 'server');
+  api.mainModule('src/documents-index.ts', 'server');
 });
 
 Package.onTest((api) => {
   api.use('ecmascript');
+  api.use('typescript');
+
   api.use('unchained:core-documents');
-  api.mainModule('documents-tests.js');
+
+  api.mainModule('tests/documents-index.test.ts');
 });

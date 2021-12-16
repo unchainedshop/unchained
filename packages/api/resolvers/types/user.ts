@@ -1,9 +1,7 @@
-import { Locale } from 'locale';
-import { actions } from '../../roles';
-import { checkAction, checkTypeResolver } from '../../acl';
 import { User as UserType, UserHelperTypes } from '@unchainedshop/types/user';
-import { systemLocale } from 'meteor/unchained:utils';
 import { log, LogLevel } from 'meteor/unchained:logger';
+import { checkAction, checkTypeResolver } from '../../acl';
+import { actions } from '../../roles';
 
 // import { logs } from '../transformations/helpers/logs';
 
@@ -14,17 +12,6 @@ const {
   viewUserEnrollments,
   viewUserQuotations,
 } = actions as Record<string, string>;
-
-const getUserLocale = (
-  user: UserType,
-  params: { localeContext?: Locale } = {}
-) => {
-  const locale =
-    params.localeContext ||
-    (user.lastLogin?.locale && new Locale(user.lastLogin.locale)) ||
-    systemLocale;
-  return locale;
-};
 
 const getPrimaryEmail = (user: UserType) => {
   return (user.emails || []).sort(
@@ -97,29 +84,25 @@ export const User: UserHelperTypes = {
   async cart(user, params, context) {
     const { countryContext, userId } = context;
     checkAction(viewUserOrders, userId, [user, params, context]);
+    // TODO use modules 
+    /* @ts-ignore */
     return user.cart({ countryContext, ...params });
   },
 
   country: async (user, params, context) => {
     checkAction(viewUserPrivateInfos, context.userId, [user, params, context]);
-    const userLocale = getUserLocale(user, params);
-    return await context.modules.countries.findCountry({
-      isoCode: userLocale.country.toUpperCase(),
-    });
+    return await context.services.countries.getUserCountry(user, params);
   },
 
   enrollments: checkTypeResolver(viewUserEnrollments, 'enrollments'),
 
   language: async (user, params, context) => {
     checkAction(viewUserPrivateInfos, context.userId, [user, params, context]);
-    const userLocale = getUserLocale(user, params);
-    return await context.modules.languages.findLanguage({
-      isoCode: userLocale.language,
-    });
+    return await context.services.user.getUserLanguage(user);
   },
   locale: (user, params, context) => {
     checkAction(viewUserPrivateInfos, context.userId, [user, params, context]);
-    return getUserLocale(user, params);
+    return context.modules.users.userLocale(user, params);
   },
 
   orders: checkTypeResolver(viewUserOrders, 'orders'),

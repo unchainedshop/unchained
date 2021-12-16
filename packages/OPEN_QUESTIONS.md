@@ -13,3 +13,9 @@
 7. What is the context in a plugin meant to be? general context incl. modules and services. Specific context for function.
 
 8. Why are the events of the core-worker not emitted using the events library, but directly with the node event emitter?
+
+9. Changed sortedAdapters to general getAdapter in Directors function, okay?
+
+10. F.Y.I: Interface definition for plugins extremly time-consuming and complex.
+
+11. Documents uses HTTP meteor package. Shall I remove it too?
