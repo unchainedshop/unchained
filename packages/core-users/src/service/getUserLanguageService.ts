@@ -9,7 +9,7 @@ export type GetUserLanguageService = (
   context: Context
 ) => Promise<Language>;
 
-export const getUserLanguage: GetUserLanguageService = async (
+export const getUserLanguageService: GetUserLanguageService = async (
   user,
   params,
   { modules }

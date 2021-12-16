@@ -15,7 +15,7 @@ export interface DocumentContext {
   documents: Array<Document>;
   user: User;
   order: Order;
-  orderPositions: Array<OrderPosition>
+  orderPositions: Array<OrderPosition>;
 }
 export type DocumentAdapterContext = DocumentContext & Context;
 
@@ -25,16 +25,14 @@ export interface IDocumentAdapterClass extends IAdapterClass {
 
 export interface IDocumentAdapter {}
 
-export interface IDocumentDirectorClass
-  extends IDirectorClass<IDocumentAdapterClass> {}
+export interface DocumenExecuteOptions {
+  date?: Date;
+  payment?: OrderPayment;
+  orderNumber: string;
+  delivery?: OrderDelivery;
+  ancestors: Array<Document>;
+}
 
-  export interface DocumenExecuteOptions {
-    date?: Date;
-    payment?: OrderPayment;
-    orderNumber: string;
-    delivery?: OrderDelivery;
-    ancestors: Array<Document>;
-  }
 export interface IDocumentDirector {
   filteredDocuments: (params: DocumentMeta) => Array<Document>;
   isDocumentExists: (params: DocumentMeta) => boolean;
