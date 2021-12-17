@@ -257,7 +257,7 @@ declare module 'meteor/unchained:director-pricing' {
   export type DeliveryPricingCalculation = {};
   export const DeliveryPricingSheet;
   export type DeliveryPricingSheetRowCategory = {};
-  export class DeliveryPricingDirector {}
+  export const DeliveryPricingDirector : any // TODO: define class
 
   export class OrderPricingAdapter {}
   export type OrderPricingAdapterContext = {};

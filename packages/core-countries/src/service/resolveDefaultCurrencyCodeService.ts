@@ -1,9 +1,7 @@
 import { Context } from '@unchainedshop/types/api';
 import { Country } from '@unchainedshop/types/countries';
-import { Currency } from '@unchainedshop/types/currencies';
 import { Modules } from '@unchainedshop/types/modules';
 import LRU from 'lru-cache';
-import { _ID } from 'meteor/unchained:utils';
 
 // REMARK: --> combines defaultCurrency and resolveDefaultCurrencyCode helpers
 

@@ -1,5 +1,5 @@
 import { Context } from './api';
-import { TimestampFields, _ID } from './common';
+import { ModuleMutations, TimestampFields, _ID } from './common';
 import { OrderDelivery } from './orders';
 import { WarehousingProvider } from './warehousing';
 import { Work } from './worker';
@@ -48,7 +48,7 @@ export interface DeliveryContext {
   warehousingThroughputTime?: number;
 }
 
-export type DeliveryAdapterContext = DeliveryContext & Context
+export type DeliveryAdapterContext = DeliveryContext & Context;
 
 export interface DeliveryAdapter {
   configurationError: () => DeliveryError;
@@ -92,9 +92,9 @@ export type DeliveryModule = ModuleMutations<DeliveryProvider> & {
   // Queries
   count: (query: DeliveryProviderQuery) => Promise<number>;
   findProvider: (
-    query: Query & {
+    query: {
       deliveryProviderId: string;
-    },
+    } | Query,
     options?: FindOptions<DeliveryProvider>
   ) => Promise<DeliveryProvider>;
   findProviders: (
@@ -146,15 +146,12 @@ export interface DeliveryProviderHelperTypes {
       version: string;
     }
   >;
-  configurationError: HelperType<never, DeliveryError>;
-  orderPrice: HelperType<
+  simulatedPrice: HelperType<
     {
-      country?: string;
       currency?: string;
-      order: Order;
+      orderId: string;
       useNetPrice?: boolean;
-      user: User;
-      providerContext: any;
+      context: any
     },
     {
       _id: string;

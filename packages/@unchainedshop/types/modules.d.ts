@@ -3,6 +3,7 @@ import { UsersModule } from './user';
 import { BookmarksModule } from './bookmarks';
 import { CountriesModule } from './countries';
 import { CurrenciesModule } from './currencies';
+import { DeliveryModule } from './delivery';
 import { EventsModule } from './events';
 import { FilesModule } from './files';
 import { LanguagesModule } from './languages';
@@ -16,8 +17,7 @@ export interface Modules {
   bookmarks: BookmarksModule;
   countries: CountriesModule;
   currencies: CurrenciesModule;
-  delivery: any;
-  documents: any;
+  delivery: DeliveryModule;
   enrollments: any;
   events: EventsModule;
   files: FilesModule;
