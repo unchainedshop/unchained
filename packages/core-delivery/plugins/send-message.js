@@ -1,5 +1,7 @@
-import { WorkerDirector } from 'meteor/unchained:core-worker';
-import { DeliveryAdapter, DeliveryDirector } from '../director';
+import {
+  DeliveryAdapter,
+  registerAdapter,
+} from 'meteor/unchained:core-delivery';
 
 class SendMessage extends DeliveryAdapter {
   static key = 'shop.unchained.delivery.send-message';
@@ -34,19 +36,22 @@ class SendMessage extends DeliveryAdapter {
   }
 
   async send(transactionContext) {
-    const { order } = this.context;
+    const { order, userId } = this.context;
 
-    return WorkerDirector.addWork({
-      type: 'MESSAGE',
-      retries: 0,
-      input: {
-        template: 'DELIVERY',
-        orderId: order._id,
-        config: this.config,
-        transactionContext,
+    return await this.context.modules.worker.addWork(
+      {
+        type: 'MESSAGE',
+        retries: 0,
+        input: {
+          template: 'DELIVERY',
+          orderId: order._id,
+          config: this.config,
+          transactionContext,
+        },
       },
-    });
+      userId
+    );
   }
 }
 
-DeliveryDirector.registerAdapter(SendMessage);
+registerAdapter(SendMessage);

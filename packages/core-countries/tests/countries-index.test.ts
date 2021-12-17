@@ -10,7 +10,7 @@ describe('Test exports', () => {
     module = await configureCountriesModule({ db });
   });
 
-  it('Check Bookmarks module', async () => {
+  it('Check Country module', async () => {
     assert.ok(module);
     assert.isFunction(module.findCountry);
     assert.isFunction(module.findCountries);

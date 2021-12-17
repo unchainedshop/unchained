@@ -3,11 +3,11 @@ import { log } from 'meteor/unchained:logger';
 import {
   ProductPricingDirector,
   ProductPricingSheet,
-} from 'meteor/unchained:core-pricing';
+} from 'meteor/unchained:director-pricing';
 import { WarehousingProviders } from 'meteor/unchained:core-warehousing';
 import { Products } from 'meteor/unchained:core-products';
 import { Quotations } from 'meteor/unchained:core-quotations';
-import { emit } from 'meteor/unchained:events';
+import { emit } from 'meteor/unchained:director-events';
 import { OrderPositions } from './collections';
 import { Orders } from '../orders/collections';
 

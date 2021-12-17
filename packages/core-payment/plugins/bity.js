@@ -6,7 +6,7 @@ import {
 } from 'meteor/unchained:core-payment';
 import { Orders } from 'meteor/unchained:core-orders';
 import bodyParser from 'body-parser';
-import { OrderPricingSheet } from 'meteor/unchained:core-pricing';
+import { OrderPricingSheet } from 'meteor/unchained:director-pricing';
 import {
   acl,
   roles,

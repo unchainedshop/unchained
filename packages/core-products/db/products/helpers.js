@@ -1,10 +1,10 @@
 import 'meteor/dburles:collection-helpers';
 import { Promise } from 'meteor/promise';
-import { ProductPricingDirector } from 'meteor/unchained:core-pricing';
+import { ProductPricingDirector } from 'meteor/unchained:director-pricing';
 import { WarehousingProviders } from 'meteor/unchained:core-warehousing';
 import { DeliveryProviders } from 'meteor/unchained:core-delivery';
 import { Countries } from 'meteor/unchained:core-countries';
-import { emit } from 'meteor/unchained:events';
+import { emit } from 'meteor/unchained:director-events';
 import {
   AssortmentProducts,
   makeAssortmentBreadcrumbsBuilder,

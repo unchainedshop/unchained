@@ -18,4 +18,8 @@
 
 10. F.Y.I: Interface definition for plugins extremly time-consuming and complex.
 
-11. Documents uses HTTP meteor package. Shall I remove it too?
+11. Documents is imported in other core packages. Is it a core-package itself? Or does it more follow the events & logger concept
+
+12. Documents uses HTTP meteor package. Shall I remove it too?
+
+13. What is the run command pattern for? That breaks with all the typed logic.

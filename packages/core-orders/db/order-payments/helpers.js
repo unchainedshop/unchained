@@ -4,8 +4,8 @@ import { PaymentProviders } from 'meteor/unchained:core-payment';
 import {
   PaymentPricingDirector,
   PaymentPricingSheet,
-} from 'meteor/unchained:core-pricing';
-import { emit } from 'meteor/unchained:events';
+} from 'meteor/unchained:director-pricing';
+import { emit } from 'meteor/unchained:director-events';
 import { objectInvert } from 'meteor/unchained:utils';
 import { OrderPayments } from './collections';
 import { OrderPaymentStatus } from './schema';

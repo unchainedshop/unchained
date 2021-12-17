@@ -5,7 +5,7 @@ import {
   PaymentProviderType,
 } from '@unchainedshop/types/payments';
 import { Collection, ModuleMutations } from '@unchainedshop/types/common';
-import { emit, registerEvents } from 'meteor/unchained:events';
+import { emit, registerEvents } from 'meteor/unchained:director-events';
 import {
   generateDbMutations,
   generateDbFilterById,

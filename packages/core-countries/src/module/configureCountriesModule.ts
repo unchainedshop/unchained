@@ -2,7 +2,7 @@ import { ModuleInput, ModuleMutations } from '@unchainedshop/types/common';
 import { CountriesModule, Country } from '@unchainedshop/types/countries';
 import countryFlags from 'emoji-flags';
 import countryI18n from 'i18n-iso-countries';
-import { emit, registerEvents } from 'meteor/unchained:events';
+import { emit, registerEvents } from 'meteor/unchained:director-events';
 import {
   generateDbFilterById,
   generateDbMutations,

@@ -1,6 +1,6 @@
 import { ModuleInput } from '@unchainedshop/types/common';
 import { CountriesModule, Country } from '@unchainedshop/types/countries';
-import { emit, registerEvents } from 'meteor/unchained:events';
+import { emit, registerEvents } from 'meteor/unchained:director-events';
 import { generateDbMutations } from 'meteor/unchained:utils';
 import { CountriesCollection } from '../db/AssortmentsCollection';
 import { CountrySchema } from '../db/AssortmentsSchema';

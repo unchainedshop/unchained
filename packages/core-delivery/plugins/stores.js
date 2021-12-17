@@ -1,6 +1,6 @@
 import {
   DeliveryAdapter,
-  DeliveryDirector,
+  registerAdapter,
 } from 'meteor/unchained:core-delivery';
 
 class PickMup extends DeliveryAdapter {
@@ -47,4 +47,4 @@ class PickMup extends DeliveryAdapter {
   }
 }
 
-DeliveryDirector.registerAdapter(PickMup);
+registerAdapter(PickMup);

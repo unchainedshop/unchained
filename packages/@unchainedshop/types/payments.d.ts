@@ -7,6 +7,7 @@ import {
   _ID,
 } from './common';
 import { User } from '@unchainedshop/types/user';
+import { Order, OrderPayment } from './orders';
 
 export enum PaymentProviderType {
   CARD = 'CARD',
@@ -51,8 +52,8 @@ export enum PaymentError {
 export interface PaymentContext {
   userId?: string;
   paymentProviderId?: string;
-  order?: any; // TODO: Replace with order type
-  orderPayment?: any; // TODO: Replace with orderPayment type
+  order?: Order;
+  orderPayment?: OrderPayment;
   transactionContext?: any; // User for singing and charging a payment
   token?: any; // Used for validation
   meta?: any
@@ -105,7 +106,7 @@ export type PaymentModule = {
     ) => Promise<Array<PaymentProvider>>;
 
     findSupported: (
-      query: { order: any } // TODO: Replace order type
+      query: { order: Order }
     ) => Array<string>;
 
     findInterface: (query: PaymentProvider) => PaymentInterface;

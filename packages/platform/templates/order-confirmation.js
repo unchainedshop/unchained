@@ -1,6 +1,6 @@
 import { MessagingDirector } from 'meteor/unchained:core-messaging';
 import { Orders } from 'meteor/unchained:core-orders';
-import { OrderPricingSheetRowCategories } from 'meteor/unchained:core-pricing';
+import { OrderPricingSheetRowCategories } from 'meteor/unchained:director-pricing';
 
 const {
   EMAIL_FROM,

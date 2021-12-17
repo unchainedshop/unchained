@@ -1,5 +1,5 @@
 import { WorkerDirector } from 'meteor/unchained:core-worker';
-import { registerEvents } from 'meteor/unchained:events';
+import { registerEvents } from 'meteor/unchained:director-events';
 import GenerateEnrollmentOrders from './worker/generate-orders';
 import settings from './settings';
 

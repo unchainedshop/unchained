@@ -1,6 +1,6 @@
 import { ModuleInput } from '@unchainedshop/types/common';
 import { LanguagesModule, Language } from '@unchainedshop/types/languages';
-import { emit, registerEvents } from 'meteor/unchained:events';
+import { emit, registerEvents } from 'meteor/unchained:director-events';
 import { generateDbMutations, generateDbFilterById } from 'meteor/unchained:utils';
 import { LanguagesCollection } from '../db/LanguagesCollection';
 import { LanguagesSchema } from '../db/LanguagesSchema';

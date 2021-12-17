@@ -2,11 +2,11 @@ import { Promise } from 'meteor/promise';
 import 'meteor/dburles:collection-helpers';
 import crypto from 'crypto';
 import { Countries } from 'meteor/unchained:core-countries';
-import { DeliveryPricingDirector } from 'meteor/unchained:core-pricing';
-import { emit } from 'meteor/unchained:events';
+import { DeliveryPricingDirector } from 'meteor/unchained:director-pricing';
+import { emit } from 'meteor/unchained:director-events';
 import { DeliveryProviders } from './collections';
 import { DeliveryDirector } from '../director';
-import settings from '../settings';
+import settings from '../src/delivery-settings';
 
 const emptyContext = {};
 
@@ -57,6 +57,7 @@ DeliveryProviders.helpers({
     );
   },
 
+  // MOVE TO api/types
   orderPrice(
     {
       country,

@@ -5,7 +5,7 @@ import {
   findPreservingIds,
   findLocalizedText,
 } from 'meteor/unchained:utils';
-import { emit } from 'meteor/unchained:events';
+import { emit } from 'meteor/unchained:director-events';
 
 import { Locale } from 'locale';
 import { log } from 'meteor/unchained:logger';

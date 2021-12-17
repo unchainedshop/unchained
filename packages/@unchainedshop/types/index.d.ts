@@ -115,7 +115,11 @@ declare module 'meteor/unchained:logger' {
   export const LogLevel: typeof LogLevelType;
 }
 
-declare module 'meteor/unchained:events' {
+/* 
+ * Director packages
+ */
+
+declare module 'meteor/unchained:director-events' {
   export const emit: EventDirector['emit'];
   export const getEmitAdapter: EventDirector['getEmitAdapter'];
   export const getEmitHistoryAdapter: EventDirector['getEmitHistoryAdapter'];
@@ -125,6 +129,29 @@ declare module 'meteor/unchained:events' {
   export const setEmitHistoryAdapter: EventDirector['setEmitHistoryAdapter'];
   export const subscribe: EventDirector['subscribe'];
 }
+
+declare module 'meteor/unchained:director-file-upload' {
+  export const setFileUploadAdapter: FileDirector['setFileAdapter'];
+  export const getFileUploadAdapter: FileDirector['getFileAdapter'];
+
+  export const composeFileName: FileDirector['composeFileName'];
+  export const createSignedURL: FileDirector['createSignedURL'];
+
+  export const registerFileUploadCallback: FileDirector['registerFileUploadCallback'];
+  export const getFileUploadCallback: FileDirector['getFileUploadCallback'];
+
+  export const removeFiles = FileDirector['removeFiles'];
+  export const uploadFileFromStream: FileDirector['uploadFileFromStream'];
+  export const uploadFileFromURL: FileDirector['uploadFileFromStream'];
+}
+
+declare module 'meteor/unchained:director-documents' {
+  
+}
+
+/* 
+ * Core packages
+ */
 
 declare module 'meteor/unchained:core-events' {
   export function configureEventsModule(
@@ -160,7 +187,7 @@ declare module 'meteor/unchained:core-currencies' {
   ): Promise<CurrenciesModule>;
 }
 
-declare module 'meteor/unchained:core-discounting' {
+declare module 'meteor/unchained:director-discounting' {
   export class DiscountAdapter implements IDiscountAdapter {
     static key: string;
     static label: string;
@@ -224,7 +251,7 @@ declare module 'meteor/unchained:core-payments' {
   export const PaymentProviderType: typeof PaymentProviderTypeType;
 }
 
-declare module 'meteor/unchained:core-pricing' {
+declare module 'meteor/unchained:director-pricing' {
   export class DeliveryPricingAdapter {}
   export type DeliveryPricingAdapterContext = {};
   export type DeliveryPricingCalculation = {};
@@ -297,21 +324,6 @@ declare module 'meteor/unchained:core-worker' {
   export const WorkerDirector: typeof WorkerDirectorType;
 
   export type WorkerPlugin<Args, Result> = IWorkerPlugin<Args, Result>;
-}
-
-declare module 'meteor/unchained:file-upload' {
-  export const setFileUploadAdapter: FileDirector['setFileAdapter'];
-  export const getFileUploadAdapter: FileDirector['getFileAdapter'];
-
-  export const composeFileName: FileDirector['composeFileName'];
-  export const createSignedURL: FileDirector['createSignedURL'];
-
-  export const registerFileUploadCallback: FileDirector['registerFileUploadCallback'];
-  export const getFileUploadCallback: FileDirector['getFileUploadCallback'];
-
-  export const removeFiles = FileDirector['removeFiles'];
-  export const uploadFileFromStream: FileDirector['uploadFileFromStream'];
-  export const uploadFileFromURL: FileDirector['uploadFileFromStream'];
 }
 
 declare module 'meteor/unchained:core-users' {

@@ -1,6 +1,6 @@
 import { Context } from '@unchainedshop/types/api';
 import { File } from '@unchainedshop/types/files';
-import { getFileUploadCallback } from 'meteor/unchained:file-upload';
+import { getFileUploadCallback } from 'meteor/unchained:director-file-upload';
 
 export type LinkFileService = (
   params: { externalId: string; size: number; type: string },

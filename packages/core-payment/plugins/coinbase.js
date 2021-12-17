@@ -7,7 +7,7 @@ import {
   paymentLogger,
 } from 'meteor/unchained:core-payment';
 
-import { OrderPricingSheet } from 'meteor/unchained:core-pricing';
+import { OrderPricingSheet } from 'meteor/unchained:director-pricing';
 
 const { COINBASE_COMMERCE_KEY } = process.env;
 

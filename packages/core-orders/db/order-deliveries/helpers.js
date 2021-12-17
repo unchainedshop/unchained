@@ -4,9 +4,9 @@ import { DeliveryProviders } from 'meteor/unchained:core-delivery';
 import {
   DeliveryPricingDirector,
   DeliveryPricingSheet,
-} from 'meteor/unchained:core-pricing';
+} from 'meteor/unchained:director-pricing';
 import { objectInvert } from 'meteor/unchained:utils';
-import { emit } from 'meteor/unchained:events';
+import { emit } from 'meteor/unchained:director-events';
 import { OrderDeliveries } from './collections';
 import { OrderDeliveryStatus } from './schema';
 import { Orders } from '../orders/collections';

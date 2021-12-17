@@ -14,8 +14,8 @@ import { WorkerDirector } from 'meteor/unchained:core-worker';
 import {
   OrderPricingDirector,
   OrderPricingSheet,
-} from 'meteor/unchained:core-pricing';
-import { emit } from 'meteor/unchained:events';
+} from 'meteor/unchained:director-pricing';
+import { emit } from 'meteor/unchained:director-events';
 import {
   uploadObjectStream,
   uploadFileFromURL,
