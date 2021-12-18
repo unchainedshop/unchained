@@ -1,17 +1,23 @@
-import { ModuleInput } from '@unchainedshop/types/common';
-import { CountriesModule, Country } from '@unchainedshop/types/countries';
+import { ModuleInput, ModuleMutations } from '@unchainedshop/types/common';
+import {
+  AssortmentsModule,
+  Assortment,
+} from '@unchainedshop/types/assortments';
 import { emit, registerEvents } from 'meteor/unchained:director-events';
 import { generateDbMutations } from 'meteor/unchained:utils';
-import { CountriesCollection } from '../db/AssortmentsCollection';
-import { CountrySchema } from '../db/AssortmentsSchema';
-import countryFlags from 'emoji-flags';
-import countryI18n from 'i18n-iso-countries';
-import { systemLocale } from 'meteor/unchained:utils';
+import { AssortmentsCollection } from '../db/AssortmentsCollection';
+import { AssortmentsSchema } from '../db/AssortmentsSchema';
 
-const COUNTRY_EVENTS: string[] = [
-  'COUNTRY_CREATE',
-  'COUNTRY_UPDATE',
-  'COUNTRY_REMOVE',
+const ASSORTMENT_EVENTS = [
+  'ASSORTMENT_CREATE',
+  'ASSORTMENT_REMOVE',
+  'ASSORTMENT_SET_BASE',
+  'ASSORTMENT_UPDATE',
+  'ASSORTMENT_UPDATE_TEXTS',
+  'ASSORTMENT_REORDER_MEDIA',
+  'ASSORTMENT_UPDATE_MEDIA_TEXT',
+  'ASSORTMENT_REMOVE_MEDIA',
+  'ASSORTMENT_ADD_MEDIA',
 ];
 
 type FindQuery = {
@@ -23,24 +29,30 @@ const buildFindSelector = ({ includeInactive = false }: FindQuery) => {
   return selector;
 };
 
-export const configureCountriesModule = async ({
+export const configureAssortmentsModule = async ({
   db,
-}: ModuleInput): Promise<CountriesModule> => {
-  registerEvents(COUNTRY_EVENTS);
+}: ModuleInput): Promise<AssortmentsModule> => {
+  registerEvents(ASSORTMENT_EVENTS);
 
-  const Countries = await CountriesCollection(db);
+  const {
+    Assortments,
+    AssortmentTexts,
+    AssortmentProducts,
+    AssortmentLinks,
+    AssortmentFilters,
+  } = await AssortmentsCollection(db);
 
-  const mutations = generateDbMutations<Country>(Countries, CountrySchema);
+  const mutations = generateDbMutations<Assortment>(Assortments, AssortmentsSchema) as ModuleMutations<Assortment>;
 
   return {
-    findCountry: async ({ countryId, isoCode }) => {
-      return await Countries.findOne(
+    findAssortment: async ({ countryId, isoCode }) => {
+      return await Assortments.findOne(
         countryId ? { _id: countryId } : { isoCode }
       );
     },
 
-    findCountries: async ({ limit, offset, includeInactive }) => {
-      const countries = await Countries.find(
+    findAssortments: async ({ limit, offset, includeInactive }) => {
+      const countries = await Assortments.find(
         buildFindSelector({ includeInactive }),
         {
           skip: offset,
@@ -51,34 +63,24 @@ export const configureCountriesModule = async ({
     },
 
     count: async (query) => {
-      const count = await Countries.find(buildFindSelector(query)).count();
+      const count = await Assortments.find(buildFindSelector(query)).count();
       return count;
     },
 
     countryExists: async ({ countryId }) => {
-      const countryCount = await Countries.find(
+      const countryCount = await Assortments.find(
         { _id: countryId },
         { limit: 1 }
       ).count();
       return !!countryCount;
     },
 
-    name(language) {
-      return countryI18n.getName(this.isoCode, language) || language;
-    },
-    flagEmoji() {
-      return countryFlags.countryCode(this.isoCode).emoji || '❌';
-    },
-    isBase() {
-      return this.isoCode === systemLocale.country;
-    },
-
-    create: async (doc: Country, userId?: string) => {
+    create: async (doc: Assortment, userId?: string) => {
       const countryId = await mutations.create(doc, userId);
       emit('COUNTRY_CREATE', { countryId });
       return countryId;
     },
-    update: async (_id: string, doc: Country, userId?: string) => {
+    update: async (_id: string, doc: Assortment, userId?: string) => {
       const countryId = await mutations.update(_id, doc, userId);
       emit('COUNTRY_UPDATE', { countryId });
       return countryId;
@@ -88,5 +90,10 @@ export const configureCountriesModule = async ({
       emit('COUNTRY_REMOVE', { countryId });
       return deletedCount;
     },
+
+    filters: {},
+    links: {},
+    products: {},
+    texts: {},
   };
 };

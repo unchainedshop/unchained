@@ -1,60 +1,48 @@
+import { Locale } from '@types/locale';
+import { ObjectId } from 'bjson';
+import { Request } from 'express';
 import { BookmarksModule } from './bookmarks';
 import {
-  Db,
   Collection,
-  _ID,
+  Db,
+  Document,
   Filter,
-  ModuleInput,
-  TimestampFields,
-  ModuleMutations,
   ModuleCreateMutation,
+  ModuleInput,
+  ModuleMutations,
+  TimestampFields,
+  _ID,
 } from './common';
-import { CurrenciesModule } from './currencies';
 import { CountriesModule } from './countries';
+import { CurrenciesModule } from './currencies';
+import { EventDirector, EventsModule } from './events';
+import { FileDirector, FilesModule } from './files';
 import { LanguagesModule } from './languages';
-import { EmitAdapter, EventDirector, EventsModule } from './events';
-import { User } from './users';
 import {
   Logger,
   LogLevel as LogLevelType,
   LogOptions,
   Transports,
 } from './logs';
-import { Locale } from '@types/locale';
-import { DiscountAdapter } from './discounting';
 import {
   PaymentAdapter as IPaymentAdapter,
   PaymentConfiguration,
   PaymentContext,
   PaymentDirector as IPaymentDirector,
-  PaymentModule,
   PaymentError as PaymentErrorType,
+  PaymentModule,
   PaymentProvider,
   PaymentProviderType as PaymentProviderTypeType,
 } from './payments';
 import {
-  WarehousingModule,
   WarehousingAdapter as IWarehousingAdapter,
   WarehousingContext,
   WarehousingDirector as IWarehousingDirector,
   WarehousingError as WarehousingErrorType,
+  WarehousingModule,
   WarehousingProvider,
-  WarehousingProviderTypeType as WarehousingProviderTypeTypeType,
 } from './warehousing';
-import {
-  WorkerDirector as WorkerDirectorType,
-  WorkerPlugin as IWorkerPlugin,
-  WorkerModule,
-} from './worker';
-import { Request } from 'express';
-import {
-  FileDirector,
-  FilesModule,
-  IFileAdapter,
-  UploadFileCallback,
-  UploadFileData,
-} from './files';
-import exp from 'constants';
+import { WorkerModule, WorkerPlugin as IWorkerPlugin } from './worker';
 
 export { Modules } from './modules';
 
@@ -71,6 +59,12 @@ declare module 'meteor/unchained:utils' {
 
   function dbIdToString(_id: _ID): string;
 
+  function findUnusedSlug(
+    checkSlugIsUniqueFn: (slug: string) => Promise<boolean>,
+    options: { slugify?: (text: string) => string } = {}
+  ): (params: { title?: string, existingSlug: string, newSlug?: string }) => string;
+
+  function generateId(id: unknown): ObjectId;
   function generateDbFilterById<T extends { _id?: _ID }>(
     id: any,
     query?: Filter<T>
@@ -82,10 +76,10 @@ declare module 'meteor/unchained:utils' {
     options?: { hasCreateOnly: boolean }
   ): ModuleMutations<T> | ModuleCreateMutation<T>;
 
-  function buildDbIndexes<T>(
+  function buildDbIndexes<T extends Document>(
     collection: Collection<T>,
-    indexes: Array<() => void>
-  ): Promise<void>;
+    indexes: Indexes<T>
+  ): Promise<boolean>;
 
   function resolveBestSupported(language: string, locales: Locales): Locale;
   function resolveBestCountry(
@@ -115,7 +109,7 @@ declare module 'meteor/unchained:logger' {
   export const LogLevel: typeof LogLevelType;
 }
 
-/* 
+/*
  * Director packages
  */
 
@@ -145,11 +139,9 @@ declare module 'meteor/unchained:director-file-upload' {
   export const uploadFileFromURL: FileDirector['uploadFileFromStream'];
 }
 
-declare module 'meteor/unchained:director-documents' {
-  
-}
+declare module 'meteor/unchained:director-documents' {}
 
-/* 
+/*
  * Core packages
  */
 
@@ -257,7 +249,7 @@ declare module 'meteor/unchained:director-pricing' {
   export type DeliveryPricingCalculation = {};
   export const DeliveryPricingSheet;
   export type DeliveryPricingSheetRowCategory = {};
-  export const DeliveryPricingDirector : any // TODO: define class
+  export const DeliveryPricingDirector: any; // TODO: define class
 
   export class OrderPricingAdapter {}
   export type OrderPricingAdapterContext = {};

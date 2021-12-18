@@ -153,13 +153,13 @@ export interface DeliveryProviderHelperTypes {
       useNetPrice?: boolean;
       context: any
     },
-    {
+    Promise<{
       _id: string;
       amount: number;
       currencyCode: string;
       countryCode: string;
       isTaxable: boolean;
       isNetPrice: boolean;
-    }
+    }>
   >;
 }

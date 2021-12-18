@@ -13,10 +13,10 @@ const incrementSuffixedSlug = (slugIncludingSuffix, delimiter = DELIMITER) => {
   return addSuffixToSlug(slugWithoutSuffix, suffixedIndex + 1);
 };
 
-export default (checkSlugIsUniqueFn, { slugify = defaultSlugify } = {}) => {
+export default async (checkSlugIsUniqueFn, { slugify = defaultSlugify } = {}) => {
   const findUnusedSlug = ({ title, existingSlug, newSlug }) => {
     const slug = newSlug || existingSlug || `${slugify(title)}`;
-    if (!checkSlugIsUniqueFn(slug)) {
+    if (!await checkSlugIsUniqueFn(slug)) {
       const isSlugAlreadySuffixed = !!newSlug;
       return findUnusedSlug({
         newSlug: isSlugAlreadySuffixed

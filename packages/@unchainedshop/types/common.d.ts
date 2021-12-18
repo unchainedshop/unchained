@@ -8,6 +8,8 @@ import {
   Sort,
   ModifyResult,
   Projection,
+  CreateIndexesOptions,
+  Document,
 } from 'mongodb';
 
 /*
@@ -15,17 +17,23 @@ import {
  */
 
 export {
-  Db,
   Collection,
-  FindOptions,
-  UpdateFilter as Update,
+  Db,
+  Document,
   Filter,
-  Sort,
+  FindOptions,
   ModifyResult,
   Projection,
+  Sort,
+  UpdateFilter as Update,
 };
 
 export type Query = { [x: string]: any };
+
+export type Indexes<T extends Document> = Array<{
+  index: Record<keyof T, number | 'text'>;
+  options?: CreateIndexesOptions;
+}>;
 
 /*
  * Module

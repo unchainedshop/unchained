@@ -23,3 +23,30 @@
 12. Documents uses HTTP meteor package. Shall I remove it too?
 
 13. What is the run command pattern for? That breaks with all the typed logic.
+
+14. The cache block will run with empty ids as the fields definition does include the _id only. What shall I do with such code?
+
+```
+Collections.AssortmentLinks.removeLinks = (
+  selector,
+  { skipInvalidation = false } = {}
+) => {
+  const assortmentLinks = Collections.AssortmentLinks.find(selector, {
+    fields: { _id: true },
+  }).fetch();
+  Collections.AssortmentLinks.remove(selector);
+  assortmentLinks.forEach((assortmentLink) =>
+    emit('ASSORTMENT_REMOVE_LINK', { assortmentLinkId: assortmentLink._id })
+  );
+  if (!skipInvalidation && assortmentLinks.length) {
+    Collections.Assortments.invalidateCache({
+      _id: {
+        $in: assortmentLinks.map(
+          (assortmentLink) => assortmentLink.parentAssortmentId
+        ),
+      },
+    });
+  }
+  return assortmentLinks;
+};
+```

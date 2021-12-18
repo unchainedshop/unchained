@@ -1,7 +1,5 @@
-import { log } from 'meteor/unchained:logger';
 import { Context, Root } from '@unchainedshop/types/api';
-import { DeliveryProvider } from '@unchainedshop/types/delivery';
-import { DeliveryProviderType } from '@unchainedshop/types/delivery';
+import { log } from 'meteor/unchained:logger';
 import { InvalidIdError } from '../../../errors';
 
 export default async function deliveryProvider(
