@@ -14,15 +14,13 @@ import {
 
 const ASSORTMENT_TEXT_EVENTS = ['ASSORTMENT_UPDATE_TEXTS'];
 
-export const configureAssortmentsModule = async ({
+export const configureAssortmentTextsModule = ({
   Assortments,
   AssortmentTexts,
-  invalidateCache,
 }: {
   Assortments: Collection<Assortment>;
   AssortmentTexts: Collection<AssortmentText>;
-  invalidateCache: AssortmentsModule['invalidateCache'];
-}): Promise<AssortmentsModule['texts']> => {
+}): AssortmentsModule['texts'] => {
   registerEvents(ASSORTMENT_TEXT_EVENTS);
 
   const makeSlug = async ({ slug, title, assortmentId }) => {

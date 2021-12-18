@@ -87,9 +87,9 @@ export type AssortmentsModule = ModuleMutations<Assortment> & {
   }) => Promise<boolean>;
 
   // Mutations
-  invalidateCache: (params: { assortmentIds: Array<string> }) => void;
-  createBreadcrumbs: () => void;
-  setBase: (assortmentId: string) => Promise<void>;
+  invalidateCache: (params: { assortmentIds: Array<string> }, userId?: string) => void;
+  createBreadcrumbs: (userId?: string) => void;
+  setBase: (assortmentId: string, userId?: string) => Promise<void>;
 
   /*
    * Assortment filters

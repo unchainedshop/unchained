@@ -12,11 +12,11 @@ const ASSORTMENT_FILTER_EVENTS = [
   'ASSORTMENT_REORDER_FILTERS',
 ];
 
-export const configureAssortmentsModule = async ({
+export const configureAssortmentFiltersModule = ({
   AssortmentFilters,
 }: {
   AssortmentFilters: Collection<AssortmentFilter>;
-}): Promise<AssortmentsModule['filters']> => {
+}): AssortmentsModule['filters'] => {
   registerEvents(ASSORTMENT_FILTER_EVENTS);
 
   return {

@@ -16,13 +16,13 @@ const ASSORTMENT_PRODUCT_EVENTS = [
   'ASSORTMENT_REORDER_PRODUCTS',
 ];
 
-export const configureAssortmentsModule = async ({
+export const configureAssortmentProductsModule = ({
   AssortmentProducts,
   invalidateCache,
 }: {
   AssortmentProducts: Collection<AssortmentProduct>;
   invalidateCache: AssortmentsModule['invalidateCache'];
-}): Promise<AssortmentsModule['products']> => {
+}): AssortmentsModule['products'] => {
   registerEvents(ASSORTMENT_PRODUCT_EVENTS);
 
   return {
