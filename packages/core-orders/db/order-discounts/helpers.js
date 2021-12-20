@@ -1,7 +1,7 @@
 import 'meteor/dburles:collection-helpers';
 import { log } from 'meteor/unchained:logger';
 import { DiscountDirector } from 'meteor/unchained:director-discounting';
-import { emit } from 'meteor/unchained:director-events';
+import { emit } from 'meteor/unchained:events';
 import { OrderDiscounts } from './collections';
 import { OrderDiscountTrigger } from './schema';
 import { Orders } from '../orders/collections';

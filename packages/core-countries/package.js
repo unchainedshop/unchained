@@ -19,7 +19,7 @@ Package.onUse((api) => {
   api.use('typescript');
 
   api.use('unchained:utils@1.0.0-beta15');
-  api.use('unchained:director-events@1.0.0-beta15');
+  api.use('unchained:events@1.0.0-beta15');
 
   api.use('unchained:core-currencies@1.0.0-beta15');
 

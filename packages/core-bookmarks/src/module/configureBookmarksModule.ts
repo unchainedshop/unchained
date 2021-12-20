@@ -1,4 +1,4 @@
-import { emit, registerEvents } from 'meteor/unchained:director-events';
+import { emit, registerEvents } from 'meteor/unchained:events';
 import { Bookmark, BookmarksModule } from '@unchainedshop/types/bookmarks';
 import { ModuleInput, ModuleMutations } from '@unchainedshop/types/common';
 import {

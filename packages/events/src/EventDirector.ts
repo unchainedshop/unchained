@@ -5,7 +5,7 @@ import {
 } from '@unchainedshop/types/events';
 import { createLogger } from 'meteor/unchained:logger';
 
-const logger = createLogger('unchained:director-events');
+const logger = createLogger('unchained:events');
 
 
 export const defaultNormalizer: ContextNormalizerFunction = (context) => {

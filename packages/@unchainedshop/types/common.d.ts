@@ -11,6 +11,8 @@ import {
   CreateIndexesOptions,
   Document,
 } from 'mongodb';
+import { Context } from './api';
+import { log, LogLevel, LogOptions } from './logs';
 
 /*
  * MongoDb
@@ -98,15 +100,15 @@ export interface Contact {
  * Adapter & Director
  */
 
-export interface IAdapterClass {
+export interface IBaseAdapter {
   key: string;
   label: string;
   version: string;
+  log: (message: string, options: LogOptions) => void;
 }
 
-export interface IDirectorClass<AdapterClass> {
-  Adapters: Map<string, AdapterClass>;
-  getAdapters: () => Array<AdapterClass>;
-  getAdapter: (key) => AdapterClass;
-  registerAdapter: (A: AdapterClass) => void;
+export interface IBaseDirector<Adapter extends IBaseAdapter> {
+  getAdapters: () => Array<Adapter>;
+  getAdapter: (key) => Adapter;
+  registerAdapter: (A: Adapter) => void;
 }

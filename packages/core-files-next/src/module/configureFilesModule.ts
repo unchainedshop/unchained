@@ -1,6 +1,6 @@
 import { ModuleInput, ModuleMutations } from '@unchainedshop/types/common';
 import { File, FilesModule, UploadFileData } from '@unchainedshop/types/files';
-import { emit, registerEvents } from 'meteor/unchained:director-events';
+import { emit, registerEvents } from 'meteor/unchained:events';
 import {
   generateDbFilterById,
   generateDbMutations,

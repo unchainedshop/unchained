@@ -113,7 +113,7 @@ declare module 'meteor/unchained:logger' {
  * Director packages
  */
 
-declare module 'meteor/unchained:director-events' {
+declare module 'meteor/unchained:events' {
   export const emit: EventDirector['emit'];
   export const getEmitAdapter: EventDirector['getEmitAdapter'];
   export const getEmitHistoryAdapter: EventDirector['getEmitHistoryAdapter'];

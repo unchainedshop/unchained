@@ -5,7 +5,7 @@ import {
   DeliveryProvider,
   DeliveryProviderType,
 } from '@unchainedshop/types/delivery';
-import { emit, registerEvents } from 'meteor/unchained:director-events';
+import { emit, registerEvents } from 'meteor/unchained:events';
 import {
   generateDbFilterById,
   generateDbMutations,
@@ -50,17 +50,6 @@ export const configureDeliveryModule = async ({
     DeliveryProviders,
     DeliveryProvidersSchema
   ) as ModuleMutations<DeliveryProvider>;
-
-  const getDeliveryAdapter = async (
-    deliveryProviderId: string,
-    context: DeliveryContext
-  ) => {
-    const provider = await DeliveryProviders.findOne({
-      _id: generateDbFilterById(deliveryProviderId)._id,
-    });
-
-    return;
-  };
 
   return {
     // Queries

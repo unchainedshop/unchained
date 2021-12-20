@@ -4,7 +4,7 @@ import { ProductPricingDirector } from 'meteor/unchained:director-pricing';
 import { WarehousingProviders } from 'meteor/unchained:core-warehousing';
 import { DeliveryProviders } from 'meteor/unchained:core-delivery';
 import { Countries } from 'meteor/unchained:core-countries';
-import { emit } from 'meteor/unchained:director-events';
+import { emit } from 'meteor/unchained:events';
 import {
   AssortmentProducts,
   makeAssortmentBreadcrumbsBuilder,

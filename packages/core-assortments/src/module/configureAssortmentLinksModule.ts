@@ -3,7 +3,7 @@ import {
   AssortmentsModule,
 } from '@unchainedshop/types/assortments';
 import { Collection, Filter } from '@unchainedshop/types/common';
-import { emit, registerEvents } from 'meteor/unchained:director-events';
+import { emit, registerEvents } from 'meteor/unchained:events';
 import {
   generateDbFilterById,
   generateId,

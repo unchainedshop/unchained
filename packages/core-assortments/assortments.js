@@ -1,4 +1,4 @@
-import { registerEvents } from 'meteor/unchained:director-events';
+import { registerEvents } from 'meteor/unchained:events';
 import addMigrations from './migrations';
 import settings from './settings';
 import createIndexes from './createIndexes';

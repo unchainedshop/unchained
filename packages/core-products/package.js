@@ -19,7 +19,7 @@ Package.onUse((api) => {
   api.use('aldeed:collection2@3.2.1');
 
   api.use('unchained:utils@1.0.0-beta15');
-  api.use('unchained:director-events@1.0.0-beta15');
+  api.use('unchained:events@1.0.0-beta15');
 
   api.use('unchained:core-files-next@1.0.0-beta15');
   api.use('unchained:core-users@1.0.0-beta15');

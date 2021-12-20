@@ -18,7 +18,7 @@ Package.onUse(function (api) {
   api.use('typescript');
 
   api.use('unchained:logger@1.0.0-beta15');
-  api.use('unchained:director-events@1.0.0-beta15');
+  api.use('unchained:events@1.0.0-beta15');
   api.use('unchained:director-file-upload@1.0.0-beta15');
 
   api.mainModule('src/files-next-index.ts', 'server');

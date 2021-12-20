@@ -1,6 +1,6 @@
 import { ModuleInput, ModuleMutations } from '@unchainedshop/types/common';
 import { CurrenciesModule, Currency } from '@unchainedshop/types/currencies';
-import { emit, registerEvents } from 'meteor/unchained:director-events';
+import { emit, registerEvents } from 'meteor/unchained:events';
 import {
   generateDbMutations,
   generateDbFilterById,
