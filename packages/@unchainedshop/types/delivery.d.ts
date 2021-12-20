@@ -1,6 +1,6 @@
 import { Context } from './api';
 import { ModuleMutations, TimestampFields, _ID } from './common';
-import { OrderDelivery } from './orders';
+import { Order, OrderDelivery } from './orders';
 import { WarehousingProvider } from './warehousing';
 import { Work } from './worker';
 

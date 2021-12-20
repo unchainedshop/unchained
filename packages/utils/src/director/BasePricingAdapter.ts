@@ -1,22 +1,20 @@
-import { Context } from '@unchainedshop/types/api';
-import { Order } from '@unchainedshop/types/orders';
-import { BaseCalculation, IPricingAdapter } from '@unchainedshop/types/pricing';
-import { User } from '@unchainedshop/types/user';
-import { log, LogLevel } from 'meteor/unchained:logger';
-
-export enum BasePricingCategory {
-  Item = 'ITEM',
-}
-
-export interface BasePricingAdapterContext extends Context {
-  order: Order;
-  user: User;
-}
-
-export const BasePricingAdapter: IPricingAdapter<
+import {
+  BaseCalculation,
   BasePricingAdapterContext,
-  BaseCalculation<BasePricingCategory>
-> = {
+  IPricingAdapter,
+  IPricingSheet,
+} from '@unchainedshop/types/pricing';
+import { log, LogLevel } from 'meteor/unchained:logger';
+import { BasePricingSheet } from './BasePricingSheet';
+
+export const BasePricingAdapter = <
+  Context extends BasePricingAdapterContext,
+  Calculation extends BaseCalculation
+>(): IPricingAdapter<
+  Context,
+  Calculation,
+  IPricingSheet<Calculation>
+> => ({
   key: '',
   label: '',
   version: '',
@@ -26,13 +24,15 @@ export const BasePricingAdapter: IPricingAdapter<
     return false;
   },
 
-  get: ({ context, calculation, discounts }) => ({
+  get: (params) => ({
     calculate: async () => {
       return [];
     },
+    calculationSheet: BasePricingSheet(params),
+    resultSheet: BasePricingSheet(params),
   }),
 
   log(message: string, { level = LogLevel.Debug, ...options } = {}) {
     return log(message, { level, ...options });
   },
-};
+});

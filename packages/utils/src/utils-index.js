@@ -14,11 +14,20 @@ export { default as findUnusedSlug } from './find-unused-slug';
 export { default as slugify } from './slugify';
 export { default as pipePromises } from './pipe-promises';
 export { default as generateRandomHash } from './generate-random-hash';
-export { checkId } from './check-id';
-export { dbIdToString } from './db-id-to-string';
-export { generateDbFilterById } from './generate-db-filter-by-id';
-export { generateDbMutations } from './generate-db-mutations';
-export { buildDbIndexes } from './build-db-indexes';
+
+/* 
+ * Db utils
+ */
+
+export { checkId } from './db/check-id';
+export { dbIdToString } from './db/db-id-to-string';
+export { generateDbFilterById } from './db/generate-db-filter-by-id';
+export { generateDbMutations } from './db/generate-db-mutations';
+export { buildDbIndexes } from './db/build-db-indexes';
+
+/* 
+ * Schemas
+ */
 
 const Schemas = {
   timestampFields,
@@ -29,3 +38,12 @@ const Schemas = {
 };
 
 export { Schemas };
+
+/*
+ * Director
+ */
+
+export { BaseDirector } from './director/BaseDirector';
+export { BasePricingAdapter } from './director/BasePricingAdapter';
+export { BasePricingDirector } from './director/BasePricingDirector';
+export { BasePricingSheet } from './director/BasePricingSheet';

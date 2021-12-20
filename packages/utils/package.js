@@ -32,5 +32,5 @@ Package.onTest((api) => {
 
   api.use('unchained:utils@1.0.0-beta15');
 
-  api.mainModule('test/utils-index.test.js');
+  api.mainModule('tests/utils-index.test.js');
 });

@@ -1,77 +1,88 @@
-import { Context } from '@unchainedshop/types/api';
-import { IPricingDirector, IPricingAdapter, BasePricingContext, BaseCalculation } from '@unchainedshop/types/pricing';
 import { Discount } from '@unchainedshop/types/discounting';
-import { Order, OrderDiscount } from '@unchainedshop/types/orders';
-import { User } from '@unchainedshop/types/user';
+import {
+  BaseCalculation,
+  BasePricingAdapterContext,
+  BasePricingContext,
+  IPricingAdapter,
+  IPricingDirector,
+  IPricingSheet,
+} from '@unchainedshop/types/pricing';
 import { log, LogLevel } from 'meteor/unchained:logger';
 import { BaseDirector } from './BaseDirector';
-import { BasePricingAdapter, BasePricingAdapterContext, BasePricingCategory, } from './BasePricingAdapter';
-import { IBaseAdapter } from '@unchainedshop/types/common';
 
-type Calculation = BaseCalculation<BasePricingCategory>;
+export const BasePricingDirector = <
+  Context extends BasePricingContext,
+  Calculation extends BaseCalculation,
+  Adapter extends IPricingAdapter<
+    BasePricingAdapterContext,
+    Calculation,
+    IPricingSheet<Calculation>
+  >
+>(): IPricingDirector<Context, Calculation, Adapter> => {
+  const baseDirector = BaseDirector<Adapter>();
 
-const baseDirector =
-  BaseDirector<IPricingAdapter<BasePricingContext, Calculation>>();
+  const director: IPricingDirector<Context, Calculation, Adapter> = {
+    ...baseDirector,
 
-export const BasePricingDirector: IPricingDirector<BasePricingContext, Calculation> = {
-  ...baseDirector,
+    buildPricingContext(pricingContext) {
+      return {
+        discounts: [],
+        ...pricingContext,
+      };
+    },
 
-  buildPricingContext(pricingContext: any) {
-    return {
-      discounts: [],
-      ...pricingContext,
-    };
-  },
+    get: (pricingContext, requestContext) => {
+      const context = {
+        ...director.buildPricingContext(pricingContext),
+        ...requestContext,
+      };
 
-  actions: (pricingContext: any, requestContext: Context) => {
-    const context = {
-      ...BasePricingDirector.buildPricingContext(pricingContext),
-      ...requestContext,
-    };
+      return {
+        calculate: async () => {
+          const adapters = baseDirector
+            .getAdapters()
+            .filter(async (Adapter) => await Adapter.isActivatedFor(context));
 
-    return {
-      calculate: async () => {
-        const adapters = baseDirector
-          .getAdapters()
-          .filter(async (Adapter) => await Adapter.isActivatedFor(context));
+          const calculation = await adapters.reduce(
+            async (previousPromise, Adapter) => {
+              const calculation = await previousPromise;
+              const discounts = context.discounts
+                .map((discount) => ({
+                  discountId: discount._id,
+                  // TODO: Use modules to get configuration
+                  /* @ts-ignore */
+                  configuration: discount.configurationForPricingAdapterKey(
+                    Adapter.key,
+                    calculation
+                  ),
+                }))
+                .filter(
+                  ({ configuration }) => configuration !== null
+                ) as Array<Discount>;
 
-        const calculation = await adapters.reduce(
-          async (previousPromise, Adapter) => {
-            const calculation = await previousPromise;
-            const discounts = context.pricingContext.discounts
-              .map((discount) => ({
-                discountId: discount._id,
-                // TODO: Use modules to get configuration
-                /* @ts-ignore */
-                configuration: discount.configurationForPricingAdapterKey(
-                  Adapter.key,
-                  calculation
-                ),
-              }))
-              .filter(
-                ({ configuration }) => configuration !== null
-              ) as Array<Discount>;
+              try {
+                const adapter = Adapter.get({
+                  context,
+                  calculation,
+                  discounts,
+                });
 
-            try {
-              const adapter = Adapter.get({
-                context,
-                calculation,
-                discounts,
-              });
+                const nextCalculationResult = await adapter.calculate();
 
-              const nextCalculationResult = await adapter.calculate();
+                return calculation.concat(nextCalculationResult);
+              } catch (error) {
+                log(error, { level: LogLevel.Error });
+              }
+              return calculation;
+            },
+            Promise.resolve([] as Array<Calculation>)
+          );
 
-              return calculation.concat(nextCalculationResult);
-            } catch (error) {
-              log(error, { level: LogLevel.Error });
-            }
-            return calculation;
-          },
-          Promise.resolve([] as Array<Calculation>)
-        );
+          return calculation;
+        },
+      };
+    },
+  };
 
-        return calculation;
-      },
-    };
-  },
+  return director;
 };

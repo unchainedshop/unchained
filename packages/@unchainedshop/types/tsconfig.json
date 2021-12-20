@@ -16,7 +16,7 @@
     "types": []
   },
   "include": [
-    "index.d.ts",
+    "index.ts",
     "accounts.d.ts",
     "api.d.ts",
     "bookmarks.d.ts",
@@ -25,7 +25,7 @@
     "currencies.d.ts",
     "events.d.ts",
     "files.d.ts",
-    "index.d.ts",
+    "index.ts",
     "languages.d.ts",
     "logs.d.ts",
     "modules.d.ts",

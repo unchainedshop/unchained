@@ -1,19 +1,20 @@
-import { Locale } from '@types/locale';
-import { ObjectId } from 'bjson';
-import { Request } from 'express';
+import { Locale, Locales } from '@types/locale';
 import { BookmarksModule } from './bookmarks';
 import {
   Collection,
   Db,
   Document,
   Filter,
+  IBaseAdapter,
+  IBaseDirector,
+  Indexes,
   ModuleCreateMutation,
   ModuleInput,
   ModuleMutations,
   TimestampFields,
   _ID,
 } from './common';
-import { CountriesModule } from './countries';
+import { CountriesModule, Country } from './countries';
 import { CurrenciesModule } from './currencies';
 import { EventDirector, EventsModule } from './events';
 import { FileDirector, FilesModule } from './files';
@@ -35,14 +36,28 @@ import {
   PaymentProviderType as PaymentProviderTypeType,
 } from './payments';
 import {
+  BaseCalculation,
+  BasePricingAdapterContext,
+  BasePricingContext,
+  IPricingAdapter,
+  IPricingDirector,
+  IPricingSheet,
+  PricingSheetParams,
+} from './pricing';
+import { UsersModule } from './user';
+import {
   WarehousingAdapter as IWarehousingAdapter,
   WarehousingContext,
   WarehousingDirector as IWarehousingDirector,
   WarehousingError as WarehousingErrorType,
   WarehousingModule,
   WarehousingProvider,
+  WarehousingProviderType as WarehousingProviderTypeType,
 } from './warehousing';
 import { WorkerModule, WorkerPlugin as IWorkerPlugin } from './worker';
+import { ObjectId } from 'bjson';
+import { Request } from 'express';
+import SimpleSchema from 'simpl-schema';
 
 export { Modules } from './modules';
 
@@ -61,8 +76,12 @@ declare module 'meteor/unchained:utils' {
 
   function findUnusedSlug(
     checkSlugIsUniqueFn: (slug: string) => Promise<boolean>,
-    options: { slugify?: (text: string) => string } = {}
-  ): (params: { title?: string, existingSlug: string, newSlug?: string }) => string;
+    options: { slugify?: (text: string) => string }
+  ): (params: {
+    title?: string;
+    existingSlug: string;
+    newSlug?: string;
+  }) => string;
 
   function generateId(id: unknown): ObjectId;
   function generateDbFilterById<T extends { _id?: _ID }>(
@@ -97,6 +116,31 @@ declare module 'meteor/unchained:utils' {
   const Schemas: {
     timestampFields: TimestampFields;
   };
+
+  // Director
+  export const BaseDirector: <
+    Adapter extends IBaseAdapter
+  >() => IBaseDirector<Adapter>;
+  export const BasePricingAdapter: <
+    AdapterContext extends BasePricingAdapterContext,
+    Calculation extends BaseCalculation
+  >() => IPricingAdapter<
+    AdapterContext,
+    Calculation,
+    IPricingSheet<Calculation>
+  >;
+  export const BasePricingDirector: <
+    Context extends BasePricingContext,
+    AdapterContext extends BasePricingAdapterContext,
+    Calculation extends BaseCalculation
+  >() => IPricingDirector<
+    Context,
+    Calculation,
+    IPricingAdapter<AdapterContext, Calculation, IPricingSheet<Calculation>>
+  >;
+  export const BasePricingSheet: <Calculation extends BaseCalculation>(
+    params: PricingSheetParams<Calculation>
+  ) => IPricingSheet<Calculation>;
 }
 
 declare module 'meteor/unchained:logger' {
@@ -125,8 +169,8 @@ declare module 'meteor/unchained:events' {
 }
 
 declare module 'meteor/unchained:director-file-upload' {
-  export const setFileUploadAdapter: FileDirector['setFileAdapter'];
-  export const getFileUploadAdapter: FileDirector['getFileAdapter'];
+  export const setFileUploadAdapter: FileDirector['setFileUploadAdapter'];
+  export const getFileUploadAdapter: FileDirector['getFileUploadAdapter'];
 
   export const composeFileName: FileDirector['composeFileName'];
   export const createSignedURL: FileDirector['createSignedURL'];
@@ -138,8 +182,6 @@ declare module 'meteor/unchained:director-file-upload' {
   export const uploadFileFromStream: FileDirector['uploadFileFromStream'];
   export const uploadFileFromURL: FileDirector['uploadFileFromStream'];
 }
-
-declare module 'meteor/unchained:director-documents' {}
 
 /*
  * Core packages

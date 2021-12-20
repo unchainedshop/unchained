@@ -5,14 +5,13 @@ import {
 } from '@unchainedshop/types/pricing';
 
 export const BasePricingSheet = <
-  Category,
-  Calculation extends BaseCalculation<Category>
+  Calculation extends BaseCalculation,
 >(
   params: PricingSheetParams<Calculation>
-): IPricingSheet<Category, Calculation> => {
+): IPricingSheet<Calculation> => {
   const calculation = params.calculation || [];
 
-  const pricingSheet: IPricingSheet<Category, Calculation> = {
+  const pricingSheet: IPricingSheet<Calculation> = {
     calculation,
     currency: params.currency,
     quantity: params.quantity,
@@ -47,7 +46,7 @@ export const BasePricingSheet = <
       return pricingSheet.gross() - pricingSheet.taxSum();
     },
 
-    total: (category: Category, useNetPrice = false) => {
+    total: (category: string, useNetPrice = false) => {
       if (!category) {
         return {
           amount: Math.round(
@@ -58,7 +57,7 @@ export const BasePricingSheet = <
       }
 
       return {
-        amount: Math.round(pricingSheet.sum({ category } as Calculation)),
+        amount: Math.round(pricingSheet.sum({ category } as any)),
         currency: params.currency,
       };
     },

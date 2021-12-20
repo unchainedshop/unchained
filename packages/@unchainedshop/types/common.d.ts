@@ -104,7 +104,7 @@ export interface IBaseAdapter {
   key: string;
   label: string;
   version: string;
-  log: (message: string, options: LogOptions) => void;
+  log: (message: string, options?: LogOptions) => void;
 }
 
 export interface IBaseDirector<Adapter extends IBaseAdapter> {
