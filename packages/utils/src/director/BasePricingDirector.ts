@@ -12,16 +12,22 @@ import { BaseDirector } from './BaseDirector';
 
 export const BasePricingDirector = <
   Context extends BasePricingContext,
+  AdapterContext extends BasePricingAdapterContext,
   Calculation extends BaseCalculation,
   Adapter extends IPricingAdapter<
     BasePricingAdapterContext,
     Calculation,
     IPricingSheet<Calculation>
   >
->(): IPricingDirector<Context, Calculation, Adapter> => {
+>(): IPricingDirector<Context, AdapterContext, Calculation, Adapter> => {
   const baseDirector = BaseDirector<Adapter>();
 
-  const director: IPricingDirector<Context, Calculation, Adapter> = {
+  const director: IPricingDirector<
+    Context,
+    AdapterContext,
+    Calculation,
+    Adapter
+  > = {
     ...baseDirector,
 
     buildPricingContext(pricingContext) {
@@ -32,10 +38,10 @@ export const BasePricingDirector = <
     },
 
     get: (pricingContext, requestContext) => {
-      const context = {
-        ...director.buildPricingContext(pricingContext),
-        ...requestContext,
-      };
+      const context = director.buildPricingContext(
+        pricingContext,
+        requestContext
+      );
 
       return {
         calculate: async () => {
@@ -48,7 +54,7 @@ export const BasePricingDirector = <
               const calculation = await previousPromise;
               const discounts = context.discounts
                 .map((discount) => ({
-                  discountId: discount._id,
+                  discountId: discount.discountId,
                   // TODO: Use modules to get configuration
                   /* @ts-ignore */
                   configuration: discount.configurationForPricingAdapterKey(

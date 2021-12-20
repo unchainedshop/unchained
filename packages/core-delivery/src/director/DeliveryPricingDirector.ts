@@ -17,12 +17,15 @@ const baseDirector = BasePricingDirector<
 export const DeliveryPricingDirector: IDeliveryPricingDirector = {
   ...baseDirector,
 
-  buildPricingContext({
-    item,
-    ...rest
-  }: {
-    item: OrderDelivery;
-  }): DeliveryPricingContext {
+  buildPricingContext(
+    {
+      item,
+      ...rest
+    }: {
+      item: OrderDelivery;
+    },
+    requestContext
+  ) {
     const { providerContext, ...context } = rest as any;
 
     if (!item)
@@ -49,6 +52,7 @@ export const DeliveryPricingDirector: IDeliveryPricingDirector = {
       user,
       ...item.context,
       ...context,
+      ...requestContext,
     };
   },
 

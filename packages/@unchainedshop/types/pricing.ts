@@ -7,6 +7,7 @@ import { User } from './user';
 export interface BasePricingAdapterContext extends Context {
   order: Order;
   user: User;
+  discounts: Array<Discount>;
 }
 
 export interface BasePricingContext {
@@ -61,7 +62,7 @@ export type IPricingAdapter<
 > = IBaseAdapter & {
   orderIndex: number;
 
-  isActivatedFor: (pricingContext: PricingContext) => Promise<boolean>;
+  isActivatedFor: (context: PricingContext) => Promise<boolean>;
 
   get: (params: {
     context: PricingContext;
@@ -75,12 +76,16 @@ export type IPricingAdapter<
 
 export type IPricingDirector<
   PricingContext extends BasePricingContext,
+  PricingAdapterContext extends BasePricingAdapterContext,
   Calculation extends BaseCalculation,
   Adapter extends IBaseAdapter
 > = IBaseDirector<Adapter> & {
-  buildPricingContext: (context: any) => PricingContext;
+  buildPricingContext: (
+    context: any,
+    requestContext: Context
+  ) => PricingAdapterContext;
   get: (
-    pricingContext: any,
+    pricingContext: PricingContext,
     requestContext: Context
   ) => IPricingAdapterActions<Calculation>;
 };
@@ -131,9 +136,7 @@ export interface DeliveryPricingContext {
 }
 
 export interface IDeliveryPricingSheet
-  extends IPricingSheet<
-    DeliveryPricingCalculation
-  > {
+  extends IPricingSheet<DeliveryPricingCalculation> {
   addDiscount(params: {
     amount: number;
     isTaxable: boolean;
@@ -171,6 +174,7 @@ export interface IDeliveryPricingAdapter
 export interface IDeliveryPricingDirector
   extends IPricingDirector<
     DeliveryPricingContext,
+    DeliveryPricingAdapterContext,
     DeliveryPricingCalculation,
     IDeliveryPricingAdapter
   > {
