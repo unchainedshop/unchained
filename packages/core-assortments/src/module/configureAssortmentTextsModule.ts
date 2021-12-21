@@ -24,7 +24,7 @@ export const configureAssortmentTextsModule = ({
   registerEvents(ASSORTMENT_TEXT_EVENTS);
 
   const makeSlug = async ({ slug, title, assortmentId }) => {
-    const checkSlugIsUnique = async (newPotentialSlug) => {
+    const checkSlugIsUnique = async (newPotentialSlug: string) => {
       return (
         (await AssortmentTexts.find({
           assortmentId: { $ne: assortmentId },
@@ -33,7 +33,8 @@ export const configureAssortmentTextsModule = ({
       );
     };
 
-    return findUnusedSlug(checkSlugIsUnique)({
+    const findSlug = findUnusedSlug(checkSlugIsUnique, {});
+    return await findSlug({
       existingSlug: slug,
       title: title || assortmentId,
     });
@@ -157,5 +158,11 @@ export const configureAssortmentTextsModule = ({
 
     upsertLocalizedText,
     makeSlug,
+
+    deleteMany: async (assortmentId) => {
+      const deletedResult = await AssortmentTexts.deleteMany({ assortmentId });
+
+      return deletedResult.deletedCount;
+    },
   };
 };

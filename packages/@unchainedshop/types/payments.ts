@@ -36,7 +36,17 @@ export type PaymentCredentials = {
   userId: string;
   token?: string;
   isPreferred?: boolean;
-  meta: unknown;
+  meta: any;
+} & TimestampFields;
+
+export type BityCredentials = {
+  _id?: _ID;
+  externalId: string;
+  data: {
+    iv: string;
+    encryptedData: string;
+  };
+  expires: Date;
 } & TimestampFields;
 
 type PaymentProviderQuery = {
@@ -63,8 +73,8 @@ export interface PaymentContext {
 
 interface IPaymentActions {
   charge: (transactionContext?: any) => Promise<any>;
-  configurationError: (transactionContext?: any) => PaymentError;
-  isActive: (transactionContext?: any) => boolean;
+  configurationError: (transactionContext?: any) => Promise<PaymentError>;
+  isActive: (transactionContext?: any) => Promise<boolean>;
   isPayLaterAllowed: (transactionContext?: any) => boolean;
   register: (transactionContext?: any) => Promise<any>;
   sign: (transactionContext?: any) => Promise<any>;
@@ -125,30 +135,28 @@ export type PaymentModule = {
       requestContext: Context
     ) => Array<string>;
 
-    findInterface: (
-      query: PaymentProvider,
-    ) => PaymentInterface;
-    findInterfaces: (
-      query: {
-        type: PaymentProviderType;
-      },
-    ) => Array<PaymentInterface>;
+    findInterface: (query: PaymentProvider) => PaymentInterface;
+    findInterfaces: (query: {
+      type: PaymentProviderType;
+    }) => Array<PaymentInterface>;
 
     configurationError: (
       paymentProvider: PaymentProvider,
       requestContext: Context
-    ) => PaymentError;
+    ) => Promise<PaymentError>;
 
     isActive: (
       paymentProviderId: string,
       paymentContext: PaymentContext,
       requestContext: Context
     ) => Promise<boolean>;
+
     isPayLaterAllowed: (
       paymentProviderId: string,
       paymentContext: PaymentContext,
       requestContext: Context
     ) => Promise<boolean>;
+
     charge: (
       paymentProviderId: string,
       paymentContext: PaymentContext,
@@ -211,6 +219,18 @@ export type PaymentModule = {
     removeCredentials: (
       paymentCredentialsId: string
     ) => Promise<PaymentCredentials>;
+  };
+
+  /*
+   * Bity Credentials Module
+   */
+
+  bityCredentials: {
+    findBityCredentials: (query: {
+      externalId: string;
+    }) => Promise<BityCredentials>;
+
+    upsertCredentials: (doc: BityCredentials, userId: string) => Promise<string | null>;
   };
 };
 

@@ -130,8 +130,8 @@ export const configurePaymentProvidersModule = (
 
     // Payment Adapter
 
-    configurationError: (paymentProvider, requestContext) => {
-      return PaymentDirector.actions(
+    configurationError: async (paymentProvider, requestContext) => {
+      return await PaymentDirector.actions(
         paymentProvider,
         getDefaultContext(),
         requestContext

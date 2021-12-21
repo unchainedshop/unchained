@@ -7,7 +7,9 @@ Package.describe({
 });
 
 Npm.depends({
+  locale: '^0.1.0',
   ramda: '0.27.1',
+  'simpl-schema': '1.12.0',
 });
 
 Package.onUse((api) => {

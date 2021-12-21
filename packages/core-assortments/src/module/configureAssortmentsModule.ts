@@ -2,6 +2,7 @@ import {
   Filter,
   ModuleInput,
   ModuleMutations,
+  Query,
 } from '@unchainedshop/types/common';
 import {
   AssortmentsModule,
@@ -20,6 +21,7 @@ import { configureAssortmentLinksModule } from './configureAssortmentLinksModule
 import { assortmentSettings } from 'src/assortments-settings';
 import { configureAssortmentProductsModule } from './configureAssortmentProductsModule';
 import { configureAssortmentTextsModule } from './configureAssortmentTextsModule';
+import { configureAssortmentMediaModule } from './configureAssortmentMediaModule';
 
 const ASSORTMENT_EVENTS = [
   'ASSORTMENT_CREATE',
@@ -32,12 +34,26 @@ const ASSORTMENT_EVENTS = [
   'ASSORTMENT_ADD_MEDIA',
 ];
 
-type FindQuery = {
-  includeInactive?: boolean;
-};
-const buildFindSelector = ({ includeInactive = false }: FindQuery) => {
-  const selector: { isActive?: true } = {};
-  if (!includeInactive) selector.isActive = true;
+const buildFindSelector = ({
+  slugs = [],
+  tags = [],
+  includeLeaves = false,
+  includeInactive = false,
+}) => {
+  const selector: Query = {};
+
+  if (slugs?.length > 0) {
+    selector.slugs = { $in: slugs };
+  } else if (tags?.length > 0) {
+    selector.tags = { $all: tags };
+  }
+
+  if (!includeLeaves) {
+    selector.isRoot = true;
+  }
+  if (!includeInactive) {
+    selector.isActive = true;
+  }
   return selector;
 };
 
@@ -218,21 +234,54 @@ export const configureAssortmentsModule = async ({
     });
   };
 
+  /*
+   * Assortment sub entities
+   */
+
+  const assortmentFilters = configureAssortmentFiltersModule({
+    AssortmentFilters,
+  });
+  const assortmentLinks = configureAssortmentLinksModule({
+    AssortmentLinks,
+    invalidateCache,
+  });
+  const assortmentProducts = configureAssortmentProductsModule({
+    AssortmentProducts,
+    invalidateCache,
+  });
+
+  const assortmentTexts = configureAssortmentTextsModule({
+    Assortments,
+    AssortmentTexts,
+  });
+
+  /*
+   * Assortment
+   */
+
   return {
     // Queries
-    findAssortment: async ({ assortmentId }) => {
-      return await Assortments.findOne(generateDbFilterById(assortmentId));
+    findAssortment: async ({ assortmentId, slug, ...rest }) => {
+      let selector: Query = {};
+
+      if (assortmentId) {
+        selector._id = generateDbFilterById(assortmentId);
+      } else if (slug) {
+        selector.slugs = slug;
+      } else {
+        return null;
+      }
+
+      return await Assortments.findOne(selector);
     },
 
-    findAssortments: async ({ limit, offset, includeInactive }) => {
-      const countries = await Assortments.find(
-        buildFindSelector({ includeInactive }),
-        {
-          skip: offset,
-          limit,
-        }
-      );
-      return countries.toArray();
+    findAssortments: async ({ limit, offset, ...query }) => {
+      const countries = Assortments.find(buildFindSelector(query), {
+        skip: offset,
+        limit,
+        sort: { sequence: 1 },
+      });
+      return await countries.toArray();
     },
 
     count: async (query) => {
@@ -249,19 +298,89 @@ export const configureAssortmentsModule = async ({
     },
 
     // Mutations
-    create: async (doc: Assortment, userId?: string) => {
-      const assortmentId = await mutations.create(doc, userId);
-      emit('COUNTRY_CREATE', { assortmentId });
+    create: async (
+      {
+        authorId,
+        isActive = true,
+        isBase = false,
+        isRoot = false,
+        locale,
+        meta = {},
+        sequence,
+        title,
+        ...rest
+      },
+      userId
+    ) => {
+      const assortmentId = await mutations.create(
+        {
+          sequence: sequence || (await Assortments.find({}).count()) + 10,
+          isBase,
+          isActive,
+          isRoot,
+          meta,
+          authorId,
+          ...rest,
+        },
+        userId
+      );
+
+      const assortment = Assortments.findOne(
+        generateDbFilterById(assortmentId)
+      );
+
+      if (locale) {
+        assortmentTexts.upsertLocalizedText(
+          assortmentId,
+          locale,
+          { assortmentId, title, authorId, locale },
+          userId
+        );
+      }
+
+      emit('ASSORTMENT_CREATE', { assortment });
+
       return assortmentId;
     },
+
     update: async (_id: string, doc: Assortment, userId?: string) => {
       const assortmentId = await mutations.update(_id, doc, userId);
-      emit('COUNTRY_UPDATE', { assortmentId });
+      emit('ASSORTMENT_UPDATE', { assortmentId });
       return assortmentId;
     },
-    delete: async (assortmentId) => {
-      emit('COUNTRY_REMOVE', { assortmentId });
-      return 0;
+
+    delete: async (assortmentId, options, userId) => {
+      await assortmentLinks.deleteMany(
+        {
+          $or: [
+            { parentAssortmentId: assortmentId },
+            { childAssortmentId: assortmentId },
+          ],
+        },
+        { skipInvalidation: true }
+      );
+
+      await assortmentProducts.deleteMany(
+        { assortmentId },
+        { skipInvalidation: true }
+      );
+
+      await assortmentFilters.deleteMany({ assortmentId });
+
+      await assortmentTexts.deleteMany(assortmentId, userId);
+
+      const deletedResult = await Assortments.deleteOne(
+        generateDbFilterById(assortmentId)
+      );
+
+      if (deletedResult.deletedCount === 1 && !options.skipInvalidation) {
+        // Invalidate all assortments
+        invalidateCache({});
+      }
+
+      emit('ASSORTMENT_REMOVE', { assortmentId });
+
+      return deletedResult.deletedCount;
     },
 
     invalidateCache,
@@ -276,7 +395,7 @@ export const configureAssortmentsModule = async ({
           },
         }
       );
-      
+
       await Assortments.updateOne(generateDbFilterById(assortmentId), {
         $set: {
           isBase: true,
@@ -290,12 +409,10 @@ export const configureAssortmentsModule = async ({
     createBreadcrumbs: () => {},
 
     // Sub entities
-    filters: configureAssortmentFiltersModule({ AssortmentFilters }),
-    links: configureAssortmentLinksModule({ AssortmentLinks, invalidateCache }),
-    products: configureAssortmentProductsModule({
-      AssortmentProducts,
-      invalidateCache,
-    }),
-    texts: configureAssortmentTextsModule({ Assortments, AssortmentTexts }),
+    media: await configureAssortmentMediaModule({ db }),
+    filters: assortmentFilters,
+    links: assortmentLinks,
+    products: assortmentProducts,
+    texts: assortmentTexts,
   };
 };

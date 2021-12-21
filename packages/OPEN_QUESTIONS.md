@@ -82,3 +82,9 @@ Collections.AssortmentLinks.removeLinks = (
 - Note to Pascal on basecamp
 
 15. Decision: MongoDB ids are always strings in Unchained
+
+
+
+## New OPEN Questions
+
+1. How should dependencies for plugins be integrated / documented? (example: Payment Plugin bity.ts)

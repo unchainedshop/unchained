@@ -12,9 +12,7 @@ const BraintreeDirect: IPaymentAdapter = {
   ...PaymentAdapter,
 
   key: 'shop.unchained.braintree-direct',
-
   label: 'Braintree Direct',
-
   version: '1.0',
 
   initialConfiguration: [
@@ -72,24 +70,22 @@ const BraintreeDirect: IPaymentAdapter = {
       });
     };
 
-    const configurationError = () => {
-      const publicCredentialsValid =
-        getAccessToken() ||
-        (getMerchantId() && getPublicKey() && getPrivateKey());
-
-      if (!publicCredentialsValid) {
-        return PaymentError.WRONG_CREDENTIALS;
-      }
-      return null;
-    };
-
-    return {
+    const adapter = {
       ...PaymentAdapter.actions(params),
 
-      configurationError,
+      configurationError: async () => {
+        const publicCredentialsValid =
+          getAccessToken() ||
+          (getMerchantId() && getPublicKey() && getPrivateKey());
 
-      isActive: () => {
-        if (!configurationError()) return true;
+        if (!publicCredentialsValid) {
+          return PaymentError.WRONG_CREDENTIALS;
+        }
+        return null;
+      },
+
+      isActive: async () => {
+        if (!(await adapter.configurationError())) return true;
         return false;
       },
 
@@ -151,6 +147,8 @@ const BraintreeDirect: IPaymentAdapter = {
         throw new Error(result.message);
       },
     };
+
+    return adapter
   },
 };
 

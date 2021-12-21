@@ -1,4 +1,5 @@
 import { AccountsModule } from './accounts';
+import { AssortmentsModule } from './assortments';
 import { UsersModule } from './user';
 import { BookmarksModule } from './bookmarks';
 import { CountriesModule } from './countries';
@@ -13,7 +14,7 @@ import { WorkerModule } from './worker';
 
 export interface Modules {
   accounts: AccountsModule;
-  assortments: any;
+  assortments: AssortmentsModule;
   bookmarks: BookmarksModule;
   countries: CountriesModule;
   currencies: CurrenciesModule;

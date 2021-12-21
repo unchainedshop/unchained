@@ -20,7 +20,7 @@ const extendSelectorWithLocale = (selector, locale) => {
   };
 };
 
-const findLocalizedText = (collection, selector, locale) => {
+const findLocalizedText = async (collection, selector, locale) => {
   const cacheKey = JSON.stringify({
     n: collection._name, // eslint-disable-line
     s: selector,
@@ -30,7 +30,7 @@ const findLocalizedText = (collection, selector, locale) => {
   const cachedText = textCache.get(cacheKey);
   if (cachedText) return cachedText;
 
-  const exactTranslation = collection.findOne(
+  const exactTranslation = await collection.findOne(
     extendSelectorWithLocale(selector, locale)
   );
   if (exactTranslation) {
@@ -39,7 +39,7 @@ const findLocalizedText = (collection, selector, locale) => {
   }
 
   if (systemLocale.normalized !== locale.normalized) {
-    const fallbackTranslation = collection.findOne(
+    const fallbackTranslation = await collection.findOne(
       extendSelectorWithLocale(selector, systemLocale)
     );
     if (fallbackTranslation) {
@@ -48,7 +48,7 @@ const findLocalizedText = (collection, selector, locale) => {
     }
   }
 
-  const foundText = collection.findOne(selector);
+  const foundText = await collection.findOne(selector);
   textCache.set(cacheKey, foundText);
   return foundText;
 };

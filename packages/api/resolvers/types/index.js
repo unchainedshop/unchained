@@ -1,4 +1,4 @@
-import Assortment from './assortment';
+import { Assortment } from './assortment';
 import AssortmentMedia from './assortment-media';
 import AssortmentPathLink from './assortment-path-link';
 import Bookmark from './bookmark';
@@ -53,8 +53,8 @@ import Quotation from './quotation';
 import { Shop } from './shop';
 import SimpleProduct from './simple-product';
 import Stock from './stock';
-import User from './user';
-import WarehousingProvider from './warehousing-provider';
+import { User } from './user';
+import { WarehousingProvider } from './warehousing-provider';
 
 export default {
   Assortment,

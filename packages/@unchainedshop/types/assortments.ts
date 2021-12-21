@@ -1,11 +1,6 @@
 import { Context } from './api';
-import {
-  Filter,
-  FindOptions,
-  ModuleMutations,
-  TimestampFields,
-  _ID,
-} from './common';
+import { Filter, FindOptions, TimestampFields, _ID } from './common';
+import { AssortmentMedia, AssortmentMediaModule } from './assortments.media';
 
 export type Assortment = {
   _id?: _ID;
@@ -20,23 +15,12 @@ export type Assortment = {
   _cachedProductIds: Array<string>;
 } & TimestampFields;
 
-export type AssortmentText = {
+export type AssortmentFilter = {
   _id?: _ID;
   assortmentId: string;
   authorId: string;
-  description?: string;
-  locale: string;
-  slug?: string;
-  subtitle?: string;
-  title?: string;
-} & TimestampFields;
-
-export type AssortmentProduct = {
-  _id?: _ID;
-  assortmentId: string;
-  authorId: string;
+  filterId: string;
   meta?: any;
-  productId: string;
   sortKey: number;
   tags: Array<string>;
 } & TimestampFields;
@@ -51,14 +35,25 @@ export type AssortmentLink = {
   tags: Array<string>;
 } & TimestampFields;
 
-export type AssortmentFilter = {
+export type AssortmentProduct = {
   _id?: _ID;
   assortmentId: string;
   authorId: string;
-  filterId: string;
   meta?: any;
+  productId: string;
   sortKey: number;
   tags: Array<string>;
+} & TimestampFields;
+
+export type AssortmentText = {
+  _id?: _ID;
+  assortmentId: string;
+  authorId: string;
+  description?: string;
+  locale: string;
+  slug?: string;
+  subtitle?: string;
+  title?: string;
 } & TimestampFields;
 
 type AssortmentQuery = {
@@ -67,12 +62,14 @@ type AssortmentQuery = {
   includeLeaves?: boolean;
   includeInactive?: boolean;
 };
-export type AssortmentsModule = ModuleMutations<Assortment> & {
+
+export type AssortmentsModule = {
   // Queries
   findAssortment: (params: {
     assortmentId?: string;
     slug?: string;
   }) => Promise<Assortment>;
+
   findAssortments: (
     params: AssortmentQuery & {
       limit?: number;
@@ -80,6 +77,7 @@ export type AssortmentsModule = ModuleMutations<Assortment> & {
     },
     options?: FindOptions
   ) => Promise<Array<Assortment>>;
+
   count: (query: AssortmentQuery) => Promise<number>;
   assortmentExists: (params: {
     assortmentId?: string;
@@ -87,9 +85,40 @@ export type AssortmentsModule = ModuleMutations<Assortment> & {
   }) => Promise<boolean>;
 
   // Mutations
-  invalidateCache: (params: { assortmentIds: Array<string> }, userId?: string) => void;
+  create: (
+    doc: Assortment & { title: string; locale: string },
+    userId: string
+  ) => Promise<string>;
+
   createBreadcrumbs: (userId?: string) => void;
+
+  update: (
+    assortmentId: string,
+    doc: Assortment,
+    userId: string
+  ) => Promise<string>;
+
+  delete: (
+    assortmentId: string,
+    options?: { skipInvalidation?: boolean },
+    userId?: string
+  ) => Promise<number>;
+
+  invalidateCache: (
+    params: { assortmentIds: Array<string> },
+    userId?: string
+  ) => void;
+
   setBase: (assortmentId: string, userId?: string) => Promise<void>;
+
+  /*
+   * Assortment media
+   */
+  media: AssortmentMediaModule;
+  // {
+  //   addMedia: ({ rawFile: any, authorId: string }, userId?: string) => Promise<string>
+  //   findMediaTexts({ assortmentMediaId: string }) => Promise<Array<AssortmentText>>;
+  // }
 
   /*
    * Assortment filters
@@ -99,7 +128,7 @@ export type AssortmentsModule = ModuleMutations<Assortment> & {
     findFilter: (
       params: { assortmentFilterId: string },
 
-      options: { skipInvalidation?: boolean }
+      options?: { skipInvalidation?: boolean }
     ) => Promise<AssortmentFilter>;
     findFilters: (
       params: {
@@ -114,9 +143,13 @@ export type AssortmentsModule = ModuleMutations<Assortment> & {
       userId?: string
     ) => Promise<AssortmentFilter>;
 
-    delete: (assortmentFilterId: string) => Promise<Array<{ _id: _ID }>>;
+    delete: (
+      assortmentFilterId: string,
+      userId?: string
+    ) => Promise<Array<{ _id: _ID }>>;
     deleteMany: (
-      selector: Filter<AssortmentFilter>
+      selector: Filter<AssortmentFilter>,
+      userId?: string
     ) => Promise<Array<{ _id: _ID }>>;
 
     updateManualOrder: (
@@ -142,15 +175,12 @@ export type AssortmentsModule = ModuleMutations<Assortment> & {
         parentAssortmentId?: string;
         childAssortmentId?: string;
       },
-      options: { skipInvalidation?: boolean }
+      options?: { skipInvalidation?: boolean }
     ) => Promise<AssortmentLink>;
-    findLinks: (
-      params: {
-        parentAssortmentId?: string;
-        childAssortmentId?: string;
-      },
-      options: { skipInvalidation?: boolean }
-    ) => Promise<Array<AssortmentLink>>;
+    findLinks: (params: {
+      parentAssortmentId?: string;
+      childAssortmentId?: string;
+    }) => Promise<Array<AssortmentLink>>;
 
     // Mutations
     create: (
@@ -161,11 +191,13 @@ export type AssortmentsModule = ModuleMutations<Assortment> & {
 
     delete: (
       assortmentLinkId: string,
-      options?: { skipInvalidation?: boolean }
+      options?: { skipInvalidation?: boolean },
+      userId?: string
     ) => Promise<Array<{ _id: _ID; parentAssortmentId: string }>>;
     deleteMany: (
       selector: Filter<AssortmentLink>,
-      options?: { skipInvalidation?: boolean }
+      options?: { skipInvalidation?: boolean },
+      userId?: string
     ) => Promise<Array<{ _id: _ID; parentAssortmentId: string }>>;
 
     updateManualOrder: (
@@ -191,7 +223,7 @@ export type AssortmentsModule = ModuleMutations<Assortment> & {
     findProduct: (
       params: { assortmentProductId: string },
 
-      options: { skipInvalidation?: boolean }
+      options?: { skipInvalidation?: boolean }
     ) => Promise<AssortmentProduct>;
     findProducts: (params: {
       productId: string;
@@ -211,11 +243,13 @@ export type AssortmentsModule = ModuleMutations<Assortment> & {
 
     delete: (
       assortmentProductId: string,
-      options?: { skipInvalidation?: boolean }
+      options?: { skipInvalidation?: boolean },
+      userId?: string
     ) => Promise<Array<{ _id: _ID; assortmentId: string }>>;
     deleteMany: (
       selector: Filter<AssortmentProduct>,
-      options?: { skipInvalidation?: boolean }
+      options?: { skipInvalidation?: boolean },
+      userId?: string
     ) => Promise<Array<{ _id: _ID; assortmentId: string }>>;
 
     updateManualOrder: (
@@ -260,13 +294,38 @@ export type AssortmentsModule = ModuleMutations<Assortment> & {
       title: string;
       assortmentId: string;
     }) => Promise<string>;
+
+    deleteMany: (assortmentId: string, userId?: string) => Promise<number>;
   };
 };
 
-type AssortmentHelperType<P, T> = (
+type HelperType<P, T> = (
   assortment: Assortment,
   params: P,
   context: Context
 ) => T;
 
-export interface AssortmentHelperTypes {}
+interface AssortmentPathLink {
+  assortmentId: string;
+  assortmentSlug: string;
+  assortmentTexts: AssortmentText;
+  link: AssortmentLink;
+}
+
+export interface AssortmentHelperTypes {
+  childrenCount: HelperType<{ includeInactive: boolean }, Promise<number>>;
+  texts: HelperType<{ forceLocale?: string }, Promise<Array<AssortmentText>>>;
+  assortmentPaths: HelperType<
+    { forceLocale?: string },
+    Promise<Array<{ links: Array<AssortmentPathLink> }>>
+  >;
+
+  media: HelperType<
+    {
+      limit: number;
+      offset: number;
+      tags?: Array<string>;
+    },
+    Promise<Array<AssortmentMedia>>
+  >;
+}

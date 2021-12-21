@@ -27,25 +27,25 @@ export const PaymentDirector: IPaymentDirector = {
     });
 
     return {
-      configurationError() {
+      configurationError: async () => {
         try {
-          const error = adapter.configurationError();
+          const error = await adapter.configurationError();
           return error;
         } catch (error) {
           return PaymentError.ADAPTER_NOT_FOUND;
         }
       },
 
-      isActive() {
+      isActive: async () => {
         try {
-          return adapter.isActive(context);
+          return await adapter.isActive(context);
         } catch (error) {
           paymentLogger.error(error.message);
           return false;
         }
       },
 
-      isPayLaterAllowed() {
+      isPayLaterAllowed: () => {
         try {
           return adapter.isPayLaterAllowed(context);
         } catch (error) {

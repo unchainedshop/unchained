@@ -17,15 +17,15 @@ export const PaymentAdapter: IPaymentAdapter = {
 
   actions: () => {
     return {
-      configurationError() {
+      configurationError: async () => {
         return PaymentError.NOT_IMPLEMENTED;
       },
 
-      isActive() {
+      isActive: async () => {
         return false;
       },
 
-      isPayLaterAllowed() {
+      isPayLaterAllowed: () => {
         return false;
       },
 

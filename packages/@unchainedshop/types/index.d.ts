@@ -58,7 +58,11 @@ import { WorkerModule, WorkerPlugin as IWorkerPlugin } from './worker';
 import { ObjectId } from 'bjson';
 import { Request } from 'express';
 import SimpleSchema from 'simpl-schema';
-import { IOrderPricingAdapter, IOrderPricingDirector } from './orders.pricing';
+import {
+  IOrderPricingAdapter,
+  IOrderPricingDirector,
+  IOrderPricingSheet,
+} from './orders.pricing';
 import {
   IProductPricingAdapter,
   IProductPricingDirector,
@@ -94,7 +98,13 @@ declare module 'meteor/unchained:utils' {
     title?: string;
     existingSlug: string;
     newSlug?: string;
-  }) => string;
+  }) => Promise<string>;
+
+  function findLocalizedText<T>(
+    collection: Collection<T>,
+    selector: Query,
+    locale: string | Locale
+  ): Promise<T>;
 
   function generateId(id: unknown): ObjectId;
   function generateDbFilterById<T extends { _id?: _ID }>(
@@ -251,6 +261,19 @@ declare module 'meteor/unchained:core-languages' {
   ): Promise<LanguagesModule>;
 }
 
+declare module 'meteor/unchained:core-orders' {
+  export const Orders: {
+    findOrder({ orderId: string }): any;
+  };
+
+  export const DiscountAdapter: IDiscountAdapter;
+  export const DiscountDirector: IDiscountDirector;
+
+  export const OrderPricingAdapter: IOrderPricingAdapter;
+  export const OrderPricingDirector: IOrderPricingDirector;
+  export const OrderPricingSheet: IOrderPricingSheet;
+}
+
 declare module 'meteor/unchained:core-payment' {
   export function configurePaymentModule(
     params: ModuleInput
@@ -267,6 +290,15 @@ declare module 'meteor/unchained:core-payment' {
   export const PaymentProviderType: typeof PaymentProviderTypeType;
 
   export const paymentLogger;
+}
+
+declare module 'meteor/unchained:core-products' {
+  export const Products: {
+    productExists({ productId: string }): any;
+  };
+
+  export const ProductPricingAdapter: IProductPricingAdapter;
+  export const ProductPricingDirector: IProductPricingDirector;
 }
 
 declare module 'meteor/unchained:core-warehousing' {
@@ -318,27 +350,6 @@ declare module 'meteor/unchained:core-users' {
   export function configureUsersModule(
     params: ModuleInput
   ): Promise<UsersModule>;
-}
-
-declare module 'meteor/unchained:core-orders' {
-  export const Orders: {
-    findOrder({ orderId: string }): any;
-  };
-
-  export const DiscountAdapter: IDiscountAdapter;
-  export const DiscountDirector: IDiscountDirector;
-
-  export const OrderPricingAdapter: IOrderPricingAdapter;
-  export const OrderPricingDirector: IOrderPricingDirector;
-}
-
-declare module 'meteor/unchained:core-products' {
-  export const Products: {
-    productExists({ productId: string }): any;
-  };
-
-  export const ProductPricingAdapter: IProductPricingAdapter;
-  export const ProductPricingDirector: IProductPricingDirector;
 }
 
 declare module 'meteor/unchained:mongodb' {

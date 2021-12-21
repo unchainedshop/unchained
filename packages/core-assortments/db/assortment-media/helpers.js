@@ -5,17 +5,17 @@ import { emit } from 'meteor/unchained:events';
 import { removeObjects, MediaObjects } from 'meteor/unchained:core-files-next';
 import { AssortmentMedia, AssortmentMediaTexts } from './collections';
 
-AssortmentMedia.findAssortmentMedia = ({ assortmentMediaId }) => {
-  return AssortmentMedia.findOne({ _id: assortmentMediaId });
-};
+// AssortmentMedia.findAssortmentMedia = ({ assortmentMediaId }) => {
+//   return AssortmentMedia.findOne({ _id: assortmentMediaId });
+// };
 
-AssortmentMedia.removeAssortmentMedia = async ({ assortmentMediaId }) => {
-  const media = AssortmentMedia.findOne({ _id: assortmentMediaId });
-  await removeObjects(media.mediaId);
-  const result = AssortmentMedia.remove({ _id: assortmentMediaId });
-  emit('ASSORTMENT_REMOVE_MEDIA', { assortmentMediaId });
-  return result;
-};
+// AssortmentMedia.removeAssortmentMedia = async ({ assortmentMediaId }) => {
+//   const media = AssortmentMedia.findOne({ _id: assortmentMediaId });
+//   await removeObjects(media.mediaId);
+//   const result = AssortmentMedia.remove({ _id: assortmentMediaId });
+//   emit('ASSORTMENT_REMOVE_MEDIA', { assortmentMediaId });
+//   return result;
+// };
 
 AssortmentMedia.helpers({
   upsertLocalizedText(locale, fields) {
@@ -70,46 +70,46 @@ AssortmentMediaTexts.findAssortmentMediaTexts = ({ assortmentMediaId }) => {
 AssortmentMedia.getLocalizedTexts = (assortmentMediaId, locale) =>
   findLocalizedText(AssortmentMediaTexts, { assortmentMediaId }, locale);
 
-AssortmentMedia.createMedia = ({ assortmentId, ...mediaData }) => {
-  const sortKey =
-    mediaData.sortKey || AssortmentMedia.getNewSortKey(assortmentId);
-  const assortmentMediaId = AssortmentMedia.insert({
-    tags: [],
-    ...mediaData,
-    sortKey,
-    assortmentId,
-    created: new Date(),
-  });
-  return AssortmentMedia.findOne({ _id: assortmentMediaId });
-};
+// AssortmentMedia.createMedia = ({ assortmentId, ...mediaData }) => {
+//   const sortKey =
+//     mediaData.sortKey || AssortmentMedia.getNewSortKey(assortmentId);
+//   const assortmentMediaId = AssortmentMedia.insert({
+//     tags: [],
+//     ...mediaData,
+//     sortKey,
+//     assortmentId,
+//     created: new Date(),
+//   });
+//   return AssortmentMedia.findOne({ _id: assortmentMediaId });
+// };
 
-AssortmentMedia.getNewSortKey = (assortmentId) => {
-  const lastAssortmentMedia = AssortmentMedia.findOne(
-    {
-      assortmentId,
-    },
-    {
-      sort: { sortKey: -1 },
-    }
-  ) || { sortKey: 0 };
-  return lastAssortmentMedia.sortKey + 1;
-};
+// AssortmentMedia.getNewSortKey = (assortmentId) => {
+//   const lastAssortmentMedia = AssortmentMedia.findOne(
+//     {
+//       assortmentId,
+//     },
+//     {
+//       sort: { sortKey: -1 },
+//     }
+//   ) || { sortKey: 0 };
+//   return lastAssortmentMedia.sortKey + 1;
+// };
 
-AssortmentMedia.updateManualOrder = ({ sortKeys }) => {
-  const changedMediaIds = sortKeys.map(({ assortmentMediaId, sortKey }) => {
-    AssortmentMedia.update(
-      {
-        _id: assortmentMediaId,
-      },
-      {
-        $set: { sortKey: sortKey + 1, updated: new Date() },
-      }
-    );
-    return assortmentMediaId;
-  });
-  const assortmentMedias = AssortmentMedia.find({
-    _id: { $in: changedMediaIds },
-  }).fetch();
-  emit('ASSORTMENT_REORDER_MEDIA', { assortmentMedias });
-  return assortmentMedias;
-};
+// AssortmentMedia.updateManualOrder = ({ sortKeys }) => {
+//   const changedMediaIds = sortKeys.map(({ assortmentMediaId, sortKey }) => {
+//     AssortmentMedia.update(
+//       {
+//         _id: assortmentMediaId,
+//       },
+//       {
+//         $set: { sortKey: sortKey + 1, updated: new Date() },
+//       }
+//     );
+//     return assortmentMediaId;
+//   });
+//   const assortmentMedias = AssortmentMedia.find({
+//     _id: { $in: changedMediaIds },
+//   }).fetch();
+//   emit('ASSORTMENT_REORDER_MEDIA', { assortmentMedias });
+//   return assortmentMedias;
+// };

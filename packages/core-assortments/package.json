@@ -26,11 +26,13 @@
   },
   "homepage": "https://github.com/unchainedshop/unchained#readme",
   "dependencies": {
+    "locale": "^0.1.0",
     "ramda": "0.27.1",
     "simpl-schema": "1.12.0"
   },
   "devDependencies": {
     "@types/chai": "^4.2.22",
+    "@types/locale": "^0.1.1",
     "@types/mocha": "^9.0.0",
     "@unchainedshop/types": "^0.9.1",
     "chai": "^4.3.4",
