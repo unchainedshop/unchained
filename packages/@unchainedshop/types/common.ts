@@ -1,24 +1,24 @@
 import {
-  Db,
   Collection,
-  UpdateFilter,
-  Filter,
-  ObjectId,
-  FindOptions,
-  Sort,
-  ModifyResult,
-  Projection,
   CreateIndexesOptions,
+  Db,
   Document,
+  Filter,
+  FindOptions,
+  ModifyResult,
+  ObjectId,
+  Projection,
+  Sort,
+  UpdateFilter,
+  IndexDirection,
 } from 'mongodb';
-import { Context } from './api';
-import { log, LogLevel, LogOptions } from './logs';
+import { LogOptions } from './logs';
 
 /*
  * MongoDb
  */
 
-export {
+export type {
   Collection,
   Db,
   Document,
@@ -33,7 +33,7 @@ export {
 export type Query = { [x: string]: any };
 
 export type Indexes<T extends Document> = Array<{
-  index: Record<keyof T, number | 'text'>;
+  index: { [key in keyof T]?: IndexDirection };
   options?: CreateIndexesOptions;
 }>;
 
@@ -109,6 +109,6 @@ export interface IBaseAdapter {
 
 export interface IBaseDirector<Adapter extends IBaseAdapter> {
   getAdapters: () => Array<Adapter>;
-  getAdapter: (key) => Adapter;
+  getAdapter: (key: string) => Adapter;
   registerAdapter: (A: Adapter) => void;
 }

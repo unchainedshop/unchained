@@ -17,7 +17,7 @@ export const OrderDiscountAdapter: IDiscountAdapter = {
     return false;
   },
 
-  actions: (params) => ({
+  actions: () => ({
     // return true if a discount is valid to be part of the order
     // without input of a user. that could be a time based global discount
     // like a 10% discount day
@@ -43,12 +43,12 @@ export const OrderDiscountAdapter: IDiscountAdapter = {
     // if you return false, this discount will
     // get removed from the order before any price calculation
     // takes place.
-    isValidForCodeTriggering: async (options) => {
+    isValidForCodeTriggering: async () => {
       return false;
     },
 
     // returns the appropriate discount context for a calculation adapter
-    discountForPricingAdapterKey(params: { pricingAdapterKey: string }) {
+    discountForPricingAdapterKey() {
       return null;
     },
   }),

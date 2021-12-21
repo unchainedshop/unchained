@@ -6,7 +6,7 @@ export const LanguagesCollection = async (db: Db) => {
   const Languages = db.collection<Language>('languages');
 
   await buildDbIndexes<Language>(Languages, [
-    () => Languages.createIndex({ isoCode: 1 }, { unique: true }),
+    { index: { isoCode: 1 }, options: { unique: true } },
   ]);
 
   return Languages;

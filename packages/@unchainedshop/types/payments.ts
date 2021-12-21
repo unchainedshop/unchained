@@ -1,6 +1,8 @@
 import { Context } from './api';
 import {
   FindOptions,
+  IBaseAdapter,
+  IBaseDirector,
   ModuleMutations,
   Query,
   TimestampFields,
@@ -59,26 +61,37 @@ export interface PaymentContext {
   meta?: any;
 }
 
-export interface PaymentAdapter {
-  charge: (context: any) => Promise<any>;
-  configurationError: (context: any) => PaymentError | string; // OPEN QUESTION: Should it be fixed to the PaymentError const
-  isActive: (context: any) => boolean;
-  isPayLaterAllowed: (context: any) => boolean;
-  register: (context: any) => Promise<any>;
-  sign: (context: any) => Promise<any>;
-  validate: (token: any) => Promise<any>;
-}
+export type IPaymentAdapter = IBaseAdapter & {
+  initialConfiguration: Array<PaymentConfiguration>;
 
-export interface PaymentDirector {
-  configurationError: () => PaymentError; // OPEN QUESTION: Should it be fixed to the PaymentError const
-  isActive: () => boolean;
-  isPayLaterAllowed: () => boolean;
-  charge: (context?: any, userId?: string) => Promise<any>;
-  register: () => Promise<any>;
-  sign: () => Promise<any>;
-  validate: () => Promise<any>;
-  run: (command: string, args: any) => Promise<boolean>;
-}
+  typeSupported: (type: PaymentProviderType) => boolean;
+
+  actions: (params: { config: PaymentConfiguration, context: PaymentContext & Context }) => {
+    charge: (transactionContext: any) => Promise<any>;
+    configurationError: (transactionContext: any) => PaymentError;
+    isActive: (transactionContext: any) => boolean;
+    isPayLaterAllowed: (transactionContext: any) => boolean;
+    register: (transactionContext: any) => Promise<any>;
+    sign: (transactionContext: any) => Promise<any>;
+    validate: (token: any) => Promise<any>;
+  };
+};
+
+export type PaymentDirector = IBaseDirector<IPaymentAdapter> & {
+  actions: (
+    discountContext: PaymentContext,
+    requestContext: Context
+  ) => {
+    configurationError: () => PaymentError;
+    isActive: () => boolean;
+    isPayLaterAllowed: () => boolean;
+    charge: (transactionContext?: any, userId?: string) => Promise<any>;
+    register: () => Promise<any>;
+    sign: () => Promise<any>;
+    validate: () => Promise<any>;
+    run: (command: string, args: any) => Promise<boolean>;
+  };
+};
 
 export interface PaymentInterface {
   _id: string;

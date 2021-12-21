@@ -16,7 +16,7 @@
     "types": []
   },
   "include": [
-    "index.d.ts",
+    "index.ts",
     "accounts.ts",
     "api.ts",
     "bookmarks.ts",

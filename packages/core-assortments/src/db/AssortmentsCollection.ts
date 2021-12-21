@@ -22,7 +22,7 @@ export const AssortmentsCollection = async (db: Db) => {
   await buildDbIndexes(Assortments, [
     { index: { isActive: 1 } },
     { index: { isRoot: 1 } },
-    { index: { squence: 1 } },
+    { index: { sequence: 1 } },
     { index: { slugs: 1 } },
     { index: { tags: 1 } },
   ]);
@@ -34,7 +34,7 @@ export const AssortmentsCollection = async (db: Db) => {
     { index: { slug: 1 } },
     { index: { locale: 1, assortmentId: 1 } },
     {
-      index: { title: 'text', subtitle: 'text', vendor: 'text', brand: 'text' },
+      index: { title: 'text', subtitle: 'text', vendor: 'text', brand: 'text' }, // TODO: check with Pascal
     },
   ]);
 

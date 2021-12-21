@@ -8,12 +8,11 @@ export const EventsCollection = async (db: Db) => {
   const Events = db.collection<Event>('events');
 
   await buildDbIndexes(Events, [
-    () =>
-      Events.createIndex(
-        { created: -1 },
-        { expireAfterSeconds: TWO_DAYS_SEC, name: 'created' }
-      ),
-    () => Events.createIndex({ type: 1 }, { name: 'type' }),
+    {
+      index: { created: -1 },
+      options: { expireAfterSeconds: TWO_DAYS_SEC, name: 'created' },
+    },
+    { index: { type: 1 }, options: { name: 'type' } },
   ]);
 
   return Events;

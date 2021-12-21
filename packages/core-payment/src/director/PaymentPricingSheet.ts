@@ -4,7 +4,7 @@ import {
   PaymentPricingCalculation,
   PaymentPricingRowCategory,
   IPaymentPricingSheet,
-} from '@unchainedshop/types/payment.pricing';
+} from '@unchainedshop/types/payments.pricing';
 import { PricingSheetParams } from '@unchainedshop/types/pricing';
 
 export const PaymentPricingSheet = (

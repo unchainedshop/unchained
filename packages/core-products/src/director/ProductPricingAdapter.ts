@@ -19,7 +19,7 @@ export const ProductPricingAdapter: IPricingAdapter<
 > = {
   ...basePricingAdapter,
 
-  isActivatedFor: async (context: ProductPricingAdapterContext) => {
+  isActivatedFor: async () => {
     return false;
   },
 

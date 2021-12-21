@@ -5,7 +5,7 @@ import {
   PaymentPricingAdapterContext,
   PaymentPricingCalculation,
   PaymentPricingContext,
-} from '@unchainedshop/types/payment.pricing';
+} from '@unchainedshop/types/payments.pricing';
 import { BasePricingDirector } from 'meteor/unchained:utils';
 import { PaymentPricingSheet } from './PaymentPricingSheet';
 

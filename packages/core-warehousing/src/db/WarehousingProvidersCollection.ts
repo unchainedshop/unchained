@@ -8,10 +8,11 @@ export const WarehousingProvidersCollection = async (db: Db) => {
   );
 
   await buildDbIndexes<WarehousingProvider>(WarehousingProviders, [
-    () =>
-      WarehousingProviders.createIndex({
+    {
+      index: {
         type: 1,
-      }),
+      },
+    },
   ]);
 
   return WarehousingProviders;

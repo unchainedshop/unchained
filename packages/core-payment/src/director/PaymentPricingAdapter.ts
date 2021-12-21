@@ -2,7 +2,7 @@ import {
   IPaymentPricingSheet,
   PaymentPricingAdapterContext,
   PaymentPricingCalculation,
-} from '@unchainedshop/types/payment.pricing';
+} from '@unchainedshop/types/payments.pricing';
 import { IPricingAdapter } from '@unchainedshop/types/pricing';
 import { BasePricingAdapter } from 'meteor/unchained:utils';
 import { PaymentPricingSheet } from './PaymentPricingSheet';
@@ -19,7 +19,7 @@ export const PaymentPricingAdapter: IPricingAdapter<
 > = {
   ...basePricingAdapter,
 
-  isActivatedFor: async (context: PaymentPricingAdapterContext) => {
+  isActivatedFor: async () => {
     return false;
   },
 

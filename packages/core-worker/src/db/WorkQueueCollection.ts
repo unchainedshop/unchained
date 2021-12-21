@@ -8,19 +8,16 @@ export const WorkQueueCollection = async (db: Db) => {
   const WorkQueue = db.collection<Work>('work_queue');
 
   await buildDbIndexes<Work>(WorkQueue, [
-    () =>
-      WorkQueue.createIndex(
-        {
-          created: -1,
-        },
-        { expireAfterSeconds: 30 * ONE_DAY_IN_SECONDS }
-      ),
-    () => WorkQueue.createIndex({ started: -1 }),
-    () => WorkQueue.createIndex({ finished: 1 }),
-    () => WorkQueue.createIndex({ scheduled: 1 }),
-    () => WorkQueue.createIndex({ priority: -1 }),
-    () => WorkQueue.createIndex({ type: 1 }),
-    () => WorkQueue.createIndex({ originalWorkId: 1 }),
+    {
+      index: { created: -1 },
+      options: { expireAfterSeconds: 30 * ONE_DAY_IN_SECONDS },
+    },
+    { index: { started: -1 } },
+    { index: { finished: 1 } },
+    { index: { scheduled: 1 } },
+    { index: { priority: -1 } },
+    { index: { type: 1 } },
+    { index: { originalWorkId: 1 } },
   ]);
 
   return WorkQueue;

@@ -1,79 +1,62 @@
-import { LogLevel } from 'meteor/unchained:logger';
 import {
-  PaymentConfiguration,
-  PaymentContext,
+  IPaymentAdapter,
   PaymentProviderType,
-  PaymentAdapter as IPaymentAdapter
 } from '@unchainedshop/types/payments';
-import { paymentLogger } from '../payment-logger';
+import { log, LogLevel } from 'meteor/unchained:logger';
 import { PaymentError } from './PaymentError';
 
-export class PaymentAdapter implements IPaymentAdapter {
-  static key = '';
+export const PaymentAdapter: IPaymentAdapter = {
+  key: '',
+  label: '',
+  version: '',
 
-  static label = '';
+  initialConfiguration: [],
 
-  static version = '';
-
-  static initialConfiguration: Array<PaymentConfiguration> = [];
-
-  static typeSupported(type: PaymentProviderType) {
+  typeSupported: () => {
     return false;
-  }
+  },
 
-  protected config = null;
-  protected context = null;
-
-  constructor(config: PaymentConfiguration, context: PaymentContext | {}) {
-    this.config = config;
-    this.context = context;
-  }
-
-  // eslint-disable-next-line
-  configurationError(): PaymentError {
-    return PaymentError.NOT_IMPLEMENTED;
-  }
-
-  // eslint-disable-next-line
-  isActive(context: PaymentContext) {
-    return false;
-  }
-
-  // eslint-disable-next-line
-  isPayLaterAllowed(context: PaymentContext) {
-    return false;
-  }
-
-  // eslint-disable-next-line
-  async charge(chargeContext: any, userId?: string) {
-    // if you return true, the status will be changed to PAID
-
-    // if you return false, the order payment status stays the
-    // same but the order status might change
-
-    // if you throw an error, you cancel the checkout process
-    return false;
-  }
-
-  // eslint-disable-next-line
-  async register(registerContext: any) {
+  actions: () => {
     return {
-      token: '',
+      configurationError() {
+        return PaymentError.NOT_IMPLEMENTED;
+      },
+
+      isActive() {
+        return false;
+      },
+
+      isPayLaterAllowed() {
+        return false;
+      },
+
+      async charge() {
+        // if you return true, the status will be changed to PAID
+
+        // if you return false, the order payment status stays the
+        // same but the order status might change
+
+        // if you throw an error, you cancel the checkout process
+        return false;
+      },
+
+      register: async () => {
+        return {
+          token: '',
+        };
+      },
+
+      sign: async () => {
+        return null;
+      },
+
+      validate: async () => {
+        return false;
+      },
     };
-  }
+  },
 
-  // eslint-disable-next-line
-  async sign(signContext: any) {
-    return null;
-  }
-
-  // eslint-disable-next-line
-  async validate(token: string) {
-    return false;
-  }
-
-  // eslint-disable-next-line
-  log(message: string, { level = LogLevel.Debug, ...meta } = {}) {
-    paymentLogger.log(level, message, meta);
-  }
-}
+  log(message: string, { level = LogLevel.Debug, ...options } = {}) {
+    return log(message, { level, ...options });
+  },
+};

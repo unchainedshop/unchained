@@ -19,7 +19,7 @@ export const DeliveryPricingAdapter: IPricingAdapter<
 > = {
   ...basePricingAdapter,
 
-  isActivatedFor: async (context: DeliveryPricingAdapterContext) => {
+  isActivatedFor: async () => {
     return false;
   },
 

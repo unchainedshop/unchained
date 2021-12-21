@@ -71,7 +71,7 @@ import {
 import {
   IPaymentPricingAdapter,
   IPaymentPricingDirector,
-} from './payment.pricing';
+} from './payments.pricing';
 import { DeliveryModule } from './delivery';
 
 declare module 'meteor/unchained:utils' {
@@ -257,33 +257,16 @@ declare module 'meteor/unchained:core-payments' {
   ): Promise<PaymentModule>;
   export const paymentServices;
 
-  export function PaymentDirector(
-    provider: PaymentProvider,
-    context: PaymentContext
-  ): IPaymentDirector;
-
-  export function registerAdapter(adapter: typeof IPaymentAdapter): void;
-  export function getAdapter(key: string): typeof IPaymentAdapter;
-
-  export class PaymentAdapter implements IPaymentAdapter {
-    static key: string;
-    static label: string;
-    static version: string;
-    static typeSupported: (type: PaymentProviderTypeType) => boolean;
-
-    public config: PaymentConfiguration | null;
-    public context: PaymentContext | null;
-
-    constructor(config: PaymentConfiguration, context: PaymentContext);
-  }
-  export const PaymentError: typeof PaymentErrorType;
-
-  export const paymentLogger;
-
-  export const PaymentProviderType: typeof PaymentProviderTypeType;
+  export const PaymentDirector: IPaymentDirector
+  export const PaymentAdapter: IPaymentAdapter
 
   export const PaymentPricingAdapter: IPaymentPricingAdapter;
   export const PaymentPricingDirector: IPaymentPricingDirector;
+
+  export const PaymentError: typeof PaymentErrorType;
+  export const PaymentProviderType: typeof PaymentProviderTypeType;
+
+  export const paymentLogger;
 }
 
 declare module 'meteor/unchained:core-warehousing' {
