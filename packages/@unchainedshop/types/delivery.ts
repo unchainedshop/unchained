@@ -1,6 +1,13 @@
 import { Context } from './api';
-import { ModuleMutations, TimestampFields, _ID } from './common';
-import { Order, OrderDelivery } from './orders';
+import {
+  ModuleMutations,
+  Query,
+  TimestampFields,
+  _ID,
+  FindOptions,
+} from './common';
+import { Order, OrderDelivery, OrderPosition } from './orders';
+import { User } from './user';
 import { WarehousingProvider } from './warehousing';
 import { Work } from './worker';
 
@@ -92,9 +99,11 @@ export type DeliveryModule = ModuleMutations<DeliveryProvider> & {
   // Queries
   count: (query: DeliveryProviderQuery) => Promise<number>;
   findProvider: (
-    query: {
-      deliveryProviderId: string;
-    } | Query,
+    query:
+      | {
+          deliveryProviderId: string;
+        }
+      | Query,
     options?: FindOptions<DeliveryProvider>
   ) => Promise<DeliveryProvider>;
   findProviders: (
@@ -105,10 +114,10 @@ export type DeliveryModule = ModuleMutations<DeliveryProvider> & {
   providerExists: (query: { deliveryProviderId: string }) => Promise<boolean>;
 
   // Delivery adapter
-  findInterface: (query: DeliveryProvider) => DeliveryInterface;
+  findInterface: (query: DeliveryProvider) => DeliveryAdapter;
   findInterfaces: (query: {
     type: DeliveryProviderType;
-  }) => Array<DeliveryInterface>;
+  }) => Array<DeliveryAdapter>;
   findSupported: (
     query: { order: any } // TODO: Replace order type
   ) => Array<string>;

@@ -1,38 +1,23 @@
-import { BasePricingSheet, PricingSheetParams } from '../basePricing/BasePricingSheet';
+import { BasePricingSheet } from 'meteor/unchained:utils';
 
-export enum DeliveryPricingSheetRowCategory {
-  Delivery = 'DELIVERY',
-  Discount = 'DISCOUNT',
-  Tax = 'TAX',
-  Item = 'ITEM', // Propably unused
-}
+import {
+  PaymentPricingCalculation,
+  PaymentPricingRowCategory,
+  IPaymentPricingSheet,
+} from '@unchainedshop/types/payment.pricing';
+import { PricingSheetParams } from '@unchainedshop/types/pricing';
 
-interface Calculation<Category> {
-  amount: number;
-  category: Category;
-  discountId?: string;
-  isNetPrice: boolean;
-  isTaxable: boolean;
-  meta?: any;
-  rate?: number;
-}
-
-export type DeliveryPricingCalculation =
-  Calculation<DeliveryPricingSheetRowCategory>;
-
-export const DeliveryPricingSheet = (
-  params: PricingSheetParams<DeliveryPricingCalculation>
-) => {
-  const basePricingSheet = BasePricingSheet<
-    DeliveryPricingSheetRowCategory,
-    DeliveryPricingCalculation
-  >(params);
+export const PaymentPricingSheet = (
+  params: PricingSheetParams<PaymentPricingCalculation>
+): IPaymentPricingSheet => {
+  const basePricingSheet = BasePricingSheet<PaymentPricingCalculation>(params);
 
   const pricingSheet = {
     ...basePricingSheet,
+
     addDiscount({ amount, isTaxable, isNetPrice, discountId, meta }) {
       basePricingSheet.calculation.push({
-        category: DeliveryPricingSheetRowCategory.Discount,
+        category: PaymentPricingRowCategory.Discount,
         amount,
         isTaxable,
         isNetPrice,
@@ -43,40 +28,40 @@ export const DeliveryPricingSheet = (
 
     addFee({ amount, isTaxable, isNetPrice, meta }) {
       basePricingSheet.calculation.push({
+        category: PaymentPricingRowCategory.Payment,
         amount,
-        category: DeliveryPricingSheetRowCategory.Delivery,
-        isNetPrice,
         isTaxable,
+        isNetPrice,
         meta,
       });
     },
 
     addTax({ amount, rate, meta }) {
       basePricingSheet.calculation.push({
+        category: PaymentPricingRowCategory.Tax,
         amount,
-        category: DeliveryPricingSheetRowCategory.Tax,
-        isNetPrice: false,
         isTaxable: false,
-        meta,
+        isNetPrice: false,
         rate,
+        meta,
       });
     },
 
     taxSum() {
       return basePricingSheet.sum({
-        category: DeliveryPricingSheetRowCategory.Tax,
+        category: PaymentPricingRowCategory.Tax,
       });
     },
 
     feeSum() {
       return basePricingSheet.sum({
-        category: DeliveryPricingSheetRowCategory.Delivery,
+        category: PaymentPricingRowCategory.Payment,
       });
     },
 
     discountSum(discountId: string) {
       return basePricingSheet.sum({
-        category: DeliveryPricingSheetRowCategory.Discount,
+        category: PaymentPricingRowCategory.Discount,
         discountId,
       });
     },
@@ -89,7 +74,7 @@ export const DeliveryPricingSheet = (
       return [...new Set(discountIds)]
         .map((discountId) => {
           const amount = basePricingSheet.sum({
-            category: DeliveryPricingSheetRowCategory.Discount,
+            category: PaymentPricingRowCategory.Discount,
             discountId,
           });
           if (!amount) {
@@ -106,20 +91,20 @@ export const DeliveryPricingSheet = (
 
     getFeeRows() {
       return basePricingSheet.filterBy({
-        category: DeliveryPricingSheetRowCategory.Item,
+        category: PaymentPricingRowCategory.Item,
       });
     },
 
     getDiscountRows(discountId: string) {
       return basePricingSheet.filterBy({
-        category: DeliveryPricingSheetRowCategory.Discount,
+        category: PaymentPricingRowCategory.Discount,
         discountId,
       });
     },
 
     getTaxRows() {
       return basePricingSheet.filterBy({
-        category: DeliveryPricingSheetRowCategory.Tax,
+        category: PaymentPricingRowCategory.Tax,
       });
     },
   };

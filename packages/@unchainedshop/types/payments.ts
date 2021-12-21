@@ -6,7 +6,7 @@ import {
   TimestampFields,
   _ID,
 } from './common';
-import { User } from '@unchainedshop/types/user';
+import { User } from './user';
 import { Order, OrderPayment } from './orders';
 
 export enum PaymentProviderType {
@@ -56,7 +56,7 @@ export interface PaymentContext {
   orderPayment?: OrderPayment;
   transactionContext?: any; // User for singing and charging a payment
   token?: any; // Used for validation
-  meta?: any
+  meta?: any;
 }
 
 export interface PaymentAdapter {
@@ -105,9 +105,7 @@ export type PaymentModule = {
       options?: FindOptions<PaymentProvider>
     ) => Promise<Array<PaymentProvider>>;
 
-    findSupported: (
-      query: { order: Order }
-    ) => Array<string>;
+    findSupported: (query: { order: Order }) => Array<string>;
 
     findInterface: (query: PaymentProvider) => PaymentInterface;
     findInterfaces: (query: {

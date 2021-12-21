@@ -1,7 +1,7 @@
-import { IBaseAdapter, IBaseDirector } from './common';
 import { Context } from './api';
-import { Order, OrderDelivery, OrderDiscount } from './orders';
+import { IBaseAdapter, IBaseDirector } from './common';
 import { Discount } from './discounting';
+import { Order, OrderDiscount } from './orders';
 import { User } from './user';
 
 export interface BasePricingAdapterContext extends Context {
@@ -16,19 +16,19 @@ export interface BasePricingContext {
   discounts?: Array<OrderDiscount>;
 }
 
-export interface BaseCalculation {
+export interface PricingCalculation {
   category: string;
   amount: number;
   meta?: any;
 }
 
-export interface PricingSheetParams<Calculation extends BaseCalculation> {
+export interface PricingSheetParams<Calculation extends PricingCalculation> {
   calculation?: Array<Calculation>;
   currency?: string;
   quantity?: number;
 }
 
-export interface IPricingSheet<Calculation extends BaseCalculation> {
+export interface IPricingSheet<Calculation extends PricingCalculation> {
   calculation: Array<Calculation>;
   currency?: string;
   quantity?: number;
@@ -38,6 +38,13 @@ export interface IPricingSheet<Calculation extends BaseCalculation> {
   isValid: () => boolean;
   gross: () => number;
   net: () => number;
+  feeSum: () => number;
+  discountSum: (discountId: string) => number;
+  discountPrices: (explicitDiscountId: string) => Array<{
+    discountId: string;
+    amount: number;
+    currency: string;
+  }>;
   sum: (filter?: Partial<Calculation>) => number;
   taxSum: () => number;
   total: (
@@ -48,16 +55,37 @@ export interface IPricingSheet<Calculation extends BaseCalculation> {
     currency: string;
   };
 
+  addDiscount: (params: {
+    amount: number;
+    isTaxable: boolean;
+    isNetPrice: boolean;
+    discountId: string;
+    meta?: any;
+  }) => void;
+  addFee: (params: {
+    amount: number;
+    isTaxable: boolean;
+    isNetPrice: boolean;
+    meta?: any;
+  }) => void;
+  addTax: (params: { amount: number; rate: number; meta?: any }) => void;
+
+  getFeeRows: () => Array<Calculation>;
+  getDiscountRows: (discountId: string) => Array<Calculation>;
+  getTaxRows: () => Array<Calculation>;
+
   filterBy: (filter?: Partial<Calculation>) => Array<Calculation>;
 }
 
-export interface IPricingAdapterActions<Calculation extends BaseCalculation> {
+export interface IPricingAdapterActions<
+  Calculation extends PricingCalculation
+> {
   calculate: () => Promise<Array<Calculation>>;
 }
 
 export type IPricingAdapter<
   PricingContext extends BasePricingAdapterContext,
-  Calculation extends BaseCalculation,
+  Calculation extends PricingCalculation,
   Sheet extends IPricingSheet<Calculation>
 > = IBaseAdapter & {
   orderIndex: number;
@@ -71,13 +99,14 @@ export type IPricingAdapter<
   }) => IPricingAdapterActions<Calculation> & {
     calculationSheet: Sheet;
     resultSheet: Sheet;
+    resetCalculation?: () => void;
   };
 };
 
 export type IPricingDirector<
   PricingContext extends BasePricingContext,
   PricingAdapterContext extends BasePricingAdapterContext,
-  Calculation extends BaseCalculation,
+  Calculation extends PricingCalculation,
   Adapter extends IBaseAdapter
 > = IBaseDirector<Adapter> & {
   buildPricingContext: (
@@ -88,95 +117,6 @@ export type IPricingDirector<
     pricingContext: PricingContext,
     requestContext: Context
   ) => IPricingAdapterActions<Calculation>;
+  getCalculation: () => Array<Calculation>;
+  getContext: () => PricingAdapterContext | null;
 };
-
-/*
- * Delivery pricing
- */
-
-export enum DeliveryPricingRowCategory {
-  Delivery = 'DELIVERY',
-  Discount = 'DISCOUNT',
-  Tax = 'TAX',
-  Item = 'ITEM', // Propably unused
-}
-
-export interface DeliveryPricingCalculation extends BaseCalculation {
-  amount: number;
-  category: string;
-  discountId?: string;
-  isNetPrice: boolean;
-  isTaxable: boolean;
-  meta?: any;
-  rate?: number;
-}
-
-export interface DeliveryPricingAdapterContext
-  extends BasePricingAdapterContext {
-  country?: string;
-  currency?: string;
-  deliveryProvider: any; // TODO: Replace with delivery provider
-  discounts: Array<Discount>;
-  order: Order;
-  orderDelivery: OrderDelivery;
-  quantity: number;
-  user: User;
-}
-
-export interface DeliveryPricingContext {
-  country?: string;
-  currency?: string;
-  deliveryProvider?: any; // TODO: Replace with delivery provider
-  discounts: Array<OrderDiscount>;
-  order?: Order;
-  orderDelivery?: OrderDelivery;
-  providerContext?: any;
-  quantity?: number;
-  user?: User;
-}
-
-export interface IDeliveryPricingSheet
-  extends IPricingSheet<DeliveryPricingCalculation> {
-  addDiscount(params: {
-    amount: number;
-    isTaxable: boolean;
-    isNetPrice: boolean;
-    discountId: string;
-    meta?: any;
-  }): void;
-  addFee(params: {
-    amount: number;
-    isTaxable: boolean;
-    isNetPrice: boolean;
-    meta?: any;
-  }): void;
-  addTax(params: { amount: number; rate: number; meta?: any }): void;
-
-  feeSum: () => number;
-  discountSum: (discountId: string) => number;
-  discountPrices: (explicitDiscountId: string) => Array<{
-    discountId: string;
-    amount: number;
-    currency: string;
-  }>;
-
-  getFeeRows: () => Array<DeliveryPricingCalculation>;
-  getDiscountRows: (discountId: string) => Array<DeliveryPricingCalculation>;
-  getTaxRows: () => Array<DeliveryPricingCalculation>;
-}
-export interface IDeliveryPricingAdapter
-  extends IPricingAdapter<
-    DeliveryPricingAdapterContext,
-    DeliveryPricingCalculation,
-    IDeliveryPricingSheet
-  > {}
-
-export interface IDeliveryPricingDirector
-  extends IPricingDirector<
-    DeliveryPricingContext,
-    DeliveryPricingAdapterContext,
-    DeliveryPricingCalculation,
-    IDeliveryPricingAdapter
-  > {
-  resultSheet: () => IDeliveryPricingSheet;
-}

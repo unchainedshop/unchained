@@ -1,10 +1,11 @@
 import { Locale } from 'locale';
+import { UpdateFilter } from 'mongodb';
 import { Context } from './api';
-import { Address, Contact, TimestampFields, Update, _ID } from './common';
-import { Language } from './languages';
-import { UpdateFilter } from './node_modules/mongodb';
+import { Bookmark } from './bookmarks';
+import { Address, Contact, TimestampFields, _ID } from './common';
 import { Country } from './countries';
 import { File } from './files';
+import { Language } from './languages';
 import { PaymentCredentials } from './payments';
 
 export interface UserProfile {
@@ -72,7 +73,7 @@ export type UsersModule = {
 
   // Mutations
   updateProfile: (
-    _id: sting,
+    _id: string,
     doc: UpdateFilter<UserProfile>,
     userId: string
   ) => Promise<User>;

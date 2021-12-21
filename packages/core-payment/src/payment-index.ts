@@ -11,4 +11,7 @@ export { PaymentAdapter } from './director/PaymentAdapter';
 export { PaymentError } from './director/PaymentError';
 export { PaymentProviderType } from './director/PaymentProviderType';
 
+export { PaymentPricingAdapter } from './director/PaymentPricingAdapter';
+export { PaymentPricingDirector } from './director/PaymentPricingDirector';
+
 export { paymentLogger } from './payment-logger';

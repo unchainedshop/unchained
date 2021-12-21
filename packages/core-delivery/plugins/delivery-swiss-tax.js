@@ -76,14 +76,16 @@ export const DeliverySwissTax = {
   },
 
   get: (params) => {
-    const pricing = pricingAdapter.get(params);
+    const pricing = DeliveryPricingAdapter.get(params);
     const { context, calculation } = params;
 
     return {
       calculate: async () => {
         const taxRate = getTaxRate(context);
 
-        pricingAdapter.log(`DeliverySwissTax -> Tax Multiplicator: ${taxRate}`);
+        DeliveryPricingAdapter.log(
+          `DeliverySwissTax -> Tax Multiplicator: ${taxRate}`
+        );
 
         pricing.calculationSheet
           .filterBy({ isTaxable: true })

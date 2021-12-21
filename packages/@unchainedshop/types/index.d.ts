@@ -36,12 +36,12 @@ import {
   PaymentProviderType as PaymentProviderTypeType,
 } from './payments';
 import {
-  BaseCalculation,
   BasePricingAdapterContext,
   BasePricingContext,
   IPricingAdapter,
   IPricingDirector,
   IPricingSheet,
+  PricingCalculation,
   PricingSheetParams,
 } from './pricing';
 import { UsersModule } from './user';
@@ -58,8 +58,6 @@ import { WorkerModule, WorkerPlugin as IWorkerPlugin } from './worker';
 import { ObjectId } from 'bjson';
 import { Request } from 'express';
 import SimpleSchema from 'simpl-schema';
-
-export { Modules } from './modules';
 
 declare module 'meteor/unchained:utils' {
   function checkId(
@@ -123,7 +121,7 @@ declare module 'meteor/unchained:utils' {
   >() => IBaseDirector<Adapter>;
   export const BasePricingAdapter: <
     AdapterContext extends BasePricingAdapterContext,
-    Calculation extends BaseCalculation
+    Calculation extends PricingCalculation
   >() => IPricingAdapter<
     AdapterContext,
     Calculation,
@@ -132,13 +130,15 @@ declare module 'meteor/unchained:utils' {
   export const BasePricingDirector: <
     Context extends BasePricingContext,
     AdapterContext extends BasePricingAdapterContext,
-    Calculation extends BaseCalculation
-  >() => IPricingDirector<
-    Context,
-    Calculation,
-    IPricingAdapter<AdapterContext, Calculation, IPricingSheet<Calculation>>
-  >;
-  export const BasePricingSheet: <Calculation extends BaseCalculation>(
+    Calculation extends PricingCalculation,
+    Adapter extends IPricingAdapter<
+      AdapterContext,
+      Calculation,
+      IPricingSheet<Calculation>
+    >
+  >() => IPricingDirector<Context, AdapterContext, Calculation, Adapter>;
+
+  export const BasePricingSheet: <Calculation extends PricingCalculation>(
     params: PricingSheetParams<Calculation>
   ) => IPricingSheet<Calculation>;
 }

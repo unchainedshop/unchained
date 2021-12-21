@@ -16,22 +16,21 @@
     "types": []
   },
   "include": [
-    "index.ts",
-    "accounts.d.ts",
-    "api.d.ts",
-    "bookmarks.d.ts",
-    "common.d.ts",
-    "countries.d.ts",
-    "currencies.d.ts",
-    "events.d.ts",
-    "files.d.ts",
-    "index.ts",
-    "languages.d.ts",
-    "logs.d.ts",
-    "modules.d.ts",
-    "payments.d.ts",
-    "user.d.ts",
-    "warehousing.d.ts",
-    "worker.d.ts"
+    "index.d.ts",
+    "accounts.ts",
+    "api.ts",
+    "bookmarks.ts",
+    "common.ts",
+    "countries.ts",
+    "currencies.ts",
+    "events.ts",
+    "files.ts",
+    "languages.ts",
+    "logs.ts",
+    "modules.ts",
+    "payments.ts",
+    "user.ts",
+    "warehousing.ts",
+    "worker.ts"
   ]
 }

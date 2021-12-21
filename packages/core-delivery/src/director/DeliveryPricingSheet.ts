@@ -3,8 +3,8 @@ import {
   DeliveryPricingCalculation,
   DeliveryPricingRowCategory,
   IDeliveryPricingSheet,
-  PricingSheetParams,
-} from '@unchainedshop/types/pricing';
+} from '@unchainedshop/types/delivery.pricing';
+import { PricingSheetParams } from '@unchainedshop/types/pricing';
 
 export const DeliveryPricingSheet = (
   params: PricingSheetParams<DeliveryPricingCalculation>
@@ -13,6 +13,7 @@ export const DeliveryPricingSheet = (
 
   const pricingSheet: IDeliveryPricingSheet = {
     ...basePricingSheet,
+    
     addDiscount({ amount, isTaxable, isNetPrice, discountId, meta }) {
       basePricingSheet.calculation.push({
         category: DeliveryPricingRowCategory.Discount,

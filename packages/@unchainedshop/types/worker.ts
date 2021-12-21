@@ -1,11 +1,5 @@
 import { Context } from './api';
-import {
-  ModuleMutations,
-  Query,
-  TimestampFields,
-  _ID,
-  FindOptions,
-} from './common';
+import { TimestampFields, _ID } from './common';
 
 export enum WorkStatus {
   NEW = 'NEW',
@@ -61,7 +55,7 @@ export interface WorkerDirector {
   registerPlugin: (plugin: WorkerPlugin) => void;
 
   configureAutoscheduling: (plugin: WorkerPlugin, work: Work) => void;
-  getAutoSchedules: () => Array<Array<string, Work>>
+  getAutoSchedules: () => Array<Array<string, Work>>;
 
   emit: (eventName: string, payload: any) => void;
   onEmit: (eventName: string, payload: any) => void;

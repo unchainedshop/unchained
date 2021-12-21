@@ -1,38 +1,22 @@
-import { BasePricingSheet, PricingSheetParams } from '../basePricing/BasePricingSheet';
+import { BasePricingSheet } from 'meteor/unchained:utils';
+import {
+  ProductPricingCalculation,
+  ProductPricingRowCategory,
+  IProductPricingSheet,
+} from '@unchainedshop/types/products.pricing';
+import { PricingSheetParams } from '@unchainedshop/types/pricing';
 
-export enum PaymentPricingSheetRowCategory {
-  Item = 'ITEM',
-  Payment = 'PAYMENT',
-  Discount = 'DISCOUNT',
-  Tax = 'TAX',
-}
-
-interface Calculation<Category> {
-  amount: number;
-  category: Category;
-  discountId?: string;
-  isTaxable: boolean;
-  isNetPrice: boolean;
-  rate?: number;
-  meta?: any;
-}
-
-export type PaymentPricingCalculation =
-  Calculation<PaymentPricingSheetRowCategory>;
-
-export const PaymentPricingSheet = (
-  params: PricingSheetParams<PaymentPricingCalculation>
-) => {
-  const basePricingSheet = BasePricingSheet<
-    PaymentPricingSheetRowCategory,
-    PaymentPricingCalculation
-  >(params);
+export const ProductPricingSheet = (
+  params: PricingSheetParams<ProductPricingCalculation>
+): IProductPricingSheet => {
+  const basePricingSheet = BasePricingSheet<ProductPricingCalculation>(params);
 
   const pricingSheet = {
     ...basePricingSheet,
-    addFee({ amount, isTaxable, isNetPrice, meta }) {
+
+    addItem({ amount, isTaxable, isNetPrice, meta }) {
       basePricingSheet.calculation.push({
-        category: PaymentPricingSheetRowCategory.Payment,
+        category: ProductPricingRowCategory.Item,
         amount,
         isTaxable,
         isNetPrice,
@@ -42,7 +26,7 @@ export const PaymentPricingSheet = (
 
     addDiscount({ amount, isTaxable, isNetPrice, discountId, meta }) {
       basePricingSheet.calculation.push({
-        category: PaymentPricingSheetRowCategory.Discount,
+        category: ProductPricingRowCategory.Discount,
         amount,
         isTaxable,
         isNetPrice,
@@ -53,7 +37,7 @@ export const PaymentPricingSheet = (
 
     addTax({ amount, rate, meta }) {
       basePricingSheet.calculation.push({
-        category: PaymentPricingSheetRowCategory.Tax,
+        category: ProductPricingRowCategory.Tax,
         amount,
         isTaxable: false,
         isNetPrice: false,
@@ -64,21 +48,29 @@ export const PaymentPricingSheet = (
 
     taxSum() {
       return basePricingSheet.sum({
-        category: PaymentPricingSheetRowCategory.Tax,
+        category: ProductPricingRowCategory.Tax,
       });
     },
 
-    feeSum() {
+    itemSum() {
       return basePricingSheet.sum({
-        category: PaymentPricingSheetRowCategory.Payment,
+        category: ProductPricingRowCategory.Item,
       });
     },
 
     discountSum(discountId: string) {
       return basePricingSheet.sum({
-        category: PaymentPricingSheetRowCategory.Discount,
+        category: ProductPricingRowCategory.Discount,
         discountId,
       });
+    },
+
+    unitPrice({ useNetPrice = false } = {}) {
+      const amount = useNetPrice ? this.net() : this.gross();
+      return {
+        amount: Math.round(amount / this.quantity),
+        currency: this.currency,
+      };
     },
 
     discountPrices(explicitDiscountId: string) {
@@ -89,7 +81,7 @@ export const PaymentPricingSheet = (
       return [...new Set(discountIds)]
         .map((discountId) => {
           const amount = basePricingSheet.sum({
-            category: PaymentPricingSheetRowCategory.Discount,
+            category: ProductPricingRowCategory.Discount,
             discountId,
           });
           if (!amount) {
@@ -104,22 +96,22 @@ export const PaymentPricingSheet = (
         .filter(Boolean);
     },
 
-    getFeeRows() {
+    getItemRows() {
       return basePricingSheet.filterBy({
-        category: PaymentPricingSheetRowCategory.Item,
+        category: ProductPricingRowCategory.Item,
       });
     },
 
     getDiscountRows(discountId: string) {
       return basePricingSheet.filterBy({
-        category: PaymentPricingSheetRowCategory.Discount,
+        category: ProductPricingRowCategory.Discount,
         discountId,
       });
     },
 
     getTaxRows() {
       return basePricingSheet.filterBy({
-        category: PaymentPricingSheetRowCategory.Tax,
+        category: ProductPricingRowCategory.Tax,
       });
     },
   };

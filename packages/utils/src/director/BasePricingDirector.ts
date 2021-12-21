@@ -1,6 +1,6 @@
 import { Discount } from '@unchainedshop/types/discounting';
 import {
-  BaseCalculation,
+  PricingCalculation,
   BasePricingAdapterContext,
   BasePricingContext,
   IPricingAdapter,
@@ -13,14 +13,17 @@ import { BaseDirector } from './BaseDirector';
 export const BasePricingDirector = <
   Context extends BasePricingContext,
   AdapterContext extends BasePricingAdapterContext,
-  Calculation extends BaseCalculation,
+  Calculation extends PricingCalculation,
   Adapter extends IPricingAdapter<
-    BasePricingAdapterContext,
+    AdapterContext,
     Calculation,
     IPricingSheet<Calculation>
   >
 >(): IPricingDirector<Context, AdapterContext, Calculation, Adapter> => {
   const baseDirector = BaseDirector<Adapter>();
+
+  let calculation: Array<Calculation> = [];
+  let context: AdapterContext | null = null;
 
   const director: IPricingDirector<
     Context,
@@ -29,7 +32,6 @@ export const BasePricingDirector = <
     Adapter
   > = {
     ...baseDirector,
-
     buildPricingContext(pricingContext) {
       return {
         discounts: [],
@@ -37,8 +39,11 @@ export const BasePricingDirector = <
       };
     },
 
+    getCalculation: () => calculation,
+    getContext: () => context,
+
     get: (pricingContext, requestContext) => {
-      const context = director.buildPricingContext(
+      context = director.buildPricingContext(
         pricingContext,
         requestContext
       );
@@ -49,7 +54,7 @@ export const BasePricingDirector = <
             .getAdapters()
             .filter(async (Adapter) => await Adapter.isActivatedFor(context));
 
-          const calculation = await adapters.reduce(
+          calculation = await adapters.reduce(
             async (previousPromise, Adapter) => {
               const calculation = await previousPromise;
               const discounts = context.discounts

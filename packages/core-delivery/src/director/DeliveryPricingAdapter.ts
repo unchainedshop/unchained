@@ -2,8 +2,8 @@ import {
   DeliveryPricingAdapterContext,
   DeliveryPricingCalculation,
   IDeliveryPricingSheet,
-  IPricingAdapter,
-} from '@unchainedshop/types/pricing';
+} from '@unchainedshop/types/delivery.pricing';
+import { IPricingAdapter } from '@unchainedshop/types/pricing';
 import { BasePricingAdapter } from 'meteor/unchained:utils';
 import { DeliveryPricingSheet } from './DeliveryPricingSheet';
 

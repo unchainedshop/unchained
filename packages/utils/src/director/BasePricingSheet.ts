@@ -1,11 +1,11 @@
 import {
-  BaseCalculation,
+  PricingCalculation,
   IPricingSheet,
   PricingSheetParams,
 } from '@unchainedshop/types/pricing';
 
 export const BasePricingSheet = <
-  Calculation extends BaseCalculation,
+  Calculation extends PricingCalculation,
 >(
   params: PricingSheetParams<Calculation>
 ): IPricingSheet<Calculation> => {

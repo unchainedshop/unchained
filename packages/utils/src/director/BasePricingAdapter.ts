@@ -1,5 +1,5 @@
 import {
-  BaseCalculation,
+  PricingCalculation,
   BasePricingAdapterContext,
   IPricingAdapter,
   IPricingSheet,
@@ -9,7 +9,7 @@ import { BasePricingSheet } from './BasePricingSheet';
 
 export const BasePricingAdapter = <
   Context extends BasePricingAdapterContext,
-  Calculation extends BaseCalculation
+  Calculation extends PricingCalculation
 >(): IPricingAdapter<
   Context,
   Calculation,

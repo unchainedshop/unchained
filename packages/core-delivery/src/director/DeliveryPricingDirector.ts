@@ -3,15 +3,17 @@ import {
   DeliveryPricingAdapterContext,
   DeliveryPricingCalculation,
   DeliveryPricingContext,
+  IDeliveryPricingAdapter,
   IDeliveryPricingDirector,
-} from '@unchainedshop/types/pricing';
+} from '@unchainedshop/types/delivery.pricing';
 import { BasePricingDirector } from 'meteor/unchained:utils';
 import { DeliveryPricingSheet } from './DeliveryPricingSheet';
 
 const baseDirector = BasePricingDirector<
   DeliveryPricingContext,
   DeliveryPricingAdapterContext,
-  DeliveryPricingCalculation
+  DeliveryPricingCalculation,
+  IDeliveryPricingAdapter
 >();
 
 export const DeliveryPricingDirector: IDeliveryPricingDirector = {
@@ -56,11 +58,14 @@ export const DeliveryPricingDirector: IDeliveryPricingDirector = {
     };
   },
 
-  resultSheet() {
+  resultSheet: () => {
+    const calculation = baseDirector.getCalculation();
+    const context = baseDirector.getContext();
+
     return DeliveryPricingSheet({
-      calculation: this.calculation,
-      currency: this.pricingContext.currency,
-      quantity: this.pricingContext.quantity,
+      calculation,
+      currency: context.currency,
+      quantity: context.quantity,
     });
   },
 };
