@@ -58,7 +58,7 @@ export const ProductPriceRound: IProductPricingAdapter & {
           ProductPriceRoundSettings;
         const { calculation = [] } = pricingAdapter.calculationSheet;
 
-        if (skip?.indexOf(currency) !== -1) return pricingAdapter.calculate();
+        if (skip?.indexOf(currency) !== -1) return await pricingAdapter.calculate();
 
         const roundPrecision = configurations?.[currency] || defaultPrecision;
 
@@ -73,7 +73,7 @@ export const ProductPriceRound: IProductPricingAdapter & {
           });
         }
 
-        return pricingAdapter.calculate();
+        return await pricingAdapter.calculate();
       },
     };
   },

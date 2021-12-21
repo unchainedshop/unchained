@@ -4,6 +4,7 @@ import {
   DeliveryPricingAdapter,
   DeliveryPricingDirector,
 } from 'meteor/unchained:core-delivery';
+import { DeliveryPricingAdapterContext, IDeliveryPricingAdapter } from '@unchainedshop/types/delivery.pricing';
 
 // https://www.ch.ch/de/mehrwertsteuersatz-schweiz/
 export const SwissTaxCategories = {
@@ -30,7 +31,7 @@ export const SwissTaxCategories = {
   },
 };
 
-const getTaxRate = (context) => {
+const getTaxRate = (context: DeliveryPricingAdapterContext) => {
   const date =
     context.order && context.order.ordered
       ? new Date(context.order.ordered)
@@ -54,7 +55,7 @@ const getTaxRate = (context) => {
   return SwissTaxCategories.DEFAULT.rate(date);
 };
 
-export const DeliverySwissTax = {
+export const DeliverySwissTax: IDeliveryPricingAdapter = {
   ...DeliveryPricingAdapter,
 
   key: 'shop.unchained.pricing.delivery-swiss-tax',
@@ -75,11 +76,13 @@ export const DeliverySwissTax = {
     return countryCode === 'CH' || countryCode === 'LI';
   },
 
-  get: (params) => {
-    const pricing = DeliveryPricingAdapter.get(params);
-    const { context, calculation } = params;
+  actions: (params) => {
+    const pricingAdapter = DeliveryPricingAdapter.actions(params);
+    const { context } = params;
 
     return {
+      ...pricingAdapter,
+      
       calculate: async () => {
         const taxRate = getTaxRate(context);
 
@@ -87,37 +90,37 @@ export const DeliverySwissTax = {
           `DeliverySwissTax -> Tax Multiplicator: ${taxRate}`
         );
 
-        pricing.calculationSheet
+        pricingAdapter.calculationSheet
           .filterBy({ isTaxable: true })
           .forEach(({ isNetPrice, ...row }) => {
             if (!isNetPrice) {
               const taxAmount = row.amount - row.amount / (1 + taxRate);
-              pricing.resultSheet.calculation.push({
+              pricingAdapter.resultSheet.calculation.push({
                 ...row,
                 amount: -taxAmount,
                 isTaxable: false,
                 isNetPrice: false,
                 /* @ts-ignore */
-                meta: { adapter: this.constructor.key },
+                meta: { adapter: DeliverySwissTax.key },
               });
-              pricing.resultSheet.addTax({
+              pricingAdapter.resultSheet.addTax({
                 amount: taxAmount,
                 rate: taxRate,
                 /* @ts-ignore */
-                meta: { adapter: this.constructor.key },
+                meta: { adapter: DeliverySwissTax.key },
               });
             } else {
               const taxAmount = row.amount * taxRate;
-              pricing.resultSheet.addTax({
+              pricingAdapter.resultSheet.addTax({
                 amount: taxAmount,
                 rate: taxRate,
                 /* @ts-ignore */
-                meta: { adapter: this.constructor.key },
+                meta: { adapter: DeliverySwissTax.key },
               });
             }
           });
 
-        return await pricing.calculate();
+        return await pricingAdapter.calculate();
       },
     };
   },

@@ -89,7 +89,7 @@ const ProductPriceECBIntraBankExchange: IProductPricingAdapter = {
         const { calculation = [] } = pricingAdapter.calculationSheet;
         const EURprice = product.price({ country, currency: 'EUR', quantity });
         if (!EURprice || !EURprice?.amount || calculation?.length)
-          return pricingAdapter.calculate();
+          return await pricingAdapter.calculate();
 
         const exchange = await getEURexchangeRateForCurrency(currency);
         const convertedAmount = EURprice.amount * exchange.rate;
@@ -101,7 +101,7 @@ const ProductPriceECBIntraBankExchange: IProductPricingAdapter = {
           meta: { adapter: ProductPriceECBIntraBankExchange.key },
         });
 
-        return pricingAdapter.calculate();
+        return await pricingAdapter.calculate();
       },
     };
   },

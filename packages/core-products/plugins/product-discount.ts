@@ -70,7 +70,7 @@ const ProductDiscount: IProductPricingAdapter = {
           }
         });
 
-        return pricingAdapter.calculate();
+        return await pricingAdapter.calculate();
       },
     };
   },

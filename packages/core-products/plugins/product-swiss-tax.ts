@@ -109,7 +109,7 @@ const ProductSwissTax: IProductPricingAdapter = {
               });
             }
           });
-        return pricingAdapter.calculate();
+        return await pricingAdapter.calculate();
       },
     };
   },

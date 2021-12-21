@@ -123,7 +123,7 @@ const OrderItemsDiscount: IOrderPricingAdapter = {
           }
         });
 
-        return pricingAdapter.calculate();
+        return await pricingAdapter.calculate();
       },
     };
   },

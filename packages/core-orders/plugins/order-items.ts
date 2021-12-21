@@ -51,7 +51,7 @@ const OrderItems: IOrderPricingAdapter = {
           });
         }
 
-        return pricingAdapter.calculate();
+        return await pricingAdapter.calculate();
       },
     };
   },

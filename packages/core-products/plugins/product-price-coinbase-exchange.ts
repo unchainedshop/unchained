@@ -63,7 +63,7 @@ const ProductPriceCoinbaseExchange: IProductPricingAdapter = {
         const { calculation = [] } = pricingAdapter.calculationSheet;
 
         if (!productPrice || !productPrice?.amount || calculation?.length)
-          return pricingAdapter.calculate();
+          return await pricingAdapter.calculate();
 
         const rate = await getFiatexchangeRateForCrypto(
           defaultCurrency,
@@ -79,7 +79,7 @@ const ProductPriceCoinbaseExchange: IProductPricingAdapter = {
           meta: { adapter: ProductPriceCoinbaseExchange.key },
         });
 
-        return pricingAdapter.calculate();
+        return await pricingAdapter.calculate();
       },
     };
   },

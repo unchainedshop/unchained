@@ -171,7 +171,7 @@ const OrderDiscount: IOrderPricingAdapter = {
           }
         });
 
-        return pricingAdapter.calculate();
+        return await pricingAdapter.calculate();
       },
     };
   },
