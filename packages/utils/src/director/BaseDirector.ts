@@ -1,9 +1,9 @@
 import { IBaseAdapter, IBaseDirector } from '@unchainedshop/types/common';
 import { log } from 'meteor/unchained:logger';
 
-export const BaseDirector = <Adapter extends IBaseAdapter>(
-  sortKey?: string
-): IBaseDirector<Adapter> => {
+export const BaseDirector = <Adapter extends IBaseAdapter>(options?: {
+  adapterSortKey: string;
+}): IBaseDirector<Adapter> => {
   const Adapters = new Map<string, Adapter>();
   return {
     getAdapter: (key) => {
@@ -11,9 +11,9 @@ export const BaseDirector = <Adapter extends IBaseAdapter>(
     },
 
     getAdapters: () => {
-      const sort = sortKey || 'key';
+      const sortKey = options?.adapterSortKey || 'key';
       return Array.from(Adapters.values()).sort(
-        (left, right) => left[sort] - right[sort]
+        (left, right) => left[sortKey] - right[sortKey]
       );
     },
 

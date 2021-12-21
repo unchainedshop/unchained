@@ -1,4 +1,4 @@
-import { ProductPricingAdapter } from 'meteor/unchained:director-pricing';
+import { ProductPricingAdapter } from 'meteor/unchained:core-products';
 
 const roundToNext = (value, precision) =>
   value % precision === precision / 2

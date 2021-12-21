@@ -1,8 +1,7 @@
 import {
   OrderPricingDirector,
   OrderPricingAdapter,
-  OrderPricingSheetRowCategory,
-} from 'meteor/unchained:director-pricing';
+} from 'meteor/unchained:core-orders';
 
 const resolveRatioAndTaxDivisorForPricingSheet = (pricing, total) => {
   if (total === 0 || !pricing) {

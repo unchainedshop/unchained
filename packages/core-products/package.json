@@ -28,6 +28,7 @@
   "homepage": "https://github.com/unchainedshop/unchained#readme",
   "dependencies": {
     "simpl-schema": "^1.12.0",
+    "lru-cache": "6.0.0",
     "hashids": "2.2.1"
   },
   "devDependencies": {

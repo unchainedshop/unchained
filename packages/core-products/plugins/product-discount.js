@@ -1,17 +1,10 @@
 import {
-  Discount,
-  DiscountConfiguration,
-} from '@unchainedshop/types/discounting';
-import {
   ProductPricingDirector,
   ProductPricingAdapter,
-  ProductPricingSheetRowCategory,
-} from 'meteor/unchained:director-pricing';
+} from 'meteor/unchained:core-products';
 
-const applyRate = (
-  { rate, fixedRate },
-  amount
-) => (rate ? amount * rate : Math.min(fixedRate, amount));
+const applyRate = ({ rate, fixedRate }, amount) =>
+  rate ? amount * rate : Math.min(fixedRate, amount);
 
 class ProductDiscount extends ProductPricingAdapter {
   static key = 'shop.unchained.pricing.product-discount';

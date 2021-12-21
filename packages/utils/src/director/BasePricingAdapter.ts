@@ -3,6 +3,7 @@ import {
   BasePricingAdapterContext,
   IPricingAdapter,
   IPricingSheet,
+  IBasePricingSheet,
 } from '@unchainedshop/types/pricing';
 import { log, LogLevel } from 'meteor/unchained:logger';
 import { BasePricingSheet } from './BasePricingSheet';
@@ -10,11 +11,7 @@ import { BasePricingSheet } from './BasePricingSheet';
 export const BasePricingAdapter = <
   Context extends BasePricingAdapterContext,
   Calculation extends PricingCalculation
->(): IPricingAdapter<
-  Context,
-  Calculation,
-  IPricingSheet<Calculation>
-> => ({
+>(): IPricingAdapter<Context, Calculation, IBasePricingSheet<Calculation>> => ({
   key: '',
   label: '',
   version: '',
@@ -24,7 +21,7 @@ export const BasePricingAdapter = <
     return false;
   },
 
-  get: (params) => ({
+  actions: (params) => ({
     calculate: async () => {
       return [];
     },

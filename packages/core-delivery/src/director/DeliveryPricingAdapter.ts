@@ -23,7 +23,7 @@ export const DeliveryPricingAdapter: IPricingAdapter<
     return false;
   },
 
-  get: ({ context, calculation }) => {
+  actions: ({ context, calculation }) => {
     const { currency } = context;
     const calculationSheet = DeliveryPricingSheet({ calculation, currency });
     const resultSheet = DeliveryPricingSheet({ currency });

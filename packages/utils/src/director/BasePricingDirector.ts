@@ -1,11 +1,10 @@
-import { Discount } from '@unchainedshop/types/discounting';
 import {
-  PricingCalculation,
   BasePricingAdapterContext,
   BasePricingContext,
   IPricingAdapter,
   IPricingDirector,
   IPricingSheet,
+  PricingCalculation,
 } from '@unchainedshop/types/pricing';
 import { log, LogLevel } from 'meteor/unchained:logger';
 import { BaseDirector } from './BaseDirector';
@@ -20,7 +19,7 @@ export const BasePricingDirector = <
     IPricingSheet<Calculation>
   >
 >(): IPricingDirector<Context, AdapterContext, Calculation, Adapter> => {
-  const baseDirector = BaseDirector<Adapter>();
+  const baseDirector = BaseDirector<Adapter>({ adapterSortKey: 'orderIndex' });
 
   let calculation: Array<Calculation> = [];
   let context: AdapterContext | null = null;
@@ -42,11 +41,8 @@ export const BasePricingDirector = <
     getCalculation: () => calculation,
     getContext: () => context,
 
-    get: (pricingContext, requestContext) => {
-      context = director.buildPricingContext(
-        pricingContext,
-        requestContext
-      );
+    actions: (pricingContext, requestContext) => {
+      context = director.buildPricingContext(pricingContext, requestContext);
 
       return {
         calculate: async () => {
@@ -67,12 +63,10 @@ export const BasePricingDirector = <
                     calculation
                   ),
                 }))
-                .filter(
-                  ({ configuration }) => configuration !== null
-                ) as Array<Discount>;
+                .filter(({ configuration }) => configuration !== null);
 
               try {
-                const adapter = Adapter.get({
+                const adapter = Adapter.actions({
                   context,
                   calculation,
                   discounts,

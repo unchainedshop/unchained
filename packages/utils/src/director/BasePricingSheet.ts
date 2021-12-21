@@ -1,6 +1,6 @@
 import {
   PricingCalculation,
-  IPricingSheet,
+  IBasePricingSheet,
   PricingSheetParams,
 } from '@unchainedshop/types/pricing';
 
@@ -8,10 +8,10 @@ export const BasePricingSheet = <
   Calculation extends PricingCalculation,
 >(
   params: PricingSheetParams<Calculation>
-): IPricingSheet<Calculation> => {
+): IBasePricingSheet<Calculation> => {
   const calculation = params.calculation || [];
 
-  const pricingSheet: IPricingSheet<Calculation> = {
+  const pricingSheet: IBasePricingSheet<Calculation> = {
     calculation,
     currency: params.currency,
     quantity: params.quantity,

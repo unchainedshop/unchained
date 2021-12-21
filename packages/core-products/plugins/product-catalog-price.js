@@ -1,7 +1,7 @@
 import {
   ProductPricingDirector,
   ProductPricingAdapter,
-} from 'meteor/unchained:director-pricing';
+} from 'meteor/unchained:core-products';
 
 class ProductPrice extends ProductPricingAdapter {
   static key = 'shop.unchained.pricing.product-price';

@@ -19,11 +19,11 @@ export const OrderPricingAdapter: IPricingAdapter<
 > = {
   ...basePricingAdapter,
 
-  isActivatedFor: async (context: OrderPricingAdapterContext) {
+  isActivatedFor: async (context: OrderPricingAdapterContext) => {
     return false;
   },
-  
-  get: ({ context, calculation }) => {
+
+  actions: ({ context, calculation }) => {
     const { currency } = context;
     const calculationSheet = OrderPricingSheet({ calculation, currency });
     const resultSheet = OrderPricingSheet({ currency });
@@ -42,4 +42,4 @@ export const OrderPricingAdapter: IPricingAdapter<
       resultSheet,
     };
   },
-}
+};

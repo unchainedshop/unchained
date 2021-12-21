@@ -1,6 +1,6 @@
 import { Context } from './api';
 import { IBaseAdapter, IBaseDirector } from './common';
-import { Discount } from './discounting';
+import { Discount } from './orders.discount';
 import { Order, OrderDiscount } from './orders';
 import { User } from './user';
 
@@ -28,7 +28,7 @@ export interface PricingSheetParams<Calculation extends PricingCalculation> {
   quantity?: number;
 }
 
-export interface IPricingSheet<Calculation extends PricingCalculation> {
+export interface IBasePricingSheet<Calculation extends PricingCalculation> {
   calculation: Array<Calculation>;
   currency?: string;
   quantity?: number;
@@ -38,13 +38,7 @@ export interface IPricingSheet<Calculation extends PricingCalculation> {
   isValid: () => boolean;
   gross: () => number;
   net: () => number;
-  feeSum: () => number;
-  discountSum: (discountId: string) => number;
-  discountPrices: (explicitDiscountId: string) => Array<{
-    discountId: string;
-    amount: number;
-    currency: string;
-  }>;
+  
   sum: (filter?: Partial<Calculation>) => number;
   taxSum: () => number;
   total: (
@@ -54,6 +48,18 @@ export interface IPricingSheet<Calculation extends PricingCalculation> {
     amount: number;
     currency: string;
   };
+
+  filterBy: (filter?: Partial<Calculation>) => Array<Calculation>;
+}
+
+export type IPricingSheet<Calculation extends PricingCalculation> = IBasePricingSheet<Calculation> & {
+  feeSum: () => number;
+  discountSum: (discountId: string) => number;
+  discountPrices: (explicitDiscountId: string) => Array<{
+    discountId: string;
+    amount: number;
+    currency: string;
+  }>;
 
   addDiscount: (params: {
     amount: number;
@@ -73,8 +79,6 @@ export interface IPricingSheet<Calculation extends PricingCalculation> {
   getFeeRows: () => Array<Calculation>;
   getDiscountRows: (discountId: string) => Array<Calculation>;
   getTaxRows: () => Array<Calculation>;
-
-  filterBy: (filter?: Partial<Calculation>) => Array<Calculation>;
 }
 
 export interface IPricingAdapterActions<
@@ -86,13 +90,13 @@ export interface IPricingAdapterActions<
 export type IPricingAdapter<
   PricingContext extends BasePricingAdapterContext,
   Calculation extends PricingCalculation,
-  Sheet extends IPricingSheet<Calculation>
+  Sheet extends IBasePricingSheet<Calculation>
 > = IBaseAdapter & {
   orderIndex: number;
 
   isActivatedFor: (context: PricingContext) => Promise<boolean>;
 
-  get: (params: {
+  actions: (params: {
     context: PricingContext;
     calculation: Array<Calculation>;
     discounts: Array<Discount>;
@@ -113,7 +117,7 @@ export type IPricingDirector<
     context: any,
     requestContext: Context
   ) => PricingAdapterContext;
-  get: (
+  actions: (
     pricingContext: PricingContext,
     requestContext: Context
   ) => IPricingAdapterActions<Calculation>;

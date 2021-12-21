@@ -118,7 +118,7 @@ declare module 'meteor/unchained:utils' {
   // Director
   export const BaseDirector: <
     Adapter extends IBaseAdapter
-  >() => IBaseDirector<Adapter>;
+  >(options?: { adapterSortKey: string }) => IBaseDirector<Adapter>;
   export const BasePricingAdapter: <
     AdapterContext extends BasePricingAdapterContext,
     Calculation extends PricingCalculation

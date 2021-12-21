@@ -1,8 +1,0 @@
-{
-  "extends": "./tsconfig.build.json",
-  "compilerOptions": {
-    "noEmit": true,
-    "types": ["node", "mocha"]
-  },
-  "include": ["src", "tests", "plugins"]
-}

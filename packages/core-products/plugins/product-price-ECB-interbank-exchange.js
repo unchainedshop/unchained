@@ -2,8 +2,7 @@ import fetch from 'isomorphic-unfetch';
 import {
   ProductPricingDirector,
   ProductPricingAdapter,
-  ProductPricingAdapterContext,
-} from 'meteor/unchained:director-pricing';
+} from 'meteor/unchained:core-products';
 
 import Cache from './utils/cache';
 

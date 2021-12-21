@@ -1,9 +1,8 @@
-/* @ts-ignore */
 import moment from 'moment';
 import {
-  DeliveryPricingDirector,
-  DeliveryPricingAdapter,
-} from 'meteor/unchained:director-pricing';
+  ProductPricingDirector,
+  ProductPricingAdapter,
+} from 'meteor/unchained:core-products';
 
 // https://www.ch.ch/de/mehrwertsteuersatz-schweiz/
 export const SwissTaxCategories = {
@@ -17,25 +16,25 @@ export const SwissTaxCategories = {
     },
   },
   REDUCED: {
-    value: 'reduced',
+    tag: 'swiss-tax-category:reduced',
     rate: () => {
       return 0.025;
     },
   },
   SPECIAL: {
-    value: 'special',
+    tag: 'swiss-tax-category:special',
     rate: () => {
       return 0.037;
     },
   },
 };
 
-export class DeliverySwissTax extends DeliveryPricingAdapter {
-  static key = 'shop.unchained.pricing.delivery-swiss-tax';
+export class ProductSwissTax extends ProductPricingAdapter {
+  static key = 'shop.unchained.pricing.product-swiss-tax';
 
   static version = '1.0';
 
-  static label = 'Apply Swiss Tax on Delivery Fees';
+  static label = 'Apply Swiss Tax on Product';
 
   static orderIndex = 20;
 
@@ -43,12 +42,13 @@ export class DeliverySwissTax extends DeliveryPricingAdapter {
     const address =
       // TODO: use modules
       /* @ts-ignore */
-      context.order?.delivery()?.context?.address ||
-      context.order?.billingAddress;
+      context.order.delivery()?.context?.address ||
+      context.order.billingAddress;
     const countryCode =
       address?.countryCode !== undefined
         ? address.countryCode?.toUpperCase().trim()
         : context.country?.toUpperCase().trim();
+
     return countryCode === 'CH' || countryCode === 'LI';
   }
 
@@ -57,20 +57,12 @@ export class DeliverySwissTax extends DeliveryPricingAdapter {
       this.context.order && this.context.order.ordered
         ? new Date(this.context.order.ordered)
         : new Date();
+    const { product } = this.context;
 
-    // TODO: use modules
-    /* @ts-ignore */
-    const taxCategoryFromProvider = this.context.provider?.configuration?.find(
-      ({ key }) => {
-        if (key === 'swiss-tax-category') return true;
-        return null;
-      }
-    )?.value;
-
-    if (taxCategoryFromProvider === SwissTaxCategories.REDUCED.value) {
+    if (product.tags?.includes(SwissTaxCategories.REDUCED.tag)) {
       return SwissTaxCategories.REDUCED.rate();
     }
-    if (taxCategoryFromProvider === SwissTaxCategories.SPECIAL.value) {
+    if (product.tags?.includes(SwissTaxCategories.SPECIAL.tag)) {
       return SwissTaxCategories.SPECIAL.rate();
     }
     return SwissTaxCategories.DEFAULT.rate(date);
@@ -78,7 +70,7 @@ export class DeliverySwissTax extends DeliveryPricingAdapter {
 
   async calculate() {
     const taxRate = this.getTaxRate();
-    this.log(`DeliverySwissTax -> Tax Multiplicator: ${taxRate}`);
+    this.log(`ProductSwissTax -> Tax Multiplicator: ${taxRate}`);
     this.calculation
       .filterBy({ isTaxable: true })
       .forEach(({ isNetPrice, ...row }) => {
@@ -88,7 +80,6 @@ export class DeliverySwissTax extends DeliveryPricingAdapter {
             ...row,
             amount: -taxAmount,
             isTaxable: false,
-            isNetPrice: false,
             /* @ts-ignore */
             meta: { adapter: this.constructor.key },
           });
@@ -103,14 +94,12 @@ export class DeliverySwissTax extends DeliveryPricingAdapter {
           this.result.addTax({
             amount: taxAmount,
             rate: taxRate,
-            /* @ts-ignore */
             meta: { adapter: this.constructor.key },
           });
         }
       });
-
-    return await super.calculate();
+    return super.calculate();
   }
 }
 
-DeliveryPricingDirector.registerAdapter(DeliverySwissTax);
+ProductPricingDirector.registerAdapter(ProductSwissTax);
