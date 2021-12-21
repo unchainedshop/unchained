@@ -1,4 +1,4 @@
-import { Discount } from './discounting';
+import { Discount } from './orders.discount';
 import { Order, OrderDelivery, OrderDiscount } from './orders';
 import {
   BasePricingAdapterContext,

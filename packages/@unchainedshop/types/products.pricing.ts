@@ -1,4 +1,4 @@
-import { Discount } from './discounting';
+import { Discount } from './orders.discount';
 import { Order, OrderDiscount } from './orders';
 import {
   BasePricingAdapterContext,
@@ -44,8 +44,15 @@ export interface ProductPricingContext {
 }
 
 export interface IProductPricingSheet
-  extends IPricingSheet<ProductPricingCalculation> {}
-  
+  extends IPricingSheet<ProductPricingCalculation> {
+  addItem: (params: {
+    amount: number;
+    isTaxable: boolean;
+    isNetPrice: boolean;
+    meta: any;
+  }) => void;
+}
+
 export interface IProductPricingAdapter
   extends IPricingAdapter<
     ProductPricingAdapterContext,

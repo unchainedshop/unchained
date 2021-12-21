@@ -58,6 +58,21 @@ import { WorkerModule, WorkerPlugin as IWorkerPlugin } from './worker';
 import { ObjectId } from 'bjson';
 import { Request } from 'express';
 import SimpleSchema from 'simpl-schema';
+import { IOrderPricingAdapter, IOrderPricingDirector } from './orders.pricing';
+import {
+  IProductPricingAdapter,
+  IProductPricingDirector,
+} from './products.pricing';
+import { IDiscountAdapter, IDiscountDirector } from './orders.discount';
+import {
+  IDeliveryPricingAdapter,
+  IDeliveryPricingDirector,
+} from './delivery.pricing';
+import {
+  IPaymentPricingAdapter,
+  IPaymentPricingDirector,
+} from './payment.pricing';
+import { DeliveryModule } from './delivery';
 
 declare module 'meteor/unchained:utils' {
   function checkId(
@@ -116,9 +131,9 @@ declare module 'meteor/unchained:utils' {
   };
 
   // Director
-  export const BaseDirector: <
-    Adapter extends IBaseAdapter
-  >(options?: { adapterSortKey: string }) => IBaseDirector<Adapter>;
+  export const BaseDirector: <Adapter extends IBaseAdapter>(options?: {
+    adapterSortKey: string;
+  }) => IBaseDirector<Adapter>;
   export const BasePricingAdapter: <
     AdapterContext extends BasePricingAdapterContext,
     Calculation extends PricingCalculation
@@ -221,30 +236,13 @@ declare module 'meteor/unchained:core-currencies' {
   ): Promise<CurrenciesModule>;
 }
 
-declare module 'meteor/unchained:director-discounting' {
-  export class DiscountAdapter implements IDiscountAdapter {
-    static key: string;
-    static label: string;
-    static version: string;
-    static orderIndex: number;
+declare module 'meteor/unchained:core-delivery' {
+  export function configureDeliveryModule(
+    params: ModuleInput
+  ): Promise<DeliveryModule>;
 
-    static isManualAdditionAllowed(code: string): boolean;
-
-    // return true if a discount is allowed to get removed manually by a user
-    static isManualRemovalAllowed(): boolean;
-
-    public context: DiscountContext;
-  }
-
-  export class DiscountDirector {
-    interfaceClass: (discountKey: string) => typeof IDiscountAdapter;
-    interface: (discountKey: string) => IDiscountAdapter;
-    resolveDiscountKeyFromStaticCode: (options) => Promise<string>;
-    findSystemDiscounts: () => Promise<Array<string>>;
-
-    static sortedAdapters: () => Array<typeof IDiscountAdapter>;
-    static registerAdapter: (adapter: typeof IDiscountAdapter) => void;
-  }
+  export const DeliveryPricingAdapter: IDeliveryPricingAdapter;
+  export const DeliveryPricingDirector: IDeliveryPricingDirector;
 }
 
 declare module 'meteor/unchained:core-languages' {
@@ -283,36 +281,9 @@ declare module 'meteor/unchained:core-payments' {
   export const paymentLogger;
 
   export const PaymentProviderType: typeof PaymentProviderTypeType;
-}
 
-declare module 'meteor/unchained:director-pricing' {
-  export class DeliveryPricingAdapter {}
-  export type DeliveryPricingAdapterContext = {};
-  export type DeliveryPricingCalculation = {};
-  export const DeliveryPricingSheet;
-  export type DeliveryPricingSheetRowCategory = {};
-  export const DeliveryPricingDirector: any; // TODO: define class
-
-  export class OrderPricingAdapter {}
-  export type OrderPricingAdapterContext = {};
-  export type OrderPricingCalculation = {};
-  export const OrderPricingSheet;
-  export type OrderPricingSheetRowCategory = {};
-  export class OrderPricingDirector {}
-
-  export class PaymentPricingAdapter {}
-  export type PaymentPricingAdapterContext = {};
-  export type PaymentPricingCalculation = {};
-  export const PaymentPricingSheet;
-  export type PaymentPricingSheetRowCategory = {};
-  export class PaymentPricingDirector {}
-
-  export class ProductPricingAdapter {}
-  export type ProductPricingAdapterContext = {};
-  export type ProductPricingCalculation = {};
-  export const ProductPricingSheet;
-  export type ProductPricingSheetRowCategory = {};
-  export class ProductPricingDirector {}
+  export const PaymentPricingAdapter: IPaymentPricingAdapter;
+  export const PaymentPricingDirector: IPaymentPricingDirector;
 }
 
 declare module 'meteor/unchained:core-warehousing' {
@@ -370,12 +341,21 @@ declare module 'meteor/unchained:core-orders' {
   export const Orders: {
     findOrder({ orderId: string }): any;
   };
+
+  export const DiscountAdapter: IDiscountAdapter;
+  export const DiscountDirector: IDiscountDirector;
+
+  export const OrderPricingAdapter: IOrderPricingAdapter;
+  export const OrderPricingDirector: IOrderPricingDirector;
 }
 
 declare module 'meteor/unchained:core-products' {
   export const Products: {
     productExists({ productId: string }): any;
   };
+
+  export const ProductPricingAdapter: IProductPricingAdapter;
+  export const ProductPricingDirector: IProductPricingDirector;
 }
 
 declare module 'meteor/unchained:mongodb' {
