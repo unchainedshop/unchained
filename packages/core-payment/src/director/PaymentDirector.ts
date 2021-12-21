@@ -1,103 +1,79 @@
 import {
-  PaymentContext,
+  IPaymentAdapter,
+  IPaymentDirector,
   PaymentProvider,
-  PaymentDirector as IPaymentDirector,
 } from '@unchainedshop/types/payments';
+import { BaseDirector } from 'meteor/unchained:utils';
 import { paymentLogger } from '../payment-logger';
-import { PaymentAdapter } from './PaymentAdapter';
 import { PaymentError } from './PaymentError';
 
+const baseDirector = BaseDirector<IPaymentAdapter>();
 
+export const PaymentDirector: IPaymentDirector = {
+  ...baseDirector,
 
-const Adapters: Map<string, typeof PaymentAdapter> = new Map();
+  actions: (paymentProvider, paymentContext, requestContext) => {
+    const Adapter = baseDirector.getAdapter(paymentProvider.adapterKey);
 
-const getFilteredAdapters = (filter) => {
-  return Array.from(Adapters)
-    .map((entry) => entry[1])
-    .filter(filter || (() => true));
-};
-
-const registerAdapter = (adapter: typeof PaymentAdapter) => {
-  paymentLogger.info(
-    `PaymentDirector -> Registered ${adapter.key} ${adapter.version} (${adapter.label})`
-  );
-  Adapters.set(adapter.key, adapter);
-};
-
-const getAdapter = (provider: PaymentProvider) => {
-  return Adapters.get(provider.adapterKey);
-};
-
-const getAdapterInstance = (
-  provider: PaymentProvider,
-  context: PaymentContext | {}
-) => {
-  const Adapter = getAdapter(provider);
-  if (!Adapter) {
-    throw new Error(`Payment Plugin ${provider.adapterKey} not available`);
-  }
-  return new Adapter(provider.configuration, context);
-};
-
-const PaymentDirector = (
-  provider: PaymentProvider,
-  { transactionContext, token, ...context }: PaymentContext
-): IPaymentDirector => ({
-  configurationError() {
-    try {
-      const adapter = getAdapterInstance(provider, context);
-      const error = adapter.configurationError();
-      return error;
-    } catch (error) {
-      return PaymentError.ADAPTER_NOT_FOUND;
+    if (!Adapter) {
+      throw new Error(
+        `Payment Plugin ${paymentProvider.adapterKey} not available`
+      );
     }
-  },
 
-  isActive() {
-    try {
-      const adapter = getAdapterInstance(provider, context);
-      return adapter.isActive(context);
-    } catch (error) {
-      paymentLogger.error(error.message);
-      return false;
-    }
-  },
+    const adapter = Adapter.actions({
+      config: paymentProvider.configuration,
+      context: { ...paymentContext, ...requestContext },
+    });
 
-  isPayLaterAllowed() {
-    try {
-      const adapter = getAdapterInstance(provider, context);
-      return adapter.isPayLaterAllowed(context);
-    } catch (error) {
-      paymentLogger.error(error.message);
-      return false;
-    }
-  },
+    return {
+      configurationError() {
+        try {
+          const error = adapter.configurationError();
+          return error;
+        } catch (error) {
+          return PaymentError.ADAPTER_NOT_FOUND;
+        }
+      },
 
-  async charge(context?: any, userId?: string) {
-    const adapter = getAdapterInstance(provider, context);
-    return adapter.charge(context || transactionContext, userId);
-  },
+      isActive() {
+        try {
+          return adapter.isActive(context);
+        } catch (error) {
+          paymentLogger.error(error.message);
+          return false;
+        }
+      },
 
-  async register() {
-    const adapter = getAdapterInstance(provider, context);
-    return adapter.register(transactionContext);
-  },
+      isPayLaterAllowed() {
+        try {
+          return adapter.isPayLaterAllowed(context);
+        } catch (error) {
+          paymentLogger.error(error.message);
+          return false;
+        }
+      },
 
-  async sign() {
-    const adapter = getAdapterInstance(provider, context);
-    return adapter.sign(transactionContext);
-  },
+      charge: async (transactionContext?: any) => {
+        return adapter.charge(transactionContext);
+      },
 
-  async validate() {
-    const adapter = getAdapterInstance(provider, context);
-    const validated = await adapter.validate(token);
-    return !!validated;
-  },
+      register: async (transactionContext?: any) => {
+        return adapter.register(transactionContext);
+      },
 
-  async run(command, ...args) {
-    const adapter = getAdapterInstance(provider, context);
-    return adapter[command](...args);
-  },
-});
+      sign: async (transactionContext?: any) => {
+        return adapter.sign(transactionContext);
+      },
 
-export { getAdapter, getFilteredAdapters, registerAdapter, PaymentDirector };
+      validate: async (token?: any) => {
+        const validated = await adapter.validate(token);
+        return !!validated;
+      },
+
+      run: async (command, ...args) => {
+        return adapter[command](...args);
+      },
+    };
+  },
+};

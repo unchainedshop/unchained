@@ -26,10 +26,10 @@ import {
   Transports,
 } from './logs';
 import {
-  PaymentAdapter as IPaymentAdapter,
+  IPaymentAdapter,
   PaymentConfiguration,
   PaymentContext,
-  PaymentDirector as IPaymentDirector,
+  IPaymentDirector,
   PaymentError as PaymentErrorType,
   PaymentModule,
   PaymentProvider,
@@ -251,14 +251,14 @@ declare module 'meteor/unchained:core-languages' {
   ): Promise<LanguagesModule>;
 }
 
-declare module 'meteor/unchained:core-payments' {
+declare module 'meteor/unchained:core-payment' {
   export function configurePaymentModule(
     params: ModuleInput
   ): Promise<PaymentModule>;
   export const paymentServices;
 
-  export const PaymentDirector: IPaymentDirector
-  export const PaymentAdapter: IPaymentAdapter
+  export const PaymentDirector: IPaymentDirector;
+  export const PaymentAdapter: IPaymentAdapter;
 
   export const PaymentPricingAdapter: IPaymentPricingAdapter;
   export const PaymentPricingDirector: IPaymentPricingDirector;

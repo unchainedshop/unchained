@@ -1,6 +1,5 @@
 import {
-  IPaymentAdapter,
-  PaymentProviderType,
+  IPaymentAdapter
 } from '@unchainedshop/types/payments';
 import { log, LogLevel } from 'meteor/unchained:logger';
 import { PaymentError } from './PaymentError';
@@ -30,7 +29,7 @@ export const PaymentAdapter: IPaymentAdapter = {
         return false;
       },
 
-      async charge() {
+      charge: async () => {
         // if you return true, the status will be changed to PAID
 
         // if you return false, the order payment status stays the

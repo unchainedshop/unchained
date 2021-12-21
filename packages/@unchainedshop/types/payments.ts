@@ -19,7 +19,7 @@ export enum PaymentProviderType {
 
 export type PaymentConfiguration = Array<{
   key: string;
-  value: string;
+  value: string | null;
 }>;
 
 export type PaymentProvider = {
@@ -61,34 +61,33 @@ export interface PaymentContext {
   meta?: any;
 }
 
+interface IPaymentActions {
+  charge: (transactionContext?: any) => Promise<any>;
+  configurationError: (transactionContext?: any) => PaymentError;
+  isActive: (transactionContext?: any) => boolean;
+  isPayLaterAllowed: (transactionContext?: any) => boolean;
+  register: (transactionContext?: any) => Promise<any>;
+  sign: (transactionContext?: any) => Promise<any>;
+  validate: (token?: any) => Promise<any>;
+}
+
 export type IPaymentAdapter = IBaseAdapter & {
-  initialConfiguration: Array<PaymentConfiguration>;
+  initialConfiguration: PaymentConfiguration;
 
   typeSupported: (type: PaymentProviderType) => boolean;
 
-  actions: (params: { config: PaymentConfiguration, context: PaymentContext & Context }) => {
-    charge: (transactionContext: any) => Promise<any>;
-    configurationError: (transactionContext: any) => PaymentError;
-    isActive: (transactionContext: any) => boolean;
-    isPayLaterAllowed: (transactionContext: any) => boolean;
-    register: (transactionContext: any) => Promise<any>;
-    sign: (transactionContext: any) => Promise<any>;
-    validate: (token: any) => Promise<any>;
-  };
+  actions: (params: {
+    config: PaymentConfiguration;
+    context: PaymentContext & Context;
+  }) => IPaymentActions;
 };
 
-export type PaymentDirector = IBaseDirector<IPaymentAdapter> & {
+export type IPaymentDirector = IBaseDirector<IPaymentAdapter> & {
   actions: (
-    discountContext: PaymentContext,
+    paymentProvider: PaymentProvider,
+    paymentContext: PaymentContext,
     requestContext: Context
-  ) => {
-    configurationError: () => PaymentError;
-    isActive: () => boolean;
-    isPayLaterAllowed: () => boolean;
-    charge: (transactionContext?: any, userId?: string) => Promise<any>;
-    register: () => Promise<any>;
-    sign: () => Promise<any>;
-    validate: () => Promise<any>;
+  ) => IPaymentActions & {
     run: (command: string, args: any) => Promise<boolean>;
   };
 };
@@ -118,39 +117,57 @@ export type PaymentModule = {
       options?: FindOptions<PaymentProvider>
     ) => Promise<Array<PaymentProvider>>;
 
-    findSupported: (query: { order: Order }) => Array<string>;
-
-    findInterface: (query: PaymentProvider) => PaymentInterface;
-    findInterfaces: (query: {
-      type: PaymentProviderType;
-    }) => Array<PaymentInterface>;
-
     providerExists: (query: { paymentProviderId: string }) => Promise<boolean>;
 
     // Payment adapter
+    findSupported: (
+      query: { order: Order },
+      requestContext: Context
+    ) => Array<string>;
 
-    configurationError: (paymentProvider: PaymentProvider) => PaymentError;
+    findInterface: (
+      query: PaymentProvider,
+    ) => PaymentInterface;
+    findInterfaces: (
+      query: {
+        type: PaymentProviderType;
+      },
+    ) => Array<PaymentInterface>;
+
+    configurationError: (
+      paymentProvider: PaymentProvider,
+      requestContext: Context
+    ) => PaymentError;
 
     isActive: (
       paymentProviderId: string,
-      context?: PaymentContext
+      paymentContext: PaymentContext,
+      requestContext: Context
     ) => Promise<boolean>;
     isPayLaterAllowed: (
       paymentProviderId: string,
-      context?: PaymentContext
+      paymentContext: PaymentContext,
+      requestContext: Context
     ) => Promise<boolean>;
     charge: (
       paymentProviderId: string,
-      context?: PaymentContext
+      paymentContext: PaymentContext,
+      requestContext: Context
     ) => Promise<any>;
     register: (
       paymentProviderId: string,
-      context?: PaymentContext
+      paymentContext: PaymentContext,
+      requestContext: Context
     ) => Promise<any>;
-    sign: (paymentProviderId: string, context?: PaymentContext) => Promise<any>;
+    sign: (
+      paymentProviderId: string,
+      paymentContext: PaymentContext,
+      requestContext: Context
+    ) => Promise<any>;
     validate: (
       paymentProviderId: string,
-      context?: PaymentContext
+      paymentContext: PaymentContext,
+      requestContext: Context
     ) => Promise<any>;
   };
 

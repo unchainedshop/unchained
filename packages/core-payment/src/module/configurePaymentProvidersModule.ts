@@ -1,22 +1,18 @@
+import { Context } from '@unchainedshop/types/api';
+import { Collection, ModuleMutations } from '@unchainedshop/types/common';
 import {
   PaymentContext,
   PaymentModule,
   PaymentProvider,
   PaymentProviderType,
 } from '@unchainedshop/types/payments';
-import { Collection, ModuleMutations } from '@unchainedshop/types/common';
 import { emit, registerEvents } from 'meteor/unchained:events';
 import {
-  generateDbMutations,
   generateDbFilterById,
+  generateDbMutations,
 } from 'meteor/unchained:utils';
 import { PaymentProvidersSchema } from '../db/PaymentProvidersSchema';
-import { PaymentAdapter } from '../director/PaymentAdapter';
-import {
-  getAdapter,
-  getFilteredAdapters,
-  PaymentDirector,
-} from '../director/PaymentDirector';
+import { PaymentDirector } from '../director/PaymentDirector';
 import { paymentProviderSettings } from './configurePaymentProvidersSettings';
 
 const PAYMENT_PROVIDER_EVENTS: string[] = [
@@ -50,13 +46,14 @@ export const configurePaymentProvidersModule = (
 
   const getPaymentAdapter = async (
     paymentProviderId: string,
-    context: PaymentContext
+    paymentContext: PaymentContext,
+    requestContext: Context
   ) => {
     const provider = await PaymentProviders.findOne(
       generateDbFilterById(paymentProviderId)
     );
 
-    return PaymentDirector(provider, getDefaultContext(context));
+    return PaymentDirector.actions(provider, paymentContext, requestContext);
   };
 
   return {
@@ -93,7 +90,7 @@ export const configurePaymentProvidersModule = (
     },
 
     findInterface: (paymentProvider) => {
-      const Adapter = getAdapter(paymentProvider);
+      const Adapter = PaymentDirector.getAdapter(paymentProvider.adapterKey);
       return {
         _id: Adapter.key,
         label: Adapter.label,
@@ -102,19 +99,25 @@ export const configurePaymentProvidersModule = (
     },
 
     findInterfaces: ({ type }) => {
-      return getFilteredAdapters((Adapter: typeof PaymentAdapter) =>
-        Adapter.typeSupported(type)
-      ).map((Adapter) => ({
-        _id: Adapter.key,
-        label: Adapter.label,
-        version: Adapter.version,
-      }));
+      return PaymentDirector.getAdapters()
+        .filter((Adapter) => {
+          Adapter.typeSupported(type);
+        })
+        .map((Adapter) => ({
+          _id: Adapter.key,
+          label: Adapter.label,
+          version: Adapter.version,
+        }));
     },
 
-    findSupported: ({ order }) => {
+    findSupported: ({ order }, requestContext) => {
       const providers = PaymentProviders.find({}).filter(
         (provider: PaymentProvider) => {
-          const director = PaymentDirector(provider, getDefaultContext(order));
+          const director = PaymentDirector.actions(
+            provider,
+            getDefaultContext(order),
+            requestContext
+          );
           return director.isActive();
         }
       );
@@ -127,45 +130,74 @@ export const configurePaymentProvidersModule = (
 
     // Payment Adapter
 
-    configurationError: (paymentProvider) => {
-      return PaymentDirector(
+    configurationError: (paymentProvider, requestContext) => {
+      return PaymentDirector.actions(
         paymentProvider,
-        getDefaultContext()
+        getDefaultContext(),
+        requestContext
       ).configurationError();
     },
 
-    isActive: async (paymentProviderId, context) => {
-      const adapter = await getPaymentAdapter(paymentProviderId, context);
+    isActive: async (paymentProviderId, paymentContext, requestContext) => {
+      const adapter = await getPaymentAdapter(
+        paymentProviderId,
+        paymentContext,
+        requestContext
+      );
       return adapter.isActive();
     },
-    isPayLaterAllowed: async (paymentProviderId, context) => {
-      const adapter = await getPaymentAdapter(paymentProviderId, context);
+    isPayLaterAllowed: async (
+      paymentProviderId,
+      paymentContext,
+      requestContext
+    ) => {
+      const adapter = await getPaymentAdapter(
+        paymentProviderId,
+        paymentContext,
+        requestContext
+      );
       return adapter.isPayLaterAllowed();
     },
 
-    charge: async (paymentProviderId, context) => {
-      const adapter = await getPaymentAdapter(paymentProviderId, context);
+    charge: async (paymentProviderId, paymentContext, requestContext) => {
+      const adapter = await getPaymentAdapter(
+        paymentProviderId,
+        paymentContext,
+        requestContext
+      );
       adapter.charge();
     },
 
-    register: async (paymentProviderId, context) => {
-      const adapter = await getPaymentAdapter(paymentProviderId, context);
+    register: async (paymentProviderId, paymentContext, requestContext) => {
+      const adapter = await getPaymentAdapter(
+        paymentProviderId,
+        paymentContext,
+        requestContext
+      );
       adapter.register();
     },
 
-    sign: async (paymentProviderId, context) => {
-      const adapter = await getPaymentAdapter(paymentProviderId, context);
+    sign: async (paymentProviderId, paymentContext, requestContext) => {
+      const adapter = await getPaymentAdapter(
+        paymentProviderId,
+        paymentContext,
+        requestContext
+      );
       adapter.sign();
     },
 
-    validate: async (paymentProviderId, context) => {
-      const adapter = await getPaymentAdapter(paymentProviderId, context);
+    validate: async (paymentProviderId, paymentContext, requestContext) => {
+      const adapter = await getPaymentAdapter(
+        paymentProviderId,
+        paymentContext,
+        requestContext
+      );
       adapter.validate();
     },
 
     // Mutations
     create: async (doc, userId) => {
-      const Adapter = getAdapter(doc);
+      const Adapter = PaymentDirector.getAdapter(doc.adapterKey);
       if (!Adapter) return null;
 
       const paymentProviderId = await mutations.create(
