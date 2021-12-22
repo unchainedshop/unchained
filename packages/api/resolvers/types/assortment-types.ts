@@ -2,10 +2,9 @@ import { AssortmentHelperTypes } from '@unchainedshop/types/assortments';
 import { Query } from '@unchainedshop/types/common';
 
 export const Assortment: AssortmentHelperTypes = {
-  async assortmentPaths(obj, { forceLocale }, { modules, localeContext }) {
+  async assortmentPaths(obj, _, { modules }) {
     return await modules.assortments.breadcrumbs({
       assortmentId: obj._id as string,
-      locale: forceLocale || localeContext.normalized,
     });
   },
 

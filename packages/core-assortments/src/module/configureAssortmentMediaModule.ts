@@ -16,8 +16,8 @@ import {
   generateDbMutations,
   generateId,
 } from 'meteor/unchained:utils';
-import { AssortmentMediaCollection } from 'src/db/AssortmentMediaCollection';
-import { AssortmentMediaSchema } from 'src/db/AssortmentMediaSchema';
+import { AssortmentMediaCollection } from '../db/AssortmentMediaCollection';
+import { AssortmentMediaSchema } from '../db/AssortmentMediaSchema';
 
 const ASSORTMENT_MEDIA_EVENTS = [
   'ASSORTMENT_ADD_MEDIA',

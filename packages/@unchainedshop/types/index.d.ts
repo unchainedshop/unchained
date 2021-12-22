@@ -1,4 +1,5 @@
 import { Locale, Locales } from '@types/locale';
+import { AssortmentsModule } from './assortments';
 import { BookmarksModule } from './bookmarks';
 import {
   Collection,
@@ -212,18 +213,11 @@ declare module 'meteor/unchained:director-file-upload' {
  * Core packages
  */
 
-declare module 'meteor/unchained:core-events' {
-  export function configureEventsModule(
-    params: ModuleInput
-  ): Promise<EventsModule>;
-}
 
-declare module 'meteor/unchained:core-files-next' {
-  export function configureFilesModule(
+declare module 'meteor/unchained:core-assortments' {
+  export function configureAssortmentsModule(
     params: ModuleInput
-  ): Promise<FilesModule>;
-
-  export const fileServices: any;
+  ): Promise<AssortmentsModule>;
 }
 
 declare module 'meteor/unchained:core-bookmarks' {
@@ -253,6 +247,20 @@ declare module 'meteor/unchained:core-delivery' {
 
   export const DeliveryPricingAdapter: IDeliveryPricingAdapter;
   export const DeliveryPricingDirector: IDeliveryPricingDirector;
+}
+
+declare module 'meteor/unchained:core-events' {
+  export function configureEventsModule(
+    params: ModuleInput
+  ): Promise<EventsModule>;
+}
+
+declare module 'meteor/unchained:core-files-next' {
+  export function configureFilesModule(
+    params: ModuleInput
+  ): Promise<FilesModule>;
+
+  export const fileServices: any;
 }
 
 declare module 'meteor/unchained:core-languages' {

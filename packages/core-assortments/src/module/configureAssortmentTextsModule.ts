@@ -48,7 +48,7 @@ export const configureAssortmentTextsModule = ({
     text: AssortmentText,
     userId?: string
   ) => {
-    const slug = makeSlug({
+    const slug = await makeSlug({
       slug: text.slug,
       title: text.title,
       assortmentId,
@@ -58,7 +58,9 @@ export const configureAssortmentTextsModule = ({
       $set: {
         updated: new Date(),
         updatedBy: userId,
-        ...text,
+        description: text.description,
+        subtitle: text.subtitle,
+        title: text.title,
       },
       $setOnInsert: {
         created: new Date(),
@@ -99,6 +101,7 @@ export const configureAssortmentTextsModule = ({
             updated: new Date(),
           },
           $pull: {
+            /* @ts-ignore */
             slugs: slug,
           },
         }

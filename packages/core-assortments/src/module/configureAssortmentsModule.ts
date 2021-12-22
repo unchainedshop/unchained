@@ -18,10 +18,11 @@ import { AssortmentsCollection } from '../db/AssortmentsCollection';
 import { AssortmentsSchema } from '../db/AssortmentsSchema';
 import { configureAssortmentFiltersModule } from './configureAssortmentFiltersModule';
 import { configureAssortmentLinksModule } from './configureAssortmentLinksModule';
-import { assortmentSettings } from 'src/assortments-settings';
+import { assortmentSettings } from '../assortments-settings';
 import { configureAssortmentProductsModule } from './configureAssortmentProductsModule';
 import { configureAssortmentTextsModule } from './configureAssortmentTextsModule';
 import { configureAssortmentMediaModule } from './configureAssortmentMediaModule';
+import { makeAssortmentBreadcrumbsBuilder } from '../utils/breadcrumbs/makeAssortmentBreadcrumbsBuilder';
 
 const ASSORTMENT_EVENTS = [
   'ASSORTMENT_CREATE',
@@ -147,10 +148,14 @@ export const configureAssortmentsModule = async ({
       return productAssignments.map(({ productId }) => productId);
     }
     // eslint-disable-next-line
-    if (!assortment._cachedProductIds || forceLiveCollection) {
+    if (
+      assortmentSettings.zipTree &&
+      (!assortment._cachedProductIds || forceLiveCollection)
+    ) {
       // get array of assortment products and child assortment links to products
       const collectedProductIdTree =
         (await collectProductIdCacheTree(assortment)) || [];
+
       const assortmentSet = new Set<string>(
         assortmentSettings.zipTree(collectedProductIdTree)
       );
@@ -265,12 +270,14 @@ export const configureAssortmentsModule = async ({
       let selector: Query = {};
 
       if (assortmentId) {
-        selector._id = generateDbFilterById(assortmentId);
+        selector = generateDbFilterById(assortmentId);
       } else if (slug) {
         selector.slugs = slug;
       } else {
         return null;
       }
+
+      console.log('SELECTOR', selector);
 
       return await Assortments.findOne(selector);
     },
@@ -295,6 +302,50 @@ export const configureAssortmentsModule = async ({
         { limit: 1 }
       ).count();
       return !!assortmentCount;
+    },
+
+    breadcrumbs: async ({ assortmentId }) => {
+      const resolveAssortmentLink =
+        (params: { selector: Query } = { selector: {} }) =>
+        async (assortmentId: string, childAssortmentId: string) => {
+          const assortmentLinks = AssortmentLinks.find(
+            { childAssortmentId: assortmentId, ...params.selector },
+            {
+              projection: { parentAssortmentId: 1 },
+              sort: { sortKey: 1 },
+            }
+          );
+
+          const parentIds = await assortmentLinks
+            .map((link) => link.parentAssortmentId)
+            .toArray();
+          return {
+            assortmentId,
+            childAssortmentId,
+            parentIds,
+          };
+        };
+
+      const resolveAssortmentProducts =
+        (params: { selector: Query } = { selector: {} }) =>
+        async (productId: string) => {
+          const assortmentProducts = AssortmentProducts.find(
+            { productId, ...params.selector },
+            {
+              projection: { _id: true, assortmentId: true },
+              sort: { sortKey: 1 },
+            }
+          );
+
+          return await assortmentProducts.toArray();
+        };
+
+      const buildBreadcrumbs = makeAssortmentBreadcrumbsBuilder({
+        resolveAssortmentLink,
+        resolveAssortmentProducts,
+      });
+
+      return await buildBreadcrumbs({ assortmentId });
     },
 
     // Mutations
@@ -373,7 +424,7 @@ export const configureAssortmentsModule = async ({
         generateDbFilterById(assortmentId)
       );
 
-      if (deletedResult.deletedCount === 1 && !options.skipInvalidation) {
+      if (deletedResult.deletedCount === 1 && !options?.skipInvalidation) {
         // Invalidate all assortments
         invalidateCache({});
       }
