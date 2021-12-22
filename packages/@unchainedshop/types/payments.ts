@@ -248,7 +248,7 @@ export interface PaymentProviderHelperTypes {
     provider: PaymentProvider,
     _: never,
     context: Context
-  ) => PaymentError;
+  ) => Promise<PaymentError>;
 }
 
 export interface PaymentCredentialsHelperTypes {

@@ -27,6 +27,13 @@ export type AssortmentMediaModule = {
     assortmentMediaId: string;
   }) => Promise<AssortmentMedia>;
 
+  findAssortmentMedias: (params: {
+    assortmentId: string;
+    limit: number;
+    offset: number;
+    tags?: Array<string>;
+  }) => Promise<Array<AssortmentMedia>>;
+
   // Mutations
   create: (doc: AssortmentMedia, userId: string) => Promise<AssortmentMedia>;
 
@@ -69,5 +76,6 @@ type HelperType<P, T> = (
 ) => T;
 
 export interface AssortmentMediaHelperTypes {
-  file: HelperType<any, File>;
+  texts: HelperType<{ forceLocale?: string }, Promise<AssortmentMediaText>>
+  file: HelperType<any, Promise<File>>;
 }

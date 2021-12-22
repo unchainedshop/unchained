@@ -2,6 +2,13 @@ import { AssortmentHelperTypes } from '@unchainedshop/types/assortments';
 import { Query } from '@unchainedshop/types/common';
 
 export const Assortment: AssortmentHelperTypes = {
+  async assortmentPaths(obj, { forceLocale }, { modules, localeContext }) {
+    return await modules.assortments.breadcrumbs({
+      assortmentId: obj._id as string,
+      locale: forceLocale || localeContext.normalized,
+    });
+  },
+
   childrenCount: async (
     assortment,
     { includeInactive = false },
@@ -24,16 +31,19 @@ export const Assortment: AssortmentHelperTypes = {
     return await modules.assortments.count(selector);
   },
 
-  async texts(obj, { forceLocale }, { modules, localeContext }) {
-    return await modules.assortments.texts.findTexts
-    return obj.getLocalizedTexts(forceLocale || localeContext.normalized);
+  async media(obj, params, { modules }) {
+    return await modules.assortments.media.findAssortmentMedias({
+      assortmentId: obj._id as string,
+      ...params,
+    });
   },
-  // async assortmentPaths(obj, { forceLocale }, { localeContext }) {
-  //   return obj.assortmentPaths(forceLocale || localeContext.normalized);
-  // },
-  // async media(obj, props) {
-  //   return obj.media(props);
-  // },
+
+  async texts(obj, { forceLocale }, { modules, localeContext }) {
+    return await modules.assortments.texts.findLocalizedText({
+      assortmentId: obj._id as string,
+      locale: forceLocale || localeContext.normalized,
+    });
+  },
 
   // TODO: use services
   // async search(obj, query, context) {

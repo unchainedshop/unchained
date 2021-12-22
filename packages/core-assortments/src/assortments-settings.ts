@@ -1,4 +1,4 @@
-import zipTreeByDeepness from './tree-zipper/zipTreeByDeepness';
+import zipTreeByDeepness from './utils/tree-zipper/zipTreeByDeepness';
 
 export const assortmentSettings = {
   zipTree: null,

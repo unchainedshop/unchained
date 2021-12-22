@@ -84,6 +84,8 @@ export type AssortmentsModule = {
     slug?: string;
   }) => Promise<boolean>;
 
+  breadcrumbs: (params: { assortmentId: string, locale?: string }) => Promise<Array<{ links: Array<AssortmentPathLink> }>>;
+
   // Mutations
   create: (
     doc: Assortment & { title: string; locale: string },
@@ -269,10 +271,14 @@ export type AssortmentsModule = {
 
   texts: {
     // Queries
-
     findTexts: (params: {
       assortmentId: string;
     }) => Promise<Array<AssortmentText>>;
+
+    findLocalizedText: (params: {
+      assortmentId: string;
+      locale?: string;
+    }) => Promise<AssortmentText>;
     searchTexts: ({ searchText: string }) => Promise<Array<string>>;
 
     // Mutations
@@ -314,7 +320,8 @@ interface AssortmentPathLink {
 
 export interface AssortmentHelperTypes {
   childrenCount: HelperType<{ includeInactive: boolean }, Promise<number>>;
-  texts: HelperType<{ forceLocale?: string }, Promise<Array<AssortmentText>>>;
+  texts: HelperType<{ forceLocale?: string }, Promise<AssortmentText>>;
+  
   assortmentPaths: HelperType<
     { forceLocale?: string },
     Promise<Array<{ links: Array<AssortmentPathLink> }>>
@@ -328,4 +335,18 @@ export interface AssortmentHelperTypes {
     },
     Promise<Array<AssortmentMedia>>
   >;
+}
+
+export interface AssortmentPathLinkHelperTypes {
+  link: (params: { assortmentId: string, childAssortmentId: string }, _: never, context: Context) => Promise<AssortmentLink>;
+ 
+  assortmentSlug: HelperType<
+    { forceLocale?: string },
+    Promise<string>
+  >
+  
+  assortmentTexts: HelperType<
+    { forceLocale?: string },
+    Promise<AssortmentText>
+  >
 }

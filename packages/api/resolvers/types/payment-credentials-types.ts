@@ -1,10 +1,9 @@
-import { Users } from 'meteor/unchained:core-users';
 import { PaymentCredentialsHelperTypes } from '@unchainedshop/types/payments';
 
 export const PaymentCredentials: PaymentCredentialsHelperTypes = {
-  async user(obj) {
-    return (Users as any).findOne({
-      _id: obj.userId,
+  async user(obj, _, { modules }) {
+    return await modules.users.findUser({
+      userId: obj.userId,
     });
   },
 
@@ -14,10 +13,13 @@ export const PaymentCredentials: PaymentCredentialsHelperTypes = {
     });
   },
 
-  async isValid(obj, _, { modules, userId }) {
+  async isValid(obj, _, context) {
+    const { modules, userId } = context;
+
     return await modules.payment.paymentProviders.validate(
       obj.paymentProviderId,
-      { paymentProviderId: obj.paymentProviderId, userId, token: obj }
+      { paymentProviderId: obj.paymentProviderId, userId, token: obj },
+      context
     );
   },
 };

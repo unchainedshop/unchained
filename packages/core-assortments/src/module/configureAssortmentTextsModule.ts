@@ -4,12 +4,14 @@ import {
   Assortment,
 } from '@unchainedshop/types/assortments';
 import { Collection, Filter } from '@unchainedshop/types/common';
+import { Locale } from 'locale';
 import { emit, registerEvents } from 'meteor/unchained:events';
 import {
   findUnusedSlug,
   generateDbFilterById,
   generateId,
   dbIdToString,
+  findLocalizedText,
 } from 'meteor/unchained:utils';
 
 const ASSORTMENT_TEXT_EVENTS = ['ASSORTMENT_UPDATE_TEXTS'];
@@ -116,6 +118,18 @@ export const configureAssortmentTextsModule = ({
       });
 
       return texts.toArray();
+    },
+
+    findLocalizedText: async ({ assortmentId, locale }) => {
+      const parsedLocale = new Locale(locale);
+
+      const text = await findLocalizedText<AssortmentText>(
+        AssortmentTexts,
+        { assortmentId },
+        parsedLocale
+      );
+
+      return text;
     },
 
     searchTexts: async ({ searchText }) => {

@@ -14,7 +14,7 @@ import {
   uploadFileFromURL,
   createUploadContainer,
 } from 'meteor/unchained:core-files-next';
-import { makeBreadcrumbsBuilder } from '../../breadcrumbs';
+import { makeBreadcrumbsBuilder } from '../../src/utils/breadcrumbs';
 import * as Collections from './collections';
 import settings from '../../settings';
 import { AssortmentMedia } from '../assortment-media';

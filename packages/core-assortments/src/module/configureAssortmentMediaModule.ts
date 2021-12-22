@@ -3,7 +3,11 @@ import {
   AssortmentMediaModule,
   AssortmentMediaText,
 } from '@unchainedshop/types/assortments.media';
-import { ModuleInput, ModuleMutations } from '@unchainedshop/types/common';
+import {
+  ModuleInput,
+  ModuleMutations,
+  Query,
+} from '@unchainedshop/types/common';
 import { Locale } from 'locale';
 import { emit, registerEvents } from 'meteor/unchained:events';
 import {
@@ -73,6 +77,21 @@ export const configureAssortmentMediaModule = async ({
       return await AssortmentMedia.findOne(
         generateDbFilterById(assortmentMediaId)
       );
+    },
+
+    findAssortmentMedias: async ({ assortmentId, tags, offset, limit }) => {
+      const selector: Query = { assortmentId };
+      if (tags && tags.length > 0) {
+        selector.tags = { $all: tags };
+      }
+
+      const mediaList = AssortmentMedia.find(selector, {
+        skip: offset,
+        limit,
+        sort: { sortKey: 1 },
+      });
+
+      return await mediaList.toArray();
     },
 
     // Mutations
@@ -156,6 +175,24 @@ export const configureAssortmentMediaModule = async ({
      */
 
     texts: {
+      // Queries
+      findMediaTexts: async ({ assortmentMediaId }) => {
+        return await AssortmentMediaTexts.find({ assortmentMediaId }).toArray();
+      },
+
+      findLocalizedMediaText: async ({ assortmentMediaId, locale }) => {
+        const parsedLocale = new Locale(locale);
+
+        const text = await findLocalizedText<AssortmentMediaText>(
+          AssortmentMediaTexts,
+          { assortmentMediaId },
+          parsedLocale
+        );
+
+        return text;
+      },
+
+      // Mutations
       updateMediaTexts: async (assortmentMediaId, texts, userId) => {
         const mediaTexts = await Promise.all(
           texts.map(
@@ -178,22 +215,6 @@ export const configureAssortmentMediaModule = async ({
         });
 
         return mediaTexts;
-      },
-
-      findMediaTexts: async ({ assortmentMediaId }) => {
-        return await AssortmentMediaTexts.find({ assortmentMediaId }).toArray();
-      },
-
-      findLocalizedMediaText: async ({ assortmentMediaId, locale }) => {
-        const parsedLocale = new Locale(locale);
-
-        const text = await findLocalizedText<AssortmentMediaText>(
-          AssortmentMediaTexts,
-          { assortmentMediaId },
-          parsedLocale
-        );
-
-        return text;
       },
     },
   };
