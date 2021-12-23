@@ -1,0 +1,425 @@
+import {
+  Filter,
+  FindOptions,
+  ModuleInput,
+  ModuleMutations,
+  Query,
+} from '@unchainedshop/types/common';
+import { ProductsModule, Product } from '@unchainedshop/types/products';
+import { emit, registerEvents } from 'meteor/unchained:events';
+import { log, LogLevel } from 'meteor/unchained:logger';
+import {
+  dbIdToString,
+  generateDbMutations,
+  generateDbFilterById,
+  objectInvert,
+} from 'meteor/unchained:utils';
+import { ProductsCollection } from '../db/ProductsCollection';
+import {
+  ProductsSchema,
+  ProductStatus,
+  ProductTypes,
+} from '../db/ProductsSchema';
+import { configureProductTextsModule } from './configureProductTextsModule';
+import { configureProductMediaModule } from './configureProductMediaModule';
+import { configureProductPricesModule } from './configureProductPrices';
+
+const PRODUCT_EVENTS = [
+  'PRODUCT_CREATE',
+  'PRODUCT_REMOVE',
+  'PRODUCT_SET_BASE',
+  'PRODUCT_UPDATE',
+];
+
+const buildFindSelector = ({
+  slugs = [],
+  tags = [],
+  includeDrafts = false,
+}) => {
+  const selector: Query = {};
+
+  if (slugs?.length > 0) {
+    selector.slugs = { $in: slugs };
+  } else if (tags?.length > 0) {
+    selector.tags = { $all: tags };
+  }
+
+  if (!includeDrafts) {
+    selector.status = { $eq: ProductStatus.ACTIVE };
+  } else {
+    selector.status = { $in: [ProductStatus.ACTIVE, ProductStatus.DRAFT] };
+  }
+
+  return selector;
+};
+
+export const configureProductsModule = async ({
+  db,
+}: ModuleInput): Promise<ProductsModule> => {
+  registerEvents(PRODUCT_EVENTS);
+
+  const { Products, ProductTexts } = await ProductsCollection(db);
+
+  const mutations = generateDbMutations<Product>(
+    Products,
+    ProductsSchema
+  ) as ModuleMutations<Product>;
+
+  const deleteProductPermanently: ProductsModule['deleteProductPermanently'] =
+    async (productId) => {
+      const deletedResult = await Products.deleteOne(
+        generateDbFilterById(productId, { status: ProductStatus.DELETED })
+      );
+
+      return deletedResult.deletedCount;
+    };
+
+  const publishProduct: ProductsModule['publish'] = async (product, userId) => {
+    if (product.status === ProductStatus.DRAFT) {
+      await Products.updateOne(generateDbFilterById(product._id), {
+        $set: {
+          status: ProductStatus.ACTIVE,
+          updated: new Date(),
+          updatedBy: userId,
+          published: new Date(),
+        },
+      });
+
+      emit('PRODUCT_PUBLISH', { product: this });
+
+      return true;
+    }
+
+    return false;
+  };
+
+  const unpublishProduct: ProductsModule['unpublish'] = async (
+    product,
+    userId
+  ) => {
+    if (product.status === ProductStatus.ACTIVE) {
+      await Products.updateOne(generateDbFilterById(product._id), {
+        $set: {
+          status: ProductStatus.DRAFT,
+          updated: new Date(),
+          updatedBy: userId,
+          published: null,
+        },
+      });
+
+      emit('PRODUCT_UNPUBLISH', { product: this });
+
+      return true;
+    }
+
+    return false;
+  };
+
+  const proxyProducts: ProductsModule['proxyProducts'] = async (
+    product,
+    vectors,
+    { includeInactive = false } = {}
+  ) => {
+    const { proxy } = product;
+    let filtered = [...(proxy.assignments || [])];
+
+    vectors.forEach(({ key, value }) => {
+      filtered = filtered.filter((assignment) => {
+        if (assignment.vector[key] === value) {
+          return true;
+        }
+        return false;
+      });
+    });
+    const productIds = filtered.map(
+      (filteredAssignment) => filteredAssignment.productId
+    );
+    const selector: Query = {
+      _id: { $in: productIds },
+      status: includeInactive
+        ? { $in: [ProductStatus.ACTIVE, ProductStatus.DRAFT] }
+        : ProductStatus.ACTIVE,
+    };
+    return await Products.find(selector).toArray();
+  };
+
+  /*
+   * Product sub entities
+   */
+
+  const productTexts = configureProductTextsModule({
+    Products,
+    ProductTexts,
+  });
+
+  /*
+   * Product
+   */
+
+  return {
+    // Queries
+    findProduct: async ({ productId, slug }) => {
+      return await Products.findOne(
+        productId ? generateDbFilterById(productId) : { slugs: slug }
+      );
+    },
+
+    findProducts: async ({ limit, offset, ...query }) => {
+      const options: FindOptions = { sort: { sequence: 1, published: -1 } };
+
+      if (!query.slugs?.length) {
+        options.skip = offset;
+        options.limit = limit;
+      }
+
+      const products = Products.find(buildFindSelector(query), options);
+
+      return await products.toArray();
+    },
+
+    count: async (query) => {
+      return await Products.find(buildFindSelector(query)).count();
+    },
+
+    productExists: async ({ productId, slug }) => {
+      const selector: Query = productId
+        ? generateDbFilterById(productId)
+        : { slugs: slug };
+      selector.status = { $ne: ProductStatus.DELETED };
+
+      const productCount = await Products.find(selector, { limit: 1 }).count();
+
+      return !!productCount;
+    },
+
+    // Transformations
+    normalizedStatus: (product) => {
+      return objectInvert(ProductStatus)[product.status || null];
+    },
+
+    isActive: (product) => {
+      return product.status === ProductStatus.ACTIVE;
+    },
+    isDraft: (product) => {
+      return product.status === ProductStatus.DRAFT;
+    },
+
+    proxyAssignments: async (product, { includeInactive = false } = {}) => {
+      const assignments = product.proxy?.assignments || [];
+
+      const productIds = assignments.map(({ productId }) => productId);
+      const selector: Query = {
+        _id: { $in: productIds },
+        status: includeInactive
+          ? { $in: [ProductStatus.ACTIVE, ProductStatus.DRAFT] }
+          : ProductStatus.ACTIVE,
+      };
+      const supportedProductIds = await Products.find(selector, {
+        projection: { _id: 1 },
+      })
+        .map(({ _id }) => dbIdToString(_id))
+        .toArray();
+
+      return assignments
+        .filter(({ productId }) => {
+          return supportedProductIds.includes(productId);
+        })
+        .map((assignment) => ({
+          assignment,
+          product: this,
+        }));
+    },
+
+    proxyProducts,
+
+    prices: configureProductPricesModule({ Products, proxyProducts }),
+
+    // Mutations
+    create: async (
+      { locale, title, type, sequence, authorId, ...productData },
+      userId,
+      { autopublish = false } = {}
+    ) => {
+      if (productData._id) {
+        // Remove deleted product by _id before creating a new one.
+        await deleteProductPermanently(productData._id as string);
+      }
+
+      const productId = await mutations.create(
+        {
+          created: new Date(),
+          type: ProductTypes[type],
+          status: ProductStatus.DRAFT,
+          sequence: sequence ?? (await Products.find({}).count()) + 10,
+          authorId,
+          ...productData,
+        },
+        userId
+      );
+
+      const product = await Products.findOne(generateDbFilterById(productId));
+
+      if (locale) {
+        productTexts.upsertLocalizedText(
+          productId,
+          locale,
+          { productId, title, authorId, locale },
+          userId
+        );
+
+        if (autopublish) {
+          await publishProduct(product, userId);
+        }
+      }
+
+      emit('PRODUCT_CREATE', { product });
+
+      return product;
+    },
+
+    update: async (_id: string, doc: Product, userId?: string) => {
+      const updateDoc = doc;
+      if (doc.type) {
+        updateDoc.type = ProductTypes[doc.type];
+      }
+
+      const productId = await mutations.update(_id, updateDoc, userId);
+
+      emit('PRODUCT_UPDATE', { productId, ...doc });
+
+      return productId;
+    },
+
+    delete: async (productId, userId) => {
+      const product = await Products.findOne(generateDbFilterById(productId));
+
+      if (product.status !== ProductStatus.DRAFT) {
+        throw new Error(`Invalid status', ${product.status}`);
+      }
+
+      const updatedResult = await Products.updateOne(
+        generateDbFilterById(productId),
+        {
+          $set: {
+            status: ProductStatus.DELETED,
+            updated: new Date(),
+            updatedBy: userId,
+          },
+        }
+      );
+
+      emit('PRODUCT_REMOVE', { productId });
+
+      return updatedResult.modifiedCount;
+    },
+
+    deleteProductPermanently,
+
+    publish: publishProduct,
+    unpublish: unpublishProduct,
+
+    /*
+     * Sub entities
+     */
+
+    assignments: {
+      addProxyAssignment: async (productId, { proxyId, vectors }, userId) => {
+        const vector = {};
+        vectors.forEach(({ key, value }) => {
+          vector[key] = value;
+        });
+        const modifier = {
+          $set: {
+            updated: new Date(),
+          },
+          $push: {
+            'proxy.assignments': {
+              vector,
+              productId,
+            },
+          },
+        };
+
+        await Products.updateOne(generateDbFilterById(proxyId), modifier);
+
+        emit('PRODUCT_ADD_ASSIGNMENT', { productId, proxyId });
+
+        return proxyId;
+      },
+
+      removeAssignment: async (productId, { vectors }, userId) => {
+        const vector = {};
+        vectors.forEach(({ key, value }) => {
+          vector[key] = value;
+        });
+        const modifier = {
+          $set: {
+            updated: new Date(),
+            updatedBy: userId,
+          },
+          $pull: {
+            'proxy.assignments': {
+              vector,
+            },
+          },
+        };
+        await Products.updateOne(generateDbFilterById(productId), modifier);
+
+        emit('PRODUCT_REMOVE_ASSIGNMENT', { productId });
+
+        return vectors.length;
+      },
+    },
+
+    bundleItems: {
+      addBundleItem: async (productId, doc, userId) => {
+        const result = await Products.updateOne(
+          generateDbFilterById(productId),
+          {
+            $set: {
+              updated: new Date(),
+              updatedBy: userId,
+            },
+            $push: {
+              bundleItems: doc,
+            },
+          }
+        );
+
+        emit('PRODUCT_CREATE_BUNDLE_ITEM', { productId });
+
+        return productId;
+      },
+
+      removeBundleItem: async (productId, index, userId) => {
+        // TODO: There has to be a better MongoDB way to do this!
+        const product = await Products.findOne(generateDbFilterById(productId));
+
+        const { bundleItems = [] } = product;
+        const removedItems = bundleItems.splice(index, 1);
+        const removedItem = removedItems.length === 1 ? removedItems[0] : null;
+
+        if (removedItem) {
+          await Products.updateOne(generateDbFilterById(productId), {
+            $set: {
+              updated: new Date(),
+              updatedBy: userId,
+              bundleItems,
+            },
+          });
+        }
+
+        emit('PRODUCT_REMOVE_BUNDLE_ITEM', {
+          productId,
+          item: removedItem,
+        });
+
+        return removedItem;
+      },
+    },
+
+    media: await configureProductMediaModule({ db }),
+
+    texts: productTexts,
+  };
+};

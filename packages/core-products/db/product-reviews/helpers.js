@@ -36,17 +36,20 @@ const buildSortOptions = (options) => {
 };
 
 ProductReviews.helpers({
-  product() {
+  // Use product and user find from modules directly
+  /* product() {
     return Products.findOne({ _id: this.productId });
   },
   author() {
     return Users.findOne({ _id: this.authorId });
-  },
+  }, */
+
   userIdsThatVoted({ type = ProductReviewVoteTypes.UPVOTE } = {}) {
     return (this.votes || [])
       .filter(({ type: currentType }) => type === currentType)
       .map(({ userId }) => userId);
   },
+
   voteCount({ type = ProductReviewVoteTypes.UPVOTE }) {
     return this.userIdsThatVoted({ type }).length;
   },

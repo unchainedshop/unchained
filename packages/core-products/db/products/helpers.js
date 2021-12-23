@@ -59,7 +59,7 @@ ProductMedia.createSignedUploadURL = async (
   );
 };
 
-const getPriceLevels = (product, { currencyCode, countryCode }) => {
+/* const getPriceLevels = (product, { currencyCode, countryCode }) => {
   return (product?.commerce?.pricing || [])
     .sort(
       (
@@ -135,15 +135,15 @@ const getPriceRange = (prices) => {
       currencyCode: max?.currencyCode,
     },
   };
-};
+};*/
 
-Products.productExists = ({ productId, slug }) => {
-  const selector = productId ? { _id: productId } : { slugs: slug };
-  selector.status = { $ne: ProductStatus.DELETED };
-  return !!Products.find(selector, { limit: 1 }).count();
-};
+// Products.productExists = ({ productId, slug }) => {
+//   const selector = productId ? { _id: productId } : { slugs: slug };
+//   selector.status = { $ne: ProductStatus.DELETED };
+//   return !!Products.find(selector, { limit: 1 }).count();
+// };
 
-Products.findProduct = ({ productId, slug }) => {
+/* Products.findProduct = ({ productId, slug }) => {
   const selector = productId ? { _id: productId } : { slugs: slug };
   return Products.findOne(selector);
 };
@@ -176,25 +176,25 @@ Products.findProducts = ({
   }
   return Products.find(selector, options).fetch();
 };
+*/
+// Products.count = async ({ tags, includeDrafts, slugs }) => {
+//   const selector = {};
 
-Products.count = async ({ tags, includeDrafts, slugs }) => {
-  const selector = {};
+//   if (slugs?.length > 0) {
+//     selector.slugs = { $in: slugs };
+//   } else if (tags?.length > 0) {
+//     selector.tags = { $all: tags };
+//   }
+//   if (!includeDrafts) {
+//     selector.status = { $eq: ProductStatus.ACTIVE };
+//   } else {
+//     selector.status = { $in: [ProductStatus.ACTIVE, ProductStatus.DRAFT] };
+//   }
+//   const count = await Products.rawCollection().countDocuments(selector);
+//   return count;
+// };
 
-  if (slugs?.length > 0) {
-    selector.slugs = { $in: slugs };
-  } else if (tags?.length > 0) {
-    selector.tags = { $all: tags };
-  }
-  if (!includeDrafts) {
-    selector.status = { $eq: ProductStatus.ACTIVE };
-  } else {
-    selector.status = { $in: [ProductStatus.ACTIVE, ProductStatus.DRAFT] };
-  }
-  const count = await Products.rawCollection().countDocuments(selector);
-  return count;
-};
-
-Products.createProduct = (
+/* Products.createProduct = (
   { locale, title, type, sequence, authorId, ...productData },
   { autopublish = false } = {}
 ) => {
@@ -219,9 +219,9 @@ Products.createProduct = (
   }
   emit('PRODUCT_CREATE', { product });
   return product;
-};
+}; */
 
-Products.updateProduct = ({ productId, type, ...product }) => {
+/* Products.updateProduct = ({ productId, type, ...product }) => {
   const modifier = {
     $set: {
       ...product,
@@ -234,7 +234,8 @@ Products.updateProduct = ({ productId, type, ...product }) => {
   const result = Products.update({ _id: productId }, modifier);
   emit('PRODUCT_UPDATE', { productId, type, ...product });
   return result;
-};
+}; */
+
 ProductTexts.findProductTexts = ({ productId }) => {
   return ProductTexts.find({ productId }).fetch();
 };
@@ -257,110 +258,110 @@ ProductTexts.makeSlug = ({ slug, title, productId }, options) => {
   });
 };
 
-Products.addProxyAssignment = ({ productId, proxyId, vectors }) => {
-  const vector = {};
-  vectors.forEach(({ key, value }) => {
-    vector[key] = value;
-  });
-  const modifier = {
-    $set: {
-      updated: new Date(),
-    },
-    $push: {
-      'proxy.assignments': {
-        vector,
-        productId,
-      },
-    },
-  };
-  emit('PRODUCT_ADD_ASSIGNMENT', { productId, proxyId });
-  return Products.update({ _id: proxyId }, modifier);
-};
+// Products.addProxyAssignment = ({ productId, proxyId, vectors }) => {
+//   const vector = {};
+//   vectors.forEach(({ key, value }) => {
+//     vector[key] = value;
+//   });
+//   const modifier = {
+//     $set: {
+//       updated: new Date(),
+//     },
+//     $push: {
+//       'proxy.assignments': {
+//         vector,
+//         productId,
+//       },
+//     },
+//   };
+//   emit('PRODUCT_ADD_ASSIGNMENT', { productId, proxyId });
+//   return Products.update({ _id: proxyId }, modifier);
+// };
 
-Products.createBundleItem = ({ productId, item }) => {
-  const result = Products.update(
-    { _id: productId },
-    {
-      $set: {
-        updated: new Date(),
-      },
-      $push: {
-        bundleItems: item,
-      },
-    }
-  );
-  emit('PRODUCT_CREATE_BUNDLE_ITEM', { productId });
-  return result;
-};
+// Products.createBundleItem = ({ productId, item }) => {
+//   const result = Products.update(
+//     { _id: productId },
+//     {
+//       $set: {
+//         updated: new Date(),
+//       },
+//       $push: {
+//         bundleItems: item,
+//       },
+//     }
+//   );
+//   emit('PRODUCT_CREATE_BUNDLE_ITEM', { productId });
+//   return result;
+// };
 
-Products.removeBundleItem = ({ productId, index }) => {
-  // TODO: There has to be a better MongoDB way to do this!
-  const product = Products.findOne({ _id: productId });
-  const { bundleItems = [] } = product;
-  const removedItem = bundleItems.splice(index, 1);
+// Products.removeBundleItem = ({ productId, index }) => {
+//   // TODO: There has to be a better MongoDB way to do this!
+//   const product = Products.findOne({ _id: productId });
+//   const { bundleItems = [] } = product;
+//   const removedItem = bundleItems.splice(index, 1);
 
-  const result = Products.update(
-    { _id: productId },
-    {
-      $set: {
-        updated: new Date(),
-        bundleItems,
-      },
-    }
-  );
-  emit('PRODUCT_REMOVE_BUNDLE_ITEM', {
-    productId,
-    item: removedItem,
-  });
-  return result;
-};
+//   const result = Products.update(
+//     { _id: productId },
+//     {
+//       $set: {
+//         updated: new Date(),
+//         bundleItems,
+//       },
+//     }
+//   );
+//   emit('PRODUCT_REMOVE_BUNDLE_ITEM', {
+//     productId,
+//     item: removedItem,
+//   });
+//   return result;
+// };
 
-Products.permanentlyRemoveDeletedProduct = ({ productId }) => {
-  Products.remove({ status: ProductStatus.DELETED, _id: productId });
-};
+// Products.permanentlyRemoveDeletedProduct = ({ productId }) => {
+//   Products.remove({ status: ProductStatus.DELETED, _id: productId });
+// };
 
-Products.removeProduct = ({ productId }) => {
-  const product = Products.findOne({ _id: productId });
-  switch (product.status) {
-    case ProductStatus.ACTIVE:
-      product.unpublish();
-    // falls through
-    case ProductStatus.DRAFT:
-      AssortmentProducts.removeProduct({ productId });
-      Products.update(
-        { _id: productId },
-        {
-          $set: {
-            status: ProductStatus.DELETED,
-            updated: new Date(),
-          },
-        }
-      );
-      emit('PRODUCT_REMOVE', { productId });
-      break;
-    default:
-      throw new Error(`Invalid status', ${product.status}`);
-  }
-};
+// Products.removeProduct = ({ productId }) => {
+//   const product = Products.findOne({ _id: productId });
+//   switch (product.status) {
+//     case ProductStatus.ACTIVE:
+//       product.unpublish();
+//     // falls through
+//     case ProductStatus.DRAFT:
+//       AssortmentProducts.removeProduct({ productId });
+//       Products.update(
+//         { _id: productId },
+//         {
+//           $set: {
+//             status: ProductStatus.DELETED,
+//             updated: new Date(),
+//           },
+//         }
+//       );
+//       emit('PRODUCT_REMOVE', { productId });
+//       break;
+//     default:
+//       throw new Error(`Invalid status', ${product.status}`);
+//   }
+// };
 
-Products.removeAssignment = ({ productId, vectors }) => {
-  const vector = {};
-  vectors.forEach(({ key, value }) => {
-    vector[key] = value;
-  });
-  const modifier = {
-    $set: {
-      updated: new Date(),
-    },
-    $pull: {
-      'proxy.assignments': {
-        vector,
-      },
-    },
-  };
-  Products.update({ _id: productId }, modifier, { multi: true });
-  emit('PRODUCT_REMOVE_ASSIGNMENT', { productId });
-};
+// Products.removeAssignment = ({ productId, vectors }) => {
+//   const vector = {};
+//   vectors.forEach(({ key, value }) => {
+//     vector[key] = value;
+//   });
+//   const modifier = {
+//     $set: {
+//       updated: new Date(),
+//     },
+//     $pull: {
+//       'proxy.assignments': {
+//         vector,
+//       },
+//     },
+//   };
+//   Products.update({ _id: productId }, modifier, { multi: true });
+//   emit('PRODUCT_REMOVE_ASSIGNMENT', { productId });
+// };
 
 AssortmentProducts.helpers({
   product() {
@@ -385,6 +386,7 @@ Products.helpers({
     });
   },
 
+  // Use Products Types,
   siblings({
     assortmentId,
     limit,
@@ -417,7 +419,7 @@ Products.helpers({
     return Products.find(productSelector, productOptions).fetch();
   },
 
-  publish() {
+  /* publish() {
     switch (this.status) {
       case ProductStatus.DRAFT:
         Products.update(
@@ -455,6 +457,9 @@ Products.helpers({
         return false;
     }
   },
+   */
+
+
   upsertLocalizedText(locale, { slug: forcedSlug, title = null, ...fields }) {
     const slug = ProductTexts.makeSlug({
       slug: forcedSlug,
@@ -533,6 +538,7 @@ Products.helpers({
     });
     return productTexts;
   },
+
   addMediaLink(mediaData) {
     return ProductMedia.createMedia({
       productId: this._id,
@@ -573,9 +579,11 @@ Products.helpers({
     const parsedLocale = new Locale(locale);
     return Products.getLocalizedTexts(this._id, parsedLocale);
   },
-  normalizedStatus() {
-    return objectInvert(ProductStatus)[this.status || null];
-  },
+  
+  // normalizedStatus() {
+  //   return objectInvert(ProductStatus)[this.status || null];
+  // },
+
   media({ limit, offset, tags }) {
     const selector = { productId: this._id };
     if (tags && tags.length > 0) {
@@ -587,60 +595,65 @@ Products.helpers({
       sort: { sortKey: 1 },
     }).fetch();
   },
-  variations() {
+
+  // Use Product variations modules directly
+  /* variations() {
     return ProductVariations.find({ productId: this._id }).fetch();
   },
   variation(key) {
     return ProductVariations.findOne({ productId: this._id, key });
-  },
-  proxyAssignments({ includeInactive = false } = {}) {
-    const assignments = this.proxy?.assignments || [];
+  }, */
 
-    const productIds = assignments.map(({ productId }) => productId);
-    const selector = {
-      _id: { $in: productIds },
-      status: includeInactive
-        ? { $in: [ProductStatus.ACTIVE, ProductStatus.DRAFT] }
-        : ProductStatus.ACTIVE,
-    };
-    const supportedProductIds = Products.find(selector, {
-      fields: { _id: 1 },
-    })
-      .fetch()
-      .map(({ _id }) => _id);
+  // proxyAssignments({ includeInactive = false } = {}) {
+  //   const assignments = this.proxy?.assignments || [];
 
-    return assignments
-      .filter(({ productId }) => {
-        return supportedProductIds.includes(productId);
-      })
-      .map((assignment) => ({
-        assignment,
-        product: this,
-      }));
-  },
-  proxyProducts(vectors, { includeInactive = false } = {}) {
-    const { proxy = {} } = this;
-    let filtered = [...(proxy.assignments || [])];
+  //   const productIds = assignments.map(({ productId }) => productId);
+  //   const selector = {
+  //     _id: { $in: productIds },
+  //     status: includeInactive
+  //       ? { $in: [ProductStatus.ACTIVE, ProductStatus.DRAFT] }
+  //       : ProductStatus.ACTIVE,
+  //   };
+  //   const supportedProductIds = Products.find(selector, {
+  //     fields: { _id: 1 },
+  //   })
+  //     .fetch()
+  //     .map(({ _id }) => _id);
 
-    vectors.forEach(({ key, value }) => {
-      filtered = filtered.filter((assignment) => {
-        if (assignment.vector[key] === value) {
-          return true;
-        }
-        return false;
-      });
-    });
-    const productIds = filtered.map(
-      (filteredAssignment) => filteredAssignment.productId
-    );
-    const selector = {
-      _id: { $in: productIds },
-      status: includeInactive
-        ? { $in: [ProductStatus.ACTIVE, ProductStatus.DRAFT] }
-        : ProductStatus.ACTIVE,
-    };
-    return Products.find(selector).fetch();
-  },
+  //   return assignments
+  //     .filter(({ productId }) => {
+  //       return supportedProductIds.includes(productId);
+  //     })
+  //     .map((assignment) => ({
+  //       assignment,
+  //       product: this,
+  //     }));
+  // },
+  // proxyProducts(vectors, { includeInactive = false } = {}) {
+  //   const { proxy = {} } = this;
+  //   let filtered = [...(proxy.assignments || [])];
+
+  //   vectors.forEach(({ key, value }) => {
+  //     filtered = filtered.filter((assignment) => {
+  //       if (assignment.vector[key] === value) {
+  //         return true;
+  //       }
+  //       return false;
+  //     });
+  //   });
+  //   const productIds = filtered.map(
+  //     (filteredAssignment) => filteredAssignment.productId
+  //   );
+  //   const selector = {
+  //     _id: { $in: productIds },
+  //     status: includeInactive
+  //       ? { $in: [ProductStatus.ACTIVE, ProductStatus.DRAFT] }
+  //       : ProductStatus.ACTIVE,
+  //   };
+  //   return Products.find(selector).fetch();
+  // },
+
+  // Service?
   userDispatches({ deliveryProviderType, ...options }, requestContext) {
     const deliveryProviders = DeliveryProviders.findProviders({
       type: deliveryProviderType,
@@ -749,41 +762,43 @@ Products.helpers({
       isNetPrice: useNetPrice,
     };
   },
-  price({ country: countryCode, currency: forcedCurrencyCode, quantity = 1 }) {
-    const currencyCode =
-      forcedCurrencyCode ||
-      Countries.resolveDefaultCurrencyCode({
-        isoCode: countryCode,
-      });
+  // price({ country: countryCode, currency: forcedCurrencyCode, quantity = 1 }) {
+  //   const currencyCode =
+  //     forcedCurrencyCode ||
+  //     Countries.resolveDefaultCurrencyCode({
+  //       isoCode: countryCode,
+  //     });
 
-    const pricing = getPriceLevels(this, {
-      currencyCode,
-      countryCode,
-    });
-    const foundPrice = pricing.find(
-      (level) => !level.maxQuantity || level.maxQuantity >= quantity
-    );
+  //   const pricing = getPriceLevels(this, {
+  //     currencyCode,
+  //     countryCode,
+  //   });
+  //   const foundPrice = pricing.find(
+  //     (level) => !level.maxQuantity || level.maxQuantity >= quantity
+  //   );
 
-    const price = {
-      amount: null,
-      currencyCode,
-      countryCode,
-      isTaxable: false,
-      isNetPrice: false,
-      ...foundPrice,
-    };
+  //   const price = {
+  //     amount: null,
+  //     currencyCode,
+  //     countryCode,
+  //     isTaxable: false,
+  //     isNetPrice: false,
+  //     ...foundPrice,
+  //   };
 
-    if (price.amount !== undefined && price.amount !== null) {
-      return {
-        _id: crypto
-          .createHash('sha256')
-          .update([this._id, countryCode, currencyCode].join(''))
-          .digest('hex'),
-        ...price,
-      };
-    }
-    return null;
-  },
+  //   if (price.amount !== undefined && price.amount !== null) {
+  //     return {
+  //       _id: crypto
+  //         .createHash('sha256')
+  //         .update([this._id, countryCode, currencyCode].join(''))
+  //         .digest('hex'),
+  //       ...price,
+  //     };
+  //   }
+  //   return null;
+  // },
+
+  // Service ?
   resolveOrderableProduct({ configuration = [] }) {
     this.checkIsActive();
     if (this.type === ProductTypes.ConfigurableProduct) {
@@ -808,6 +823,7 @@ Products.helpers({
     }
     return this;
   },
+
   checkIsActive() {
     if (!this.isActive()) {
       throw new Error(
@@ -815,10 +831,10 @@ Products.helpers({
       );
     }
   },
-  isActive() {
-    if (this.status === ProductStatus.ACTIVE) return true;
-    return false;
-  },
+  // isActive() {
+  //   if (this.status === ProductStatus.ACTIVE) return true;
+  //   return false;
+  // },
   reviews({ limit, offset }) {
     return ProductReviews.findReviews(
       { productId: this._id },
