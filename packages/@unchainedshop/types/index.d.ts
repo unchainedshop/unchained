@@ -12,6 +12,7 @@ import {
   ModuleCreateMutation,
   ModuleInput,
   ModuleMutations,
+  Query,
   TimestampFields,
   _ID,
 } from './common';
@@ -45,6 +46,7 @@ import {
   PricingCalculation,
   PricingSheetParams,
 } from './pricing';
+import { ProductsModule, ProductType } from './products';
 import { UsersModule } from './user';
 import {
   WarehousingAdapter as IWarehousingAdapter,
@@ -135,6 +137,8 @@ declare module 'meteor/unchained:utils' {
     remotePort: string;
   };
 
+  function objectInvert(obj: Record<string, string>): Record<string, string>;
+
   const systemLocale: Locale;
 
   const Schemas: {
@@ -212,7 +216,6 @@ declare module 'meteor/unchained:director-file-upload' {
 /*
  * Core packages
  */
-
 
 declare module 'meteor/unchained:core-assortments' {
   export function configureAssortmentsModule(
@@ -301,12 +304,14 @@ declare module 'meteor/unchained:core-payment' {
 }
 
 declare module 'meteor/unchained:core-products' {
-  export const Products: {
-    productExists({ productId: string }): any;
-  };
+  export function configureProductsModule(
+    params: ModuleInput
+  ): Promise<ProductsModule>;
 
   export const ProductPricingAdapter: IProductPricingAdapter;
   export const ProductPricingDirector: IProductPricingDirector;
+
+  export const ProductTypes: typeof ProductType;
 }
 
 declare module 'meteor/unchained:core-warehousing' {

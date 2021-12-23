@@ -313,7 +313,7 @@ type HelperType<P, T> = (
   context: Context
 ) => T;
 
-interface AssortmentPathLink {
+export interface AssortmentPathLink {
   assortmentId: string;
   assortmentSlug: string;
   assortmentTexts: AssortmentText;

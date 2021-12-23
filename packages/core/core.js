@@ -17,6 +17,16 @@ import {
 } from 'meteor/unchained:core-accountsjs';
 
 import {
+  configureAssortmentsModule,
+  assortmentSettings,
+} from 'meteor/unchained:core-assortments';
+
+import {
+  configureDeliveryModule,
+  deliverySettings,
+} from 'meteor/unchained:core-delivery';
+
+import {
   configureBookmarksModule,
   bookmarkServices,
 } from 'meteor/unchained:core-bookmarks';
@@ -52,6 +62,8 @@ export const initCore = async ({
   };
 
   const accounts = await configureAccountsModule();
+  const assortments = await configureAssortmentsModule({ db });
+  const delivery = await configureDeliveryModule({ db });
   const events = await configureEventsModule({ db });
   const files = await configureFilesModule({ db });
   const bookmarks = await configureBookmarksModule({ db });
@@ -62,6 +74,7 @@ export const initCore = async ({
   const users = await configureUsersModule({ db });
 
   accountsSettings(modules.accounts);
+  assortmentsSettings();
   usersSettings(modules.users);
 
   configureWorker(modules.worker, moduleOptions);
@@ -73,16 +86,17 @@ export const initCore = async ({
   configureProducts(modules.products, moduleOptions);
   configureQuotations(modules.quotations, moduleOptions);
   configureOrders(modules.orders, moduleOptions);
-  configureAssortments(modules.assortments, moduleOptions);
   configureFilters(modules.filters, moduleOptions);
   configureEnrollments(modules.enrollments, moduleOptions);
 
   return {
     modules: {
       accounts,
+      assortments,
       bookmarks,
       countries,
       currencies,
+      delivery,
       events,
       files,
       languages,

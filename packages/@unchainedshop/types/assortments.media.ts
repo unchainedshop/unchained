@@ -37,7 +37,7 @@ export type AssortmentMediaModule = {
   // Mutations
   create: (doc: AssortmentMedia, userId: string) => Promise<AssortmentMedia>;
 
-  delete: (assortmentId: string, userId?: string) => Promise<number>;
+  delete: (assortmentMediaId: string, userId?: string) => Promise<number>;
 
   updateManualOrder: (
     params: {

@@ -8,6 +8,7 @@ import {
   PricingCalculation,
 } from './pricing';
 import { User } from './user';
+import { Context } from './api';
 
 export enum ProductPricingRowCategory {
   Item = 'ITEM',
@@ -22,8 +23,7 @@ export interface ProductPricingCalculation extends PricingCalculation {
   rate?: number;
 }
 
-export interface ProductPricingAdapterContext
-  extends BasePricingAdapterContext {
+export interface ProductPricingAdapterContext extends Context {
   country: string;
   currency: string;
   discounts: Array<Discount>;
@@ -51,6 +51,10 @@ export interface IProductPricingSheet
     isNetPrice: boolean;
     meta: any;
   }) => void;
+  unitPrice: (params: { useNetPrice: boolean }) => {
+    amount: number;
+    currency: string;
+  };
 }
 
 export interface IProductPricingAdapter

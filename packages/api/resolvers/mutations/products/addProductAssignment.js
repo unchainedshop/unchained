@@ -5,7 +5,7 @@ import {
   ProductNotFoundError,
   InvalidIdError,
   ProductWrongTypeError,
-} from '../../errors';
+} from '../../../errors';
 
 export default function addProductAssignment(
   root,

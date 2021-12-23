@@ -1,15 +1,25 @@
 import { log } from 'meteor/unchained:logger';
-import { Assortments } from 'meteor/unchained:core-assortments';
 import { searchProducts } from 'meteor/unchained:core-filters';
-import { QueryStringRequiredError } from '../../errors';
+import { QueryStringRequiredError } from '../../../errors';
+import { Root } from '@unchainedshop/types/api';
+import { Context } from 'vm';
 
-export default async function searchQuery(root, query, context) {
-  const { userId } = context;
+export default async function searchQuery(
+  root: Root,
+  query: {
+    queryString: string;
+    assortmentId: string;
+    ignoreChildAssortments: Array<string>;
+  },
+  { modules, userId }: Context
+) {
   const forceLiveCollection = false;
   const { queryString, assortmentId, ignoreChildAssortments } = query;
+
   log(`query search ${assortmentId} ${JSON.stringify(query)}`, { userId });
+  
   if (assortmentId) {
-    const assortment = Assortments.findAssortment({ assortmentId });
+    const assortment = await modules.assortments.find({ assortmentId });    
     return assortment?.searchProducts({
       query,
       forceLiveCollection,

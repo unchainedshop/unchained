@@ -18,7 +18,7 @@ import { AssortmentsCollection } from '../db/AssortmentsCollection';
 import { AssortmentsSchema } from '../db/AssortmentsSchema';
 import { configureAssortmentFiltersModule } from './configureAssortmentFiltersModule';
 import { configureAssortmentLinksModule } from './configureAssortmentLinksModule';
-import { assortmentSettings } from '../assortments-settings';
+import { assortmentsSettings } from '../assortments-settings';
 import { configureAssortmentProductsModule } from './configureAssortmentProductsModule';
 import { configureAssortmentTextsModule } from './configureAssortmentTextsModule';
 import { configureAssortmentMediaModule } from './configureAssortmentMediaModule';
@@ -29,10 +29,6 @@ const ASSORTMENT_EVENTS = [
   'ASSORTMENT_REMOVE',
   'ASSORTMENT_SET_BASE',
   'ASSORTMENT_UPDATE',
-  'ASSORTMENT_REORDER_MEDIA',
-  'ASSORTMENT_UPDATE_MEDIA_TEXT',
-  'ASSORTMENT_REMOVE_MEDIA',
-  'ASSORTMENT_ADD_MEDIA',
 ];
 
 const buildFindSelector = ({
@@ -149,7 +145,7 @@ export const configureAssortmentsModule = async ({
     }
     // eslint-disable-next-line
     if (
-      assortmentSettings.zipTree &&
+      assortmentsSettings.zipTree &&
       (!assortment._cachedProductIds || forceLiveCollection)
     ) {
       // get array of assortment products and child assortment links to products
@@ -157,7 +153,7 @@ export const configureAssortmentsModule = async ({
         (await collectProductIdCacheTree(assortment)) || [];
 
       const assortmentSet = new Set<string>(
-        assortmentSettings.zipTree(collectedProductIdTree)
+        assortmentsSettings.zipTree(collectedProductIdTree)
       );
       return [...assortmentSet];
     }
