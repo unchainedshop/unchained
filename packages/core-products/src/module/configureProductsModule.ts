@@ -277,7 +277,7 @@ export const configureProductsModule = async ({
       return product;
     },
 
-    update: async (_id: string, doc: Product, userId?: string) => {
+    update: async (_id, doc, userId) => {
       const updateDoc = doc;
       if (doc.type) {
         updateDoc.type = ProductTypes[doc.type];

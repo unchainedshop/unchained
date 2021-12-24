@@ -1,6 +1,6 @@
 import { Context } from './api';
 import { AssortmentPathLink, AssortmentProduct } from './assortments';
-import { FindOptions, TimestampFields, _ID } from './common';
+import { Update, FindOptions, TimestampFields, _ID } from './common';
 import { Country } from './countries';
 import { Currency } from './currencies';
 import { ProductMedia, ProductMediaModule } from './products.media';
@@ -17,9 +17,9 @@ export interface ProductConfiguration {
   value: string;
 }
 
-interface ProductBundleItem {
-  productId: String;
-  quantity: Number;
+export interface ProductBundleItem {
+  productId: string;
+  quantity: number;
   configuration: Array<ProductConfiguration>;
 }
 
@@ -33,14 +33,14 @@ export interface ProductPrice {
   maxQuantity?: number;
 }
 
-interface ProductCommerce {
+export interface ProductCommerce {
   salesUnit?: string;
   salesQuantityPerUnit?: string;
   defaultOrderQuantity?: number;
   pricing: Array<ProductPrice>;
 }
 
-interface ProductPlan {
+export interface ProductPlan {
   billingInterval?: string;
   billingIntervalCount?: number;
   usageCalculationType?: string;
@@ -53,18 +53,18 @@ export interface ProductAssignment {
   productId: string;
 }
 
-interface ProductProxy {
+export interface ProductProxy {
   assignments: Array<ProductAssignment>;
 }
 
-interface ProductSupply {
+export interface ProductSupply {
   weightInGram?: number;
   heightInMillimeters?: number;
   lengthInMillimeters?: number;
   widthInMillimeters?: number;
 }
 
-interface ProductWarehousing {
+export interface ProductWarehousing {
   baseUnit?: string;
   sku?: string;
 }
@@ -219,7 +219,11 @@ export type ProductsModule = {
   delete: (productId: string, userId?: string) => Promise<number>;
   deleteProductPermanently: (productId: string) => Promise<number>;
 
-  update: (productId: string, doc: Product, userId: string) => Promise<string>;
+  update: (
+    productId: string,
+    doc: Update<Product>,
+    userId: string
+  ) => Promise<string>;
 
   publish: (product: Product, userId?: string) => Promise<boolean>;
   unpublish: (product: Product, userId?: string) => Promise<boolean>;
