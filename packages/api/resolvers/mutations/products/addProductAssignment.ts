@@ -20,7 +20,7 @@ export default async function addProductAssignment(
 ) {
   const { proxyId, productId, vectors } = params;
 
-  log(`mutation addProductAssignment ${proxyId} ${productId}`, { userId });
+  log(`mutation addProductAssignment ${proxyId} ${productId}`,{ userId });
 
   if (!proxyId) throw new InvalidIdError({ proxyId });
   if (!productId) throw new InvalidIdError({ productId });

@@ -11,7 +11,7 @@ export default async function removeProduct(
   { productId }: { productId: string },
   { modules, userId }: Context
 ) {
-  log(`mutation removeProduct ${productId}`, { userId });
+  log(`mutation removeProduct ${productId}`,{ userId });
 
   if (!productId) throw new InvalidIdError({ productId });
 

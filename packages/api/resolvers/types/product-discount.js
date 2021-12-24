@@ -1,8 +1,9 @@
 import crypto from 'crypto';
 
-export default {
-  interface(obj) {
-    const Interface = obj.interface();
+// TODO: Check with Pascal where it is used
+export const ProductDiscount = {
+  interface(obj, _, { modules }) {
+    const Interface = modules.product.interface();
     if (!Interface) return null;
     return {
       _id: Interface.key,

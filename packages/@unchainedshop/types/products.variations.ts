@@ -3,6 +3,7 @@ import { Context } from './api';
 import { TimestampFields, _ID } from './common';
 import { Product, ProductAssignment, ProductConfiguration } from './products';
 import { ProductPricingContext } from './products.pricing';
+import { ProductReview } from './products.reviews';
 
 export enum ProductVariationType {
   COLOR = 'COLOR',
@@ -33,25 +34,37 @@ export type ProductVariationOption = {
   value: string;
 };
 
-export type ProductVariationModule = {
+export type ProductVariationsModule = {
   // Queries
-  findProductVariation: (params: {
-    productVariantionId: string;
+  findProductVariation: (query: {
+    productVariationId: string;
   }) => Promise<ProductVariation>;
 
-  findProductVariations: (params: {
+  findProductVariations: (query: {
     productId: string;
     limit: number;
     offset: number;
     tags?: Array<string>;
   }) => Promise<Array<ProductVariation>>;
 
+  // Transformations
+  option: (
+    productVariation: ProductVariation,
+    productVariationOptionValue: string
+  ) => {
+    _id: string;
+    productVariationOption: string;
+  };
+
   // Mutations
-  create: (doc: ProductVariation, userId?: string) => Promise<ProductVariation>;
+  create: (
+    doc: ProductVariation & { locale?: string; title?: string },
+    userId?: string
+  ) => Promise<ProductVariation>;
 
   delete: (productVariationId: string, userId?: string) => Promise<number>;
 
-  createVariationOption: (
+  addVariationOption: (
     productVariationId: string,
     data: {
       inputData: { value: string; title: string };
@@ -60,14 +73,11 @@ export type ProductVariationModule = {
     userId?: string
   ) => Promise<ProductVariation>;
 
-  deleteVariationOption: (
+  removeVariationOption: (
     productVariationId: string,
-    productVariationOptionValue: string
+    productVariationOptionValue: string,
+    userId?: string
   ) => Promise<void>;
-
-  option: (
-    productVariationOptionValue: string
-  ) => Promise<ProductVariationOption>;
 
   texts: {
     // Queries
@@ -77,8 +87,9 @@ export type ProductVariationModule = {
     }) => Promise<Array<ProductVariationText>>;
 
     findLocalizedVariationText: (query: {
-      productVariationId: string;
       locale: string;
+      productVariationId: string;
+      productVariationOptionValue?: string;
     }) => Promise<ProductVariationText>;
 
     // Mutations
@@ -92,19 +103,32 @@ export type ProductVariationModule = {
 };
 
 type HelperType<P, T> = (
-  productVariantion: ProductVariation,
+  productVariation: ProductVariation,
   params: P,
   context: Context
 ) => T;
 
 export interface ProductVariationHelperTypes {
+  options: HelperType<
+    never,
+    Array<{
+      _id: string;
+      productVariationOption: string;
+    }>
+  >;
   texts: HelperType<{ forceLocale?: string }, Promise<ProductVariationText>>;
 }
 
+type OptionHelperType<P, T> = (
+  option: { _id: string; productVariationOption: string },
+  params: P,
+  context: Context
+) => T;
+
 export interface ProductVariationOptionHelperTypes {
-  _id: HelperType<never, string>;
-  texts: HelperType<{ forceLocale?: string }, Promise<ProductVariationText>>;
-  value: HelperType<never, string>;
+  _id: OptionHelperType<never, string>;
+  texts: OptionHelperType<{ forceLocale?: string }, Promise<ProductVariationText>>;
+  value: OptionHelperType<never, string>;
 }
 
 type AssignmentHelperType<T> = (
@@ -129,6 +153,8 @@ type AssignmentVectorHelperType<T> = (
 
 export interface ProductVariationAssignmentVectorHelperTypes {
   _id: AssignmentVectorHelperType<string>;
-  option: AssignmentVectorHelperType<Promise<ProductVariationOption>>;
+  option: AssignmentVectorHelperType<
+    Promise<{ _id: string; productVariationOption: string }>
+  >;
   variation: AssignmentVectorHelperType<Promise<ProductVariation>>;
 }

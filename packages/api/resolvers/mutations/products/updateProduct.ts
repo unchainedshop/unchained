@@ -8,7 +8,7 @@ export default async function updateProduct(
   { product, productId }: { product: Product; productId: string },
   { modules, userId }: Context
 ) {
-  log(`mutation updateProduct ${productId}`, { userId });
+  log(`mutation updateProduct ${productId}`,{ userId });
 
   if (!productId) throw new InvalidIdError({ productId });
 

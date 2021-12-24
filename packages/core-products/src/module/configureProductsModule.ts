@@ -23,6 +23,8 @@ import {
 import { configureProductTextsModule } from './configureProductTextsModule';
 import { configureProductMediaModule } from './configureProductMediaModule';
 import { configureProductPricesModule } from './configureProductPrices';
+import { configureProductReviewsModule } from './configureProductReviewsModule';
+import { configureProductVariationsModule } from './configureProductVariationsModule';
 
 const PRODUCT_EVENTS = [
   'PRODUCT_CREATE',
@@ -419,7 +421,9 @@ export const configureProductsModule = async ({
     },
 
     media: await configureProductMediaModule({ db }),
-
+    reviews: await configureProductReviewsModule({ db }),
+    variations: await configureProductVariationsModule({ db }),
+    
     texts: productTexts,
   };
 };

@@ -17,7 +17,7 @@ export default async function updateProductWarehousing(
   }: { warehousing: ProductWarehousing; productId: string },
   { modules, userId }: Context
 ) {
-  log(`mutation updateProductWarehousing ${productId}`, { userId });
+  log(`mutation updateProductWarehousing ${productId}`,{ userId });
 
   if (!productId) throw new InvalidIdError({ productId });
 

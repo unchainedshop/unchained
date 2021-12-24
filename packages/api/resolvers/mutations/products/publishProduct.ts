@@ -10,7 +10,7 @@ export default async function publishProduct(
   { productId }: { productId: string },
   { modules, userId }: Context
 ) {
-  log(`mutation publishProduct ${productId}`, { userId });
+  log(`mutation publishProduct ${productId}`,{ userId });
 
   if (!productId) throw new InvalidIdError({ productId });
 

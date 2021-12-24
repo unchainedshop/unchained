@@ -13,7 +13,7 @@ export default async function updateProductPlan(
   { plan, productId }: { plan: ProductPlan; productId: string },
   { modules, userId }: Context
 ) {
-  log(`mutation updateProductPlan ${productId}`, { userId });
+  log(`mutation updateProductPlan ${productId}`,{ userId });
 
   if (!productId) throw new InvalidIdError({ productId });
 

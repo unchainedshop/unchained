@@ -15,9 +15,11 @@ export default async function prepareUserAvatarUpload(
   });
 
   return await modules.files.createSignedURL(
-    'user-avatars',
-    params.mediaName,
-    { userId: normalizedUserId },
+    {
+      directoryName: 'user-avatars',
+      fileName: params.mediaName,
+      meta: { userId: normalizedUserId },
+    },
     userId,
     (file) => services.users.updateUserAvatarAfterUpload({ file }, context)
   );

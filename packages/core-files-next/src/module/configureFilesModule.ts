@@ -12,9 +12,7 @@ import { MediaObjectsSchema } from '../db/MediaObjectsSchema';
 const FILE_EVENTS: string[] = ['FILE_CREATE', 'FILE_UPDATE', 'FILE_REMOVE'];
 
 const getFileFromFileData = (fileData: UploadFileData, meta: any) => ({
-  externalId: encodeURIComponent(
-    `${fileData.directoryName}/${fileData.hash}`
-  ),
+  externalId: encodeURIComponent(`${fileData.directoryName}/${fileData.hash}`),
   expires: meta.expiryDate || fileData.expiryDate,
   name: fileData.fileName,
   size: fileData.size,
@@ -60,11 +58,15 @@ export const configureFilesModule = async ({
     },
 
     // Plugin
-    createSignedURL: async (directoryName, fileName, meta, userId, uploadFileCallback) => {
-      const uploadFileData = await FileUpload.createSignedURL(
+    createSignedURL: async (
+      { directoryName, fileName, meta },
+      userId,
+      uploadFileCallback
+    ) => {
+      const uploadFileData = await FileUpload.createSignedURL({
         directoryName,
-        fileName
-      );
+        fileName,
+      });
       const file = getFileFromFileData(uploadFileData, meta);
 
       const fileId = await mutations.create(file, userId);

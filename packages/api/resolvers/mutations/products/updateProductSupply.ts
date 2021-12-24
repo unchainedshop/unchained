@@ -14,7 +14,7 @@ export default async function updateProductSupply(
   { supply, productId }: { supply: ProductSupply; productId: string },
   { modules, userId }: Context
 ) {
-  log(`mutation updateProductSupply ${productId}`, { userId });
+  log(`mutation updateProductSupply ${productId}`,{ userId });
 
   if (!productId) throw new InvalidIdError({ productId });
 

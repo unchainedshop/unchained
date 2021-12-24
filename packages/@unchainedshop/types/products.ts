@@ -3,7 +3,11 @@ import { AssortmentPathLink, AssortmentProduct } from './assortments';
 import { Update, FindOptions, TimestampFields, _ID } from './common';
 import { Country } from './countries';
 import { Currency } from './currencies';
+import { DeliveryProvider, DeliveryProviderType } from './delivery';
 import { ProductMedia, ProductMediaModule } from './products.media';
+import { ProductReviewsModule } from './products.reviews';
+import { ProductVariationsModule } from './products.variations';
+import { WarehousingProvider } from './warehousing';
 
 export enum ProductType {
   SimpleProduct = 'SIMPLE_PRODUCT',
@@ -263,13 +267,14 @@ export type ProductsModule = {
   };
 
   /*
-   * Product media
+   * Product sub entities (Media, Variations & Reviews)
    */
   media: ProductMediaModule;
   // {
   //   addMedia: ({ rawFile: any, authorId: string }, userId?: string) => Promise<string>
-  //   findMediaTexts({ productMediaId: string }) => Promise<Array<ProductText>>;
   // }
+  reviews: ProductReviewsModule;
+  variations: ProductVariationsModule;
 
   /*
    * Product texts
@@ -313,13 +318,6 @@ type HelperType<P, T> = (product: Product, params: P, context: Context) => T;
 
 export interface ProductHelperTypes {
   childrenCount: HelperType<{ includeInactive: boolean }, Promise<number>>;
-  texts: HelperType<{ forceLocale?: string }, Promise<ProductText>>;
-
-  assortmentPaths: HelperType<
-    { forceLocale?: string },
-    Promise<Array<{ links: Array<AssortmentPathLink> }>>
-  >;
-
   siblings: HelperType<
     {
       assortmentId?: string;
@@ -329,6 +327,15 @@ export interface ProductHelperTypes {
     },
     Promise<Array<string>>
   >;
+  
+  texts: HelperType<{ forceLocale?: string }, Promise<ProductText>>;
+
+  assortmentPaths: HelperType<
+    { forceLocale?: string },
+    Promise<Array<{ links: Array<AssortmentPathLink> }>>
+  >;
+
+  status: HelperType<never, string>;
 
   media: HelperType<
     {
@@ -338,6 +345,80 @@ export interface ProductHelperTypes {
     },
     Promise<Array<ProductMedia>>
   >;
+}
+
+export interface PlanProductHelperTypes extends ProductHelperTypes {
+  catalogPrice: HelperType<
+    { quantity: number; currency: string },
+    Promise<ProductPrice>
+  >;
+
+  leveledCatalogPrices: HelperType<
+    { currency: string },
+    Promise<
+      Array<{
+        minQuantity: number;
+        maxQuantity: number;
+        price: ProductPrice;
+      }>
+    >
+  >;
+
+  simulatedPrice: HelperType<
+    { quantity: number; currency: string; useNetPrice: boolean },
+    Promise<ProductPrice>
+  >;
+
+  simulatedDiscounts: HelperType<
+    { quantity: number },
+    Promise<Array<{
+      _id: string;
+      interface: any;
+      total: ProductPrice;
+    }>>
+  >;
+
+  salesUnit: HelperType<never, string>;
+  salesQuantityPerUnit: HelperType<never, string>;
+  defaultOrderQuantity: HelperType<never, number>;
+}
+
+export interface SimpleProductHelperTypes extends PlanProductHelperTypes {
+  simulatedDispatches: HelperType<
+    {
+      referenceDate: Date;
+      quantity: number;
+      deliveryProviderType: DeliveryProviderType;
+    },
+    Promise<
+      Array<{
+        _id: string;
+        deliveryProvider?: DeliveryProvider;
+        warehousingProvider?: WarehousingProvider;
+        shipping?: Date;
+        earliestDelivery?: Date;
+      }>
+    >
+  >;
+
+  simulatedStocks: HelperType<
+    {
+      referenceDate: Date;
+      deliveryProviderType: DeliveryProviderType;
+    },
+    Promise<
+      Array<{
+        _id: string;
+        deliveryProvider?: DeliveryProvider;
+        warehousingProvider?: WarehousingProvider;
+        quantity?: number;
+      }>
+    >
+  >;
+
+  baseUnit: HelperType<never, string>;
+  sku: HelperType<never, string>;
+  dimensions: HelperType<never, ProductSupply>;
 }
 
 export interface ProductAssortmentPathHelperTypes {

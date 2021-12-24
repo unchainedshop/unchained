@@ -17,7 +17,7 @@ export default async function removeProductAssignment(
   { modules, userId }: Context
 ) {
   const { proxyId, vectors } = params;
-  log(`mutation removeProductAssignment ${proxyId}`, { userId });
+  log(`mutation removeProductAssignment ${proxyId}`,{ userId });
 
   if (!proxyId) throw new InvalidIdError({ proxyId });
 

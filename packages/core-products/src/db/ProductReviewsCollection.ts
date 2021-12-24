@@ -1,4 +1,4 @@
-import { ProductReview } from '@unchainedshop/types/products.review';
+import { ProductReview } from '@unchainedshop/types/products.reviews';
 import { Db } from '@unchainedshop/types/common';
 import { buildDbIndexes } from 'meteor/unchained:utils';
 

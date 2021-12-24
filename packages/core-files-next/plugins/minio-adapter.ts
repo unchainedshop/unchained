@@ -122,7 +122,7 @@ export const MinioAdapter: FileAdapter = {
     );
   },
 
-  createSignedURL: async (directoryName = '', fileName) => {
+  createSignedURL: async ({ directoryName = '', fileName }) => {
     if (!client) throw new Error('Minio not connected, check env variables');
 
     const { hash, hashedName } = generateRandomFileName(fileName);
@@ -144,13 +144,15 @@ export const MinioAdapter: FileAdapter = {
     };
   },
 
-  registerFileUploadCallback(directoryName, fn) {
+  registerFileUploadCallback(directoryName: string, fn) {
     if (!FileUploadRegistry.has(directoryName)) {
       FileUploadRegistry.set(directoryName, fn);
     }
   },
 
-  getFileUploadCallback(directoryName) { return FileUploadRegistry.get(directoryName) },
+  getFileUploadCallback(directoryName) {
+    return FileUploadRegistry.get(directoryName);
+  },
 
   async removeFiles(composedFileIds) {
     if (!client) throw new Error('Minio not connected, check env variables');

@@ -35,7 +35,10 @@ export type ProductMediaModule = {
   }) => Promise<Array<ProductMedia>>;
 
   // Mutations
-  create: (doc: ProductMedia, userId: string) => Promise<ProductMedia>;
+  create: (
+    data: { productId: string; mediaId: string },
+    userId: string
+  ) => Promise<ProductMedia>;
 
   delete: (productMediaId: string, userId?: string) => Promise<number>;
 
@@ -76,6 +79,6 @@ type HelperType<P, T> = (
 ) => T;
 
 export interface ProductMediaHelperTypes {
-  texts: HelperType<{ forceLocale?: string }, Promise<ProductMediaText>>
+  texts: HelperType<{ forceLocale?: string }, Promise<ProductMediaText>>;
   file: HelperType<never, Promise<File>>;
 }

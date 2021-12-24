@@ -88,3 +88,7 @@ Collections.AssortmentLinks.removeLinks = (
 ## New OPEN Questions
 
 1. How should dependencies for plugins be integrated / documented? (example: Payment Plugin bity.ts)
+
+2. Naming for class constructor in Directors and Adapters for now 'actions'. Better suggestion?
+
+3. Is product-discount type used (in api/resolvers/types/product-discount.js)

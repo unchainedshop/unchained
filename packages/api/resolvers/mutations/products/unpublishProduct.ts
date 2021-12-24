@@ -11,7 +11,7 @@ export default async function unpublishProduct(
   { productId }: { productId: string },
   { modules, userId }: Context
 ) {
-  log(`mutation unpublishProduct ${productId}`, { userId });
+  log(`mutation unpublishProduct ${productId}`,{ userId });
 
   if (!productId) throw new InvalidIdError({ productId });
 

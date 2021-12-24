@@ -52,7 +52,7 @@ import signPaymentProviderForCredentialRegistration from './payment/signPaymentP
 import translatedAssortmentMediaTexts from './assortments/translatedAssortmentMediaTexts';
 import translatedAssortmentTexts from './translatedAssortmentTexts';
 import translatedFilterTexts from './translatedFilterTexts';
-import translatedProductMediaTexts from './translatedProductMediaTexts';
+import translatedProductMediaTexts from './products/translatedProductMediaTexts.ts';
 import translatedProductTexts from './translatedProductTexts';
 import translatedProductVariationTexts from './translatedProductVariationTexts';
 import user from './users/user';

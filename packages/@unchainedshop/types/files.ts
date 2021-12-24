@@ -25,28 +25,30 @@ export type FilesModule = ModuleMutations<File> & {
   ) => Promise<File>;
   // Plugin
   createSignedURL: (
-    directoryName: string,
-    fileName: string,
-    meta: any,
+    data: {
+      directoryName: string;
+      fileName: string;
+      meta: any;
+    },
     userId: string,
-    uploadFileCallback: UploadFileCallback,
+    uploadFileCallback: UploadFileCallback
   ) => Promise<File | null>;
   removeFiles: (fileIds: string | Array<string>) => Promise<number>;
   uploadFileFromStream: (
     directoryName: string,
     rawFile: any,
     meta: any,
-    userId: string,
+    userId: string
   ) => Promise<File | null>;
   uploadFileFromURL: (
     directoryName: string,
     file: { fileLink: string; fileName: string },
     meta: any,
-    userId: string,
+    userId: string
   ) => Promise<File | null>;
 };
 
-interface UploadFileData {
+export interface UploadFileData {
   directoryName: string;
   expiryDate: Date;
   fileName: string;
@@ -57,23 +59,12 @@ interface UploadFileData {
   url: string;
 }
 
-interface SignedPutURLData {
-  directoryName: string;
-  expiryDate: Date;
-  fileName: string;
-  hash: string;
-  hashedName: string;
-  type: string;
-  url: string;
-}
-
-
 export interface FileAdapter {
   composeFileName: (file: File) => string;
-  createSignedURL: (
-    directoryName: string,
-    fileName: string
-  ) => Promise<UploadFileData | null>;
+  createSignedURL: (data: {
+    directoryName: string;
+    fileName: string;
+  }) => Promise<UploadFileData | null>;
   removeFiles: (composedFileIds: Array<string>) => Promise<void>;
   uploadFileFromStream: (
     directoryName: string,
@@ -85,7 +76,7 @@ export interface FileAdapter {
   ) => Promise<UploadFileData | null>;
 }
 
-type UploadFileCallback = (file) => Promise<void>;
+type UploadFileCallback = (file: File) => Promise<void>;
 
 export interface FileDirector extends FileAdapter {
   setFileUploadAdapter(adapter: FileAdapter): void;
@@ -95,5 +86,4 @@ export interface FileDirector extends FileAdapter {
     callback: UploadFileCallback
   ) => void;
   getFileUploadCallback: (directoryName: string) => UploadFileCallback;
-  
 }
