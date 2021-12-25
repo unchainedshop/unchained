@@ -1,16 +1,31 @@
 import {
-  registerWarehousingAdapter,
+  WarehousingDirector,
   WarehousingAdapter,
+  WarehousingProviderType,
 } from 'meteor/unchained:core-warehousing';
 import Sheets from 'node-sheets';
 import { log, LogLevel } from 'meteor/unchained:logger';
 import LRU from 'lru-cache';
+import { IWarehousingAdapter } from '@unchainedshop/types/warehousing';
 
 const { NODE_ENV, GOOGLE_SHEETS_ID, GOOGLE_SHEETS_PRIVATE_KEY_DATA } =
   process.env;
 
 const maxAge = NODE_ENV === 'production' ? 1000 * 60 * 60 : -1; // 1 hour or 1 second
-let updateGoogleCache;
+
+let updateGoogleCache = async () => {
+  try {
+    const sheet = await downloadSpreadsheet();
+    if (sheet) {
+      googleCache.set('tables', sheet);
+      return sheet;
+    }
+  } catch (e) {
+    log(e, { level: LogLevel.Error });
+  }
+  return null;
+};
+
 const googleCache = new LRU({
   max: 500,
   maxAge, // 1 second in dev
@@ -20,7 +35,7 @@ const googleCache = new LRU({
   },
 });
 
-async function downloadSpreadsheet() {
+const downloadSpreadsheet = async () => {
   if (!GOOGLE_SHEETS_PRIVATE_KEY_DATA || !GOOGLE_SHEETS_ID) return null;
   try {
     // https://docs.google.com/spreadsheets/d/GOOGLE_SHEETS_ID/edit?usp=sharing
@@ -40,136 +55,124 @@ async function downloadSpreadsheet() {
     log(err, { level: LogLevel.Error });
     throw err;
   }
-}
-
-updateGoogleCache = async () => {
-  try {
-    const sheet = await downloadSpreadsheet();
-    if (sheet) {
-      googleCache.set('tables', sheet);
-      return sheet;
-    }
-  } catch (e) {
-    log(e, { level: LogLevel.Error });
-  }
-  return null;
 };
 
 updateGoogleCache();
 
-class GoogleSheets extends WarehousingAdapter {
-  static key = 'shop.unchained.warehousing.google-sheets';
-
-  static version = '1.0';
-
-  static label = 'Google Sheets';
-
-  static orderIndex = 0;
-
-  static initialConfiguration = [
-    {
-      key: 'address',
-      value: null,
-    },
-  ];
-
-  static typeSupported(type) {
-    return type === 'PHYSICAL';
+const getRows = async (name: string) => {
+  const cachedTables = googleCache.get('tables');
+  let tables = cachedTables;
+  if (!cachedTables) {
+    tables = await updateGoogleCache();
   }
+  if (!tables || !tables[name] || !tables[name].rows) return [];
+  return tables[name].rows;
+};
 
-  static async getRows(name: string) {
-    const cachedTables = googleCache.get('tables');
-    let tables = cachedTables;
-    if (!cachedTables) {
-      tables = await updateGoogleCache();
+const getRemoteTime = async (
+  sku: string,
+  quantity: number,
+  selector: string
+) => {
+  const rows = await getRows('delivery');
+  const resolvedRow = rows.reduce((result, row) => {
+    const parsedQuantity = parseInt(row.Quantity.value, 10);
+    const parsedSKU = row.SKU.value.toUpperCase();
+    if (parsedSKU === sku && parsedQuantity <= quantity) {
+      return row;
     }
-    if (!tables || !tables[name] || !tables[name].rows) return [];
-    return tables[name].rows;
-  }
+    return result;
+  }, null);
+  if (!resolvedRow) return null;
+  const time = parseInt(resolvedRow[selector].value, 10) || 0;
+  log(
+    `GoogleSheet: Resolve Time ${selector} (${quantity}) for ${sku}: ${time}`,
+    { level: LogLevel.Verbose }
+  );
+  return time;
+};
 
-  // eslint-disable-next-line
-  isActive() {
-    return true;
-  }
+const getRemoteInventory = async (sku: string) => {
+  const rows = await getRows('inventory');
+  const resolvedRow = [].concat(rows).reduce((result, row) => {
+    if (result || !row) return result;
+    const parsedSKU = row.SKU.value.toUpperCase();
+    if (parsedSKU === sku) {
+      return row;
+    }
+    return result;
+  }, null);
+  if (!resolvedRow) return null;
+  const amount = parseInt(resolvedRow.Stock.value, 10) || 0;
+  log(`GoogleSheet: Resolve Inventory for ${sku}: ${amount}`, {
+    level: LogLevel.Verbose,
+  });
+  return amount;
+};
 
-  // eslint-disable-next-line
-  configurationError() {
-    return null;
-  }
+const GoogleSheets: IWarehousingAdapter = {
+  ...WarehousingAdapter,
 
-  async getRemoteTime(sku, quantity: number, selector: string) {
-    /* @ts-ignore */
-    const rows = await this.constructor.getRows('delivery');
-    const resolvedRow = rows.reduce((result, row) => {
-      const parsedQuantity = parseInt(row.Quantity.value, 10);
-      const parsedSKU = row.SKU.value.toUpperCase();
-      if (parsedSKU === sku && parsedQuantity <= quantity) {
-        return row;
-      }
-      return result;
-    }, null);
-    if (!resolvedRow) return null;
-    const time = parseInt(resolvedRow[selector].value, 10) || 0;
-    log(
-      `GoogleSheet: Resolve Time ${selector} (${quantity}) for ${sku}: ${time}`,
-      { level: LogLevel.Verbose }
-    );
-    return time;
-  }
+  key: 'shop.unchained.warehousing.google-sheets',
+  version: '1.0',
+  label: 'Google Sheets',
+  orderIndex: 0,
 
-  async getRemoteInventory(sku) {
-    /* @ts-ignore */
-    const rows = await this.constructor.getRows('inventory');
-    const resolvedRow = [].concat(rows).reduce((result, row) => {
-      if (result || !row) return result;
-      const parsedSKU = row.SKU.value.toUpperCase();
-      if (parsedSKU === sku) {
-        return row;
-      }
-      return result;
-    }, null);
-    if (!resolvedRow) return null;
-    const amount = parseInt(resolvedRow.Stock.value, 10) || 0;
-    log(`GoogleSheet: Resolve Inventory for ${sku}: ${amount}`, {
-      level: LogLevel.Verbose,
-    });
-    return amount;
-  }
+  typeSupported: (type) => {
+    return type === WarehousingProviderType.PHYSICAL;
+  },
 
-  async stock() {
-    const { product } = this.context;
-    const { sku } = product.warehousing || {};
-    return this.getRemoteInventory(sku);
-  }
+  actions: (_, context) => {
+    // const initialConfiguration = [
+    //   {
+    //     key: 'address',
+    //     value: null,
+    //   },
+    // ];
 
-  async productionTime(quantity: number) {
-    const { product } = this.context;
-    const { sku } = product.warehousing || {};
-    if (!sku) return null;
-    const selector = 'WAREHOUSE_HOURS';
-    const timeInHours = await this.getRemoteTime(
-      sku.toUpperCase(),
-      quantity,
-      selector
-    );
-    if (!timeInHours) return null;
-    return timeInHours * 60 * 60 * 1000;
-  }
+    return {
+      isActive: () => {
+        return true;
+      },
 
-  async commissioningTime(quantity) {
-    const { product, deliveryProvider } = this.context;
-    const { sku } = product.warehousing || {};
-    if (!sku) return null;
-    const { type } = deliveryProvider;
-    const selector = `DELIVERY_HOURS:${type}`;
-    const timeInHours = await this.getRemoteTime(
-      sku.toUpperCase(),
-      quantity,
-      selector
-    );
-    if (!timeInHours) return null;
-    return timeInHours * 60 * 60 * 1000;
-  }
-}
+      configurationError: () => {
+        return null;
+      },
 
-registerWarehousingAdapter(GoogleSheets);
+      stock: async () => {
+        const { sku } = context.product.warehousing || {};
+        return getRemoteInventory(sku);
+      },
+
+      productionTime: async (quantity: number) => {
+        const { sku } = context.product.warehousing || {};
+        if (!sku) return null;
+        const selector = 'WAREHOUSE_HOURS';
+        const timeInHours = await getRemoteTime(
+          sku.toUpperCase(),
+          quantity,
+          selector
+        );
+        if (!timeInHours) return null;
+        return timeInHours * 60 * 60 * 1000;
+      },
+
+      commissioningTime: async (quantity) => {
+        const { product, deliveryProvider } = context;
+        const { sku } = product.warehousing || {};
+        if (!sku) return null;
+        const { type } = deliveryProvider;
+        const selector = `DELIVERY_HOURS:${type}`;
+        const timeInHours = await getRemoteTime(
+          sku.toUpperCase(),
+          quantity,
+          selector
+        );
+        if (!timeInHours) return null;
+        return timeInHours * 60 * 60 * 1000;
+      },
+    };
+  },
+};
+
+WarehousingDirector.registerAdapter(GoogleSheets);

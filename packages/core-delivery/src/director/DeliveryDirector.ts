@@ -1,99 +1,69 @@
 import {
-  DeliveryContext,
-  DeliveryProvider,
-  DeliveryDirector as IDeliveryDirector,
+  IDeliveryAdapter,
+  IDeliveryDirector,
 } from '@unchainedshop/types/delivery';
-import { DeliveryAdapter } from './DeliveryAdapter';
+import { BaseDirector } from 'meteor/unchained:utils';
 import { DeliveryError } from './DeliveryError';
-import { log } from 'meteor/unchained:logger';
-import { Context } from '@unchainedshop/types/api';
 
-const Adapters: Map<string, typeof DeliveryAdapter> = new Map();
+const baseDirector = BaseDirector<IDeliveryAdapter>();
 
-const getAdapters = (filter: (a: typeof DeliveryAdapter) => boolean) => {
-  return Array.from(Adapters.values()).filter(filter || (() => true));
+export const DeliveryDirector: IDeliveryDirector = {
+  ...baseDirector,
+
+  actions: (deliveryProvider, deliveryContext, requestContext) => {
+    const Adapter = baseDirector.getAdapter(deliveryProvider.adapterKey);
+
+    const context = { ...deliveryContext, ...requestContext };
+    const adapter = Adapter.actions(deliveryProvider.configuration, context);
+
+    return {
+      configurationError: () => {
+        try {
+          const error = adapter.configurationError();
+          return error;
+        } catch (error) {
+          return DeliveryError.ADAPTER_NOT_FOUND;
+        }
+      },
+
+      estimatedDeliveryThroughput: async (warehousingThroughputTime) => {
+        try {
+          return adapter.estimatedDeliveryThroughput(warehousingThroughputTime);
+        } catch (error) {
+          console.warn(error);
+          return null;
+        }
+      },
+
+      isActive: () => {
+        try {
+          return adapter.isActive();
+        } catch (error) {
+          console.warn(error);
+          return false;
+        }
+      },
+
+      isAutoReleaseAllowed: () => {
+        try {
+          return adapter.isAutoReleaseAllowed();
+        } catch (error) {
+          console.warn(error);
+          return false;
+        }
+      },
+
+      send: async (transactionContext) => {
+        return await adapter.send(transactionContext);
+      },
+
+      pickUpLocationById: async (locationId) => {
+        return await adapter.pickUpLocationById(locationId);
+      },
+
+      pickUpLocations: async () => {
+        return await adapter.pickUpLocations();
+      },
+    };
+  },
 };
-
-const registerAdapter = (adapter: typeof DeliveryAdapter) => {
-  log(
-    `DeliveryDirector -> Registered ${adapter.key} ${adapter.version} (${adapter.label})`
-  );
-  Adapters.set(adapter.key, adapter);
-};
-
-const getAdapter = (provider: DeliveryProvider) => {
-  return Adapters.get(provider.adapterKey);
-};
-
-const getAdapterInstance = (
-  provider: DeliveryProvider,
-  context: DeliveryContext | {}
-) => {
-  const Adapter = getAdapter(provider);
-  if (!Adapter) {
-    throw new Error(`Delivery Plugin ${provider.adapterKey} not available`);
-  }
-  return new Adapter(provider.configuration, context);
-};
-
-const DeliveryDirector = (
-  provider: DeliveryProvider,
-  deliveryContext: DeliveryContext,
-  requestContext: Context
-): IDeliveryDirector => {
-  const context = { ...deliveryContext, ...requestContext };
-  return {
-    configurationError() {
-      try {
-        const adapter = getAdapterInstance(provider, context);
-        const error = adapter.configurationError();
-        return error;
-      } catch (error) {
-        return DeliveryError.ADAPTER_NOT_FOUND;
-      }
-    },
-
-    async estimatedDeliveryThroughput({ warehousingThroughputTime }) {
-      try {
-        const adapter = getAdapterInstance(provider, context);
-        return adapter.estimatedDeliveryThroughput(warehousingThroughputTime);
-      } catch (error) {
-        console.warn(error); // eslint-disable-line
-        return null;
-      }
-    },
-
-    isActive() {
-      try {
-        const adapter = getAdapterInstance(provider, context);
-        return adapter.isActive();
-      } catch (error) {
-        console.warn(error); // eslint-disable-line
-        return false;
-      }
-    },
-
-    isAutoReleaseAllowed() {
-      try {
-        const adapter = getAdapterInstance(provider, context);
-        return adapter.isAutoReleaseAllowed();
-      } catch (error) {
-        console.warn(error); // eslint-disable-line
-        return false;
-      }
-    },
-
-    async send(transactionContext) {
-      const adapter = getAdapterInstance(provider, context);
-      const sendResult = await adapter.send(transactionContext);
-      return sendResult;
-    },
-
-    async run(command, ...args) {
-      const adapter = getAdapterInstance(provider, context);
-      return adapter[command](...args);
-    },
-  };
-};
-
-export { getAdapter, getAdapters, registerAdapter, DeliveryDirector };

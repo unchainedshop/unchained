@@ -15,9 +15,11 @@ export default async function updateUserAvatar(
     throw new UserNotFoundError({ userId: normalizedUserId });
 
   const file = await modules.files.uploadFileFromStream(
-    'user-avatars',
-    params.avatar,
-    { userId: normalizedUserId },
+    {
+      directoryName: 'user-avatars',
+      rawFile: params.avatar,
+      meta: { userId: normalizedUserId },
+    },
     userId
   );
 

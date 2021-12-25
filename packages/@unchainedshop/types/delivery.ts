@@ -5,6 +5,8 @@ import {
   TimestampFields,
   _ID,
   FindOptions,
+  IBaseDirector,
+  IBaseAdapter,
 } from './common';
 import { Order, OrderDelivery, OrderPosition } from './orders';
 import { User } from './user';
@@ -57,7 +59,7 @@ export interface DeliveryContext {
 
 export type DeliveryAdapterContext = DeliveryContext & Context;
 
-export interface DeliveryAdapter {
+interface DeliveryAdapterActions {
   configurationError: () => DeliveryError;
   estimatedDeliveryThroughput: (
     warehousingThroughputTime: number
@@ -68,17 +70,22 @@ export interface DeliveryAdapter {
   pickUpLocations: () => Promise<Array<DeliveryLocation>>;
   send: (transactionContext: any) => Promise<boolean | Work>;
 }
+export type IDeliveryAdapter = IBaseAdapter & {
+  typeSupported: (type: DeliveryProviderType) => boolean
+  
+  actions: (
+    config: DeliveryConfiguration,
+    context: DeliveryAdapterContext & Context
+  ) => DeliveryAdapterActions;
+};
 
-export interface DeliveryDirector {
-  configurationError: () => DeliveryError;
-  estimatedDeliveryThroughput: (data: {
-    warehousingThroughputTime: number;
-  }) => Promise<number>;
-  isActive: () => boolean;
-  isAutoReleaseAllowed: () => boolean;
-  send: (transactionContext: any) => Promise<boolean | Work>;
-  run: (command: string, args: any) => Promise<boolean>;
-}
+export type IDeliveryDirector = IBaseDirector<IDeliveryAdapter> & {
+  actions: (
+    deliveryProvider: DeliveryProvider,
+    deliveryContext: DeliveryContext,
+    requestContext: Context
+  ) => DeliveryAdapterActions;
+};
 
 export interface DeliveryLocation {
   _id: string;
@@ -114,10 +121,10 @@ export type DeliveryModule = ModuleMutations<DeliveryProvider> & {
   providerExists: (query: { deliveryProviderId: string }) => Promise<boolean>;
 
   // Delivery adapter
-  findInterface: (query: DeliveryProvider) => DeliveryAdapter;
+  findInterface: (query: DeliveryProvider) => IDeliveryAdapter;
   findInterfaces: (query: {
     type: DeliveryProviderType;
-  }) => Array<DeliveryAdapter>;
+  }) => Array<IDeliveryAdapter>;
   findSupported: (
     query: { order: any } // TODO: Replace order type
   ) => Array<string>;
@@ -160,7 +167,7 @@ export interface DeliveryProviderHelperTypes {
       currency?: string;
       orderId: string;
       useNetPrice?: boolean;
-      context: any
+      context: any;
     },
     Promise<{
       _id: string;

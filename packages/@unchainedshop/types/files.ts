@@ -35,9 +35,7 @@ export type FilesModule = ModuleMutations<File> & {
   ) => Promise<File | null>;
   removeFiles: (fileIds: string | Array<string>) => Promise<number>;
   uploadFileFromStream: (
-    directoryName: string,
-    rawFile: any,
-    meta: any,
+    params: { directoryName: string, rawFile: any, meta: any },
     userId: string
   ) => Promise<File | null>;
   uploadFileFromURL: (

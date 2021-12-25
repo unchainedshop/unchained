@@ -79,7 +79,13 @@ import {
   IPaymentPricingAdapter,
   IPaymentPricingDirector,
 } from './payments.pricing';
-import { DeliveryModule } from './delivery';
+import {
+  IDeliveryAdapter,
+  IDeliveryDirector,
+  DeliveryModule,
+  DeliveryError,
+  DeliveryProviderType,
+} from './delivery';
 
 declare module 'meteor/unchained:utils' {
   function checkId(
@@ -147,7 +153,7 @@ declare module 'meteor/unchained:utils' {
 
   // Director
   export const BaseDirector: <Adapter extends IBaseAdapter>(options?: {
-    adapterSortKey: string;
+    adapterSortKey?: string;
   }) => IBaseDirector<Adapter>;
   export const BasePricingAdapter: <
     AdapterContext extends BasePricingAdapterContext,
@@ -248,6 +254,11 @@ declare module 'meteor/unchained:core-delivery' {
     params: ModuleInput
   ): Promise<DeliveryModule>;
 
+  export const DeliveryAdapter: IDeliveryAdapter;
+  export const DeliveryDirector: IDeliveryDirector;
+  export const DeliveryProviderType: typeof DeliveryProviderType;
+  export const DeliveryError: typeof DeliveryError
+
   export const DeliveryPricingAdapter: IDeliveryPricingAdapter;
   export const DeliveryPricingDirector: IDeliveryPricingDirector;
 }
@@ -319,33 +330,9 @@ declare module 'meteor/unchained:core-warehousing' {
     params: ModuleInput
   ): Promise<WarehousingModule>;
 
-  export function WarehousingDirector(
-    provider: WarehousingProvider
-  ): IWarehousingDirector;
-
-  export function registerWarehousingAdapter(
-    adapter: typeof IWarehousingAdapter
-  ): void;
-  export function getWarehousingAdapter(
-    key: string
-  ): typeof IWarehousingAdapter;
-
-  export class WarehousingAdapter implements IWarehousingAdapter {
-    static key: string;
-    static label: string;
-    static version: string;
-    static typeSupported: (type: WarehousingProviderTypeType) => boolean;
-
-    public config: WarehousingProvider['configuration'];
-    public context: WarehousingContext;
-
-    constructor(
-      config: WarehousingProvider['configuration'],
-      context: WarehousingContext
-    );
-  }
+  export const WarehousingDirector: IWarehousingDirector;
+  export const WarehousingAdapter: IWarehousingAdapter;
   export const WarehousingError: typeof WarehousingErrorType;
-
   export const WarehousingProviderType: typeof WarehousingProviderTypeType;
 }
 

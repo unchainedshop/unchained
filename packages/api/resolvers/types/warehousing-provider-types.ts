@@ -7,11 +7,11 @@ export const WarehousingProvider: WarehousingProviderHelperTypes = {
     return Interface;
   },
 
-  configurationError(obj, _, { modules }) {
-    return modules.warehousing.configurationError(obj);
+  configurationError(obj, _, context) {
+    return context.modules.warehousing.configurationError(obj, context);
   },
 
-  isActive(obj, _, { modules }) {
-    return modules.warehousing.isActive(obj);
-  }
+  isActive(obj, _, context) {
+    return context.modules.warehousing.isActive(obj, context);
+  },
 };

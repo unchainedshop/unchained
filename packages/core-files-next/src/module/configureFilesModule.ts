@@ -113,7 +113,7 @@ export const configureFilesModule = async ({
       return deletedFilesResult.deletedCount;
     },
 
-    uploadFileFromStream: async (directoryName, rawFile, meta, userId) => {
+    uploadFileFromStream: async ({ directoryName, rawFile, meta }, userId) => {
       const uploadFileData = await FileUpload.uploadFileFromStream(
         directoryName,
         rawFile

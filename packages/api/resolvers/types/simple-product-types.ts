@@ -15,10 +15,13 @@ export const SimpleProduct: SimpleProductHelperTypes = {
     return deliveryProviders.reduce(async (oldResult, deliveryProvider) => {
       const result = await oldResult;
 
-      const warehousingProviders = await modules.warehousing.findSupported({
-        product: obj,
-        deliveryProvider,
-      });
+      const warehousingProviders = await modules.warehousing.findSupported(
+        {
+          product: obj,
+          deliveryProvider,
+        },
+        requestContext
+      );
 
       const mappedWarehousingProviders = warehousingProviders.map(
         (warehousingProvider) => {

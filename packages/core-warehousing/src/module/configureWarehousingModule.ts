@@ -13,11 +13,7 @@ import {
 import { WarehousingProvidersCollection } from '../db/WarehousingProvidersCollection';
 import { WarehousingProvidersSchema } from '../db/WarehousingProvidersSchema';
 import { WarehousingAdapter } from '../director/WarehousingAdapter';
-import {
-  getWarehousingAdapter,
-  getFilteredAdapters,
-  WarehousingDirector,
-} from '../director/WarehousingDirector';
+import { WarehousingDirector } from '../director/WarehousingDirector';
 
 const WAREHOUSING_PROVIDER_EVENTS: string[] = [
   'WAREHOUSING_PROVIDER_CREATE',
@@ -33,12 +29,6 @@ type FindQuery = {
 const buildFindSelector = ({ type, deleted = null }: FindQuery = {}) => {
   const query = type ? { type, deleted } : { deleted };
   return query;
-};
-
-const getDefaultContext = (
-  context?: WarehousingContext
-): WarehousingContext => {
-  return context || {};
 };
 
 export const configureWarehousingModule = async ({
@@ -85,8 +75,12 @@ export const configureWarehousingModule = async ({
       return !!providerCount;
     },
 
+    // Adapter
+
     findInterface: (warehousingProvider) => {
-      const Adapter = getWarehousingAdapter(warehousingProvider);
+      const Adapter = WarehousingDirector.getAdapter(
+        warehousingProvider.adapterKey
+      );
       return {
         _id: Adapter.key,
         label: Adapter.label,
@@ -95,36 +89,48 @@ export const configureWarehousingModule = async ({
     },
 
     findInterfaces: ({ type }) => {
-      return getFilteredAdapters((Adapter: typeof WarehousingAdapter) =>
-        Adapter.typeSupported(type)
-      ).map((Adapter) => ({
+      return WarehousingDirector.getAdapters({
+        adapterFilter: (Adapter) => Adapter.typeSupported(type),
+      }).map((Adapter) => ({
         _id: Adapter.key,
         label: Adapter.label,
         version: Adapter.version,
       }));
     },
 
-    findSupported: async () => {
-      const providers = WarehousingProviders.find(buildFindSelector({})).filter(
-        (provider: WarehousingProvider) =>
-          WarehousingDirector(provider).isActive()
-      );
+    findSupported: async (warehousingContext, requestContext) => {
+      const providers = await WarehousingProviders.find(
+        buildFindSelector({})
+      ).toArray();
+      return providers.filter((provider) => {
+        const Adapter = WarehousingDirector.actions(
+          provider,
+          warehousingContext,
+          requestContext
+        );
 
-      return await providers.toArray();
+        return Adapter.isActive();
+      });
     },
 
-    // Adapter
-
-    configurationError: (provider: WarehousingProvider) => {
-      return WarehousingDirector(provider).configurationError();
+    configurationError: (provider, requestContext) => {
+      return WarehousingDirector.actions(
+        provider,
+        {},
+        requestContext
+      ).configurationError();
     },
-    isActive: (provider: WarehousingProvider) => {
-      return WarehousingDirector(provider).isActive();
+    isActive: (provider, requestContext) => {
+      return WarehousingDirector.actions(
+        provider,
+        {},
+        requestContext
+      ).isActive();
     },
 
     // Mutations
     create: async (doc, userId) => {
-      const Adapter = getWarehousingAdapter(doc);
+      const Adapter = WarehousingDirector.getAdapter(doc.adapterKey);
       if (!Adapter) return null;
 
       const warehousingProviderId = await mutations.create(

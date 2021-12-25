@@ -1,62 +1,43 @@
+import { IWarehousingAdapter } from '@unchainedshop/types/warehousing';
 import { log, LogLevel } from 'meteor/unchained:logger';
-import {
-  WarehousingContext,
-  WarehousingProviderType,
-  WarehousingAdapter as IWarehousingAdapter,
-  WarehousingProvider,
-} from '@unchainedshop/types/warehousing';
 import { WarehousingError } from './WarehousingError';
 
-export class WarehousingAdapter implements IWarehousingAdapter {
-  static key = '';
+export const WarehousingAdapter: IWarehousingAdapter = {
+  key: '',
+  label: '',
+  version: '',
+  orderIndex: 0,
 
-  static label = '';
-
-  static version = '';
-
-  static typeSupported(type) {
-    // eslint-disable-line
+  typeSupported: () => {
     return false;
-  }
+  },
 
-  public config: WarehousingProvider['configuration'];
-  public context: WarehousingContext;
+  actions: () => {
+    return {
+      configurationError() {
+        return WarehousingError.NOT_IMPLEMENTED;
+      },
 
-  constructor(
-    config: WarehousingProvider['configuration'],
-    context: WarehousingContext
-  ) {
-    this.config = config;
-    this.context = context;
-  }
+      isActive() {
+        return false;
+      },
 
-  configurationError() {
-    // eslint-disable-line
-    return WarehousingError.NOT_IMPLEMENTED;
-  }
+      stock: async () => {
+        return 0;
+      },
 
-  isActive() {
-    // eslint-disable-line
-    return false;
-  }
+      productionTime: async () => {
+        return 0;
+      },
 
-  async stock(referenceDate) {
-    // eslint-disable-line
-    return 0;
-  }
-
-  async productionTime(quantityToProduce) {
-    // eslint-disable-line
-    return 0;
-  }
-
-  async commissioningTime(quantity) {
-    // eslint-disable-line
-    return 0;
-  }
+      commissioningTime: async () => {
+        return 0;
+      },
+    };
+  },
 
   log(message, { level = LogLevel.Debug, ...options } = {}) {
     // eslint-disable-line
     return log(message, { level, ...options });
-  }
-}
+  },
+};

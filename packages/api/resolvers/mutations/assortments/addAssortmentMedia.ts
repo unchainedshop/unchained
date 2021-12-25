@@ -14,5 +14,17 @@ export default async function addAssortmentMedia(
   if (!(await modules.assortments.assortmentExists({ assortmentId })))
     throw new AssortmentNotFoundError({ assortmentId });
 
-  return await modules.assortments.media.addMedia({ rawFile: media, authorId: userId });
+  const file = await modules.files.uploadFileFromStream(
+    {
+      directoryName: 'assortment-media',
+      rawFile: media,
+      meta: { authorId: userId },
+    },
+    userId
+  );
+
+  return await modules.assortments.media.create(
+    { assortmentId, mediaId: file._id as string },
+    userId
+  );
 }
