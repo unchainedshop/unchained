@@ -4,17 +4,14 @@ import {
 } from '@unchainedshop/types/delivery';
 import fetch from 'isomorphic-unfetch';
 import {
-  DeliveryError,
-  DeliveryDirector,
   DeliveryAdapter,
+  DeliveryDirector,
+  DeliveryError,
 } from 'meteor/unchained:core-delivery';
 
-const fetchPickMupLocations = async (
-  key: string,
-  idsFilter?: Array<string>
-) => {
-  /* @ts-ignore */
-  const pickMupUrl = `https://web-api.migros.ch/widgets/stores?key=${key}&verbosity=detail&limit=5000&aggregation_options%5Bempty_buckets%5D=true&filters%5Bmarkets%5D%5B0%5D%5B%5D=super&filters%5Bmarkets%5D%5B0%5D%5B%5D=mno&filters%5Bmarkets%5D%5B0%5D%5B%5D=voi&filters%5Bmarkets%5D%5B0%5D%5B%5D=mp&filters%5Bmarkets%5D%5B0%5D%5B%5D=out&filters%5Bmarkets%5D%5B0%5D%5B%5D=spx&filters%5Bmarkets%5D%5B0%5D%5B%5D=doi&filters%5Bmarkets%5D%5B0%5D%5B%5D=mec&filters%5Bmarkets%5D%5B0%5D%5B%5D=mica&filters%5Bmarkets%5D%5B0%5D%5B%5D=res&filters%5Bmarkets%5D%5B0%5D%5B%5D=flori&filters%5Bmarkets%5D%5B0%5D%5B%5D=gour&filters%5Bmarkets%5D%5B0%5D%5B%5D=alna&filters%5Bmarkets%5D%5B0%5D%5B%5D=cof&filters%5Bmarkets%5D%5B0%5D%5B%5D=chng&filters%5Bservices%5D%5Bsub_type%5D%5B%5D=pickmup&aggregation_groups%5B_custom%5D%5Bopen_on%5D%5Bnow%5D=20190923T11%3A45&aggregation_groups%5B_custom%5D%5Bopen_on%5D%5Bafter_1900%5D=20190923T19%3A01&aggregation_groups%5B_custom%5D%5Bopen_on%5D%5Bsundays%5D=sunday&aggregation_groups%5Bmarkets%5D%5B_terms%5D%5B%5D=super&aggregation_groups%5Bmarkets%5D%5B_terms%5D%5B%5D=voi&aggregation_groups%5Bmarkets%5D%5B_terms%5D%5B%5D=mp&aggregation_groups%5Bmarkets%5D%5B_terms%5D%5B%5D=mec&aggregation_groups%5Bmarkets%5D%5B_terms%5D%5B%5D=spx&aggregation_groups%5Bmarkets%5D%5B_terms%5D%5B%5D=doi&aggregation_groups%5Bmarkets%5D%5B_terms%5D%5B%5D=mica&aggregation_groups%5Bmarkets%5D%5B_terms%5D%5B%5D=out&aggregation_groups%5Bmarkets%5D%5B_terms%5D%5B%5D=flori&aggregation_groups%5Bmarkets%5D%5B_terms%5D%5B%5D=alna&aggregation_groups%5Bmarkets%5D%5B_terms%5D%5B%5D=res&aggregation_groups%5Bmarkets%5D%5B_terms%5D%5B%5D=gour&aggregation_groups%5Bmarkets%5D%5B_terms%5D%5B%5D=cof&aggregation_groups%5Bmarkets%5D%5B_terms%5D%5B%5D=res&aggregation_groups%5Bmarkets%5D%5B_terms%5D%5B%5D=gour&aggregation_groups%5Bmarkets%5D%5B_terms%5D%5B%5D=cof&aggregation_groups%5Bservices%5D%5Bsub_type%5D%5B_terms%5D%5B%5D=market-service-mig_clean&aggregation_groups%5Bservices%5D%5Bsub_type%5D%5B_terms%5D%5B%5D=market-service-mig_online&aggregation_groups%5Bservices%5D%5Bsub_type%5D%5B_terms%5D%5B%5D=pickmup&aggregation_groups%5Bservices%5D%5Bsub_type%5D%5B_terms%5D%5B%5D=post-service-point&aggregation_groups%5Bservices%5D%5Bsub_type%5D%5B_terms%5D%5B%5D=subito-selfscanning&aggregation_groups%5Bservices%5D%5Bsub_type%5D%5B_terms%5D%5B%5D=subito-selfcheckout&aggregation_groups%5Bservices%5D%5Bsub_type%5D%5B_terms%5D%5B%5D=market-service-mig_bakery&aggregation_groups%5Bservices%5D%5Bsub_type%5D%5B_terms%5D%5B%5D=counter-mez&aggregation_groups%5Bservices%5D%5Bsub_type%5D%5B_terms%5D%5B%5D=counter-fisch&aggregation_groups%5Bservices%5D%5Bsub_type%5D%5B_terms%5D%5B%5D=counter-kaes&aggregation_groups%5Bservices%5D%5Bsub_type%5D%5B_terms%5D%5B%5D=srv`;
+const fetchPickMupLocations = async (key: string, idsFilter?: string) => {
+  // const pickMupUrl = `https://web-api.migros.ch/widgets/stores?key=${key}&verbosity=detail&limit=5000&aggregation_options%5Bempty_buckets%5D=true&filters%5Bmarkets%5D%5B0%5D%5B%5D=super&filters%5Bmarkets%5D%5B0%5D%5B%5D=mno&filters%5Bmarkets%5D%5B0%5D%5B%5D=voi&filters%5Bmarkets%5D%5B0%5D%5B%5D=mp&filters%5Bmarkets%5D%5B0%5D%5B%5D=out&filters%5Bmarkets%5D%5B0%5D%5B%5D=spx&filters%5Bmarkets%5D%5B0%5D%5B%5D=doi&filters%5Bmarkets%5D%5B0%5D%5B%5D=mec&filters%5Bmarkets%5D%5B0%5D%5B%5D=mica&filters%5Bmarkets%5D%5B0%5D%5B%5D=res&filters%5Bmarkets%5D%5B0%5D%5B%5D=flori&filters%5Bmarkets%5D%5B0%5D%5B%5D=gour&filters%5Bmarkets%5D%5B0%5D%5B%5D=alna&filters%5Bmarkets%5D%5B0%5D%5B%5D=cof&filters%5Bmarkets%5D%5B0%5D%5B%5D=chng&filters%5Bservices%5D%5Bsub_type%5D%5B%5D=pickmup&aggregation_groups%5B_custom%5D%5Bopen_on%5D%5Bnow%5D=20190923T11%3A45&aggregation_groups%5B_custom%5D%5Bopen_on%5D%5Bafter_1900%5D=20190923T19%3A01&aggregation_groups%5B_custom%5D%5Bopen_on%5D%5Bsundays%5D=sunday&aggregation_groups%5Bmarkets%5D%5B_terms%5D%5B%5D=super&aggregation_groups%5Bmarkets%5D%5B_terms%5D%5B%5D=voi&aggregation_groups%5Bmarkets%5D%5B_terms%5D%5B%5D=mp&aggregation_groups%5Bmarkets%5D%5B_terms%5D%5B%5D=mec&aggregation_groups%5Bmarkets%5D%5B_terms%5D%5B%5D=spx&aggregation_groups%5Bmarkets%5D%5B_terms%5D%5B%5D=doi&aggregation_groups%5Bmarkets%5D%5B_terms%5D%5B%5D=mica&aggregation_groups%5Bmarkets%5D%5B_terms%5D%5B%5D=out&aggregation_groups%5Bmarkets%5D%5B_terms%5D%5B%5D=flori&aggregation_groups%5Bmarkets%5D%5B_terms%5D%5B%5D=alna&aggregation_groups%5Bmarkets%5D%5B_terms%5D%5B%5D=res&aggregation_groups%5Bmarkets%5D%5B_terms%5D%5B%5D=gour&aggregation_groups%5Bmarkets%5D%5B_terms%5D%5B%5D=cof&aggregation_groups%5Bmarkets%5D%5B_terms%5D%5B%5D=res&aggregation_groups%5Bmarkets%5D%5B_terms%5D%5B%5D=gour&aggregation_groups%5Bmarkets%5D%5B_terms%5D%5B%5D=cof&aggregation_groups%5Bservices%5D%5Bsub_type%5D%5B_terms%5D%5B%5D=market-service-mig_clean&aggregation_groups%5Bservices%5D%5Bsub_type%5D%5B_terms%5D%5B%5D=market-service-mig_online&aggregation_groups%5Bservices%5D%5Bsub_type%5D%5B_terms%5D%5B%5D=pickmup&aggregation_groups%5Bservices%5D%5Bsub_type%5D%5B_terms%5D%5B%5D=post-service-point&aggregation_groups%5Bservices%5D%5Bsub_type%5D%5B_terms%5D%5B%5D=subito-selfscanning&aggregation_groups%5Bservices%5D%5Bsub_type%5D%5B_terms%5D%5B%5D=subito-selfcheckout&aggregation_groups%5Bservices%5D%5Bsub_type%5D%5B_terms%5D%5B%5D=market-service-mig_bakery&aggregation_groups%5Bservices%5D%5Bsub_type%5D%5B_terms%5D%5B%5D=counter-mez&aggregation_groups%5Bservices%5D%5Bsub_type%5D%5B_terms%5D%5B%5D=counter-fisch&aggregation_groups%5Bservices%5D%5Bsub_type%5D%5B_terms%5D%5B%5D=counter-kaes&aggregation_groups%5Bservices%5D%5Bsub_type%5D%5B_terms%5D%5B%5D=srv`;
+  const pickMupUrl = '';
 
   const data = await fetch(
     `${pickMupUrl}${idsFilter ? `&ids[]=${idsFilter}` : ''}`,
@@ -72,11 +69,18 @@ const PickMup: IDeliveryAdapter = {
   label: 'Migros Pick M Up',
   version: '1.0',
 
+  initialConfiguration: [
+    {
+      key: 'key',
+      value: '',
+    },
+  ],
+
   typeSupported: (type) => {
     return type === DeliveryProviderType.PICKUP;
   },
 
-  actions: (config) => {
+  actions: (config, context) => {
     const getKey = () => {
       // Load https://filialen.migros.ch/de/filter:market_services-pickmup, open the browser developer tools and look for the sessionKey:
       // <html lang="de" data-setup="{'env': 'production','sessionKey': '8ApUDaqeNER3Mest'}" class="no-js">
@@ -87,6 +91,8 @@ const PickMup: IDeliveryAdapter = {
     };
 
     return {
+      ...DeliveryAdapter.actions(config, context),
+
       isActive() {
         return true;
       },
@@ -103,12 +109,8 @@ const PickMup: IDeliveryAdapter = {
         return null;
       },
 
-      estimatedDeliveryThroughput: async () => {
-        return 0;
-      },
-
       pickUpLocationById: async (id) => {
-        const [foundLocation] = await fetchPickMupLocations(getKey(), [id]);
+        const [foundLocation] = await fetchPickMupLocations(getKey(), id);
         return foundLocation;
       },
 

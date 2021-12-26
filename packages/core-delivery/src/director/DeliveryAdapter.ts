@@ -8,6 +8,8 @@ export const DeliveryAdapter: IDeliveryAdapter = {
   label: '',
   version: '',
 
+  initialConfiguration: [],
+
   typeSupported: () => {
     return false;
   },
@@ -21,7 +23,7 @@ export const DeliveryAdapter: IDeliveryAdapter = {
       estimatedDeliveryThroughput: async () => {
         return 0;
       },
-      
+
       isActive: () => {
         return false;
       },

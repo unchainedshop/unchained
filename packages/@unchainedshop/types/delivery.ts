@@ -71,6 +71,8 @@ interface DeliveryAdapterActions {
   send: (transactionContext: any) => Promise<boolean | Work>;
 }
 export type IDeliveryAdapter = IBaseAdapter & {
+  initialConfiguration: DeliveryConfiguration
+  
   typeSupported: (type: DeliveryProviderType) => boolean
   
   actions: (

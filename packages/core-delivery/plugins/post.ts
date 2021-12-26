@@ -27,10 +27,6 @@ const Post: IDeliveryAdapter = {
       configurationError:() => {
         return null;
       },
-
-      estimatedDeliveryThroughput: async () => {
-        return 0;
-      },
     };
   },
 };
