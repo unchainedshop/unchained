@@ -85,7 +85,8 @@ export type AssortmentsModule = {
   }) => Promise<boolean>;
 
   breadcrumbs: (params: {
-    assortmentId: string;
+    assortmentId?: string;
+    productId?: string;
   }) => Promise<Array<{ links: Array<AssortmentPathLink> }>>;
 
   // Mutations
@@ -119,10 +120,6 @@ export type AssortmentsModule = {
    * Assortment media
    */
   media: AssortmentMediaModule;
-  // {
-  //   addMedia: ({ rawFile: any, authorId: string }, userId?: string) => Promise<string>
-  //   findMediaTexts({ assortmentMediaId: string }) => Promise<Array<AssortmentText>>;
-  // }
 
   /*
    * Assortment filters
@@ -325,7 +322,7 @@ export interface AssortmentHelperTypes {
   texts: HelperType<{ forceLocale?: string }, Promise<AssortmentText>>;
 
   assortmentPaths: HelperType<
-    { forceLocale?: string },
+    never,
     Promise<Array<{ links: Array<AssortmentPathLink> }>>
   >;
 

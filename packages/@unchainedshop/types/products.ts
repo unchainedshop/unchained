@@ -37,6 +37,12 @@ export interface ProductPrice {
   maxQuantity?: number;
 }
 
+interface ProductPriceRange {
+  _id: string;
+  minPrice: ProductPrice;
+  maxPrice: ProductPrice;
+}
+
 export interface ProductCommerce {
   salesUnit?: string;
   salesQuantityPerUnit?: string;
@@ -126,6 +132,13 @@ export type ProductsModule = {
     options?: FindOptions
   ) => Promise<Array<Product>>;
 
+  findProductSiblings: (params: {
+    productIds: Array<string>;
+    includeInactive: boolean;
+    limit?: number;
+    offset?: number;
+  }) => Promise<Array<Product>>;
+
   count: (query: ProductQuery) => Promise<number>;
   productExists: (params: {
     productId?: string;
@@ -189,11 +202,7 @@ export type ProductsModule = {
         vectors: Array<ProductConfiguration>;
       },
       requestContext: Context
-    ) => Promise<{
-      _id: string;
-      minPrice: ProductPrice;
-      maxPrice: ProductPrice;
-    }>;
+    ) => Promise<ProductPriceRange>;
 
     simulatedPriceRange: (
       prodct: Product,
@@ -206,11 +215,7 @@ export type ProductsModule = {
         vectors: Array<ProductConfiguration>;
       },
       requestContext: Context
-    ) => Promise<{
-      _id: string;
-      minPrice: ProductPrice;
-      maxPrice: ProductPrice;
-    }>;
+    ) => Promise<ProductPriceRange>;
   };
 
   // Mutations
@@ -317,23 +322,14 @@ export type ProductsModule = {
 type HelperType<P, T> = (product: Product, params: P, context: Context) => T;
 
 export interface ProductHelperTypes {
-  childrenCount: HelperType<{ includeInactive: boolean }, Promise<number>>;
-  siblings: HelperType<
-    {
-      assortmentId?: string;
-      limit: number;
-      offset: number;
-      includeInactive: boolean;
-    },
-    Promise<Array<string>>
-  >;
-  
-  texts: HelperType<{ forceLocale?: string }, Promise<ProductText>>;
+  __resolveType: HelperType<never, string>;
 
   assortmentPaths: HelperType<
     { forceLocale?: string },
     Promise<Array<{ links: Array<AssortmentPathLink> }>>
   >;
+
+  texts: HelperType<{ forceLocale?: string }, Promise<ProductText>>;
 
   status: HelperType<never, string>;
 
@@ -347,7 +343,51 @@ export interface ProductHelperTypes {
   >;
 }
 
+export interface BundleProductHelperTypes extends ProductHelperTypes {
+  bundleItems: HelperType<never, Array<ProductBundleItem>>;
+}
+
+export interface ConfigurableProductHelperTypes extends ProductHelperTypes {
+  assignments: HelperType<
+    { includeInactive: boolean },
+    Promise<Array<{ assignment: ProductAssignment; product: Product }>>
+  >;
+  products: HelperType<
+    { vectors: Array<ProductConfiguration>; includeInactive: boolean },
+    Promise<Array<Product>>
+  >;
+  catalogPriceRange: HelperType<
+    {
+      currency?: string;
+      includeInactive: boolean;
+      quantity: number;
+      vectors: Array<ProductConfiguration>;
+    },
+    Promise<ProductPriceRange>
+  >;
+  simulatedPriceRange: HelperType<
+    {
+      currency?: string;
+      includeInactive: boolean;
+      quantity?: number;
+      vectors: Array<ProductConfiguration>;  
+      useNetPrice: boolean;  
+    },
+    Promise<ProductPriceRange>
+  >;
+}
+
 export interface PlanProductHelperTypes extends ProductHelperTypes {
+  siblings: HelperType<
+    {
+      assortmentId?: string;
+      limit: number;
+      offset: number;
+      includeInactive: boolean;
+    },
+    Promise<Array<Product>>
+  >;
+
   catalogPrice: HelperType<
     { quantity: number; currency: string },
     Promise<ProductPrice>
@@ -371,11 +411,13 @@ export interface PlanProductHelperTypes extends ProductHelperTypes {
 
   simulatedDiscounts: HelperType<
     { quantity: number },
-    Promise<Array<{
-      _id: string;
-      interface: any;
-      total: ProductPrice;
-    }>>
+    Promise<
+      Array<{
+        _id: string;
+        interface: any;
+        total: ProductPrice;
+      }>
+    >
   >;
 
   salesUnit: HelperType<never, string>;

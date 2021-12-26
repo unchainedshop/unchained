@@ -300,7 +300,7 @@ export const configureAssortmentsModule = async ({
       return !!assortmentCount;
     },
 
-    breadcrumbs: async ({ assortmentId }) => {
+    breadcrumbs: async ({ assortmentId, productId }) => {
       const resolveAssortmentLink =
         (params: { selector: Query } = { selector: {} }) =>
         async (assortmentId: string, childAssortmentId: string) => {
@@ -336,12 +336,13 @@ export const configureAssortmentsModule = async ({
           return await assortmentProducts.toArray();
         };
 
+
       const buildBreadcrumbs = makeAssortmentBreadcrumbsBuilder({
         resolveAssortmentLink,
         resolveAssortmentProducts,
       });
 
-      return await buildBreadcrumbs({ assortmentId });
+      return await buildBreadcrumbs({ assortmentId, productId });
     },
 
     // Mutations

@@ -179,6 +179,24 @@ export const configureProductsModule = async ({
       return await products.toArray();
     },
 
+    findProductSiblings: async ({
+      productIds,
+      limit,
+      offset,
+      includeInactive = false,
+    }) => {
+      const productSelector: Query = {
+        _id: { $in: productIds },
+        status: includeInactive
+          ? { $in: [ProductStatus.ACTIVE, ProductStatus.DRAFT] }
+          : ProductStatus.ACTIVE,
+      };
+
+      const productOptions = { skip: offset, limit };
+
+      return await Products.find(productSelector, productOptions).toArray();
+    },
+
     count: async (query) => {
       return await Products.find(buildFindSelector(query)).count();
     },
@@ -423,7 +441,7 @@ export const configureProductsModule = async ({
     media: await configureProductMediaModule({ db }),
     reviews: await configureProductReviewsModule({ db }),
     variations: await configureProductVariationsModule({ db }),
-    
+
     texts: productTexts,
   };
 };

@@ -2,18 +2,32 @@ import {
   PlanProductHelperTypes,
   ProductPrice,
 } from '@unchainedshop/types/products';
+import { Product } from './product-types';
 
 export const PlanProduct: PlanProductHelperTypes = {
-  texts: async (obj, { forceLocale }, requestContext) => {
-    const { localeContext, modules } = requestContext;
-    return await modules.products.texts.findLocalizedText({
-      productId: obj._id as string,
-      locale: forceLocale || localeContext.normalized,
-    });
-  },
+  ...Product,
 
-  status(obj, _, { modules }) {
-    return modules.products.normalizedStatus(obj);
+  siblings: async (product, params, { modules }) => {
+    const { assortmentId, limit, offset, includeInactive = false } = params;
+
+    const productId = product._id as string;
+    const assortmentIds = assortmentId
+      ? [assortmentId]
+      : await modules.assortments.products.findAssortmentIds({ productId });
+
+    if (!assortmentIds.length) return [];
+
+    const productIds = await modules.assortments.products.findProductSiblings({
+      productId,
+      assortmentIds,
+    });
+
+    return await modules.products.findProductSiblings({
+      productIds,
+      includeInactive,
+      limit,
+      offset,
+    });
   },
 
   catalogPrice: async (obj, { quantity, currency }, requestContext) => {
@@ -75,15 +89,5 @@ export const PlanProduct: PlanProductHelperTypes = {
   },
   defaultOrderQuantity(obj) {
     return obj.commerce && obj.commerce.defaultOrderQuantity;
-  },
-  // assortmentPaths: async (obj, { forceLocale }, { modules, localeContext }) => {
-  //   return modules.assortments.breadcrumbs(  (forceLocale || localeContext.normalized);
-  // },
-
-  media: async (obj, params, { modules }) => {
-    return await modules.products.media.findProductMedias({
-      productId: obj._id as string,
-      ...params,
-    });
-  },
+  },  
 };

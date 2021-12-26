@@ -1,11 +1,12 @@
 import { SimpleProductHelperTypes } from '@unchainedshop/types/products';
-import { PlanProduct } from './plan-product-types';
+import { WarehousingDirector } from 'meteor/unchained:core-warehousing';
+import { PlanProduct } from './product-plan-types';
 
 export const SimpleProduct: SimpleProductHelperTypes = {
   ...PlanProduct,
 
   simulatedDispatches: async (obj, params, requestContext) => {
-    const { deliveryProviderType } = params;
+    const { deliveryProviderType, referenceDate, quantity } = params;
     const { modules } = requestContext;
 
     const deliveryProviders = await modules.delivery.findProviders({
@@ -23,21 +24,27 @@ export const SimpleProduct: SimpleProductHelperTypes = {
         requestContext
       );
 
-      const mappedWarehousingProviders = warehousingProviders.map(
-        (warehousingProvider) => {
-          const context = {
-            warehousingProvider,
+      const mappedWarehousingProviders = await Promise.all(
+        warehousingProviders.map(async (warehousingProvider) => {
+          const warehousingContext = {
             deliveryProvider,
-            product: this,
-            requestContext,
-            ...options,
+            product: obj,
+            quantity,
+            referenceDate,
+            warehousingProvider,
           };
-          const dispatch = warehousingProvider.estimatedDispatch(context);
+
+          const dispatch = await WarehousingDirector.actions(
+            warehousingProvider,
+            warehousingContext,
+            requestContext
+          ).estimatedDispatch();
+          
           return {
-            ...context,
+            ...warehousingContext,
             ...dispatch,
           };
-        }
+        })
       );
 
       return result.concat(result, mappedWarehousingProviders);
@@ -55,29 +62,37 @@ export const SimpleProduct: SimpleProductHelperTypes = {
     return deliveryProviders.reduce(async (oldResult, deliveryProvider) => {
       const result = await oldResult;
 
-      const warehousingProviders = await modules.warehousing.findSupported({
-        product: this,
-        deliveryProvider,
-      });
-      const mappedWarehousingProviders = warehousingProviders.map(
-        (warehousingProvider) => {
-          const context = {
-            warehousingProvider,
+      const warehousingProviders = await modules.warehousing.findSupported(
+        {
+          product: obj,
+          deliveryProvider,
+        },
+        requestContext
+      );
+
+      const mappedWarehousingProviders = await Promise.all(
+        warehousingProviders.map(async (warehousingProvider) => {
+          const warehousingContext = {
             deliveryProvider,
-            product: this,
-            requestContext,
-            ...options,
+            product: obj,
+            referenceDate,
           };
-          const stock = warehousingProvider.estimatedStock(context);
+
+          const stock = await WarehousingDirector.actions(
+            warehousingProvider,
+            warehousingContext,
+            requestContext
+          ).estimatedStock();
+
           return {
-            ...context,
+            ...warehousingContext,
             ...stock,
           };
-        }
+        })
       );
 
       return result.concat(result, mappedWarehousingProviders);
-    }, Promise.all([]));
+    }, Promise.resolve([]));
   },
 
   baseUnit: (obj) => {

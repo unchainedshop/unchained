@@ -1,5 +1,4 @@
 import { IDeliveryAdapter } from '@unchainedshop/types/delivery';
-import { Work } from '@unchainedshop/types/worker';
 import { log, LogLevel } from 'meteor/unchained:logger';
 import { DeliveryError } from './DeliveryError';
 

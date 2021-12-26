@@ -1,4 +1,7 @@
 import { Locale, Locales } from '@types/locale';
+import { ObjectId } from 'bjson';
+import { Request } from 'express';
+import SimpleSchema from 'simpl-schema';
 import { AssortmentsModule } from './assortments';
 import { BookmarksModule } from './bookmarks';
 import {
@@ -14,10 +17,18 @@ import {
   ModuleMutations,
   Query,
   TimestampFields,
-  _ID,
+  _ID
 } from './common';
 import { CountriesModule, Country } from './countries';
 import { CurrenciesModule } from './currencies';
+import {
+  DeliveryModule, IDeliveryAdapter,
+  IDeliveryDirector
+} from './delivery';
+import {
+  IDeliveryPricingAdapter,
+  IDeliveryPricingDirector
+} from './delivery.pricing';
 import { EventDirector, EventsModule } from './events';
 import { FileDirector, FilesModule } from './files';
 import { LanguagesModule } from './languages';
@@ -25,18 +36,23 @@ import {
   Logger,
   LogLevel as LogLevelType,
   LogOptions,
-  Transports,
+  Transports
 } from './logs';
+import { IDiscountAdapter, IDiscountDirector } from './orders.discount';
 import {
-  IPaymentAdapter,
-  PaymentConfiguration,
-  PaymentContext,
-  IPaymentDirector,
+  IOrderPricingAdapter,
+  IOrderPricingDirector,
+  IOrderPricingSheet
+} from './orders.pricing';
+import {
+  IPaymentAdapter, IPaymentDirector,
   PaymentError as PaymentErrorType,
-  PaymentModule,
-  PaymentProvider,
-  PaymentProviderType as PaymentProviderTypeType,
+  PaymentModule, PaymentProviderType as PaymentProviderTypeType
 } from './payments';
+import {
+  IPaymentPricingAdapter,
+  IPaymentPricingDirector
+} from './payments.pricing';
 import {
   BasePricingAdapterContext,
   BasePricingContext,
@@ -44,48 +60,18 @@ import {
   IPricingDirector,
   IPricingSheet,
   PricingCalculation,
-  PricingSheetParams,
+  PricingSheetParams
 } from './pricing';
 import { ProductsModule, ProductType } from './products';
-import { UsersModule } from './user';
-import {
-  WarehousingAdapter as IWarehousingAdapter,
-  WarehousingContext,
-  WarehousingDirector as IWarehousingDirector,
-  WarehousingError as WarehousingErrorType,
-  WarehousingModule,
-  WarehousingProvider,
-  WarehousingProviderType as WarehousingProviderTypeType,
-} from './warehousing';
-import { WorkerModule, WorkerPlugin as IWorkerPlugin } from './worker';
-import { ObjectId } from 'bjson';
-import { Request } from 'express';
-import SimpleSchema from 'simpl-schema';
-import {
-  IOrderPricingAdapter,
-  IOrderPricingDirector,
-  IOrderPricingSheet,
-} from './orders.pricing';
 import {
   IProductPricingAdapter,
-  IProductPricingDirector,
+  IProductPricingDirector
 } from './products.pricing';
-import { IDiscountAdapter, IDiscountDirector } from './orders.discount';
+import { UsersModule } from './user';
 import {
-  IDeliveryPricingAdapter,
-  IDeliveryPricingDirector,
-} from './delivery.pricing';
-import {
-  IPaymentPricingAdapter,
-  IPaymentPricingDirector,
-} from './payments.pricing';
-import {
-  IDeliveryAdapter,
-  IDeliveryDirector,
-  DeliveryModule,
-  DeliveryError,
-  DeliveryProviderType,
-} from './delivery';
+  IWarehousingAdapter, IWarehousingDirector, WarehousingError as WarehousingErrorType, WarehousingModule, WarehousingProviderType as WarehousingProviderTypeType
+} from './warehousing';
+import { WorkerModule, WorkerPlugin as IWorkerPlugin } from './worker';
 
 declare module 'meteor/unchained:utils' {
   function checkId(

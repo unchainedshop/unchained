@@ -14,11 +14,7 @@ import { DeliveryProvidersCollection } from 'src/db/DeliveryProvidersCollection'
 import { deliverySettings } from 'src/delivery-settings';
 import { DeliveryProvidersSchema } from '../db/DeliveryProvidersSchema';
 import { DeliveryAdapter } from '../director/DeliveryAdapter';
-import {
-  DeliveryDirector,
-  getAdapter,
-  getAdapters,
-} from '../director/DeliveryDirector';
+import { DeliveryDirector } from '../director/DeliveryDirector';
 
 const DELIVERY_PROVIDER_EVENTS: string[] = [
   'DELIVERY_PROVIDER_CREATE',
@@ -86,18 +82,13 @@ export const configureDeliveryModule = async ({
     // Delivery Adapter
 
     findInterface: (deliveryProvider) => {
-      const Adapter = getAdapter(deliveryProvider);
-      return {
-        _id: Adapter.key,
-        label: Adapter.label,
-        version: Adapter.version,
-      };
+      return DeliveryDirector.getAdapter(deliveryProvider.adapterKey);
     },
 
     findInterfaces: ({ type }) => {
-      return getAdapters((Adapter: typeof DeliveryAdapter) =>
-        Adapter.typeSupported(type)
-      ).map((Adapter) => ({
+      return DeliveryDirector.getAdapters({
+        adapterFilter: (Adapter) => Adapter.typeSupported(type),
+      }).map((Adapter) => ({
         _id: Adapter.key,
         label: Adapter.label,
         version: Adapter.version,
@@ -107,7 +98,7 @@ export const configureDeliveryModule = async ({
     findSupported: (deliveryContext, requestContext) => {
       const providers = DeliveryProviders.find({}).filter(
         (provider: DeliveryProvider) => {
-          const director = DeliveryDirector(
+          const director = DeliveryDirector.actions(
             provider,
             getDefaultContext(deliveryContext),
             requestContext
@@ -123,7 +114,7 @@ export const configureDeliveryModule = async ({
 
     // Mutations
     create: async (doc, userId) => {
-      const Adapter = getAdapter(doc);
+      const Adapter = DeliveryDirector.getAdapter(doc.adapterKey);
       if (!Adapter) return null;
 
       const deliveryProviderId = await mutations.create(
