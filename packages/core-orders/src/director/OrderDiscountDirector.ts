@@ -5,7 +5,7 @@ import {
 import { log } from 'meteor/unchained:logger';
 import { BaseDirector } from 'meteor/unchained:utils';
 
-const baseDirector = BaseDirector<IDiscountAdapter>({
+const baseDirector = BaseDirector<IDiscountAdapter>('OrderDiscountDirector', {
   adapterSortKey: 'orderIndex',
 });
 

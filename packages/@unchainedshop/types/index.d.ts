@@ -17,17 +17,20 @@ import {
   ModuleMutations,
   Query,
   TimestampFields,
-  _ID
+  _ID,
 } from './common';
 import { CountriesModule, Country } from './countries';
 import { CurrenciesModule } from './currencies';
 import {
-  DeliveryModule, IDeliveryAdapter,
-  IDeliveryDirector
+  DeliveryModule,
+  IDeliveryAdapter,
+  IDeliveryDirector,
+  DeliveryProviderType as DeliveryProviderTypeType,
+  DeliveryError as DeliveryErrorType,
 } from './delivery';
 import {
   IDeliveryPricingAdapter,
-  IDeliveryPricingDirector
+  IDeliveryPricingDirector,
 } from './delivery.pricing';
 import { EventDirector, EventsModule } from './events';
 import { FileDirector, FilesModule } from './files';
@@ -36,22 +39,24 @@ import {
   Logger,
   LogLevel as LogLevelType,
   LogOptions,
-  Transports
+  Transports,
 } from './logs';
 import { IDiscountAdapter, IDiscountDirector } from './orders.discount';
 import {
   IOrderPricingAdapter,
   IOrderPricingDirector,
-  IOrderPricingSheet
+  IOrderPricingSheet,
 } from './orders.pricing';
 import {
-  IPaymentAdapter, IPaymentDirector,
+  IPaymentAdapter,
+  IPaymentDirector,
   PaymentError as PaymentErrorType,
-  PaymentModule, PaymentProviderType as PaymentProviderTypeType
+  PaymentModule,
+  PaymentProviderType as PaymentProviderTypeType,
 } from './payments';
 import {
   IPaymentPricingAdapter,
-  IPaymentPricingDirector
+  IPaymentPricingDirector,
 } from './payments.pricing';
 import {
   BasePricingAdapterContext,
@@ -60,18 +65,22 @@ import {
   IPricingDirector,
   IPricingSheet,
   PricingCalculation,
-  PricingSheetParams
+  PricingSheetParams,
 } from './pricing';
 import { ProductsModule, ProductType } from './products';
 import {
   IProductPricingAdapter,
-  IProductPricingDirector
+  IProductPricingDirector,
 } from './products.pricing';
 import { UsersModule } from './user';
 import {
-  IWarehousingAdapter, IWarehousingDirector, WarehousingError as WarehousingErrorType, WarehousingModule, WarehousingProviderType as WarehousingProviderTypeType
+  IWarehousingAdapter,
+  IWarehousingDirector,
+  WarehousingError as WarehousingErrorType,
+  WarehousingModule,
+  WarehousingProviderType as WarehousingProviderTypeType,
 } from './warehousing';
-import { WorkerModule, WorkerPlugin as IWorkerPlugin } from './worker';
+import { WorkerModule, IWorkerAdapter, IWorkerDirector } from './worker';
 
 declare module 'meteor/unchained:utils' {
   function checkId(
@@ -138,9 +147,13 @@ declare module 'meteor/unchained:utils' {
   };
 
   // Director
-  export const BaseDirector: <Adapter extends IBaseAdapter>(options?: {
-    adapterSortKey?: string;
-  }) => IBaseDirector<Adapter>;
+  export const BaseDirector: <Adapter extends IBaseAdapter>(
+    directorName: string,
+    options?: {
+      adapterSortKey?: string;
+      adapterKeyField?: string;
+    }
+  ) => IBaseDirector<Adapter>;
   export const BasePricingAdapter: <
     AdapterContext extends BasePricingAdapterContext,
     Calculation extends PricingCalculation
@@ -158,7 +171,9 @@ declare module 'meteor/unchained:utils' {
       Calculation,
       IPricingSheet<Calculation>
     >
-  >() => IPricingDirector<Context, AdapterContext, Calculation, Adapter>;
+  >(
+    directorName: string
+  ) => IPricingDirector<Context, AdapterContext, Calculation, Adapter>;
 
   export const BasePricingSheet: <Calculation extends PricingCalculation>(
     params: PricingSheetParams<Calculation>
@@ -242,8 +257,8 @@ declare module 'meteor/unchained:core-delivery' {
 
   export const DeliveryAdapter: IDeliveryAdapter;
   export const DeliveryDirector: IDeliveryDirector;
-  export const DeliveryProviderType: typeof DeliveryProviderType;
-  export const DeliveryError: typeof DeliveryError
+  export const DeliveryProviderType: typeof DeliveryProviderTypeType;
+  export const DeliveryError: typeof DeliveryErrorType;
 
   export const DeliveryPricingAdapter: IDeliveryPricingAdapter;
   export const DeliveryPricingDirector: IDeliveryPricingDirector;
@@ -327,9 +342,8 @@ declare module 'meteor/unchained:core-worker' {
     params: ModuleInput
   ): Promise<WorkerModule>;
 
-  export const WorkerDirector: typeof WorkerDirectorType;
-
-  export type WorkerPlugin<Args, Result> = IWorkerPlugin<Args, Result>;
+  export const WorkerDirector: IWorkerDirector;
+  export const WorkerAdapter: IWorkerAdapter;
 }
 
 declare module 'meteor/unchained:core-users' {

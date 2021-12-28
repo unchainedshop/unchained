@@ -1,4 +1,5 @@
-import { WorkerDirector, WorkerPlugin } from 'meteor/unchained:core-worker';
+import { IWorkerAdapter } from '@unchainedshop/types/worker';
+import { WorkerDirector, WorkerAdapter } from 'meteor/unchained:core-worker';
 
 const wait = async (time: number) => {
   return new Promise((resolve) => {
@@ -15,13 +16,16 @@ type Arg = {
 
 type Result = Arg;
 
-const Heartbeat: WorkerPlugin<Arg, Result> = {
+const Heartbeat: IWorkerAdapter<Arg, Result> = {
+  ...WorkerAdapter,
+
   key: 'shop.unchained.worker-plugin.heartbeat',
   label: 'Heartbeat plugin to check if workers are working',
   version: '1.0',
+
   type: 'HEARTBEAT',
 
-  async doWork(input) {
+  doWork: async (input: Arg): Promise<{ success: boolean; result: Result }> => {
     if (input?.wait) {
       await wait(input.wait);
     }
@@ -38,6 +42,4 @@ const Heartbeat: WorkerPlugin<Arg, Result> = {
   },
 };
 
-WorkerDirector.registerPlugin(Heartbeat);
-
-export default Heartbeat;
+WorkerDirector.registerAdapter(Heartbeat);

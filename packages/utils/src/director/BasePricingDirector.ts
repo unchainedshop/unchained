@@ -18,8 +18,8 @@ export const BasePricingDirector = <
     Calculation,
     IPricingSheet<Calculation>
   >
->(): IPricingDirector<Context, AdapterContext, Calculation, Adapter> => {
-  const baseDirector = BaseDirector<Adapter>({ adapterSortKey: 'orderIndex' });
+>(directorName: string): IPricingDirector<Context, AdapterContext, Calculation, Adapter> => {
+  const baseDirector = BaseDirector<Adapter>(directorName, { adapterSortKey: 'orderIndex' });
 
   let calculation: Array<Calculation> = [];
   let context: AdapterContext | null = null;

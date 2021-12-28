@@ -1,45 +1,43 @@
 import {
-  WorkerDirector as IWorkerDirector,
-  WorkerPlugin,
+  IWorkerDirector,
+  IWorkerAdapter,
   Work,
 } from '@unchainedshop/types/worker';
 import { EventEmitter } from 'events';
+import { BaseDirector } from 'meteor/unchained:utils';
 import { log, LogLevel } from 'meteor/unchained:logger';
 import { WorkerEventTypes } from './WorkerEventTypes';
 
 export const DIRECTOR_MARKED_FAILED_ERROR = 'DIRECTOR_MARKED_FAILED';
 
-const Plugins = new Map<string, WorkerPlugin<any, any>>();
 const AutoScheduleMap = new Map<string, Work>();
 const Events = new EventEmitter();
 
-const WorkerDirector: IWorkerDirector = {
+const baseDirector = BaseDirector<IWorkerAdapter<any, any>>('WorkerDirector', {
+  adapterKeyField: 'type',
+});
+
+export const WorkerDirector: IWorkerDirector = {
+  ...baseDirector,
+
   getActivePluginTypes: () => {
-    return Array.from(Plugins.keys());
+    return baseDirector.getAdapters().map((adapter) => adapter.type);
   },
 
-  getPlugin: (type: string) => {
-    return Plugins.get(type);
-  },
-
-  registerPlugin: (plugin: WorkerPlugin<any, any>) => {
-    if (Plugins.get(plugin.type))
+  registerAdapter: (Adapter) => {
+    if (baseDirector.getAdapter(Adapter.type))
       throw new Error(
-        `WorkderDirector: There is already a plugin registered with type: ${plugin.type}`
+        `WorkderDirector: There is already a adapter registered with type: ${Adapter.type}`
       );
 
-    Plugins.set(plugin.type, plugin);
-
-    log(
-      `WorkderDirector -> Registered ${plugin.type} ${plugin.key}@${plugin.version} (${plugin.label})`
-    );
+    baseDirector.registerAdapter(Adapter);
   },
 
-  configureAutoscheduling: (plugin, workQueue) => {
+  configureAutoscheduling: (adapter, workQueue) => {
     const { scheduled } = workQueue;
-    AutoScheduleMap.set(plugin.type, workQueue);
+    AutoScheduleMap.set(adapter.type, workQueue);
     log(
-      `WorkderDirector -> Configured ${plugin.type} ${plugin.key}@${plugin.version} (${plugin.label}) for Autorun at ${scheduled}`
+      `WorkderDirector -> Configured ${adapter.type} ${adapter.key}@${adapter.version} (${adapter.label}) for Autorun at ${scheduled}`
     );
   },
   getAutoSchedules: () => Array.from(AutoScheduleMap),
@@ -49,12 +47,13 @@ const WorkerDirector: IWorkerDirector = {
   offEmit: Events.off,
 
   doWork: async ({ type, input }) => {
-    const plugin = Plugins.get(type);
+    const adapter = baseDirector.getAdapter(type);
 
-    if (!plugin) log(`WorkderDirector: No registered plugin for type: ${type}`);
+    if (!adapter)
+      log(`WorkderDirector: No registered adapter for type: ${type}`);
 
-    const output = await plugin.doWork(input).catch((error) => {
-      // DO not use this as flow control. The plugin should catch expected errors and return status: FAILED
+    const output = await adapter.doWork(input).catch((error) => {
+      // DO not use this as flow control. The adapter should catch expected errors and return status: FAILED
       log('DO not use this as flow control.', { level: LogLevel.Verbose });
 
       log(`WorkderDirector -> Error doing work ${type}: ${error.message}`);
@@ -71,6 +70,3 @@ const WorkerDirector: IWorkerDirector = {
     return output;
   },
 };
-
-// eslint-disable-next-line import/prefer-default-export
-export { WorkerDirector, WorkerEventTypes, WorkerPlugin };

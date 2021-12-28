@@ -7,7 +7,7 @@ import { BaseDirector } from 'meteor/unchained:utils';
 import { paymentLogger } from '../payment-logger';
 import { PaymentError } from './PaymentError';
 
-const baseDirector = BaseDirector<IPaymentAdapter>();
+const baseDirector = BaseDirector<IPaymentAdapter>('PaymentDirector');
 
 export const PaymentDirector: IPaymentDirector = {
   ...baseDirector,

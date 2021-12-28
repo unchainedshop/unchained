@@ -1,12 +1,7 @@
-import { WorkerPlugin } from 'meteor/unchained:core-worker';
+import { IWorkerAdapter } from '@unchainedshop/types/worker';
+import { log, LogLevel } from 'meteor/unchained:logger';
 
-console.warn(
-  "@deprecated Use `import { WorkerPlugin } from 'meteor/unchained:core-worker';` instead"
-);
-/**
- * @deprecated Use `import { WorkerPlugin } from 'meteor/unchained:core-worker';` instead
- */
-const DeprecatedWorkerPlugin: WorkerPlugin<void, null> = {
+export const BaseWorkerPlugin: IWorkerAdapter<any, void> = {
   key: '',
   label: '',
   version: '',
@@ -15,6 +10,8 @@ const DeprecatedWorkerPlugin: WorkerPlugin<void, null> = {
   async doWork() {
     return { success: false, result: null };
   },
-};
 
-export default DeprecatedWorkerPlugin;
+  log(message: string, { level = LogLevel.Debug, ...options } = {}) {
+    return log(message, { level, ...options });
+  },
+};

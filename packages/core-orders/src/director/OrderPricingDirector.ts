@@ -14,7 +14,7 @@ const baseDirector = BasePricingDirector<
   OrderPricingAdapterContext,
   OrderPricingCalculation,
   IOrderPricingAdapter
->();
+>('OrderPricingDirector');
 
 export const OrderPricingDirector: IOrderPricingDirector = {
   ...baseDirector,

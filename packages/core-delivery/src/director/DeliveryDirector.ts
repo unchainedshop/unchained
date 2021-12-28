@@ -5,7 +5,7 @@ import {
 import { BaseDirector } from 'meteor/unchained:utils';
 import { DeliveryError } from './DeliveryError';
 
-const baseDirector = BaseDirector<IDeliveryAdapter>();
+const baseDirector = BaseDirector<IDeliveryAdapter>('DeliveryDirector');
 
 export const DeliveryDirector: IDeliveryDirector = {
   ...baseDirector,

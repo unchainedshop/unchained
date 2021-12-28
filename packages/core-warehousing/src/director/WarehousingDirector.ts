@@ -12,7 +12,7 @@ const getReferenceDate = (context: WarehousingContext) => {
   return context && context.referenceDate ? context.referenceDate : new Date();
 };
 
-const baseDirector = BaseDirector<IWarehousingAdapter>({
+const baseDirector = BaseDirector<IWarehousingAdapter>('WarehousingDirector', {
   adapterSortKey: 'orderIndex',
 });
 

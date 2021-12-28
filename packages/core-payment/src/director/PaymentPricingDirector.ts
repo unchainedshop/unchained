@@ -14,7 +14,7 @@ const baseDirector = BasePricingDirector<
   PaymentPricingAdapterContext,
   PaymentPricingCalculation,
   IPaymentPricingAdapter
->();
+>('PaymentPricingDirector');
 
 export const PaymentPricingDirector: IPaymentPricingDirector = {
   ...baseDirector,

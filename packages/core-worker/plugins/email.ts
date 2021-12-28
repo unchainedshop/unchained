@@ -1,20 +1,32 @@
-import { WorkerDirector, WorkerPlugin } from 'meteor/unchained:core-worker';
+import { WorkerDirector } from 'meteor/unchained:core-worker';
 import { createLogger } from 'meteor/unchained:logger';
 import { Email } from 'meteor/email';
+import { IWorkerAdapter } from '@unchainedshop/types/worker';
+import { BaseWorkerPlugin } from './base';
 
 const logger = createLogger('unchained:core-worker');
 
-const EmailWorkerPlugin: WorkerPlugin<
-  { from?: string; to?: string; subject?: string; [x: string]: any },
+const EmailWorkerPlugin: IWorkerAdapter<
+  {
+    from?: string;
+    to?: string;
+    subject?: string;
+    [x: string]: any;
+  },
   void
 > = {
+  ...BaseWorkerPlugin,
+
   key: 'shop.unchained.worker-plugin.email',
   label: 'Send a Mail through Meteor Mailer',
   version: '1.0',
+
   type: 'EMAIL',
 
-  async doWork({ from, to, subject, ...rest } = {}) {
-    logger.debug(`${this.key} -> doWork: ${from} -> ${to} (${subject})`);
+  doWork: async ({ from, to, subject, ...rest }) => {
+    logger.debug(
+      `${EmailWorkerPlugin.key} -> doWork: ${from} -> ${to} (${subject})`
+    );
 
     if (!to) {
       return {
@@ -48,6 +60,4 @@ const EmailWorkerPlugin: WorkerPlugin<
   },
 };
 
-WorkerDirector.registerPlugin(EmailWorkerPlugin);
-
-export default EmailWorkerPlugin;
+WorkerDirector.registerAdapter(EmailWorkerPlugin);

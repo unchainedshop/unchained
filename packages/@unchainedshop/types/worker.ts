@@ -1,5 +1,5 @@
 import { Context } from './api';
-import { TimestampFields, _ID } from './common';
+import { IBaseAdapter, IBaseDirector, TimestampFields, _ID } from './common';
 
 export enum WorkStatus {
   NEW = 'NEW',
@@ -41,28 +41,24 @@ interface WorkResult<Result> {
   error?: any;
 }
 
-export interface WorkerPlugin<Args, Result> {
-  key: string;
-  label: string;
-  version: string;
+export type IWorkerAdapter<Args, Result> = IBaseAdapter & {
   type: string;
-  doWork(args: Args): Promise<WorkResult<Result>>;
-}
 
-export interface WorkerDirector {
+  doWork: (args: Args) => Promise<WorkResult<Result>>;
+};
+
+export type IWorkerDirector = IBaseDirector<IWorkerAdapter<any, any>> & {
   getActivePluginTypes: () => Array<string>;
-  getPlugin: (type: string) => WorkerPlugin;
-  registerPlugin: (plugin: WorkerPlugin) => void;
 
-  configureAutoscheduling: (plugin: WorkerPlugin, work: Work) => void;
-  getAutoSchedules: () => Array<Array<string, Work>>;
+  configureAutoscheduling: (adapter: IWorkerAdapter<any, any>, work: Work) => void;
+  getAutoSchedules: () => Array<[string, Work]>;
 
   emit: (eventName: string, payload: any) => void;
   onEmit: (eventName: string, payload: any) => void;
   offEmit: (eventName: string, payload: any) => void;
 
-  doWork: (work: Work) => Promise<WorkResult<any>>;
-}
+  doWork: (params: { type: string; input: any }) => Promise<WorkResult<any>>;
+};
 
 export type WorkerModule = {
   activeWorkTypes: () => Promise<Array<string>>;
@@ -91,10 +87,7 @@ export type WorkerModule = {
   // Mutations
   addWork: (data: WorkData, userId: string) => Promise<Work>;
 
-  allocateWork: (doc: {
-    types: Array<Worker>;
-    worker: string;
-  }) => Promise<Work>;
+  allocateWork: (doc: { types: Array<Work>; worker: string }) => Promise<Work>;
 
   doWork: (work: Work) => Promise<WorkResult<any>>;
 

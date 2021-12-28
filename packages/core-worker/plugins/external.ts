@@ -1,6 +1,10 @@
-import { WorkerDirector, WorkerPlugin } from 'meteor/unchained:core-worker';
+import { IWorkerAdapter } from '@unchainedshop/types/worker';
+import { WorkerDirector } from 'meteor/unchained:core-worker';
+import { BaseWorkerPlugin } from './base';
 
-const ExternalWorkerPlugin: WorkerPlugin<void, void> = {
+export const ExternalWorkerPlugin: IWorkerAdapter<void, void> = {
+  ...BaseWorkerPlugin,
+
   key: 'shop.unchained.worker-plugin.external',
   label:
     'External plugin as a placeholder for workers who interact with the system only via GraphQL',
@@ -12,6 +16,4 @@ const ExternalWorkerPlugin: WorkerPlugin<void, void> = {
   },
 };
 
-WorkerDirector.registerPlugin(ExternalWorkerPlugin);
-
-export default ExternalWorkerPlugin;
+WorkerDirector.registerAdapter(ExternalWorkerPlugin);
