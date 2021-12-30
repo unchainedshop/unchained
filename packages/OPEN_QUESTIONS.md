@@ -92,3 +92,9 @@ Collections.AssortmentLinks.removeLinks = (
 2. Naming for class constructor in Directors and Adapters for now 'actions'. Better suggestion?
 
 3. Is product-discount type used (in api/resolvers/types/product-discount.js)
+
+4. Order Payment: core-orders/order-payments/helpers --> markPaid and api/resolvers/mutations/payOrder: Different check for status
+  if (payment.status !== OrderPaymentStatus.OPEN && order.confirmed)  vs
+  if (payment.status !== OrderPaymentStatus.OPEN)
+What happens if the first one passes and the second not?
+

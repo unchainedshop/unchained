@@ -129,6 +129,7 @@ Enrollments.helpers({
 //   },
 // });
 
+// Mapped to cart transformation
 Users.helpers({
   async cart({ countryContext, orderNumber } = {}) {
     const selector = {
@@ -156,6 +157,7 @@ Users.helpers({
     return orders;
   },
 });
+
 
 Orders.orderExists = ({ orderId, orderNumber }) => {
   const selector = orderId ? { _id: orderId } : { orderNumber };
@@ -688,6 +690,7 @@ Orders.setPaymentProvider = ({ orderId, paymentProviderId }) => {
     ? payment._id
     : OrderPayments.createOrderPayment({ orderId, paymentProviderId })._id;
   log(`Set Payment Provider ${paymentProviderId}`, { orderId });
+  
   Orders.update({ _id: orderId }, { $set: { paymentId, updated: new Date() } });
   Orders.updateCalculation({ orderId });
   return Orders.findOne({ _id: orderId });

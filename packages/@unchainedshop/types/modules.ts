@@ -1,6 +1,5 @@
 import { AccountsModule } from './accounts';
 import { AssortmentsModule } from './assortments';
-import { UsersModule } from './user';
 import { BookmarksModule } from './bookmarks';
 import { CountriesModule } from './countries';
 import { CurrenciesModule } from './currencies';
@@ -8,8 +7,10 @@ import { DeliveryModule } from './delivery';
 import { EventsModule } from './events';
 import { FilesModule } from './files';
 import { LanguagesModule } from './languages';
+import { OrdersModule } from './orders';
 import { PaymentModule } from './payments';
 import { ProductsModule } from './products';
+import { UsersModule } from './user';
 import { WarehousingModule } from './warehousing';
 import { WorkerModule } from './worker';
 
@@ -26,7 +27,7 @@ export interface Modules {
   filters: any;
   languages: LanguagesModule;
   messaging: any;
-  orders: any;
+  orders: OrdersModule;
   payment: PaymentModule;
   products: ProductsModule;
   quotations: any;

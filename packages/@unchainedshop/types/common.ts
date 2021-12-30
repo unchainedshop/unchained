@@ -64,6 +64,8 @@ export interface ModuleMutations<T> extends ModuleCreateMutation<T> {
 
 export type _ID = string | ObjectId;
 
+export type Configuration = Array<{ key: string; value: string }>;
+
 export type LogFields = Array<{
   date: Date;
   type: string;

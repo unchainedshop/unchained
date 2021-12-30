@@ -1,11 +1,5 @@
-import { Discount } from './orders.discount';
-import {
-  Order,
-  OrderDelivery,
-  OrderDiscount,
-  OrderPayment,
-  OrderPosition,
-} from './orders';
+import { Discount } from './discount';
+import { Order } from './orders';
 import {
   BasePricingAdapterContext,
   IPricingAdapter,
@@ -14,6 +8,10 @@ import {
   PricingCalculation,
 } from './pricing';
 import { User } from './user';
+import { OrderDelivery } from './orders.deliveries';
+import { OrderPayment } from './orders.payments';
+import { OrderDiscount } from './orders.discount';
+import { OrderPosition } from './orders.positions';
 
 /*
  * Order pricing

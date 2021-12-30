@@ -1,0 +1,40 @@
+import { log } from 'meteor/unchained:logger';
+import { OrderDeliveryStatus } from 'meteor/unchained:core-orders';
+import {
+  OrderNotFoundError,
+  OrderWrongDeliveryStatusError,
+  OrderWrongStatusError,
+  InvalidIdError,
+} from '../../../errors';
+import { Root, Context } from '@unchainedshop/types/api';
+
+export default async function deliverOrder(
+  root: Root,
+  { orderId }: { orderId: string },
+  { modules, userId }: Context
+) {
+  log('mutation deliverOrder', { orderId, userId });
+
+  if (!orderId) throw new InvalidIdError({ orderId });
+
+  const order = await modules.orders.findOrder({ orderId });
+  if (!order) throw new OrderNotFoundError({ orderId });
+
+  if (modules.orders.isCart(order)) {
+    throw new OrderWrongStatusError({ status: order.status });
+  }
+
+  const orderDelivery = await modules.orders.deliveries.findDelivery({
+    orderDeliveryId: order.deliveryId,
+  });
+
+  if (orderDelivery.status !== OrderDeliveryStatus.OPEN && order.confirmed) {
+    throw new OrderWrongDeliveryStatusError({
+      status: orderDelivery.status,
+    });
+  }
+
+  await modules.orders.deliveries.markAsDelivered(orderDelivery);
+
+  return await modules.orders.processOrder(order, {}, userId);
+}

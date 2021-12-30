@@ -4,6 +4,7 @@ import { Request } from 'express';
 import SimpleSchema from 'simpl-schema';
 import { AssortmentsModule } from './assortments';
 import { BookmarksModule } from './bookmarks';
+import { OrdersModule, OrderStatus as OrderStatusType } from './orders';
 import {
   Collection,
   Db,
@@ -47,6 +48,8 @@ import {
   IOrderPricingDirector,
   IOrderPricingSheet,
 } from './orders.pricing';
+import { OrderDeliveryStatus as OrderDeliveryStatusType } from './orders.deliveries';
+import { OrderPaymentStatus as OrderPaymentStatusType } from './orders.payments';
 import {
   IPaymentAdapter,
   IPaymentDirector,
@@ -285,9 +288,11 @@ declare module 'meteor/unchained:core-languages' {
 }
 
 declare module 'meteor/unchained:core-orders' {
-  export const Orders: {
-    findOrder({ orderId: string }): any;
-  };
+  function configureOrdersModule(params: ModuleInput): Promise<OrdersModule>;
+
+  export const OrderStatus: typeof OrderStatusType;
+  export const OrderDeliveryStatus: typeof OrderDeliveryStatusType;
+  export const OrderPaymentStatus: typeof OrderPaymentStatusType;
 
   export const DiscountAdapter: IDiscountAdapter;
   export const DiscountDirector: IDiscountDirector;

@@ -1,3 +1,4 @@
+import { Product } from '@unchainedshop/types/products';
 import { Context } from './api';
 import {
   ModuleMutations,
@@ -49,7 +50,7 @@ export interface DeliveryContext {
   order?: Order;
   orderDelivery?: OrderDelivery;
   orderPosition?: OrderPosition;
-  product?: any; // TODO: Replace with product type
+  product?: Product;
   quantity?: number;
   referenceDate?: Date;
   user?: User;
@@ -128,7 +129,7 @@ export type DeliveryModule = ModuleMutations<DeliveryProvider> & {
     type: DeliveryProviderType;
   }) => Array<IDeliveryAdapter>;
   findSupported: (
-    query: { order: any } // TODO: Replace order type
+    query: { order: Order }
   ) => Array<string>;
 
   /* REMARK: Use director directly

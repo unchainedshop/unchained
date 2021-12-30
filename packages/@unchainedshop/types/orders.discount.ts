@@ -1,50 +1,16 @@
-import { Context } from './api';
-import { IBaseAdapter, IBaseDirector } from './common';
-import { Order, OrderDiscount } from './orders';
+import { TimestampFields, _ID } from './common';
 
-export interface DiscountConfiguration {
-  fixedRate?: number;
-  rate?: number;
-  isNetPrice?: boolean;
+export enum OrderDiscountTrigger {
+  USER = 'USER',
+  SYSTEM = 'SYSTEM',
 }
 
-export interface Discount {
-  discountId: string;
-  configuration: DiscountConfiguration;
-}
-
-export interface DiscountContext {
-  order: Order;
-  orderDiscount: OrderDiscount;
-}
-
-export type IDiscountAdapter = IBaseAdapter & {
-  orderIndex: number;
-
-  isManualAdditionAllowed: (code: string) => Promise<boolean>;
-  isManualRemovalAllowed: () => Promise<boolean>;
-
-  actions: (params: { context: DiscountContext & Context }) => {
-    isValidForSystemTriggering: () => Promise<boolean>;
-    isValidForCodeTriggering: (params: { code: string }) => Promise<boolean>;
-
-    discountForPricingAdapterKey: (params: {
-      pricingAdapterKey: string;
-    }) => DiscountConfiguration;
-
-    reserve: (params: { code: string }) => Promise<any>;
-    release: () => Promise<void>;
-  };
-};
-
-export type IDiscountDirector = IBaseDirector<IDiscountAdapter> & {
-  actions: (
-    discountContext: DiscountContext,
-    requestContext: Context
-  ) => {
-    resolveDiscountKeyFromStaticCode: (params: {
-      code: string;
-    }) => Promise<string | null>;
-    findSystemDiscounts: () => Promise<Array<string>>;
-  };
-};
+export type OrderDiscount = {
+  _id: _ID;
+  orderId: string;
+  code?: string;
+  trigger: OrderDiscountTrigger;
+  discountKey: string;
+  reservation?: any;
+  context?: any;
+} & TimestampFields;

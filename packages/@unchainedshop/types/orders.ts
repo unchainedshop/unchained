@@ -1,4 +1,17 @@
-import { Address, Contact, LogFields, TimestampFields, _ID } from './common';
+import {
+  Address,
+  Contact,
+  FindOptions,
+  LogFields,
+  ModuleMutations,
+  TimestampFields,
+  Update,
+  _ID,
+} from './common';
+import { OrderDeliveriesModule } from './orders.deliveries';
+import { OrderPositionsModule } from './orders.positions';
+import { OrderPaymentsModule } from './orders.payments';
+import { User } from './user';
 
 export enum OrderStatus {
   OPEN = 'OPEN', // Null value is mapped to OPEN status
@@ -7,92 +20,117 @@ export enum OrderStatus {
   FULLFILLED = 'FULLFILLED',
 }
 
-export enum OrderDeliveryStatus {
-  OPEN = 'OPEN', // Null value is mapped to OPEN status
-  DELIVERED = 'DELIVERED',
-  RETURNED = 'RETURNED',
-}
-
-export enum OrderDiscountTrigger {
-  USER = 'USER',
-  SYSTEM = 'SYSTEM',
-}
-
-export enum OrderPaymentStatus {
-  OPEN = 'OPEN', // Null value is mapped to OPEN status
-  PAID = 'PAID',
-  REFUNDED = 'REFUNDED',
-}
-
-export enum OrderDocumentTypes {
-  ORDER_CONFIRMATION = 'ORDER_CONFIRMATION',
-  DELIVERY_NOTE = 'DELIVERY_NOTE',
-  INVOICE = 'INVOICE',
-  RECEIPT = 'RECEIPT',
-  OTHER = 'OTHER',
-}
-
 export type Order = {
-  _id: _ID;
+  _id?: _ID;
   billingAddress?: Address;
   calculation: Array<any>;
   confirmed?: Date;
   contact?: Contact;
   context?: any;
-  countryCode?: string;
-  currency?: string;
+  countryCode: string;
+  currency: string;
   deliveryId?: string;
   fullfilled?: Date;
+  orderCode?: string;
   ordered?: Date;
   orderNumber?: string;
   originEnrollmentId?: string;
   paymentId?: string;
   status: OrderStatus | null;
-  userId?: string;
+  userId: string;
 } & LogFields &
   TimestampFields;
 
-export type OrderPosition = {
-  _id: _ID;
-  calculation: Array<any>;
-  configuration: Array<{ key: string; value: string }>;
-  context?: any;
-  orderId: string;
-  originalProductId?: string;
-  productId: string;
-  quantity: number;
-  quotationId?: string;
-  scheduling: Array<any>;
-} & TimestampFields;
+type OrderQuery = {
+  includeCarts?: boolean;
+  queryString?: string;
+};
 
-export type OrderDiscount = {
-  _id: _ID;
-  orderId: string;
-  code?: string;
-  trigger: OrderDiscountTrigger;
-  discountKey: string;
-  reservation?: any;
-  context?: any;
-} & TimestampFields;
+export type OrdersModule = ModuleMutations<Order> & {
+  // Queries
+  findOrder: (params: {
+    orderId?: string;
+    orderNumber?: string;
+  }) => Promise<Order>;
+  findOrders: (
+    params: OrderQuery & {
+      limit?: number;
+      offset?: number;
+    },
+    options?: FindOptions
+  ) => Promise<Array<Order>>;
+  count: (query: OrderQuery) => Promise<number>;
+  orderExists: (params: { orderId: string }) => Promise<boolean>;
 
-export type OrderDelivery = {
-  _id: _ID;
-  orderId: string;
-  deliveryProviderId: string;
-  delivered?: Date;
-  status: OrderDeliveryStatus | null;
-  context?: any;
-  calculation: Array<any>;
-} & LogFields &
-  TimestampFields;
+  // Transformations
+  normalizedStatus: (order: Order) => string;
+  nextStatus: (order: Order) => Promise<OrderStatus>;
+  isCart: (order: Order) => boolean;
+  cart: (
+    order: { countryContext?: string; orderNumber?: string },
+    user: User
+  ) => Promise<Order>;
 
-export type OrderPayment = {
-  _id: _ID;
-  orderId: string;
-  context?: any;
-  paid?: Date;
-  paymentProviderId?: string;
-  status?: OrderPaymentStatus | null;
-  calculation?: Array<any>;
-} & LogFields &
-  TimestampFields;
+  // Checkout
+  checkout: (
+    order: Order,
+    params: { paymentContext?: any; deliveryContext?: any; orderContext?: any },
+    userId?: string
+  ) => Promise<Order>;
+  confirm: (
+    order: Order,
+    params: { paymentContext?: any; deliveryContext?: any; orderContext?: any },
+    userId?: string
+  ) => Promise<Order>;
+  processOrder: (
+    order: Order,
+    params: { paymentContext?: any; deliveryContext?: any; orderContext?: any },
+    userId?: string
+  ) => Promise<Order>;
+
+  // Mutations
+  create: (
+    doc: { orderNumber?: string; currency: string; countryCode: string },
+    user: User
+  ) => Promise<Order>;
+  update: (_id: _ID, doc: Update<Order>, userId?: string) => Promise<Order>;
+
+  setDeliveryProvider: (
+    _id: _ID,
+    deliveryProviderId: string,
+    userId?: string
+  ) => Promise<Order>;
+  setPaymentProvider: (
+    _id: _ID,
+    paymentProviderId: string,
+    userId?: string
+  ) => Promise<Order>;
+
+  updateBillingAddress: (
+    _id: _ID,
+    billingAddress: Address,
+    userId?: string
+  ) => Promise<Order>;
+  updateContact: (
+    _id: _ID,
+    contact: Contact,
+    userId?: string
+  ) => Promise<Order>;
+  updateContext: (_id: _ID, context: any, userId?: string) => Promise<Order>;
+
+  updateStatus: (
+    _id: _ID,
+    params: { status: OrderStatus; info?: string },
+    userId?: string
+  ) => Promise<Order>;
+
+  updateCalculation: (_id: _ID) => Promise<boolean>;
+
+  /*
+   * Sub entities
+   */
+
+  deliveries: OrderDeliveriesModule;
+  positions: OrderPositionsModule;
+  payments: OrderPaymentsModule;
+};
