@@ -42,7 +42,7 @@ import {
   LogOptions,
   Transports,
 } from './logs';
-import { IDiscountAdapter, IDiscountDirector } from './orders.discount';
+import { IDiscountAdapter, IDiscountDirector } from './discount';
 import {
   IOrderPricingAdapter,
   IOrderPricingDirector,
@@ -83,7 +83,7 @@ import {
   WarehousingModule,
   WarehousingProviderType as WarehousingProviderTypeType,
 } from './warehousing';
-import { WorkerModule, IWorkerAdapter, IWorkerDirector } from './worker';
+import { WorkerModule, IWorkerDirector, IWorkerAdapter } from './worker';
 
 declare module 'meteor/unchained:utils' {
   function checkId(
@@ -348,7 +348,7 @@ declare module 'meteor/unchained:core-worker' {
   ): Promise<WorkerModule>;
 
   export const WorkerDirector: IWorkerDirector;
-  export const WorkerAdapter: IWorkerAdapter;
+  export const WorkerAdapter: IWorkerAdapter<any, any>;
 }
 
 declare module 'meteor/unchained:core-users' {

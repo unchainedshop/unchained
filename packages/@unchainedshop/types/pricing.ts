@@ -1,7 +1,8 @@
+import { OrderDiscount } from './orders.discount';
 import { Context } from './api';
 import { IBaseAdapter, IBaseDirector } from './common';
-import { Discount } from './orders.discount';
-import { Order, OrderDiscount } from './orders';
+import { Discount } from './discount';
+import { Order } from './orders';
 import { User } from './user';
 
 export interface BasePricingAdapterContext extends Context {
@@ -85,6 +86,7 @@ export interface IPricingAdapterActions<
   Calculation extends PricingCalculation
 > {
   calculate: () => Promise<Array<Calculation>>;
+  resultSheet: () => IPricingSheet<Calculation>
 }
 
 export type IPricingAdapter<
@@ -101,8 +103,7 @@ export type IPricingAdapter<
     calculation: Array<Calculation>;
     discounts: Array<Discount>;
   }) => IPricingAdapterActions<Calculation> & {
-    calculationSheet: Sheet;
-    resultSheet: Sheet;
+    calculationSheet: () => Sheet;
     resetCalculation?: () => void;
   };
 };
@@ -116,7 +117,7 @@ export type IPricingDirector<
   buildPricingContext: (
     context: any,
     requestContext: Context
-  ) => PricingAdapterContext;
+  ) => Promise<PricingAdapterContext>;
   actions: (
     pricingContext: PricingContext,
     requestContext: Context

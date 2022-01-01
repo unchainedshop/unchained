@@ -12,6 +12,7 @@ import { OrderDeliveriesModule } from './orders.deliveries';
 import { OrderPositionsModule } from './orders.positions';
 import { OrderPaymentsModule } from './orders.payments';
 import { User } from './user';
+import { OrderDiscountModule } from './orders.discount';
 
 export enum OrderStatus {
   OPEN = 'OPEN', // Null value is mapped to OPEN status
@@ -131,6 +132,7 @@ export type OrdersModule = ModuleMutations<Order> & {
    */
 
   deliveries: OrderDeliveriesModule;
+  discount: OrderDiscountModule;
   positions: OrderPositionsModule;
   payments: OrderPaymentsModule;
 };

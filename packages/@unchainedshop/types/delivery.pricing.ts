@@ -1,5 +1,7 @@
-import { Discount } from './orders.discount';
-import { Order, OrderDelivery, OrderDiscount } from './orders';
+import { OrderDelivery } from './orders.deliveries';
+import { OrderDiscount } from './orders.discount';
+import { Discount } from './discount';
+import { Order } from './orders';
 import {
   BasePricingAdapterContext,
   IPricingAdapter,
@@ -66,6 +68,4 @@ export interface IDeliveryPricingDirector
     DeliveryPricingAdapterContext,
     DeliveryPricingCalculation,
     IDeliveryPricingAdapter
-  > {
-  resultSheet: () => IDeliveryPricingSheet;
-}
+  > {}

@@ -1,5 +1,5 @@
 import { log } from 'meteor/unchained:logger';
-import { OrderDeliveries } from 'meteor/unchained:core-orders';
+import { Context, Root } from '@unchainedshop/types/api';
 import { DeliveryProviderType } from 'meteor/unchained:core-delivery';
 import {
   OrderDeliveryNotFoundError,
@@ -9,15 +9,23 @@ import {
 
 export default async function updateOrderDeliveryShipping(
   root: Root,
-  { orderDeliveryId, ...context },
-  { userId }
+  { orderDeliveryId, meta }: { orderDeliveryId: string; meta: any },
+  { modules, userId }: Context
 ) {
   log(`mutation updateOrderDeliveryShipping ${orderDeliveryId}`, { userId });
 
   if (!orderDeliveryId) throw new InvalidIdError({ orderDeliveryId });
-  const orderDelivery = OrderDeliveries.findDelivery({ orderDeliveryId });
+
+  const orderDelivery = await modules.orders.deliveries.findDelivery({
+    orderDeliveryId,
+  });
   if (!orderDelivery) throw new OrderDeliveryNotFoundError({ orderDeliveryId });
-  const deliveryProviderType = orderDelivery?.provider()?.type;
+
+  const provider = await modules.delivery.findProvider({
+    deliveryProviderId: orderDelivery.deliveryProviderId,
+  });
+  const deliveryProviderType = provider?.type;
+
   if (deliveryProviderType !== DeliveryProviderType.SHIPPING)
     throw new OrderDeliveryTypeError({
       orderDeliveryId,
@@ -25,5 +33,9 @@ export default async function updateOrderDeliveryShipping(
       required: DeliveryProviderType.SHIPPING,
     });
 
-  return orderDelivery.updateContext(context);
+  return await modules.orders.deliveries.updateDelivery(
+    orderDeliveryId,
+    { orderId: orderDelivery.orderId, context: meta },
+    userId
+  );
 }

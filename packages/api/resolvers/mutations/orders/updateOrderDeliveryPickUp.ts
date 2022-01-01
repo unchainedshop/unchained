@@ -1,23 +1,31 @@
-import { log } from 'meteor/unchained:logger';
-import { OrderDeliveries } from 'meteor/unchained:core-orders';
+import { Context, Root } from '@unchainedshop/types/api';
 import { DeliveryProviderType } from 'meteor/unchained:core-delivery';
+import { log } from 'meteor/unchained:logger';
 import {
-  OrderDeliveryNotFoundError,
   InvalidIdError,
+  OrderDeliveryNotFoundError,
   OrderDeliveryTypeError,
 } from '../../../errors';
 
 export default async function updateOrderDeliveryPickUp(
   root: Root,
-  { orderDeliveryId, ...context },
-  { userId }
+  { orderDeliveryId, meta }: { orderDeliveryId: string; meta: any },
+  { modules, userId }: Context
 ) {
   log(`mutation updateOrderDeliveryPickUp ${orderDeliveryId}`, { userId });
 
   if (!orderDeliveryId) throw new InvalidIdError({ orderDeliveryId });
-  const orderDelivery = OrderDeliveries.findDelivery({ orderDeliveryId });
+
+  const orderDelivery = await modules.orders.deliveries.findDelivery({
+    orderDeliveryId,
+  });
   if (!orderDelivery) throw new OrderDeliveryNotFoundError({ orderDeliveryId });
-  const deliveryProviderType = orderDelivery?.provider()?.type;
+
+  const provider = await modules.delivery.findProvider({
+    deliveryProviderId: orderDelivery.deliveryProviderId,
+  });
+  const deliveryProviderType = provider?.type;
+
   if (deliveryProviderType !== DeliveryProviderType.PICKUP)
     throw new OrderDeliveryTypeError({
       orderDeliveryId,
@@ -25,5 +33,9 @@ export default async function updateOrderDeliveryPickUp(
       required: DeliveryProviderType.PICKUP,
     });
 
-  return orderDelivery.updateContext(context);
+  return await modules.orders.deliveries.updateDelivery(
+    orderDeliveryId,
+    { orderId: orderDelivery.orderId, context: meta },
+    userId
+  );
 }

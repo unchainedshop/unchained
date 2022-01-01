@@ -1,4 +1,4 @@
-import { Product } from '@unchainedshop/types/products';
+import { Product } from './products';
 import { Context } from './api';
 import {
   ModuleMutations,

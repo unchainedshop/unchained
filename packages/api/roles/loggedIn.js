@@ -36,11 +36,11 @@ export default (role, actions) => {
     );
   };
 
-  const isOwnedOrder = (root, { orderId }, { userId }) => {
-    const order = Orders.findOrder(
+  const isOwnedOrder = async (root, { orderId }, { modules, userId }) => {
+    const order = await modules.orders.findOrder(
       { orderId },
       {
-        fields: {
+        projection: {
           userId: true,
         },
       }
@@ -49,9 +49,9 @@ export default (role, actions) => {
     return order.userId === userId;
   };
 
-  const isOwnedOrderOrCart = (root, { orderId }, { userId }) => {
+  const isOwnedOrderOrCart = async (root, { orderId }, context) => {
     if (orderId) {
-      return isOwnedOrder(null, { orderId }, { userId });
+      return await isOwnedOrder(null, { orderId }, context);
     }
     return true;
   };

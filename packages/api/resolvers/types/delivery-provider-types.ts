@@ -19,10 +19,13 @@ export const DeliveryProvider: DeliveryProviderHelperTypes = {
     { currency: currencyCode, orderId, useNetPrice, context: providerContext },
     requestContext
   ) {
-    const { services, countryContext: country, userId } = requestContext;
-    // TODO: replace with module
-    /* @ts-ignore */
-    const order = Orders.findOrder({ orderId });
+    const {
+      modules,
+      services,
+      countryContext: country,
+      userId,
+    } = requestContext;
+    const order = await modules.orders.findOrder({ orderId });
 
     const currency =
       currencyCode ||
@@ -32,11 +35,12 @@ export const DeliveryProvider: DeliveryProviderHelperTypes = {
 
     const user = await requestContext.modules.users.findUser({ userId });
 
-    const pricingDirector = new DeliveryPricingDirector(
+    const pricingDirector = DeliveryPricingDirector.actions(
       {
         country,
         currency,
         deliveryProvider: obj,
+        discounts: [],
         order,
         providerContext,
         user,
@@ -48,7 +52,11 @@ export const DeliveryProvider: DeliveryProviderHelperTypes = {
     if (!calculated) return null;
 
     const pricing = pricingDirector.resultSheet();
-    const orderPrice = pricing.total(null, useNetPrice) as { amount: number, currency: string };
+    
+    const orderPrice = pricing.total(null, useNetPrice) as {
+      amount: number;
+      currency: string;
+    };
 
     return {
       _id: crypto

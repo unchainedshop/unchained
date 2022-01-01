@@ -1,4 +1,4 @@
-import { OrderDelivery } from '@unchainedshop/types/orders';
+import { OrderDelivery } from '@unchainedshop/types/orders.deliveries';
 import {
   DeliveryPricingAdapterContext,
   DeliveryPricingCalculation,
@@ -19,7 +19,7 @@ const baseDirector = BasePricingDirector<
 export const DeliveryPricingDirector: IDeliveryPricingDirector = {
   ...baseDirector,
 
-  buildPricingContext(
+  buildPricingContext: async (
     {
       item,
       ...rest
@@ -27,7 +27,7 @@ export const DeliveryPricingDirector: IDeliveryPricingDirector = {
       item: OrderDelivery;
     },
     requestContext
-  ) {
+  ) => {
     const { providerContext, ...context } = rest as any;
 
     if (!item)
@@ -37,13 +37,20 @@ export const DeliveryPricingDirector: IDeliveryPricingDirector = {
         ...context,
       };
 
-    // TODO: use modules
-    /* @ts-ignore */
-    const order = item.order();
-    /* @ts-ignore */
-    const provider = item.provider();
-    const user = order.user();
-    const discounts = order.discounts();
+    const order = await requestContext.modules.orders.findOrder({
+      orderId: item.orderId,
+    });
+    const provider = requestContext.modules.delivery.findProvider({
+      deliveryProviderId: item.deliveryProviderId,
+    });
+    const user = await requestContext.modules.users.findUser({
+      userId: order.userId,
+    });
+
+    const discounts =
+      await requestContext.modules.orders.discount.findOrderDiscount({
+        orderDiscountId: item.orderId,
+      });
 
     return {
       country: order.countryCode,
@@ -58,14 +65,9 @@ export const DeliveryPricingDirector: IDeliveryPricingDirector = {
     };
   },
 
-  resultSheet: () => {
-    const calculation = baseDirector.getCalculation();
-    const context = baseDirector.getContext();
-
-    return DeliveryPricingSheet({
-      calculation,
-      currency: context.currency,
-      quantity: context.quantity,
-    });
+  actions: (pricingContext, requestContext) => {
+    return {
+      ...baseDirector.actions(pricingContext, requestContext),
+    };
   },
 };

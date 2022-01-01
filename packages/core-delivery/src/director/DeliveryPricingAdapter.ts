@@ -38,8 +38,8 @@ export const DeliveryPricingAdapter: IPricingAdapter<
         );
         return resultRaw;
       },
-      calculationSheet,
-      resultSheet,
+      calculationSheet: () => calculationSheet,
+      resultSheet: () => resultSheet,
     };
   },
 };
