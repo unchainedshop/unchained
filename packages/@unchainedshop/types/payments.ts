@@ -9,7 +9,8 @@ import {
   _ID,
 } from './common';
 import { User } from './user';
-import { Order, OrderPayment } from './orders';
+import { Order } from './orders';
+import { OrderPayment } from './orders.payments';
 
 export enum PaymentProviderType {
   CARD = 'CARD',
@@ -77,8 +78,8 @@ interface IPaymentActions {
   isActive: (transactionContext?: any) => Promise<boolean>;
   isPayLaterAllowed: (transactionContext?: any) => boolean;
   register: (transactionContext?: any) => Promise<any>;
-  sign: (transactionContext?: any) => Promise<any>;
-  validate: (token?: any) => Promise<any>;
+  sign: (transactionContext?: any) => Promise<string>;
+  validate: (token?: any) => Promise<boolean>;
 }
 
 export type IPaymentAdapter = IBaseAdapter & {
@@ -171,12 +172,12 @@ export type PaymentModule = {
       paymentProviderId: string,
       paymentContext: PaymentContext,
       requestContext: Context
-    ) => Promise<any>;
+    ) => Promise<string>;
     validate: (
       paymentProviderId: string,
       paymentContext: PaymentContext,
       requestContext: Context
-    ) => Promise<any>;
+    ) => Promise<boolean>;
   };
 
   /*

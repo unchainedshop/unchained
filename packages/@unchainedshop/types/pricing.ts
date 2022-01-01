@@ -39,13 +39,10 @@ export interface IBasePricingSheet<Calculation extends PricingCalculation> {
   isValid: () => boolean;
   gross: () => number;
   net: () => number;
-  
+
   sum: (filter?: Partial<Calculation>) => number;
   taxSum: () => number;
-  total: (
-    category: string,
-    useNetPrice: boolean
-  ) => {
+  total: (params: { category: string; useNetPrice: boolean }) => {
     amount: number;
     currency: string;
   };
@@ -53,40 +50,41 @@ export interface IBasePricingSheet<Calculation extends PricingCalculation> {
   filterBy: (filter?: Partial<Calculation>) => Array<Calculation>;
 }
 
-export type IPricingSheet<Calculation extends PricingCalculation> = IBasePricingSheet<Calculation> & {
-  feeSum: () => number;
-  discountSum: (discountId: string) => number;
-  discountPrices: (explicitDiscountId: string) => Array<{
-    discountId: string;
-    amount: number;
-    currency: string;
-  }>;
+export type IPricingSheet<Calculation extends PricingCalculation> =
+  IBasePricingSheet<Calculation> & {
+    feeSum: () => number;
+    discountSum: (discountId: string) => number;
+    discountPrices: (explicitDiscountId?: string) => Array<{
+      discountId: string;
+      amount: number;
+      currency: string;
+    }>;
 
-  addDiscount: (params: {
-    amount: number;
-    isTaxable: boolean;
-    isNetPrice: boolean;
-    discountId: string;
-    meta?: any;
-  }) => void;
-  addFee: (params: {
-    amount: number;
-    isTaxable: boolean;
-    isNetPrice: boolean;
-    meta?: any;
-  }) => void;
-  addTax: (params: { amount: number; rate: number; meta?: any }) => void;
+    addDiscount: (params: {
+      amount: number;
+      isTaxable: boolean;
+      isNetPrice: boolean;
+      discountId: string;
+      meta?: any;
+    }) => void;
+    addFee: (params: {
+      amount: number;
+      isTaxable: boolean;
+      isNetPrice: boolean;
+      meta?: any;
+    }) => void;
+    addTax: (params: { amount: number; rate: number; meta?: any }) => void;
 
-  getFeeRows: () => Array<Calculation>;
-  getDiscountRows: (discountId: string) => Array<Calculation>;
-  getTaxRows: () => Array<Calculation>;
-}
+    getFeeRows: () => Array<Calculation>;
+    getDiscountRows: (discountId: string) => Array<Calculation>;
+    getTaxRows: () => Array<Calculation>;
+  };
 
 export interface IPricingAdapterActions<
   Calculation extends PricingCalculation
 > {
   calculate: () => Promise<Array<Calculation>>;
-  resultSheet: () => IPricingSheet<Calculation>
+  resultSheet: () => IPricingSheet<Calculation>;
 }
 
 export type IPricingAdapter<

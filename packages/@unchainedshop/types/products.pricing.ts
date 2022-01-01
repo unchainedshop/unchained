@@ -1,5 +1,5 @@
 import { Discount } from './discount';
-import { Order, OrderDiscount } from './orders';
+import { Order } from './orders';
 import {
   BasePricingAdapterContext,
   IPricingAdapter,
@@ -9,6 +9,7 @@ import {
 } from './pricing';
 import { User } from './user';
 import { Context } from './api';
+import { OrderDiscount } from './orders.discount';
 
 export enum ProductPricingRowCategory {
   Item = 'ITEM',

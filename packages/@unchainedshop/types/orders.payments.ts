@@ -1,4 +1,6 @@
+import { Context } from 'vm';
 import { LogFields, ModuleMutations, TimestampFields, _ID } from './common';
+import { IOrderPricingSheet, OrderPrice } from './orders.pricing';
 
 export enum OrderPaymentStatus {
   OPEN = 'OPEN', // Null value is mapped to OPEN status
@@ -19,12 +21,38 @@ export type OrderPayment = {
 
 export type OrderPaymentsModule = ModuleMutations<OrderPayment> & {
   // Queries
-  findOrderPayment: (params: { orderPaymentId: string }) => Promise<OrderPayment>;
+  findOrderPayment: (params: {
+    orderPaymentId: string;
+  }) => Promise<OrderPayment>;
+
+  // Transformations
+  normalizedStatus: (orderPayment: OrderPayment) => string;
+  pricingSheet: (orderPayment: OrderPayment) => IOrderPricingSheet;
 
   // Mutations
-  markAsPaid: (payment: OrderPayment, meta: any, userId?: string) => Promise<void>
+  markAsPaid: (
+    payment: OrderPayment,
+    meta: any,
+    userId?: string
+  ) => Promise<void>;
 
-  updateContext: (orderPaymentId: string, context: any, userId?: string) => Promise<OrderPayment>
-  
+  sign: (
+    payment: OrderPayment,
+    paymentContext: any,
+    requestContext: Context
+  ) => Promise<string>;
+
+  updateContext: (
+    orderPaymentId: string,
+    context: any,
+    userId?: string
+  ) => Promise<OrderPayment>;
+
   updateCalculation: (_id: _ID) => Promise<boolean>;
+};
+
+export type OrderPaymentDiscount = Omit<OrderPrice, '_id'> & {
+  _id?: string;
+  discountId: string;
+  item: OrderPayment;
 };

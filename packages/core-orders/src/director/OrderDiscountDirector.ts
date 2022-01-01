@@ -1,7 +1,7 @@
 import {
   IDiscountAdapter,
   IDiscountDirector,
-} from '@unchainedshop/types/orders.discount';
+} from '@unchainedshop/types/discount';
 import { log } from 'meteor/unchained:logger';
 import { BaseDirector } from 'meteor/unchained:utils';
 

@@ -1,11 +1,20 @@
 import { Context } from '@unchainedshop/types/api';
-import { Bookmark } from '@unchainedshop/types/bookmarks';
+import { Bookmark as BookmarkType } from '@unchainedshop/types/bookmarks';
+import { Product } from '@unchainedshop/types/products';
+import { User } from '@unchainedshop/types/user';
 
-export default {
-  product: async (obj: Bookmark, _, { modules }: Context) => {
+type HelperType<T> = (bookmark: BookmarkType, _: never, context: Context) => T;
+
+interface BookmarkHelperTypes {
+  product: HelperType<Promise<Product>>;
+  user: HelperType<Promise<User>>;
+}
+
+export const Bookmark: BookmarkHelperTypes = {
+  product: async (obj, _, { modules }) => {
     return await modules.products.findProduct({ productId: obj.productId });
   },
-  user: async (obj: Bookmark, _: never, { modules }: Context) => {
+  user: async (obj, _, { modules }) => {
     return await modules.users.findUser({ userId: obj.userId });
   },
 };

@@ -1,4 +1,4 @@
-import { OrderDelivery } from '@unchainedshop/types/orders';
+import { OrderDelivery as OrderDeliveryType } from '@unchainedshop/types/orders.deliveries';
 import { DeliveryProviderType } from 'meteor/unchained:core-delivery';
 import { objectInvert } from 'meteor/unchained:utils';
 import { Context } from '@unchainedshop/types/api';
@@ -8,8 +8,12 @@ const OrderDeliveryMap = {
   OrderDeliveryPickUp: DeliveryProviderType.PICKUP,
 };
 
-export default {
-  __resolveType: async (obj: OrderDelivery, _: never, { modules }: Context) => {
+export const OrderDelivery = {
+  __resolveType: async (
+    obj: OrderDeliveryType,
+    _: never,
+    { modules }: Context
+  ) => {
     const provider = await modules.delivery.findProvider({
       deliveryProviderId: obj.deliveryProviderId,
     });

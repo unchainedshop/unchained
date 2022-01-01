@@ -13,7 +13,7 @@ const LengthUnit = {
   MILLIMETERS: 'MILLIMETERS',
 };
 
-export default {
+export const Dimensions = {
   weight({ weightInGram = 0 }, { unit }) {
     if (unit === MassUnit.KILOGRAM) {
       return weightInGram / 1000;

@@ -9,7 +9,7 @@ function hexToRgb(hex) {
     : null;
 }
 
-export default {
+export const Color = {
   name({ colorName }) {
     return colorName;
   },

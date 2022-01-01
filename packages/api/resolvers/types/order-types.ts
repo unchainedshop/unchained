@@ -6,6 +6,12 @@ import { OrderPricingSheet } from 'meteor/unchained:utils';
 // import { DeliveryProviders } from 'meteor/unchained:core-delivery';
 // import { PaymentProviders } from 'meteor/unchained:core-payment';
 
+type HelperType<P, T> = (
+  order: OrderType,
+  params: P,
+  context: Context
+) => T;
+
 interface OrderHelperTypes {}
 
 export const Order = {
@@ -41,7 +47,9 @@ export const Order = {
     params: { category: string },
     { modules }: Context
   ) => {
-    const price = modules.orders.pricingSheet(obj).total(params.category);
+    const price = modules.orders
+      .pricingSheet(obj)
+      .total({ category: params.category, useNetPrice: false });
 
     return {
       _id: crypto

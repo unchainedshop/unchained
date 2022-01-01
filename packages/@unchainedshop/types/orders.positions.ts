@@ -1,11 +1,7 @@
-import {
-  Configuration,
-  FindOptions,
-  ModuleMutations,
-  TimestampFields,
-  _ID,
-} from './common';
+import { Configuration, FindOptions, TimestampFields, _ID } from './common';
+import { OrderPrice } from './orders.pricing';
 import { Product } from './products';
+import { IProductPricingSheet } from './products.pricing';
 
 export type OrderPosition = {
   _id: _ID;
@@ -36,6 +32,9 @@ export type OrderPositionsModule = {
   ) => Promise<Array<OrderPosition>>;
   count: (query: OrderQuery) => Promise<number>;
 
+  // Transformations
+  pricingSheet: (position: OrderPosition) => IProductPricingSheet;
+
   // Mutations
   create: (
     params: {
@@ -56,4 +55,10 @@ export type OrderPositionsModule = {
   ) => Promise<OrderPosition>;
 
   updateCalculation: (_id: _ID) => Promise<boolean>;
+};
+
+export type OrderPositionDiscount = Omit<OrderPrice, '_id'> & {
+  _id?: string;
+  discountId: string;
+  item: OrderPosition;
 };

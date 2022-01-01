@@ -294,8 +294,8 @@ declare module 'meteor/unchained:core-orders' {
   export const OrderDeliveryStatus: typeof OrderDeliveryStatusType;
   export const OrderPaymentStatus: typeof OrderPaymentStatusType;
 
-  export const DiscountAdapter: IDiscountAdapter;
-  export const DiscountDirector: IDiscountDirector;
+  export const OrderDiscountAdapter: IDiscountAdapter;
+  export const OrderDiscountDirector: IDiscountDirector;
 
   export const OrderPricingAdapter: IOrderPricingAdapter;
   export const OrderPricingDirector: IOrderPricingDirector;

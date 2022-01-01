@@ -1,5 +1,6 @@
 import { ModuleMutations, TimestampFields, _ID } from './common';
 import { Order } from './orders';
+import { OrderPrice } from './orders.pricing';
 
 export enum OrderDiscountTrigger {
   USER = 'USER',
@@ -10,6 +11,7 @@ export type OrderDiscount = {
   _id?: _ID;
   orderId: string;
   code?: string;
+  total?: OrderPrice;
   trigger?: OrderDiscountTrigger;
   discountKey?: string;
   reservation?: any;

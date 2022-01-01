@@ -113,7 +113,7 @@ import requestQuotation from './requestQuotation';
 import rejectQuotation from './rejectQuotation';
 import verifyQuotation from './verifyQuotation';
 import makeQuotationProposal from './makeQuotationProposal';
-import bookmark from './bookmark';
+import bookmark from './bookmarks/bookmark';
 import createBookmark from './bookmarks/createBookmark';
 import removeBookmark from './bookmarks/removeBookmark';
 import addWork from './addWork';

@@ -25,6 +25,8 @@ export enum OrderPricingRowCategory {
   Payment = 'PAYMENT',
 }
 
+export type OrderPrice = { _id: string; amount: number; currency: string };
+
 export interface OrderPricingCalculation extends PricingCalculation {
   discountId?: string;
 }

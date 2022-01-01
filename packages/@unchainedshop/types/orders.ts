@@ -13,6 +13,7 @@ import { OrderPositionsModule } from './orders.positions';
 import { OrderPaymentsModule } from './orders.payments';
 import { User } from './user';
 import { OrderDiscountModule } from './orders.discount';
+import { IProductPricingSheet } from './products.pricing';
 
 export enum OrderStatus {
   OPEN = 'OPEN', // Null value is mapped to OPEN status
@@ -71,6 +72,7 @@ export type OrdersModule = ModuleMutations<Order> & {
     order: { countryContext?: string; orderNumber?: string },
     user: User
   ) => Promise<Order>;
+  pricingSheet: (order: Order) => IProductPricingSheet;
 
   // Checkout
   checkout: (
