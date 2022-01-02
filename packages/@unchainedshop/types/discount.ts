@@ -1,7 +1,7 @@
 import { Context } from './api';
 import { IBaseAdapter, IBaseDirector } from './common';
 import { Order } from './orders';
-import { OrderDiscount } from './orders.discount';
+import { OrderDiscount } from './orders.discounts';
 
 export interface DiscountConfiguration {
   fixedRate?: number;
@@ -19,23 +19,27 @@ export interface DiscountContext {
   orderDiscount: OrderDiscount;
 }
 
+export interface DiscountAdapterActions {
+  isValidForSystemTriggering: () => Promise<boolean>;
+  isValidForCodeTriggering: (params: { code: string }) => Promise<boolean>;
+
+  discountForPricingAdapterKey: (params: {
+    pricingAdapterKey: string;
+  }) => DiscountConfiguration;
+
+  reserve: (params: { code: string }) => Promise<any>;
+  release: () => Promise<void>;
+}
+
 export type IDiscountAdapter = IBaseAdapter & {
   orderIndex: number;
 
   isManualAdditionAllowed: (code: string) => Promise<boolean>;
   isManualRemovalAllowed: () => Promise<boolean>;
 
-  actions: (params: { context: DiscountContext & Context }) => {
-    isValidForSystemTriggering: () => Promise<boolean>;
-    isValidForCodeTriggering: (params: { code: string }) => Promise<boolean>;
-
-    discountForPricingAdapterKey: (params: {
-      pricingAdapterKey: string;
-    }) => DiscountConfiguration;
-
-    reserve: (params: { code: string }) => Promise<any>;
-    release: () => Promise<void>;
-  };
+  actions: (params: {
+    context: DiscountContext & Context;
+  }) => DiscountAdapterActions;
 };
 
 export type IDiscountDirector = IBaseDirector<IDiscountAdapter> & {

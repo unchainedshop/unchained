@@ -1,10 +1,10 @@
-import { OrderDelivery, OrderPosition } from '@unchainedshop/types/orders';
+import { OrderPosition } from '@unchainedshop/types/orders.positions';
 import {
+  IProductPricingAdapter,
+  IProductPricingDirector,
   ProductPricingAdapterContext,
   ProductPricingCalculation,
   ProductPricingContext,
-  IProductPricingAdapter,
-  IProductPricingDirector,
 } from '@unchainedshop/types/products.pricing';
 import { BasePricingDirector } from 'meteor/unchained:utils';
 import { ProductPricingSheet } from './ProductPricingSheet';
@@ -19,7 +19,7 @@ const baseDirector = BasePricingDirector<
 export const ProductPricingDirector: IProductPricingDirector = {
   ...baseDirector,
 
-  buildPricingContext: (
+  buildPricingContext: async (
     {
       item: orderPosition,
       ...pricingContext
@@ -35,14 +35,19 @@ export const ProductPricingDirector: IProductPricingDirector = {
         ...requestContext,
       } as ProductPricingAdapterContext;
 
-    // TODO: use modules
-    /* @ts-ignore */
-    const product = orderPosition.product();
-    // TODO: use modules
-    /* @ts-ignore */
-    const order = orderPosition.order();
-    const user = order.user();
-    const discounts = order.discounts();
+    const product = await requestContext.modules.products.findProduct({
+      productId: orderPosition.productId,
+    });
+
+    const order = await requestContext.modules.orders.findOrder({
+      orderId: orderPosition.orderId,
+    });
+    const user = await requestContext.modules.users.findUser({
+      userId: order.userId,
+    });
+    const discounts = requestContext.modules.orders.positions.discounts(orderPosition, {
+      currency: order.currency,
+    });
 
     return {
       country: order.countryCode,

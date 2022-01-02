@@ -1,9 +1,12 @@
-import { OrderDiscount } from './orders.discount';
+import { OrderDiscount } from './orders.discounts';
 import { Context } from './api';
 import { IBaseAdapter, IBaseDirector } from './common';
 import { Discount } from './discount';
 import { Order } from './orders';
 import { User } from './user';
+import { OrderDelivery } from './orders.deliveries';
+import { OrderPayment } from './orders.payments';
+import { OrderPosition } from './orders.positions';
 
 export interface BasePricingAdapterContext extends Context {
   order: Order;
@@ -11,11 +14,15 @@ export interface BasePricingAdapterContext extends Context {
   discounts: Array<Discount>;
 }
 
-export interface BasePricingContext {
-  order?: Order;
-  user?: User;
-  discounts?: Array<OrderDiscount>;
-}
+export type BasePricingContext =
+  | {
+      order?: Order;
+      user?: User;
+      discounts?: Array<OrderDiscount>;
+    }
+  | {
+      item: OrderDelivery | OrderPayment | OrderPosition;
+    };
 
 export interface PricingCalculation {
   category: string;

@@ -146,6 +146,9 @@ export type ProductsModule = {
   }) => Promise<boolean>;
 
   // Transformations
+  isActive: (product: Product) => boolean;
+  isDraft: (product: Product) => boolean;
+
   normalizedStatus: (product: Product) => string;
 
   proxyAssignments: (
@@ -159,8 +162,10 @@ export type ProductsModule = {
     options: { includeInactive?: boolean }
   ) => Promise<Array<Product>>;
 
-  isActive: (product: Product) => boolean;
-  isDraft: (product: Product) => boolean;
+  resolveOrderableProduct: (
+    product: Product,
+    params: { configuration?: Array<ProductConfiguration> }
+  ) => Promise<Product>;
 
   prices: {
     price: (
@@ -370,8 +375,8 @@ export interface ConfigurableProductHelperTypes extends ProductHelperTypes {
       currency?: string;
       includeInactive: boolean;
       quantity?: number;
-      vectors: Array<ProductConfiguration>;  
-      useNetPrice: boolean;  
+      vectors: Array<ProductConfiguration>;
+      useNetPrice: boolean;
     },
     Promise<ProductPriceRange>
   >;

@@ -1,10 +1,10 @@
+import { Context } from './api';
 import { Configuration, FindOptions, TimestampFields, _ID } from './common';
-import { OrderPrice } from './orders.pricing';
+import { IOrderPricingSheet, OrderPrice } from './orders.pricing';
 import { Product } from './products';
-import { IProductPricingSheet } from './products.pricing';
 
 export type OrderPosition = {
-  _id: _ID;
+  _id?: _ID;
   calculation: Array<any>;
   configuration: Configuration;
   context?: any;
@@ -23,17 +23,24 @@ type OrderQuery = {
 export type OrderPositionsModule = {
   // Queries
   findOrderPosition: (params: { itemId: string }) => Promise<OrderPosition>;
-  findOrders: (
+  findOrderPositions: (
     params: OrderQuery & {
       limit?: number;
       offset?: number;
     },
     options?: FindOptions
   ) => Promise<Array<OrderPosition>>;
-  count: (query: OrderQuery) => Promise<number>;
 
   // Transformations
-  pricingSheet: (position: OrderPosition) => IProductPricingSheet;
+  discounts: (
+    orderPosition: OrderPosition,
+    params: { currency?: string; discountId?: string }
+  ) => Array<OrderPositionDiscount>;
+
+  pricingSheet: (
+    orderPosition: OrderPosition,
+    params: { currency?: string }
+  ) => IOrderPricingSheet;
 
   // Mutations
   create: (
@@ -42,19 +49,31 @@ export type OrderPositionsModule = {
       orderId: string;
       product: Product;
       quantity: number;
+      quotationId?: string;
     },
-    userId?: string
+    requestContext: Context
   ) => Promise<OrderPosition>;
 
-  removePositions: ({ orderId: string }, userId?: string) => Promise<number>;
+  delete: (
+    orderPositionId: string,
+    requestContext: Context
+  ) => Promise<OrderPosition>;
+
+  removePositions: (
+    { orderId: string },
+    requestContext: Context
+  ) => Promise<number>;
 
   update: (
-    query: { orderId: string; positionId: string },
+    query: { orderId: string; orderPositionId: string },
     params: { quantity?: number; configuration?: Configuration },
-    userId?: string
+    requestContext: Context
   ) => Promise<OrderPosition>;
 
-  updateCalculation: (_id: _ID) => Promise<boolean>;
+  updateCalculation: (
+    orderPosition: OrderPosition,
+    requestContext: Context
+  ) => Promise<OrderPosition>;
 };
 
 export type OrderPositionDiscount = Omit<OrderPrice, '_id'> & {

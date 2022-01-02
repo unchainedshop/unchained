@@ -11,49 +11,50 @@ import { emit } from 'meteor/unchained:events';
 import { OrderPositions } from './collections';
 import { Orders } from '../orders/collections';
 
-OrderPositions.findItem = ({ itemId }, options) => {
-  return OrderPositions.findOne({ _id: itemId }, options);
-};
+// OrderPositions.findItem = ({ itemId }, options) => {
+//   return OrderPositions.findOne({ _id: itemId }, options);
+// };
 
 OrderPositions.helpers({
-  product() {
-    return Products.findOne({
-      _id: this.productId,
-    });
-  },
-  order() {
-    return Orders.findOne({
-      _id: this.orderId,
-    });
-  },
-  originalProduct() {
-    return (
-      Products.findOne({
-        _id: this.originalProductId,
-      }) || this.product()
-    );
-  },
-  quotation() {
-    return Quotations.findOne({
-      _id: this.quotationId,
-    });
-  },
-  pricing() {
-    return new ProductPricingSheet({
-      calculation: this.calculation,
-      currency: this.order().currency,
-      quantity: this.quantity,
-    });
-  },
-  discounts(orderDiscountId) {
-    const discounts = this.pricing()
-      .discountPrices(orderDiscountId)
-      .map((discount) => ({
-        item: this,
-        ...discount,
-      }));
-    return discounts;
-  },
+  // product() {
+  //   return Products.findOne({
+  //     _id: this.productId,
+  //   });
+  // },
+  // order() {
+  //   return Orders.findOne({
+  //     _id: this.orderId,
+  //   });
+  // },
+  // originalProduct() {
+  //   return (
+  //     Products.findOne({
+  //       _id: this.originalProductId,
+  //     }) || this.product()
+  //   );
+  // },
+  // quotation() {
+  //   return Quotations.findOne({
+  //     _id: this.quotationId,
+  //   });
+  // },
+  // pricing() {
+  //   return new ProductPricingSheet({
+  //     calculation: this.calculation,
+  //     currency: this.order().currency,
+  //     quantity: this.quantity,
+  //   });
+  // },
+  // discounts(orderDiscountId) {
+  //   const discounts = this.pricing()
+  //     .discountPrices(orderDiscountId)
+  //     .map((discount) => ({
+  //       item: this,
+  //       ...discount,
+  //     }));
+  //   return discounts;
+  // },
+
   validationErrors() {
     const errors = [];
     log(`OrderPosition ${this._id} -> Validate ${this.quantity}`, {
@@ -66,6 +67,7 @@ OrderPositions.helpers({
         new Error('Quotation expired or fullfiled, please request a new offer')
       );
   },
+
   reserve() {
     if (this.quotationId)
       this.quotation().fullfill({ info: { orderPositionId: this._id } });
@@ -73,6 +75,7 @@ OrderPositions.helpers({
       orderId: this.orderId,
     });
   },
+
   dispatches() {
     const scheduling = this.scheduling || [];
     const order = this.order();
@@ -104,20 +107,20 @@ OrderPositions.helpers({
       undefined
     );
   },
-  updateCalculation() {
-    log(`OrderPosition ${this._id} -> Update Calculation`, {
-      orderId: this.orderId,
-    });
-    const pricing = new ProductPricingDirector({ item: this });
-    const calculation = pricing.calculate();
-    OrderPositions.update(
-      { _id: this._id },
-      {
-        $set: { calculation },
-      }
-    );
-    return OrderPositions.findOne({ _id: this._id });
-  },
+  // updateCalculation() {
+  //   log(`OrderPosition ${this._id} -> Update Calculation`, {
+  //     orderId: this.orderId,
+  //   });
+  //   const pricing = new ProductPricingDirector({ item: this });
+  //   const calculation = pricing.calculate();
+  //   OrderPositions.update(
+  //     { _id: this._id },
+  //     {
+  //       $set: { calculation },
+  //     }
+  //   );
+  //   return OrderPositions.findOne({ _id: this._id });
+  // },
   updateScheduling() {
     // scheduling (store in db for auditing)
     const order = this.order();
@@ -190,122 +193,122 @@ OrderPositions.upsertPosition = ({
   });
 };
 
-OrderPositions.createPosition = ({
-  orderId,
-  productId,
-  originalProductId,
-  quotationId,
-  quantity,
-  configuration,
-  ...rest
-}) => {
-  log(
-    `Create ${quantity}x Position with Product ${productId} ${
-      quotationId ? ` (${quotationId})` : ''
-    }`,
-    { orderId }
-  );
-  const positionId = OrderPositions.insert({
-    ...rest,
-    orderId,
-    productId,
-    originalProductId,
-    quotationId,
-    quantity,
-    configuration,
-    created: new Date(),
-  });
-  Orders.updateCalculation({ orderId });
-  return OrderPositions.findOne({
-    _id: positionId,
-  });
-};
+// OrderPositions.createPosition = ({
+//   orderId,
+//   productId,
+//   originalProductId,
+//   quotationId,
+//   quantity,
+//   configuration,
+//   ...rest
+// }) => {
+//   log(
+//     `Create ${quantity}x Position with Product ${productId} ${
+//       quotationId ? ` (${quotationId})` : ''
+//     }`,
+//     { orderId }
+//   );
+//   const positionId = OrderPositions.insert({
+//     ...rest,
+//     orderId,
+//     productId,
+//     originalProductId,
+//     quotationId,
+//     quantity,
+//     configuration,
+//     created: new Date(),
+//   });
+//   Orders.updateCalculation({ orderId });
+//   return OrderPositions.findOne({
+//     _id: positionId,
+//   });
+// };
 
-OrderPositions.updatePosition = (
-  { orderId, positionId },
-  { quantity = null, configuration = null }
-) => {
-  const orderPosition = OrderPositions.findOne({
-    orderId,
-    _id: positionId,
-  });
+// OrderPositions.updatePosition = (
+//   { orderId, positionId },
+//   { quantity = null, configuration = null }
+// ) => {
+//   const orderPosition = OrderPositions.findOne({
+//     orderId,
+//     _id: positionId,
+//   });
 
-  if (quantity !== null) {
-    log(
-      `OrderPosition ${positionId} -> Update Quantity of ${positionId} to ${quantity}x`,
-      { orderId }
-    );
+//   if (quantity !== null) {
+//     log(
+//       `OrderPosition ${positionId} -> Update Quantity of ${positionId} to ${quantity}x`,
+//       { orderId }
+//     );
 
-    OrderPositions.update(
-      { orderId, _id: positionId },
-      {
-        $set: {
-          quantity,
-          updated: new Date(),
-        },
-      }
-    );
-  }
-  if (configuration !== null) {
-    log(
-      `OrderPosition ${positionId} -> Update confiugration of ${positionId} to ${JSON.stringify(
-        configuration
-      )}x`,
-      { orderId }
-    );
-    // check if the variant has changed
-    const originalProduct = orderPosition.originalProduct();
-    if (originalProduct) {
-      const resolvedProduct = originalProduct.resolveOrderableProduct({
-        quantity,
-        configuration,
-      });
-      OrderPositions.update(
-        { orderId, _id: positionId },
-        {
-          $set: {
-            productId: resolvedProduct._id,
-            updated: new Date(),
-          },
-        }
-      );
-    }
+//     OrderPositions.update(
+//       { orderId, _id: positionId },
+//       {
+//         $set: {
+//           quantity,
+//           updated: new Date(),
+//         },
+//       }
+//     );
+//   }
+//   if (configuration !== null) {
+//     log(
+//       `OrderPosition ${positionId} -> Update confiugration of ${positionId} to ${JSON.stringify(
+//         configuration
+//       )}x`,
+//       { orderId }
+//     );
+//     // check if the variant has changed
+//     const originalProduct = orderPosition.originalProduct();
+//     if (originalProduct) {
+//       const resolvedProduct = originalProduct.resolveOrderableProduct({
+//         quantity,
+//         configuration,
+//       });
+//       OrderPositions.update(
+//         { orderId, _id: positionId },
+//         {
+//           $set: {
+//             productId: resolvedProduct._id,
+//             updated: new Date(),
+//           },
+//         }
+//       );
+//     }
 
-    OrderPositions.update(
-      { orderId, _id: positionId },
-      {
-        $set: {
-          configuration,
-          updated: new Date(),
-        },
-      }
-    );
-  }
-  Orders.updateCalculation({ orderId });
-  const position = OrderPositions.findOne({
-    _id: positionId,
-  });
-  emit('ORDER_UPDATE_CART_ITEM', {
-    orderPosition: position,
-  });
-  return position;
-};
+//     OrderPositions.update(
+//       { orderId, _id: positionId },
+//       {
+//         $set: {
+//           configuration,
+//           updated: new Date(),
+//         },
+//       }
+//     );
+//   }
+//   Orders.updateCalculation({ orderId });
+//   const position = OrderPositions.findOne({
+//     _id: positionId,
+//   });
+//   emit('ORDER_UPDATE_CART_ITEM', {
+//     orderPosition: position,
+//   });
+//   return position;
+// };
 
-OrderPositions.removePosition = ({ positionId }) => {
-  const position = OrderPositions.findOne({ _id: positionId });
-  log(`Remove Position ${positionId}`, { orderId: position.orderId });
-  OrderPositions.remove({ _id: positionId });
-  Orders.updateCalculation({ orderId: position.orderId });
-  emit('ORDER_REMOVE_CART_ITEM', {
-    orderPosition: position,
-  });
-  return position;
-};
+// OrderPositions.removePosition = ({ positionId }) => {
+//   const position = OrderPositions.findOne({ _id: positionId });
+//   log(`Remove Position ${positionId}`, { orderId: position.orderId });
+//   OrderPositions.remove({ _id: positionId });
+//   Orders.updateCalculation({ orderId: position.orderId });
+//   emit('ORDER_REMOVE_CART_ITEM', {
+//     orderPosition: position,
+//   });
+//   return position;
+// };
 
-OrderPositions.removePositions = ({ orderId }) => {
-  log('Remove Positions', { orderId });
-  const count = OrderPositions.remove({ orderId });
-  Orders.updateCalculation({ orderId });
-  emit('ORDER_EMPTY_CART', { orderId, count });
-  return count;
-};
+// OrderPositions.removePositions = ({ orderId }) => {
+//   log('Remove Positions', { orderId });
+//   const count = OrderPositions.remove({ orderId });
+//   Orders.updateCalculation({ orderId });
+//   emit('ORDER_EMPTY_CART', { orderId, count });
+//   return count;
+// };

@@ -1,4 +1,3 @@
-import { OrderDelivery } from '@unchainedshop/types/orders.deliveries';
 import {
   DeliveryPricingAdapterContext,
   DeliveryPricingCalculation,
@@ -6,8 +5,8 @@ import {
   IDeliveryPricingAdapter,
   IDeliveryPricingDirector,
 } from '@unchainedshop/types/delivery.pricing';
+import { OrderDelivery } from '@unchainedshop/types/orders.deliveries';
 import { BasePricingDirector } from 'meteor/unchained:utils';
-import { DeliveryPricingSheet } from './DeliveryPricingSheet';
 
 const baseDirector = BasePricingDirector<
   DeliveryPricingContext,
@@ -49,7 +48,7 @@ export const DeliveryPricingDirector: IDeliveryPricingDirector = {
 
     const discounts =
       await requestContext.modules.orders.discount.findOrderDiscount({
-        orderDiscountId: item.orderId,
+        discountId: item.orderId,
       });
 
     return {

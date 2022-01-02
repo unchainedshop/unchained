@@ -27,7 +27,16 @@ export default async function createCart(
       orderNumber,
       currency,
       countryCode: countryContext,
+      billingAddress: user.lastBillingAddress || user.profile?.address,
+      contact:
+        user.lastContact ||
+        (!user.guest
+          ? {
+              telNumber: user.profile?.phoneMobile,
+              emailAddress: modules.users.primaryEmail(user)?.address,
+            }
+          : {}),
     },
-    user
+    userId
   );
 }

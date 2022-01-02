@@ -897,6 +897,8 @@ Orders.ensureCartForUser = async ({ userId, user, countryContext }) => {
   });
 };
 
+// Used in platform package
+
 Orders.migrateCart = async ({
   fromUserId,
   toUserId,
@@ -948,6 +950,7 @@ Orders.migrateCart = async ({
     orderId: toCart._id,
   });
 };
+
 
 Orders.invalidateProviders = async () => {
   log('Orders: Start invalidating cart providers', { level: 'verbose' });

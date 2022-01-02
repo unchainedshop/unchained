@@ -1,4 +1,4 @@
-import { Context } from 'vm';
+import { Context } from './api';
 import { LogFields, ModuleMutations, TimestampFields, _ID } from './common';
 import { IOrderPricingSheet, OrderPrice } from './orders.pricing';
 
@@ -19,17 +19,28 @@ export type OrderPayment = {
 } & LogFields &
   TimestampFields;
 
-export type OrderPaymentsModule = ModuleMutations<OrderPayment> & {
+export type OrderPaymentsModule = {
   // Queries
   findOrderPayment: (params: {
     orderPaymentId: string;
   }) => Promise<OrderPayment>;
 
   // Transformations
+  isBlockingOrderConfirmation: (
+    orderPayment: OrderPayment,
+    requestContext: Context
+  ) => Promise<boolean>;
+  isBlockingOrderFullfillment: (orderPayment: OrderPayment) => boolean;
   normalizedStatus: (orderPayment: OrderPayment) => string;
-  pricingSheet: (orderPayment: OrderPayment) => IOrderPricingSheet;
+  pricingSheet: (
+    orderPayment: OrderPayment,
+    currency: string
+  ) => IOrderPricingSheet;
 
   // Mutations
+  create: (doc: OrderPayment, userId?: string) => Promise<OrderPayment>;
+  delete: (orderPaymentId: string, userId?: string) => Promise<number>;
+
   markAsPaid: (
     payment: OrderPayment,
     meta: any,
@@ -45,10 +56,19 @@ export type OrderPaymentsModule = ModuleMutations<OrderPayment> & {
   updateContext: (
     orderPaymentId: string,
     context: any,
+    requestContext: Context
+  ) => Promise<OrderPayment>;
+
+  updateStatus: (
+    orderPaymentId: string,
+    params: { status: OrderPaymentStatus; info?: string },
     userId?: string
   ) => Promise<OrderPayment>;
 
-  updateCalculation: (_id: _ID) => Promise<boolean>;
+  updateCalculation: (
+    orderPayment: OrderPayment,
+    requestContext: Context
+  ) => Promise<boolean>;
 };
 
 export type OrderPaymentDiscount = Omit<OrderPrice, '_id'> & {

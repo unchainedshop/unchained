@@ -10,7 +10,7 @@ import {
 import { User } from './user';
 import { OrderDelivery } from './orders.deliveries';
 import { OrderPayment } from './orders.payments';
-import { OrderDiscount } from './orders.discount';
+import { OrderDiscount } from '@unchainedshop/types/orders.discounts';
 import { OrderPosition } from './orders.positions';
 
 /*
@@ -42,13 +42,7 @@ export interface OrderPricingAdapterContext extends BasePricingAdapterContext {
 }
 
 export interface OrderPricingContext {
-  currency?: string;
-  discounts: Array<OrderDiscount>;
   order: Order;
-  orderDelivery: OrderDelivery;
-  orderPositions: Array<OrderPosition>;
-  orderPayment?: OrderPayment;
-  user: User;
 }
 
 export interface IOrderPricingSheet

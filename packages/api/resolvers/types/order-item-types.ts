@@ -13,14 +13,17 @@ type HelperType<P, T> = (
 ) => T;
 
 interface OrderItemHelperTypes {
-  total: HelperType<{ category: string }, OrderPrice>;
-  unitPrice: HelperType<never, OrderPrice>;
-  discounts: HelperType<never, Array<OrderPositionDiscount>>;
+  total: HelperType<{ category: string }, Promise<OrderPrice>>;
+  unitPrice: HelperType<never, Promise<OrderPrice>>;
+  discounts: HelperType<never, Promise<Array<OrderPositionDiscount>>>;
 }
 
 export const OrderItem: OrderItemHelperTypes = {
-  total: (obj, { category }, { modules }) => {
-    const pricingSheet = modules.orders.positions.pricingSheet(obj);
+  total: async (obj, { category }, { modules }) => {
+    const order = await modules.orders.findOrder({ orderId: obj.orderId });
+    const pricingSheet = modules.orders.positions.pricingSheet(obj, {
+      currency: order.currency,
+    });
     if (pricingSheet.isValid()) {
       const { amount, currency } = pricingSheet.total({
         category,
@@ -38,8 +41,11 @@ export const OrderItem: OrderItemHelperTypes = {
     return null;
   },
 
-  unitPrice: (obj, _, { modules }) => {
-    const pricingSheet = modules.orders.positions.pricingSheet(obj);
+  unitPrice: async (obj, _, { modules }) => {
+    const order = await modules.orders.findOrder({ orderId: obj.orderId });
+    const pricingSheet = modules.orders.positions.pricingSheet(obj, {
+      currency: order.currency,
+    });
     if (pricingSheet.isValid()) {
       const { amount, currency } = pricingSheet.unitPrice({
         useNetPrice: false,
@@ -56,8 +62,11 @@ export const OrderItem: OrderItemHelperTypes = {
     return null;
   },
 
-  discounts: (obj, _, { modules }) => {
-    const pricingSheet = modules.orders.positions.pricingSheet(obj);
+  discounts: async (obj, _, { modules }) => {
+    const order = await modules.orders.findOrder({ orderId: obj.orderId });
+    const pricingSheet = modules.orders.positions.pricingSheet(obj, {
+      currency: order.currency,
+    });
     if (pricingSheet.isValid()) {
       // IMPORTANT: Do not send any parameter to obj.discounts!
       return pricingSheet.discountPrices().map((discount) => ({

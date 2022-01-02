@@ -18,8 +18,12 @@ export const BasePricingDirector = <
     Calculation,
     IPricingSheet<Calculation>
   >
->(directorName: string): IPricingDirector<Context, AdapterContext, Calculation, Adapter> => {
-  const baseDirector = BaseDirector<Adapter>(directorName, { adapterSortKey: 'orderIndex' });
+>(
+  directorName: string
+): IPricingDirector<Context, AdapterContext, Calculation, Adapter> => {
+  const baseDirector = BaseDirector<Adapter>(directorName, {
+    adapterSortKey: 'orderIndex',
+  });
 
   let calculation: Array<Calculation> = [];
   let context: AdapterContext | null = null;
@@ -42,10 +46,13 @@ export const BasePricingDirector = <
     getContext: () => context,
 
     actions: (pricingContext, requestContext) => {
-      context = director.buildPricingContext(pricingContext, requestContext);
-
       return {
         calculate: async () => {
+          const context = await director.buildPricingContext(
+            pricingContext,
+            requestContext
+          );
+
           const adapters = baseDirector
             .getAdapters()
             .filter(async (Adapter) => await Adapter.isActivatedFor(context));
@@ -85,6 +92,8 @@ export const BasePricingDirector = <
 
           return calculation;
         },
+
+        resultSheet: () => null,
       };
     },
   };

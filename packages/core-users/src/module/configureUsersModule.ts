@@ -87,6 +87,14 @@ export const configureUsersModule = async ({
     },
 
     // Transformations
+    primaryEmail: (user) => {
+      return (user.emails || []).sort(
+        ({ verified: verifiedLeft }, { verified: verifiedRight }) =>
+          /* @ts-ignore */
+          verifiedRight - verifiedLeft
+      )?.[0];
+    },
+
     userLocale: (user, params = {}) => {
       return getUserLocale(user, params);
     },

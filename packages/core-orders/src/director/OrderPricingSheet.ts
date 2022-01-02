@@ -2,12 +2,13 @@ import { BasePricingSheet } from 'meteor/unchained:utils';
 import {
   OrderPricingCalculation,
   OrderPricingRowCategory,
+  IOrderPricingSheet,
 } from '@unchainedshop/types/orders.pricing';
 import { PricingSheetParams } from '@unchainedshop/types/pricing';
 
 export const OrderPricingSheet = (
   params: PricingSheetParams<OrderPricingCalculation>
-) => {
+): IOrderPricingSheet => {
   const basePricingSheet = BasePricingSheet<OrderPricingCalculation>(params);
 
   const pricingSheet = {

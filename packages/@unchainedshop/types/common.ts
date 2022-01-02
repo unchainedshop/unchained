@@ -66,11 +66,13 @@ export type _ID = string | ObjectId;
 
 export type Configuration = Array<{ key: string; value: string }>;
 
-export type LogFields = Array<{
-  date: Date;
-  type: string;
-  info: string;
-}>;
+export type LogFields = {
+  log: Array<{
+    date: Date;
+    status?: string;
+    info: string;
+  }>;
+};
 
 export type TimestampFields = {
   created?: Date;

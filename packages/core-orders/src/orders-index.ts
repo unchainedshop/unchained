@@ -6,3 +6,5 @@ export { OrderDiscountDirector } from './director/OrderDiscountDirector';
 export { OrderPricingAdapter } from './director/OrderPricingAdapter';
 export { OrderPricingDirector } from './director/OrderPricingDirector';
 export { OrderPricingSheet } from './director/OrderPricingSheet';
+
+export { orderSettings } from './orders-settings';

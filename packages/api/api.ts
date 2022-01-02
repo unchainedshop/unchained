@@ -101,6 +101,7 @@ const startUnchainedServer = (options: UnchainedServerOptions) => {
 const getCurrentContextResolver = () => context;
 
 export const useMiddlewareWithCurrentContext = (path, middleware) => {
+  /* @ts-ignore */
   WebApp.connectHandlers.use(path, async (req, res, ...rest) => {
     const currentContextResolver = getCurrentContextResolver();
     req.unchainedContext = await currentContextResolver({ req, res });

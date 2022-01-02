@@ -32,5 +32,14 @@ export default async ({
       isoCode: countryContext,
     }),
     countryCode: countryContext,
+    billingAddress: user.lastBillingAddress || user.profile?.address,
+    contact:
+      user.lastContact ||
+      (!user.guest
+        ? {
+            telNumber: user.profile?.phoneMobile,
+            emailAddress: modules.user.primaryEmail()?.address,
+          }
+        : {}),
   });
 };

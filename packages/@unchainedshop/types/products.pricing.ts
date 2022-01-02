@@ -1,5 +1,8 @@
+import { Context } from './api';
 import { Discount } from './discount';
 import { Order } from './orders';
+import { OrderDiscount } from './orders.discounts';
+import { OrderPosition } from './orders.positions';
 import {
   BasePricingAdapterContext,
   IPricingAdapter,
@@ -7,9 +10,8 @@ import {
   IPricingSheet,
   PricingCalculation,
 } from './pricing';
+import { Product } from './products';
 import { User } from './user';
-import { Context } from './api';
-import { OrderDiscount } from './orders.discount';
 
 export enum ProductPricingRowCategory {
   Item = 'ITEM',
@@ -24,25 +26,27 @@ export interface ProductPricingCalculation extends PricingCalculation {
   rate?: number;
 }
 
-export interface ProductPricingAdapterContext extends Context {
+export interface ProductPricingAdapterContext extends BasePricingAdapterContext {
   country: string;
   currency: string;
   discounts: Array<Discount>;
   order: Order;
-  product: any; // TODO: update with product type
+  product: Product;
   quantity: number;
   user: User;
 }
 
-export interface ProductPricingContext {
-  country?: string;
-  currency?: string;
-  discounts?: Array<OrderDiscount>;
-  order?: Order;
-  product?: any; // TODO: update with product type
-  quantity?: number;
-  user?: User;
-}
+export type ProductPricingContext =
+  | {
+      country?: string;
+      currency?: string;
+      discounts?: Array<OrderDiscount>;
+      order?: Order;
+      product?: Product;
+      quantity?: number;
+      user?: User;
+    }
+  | { item: OrderPosition };
 
 export interface IProductPricingSheet
   extends IPricingSheet<ProductPricingCalculation> {

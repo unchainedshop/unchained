@@ -1,4 +1,4 @@
-import { OrderPayment } from '@unchainedshop/types/orders';
+import { OrderPayment } from '@unchainedshop/types/orders.payments';
 import {
   IPaymentPricingAdapter,
   IPaymentPricingDirector,
@@ -19,16 +19,23 @@ const baseDirector = BasePricingDirector<
 export const PaymentPricingDirector: IPaymentPricingDirector = {
   ...baseDirector,
 
-  buildPricingContext: ({ item }: { item: OrderPayment }, requestContext) => {
-    // TODO: use modules
-    /* @ts-ignore */
-    const order = item.order();
-    // TODO: use modules
-    /* @ts-ignore */
-    const provider = item.provider();
-    const user = order.user();
+  buildPricingContext: async (
+    { item }: { item: OrderPayment },
+    requestContext
+  ) => {
+    const order = await requestContext.modules.orders.findOrder({
+      orderId: item.orderId,
+    });
+    const provider =
+      await requestContext.modules.payment.paymentProviders.findProvider({
+        paymentProviderId: item.paymentProviderId,
+      });
+    const user = await requestContext.modules.users.findUser({
+      userId: order.userId,
+    });
 
     return {
+      orderPayment: item,
       order,
       provider,
       user,

@@ -69,8 +69,9 @@ export type UsersModule = {
   userExists: (query: { userId: string }) => Promise<boolean>;
 
   // Transformations
+  primaryEmail: (user: User) => Email
   userLocale: (user: User, params?: { localeContext?: Locale }) => Locale;
-
+  
   // Mutations
   updateProfile: (
     _id: string,

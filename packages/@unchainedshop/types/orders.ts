@@ -1,19 +1,18 @@
+import { OrderDiscountsModule } from './orders.discounts';
+import { Context } from './api';
 import {
   Address,
   Contact,
   FindOptions,
-  LogFields,
-  ModuleMutations,
-  TimestampFields,
+  LogFields, TimestampFields,
   Update,
-  _ID,
+  _ID
 } from './common';
 import { OrderDeliveriesModule } from './orders.deliveries';
-import { OrderPositionsModule } from './orders.positions';
 import { OrderPaymentsModule } from './orders.payments';
+import { OrderPositionsModule } from './orders.positions';
+import { IOrderPricingSheet } from './orders.pricing';
 import { User } from './user';
-import { OrderDiscountModule } from './orders.discount';
-import { IProductPricingSheet } from './products.pricing';
 
 export enum OrderStatus {
   OPEN = 'OPEN', // Null value is mapped to OPEN status
@@ -46,14 +45,18 @@ export type Order = {
 type OrderQuery = {
   includeCarts?: boolean;
   queryString?: string;
+  userId?: string;
 };
 
-export type OrdersModule = ModuleMutations<Order> & {
+export type OrdersModule = {
   // Queries
-  findOrder: (params: {
-    orderId?: string;
-    orderNumber?: string;
-  }) => Promise<Order>;
+  findOrder: (
+    params: {
+      orderId?: string;
+      orderNumber?: string;
+    },
+    options?: FindOptions
+  ) => Promise<Order>;
   findOrders: (
     params: OrderQuery & {
       limit?: number;
@@ -66,13 +69,13 @@ export type OrdersModule = ModuleMutations<Order> & {
 
   // Transformations
   normalizedStatus: (order: Order) => string;
-  nextStatus: (order: Order) => Promise<OrderStatus>;
+  nextStatus: (order: Order) => Promise<OrderStatus | null>;
   isCart: (order: Order) => boolean;
   cart: (
     order: { countryContext?: string; orderNumber?: string },
     user: User
   ) => Promise<Order>;
-  pricingSheet: (order: Order) => IProductPricingSheet;
+  pricingSheet: (order: Order) => IOrderPricingSheet;
 
   // Checkout
   checkout: (
@@ -93,48 +96,53 @@ export type OrdersModule = ModuleMutations<Order> & {
 
   // Mutations
   create: (
-    doc: { orderNumber?: string; currency: string; countryCode: string },
-    user: User
+    doc: { orderNumber?: string; currency: string; countryCode: string, billingAddress?: Address, contact?: Contact },
+    userId?: string
   ) => Promise<Order>;
-  update: (_id: _ID, doc: Update<Order>, userId?: string) => Promise<Order>;
+  update: (_id: string, doc: Update<Order>, userId?: string) => Promise<Order>;
+  delete: (_id: string, userId?: string) => Promise<number>;
 
   setDeliveryProvider: (
     _id: _ID,
     deliveryProviderId: string,
-    userId?: string
+    requestContext: Context
   ) => Promise<Order>;
   setPaymentProvider: (
     _id: _ID,
     paymentProviderId: string,
-    userId?: string
+    requestContext: Context
   ) => Promise<Order>;
 
   updateBillingAddress: (
     _id: _ID,
     billingAddress: Address,
-    userId?: string
+    requestContext: Context
   ) => Promise<Order>;
   updateContact: (
     _id: _ID,
     contact: Contact,
-    userId?: string
+    requestContext: Context
   ) => Promise<Order>;
-  updateContext: (_id: _ID, context: any, userId?: string) => Promise<Order>;
+  updateContext: (
+    _id: _ID,
+    context: any,
+    requestContext: Context
+  ) => Promise<Order>;
 
   updateStatus: (
     _id: _ID,
     params: { status: OrderStatus; info?: string },
-    userId?: string
+    requestContext: Context
   ) => Promise<Order>;
 
-  updateCalculation: (_id: _ID) => Promise<boolean>;
+  updateCalculation: (_id: _ID, requestContext: Context) => Promise<Order>;
 
   /*
    * Sub entities
    */
 
   deliveries: OrderDeliveriesModule;
-  discount: OrderDiscountModule;
+  discounts: OrderDiscountsModule;
   positions: OrderPositionsModule;
   payments: OrderPaymentsModule;
 };

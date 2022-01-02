@@ -183,7 +183,7 @@ export const configurePaymentProvidersModule = (
         paymentContext,
         requestContext
       );
-      adapter.sign();
+      return adapter.sign();
     },
 
     validate: async (paymentProviderId, paymentContext, requestContext) => {
@@ -192,7 +192,7 @@ export const configurePaymentProvidersModule = (
         paymentContext,
         requestContext
       );
-      adapter.validate();
+      return adapter.validate();
     },
 
     // Mutations

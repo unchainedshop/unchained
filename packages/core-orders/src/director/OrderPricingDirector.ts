@@ -1,10 +1,10 @@
-import { Order, OrderDelivery } from '@unchainedshop/types/orders';
+import { Order } from '@unchainedshop/types/orders';
 import {
+  IOrderPricingAdapter,
+  IOrderPricingDirector,
   OrderPricingAdapterContext,
   OrderPricingCalculation,
   OrderPricingContext,
-  IOrderPricingAdapter,
-  IOrderPricingDirector,
 } from '@unchainedshop/types/orders.pricing';
 import { BasePricingDirector } from 'meteor/unchained:utils';
 import { OrderPricingSheet } from './OrderPricingSheet';
@@ -19,10 +19,11 @@ const baseDirector = BasePricingDirector<
 export const OrderPricingDirector: IOrderPricingDirector = {
   ...baseDirector,
 
-  buildPricingContext: ({ order }: { order: Order }, requestContext) => {
-    // TODO: use modules
-    /* @ts-ignore */
-    const user = order.user();
+  buildPricingContext: async ({ order }: { order: Order }, requestContext) => {
+    const user = await requestContext.modules.users.findUser({
+      userId: order.userId,
+    });
+
     // TODO: use modules
     /* @ts-ignore */
     const orderPositions = order.items();

@@ -1,4 +1,5 @@
-import { Order, OrderPayment } from './orders';
+import { OrderPayment } from './orders.payments';
+import { Order } from './orders';
 import { PaymentProvider } from './payments';
 import {
   BasePricingAdapterContext,
@@ -35,11 +36,13 @@ export interface PaymentPricingAdapterContext
   provider: PaymentProvider;
 }
 
-export interface PaymentPricingContext {
+export type PaymentPricingContext = {
   user: User;
   orderPayment: OrderPayment;
   order: Order;
   provider: PaymentProvider;
+} | {
+  item: OrderPayment
 }
 
 export interface IPaymentPricingSheet

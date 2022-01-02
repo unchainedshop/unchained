@@ -1,3 +1,4 @@
+import { Context } from './api';
 import {
   LogFields,
   ModuleMutations,
@@ -24,37 +25,43 @@ export type OrderDelivery = {
 } & LogFields &
   TimestampFields;
 
-export type OrderDeliveriesModule = ModuleMutations<OrderDelivery> & {
+export type OrderDeliveriesModule = {
   // Queries
   findDelivery: (params: { orderDeliveryId: string }) => Promise<OrderDelivery>;
 
   // Transformations
-  normalizedStatus: (orderDelivery: OrderDelivery) => string;
   isBlockingOrderFullfillment: (orderDelivery: OrderDelivery) => boolean;
-  pricingSheet: (orderDelivery: OrderDelivery) => IOrderPricingSheet;
-  
+  normalizedStatus: (orderDelivery: OrderDelivery) => string;
+  pricingSheet: (
+    orderDelivery: OrderDelivery,
+    currency: string
+  ) => IOrderPricingSheet;
+
   // Mutations
   create: (doc: OrderDelivery, userId?: string) => Promise<OrderDelivery>;
-  markAsDelivered: (orderDelivery: OrderDelivery) => Promise<void>;
+  delete: (orderDeliveryId: string, userId?: string) => Promise<number>;
 
-  update: (
-    _id: _ID,
-    doc: Update<OrderDelivery>,
+  markAsDelivered: (
+    orderDelivery: OrderDelivery,
     userId?: string
-  ) => Promise<OrderDelivery>;
+  ) => Promise<void>;
 
   updateDelivery: (
-    _id: _ID,
+    orderDeliveryId: string,
     params: { context: any; orderId: string },
-    userId?: string
+    requestContext: Context
   ) => Promise<OrderDelivery>;
+
   updateStatus: (
-    _id: _ID,
+    orderDeliveryId: string,
     params: { status: OrderDeliveryStatus; info?: string },
     userId?: string
   ) => Promise<OrderDelivery>;
 
-  updateCalculation: (_id: _ID) => Promise<boolean>;
+  updateCalculation: (
+    orderDelivery: OrderDelivery,
+    requestContext: Context
+  ) => Promise<boolean>;
 };
 
 export type OrderDeliveryDiscount = Omit<OrderPrice, '_id'> & {

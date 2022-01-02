@@ -98,3 +98,4 @@ Collections.AssortmentLinks.removeLinks = (
   if (payment.status !== OrderPaymentStatus.OPEN)
 What happens if the first one passes and the second not?
 
+5. Does the user object exists in the requestContext? So far I used the userId exclusively and fetched the user if needed on the fly.
