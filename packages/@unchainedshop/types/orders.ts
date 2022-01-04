@@ -11,7 +11,11 @@ import { OrderDeliveriesModule, OrderDelivery } from './orders.deliveries';
 import { OrderDiscount, OrderDiscountsModule } from './orders.discounts';
 import { OrderPayment, OrderPaymentsModule } from './orders.payments';
 import { OrderPosition, OrderPositionsModule } from './orders.positions';
-import { IOrderPricingSheet, OrderPrice, OrderPricingDiscount } from './orders.pricing';
+import {
+  IOrderPricingSheet,
+  OrderPrice,
+  OrderPricingDiscount,
+} from './orders.pricing';
 import { PricingDiscount } from './pricing';
 import { User } from './user';
 
@@ -83,7 +87,7 @@ export interface OrderTransformations {
     order: Order,
     orderDiscount: OrderDiscount,
     requestContext: Context
-  ) => Promise<Array<OrderPricingDiscount>>
+  ) => Promise<Array<OrderPricingDiscount>>;
   discountTotal: (
     order: Order,
     orderDiscount: OrderDiscount,
@@ -103,7 +107,6 @@ export interface OrderProcessing {
   checkout: OrderContextParams<OrderTransactionContext>;
   confirm: OrderContextParams<OrderTransactionContext>;
   ensureCartForUser: OrderContextParams<{ user: User; countryContext: string }>;
-  nextStatus: (order: Order) => Promise<OrderStatus | null>;
   processOrder: OrderContextParams<OrderTransactionContext>;
   sendOrderConfirmationToCustomer: OrderContextParams<{ locale: string }>;
 }

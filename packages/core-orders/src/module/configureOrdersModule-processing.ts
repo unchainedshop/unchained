@@ -47,24 +47,6 @@ export const configureOrderModuleProcessing = ({
   const findOrderPayment = async (order: Order) =>
     await OrderPayments.findOne(generateDbFilterById(order.paymentId));
 
-  const findNewOrderNumber = async (order: Order) => {
-    let orderNumber = null;
-    let i = 0;
-    while (!orderNumber) {
-      const newHashID = orderSettings.orderNumberHashFn(order, i);
-      if (
-        (await Orders.find(
-          { orderNumber: newHashID },
-          { limit: 1 }
-        ).count()) === 0
-      ) {
-        orderNumber = newHashID;
-      }
-      i += 1;
-    }
-    return orderNumber;
-  };
-
   const missingInputDataForCheckout = async (order: Order) => {
     const errors = [];
     if (order.status !== OrderStatus.OPEN)
@@ -130,7 +112,69 @@ export const configureOrderModuleProcessing = ({
     );
   };
 
-  const findNextStatus: OrderProcessing['nextStatus'] = async (order) => {
+  const isAutoConfirmationEnabled = async (
+    order: Order,
+    requestContext: Context
+  ) => {
+    const { modules } = requestContext;
+
+    const orderPayment = await findOrderPayment(order);
+    let isBlockingOrderConfirmation =
+      orderPayment &&
+      (await modules.orders.payments.isBlockingOrderConfirmation(
+        orderPayment,
+        requestContext
+      ));
+    if (isBlockingOrderConfirmation) return false;
+
+    const orderDelivery = await findOrderDelivery(order);
+    isBlockingOrderConfirmation =
+      orderDelivery &&
+      (await modules.orders.deliveries.isBlockingOrderConfirmation(
+        orderDelivery,
+        requestContext
+      ));
+    if (isBlockingOrderConfirmation) return false;
+
+    if (
+      order.status === OrderStatus.FULLFILLED ||
+      order.status === OrderStatus.CONFIRMED
+    ) {
+      return false;
+    }
+
+    return true;
+  };
+
+  const isAutoFullfillmentEnabled = async (
+    order: Order,
+    requestContext: Context
+  ) => {
+    const { modules } = requestContext;
+
+    const orderPayment = await findOrderPayment(order);
+    let isBlockingOrderFullfillment =
+      orderPayment &&
+      modules.orders.payments.isBlockingOrderFullfillment(orderPayment);
+    if (isBlockingOrderFullfillment) return false;
+
+    const orderDelivery = await findOrderDelivery(order);
+    isBlockingOrderFullfillment =
+      orderDelivery &&
+      modules.orders.deliveries.isBlockingOrderFullfillment(orderDelivery);
+    if (isBlockingOrderFullfillment) return false;
+
+    if (order.status === OrderStatus.FULLFILLED) {
+      return false;
+    }
+
+    return true;
+  };
+
+  const findNextStatus = async (
+    order: Order,
+    requestContext: Context
+  ): Promise<OrderStatus | null> => {
     let status = order.status;
 
     if (status === OrderStatus.OPEN || !status) {
@@ -140,13 +184,13 @@ export const configureOrderModuleProcessing = ({
       }
     }
     if (status === OrderStatus.PENDING) {
-      if (this.isAutoConfirmationEnabled()) {
+      if (await isAutoConfirmationEnabled(order, requestContext)) {
         emit('ORDER_CONFIRMED', { order });
         status = OrderStatus.CONFIRMED;
       }
     }
     if (status === OrderStatus.CONFIRMED) {
-      if (this.isAutoFullfillmentEnabled()) {
+      if (await isAutoFullfillmentEnabled(order, requestContext)) {
         emit('ORDER_FULLFILLED', { order });
         status = OrderStatus.FULLFILLED;
       }
@@ -284,11 +328,9 @@ export const configureOrderModuleProcessing = ({
       );
     },
 
-    nextStatus: findNextStatus,
-
     processOrder: async (order, params, requestContext) => {
       const { modules, userId } = requestContext;
-      const nextStatus = await findNextStatus(order);
+      const nextStatus = await findNextStatus(order, requestContext);
       if (nextStatus === OrderStatus.PENDING) {
         // auto charge during transition to pending
         const orderPayment = await modules.orders.payments.findOrderPayment({

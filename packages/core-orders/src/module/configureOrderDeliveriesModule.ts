@@ -8,7 +8,10 @@ import {
   OrderDeliveriesModule,
   OrderDelivery,
 } from '@unchainedshop/types/orders.deliveries';
-import { DeliveryPricingDirector } from 'meteor/unchained:core-delivery';
+import {
+  DeliveryDirector,
+  DeliveryPricingDirector,
+} from 'meteor/unchained:core-delivery';
 import { emit, registerEvents } from 'meteor/unchained:events';
 import { log } from 'meteor/unchained:logger';
 import {
@@ -78,8 +81,8 @@ export const configureOrderDeliveriesModule = ({
 
     // Transformations
     discounts: (orderDelivery, { order, orderDiscount }, { modules }) => {
-      if (!orderDelivery) return []
-      
+      if (!orderDelivery) return [];
+
       const pricingSheet = modules.orders.deliveries.pricingSheet(
         orderDelivery,
         order.currency
@@ -93,13 +96,25 @@ export const configureOrderDeliveriesModule = ({
         }));
     },
 
-    normalizedStatus: (orderDelivery) => {
-      return objectInvert(OrderDeliveryStatus)[orderDelivery.status || null];
+    isBlockingOrderConfirmation: async (orderDelivery, requestContext) => {
+      const provider = await requestContext.modules.delivery.findProvider({
+        deliveryProviderId: orderDelivery.deliveryProviderId,
+      });
+
+      const director = DeliveryDirector.actions(provider, {}, requestContext);
+
+      if (director.isAutoReleaseAllowed()) return false;
+
+      return true;
     },
     isBlockingOrderFullfillment: (orderDelivery) => {
       if (orderDelivery.status === OrderDeliveryStatus.DELIVERED) return false;
       return true;
     },
+    normalizedStatus: (orderDelivery) => {
+      return objectInvert(OrderDeliveryStatus)[orderDelivery.status || null];
+    },
+
     pricingSheet: (orderDelivery, currency) => {
       return OrderPricingSheet({
         calculation: orderDelivery.calculation,

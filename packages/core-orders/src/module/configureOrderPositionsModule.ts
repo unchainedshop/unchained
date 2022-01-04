@@ -2,6 +2,7 @@ import {
   Collection,
   Filter,
   ModuleMutations,
+  Query,
 } from '@unchainedshop/types/common';
 import { OrdersModule } from '@unchainedshop/types/orders';
 import {
@@ -16,6 +17,7 @@ import { log } from 'meteor/unchained:logger';
 import {
   generateDbFilterById,
   generateDbMutations,
+  dbIdToString,
 } from 'meteor/unchained:utils';
 import { OrderPositionsSchema } from '../db/OrderPositionsSchema';
 import { OrderPricingSheet } from '../director/OrderPricingSheet';
@@ -24,6 +26,7 @@ const ORDER_POSITION_EVENTS: string[] = [
   'ORDER_UPDATE_CART_ITEM',
   'ORDER_REMOVE_CART_ITEM',
   'ORDER_EMPTY_CART',
+  'ORDER_ADD_PRODUCT',
 ];
 
 const buildFindByIdSelector = (orderPositionId: string, orderId?: string) =>
@@ -82,23 +85,32 @@ export const configureOrderPositionsModule = ({
     // Mutations
 
     create: async (
-      { configuration, orderId, product, quantity, quotationId },
+      { configuration, context, quantity, quotationId },
+      { order, product, originalProduct },
       requestContext
     ) => {
+      const orderId = dbIdToString(order._id);
+      const productId = dbIdToString(product._id);
+      const originalProductId = originalProduct
+        ? dbIdToString(originalProduct._id)
+        : undefined;
+
       log(
-        `Create ${quantity}x Position with Product ${product._id} ${
+        `Create ${quantity}x Position with Product ${productId} ${
           quotationId ? ` (${quotationId})` : ''
         }`,
-        { orderId }
+        { orderId, productId, originalProductId, userId: requestContext.userId }
       );
 
       const positionId = await mutations.create(
         {
           orderId,
-          productId: product._id as string,
+          productId,
+          originalProductId,
           quotationId,
           quantity,
           configuration,
+          context,
           calculation: [],
           scheduling: [],
         },
@@ -190,14 +202,13 @@ export const configureOrderPositionsModule = ({
           const resolvedProduct =
             await requestContext.modules.products.resolveOrderableProduct(
               originalProduct,
-              {
-                configuration,
-              }
+              { configuration },
+              requestContext
             );
 
           await OrderPositions.updateOne(selector, {
             $set: {
-              productId: resolvedProduct._id as string,
+              productId: dbIdToString(resolvedProduct._id),
               updated: new Date(),
               updatedBy: requestContext.userId,
             },
@@ -300,6 +311,60 @@ export const configureOrderPositionsModule = ({
       });
 
       return await OrderPositions.findOne(selector);
+    },
+
+    addProductItem: async (
+      orderPosition,
+      { order, product },
+      requestContext
+    ) => {
+      const { modules } = requestContext;
+      const { orderId, quantity, configuration, context, ...scope } =
+        orderPosition;
+
+      // Search for existing position
+      const selector: Query = {
+        orderId,
+        configuration: configuration || {
+          $exists: false,
+        },
+        ...scope,
+      };
+      const existingPosition = await OrderPositions.findOne(selector);
+
+      // Update position if exists
+      let upsertedOrderPosition = orderPosition;
+
+      if (existingPosition) {
+        upsertedOrderPosition = await modules.orders.positions.update(
+          {
+            orderId,
+            orderPositionId: dbIdToString(existingPosition._id),
+          },
+          {
+            quantity: existingPosition.quantity + quantity,
+          },
+          requestContext
+        );
+      }
+
+      // Resolve product
+      const resolvedProduct = await modules.products.resolveOrderableProduct(
+        product,
+        { configuration },
+        requestContext
+      );
+
+      // Otherwise add new position
+      upsertedOrderPosition = await modules.orders.positions.create(
+        orderPosition,
+        { order, product: resolvedProduct, originalProduct: product },
+        requestContext
+      );
+
+      emit('ORDER_ADD_PRODUCT', { orderPosition: upsertedOrderPosition });
+
+      return upsertedOrderPosition;
     },
   };
 };

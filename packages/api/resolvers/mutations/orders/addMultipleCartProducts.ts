@@ -35,7 +35,7 @@ export default async function addMultipleCartProducts(
     })
   );
 
-  const cart = await getOrderCart({ orderId }, context);
+  const order = await getOrderCart({ orderId }, context);
 
   return await Promise.all(
     itemsWithProducts.map(async ({ product, quantity, configuration }) => {
@@ -52,12 +52,14 @@ export default async function addMultipleCartProducts(
         { userId, orderId }
       );
 
-      return await modules.orders.positions.create({
-        orderId: cart._id as string,
-        product,
-        quantity,
-        configuration,
-      });
+      return await modules.orders.positions.create(
+        {
+          quantity,
+          configuration,
+        },
+        { order, product },
+        context
+      );
     })
   );
 }

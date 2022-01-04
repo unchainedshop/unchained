@@ -115,8 +115,8 @@ export const configureOrderPaymentsModule = ({
       if (orderPayment.status === OrderPaymentStatus.PAID) return false;
 
       const director = await getDirector(orderPayment, {}, requestContext);
-
       if (director.isPayLaterAllowed()) return false;
+      
       return true;
     },
     isBlockingOrderFullfillment: (orderPayment) => {

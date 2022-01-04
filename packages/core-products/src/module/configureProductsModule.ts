@@ -25,6 +25,7 @@ import { configureProductMediaModule } from './configureProductMediaModule';
 import { configureProductPricesModule } from './configureProductPrices';
 import { configureProductReviewsModule } from './configureProductReviewsModule';
 import { configureProductVariationsModule } from './configureProductVariationsModule';
+import { Context } from '@unchainedshop/types/api';
 
 const PRODUCT_EVENTS = [
   'PRODUCT_CREATE',
@@ -66,6 +67,14 @@ export const configureProductsModule = async ({
     Products,
     ProductsSchema
   ) as ModuleMutations<Product>;
+
+  const checkIsActive = (product: Product, { modules }: Context) => {
+    if (!modules.products.isActive(product)) {
+      throw new Error(
+        'This product is not available for ordering at the moment'
+      );
+    }
+  };
 
   const deleteProductPermanently: ProductsModule['deleteProductPermanently'] =
     async (productId) => {
@@ -251,6 +260,48 @@ export const configureProductsModule = async ({
     },
 
     proxyProducts,
+
+    resolveOrderableProduct: async (
+      product,
+      { configuration },
+      requestContext
+    ) => {
+      const { modules } = requestContext;
+      const productId = dbIdToString(product._id);
+
+      checkIsActive(product, requestContext);
+
+      if (product.type === ProductTypes.ConfigurableProduct) {
+        const variations =
+          await modules.products.variations.findProductVariations({
+            productId,
+          });
+        const vectors = configuration.filter(({ key: configurationKey }) => {
+          const isKeyEqualsVariationKey = Boolean(
+            variations.filter(
+              ({ key: variationKey }) => variationKey === configurationKey
+            ).length
+          );
+          return isKeyEqualsVariationKey;
+        });
+
+        const variants = await modules.products.proxyProducts(
+          product,
+          vectors,
+          { includeInactive: false }
+        );
+        if (variants.length !== 1) {
+          throw new Error(
+            'There needs to be exactly one variant left when adding a ConfigurableProduct to the cart, configuration not distinct enough'
+          );
+        }
+
+        const resolvedProduct = variants[0];
+        checkIsActive(resolvedProduct, requestContext);
+        return resolvedProduct;
+      }
+      return product;
+    },
 
     prices: configureProductPricesModule({ Products, proxyProducts }),
 

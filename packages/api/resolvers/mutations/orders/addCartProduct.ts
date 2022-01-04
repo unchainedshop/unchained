@@ -30,12 +30,14 @@ export default async function addCartProduct(
   const user = await modules.users.findUser({ userId });
   if (!user) throw new UserNotFoundError({ userId });
 
-  const cart = await getOrderCart({ orderId, user }, context);
+  const order = await getOrderCart({ orderId, user }, context);
 
-  return await modules.orders.positions.create({
-    orderId: cart._id as string,
-    product,
-    quantity,
-    configuration,
-  });
+  return await modules.orders.positions.create(
+    {
+      quantity,
+      configuration,
+    },
+    { order, product },
+    context
+  );
 }

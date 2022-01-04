@@ -42,6 +42,10 @@ export type OrderDeliveriesModule = {
     params: { order: Order; orderDiscount: OrderDiscount },
     requestContext: Context
   ) => Array<OrderPricingDiscount>;
+  isBlockingOrderConfirmation: (
+    orderDelivery: OrderDelivery,
+    requestContext: Context
+  ) => Promise<boolean>;
   isBlockingOrderFullfillment: (orderDelivery: OrderDelivery) => boolean;
   normalizedStatus: (orderDelivery: OrderDelivery) => string;
   pricingSheet: (

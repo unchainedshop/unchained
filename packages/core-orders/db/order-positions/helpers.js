@@ -55,18 +55,18 @@ OrderPositions.helpers({
   //   return discounts;
   // },
 
-  validationErrors() {
-    const errors = [];
-    log(`OrderPosition ${this._id} -> Validate ${this.quantity}`, {
-      orderId: this.orderId,
-    });
-    if (!this.product().isActive())
-      errors.push(new Error('This product is not available anymore'));
-    if (this.quotationId && !this.quotation().isProposalValid())
-      errors.push(
-        new Error('Quotation expired or fullfiled, please request a new offer')
-      );
-  },
+  // validationErrors() {
+  //   const errors = [];
+  //   log(`OrderPosition ${this._id} -> Validate ${this.quantity}`, {
+  //     orderId: this.orderId,
+  //   });
+  //   if (!this.product().isActive())
+  //     errors.push(new Error('This product is not available anymore'));
+  //   if (this.quotationId && !this.quotation().isProposalValid())
+  //     errors.push(
+  //       new Error('Quotation expired or fullfiled, please request a new offer')
+  //     );
+  // },
 
   reserve() {
     if (this.quotationId)
@@ -76,6 +76,7 @@ OrderPositions.helpers({
     });
   },
 
+  // Type
   dispatches() {
     const scheduling = this.scheduling || [];
     const order = this.order();
@@ -160,39 +161,39 @@ OrderPositions.helpers({
 //   },
 // });
 
-OrderPositions.upsertPosition = ({
-  orderId,
-  quantity,
-  configuration,
-  context,
-  ...scope
-}) => {
-  const existingPosition = OrderPositions.findOne({
-    orderId,
-    configuration: configuration || {
-      $exists: false,
-    },
-    ...scope,
-  });
-  if (existingPosition) {
-    return OrderPositions.updatePosition(
-      {
-        orderId,
-        positionId: existingPosition._id,
-      },
-      {
-        quantity: existingPosition.quantity + quantity,
-      }
-    );
-  }
-  return OrderPositions.createPosition({
-    orderId,
-    quantity,
-    configuration,
-    context,
-    ...scope,
-  });
-};
+// OrderPositions.upsertPosition = ({
+//   orderId,
+//   quantity,
+//   configuration,
+//   context,
+//   ...scope
+// }) => {
+//   const existingPosition = OrderPositions.findOne({
+//     orderId,
+//     configuration: configuration || {
+//       $exists: false,
+//     },
+//     ...scope,
+//   });
+//   if (existingPosition) {
+//     return OrderPositions.updatePosition(
+//       {
+//         orderId,
+//         positionId: existingPosition._id,
+//       },
+//       {
+//         quantity: existingPosition.quantity + quantity,
+//       }
+//     );
+//   }
+//   return OrderPositions.createPosition({
+//     orderId,
+//     quantity,
+//     configuration,
+//     context,
+//     ...scope,
+//   });
+// };
 
 // OrderPositions.createPosition = ({
 //   orderId,

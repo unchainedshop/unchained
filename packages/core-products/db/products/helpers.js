@@ -824,13 +824,13 @@ Products.helpers({
     return this;
   },
 
-  checkIsActive() {
-    if (!this.isActive()) {
-      throw new Error(
-        'This product is not available for ordering at the moment'
-      );
-    }
-  },
+  // checkIsActive() {
+  //   if (!this.isActive()) {
+  //     throw new Error(
+  //       'This product is not available for ordering at the moment'
+  //     );
+  //   }
+  // },
   // isActive() {
   //   if (this.status === ProductStatus.ACTIVE) return true;
   //   return false;

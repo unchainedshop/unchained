@@ -366,11 +366,15 @@ Orders.helpers({
   //     ...props,
   //   }).fetch();
   // },
+
+  // Split into quotation part and order part
   addQuotationItem({ quotation, ...quotationItemConfiguration }) {
     const { quantity, configuration } = quotation.transformItemConfiguration(
       quotationItemConfiguration
     );
     const product = quotation.product();
+
+    // This is on order side only
     return this.addProductItem({
       product,
       quantity,
@@ -378,22 +382,24 @@ Orders.helpers({
       quotationId: quotation._id,
     });
   },
-  addProductItem({ product, quantity, configuration, ...rest }) {
-    const resolvedProduct = product.resolveOrderableProduct({
-      quantity,
-      configuration,
-    });
-    const orderPosition = OrderPositions.upsertPosition({
-      orderId: this._id,
-      productId: resolvedProduct._id,
-      originalProductId: product._id,
-      quantity,
-      configuration,
-      ...rest,
-    });
-    emit('ORDER_ADD_PRODUCT', { orderPosition });
-    return orderPosition;
-  },
+
+  // addProductItem({ product, quantity, configuration, ...rest }) {
+  //   const resolvedProduct = product.resolveOrderableProduct({
+  //     quantity,
+  //     configuration,
+  //   });
+
+  //   const orderPosition = OrderPositions.upsertPosition({
+  //     orderId: this._id,
+  //     productId: resolvedProduct._id,
+  //     originalProductId: product._id,
+  //     quantity,
+  //     configuration,
+  //     ...rest,
+  //   });
+  //   emit('ORDER_ADD_PRODUCT', { orderPosition });
+  //   return orderPosition;
+  // },
   // user() {
   //   return Users.findOne({
   //     _id: this.userId,
@@ -434,9 +440,9 @@ Orders.helpers({
   //     context,
   //   });
   // },
-  totalQuantity() {
-    return this.items().reduce((oldValue, item) => oldValue + item.quantity, 0);
-  },
+  // totalQuantity() {
+  //   return this.items().reduce((oldValue, item) => oldValue + item.quantity, 0);
+  // },
   // itemValidationErrors() {
   //   // Check if items are valid
   //   const items = this.items();
@@ -599,22 +605,22 @@ Orders.helpers({
   // isValidForCheckout() {
   //   return this.missingInputDataForCheckout().length === 0;
   // },
-  isAutoConfirmationEnabled() {
-    if (this.payment().isBlockingOrderConfirmation()) return false;
-    if (this.delivery().isBlockingOrderConfirmation()) return false;
-    if (
-      this.status === OrderStatus.FULLFILLED ||
-      this.status === OrderStatus.CONFIRMED
-    )
-      return false;
-    return true;
-  },
-  isAutoFullfillmentEnabled() {
-    if (this.payment().isBlockingOrderFullfillment()) return false;
-    if (this.delivery().isBlockingOrderFullfillment()) return false;
-    if (this.status === OrderStatus.FULLFILLED) return false;
-    return true;
-  },
+  // isAutoConfirmationEnabled() {
+  //   if (this.payment().isBlockingOrderConfirmation()) return false;
+  //   if (this.delivery().isBlockingOrderConfirmation()) return false;
+  //   if (
+  //     this.status === OrderStatus.FULLFILLED ||
+  //     this.status === OrderStatus.CONFIRMED
+  //   )
+  //     return false;
+  //   return true;
+  // },
+  // isAutoFullfillmentEnabled() {
+  //   if (this.payment().isBlockingOrderFullfillment()) return false;
+  //   if (this.delivery().isBlockingOrderFullfillment()) return false;
+  //   if (this.status === OrderStatus.FULLFILLED) return false;
+  //   return true;
+  // },
   // addDocument(objOrString, meta, options = {}) {
   //   if (typeof objOrString === 'string' || objOrString instanceof String) {
   //     return Promise.await(

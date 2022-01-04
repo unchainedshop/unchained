@@ -44,13 +44,8 @@ export type OrderPositionsModule = {
 
   // Mutations
   create: (
-    params: {
-      configuration: Configuration;
-      orderId: string;
-      product: Product;
-      quantity: number;
-      quotationId?: string;
-    },
+    doc: Partial<OrderPosition>,
+    params: { order: Order; product: Product; originalProduct: Product },
     requestContext: Context
   ) => Promise<OrderPosition>;
 
@@ -81,6 +76,12 @@ export type OrderPositionsModule = {
 
   updateCalculation: (
     orderPosition: OrderPosition,
+    requestContext: Context
+  ) => Promise<OrderPosition>;
+
+  addProductItem: (
+    doc: OrderPosition,
+    params: { order: Order; product: Product },
     requestContext: Context
   ) => Promise<OrderPosition>;
 };

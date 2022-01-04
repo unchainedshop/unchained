@@ -164,7 +164,8 @@ export type ProductsModule = {
 
   resolveOrderableProduct: (
     product: Product,
-    params: { configuration?: Array<ProductConfiguration> }
+    params: { configuration?: Array<ProductConfiguration> },
+    requestContext: Context,
   ) => Promise<Product>;
 
   prices: {

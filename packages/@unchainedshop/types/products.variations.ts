@@ -42,8 +42,8 @@ export type ProductVariationsModule = {
 
   findProductVariations: (query: {
     productId: string;
-    limit: number;
-    offset: number;
+    limit?: number;
+    offset?: number;
     tags?: Array<string>;
   }) => Promise<Array<ProductVariation>>;
 
