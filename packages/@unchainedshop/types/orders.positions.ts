@@ -1,6 +1,13 @@
 import { Context } from './api';
 import { Configuration, FindOptions, TimestampFields, _ID } from './common';
-import { IOrderPricingSheet, OrderPrice } from './orders.pricing';
+import { Order } from './orders';
+import { OrderDelivery } from './orders.deliveries';
+import { OrderDiscount } from './orders.discounts';
+import {
+  IOrderPricingSheet,
+  OrderPrice,
+  OrderPricingDiscount,
+} from './orders.pricing';
 import { Product } from './products';
 
 export type OrderPosition = {
@@ -16,26 +23,19 @@ export type OrderPosition = {
   scheduling: Array<any>;
 } & TimestampFields;
 
-type OrderQuery = {
-  orderId: string;
-};
-
 export type OrderPositionsModule = {
   // Queries
   findOrderPosition: (params: { itemId: string }) => Promise<OrderPosition>;
-  findOrderPositions: (
-    params: OrderQuery & {
-      limit?: number;
-      offset?: number;
-    },
-    options?: FindOptions
-  ) => Promise<Array<OrderPosition>>;
+  findOrderPositions: (params: {
+    orderId: string;
+  }) => Promise<Array<OrderPosition>>;
 
   // Transformations
   discounts: (
     orderPosition: OrderPosition,
-    params: { currency?: string; discountId?: string }
-  ) => Array<OrderPositionDiscount>;
+    params: { order: Order; orderDiscount: OrderDiscount },
+    requestContext: Context
+  ) => Array<OrderPricingDiscount>;
 
   pricingSheet: (
     orderPosition: OrderPosition,
@@ -69,6 +69,15 @@ export type OrderPositionsModule = {
     params: { quantity?: number; configuration?: Configuration },
     requestContext: Context
   ) => Promise<OrderPosition>;
+
+  updateScheduling: (
+    params: {
+      order: Order;
+      orderDelivery: OrderDelivery;
+      orderPosition: OrderPosition;
+    },
+    requestContext: Context
+  ) => Promise<boolean>;
 
   updateCalculation: (
     orderPosition: OrderPosition,

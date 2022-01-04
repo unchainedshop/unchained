@@ -1,11 +1,11 @@
-import { IDiscountAdapter } from '@unchainedshop/types/orders.discount';
+import { IDiscountAdapter } from '@unchainedshop/types/discount';
 import {
-  DiscountDirector,
-  DiscountAdapter,
+  OrderDiscountDirector,
+  OrderDiscountAdapter,
 } from 'meteor/unchained:core-orders';
 
 const HundredOff: IDiscountAdapter = {
-  ...DiscountAdapter,
+  ...OrderDiscountAdapter,
 
   key: 'shop.unchained.discount.100-off',
   label: '100 Off',
@@ -23,7 +23,7 @@ const HundredOff: IDiscountAdapter = {
   },
 
   actions: ({ context }) => ({
-    ...DiscountAdapter.actions({ context }),
+    ...OrderDiscountAdapter.actions({ context }),
 
     isValidForSystemTriggering: async () => {
       return false;
@@ -44,4 +44,4 @@ const HundredOff: IDiscountAdapter = {
   }),
 };
 
-DiscountDirector.registerAdapter(HundredOff);
+OrderDiscountDirector.registerAdapter(HundredOff);

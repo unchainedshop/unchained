@@ -1,35 +1,47 @@
 import { Context } from '@unchainedshop/types/api';
+import { Country } from '@unchainedshop/types/countries';
+import { Currency } from '@unchainedshop/types/currencies';
 import { Order as OrderType } from '@unchainedshop/types/orders';
+import { OrderDelivery } from '@unchainedshop/types/orders.deliveries';
+import { OrderDiscount } from '@unchainedshop/types/orders.discounts';
+import { OrderPayment } from '@unchainedshop/types/orders.payments';
+import { OrderPosition } from '@unchainedshop/types/orders.positions';
+import { OrderPrice } from '@unchainedshop/types/orders.pricing';
+import { User } from '@unchainedshop/types/user';
 import crypto from 'crypto';
 import { OrderPricingSheet } from 'meteor/unchained:utils';
 // import { Currencies } from 'meteor/unchained:core-currencies';
 // import { DeliveryProviders } from 'meteor/unchained:core-delivery';
 // import { PaymentProviders } from 'meteor/unchained:core-payment';
 
-type HelperType<P, T> = (
-  order: OrderType,
-  params: P,
-  context: Context
-) => T;
+type HelperType<P, T> = (order: OrderType, params: P, context: Context) => T;
 
-interface OrderHelperTypes {}
+interface OrderHelperTypes {
+  supportedDeliveryProviders: HelperType<never, Promise<Array<string>>>;
+  supportedPaymentProviders: HelperType<never, Promise<Array<string>>>;
+  currency: HelperType<never, Promise<Currency>>;
+  country: HelperType<never, Promise<Country>>;
+  discounts: HelperType<never, Promise<Array<OrderDiscount>>>;
+  delivery: HelperType<never, Promise<OrderDelivery>>;
+  enrollment: HelperType<never, Promise<Enrollment>>;
+  payment: HelperType<never, Promise<OrderPayment>>;
+  items: HelperType<never, Promise<Array<OrderPosition>>>;
+  status: HelperType<never, string>;
+  total: HelperType<{ category: string }, Promise<OrderPrice>>;
+  user: HelperType<never, Promise<User>>;
+}
 
-export const Order = {
-  supportedDeliveryProviders: async (
-    obj: OrderType,
-    _: never,
-    { modules }: Context
-  ) => {
-    return modules.delivery.findSupported({
-      order: obj,
-    });
+export const Order: OrderHelperTypes = {
+  supportedDeliveryProviders: async (obj, _, context) => {
+    return await context.modules.delivery.findSupported(
+      {
+        order: obj,
+      },
+      context
+    );
   },
 
-  supportedPaymentProviders: async (
-    obj: OrderType,
-    _: never,
-    context: Context
-  ) => {
+  supportedPaymentProviders: async (obj, _, context) => {
     return context.modules.payment.paymentProviders.findSupported(
       {
         order: obj,
@@ -38,15 +50,49 @@ export const Order = {
     );
   },
 
-  status: (obj: OrderType, _: never, { modules }: Context) => {
+  currency: async (obj, _, { modules }) => {
+    return await modules.currencies.findCurrency({ isoCode: obj.currency });
+  },
+
+  country: async (obj, _, { modules }) => {
+    return await modules.countries.findCountry({ isoCode: obj.countryCode });
+  },
+
+  discounts: async (obj, _, { modules }) => {
+    return await modules.orders.discounts.findOrderDiscounts({
+      orderId: obj._id as string,
+    });
+  },
+
+  delivery: async (obj, _, { modules }) => {
+    return await modules.orders.deliveries.findDelivery({
+      orderDeliveryId: obj.deliveryId,
+    });
+  },
+
+  enrollment: async (obj, _, { modules }) => {
+    return await modules.enrollments.findEnrollment({
+      orderId: obj._id as string,
+    });
+  },
+
+  items: async (obj, _, { modules }) => {
+    return await modules.orders.positions.findOrderPositions({
+      orderId: obj._id as string,
+    });
+  },
+
+  payment: async (obj, _, { modules }) => {
+    return await modules.orders.payments.findOrderPayment({
+      orderPaymentId: obj.paymentId,
+    });
+  },
+
+  status: (obj, _, { modules }) => {
     return modules.orders.normalizedStatus(obj);
   },
 
-  total: async (
-    obj: OrderType,
-    params: { category: string },
-    { modules }: Context
-  ) => {
+  total: async (obj, params: { category: string }, { modules }) => {
     const price = modules.orders
       .pricingSheet(obj)
       .total({ category: params.category, useNetPrice: false });
@@ -60,7 +106,9 @@ export const Order = {
     };
   },
 
-  currency: async (obj: OrderType, _: never, { modules }: Context) => {
-    return await modules.currencies.findCurrency({ isoCode: obj.currency });
+  user: async (obj, _, { modules }) => {
+    return await modules.users.findUser({
+      userId: obj.userId,
+    });
   },
 };

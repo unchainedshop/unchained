@@ -1,7 +1,7 @@
 import {
   Discount,
   DiscountConfiguration,
-} from '@unchainedshop/types/orders.discount';
+} from '@unchainedshop/types/orders.discounts';
 import {
   IProductPricingAdapter,
   ProductPricingRowCategory,

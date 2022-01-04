@@ -4,6 +4,7 @@ import {
   Filter,
   ModuleMutations,
 } from '@unchainedshop/types/common';
+import { OrdersModule } from '@unchainedshop/types/orders';
 import {
   OrderPaymentsModule,
   OrderPayment,
@@ -16,6 +17,7 @@ import {
   generateDbFilterById,
   generateDbMutations,
   objectInvert,
+  dbIdToString,
 } from 'meteor/unchained:utils';
 import { OrderPaymentsSchema } from '../db/OrderPaymentsSchema';
 import { OrderPaymentStatus } from '../db/OrderPaymentStatus';
@@ -26,47 +28,19 @@ const ORDER_PAYMENT_EVENTS: string[] = ['ORDER_SIGN_PAYMENT', 'ORDER_PAY'];
 const buildFindByIdSelector = (orderPaymentId: string) =>
   generateDbFilterById(orderPaymentId) as Filter<OrderPayment>;
 
-export const configureOrderPaymentsModule = async ({
+export const configureOrderPaymentsModule = ({
   OrderPayments,
+  updateCalculation,
 }: {
   OrderPayments: Collection<OrderPayment>;
-}): Promise<OrderPaymentsModule> => {
+  updateCalculation: OrdersModule['updateCalculation'];
+}): OrderPaymentsModule => {
   registerEvents(ORDER_PAYMENT_EVENTS);
 
   const mutations = generateDbMutations<OrderPayment>(
     OrderPayments,
     OrderPaymentsSchema
   ) as ModuleMutations<OrderPayment>;
-
-  const updateCalculation: OrderPaymentsModule['updateCalculation'] = async (
-    orderPayment,
-    requestContext
-  ) => {
-    log(`OrderPayment ${orderPayment._id} -> Update Calculation`, {
-      orderId: orderPayment.orderId,
-    });
-
-    const pricing = PaymentPricingDirector.actions(
-      {
-        item: orderPayment,
-      },
-      requestContext
-    );
-    const calculation = await pricing.calculate();
-
-    await OrderPayments.updateOne(
-      buildFindByIdSelector(orderPayment._id as string),
-      {
-        $set: {
-          calculation,
-          updated: new Date(),
-          updatedBy: requestContext.userId,
-        },
-      }
-    );
-
-    return true;
-  };
 
   const updateStatus: OrderPaymentsModule['updateStatus'] = async (
     orderPaymentId,
@@ -121,6 +95,22 @@ export const configureOrderPaymentsModule = async ({
     },
 
     // Transformations
+    discounts: (orderPayment, { order, orderDiscount }, { modules }) => {
+      if (!orderPayment) return [];
+      
+      const pricingSheet = modules.orders.payments.pricingSheet(
+        orderPayment,
+        order.currency
+      );
+
+      return pricingSheet
+        .discountPrices(orderDiscount._id as string)
+        .map((discount) => ({
+          payment: orderPayment,
+          ...discount,
+        }));
+    },
+
     isBlockingOrderConfirmation: async (orderPayment, requestContext) => {
       if (orderPayment.status === OrderPaymentStatus.PAID) return false;
 
@@ -159,6 +149,72 @@ export const configureOrderPaymentsModule = async ({
       return orderPayment;
     },
 
+    charge: async (
+      orderPayment,
+      { transactionContext, order },
+      requestContext
+    ) => {
+      if (orderPayment.status !== OrderPaymentStatus.OPEN) return orderPayment;
+
+      const paymentProvider =
+        await requestContext.modules.payment.paymentProviders.findProvider({
+          paymentProviderId: orderPayment.paymentProviderId,
+        });
+
+      const paymentProviderId = dbIdToString(paymentProvider._id);
+
+      const arbitraryResponseData =
+        await requestContext.modules.payment.paymentProviders.charge(
+          paymentProviderId,
+          {
+            order,
+            orderPayment,
+            transactionContext: {
+              ...(transactionContext || {}),
+              ...(orderPayment.context || {}),
+            },
+          },
+          requestContext
+        );
+
+      if (arbitraryResponseData) {
+        return await updateStatus(
+          dbIdToString(orderPayment._id),
+          {
+            status: OrderPaymentStatus.PAID,
+            info: JSON.stringify(arbitraryResponseData),
+          },
+          requestContext.userId
+        );
+      }
+
+      return orderPayment;
+    },
+
+    delete: async (orderPaymentId, userId) => {
+      const deletedCount = await mutations.delete(orderPaymentId, userId);
+      return deletedCount;
+    },
+
+    logEvent: async (orderPaymentId, event, userId) => {
+      const date = new Date();
+      const modifier = {
+        $push: {
+          log: {
+            date,
+            status: undefined,
+            info: JSON.stringify(event),
+          },
+        },
+      };
+      await OrderPayments.updateOne(
+        generateDbFilterById(orderPaymentId),
+        modifier
+      );
+
+      return true;
+    },
+
     markAsPaid: async (orderPayment, meta, userId) => {
       if (orderPayment.status !== OrderPaymentStatus.OPEN) return;
 
@@ -171,11 +227,6 @@ export const configureOrderPaymentsModule = async ({
         userId
       );
       emit('ORDER_PAY', { orderPayment });
-    },
-
-    delete: async (orderPaymentId, userId) => {
-      const deletedCount = await mutations.delete(orderPaymentId, userId);
-      return deletedCount;
     },
 
     sign: async (orderPayment, paymentContext, requestContext) => {
@@ -217,13 +268,38 @@ export const configureOrderPaymentsModule = async ({
       });
 
       const orderPayment = await OrderPayments.findOne(selector);
-      await updateCalculation(orderPayment, requestContext);
+      await updateCalculation(orderId, requestContext);
       emit('ORDER_UPDATE_DELIVERY', { orderPayment });
       return orderPayment;
     },
 
     updateStatus,
 
-    updateCalculation,
+    updateCalculation: async (orderPayment, requestContext) => {
+      log(`OrderPayment ${orderPayment._id} -> Update Calculation`, {
+        orderId: orderPayment.orderId,
+      });
+
+      const pricing = PaymentPricingDirector.actions(
+        {
+          item: orderPayment,
+        },
+        requestContext
+      );
+      const calculation = await pricing.calculate();
+
+      await OrderPayments.updateOne(
+        buildFindByIdSelector(orderPayment._id as string),
+        {
+          $set: {
+            calculation,
+            updated: new Date(),
+            updatedBy: requestContext.userId,
+          },
+        }
+      );
+
+      return true;
+    },
   };
 };

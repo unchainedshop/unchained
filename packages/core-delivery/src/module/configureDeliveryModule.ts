@@ -1,3 +1,4 @@
+import { Context } from '@unchainedshop/types/api';
 import { ModuleInput, ModuleMutations } from '@unchainedshop/types/common';
 import {
   DeliveryContext,
@@ -47,6 +48,18 @@ export const configureDeliveryModule = async ({
     DeliveryProvidersSchema
   ) as ModuleMutations<DeliveryProvider>;
 
+  const getDeliveryAdapter = async (
+    deliveryProviderId: string,
+    deliveryContext: DeliveryContext,
+    requestContext: Context
+  ) => {
+    const provider = await DeliveryProviders.findOne(
+      generateDbFilterById(deliveryProviderId)
+    );
+
+    return DeliveryDirector.actions(provider, deliveryContext, requestContext);
+  };
+
   return {
     // Queries
     count: async (query) => {
@@ -88,28 +101,33 @@ export const configureDeliveryModule = async ({
     findInterfaces: ({ type }) => {
       return DeliveryDirector.getAdapters({
         adapterFilter: (Adapter) => Adapter.typeSupported(type),
-      }).map((Adapter) => ({
-        _id: Adapter.key,
-        label: Adapter.label,
-        version: Adapter.version,
-      }));
+      });
     },
 
-    findSupported: (deliveryContext, requestContext) => {
-      const providers = DeliveryProviders.find({}).filter(
-        (provider: DeliveryProvider) => {
+    findSupported: async ({ order }, requestContext) => {
+      const providers = await DeliveryProviders.find({})
+        .filter((provider: DeliveryProvider) => {
           const director = DeliveryDirector.actions(
             provider,
-            getDefaultContext(deliveryContext),
+            getDefaultContext({ order }),
             requestContext
           );
           return director.isActive();
-        }
-      );
+        })
+        .toArray();
 
       return deliverySettings.filterSupportedProviders({
         providers,
       });
+    },
+
+    send: async (deliveryProviderId, deliveryContext, requestContext) => {
+      const adapter = await getDeliveryAdapter(
+        deliveryProviderId,
+        deliveryContext,
+        requestContext
+      );
+      adapter.send();
     },
 
     // Mutations

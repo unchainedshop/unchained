@@ -22,7 +22,7 @@ export default async function addCartDiscount(
 
   const cart = await getOrderCart({ orderId, user }, context);
 
-  return await modules.orders.discount.create(
+  return await modules.orders.discounts.create(
     { orderId: cart._id as string, code },
     userId
   );

@@ -1,6 +1,12 @@
 import { Context } from './api';
 import { LogFields, ModuleMutations, TimestampFields, _ID } from './common';
-import { IOrderPricingSheet, OrderPrice } from './orders.pricing';
+import { Order } from './orders';
+import { OrderDiscount } from './orders.discounts';
+import {
+  IOrderPricingSheet,
+  OrderPrice,
+  OrderPricingDiscount,
+} from './orders.pricing';
 
 export enum OrderPaymentStatus {
   OPEN = 'OPEN', // Null value is mapped to OPEN status
@@ -9,7 +15,7 @@ export enum OrderPaymentStatus {
 }
 
 export type OrderPayment = {
-  _id: _ID;
+  _id?: _ID;
   orderId: string;
   context?: any;
   paid?: Date;
@@ -26,6 +32,11 @@ export type OrderPaymentsModule = {
   }) => Promise<OrderPayment>;
 
   // Transformations
+  discounts: (
+    orderPayment: OrderPayment,
+    params: { order: Order; orderDiscount: OrderDiscount },
+    requestContext: Context
+  ) => Array<OrderPricingDiscount>;
   isBlockingOrderConfirmation: (
     orderPayment: OrderPayment,
     requestContext: Context
@@ -39,7 +50,20 @@ export type OrderPaymentsModule = {
 
   // Mutations
   create: (doc: OrderPayment, userId?: string) => Promise<OrderPayment>;
+
+  charge: (
+    orderPayment: OrderPayment,
+    paymentContext: { order: Order; transactionContext: any },
+    requestContext: Context
+  ) => Promise<OrderPayment>;
+
   delete: (orderPaymentId: string, userId?: string) => Promise<number>;
+
+  logEvent: (
+    orderPaymentId: string,
+    event: any,
+    userId?: string
+  ) => Promise<boolean>;
 
   markAsPaid: (
     payment: OrderPayment,

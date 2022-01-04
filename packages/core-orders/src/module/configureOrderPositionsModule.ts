@@ -1,4 +1,3 @@
-import { Context } from '@unchainedshop/types/api';
 import {
   Collection,
   Filter,
@@ -6,18 +5,17 @@ import {
 } from '@unchainedshop/types/common';
 import { OrdersModule } from '@unchainedshop/types/orders';
 import {
-  OrderPositionsModule,
   OrderPosition,
+  OrderPositionsModule,
 } from '@unchainedshop/types/orders.positions';
 import { Product } from '@unchainedshop/types/products';
 import { ProductPricingDirector } from 'meteor/unchained:core-products';
-import { PaymentDirector } from 'meteor/unchained:core-payment';
+import { WarehousingDirector } from 'meteor/unchained:core-warehousing';
 import { emit, registerEvents } from 'meteor/unchained:events';
 import { log } from 'meteor/unchained:logger';
 import {
   generateDbFilterById,
   generateDbMutations,
-  objectInvert,
 } from 'meteor/unchained:utils';
 import { OrderPositionsSchema } from '../db/OrderPositionsSchema';
 import { OrderPricingSheet } from '../director/OrderPricingSheet';
@@ -34,13 +32,13 @@ const buildFindByIdSelector = (orderPositionId: string, orderId?: string) =>
     orderId ? { orderId } : undefined
   ) as Filter<OrderPosition>;
 
-export const configureOrderPositionsModule = async ({
+export const configureOrderPositionsModule = ({
   OrderPositions,
   updateCalculation,
 }: {
   OrderPositions: Collection<OrderPosition>;
   updateCalculation: OrdersModule['updateCalculation'];
-}): Promise<OrderPositionsModule> => {
+}): OrderPositionsModule => {
   registerEvents(ORDER_POSITION_EVENTS);
 
   const mutations = generateDbMutations<OrderPosition>(
@@ -53,25 +51,24 @@ export const configureOrderPositionsModule = async ({
     findOrderPosition: async ({ itemId }) => {
       return await OrderPositions.findOne(buildFindByIdSelector(itemId));
     },
-    findOrderPositions: async ({}, options) => {
-      const positions = OrderPositions.find(options);
+    findOrderPositions: async ({ orderId }) => {
+      const positions = OrderPositions.find({ orderId, quantity: { $gt: 0 } });
       return await positions.toArray();
     },
 
     // Transformations
-    discounts: (orderPosition, { currency, discountId }) => {
-      const pricingSheet = OrderPricingSheet({
-        calculation: orderPosition.calculation,
-        currency,
-        quantity: orderPosition.quantity,
-      });
-      const discounts = pricingSheet
-        .discountPrices(discountId)
+    discounts: (orderPosition, { order, orderDiscount }, { modules }) => {
+      const pricingSheet = modules.orders.positions.pricingSheet(
+        orderPosition,
+        { currency: order.currency }
+      );
+
+      return pricingSheet
+        .discountPrices(orderDiscount._id as string)
         .map((discount) => ({
           item: orderPosition,
           ...discount,
         }));
-      return discounts;
     },
 
     pricingSheet: (orderPosition, { currency }) => {
@@ -225,6 +222,65 @@ export const configureOrderPositionsModule = async ({
       });
 
       return updatedOrderPosition;
+    },
+
+    updateScheduling: async (
+      { order, orderDelivery, orderPosition },
+      requestContext
+    ) => {
+      const { modules } = requestContext;
+      // scheduling (store in db for auditing)
+      const product = await modules.products.findProduct({
+        productId: orderPosition.productId,
+      });
+      const deliveryProvider =
+        orderDelivery &&
+        (await modules.delivery.findProvider({
+          deliveryProviderId: orderDelivery.deliveryProviderId,
+        }));
+      const { countryCode, userId } = order;
+
+      const scheduling = await Promise.all(
+        (
+          await modules.warehousing.findSupported(
+            {
+              product,
+              deliveryProvider,
+            },
+            requestContext
+          )
+        ).map(async (warehousingProvider) => {
+          const context = {
+            warehousingProvider,
+            deliveryProvider,
+            product,
+            item: orderPosition,
+            delivery: deliveryProvider,
+            order,
+            userId,
+            country: countryCode,
+            referenceDate: order.ordered,
+            quantity: orderPosition.quantity,
+          };
+          const director = WarehousingDirector.actions(
+            warehousingProvider,
+            context,
+            requestContext
+          );
+          const dispatch = await director.estimatedDispatch();
+
+          return {
+            warehousingProviderId: warehousingProvider._id,
+            ...dispatch,
+          };
+        })
+      );
+
+      await OrderPositions.updateOne(generateDbFilterById(orderPosition._id), {
+        $set: { scheduling },
+      });
+
+      return true;
     },
 
     updateCalculation: async (orderPosition, requestContext) => {

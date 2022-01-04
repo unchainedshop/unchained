@@ -53,8 +53,8 @@ export const DeliveryDirector: IDeliveryDirector = {
         }
       },
 
-      send: async (transactionContext) => {
-        return await adapter.send(transactionContext);
+      send: async () => {
+        return await adapter.send();
       },
 
       pickUpLocationById: async (locationId) => {

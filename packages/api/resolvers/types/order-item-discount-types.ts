@@ -1,5 +1,5 @@
 import { Context } from '@unchainedshop/types/api';
-import { OrderDiscount } from '@unchainedshop/types/orders.discount';
+import { OrderDiscount } from '@unchainedshop/types/orders.discounts';
 import { OrderPositionDiscount } from '@unchainedshop/types/orders.positions';
 import { OrderPrice } from '@unchainedshop/types/orders.pricing';
 import crypto from 'crypto';
@@ -22,7 +22,7 @@ export const OrderItemDiscount: OrderItemDiscountHelperTypes = {
   },
 
   orderDiscount: async (obj, _, { modules }) => {
-    return await modules.orders.discount.findOrderDiscount({
+    return await modules.orders.discounts.findOrderDiscount({
       discountId: obj.discountId,
     });
   },

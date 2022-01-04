@@ -47,7 +47,7 @@ export const DeliveryPricingDirector: IDeliveryPricingDirector = {
     });
 
     const discounts =
-      await requestContext.modules.orders.discount.findOrderDiscount({
+      await requestContext.modules.orders.discounts.findOrderDiscount({
         discountId: item.orderId,
       });
 

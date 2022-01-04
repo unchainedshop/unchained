@@ -6,11 +6,11 @@ import {
   IPricingDirector,
   IPricingSheet,
   PricingCalculation,
+  PricingDiscount,
 } from './pricing';
 import { User } from './user';
 import { OrderDelivery } from './orders.deliveries';
 import { OrderPayment } from './orders.payments';
-import { OrderDiscount } from '@unchainedshop/types/orders.discounts';
 import { OrderPosition } from './orders.positions';
 
 /*
@@ -25,7 +25,14 @@ export enum OrderPricingRowCategory {
   Payment = 'PAYMENT',
 }
 
-export type OrderPrice = { _id: string; amount: number; currency: string };
+export type OrderPrice = { _id?: string; amount: number; currency: string };
+
+export type OrderPricingDiscount = PricingDiscount & {
+  delivery?: OrderDelivery;
+  item?: OrderPosition;
+  order?: Order;
+  payment?: OrderPayment;
+};
 
 export interface OrderPricingCalculation extends PricingCalculation {
   discountId?: string;

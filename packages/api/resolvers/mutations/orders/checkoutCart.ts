@@ -21,7 +21,7 @@ export default async function checkoutCart(
   const cart = await getOrderCart({ orderId }, context);
 
   try {
-    return await modules.orders.checkout(cart, transactionContext, userId);
+    return await modules.orders.checkout(cart, transactionContext, context);
   } catch (error) {
     log(error.message, { userId, orderId: cart._id, level: LogLevel.Error });
 

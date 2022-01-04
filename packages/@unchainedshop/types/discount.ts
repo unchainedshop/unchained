@@ -16,7 +16,7 @@ export interface Discount {
 
 export interface DiscountContext {
   order: Order;
-  orderDiscount: OrderDiscount;
+  orderDiscount?: OrderDiscount;
 }
 
 export interface DiscountAdapterActions {

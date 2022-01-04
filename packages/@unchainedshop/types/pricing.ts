@@ -30,6 +30,12 @@ export interface PricingCalculation {
   meta?: any;
 }
 
+export interface PricingDiscount {
+  discountId: string;
+  amount: number;
+  currency: string;
+}
+
 export interface PricingSheetParams<Calculation extends PricingCalculation> {
   calculation?: Array<Calculation>;
   currency?: string;
@@ -49,7 +55,7 @@ export interface IBasePricingSheet<Calculation extends PricingCalculation> {
 
   sum: (filter?: Partial<Calculation>) => number;
   taxSum: () => number;
-  total: (params: { category: string; useNetPrice: boolean }) => {
+  total: (params: { category?: string; useNetPrice: boolean }) => {
     amount: number;
     currency: string;
   };
@@ -61,11 +67,7 @@ export type IPricingSheet<Calculation extends PricingCalculation> =
   IBasePricingSheet<Calculation> & {
     feeSum: () => number;
     discountSum: (discountId: string) => number;
-    discountPrices: (explicitDiscountId?: string) => Array<{
-      discountId: string;
-      amount: number;
-      currency: string;
-    }>;
+    discountPrices: (explicitDiscountId?: string) => Array<PricingDiscount>;
 
     addDiscount: (params: {
       amount: number;

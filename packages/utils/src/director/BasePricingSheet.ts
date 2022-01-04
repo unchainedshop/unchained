@@ -4,9 +4,7 @@ import {
   PricingSheetParams,
 } from '@unchainedshop/types/pricing';
 
-export const BasePricingSheet = <
-  Calculation extends PricingCalculation,
->(
+export const BasePricingSheet = <Calculation extends PricingCalculation>(
   params: PricingSheetParams<Calculation>
 ): IBasePricingSheet<Calculation> => {
   const calculation = params.calculation || [];
@@ -46,7 +44,7 @@ export const BasePricingSheet = <
       return pricingSheet.gross() - pricingSheet.taxSum();
     },
 
-    total: (category: string, useNetPrice = false) => {
+    total: ({ category, useNetPrice }) => {
       if (!category) {
         return {
           amount: Math.round(

@@ -3,6 +3,7 @@ import {
   Filter,
   ModuleMutations,
 } from '@unchainedshop/types/common';
+import { OrdersModule } from '@unchainedshop/types/orders';
 import {
   OrderDeliveriesModule,
   OrderDelivery,
@@ -14,6 +15,7 @@ import {
   generateDbFilterById,
   generateDbMutations,
   objectInvert,
+  dbIdToString,
 } from 'meteor/unchained:utils';
 import { OrderDeliveriesSchema } from '../db/OrderDeliveriesSchema';
 import { OrderDeliveryStatus } from '../db/OrderDeliveryStatus';
@@ -24,47 +26,19 @@ const ORDER_DELIVERY_EVENTS: string[] = ['ORDER_DELIVER'];
 const buildFindByIdSelector = (orderDeliveryId: string) =>
   generateDbFilterById(orderDeliveryId) as Filter<OrderDelivery>;
 
-export const configureOrderDeliveriesModule = async ({
+export const configureOrderDeliveriesModule = ({
   OrderDeliveries,
+  updateCalculation,
 }: {
   OrderDeliveries: Collection<OrderDelivery>;
-}): Promise<OrderDeliveriesModule> => {
+  updateCalculation: OrdersModule['updateCalculation'];
+}): OrderDeliveriesModule => {
   registerEvents(ORDER_DELIVERY_EVENTS);
 
   const mutations = generateDbMutations<OrderDelivery>(
     OrderDeliveries,
     OrderDeliveriesSchema
   ) as ModuleMutations<OrderDelivery>;
-
-  const updateCalculation: OrderDeliveriesModule['updateCalculation'] = async (
-    orderDelivery,
-    requestContext
-  ) => {
-    log(`OrderDelivery ${orderDelivery._id} -> Update Calculation`, {
-      orderId: orderDelivery.orderId,
-    });
-
-    const pricing = DeliveryPricingDirector.actions(
-      {
-        item: orderDelivery,
-      },
-      requestContext
-    );
-    const calculation = await pricing.calculate();
-
-    await OrderDeliveries.updateOne(
-      buildFindByIdSelector(orderDelivery._id as string),
-      {
-        $set: {
-          calculation,
-          updated: new Date(),
-          updatedBy: requestContext.userId,
-        },
-      }
-    );
-
-    return true;
-  };
 
   const updateStatus: OrderDeliveriesModule['updateStatus'] = async (
     orderDeliveryId,
@@ -103,6 +77,22 @@ export const configureOrderDeliveriesModule = async ({
     },
 
     // Transformations
+    discounts: (orderDelivery, { order, orderDiscount }, { modules }) => {
+      if (!orderDelivery) return []
+      
+      const pricingSheet = modules.orders.deliveries.pricingSheet(
+        orderDelivery,
+        order.currency
+      );
+
+      return pricingSheet
+        .discountPrices(orderDiscount._id as string)
+        .map((discount) => ({
+          delivery: orderDelivery,
+          ...discount,
+        }));
+    },
+
     normalizedStatus: (orderDelivery) => {
       return objectInvert(OrderDeliveryStatus)[orderDelivery.status || null];
     },
@@ -131,6 +121,11 @@ export const configureOrderDeliveriesModule = async ({
       return orderDelivery;
     },
 
+    delete: async (orderDeliveryId, userId) => {
+      const deletedCount = await mutations.delete(orderDeliveryId, userId);
+      return deletedCount;
+    },
+
     markAsDelivered: async (orderDelivery, userId) => {
       if (orderDelivery.status !== OrderDeliveryStatus.OPEN) return;
       const updatedOrderDelivery = await updateStatus(
@@ -144,9 +139,46 @@ export const configureOrderDeliveriesModule = async ({
       emit('ORDER_DELIVER', { orderDelivery: updatedOrderDelivery });
     },
 
-    delete: async (orderDeliveryId, userId) => {
-      const deletedCount = await mutations.delete(orderDeliveryId, userId);
-      return deletedCount;
+    send: async (orderDelivery, { order, deliveryContext }, requestContext) => {
+      if (orderDelivery.status !== OrderDeliveryStatus.OPEN)
+        return orderDelivery;
+
+      const deliveryProvider =
+        await requestContext.modules.delivery.findProvider({
+          deliveryProviderId: orderDelivery.deliveryProviderId,
+        });
+
+      const deliveryProviderId = dbIdToString(deliveryProvider._id);
+
+      const address =
+        orderDelivery.context?.address || order || order.billingAddress || {};
+
+      const arbitraryResponseData = await requestContext.modules.delivery.send(
+        deliveryProviderId,
+        {
+          order,
+          orderDelivery,
+          transactionContext: {
+            ...(deliveryContext || {}),
+            ...(orderDelivery.context || {}),
+            address,
+          },
+        },
+        requestContext
+      );
+
+      if (arbitraryResponseData) {
+        return await updateStatus(
+          dbIdToString(orderDelivery._id) as string,
+          {
+            status: OrderDeliveryStatus.DELIVERED,
+            info: JSON.stringify(arbitraryResponseData),
+          },
+          requestContext.userId
+        );
+      }
+
+      return orderDelivery;
     },
 
     updateDelivery: async (
@@ -168,13 +200,38 @@ export const configureOrderDeliveriesModule = async ({
       });
 
       const orderDelivery = await OrderDeliveries.findOne(selector);
-      await updateCalculation(orderDelivery, requestContext);
+      await updateCalculation(orderId, requestContext);
       emit('ORDER_UPDATE_DELIVERY', { orderDelivery });
       return orderDelivery;
     },
 
     updateStatus,
 
-    updateCalculation,
+    updateCalculation: async (orderDelivery, requestContext) => {
+      log(`OrderDelivery ${orderDelivery._id} -> Update Calculation`, {
+        orderId: orderDelivery.orderId,
+      });
+
+      const pricing = DeliveryPricingDirector.actions(
+        {
+          item: orderDelivery,
+        },
+        requestContext
+      );
+      const calculation = await pricing.calculate();
+
+      await OrderDeliveries.updateOne(
+        buildFindByIdSelector(orderDelivery._id as string),
+        {
+          $set: {
+            calculation,
+            updated: new Date(),
+            updatedBy: requestContext.userId,
+          },
+        }
+      );
+
+      return true;
+    },
   };
 };

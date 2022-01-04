@@ -1,7 +1,8 @@
 import { Context } from './api';
-import { ModuleMutations, TimestampFields, _ID, FindOptions } from './common';
-import { DiscountAdapterActions, IDiscountAdapter } from './discount';
+import { FindOptions, TimestampFields, _ID } from './common';
+import { DiscountAdapterActions, DiscountConfiguration } from './discount';
 import { OrderPrice } from './orders.pricing';
+import { PricingCalculation } from './pricing';
 
 export enum OrderDiscountTrigger {
   USER = 'USER',
@@ -23,7 +24,7 @@ export type OrderDiscountsModule = {
   // Queries
   findOrderDiscount: (
     params: { discountId: string },
-    options: FindOptions
+    options?: FindOptions
   ) => Promise<OrderDiscount>;
   findOrderDiscounts: (params: {
     orderId: string;
@@ -39,6 +40,12 @@ export type OrderDiscountsModule = {
     orderDiscount: OrderDiscount,
     requestContext: Context
   ) => Promise<boolean>;
+
+  // Adapter
+  configurationForPricingAdapterKey: (
+    pricingAdapterKey: string,
+    calculation: Array<PricingCalculation>,
+  ) => DiscountConfiguration;
 
   // Mutations
   createManualOrderDiscount: (
@@ -56,6 +63,4 @@ export type OrderDiscountsModule = {
     orderDiscountId: string,
     requestContext: Context
   ) => Promise<OrderDiscount>;
-
-  updateCalculation: (orderDiscountId: string) => Promise<boolean>;
 };

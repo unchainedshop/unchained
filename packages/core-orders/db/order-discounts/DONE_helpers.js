@@ -6,10 +6,10 @@ import { OrderDiscounts } from './collections';
 import { OrderDiscountTrigger } from './schema';
 import { Orders } from '../orders/collections';
 
-const ErrorCodes = {
-  CODE_ALREADY_PRESENT: 'CODE_ALREADY_PRESENT',
-  CODE_NOT_VALID: 'CODE_NOT_VALID',
-};
+// const ErrorCodes = {
+//   CODE_ALREADY_PRESENT: 'CODE_ALREADY_PRESENT',
+//   CODE_NOT_VALID: 'CODE_NOT_VALID',
+// };
 
 // OrderDiscounts.findDiscount = ({ discountId }, options) => {
 //   return OrderDiscounts.findOne({ _id: discountId }, options);
@@ -61,20 +61,22 @@ OrderDiscounts.helpers({
   //     reservation: null,
   //   });
   // },
-  configurationForPricingAdapterKey(pricingAdapterKey, calculation) {
-    const adapter = this.interface();
-    if (!adapter) return null;
-    return adapter.discountForPricingAdapterKey({
-      pricingAdapterKey,
-      calculation,
-    });
-  },
-  total() {
-    return this.order().discountTotal({ orderDiscountId: this._id });
-  },
-  discounted() {
-    return this.order().discounted({ orderDiscountId: this._id });
-  },
+  // configurationForPricingAdapterKey(pricingAdapterKey, calculation) {
+  //   const adapter = this.interface();
+  //   if (!adapter) return null;
+  //   return adapter.discountForPricingAdapterKey({
+  //     pricingAdapterKey,
+  //     calculation,
+  //   });
+  // },
+
+  // Move to order
+  // total() {
+  //   return this.order().discountTotal({ orderDiscountId: this._id });
+  // },
+  // discounted() {
+  //   return this.order().discounted({ orderDiscountId: this._id });
+  // },
 });
 
 // OrderDiscounts.createManualOrderDiscount = ({ orderId, code, ...rest }) => {
@@ -194,33 +196,33 @@ OrderDiscounts.helpers({
 //   }
 // };
 
-OrderDiscounts.updateDiscounts = ({ orderId }) => {
-  // 1. go through existing order-discounts and check if discount still valid,
-  // those who are not valid anymore should get removed
-  const order = Orders.findOne({ _id: orderId });
-  Promise.await(
-    Promise.all(
-      order.discounts().map(async (discount) => {
-        const isValid = await discount.isValid();
-        if (!isValid) {
-          OrderDiscounts.removeDiscount({ discountId: discount._id });
-        }
-      })
-    )
-  );
+// OrderDiscounts.updateDiscounts = ({ orderId }) => {
+//   // 1. go through existing order-discounts and check if discount still valid,
+//   // those who are not valid anymore should get removed
+//   const order = Orders.findOne({ _id: orderId });
+//   Promise.await(
+//     Promise.all(
+//       order.discounts().map(async (discount) => {
+//         const isValid = await discount.isValid();
+//         if (!isValid) {
+//           OrderDiscounts.removeDiscount({ discountId: discount._id });
+//         }
+//       })
+//     )
+//   );
 
-  // 2. run auto-system discount
-  const currentDiscountKeys = order
-    .discounts()
-    .map(({ discountKey }) => discountKey);
-  const director = new DiscountDirector({ order });
-  Promise.await(director.findSystemDiscounts())
-    .filter((key) => currentDiscountKeys.indexOf(key) === -1)
-    .forEach((discountKey) =>
-      OrderDiscounts.createDiscount({
-        orderId,
-        discountKey,
-        trigger: OrderDiscountTrigger.SYSTEM,
-      })
-    );
-};
+//   // 2. run auto-system discount
+//   const currentDiscountKeys = order
+//     .discounts()
+//     .map(({ discountKey }) => discountKey);
+//   const director = new DiscountDirector({ order });
+//   Promise.await(director.findSystemDiscounts())
+//     .filter((key) => currentDiscountKeys.indexOf(key) === -1)
+//     .forEach((discountKey) =>
+//       OrderDiscounts.createDiscount({
+//         orderId,
+//         discountKey,
+//         trigger: OrderDiscountTrigger.SYSTEM,
+//       })
+//     );
+// };

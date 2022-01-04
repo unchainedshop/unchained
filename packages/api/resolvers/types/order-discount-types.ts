@@ -1,5 +1,6 @@
 import { Context } from '@unchainedshop/types/api';
-import { OrderDiscount as OrderDiscountType } from '@unchainedshop/types/orders.discount';
+import { Order, OrderPricingDiscount } from '@unchainedshop/types/orders';
+import { OrderDiscount as OrderDiscountType } from '@unchainedshop/types/orders.discounts';
 import { OrderPrice } from '@unchainedshop/types/orders.pricing';
 import crypto from 'crypto';
 import { OrderDiscountDirector } from 'meteor/unchained:core-orders';
@@ -22,6 +23,8 @@ interface OrderDiscountHelperTypes {
     }>
   >;
 
+  discounted: HelperType<never, Promise<Array<OrderPricingDiscount>>>;
+  order: HelperType<never, Promise<Order>>;
   total: HelperType<never, OrderPrice>;
 }
 
@@ -41,6 +44,10 @@ export const OrderDiscount: OrderDiscountHelperTypes = {
     };
   },
 
+  order: async (obj, _, { modules }) => {
+    return await modules.orders.findOrder({ orderId: obj.orderId });
+  },
+
   total: (obj) => {
     const { total } = obj;
     if (total) {
@@ -54,5 +61,12 @@ export const OrderDiscount: OrderDiscountHelperTypes = {
       };
     }
     return null;
+  },
+
+  discounted: async (obj, _, context) => {
+    const order = await context.modules.orders.findOrder({
+      orderId: obj.orderId,
+    });
+    return await context.modules.orders.discounted(order, obj, context);
   },
 };

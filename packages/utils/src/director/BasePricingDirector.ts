@@ -63,12 +63,11 @@ export const BasePricingDirector = <
               const discounts = context.discounts
                 .map((discount) => ({
                   discountId: discount.discountId,
-                  // TODO: Use modules to get configuration
-                  /* @ts-ignore */
-                  configuration: discount.configurationForPricingAdapterKey(
-                    Adapter.key,
-                    calculation
-                  ),
+                  configuration:
+                    requestContext.modules.orders.discounts.configurationForPricingAdapterKey(
+                      Adapter.key,
+                      calculation
+                    ),
                 }))
                 .filter(({ configuration }) => configuration !== null);
 

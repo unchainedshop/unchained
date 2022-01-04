@@ -54,26 +54,26 @@ OrderDeliveries.helpers({
   //   if (this.status === OrderDeliveryStatus.DELIVERED) return false;
   //   return true;
   // },
-  send(deliveryContext, order) {
-    if (this.status !== OrderDeliveryStatus.OPEN) return;
-    const provider = this.provider();
-    const address =
-      this.context?.address || (order || this.order()).billingAddress || {};
-    const arbitraryResponseData = provider.send({
-      transactionContext: {
-        ...(deliveryContext || {}),
-        ...(this.context || {}),
-        address,
-      },
-      order,
-    });
-    if (arbitraryResponseData) {
-      this.setStatus(
-        OrderDeliveryStatus.DELIVERED,
-        JSON.stringify(arbitraryResponseData)
-      );
-    }
-  },
+  // send(deliveryContext, order) {
+  //   if (this.status !== OrderDeliveryStatus.OPEN) return;
+  //   const provider = this.provider();
+  //   const address =
+  //     this.context?.address || (order || this.order()).billingAddress || {};
+  //   const arbitraryResponseData = provider.send({
+  //     transactionContext: {
+  //       ...(deliveryContext || {}),
+  //       ...(this.context || {}),
+  //       address,
+  //     },
+  //     order,
+  //   });
+  //   if (arbitraryResponseData) {
+  //     this.setStatus(
+  //       OrderDeliveryStatus.DELIVERED,
+        
+  //     );
+  //   }
+  // },
   // markDelivered() {
   //   if (this.status !== OrderDeliveryStatus.OPEN) return;
   //   this.setStatus(OrderDeliveryStatus.DELIVERED, 'mark delivered manually');
@@ -87,14 +87,14 @@ OrderDeliveries.helpers({
   //   });
   // },
 
-  discounts(orderDiscountId) {
-    return this.pricing()
-      .discountPrices(orderDiscountId)
-      .map((discount) => ({
-        delivery: this,
-        ...discount,
-      }));
-  },
+  // discounts(orderDiscountId) {
+  //   return this.pricing()
+  //     .discountPrices(orderDiscountId)
+  //     .map((discount) => ({
+  //       delivery: this,
+  //       ...discount,
+  //     }));
+  // },
 
   // updateCalculation() {
   //   log(`OrderDelivery ${this._id} -> Update Calculation`, {

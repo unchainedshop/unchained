@@ -36,13 +36,13 @@ const OrderDiscountErrorCode = {
 const buildFindByIdSelector = (orderDiscountId: string) =>
   generateDbFilterById(orderDiscountId) as Filter<OrderDiscount>;
 
-export const configureOrderDiscountsModule = async ({
+export const configureOrderDiscountsModule = ({
   OrderDiscounts,
   updateCalculation,
 }: {
   OrderDiscounts: Collection<OrderDiscount>;
   updateCalculation: OrdersModule['updateCalculation'];
-}): Promise<OrderDiscountsModule> => {
+}): OrderDiscountsModule => {
   registerEvents(ORDER_DISCOUNT_EVENTS);
 
   const mutations = generateDbMutations<OrderDiscount>(
@@ -191,9 +191,9 @@ export const configureOrderDiscountsModule = async ({
     // Transformations
     interface: async (orderDiscount, requestContext) => {
       const adapter = await getAdapter(orderDiscount, requestContext);
-      if (!adapter) return null;
+      return adapter
     },
-    
+
     isValid: async (orderDiscount, requestContext) => {
       const adapter = await getAdapter(orderDiscount, requestContext);
       if (!adapter) return null;
@@ -265,7 +265,5 @@ export const configureOrderDiscountsModule = async ({
       emit('ORDER_UPDATE_DISCOUNT', { discount });
       return discount;
     },
-
-    updateCalculation,
   };
 };

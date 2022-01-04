@@ -6,7 +6,14 @@ import {
   Update,
   _ID,
 } from './common';
-import { IOrderPricingSheet, OrderPrice } from './orders.pricing';
+import { Order } from './orders';
+import { OrderDiscount } from './orders.discounts';
+import { OrderPayment } from './orders.payments';
+import {
+  IOrderPricingSheet,
+  OrderPrice,
+  OrderPricingDiscount,
+} from './orders.pricing';
 
 export enum OrderDeliveryStatus {
   OPEN = 'OPEN', // Null value is mapped to OPEN status
@@ -15,7 +22,7 @@ export enum OrderDeliveryStatus {
 }
 
 export type OrderDelivery = {
-  _id: _ID;
+  _id?: _ID;
   orderId: string;
   deliveryProviderId: string;
   delivered?: Date;
@@ -30,6 +37,11 @@ export type OrderDeliveriesModule = {
   findDelivery: (params: { orderDeliveryId: string }) => Promise<OrderDelivery>;
 
   // Transformations
+  discounts: (
+    orderDelivery: OrderDelivery,
+    params: { order: Order; orderDiscount: OrderDiscount },
+    requestContext: Context
+  ) => Array<OrderPricingDiscount>;
   isBlockingOrderFullfillment: (orderDelivery: OrderDelivery) => boolean;
   normalizedStatus: (orderDelivery: OrderDelivery) => string;
   pricingSheet: (
@@ -45,6 +57,12 @@ export type OrderDeliveriesModule = {
     orderDelivery: OrderDelivery,
     userId?: string
   ) => Promise<void>;
+
+  send: (
+    orderDelivery: OrderDelivery,
+    params: { order: Order; deliveryContext?: any },
+    requestContext: Context
+  ) => Promise<OrderDelivery>;
 
   updateDelivery: (
     orderDeliveryId: string,

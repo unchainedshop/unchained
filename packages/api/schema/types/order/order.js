@@ -81,27 +81,27 @@ export default [
     """
     type Order {
       _id: ID!
-      user: User
-      status: OrderStatus
-      created: DateTime
-      updated: DateTime
-      ordered: DateTime
-      orderNumber: String
+      billingAddress: Address
       confirmed: DateTime
-      fullfilled: DateTime
       contact: Contact
       country: Country
+      created: DateTime
       currency: Currency
-      billingAddress: Address
       delivery: OrderDelivery
-      payment: OrderPayment
-      items: [OrderItem!]
       discounts: [OrderDiscount!]
-      total(category: OrderPriceCategory): Price
       documents(type: OrderDocumentType = CONFIRMATION): [Media!]!
+      enrollment: Enrollment
+      fullfilled: DateTime
+      items: [OrderItem!]
+      ordered: DateTime
+      orderNumber: String
+      payment: OrderPayment
+      status: OrderStatus
       supportedDeliveryProviders: [DeliveryProvider!]!
       supportedPaymentProviders: [PaymentProvider!]!
-      enrollment: Enrollment
+      total(category: OrderPriceCategory): Price
+      updated: DateTime
+      user: User
     }
   `,
 ];

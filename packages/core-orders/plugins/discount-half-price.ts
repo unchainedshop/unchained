@@ -1,11 +1,11 @@
-import { IDiscountAdapter } from '@unchainedshop/types/orders.discount';
+import { IDiscountAdapter } from '@unchainedshop/types/discount';
 import {
-  DiscountDirector,
-  DiscountAdapter,
+  OrderDiscountDirector,
+  OrderDiscountAdapter,
 } from 'meteor/unchained:director-discounting';
 
 const HalfPrice: IDiscountAdapter = {
-  ...DiscountAdapter,
+  ...OrderDiscountAdapter,
 
   key: 'shop.unchained.discount.half-price',
   label: 'Half Price',
@@ -23,7 +23,7 @@ const HalfPrice: IDiscountAdapter = {
   },
 
   actions: ({ context }) => ({
-    ...DiscountAdapter.actions({ context }),
+    ...OrderDiscountAdapter.actions({ context }),
 
     isValidForSystemTriggering: async () => {
       const { order } = context;
@@ -40,7 +40,7 @@ const HalfPrice: IDiscountAdapter = {
     },
 
     // returns the appropriate discount context for a calculation adapter
-    discountForPricingAdapterKey: ({ pricingAdapterKey }) => {
+    discountForPricingAdapterKey({ pricingAdapterKey }) {
       if (pricingAdapterKey === 'shop.unchained.pricing.product-discount') {
         return { rate: 0.5 };
       }
@@ -49,4 +49,4 @@ const HalfPrice: IDiscountAdapter = {
   }),
 };
 
-DiscountDirector.registerAdapter(HalfPrice);
+OrderDiscountDirector.registerAdapter(HalfPrice);

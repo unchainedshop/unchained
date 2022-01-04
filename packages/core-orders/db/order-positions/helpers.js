@@ -98,15 +98,16 @@ OrderPositions.helpers({
       };
     });
   },
-  config(key) {
-    return (this.configuration || []).reduce(
-      (accumulator, configurationItem) => {
-        if (configurationItem.key === key) return configurationItem.value;
-        return accumulator;
-      },
-      undefined
-    );
-  },
+  
+  // config(key) {
+  //   return (this.configuration || []).reduce(
+  //     (accumulator, configurationItem) => {
+  //       if (configurationItem.key === key) return configurationItem.value;
+  //       return accumulator;
+  //     },
+  //     undefined
+  //   );
+  // },
   // updateCalculation() {
   //   log(`OrderPosition ${this._id} -> Update Calculation`, {
   //     orderId: this.orderId,
@@ -121,43 +122,43 @@ OrderPositions.helpers({
   //   );
   //   return OrderPositions.findOne({ _id: this._id });
   // },
-  updateScheduling() {
-    // scheduling (store in db for auditing)
-    const order = this.order();
-    const delivery = order.delivery();
-    const product = this.product();
-    const deliveryProvider = delivery && delivery.provider();
-    const { countryCode, userId } = order;
-    const scheduling = WarehousingProviders.findSupported({
-      product,
-      deliveryProvider,
-    }).map((warehousingProvider) => {
-      const context = {
-        warehousingProvider,
-        deliveryProvider,
-        product,
-        item: this,
-        delivery,
-        order,
-        userId,
-        country: countryCode,
-        referenceDate: order.ordered,
-        quantity: this.quantity,
-      };
-      const dispatch = warehousingProvider.estimatedDispatch(context);
-      return {
-        warehousingProviderId: warehousingProvider._id,
-        ...dispatch,
-      };
-    });
-    return OrderPositions.update(
-      { _id: this._id },
-      {
-        $set: { scheduling },
-      }
-    );
-  },
-});
+//   updateScheduling() {
+//     // scheduling (store in db for auditing)
+//     const order = this.order();
+//     const delivery = order.delivery();
+//     const product = this.product();
+//     const deliveryProvider = delivery && delivery.provider();
+//     const { countryCode, userId } = order;
+//     const scheduling = WarehousingProviders.findSupported({
+//       product,
+//       deliveryProvider,
+//     }).map((warehousingProvider) => {
+//       const context = {
+//         warehousingProvider,
+//         deliveryProvider,
+//         product,
+//         item: this,
+//         delivery,
+//         order,
+//         userId,
+//         country: countryCode,
+//         referenceDate: order.ordered,
+//         quantity: this.quantity,
+//       };
+//       const dispatch = warehousingProvider.estimatedDispatch(context);
+//       return {
+//         warehousingProviderId: warehousingProvider._id,
+//         ...dispatch,
+//       };
+//     });
+//     return OrderPositions.update(
+//       { _id: this._id },
+//       {
+//         $set: { scheduling },
+//       }
+//     );
+//   },
+// });
 
 OrderPositions.upsertPosition = ({
   orderId,

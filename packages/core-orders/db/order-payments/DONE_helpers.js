@@ -66,26 +66,26 @@ OrderPayments.helpers({
   //   if (this.status === OrderPaymentStatus.PAID) return false;
   //   return true;
   // },
-  charge(paymentContext, order) {
-    if (this.status !== OrderPaymentStatus.OPEN) return;
-    const provider = this.provider();
-    const arbitraryResponseData = provider.charge(
-      {
-        transactionContext: {
-          ...(paymentContext || {}),
-          ...(this.context || {}),
-        },
-        order,
-      },
-      order.userId
-    );
-    if (arbitraryResponseData) {
-      this.setStatus(
-        OrderPaymentStatus.PAID,
-        JSON.stringify(arbitraryResponseData)
-      );
-    }
-  },
+  // charge(paymentContext, order) {
+  //   if (this.status !== OrderPaymentStatus.OPEN) return;
+  //   const provider = this.provider();
+  //   const arbitraryResponseData = provider.charge(
+  //     {
+  //       transactionContext: {
+  //         ...(paymentContext || {}),
+  //         ...(this.context || {}),
+  //       },
+  //       order,
+  //     },
+  //     order.userId
+  //   );
+  //   if (arbitraryResponseData) {
+  //     this.setStatus(
+  //       OrderPaymentStatus.PAID,
+  //       JSON.stringify(arbitraryResponseData)
+  //     );
+  //   }
+  // },
   // markPaid(arbitraryResponseData) {
   //   if (this.status !== OrderPaymentStatus.OPEN) return;
   //   this.setStatus(
@@ -103,14 +103,14 @@ OrderPayments.helpers({
   //     status,
   //   });
   },
-  discounts(orderDiscountId) {
-    return this.pricing()
-      .discountPrices(orderDiscountId)
-      .map((discount) => ({
-        payment: this,
-        ...discount,
-      }));
-  },
+  // discounts(orderDiscountId) {
+  //   return this.pricing()
+  //     .discountPrices(orderDiscountId)
+  //     .map((discount) => ({
+  //       payment: this,
+  //       ...discount,
+  //     }));
+  // },
   // updateCalculation() {
   //   log(`OrderPayment ${this._id} -> Update Calculation`, {
   //     orderId: this.orderId,
@@ -155,19 +155,19 @@ OrderPayments.helpers({
 //   return orderPayment;
 // };
 
-OrderPayments.logEvent = ({ paymentId, event }) => {
-  const date = new Date();
-  const modifier = {
-    $push: {
-      log: {
-        date,
-        status: undefined,
-        info: JSON.stringify(event),
-      },
-    },
-  };
-  OrderPayments.update({ _id: paymentId }, modifier);
-};
+// OrderPayments.logEvent = ({ paymentId, event }) => {
+//   const date = new Date();
+//   const modifier = {
+//     $push: {
+//       log: {
+//         date,
+//         status: undefined,
+//         info: JSON.stringify(event),
+//       },
+//     },
+//   };
+//   OrderPayments.update({ _id: paymentId }, modifier);
+// };
 
 // OrderPayments.updateStatus = ({ paymentId, status, info = '' }) => {
 //   log(`OrderPayment ${paymentId} -> New Status: ${status}`);

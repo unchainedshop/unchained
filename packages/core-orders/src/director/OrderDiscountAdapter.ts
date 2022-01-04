@@ -1,6 +1,6 @@
 import { log, LogLevel } from 'meteor/unchained:logger';
 
-import { IDiscountAdapter } from '@unchainedshop/types/orders.discount';
+import { IDiscountAdapter } from '@unchainedshop/types/discount';
 
 export const OrderDiscountAdapter: IDiscountAdapter = {
   key: '',

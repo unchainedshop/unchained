@@ -31,14 +31,14 @@ import { OrderPositions } from '../order-positions/collections';
 import settings from '../../settings';
 import { updateOrderDocuments } from '../order-documents/helpers';
 
-const buildFindSelector = ({ includeCarts, queryString }) => {
-  const selector = {};
-  if (!includeCarts) selector.status = { $ne: OrderStatus.OPEN };
-  if (queryString) {
-    selector.$text = { $search: queryString };
-  }
-  return selector;
-};
+// const buildFindSelector = ({ includeCarts, queryString }) => {
+//   const selector = {};
+//   if (!includeCarts) selector.status = { $ne: OrderStatus.OPEN };
+//   if (queryString) {
+//     selector.$text = { $search: queryString };
+//   }
+//   return selector;
+// };
 
 Enrollments.generateFromCheckout = async ({ items, order, ...context }) => {
   const payment = order.payment();
@@ -130,86 +130,86 @@ Enrollments.helpers({
 // });
 
 // Mapped to cart transformation
-Users.helpers({
-  async cart({ countryContext, orderNumber } = {}) {
-    const selector = {
-      countryCode: countryContext || this.lastLogin.countryContext,
-      status: { $eq: OrderStatus.OPEN },
-    };
-    if (orderNumber) selector.orderNumber = orderNumber;
-    const carts = await this.orders(selector);
-    if (carts.length > 0) {
-      return carts[0];
-    }
-    return null;
-  },
-  async orders({ includeCarts = false, status, ...rest } = {}) {
-    const selector = { userId: this._id, ...rest };
-    if (!includeCarts || status) {
-      selector.status = status || { $ne: OrderStatus.OPEN };
-    }
-    const options = {
-      sort: {
-        updated: -1,
-      },
-    };
-    const orders = Orders.find(selector, options).fetch();
-    return orders;
-  },
-});
+// Users.helpers({
+  // async cart({ countryContext, orderNumber } = {}) {
+  //   const selector = {
+  //     countryCode: countryContext || this.lastLogin.countryContext,
+  //     status: { $eq: OrderStatus.OPEN },
+  //   };
+  //   if (orderNumber) selector.orderNumber = orderNumber;
+  //   const carts = await this.orders(selector);
+  //   if (carts.length > 0) {
+  //     return carts[0];
+  //   }
+  //   return null;
+  // },
+  // async orders({ includeCarts = false, status, ...rest } = {}) {
+  //   const selector = { userId: this._id, ...rest };
+  //   if (!includeCarts || status) {
+  //     selector.status = status || { $ne: OrderStatus.OPEN };
+  //   }
+  //   const options = {
+  //     sort: {
+  //       updated: -1,
+  //     },
+  //   };
+  //   const orders = Orders.find(selector, options).fetch();
+  //   return orders;
+  // },
+// });
 
 
-Orders.orderExists = ({ orderId, orderNumber }) => {
-  const selector = orderId ? { _id: orderId } : { orderNumber };
-  return !!Orders.find(selector).count();
-};
+// Orders.orderExists = ({ orderId, orderNumber }) => {
+//   const selector = orderId ? { _id: orderId } : { orderNumber };
+//   return !!Orders.find(selector).count();
+// };
 
-Orders.findOrder = ({ orderId, ...rest }, options) => {
-  const selector = orderId ? { _id: orderId } : rest;
-  if (!Object.keys(selector)?.length) return null;
-  return Orders.findOne(selector, options);
-};
+// Orders.findOrder = ({ orderId, ...rest }, options) => {
+//   const selector = orderId ? { _id: orderId } : rest;
+//   if (!Object.keys(selector)?.length) return null;
+//   return Orders.findOne(selector, options);
+// };
 
-Orders.removeOrder = ({ orderId }) => {
-  emit('ORDER_REMOVE', { orderId });
-  return Orders.remove({ _id: orderId });
-};
+// Orders.removeOrder = ({ orderId }) => {
+//   emit('ORDER_REMOVE', { orderId });
+//   return Orders.remove({ _id: orderId });
+// };
 
-Orders.findOrders = async ({
-  limit,
-  offset,
-  sort = {
-    created: -1,
-  },
-  queryString,
-  ...query
-}) => {
-  const options = {
-    skip: offset,
-    limit,
-    sort,
-  };
-  const selector = buildFindSelector({ queryString, ...query });
-  if (queryString) {
-    const orderArr = await Orders.rawCollection()
-      .find(selector, {
-        ...options,
-        projection: { score: { $meta: 'textScore' } },
-        sort: { score: { $meta: 'textScore' } },
-      })
-      .toArray();
-    return (orderArr || []).map((item) => new Orders._transform(item)); // eslint-disable-line
-  }
+// Orders.findOrders = async ({
+//   limit,
+//   offset,
+//   sort = {
+//     created: -1,
+//   },
+//   queryString,
+//   ...query
+// }) => {
+//   const options = {
+//     skip: offset,
+//     limit,
+//     sort,
+//   };
+//   const selector = buildFindSelector({ queryString, ...query });
+//   if (queryString) {
+//     const orderArr = await Orders.rawCollection()
+//       .find(selector, {
+//         ...options,
+//         projection: { score: { $meta: 'textScore' } },
+//         sort: { score: { $meta: 'textScore' } },
+//       })
+//       .toArray();
+//     return (orderArr || []).map((item) => new Orders._transform(item)); // eslint-disable-line
+//   }
 
-  return Orders.find(selector, options).fetch();
-};
+//   return Orders.find(selector, options).fetch();
+// };
 
-Orders.count = async (query) => {
-  const count = await Orders.rawCollection().countDocuments(
-    buildFindSelector(query)
-  );
-  return count;
-};
+// Orders.count = async (query) => {
+//   const count = await Orders.rawCollection().countDocuments(
+//     buildFindSelector(query)
+//   );
+//   return count;
+// };
 
 Orders.helpers({
   enrollment() {
@@ -217,48 +217,51 @@ Orders.helpers({
       'periods.orderId': this._id,
     });
   },
-  discounts() {
-    return OrderDiscounts.find({ orderId: this._id }).fetch();
-  },
-  discounted({ orderDiscountId }) {
-    const payment = this.payment();
-    const delivery = this.delivery();
 
-    const discounted = [
-      ...(payment?.discounts(orderDiscountId) || []),
-      ...(delivery?.discounts(orderDiscountId) || []),
-      ...this.items().flatMap((item) => item.discounts(orderDiscountId)),
-      ...this.pricing()
-        .discountPrices(orderDiscountId)
-        .map((discount) => ({
-          order: this,
-          ...discount,
-        })),
-    ].filter(Boolean);
+  // discounts() {
+  //   return OrderDiscounts.find({ orderId: this._id }).fetch();
+  // },
+  // discounted({ orderDiscountId }) {
+  //   const payment = this.payment();
+  //   const delivery = this.delivery();
 
-    return discounted;
-  },
-  discountTotal({ orderDiscountId }) {
-    const payment = this.payment();
-    const delivery = this.delivery();
+  //   const discounted = [
+  //     ...(payment?.discounts(orderDiscountId) || []),
+  //     ...(delivery?.discounts(orderDiscountId) || []),
+  //     ...this.items().flatMap((item) => item.discounts(orderDiscountId)),
+  //     ...this.pricing()
+  //       .discountPrices(orderDiscountId)
+  //       .map((discount) => ({
+  //         order: this,
+  //         ...discount,
+  //       })),
+  //   ].filter(Boolean);
 
-    const prices = [
-      payment?.pricing().discountSum(orderDiscountId),
-      delivery?.pricing().discountSum(orderDiscountId),
-      ...this.items().flatMap((item) =>
-        item.pricing().discountSum(orderDiscountId)
-      ),
-      this.pricing().discountSum(orderDiscountId),
-    ];
-    const amount = prices.reduce(
-      (oldValue, price) => oldValue + (price || 0),
-      0
-    );
-    return {
-      amount,
-      currency: this.currency,
-    };
-  },
+  //   return discounted;
+  // },
+  // discountTotal({ orderDiscountId }) {
+  //   const payment = this.payment();
+  //   const delivery = this.delivery();
+
+  //   const prices = [
+  //     payment?.pricing().discountSum(orderDiscountId),
+  //     delivery?.pricing().discountSum(orderDiscountId),
+  //     ...this.items().flatMap((item) =>
+  //       item.pricing().discountSum(orderDiscountId)
+  //     ),
+  //     this.pricing().discountSum(orderDiscountId),
+  //   ];
+  //   const amount = prices.reduce(
+  //     (oldValue, price) => oldValue + (price || 0),
+  //     0
+  //   );
+  //   return {
+  //     amount,
+  //     currency: this.currency,
+  //   };
+  // },
+  
+  // TODO: Check if used somewhere
   addDiscount({ code }) {
     const discount = OrderDiscounts.createManualOrderDiscount({
       orderId: this._id,
@@ -267,100 +270,102 @@ Orders.helpers({
     emit('ORDER_ADD_DISCOUNT', { discount });
     return discount;
   },
-  async initProviders() {
-    const order = await this.initPreferredDeliveryProvider();
-    return order.initPreferredPaymentProvider();
-  },
-  async initPreferredPaymentProvider() {
-    const supportedPaymentProviders = PaymentProviders.findSupported({
-      order: this,
-    });
 
-    const paymentProviderId = this.payment()?.paymentProviderId;
-    const isAlreadyInitializedWithSupportedProvider =
-      supportedPaymentProviders.some((provider) => {
-        return provider._id === paymentProviderId;
-      });
-    if (
-      supportedPaymentProviders.length > 0 &&
-      !isAlreadyInitializedWithSupportedProvider
-    ) {
-      const paymentCredentials = await this.user()?.paymentCredentials({
-        isPreferred: true,
-      });
-      if (paymentCredentials?.length) {
-        const foundSupportedPreferredProvider = supportedPaymentProviders.find(
-          (supportedPaymentProvider) => {
-            return paymentCredentials.some((paymentCredential) => {
-              return (
-                supportedPaymentProvider._id ===
-                paymentCredential.paymentProviderId
-              );
-            });
-          }
-        );
-        if (foundSupportedPreferredProvider) {
-          return this.setPaymentProvider({
-            paymentProviderId: foundSupportedPreferredProvider._id,
-          });
-        }
-      }
-      return this.setPaymentProvider({
-        paymentProviderId: supportedPaymentProviders[0]._id,
-      });
-    }
-    return this;
-  },
-  async initPreferredDeliveryProvider() {
-    const supportedDeliveryProviders = DeliveryProviders.findSupported({
-      order: this,
-    });
 
-    const deliveryProviderId = this.delivery()?.deliveryProviderId;
-    const isAlreadyInitializedWithSupportedProvider =
-      supportedDeliveryProviders.some((provider) => {
-        return provider._id === deliveryProviderId;
-      });
+  // async initProviders() {
+  //   const order = await this.initPreferredDeliveryProvider();
+  //   return order.initPreferredPaymentProvider();
+  // },
+  // async initPreferredPaymentProvider() {
+  //   const supportedPaymentProviders = PaymentProviders.findSupported({
+  //     order: this,
+  //   });
 
-    if (
-      supportedDeliveryProviders.length > 0 &&
-      !isAlreadyInitializedWithSupportedProvider
-    ) {
-      return this.setDeliveryProvider({
-        deliveryProviderId: supportedDeliveryProviders[0]._id,
-      });
-    }
-    return this;
-  },
-  setDeliveryProvider({ deliveryProviderId }) {
-    const result = Orders.setDeliveryProvider({
-      orderId: this._id,
-      deliveryProviderId,
-    });
-    emit('ORDER_SET_DELIVERY_PROVIDER', {
-      order: this,
-      deliveryProviderId,
-    });
-    return result;
-  },
-  setPaymentProvider({ paymentProviderId }) {
-    const result = Orders.setPaymentProvider({
-      orderId: this._id,
-      paymentProviderId,
-    });
-    emit('ORDER_SET_PAYMENT_PROVIDER', {
-      order: this,
-      paymentProviderId,
-    });
-    return result;
-  },
-  items(props) {
-    return OrderPositions.find({
-      orderId: this._id,
-      quantity: { $gt: 0 },
-      ...props,
-    }).fetch();
-  },
+  //   const paymentProviderId = this.payment()?.paymentProviderId;
+  //   const isAlreadyInitializedWithSupportedProvider =
+  //     supportedPaymentProviders.some((provider) => {
+  //       return provider._id === paymentProviderId;
+  //     });
+  //   if (
+  //     supportedPaymentProviders.length > 0 &&
+  //     !isAlreadyInitializedWithSupportedProvider
+  //   ) {
+  //     const paymentCredentials = await this.user()?.paymentCredentials({
+  //       isPreferred: true,
+  //     });
+  //     if (paymentCredentials?.length) {
+  //       const foundSupportedPreferredProvider = supportedPaymentProviders.find(
+  //         (supportedPaymentProvider) => {
+  //           return paymentCredentials.some((paymentCredential) => {
+  //             return (
+  //               supportedPaymentProvider._id ===
+  //               paymentCredential.paymentProviderId
+  //             );
+  //           });
+  //         }
+  //       );
+  //       if (foundSupportedPreferredProvider) {
+  //         return this.setPaymentProvider({
+  //           paymentProviderId: foundSupportedPreferredProvider._id,
+  //         });
+  //       }
+  //     }
+  //     return this.setPaymentProvider({
+  //       paymentProviderId: supportedPaymentProviders[0]._id,
+  //     });
+  //   }
+  //   return this;
+  // },
+  // async initPreferredDeliveryProvider() {
+  //   const supportedDeliveryProviders = DeliveryProviders.findSupported({
+  //     order: this,
+  //   });
+
+  //   const deliveryProviderId = this.delivery()?.deliveryProviderId;
+  //   const isAlreadyInitializedWithSupportedProvider =
+  //     supportedDeliveryProviders.some((provider) => {
+  //       return provider._id === deliveryProviderId;
+  //     });
+
+  //   if (
+  //     supportedDeliveryProviders.length > 0 &&
+  //     !isAlreadyInitializedWithSupportedProvider
+  //   ) {
+  //     return this.setDeliveryProvider({
+  //       deliveryProviderId: supportedDeliveryProviders[0]._id,
+  //     });
+  //   }
+  //   return this;
+  // },
+  // setDeliveryProvider({ deliveryProviderId }) {
+  //   const result = Orders.setDeliveryProvider({
+  //     orderId: this._id,
+  //     deliveryProviderId,
+  //   });
+  //   emit('ORDER_SET_DELIVERY_PROVIDER', {
+  //     order: this,
+  //     deliveryProviderId,
+  //   });
+  //   return result;
+  // },
+  // setPaymentProvider({ paymentProviderId }) {
+  //   const result = Orders.setPaymentProvider({
+  //     orderId: this._id,
+  //     paymentProviderId,
+  //   });
+  //   emit('ORDER_SET_PAYMENT_PROVIDER', {
+  //     order: this,
+  //     paymentProviderId,
+  //   });
+  //   return result;
+  // },
+  // items(props) {
+  //   return OrderPositions.find({
+  //     orderId: this._id,
+  //     quantity: { $gt: 0 },
+  //     ...props,
+  //   }).fetch();
+  // },
   addQuotationItem({ quotation, ...quotationItemConfiguration }) {
     const { quantity, configuration } = quotation.transformItemConfiguration(
       quotationItemConfiguration
@@ -389,68 +394,68 @@ Orders.helpers({
     emit('ORDER_ADD_PRODUCT', { orderPosition });
     return orderPosition;
   },
-  user() {
-    return Users.findOne({
-      _id: this.userId,
-    });
-  },
-  normalizedStatus() {
-    return objectInvert(OrderStatus)[this.status || null];
-  },
-  pricing() {
-    const pricing = new OrderPricingSheet({
-      calculation: this.calculation,
-      currency: this.currency,
-    });
-    return pricing;
-  },
-  delivery() {
-    return OrderDeliveries.findOne({ _id: this.deliveryId });
-  },
-  payment() {
-    return OrderPayments.findOne({ _id: this.paymentId });
-  },
-  updateBillingAddress(billingAddress = {}) {
-    return Orders.updateBillingAddress({
-      orderId: this._id,
-      billingAddress,
-    });
-  },
-  updateContact(contact = {}) {
-    return Orders.updateContact({
-      orderId: this._id,
-      contact,
-    });
-  },
-  updateContext(context) {
-    if (!this.context && !context) return this;
-    return Orders.updateContext({
-      orderId: this._id,
-      context,
-    });
-  },
+  // user() {
+  //   return Users.findOne({
+  //     _id: this.userId,
+  //   });
+  // },
+  // normalizedStatus() {
+  //   return objectInvert(OrderStatus)[this.status || null];
+  // },
+  // pricing() {
+  //   const pricing = new OrderPricingSheet({
+  //     calculation: this.calculation,
+  //     currency: this.currency,
+  //   });
+  //   return pricing;
+  // },
+  // delivery() {
+  //   return OrderDeliveries.findOne({ _id: this.deliveryId });
+  // },
+  // payment() {
+  //   return OrderPayments.findOne({ _id: this.paymentId });
+  // },
+  // updateBillingAddress(billingAddress = {}) {
+  //   return Orders.updateBillingAddress({
+  //     orderId: this._id,
+  //     billingAddress,
+  //   });
+  // },
+  // updateContact(contact = {}) {
+  //   return Orders.updateContact({
+  //     orderId: this._id,
+  //     contact,
+  //   });
+  // },
+  // updateContext(context) {
+  //   if (!this.context && !context) return this;
+  //   return Orders.updateContext({
+  //     orderId: this._id,
+  //     context,
+  //   });
+  // },
   totalQuantity() {
     return this.items().reduce((oldValue, item) => oldValue + item.quantity, 0);
   },
-  itemValidationErrors() {
-    // Check if items are valid
-    const items = this.items();
-    if (items.length === 0) {
-      const NoItemsError = new Error('No items to checkout');
-      NoItemsError.name = 'NoItemsError';
-      return [NoItemsError];
-    }
-    return items.flatMap((item) => item.validationErrors());
-  },
-  reserveItems() {
-    // If we came here, the checkout succeeded, so we can reserve the items
-    this.items().forEach((item) => item.reserve());
+  // itemValidationErrors() {
+  //   // Check if items are valid
+  //   const items = this.items();
+  //   if (items.length === 0) {
+  //     const NoItemsError = new Error('No items to checkout');
+  //     NoItemsError.name = 'NoItemsError';
+  //     return [NoItemsError];
+  //   }
+  //   return items.flatMap((item) => item.validationErrors());
+  // },
+  // reserveItems() {
+  //   // If we came here, the checkout succeeded, so we can reserve the items
+  //   this.items().forEach((item) => item.reserve());
 
-    // TODO: we will use this function to keep a "Ordered in Flight" amount, allowing us to
-    // do live stock stuff
-    // 2. Reserve quantity at Warehousing Provider until order is CANCELLED/FULLFILLED
-    // ???
-  },
+  //   // TODO: we will use this function to keep a "Ordered in Flight" amount, allowing us to
+  //   // do live stock stuff
+  //   // 2. Reserve quantity at Warehousing Provider until order is CANCELLED/FULLFILLED
+  //   // ???
+  // },
   generateEnrollments(context) {
     if (this.originEnrollmentId) return;
     const items = this.items().filter((item) => {
@@ -468,133 +473,132 @@ Orders.helpers({
       );
     }
   },
-  async checkout(
-    { paymentContext, deliveryContext, orderContext } = {},
-    options
-  ) {
-    const errors = [
-      ...this.missingInputDataForCheckout(),
-      ...this.itemValidationErrors(),
-    ].filter(Boolean);
-    if (errors.length > 0) {
-      throw new Error(errors[0]);
-    }
-    const locale = this.user().locale(options);
+  // async checkout(
+  //   { paymentContext, deliveryContext, orderContext } = {},
+  //   options
+  // ) {
+  //   const errors = [
+  //     ...this.missingInputDataForCheckout(),
+  //     ...this.itemValidationErrors(),
+  //   ].filter(Boolean);
+  //   if (errors.length > 0) {
+  //     throw new Error(errors[0]);
+  //   }
+  //   const locale = this.user().locale(options);
 
-    const updatedOrderContext = this.updateContext(orderContext)
-      .processOrder({ paymentContext, deliveryContext })
-      .sendOrderConfirmationToCustomer({ locale });
+  //   const updatedOrderContext = this.updateContext(orderContext)
+  //     .processOrder({ paymentContext, deliveryContext })
+  //     .sendOrderConfirmationToCustomer({ locale });
 
-    await Orders.ensureCartForUser({
-      user: this.user(),
-      countryContext: locale.country,
-    });
-    return updatedOrderContext;
-  },
-  confirm({ orderContext, paymentContext, deliveryContext }, options) {
-    if (this.status !== OrderStatus.PENDING) return this;
-    const locale = this.user().locale(options);
-    return this.updateContext(orderContext)
-      .setStatus(OrderStatus.CONFIRMED, 'confirmed manually')
-      .processOrder({ paymentContext, deliveryContext })
-      .sendOrderConfirmationToCustomer({ locale });
-  },
-  missingInputDataForCheckout() {
-    const errors = [];
-    if (this.status !== OrderStatus.OPEN)
-      errors.push(new Error('Order has already been checked out'));
-    if (!this.contact) errors.push(new Error('Contact data not provided'));
-    if (!this.billingAddress)
-      errors.push(new Error('Billing address not provided'));
-    if (this.totalQuantity() === 0) errors.push(new Error('No items in cart'));
-    if (!this.delivery()) errors.push('No delivery provider selected');
-    if (!this.payment()) errors.push('No payment provider selected');
-    return errors;
-  },
-  sendOrderConfirmationToCustomer({ locale }) {
-    // send message with high priority
-    WorkerDirector.addWork({
-      type: 'MESSAGE',
-      retries: 0,
-      input: {
-        locale,
-        template: 'ORDER_CONFIRMATION',
-        orderId: this._id,
-      },
-    });
-    return this;
-  },
-  processOrder({ paymentContext, deliveryContext } = {}) {
-    if (this.nextStatus() === OrderStatus.PENDING) {
-      // auto charge during transition to pending
-      this.payment().charge(paymentContext, this);
-      this.storeLastUserData();
-    }
+  //   await Orders.ensureCartForUser({
+  //     user: this.user(),
+  //     countryContext: locale.country,
+  //   });
+  //   return updatedOrderContext;
+  // },
+  // confirm({ orderContext, paymentContext, deliveryContext }, options) {
+  //   if (this.status !== OrderStatus.PENDING) return this;
+  //   const locale = this.user().locale(options);
+  //   return this.updateContext(orderContext)
+  //     .setStatus(OrderStatus.CONFIRMED, 'confirmed manually')
+  //     .processOrder({ paymentContext, deliveryContext })
+  //     .sendOrderConfirmationToCustomer({ locale });
+  // },
+  // missingInputDataForCheckout() {
+  //   const errors = [];
+  //   if (this.status !== OrderStatus.OPEN)
+  //     errors.push(new Error('Order has already been checked out'));
+  //   if (!this.contact) errors.push(new Error('Contact data not provided'));
+  //   if (!this.billingAddress)
+  //     errors.push(new Error('Billing address not provided'));
+  //   if (this.totalQuantity() === 0) errors.push(new Error('No items in cart'));
+  //   if (!this.delivery()) errors.push('No delivery provider selected');
+  //   if (!this.payment()) errors.push('No payment provider selected');
+  //   return errors;
+  // },
+  // sendOrderConfirmationToCustomer({ locale }) {
+  //   // send message with high priority
+  //   WorkerDirector.addWork({
+  //     type: 'MESSAGE',
+  //     retries: 0,
+  //     input: {
+  //       locale,
+  //       template: 'ORDER_CONFIRMATION',
+  //       orderId: this._id,
+  //     },
+  //   });
+  //   return this;
+  // },
+  // processOrder({ paymentContext, deliveryContext } = {}) {
+  //   if (this.nextStatus() === OrderStatus.PENDING) {
+  //     // auto charge during transition to pending
+  //     this.payment().charge(paymentContext, this);
+  //     this.storeLastUserData();
+  //   }
 
-    if (this.nextStatus() === OrderStatus.CONFIRMED) {
-      if (this.status !== OrderStatus.CONFIRMED) {
-        // we have to stop here shortly to complete the confirmation
-        // before auto delivery is started, else we have no chance to create
-        // documents and numbers that are needed for delivery
-        const newConfirmedOrder = this.setStatus(
-          OrderStatus.CONFIRMED,
-          'before delivery'
-        );
-        this.delivery().send(deliveryContext, newConfirmedOrder);
-        newConfirmedOrder.generateEnrollments({
-          paymentContext,
-          deliveryContext,
-        });
-      } else {
-        this.delivery().send(deliveryContext, this);
-      }
-      this.reserveItems();
-    }
-
-    return this.setStatus(this.nextStatus(), 'order processed');
-  },
-  setStatus(status, info) {
-    return Orders.updateStatus({
-      orderId: this._id,
-      status,
-      info,
-    });
-  },
-  nextStatus() {
-    let { status } = this;
-    if (status === OrderStatus.OPEN || !status) {
-      if (this.isValidForCheckout()) {
-        emit('ORDER_CHECKOUT', { order: this });
-        status = OrderStatus.PENDING;
-      }
-    }
-    if (status === OrderStatus.PENDING) {
-      if (this.isAutoConfirmationEnabled()) {
-        emit('ORDER_CONFIRMED', { order: this });
-        status = OrderStatus.CONFIRMED;
-      }
-    }
-    if (status === OrderStatus.CONFIRMED) {
-      if (this.isAutoFullfillmentEnabled()) {
-        emit('ORDER_FULLFILLED', { order: this });
-        status = OrderStatus.FULLFILLED;
-      }
-    }
-    return status;
-  },
-  storeLastUserData() {
-    Users.updateLastBillingAddress({
-      userId: this.userId,
-      lastBillingAddress: this.billingAddress,
-    });
-    Users.updateLastContact({
-      userId: this.userId,
-      lastContact: this.contact,
-    });
-  },
-  isValidForCheckout() {
-    return this.missingInputDataForCheckout().length === 0;
-  },
+  //   if (this.nextStatus() === OrderStatus.CONFIRMED) {
+  //     if (this.status !== OrderStatus.CONFIRMED) {
+  //       // we have to stop here shortly to complete the confirmation
+  //       // before auto delivery is started, else we have no chance to create
+  //       // documents and numbers that are needed for delivery
+  //       const newConfirmedOrder = this.setStatus(
+  //         OrderStatus.CONFIRMED,
+  //         'before delivery'
+  //       );
+  //       this.delivery().send(deliveryContext, newConfirmedOrder);
+  //       newConfirmedOrder.generateEnrollments({
+  //         paymentContext,
+  //         deliveryContext,
+  //       });
+  //     } else {
+  //       this.delivery().send(deliveryContext, this);
+  //     }
+  //     this.reserveItems();
+  //   }
+  //   return this.setStatus(this.nextStatus(), 'order processed');
+  // },
+  // setStatus(status, info) {
+  //   return Orders.updateStatus({
+  //     orderId: this._id,
+  //     status,
+  //     info,
+  //   });
+  // },
+  // nextStatus() {
+  //   let { status } = this;
+  //   if (status === OrderStatus.OPEN || !status) {
+  //     if (this.isValidForCheckout()) {
+  //       emit('ORDER_CHECKOUT', { order: this });
+  //       status = OrderStatus.PENDING;
+  //     }
+  //   }
+  //   if (status === OrderStatus.PENDING) {
+  //     if (this.isAutoConfirmationEnabled()) {
+  //       emit('ORDER_CONFIRMED', { order: this });
+  //       status = OrderStatus.CONFIRMED;
+  //     }
+  //   }
+  //   if (status === OrderStatus.CONFIRMED) {
+  //     if (this.isAutoFullfillmentEnabled()) {
+  //       emit('ORDER_FULLFILLED', { order: this });
+  //       status = OrderStatus.FULLFILLED;
+  //     }
+  //   }
+  //   return status;
+  // },
+  // storeLastUserData() {
+  //   Users.updateLastBillingAddress({
+  //     userId: this.userId,
+  //     lastBillingAddress: this.billingAddress,
+  //   });
+  //   Users.updateLastContact({
+  //     userId: this.userId,
+  //     lastContact: this.contact,
+  //   });
+  // },
+  // isValidForCheckout() {
+  //   return this.missingInputDataForCheckout().length === 0;
+  // },
   isAutoConfirmationEnabled() {
     if (this.payment().isBlockingOrderConfirmation()) return false;
     if (this.delivery().isBlockingOrderConfirmation()) return false;
@@ -611,48 +615,48 @@ Orders.helpers({
     if (this.status === OrderStatus.FULLFILLED) return false;
     return true;
   },
-  addDocument(objOrString, meta, options = {}) {
-    if (typeof objOrString === 'string' || objOrString instanceof String) {
-      return Promise.await(
-        uploadFileFromURL(
-          'order-documents',
-          { fileLink: objOrString },
-          {
-            ...options,
-            meta: {
-              orderId: this._id,
-              ...meta,
-            },
-          }
-        )
-      );
-    }
-    const { rawFile, userId } = objOrString;
-    return uploadObjectStream('order-documents', rawFile, {
-      orderId: this._id,
-      userId,
-      ...meta,
-    });
-  },
-  documents(options) {
-    const { type } = options || {};
-    const selector = { 'meta.orderId': this._id };
-    if (type) {
-      selector['meta.type'] = type;
-    }
-    return MediaObjects.find(selector, { sort: { 'meta.date': -1 } }).fetch();
-  },
-  document(options) {
-    const { type } = options || {};
-    const selector = { 'meta.orderId': this._id };
-    if (type) {
-      selector['meta.type'] = type;
-    }
-    return MediaObjects.findOne(selector, { sort: { 'meta.date': -1 } });
-  },
-  country() {
-    return Countries.findOne({ isoCode: this.countryCode });
-  },
+  // addDocument(objOrString, meta, options = {}) {
+  //   if (typeof objOrString === 'string' || objOrString instanceof String) {
+  //     return Promise.await(
+  //       uploadFileFromURL(
+  //         'order-documents',
+  //         { fileLink: objOrString },
+  //         {
+  //           ...options,
+  //           meta: {
+  //             orderId: this._id,
+  //             ...meta,
+  //           },
+  //         }
+  //       )
+  //     );
+  //   }
+  //   const { rawFile, userId } = objOrString;
+  //   return uploadObjectStream('order-documents', rawFile, {
+  //     orderId: this._id,
+  //     userId,
+  //     ...meta,
+  //   });
+  // },
+  // documents(options) {
+  //   const { type } = options || {};
+  //   const selector = { 'meta.orderId': this._id };
+  //   if (type) {
+  //     selector['meta.type'] = type;
+  //   }
+  //   return MediaObjects.find(selector, { sort: { 'meta.date': -1 } }).fetch();
+  // },
+  // document(options) {
+  //   const { type } = options || {};
+  //   const selector = { 'meta.orderId': this._id };
+  //   if (type) {
+  //     selector['meta.type'] = type;
+  //   }
+  //   return MediaObjects.findOne(selector, { sort: { 'meta.date': -1 } });
+  // },
+  // country() {
+  //   return Countries.findOne({ isoCode: this.countryCode });
+  // },
   // --> Moved to API query resolver using the modules pattern
   // logs({ limit, offset }) {
   //   const selector = { 'meta.orderId': this._id };
@@ -665,237 +669,237 @@ Orders.helpers({
   //   }).fetch();
   //   return logs;
   // },
-  isCart() {
-    return (this.status || null) === OrderStatus.OPEN;
-  },
+  // isCart() {
+  //   return (this.status || null) === OrderStatus.OPEN;
+  // },
 });
 
-Orders.setDeliveryProvider = ({ orderId, deliveryProviderId }) => {
-  const delivery = OrderDeliveries.findOne({ orderId, deliveryProviderId });
-  const deliveryId = delivery
-    ? delivery._id
-    : OrderDeliveries.createOrderDelivery({ orderId, deliveryProviderId })._id;
-  log(`Set Delivery Provider ${deliveryProviderId}`, { orderId });
-  Orders.update(
-    { _id: orderId },
-    { $set: { deliveryId, updated: new Date() } }
-  );
-  Orders.updateCalculation({ orderId });
-  return Orders.findOne({ _id: orderId });
-};
+// Orders.setDeliveryProvider = ({ orderId, deliveryProviderId }) => {
+//   const delivery = OrderDeliveries.findOne({ orderId, deliveryProviderId });
+//   const deliveryId = delivery
+//     ? delivery._id
+//     : OrderDeliveries.createOrderDelivery({ orderId, deliveryProviderId })._id;
+//   log(`Set Delivery Provider ${deliveryProviderId}`, { orderId });
+//   Orders.update(
+//     { _id: orderId },
+//     { $set: { deliveryId, updated: new Date() } }
+//   );
+//   Orders.updateCalculation({ orderId });
+//   return Orders.findOne({ _id: orderId });
+// };
 
-Orders.setPaymentProvider = ({ orderId, paymentProviderId }) => {
-  const payment = OrderPayments.findOne({ orderId, paymentProviderId });
-  const paymentId = payment
-    ? payment._id
-    : OrderPayments.createOrderPayment({ orderId, paymentProviderId })._id;
-  log(`Set Payment Provider ${paymentProviderId}`, { orderId });
+// Orders.setPaymentProvider = ({ orderId, paymentProviderId }) => {
+//   const payment = OrderPayments.findOne({ orderId, paymentProviderId });
+//   const paymentId = payment
+//     ? payment._id
+//     : OrderPayments.createOrderPayment({ orderId, paymentProviderId })._id;
+//   log(`Set Payment Provider ${paymentProviderId}`, { orderId });
   
-  Orders.update({ _id: orderId }, { $set: { paymentId, updated: new Date() } });
-  Orders.updateCalculation({ orderId });
-  return Orders.findOne({ _id: orderId });
-};
+//   Orders.update({ _id: orderId }, { $set: { paymentId, updated: new Date() } });
+//   Orders.updateCalculation({ orderId });
+//   return Orders.findOne({ _id: orderId });
+// };
 
-Orders.createOrder = async ({
-  user,
-  currency,
-  countryCode,
-  billingAddress,
-  contact,
-  ...rest
-}) => {
-  const orderId = Orders.insert({
-    ...rest,
-    created: new Date(),
-    status: OrderStatus.OPEN,
-    billingAddress:
-      billingAddress || user.lastBillingAddress || user.profile?.address,
-    contact:
-      contact ||
-      user.lastContact ||
-      (!user.isGuest()
-        ? {
-            telNumber: user.telNumber(),
-            emailAddress: user.primaryEmail()?.address,
-          }
-        : {}),
-    userId: user._id,
-    currency,
-    countryCode,
-  });
-  const order = Orders.findOne({ _id: orderId }).initProviders();
-  emit('ORDER_CREATE', { order });
-  return order;
-};
+// Orders.createOrder = async ({
+//   user,
+//   currency,
+//   countryCode,
+//   billingAddress,
+//   contact,
+//   ...rest
+// }) => {
+//   const orderId = Orders.insert({
+//     ...rest,
+//     created: new Date(),
+//     status: OrderStatus.OPEN,
+//     billingAddress:
+//       billingAddress || user.lastBillingAddress || user.profile?.address,
+//     contact:
+//       contact ||
+//       user.lastContact ||
+//       (!user.isGuest()
+//         ? {
+//             telNumber: user.telNumber(),
+//             emailAddress: user.primaryEmail()?.address,
+//           }
+//         : {}),
+//     userId: user._id,
+//     currency,
+//     countryCode,
+//   });
+//   const order = Orders.findOne({ _id: orderId }).initProviders();
+//   emit('ORDER_CREATE', { order });
+//   return order;
+// };
 
-Orders.updateBillingAddress = ({ billingAddress, orderId }) => {
-  log('Update Invoicing Address', { orderId });
-  Orders.update(
-    { _id: orderId },
-    {
-      $set: {
-        billingAddress,
-        updated: new Date(),
-      },
-    }
-  );
-  Orders.updateCalculation({ orderId });
-  const order = Orders.findOne({ _id: orderId });
-  emit('ORDER_UPDATE', { order, field: 'billing' });
-  return order;
-};
+// Orders.updateBillingAddress = ({ billingAddress, orderId }) => {
+//   log('Update Invoicing Address', { orderId });
+//   Orders.update(
+//     { _id: orderId },
+//     {
+//       $set: {
+//         billingAddress,
+//         updated: new Date(),
+//       },
+//     }
+//   );
+//   Orders.updateCalculation({ orderId });
+//   const order = Orders.findOne({ _id: orderId });
+//   emit('ORDER_UPDATE', { order, field: 'billing' });
+//   return order;
+// };
 
-Orders.updateContact = ({ contact, orderId }) => {
-  log('Update Contact', { orderId });
-  Orders.update(
-    { _id: orderId },
-    {
-      $set: {
-        contact,
-        updated: new Date(),
-      },
-    }
-  );
-  Orders.updateCalculation({ orderId });
-  const order = Orders.findOne({ _id: orderId });
-  emit('ORDER_UPDATE', { order, field: 'contact' });
-  return order;
-};
+// Orders.updateContact = ({ contact, orderId }) => {
+//   log('Update Contact', { orderId });
+//   Orders.update(
+//     { _id: orderId },
+//     {
+//       $set: {
+//         contact,
+//         updated: new Date(),
+//       },
+//     }
+//   );
+//   Orders.updateCalculation({ orderId });
+//   const order = Orders.findOne({ _id: orderId });
+//   emit('ORDER_UPDATE', { order, field: 'contact' });
+//   return order;
+// };
 
-Orders.updateContext = ({ context, orderId }) => {
-  log('Update Arbitrary Context', { orderId });
-  Orders.update(
-    { _id: orderId },
-    {
-      $set: {
-        context,
-        updated: new Date(),
-      },
-    }
-  );
-  Orders.updateCalculation({ orderId });
-  const order = Orders.findOne({ _id: orderId });
-  emit('ORDER_UPDATE', { order, field: 'context' });
-  return order;
-};
+// Orders.updateContext = ({ context, orderId }) => {
+//   log('Update Arbitrary Context', { orderId });
+//   Orders.update(
+//     { _id: orderId },
+//     {
+//       $set: {
+//         context,
+//         updated: new Date(),
+//       },
+//     }
+//   );
+//   Orders.updateCalculation({ orderId });
+//   const order = Orders.findOne({ _id: orderId });
+//   emit('ORDER_UPDATE', { order, field: 'context' });
+//   return order;
+// };
 
-Orders.newOrderNumber = (order) => {
-  let orderNumber = null;
-  let i = 0;
-  while (!orderNumber) {
-    const newHashID = settings.orderNumberHashFn(order, i);
-    if (Orders.find({ orderNumber: newHashID }, { limit: 1 }).count() === 0) {
-      orderNumber = newHashID;
-    }
-    i += 1;
-  }
-  return orderNumber;
-};
+// Orders.newOrderNumber = (order) => {
+//   let orderNumber = null;
+//   let i = 0;
+//   while (!orderNumber) {
+//     const newHashID = settings.orderNumberHashFn(order, i);
+//     if (Orders.find({ orderNumber: newHashID }, { limit: 1 }).count() === 0) {
+//       orderNumber = newHashID;
+//     }
+//     i += 1;
+//   }
+//   return orderNumber;
+// };
 
-Orders.updateStatus = ({ status, orderId, info = '' }) => {
-  const order = Orders.findOne({ _id: orderId });
-  if (order.status === status) return order;
-  const date = new Date();
-  let shouldUpdateDocuments = false;
-  const modifier = {
-    $set: { status, updated: new Date() },
-    $push: {
-      log: {
-        date,
-        status,
-        info,
-      },
-    },
-  };
-  switch (status) {
-    // explicitly use fallthrough here!
-    case OrderStatus.FULLFILLED:
-      if (!order.fullfilled) {
-        modifier.$set.fullfilled = date;
-      }
-    case OrderStatus.CONFIRMED: // eslint-disable-line no-fallthrough
-      shouldUpdateDocuments = true;
-      if (!order.confirmed) {
-        modifier.$set.confirmed = date;
-      }
-    case OrderStatus.PENDING: // eslint-disable-line no-fallthrough
-      if (!order.ordered) {
-        modifier.$set.ordered = date;
-      }
-      if (!order.orderNumber) {
-        // Order Numbers can be set by the user
-        modifier.$set.orderNumber = Orders.newOrderNumber(order);
-      }
-      break;
-    default:
-      break;
-  }
-  // documents represent long-living state of orders,
-  // so we only track when transitioning to confirmed or fullfilled status
-  if (shouldUpdateDocuments) {
-    try {
-      // It's okay if this fails as it is not
-      // super-vital to the
-      // checkout process
-      updateOrderDocuments({
-        orderId,
-        date: modifier.$set.confirmed || order.confirmed,
-        ...modifier.$set,
-      });
-    } catch (e) {
-      log(e, { level: 'error', orderId });
-    }
-  }
-  log(`New Status: ${status}`, { orderId });
-  Orders.update({ _id: orderId }, modifier);
-  return Orders.findOne({ _id: orderId });
-};
+// Orders.updateStatus = ({ status, orderId, info = '' }) => {
+//   const order = Orders.findOne({ _id: orderId });
+//   if (order.status === status) return order;
+//   const date = new Date();
+//   let shouldUpdateDocuments = false;
+//   const modifier = {
+//     $set: { status, updated: new Date() },
+//     $push: {
+//       log: {
+//         date,
+//         status,
+//         info,
+//       },
+//     },
+//   };
+//   switch (status) {
+//     // explicitly use fallthrough here!
+//     case OrderStatus.FULLFILLED:
+//       if (!order.fullfilled) {
+//         modifier.$set.fullfilled = date;
+//       }
+//     case OrderStatus.CONFIRMED: // eslint-disable-line no-fallthrough
+//       shouldUpdateDocuments = true;
+//       if (!order.confirmed) {
+//         modifier.$set.confirmed = date;
+//       }
+//     case OrderStatus.PENDING: // eslint-disable-line no-fallthrough
+//       if (!order.ordered) {
+//         modifier.$set.ordered = date;
+//       }
+//       if (!order.orderNumber) {
+//         // Order Numbers can be set by the user
+//         modifier.$set.orderNumber = Orders.newOrderNumber(order);
+//       }
+//       break;
+//     default:
+//       break;
+//   }
+//   // documents represent long-living state of orders,
+//   // so we only track when transitioning to confirmed or fullfilled status
+//   if (shouldUpdateDocuments) {
+//     try {
+//       // It's okay if this fails as it is not
+//       // super-vital to the
+//       // checkout process
+//       updateOrderDocuments({
+//         orderId,
+//         date: modifier.$set.confirmed || order.confirmed,
+//         ...modifier.$set,
+//       });
+//     } catch (e) {
+//       log(e, { level: 'error', orderId });
+//     }
+//   }
+//   log(`New Status: ${status}`, { orderId });
+//   Orders.update({ _id: orderId }, modifier);
+//   return Orders.findOne({ _id: orderId });
+// };
 
-Orders.updateCalculation = ({ orderId }) => {
-  OrderDiscounts.updateDiscounts({ orderId });
+// Orders.updateCalculation = ({ orderId }) => {
+//   OrderDiscounts.updateDiscounts({ orderId });
 
-  const order = Promise.await(Orders.findOne({ _id: orderId }).initProviders());
-  const items = order.items();
+//   const order = Promise.await(Orders.findOne({ _id: orderId }).initProviders());
+//   const items = order.items();
 
-  const updatedItems = items.map((item) => item.updateCalculation());
-  order.delivery()?.updateCalculation(); // eslint-disable-line
-  order.payment()?.updateCalculation(); // eslint-disable-line
+//   const updatedItems = items.map((item) => item.updateCalculation());
+//   order.delivery()?.updateCalculation(); // eslint-disable-line
+//   order.payment()?.updateCalculation(); // eslint-disable-line
 
-  updatedItems.forEach((item) => item.updateScheduling());
+//   updatedItems.forEach((item) => item.updateScheduling());
 
-  const pricing = new OrderPricingDirector({ item: order });
-  const calculation = pricing.calculate();
-  return Orders.update(
-    { _id: orderId },
-    {
-      $set: {
-        calculation,
-        updated: new Date(),
-      },
-    }
-  );
-};
+//   const pricing = new OrderPricingDirector({ item: order });
+//   const calculation = pricing.calculate();
+//   return Orders.update(
+//     { _id: orderId },
+//     {
+//       $set: {
+//         calculation,
+//         updated: new Date(),
+//       },
+//     }
+//   );
+// };
 
-Orders.ensureCartForUser = async ({ userId, user, countryContext }) => {
-  if (!settings.ensureUserHasCart) return;
-  const userObject = user || Users.findUser({ userId });
-  if (!userObject) throw new Error('User with the id not found');
-  const countryCode = countryContext || userObject.lastLogin.countryContext;
+// Orders.ensureCartForUser = async ({ userId, user, countryContext }) => {
+//   if (!settings.ensureUserHasCart) return;
+//   const userObject = user || Users.findUser({ userId });
+//   if (!userObject) throw new Error('User with the id not found');
+//   const countryCode = countryContext || userObject.lastLogin.countryContext;
 
-  const cart = await userObject?.cart({
-    countryContext: countryCode,
-  });
+//   const cart = await userObject?.cart({
+//     countryContext: countryCode,
+//   });
 
-  if (cart) return;
+//   if (cart) return;
 
-  Orders.createOrder({
-    user: userObject,
-    currency: Countries.resolveDefaultCurrencyCode({
-      isoCode: countryCode,
-    }),
-    countryCode,
-  });
-};
+//   Orders.createOrder({
+//     user: userObject,
+//     currency: Countries.resolveDefaultCurrencyCode({
+//       isoCode: countryCode,
+//     }),
+//     countryCode,
+//   });
+// };
 
 // Used in platform package
 

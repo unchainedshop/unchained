@@ -1,6 +1,6 @@
 import { Context } from '@unchainedshop/types/api';
 import { OrderDeliveryDiscount as OrderDeliveryDiscountType } from '@unchainedshop/types/orders.deliveries';
-import { OrderDiscount } from '@unchainedshop/types/orders.discount';
+import { OrderDiscount } from '@unchainedshop/types/orders.discounts';
 import { OrderPrice } from '@unchainedshop/types/orders.pricing';
 import crypto from 'crypto';
 
@@ -22,7 +22,7 @@ export const OrderDeliveryDiscount: OrderDeliveryDiscountHelperTypes = {
   },
 
   orderDiscount: async (obj, _, { modules }) => {
-    return await modules.orders.discount.findOrderDiscount({
+    return await modules.orders.discounts.findOrderDiscount({
       discountId: obj.discountId,
     });
   },

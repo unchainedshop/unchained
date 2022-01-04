@@ -16,7 +16,7 @@ export default async function removeCartDiscount(
 
   if (!discountId) throw new InvalidIdError({ discountId });
 
-  const orderDiscount = await modules.orders.discount.findOrderDiscount({
+  const orderDiscount = await modules.orders.discounts.findOrderDiscount({
     discountId,
   });
   if (!orderDiscount) throw new OrderDiscountNotFoundError({ orderDiscount });
@@ -28,5 +28,5 @@ export default async function removeCartDiscount(
     throw new OrderWrongStatusError({ status: order.status });
   }
   
-  return await modules.orders.discount.delete(discountId, userId);
+  return await modules.orders.discounts.delete(discountId, userId);
 }

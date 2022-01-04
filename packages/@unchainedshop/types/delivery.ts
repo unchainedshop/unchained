@@ -9,10 +9,12 @@ import {
   IBaseDirector,
   IBaseAdapter,
 } from './common';
-import { Order, OrderDelivery, OrderPosition } from './orders';
+import { Order } from './orders';
 import { User } from './user';
 import { WarehousingProvider } from './warehousing';
 import { Work } from './worker';
+import { OrderDelivery } from './orders.deliveries';
+import { OrderPosition } from './orders.positions';
 
 export enum DeliveryProviderType {
   SHIPPING = 'SHIPPING',
@@ -53,6 +55,7 @@ export interface DeliveryContext {
   product?: Product;
   quantity?: number;
   referenceDate?: Date;
+  transactionContext?: any;
   user?: User;
   warehousingProvider?: WarehousingProvider;
   warehousingThroughputTime?: number;
@@ -69,16 +72,16 @@ interface DeliveryAdapterActions {
   isAutoReleaseAllowed: () => boolean;
   pickUpLocationById: (locationId: string) => Promise<DeliveryLocation>;
   pickUpLocations: () => Promise<Array<DeliveryLocation>>;
-  send: (transactionContext: any) => Promise<boolean | Work>;
+  send: () => Promise<boolean | Work>;
 }
 export type IDeliveryAdapter = IBaseAdapter & {
-  initialConfiguration: DeliveryConfiguration
-  
-  typeSupported: (type: DeliveryProviderType) => boolean
-  
+  initialConfiguration: DeliveryConfiguration;
+
+  typeSupported: (type: DeliveryProviderType) => boolean;
+
   actions: (
     config: DeliveryConfiguration,
-    context: DeliveryAdapterContext & Context
+    context: DeliveryAdapterContext
   ) => DeliveryAdapterActions;
 };
 
@@ -124,30 +127,20 @@ export type DeliveryModule = ModuleMutations<DeliveryProvider> & {
   providerExists: (query: { deliveryProviderId: string }) => Promise<boolean>;
 
   // Delivery adapter
-  findInterface: (query: DeliveryProvider) => IDeliveryAdapter;
-  findInterfaces: (query: {
+  findInterface: (params: DeliveryProvider) => IDeliveryAdapter;
+  findInterfaces: (params: {
     type: DeliveryProviderType;
   }) => Array<IDeliveryAdapter>;
   findSupported: (
-    query: { order: Order }
-  ) => Array<string>;
+    params: { order: Order },
+    requestContext: Context
+  ) => Promise<Array<string>>;
 
-  /* REMARK: Use director directly
-  configurationError: (deliveryProvider: DeliveryProvider) => DeliveryError;
-  isActive: (context: DeliveryContext) => Promise<boolean>;
-  isAutoReleaseAllowed: (context: DeliveryContext) => boolean;
-  estimatedDeliveryThroughput: (context: DeliveryContext) => Promise<number>;
   send: (
-    transactionContext: any // Defined as { paymentContext, deliveryContext, orderContext }
-  ) => Promise<Work>;
-
-  // Clarfiy why to use the generic run pattern and not specific commands
-  run: (
-    name: string,
-    params: { orderDelivery: OrderDelivery },
-    args: any
-  ) => Promise<DeliveryLocation | Array<DeliveryLocation>>;
-  */
+    deliveryProviderId: string,
+    deliveryContext: DeliveryContext,
+    requestContext: Context
+  ) => Promise<any>;
 };
 
 type HelperType<P, T> = (

@@ -99,3 +99,9 @@ Collections.AssortmentLinks.removeLinks = (
 What happens if the first one passes and the second not?
 
 5. Does the user object exists in the requestContext? So far I used the userId exclusively and fetched the user if needed on the fly.
+
+6. configureOrdersModule --> ensureCartForUser: Can we apply the same logic as for the api --> getOrderCart function?
+
+7. OrderDiscountable does not seem to be resolved correctly.
+
+8. Is the function addDiscount in order helpers used somewhere?
