@@ -16,6 +16,7 @@ const {
 const { combine, label, timestamp, colorize, printf, json } = format;
 
 const debugStringContainsModule = (debugString: string, moduleName: string) => {
+  if (!debugString) return false;
   const loggingMatched = debugString
     .split(',')
     .reduce((accumulator: any, name: string) => {

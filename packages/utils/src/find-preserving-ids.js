@@ -8,22 +8,23 @@ const sortBySequence = {
   sequence: 1,
 };
 
+const defaultSort = AMAZON_DOCUMENTDB_COMPAT_MODE
+  ? sortBySequence
+  : sortByIndex;
+
 export default (Collection) =>
   async (selector, ids, options = {}) => {
-    const defaultSort = AMAZON_DOCUMENTDB_COMPAT_MODE
-      ? sortBySequence
-      : sortByIndex;
-
     const { skip, limit, sort = defaultSort } = options;
     const filteredSelector = {
       ...selector,
       _id: { $in: ids },
     };
+
     const filteredPipeline = [
       {
         $match: filteredSelector,
       },
-      !AMAZON_DOCUMENTDB_COMPAT_MODE && {
+      sort?.index && {
         $addFields: {
           index: { $indexOfArray: [ids, '$_id'] },
         },
