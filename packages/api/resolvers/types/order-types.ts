@@ -1,7 +1,12 @@
 import { Context } from '@unchainedshop/types/api';
 import { Country } from '@unchainedshop/types/countries';
 import { Currency } from '@unchainedshop/types/currencies';
-import { Order as OrderType } from '@unchainedshop/types/orders';
+import { Enrollment } from '@unchainedshop/types/enrollments';
+import { File } from '@unchainedshop/types/files';
+import {
+  Order as OrderType,
+  OrderDocumentType,
+} from '@unchainedshop/types/orders';
 import { OrderDelivery } from '@unchainedshop/types/orders.deliveries';
 import { OrderDiscount } from '@unchainedshop/types/orders.discounts';
 import { OrderPayment } from '@unchainedshop/types/orders.payments';
@@ -9,10 +14,6 @@ import { OrderPosition } from '@unchainedshop/types/orders.positions';
 import { OrderPrice } from '@unchainedshop/types/orders.pricing';
 import { User } from '@unchainedshop/types/user';
 import crypto from 'crypto';
-import { OrderPricingSheet } from 'meteor/unchained:utils';
-// import { Currencies } from 'meteor/unchained:core-currencies';
-// import { DeliveryProviders } from 'meteor/unchained:core-delivery';
-// import { PaymentProviders } from 'meteor/unchained:core-payment';
 
 type HelperType<P, T> = (order: OrderType, params: P, context: Context) => T;
 
@@ -23,6 +24,7 @@ interface OrderHelperTypes {
   country: HelperType<never, Promise<Country>>;
   discounts: HelperType<never, Promise<Array<OrderDiscount>>>;
   delivery: HelperType<never, Promise<OrderDelivery>>;
+  documents: HelperType<{ type: OrderDocumentType }, Promise<Array<File>>>;
   enrollment: HelperType<never, Promise<Enrollment>>;
   payment: HelperType<never, Promise<OrderPayment>>;
   items: HelperType<never, Promise<Array<OrderPosition>>>;
@@ -62,6 +64,13 @@ export const Order: OrderHelperTypes = {
     return await modules.orders.discounts.findOrderDiscounts({
       orderId: obj._id as string,
     });
+  },
+
+  documents: async (obj, { type }, { modules }) => {
+    return await modules.files.findFilesByMetaData(
+      { meta: { orderId: obj._id as string, type } },
+      { sort: { 'meta.data': -1 } }
+    );
   },
 
   delivery: async (obj, _, { modules }) => {

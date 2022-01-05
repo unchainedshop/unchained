@@ -12,7 +12,7 @@ import { OrdersCollection } from '../db/OrdersCollection';
 import { OrderStatus } from '../db/OrderStatus';
 import { OrderDiscountDirector } from '../director/OrderDiscountDirector';
 import { OrderPricingDirector } from '../director/OrderPricingDirector';
-import { orderSettings } from '../orders-settings';
+import { ordersSettings } from '../orders-settings';
 import { configureOrderDeliveriesModule } from './configureOrderDeliveriesModule';
 import { configureOrderDiscountsModule } from './configureOrderDiscountsModule';
 import { configureOrderPaymentsModule } from './configureOrderPaymentsModule';
@@ -50,7 +50,7 @@ export const configureOrdersModule = async ({
     let orderNumber = null;
     let i = 0;
     while (!orderNumber) {
-      const newHashID = orderSettings.orderNumberHashFn(order, i);
+      const newHashID = ordersSettings.orderNumberHashFn(order, i);
       if (
         (await Orders.find(
           { orderNumber: newHashID },

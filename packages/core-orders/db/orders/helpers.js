@@ -40,41 +40,43 @@ import { updateOrderDocuments } from '../order-documents/helpers';
 //   return selector;
 // };
 
-Enrollments.generateFromCheckout = async ({ items, order, ...context }) => {
-  const payment = order.payment();
-  const delivery = order.delivery();
-  const template = {
-    orderId: order._id,
-    userId: order.userId,
-    countryCode: order.countryCode,
-    currencyCode: order.currency,
-    billingAddress: order.billingAddress,
-    contact: order.contact,
-    payment: {
-      paymentProviderId: payment.paymentProviderId,
-      context: payment.context,
-    },
-    delivery: {
-      deliveryProviderId: delivery.deliveryProviderId,
-      context: delivery.context,
-    },
-    meta: order.meta,
-  };
-  return Promise.all(
-    items.map(async (item) => {
-      const enrollmentData =
-        await EnrollmentDirector.transformOrderItemToEnrollment(item, {
-          ...template,
-          ...context,
-        });
+// Enrollments.generateFromCheckout = async ({ items, order, ...context }) => {
+//   const payment = order.payment();
+//   const delivery = order.delivery();
 
-      await Enrollments.createEnrollment({
-        ...enrollmentData,
-        orderIdForFirstPeriod: order._id,
-      });
-    })
-  );
-};
+//   const template = {
+//     orderId: order._id,
+//     userId: order.userId,
+//     countryCode: order.countryCode,
+//     currencyCode: order.currency,
+//     billingAddress: order.billingAddress,
+//     contact: order.contact,
+//     payment: {
+//       paymentProviderId: payment.paymentProviderId,
+//       context: payment.context,
+//     },
+//     delivery: {
+//       deliveryProviderId: delivery.deliveryProviderId,
+//       context: delivery.context,
+//     },
+//     meta: order.meta,
+//   };
+
+//   return Promise.all(
+//     items.map(async (item) => {
+//       const enrollmentData =
+//         await EnrollmentDirector.transformOrderItemToEnrollment(item, {
+//           ...template,
+//           ...context,
+//         });
+
+//       await Enrollments.createEnrollment({
+//         ...enrollmentData,
+//         orderIdForFirstPeriod: order._id,
+//       });
+//     })
+//   );
+// };
 
 Enrollments.helpers({
   async generateOrder({ products, orderContext, ...configuration }) {
@@ -211,12 +213,12 @@ Enrollments.helpers({
 //   return count;
 // };
 
-Orders.helpers({
-  enrollment() {
-    return Enrollments.findOne({
-      'periods.orderId': this._id,
-    });
-  },
+// Orders.helpers({
+//   enrollment() {
+//     return Enrollments.findOne({
+//       'periods.orderId': this._id,
+//     });
+//   },
 
   // discounts() {
   //   return OrderDiscounts.find({ orderId: this._id }).fetch();
@@ -462,23 +464,23 @@ Orders.helpers({
   //   // 2. Reserve quantity at Warehousing Provider until order is CANCELLED/FULLFILLED
   //   // ???
   // },
-  generateEnrollments(context) {
-    if (this.originEnrollmentId) return;
-    const items = this.items().filter((item) => {
-      const productPlan = item.product()?.plan;
-      return !!productPlan;
-    });
+  // generateEnrollments(context) {
+  //   if (this.originEnrollmentId) return;
+  //   const items = this.items().filter((item) => {
+  //     const productPlan = item.product()?.plan;
+  //     return !!productPlan;
+  //   });
 
-    if (items.length > 0) {
-      Promise.await(
-        Enrollments.generateFromCheckout({
-          order: this,
-          items,
-          ...context,
-        })
-      );
-    }
-  },
+  //   if (items.length > 0) {
+  //     Promise.await(
+  //       Enrollments.generateFromCheckout({
+  //         order: this,
+  //         items,
+  //         ...context,
+  //       })
+  //     );
+  //   }
+  // },
   // async checkout(
   //   { paymentContext, deliveryContext, orderContext } = {},
   //   options

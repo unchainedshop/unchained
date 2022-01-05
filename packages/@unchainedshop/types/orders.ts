@@ -7,16 +7,16 @@ import {
   TimestampFields,
   _ID,
 } from './common';
-import { OrderDeliveriesModule, OrderDelivery } from './orders.deliveries';
+import { Enrollment } from './enrollments';
+import { OrderDeliveriesModule } from './orders.deliveries';
 import { OrderDiscount, OrderDiscountsModule } from './orders.discounts';
-import { OrderPayment, OrderPaymentsModule } from './orders.payments';
+import { OrderPaymentsModule } from './orders.payments';
 import { OrderPosition, OrderPositionsModule } from './orders.positions';
 import {
   IOrderPricingSheet,
   OrderPrice,
   OrderPricingDiscount,
 } from './orders.pricing';
-import { PricingDiscount } from './pricing';
 import { User } from './user';
 
 export enum OrderStatus {
@@ -24,6 +24,14 @@ export enum OrderStatus {
   PENDING = 'PENDING',
   CONFIRMED = 'CONFIRMED',
   FULLFILLED = 'FULLFILLED',
+}
+
+export enum OrderDocumentType {
+  ORDER_CONFIRMATION = 'ORDER_CONFIRMATION',
+  DELIVERY_NOTE = 'DELIVERY_NOTE',
+  INVOICE = 'INVOICE',
+  RECEIPT = 'RECEIPT',
+  OTHER = 'OTHER',
 }
 
 export type Order = {

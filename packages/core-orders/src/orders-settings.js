@@ -1,6 +1,6 @@
 import { generateRandomHash } from 'meteor/unchained:utils';
 
-export const orderSettings = {
+export const ordersSettings = {
   ensureUserHasCart: null,
   orderNumberHashFn: null,
   load({

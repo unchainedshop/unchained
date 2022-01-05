@@ -108,7 +108,7 @@ export const configureOrderModuleTransformations = ({
       });
       const orderPositionDiscounts = orderPositions.map((orderPosition) =>
         modules.orders.positions
-          .pricingSheet(orderPosition, { currency: order.currency })
+          .pricingSheet(orderPosition, order.currency, requestContext)
           .discountSum(orderDiscountId)
       );
 

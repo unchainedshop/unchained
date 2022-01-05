@@ -4,6 +4,7 @@ import { BookmarksModule } from './bookmarks';
 import { CountriesModule } from './countries';
 import { CurrenciesModule } from './currencies';
 import { DeliveryModule } from './delivery';
+import { EnrollmentsModule } from './enrollments';
 import { EventsModule } from './events';
 import { FilesModule } from './files';
 import { LanguagesModule } from './languages';
@@ -21,7 +22,7 @@ export interface Modules {
   countries: CountriesModule;
   currencies: CurrenciesModule;
   delivery: DeliveryModule;
-  enrollments: any;
+  enrollments: EnrollmentsModule;
   events: EventsModule;
   files: FilesModule;
   filters: any;

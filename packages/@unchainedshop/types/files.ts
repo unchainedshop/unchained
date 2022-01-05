@@ -23,6 +23,14 @@ export type FilesModule = ModuleMutations<File> & {
     params: { fileId?: string; externalId?: string },
     options?: FindOptions
   ) => Promise<File>;
+
+  findFilesByMetaData: (
+    params: {
+      meta: Record<string, any>;
+    },
+    options?: FindOptions
+  ) => Promise<Array<File>>;
+
   // Plugin
   createSignedURL: (
     data: {
@@ -35,7 +43,7 @@ export type FilesModule = ModuleMutations<File> & {
   ) => Promise<File | null>;
   removeFiles: (fileIds: string | Array<string>) => Promise<number>;
   uploadFileFromStream: (
-    params: { directoryName: string, rawFile: any, meta: any },
+    params: { directoryName: string; rawFile: any; meta: any },
     userId: string
   ) => Promise<File | null>;
   uploadFileFromURL: (

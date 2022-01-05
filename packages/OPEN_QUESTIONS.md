@@ -105,3 +105,7 @@ What happens if the first one passes and the second not?
 7. OrderDiscountable does not seem to be resolved correctly.
 
 8. Is the function addDiscount in order helpers used somewhere?
+
+9. Enrollments/helpers addEnrollmentPeriod: OrderId is not defined in db schema but filled in the helper method.
+
+10. Orders/helpers: generateFromCheckout: order.meta does not exist on Order. Leave empty? or context?

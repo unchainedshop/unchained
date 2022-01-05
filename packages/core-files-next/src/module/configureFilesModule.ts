@@ -1,4 +1,8 @@
-import { ModuleInput, ModuleMutations } from '@unchainedshop/types/common';
+import {
+  ModuleInput,
+  ModuleMutations,
+  Query,
+} from '@unchainedshop/types/common';
 import { File, FilesModule, UploadFileData } from '@unchainedshop/types/files';
 import { emit, registerEvents } from 'meteor/unchained:events';
 import {
@@ -39,6 +43,27 @@ export const configureFilesModule = async ({
         fileId ? generateDbFilterById(fileId) : { externalId },
         options
       );
+    },
+
+    findFilesByMetaData: async ({ meta }, options) => {
+      const metaKeys = Object.keys(meta);
+
+      if (metaKeys.length === 0) return [];
+
+      let selector: Query = metaKeys.reduce(
+        (currentSelector, key) =>
+          meta[key] !== undefined
+            ? {
+                ...currentSelector,
+                [`meta.${key}`]: meta[key],
+              }
+            : currentSelector,
+        {}
+      );
+
+      const files = Files.find(selector, options);
+
+      return await files.toArray();
     },
 
     create: async (doc: File, userId: string) => {

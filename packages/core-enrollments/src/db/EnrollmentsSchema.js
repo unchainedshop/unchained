@@ -1,22 +1,11 @@
 import { Schemas } from 'meteor/unchained:utils';
 import SimpleSchema from 'simpl-schema';
 
-import { Enrollments } from './collections';
-
-const { logFields, contextFields, timestampFields, Address, Contact } = Schemas;
-
-export const EnrollmentStatus = {
-  INITIAL: 'INITIAL',
-  ACTIVE: 'ACTIVE',
-  PAUSED: 'PAUSED',
-  TERMINATED: 'TERMINATED',
-};
-
 export const PeriodSchema = new SimpleSchema(
   {
+    orderId: { type: String },
     start: { type: Date, required: true },
     end: { type: Date, required: true },
-    orderId: { type: String },
     isTrial: { type: Boolean },
   },
   {
@@ -24,7 +13,7 @@ export const PeriodSchema = new SimpleSchema(
   }
 );
 
-export const Schema = new SimpleSchema(
+export const EnrollmentsSchema = new SimpleSchema(
   {
     userId: { type: String, required: true },
     status: { type: String, required: true },
@@ -51,23 +40,14 @@ export const Schema = new SimpleSchema(
     countryCode: String,
     payment: { type: Object },
     'payment.paymentProviderId': String,
-    'payment.context': contextFields.context,
+    'payment.context': Schemas.contextFields.context,
     delivery: { type: Object },
     'delivery.deliveryProviderId': String,
-    'delivery.context': contextFields.context,
+    'delivery.context': Schemas.contextFields.context,
     periods: { type: Array },
     'periods.$': { type: PeriodSchema, required: true },
-    ...timestampFields,
-    ...contextFields,
-    ...logFields,
+    ...Schemas.logFields,
+    ...Schemas.timestampFields,
   },
   { requiredByDefault: false }
 );
-
-Enrollments.attachSchema(Schema);
-
-export default () => {
-  Enrollments.rawCollection().createIndex({ userId: 1 });
-  Enrollments.rawCollection().createIndex({ productId: 1 });
-  Enrollments.rawCollection().createIndex({ status: 1 });
-};

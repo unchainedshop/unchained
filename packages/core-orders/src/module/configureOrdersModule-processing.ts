@@ -12,7 +12,7 @@ import { emit, registerEvents } from 'meteor/unchained:events';
 import { log } from 'meteor/unchained:logger';
 import { dbIdToString, generateDbFilterById } from 'meteor/unchained:utils';
 import { OrderStatus } from '../db/OrderStatus';
-import { orderSettings } from '../orders-settings';
+import { ordersSettings } from '../orders-settings';
 
 const ORDER_PROCESSING_EVENTS: string[] = [
   'ORDER_CHECKOUT',
@@ -289,7 +289,7 @@ export const configureOrderModuleProcessing = ({
     },
 
     ensureCartForUser: async (order, params, { modules, services, userId }) => {
-      if (!orderSettings.ensureUserHasCart) return order;
+      if (!ordersSettings.ensureUserHasCart) return order;
 
       const user =
         params.user || (await modules.users.findUser({ userId: order.userId }));
@@ -355,6 +355,7 @@ export const configureOrderModuleProcessing = ({
       }
 
       if (nextStatus === OrderStatus.CONFIRMED) {
+        const orderId = dbIdToString(order._id);
         const orderDelivery = await modules.orders.deliveries.findDelivery({
           orderDeliveryId: order.deliveryId,
         });
@@ -363,7 +364,7 @@ export const configureOrderModuleProcessing = ({
           // before auto delivery is started, else we have no chance to create
           // documents and numbers that are needed for delivery
           const newConfirmedOrder = await updateStatus(
-            order._id as string,
+            orderId,
             {
               status: OrderStatus.CONFIRMED,
               info: 'before delivery',
@@ -379,15 +380,35 @@ export const configureOrderModuleProcessing = ({
             },
             requestContext
           );
-          // TODO: Implement enrollments module
-          await modules.enrollments.generateEnrollments(
-            newConfirmedOrder,
-            {
-              paymentContext: params.paymentContext,
-              deliveryContext: params.deliveryContext,
-            },
-            requestContext
-          );
+
+          // Generate enrollments
+          if (!order.originEnrollmentId) {
+            const orderPositions =
+              await modules.orders.positions.findOrderPositions({ orderId });
+
+            const filteredOrderPositions = await Promise.all(
+              orderPositions.filter(async (orderPosition) => {
+                const product = await modules.products.findProduct({
+                  productId: orderPosition.productId,
+                });
+                return !!product.plan;
+              })
+            );
+
+            if (filteredOrderPositions.length > 0) {
+              await modules.enrollments.createFromCheckout(
+                newConfirmedOrder,
+                {
+                  orderPositions: filteredOrderPositions,
+                  context: {
+                    paymentContext: params.paymentContext,
+                    deliveryContext: params.deliveryContext,
+                  },
+                },
+                requestContext
+              );
+            }
+          }
         } else {
           await modules.orders.deliveries.send(
             orderDelivery,

@@ -7,4 +7,4 @@ export { OrderPricingAdapter } from './director/OrderPricingAdapter';
 export { OrderPricingDirector } from './director/OrderPricingDirector';
 export { OrderPricingSheet } from './director/OrderPricingSheet';
 
-export { orderSettings } from './orders-settings';
+export { ordersSettings } from './orders-settings';
