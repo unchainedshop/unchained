@@ -77,28 +77,28 @@ OrderPositions.helpers({
   },
 
   // Type
-  dispatches() {
-    const scheduling = this.scheduling || [];
-    const order = this.order();
-    const { countryCode, userId } = order;
-    return scheduling.map((schedule) => {
-      const context = {
-        warehousingProvider: WarehousingProviders.findProvider({
-          warehousingProviderId: schedule.warehousingProviderId,
-        }),
-        deliveryProvider: order.delivery().provider(),
-        product: this.product(),
-        quantity: this.quantity,
-        country: countryCode,
-        userId,
-        // referenceDate,
-      };
-      return {
-        ...context,
-        ...schedule,
-      };
-    });
-  },
+  // dispatches() {
+  //   const scheduling = this.scheduling || [];
+  //   const order = this.order();
+  //   const { countryCode, userId } = order;
+  //   return scheduling.map((schedule) => {
+  //     const context = {
+  //       warehousingProvider: WarehousingProviders.findProvider({
+  //         warehousingProviderId: schedule.warehousingProviderId,
+  //       }),
+  //       deliveryProvider: order.delivery().provider(),
+  //       product: this.product(),
+  //       quantity: this.quantity,
+  //       country: countryCode,
+  //       userId,
+  //       // referenceDate,
+  //     };
+  //     return {
+  //       ...context,
+  //       ...schedule,
+  //     };
+  //   });
+  // },
   
   // config(key) {
   //   return (this.configuration || []).reduce(

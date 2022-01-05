@@ -1,7 +1,8 @@
-import { OrderDelivery } from './orders.deliveries';
-import { OrderDiscount } from './orders.discount';
+import { DeliveryProvider } from './delivery';
 import { Discount } from './discount';
 import { Order } from './orders';
+import { OrderDelivery } from './orders.deliveries';
+import { OrderDiscount } from './orders.discounts';
 import {
   BasePricingAdapterContext,
   IPricingAdapter,
@@ -10,7 +11,6 @@ import {
   PricingCalculation,
 } from './pricing';
 import { User } from './user';
-import { DeliveryProvider } from '@unchainedshop/types/delivery';
 
 /*
  * Delivery pricing
@@ -35,16 +35,18 @@ export interface DeliveryPricingAdapterContext
   country?: string;
   currency?: string;
   deliveryProvider: DeliveryProvider;
-  discounts: Array<Discount>;
+  discounts: Array<OrderDiscount>;
   order: Order;
   orderDelivery: OrderDelivery;
   quantity: number;
   user: User;
 }
 
-export type DeliveryPricingContext = Omit<DeliveryPricingAdapterContext, 'discounts'> & {  
-  providerContext?: any;
-} | { item: OrderDelivery}
+export type DeliveryPricingContext =
+  | (Omit<DeliveryPricingAdapterContext, 'discounts'> & {
+      providerContext?: any;
+    })
+  | { item: OrderDelivery };
 
 export interface IDeliveryPricingSheet
   extends IPricingSheet<DeliveryPricingCalculation> {}

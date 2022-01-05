@@ -15,6 +15,10 @@ import { WarehousingProvider } from './warehousing';
 import { Work } from './worker';
 import { OrderDelivery } from './orders.deliveries';
 import { OrderPosition } from './orders.positions';
+import {
+  DeliveryPricingContext,
+  DeliveryPricingCalculation,
+} from './delivery.pricing';
 
 export enum DeliveryProviderType {
   SHIPPING = 'SHIPPING',
@@ -136,6 +140,14 @@ export type DeliveryModule = ModuleMutations<DeliveryProvider> & {
     requestContext: Context
   ) => Promise<Array<string>>;
 
+  isAutoReleaseAllowed: (
+    deliveryProvider: DeliveryProvider,
+    requestContext: Context
+  ) => boolean;
+  calculate: (
+    pricingContext: DeliveryPricingContext,
+    requestContext: Context
+  ) => Promise<Array<DeliveryPricingCalculation>>;
   send: (
     deliveryProviderId: string,
     deliveryContext: DeliveryContext,

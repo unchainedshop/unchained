@@ -25,6 +25,7 @@ export type {
   Filter,
   FindOptions,
   ModifyResult,
+  ObjectId,
   Projection,
   Sort,
   UpdateFilter as Update,

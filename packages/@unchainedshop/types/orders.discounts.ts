@@ -1,3 +1,4 @@
+import { Order } from './orders';
 import { Context } from './api';
 import { FindOptions, TimestampFields, _ID } from './common';
 import { DiscountAdapterActions, DiscountConfiguration } from './discount';
@@ -43,9 +44,10 @@ export type OrderDiscountsModule = {
 
   // Adapter
   configurationForPricingAdapterKey: (
-    pricingAdapterKey: string,
-    calculation: Array<PricingCalculation>,
-  ) => DiscountConfiguration;
+    orderDiscount: OrderDiscount,
+    adapterKey: string,
+    requestContext: Context
+  ) => Promise<DiscountConfiguration>;
 
   // Mutations
   createManualOrderDiscount: (

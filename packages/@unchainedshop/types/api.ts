@@ -1,4 +1,4 @@
-import { Locale } from '@types/locale';
+import { Locale } from 'locale';
 import { Modules } from './modules';
 
 export declare type Root = Record<string, unknown>;

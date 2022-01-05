@@ -57,6 +57,10 @@ export type IWarehousingAdapter = IBaseAdapter & {
   };
 };
 
+type EstimatedDispatch = {
+  shipping?: Date;
+  earliestDelivery?: Date;
+};
 export type IWarehousingDirector = IBaseDirector<IWarehousingAdapter> & {
   actions: (
     warehousingProvider: WarehousingProvider,
@@ -67,10 +71,7 @@ export type IWarehousingDirector = IBaseDirector<IWarehousingAdapter> & {
     isActive: () => boolean;
     throughputTime: () => Promise<number>;
     estimatedStock: () => Promise<{ quantity: number } | null>;
-    estimatedDispatch: () => Promise<{
-      shipping?: Date;
-      earliestDelivery?: Date;
-    }>;
+    estimatedDispatch: () => Promise<EstimatedDispatch>;
   };
 };
 
@@ -109,6 +110,11 @@ export type WarehousingModule = ModuleMutations<WarehousingProvider> & {
     provider: WarehousingProvider,
     requestContext: Context
   ) => WarehousingError;
+  estimatedDispatch: (
+    provider: WarehousingProvider,
+    context: WarehousingContext,
+    requestContext: Context
+  ) => Promise<EstimatedDispatch>;
   isActive: (provider: WarehousingProvider, requestContext: Context) => boolean;
 };
 

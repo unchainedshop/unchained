@@ -10,8 +10,6 @@ import {
   OrderPositionsModule,
 } from '@unchainedshop/types/orders.positions';
 import { Product } from '@unchainedshop/types/products';
-import { ProductPricingDirector } from 'meteor/unchained:core-products';
-import { WarehousingDirector } from 'meteor/unchained:core-warehousing';
 import { emit, registerEvents } from 'meteor/unchained:events';
 import { log } from 'meteor/unchained:logger';
 import {
@@ -20,7 +18,6 @@ import {
   dbIdToString,
 } from 'meteor/unchained:utils';
 import { OrderPositionsSchema } from '../db/OrderPositionsSchema';
-import { OrderPricingSheet } from '../director/OrderPricingSheet';
 
 const ORDER_POSITION_EVENTS: string[] = [
   'ORDER_UPDATE_CART_ITEM',
@@ -60,10 +57,11 @@ export const configureOrderPositionsModule = ({
     },
 
     // Transformations
-    discounts: (orderPosition, { order, orderDiscount }, { modules }) => {
-      const pricingSheet = modules.orders.positions.pricingSheet(
+    discounts: (orderPosition, { order, orderDiscount }, requestContext) => {
+      const pricingSheet = requestContext.modules.orders.positions.pricingSheet(
         orderPosition,
-        { currency: order.currency }
+        order.currency,
+        requestContext
       );
 
       return pricingSheet
@@ -74,8 +72,8 @@ export const configureOrderPositionsModule = ({
         }));
     },
 
-    pricingSheet: (orderPosition, { currency }) => {
-      return OrderPricingSheet({
+    pricingSheet: (orderPosition, currency, { modules }) => {
+      return modules.products.pricingSheet({
         calculation: orderPosition.calculation,
         currency,
         quantity: orderPosition.quantity,
@@ -273,12 +271,13 @@ export const configureOrderPositionsModule = ({
             referenceDate: order.ordered,
             quantity: orderPosition.quantity,
           };
-          const director = WarehousingDirector.actions(
-            warehousingProvider,
-            context,
-            requestContext
-          );
-          const dispatch = await director.estimatedDispatch();
+
+          const dispatch =
+            await requestContext.modules.warehousing.estimatedDispatch(
+              warehousingProvider,
+              context,
+              requestContext
+            );
 
           return {
             warehousingProviderId: warehousingProvider._id,
@@ -299,11 +298,10 @@ export const configureOrderPositionsModule = ({
         orderId: orderPosition.orderId,
       });
 
-      const pricing = ProductPricingDirector.actions(
+      const calculation = await requestContext.modules.products.calculate(
         { item: orderPosition },
         requestContext
       );
-      const calculation = await pricing.calculate();
       const selector = buildFindByIdSelector(orderPosition._id as string);
 
       await OrderPositions.updateOne(selector, {

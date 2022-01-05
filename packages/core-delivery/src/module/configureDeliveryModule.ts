@@ -11,11 +11,11 @@ import {
   generateDbFilterById,
   generateDbMutations,
 } from 'meteor/unchained:utils';
-import { DeliveryProvidersCollection } from 'src/db/DeliveryProvidersCollection';
-import { deliverySettings } from 'src/delivery-settings';
+import { DeliveryProvidersCollection } from '../db/DeliveryProvidersCollection';
 import { DeliveryProvidersSchema } from '../db/DeliveryProvidersSchema';
-import { DeliveryAdapter } from '../director/DeliveryAdapter';
+import { deliverySettings } from '../delivery-settings';
 import { DeliveryDirector } from '../director/DeliveryDirector';
+import { DeliveryPricingDirector } from '../director/DeliveryPricingDirector';
 
 const DELIVERY_PROVIDER_EVENTS: string[] = [
   'DELIVERY_PROVIDER_CREATE',
@@ -119,6 +119,26 @@ export const configureDeliveryModule = async ({
       return deliverySettings.filterSupportedProviders({
         providers,
       });
+    },
+
+    isAutoReleaseAllowed: (deliveryProvider, requestContext) => {
+      const director = DeliveryDirector.actions(
+        deliveryProvider,
+        {},
+        requestContext
+      );
+
+      if (director.isAutoReleaseAllowed()) return false;
+
+      return true;
+    },
+
+    calculate: async (pricingContext, requestContext) => {
+      const pricing = DeliveryPricingDirector.actions(
+        pricingContext,
+        requestContext
+      );
+      return await pricing.calculate();
     },
 
     send: async (deliveryProviderId, deliveryContext, requestContext) => {

@@ -1,3 +1,4 @@
+import { Discount } from '@unchainedshop/types/discount';
 import {
   BasePricingAdapterContext,
   BasePricingContext,
@@ -7,6 +8,7 @@ import {
   PricingCalculation,
 } from '@unchainedshop/types/pricing';
 import { log, LogLevel } from 'meteor/unchained:logger';
+import { dbIdToString } from '../utils-index';
 import { BaseDirector } from './BaseDirector';
 
 export const BasePricingDirector = <
@@ -35,7 +37,7 @@ export const BasePricingDirector = <
     Adapter
   > = {
     ...baseDirector,
-    buildPricingContext(pricingContext) {
+    buildPricingContext: (pricingContext) => {
       return {
         discounts: [],
         ...pricingContext,
@@ -53,29 +55,32 @@ export const BasePricingDirector = <
             requestContext
           );
 
-          const adapters = baseDirector
+          const Adapters = baseDirector
             .getAdapters()
             .filter(async (Adapter) => await Adapter.isActivatedFor(context));
 
-          calculation = await adapters.reduce(
+          calculation = await Adapters.reduce(
             async (previousPromise, Adapter) => {
               const calculation = await previousPromise;
-              const discounts = context.discounts
-                .map((discount) => ({
-                  discountId: discount.discountId,
+              const discounts: Array<Discount> = await Promise.all(
+                context.discounts.map(async (discount) => ({
+                  discountId: dbIdToString(discount._id),
                   configuration:
-                    requestContext.modules.orders.discounts.configurationForPricingAdapterKey(
+                    await requestContext.modules.orders.discounts.configurationForPricingAdapterKey(
+                      discount,
                       Adapter.key,
-                      calculation
+                      requestContext
                     ),
                 }))
-                .filter(({ configuration }) => configuration !== null);
+              );
 
               try {
                 const adapter = Adapter.actions({
                   context,
                   calculation,
-                  discounts,
+                  discounts: discounts.filter(
+                    ({ configuration }) => configuration !== null
+                  ),
                 });
 
                 const nextCalculationResult = await adapter.calculate();

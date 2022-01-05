@@ -42,8 +42,8 @@ export const ProductPricingAdapter: IPricingAdapter<
         );
         return resultRaw;
       },
-      calculationSheet,
-      resultSheet,
+      calculationSheet: () => calculationSheet,
+      resultSheet: () => resultSheet,
       resetCalculation() {
         // revert old prices
         calculationSheet.filterBy().forEach(({ amount, ...row }) => {

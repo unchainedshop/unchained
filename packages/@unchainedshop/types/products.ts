@@ -1,3 +1,8 @@
+import {
+  IProductPricingSheet,
+  ProductPricingCalculation,
+  ProductPricingContext,
+} from './products.pricing';
 import { Context } from './api';
 import { AssortmentPathLink, AssortmentProduct } from './assortments';
 import { Update, FindOptions, TimestampFields, _ID } from './common';
@@ -151,6 +156,12 @@ export type ProductsModule = {
 
   normalizedStatus: (product: Product) => string;
 
+  pricingSheet: (params: {
+    calculation: Array<ProductPricingCalculation>;
+    currency: string;
+    quantity: number;
+  }) => IProductPricingSheet;
+
   proxyAssignments: (
     product: Product,
     options: { includeInactive?: boolean }
@@ -165,7 +176,7 @@ export type ProductsModule = {
   resolveOrderableProduct: (
     product: Product,
     params: { configuration?: Array<ProductConfiguration> },
-    requestContext: Context,
+    requestContext: Context
   ) => Promise<Product>;
 
   prices: {
@@ -223,6 +234,13 @@ export type ProductsModule = {
       requestContext: Context
     ) => Promise<ProductPriceRange>;
   };
+
+  // Product adapter
+
+  calculate: (
+    pricingContext: ProductPricingContext,
+    requestContext: Context
+  ) => Promise<Array<ProductPricingCalculation>>;
 
   // Mutations
   create: (

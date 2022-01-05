@@ -28,6 +28,8 @@ export const ProductPricingDirector: IProductPricingDirector = {
     } & ProductPricingContext,
     requestContext
   ) => {
+    const { modules } = requestContext;
+
     if (!orderPosition)
       return {
         discounts: [],
@@ -35,18 +37,18 @@ export const ProductPricingDirector: IProductPricingDirector = {
         ...requestContext,
       } as ProductPricingAdapterContext;
 
-    const product = await requestContext.modules.products.findProduct({
+    const product = await modules.products.findProduct({
       productId: orderPosition.productId,
     });
 
-    const order = await requestContext.modules.orders.findOrder({
+    const order = await modules.orders.findOrder({
       orderId: orderPosition.orderId,
     });
-    const user = await requestContext.modules.users.findUser({
+    const user = await modules.users.findUser({
       userId: order.userId,
     });
-    const discounts = requestContext.modules.orders.positions.discounts(orderPosition, {
-      currency: order.currency,
+    const discounts = await modules.orders.discounts.findOrderDiscounts({
+      orderId: orderPosition.orderId,
     });
 
     return {

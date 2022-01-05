@@ -1,17 +1,17 @@
-import { Discount } from './discount';
 import { Order } from './orders';
+import { OrderDelivery } from './orders.deliveries';
+import { OrderDiscount } from './orders.discounts';
+import { OrderPayment } from './orders.payments';
+import { OrderPosition } from './orders.positions';
 import {
   BasePricingAdapterContext,
   IPricingAdapter,
   IPricingDirector,
   IPricingSheet,
   PricingCalculation,
-  PricingDiscount,
+  PricingDiscount
 } from './pricing';
 import { User } from './user';
-import { OrderDelivery } from './orders.deliveries';
-import { OrderPayment } from './orders.payments';
-import { OrderPosition } from './orders.positions';
 
 /*
  * Order pricing
@@ -40,7 +40,7 @@ export interface OrderPricingCalculation extends PricingCalculation {
 
 export interface OrderPricingAdapterContext extends BasePricingAdapterContext {
   currency?: string;
-  discounts: Array<Discount>;
+  discounts: Array<OrderDiscount>;
   order: Order;
   orderDelivery: OrderDelivery;
   orderPositions: Array<OrderPosition>;

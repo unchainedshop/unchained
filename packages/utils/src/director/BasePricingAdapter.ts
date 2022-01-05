@@ -17,7 +17,7 @@ export const BasePricingAdapter = <
   version: '',
   orderIndex: 0,
 
-  isActivatedFor: async (context) => {
+  isActivatedFor: async () => {
     return false;
   },
 
@@ -25,8 +25,8 @@ export const BasePricingAdapter = <
     calculate: async () => {
       return [];
     },
-    calculationSheet: BasePricingSheet(params),
-    resultSheet: BasePricingSheet(params),
+    calculationSheet: () => BasePricingSheet(params),
+    resultSheet: () => BasePricingSheet(params),
   }),
 
   log(message: string, { level = LogLevel.Debug, ...options } = {}) {

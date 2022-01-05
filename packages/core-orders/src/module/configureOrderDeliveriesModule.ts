@@ -8,10 +8,6 @@ import {
   OrderDeliveriesModule,
   OrderDelivery,
 } from '@unchainedshop/types/orders.deliveries';
-import {
-  DeliveryDirector,
-  DeliveryPricingDirector,
-} from 'meteor/unchained:core-delivery';
 import { emit, registerEvents } from 'meteor/unchained:events';
 import { log } from 'meteor/unchained:logger';
 import {
@@ -101,11 +97,10 @@ export const configureOrderDeliveriesModule = ({
         deliveryProviderId: orderDelivery.deliveryProviderId,
       });
 
-      const director = DeliveryDirector.actions(provider, {}, requestContext);
-
-      if (director.isAutoReleaseAllowed()) return false;
-
-      return true;
+      return requestContext.modules.delivery.isAutoReleaseAllowed(
+        provider,
+        requestContext
+      );
     },
     isBlockingOrderFullfillment: (orderDelivery) => {
       if (orderDelivery.status === OrderDeliveryStatus.DELIVERED) return false;
@@ -227,13 +222,12 @@ export const configureOrderDeliveriesModule = ({
         orderId: orderDelivery.orderId,
       });
 
-      const pricing = DeliveryPricingDirector.actions(
+      const calculation = await requestContext.modules.delivery.calculate(
         {
           item: orderDelivery,
         },
         requestContext
       );
-      const calculation = await pricing.calculate();
 
       await OrderDeliveries.updateOne(
         buildFindByIdSelector(orderDelivery._id as string),

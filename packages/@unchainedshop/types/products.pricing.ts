@@ -1,5 +1,3 @@
-import { Context } from './api';
-import { Discount } from './discount';
 import { Order } from './orders';
 import { OrderDiscount } from './orders.discounts';
 import { OrderPosition } from './orders.positions';
@@ -8,7 +6,7 @@ import {
   IPricingAdapter,
   IPricingDirector,
   IPricingSheet,
-  PricingCalculation,
+  PricingCalculation
 } from './pricing';
 import { Product } from './products';
 import { User } from './user';
@@ -29,7 +27,7 @@ export interface ProductPricingCalculation extends PricingCalculation {
 export interface ProductPricingAdapterContext extends BasePricingAdapterContext {
   country: string;
   currency: string;
-  discounts: Array<Discount>;
+  discounts: Array<OrderDiscount>
   order: Order;
   product: Product;
   quantity: number;

@@ -120,9 +120,23 @@ export const configureWarehousingModule = async ({
         requestContext
       ).configurationError();
     },
-    isActive: (provider, requestContext) => {
+
+    estimatedDispatch: async (
+      warehousingProvider,
+      warehousingContext,
+      requestContext
+    ) => {
+      const director = WarehousingDirector.actions(
+        warehousingProvider,
+        warehousingContext,
+        requestContext
+      );
+      return await director.estimatedDispatch();
+    },
+
+    isActive: (warehousingProvider, requestContext) => {
       return WarehousingDirector.actions(
-        provider,
+        warehousingProvider,
         {},
         requestContext
       ).isActive();

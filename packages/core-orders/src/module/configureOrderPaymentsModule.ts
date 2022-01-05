@@ -9,8 +9,8 @@ import {
   OrderPaymentsModule,
   OrderPayment,
 } from '@unchainedshop/types/orders.payments';
-import { PaymentPricingDirector } from 'meteor/unchained:core-payment';
-import { PaymentDirector } from 'meteor/unchained:core-payment';
+// import { PaymentPricingDirector } from 'meteor/unchained:core-payment';
+// import { PaymentDirector } from 'meteor/unchained:core-payment';
 import { emit, registerEvents } from 'meteor/unchained:events';
 import { log } from 'meteor/unchained:logger';
 import {
@@ -70,24 +70,6 @@ export const configureOrderPaymentsModule = ({
     return await OrderPayments.findOne(selector);
   };
 
-  const getDirector = async (
-    orderPayment: OrderPayment,
-    paymentContext: any,
-    requestContext: Context
-  ) => {
-    const provider =
-      await requestContext.modules.payment.paymentProviders.findProvider({
-        paymentProviderId: orderPayment.paymentProviderId,
-      });
-    const director = PaymentDirector.actions(
-      provider,
-      paymentContext,
-      requestContext
-    );
-
-    return director;
-  };
-
   return {
     // Queries
     findOrderPayment: async ({ orderPaymentId }) => {
@@ -97,7 +79,7 @@ export const configureOrderPaymentsModule = ({
     // Transformations
     discounts: (orderPayment, { order, orderDiscount }, { modules }) => {
       if (!orderPayment) return [];
-      
+
       const pricingSheet = modules.orders.payments.pricingSheet(
         orderPayment,
         order.currency
@@ -114,9 +96,15 @@ export const configureOrderPaymentsModule = ({
     isBlockingOrderConfirmation: async (orderPayment, requestContext) => {
       if (orderPayment.status === OrderPaymentStatus.PAID) return false;
 
-      const director = await getDirector(orderPayment, {}, requestContext);
-      if (director.isPayLaterAllowed()) return false;
-      
+      const isPayLaterAllowed =
+        await requestContext.modules.payment.paymentProviders.isPayLaterAllowed(
+          orderPayment.paymentProviderId,
+          {},
+          requestContext
+        );
+
+      if (isPayLaterAllowed) return false;
+
       return true;
     },
     isBlockingOrderFullfillment: (orderPayment) => {
@@ -230,16 +218,11 @@ export const configureOrderPaymentsModule = ({
     },
 
     sign: async (orderPayment, paymentContext, requestContext) => {
-      const director = await getDirector(
-        orderPayment,
+      const result = await requestContext.modules.payment.paymentProviders.sign(
+        orderPayment.paymentProviderId,
         paymentContext,
         requestContext
       );
-
-      const result = await director.sign({
-        paymentContext,
-        orderPayment,
-      });
 
       emit('ORDER_SIGN_PAYMENT', {
         orderPayment,
@@ -280,13 +263,13 @@ export const configureOrderPaymentsModule = ({
         orderId: orderPayment.orderId,
       });
 
-      const pricing = PaymentPricingDirector.actions(
-        {
-          item: orderPayment,
-        },
-        requestContext
-      );
-      const calculation = await pricing.calculate();
+      const calculation =
+        await requestContext.modules.payment.paymentProviders.calculate(
+          {
+            item: orderPayment,
+          },
+          requestContext
+        );
 
       await OrderPayments.updateOne(
         buildFindByIdSelector(orderPayment._id as string),

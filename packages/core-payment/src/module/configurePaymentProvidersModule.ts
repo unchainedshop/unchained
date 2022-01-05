@@ -11,6 +11,7 @@ import {
   generateDbFilterById,
   generateDbMutations,
 } from 'meteor/unchained:utils';
+import { PaymentPricingDirector } from '../director/PaymentPricingDirector';
 import { PaymentProvidersSchema } from '../db/PaymentProvidersSchema';
 import { PaymentDirector } from '../director/PaymentDirector';
 import { paymentProviderSettings } from './configurePaymentProvidersSettings';
@@ -136,6 +137,14 @@ export const configurePaymentProvidersModule = (
         getDefaultContext(),
         requestContext
       ).configurationError();
+    },
+
+    calculate: async (pricingContext, requestContext) => {
+      const pricing = PaymentPricingDirector.actions(
+        pricingContext,
+        requestContext
+      );
+      return await pricing.calculate();
     },
 
     isActive: async (paymentProviderId, paymentContext, requestContext) => {

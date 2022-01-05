@@ -6,35 +6,29 @@ Package.describe({
   documentation: 'README.md',
 });
 
+Npm.depends({
+  'simpl-schema': '1.12.0',
+});
+
 Package.onUse((api) => {
   api.versionsFrom('2.2');
   api.use('ecmascript');
-  api.use('mongo');
-  api.use('promise');
-  api.use('dburles:collection-helpers@1.1.0');
-  api.use('aldeed:collection2@3.2.1');
+  api.use('typescript');
 
   api.use('unchained:utils@1.0.0-beta15');
   api.use('unchained:events@1.0.0-beta15');
   api.use('unchained:logger@1.0.0-beta15');
 
-  api.use('unchained:core-files-next@1.0.0-beta15');
-  api.use('unchained:director-pricing@1.0.0-beta15');
-  api.use('unchained:core-users@1.0.0-beta15');
-  api.use('unchained:core-countries@1.0.0-beta15');
-  api.use('unchained:core-documents@1.0.0-beta15');
-  api.use('unchained:core-delivery@1.0.0-beta15');
-  api.use('unchained:core-products@1.0.0-beta15');
-  api.use('unchained:director-discounting@1.0.0-beta15');
-  api.use('unchained:core-payment@1.0.0-beta15');
-  api.use('unchained:core-quotations@1.0.0-beta15');
-  api.use('unchained:core-enrollments@1.0.0-beta15');
-
-  api.mainModule('orders.js', 'server');
+  api.mainModule('src/orders-index.ts', 'server');
 });
 
 Package.onTest((api) => {
+  api.use('meteortesting:mocha');
   api.use('ecmascript');
+  api.use('typescript');
+
+  api.use('unchained:mongodb');
   api.use('unchained:core-orders');
-  api.mainModule('orders-tests.js');
+
+  api.mainModule('tests/orders-index.test.ts');
 });

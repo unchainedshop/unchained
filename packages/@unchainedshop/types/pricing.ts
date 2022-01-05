@@ -11,7 +11,7 @@ import { OrderPosition } from './orders.positions';
 export interface BasePricingAdapterContext extends Context {
   order: Order;
   user: User;
-  discounts: Array<Discount>;
+  discounts: Array<OrderDiscount>
 }
 
 export type BasePricingContext =
@@ -90,10 +90,10 @@ export type IPricingSheet<Calculation extends PricingCalculation> =
   };
 
 export interface IPricingAdapterActions<
-  Calculation extends PricingCalculation
+  Calculation extends PricingCalculation,
 > {
   calculate: () => Promise<Array<Calculation>>;
-  resultSheet: () => IPricingSheet<Calculation>;
+  resultSheet: () => IBasePricingSheet<Calculation>;
 }
 
 export type IPricingAdapter<
@@ -106,7 +106,7 @@ export type IPricingAdapter<
   isActivatedFor: (context: PricingContext) => Promise<boolean>;
 
   actions: (params: {
-    context: PricingContext;
+    context: PricingContext,
     calculation: Array<Calculation>;
     discounts: Array<Discount>;
   }) => IPricingAdapterActions<Calculation> & {

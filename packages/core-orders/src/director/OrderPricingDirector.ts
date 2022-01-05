@@ -6,7 +6,7 @@ import {
   OrderPricingCalculation,
   OrderPricingContext,
 } from '@unchainedshop/types/orders.pricing';
-import { BasePricingDirector } from 'meteor/unchained:utils';
+import { BasePricingDirector, dbIdToString } from 'meteor/unchained:utils';
 import { OrderPricingSheet } from './OrderPricingSheet';
 
 const baseDirector = BasePricingDirector<
@@ -20,22 +20,28 @@ export const OrderPricingDirector: IOrderPricingDirector = {
   ...baseDirector,
 
   buildPricingContext: async ({ order }: { order: Order }, requestContext) => {
-    const user = await requestContext.modules.users.findUser({
+    const { modules } = requestContext;
+    const user = await modules.users.findUser({
       userId: order.userId,
     });
 
-    // TODO: use modules
-    /* @ts-ignore */
-    const orderPositions = order.items();
-    // TODO: use modules
-    /* @ts-ignore */
-    const orderDelivery = order.delivery();
-    // TODO: use modules
-    /* @ts-ignore */
-    const orderPayment = order.payment();
-    // TODO: use modules
-    /* @ts-ignore */
-    const discounts = order.discounts();
+    const orderId = dbIdToString(order._id);
+
+    const orderPositions = await modules.orders.positions.findOrderPositions({
+      orderId,
+    });
+
+    const orderDelivery = await modules.orders.deliveries.findDelivery({
+      orderDeliveryId: order.deliveryId,
+    });
+
+    const orderPayment = await modules.orders.payments.findOrderPayment({
+      orderPaymentId: order.paymentId,
+    });
+
+    const discounts = await modules.orders.discounts.findOrderDiscounts({
+      orderId,
+    });
 
     return {
       currency: order.currency,

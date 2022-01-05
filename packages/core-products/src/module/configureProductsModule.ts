@@ -26,6 +26,8 @@ import { configureProductPricesModule } from './configureProductPrices';
 import { configureProductReviewsModule } from './configureProductReviewsModule';
 import { configureProductVariationsModule } from './configureProductVariationsModule';
 import { Context } from '@unchainedshop/types/api';
+import { ProductPricingDirector } from 'src/products-index';
+import { ProductPricingSheet } from 'src/director/ProductPricingSheet';
 
 const PRODUCT_EVENTS = [
   'PRODUCT_CREATE',
@@ -233,6 +235,10 @@ export const configureProductsModule = async ({
       return product.status === ProductStatus.DRAFT;
     },
 
+    pricingSheet: (params) => {
+      return ProductPricingSheet(params);
+    },
+
     proxyAssignments: async (product, { includeInactive = false } = {}) => {
       const assignments = product.proxy?.assignments || [];
 
@@ -304,6 +310,16 @@ export const configureProductsModule = async ({
     },
 
     prices: configureProductPricesModule({ Products, proxyProducts }),
+
+    // Product adapter
+    calculate: async (pricingContext, requestContext) => {
+      const director = ProductPricingDirector.actions(
+        pricingContext,
+        requestContext
+      );
+
+      return await director.calculate();
+    },
 
     // Mutations
     create: async (

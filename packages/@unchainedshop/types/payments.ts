@@ -11,6 +11,10 @@ import {
 import { User } from './user';
 import { Order } from './orders';
 import { OrderPayment } from './orders.payments';
+import {
+  PaymentPricingContext,
+  PaymentPricingCalculation,
+} from './payments.pricing';
 
 export enum PaymentProviderType {
   CARD = 'CARD',
@@ -158,6 +162,11 @@ export type PaymentModule = {
       requestContext: Context
     ) => Promise<boolean>;
 
+    calculate: (
+      pricingContext: PaymentPricingContext,
+      requestContext: Context
+    ) => Promise<Array<PaymentPricingCalculation>>;
+
     charge: (
       paymentProviderId: string,
       paymentContext: PaymentContext,
@@ -231,7 +240,10 @@ export type PaymentModule = {
       externalId: string;
     }) => Promise<BityCredentials>;
 
-    upsertCredentials: (doc: BityCredentials, userId: string) => Promise<string | null>;
+    upsertCredentials: (
+      doc: BityCredentials,
+      userId: string
+    ) => Promise<string | null>;
   };
 };
 

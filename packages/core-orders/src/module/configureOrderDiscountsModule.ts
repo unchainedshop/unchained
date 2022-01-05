@@ -4,23 +4,21 @@ import {
   Filter,
   ModuleMutations,
 } from '@unchainedshop/types/common';
+import { OrdersModule } from '@unchainedshop/types/orders';
 import {
-  OrderDiscountsModule,
   OrderDiscount,
+  OrderDiscountsModule,
 } from '@unchainedshop/types/orders.discounts';
-import { OrderDiscountDirector } from '../director/OrderDiscountDirector';
 import { emit, registerEvents } from 'meteor/unchained:events';
 import { log } from 'meteor/unchained:logger';
 import {
+  dbIdToString,
   generateDbFilterById,
   generateDbMutations,
-  objectInvert,
-  dbIdToString,
 } from 'meteor/unchained:utils';
 import { OrderDiscountsSchema } from '../db/OrderDiscountsSchema';
-import { OrderPricingSheet } from '../director/OrderPricingSheet';
 import { OrderDiscountTrigger } from '../db/OrderDiscountTrigger';
-import { OrdersModule } from '@unchainedshop/types/orders';
+import { OrderDiscountDirector } from '../director/OrderDiscountDirector';
 
 const ORDER_DISCOUNT_EVENTS: string[] = [
   'ORDER_CREATE_DISCOUNT',
@@ -191,7 +189,7 @@ export const configureOrderDiscountsModule = ({
     // Transformations
     interface: async (orderDiscount, requestContext) => {
       const adapter = await getAdapter(orderDiscount, requestContext);
-      return adapter
+      return adapter;
     },
 
     isValid: async (orderDiscount, requestContext) => {
@@ -204,6 +202,20 @@ export const configureOrderDiscountsModule = ({
 
       return adapter.isValidForCodeTriggering({
         code: orderDiscount.code,
+      });
+    },
+
+    // Adapter
+    configurationForPricingAdapterKey: async (
+      orderDiscount,
+      adapterKey,
+      requestContext
+    ) => {
+      const adapter = await getAdapter(orderDiscount, requestContext);
+      if (!adapter) return null;
+
+      return adapter.discountForPricingAdapterKey({
+        pricingAdapterKey: adapterKey,
       });
     },
 

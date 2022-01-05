@@ -58,9 +58,10 @@ export const generateDbMutations = <T extends { _id?: _ID }>(
           const filter = generateDbFilterById(_id)
           filter.deleted = null
           const values = schema.clean(
-            { deleted: new Date(), deletedBy: userId },
+            { $set: { deleted: new Date(), deletedBy: userId } },
             { isModifier: true }
           );
+
           const result = await collection.updateOne(filter, values);
 
           return result.modifiedCount;

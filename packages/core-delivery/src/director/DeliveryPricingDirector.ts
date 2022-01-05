@@ -27,6 +27,7 @@ export const DeliveryPricingDirector: IDeliveryPricingDirector = {
     },
     requestContext
   ) => {
+    const { modules } = requestContext;
     const { providerContext, ...context } = rest as any;
 
     if (!item)
@@ -36,20 +37,19 @@ export const DeliveryPricingDirector: IDeliveryPricingDirector = {
         ...context,
       };
 
-    const order = await requestContext.modules.orders.findOrder({
+    const order = await modules.orders.findOrder({
       orderId: item.orderId,
     });
-    const provider = requestContext.modules.delivery.findProvider({
+    const provider = modules.delivery.findProvider({
       deliveryProviderId: item.deliveryProviderId,
     });
-    const user = await requestContext.modules.users.findUser({
+    const user = await modules.users.findUser({
       userId: order.userId,
     });
 
-    const discounts =
-      await requestContext.modules.orders.discounts.findOrderDiscount({
-        discountId: item.orderId,
-      });
+    const discounts = await modules.orders.discounts.findOrderDiscount({
+      discountId: item.orderId,
+    });
 
     return {
       country: order.countryCode,

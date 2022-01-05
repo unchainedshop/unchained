@@ -1,18 +1,18 @@
 import { Context } from './api';
-import { Configuration, FindOptions, TimestampFields, _ID } from './common';
+import { Configuration, TimestampFields, _ID } from './common';
 import { Order } from './orders';
 import { OrderDelivery } from './orders.deliveries';
 import { OrderDiscount } from './orders.discounts';
-import {
-  IOrderPricingSheet,
-  OrderPrice,
-  OrderPricingDiscount,
-} from './orders.pricing';
+import { OrderPrice, OrderPricingDiscount } from './orders.pricing';
 import { Product } from './products';
+import {
+  IProductPricingSheet,
+  ProductPricingCalculation,
+} from './products.pricing';
 
 export type OrderPosition = {
   _id?: _ID;
-  calculation: Array<any>;
+  calculation: Array<ProductPricingCalculation>;
   configuration: Configuration;
   context?: any;
   orderId: string;
@@ -39,13 +39,14 @@ export type OrderPositionsModule = {
 
   pricingSheet: (
     orderPosition: OrderPosition,
-    params: { currency?: string }
-  ) => IOrderPricingSheet;
+    currency: string,
+    requestContext: Context
+  ) => IProductPricingSheet;
 
   // Mutations
   create: (
     doc: Partial<OrderPosition>,
-    params: { order: Order; product: Product; originalProduct: Product },
+    params: { order: Order; product: Product; originalProduct?: Product },
     requestContext: Context
   ) => Promise<OrderPosition>;
 

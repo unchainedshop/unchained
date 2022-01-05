@@ -1,5 +1,5 @@
-import { Locale, Locales } from '@types/locale';
-import { ObjectId } from 'bjson';
+import { Locale, Locales } from 'locale';
+import { ObjectId } from './common';
 import { Request } from 'express';
 import SimpleSchema from 'simpl-schema';
 import { AssortmentsModule } from './assortments';
@@ -74,6 +74,8 @@ import { ProductsModule, ProductType } from './products';
 import {
   IProductPricingAdapter,
   IProductPricingDirector,
+  IProductPricingSheet,
+  ProductPricingCalculation,
 } from './products.pricing';
 import { UsersModule } from './user';
 import {
@@ -327,6 +329,7 @@ declare module 'meteor/unchained:core-products' {
 
   export const ProductPricingAdapter: IProductPricingAdapter;
   export const ProductPricingDirector: IProductPricingDirector;
+  export const ProductPricingSheet: (params: PricingSheetParams<ProductPricingCalculation>) => IProductPricingSheet
 
   export const ProductTypes: typeof ProductType;
 }
