@@ -1,43 +1,53 @@
 import { log } from 'meteor/unchained:logger';
-import { Enrollments } from 'meteor/unchained:core-enrollments';
-import { Products, ProductStatus } from 'meteor/unchained:core-products';
+import { Context, Root } from '@unchainedshop/types/api';
+import { ProductStatus } from 'meteor/unchained:core-products';
 import {
   ProductNotFoundError,
   UserNotFoundError,
   ProductWrongStatusError,
   InvalidIdError,
-} from '../../errors';
+} from '../../../errors';
 
 export default async function createEnrollment(
-  root,
+  root: Root,
   { contact, plan, billingAddress, payment, delivery, meta },
-  { countryContext, userId, user }
+  context: Context
 ) {
+  const { countryContext, modules, userId } = context;
+
   log('mutation createEnrollment', { userId });
+
+  const user = await modules.users.findUser({ userId });
   if (!user) throw new UserNotFoundError({ userId });
+
   const { configuration, quantity, productId } = plan;
-  const product = Products.findProduct({
-    productId: plan.productId,
-  });
+
   if (!productId) throw new InvalidIdError({ productId });
+
+  const product = await modules.products.findProduct({ productId });
   if (!product) {
     throw new ProductNotFoundError({
       productId: plan.productId,
     });
   }
+
   if (product.status !== ProductStatus.ACTIVE) {
     throw new ProductWrongStatusError({ status: product.status });
   }
-  return Enrollments.createEnrollment({
-    productId,
-    configuration,
-    quantity,
-    userId,
-    countryCode: countryContext,
-    payment,
-    delivery,
-    contact,
-    billingAddress,
-    meta,
-  });
+
+  return await modules.enrollments.create(
+    {
+      billingAddress,
+      configuration,
+      contact,
+      countryCode: countryContext,
+      delivery,
+      meta,
+      payment,
+      productId,
+      quantity,
+      userId,
+    },
+    context
+  );
 }

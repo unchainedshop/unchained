@@ -1,9 +1,9 @@
 import { log } from 'meteor/unchained:logger';
 import { Products } from 'meteor/unchained:core-products';
 import { Quotations } from 'meteor/unchained:core-quotations';
-import { ProductNotFoundError, InvalidIdError } from '../../errors';
+import { ProductNotFoundError, InvalidIdError } from '../../../errors';
 
-export default function requestQuotation(
+export default async function requestQuotation(
   root,
   { productId, configuration },
   { userId, countryContext, localeContext }

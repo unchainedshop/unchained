@@ -43,9 +43,16 @@ export interface DeliveryPricingAdapterContext
 }
 
 export type DeliveryPricingContext =
-  | (Omit<DeliveryPricingAdapterContext, 'discounts'> & {
+  | {
+      country?: string;
+      currency?: string;
+      deliveryProvider: DeliveryProvider;
+      order: Order;
+      orderDelivery: OrderDelivery;
       providerContext?: any;
-    })
+      quantity: number;
+      user: User;
+    }
   | { item: OrderDelivery };
 
 export interface IDeliveryPricingSheet

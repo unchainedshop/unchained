@@ -7,6 +7,7 @@ import { EventEmitter } from 'events';
 import { BaseDirector } from 'meteor/unchained:utils';
 import { log, LogLevel } from 'meteor/unchained:logger';
 import { WorkerEventTypes } from './WorkerEventTypes';
+import { Context } from '@unchainedshop/types/api';
 
 export const DIRECTOR_MARKED_FAILED_ERROR = 'DIRECTOR_MARKED_FAILED';
 
@@ -46,13 +47,13 @@ export const WorkerDirector: IWorkerDirector = {
   onEmit: Events.on,
   offEmit: Events.off,
 
-  doWork: async ({ type, input }) => {
+  doWork: async ({ type, input }, requestContext: Context) => {
     const adapter = baseDirector.getAdapter(type);
 
     if (!adapter)
       log(`WorkderDirector: No registered adapter for type: ${type}`);
 
-    const output = await adapter.doWork(input).catch((error) => {
+    const output = await adapter.doWork(input, requestContext).catch((error) => {
       // DO not use this as flow control. The adapter should catch expected errors and return status: FAILED
       log('DO not use this as flow control.', { level: LogLevel.Verbose });
 

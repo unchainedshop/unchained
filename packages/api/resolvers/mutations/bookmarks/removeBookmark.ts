@@ -1,6 +1,6 @@
 import { Context, Root } from '@unchainedshop/types/api';
 import { Modules } from '@unchainedshop/types';
-import { BookmarkNotFoundError, InvalidIdError } from '../../errors';
+import { BookmarkNotFoundError, InvalidIdError } from '../../../errors';
 import { log } from 'meteor/unchained:logger';
 
 export default async function removeBookmark(

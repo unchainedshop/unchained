@@ -14,6 +14,12 @@ import { ProductReviewsModule } from './products.reviews';
 import { ProductVariationsModule } from './products.variations';
 import { WarehousingProvider } from './warehousing';
 
+export enum ProductStatus {
+  DRAFT = 'DRAFT',
+  ACTIVE = 'ACTIVE',
+  DELETED = 'DELETED',
+}
+
 export enum ProductType {
   SimpleProduct = 'SIMPLE_PRODUCT',
   ConfigurableProduct = 'CONFIGURABLE_PRODUCT',
@@ -154,7 +160,7 @@ export type ProductsModule = {
   isActive: (product: Product) => boolean;
   isDraft: (product: Product) => boolean;
 
-  normalizedStatus: (product: Product) => string;
+  normalizedStatus: (product: Product) => ProductStatus;
 
   pricingSheet: (params: {
     calculation: Array<ProductPricingCalculation>;

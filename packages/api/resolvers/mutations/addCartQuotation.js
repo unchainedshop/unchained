@@ -5,7 +5,7 @@ import {
   QuotationWrongStatusError,
   OrderQuantityTooLowError,
   InvalidIdError,
-} from '../../errors';
+} from '../../../errors';
 import getCart from '../../getCart';
 
 export default async function addCartQuotation(

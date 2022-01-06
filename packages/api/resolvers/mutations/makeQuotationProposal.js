@@ -4,9 +4,9 @@ import {
   QuotationNotFoundError,
   QuotationWrongStatusError,
   InvalidIdError,
-} from '../../errors';
+} from '../../../errors';
 
-export default function makeQuotationProposal(
+export default async function makeQuotationProposal(
   root,
   { quotationId, ...transactionContext },
   { userId }

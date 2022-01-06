@@ -34,12 +34,10 @@ export const configureAccountsModule = async ({
     },
 
     // Email
-    addEmail: async (userId, email) => {
-      await accountsPassword.addEmail(userId, email, false);
-    },
-    removeEmail: async (userId, email) => {
-      await accountsPassword.removeEmail(userId, email);
-    },
+    addEmail: async (userId, email) =>
+      await accountsPassword.addEmail(userId, email, false),
+    removeEmail: async (userId, email) =>
+      await accountsPassword.removeEmail(userId, email),
     updateEmail: async (userId, email, user) => {
       log(
         'user.updateEmail is deprecated, please use user.addEmail and user.removeEmail',
@@ -57,15 +55,16 @@ export const configureAccountsModule = async ({
           )
       );
     },
-    findUnverifiedUserByToken: async (token: string) => {
-      return await dbManager.findUserByEmailVerificationToken(token);
-    },
-    sendVerificationEmail: async (email: string) => {
-      await accountsPassword.sendVerificationEmail(email);
-    },
-    verifyEmail: async (token: string) => {
-      await accountsPassword.verifyEmail(token);
-    },
+
+    findUnverifiedUserByToken: async (token) =>
+      await dbManager.findUserByEmailVerificationToken(token),
+
+    sendVerificationEmail: async (email) =>
+      await accountsPassword.sendVerificationEmail(email),
+    sendEnrollmentEmail: async (email) =>
+      await accountsPassword.sendEnrollmentEmail(email),
+
+    verifyEmail: async (token) => await accountsPassword.verifyEmail(token),
 
     // Autentication
     createLoginToken: async (userId, rawContext) => {
@@ -106,10 +105,12 @@ export const configureAccountsModule = async ({
     },
 
     logout: async ({ token }, { loginToken, userId }) => {
-      const logoutError = await accountsServer.logout({
-        token: token || accountsServer.hashLoginToken(loginToken),
-        userId,
-      }).catch(error => error);
+      const logoutError = await accountsServer
+        .logout({
+          token: token || accountsServer.hashLoginToken(loginToken),
+          userId,
+        })
+        .catch((error) => error);
 
       return {
         success: !logoutError,
@@ -118,9 +119,8 @@ export const configureAccountsModule = async ({
     },
 
     // User management
-    setUsername: async (_id, username) => {
-      await dbManager.setUsername(_id, username);
-    },
+    setUsername: async (_id, username) =>
+      await dbManager.setUsername(_id, username),
     setPassword: async (
       userId,
       { newPassword: newHashedPassword, newPlainPassword }

@@ -26,6 +26,9 @@ export const DeliveryProvider: DeliveryProviderHelperTypes = {
       userId,
     } = requestContext;
     const order = await modules.orders.findOrder({ orderId });
+    const orderDelivery = await modules.orders.deliveries.findDelivery({
+      orderDeliveryId: order.deliveryId,
+    });
 
     const currency =
       currencyCode ||
@@ -39,9 +42,10 @@ export const DeliveryProvider: DeliveryProviderHelperTypes = {
       {
         country,
         currency,
+        quantity: 1,
         deliveryProvider: obj,
-        discounts: [],
         order,
+        orderDelivery,
         providerContext,
         user,
       },
@@ -52,8 +56,8 @@ export const DeliveryProvider: DeliveryProviderHelperTypes = {
     if (!calculated) return null;
 
     const pricing = pricingDirector.resultSheet();
-    
-    const orderPrice = pricing.total(null, useNetPrice) as {
+
+    const orderPrice = pricing.total({ useNetPrice }) as {
       amount: number;
       currency: string;
     };

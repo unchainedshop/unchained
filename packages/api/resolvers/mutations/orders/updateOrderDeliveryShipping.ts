@@ -10,8 +10,10 @@ import {
 export default async function updateOrderDeliveryShipping(
   root: Root,
   { orderDeliveryId, meta }: { orderDeliveryId: string; meta: any },
-  { modules, userId }: Context
+  context: Context
 ) {
+  const { modules, userId } = context;
+
   log(`mutation updateOrderDeliveryShipping ${orderDeliveryId}`, { userId });
 
   if (!orderDeliveryId) throw new InvalidIdError({ orderDeliveryId });
@@ -36,6 +38,6 @@ export default async function updateOrderDeliveryShipping(
   return await modules.orders.deliveries.updateDelivery(
     orderDeliveryId,
     { orderId: orderDelivery.orderId, context: meta },
-    userId
+    context
   );
 }

@@ -9,8 +9,10 @@ import {
 export default async function removeCartItem(
   root: Root,
   { itemId }: { itemId: string },
-  { modules, userId }: Context
+  context: Context
 ) {
+  const { modules, userId } = context;
+
   log(`mutation removeCartItem ${itemId}`, { userId });
 
   if (!itemId) throw new InvalidIdError({ itemId });
@@ -26,5 +28,5 @@ export default async function removeCartItem(
     throw new OrderWrongStatusError({ status: order.status });
   }
 
-  return await modules.orders.positions.delete(itemId, userId);
+  return await modules.orders.positions.delete(itemId, context);
 }

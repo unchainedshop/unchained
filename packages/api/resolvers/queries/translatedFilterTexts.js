@@ -1,7 +1,7 @@
 import { log } from 'meteor/unchained:logger';
 import { FilterTexts } from 'meteor/unchained:core-filters';
 
-export default function translatedFilterTexts(
+export default async function translatedFilterTexts(
   root,
   { filterId, filterOptionValue },
   { userId }

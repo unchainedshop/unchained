@@ -70,7 +70,11 @@ import {
   PricingCalculation,
   PricingSheetParams,
 } from './pricing';
-import { ProductsModule, ProductType } from './products';
+import {
+  ProductsModule,
+  ProductType,
+  ProductStatus as ProductStatusType,
+} from './products';
 import {
   IProductPricingAdapter,
   IProductPricingDirector,
@@ -86,6 +90,12 @@ import {
   WarehousingProviderType as WarehousingProviderTypeType,
 } from './warehousing';
 import { WorkerModule, IWorkerDirector, IWorkerAdapter } from './worker';
+import {
+  EnrollmentsModule,
+  EnrollmentStatus as EnrollmentStatusType,
+  IEnrollmentAdapter,
+  IEnrollmentDirector,
+} from './enrollments';
 
 declare module 'meteor/unchained:utils' {
   function checkId(
@@ -269,6 +279,17 @@ declare module 'meteor/unchained:core-delivery' {
   export const DeliveryPricingDirector: IDeliveryPricingDirector;
 }
 
+declare module 'meteor/unchained:core-enrollments' {
+  export function configureEnrollmentsModule(
+    params: ModuleInput
+  ): Promise<EnrollmentsModule>;
+
+  export const EnrollmentStatus: typeof EnrollmentStatusType;
+
+  export const EnrollmentAdapter: IEnrollmentAdapter;
+  export const EnrollmentDirector: IEnrollmentDirector;
+}
+
 declare module 'meteor/unchained:core-events' {
   export function configureEventsModule(
     params: ModuleInput
@@ -329,9 +350,12 @@ declare module 'meteor/unchained:core-products' {
 
   export const ProductPricingAdapter: IProductPricingAdapter;
   export const ProductPricingDirector: IProductPricingDirector;
-  export const ProductPricingSheet: (params: PricingSheetParams<ProductPricingCalculation>) => IProductPricingSheet
+  export const ProductPricingSheet: (
+    params: PricingSheetParams<ProductPricingCalculation>
+  ) => IProductPricingSheet;
 
   export const ProductTypes: typeof ProductType;
+  export const ProductStatus: typeof ProductStatusType;
 }
 
 declare module 'meteor/unchained:core-warehousing' {

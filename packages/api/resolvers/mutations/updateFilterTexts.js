@@ -1,8 +1,8 @@
 import { log } from 'meteor/unchained:logger';
 import { Filters } from 'meteor/unchained:core-filters';
-import { FilterNotFoundError, InvalidIdError } from '../../errors';
+import { FilterNotFoundError, InvalidIdError } from '../../../errors';
 
-export default function updateFilterTexts(
+export default async function updateFilterTexts(
   root,
   { texts, filterId, filterOptionValue },
   { userId }

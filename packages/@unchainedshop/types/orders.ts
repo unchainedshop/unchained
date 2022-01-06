@@ -122,11 +122,12 @@ export interface OrderProcessing {
 export interface OrderMutations {
   create: (
     doc: {
-      orderNumber?: string;
-      currency: string;
-      countryCode: string;
       billingAddress?: Address;
       contact?: Contact;
+      countryCode: string;
+      currency: string;
+      orderNumber?: string;
+      originEnrollmentId?: string;
     },
     userId?: string
   ) => Promise<Order>;

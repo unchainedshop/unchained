@@ -1,28 +1,23 @@
-import {
-  ModuleInput,
-  ModuleMutations,
-  Query,
-  Update,
-} from '@unchainedshop/types/common';
+import { Context } from '@unchainedshop/types/api';
+import { ModuleInput, ModuleMutations } from '@unchainedshop/types/common';
 import {
   Enrollment,
   EnrollmentsModule,
 } from '@unchainedshop/types/enrollments';
-import { log } from 'meteor/unchained:logger';
 import { Locale } from 'locale';
+import { emit, registerEvents } from 'meteor/unchained:events';
+import { log } from 'meteor/unchained:logger';
 import {
   dbIdToString,
-  objectInvert,
   generateDbFilterById,
   generateDbMutations,
+  objectInvert,
 } from 'meteor/unchained:utils';
+import { EnrollmentsSchema } from '../db/EnrollmentsSchema';
+import { EnrollmentDirector } from '../enrollments-index';
 import { EnrollmentsCollection } from '../db/EnrollmentsCollection';
 import { EnrollmentStatus } from '../db/EnrollmentStatus';
 import { enrollmentsSettings } from '../enrollments-settings';
-import { emit, registerEvents } from 'meteor/unchained:events';
-import { Context } from '@unchainedshop/types/api';
-import { request } from 'http';
-import { EnrollmentsSchema } from 'src/db/EnrollmentsSchema';
 
 const ENROLLMENT_EVENTS: string[] = [
   'ENROLLMENT_ADD_PERIOD',
@@ -71,7 +66,10 @@ export const configureEnrollmentsModule = async ({
     requestContext: Context
   ): Promise<EnrollmentStatus> => {
     let status = enrollment.status as EnrollmentStatus;
-    const director = this.director();
+    const director = await EnrollmentDirector.actions(
+      { enrollment },
+      requestContext
+    );
 
     if (
       status === EnrollmentStatus.INITIAL ||
@@ -178,12 +176,11 @@ export const configureEnrollmentsModule = async ({
     const locale = modules.users.userLocale(user, requestContext);
     const reason = 'new_enrollment';
 
-    const director = EnrollmentDirector.actions({ enrollment }, requestContext);
-    const period = await director.nextPeriod({
-      orderId: params.orderIdForFirstPeriod,
-      reason,
-      locale,
-    });
+    const director = await EnrollmentDirector.actions(
+      { enrollment },
+      requestContext
+    );
+    const period = await director.nextPeriod();
 
     if (period && (params.orderIdForFirstPeriod || period.isTrial)) {
       const intializedEnrollment =
@@ -268,14 +265,13 @@ export const configureEnrollmentsModule = async ({
       return await Enrollments.findOne(selector, options);
     },
 
-    findEnrollments: async ({ limit, offset }) => {
-      const enrollments = Enrollments.find(
-        {},
-        {
-          skip: offset,
-          limit,
-        }
-      );
+    findEnrollments: async ({ status, limit, offset }) => {
+      const selector = status ? { status: { $in: status } } : {};
+
+      const enrollments = Enrollments.find(selector, {
+        skip: offset,
+        limit,
+      });
 
       return await enrollments.toArray();
     },
@@ -372,7 +368,7 @@ export const configureEnrollmentsModule = async ({
       { countryCode, currencyCode, orderIdForFirstPeriod, ...enrollmentData },
       requestContext
     ) => {
-      const { userId, modules, services } = requestContext;
+      const { userId, services } = requestContext;
 
       log('Create Enrollment', { userId });
 
@@ -389,6 +385,7 @@ export const configureEnrollmentsModule = async ({
           periods: [],
           currencyCode: currency,
           countryCode,
+          configuration: enrollmentData.configuration || [],
           log: [],
         },
         userId
@@ -428,6 +425,7 @@ export const configureEnrollmentsModule = async ({
       requestContext
     ) => {
       const { modules, userId } = requestContext;
+      const orderId = dbIdToString(order._id);
 
       const payment = await modules.orders.payments.findOrderPayment({
         orderPaymentId: order.paymentId,
@@ -437,22 +435,25 @@ export const configureEnrollmentsModule = async ({
       });
 
       const template = {
-        orderId: order._id,
-        userId: order.userId,
-        countryCode: order.countryCode,
-        currencyCode: order.currency,
         billingAddress: order.billingAddress,
         contact: order.contact,
-        payment: {
-          paymentProviderId: payment.paymentProviderId,
-          context: payment.context,
-        },
+        countryCode: order.countryCode,
+        currencyCode: order.currency,
         delivery: {
           deliveryProviderId: delivery.deliveryProviderId,
           context: delivery.context,
         },
+        orderIdForFirstPeriod: orderId,
+        payment: {
+          paymentProviderId: payment.paymentProviderId,
+          context: payment.context,
+        },
+        userId: order.userId,
+
         // TODO: Check with pascal
         meta: order.context,
+
+        ...context,
       };
 
       const enrollments = await Promise.all(
@@ -460,23 +461,18 @@ export const configureEnrollmentsModule = async ({
           const enrollmentData =
             await EnrollmentDirector.transformOrderItemToEnrollment(
               orderPosition,
-              {
-                ...template,
-                ...context,
-              }
+              template,
+              requestContext
             );
 
           return await modules.enrollments.create(
-            {
-              ...enrollmentData,
-              orderIdForFirstPeriod: order._id,
-            },
+            enrollmentData,
             requestContext
           );
         })
       );
 
-      return enrollments
+      return enrollments;
     },
 
     delete: async (enrollmentId, userId) => {
@@ -492,7 +488,7 @@ export const configureEnrollmentsModule = async ({
     updatePayment: updateEnrollmentField('payment'),
 
     updatePlan: async (enrollmentId, plan, requestContext) => {
-      const { modules, userId } = requestContext;
+      const { userId } = requestContext;
 
       log(`Update enrollment plan fields`, {
         enrollmentId,

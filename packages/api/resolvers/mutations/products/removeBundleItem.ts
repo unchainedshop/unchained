@@ -4,9 +4,9 @@ import {
   ProductNotFoundError,
   InvalidIdError,
   ProductWrongTypeError,
-} from '../../errors';
+} from '../../../errors';
 
-export default function removeBundleItem(root, { productId, index }) {
+export default async function removeBundleItem(root: Root, { productId, index }) {
   log(`mutation removeBundleItem ${productId}`, { index });
   if (!productId) throw new InvalidIdError({ productId });
   const product = Products.findProduct({ productId });

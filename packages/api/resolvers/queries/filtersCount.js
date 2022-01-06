@@ -1,7 +1,7 @@
 import { log } from 'meteor/unchained:logger';
 import { Filters } from 'meteor/unchained:core-filters';
 
-export default function filtersCount(root, { includeInactive }, { userId }) {
+export default async function filtersCount(root: Root, { includeInactive }, { modules, userId }: Context) {
   log(`query filtersCount: ${includeInactive ? 'includeInactive' : ''} `, {
     userId,
   });

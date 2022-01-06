@@ -1,7 +1,7 @@
 import { log } from 'meteor/unchained:logger';
 import { emit } from 'meteor/unchained:events';
 
-export default (root, { path, referrer }, context) => {
+export default (root: Root, { path, referrer }, context) => {
   log(`mutation pageView ${path} ${referrer}`, {
     userId: context.userId,
   });

@@ -27,7 +27,10 @@
   },
   "homepage": "https://github.com/unchainedshop/unchained#readme",
   "dependencies": {
+    "hashids": "2.2.1",
+    "later": "1.2.0",
     "locale": "^0.1.0",
+    "moment": "^2.29.1",
     "simpl-schema": "^1.12.0"
   },
   "devDependencies": {

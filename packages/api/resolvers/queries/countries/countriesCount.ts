@@ -1,7 +1,7 @@
 import { Context, Root } from '@unchainedshop/types/api';
 import { log } from 'meteor/unchained:logger';
 
-export default function countriesCount(
+export default async function countriesCount(
   root: Root,
   { includeInactive }: { includeInactive: boolean },
   { modules, userId }: Context

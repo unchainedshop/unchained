@@ -56,24 +56,24 @@ Users.helpers({
 //   return count;
 // };
 
-Enrollments.helpers({
-  // Move to types
-  user() {
-    return Users.findOne({
-      _id: this.userId,
-    });
-  },
-  product() {
-    return Products.findOne({
-      _id: this.productId,
-    });
-  },
-  country() {
-    return Countries.findOne({ isoCode: this.countryCode });
-  },
-  currency() {
-    return Currencies.findOne({ isoCode: this.currencyCode });
-  },
+// Enrollments.helpers({
+//   // Move to types
+//   user() {
+//     return Users.findOne({
+//       _id: this.userId,
+//     });
+//   },
+//   product() {
+//     return Products.findOne({
+//       _id: this.productId,
+//     });
+//   },
+//   country() {
+//     return Countries.findOne({ isoCode: this.countryCode });
+//   },
+//   currency() {
+//     return Currencies.findOne({ isoCode: this.currencyCode });
+//   },
 
 
   // normalizedStatus() {

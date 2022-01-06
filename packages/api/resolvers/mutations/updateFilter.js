@@ -1,8 +1,8 @@
 import { log } from 'meteor/unchained:logger';
 import { Filters } from 'meteor/unchained:core-filters';
-import { FilterNotFoundError, InvalidIdError } from '../../errors';
+import { FilterNotFoundError, InvalidIdError } from '../../../errors';
 
-export default function updateFilter(root, { filter, filterId }, { userId }) {
+export default async function updateFilter(root: Root, { filter, filterId }, { modules, userId }: Context) {
   log(`mutation updateFilter ${filterId}`, { userId });
   if (!filterId) throw new InvalidIdError({ filterId });
   if (!Filters.filterExists({ filterId }))

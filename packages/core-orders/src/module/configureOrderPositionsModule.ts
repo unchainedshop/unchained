@@ -317,12 +317,14 @@ export const configureOrderPositionsModule = ({
       requestContext
     ) => {
       const { modules } = requestContext;
-      const { orderId, quantity, configuration, context, ...scope } =
-        orderPosition;
+      const { quantity, configuration, ...scope } = orderPosition;
+      const orderId = orderPosition.orderId || dbIdToString(order._id);
+      const productId = orderPosition.productId || product._id;
 
       // Search for existing position
       const selector: Query = {
         orderId,
+        productId,
         configuration: configuration || {
           $exists: false,
         },
@@ -331,7 +333,7 @@ export const configureOrderPositionsModule = ({
       const existingPosition = await OrderPositions.findOne(selector);
 
       // Update position if exists
-      let upsertedOrderPosition = orderPosition;
+      let upsertedOrderPosition: OrderPosition;
 
       if (existingPosition) {
         upsertedOrderPosition = await modules.orders.positions.update(
@@ -344,21 +346,21 @@ export const configureOrderPositionsModule = ({
           },
           requestContext
         );
+      } else {
+        // Resolve product
+        const resolvedProduct = await modules.products.resolveOrderableProduct(
+          product,
+          { configuration },
+          requestContext
+        );
+
+        // Otherwise add new position
+        upsertedOrderPosition = await modules.orders.positions.create(
+          orderPosition,
+          { order, product: resolvedProduct, originalProduct: product },
+          requestContext
+        );
       }
-
-      // Resolve product
-      const resolvedProduct = await modules.products.resolveOrderableProduct(
-        product,
-        { configuration },
-        requestContext
-      );
-
-      // Otherwise add new position
-      upsertedOrderPosition = await modules.orders.positions.create(
-        orderPosition,
-        { order, product: resolvedProduct, originalProduct: product },
-        requestContext
-      );
 
       emit('ORDER_ADD_PRODUCT', { orderPosition: upsertedOrderPosition });
 

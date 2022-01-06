@@ -81,7 +81,15 @@ export type OrderPositionsModule = {
   ) => Promise<OrderPosition>;
 
   addProductItem: (
-    doc: OrderPosition,
+    doc: {
+      context?: any;
+      configuration?: Configuration;
+      orderId?: string;
+      originalProductId?: string;
+      productId?: string;
+      quantity: number;
+      quotationId?: string;
+    },
     params: { order: Order; product: Product },
     requestContext: Context
   ) => Promise<OrderPosition>;

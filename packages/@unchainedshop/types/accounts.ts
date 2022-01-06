@@ -31,6 +31,7 @@ export interface AccountsModule {
   updateEmail: (userId: string, email: string, user: User) => Promise<void>;
   verifyEmail: (token: string) => Promise<void>;
   findUnverifiedUserByToken: (token: string) => Promise<AccountsUser>;
+  sendEnrollmentEmail: (email: string) => Promise<void>;
   sendVerificationEmail: (email: string) => Promise<void>;
 
   // Authentication

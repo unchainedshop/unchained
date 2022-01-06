@@ -1,7 +1,7 @@
 import { log } from 'meteor/unchained:logger';
 import { Filters } from 'meteor/unchained:core-filters';
 
-export default function filters(
+export default async function filters(
   root,
   { limit, offset, includeInactive },
   { userId }

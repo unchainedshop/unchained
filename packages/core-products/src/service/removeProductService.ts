@@ -1,5 +1,5 @@
 import { Context } from '@unchainedshop/types/api';
-import { ProductStatus } from '../db/ProductsSchema';
+import { ProductStatus } from '../db/ProductStatus';
 
 export type RemoveProductService = (
   params: { productId: string },

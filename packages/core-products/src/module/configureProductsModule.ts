@@ -1,33 +1,28 @@
+import { Context } from '@unchainedshop/types/api';
 import {
-  Filter,
   FindOptions,
   ModuleInput,
   ModuleMutations,
   Query,
 } from '@unchainedshop/types/common';
-import { ProductsModule, Product } from '@unchainedshop/types/products';
+import { Product, ProductsModule } from '@unchainedshop/types/products';
 import { emit, registerEvents } from 'meteor/unchained:events';
-import { log, LogLevel } from 'meteor/unchained:logger';
 import {
   dbIdToString,
-  generateDbMutations,
   generateDbFilterById,
+  generateDbMutations,
   objectInvert,
 } from 'meteor/unchained:utils';
 import { ProductsCollection } from '../db/ProductsCollection';
-import {
-  ProductsSchema,
-  ProductStatus,
-  ProductTypes,
-} from '../db/ProductsSchema';
-import { configureProductTextsModule } from './configureProductTextsModule';
+import { ProductsSchema, ProductTypes } from '../db/ProductsSchema';
+import { ProductStatus } from '../db/ProductStatus';
+import { ProductPricingSheet } from '../director/ProductPricingSheet';
+import { ProductPricingDirector } from '../products-index';
 import { configureProductMediaModule } from './configureProductMediaModule';
 import { configureProductPricesModule } from './configureProductPrices';
 import { configureProductReviewsModule } from './configureProductReviewsModule';
+import { configureProductTextsModule } from './configureProductTextsModule';
 import { configureProductVariationsModule } from './configureProductVariationsModule';
-import { Context } from '@unchainedshop/types/api';
-import { ProductPricingDirector } from 'src/products-index';
-import { ProductPricingSheet } from 'src/director/ProductPricingSheet';
 
 const PRODUCT_EVENTS = [
   'PRODUCT_CREATE',
@@ -225,7 +220,9 @@ export const configureProductsModule = async ({
 
     // Transformations
     normalizedStatus: (product) => {
-      return objectInvert(ProductStatus)[product.status || null];
+      return product.status > ''
+        ? (product.status as ProductStatus)
+        : ProductStatus.DRAFT;
     },
 
     isActive: (product) => {

@@ -44,20 +44,26 @@ interface WorkResult<Result> {
 export type IWorkerAdapter<Args, Result> = IBaseAdapter & {
   type: string;
 
-  doWork: (args: Args) => Promise<WorkResult<Result>>;
+  doWork: (args: Args, requestContext: Context) => Promise<WorkResult<Result>>;
 };
 
 export type IWorkerDirector = IBaseDirector<IWorkerAdapter<any, any>> & {
   getActivePluginTypes: () => Array<string>;
 
-  configureAutoscheduling: (adapter: IWorkerAdapter<any, any>, work: Work) => void;
+  configureAutoscheduling: (
+    adapter: IWorkerAdapter<any, any>,
+    work: Work
+  ) => void;
   getAutoSchedules: () => Array<[string, Work]>;
 
   emit: (eventName: string, payload: any) => void;
   onEmit: (eventName: string, payload: any) => void;
   offEmit: (eventName: string, payload: any) => void;
 
-  doWork: (params: { type: string; input: any }) => Promise<WorkResult<any>>;
+  doWork: (
+    params: { type: string; input: any },
+    requestContext: Context
+  ) => Promise<WorkResult<any>>;
 };
 
 export type WorkerModule = {

@@ -8,12 +8,6 @@ export const ProductTypes = {
   PlanProduct: 'PLAN_PRODUCT',
 };
 
-export const ProductStatus = {
-  DRAFT: null,
-  ACTIVE: 'ACTIVE',
-  DELETED: 'DELETED',
-};
-
 const ProductCommerceSchema = new SimpleSchema(
   {
     salesUnit: String,

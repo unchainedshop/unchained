@@ -4,9 +4,9 @@ import {
   QuotationNotFoundError,
   QuotationWrongStatusError,
   InvalidIdError,
-} from '../../errors';
+} from '../../../errors';
 
-export default function verifyQuotation(
+export default async function verifyQuotation(
   root,
   { quotationId, ...transactionContext },
   { userId }

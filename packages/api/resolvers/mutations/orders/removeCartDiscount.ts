@@ -10,8 +10,10 @@ import {
 export default async function removeCartDiscount(
   root: Root,
   { discountId }: { discountId: string },
-  { modules, userId }: Context
+  context: Context
 ) {
+  const { modules, userId } = context;
+
   log(`mutation removeCartDiscount ${discountId}`, { userId });
 
   if (!discountId) throw new InvalidIdError({ discountId });
@@ -27,6 +29,6 @@ export default async function removeCartDiscount(
   if (!modules.orders.isCart(order)) {
     throw new OrderWrongStatusError({ status: order.status });
   }
-  
-  return await modules.orders.discounts.delete(discountId, userId);
+
+  return await modules.orders.discounts.delete(discountId, context);
 }
