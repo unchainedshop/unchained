@@ -122,10 +122,12 @@ export type ProductText = {
   labels?: Array<string>;
 } & TimestampFields;
 
-type ProductQuery = Query & {
+export type ProductQuery = {
+  includeDrafts?: boolean;
+  productIds?: Array<string>;
+  productSelector?: Query;
   slugs?: Array<string>;
   tags?: Array<string>;
-  includeDrafts?: boolean;
 };
 
 export type ProductsModule = {
@@ -315,6 +317,13 @@ export type ProductsModule = {
   search: {
     buildActiveStatusFilter: () => Query;
     buildActiveDraftStatusFilter: () => Query;
+    findFilteredProducts: (params: {
+      limit: number;
+      offset: number;
+      productIds: Array<string>;
+      productSelector: Query;
+      sort: FindOptions['sort'];
+    }) => Promise<Array<Product>>;
   };
 
   /*

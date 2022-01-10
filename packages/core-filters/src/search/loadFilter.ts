@@ -1,0 +1,167 @@
+import { Context } from '@unchainedshop/types/api';
+import {
+  Filter,
+  FilterAdapterActions,
+  SearchFilterQuery,
+} from '@unchainedshop/types/filters';
+import { FilterType } from 'src/db/FilterType';
+import { intersectSet } from 'src/utils/intersectSet';
+import { CleanedSearchQuery, FilterProductIds } from './search';
+
+const findLoadedOptions = async (
+  filter: Filter,
+  params: {
+    forceLiveCollection: boolean;
+    productIdSet: Set<string>;
+    values: Array<string>;
+  },
+  filterProductIds: FilterProductIds,
+  filterActions: FilterAdapterActions,
+  requestContext: Context
+) => {
+  const { values, forceLiveCollection, productIdSet } = params;
+
+  const filterOptions =
+    (filter.type === FilterType.SWITCH && ['true', 'false']) ||
+    filter.options ||
+    [];
+
+  const mappedOptions = await Promise.all(
+    filterOptions.map(async (value) => {
+      const filterOptionProductIds = await filterProductIds(
+        filter,
+        {
+          values: [value],
+          forceLiveCollection,
+        },
+        requestContext
+      );
+
+      const filteredProductIds = intersectSet(
+        productIdSet,
+        new Set(filterOptionProductIds)
+      );
+      if (!filteredProductIds.size) return null;
+
+      const filteredProductsCount = filterActions.aggregateProductIds({
+        productIds: [...filteredProductIds],
+      });
+      return {
+        definition: () => ({ filterOption: value, ...filter }),
+        filteredProducts: filteredProductsCount,
+        filteredProductsCount: filteredProductsCount,
+        isSelected: values ? values.indexOf(value) !== -1 : false,
+      };
+    })
+  );
+
+  return mappedOptions.filter(Boolean);
+};
+
+export const loadFilter = async (
+  filter: Filter,
+  params: {
+    allProductIds: Array<string>;
+    filterQuery: Record<string, Array<string>>;
+    forceLiveCollection: boolean;
+    otherFilters: Array<Filter>;
+  },
+  filterProductIds: FilterProductIds,
+  filterActions: FilterAdapterActions,
+  requestContext: Context
+) => {
+  const { allProductIds, filterQuery, forceLiveCollection, otherFilters } =
+    params;
+
+  const values = filterQuery[filter.key];
+
+  // The examinedProductIdSet is a set of product id's that:
+  // - Fit this filter generally
+  // - Are part of the preselected product id array
+  const filteredProductIds = await filterProductIds(
+    filter,
+    {
+      values: [undefined],
+      forceLiveCollection,
+    },
+    requestContext
+  );
+
+  const examinedProductIdSet = intersectSet(
+    new Set(allProductIds),
+    new Set(filteredProductIds)
+  );
+
+  // The filteredProductIdSet is a set of product id's that:
+  // - Are filtered by all other filters
+  // - Are filtered by the currently selected value of this filter
+  // or if there is no currently selected value:
+  // - Is the same like examinedProductIdSet
+  const filteredByOtherFiltersSet = await otherFilters
+    .filter((otherFilter) => otherFilter.key !== filter.key)
+    .reduce(async (productIdSetPromise, otherFilter) => {
+      const productIdSet = await productIdSetPromise;
+      if (!filterQuery[filter.key]) return productIdSet;
+      const otherFilterProductIds = await filterProductIds(
+        otherFilter,
+        {
+          values: filterQuery[filter.key],
+          forceLiveCollection,
+        },
+        requestContext
+      );
+
+      return intersectSet(productIdSet, new Set(otherFilterProductIds));
+    }, Promise.resolve(new Set(examinedProductIdSet)));
+
+  const filterProductIdsForValues = values
+    ? await filterProductIds(
+        filter,
+        {
+          values,
+          forceLiveCollection,
+        },
+        requestContext
+      )
+    : filteredProductIds;
+
+  const filteredProductIdSet = intersectSet(
+    filteredByOtherFiltersSet,
+    new Set(filterProductIdsForValues)
+  );
+
+  const examinedProductsCount = filterActions.aggregateProductIds({
+    productIds: [...examinedProductIdSet],
+  }).length;
+
+  const filteredProductsCount = filterActions.aggregateProductIds({
+    productIds: [...filteredProductIdSet],
+  }).length;
+
+  return {
+    definition: filter,
+    examinedProducts: examinedProductsCount,
+    productsCount: examinedProductsCount,
+    filteredProducts: filteredProductsCount,
+    filteredProductsCount: filteredProductsCount,
+    isSelected: Object.prototype.hasOwnProperty.call(filterQuery, filter.key),
+    options: async () => {
+      // The current base for options should be an array of product id's that:
+      // - Are part of the preselected product id array
+      // - Fit this filter generally
+      // - Are filtered by all other filters
+      // - Are not filtered by the currently selected value of this filter
+      return await findLoadedOptions(
+        filter,
+        {
+          values,
+          forceLiveCollection,
+          productIdSet: filteredByOtherFiltersSet,
+        },
+        filterProductIds,
+        filterActions,
+        requestContext
+      );
+    },
+  };
+};

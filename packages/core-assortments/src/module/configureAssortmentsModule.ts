@@ -7,6 +7,7 @@ import {
 import {
   AssortmentsModule,
   Assortment,
+  AssortmentQuery,
 } from '@unchainedshop/types/assortments';
 import { emit, registerEvents } from 'meteor/unchained:events';
 import { log, LogLevel } from 'meteor/unchained:logger';
@@ -33,12 +34,18 @@ const ASSORTMENT_EVENTS = [
 ];
 
 const buildFindSelector = ({
+  assortmentIds = [],
+  assortmentSelector,
   slugs = [],
   tags = [],
   includeLeaves = false,
   includeInactive = false,
-}) => {
-  const selector: Query = {};
+}: AssortmentQuery) => {
+  const selector: Query = assortmentSelector || {};
+
+  if (assortmentIds?.length > 0) {
+    selector._ids = { $in: assortmentIds };
+  }
 
   if (slugs?.length > 0) {
     selector.slugs = { $in: slugs };
@@ -486,6 +493,25 @@ export const configureAssortmentsModule = async ({
     },
 
     createBreadcrumbs: () => {},
+
+    search: {
+      findFilteredAssortments: async ({
+        limit,
+        offset,
+        assortmentIds,
+        assortmentSelector,
+        sort,
+      }) =>
+        await findPreservingIds(Assortments)(
+          assortmentSelector,
+          assortmentIds,
+          {
+            limit,
+            offset,
+            sort,
+          }
+        ),
+    },
 
     // Sub entities
     media: await configureAssortmentMediaModule({ db }),

@@ -6,15 +6,22 @@ export type CleanedFilterCache = Omit<FilterCache, 'productIds'> & {
 };
 
 export type CleanedSearchQuery = Omit<SearchQuery, 'query'> & {
-  filterQuery: Record<string, Array<sting>>;
+  filterQuery: Record<string, Array<string>>;
 };
 
 export interface SearchConfiguration {
   query?: CleanedSearchQuery;
   filterSelector: Query;
-  productSelector: Query;
   sortStage: FindOptions['sort'];
   forceLiveCollection: boolean;
+}
+
+export interface SearchProductConfiguration extends SearchConfiguration {
+  productSelector: Query;
+}
+
+export interface SearchAssortmentConfiguration extends SearchConfiguration {
+  assortmentSelector: Query;
 }
 
 export type FilterProductIds = (

@@ -230,23 +230,23 @@ Filters.helpers({
   //   };
   // },
 
-  collectProductIds({ value, ...options } = {}) {
-    const director = new FilterDirector({ filter: this, ...options });
-    const selector = Promise.await(
-      director.buildProductSelector(
-        {
-          status: ProductStatus.ACTIVE,
-        },
-        {
-          key: this.key,
-          value,
-        }
-      )
-    );
-    if (!selector) return [];
-    const products = Products.find(selector, { fields: { _id: true } }).fetch();
-    return products.map(({ _id }) => _id);
-  },
+  // collectProductIds({ value, ...options } = {}) {
+  //   const director = new FilterDirector({ filter: this, ...options });
+  //   const selector = Promise.await(
+  //     director.buildProductSelector(
+  //       {
+  //         status: ProductStatus.ACTIVE,
+  //       },
+  //       {
+  //         key: this.key,
+  //         value,
+  //       }
+  //     )
+  //   );
+  //   if (!selector) return [];
+  //   const products = Products.find(selector, { fields: { _id: true } }).fetch();
+  //   return products.map(({ _id }) => _id);
+  // },
   // buildProductIdMap() {
   //   const cache = {
   //     allProductIds: this.collectProductIds(),
@@ -322,137 +322,137 @@ Filters.helpers({
     }
     return this._cache; // eslint-disable-line
   },
-  productIds({ values, forceLiveCollection }) {
-    const { productIds, allProductIds } = forceLiveCollection
-      ? this.buildProductIdMap()
-      : this.cache() || this.buildProductIdMap();
+  // productIds({ values, forceLiveCollection }) {
+  //   const { productIds, allProductIds } = forceLiveCollection
+  //     ? this.buildProductIdMap()
+  //     : this.cache() || this.buildProductIdMap();
 
-    if (this.type === FilterTypes.SWITCH) {
-      const [stringifiedBoolean] = values;
-      if (stringifiedBoolean !== undefined) {
-        if (
-          !stringifiedBoolean ||
-          stringifiedBoolean === 'false' ||
-          stringifiedBoolean === '0'
-        ) {
-          return productIds.false;
-        }
-        return productIds.true;
-      }
-      return allProductIds;
-    }
+  //   if (this.type === FilterTypes.SWITCH) {
+  //     const [stringifiedBoolean] = values;
+  //     if (stringifiedBoolean !== undefined) {
+  //       if (
+  //         !stringifiedBoolean ||
+  //         stringifiedBoolean === 'false' ||
+  //         stringifiedBoolean === '0'
+  //       ) {
+  //         return productIds.false;
+  //       }
+  //       return productIds.true;
+  //     }
+  //     return allProductIds;
+  //   }
 
-    const reducedByValues = values.reduce((accumulator, value) => {
-      const additionalValues =
-        value === undefined ? allProductIds : productIds[value];
-      return [...accumulator, ...(additionalValues || [])];
-    }, []);
-    return reducedByValues;
-  },
-  optionsForFilterType(type) {
-    if (type === FilterTypes.SWITCH) return ['true', 'false'];
-    return this.options || [];
-  },
-  loadedOptions({ values, forceLiveCollection, productIdSet, director }) {
-    const mappedOptions = this.optionsForFilterType(this.type)
-      .map((value) => {
-        const filterOptionProductIds = this.productIds({
-          values: [value],
-          forceLiveCollection,
-        });
-        const filteredProductIds = intersectSet(
-          productIdSet,
-          new Set(filterOptionProductIds)
-        );
-        if (!filteredProductIds.length) return null;
-        return {
-          definition: () => this.optionObject(value),
-          filteredProducts: director.aggregateProductIds([
-            ...filteredProductIds,
-          ]).length,
-          filteredProductsCount: director.aggregateProductIds([
-            ...filteredProductIds,
-          ]).length,
-          isSelected: values ? values.indexOf(value) !== -1 : false,
-        };
-      })
-      .filter(Boolean);
-    return mappedOptions;
-  },
-  load({
-    filterQuery,
-    forceLiveCollection,
-    allProductIdsSet,
-    otherFilters,
-    director,
-    ...options
-  }) {
-    const values = filterQuery[this.key];
+  //   const reducedByValues = values.reduce((accumulator, value) => {
+  //     const additionalValues =
+  //       value === undefined ? allProductIds : productIds[value];
+  //     return [...accumulator, ...(additionalValues || [])];
+  //   }, []);
+  //   return reducedByValues;
+  // },
+  // optionsForFilterType(type) {
+  //   if (type === FilterTypes.SWITCH) return ['true', 'false'];
+  //   return this.options || [];
+  // },
+  // loadedOptions({ values, forceLiveCollection, productIdSet, director }) {
+  //   const mappedOptions = this.optionsForFilterType(this.type)
+  //     .map((value) => {
+  //       const filterOptionProductIds = this.productIds({
+  //         values: [value],
+  //         forceLiveCollection,
+  //       });
+  //       const filteredProductIds = intersectSet(
+  //         productIdSet,
+  //         new Set(filterOptionProductIds)
+  //       );
+  //       if (!filteredProductIds.length) return null;
+  //       return {
+  //         definition: () => this.optionObject(value),
+  //         filteredProducts: director.aggregateProductIds([
+  //           ...filteredProductIds,
+  //         ]).length,
+  //         filteredProductsCount: director.aggregateProductIds([
+  //           ...filteredProductIds,
+  //         ]).length,
+  //         isSelected: values ? values.indexOf(value) !== -1 : false,
+  //       };
+  //     })
+  //     .filter(Boolean);
+  //   return mappedOptions;
+  // },
+  // load({
+  //   filterQuery,
+  //   forceLiveCollection,
+  //   allProductIdsSet,
+  //   otherFilters,
+  //   director,
+  //   ...options
+  // }) {
+  //   const values = filterQuery[this.key];
 
-    // The examinedProductIdSet is a set of product id's that:
-    // - Fit this filter generally
-    // - Are part of the preselected product id array
-    const filterProductIds = this.productIds({
-      values: [undefined],
-      forceLiveCollection,
-    });
-    const examinedProductIdSet = intersectSet(
-      allProductIdsSet,
-      new Set(filterProductIds)
-    );
+  //   // The examinedProductIdSet is a set of product id's that:
+  //   // - Fit this filter generally
+  //   // - Are part of the preselected product id array
+  //   const filterProductIds = this.productIds({
+  //     values: [undefined],
+  //     forceLiveCollection,
+  //   });
+  //   const examinedProductIdSet = intersectSet(
+  //     allProductIdsSet,
+  //     new Set(filterProductIds)
+  //   );
 
-    // The filteredProductIdSet is a set of product id's that:
-    // - Are filtered by all other filters
-    // - Are filtered by the currently selected value of this filter
-    // or if there is no currently selected value:
-    // - Is the same like examinedProductIdSet
-    const filteredByOtherFiltersSet = otherFilters
-      .filter((otherFilter) => otherFilter.key !== this.key)
-      .reduce((productIdSet, filter) => {
-        if (!filterQuery[filter.key]) return productIdSet;
-        const otherFilterProductIds = filter.productIds({
-          values: filterQuery[filter.key],
-          forceLiveCollection,
-        });
-        return intersectSet(productIdSet, new Set(otherFilterProductIds));
-      }, new Set(examinedProductIdSet));
+  //   // The filteredProductIdSet is a set of product id's that:
+  //   // - Are filtered by all other filters
+  //   // - Are filtered by the currently selected value of this filter
+  //   // or if there is no currently selected value:
+  //   // - Is the same like examinedProductIdSet
+  //   const filteredByOtherFiltersSet = otherFilters
+  //     .filter((otherFilter) => otherFilter.key !== this.key)
+  //     .reduce((productIdSet, filter) => {
+  //       if (!filterQuery[filter.key]) return productIdSet;
+  //       const otherFilterProductIds = filter.productIds({
+  //         values: filterQuery[filter.key],
+  //         forceLiveCollection,
+  //       });
+  //       return intersectSet(productIdSet, new Set(otherFilterProductIds));
+  //     }, new Set(examinedProductIdSet));
 
-    const filterProductIdsForValues = values
-      ? this.productIds({
-          values,
-          forceLiveCollection,
-        })
-      : filterProductIds;
-    const filteredProductIdSet = intersectSet(
-      filteredByOtherFiltersSet,
-      new Set(filterProductIdsForValues)
-    );
+  //   const filterProductIdsForValues = values
+  //     ? this.productIds({
+  //         values,
+  //         forceLiveCollection,
+  //       })
+  //     : filterProductIds;
+  //   const filteredProductIdSet = intersectSet(
+  //     filteredByOtherFiltersSet,
+  //     new Set(filterProductIdsForValues)
+  //   );
 
-    return {
-      definition: this,
-      examinedProducts: director.aggregateProductIds([...examinedProductIdSet])
-        .length,
-      productsCount: director.aggregateProductIds([...examinedProductIdSet])
-        .length,
-      filteredProducts: director.aggregateProductIds([...filteredProductIdSet])
-        .length,
-      filteredProductsCount: director.aggregateProductIds([
-        ...filteredProductIdSet,
-      ]).length,
-      isSelected: Object.prototype.hasOwnProperty.call(filterQuery, this.key),
-      options: () => {
-        // The current base for options should be an array of product id's that:
-        // - Are part of the preselected product id array
-        // - Fit this filter generally
-        // - Are filtered by all other filters
-        // - Are not filtered by the currently selected value of this filter
-        return this.loadedOptions({
-          director,
-          values,
-          forceLiveCollection,
-          productIdSet: filteredByOtherFiltersSet,
-        });
-      },
-    };
-  },
+  //   return {
+  //     definition: this,
+  //     examinedProducts: director.aggregateProductIds([...examinedProductIdSet])
+  //       .length,
+  //     productsCount: director.aggregateProductIds([...examinedProductIdSet])
+  //       .length,
+  //     filteredProducts: director.aggregateProductIds([...filteredProductIdSet])
+  //       .length,
+  //     filteredProductsCount: director.aggregateProductIds([
+  //       ...filteredProductIdSet,
+  //     ]).length,
+  //     isSelected: Object.prototype.hasOwnProperty.call(filterQuery, this.key),
+  //     options: () => {
+  //       // The current base for options should be an array of product id's that:
+  //       // - Are part of the preselected product id array
+  //       // - Fit this filter generally
+  //       // - Are filtered by all other filters
+  //       // - Are not filtered by the currently selected value of this filter
+  //       return this.loadedOptions({
+  //         director,
+  //         values,
+  //         forceLiveCollection,
+  //         productIdSet: filteredByOtherFiltersSet,
+  //       });
+  //     },
+  //   };
+  // },
 });

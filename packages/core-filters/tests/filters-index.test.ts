@@ -1,42 +1,45 @@
 import { assert } from 'chai';
 import { initDb } from 'meteor/unchained:mongodb';
-import { configureFiltersModule } from 'meteor/unchained:core-filters';
+import {
+  configureFiltersModule,
+  FilterType,
+} from 'meteor/unchained:core-filters';
+import { dbIdToString } from 'meteor/unchained:utils';
 import { FiltersModule } from '@unchainedshop/types/filters';
+import { Context } from '@unchainedshop/types/api';
 
 describe('Test exports', () => {
   let module: FiltersModule;
+  let context = { userId: 'Test-User-1' } as Context;
 
   before(async () => {
     const db = initDb();
-    module = await configureFiltersModule({ db }).catch((error) => {
-      console.error(error);
-    });
+    module = await configureFiltersModule({ db });
   });
 
   it('Insert filter', async () => {
-    const filterId = await module.create(
+    const newFilter = await module.create(
       {
         authorId: 'Test-User-1',
         isActive: true,
-        isBase: true,
-        isRoot: true,
-        sequence: 13,
-        slugs: ['Test'],
-        tags: [],
-        _cachedProductIds: [],
-        title: 'Test',
-        locale: 'de',
+        key: 'Test',
+        options: [],
+        type: FilterType.SINGLE_CHOICE,
+        title: 'My Test Filter',
+        locale: 'en',
       },
-      'Test-User-1'
+      context
     );
 
-    assert.ok(filterId);
-
-    const filter = await module.findFilter({ filterId });
+    assert.ok(newFilter);
+    const filterId = dbIdToString(newFilter._id);
+    const filter = await module.findFilter({
+      filterId,
+    });
 
     assert.ok(filter);
 
-    const deletedCount = await module.delete(filterId);
+    const deletedCount = await module.delete(filterId, context);
     assert.equal(deletedCount, 1);
   });
 });

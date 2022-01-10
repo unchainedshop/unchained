@@ -5,14 +5,24 @@ import {
   FiltersModule,
   FilterText,
 } from '@unchainedshop/types/filters';
+import { Product } from '@unchainedshop/types/products';
+import { dbIdToString } from 'meteor/unchained:utils';
 import { FilterDirector } from 'src/director/FilterDirector';
+import { assortmentFulltextSearch } from 'src/search/assortmentFulltextSearch';
 import { cleanQuery } from 'src/search/cleanQuery';
+import { loadFilter } from 'src/search/loadFilter';
 import { productFacetedSearch } from 'src/search/productFacetedSearch';
 import { productFulltextSearch } from 'src/search/productFulltextSearch';
+import { resolveAssortmentSelector } from 'src/search/resolveAssortmentSelector';
 import { resolveFilterSelector } from 'src/search/resolveFilterSelector';
 import { resolveProductSelector } from 'src/search/resolveProductSelector';
 import { resolveSortStage } from 'src/search/resolveSortStage';
-import { FilterProductIds, SearchConfiguration } from 'src/search/search';
+import {
+  FilterProductIds,
+  SearchAssortmentConfiguration,
+  SearchConfiguration,
+  SearchProductConfiguration,
+} from 'src/search/search';
 
 export const configureFilterSearchModule = ({
   Filters,
@@ -26,13 +36,59 @@ export const configureFilterSearchModule = ({
       searchQuery,
       { forceLiveCollection },
       requestContext
-    ) => {},
+    ) => {
+      const { modules } = requestContext;
+      const filterActions = FilterDirector.actions(
+        { searchQuery },
+        requestContext
+      );
+
+      const query = cleanQuery(searchQuery);
+      const filterSelector = await resolveFilterSelector(
+        searchQuery,
+        filterActions
+      );
+      const assortmentSelector = resolveAssortmentSelector(searchQuery);
+      const sortStage = await resolveSortStage(searchQuery, filterActions);
+
+      const searchConfiguration: SearchAssortmentConfiguration = {
+        query,
+        filterSelector,
+        assortmentSelector,
+        sortStage,
+        forceLiveCollection,
+      };
+
+      const totalAssortmentIds = await assortmentFulltextSearch(
+        searchConfiguration,
+        filterActions
+      )(query?.productIds);
+      const totalAssormentCount = async () =>
+        modules.assortments.count({
+          assortmentSelector,
+          assortmentIds: totalAssortmentIds,
+        });
+
+      return {
+        totalAssortments: totalAssormentCount,
+        assortmentsCount: totalAssormentCount,
+        assortments: async ({ offset, limit }) =>
+          await modules.assortments.search.findFilteredAssortments({
+            limit,
+            offset,
+            assortmentIds: totalAssortmentIds,
+            assortmentSelector,
+            sort: sortStage,
+          }),
+      };
+    },
 
     searchProducts: async (
       searchQuery,
       { forceLiveCollection },
       requestContext
     ) => {
+      const { modules } = requestContext;
       const filterActions = FilterDirector.actions(
         { searchQuery },
         requestContext
@@ -50,7 +106,7 @@ export const configureFilterSearchModule = ({
       );
       const sortStage = await resolveSortStage(searchQuery, filterActions);
 
-      const searchConfiguration: SearchConfiguration = {
+      const searchConfiguration: SearchProductConfiguration = {
         query,
         filterSelector,
         productSelector,
@@ -65,49 +121,54 @@ export const configureFilterSearchModule = ({
       )(productIds);
 
       const findFilters = async () => {
-        const resolvedFilterSelector = await filterSelector;
-        const extractedFilterIds = resolvedFilterSelector?._id?.$in || [];
-        const otherFilters = await Filters.find(
-          resolvedFilterSelector
-        ).toArray();
+        const extractedFilterIds = filterSelector?._id?.$in || [];
+        const otherFilters = await Filters.find(filterSelector).toArray();
         const sortedFilters = otherFilters.sort((left, right) => {
           const leftIndex = extractedFilterIds.indexOf(left._id);
           const rightIndex = extractedFilterIds.indexOf(right._id);
           return leftIndex - rightIndex;
         });
 
-        const relevantProducts =
-          await requestContext.modules.products.findProducts(
-            {
-              ...productSelector,
-              _id: { $in: totalProductIds },
-            },
-            {
-              projection: { _id: 1 },
-            }
-          );
-        const relevantProductIds = relevantProducts.map(({ _id }) => _id);
+        const relevantProducts = await modules.products.findProducts(
+          {
+            productSelector,
+            productIds: totalProductIds,
+          },
+          {
+            projection: { _id: 1 },
+          }
+        );
+        const relevantProductIds = relevantProducts.map(({ _id }) =>
+          dbIdToString(_id)
+        );
 
-        return sortedFilters.map((filter) => {
-          return filter.load({
-            ...query,
-            director,
-            allProductIdsSet: new Set(relevantProductIds),
-            otherFilters,
-            context,
-          });
-        });
+        return await Promise.all(
+          sortedFilters.map(async (filter) => {
+            return await loadFilter(
+              filter,
+              {
+                allProductIds: relevantProductIds,
+                filterQuery: query.filterQuery,
+                forceLiveCollection,
+                otherFilters,
+              },
+              filterProductIds,
+              filterActions,
+              requestContext
+            );
+          })
+        );
       };
 
       if (searchQuery.productIds?.length === 0) {
         // Restricted to an empty array of products
         // will always lead to an empty result
         return {
-          totalProducts: 0,
-          productsCount: 0,
-          filteredProducts: 0,
-          filteredProductsCount: 0,
-          products: () => [],
+          totalProducts: async () => 0,
+          productsCount: async () => 0,
+          filteredProducts: async () => 0,
+          filteredProductsCount: async () => 0,
+          products: async () => [] as Array<Product>,
           filters: findFilters,
         };
       }
@@ -117,51 +178,44 @@ export const configureFilterSearchModule = ({
         filterProductIds,
         searchConfiguration,
         requestContext
-      );
+      )(totalProductIds);
+      const aggregatedProductIds = filterActions.aggregateProductIds({
+        productIds: filteredProductIds,
+      });
 
-      const countProducts = requestContext.modules.products.count;
+      const countProducts = modules.products.count;
 
       return {
         totalProducts: async () =>
           await countProducts({
-            ...productSelector,
-            _id: {
-              $in: filterActions.aggregateProductIds({
-                productIds: totalProductIds,
-              }),
-            },
+            productSelector,
+            productIds: filterActions.aggregateProductIds({
+              productIds: totalProductIds,
+            }),
           }),
         productsCount: async () =>
           await countProducts({
-            ...productSelector,
-            _id: { $in: await totalProductIds },
+            productSelector,
+            productIds: totalProductIds,
           }),
         filteredProducts: async () =>
           await countProducts({
-            ...productSelector,
-            _id: {
-              $in: filterActions.aggregateProductIds({
-                productIds: filteredProductIds,
-              }),
-            },
+            productSelector,
+            productIds: aggregatedProductIds,
           }),
         filteredProductsCount: async () =>
           await countProducts({
-            ...productSelector,
-            _id: { $in: filteredProductIds },
+            productSelector,
+            productIds: filteredProductIds,
           }),
         products: async ({ offset, limit }) =>
-          findPreservingIds(Products)(
+          await modules.products.search.findFilteredProducts({
+            limit,
+            offset,
+            productIds: aggregatedProductIds,
             productSelector,
-            filterActions.aggregateProductIds({
-              productIds: filteredProductIds,
-            }),
-            {
-              skip: offset,
-              limit,
-              sort: sortStage,
-            }
-          ),
+            sort: sortStage,
+          }),
         filters: findFilters,
       };
     },

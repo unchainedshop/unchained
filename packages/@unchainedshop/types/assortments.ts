@@ -1,5 +1,5 @@
 import { Context } from './api';
-import { Filter, FindOptions, TimestampFields, _ID } from './common';
+import { Filter, FindOptions, Query, TimestampFields, _ID } from './common';
 import { AssortmentMedia, AssortmentMediaModule } from './assortments.media';
 
 export type Assortment = {
@@ -56,11 +56,13 @@ export type AssortmentText = {
   title?: string;
 } & TimestampFields;
 
-type AssortmentQuery = {
+export type AssortmentQuery = {
+  assortmentIds?: Array<string>;
+  assortmentSelector?: Query;
+  includeInactive?: boolean;
+  includeLeaves?: boolean;
   slugs?: Array<string>;
   tags?: Array<string>;
-  includeLeaves?: boolean;
-  includeInactive?: boolean;
 };
 
 export type AssortmentsModule = {
@@ -283,6 +285,20 @@ export type AssortmentsModule = {
       },
       userId?: string
     ) => Promise<Array<AssortmentProduct>>;
+  };
+
+  /*
+   * Assortment Filter Search
+   */
+
+  search: {
+    findFilteredAssortments: (params: {
+      assortmentIds: Array<string>;
+      assortmentSelector: Query;
+      limit: number;
+      offset: number;
+      sort: FindOptions['sort'];
+    }) => Promise<Array<Assortment>>;
   };
 
   /*

@@ -6,13 +6,17 @@ import {
   Query,
 } from '@unchainedshop/types/common';
 import { query } from '@unchainedshop/types/node_modules/winston';
-import { Product, ProductsModule } from '@unchainedshop/types/products';
+import {
+  Product,
+  ProductQuery,
+  ProductsModule,
+} from '@unchainedshop/types/products';
 import { emit, registerEvents } from 'meteor/unchained:events';
 import {
   dbIdToString,
   generateDbFilterById,
   generateDbMutations,
-  objectInvert,
+  findPreservingIds,
 } from 'meteor/unchained:utils';
 import { ProductsCollection } from '../db/ProductsCollection';
 import { ProductsSchema, ProductTypes } from '../db/ProductsSchema';
@@ -36,9 +40,17 @@ const buildFindSelector = ({
   slugs = [],
   tags = [],
   includeDrafts = false,
+  productIds = [],
+  productSelector,
   ...query
-}) => {
-  const selector: Query = query;
+}: ProductQuery) => {
+  const selector: Query = productSelector
+    ? { ...productSelector, ...query }
+    : query;
+
+  if (productIds?.length > 0) {
+    selector._id = { $in: productIds };
+  }
 
   if (slugs?.length > 0) {
     selector.slugs = { $in: slugs };
@@ -515,6 +527,18 @@ export const configureProductsModule = async ({
       buildActiveStatusFilter: () => ({
         status: { $in: [ProductStatus.ACTIVE, ProductStatus.DRAFT] },
       }),
+      findFilteredProducts: async ({
+        limit,
+        offset,
+        productIds,
+        productSelector,
+        sort,
+      }) =>
+        await findPreservingIds(Products)(productSelector, productIds, {
+          skip: offset,
+          limit,
+          sort,
+        }),
     },
 
     texts: productTexts,

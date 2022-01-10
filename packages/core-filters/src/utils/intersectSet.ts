@@ -1,6 +1,6 @@
 export const intersectSet = (
-  productIdSet: Set<String>,
-  filterProductIdSet: Set<String>
+  productIdSet: Set<string>,
+  filterProductIdSet: Set<string>
 ) =>
   new Set(
     [...productIdSet].filter((currentProductId) =>
