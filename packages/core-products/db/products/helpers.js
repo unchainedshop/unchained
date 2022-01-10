@@ -363,11 +363,12 @@ ProductTexts.makeSlug = ({ slug, title, productId }, options) => {
 //   emit('PRODUCT_REMOVE_ASSIGNMENT', { productId });
 // };
 
-AssortmentProducts.helpers({
-  product() {
-    return Products.findOne({ _id: this.productId });
-  },
-});
+// AssortmentProducts.helpers({
+//   product() {
+//     return Products.findOne({ _id: this.productId });
+//   },
+
+// });
 
 Products.helpers({
   assortmentIds() {
@@ -799,30 +800,30 @@ Products.helpers({
   // },
 
   // Service ?
-  resolveOrderableProduct({ configuration = [] }) {
-    this.checkIsActive();
-    if (this.type === ProductTypes.ConfigurableProduct) {
-      const variations = this.variations();
-      const vectors = configuration.filter(({ key: configurationKey }) => {
-        const isKeyEqualsVariationKey = Boolean(
-          variations.filter(
-            ({ key: variationKey }) => variationKey === configurationKey
-          ).length
-        );
-        return isKeyEqualsVariationKey;
-      });
-      const variants = this.proxyProducts(vectors);
-      if (variants.length !== 1) {
-        throw new Error(
-          'There needs to be exactly one variant left when adding a ConfigurableProduct to the cart, configuration not distinct enough'
-        );
-      }
-      const resolvedProduct = variants[0];
-      resolvedProduct.checkIsActive();
-      return resolvedProduct;
-    }
-    return this;
-  },
+  // resolveOrderableProduct({ configuration = [] }) {
+  //   this.checkIsActive();
+  //   if (this.type === ProductTypes.ConfigurableProduct) {
+  //     const variations = this.variations();
+  //     const vectors = configuration.filter(({ key: configurationKey }) => {
+  //       const isKeyEqualsVariationKey = Boolean(
+  //         variations.filter(
+  //           ({ key: variationKey }) => variationKey === configurationKey
+  //         ).length
+  //       );
+  //       return isKeyEqualsVariationKey;
+  //     });
+  //     const variants = this.proxyProducts(vectors);
+  //     if (variants.length !== 1) {
+  //       throw new Error(
+  //         'There needs to be exactly one variant left when adding a ConfigurableProduct to the cart, configuration not distinct enough'
+  //       );
+  //     }
+  //     const resolvedProduct = variants[0];
+  //     resolvedProduct.checkIsActive();
+  //     return resolvedProduct;
+  //   }
+  //   return this;
+  // },
 
   // checkIsActive() {
   //   if (!this.isActive()) {
@@ -835,158 +836,158 @@ Products.helpers({
   //   if (this.status === ProductStatus.ACTIVE) return true;
   //   return false;
   // },
-  reviews({ limit, offset }) {
-    return ProductReviews.findReviews(
-      { productId: this._id },
-      { offset, limit }
-    );
-  },
-  catalogPrices() {
-    const prices = (this.commerce && this.commerce.pricing) || [];
-    return prices.map((price) => ({
-      _id: crypto
-        .createHash('sha256')
-        .update(
-          [
-            this._id,
-            price.countryCode,
-            price.currencyCode,
-            price.maxQuantity,
-            price.amount,
-          ].join('')
-        )
-        .digest('hex'),
-      ...price,
-    }));
-  },
-  catalogPriceRange({
-    quantity = 0,
-    vectors = [],
-    includeInactive = false,
-    country,
-    currency,
-  }) {
-    const proxyProducts = this.proxyProducts(vectors, { includeInactive });
-    const filtered = [];
-    proxyProducts.forEach((p) => {
-      const catalogPrice = p.price({
-        country,
-        quantity,
-        currency,
-      });
+  // reviews({ limit, offset }) {
+  //   return ProductReviews.findReviews(
+  //     { productId: this._id },
+  //     { offset, limit }
+  //   );
+  // },
+  // catalogPrices() {
+  //   const prices = (this.commerce && this.commerce.pricing) || [];
+  //   return prices.map((price) => ({
+  //     _id: crypto
+  //       .createHash('sha256')
+  //       .update(
+  //         [
+  //           this._id,
+  //           price.countryCode,
+  //           price.currencyCode,
+  //           price.maxQuantity,
+  //           price.amount,
+  //         ].join('')
+  //       )
+  //       .digest('hex'),
+  //     ...price,
+  //   }));
+  // },
+//   catalogPriceRange({
+//     quantity = 0,
+//     vectors = [],
+//     includeInactive = false,
+//     country,
+//     currency,
+//   }) {
+//     const proxyProducts = this.proxyProducts(vectors, { includeInactive });
+//     const filtered = [];
+//     proxyProducts.forEach((p) => {
+//       const catalogPrice = p.price({
+//         country,
+//         quantity,
+//         currency,
+//       });
 
-      if (catalogPrice) {
-        filtered.push(catalogPrice);
-      }
-    });
+//       if (catalogPrice) {
+//         filtered.push(catalogPrice);
+//       }
+//     });
 
-    if (!filtered.length) return null;
-    const { minPrice, maxPrice } = getPriceRange(filtered);
+//     if (!filtered.length) return null;
+//     const { minPrice, maxPrice } = getPriceRange(filtered);
 
-    return {
-      _id: crypto
-        .createHash('sha256')
-        .update(
-          [
-            this._id,
-            Math.random(),
-            minPrice.amount,
-            minPrice.currency,
-            maxPrice.amount,
-            maxPrice.currency,
-          ].join('')
-        )
-        .digest('hex'),
-      minPrice,
-      maxPrice,
-    };
-  },
-  simulatedPriceRange(
-    {
-      quantity,
-      vectors = [],
-      includeInactive = false,
-      currency,
-      country,
-      useNetPrice = false,
-    },
-    requestContext
-  ) {
-    const proxyProducts = this.proxyProducts(vectors, { includeInactive });
-    const { userId, user } = requestContext;
-    const filtered = [];
+//     return {
+//       _id: crypto
+//         .createHash('sha256')
+//         .update(
+//           [
+//             this._id,
+//             Math.random(),
+//             minPrice.amount,
+//             minPrice.currency,
+//             maxPrice.amount,
+//             maxPrice.currency,
+//           ].join('')
+//         )
+//         .digest('hex'),
+//       minPrice,
+//       maxPrice,
+//     };
+//   },
+//   simulatedPriceRange(
+//     {
+//       quantity,
+//       vectors = [],
+//       includeInactive = false,
+//       currency,
+//       country,
+//       useNetPrice = false,
+//     },
+//     requestContext
+//   ) {
+//     const proxyProducts = this.proxyProducts(vectors, { includeInactive });
+//     const { userId, user } = requestContext;
+//     const filtered = [];
 
-    proxyProducts.forEach((p) => {
-      const userPrice = p.userPrice(
-        {
-          quantity,
-          currency,
-          country,
-          useNetPrice,
-          userId,
-          user,
-        },
-        requestContext
-      );
-      if (userPrice) filtered.push(userPrice);
-    });
+//     proxyProducts.forEach((p) => {
+//       const userPrice = p.userPrice(
+//         {
+//           quantity,
+//           currency,
+//           country,
+//           useNetPrice,
+//           userId,
+//           user,
+//         },
+//         requestContext
+//       );
+//       if (userPrice) filtered.push(userPrice);
+//     });
 
-    if (!filtered.length) return null;
-    const { minPrice, maxPrice } = getPriceRange(filtered);
+//     if (!filtered.length) return null;
+//     const { minPrice, maxPrice } = getPriceRange(filtered);
 
-    return {
-      _id: crypto
-        .createHash('sha256')
-        .update(
-          [
-            this._id,
-            Math.random(),
-            minPrice.amount,
-            minPrice.currency,
-            maxPrice.amount,
-            maxPrice.currency,
-          ].join('')
-        )
-        .digest('hex'),
-      minPrice,
-      maxPrice,
-    };
-  },
-  leveledCatalogPrices({ currency: currencyCode, country: countryCode }) {
-    const currency =
-      currencyCode ||
-      Countries.resolveDefaultCurrencyCode({
-        isoCode: countryCode,
-      });
+//     return {
+//       _id: crypto
+//         .createHash('sha256')
+//         .update(
+//           [
+//             this._id,
+//             Math.random(),
+//             minPrice.amount,
+//             minPrice.currency,
+//             maxPrice.amount,
+//             maxPrice.currency,
+//           ].join('')
+//         )
+//         .digest('hex'),
+//       minPrice,
+//       maxPrice,
+//     };
+//   },
+//   leveledCatalogPrices({ currency: currencyCode, country: countryCode }) {
+//     const currency =
+//       currencyCode ||
+//       Countries.resolveDefaultCurrencyCode({
+//         isoCode: countryCode,
+//       });
 
-    let previousMax = null;
-    const filteredAndSortedPriceLevels = getPriceLevels(this, {
-      currencyCode: currency,
-      countryCode,
-    });
+//     let previousMax = null;
+//     const filteredAndSortedPriceLevels = getPriceLevels(this, {
+//       currencyCode: currency,
+//       countryCode,
+//     });
 
-    return filteredAndSortedPriceLevels.map((priceLevel, i) => {
-      const max = priceLevel.maxQuantity || null;
-      const min = previousMax ? previousMax + 1 : 0;
-      previousMax = priceLevel.maxQuantity;
-      return {
-        minQuantity: min,
-        maxQuantity:
-          i === 0 && priceLevel.maxQuantity > 0 ? priceLevel.maxQuantity : max,
-        price: {
-          _id: crypto
-            .createHash('sha256')
-            .update([this._id, priceLevel.amount, currency].join(''))
-            .digest('hex'),
-          isTaxable: !!priceLevel.isTaxable,
-          isNetPrice: !!priceLevel.isNetPrice,
-          amount: priceLevel.amount,
-          currencyCode: currency,
-        },
-      };
-    });
-  },
-});
+//     return filteredAndSortedPriceLevels.map((priceLevel, i) => {
+//       const max = priceLevel.maxQuantity || null;
+//       const min = previousMax ? previousMax + 1 : 0;
+//       previousMax = priceLevel.maxQuantity;
+//       return {
+//         minQuantity: min,
+//         maxQuantity:
+//           i === 0 && priceLevel.maxQuantity > 0 ? priceLevel.maxQuantity : max,
+//         price: {
+//           _id: crypto
+//             .createHash('sha256')
+//             .update([this._id, priceLevel.amount, currency].join(''))
+//             .digest('hex'),
+//           isTaxable: !!priceLevel.isTaxable,
+//           isNetPrice: !!priceLevel.isNetPrice,
+//           amount: priceLevel.amount,
+//           currencyCode: currency,
+//         },
+//       };
+//     });
+//   },
+// });
 
-Products.getLocalizedTexts = (productId, locale) =>
-  findLocalizedText(ProductTexts, { productId }, locale);
+// Products.getLocalizedTexts = (productId, locale) =>
+//   findLocalizedText(ProductTexts, { productId }, locale);

@@ -2,7 +2,6 @@ import { log, LogLevel } from 'meteor/unchained:logger';
 import moment from 'moment';
 
 import { IEnrollmentAdapter } from '@unchainedshop/types/enrollments';
-import { Enrollment } from '@unchainedshop/types/enrollments';
 
 const periodForReferenceDate = (
   referenceDate: Date,

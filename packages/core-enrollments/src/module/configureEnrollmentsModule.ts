@@ -1,5 +1,9 @@
 import { Context } from '@unchainedshop/types/api';
-import { ModuleInput, ModuleMutations } from '@unchainedshop/types/common';
+import {
+  ModuleInput,
+  ModuleMutations,
+  Query,
+} from '@unchainedshop/types/common';
 import {
   Enrollment,
   EnrollmentsModule,
@@ -265,8 +269,11 @@ export const configureEnrollmentsModule = async ({
       return await Enrollments.findOne(selector, options);
     },
 
-    findEnrollments: async ({ status, limit, offset }) => {
-      const selector = status ? { status: { $in: status } } : {};
+    findEnrollments: async ({ status, userId, limit, offset }) => {
+      let selector: Query = status ? { status: { $in: status } } : {};
+      if (userId) {
+        selector.userId = userId;
+      }
 
       const enrollments = Enrollments.find(selector, {
         skip: offset,

@@ -10,18 +10,22 @@ type HelperType<P, T> = (
   context: Context
 ) => T;
 
-interface OrderPaymentCartHelperTypes {
+interface OrderPaymentCardHelperTypes {
   status: HelperType<never, string>;
-  discounts: HelperType<never, Array<OrderPaymentDiscount>>;
+  discounts: HelperType<never, Promise<Array<OrderPaymentDiscount>>>;
 }
 
-export const OrderPaymentCart: OrderPaymentCartHelperTypes = {
+export const OrderPaymentCard: OrderPaymentCardHelperTypes = {
   status: (obj, _, { modules }) => {
     return modules.orders.payments.normalizedStatus(obj);
   },
 
-  discounts: (obj, _, { modules }) => {
-    const pricingSheet = modules.orders.payments.pricingSheet(obj);
+  discounts: async (obj, _, { modules }) => {
+    const order = await modules.orders.findOrder({ orderId: obj.orderId });
+    const pricingSheet = modules.orders.payments.pricingSheet(
+      obj,
+      order.currency
+    );
     if (pricingSheet.isValid()) {
       // IMPORTANT: Do not send any parameter to obj.discounts!
       return pricingSheet.discountPrices().map((discount) => ({

@@ -13,6 +13,7 @@ import { log, LogLevel } from 'meteor/unchained:logger';
 import {
   generateDbMutations,
   generateDbFilterById,
+  findPreservingIds,
 } from 'meteor/unchained:utils';
 import { AssortmentsCollection } from '../db/AssortmentsCollection';
 import { AssortmentsSchema } from '../db/AssortmentsSchema';
@@ -279,12 +280,43 @@ export const configureAssortmentsModule = async ({
     },
 
     findAssortments: async ({ limit, offset, ...query }) => {
-      const countries = Assortments.find(buildFindSelector(query), {
+      const assortments = Assortments.find(buildFindSelector(query), {
         skip: offset,
         limit,
         sort: { sequence: 1 },
       });
-      return await countries.toArray();
+      return await assortments.toArray();
+    },
+
+    findProductIds: async ({
+      assortmentId,
+      forceLiveCollection,
+      ignoreChildAssortments,
+    }) => {
+      const assortment = await Assortments.findOne(
+        generateDbFilterById(assortmentId)
+      );
+      return await findProductIds(assortment, {
+        forceLiveCollection,
+        ignoreChildAssortments,
+      });
+    },
+
+    children: async ({ assortmentId, includeInactive }) => {
+      const assortmentLinks = await AssortmentLinks.find(
+        { parentAssortmentId: assortmentId },
+        {
+          projection: { childAssortmentId: 1 },
+          sort: { sortKey: 1 },
+        }
+      ).toArray();
+
+      const assortmentIds = assortmentLinks.map(
+        ({ childAssortmentId }) => childAssortmentId
+      );
+
+      const selector = !includeInactive ? { isActive: true } : {};
+      return await findPreservingIds(Assortments)(selector, assortmentIds);
     },
 
     count: async (query) => {
@@ -335,7 +367,6 @@ export const configureAssortmentsModule = async ({
 
           return await assortmentProducts.toArray();
         };
-
 
       const buildBreadcrumbs = makeAssortmentBreadcrumbsBuilder({
         resolveAssortmentLink,

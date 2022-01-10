@@ -5,6 +5,7 @@ import {
   ModuleMutations,
   Query,
 } from '@unchainedshop/types/common';
+import { query } from '@unchainedshop/types/node_modules/winston';
 import { Product, ProductsModule } from '@unchainedshop/types/products';
 import { emit, registerEvents } from 'meteor/unchained:events';
 import {
@@ -35,8 +36,9 @@ const buildFindSelector = ({
   slugs = [],
   tags = [],
   includeDrafts = false,
+  ...query
 }) => {
-  const selector: Query = {};
+  const selector: Query = query;
 
   if (slugs?.length > 0) {
     selector.slugs = { $in: slugs };
@@ -505,6 +507,15 @@ export const configureProductsModule = async ({
     media: await configureProductMediaModule({ db }),
     reviews: await configureProductReviewsModule({ db }),
     variations: await configureProductVariationsModule({ db }),
+
+    search: {
+      buildActiveDraftStatusFilter: () => ({
+        status: { $in: [ProductStatus.ACTIVE, ProductStatus.DRAFT] },
+      }),
+      buildActiveStatusFilter: () => ({
+        status: { $in: [ProductStatus.ACTIVE, ProductStatus.DRAFT] },
+      }),
+    },
 
     texts: productTexts,
   };

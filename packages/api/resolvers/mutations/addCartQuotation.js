@@ -9,7 +9,7 @@ import {
 import getCart from '../../getCart';
 
 export default async function addCartQuotation(
-  root,
+  root: Root,
   { orderId, quotationId, quantity, configuration },
   { user, userId, countryContext }
 ) {

@@ -39,11 +39,24 @@ export const configureAssortmentLinksModule = ({
       );
     },
 
-    findLinks: async ({ parentAssortmentId, childAssortmentId }) => {
-      const links = AssortmentLinks.find({
-        parentAssortmentId,
-        childAssortmentId,
-      });
+    findLinks: async ({ assortmentId, parentAssortmentId }, options) => {
+      const selector = parentAssortmentId
+        ? {
+            parentAssortmentId,
+          }
+        : {
+            $or: [
+              { parentAssortmentId: assortmentId },
+              { childAssortmentId: assortmentId },
+            ],
+          };
+
+      const links = AssortmentLinks.find(
+        selector,
+        options || {
+          sort: { sortKey: 1 },
+        }
+      );
 
       return links.toArray();
     },

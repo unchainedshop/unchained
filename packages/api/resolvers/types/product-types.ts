@@ -14,11 +14,41 @@ export const Product: ProductHelperTypes = {
     });
   },
 
-  texts: async (obj, { forceLocale }, requestContext) => {
-    const { localeContext, modules } = requestContext;
-    return await modules.products.texts.findLocalizedText({
+  media: async (obj, params, { modules }) => {
+    return await modules.products.media.findProductMedias({
       productId: obj._id as string,
-      locale: forceLocale || localeContext.normalized,
+      ...params,
+    });
+  },
+
+  reviews: async (obj, { limit = 10, offset = 0 }, { modules }) => {
+    return await modules.products.reviews.findProductReviews({
+      productId: obj._id as string,
+      limit,
+      offset,
+    });
+  },
+
+  siblings: async (product, params, { modules }) => {
+    const { assortmentId, limit, offset, includeInactive = false } = params;
+
+    const productId = product._id as string;
+    const assortmentIds = assortmentId
+      ? [assortmentId]
+      : await modules.assortments.products.findAssortmentIds({ productId });
+
+    if (!assortmentIds.length) return [];
+
+    const productIds = await modules.assortments.products.findProductSiblings({
+      productId,
+      assortmentIds,
+    });
+
+    return await modules.products.findProductSiblings({
+      productIds,
+      includeInactive,
+      limit,
+      offset,
     });
   },
 
@@ -26,10 +56,11 @@ export const Product: ProductHelperTypes = {
     return modules.products.normalizedStatus(obj);
   },
 
-  media: async (obj, params, { modules }) => {
-    return await modules.products.media.findProductMedias({
+  texts: async (obj, { forceLocale }, requestContext) => {
+    const { localeContext, modules } = requestContext;
+    return await modules.products.texts.findLocalizedText({
       productId: obj._id as string,
-      ...params,
+      locale: forceLocale || localeContext.normalized,
     });
   },
 };

@@ -19,212 +19,216 @@ const zlib = require('zlib');
 
 const MAX_UNCOMPRESSED_FILTER_PRODUCTS = 1000;
 
-const buildFindSelector = ({ includeInactive = false }) => {
-  const selector = {};
-  if (!includeInactive) selector.isActive = true;
-  return selector;
-};
+// const buildFindSelector = ({ includeInactive = false }) => {
+//   const selector = {};
+//   if (!includeInactive) selector.isActive = true;
+//   return selector;
+// };
 
-Assortments.helpers({
-  async searchProducts({
-    query,
-    ignoreChildAssortments,
-    forceLiveCollection,
-    ...options
-  }) {
-    const productIds = this.productIds({
-      forceLiveCollection,
-      ignoreChildAssortments,
-    });
-    const filterIds = this.filterAssignments().map(({ filterId }) => filterId);
-    return searchProducts({
-      query: {
-        filterIds,
-        productIds,
-        ...query,
-      },
-      forceLiveCollection,
-      ...options,
-    });
-  },
-});
+// Assortments.helpers({
+//   async searchProducts({
+//     query,
+//     ignoreChildAssortments,
+//     forceLiveCollection,
+//     ...options
+//   }) {
+//     const productIds = this.productIds({
+//       forceLiveCollection,
+//       ignoreChildAssortments,
+//     });
+//     const filterIds = this.filterAssignments().map(({ filterId }) => filterId);
+//     return searchProducts({
+//       query: {
+//         filterIds,
+//         productIds,
+//         ...query,
+//       },
+//       forceLiveCollection,
+//       ...options,
+//     });
+//   },
+// });
 
-AssortmentFilters.helpers({
-  filter() {
-    return Filters.findOne({ _id: this.filterId });
-  },
-});
 
-Filters.createFilter = (
-  { locale, title, type, isActive = false, authorId, ...filterData },
-  { skipInvalidation = false } = {}
-) => {
-  const filterId = Filters.insert({
-    isActive,
-    created: new Date(),
-    type: FilterTypes[type],
-    authorId,
-    ...filterData,
-  });
-  const filterObject = Filters.findOne({ _id: filterId });
-  if (locale) {
-    filterObject.upsertLocalizedText(locale, {
-      filterOptionValue: null,
-      title,
-      authorId,
-    });
-  }
-  if (!skipInvalidation) {
-    filterObject.invalidateProductIdCache();
-  }
-  emit('FILTER_CREATE', { filter: filterObject });
-  return filterObject;
-};
+// // Move to types
+// AssortmentFilters.helpers({
+//   filter() {
+//     return Filters.findOne({ _id: this.filterId });
+//   },
+// });
 
-Filters.updateFilter = (
-  { filterId, ...filter },
-  { skipInvalidation = false } = {}
-) => {
-  const modifier = {
-    $set: {
-      ...filter,
-      updated: new Date(),
-    },
-  };
-  Filters.update({ _id: filterId }, modifier);
-  const filterObject = Filters.findOne({ _id: filterId });
-  if (!skipInvalidation) {
-    filterObject.invalidateProductIdCache();
-  }
-  emit('FILTER_UPDATE', { filter: filterObject });
-  return filterObject;
-};
 
-Filters.removeFilter = ({ filterId }) => {
-  AssortmentFilters.removeFilters({ filterId });
-  const result = Filters.remove({ _id: filterId });
-  emit('FILTER_REMOVE', { filterId });
-  return result;
-};
+// Filters.createFilter = (
+//   { locale, title, type, isActive = false, authorId, ...filterData },
+//   { skipInvalidation = false } = {}
+// ) => {
+//   const filterId = Filters.insert({
+//     isActive,
+//     created: new Date(),
+//     type: FilterTypes[type],
+//     authorId,
+//     ...filterData,
+//   });
+//   const filterObject = Filters.findOne({ _id: filterId });
+//   if (locale) {
+//     filterObject.upsertLocalizedText(locale, {
+//       filterOptionValue: null,
+//       title,
+//       authorId,
+//     });
+//   }
+//   if (!skipInvalidation) {
+//     filterObject.invalidateProductIdCache();
+//   }
+//   emit('FILTER_CREATE', { filter: filterObject });
+//   return filterObject;
+// };
 
-Filters.getLocalizedTexts = (filterId, filterOptionValue, locale) =>
-  findLocalizedText(
-    FilterTexts,
-    {
-      filterId,
-      filterOptionValue: filterOptionValue || { $eq: null },
-    },
-    locale
-  );
+// Filters.updateFilter = (
+//   { filterId, ...filter },
+//   { skipInvalidation = false } = {}
+// ) => {
+//   const modifier = {
+//     $set: {
+//       ...filter,
+//       updated: new Date(),
+//     },
+//   };
+//   Filters.update({ _id: filterId }, modifier);
+//   const filterObject = Filters.findOne({ _id: filterId });
+//   if (!skipInvalidation) {
+//     filterObject.invalidateProductIdCache();
+//   }
+//   emit('FILTER_UPDATE', { filter: filterObject });
+//   return filterObject;
+// };
 
-Filters.filterExists = ({ filterId }) => {
-  return !!Filters.find({ _id: filterId }).count();
-};
+// Filters.removeFilter = ({ filterId }) => {
+//   // Move to mutation
+//   // AssortmentFilters.removeFilters({ filterId });
+//   const result = Filters.remove({ _id: filterId });
+//   emit('FILTER_REMOVE', { filterId });
+//   return result;
+// };
 
-Filters.findFilter = ({ filterId }) => {
-  return Filters.findOne({ _id: filterId });
-};
+// Filters.getLocalizedTexts = (filterId, filterOptionValue, locale) =>
+//   findLocalizedText(
+//     FilterTexts,
+//     {
+//       filterId,
+//       filterOptionValue: filterOptionValue || { $eq: null },
+//     },
+//     locale
+//   );
 
-Filters.findFilters = ({ limit, offset, ...query }) => {
-  return Filters.find(buildFindSelector(query), {
-    skip: offset,
-    limit,
-  }).fetch();
-};
+// Filters.filterExists = ({ filterId }) => {
+//   return !!Filters.find({ _id: filterId }).count();
+// };
 
-Filters.count = async (query) => {
-  const count = await Filters.rawCollection().countDocuments(
-    buildFindSelector(query)
-  );
-  return count;
-};
+// Filters.findFilter = ({ filterId }) => {
+//   return Filters.findOne({ _id: filterId });
+// };
 
-FilterTexts.findFilterTexts = ({ filterId, filterOptionValue }) => {
-  return FilterTexts.find({
-    filterId,
-    filterOptionValue,
-  }).fetch();
-};
+// Filters.findFilters = ({ limit, offset, ...query }) => {
+//   return Filters.find(buildFindSelector(query), {
+//     skip: offset,
+//     limit,
+//   }).fetch();
+// };
 
-Filters.invalidateCache = (selector) => {
-  log('Filters: Start invalidating filter caches', { level: 'verbose' });
-  Filters.find(selector || {})
-    .fetch()
-    .forEach((filter) => filter.invalidateProductIdCache());
-};
+// Filters.count = async (query) => {
+//   const count = await Filters.rawCollection().countDocuments(
+//     buildFindSelector(query)
+//   );
+//   return count;
+// };
 
-Filters.removeFilterOption = ({ filterId, filterOptionValue }) => {
-  return Filters.update(
-    { _id: filterId },
-    {
-      $set: {
-        updated: new Date(),
-      },
-      $pull: {
-        options: filterOptionValue,
-      },
-    }
-  );
-};
+// FilterTexts.findFilterTexts = ({ filterId, filterOptionValue }) => {
+//   return FilterTexts.find({
+//     filterId,
+//     filterOptionValue,
+//   }).fetch();
+// };
+
+// Filters.invalidateCache = (selector) => {
+//   log('Filters: Start invalidating filter caches', { level: 'verbose' });
+//   Filters.find(selector || {})
+//     .fetch()
+//     .forEach((filter) => filter.invalidateProductIdCache());
+// };
+
+// Filters.removeFilterOption = ({ filterId, filterOptionValue }) => {
+//   return Filters.update(
+//     { _id: filterId },
+//     {
+//       $set: {
+//         updated: new Date(),
+//       },
+//       $pull: {
+//         options: filterOptionValue,
+//       },
+//     }
+//   );
+// };
 
 Filters.helpers({
-  upsertLocalizedText(locale, { filterOptionValue, ...fields }) {
-    const selector = {
-      filterId: this._id,
-      filterOptionValue: filterOptionValue || { $eq: null },
-      locale,
-    };
-    FilterTexts.upsert(selector, {
-      $set: {
-        updated: new Date(),
-        ...fields,
-      },
-      $setOnInsert: {
-        filterId: this._id,
-        filterOptionValue: filterOptionValue || null,
-        locale,
-        created: new Date(),
-      },
-    });
-    return FilterTexts.findOne(selector);
-  },
-  addOption({ option, localeContext, userId }) {
-    const { value, title } = option;
-    Filters.update(this._id, {
-      $set: {
-        updated: new Date(),
-      },
-      $addToSet: {
-        options: value,
-      },
-    });
+  // upsertLocalizedText(locale, { filterOptionValue, ...fields }) {
+  //   const selector = {
+  //     filterId: this._id,
+  //     filterOptionValue: filterOptionValue || { $eq: null },
+  //     locale,
+  //   };
+  //   FilterTexts.upsert(selector, {
+  //     $set: {
+  //       updated: new Date(),
+  //       ...fields,
+  //     },
+  //     $setOnInsert: {
+  //       filterId: this._id,
+  //       filterOptionValue: filterOptionValue || null,
+  //       locale,
+  //       created: new Date(),
+  //     },
+  //   });
+  //   return FilterTexts.findOne(selector);
+  // },
+  // addOption({ option, localeContext, userId }) {
+  //   const { value, title } = option;
+  //   Filters.update(this._id, {
+  //     $set: {
+  //       updated: new Date(),
+  //     },
+  //     $addToSet: {
+  //       options: value,
+  //     },
+  //   });
 
-    this.upsertLocalizedText(localeContext.language, {
-      authorId: userId,
-      filterOptionValue: value,
-      title,
-    });
-  },
-  updateTexts({ texts, filterOptionValue, userId }) {
-    return texts.map(({ locale, ...localizations }) =>
-      this.upsertLocalizedText(locale, {
-        ...localizations,
-        authorId: userId,
-        filterOptionValue,
-      })
-    );
-  },
-  getLocalizedTexts(locale, optionValue) {
-    const parsedLocale = new Locale(locale);
-    return Filters.getLocalizedTexts(this._id, optionValue, parsedLocale);
-  },
-  optionObject(filterOption) {
-    return {
-      filterOption,
-      getLocalizedTexts: this.getLocalizedTexts,
-      ...this,
-    };
-  },
+  //   this.upsertLocalizedText(localeContext.language, {
+  //     authorId: userId,
+  //     filterOptionValue: value,
+  //     title,
+  //   });
+  // },
+  // updateTexts({ texts, filterOptionValue, userId }) {
+  //   return texts.map(({ locale, ...localizations }) =>
+  //     this.upsertLocalizedText(locale, {
+  //       ...localizations,
+  //       authorId: userId,
+  //       filterOptionValue,
+  //     })
+  //   );
+  // },
+  // getLocalizedTexts(locale, optionValue) {
+  //   const parsedLocale = new Locale(locale);
+  //   return Filters.getLocalizedTexts(this._id, optionValue, parsedLocale);
+  // },
+  // optionObject(filterOption) {
+  //   return {
+  //     filterOption,
+  //     getLocalizedTexts: this.getLocalizedTexts,
+  //     ...this,
+  //   };
+  // },
 
   collectProductIds({ value, ...options } = {}) {
     const director = new FilterDirector({ filter: this, ...options });
@@ -243,54 +247,54 @@ Filters.helpers({
     const products = Products.find(selector, { fields: { _id: true } }).fetch();
     return products.map(({ _id }) => _id);
   },
-  buildProductIdMap() {
-    const cache = {
-      allProductIds: this.collectProductIds(),
-    };
-    if (this.type === FilterTypes.SWITCH) {
-      cache.productIds = {
-        true: this.collectProductIds({ value: true }),
-        false: this.collectProductIds({ value: false }),
-      };
-    } else {
-      cache.productIds = (this.options || []).reduce(
-        (accumulator, option) => ({
-          ...accumulator,
-          [option]: this.collectProductIds({ value: option }),
-        }),
-        {}
-      );
-    }
+  // buildProductIdMap() {
+  //   const cache = {
+  //     allProductIds: this.collectProductIds(),
+  //   };
+  //   if (this.type === FilterTypes.SWITCH) {
+  //     cache.productIds = {
+  //       true: this.collectProductIds({ value: true }),
+  //       false: this.collectProductIds({ value: false }),
+  //     };
+  //   } else {
+  //     cache.productIds = (this.options || []).reduce(
+  //       (accumulator, option) => ({
+  //         ...accumulator,
+  //         [option]: this.collectProductIds({ value: option }),
+  //       }),
+  //       {}
+  //     );
+  //   }
 
-    return cache;
-  },
-  invalidateProductIdCache() {
-    log(`Filters: Rebuilding ${this.key}`, { level: 'verbose' }); // eslint-disable.line
-    const { productIds, allProductIds } = this.buildProductIdMap();
-    const cache = {
-      allProductIds,
-      productIds: Object.entries(productIds),
-    };
+  //   return cache;
+  // },
+  // invalidateProductIdCache() {
+  //   log(`Filters: Rebuilding ${this.key}`, { level: 'verbose' }); // eslint-disable.line
+  //   const { productIds, allProductIds } = this.buildProductIdMap();
+  //   const cache = {
+  //     allProductIds,
+  //     productIds: Object.entries(productIds),
+  //   };
 
-    const gzip = util.promisify(zlib.gzip);
-    const compressedCache =
-      allProductIds.length > MAX_UNCOMPRESSED_FILTER_PRODUCTS
-        ? Promise.await(gzip(JSON.stringify(cache)))
-        : null;
+  //   const gzip = util.promisify(zlib.gzip);
+  //   const compressedCache =
+  //     allProductIds.length > MAX_UNCOMPRESSED_FILTER_PRODUCTS
+  //       ? Promise.await(gzip(JSON.stringify(cache)))
+  //       : null;
 
-    Filters.update(
-      { _id: this._id },
-      {
-        $set: {
-          _cache: compressedCache
-            ? {
-                compressed: compressedCache,
-              }
-            : cache,
-        },
-      }
-    );
-  },
+  //   Filters.update(
+  //     { _id: this._id },
+  //     {
+  //       $set: {
+  //         _cache: compressedCache
+  //           ? {
+  //               compressed: compressedCache,
+  //             }
+  //           : cache,
+  //       },
+  //     }
+  //   );
+  // },
   cache() {
     // eslint-disable-next-line
     if (!this._cache) return null;

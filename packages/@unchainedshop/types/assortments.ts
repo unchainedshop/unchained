@@ -65,24 +65,36 @@ type AssortmentQuery = {
 
 export type AssortmentsModule = {
   // Queries
-  findAssortment: (params: {
+  assortmentExists: (query: {
+    assortmentId?: string;
+    slug?: string;
+  }) => Promise<boolean>;
+
+  children: (query: {
+    assortmentId: string;
+    includeInactive?: boolean;
+  }) => Promise<Array<Assortment>>;
+
+  count: (query: AssortmentQuery) => Promise<number>;
+
+  findAssortment: (query: {
     assortmentId?: string;
     slug?: string;
   }) => Promise<Assortment>;
 
   findAssortments: (
-    params: AssortmentQuery & {
+    query: AssortmentQuery & {
       limit?: number;
       offset?: number;
     },
     options?: FindOptions
   ) => Promise<Array<Assortment>>;
 
-  count: (query: AssortmentQuery) => Promise<number>;
-  assortmentExists: (params: {
-    assortmentId?: string;
-    slug?: string;
-  }) => Promise<boolean>;
+  findProductIds: (params: {
+    assortmentId: string;
+    forceLiveCollection?: boolean;
+    ignoreChildAssortments?: boolean;
+  }) => Promise<Array<string>>;
 
   breadcrumbs: (params: {
     assortmentId?: string;
@@ -135,8 +147,9 @@ export type AssortmentsModule = {
       params: {
         assortmentId: string;
       },
-      options: FindOptions<AssortmentFilter>
+      options?: FindOptions
     ) => Promise<Array<AssortmentFilter>>;
+    findFilterIds: (params: { assortmentId: string }) => Promise<Array<string>>;
 
     // Mutations
     create: (
@@ -171,17 +184,20 @@ export type AssortmentsModule = {
   links: {
     // Queries
     findLink: (
-      params: {
+      query: {
         assortmentLinkId?: string;
         parentAssortmentId?: string;
         childAssortmentId?: string;
       },
       options?: { skipInvalidation?: boolean }
     ) => Promise<AssortmentLink>;
-    findLinks: (params: {
-      parentAssortmentId?: string;
-      childAssortmentId?: string;
-    }) => Promise<Array<AssortmentLink>>;
+    findLinks: (
+      query: {
+        assortmentId?: string;
+        parentAssortmentId?: string;
+      },
+      options?: FindOptions
+    ) => Promise<Array<AssortmentLink>>;
 
     // Mutations
     create: (
@@ -221,15 +237,20 @@ export type AssortmentsModule = {
     findAssortmentIds: (params: {
       productId: string;
     }) => Promise<Array<string>>;
+
     findProduct: (
       params: { assortmentProductId: string },
 
       options?: { skipInvalidation?: boolean }
     ) => Promise<AssortmentProduct>;
-    findProducts: (params: {
-      productId: string;
-      assortmentId: string;
-    }) => Promise<Array<AssortmentProduct>>;
+
+    findProducts: (
+      params: {
+        assortmentId: string;
+      },
+      options?: FindOptions
+    ) => Promise<Array<AssortmentProduct>>;
+
     findProductSiblings: (params: {
       productId: string;
       assortmentIds: Array<string>;
@@ -304,49 +325,9 @@ export type AssortmentsModule = {
   };
 };
 
-type HelperType<P, T> = (
-  assortment: Assortment,
-  params: P,
-  context: Context
-) => T;
-
 export interface AssortmentPathLink {
   assortmentId: string;
   assortmentSlug: string;
   assortmentTexts: AssortmentText;
   link: AssortmentLink;
-}
-
-export interface AssortmentHelperTypes {
-  childrenCount: HelperType<{ includeInactive: boolean }, Promise<number>>;
-  texts: HelperType<{ forceLocale?: string }, Promise<AssortmentText>>;
-
-  assortmentPaths: HelperType<
-    never,
-    Promise<Array<{ links: Array<AssortmentPathLink> }>>
-  >;
-
-  media: HelperType<
-    {
-      limit: number;
-      offset: number;
-      tags?: Array<string>;
-    },
-    Promise<Array<AssortmentMedia>>
-  >;
-}
-
-export interface AssortmentPathLinkHelperTypes {
-  link: (
-    params: { assortmentId: string; childAssortmentId: string },
-    _: never,
-    context: Context
-  ) => Promise<AssortmentLink>;
-
-  assortmentSlug: HelperType<{ forceLocale?: string }, Promise<string>>;
-
-  assortmentTexts: HelperType<
-    { forceLocale?: string },
-    Promise<AssortmentText>
-  >;
 }

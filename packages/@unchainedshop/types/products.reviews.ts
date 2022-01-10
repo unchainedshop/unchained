@@ -39,9 +39,9 @@ export type ProductReviewsModule = {
 
   findProductReviews: (
     query: ProductReviewQuery & {
-      limit: number;
-      offset: number;
-      sort: Array<{ key: string; value: 'DESC' | 'ASC' }>;
+      limit?: number;
+      offset?: number;
+      sort?: Array<{ key: string; value: 'DESC' | 'ASC' }>;
     }
   ) => Promise<Array<ProductReview>>;
 

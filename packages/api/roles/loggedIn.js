@@ -13,7 +13,7 @@ import { Promise } from 'meteor/promise';
 
 export default (role, actions) => {
   const isMyself = (
-    root,
+    root: Root,
     { userId: foreignUserId } = {},
     { userId: ownUserId } = {}
   ) => {
@@ -163,7 +163,7 @@ export default (role, actions) => {
   };
 
   const isOwnedPaymentCredential = (
-    root,
+    root: Root,
     { paymentCredentialsId },
     { userId }
   ) => {

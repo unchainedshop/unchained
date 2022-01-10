@@ -102,7 +102,7 @@ export const configureProductReviewsModule = async ({
       const reviewsList = ProductReviews.find(buildFindSelector(query), {
         skip: offset,
         limit,
-        sort: buildSortOptions(sort),
+        sort: buildSortOptions(sort || [{ key: 'rating', value: 'DESC' }]),
       });
 
       return await reviewsList.toArray();

@@ -7,29 +7,6 @@ import { Product } from './product-types';
 export const PlanProduct: PlanProductHelperTypes = {
   ...Product,
 
-  siblings: async (product, params, { modules }) => {
-    const { assortmentId, limit, offset, includeInactive = false } = params;
-
-    const productId = product._id as string;
-    const assortmentIds = assortmentId
-      ? [assortmentId]
-      : await modules.assortments.products.findAssortmentIds({ productId });
-
-    if (!assortmentIds.length) return [];
-
-    const productIds = await modules.assortments.products.findProductSiblings({
-      productId,
-      assortmentIds,
-    });
-
-    return await modules.products.findProductSiblings({
-      productIds,
-      includeInactive,
-      limit,
-      offset,
-    });
-  },
-
   catalogPrice: async (obj, { quantity, currency }, requestContext) => {
     const { modules, countryContext } = requestContext;
     return await modules.products.prices.price(
@@ -89,5 +66,5 @@ export const PlanProduct: PlanProductHelperTypes = {
   },
   defaultOrderQuantity(obj) {
     return obj.commerce && obj.commerce.defaultOrderQuantity;
-  },  
+  },
 };

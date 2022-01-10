@@ -25,18 +25,18 @@ import settings from '../../settings';
 //   },
 // });
 
-Users.helpers({
-  enrollments() {
-    return Enrollments.find(
-      { userId: this._id },
-      {
-        sort: {
-          created: -1,
-        },
-      }
-    ).fetch();
-  },
-});
+// Users.helpers({
+//   enrollments() {
+//     return Enrollments.find(
+//       { userId: this._id },
+//       {
+//         sort: {
+//           created: -1,
+//         },
+//       }
+//     ).fetch();
+//   },
+// });
 
 // Enrollments.findEnrollment = ({ enrollmentId }, options) => {
 //   return Enrollments.findOne({ _id: enrollmentId }, options);

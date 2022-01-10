@@ -1,4 +1,5 @@
 import {
+  Assortment,
   AssortmentProduct,
   AssortmentsModule,
 } from '@unchainedshop/types/assortments';
@@ -42,8 +43,8 @@ export const configureAssortmentProductsModule = ({
       );
     },
 
-    findProducts: async ({ assortmentId }) => {
-      const products = AssortmentProducts.find({ assortmentId });
+    findProducts: async ({ assortmentId }, options) => {
+      const products = AssortmentProducts.find({ assortmentId }, options);
       return await products.toArray();
     },
 

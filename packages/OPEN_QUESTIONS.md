@@ -109,3 +109,7 @@ What happens if the first one passes and the second not?
 9. Enrollments/helpers addEnrollmentPeriod: OrderId is not defined in db schema but filled in the helper method.
 
 10. Orders/helpers: generateFromCheckout: order.meta does not exist on Order. Leave empty? or context?
+
+11. FilterDirector: What are the options? Could not find a call that provides options and thus I would remove this parameter (except in other implementations it is used)
+
+12. Filters --> Helper: Delete Filter should also delete the FilterTexts of this filter, right? (Similar to assortments)l

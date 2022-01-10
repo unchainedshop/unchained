@@ -5,12 +5,12 @@ import {
 } from './products.pricing';
 import { Context } from './api';
 import { AssortmentPathLink, AssortmentProduct } from './assortments';
-import { Update, FindOptions, TimestampFields, _ID } from './common';
+import { Update, FindOptions, TimestampFields, _ID, Query } from './common';
 import { Country } from './countries';
 import { Currency } from './currencies';
 import { DeliveryProvider, DeliveryProviderType } from './delivery';
 import { ProductMedia, ProductMediaModule } from './products.media';
-import { ProductReviewsModule } from './products.reviews';
+import { ProductReview, ProductReviewsModule } from './products.reviews';
 import { ProductVariationsModule } from './products.variations';
 import { WarehousingProvider } from './warehousing';
 
@@ -122,7 +122,7 @@ export type ProductText = {
   labels?: Array<string>;
 } & TimestampFields;
 
-type ProductQuery = {
+type ProductQuery = Query & {
   slugs?: Array<string>;
   tags?: Array<string>;
   includeDrafts?: boolean;
@@ -305,11 +305,17 @@ export type ProductsModule = {
    * Product sub entities (Media, Variations & Reviews)
    */
   media: ProductMediaModule;
-  // {
-  //   addMedia: ({ rawFile: any, authorId: string }, userId?: string) => Promise<string>
-  // }
   reviews: ProductReviewsModule;
   variations: ProductVariationsModule;
+
+  /*
+   * Product search
+   */
+
+  search: {
+    buildActiveStatusFilter: () => Query;
+    buildActiveDraftStatusFilter: () => Query;
+  };
 
   /*
    * Product texts
@@ -359,10 +365,6 @@ export interface ProductHelperTypes {
     Promise<Array<{ links: Array<AssortmentPathLink> }>>
   >;
 
-  texts: HelperType<{ forceLocale?: string }, Promise<ProductText>>;
-
-  status: HelperType<never, string>;
-
   media: HelperType<
     {
       limit: number;
@@ -371,6 +373,28 @@ export interface ProductHelperTypes {
     },
     Promise<Array<ProductMedia>>
   >;
+
+  reviews: HelperType<
+    {
+      limit?: number;
+      offset?: number;
+    },
+    Promise<Array<ProductReview>>
+  >;
+
+  siblings: HelperType<
+    {
+      assortmentId?: string;
+      limit: number;
+      offset: number;
+      includeInactive: boolean;
+    },
+    Promise<Array<Product>>
+  >;
+
+  status: HelperType<never, string>;
+
+  texts: HelperType<{ forceLocale?: string }, Promise<ProductText>>;
 }
 
 export interface BundleProductHelperTypes extends ProductHelperTypes {
@@ -408,16 +432,6 @@ export interface ConfigurableProductHelperTypes extends ProductHelperTypes {
 }
 
 export interface PlanProductHelperTypes extends ProductHelperTypes {
-  siblings: HelperType<
-    {
-      assortmentId?: string;
-      limit: number;
-      offset: number;
-      includeInactive: boolean;
-    },
-    Promise<Array<Product>>
-  >;
-
   catalogPrice: HelperType<
     { quantity: number; currency: string },
     Promise<ProductPrice>

@@ -7,7 +7,7 @@ import {
 } from '../../../errors';
 
 export default async function makeQuotationProposal(
-  root,
+  root: Root,
   { quotationId, ...transactionContext },
   { userId }
 ) {

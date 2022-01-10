@@ -84,7 +84,7 @@ export const User: UserHelperTypes = {
   async cart(user, params, context) {
     const { countryContext, userId } = context;
     checkAction(viewUserOrders, userId, [user, params, context]);
-    // TODO use modules 
+    // TODO use modules
     /* @ts-ignore */
     return user.cart({ countryContext, ...params });
   },
@@ -94,7 +94,12 @@ export const User: UserHelperTypes = {
     return await context.services.countries.getUserCountry(user, params);
   },
 
-  enrollments: checkTypeResolver(viewUserEnrollments, 'enrollments'),
+  enrollments: async (user, params, context) => {
+    checkAction(viewUserEnrollments, context.userId, [user, params, context]);
+    return await context.modules.enrollments.findEnrollments({
+      userId: user._id as string,
+    });
+  },
 
   language: async (user, params, context) => {
     checkAction(viewUserPrivateInfos, context.userId, [user, params, context]);

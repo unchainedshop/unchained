@@ -4,7 +4,7 @@ import { Quotations } from 'meteor/unchained:core-quotations';
 import { ProductNotFoundError, InvalidIdError } from '../../../errors';
 
 export default async function requestQuotation(
-  root,
+  root: Root,
   { productId, configuration },
   { userId, countryContext, localeContext }
 ) {

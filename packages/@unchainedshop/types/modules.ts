@@ -7,6 +7,7 @@ import { DeliveryModule } from './delivery';
 import { EnrollmentsModule } from './enrollments';
 import { EventsModule } from './events';
 import { FilesModule } from './files';
+import { FiltersModule } from './filters';
 import { LanguagesModule } from './languages';
 import { OrdersModule } from './orders';
 import { PaymentModule } from './payments';
@@ -25,7 +26,7 @@ export interface Modules {
   enrollments: EnrollmentsModule;
   events: EventsModule;
   files: FilesModule;
-  filters: any;
+  filters: FiltersModule;
   languages: LanguagesModule;
   messaging: any;
   orders: OrdersModule;

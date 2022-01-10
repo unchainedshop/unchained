@@ -84,7 +84,7 @@ import setRoles from './users/setRoles';
 import setUsername from './accounts/setUsername';
 import enrollUser from './accounts/enrollUser';
 import checkoutCart from './orders/checkoutCart';
-import createFilter from './createFilter';
+import createFilter from './filters/createFilter';
 import updateFilter from './updateFilter';
 import createFilterOption from './createFilterOption';
 import removeFilter from './removeFilter';

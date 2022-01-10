@@ -7,7 +7,7 @@ import {
 } from '../../../errors';
 
 export default async function verifyQuotation(
-  root,
+  root: Root,
   { quotationId, ...transactionContext },
   { userId }
 ) {

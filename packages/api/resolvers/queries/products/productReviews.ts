@@ -2,7 +2,7 @@ import { log } from 'meteor/unchained:logger';
 import { Root, Context } from '@unchainedshop/types/api';
 
 export default async function productReviews(
-  root,
+  root: Root,
   params: {
     limit: number;
     offset: number;

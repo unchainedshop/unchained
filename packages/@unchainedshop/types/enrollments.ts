@@ -71,6 +71,7 @@ export interface EnrollmentQueries {
   ) => Promise<Enrollment>;
   findEnrollments: (params: {
     status?: Array<EnrollmentStatus>;
+    userId?: string;
     limit?: number;
     offset?: number;
   }) => Promise<Array<Enrollment>>;

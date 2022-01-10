@@ -96,6 +96,12 @@ import {
   IEnrollmentAdapter,
   IEnrollmentDirector,
 } from './enrollments';
+import {
+  FiltersModule,
+  FilterType as FilterTypeType,
+  IFilterAdapter,
+  IFilterDirector,
+} from './filters';
 
 declare module 'meteor/unchained:utils' {
   function checkId(
@@ -124,6 +130,14 @@ declare module 'meteor/unchained:utils' {
     selector: Query,
     locale: string | Locale
   ): Promise<T>;
+
+  function findPreservingIds<T>(
+    collection: Collection<T>
+  ): (
+    selector: Query,
+    ids: Array<string>,
+    options?: FindOptions
+  ) => Promise<Array<T>>;
 
   function generateId(id: unknown): ObjectId;
   function generateDbFilterById<T extends { _id?: _ID }>(
@@ -302,6 +316,17 @@ declare module 'meteor/unchained:core-files-next' {
   ): Promise<FilesModule>;
 
   export const fileServices: any;
+}
+
+declare module 'meteor/unchained:core-filters' {
+  export function configureFiltersModule(
+    params: ModuleInput
+  ): Promise<FiltersModule>;
+
+  export const FilterType: typeof FilterTypeType;
+
+  export const FilterAdapter: IFilterAdapter;
+  export const FilterDirector: IFilterDirector;
 }
 
 declare module 'meteor/unchained:core-languages' {

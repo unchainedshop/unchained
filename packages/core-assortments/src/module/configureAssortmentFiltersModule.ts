@@ -31,6 +31,17 @@ export const configureAssortmentFiltersModule = ({
       return await filters.toArray();
     },
 
+    findFilterIds: async ({ assortmentId }) => {
+      const filters = AssortmentFilters.find(
+        { assortmentId },
+        {
+          sort: { sortKey: 1 },
+          projection: { filterId: 1 },
+        }
+      ).map((filter) => filter.filterId);
+      
+      return await filters.toArray();
+    },
     create: async (doc: AssortmentFilter, userId) => {
       const { assortmentId, filterId, ...rest } = doc;
 

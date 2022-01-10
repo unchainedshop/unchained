@@ -1,5 +1,5 @@
 import { Context } from '@unchainedshop/types/api';
-import { OrderPayment } from '@unchainedshop/types/orders';
+import { OrderPayment as OrderPaymentType } from '@unchainedshop/types/orders.payments';
 import { PaymentProviderType } from 'meteor/unchained:core-payment';
 import { objectInvert } from 'meteor/unchained:utils';
 
@@ -9,8 +9,12 @@ const OrderPaymentMap = {
   OrderPaymentInvoice: PaymentProviderType.INVOICE,
 };
 
-export default {
-  __resolveType: async (obj: OrderPayment, _: never, { modules }: Context) => {
+export const OrderPayment = {
+  __resolveType: async (
+    obj: OrderPaymentType,
+    _: never,
+    { modules }: Context
+  ) => {
     const provider = await modules.payment.paymentProviders.findProvider({
       paymentProviderId: obj.paymentProviderId,
     });
