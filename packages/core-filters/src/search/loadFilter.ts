@@ -4,8 +4,8 @@ import {
   FilterAdapterActions,
   SearchFilterQuery,
 } from '@unchainedshop/types/filters';
-import { FilterType } from 'src/db/FilterType';
-import { intersectSet } from 'src/utils/intersectSet';
+import { FilterType } from '../db/FilterType';
+import { intersectSet } from '../utils/intersectSet';
 import { CleanedSearchQuery, FilterProductIds } from './search';
 
 const findLoadedOptions = async (

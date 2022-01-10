@@ -17,9 +17,9 @@ import {
   generateDbFilterById,
   generateDbMutations,
 } from 'meteor/unchained:utils';
-import { FilterType } from 'src/db/FilterType';
-import { FilterDirector } from 'src/director/FilterDirector';
-import { CleanedFilterCache } from 'src/search/search';
+import { FilterType } from '../db/FilterType';
+import { FilterDirector } from '../director/FilterDirector';
+import { CleanedFilterCache } from '../search/search';
 import util from 'util';
 import zlib from 'zlib';
 import { FiltersCollection } from '../db/FiltersCollection';

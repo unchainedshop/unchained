@@ -7,22 +7,22 @@ import {
 } from '@unchainedshop/types/filters';
 import { Product } from '@unchainedshop/types/products';
 import { dbIdToString } from 'meteor/unchained:utils';
-import { FilterDirector } from 'src/director/FilterDirector';
-import { assortmentFulltextSearch } from 'src/search/assortmentFulltextSearch';
-import { cleanQuery } from 'src/search/cleanQuery';
-import { loadFilter } from 'src/search/loadFilter';
-import { productFacetedSearch } from 'src/search/productFacetedSearch';
-import { productFulltextSearch } from 'src/search/productFulltextSearch';
-import { resolveAssortmentSelector } from 'src/search/resolveAssortmentSelector';
-import { resolveFilterSelector } from 'src/search/resolveFilterSelector';
-import { resolveProductSelector } from 'src/search/resolveProductSelector';
-import { resolveSortStage } from 'src/search/resolveSortStage';
+import { FilterDirector } from '../director/FilterDirector';
+import { assortmentFulltextSearch } from '../search/assortmentFulltextSearch';
+import { cleanQuery } from '../search/cleanQuery';
+import { loadFilter } from '../search/loadFilter';
+import { productFacetedSearch } from '../search/productFacetedSearch';
+import { productFulltextSearch } from '../search/productFulltextSearch';
+import { resolveAssortmentSelector } from '../search/resolveAssortmentSelector';
+import { resolveFilterSelector } from '../search/resolveFilterSelector';
+import { resolveProductSelector } from '../search/resolveProductSelector';
+import { resolveSortStage } from '../search/resolveSortStage';
 import {
   FilterProductIds,
   SearchAssortmentConfiguration,
   SearchConfiguration,
   SearchProductConfiguration,
-} from 'src/search/search';
+} from '../search/search';
 
 export const configureFilterSearchModule = ({
   Filters,
