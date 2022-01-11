@@ -1,5 +1,5 @@
 import { Context } from './api';
-import { LogFields, ModuleMutations, TimestampFields, _ID } from './common';
+import { LogFields, FindOptions, TimestampFields, _ID } from './common';
 import { Order } from './orders';
 import { OrderDiscount } from './orders.discounts';
 import {
@@ -27,9 +27,12 @@ export type OrderPayment = {
 
 export type OrderPaymentsModule = {
   // Queries
-  findOrderPayment: (params: {
-    orderPaymentId: string;
-  }) => Promise<OrderPayment>;
+  findOrderPayment: (
+    params: {
+      orderPaymentId: string;
+    },
+    options: FindOptions
+  ) => Promise<OrderPayment>;
 
   // Transformations
   discounts: (

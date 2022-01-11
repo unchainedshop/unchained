@@ -1,14 +1,12 @@
-import { accountsServer } from 'meteor/unchained:core-accountsjs';
-import { Users } from 'meteor/unchained:core-users';
+import { UnchainedAPI, UnchainedUserContext } from '@unchainedshop/types/api';
+import { Request } from 'express';
 import { check } from 'meteor/check';
+import { dbIdToString } from 'meteor/unchained:utils';
 
-export interface UnchainedServerUserContext {
-  userId?: string;
-  user?: any;
-  loginToken?: string;
-}
-
-export default async (req): Promise<UnchainedServerUserContext> => {
+export const getUserContext = async (
+  req: Request,
+  unchainedAPI: UnchainedAPI
+): Promise<UnchainedUserContext> => {
   // there is a possible current user connected!
   let loginToken = req.headers['meteor-login-token'];
   if (req.cookies.meteor_login_token) {
@@ -28,9 +26,10 @@ export default async (req): Promise<UnchainedServerUserContext> => {
     check(loginToken, String);
 
     // the hashed token is the key to find the possible current user in the db
-    const hashedToken = accountsServer.hashLoginToken(loginToken); // eslint-disable-line
+    const hashedToken =
+      unchainedAPI.modules.accounts.createHashLoginToken(loginToken);
 
-    const currentUser = Users.findUser({
+    const currentUser = await unchainedAPI.modules.users.findUser({
       hashedToken,
     });
 
@@ -51,7 +50,7 @@ export default async (req): Promise<UnchainedServerUserContext> => {
         // return a new context object with the current user & her id
         return {
           user: currentUser,
-          userId: currentUser._id,
+          userId: dbIdToString(currentUser._id),
           loginToken,
         };
       }

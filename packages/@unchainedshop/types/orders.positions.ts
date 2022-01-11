@@ -1,5 +1,5 @@
 import { Context } from './api';
-import { Configuration, TimestampFields, _ID } from './common';
+import { Configuration, FindOptions, TimestampFields, _ID } from './common';
 import { Order } from './orders';
 import { OrderDelivery } from './orders.deliveries';
 import { OrderDiscount } from './orders.discounts';
@@ -25,7 +25,7 @@ export type OrderPosition = {
 
 export type OrderPositionsModule = {
   // Queries
-  findOrderPosition: (params: { itemId: string }) => Promise<OrderPosition>;
+  findOrderPosition: (params: { itemId: string }, options: FindOptions) => Promise<OrderPosition>;
   findOrderPositions: (params: {
     orderId: string;
   }) => Promise<Array<OrderPosition>>;

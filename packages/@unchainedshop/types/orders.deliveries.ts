@@ -3,7 +3,7 @@ import {
   LogFields,
   ModuleMutations,
   TimestampFields,
-  Update,
+  FindOptions,
   _ID,
 } from './common';
 import { Order } from './orders';
@@ -34,7 +34,10 @@ export type OrderDelivery = {
 
 export type OrderDeliveriesModule = {
   // Queries
-  findDelivery: (params: { orderDeliveryId: string }) => Promise<OrderDelivery>;
+  findDelivery: (
+    params: { orderDeliveryId: string },
+    options: FindOptions
+  ) => Promise<OrderDelivery>;
 
   // Transformations
   discounts: (

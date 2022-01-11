@@ -1,8 +1,8 @@
 import { Roles, Role } from 'meteor/unchained:roles';
 
-import all from './all';
-import loggedIn from './loggedIn';
-import admin from './admin';
+import { all } from './all';
+import { loggedIn } from './loggedIn';
+import { admin } from './admin';
 
 const roles = {
   ADMIN: Roles.adminRole,
@@ -11,9 +11,8 @@ const roles = {
 };
 
 const allRoles = roles;
-export default allRoles;
 
-export const actions = [
+const actions = [
   'viewEvent',
   'viewEvents',
   'viewUserRoles',
@@ -102,7 +101,7 @@ export const actions = [
   return newValue;
 }, {});
 
-export const configureRoles = ({ additionalRoles = {} } = {}) => {
+const configureRoles = ({ additionalRoles = {} }) => {
   Object.entries(additionalRoles).forEach(([key, val]) => {
     allRoles[key] = new Role(key);
     val(allRoles[key], actions);
@@ -112,8 +111,10 @@ export const configureRoles = ({ additionalRoles = {} } = {}) => {
   admin(roles.ADMIN, actions);
 };
 
-export const checkPermission = (userId, action, ...args) =>
-  Roles.userHasPermission(userId, action, ...args);
+const checkPermission = async (context, action, ...args) =>
+  await Roles.userHasPermission(context, action, ...args);
 
-export const updateUserRole = (userId, roleName) =>
-  Roles.addUserToRoles(userId, roles[roleName].name);
+const updateUserRole = async (context, roleName) =>
+  await Roles.addUserToRoles(context, roles[roleName].name);
+
+export { allRoles, actions, configureRoles, checkPermission, updateUserRole };

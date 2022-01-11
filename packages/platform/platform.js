@@ -40,7 +40,7 @@ export const startPlatform = async ({ modules, typeDefs, ...options } = {}) => {
   const db = initDb();
 
   // Initialise core using the database
-  const unchained = await initCore({
+  const unchainedAPI = await initCore({
     db,
     modules,
     bulkImporter: {
@@ -63,7 +63,7 @@ export const startPlatform = async ({ modules, typeDefs, ...options } = {}) => {
       ...workerTypeDefs(),
       ...(typeDefs || []),
     ],
-    unchained,
+    unchainedAPI,
   });
   if (emailInterceptionIsEnabled) interceptEmails(options);
   if (workQueueIsEnabled) {

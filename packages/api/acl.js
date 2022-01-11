@@ -24,22 +24,22 @@ const ensureIsFunction = (fn, action, options, key) => {
   }
 };
 
-const checkAction = (
+const checkAction = async (
   action,
-  userId,
+  context,
   args = emptyArray,
   options = emptyObject
 ) => {
   const { key } = options || emptyObject;
-  const hasPermission = checkPermission(userId, action, ...args);
+  const hasPermission = await checkPermission(context, action, ...args);
   if (hasPermission) return;
   const keyText = key && key !== '' ? ` in "${key}"` : '';
   throw new NoPermissionError({
-    userId,
+    userId: context.userId,
     action,
     key,
     message: `The user "${
-      userId || ''
+      context.userId || ''
     }" has no permission to perform the action "${action}"${keyText}`,
   });
 };
@@ -48,9 +48,9 @@ const wrapFunction = (fn, name, action, userOptions) => {
   const key = name || fn.name;
   const options = { ...defaultOptions, ...userOptions };
   ensureIsFunction(fn, action, options, key);
-  return (root, params, context, ...other) => {
+  return async (root, params, context, ...other) => {
     const args = options.mapArgs(root, params, context, ...other);
-    checkAction(action, context.userId, args, {
+    await checkAction(action, context, args, {
       key: options.showKey ? key : '',
     });
     return fn(root, params, context, ...other);
@@ -63,8 +63,8 @@ const checkResolver = (action, userOptions) => {
 };
 
 const checkTypeResolver = (action, key) =>
-  function _checkTypeResolver(obj, params, context) {
-    checkAction(action, context.userId, [obj, params, context]);
+  async function _checkTypeResolver(obj, params, context) {
+    await checkAction(action, context.userId, [obj, params, context]);
     if (typeof obj[key] === 'function') {
       return obj[key](params, context);
     }

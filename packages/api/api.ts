@@ -1,29 +1,31 @@
-import getUserContext, { UnchainedServerUserContext } from './user-context';
-import getLocaleContext, {
-  UnchainedServerLocaleContext,
-} from './locale-context';
+import { getUserContext } from './user-context';
+import { getLocaleContext } from './locale-context';
 
 import createGraphQLServer from './createGraphQLServer';
 import createBulkImportServer from './createBulkImportServer';
 import { configureRoles } from './roles';
 
-import hashPassword from './hashPassword';
-import getCart from './getCart';
-import instantiateLoaders, { UnchainedServerLoaders } from './loaders';
-import { UnchainedAPI } from '@unchainedshop/types/api';
+// import getCart from './getCart';
+import instantiateLoaders from './loaders';
+import {
+  UnchainedAPI,
+  UnchainedLoaders,
+  UnchainedLocaleContext,
+  UnchainedUserContext,
+} from '@unchainedshop/types/api';
 
-export { hashPassword, getCart };
+export { hashPassword } from './hashPassword';
 export * as roles from './roles';
 export * as acl from './acl';
 export * as errors from './errors';
 
-export type UnchainedServerContext = UnchainedServerLocaleContext &
-  UnchainedServerUserContext &
-  UnchainedServerLoaders &
+export type UnchainedServerContext = UnchainedLocaleContext &
+  UnchainedUserContext &
+  UnchainedLoaders &
   UnchainedAPI;
 
 export interface UnchainedServerOptions {
-  unchained: UnchainedAPI;
+  unchainedAPI: UnchainedAPI;
   bulkImporter: any;
   rolesOptions: any;
   context: any;
@@ -32,30 +34,21 @@ export interface UnchainedServerOptions {
 const UNCHAINED_API_VERSION = '1.0.0-beta15'; // eslint-disable-line
 
 export const createContextResolver =
-  (unchained: UnchainedAPI) =>
+  (unchainedAPI: UnchainedAPI) =>
   // eslint-disable-next-line
   async ({ req, res, ...apolloContext }): Promise<UnchainedServerContext> => {
-    const loaders = await instantiateLoaders(req, unchained);
+    const loaders = await instantiateLoaders(req, unchainedAPI);
     // const intermediateContext: Partial<UnchainedServerContext> = {
     //   ...unchained,
     //   ...loaders,
     // };
-    const userContext = await getUserContext(req /* intermediateContext */);
 
-    const languages = await unchained.modules.languages.findLanguages(
-      { includeInactive: false },
-      { projection: { isoCode: 1, isActive: 1 } }
-    );
+    const userContext = await getUserContext(req, unchainedAPI);
+    const localeContext = await getLocaleContext(req, unchainedAPI);
 
-    const countries = await unchained.modules.countries.findCountries(
-      { includeInactive: false },
-      { projection: { isoCode: 1, isActive: 1 } }
-    );
-    
-    const localeContext = getLocaleContext(req, languages, countries);
     return {
       ...apolloContext,
-      ...unchained,
+      ...unchainedAPI,
       ...loaders,
       ...userContext,
       ...localeContext,
@@ -67,7 +60,7 @@ let context;
 
 const startUnchainedServer = (options: UnchainedServerOptions) => {
   const {
-    unchained,
+    unchainedAPI,
     rolesOptions,
     context: customContext,
     ...apolloServerOptions
@@ -75,7 +68,7 @@ const startUnchainedServer = (options: UnchainedServerOptions) => {
 
   configureRoles(rolesOptions);
 
-  const contextResolver = createContextResolver(unchained);
+  const contextResolver = createContextResolver(unchainedAPI);
 
   context = customContext
     ? ({ req, res }) => {

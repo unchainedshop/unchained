@@ -21,8 +21,9 @@ Package.onUse((api) => {
   api.use('unchained:core-enrollments@1.0.0-beta15');
   api.use('unchained:core-events@1.0.0-beta15');
   api.use('unchained:core-filters@1.0.0-beta15');
+  api.use('unchained:core-files-next@1.0.0-beta15');
   api.use('unchained:core-languages@1.0.0-beta15');
-  api.use('unchained:core-messaging@1.0.0-beta15');
+  // api.use('unchained:core-messaging@1.0.0-beta15');
   api.use('unchained:core-orders@1.0.0-beta15');
   api.use('unchained:core-payment@1.0.0-beta15');
   api.use('unchained:core-products@1.0.0-beta15');

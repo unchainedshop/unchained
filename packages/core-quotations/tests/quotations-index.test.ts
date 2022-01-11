@@ -1,19 +1,18 @@
+import { Context } from '@unchainedshop/types/api';
+import { QuotationsModule } from '@unchainedshop/types/quotations';
+import { UsersModule } from '@unchainedshop/types/user';
 import { assert } from 'chai';
+import { configureQuotationsModule } from 'meteor/unchained:core-quotations';
+import { configureUsersModule } from 'meteor/unchained:core-users';
 import { initDb } from 'meteor/unchained:mongodb';
 import { dbIdToString } from 'meteor/unchained:utils';
-import { configureUsersModule } from 'meteor/unchained:core-users';
-import { configureQuotationsModule } from 'meteor/unchained:core-quotations';
-import { QuotationsModule } from '@unchainedshop/types/quotations';
-import { Context } from '@unchainedshop/types/api';
-import { User, UsersModule } from '@unchainedshop/types/user';
-
-import '../plugins/manual'
+import '../plugins/manual';
 
 describe('Test exports', () => {
   const context: {
     modules: { quotations: QuotationsModule; users: UsersModule };
     services: { countries: { resolveDefaultCurrencyCode: () => string } };
-    userId: string,
+    userId: string;
   } = {
     modules: {
       quotations: null,

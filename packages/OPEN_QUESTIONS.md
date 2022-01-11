@@ -117,3 +117,5 @@ What happens if the first one passes and the second not?
 13. Media created with core-documents director can also be deleted? (e.g. Quotation Proposal)
 
 14. Quotations --> helpers: documents still required (after deletion of core-documents)?
+
+15. In roles/loggedIn there is a check for the ProductReviews userId but there is no userId on the ProductsReview schema. What is the right check here? (AuthorId or add a userId)?

@@ -48,8 +48,8 @@ export const configureOrderPositionsModule = ({
 
   return {
     // Queries
-    findOrderPosition: async ({ itemId }) => {
-      return await OrderPositions.findOne(buildFindByIdSelector(itemId));
+    findOrderPosition: async ({ itemId }, options) => {
+      return await OrderPositions.findOne(buildFindByIdSelector(itemId), options);
     },
     findOrderPositions: async ({ orderId }) => {
       const positions = OrderPositions.find({ orderId, quantity: { $gt: 0 } });

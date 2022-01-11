@@ -83,6 +83,9 @@ export const configureAccountsModule = async ({
       };
     },
 
+    createHashLoginToken: (loginToken) =>
+      accountsServer.hashLoginToken(loginToken),
+
     loginWithService: async (params, rawContext) => {
       const context = evaluateContext(filterContext(rawContext));
 

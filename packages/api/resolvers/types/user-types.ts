@@ -18,32 +18,36 @@ import { log, LogLevel } from 'meteor/unchained:logger';
 import { checkAction, checkTypeResolver } from '../../acl';
 import { actions } from '../../roles';
 
-type HelperType<P, T> = (user: UserType, params: P, context: Context) => T;
+type HelperType<P, T> = (
+  user: UserType,
+  params: P,
+  context: Context
+) => Promise<T>;
 
 export interface UserHelperTypes {
   _id: HelperType<any, boolean>;
-  avatar: HelperType<{ localeContext: Locale }, Promise<File>>;
-  bookmarks: HelperType<any, Promise<Array<Bookmark>>>;
-  cart: HelperType<{ orderNumber?: string }, Promise<Order>>;
-  country: HelperType<{ localeContext: Locale }, Promise<Country>>;
+  avatar: HelperType<{ localeContext: Locale }, File>;
+  bookmarks: HelperType<any, Array<Bookmark>>;
+  cart: HelperType<{ orderNumber?: string }, Order>;
+  country: HelperType<{ localeContext: Locale }, Country>;
   email: HelperType<any, string>;
   emails: HelperType<any, Array<string>>;
-  enrollments: HelperType<any, Promise<Array<Enrollment>>>;
+  enrollments: HelperType<any, Array<Enrollment>>;
   isEmailVerified: HelperType<any, boolean>;
   isGuest: HelperType<any, boolean>;
   isInitialPassword: HelperType<any, boolean>;
   isTwoFactorEnabled: HelperType<any, boolean>;
-  language: HelperType<{ localeContext: Locale }, Promise<Language>>;
+  language: HelperType<{ localeContext: Locale }, Language>;
   lastBillingAddress: HelperType<any, UserType['lastBillingAddress']>;
   lastContact: HelperType<any, Contact>;
   lastLogin: HelperType<any, UserType['lastLogin']>;
   locale: HelperType<{ localeContext: Locale }, Locale>;
   name: HelperType<any, string>;
-  orders: HelperType<{ includeCarts: boolean }, Promise<Array<Order>>>;
-  paymentCredentials: HelperType<any, Promise<Array<PaymentCredentials>>>;
+  orders: HelperType<{ includeCarts: boolean }, Array<Order>>;
+  paymentCredentials: HelperType<any, Array<PaymentCredentials>>;
   primaryEmail: HelperType<any, Email>;
   profile: HelperType<any, UserProfile>;
-  quotations: HelperType<any, Promise<Array<Quotation>>>;
+  quotations: HelperType<any, Array<Quotation>>;
   roles: HelperType<any, Array<string>>;
   tags: HelperType<any, Array<string>>;
   telNumber: HelperType<any, string>;
@@ -83,53 +87,51 @@ export const User: UserHelperTypes = {
   telNumber: checkTypeResolver(viewUserPrivateInfos, 'telNumber'),
   username: checkTypeResolver(viewUserPrivateInfos, 'username'),
 
-  primaryEmail: (user, params, context) => {
-    checkAction(viewUserPrivateInfos, context.userId, [user, params, context]);
+  primaryEmail: async (user, params, context) => {
+    await checkAction(viewUserPrivateInfos, context, [user, params, context]);
     return getPrimaryEmail(user);
   },
 
-  isEmailVerified: (user, params, context) => {
-    checkAction(viewUserPrivateInfos, context.userId, [user, params, context]);
+  isEmailVerified: async (user, params, context) => {
+    await checkAction(viewUserPrivateInfos, context, [user, params, context]);
     log(
       'user.isEmailVerified is deprecated, please use user.primaryEmail.verified',
       { level: LogLevel.Warning }
     );
     return !!getPrimaryEmail(user)?.verified;
   },
-  isInitialPassword: (user, params, context) => {
-    checkAction(viewUserPrivateInfos, context.userId, [user, params, context]);
+  isInitialPassword: async (user, params, context) => {
+    await checkAction(viewUserPrivateInfos, context, [user, params, context]);
     const { password: { initial } = { initial: undefined } } =
       user.services || {};
     return user.initialPassword || !!initial;
   },
-  isTwoFactorEnabled: (user, params, context) => {
-    checkAction(viewUserPrivateInfos, context.userId, [user, params, context]);
+  isTwoFactorEnabled: async (user, params, context) => {
+    await checkAction(viewUserPrivateInfos, context, [user, params]);
     const { 'two-factor': { secret } = { secret: undefined } } =
       user.services || {};
     return !!secret;
   },
-  isGuest: (user, params, context) => {
-    checkAction(viewUserPrivateInfos, context.userId, [user, params, context]);
+  isGuest: async (user, params, context) => {
+    await checkAction(viewUserPrivateInfos, context, [user, params]);
     return !!user.guest;
   },
 
   avatar: async (user, params, context) => {
-    checkAction(viewUserPublicInfos, context.userId, [user, params, context]);
+    await checkAction(viewUserPublicInfos, context, [user, params]);
     return await context.modules.files.findFile({
       fileId: user.avatarId as string,
     });
   },
 
   bookmarks: async (user, params, context) => {
-    const { userId, modules } = context;
-    checkAction(viewUserPrivateInfos, userId, [user, params, context]);
-    return modules.bookmarks.findByUserId(user._id as string);
+    await checkAction(viewUserPrivateInfos, context, [user, params]);
+    return context.modules.bookmarks.findByUserId(user._id as string);
   },
 
   async cart(user, params, context) {
-    const { modules, countryContext, userId } = context;
-    checkAction(viewUserOrders, userId, [user, params, context]);
-
+    const { modules, countryContext } = context;
+    await checkAction(viewUserOrders, context, [user, params]);
     return await modules.orders.cart(
       { countryContext, orderNumber: params.orderNumber },
       user
@@ -137,32 +139,30 @@ export const User: UserHelperTypes = {
   },
 
   country: async (user, params, context) => {
-    checkAction(viewUserPrivateInfos, context.userId, [user, params, context]);
+    await checkAction(viewUserPrivateInfos, context, [user, params]);
     return await context.services.countries.getUserCountry(user, params);
   },
 
   enrollments: async (user, params, context) => {
-    checkAction(viewUserEnrollments, context.userId, [user, params, context]);
+    await checkAction(viewUserEnrollments, context, [user, params]);
     return await context.modules.enrollments.findEnrollments({
       userId: user._id as string,
     });
   },
 
   language: async (user, params, context) => {
-    checkAction(viewUserPrivateInfos, context.userId, [user, params, context]);
+    await checkAction(viewUserPrivateInfos, context, [user, params]);
     return await context.services.user.getUserLanguage(user);
   },
-  locale: (user, params, context) => {
-    checkAction(viewUserPrivateInfos, context.userId, [user, params, context]);
+
+  locale: async (user, params, context) => {
+    await checkAction(viewUserPrivateInfos, context, [user, params, context]);
     return context.modules.users.userLocale(user, params);
   },
 
   orders: async (user, params, context) => {
-    const { userId, modules } = context;
-
-    checkAction(viewUserOrders, userId, [user, params, context]);
-
-    return await modules.orders.findOrders(
+    await checkAction(viewUserOrders, context, [user, params]);
+    return await context.modules.orders.findOrders(
       { userId: user._id as string, includeCarts: params.includeCarts },
       {
         sort: {
@@ -173,11 +173,8 @@ export const User: UserHelperTypes = {
   },
 
   paymentCredentials: async (user, params, context) => {
-    const { userId, modules } = context;
-
-    checkAction(viewUserPrivateInfos, userId, [user, params, context]);
-
-    return await modules.payment.paymentCredentials.findPaymentCredentials(
+    await checkAction(viewUserPrivateInfos, context, [user, params]);
+    return await context.modules.payment.paymentCredentials.findPaymentCredentials(
       { ...params.selector, userId: user._id as string },
       {
         sort: {
@@ -188,11 +185,8 @@ export const User: UserHelperTypes = {
   },
 
   quotations: async (user, params, context) => {
-    const { userId, modules } = context;
-
-    checkAction(viewUserQuotations, userId, [user, params, context]);
-
-    return await modules.quotations.findQuotations(
+    await checkAction(viewUserQuotations, context, [user, params]);
+    return await context.modules.quotations.findQuotations(
       { userId: user._id as string },
       {
         sort: {

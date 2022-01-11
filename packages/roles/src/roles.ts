@@ -1,7 +1,8 @@
 import { Meteor } from 'meteor/meteor';
-import { Users } from 'meteor/unchained:core-users';
 import clone from 'lodash.clone';
-import { has, isFunction } from './helpers';
+import { has, isFunction } from '../helpers';
+import { Context } from '@unchainedshop/types/api';
+import { User } from '@unchainedshop/types/user';
 
 interface RoleInterface {
   name: string;
@@ -19,11 +20,19 @@ interface RolesInterface {
   helpers: string[];
   registerAction(name: string): void;
   registerHelper(name: string): void;
-  getUserRoles(userId: string, includeSpecial: boolean): string[];
-  allow(userId: string, action: any): boolean;
-  userHasPermission(userId: string, action: any): boolean;
-  addUserToRoles(userId: string, roles: string | string[]): any;
-  checkPermission(userId: string, action: any): void | never;
+  getUserRoles(
+    context: Context,
+    roles: Array<string>,
+    includeSpecial: boolean
+  ): string[];
+  allow(context: Context, roles: Array<string>, action: any): boolean;
+  userHasPermission(
+    context: Context,
+    roles: Array<string>,
+    action: any
+  ): boolean;
+  addUserToRoles(context: Context, roles: string | string[]): Promise<any>;
+  checkPermission(context: Context, action: any): Promise<void | never>;
   adminRole?: RoleInterface;
   loggedInRole?: RoleInterface;
   allRole?: RoleInterface;
@@ -54,12 +63,10 @@ export const Roles: RolesInterface = {
   /**
    * Get user roles
    */
-  getUserRoles: (userId: string, includeSpecial: boolean) => {
-    const object = Users.findOne({ _id: userId }, { fields: { roles: 1 } });
-    const roles = (object && object.roles) || [];
+  getUserRoles(context, roles, includeSpecial) {
     if (includeSpecial) {
       roles.push('__all__');
-      if (!userId) {
+      if (!context.userId) {
         roles.push('__notLoggedIn__');
       } else {
         roles.push('__loggedIn__');
@@ -75,14 +82,14 @@ export const Roles: RolesInterface = {
   /**
    * Returns true if the user passes the allow check
    */
-  allow(userId, action) {
+  allow(context, roles, action) {
     // eslint-disable-next-line prefer-rest-params
     const args = Object.values(arguments).slice(2);
-    const context = { userId };
-    let allowed = false;
-    const roles = Roles.getUserRoles(userId, true);
 
-    roles.forEach((role) => {
+    let allowed = false;
+    const userRoles = Roles.getUserRoles(context, roles, true);
+
+    userRoles.forEach((role) => {
       if (
         this.roles[role] &&
         this.roles[role].allowRules &&
@@ -103,32 +110,36 @@ export const Roles: RolesInterface = {
   /**
    * To check if a user has permisisons to execute an action
    */
-  userHasPermission(...args) {
-    const allows = this.allow(...args);
+  userHasPermission: (context, roles, action) => {
+    const allows = Roles.allow(context, roles, action);
     return allows === true;
   },
 
   /**
    * Adds roles to a user
    */
-  addUserToRoles(userId: string, roles: string | string[]) {
+  async addUserToRoles(context, roles) {
     let userRoles = roles;
     if (!Array.isArray(userRoles)) {
       userRoles = [userRoles];
     }
 
-    return Users.update(
-      { _id: userId },
-      { $addToSet: { roles: { $each: userRoles } } }
-    );
+    return await context.modules.users.addRoles(context.userId, userRoles);
   },
 
   /**
    * If the user doesn't has permission it will throw a error
    * Roles.userHasPermission(userId, action, [extra])
    */
-  checkPermission(...args) {
-    if (!this.userHasPermission(...args)) {
+  async checkPermission(context, action) {
+    const user = await context.modules.users.findUser(
+      { userId: context.userId },
+      { projection: { roles: 1 } }
+    );
+
+    const roles = (user && user.roles) || [];
+
+    if (!this.userHasPermission(context, roles, action)) {
       throw new Meteor.Error(
         'unauthorized',
         'The user has no permission to perform this action'

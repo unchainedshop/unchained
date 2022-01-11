@@ -1,4 +1,4 @@
-export default (role, actions) => {
+export const all = (role, actions) => {
   const isInLoginMutationResponse = (root) => {
     // eslint-disable-next-line
     if (root && root._inLoginMethodResponse) {

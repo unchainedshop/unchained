@@ -11,7 +11,11 @@ import { OrderPricingSheet } from 'meteor/unchained:core-orders';
 /* @ts-ignore */
 import bodyParser from 'body-parser';
 /* @ts-ignore */
-import { acl, roles, useMiddlewareWithCurrentContext } from 'meteor/unchained:api';
+import {
+  acl,
+  roles,
+  useMiddlewareWithCurrentContext,
+} from 'meteor/unchained:api';
 import crypto from 'crypto';
 import fetch from 'isomorphic-unfetch';
 /* @ts-ignore */
@@ -137,7 +141,10 @@ const signPayload = (...args) => {
   return signedString;
 };
 
-const bityExchangeFetch = async (params: { path: string, data?: any }, context: Context) => {
+const bityExchangeFetch = async (
+  params: { path: string; data?: any },
+  context: Context
+) => {
   const body = params.data && JSON.stringify(params.data);
   const doFetch = async () => {
     const response = await fetch(`${BITY_API_ENDPOINT}${params.path}`, {
@@ -203,7 +210,7 @@ useMiddlewareWithCurrentContext(BITY_OAUTH_INIT_PATH, async (req, res) => {
   if (req.method === 'GET') {
     try {
       const resolvedContext = req.unchainedContext;
-      checkAction(actions.managePaymentProviders, resolvedContext?.userId);
+      await checkAction(actions.managePaymentProviders, resolvedContext);
 
       const bityAuthClient = createBityAuth();
       const uri = bityAuthClient.code.getUri();
@@ -287,7 +294,7 @@ const Bity: IPaymentAdapter = {
       },
 
       isActive: async () => {
-        if (await adapter.configurationError() === null) return true;
+        if ((await adapter.configurationError()) === null) return true;
         return false;
       },
 
@@ -362,25 +369,28 @@ const Bity: IPaymentAdapter = {
           throw new Error('Signature Mismatch');
         }
 
-        const path = await createBityOrder({
-          input: {
-            amount: bityPayload.input.amount,
-            currency: bityPayload.input.currency,
-          },
-          output: {
-            currency: bityPayload.output.currency,
-            type: 'bank_account',
-            iban: BITY_BANK_ACCOUNT_IBAN,
-            reference: order._id,
-            owner: {
-              address: BITY_BANK_ACCOUNT_ADDRESS,
-              city: BITY_BANK_ACCOUNT_CITY,
-              country: BITY_BANK_ACCOUNT_COUNTRY,
-              name: BITY_BANK_ACCOUNT_NAME,
-              zip: BITY_BANK_ACCOUNT_ZIP,
+        const path = await createBityOrder(
+          {
+            input: {
+              amount: bityPayload.input.amount,
+              currency: bityPayload.input.currency,
+            },
+            output: {
+              currency: bityPayload.output.currency,
+              type: 'bank_account',
+              iban: BITY_BANK_ACCOUNT_IBAN,
+              reference: order._id,
+              owner: {
+                address: BITY_BANK_ACCOUNT_ADDRESS,
+                city: BITY_BANK_ACCOUNT_CITY,
+                country: BITY_BANK_ACCOUNT_COUNTRY,
+                name: BITY_BANK_ACCOUNT_NAME,
+                zip: BITY_BANK_ACCOUNT_ZIP,
+              },
             },
           },
-        }, params.context);
+          params.context
+        );
 
         paymentLogger.info(`Bity Plugin: Prepared Bity Order`, path);
         const response = await bityExchangeFetch({ path }, params.context);

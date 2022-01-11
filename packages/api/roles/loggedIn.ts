@@ -1,46 +1,47 @@
-import {
-  Orders,
-  OrderPayments,
-  OrderDeliveries,
-  OrderPositions,
-  OrderDiscounts,
-} from 'meteor/unchained:core-orders';
-import { ProductReviews } from 'meteor/unchained:core-products';
-import { Context, Root } from '@unchainedshop/types/api'import { Enrollments } from 'meteor/unchained:core-enrollments';
-import { PaymentCredentials } from 'meteor/unchained:core-payment';
-import { Promise } from 'meteor/promise';
+import { Context, Root, UnchainedAPI } from '@unchainedshop/types/api';
 
-export default (role, actions) => {
+export const loggedIn = (
+  role: any,
+  actions: Record<string, string>,
+) => {
   const isMyself = (
     root: Root,
-    { userId: foreignUserId } = {},
-    { userId: ownUserId } = {}
+    foreignUser: { userId?: string } = {},
+    ownUser: { userId?: string } = {}
   ) => {
     if (
       root &&
       root.username &&
       root.services &&
       root.emails &&
-      !foreignUserId
+      !foreignUser.userId
     ) {
-      return root._id === ownUserId;
+      return root._id === ownUser.userId;
     }
-    return foreignUserId === ownUserId || !foreignUserId;
+    return foreignUser.userId === ownUser.userId || !foreignUser.userId;
   };
 
-  const isOwnedEmailAddress = (root, { email } = {}, { user } = {}) => {
+  const isOwnedEmailAddress = (
+    root: Root,
+    params: { email?: string },
+    { user }: Context
+  ) => {
     return user?.emails?.some(
       (emailRecord) =>
-        emailRecord.address?.toLowerCase() === email?.toLowerCase()
+        emailRecord.address?.toLowerCase() === params.email?.toLowerCase()
     );
   };
 
-  const isOwnedOrder = async (root, { orderId }, { modules, userId }) => {
+  const isOwnedOrder = async (
+    root: Root,
+    params: { orderId: string },
+    { modules, userId }: Context
+  ) => {
     const order = await modules.orders.findOrder(
-      { orderId },
+      { orderId: params.orderId },
       {
         projection: {
-          userId: true,
+          userId: 1,
         },
       }
     );
@@ -48,19 +49,27 @@ export default (role, actions) => {
     return order.userId === userId;
   };
 
-  const isOwnedOrderOrCart = async (root, { orderId }, context) => {
-    if (orderId) {
-      return await isOwnedOrder(null, { orderId }, context);
+  const isOwnedOrderOrCart = async (
+    root: Root,
+    params: { orderId?: string },
+    context: Context
+  ) => {
+    if (params.orderId) {
+      return await isOwnedOrder(null, { orderId: params.orderId }, context);
     }
     return true;
   };
 
-  const isOwnedEnrollment = (root, { enrollmentId }, { userId }) => {
-    const enrollment = Enrollments.findEnrollment(
-      { enrollmentId },
+  const isOwnedEnrollment = async (
+    root: Root,
+    params: { enrollmentId: string },
+    { modules, userId }: Context
+  ) => {
+    const enrollment = await modules.enrollments.findEnrollment(
+      { enrollmentId: params.enrollmentId },
       {
-        fields: {
-          userId: true,
+        projection: {
+          userId: 1,
         },
       }
     );
@@ -68,28 +77,36 @@ export default (role, actions) => {
     return enrollment.userId === userId;
   };
 
-  const isOwnedOrderPayment = (root, { orderPaymentId }, { userId }) => {
-    const payment = OrderPayments.findPayment(
-      { orderPaymentId },
+  const isOwnedOrderPayment = async (
+    root: Root,
+    params: { orderPaymentId: string },
+    context: Context
+  ) => {
+    const payment = await context.modules.orders.payments.findOrderPayment(
+      { orderPaymentId: params.orderPaymentId },
       {
-        fields: {
-          orderId: true,
+        projection: {
+          orderId: 1,
         },
       }
     );
     // return true if db entity not found in order
     // to let the resolver throw a good exception
     if (!payment) return true;
-    const orderId = payment && payment.orderId;
-    return isOwnedOrder(null, { orderId }, { userId });
+    const orderId = payment?.orderId;
+    return isOwnedOrder(null, { orderId }, context);
   };
 
-  const isOwnedOrderDelivery = (root, { orderDeliveryId }, { userId }) => {
-    const delivery = OrderDeliveries.findDelivery(
-      { orderDeliveryId },
+  const isOwnedOrderDelivery = async (
+    root: Root,
+    params: { orderDeliveryId: string },
+    context: Context
+  ) => {
+    const delivery = await context.modules.orders.deliveries.findDelivery(
+      { orderDeliveryId: params.orderDeliveryId },
       {
-        fields: {
-          orderId: true,
+        projection: {
+          orderId: 1,
         },
       }
     );
@@ -97,15 +114,19 @@ export default (role, actions) => {
     // to let the resolver throw a good exception
     if (!delivery) return true;
     const orderId = delivery && delivery.orderId;
-    return isOwnedOrder(null, { orderId }, { userId });
+    return isOwnedOrder(null, { orderId }, context);
   };
 
-  const isOwnedOrderItem = (root, { itemId }, { userId }) => {
-    const item = OrderPositions.findItem(
-      { itemId },
+  const isOwnedOrderItem = async (
+    root: Root,
+    params: { itemId: string },
+    context: Context
+  ) => {
+    const item = await context.modules.orders.positions.findOrderPosition(
+      { itemId: params.itemId },
       {
-        fields: {
-          orderId: true,
+        projection: {
+          orderId: 1,
         },
       }
     );
@@ -113,15 +134,19 @@ export default (role, actions) => {
     // to let the resolver throw a good exception
     if (!item) return true;
     const orderId = item && item.orderId;
-    return isOwnedOrder(null, { orderId }, { userId });
+    return isOwnedOrder(null, { orderId }, context);
   };
 
-  const isOwnedOrderDiscount = (root, { discountId }, { userId }) => {
-    const discount = OrderDiscounts.findDiscount(
-      { discountId },
+  const isOwnedOrderDiscount = async (
+    root: Root,
+    params: { discountId: string },
+    context: Context
+  ) => {
+    const discount = await context.modules.orders.discounts.findOrderDiscount(
+      { discountId: params.discountId },
       {
-        fields: {
-          orderId: true,
+        projection: {
+          orderId: 1,
         },
       }
     );
@@ -129,21 +154,31 @@ export default (role, actions) => {
     // to let the resolver throw a good exception
     if (!discount) return true;
     const orderId = discount && discount.orderId;
-    return isOwnedOrder(null, { orderId }, { userId });
+    return isOwnedOrder(null, { orderId }, context);
   };
 
-  const isOwnedProductReview = (root, { productReviewId }, { userId }) => {
-    const review = ProductReviews.findReview({ productReviewId });
+  const isOwnedProductReview = async (
+    root: Root,
+    { productReviewId }: { productReviewId: string },
+    { modules, userId }: Context
+  ) => {
+    const review = await modules.products.reviews.findProductReview({
+      productReviewId,
+    });
     if (!review) return true;
-    return review.userId === userId;
+    return review.authorId === userId;
   };
 
-  const isOwnedQuotation = (root, { quotationId }, { userId }) => {
+  const isOwnedQuotation = async (
+    root: Root,
+    { quotationId }: { quotationId: string },
+    { modules, userId }: Context
+  ) => {
     const quotation = await modules.quotations.findQuotation(
       { quotationId },
       {
-        fields: {
-          userId: true,
+        projection: {
+          userId: 1,
         },
       }
     );
@@ -153,26 +188,30 @@ export default (role, actions) => {
     return quotation.userId === userId;
   };
 
-  const isOwnedBookmark = (root, { bookmarkId }, { userId, modules }) => {
-    const bookmark = Promise.await(modules.bookmarks.findById(bookmarkId));
+  const isOwnedBookmark = async (
+    root: Root,
+    { bookmarkId }: { bookmarkId: string },
+    { userId, modules }: Context
+  ) => {
+    const bookmark = await modules.bookmarks.findById(bookmarkId);
     // return true if db entity not found in order
     // to let the resolver throw a good exception
     if (!bookmark) return true;
     return bookmark.userId === userId;
   };
 
-  const isOwnedPaymentCredential = (
+  const isOwnedPaymentCredential = async (
     root: Root,
-    { paymentCredentialsId },
-    { userId }
+    { paymentCredentialsId }: { paymentCredentialsId: string },
+    { modules, userId }: Context
   ) => {
-    const credentials = PaymentCredentials.findCredentials(
+    const credentials = await modules.payment.paymentCredentials.findPaymentCredential(
       {
         paymentCredentialsId,
       },
       {
-        fields: {
-          userId: true,
+        projection: {
+          userId: 1,
         },
       }
     );
@@ -181,6 +220,7 @@ export default (role, actions) => {
     if (!credentials) return true;
     return credentials.userId === userId;
   };
+
   role.allow(actions.viewEvent, false);
   role.allow(actions.viewEvents, false);
   role.allow(actions.viewUser, isMyself);

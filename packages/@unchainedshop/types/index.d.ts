@@ -60,6 +60,7 @@ import {
 import {
   IPaymentPricingAdapter,
   IPaymentPricingDirector,
+  IPaymentPricingSheet,
 } from './payments.pricing';
 import {
   BasePricingAdapterContext,
@@ -370,6 +371,7 @@ declare module 'meteor/unchained:core-payment' {
 
   export const PaymentPricingAdapter: IPaymentPricingAdapter;
   export const PaymentPricingDirector: IPaymentPricingDirector;
+  export const PaymentPricingSheet: IPaymentPricingSheet;
 
   export const PaymentError: typeof PaymentErrorType;
   export const PaymentProviderType: typeof PaymentProviderTypeType;

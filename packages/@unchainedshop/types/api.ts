@@ -1,26 +1,40 @@
 import { Locale } from 'locale';
 import { Modules } from './modules';
+import { User } from './user';
 
 export declare type Root = Record<string, unknown>;
-export declare interface Context {
-  countryContext: string;
-  localeContext: Locale;
+
+export interface UnchainedUserContext {
   loginToken?: string;
-  modules: Modules;
-  remoteAddress: string;
-  remotePort: string;
-  services: any;
-  userAgent: string;
   userId?: string;
+  user?: User;
 }
 
 export interface UnchainedAPI {
-  services: any;
   modules: Modules;
-  version: string;
+  services: any;
+  version?: string;
 }
 
-export interface LocaleContext {
-  localeContext: Locale;
+export interface UnchainedLocaleContext {
   countryContext: string;
+  localeContext: Locale;
+  remoteAddress?: string;
+  remotePort?: string;
+  userAgent?: string;
 }
+
+export interface UnchainedLoaders {
+  bookmarksByQueryLoader: any;
+  bookmarkByIdLoader: any;
+}
+
+export interface UnchainedBulkImport {
+  bulkImporter: any
+}
+
+export type Context = UnchainedAPI &
+  UnchainedUserContext &
+  UnchainedLocaleContext &
+  UnchainedLoaders &
+  UnchainedBulkImport;

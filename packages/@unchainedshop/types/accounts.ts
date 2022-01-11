@@ -43,6 +43,8 @@ export interface AccountsModule {
     token: string;
     tokenExpires: Date;
   }>;
+  createHashLoginToken: (token?: any) => string;
+
   loginWithService: (
     params:
       | { service: 'guest' }
@@ -58,7 +60,10 @@ export interface AccountsModule {
     token: string;
     tokenExpires: Date;
   }>;
-  logout: (params: { token?: string }, context: Context) => Promise<{ success: boolean; error: any }>;
+  logout: (
+    params: { token?: string },
+    context: Context
+  ) => Promise<{ success: boolean; error: any }>;
 
   // User Management
   setUsername: (userId: string, username: string) => Promise<void>;

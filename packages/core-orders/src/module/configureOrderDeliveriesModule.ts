@@ -69,9 +69,10 @@ export const configureOrderDeliveriesModule = ({
 
   return {
     // Queries
-    findDelivery: async ({ orderDeliveryId }) => {
+    findDelivery: async ({ orderDeliveryId }, options) => {
       return await OrderDeliveries.findOne(
-        buildFindByIdSelector(orderDeliveryId)
+        buildFindByIdSelector(orderDeliveryId),
+        options
       );
     },
 

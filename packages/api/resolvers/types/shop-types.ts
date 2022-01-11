@@ -5,10 +5,14 @@ import { checkAction } from '../../acl';
 import roles, { actions } from '../../roles';
 
 interface ShopHelperTypes {
-  _id: () => string
-  country: (root :never, params :never, context: Context) => Promise<Country>
-  language: (root :never, params :never, context: Context) => Promise<Language>
-  userRoles: (root :never, params :never, context: Context) => Array<string>
+  _id: () => string;
+  country: (root: never, params: never, context: Context) => Promise<Country>;
+  language: (root: never, params: never, context: Context) => Promise<Language>;
+  userRoles: (
+    root: never,
+    params: never,
+    context: Context
+  ) => Promise<Array<string>>;
 }
 
 export const Shop: ShopHelperTypes = {
@@ -22,9 +26,9 @@ export const Shop: ShopHelperTypes = {
   async country(_root, _params, { countryContext, modules }) {
     return modules.countries.findCountry({ isoCode: countryContext });
   },
-  
-  userRoles(_root, _params, context) {
-    checkAction((actions as any).manageUsers, context.userId);
+
+  async userRoles(_root, _params, context) {
+    await checkAction((actions as any).manageUsers, context);
     return Object.values(roles)
       .map(({ name }) => name)
       .filter((name) => name.substring(0, 2) !== '__');

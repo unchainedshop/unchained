@@ -3,12 +3,12 @@ import {
   PaymentAdapter,
   PaymentError,
   paymentLogger,
+  PaymentPricingSheet,
 } from 'meteor/unchained:core-payment';
 import bodyParser from 'body-parser';
 import { useMiddlewareWithCurrentContext } from 'meteor/unchained:api';
 import { IPaymentAdapter } from '@unchainedshop/types/payments';
 import { Context } from '@unchainedshop/types/api';
-import { PaymentPricingSheet } from 'src/director/PaymentPricingSheet';
 
 const {
   STRIPE_SECRET,

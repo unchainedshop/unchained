@@ -1,6 +1,12 @@
 import { Locale } from 'locale';
-import { UpdateFilter } from 'mongodb';
-import { Address, Contact, TimestampFields, _ID } from './common';
+import {
+  Address,
+  Contact,
+  TimestampFields,
+  _ID,
+  Update,
+  FindOptions,
+} from './common';
 
 export interface UserProfile {
   displayName?: string;
@@ -49,11 +55,14 @@ type UserQuery = {
 export type UsersModule = {
   // Queries
   count: (query: UserQuery) => Promise<number>;
-  findUser: (query: {
-    userId?: _ID;
-    resetToken?: string;
-    hashedToken?: string;
-  }) => Promise<User>;
+  findUser: (
+    query: {
+      userId?: _ID;
+      resetToken?: string;
+      hashedToken?: string;
+    },
+    options?: FindOptions
+  ) => Promise<User>;
   findUsers: (
     query: UserQuery & {
       limit?: number;
@@ -67,9 +76,11 @@ export type UsersModule = {
   userLocale: (user: User, params?: { localeContext?: Locale }) => Locale;
 
   // Mutations
+  addRoles: (userId: string, roles: Array<string>) => Promise<number>
+  
   updateProfile: (
     _id: string,
-    doc: UpdateFilter<UserProfile>,
+    doc: Update<UserProfile>,
     userId: string
   ) => Promise<User>;
   updateAvatar: (_id: string, fileId: string, userId: string) => Promise<User>;

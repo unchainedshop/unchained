@@ -72,8 +72,8 @@ export const configureOrderPaymentsModule = ({
 
   return {
     // Queries
-    findOrderPayment: async ({ orderPaymentId }) => {
-      return await OrderPayments.findOne(buildFindByIdSelector(orderPaymentId));
+    findOrderPayment: async ({ orderPaymentId }, options) => {
+      return await OrderPayments.findOne(buildFindByIdSelector(orderPaymentId), options);
     },
 
     // Transformations

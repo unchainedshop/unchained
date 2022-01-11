@@ -49,7 +49,7 @@ export const configureUsersModule = async ({
       return userCount;
     },
 
-    findUser: async ({ userId, resetToken, hashedToken }) => {
+    findUser: async ({ userId, resetToken, hashedToken }, options) => {
       if (hashedToken) {
         return await Users.findOne({
           'services.resume.loginTokens.hashedToken': hashedToken,
@@ -61,7 +61,7 @@ export const configureUsersModule = async ({
           'services.password.reset.token': resetToken,
         });
       }
-      return await Users.findOne(generateDbFilterById(userId));
+      return await Users.findOne(generateDbFilterById(userId), options);
     },
 
     findUsers: async ({ limit, offset, includeGuests, queryString }) => {
@@ -100,6 +100,14 @@ export const configureUsersModule = async ({
     },
 
     // Mutations
+    addRoles: async (userId, roles) => {
+      const updateResult = await Users.updateOne(generateDbFilterById(userId), {
+        $addToSet: { roles: { $each: roles } },
+      });
+
+      return updateResult.modifiedCount;
+    },
+
     updateProfile: async (_id, profile, userId) => {
       const userFilter = generateDbFilterById(_id);
       const modifier = {

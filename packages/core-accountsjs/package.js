@@ -16,8 +16,12 @@ Npm.depends({
 
 Package.onUse((api) => {
   api.versionsFrom('2.2');
+  
   api.use('ecmascript');
   api.use('typescript')
+  api.use('mongo');
+
+  api.use('unchained:core-worker');
 
   api.mainModule('src/accounts-index.ts');
 });

@@ -1,14 +1,14 @@
+import { UnchainedAPI, UnchainedLoaders } from '@unchainedshop/types/api';
 import DataLoader from 'dataloader';
+import { Request } from 'express';
 
-export interface UnchainedServerLoaders {
-  bookmarksByQueryLoader: any;
-  bookmarkByIdLoader: any;
-}
-
-export default async (_, unchained): Promise<UnchainedServerLoaders> => {
+export default async (
+  req: Request,
+  unchainedAPI: UnchainedAPI
+): Promise<UnchainedLoaders> => {
   return {
     bookmarksByQueryLoader: new DataLoader(async (queries) => {
-      const results = unchained.modules.bookmarks.find({
+      const results = await unchainedAPI.modules.bookmarks.find({
         $or: queries,
       });
       return queries.map(
@@ -20,7 +20,7 @@ export default async (_, unchained): Promise<UnchainedServerLoaders> => {
       );
     }),
     bookmarkByIdLoader: new DataLoader(async (ids) => {
-      const results = unchained.modules.bookmarks.find({
+      const results = await unchainedAPI.modules.bookmarks.find({
         _id: {
           $in: ids,
         },

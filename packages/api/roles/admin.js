@@ -1,4 +1,4 @@
-export default (role, actions) => {
+export const admint = (role, actions) => {
   role.allow(actions.viewEvent, () => true);
   role.allow(actions.viewEvents, () => true);
   role.allow(actions.viewUser, () => true);

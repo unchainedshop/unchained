@@ -22,7 +22,6 @@ Package.onUse((api) => {
   api.use('ecmascript');
   api.use('webapp');
   api.use('check');
-  api.use('mongo');
   api.use('typescript');
 
   api.use('unchained:events@1.0.0-beta15');

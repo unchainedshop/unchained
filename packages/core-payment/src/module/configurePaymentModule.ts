@@ -1,6 +1,6 @@
 import { ModuleInput } from '@unchainedshop/types/common';
 import { PaymentModule } from '@unchainedshop/types/payments';
-import { BityCredentialsCollection } from 'src/db/BityCredentialsCollection';
+import { BityCredentialsCollection } from '../db/BityCredentialsCollection';
 import { PaymentCredentialsCollection } from '../db/PaymentCredentialsCollection';
 import { PaymentProvidersCollection } from '../db/PaymentProvidersCollection';
 import { configureBityCredentialsModule } from './configureBityCredentialsModule';
