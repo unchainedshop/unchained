@@ -9,6 +9,7 @@ Package.describe({
 Npm.depends({
   locale: '0.1.0',
   uuid: '7.0.1',
+  'simpl-schema': '1.12.0',
 });
 
 Package.onUse((api) => {
@@ -18,8 +19,6 @@ Package.onUse((api) => {
 
   api.use('unchained:utils@1.0.0-beta15');
   api.use('unchained:logger@1.0.0-beta15');
-
-  api.use('unchained:core-files-next@1.0.0-beta15');
 
   api.mainModule('src/users-index.ts', 'server');
 });

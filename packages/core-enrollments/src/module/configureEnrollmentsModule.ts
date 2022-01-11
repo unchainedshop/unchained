@@ -96,7 +96,7 @@ export const configureEnrollmentsModule = async ({
   const updateStatus: EnrollmentsModule['updateStatus'] = async (
     enrollmentId,
     { status, info = '' },
-    requestContext
+    userId?: string
   ) => {
     const selector = generateDbFilterById(enrollmentId);
     const enrollment = await Enrollments.findOne(selector);
@@ -105,7 +105,7 @@ export const configureEnrollmentsModule = async ({
 
     const date = new Date();
     const modifier = {
-      $set: { status, updated: new Date(), updatedBy: requestContext.userId },
+      $set: { status, updated: new Date(), updatedBy: userId },
       $push: {
         log: {
           date,
@@ -163,7 +163,7 @@ export const configureEnrollmentsModule = async ({
     return await updateStatus(
       dbIdToString(enrollment._id),
       { status: nextStatus, info: 'enrollment processed' },
-      requestContext
+      requestContext.userId
     );
   };
 
