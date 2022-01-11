@@ -55,9 +55,10 @@ export type Order = {
 } & LogFields &
   TimestampFields;
 
-type OrderQuery = {
+export type OrderQuery = {
   includeCarts?: boolean;
   queryString?: string;
+  status?: string;
   userId?: string;
 };
 

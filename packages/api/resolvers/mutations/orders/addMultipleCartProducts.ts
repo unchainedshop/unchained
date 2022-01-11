@@ -4,7 +4,7 @@ import {
   ProductNotFoundError,
   OrderQuantityTooLowError,
 } from '../../../errors';
-import { getOrderCart } from './getOrderCart';
+import { getOrderCart } from '../utils/getOrderCart';
 import { Configuration } from '@unchainedshop/types/common';
 
 export default async function addMultipleCartProducts(

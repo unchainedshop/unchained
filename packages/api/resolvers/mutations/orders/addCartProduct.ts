@@ -5,7 +5,7 @@ import {
   InvalidIdError,
   UserNotFoundError,
 } from '../../../errors';
-import { getOrderCart } from './getOrderCart';
+import { getOrderCart } from '../utils/getOrderCart';
 import { Context, Root } from '@unchainedshop/types/api';
 
 export default async function addCartProduct(
@@ -27,6 +27,7 @@ export default async function addCartProduct(
 
   const product = await modules.products.findProduct({ productId });
   if (!product) throw new ProductNotFoundError({ productId });
+  
   const user = await modules.users.findUser({ userId });
   if (!user) throw new UserNotFoundError({ userId });
 

@@ -78,46 +78,46 @@ import { updateOrderDocuments } from '../order-documents/helpers';
 //   );
 // };
 
-Enrollments.helpers({
-  async generateOrder({ products, orderContext, ...configuration }) {
-    if (!this.payment || !this.delivery) return null;
-    const cart = await Orders.createOrder({
-      user: this.user(),
-      currency: this.currencyCode,
-      countryCode: this.countryCode,
-      contact: this.contact,
-      billingAddress: this.billingAddress,
-      originEnrollmentId: this._id,
-      ...configuration,
-    });
-    if (products) {
-      products.forEach(cart.addProductItem);
-    } else {
-      cart.addProductItem({
-        product: this.product(),
-        quantity: 1,
-      });
-    }
-    const { paymentProviderId, paymentContext } = this.payment;
-    if (paymentProviderId) {
-      cart.setPaymentProvider({
-        paymentProviderId,
-      });
-    }
-    const { deliveryProviderId, deliveryContext } = this.delivery;
-    if (deliveryProviderId) {
-      cart.setDeliveryProvider({
-        deliveryProviderId,
-      });
-    }
-    const order = cart.checkout({
-      paymentContext,
-      deliveryContext,
-      orderContext,
-    });
-    return order;
-  },
-});
+// Enrollments.helpers({
+//   async generateOrder({ products, orderContext, ...configuration }) {
+//     if (!this.payment || !this.delivery) return null;
+//     const cart = await Orders.createOrder({
+//       user: this.user(),
+//       currency: this.currencyCode,
+//       countryCode: this.countryCode,
+//       contact: this.contact,
+//       billingAddress: this.billingAddress,
+//       originEnrollmentId: this._id,
+//       ...configuration,
+//     });
+//     if (products) {
+//       products.forEach(cart.addProductItem);
+//     } else {
+//       cart.addProductItem({
+//         product: this.product(),
+//         quantity: 1,
+//       });
+//     }
+//     const { paymentProviderId, paymentContext } = this.payment;
+//     if (paymentProviderId) {
+//       cart.setPaymentProvider({
+//         paymentProviderId,
+//       });
+//     }
+//     const { deliveryProviderId, deliveryContext } = this.delivery;
+//     if (deliveryProviderId) {
+//       cart.setDeliveryProvider({
+//         deliveryProviderId,
+//       });
+//     }
+//     const order = cart.checkout({
+//       paymentContext,
+//       deliveryContext,
+//       orderContext,
+//     });
+//     return order;
+//   },
+// });
 
 // --> Moved to API query resolver using the modules pattern
 // Logs.helpers({
@@ -370,20 +370,20 @@ Enrollments.helpers({
   // },
 
   // Split into quotation part and order part
-  addQuotationItem({ quotation, ...quotationItemConfiguration }) {
-    const { quantity, configuration } = quotation.transformItemConfiguration(
-      quotationItemConfiguration
-    );
-    const product = quotation.product();
+  // addQuotationItem({ quotation, ...quotationItemConfiguration }) {
+  //   const { quantity, configuration } = quotation.transformItemConfiguration(
+  //     quotationItemConfiguration
+  //   );
+  //   const product = quotation.product();
 
-    // This is on order side only
-    return this.addProductItem({
-      product,
-      quantity,
-      configuration,
-      quotationId: quotation._id,
-    });
-  },
+  //   // This is on order side only
+  //   return this.addProductItem({
+  //     product,
+  //     quantity,
+  //     configuration,
+  //     quotationId: quotation._id,
+  //   });
+  // },
 
   // addProductItem({ product, quantity, configuration, ...rest }) {
   //   const resolvedProduct = product.resolveOrderableProduct({

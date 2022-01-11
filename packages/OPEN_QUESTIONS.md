@@ -112,4 +112,8 @@ What happens if the first one passes and the second not?
 
 11. FilterDirector: What are the options? Could not find a call that provides options and thus I would remove this parameter (except in other implementations it is used)
 
-12. Filters --> Helper: Delete Filter should also delete the FilterTexts of this filter, right? (Similar to assortments)l
+12. Filters --> Helper: Delete Filter should also delete the FilterTexts of this filter, right? (Similar to assortments)
+
+13. Media created with core-documents director can also be deleted? (e.g. Quotation Proposal)
+
+14. Quotations --> helpers: documents still required (after deletion of core-documents)?

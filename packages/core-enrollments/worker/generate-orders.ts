@@ -1,5 +1,4 @@
 import { WorkerDirector, WorkerAdapter } from 'meteor/unchained:core-worker';
-// import WorkerPlugin from 'meteor/unchained:core-worker/workers/base';
 import { dbIdToString } from 'meteor/unchained:utils';
 import {
   EnrollmentStatus,

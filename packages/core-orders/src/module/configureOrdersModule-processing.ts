@@ -97,7 +97,7 @@ export const configureOrderModuleProcessing = ({
 
         const quotation =
           orderPosition.quotationId &&
-          (await modules.quotations.findQuatation({
+          (await modules.quotations.findQuotation({
             quotationId: orderPosition.quotationId,
           }));
         if (quotation && !modules.quotations.isProposalValid(quotation)) {
@@ -424,13 +424,24 @@ export const configureOrderModuleProcessing = ({
         // If we came here, the checkout succeeded, so we can reserve the items
         const orderPositions = await findOrderPositions(order);
         await Promise.all(
-          orderPositions.map(
-            async (orderPosition) =>
-              await modules.quotations.reserve(orderPosition.quotationId, {
-                orderId: order._id as string,
+          orderPositions.map(async (orderPosition) => {
+            const quotation = await modules.quotations.fullfillQuotation(
+              orderPosition.quotationId,
+              {
+                orderId,
                 orderPositionId: dbIdToString(orderPosition._id),
-              })
-          )
+              },
+              requestContext
+            );
+
+            log(
+              `OrderPosition ${orderPosition._id} -> Reserve ${orderPosition.quantity}`,
+              {
+                orderId,
+                quotation,
+              }
+            );
+          })
         );
 
         // TODO: we will use this function to keep a "Ordered in Flight" amount, allowing us to

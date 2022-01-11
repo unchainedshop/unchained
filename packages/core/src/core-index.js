@@ -14,7 +14,6 @@ import {
 } from 'meteor/unchained:core-countries';
 import { configureCurrenciesModule } from 'meteor/unchained:core-currencies';
 import { configureDeliveryModule } from 'meteor/unchained:core-delivery';
-import { configureDocumentsModule } from 'meteor/unchained:core-documents';
 import { configureEnrollmentsModule } from 'meteor/unchained:core-enrollments';
 import { configureEventsModule } from 'meteor/unchained:core-events';
 import {
@@ -23,7 +22,7 @@ import {
 } from 'meteor/unchained:core-files-next';
 import { configureFiltersModule } from 'meteor/unchained:core-filters';
 import { configureLanguagesModule } from 'meteor/unchained:core-languages';
-import { configureMessagingModule } from 'meteor/unchained:core-messaging';
+// import { configureMessagingModule } from 'meteor/unchained:core-messaging';
 import { configureOrdersModule } from 'meteor/unchained:core-orders';
 import {
   configurePaymentModule,
@@ -55,14 +54,12 @@ export const initCore = async ({
   const countries = await configureCountriesModule({ db });
   const currencies = await configureCurrenciesModule({ db });
   const delivery = await configureDeliveryModule({ db });
-  const delivery = await configureDeliveryModule({ db });
-  const documents = await configureDocumentsModule({ db });
   const enrollments = await configureEnrollmentsModule({ db });
   const events = await configureEventsModule({ db });
   const files = await configureFilesModule({ db });
   const filters = await configureFiltersModule({ db });
   const languages = await configureLanguagesModule({ db });
-  const messaging = await configureMessagingModule({ db });
+  // const messaging = await configureMessagingModule({ db });
   const orders = await configureOrdersModule({ db });
   const payment = await configurePaymentModule({ db });
   const products = await configureProductsModule({ db });
@@ -83,14 +80,12 @@ export const initCore = async ({
       countries,
       currencies,
       delivery,
-      delivery,
-      documents,
       enrollments,
       events,
       files,
       filters,
       languages,
-      messaging,
+      // messaging,
       orders,
       payment,
       products,

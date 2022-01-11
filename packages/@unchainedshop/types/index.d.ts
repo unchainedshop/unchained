@@ -93,9 +93,17 @@ import { WorkerModule, IWorkerDirector, IWorkerAdapter } from './worker';
 import {
   EnrollmentsModule,
   EnrollmentStatus as EnrollmentStatusType,
+  EnrollmentError as EnrollmentErrorType,
   IEnrollmentAdapter,
   IEnrollmentDirector,
 } from './enrollments';
+import {
+  QuotationsModule,
+  QuotationStatus as QuotationStatusType,
+  QuotationError as QuotationErrorType,
+  IQuotationAdapter,
+  IQuotationDirector,
+} from './quotations';
 import {
   FiltersModule,
   FilterType as FilterTypeType,
@@ -299,9 +307,10 @@ declare module 'meteor/unchained:core-enrollments' {
   ): Promise<EnrollmentsModule>;
 
   export const EnrollmentStatus: typeof EnrollmentStatusType;
-
+  
   export const EnrollmentAdapter: IEnrollmentAdapter;
   export const EnrollmentDirector: IEnrollmentDirector;
+  export const EnrollmentError: typeof EnrollmentErrorType;
 }
 
 declare module 'meteor/unchained:core-events' {
@@ -381,6 +390,18 @@ declare module 'meteor/unchained:core-products' {
 
   export const ProductTypes: typeof ProductType;
   export const ProductStatus: typeof ProductStatusType;
+}
+
+declare module 'meteor/unchained:core-quotations' {
+  export function configureQuotationsModule(
+    params: ModuleInput
+  ): Promise<QuotationsModule>;
+
+  export const QuotationStatus: typeof QuotationStatusType;
+
+  export const QuotationAdapter: IQuotationAdapter;
+  export const QuotationDirector: IQuotationDirector;
+  export const QuotationError: typeof QuotationErrorType;
 }
 
 declare module 'meteor/unchained:core-warehousing' {

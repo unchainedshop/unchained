@@ -1,12 +1,6 @@
 import { Locale } from 'locale';
 import { UpdateFilter } from 'mongodb';
-import { Context } from './api';
-import { Bookmark } from './bookmarks';
 import { Address, Contact, TimestampFields, _ID } from './common';
-import { Country } from './countries';
-import { File } from './files';
-import { Language } from './languages';
-import { PaymentCredentials } from './payments';
 
 export interface UserProfile {
   displayName?: string;
@@ -17,7 +11,7 @@ export interface UserProfile {
   customFields?: unknown;
 }
 
-interface UserLastLogin {
+export interface UserLastLogin {
   timestamp?: Date;
   locale?: string;
   countryContext?: string;
@@ -26,7 +20,7 @@ interface UserLastLogin {
   userAgent?: string;
 }
 
-interface Email {
+export interface Email {
   address: string;
   verified: boolean;
 }
@@ -69,9 +63,9 @@ export type UsersModule = {
   userExists: (query: { userId: string }) => Promise<boolean>;
 
   // Transformations
-  primaryEmail: (user: User) => Email
+  primaryEmail: (user: User) => Email;
   userLocale: (user: User, params?: { localeContext?: Locale }) => Locale;
-  
+
   // Mutations
   updateProfile: (
     _id: string,
@@ -101,35 +95,3 @@ export type UsersModule = {
     userId: string
   ) => Promise<User>;
 };
-
-type HelperType<P, T> = (user: User, params: P, context: Context) => T;
-
-export interface UserHelperTypes {
-  _id: HelperType<any, boolean>;
-  avatar: HelperType<{ localeContext: Locale }, Promise<File>>;
-  bookmarks: HelperType<any, Promise<Array<Bookmark>>>;
-  cart: HelperType<any, any>;
-  country: HelperType<{ localeContext: Locale }, Promise<Country>>;
-  email: HelperType<any, string>;
-  emails: HelperType<any, Array<string>>;
-  enrollments: HelperType<any, any>;
-  isEmailVerified: HelperType<any, boolean>;
-  isGuest: HelperType<any, boolean>;
-  isInitialPassword: HelperType<any, boolean>;
-  isTwoFactorEnabled: HelperType<any, boolean>;
-  language: HelperType<{ localeContext: Locale }, Promise<Language>>;
-  lastBillingAddress: HelperType<any, Address>;
-  lastContact: HelperType<any, Contact>;
-  lastLogin: HelperType<any, UserLastLogin>;
-  locale: HelperType<{ localeContext: Locale }, Locale>;
-  name: HelperType<any, string>;
-  orders: HelperType<any, any>;
-  paymentCredentials: HelperType<any, Promise<Array<PaymentCredentials>>>;
-  primaryEmail: HelperType<any, Email>;
-  profile: HelperType<any, UserProfile>;
-  quotations: HelperType<any, any>;
-  roles: HelperType<any, Array<string>>;
-  tags: HelperType<any, Array<string>>;
-  telNumber: HelperType<any, string>;
-  username: HelperType<any, string>;
-}

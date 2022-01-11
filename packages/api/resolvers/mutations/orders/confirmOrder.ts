@@ -1,13 +1,11 @@
+import { Context, Root } from '@unchainedshop/types/api';
 import { OrderStatus } from 'meteor/unchained:core-orders';
+import { log } from 'meteor/unchained:logger';
 import {
+  InvalidIdError,
   OrderNotFoundError,
   OrderWrongStatusError,
-  InvalidIdError,
 } from '../../../errors';
-import { Context, Root } from '@unchainedshop/types/api';
-import { log, LogLevel } from 'meteor/unchained:logger';
-import { OrderCheckoutError } from '../../../errors';
-import { getOrderCart } from './getOrderCart';
 
 export default async function confirmOrder(
   root: Root,
@@ -33,5 +31,5 @@ export default async function confirmOrder(
     throw new OrderWrongStatusError({ status: order.status });
   }
 
-  return await modules.orders.confirm(order, transactionContext, userId);
+  return await modules.orders.confirm(order, transactionContext, context);
 }

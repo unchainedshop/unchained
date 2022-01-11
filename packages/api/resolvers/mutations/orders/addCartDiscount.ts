@@ -1,12 +1,7 @@
-import { log } from 'meteor/unchained:logger';
-import { getOrderCart } from './getOrderCart';
 import { Context, Root } from '@unchainedshop/types/api';
-import {
-  ProductNotFoundError,
-  OrderQuantityTooLowError,
-  InvalidIdError,
-  UserNotFoundError,
-} from '../../../errors';
+import { log } from 'meteor/unchained:logger';
+import { UserNotFoundError } from '../../../errors';
+import { getOrderCart } from '../utils/getOrderCart';
 
 export default async function addCartDiscount(
   root: Root,

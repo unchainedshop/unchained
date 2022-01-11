@@ -52,9 +52,9 @@ import { EnrollmentDelivery } from './enrollment-delivery-types';
 import { EnrollmentPayment } from './enrollment-payment-types';
 import { EnrollmentPeriod } from './enrollment-period-types';
 import { EnrollmentPlan } from './enrollment-plan-tyes';
-import Filter from './filter-types';
-import FilterOption from './filter-option-types';
-import Quotation from './quotation';
+import { Filter } from './filter-types';
+import { FilterOption } from './filter-option-types';
+import Quotation from './quotation-types';
 
 const types = {
   Assortment,

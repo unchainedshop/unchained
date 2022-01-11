@@ -68,13 +68,13 @@ OrderPositions.helpers({
   //     );
   // },
 
-  reserve() {
-    if (this.quotationId)
-      this.quotation().fullfill({ info: { orderPositionId: this._id } });
-    log(`OrderPosition ${this._id} -> Reserve ${this.quantity}`, {
-      orderId: this.orderId,
-    });
-  },
+  // reserve() {
+  //   if (this.quotationId)
+  //     this.quotation().fullfill({ info: { orderPositionId: this._id } });
+  //   log(`OrderPosition ${this._id} -> Reserve ${this.quantity}`, {
+  //     orderId: this.orderId,
+  //   });
+  // },
 
   // Type
   // dispatches() {

@@ -1,6 +1,6 @@
 import { log } from 'meteor/unchained:logger';
 import { Context, Root } from '@unchainedshop/types/api';
-import { getOrderCart } from './getOrderCart';
+import { getOrderCart } from '../utils/getOrderCart';
 
 export default async function emptyCart(
   root: Root,
@@ -14,7 +14,10 @@ export default async function emptyCart(
   const cart = await getOrderCart({ orderId }, context);
   if (!cart) return null;
 
-  await modules.orders.positions.removePositions({ orderId: cart._id }, userId);
+  await modules.orders.positions.removePositions(
+    { orderId: cart._id },
+    context
+  );
 
   return cart;
 }

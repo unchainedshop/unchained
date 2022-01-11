@@ -1,29 +1,35 @@
 import { log } from 'meteor/unchained:logger';
-import { Products } from 'meteor/unchained:core-products';
-import { Quotations } from 'meteor/unchained:core-quotations';
+import { Context, Root } from '@unchainedshop/types/api';
 import { ProductNotFoundError, InvalidIdError } from '../../../errors';
+import { Configuration } from '@unchainedshop/types/common';
 
 export default async function requestQuotation(
   root: Root,
-  { productId, configuration },
-  { userId, countryContext, localeContext }
+  params: { productId: string; configuration: Configuration },
+  context: Context
 ) {
+  const { countryContext, modules, userId } = context;
+  const { productId, configuration } = params;
+
   log(
     `mutation requestQuotation ${productId} ${
       configuration ? JSON.stringify(configuration) : ''
     }`,
     { userId }
   );
+
   if (!productId) throw new InvalidIdError({ productId });
-  if (!Products.productExists({ productId }))
+
+  if (!(await modules.products.productExists({ productId })))
     throw new ProductNotFoundError({ productId });
-  return Quotations.requestQuotation(
+
+  return await modules.quotations.create(
     {
       userId,
       productId,
       countryCode: countryContext,
       configuration,
     },
-    { localeContext }
+    context
   );
 }

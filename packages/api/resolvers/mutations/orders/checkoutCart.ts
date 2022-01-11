@@ -1,7 +1,7 @@
 import { Context, Root } from '@unchainedshop/types/api';
 import { log, LogLevel } from 'meteor/unchained:logger';
 import { OrderCheckoutError } from '../../../errors';
-import { getOrderCart } from './getOrderCart';
+import { getOrderCart } from '../utils/getOrderCart';
 
 export default async function checkoutCart(
   root: Root,

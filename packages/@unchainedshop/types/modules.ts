@@ -12,6 +12,7 @@ import { LanguagesModule } from './languages';
 import { OrdersModule } from './orders';
 import { PaymentModule } from './payments';
 import { ProductsModule } from './products';
+import { QuotationsModule } from './quotations';
 import { UsersModule } from './user';
 import { WarehousingModule } from './warehousing';
 import { WorkerModule } from './worker';
@@ -32,7 +33,7 @@ export interface Modules {
   orders: OrdersModule;
   payment: PaymentModule;
   products: ProductsModule;
-  quotations: any;
+  quotations: QuotationsModule;
   users: UsersModule;
   warehousing: WarehousingModule;
   worker: WorkerModule;

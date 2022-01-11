@@ -6,27 +6,30 @@ Package.describe({
   documentation: 'README.md',
 });
 
+Npm.depends({
+  'simpl-schema': '1.12.0',
+});
+
 Package.onUse((api) => {
   api.versionsFrom('2.2');
   api.use('ecmascript');
-  api.use('mongo');
-  api.use('dburles:collection-helpers@1.1.0');
-  api.use('aldeed:collection2@3.2.1');
+  api.use('typescript');
 
   api.use('unchained:utils@1.0.0-beta15');
   api.use('unchained:logger@1.0.0-beta15');
+  api.use('unchained:events@1.0.0-beta15');
 
-  api.use('unchained:core-files-next@1.0.0-beta15');
-  api.use('unchained:core-users@1.0.0-beta15');
-  api.use('unchained:core-products@1.0.0-beta15');
-  api.use('unchained:core-countries@1.0.0-beta15');
-  api.use('unchained:core-worker@1.0.0-beta15');
-
-  api.mainModule('quotations.js', 'server');
+  api.mainModule('src/quotations-index.ts', 'server');
 });
 
 Package.onTest((api) => {
+  api.use('meteortesting:mocha');
   api.use('ecmascript');
+  api.use('typescript');
+
+  api.use('unchained:mongodb');
+  api.use('unchained:core-users');
   api.use('unchained:core-quotations');
-  api.mainModule('quotations-tests.js');
+
+  api.mainModule('tests/quotations-index.test.ts');
 });

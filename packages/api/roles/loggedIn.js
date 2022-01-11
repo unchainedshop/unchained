@@ -6,8 +6,7 @@ import {
   OrderDiscounts,
 } from 'meteor/unchained:core-orders';
 import { ProductReviews } from 'meteor/unchained:core-products';
-import { Quotations } from 'meteor/unchained:core-quotations';
-import { Enrollments } from 'meteor/unchained:core-enrollments';
+import { Context, Root } from '@unchainedshop/types/api'import { Enrollments } from 'meteor/unchained:core-enrollments';
 import { PaymentCredentials } from 'meteor/unchained:core-payment';
 import { Promise } from 'meteor/promise';
 
@@ -140,7 +139,7 @@ export default (role, actions) => {
   };
 
   const isOwnedQuotation = (root, { quotationId }, { userId }) => {
-    const quotation = Quotations.findQuotation(
+    const quotation = await modules.quotations.findQuotation(
       { quotationId },
       {
         fields: {

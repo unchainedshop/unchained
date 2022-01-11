@@ -42,7 +42,7 @@ import productReviews from './productReviews';
 import productReviewsCount from './productReviewsCount';
 import products from './products';
 import productsCount from './productsCount';
-import quotation from './quotation';
+import quotation from './quotations/quotation';
 import quotations from './quotations';
 import quotationsCount from './quotationsCount';
 import searchAssortments from './filters/searchAssortments';

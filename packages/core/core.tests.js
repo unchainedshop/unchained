@@ -1,5 +1,5 @@
 import { assert } from "chai"
-import { initCore } from "./core"
+import { initCore } from "./src/core-index"
 import { log, LogLevel } from 'unchained-core-logger';
 import { emit, registerEvents, EventDirector, EventAdapter } from 'unchained-core-events'
 

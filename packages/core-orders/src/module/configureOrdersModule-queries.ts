@@ -1,18 +1,29 @@
 import { Collection, FindOptions, Query } from '@unchainedshop/types/common';
-import { Order, OrderQueries, OrdersModule } from '@unchainedshop/types/orders';
+import { Order, OrderQueries, OrderQuery } from '@unchainedshop/types/orders';
 import { generateDbFilterById } from 'meteor/unchained:utils';
 
-type FindQuery = {
-  includeCarts?: boolean;
-  queryString?: string;
-};
-
-const buildFindSelector = ({ includeCarts, queryString }: FindQuery) => {
+const buildFindSelector = ({
+  includeCarts,
+  status,
+  userId,
+  queryString,
+}: OrderQuery) => {
   const selector: Query = {};
-  if (!includeCarts) selector.status = { $ne: null };
+
+  if (userId) {
+    selector.userId = userId;
+  }
+
+  if (status) {
+    selector.status = status;
+  } else if (!includeCarts) {
+    selector.status = { $ne: null }; // Status 'null' equals OrderStatus.OPEN
+  }
+
   if (queryString) {
     selector.$text = { $search: queryString };
   }
+
   return selector;
 };
 
