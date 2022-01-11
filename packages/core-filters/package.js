@@ -28,6 +28,7 @@ Package.onTest((api) => {
   api.use('typescript');
 
   api.use('unchained:mongodb');
+  api.use('unchained:core-products');
   api.use('unchained:core-filters');
 
   api.mainModule('tests/filters-index.test.ts');
