@@ -2,7 +2,7 @@ import { WorkerEventTypes } from '../director/WorkerEventTypes';
 import { WorkerDirector } from '../director/WorkerDirector';
 import { BaseWorker } from './BaseWorker';
 
-class EventListenerWorker extends BaseWorker {
+export class EventListenerWorker extends BaseWorker {
   static key = 'shop.unchained.worker.event-listener';
 
   static label =
@@ -45,5 +45,3 @@ class EventListenerWorker extends BaseWorker {
     WorkerDirector.offEmit(WorkerEventTypes.FINISHED, this.onFinished);
   }
 }
-
-export default EventListenerWorker;

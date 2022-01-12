@@ -41,6 +41,10 @@ interface WorkResult<Result> {
   error?: any;
 }
 
+export type WorkScheduleConfigureation = Omit<Work, 'input'> & {
+  input: () => any;
+  schedule: any; // TODO: figure out how this schedule looks like
+};
 export type IWorkerAdapter<Args, Result> = IBaseAdapter & {
   type: string;
 
@@ -52,18 +56,15 @@ export type IWorkerDirector = IBaseDirector<IWorkerAdapter<any, any>> & {
 
   configureAutoscheduling: (
     adapter: IWorkerAdapter<any, any>,
-    work: Work
+    workScheduleConfiguration: WorkScheduleConfigureation
   ) => void;
-  getAutoSchedules: () => Array<[string, Work]>;
+  getAutoSchedules: () => Array<[string, WorkScheduleConfigureation]>;
 
   emit: (eventName: string, payload: any) => void;
   onEmit: (eventName: string, payload: any) => void;
   offEmit: (eventName: string, payload: any) => void;
 
-  doWork: (
-    params: { type: string; input: any },
-    requestContext: Context
-  ) => Promise<WorkResult<any>>;
+  doWork: (work: Work, requestContext: Context) => Promise<WorkResult<any>>;
 };
 
 export type WorkerModule = {
@@ -93,9 +94,12 @@ export type WorkerModule = {
   // Mutations
   addWork: (data: WorkData, userId: string) => Promise<Work>;
 
-  allocateWork: (doc: { types: Array<Work>; worker: string }) => Promise<Work>;
+  allocateWork: (doc: {
+    types: Array<string>;
+    worker: string;
+  }) => Promise<Work>;
 
-  doWork: (work: Work) => Promise<WorkResult<any>>;
+  doWork: (work: Work, requestContext: Context) => Promise<WorkResult<any>>;
 
   ensureOneWork: (work: Work) => Promise<Work>;
 

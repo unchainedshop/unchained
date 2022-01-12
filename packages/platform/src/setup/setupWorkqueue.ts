@@ -1,8 +1,10 @@
-import { WorkerDirector } from 'meteor/unchained:core-worker';
-
-import EventListenerWorker from 'meteor/unchained:core-worker/workers/eventListener';
-import IntervalWorker from 'meteor/unchained:core-worker/workers/interval';
-import FailedRescheduler from 'meteor/unchained:core-worker/schedulers/failedRescheduler';
+import { Context } from '@unchainedshop/types/api';
+import {
+  WorkerDirector,
+  EventListenerWorker,
+  IntervalWorker,
+  FailedRescheduler,
+} from 'meteor/unchained:core-worker';
 
 export const workerTypeDefs = () => [
   /* GraphQL */ `
@@ -12,19 +14,26 @@ export const workerTypeDefs = () => [
   `,
 ];
 
-export const setupWorkqueue = (modules, { workerId, batchCount, schedule }) => {
+export const setupWorkqueue = (
+  { workerId, batchCount, schedule },
+  unchainedAPI: Context
+) => {
   const handlers = [
-    new FailedRescheduler({ modules, workerId }),
-    new EventListenerWorker({
-      modules,
-      workerId,
-    }),
-    new IntervalWorker({
-      modules,
-      workerId,
-      batchCount,
-      schedule,
-    }),
+    new FailedRescheduler({ workerId }, unchainedAPI),
+    new EventListenerWorker(
+      {
+        workerId,
+      },
+      unchainedAPI
+    ),
+    new IntervalWorker(
+      {
+        workerId,
+        batchCount,
+        schedule,
+      },
+      unchainedAPI
+    ),
   ];
 
   handlers.forEach((handler) => handler.start());

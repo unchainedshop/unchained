@@ -5,7 +5,7 @@ import { dbIdToString } from 'meteor/unchained:utils';
 import { WorkerDirector } from '../director/WorkerDirector';
 import { WorkerEventTypes } from '../director/WorkerEventTypes';
 
-class FailedRescheduler {
+export class FailedRescheduler {
   static key = 'shop.unchained.scheduler.failed';
 
   static label = 'Reschedule failed works';
@@ -13,6 +13,7 @@ class FailedRescheduler {
   static version = '1.0';
 
   private modules: Modules;
+  
   constructor({ modules }) {
     this.modules = modules;
   }
@@ -65,5 +66,3 @@ class FailedRescheduler {
     );
   }
 }
-
-export default FailedRescheduler;

@@ -198,7 +198,7 @@ export const configureWorkerModule = async ({
       { type, input, priority = 0, scheduled, originalWorkId, retries = 20 },
       userId
     ) => {
-      if (!WorkerDirector.getPlugin(type)) {
+      if (!WorkerDirector.getAdapter(type)) {
         throw new Error(`No plugin registered for type ${type}`);
       }
 
@@ -311,8 +311,8 @@ export const configureWorkerModule = async ({
       }
     },
 
-    doWork: (work) => {
-      return WorkerDirector.doWork(work);
+    doWork: (work, requestContext) => {
+      return WorkerDirector.doWork(work, requestContext);
     },
 
     finishWork,

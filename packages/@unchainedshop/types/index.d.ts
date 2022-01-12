@@ -10,6 +10,7 @@ import {
   Db,
   Document,
   Filter,
+  FindOptions,
   IBaseAdapter,
   IBaseDirector,
   Indexes,
@@ -36,7 +37,6 @@ import {
 } from './delivery.pricing';
 import { IDiscountAdapter, IDiscountDirector } from './discount';
 import {
-  EnrollmentError as EnrollmentErrorType,
   EnrollmentsModule,
   EnrollmentStatus as EnrollmentStatusType,
   IEnrollmentAdapter,
@@ -327,7 +327,6 @@ declare module 'meteor/unchained:core-enrollments' {
 
   export const EnrollmentAdapter: IEnrollmentAdapter;
   export const EnrollmentDirector: IEnrollmentDirector;
-  export const EnrollmentError: typeof EnrollmentErrorType;
 }
 
 declare module 'meteor/unchained:core-events' {
@@ -440,6 +439,10 @@ declare module 'meteor/unchained:core-worker' {
 
   export const WorkerDirector: IWorkerDirector;
   export const WorkerAdapter: IWorkerAdapter<any, any>;
+
+  export const EventListenerWorker: any;
+  export const IntervalWorker: any;
+  export const FailedRescheduler: any;
 }
 
 declare module 'meteor/unchained:core-users' {

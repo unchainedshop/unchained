@@ -2,9 +2,9 @@ import { startAPIServer } from 'meteor/unchained:api';
 import { initCore } from 'meteor/unchained:core';
 import { initDb } from 'meteor/unchained:mongodb';
 // import { setupTemplates, MessageTypes } from '../setup-templates';
-import { setupWorkqueue, workerTypeDefs } from '../setup-workqueue';
-import { setupCarts } from '../setup/setupCarts';
-import { BulkImportPayloads } from './bulk-importer';
+import { setupWorkqueue, workerTypeDefs } from './setup/setupWorkqueue';
+import { setupCarts } from './setup/setupCarts';
+import { BulkImportPayloads } from './bulk-importer/createBulkImporter';
 import { generateEventTypeDefs } from './generateRegisteredEvents';
 import { interceptEmails } from './interceptEmails';
 import { migrationRepository } from './migrations/migrationRepository';
@@ -68,7 +68,7 @@ export const startPlatform = async ({ modules, typeDefs, ...options } = {}) => {
   if (emailInterceptionIsEnabled) interceptEmails(options);
 
   if (workQueueIsEnabled) {
-    const handlers = setupWorkqueue(modules, options);
+    const handlers = setupWorkqueue(options, unchainedAPI);
     handlers.forEach((handler) => queueWorkers.push(handler));
     await setupCarts(options, unchainedAPI);
   }

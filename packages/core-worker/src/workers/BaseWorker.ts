@@ -1,3 +1,4 @@
+import { Context } from '@unchainedshop/types/api';
 import { Modules } from '@unchainedshop/types/modules';
 import { Work } from '@unchainedshop/types/worker';
 import later from 'later';
@@ -21,10 +22,10 @@ export class BaseWorker {
   static type = 'BASE';
 
   protected workerId: string;
-  protected modules: Modules;
+  protected requestContext: Context;
 
-  constructor({ modules, workerId }) {
-    this.modules = modules;
+  constructor({ workerId }, requestContext: Context) {
+    this.requestContext = requestContext;
     /* @ts-ignore */
     this.workerId = resolveWorkerId(workerId, this.constructor.type);
     /* @ts-ignore */
@@ -49,7 +50,7 @@ export class BaseWorker {
   }
 
   async reset(referenceDate = new Date()) {
-    await this.modules.worker.markOldWorkAsFailed({
+    await this.requestContext.modules.worker.markOldWorkAsFailed({
       types: this.getInternalTypes(),
       worker: this.workerId,
       referenceDate,
@@ -64,7 +65,7 @@ export class BaseWorker {
         fixedSchedule.schedules[0].s = [0]; // ignore seconds, always run on second 0
         const nextDate = later.schedule(fixedSchedule).next(1, referenceDate);
         nextDate.setMilliseconds(0);
-        await this.modules.worker.ensureOneWork({
+        await this.requestContext.modules.worker.ensureOneWork({
           type,
           input: input(),
           scheduled: nextDate,
@@ -84,7 +85,7 @@ export class BaseWorker {
       if (params.maxWorkItemCount && params.maxWorkItemCount < recursionCounter)
         return null;
 
-      const work = await this.modules.worker.allocateWork({
+      const work = await this.requestContext.modules.worker.allocateWork({
         types: this.getInternalTypes(),
         worker: this.workerId,
       });
@@ -92,9 +93,12 @@ export class BaseWorker {
       let doneWork: Work | null = null;
 
       if (work) {
-        const output = await this.modules.worker.doWork(work);
+        const output = await this.requestContext.modules.worker.doWork(
+          work,
+          this.requestContext
+        );
 
-        doneWork = await this.modules.worker.finishWork(
+        doneWork = await this.requestContext.modules.worker.finishWork(
           dbIdToString(work._id),
           {
             ...output,

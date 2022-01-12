@@ -2,6 +2,7 @@ import {
   IWorkerDirector,
   IWorkerAdapter,
   Work,
+  WorkScheduleConfigureation,
 } from '@unchainedshop/types/worker';
 import { EventEmitter } from 'events';
 import { BaseDirector } from 'meteor/unchained:utils';
@@ -11,7 +12,7 @@ import { Context } from '@unchainedshop/types/api';
 
 export const DIRECTOR_MARKED_FAILED_ERROR = 'DIRECTOR_MARKED_FAILED';
 
-const AutoScheduleMap = new Map<string, Work>();
+const AutoScheduleMap = new Map<string, WorkScheduleConfigureation>();
 const Events = new EventEmitter();
 
 const baseDirector = BaseDirector<IWorkerAdapter<any, any>>('WorkerDirector', {
@@ -35,10 +36,10 @@ export const WorkerDirector: IWorkerDirector = {
   },
 
   configureAutoscheduling: (adapter, workQueue) => {
-    const { scheduled } = workQueue;
+    const { schedule } = workQueue;
     AutoScheduleMap.set(adapter.type, workQueue);
     log(
-      `WorkderDirector -> Configured ${adapter.type} ${adapter.key}@${adapter.version} (${adapter.label}) for Autorun at ${scheduled}`
+      `WorkderDirector -> Configured ${adapter.type} ${adapter.key}@${adapter.version} (${adapter.label}) for Autorun at ${schedule}`
     );
   },
   getAutoSchedules: () => Array.from(AutoScheduleMap),
@@ -53,18 +54,20 @@ export const WorkerDirector: IWorkerDirector = {
     if (!adapter)
       log(`WorkderDirector: No registered adapter for type: ${type}`);
 
-    const output = await adapter.doWork(input, requestContext).catch((error) => {
-      // DO not use this as flow control. The adapter should catch expected errors and return status: FAILED
-      log('DO not use this as flow control.', { level: LogLevel.Verbose });
+    const output = await adapter
+      .doWork(input, requestContext)
+      .catch((error) => {
+        // DO not use this as flow control. The adapter should catch expected errors and return status: FAILED
+        log('DO not use this as flow control.', { level: LogLevel.Verbose });
 
-      log(`WorkderDirector -> Error doing work ${type}: ${error.message}`);
+        log(`WorkderDirector -> Error doing work ${type}: ${error.message}`);
 
-      const output = { error, success: false };
+        const output = { error, success: false };
 
-      Events.emit(WorkerEventTypes.DONE, { output });
+        Events.emit(WorkerEventTypes.DONE, { output });
 
-      return output;
-    });
+        return output;
+      });
 
     Events.emit(WorkerEventTypes.DONE, { output });
 

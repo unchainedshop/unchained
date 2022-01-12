@@ -1,3 +1,4 @@
+import { Context } from '@unchainedshop/types/api';
 import { Modules } from '@unchainedshop/types/modules';
 import later from 'later';
 import { BaseWorker } from './BaseWorker';
@@ -19,7 +20,7 @@ export const scheduleToInterval = (scheduleRaw: Date | string) => {
   return Math.min(1000 * 60 * 60, diff); // at least once every hour!
 };
 
-class IntervalWorker extends BaseWorker {
+export class IntervalWorker extends BaseWorker {
   static key = 'shop.unchained.worker.cron';
 
   static label =
@@ -33,18 +34,21 @@ class IntervalWorker extends BaseWorker {
   private intervalDelay: number;
   private intervalHandle: NodeJS.Timer;
 
-  constructor({
-    modules,
-    workerId,
-    batchCount = 0,
-    schedule = defaultSchedule,
-  }: {
-    modules: Modules;
-    workerId: string;
-    batchCount?: number;
-    schedule?: Date | string;
-  }) {
-    super({ modules, workerId });
+  constructor(
+    {
+      modules,
+      workerId,
+      batchCount = 0,
+      schedule = defaultSchedule,
+    }: {
+      modules: Modules;
+      workerId: string;
+      batchCount?: number;
+      schedule?: Date | string;
+    },
+    requestContext: Context
+  ) {
+    super({ workerId }, requestContext);
     this.batchCount = batchCount;
     this.intervalDelay = scheduleToInterval(schedule);
   }
@@ -63,5 +67,3 @@ class IntervalWorker extends BaseWorker {
     clearInterval(this.intervalHandle);
   }
 }
-
-export default IntervalWorker;
