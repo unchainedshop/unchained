@@ -58,7 +58,7 @@ export const createContextResolver =
 
 let context;
 
-const startUnchainedServer = (options: UnchainedServerOptions) => {
+export const startAPIServer = (options: UnchainedServerOptions) => {
   const {
     unchainedAPI,
     rolesOptions,
@@ -101,5 +101,3 @@ export const useMiddlewareWithCurrentContext = (path, middleware) => {
     return middleware(req, res, ...rest);
   });
 };
-
-export default startUnchainedServer;

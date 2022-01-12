@@ -49,8 +49,8 @@ export type FilesModule = ModuleMutations<File> & {
   uploadFileFromURL: (
     directoryName: string,
     file: { fileLink: string; fileName: string },
-    meta: any,
-    userId: string
+    meta?: any,
+    userId?: string
   ) => Promise<File | null>;
 };
 

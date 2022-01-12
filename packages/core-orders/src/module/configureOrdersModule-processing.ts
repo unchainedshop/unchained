@@ -25,12 +25,14 @@ export const configureOrderModuleProcessing = ({
   OrderPositions,
   OrderDeliveries,
   OrderPayments,
+  updateCalculation,
   updateStatus,
 }: {
   Orders: Collection<Order>;
   OrderPositions: Collection<OrderPosition>;
   OrderDeliveries: Collection<OrderDelivery>;
   OrderPayments: Collection<OrderPayment>;
+  updateCalculation: OrdersModule['updateCalculation'];
   updateStatus: OrdersModule['updateStatus'];
 }): OrderProcessing => {
   registerEvents(ORDER_PROCESSING_EVENTS);
@@ -238,8 +240,8 @@ export const configureOrderModuleProcessing = ({
         requestContext
       );
       updatedOrder = await modules.orders.ensureCartForUser(
-        order,
         {
+          order: updatedOrder,
           user,
           countryContext: locale.country,
         },
@@ -288,13 +290,18 @@ export const configureOrderModuleProcessing = ({
       return updatedOrder;
     },
 
-    ensureCartForUser: async (order, params, { modules, services, userId }) => {
-      if (!ordersSettings.ensureUserHasCart) return order;
+    ensureCartForUser: async (params, requestContext) => {
+      const { modules, services, userId } = requestContext;
+
+      if (!ordersSettings.ensureUserHasCart) return params.order;
 
       const user =
-        params.user || (await modules.users.findUser({ userId: order.userId }));
+        params.user ||
+        (params.order &&
+          (await modules.users.findUser({ userId: params.order._id })));
 
       if (!user) throw new Error('User with the id not found');
+
       const countryCode =
         params.countryContext || user.lastLogin.countryContext;
 
@@ -305,9 +312,12 @@ export const configureOrderModuleProcessing = ({
       if (cart) return cart;
 
       const currency =
-        await await services.countries.resolveDefaultCurrencyCode({
-          isoCode: params.countryContext,
-        });
+        await services.countries.resolveDefaultCurrencyCodeService(
+          {
+            isoCode: params.countryContext,
+          },
+          requestContext
+        );
 
       return await modules.orders.create(
         {
@@ -326,6 +336,37 @@ export const configureOrderModuleProcessing = ({
         },
         userId
       );
+    },
+
+    migrateCart: async (
+      { fromCart, shouldMergeCarts, toCart },
+      requestContext
+    ) => {
+      const fromCartId = dbIdToString(fromCart._id);
+      const toCartId = dbIdToString(toCart._id);
+
+      if (!toCart || !shouldMergeCarts) {
+        // No destination cart, move whole cart
+        await Orders.updateOne(generateDbFilterById(fromCart._id), {
+          $set: {
+            userId: dbIdToString(toCart.userId),
+          },
+        });
+        return await updateCalculation(fromCartId, requestContext);
+      }
+
+      // Move positions
+      await OrderPositions.updateMany(
+        { orderId: fromCartId },
+        {
+          $set: {
+            orderId: toCartId,
+          },
+        }
+      );
+
+      await updateCalculation(fromCartId, requestContext);
+      return await updateCalculation(toCartId, requestContext);
     },
 
     processOrder: async (order, params, requestContext) => {

@@ -1,18 +1,10 @@
-import { Context } from '@unchainedshop/types/api';
-import { PaymentContext } from '@unchainedshop/types/payments';
-
-export type ChargeService = (
-  params: {
-    paymentContext: PaymentContext;
-    paymentProviderId: string;
-  },
-  context: Context
-) => Promise<any>;
+import { ChargeService } from '@unchainedshop/types/payments';
 
 export const chargeService: ChargeService = async (
   { paymentContext, paymentProviderId },
-  { modules, userId }
+  requestContext
 ) => {
+  const { modules, userId } = requestContext;
   const normalizedContext = {
     ...paymentContext,
     userId,
@@ -32,6 +24,7 @@ export const chargeService: ChargeService = async (
   const result = await modules.payment.paymentProviders.charge(
     paymentProviderId,
     normalizedContext,
+    requestContext
   );
 
   if (!result) return false;

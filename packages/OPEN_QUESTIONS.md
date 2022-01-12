@@ -119,3 +119,5 @@ What happens if the first one passes and the second not?
 14. Quotations --> helpers: documents still required (after deletion of core-documents)?
 
 15. In roles/loggedIn there is a check for the ProductReviews userId but there is no userId on the ProductsReview schema. What is the right check here? (AuthorId or add a userId)?
+
+16. Platform: setup-accounts file: The users collection is attached to the accountsServer instance like this `accountsServer.users = Users` What is it used for and where?

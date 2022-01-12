@@ -1,4 +1,5 @@
 import { Locale } from 'locale';
+import { Context } from './api';
 import {
   Address,
   Contact,
@@ -7,6 +8,9 @@ import {
   Update,
   FindOptions,
 } from './common';
+import { Country } from './countries';
+import { File } from './files';
+import { Language } from './languages';
 
 export interface UserProfile {
   displayName?: string;
@@ -52,6 +56,10 @@ type UserQuery = {
   queryString?: string;
 };
 
+/*
+ * Module
+ */
+
 export type UsersModule = {
   // Queries
   count: (query: UserQuery) => Promise<number>;
@@ -76,14 +84,15 @@ export type UsersModule = {
   userLocale: (user: User, params?: { localeContext?: Locale }) => Locale;
 
   // Mutations
-  addRoles: (userId: string, roles: Array<string>) => Promise<number>
-  
-  updateProfile: (
-    _id: string,
-    doc: Update<UserProfile>,
-    userId: string
-  ) => Promise<User>;
+  addRoles: (userId: string, roles: Array<string>) => Promise<number>;
+
   updateAvatar: (_id: string, fileId: string, userId: string) => Promise<User>;
+  updateGuest: (user: User, guest: boolean) => Promise<void>;
+  updateHeartbeat: (userId: string, doc: UserLastLogin) => Promise<User>;
+  updateInitialPassword: (
+    user: User,
+    initialPassword: boolean
+  ) => Promise<void>;
   updateLastBillingAddress: (
     _id: string,
     doc: Address,
@@ -94,7 +103,11 @@ export type UsersModule = {
     doc: Contact,
     userId: string
   ) => Promise<User>;
-  updateHeartbeat: (userId: string, doc: UserLastLogin) => Promise<User>;
+  updateProfile: (
+    _id: string,
+    doc: Update<UserProfile>,
+    userId: string
+  ) => Promise<User>;
   updateRoles: (
     _id: string,
     roles: Array<string>,
@@ -106,3 +119,30 @@ export type UsersModule = {
     userId: string
   ) => Promise<User>;
 };
+
+/*
+ * Services
+ */
+
+export type UpdateUserAvatarAfterUploadService = (
+  params: { file: File; userId: string },
+  context: Context
+) => Promise<void>;
+
+export type GetUserLanguageService = (
+  user: User,
+  params: { localeContext?: Locale },
+  context: Context
+) => Promise<Language>;
+
+export type GetUserCountryService = (
+  user: User,
+  params: { localeContext?: Locale },
+  context: Context
+) => Promise<Country>;
+
+export interface UserServices {
+  getUserCountry: GetUserCountryService;
+  getUserLanguage: GetUserLanguageService;
+  updateUserAvatarAfterUpload: UpdateUserAvatarAfterUploadService;
+}

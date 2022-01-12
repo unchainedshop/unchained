@@ -1,17 +1,6 @@
-import {
-  registerPaymentCredentialsService,
-  RegisterPaymentCredentialsService,
-} from './registerPaymentCredentialsService';
-
-import {
-  chargeService,
-  ChargeService,
-} from './chargeService';
-
-export interface PaymentServices {
-  chargeService: ChargeService;
-  registerPaymentCredentialsService: RegisterPaymentCredentialsService;
-}
+import { PaymentServices } from '@unchainedshop/types/payments';
+import { chargeService } from './chargeService';
+import { registerPaymentCredentialsService } from './registerPaymentCredentialsService';
 
 export const paymentServices: PaymentServices = {
   chargeService,

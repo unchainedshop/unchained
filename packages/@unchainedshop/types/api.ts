@@ -1,5 +1,6 @@
 import { Locale } from 'locale';
 import { Modules } from './modules';
+import { Services } from './services';
 import { User } from './user';
 
 export declare type Root = Record<string, unknown>;
@@ -12,7 +13,7 @@ export interface UnchainedUserContext {
 
 export interface UnchainedAPI {
   modules: Modules;
-  services: any;
+  services: Services;
   version?: string;
 }
 

@@ -8,8 +8,9 @@ export interface AccountsOptions {
 
 export interface UserData {
   email?: string;
+  guest?: boolean
   initialPassword?: boolean
-  password: string;
+  password: string | null;
   plainPassword?: string;
   profile?: UserProfile;
   username?: string;
@@ -21,7 +22,6 @@ export interface AccountsModule {
   // Mutations
   createUser: (
     userData: UserData,
-    context: any,
     options: { skipMessaging?: boolean }
   ) => Promise<string>;
 

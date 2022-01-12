@@ -1,10 +1,10 @@
-import { Locale, Locales } from 'locale';
-import { ObjectId } from './common';
+import { ApolloServer } from 'apollo-server-express';
 import { Request } from 'express';
-import SimpleSchema from 'simpl-schema';
+import { Locale, Locales } from 'locale';
+import SimpleSchema, { SimpleSchemaDefinition } from 'simpl-schema';
+import { AccountsModule } from './accounts';
 import { AssortmentsModule } from './assortments';
 import { BookmarksModule } from './bookmarks';
-import { OrdersModule, OrderStatus as OrderStatusType } from './orders';
 import {
   Collection,
   Db,
@@ -16,6 +16,7 @@ import {
   ModuleCreateMutation,
   ModuleInput,
   ModuleMutations,
+  ObjectId,
   Query,
   TimestampFields,
   _ID,
@@ -23,18 +24,32 @@ import {
 import { CountriesModule, Country } from './countries';
 import { CurrenciesModule } from './currencies';
 import {
+  DeliveryError as DeliveryErrorType,
   DeliveryModule,
+  DeliveryProviderType as DeliveryProviderTypeType,
   IDeliveryAdapter,
   IDeliveryDirector,
-  DeliveryProviderType as DeliveryProviderTypeType,
-  DeliveryError as DeliveryErrorType,
 } from './delivery';
 import {
   IDeliveryPricingAdapter,
   IDeliveryPricingDirector,
 } from './delivery.pricing';
+import { IDiscountAdapter, IDiscountDirector } from './discount';
+import {
+  EnrollmentError as EnrollmentErrorType,
+  EnrollmentsModule,
+  EnrollmentStatus as EnrollmentStatusType,
+  IEnrollmentAdapter,
+  IEnrollmentDirector,
+} from './enrollments';
 import { EventDirector, EventsModule } from './events';
 import { FileDirector, FilesModule } from './files';
+import {
+  FiltersModule,
+  FilterType as FilterTypeType,
+  IFilterAdapter,
+  IFilterDirector,
+} from './filters';
 import { LanguagesModule } from './languages';
 import {
   Logger,
@@ -42,14 +57,14 @@ import {
   LogOptions,
   Transports,
 } from './logs';
-import { IDiscountAdapter, IDiscountDirector } from './discount';
+import { OrdersModule, OrderStatus as OrderStatusType } from './orders';
+import { OrderDeliveryStatus as OrderDeliveryStatusType } from './orders.deliveries';
+import { OrderPaymentStatus as OrderPaymentStatusType } from './orders.payments';
 import {
   IOrderPricingAdapter,
   IOrderPricingDirector,
   IOrderPricingSheet,
 } from './orders.pricing';
-import { OrderDeliveryStatus as OrderDeliveryStatusType } from './orders.deliveries';
-import { OrderPaymentStatus as OrderPaymentStatusType } from './orders.payments';
 import {
   IPaymentAdapter,
   IPaymentDirector,
@@ -73,8 +88,8 @@ import {
 } from './pricing';
 import {
   ProductsModule,
-  ProductType,
   ProductStatus as ProductStatusType,
+  ProductType,
 } from './products';
 import {
   IProductPricingAdapter,
@@ -82,6 +97,13 @@ import {
   IProductPricingSheet,
   ProductPricingCalculation,
 } from './products.pricing';
+import {
+  IQuotationAdapter,
+  IQuotationDirector,
+  QuotationError as QuotationErrorType,
+  QuotationsModule,
+  QuotationStatus as QuotationStatusType,
+} from './quotations';
 import { UsersModule } from './user';
 import {
   IWarehousingAdapter,
@@ -90,27 +112,7 @@ import {
   WarehousingModule,
   WarehousingProviderType as WarehousingProviderTypeType,
 } from './warehousing';
-import { WorkerModule, IWorkerDirector, IWorkerAdapter } from './worker';
-import {
-  EnrollmentsModule,
-  EnrollmentStatus as EnrollmentStatusType,
-  EnrollmentError as EnrollmentErrorType,
-  IEnrollmentAdapter,
-  IEnrollmentDirector,
-} from './enrollments';
-import {
-  QuotationsModule,
-  QuotationStatus as QuotationStatusType,
-  QuotationError as QuotationErrorType,
-  IQuotationAdapter,
-  IQuotationDirector,
-} from './quotations';
-import {
-  FiltersModule,
-  FilterType as FilterTypeType,
-  IFilterAdapter,
-  IFilterDirector,
-} from './filters';
+import { IWorkerAdapter, IWorkerDirector, WorkerModule } from './worker';
 
 declare module 'meteor/unchained:utils' {
   function checkId(
@@ -182,6 +184,9 @@ declare module 'meteor/unchained:utils' {
 
   const Schemas: {
     timestampFields: TimestampFields;
+    User: SimpleSchema;
+    Address: SimpleSchema;
+    Contact: SimpleSchema;
   };
 
   // Director
@@ -262,6 +267,17 @@ declare module 'meteor/unchained:director-file-upload' {
  * Core packages
  */
 
+declare module 'meteor/unchained:core-accountsjs' {
+  function configureAccountsModule(
+    params: ModuleInput
+  ): Promise<AccountsModule>;
+
+  const accountsServer: any;
+  const accountsPassword: any;
+
+  function randomValueHex(len: number): string;
+}
+
 declare module 'meteor/unchained:core-assortments' {
   export function configureAssortmentsModule(
     params: ModuleInput
@@ -308,7 +324,7 @@ declare module 'meteor/unchained:core-enrollments' {
   ): Promise<EnrollmentsModule>;
 
   export const EnrollmentStatus: typeof EnrollmentStatusType;
-  
+
   export const EnrollmentAdapter: IEnrollmentAdapter;
   export const EnrollmentDirector: IEnrollmentDirector;
   export const EnrollmentError: typeof EnrollmentErrorType;
@@ -430,6 +446,13 @@ declare module 'meteor/unchained:core-users' {
   export function configureUsersModule(
     params: ModuleInput
   ): Promise<UsersModule>;
+}
+
+declare module 'meteor/unchained:api' {
+  export function startAPIServer(options: UnchainedServerOptions): {
+    apolloGraphQLServer: ApolloServer;
+    bulkImportServer: any;
+  };
 }
 
 declare module 'meteor/unchained:mongodb' {

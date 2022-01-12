@@ -161,6 +161,14 @@ export const configureAssortmentProductsModule = ({
       return assortmentProducts;
     },
 
+    // This action is specifically used for the bulk migration scripts in the platform package
+    update: async (assortmentProductId, doc) => {
+      const selector = generateDbFilterById(assortmentProductId);
+      const modifier = { $set: doc };
+      await AssortmentProducts.updateOne(selector, modifier);
+      return await AssortmentProducts.findOne(selector);
+    },
+
     updateManualOrder: async ({ sortKeys }, userId) => {
       const changedAssortmentProductIds = await Promise.all(
         sortKeys.map(async ({ assortmentProductId, sortKey }) => {

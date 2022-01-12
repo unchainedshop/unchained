@@ -1,17 +1,16 @@
 import {
-  AssortmentText,
-  AssortmentsModule,
   Assortment,
+  AssortmentsModule,
+  AssortmentText,
 } from '@unchainedshop/types/assortments';
-import { Collection, Filter } from '@unchainedshop/types/common';
+import { Collection } from '@unchainedshop/types/common';
 import { Locale } from 'locale';
 import { emit, registerEvents } from 'meteor/unchained:events';
 import {
+  findLocalizedText,
   findUnusedSlug,
   generateDbFilterById,
   generateId,
-  dbIdToString,
-  findLocalizedText,
 } from 'meteor/unchained:utils';
 
 const ASSORTMENT_TEXT_EVENTS = ['ASSORTMENT_UPDATE_TEXTS'];

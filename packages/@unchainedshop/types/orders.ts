@@ -7,11 +7,10 @@ import {
   TimestampFields,
   _ID,
 } from './common';
-import { Enrollment } from './enrollments';
 import { OrderDeliveriesModule } from './orders.deliveries';
 import { OrderDiscount, OrderDiscountsModule } from './orders.discounts';
 import { OrderPaymentsModule } from './orders.payments';
-import { OrderPosition, OrderPositionsModule } from './orders.positions';
+import { OrderPositionsModule } from './orders.positions';
 import {
   IOrderPricingSheet,
   OrderPrice,
@@ -54,6 +53,10 @@ export type Order = {
   userId: string;
 } & LogFields &
   TimestampFields;
+
+/*
+ * Module
+ */
 
 export type OrderQuery = {
   includeCarts?: boolean;
@@ -115,7 +118,18 @@ export interface OrderTransformations {
 export interface OrderProcessing {
   checkout: OrderContextParams<OrderTransactionContext>;
   confirm: OrderContextParams<OrderTransactionContext>;
-  ensureCartForUser: OrderContextParams<{ user: User; countryContext: string }>;
+  ensureCartForUser: (
+    params: { order?: Order; user: User; countryContext?: string },
+    requestContext: Context
+  ) => Promise<Order>;
+  migrateCart: (
+    params: {
+      fromCart: Order;
+      shouldMergeCarts: boolean;
+      toCart: Order;
+    },
+    requestContext: Context
+  ) => Promise<Order>;
   processOrder: OrderContextParams<OrderTransactionContext>;
   sendOrderConfirmationToCustomer: OrderContextParams<{ locale: string }>;
 }
@@ -134,6 +148,9 @@ export interface OrderMutations {
   ) => Promise<Order>;
 
   delete: (orderId: string, userId?: string) => Promise<number>;
+
+  initProviders: (order: Order, requestContext: Context) => Promise<Order>;
+  invalidateProviders: (requestContext: Context) => Promise<void>;
 
   setDeliveryProvider: (
     orderId: string,
@@ -183,3 +200,21 @@ export type OrdersModule = OrderQueries &
     positions: OrderPositionsModule;
     payments: OrderPaymentsModule;
   };
+
+/*
+ * Services
+ */
+
+export type MigrateOrderCartsService = (
+  params: {
+    countryContext?: string;
+    fromUserId: string;
+    shouldMergeCarts: boolean;
+    toUser: User;
+  },
+  requestContext: Context
+) => Promise<Order>;
+
+export interface OrderServices {
+  migrateOrderCarts: MigrateOrderCartsService;
+}

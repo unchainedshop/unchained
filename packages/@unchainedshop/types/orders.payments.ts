@@ -31,7 +31,7 @@ export type OrderPaymentsModule = {
     params: {
       orderPaymentId: string;
     },
-    options: FindOptions
+    options?: FindOptions
   ) => Promise<OrderPayment>;
 
   // Transformations

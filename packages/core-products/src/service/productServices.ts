@@ -1,11 +1,5 @@
-import {
-  removeProductService,
-  RemoveProductService,
-} from './removeProductService';
-
-export interface ProductServices {
-  removeProductService: RemoveProductService;
-}
+import { ProductServices } from '@unchainedshop/types/products';
+import { removeProductService } from './removeProductService';
 
 export const productServices: ProductServices = {
   removeProductService,

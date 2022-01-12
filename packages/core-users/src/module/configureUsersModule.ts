@@ -5,9 +5,9 @@ import { log } from 'meteor/unchained:logger';
 import {
   generateDbFilterById,
   generateDbMutations,
+  Schemas,
 } from 'meteor/unchained:utils';
 import { UsersCollection } from '../db/UsersCollection';
-import { UsersSchema } from '../db/UsersSchema';
 import { systemLocale } from 'meteor/unchained:utils';
 
 type FindQuery = {
@@ -39,7 +39,7 @@ export const configureUsersModule = async ({
 
   const mutations = generateDbMutations<User>(
     Users,
-    UsersSchema
+    Schemas.User
   ) as ModuleMutations<User>;
 
   return {
@@ -108,22 +108,6 @@ export const configureUsersModule = async ({
       return updateResult.modifiedCount;
     },
 
-    updateProfile: async (_id, profile, userId) => {
-      const userFilter = generateDbFilterById(_id);
-      const modifier = {
-        $set: Object.keys(profile).reduce((acc, profileKey) => {
-          return {
-            ...acc,
-            [`profile.${profileKey}`]: profile[profileKey],
-          };
-        }, {}),
-      };
-
-      await mutations.update(_id, modifier, userId);
-
-      return await Users.findOne(userFilter);
-    },
-
     updateAvatar: async (_id, fileId, userId) => {
       const userFilter = generateDbFilterById(_id);
       log('Update Avatar', { userId: _id });
@@ -134,6 +118,53 @@ export const configureUsersModule = async ({
           updated: new Date(),
           updatedBy: userId,
         },
+      };
+
+      await mutations.update(_id, modifier, userId);
+
+      return await Users.findOne(userFilter);
+    },
+
+    updateGuest: async (user, guest) => {
+      log('Update guest', { userId: user._id });
+
+      const modifier = { $set: { guest } };
+      await Users.updateOne(generateDbFilterById(user._id), modifier);
+    },
+
+    updateHeartbeat: async (userId, lastLogin) => {
+      const userFilter = generateDbFilterById(userId);
+
+      const modifier = {
+        $set: {
+          lastLogin: {
+            timestamp: new Date(),
+            ...lastLogin,
+          },
+        },
+      };
+
+      await mutations.update(userId, modifier, userId);
+
+      return await Users.findOne(userFilter);
+    },
+
+    updateInitialPassword: async (user, initialPassword) => {
+      log('Update initial password', { userId: user._id });
+
+      const modifier = { $set: { initialPassword } };
+      await Users.updateOne(generateDbFilterById(user._id), modifier);
+    },
+
+    updateProfile: async (_id, profile, userId) => {
+      const userFilter = generateDbFilterById(_id);
+      const modifier = {
+        $set: Object.keys(profile).reduce((acc, profileKey) => {
+          return {
+            ...acc,
+            [`profile.${profileKey}`]: profile[profileKey],
+          };
+        }, {}),
       };
 
       await mutations.update(_id, modifier, userId);
@@ -194,23 +225,6 @@ export const configureUsersModule = async ({
       }
 
       await mutations.update(_id, modifier, userId);
-
-      return await Users.findOne(userFilter);
-    },
-
-    updateHeartbeat: async (userId, lastLogin) => {
-      const userFilter = generateDbFilterById(userId);
-
-      const modifier = {
-        $set: {
-          lastLogin: {
-            timestamp: new Date(),
-            ...lastLogin,
-          },
-        },
-      };
-
-      await mutations.update(userId, modifier, userId);
 
       return await Users.findOne(userFilter);
     },

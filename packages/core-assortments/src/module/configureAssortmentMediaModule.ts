@@ -143,6 +143,23 @@ export const configureAssortmentMediaModule = async ({
       return deletedResult.deletedCount;
     },
 
+    deleteMany: async (assortmentId: string, assortmentMediaIds) => {
+      const selector: Query = {
+        assortmentId,
+        _id: { $in: assortmentMediaIds },
+      };
+      const deletedResult = await AssortmentMedia.deleteMany(selector);
+      return deletedResult.deletedCount;
+    },
+
+    // This action is specifically used for the bulk migration scripts in the platform package
+    update: async (assortmentMediaId, doc) => {
+      const selector = generateDbFilterById(assortmentMediaId);
+      const modifier = { $set: doc };
+      await AssortmentMedia.updateOne(selector, modifier);
+      return await AssortmentMedia.findOne(selector);
+    },
+
     updateManualOrder: async ({ sortKeys }, userId) => {
       const changedAssortmentMediaIds = await Promise.all(
         sortKeys.map(async ({ assortmentMediaId, sortKey }) => {
@@ -215,6 +232,33 @@ export const configureAssortmentMediaModule = async ({
         });
 
         return mediaTexts;
+      },
+
+      upsertLocalizedText: async (assortmentMediaId, locale, text, userId) => {
+        await AssortmentMediaTexts.updateOne(
+          {
+            assortmentMediaId,
+            locale,
+          },
+          {
+            $set: {
+              updated: new Date(),
+              updatedBy: userId,
+              ...text,
+            },
+            $setOnInsert: {
+              created: new Date(),
+              createdBy: userId,
+              assortmentMediaId,
+              locale,
+            },
+          }
+        );
+
+        return await AssortmentMediaTexts.findOne({
+          assortmentMediaId,
+          locale,
+        });
       },
     },
   };

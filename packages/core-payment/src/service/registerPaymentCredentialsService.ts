@@ -1,20 +1,14 @@
-import { Context } from '@unchainedshop/types/api';
-import {
-  PaymentContext,
-  PaymentCredentials
-} from '@unchainedshop/types/payments';
-
-export type RegisterPaymentCredentialsService = (
-  params: {
-    paymentContext: PaymentContext;
-    paymentProviderId: string;
-  },
-  context: Context
-) => Promise<PaymentCredentials | null>;
+import { RegisterPaymentCredentialsService } from '@unchainedshop/types/payments';
 
 export const registerPaymentCredentialsService: RegisterPaymentCredentialsService =
-  async ({ paymentContext, paymentProviderId }, { modules, userId }) => {
-    const registration = await modules.payment.paymentProviders.register(paymentProviderId, paymentContext)
+  async ({ paymentContext, paymentProviderId }, requestContext) => {
+    const { modules, userId } = requestContext;
+    const registration = await modules.payment.paymentProviders.register(
+      paymentProviderId,
+      paymentContext,
+      requestContext
+    );
+    
     if (!registration) return null;
 
     const paymentCredentialsId =

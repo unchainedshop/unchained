@@ -35,9 +35,21 @@ export type AssortmentMediaModule = {
   }) => Promise<Array<AssortmentMedia>>;
 
   // Mutations
-  create: (doc: { assortmentId: string, mediaId: string }, userId: string) => Promise<AssortmentMedia>;
+  create: (
+    doc: { assortmentId: string; mediaId: string },
+    userId: string
+  ) => Promise<AssortmentMedia>;
 
   delete: (assortmentMediaId: string, userId?: string) => Promise<number>;
+  deleteMany: (
+    assortmentId: string,
+    assortmentMediaIds: Array<_ID>
+  ) => Promise<number>;
+
+  update: (
+    assortmentMediaId: string,
+    doc: AssortmentMedia
+  ) => Promise<AssortmentMedia>;
 
   updateManualOrder: (
     params: {
@@ -66,6 +78,13 @@ export type AssortmentMediaModule = {
       texts: Array<AssortmentMediaText>,
       userId: string
     ) => Promise<Array<AssortmentMediaText>>;
+
+    upsertLocalizedText: (
+      assortmentId: string,
+      locale: string,
+      text: AssortmentMediaText,
+      userId?: string
+    ) => Promise<AssortmentMediaText>;
   };
 };
 
@@ -76,6 +95,6 @@ type HelperType<P, T> = (
 ) => T;
 
 export interface AssortmentMediaHelperTypes {
-  texts: HelperType<{ forceLocale?: string }, Promise<AssortmentMediaText>>
+  texts: HelperType<{ forceLocale?: string }, Promise<AssortmentMediaText>>;
   file: HelperType<any, Promise<File>>;
 }

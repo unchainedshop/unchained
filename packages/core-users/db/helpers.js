@@ -73,106 +73,106 @@ Users.setTags = ({ userId, tags }) => {
 };
 
 Users.helpers({
-  isGuest() {
-    return !!this.guest;
-  },
-  isTwoFactorEnabled() {
-    const { 'two-factor': { secret } = {} } = this.services || {};
-    return !!secret;
-  },
-  isInitialPassword() {
-    const { password: { initial } = {} } = this.services || {};
-    return this.initialPassword || !!initial;
-  },
-  isEmailVerified() {
-    log(
-      'user.isEmailVerified is deprecated, please use user.primaryEmail.verified',
-      { level: 'warn' }
-    );
-    return !!this.primaryEmail()?.verified;
-  },
-  language(options) {
-    return Languages.findOne({ isoCode: this.locale(options).language });
-  },
-  country(options) {
-    return Countries.findOne({
-      isoCode: this.locale(options).country.toUpperCase(),
-    });
-  },
-  locale({ localeContext } = {}) {
-    const locale =
-      localeContext ||
-      (this.lastLogin?.locale && new Locale(this.lastLogin.locale)) ||
-      systemLocale;
-    return locale;
-  },
-  avatar() {
-    return MediaObjects.findOne({ _id: this.avatarId });
-  },
-  primaryEmail() {
-    return (this.emails || []).sort(
-      ({ verified: verifiedLeft }, { verified: verifiedRight }) =>
-        verifiedRight - verifiedLeft
-    )?.[0];
-  },
-  email() {
-    log('user.email is deprecated, please use user.primaryEmail.verified', {
-      level: 'warn',
-    });
-    return this.primaryEmail()?.address;
-  },
-  telNumber() {
-    return this.profile && this.profile.phoneMobile;
-  },
-  name() {
-    const { profile } = this;
-    if (profile && profile.displayName && profile.displayName !== '')
-      return profile.displayName;
-    return this.primaryEmail()?.address || this._id;
-  },
-  async setPassword(password) {
-    const newPassword = password || uuidv4().split('-').pop();
-    await accountsPassword.setPassword(this._id, newPassword);
-  },
-  setRoles(roles) {
-    Users.update(
-      { _id: this._id },
-      {
-        $set: {
-          updated: new Date(),
-          roles,
-        },
-      }
-    );
-    return Users.findOne({ _id: this._id });
-  },
-  async setUsername(username) {
-    await dbManager.setUsername(this._id, username);
-    return Users.findOne({ _id: this._id });
-  },
-  async addEmail(email, { verified = false } = {}) {
-    await accountsPassword.addEmail(this._id, email, verified);
-    return Users.findOne({ _id: this._id });
-  },
-  async removeEmail(email) {
-    await accountsPassword.removeEmail(this._id, email);
-    return Users.findOne({ _id: this._id });
-  },
-  async updateEmail(email, { verified = false } = {}) {
-    log(
-      'user.updateEmail is deprecated, please use user.addEmail and user.removeEmail',
-      { level: 'warn' }
-    );
-    await accountsPassword.addEmail(this._id, email, verified);
-    await Promise.all(
-      (this.emails || [])
-        .filter(({ address }) => address.toLowerCase() !== email.toLowerCase())
-        .map(async ({ address }) =>
-          accountsPassword.removeEmail(this._id, address)
-        )
-    );
-    return Users.findOne({ _id: this._id });
-  },
+  // isGuest() {
+  //   return !!this.guest;
+  // },
+  // isTwoFactorEnabled() {
+  //   const { 'two-factor': { secret } = {} } = this.services || {};
+  //   return !!secret;
+  // },
+  // isInitialPassword() {
+  //   const { password: { initial } = {} } = this.services || {};
+  //   return this.initialPassword || !!initial;
+  // },
+  // isEmailVerified() {
+  //   log(
+  //     'user.isEmailVerified is deprecated, please use user.primaryEmail.verified',
+  //     { level: 'warn' }
+  //   );
+  //   return !!this.primaryEmail()?.verified;
+  // },
+  // language(options) {
+  //   return Languages.findOne({ isoCode: this.locale(options).language });
+  // },
+  // country(options) {
+  //   return Countries.findOne({
+  //     isoCode: this.locale(options).country.toUpperCase(),
+  //   });
+  // },
+  // locale({ localeContext } = {}) {
+  //   const locale =
+  //     localeContext ||
+  //     (this.lastLogin?.locale && new Locale(this.lastLogin.locale)) ||
+  //     systemLocale;
+  //   return locale;
+  // },
+  // avatar() {
+  //   return MediaObjects.findOne({ _id: this.avatarId });
+  // },
+  // primaryEmail() {
+  //   return (this.emails || []).sort(
+  //     ({ verified: verifiedLeft }, { verified: verifiedRight }) =>
+  //       verifiedRight - verifiedLeft
+  //   )?.[0];
+  // },
+  // email() {
+  //   log('user.email is deprecated, please use user.primaryEmail.verified', {
+  //     level: 'warn',
+  //   });
+  //   return this.primaryEmail()?.address;
+  // },
+  // telNumber() {
+  //   return this.profile && this.profile.phoneMobile;
+  // },
+  // name() {
+  //   const { profile } = this;
+  //   if (profile && profile.displayName && profile.displayName !== '')
+  //     return profile.displayName;
+  //   return this.primaryEmail()?.address || this._id;
+  // },
+  // async setPassword(password) {
+  //   const newPassword = password || uuidv4().split('-').pop();
+  //   await accountsPassword.setPassword(this._id, newPassword);
+  // },
+  // setRoles(roles) {
+  //   Users.update(
+  //     { _id: this._id },
+  //     {
+  //       $set: {
+  //         updated: new Date(),
+  //         roles,
+  //       },
+  //     }
+  //   );
+  //   return Users.findOne({ _id: this._id });
+  // },
+  // async setUsername(username) {
+  //   await dbManager.setUsername(this._id, username);
+  //   return Users.findOne({ _id: this._id });
+  // },
+  // async addEmail(email, { verified = false } = {}) {
+  //   await accountsPassword.addEmail(this._id, email, verified);
+  //   return Users.findOne({ _id: this._id });
+  // },
+  // async removeEmail(email) {
+  //   await accountsPassword.removeEmail(this._id, email);
+  //   return Users.findOne({ _id: this._id });
+  // },
+  // async updateEmail(email, { verified = false } = {}) {
+  //   log(
+  //     'user.updateEmail is deprecated, please use user.addEmail and user.removeEmail',
+  //     { level: 'warn' }
+  //   );
+  //   await accountsPassword.addEmail(this._id, email, verified);
+  //   await Promise.all(
+  //     (this.emails || [])
+  //       .filter(({ address }) => address.toLowerCase() !== email.toLowerCase())
+  //       .map(async ({ address }) =>
+  //         accountsPassword.removeEmail(this._id, address)
+  //       )
+  //   );
+  //   return Users.findOne({ _id: this._id });
+  // },
   // --> Moved to API query resolver using the modules pattern
   // logs({ limit, offset }) {
   //   const selector = { 'meta.userId': this._id };

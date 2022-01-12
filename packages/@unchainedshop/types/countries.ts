@@ -32,12 +32,11 @@ export type CountriesModule = ModuleMutations<Country> & {
   name: (country: Country, language: string) => string;
 };
 
-export interface CountryHelperTypes {
-  flagEmoji: (country: Country, params: never, context: Context) => string;
-  isBase: (country: Country, params: never, context: Context) => boolean;
-  name: (
-    country: Country,
-    params: { forceLocale: string },
-    context: Context
-  ) => string;
+export type ResolveDefaultCurrencyCodeService = (
+  params: { isoCode: string },
+  context: Context
+) => Promise<string>;
+
+export interface CountryServices {
+  resolveDefaultCurrencyCodeService: ResolveDefaultCurrencyCodeService;
 }

@@ -1,14 +1,9 @@
 import { Context } from '@unchainedshop/types/api';
-import { Country } from '@unchainedshop/types/countries';
+import { Country, ResolveDefaultCurrencyCodeService } from '@unchainedshop/types/countries';
 import { Modules } from '@unchainedshop/types/modules';
 import LRU from 'lru-cache';
 
 // REMARK: --> combines defaultCurrency and resolveDefaultCurrencyCode helpers
-
-export type ResolveDefaultCurrencyCodeService = (
-  params: { isoCode: string },
-  context: Context
-) => Promise<string>;
 
 const { NODE_ENV } = process.env;
 

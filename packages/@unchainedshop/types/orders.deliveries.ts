@@ -36,7 +36,7 @@ export type OrderDeliveriesModule = {
   // Queries
   findDelivery: (
     params: { orderDeliveryId: string },
-    options: FindOptions
+    options?: FindOptions
   ) => Promise<OrderDelivery>;
 
   // Transformations

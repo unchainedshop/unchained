@@ -47,16 +47,16 @@ export interface ModuleInput {
 }
 
 export interface ModuleCreateMutation<T> {
-  create: (doc: T, userId: string) => Promise<string | null>;
+  create: (doc: T, userId?: string) => Promise<string | null>;
 }
 
 export interface ModuleMutations<T> extends ModuleCreateMutation<T> {
   update: (
     _id: string,
     doc: UpdateFilter<T>,
-    userId: string
+    userId?: string
   ) => Promise<string>;
-  delete: (_id: string, userId: string) => Promise<number>;
+  delete: (_id: string, userId?: string) => Promise<number>;
 }
 
 /*

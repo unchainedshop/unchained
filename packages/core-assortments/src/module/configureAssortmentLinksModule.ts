@@ -110,6 +110,14 @@ export const configureAssortmentLinksModule = ({
       return assortmentLink;
     },
 
+    // This action is specifically used for the bulk migration scripts in the platform package
+    update: async (assortmentLinkId, doc) => {
+      const selector = generateDbFilterById(assortmentLinkId);
+      const modifier = { $set: doc };
+      await AssortmentLinks.updateOne(selector, modifier);
+      return await AssortmentLinks.findOne(selector);
+    },
+
     delete: async (assortmentLinkId, options) => {
       const selector = generateDbFilterById(assortmentLinkId);
 

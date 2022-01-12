@@ -1,10 +1,5 @@
-import { Context } from '@unchainedshop/types/api';
+import { RemoveProductService } from '@unchainedshop/types/products';
 import { ProductStatus } from '../db/ProductStatus';
-
-export type RemoveProductService = (
-  params: { productId: string },
-  context: Context
-) => Promise<boolean>;
 
 export const removeProductService: RemoveProductService = async (
   { productId },

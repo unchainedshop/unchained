@@ -1,5 +1,4 @@
 import { log } from 'meteor/unchained:logger';
-import { Products } from 'meteor/unchained:core-products';
 import {
   BookmarkAlreadyExistsError,
   InvalidIdError,
@@ -17,7 +16,7 @@ export default async function createBookmark(
     userId: currenctUserId,
   });
   if (!productId) throw new InvalidIdError({ productId });
-  if (!Products.productExists({ productId }))
+  if (!(await modules.products.productExists({ productId })))
     throw new ProductNotFoundError({ productId });
 
   const bookmark = await modules.bookmarks.findByUserIdAndProductId({

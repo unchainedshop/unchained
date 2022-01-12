@@ -1,10 +1,11 @@
-import Address from './address-schema';
-import Contact from './contact-schema';
+import { AddressSchema } from './schemas/AddressSchema';
+import { ContactSchema } from './schemas/ContactSchema';
 import {
   timestampFields,
   contextFields,
   logFields,
-} from './common-schema-fields';
+} from './schemas/commonSchemaFields';
+import { UserSchema } from './schemas/UsersSchema';
 
 export { default as findLocalizedText } from './find-localized-text';
 export * from './locale-helpers';
@@ -14,7 +15,7 @@ export { default as slugify } from './slugify';
 export { default as pipePromises } from './pipe-promises';
 export { default as generateRandomHash } from './generate-random-hash';
 
-/* 
+/*
  * Db utils
  */
 
@@ -25,7 +26,7 @@ export { generateDbMutations } from './db/generate-db-mutations';
 export { buildDbIndexes } from './db/build-db-indexes';
 export { findPreservingIds } from './find-preserving-ids';
 
-/* 
+/*
  * Schemas
  */
 
@@ -33,8 +34,9 @@ const Schemas = {
   timestampFields,
   contextFields,
   logFields,
-  Address,
-  Contact,
+  Address: AddressSchema,
+  Contact: ContactSchema,
+  User: UserSchema,
 };
 
 export { Schemas };

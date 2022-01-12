@@ -107,6 +107,10 @@ export type IPaymentDirector = IBaseDirector<IPaymentAdapter> & {
   };
 };
 
+/*
+ * Module
+ */
+
 export interface PaymentInterface {
   _id: string;
   label: string;
@@ -246,6 +250,35 @@ export type PaymentModule = {
     ) => Promise<string | null>;
   };
 };
+
+/*
+ * Services
+ */
+
+export type ChargeService = (
+  params: {
+    paymentContext: PaymentContext;
+    paymentProviderId: string;
+  },
+  context: Context
+) => Promise<any>;
+
+export type RegisterPaymentCredentialsService = (
+  params: {
+    paymentContext: PaymentContext;
+    paymentProviderId: string;
+  },
+  context: Context
+) => Promise<PaymentCredentials | null>;
+
+export interface PaymentServices {
+  chargeService: ChargeService;
+  registerPaymentCredentialsService: RegisterPaymentCredentialsService;
+}
+
+/*
+ * API Types
+ */
 
 export interface PaymentProviderHelperTypes {
   interface: (

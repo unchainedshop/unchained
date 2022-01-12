@@ -1,4 +1,5 @@
 import { Collection, ModuleMutations } from '@unchainedshop/types/common';
+import { LogLevel } from '@unchainedshop/types/logs';
 import {
   Order,
   OrderMutations,
@@ -32,6 +33,7 @@ export const configureOrderModuleMutations = ({
   OrderDeliveries,
   OrderPayments,
   OrderDiscounts,
+  initProviders,
   updateStatus,
   updateCalculation,
 }: {
@@ -40,6 +42,7 @@ export const configureOrderModuleMutations = ({
   OrderDeliveries: Collection<OrderDelivery>;
   OrderPayments: Collection<OrderPayment>;
   OrderDiscounts: Collection<OrderDiscount>;
+  initProviders: OrdersModule['initProviders'];
   updateStatus: OrdersModule['updateStatus'];
   updateCalculation: OrdersModule['updateCalculation'];
 }): OrderMutations => {
@@ -81,6 +84,22 @@ export const configureOrderModuleMutations = ({
       const deletedCount = await mutations.delete(orderId, userId);
       emit('ORDER_REMOVE', { orderId });
       return deletedCount;
+    },
+
+    initProviders,
+
+    invalidateProviders: async (requestContext) => {
+      log('Orders: Start invalidating cart providers', {
+        level: LogLevel.Verbose,
+      });
+
+      const orders = await Orders.find({
+        status: { $eq: null }, // Null equals OrderStatus.OPEN
+      }).toArray();
+
+      await Promise.all(
+        orders.map(async (order) => await initProviders(order, requestContext))
+      );
     },
 
     setDeliveryProvider: async (

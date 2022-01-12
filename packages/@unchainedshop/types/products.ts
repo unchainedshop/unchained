@@ -122,6 +122,10 @@ export type ProductText = {
   labels?: Array<string>;
 } & TimestampFields;
 
+/*
+ * Module
+ */
+
 export type ProductQuery = {
   includeDrafts?: boolean;
   productIds?: Array<string>;
@@ -363,6 +367,23 @@ export type ProductsModule = {
     deleteMany: (productId: string, userId?: string) => Promise<number>;
   };
 };
+
+/*
+ * Services
+ */
+
+export type RemoveProductService = (
+  params: { productId: string },
+  context: Context
+) => Promise<boolean>;
+
+export interface ProductServices {
+  removeProductService: RemoveProductService;
+}
+
+/*
+ * API Types
+ */
 
 type HelperType<P, T> = (product: Product, params: P, context: Context) => T;
 

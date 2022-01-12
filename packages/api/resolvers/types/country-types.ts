@@ -1,5 +1,15 @@
 import { Context } from '@unchainedshop/types/api';
-import { CountryHelperTypes } from '@unchainedshop/types/countries';
+import { Country as CountryType } from '@unchainedshop/types/countries';
+
+export interface CountryHelperTypes {
+  flagEmoji: (country: CountryType, params: never, context: Context) => string;
+  isBase: (country: CountryType, params: never, context: Context) => boolean;
+  name: (
+    country: CountryType,
+    params: { forceLocale: string },
+    context: Context
+  ) => string;
+}
 
 export const Country: CountryHelperTypes = {
   flagEmoji(country, _, { modules }: Context) {

@@ -168,6 +168,11 @@ export type AssortmentsModule = {
       userId?: string
     ) => Promise<Array<{ _id: _ID }>>;
 
+    update: (
+      assortmentFilterId: string,
+      doc: AssortmentFilter
+    ) => Promise<AssortmentFilter>;
+
     updateManualOrder: (
       params: {
         sortKeys: Array<{
@@ -218,6 +223,11 @@ export type AssortmentsModule = {
       options?: { skipInvalidation?: boolean },
       userId?: string
     ) => Promise<Array<{ _id: _ID; parentAssortmentId: string }>>;
+
+    update: (
+      assortmentLinkId: string,
+      doc: AssortmentLink
+    ) => Promise<AssortmentLink>;
 
     updateManualOrder: (
       params: {
@@ -275,6 +285,11 @@ export type AssortmentsModule = {
       options?: { skipInvalidation?: boolean },
       userId?: string
     ) => Promise<Array<{ _id: _ID; assortmentId: string }>>;
+
+    update: (
+      assortmentProductId: string,
+      doc: AssortmentProduct
+    ) => Promise<AssortmentProduct>;
 
     updateManualOrder: (
       params: {

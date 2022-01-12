@@ -40,9 +40,6 @@ export const configureOrdersModule = async ({
   const findOrderDelivery = async (order: Order) =>
     await OrderDeliveries.findOne(generateDbFilterById(order.deliveryId));
 
-  const findOrderDiscounts = async (order: Order) =>
-    await OrderDiscounts.findOne({ orderId: order._id });
-
   const findOrderPayment = async (order: Order) =>
     await OrderPayments.findOne(generateDbFilterById(order.paymentId));
 
@@ -336,6 +333,7 @@ export const configureOrdersModule = async ({
     OrderDeliveries,
     OrderPayments,
     OrderPositions,
+    updateCalculation,
     updateStatus,
   });
   const orderMutations = configureOrderModuleMutations({
@@ -344,8 +342,9 @@ export const configureOrdersModule = async ({
     OrderDiscounts,
     OrderPayments,
     OrderPositions,
-    updateStatus,
+    initProviders,
     updateCalculation,
+    updateStatus,
   });
 
   const orderDiscountsModule = configureOrderDiscountsModule({

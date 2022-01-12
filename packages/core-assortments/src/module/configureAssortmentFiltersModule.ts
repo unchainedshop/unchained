@@ -39,7 +39,7 @@ export const configureAssortmentFiltersModule = ({
           projection: { filterId: 1 },
         }
       ).map((filter) => filter.filterId);
-      
+
       return await filters.toArray();
     },
     create: async (doc: AssortmentFilter, userId) => {
@@ -117,6 +117,14 @@ export const configureAssortmentFiltersModule = ({
       });
 
       return assortmentFilters;
+    },
+
+    // This action is specifically used for the bulk migration scripts in the platform package
+    update: async (assortmentFilterId, doc) => {
+      const selector = generateDbFilterById(assortmentFilterId);
+      const modifier = { $set: doc };
+      await AssortmentFilters.updateOne(selector, modifier);
+      return await AssortmentFilters.findOne(selector);
     },
 
     updateManualOrder: async ({ sortKeys }, userId) => {

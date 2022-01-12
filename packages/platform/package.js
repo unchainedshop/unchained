@@ -20,10 +20,16 @@ Package.onUse((api) => {
   api.use('check');
   api.use('email');
 
-  api.use('unchained:mongodb@1.0.0-beta15');
+  api.use('unchained:utils@1.0.0-beta15');
+  api.use('unchained:logger@1.0.0-beta15');
   api.use('unchained:events@1.0.0-beta15');
+
+  api.use('unchained:mongodb@1.0.0-beta15');
   api.use('unchained:core@1.0.0-beta15');
   api.use('unchained:api@1.0.0-beta15');
+
+  api.use('unchained:core-worker@1.0.0-beta15');
+  api.use('unchained:core-accountsjs@1.0.0-beta15');
 
   api.mainModule('platform.js', 'server');
 });
