@@ -1,6 +1,6 @@
 import { WorkerEventTypes } from '../director/WorkerEventTypes';
 import { WorkerDirector } from '../director/WorkerDirector';
-import BaseWorker from './BaseWorker';
+import { BaseWorker } from './BaseWorker';
 
 class EventListenerWorker extends BaseWorker {
   static key = 'shop.unchained.worker.event-listener';

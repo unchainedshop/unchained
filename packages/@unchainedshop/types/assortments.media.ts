@@ -41,10 +41,10 @@ export type AssortmentMediaModule = {
   ) => Promise<AssortmentMedia>;
 
   delete: (assortmentMediaId: string, userId?: string) => Promise<number>;
-  deleteMany: (
+  deleteMediaFiles: (params: {
     assortmentId: string,
-    assortmentMediaIds: Array<_ID>
-  ) => Promise<number>;
+    excludeAssortmentMediaIds: Array<_ID>
+  }) => Promise<number>;
 
   update: (
     assortmentMediaId: string,

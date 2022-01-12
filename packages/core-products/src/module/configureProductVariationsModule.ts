@@ -161,6 +161,23 @@ export const configureProductVariationsModule = async ({
       return deletedResult.deletedCount;
     },
 
+    deleteVariations: async ({ productId, exlcudedProductVariationIds }) => {
+      const selector: Query = {
+        productId,
+        _id: { $nin: exlcudedProductVariationIds },
+      };
+      const deletedResult = await ProductVariations.deleteMany(selector);
+      return deletedResult.deletedCount;
+    },
+
+    // This action is specifically used for the bulk migration scripts in the platform package
+    update: async (productVariationId, doc) => {
+      const selector = generateDbFilterById(productVariationId);
+      const modifier = { $set: doc };
+      await ProductVariations.updateOne(selector, modifier);
+      return await ProductVariations.findOne(selector);
+    },
+
     addVariationOption: async (
       productVariationId,
       { inputData, localeContext },
@@ -241,7 +258,11 @@ export const configureProductVariationsModule = async ({
         }).toArray();
       },
 
-      findLocalizedVariationText: async ({ productVariationId, productVariationOptionValue, locale }) => {
+      findLocalizedVariationText: async ({
+        productVariationId,
+        productVariationOptionValue,
+        locale,
+      }) => {
         const parsedLocale = new Locale(locale);
 
         const text = await findLocalizedText<ProductVariationText>(
@@ -284,6 +305,22 @@ export const configureProductVariationsModule = async ({
 
         return productVariationTexts;
       },
+
+      upsertLocalizedText: async (
+        { productVariationId, productVariationOptionValue },
+        locale,
+        text,
+        userId
+      ) =>
+        await upsertLocalizedText(
+          {
+            productVariationId,
+            productVariationOptionValue,
+            locale,
+            ...text,
+          },
+          userId
+        ),
     },
   };
 };

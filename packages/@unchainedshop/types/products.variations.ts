@@ -63,6 +63,15 @@ export type ProductVariationsModule = {
   ) => Promise<ProductVariation>;
 
   delete: (productVariationId: string, userId?: string) => Promise<number>;
+  deleteVariations: (params: {
+    productId: string,
+    exlcudedProductVariationIds: Array<_ID>
+  }) => Promise<number>;
+
+  update: (
+    productMediaId: string,
+    doc: ProductVariation
+  ) => Promise<ProductVariation>;
 
   addVariationOption: (
     productVariationId: string,
@@ -99,6 +108,16 @@ export type ProductVariationsModule = {
       productVariationOptionValue?: string,
       userId?: string
     ) => Promise<Array<ProductVariationText>>;
+
+    upsertLocalizedText: (
+      params: {
+        productVariationId: string;
+        productVariationOptionValue?: string;
+      },
+      locale: string,
+      text: ProductVariationText,
+      userId?: string
+    ) => Promise<ProductVariationText>;
   };
 };
 
@@ -127,7 +146,10 @@ type OptionHelperType<P, T> = (
 
 export interface ProductVariationOptionHelperTypes {
   _id: OptionHelperType<never, string>;
-  texts: OptionHelperType<{ forceLocale?: string }, Promise<ProductVariationText>>;
+  texts: OptionHelperType<
+    { forceLocale?: string },
+    Promise<ProductVariationText>
+  >;
   value: OptionHelperType<never, string>;
 }
 

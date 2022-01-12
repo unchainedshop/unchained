@@ -3,9 +3,8 @@ import { AssortmentText } from '@unchainedshop/types/assortments';
 
 export default async (
   { assortmentId, content, authorId },
-  unchainedAPI: Context
+  { modules, userId }: Context
 ) => {
-  const { modules, userId } = unchainedAPI;
   const assortment = await modules.assortments.findAssortment({ assortmentId });
   if (!assortment)
     throw new Error(

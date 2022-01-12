@@ -41,7 +41,12 @@ export type ProductMediaModule = {
   ) => Promise<ProductMedia>;
 
   delete: (productMediaId: string, userId?: string) => Promise<number>;
+  deleteMediaFiles: (params: {
+    productId: string;
+    exlcudedProductMediaIds: Array<_ID>;
+  }) => Promise<number>;
 
+  update: (productMediaId: string, productMedia: ProductMedia) => Promise<ProductMedia>;
   updateManualOrder: (
     params: {
       sortKeys: Array<{
@@ -69,6 +74,13 @@ export type ProductMediaModule = {
       texts: Array<ProductMediaText>,
       userId: string
     ) => Promise<Array<ProductMediaText>>;
+
+    upsertLocalizedText: (
+      productMediaId: string,
+      locale: string,
+      text: ProductMediaText,
+      userId?: string
+    ) => Promise<ProductMediaText>;
   };
 };
 

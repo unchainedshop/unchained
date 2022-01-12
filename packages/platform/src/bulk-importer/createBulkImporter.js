@@ -30,7 +30,7 @@ export const createBucket = (bucketName) => {
 
 export const BulkImportPayloads = createBucket('bulk_import_payloads');
 
-export default (options) => {
+export const createBulkImporter = (options) => {
   const bulkOperations = {};
   const preparationIssues = [];
   const { logger } = options;

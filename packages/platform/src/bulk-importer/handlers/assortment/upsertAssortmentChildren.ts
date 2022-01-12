@@ -3,9 +3,8 @@ import { AssortmentLink } from '@unchainedshop/types/assortments';
 
 const upsert = async (
   assortmentLink: AssortmentLink,
-  unchainedAPI: Context
+  { modules, userId }: Context
 ) => {
-  const { modules, userId } = unchainedAPI;
   if (
     !(await modules.assortments.assortmentExists({
       assortmentId: assortmentLink.childAssortmentId,

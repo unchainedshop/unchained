@@ -1,8 +1,13 @@
-import { Filters } from 'meteor/unchained:core-filters';
+import { Context } from '@unchainedshop/types/api';
 import upsertFilterContent from './upsertFilterContent';
 import upsertFilterOptionContent from './upsertFilterOptionContent';
 
-export default async function updateFilter(payload, { logger, authorId }) {
+export default async function updateFilter(
+  payload: any,
+  { authorId, logger }: { authorId: string, logger: any },
+  unchainedAPI: Context
+) {
+  const { modules } = unchainedAPI;
   const { specification, _id } = payload;
 
   if (!specification)
@@ -10,12 +15,15 @@ export default async function updateFilter(payload, { logger, authorId }) {
 
   logger.debug('update filter object', specification);
   const { content, options, ...filterData } = specification;
-  const filter = await Filters.updateFilter({
-    ...filterData,
-    filterId: _id,
-    options: options?.map((option) => option.value) || [],
-    authorId,
-  });
+  const filter = await modules.filters.update(
+    _id,
+    {
+      ...filterData,
+      options: options?.map((option) => option.value) || [],
+      authorId,
+    },
+    unchainedAPI
+  );
 
   if (content || options) {
     if (!filter)
@@ -24,11 +32,11 @@ export default async function updateFilter(payload, { logger, authorId }) {
 
   if (content) {
     logger.debug('replace localized content for filter', content);
-    await upsertFilterContent({ content, filter }, { authorId, logger });
+    await upsertFilterContent({ content, filter }, { authorId }, unchainedAPI);
   }
 
   if (options) {
     logger.debug('replace localized content for filter options', content);
-    await upsertFilterOptionContent({ options, filter }, { authorId, logger });
+    await upsertFilterOptionContent({ options, filter }, { authorId }, unchainedAPI);
   }
 }

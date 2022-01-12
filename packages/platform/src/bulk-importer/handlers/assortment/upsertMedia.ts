@@ -86,8 +86,8 @@ export default async (
     })
   );
 
-  await modules.assortments.media.deleteMany(
+  await modules.assortments.media.deleteMediaFiles({
     assortmentId,
-    mediaObjects.map((obj) => obj._id)
-  );
+    excludeAssortmentMediaIds: mediaObjects.map((obj) => obj._id),
+  });
 };

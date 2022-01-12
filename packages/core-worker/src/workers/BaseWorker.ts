@@ -11,7 +11,7 @@ const { UNCHAINED_WORKER_ID } = process.env;
 const resolveWorkerId = (customWorkerId, type) =>
   customWorkerId || UNCHAINED_WORKER_ID || `${os.hostname()}:${type}`;
 
-class BaseWorker {
+export class BaseWorker {
   static key = 'shop.unchained.worker.base';
 
   static label = 'Base worker. Do not use this directly.';
@@ -117,5 +117,3 @@ class BaseWorker {
     return floored;
   }
 }
-
-export default BaseWorker;

@@ -1,11 +1,13 @@
-import { Filters } from 'meteor/unchained:core-filters';
+import { Context } from '@unchainedshop/types/api';
 import upsertFilterContent from './upsertFilterContent';
 import upsertFilterOptionContent from './upsertFilterOptionContent';
 
 export default async function createFilter(
-  payload,
-  { logger, authorId, createShouldUpsertIfIDExists }
+  payload: any,
+  { logger, authorId, createShouldUpsertIfIDExists },
+  unchainedAPI: Context
 ) {
+  const { modules } = unchainedAPI;
   const { specification, _id } = payload;
 
   if (!specification)
@@ -23,12 +25,15 @@ export default async function createFilter(
   logger.debug('create filter object', specification);
   let filter;
   try {
-    filter = await Filters.createFilter({
-      ...filterData,
-      _id,
-      options: options?.map((option) => option.value) || [],
-      authorId,
-    });
+    filter = await unchainedAPI.modules.filters.create(
+      {
+        ...filterData,
+        _id,
+        options: options?.map((option) => option.value) || [],
+        authorId,
+      },
+      unchainedAPI
+    );
   } catch (e) {
     if (!createShouldUpsertIfIDExists) throw e;
 
@@ -36,17 +41,24 @@ export default async function createFilter(
       'entity already exists, falling back to update',
       specification
     );
-    filter = await Filters.updateFilter({
-      ...filterData,
-      filterId: _id,
-      options: options?.map((option) => option.value) || [],
-      authorId,
-    });
+    filter = await modules.filters.update(
+      _id,
+      {
+        ...filterData,
+        options: options?.map((option) => option.value) || [],
+        authorId,
+      },
+      unchainedAPI
+    );
   }
 
   logger.debug('create localized content for filter', content);
-  await upsertFilterContent({ content, filter }, { authorId, logger });
+  await upsertFilterContent({ content, filter }, { authorId }, unchainedAPI);
 
   logger.debug('create localized content for filter options', content);
-  await upsertFilterOptionContent({ options, filter }, { authorId, logger });
+  await upsertFilterOptionContent(
+    { options, filter },
+    { authorId },
+    unchainedAPI
+  );
 }

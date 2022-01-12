@@ -6,7 +6,7 @@ import upsertAssortmentFilters from './upsertAssortmentFilters';
 import { Context } from '@unchainedshop/types/api';
 
 export default async function createAssortment(
-  payload,
+  payload: any,
   { logger, authorId, createShouldUpsertIfIDExists },
   unchainedAPI: Context
 ) {

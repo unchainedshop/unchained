@@ -140,6 +140,23 @@ export const configureProductMediaModule = async ({
       return deletedResult.deletedCount;
     },
 
+    deleteMediaFiles: async ({ productId, exlcudedProductMediaIds }) => {
+      const selector: Query = {
+        productId,
+        _id: { $nin: exlcudedProductMediaIds },
+      };
+      const deletedResult = await ProductMedia.deleteMany(selector);
+      return deletedResult.deletedCount;
+    },
+
+    // This action is specifically used for the bulk migration scripts in the platform package
+    update: async (productMediaId, doc) => {
+      const selector = generateDbFilterById(productMediaId);
+      const modifier = { $set: doc };
+      await ProductMedia.updateOne(selector, modifier);
+      return await ProductMedia.findOne(selector);
+    },
+
     updateManualOrder: async ({ sortKeys }, userId) => {
       const changedProductMediaIds = await Promise.all(
         sortKeys.map(async ({ productMediaId, sortKey }) => {
@@ -210,6 +227,8 @@ export const configureProductMediaModule = async ({
 
         return mediaTexts;
       },
+
+      upsertLocalizedText,
     },
   };
 };

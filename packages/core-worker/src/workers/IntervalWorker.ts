@@ -1,6 +1,6 @@
 import { Modules } from '@unchainedshop/types/modules';
 import later from 'later';
-import BaseWorker from './BaseWorker';
+import { BaseWorker } from './BaseWorker';
 
 const { NODE_ENV } = process.env;
 
@@ -8,7 +8,7 @@ const defaultSchedule = later.parse.text(
   NODE_ENV !== 'production' ? 'every 2 seconds' : 'every 30 seconds'
 );
 
-export const scheduleToInterval = (scheduleRaw) => {
+export const scheduleToInterval = (scheduleRaw: Date | string) => {
   const referenceDate = new Date(1000);
   const schedule =
     typeof scheduleRaw === 'string'
@@ -42,7 +42,7 @@ class IntervalWorker extends BaseWorker {
     modules: Modules;
     workerId: string;
     batchCount?: number;
-    schedule?: Date;
+    schedule?: Date | string;
   }) {
     super({ modules, workerId });
     this.batchCount = batchCount;

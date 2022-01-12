@@ -143,10 +143,10 @@ export const configureAssortmentMediaModule = async ({
       return deletedResult.deletedCount;
     },
 
-    deleteMany: async (assortmentId: string, assortmentMediaIds) => {
+    deleteMediaFiles: async ({ assortmentId, excludeAssortmentMediaIds }) => {
       const selector: Query = {
         assortmentId,
-        _id: { $in: assortmentMediaIds },
+        _id: { $nin: excludeAssortmentMediaIds },
       };
       const deletedResult = await AssortmentMedia.deleteMany(selector);
       return deletedResult.deletedCount;

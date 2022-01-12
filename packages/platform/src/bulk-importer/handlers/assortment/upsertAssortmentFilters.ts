@@ -3,9 +3,8 @@ import { AssortmentFilter } from '@unchainedshop/types/assortments';
 
 const upsert = async (
   assortmentFilter: AssortmentFilter,
-  unchainedAPI: Context
+  { modules, userId }: Context
 ) => {
-  const { modules, userId } = unchainedAPI;
   if (
     !(await modules.filters.filterExists({
       filterId: assortmentFilter.filterId,
