@@ -2,7 +2,7 @@ import { Context } from '@unchainedshop/types/api';
 import { Country } from '@unchainedshop/types/countries';
 import { Language } from '@unchainedshop/types/languages';
 import { checkAction } from '../../acl';
-import roles, { actions } from '../../roles';
+import { allRoles, actions } from '../../roles';
 
 interface ShopHelperTypes {
   _id: () => string;
@@ -29,7 +29,7 @@ export const Shop: ShopHelperTypes = {
 
   async userRoles(_root, _params, context) {
     await checkAction((actions as any).manageUsers, context);
-    return Object.values(roles)
+    return Object.values(allRoles)
       .map(({ name }) => name)
       .filter((name) => name.substring(0, 2) !== '__');
   },

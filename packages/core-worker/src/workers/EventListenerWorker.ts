@@ -1,47 +1,57 @@
 import { WorkerEventTypes } from '../director/WorkerEventTypes';
 import { WorkerDirector } from '../director/WorkerDirector';
 import { BaseWorker } from './BaseWorker';
+import { IWorker } from '@unchainedshop/types/worker';
 
-export class EventListenerWorker extends BaseWorker {
-  static key = 'shop.unchained.worker.event-listener';
+export const EventListenerWorker: IWorker<{ workerId: string }> = {
+  ...BaseWorker,
 
-  static label =
-    'Allocates work on events. This worker does not make sense on multiple containers.';
+  key: 'shop.unchained.worker.event-listener',
+  label:
+    'Allocates work on events. This worker does not make sense on multiple containers.',
+  version: '1.0',
+  type: 'EVENT_LISTENER',
 
-  static version = '1.0';
+  actions: ({ workerId }, requestContext) => {
+    let onAdded: () => Promise<void>;
+    let onFinished: () => Promise<void>;
 
-  static type = 'EVENT_LISTENER';
+    const baseWorkerActions = BaseWorker.actions(
+      { workerId, worker: EventListenerWorker },
+      requestContext
+    );
+    return {
+      ...baseWorkerActions,
 
-  private onAdded: () => void;
-  private onFinished: () => void;
+      start() {
+        onAdded = async () => {
+          await baseWorkerActions.process({
+            maxWorkItemCount: 0,
+            referenceDate: EventListenerWorker.getFloorDate(),
+          });
+        };
+        onFinished = async () => {
+          await baseWorkerActions.process({
+            maxWorkItemCount: 0,
 
-  start() {
-    this.onAdded = () => {
-      this.process({
-        maxWorkItemCount: 0,
-        /* @ts-ignore */
-        referenceDate: this.constructor.floorDate(),
-      });
+            referenceDate: EventListenerWorker.getFloorDate(),
+          });
+        };
+
+        WorkerDirector.onEmit(WorkerEventTypes.ADDED, onAdded);
+        WorkerDirector.onEmit(WorkerEventTypes.FINISHED, onFinished);
+
+        setTimeout(async () => {
+          await baseWorkerActions.autorescheduleTypes({
+            referenceDate: EventListenerWorker.getFloorDate(),
+          });
+        }, 300);
+      },
+
+      stop() {
+        WorkerDirector.offEmit(WorkerEventTypes.ADDED, onAdded);
+        WorkerDirector.offEmit(WorkerEventTypes.FINISHED, onFinished);
+      },
     };
-    this.onFinished = () => {
-      this.process({
-        maxWorkItemCount: 0,
-        /* @ts-ignore */
-        referenceDate: this.constructor.floorDate(),
-      });
-    };
-
-    WorkerDirector.onEmit(WorkerEventTypes.ADDED, this.onAdded);
-    WorkerDirector.onEmit(WorkerEventTypes.FINISHED, this.onFinished);
-
-    setTimeout(() => {
-      /* @ts-ignore */
-      this.autorescheduleTypes(this.constructor.floorDate());
-    }, 300);
-  }
-
-  stop() {
-    WorkerDirector.offEmit(WorkerEventTypes.ADDED, this.onAdded);
-    WorkerDirector.offEmit(WorkerEventTypes.FINISHED, this.onFinished);
-  }
-}
+  },
+};

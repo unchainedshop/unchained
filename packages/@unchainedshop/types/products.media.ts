@@ -1,5 +1,5 @@
 import { Context } from './api';
-import { TimestampFields, _ID } from './common';
+import { FindOptions, TimestampFields, _ID } from './common';
 import { File } from './files';
 
 export type ProductMedia = {
@@ -28,11 +28,11 @@ export type ProductMediaModule = {
   }) => Promise<ProductMedia>;
 
   findProductMedias: (params: {
-    productId: string;
-    limit: number;
-    offset: number;
+    productId?: string;
+    limit?: number;
+    offset?: number;
     tags?: Array<string>;
-  }) => Promise<Array<ProductMedia>>;
+  }, options?: FindOptions) => Promise<Array<ProductMedia>>;
 
   // Mutations
   create: (
@@ -42,8 +42,9 @@ export type ProductMediaModule = {
 
   delete: (productMediaId: string, userId?: string) => Promise<number>;
   deleteMediaFiles: (params: {
-    productId: string;
-    exlcudedProductMediaIds: Array<_ID>;
+    productId?: string;
+    excludedProdcutIds?: Array<_ID>;
+    excludedProductMediaIds?: Array<_ID>;
   }) => Promise<number>;
 
   update: (productMediaId: string, productMedia: ProductMedia) => Promise<ProductMedia>;

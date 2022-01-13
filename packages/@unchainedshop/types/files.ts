@@ -41,7 +41,10 @@ export type FilesModule = ModuleMutations<File> & {
     userId: string,
     uploadFileCallback: UploadFileCallback
   ) => Promise<File | null>;
-  removeFiles: (fileIds: string | Array<string>) => Promise<number>;
+  removeFiles: (params: {
+    externalFileIds?: string | Array<string>;
+    excludedFileIds?: Array<_ID>;
+  }) => Promise<number>;
   uploadFileFromStream: (
     params: { directoryName: string; rawFile: any; meta: any },
     userId: string

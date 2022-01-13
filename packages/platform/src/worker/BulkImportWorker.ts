@@ -1,8 +1,9 @@
-import WorkerPlugin from 'meteor/unchained:core-worker/workers/base';
+import { IWorkerAdapter } from '@unchainedshop/types/worker';
 import { WorkerDirector } from 'meteor/unchained:core-worker';
 import { createLogger } from 'meteor/unchained:logger';
+import { BaseAdapter } from 'meteor/unchained:utils';
 import yj from 'yieldable-json';
-import { createBulkImporter, BulkImportPayloads } from '../bulk-importer/createBulkImporter';
+import { BulkImportPayloads, createBulkImporter } from '../bulk-importer/createBulkImporter';
 
 const logger = createLogger('unchained:platform:bulk-import');
 
@@ -15,9 +16,9 @@ const unpackPayload = async ({ payloadId, ...options }) => {
     });
     readStream.on('end', () => {
       const buffer = Buffer.concat(buffers);
-      logger.profile(`parseAsync`, { level: 'verbose' });
+      logger.profile(`parseAsync`);
       yj.parseAsync(buffer.toString(), undefined, 8, (err, data) => {
-        logger.profile(`parseAsync`, { level: 'verbose' });
+        logger.profile(`parseAsync`);
         if (err) {
           reject(err);
           return;
@@ -28,16 +29,15 @@ const unpackPayload = async ({ payloadId, ...options }) => {
   });
 };
 
-class BulkImport extends WorkerPlugin {
-  static key = 'shop.unchained.worker-plugin.bulk-import';
+export const BulkImportWorker: IWorkerAdapter<any, {}> = {
+  ...BaseAdapter,
 
-  static label = 'Bulk Import';
+  key: 'shop.unchained.worker-plugin.bulk-import',
+  label: 'Bulk Import',
+  version: '1.0',
+  type: 'BULK_IMPORT',
 
-  static version = '1.0';
-
-  static type = 'BULK_IMPORT';
-
-  static async doWork(rawPayload) {
+  doWork: async (rawPayload) => {
     try {
       const {
         events,
@@ -82,6 +82,4 @@ class BulkImport extends WorkerPlugin {
   }
 }
 
-WorkerDirector.registerPlugin(BulkImport);
-
-export default BulkImport;
+WorkerDirector.registerAdapter(BulkImportWorker);

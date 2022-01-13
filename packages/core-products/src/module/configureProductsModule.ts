@@ -87,11 +87,12 @@ export const configureProductsModule = async ({
     }
   };
 
-  const deleteProductPermanently: ProductsModule['deleteProductPermanently'] =
-    async (productId) => {
-      const deletedResult = await Products.deleteOne(
-        generateDbFilterById(productId, { status: ProductStatus.DELETED })
-      );
+  const deleteProductsPermanently: ProductsModule['deleteProductsPermanently'] =
+    async ({ productId, excludedProductIds }) => {
+      const selector: Query = productId
+        ? generateDbFilterById(productId, { status: ProductStatus.DELETED })
+        : { _id: { $nin: excludedProductIds } };
+      const deletedResult = await Products.deleteOne(selector);
 
       return deletedResult.deletedCount;
     };
@@ -340,7 +341,9 @@ export const configureProductsModule = async ({
     ) => {
       if (productData._id) {
         // Remove deleted product by _id before creating a new one.
-        await deleteProductPermanently(productData._id as string);
+        await deleteProductsPermanently({
+          productId: productData._id as string,
+        });
       }
 
       const productId = await mutations.create(
@@ -411,7 +414,7 @@ export const configureProductsModule = async ({
       return updatedResult.modifiedCount;
     },
 
-    deleteProductPermanently,
+    deleteProductsPermanently,
 
     publish: publishProduct,
     unpublish: unpublishProduct,

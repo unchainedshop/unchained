@@ -1,4 +1,5 @@
 import { Context } from '@unchainedshop/types/api';
+import { WorkerSchedule } from '@unchainedshop/types/worker';
 import {
   WorkerDirector,
   EventListenerWorker,
@@ -14,26 +15,20 @@ export const workerTypeDefs = () => [
   `,
 ];
 
+export interface SetupWorkqueueOptions {
+  workerId: string;
+  batchCount: number;
+  schedule: WorkerSchedule;
+}
+
 export const setupWorkqueue = (
-  { workerId, batchCount, schedule },
+  { workerId, batchCount, schedule }: SetupWorkqueueOptions,
   unchainedAPI: Context
 ) => {
   const handlers = [
-    new FailedRescheduler({ workerId }, unchainedAPI),
-    new EventListenerWorker(
-      {
-        workerId,
-      },
-      unchainedAPI
-    ),
-    new IntervalWorker(
-      {
-        workerId,
-        batchCount,
-        schedule,
-      },
-      unchainedAPI
-    ),
+    FailedRescheduler.actions(unchainedAPI),
+    EventListenerWorker.actions({ workerId }, unchainedAPI),
+    IntervalWorker.actions({ workerId, batchCount, schedule }, unchainedAPI),
   ];
 
   handlers.forEach((handler) => handler.start());

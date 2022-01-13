@@ -85,6 +85,6 @@ export default async function upsertVariations(
   );
   await modules.products.variations.deleteVariations({
     productId,
-    exlcudedProductVariationIds: productVariationObjects.map((obj) => obj._id),
+    excludedProductVariationIds: productVariationObjects.map((obj) => obj._id),
   });
 }

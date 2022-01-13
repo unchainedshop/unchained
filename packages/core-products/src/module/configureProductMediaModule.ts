@@ -76,8 +76,8 @@ export const configureProductMediaModule = async ({
       return await ProductMedia.findOne(generateDbFilterById(productMediaId));
     },
 
-    findProductMedias: async ({ productId, tags, offset, limit }) => {
-      const selector: Query = { productId };
+    findProductMedias: async ({ productId, tags, offset, limit }, options) => {
+      const selector: Query = productId ? { productId } : {};
       if (tags && tags.length > 0) {
         selector.tags = { $all: tags };
       }
@@ -86,6 +86,7 @@ export const configureProductMediaModule = async ({
         skip: offset,
         limit,
         sort: { sortKey: 1 },
+        ...options,
       });
 
       return await mediaList.toArray();
@@ -140,11 +141,21 @@ export const configureProductMediaModule = async ({
       return deletedResult.deletedCount;
     },
 
-    deleteMediaFiles: async ({ productId, exlcudedProductMediaIds }) => {
-      const selector: Query = {
-        productId,
-        _id: { $nin: exlcudedProductMediaIds },
-      };
+    deleteMediaFiles: async ({
+      productId,
+      excludedProdcutIds,
+      excludedProductMediaIds,
+    }) => {
+      const selector: Query = productId ? { productId } : {};
+
+      if (!productId && excludedProdcutIds) {
+        selector.productId = { $nin: excludedProdcutIds };
+      }
+
+      if (excludedProductMediaIds) {
+        selector._id = { $nin: excludedProductMediaIds };
+      }
+
       const deletedResult = await ProductMedia.deleteMany(selector);
       return deletedResult.deletedCount;
     },

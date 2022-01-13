@@ -88,6 +88,6 @@ export default async (
 
   await modules.assortments.media.deleteMediaFiles({
     assortmentId,
-    excludeAssortmentMediaIds: mediaObjects.map((obj) => obj._id),
+    excludedAssortmentMediaIds: mediaObjects.map((obj) => obj._id),
   });
 };

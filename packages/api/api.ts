@@ -8,9 +8,11 @@ import { configureRoles } from './roles';
 // import getCart from './getCart';
 import instantiateLoaders from './loaders';
 import {
+  Context,
   UnchainedAPI,
   UnchainedLoaders,
   UnchainedLocaleContext,
+  UnchainedServerOptions,
   UnchainedUserContext,
 } from '@unchainedshop/types/api';
 
@@ -23,13 +25,6 @@ export type UnchainedServerContext = UnchainedLocaleContext &
   UnchainedUserContext &
   UnchainedLoaders &
   UnchainedAPI;
-
-export interface UnchainedServerOptions {
-  unchainedAPI: UnchainedAPI;
-  bulkImporter: any;
-  rolesOptions: any;
-  context: any;
-}
 
 const UNCHAINED_API_VERSION = '1.0.0-beta15'; // eslint-disable-line
 

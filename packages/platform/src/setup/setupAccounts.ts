@@ -11,9 +11,12 @@ import moniker from 'moniker';
 
 // TODO: Check with Pascal
 // accountsServer.users = Users;
+export interface SetupAccountsOptions {
+  mergeUserCartsOnLogin?: boolean;
+}
 
 export const setupAccounts = (
-  { mergeUserCartsOnLogin = true },
+  options: SetupAccountsOptions = { mergeUserCartsOnLogin: true },
   unchainedAPI: Context
 ) => {
   accountsPassword.options.validateNewUser = (user: User) => {
@@ -73,7 +76,7 @@ export const setupAccounts = (
           fromUserId: userIdBeforeLogin,
           toUser: user,
           countryContext,
-          shouldMergeCarts: mergeUserCartsOnLogin,
+          shouldMergeCarts: options.mergeUserCartsOnLogin,
         },
         unchainedAPI
       );
@@ -82,7 +85,7 @@ export const setupAccounts = (
         {
           fromUserId: userIdBeforeLogin,
           toUserId: user._id,
-          mergeBookmarks: mergeUserCartsOnLogin,
+          mergeBookmarks: options.mergeUserCartsOnLogin,
         },
         connection
       );

@@ -1,15 +1,22 @@
 import { Context } from '@unchainedshop/types/api';
 import { Modules } from '@unchainedshop/types/modules';
+import { IWorker, WorkerSchedule } from '@unchainedshop/types/worker';
 import later from 'later';
 import { BaseWorker } from './BaseWorker';
 
 const { NODE_ENV } = process.env;
 
+interface WorkerParams {
+  workerId: string;
+  batchCount?: number;
+  schedule: WorkerSchedule | string;
+}
+
 const defaultSchedule = later.parse.text(
   NODE_ENV !== 'production' ? 'every 2 seconds' : 'every 30 seconds'
-);
+) as WorkerSchedule;
 
-export const scheduleToInterval = (scheduleRaw: Date | string) => {
+export const scheduleToInterval = (scheduleRaw: WorkerSchedule | string) => {
   const referenceDate = new Date(1000);
   const schedule =
     typeof scheduleRaw === 'string'
@@ -20,50 +27,41 @@ export const scheduleToInterval = (scheduleRaw: Date | string) => {
   return Math.min(1000 * 60 * 60, diff); // at least once every hour!
 };
 
-export class IntervalWorker extends BaseWorker {
-  static key = 'shop.unchained.worker.cron';
+export const IntervalWorker: IWorker<WorkerParams> = {
+  ...BaseWorker,
 
-  static label =
-    'Allocates work on fixed intervals with native node setInterval';
+  key: 'shop.unchained.worker.cron',
+  label: 'Allocates work on fixed intervals with native node setInterval',
+  version: '1.0',
+  type: 'CRON',
 
-  static version = '1.0';
-
-  static type = 'CRON';
-
-  private batchCount: number;
-  private intervalDelay: number;
-  private intervalHandle: NodeJS.Timer;
-
-  constructor(
-    {
-      modules,
-      workerId,
-      batchCount = 0,
-      schedule = defaultSchedule,
-    }: {
-      modules: Modules;
-      workerId: string;
-      batchCount?: number;
-      schedule?: Date | string;
-    },
+  actions: (
+    { workerId, batchCount = 0, schedule = defaultSchedule },
     requestContext: Context
-  ) {
-    super({ workerId }, requestContext);
-    this.batchCount = batchCount;
-    this.intervalDelay = scheduleToInterval(schedule);
-  }
+  ) => {
+    const baseWorkerActions = BaseWorker.actions(
+      { workerId, worker: IntervalWorker },
+      requestContext
+    );
 
-  start() {
-    this.intervalHandle = setInterval(() => {
-      this.process({
-        maxWorkItemCount: this.batchCount,
-        /* @ts-ignore */
-        referenceDate: this.constructor.floorDate(),
-      });
-    }, this.intervalDelay);
-  }
+    const intervalDelay = scheduleToInterval(schedule);
+    let intervalHandle: NodeJS.Timer;
 
-  stop() {
-    clearInterval(this.intervalHandle);
-  }
-}
+    return {
+      ...baseWorkerActions,
+
+      start() {
+        intervalHandle = setInterval(() => {
+          baseWorkerActions.process({
+            maxWorkItemCount: batchCount,
+            referenceDate: IntervalWorker.getFloorDate(),
+          });
+        }, intervalDelay);
+      },
+
+      stop() {
+        clearInterval(intervalHandle);
+      },
+    };
+  },
+};

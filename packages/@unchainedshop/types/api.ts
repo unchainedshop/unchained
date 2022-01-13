@@ -31,7 +31,7 @@ export interface UnchainedLoaders {
 }
 
 export interface UnchainedBulkImport {
-  bulkImporter: any
+  bulkImporter: any;
 }
 
 export type Context = UnchainedAPI &
@@ -39,3 +39,11 @@ export type Context = UnchainedAPI &
   UnchainedLocaleContext &
   UnchainedLoaders &
   UnchainedBulkImport;
+
+export interface UnchainedServerOptions {
+  unchainedAPI: UnchainedAPI;
+  bulkImporter?: any;
+  rolesOptions?: any;
+  typeDefs: Array<string>;
+  context?: any;
+}

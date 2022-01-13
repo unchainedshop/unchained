@@ -23,12 +23,18 @@ import {
 import { configureFiltersModule } from 'meteor/unchained:core-filters';
 import { configureLanguagesModule } from 'meteor/unchained:core-languages';
 // import { configureMessagingModule } from 'meteor/unchained:core-messaging';
-import { configureOrdersModule } from 'meteor/unchained:core-orders';
+import {
+  configureOrdersModule,
+  orderServices,
+} from 'meteor/unchained:core-orders';
 import {
   configurePaymentModule,
   paymentServices,
 } from 'meteor/unchained:core-payment';
-import { configureProductsModule } from 'meteor/unchained:core-products';
+import {
+  configureProductsModule,
+  productServices,
+} from 'meteor/unchained:core-products';
 import { configureQuotationsModule } from 'meteor/unchained:core-quotations';
 import {
   configureUsersModule,
@@ -44,10 +50,6 @@ export const initCore = async ({
   migrationRepository,
   ...otherComponents
 } = {}) => {
-  const moduleOptions = {
-    migrationRepository,
-  };
-
   const accounts = await configureAccountsModule();
   const assortments = await configureAssortmentsModule({ db });
   const bookmarks = await configureBookmarksModule({ db });
@@ -95,11 +97,12 @@ export const initCore = async ({
       worker,
     },
     services: {
-      accounts: accountsServices,
       bookmarks: bookmarkServices,
       countries: countryServices,
+      // files: fileServices,
+      orders: orderServices,
       payment: paymentServices,
-      files: fileServices,
+      products: productServices,
       users: userServices,
     },
     ...otherComponents,

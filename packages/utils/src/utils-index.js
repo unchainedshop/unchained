@@ -45,6 +45,7 @@ export { Schemas };
  * Director
  */
 
+export { BaseAdapter } from './director/BaseAdapter';
 export { BaseDirector } from './director/BaseDirector';
 export { BasePricingAdapter } from './director/BasePricingAdapter';
 export { BasePricingDirector } from './director/BasePricingDirector';

@@ -1,68 +1,64 @@
 import { Modules } from '@unchainedshop/types/modules';
-import { Work } from '@unchainedshop/types/worker';
+import { IScheduler, Work } from '@unchainedshop/types/worker';
 import { log } from 'meteor/unchained:logger';
 import { dbIdToString } from 'meteor/unchained:utils';
 import { WorkerDirector } from '../director/WorkerDirector';
 import { WorkerEventTypes } from '../director/WorkerEventTypes';
 
-export class FailedRescheduler {
-  static key = 'shop.unchained.scheduler.failed';
+export const FailedRescheduler: IScheduler = {
+  key: 'shop.unchained.scheduler.failed',
+  label: 'Reschedule failed works',
+  version: '1.0',
 
-  static label = 'Reschedule failed works';
+  actions: (requestContext) => {
+    const handleFinishedWork = ({
+      work,
+      userId,
+    }: {
+      work: Work;
+      userId: string;
+    }) => {
+      if (!work.success && work.retries > 0) {
+        const now = new Date();
+        const workDelayMs = work.scheduled.getTime() - work.created.getTime();
 
-  static version = '1.0';
+        // In short: Double the delay of the old work or delay for 5 seconds
+        const scheduled =
+          workDelayMs > 1000
+            ? new Date(now.getTime() + workDelayMs * 2)
+            : new Date(now.setSeconds(now.getSeconds() + 5));
 
-  private modules: Modules;
-  
-  constructor({ modules }) {
-    this.modules = modules;
-  }
+        log(
+          /* @ts-ignore */
+          `${FailedRescheduler.key} -> Reschedule failed work ${work._id} ${
+            work.type
+          } for ${scheduled} (in ${Math.round(
+            workDelayMs / 1000
+          )}). Remaining retries: ${work.retries}`
+        );
 
-  handleFinishedWork({ work, userId }: { work: Work; userId: string }) {
-    if (!work.success && work.retries > 0) {
-      const now = new Date();
-      const workDelayMs = work.scheduled.getTime() - work.created.getTime();
+        requestContext.modules.worker.addWork(
+          {
+            type: work.type,
+            input: work.input,
+            priority: work.priority,
+            originalWorkId: work.originalWorkId || dbIdToString(work._id),
+            retries: work.retries - 1,
+            scheduled,
+          },
+          userId
+        );
+      }
+    };
 
-      // In short: Double the delay of the old work or delay for 5 seconds
-      const scheduled =
-        workDelayMs > 1000
-          ? new Date(now.getTime() + workDelayMs * 2)
-          : new Date(now.setSeconds(now.getSeconds() + 5));
+    return {
+      start() {
+        WorkerDirector.onEmit(WorkerEventTypes.FINISHED, handleFinishedWork);
+      },
 
-      log(
-        /* @ts-ignore */
-        `${this.constructor.key} -> Reschedule failed work ${work._id} ${
-          work.type
-        } for ${scheduled} (in ${Math.round(
-          workDelayMs / 1000
-        )}). Remaining retries: ${work.retries}`
-      );
-
-      this.modules.worker.addWork(
-        {
-          type: work.type,
-          input: work.input,
-          priority: work.priority,
-          originalWorkId: work.originalWorkId || dbIdToString(work._id),
-          retries: work.retries - 1,
-          scheduled,
-        },
-        userId
-      );
-    }
-  }
-
-  start() {
-    WorkerDirector.onEmit(
-      WorkerEventTypes.FINISHED,
-      this.handleFinishedWork.bind(this)
-    );
-  }
-
-  stop() {
-    WorkerDirector.offEmit(
-      WorkerEventTypes.FINISHED,
-      this.handleFinishedWork.bind(this)
-    );
-  }
-}
+      stop() {
+        WorkerDirector.offEmit(WorkerEventTypes.FINISHED, handleFinishedWork);
+      },
+    };
+  },
+};

@@ -54,7 +54,8 @@ import { EnrollmentPeriod } from './enrollment-period-types';
 import { EnrollmentPlan } from './enrollment-plan-tyes';
 import { Filter } from './filter-types';
 import { FilterOption } from './filter-option-types';
-import Quotation from './quotation-types';
+import { Quotation } from './quotation-types';
+import { Work } from './work-types';
 
 const types = {
   Assortment,
@@ -114,6 +115,7 @@ const types = {
   Stock,
   User,
   WarehousingProvider,
+  Work,
 };
 
 export default types;

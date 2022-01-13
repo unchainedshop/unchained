@@ -5,11 +5,13 @@ const {
   UNCHAINED_ASSIGN_CART_FOR_USERS = false,
 } = process.env;
 
+export interface SetupCartsOptions {
+  invalidateProviders?: boolean;
+  assignCartForUsers?: boolean;
+}
+
 export const setupCarts = async (
-  options: {
-    invalidateProviders?: boolean;
-    assignCartForUsers?: boolean;
-  } = {},
+  options: SetupCartsOptions = {},
   unchainedAPI: Context
 ) => {
   if (options.invalidateProviders ?? !!UNCHAINED_INVALIDATE_PROVIDERS) {

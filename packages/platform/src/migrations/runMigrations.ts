@@ -2,16 +2,15 @@ import { Db } from '@unchainedshop/types/common';
 import { createLogger } from 'meteor/unchained:logger';
 import { generateDbFilterById } from 'meteor/unchained:utils';
 import { createMigrationRunner } from './createMigrationRunner';
+import { migrationRepository } from './migrationRepository';
 
 export const runMigrations = async ({
   db,
   logger = createLogger('unchained:migrations'),
-  repository,
   ...options
 }: {
   db: Db;
-  logger: any;
-  repository: any;
+  logger?: any;
 }) => {
   const LastMigration = db.collection('last-migration');
 
@@ -46,7 +45,7 @@ export const runMigrations = async ({
 
   const currentId = await findCurrentId();
   const runner = createMigrationRunner({
-    repository,
+    repository: migrationRepository,
     currentId,
     onMigrationComplete,
     logger,

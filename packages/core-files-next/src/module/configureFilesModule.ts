@@ -101,39 +101,41 @@ export const configureFilesModule = async ({
       return await Files.findOne(generateDbFilterById(fileId));
     },
 
-    removeFiles: async (fileIds) => {
-      if (typeof fileIds !== 'string' && !Array.isArray(fileIds))
+    removeFiles: async ({ externalFileIds, excludedFileIds }) => {
+      if (
+        externalFileIds &&
+        typeof externalFileIds !== 'string' &&
+        !Array.isArray(externalFileIds)
+      )
         throw Error(
           'Media id/s to be removed not provided as a string or array'
         );
 
-      const idList = [];
+      const selector: Query = excludedFileIds
+        ? { _id: { $nin: excludedFileIds } }
+        : {};
 
-      if (typeof fileIds === 'string') {
-        const file = await Files.findOne({ externalId: fileIds });
-        idList.push(FileUpload.composeFileName(file));
-      } else {
-        const files = Files.find(
-          { externalId: { $in: fileIds } },
-          {
-            projection: {
-              _id: 1,
-              externalFieldId: 1,
-              url: 1,
-            },
-          }
-        );
-        const ids = await files.map(FileUpload.composeFileName).toArray();
-        idList.push(...ids);
+      if (externalFileIds) {
+        if (typeof externalFileIds === 'string') {
+          selector.externalId = externalFileIds;
+        } else {
+          selector.externalId = { externalId: { $in: externalFileIds } };
+        }
       }
+
+      const files = Files.find(selector, {
+        projection: {
+          _id: 1,
+          externalFieldId: 1,
+          url: 1,
+        },
+      });
+
+      const idList = await files.map(FileUpload.composeFileName).toArray();
 
       await FileUpload.removeFiles(idList);
 
-      const deletedFilesResult = await Files.deleteMany({
-        externalId: {
-          $in: typeof fileIds === 'string' ? [fileIds] : fileIds,
-        },
-      });
+      const deletedFilesResult = await Files.deleteMany(selector);
 
       return deletedFilesResult.deletedCount;
     },

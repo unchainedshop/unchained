@@ -1,8 +1,9 @@
 import { ApolloServer } from 'apollo-server-express';
 import { Request } from 'express';
 import { Locale, Locales } from 'locale';
-import SimpleSchema, { SimpleSchemaDefinition } from 'simpl-schema';
+import SimpleSchema from 'simpl-schema';
 import { AccountsModule } from './accounts';
+import { Context, UnchainedServerOptions } from './api';
 import { AssortmentsModule } from './assortments';
 import { BookmarksModule } from './bookmarks';
 import {
@@ -112,7 +113,13 @@ import {
   WarehousingModule,
   WarehousingProviderType as WarehousingProviderTypeType,
 } from './warehousing';
-import { IWorkerAdapter, IWorkerDirector, WorkerModule } from './worker';
+import {
+  IScheduler,
+  IWorker,
+  IWorkerAdapter,
+  IWorkerDirector,
+  WorkerModule,
+} from './worker';
 
 declare module 'meteor/unchained:utils' {
   function checkId(
@@ -190,6 +197,7 @@ declare module 'meteor/unchained:utils' {
   };
 
   // Director
+  export const BaseAdapter: IBaseAdapter;
   export const BaseDirector: <Adapter extends IBaseAdapter>(
     directorName: string,
     options?: {
@@ -440,15 +448,27 @@ declare module 'meteor/unchained:core-worker' {
   export const WorkerDirector: IWorkerDirector;
   export const WorkerAdapter: IWorkerAdapter<any, any>;
 
-  export const EventListenerWorker: any;
-  export const IntervalWorker: any;
-  export const FailedRescheduler: any;
+  export const EventListenerWorker: IWorker<{ workerId: string }>;
+  export const IntervalWorker: IWorker<{
+    workerId: string;
+    batchCount?: number;
+    schedule: WorkerSchedule | string;
+  }>;
+  export const FailedRescheduler: IScheduler;
 }
 
 declare module 'meteor/unchained:core-users' {
   export function configureUsersModule(
     params: ModuleInput
   ): Promise<UsersModule>;
+}
+
+declare module 'meteor/unchained:core' {
+  export function initCore(options: {
+    db: Db;
+    modules: Record<string, any>;
+    [x: string]: any;
+  }): Context;
 }
 
 declare module 'meteor/unchained:api' {

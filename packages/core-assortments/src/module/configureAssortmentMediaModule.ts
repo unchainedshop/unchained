@@ -79,8 +79,11 @@ export const configureAssortmentMediaModule = async ({
       );
     },
 
-    findAssortmentMedias: async ({ assortmentId, tags, offset, limit }) => {
-      const selector: Query = { assortmentId };
+    findAssortmentMedias: async (
+      { assortmentId, tags, offset, limit },
+      options
+    ) => {
+      const selector: Query = assortmentId ? { assortmentId } : {};
       if (tags && tags.length > 0) {
         selector.tags = { $all: tags };
       }
@@ -89,6 +92,7 @@ export const configureAssortmentMediaModule = async ({
         skip: offset,
         limit,
         sort: { sortKey: 1 },
+        ...options,
       });
 
       return await mediaList.toArray();
@@ -143,11 +147,21 @@ export const configureAssortmentMediaModule = async ({
       return deletedResult.deletedCount;
     },
 
-    deleteMediaFiles: async ({ assortmentId, excludeAssortmentMediaIds }) => {
-      const selector: Query = {
-        assortmentId,
-        _id: { $nin: excludeAssortmentMediaIds },
-      };
+    deleteMediaFiles: async ({
+      assortmentId,
+      excludedAssortmentIds,
+      excludedAssortmentMediaIds,
+    }) => {
+      const selector: Query = assortmentId ? { assortmentId } : {};
+
+      if (!assortmentId && excludedAssortmentIds) {
+        selector.assortmentId = { $nin: excludedAssortmentIds };
+      }
+
+      if (excludedAssortmentMediaIds) {
+        selector._id = { $nin: excludedAssortmentMediaIds };
+      }
+
       const deletedResult = await AssortmentMedia.deleteMany(selector);
       return deletedResult.deletedCount;
     },

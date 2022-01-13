@@ -262,7 +262,7 @@ export type ProductsModule = {
   ) => Promise<Product>;
 
   delete: (productId: string, userId?: string) => Promise<number>;
-  deleteProductPermanently: (productId: string) => Promise<number>;
+  deleteProductsPermanently: (params: { productId?: string, excludedProductIds?: Array<_ID> }) => Promise<number>;
 
   update: (
     productId: string,

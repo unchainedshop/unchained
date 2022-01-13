@@ -26,6 +26,10 @@ export type Work = {
   worker?: string;
 } & TimestampFields;
 
+/*
+ * Module
+ */
+
 export interface WorkData {
   type: string;
   input: any;
@@ -40,32 +44,6 @@ interface WorkResult<Result> {
   result?: Result;
   error?: any;
 }
-
-export type WorkScheduleConfigureation = Omit<Work, 'input'> & {
-  input: () => any;
-  schedule: any; // TODO: figure out how this schedule looks like
-};
-export type IWorkerAdapter<Args, Result> = IBaseAdapter & {
-  type: string;
-
-  doWork: (args: Args, requestContext: Context) => Promise<WorkResult<Result>>;
-};
-
-export type IWorkerDirector = IBaseDirector<IWorkerAdapter<any, any>> & {
-  getActivePluginTypes: () => Array<string>;
-
-  configureAutoscheduling: (
-    adapter: IWorkerAdapter<any, any>,
-    workScheduleConfiguration: WorkScheduleConfigureation
-  ) => void;
-  getAutoSchedules: () => Array<[string, WorkScheduleConfigureation]>;
-
-  emit: (eventName: string, payload: any) => void;
-  onEmit: (eventName: string, payload: any) => void;
-  offEmit: (eventName: string, payload: any) => void;
-
-  doWork: (work: Work, requestContext: Context) => Promise<WorkResult<any>>;
-};
 
 export type WorkerModule = {
   activeWorkTypes: () => Promise<Array<string>>;
@@ -125,9 +103,80 @@ export type WorkerModule = {
   ) => Promise<Array<Work>>;
 };
 
-type HelperType<P, T> = (provider: Work, params: P, context: Context) => T;
+/*
+ * Director
+ */
 
-export interface WorkHelperTypes {
-  status: HelperType<never, WorkStatus>;
-  original: HelperType<never, Promise<Work>>;
+export interface WorkerSchedule {
+  schedules: Array<Record<string, any>>;
+  exceptions: Array<Record<string, any>>;
 }
+
+export type WorkScheduleConfigureation = Omit<Work, 'input'> & {
+  input: () => any;
+  schedule: WorkerSchedule;
+};
+export type IWorkerAdapter<Args, Result> = IBaseAdapter & {
+  type: string;
+
+  doWork: (args: Args, requestContext: Context) => Promise<WorkResult<Result>>;
+};
+
+export type IWorkerDirector = IBaseDirector<IWorkerAdapter<any, any>> & {
+  getActivePluginTypes: () => Array<string>;
+
+  configureAutoscheduling: (
+    adapter: IWorkerAdapter<any, any>,
+    workScheduleConfiguration: WorkScheduleConfigureation
+  ) => void;
+  getAutoSchedules: () => Array<[string, WorkScheduleConfigureation]>;
+
+  emit: (eventName: string, payload: any) => void;
+  onEmit: (eventName: string, payload: any) => void;
+  offEmit: (eventName: string, payload: any) => void;
+
+  doWork: (work: Work, requestContext: Context) => Promise<WorkResult<any>>;
+};
+
+/*
+ * Worker
+ */
+
+export type IWorker<P extends { workerId: string }> = {
+  key: string;
+  label: string;
+  version: string;
+  type: string;
+
+  getFloorDate: (date?: Date) => Date;
+  getInternalTypes: () => Array<string>;
+
+  actions: (
+    params: P,
+    requestContext: Context
+  ) => {
+    autorescheduleTypes: (params: {
+      referenceDate: Date;
+    }) => Promise<Array<Work>>;
+    process: (params: {
+      maxWorkItemCount?: number;
+      referenceDate?: Date;
+    }) => Promise<void>;
+    reset: () => Promise<void>;
+    start: () => void;
+    stop: () => void;
+  };
+};
+
+export type IScheduler = {
+  key: string;
+  label: string;
+  version: string;
+
+  actions: (
+    requestContext: Context
+  ) => {
+    start: () => void;
+    stop: () => void;
+  };
+};

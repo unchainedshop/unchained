@@ -100,6 +100,6 @@ export default async function upsertMedia(
 
   await modules.products.media.deleteMediaFiles({
     productId,
-    exlcudedProductMediaIds: productMediaObjects.map((obj) => obj._id),
+    excludedProductMediaIds: productMediaObjects.map((obj) => obj._id),
   });
 }

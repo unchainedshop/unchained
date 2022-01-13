@@ -1,3 +1,4 @@
+import { FindOptions } from 'mongodb';
 import { Context } from './api';
 import { TimestampFields, _ID } from './common';
 import { File } from './files';
@@ -27,12 +28,15 @@ export type AssortmentMediaModule = {
     assortmentMediaId: string;
   }) => Promise<AssortmentMedia>;
 
-  findAssortmentMedias: (params: {
-    assortmentId: string;
-    limit: number;
-    offset: number;
-    tags?: Array<string>;
-  }) => Promise<Array<AssortmentMedia>>;
+  findAssortmentMedias: (
+    params: {
+      assortmentId?: string;
+      limit?: number;
+      offset?: number;
+      tags?: Array<string>;
+    },
+    options: FindOptions
+  ) => Promise<Array<AssortmentMedia>>;
 
   // Mutations
   create: (
@@ -42,8 +46,9 @@ export type AssortmentMediaModule = {
 
   delete: (assortmentMediaId: string, userId?: string) => Promise<number>;
   deleteMediaFiles: (params: {
-    assortmentId: string,
-    excludeAssortmentMediaIds: Array<_ID>
+    assortmentId?: string;
+    excludedAssortmentIds?: Array<_ID>;
+    excludedAssortmentMediaIds?: Array<_ID>;
   }) => Promise<number>;
 
   update: (
