@@ -1,11 +1,10 @@
 import {
   EnrollmentData,
   IEnrollmentAdapter,
-  IEnrollmentDirector,
+  IEnrollmentDirector
 } from '@unchainedshop/types/enrollments';
-import { LogLevel } from '@unchainedshop/types/logs';
 import { ProductPlan } from '@unchainedshop/types/products';
-import { log } from 'meteor/unchained:logger';
+import { log, LogLevel } from 'meteor/unchained:logger';
 import { BaseDirector } from 'meteor/unchained:utils';
 
 const baseDirector = BaseDirector<IEnrollmentAdapter>('EnrollmentDirector', {

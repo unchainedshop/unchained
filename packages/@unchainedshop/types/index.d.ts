@@ -2,10 +2,10 @@ import { ApolloServer } from 'apollo-server-express';
 import { Request } from 'express';
 import { Locale, Locales } from 'locale';
 import SimpleSchema from 'simpl-schema';
-import { AccountsModule } from './accounts';
-import { Context, UnchainedServerOptions } from './api';
+import { AccountsModule, AccountsOptions } from './accounts';
+import { Context, UnchainedCoreOptions, UnchainedServerOptions } from './api';
 import { AssortmentsModule } from './assortments';
-import { BookmarksModule } from './bookmarks';
+import { BookmarkServices, BookmarksModule } from './bookmarks';
 import {
   Collection,
   Db,
@@ -23,7 +23,7 @@ import {
   TimestampFields,
   _ID,
 } from './common';
-import { CountriesModule, Country } from './countries';
+import { CountriesModule, Country, CountryServices } from './countries';
 import { CurrenciesModule } from './currencies';
 import {
   DeliveryError as DeliveryErrorType,
@@ -44,7 +44,7 @@ import {
   IEnrollmentDirector,
 } from './enrollments';
 import { EventDirector, EventsModule } from './events';
-import { FileDirector, FilesModule } from './files';
+import { FileDirector, FileServices, FilesModule } from './files';
 import {
   FiltersModule,
   FilterType as FilterTypeType,
@@ -58,7 +58,11 @@ import {
   LogOptions,
   Transports,
 } from './logs';
-import { OrdersModule, OrderStatus as OrderStatusType } from './orders';
+import {
+  OrderServices,
+  OrdersModule,
+  OrderStatus as OrderStatusType,
+} from './orders';
 import { OrderDeliveryStatus as OrderDeliveryStatusType } from './orders.deliveries';
 import { OrderPaymentStatus as OrderPaymentStatusType } from './orders.payments';
 import {
@@ -88,6 +92,7 @@ import {
   PricingSheetParams,
 } from './pricing';
 import {
+  ProductServices,
   ProductsModule,
   ProductStatus as ProductStatusType,
   ProductType,
@@ -105,7 +110,7 @@ import {
   QuotationsModule,
   QuotationStatus as QuotationStatusType,
 } from './quotations';
-import { UsersModule } from './user';
+import { UserServices, UsersModule } from './user';
 import {
   IWarehousingAdapter,
   IWarehousingDirector,
@@ -119,6 +124,8 @@ import {
   IWorkerAdapter,
   IWorkerDirector,
   WorkerModule,
+  WorkerSchedule,
+  WorkStatus as WorkerStatusType,
 } from './worker';
 
 declare module 'meteor/unchained:utils' {
@@ -197,15 +204,15 @@ declare module 'meteor/unchained:utils' {
   };
 
   // Director
-  export const BaseAdapter: IBaseAdapter;
-  export const BaseDirector: <Adapter extends IBaseAdapter>(
+  const BaseAdapter: IBaseAdapter;
+  const BaseDirector: <Adapter extends IBaseAdapter>(
     directorName: string,
     options?: {
       adapterSortKey?: string;
       adapterKeyField?: string;
     }
   ) => IBaseDirector<Adapter>;
-  export const BasePricingAdapter: <
+  const BasePricingAdapter: <
     AdapterContext extends BasePricingAdapterContext,
     Calculation extends PricingCalculation
   >() => IPricingAdapter<
@@ -213,7 +220,7 @@ declare module 'meteor/unchained:utils' {
     Calculation,
     IPricingSheet<Calculation>
   >;
-  export const BasePricingDirector: <
+  const BasePricingDirector: <
     Context extends BasePricingContext,
     AdapterContext extends BasePricingAdapterContext,
     Calculation extends PricingCalculation,
@@ -226,19 +233,19 @@ declare module 'meteor/unchained:utils' {
     directorName: string
   ) => IPricingDirector<Context, AdapterContext, Calculation, Adapter>;
 
-  export const BasePricingSheet: <Calculation extends PricingCalculation>(
+  const BasePricingSheet: <Calculation extends PricingCalculation>(
     params: PricingSheetParams<Calculation>
   ) => IPricingSheet<Calculation>;
 }
 
 declare module 'meteor/unchained:logger' {
-  export function log(message: string, options?: LogOptions): void;
-  export function createLogger(
+  function log(message: string, options?: LogOptions): void;
+  function createLogger(
     moduleName: string,
     moreTransports?: Transports
   ): Logger;
 
-  export const LogLevel: typeof LogLevelType;
+  const LogLevel: typeof LogLevelType;
 }
 
 /*
@@ -246,29 +253,29 @@ declare module 'meteor/unchained:logger' {
  */
 
 declare module 'meteor/unchained:events' {
-  export const emit: EventDirector['emit'];
-  export const getEmitAdapter: EventDirector['getEmitAdapter'];
-  export const getEmitHistoryAdapter: EventDirector['getEmitHistoryAdapter'];
-  export const getRegisteredEvents: EventDirector['getRegisteredEvents'];
-  export const registerEvents: EventDirector['registerEvents'];
-  export const setEmitAdapter: EventDirector['setEmitAdapter'];
-  export const setEmitHistoryAdapter: EventDirector['setEmitHistoryAdapter'];
-  export const subscribe: EventDirector['subscribe'];
+  const emit: EventDirector['emit'];
+  const getEmitAdapter: EventDirector['getEmitAdapter'];
+  const getEmitHistoryAdapter: EventDirector['getEmitHistoryAdapter'];
+  const getRegisteredEvents: EventDirector['getRegisteredEvents'];
+  const registerEvents: EventDirector['registerEvents'];
+  const setEmitAdapter: EventDirector['setEmitAdapter'];
+  const setEmitHistoryAdapter: EventDirector['setEmitHistoryAdapter'];
+  const subscribe: EventDirector['subscribe'];
 }
 
 declare module 'meteor/unchained:director-file-upload' {
-  export const setFileUploadAdapter: FileDirector['setFileUploadAdapter'];
-  export const getFileUploadAdapter: FileDirector['getFileUploadAdapter'];
+  const setFileUploadAdapter: FileDirector['setFileUploadAdapter'];
+  const getFileUploadAdapter: FileDirector['getFileUploadAdapter'];
 
-  export const composeFileName: FileDirector['composeFileName'];
-  export const createSignedURL: FileDirector['createSignedURL'];
+  const composeFileName: FileDirector['composeFileName'];
+  const createSignedURL: FileDirector['createSignedURL'];
 
-  export const registerFileUploadCallback: FileDirector['registerFileUploadCallback'];
-  export const getFileUploadCallback: FileDirector['getFileUploadCallback'];
+  const registerFileUploadCallback: FileDirector['registerFileUploadCallback'];
+  const getFileUploadCallback: FileDirector['getFileUploadCallback'];
 
-  export const removeFiles = FileDirector['removeFiles'];
-  export const uploadFileFromStream: FileDirector['uploadFileFromStream'];
-  export const uploadFileFromURL: FileDirector['uploadFileFromStream'];
+  const removeFiles: FileDirector['removeFiles'];
+  const uploadFileFromStream: FileDirector['uploadFileFromStream'];
+  const uploadFileFromURL: FileDirector['uploadFileFromStream'];
 }
 
 /*
@@ -277,8 +284,10 @@ declare module 'meteor/unchained:director-file-upload' {
 
 declare module 'meteor/unchained:core-accountsjs' {
   function configureAccountsModule(
-    params: ModuleInput
+    options: AccountsOptions
   ): Promise<AccountsModule>;
+
+  const accountsSettings: any;
 
   const accountsServer: any;
   const accountsPassword: any;
@@ -287,79 +296,81 @@ declare module 'meteor/unchained:core-accountsjs' {
 }
 
 declare module 'meteor/unchained:core-assortments' {
-  export function configureAssortmentsModule(
+  function configureAssortmentsModule(
     params: ModuleInput
   ): Promise<AssortmentsModule>;
+
+  const assortmentsSettings;
 }
 
 declare module 'meteor/unchained:core-bookmarks' {
-  export function configureBookmarksModule(
+  function configureBookmarksModule(
     params: ModuleInput
   ): Promise<BookmarksModule>;
-  export const bookmarkServices: any;
+
+  const bookmarkServices: BookmarkServices;
 }
 
 declare module 'meteor/unchained:core-countries' {
-  export function configureCountriesModule(
+  function configureCountriesModule(
     params: ModuleInput
   ): Promise<CountriesModule>;
-  export const countryServices: any;
+
+  const countryServices: CountryServices;
 }
 
 declare module 'meteor/unchained:core-currencies' {
-  export function configureCurrenciesModule(
+  function configureCurrenciesModule(
     params: ModuleInput
   ): Promise<CurrenciesModule>;
 }
 
 declare module 'meteor/unchained:core-delivery' {
-  export function configureDeliveryModule(
+  function configureDeliveryModule(
     params: ModuleInput
   ): Promise<DeliveryModule>;
 
-  export const DeliveryAdapter: IDeliveryAdapter;
-  export const DeliveryDirector: IDeliveryDirector;
-  export const DeliveryProviderType: typeof DeliveryProviderTypeType;
-  export const DeliveryError: typeof DeliveryErrorType;
+  const deliverySettings;
 
-  export const DeliveryPricingAdapter: IDeliveryPricingAdapter;
-  export const DeliveryPricingDirector: IDeliveryPricingDirector;
+  const DeliveryAdapter: IDeliveryAdapter;
+  const DeliveryDirector: IDeliveryDirector;
+  const DeliveryProviderType: typeof DeliveryProviderTypeType;
+  const DeliveryError: typeof DeliveryErrorType;
+
+  const DeliveryPricingAdapter: IDeliveryPricingAdapter;
+  const DeliveryPricingDirector: IDeliveryPricingDirector;
 }
 
 declare module 'meteor/unchained:core-enrollments' {
-  export function configureEnrollmentsModule(
+  function configureEnrollmentsModule(
     params: ModuleInput
   ): Promise<EnrollmentsModule>;
 
-  export const EnrollmentStatus: typeof EnrollmentStatusType;
+  const enrollmentsSettings;
 
-  export const EnrollmentAdapter: IEnrollmentAdapter;
-  export const EnrollmentDirector: IEnrollmentDirector;
+  const EnrollmentStatus: typeof EnrollmentStatusType;
+
+  const EnrollmentAdapter: IEnrollmentAdapter;
+  const EnrollmentDirector: IEnrollmentDirector;
 }
 
 declare module 'meteor/unchained:core-events' {
-  export function configureEventsModule(
-    params: ModuleInput
-  ): Promise<EventsModule>;
+  function configureEventsModule(params: ModuleInput): Promise<EventsModule>;
 }
 
 declare module 'meteor/unchained:core-files-next' {
-  export function configureFilesModule(
-    params: ModuleInput
-  ): Promise<FilesModule>;
+  function configureFilesModule(params: ModuleInput): Promise<FilesModule>;
 
-  export const fileServices: any;
+  const fileServices: FileServices;
 }
 
 declare module 'meteor/unchained:core-filters' {
-  export function configureFiltersModule(
-    params: ModuleInput
-  ): Promise<FiltersModule>;
+  function configureFiltersModule(params: ModuleInput): Promise<FiltersModule>;
 
-  export const FilterType: typeof FilterTypeType;
+  const FilterType: typeof FilterTypeType;
 
-  export const FilterAdapter: IFilterAdapter;
-  export const FilterDirector: IFilterDirector;
+  const FilterAdapter: IFilterAdapter;
+  const FilterDirector: IFilterDirector;
 }
 
 declare module 'meteor/unchained:core-languages' {
@@ -371,113 +382,113 @@ declare module 'meteor/unchained:core-languages' {
 declare module 'meteor/unchained:core-orders' {
   function configureOrdersModule(params: ModuleInput): Promise<OrdersModule>;
 
-  export const OrderStatus: typeof OrderStatusType;
-  export const OrderDeliveryStatus: typeof OrderDeliveryStatusType;
-  export const OrderPaymentStatus: typeof OrderPaymentStatusType;
+  const orderServices: OrderServices;
+  const ordersSettings;
 
-  export const OrderDiscountAdapter: IDiscountAdapter;
-  export const OrderDiscountDirector: IDiscountDirector;
+  const OrderStatus: typeof OrderStatusType;
+  const OrderDeliveryStatus: typeof OrderDeliveryStatusType;
+  const OrderPaymentStatus: typeof OrderPaymentStatusType;
 
-  export const OrderPricingAdapter: IOrderPricingAdapter;
-  export const OrderPricingDirector: IOrderPricingDirector;
-  export const OrderPricingSheet: IOrderPricingSheet;
+  const OrderDiscountAdapter: IDiscountAdapter;
+  const OrderDiscountDirector: IDiscountDirector;
+
+  const OrderPricingAdapter: IOrderPricingAdapter;
+  const OrderPricingDirector: IOrderPricingDirector;
+  const OrderPricingSheet: IOrderPricingSheet;
 }
 
 declare module 'meteor/unchained:core-payment' {
-  export function configurePaymentModule(
-    params: ModuleInput
-  ): Promise<PaymentModule>;
-  export const paymentServices;
+  function configurePaymentModule(params: ModuleInput): Promise<PaymentModule>;
+  const paymentServices;
 
-  export const PaymentDirector: IPaymentDirector;
-  export const PaymentAdapter: IPaymentAdapter;
+  const PaymentDirector: IPaymentDirector;
+  const PaymentAdapter: IPaymentAdapter;
 
-  export const PaymentPricingAdapter: IPaymentPricingAdapter;
-  export const PaymentPricingDirector: IPaymentPricingDirector;
-  export const PaymentPricingSheet: IPaymentPricingSheet;
+  const PaymentPricingAdapter: IPaymentPricingAdapter;
+  const PaymentPricingDirector: IPaymentPricingDirector;
+  const PaymentPricingSheet: IPaymentPricingSheet;
 
-  export const PaymentError: typeof PaymentErrorType;
-  export const PaymentProviderType: typeof PaymentProviderTypeType;
+  const PaymentError: typeof PaymentErrorType;
+  const PaymentProviderType: typeof PaymentProviderTypeType;
 
-  export const paymentLogger;
+  const paymentLogger;
 }
 
 declare module 'meteor/unchained:core-products' {
-  export function configureProductsModule(
+  function configureProductsModule(
     params: ModuleInput
   ): Promise<ProductsModule>;
 
-  export const ProductPricingAdapter: IProductPricingAdapter;
-  export const ProductPricingDirector: IProductPricingDirector;
-  export const ProductPricingSheet: (
+  const productServices: ProductServices;
+
+  const ProductPricingAdapter: IProductPricingAdapter;
+  const ProductPricingDirector: IProductPricingDirector;
+  const ProductPricingSheet: (
     params: PricingSheetParams<ProductPricingCalculation>
   ) => IProductPricingSheet;
 
-  export const ProductTypes: typeof ProductType;
-  export const ProductStatus: typeof ProductStatusType;
+  const ProductTypes: typeof ProductType;
+  const ProductStatus: typeof ProductStatusType;
 }
 
 declare module 'meteor/unchained:core-quotations' {
-  export function configureQuotationsModule(
+  function configureQuotationsModule(
     params: ModuleInput
   ): Promise<QuotationsModule>;
 
-  export const QuotationStatus: typeof QuotationStatusType;
+  const quotationsSettings;
 
-  export const QuotationAdapter: IQuotationAdapter;
-  export const QuotationDirector: IQuotationDirector;
-  export const QuotationError: typeof QuotationErrorType;
+  const QuotationStatus: typeof QuotationStatusType;
+
+  const QuotationAdapter: IQuotationAdapter;
+  const QuotationDirector: IQuotationDirector;
+  const QuotationError: typeof QuotationErrorType;
+}
+
+declare module 'meteor/unchained:core-users' {
+  function configureUsersModule(params: ModuleInput): Promise<UsersModule>;
+
+  const userServices: UserServices;
 }
 
 declare module 'meteor/unchained:core-warehousing' {
-  export function configureWarehousingModule(
+  function configureWarehousingModule(
     params: ModuleInput
   ): Promise<WarehousingModule>;
 
-  export const WarehousingDirector: IWarehousingDirector;
-  export const WarehousingAdapter: IWarehousingAdapter;
-  export const WarehousingError: typeof WarehousingErrorType;
-  export const WarehousingProviderType: typeof WarehousingProviderTypeType;
+  const WarehousingDirector: IWarehousingDirector;
+  const WarehousingAdapter: IWarehousingAdapter;
+  const WarehousingError: typeof WarehousingErrorType;
+  const WarehousingProviderType: typeof WarehousingProviderTypeType;
 }
 
 declare module 'meteor/unchained:core-worker' {
-  export function configureWorkerModule(
-    params: ModuleInput
-  ): Promise<WorkerModule>;
+  function configureWorkerModule(params: ModuleInput): Promise<WorkerModule>;
 
-  export const WorkerDirector: IWorkerDirector;
-  export const WorkerAdapter: IWorkerAdapter<any, any>;
+  const WorkerDirector: IWorkerDirector;
+  const WorkStatus: typeof WorkerStatusType;
+  const WorkerAdapter: IWorkerAdapter<any, any>;
 
-  export const EventListenerWorker: IWorker<{ workerId: string }>;
-  export const IntervalWorker: IWorker<{
+  const EventListenerWorker: IWorker<{ workerId: string }>;
+  const IntervalWorker: IWorker<{
     workerId: string;
     batchCount?: number;
     schedule: WorkerSchedule | string;
   }>;
-  export const FailedRescheduler: IScheduler;
-}
-
-declare module 'meteor/unchained:core-users' {
-  export function configureUsersModule(
-    params: ModuleInput
-  ): Promise<UsersModule>;
+  const FailedRescheduler: IScheduler;
 }
 
 declare module 'meteor/unchained:core' {
-  export function initCore(options: {
-    db: Db;
-    modules: Record<string, any>;
-    [x: string]: any;
-  }): Context;
+  function initCore(options: UnchainedCoreOptions): Context;
 }
 
 declare module 'meteor/unchained:api' {
-  export function startAPIServer(options: UnchainedServerOptions): {
+  function startAPIServer(options: UnchainedServerOptions): {
     apolloGraphQLServer: ApolloServer;
     bulkImportServer: any;
   };
 }
 
 declare module 'meteor/unchained:mongodb' {
-  export function initDb(): Db;
+  function initDb(): Db;
 }

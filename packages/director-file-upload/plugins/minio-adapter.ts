@@ -120,7 +120,7 @@ export const MinioAdapter: FileAdapter = {
     );
   },
 
-  createSignedURL: async (directoryName = '', fileName) => {
+  createSignedURL: async ({ directoryName = '', fileName }) => {
     if (!client) throw new Error('Minio not connected, check env variables');
 
     const { hash, hashedName } = generateRandomFileName(fileName);
@@ -142,7 +142,7 @@ export const MinioAdapter: FileAdapter = {
     };
   },
 
-    async removeFiles(composedFileIds) {
+  async removeFiles(composedFileIds) {
     if (!client) throw new Error('Minio not connected, check env variables');
 
     await client.removeObjects(MINIO_BUCKET_NAME, composedFileIds);

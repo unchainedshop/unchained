@@ -14,6 +14,7 @@ import {
 import { Order } from './orders';
 import { OrderPosition } from './orders.positions';
 import { Product, ProductPlan } from './products';
+import { WorkerSchedule } from './worker';
 
 export enum EnrollmentStatus {
   INITIAL = 'INITIAL',
@@ -223,10 +224,7 @@ export type IEnrollmentAdapter = IBaseAdapter & {
 export type IEnrollmentDirector = IBaseDirector<IEnrollmentAdapter> & {
   transformOrderItemToEnrollment: (
     orderPosition: OrderPosition,
-    doc: Omit<
-      EnrollmentData,
-      'configuration' | 'productId' | 'quantity'
-    >,
+    doc: Omit<EnrollmentData, 'configuration' | 'productId' | 'quantity'>,
     requestContext: Context
   ) => Promise<EnrollmentData>;
 
@@ -235,3 +233,13 @@ export type IEnrollmentDirector = IBaseDirector<IEnrollmentAdapter> & {
     requestContext: Context
   ) => Promise<EnrollmentAdapterActions>;
 };
+
+/*
+ * Settings
+ */
+
+export interface EnrollmentsSettingsOptions {
+  autoSchedulingSchedule: WorkerSchedule;
+  autoSchedulingInput: () => any;
+  enrollmentNumberHashFn: (enrollment: Enrollment, index: number) => string;
+}

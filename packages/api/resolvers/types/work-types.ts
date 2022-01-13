@@ -1,5 +1,5 @@
 import { Context } from '@unchainedshop/types/api';
-import { Work as WorkType } from '@unchainedshop/types/worker';
+import { WorkQueue as WorkType } from '@unchainedshop/types/worker';
 
 type HelperType<P, T> = (work: WorkType, params: P, context: Context) => T;
 

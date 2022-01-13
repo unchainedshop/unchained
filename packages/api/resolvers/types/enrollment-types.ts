@@ -17,7 +17,6 @@ type HelperType<T> = (
 type EnrollmentHelperTypes = {
   plan: HelperType<EnrollmentPlan>;
   user: HelperType<Promise<User>>;
-  product: HelperType<Promise<Product>>;
   country: HelperType<Promise<Country>>;
   currency: HelperType<Promise<Currency>>;
 };
@@ -36,11 +35,7 @@ export const Enrollment: EnrollmentHelperTypes = {
       userId: obj.userId,
     });
   },
-  product: async (obj, _, { modules }) => {
-    return await modules.products.findProduct({
-      productId: obj.productId,
-    });
-  },
+  
   country: async (obj, _, { modules }) => {
     return await modules.countries.findCountry({ isoCode: obj.countryCode });
   },

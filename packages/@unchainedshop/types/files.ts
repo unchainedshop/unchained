@@ -1,3 +1,4 @@
+import { Context } from './api';
 import {
   Filter,
   FindOptions,
@@ -16,6 +17,10 @@ export type File = {
   type?: string;
   url?: string;
 } & TimestampFields;
+
+/*
+ * Module
+ */
 
 export type FilesModule = ModuleMutations<File> & {
   // Query
@@ -56,6 +61,23 @@ export type FilesModule = ModuleMutations<File> & {
     userId?: string
   ) => Promise<File | null>;
 };
+
+/*
+ * Services
+ */
+
+export type LinkFileService = (
+  params: { externalId: string; size: number; type: string },
+  context: Context
+) => Promise<File>;
+
+export interface FileServices {
+  linkFileService: LinkFileService;
+}
+
+/*
+ * Director
+ */
 
 export interface UploadFileData {
   directoryName: string;

@@ -16,9 +16,7 @@ Package.onUse((api) => {
   api.use('ecmascript');
   api.use('typescript');
 
-  api.addFiles(['helpers.ts', 'roles.ts'], 'server');
-
-  api.mainModule('src/roles.ts');
+  api.mainModule('src/roles-index.ts');
 });
 
 Package.onTest((api) => {

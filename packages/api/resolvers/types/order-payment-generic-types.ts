@@ -3,7 +3,7 @@ import {
   OrderPayment,
   OrderPaymentDiscount,
 } from '@unchainedshop/types/orders.payments';
-import { OrderPaymentConfigurationError } from 'errors';
+import { OrderPaymentConfigurationError } from '../../errors';
 
 type HelperType<P, T> = (
   orderPayment: OrderPayment,

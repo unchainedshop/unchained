@@ -1,5 +1,11 @@
 import { Locale } from 'locale';
+import { Db } from 'mongodb';
+import { AccountsOptions } from './accounts';
+import { DeliverySettingsOptions } from './delivery';
+import { EnrollmentsSettingsOptions } from './enrollments';
 import { Modules } from './modules';
+import { Order } from './orders';
+import { Quotation } from './quotations';
 import { Services } from './services';
 import { User } from './user';
 
@@ -46,4 +52,25 @@ export interface UnchainedServerOptions {
   rolesOptions?: any;
   typeDefs: Array<string>;
   context?: any;
+}
+
+export interface UnchainedCoreOptions {
+  db: Db;
+  modules: Record<string, any>;
+  options: {
+    accounts?: AccountsOptions;
+    assortments?: {
+      zipTree: (tree: any) => any;
+    };
+    delivery?: DeliverySettingsOptions;
+    enrollments?: EnrollmentsSettingsOptions;
+    orders?: {
+      ensureUserHasCart?: boolean;
+      orderNumberHashFn?: (order: Order, index: number) => string;
+    };
+    quotations?: {
+      quotationNumberHashFn?: (quotation: Quotation, index: number) => string;
+    };
+  };
+  [x: string]: any;
 }

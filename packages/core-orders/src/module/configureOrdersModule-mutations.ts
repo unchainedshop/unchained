@@ -1,5 +1,5 @@
 import { Collection, ModuleMutations } from '@unchainedshop/types/common';
-import { LogLevel } from '@unchainedshop/types/logs';
+import { LogLevel } from 'meteor/unchained:logger';
 import {
   Order,
   OrderMutations,

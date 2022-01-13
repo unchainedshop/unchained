@@ -41,7 +41,7 @@ export interface UserHelperTypes {
   lastBillingAddress: HelperType<any, UserType['lastBillingAddress']>;
   lastContact: HelperType<any, Contact>;
   lastLogin: HelperType<any, UserType['lastLogin']>;
-  locale: HelperType<{ localeContext: Locale }, Locale>;
+  // locale: HelperType<{ localeContext: Locale }, Locale>;
   name: HelperType<any, string>;
   orders: HelperType<{ includeCarts: boolean }, Array<Order>>;
   paymentCredentials: HelperType<any, Array<PaymentCredentials>>;
@@ -50,7 +50,6 @@ export interface UserHelperTypes {
   quotations: HelperType<any, Array<Quotation>>;
   roles: HelperType<any, Array<string>>;
   tags: HelperType<any, Array<string>>;
-  telNumber: HelperType<any, string>;
   username: HelperType<any, string>;
 }
 
@@ -84,7 +83,6 @@ export const User: UserHelperTypes = {
   profile: checkTypeResolver(viewUserPrivateInfos, 'profile'),
   roles: checkTypeResolver(viewUserPrivateInfos, 'roles'),
   tags: checkTypeResolver(viewUserPrivateInfos, 'tags'),
-  telNumber: checkTypeResolver(viewUserPrivateInfos, 'telNumber'),
   username: checkTypeResolver(viewUserPrivateInfos, 'username'),
 
   primaryEmail: async (user, params, context) => {
@@ -155,10 +153,10 @@ export const User: UserHelperTypes = {
     return await context.services.user.getUserLanguage(user);
   },
 
-  locale: async (user, params, context) => {
-    await checkAction(viewUserPrivateInfos, context, [user, params, context]);
-    return context.modules.users.userLocale(user, params);
-  },
+  // locale: async (user, params, context) => {
+  //   await checkAction(viewUserPrivateInfos, context, [user, params, context]);
+  //   return context.modules.users.userLocale(user, params);
+  // },
 
   orders: async (user, params, context) => {
     await checkAction(viewUserOrders, context, [user, params]);

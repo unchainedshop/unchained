@@ -1,4 +1,8 @@
-import { DeliveryProvider } from '@unchainedshop/types/delivery';
+import {
+  DeliveryProvider,
+  DeliverySettings,
+  FilterProviders,
+} from '@unchainedshop/types/delivery';
 import { createLogger } from 'meteor/unchained:logger';
 import { dbIdToString } from 'meteor/unchained:utils';
 
@@ -11,21 +15,9 @@ const sortByCreationDate = (
   return new Date(left.created).getTime() - new Date(right.created).getTime();
 };
 
-type FilterProviders = (params: {
-  providers: Array<DeliveryProvider>;
-}) => Array<string>;
-
 const allProviders: FilterProviders = ({ providers }) => {
   return providers.sort(sortByCreationDate).map(({ _id }) => _id as string);
 };
-
-interface DeliverySettings {
-  filterSupportedProviders: FilterProviders | null;
-  load: (params: {
-    sortProviders?: (a: DeliveryProvider, b: DeliveryProvider) => number;
-    filterSupportedProviders: FilterProviders;
-  }) => void;
-}
 
 export const deliverySettings: DeliverySettings = {
   filterSupportedProviders: null,

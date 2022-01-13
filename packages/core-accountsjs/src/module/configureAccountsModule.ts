@@ -10,7 +10,7 @@ import hashPassword from './utils/hashPassword';
 
 export const configureAccountsModule = async ({
   autoMessagingAfterUserCreation,
-}: AccountsOptions): Promise<AccountsModule> => {
+}: AccountsOptions = {}): Promise<AccountsModule> => {
   return {
     emit: async (event, meta) =>
       await accountsServer.getHooks().emit(event, meta),

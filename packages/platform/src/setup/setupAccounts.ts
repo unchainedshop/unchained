@@ -11,7 +11,9 @@ import moniker from 'moniker';
 
 // TODO: Check with Pascal
 // accountsServer.users = Users;
+
 export interface SetupAccountsOptions {
+  autoMessagingAfterUserCreation?: boolean;
   mergeUserCartsOnLogin?: boolean;
 }
 

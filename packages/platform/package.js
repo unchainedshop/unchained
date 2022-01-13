@@ -31,12 +31,14 @@ Package.onUse((api) => {
   api.use('unchained:core-worker@1.0.0-beta15');
   api.use('unchained:core-accountsjs@1.0.0-beta15');
 
-  api.mainModule('platform.js', 'server');
+  api.mainModule('src/platform-index.ts', 'server');
 });
 
 Package.onTest((api) => {
   api.use('ecmascript');
+  api.use('typescript');
+
   api.use('unchained:platform');
 
-  api.mainModule('platform-tests.js');
+  api.mainModule('tests/platform-index.test.ts');
 });

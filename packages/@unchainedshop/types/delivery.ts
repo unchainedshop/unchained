@@ -187,3 +187,21 @@ export interface DeliveryProviderHelperTypes {
     }>
   >;
 }
+
+/*
+ * Settings
+ */
+
+export type FilterProviders = (params: {
+  providers: Array<DeliveryProvider>;
+}) => Array<string>;
+
+export interface DeliverySettingsOptions {
+  sortProviders?: (a: DeliveryProvider, b: DeliveryProvider) => number;
+  filterSupportedProviders: FilterProviders;
+}
+
+export interface DeliverySettings {
+  filterSupportedProviders: FilterProviders | null;
+  load: (options: DeliverySettingsOptions) => void;
+}

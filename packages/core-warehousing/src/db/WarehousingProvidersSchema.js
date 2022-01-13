@@ -1,6 +1,5 @@
 import SimpleSchema from 'simpl-schema';
 import { Schemas } from 'meteor/unchained:utils';
-import { ObjectId } from 'bson';
 
 export const WarehousingProvidersSchema = new SimpleSchema(
   {

@@ -1,6 +1,6 @@
 import { DeliveryProviderHelperTypes } from '@unchainedshop/types/delivery';
 import crypto from 'crypto';
-import { DeliveryPricingDirector } from 'meteor/unchained:director-pricing';
+import { DeliveryPricingDirector } from 'meteor/unchained:core-delivery';
 
 export const DeliveryProvider: DeliveryProviderHelperTypes = {
   interface(obj, _, { modules }) {

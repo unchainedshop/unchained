@@ -32,7 +32,29 @@ Package.onUse((api) => {
   api.use('unchained:core-warehousing@1.0.0-beta15');
   api.use('unchained:core-worker@1.0.0-beta15');
 
-  api.mainModule('src/core-index.js', 'server');
+  api.imply([
+    'unchained:core-accountsjs',
+    'unchained:core-assortments',
+    'unchained:core-bookmarks',
+    'unchained:core-countries',
+    'unchained:core-currencies',
+    'unchained:core-delivery',
+    'unchained:core-enrollments',
+    'unchained:core-events',
+    'unchained:core-filters',
+    'unchained:core-files-next',
+    'unchained:core-languages',
+    // 'unchained:core-messaging',
+    'unchained:core-orders',
+    'unchained:core-payment',
+    'unchained:core-products',
+    'unchained:core-quotations',
+    'unchained:core-users',
+    'unchained:core-warehousing',
+    'unchained:core-worker',
+  ]);
+
+  api.mainModule('src/core-index.ts', 'server');
 });
 
 Package.onTest((api) => {

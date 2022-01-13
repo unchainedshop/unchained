@@ -2,7 +2,7 @@ import { log } from 'meteor/unchained:logger';
 import { Context, Root } from '@unchainedshop/types/api';
 import { getOrderCart } from '../utils/getOrderCart';
 import { Address, Contact } from '@unchainedshop/types/common';
-import { UserNotFoundError } from 'errors';
+import { UserNotFoundError } from '../../../errors';
 
 interface UpdateCartParams {
   orderId?: string;

@@ -8,7 +8,3 @@ export const has = (obj: { [key: string]: any }, key: string): boolean => {
       : obj.hasOwnProperty.call(obj, key))
   );
 };
-
-export const isFunction = (func: () => any): boolean => {
-  return func && typeof func === 'function';
-};

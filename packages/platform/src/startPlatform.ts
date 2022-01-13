@@ -1,4 +1,7 @@
-import { UnchainedServerOptions } from '@unchainedshop/types/api';
+import {
+  UnchainedCoreOptions,
+  UnchainedServerOptions,
+} from '@unchainedshop/types/api';
 import { startAPIServer } from 'meteor/unchained:api';
 import { initCore } from 'meteor/unchained:core';
 import { initDb } from 'meteor/unchained:mongodb';
@@ -37,18 +40,20 @@ const isEmailInterceptionEnabled = (options) => {
 export const queueWorkers = [];
 
 type PlatformOptions = {
-  accountOptions?: SetupAccountsOptions;
+  accountsOptions?: SetupAccountsOptions;
   additionalTypeDefs: Array<string>;
   bulkImporter?: any;
   context?: any;
   modules: Record<string, any>;
   rolesOptions?: any;
   workQueueOptions?: SetupWorkqueueOptions & SetupCartsOptions;
+  coreOptions: UnchainedCoreOptions['options'];
 };
 export const startPlatform = async (
-  { modules, additionalTypeDefs = [], ...options }: PlatformOptions = {
+  { modules, additionalTypeDefs = [], coreOptions = {}, ...options }: PlatformOptions = {
     modules: undefined,
     additionalTypeDefs: [],
+    coreOptions: {},
   }
 ) => {
   const workQueueIsEnabled = isWorkQueueEnabled(options);
@@ -64,7 +69,7 @@ export const startPlatform = async (
     bulkImporter: {
       BulkImportPayloads,
     },
-    options,
+    options: coreOptions,
   });
 
   if (workQueueIsEnabled) {
@@ -72,7 +77,7 @@ export const startPlatform = async (
   }
 
   // Setup accountsjs specific extensions and event handlers
-  setupAccounts(options.accountOptions, unchainedAPI);
+  setupAccounts(options.accountsOptions, unchainedAPI);
 
   // Setup email templates
   // setupTemplates(options);
@@ -90,7 +95,7 @@ export const startPlatform = async (
   if (emailInterceptionIsEnabled) interceptEmails();
 
   // Setup work queues for scheduled work
-  if (workQueueIsEnabled) {
+  if (workQueueIsEnabled && options.workQueueOptions) {
     const handlers = setupWorkqueue(options.workQueueOptions, unchainedAPI);
     handlers.forEach((handler) => queueWorkers.push(handler));
     await setupCarts(options.workQueueOptions, unchainedAPI);

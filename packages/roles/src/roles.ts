@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import clone from 'lodash.clone';
-import { has, isFunction } from '../helpers';
+import { has } from './utils/has';
+import { isFunction } from './utils/isFunction';
 import { Context } from '@unchainedshop/types/api';
-import { User } from '@unchainedshop/types/user';
 
 interface RoleInterface {
   name: string;

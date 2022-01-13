@@ -56,7 +56,7 @@ let context;
 export const startAPIServer = (options: UnchainedServerOptions) => {
   const {
     unchainedAPI,
-    rolesOptions,
+    rolesOptions = {},
     context: customContext,
     ...apolloServerOptions
   } = options || {};
