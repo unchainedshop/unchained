@@ -14,7 +14,7 @@ const buildFindSelector = ({ type }: FindQuery) => {
 
 export const configureEventsModule = async ({
   db,
-}: ModuleInput): Promise<EventsModule> => {
+}: ModuleInput<{}>): Promise<EventsModule> => {
   const Events = await EventsCollection(db);
 
   configureEventHistoryAdapter(Events);

@@ -40,7 +40,7 @@ const MAX_UNCOMPRESSED_FILTER_PRODUCTS = 1000;
 export const configureFiltersModule = async ({
   db,
   skipInvalidationOnStartup,
-}: ModuleInput & {
+}: ModuleInput<{}> & {
   skipInvalidationOnStartup: boolean;
 }): Promise<FiltersModule> => {
   registerEvents(FILTER_EVENTS);
@@ -150,9 +150,12 @@ export const configureFiltersModule = async ({
     requestContext: Context
   ) => {
     const getProductIds =
-      (!forceLiveCollection && cache(filter)) ||
-      buildProductIdMap(filter, requestContext);
-    const { allProductIds, productIds } = await getProductIds;
+      (!forceLiveCollection && await cache(filter)) ||
+      await buildProductIdMap(filter, requestContext);
+
+    console.log('PRODUCT IDS', getProductIds)
+
+    const { allProductIds, productIds } = getProductIds;
 
     if (filter.type === FilterType.SWITCH) {
       const [stringifiedBoolean] = values;

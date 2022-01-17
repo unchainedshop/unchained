@@ -16,7 +16,7 @@ const BOOKMARK_EVENTS: string[] = [
 
 export const configureBookmarksModule = async ({
   db,
-}: ModuleInput): Promise<BookmarksModule> => {
+}: ModuleInput<{}>): Promise<BookmarksModule> => {
   registerEvents(BOOKMARK_EVENTS);
 
   const Bookmarks = await BookmarksCollection(db);

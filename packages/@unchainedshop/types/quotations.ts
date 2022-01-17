@@ -181,3 +181,11 @@ export type IQuotationDirector = IBaseDirector<IQuotationAdapter> & {
     requestContext: Context
   ) => QuotationAdapterActions;
 };
+
+/*
+ * Settings
+ */
+
+export interface QuotationsSettingsOptions {
+  quotationNumberHashFn?: (quotation: Quotation, index: number) => string;
+}

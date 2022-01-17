@@ -21,7 +21,7 @@ const buildFindSelector = ({ includeInactive = false }: FindQuery) => {
 
 export const configureCurrenciesModule = async ({
   db,
-}: ModuleInput): Promise<CurrenciesModule> => {
+}: ModuleInput<{}>): Promise<CurrenciesModule> => {
   registerEvents(CURRENCY_EVENTS);
 
   const Currencies = await CurrenciesCollection(db);

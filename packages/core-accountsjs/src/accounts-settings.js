@@ -2,7 +2,7 @@ import { accountsPassword } from './accounts/accounts-password';
 import { accountsServer } from './accounts/accounts-server';
 
 export const accountsSettings = {
-  load({ server = {}, password = {} } = {}) {
+  configureSettings: ({ server = {}, password = {} } = {}) => {
     accountsPassword.options.sendVerificationEmailAfterSignup = false;
     Object.keys(server).forEach((key) => {
       accountsServer.options[key] = server[key];

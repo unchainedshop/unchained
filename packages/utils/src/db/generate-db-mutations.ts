@@ -36,27 +36,35 @@ export const generateDbMutations = <T extends { _id?: _ID }>(
       ? undefined
       : async (_id, doc, userId) => {
           checkId(_id);
-          const values = schema.clean(doc, { isModifier: true });
-          values.$set = values.$set || {};
-          values.$set.updated = new Date();
-          values.$set.updatedBy = userId;
 
-          schema.validate(values, { modifier: true });
+          let modifier;
+          if (doc.$set) {
+            const values = schema.clean(doc, { isModifier: true });
+            modifier = values;
+            modifier.$set = values.$set || {};
+            modifier.$set.updated = new Date();
+            modifier.$set.updatedBy = userId;
+          } else {
+            const values = schema.clean(doc);
+            modifier = { $set: values };
+            modifier.$set.updated = new Date();
+            modifier.$set.updatedBy = userId;
+          }
+
+          schema.validate(modifier, { modifier: true });
           const filter = generateDbFilterById(_id);
-          filter.deleted = null
-          const result = await collection.updateOne(filter, values);
+          filter.deleted = null;
+          const result = await collection.updateOne(filter, modifier);
 
-          return typeof result.upsertedId === 'string'
-            ? result.upsertedId
-            : result.upsertedId.toHexString();
+          return _id;
         },
 
     delete: hasCreateOnly
       ? undefined
       : async (_id, userId) => {
           checkId(_id);
-          const filter = generateDbFilterById(_id)
-          filter.deleted = null
+          const filter = generateDbFilterById(_id);
+          filter.deleted = null;
           const values = schema.clean(
             { $set: { deleted: new Date(), deletedBy: userId } },
             { isModifier: true }

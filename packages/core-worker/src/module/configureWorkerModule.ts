@@ -92,7 +92,7 @@ const defaultSort = {
 
 export const configureWorkerModule = async ({
   db,
-}: ModuleInput): Promise<WorkerModule> => {
+}: ModuleInput<{}>): Promise<WorkerModule> => {
   const WorkQueue = await WorkQueueCollection(db);
 
   const mutations = generateDbMutations<Work>(

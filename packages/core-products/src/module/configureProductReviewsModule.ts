@@ -72,7 +72,7 @@ const userIdsThatVoted: ProductReviewsModule['votes']['userIdsThatVoted'] = (
 
 export const configureProductReviewsModule = async ({
   db,
-}: ModuleInput): Promise<ProductReviewsModule> => {
+}: ModuleInput<{}>): Promise<ProductReviewsModule> => {
   registerEvents(PRODUCT_REVIEW_EVENTS);
 
   const { ProductReviews } = await ProductReviewsCollection(db);

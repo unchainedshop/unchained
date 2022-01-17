@@ -111,8 +111,7 @@ const configureRoles = ({ additionalRoles = {} }) => {
   admin(roles.ADMIN, actions);
 };
 
-const checkPermission = async (context, action, ...args) =>
-  await Roles.userHasPermission(context, action, ...args);
+const checkPermission = Roles.userHasPermission;
 
 const updateUserRole = async (context, roleName) =>
   await Roles.addUserToRoles(context, roles[roleName].name);

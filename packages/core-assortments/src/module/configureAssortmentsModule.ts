@@ -8,6 +8,7 @@ import {
   AssortmentsModule,
   Assortment,
   AssortmentQuery,
+  AssortmentsSettingsOptions,
 } from '@unchainedshop/types/assortments';
 import { emit, registerEvents } from 'meteor/unchained:events';
 import { log, LogLevel } from 'meteor/unchained:logger';
@@ -44,7 +45,7 @@ const buildFindSelector = ({
   const selector: Query = assortmentSelector || {};
 
   if (assortmentIds?.length > 0) {
-    selector._ids = { $in: assortmentIds };
+    selector._id = { $in: assortmentIds };
   }
 
   if (slugs?.length > 0) {
@@ -53,10 +54,11 @@ const buildFindSelector = ({
     selector.tags = { $all: tags };
   }
 
-  if (!includeLeaves) {
+  if (!assortmentSelector && !includeLeaves) {
     selector.isRoot = true;
   }
-  if (!includeInactive) {
+
+  if (!assortmentSelector && !includeInactive) {
     selector.isActive = true;
   }
   return selector;
@@ -68,8 +70,11 @@ const eqSet = (as: Set<string>, bs: Set<string>) => {
 
 export const configureAssortmentsModule = async ({
   db,
-}: ModuleInput): Promise<AssortmentsModule> => {
+  options,
+}: ModuleInput<AssortmentsSettingsOptions>): Promise<AssortmentsModule> => {
   registerEvents(ASSORTMENT_EVENTS);
+
+  assortmentsSettings.configureSettings(options);
 
   const {
     Assortments,
@@ -281,8 +286,6 @@ export const configureAssortmentsModule = async ({
         return null;
       }
 
-      console.log('SELECTOR', selector);
-
       return await Assortments.findOne(selector);
     },
 
@@ -340,40 +343,39 @@ export const configureAssortmentsModule = async ({
     },
 
     breadcrumbs: async ({ assortmentId, productId }) => {
-      const resolveAssortmentLink =
-        (params: { selector: Query } = { selector: {} }) =>
-        async (assortmentId: string, childAssortmentId: string) => {
-          const assortmentLinks = AssortmentLinks.find(
-            { childAssortmentId: assortmentId, ...params.selector },
-            {
-              projection: { parentAssortmentId: 1 },
-              sort: { sortKey: 1 },
-            }
-          );
+      const resolveAssortmentLink = async (
+        assortmentId: string,
+        childAssortmentId: string
+      ) => {
+        const assortmentLinks = AssortmentLinks.find(
+          { childAssortmentId: assortmentId },
+          {
+            projection: { parentAssortmentId: 1 },
+            sort: { sortKey: 1 },
+          }
+        );
 
-          const parentIds = await assortmentLinks
-            .map((link) => link.parentAssortmentId)
-            .toArray();
-          return {
-            assortmentId,
-            childAssortmentId,
-            parentIds,
-          };
+        const parentIds = await assortmentLinks
+          .map((link) => link.parentAssortmentId)
+          .toArray();
+        return {
+          assortmentId,
+          childAssortmentId,
+          parentIds,
         };
+      };
 
-      const resolveAssortmentProducts =
-        (params: { selector: Query } = { selector: {} }) =>
-        async (productId: string) => {
-          const assortmentProducts = AssortmentProducts.find(
-            { productId, ...params.selector },
-            {
-              projection: { _id: true, assortmentId: true },
-              sort: { sortKey: 1 },
-            }
-          );
+      const resolveAssortmentProducts = async (productId: string) => {
+        const assortmentProducts = AssortmentProducts.find(
+          { productId },
+          {
+            projection: { _id: true, assortmentId: true },
+            sort: { sortKey: 1 },
+          }
+        );
 
-          return await assortmentProducts.toArray();
-        };
+        return await assortmentProducts.toArray();
+      };
 
       const buildBreadcrumbs = makeAssortmentBreadcrumbsBuilder({
         resolveAssortmentLink,
@@ -501,8 +503,8 @@ export const configureAssortmentsModule = async ({
         assortmentIds,
         assortmentSelector,
         sort,
-      }) =>
-        await findPreservingIds(Assortments)(
+      }) => {
+        const assortments =  await findPreservingIds(Assortments)(
           assortmentSelector,
           assortmentIds,
           {
@@ -510,7 +512,11 @@ export const configureAssortmentsModule = async ({
             offset,
             sort,
           }
-        ),
+        )
+
+        return assortments
+      }
+      
     },
 
     // Sub entities

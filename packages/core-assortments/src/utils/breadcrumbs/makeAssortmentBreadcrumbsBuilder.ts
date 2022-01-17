@@ -10,7 +10,7 @@ export const makeAssortmentBreadcrumbsBuilder = ({
   resolveAssortmentLink,
   resolveAssortmentProducts,
 }) => {
-  return async (params: { assortmentId?: string; productId?: string }) =>
+  return async (params: { assortmentId?: string; productId?: string }) => 
     await buildBreadcrumbs({
       assortmentId: params.assortmentId,
       productId: params.productId,

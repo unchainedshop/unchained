@@ -63,6 +63,7 @@ export const configureFilterSearchModule = ({
         searchConfiguration,
         filterActions
       )(query?.productIds);
+
       const totalAssormentCount = async () =>
         modules.assortments.count({
           assortmentSelector,

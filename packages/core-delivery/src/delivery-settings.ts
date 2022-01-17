@@ -21,7 +21,12 @@ const allProviders: FilterProviders = ({ providers }) => {
 
 export const deliverySettings: DeliverySettings = {
   filterSupportedProviders: null,
-  load({ sortProviders, filterSupportedProviders = allProviders }) {
+
+  configureSettings(
+    { sortProviders, filterSupportedProviders = allProviders } = {
+      sortProviders: undefined,
+    }
+  ) {
     if (sortProviders) {
       logger.warn(
         'sortProviders is deprecated, please specifc filterSupportedProviders instead'

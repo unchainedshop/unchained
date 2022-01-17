@@ -262,7 +262,10 @@ export type ProductsModule = {
   ) => Promise<Product>;
 
   delete: (productId: string, userId?: string) => Promise<number>;
-  deleteProductsPermanently: (params: { productId?: string, excludedProductIds?: Array<_ID> }) => Promise<number>;
+  deleteProductsPermanently: (params: {
+    productId?: string;
+    excludedProductIds?: Array<_ID>;
+  }) => Promise<number>;
 
   update: (
     productId: string,
@@ -336,7 +339,10 @@ export type ProductsModule = {
 
   texts: {
     // Queries
-    findTexts: (params: { productId: string }) => Promise<Array<ProductText>>;
+    findTexts: (
+      query: Query,
+      options?: FindOptions
+    ) => Promise<Array<ProductText>>;
 
     findLocalizedText: (params: {
       productId: string;

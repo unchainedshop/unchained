@@ -125,3 +125,5 @@ What happens if the first one passes and the second not?
 17. Npm package: later is deprecated and should be replaced with https://www.npmjs.com/package/@breejs/later
 
 18. BaseWorker: line 61: Does that work wiht [0]? As far as I could see in the code the schedules need to be strings. But well, it is not really clear to me how this later works...
+
+19. Roles: Fetch user in roles.ts -> userHasPermission might be unnecessary as the user is set as soon as a user logs in and we have a userId. Is that correct?

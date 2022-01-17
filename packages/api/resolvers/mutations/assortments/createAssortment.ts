@@ -4,12 +4,14 @@ import { Assortment } from '@unchainedshop/types/assortments';
 
 export default async function createAssortment(
   root: Root,
-  { assortment }: { assortment: Assortment & { title: string, locale?: string }},
+  {
+    assortment,
+  }: { assortment: Assortment & { title: string; locale?: string } },
   { modules, userId, localeContext }: Context
 ) {
   log('mutation createAssortment', { modules, userId });
 
-  return await modules.assortments.create(
+  const assortmentId = await modules.assortments.create(
     {
       ...assortment,
       locale: localeContext.language,
@@ -17,4 +19,6 @@ export default async function createAssortment(
     },
     userId
   );
+
+  return await modules.assortments.findAssortment({ assortmentId });
 }

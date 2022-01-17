@@ -198,10 +198,11 @@ export type FilterProviders = (params: {
 
 export interface DeliverySettingsOptions {
   sortProviders?: (a: DeliveryProvider, b: DeliveryProvider) => number;
-  filterSupportedProviders: FilterProviders;
+  filterSupportedProviders?: FilterProviders;
 }
 
 export interface DeliverySettings {
   filterSupportedProviders: FilterProviders | null;
-  load: (options: DeliverySettingsOptions) => void;
+
+  configureSettings: (options?: DeliverySettingsOptions) => void;
 }

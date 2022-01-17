@@ -26,11 +26,7 @@ interface RolesInterface {
     includeSpecial: boolean
   ): string[];
   allow(context: Context, roles: Array<string>, action: any): boolean;
-  userHasPermission(
-    context: Context,
-    roles: Array<string>,
-    action: any
-  ): boolean;
+  userHasPermission(context: Context, action: any): Promise<boolean>;
   addUserToRoles(context: Context, roles: string | string[]): Promise<any>;
   checkPermission(context: Context, action: any): Promise<void | never>;
   adminRole?: RoleInterface;
@@ -87,6 +83,7 @@ export const Roles: RolesInterface = {
     const args = Object.values(arguments).slice(2);
 
     let allowed = false;
+
     const userRoles = Roles.getUserRoles(context, roles, true);
 
     userRoles.forEach((role) => {
@@ -110,7 +107,18 @@ export const Roles: RolesInterface = {
   /**
    * To check if a user has permisisons to execute an action
    */
-  userHasPermission: (context, roles, action) => {
+  userHasPermission: async (context, action) => {
+    const user =
+      context.user ||
+      // TODO: Check with Pascal. Not sure this is needed, as it might be, that if there is a userId then the user is set as well
+      (context.userId &&
+        (await context.modules.users.findUser(
+          { userId: context.userId },
+          { projection: { roles: 1 } }
+        )));
+
+    const roles = Array.isArray(user?.roles) ? user.roles : [];
+
     const allows = Roles.allow(context, roles, action);
     return allows === true;
   },
@@ -132,14 +140,7 @@ export const Roles: RolesInterface = {
    * Roles.userHasPermission(userId, action, [extra])
    */
   async checkPermission(context, action) {
-    const user = await context.modules.users.findUser(
-      { userId: context.userId },
-      { projection: { roles: 1 } }
-    );
-
-    const roles = (user && user.roles) || [];
-
-    if (!this.userHasPermission(context, roles, action)) {
+    if (!(await Roles.userHasPermission(context, action))) {
       throw new Meteor.Error(
         'unauthorized',
         'The user has no permission to perform this action'

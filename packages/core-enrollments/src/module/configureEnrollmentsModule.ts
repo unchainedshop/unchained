@@ -32,8 +32,11 @@ const ENROLLMENT_EVENTS: string[] = [
 
 export const configureEnrollmentsModule = async ({
   db,
-}: ModuleInput): Promise<EnrollmentsModule> => {
+  options,
+}: ModuleInput<EnrollmentsSettingsOptions>): Promise<EnrollmentsModule> => {
   registerEvents(ENROLLMENT_EVENTS);
+
+  enrollmentsSettings.configureSettings(options);
 
   const Enrollments = await EnrollmentsCollection(db);
 
@@ -490,6 +493,22 @@ export const configureEnrollmentsModule = async ({
       const deletedCount = await mutations.delete(enrollmentId, userId);
       emit('ORDER_REMOVE', { enrollmentId });
       return deletedCount;
+    },
+
+    removeEnrollmentPeriodByOrderId: async (enrollmentId, orderId, userId) => {
+      const selector = generateDbFilterById(enrollmentId);
+      await Enrollments.update(selector, {
+        $set: {
+          updated: new Date(),
+          updatedBy: userId,
+        },
+
+        $pull: {
+          periods: { orderId: { $in: [orderId, undefined, null] } },
+        },
+      });
+
+      return await Enrollments.findOne(selector);
     },
 
     updateBillingAddress: updateEnrollmentField('billingAddress'),

@@ -18,8 +18,8 @@ describe('Assortments', () => {
     graphqlFetchAsAnonymousUser = await createAnonymousGraphqlFetch();
   });
 
-  describe('Query.assortments for admin user should', () => {
-    it('Return the only active assortments when no argument passed', async () => {
+  describe("Query.assortments for admin user should", () => {
+    it("Return the only active assortments when no argument passed", async () => {
       const {
         data: { assortments },
       } = await graphqlFetch({
@@ -36,7 +36,7 @@ describe('Assortments', () => {
       expect(assortments.length).toEqual(4);
     });
 
-    it('Return active assortments and include leaves', async () => {
+    it("Return active assortments and include leaves", async () => {
       const result = await graphqlFetch({
         query: /* GraphQL */ `
           query Assortments(
@@ -118,7 +118,7 @@ describe('Assortments', () => {
       });
       expect(result.data.assortments.length).toEqual(5);
     });
-    it('Return all assortments and without leaves', async () => {
+    it("Return all assortments and without leaves", async () => {
       const {
         data: { assortments },
       } = await graphqlFetch({
@@ -147,7 +147,7 @@ describe('Assortments', () => {
 
       expect(assortments.length).toEqual(8);
     });
-    it('Return all assortments and include leaves', async () => {
+    it("Return all assortments and include leaves", async () => {
       const {
         data: { assortments },
       } = await graphqlFetch({
@@ -446,8 +446,8 @@ describe('Assortments', () => {
     });
   });
 
-  describe('Query.searchAssortments for admin user should', () => {
-    it('Return assortments successfuly', async () => {
+  describe("Query.searchAssortments for admin user should", () => {
+    it("Return assortments successfuly", async () => {
       const {
         data: { searchAssortments },
       } = await graphqlFetch({
@@ -471,15 +471,15 @@ describe('Assortments', () => {
           }
         `,
         variables: {
-          queryString: 'simple-assortment',
+          queryString: "simple-assortment",
         },
       });
 
       expect(searchAssortments.totalAssortments).toEqual(1);
       expect(searchAssortments.assortments[0].texts).toMatchObject({
-        _id: 'german',
-        title: 'simple assortment de',
-        description: 'text-de',
+        _id: "german",
+        title: "simple assortment de",
+        description: "text-de",
       });
     });
   });

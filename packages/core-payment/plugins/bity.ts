@@ -236,11 +236,11 @@ useMiddlewareWithCurrentContext(BITY_OAUTH_PATH, async (req, res, next) => {
 useMiddlewareWithCurrentContext(BITY_OAUTH_PATH, async (req, res) => {
   if (req.method === 'GET') {
     try {
-      const requestContext = req.unchainedContext as Context;
-      checkAction(actions.managePaymentProviders, requestContext?.userId);
+      const resolvedContext = req.unchainedContext as Context;
+      await checkAction(actions.managePaymentProviders, resolvedContext);
       const bityAuthClient = createBityAuth();
       const user = await bityAuthClient.code.getToken(req.originalUrl);
-      await upsertBityCredentials(user, requestContext);
+      await upsertBityCredentials(user, resolvedContext);
       res.writeHead(200);
       return res.end('Bity Credentials Setup Complete');
     } catch (e) {

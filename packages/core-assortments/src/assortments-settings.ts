@@ -1,8 +1,9 @@
 import zipTreeByDeepness from './utils/tree-zipper/zipTreeByDeepness';
+import { AssortmentsSettingsOptions } from '@unchainedshop/types/assortments'
 
 export const assortmentsSettings = {
   zipTree: null,
-  load({ zipTree = zipTreeByDeepness } = {}) {
-    this.zipTree = zipTree;
+  configureSettings: ({ zipTree = zipTreeByDeepness }: AssortmentsSettingsOptions = {}) => {
+    assortmentsSettings.zipTree = zipTree;
   },
 };

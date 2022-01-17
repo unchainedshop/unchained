@@ -1,11 +1,6 @@
-import {
-  accountsSettings,
-  configureAccountsModule,
-} from 'meteor/unchained:core-accountsjs';
-import {
-  configureAssortmentsModule,
-  assortmentsSettings,
-} from 'meteor/unchained:core-assortments';
+import { UnchainedCoreOptions } from '@unchainedshop/types/api';
+import { configureAccountsModule } from 'meteor/unchained:core-accountsjs';
+import { configureAssortmentsModule } from 'meteor/unchained:core-assortments';
 import {
   bookmarkServices,
   configureBookmarksModule,
@@ -15,14 +10,8 @@ import {
   countryServices,
 } from 'meteor/unchained:core-countries';
 import { configureCurrenciesModule } from 'meteor/unchained:core-currencies';
-import {
-  configureDeliveryModule,
-  deliverySettings,
-} from 'meteor/unchained:core-delivery';
-import {
-  configureEnrollmentsModule,
-  enrollmentsSettings,
-} from 'meteor/unchained:core-enrollments';
+import { configureDeliveryModule } from 'meteor/unchained:core-delivery';
+import { configureEnrollmentsModule } from 'meteor/unchained:core-enrollments';
 import { configureEventsModule } from 'meteor/unchained:core-events';
 import {
   configureFilesModule,
@@ -34,7 +23,6 @@ import { configureLanguagesModule } from 'meteor/unchained:core-languages';
 import {
   configureOrdersModule,
   orderServices,
-  ordersSettings,
 } from 'meteor/unchained:core-orders';
 import {
   configurePaymentModule,
@@ -44,17 +32,13 @@ import {
   configureProductsModule,
   productServices,
 } from 'meteor/unchained:core-products';
-import {
-  configureQuotationsModule,
-  quotationsSettings,
-} from 'meteor/unchained:core-quotations';
+import { configureQuotationsModule } from 'meteor/unchained:core-quotations';
 import {
   configureUsersModule,
   userServices,
 } from 'meteor/unchained:core-users';
 import { configureWarehousingModule } from 'meteor/unchained:core-warehousing';
 import { configureWorkerModule } from 'meteor/unchained:core-worker';
-import { UnchainedCoreOptions } from '@unchainedshop/types/api';
 
 export const initCore = async ({
   db,
@@ -63,31 +47,36 @@ export const initCore = async ({
   options = {},
 }: UnchainedCoreOptions) => {
   const accounts = await configureAccountsModule(options.accounts);
-  const assortments = await configureAssortmentsModule({ db });
+  const assortments = await configureAssortmentsModule({ db, options: options.assortments });
   const bookmarks = await configureBookmarksModule({ db });
   const countries = await configureCountriesModule({ db });
   const currencies = await configureCurrenciesModule({ db });
-  const delivery = await configureDeliveryModule({ db });
-  const enrollments = await configureEnrollmentsModule({ db });
+  const delivery = await configureDeliveryModule({
+    db,
+    options: options.delivery,
+  });
+  const enrollments = await configureEnrollmentsModule({
+    db,
+    options: options.enrollments,
+  });
   const events = await configureEventsModule({ db });
   const files = await configureFilesModule({ db });
   const filters = await configureFiltersModule({ db });
   const languages = await configureLanguagesModule({ db });
   // const messaging = await configureMessagingModule({ db });
-  const orders = await configureOrdersModule({ db });
+  const orders = await configureOrdersModule({
+    db,
+    options: options.orders,
+  });
   const payment = await configurePaymentModule({ db });
   const products = await configureProductsModule({ db });
-  const quotations = await configureQuotationsModule({ db });
+  const quotations = await configureQuotationsModule({
+    db,
+    options: options.quotations,
+  });
   const users = await configureUsersModule({ db });
   const warehousing = await configureWarehousingModule({ db });
   const worker = await configureWorkerModule({ db });
-
-  accountsSettings(modules.accounts);
-  assortmentsSettings(options.assortments);
-  deliverySettings(options.delivery);
-  enrollmentsSettings(options.enrollments);
-  ordersSettings(options.orders);
-  quotationsSettings(options.quotations);
 
   return {
     modules: {

@@ -5,6 +5,7 @@ import {
   DeliveryModule,
   DeliveryProvider,
   DeliveryProviderType,
+  DeliverySettingsOptions,
 } from '@unchainedshop/types/delivery';
 import { emit, registerEvents } from 'meteor/unchained:events';
 import {
@@ -38,8 +39,11 @@ const getDefaultContext = (context?: DeliveryContext): DeliveryContext => {
 
 export const configureDeliveryModule = async ({
   db,
-}: ModuleInput): Promise<DeliveryModule> => {
+  options,
+}: ModuleInput<DeliverySettingsOptions>): Promise<DeliveryModule> => {
   registerEvents(DELIVERY_PROVIDER_EVENTS);
+
+  deliverySettings.configureSettings(options);
 
   const DeliveryProviders = await DeliveryProvidersCollection(db);
 

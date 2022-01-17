@@ -28,7 +28,7 @@ const PRODUCT_MEDIA_EVENTS = [
 
 export const configureProductMediaModule = async ({
   db,
-}: ModuleInput): Promise<ProductMediaModule> => {
+}: ModuleInput<{}>): Promise<ProductMediaModule> => {
   registerEvents(PRODUCT_MEDIA_EVENTS);
 
   const { ProductMedia, ProductMediaTexts } = await ProductMediaCollection(db);

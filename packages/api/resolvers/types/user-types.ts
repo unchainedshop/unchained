@@ -86,12 +86,12 @@ export const User: UserHelperTypes = {
   username: checkTypeResolver(viewUserPrivateInfos, 'username'),
 
   primaryEmail: async (user, params, context) => {
-    await checkAction(viewUserPrivateInfos, context, [user, params, context]);
+    await checkAction(viewUserPrivateInfos, context, [user, params]);
     return getPrimaryEmail(user);
   },
 
   isEmailVerified: async (user, params, context) => {
-    await checkAction(viewUserPrivateInfos, context, [user, params, context]);
+    await checkAction(viewUserPrivateInfos, context, [user, params]);
     log(
       'user.isEmailVerified is deprecated, please use user.primaryEmail.verified',
       { level: LogLevel.Warning }
@@ -99,7 +99,7 @@ export const User: UserHelperTypes = {
     return !!getPrimaryEmail(user)?.verified;
   },
   isInitialPassword: async (user, params, context) => {
-    await checkAction(viewUserPrivateInfos, context, [user, params, context]);
+    await checkAction(viewUserPrivateInfos, context, [user, params]);
     const { password: { initial } = { initial: undefined } } =
       user.services || {};
     return user.initialPassword || !!initial;
@@ -138,7 +138,7 @@ export const User: UserHelperTypes = {
 
   country: async (user, params, context) => {
     await checkAction(viewUserPrivateInfos, context, [user, params]);
-    return await context.services.countries.getUserCountry(user, params);
+    return await context.services.users.getUserCountry(user, params, context);
   },
 
   enrollments: async (user, params, context) => {
@@ -150,7 +150,7 @@ export const User: UserHelperTypes = {
 
   language: async (user, params, context) => {
     await checkAction(viewUserPrivateInfos, context, [user, params]);
-    return await context.services.user.getUserLanguage(user);
+    return await context.services.users.getUserLanguage(user, params, context);
   },
 
   // locale: async (user, params, context) => {

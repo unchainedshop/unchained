@@ -28,7 +28,7 @@ export type UnchainedServerContext = UnchainedLocaleContext &
 
 const UNCHAINED_API_VERSION = '1.0.0-beta15'; // eslint-disable-line
 
-export const createContextResolver =
+const createContextResolver =
   (unchainedAPI: UnchainedAPI) =>
   // eslint-disable-next-line
   async ({ req, res, ...apolloContext }): Promise<UnchainedServerContext> => {

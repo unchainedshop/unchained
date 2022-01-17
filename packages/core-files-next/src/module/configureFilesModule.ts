@@ -27,7 +27,7 @@ const getFileFromFileData = (fileData: UploadFileData, meta: any) => ({
 
 export const configureFilesModule = async ({
   db,
-}: ModuleInput): Promise<FilesModule> => {
+}: ModuleInput<{}>): Promise<FilesModule> => {
   registerEvents(FILE_EVENTS);
 
   const Files = await MediaObjectsCollection(db);

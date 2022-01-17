@@ -33,7 +33,7 @@ const buildFindSelector = ({ type, deleted = null }: FindQuery = {}) => {
 
 export const configureWarehousingModule = async ({
   db,
-}: ModuleInput): Promise<WarehousingModule> => {
+}: ModuleInput<{}>): Promise<WarehousingModule> => {
   registerEvents(WAREHOUSING_PROVIDER_EVENTS);
 
   const WarehousingProviders = await WarehousingProvidersCollection(db);

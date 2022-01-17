@@ -2,19 +2,19 @@ import { Context } from './api';
 import { User, UserProfile } from './user';
 import { User as AccountsUser } from '@accounts/types';
 
-export interface AccountsOptions {
-  autoMessagingAfterUserCreation?: boolean;
-}
-
 export interface UserData {
   email?: string;
-  guest?: boolean
-  initialPassword?: boolean
+  guest?: boolean;
+  initialPassword?: boolean;
   password: string | null;
   plainPassword?: string;
   profile?: UserProfile;
   username?: string;
 }
+
+/*
+ * Module
+ */
 
 export interface AccountsModule {
   emit: (event: string, meta: any) => Promise<void>;
@@ -31,7 +31,6 @@ export interface AccountsModule {
   updateEmail: (userId: string, email: string, user: User) => Promise<void>;
   verifyEmail: (token: string) => Promise<void>;
   findUnverifiedUserByToken: (token: string) => Promise<AccountsUser>;
-  sendEnrollmentEmail: (email: string) => Promise<void>;
   sendVerificationEmail: (email: string) => Promise<void>;
 
   // Authentication
@@ -43,8 +42,6 @@ export interface AccountsModule {
     token: string;
     tokenExpires: Date;
   }>;
-  createHashLoginToken: (token?: any) => string;
-
   loginWithService: (
     params:
       | { service: 'guest' }
@@ -97,4 +94,14 @@ export interface AccountsModule {
     code: string
   ) => Promise<boolean>;
   disableTOTP: (userId: string, code: string) => Promise<boolean>;
+}
+
+/*
+ * Settings
+ */
+
+export interface AccountsSettingsOptions {
+  autoMessagingAfterUserCreation?: boolean;
+  server?: any;
+  password?: any;
 }

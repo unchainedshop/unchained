@@ -35,7 +35,7 @@ export type AssortmentMediaModule = {
       offset?: number;
       tags?: Array<string>;
     },
-    options: FindOptions
+    options?: FindOptions
   ) => Promise<Array<AssortmentMedia>>;
 
   // Mutations

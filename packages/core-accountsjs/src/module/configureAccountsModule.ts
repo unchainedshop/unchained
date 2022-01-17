@@ -2,15 +2,21 @@ import { log, LogLevel } from 'meteor/unchained:logger';
 import { v4 as uuidv4 } from 'uuid';
 import { evaluateContext } from './utils/evaluateContext';
 import { filterContext } from './utils/filterContext';
-import { AccountsModule, AccountsOptions } from '@unchainedshop/types/accounts';
+import {
+  AccountsModule,
+  AccountsSettingsOptions,
+} from '@unchainedshop/types/accounts';
 import { accountsPassword } from '../accounts/accounts-password';
 import { accountsServer } from '../accounts/accounts-server';
 import { dbManager } from '../accounts/db-manager';
 import hashPassword from './utils/hashPassword';
+import { accountsSettings } from '../accounts-settings';
 
 export const configureAccountsModule = async ({
-  autoMessagingAfterUserCreation,
-}: AccountsOptions = {}): Promise<AccountsModule> => {
+  options: accountsOptions = {},
+}: { options?: AccountsSettingsOptions } = {}): Promise<AccountsModule> => {
+  accountsSettings.configureSettings(accountsOptions);
+
   return {
     emit: async (event, meta) =>
       await accountsServer.getHooks().emit(event, meta),
@@ -21,7 +27,9 @@ export const configureAccountsModule = async ({
 
       const autoMessagingEnabled = options.skipMessaging
         ? false
-        : autoMessagingAfterUserCreation && userData.email && userId;
+        : accountsOptions.autoMessagingAfterUserCreation &&
+          userData.email &&
+          userId;
 
       if (autoMessagingEnabled) {
         if (userData.password === undefined) {

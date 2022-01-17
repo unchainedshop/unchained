@@ -54,7 +54,7 @@ const buildFindSelector = ({
 
   if (slugs?.length > 0) {
     selector.slugs = { $in: slugs };
-  } else if (tags?.length > 0) {
+  } else if (Array.isArray(tags) && tags?.length > 0) {
     selector.tags = { $all: tags };
   }
 
@@ -69,7 +69,7 @@ const buildFindSelector = ({
 
 export const configureProductsModule = async ({
   db,
-}: ModuleInput): Promise<ProductsModule> => {
+}: ModuleInput<{}>): Promise<ProductsModule> => {
   registerEvents(PRODUCT_EVENTS);
 
   const { Products, ProductTexts } = await ProductsCollection(db);
@@ -536,12 +536,13 @@ export const configureProductsModule = async ({
         productIds,
         productSelector,
         sort,
-      }) =>
-        await findPreservingIds(Products)(productSelector, productIds, {
+      }) => {
+        return await findPreservingIds(Products)(productSelector, productIds, {
           skip: offset,
           limit,
           sort,
-        }),
+        });
+      },
     },
 
     texts: productTexts,

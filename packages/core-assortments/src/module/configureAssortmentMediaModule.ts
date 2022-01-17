@@ -28,7 +28,7 @@ const ASSORTMENT_MEDIA_EVENTS = [
 
 export const configureAssortmentMediaModule = async ({
   db,
-}: ModuleInput): Promise<AssortmentMediaModule> => {
+}: ModuleInput<{}>): Promise<AssortmentMediaModule> => {
   registerEvents(ASSORTMENT_MEDIA_EVENTS);
 
   const { AssortmentMedia, AssortmentMediaTexts } =

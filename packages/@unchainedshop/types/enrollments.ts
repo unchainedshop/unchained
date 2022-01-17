@@ -141,6 +141,12 @@ export interface EnrollmentMutations {
 
   delete: (enrollmentId: string, userId?: string) => Promise<number>;
 
+  removeEnrollmentPeriodByOrderId: (
+    enrollmentId: string,
+    orderId: string,
+    userId?: string
+  ) => Promise<Enrollment>;
+
   updateBillingAddress: (
     enrollmentId: string,
     billingAddress: Address,

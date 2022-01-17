@@ -32,7 +32,7 @@ const PRODUCT_VARIATION_EVENTS = [
 
 export const configureProductVariationsModule = async ({
   db,
-}: ModuleInput): Promise<ProductVariationsModule> => {
+}: ModuleInput<{}>): Promise<ProductVariationsModule> => {
   registerEvents(PRODUCT_VARIATION_EVENTS);
 
   const { ProductVariations, ProductVariationTexts } =

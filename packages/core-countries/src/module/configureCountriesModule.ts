@@ -28,7 +28,7 @@ const buildFindSelector = ({ includeInactive = false }: FindQuery) => {
 
 export const configureCountriesModule = async ({
   db,
-}: ModuleInput): Promise<CountriesModule> => {
+}: ModuleInput<{}>): Promise<CountriesModule> => {
   registerEvents(COUNTRY_EVENTS);
 
   const Countries = await CountriesCollection(db);

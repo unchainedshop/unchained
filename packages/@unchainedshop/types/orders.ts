@@ -218,3 +218,12 @@ export type MigrateOrderCartsService = (
 export interface OrderServices {
   migrateOrderCarts: MigrateOrderCartsService;
 }
+
+/*
+ * Settings
+ */
+
+export interface OrdersSettingsOptions {
+  ensureUserHasCart?: boolean;
+  orderNumberHashFn?: (order: Order, index: number) => string;
+}

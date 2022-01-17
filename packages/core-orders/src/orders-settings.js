@@ -3,7 +3,8 @@ import { generateRandomHash } from 'meteor/unchained:utils';
 export const ordersSettings = {
   ensureUserHasCart: null,
   orderNumberHashFn: null,
-  load({
+  
+  configureSettings({
     ensureUserHasCart = false,
     orderNumberHashFn = generateRandomHash,
   } = {}) {

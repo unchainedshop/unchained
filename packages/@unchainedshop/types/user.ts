@@ -52,6 +52,7 @@ export type User = {
 } & TimestampFields;
 
 type UserQuery = {
+  username?: string;
   includeGuests?: boolean;
   queryString?: string;
 };

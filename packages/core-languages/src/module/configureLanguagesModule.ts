@@ -23,7 +23,7 @@ const buildFindSelector = ({ includeInactive = false }: FindQuery) => {
 
 export const configureLanguagesModule = async ({
   db,
-}: ModuleInput): Promise<LanguagesModule> => {
+}: ModuleInput<{}>): Promise<LanguagesModule> => {
   registerEvents(LANGUAGE_EVENTS);
 
   const Languages = await LanguagesCollection(db);

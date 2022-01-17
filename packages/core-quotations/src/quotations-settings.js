@@ -2,7 +2,8 @@ import { generateRandomHash } from 'meteor/unchained:utils';
 
 export const quotationsSettings = {
   quotationNumberHashFn: null,
-  load({ quotationNumberHashFn = generateRandomHash } = {}) {
+  
+  configureSettings({ quotationNumberHashFn = generateRandomHash } = {}) {
     this.quotationNumberHashFn = quotationNumberHashFn;
   },
 };

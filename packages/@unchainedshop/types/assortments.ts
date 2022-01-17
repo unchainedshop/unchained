@@ -322,9 +322,10 @@ export type AssortmentsModule = {
 
   texts: {
     // Queries
-    findTexts: (params: {
-      assortmentId: string;
-    }) => Promise<Array<AssortmentText>>;
+    findTexts: (
+      query: Query,
+      options?: FindOptions
+    ) => Promise<Array<AssortmentText>>;
 
     findLocalizedText: (params: {
       assortmentId: string;
@@ -361,4 +362,12 @@ export interface AssortmentPathLink {
   assortmentSlug: string;
   assortmentTexts: AssortmentText;
   link: AssortmentLink;
+}
+
+/*
+ * Settings
+ */
+
+export interface AssortmentsSettingsOptions {
+  zipTree: (data: any) => any;
 }

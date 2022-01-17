@@ -10,7 +10,7 @@ export const enrollmentsSettings = {
   autoSchedulingSchedule: null,
   autoSchedulingInput: null,
   enrollmentNumberHashFn: null,
-  load({
+  configureSettings({
     autoSchedulingSchedule = everyHourSchedule,
     autoSchedulingInput = emptyObject,
     enrollmentNumberHashFn = generateRandomHash,

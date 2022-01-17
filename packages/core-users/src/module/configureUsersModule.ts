@@ -1,6 +1,6 @@
 import { Locale } from 'locale';
-import { ModuleInput, ModuleMutations } from '@unchainedshop/types/common';
-import { User, UsersModule } from '@unchainedshop/types/user';
+import { ModuleInput, ModuleMutations, Query } from '@unchainedshop/types/common';
+import { User, UserQuery, UsersModule } from '@unchainedshop/types/user';
 import { log } from 'meteor/unchained:logger';
 import {
   generateDbFilterById,
@@ -10,13 +10,12 @@ import {
 import { UsersCollection } from '../db/UsersCollection';
 import { systemLocale } from 'meteor/unchained:utils';
 
-type FindQuery = {
-  includeGuests?: boolean;
-  queryString?: string;
-};
-
-const buildFindSelector = ({ includeGuests, queryString }: FindQuery) => {
-  const selector: any = {};
+const buildFindSelector = ({
+  username,
+  includeGuests,
+  queryString,
+}: UserQuery) => {
+  const selector: Query = username ? { username } : { username };
   if (!includeGuests) selector.guest = { $ne: true };
   if (queryString) {
     selector.$text = { $search: queryString };
@@ -34,7 +33,7 @@ const getUserLocale = (user: User, params: { localeContext?: Locale } = {}) => {
 
 export const configureUsersModule = async ({
   db,
-}: ModuleInput): Promise<UsersModule> => {
+}: ModuleInput<{}>): Promise<UsersModule> => {
   const Users = await UsersCollection(db);
 
   const mutations = generateDbMutations<User>(
@@ -53,14 +52,15 @@ export const configureUsersModule = async ({
       if (hashedToken) {
         return await Users.findOne({
           'services.resume.loginTokens.hashedToken': hashedToken,
-        });
+        }, options);
       }
 
       if (resetToken) {
         return await Users.findOne({
           'services.password.reset.token': resetToken,
-        });
+        }, options);
       }
+
       return await Users.findOne(generateDbFilterById(userId), options);
     },
 

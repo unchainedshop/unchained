@@ -114,10 +114,8 @@ export const configureAssortmentTextsModule = ({
 
   return {
     // Queries
-    findTexts: async ({ assortmentId }) => {
-      const texts = AssortmentTexts.find({
-        assortmentId,
-      });
+    findTexts: async (query, options) => {
+      const texts = AssortmentTexts.find(query, options);
 
       return texts.toArray();
     },

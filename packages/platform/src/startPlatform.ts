@@ -50,7 +50,12 @@ type PlatformOptions = {
   coreOptions: UnchainedCoreOptions['options'];
 };
 export const startPlatform = async (
-  { modules, additionalTypeDefs = [], coreOptions = {}, ...options }: PlatformOptions = {
+  {
+    modules,
+    additionalTypeDefs = [],
+    coreOptions = {},
+    ...options
+  }: PlatformOptions = {
     modules: undefined,
     additionalTypeDefs: [],
     coreOptions: {},
@@ -63,7 +68,7 @@ export const startPlatform = async (
   const db = initDb();
 
   // Initialise core api using the database
-  const unchainedAPI = initCore({
+  const unchainedAPI = await initCore({
     db,
     modules,
     bulkImporter: {
@@ -100,4 +105,6 @@ export const startPlatform = async (
     handlers.forEach((handler) => queueWorkers.push(handler));
     await setupCarts(options.workQueueOptions, unchainedAPI);
   }
+
+  return unchainedAPI;
 };

@@ -1,6 +1,10 @@
 import { Context } from '@unchainedshop/types/api';
 import { ModuleInput, Update } from '@unchainedshop/types/common';
-import { Order, OrdersModule } from '@unchainedshop/types/orders';
+import {
+  Order,
+  OrdersModule,
+  OrdersSettingsOptions,
+} from '@unchainedshop/types/orders';
 import { log } from 'meteor/unchained:logger';
 import { dbIdToString, generateDbFilterById } from 'meteor/unchained:utils';
 import { OrderDeliveriesCollection } from '../db/OrderDeliveriesCollection';
@@ -24,7 +28,10 @@ import { configureOrderModuleTransformations } from './configureOrdersModule-tra
 
 export const configureOrdersModule = async ({
   db,
-}: ModuleInput): Promise<OrdersModule> => {
+  options,
+}: ModuleInput<OrdersSettingsOptions>): Promise<OrdersModule> => {
+  ordersSettings.configureSettings(options);
+
   const Orders = await OrdersCollection(db);
   const OrderDeliveries = await OrderDeliveriesCollection(db);
   const OrderDiscounts = await OrderDiscountsCollection(db);

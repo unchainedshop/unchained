@@ -49,7 +49,7 @@ const wrapFunction = (fn, name, action, userOptions) => {
   const options = { ...defaultOptions, ...userOptions };
   ensureIsFunction(fn, action, options, key);
   return async (root, params, context, ...other) => {
-    const args = options.mapArgs(root, params, context, ...other);
+    const args = options.mapArgs(root, params, ...other);
     await checkAction(action, context, args, {
       key: options.showKey ? key : '',
     });
@@ -64,7 +64,7 @@ const checkResolver = (action, userOptions) => {
 
 const checkTypeResolver = (action, key) =>
   async function _checkTypeResolver(obj, params, context) {
-    await checkAction(action, context.userId, [obj, params, context]);
+    await checkAction(action, context, [obj, params]);
     if (typeof obj[key] === 'function') {
       return obj[key](params, context);
     }

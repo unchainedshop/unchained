@@ -13,7 +13,6 @@ import {
   SearchFilterQuery,
   SearchProducts,
 } from '@unchainedshop/types/filters';
-import { findPreservingIds } from 'meteor/unchained:utils';
 
 type HelperType<P, T> = (
   assortment: AssortmentType,
@@ -54,7 +53,7 @@ export interface AssortmentHelperTypes {
       includeInactive: boolean;
       ignoreChildAssortments: boolean;
     },
-    SearchProducts
+    Promise<SearchProducts>
   >;
 
   searchProducts: HelperType<
@@ -64,7 +63,7 @@ export interface AssortmentHelperTypes {
       includeInactive: boolean;
       ignoreChildAssortments: boolean;
     },
-    SearchProducts
+    Promise<SearchProducts>
   >;
 
   texts: HelperType<{ forceLocale?: string }, Promise<AssortmentText>>;
@@ -148,11 +147,18 @@ export const Assortment: AssortmentHelperTypes = {
     });
   },
 
-  // TODO: use services
-  // async search(obj, query, context) {
-  //   return obj.searchProducts({ query, context });
-  // },
-  // async searchProducts(obj, query, context) {
-  //   return obj.searchProducts({ query, context });
-  // },
+  search: async (obj, query, context) => {
+    return await context.modules.filters.search.searchProducts(
+      query,
+      {},
+      context
+    );
+  },
+  searchProducts: async (obj, query, context) => {
+    return await context.modules.filters.search.searchProducts(
+      query,
+      {},
+      context
+    );
+  },
 };

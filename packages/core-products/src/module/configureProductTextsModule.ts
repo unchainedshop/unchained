@@ -114,12 +114,10 @@ export const configureProductTextsModule = ({
 
   return {
     // Queries
-    findTexts: async ({ productId }) => {
-      const texts = ProductTexts.find({
-        productId,
-      });
+    findTexts: async (selector, options) => {
+      const texts = ProductTexts.find(selector, options);
 
-      return texts.toArray();
+      return await texts.toArray();
     },
 
     findLocalizedText: async ({ productId, locale }) => {

@@ -4,7 +4,11 @@ import {
   ModuleMutations,
   Query,
 } from '@unchainedshop/types/common';
-import { Quotation, QuotationsModule } from '@unchainedshop/types/quotations';
+import {
+  Quotation,
+  QuotationsModule,
+  QuotationsSettingsOptions,
+} from '@unchainedshop/types/quotations';
 import { Locale } from 'locale';
 import { emit, registerEvents } from 'meteor/unchained:events';
 import { log } from 'meteor/unchained:logger';
@@ -43,8 +47,11 @@ const isExpired: QuotationsModule['isExpired'] = (
 
 export const configureQuotationsModule = async ({
   db,
-}: ModuleInput): Promise<QuotationsModule> => {
+  options,
+}: ModuleInput<QuotationsSettingsOptions>): Promise<QuotationsModule> => {
   registerEvents(QUOTATION_EVENTS);
+
+  quotationsSettings.configureSettings(options);
 
   const Quotations = await QuotationsCollection(db);
 
