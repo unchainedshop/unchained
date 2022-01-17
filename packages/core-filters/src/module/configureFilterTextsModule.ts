@@ -26,12 +26,13 @@ export const configureFilterTextsModule = ({
     userId?: string
   ) => {
     const { filterId, filterOptionValue } = params;
+    const { filterOptionValue: textFilterOptionValue, ...textFields } = text;
+    
     const modifier: any = {
       $set: {
         updated: new Date(),
         updatedBy: userId,
-        subtitle: text.subtitle,
-        title: text.title,
+        ...textFields,
       },
       $setOnInsert: {
         created: new Date(),

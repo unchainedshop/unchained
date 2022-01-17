@@ -41,6 +41,7 @@ import { ProductBundleItem } from './product-bundle-item-types';
 import { ProductCatalogPrice } from './product-catalog-price-types';
 import { ProductDiscount } from './product-discount';
 import { ProductMedia } from './product-media-types';
+import { ProductReview } from './product-review-types';
 import { ProductVariation } from './product-variation-types';
 import { ProductVariationAssignment } from './product-variation-assignment-types';
 import { ProductVariationAssignmentVector } from './product-variation-assignment-vector';
@@ -111,6 +112,7 @@ const types = {
   ProductCatalogPrice,
   ProductDiscount,
   ProductMedia,
+  ProductReview,
   ProductVariation,
   ProductVariationAssignment,
   ProductVariationAssignmentVector,

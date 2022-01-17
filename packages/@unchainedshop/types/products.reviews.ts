@@ -71,11 +71,6 @@ export type ProductReviewsModule = {
       query: { userId: string }
     ) => Array<ProductVote>;
 
-    // Implement directly in api/types
-    // voteCount: ( { type = ProductReviewVoteTypes.UPVOTE }) {
-    //   return this.userIdsThatVoted({ type }).length;
-    // },
-
     // Mutations
     addVote: (
       productReview: ProductReview,

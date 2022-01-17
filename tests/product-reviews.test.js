@@ -134,7 +134,7 @@ describe('Products: Reviews', () => {
     });
   });
   describe('Mutation.updateProductReview', () => {
-    it('update a product review', async () => {
+    it.only('update a product review', async () => {
       const { data: { updateProductReview } = {} } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation updateProductReview(

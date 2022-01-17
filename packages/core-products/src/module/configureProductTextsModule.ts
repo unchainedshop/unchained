@@ -47,9 +47,15 @@ export const configureProductTextsModule = ({
     text: ProductText,
     userId?: string
   ) => {
+    const {
+      slug: textSlug,
+      title = null,
+      locale: textLocale,
+      ...textFields
+    } = text;
     const slug = await makeSlug({
-      slug: text.slug,
-      title: text.title,
+      slug: textSlug,
+      title,
       productId,
     });
 
@@ -57,9 +63,8 @@ export const configureProductTextsModule = ({
       $set: {
         updated: new Date(),
         updatedBy: userId,
-        description: text.description,
-        subtitle: text.subtitle,
         title: text.title,
+        ...textFields,
       },
       $setOnInsert: {
         created: new Date(),
@@ -109,9 +114,7 @@ export const configureProductTextsModule = ({
       );
     }
 
-    return await ProductTexts.findOne(
-      updateResult.upsertedId ? { _id: updateResult.upsertedId._id } : selector
-    );
+    return await ProductTexts.findOne(selector);
   };
 
   return {
@@ -149,20 +152,21 @@ export const configureProductTextsModule = ({
 
     // Mutations
     updateTexts: async (productId, texts, userId) => {
-      const productTexts = await Promise.all(
-        texts?.map(
-          async (text) =>
-            await upsertLocalizedText(
-              productId,
-              text.locale,
-              {
-                ...text,
-                authorId: userId,
-              },
-              userId
+      const productTexts = texts
+        ? await Promise.all(
+            texts.map((text) =>
+              upsertLocalizedText(
+                productId,
+                text.locale,
+                {
+                  ...text,
+                  authorId: userId,
+                },
+                userId
+              )
             )
-        )
-      );
+          )
+        : [];
 
       emit('PRODUCT_UPDATE_TEXTS', {
         productId,

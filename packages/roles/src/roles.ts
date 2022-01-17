@@ -26,7 +26,7 @@ interface RolesInterface {
     includeSpecial: boolean
   ): string[];
   allow(context: Context, roles: Array<string>, action: any): boolean;
-  userHasPermission(context: Context, action: any): Promise<boolean>;
+  userHasPermission(context: Context, action: any, ...args: any): Promise<boolean>;
   addUserToRoles(context: Context, roles: string | string[]): Promise<any>;
   checkPermission(context: Context, action: any): Promise<void | never>;
   adminRole?: RoleInterface;
@@ -78,14 +78,15 @@ export const Roles: RolesInterface = {
   /**
    * Returns true if the user passes the allow check
    */
-  allow(context, roles, action) {
+  allow(context, roles, action, ...args) {
     // eslint-disable-next-line prefer-rest-params
-    const args = Object.values(arguments).slice(2);
+    // const args = Object.values(arguments).slice(2);
 
     let allowed = false;
 
     const userRoles = Roles.getUserRoles(context, roles, true);
 
+    console.log('USER_ROLES', userRoles, arguments)
     userRoles.forEach((role) => {
       if (
         this.roles[role] &&
@@ -93,6 +94,7 @@ export const Roles: RolesInterface = {
         this.roles[role].allowRules[action]
       ) {
         this.roles[role].allowRules[action].forEach((func: any) => {
+          console.log('ACTION ALLOW', role, action, func, !!context.modules, args)
           const allow = func.apply(context, args);
           if (allow === true) {
             allowed = true;
@@ -107,7 +109,8 @@ export const Roles: RolesInterface = {
   /**
    * To check if a user has permisisons to execute an action
    */
-  userHasPermission: async (context, action) => {
+  userHasPermission: async (context, action, ...args) => {
+    console.log('ARGS', args)
     const user =
       context.user ||
       // TODO: Check with Pascal. Not sure this is needed, as it might be, that if there is a userId then the user is set as well

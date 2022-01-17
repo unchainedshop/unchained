@@ -90,10 +90,16 @@ export const configureAssortmentLinksModule = ({
         $set.sortKey = doc.sortKey;
       }
 
-      await AssortmentLinks.updateOne(selector, {
-        $set,
-        $setOnInsert,
-      });
+      await AssortmentLinks.updateOne(
+        selector,
+        {
+          $set,
+          $setOnInsert,
+        },
+        {
+          upsert: true,
+        }
+      );
 
       const assortmentLink = await AssortmentLinks.findOne(selector);
 

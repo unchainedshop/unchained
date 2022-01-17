@@ -46,8 +46,9 @@ export const configureAssortmentTextsModule = ({
     text: AssortmentText,
     userId?: string
   ) => {
+    const { slug: textSlug, ...textFields } = text;
     const slug = await makeSlug({
-      slug: text.slug,
+      slug: textSlug,
       title: text.title,
       assortmentId,
     });
@@ -56,9 +57,7 @@ export const configureAssortmentTextsModule = ({
       $set: {
         updated: new Date(),
         updatedBy: userId,
-        description: text.description,
-        subtitle: text.subtitle,
-        title: text.title,
+        ...textFields,
       },
       $setOnInsert: {
         created: new Date(),

@@ -140,7 +140,7 @@ export const configureProductsModule = async ({
 
   const proxyProducts: ProductsModule['proxyProducts'] = async (
     product,
-    vectors,
+    vectors = [],
     { includeInactive = false } = {}
   ) => {
     const { proxy } = product;

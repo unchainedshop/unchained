@@ -159,9 +159,12 @@ export const loggedIn = (
 
   const isOwnedProductReview = async (
     root: Root,
-    { productReviewId }: { productReviewId: string },
-    { modules, userId }: Context
+    params: { productReviewId: string },
+    context: Context
   ) => {
+    console.log('IS OWNED PRODUCT REVIEW', root, params, context)
+    const { productReviewId } = params
+    const { modules, userId } = context
     const review = await modules.products.reviews.findProductReview({
       productReviewId,
     });
