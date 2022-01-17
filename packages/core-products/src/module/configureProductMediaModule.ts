@@ -14,7 +14,7 @@ import {
   findLocalizedText,
   generateDbFilterById,
   generateDbMutations,
-  generateId,
+  dbIdToString,
 } from 'meteor/unchained:utils';
 import { ProductMediaCollection } from '../db/ProductMediaCollection';
 import { ProductMediaSchema } from '../db/ProductMediaSchema';
@@ -61,6 +61,9 @@ export const configureProductMediaModule = async ({
           createdBy: userId,
           locale,
         },
+      },
+      {
+        upsert: true,
       }
     );
 
@@ -179,7 +182,7 @@ export const configureProductMediaModule = async ({
             },
           });
 
-          return generateId(productMediaId);
+          return dbIdToString(productMediaId);
         })
       );
 

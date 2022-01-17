@@ -48,10 +48,12 @@ export const configureFilterTextsModule = ({
       locale,
     };
 
-    const updateResult = await FilterTexts.updateOne(selector, modifier);
+    const updateResult = await FilterTexts.updateOne(selector, modifier, {
+      upsert: true,
+    });
 
     return await FilterTexts.findOne(
-      updateResult.upsertedId ? updateResult.upsertedId : selector
+      updateResult.upsertedId ? { _id: updateResult.upsertedId } : selector
     );
   };
 

@@ -14,7 +14,7 @@ import {
   findLocalizedText,
   generateDbFilterById,
   generateDbMutations,
-  generateId,
+  dbIdToString,
 } from 'meteor/unchained:utils';
 import { AssortmentMediaCollection } from '../db/AssortmentMediaCollection';
 import { AssortmentMediaSchema } from '../db/AssortmentMediaSchema';
@@ -45,11 +45,12 @@ export const configureAssortmentMediaModule = async ({
     text: AssortmentMediaText,
     userId: string
   ) => {
-    await AssortmentMediaTexts.updateOne(
-      {
-        assortmentMediaId,
-        locale,
-      },
+    const selector = {
+      assortmentMediaId,
+      locale,
+    };
+    const updsertResult = await AssortmentMediaTexts.updateOne(
+      selector,
       {
         $set: {
           updated: new Date(),
@@ -57,18 +58,22 @@ export const configureAssortmentMediaModule = async ({
           ...text,
         },
         $setOnInsert: {
-          assortmentMediaId,
           created: new Date(),
           createdBy: userId,
+          assortmentMediaId,
           locale,
         },
+      },
+      {
+        upsert: true,
       }
     );
 
-    return await AssortmentMediaTexts.findOne({
-      assortmentMediaId,
-      locale,
-    });
+    return await AssortmentMediaTexts.findOne(
+      updsertResult.upsertedId
+        ? { _id: updsertResult.upsertedId._id }
+        : selector
+    );
   };
 
   return {
@@ -188,7 +193,7 @@ export const configureAssortmentMediaModule = async ({
             }
           );
 
-          return generateId(assortmentMediaId);
+          return dbIdToString(assortmentMediaId);
         })
       );
 
@@ -226,19 +231,20 @@ export const configureAssortmentMediaModule = async ({
       // Mutations
       updateMediaTexts: async (assortmentMediaId, texts, userId) => {
         const mediaTexts = await Promise.all(
-          texts.map(
-            async ({ locale, ...localizations }) =>
-              await upsertLocalizedText(
-                assortmentMediaId,
-                locale,
-                {
-                  ...localizations,
-                  authorId: userId,
-                },
-                userId
-              )
+          texts.map(({ locale, ...localizations }) =>
+            upsertLocalizedText(
+              assortmentMediaId,
+              locale,
+              {
+                ...localizations,
+                authorId: userId,
+              },
+              userId
+            )
           )
         );
+
+        console.log('MEDIA_TEXTS', texts, mediaTexts);
 
         emit('ASSORTMENT_UPDATE_MEDIA_TEXT', {
           assortmentMediaId,
@@ -248,32 +254,7 @@ export const configureAssortmentMediaModule = async ({
         return mediaTexts;
       },
 
-      upsertLocalizedText: async (assortmentMediaId, locale, text, userId) => {
-        await AssortmentMediaTexts.updateOne(
-          {
-            assortmentMediaId,
-            locale,
-          },
-          {
-            $set: {
-              updated: new Date(),
-              updatedBy: userId,
-              ...text,
-            },
-            $setOnInsert: {
-              created: new Date(),
-              createdBy: userId,
-              assortmentMediaId,
-              locale,
-            },
-          }
-        );
-
-        return await AssortmentMediaTexts.findOne({
-          assortmentMediaId,
-          locale,
-        });
-      },
+      upsertLocalizedText,
     },
   };
 };

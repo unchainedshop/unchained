@@ -2,13 +2,9 @@ import {
   AssortmentLink,
   AssortmentsModule,
 } from '@unchainedshop/types/assortments';
-import { Collection, Filter } from '@unchainedshop/types/common';
+import { Collection } from '@unchainedshop/types/common';
 import { emit, registerEvents } from 'meteor/unchained:events';
-import {
-  generateDbFilterById,
-  generateId,
-  dbIdToString,
-} from 'meteor/unchained:utils';
+import { generateDbFilterById } from 'meteor/unchained:utils';
 
 const ASSORTMENT_LINK_EVENTS = [
   'ASSORTMENT_ADD_LINK',
@@ -175,7 +171,7 @@ export const configureAssortmentLinksModule = ({
             }
           );
 
-          return generateId(assortmentLinkId);
+          return assortmentLinkId;
         })
       );
 

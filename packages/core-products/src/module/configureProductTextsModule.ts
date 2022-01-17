@@ -77,15 +77,17 @@ export const configureProductTextsModule = ({
 
     const selector = { productId, locale };
 
-    const updateResult = await ProductTexts.updateOne(selector, modifier);
+    const updateResult = await ProductTexts.updateOne(selector, modifier, {
+      upsert: true,
+    });
 
     if (updateResult.upsertedCount > 0 || updateResult.modifiedCount > 0) {
       await Products.updateOne(generateDbFilterById(productId), {
         $set: {
           updated: new Date(),
+          updatedBy: userId,
         },
         $addToSet: {
-          /* @ts-ignore */
           slugs: slug,
         },
       });
@@ -98,9 +100,9 @@ export const configureProductTextsModule = ({
         {
           $set: {
             updated: new Date(),
+            updatedBy: userId,
           },
           $pull: {
-            /* @ts-ignore */
             slugs: slug,
           },
         }
@@ -108,7 +110,7 @@ export const configureProductTextsModule = ({
     }
 
     return await ProductTexts.findOne(
-      updateResult.upsertedId ? updateResult.upsertedId : selector
+      updateResult.upsertedId ? { _id: updateResult.upsertedId._id } : selector
     );
   };
 

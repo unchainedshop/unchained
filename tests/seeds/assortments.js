@@ -216,8 +216,8 @@ export const AssortmentFilters = [
     _id: 'assortment-filter-1',
     sortKey: 1,
     tags: ['assortment-filter-1'],
-    assortment: SimpleAssortment[1],
-    filter: MultiChoiceFilter,
+    assortmentId: SimpleAssortment[1]._id,
+    filterId: MultiChoiceFilter._id,
   },
 ];
 

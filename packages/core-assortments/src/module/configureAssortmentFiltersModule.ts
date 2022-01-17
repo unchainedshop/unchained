@@ -2,9 +2,9 @@ import {
   AssortmentFilter,
   AssortmentsModule,
 } from '@unchainedshop/types/assortments';
-import { Collection, Filter } from '@unchainedshop/types/common';
+import { Collection, Filter, Query } from '@unchainedshop/types/common';
 import { emit, registerEvents } from 'meteor/unchained:events';
-import { generateDbFilterById, generateId } from 'meteor/unchained:utils';
+import { generateDbFilterById } from 'meteor/unchained:utils';
 
 const ASSORTMENT_FILTER_EVENTS = [
   'ASSORTMENT_ADD_FILTER',
@@ -74,10 +74,14 @@ export const configureAssortmentFiltersModule = ({
         $set.sortKey = doc.sortKey;
       }
 
-      await AssortmentFilters.updateOne(selector, {
-        $set,
-        $setOnInsert,
-      });
+      await AssortmentFilters.updateOne(
+        selector,
+        {
+          $set,
+          $setOnInsert,
+        },
+        { upsert: true }
+      );
 
       const assortmentFilter = await AssortmentFilters.findOne(selector);
 
@@ -87,8 +91,7 @@ export const configureAssortmentFiltersModule = ({
     },
 
     delete: async (assortmentFilterId) => {
-      const selector: Filter<AssortmentFilter> =
-        generateDbFilterById(assortmentFilterId);
+      const selector: Query = generateDbFilterById(assortmentFilterId);
 
       const assortmentFilter = await AssortmentFilters.findOne(selector, {
         projection: { _id: 1 },
@@ -141,13 +144,19 @@ export const configureAssortmentFiltersModule = ({
             }
           );
 
-          return generateId(assortmentFilterId);
+          return assortmentFilterId;
         })
       );
 
       const assortmentFilters = await AssortmentFilters.find({
         _id: { $in: changedAssortmentFilterIds },
       }).toArray();
+
+      console.log(
+        'ASSORMTENT_FILTER_IDS',
+        changedAssortmentFilterIds,
+        assortmentFilters
+      );
 
       emit('ASSORTMENT_REORDER_FILTERS', { assortmentFilters });
 

@@ -1,5 +1,8 @@
 import { Assortment } from './assortment-types';
 import { AssortmentMedia } from './assortment-media-types';
+import { AssortmentFilter } from './assortment-filter-types';
+import { AssortmentLink } from './assortment-link-types';
+import { AssortmentProduct } from './assortment-product-types';
 import { AssortmentPathLink } from './assortment-path-link-types';
 import { Bookmark } from './bookmark-types';
 import { BundleProduct } from './product-bundle-types';
@@ -59,8 +62,11 @@ import { Work } from './work-types';
 
 const types = {
   Assortment,
+  AssortmentFilter,
+  AssortmentLink,
   AssortmentMedia,
   AssortmentPathLink,
+  AssortmentProduct,
   Bookmark,
   BundleProduct,
   Color,

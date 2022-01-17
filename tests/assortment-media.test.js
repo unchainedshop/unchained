@@ -297,7 +297,7 @@ describe('AssortmentMedia', () => {
   });
 
   describe('mutation.reorderAssortmentMedia for admin user should', () => {
-    it('update assortment media sortkey successfuly when provided valid media ID', async () => {
+    it("update assortment media sortkey successfuly when provided valid media ID", async () => {
       const { data: { reorderAssortmentMedia } = {} } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation ReorderAssortmentmedia(

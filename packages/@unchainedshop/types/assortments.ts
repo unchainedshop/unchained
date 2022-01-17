@@ -1,6 +1,5 @@
-import { Context } from './api';
+import { AssortmentMediaModule } from './assortments.media';
 import { Filter, FindOptions, Query, TimestampFields, _ID } from './common';
-import { AssortmentMedia, AssortmentMediaModule } from './assortments.media';
 
 export type Assortment = {
   _id?: _ID;

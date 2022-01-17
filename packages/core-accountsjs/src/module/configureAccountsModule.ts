@@ -58,7 +58,7 @@ export const configureAccountsModule = async ({
           .filter(
             ({ address }) => address.toLowerCase() !== email.toLowerCase()
           )
-          .map(async ({ address }) =>
+          .map(({ address }) =>
             accountsPassword.removeEmail(userId, address)
           )
       );

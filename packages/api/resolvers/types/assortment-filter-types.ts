@@ -18,9 +18,12 @@ type AssortmentFilterHelperTypes = {
 
 export const AssortmentFilter: AssortmentFilterHelperTypes = {
   assortment: async (obj, _, { modules }) => {
-    return await modules.assortments.findAssortment({
+    const assortment = await modules.assortments.findAssortment({
       assortmentId: obj.assortmentId,
     });
+
+    console.log('ASSORTMENT-TYPE', assortment, obj)
+    return assortment
   },
 
   filter: async (obj, _, { modules }) => {

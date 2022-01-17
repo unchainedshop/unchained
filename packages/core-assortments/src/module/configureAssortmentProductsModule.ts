@@ -1,15 +1,10 @@
 import {
-  Assortment,
   AssortmentProduct,
   AssortmentsModule,
 } from '@unchainedshop/types/assortments';
 import { Collection } from '@unchainedshop/types/common';
 import { emit, registerEvents } from 'meteor/unchained:events';
-import {
-  dbIdToString,
-  generateDbFilterById,
-  generateId,
-} from 'meteor/unchained:utils';
+import { dbIdToString, generateDbFilterById } from 'meteor/unchained:utils';
 
 const ASSORTMENT_PRODUCT_EVENTS = [
   'ASSORTMENT_ADD_PRODUCT',
@@ -183,7 +178,7 @@ export const configureAssortmentProductsModule = ({
             }
           );
 
-          return generateId(assortmentProductId);
+          return assortmentProductId;
         })
       );
 

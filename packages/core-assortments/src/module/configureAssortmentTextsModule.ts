@@ -10,7 +10,6 @@ import {
   findLocalizedText,
   findUnusedSlug,
   generateDbFilterById,
-  generateId,
 } from 'meteor/unchained:utils';
 
 const ASSORTMENT_TEXT_EVENTS = ['ASSORTMENT_UPDATE_TEXTS'];
@@ -76,31 +75,33 @@ export const configureAssortmentTextsModule = ({
     }
 
     const selector = { assortmentId, locale };
-
-    const updateResult = await AssortmentTexts.updateOne(selector, modifier);
+    const updateResult = await AssortmentTexts.updateOne(selector, modifier, {
+      upsert: true,
+    });
 
     if (updateResult.upsertedCount > 0 || updateResult.modifiedCount > 0) {
-      await Assortments.updateOne(generateDbFilterById(assortmentId), {
+      const assortmentSelector = generateDbFilterById(assortmentId);
+      await Assortments.updateOne(assortmentSelector, {
         $set: {
           updated: new Date(),
+          updatedBy: userId,
         },
         $addToSet: {
-          /* @ts-ignore */
           slugs: slug,
         },
       });
 
       await Assortments.updateMany(
         {
-          _id: { $ne: generateId(assortmentId) },
+          _id: { $ne: assortmentSelector },
           slugs: slug,
         },
         {
           $set: {
             updated: new Date(),
+            updatedBy: userId,
           },
           $pull: {
-            /* @ts-ignore */
             slugs: slug,
           },
         }
@@ -108,7 +109,7 @@ export const configureAssortmentTextsModule = ({
     }
 
     return await AssortmentTexts.findOne(
-      updateResult.upsertedId ? updateResult.upsertedId : selector
+      updateResult.upsertedId ? { _id: updateResult.upsertedId._id } : selector
     );
   };
 
@@ -147,20 +148,24 @@ export const configureAssortmentTextsModule = ({
 
     // Mutations
     updateTexts: async (assortmentId, texts, userId) => {
-      const assortmentTexts = await Promise.all(
-        texts?.map(
-          async (text) =>
-            await upsertLocalizedText(
-              assortmentId,
-              text.locale,
-              {
-                ...text,
-                authorId: userId,
-              },
-              userId
+      console.log('INPUT_ASSORTMENT_TEXT', texts);
+      const assortmentTexts = Array.isArray(texts)
+        ? await Promise.all(
+            texts.map((text) =>
+              upsertLocalizedText(
+                assortmentId,
+                text.locale,
+                {
+                  ...text,
+                  authorId: userId,
+                },
+                userId
+              )
             )
-        )
-      );
+          )
+        : [];
+
+      console.log('ASSORTMENT TEXTS', assortmentTexts);
 
       emit('ASSORTMENT_UPDATE_TEXTS', {
         assortmentId,

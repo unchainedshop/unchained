@@ -59,20 +59,26 @@ export const configureProductVariationsModule = async ({
       },
       locale,
     };
-    await ProductVariationTexts.updateOne(selector, {
-      $set: {
-        updated: new Date(),
-        updatedBy: userId,
-        ...text,
+    await ProductVariationTexts.updateOne(
+      selector,
+      {
+        $set: {
+          updated: new Date(),
+          updatedBy: userId,
+          ...text,
+        },
+        $setOnInsert: {
+          productVariationId,
+          productVariationOptionValue: productVariationOptionValue || null,
+          created: new Date(),
+          createdBy: userId,
+          locale,
+        },
       },
-      $setOnInsert: {
-        productVariationId,
-        productVariationOptionValue: productVariationOptionValue || null,
-        created: new Date(),
-        createdBy: userId,
-        locale,
-      },
-    });
+      {
+        upsert: true,
+      }
+    );
 
     return await ProductVariationTexts.findOne(selector);
   };
