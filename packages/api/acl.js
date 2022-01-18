@@ -1,4 +1,4 @@
-import { checkPermission } from './roles';
+import { checkUserHasPermission } from './roles';
 import { NoPermissionError, PermissionSystemError } from './errors';
 
 const defaultOptions = {
@@ -25,13 +25,13 @@ const ensureIsFunction = (fn, action, options, key) => {
 };
 
 const checkAction = async (
-  action,
   context,
+  action,
   args = emptyArray,
   options = emptyObject
 ) => {
   const { key } = options || emptyObject;
-  const hasPermission = await checkPermission(context, action, ...args);
+  const hasPermission = await checkUserHasPermission(context, action, args);
   if (hasPermission) return;
   const keyText = key && key !== '' ? ` in "${key}"` : '';
   throw new NoPermissionError({
@@ -50,7 +50,7 @@ const wrapFunction = (fn, name, action, userOptions) => {
   ensureIsFunction(fn, action, options, key);
   return async (root, params, context, ...other) => {
     const args = options.mapArgs(root, params, ...other);
-    await checkAction(action, context, args, {
+    await checkAction(context, action, args, {
       key: options.showKey ? key : '',
     });
     return fn(root, params, context, ...other);
@@ -64,7 +64,7 @@ const checkResolver = (action, userOptions) => {
 
 const checkTypeResolver = (action, key) =>
   async function _checkTypeResolver(obj, params, context) {
-    await checkAction(action, context, [obj, params]);
+    await checkAction(context, action, [obj, params]);
     if (typeof obj[key] === 'function') {
       return obj[key](params, context);
     }

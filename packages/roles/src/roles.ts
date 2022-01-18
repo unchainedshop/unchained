@@ -12,6 +12,7 @@ interface RoleInterface {
   helpers: Record<string, unknown>;
 }
 
+type CheckPermissionArgs = [obj?: any, params?: any]
 interface RolesInterface {
   roles: {
     [name: string]: RoleInterface;
@@ -25,10 +26,23 @@ interface RolesInterface {
     roles: Array<string>,
     includeSpecial: boolean
   ): string[];
-  allow(context: Context, roles: Array<string>, action: any): boolean;
-  userHasPermission(context: Context, action: any, ...args: any): Promise<boolean>;
+  allow(
+    context: Context,
+    roles: Array<string>,
+    action: string,
+    args: CheckPermissionArgs
+  ): boolean;
+  userHasPermission(
+    context: Context,
+    action: string,
+    args: CheckPermissionArgs
+  ): Promise<boolean>;
   addUserToRoles(context: Context, roles: string | string[]): Promise<any>;
-  checkPermission(context: Context, action: any): Promise<void | never>;
+  checkPermission(
+    context: Context,
+    action: string,
+    args: CheckPermissionArgs
+  ): Promise<void | never>;
   adminRole?: RoleInterface;
   loggedInRole?: RoleInterface;
   allRole?: RoleInterface;
@@ -78,7 +92,7 @@ export const Roles: RolesInterface = {
   /**
    * Returns true if the user passes the allow check
    */
-  allow(context, roles, action, ...args) {
+  allow(context, roles, action, [obj, params]) {
     // eslint-disable-next-line prefer-rest-params
     // const args = Object.values(arguments).slice(2);
 
@@ -86,16 +100,14 @@ export const Roles: RolesInterface = {
 
     const userRoles = Roles.getUserRoles(context, roles, true);
 
-    console.log('USER_ROLES', userRoles, arguments)
     userRoles.forEach((role) => {
       if (
-        this.roles[role] &&
-        this.roles[role].allowRules &&
-        this.roles[role].allowRules[action]
+        Roles.roles[role] &&
+        Roles.roles[role].allowRules &&
+        Roles.roles[role].allowRules[action]
       ) {
-        this.roles[role].allowRules[action].forEach((func: any) => {
-          console.log('ACTION ALLOW', role, action, func, !!context.modules, args)
-          const allow = func.apply(context, args);
+        Roles.roles[role].allowRules[action].forEach((allowFn: any) => {
+          const allow = allowFn(obj, params, context);
           if (allow === true) {
             allowed = true;
           }
@@ -109,8 +121,7 @@ export const Roles: RolesInterface = {
   /**
    * To check if a user has permisisons to execute an action
    */
-  userHasPermission: async (context, action, ...args) => {
-    console.log('ARGS', args)
+  userHasPermission: async (context, action, args) => {
     const user =
       context.user ||
       // TODO: Check with Pascal. Not sure this is needed, as it might be, that if there is a userId then the user is set as well
@@ -122,7 +133,7 @@ export const Roles: RolesInterface = {
 
     const roles = Array.isArray(user?.roles) ? user.roles : [];
 
-    const allows = Roles.allow(context, roles, action);
+    const allows = Roles.allow(context, roles, action, args);
     return allows === true;
   },
 
@@ -142,8 +153,8 @@ export const Roles: RolesInterface = {
    * If the user doesn't has permission it will throw a error
    * Roles.userHasPermission(userId, action, [extra])
    */
-  async checkPermission(context, action) {
-    if (!(await Roles.userHasPermission(context, action))) {
+  async checkPermission(context, action, args) {
+    if (!(await Roles.userHasPermission(context, action, args))) {
       throw new Meteor.Error(
         'unauthorized',
         'The user has no permission to perform this action'

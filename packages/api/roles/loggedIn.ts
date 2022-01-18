@@ -1,28 +1,26 @@
 import { Context, Root, UnchainedAPI } from '@unchainedshop/types/api';
+import { User } from '@unchainedshop/types/user';
 
-export const loggedIn = (
-  role: any,
-  actions: Record<string, string>,
-) => {
+export const loggedIn = (role: any, actions: Record<string, string>) => {
   const isMyself = (
-    root: Root,
+    user: User,
     foreignUser: { userId?: string } = {},
     ownUser: { userId?: string } = {}
   ) => {
     if (
-      root &&
-      root.username &&
-      root.services &&
-      root.emails &&
+      user &&
+      user.username &&
+      user.services &&
+      user.emails &&
       !foreignUser.userId
     ) {
-      return root._id === ownUser.userId;
+      return user._id === ownUser.userId;
     }
     return foreignUser.userId === ownUser.userId || !foreignUser.userId;
   };
 
   const isOwnedEmailAddress = (
-    root: Root,
+    obj: any,
     params: { email?: string },
     { user }: Context
   ) => {
@@ -33,7 +31,7 @@ export const loggedIn = (
   };
 
   const isOwnedOrder = async (
-    root: Root,
+    obj: any,
     params: { orderId: string },
     { modules, userId }: Context
   ) => {
@@ -50,7 +48,7 @@ export const loggedIn = (
   };
 
   const isOwnedOrderOrCart = async (
-    root: Root,
+    obj: any,
     params: { orderId?: string },
     context: Context
   ) => {
@@ -61,7 +59,7 @@ export const loggedIn = (
   };
 
   const isOwnedEnrollment = async (
-    root: Root,
+    obj: any,
     params: { enrollmentId: string },
     { modules, userId }: Context
   ) => {
@@ -78,7 +76,7 @@ export const loggedIn = (
   };
 
   const isOwnedOrderPayment = async (
-    root: Root,
+    obj: any,
     params: { orderPaymentId: string },
     context: Context
   ) => {
@@ -98,7 +96,7 @@ export const loggedIn = (
   };
 
   const isOwnedOrderDelivery = async (
-    root: Root,
+    obj: any,
     params: { orderDeliveryId: string },
     context: Context
   ) => {
@@ -118,7 +116,7 @@ export const loggedIn = (
   };
 
   const isOwnedOrderItem = async (
-    root: Root,
+    obj: any,
     params: { itemId: string },
     context: Context
   ) => {
@@ -138,7 +136,7 @@ export const loggedIn = (
   };
 
   const isOwnedOrderDiscount = async (
-    root: Root,
+    obj: any,
     params: { discountId: string },
     context: Context
   ) => {
@@ -158,13 +156,12 @@ export const loggedIn = (
   };
 
   const isOwnedProductReview = async (
-    root: Root,
+    obj: any,
     params: { productReviewId: string },
     context: Context
   ) => {
-    console.log('IS OWNED PRODUCT REVIEW', root, params, context)
-    const { productReviewId } = params
-    const { modules, userId } = context
+    const { productReviewId } = params;
+    const { modules, userId } = context;
     const review = await modules.products.reviews.findProductReview({
       productReviewId,
     });
@@ -173,7 +170,7 @@ export const loggedIn = (
   };
 
   const isOwnedQuotation = async (
-    root: Root,
+    obj: any,
     { quotationId }: { quotationId: string },
     { modules, userId }: Context
   ) => {
@@ -192,7 +189,7 @@ export const loggedIn = (
   };
 
   const isOwnedBookmark = async (
-    root: Root,
+    obj: any,
     { bookmarkId }: { bookmarkId: string },
     { userId, modules }: Context
   ) => {
@@ -204,20 +201,21 @@ export const loggedIn = (
   };
 
   const isOwnedPaymentCredential = async (
-    root: Root,
+    obj: any,
     { paymentCredentialsId }: { paymentCredentialsId: string },
     { modules, userId }: Context
   ) => {
-    const credentials = await modules.payment.paymentCredentials.findPaymentCredential(
-      {
-        paymentCredentialsId,
-      },
-      {
-        projection: {
-          userId: 1,
+    const credentials =
+      await modules.payment.paymentCredentials.findPaymentCredential(
+        {
+          paymentCredentialsId,
         },
-      }
-    );
+        {
+          projection: {
+            userId: 1,
+          },
+        }
+      );
     // return true if db entity not found in order
     // to let the resolver throw a good exception
     if (!credentials) return true;

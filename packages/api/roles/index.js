@@ -111,9 +111,15 @@ const configureRoles = ({ additionalRoles = {} }) => {
   admin(roles.ADMIN, actions);
 };
 
-const checkPermission = Roles.userHasPermission;
+const checkUserHasPermission = Roles.userHasPermission;
 
 const updateUserRole = async (context, roleName) =>
   await Roles.addUserToRoles(context, roles[roleName].name);
 
-export { allRoles, actions, configureRoles, checkPermission, updateUserRole };
+export {
+  allRoles,
+  actions,
+  configureRoles,
+  checkUserHasPermission,
+  updateUserRole,
+};

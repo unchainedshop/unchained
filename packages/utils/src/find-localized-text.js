@@ -28,6 +28,7 @@ const findLocalizedText = async (collection, selector, locale) => {
   });
 
   const cachedText = textCache.get(cacheKey);
+
   if (cachedText) return cachedText;
 
   const exactTranslation = await collection.findOne(

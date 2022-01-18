@@ -1,7 +1,6 @@
 import { UnchainedAPI, UnchainedUserContext } from '@unchainedshop/types/api';
 import { Request } from 'express';
 import { check } from 'meteor/check';
-import { dbIdToString } from 'meteor/unchained:utils';
 
 export const getUserContext = async (
   req: Request,
@@ -50,7 +49,7 @@ export const getUserContext = async (
         // return a new context object with the current user & her id
         return {
           user: currentUser,
-          userId: dbIdToString(currentUser._id),
+          userId: currentUser._id,
           loginToken,
         };
       }
