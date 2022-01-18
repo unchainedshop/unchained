@@ -12,7 +12,7 @@ interface RoleInterface {
   helpers: Record<string, unknown>;
 }
 
-type CheckPermissionArgs = [obj?: any, params?: any]
+type CheckPermissionArgs = [obj?: any, params?: any];
 interface RolesInterface {
   roles: {
     [name: string]: RoleInterface;
@@ -31,7 +31,7 @@ interface RolesInterface {
     roles: Array<string>,
     action: string,
     args: CheckPermissionArgs
-  ): boolean;
+  ): Promise<boolean>;
   userHasPermission(
     context: Context,
     action: string,
@@ -92,30 +92,35 @@ export const Roles: RolesInterface = {
   /**
    * Returns true if the user passes the allow check
    */
-  allow(context, roles, action, [obj, params]) {
-    // eslint-disable-next-line prefer-rest-params
-    // const args = Object.values(arguments).slice(2);
-
-    let allowed = false;
-
+  async allow(context, roles, action, [obj, params]) {
     const userRoles = Roles.getUserRoles(context, roles, true);
 
-    userRoles.forEach((role) => {
-      if (
-        Roles.roles[role] &&
-        Roles.roles[role].allowRules &&
-        Roles.roles[role].allowRules[action]
-      ) {
-        Roles.roles[role].allowRules[action].forEach((allowFn: any) => {
-          const allow = allowFn(obj, params, context);
-          if (allow === true) {
-            allowed = true;
-          }
-        });
-      }
-    });
+    return await userRoles.reduce(
+      async (roleIsAllowedPromise: Promise<boolean>, role) => {
+        const roleIsAllowed = await roleIsAllowedPromise;
 
-    return allowed;
+        if (roleIsAllowed) return true;
+
+        if (
+          Roles.roles[role] &&
+          Roles.roles[role].allowRules &&
+          Roles.roles[role].allowRules[action]
+        ) {
+          return await Roles.roles[role].allowRules[action].reduce(
+            async (rulesIsAllowedPromise: Promise<boolean>, allowFn: any) => {
+              const ruleIsAllowed = await rulesIsAllowedPromise;
+              if (ruleIsAllowed) return true;
+
+              return await allowFn(obj, params, context);
+            },
+            Promise.resolve(false)
+          );
+        }
+
+        return roleIsAllowed;
+      },
+      Promise.resolve(false)
+    );
   },
 
   /**
@@ -133,7 +138,7 @@ export const Roles: RolesInterface = {
 
     const roles = Array.isArray(user?.roles) ? user.roles : [];
 
-    const allows = Roles.allow(context, roles, action, args);
+    const allows = await Roles.allow(context, roles, action, args);
     return allows === true;
   },
 

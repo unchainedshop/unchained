@@ -246,8 +246,8 @@ describe('Bookmark', () => {
     });
   });
 
-  describe('For normal user ', () => {
-    it('return array of all current user bookmarks should ', async () => {
+  describe("For normal user ", () => {
+    it("return array of all current user bookmarks should ", async () => {
       const {
         data: {
           user: { bookmarks },
@@ -267,7 +267,7 @@ describe('Bookmark', () => {
       expect(bookmarks.length).toEqual(2);
     });
 
-    it('remove bookmark a product when provided valid product ID and false second argument', async () => {
+    it("remove bookmark a product when provided valid product ID and false second argument", async () => {
       const {
         data: { bookmark }, // eslint-disable-line
       } = await graphqlNormalUserFetch({
@@ -279,7 +279,7 @@ describe('Bookmark', () => {
           }
         `,
         variables: {
-          productId: 'simpleproduct',
+          productId: "simpleproduct",
           bookmarked: false,
         },
       });
@@ -303,7 +303,7 @@ describe('Bookmark', () => {
       expect(bookmarks.length).toEqual(1);
     });
 
-    it('bookmark a product when provided valid product ID', async () => {
+    it("bookmark a product when provided valid product ID", async () => {
       const {
         data: { bookmark },
       } = await graphqlNormalUserFetch({
@@ -322,7 +322,7 @@ describe('Bookmark', () => {
       expect(bookmark).not.toBe(null);
     });
 
-    it('remove bookmark when provided valid bookmark ID', async () => {
+    it("remove bookmark when provided valid bookmark ID", async () => {
       const {
         data: { removeBookmark }, // eslint-disable-line
       } = await graphqlNormalUserFetch({

@@ -86,12 +86,12 @@ export const User: UserHelperTypes = {
   username: checkTypeResolver(viewUserPrivateInfos, 'username'),
 
   primaryEmail: async (user, params, context) => {
-    await checkAction(viewUserPrivateInfos, context, [user, params]);
+    await checkAction(context, viewUserPrivateInfos, [user, params]);
     return getPrimaryEmail(user);
   },
 
   isEmailVerified: async (user, params, context) => {
-    await checkAction(viewUserPrivateInfos, context, [user, params]);
+    await checkAction(context, viewUserPrivateInfos, [user, params]);
     log(
       'user.isEmailVerified is deprecated, please use user.primaryEmail.verified',
       { level: LogLevel.Warning }
@@ -99,37 +99,37 @@ export const User: UserHelperTypes = {
     return !!getPrimaryEmail(user)?.verified;
   },
   isInitialPassword: async (user, params, context) => {
-    await checkAction(viewUserPrivateInfos, context, [user, params]);
+    await checkAction(context, viewUserPrivateInfos, [user, params]);
     const { password: { initial } = { initial: undefined } } =
       user.services || {};
     return user.initialPassword || !!initial;
   },
   isTwoFactorEnabled: async (user, params, context) => {
-    await checkAction(viewUserPrivateInfos, context, [user, params]);
+    await checkAction(context, viewUserPrivateInfos, [user, params]);
     const { 'two-factor': { secret } = { secret: undefined } } =
       user.services || {};
     return !!secret;
   },
   isGuest: async (user, params, context) => {
-    await checkAction(viewUserPrivateInfos, context, [user, params]);
+    await checkAction(context, viewUserPrivateInfos, [user, params]);
     return !!user.guest;
   },
 
   avatar: async (user, params, context) => {
-    await checkAction(viewUserPublicInfos, context, [user, params]);
+    await checkAction(context, viewUserPublicInfos, [user, params]);
     return await context.modules.files.findFile({
       fileId: user.avatarId as string,
     });
   },
 
   bookmarks: async (user, params, context) => {
-    await checkAction(viewUserPrivateInfos, context, [user, params]);
-    return context.modules.bookmarks.findByUserId(user._id);
+    await checkAction(context, viewUserPrivateInfos, [user, params]);
+    return await context.modules.bookmarks.findByUserId(user._id);
   },
 
   async cart(user, params, context) {
     const { modules, countryContext } = context;
-    await checkAction(viewUserOrders, context, [user, params]);
+    await checkAction(context, viewUserOrders, [user, params]);
     return await modules.orders.cart(
       { countryContext, orderNumber: params.orderNumber },
       user
@@ -137,29 +137,29 @@ export const User: UserHelperTypes = {
   },
 
   country: async (user, params, context) => {
-    await checkAction(viewUserPrivateInfos, context, [user, params]);
+    await checkAction(context, viewUserPrivateInfos, [user, params]);
     return await context.services.users.getUserCountry(user, params, context);
   },
 
   enrollments: async (user, params, context) => {
-    await checkAction(viewUserEnrollments, context, [user, params]);
+    await checkAction(context, viewUserEnrollments, [user, params]);
     return await context.modules.enrollments.findEnrollments({
       userId: user._id,
     });
   },
 
   language: async (user, params, context) => {
-    await checkAction(viewUserPrivateInfos, context, [user, params]);
+    await checkAction(context, viewUserPrivateInfos, [user, params]);
     return await context.services.users.getUserLanguage(user, params, context);
   },
 
   // locale: async (user, params, context) => {
-  //   await checkAction(viewUserPrivateInfos, context, [user, params, context]);
+  //   await checkAction(context, viewUserPrivateInfos, [user, params, context]);
   //   return context.modules.users.userLocale(user, params);
   // },
 
   orders: async (user, params, context) => {
-    await checkAction(viewUserOrders, context, [user, params]);
+    await checkAction(context, viewUserOrders, [user, params]);
     return await context.modules.orders.findOrders(
       { userId: user._id, includeCarts: params.includeCarts },
       {
@@ -171,7 +171,7 @@ export const User: UserHelperTypes = {
   },
 
   paymentCredentials: async (user, params, context) => {
-    await checkAction(viewUserPrivateInfos, context, [user, params]);
+    await checkAction(context, viewUserPrivateInfos, [user, params]);
     return await context.modules.payment.paymentCredentials.findPaymentCredentials(
       { ...params.selector, userId: user._id },
       {
@@ -183,7 +183,7 @@ export const User: UserHelperTypes = {
   },
 
   quotations: async (user, params, context) => {
-    await checkAction(viewUserQuotations, context, [user, params]);
+    await checkAction(context, viewUserQuotations, [user, params]);
     return await context.modules.quotations.findQuotations(
       { userId: user._id },
       {

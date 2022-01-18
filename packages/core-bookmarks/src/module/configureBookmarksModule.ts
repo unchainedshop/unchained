@@ -29,9 +29,9 @@ export const configureBookmarksModule = async ({
   return {
     // Queries
     findByUserId: async (userId) =>
-      Bookmarks.find({ userId, deleted: null }).toArray(),
+      await Bookmarks.find({ userId, deleted: null }).toArray(),
     findByUserIdAndProductId: async ({ userId, productId }) =>
-      Bookmarks.findOne({ userId, productId, deleted: null }),
+      await Bookmarks.findOne({ userId, productId, deleted: null }),
     findById: async (bookmarkId) => {
       let bookmark: Bookmark;
       if (bookmarkId) {
@@ -40,7 +40,9 @@ export const configureBookmarksModule = async ({
       }
       return bookmark;
     },
+
     find: async (query) => Bookmarks.find(query).toArray(),
+
     existsByUserIdAndProductId: async ({ productId, userId }) => {
       let selector = {};
       if (productId && userId) {
@@ -69,6 +71,7 @@ export const configureBookmarksModule = async ({
       );
       return result.upsertedCount;
     },
+    
     deleteByUserId: async (toUserId, userId) => {
       const result = await Bookmarks.updateMany(
         { userId: toUserId },
