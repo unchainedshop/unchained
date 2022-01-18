@@ -6,7 +6,11 @@ import {
 } from '@unchainedshop/types/filters';
 import { Locale } from 'locale';
 import { emit, registerEvents } from 'meteor/unchained:events';
-import { findLocalizedText, generateDbObjectId } from 'meteor/unchained:utils';
+import {
+  findLocalizedText,
+  generateDbFilterById,
+  generateDbObjectId,
+} from 'meteor/unchained:utils';
 
 const FILTER_TEXT_EVENTS = ['FILTER_UPDATE_TEXTS'];
 
@@ -26,16 +30,17 @@ export const configureFilterTextsModule = ({
     userId?: string
   ) => {
     const { filterId, filterOptionValue } = params;
-    const { filterOptionValue: textFilterOptionValue, ...textFields } = text;
-    
+
+    const _id = generateDbObjectId();
     const modifier: any = {
       $set: {
         updated: new Date(),
         updatedBy: userId,
-        ...textFields,
+        title: text.title,
+        subtitle: text.subtitle,
       },
       $setOnInsert: {
-        _id: generateDbObjectId(),
+        _id,
         created: new Date(),
         createdBy: userId,
         filterId,
@@ -55,7 +60,7 @@ export const configureFilterTextsModule = ({
     });
 
     return await FilterTexts.findOne(
-      updateResult.upsertedId ? { _id: updateResult.upsertedId } : selector
+      updateResult.upsertedCount === 1 ? generateDbFilterById(_id) : selector
     );
   };
 
@@ -86,20 +91,19 @@ export const configureFilterTextsModule = ({
     },
 
     // Mutations
-    updateTexts: async (params, texts, userId) => {
+    updateTexts: async (params, texts = [], userId) => {
       const filterTexts = await Promise.all(
-        texts?.map(
-          async (text) =>
-            await upsertLocalizedText(
-              params,
-              text.locale,
-              {
-                ...text,
-                ...params,
-                authorId: userId,
-              },
-              userId
-            )
+        texts.map((text) =>
+          upsertLocalizedText(
+            params,
+            text.locale,
+            {
+              ...text,
+              ...params,
+              authorId: userId,
+            },
+            userId
+          )
         )
       );
 

@@ -29,8 +29,8 @@ const QUOTATION_EVENTS: string[] = [
   'QUOTATION_UPDATE',
 ];
 
-const buildFindSelector = ({ userId }: { userId?: string }) => {
-  const selector: Query = userId ? { userId } : {};
+const buildFindSelector = (query: { userId?: string } = {}) => {
+  const selector: Query = query.userId ? { userId: query.userId } : {};
   return selector;
 };
 

@@ -4,6 +4,10 @@ import { objectInvert } from 'meteor/unchained:utils';
 import { OrderStatus } from '../db/OrderStatus';
 import { OrderPricingSheet } from '../director/OrderPricingSheet';
 
+const InternalOrderStatus = {
+  OPEN: null,
+};
+
 export const configureOrderModuleTransformations = ({
   Orders,
 }: {
@@ -14,7 +18,7 @@ export const configureOrderModuleTransformations = ({
 
     const selector: Query = { userId, ...rest };
     if (!includeCarts || status) {
-      selector.status = status || { $ne: OrderStatus.OPEN };
+      selector.status = status || { $ne: InternalOrderStatus.OPEN };
     }
     const options: FindOptions = {
       sort: {
@@ -139,12 +143,12 @@ export const configureOrderModuleTransformations = ({
     },
 
     isCart: (order) => {
-      return (order.status || null) === OrderStatus.OPEN;
+      return (order.status || null) === InternalOrderStatus.OPEN;
     },
     cart: async (order, user) => {
       const selector: Query = {
         countryCode: order.countryContext || user.lastLogin.countryContext,
-        status: { $eq: OrderStatus.OPEN },
+        status: { $eq: InternalOrderStatus.OPEN },
       };
 
       if (order.orderNumber) {

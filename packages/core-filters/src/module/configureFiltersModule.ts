@@ -152,8 +152,6 @@ export const configureFiltersModule = async ({
       (!forceLiveCollection && (await cache(filter))) ||
       (await buildProductIdMap(filter, requestContext));
 
-    console.log('PRODUCT IDS', getProductIds);
-
     const { allProductIds, productIds } = getProductIds;
 
     if (filter.type === FilterType.SWITCH) {

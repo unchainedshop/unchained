@@ -6,11 +6,11 @@ import {
 
 const defaultSelector = ({
   filterIds,
-  filterQuery = [],
+  filterQuery,
   includeInactive,
 }: SearchQuery) => {
   const selector: Query = {};
-  const keys = filterQuery.map((filter) => filter.key);
+  const keys = (filterQuery || []).map((filter) => filter.key);
   if (Array.isArray(filterIds)) {
     // return predefined list
     selector._id = { $in: filterIds };

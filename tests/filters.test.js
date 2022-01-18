@@ -246,7 +246,7 @@ describe('Filters', () => {
   });
 
   describe('mutation.updateFilterTexts for admin user should', () => {
-    it('update filter texts successfuly when passed valid filter ID', async () => {
+    it('update filter texts successfully when passed valid filter ID', async () => {
       const {
         data: { updateFilterTexts },
       } = await graphqlFetch({
@@ -429,6 +429,7 @@ describe('Filters', () => {
           },
         },
       });
+
       expect(createFilter).toMatchObject({
         isActive: false,
         texts: {

@@ -16,6 +16,7 @@ export const getOrderCart = async (
   if (orderId) {
     const order = await modules.orders.findOrder({ orderId });
     if (!order) throw new OrderNotFoundError({ orderId });
+
     if (!modules.orders.isCart(order))
       throw new OrderWrongStatusError({ status: order.status });
 

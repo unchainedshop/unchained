@@ -45,7 +45,7 @@ const findLoadedOptions = async (
 
       const filteredProductsCount = filterActions.aggregateProductIds({
         productIds: [...filteredProductIds],
-      });
+      }).length;
       return {
         definition: () => ({ filterOption: value, ...filter }),
         filteredProducts: filteredProductsCount,

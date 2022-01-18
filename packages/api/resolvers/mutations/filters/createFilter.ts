@@ -5,8 +5,9 @@ import { Filter } from '@unchainedshop/types/filters';
 export default async function createFilter(
   root: Root,
   { filter }: { filter: Filter & { title: string } },
-  { modules, localeContext, userId }: Context
+  context: Context
 ) {
+  const { modules, localeContext, userId } = context;
   log('mutation createFilter', { userId });
 
   return await modules.filters.create(
@@ -15,6 +16,6 @@ export default async function createFilter(
       locale: localeContext.language,
       authorId: userId,
     },
-    userId
+    context
   );
 }
