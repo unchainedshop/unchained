@@ -41,7 +41,7 @@ export default async function bookmark(
     throw new BookmarkNotFoundError({ productId, userId });
   }
 
-  await modules.bookmarks.delete(foundBookmark._id as string, userId);
+  await modules.bookmarks.delete(foundBookmark._id, userId);
 
   return foundBookmark;
 }

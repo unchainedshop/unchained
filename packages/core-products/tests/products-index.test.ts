@@ -36,7 +36,7 @@ describe('Test exports', () => {
     );
 
     assert.ok(product);
-    const productId = product._id as string;
+    const productId = product._id;
     product = await module.findProduct({ productId });
 
     assert.ok(product);

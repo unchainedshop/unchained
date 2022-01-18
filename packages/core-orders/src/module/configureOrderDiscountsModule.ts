@@ -133,7 +133,7 @@ export const configureOrderDiscountsModule = ({
     });
 
     return await updateDiscount(
-      orderDiscount._id as string,
+      orderDiscount._id,
       reservation,
       requestContext.userId
     );
@@ -245,7 +245,7 @@ export const configureOrderDiscountsModule = ({
           requestContext
         ).catch(async (error) => {
           // Rollback
-          await deleteDiscount(newDiscount._id as string, requestContext);
+          await deleteDiscount(newDiscount._id, requestContext);
           throw error;
         });
 

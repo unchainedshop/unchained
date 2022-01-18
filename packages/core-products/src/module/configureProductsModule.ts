@@ -35,6 +35,10 @@ const PRODUCT_EVENTS = [
   'PRODUCT_UPDATE',
 ];
 
+const InternalProductStatus = {
+  DRAFT: null,
+};
+
 const buildFindSelector = ({
   slugs = [],
   tags = [],
@@ -60,7 +64,9 @@ const buildFindSelector = ({
   if (!includeDrafts) {
     selector.status = { $eq: ProductStatus.ACTIVE };
   } else {
-    selector.status = { $in: [ProductStatus.ACTIVE, ProductStatus.DRAFT] };
+    selector.status = {
+      $in: [ProductStatus.ACTIVE, InternalProductStatus.DRAFT],
+    };
   }
 
   return selector;
@@ -97,7 +103,7 @@ export const configureProductsModule = async ({
     };
 
   const publishProduct: ProductsModule['publish'] = async (product, userId) => {
-    if (product.status === ProductStatus.DRAFT) {
+    if (product.status === InternalProductStatus.DRAFT) {
       await Products.updateOne(generateDbFilterById(product._id), {
         $set: {
           status: ProductStatus.ACTIVE,
@@ -122,7 +128,7 @@ export const configureProductsModule = async ({
     if (product.status === ProductStatus.ACTIVE) {
       await Products.updateOne(generateDbFilterById(product._id), {
         $set: {
-          status: ProductStatus.DRAFT,
+          status: InternalProductStatus.DRAFT,
           updated: new Date(),
           updatedBy: userId,
           published: null,
@@ -159,7 +165,7 @@ export const configureProductsModule = async ({
     const selector: Query = {
       _id: { $in: productIds },
       status: includeInactive
-        ? { $in: [ProductStatus.ACTIVE, ProductStatus.DRAFT] }
+        ? { $in: [ProductStatus.ACTIVE, InternalProductStatus.DRAFT] }
         : ProductStatus.ACTIVE,
     };
     return await Products.find(selector).toArray();
@@ -209,7 +215,7 @@ export const configureProductsModule = async ({
       const productSelector: Query = {
         _id: { $in: productIds },
         status: includeInactive
-          ? { $in: [ProductStatus.ACTIVE, ProductStatus.DRAFT] }
+          ? { $in: [ProductStatus.ACTIVE, InternalProductStatus.DRAFT] }
           : ProductStatus.ACTIVE,
       };
 
@@ -235,16 +241,19 @@ export const configureProductsModule = async ({
 
     // Transformations
     normalizedStatus: (product) => {
-      return product.status > ''
-        ? (product.status as ProductStatus)
-        : ProductStatus.DRAFT;
+      return product.status === null
+        ? ProductStatus.DRAFT
+        : (product.status as ProductStatus);
     },
 
     isActive: (product) => {
       return product.status === ProductStatus.ACTIVE;
     },
     isDraft: (product) => {
-      return product.status === ProductStatus.DRAFT;
+      return (
+        product.status === ProductStatus.DRAFT ||
+        product.status === InternalProductStatus.DRAFT
+      );
     },
 
     pricingSheet: (params) => {
@@ -258,7 +267,7 @@ export const configureProductsModule = async ({
       const selector: Query = {
         _id: { $in: productIds },
         status: includeInactive
-          ? { $in: [ProductStatus.ACTIVE, ProductStatus.DRAFT] }
+          ? { $in: [ProductStatus.ACTIVE, InternalProductStatus.DRAFT] }
           : ProductStatus.ACTIVE,
       };
       const supportedProductIds = await Products.find(selector, {
@@ -342,7 +351,7 @@ export const configureProductsModule = async ({
       if (productData._id) {
         // Remove deleted product by _id before creating a new one.
         await deleteProductsPermanently({
-          productId: productData._id as string,
+          productId: productData._id,
         });
       }
 
@@ -350,7 +359,7 @@ export const configureProductsModule = async ({
         {
           created: new Date(),
           type: ProductTypes[type],
-          status: ProductStatus.DRAFT,
+          status: InternalProductStatus.DRAFT,
           sequence: sequence ?? (await Products.find({}).count()) + 10,
           authorId,
           ...productData,
@@ -394,7 +403,7 @@ export const configureProductsModule = async ({
     delete: async (productId, userId) => {
       const product = await Products.findOne(generateDbFilterById(productId));
 
-      if (product.status !== ProductStatus.DRAFT) {
+      if (product.status !== InternalProductStatus.DRAFT) {
         throw new Error(`Invalid status', ${product.status}`);
       }
 
@@ -525,10 +534,10 @@ export const configureProductsModule = async ({
 
     search: {
       buildActiveDraftStatusFilter: () => ({
-        status: { $in: [ProductStatus.ACTIVE, ProductStatus.DRAFT] },
+        status: { $in: [ProductStatus.ACTIVE, InternalProductStatus.DRAFT] },
       }),
       buildActiveStatusFilter: () => ({
-        status: { $in: [ProductStatus.ACTIVE, ProductStatus.DRAFT] },
+        status: { $in: [ProductStatus.ACTIVE, InternalProductStatus.DRAFT] },
       }),
       findFilteredProducts: async ({
         limit,

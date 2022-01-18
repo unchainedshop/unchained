@@ -82,7 +82,7 @@ useMiddlewareWithCurrentContext(
           );
         } else {
           await modules.orders.payments.charge(
-            orderPayment._id as string,
+            orderPayment._id,
             paymentContext,
             requestContext
           );

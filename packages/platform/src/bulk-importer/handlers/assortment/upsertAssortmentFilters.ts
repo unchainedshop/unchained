@@ -18,7 +18,7 @@ const upsert = async (
     return await modules.assortments.filters.create(assortmentFilter, userId);
   } catch (e) {
     return await modules.assortments.filters.update(
-      assortmentFilter._id as string,
+      assortmentFilter._id,
       assortmentFilter
     );
   }

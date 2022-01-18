@@ -143,7 +143,7 @@ export const configureWorkerModule = async ({
       const typeList = await WorkQueue.aggregate([
         { $group: { _id: '$type' } },
       ]).toArray();
-      return typeList.map((t) => t._id as string);
+      return typeList.map((t) => t._id);
     },
 
     findWork: async ({ workId, originalWorkId }) => {

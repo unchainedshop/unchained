@@ -21,10 +21,10 @@ const upsert = async (
     });
   } catch (e) {
     await modules.assortments.products.update(
-      assortmentProduct._id as string,
+      assortmentProduct._id,
       assortmentProduct
     );
-    return assortmentProduct._id as string;
+    return assortmentProduct._id;
   }
 };
 

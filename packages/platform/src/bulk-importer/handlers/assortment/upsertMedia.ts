@@ -8,7 +8,7 @@ const upsertAsset = async (
 ) => {
   const { modules, userId } = unchainedAPI;
   const { _id, fileName, url, ...assetData } = asset;
-  const fileId = _id as string;
+  const fileId = _id;
   try {
     if (_id && (await modules.files.findFile({ fileId })))
       throw new Error('Media already exists');
@@ -70,7 +70,7 @@ export default async (
           Object.entries(content).map(
             async ([locale, localizedData]: [string, AssortmentMediaText]) => {
               return await modules.assortments.media.texts.upsertLocalizedText(
-                mediaObject._id as string,
+                mediaObject._id,
                 locale,
                 {
                   ...localizedData,

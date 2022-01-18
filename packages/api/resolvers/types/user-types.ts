@@ -124,7 +124,7 @@ export const User: UserHelperTypes = {
 
   bookmarks: async (user, params, context) => {
     await checkAction(viewUserPrivateInfos, context, [user, params]);
-    return context.modules.bookmarks.findByUserId(user._id as string);
+    return context.modules.bookmarks.findByUserId(user._id);
   },
 
   async cart(user, params, context) {
@@ -144,7 +144,7 @@ export const User: UserHelperTypes = {
   enrollments: async (user, params, context) => {
     await checkAction(viewUserEnrollments, context, [user, params]);
     return await context.modules.enrollments.findEnrollments({
-      userId: user._id as string,
+      userId: user._id,
     });
   },
 
@@ -161,7 +161,7 @@ export const User: UserHelperTypes = {
   orders: async (user, params, context) => {
     await checkAction(viewUserOrders, context, [user, params]);
     return await context.modules.orders.findOrders(
-      { userId: user._id as string, includeCarts: params.includeCarts },
+      { userId: user._id, includeCarts: params.includeCarts },
       {
         sort: {
           updated: -1,
@@ -173,7 +173,7 @@ export const User: UserHelperTypes = {
   paymentCredentials: async (user, params, context) => {
     await checkAction(viewUserPrivateInfos, context, [user, params]);
     return await context.modules.payment.paymentCredentials.findPaymentCredentials(
-      { ...params.selector, userId: user._id as string },
+      { ...params.selector, userId: user._id },
       {
         sort: {
           created: -1,
@@ -185,7 +185,7 @@ export const User: UserHelperTypes = {
   quotations: async (user, params, context) => {
     await checkAction(viewUserQuotations, context, [user, params]);
     return await context.modules.quotations.findQuotations(
-      { userId: user._id as string },
+      { userId: user._id },
       {
         sort: {
           created: -1,

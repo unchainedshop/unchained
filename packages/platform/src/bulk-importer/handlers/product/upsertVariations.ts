@@ -13,7 +13,7 @@ const upsert = async (
     return await modules.products.variations.create(productVariation, userId);
   } catch (e) {
     return await modules.products.variations.update(
-      productVariation._id as string,
+      productVariation._id,
       productVariation
     );
   }

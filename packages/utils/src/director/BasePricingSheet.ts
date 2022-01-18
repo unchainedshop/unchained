@@ -25,6 +25,7 @@ export const BasePricingSheet = <Calculation extends PricingCalculation>(
     sum: (filter) => {
       return pricingSheet
         .filterBy(filter)
+        .filter(Boolean)
         .reduce(
           (sum: number, calculationRow: Calculation) =>
             sum + calculationRow.amount,
@@ -61,15 +62,18 @@ export const BasePricingSheet = <Calculation extends PricingCalculation>(
     },
 
     filterBy: (filter) => {
-      return Object.keys(filter || {}).reduce(
+      const filteredCalculation = Object.keys(filter || {}).reduce(
         (oldCalculation, filterKey) =>
           oldCalculation.filter(
             (row: Calculation) =>
-              filter[filterKey] === undefined ||
-              row[filterKey] === filter[filterKey]
+              !!row &&
+              (filter[filterKey] === undefined ||
+                row[filterKey] === filter[filterKey])
           ),
         calculation
       );
+
+      return filteredCalculation;
     },
   };
 

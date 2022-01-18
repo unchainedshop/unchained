@@ -38,7 +38,7 @@ export const AssortmentPathLink: AssortmentPathLinkHelperTypes = {
   assortmentSlug: async (obj, params, { modules, localeContext }) => {
     const locale = new Locale(params.forceLocale || localeContext.normalized);
     const text = await modules.assortments.texts.findLocalizedText({
-      assortmentId: obj._id as string,
+      assortmentId: obj._id,
       locale,
     });
 
@@ -48,7 +48,7 @@ export const AssortmentPathLink: AssortmentPathLinkHelperTypes = {
   assortmentTexts: async (obj, params, { modules, localeContext }) => {
     const locale = new Locale(params.forceLocale || localeContext.normalized);
     return await modules.assortments.texts.findLocalizedText({
-      assortmentId: obj._id as string,
+      assortmentId: obj._id,
       locale,
     });
   },

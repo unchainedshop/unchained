@@ -24,7 +24,7 @@ export default async function addProductMedia(
   );
 
   return await modules.products.media.create(
-    { productId, mediaId: file._id as string },
+    { productId, mediaId: file._id },
     userId
   );
 }

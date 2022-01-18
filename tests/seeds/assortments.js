@@ -1,4 +1,4 @@
-import { SimpleProduct } from './products';
+import { SimpleProduct } from "./products";
 import { MultiChoiceFilter } from './filters';
 
 export const SimpleAssortment = [

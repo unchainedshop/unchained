@@ -85,7 +85,7 @@ export const configureOrderPaymentsModule = ({
       );
 
       return pricingSheet
-        .discountPrices(orderDiscount._id as string)
+        .discountPrices(orderDiscount._id)
         .map((discount) => ({
           payment: orderPayment,
           ...discount,
@@ -206,7 +206,7 @@ export const configureOrderPaymentsModule = ({
       if (orderPayment.status !== OrderPaymentStatus.OPEN) return;
 
       updateStatus(
-        orderPayment._id as string,
+        orderPayment._id,
         {
           status: OrderPaymentStatus.PAID,
           info: meta ? JSON.stringify(meta) : 'mark paid manually',
@@ -271,7 +271,7 @@ export const configureOrderPaymentsModule = ({
         );
 
       await OrderPayments.updateOne(
-        buildFindByIdSelector(orderPayment._id as string),
+        buildFindByIdSelector(orderPayment._id),
         {
           $set: {
             calculation,

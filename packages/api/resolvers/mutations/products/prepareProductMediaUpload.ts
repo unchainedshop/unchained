@@ -19,7 +19,7 @@ export default async function prepareProductMediaUpload(
       await modules.products.media.create(
         {
           productId,
-          mediaId: file._id as string,
+          mediaId: file._id,
         },
         userId
       );

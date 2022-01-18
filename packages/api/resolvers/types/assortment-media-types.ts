@@ -3,7 +3,7 @@ import { AssortmentMediaHelperTypes } from '@unchainedshop/types/assortments.med
 export const AssortmentMedia: AssortmentMediaHelperTypes = {
   texts: async (obj, { forceLocale }, { modules, localeContext }) => {
     return await modules.assortments.media.texts.findLocalizedMediaText({
-      assortmentMediaId: obj._id as string,
+      assortmentMediaId: obj._id,
       locale: forceLocale || localeContext.normalized,
     });
   },

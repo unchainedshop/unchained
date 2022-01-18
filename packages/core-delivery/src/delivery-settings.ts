@@ -15,7 +15,7 @@ const sortByCreationDate = (
 };
 
 const allProviders: FilterProviders = ({ providers }) => {
-  return providers.sort(sortByCreationDate).map(({ _id }) => _id as string);
+  return providers.sort(sortByCreationDate).map(({ _id }) => _id);
 };
 
 export const deliverySettings: DeliverySettings = {

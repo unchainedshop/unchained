@@ -10,7 +10,7 @@ const upsertAsset = async (
   { modules, userId }: Context
 ) => {
   const { _id, fileName, url, ...assetData } = asset;
-  const fileId = _id as string;
+  const fileId = _id;
 
   try {
     if (_id && (await modules.files.findFile({ fileId })))
@@ -44,7 +44,7 @@ const upsertProductMedia = async (
     return await modules.products.media.create(productMedia, userId);
   } catch (e) {
     const { _id, ...productMediaData } = productMedia;
-    const productMediaId = _id as string;
+    const productMediaId = _id;
     await modules.products.media.update(productMediaId, productMediaData);
     return await modules.products.media.findProductMedia({ productMediaId });
   }

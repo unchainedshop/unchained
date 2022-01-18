@@ -72,13 +72,13 @@ export interface AssortmentHelperTypes {
 export const Assortment: AssortmentHelperTypes = {
   async assortmentPaths(obj, _, { modules }) {
     return await modules.assortments.breadcrumbs({
-      assortmentId: obj._id as string,
+      assortmentId: obj._id,
     });
   },
 
   children: async (obj, { includeInactive }, { modules }) => {
     return await modules.assortments.children({
-      assortmentId: obj._id as string,
+      assortmentId: obj._id,
       includeInactive,
     });
   },
@@ -89,7 +89,7 @@ export const Assortment: AssortmentHelperTypes = {
     { modules }
   ) => {
     const assortmentChildrenIds = await modules.assortments.links.findLinks({
-      parentAssortmentId: assortment._id as string,
+      parentAssortmentId: assortment._id,
     });
     const assortmentIds = assortmentChildrenIds.map(
       ({ childAssortmentId }) => childAssortmentId
@@ -108,7 +108,7 @@ export const Assortment: AssortmentHelperTypes = {
   filterAssignments: async (obj, _, { modules }) => {
     return await modules.assortments.filters.findFilters(
       {
-        assortmentId: obj._id as string,
+        assortmentId: obj._id,
       },
       {
         sort: { sortKey: 1 },
@@ -118,13 +118,13 @@ export const Assortment: AssortmentHelperTypes = {
 
   linkedAssortments: async (obj, _, { modules }) => {
     return await modules.assortments.links.findLinks({
-      assortmentId: obj._id as string,
+      assortmentId: obj._id,
     });
   },
 
   async media(obj, params, { modules }) {
     return await modules.assortments.media.findAssortmentMedias({
-      assortmentId: obj._id as string,
+      assortmentId: obj._id,
       ...params,
     });
   },
@@ -132,7 +132,7 @@ export const Assortment: AssortmentHelperTypes = {
   productAssignments: async (obj, _, { modules }) => {
     return await modules.assortments.products.findProducts(
       {
-        assortmentId: obj._id as string,
+        assortmentId: obj._id,
       },
       {
         sort: { sortKey: 1 },
@@ -142,7 +142,7 @@ export const Assortment: AssortmentHelperTypes = {
 
   async texts(obj, { forceLocale }, { modules, localeContext }) {
     return await modules.assortments.texts.findLocalizedText({
-      assortmentId: obj._id as string,
+      assortmentId: obj._id,
       locale: forceLocale || localeContext.normalized,
     });
   },

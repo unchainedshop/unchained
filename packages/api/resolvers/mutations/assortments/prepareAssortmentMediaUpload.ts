@@ -19,7 +19,7 @@ export default async function prepareAssortmentMediaUpload(
       await modules.assortments.media.create(
         {
           assortmentId,
-          mediaId: file._id as string,
+          mediaId: file._id,
         },
         userId
       );

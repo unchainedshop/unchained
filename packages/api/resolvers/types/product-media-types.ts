@@ -3,7 +3,7 @@ import { ProductMediaHelperTypes } from '@unchainedshop/types/products.media';
 export const ProductMedia: ProductMediaHelperTypes = {
   texts: async (obj, { forceLocale }, { modules, localeContext }) => {
     return await modules.products.media.texts.findLocalizedMediaText({
-      productMediaId: obj._id as string,
+      productMediaId: obj._id,
       locale: forceLocale || localeContext.normalized,
     });
   },

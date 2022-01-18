@@ -492,7 +492,7 @@ export const configureOrderModuleProcessing = ({
       }
 
       return await updateStatus(
-        order._id as string,
+        order._id,
         { status: nextStatus, info: 'order processed' },
         requestContext
       );

@@ -3,7 +3,7 @@ import { FilterDirector } from 'meteor/unchained:core-filters';
 
 const defaultSelector = ({ includeInactive }) => {
   const selector = {
-    status: { $in: [ProductStatus.ACTIVE, ProductStatus.DRAFT] },
+    status: { $in: [ProductStatus.ACTIVE, null /* ProductStatus.DRAFT */] },
   };
   if (!includeInactive) {
     selector.status = ProductStatus.ACTIVE;

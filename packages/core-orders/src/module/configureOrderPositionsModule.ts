@@ -67,7 +67,7 @@ export const configureOrderPositionsModule = ({
       );
 
       return pricingSheet
-        .discountPrices(orderDiscount._id as string)
+        .discountPrices(orderDiscount._id)
         .map((discount) => ({
           item: orderPosition,
           ...discount,
@@ -304,7 +304,7 @@ export const configureOrderPositionsModule = ({
         { item: orderPosition },
         requestContext
       );
-      const selector = buildFindByIdSelector(orderPosition._id as string);
+      const selector = buildFindByIdSelector(orderPosition._id);
 
       await OrderPositions.updateOne(selector, {
         $set: { calculation },

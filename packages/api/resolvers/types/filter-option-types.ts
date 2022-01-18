@@ -27,7 +27,7 @@ export const FilterOption: FilterOptionHelperTypes = {
 
   async texts(obj, { forceLocale }, { modules, localeContext }) {
     return await modules.filters.texts.findLocalizedText({
-      filterId: obj._id as string,
+      filterId: obj._id,
       filterOption: obj.filterOption,
       locale: forceLocale || localeContext.normalized,
     });

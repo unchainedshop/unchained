@@ -85,7 +85,7 @@ export const configureOrderDeliveriesModule = ({
       );
 
       return pricingSheet
-        .discountPrices(orderDiscount._id as string)
+        .discountPrices(orderDiscount._id)
         .map((discount) => ({
           delivery: orderDelivery,
           ...discount,
@@ -139,7 +139,7 @@ export const configureOrderDeliveriesModule = ({
     markAsDelivered: async (orderDelivery, userId) => {
       if (orderDelivery.status !== OrderDeliveryStatus.OPEN) return;
       const updatedOrderDelivery = await updateStatus(
-        orderDelivery._id as string,
+        orderDelivery._id,
         {
           status: OrderDeliveryStatus.DELIVERED,
           info: 'mark delivered manually',
@@ -230,7 +230,7 @@ export const configureOrderDeliveriesModule = ({
       );
 
       await OrderDeliveries.updateOne(
-        buildFindByIdSelector(orderDelivery._id as string),
+        buildFindByIdSelector(orderDelivery._id),
         {
           $set: {
             calculation,

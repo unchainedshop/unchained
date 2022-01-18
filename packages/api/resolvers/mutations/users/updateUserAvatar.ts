@@ -25,7 +25,7 @@ export default async function updateUserAvatar(
 
   return await modules.users.updateAvatar(
     normalizedUserId,
-    file._id as string,
+    file._id,
     userId
   );
 }

@@ -12,7 +12,7 @@ export const linkFileService: LinkFileService = async (
 
   const [directoryName] = decodeURIComponent(externalId).split('/');
 
-  await modules.files.update(file._id as string, {
+  await modules.files.update(file._id, {
     $set: {
       size,
       type,
@@ -23,5 +23,5 @@ export const linkFileService: LinkFileService = async (
 
   await getFileUploadCallback(directoryName)(file);
 
-  return await modules.files.findFile({ fileId: file._id as string });
+  return await modules.files.findFile({ fileId: file._id });
 };

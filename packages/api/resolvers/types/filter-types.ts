@@ -22,7 +22,7 @@ export const Filter: FilterHelperTypes = {
 
   texts: async (obj, { forceLocale }, { modules, localeContext }) => {
     return await modules.filters.texts.findLocalizedText({
-      filterId: obj._id as string,
+      filterId: obj._id,
       locale: forceLocale || localeContext.normalized,
     });
   },

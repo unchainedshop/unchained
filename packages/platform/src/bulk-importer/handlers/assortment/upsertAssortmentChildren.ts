@@ -22,7 +22,7 @@ const upsert = async (
     );
   } catch (e) {
     return await modules.assortments.links.update(
-      assortmentLink._id as string,
+      assortmentLink._id,
       assortmentLink
     );
   }

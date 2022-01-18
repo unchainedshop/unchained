@@ -122,6 +122,8 @@ export const configureAssortmentProductsModule = ({
         projection: { _id: 1, assortmentId: 1 },
       });
 
+      if (!assortmentProduct) return []
+
       AssortmentProducts.deleteOne(selector);
 
       emit('ASSORTMENT_REMOVE_PRODUCT', {
@@ -135,6 +137,7 @@ export const configureAssortmentProductsModule = ({
       }
 
       return [assortmentProduct];
+      
     },
 
     deleteMany: async (selector, options) => {

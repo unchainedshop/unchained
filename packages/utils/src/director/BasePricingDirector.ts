@@ -8,7 +8,6 @@ import {
   PricingCalculation,
 } from '@unchainedshop/types/pricing';
 import { log, LogLevel } from 'meteor/unchained:logger';
-import { dbIdToString } from '../utils-index';
 import { BaseDirector } from './BaseDirector';
 
 export const BasePricingDirector = <
@@ -37,34 +36,35 @@ export const BasePricingDirector = <
     Adapter
   > = {
     ...baseDirector,
-    buildPricingContext: (pricingContext) => {
+    buildPricingContext: (pricingContext, requestContext) => {
       return {
         discounts: [],
         ...pricingContext,
+        ...requestContext,
       };
     },
 
     getCalculation: () => calculation,
     getContext: () => context,
 
-    actions: (pricingContext, requestContext) => {
+    actions: async (pricingContext, requestContext) => {
+      context = await director.buildPricingContext(
+        pricingContext,
+        requestContext
+      );
+
       return {
         calculate: async () => {
-          const context = await director.buildPricingContext(
-            pricingContext,
-            requestContext
-          );
-
           const Adapters = baseDirector
             .getAdapters()
             .filter(async (Adapter) => await Adapter.isActivatedFor(context));
 
           calculation = await Adapters.reduce(
             async (previousPromise, Adapter) => {
-              const calculation = await previousPromise;
+              const resolvedCalculation = await previousPromise;
               const discounts: Array<Discount> = await Promise.all(
                 context.discounts.map(async (discount) => ({
-                  discountId: dbIdToString(discount._id),
+                  discountId: discount._id,
                   configuration:
                     await requestContext.modules.orders.discounts.configurationForPricingAdapterKey(
                       discount,
@@ -77,21 +77,23 @@ export const BasePricingDirector = <
               try {
                 const adapter = Adapter.actions({
                   context,
-                  calculation,
+                  calculation: resolvedCalculation,
                   discounts: discounts.filter(
                     ({ configuration }) => configuration !== null
                   ),
                 });
 
                 const nextCalculationResult = await adapter.calculate();
+                if (!nextCalculationResult) return null;
+                if (!resolvedCalculation) return null;
 
-                return calculation.concat(nextCalculationResult);
+                return resolvedCalculation.concat(nextCalculationResult);
               } catch (error) {
                 log(error, { level: LogLevel.Error });
               }
-              return calculation;
+              return resolvedCalculation;
             },
-            Promise.resolve([] as Array<Calculation>)
+            Promise.resolve([])
           );
 
           return calculation;

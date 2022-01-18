@@ -24,7 +24,7 @@ export default async function addAssortmentMedia(
   );
 
   return await modules.assortments.media.create(
-    { assortmentId, mediaId: file._id as string },
+    { assortmentId, mediaId: file._id },
     userId
   );
 }

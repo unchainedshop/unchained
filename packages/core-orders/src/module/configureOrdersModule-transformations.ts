@@ -51,7 +51,7 @@ export const configureOrderModuleTransformations = ({
 
       // Position discounts
       const orderPositions = await modules.orders.positions.findOrderPositions({
-        orderId: order._id as string,
+        orderId: order._id,
       });
       const orderPositionDiscounts = orderPositions.flatMap((orderPosition) =>
         modules.orders.positions.discounts(
@@ -68,7 +68,7 @@ export const configureOrderModuleTransformations = ({
       });
 
       const orderDiscounts = pricingSheet
-        .discountPrices(orderDiscount._id as string)
+        .discountPrices(orderDiscount._id)
         .map((discount) => ({ order, ...discount }));
 
       // All discounts
@@ -104,7 +104,7 @@ export const configureOrderModuleTransformations = ({
 
       // Position discounts
       const orderPositions = await modules.orders.positions.findOrderPositions({
-        orderId: order._id as string,
+        orderId: order._id,
       });
       const orderPositionDiscounts = orderPositions.map((orderPosition) =>
         modules.orders.positions

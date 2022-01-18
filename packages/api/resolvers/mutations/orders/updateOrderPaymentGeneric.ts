@@ -42,7 +42,7 @@ export default async function updateOrderPaymentGeneric(
     });
 
   return await modules.orders.payments.updateContext(
-    orderPayment._id as string,
+    orderPayment._id,
     meta,
     userId
   );

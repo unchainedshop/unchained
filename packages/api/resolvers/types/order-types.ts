@@ -62,13 +62,13 @@ export const Order: OrderHelperTypes = {
 
   discounts: async (obj, _, { modules }) => {
     return await modules.orders.discounts.findOrderDiscounts({
-      orderId: obj._id as string,
+      orderId: obj._id,
     });
   },
 
   documents: async (obj, { type }, { modules }) => {
     return await modules.files.findFilesByMetaData(
-      { meta: { orderId: obj._id as string, type } },
+      { meta: { orderId: obj._id, type } },
       { sort: { 'meta.data': -1 } }
     );
   },
@@ -81,13 +81,13 @@ export const Order: OrderHelperTypes = {
 
   enrollment: async (obj, _, { modules }) => {
     return await modules.enrollments.findEnrollment({
-      orderId: obj._id as string,
+      orderId: obj._id,
     });
   },
 
   items: async (obj, _, { modules }) => {
     return await modules.orders.positions.findOrderPositions({
-      orderId: obj._id as string,
+      orderId: obj._id,
     });
   },
 
