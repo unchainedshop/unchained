@@ -3,7 +3,7 @@ import { Db } from '@unchainedshop/types/common';
 import { buildDbIndexes } from 'meteor/unchained:utils';
 
 export const ProductReviewsCollection = async (db: Db) => {
-  const ProductReviews = db.collection<ProductReview>('product_variations');
+  const ProductReviews = db.collection<ProductReview>('product_reviews');
 
   await buildDbIndexes(ProductReviews, [
     { index: { productId: 1 } },

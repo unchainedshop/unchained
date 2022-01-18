@@ -1,5 +1,4 @@
 import { hashPassword } from "meteor/unchained:api";
-import { dbIdToString } from "meteor/unchained:utils";
 import { DeliveryProviderType } from "meteor/unchained:core-delivery";
 import { PaymentProviderType } from "meteor/unchained:core-payment";
 import { v4 as uuidv4 } from "uuid";
@@ -84,7 +83,7 @@ export default async (unchainedApi: Context) => {
               isoCode: code,
               isActive: true,
               authorId: adminId,
-              defaultCurrencyId: dbIdToString(currencies[key]._id),
+              defaultCurrencyId: currencies[key]._id,
             },
             adminId
           );

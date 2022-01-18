@@ -39,7 +39,7 @@ const ProductDiscount: IProductPricingAdapter = {
       const { isNetPrice = false, ...meta } = configuration;
       const amount = applyRate(configuration, total);
 
-      pricingAdapter.resultSheet.addDiscount({
+      pricingAdapter.resultSheet().addDiscount({
         amount: amount * -1,
         discountId,
         isNetPrice,
@@ -52,11 +52,11 @@ const ProductDiscount: IProductPricingAdapter = {
       ...pricingAdapter,
 
       calculate: async () => {
-        const taxableTotal = pricingAdapter.calculationSheet.sum({
+        const taxableTotal = pricingAdapter.calculationSheet().sum({
           category: ProductPricingRowCategory.Item,
           isTaxable: true,
         });
-        const nonTaxableTotal = pricingAdapter.calculationSheet.sum({
+        const nonTaxableTotal = pricingAdapter.calculationSheet().sum({
           category: ProductPricingRowCategory.Item,
           isTaxable: false,
         });

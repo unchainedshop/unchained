@@ -23,7 +23,7 @@ export default async function removeProductVariationOption(
   if (!productVariation)
     throw new ProductVariationNotFoundError({ productVariationId });
 
-  await modules.products.variations.deleteVariationOption(
+  await modules.products.variations.removeVariationOption(
     productVariationId,
     productVariationOptionValue,
     userId

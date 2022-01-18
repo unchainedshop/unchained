@@ -18,7 +18,6 @@ import {
   ModuleCreateMutation,
   ModuleInput,
   ModuleMutations,
-  ObjectId,
   Query,
   TimestampFields,
   _ID,
@@ -164,7 +163,7 @@ declare module 'meteor/unchained:utils' {
     options?: FindOptions
   ) => Promise<Array<T>>;
 
-  function generateId(id: unknown): ObjectId;
+  function generateDbObjectId(): string;
   function generateDbFilterById<T extends { _id?: _ID }>(
     id: any,
     query?: Filter<T>

@@ -1,5 +1,4 @@
 import { WorkerDirector, WorkerAdapter } from 'meteor/unchained:core-worker';
-import { dbIdToString } from 'meteor/unchained:utils';
 import {
   EnrollmentStatus,
   EnrollmentDirector,
@@ -29,12 +28,12 @@ const generateOrder = async (
       countryCode: enrollment.countryCode,
       contact: enrollment.contact,
       billingAddress: enrollment.billingAddress,
-      originEnrollmentId: dbIdToString(enrollment._id),
+      originEnrollmentId: enrollment._id,
       ...configuration,
     },
     enrollment.userId
   );
-  const orderId = dbIdToString(order._id);
+  const orderId = order._id;
 
   if (orderProducts) {
     await Promise.all(
@@ -129,8 +128,8 @@ const GenerateEnrollmentOrders: IWorkerAdapter<any, any> = {
                 );
                 if (order) {
                   await modules.enrollments.addEnrollmentPeriod(
-                    dbIdToString(enrollment._id),
-                    { ...period, orderId: dbIdToString(order._id) }
+                    enrollment._id,
+                    { ...period, orderId: order._id }
                   );
                 }
               }

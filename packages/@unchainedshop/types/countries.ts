@@ -38,5 +38,5 @@ export type ResolveDefaultCurrencyCodeService = (
 ) => Promise<string>;
 
 export interface CountryServices {
-  resolveDefaultCurrencyCodeService: ResolveDefaultCurrencyCodeService;
+  resolveDefaultCurrencyCode: ResolveDefaultCurrencyCodeService;
 }

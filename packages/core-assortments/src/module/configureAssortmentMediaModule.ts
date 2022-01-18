@@ -14,7 +14,7 @@ import {
   findLocalizedText,
   generateDbFilterById,
   generateDbMutations,
-  dbIdToString,
+  generateDbObjectId,
 } from 'meteor/unchained:utils';
 import { AssortmentMediaCollection } from '../db/AssortmentMediaCollection';
 import { AssortmentMediaSchema } from '../db/AssortmentMediaSchema';
@@ -58,6 +58,7 @@ export const configureAssortmentMediaModule = async ({
           ...text,
         },
         $setOnInsert: {
+          _id: generateDbObjectId(),
           created: new Date(),
           createdBy: userId,
           assortmentMediaId,
@@ -193,7 +194,7 @@ export const configureAssortmentMediaModule = async ({
             }
           );
 
-          return dbIdToString(assortmentMediaId);
+          return assortmentMediaId;
         })
       );
 

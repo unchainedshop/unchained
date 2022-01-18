@@ -10,6 +10,7 @@ import {
   findLocalizedText,
   findUnusedSlug,
   generateDbFilterById,
+  generateDbObjectId,
 } from 'meteor/unchained:utils';
 
 const ASSORTMENT_TEXT_EVENTS = ['ASSORTMENT_UPDATE_TEXTS'];
@@ -60,6 +61,7 @@ export const configureAssortmentTextsModule = ({
         ...textFields,
       },
       $setOnInsert: {
+        _id: generateDbObjectId(),
         created: new Date(),
         createdBy: userId,
         assortmentId,

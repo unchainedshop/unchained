@@ -12,7 +12,6 @@ import {
 import { emit, registerEvents } from 'meteor/unchained:events';
 import { log } from 'meteor/unchained:logger';
 import {
-  dbIdToString,
   generateDbFilterById,
   generateDbMutations,
 } from 'meteor/unchained:utils';
@@ -153,7 +152,7 @@ export const configureOrderDiscountsModule = ({
     const discount = await OrderDiscounts.findOne({ code, orderId: null });
     if (!discount) return null;
 
-    const discountId = dbIdToString(discount._id);
+    const discountId = discount._id;
     try {
       const updatedDiscount = await updateDiscount(
         discountId,

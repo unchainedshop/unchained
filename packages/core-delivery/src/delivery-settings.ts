@@ -4,7 +4,6 @@ import {
   FilterProviders,
 } from '@unchainedshop/types/delivery';
 import { createLogger } from 'meteor/unchained:logger';
-import { dbIdToString } from 'meteor/unchained:utils';
 
 const logger = createLogger('unchained:core-delivery');
 
@@ -32,9 +31,7 @@ export const deliverySettings: DeliverySettings = {
         'sortProviders is deprecated, please specifc filterSupportedProviders instead'
       );
       const filterSortedProviders: FilterProviders = ({ providers }) => {
-        return providers
-          .sort(sortProviders)
-          .map(({ _id }) => dbIdToString(_id));
+        return providers.sort(sortProviders).map(({ _id }) => _id);
       };
       this.filterSupportedProviders = filterSortedProviders;
     } else {

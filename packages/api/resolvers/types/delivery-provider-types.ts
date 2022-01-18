@@ -32,13 +32,16 @@ export const DeliveryProvider: DeliveryProviderHelperTypes = {
 
     const currency =
       currencyCode ||
-      (await services.countries.resolveDefaultCurrencyCode({
-        isoCode: country,
-      }));
+      (await services.countries.resolveDefaultCurrencyCode(
+        {
+          isoCode: country,
+        },
+        requestContext
+      ));
 
     const user = await requestContext.modules.users.findUser({ userId });
 
-    const pricingDirector = DeliveryPricingDirector.actions(
+    const pricingDirector = await DeliveryPricingDirector.actions(
       {
         country,
         currency,

@@ -17,7 +17,6 @@ import {
   generateDbFilterById,
   generateDbMutations,
   objectInvert,
-  dbIdToString,
 } from 'meteor/unchained:utils';
 import { OrderPaymentsSchema } from '../db/OrderPaymentsSchema';
 import { OrderPaymentStatus } from '../db/OrderPaymentStatus';
@@ -149,7 +148,7 @@ export const configureOrderPaymentsModule = ({
           paymentProviderId: orderPayment.paymentProviderId,
         });
 
-      const paymentProviderId = dbIdToString(paymentProvider._id);
+      const paymentProviderId = paymentProvider._id;
 
       const arbitraryResponseData =
         await requestContext.modules.payment.paymentProviders.charge(
@@ -167,7 +166,7 @@ export const configureOrderPaymentsModule = ({
 
       if (arbitraryResponseData) {
         return await updateStatus(
-          dbIdToString(orderPayment._id),
+          orderPayment._id,
           {
             status: OrderPaymentStatus.PAID,
             info: JSON.stringify(arbitraryResponseData),

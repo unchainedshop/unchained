@@ -10,7 +10,7 @@ import { OrderPayment } from '@unchainedshop/types/orders.payments';
 import { OrderPosition } from '@unchainedshop/types/orders.positions';
 import { emit, registerEvents } from 'meteor/unchained:events';
 import { log } from 'meteor/unchained:logger';
-import { dbIdToString, generateDbFilterById } from 'meteor/unchained:utils';
+import { generateDbFilterById } from 'meteor/unchained:utils';
 import { OrderStatus } from '../db/OrderStatus';
 import { ordersSettings } from '../orders-settings';
 
@@ -204,7 +204,7 @@ export const configureOrderModuleProcessing = ({
   return {
     checkout: async (order, params, requestContext) => {
       const { modules, localeContext } = requestContext;
-      const orderId = dbIdToString(order._id);
+      const orderId = order._id;
 
       const errors = [
         ...(await missingInputDataForCheckout(order)),
@@ -253,7 +253,7 @@ export const configureOrderModuleProcessing = ({
 
     confirm: async (order, params, requestContext) => {
       const { modules, localeContext, userId } = requestContext;
-      const orderId = dbIdToString(order._id);
+      const orderId = order._id;
 
       if (order.status !== OrderStatus.PENDING) return order;
 
@@ -342,14 +342,14 @@ export const configureOrderModuleProcessing = ({
       { fromCart, shouldMergeCarts, toCart },
       requestContext
     ) => {
-      const fromCartId = dbIdToString(fromCart._id);
-      const toCartId = dbIdToString(toCart._id);
+      const fromCartId = fromCart._id;
+      const toCartId = toCart._id;
 
       if (!toCart || !shouldMergeCarts) {
         // No destination cart, move whole cart
         await Orders.updateOne(generateDbFilterById(fromCart._id), {
           $set: {
-            userId: dbIdToString(toCart.userId),
+            userId: toCart.userId,
           },
         });
         return await updateCalculation(fromCartId, requestContext);
@@ -396,7 +396,7 @@ export const configureOrderModuleProcessing = ({
       }
 
       if (nextStatus === OrderStatus.CONFIRMED) {
-        const orderId = dbIdToString(order._id);
+        const orderId = order._id;
         const orderDelivery = await modules.orders.deliveries.findDelivery({
           orderDeliveryId: order.deliveryId,
         });
@@ -470,7 +470,7 @@ export const configureOrderModuleProcessing = ({
               orderPosition.quotationId,
               {
                 orderId,
-                orderPositionId: dbIdToString(orderPosition._id),
+                orderPositionId: orderPosition._id,
               },
               requestContext
             );

@@ -45,21 +45,30 @@ const ProductPriceCoinbaseExchange: IProductPricingAdapter = {
 
   actions: (params) => {
     const pricingAdapter = ProductPricingAdapter.actions(params);
-
+    const { services, modules } = params.context;
     return {
       ...pricingAdapter,
 
       calculate: async () => {
         const { product, country, quantity, currency } = params.context;
         const defaultCurrency =
-          params.context.services.countries.resolveDefaultCurrencyCode({
-            isoCode: country,
-          });
-        const productPrice = product.price({
-          country,
-          currency: defaultCurrency,
-          quantity,
-        });
+          await services.countries.resolveDefaultCurrencyCode(
+            {
+              isoCode: country,
+            },
+            params.context
+          );
+
+        const productPrice = await modules.products.prices.price(
+          product,
+          {
+            country,
+            currency: defaultCurrency,
+            quantity,
+          },
+          params.context
+        );
+
         const { calculation = [] } = pricingAdapter.calculationSheet;
 
         if (!productPrice || !productPrice?.amount || calculation?.length)
@@ -72,7 +81,7 @@ const ProductPriceCoinbaseExchange: IProductPricingAdapter = {
 
         const convertedAmount = productPrice?.amount * rate;
         pricingAdapter.resetCalculation();
-        pricingAdapter.resultSheet.addItem({
+        pricingAdapter.resultSheet().addItem({
           amount: convertedAmount * quantity,
           isTaxable: productPrice?.isTaxable,
           isNetPrice: productPrice?.isNetPrice,

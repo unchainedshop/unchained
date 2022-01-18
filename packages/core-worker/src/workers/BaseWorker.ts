@@ -1,7 +1,6 @@
 import { IWorker, Work } from '@unchainedshop/types/worker';
 import later from 'later';
 import { log } from 'meteor/unchained:logger';
-import { dbIdToString } from 'meteor/unchained:utils';
 import os from 'os';
 import { WorkerDirector } from '../director/WorkerDirector';
 
@@ -96,7 +95,7 @@ export const BaseWorker: IWorker<WorkerParams> = {
             );
 
             doneWork = await requestContext.modules.worker.finishWork(
-              dbIdToString(work._id),
+              work._id,
               {
                 ...output,
                 started: work.started,

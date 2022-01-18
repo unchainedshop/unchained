@@ -4,7 +4,10 @@ import {
 } from '@unchainedshop/types/assortments';
 import { Collection, Filter, Query } from '@unchainedshop/types/common';
 import { emit, registerEvents } from 'meteor/unchained:events';
-import { generateDbFilterById } from 'meteor/unchained:utils';
+import {
+  generateDbFilterById,
+  generateDbObjectId,
+} from 'meteor/unchained:utils';
 
 const ASSORTMENT_FILTER_EVENTS = [
   'ASSORTMENT_ADD_FILTER',
@@ -57,6 +60,7 @@ export const configureAssortmentFiltersModule = ({
         ...rest,
       };
       const $setOnInsert: any = {
+        _id: generateDbObjectId(),
         filterId,
         assortmentId,
         created: new Date(),

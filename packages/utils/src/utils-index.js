@@ -20,11 +20,8 @@ export { default as generateRandomHash } from './generate-random-hash';
  */
 
 export { checkId } from './db/check-id';
-export { dbIdToString } from './db/db-id-to-string';
-export {
-  generateDbFilterById,
-  generateId,
-} from './db/generate-db-filter-by-id';
+export { generateDbObjectId } from './db/generate-db-object-id';
+export { generateDbFilterById } from './db/generate-db-filter-by-id';
 export { generateDbMutations } from './db/generate-db-mutations';
 export { buildDbIndexes } from './db/build-db-indexes';
 export { findPreservingIds } from './find-preserving-ids';

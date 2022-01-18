@@ -90,12 +90,12 @@ export const DeliverySwissTax: IDeliveryPricingAdapter = {
           `DeliverySwissTax -> Tax Multiplicator: ${taxRate}`
         );
 
-        pricingAdapter.calculationSheet
+        pricingAdapter.calculationSheet()
           .filterBy({ isTaxable: true })
           .forEach(({ isNetPrice, ...row }) => {
             if (!isNetPrice) {
               const taxAmount = row.amount - row.amount / (1 + taxRate);
-              pricingAdapter.resultSheet.calculation.push({
+              pricingAdapter.resultSheet().calculation.push({
                 ...row,
                 amount: -taxAmount,
                 isTaxable: false,
@@ -103,7 +103,7 @@ export const DeliverySwissTax: IDeliveryPricingAdapter = {
                 /* @ts-ignore */
                 meta: { adapter: DeliverySwissTax.key },
               });
-              pricingAdapter.resultSheet.addTax({
+              pricingAdapter.resultSheet().addTax({
                 amount: taxAmount,
                 rate: taxRate,
                 /* @ts-ignore */
@@ -111,7 +111,7 @@ export const DeliverySwissTax: IDeliveryPricingAdapter = {
               });
             } else {
               const taxAmount = row.amount * taxRate;
-              pricingAdapter.resultSheet.addTax({
+              pricingAdapter.resultSheet().addTax({
                 amount: taxAmount,
                 rate: taxRate,
                 /* @ts-ignore */

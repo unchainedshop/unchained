@@ -4,7 +4,10 @@ import {
 } from '@unchainedshop/types/assortments';
 import { Collection } from '@unchainedshop/types/common';
 import { emit, registerEvents } from 'meteor/unchained:events';
-import { generateDbFilterById } from 'meteor/unchained:utils';
+import {
+  generateDbFilterById,
+  generateDbObjectId,
+} from 'meteor/unchained:utils';
 
 const ASSORTMENT_LINK_EVENTS = [
   'ASSORTMENT_ADD_LINK',
@@ -73,6 +76,7 @@ export const configureAssortmentLinksModule = ({
         ...rest,
       };
       const $setOnInsert: any = {
+        _id: generateDbObjectId(),
         parentAssortmentId,
         childAssortmentId,
         created: new Date(),

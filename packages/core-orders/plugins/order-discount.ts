@@ -152,7 +152,7 @@ const OrderDiscount: IOrderPricingAdapter = {
           const taxAmount = itemsTaxAmount + deliveryAndPaymentTaxAmount;
 
           if (discountAmount) {
-            pricingAdapter.resultSheet.addDiscounts({
+            pricingAdapter.resultSheet().addDiscounts({
               amount: discountAmount * -1,
               discountId,
               meta: {
@@ -160,7 +160,7 @@ const OrderDiscount: IOrderPricingAdapter = {
               },
             });
             if (taxAmount !== 0) {
-              pricingAdapter.resultSheet.addTaxes({
+              pricingAdapter.resultSheet().addTaxes({
                 amount: taxAmount * -1,
                 meta: {
                   discountId,

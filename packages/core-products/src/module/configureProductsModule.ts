@@ -13,7 +13,6 @@ import {
 } from '@unchainedshop/types/products';
 import { emit, registerEvents } from 'meteor/unchained:events';
 import {
-  dbIdToString,
   generateDbFilterById,
   generateDbMutations,
   findPreservingIds,
@@ -182,9 +181,10 @@ export const configureProductsModule = async ({
   return {
     // Queries
     findProduct: async ({ productId, slug }) => {
-      return await Products.findOne(
-        productId ? generateDbFilterById(productId) : { slugs: slug }
-      );
+      const selector = productId
+        ? generateDbFilterById(productId)
+        : { slugs: slug };
+      return await Products.findOne(selector);
     },
 
     findProducts: async ({ limit, offset, ...query }) => {
@@ -264,7 +264,7 @@ export const configureProductsModule = async ({
       const supportedProductIds = await Products.find(selector, {
         projection: { _id: 1 },
       })
-        .map(({ _id }) => dbIdToString(_id))
+        .map(({ _id }) => _id)
         .toArray();
 
       return assignments
@@ -285,7 +285,7 @@ export const configureProductsModule = async ({
       requestContext
     ) => {
       const { modules } = requestContext;
-      const productId = dbIdToString(product._id);
+      const productId = product._id;
 
       checkIsActive(product, requestContext);
 
@@ -325,7 +325,7 @@ export const configureProductsModule = async ({
 
     // Product adapter
     calculate: async (pricingContext, requestContext) => {
-      const director = ProductPricingDirector.actions(
+      const director = await ProductPricingDirector.actions(
         pricingContext,
         requestContext
       );

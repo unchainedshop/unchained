@@ -1,7 +1,6 @@
 import { Modules } from '@unchainedshop/types/modules';
 import { IScheduler, Work } from '@unchainedshop/types/worker';
 import { log } from 'meteor/unchained:logger';
-import { dbIdToString } from 'meteor/unchained:utils';
 import { WorkerDirector } from '../director/WorkerDirector';
 import { WorkerEventTypes } from '../director/WorkerEventTypes';
 
@@ -42,7 +41,7 @@ export const FailedRescheduler: IScheduler = {
             type: work.type,
             input: work.input,
             priority: work.priority,
-            originalWorkId: work.originalWorkId || dbIdToString(work._id),
+            originalWorkId: work.originalWorkId || work._id,
             retries: work.retries - 1,
             scheduled,
           },

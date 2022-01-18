@@ -6,7 +6,7 @@ import {
   OrderPricingCalculation,
   OrderPricingContext,
 } from '@unchainedshop/types/orders.pricing';
-import { BasePricingDirector, dbIdToString } from 'meteor/unchained:utils';
+import { BasePricingDirector } from 'meteor/unchained:utils';
 import { OrderPricingSheet } from './OrderPricingSheet';
 
 const baseDirector = BasePricingDirector<
@@ -25,10 +25,8 @@ export const OrderPricingDirector: IOrderPricingDirector = {
       userId: order.userId,
     });
 
-    const orderId = dbIdToString(order._id);
-
     const orderPositions = await modules.orders.positions.findOrderPositions({
-      orderId,
+      orderId: order._id,
     });
 
     const orderDelivery = await modules.orders.deliveries.findDelivery({
@@ -40,7 +38,7 @@ export const OrderPricingDirector: IOrderPricingDirector = {
     });
 
     const discounts = await modules.orders.discounts.findOrderDiscounts({
-      orderId,
+      orderId: order._id,
     });
 
     return {

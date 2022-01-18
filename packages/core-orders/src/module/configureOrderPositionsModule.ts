@@ -15,7 +15,6 @@ import { log } from 'meteor/unchained:logger';
 import {
   generateDbFilterById,
   generateDbMutations,
-  dbIdToString,
 } from 'meteor/unchained:utils';
 import { OrderPositionsSchema } from '../db/OrderPositionsSchema';
 
@@ -49,7 +48,10 @@ export const configureOrderPositionsModule = ({
   return {
     // Queries
     findOrderPosition: async ({ itemId }, options) => {
-      return await OrderPositions.findOne(buildFindByIdSelector(itemId), options);
+      return await OrderPositions.findOne(
+        buildFindByIdSelector(itemId),
+        options
+      );
     },
     findOrderPositions: async ({ orderId }) => {
       const positions = OrderPositions.find({ orderId, quantity: { $gt: 0 } });
@@ -87,10 +89,10 @@ export const configureOrderPositionsModule = ({
       { order, product, originalProduct },
       requestContext
     ) => {
-      const orderId = dbIdToString(order._id);
-      const productId = dbIdToString(product._id);
+      const orderId = order._id;
+      const productId = product._id;
       const originalProductId = originalProduct
-        ? dbIdToString(originalProduct._id)
+        ? originalProduct._id
         : undefined;
 
       log(
@@ -206,7 +208,7 @@ export const configureOrderPositionsModule = ({
 
           await OrderPositions.updateOne(selector, {
             $set: {
-              productId: dbIdToString(resolvedProduct._id),
+              productId: resolvedProduct._id,
               updated: new Date(),
               updatedBy: requestContext.userId,
             },
@@ -318,7 +320,7 @@ export const configureOrderPositionsModule = ({
     ) => {
       const { modules } = requestContext;
       const { quantity, configuration, ...scope } = orderPosition;
-      const orderId = orderPosition.orderId || dbIdToString(order._id);
+      const orderId = orderPosition.orderId || order._id;
       const productId = orderPosition.productId || product._id;
 
       // Search for existing position
@@ -339,7 +341,7 @@ export const configureOrderPositionsModule = ({
         upsertedOrderPosition = await modules.orders.positions.update(
           {
             orderId,
-            orderPositionId: dbIdToString(existingPosition._id),
+            orderPositionId: existingPosition._id,
           },
           {
             quantity: existingPosition.quantity + quantity,

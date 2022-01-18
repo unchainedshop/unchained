@@ -63,7 +63,7 @@ export interface ModuleMutations<T> extends ModuleCreateMutation<T> {
  * Data definitions
  */
 
-export type _ID = string | ObjectId;
+export type _ID = string;
 
 export type Configuration = Array<{ key: string; value: string }>;
 

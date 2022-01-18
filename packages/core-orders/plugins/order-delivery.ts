@@ -31,9 +31,9 @@ const OrderDelivery: IOrderPricingAdapter = {
           const tax = pricing.taxSum();
           const shipping = pricing.gross();
 
-          pricingAdapter.resultSheet.addDelivery({ amount: shipping });
+          pricingAdapter.resultSheet().addDelivery({ amount: shipping });
           if (tax !== 0) {
-            pricingAdapter.resultSheet.addTaxes({ amount: tax });
+            pricingAdapter.resultSheet().addTaxes({ amount: tax });
           }
         }
         return await pricingAdapter.calculate();

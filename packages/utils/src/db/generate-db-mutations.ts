@@ -6,6 +6,7 @@ import {
   _ID,
 } from '@unchainedshop/types/common';
 import { checkId } from './check-id';
+import { generateDbObjectId } from './generate-db-object-id';
 import { generateDbFilterById } from './generate-db-filter-by-id';
 
 export const generateDbMutations = <T extends { _id?: _ID }>(
@@ -25,11 +26,10 @@ export const generateDbMutations = <T extends { _id?: _ID }>(
       values.created = new Date();
       values.createdBy = userId;
       schema.validate(values);
-      const result = await collection.insertOne(values);
+      values._id = generateDbObjectId();
 
-      return typeof result.insertedId === 'string'
-        ? result.insertedId
-        : result.insertedId.toHexString();
+      const result = await collection.insertOne(values);
+      return result.insertedId as string;
     },
 
     update: hasCreateOnly

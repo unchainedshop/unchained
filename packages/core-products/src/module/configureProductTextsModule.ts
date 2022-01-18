@@ -1,16 +1,16 @@
+import { Collection } from '@unchainedshop/types/common';
 import {
-  ProductText,
-  ProductsModule,
   Product,
+  ProductsModule,
+  ProductText,
 } from '@unchainedshop/types/products';
-import { Collection, Filter } from '@unchainedshop/types/common';
 import { Locale } from 'locale';
 import { emit, registerEvents } from 'meteor/unchained:events';
 import {
+  findLocalizedText,
   findUnusedSlug,
   generateDbFilterById,
-  generateId,
-  findLocalizedText,
+  generateDbObjectId,
 } from 'meteor/unchained:utils';
 
 const PRODUCT_TEXT_EVENTS = ['PRODUCT_UPDATE_TEXTS'];
@@ -51,6 +51,7 @@ export const configureProductTextsModule = ({
       slug: textSlug,
       title = null,
       locale: textLocale,
+      productId: textProductId,
       ...textFields
     } = text;
     const slug = await makeSlug({
@@ -67,6 +68,7 @@ export const configureProductTextsModule = ({
         ...textFields,
       },
       $setOnInsert: {
+        _id: generateDbObjectId(),
         created: new Date(),
         createdBy: userId,
         productId,
@@ -99,7 +101,7 @@ export const configureProductTextsModule = ({
 
       await Products.updateMany(
         {
-          _id: { $ne: generateId(productId) },
+          _id: { $ne: productId },
           slugs: slug,
         },
         {

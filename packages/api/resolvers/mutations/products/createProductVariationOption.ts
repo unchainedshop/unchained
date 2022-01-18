@@ -25,7 +25,7 @@ export default async function createProductVariationOption(
   if (!variation)
     throw new ProductVariationNotFoundError({ productVariationId });
 
-  return await modules.products.variations.createVariationOption(
+  return await modules.products.variations.addVariationOption(
     productVariationId,
     { inputData, localeContext },
     userId

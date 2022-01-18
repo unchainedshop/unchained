@@ -63,10 +63,4 @@ export const DeliveryPricingDirector: IDeliveryPricingDirector = {
       ...requestContext,
     };
   },
-
-  actions: (pricingContext, requestContext) => {
-    return {
-      ...baseDirector.actions(pricingContext, requestContext),
-    };
-  },
 };

@@ -7,15 +7,12 @@ import {
 } from '../../../errors';
 
 export const getOrderCart = async (
-  {
-    orderId,
-    user: userObject,
-  }: {
-    orderId?: string;
-    user?: User;
-  },
-  { countryContext, modules, services, userId }: Context
+  params: { orderId?: string; user?: User },
+  context: Context
 ) => {
+  const { countryContext, modules, services, userId } = context;
+  const { orderId } = params;
+
   if (orderId) {
     const order = await modules.orders.findOrder({ orderId });
     if (!order) throw new OrderNotFoundError({ orderId });
@@ -25,15 +22,18 @@ export const getOrderCart = async (
     return order;
   }
 
-  const user = userObject || (await modules.users.findUser({ userId }));
+  const user = params.user || (await modules.users.findUser({ userId }));
   if (!user) throw new UserNotFoundError({ userId });
 
   const cart = await modules.orders.cart({ countryContext }, user);
   if (cart) return cart;
 
-  const currency = await await services.countries.resolveDefaultCurrencyCode({
-    isoCode: countryContext,
-  });
+  const currency = await services.countries.resolveDefaultCurrencyCode(
+    {
+      isoCode: countryContext,
+    },
+    context
+  );
 
   return await modules.orders.create(
     {

@@ -4,7 +4,10 @@ import {
 } from '@unchainedshop/types/assortments';
 import { Collection } from '@unchainedshop/types/common';
 import { emit, registerEvents } from 'meteor/unchained:events';
-import { dbIdToString, generateDbFilterById } from 'meteor/unchained:utils';
+import {
+  generateDbFilterById,
+  generateDbObjectId,
+} from 'meteor/unchained:utils';
 
 const ASSORTMENT_PRODUCT_EVENTS = [
   'ASSORTMENT_ADD_PRODUCT',
@@ -78,6 +81,7 @@ export const configureAssortmentProductsModule = ({
         ...rest,
       };
       const $setOnInsert: any = {
+        _id: generateDbObjectId(),
         productId,
         assortmentId,
         created: new Date(),
@@ -108,7 +112,7 @@ export const configureAssortmentProductsModule = ({
         invalidateCache({ assortmentIds: [assortmentId] });
       }
 
-      return dbIdToString(assortmentProduct._id);
+      return assortmentProduct._id;
     },
 
     delete: async (assortmentProductId, options) => {

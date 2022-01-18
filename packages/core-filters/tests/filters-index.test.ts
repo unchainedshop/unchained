@@ -5,7 +5,6 @@ import {
   FilterType,
 } from 'meteor/unchained:core-filters';
 import { configureProductsModule } from 'meteor/unchained:core-products';
-import { dbIdToString } from 'meteor/unchained:utils';
 import { FiltersModule } from '@unchainedshop/types/filters';
 import { Context } from '@unchainedshop/types/api';
 import { ProductsModule } from '@unchainedshop/types/products';
@@ -63,9 +62,9 @@ describe('Test exports', () => {
     );
 
     assert.ok(newFilter);
-    filterId = dbIdToString(newFilter._id);
+
     const filter = await context.modules.filters.findFilter({
-      filterId,
+      filterId: newFilter._id,
     });
 
     assert.ok(filter);

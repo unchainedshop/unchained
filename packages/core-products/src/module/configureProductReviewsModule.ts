@@ -113,12 +113,11 @@ export const configureProductReviewsModule = async ({
     },
 
     reviewExists: async ({ productReviewId }) => {
-      const productCount = await ProductReviews.find(
-        generateDbFilterById(productReviewId),
-        { limit: 1 }
+      const productReviewCount = await ProductReviews.find(
+        generateDbFilterById(productReviewId)
       ).count();
 
-      return !!productCount;
+      return !!productReviewCount;
     },
 
     // Mutations

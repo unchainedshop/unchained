@@ -1,6 +1,5 @@
 import { assert } from 'chai';
 import { initDb } from 'meteor/unchained:mongodb';
-import { dbIdToString } from 'meteor/unchained:utils';
 import { configureOrdersModule } from 'meteor/unchained:core-orders';
 import { OrdersModule } from '@unchainedshop/types/orders';
 
@@ -36,7 +35,7 @@ describe('Test exports', () => {
     );
 
     assert.ok(order);
-    const orderId = dbIdToString(order._id);
+    const orderId = order._id;
     order = await module.findOrder({ orderId });
 
     assert.ok(order);

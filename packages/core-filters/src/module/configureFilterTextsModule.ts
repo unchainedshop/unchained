@@ -6,7 +6,7 @@ import {
 } from '@unchainedshop/types/filters';
 import { Locale } from 'locale';
 import { emit, registerEvents } from 'meteor/unchained:events';
-import { findLocalizedText } from 'meteor/unchained:utils';
+import { findLocalizedText, generateDbObjectId } from 'meteor/unchained:utils';
 
 const FILTER_TEXT_EVENTS = ['FILTER_UPDATE_TEXTS'];
 
@@ -35,6 +35,7 @@ export const configureFilterTextsModule = ({
         ...textFields,
       },
       $setOnInsert: {
+        _id: generateDbObjectId(),
         created: new Date(),
         createdBy: userId,
         filterId,

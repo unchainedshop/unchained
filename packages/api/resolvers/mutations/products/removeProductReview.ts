@@ -14,5 +14,9 @@ export default async function removeProductReview(
   if (!(await modules.products.reviews.reviewExists({ productReviewId })))
     throw new ProductReviewNotFoundError({ productReviewId });
 
-  return await modules.products.reviews.delete(productReviewId, userId);
+  await modules.products.reviews.delete(productReviewId, userId);
+
+  return await modules.products.reviews.findProductReview({
+    productReviewId,
+  });
 }

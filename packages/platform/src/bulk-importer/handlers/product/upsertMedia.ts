@@ -4,7 +4,6 @@ import {
   ProductMedia,
   ProductMediaText,
 } from '@unchainedshop/types/products.media';
-import { dbIdToString } from 'meteor/unchained:utils';
 
 const upsertAsset = async (
   asset: File & { fileName: string },
@@ -61,13 +60,13 @@ export default async function upsertMedia(
     media.map(async ({ asset, content, ...mediaData }) => {
       const file = await upsertAsset(asset, unchainedAPI);
       if (!file) throw new Error(`Unable to create binary ${asset._id}`);
-      const fileId = dbIdToString(file._id);
+      const fileId = file._id;
       const productMedia = await upsertProductMedia(
         {
           authorId,
           ...mediaData,
           productId,
-          mediaId: dbIdToString(file._id),
+          mediaId: file._id,
         } as ProductMedia,
         unchainedAPI
       );
@@ -82,7 +81,7 @@ export default async function upsertMedia(
           Object.entries(content).map(
             async ([locale, localizedData]: [string, ProductMediaText]) => {
               return await modules.products.media.texts.upsertLocalizedText(
-                dbIdToString(productMedia._id),
+                productMedia._id,
                 locale,
                 {
                   ...localizedData,

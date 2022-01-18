@@ -12,7 +12,6 @@ import { Locale } from 'locale';
 import { emit, registerEvents } from 'meteor/unchained:events';
 import { log } from 'meteor/unchained:logger';
 import {
-  dbIdToString,
   generateDbFilterById,
   generateDbMutations,
   objectInvert,
@@ -164,7 +163,7 @@ export const configureEnrollmentsModule = async ({
     }
 
     return await updateStatus(
-      dbIdToString(enrollment._id),
+      enrollment._id,
       { status: nextStatus, info: 'enrollment processed' },
       requestContext
     );
@@ -192,7 +191,7 @@ export const configureEnrollmentsModule = async ({
     if (period && (params.orderIdForFirstPeriod || period.isTrial)) {
       const intializedEnrollment =
         await modules.enrollments.addEnrollmentPeriod(
-          dbIdToString(enrollment._id),
+          enrollment._id,
           period,
           userId
         );
@@ -230,7 +229,7 @@ export const configureEnrollmentsModule = async ({
           reason: params.reason,
           locale,
           template: 'ENROLLMENT_STATUS',
-          enrollmentId: dbIdToString(enrollment._id),
+          enrollmentId: enrollment._id,
         },
       },
       userId
@@ -311,7 +310,7 @@ export const configureEnrollmentsModule = async ({
       if (enrollment.status === EnrollmentStatus.TERMINATED) return enrollment;
 
       const updatedEnrollment = await updateStatus(
-        dbIdToString(enrollment._id),
+        enrollment._id,
         {
           status: EnrollmentStatus.TERMINATED,
           info: 'terminated manually',
@@ -336,7 +335,7 @@ export const configureEnrollmentsModule = async ({
       if (enrollment.status === EnrollmentStatus.TERMINATED) return enrollment;
 
       const updatedEnrollment = await updateStatus(
-        dbIdToString(enrollment._id),
+        enrollment._id,
         {
           status: EnrollmentStatus.ACTIVE,
           info: 'activated manually',
@@ -388,9 +387,12 @@ export const configureEnrollmentsModule = async ({
 
       const currency =
         currencyCode ||
-        (await services.countries.resolveDefaultCurrencyCode({
-          isoCode: countryCode,
-        }));
+        (await services.countries.resolveDefaultCurrencyCode(
+          {
+            isoCode: countryCode,
+          },
+          requestContext
+        ));
 
       const enrollmentId = await mutations.create(
         {
@@ -438,8 +440,8 @@ export const configureEnrollmentsModule = async ({
       { orderPositions, context },
       requestContext
     ) => {
-      const { modules, userId } = requestContext;
-      const orderId = dbIdToString(order._id);
+      const { modules } = requestContext;
+      const orderId = order._id;
 
       const payment = await modules.orders.payments.findOrderPayment({
         orderPaymentId: order.paymentId,

@@ -8,8 +8,9 @@ import {
 export default async function createCart(
   root: Root,
   { orderNumber }: { orderNumber: string },
-  { modules, services, countryContext, userId }: Context
+  context: Context
 ) {
+  const { modules, services, countryContext, userId } = context;
   log('mutation createCart', { userId });
 
   const order = await modules.orders.findOrder({ orderNumber });
@@ -18,9 +19,12 @@ export default async function createCart(
   const user = await modules.users.findUser({ userId });
   if (!user) throw new UserNotFoundError({ userId });
 
-  const currency = await await services.countries.resolveDefaultCurrencyCode({
-    isoCode: countryContext,
-  });
+  const currency = await services.countries.resolveDefaultCurrencyCode(
+    {
+      isoCode: countryContext,
+    },
+    context
+  );
 
   return await modules.orders.create(
     {

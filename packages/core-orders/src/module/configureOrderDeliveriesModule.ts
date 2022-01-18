@@ -14,7 +14,6 @@ import {
   generateDbFilterById,
   generateDbMutations,
   objectInvert,
-  dbIdToString,
 } from 'meteor/unchained:utils';
 import { OrderDeliveriesSchema } from '../db/OrderDeliveriesSchema';
 import { OrderDeliveryStatus } from '../db/OrderDeliveryStatus';
@@ -159,7 +158,7 @@ export const configureOrderDeliveriesModule = ({
           deliveryProviderId: orderDelivery.deliveryProviderId,
         });
 
-      const deliveryProviderId = dbIdToString(deliveryProvider._id);
+      const deliveryProviderId = deliveryProvider._id;
 
       const address =
         orderDelivery.context?.address || order || order.billingAddress || {};
@@ -180,7 +179,7 @@ export const configureOrderDeliveriesModule = ({
 
       if (arbitraryResponseData) {
         return await updateStatus(
-          dbIdToString(orderDelivery._id) as string,
+          orderDelivery._id,
           {
             status: OrderDeliveryStatus.DELIVERED,
             info: JSON.stringify(arbitraryResponseData),

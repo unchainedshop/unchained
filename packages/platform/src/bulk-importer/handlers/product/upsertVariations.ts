@@ -3,7 +3,6 @@ import {
   ProductVariation,
   ProductVariationText,
 } from '@unchainedshop/types/products.variations';
-import { dbIdToString } from 'meteor/unchained:utils';
 
 const upsert = async (
   productVariation: ProductVariation,
@@ -48,7 +47,7 @@ export default async function upsertVariations(
               ]) => {
                 return await modules.products.variations.texts.upsertLocalizedText(
                   {
-                    productVariationId: dbIdToString(variation._id),
+                    productVariationId: variation._id,
                     productVariationOptionValue: optionValue,
                   },
                   locale,
@@ -68,7 +67,7 @@ export default async function upsertVariations(
           async ([locale, localizedData]: [string, ProductVariationText]) => {
             return await modules.products.variations.texts.upsertLocalizedText(
               {
-                productVariationId: dbIdToString(variation._id),
+                productVariationId: variation._id,
               },
               locale,
               {

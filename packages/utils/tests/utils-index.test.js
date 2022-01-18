@@ -1,6 +1,5 @@
 import { assert } from 'chai';
 import {
-  dbIdToString,
   findLocalizedText,
   findPreservingIds,
   findUnusedSlug,
@@ -38,7 +37,6 @@ describe('Test exports', () => {
     assert.isFunction(findUnusedSlug);
     assert.isFunction(slugify);
     assert.isFunction(pipePromises);
-    assert.isFunction(dbIdToString);
     assert.isFunction(generateDbFilterById);
     assert.isFunction(generateRandomHash);
     assert.isFunction(generateDbMutations);

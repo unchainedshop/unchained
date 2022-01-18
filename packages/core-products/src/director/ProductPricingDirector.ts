@@ -66,7 +66,7 @@ export const ProductPricingDirector: IProductPricingDirector = {
   resultSheet() {
     const calculation = baseDirector.getCalculation();
     const context = baseDirector.getContext();
-
+    
     return ProductPricingSheet({
       calculation,
       currency: context.currency,

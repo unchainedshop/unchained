@@ -6,7 +6,7 @@ import {
   OrdersSettingsOptions,
 } from '@unchainedshop/types/orders';
 import { log } from 'meteor/unchained:logger';
-import { dbIdToString, generateDbFilterById } from 'meteor/unchained:utils';
+import { generateDbFilterById } from 'meteor/unchained:utils';
 import { OrderDeliveriesCollection } from '../db/OrderDeliveriesCollection';
 import { OrderDiscountsCollection } from '../db/OrderDiscountsCollection';
 import { OrderDiscountTrigger } from '../db/OrderDiscountTrigger';
@@ -126,12 +126,12 @@ export const configureOrdersModule = async ({
 
   const updateDiscounts = async (order: Order, requestContext: Context) => {
     const { modules } = requestContext;
-    const orderId = dbIdToString(order._id);
+    const orderId = order._id;
 
     // 1. go through existing order-discounts and check if discount still valid,
     // those who are not valid anymore should get removed
     const discounts = await modules.orders.discounts.findOrderDiscounts({
-      orderId: dbIdToString(order._id),
+      orderId,
     });
 
     await Promise.all(
@@ -142,10 +142,7 @@ export const configureOrdersModule = async ({
         );
 
         if (!isValid) {
-          await modules.orders.discounts.delete(
-            dbIdToString(discount._id),
-            requestContext
-          );
+          await modules.orders.discounts.delete(discount._id, requestContext);
         }
       })
     );
@@ -182,7 +179,7 @@ export const configureOrdersModule = async ({
   const initProviders = async (order: Order, requestContext: Context) => {
     const { modules } = requestContext;
 
-    const orderId = dbIdToString(order._id);
+    const orderId = order._id;
     let updatedOrder = order;
 
     // Init delivery provider

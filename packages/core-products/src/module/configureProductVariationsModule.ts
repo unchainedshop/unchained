@@ -14,7 +14,7 @@ import {
   findLocalizedText,
   generateDbFilterById,
   generateDbMutations,
-  dbIdToString,
+  generateDbObjectId,
 } from 'meteor/unchained:utils';
 import { ProductVariationsCollection } from '../db/ProductVariationsCollection';
 import {
@@ -68,6 +68,7 @@ export const configureProductVariationsModule = async ({
           ...text,
         },
         $setOnInsert: {
+          _id: generateDbObjectId(),
           productVariationId,
           productVariationOptionValue: productVariationOptionValue || null,
           created: new Date(),
@@ -109,7 +110,7 @@ export const configureProductVariationsModule = async ({
 
     option: (productVariation, productVariationOption) => {
       return {
-        _id: dbIdToString(productVariation._id),
+        _id: productVariation._id,
         productVariationOption,
       };
     },
@@ -271,9 +272,13 @@ export const configureProductVariationsModule = async ({
       }) => {
         const parsedLocale = new Locale(locale);
 
+        const selector: Query = { productVariationId };
+        if (productVariationOptionValue > '') {
+          selector.procuctVariationOptionValue = productVariationOptionValue;
+        }
         const text = await findLocalizedText<ProductVariationText>(
           ProductVariationTexts,
-          { productVariationId, productVariationOptionValue },
+          selector,
           parsedLocale
         );
 

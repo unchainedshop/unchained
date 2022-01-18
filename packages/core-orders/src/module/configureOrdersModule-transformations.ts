@@ -1,6 +1,6 @@
 import { Collection, FindOptions, Query } from '@unchainedshop/types/common';
 import { Order, OrderTransformations } from '@unchainedshop/types/orders';
-import { dbIdToString, objectInvert } from 'meteor/unchained:utils';
+import { objectInvert } from 'meteor/unchained:utils';
 import { OrderStatus } from '../db/OrderStatus';
 import { OrderPricingSheet } from '../director/OrderPricingSheet';
 
@@ -84,7 +84,7 @@ export const configureOrderModuleTransformations = ({
 
     discountTotal: async (order, orderDiscount, requestContext) => {
       const { modules } = requestContext;
-      const orderDiscountId = dbIdToString(orderDiscount._id);
+      const orderDiscountId = orderDiscount._id;
 
       // Delivery discounts
       const orderDelivery = await modules.orders.deliveries.findDelivery({

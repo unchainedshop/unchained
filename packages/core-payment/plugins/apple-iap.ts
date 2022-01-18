@@ -8,7 +8,6 @@ import { EnrollmentStatus } from 'meteor/unchained:core-enrollments';
 import bodyParser from 'body-parser';
 import fetch from 'isomorphic-unfetch';
 import { Mongo } from 'meteor/mongo';
-import { dbIdToString } from 'meteor/unchained:utils';
 import { useMiddlewareWithCurrentContext } from 'meteor/unchained:api';
 import { IPaymentAdapter } from '@unchainedshop/types/payments';
 import { Context } from '@unchainedshop/types/api';
@@ -144,7 +143,7 @@ useMiddlewareWithCurrentContext(APPLE_IAP_WEBHOOK_PATH, async (req, res) => {
             },
             resolvedContext
           );
-          const orderId = dbIdToString(checkedOut._id);
+          const orderId = checkedOut._id;
           const enrollment = await modules.enrollments.findEnrollment({
             orderId,
           });
@@ -152,7 +151,7 @@ useMiddlewareWithCurrentContext(APPLE_IAP_WEBHOOK_PATH, async (req, res) => {
             {
               transactionId: latestTransaction.original_transaction_id,
               transactions,
-              enrollmentId: dbIdToString(enrollment._id),
+              enrollmentId: enrollment._id,
               orderId,
             },
             resolvedContext

@@ -58,16 +58,19 @@ const ProductSwissTax: IProductPricingAdapter = {
   label: 'Apply Swiss Tax on Product',
   orderIndex: 20,
 
-  isActivatedFor: async (context) => {
-    const address =
-      // TODO: use modules
-      /* @ts-ignore */
-      context.order.delivery()?.context?.address ||
-      context.order.billingAddress;
-    const countryCode =
-      address?.countryCode !== undefined
-        ? address.countryCode?.toUpperCase().trim()
-        : context.country?.toUpperCase().trim();
+  isActivatedFor: async ({ country, order, modules }) => {
+    let countryCode = country?.toUpperCase().trim();
+    if (order) {
+      const orderDelivery = await modules.orders.deliveries.findDelivery({
+        orderDeliveryId: order.deliveryId,
+      });
+
+      const address = orderDelivery?.context?.address || order.billingAddress;
+
+      if (address?.countryCode !== undefined) {
+        countryCode = address.countryCode.toUpperCase().trim();
+      }
+    }
 
     return countryCode === 'CH' || countryCode === 'LI';
   },
@@ -83,26 +86,26 @@ const ProductSwissTax: IProductPricingAdapter = {
         ProductPricingAdapter.log(
           `ProductSwissTax -> Tax Multiplicator: ${taxRate}`
         );
-        pricingAdapter.calculationSheet
+        pricingAdapter.calculationSheet()
           .filterBy({ isTaxable: true })
           .forEach(({ isNetPrice, ...row }) => {
             if (!isNetPrice) {
               const taxAmount = row.amount - row.amount / (1 + taxRate);
-              pricingAdapter.resultSheet.calculation.push({
+              pricingAdapter.resultSheet().calculation.push({
                 ...row,
                 amount: -taxAmount,
                 isTaxable: false,
                 isNetPrice: false,
                 meta: { adapter: ProductSwissTax.key },
               });
-              pricingAdapter.resultSheet.addTax({
+              pricingAdapter.resultSheet().addTax({
                 amount: taxAmount,
                 rate: taxRate,
                 meta: { adapter: ProductSwissTax.key },
               });
             } else {
               const taxAmount = row.amount * taxRate;
-              pricingAdapter.resultSheet.addTax({
+              pricingAdapter.resultSheet().addTax({
                 amount: taxAmount,
                 rate: taxRate,
                 meta: { adapter: ProductSwissTax.key },

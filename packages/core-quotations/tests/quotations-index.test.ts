@@ -5,7 +5,6 @@ import { assert } from 'chai';
 import { configureQuotationsModule } from 'meteor/unchained:core-quotations';
 import { configureUsersModule } from 'meteor/unchained:core-users';
 import { initDb } from 'meteor/unchained:mongodb';
-import { dbIdToString } from 'meteor/unchained:utils';
 import '../plugins/manual';
 
 describe('Test exports', () => {
@@ -55,7 +54,7 @@ describe('Test exports', () => {
     );
 
     assert.ok(quotation);
-    const quotationId = dbIdToString(quotation._id);
+    const quotationId = quotation._id;
     quotation = await context.modules.quotations.findQuotation({
       quotationId,
     });

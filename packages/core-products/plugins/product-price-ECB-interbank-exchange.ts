@@ -85,16 +85,21 @@ const ProductPriceECBIntraBankExchange: IProductPricingAdapter = {
       ...pricingAdapter,
 
       calculate: async () => {
-        const { product, country, quantity, currency } = params.context;
+        const { product, country, quantity, currency, modules } =
+          params.context;
         const { calculation = [] } = pricingAdapter.calculationSheet;
-        const EURprice = product.price({ country, currency: 'EUR', quantity });
+        const EURprice = await modules.products.prices.price(
+          product,
+          { country, currency: 'EUR', quantity },
+          params.context
+        );
         if (!EURprice || !EURprice?.amount || calculation?.length)
           return await pricingAdapter.calculate();
 
         const exchange = await getEURexchangeRateForCurrency(currency);
         const convertedAmount = EURprice.amount * exchange.rate;
         pricingAdapter.resetCalculation();
-        pricingAdapter.resultSheet.addItem({
+        pricingAdapter.resultSheet().addItem({
           amount: convertedAmount * quantity,
           isTaxable: EURprice.isTaxable,
           isNetPrice: EURprice.isNetPrice,

@@ -12,7 +12,6 @@ import { OrderPosition } from '@unchainedshop/types/orders.positions';
 import { emit, registerEvents } from 'meteor/unchained:events';
 import { log } from 'meteor/unchained:logger';
 import {
-  dbIdToString,
   generateDbFilterById,
   generateDbMutations,
 } from 'meteor/unchained:utils';
@@ -111,23 +110,20 @@ export const configureOrderModuleMutations = ({
         orderId,
         deliveryProviderId,
       });
-      const deliveryId = dbIdToString(
-        delivery
-          ? delivery._id
-          : (
-              await requestContext.modules.orders.deliveries.create(
-                {
-                  calculation: [],
-                  deliveryProviderId,
-                  log: [],
-                  orderId,
-                  status: null,
-                },
-                requestContext.userId
-              )
-            )._id
-      );
-
+      const deliveryId =
+        delivery?._id ||
+        (
+          await requestContext.modules.orders.deliveries.create(
+            {
+              calculation: [],
+              deliveryProviderId,
+              log: [],
+              orderId,
+              status: null,
+            },
+            requestContext.userId
+          )
+        )._id;
       log(`Set Delivery Provider ${deliveryProviderId}`, { orderId });
 
       const selector = generateDbFilterById(orderId);
@@ -154,23 +150,20 @@ export const configureOrderModuleMutations = ({
         orderId,
         paymentProviderId,
       });
-      const paymentId = dbIdToString(
-        payment
-          ? payment._id
-          : (
-              await requestContext.modules.orders.payments.create(
-                {
-                  calculation: [],
-                  paymentProviderId,
-                  log: [],
-                  orderId,
-                  status: null,
-                },
-                requestContext.userId
-              )
-            )._id
-      );
-
+      const paymentId =
+        payment?._id ||
+        (
+          await requestContext.modules.orders.payments.create(
+            {
+              calculation: [],
+              paymentProviderId,
+              log: [],
+              orderId,
+              status: null,
+            },
+            requestContext.userId
+          )
+        )._id;
       log(`Set Payment Provider ${paymentProviderId}`, { orderId });
 
       const selector = generateDbFilterById(orderId);

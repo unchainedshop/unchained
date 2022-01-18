@@ -13,7 +13,6 @@ import { Locale } from 'locale';
 import { emit, registerEvents } from 'meteor/unchained:events';
 import { log } from 'meteor/unchained:logger';
 import {
-  dbIdToString,
   generateDbFilterById,
   generateDbMutations,
   objectInvert,
@@ -182,15 +181,11 @@ export const configureQuotationsModule = async ({
     }
     if (nextStatus === QuotationStatus.PROPOSED) {
       const proposal = await director.quote();
-      return modules.quotations.updateProposal(
-        dbIdToString(quotation._id),
-        proposal,
-        userId
-      );
+      return modules.quotations.updateProposal(quotation._id, proposal, userId);
     }
 
     return await updateStatus(
-      dbIdToString(quotation._id),
+      quotation._id,
       { status: nextStatus, info: 'quotation processed' },
       requestContext.userId
     );
@@ -214,7 +209,7 @@ export const configureQuotationsModule = async ({
         input: {
           locale,
           template: 'QUOTATION_STATUS',
-          quotationId: dbIdToString(quotation._id),
+          quotationId: quotation._id,
         },
       },
       userId
@@ -292,7 +287,7 @@ export const configureQuotationsModule = async ({
       if (quotation.status === QuotationStatus.FULLFILLED) return quotation;
 
       let updatedQuotation = await updateStatus(
-        dbIdToString(quotation._id),
+        quotation._id,
         {
           status: QuotationStatus.FULLFILLED,
           info: JSON.stringify(info),
@@ -317,7 +312,7 @@ export const configureQuotationsModule = async ({
       if (quotation.status !== QuotationStatus.PROCESSING) return quotation;
 
       let updatedQuotation = await updateStatus(
-        dbIdToString(quotation._id),
+        quotation._id,
         {
           status: QuotationStatus.PROPOSED,
           info: 'proposed manually',
@@ -342,7 +337,7 @@ export const configureQuotationsModule = async ({
       if (quotation.status === QuotationStatus.FULLFILLED) return quotation;
 
       let updatedQuotation = await updateStatus(
-        dbIdToString(quotation._id),
+        quotation._id,
         {
           status: QuotationStatus.REJECTED,
           info: 'rejected manually',
@@ -367,7 +362,7 @@ export const configureQuotationsModule = async ({
       if (quotation.status !== QuotationStatus.REQUESTED) return quotation;
 
       let updatedQuotation = await updateStatus(
-        dbIdToString(quotation._id),
+        quotation._id,
         {
           status: QuotationStatus.PROCESSING,
           info: 'verified elligibility manually',
@@ -399,9 +394,12 @@ export const configureQuotationsModule = async ({
 
       log('Create Quotation', { userId });
 
-      const currency = await services.countries.resolveDefaultCurrencyCode({
-        isoCode: countryCode,
-      });
+      const currency = await services.countries.resolveDefaultCurrencyCode(
+        {
+          isoCode: countryCode,
+        },
+        requestContext
+      );
 
       const quotationId = await mutations.create(
         {

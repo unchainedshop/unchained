@@ -1,6 +1,5 @@
 import { assert } from 'chai';
 import { initDb } from 'meteor/unchained:mongodb';
-import { dbIdToString } from 'meteor/unchained:utils';
 import { configureUsersModule } from 'meteor/unchained:core-users';
 import { configureEnrollmentsModule } from 'meteor/unchained:core-enrollments';
 import { EnrollmentsModule } from '@unchainedshop/types/enrollments';
@@ -75,7 +74,7 @@ describe('Test exports', () => {
     );
 
     assert.ok(enrollment);
-    const enrollmentId = dbIdToString(enrollment._id);
+    const enrollmentId = enrollment._id;
     enrollment = await context.modules.enrollments.findEnrollment({
       enrollmentId,
     });

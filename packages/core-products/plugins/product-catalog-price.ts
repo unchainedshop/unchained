@@ -23,13 +23,18 @@ const ProductPrice: IProductPricingAdapter = {
       ...pricingAdapter,
 
       calculate: async () => {
-        const { product, country, currency, quantity } = params.context;
+        const { product, country, currency, quantity, modules } =
+          params.context;
 
-        const price = product.price({ country, currency, quantity });
+        const price = await modules.products.prices.price(
+          product,
+          { country, currency, quantity },
+          params.context
+        );
         if (price === null || price === undefined) return null;
         const itemTotal = price.amount * quantity;
 
-        pricingAdapter.resultSheet.addItem({
+        pricingAdapter.resultSheet().addItem({
           amount: itemTotal,
           isTaxable: price.isTaxable,
           isNetPrice: price.isNetPrice,

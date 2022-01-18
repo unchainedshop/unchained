@@ -1,22 +1,36 @@
 import { log } from 'meteor/unchained:logger';
-import { Products, ProductTypes } from 'meteor/unchained:core-products';
+import { ProductTypes } from 'meteor/unchained:core-products';
 import {
   ProductNotFoundError,
   InvalidIdError,
   ProductWrongTypeError,
 } from '../../../errors';
+import { Context, Root } from '@unchainedshop/types/api';
 
-export default async function removeBundleItem(root: Root, { productId, index }) {
+export default async function removeBundleItem(
+  root: Root,
+  { productId, index }: { productId: string; index: number },
+  { modules, userId }: Context
+) {
   log(`mutation removeBundleItem ${productId}`, { index });
+
   if (!productId) throw new InvalidIdError({ productId });
-  const product = Products.findProduct({ productId });
+
+  const product = await modules.products.findProduct({ productId });
   if (!product) throw new ProductNotFoundError({ productId });
+
   if (product.type !== ProductTypes.BundleProduct)
     throw new ProductWrongTypeError({
       productId,
       received: product.type,
       required: ProductTypes.BundleProduct,
     });
-  Products.removeBundleItem({ productId, index });
-  return Products.findProduct({ productId });
+
+  await modules.products.bundleItems.removeBundleItem(
+    productId,
+    index,
+    userId
+  );
+
+  return await modules.products.findProduct({ productId });
 }

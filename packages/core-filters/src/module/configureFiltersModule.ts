@@ -13,7 +13,6 @@ import {
 import { emit, registerEvents } from 'meteor/unchained:events';
 import { log, LogLevel } from 'meteor/unchained:logger';
 import {
-  dbIdToString,
   generateDbFilterById,
   generateDbMutations,
 } from 'meteor/unchained:utils';
@@ -75,7 +74,7 @@ export const configureFiltersModule = async ({
     const products = await modules.products.findProducts(selector, {
       projection: { _id: true },
     });
-    return products.map(({ _id }) => dbIdToString(_id));
+    return products.map(({ _id }) => _id);
   };
 
   const buildProductIdMap = async (filter: Filter, requestContext: Context) => {
@@ -150,10 +149,10 @@ export const configureFiltersModule = async ({
     requestContext: Context
   ) => {
     const getProductIds =
-      (!forceLiveCollection && await cache(filter)) ||
-      await buildProductIdMap(filter, requestContext);
+      (!forceLiveCollection && (await cache(filter))) ||
+      (await buildProductIdMap(filter, requestContext));
 
-    console.log('PRODUCT IDS', getProductIds)
+    console.log('PRODUCT IDS', getProductIds);
 
     const { allProductIds, productIds } = getProductIds;
 

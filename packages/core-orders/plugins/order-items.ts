@@ -41,12 +41,12 @@ const OrderItems: IOrderPricingAdapter = {
           }
         );
 
-        pricingAdapter.resultSheet.addItems({
+        pricingAdapter.resultSheet().addItems({
           amount: totalAndTaxesOfAllItems.items,
         });
 
         if (totalAndTaxesOfAllItems.taxes !== 0) {
-          pricingAdapter.resultSheet.addTaxes({
+          pricingAdapter.resultSheet().addTaxes({
             amount: totalAndTaxesOfAllItems.taxes,
           });
         }

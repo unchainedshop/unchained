@@ -6,7 +6,6 @@ import {
   FilterText,
 } from '@unchainedshop/types/filters';
 import { Product } from '@unchainedshop/types/products';
-import { dbIdToString } from 'meteor/unchained:utils';
 import { FilterDirector } from '../director/FilterDirector';
 import { assortmentFulltextSearch } from '../search/assortmentFulltextSearch';
 import { cleanQuery } from '../search/cleanQuery';
@@ -139,9 +138,7 @@ export const configureFilterSearchModule = ({
             projection: { _id: 1 },
           }
         );
-        const relevantProductIds = relevantProducts.map(({ _id }) =>
-          dbIdToString(_id)
-        );
+        const relevantProductIds = relevantProducts.map(({ _id }) => _id);
 
         return await Promise.all(
           sortedFilters.map(async (filter) => {

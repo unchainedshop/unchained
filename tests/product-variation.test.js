@@ -98,7 +98,7 @@ describe('ProductsVariation', () => {
   });
 
   describe('mutation.createProductVariation for admin user should', () => {
-    it('create product variation successfuly when passed CONFIGURABLE_PRODUCT product type', async () => {
+    it('create product variation successfully when passed CONFIGURABLE_PRODUCT product type', async () => {
       const { data: { createProductVariation } = {} } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation CreateProductVariation(
@@ -264,7 +264,7 @@ describe('ProductsVariation', () => {
   });
 
   describe('mutation.createProductVariationOption for admin user should', () => {
-    it('create product variation option successfuly', async () => {
+    it('create product variation option successfully', async () => {
       const { data: { createProductVariationOption } = {} } =
         await graphqlFetch({
           query: /* GraphQL */ `
