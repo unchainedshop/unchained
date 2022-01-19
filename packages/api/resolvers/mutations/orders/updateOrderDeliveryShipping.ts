@@ -9,10 +9,11 @@ import {
 
 export default async function updateOrderDeliveryShipping(
   root: Root,
-  { orderDeliveryId, meta }: { orderDeliveryId: string; meta: any },
+  params: { orderDeliveryId: string; address: any; meta: any },
   context: Context
 ) {
   const { modules, userId } = context;
+  const { orderDeliveryId, address, meta } = params
 
   log(`mutation updateOrderDeliveryShipping ${orderDeliveryId}`, { userId });
 
@@ -37,7 +38,7 @@ export default async function updateOrderDeliveryShipping(
 
   return await modules.orders.deliveries.updateDelivery(
     orderDeliveryId,
-    { orderId: orderDelivery.orderId, context: meta },
+    { orderId: orderDelivery.orderId, context: { address, meta } },
     context
   );
 }

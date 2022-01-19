@@ -39,6 +39,7 @@ export const PaymentPricingDirector: IPaymentPricingDirector = {
       order,
       provider,
       user,
+      discounts: [],
       ...item.context,
       ...requestContext,
     };

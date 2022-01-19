@@ -21,9 +21,11 @@ export default async function setOrderDeliveryProvider(
   const order = await modules.orders.findOrder({ orderId });
   if (!order) throw new OrderNotFoundError({ orderId });
 
-  return await modules.orders.setDeliveryProvider(
+  const orderDelivery = await modules.orders.setDeliveryProvider(
     orderId,
     deliveryProviderId,
     context
   );
+
+  return orderDelivery
 }

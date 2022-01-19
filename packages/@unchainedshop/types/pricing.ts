@@ -128,7 +128,7 @@ export type IPricingDirector<
   actions: (
     pricingContext: PricingContext,
     requestContext: Context
-  ) => IPricingAdapterActions<Calculation>;
+  ) => Promise<IPricingAdapterActions<Calculation>>;
   getCalculation: () => Array<Calculation>;
   getContext: () => PricingAdapterContext | null;
 };

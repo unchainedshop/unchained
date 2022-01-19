@@ -48,6 +48,7 @@ describe('Order: Deliveries', () => {
             deliveryProviderId: SendMailDeliveryProvider._id,
           },
         });
+
       expect(setOrderDeliveryProvider).toMatchObject({
         _id: SimpleOrder._id,
         delivery: {

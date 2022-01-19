@@ -19,7 +19,10 @@ import { OrderDeliveriesSchema } from '../db/OrderDeliveriesSchema';
 import { OrderDeliveryStatus } from '../db/OrderDeliveryStatus';
 import { OrderPricingSheet } from '../director/OrderPricingSheet';
 
-const ORDER_DELIVERY_EVENTS: string[] = ['ORDER_DELIVER'];
+const ORDER_DELIVERY_EVENTS: string[] = [
+  'ORDER_DELIVER',
+  'ORDER_UPDATE_DELIVERY',
+];
 
 const buildFindByIdSelector = (orderDeliveryId: string) =>
   generateDbFilterById(orderDeliveryId) as Filter<OrderDelivery>;

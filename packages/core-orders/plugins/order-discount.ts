@@ -88,14 +88,14 @@ const OrderDiscount: IOrderPricingAdapter = {
         // if you want to add percentual discounts,
         // add it to the order item calculation
 
-        const totalAmountOfItems = pricingAdapter.calculationSheet.sum({
+        const totalAmountOfItems = pricingAdapter.calculationSheet().sum({
           category: OrderPricingRowCategory.Items,
         });
         const totalAmountOfPaymentAndDelivery =
-          pricingAdapter.calculationSheet.sum({
+          pricingAdapter.calculationSheet().sum({
             category: OrderPricingRowCategory.Payment,
           }) +
-          pricingAdapter.calculationSheet.sum({
+          pricingAdapter.calculationSheet().sum({
             category: OrderPricingRowCategory.Delivery,
           });
 

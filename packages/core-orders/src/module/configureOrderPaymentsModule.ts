@@ -22,7 +22,7 @@ import { OrderPaymentsSchema } from '../db/OrderPaymentsSchema';
 import { OrderPaymentStatus } from '../db/OrderPaymentStatus';
 import { OrderPricingSheet } from '../director/OrderPricingSheet';
 
-const ORDER_PAYMENT_EVENTS: string[] = ['ORDER_SIGN_PAYMENT', 'ORDER_PAY'];
+const ORDER_PAYMENT_EVENTS: string[] = ['ORDER_UPDATE_PAYMENT', 'ORDER_SIGN_PAYMENT', 'ORDER_PAY'];
 
 const buildFindByIdSelector = (orderPaymentId: string) =>
   generateDbFilterById(orderPaymentId) as Filter<OrderPayment>;
@@ -251,7 +251,7 @@ export const configureOrderPaymentsModule = ({
 
       const orderPayment = await OrderPayments.findOne(selector);
       await updateCalculation(orderId, requestContext);
-      emit('ORDER_UPDATE_DELIVERY', { orderPayment });
+      emit('ORDER_UPDATE_PAYMENT', { orderPayment });
       return orderPayment;
     },
 

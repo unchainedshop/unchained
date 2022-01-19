@@ -1,5 +1,6 @@
 import { Context } from '@unchainedshop/types/api';
 import { Address } from '@unchainedshop/types/common';
+import { DeliveryProvider } from '@unchainedshop/types/delivery';
 import {
   OrderDelivery,
   OrderDeliveryDiscount,
@@ -13,8 +14,9 @@ type HelperType<T> = (
 
 interface OrderDeliveryShippingHelperTypes {
   address: HelperType<Address>;
+  discounts: HelperType<Promise<Array<OrderDeliveryDiscount>>>;
+  provider: HelperType<Promise<DeliveryProvider>>;
   status: HelperType<string>;
-  discounts: HelperType<Array<OrderDeliveryDiscount>>;
 }
 
 export const OrderDeliveryShipping: OrderDeliveryShippingHelperTypes = {
@@ -26,8 +28,18 @@ export const OrderDeliveryShipping: OrderDeliveryShippingHelperTypes = {
     return modules.orders.deliveries.normalizedStatus(obj);
   },
 
-  discounts: (obj, _, { modules }) => {
-    const pricingSheet = modules.orders.deliveries.pricingSheet(obj);
+  provider: async (obj, _, { modules }) => {
+    return await modules.delivery.findProvider({
+      deliveryProviderId: obj.deliveryProviderId,
+    });
+  },
+
+  discounts: async (obj, _, { modules }) => {
+    const order = await modules.orders.findOrder({ orderId: obj.orderId });
+    const pricingSheet = modules.orders.deliveries.pricingSheet(
+      obj,
+      order.currency
+    );
     if (pricingSheet.isValid()) {
       // IMPORTANT: Do not send any parameter to obj.discounts!
       return pricingSheet.discountPrices().map((discount) => ({

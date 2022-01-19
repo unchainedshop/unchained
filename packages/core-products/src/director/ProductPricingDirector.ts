@@ -28,8 +28,6 @@ export const ProductPricingDirector: IProductPricingDirector = {
     } & ProductPricingContext,
     requestContext
   ) => {
-    console.log('BUILD PRODUCT CONTEXT', orderPosition, pricingContext);
-
     const { modules } = requestContext;
 
     if (!orderPosition) {

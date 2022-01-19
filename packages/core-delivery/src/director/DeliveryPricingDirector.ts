@@ -48,8 +48,8 @@ export const DeliveryPricingDirector: IDeliveryPricingDirector = {
       userId: order.userId,
     });
 
-    const discounts = await modules.orders.discounts.findOrderDiscount({
-      discountId: item.orderId,
+    const discounts = await modules.orders.discounts.findOrderDiscounts({
+      orderId: item.orderId,
     });
 
     return {

@@ -144,7 +144,7 @@ export const configurePaymentProvidersModule = (
     },
 
     calculate: async (pricingContext, requestContext) => {
-      const pricing = PaymentPricingDirector.actions(
+      const pricing = await PaymentPricingDirector.actions(
         pricingContext,
         requestContext
       );

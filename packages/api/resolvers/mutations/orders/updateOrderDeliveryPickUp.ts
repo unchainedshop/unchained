@@ -9,12 +9,12 @@ import {
 
 export default async function updateOrderDeliveryPickUp(
   root: Root,
-  { orderDeliveryId, meta }: { orderDeliveryId: string; meta: any },
+  params: { orderDeliveryId: string; orderPickUpLocationId: string; meta: any },
   context: Context
 ) {
   const { modules, userId } = context;
-
-  log(`mutation updateOrderDeliveryPickUp ${orderDeliveryId}`, { userId });
+  const { orderDeliveryId, orderPickUpLocationId, meta } = params
+  log(`mutation updateOrderDeliveryPickUp ${orderDeliveryId} with location ${orderPickUpLocationId}`, { userId });
 
   if (!orderDeliveryId) throw new InvalidIdError({ orderDeliveryId });
 
@@ -37,7 +37,7 @@ export default async function updateOrderDeliveryPickUp(
 
   return await modules.orders.deliveries.updateDelivery(
     orderDeliveryId,
-    { orderId: orderDelivery.orderId, context: meta },
+    { orderId: orderDelivery.orderId, context: { orderPickUpLocationId, meta } },
     context
   );
 }

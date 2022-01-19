@@ -75,7 +75,7 @@ const OrderItemsDiscount: IOrderPricingAdapter = {
         // if you want to add percentual discounts,
         // add it to the order item calculation
 
-        const totalAmountOfItems = pricingAdapter.calculationSheet.sum({
+        const totalAmountOfItems = pricingAdapter.calculationSheet().sum({
           category: OrderPricingRowCategory.Items,
         });
 

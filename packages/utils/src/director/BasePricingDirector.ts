@@ -42,11 +42,12 @@ export const BasePricingDirector = <
     actions: async (pricingContext, requestContext, buildPricingContext) => {
       const context = await buildPricingContext(pricingContext, requestContext);
 
+      const { services, modules, res, req, ...other } = context
+
       return {
         calculate: async () => {
           const Adapters = baseDirector.getAdapters({
             adapterFilter: async (Adapter) => {
-              console.log('ADAPTER CONTEXT', context.order);
               return await Adapter.isActivatedFor(context);
             },
           });

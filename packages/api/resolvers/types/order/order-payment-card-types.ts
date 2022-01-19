@@ -3,21 +3,29 @@ import {
   OrderPayment,
   OrderPaymentDiscount,
 } from '@unchainedshop/types/orders.payments';
+import { PaymentProvider } from '@unchainedshop/types/payments';
 
-type HelperType<P, T> = (
+type HelperType<T> = (
   orderPayment: OrderPayment,
-  params: P,
+  _: never,
   context: Context
 ) => T;
 
 interface OrderPaymentCardHelperTypes {
-  status: HelperType<never, string>;
-  discounts: HelperType<never, Promise<Array<OrderPaymentDiscount>>>;
+  discounts: HelperType<Promise<Array<OrderPaymentDiscount>>>;
+  provider: HelperType<Promise<PaymentProvider>>
+  status: HelperType<string>;
 }
 
 export const OrderPaymentCard: OrderPaymentCardHelperTypes = {
   status: (obj, _, { modules }) => {
     return modules.orders.payments.normalizedStatus(obj);
+  },
+
+  provider: async (obj, _, { modules }) => {
+    return await modules.payment.paymentProviders.findProvider({
+      paymentProviderId: obj.paymentProviderId,
+    });
   },
 
   discounts: async (obj, _, { modules }) => {
