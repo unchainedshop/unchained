@@ -58,7 +58,7 @@ export const DeliveryProvider: DeliveryProviderHelperTypes = {
     const calculated = await pricingDirector.calculate();
     if (!calculated) return null;
 
-    const pricing = pricingDirector.resultSheet();
+    const pricing = DeliveryPricingDirector.resultSheet();
 
     const orderPrice = pricing.total({ useNetPrice }) as {
       amount: number;

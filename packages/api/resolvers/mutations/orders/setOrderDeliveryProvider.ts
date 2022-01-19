@@ -5,8 +5,9 @@ import { OrderNotFoundError, InvalidIdError } from '../../../errors';
 export default async function setOrderDeliveryProvider(
   root: Root,
   params: { orderId: string; deliveryProviderId: string },
-  { modules, userId }: Context
+  context: Context
 ) {
+  const { modules, userId } = context;
   const { orderId, deliveryProviderId } = params;
 
   log(`mutation setOrderDeliveryProvider ${deliveryProviderId}`, {
@@ -23,6 +24,6 @@ export default async function setOrderDeliveryProvider(
   return await modules.orders.setDeliveryProvider(
     orderId,
     deliveryProviderId,
-    userId
+    context
   );
 }

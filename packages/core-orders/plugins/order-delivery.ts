@@ -18,16 +18,18 @@ const OrderDelivery: IOrderPricingAdapter = {
 
   actions: (params) => {
     const pricingAdapter = OrderPricingAdapter.actions(params);
+    const { order, orderDelivery, modules } = params.context;
+
     return {
       ...pricingAdapter,
 
       calculate: async () => {
         // just add tax + net price to order pricing
-        const { orderDelivery } = params.context;
         if (orderDelivery) {
-          // TODO: use module
-          // @ts-ignore */
-          const pricing = orderDelivery.pricing();
+          const pricing = modules.orders.deliveries.pricingSheet(
+            orderDelivery,
+            order.currency
+          );
           const tax = pricing.taxSum();
           const shipping = pricing.gross();
 

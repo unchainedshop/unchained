@@ -1,7 +1,7 @@
 import {
   EnrollmentData,
   IEnrollmentAdapter,
-  IEnrollmentDirector
+  IEnrollmentDirector,
 } from '@unchainedshop/types/enrollments';
 import { ProductPlan } from '@unchainedshop/types/products';
 import { log, LogLevel } from 'meteor/unchained:logger';
@@ -13,7 +13,7 @@ const baseDirector = BaseDirector<IEnrollmentAdapter>('EnrollmentDirector', {
 
 const findAppropriateAdapters = (productPlan?: ProductPlan) =>
   baseDirector.getAdapters({
-    adapterFilter: (Adapter) => {
+    adapterFilter: (Adapter: IEnrollmentAdapter) => {
       const activated = Adapter.isActivatedFor(productPlan);
       if (!activated) {
         log(
@@ -45,13 +45,13 @@ export const EnrollmentDirector: IEnrollmentDirector = {
       requestContext
     );
 
-    const enrollmentData: EnrollmentData= {
+    const enrollmentData: EnrollmentData = {
       ...doc,
       ...enrollmentPlan,
       configuration: [],
     };
 
-    return enrollmentData
+    return enrollmentData;
   },
 
   actions: async (enrollmentContext, requestContext) => {

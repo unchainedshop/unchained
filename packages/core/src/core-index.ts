@@ -47,7 +47,10 @@ export const initCore = async ({
   options = {},
 }: UnchainedCoreOptions) => {
   const accounts = await configureAccountsModule(options.accounts);
-  const assortments = await configureAssortmentsModule({ db, options: options.assortments });
+  const assortments = await configureAssortmentsModule({
+    db,
+    options: options.assortments,
+  });
   const bookmarks = await configureBookmarksModule({ db });
   const countries = await configureCountriesModule({ db });
   const currencies = await configureCurrenciesModule({ db });
@@ -68,7 +71,10 @@ export const initCore = async ({
     db,
     options: options.orders,
   });
-  const payment = await configurePaymentModule({ db });
+  const payment = await configurePaymentModule({
+    db,
+    options: options.paymentProviders,
+  });
   const products = await configureProductsModule({ db });
   const quotations = await configureQuotationsModule({
     db,

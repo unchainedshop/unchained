@@ -26,7 +26,7 @@
     "test:ci": "npm run test:integration && npm run test:packages",
     "test:integration": "jest --ci --runInBand --detectOpenHandles --forceExit tests/*",
     "test:packages": "jest --ci --runInBand --detectOpenHandles --forceExit packages/*",
-    "test:watch": "cross-env DEBUG=jest-mongodb:* jest --runInBand --watch --no-watchman --verbose tests/orders.test",
+    "test:watch": "cross-env DEBUG=jest-mongodb:* jest --runInBand --watch --no-watchman --verbose tests/order-deliveries",
     "dev": "run-p --print-label dev:*",
     "dev:minimal": "cd examples/minimal && npm run dev",
     "dev:controlpanel": "cd examples/controlpanel && npm run dev",

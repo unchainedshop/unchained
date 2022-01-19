@@ -15,20 +15,21 @@ const OrderPayment: IOrderPricingAdapter = {
   isActivatedFor: async () => {
     return true;
   },
-  
+
   actions: (params) => {
     const pricingAdapter = OrderPricingAdapter.actions(params);
+    const { order, orderPayment, modules } = params.context;
+
     return {
       ...pricingAdapter,
 
       calculate: async () => {
         // just add tax + net price to order pricing
-        const { orderPayment } = params.context;
-
         if (orderPayment) {
-          // TODO: use module
-          // @ts-ignore */
-          const pricing = orderPayment.pricing();
+          const pricing = modules.orders.payments.pricingSheet(
+            orderPayment,
+            order.currency
+          );
           const tax = pricing.taxSum();
           const paymentFees = pricing.gross();
 

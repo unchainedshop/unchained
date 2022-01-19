@@ -7,6 +7,7 @@ import {
 } from '@unchainedshop/types/delivery.pricing';
 import { OrderDelivery } from '@unchainedshop/types/orders.deliveries';
 import { BasePricingDirector } from 'meteor/unchained:utils';
+import { DeliveryPricingSheet } from './DeliveryPricingSheet';
 
 const baseDirector = BasePricingDirector<
   DeliveryPricingContext,
@@ -28,7 +29,7 @@ export const DeliveryPricingDirector: IDeliveryPricingDirector = {
     requestContext
   ) => {
     const { modules } = requestContext;
-    const { providerContext, ...context } = rest as any;
+    const { providerContext, currency, ...context } = rest as any;
 
     if (!item)
       return {
@@ -53,7 +54,7 @@ export const DeliveryPricingDirector: IDeliveryPricingDirector = {
 
     return {
       country: order.countryCode,
-      currency: order.currency,
+      currency: currency || order.currency,
       discounts,
       order,
       provider,
@@ -62,5 +63,22 @@ export const DeliveryPricingDirector: IDeliveryPricingDirector = {
       ...context,
       ...requestContext,
     };
+  },
+
+  actions: async (pricingContext, requestContext) => {
+    return await baseDirector.actions(
+      pricingContext,
+      requestContext,
+      DeliveryPricingDirector.buildPricingContext
+    );
+  },
+
+  resultSheet() {
+    const pricingSheet = DeliveryPricingSheet({
+      calculation: baseDirector.getCalculation(),
+      currency: baseDirector.getContext().currency,
+    });
+
+    return pricingSheet;
   },
 };

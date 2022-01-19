@@ -45,8 +45,4 @@ describe('Test exports', () => {
     assert.ok(await module.findUser({ userId }));
     assert.lengthOf(await module.findUsers({ limit: 10 }), 1);
   });
-
-  it('Check mutation', () => {
-    // TODO:
-  });
 });

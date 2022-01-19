@@ -28,14 +28,17 @@ export const ProductPricingDirector: IProductPricingDirector = {
     } & ProductPricingContext,
     requestContext
   ) => {
+    console.log('BUILD PRODUCT CONTEXT', orderPosition, pricingContext);
+
     const { modules } = requestContext;
 
-    if (!orderPosition)
+    if (!orderPosition) {
       return {
         discounts: [],
         ...pricingContext,
         ...requestContext,
       } as ProductPricingAdapterContext;
+    }
 
     const product = await modules.products.findProduct({
       productId: orderPosition.productId,
@@ -63,10 +66,18 @@ export const ProductPricingDirector: IProductPricingDirector = {
     };
   },
 
+  actions: async (pricingContext, requestContext) => {
+    return await baseDirector.actions(
+      pricingContext,
+      requestContext,
+      ProductPricingDirector.buildPricingContext
+    );
+  },
+
   resultSheet() {
     const calculation = baseDirector.getCalculation();
     const context = baseDirector.getContext();
-    
+
     return ProductPricingSheet({
       calculation,
       currency: context.currency,

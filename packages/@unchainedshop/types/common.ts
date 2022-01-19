@@ -42,8 +42,9 @@ export type Indexes<T extends Document> = Array<{
  * Module
  */
 
-export interface ModuleInput {
+export interface ModuleInput<Options extends {}> {
   db: Db;
+  options?: Options
 }
 
 export interface ModuleCreateMutation<T> {
@@ -114,7 +115,7 @@ export interface IBaseAdapter {
 
 export interface IBaseDirector<Adapter extends IBaseAdapter> {
   getAdapters: (options?: {
-    adapterFilter?: (adapter: Adapter) => boolean;
+    adapterFilter?: (adapter: Adapter) => Promise<boolean>;
   }) => Array<Adapter>;
   getAdapter: (key: string) => Adapter;
   registerAdapter: (A: Adapter) => void;

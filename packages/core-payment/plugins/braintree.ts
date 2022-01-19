@@ -104,22 +104,21 @@ const BraintreeDirect: IPaymentAdapter = {
       },
 
       charge: async ({ paypalPaymentMethodNonce }) => {
+        const { order, modules } = params.context;
         if (!paypalPaymentMethodNonce)
           throw new Error(
             'You have to provide paypalPaymentMethodNonce in paymentContext'
           );
         const braintree = require('braintree'); // eslint-disable-line
         const gateway = getGateway(braintree);
-        const address = params.context.order.billingAddress || {};
-        // TODO: use modules
-        /* @ts-ignore */
-        const pricing = params.context.order.pricing();
-        const rounded = Math.round(pricing.total().amount / 10 || 0) * 10;
+        const address = order.billingAddress || {};
+        const pricing = modules.orders.pricingSheet(order)
+        const rounded = Math.round(pricing.total({ useNetPrice: false }).amount / 10 || 0) * 10;
         const saleRequest = {
           amount: rounded / 100,
-          merchantAccountId: params.context.order.currency,
+          merchantAccountId: order.currency,
           paymentMethodNonce: paypalPaymentMethodNonce,
-          orderId: params.context.order.orderNumber || params.context.order._id,
+          orderId: order.orderNumber || order._id,
           shipping: {
             firstName: address.firstName,
             lastName: address.lastName,

@@ -44,6 +44,14 @@ export const PaymentPricingDirector: IPaymentPricingDirector = {
     };
   },
 
+  actions: async (pricingContext, requestContext) => {
+    return await baseDirector.actions(
+      pricingContext,
+      requestContext,
+      PaymentPricingDirector.buildPricingContext
+    );
+  },
+
   resultSheet: () => {
     return PaymentPricingSheet({
       calculation: baseDirector.getCalculation(),

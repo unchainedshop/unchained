@@ -2,9 +2,9 @@ import { ApolloServer } from 'apollo-server-express';
 import { Request } from 'express';
 import { Locale, Locales } from 'locale';
 import SimpleSchema from 'simpl-schema';
-import { AccountsModule, AccountsOptions } from './accounts';
+import { AccountsModule, AccountsSettingsOptions } from './accounts';
 import { Context, UnchainedCoreOptions, UnchainedServerOptions } from './api';
-import { AssortmentsModule } from './assortments';
+import { AssortmentsModule, AssortmentsSettingsOptions } from './assortments';
 import { BookmarkServices, BookmarksModule } from './bookmarks';
 import {
   Collection,
@@ -28,16 +28,20 @@ import {
   DeliveryError as DeliveryErrorType,
   DeliveryModule,
   DeliveryProviderType as DeliveryProviderTypeType,
+  DeliverySettingsOptions,
   IDeliveryAdapter,
   IDeliveryDirector,
 } from './delivery';
 import {
+  DeliveryPricingCalculation,
   IDeliveryPricingAdapter,
   IDeliveryPricingDirector,
+  IDeliveryPricingSheet,
 } from './delivery.pricing';
 import { IDiscountAdapter, IDiscountDirector } from './discount';
 import {
   EnrollmentsModule,
+  EnrollmentsSettingsOptions,
   EnrollmentStatus as EnrollmentStatusType,
   IEnrollmentAdapter,
   IEnrollmentDirector,
@@ -60,10 +64,12 @@ import {
 import {
   OrderServices,
   OrdersModule,
+  OrdersSettingsOptions,
   OrderStatus as OrderStatusType,
 } from './orders';
 import { OrderDeliveryStatus as OrderDeliveryStatusType } from './orders.deliveries';
 import { OrderPaymentStatus as OrderPaymentStatusType } from './orders.payments';
+import { OrderPricingCalculation } from './orders.pricing';
 import {
   IOrderPricingAdapter,
   IOrderPricingDirector,
@@ -74,17 +80,21 @@ import {
   IPaymentDirector,
   PaymentError as PaymentErrorType,
   PaymentModule,
+  PaymentProvidersSettingsOptions,
   PaymentProviderType as PaymentProviderTypeType,
 } from './payments';
 import {
   IPaymentPricingAdapter,
   IPaymentPricingDirector,
   IPaymentPricingSheet,
+  PaymentPricingCalculation,
 } from './payments.pricing';
 import {
   BasePricingAdapterContext,
   BasePricingContext,
+  IBasePricingDirector,
   IPricingAdapter,
+  IPricingAdapterActions,
   IPricingDirector,
   IPricingSheet,
   PricingCalculation,
@@ -107,6 +117,7 @@ import {
   IQuotationDirector,
   QuotationError as QuotationErrorType,
   QuotationsModule,
+  QuotationsSettingsOptions,
   QuotationStatus as QuotationStatusType,
 } from './quotations';
 import { UserServices, UsersModule } from './user';
@@ -211,6 +222,7 @@ declare module 'meteor/unchained:utils' {
       adapterKeyField?: string;
     }
   ) => IBaseDirector<Adapter>;
+
   const BasePricingAdapter: <
     AdapterContext extends BasePricingAdapterContext,
     Calculation extends PricingCalculation
@@ -219,6 +231,7 @@ declare module 'meteor/unchained:utils' {
     Calculation,
     IPricingSheet<Calculation>
   >;
+
   const BasePricingDirector: <
     Context extends BasePricingContext,
     AdapterContext extends BasePricingAdapterContext,
@@ -230,7 +243,7 @@ declare module 'meteor/unchained:utils' {
     >
   >(
     directorName: string
-  ) => IPricingDirector<Context, AdapterContext, Calculation, Adapter>;
+  ) => IBasePricingDirector<Context, AdapterContext, Calculation, Adapter>;
 
   const BasePricingSheet: <Calculation extends PricingCalculation>(
     params: PricingSheetParams<Calculation>
@@ -283,7 +296,7 @@ declare module 'meteor/unchained:director-file-upload' {
 
 declare module 'meteor/unchained:core-accountsjs' {
   function configureAccountsModule(
-    options: AccountsOptions
+    options: AccountsSettingsOptions
   ): Promise<AccountsModule>;
 
   const accountsSettings: any;
@@ -296,7 +309,7 @@ declare module 'meteor/unchained:core-accountsjs' {
 
 declare module 'meteor/unchained:core-assortments' {
   function configureAssortmentsModule(
-    params: ModuleInput
+    params: ModuleInput<AssortmentsSettingsOptions>
   ): Promise<AssortmentsModule>;
 
   const assortmentsSettings;
@@ -304,7 +317,7 @@ declare module 'meteor/unchained:core-assortments' {
 
 declare module 'meteor/unchained:core-bookmarks' {
   function configureBookmarksModule(
-    params: ModuleInput
+    params: ModuleInput<{}>
   ): Promise<BookmarksModule>;
 
   const bookmarkServices: BookmarkServices;
@@ -312,7 +325,7 @@ declare module 'meteor/unchained:core-bookmarks' {
 
 declare module 'meteor/unchained:core-countries' {
   function configureCountriesModule(
-    params: ModuleInput
+    params: ModuleInput<{}>
   ): Promise<CountriesModule>;
 
   const countryServices: CountryServices;
@@ -320,13 +333,13 @@ declare module 'meteor/unchained:core-countries' {
 
 declare module 'meteor/unchained:core-currencies' {
   function configureCurrenciesModule(
-    params: ModuleInput
+    params: ModuleInput<{}>
   ): Promise<CurrenciesModule>;
 }
 
 declare module 'meteor/unchained:core-delivery' {
   function configureDeliveryModule(
-    params: ModuleInput
+    params: ModuleInput<DeliverySettingsOptions>
   ): Promise<DeliveryModule>;
 
   const deliverySettings;
@@ -338,11 +351,14 @@ declare module 'meteor/unchained:core-delivery' {
 
   const DeliveryPricingAdapter: IDeliveryPricingAdapter;
   const DeliveryPricingDirector: IDeliveryPricingDirector;
+  const DeliveryPricingSheet: (
+    params: PricingSheetParams<DeliveryPricingCalculation>
+  ) => IDeliveryPricingSheet;
 }
 
 declare module 'meteor/unchained:core-enrollments' {
   function configureEnrollmentsModule(
-    params: ModuleInput
+    params: ModuleInput<EnrollmentsSettingsOptions>
   ): Promise<EnrollmentsModule>;
 
   const enrollmentsSettings;
@@ -354,17 +370,21 @@ declare module 'meteor/unchained:core-enrollments' {
 }
 
 declare module 'meteor/unchained:core-events' {
-  function configureEventsModule(params: ModuleInput): Promise<EventsModule>;
+  function configureEventsModule(
+    params: ModuleInput<{}>
+  ): Promise<EventsModule>;
 }
 
 declare module 'meteor/unchained:core-files-next' {
-  function configureFilesModule(params: ModuleInput): Promise<FilesModule>;
+  function configureFilesModule(params: ModuleInput<{}>): Promise<FilesModule>;
 
   const fileServices: FileServices;
 }
 
 declare module 'meteor/unchained:core-filters' {
-  function configureFiltersModule(params: ModuleInput): Promise<FiltersModule>;
+  function configureFiltersModule(
+    params: ModuleInput<{}>
+  ): Promise<FiltersModule>;
 
   const FilterType: typeof FilterTypeType;
 
@@ -374,12 +394,14 @@ declare module 'meteor/unchained:core-filters' {
 
 declare module 'meteor/unchained:core-languages' {
   function configureLanguagesModule(
-    params: ModuleInput
+    params: ModuleInput<{}>
   ): Promise<LanguagesModule>;
 }
 
 declare module 'meteor/unchained:core-orders' {
-  function configureOrdersModule(params: ModuleInput): Promise<OrdersModule>;
+  function configureOrdersModule(
+    params: ModuleInput<OrdersSettingsOptions>
+  ): Promise<OrdersModule>;
 
   const orderServices: OrderServices;
   const ordersSettings;
@@ -393,11 +415,15 @@ declare module 'meteor/unchained:core-orders' {
 
   const OrderPricingAdapter: IOrderPricingAdapter;
   const OrderPricingDirector: IOrderPricingDirector;
-  const OrderPricingSheet: IOrderPricingSheet;
+  const OrderPricingSheet: (
+    params: PricingSheetParams<OrderPricingCalculation>
+  ) => IOrderPricingSheet;
 }
 
 declare module 'meteor/unchained:core-payment' {
-  function configurePaymentModule(params: ModuleInput): Promise<PaymentModule>;
+  function configurePaymentModule(
+    params: ModuleInput<PaymentProvidersSettingsOptions>
+  ): Promise<PaymentModule>;
   const paymentServices;
 
   const PaymentDirector: IPaymentDirector;
@@ -405,7 +431,9 @@ declare module 'meteor/unchained:core-payment' {
 
   const PaymentPricingAdapter: IPaymentPricingAdapter;
   const PaymentPricingDirector: IPaymentPricingDirector;
-  const PaymentPricingSheet: IPaymentPricingSheet;
+  const PaymentPricingSheet: (
+    params: PricingSheetParams<PaymentPricingCalculation>
+  ) => IPaymentPricingSheet;
 
   const PaymentError: typeof PaymentErrorType;
   const PaymentProviderType: typeof PaymentProviderTypeType;
@@ -415,7 +443,7 @@ declare module 'meteor/unchained:core-payment' {
 
 declare module 'meteor/unchained:core-products' {
   function configureProductsModule(
-    params: ModuleInput
+    params: ModuleInput<{}>
   ): Promise<ProductsModule>;
 
   const productServices: ProductServices;
@@ -432,7 +460,7 @@ declare module 'meteor/unchained:core-products' {
 
 declare module 'meteor/unchained:core-quotations' {
   function configureQuotationsModule(
-    params: ModuleInput
+    params: ModuleInput<QuotationsSettingsOptions>
   ): Promise<QuotationsModule>;
 
   const quotationsSettings;
@@ -445,14 +473,14 @@ declare module 'meteor/unchained:core-quotations' {
 }
 
 declare module 'meteor/unchained:core-users' {
-  function configureUsersModule(params: ModuleInput): Promise<UsersModule>;
+  function configureUsersModule(params: ModuleInput<{}>): Promise<UsersModule>;
 
   const userServices: UserServices;
 }
 
 declare module 'meteor/unchained:core-warehousing' {
   function configureWarehousingModule(
-    params: ModuleInput
+    params: ModuleInput<{}>
   ): Promise<WarehousingModule>;
 
   const WarehousingDirector: IWarehousingDirector;
@@ -462,7 +490,9 @@ declare module 'meteor/unchained:core-warehousing' {
 }
 
 declare module 'meteor/unchained:core-worker' {
-  function configureWorkerModule(params: ModuleInput): Promise<WorkerModule>;
+  function configureWorkerModule(
+    params: ModuleInput<{}>
+  ): Promise<WorkerModule>;
 
   const WorkerDirector: IWorkerDirector;
   const WorkStatus: typeof WorkerStatusType;

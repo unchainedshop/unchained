@@ -19,7 +19,4 @@ describe('Test exports', () => {
     assert.isFunction(await module.providerExists);
   });
 
-  it('Check mutation', () => {
-    // TODO:
-  });
 });

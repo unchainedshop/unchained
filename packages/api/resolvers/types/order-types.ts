@@ -35,16 +35,19 @@ interface OrderHelperTypes {
 
 export const Order: OrderHelperTypes = {
   supportedDeliveryProviders: async (obj, _, context) => {
-    return await context.modules.delivery.findSupported(
+    const providers = await context.modules.delivery.findSupported(
       {
         order: obj,
       },
       context
     );
+
+    console.log('SUPPORTED PROVIDERS', providers)
+    return providers
   },
 
   supportedPaymentProviders: async (obj, _, context) => {
-    return context.modules.payment.paymentProviders.findSupported(
+    return await context.modules.payment.paymentProviders.findSupported(
       {
         order: obj,
       },

@@ -4,6 +4,7 @@ import {
   PaymentContext,
   PaymentModule,
   PaymentProvider,
+  PaymentProvidersSettingsOptions,
   PaymentProviderType,
 } from '@unchainedshop/types/payments';
 import { emit, registerEvents } from 'meteor/unchained:events';
@@ -36,9 +37,12 @@ const getDefaultContext = (context?: PaymentContext): PaymentContext => {
 };
 
 export const configurePaymentProvidersModule = (
-  PaymentProviders: Collection<PaymentProvider>
+  PaymentProviders: Collection<PaymentProvider>,
+  options: PaymentProvidersSettingsOptions
 ): PaymentModule['paymentProviders'] => {
   registerEvents(PAYMENT_PROVIDER_EVENTS);
+
+  paymentProviderSettings.configureSettings(options);
 
   const mutations = generateDbMutations<PaymentProvider>(
     PaymentProviders,
@@ -111,8 +115,8 @@ export const configurePaymentProvidersModule = (
         }));
     },
 
-    findSupported: ({ order }, requestContext) => {
-      const providers = PaymentProviders.find({}).filter(
+    findSupported: async ({ order }, requestContext) => {
+      const providers = await PaymentProviders.find({}).filter(
         (provider: PaymentProvider) => {
           const director = PaymentDirector.actions(
             provider,
@@ -121,7 +125,7 @@ export const configurePaymentProvidersModule = (
           );
           return director.isActive();
         }
-      );
+      ).toArray();
 
       return paymentProviderSettings.filterSupportedProviders({
         providers,

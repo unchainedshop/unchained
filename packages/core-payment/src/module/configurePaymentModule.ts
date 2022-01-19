@@ -1,5 +1,5 @@
 import { ModuleInput } from '@unchainedshop/types/common';
-import { PaymentModule } from '@unchainedshop/types/payments';
+import { PaymentModule, PaymentProvidersSettingsOptions } from '@unchainedshop/types/payments';
 import { BityCredentialsCollection } from '../db/BityCredentialsCollection';
 import { PaymentCredentialsCollection } from '../db/PaymentCredentialsCollection';
 import { PaymentProvidersCollection } from '../db/PaymentProvidersCollection';
@@ -9,15 +9,15 @@ import { configurePaymentProvidersModule } from './configurePaymentProvidersModu
 
 export const configurePaymentModule = async ({
   db,
-}: ModuleInput<{}>): Promise<PaymentModule> => {
-
-  const PaymentProviders = await PaymentProvidersCollection(db);
+  options,
+}: ModuleInput<PaymentProvidersSettingsOptions>): Promise<PaymentModule> => {
+  const PaymentProviders = await PaymentProvidersCollection(db, options);
   const PaymentCredentials = await PaymentCredentialsCollection(db);
-  const BityCredentials = BityCredentialsCollection(db)
+  const BityCredentials = BityCredentialsCollection(db);
 
   return {
     paymentProviders: configurePaymentProvidersModule(PaymentProviders),
     paymentCredentials: configurePaymentCredentialsModule(PaymentCredentials),
-    bityCredentials: configureBityCredentialsModule(BityCredentials)
-  }
+    bityCredentials: configureBityCredentialsModule(BityCredentials),
+  };
 };

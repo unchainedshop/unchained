@@ -138,7 +138,7 @@ export const configureDeliveryModule = async ({
     },
 
     calculate: async (pricingContext, requestContext) => {
-      const pricing = DeliveryPricingDirector.actions(
+      const pricing = await DeliveryPricingDirector.actions(
         pricingContext,
         requestContext
       );

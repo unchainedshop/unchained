@@ -7,7 +7,7 @@ export const DeliveryProvidersCollection = async (db: Db) => {
     db.collection<DeliveryProvider>('delivery-providers');
 
   await buildDbIndexes<DeliveryProvider>(DeliveryProviders, [
-    { index: { type: 1 }, options: { unique: true } },
+    { index: { type: 1 } },
   ]);
 
   return DeliveryProviders;

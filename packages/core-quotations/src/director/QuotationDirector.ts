@@ -18,7 +18,7 @@ const findAppropriateAdapters = (
   requestContext: Context
 ) =>
   baseDirector.getAdapters({
-    adapterFilter: (Adapter) => {
+    adapterFilter: (Adapter: IQuotationAdapter) => {
       const activated = Adapter.isActivatedFor(
         quotationContext,
         requestContext

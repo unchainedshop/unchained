@@ -142,7 +142,7 @@ export type PaymentModule = {
     findSupported: (
       query: { order: Order },
       requestContext: Context
-    ) => Array<string>;
+    ) => Promise<Array<string>>;
 
     findInterface: (query: PaymentProvider) => PaymentInterface;
     findInterfaces: (query: {
@@ -274,6 +274,17 @@ export type RegisterPaymentCredentialsService = (
 export interface PaymentServices {
   chargeService: ChargeService;
   registerPaymentCredentialsService: RegisterPaymentCredentialsService;
+}
+
+/*
+ * Settings
+ */
+
+export interface PaymentProvidersSettingsOptions {
+  sortProviders: any;
+  filterSupportedProviders: (params: {
+    providers: Array<PaymentProvider>;
+  }) => Array<PaymentProvider>;
 }
 
 /*

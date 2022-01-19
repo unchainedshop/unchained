@@ -77,6 +77,9 @@ const OrderDiscount: IOrderPricingAdapter = {
 
   actions: (params) => {
     const pricingAdapter = OrderPricingAdapter.actions(params);
+    const { order, orderDelivery, orderPositions, orderPayment, modules } =
+      params.context;
+
     return {
       ...pricingAdapter,
 
@@ -96,24 +99,22 @@ const OrderDiscount: IOrderPricingAdapter = {
             category: OrderPricingRowCategory.Delivery,
           });
 
-        const itemShares = params.context.orderPositions.map((orderPosition) =>
+        const itemShares = orderPositions.map((orderPosition) =>
           resolveRatioAndTaxDivisorForPricingSheet(
-            // TODO: use module
-            // @ts-ignore */
-            orderPosition.pricing(),
+            modules.orders.positions.pricingSheet(
+              orderPosition,
+              order.currency,
+              params.context
+            ),
             totalAmountOfItems
           )
         );
         const deliveryShare = resolveRatioAndTaxDivisorForPricingSheet(
-          // TODO: use module
-          // @ts-ignore */
-          params.context.orderDelivery.pricing(),
+          modules.orders.deliveries.pricingSheet(orderDelivery, order.currency),
           totalAmountOfPaymentAndDelivery
         );
         const paymentShare = resolveRatioAndTaxDivisorForPricingSheet(
-          // TODO: use module
-          // @ts-ignore */
-          params.context.orderPayment?.pricing(),
+          modules.orders.payments.pricingSheet(orderPayment, order.currency),
           totalAmountOfPaymentAndDelivery
         );
 

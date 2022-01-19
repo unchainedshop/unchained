@@ -7,6 +7,7 @@ import { EnrollmentsSettingsOptions } from './enrollments';
 import { Modules } from './modules';
 import { Order, OrdersSettingsOptions } from './orders';
 import { Quotation, QuotationsSettingsOptions } from './quotations';
+import { PaymentProvidersSettingsOptions } from './payments';
 import { Services } from './services';
 import { User } from './user';
 
@@ -64,6 +65,7 @@ export interface UnchainedCoreOptions {
     delivery?: DeliverySettingsOptions;
     enrollments?: EnrollmentsSettingsOptions;
     orders?: OrdersSettingsOptions;
+    paymentProviders?: PaymentProvidersSettingsOptions;
     quotations?: QuotationsSettingsOptions;
   };
   [x: string]: any;

@@ -211,7 +211,10 @@ export const configureOrdersModule = async ({
 
     // Init payment provider
     const supportedPaymentProviders =
-      modules.payment.paymentProviders.findSupported({ order }, requestContext);
+      await modules.payment.paymentProviders.findSupported(
+        { order },
+        requestContext
+      );
 
     const orderPayment = await modules.orders.payments.findOrderPayment({
       orderPaymentId: order.paymentId,
@@ -314,7 +317,10 @@ export const configureOrdersModule = async ({
       )
     );
 
-    const pricing = OrderPricingDirector.actions({ order }, requestContext);
+    const pricing = await OrderPricingDirector.actions(
+      { order },
+      requestContext
+    );
     const calculation = await pricing.calculate();
 
     await Orders.updateOne(selector, {

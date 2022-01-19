@@ -1,7 +1,6 @@
 import {
   IPaymentAdapter,
   IPaymentDirector,
-  PaymentProvider,
 } from '@unchainedshop/types/payments';
 import { BaseDirector } from 'meteor/unchained:utils';
 import { paymentLogger } from '../payment-logger';

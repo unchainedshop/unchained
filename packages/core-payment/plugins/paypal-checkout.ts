@@ -69,6 +69,8 @@ const PaypalCheckout: IPaymentAdapter = {
       },
 
       charge: async ({ orderID }) => {
+        const { modules, order } = params.context;
+
         if (!orderID) {
           paymentLogger.warn('Paypal Native Plugin: PRICE MATCH');
           throw new Error('You have to provide orderID in paymentContext');
@@ -81,13 +83,13 @@ const PaypalCheckout: IPaymentAdapter = {
           const client = new checkoutNodeJssdk.core.PayPalHttpClient(
             environment()
           );
-          const order = await client.execute(request);
+          const paypalOrder = await client.execute(request);
 
-          // TODO: use modules
-          /* @ts-ignore */
-          const pricing = params.context.order.pricing();
-          const ourTotal = (pricing.total().amount / 100).toFixed(2);
-          const paypalTotal = order.result.purchase_units[0].amount.value;
+          const pricing = modules.orders.pricingSheet(order);
+          const ourTotal = (
+            pricing.total({ useNetPrice: false }).amount / 100
+          ).toFixed(2);
+          const paypalTotal = paypalOrder.result.purchase_units[0].amount.value;
 
           if (ourTotal === paypalTotal) {
             paymentLogger.info('Paypal Native Plugin: PRICE MATCH');
@@ -96,7 +98,7 @@ const PaypalCheckout: IPaymentAdapter = {
 
           paymentLogger.warn(
             'Paypal Native Plugin: Missmatch PAYPAL ORDER',
-            JSON.stringify(order.result, null, 2)
+            JSON.stringify(paypalOrder.result, null, 2)
           );
 
           paymentLogger.debug(

@@ -11,7 +11,7 @@ import { OrderPosition } from './orders.positions';
 export interface BasePricingAdapterContext extends Context {
   order: Order;
   user: User;
-  discounts: Array<OrderDiscount>
+  discounts: Array<OrderDiscount>;
 }
 
 export type BasePricingContext =
@@ -90,7 +90,7 @@ export type IPricingSheet<Calculation extends PricingCalculation> =
   };
 
 export interface IPricingAdapterActions<
-  Calculation extends PricingCalculation,
+  Calculation extends PricingCalculation
 > {
   calculate: () => Promise<Array<Calculation>>;
   resultSheet: () => IBasePricingSheet<Calculation>;
@@ -106,7 +106,7 @@ export type IPricingAdapter<
   isActivatedFor: (context: PricingContext) => Promise<boolean>;
 
   actions: (params: {
-    context: PricingContext,
+    context: PricingContext;
     calculation: Array<Calculation>;
     discounts: Array<Discount>;
   }) => IPricingAdapterActions<Calculation> & {
@@ -131,4 +131,23 @@ export type IPricingDirector<
   ) => IPricingAdapterActions<Calculation>;
   getCalculation: () => Array<Calculation>;
   getContext: () => PricingAdapterContext | null;
+};
+
+export type IBasePricingDirector<
+  PricingContext extends BasePricingContext,
+  PricingAdapterContext extends BasePricingAdapterContext,
+  Calculation extends PricingCalculation,
+  Adapter extends IBaseAdapter
+> = Omit<
+  IPricingDirector<PricingContext, PricingAdapterContext, Calculation, Adapter>,
+  'actions' | 'buildPricingContext'
+> & {
+  actions: (
+    pricingContext: PricingContext,
+    requestContext: Context,
+    buildPricingContext: (
+      context: any,
+      requestContext: Context
+    ) => Promise<PricingAdapterContext>
+  ) => Promise<IPricingAdapterActions<Calculation>>;
 };

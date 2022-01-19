@@ -4,7 +4,10 @@ import {
   DeliveryPricingAdapter,
   DeliveryPricingDirector,
 } from 'meteor/unchained:core-delivery';
-import { DeliveryPricingAdapterContext, IDeliveryPricingAdapter } from '@unchainedshop/types/delivery.pricing';
+import {
+  DeliveryPricingAdapterContext,
+  IDeliveryPricingAdapter,
+} from '@unchainedshop/types/delivery.pricing';
 
 // https://www.ch.ch/de/mehrwertsteuersatz-schweiz/
 export const SwissTaxCategories = {
@@ -37,9 +40,7 @@ const getTaxRate = (context: DeliveryPricingAdapterContext) => {
       ? new Date(context.order.ordered)
       : new Date();
 
-  // TODO: use modules
-  /* @ts-ignore */
-  const taxCategoryFromProvider = context.provider?.configuration?.find(
+  const taxCategoryFromProvider = context.deliveryProvider?.configuration?.find(
     ({ key }) => {
       if (key === 'swiss-tax-category') return true;
       return null;
@@ -63,16 +64,20 @@ export const DeliverySwissTax: IDeliveryPricingAdapter = {
   label: 'Apply Swiss Tax on Delivery Fees',
   orderIndex: 20,
 
-  isActivatedFor: async (context) => {
-    const address =
-      // TODO: use modules
-      /* @ts-ignore */
-      context.order?.delivery()?.context?.address ||
-      context.order?.billingAddress;
-    const countryCode =
-      address?.countryCode !== undefined
-        ? address.countryCode?.toUpperCase().trim()
-        : context.country?.toUpperCase().trim();
+  isActivatedFor: async ({ order, country, modules }) => {
+    let countryCode = country?.toUpperCase().trim();
+
+    if (order) {
+      const orderDelivery = await modules.orders.deliveries.findDelivery({
+        orderDeliveryId: order.deliveryId,
+      });
+      const address = orderDelivery?.context?.address || order.billingAddress;
+
+      if (address?.countryCode > '') {
+        countryCode = address.countryCode?.toUpperCase().trim();
+      }
+    }
+
     return countryCode === 'CH' || countryCode === 'LI';
   },
 
@@ -82,7 +87,7 @@ export const DeliverySwissTax: IDeliveryPricingAdapter = {
 
     return {
       ...pricingAdapter,
-      
+
       calculate: async () => {
         const taxRate = getTaxRate(context);
 
@@ -90,7 +95,8 @@ export const DeliverySwissTax: IDeliveryPricingAdapter = {
           `DeliverySwissTax -> Tax Multiplicator: ${taxRate}`
         );
 
-        pricingAdapter.calculationSheet()
+        pricingAdapter
+          .calculationSheet()
           .filterBy({ isTaxable: true })
           .forEach(({ isNetPrice, ...row }) => {
             if (!isNetPrice) {

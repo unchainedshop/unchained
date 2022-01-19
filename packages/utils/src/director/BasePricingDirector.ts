@@ -2,16 +2,15 @@ import { Discount } from '@unchainedshop/types/discount';
 import {
   BasePricingAdapterContext,
   BasePricingContext,
-  IPricingAdapter,
-  IPricingDirector,
-  IPricingSheet,
-  PricingCalculation,
+  IBasePricingDirector,
+  IPricingAdapter, IPricingSheet,
+  PricingCalculation
 } from '@unchainedshop/types/pricing';
 import { log, LogLevel } from 'meteor/unchained:logger';
 import { BaseDirector } from './BaseDirector';
 
 export const BasePricingDirector = <
-  Context extends BasePricingContext,
+  DirectorContext extends BasePricingContext,
   AdapterContext extends BasePricingAdapterContext,
   Calculation extends PricingCalculation,
   Adapter extends IPricingAdapter<
@@ -21,7 +20,12 @@ export const BasePricingDirector = <
   >
 >(
   directorName: string
-): IPricingDirector<Context, AdapterContext, Calculation, Adapter> => {
+): IBasePricingDirector<
+  DirectorContext,
+  AdapterContext,
+  Calculation,
+  Adapter
+> => {
   const baseDirector = BaseDirector<Adapter>(directorName, {
     adapterSortKey: 'orderIndex',
   });
@@ -29,35 +33,23 @@ export const BasePricingDirector = <
   let calculation: Array<Calculation> = [];
   let context: AdapterContext | null = null;
 
-  const director: IPricingDirector<
-    Context,
-    AdapterContext,
-    Calculation,
-    Adapter
-  > = {
+  const director = {
     ...baseDirector,
-    buildPricingContext: (pricingContext, requestContext) => {
-      return {
-        discounts: [],
-        ...pricingContext,
-        ...requestContext,
-      };
-    },
 
     getCalculation: () => calculation,
     getContext: () => context,
 
-    actions: async (pricingContext, requestContext) => {
-      context = await director.buildPricingContext(
-        pricingContext,
-        requestContext
-      );
+    actions: async (pricingContext, requestContext, buildPricingContext) => {
+      const context = await buildPricingContext(pricingContext, requestContext);
 
       return {
         calculate: async () => {
-          const Adapters = baseDirector
-            .getAdapters()
-            .filter(async (Adapter) => await Adapter.isActivatedFor(context));
+          const Adapters = baseDirector.getAdapters({
+            adapterFilter: async (Adapter) => {
+              console.log('ADAPTER CONTEXT', context.order);
+              return await Adapter.isActivatedFor(context);
+            },
+          });
 
           calculation = await Adapters.reduce(
             async (previousPromise, Adapter) => {
@@ -66,10 +58,10 @@ export const BasePricingDirector = <
                 context.discounts.map(async (discount) => ({
                   discountId: discount._id,
                   configuration:
-                    await requestContext.modules.orders.discounts.configurationForPricingAdapterKey(
+                    await context.modules.orders.discounts.configurationForPricingAdapterKey(
                       discount,
                       Adapter.key,
-                      requestContext
+                      context
                     ),
                 }))
               );

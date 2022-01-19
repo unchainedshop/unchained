@@ -34,17 +34,15 @@ export interface ProductPricingAdapterContext extends BasePricingAdapterContext 
   user: User;
 }
 
-export type ProductPricingContext =
-  | {
-      country?: string;
-      currency?: string;
-      discounts?: Array<OrderDiscount>;
-      order?: Order;
-      product?: Product;
-      quantity?: number;
-      user?: User;
-    }
-  | { item: OrderPosition };
+export type ProductPricingContext = {
+  country?: string;
+  currency?: string;
+  discounts?: Array<OrderDiscount>;
+  order?: Order;
+  product?: Product;
+  quantity?: number;
+  user?: User;
+};
 
 export interface IProductPricingSheet
   extends IPricingSheet<ProductPricingCalculation> {

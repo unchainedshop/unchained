@@ -9,11 +9,7 @@ const OrderDeliveryMap = {
 };
 
 export const OrderDelivery = {
-  __resolveType: async (
-    obj: OrderDeliveryType,
-    _: never,
-    { modules }: Context
-  ) => {
+  __resolveType: async (obj: OrderDeliveryType, { modules }: Context) => {
     const provider = await modules.delivery.findProvider({
       deliveryProviderId: obj.deliveryProviderId,
     });

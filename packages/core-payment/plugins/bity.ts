@@ -10,7 +10,6 @@ import { IPaymentAdapter } from '@unchainedshop/types/payments';
 import { OrderPricingSheet } from 'meteor/unchained:core-orders';
 /* @ts-ignore */
 import bodyParser from 'body-parser';
-/* @ts-ignore */
 import {
   acl,
   roles,
@@ -309,14 +308,17 @@ const Bity: IPaymentAdapter = {
         );
 
         const { orderPayment } = params.context;
-        // TODO use modules
-        /* @ts-ignore */
-        const order = orderPayment.order();
-        const pricing = new OrderPricingSheet({
+
+        const order = await params.context.modules.orders.findOrder({
+          orderId: orderPayment.orderId,
+        });
+        const pricing = OrderPricingSheet({
           calculation: order.calculation,
           currency: order.currency,
         });
-        const totalAmount = Math.round(pricing?.total().amount / 10 || 0) * 10;
+        const totalAmount =
+          Math.round(pricing?.total({ useNetPrice: false }).amount / 10 || 0) *
+          10;
 
         const payload = await estimateBityOrder(
           {
@@ -348,11 +350,16 @@ const Bity: IPaymentAdapter = {
         const { order } = params.context;
         const { bityPayload, bitySignature } = order?.context || {};
 
-        const pricing = new OrderPricingSheet({
+        const pricing = OrderPricingSheet({
           calculation: order.calculation,
           currency: order.currency,
         });
-        const totalAmount = Math.round(pricing?.total().amount / 10 || 0) * 10;
+        const totalAmount =
+          Math.round(
+            pricing?.total({
+              useNetPrice: false,
+            }).amount / 10 || 0
+          ) * 10;
 
         const signature = signPayload(
           JSON.stringify(bityPayload),
@@ -404,13 +411,15 @@ const Bity: IPaymentAdapter = {
           );
           throw new Error('Bity Order not Found');
         }
-        // TODO: check once module is implemented
-        params.context.modules.orders.update(
-          { _id: order._id },
+
+        await params.context.modules.orders.updateContext(
+          order._id,
           {
-            $set: { 'context.bityOrder': bityOrder },
-          }
+            bityOrder: bityOrder,
+          },
+          params.context
         );
+
         return false;
       },
     };

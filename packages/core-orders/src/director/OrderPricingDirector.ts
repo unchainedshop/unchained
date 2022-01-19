@@ -53,10 +53,18 @@ export const OrderPricingDirector: IOrderPricingDirector = {
     };
   },
 
+  actions: async (pricingContext, requestContext) => {
+    return await baseDirector.actions(
+      pricingContext,
+      requestContext,
+      OrderPricingDirector.buildPricingContext
+    );
+  },
+
   resultSheet() {
     const pricingSheet = OrderPricingSheet({
       calculation: baseDirector.getCalculation(),
-      currency: baseDirector.getContext().order.currency,
+      currency: baseDirector.getContext().currency,
     });
 
     return pricingSheet;

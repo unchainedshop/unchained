@@ -18,16 +18,20 @@ const OrderItems: IOrderPricingAdapter = {
 
   actions: (params) => {
     const pricingAdapter = OrderPricingAdapter.actions(params);
+    const { order, orderPositions, modules } = params.context;
+
     return {
       ...pricingAdapter,
 
       calculate: async () => {
         // just sum up all products items prices, taxes & fees
-        const totalAndTaxesOfAllItems = params.context.orderPositions.reduce(
+        const totalAndTaxesOfAllItems = orderPositions.reduce(
           (current, orderPosition) => {
-            // TODO: use module
-            // @ts-ignore */
-            const pricing = orderPosition.pricing();
+            const pricing = modules.orders.positions.pricingSheet(
+              orderPosition,
+              order.currency,
+              params.context
+            );
             const tax = pricing.taxSum();
             const items = pricing.gross();
             return {
