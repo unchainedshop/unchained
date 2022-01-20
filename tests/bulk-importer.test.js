@@ -253,7 +253,7 @@ describe('Bulk Importer', () => {
   });
 
   describe('Import Filters', () => {
-    it('adds 1 CREATE and 1 UPDATE event', async () => {
+    it.only('adds 1 CREATE and 1 UPDATE event', async () => {
       const { data: { addWork } = {} } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation addWork($input: JSON) {

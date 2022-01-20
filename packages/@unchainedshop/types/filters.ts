@@ -63,23 +63,6 @@ export type SearchQuery = Query & {
   queryString?: string;
 };
 
-type LoadedFilterOption = {
-  filteredProducts: number; // @deprecated: Reason: "Renamed, use the filteredProductsCount field"
-  filteredProductsCount: number;
-  definition: FilterOption;
-  isSelected?: boolean;
-};
-
-type LoadedFilter = {
-  examinedProducts: number; // @deprecated: Reason: "Renamed, use the productsCount field"
-  productsCount: number;
-  filteredProducts: number; // @deprecated: Reason: "Renamed, use the filteredProductsCount field"
-  filteredProductsCount: number;
-  definition: Filter;
-  isSelected?: boolean;
-  options: Array<LoadedFilterOption>;
-};
-
 export type SearchProducts = {
   totalProducts: () => Promise<number>; // @deprecated: Reason: "Renamed, use the productsCount field"
   productsCount: () => Promise<number>;
@@ -115,6 +98,8 @@ export type FiltersModule = {
   ) => Promise<Array<Filter>>;
 
   filterExists: (params: { filterId: string }) => Promise<boolean>;
+
+  invalidateCache: (query: Query, requestContext: Context) => Promise<void>;
 
   // Mutations
   create: (

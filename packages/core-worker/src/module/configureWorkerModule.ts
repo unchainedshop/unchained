@@ -102,12 +102,20 @@ export const configureWorkerModule = async ({
 
   const finishWork: WorkerModule['finishWork'] = async (
     workId,
-    { error, finished, result, started, success, worker = UNCHAINED_WORKER_ID },
+    {
+      error,
+      finished = new Date(),
+      result,
+      started = new Date(),
+      success,
+      worker = UNCHAINED_WORKER_ID,
+    },
     userId
   ) => {
     const workBeforeUpdate = await WorkQueue.findOne(
       buildQuerySelector({ workId, status: [WorkStatus.ALLOCATED] })
     );
+
     if (!workBeforeUpdate) return null;
 
     await mutations.update(
@@ -132,7 +140,7 @@ export const configureWorkerModule = async ({
       work,
     });
 
-    WorkerDirector.emit(WorkerEventTypes.FINISHED, { work, userId });
+    WorkerDirector.events.emit(WorkerEventTypes.FINISHED, { work, userId });
 
     return work;
   };
@@ -153,7 +161,8 @@ export const configureWorkerModule = async ({
     },
 
     findWorkQueue: async ({ limit, skip, ...selectorOptions }) => {
-      const workQueues = WorkQueue.find(buildQuerySelector(selectorOptions), {
+      const selector = buildQuerySelector(selectorOptions);
+      const workQueues = WorkQueue.find(selector, {
         skip,
         limit,
         sort: defaultSort,
@@ -225,7 +234,7 @@ export const configureWorkerModule = async ({
 
       const work = await WorkQueue.findOne(generateDbFilterById(workId));
 
-      WorkerDirector.emit(WorkerEventTypes.ADDED, { work, userId });
+      WorkerDirector.events.emit(WorkerEventTypes.ADDED, { work, userId });
 
       return work;
     },
@@ -241,16 +250,17 @@ export const configureWorkerModule = async ({
         worker: { $in: [null, worker] },
         ...(types ? { type: { $in: types } } : {}),
       });
-      const result = await /* @ts-ignore */
-      (Work.findOneAndUpdate(
+      const result = await WorkQueue.findOneAndUpdate(
         query,
         {
           $set: { started: new Date(), worker },
         },
-        { sort: defaultSort, returnNewDocument: true }
-      ) as Promise<ModifyResult<Work>>);
+        { sort: defaultSort, returnDocument: 'after' }
+      );
 
-      WorkerDirector.emit(WorkerEventTypes.ALLOCATED, { work: result.value });
+      WorkerDirector.events.emit(WorkerEventTypes.ALLOCATED, {
+        work: result.value,
+      });
 
       return result.value;
     },
@@ -301,7 +311,7 @@ export const configureWorkerModule = async ({
             `WorkerDirector -> Work added again (ensure) ${type} ${scheduled} ${retries}`
           );
 
-          WorkerDirector.emit(WorkerEventTypes.ADDED, {
+          WorkerDirector.events.emit(WorkerEventTypes.ADDED, {
             work: result.value,
           });
         }
@@ -330,7 +340,7 @@ export const configureWorkerModule = async ({
 
       const work = await WorkQueue.findOne(generateDbFilterById(workId));
 
-      WorkerDirector.emit(WorkerEventTypes.DELETED, { work, userId });
+      WorkerDirector.events.emit(WorkerEventTypes.DELETED, { work, userId });
 
       return work;
     },
@@ -350,7 +360,7 @@ export const configureWorkerModule = async ({
         workQueue.map(
           async ({ _id }) =>
             await finishWork(
-              typeof _id === 'string' ? _id : _id.toHexString(),
+              _id,
               {
                 finished: new Date(),
                 result: null,

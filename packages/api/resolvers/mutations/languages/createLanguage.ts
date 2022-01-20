@@ -9,8 +9,13 @@ export default async function createLanguage(
 ) {
   log('mutation createLanguage', { userId });
 
-  return await modules.languages.create({
-    ...language,
-    authorId: userId,
-  }, userId);
+  const languageId = await modules.languages.create(
+    {
+      ...language,
+      authorId: userId,
+    },
+    userId
+  );
+
+  return await modules.languages.findLanguage({ languageId });
 }

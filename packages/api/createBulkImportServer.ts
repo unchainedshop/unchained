@@ -11,7 +11,7 @@ const { BULK_IMPORT_API_PATH = '/bulk-import' } = process.env;
 const bulkImportMiddleware = async (req, res) => {
   try {
     const resolvedContext = req.unchainedContext as Context;
-    await checkAction((actions as any).bulkImport, resolvedContext);
+    await checkAction(resolvedContext, (actions as any).bulkImport);
 
     const date = new Date().toISOString();
     if (req.method === 'POST') {

@@ -8,8 +8,13 @@ export default async function createCurrency(
   { userId, modules }: Context
 ) {
   log('mutation createCurrency', { userId });
-  return await modules.currencies.create({
-    ...currency,
-    authorId: userId,
-  }, userId);
+  const currencyId = await modules.currencies.create(
+    {
+      ...currency,
+      authorId: userId,
+    },
+    userId
+  );
+
+  return await modules.currencies.findCurrency({ currencyId });
 }

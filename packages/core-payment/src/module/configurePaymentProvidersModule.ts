@@ -116,16 +116,16 @@ export const configurePaymentProvidersModule = (
     },
 
     findSupported: async ({ order }, requestContext) => {
-      const providers = await PaymentProviders.find({}).filter(
-        (provider: PaymentProvider) => {
+      const providers = await PaymentProviders.find({})
+        .filter((provider: PaymentProvider) => {
           const director = PaymentDirector.actions(
             provider,
             getDefaultContext(order),
             requestContext
           );
           return director.isActive();
-        }
-      ).toArray();
+        })
+        .toArray();
 
       return paymentProviderSettings.filterSupportedProviders({
         providers,
@@ -169,7 +169,7 @@ export const configurePaymentProvidersModule = (
         paymentContext,
         requestContext
       );
-      
+
       return adapter.isPayLaterAllowed();
     },
 
@@ -216,7 +216,6 @@ export const configurePaymentProvidersModule = (
 
       const paymentProviderId = await mutations.create(
         {
-          created: new Date(),
           configuration: Adapter.initialConfiguration,
           ...doc,
         },
@@ -227,27 +226,29 @@ export const configurePaymentProvidersModule = (
         generateDbFilterById(paymentProviderId)
       );
       emit('PAYMENT_PROVIDER_CREATE', { paymentProvider });
-      return paymentProviderId;
+
+      return paymentProvider;
     },
 
     update: async (_id: string, doc: PaymentProvider, userId: string) => {
-      const paymentProviderId = await mutations.update(_id, doc, userId);
+      await mutations.update(_id, doc, userId);
       const paymentProvider = await PaymentProviders.findOne(
         generateDbFilterById(_id)
       );
       emit('PAYMENT_PROVIDER_UPDATE', { paymentProvider });
 
-      return paymentProviderId;
+      return paymentProvider;
     },
 
     delete: async (_id, userId) => {
-      const deletedCount = await mutations.delete(_id, userId);
+      await mutations.delete(_id, userId);
       const paymentProvider = PaymentProviders.findOne(
         generateDbFilterById(_id)
       );
 
       emit('PAYMENT_PROVIDER_REMOVE', { paymentProvider });
-      return deletedCount;
+
+      return paymentProvider;
     },
   };
 };

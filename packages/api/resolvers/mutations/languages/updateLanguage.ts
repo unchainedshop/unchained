@@ -9,7 +9,9 @@ export default async function updateLanguage(
   { userId, modules }: Context
 ) {
   log(`mutation updateLanguage ${languageId}`, { userId });
+
   if (!languageId) throw new InvalidIdError({ languageId });
+
   if (!(await modules.languages.languageExists({ languageId })))
     throw new LanguageNotFoundError({ languageId });
 

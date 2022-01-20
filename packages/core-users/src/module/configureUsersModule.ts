@@ -1,5 +1,9 @@
 import { Locale } from 'locale';
-import { ModuleInput, ModuleMutations, Query } from '@unchainedshop/types/common';
+import {
+  ModuleInput,
+  ModuleMutations,
+  Query,
+} from '@unchainedshop/types/common';
 import { User, UserQuery, UsersModule } from '@unchainedshop/types/user';
 import { log } from 'meteor/unchained:logger';
 import {
@@ -50,15 +54,21 @@ export const configureUsersModule = async ({
 
     findUser: async ({ userId, resetToken, hashedToken }, options) => {
       if (hashedToken) {
-        return await Users.findOne({
-          'services.resume.loginTokens.hashedToken': hashedToken,
-        }, options);
+        return await Users.findOne(
+          {
+            'services.resume.loginTokens.hashedToken': hashedToken,
+          },
+          options
+        );
       }
 
       if (resetToken) {
-        return await Users.findOne({
-          'services.password.reset.token': resetToken,
-        }, options);
+        return await Users.findOne(
+          {
+            'services.password.reset.token': resetToken,
+          },
+          options
+        );
       }
 
       return await Users.findOne(generateDbFilterById(userId), options);
@@ -80,9 +90,8 @@ export const configureUsersModule = async ({
     },
 
     userExists: async ({ userId }) => {
-      const userCount = await Users.find(generateDbFilterById(userId), {
-        limit: 1,
-      }).count();
+      const selector = generateDbFilterById(userId);
+      const userCount = await Users.find(selector, { limit: 1 }).count();
       return !!userCount;
     },
 
@@ -261,6 +270,6 @@ export const configureUsersModule = async ({
 
     updateUser: async (query, modifier, options) => {
       await Users.updateOne(query, modifier, options);
-    }
+    },
   };
 };

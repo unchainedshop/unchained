@@ -1,7 +1,10 @@
 import { ModuleInput } from '@unchainedshop/types/common';
 import { LanguagesModule, Language } from '@unchainedshop/types/languages';
 import { emit, registerEvents } from 'meteor/unchained:events';
-import { generateDbMutations, generateDbFilterById } from 'meteor/unchained:utils';
+import {
+  generateDbMutations,
+  generateDbFilterById,
+} from 'meteor/unchained:utils';
 import { LanguagesCollection } from '../db/LanguagesCollection';
 import { LanguagesSchema } from '../db/LanguagesSchema';
 import { systemLocale } from 'meteor/unchained:utils';
@@ -38,14 +41,11 @@ export const configureLanguagesModule = async ({
     },
 
     findLanguages: async ({ limit, offset, includeInactive }, options) => {
-      const languages = Languages.find(
-        buildFindSelector({ includeInactive }),
-        {
-          skip: offset,
-          limit,
-          ...options,
-        }
-      );
+      const languages = Languages.find(buildFindSelector({ includeInactive }), {
+        skip: offset,
+        limit,
+        ...options,
+      });
       return await languages.toArray();
     },
 
@@ -67,17 +67,31 @@ export const configureLanguagesModule = async ({
     },
 
     create: async (doc: Language, userId?: string) => {
-      const languageId = await mutations.create(doc, userId);
+      const languageId = await mutations.create(
+        {
+          ...doc,
+          isoCode: doc.isoCode.toLowerCase(),
+          isActive: true,
+        },
+        userId
+      );
       emit('LANGUAGE_CREATE', { languageId });
       return languageId;
     },
-    update: async (_id: string, doc: Language, userId?: string) => {
-      const languageId = await mutations.update(_id, doc, userId);
+    update: async (languageId, doc, userId) => {
+      await mutations.update(
+        languageId,
+        {
+          ...doc,
+          isoCode: doc.isoCode.toLowerCase(),
+        },
+        userId
+      );
       emit('LANGUAGE_UPDATE', { languageId });
       return languageId;
     },
-    delete: async (languageId) => {
-      const deletedCount = await mutations.delete(languageId);
+    delete: async (languageId, userId) => {
+      const deletedCount = await mutations.delete(languageId, userId);
       emit('LANGUAGE_REMOVE', { languageId });
       return deletedCount;
     },

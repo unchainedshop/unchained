@@ -80,7 +80,14 @@ export const configureCountriesModule = async ({
     },
 
     create: async (doc: Country, userId: string) => {
-      const countryId = await mutations.create(doc, userId);
+      const countryId = await mutations.create(
+        {
+          ...doc,
+          isoCode: doc.isoCode.toUpperCase(),
+          isActive: true,
+        },
+        userId
+      );
       emit('COUNTRY_CREATE', { countryId });
       return countryId;
     },

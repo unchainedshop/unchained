@@ -11,11 +11,10 @@ export default async function updateCurrency(
   log(`mutation updateCurrency ${currencyId}`, { userId });
   if (!currencyId) throw new InvalidIdError({ currencyId });
 
-  const currencyExists = await modules.currencies.currencyExists({
-    currencyId,
-  });
-  if (!currencyExists) throw new CurrencyNotFoundError({ currencyId });
+  if (!(await modules.currencies.currencyExists({ currencyId })))
+    throw new CurrencyNotFoundError({ currencyId });
 
   await modules.currencies.update(currencyId, currency, userId);
+
   return modules.currencies.findCurrency({ currencyId });
 }

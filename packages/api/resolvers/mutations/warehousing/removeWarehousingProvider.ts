@@ -23,7 +23,5 @@ export default async function removeWarehousingProvider(
   if (!provider)
     throw new WarehousingProviderNotFoundError({ warehousingProviderId });
 
-  await modules.warehousing.delete(warehousingProviderId, userId);
-
-  return provider;
+  return await modules.warehousing.delete(warehousingProviderId, userId);
 }

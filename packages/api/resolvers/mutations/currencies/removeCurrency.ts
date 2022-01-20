@@ -8,10 +8,13 @@ export default async function removeCurrency(
   { userId, modules }: Context
 ) {
   log(`mutation removeCurrency ${currencyId}`, { userId });
+
   if (!currencyId) throw new InvalidIdError({ currencyId });
-  const currency = await modules.currencies.findCurrency({ currencyId });
-  if (!currency) throw new CurrencyNotFoundError({ currencyId });
+
+  if (!(await modules.currencies.currencyExists({ currencyId })))
+    throw new CurrencyNotFoundError({ currencyId });
 
   await modules.currencies.delete(currencyId, userId);
-  return currency;
+  
+  return await modules.currencies.findCurrency({ currencyId });
 }

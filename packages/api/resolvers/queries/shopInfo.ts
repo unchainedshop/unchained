@@ -1,15 +1,18 @@
-import { Root } from '@unchainedshop/types/api';
+import { Context, Root } from '@unchainedshop/types/api';
 import { log } from 'meteor/unchained:logger';
 import type { UnchainedServerContext } from '../../api';
 
-export default async function shopInfo(
+export default function shopInfo(
   root: Root,
   _: never,
-  context: UnchainedServerContext
-): { version: string; externalLinks: any[] } {
+  context: Context
+): { version?: string; externalLinks: Array<string> } {
   log('query shopInfo', { userId: context.userId });
+
   return {
     version: context.version,
     externalLinks: JSON.parse(process.env.EXTERNAL_LINKS || '[]'),
   };
 }
+
+//

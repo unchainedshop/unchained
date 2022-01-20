@@ -4,6 +4,7 @@ import {
   IBaseAdapter,
   IBaseDirector,
   ModuleMutations,
+  ModuleMutationsWithReturnDoc,
   Query,
   TimestampFields,
   _ID,
@@ -15,6 +16,7 @@ import {
   PaymentPricingContext,
   PaymentPricingCalculation,
 } from './payments.pricing';
+import { UpdateFilter } from 'mongodb';
 
 export enum PaymentProviderType {
   CARD = 'CARD',
@@ -122,7 +124,7 @@ export type PaymentModule = {
    * Payment Providers Module
    */
 
-  paymentProviders: ModuleMutations<PaymentProvider> & {
+  paymentProviders: ModuleMutationsWithReturnDoc<PaymentProvider> & {
     // Queries
     count: (query: PaymentProviderQuery) => Promise<number>;
     findProvider: (

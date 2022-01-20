@@ -4,15 +4,17 @@ import { Language } from '@unchainedshop/types/languages';
 import { checkAction } from '../../acl';
 import { allRoles, actions } from '../../roles';
 
+type HelperType<T> = (
+  root: never,
+  params: never,
+  context: Context
+) => Promise<T>;
+
 interface ShopHelperTypes {
   _id: () => string;
-  country: (root: never, params: never, context: Context) => Promise<Country>;
-  language: (root: never, params: never, context: Context) => Promise<Language>;
-  userRoles: (
-    root: never,
-    params: never,
-    context: Context
-  ) => Promise<Array<string>>;
+  country: HelperType<Country>;
+  language: HelperType<Language>;
+  userRoles: HelperType<Array<string>>;
 }
 
 export const Shop: ShopHelperTypes = {
@@ -20,15 +22,15 @@ export const Shop: ShopHelperTypes = {
     return 'root';
   },
 
-  async language(_root, _params, { localeContext, modules }) {
+  language: async (_root, _params, { localeContext, modules }) => {
     return modules.languages.findLanguage({ isoCode: localeContext.language });
   },
-  async country(_root, _params, { countryContext, modules }) {
+  country: async (_root, _params, { countryContext, modules }) => {
     return modules.countries.findCountry({ isoCode: countryContext });
   },
 
-  async userRoles(_root, _params, context) {
-    await checkAction((actions as any).manageUsers, context);
+  userRoles: async (_root, _params, context) => {
+    await checkAction(context, (actions as any).manageUsers);
     return Object.values(allRoles)
       .map(({ name }) => name)
       .filter((name) => name.substring(0, 2) !== '__');

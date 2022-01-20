@@ -79,12 +79,21 @@ export const User: UserHelperTypes = {
   ),
   lastContact: checkTypeResolver(viewUserPrivateInfos, 'lastContact'),
   lastLogin: checkTypeResolver(viewUserPrivateInfos, 'lastLogin'),
-  name: checkTypeResolver(viewUserPublicInfos, 'name'),
   profile: checkTypeResolver(viewUserPrivateInfos, 'profile'),
   roles: checkTypeResolver(viewUserPrivateInfos, 'roles'),
   tags: checkTypeResolver(viewUserPrivateInfos, 'tags'),
   username: checkTypeResolver(viewUserPrivateInfos, 'username'),
 
+  name: async (user, params, context) => {
+    await checkAction(context, viewUserPublicInfos, [user, params]);
+
+    const { profile } = user;
+    if (profile && profile.displayName && profile.displayName !== '')
+      return profile.displayName;
+
+    const primaryEmail = getPrimaryEmail(user);
+    return primaryEmail?.address || user._id;
+  },
   primaryEmail: async (user, params, context) => {
     await checkAction(context, viewUserPrivateInfos, [user, params]);
     return getPrimaryEmail(user);

@@ -1,20 +1,36 @@
 import { MongoInternals } from 'meteor/mongo';
-import { Assortments } from 'meteor/unchained:core-assortments';
-import { Filters } from 'meteor/unchained:core-filters';
 import * as AssortmentHandlers from './handlers/assortment';
-import * as ProductHandlers from './handlers/product';
 import * as FilterHandlers from './handlers/filter';
+import * as ProductHandlers from './handlers/product';
 
 const allowedOperations = ['create', 'remove', 'update'];
 
-const runPrepareAsync = async (entity, operation, event, context) => {
+const runPrepareAsync = async (
+  entity,
+  operation,
+  event,
+  context,
+  requestContext
+) => {
   switch (entity) {
     case 'ASSORTMENT':
-      return AssortmentHandlers[operation]?.(event.payload, context);
+      return AssortmentHandlers[operation]?.(
+        event.payload,
+        context,
+        requestContext
+      );
     case 'PRODUCT':
-      return ProductHandlers[operation]?.(event.payload, context);
+      return ProductHandlers[operation]?.(
+        event.payload,
+        context,
+        requestContext
+      );
     case 'FILTER':
-      return FilterHandlers[operation]?.(event.payload, context);
+      return FilterHandlers[operation]?.(
+        event.payload,
+        context,
+        requestContext
+      );
     default:
       throw new Error(`Entity ${event.entity} unknown`);
   }
@@ -30,7 +46,7 @@ export const createBucket = (bucketName) => {
 
 export const BulkImportPayloads = createBucket('bulk_import_payloads');
 
-export const createBulkImporter = (options) => {
+export const createBulkImporter = (options, requestContext) => {
   const bulkOperations = {};
   const preparationIssues = [];
   const { logger } = options;
@@ -68,7 +84,13 @@ export const createBulkImporter = (options) => {
       });
 
       try {
-        await runPrepareAsync(entity, operation, event, context);
+        await runPrepareAsync(
+          entity,
+          operation,
+          event,
+          context,
+          requestContext
+        );
         logger.verbose(`${operation} ${entity} ${event.payload._id} [SUCCESS]`);
       } catch (e) {
         logger.verbose(
@@ -105,9 +127,9 @@ export const createBulkImporter = (options) => {
       logger.info(`Import finished without errors`);
       return [operationResults, null];
     },
-    async invalidateCaches() {
-      await Assortments.invalidateCache();
-      await Filters.invalidateCache();
+    async invalidateCaches(requestContext) {
+      await requestContext.modules.assortments.invalidateCache();
+      await requestContext.modules.filters.invalidateCache({}, requestContext);
     },
   };
 };

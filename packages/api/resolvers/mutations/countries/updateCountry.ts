@@ -11,9 +11,11 @@ export default async function updateCountry(
   log(`mutation updateCountry ${countryId}`, { userId });
 
   if (!countryId) throw new InvalidIdError({ countryId });
+  
   if (!await modules.countries.countryExists({ countryId }))
     throw new CountryNotFoundError({ countryId });
 
   await modules.countries.update(countryId, country, userId);
+
   return await modules.countries.findCountry({ countryId });
 }

@@ -1,7 +1,4 @@
-import {
-  UnchainedCoreOptions,
-  UnchainedServerOptions,
-} from '@unchainedshop/types/api';
+import { UnchainedCoreOptions } from '@unchainedshop/types/api';
 import { startAPIServer } from 'meteor/unchained:api';
 import { initCore } from 'meteor/unchained:core';
 import { initDb } from 'meteor/unchained:mongodb';
@@ -27,7 +24,7 @@ const {
   UNCHAINED_DISABLE_WORKER = false,
 } = process.env;
 
-const isWorkQueueEnabled = (options) => {
+const checkWorkQueueEnabled = (options: SetupWorkqueueOptions) => {
   if (options?.disableWorker) return false;
   return !UNCHAINED_DISABLE_WORKER;
 };
@@ -61,7 +58,7 @@ export const startPlatform = async (
     coreOptions: {},
   }
 ) => {
-  const workQueueIsEnabled = isWorkQueueEnabled(options);
+  const isWorkQueueEnabled = checkWorkQueueEnabled(options.workQueueOptions);
   const emailInterceptionIsEnabled = isEmailInterceptionEnabled(options);
 
   // Configure database
@@ -77,7 +74,7 @@ export const startPlatform = async (
     options: coreOptions,
   });
 
-  if (workQueueIsEnabled) {
+  if (isWorkQueueEnabled) {
     await runMigrations({ db });
   }
 
@@ -100,7 +97,7 @@ export const startPlatform = async (
   if (emailInterceptionIsEnabled) interceptEmails();
 
   // Setup work queues for scheduled work
-  if (workQueueIsEnabled && options.workQueueOptions) {
+  if (isWorkQueueEnabled) {
     const handlers = setupWorkqueue(options.workQueueOptions, unchainedAPI);
     handlers.forEach((handler) => queueWorkers.push(handler));
     await setupCarts(options.workQueueOptions, unchainedAPI);

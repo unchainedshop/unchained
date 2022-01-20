@@ -33,13 +33,12 @@ export const EventListenerWorker: IWorker<{ workerId: string }> = {
         onFinished = async () => {
           await baseWorkerActions.process({
             maxWorkItemCount: 0,
-
             referenceDate: EventListenerWorker.getFloorDate(),
           });
         };
 
-        WorkerDirector.onEmit(WorkerEventTypes.ADDED, onAdded);
-        WorkerDirector.onEmit(WorkerEventTypes.FINISHED, onFinished);
+        WorkerDirector.events.on(WorkerEventTypes.ADDED, onAdded);
+        WorkerDirector.events.on(WorkerEventTypes.FINISHED, onFinished);
 
         setTimeout(async () => {
           await baseWorkerActions.autorescheduleTypes({
@@ -49,8 +48,8 @@ export const EventListenerWorker: IWorker<{ workerId: string }> = {
       },
 
       stop() {
-        WorkerDirector.offEmit(WorkerEventTypes.ADDED, onAdded);
-        WorkerDirector.offEmit(WorkerEventTypes.FINISHED, onFinished);
+        WorkerDirector.events.off(WorkerEventTypes.ADDED, onAdded);
+        WorkerDirector.events.off(WorkerEventTypes.FINISHED, onFinished);
       },
     };
   },

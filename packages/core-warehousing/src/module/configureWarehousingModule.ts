@@ -90,7 +90,7 @@ export const configureWarehousingModule = async ({
 
     findInterfaces: ({ type }) => {
       return WarehousingDirector.getAdapters({
-        adapterFilter: (Adapter) => Adapter.typeSupported(type),
+        adapterFilter: async (Adapter) => Adapter.typeSupported(type),
       }).map((Adapter) => ({
         _id: Adapter.key,
         label: Adapter.label,
@@ -169,14 +169,15 @@ export const configureWarehousingModule = async ({
       return warehousingProviderId;
     },
 
-    delete: async (_id, userId) => {
-      const deletedCount = await mutations.delete(_id, userId);
+    delete: async (providerId, userId) => {
+      await mutations.delete(providerId, userId);
       const warehousingProvider = WarehousingProviders.findOne(
-        generateDbFilterById(_id)
+        generateDbFilterById(providerId)
       );
 
       emit('WAREHOUSING_PROVIDER_REMOVE', { warehousingProvider });
-      return deletedCount;
+      
+      return warehousingProvider;
     },
   };
 };

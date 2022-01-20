@@ -14,6 +14,7 @@ export const generateDbMutations = <T extends { _id?: _ID }>(
   schema: SimpleSchema,
   options?: {
     hasCreateOnly?: boolean;
+    shouldReturnDocument?: boolean;
   }
 ): ModuleMutations<T> | ModuleCreateMutation<T> => {
   if (!collection) throw new Error('Collection is missing');
@@ -29,6 +30,7 @@ export const generateDbMutations = <T extends { _id?: _ID }>(
       values._id = generateDbObjectId();
 
       const result = await collection.insertOne(values);
+      /* @ts-ignore */
       return result.insertedId as string;
     },
 
@@ -37,7 +39,8 @@ export const generateDbMutations = <T extends { _id?: _ID }>(
       : async (_id, doc, userId) => {
           checkId(_id);
 
-          let modifier;
+          let modifier: any;
+          /* @ts-ignore */
           if (doc.$set) {
             const values = schema.clean(doc, { isModifier: true });
             modifier = values;
@@ -52,9 +55,8 @@ export const generateDbMutations = <T extends { _id?: _ID }>(
           }
 
           schema.validate(modifier, { modifier: true });
-          const filter = generateDbFilterById(_id);
-          filter.deleted = null;
-          const result = await collection.updateOne(filter, modifier);
+          const filter = generateDbFilterById(_id, { deleted: null });
+          await collection.updateOne(filter, modifier);
 
           return _id;
         },
@@ -63,12 +65,9 @@ export const generateDbMutations = <T extends { _id?: _ID }>(
       ? undefined
       : async (_id, userId) => {
           checkId(_id);
-          const filter = generateDbFilterById(_id);
-          filter.deleted = null;
-          const values = schema.clean(
-            { $set: { deleted: new Date(), deletedBy: userId } },
-            { isModifier: true }
-          );
+          const filter = generateDbFilterById(_id, { delete: null });
+          const modifier = { $set: { deleted: new Date(), deletedBy: userId } };
+          const values = schema.clean(modifier, { isModifier: true });
 
           const result = await collection.updateOne(filter, values);
 

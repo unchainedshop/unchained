@@ -44,7 +44,7 @@ export type Indexes<T extends Document> = Array<{
 
 export interface ModuleInput<Options extends {}> {
   db: Db;
-  options?: Options
+  options?: Options;
 }
 
 export interface ModuleCreateMutation<T> {
@@ -54,10 +54,20 @@ export interface ModuleCreateMutation<T> {
 export interface ModuleMutations<T> extends ModuleCreateMutation<T> {
   update: (
     _id: string,
-    doc: UpdateFilter<T>,
+    doc: UpdateFilter<T> | T,
     userId?: string
   ) => Promise<string>;
   delete: (_id: string, userId?: string) => Promise<number>;
+}
+
+export interface ModuleMutationsWithReturnDoc<T> {
+  create: (doc: T, userId?: string) => Promise<T>
+  update: (
+    _id: _ID,
+    doc: UpdateFilter<T> | T,
+    userId?: string
+  ) => Promise<T>;
+  delete: (_id: _ID, userId?: string) => Promise<T>;
 }
 
 /*

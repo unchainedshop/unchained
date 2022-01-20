@@ -177,27 +177,28 @@ export const configureDeliveryModule = async ({
 
       emit('DELIVERY_PROVIDER_CREATE', { deliveryProvider });
 
-      return deliveryProviderId;
+      return deliveryProvider;
     },
 
     update: async (_id: string, doc: DeliveryProvider, userId: string) => {
-      const deliveryProviderId = await mutations.update(_id, doc, userId);
+      await mutations.update(_id, doc, userId);
       const deliveryProvider = await DeliveryProviders.findOne(
         generateDbFilterById(_id)
       );
       emit('DELIVERY_PROVIDER_UPDATE', { deliveryProvider });
 
-      return deliveryProviderId;
+      return deliveryProvider;
     },
 
     delete: async (_id, userId) => {
-      const deletedCount = await mutations.delete(_id, userId);
-      const deliveryProvider = DeliveryProviders.findOne(
+      await mutations.delete(_id, userId);
+      const deliveryProvider = await DeliveryProviders.findOne(
         generateDbFilterById(_id)
       );
 
       emit('DELIVERY_PROVIDER_REMOVE', { deliveryProvider });
-      return deletedCount;
+
+      return deliveryProvider;
     },
   };
 };

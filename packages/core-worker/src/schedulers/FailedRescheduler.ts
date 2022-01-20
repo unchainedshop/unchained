@@ -52,11 +52,14 @@ export const FailedRescheduler: IScheduler = {
 
     return {
       start() {
-        WorkerDirector.onEmit(WorkerEventTypes.FINISHED, handleFinishedWork);
+        WorkerDirector.events.on(WorkerEventTypes.FINISHED, handleFinishedWork);
       },
 
       stop() {
-        WorkerDirector.offEmit(WorkerEventTypes.FINISHED, handleFinishedWork);
+        WorkerDirector.events.off(
+          WorkerEventTypes.FINISHED,
+          handleFinishedWork
+        );
       },
     };
   },

@@ -116,6 +116,9 @@ export type WarehousingModule = ModuleMutations<WarehousingProvider> & {
     requestContext: Context
   ) => Promise<EstimatedDispatch>;
   isActive: (provider: WarehousingProvider, requestContext: Context) => boolean;
+
+  // Mutations
+  delete: (providerId: string, userId?: string) => Promise<WarehousingProvider>;
 };
 
 type HelperType<P, T> = (

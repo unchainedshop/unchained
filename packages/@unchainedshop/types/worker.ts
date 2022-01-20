@@ -1,3 +1,4 @@
+import { EventEmitter } from 'stream';
 import { Context } from './api';
 import { IBaseAdapter, IBaseDirector, TimestampFields, _ID } from './common';
 
@@ -131,9 +132,10 @@ export type IWorkerDirector = IBaseDirector<IWorkerAdapter<any, any>> & {
   ) => void;
   getAutoSchedules: () => Array<[string, WorkScheduleConfigureation]>;
 
-  emit: (eventName: string, payload: any) => void;
-  onEmit: (eventName: string, payload: any) => void;
-  offEmit: (eventName: string, payload: any) => void;
+  events: EventEmitter
+  // emit: (eventName: string, payload: any) => void;
+  // onEmit: (eventName: string, payload: any) => void;
+  // offEmit: (eventName: string, payload: any) => void;
 
   doWork: (work: Work, requestContext: Context) => Promise<WorkResult<any>>;
 };

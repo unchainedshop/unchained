@@ -17,14 +17,19 @@ export default async function heartbeat(
 ) {
   log(`mutation updateHeartbeat ${remoteAddress}`, { userId });
 
-  if (!(await modules.users.userExists({ userId })))
-    throw new UserNotFoundError({ userId });
+  if (!userId) throw new UserNotFoundError({ userId });
 
-  return await modules.users.updateHeartbeat(userId, {
+  if (!(await modules.users.userExists({ userId }))) {
+    throw new UserNotFoundError({ userId });
+  }
+
+  const user = await modules.users.updateHeartbeat(userId, {
     countryContext,
     locale: localeContext.normalized,
     remoteAddress,
     remotePort,
     userAgent,
   });
+
+  return user;
 }

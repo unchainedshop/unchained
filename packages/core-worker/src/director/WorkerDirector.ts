@@ -22,6 +22,8 @@ const baseDirector = BaseDirector<IWorkerAdapter<any, any>>('WorkerDirector', {
 export const WorkerDirector: IWorkerDirector = {
   ...baseDirector,
 
+  events: new EventEmitter(),
+
   getActivePluginTypes: () => {
     return baseDirector.getAdapters().map((adapter) => adapter.type);
   },
@@ -44,15 +46,12 @@ export const WorkerDirector: IWorkerDirector = {
   },
   getAutoSchedules: () => Array.from(AutoScheduleMap),
 
-  emit: Events.emit,
-  onEmit: Events.on,
-  offEmit: Events.off,
-
   doWork: async ({ type, input }, requestContext: Context) => {
     const adapter = baseDirector.getAdapter(type);
 
-    if (!adapter)
+    if (!adapter) {
       log(`WorkderDirector: No registered adapter for type: ${type}`);
+    }
 
     const output = await adapter
       .doWork(input, requestContext)
@@ -64,12 +63,12 @@ export const WorkerDirector: IWorkerDirector = {
 
         const output = { error, success: false };
 
-        Events.emit(WorkerEventTypes.DONE, { output });
+        WorkerDirector.events.emit(WorkerEventTypes.DONE, { output });
 
         return output;
       });
 
-    Events.emit(WorkerEventTypes.DONE, { output });
+    WorkerDirector.events.emit(WorkerEventTypes.DONE, { output });
 
     return output;
   },

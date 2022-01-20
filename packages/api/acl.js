@@ -31,9 +31,13 @@ const checkAction = async (
   options = emptyObject
 ) => {
   const { key } = options || emptyObject;
+
   const hasPermission = await checkUserHasPermission(context, action, args);
   if (hasPermission) return;
+  
   const keyText = key && key !== '' ? ` in "${key}"` : '';
+
+  console.log('ERROR', context.userId, action, key)
   throw new NoPermissionError({
     userId: context.userId,
     action,

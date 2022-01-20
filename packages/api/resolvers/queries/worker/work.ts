@@ -10,6 +10,6 @@ export default async function work(
   log(`query work ${workId}`, { userId });
 
   if (!workId) throw new InvalidIdError({ workId });
-  
-  return await modules.worker.findWorkQueue({ workQueueId: workId });
+
+  return await modules.worker.findWork({ workId });
 }

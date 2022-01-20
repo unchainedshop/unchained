@@ -209,7 +209,7 @@ describe('Order: Management', () => {
   });
 
   describe('Mutation.deliverOrder', () => {
-    it.only('deliver a confirmed order -> leads to fullfilled', async () => {
+    it('deliver a confirmed order -> leads to fullfilled', async () => {
       const { data: { deliverOrder } = {} } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation deliverOrder($orderId: ID!) {

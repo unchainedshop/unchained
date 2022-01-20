@@ -140,7 +140,7 @@ export const configureOrderDeliveriesModule = ({
     },
 
     markAsDelivered: async (orderDelivery, userId) => {
-      if (orderDelivery.status !== OrderDeliveryStatus.OPEN) return;
+      if (orderDelivery.status !== null /* OrderDeliveryStatus.OPEN */) return;
       const updatedOrderDelivery = await updateStatus(
         orderDelivery._id,
         {

@@ -10,10 +10,11 @@ export default async function removeLanguage(
   log(`mutation removeLanguage ${languageId}`, { userId });
 
   if (!languageId) throw new InvalidIdError({ languageId });
-  const language = await modules.languages.findLanguage({ languageId });
-  if (!language) throw new LanguageNotFoundError({ languageId });
+
+  if (!(await modules.languages.languageExists({ languageId })))
+    throw new LanguageNotFoundError({ languageId });
 
   await modules.languages.delete(languageId, userId);
 
-  return language;
+  return await modules.languages.findLanguage({ languageId });
 }

@@ -8,6 +8,7 @@ import {
   FindOptions,
   IBaseDirector,
   IBaseAdapter,
+  ModuleMutationsWithReturnDoc,
 } from './common';
 import { Order } from './orders';
 import { User } from './user';
@@ -123,7 +124,7 @@ interface DeliveryInterface {
   versin: string;
 }
 
-export type DeliveryModule = ModuleMutations<DeliveryProvider> & {
+export type DeliveryModule = ModuleMutationsWithReturnDoc<DeliveryProvider> & {
   // Queries
   count: (query: DeliveryProviderQuery) => Promise<number>;
   findProvider: (

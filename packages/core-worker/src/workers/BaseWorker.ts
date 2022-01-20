@@ -98,12 +98,14 @@ export const BaseWorker: IWorker<WorkerParams> = {
               work._id,
               {
                 ...output,
+                finished: work.finished || new Date(),
                 started: work.started,
                 worker: workerId,
               },
               '0'
             );
           }
+
           if (doneWork) return processRecursively(recursionCounter + 1);
 
           return null;

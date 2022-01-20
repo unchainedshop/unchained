@@ -16,13 +16,14 @@ export const workerTypeDefs = () => [
 ];
 
 export interface SetupWorkqueueOptions {
-  workerId: string;
-  batchCount: number;
-  schedule: WorkerSchedule;
+  batchCount?: number;
+  disableWorker?: boolean;
+  schedule?: WorkerSchedule;
+  workerId?: string;
 }
 
 export const setupWorkqueue = (
-  { workerId, batchCount, schedule }: SetupWorkqueueOptions,
+  { workerId, batchCount, schedule }: SetupWorkqueueOptions = {},
   unchainedAPI: Context
 ) => {
   const handlers = [

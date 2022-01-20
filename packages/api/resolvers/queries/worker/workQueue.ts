@@ -29,7 +29,7 @@ export default async function workers(
     { userId }
   );
 
-  return await modules.worker.findWorkQueues({
+  return await modules.worker.findWorkQueue({
     status,
     selectTypes,
     created,

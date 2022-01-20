@@ -169,6 +169,7 @@ export const configureOrderModuleProcessing = ({
     isBlockingOrderFullfillment =
       orderDelivery &&
       modules.orders.deliveries.isBlockingOrderFullfillment(orderDelivery);
+
     if (isBlockingOrderFullfillment) return false;
 
     if (order.status === OrderStatus.FULLFILLED) {
@@ -450,11 +451,6 @@ export const configureOrderModuleProcessing = ({
 
             const filteredProductOrderPositions =
               mappedProductOrderPositions.filter((item) => item.product?.plan);
-
-            console.log(
-              'FILTERED PRODUCTS',
-              filteredProductOrderPositions
-            );
 
             if (filteredProductOrderPositions.length > 0) {
               await modules.enrollments.createFromCheckout(

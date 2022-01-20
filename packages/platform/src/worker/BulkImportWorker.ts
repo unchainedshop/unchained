@@ -3,7 +3,10 @@ import { WorkerDirector } from 'meteor/unchained:core-worker';
 import { createLogger } from 'meteor/unchained:logger';
 import { BaseAdapter } from 'meteor/unchained:utils';
 import yj from 'yieldable-json';
-import { BulkImportPayloads, createBulkImporter } from '../bulk-importer/createBulkImporter';
+import {
+  BulkImportPayloads,
+  createBulkImporter,
+} from '../bulk-importer/createBulkImporter';
 
 const logger = createLogger('unchained:platform:bulk-import');
 
@@ -37,7 +40,7 @@ export const BulkImportWorker: IWorkerAdapter<any, {}> = {
   version: '1.0',
   type: 'BULK_IMPORT',
 
-  doWork: async (rawPayload) => {
+  doWork: async (rawPayload, requestContext) => {
     try {
       const {
         events,
@@ -46,17 +49,20 @@ export const BulkImportWorker: IWorkerAdapter<any, {}> = {
       } = rawPayload.payloadId ? await unpackPayload(rawPayload) : rawPayload;
 
       if (!events?.length) throw new Error('No events submitted');
-      const bulkImporter = createBulkImporter({
-        logger,
-        authorId,
-        createShouldUpsertIfIDExists,
-      });
+      const bulkImporter = createBulkImporter(
+        {
+          logger,
+          authorId,
+          createShouldUpsertIfIDExists,
+        },
+        requestContext
+      );
       for (let i = 0, len = events.length; i < len; i += 1) {
         // eslint-disable-next-line
         await bulkImporter.prepare(events[i]);
       }
       const [result, error] = await bulkImporter.execute();
-      await bulkImporter.invalidateCaches();
+      await bulkImporter.invalidateCaches(requestContext);
       if (error) {
         return {
           success: false,
@@ -79,7 +85,7 @@ export const BulkImportWorker: IWorkerAdapter<any, {}> = {
         },
       };
     }
-  }
-}
+  },
+};
 
 WorkerDirector.registerAdapter(BulkImportWorker);

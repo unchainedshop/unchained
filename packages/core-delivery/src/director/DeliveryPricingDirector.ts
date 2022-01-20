@@ -76,7 +76,6 @@ export const DeliveryPricingDirector: IDeliveryPricingDirector = {
   },
 
   resultSheet() {
-    console.log('CONTEXT', baseDirector.getContext().currency)
     const pricingSheet = DeliveryPricingSheet({
       calculation: baseDirector.getCalculation(),
       currency: baseDirector.getContext().currency,

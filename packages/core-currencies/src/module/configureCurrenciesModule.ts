@@ -8,13 +8,17 @@ import {
 import { CurrenciesCollection } from '../db/CurrenciesCollection';
 import { CurrenciesSchema } from '../db/CurrenciesSchema';
 
-const CURRENCY_EVENTS: string[] = ['CURRENCY_CREATE', 'CURRENCY_UPDATE', 'CURRENCY_REMOVE'];
+const CURRENCY_EVENTS: string[] = [
+  'CURRENCY_CREATE',
+  'CURRENCY_UPDATE',
+  'CURRENCY_REMOVE',
+];
 
 type FindQuery = {
   includeInactive?: boolean;
 };
 const buildFindSelector = ({ includeInactive = false }: FindQuery) => {
-  const selector: { isActive?: true } = {};
+  const selector: { isActive?: true; deleted: null } = { deleted: null };
   if (!includeInactive) selector.isActive = true;
   return selector;
 };
@@ -26,7 +30,10 @@ export const configureCurrenciesModule = async ({
 
   const Currencies = await CurrenciesCollection(db);
 
-  const mutations = generateDbMutations<Currency>(Currencies, CurrenciesSchema) as ModuleMutations<Currency>;
+  const mutations = generateDbMutations<Currency>(
+    Currencies,
+    CurrenciesSchema
+  ) as ModuleMutations<Currency>;
 
   return {
     findCurrency: async ({ currencyId, isoCode }) => {
@@ -60,12 +67,22 @@ export const configureCurrenciesModule = async ({
     },
 
     create: async (doc: Currency, userId: string) => {
-      const currencyId = await mutations.create(doc, userId);
+      const currencyId = await mutations.create(
+        { ...doc, isoCode: doc.isoCode.toUpperCase(), isActive: true },
+        userId
+      );
       emit('CURRENCY_CREATE', { currencyId });
       return currencyId;
     },
     update: async (_id: string, doc: Partial<Currency>, userId: string) => {
-      const currencyId = await mutations.update(_id, { $set: doc }, userId);
+      const currencyId = await mutations.update(
+        _id,
+        {
+          ...doc,
+          isoCode: doc.isoCode.toUpperCase(),
+        },
+        userId
+      );
       emit('CURRENCY_UPDATE', { currencyId });
       return currencyId;
     },

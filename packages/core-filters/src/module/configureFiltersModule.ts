@@ -181,6 +181,8 @@ export const configureFiltersModule = async ({
     filter: Filter,
     requestContext: Context
   ) => {
+    if (!filter) return
+    
     log(`Filters: Rebuilding ${filter.key}`, { level: LogLevel.Verbose });
 
     const { productIds, allProductIds } = await buildProductIdMap(
@@ -219,9 +221,9 @@ export const configureFiltersModule = async ({
 
     const filters = await Filters.find(selector || {}).toArray();
 
-    filters.forEach((filter) => {
-      invalidateProductIdCache(filter, requestContext);
-    });
+    await Promise.all(
+      filters.map(async (filter) => await invalidateProductIdCache(filter, requestContext))
+    );
   };
 
   const filterSearch = configureFilterSearchModule({
@@ -271,6 +273,8 @@ export const configureFiltersModule = async ({
       }).count();
       return !!filterCount;
     },
+
+    invalidateCache,
 
     // Mutations
     create: async (
