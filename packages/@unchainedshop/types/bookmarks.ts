@@ -39,7 +39,7 @@ export type MigrateBookmarksService = (
   params: {
     fromUserId: string;
     toUserId: string;
-    shouldMergeBookmarks: () => void;
+    shouldMergeBookmarks: boolean;
   },
   context: Context
 ) => Promise<void>;

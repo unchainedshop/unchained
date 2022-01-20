@@ -258,5 +258,9 @@ export const configureUsersModule = async ({
 
       return await Users.findOne(userFilter);
     },
+
+    updateUser: async (query, modifier, options) => {
+      await Users.updateOne(query, modifier, options);
+    }
   };
 };

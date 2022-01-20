@@ -1,4 +1,5 @@
 export { configureOrdersModule } from './module/configureOrdersModule';
+export { orderServices } from './service/orderServices';
 
 export { OrderStatus } from './db/OrderStatus';
 export { OrderDeliveryStatus } from './db/OrderDeliveryStatus';

@@ -9,7 +9,7 @@ import {
 import { accountsPassword } from '../accounts/accounts-password';
 import { accountsServer } from '../accounts/accounts-server';
 import { dbManager } from '../accounts/db-manager';
-import hashPassword from './utils/hashPassword';
+import { hashPassword } from './utils/hashPassword';
 import { accountsSettings } from '../accounts-settings';
 
 export const configureAccountsModule = async ({

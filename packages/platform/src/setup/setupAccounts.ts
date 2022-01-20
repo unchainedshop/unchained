@@ -9,9 +9,6 @@ import {
 import { Schemas } from 'meteor/unchained:utils';
 import moniker from 'moniker';
 
-// TODO: Check with Pascal
-// accountsServer.users = Users;
-
 export interface SetupAccountsOptions {
   autoMessagingAfterUserCreation?: boolean;
   mergeUserCartsOnLogin?: boolean;
@@ -30,6 +27,8 @@ export const setupAccounts = (
     customSchema.validate(user);
     return customSchema.clean(user);
   };
+
+  accountsServer.users = unchainedAPI.modules.users;
 
   accountsServer.services.guest = {
     async authenticate(params: { email?: string | null }) {
@@ -61,8 +60,14 @@ export const setupAccounts = (
       remotePort,
       userAgent,
       normalizedLocale,
-      services,
     } = connection;
+
+    const userId = connection.userId || unchainedAPI.userId;
+    const context = {
+      ...unchainedAPI,
+      userId,
+      user,
+    };
 
     await unchainedAPI.modules.users.updateHeartbeat(user._id, {
       remoteAddress,
@@ -80,16 +85,16 @@ export const setupAccounts = (
           countryContext,
           shouldMergeCarts: options.mergeUserCartsOnLogin,
         },
-        unchainedAPI
+        context
       );
 
-      await services.bookmark.migrateBookmarks(
+      await unchainedAPI.services.bookmarks.migrateBookmarks(
         {
           fromUserId: userIdBeforeLogin,
           toUserId: user._id,
-          mergeBookmarks: options.mergeUserCartsOnLogin,
+          shouldMergeBookmarks: options.mergeUserCartsOnLogin,
         },
-        connection
+        context
       );
     }
 
@@ -98,7 +103,7 @@ export const setupAccounts = (
         user,
         countryContext,
       },
-      unchainedAPI as Context
+      context
     );
   });
 

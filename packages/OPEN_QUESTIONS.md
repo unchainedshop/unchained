@@ -120,8 +120,6 @@ What happens if the first one passes and the second not?
 
 15. In roles/loggedIn there is a check for the ProductReviews userId but there is no userId on the ProductsReview schema. What is the right check here? (AuthorId or add a userId)?
 
-16. Platform: setup-accounts file: The users collection is attached to the accountsServer instance like this `accountsServer.users = Users` What is it used for and where?
-
 17. Npm package: later is deprecated and should be replaced with https://www.npmjs.com/package/@breejs/later
 
 18. BaseWorker: line 61: Does that work wiht [0]? As far as I could see in the code the schedules need to be strings. But well, it is not really clear to me how this later works...

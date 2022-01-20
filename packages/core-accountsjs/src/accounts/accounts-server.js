@@ -36,7 +36,7 @@ export class UnchainedAccountsServer extends AccountsServer {
   LOGIN_UNEXPIRING_TOKEN_DAYS = 365 * 100;
 
   destroyToken = async (userId, loginToken) => {
-    this.users.update(
+    await this.users.updateUser(
       { _id: userId },
       {
         $pull: {
@@ -51,7 +51,7 @@ export class UnchainedAccountsServer extends AccountsServer {
   async removeExpiredTokens(userId) {
     const tokenLifetimeMs = this.getTokenLifetimeMs();
     const oldestValidDate = new Date(new Date() - tokenLifetimeMs);
-    await this.users.update(
+    await this.users.updateUser(
       {
         _id: userId,
         $or: [
@@ -107,7 +107,7 @@ export class UnchainedAccountsServer extends AccountsServer {
     const userId = user._id ? user._id : user;
     const hashedToken = this.hashLoginToken(stampedLoginToken);
     await this.removeExpiredTokens(userId);
-    await this.users.update(
+    await this.users.updateUser(
       { _id: userId }, // can be user object or mere id passed by guest service
       {
         $push: {
@@ -133,7 +133,7 @@ export class UnchainedAccountsServer extends AccountsServer {
     try {
       await this.destroyToken(userId, token);
       this.hooks.emit(ServerHooks.LogoutSuccess, {
-        user: this.users.findOne({ _id: userId }),
+        user: await this.users.findUser({ userId }),
       });
     } catch (error) {
       this.hooks.emit(ServerHooks.LogoutError, error);
