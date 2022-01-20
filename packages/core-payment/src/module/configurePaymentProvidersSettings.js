@@ -16,7 +16,7 @@ export const paymentProviderSettings = {
         'sortProviders is deprecated, please specifc filterSupportedProviders instead'
       );
       this.filterSupportedProviders = ({ providers }) => {
-        return providers.sort(sortProviders).map(({ _id }) => _id);
+        return providers.sort(sortProviders);
       };
     } else {
       this.filterSupportedProviders = filterSupportedProviders;

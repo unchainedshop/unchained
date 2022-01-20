@@ -13,7 +13,6 @@ import { log } from 'meteor/unchained:logger';
 import {
   generateDbFilterById,
   generateDbMutations,
-  objectInvert,
 } from 'meteor/unchained:utils';
 import { OrderDeliveriesSchema } from '../db/OrderDeliveriesSchema';
 import { OrderDeliveryStatus } from '../db/OrderDeliveryStatus';
@@ -87,12 +86,10 @@ export const configureOrderDeliveriesModule = ({
         order.currency
       );
 
-      return pricingSheet
-        .discountPrices(orderDiscount._id)
-        .map((discount) => ({
-          delivery: orderDelivery,
-          ...discount,
-        }));
+      return pricingSheet.discountPrices(orderDiscount._id).map((discount) => ({
+        delivery: orderDelivery,
+        ...discount,
+      }));
     },
 
     isBlockingOrderConfirmation: async (orderDelivery, requestContext) => {
@@ -109,8 +106,11 @@ export const configureOrderDeliveriesModule = ({
       if (orderDelivery.status === OrderDeliveryStatus.DELIVERED) return false;
       return true;
     },
+    
     normalizedStatus: (orderDelivery) => {
-      return objectInvert(OrderDeliveryStatus)[orderDelivery.status || null];
+      return orderDelivery.status === null
+        ? OrderDeliveryStatus.OPEN
+        : (orderDelivery.status as OrderDeliveryStatus);
     },
 
     pricingSheet: (orderDelivery, currency) => {

@@ -5,7 +5,7 @@ let graphqlFetch;
 describe('public queries', () => {
   beforeAll(async () => {
     await setupDatabase();
-    graphqlFetch = await createAnonymousGraphqlFetch();
+    graphqlFetch = createAnonymousGraphqlFetch();
   });
 
   it('products', async () => {

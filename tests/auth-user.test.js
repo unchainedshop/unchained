@@ -8,8 +8,8 @@ let adminGraphqlFetch;
 describe('Auth for logged in users', () => {
   beforeAll(async () => {
     [db] = await setupDatabase();
-    graphqlFetch = await createLoggedInGraphqlFetch(USER_TOKEN);
-    adminGraphqlFetch = await createLoggedInGraphqlFetch(ADMIN_TOKEN);
+    graphqlFetch = createLoggedInGraphqlFetch(USER_TOKEN);
+    adminGraphqlFetch = createLoggedInGraphqlFetch(ADMIN_TOKEN);
   });
 
   describe('Query.me', () => {

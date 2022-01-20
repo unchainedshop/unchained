@@ -1,6 +1,7 @@
 import { Context } from '@unchainedshop/types/api';
 import { Country } from '@unchainedshop/types/countries';
 import { Currency } from '@unchainedshop/types/currencies';
+import { DeliveryProvider } from '@unchainedshop/types/delivery';
 import { Enrollment } from '@unchainedshop/types/enrollments';
 import { File } from '@unchainedshop/types/files';
 import {
@@ -12,14 +13,18 @@ import { OrderDiscount } from '@unchainedshop/types/orders.discounts';
 import { OrderPayment } from '@unchainedshop/types/orders.payments';
 import { OrderPosition } from '@unchainedshop/types/orders.positions';
 import { OrderPrice } from '@unchainedshop/types/orders.pricing';
+import { PaymentProvider } from '@unchainedshop/types/payments';
 import { User } from '@unchainedshop/types/user';
 import crypto from 'crypto';
 
 type HelperType<P, T> = (order: OrderType, params: P, context: Context) => T;
 
 interface OrderHelperTypes {
-  supportedDeliveryProviders: HelperType<never, Promise<Array<string>>>;
-  supportedPaymentProviders: HelperType<never, Promise<Array<string>>>;
+  supportedDeliveryProviders: HelperType<
+    never,
+    Promise<Array<DeliveryProvider>>
+  >;
+  supportedPaymentProviders: HelperType<never, Promise<Array<PaymentProvider>>>;
   currency: HelperType<never, Promise<Currency>>;
   country: HelperType<never, Promise<Country>>;
   discounts: HelperType<never, Promise<Array<OrderDiscount>>>;
@@ -42,8 +47,7 @@ export const Order: OrderHelperTypes = {
       context
     );
 
-    console.log('SUPPORTED PROVIDERS', providers)
-    return providers
+    return providers;
   },
 
   supportedPaymentProviders: async (obj, _, context) => {

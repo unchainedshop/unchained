@@ -9,5 +9,5 @@ export default async function warehousingInterfaces(
 ) {
   log(`query warehousingInterfaces ${params.type}`, { userId });
 
-  return await modules.warehousing.findInterfaces(params);
+  return modules.warehousing.findInterfaces(params);
 }

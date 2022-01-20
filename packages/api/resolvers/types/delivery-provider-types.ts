@@ -5,6 +5,7 @@ import { DeliveryPricingDirector } from 'meteor/unchained:core-delivery';
 export const DeliveryProvider: DeliveryProviderHelperTypes = {
   interface(obj, _, { modules }) {
     const Interface = modules.delivery.findInterface(obj);
+
     if (!Interface) return null;
 
     return {
@@ -59,7 +60,7 @@ export const DeliveryProvider: DeliveryProviderHelperTypes = {
     if (!calculated) return null;
 
     const pricing = DeliveryPricingDirector.resultSheet();
-
+    
     const orderPrice = pricing.total({ useNetPrice }) as {
       amount: number;
       currency: string;

@@ -1,7 +1,7 @@
 import { ApolloServer, ApolloError } from 'apollo-server-express';
 import { processRequest } from 'graphql-upload';
 import { WebApp } from 'meteor/webapp';
-import { log } from 'meteor/unchained:logger';
+import { log, LogLevel } from 'meteor/unchained:logger';
 import typeDefs from './schema';
 import resolvers from './resolvers';
 
@@ -27,7 +27,7 @@ const logGraphQLServerError = (error) => {
       ...rest
     } = error;
     log(`${message} ${extensions && extensions.code}`, {
-      level: 'error',
+      level: LogLevel.Error,
       ...extensions,
       ...rest,
     });

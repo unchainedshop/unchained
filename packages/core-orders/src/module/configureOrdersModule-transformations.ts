@@ -1,6 +1,5 @@
 import { Collection, FindOptions, Query } from '@unchainedshop/types/common';
 import { Order, OrderTransformations } from '@unchainedshop/types/orders';
-import { objectInvert } from 'meteor/unchained:utils';
 import { OrderStatus } from '../db/OrderStatus';
 import { OrderPricingSheet } from '../director/OrderPricingSheet';
 
@@ -139,7 +138,9 @@ export const configureOrderModuleTransformations = ({
     },
 
     normalizedStatus: (order) => {
-      return objectInvert(OrderStatus)[order.status || null];
+      return order.status === null
+        ? OrderStatus.OPEN
+        : (order.status as OrderStatus);
     },
 
     isCart: (order) => {

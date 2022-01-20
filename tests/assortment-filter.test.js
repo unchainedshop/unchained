@@ -12,7 +12,7 @@ let graphqlFetch;
 describe('AssortmentFilter', () => {
   beforeAll(async () => {
     await setupDatabase();
-    graphqlFetch = await createLoggedInGraphqlFetch(ADMIN_TOKEN);
+    graphqlFetch = createLoggedInGraphqlFetch(ADMIN_TOKEN);
   });
 
   describe('mutation.reorderAssortmentFilters for admin users should', () => {
@@ -250,7 +250,7 @@ describe('AssortmentFilter', () => {
 
   describe('mutation.addAssortmentFilter for anonymous users should', () => {
     it('return error', async () => {
-      const graphqlAnonymousFetch = await createAnonymousGraphqlFetch();
+      const graphqlAnonymousFetch = createAnonymousGraphqlFetch();
 
       const { errors } = await graphqlAnonymousFetch({
         query: /* GraphQL */ `
@@ -360,7 +360,7 @@ describe('AssortmentFilter', () => {
 
   describe('mutation.removeAssortmentFilter for anonymous users should', () => {
     it('return error', async () => {
-      const graphqlAnonymousFetch = await createAnonymousGraphqlFetch();
+      const graphqlAnonymousFetch = createAnonymousGraphqlFetch();
       const { errors } = await graphqlAnonymousFetch({
         query: /* GraphQL */ `
           mutation RemoveAssortmentFilter($assortmentFilterId: ID!) {

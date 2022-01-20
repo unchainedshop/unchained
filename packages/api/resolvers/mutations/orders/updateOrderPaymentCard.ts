@@ -10,8 +10,10 @@ import {
 export default async function updateOrderPaymentCard(
   root: Root,
   { orderPaymentId, meta }: { orderPaymentId: string; meta?: any },
-  { modules, userId }: Context
+  context: Context
 ) {
+  const { modules, userId } = context;
+
   log(
     `mutation updateOrderPaymentCard ${orderPaymentId} ${JSON.stringify(meta)}`,
     { userId }
@@ -40,6 +42,6 @@ export default async function updateOrderPaymentCard(
   return await modules.orders.payments.updateContext(
     orderPayment._id,
     meta,
-    userId
+    context
   );
 }

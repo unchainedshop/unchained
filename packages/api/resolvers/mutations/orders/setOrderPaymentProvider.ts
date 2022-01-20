@@ -5,8 +5,9 @@ import { OrderNotFoundError, InvalidIdError } from '../../../errors';
 export default async function setOrderPaymentProvider(
   root: Root,
   params: { orderId: string; paymentProviderId: string },
-  { modules, userId }: Context
+  context: Context
 ) {
+  const { modules, userId } = context;
   const { orderId, paymentProviderId } = params;
 
   log(`mutation setOrderPaymentProvider ${paymentProviderId}`, {
@@ -23,6 +24,6 @@ export default async function setOrderPaymentProvider(
   return await modules.orders.setPaymentProvider(
     orderId,
     paymentProviderId,
-    userId
+    context
   );
 }

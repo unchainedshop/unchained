@@ -40,9 +40,7 @@ export const BasePricingDirector = <
     getContext: () => context,
 
     actions: async (pricingContext, requestContext, buildPricingContext) => {
-      const context = await buildPricingContext(pricingContext, requestContext);
-
-      const { services, modules, res, req, ...other } = context
+      context = await buildPricingContext(pricingContext, requestContext);
 
       return {
         calculate: async () => {
@@ -77,6 +75,7 @@ export const BasePricingDirector = <
                 });
 
                 const nextCalculationResult = await adapter.calculate();
+
                 if (!nextCalculationResult) return null;
                 if (!resolvedCalculation) return null;
 

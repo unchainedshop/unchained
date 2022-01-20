@@ -155,9 +155,12 @@ export const configureOrderModuleProcessing = ({
     const { modules } = requestContext;
 
     const orderPayment = await findOrderPayment(order);
+    console.log('ORDER PAYMENT', orderPayment)
     let isBlockingOrderFullfillment =
       orderPayment &&
       modules.orders.payments.isBlockingOrderFullfillment(orderPayment);
+
+    console.log('IS BLOCKING', isBlockingOrderFullfillment, orderPayment)
     if (isBlockingOrderFullfillment) return false;
 
     const orderDelivery = await findOrderDelivery(order);
@@ -192,7 +195,9 @@ export const configureOrderModuleProcessing = ({
       }
     }
     if (status === OrderStatus.CONFIRMED) {
-      if (await isAutoFullfillmentEnabled(order, requestContext)) {
+      const isFullfilled = await isAutoFullfillmentEnabled(order, requestContext)
+      console.log('IS FULLFILLED', isFullfilled)
+      if (isFullfilled) {
         emit('ORDER_FULLFILLED', { order });
         status = OrderStatus.FULLFILLED;
       }

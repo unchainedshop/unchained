@@ -15,7 +15,7 @@ const sortByCreationDate = (
 };
 
 const allProviders: FilterProviders = ({ providers }) => {
-  return providers.sort(sortByCreationDate).map(({ _id }) => _id);
+  return providers.sort(sortByCreationDate);
 };
 
 export const deliverySettings: DeliverySettings = {
@@ -31,7 +31,7 @@ export const deliverySettings: DeliverySettings = {
         'sortProviders is deprecated, please specifc filterSupportedProviders instead'
       );
       const filterSortedProviders: FilterProviders = ({ providers }) => {
-        return providers.sort(sortProviders).map(({ _id }) => _id);
+        return providers.sort(sortProviders);
       };
       this.filterSupportedProviders = filterSortedProviders;
     } else {

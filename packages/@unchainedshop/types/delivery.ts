@@ -112,6 +112,17 @@ export interface DeliveryLocation {
     longitude: number;
   };
 }
+
+/*
+ * Module
+ */
+
+interface DeliveryInterface {
+  _id: string;
+  label: string;
+  versin: string;
+}
+
 export type DeliveryModule = ModuleMutations<DeliveryProvider> & {
   // Queries
   count: (query: DeliveryProviderQuery) => Promise<number>;
@@ -134,11 +145,11 @@ export type DeliveryModule = ModuleMutations<DeliveryProvider> & {
   findInterface: (params: DeliveryProvider) => IDeliveryAdapter;
   findInterfaces: (params: {
     type: DeliveryProviderType;
-  }) => Array<IDeliveryAdapter>;
+  }) => Array<DeliveryInterface>;
   findSupported: (
     params: { order: Order },
     requestContext: Context
-  ) => Promise<Array<string>>;
+  ) => Promise<Array<DeliveryProvider>>;
 
   isAutoReleaseAllowed: (
     deliveryProvider: DeliveryProvider,
@@ -194,7 +205,7 @@ export interface DeliveryProviderHelperTypes {
 
 export type FilterProviders = (params: {
   providers: Array<DeliveryProvider>;
-}) => Array<string>;
+}) => Array<DeliveryProvider>;
 
 export interface DeliverySettingsOptions {
   sortProviders?: (a: DeliveryProvider, b: DeliveryProvider) => number;

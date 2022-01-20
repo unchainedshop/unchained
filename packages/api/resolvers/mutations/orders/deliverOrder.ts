@@ -11,8 +11,9 @@ import { Root, Context } from '@unchainedshop/types/api';
 export default async function deliverOrder(
   root: Root,
   { orderId }: { orderId: string },
-  { modules, userId }: Context
+  context: Context
 ) {
+  const { modules, userId } = context
   log('mutation deliverOrder', { orderId, userId });
 
   if (!orderId) throw new InvalidIdError({ orderId });
@@ -28,7 +29,11 @@ export default async function deliverOrder(
     orderDeliveryId: order.deliveryId,
   });
 
-  if (orderDelivery.status !== OrderDeliveryStatus.OPEN && order.confirmed) {
+  if (
+    modules.orders.deliveries.normalizedStatus(orderDelivery) !==
+      OrderDeliveryStatus.OPEN &&
+    order.confirmed
+  ) {
     throw new OrderWrongDeliveryStatusError({
       status: orderDelivery.status,
     });
@@ -36,5 +41,5 @@ export default async function deliverOrder(
 
   await modules.orders.deliveries.markAsDelivered(orderDelivery);
 
-  return await modules.orders.processOrder(order, {}, userId);
+  return await modules.orders.processOrder(order, {}, context);
 }

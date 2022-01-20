@@ -9,18 +9,16 @@ import {
   QuotationsModule,
   QuotationsSettingsOptions,
 } from '@unchainedshop/types/quotations';
-import { Locale } from 'locale';
 import { emit, registerEvents } from 'meteor/unchained:events';
 import { log } from 'meteor/unchained:logger';
 import {
   generateDbFilterById,
   generateDbMutations,
-  objectInvert,
 } from 'meteor/unchained:utils';
-import { QuotationsSchema } from '../db/QuotationsSchema';
-import { QuotationDirector } from '../quotations-index';
 import { QuotationsCollection } from '../db/QuotationsCollection';
+import { QuotationsSchema } from '../db/QuotationsSchema';
 import { QuotationStatus } from '../db/QuotationStatus';
+import { QuotationDirector } from '../quotations-index';
 import { quotationsSettings } from '../quotations-settings';
 
 const QUOTATION_EVENTS: string[] = [
@@ -268,7 +266,9 @@ export const configureQuotationsModule = async ({
 
     // Transformations
     normalizedStatus: (quotation) => {
-      return objectInvert(QuotationStatus)[quotation.status || null];
+      return quotation.status === null
+        ? QuotationStatus.REQUESTED
+        : (quotation.status as QuotationStatus);
     },
 
     isExpired,

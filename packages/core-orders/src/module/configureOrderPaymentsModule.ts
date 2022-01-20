@@ -1,4 +1,3 @@
-import { Context } from '@unchainedshop/types/api';
 import {
   Collection,
   Filter,
@@ -6,8 +5,8 @@ import {
 } from '@unchainedshop/types/common';
 import { OrdersModule } from '@unchainedshop/types/orders';
 import {
-  OrderPaymentsModule,
   OrderPayment,
+  OrderPaymentsModule,
 } from '@unchainedshop/types/orders.payments';
 // import { PaymentPricingDirector } from 'meteor/unchained:core-payment';
 // import { PaymentDirector } from 'meteor/unchained:core-payment';
@@ -16,13 +15,16 @@ import { log } from 'meteor/unchained:logger';
 import {
   generateDbFilterById,
   generateDbMutations,
-  objectInvert,
 } from 'meteor/unchained:utils';
 import { OrderPaymentsSchema } from '../db/OrderPaymentsSchema';
 import { OrderPaymentStatus } from '../db/OrderPaymentStatus';
 import { OrderPricingSheet } from '../director/OrderPricingSheet';
 
-const ORDER_PAYMENT_EVENTS: string[] = ['ORDER_UPDATE_PAYMENT', 'ORDER_SIGN_PAYMENT', 'ORDER_PAY'];
+const ORDER_PAYMENT_EVENTS: string[] = [
+  'ORDER_UPDATE_PAYMENT',
+  'ORDER_SIGN_PAYMENT',
+  'ORDER_PAY',
+];
 
 const buildFindByIdSelector = (orderPaymentId: string) =>
   generateDbFilterById(orderPaymentId) as Filter<OrderPayment>;
@@ -72,7 +74,10 @@ export const configureOrderPaymentsModule = ({
   return {
     // Queries
     findOrderPayment: async ({ orderPaymentId }, options) => {
-      return await OrderPayments.findOne(buildFindByIdSelector(orderPaymentId), options);
+      return await OrderPayments.findOne(
+        buildFindByIdSelector(orderPaymentId),
+        options
+      );
     },
 
     // Transformations
@@ -84,12 +89,10 @@ export const configureOrderPaymentsModule = ({
         order.currency
       );
 
-      return pricingSheet
-        .discountPrices(orderDiscount._id)
-        .map((discount) => ({
-          payment: orderPayment,
-          ...discount,
-        }));
+      return pricingSheet.discountPrices(orderDiscount._id).map((discount) => ({
+        payment: orderPayment,
+        ...discount,
+      }));
     },
 
     isBlockingOrderConfirmation: async (orderPayment, requestContext) => {
@@ -112,7 +115,9 @@ export const configureOrderPaymentsModule = ({
     },
 
     normalizedStatus: (orderPayment) => {
-      return objectInvert(OrderPaymentStatus)[orderPayment.status || null];
+      return orderPayment.status === null
+        ? OrderPaymentStatus.OPEN
+        : (orderPayment.status as OrderPaymentStatus);
     },
     pricingSheet: (orderPayment, currency) => {
       return OrderPricingSheet({
@@ -270,16 +275,13 @@ export const configureOrderPaymentsModule = ({
           requestContext
         );
 
-      await OrderPayments.updateOne(
-        buildFindByIdSelector(orderPayment._id),
-        {
-          $set: {
-            calculation,
-            updated: new Date(),
-            updatedBy: requestContext.userId,
-          },
-        }
-      );
+      await OrderPayments.updateOne(buildFindByIdSelector(orderPayment._id), {
+        $set: {
+          calculation,
+          updated: new Date(),
+          updatedBy: requestContext.userId,
+        },
+      });
 
       return true;
     },

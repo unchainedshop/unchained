@@ -18,14 +18,14 @@ export default async function setOrderDeliveryProvider(
   if (!orderId) throw new InvalidIdError({ orderId });
   if (!deliveryProviderId) throw new InvalidIdError({ deliveryProviderId });
 
-  const order = await modules.orders.findOrder({ orderId });
-  if (!order) throw new OrderNotFoundError({ orderId });
+  if (!(await modules.orders.orderExists({ orderId })))
+    throw new OrderNotFoundError({ orderId });
 
-  const orderDelivery = await modules.orders.setDeliveryProvider(
+  const order = await modules.orders.setDeliveryProvider(
     orderId,
     deliveryProviderId,
     context
   );
 
-  return orderDelivery
+  return order;
 }

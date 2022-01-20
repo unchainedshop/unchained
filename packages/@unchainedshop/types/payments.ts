@@ -142,7 +142,7 @@ export type PaymentModule = {
     findSupported: (
       query: { order: Order },
       requestContext: Context
-    ) => Promise<Array<string>>;
+    ) => Promise<Array<PaymentProvider>>;
 
     findInterface: (query: PaymentProvider) => PaymentInterface;
     findInterfaces: (query: {

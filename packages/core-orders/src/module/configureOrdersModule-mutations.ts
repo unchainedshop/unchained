@@ -106,6 +106,7 @@ export const configureOrderModuleMutations = ({
       deliveryProviderId,
       requestContext
     ) => {
+      const { modules } = requestContext;
       const delivery = await OrderDeliveries.findOne({
         orderId,
         deliveryProviderId,
@@ -113,7 +114,7 @@ export const configureOrderModuleMutations = ({
       const deliveryId =
         delivery?._id ||
         (
-          await requestContext.modules.orders.deliveries.create(
+          await modules.orders.deliveries.create(
             {
               calculation: [],
               deliveryProviderId,
@@ -124,6 +125,7 @@ export const configureOrderModuleMutations = ({
             requestContext.userId
           )
         )._id;
+
       log(`Set Delivery Provider ${deliveryProviderId}`, { orderId });
 
       const selector = generateDbFilterById(orderId);
@@ -146,6 +148,7 @@ export const configureOrderModuleMutations = ({
     },
 
     setPaymentProvider: async (orderId, paymentProviderId, requestContext) => {
+      const { modules, userId } = requestContext;
       const payment = await OrderPayments.findOne({
         orderId,
         paymentProviderId,
@@ -153,7 +156,7 @@ export const configureOrderModuleMutations = ({
       const paymentId =
         payment?._id ||
         (
-          await requestContext.modules.orders.payments.create(
+          await modules.orders.payments.create(
             {
               calculation: [],
               paymentProviderId,
@@ -161,14 +164,14 @@ export const configureOrderModuleMutations = ({
               orderId,
               status: null,
             },
-            requestContext.userId
+            userId
           )
         )._id;
       log(`Set Payment Provider ${paymentProviderId}`, { orderId });
 
       const selector = generateDbFilterById(orderId);
       await Orders.updateOne(selector, {
-        $set: { paymentId, updated: new Date() },
+        $set: { paymentId, updated: new Date(), updatedBy: userId },
       });
 
       const order = await updateCalculation(orderId, requestContext);

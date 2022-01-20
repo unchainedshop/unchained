@@ -35,7 +35,9 @@ export const DeliveryPricingDirector: IDeliveryPricingDirector = {
       return {
         discounts: [],
         providerContext,
+        currency,
         ...context,
+        ...requestContext,
       };
 
     const order = await modules.orders.findOrder({
@@ -74,6 +76,7 @@ export const DeliveryPricingDirector: IDeliveryPricingDirector = {
   },
 
   resultSheet() {
+    console.log('CONTEXT', baseDirector.getContext().currency)
     const pricingSheet = DeliveryPricingSheet({
       calculation: baseDirector.getCalculation(),
       currency: baseDirector.getContext().currency,

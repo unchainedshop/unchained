@@ -6,7 +6,7 @@ let graphqlFetch;
 describe('basic setup of internationalization and localization context', () => {
   beforeAll(async () => {
     [db] = await setupDatabase();
-    graphqlFetch = await createLoggedInGraphqlFetch();
+    graphqlFetch = createLoggedInGraphqlFetch();
   });
 
   describe('currencies', () => {

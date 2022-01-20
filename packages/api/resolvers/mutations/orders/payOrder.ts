@@ -11,8 +11,10 @@ import {
 export default async function payOrder(
   root: Root,
   { orderId }: { orderId: string },
-  { modules, userId }: Context
+  context: Context
 ) {
+  const { modules, userId } = context;
+
   log('mutation payOrder', { orderId, userId });
 
   if (!orderId) throw new InvalidIdError({ orderId });
@@ -24,19 +26,21 @@ export default async function payOrder(
     throw new OrderWrongStatusError({ status: order.status });
   }
 
-  // --> Could be bundled into one mutation (Depending on answer of status check between api and helper)
   const payment = await modules.orders.payments.findOrderPayment({
-    paymentId: order.paymentId,
+    orderPaymentId: order.paymentId,
   });
 
-  if (payment.status !== OrderPaymentStatus.OPEN && order.confirmed) {
+  if (
+    modules.orders.payments.normalizedStatus(payment) !==
+      OrderPaymentStatus.OPEN &&
+    order.confirmed
+  ) {
     throw new OrderWrongPaymentStatusError({
       status: payment.status,
     });
   }
 
   await modules.orders.payments.markAsPaid(payment, null, userId);
-  // <-- Bundle end
 
-  return await modules.orders.processOrder(order, {}, userId);
+  return await modules.orders.processOrder(order, {}, context);
 }

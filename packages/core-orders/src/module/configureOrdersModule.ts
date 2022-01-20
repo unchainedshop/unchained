@@ -195,7 +195,7 @@ export const configureOrdersModule = async ({
 
     let isAlreadyInitializedWithSupportedProvider =
       supportedDeliveryProviders.some((provider) => {
-        return provider === deliveryProviderId;
+        return provider._id === deliveryProviderId;
       });
 
     if (
@@ -204,7 +204,7 @@ export const configureOrdersModule = async ({
     ) {
       updatedOrder = await modules.orders.setDeliveryProvider(
         orderId,
-        supportedDeliveryProviders[0],
+        supportedDeliveryProviders[0]._id,
         requestContext
       );
     }
@@ -223,7 +223,7 @@ export const configureOrdersModule = async ({
 
     isAlreadyInitializedWithSupportedProvider = supportedPaymentProviders.some(
       (provider) => {
-        return provider === paymentProviderId;
+        return provider._id === paymentProviderId;
       }
     );
     if (
@@ -247,7 +247,7 @@ export const configureOrdersModule = async ({
           (supportedPaymentProvider) => {
             return paymentCredentials.some((paymentCredential) => {
               return (
-                supportedPaymentProvider === paymentCredential.paymentProviderId
+                supportedPaymentProvider._id === paymentCredential.paymentProviderId
               );
             });
           }
@@ -257,14 +257,14 @@ export const configureOrdersModule = async ({
           isOrderUpdated = true;
           await modules.orders.setPaymentProvider(
             orderId,
-            foundSupportedPreferredProvider,
+            foundSupportedPreferredProvider._id,
             requestContext
           );
         }
 
         updatedOrder = await modules.orders.setPaymentProvider(
           orderId,
-          supportedPaymentProviders[0],
+          supportedPaymentProviders[0]._id,
           requestContext
         );
       }

@@ -20,7 +20,7 @@ const assortmentMediaFile = fs.createReadStream(
 describe('AssortmentMedia', () => {
   beforeAll(async () => {
     await setupDatabase();
-    graphqlFetch = await createLoggedInGraphqlFetch(ADMIN_TOKEN);
+    graphqlFetch = createLoggedInGraphqlFetch(ADMIN_TOKEN);
   });
 
   describe('Mutation.addAssortmentMedia for admin user should', () => {
@@ -365,7 +365,7 @@ describe('AssortmentMedia', () => {
 
   describe('mutation.reorderAssortmentMedia for anonymous user should', () => {
     it('return error', async () => {
-      const graphqlAnonymousFetch = await createAnonymousGraphqlFetch();
+      const graphqlAnonymousFetch = createAnonymousGraphqlFetch();
 
       const { errors } = await graphqlAnonymousFetch({
         query: /* GraphQL */ `
@@ -487,7 +487,7 @@ describe('AssortmentMedia', () => {
 
   describe('mutation.updateAssortmentMediaTexts for anonymous user should', () => {
     it('return error', async () => {
-      const graphqlAnonymousFetch = await createAnonymousGraphqlFetch();
+      const graphqlAnonymousFetch = createAnonymousGraphqlFetch();
 
       const { errors } = await graphqlAnonymousFetch({
         query: /* GraphQL */ `
@@ -607,7 +607,7 @@ describe('AssortmentMedia', () => {
 
   describe('mutation.removeAssortmentMedia for anonymous user should', () => {
     it('return error', async () => {
-      const graphqlAnonymousFetch = await createAnonymousGraphqlFetch();
+      const graphqlAnonymousFetch = createAnonymousGraphqlFetch();
 
       const { errors } = await graphqlAnonymousFetch({
         query: /* GraphQL */ `

@@ -6,7 +6,7 @@ let graphqlFetch;
 describe('Order: Management', () => {
   beforeAll(async () => {
     await setupDatabase();
-    graphqlFetch = await createLoggedInGraphqlFetch();
+    graphqlFetch = createLoggedInGraphqlFetch();
   });
 
   describe('Mutation.removeOrder', () => {
@@ -209,7 +209,7 @@ describe('Order: Management', () => {
   });
 
   describe('Mutation.deliverOrder', () => {
-    it('deliver a confirmed order -> leads to fullfilled', async () => {
+    it.only('deliver a confirmed order -> leads to fullfilled', async () => {
       const { data: { deliverOrder } = {} } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation deliverOrder($orderId: ID!) {

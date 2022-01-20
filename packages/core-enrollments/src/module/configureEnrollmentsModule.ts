@@ -14,12 +14,11 @@ import { log } from 'meteor/unchained:logger';
 import {
   generateDbFilterById,
   generateDbMutations,
-  objectInvert,
 } from 'meteor/unchained:utils';
-import { EnrollmentsSchema } from '../db/EnrollmentsSchema';
-import { EnrollmentDirector } from '../enrollments-index';
 import { EnrollmentsCollection } from '../db/EnrollmentsCollection';
+import { EnrollmentsSchema } from '../db/EnrollmentsSchema';
 import { EnrollmentStatus } from '../db/EnrollmentStatus';
+import { EnrollmentDirector } from '../enrollments-index';
 import { enrollmentsSettings } from '../enrollments-settings';
 
 const ENROLLMENT_EVENTS: string[] = [
@@ -291,7 +290,9 @@ export const configureEnrollmentsModule = async ({
 
     // Transformations
     normalizedStatus: (enrollment) => {
-      return objectInvert(EnrollmentStatus)[enrollment.status || null];
+      return enrollment.status === null
+        ? EnrollmentStatus.INITIAL
+        : (enrollment.status as EnrollmentStatus);
     },
 
     isExpired: (enrollment, { referenceDate }) => {
