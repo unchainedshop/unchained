@@ -104,7 +104,7 @@ export const configureOrderPaymentsModule = ({
           {},
           requestContext
         );
-
+        
       if (isPayLaterAllowed) return false;
 
       return true;
@@ -146,7 +146,12 @@ export const configureOrderPaymentsModule = ({
       { transactionContext, order },
       requestContext
     ) => {
-      if (orderPayment.status !== OrderPaymentStatus.OPEN) return orderPayment;
+      if (
+        requestContext.modules.orders.payments.normalizedStatus(
+          orderPayment
+        ) !== OrderPaymentStatus.OPEN
+      )
+        return orderPayment;
 
       const paymentProvider =
         await requestContext.modules.payment.paymentProviders.findProvider({

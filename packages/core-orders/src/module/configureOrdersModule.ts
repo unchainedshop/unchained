@@ -110,7 +110,7 @@ export const configureOrdersModule = async ({
         if (!order.orderNumber) {
           // Order Numbers can be set by the user
           /* @ts-ignore */
-          modifier.$set.orderNumber = findNewOrderNumber(order);
+          modifier.$set.orderNumber = await findNewOrderNumber(order);
         }
         break;
       default:

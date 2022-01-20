@@ -25,7 +25,7 @@ export type OrderPosition = {
 
 export type OrderPositionsModule = {
   // Queries
-  findOrderPosition: (params: { itemId: string }, options: FindOptions) => Promise<OrderPosition>;
+  findOrderPosition: (params: { itemId: string }, options?: FindOptions) => Promise<OrderPosition>;
   findOrderPositions: (params: {
     orderId: string;
   }) => Promise<Array<OrderPosition>>;

@@ -4,7 +4,7 @@ import { getOrderCart } from '../utils/getOrderCart';
 
 export default async function emptyCart(
   root: Root,
-  { orderId }: { orderId: string },
+  { orderId }: { orderId?: string },
   context: Context
 ) {
   const { modules, userId } = context;

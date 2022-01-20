@@ -436,11 +436,7 @@ export const configureEnrollmentsModule = async ({
       return enrollment;
     },
 
-    createFromCheckout: async (
-      order,
-      { orderPositions, context },
-      requestContext
-    ) => {
+    createFromCheckout: async (order, { items, context }, requestContext) => {
       const { modules } = requestContext;
       const orderId = order._id;
 
@@ -474,10 +470,10 @@ export const configureEnrollmentsModule = async ({
       };
 
       const enrollments = await Promise.all(
-        orderPositions.map(async (orderPosition) => {
+        items.map(async (item) => {
           const enrollmentData =
             await EnrollmentDirector.transformOrderItemToEnrollment(
-              orderPosition,
+              item,
               template,
               requestContext
             );

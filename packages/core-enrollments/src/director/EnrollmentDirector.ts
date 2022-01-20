@@ -30,18 +30,18 @@ const findAppropriateAdapters = (productPlan?: ProductPlan) =>
 export const EnrollmentDirector: IEnrollmentDirector = {
   ...baseDirector,
 
-  transformOrderItemToEnrollment: async (item, doc, requestContext) => {
-    const product = await requestContext.modules.products.findProduct({
-      productId: item.productId,
-    });
-
+  transformOrderItemToEnrollment: async (
+    { orderPosition, product },
+    doc,
+    requestContext
+  ) => {
     const Adapter = findAppropriateAdapters(product.plan)?.[0];
     if (!Adapter) {
       throw new Error('No suitable enrollment plugin available for this item');
     }
 
     const enrollmentPlan = await Adapter.transformOrderItemToEnrollmentPlan(
-      item,
+      orderPosition,
       requestContext
     );
 

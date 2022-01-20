@@ -13,6 +13,7 @@ import { ProductMedia, ProductMediaModule } from './products.media';
 import { ProductReview, ProductReviewsModule } from './products.reviews';
 import { ProductVariationsModule } from './products.variations';
 import { WarehousingProvider } from './warehousing';
+import { OrderPosition } from './orders.positions';
 
 export enum ProductStatus {
   DRAFT = 'DRAFT',
@@ -250,7 +251,7 @@ export type ProductsModule = {
   // Product adapter
 
   calculate: (
-    pricingContext: ProductPricingContext,
+    pricingContext: ProductPricingContext & { item: OrderPosition },
     requestContext: Context
   ) => Promise<Array<ProductPricingCalculation>>;
 

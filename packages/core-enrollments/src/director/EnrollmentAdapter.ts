@@ -27,7 +27,7 @@ export const EnrollmentAdapter: IEnrollmentAdapter = {
     return false;
   },
 
-  transformOrderItemToEnrollmentPlan: async (item, requestContext) => {
+  transformOrderItemToEnrollmentPlan: async (item) => {
     return {
       configuration: item.configuration,
       productId: item.productId,

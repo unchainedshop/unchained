@@ -51,7 +51,7 @@ export const configureOrderModuleProcessing = ({
 
   const missingInputDataForCheckout = async (order: Order) => {
     const errors = [];
-    if (order.status !== OrderStatus.OPEN)
+    if (order.status !== null)
       errors.push(new Error('Order has already been checked out'));
     if (!order.contact) errors.push(new Error('Contact data not provided'));
     if (!order.billingAddress)
@@ -78,8 +78,8 @@ export const configureOrderModuleProcessing = ({
       NoItemsError.name = 'NoItemsError';
       return [NoItemsError];
     }
-    return Promise.all(
-      orderPositions.flatMap(async (orderPosition) => {
+    const validationErrors = await Promise.all(
+      orderPositions.map(async (orderPosition) => {
         const errors = [];
 
         log(
@@ -112,6 +112,8 @@ export const configureOrderModuleProcessing = ({
         return errors;
       })
     );
+
+    return validationErrors.flatMap((f) => f);
   };
 
   const isAutoConfirmationEnabled = async (
@@ -127,6 +129,7 @@ export const configureOrderModuleProcessing = ({
         orderPayment,
         requestContext
       ));
+
     if (isBlockingOrderConfirmation) return false;
 
     const orderDelivery = await findOrderDelivery(order);
@@ -136,6 +139,7 @@ export const configureOrderModuleProcessing = ({
         orderDelivery,
         requestContext
       ));
+
     if (isBlockingOrderConfirmation) return false;
 
     if (
@@ -155,12 +159,10 @@ export const configureOrderModuleProcessing = ({
     const { modules } = requestContext;
 
     const orderPayment = await findOrderPayment(order);
-    console.log('ORDER PAYMENT', orderPayment)
     let isBlockingOrderFullfillment =
       orderPayment &&
       modules.orders.payments.isBlockingOrderFullfillment(orderPayment);
 
-    console.log('IS BLOCKING', isBlockingOrderFullfillment, orderPayment)
     if (isBlockingOrderFullfillment) return false;
 
     const orderDelivery = await findOrderDelivery(order);
@@ -195,8 +197,10 @@ export const configureOrderModuleProcessing = ({
       }
     }
     if (status === OrderStatus.CONFIRMED) {
-      const isFullfilled = await isAutoFullfillmentEnabled(order, requestContext)
-      console.log('IS FULLFILLED', isFullfilled)
+      const isFullfilled = await isAutoFullfillmentEnabled(
+        order,
+        requestContext
+      );
       if (isFullfilled) {
         emit('ORDER_FULLFILLED', { order });
         status = OrderStatus.FULLFILLED;
@@ -385,7 +389,7 @@ export const configureOrderModuleProcessing = ({
 
         await modules.orders.payments.charge(
           orderPayment,
-          params.paymentContext,
+          { order, transactionContext: params.paymentContext },
           requestContext
         );
         await modules.users.updateLastBillingAddress(
@@ -432,20 +436,31 @@ export const configureOrderModuleProcessing = ({
             const orderPositions =
               await modules.orders.positions.findOrderPositions({ orderId });
 
-            const filteredOrderPositions = await Promise.all(
-              orderPositions.filter(async (orderPosition) => {
+            const mappedProductOrderPositions = await Promise.all(
+              orderPositions.map(async (orderPosition) => {
                 const product = await modules.products.findProduct({
                   productId: orderPosition.productId,
                 });
-                return !!product.plan;
+                return {
+                  orderPosition,
+                  product,
+                };
               })
             );
 
-            if (filteredOrderPositions.length > 0) {
+            const filteredProductOrderPositions =
+              mappedProductOrderPositions.filter((item) => item.product?.plan);
+
+            console.log(
+              'FILTERED PRODUCTS',
+              filteredProductOrderPositions
+            );
+
+            if (filteredProductOrderPositions.length > 0) {
               await modules.enrollments.createFromCheckout(
                 newConfirmedOrder,
                 {
-                  orderPositions: filteredOrderPositions,
+                  items: filteredOrderPositions,
                   context: {
                     paymentContext: params.paymentContext,
                     deliveryContext: params.deliveryContext,

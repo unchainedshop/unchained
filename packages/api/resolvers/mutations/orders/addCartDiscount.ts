@@ -17,8 +17,8 @@ export default async function addCartDiscount(
 
   const cart = await getOrderCart({ orderId, user }, context);
 
-  return await modules.orders.discounts.create(
+  return await modules.orders.discounts.createManualOrderDiscount(
     { orderId: cart._id, code },
-    userId
+    context
   );
 }

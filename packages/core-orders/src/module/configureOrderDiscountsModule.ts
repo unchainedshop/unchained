@@ -23,6 +23,7 @@ const ORDER_DISCOUNT_EVENTS: string[] = [
   'ORDER_CREATE_DISCOUNT',
   'ORDER_UPDATE_DISCOUNT',
   'ORDER_REMOVE_DISCOUNT',
+  'ORDER_ADD_DISCOUNT',
 ];
 
 const OrderDiscountErrorCode = {
@@ -145,7 +146,8 @@ export const configureOrderDiscountsModule = ({
   ) => {
     log(`OrderDiscounts -> Try to grab ${code}`, { orderId });
 
-    const existingDiscount = OrderDiscounts.findOne({ code, orderId });
+    const existingDiscount = await OrderDiscounts.findOne({ code, orderId });
+
     if (existingDiscount)
       throw new Error(OrderDiscountErrorCode.CODE_ALREADY_PRESENT);
 
@@ -237,7 +239,13 @@ export const configureOrderDiscountsModule = ({
       });
 
       if (discountKey) {
-        const newDiscount = await createDiscount(doc, requestContext.userId);
+        const newDiscount = await createDiscount(
+          {
+            ...doc,
+            discountKey,
+          },
+          requestContext.userId
+        );
 
         let reservedDiscount: OrderDiscount;
         reservedDiscount = await reserveDiscount(
@@ -250,6 +258,9 @@ export const configureOrderDiscountsModule = ({
         });
 
         await updateCalculation(orderId, requestContext);
+
+        emit('ORDER_ADD_DISCOUNT', { discount: reserveDiscount });
+
         return reservedDiscount;
       }
 

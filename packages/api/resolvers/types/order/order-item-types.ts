@@ -1,10 +1,12 @@
 import { Context } from '@unchainedshop/types/api';
 import { DeliveryProvider } from '@unchainedshop/types/delivery';
+import { Order } from '@unchainedshop/types/orders';
 import {
   OrderPosition,
   OrderPositionDiscount,
 } from '@unchainedshop/types/orders.positions';
 import { OrderPrice } from '@unchainedshop/types/orders.pricing';
+import { Product } from '@unchainedshop/types/products';
 import { WarehousingProvider } from '@unchainedshop/types/warehousing';
 import crypto from 'crypto';
 
@@ -15,8 +17,6 @@ type HelperType<P, T> = (
 ) => T;
 
 interface OrderItemHelperTypes {
-  total: HelperType<{ category: string }, Promise<OrderPrice>>;
-  unitPrice: HelperType<never, Promise<OrderPrice>>;
   discounts: HelperType<never, Promise<Array<OrderPositionDiscount>>>;
   dispatches: HelperType<
     never,
@@ -30,6 +30,11 @@ interface OrderItemHelperTypes {
       }>
     >
   >;
+  order: HelperType<never, Promise<Order>>;
+  originalProduct: HelperType<never, Promise<Product>>;
+  product: HelperType<never, Promise<Product>>;
+  total: HelperType<{ category: string }, Promise<OrderPrice>>;
+  unitPrice: HelperType<never, Promise<OrderPrice>>;
 }
 
 const getPricingSheet = async (
@@ -51,45 +56,6 @@ const getPricingSheet = async (
 };
 
 export const OrderItem: OrderItemHelperTypes = {
-  total: async (obj, { category }, context) => {
-    const pricingSheet = await getPricingSheet(obj, context);
-
-    if (pricingSheet.isValid()) {
-      const { amount, currency } = pricingSheet.total({
-        category,
-        useNetPrice: false,
-      });
-      return {
-        _id: crypto
-          .createHash('sha256')
-          .update([`${obj._id}-${category}`, amount, currency].join(''))
-          .digest('hex'),
-        amount,
-        currency,
-      };
-    }
-    return null;
-  },
-
-  unitPrice: async (obj, _, context) => {
-    const pricingSheet = await getPricingSheet(obj, context);
-
-    if (pricingSheet.isValid()) {
-      const { amount, currency } = pricingSheet.unitPrice({
-        useNetPrice: false,
-      });
-      return {
-        _id: crypto
-          .createHash('sha256')
-          .update([`${obj._id}-unit`, amount, currency].join(''))
-          .digest('hex'),
-        amount,
-        currency,
-      };
-    }
-    return null;
-  },
-
   discounts: async (obj, _, context) => {
     const pricingSheet = await getPricingSheet(obj, context);
 
@@ -137,5 +103,58 @@ export const OrderItem: OrderItemHelperTypes = {
         };
       })
     );
+  },
+
+  order: async (obj, _, { modules }) => {
+    return await modules.orders.findOrder({ orderId: obj.orderId });
+  },
+
+  originalProduct: async (obj, _, { modules }) => {
+    return await modules.products.findProduct({
+      productId: obj.originalProductId,
+    });
+  },
+
+  product: async (obj, _, { modules }) => {
+    return await modules.products.findProduct({ productId: obj.productId });
+  },
+
+  total: async (obj, { category }, context) => {
+    const pricingSheet = await getPricingSheet(obj, context);
+
+    if (pricingSheet.isValid()) {
+      const { amount, currency } = pricingSheet.total({
+        category,
+        useNetPrice: false,
+      });
+      return {
+        _id: crypto
+          .createHash('sha256')
+          .update([`${obj._id}-${category}`, amount, currency].join(''))
+          .digest('hex'),
+        amount,
+        currency,
+      };
+    }
+    return null;
+  },
+
+  unitPrice: async (obj, _, context) => {
+    const pricingSheet = await getPricingSheet(obj, context);
+
+    if (pricingSheet.isValid()) {
+      const { amount, currency } = pricingSheet.unitPrice({
+        useNetPrice: false,
+      });
+      return {
+        _id: crypto
+          .createHash('sha256')
+          .update([`${obj._id}-unit`, amount, currency].join(''))
+          .digest('hex'),
+        amount,
+        currency,
+      };
+    }
+    return null;
   },
 };

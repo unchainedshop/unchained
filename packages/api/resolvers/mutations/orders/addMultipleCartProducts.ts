@@ -37,8 +37,10 @@ export default async function addMultipleCartProducts(
 
   const order = await getOrderCart({ orderId }, context);
 
-  return await Promise.all(
-    itemsWithProducts.map(async ({ product, quantity, configuration }) => {
+  // Reduce is used to wait for each product to be added before processing the next (sequential processing)
+  return await itemsWithProducts.reduce(
+    async (positionsPromise, { product, quantity, configuration }) => {
+      const positions = await positionsPromise;
       if (quantity < 1)
         throw new OrderQuantityTooLowError({
           quantity,
@@ -52,7 +54,7 @@ export default async function addMultipleCartProducts(
         { userId, orderId }
       );
 
-      return await modules.orders.positions.create(
+      const position = await modules.orders.positions.addProductItem(
         {
           quantity,
           configuration,
@@ -60,6 +62,11 @@ export default async function addMultipleCartProducts(
         { order, product },
         context
       );
-    })
+      
+      positions.push(position);
+
+      return positions;
+    },
+    Promise.resolve([])
   );
 }

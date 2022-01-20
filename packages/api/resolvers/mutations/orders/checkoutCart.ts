@@ -20,6 +20,12 @@ export default async function checkoutCart(
 
   const cart = await getOrderCart({ orderId }, context);
 
+  const order = await modules.orders.checkout(
+    cart,
+    transactionContext,
+    context
+  );
+
   try {
     return await modules.orders.checkout(cart, transactionContext, context);
   } catch (error) {

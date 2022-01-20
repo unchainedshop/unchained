@@ -18,7 +18,6 @@ import {
 import { OrdersSchema } from '../db/OrdersSchema';
 
 const ORDER_EVENTS: string[] = [
-  'ORDER_ADD_DISCOUNT',
   'ORDER_CREATE',
   'ORDER_REMOVE',
   'ORDER_SET_DELIVERY_PROVIDER',

@@ -3,6 +3,7 @@ import {
   IPaymentDirector,
 } from '@unchainedshop/types/payments';
 import { BaseDirector } from 'meteor/unchained:utils';
+import { log } from 'meteor/unchained:logger';
 import { paymentLogger } from '../payment-logger';
 import { PaymentError } from './PaymentError';
 
@@ -37,7 +38,7 @@ export const PaymentDirector: IPaymentDirector = {
 
       isActive: async () => {
         try {
-          return await adapter.isActive(context);
+          return await adapter.isActive();
         } catch (error) {
           paymentLogger.error(error.message);
           return false;
@@ -46,7 +47,7 @@ export const PaymentDirector: IPaymentDirector = {
 
       isPayLaterAllowed: () => {
         try {
-          return adapter.isPayLaterAllowed(context);
+          return adapter.isPayLaterAllowed();
         } catch (error) {
           paymentLogger.error(error.message);
           return false;

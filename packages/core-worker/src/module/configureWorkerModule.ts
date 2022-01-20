@@ -198,9 +198,9 @@ export const configureWorkerModule = async ({
       { type, input, priority = 0, scheduled, originalWorkId, retries = 20 },
       userId
     ) => {
-      if (!WorkerDirector.getAdapter(type)) {
-        throw new Error(`No plugin registered for type ${type}`);
-      }
+      // if (!WorkerDirector.getAdapter(type)) {
+      //   throw new Error(`No plugin registered for type ${type}`);
+      // }
 
       const created = new Date();
       const workId = await mutations.create(

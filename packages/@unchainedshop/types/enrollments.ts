@@ -130,7 +130,10 @@ export interface EnrollmentMutations {
   createFromCheckout: (
     order: Order,
     params: {
-      orderPositions: Array<OrderPosition>;
+      items: Array<{
+        orderPosition: OrderPosition;
+        product: Product;
+      }>;
       context: {
         paymentContext?: any;
         deliveryContext?: any;
@@ -229,7 +232,7 @@ export type IEnrollmentAdapter = IBaseAdapter & {
 
 export type IEnrollmentDirector = IBaseDirector<IEnrollmentAdapter> & {
   transformOrderItemToEnrollment: (
-    orderPosition: OrderPosition,
+    item: { orderPosition: OrderPosition; product: Product },
     doc: Omit<EnrollmentData, 'configuration' | 'productId' | 'quantity'>,
     requestContext: Context
   ) => Promise<EnrollmentData>;

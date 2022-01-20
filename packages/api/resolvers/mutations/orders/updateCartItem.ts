@@ -15,8 +15,9 @@ export default async function updateCartItem(
     quantity?: number;
     configuration?: Configuration;
   },
-  { modules, userId }: Context
+  context: Context
 ) {
+  const { modules, userId } = context;
   const { itemId, quantity = null, configuration = null } = params;
 
   log(
@@ -35,28 +36,28 @@ export default async function updateCartItem(
   if (!modules.orders.isCart(order)) {
     throw new OrderWrongStatusError({ status: order.status });
   }
-
+  
   if (quantity !== null) {
     if (quantity < 1) throw new OrderQuantityTooLowError({ quantity });
     // FIXME: positionId is actually
-    await modules.orders.positions.updatePosition(
+    await modules.orders.positions.update(
       {
         orderId: item.orderId,
-        positionId: itemId,
+        orderPositionId: itemId,
       },
       { quantity },
-      userId
+      context
     );
   }
 
   if (configuration !== null) {
-    await modules.orders.positions.updatePosition(
+    await modules.orders.positions.update(
       {
         orderId: item.orderId,
-        positionId: itemId,
+        orderPositionId: itemId,
       },
       { configuration },
-      userId
+      context
     );
   }
 

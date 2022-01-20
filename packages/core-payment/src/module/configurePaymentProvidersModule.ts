@@ -169,6 +169,7 @@ export const configurePaymentProvidersModule = (
         paymentContext,
         requestContext
       );
+      
       return adapter.isPayLaterAllowed();
     },
 

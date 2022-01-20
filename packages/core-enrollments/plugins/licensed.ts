@@ -20,8 +20,8 @@ const LicensedEnrollments: IEnrollmentAdapter = {
   version: '1.0',
   label: 'Simple Licensed Enrollments',
 
-  isActivatedFor: ({ usageCalculationType }) => {
-    return usageCalculationType === 'LICENSED';
+  isActivatedFor: (productPlan) => {
+    return productPlan?.usageCalculationType === 'LICENSED';
   },
 
   actions: (params) => {

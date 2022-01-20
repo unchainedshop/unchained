@@ -53,6 +53,7 @@ export const configureOrderPositionsModule = ({
         options
       );
     },
+
     findOrderPositions: async ({ orderId }) => {
       const positions = OrderPositions.find({ orderId, quantity: { $gt: 0 } });
       return await positions.toArray();
@@ -66,12 +67,10 @@ export const configureOrderPositionsModule = ({
         requestContext
       );
 
-      return pricingSheet
-        .discountPrices(orderDiscount._id)
-        .map((discount) => ({
-          item: orderPosition,
-          ...discount,
-        }));
+      return pricingSheet.discountPrices(orderDiscount._id).map((discount) => ({
+        item: orderPosition,
+        ...discount,
+      }));
     },
 
     pricingSheet: (orderPosition, currency, { modules }) => {
@@ -124,9 +123,7 @@ export const configureOrderPositionsModule = ({
 
     delete: async (orderPositionId, requestContext) => {
       const selector = buildFindByIdSelector(orderPositionId);
-      const orderPosition = await OrderPositions.findOne(
-        buildFindByIdSelector(orderPositionId)
-      );
+      const orderPosition = await OrderPositions.findOne(selector);
 
       log(`Remove Position ${orderPositionId}`, {
         orderId: orderPosition.orderId,
@@ -319,17 +316,28 @@ export const configureOrderPositionsModule = ({
       requestContext
     ) => {
       const { modules } = requestContext;
-      const { quantity, configuration, ...scope } = orderPosition;
-      const orderId = orderPosition.orderId || order._id;
-      const productId = orderPosition.productId || product._id;
+      const {
+        configuration,
+        context,
+        orderId: positionOrderId,
+        quantity,
+        ...scope
+      } = orderPosition;
+      const orderId = order._id || positionOrderId;
+
+      // Resolve product
+      const resolvedProduct = await modules.products.resolveOrderableProduct(
+        product,
+        { configuration },
+        requestContext
+      );
 
       // Search for existing position
       const selector: Query = {
         orderId,
-        productId,
-        configuration: configuration || {
-          $exists: false,
-        },
+        productId: resolvedProduct._id,
+        originalProductId: product._id,
+        configuration: configuration || { $exists: false },
         ...scope,
       };
       const existingPosition = await OrderPositions.findOne(selector);
@@ -349,13 +357,6 @@ export const configureOrderPositionsModule = ({
           requestContext
         );
       } else {
-        // Resolve product
-        const resolvedProduct = await modules.products.resolveOrderableProduct(
-          product,
-          { configuration },
-          requestContext
-        );
-
         // Otherwise add new position
         upsertedOrderPosition = await modules.orders.positions.create(
           orderPosition,
