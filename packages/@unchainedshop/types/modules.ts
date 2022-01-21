@@ -9,6 +9,7 @@ import { EventsModule } from './events';
 import { FilesModule } from './files';
 import { FiltersModule } from './filters';
 import { LanguagesModule } from './languages';
+import { MessagingModule } from './messaging';
 import { OrdersModule } from './orders';
 import { PaymentModule } from './payments';
 import { ProductsModule } from './products';
@@ -29,7 +30,7 @@ export interface Modules {
   files: FilesModule;
   filters: FiltersModule;
   languages: LanguagesModule;
-  messaging: any;
+  messaging: MessagingModule;
   orders: OrdersModule;
   payment: PaymentModule;
   products: ProductsModule;

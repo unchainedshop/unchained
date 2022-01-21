@@ -1,6 +1,7 @@
 import { UnchainedCoreOptions } from '@unchainedshop/types/api';
 import { startAPIServer } from 'meteor/unchained:api';
 import { initCore } from 'meteor/unchained:core';
+import 'meteor/unchained:core-messaging/plugins/MessageWorker';
 import { initDb } from 'meteor/unchained:mongodb';
 import { BulkImportPayloads } from './bulk-importer/createBulkImporter';
 import { generateEventTypeDefs } from './generateRegisteredEvents';
@@ -8,7 +9,7 @@ import { interceptEmails } from './interceptEmails';
 import { runMigrations } from './migrations/runMigrations';
 import { setupAccounts, SetupAccountsOptions } from './setup/setupAccounts';
 import { setupCarts, SetupCartsOptions } from './setup/setupCarts';
-// import { setupTemplates, MessageTypes } from '../setup-templates';
+import { MessageTypes, setupTemplates } from './setup/setupTemplates';
 import {
   setupWorkqueue,
   SetupWorkqueueOptions,
@@ -16,7 +17,7 @@ import {
 } from './setup/setupWorkqueue';
 import './worker/BulkImportWorker';
 
-// export { MessageTypes };
+export { MessageTypes };
 
 const {
   NODE_ENV,
@@ -82,7 +83,7 @@ export const startPlatform = async (
   setupAccounts(options.accountsOptions, unchainedAPI);
 
   // Setup email templates
-  // setupTemplates(options);
+  setupTemplates();
 
   // Combine type defs for graphQL schema
   const typeDefs = [

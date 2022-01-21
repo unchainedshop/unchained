@@ -91,7 +91,7 @@ const generateOrder = async (
   return order;
 };
 
-const GenerateEnrollmentOrders: IWorkerAdapter<any, any> = {
+const GenerateEnrollmentOrdersWorker: IWorkerAdapter<any, any> = {
   ...WorkerAdapter,
 
   key: 'shop.unchained.worker-plugin.generate-enrollment-orders',
@@ -164,6 +164,6 @@ const GenerateEnrollmentOrders: IWorkerAdapter<any, any> = {
   },
 };
 
-WorkerDirector.registerAdapter(GenerateEnrollmentOrders);
+WorkerDirector.registerAdapter(GenerateEnrollmentOrdersWorker);
 
-export default GenerateEnrollmentOrders;
+export default GenerateEnrollmentOrdersWorker;

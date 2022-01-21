@@ -117,10 +117,14 @@ export type WorkScheduleConfigureation = Omit<Work, 'input'> & {
   input: () => any;
   schedule: WorkerSchedule;
 };
-export type IWorkerAdapter<Args, Result> = IBaseAdapter & {
+export type IWorkerAdapter<Input, Output> = IBaseAdapter & {
   type: string;
 
-  doWork: (args: Args, requestContext: Context) => Promise<WorkResult<Result>>;
+  doWork: (
+    input: Input,
+    requestContext: Context,
+    workId: string
+  ) => Promise<WorkResult<Output>>;
 };
 
 export type IWorkerDirector = IBaseDirector<IWorkerAdapter<any, any>> & {
@@ -132,7 +136,7 @@ export type IWorkerDirector = IBaseDirector<IWorkerAdapter<any, any>> & {
   ) => void;
   getAutoSchedules: () => Array<[string, WorkScheduleConfigureation]>;
 
-  events: EventEmitter
+  events: EventEmitter;
   // emit: (eventName: string, payload: any) => void;
   // onEmit: (eventName: string, payload: any) => void;
   // offEmit: (eventName: string, payload: any) => void;
@@ -175,9 +179,7 @@ export type IScheduler = {
   label: string;
   version: string;
 
-  actions: (
-    requestContext: Context
-  ) => {
+  actions: (requestContext: Context) => {
     start: () => void;
     stop: () => void;
   };

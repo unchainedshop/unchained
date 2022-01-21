@@ -5,9 +5,9 @@ import { AssortmentsSettingsOptions } from './assortments';
 import { DeliverySettingsOptions } from './delivery';
 import { EnrollmentsSettingsOptions } from './enrollments';
 import { Modules } from './modules';
-import { Order, OrdersSettingsOptions } from './orders';
-import { Quotation, QuotationsSettingsOptions } from './quotations';
+import { OrdersSettingsOptions } from './orders';
 import { PaymentProvidersSettingsOptions } from './payments';
+import { QuotationsSettingsOptions } from './quotations';
 import { Services } from './services';
 import { User } from './user';
 

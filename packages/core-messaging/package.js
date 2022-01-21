@@ -14,16 +14,9 @@ Npm.depends({
 Package.onUse((api) => {
   api.versionsFrom('2.2');
   api.use('ecmascript');
+  api.use('typescript');
 
   api.use('unchained:logger@1.0.0-beta15');
 
-  api.use('unchained:core-worker@1.0.0-beta15');
-
-  api.mainModule('messaging.js', 'server');
-});
-
-Package.onTest((api) => {
-  api.use('ecmascript');
-  api.use('unchained:core-messaging');
-  api.mainModule('messaging-tests.js');
+  api.mainModule('src/messaging-index.ts', 'server');
 });

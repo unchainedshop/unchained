@@ -14,6 +14,7 @@ import {
 } from 'mongodb';
 import { LogOptions } from './logs';
 
+export { Locale, Locales } from 'locale'
 /*
  * MongoDb
  */

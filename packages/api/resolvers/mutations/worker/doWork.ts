@@ -3,11 +3,8 @@ import { WorkTypeInvalidError } from '../../../errors';
 import { Context, Root } from '@unchainedshop/types/api';
 import { Work } from '@unchainedshop/types/worker';
 
-export default async function doWork(
-  root: Root,
-  work: Work,
-  { modules, userId }: Context
-) {
+export default async function doWork(root: Root, work: Work, context: Context) {
+  const { modules, userId } = context;
   const { type, input } = work;
 
   log(`mutation doWork ${type} ${input}`, {
@@ -16,5 +13,5 @@ export default async function doWork(
 
   if (!type) throw new WorkTypeInvalidError({ type });
 
-  return await modules.worker.doWork(work);
+  return await modules.worker.doWork(work, context);
 }

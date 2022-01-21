@@ -66,6 +66,10 @@ import {
   Transports,
 } from './logs';
 import {
+  MessagingModule,
+  IMessagingDirector,
+} from './messaging';
+import {
   OrderServices,
   OrdersModule,
   OrdersSettingsOptions,
@@ -73,7 +77,10 @@ import {
 } from './orders';
 import { OrderDeliveryStatus as OrderDeliveryStatusType } from './orders.deliveries';
 import { OrderPaymentStatus as OrderPaymentStatusType } from './orders.payments';
-import { OrderPricingCalculation } from './orders.pricing';
+import {
+  OrderPricingCalculation,
+  OrderPricingRowCategory as OrderPricingRowCategoryType,
+} from './orders.pricing';
 import {
   IOrderPricingAdapter,
   IOrderPricingDirector,
@@ -404,6 +411,14 @@ declare module 'meteor/unchained:core-languages' {
   ): Promise<LanguagesModule>;
 }
 
+declare module 'meteor/unchained:core-messaging' {
+  function configureMessagingsModule(): MessagingModule;
+
+  const MessagingDirector: IMessagingDirector;
+
+  const messagingLogger: Logger;
+}
+
 declare module 'meteor/unchained:core-orders' {
   function configureOrdersModule(
     params: ModuleInput<OrdersSettingsOptions>
@@ -444,7 +459,7 @@ declare module 'meteor/unchained:core-payment' {
   const PaymentError: typeof PaymentErrorType;
   const PaymentProviderType: typeof PaymentProviderTypeType;
 
-  const paymentLogger;
+  const paymentLogger: Logger;
 }
 
 declare module 'meteor/unchained:core-products' {

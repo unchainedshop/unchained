@@ -1,5 +1,5 @@
-import { MessagingDirector } from 'meteor/unchained:core-messaging';
-import { Users } from 'meteor/unchained:core-users';
+import { Context } from '@unchainedshop/types/api';
+import { TemplateResolver } from '@unchainedshop/types/messaging';
 
 const {
   EMAIL_FROM,
@@ -116,18 +116,22 @@ const emailConfig = {
   },
 };
 
-export default ({ userId, action, recipientEmail, token }) => {
+export const resolveAccountActionTemplate: TemplateResolver = async (
+  { userId, action, recipientEmail, token },
+  { modules }
+) => {
   if (!token || !action) return [];
 
-  const user = Users.findOne({ _id: userId });
-  const locale = user.locale();
+  const user = await modules.users.findUser({ userId });
+  const locale = modules.users.userLocale(user);
+
   const { url } = emailConfig[action];
   const { subject, message, buttonText } = emailConfig[action][locale.language];
 
-  const templateVariables = {
-    subject,
-    message,
+  const data = {
     buttonText,
+    message,
+    subject,
     url: url(token),
   };
 
@@ -136,13 +140,10 @@ export default ({ userId, action, recipientEmail, token }) => {
       type: 'EMAIL',
       input: {
         from: EMAIL_FROM,
-        to: recipientEmail || user.primaryEmail()?.address,
+        to: recipientEmail || modules.users.primaryEmail(user)?.address,
         subject,
-        text: MessagingDirector.renderToText(textTemplate, templateVariables),
-        html: MessagingDirector.renderMjmlToHtml(
-          mjmlTemplate,
-          templateVariables
-        ),
+        text: modules.messaging.renderToText(textTemplate, data),
+        html: modules.messaging.renderMjmlToHtml(mjmlTemplate, data),
       },
     },
   ];
