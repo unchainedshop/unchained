@@ -47,7 +47,7 @@ export const configureAssortmentTextsModule = ({
     text: AssortmentText,
     userId?: string
   ) => {
-    const { slug: textSlug, ...textFields } = text;
+    const { slug: textSlug, locale: textLocale, ...textFields } = text;
     const slug = await makeSlug({
       slug: textSlug,
       title: text.title,
@@ -76,6 +76,7 @@ export const configureAssortmentTextsModule = ({
     }
 
     const selector = { assortmentId, locale };
+
     const updateResult = await AssortmentTexts.updateOne(selector, modifier, {
       upsert: true,
     });
@@ -149,7 +150,6 @@ export const configureAssortmentTextsModule = ({
 
     // Mutations
     updateTexts: async (assortmentId, texts, userId) => {
-      console.log('INPUT_ASSORTMENT_TEXT', texts);
       const assortmentTexts = Array.isArray(texts)
         ? await Promise.all(
             texts.map((text) =>
@@ -165,8 +165,6 @@ export const configureAssortmentTextsModule = ({
             )
           )
         : [];
-
-      console.log('ASSORTMENT TEXTS', assortmentTexts);
 
       emit('ASSORTMENT_UPDATE_TEXTS', {
         assortmentId,
