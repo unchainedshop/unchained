@@ -105,3 +105,7 @@ export interface AccountsSettingsOptions {
   server?: any;
   password?: any;
 }
+export interface AccountsSettings {
+  autoMessagingAfterUserCreation: boolean;
+  configureSettings: (options?: AccountsSettingsOptions) => void;
+}

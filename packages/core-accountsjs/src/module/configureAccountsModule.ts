@@ -1,23 +1,19 @@
-import { log, LogLevel } from 'meteor/unchained:logger';
-import { v4 as uuidv4 } from 'uuid';
-import { evaluateContext } from './utils/evaluateContext';
-import { filterContext } from './utils/filterContext';
 import {
   AccountsModule,
   AccountsSettingsOptions,
 } from '@unchainedshop/types/accounts';
-import { accountsPassword } from '../accounts/accounts-password';
-import { accountsServer } from '../accounts/accounts-server';
-import { dbManager } from '../accounts/db-manager';
-import { hashPassword } from './utils/hashPassword';
+import { log, LogLevel } from 'meteor/unchained:logger';
+import { v4 as uuidv4 } from 'uuid';
 import { accountsSettings } from '../accounts-settings';
+import { accountsServer } from '../accounts/accountsServer';
+import { accountsPassword } from '../accounts/accountsPassword';
+import { dbManager } from '../accounts/dbManager';
+import { evaluateContext } from './utils/evaluateContext';
+import { filterContext } from './utils/filterContext';
+import { hashPassword } from './utils/hashPassword';
 
-export const configureAccountsModule = async ({
-  options: accountsOptions = {},
-}: { options?: AccountsSettingsOptions } = {}): Promise<AccountsModule> => {
-  accountsSettings.configureSettings(accountsOptions);
-
-  return {
+export const configureAccountsModule = async (): Promise<AccountsModule> => {
+  return {    
     emit: async (event, meta) =>
       await accountsServer.getHooks().emit(event, meta),
 
@@ -27,9 +23,9 @@ export const configureAccountsModule = async ({
 
       const autoMessagingEnabled = options.skipMessaging
         ? false
-        : accountsOptions.autoMessagingAfterUserCreation &&
-          userData.email &&
-          userId;
+        : accountsSettings.autoMessagingAfterUserCreation &&
+          !!userData.email &&
+          !!userId;
 
       if (autoMessagingEnabled) {
         if (userData.password === undefined) {
@@ -58,9 +54,7 @@ export const configureAccountsModule = async ({
           .filter(
             ({ address }) => address.toLowerCase() !== email.toLowerCase()
           )
-          .map(({ address }) =>
-            accountsPassword.removeEmail(userId, address)
-          )
+          .map(({ address }) => accountsPassword.removeEmail(userId, address))
       );
     },
 

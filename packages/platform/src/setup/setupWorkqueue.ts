@@ -7,13 +7,15 @@ import {
   FailedRescheduler,
 } from 'meteor/unchained:core-worker';
 
-export const workerTypeDefs = () => [
-  /* GraphQL */ `
+export const workerTypeDefs = () => {
+  return [
+    /* GraphQL */ `
     extend enum WorkType {
       ${WorkerDirector.getActivePluginTypes().join(',')}
     }
   `,
-];
+  ];
+};
 
 export interface SetupWorkqueueOptions {
   batchCount?: number;

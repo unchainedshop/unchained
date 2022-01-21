@@ -8,9 +8,9 @@ export default async function enrollUser(
   params: UserData,
   context: Context
 ) {
-  const { modules, userId } = context
+  const { modules } = context;
 
-  log('mutation enrollUser', { email: params.email, userId });
+  log('mutation enrollUser', { email: params.email, userId: context.userId });
 
   const mappedUserData = params;
   mappedUserData.initialPassword = true;
@@ -21,9 +21,9 @@ export default async function enrollUser(
 
   // Skip Messaging when password is set so we
   // don't send a verification e-mail after enrollment
-  const user = await modules.accounts.createUser(mappedUserData, context, {
+  const userId = await modules.accounts.createUser(mappedUserData, {
     skipMessaging: !!mappedUserData.password,
   });
 
-  return user;
+  return await modules.users.findUser({ userId })
 }

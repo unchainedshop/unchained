@@ -42,11 +42,11 @@ import { configureWorkerModule } from 'meteor/unchained:core-worker';
 
 export const initCore = async ({
   db,
-  modules = {},
+  modules,
   bulkImporter,
   options = {},
 }: UnchainedCoreOptions) => {
-  const accounts = await configureAccountsModule(options.accounts);
+  const accounts = await configureAccountsModule();
   const assortments = await configureAssortmentsModule({
     db,
     options: options.assortments,
@@ -84,8 +84,11 @@ export const initCore = async ({
   const warehousing = await configureWarehousingModule({ db });
   const worker = await configureWorkerModule({ db });
 
+  
+
   return {
     modules: {
+      ...modules,
       accounts,
       assortments,
       bookmarks,

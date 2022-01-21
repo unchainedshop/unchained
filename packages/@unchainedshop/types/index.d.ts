@@ -2,7 +2,11 @@ import { ApolloServer } from 'apollo-server-express';
 import { Request } from 'express';
 import { Locale, Locales } from 'locale';
 import SimpleSchema from 'simpl-schema';
-import { AccountsModule, AccountsSettingsOptions } from './accounts';
+import {
+  AccountsModule,
+  AccountsSettings,
+  AccountsSettingsOptions,
+} from './accounts';
 import { Context, UnchainedCoreOptions, UnchainedServerOptions } from './api';
 import { AssortmentsModule, AssortmentsSettingsOptions } from './assortments';
 import { BookmarkServices, BookmarksModule } from './bookmarks';
@@ -299,10 +303,12 @@ declare module 'meteor/unchained:core-accountsjs' {
     options: AccountsSettingsOptions
   ): Promise<AccountsModule>;
 
-  const accountsSettings: any;
+  function configureAccountServer(context: Context): any;
 
-  const accountsServer: any;
-  const accountsPassword: any;
+  const accountsSettings: AccountsSettings;
+
+  // const accountsServer: any;
+  // const accountsPassword: any;
 
   function randomValueHex(len: number): string;
 }

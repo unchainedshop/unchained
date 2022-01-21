@@ -1,34 +1,9 @@
 import { AccountsServer, ServerHooks } from '@accounts/server';
-import { WorkerDirector } from 'meteor/unchained:core-worker';
 import crypto from 'crypto';
+import { accountsPassword } from './accountsPassword';
+import { accountsServerOptions } from './accountsServerOptions';
+import { dbManager } from './dbManager';
 import { randomValueHex } from './utils/helpers';
-import { dbManager } from './db-manager';
-import { accountsPassword } from './accounts-password';
-
-const accountsServerOptions = {
-  useInternalUserObjectSanitizer: false,
-  siteUrl: process.env.ROOT_URL,
-  prepareMail: (to, token, user, pathFragment) => {
-    return {
-      template: 'ACCOUNT_ACTION',
-      recipientEmail: to,
-      action: pathFragment,
-      userId: user.id || user._id,
-      token,
-      skipMessaging: !!user.guest && pathFragment === 'verify-email',
-    };
-  },
-  sendMail: (input) => {
-    if (!input) return true;
-    if (input.skipMessaging) return true;
-
-    return WorkerDirector.addWork({
-      type: 'MESSAGE',
-      retries: 0,
-      input,
-    });
-  },
-};
 
 export class UnchainedAccountsServer extends AccountsServer {
   DEFAULT_LOGIN_EXPIRATION_DAYS = 30;
@@ -142,13 +117,20 @@ export class UnchainedAccountsServer extends AccountsServer {
   }
 }
 
-// eslint-disable-next-line import/prefer-default-export
-export const accountsServer = new UnchainedAccountsServer(
-  {
-    db: dbManager,
-    ...accountsServerOptions,
-  },
-  {
-    password: accountsPassword,
-  }
-);
+let accountsServer = null;
+
+export const configureAccountServer = (requestContext) => {
+  accountsServer = new UnchainedAccountsServer(
+    {
+      db: dbManager,
+      ...accountsServerOptions(requestContext),
+    },
+    {
+      password: accountsPassword,
+    }
+  );
+
+  return accountsServer
+};
+
+export { accountsServer }

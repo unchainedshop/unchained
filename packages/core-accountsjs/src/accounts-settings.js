@@ -1,9 +1,30 @@
-import { accountsPassword } from './accounts/accounts-password';
-import { accountsServer } from './accounts/accounts-server';
+import { accountsPassword } from './accounts/accountsPassword';
+import { accountsServer } from './accounts/accountsServer';
+import { Schemas } from 'meteor/unchained:utils'
+
+const defaultAutoMessagingAfterUserCreation = true;
 
 export const accountsSettings = {
-  configureSettings: ({ server = {}, password = {} } = {}) => {
+  autoMessagingAfterUserCreation: null,
+  configureSettings: ({
+    autoMessagingAfterUserCreation = defaultAutoMessagingAfterUserCreation,
+    server = {},
+    password = {},
+  } = {}) => {
+    accountsSettings.autoMessagingAfterUserCreation =
+      autoMessagingAfterUserCreation ?? defaultAutoMessagingAfterUserCreation;
+
     accountsPassword.options.sendVerificationEmailAfterSignup = false;
+    accountsPassword.options.validateNewUser = (user) => {
+      const customSchema = Schemas.User.extend({
+        password: String,
+        email: String,
+      }).omit('_id', 'created', 'createdBy', 'emails', 'services');
+
+      customSchema.validate(user);
+      return customSchema.clean(user);
+    };
+
     Object.keys(server).forEach((key) => {
       accountsServer.options[key] = server[key];
     });

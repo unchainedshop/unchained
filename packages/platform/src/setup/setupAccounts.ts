@@ -2,11 +2,10 @@ import { Context } from '@unchainedshop/types/api';
 import { User } from '@unchainedshop/types/user';
 import { check, Match } from 'meteor/check';
 import {
-  accountsPassword,
-  accountsServer,
+  accountsSettings,
+  configureAccountServer,
   randomValueHex,
 } from 'meteor/unchained:core-accountsjs';
-import { Schemas } from 'meteor/unchained:utils';
 import moniker from 'moniker';
 
 export interface SetupAccountsOptions {
@@ -18,18 +17,12 @@ export const setupAccounts = (
   options: SetupAccountsOptions = { mergeUserCartsOnLogin: true },
   unchainedAPI: Context
 ) => {
-  accountsPassword.options.validateNewUser = (user: User) => {
-    const customSchema = Schemas.User.extend({
-      password: String,
-      email: String,
-    }).omit('_id', 'created', 'createdBy', 'emails', 'services');
+  const accountsServer = configureAccountServer(unchainedAPI);
 
-    customSchema.validate(user);
-    return customSchema.clean(user);
-  };
+  accountsSettings.configureSettings(accountsServer, options);
 
   accountsServer.users = unchainedAPI.modules.users;
-
+  
   accountsServer.services.guest = {
     async authenticate(params: { email?: string | null }) {
       check(params.email, Match.OneOf(String, null, undefined));
@@ -124,4 +117,6 @@ export const setupAccounts = (
       return true;
     }
   );
+
+  return accountsServer;
 };

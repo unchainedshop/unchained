@@ -45,7 +45,7 @@ import seed from './seed';
 Meteor.startup(async () => {
   const unchainedApi = await startPlatform({
     introspection: true,
-    modules: {
+    options: {
       accounts: {
         password: {
           twoFactor: {
