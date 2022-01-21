@@ -20,7 +20,7 @@ export default async function changePassword(
     throw new Error('Old password is required');
   }
 
-  await modules.accounts.changePassword(userId, params);
+  const success = await modules.accounts.changePassword(userId, params);
   
-  return { success: true };
+  return { success };
 }

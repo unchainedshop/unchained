@@ -10,5 +10,10 @@ export default async function loginAsGuest(
 
   log('mutation loginAsGuest');
 
-  return await modules.accounts.loginWithService({ service: 'guest' }, context);
+  const loginToken = await modules.accounts.loginWithService(
+    { service: 'guest' },
+    context
+  );
+
+  return loginToken;
 }

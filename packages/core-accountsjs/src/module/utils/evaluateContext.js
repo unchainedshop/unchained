@@ -1,15 +1,15 @@
 export const evaluateContext = (filteredContext) => {
   const {
     userId: userIdBeforeLogin,
+    user: userBeforeLogin,
     localeContext,
-    modules, // Do not propagate further
-    services, // Do not propagate further
     ...handlerContext
   } = filteredContext;
 
   return {
     userIdBeforeLogin,
+    userBeforeLogin,
     normalizedLocale: localeContext && localeContext.normalized,
     ...handlerContext,
   };
-}
+};

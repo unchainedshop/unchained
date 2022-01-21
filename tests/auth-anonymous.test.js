@@ -2,22 +2,22 @@ import {
   setupDatabase,
   createAnonymousGraphqlFetch,
   createLoggedInGraphqlFetch,
-} from './helpers';
-import { User, ADMIN_TOKEN } from './seeds/users';
+} from "./helpers";
+import { User, ADMIN_TOKEN } from "./seeds/users";
 
 let db;
 let graphqlFetch;
 let adminGraphqlFetch;
 
-describe('Auth for anonymous users', () => {
+describe("Auth for anonymous users", () => {
   beforeAll(async () => {
     [db] = await setupDatabase();
     graphqlFetch = createAnonymousGraphqlFetch();
     adminGraphqlFetch = createLoggedInGraphqlFetch(ADMIN_TOKEN);
   });
 
-  describe('Mutation.loginAsGuest', () => {
-    it('login as guest', async () => {
+  describe("Mutation.loginAsGuest", () => {
+    it("login as guest", async () => {
       // ensure no e-mail verification gets sent
       const result = await graphqlFetch({
         query: /* GraphQL */ `
@@ -47,14 +47,14 @@ describe('Auth for anonymous users', () => {
       });
 
       const work = workQueue.filter(
-        ({ type, status }) => type === 'MESSAGE' && status === 'SUCCESS',
+        ({ type, status }) => type === "MESSAGE" && status === "SUCCESS"
       );
       expect(work).toHaveLength(0);
 
       expect(result.data.loginAsGuest).toMatchObject({});
     });
-    it('user has guest flag', async () => {
-      const Users = db.collection('users');
+    it("user has guest flag", async () => {
+      const Users = db.collection("users");
       const user = await Users.findOne({
         guest: true,
       });
@@ -69,8 +69,8 @@ describe('Auth for anonymous users', () => {
     });
   });
 
-  describe('Mutation.createUser', () => {
-    it('create a new user', async () => {
+  describe("Mutation.createUser", () => {
+    it("create a new user", async () => {
       const {
         data: { createUser },
       } = await graphqlFetch({
@@ -99,14 +99,14 @@ describe('Auth for anonymous users', () => {
           }
         `,
         variables: {
-          username: 'newuser',
-          email: 'newuser@unchained.local',
-          password: 'password',
+          username: "newuser",
+          email: "newuser@unchained.local",
+          password: "password",
           profile: {
-            displayName: 'New User',
+            displayName: "New User",
             birthday: new Date(),
-            phoneMobile: '+410000000',
-            gender: 'm',
+            phoneMobile: "+410000000",
+            gender: "m",
             address: null,
             customFields: null,
           },
@@ -120,8 +120,8 @@ describe('Auth for anonymous users', () => {
     });
   });
 
-  describe('Mutation.loginWithPassword', () => {
-    it('login via username and password', async () => {
+  describe("Mutation.loginWithPassword", () => {
+    it("login via username and password", async () => {
       const { data: { loginWithPassword } = {} } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation {
@@ -136,30 +136,34 @@ describe('Auth for anonymous users', () => {
         `,
       });
       expect(loginWithPassword).toMatchObject({
-        id: 'admin',
+        id: "admin",
         user: {
-          username: 'admin',
+          username: "admin",
         },
       });
     });
   });
 
-  describe('Mutation.forgotPassword', () => {
+  describe("Mutation.forgotPassword", () => {
     beforeAll(async () => {
-      const Users = db.collection('users');
-      await Users.findOrInsertOne({
-        ...User,
-        _id: 'userthatforgetspasswords',
-        emails: [
-          {
-            address: 'userthatforgetspasswords@unchained.local',
-            verified: true,
-          },
-        ],
-      });
+      const Users = db.collection("users");
+      const user = await Users.findOne({ _id: "userthatforgetspasswords" });
+      if (!user) {
+        await Users.insertOne({
+          ...User,
+          _id: "userthatforgetspasswords",
+          username: `${User.username}${Math.random()}`,
+          emails: [
+            {
+              address: "userthatforgetspasswords@unchained.local",
+              verified: true,
+            },
+          ],
+        });
+      }
     });
 
-    it('create a reset token', async () => {
+    it("create a reset token", async () => {
       const { data: { forgotPassword } = {} } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation {
@@ -175,35 +179,35 @@ describe('Auth for anonymous users', () => {
     });
   });
 
-  describe('Mutation.resetPassword', () => {
+  describe("Mutation.resetPassword", () => {
     beforeAll(async () => {
-      const Users = db.collection('users');
+      const Users = db.collection("users");
       const userCopy = {
         ...User,
         username: `${User.username}${Math.random()}`,
       };
       delete userCopy._id;
       await Users.findOneAndUpdate(
-        { _id: 'userthatforgetspasswords' },
+        { _id: "userthatforgetspasswords" },
         {
           $setOnInsert: {
             ...userCopy,
             emails: [
               {
-                address: 'userthatforgetspasswords@unchained.local',
+                address: "userthatforgetspasswords@unchained.local",
                 verified: true,
               },
             ],
           },
         },
         {
-          returnDocument: 'after',
+          returnDocument: "after",
           upsert: true,
-        },
+        }
       );
     });
 
-    it('create a reset token', async () => {
+    it("create a reset token", async () => {
       const { data: { forgotPassword } = {} } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation {
@@ -218,11 +222,11 @@ describe('Auth for anonymous users', () => {
       });
     });
 
-    it('change password with token from forgotPassword call', async () => {
+    it("change password with token from forgotPassword call", async () => {
       // Reset the password with that token
-      const Users = db.collection('users');
+      const Users = db.collection("users");
       const user = await Users.findOne({
-        'emails.address': 'userthatforgetspasswords@unchained.local',
+        "emails.address": "userthatforgetspasswords@unchained.local",
       });
 
       const {
@@ -246,14 +250,14 @@ describe('Auth for anonymous users', () => {
           }
         `,
         variables: {
-          newPlainPassword: 'password',
+          newPlainPassword: "password",
           token,
         },
       });
       expect(resetPassword).toMatchObject({
-        id: 'userthatforgetspasswords',
+        id: "userthatforgetspasswords",
         user: {
-          _id: 'userthatforgetspasswords',
+          _id: "userthatforgetspasswords",
         },
       });
     });

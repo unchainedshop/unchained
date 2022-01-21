@@ -22,7 +22,7 @@ export const setupAccounts = (
   accountsSettings.configureSettings(accountsServer, options);
 
   accountsServer.users = unchainedAPI.modules.users;
-  
+
   accountsServer.services.guest = {
     async authenticate(params: { email?: string | null }) {
       check(params.email, Match.OneOf(String, null, undefined));
@@ -45,7 +45,7 @@ export const setupAccounts = (
   };
 
   accountsServer.on('LoginTokenCreated', async (props) => {
-    const { user, connection = {} } = props;
+    const { userId, connection = {} } = props;
     const {
       userIdBeforeLogin,
       countryContext,
@@ -55,14 +55,12 @@ export const setupAccounts = (
       normalizedLocale,
     } = connection;
 
-    const userId = connection.userId || unchainedAPI.userId;
     const context = {
       ...unchainedAPI,
-      userId,
-      user,
+      userId: userId || unchainedAPI.userId,
     };
 
-    await unchainedAPI.modules.users.updateHeartbeat(user._id, {
+    await unchainedAPI.modules.users.updateHeartbeat(userId, {
       remoteAddress,
       remotePort,
       userAgent,
@@ -74,7 +72,7 @@ export const setupAccounts = (
       await unchainedAPI.services.orders.migrateOrderCarts(
         {
           fromUserId: userIdBeforeLogin,
-          toUser: user,
+          toUser: userId,
           countryContext,
           shouldMergeCarts: options.mergeUserCartsOnLogin,
         },
@@ -84,13 +82,14 @@ export const setupAccounts = (
       await unchainedAPI.services.bookmarks.migrateBookmarks(
         {
           fromUserId: userIdBeforeLogin,
-          toUserId: user._id,
+          toUserId: userId,
           shouldMergeBookmarks: options.mergeUserCartsOnLogin,
         },
         context
       );
     }
 
+    const user = await unchainedAPI.modules.users.findUser({ userId });
     await unchainedAPI.modules.orders.ensureCartForUser(
       {
         user,

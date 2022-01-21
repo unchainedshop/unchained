@@ -13,7 +13,7 @@ import { filterContext } from './utils/filterContext';
 import { hashPassword } from './utils/hashPassword';
 
 export const configureAccountsModule = async (): Promise<AccountsModule> => {
-  return {    
+  return {
     emit: async (event, meta) =>
       await accountsServer.getHooks().emit(event, meta),
 
@@ -71,13 +71,16 @@ export const configureAccountsModule = async (): Promise<AccountsModule> => {
     // Autentication
     createLoginToken: async (userId, rawContext) => {
       const context = evaluateContext(filterContext(rawContext));
+
       const { user: tokenUser, token: loginToken } =
         await accountsServer.loginWithUser(userId);
+
       await accountsServer.getHooks().emit('LoginTokenCreated', {
-        user: tokenUser,
+        userId: tokenUser,
         connection: context,
         service: null,
       });
+
       return {
         id: userId,
         token: loginToken.token,
@@ -91,18 +94,17 @@ export const configureAccountsModule = async (): Promise<AccountsModule> => {
     loginWithService: async (params, rawContext) => {
       const context = evaluateContext(filterContext(rawContext));
 
-      /* @ts-ignore */
       const { user: tokenUser, token: loginToken } =
         await accountsServer.loginWithService(params.service, params, context);
 
       await accountsServer.getHooks().emit('LoginTokenCreated', {
+        userId: tokenUser._id,
         user: tokenUser,
         connection: context,
         service: params.service,
       });
 
       return {
-        /* @ts-ignore */
         id: tokenUser._id,
         token: loginToken.token,
         tokenExpires: loginToken.when,
@@ -150,13 +152,30 @@ export const configureAccountsModule = async (): Promise<AccountsModule> => {
       const newPassword = newHashedPassword || hashPassword(newPlainPassword);
       const oldPassword = oldHashedPassword || hashPassword(oldPlainPassword);
 
-      await accountsPassword.changePassword(userId, oldPassword, newPassword);
+      const success = await accountsPassword
+        .changePassword(userId, oldPassword, newPassword)
+        .then(() => true) // Map null to success
+        .catch((error: Error) => {
+          log('Error while changing password', {
+            level: LogLevel.Error,
+            ...error,
+          });
+          return false;
+        });
+      return success;
     },
-    sendResetPasswordEmail: async (email) => {
-      await accountsPassword.sendResetPasswordEmail(email);
-
-      return true;
-    },
+    sendResetPasswordEmail: async (email) =>
+      await accountsPassword
+        .sendResetPasswordEmail(email)
+        .then(() => true) // Map null to success
+        .catch((error: Error) => {
+          log('Error while sending reset password', {
+            level: LogLevel.Error,
+            ...error,
+            email,
+          });
+          return false;
+        }),
 
     resetPassword: async (
       { newPassword: newHashedPassword, newPlainPassword, token },
