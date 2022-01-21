@@ -191,7 +191,7 @@ export const configureEnrollmentsModule = async ({
       const intializedEnrollment =
         await modules.enrollments.addEnrollmentPeriod(
           enrollment._id,
-          period,
+          { ...period, orderId: params.orderIdForFirstPeriod },
           userId
         );
 
@@ -310,7 +310,7 @@ export const configureEnrollmentsModule = async ({
     ) => {
       if (enrollment.status === EnrollmentStatus.TERMINATED) return enrollment;
 
-      const updatedEnrollment = await updateStatus(
+      let updatedEnrollment = await updateStatus(
         enrollment._id,
         {
           status: EnrollmentStatus.TERMINATED,
@@ -319,13 +319,13 @@ export const configureEnrollmentsModule = async ({
         requestContext
       );
 
-      await processEnrollment(
+      updatedEnrollment = await processEnrollment(
         updatedEnrollment,
         { enrollmentContext },
         requestContext
       );
 
-      return await sendStatusToCustomer(enrollment, {}, requestContext);
+      return await sendStatusToCustomer(updatedEnrollment, {}, requestContext);
     },
 
     activateEnrollment: async (
@@ -335,7 +335,7 @@ export const configureEnrollmentsModule = async ({
     ) => {
       if (enrollment.status === EnrollmentStatus.TERMINATED) return enrollment;
 
-      const updatedEnrollment = await updateStatus(
+      let updatedEnrollment = await updateStatus(
         enrollment._id,
         {
           status: EnrollmentStatus.ACTIVE,
@@ -344,13 +344,13 @@ export const configureEnrollmentsModule = async ({
         requestContext
       );
 
-      await processEnrollment(
+      updatedEnrollment= await processEnrollment(
         updatedEnrollment,
         { enrollmentContext },
         requestContext
       );
 
-      return await sendStatusToCustomer(enrollment, {}, requestContext);
+      return await sendStatusToCustomer(updatedEnrollment, {}, requestContext);
     },
 
     // Mutations

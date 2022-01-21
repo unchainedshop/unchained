@@ -8,20 +8,25 @@ import {
 import { Product } from '@unchainedshop/types/products';
 import { User } from '@unchainedshop/types/user';
 
-type HelperType<T> = (
+type HelperType<P, T> = (
   enrollment: EnrollmentType,
-  _: never,
+  params: P,
   context: Context
 ) => T;
 
 type EnrollmentHelperTypes = {
-  plan: HelperType<EnrollmentPlan>;
-  user: HelperType<Promise<User>>;
-  country: HelperType<Promise<Country>>;
-  currency: HelperType<Promise<Currency>>;
+  isExpired: HelperType<{ referenceDate?: Date }, boolean>;
+  plan: HelperType<never, EnrollmentPlan>;
+  user: HelperType<never, Promise<User>>;
+  country: HelperType<never, Promise<Country>>;
+  currency: HelperType<never, Promise<Currency>>;
 };
 
 export const Enrollment: EnrollmentHelperTypes = {
+  isExpired: (obj, params, { modules }) => {
+    return modules.enrollments.isExpired(obj, params);
+  },
+
   plan: ({ quantity, productId, configuration }) => {
     return {
       quantity,
@@ -35,7 +40,7 @@ export const Enrollment: EnrollmentHelperTypes = {
       userId: obj.userId,
     });
   },
-  
+
   country: async (obj, _, { modules }) => {
     return await modules.countries.findCountry({ isoCode: obj.countryCode });
   },

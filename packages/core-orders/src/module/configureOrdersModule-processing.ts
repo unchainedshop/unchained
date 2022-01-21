@@ -322,7 +322,7 @@ export const configureOrderModuleProcessing = ({
       if (cart) return cart;
 
       const currency =
-        await services.countries.resolveDefaultCurrencyCodeService(
+        await services.countries.resolveDefaultCurrencyCode(
           {
             isoCode: params.countryContext,
           },
@@ -456,7 +456,7 @@ export const configureOrderModuleProcessing = ({
               await modules.enrollments.createFromCheckout(
                 newConfirmedOrder,
                 {
-                  items: filteredOrderPositions,
+                  items: filteredProductOrderPositions,
                   context: {
                     paymentContext: params.paymentContext,
                     deliveryContext: params.deliveryContext,

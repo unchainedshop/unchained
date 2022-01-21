@@ -31,10 +31,7 @@ export const OrderDeliveryPickUp: OrderDeliveryPickupHelperTypes = {
     });
     const director = DeliveryDirector.actions(provider, {}, context);
 
-    const location = await director.pickUpLocationById(orderPickUpLocationId);
-
-    console.log('LOCAtION', obj, provider, location, orderPickUpLocationId);
-    return location;
+    return await director.pickUpLocationById(orderPickUpLocationId);
   },
 
   pickUpLocations: async (obj, _, context) => {

@@ -27,7 +27,7 @@ export default async function updateOrderDeliveryPickUp(
     deliveryProviderId: orderDelivery.deliveryProviderId,
   });
   const deliveryProviderType = provider?.type;
-
+  
   if (deliveryProviderType !== DeliveryProviderType.PICKUP)
     throw new OrderDeliveryTypeError({
       orderDeliveryId,
