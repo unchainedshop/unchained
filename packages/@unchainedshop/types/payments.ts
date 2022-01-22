@@ -56,6 +56,13 @@ export type BityCredentials = {
   expires: Date;
 } & TimestampFields;
 
+export type AppleTransaction = {
+  _id?: _ID;
+  transactionIdentifier: string;
+  matchedTransaction: any;
+  orderId: string;
+} & TimestampFields;
+
 type PaymentProviderQuery = {
   type?: PaymentProviderType;
   deleted?: Date;
@@ -251,6 +258,21 @@ export type PaymentModule = {
       userId: string
     ) => Promise<string | null>;
   };
+
+  /*
+   * Apple Transactions Module
+   */
+
+  appleTransactions: {
+    findTransactions: (query: {
+      transactionIdentifier: string;
+    }) => Promise<Array<AppleTransaction>>;
+
+    createTransaction: (
+      doc: AppleTransaction,
+      userId: string
+    ) => Promise<string | null>;
+  };
 };
 
 /*
@@ -274,8 +296,8 @@ export type RegisterPaymentCredentialsService = (
 ) => Promise<PaymentCredentials | null>;
 
 export interface PaymentServices {
-  chargeService: ChargeService;
-  registerPaymentCredentialsService: RegisterPaymentCredentialsService;
+  charge: ChargeService;
+  registerPaymentCredentials: RegisterPaymentCredentialsService;
 }
 
 /*

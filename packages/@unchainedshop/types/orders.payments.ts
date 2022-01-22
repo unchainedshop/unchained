@@ -34,6 +34,13 @@ export type OrderPaymentsModule = {
     options?: FindOptions
   ) => Promise<OrderPayment>;
 
+  findOrderPaymentByContextData: (
+    params: {
+      context: any;
+    },
+    options?: FindOptions
+  ) => Promise<OrderPayment>;
+
   // Transformations
   discounts: (
     orderPayment: OrderPayment,
@@ -82,7 +89,7 @@ export type OrderPaymentsModule = {
 
   updateContext: (
     orderPaymentId: string,
-    context: any,
+    params: { orderId?: string; context: any },
     requestContext: Context
   ) => Promise<OrderPayment>;
 

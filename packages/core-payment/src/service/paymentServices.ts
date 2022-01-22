@@ -3,6 +3,6 @@ import { chargeService } from './chargeService';
 import { registerPaymentCredentialsService } from './registerPaymentCredentialsService';
 
 export const paymentServices: PaymentServices = {
-  chargeService,
-  registerPaymentCredentialsService,
+  charge: chargeService,
+  registerPaymentCredentials: registerPaymentCredentialsService,
 };

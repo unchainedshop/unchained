@@ -218,7 +218,7 @@ export const configureOrderModuleMutations = ({
     },
 
     updateContext: async (orderId, context, requestContext) => {
-      log('Update Arbitrary Context', { orderId });
+      log('Update Arbitrary Context', { orderId, context });
 
       const selector = generateDbFilterById(orderId);
       await Orders.updateOne(selector, {

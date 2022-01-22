@@ -19,7 +19,7 @@ import {
 } from 'meteor/unchained:core-files-next';
 import { configureFiltersModule } from 'meteor/unchained:core-filters';
 import { configureLanguagesModule } from 'meteor/unchained:core-languages';
-// import { configureMessagingModule } from 'meteor/unchained:core-messaging';
+import { configureMessagingModule } from 'meteor/unchained:core-messaging';
 import {
   configureOrdersModule,
   orderServices,
@@ -66,7 +66,7 @@ export const initCore = async ({
   const files = await configureFilesModule({ db });
   const filters = await configureFiltersModule({ db });
   const languages = await configureLanguagesModule({ db });
-  // const messaging = await configureMessagingModule({ db });
+  const messaging = await configureMessagingModule({ db });
   const orders = await configureOrdersModule({
     db,
     options: options.orders,
@@ -87,6 +87,7 @@ export const initCore = async ({
   
 
   return {
+    db,
     modules: {
       ...modules,
       accounts,
@@ -100,7 +101,7 @@ export const initCore = async ({
       files,
       filters,
       languages,
-      // messaging,
+      messaging,
       orders,
       payment,
       products,

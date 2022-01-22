@@ -529,7 +529,7 @@ declare module 'meteor/unchained:core-worker' {
 }
 
 declare module 'meteor/unchained:core' {
-  function initCore(options: UnchainedCoreOptions): Context;
+  function initCore(options: UnchainedCoreOptions): Promise<Context>;
 }
 
 declare module 'meteor/unchained:api' {

@@ -30,6 +30,7 @@ Package.onUse((api) => {
 
   api.use('unchained:core-worker@1.0.0-beta15');
   api.use('unchained:core-accountsjs@1.0.0-beta15');
+  api.use('unchained:core-messaging@1.0.0-beta15');
 
   api.mainModule('src/platform-index.ts', 'server');
 });

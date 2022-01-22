@@ -20,6 +20,7 @@ export interface UnchainedUserContext {
 }
 
 export interface UnchainedAPI {
+  db: Db;
   modules: Modules;
   services: Services;
   version?: string;

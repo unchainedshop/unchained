@@ -179,7 +179,7 @@ export const configurePaymentProvidersModule = (
         paymentContext,
         requestContext
       );
-      adapter.charge();
+      return adapter.charge();
     },
 
     register: async (paymentProviderId, paymentContext, requestContext) => {
@@ -188,7 +188,7 @@ export const configurePaymentProvidersModule = (
         paymentContext,
         requestContext
       );
-      adapter.register();
+      return adapter.register();
     },
 
     sign: async (paymentProviderId, paymentContext, requestContext) => {

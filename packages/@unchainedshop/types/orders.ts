@@ -66,6 +66,7 @@ export type OrderQuery = {
 };
 
 type OrderTransactionContext = {
+  transactionContext?: any;
   paymentContext?: any;
   deliveryContext?: any;
   orderContext?: any;

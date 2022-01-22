@@ -321,13 +321,12 @@ export const configureOrderModuleProcessing = ({
       );
       if (cart) return cart;
 
-      const currency =
-        await services.countries.resolveDefaultCurrencyCode(
-          {
-            isoCode: params.countryContext,
-          },
-          requestContext
-        );
+      const currency = await services.countries.resolveDefaultCurrencyCode(
+        {
+          isoCode: params.countryContext,
+        },
+        requestContext
+      );
 
       return await modules.orders.create(
         {
@@ -390,7 +389,7 @@ export const configureOrderModuleProcessing = ({
 
         await modules.orders.payments.charge(
           orderPayment,
-          { order, transactionContext: params.paymentContext },
+          { order, transactionContext: params.transactionContext },
           requestContext
         );
         await modules.users.updateLastBillingAddress(

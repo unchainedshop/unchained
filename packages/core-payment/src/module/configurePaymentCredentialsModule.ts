@@ -69,6 +69,7 @@ export const configurePaymentCredentialsModule = (
       token,
       ...meta
     }) => {
+      const paymentCredentialsId = generateDbObjectId();
       const result = await PaymentCredentials.updateOne(
         _id
           ? generateDbFilterById(_id, {
@@ -81,7 +82,7 @@ export const configurePaymentCredentialsModule = (
             },
         {
           $setOnInsert: {
-            _id: generateDbObjectId(),
+            _id: paymentCredentialsId,
             userId,
             paymentProviderId,
             isPreferred: false,
@@ -103,17 +104,17 @@ export const configurePaymentCredentialsModule = (
       if (result.upsertedCount > 0) {
         await markPreferred({
           userId,
-          paymentCredentialsId: result.upsertedId.toHexString(),
+          paymentCredentialsId,
         });
-        return result.upsertedId.toHexString();
+        return paymentCredentialsId;
       }
       return null;
     },
+
     removeCredentials: async (paymentCredentialsId) => {
-      const paymentCredentials = PaymentCredentials.findOne(
-        generateDbFilterById(paymentCredentialsId)
-      );
-      PaymentCredentials.deleteOne(generateDbFilterById(paymentCredentialsId));
+      const selector = generateDbFilterById(paymentCredentialsId);
+      const paymentCredentials = await PaymentCredentials.findOne(selector)
+      await PaymentCredentials.deleteOne(selector);
       return paymentCredentials;
     },
   };

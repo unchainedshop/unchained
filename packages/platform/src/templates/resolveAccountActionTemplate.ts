@@ -1,4 +1,3 @@
-import { Context } from '@unchainedshop/types/api';
 import { TemplateResolver } from '@unchainedshop/types/messaging';
 
 const {

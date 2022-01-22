@@ -2,6 +2,7 @@ import {
   Collection,
   Filter,
   ModuleMutations,
+  Query,
 } from '@unchainedshop/types/common';
 import { OrdersModule } from '@unchainedshop/types/orders';
 import {
@@ -79,6 +80,24 @@ export const configureOrderPaymentsModule = ({
         options
       );
     },
+    findOrderPaymentByContextData: async ({ context }, options) => {
+      const contextKeys = Object.keys(context);
+
+      if (contextKeys.length === 0) return null;
+
+      let selector: Query = contextKeys.reduce(
+        (currentSelector, key) =>
+          context[key] !== undefined
+            ? {
+                ...currentSelector,
+                [`context.${key}`]: context[key],
+              }
+            : currentSelector,
+        {}
+      );
+
+      return await OrderPayments.findOne(selector, options);
+    },
 
     // Transformations
     discounts: (orderPayment, { order, orderDiscount }, { modules }) => {
@@ -104,7 +123,7 @@ export const configureOrderPaymentsModule = ({
           {},
           requestContext
         );
-        
+
       if (isPayLaterAllowed) return false;
 
       return true;
@@ -161,14 +180,16 @@ export const configureOrderPaymentsModule = ({
       const paymentProviderId = paymentProvider._id;
 
       const arbitraryResponseData =
-        await requestContext.modules.payment.paymentProviders.charge(
-          paymentProviderId,
+        await requestContext.services.payment.charge(
           {
-            order,
-            orderPayment,
-            transactionContext: {
-              ...(transactionContext || {}),
-              ...(orderPayment.context || {}),
+            paymentProviderId,
+            paymentContext: {
+              order,
+              orderPayment,
+              transactionContext: {
+                ...(transactionContext || {}),
+                ...(orderPayment.context || {}),
+              },
             },
           },
           requestContext
@@ -248,6 +269,7 @@ export const configureOrderPaymentsModule = ({
     ) => {
       log(`OrderPayment ${orderPaymentId} -> Update Context`, {
         orderId,
+        context
       });
 
       const selector = buildFindByIdSelector(orderPaymentId);
